@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56768C2D12
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 08:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B89DC2D15
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 08:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732442AbfJAGIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 02:08:18 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:42671 "EHLO
+        id S1731693AbfJAGIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 02:08:17 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:37057 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725777AbfJAGIR (ORCPT
+        with ESMTP id S1727669AbfJAGIR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 02:08:17 -0400
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1iFBKY-0005n3-S4; Tue, 01 Oct 2019 08:08:14 +0200
+        id 1iFBKY-0005n4-S4; Tue, 01 Oct 2019 08:08:14 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1iFBKW-0006NV-Q2; Tue, 01 Oct 2019 08:08:12 +0200
+        id 1iFBKW-0006Ne-R5; Tue, 01 Oct 2019 08:08:12 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -27,9 +27,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/3] net: phy: at803x: add ar9331 support
-Date:   Tue,  1 Oct 2019 08:08:10 +0200
-Message-Id: <20191001060811.24291-3-o.rempel@pengutronix.de>
+Subject: [PATCH v2 3/3] net: phy: at803x: remove probe and struct at803x_priv
+Date:   Tue,  1 Oct 2019 08:08:11 +0200
+Message-Id: <20191001060811.24291-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191001060811.24291-1-o.rempel@pengutronix.de>
 References: <20191001060811.24291-1-o.rempel@pengutronix.de>
@@ -44,44 +44,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mostly this hardware can work with generic PHY driver, but this change
-is needed to provided interrupt handling support.
-Tested with dsa ar9331-switch driver.
+struct at803x_priv is never used in this driver. So remove it
+and the probe function allocating it.
 
+Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/at803x.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/phy/at803x.c | 21 ---------------------
+ 1 file changed, 21 deletions(-)
 
 diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 7895dbe600ac..42492f83c8d7 100644
+index 42492f83c8d7..e64f77e152f4 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -53,6 +53,7 @@
- #define AT803X_DEBUG_REG_5			0x05
- #define AT803X_DEBUG_TX_CLK_DLY_EN		BIT(8)
+@@ -63,10 +63,6 @@ MODULE_DESCRIPTION("Atheros 803x PHY driver");
+ MODULE_AUTHOR("Matus Ujhelyi");
+ MODULE_LICENSE("GPL");
  
-+#define ATH9331_PHY_ID 0x004dd041
- #define ATH8030_PHY_ID 0x004dd076
- #define ATH8031_PHY_ID 0x004dd074
- #define ATH8035_PHY_ID 0x004dd072
-@@ -403,6 +404,16 @@ static struct phy_driver at803x_driver[] = {
- 	.aneg_done		= at803x_aneg_done,
- 	.ack_interrupt		= &at803x_ack_interrupt,
- 	.config_intr		= &at803x_config_intr,
-+}, {
-+	/* ATHEROS AR9331 */
-+	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
-+	.name			= "Atheros AR9331 built-in PHY",
-+	.config_init		= at803x_config_init,
-+	.suspend		= at803x_suspend,
-+	.resume			= at803x_resume,
-+	/* PHY_BASIC_FEATURES */
-+	.ack_interrupt		= &at803x_ack_interrupt,
-+	.config_intr		= &at803x_config_intr,
- } };
+-struct at803x_priv {
+-	bool phy_reset:1;
+-};
+-
+ struct at803x_context {
+ 	u16 bmcr;
+ 	u16 advertise;
+@@ -232,20 +228,6 @@ static int at803x_resume(struct phy_device *phydev)
+ 	return phy_modify(phydev, MII_BMCR, BMCR_PDOWN | BMCR_ISOLATE, 0);
+ }
  
- module_phy_driver(at803x_driver);
+-static int at803x_probe(struct phy_device *phydev)
+-{
+-	struct device *dev = &phydev->mdio.dev;
+-	struct at803x_priv *priv;
+-
+-	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
+-
+-	phydev->priv = priv;
+-
+-	return 0;
+-}
+-
+ static int at803x_config_init(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -367,7 +349,6 @@ static struct phy_driver at803x_driver[] = {
+ 	/* ATHEROS 8035 */
+ 	PHY_ID_MATCH_EXACT(ATH8035_PHY_ID),
+ 	.name			= "Atheros 8035 ethernet",
+-	.probe			= at803x_probe,
+ 	.config_init		= at803x_config_init,
+ 	.set_wol		= at803x_set_wol,
+ 	.get_wol		= at803x_get_wol,
+@@ -380,7 +361,6 @@ static struct phy_driver at803x_driver[] = {
+ 	/* ATHEROS 8030 */
+ 	PHY_ID_MATCH_EXACT(ATH8030_PHY_ID),
+ 	.name			= "Atheros 8030 ethernet",
+-	.probe			= at803x_probe,
+ 	.config_init		= at803x_config_init,
+ 	.link_change_notify	= at803x_link_change_notify,
+ 	.set_wol		= at803x_set_wol,
+@@ -394,7 +374,6 @@ static struct phy_driver at803x_driver[] = {
+ 	/* ATHEROS 8031 */
+ 	PHY_ID_MATCH_EXACT(ATH8031_PHY_ID),
+ 	.name			= "Atheros 8031 ethernet",
+-	.probe			= at803x_probe,
+ 	.config_init		= at803x_config_init,
+ 	.set_wol		= at803x_set_wol,
+ 	.get_wol		= at803x_get_wol,
 -- 
 2.23.0
 
