@@ -2,140 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F558C42ED
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:48:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D5F0C42F3
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:49:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727024AbfJAVsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 17:48:04 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12820 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726681AbfJAVsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:48:04 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x91Lj2pF027867;
-        Tue, 1 Oct 2019 14:47:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=7FF6FDrG24BQP5cFIpUBzsR1aA4CUTJUDO7p3CXeRzQ=;
- b=KRBQpU7JhvnYexZtcNPoLbX02cKOGPgZsiFwoYQfyq5SHezv9lyzgXlDbnD7nke9CswN
- Ulyu5qEWYT0Yy4eba6Cwl/DveWnfQp/98m1cfq7ElrlK0OQzL4e6hcwooufqLyO0u+3A
- GTkeVuUoOwvEiYBn3FuBeDXdVPB3lKAQj34= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vcasb9g9a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 01 Oct 2019 14:47:51 -0700
-Received: from prn-mbx01.TheFacebook.com (2620:10d:c081:6::15) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 1 Oct 2019 14:47:50 -0700
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx01.TheFacebook.com (2620:10d:c081:6::15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 1 Oct 2019 14:47:50 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 1 Oct 2019 14:47:50 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SODEGhk5LqqPzkr/s61UrqKlJDkWsAzYhTFAZWPObck6oiUHglnwLCzpKMzNFeGslYBpgrp4CKcuNarZR9TDFRnPo56oeeD+qhhDGbdnQY99dBMPx6/zL7Y08Cuvth5HdB2+PR/IuWNt0mM1JAaKdOGmj8XAUyR7aMt9IO2nwWhuqRW7ZGZTIf7kXNkvsT7g6zr7zx41W0yD/b4dYY7PXgid5BP3ZS6Xr3R4nMYCfiykGTZsxOWfZ+Bkc6AhR3kHo81Nm/MDZdH6jSyHJi2KzMOufOIO30OTqPlNBPI4WHa/wfPhoIk5o78c4RAIzSIwltCt/pIoI9w2yBzJKzma6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7FF6FDrG24BQP5cFIpUBzsR1aA4CUTJUDO7p3CXeRzQ=;
- b=lONzZkFa5uBbKkI3QthEyoCqcPE8sNKrEvclrI6UqSjuvCZxPvPlymKd/Tv+0gscZjoeUqDTKUGimwsW6xVi6XjpHw7L61Rb76nFXS5vmC5eJgUl0b/VB3jzkla7cjZnQZL0bd7ujKakqNP7qO3bVOtHM1t733Qj6oViuBa+Quu80JkJK0/MznvLm7ne2R8BeXiJsBKzkESsPXh9+xljWz6qeDhJOaZ9ZyqmA2nnULXK9pjAbAmoHP7iXSHimhci/Q7syqtajuK8Y4I9HTgUoOw1uXsuWdYvwq6L+4m3cX5WPNSJaR3gtcy/oHg3ZwqUkbjIxo188kzTjyT4ZphVVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7FF6FDrG24BQP5cFIpUBzsR1aA4CUTJUDO7p3CXeRzQ=;
- b=LgXxg3SjpviC+GtMbJnuhr8Br/Wrb/NeI5+7So4BAWW1WM9dGkJ7vgvMK+f0mFt6EPpBMCo1vmrjoJCtCSrjEk/FFtIaShrWDl9O6jaeQu4WMN6IotDl6wOK7ajBRixcPreJM1Qvp6KyZPKsn8s4TvhwzwgstmYZ1VeY1BzCZaw=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1280.namprd15.prod.outlook.com (10.175.3.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.20; Tue, 1 Oct 2019 21:47:47 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1%8]) with mapi id 15.20.2305.022; Tue, 1 Oct 2019
- 21:47:47 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S1727985AbfJAVt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 17:49:26 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:23039 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727981AbfJAVt0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:49:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1569966565;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xTPKXYanENCf8S6Y/MdcG6LWf8Ty0manQNkYewZ+BGM=;
+        b=cIzP+yjKPGy1t9Z0JYIkZzzo7jevU5voZVk+u8VA3mVgKSdpTuS9ka4Twj7izRd6t34WjB
+        gt/MCC+Pjm0LzPGqMdDxstoBCP7BxVzgWdKbKXMnoL3RCXFt1dt2CcCRlxXBgex9YG5oM4
+        p+4RpjWzHLVQfE7i06exAIxG5HAHuxM=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-133-3t5NXPNGMvuOBlb8B0cf8w-1; Tue, 01 Oct 2019 17:49:22 -0400
+Received: by mail-lf1-f71.google.com with SMTP id x20so3011594lfe.14
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 14:49:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=CWvSuWO20TyB05rSQQNOr2Loal1JyROYxQL2nrEc6yk=;
+        b=tTOMzECRF4zJGSQPQ431fhEEExKqXthsGIRdwxTPj8BkYIShY04zBwGaLBRIKmen1C
+         ZpBac6pylSxdE9hMalyG/OhJhNBBsfl21LPSZx2037eYpuc7gL8ul7mA4L9ds4+VtUAT
+         JG0dzOf5eoDynXOA56vzmzET7GcD+sLXYU5Xvw9/CkNVe7YFIAu6ENR98onyOgO2fv59
+         EFiz+eu3kSYpWvEJxSMLD9BCZc4W5SVtyAs/jAw2iolCj0nScrusAbYU6oYj0OwDSQ3i
+         as4NGrmmeT9AAAck1jHod7o2PVuy4VRZ5d5zuht/alx56tyvTzotST0x+bnzQ+Kt9qjf
+         ahaA==
+X-Gm-Message-State: APjAAAVx/UABMwO2fVYhPilMGLsnsBXVevFeyN+LaqElgVp/rs4ZaeRm
+        Tc1B8TqWazZeNFcFsBwS8Ia5PF1xzfqJ+I4eIlSwdSLtzBgXoN3I0xgkLNT7QeQFkDpH0cCy3Bt
+        1XEZyVrU33a1LZIUO
+X-Received: by 2002:a2e:8857:: with SMTP id z23mr45938ljj.19.1569966560601;
+        Tue, 01 Oct 2019 14:49:20 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzrNkirmUxLUhp3EyQUktDY7LhdA5FGyZ3+yZH2x7FEwi2PkHZAqN4kO+1NY51d/6WEM10SVQ==
+X-Received: by 2002:a2e:8857:: with SMTP id z23mr45927ljj.19.1569966560379;
+        Tue, 01 Oct 2019 14:49:20 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id s7sm4280204ljs.16.2019.10.01.14.49.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Oct 2019 14:49:19 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 6140718063D; Tue,  1 Oct 2019 23:49:18 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 5/6] selftests/bpf: adjust CO-RE reloc tests for
- new BPF_CORE_READ macro
-Thread-Topic: [PATCH bpf-next 5/6] selftests/bpf: adjust CO-RE reloc tests for
- new BPF_CORE_READ macro
-Thread-Index: AQHVd8FNfE+g95IKgkOuRre54jGgJqdGVDYA
-Date:   Tue, 1 Oct 2019 21:47:47 +0000
-Message-ID: <4F50FF25-BCD3-4B72-9837-499962762238@fb.com>
-References: <20190930185855.4115372-1-andriin@fb.com>
- <20190930185855.4115372-6-andriin@fb.com>
-In-Reply-To: <20190930185855.4115372-6-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:200::1:7bc9]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1cecce6d-0b77-403f-beec-08d746b8ffa1
-x-ms-traffictypediagnostic: MWHPR15MB1280:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB12803626281000FAA669BDF3B39D0@MWHPR15MB1280.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:409;
-x-forefront-prvs: 0177904E6B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(199004)(189003)(66446008)(66476007)(81156014)(66556008)(76116006)(5660300002)(66946007)(91956017)(64756008)(76176011)(6436002)(71200400001)(99286004)(6636002)(14454004)(8676002)(53546011)(6506007)(102836004)(6116002)(4744005)(50226002)(8936002)(186003)(25786009)(498600001)(86362001)(71190400001)(54906003)(229853002)(7736002)(36756003)(2906002)(6862004)(81166006)(6246003)(4326008)(46003)(11346002)(446003)(33656002)(256004)(305945005)(6486002)(37006003)(6512007)(2616005)(486006)(476003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1280;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WG46Dww9EtSgvygpBcxmheFH8bAY8YMk+uIZfgGv87bfPizmy2/7er0hxhllhHiaB/1evaScKcg/C09Q1uaVO1dxELEUSf2fCkPm2gmK7KoKV09Dkgk7h+frrit1jCfGqoP+DtOma/DYjrdr/S82mJzl4NFNNqTTZ7HRpb3IgCxob76KLVg5z8Vy6ZBFc9FGIpGlVIVIt7ksqqo4+CrSqsO2MZxkipVMENiu8XuuxGHV4M2XBzqtq9UmL6tChmN17m64v5Ct9Nbh8bNzst6u95YNe08WkceXW1aEAWTiY3zjYKTaVeacO4J+q5F1VYUPQT5kSRq3WApAV7fvTarEK8TVpU81OTX9xSGQHki57mYWeNx25Od04igh+08fGX8bLFaJ/MSpHxY7su1B4M79YPtU+3aIQ7dTQkVkz8VkrS4=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <19D34133E55B5D45A324938B0F224884@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Daniel Borkmann <daniel@iogearbox.net>,
+        KP Singh <kpsingh@chromium.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [RFC][PATCH bpf-next] libbpf: add bpf_object__open_{file,mem} w/ sized opts
+In-Reply-To: <CAEf4BzYvx7wpy79mTgKMuZop3_qYCCOzk4XWoDKiq7Fbj+gAow@mail.gmail.com>
+References: <20190930164239.3697916-1-andriin@fb.com> <871rvwx3fg.fsf@toke.dk> <CAEf4BzYvx7wpy79mTgKMuZop3_qYCCOzk4XWoDKiq7Fbj+gAow@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 01 Oct 2019 23:49:18 +0200
+Message-ID: <87lfu4t9up.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cecce6d-0b77-403f-beec-08d746b8ffa1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Oct 2019 21:47:47.2101
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: k0buFrkpty5EO7Hdhe3NMS1sqoesPMeKGYkyESbTPIxFTQ/LG6htIlLmIt8seSYLnqK6605lcPrWrBl8lObKEA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1280
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-01_10:2019-10-01,2019-10-01 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- priorityscore=1501 lowpriorityscore=0 spamscore=0 impostorscore=0
- adultscore=0 phishscore=0 suspectscore=0 malwarescore=0 bulkscore=0
- mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910010180
-X-FB-Internal: deliver
+X-MC-Unique: 3t5NXPNGMvuOBlb8B0cf8w-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
+> On Tue, Oct 1, 2019 at 1:42 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>>
+>> Andrii Nakryiko <andriin@fb.com> writes:
+>>
+>> > Add new set of bpf_object__open APIs using new approach to optional
+>> > parameters extensibility allowing simpler ABI compatibility approach.
+>> >
+>> > This patch demonstrates an approach to implementing libbpf APIs that
+>> > makes it easy to extend existing APIs with extra optional parameters i=
+n
+>> > such a way, that ABI compatibility is preserved without having to do
+>> > symbol versioning and generating lots of boilerplate code to handle it=
+.
+>> > To facilitate succinct code for working with options, add OPTS_VALID,
+>> > OPTS_HAS, and OPTS_GET macros that hide all the NULL and size checks.
+>> >
+>> > Additionally, newly added libbpf APIs are encouraged to follow similar
+>> > pattern of having all mandatory parameters as formal function paramete=
+rs
+>> > and always have optional (NULL-able) xxx_opts struct, which should
+>> > always have real struct size as a first field and the rest would be
+>> > optional parameters added over time, which tune the behavior of existi=
+ng
+>> > API, if specified by user.
+>>
+>> I think this is a reasonable idea. It does require some care when adding
+>> new options, though. They have to be truly optional. I.e., I could
+>> imagine that we will have cases where the behaviour might need to be
+>> different if a program doesn't understand a particular option (I am
+>> working on such a case in the kernel ATM). You could conceivably use the
+>> OPTS_HAS() macro to test for this case in the code, but that breaks if a
+>> program is recompiled with no functional change: then it would *appear*
+>> to "understand" that option, but not react properly to it.
+>
+> So let me double-check I'm understanding this correctly.
+>
+> Let's say we have some initial options like:
+>
+> // VERSION 1
+> struct bla_opts {
+>     size_t sz;
+> };
+>
+> // VERSION 2
+> Then in newer version we add new field:
+> struct bla_opts {
+>     int awesomeness_trigger;
+> };
+>
+> Are you saying that if program was built with VERSION 1 in mind (so sz
+> =3D 8 for bla_opts, so awesomeness_trigger can't be even specified),
+> then that should be different from the program built against VERSION 2
+> and specifying .awesomeness_trigger =3D 0?
+> Do I get this right? I'm not sure how to otherwise interpret what you
+> are saying, so please elaborate if I didn't get the idea.
+>
+> If that's what you are saying, then I think we shouldn't (and we
+> really can't, see Jesper's remark about padding) distinguish between
+> whether field was not "physically" there or whether it was just set to
+> default 0 value. Treating this uniformly as 0 makes libbpf logic
+> simpler and consistent and behavior much less surprising.
 
-> On Sep 30, 2019, at 11:58 AM, Andrii Nakryiko <andriin@fb.com> wrote:
->=20
-> Given introduction of variadic BPF_CORE_READ with slightly different
-> syntax and semantics, define CORE_READ, which is a thin wrapper around
-> low-level bpf_core_read() macro, which in turn is just a wrapper around
-> bpf_probe_read(). BPF_CORE_READ is higher-level variadic macro
-> supporting multi-pointer reads and are tested separately.
->=20
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->=20
+Indeed. My point was that we should make sure we don't try to do this :)
 
-Acked-by: Song Liu <songliubraving@fb.com>=20
+>> In other words, this should only be used for truly optional bits (like
+>> flags) where the default corresponds to unchanged behaviour relative to
+>> when the option was added.
+>
+> This I agree 100%, furthermore, any added new option has to behave
+> like this. If that's not the case, then it has to be a new API
+> function or at least another symbol version.
 
+Exactly!
+
+>>
+>> A few comments on the syntax below...
+>>
+>>
+>> > +static struct bpf_object *
+>> > +__bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
+>> > +                    struct bpf_object_open_opts *opts, bool enforce_k=
+ver)
+>>
+>> I realise this is an internal function, but why does it have a
+>> non-optional parameter *after* the opts?
+>
+> Oh, no reason, added it later and I'm hoping to remove it completely.
+> Current bpf_object__open_buffer always enforces kver presence in a
+> program, which differs from bpf_object__open behavior (where it
+> depends on provided .prog_type argument), so with this I tried to
+> preserve existing behavior. But in the final version of this patch I
+> think I'll just make this kver archaic business in libbpf not
+> enforced. It's been deleted from kernel long time ago, there is no
+> good reason to keep enforcing this in libbpf. If someone is running
+> against old kernel and didn't specify kver, they'll get error anyway.
+> Libbpf will just need to make sure to pass kver through, if it's
+> specified. Thoughts?
+
+Not many. Enforcing anything on kernel version seems brittle anyway, so
+off the top of my head, yeah, let's nuke it (in a backwards-compatible
+way, of course :)).
+
+>>
+>> >       char tmp_name[64];
+>> > +     const char *name;
+>> >
+>> > -     /* param validation */
+>> > -     if (!obj_buf || obj_buf_sz <=3D 0)
+>> > -             return NULL;
+>> > +     if (!OPTS_VALID(opts) || !obj_buf || obj_buf_sz =3D=3D 0)
+>> > +             return ERR_PTR(-EINVAL);
+>> >
+>> > +     name =3D OPTS_GET(opts, object_name, NULL);
+>> >       if (!name) {
+>> >               snprintf(tmp_name, sizeof(tmp_name), "%lx-%lx",
+>> >                        (unsigned long)obj_buf,
+>> >                        (unsigned long)obj_buf_sz);
+>> >               name =3D tmp_name;
+>> >       }
+>> > +
+>> >       pr_debug("loading object '%s' from buffer\n", name);
+>> >
+>> > -     return __bpf_object__open(name, obj_buf, obj_buf_sz, true, true)=
+;
+>> > +     return __bpf_object__open(name, obj_buf, obj_buf_sz, enforce_kve=
+r, 0);
+>> > +}
+>> > +
+>> > +struct bpf_object *
+>> > +bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
+>> > +                  struct bpf_object_open_opts *opts)
+>> > +{
+>> > +     return __bpf_object__open_mem(obj_buf, obj_buf_sz, opts, false);
+>> > +}
+>> > +
+>> > +struct bpf_object *
+>> > +bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz, const=
+ char *name)
+>> > +{
+>> > +     struct bpf_object_open_opts opts =3D {
+>> > +             .sz =3D sizeof(struct bpf_object_open_opts),
+>> > +             .object_name =3D name,
+>> > +     };
+>>
+>> I think this usage with the "size in struct" model is really awkward.
+>> Could we define a macro to help hide it? E.g.,
+>>
+>> #define BPF_OPTS_TYPE(type) struct bpf_ ## type ## _opts
+>> #define DECLARE_BPF_OPTS(var, type) BPF_OPTS_TYPE(type) var =3D { .sz =
+=3D sizeof(BPF_OPTS_TYPE(type)); }
+>
+> We certainly could (though I'd maintain that type specified full
+> struct name, makes it easier to navigate/grep code), but then we'll be
+> preventing this nice syntax of initializing structs, which makes me
+> very said because I love that syntax.
+>>
+>> Then the usage code could be:
+>>
+>> DECLARE_BPF_OPTS(opts, object_open);
+>> opts.object_name =3D name;
+>>
+>> Still not ideal, but at least it's less boiler plate for the caller, and
+>> people will be less likely to mess up by forgetting to add the size.
+>
+> What do you think about this?
+>
+> #define BPF_OPTS(type, name, ...) \
+>         struct type name =3D { \
+>                 .sz =3D sizeof(struct type), \
+>                 __VA_ARGS__ \
+>         }
+>
+> struct bla_opts {
+>         size_t sz;
+>         int opt1;
+>         void *opt2;
+>         const char *opt3;
+> };
+>
+> int main() {
+>         BPF_OPTS(bla_opts, opts,
+>                 .opt1 =3D 123,
+>                 .opt2 =3D NULL,
+>                 .opt3 =3D "fancy",
+>         );
+>
+>         /* then also */
+>         BPF_OPTS(bla_opts, old_school);
+>         old_school.opt1 =3D 256;
+>
+>         return opts.opt1;
+> }
+
+Sure, LGTM! Should we still keep the bit where it expands _opts in the
+struct name as part of the macro, or does that become too obtuse?
+
+> Thanks a lot for a thoughtful feedback, Toke!
+
+You're very welcome! And thanks for working on these API issues!
+
+-Toke
 
