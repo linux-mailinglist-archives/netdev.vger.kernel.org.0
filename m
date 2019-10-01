@@ -2,80 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C72A3C2F59
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 10:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64CC1C2F4E
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 10:53:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733209AbfJAIz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 04:55:28 -0400
-Received: from mail-m964.mail.126.com ([123.126.96.4]:49510 "EHLO
-        mail-m964.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbfJAIz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 04:55:28 -0400
-X-Greylist: delayed 1819 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Oct 2019 04:55:26 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=8+PkyfTKytiTLsOI38
-        wFrb2knSB9Am6i5LeugKWw9WQ=; b=lbsGjsWGEkeVAIkDd4hYYzzM1Pjr32hoS5
-        a4ZpV12XLxW49wzP4EaHN7rcCAfppBn1LZeRTR6GI48uO++0CHywuMaZqwxh/E1P
-        Sg5JmrsQWdUwDjul59BMda1SsF+I6e20d+LqrNKSTdPKZat3CNWt/IDSXB9xHbxs
-        E6423apYs=
-Received: from localhost.localdomain (unknown [123.116.149.18])
-        by smtp9 (Coremail) with SMTP id NeRpCgCnLRpbDZNdDyGnAA--.8531S2;
-        Tue, 01 Oct 2019 16:25:00 +0800 (CST)
-From:   wh_bin@126.com
-To:     pablo@netfilter.org
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wh_bin@126.com
-Subject: [PATCH] netfilter:get_next_corpse():No need to double check the *bucket
-Date:   Tue,  1 Oct 2019 16:24:41 +0800
-Message-Id: <20191001082441.7140-1-wh_bin@126.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: NeRpCgCnLRpbDZNdDyGnAA--.8531S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWrurW7uryfZry3tFWfZFyxXwb_yoW8JryUpw
-        nakw1ay34xWrs0yF4Fgry7AFsxCws3ua1jgr45G34rGwnrGwn8CF48Kry7Xas8Xrs5JF13
-        Ars0yw1j9F1kXw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UTKZZUUUUU=
-X-Originating-IP: [123.116.149.18]
-X-CM-SenderInfo: xzkbuxbq6rjloofrz/1tbiWBxBol1w0rQrGwAAsc
+        id S1733230AbfJAIxG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Oct 2019 04:53:06 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54828 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726672AbfJAIxG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 04:53:06 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id A965D10C0933;
+        Tue,  1 Oct 2019 08:53:05 +0000 (UTC)
+Received: from [10.36.116.181] (ovpn-116-181.ams2.redhat.com [10.36.116.181])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6D29D5C219;
+        Tue,  1 Oct 2019 08:53:04 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     xiangxia.m.yue@gmail.com, "ovs dev" <dev@openvswitch.org>
+Cc:     gvrose8192@gmail.com, pshelar@ovn.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/9] optimize openvswitch flow looking up
+Date:   Tue, 01 Oct 2019 10:53:02 +0200
+Message-ID: <12EAB90C-827E-4BC5-8CED-08DA510CF566@redhat.com>
+In-Reply-To: <1569777006-7435-1-git-send-email-xiangxia.m.yue@gmail.com>
+References: <1569777006-7435-1-git-send-email-xiangxia.m.yue@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Tue, 01 Oct 2019 08:53:05 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hongbin Wang <wh_bin@126.com>
+Interesting performance gain, copied in the OVS development mailing 
+list.
 
-The *bucket is in for loops,it has been checked.
+//Eelco
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
----
- net/netfilter/nf_conntrack_core.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+On 29 Sep 2019, at 19:09, xiangxia.m.yue@gmail.com wrote:
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 0c63120b2db2..8d48babe6561 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -2000,14 +2000,12 @@ get_next_corpse(int (*iter)(struct nf_conn *i, void *data),
- 		lockp = &nf_conntrack_locks[*bucket % CONNTRACK_LOCKS];
- 		local_bh_disable();
- 		nf_conntrack_lock(lockp);
--		if (*bucket < nf_conntrack_htable_size) {
--			hlist_nulls_for_each_entry(h, n, &nf_conntrack_hash[*bucket], hnnode) {
--				if (NF_CT_DIRECTION(h) != IP_CT_DIR_ORIGINAL)
--					continue;
--				ct = nf_ct_tuplehash_to_ctrack(h);
--				if (iter(ct, data))
--					goto found;
--			}
-+		hlist_nulls_for_each_entry(h, n, &nf_conntrack_hash[*bucket], hnnode) {
-+			if (NF_CT_DIRECTION(h) != IP_CT_DIR_ORIGINAL)
-+				continue;
-+			ct = nf_ct_tuplehash_to_ctrack(h);
-+			if (iter(ct, data))
-+				goto found;
- 		}
- 		spin_unlock(lockp);
- 		local_bh_enable();
--- 
-2.17.1
-
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> This series patch optimize openvswitch.
+>
+> Patch 1, 2, 4: Port Pravin B Shelar patches to
+> linux upstream with little changes.
+>
+> Patch 5, 6, 7: Optimize the flow looking up and
+> simplify the flow hash.
+>
+> Patch 8: is a bugfix.
+>
+> The performance test is on Intel Xeon E5-2630 v4.
+> The test topology is show as below:
+>
+> +-----------------------------------+
+> |   +---------------------------+   |
+> |   | eth0   ovs-switch    eth1 |   | Host0
+> |   +---------------------------+   |
+> +-----------------------------------+
+>       ^                       |
+>       |                       |
+>       |                       |
+>       |                       |
+>       |                       v
+> +-----+----+             +----+-----+
+> | netperf  | Host1       | netserver| Host2
+> +----------+             +----------+
+>
+> We use netperf send the 64B frame, and insert 255+ flow-mask:
+> $ ovs-dpctl add-flow ovs-switch 
+> "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)" 
+> 2
+> ...
+> $ ovs-dpctl add-flow ovs-switch 
+> "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)" 
+> 2
+> $ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
+>
+> * Without series patch, throughput 8.28Mbps
+> * With series patch, throughput 46.05Mbps
+>
+> Tonghao Zhang (9):
+>   net: openvswitch: add flow-mask cache for performance
+>   net: openvswitch: convert mask list in mask array
+>   net: openvswitch: shrink the mask array if necessary
+>   net: openvswitch: optimize flow mask cache hash collision
+>   net: openvswitch: optimize flow-mask looking up
+>   net: openvswitch: simplify the flow_hash
+>   net: openvswitch: add likely in flow_lookup
+>   net: openvswitch: fix possible memleak on destroy flow table
+>   net: openvswitch: simplify the ovs_dp_cmd_new
+>
+>  net/openvswitch/datapath.c   |  63 +++++----
+>  net/openvswitch/flow.h       |   1 -
+>  net/openvswitch/flow_table.c | 318 
+> +++++++++++++++++++++++++++++++++++++------
+>  net/openvswitch/flow_table.h |  19 ++-
+>  4 files changed, 330 insertions(+), 71 deletions(-)
+>
+> -- 
+> 1.8.3.1
