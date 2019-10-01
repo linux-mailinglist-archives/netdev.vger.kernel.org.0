@@ -2,85 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1182C3262
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:23:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAEE6C327E
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731338AbfJALXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 07:23:04 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45333 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725947AbfJALXE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:23:04 -0400
-Received: by mail-pg1-f194.google.com with SMTP id q7so9382613pgi.12;
-        Tue, 01 Oct 2019 04:23:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3RJ117gHi9sUj8qt+VBfFz4EZYQo2wfsZBAfmwAinyI=;
-        b=bWpao1UbKLZ5vdfFFpvQBVnrWMGZwrWXh5RH0yoT0CFcWQZsyod03p7/fg3sK1RoaJ
-         M5lhkKCaUSDoqalvZbEQXwsQAvlatomKNJHb16rTalnD5qdWfnIkF7opmdS4kleOV7af
-         bFofljbGiaBbR9PuYeQFnECoYVNo07aP2DkonJQ1MIGz17VvN8jXMS09cOKqGVcv5As1
-         KzR+F4lVMtxm2OpAe62THuRKAyWVTtt7to+3CoXbiXdEqbtjiCfseUd9gTJbLrZdkFqt
-         l+OjLSCyf2WZ6iW7vLK3x4Z6Oaf/nJqi3LYCcVaG36wD4SJNhRBGPIx4eiPgp1aPdiXZ
-         o3AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3RJ117gHi9sUj8qt+VBfFz4EZYQo2wfsZBAfmwAinyI=;
-        b=GhxJwLDktfCM1IT6WI3ercTi/9ft8EY62kZnWA3OdC+z/VC2b8w680OixnF4tV2a0g
-         IT+G1DJDrep+1VcD9LRqDGOERosAZ1emY69PjYY+8ZukG3nrSZsrDuYaookvlA2zRsJy
-         FX0mjUqi+eP49jpm4JIwkkUYjQjDKn687wWqUr2cpQAcUbORKVGcQDnm7KTbgQGXdRrt
-         CmbFGEwhWIYxzECCIs6wou2FQQ24+jiP900OYrOwQ6ba490QsufxL5HavvcZfMG1+OpF
-         8qFp7MxBdiSEBxQ+0M/uZPEgTrl5SpnwfJqI3/1OWph3Pl4jq6CjwuoNQsW8CVbvGbus
-         vnvg==
-X-Gm-Message-State: APjAAAXoS3dHee+s+y9r2Q9on0bVybMMrxM89Iw3aJ7EKgyaH/RKdEVE
-        ty0RuhQwUvNabOSzPA7hLweG9TBYKVU=
-X-Google-Smtp-Source: APXvYqyuiSulkSxXtffHndOosj4twhj2q6JGfb2gAtGd+/2qcb6hdjXV7GqmuKRbg7qHWFjcHBi3Gg==
-X-Received: by 2002:a63:2216:: with SMTP id i22mr29406263pgi.430.1569928982981;
-        Tue, 01 Oct 2019 04:23:02 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id h1sm15849488pfk.124.2019.10.01.04.22.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 04:23:02 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf] samples/bpf: fix build for task_fd_query_user.c
-Date:   Tue,  1 Oct 2019 13:22:49 +0200
-Message-Id: <20191001112249.27341-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726107AbfJALa5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Oct 2019 07:30:57 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:44490 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725844AbfJALa5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 07:30:57 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 2D191882EA;
+        Tue,  1 Oct 2019 11:30:57 +0000 (UTC)
+Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 19D1260C83;
+        Tue,  1 Oct 2019 11:30:49 +0000 (UTC)
+Date:   Tue, 1 Oct 2019 13:30:48 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, ilias.apalodimas@linaro.org,
+        mcroce@redhat.com, brouer@redhat.com
+Subject: Re: [RFC 3/4] net: mvneta: add basic XDP support
+Message-ID: <20191001133048.108b056a@carbon>
+In-Reply-To: <87zhiku3lv.fsf@toke.dk>
+References: <cover.1569920973.git.lorenzo@kernel.org>
+        <5119bf5e9c33205196cf0e8b6dc7cf0d69a7e6e9.1569920973.git.lorenzo@kernel.org>
+        <20191001125246.0000230a@gmail.com>
+        <87zhiku3lv.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 01 Oct 2019 11:30:57 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Tue, 01 Oct 2019 13:06:36 +0200
+Toke Høiland-Jørgensen <toke@redhat.com> wrote:
 
-Add missing "linux/perf_event.h" include file.
+> Maciej Fijalkowski <maciejromanfijalkowski@gmail.com> writes:
+> 
+> > On Tue,  1 Oct 2019 11:24:43 +0200
+> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >  
+> >> Add basic XDP support to mvneta driver for devices that rely on software
+> >> buffer management. Currently supported verdicts are:
+> >> - XDP_DROP
+> >> - XDP_PASS
+> >> - XDP_REDIRECT  
+> >
+> > You're supporting XDP_ABORTED as well :P any plans for XDP_TX?  
+> 
+> Wait, if you are supporting REDIRECT but not TX, that means redirect
+> only works to other, non-mvneta, devices, right? Maybe that should be
+> made clear in the commit message :)
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- samples/bpf/task_fd_query_user.c | 1 +
- 1 file changed, 1 insertion(+)
+If you implemented XDP_REDIRECT, then it should be trivial to implement
+XDP_TX, as you can just convert the xdp_buff to xdp_frame and call your
+ndo_xdp_xmit function directly (and do the tail-flush).
 
-diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query_user.c
-index e39938058223..4c31b305e6ef 100644
---- a/samples/bpf/task_fd_query_user.c
-+++ b/samples/bpf/task_fd_query_user.c
-@@ -13,6 +13,7 @@
- #include <sys/resource.h>
- #include <sys/types.h>
- #include <sys/stat.h>
-+#include <linux/perf_event.h>
- 
- #include "libbpf.h"
- #include "bpf_load.h"
+Or maybe you are missing a ndo_xdp_xmit function (as Toke indirectly
+points out).
+
 -- 
-2.20.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
