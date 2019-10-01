@@ -2,113 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15D2FC36D7
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 16:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1232AC3704
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 16:22:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388751AbfJAOQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 10:16:20 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42858 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726554AbfJAOQU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 10:16:20 -0400
-Received: by mail-qt1-f193.google.com with SMTP id w14so21743341qto.9;
-        Tue, 01 Oct 2019 07:16:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=zqe/3yQ//FnSWGENLzctmWxawD8BEgiS/3EQrQ4HX8Q=;
-        b=U5szjWsyE6rJuE1IsJodEcdG6EC9zXgWg6A1w9p6+VcT3Ug/y6Xf0r6pQ8e3EyaHtJ
-         SHuWDz50EB2O+ZJ3Ca4aTVtSbuFgmK+G3EI44O3R+2zpu0kyjzXXOeRhcIh8EPjMVBA3
-         Q8dpXPkI4L177mVxdw6QXwBvQsegsNHR71bJLYcv42T6atSGrk8YbrzC4xcsTGsULGqB
-         64OB27zXFiLEFyTTSQh6XyO2w8yPC6jW35qlEkoupPUZ+boU5fWvhhAnkmGppaGjnQOu
-         oKSMC5PzD7KkhEh2rl6DMF1TpM6SObOk2nBwCbwnLpfFqFQMVXE6fEr17l8+qdJxUv5h
-         YWNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=zqe/3yQ//FnSWGENLzctmWxawD8BEgiS/3EQrQ4HX8Q=;
-        b=Fw7foO3f2PASYJVqStJ4mMWRQ6XLykqVTdkur49JeJM80FIWTn2Bvx8Bmq7uRVGaqt
-         0N4hvyo+SIhSY7qb9lgkhcqGEIf1BhdsdMNbXlWW/xBkBnxGQZqPNVJclKGgdVd5Hlrn
-         EWn3ZKyXtVahkHhKLph8mQFypm1EoFO8mxYFbDCB5FFop8j4zRKh8/jGdIvhYTJfUf96
-         09B+hJulFkgevjSlgoKL4oAScKaf403MCzbzQehL9oAA+r9aKtXM60clIm+Y45wwsAb4
-         LoczYeBuGMDe5SDboQXASh+x3wjYTdO+eCU2ymrGzenZqNJRhtrC9RimRIly3pp0nHHd
-         7Myw==
-X-Gm-Message-State: APjAAAVe2cMHQOHWavwUrTPI2U+RkmBqpAXa6yFcdzb78rLNKyKyNSpT
-        kAI+4DOS1GPnsgg5pvFr4cQ8mGJtZHPqRr74eDo=
-X-Google-Smtp-Source: APXvYqwy5L7lsArt7eRzsOObi54HA7rJbsTO0TkfyRzzAV4GNqKD8qOP15LcFgfixXyNieEk8mnHY5psxc3M3RmPVBM=
-X-Received: by 2002:a05:6214:1369:: with SMTP id c9mr25800672qvw.3.1569939377523;
- Tue, 01 Oct 2019 07:16:17 -0700 (PDT)
+        id S2389035AbfJAOWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 10:22:11 -0400
+Received: from mout.kundenserver.de ([217.72.192.75]:39489 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389016AbfJAOWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 10:22:07 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1N6c0W-1i4vN93b6E-0182Dk; Tue, 01 Oct 2019 16:21:54 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ionic: select CONFIG_NET_DEVLINK
+Date:   Tue,  1 Oct 2019 16:21:40 +0200
+Message-Id: <20191001142151.1206987-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-References: <20191001101429.24965-1-bjorn.topel@gmail.com> <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
-In-Reply-To: <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 1 Oct 2019 16:16:05 +0200
-Message-ID: <CAJ+HfNgvxornSfqnbAthNy6u6=-enGCdA8K1e6rLXhCzGgmONQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] samples/bpf: kbuild: add CONFIG_SAMPLE_BPF Kconfig
-To:     Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:u7qraBxsgoB/VaqNMmE0UtXHW3uhM1WX/o1uIcS2nAeZfUDgChQ
+ BtCKPfi1Jo3WIfOuE4U3nFRcAC6Rgni/92SmJ7YBr6HCd+sfqaIXu/sCIPCpWAdmYjzOBfQ
+ VCwRY4xh9QCc3PaBFt/LgHxbpzHnd19BeuAHVj9EYLC7gC5b1rWzDVw/2dlQ7W06mGIPnYI
+ BfbaJfuBD1+qiV1HwIRsg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dkPAEz+sepA=:Pg+Dbyy+hzRh0CS1RVlh79
+ L1hXS14AIrY/G/OHNUCQLb0ZeGJ7dmdcv+KKsJgRiI09HzwXmm02jusaIK72wYZeH3eW8IuFQ
+ 7hEGZo1mxG+8KNO9yPvTD/GTZqrtWXkwTgdib8IHR5FkeHWqQggWAFVpu7qHIFKEnqAu5jw6S
+ +7I2ot9C0kEm4VWeIBPl+OrVSWTPiVelxLBGMbppcobCEBcsIIbP5G3165iIG6vck5+NQYKXC
+ m6Mz79afCW4pftyaCd6oOfjg+keZbqGJbAFRqxyuJ5pgRzIkG/atkxG4/mIX0Imo+USOGTWcO
+ bx5rNJeYfx2cp6gNlJ/eiAZXjD/NPPU3tGp1clC5LB+zd9e4VjTXHy5qm9iOoutEqhaN+ti9M
+ bt0wCku7ZT4S1s5VokQJfwFPnPdy/WfA9kLkgRILtq8ElZnRmLYDTiTFbNzqJ8/YhdxkEvzvt
+ aert8QgW8TOkVWrYgs0QKSS61YslZpGWziGLTEoMYJ2nlDUxsImkc17hZbvYwyBZicbhaKLSe
+ blDLTZCsJMzlwjh/To12vRSmBoeDdYbAI+GQ5HlZCAO3NfVvtwX043zvjKhmGsFFyFyJNsFGA
+ swZkGPZn+5GaVvhbKjgGR3BDXmT5+d4UEhZ5jf8qgnJoIbYd+60xjIGU05UrB5/jgJsPrYTcY
+ bKvSRJu/ohLVWs/DOs/joa67MCegMxy5LUR1tWh1B3RtTJUn9EsWfPI3jAkCs4krZQ8p3rWdk
+ DL0/9fr72XcgAbK75bVf3Fw4LaSta2tmmTHWuNknlq0eMLIsaE4MkyLXi8mIBMm/COZZ8f38v
+ mrNtqFYZYeryLGnHc0gxkhtwhu5EAG/HVUcYZjbYKY/u4b8wdrbHvDH9y8jn5/yqBQsI1uCml
+ 1gYQhpOD05qEjFY6s5LA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Oct 2019 at 14:33, Masahiro Yamada
-<yamada.masahiro@socionext.com> wrote:
->
-> Hi Bjorn
->
-> On Tue, Oct 1, 2019 at 7:14 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.c=
-om> wrote:
-> >
-[...]
-> >  subdir-$(CONFIG_SAMPLE_VFS)            +=3D vfs
-> > +subdir-$(CONFIG_SAMPLE_BPF)            +=3D bpf
->
->
-> Please keep samples/Makefile sorted alphabetically.
->
+When no other driver selects the devlink library code, ionic
+produces a link failure:
 
-Thank you, I'll address that in the v2!
+drivers/net/ethernet/pensando/ionic/ionic_devlink.o: In function `ionic_devlink_alloc':
+ionic_devlink.c:(.text+0xd): undefined reference to `devlink_alloc'
+drivers/net/ethernet/pensando/ionic/ionic_devlink.o: In function `ionic_devlink_register':
+ionic_devlink.c:(.text+0x71): undefined reference to `devlink_register'
 
->
->
->
-> I am not checking samples/bpf/Makefile, but
-> allmodconfig no longer compiles for me.
->
->
->
-> samples/bpf/Makefile:209: WARNING: Detected possible issues with include =
-path.
-> samples/bpf/Makefile:210: WARNING: Please install kernel headers
-> locally (make headers_install).
-> error: unable to create target: 'No available targets are compatible
-> with triple "bpf"'
-> 1 error generated.
-> readelf: Error: './llvm_btf_verify.o': No such file
-> *** ERROR: LLVM (llc) does not support 'bpf' target
->    NOTICE: LLVM version >=3D 3.7.1 required
->
+Add the same 'select' statement that the other drivers use here.
 
-Yes, the BPF samples require clang/LLVM with BPF support to build. Any
-suggestion on a good way to address this (missing tools), better than
-the warning above? After the commit 394053f4a4b3 ("kbuild: make single
-targets work more correctly"), it's no longer possible to build
-samples/bpf without support in the samples/Makefile.
+Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/pensando/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/ethernet/pensando/Kconfig b/drivers/net/ethernet/pensando/Kconfig
+index bd0583e409df..d25b88f53de4 100644
+--- a/drivers/net/ethernet/pensando/Kconfig
++++ b/drivers/net/ethernet/pensando/Kconfig
+@@ -20,6 +20,7 @@ if NET_VENDOR_PENSANDO
+ config IONIC
+ 	tristate "Pensando Ethernet IONIC Support"
+ 	depends on 64BIT && PCI
++	select NET_DEVLINK
+ 	help
+ 	  This enables the support for the Pensando family of Ethernet
+ 	  adapters.  More specific information on this driver can be
+-- 
+2.20.0
 
-Thanks,
-Bj=C3=B6rn
-
-> --
-> Best Regards
-> Masahiro Yamada
