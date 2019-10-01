@@ -2,118 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D17CC3443
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 14:33:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ACD1C344E
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 14:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387702AbfJAMc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 08:32:27 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:44762 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731252AbfJAMc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 08:32:26 -0400
-X-UUID: a1a8f4deaff4417da60a6366a777b2d2-20191001
-X-UUID: a1a8f4deaff4417da60a6366a777b2d2-20191001
-Received: from mtkcas09.mediatek.inc [(172.21.101.178)] by mailgw01.mediatek.com
-        (envelope-from <mark-mc.lee@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 1956266554; Tue, 01 Oct 2019 20:32:21 +0800
-Received: from mtkcas09.mediatek.inc (172.21.101.178) by
- mtkmbs05n1.mediatek.inc (172.21.101.15) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Tue, 1 Oct 2019 20:32:17 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas09.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Tue, 1 Oct 2019 20:32:18 +0800
-From:   MarkLee <Mark-MC.Lee@mediatek.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Felix Fietkau <nbd@openwrt.org>,
-        Nelson Chang <nelson.chang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rene van Dorst <opensource@vdorst.com>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, MarkLee <Mark-MC.Lee@mediatek.com>
-Subject: [PATCH net 2/2] arm: dts: mediatek: Fix mt7629 dts to reflect the latest dt-binding
-Date:   Tue, 1 Oct 2019 20:31:50 +0800
-Message-ID: <20191001123150.23135-3-Mark-MC.Lee@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20191001123150.23135-1-Mark-MC.Lee@mediatek.com>
-References: <20191001123150.23135-1-Mark-MC.Lee@mediatek.com>
+        id S2387752AbfJAMdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 08:33:49 -0400
+Received: from conssluserg-01.nifty.com ([210.131.2.80]:36852 "EHLO
+        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726181AbfJAMds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 08:33:48 -0400
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id x91CXb5n009302;
+        Tue, 1 Oct 2019 21:33:38 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com x91CXb5n009302
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1569933218;
+        bh=vZ/by6QGyvjk+iMrCPDyuHl+7HvLeaF7vg7qAlH/0gM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LcxUtM7Szvj3Aa2e4c2A1wzxF3fUSR8DEKqTJvpb1RlRemNEy9bn14M3IRgHYzs11
+         AjHa/fw1zpSswKnqtBDS03OHuKplMR057CnPolWhMcv4iyYAr6tGBM8ga4SR12S76P
+         cG5et+8g+yyQFVCC6bhCsLC2GsGuFROtLfVo8PYphiJ0yzCD+X4S7ms6WL/sNrdaUw
+         PGNEu9uPWIt6jJL17RcM68FMLNK1mOFaTP/jOrO+BgOSvrGLInFE2ByW7SSkIeoTb8
+         GPNFBqfkKsf1lj+gHbF2sgU+4rJO4i+krzAlxs9wjyHpsat1odB9sGygYPq53lIz3w
+         F5N56NLrRJ2IA==
+X-Nifty-SrcIP: [209.85.217.47]
+Received: by mail-vs1-f47.google.com with SMTP id y129so8217342vsc.6;
+        Tue, 01 Oct 2019 05:33:37 -0700 (PDT)
+X-Gm-Message-State: APjAAAVqoUo4xMHtaIhWOsrj2nqL9/L7VKuzLpFhlUsDoxqHN917PWLL
+        qtDUaa7pg8TwXe+hqgCpmSn0rTCJAVkApQikIW4=
+X-Google-Smtp-Source: APXvYqzyG7S32nGz1uEUNLPUcQCQ8TKvJylySJaOoKcfZPW3A+jS3aqcfynfl9dnbk2g6Sr1O9oa0d+P231N1XKqaRU=
+X-Received: by 2002:a67:1e87:: with SMTP id e129mr13181899vse.179.1569933216622;
+ Tue, 01 Oct 2019 05:33:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20191001101429.24965-1-bjorn.topel@gmail.com>
+In-Reply-To: <20191001101429.24965-1-bjorn.topel@gmail.com>
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Tue, 1 Oct 2019 21:33:00 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
+Message-ID: <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
+Subject: Re: [PATCH bpf] samples/bpf: kbuild: add CONFIG_SAMPLE_BPF Kconfig
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Removes mediatek,physpeed property from dtsi that is useless in PHYLINK
-* Set gmac0 to fixed-link sgmii 2.5Gbit mode
-* Set gmac1 to gmii mode that connect to a internal gphy
+Hi Bjorn
 
-Signed-off-by: MarkLee <Mark-MC.Lee@mediatek.com>
----
- arch/arm/boot/dts/mt7629-rfb.dts | 13 ++++++++++++-
- arch/arm/boot/dts/mt7629.dtsi    |  2 --
- 2 files changed, 12 insertions(+), 3 deletions(-)
+On Tue, Oct 1, 2019 at 7:14 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com=
+> wrote:
+>
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> This commit makes it possible to build the BPF samples via a Kconfig
+> option, CONFIG_SAMPLE_BPF. Further, it fixes that samples/bpf/ could
+> not be built due to a missing samples/Makefile subdir-y entry, after
+> the introduction of commit 394053f4a4b3 ("kbuild: make single targets
+> work more correctly").
+>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> ---
+>  samples/Kconfig  | 4 ++++
+>  samples/Makefile | 1 +
+>  2 files changed, 5 insertions(+)
+>
+> diff --git a/samples/Kconfig b/samples/Kconfig
+> index c8dacb4dda80..054297ac89ad 100644
+> --- a/samples/Kconfig
+> +++ b/samples/Kconfig
+> @@ -169,4 +169,8 @@ config SAMPLE_VFS
+>           as mount API and statx().  Note that this is restricted to the =
+x86
+>           arch whilst it accesses system calls that aren't yet in all arc=
+hes.
+>
+> +config SAMPLE_BPF
+> +       bool "BPF samples"
+> +       depends on HEADERS_INSTALL
+> +
+>  endif # SAMPLES
+> diff --git a/samples/Makefile b/samples/Makefile
+> index 7d6e4ca28d69..49aa2f7d044b 100644
+> --- a/samples/Makefile
+> +++ b/samples/Makefile
+> @@ -20,3 +20,4 @@ obj-$(CONFIG_SAMPLE_TRACE_PRINTK)     +=3D trace_printk=
+/
+>  obj-$(CONFIG_VIDEO_PCI_SKELETON)       +=3D v4l/
+>  obj-y                                  +=3D vfio-mdev/
+>  subdir-$(CONFIG_SAMPLE_VFS)            +=3D vfs
+> +subdir-$(CONFIG_SAMPLE_BPF)            +=3D bpf
 
-diff --git a/arch/arm/boot/dts/mt7629-rfb.dts b/arch/arm/boot/dts/mt7629-rfb.dts
-index 3621b7d2b22a..6bf1f7d8ddb5 100644
---- a/arch/arm/boot/dts/mt7629-rfb.dts
-+++ b/arch/arm/boot/dts/mt7629-rfb.dts
-@@ -66,9 +66,21 @@
- 	pinctrl-1 = <&ephy_leds_pins>;
- 	status = "okay";
- 
-+	gmac0: mac@0 {
-+		compatible = "mediatek,eth-mac";
-+		reg = <0>;
-+		phy-mode = "sgmii";
-+		fixed-link {
-+			speed = <2500>;
-+			full-duplex;
-+			pause;
-+		};
-+	};
-+
- 	gmac1: mac@1 {
- 		compatible = "mediatek,eth-mac";
- 		reg = <1>;
-+		phy-mode = "gmii";
- 		phy-handle = <&phy0>;
- 	};
- 
-@@ -78,7 +90,6 @@
- 
- 		phy0: ethernet-phy@0 {
- 			reg = <0>;
--			phy-mode = "gmii";
- 		};
- 	};
- };
-diff --git a/arch/arm/boot/dts/mt7629.dtsi b/arch/arm/boot/dts/mt7629.dtsi
-index 9608bc2ccb3f..867b88103b9d 100644
---- a/arch/arm/boot/dts/mt7629.dtsi
-+++ b/arch/arm/boot/dts/mt7629.dtsi
-@@ -468,14 +468,12 @@
- 			compatible = "mediatek,mt7629-sgmiisys", "syscon";
- 			reg = <0x1b128000 0x3000>;
- 			#clock-cells = <1>;
--			mediatek,physpeed = "2500";
- 		};
- 
- 		sgmiisys1: syscon@1b130000 {
- 			compatible = "mediatek,mt7629-sgmiisys", "syscon";
- 			reg = <0x1b130000 0x3000>;
- 			#clock-cells = <1>;
--			mediatek,physpeed = "2500";
- 		};
- 	};
- };
--- 
-2.17.1
 
+Please keep samples/Makefile sorted alphabetically.
+
+
+
+
+I am not checking samples/bpf/Makefile, but
+allmodconfig no longer compiles for me.
+
+
+
+samples/bpf/Makefile:209: WARNING: Detected possible issues with include pa=
+th.
+samples/bpf/Makefile:210: WARNING: Please install kernel headers
+locally (make headers_install).
+error: unable to create target: 'No available targets are compatible
+with triple "bpf"'
+1 error generated.
+readelf: Error: './llvm_btf_verify.o': No such file
+*** ERROR: LLVM (llc) does not support 'bpf' target
+   NOTICE: LLVM version >=3D 3.7.1 required
+
+--=20
+Best Regards
+Masahiro Yamada
