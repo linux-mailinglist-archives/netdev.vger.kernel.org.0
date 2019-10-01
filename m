@@ -2,104 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EABD1C3EF8
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 440B2C3FA8
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 20:17:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730979AbfJARtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 13:49:11 -0400
-Received: from mail-pl1-f202.google.com ([209.85.214.202]:37160 "EHLO
-        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726062AbfJARtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 13:49:11 -0400
-Received: by mail-pl1-f202.google.com with SMTP id p15so7699812plq.4
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 10:49:10 -0700 (PDT)
+        id S1731932AbfJASR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 14:17:56 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:33895 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726873AbfJASR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 14:17:56 -0400
+Received: by mail-yb1-f194.google.com with SMTP id p11so5948884ybc.1
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 11:17:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=gGCVjqhtBSkQ7qwIsFjA6kBBGz9r2UmtOH2oSB04oM0=;
-        b=pmWpC2UAQCRHBJ17j6T1r0PqiVqZ5n8GKpyjtSppvwb5xGIRgCqaWlEuGIitPSE/xZ
-         zk7KKC7QuDLlZi2E44eSCOw3QXKNINeh6TwrvhHyDoMNvDcgvCAJzOd4nH3+cjdf4m8w
-         a8CVSfrYzw3ojJdqLovKNFdminRFcrxhEvYsQPUhJP3oJIBtF5Zj+uutCwhCoCF99iz7
-         BC72EKsphEppD4ynfCxj6G24CpWQIHZeTMEzUaUyGZ0wqfBTvWsbavAD6aLx0ZDbJxLu
-         cwCHrsAMCiShALq01hzxnZCDVyfXYl9OtchnYXQFn2hx5IFdwYYGixVduEDWG7/PUTKm
-         j6MA==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZknMp8m9v93W75yYroBtNlfIZBzgcPs43nxG5EutoQY=;
+        b=Lewl8pA0B/sIfuJzP4yaTnYp7NbRoXjcm1WhhokMJZxEU2y9PwLh3jScj7j4ChcOzk
+         p/n9qTnyh4YUcuga4CZ8nqemo4Z3y9dWqeAKHqvVC584kl5+Dw5XwdJVF51RyMIJbr+2
+         VktX0kTKiG3mi/n3Gfn9rfXjxvSOh0ND6+hoE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=gGCVjqhtBSkQ7qwIsFjA6kBBGz9r2UmtOH2oSB04oM0=;
-        b=kTiSQ9wm4fTB1dvLUAEuFZBHfxuAiRFMpbMbGH0ILtCG/t81GqJ+yTq/3qPe9Jhp4Z
-         15r+BIepKeuTjIotK8NC7rc8IjYCyb4AsvGY/1FZlIgSarZUST1zpylGL0zc6pWhi6kh
-         NqjRc6exKHaBT7emarvDBPNBAbbpzkwiJefacinOlgPfDiR8cUt9TfOTo5qM2YKmIxz8
-         WYefFMbt4NwmLViyu2GwwPQfYUXmQ7tBLeq11AaSkKFpCV2LfcKHzhSAPbbNiamgBaB8
-         lfrlYuxeFphiqFQ1Q+CNH1Ag7ywbRlkfP/7twhatXRsldEzFI1CzVOYbbWbTAxPO53h6
-         nhdw==
-X-Gm-Message-State: APjAAAVs30tjRyIz/83ObYv4uHG4v0lCMUe0jlbyCZ6VYHToOsMiXtvL
-        n+BzEZ0dNEfAB8VMM1pORgRx30k4ZLe4vw==
-X-Google-Smtp-Source: APXvYqyzoBhc9Qhx9xkQRcslMz5L/i8ebISHua2oCMCQr0PpGekEmOoZNRSN8sNOEHogLRLqDkecccrImX354Q==
-X-Received: by 2002:a65:500d:: with SMTP id f13mr31623802pgo.359.1569952149877;
- Tue, 01 Oct 2019 10:49:09 -0700 (PDT)
-Date:   Tue,  1 Oct 2019 10:49:06 -0700
-Message-Id: <20191001174906.96622-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
-Subject: [PATCH net-next] tcp: add ipv6_addr_v4mapped_loopback() helper
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZknMp8m9v93W75yYroBtNlfIZBzgcPs43nxG5EutoQY=;
+        b=unzJL5G4e1/pnY5rr/1xsgLu84eZtDKeyspUAioIL3gAL813fvlEp7DFEs/m/Lt/pB
+         WD1X8jXOJ6EbBtNTkj6/5GjUqtUMmldYM6yIcZHhUqX7jSXDaa0iEwyuFgsBPSaPAfhd
+         Cde03j4Gfjlij2bTqxNL2jexujF1E5UfxkLHNVQGZfIPMZZM/O7W7PKHRmMXXJosjyZp
+         dgATqRd1l+A5ynYYX1JrDlCGT39V2fOfgdqmWI46uR3KGSkUpe8giErQQG9trk3Aogzf
+         OD7dNRyvUf+jkwFDPXYa+GSTKoW4b7jFpIRm42ylLm2b6hubpRBwqb6SCAmkAlY0SOtz
+         OFiQ==
+X-Gm-Message-State: APjAAAXwKsqVDKDpbnjsw2iRsh7rajXX5ZwnHanx4TFaWLJ7Uz/WDglY
+        GdAArr9T43V5QIX/teQQ1TQO4jTPko0dUUhiSalg9Q==
+X-Google-Smtp-Source: APXvYqzuDDiAu8mTyAZsx5iA/7h+8ZlaOZqbN+PxPdG2npcOi9a17aQ1fBYFSt+JHZpZf8cxc4g6hzwx8kYahX4cHj0=
+X-Received: by 2002:a25:68c2:: with SMTP id d185mr20173897ybc.186.1569953875354;
+ Tue, 01 Oct 2019 11:17:55 -0700 (PDT)
+MIME-Version: 1.0
+References: <1923F6C8-A3CC-4904-B2E7-176BDB52AF1B@gmail.com>
+In-Reply-To: <1923F6C8-A3CC-4904-B2E7-176BDB52AF1B@gmail.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Tue, 1 Oct 2019 11:17:44 -0700
+Message-ID: <CACKFLikbp+sTxFBNEnUYFK2oAqeYm58uULE=AXfCp2Afg3x4ew@mail.gmail.com>
+Subject: Re: Gentoo Linux 5.x - Tigon3
+To:     Rudolf Spring <rudolf.spring@gmail.com>
+Cc:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tcp_twsk_unique() has a hard coded assumption about ipv4 loopback
-being 127/8
+On Tue, Oct 1, 2019 at 7:31 AM Rudolf Spring <rudolf.spring@gmail.com> wrot=
+e:
+>
+> Hello - Since Kernel Version 5.0 (5.0.x/5.1.x/5.2.x and now 5.3.x) my BCM=
+57765 refuses to work correctly. The same system configuration works withou=
+t problems on the latest stable Gentoo 4.19.72 Kernel. So the changes from =
+4.19 to 5.0 include some code that is responsible for the hick-up.
 
-Lets instead use the standard ipv4_is_loopback() method,
-in a new ipv6_addr_v4mapped_loopback() helper.
+These are all the tg3 changes between 4.19 and 5.0:
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/ipv6.h  | 5 +++++
- net/ipv4/tcp_ipv4.c | 6 ++----
- 2 files changed, 7 insertions(+), 4 deletions(-)
+750afb08ca71 cross-tree: phase out dma_zalloc_coherent()
+cddaf02bcb73 tg3: optionally use eth_platform_get_mac_address() to get
+mac address
+3c1bcc8614db net: ethernet: Convert phydev advertize and supported
+from u32 to link mode
+6fe42e228dc2 tg3: extend PTP gettime function to read system clock
+310fc0513ea9 tg3: Fix fall-through annotations
+22b7d29926b5 net: ethernet: Add helper to determine if pause
+configuration is supported
+70814e819c11 net: ethernet: Add helper for set_pauseparam for Asym Pause
+af8d9bb2f2f4 net: ethernet: Add helper for MACs which support asym pause
+04b7d41d8046 net: ethernet: Fix up drivers masking pause support
+58056c1e1b0e net: ethernet: Use phy_set_max_speed() to limit advertised spe=
+ed
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 009605c56f209040d10f4878353aafa66c1a845f..d04b7abe2a4c3975edce9f4f0d91e6091ca4d401 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -696,6 +696,11 @@ static inline bool ipv6_addr_v4mapped(const struct in6_addr *a)
- 					cpu_to_be32(0x0000ffff))) == 0UL;
- }
- 
-+static inline bool ipv6_addr_v4mapped_loopback(const struct in6_addr *a)
-+{
-+	return ipv6_addr_v4mapped(a) && ipv4_is_loopback(a->s6_addr32[3]);
-+}
-+
- static inline u32 ipv6_portaddr_hash(const struct net *net,
- 				     const struct in6_addr *addr6,
- 				     unsigned int port)
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 2ee45e3755e92e60b5e1810e2f68205221b8308d..27dc3c1e909494f54da18ea05bb0102de8ef5e5b 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -121,11 +121,9 @@ int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
- #if IS_ENABLED(CONFIG_IPV6)
- 		if (tw->tw_family == AF_INET6) {
- 			if (ipv6_addr_loopback(&tw->tw_v6_daddr) ||
--			    (ipv6_addr_v4mapped(&tw->tw_v6_daddr) &&
--			     (tw->tw_v6_daddr.s6_addr[12] == 127)) ||
-+			    ipv6_addr_v4mapped_loopback(&tw->tw_v6_daddr) ||
- 			    ipv6_addr_loopback(&tw->tw_v6_rcv_saddr) ||
--			    (ipv6_addr_v4mapped(&tw->tw_v6_rcv_saddr) &&
--			     (tw->tw_v6_rcv_saddr.s6_addr[12] == 127)))
-+			    ipv6_addr_v4mapped_loopback(&tw->tw_v6_rcv_saddr))
- 				loopback = true;
- 		} else
- #endif
--- 
-2.23.0.581.g78d2f28ef7-goog
-
+Most of the changes are related to PHY settings.  I suggest that you
+check the link settings, including speed, pause, asym pause, etc
+between the working kernel and the non-working kernel to see if there
+are differences in the settings.
