@@ -2,113 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53EE5C440B
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 00:51:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A982BC4416
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 01:02:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726430AbfJAWv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 18:51:27 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:44310 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726070AbfJAWv0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 18:51:26 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x91Mn65L117946;
-        Tue, 1 Oct 2019 22:51:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2019-08-05;
- bh=lTwY/uvL5YO77PmS6ZkaXeD/gwtR9uILaRrOxXEqrwc=;
- b=ZhbXsj3b6iHdkqj4P7S6zUmDDs+9gVjJJFM9mQ2Gqoy7TPJ1cxeuPOzDTkRV712urImp
- XGvls91omhq3Vuvn2o0XL5YEtjYmmTIkSDaD4TrPuVRgbAQVBpYhu6Gstu2hc55stKwR
- 4JJGU+O5qpuZgF18KClOCdfq6SSrDXKWKVhGYH7xLtZ1s1gzvx7tYCwa4TPBVH8fXJBe
- CPzqtat9soabXujhN+i+h4+KwAAuqFvbTMhlHLWcn07Lv/XAa8noG8pvw+Yag3xWiG9B
- 7kKKpGsALdJVxML4c04o3hpT2UHsORh9hI7m476FID44+PbBXgtW7Q8QetgDqLVZUDWT zQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 2v9yfq9dep-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 01 Oct 2019 22:51:19 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x91MmxIa152178;
-        Tue, 1 Oct 2019 22:51:19 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 2vbqd1nec4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 01 Oct 2019 22:51:19 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x91MpIVu158277;
-        Tue, 1 Oct 2019 22:51:18 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 2vbqd1nebr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 01 Oct 2019 22:51:18 +0000
-Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x91MpIxv007832;
-        Tue, 1 Oct 2019 22:51:18 GMT
-Received: from ca-dev92.us.oracle.com (/10.129.135.31)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 01 Oct 2019 15:51:17 -0700
-From:   Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net,
-        santosh.shilimkar@oracle.com, rds-devel@oss.oracle.com
-Cc:     Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>
-Subject: [PATCH net-next] net/rds: Log vendor error if send/recv Work requests fail
-Date:   Tue,  1 Oct 2019 15:41:16 -0700
-Message-Id: <1569969676-46142-1-git-send-email-sudhakar.dindukurti@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910010192
+        id S1728724AbfJAXCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 19:02:20 -0400
+Received: from smtp1.cs.stanford.edu ([171.64.64.25]:42040 "EHLO
+        smtp1.cs.Stanford.EDU" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728555AbfJAXCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 19:02:20 -0400
+Received: from mail-lj1-f173.google.com ([209.85.208.173]:43091)
+        by smtp1.cs.Stanford.EDU with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <ouster@cs.stanford.edu>)
+        id 1iFR9u-0004c9-QS
+        for netdev@vger.kernel.org; Tue, 01 Oct 2019 16:02:19 -0700
+Received: by mail-lj1-f173.google.com with SMTP id n14so15097991ljj.10
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 16:02:18 -0700 (PDT)
+X-Gm-Message-State: APjAAAXnB8fV+4iq9pE9Xky0peQg5IwqCYZo7nxdl+0TcjeDrXT6PC2k
+        e0un77MkryVv1+rfsTPdHGUjoFQ8m8TCio9/im4=
+X-Google-Smtp-Source: APXvYqyklF+Ax9QgrnDKxLs0gBsdi3eqsZqfB08m32FxxgtFb9pF3qwP0eo817in14Q8soB+0xQcjuz1cX3eixv5BOw=
+X-Received: by 2002:a2e:8941:: with SMTP id b1mr221383ljk.40.1569970937794;
+ Tue, 01 Oct 2019 16:02:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAGXJAmwQw1ohc48NfAvMyNDpDgHGkdVO89Jo8B0j0TuMr7wLpA@mail.gmail.com>
+ <CAGXJAmz5izfnamHA3Y_hU-AT1CX5K2MN=6BPjRXXcTCWvPeWng@mail.gmail.com>
+ <01ac3ff4-4c06-7a6c-13fc-29ca9ed3ad88@gmail.com> <CAGXJAmxmJ-Vm379N4nbjXeQCAgY9ur53wmr0HZy23dQ_t++r-Q@mail.gmail.com>
+ <f4520c32-3133-fb3b-034e-d492d40eb066@gmail.com> <CAGXJAmygtKtt18nKV6qRCKXfO93DoK4C2Gv_RaMuahsZG3TS6A@mail.gmail.com>
+ <c5886aed-8448-fe62-b2a3-4ae8fe23e2a6@gmail.com> <CAGXJAmzHvKzKb1wzxtZK_KCu-pEQghznM4qmfzYmWeWR1CaJ7Q@mail.gmail.com>
+ <47fef079-635d-483e-b530-943b2a55fc22@gmail.com> <CAGXJAmy7PTZOcwRz-mSiZJkEL4sJKWhkE8kisUZp8M=V1BBA3g@mail.gmail.com>
+ <f572890a-ca31-e01a-e370-c8b3e3b51f5b@gmail.com>
+In-Reply-To: <f572890a-ca31-e01a-e370-c8b3e3b51f5b@gmail.com>
+From:   John Ousterhout <ouster@cs.stanford.edu>
+Date:   Tue, 1 Oct 2019 16:01:41 -0700
+X-Gmail-Original-Message-ID: <CAGXJAmyKLQR9Oa9KGPQ9cwYb2sYn-ZAcQa_fVdcunZtKpPRYjg@mail.gmail.com>
+Message-ID: <CAGXJAmyKLQR9Oa9KGPQ9cwYb2sYn-ZAcQa_fVdcunZtKpPRYjg@mail.gmail.com>
+Subject: Re: BUG: sk_backlog.len can overestimate
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Score: -1.0
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin on smtp1.cs.Stanford.EDU
+X-Scan-Signature: a11a15d02c0ec4233875b3872b0caebb
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Logs vendor error if work requests fail. Vendor error provides
-more information that is used for debugging the issue.
+On Tue, Oct 1, 2019 at 1:53 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> On 10/1/19 1:45 PM, John Ousterhout wrote:
+>
+> >
+> > But this isn't really about socket resource limits (though that is
+> > conflated in the implementation); it's about limiting the time spent
+> > in a single call to __release_sock, no?
+>
+> The proxy used is memory usage, not time usage.
 
-Signed-off-by: Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>
----
- net/rds/ib_recv.c | 5 +++--
- net/rds/ib_send.c | 4 ++--
- 2 files changed, 5 insertions(+), 4 deletions(-)
+I apologize for being pedantic, but the proxy isn't memory usage; it's
+actually "number of bytes added to the backlog since the last time it
+was emptied". At the time the limit is hit, actual memory usage is
+probably a lot less than the limit. This was the source of my
+confusion, since I assumed you really *wanted* memory usage to be the
+limit.
 
-diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
-index 3cae88c..e668bac 100644
---- a/net/rds/ib_recv.c
-+++ b/net/rds/ib_recv.c
-@@ -983,10 +983,11 @@ void rds_ib_recv_cqe_handler(struct rds_ib_connection *ic,
- 	} else {
- 		/* We expect errors as the qp is drained during shutdown */
- 		if (rds_conn_up(conn) || rds_conn_connecting(conn))
--			rds_ib_conn_error(conn, "recv completion on <%pI6c,%pI6c, %d> had status %u (%s), disconnecting and reconnecting\n",
-+			rds_ib_conn_error(conn, "recv completion on <%pI6c,%pI6c, %d> had status %u (%s), vendor err 0x%x, disconnecting and reconnecting\n",
- 					  &conn->c_laddr, &conn->c_faddr,
- 					  conn->c_tos, wc->status,
--					  ib_wc_status_msg(wc->status));
-+					  ib_wc_status_msg(wc->status),
-+					  wc->vendor_err);
- 	}
- 
- 	/* rds_ib_process_recv() doesn't always consume the frag, and
-diff --git a/net/rds/ib_send.c b/net/rds/ib_send.c
-index dfe6237..102c5c5 100644
---- a/net/rds/ib_send.c
-+++ b/net/rds/ib_send.c
-@@ -300,10 +300,10 @@ void rds_ib_send_cqe_handler(struct rds_ib_connection *ic, struct ib_wc *wc)
- 
- 	/* We expect errors as the qp is drained during shutdown */
- 	if (wc->status != IB_WC_SUCCESS && rds_conn_up(conn)) {
--		rds_ib_conn_error(conn, "send completion on <%pI6c,%pI6c,%d> had status %u (%s), disconnecting and reconnecting\n",
-+		rds_ib_conn_error(conn, "send completion on <%pI6c,%pI6c,%d> had status %u (%s), vendor err 0x%x, disconnecting and reconnecting\n",
- 				  &conn->c_laddr, &conn->c_faddr,
- 				  conn->c_tos, wc->status,
--				  ib_wc_status_msg(wc->status));
-+				  ib_wc_status_msg(wc->status), wc->vendor_err);
- 	}
- }
- 
--- 
-1.8.3.1
 
+> cond_resched() or a preemptible kernel makes anything based on time flaky,
+> you probably do not want to play with a time limit...
+>
+>
+>
