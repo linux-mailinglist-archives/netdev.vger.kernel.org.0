@@ -2,157 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84DDDC395F
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 17:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26EEAC3962
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 17:45:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389634AbfJAPoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 11:44:37 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:43739 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726086AbfJAPoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 11:44:37 -0400
-Received: by mail-pg1-f194.google.com with SMTP id v27so9900879pgk.10
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 08:44:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3RxnDGRr7B1XTJFunDM7ZNbXmbQskGnoRCYVHzPDhjY=;
-        b=aaXHJnyItKtapP/eT7bgV/RWcyFHwp4VhYihtj48vumdyUhczhQsttZcV7NVVOnK/G
-         bA0s4p9tepc1VmsRkQQ5CQML0vT+xCOsgbuaWoLtVVaFijXVrlx1DMR1wGOCjdFdgdrc
-         ZgvEtbd23AuEK8wDpfL/qIoLrUUGbeMRcwenVT+WV8JqrWPao1UWc8J6T1QjmQof0Ue7
-         pC2pPoOxrWe6FNsXNsRVMzR3O1osZ6JF9B98kOxXht0KlPseHc2BedqgSnEqmIK+Wfg0
-         v6qkpF5ICEM8hJgvHXeS85jUZ1gtI97Ll1NkBXbp9Vjxs0FtyJ+wtWhnMuDTboj/IaSY
-         KwXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3RxnDGRr7B1XTJFunDM7ZNbXmbQskGnoRCYVHzPDhjY=;
-        b=RDOsVWzt6stOlQ8aLtmtcAxr5a97wyQ66ILZE6AH5judyEvsurkRxcuvSrK1Rcw9LT
-         hhaqUjkqB3vjkhUN16Ncn4ujGRnK9Dx7WMDJeRIrFiEyo8WbwYdQ2Jf1agz2IWo7r1KY
-         dJXAcTup0xGbi8K/kor6m2A9X0gVQXOdRedj/KNEoNcaze0MFjERDN9J7J0knjjYmDHw
-         mFbbIJbbgeNjfjXzqTFmSUiNuvn26QBcQdU+YqMHK4Q8DQTT2b1ShMkoAOTQluLacE3l
-         38s8okZILJHgBw0OEoq/t6rH6mhc7PD3go95m0imTxfdNY48LWfOsd8/JxXX9OKFB/hN
-         mJmQ==
-X-Gm-Message-State: APjAAAVVNm8oqLF/WfNZ3/s/DvAW4uoXQZSOaWdMdXKlzcVmZ8C8LEu7
-        cuwEzpqrP/uDnbyLrKAR6IgoUQ==
-X-Google-Smtp-Source: APXvYqwVhM/EntPxs94ONszYZE1mKQBE9G5wS7fcs2w8cMG3BAuOlnjqb0PYFYz8fL7WJ+yQjl16nA==
-X-Received: by 2002:a63:350f:: with SMTP id c15mr27311143pga.225.1569944674989;
-        Tue, 01 Oct 2019 08:44:34 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id p88sm5938164pjp.22.2019.10.01.08.44.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 08:44:34 -0700 (PDT)
-Date:   Tue, 1 Oct 2019 08:44:27 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Sriram Krishnan <srirakr2@cisco.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] AF_PACKET doesnt strip VLAN information
-Message-ID: <20191001084427.73f130c0@hermes.lan>
-In-Reply-To: <CA+FuTSfN5=xkYUKiafM3uKF37kV6mg0Cn5WGv2QF887Pyw5A5g@mail.gmail.com>
-References: <1569646705-10585-1-git-send-email-srirakr2@cisco.com>
-        <CA+FuTSfN5=xkYUKiafM3uKF37kV6mg0Cn5WGv2QF887Pyw5A5g@mail.gmail.com>
+        id S2389639AbfJAPpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 11:45:11 -0400
+Received: from smtp3.cs.stanford.edu ([171.64.64.27]:42296 "EHLO
+        smtp3.cs.Stanford.EDU" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726309AbfJAPpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 11:45:11 -0400
+Received: from mail-lj1-f177.google.com ([209.85.208.177]:43404)
+        by smtp3.cs.Stanford.EDU with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <ouster@cs.stanford.edu>)
+        id 1iFKKs-0007uK-3e
+        for netdev@vger.kernel.org; Tue, 01 Oct 2019 08:45:10 -0700
+Received: by mail-lj1-f177.google.com with SMTP id n14so13872058ljj.10
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 08:45:10 -0700 (PDT)
+X-Gm-Message-State: APjAAAVjHTJQOdMCk9BoCIc0+ssxlouhbyJW/H950524tiW89H8zvLov
+        mro9qRWSiedgcuVFSOt4REX9iM6ORH8dMkeTuFE=
+X-Google-Smtp-Source: APXvYqws9wVV88Acuut4Q2E2fjVV4eTOu57/Z+cSdcPo/WMYYIWE97HvrE/Js12COGPvrazWzIeOIRHQLPN7DAs8RYs=
+X-Received: by 2002:a2e:b1ce:: with SMTP id e14mr17131692lja.135.1569944709055;
+ Tue, 01 Oct 2019 08:45:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CAGXJAmwQw1ohc48NfAvMyNDpDgHGkdVO89Jo8B0j0TuMr7wLpA@mail.gmail.com>
+ <CAGXJAmz5izfnamHA3Y_hU-AT1CX5K2MN=6BPjRXXcTCWvPeWng@mail.gmail.com> <01ac3ff4-4c06-7a6c-13fc-29ca9ed3ad88@gmail.com>
+In-Reply-To: <01ac3ff4-4c06-7a6c-13fc-29ca9ed3ad88@gmail.com>
+From:   John Ousterhout <ouster@cs.stanford.edu>
+Date:   Tue, 1 Oct 2019 08:44:32 -0700
+X-Gmail-Original-Message-ID: <CAGXJAmxfSw3jN6fYae4MeOcgrSMODrBeGF91AsNWWJX1V-ftrw@mail.gmail.com>
+Message-ID: <CAGXJAmxfSw3jN6fYae4MeOcgrSMODrBeGF91AsNWWJX1V-ftrw@mail.gmail.com>
+Subject: Re: BUG: sk_backlog.len can overestimate
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Score: -1.0
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin on smtp3.cs.Stanford.EDU
+X-Scan-Signature: ae35470b07fbe4e2dbb6b33d1de23969
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Sep 2019 11:16:14 -0400
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+On Mon, Sep 30, 2019 at 5:14 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> On 9/30/19 4:58 PM, John Ousterhout wrote:
+> > As of 4.16.10, it appears to me that sk->sk_backlog_len does not
+> > provide an accurate estimate of backlog length; this reduces the
+> > usefulness of the "limit" argument to sk_add_backlog.
+> >
+> > The problem is that, under heavy load, sk->sk_backlog_len can grow
+> > arbitrarily large, even though the actual amount of data in the
+> > backlog is small. This happens because __release_sock doesn't reset
+> > the backlog length until it gets completely caught up. Under heavy
+> > load, new packets can be arriving continuously  into the backlog
+> > (which increases sk_backlog.len) while other packets are being
+> > serviced. This can go on forever, so sk_backlog.len never gets reset
+> > and it can become arbitrarily large.
+>
+> Certainly not.
+>
+> It can not grow arbitrarily large, unless a backport gone wrong maybe.
 
-> On Mon, Sep 30, 2019 at 1:24 AM Sriram Krishnan <srirakr2@cisco.com> wrote:
-> >
-> > When an application sends with AF_PACKET and places a vlan header on
-> > the raw packet; then the AF_PACKET needs to move the tag into the skb
-> > so that it gets processed normally through the rest of the transmit
-> > path.
-> >
-> > This is particularly a problem on Hyper-V where the host only allows
-> > vlan in the offload info.  
-> 
-> This sounds like behavior that needs to be addressed in the driver, instead?
+Can you help me understand what would limit the growth of this value?
+Suppose that new packets are arriving as quickly as they are
+processed. Every time __release_sock calls sk_backlog_rcv, a new
+packet arrives during the call, which is added to the backlog,
+incrementing sk_backlog.len. However, sk_backlog_len doesn't get
+decreased when sk_backlog_rcv completes, since the backlog hasn't
+emptied (as you said, it's not "safe"). As a result, sk_backlog.len
+has increased, but the actual backlog length is unchanged (one packet
+was added, one was removed). Why can't this process repeat
+indefinitely, until eventually sk_backlog.len reaches whatever limit
+the transport specifies when it invokes sk_add_backlog? At this point
+packets will be dropped by the transport even though the backlog isn't
+actually very large.
 
-This was what we did first, but the problem was more general.
-For example, many filtering functions assume that vlan tag is in
-skb meta data, not the packet data itself. Therefore AF_PACKET would
-get around any filter rules.
-
-> 
-> > Cc: xe-linux-external@cisco.com
-> > ---
-> >  net/packet/af_packet.c | 26 ++++++++++++++++++++++++--
-> >  1 file changed, 24 insertions(+), 2 deletions(-)
+> > Because of this, the "limit" argument to sk_add_backlog may not be
+> > useful, since it could result in packets being discarded even though
+> > the backlog is not very large.
 > >
-> > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> > index e2742b0..cfe0904 100644
-> > --- a/net/packet/af_packet.c
-> > +++ b/net/packet/af_packet.c
-> > @@ -1849,15 +1849,35 @@ static int packet_rcv_spkt(struct sk_buff *skb, struct net_device *dev,
-> >         return 0;
-> >  }
-> >
-> > -static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
-> > +static int packet_parse_headers(struct sk_buff *skb, struct socket *sock)
-> >  {
-> >         if ((!skb->protocol || skb->protocol == htons(ETH_P_ALL)) &&
-> >             sock->type == SOCK_RAW) {  
-> 
-> If inside this branch, may miss packets with skb->protocol set to one
-> of the VLAN Ethertypes.
-> 
-> > +               __be16 ethertype;
-> > +
-> >                 skb_reset_mac_header(skb);
-> > +
-> > +               ethertype = eth_hdr(skb)->h_proto;
-> > +               /*
-> > +                * If Vlan tag is present in the packet
-> > +                *  move it to skb
-> > +               */
-> > +               if (eth_type_vlan(ethertype)) {
-> > +                       int err;
-> > +                       __be16 vlan_tci;
-> > +
-> > +                       err = __skb_vlan_pop(skb, &vlan_tci);
-> > +                       if (unlikely(err))
-> > +                               return err;
-> > +
-> > +                       __vlan_hwaccel_put_tag(skb, ethertype, vlan_tci);  
-> 
-> What happens with multiple tags (QinQ)?
-
-Same as multiple tags in a normal sent packet. The second tag is in
-the packet itself.
-
-> 
-> > +               }
-> > +
-> >                 skb->protocol = dev_parse_header_protocol(skb);
-> >         }
-> >
-> >         skb_probe_transport_header(skb);
-> > +       return 0;
-> >  }
-> >
-> >  /*
-> > @@ -1979,7 +1999,9 @@ static int packet_sendmsg_spkt(struct socket *sock, struct msghdr *msg,
-> >         if (unlikely(extra_len == 4))
-> >                 skb->no_fcs = 1;
-> >
-> > -       packet_parse_headers(skb, sock);
-> > +       err = packet_parse_headers(skb, sock);
-> > +       if (err)
-> > +               goto out_unlock;  
-> 
-> This only tests the new return value in one of three callers of
-> packet_sendmsg_spkt.
-
+>
+>
+> You will have to study git log/history for the details, the limit _is_ useful,
+> and we reset the limit in __release_sock() only when _safe_.
+>
+> Assuming you talk about TCP, then I suggest you use a more recent kernel.
+>
+> linux-5.0 got coalescing in the backlog queue, which helped quite a bit.
