@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C13BC3D87
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06AFDC3D82
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730717AbfJARAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 13:00:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52148 "EHLO mail.kernel.org"
+        id S1730447AbfJAQk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:40:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52338 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730241AbfJAQkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:40:47 -0400
+        id S1730416AbfJAQkz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:40:55 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6B87E21A4A;
-        Tue,  1 Oct 2019 16:40:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8AD79205C9;
+        Tue,  1 Oct 2019 16:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948047;
-        bh=AFahc8G12K7WvzeCEERC3mW1Z1th2gs47ouNqmHB0wA=;
+        s=default; t=1569948054;
+        bh=tIbenjcvZqPaNdBtku31+1LasH3s1munDjqFxyHW7Yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PPiOLtLZtsPXzedIqFHTNWvPncwW1qkdB2L/UDaCacxr8FARikNWCww+ScfXlMmFx
-         5xmqvDN9tqzhuMtNZof0iPCZ+ThMvAmEvzqKg8foM331tDWXPdY/7hDYYfaCjtDuEy
-         a0+NqT8cMq9t1THTZeViQYVnl9z4XA4k3dLNXZBY=
+        b=wCoFRTSJcWRTh6BIXDnBWis1naWIMqMZOBr8YPoxRPrgF4QftgxS1V5Z5ozO/j4nn
+         poueld2uU60M0AJtw45ZGYACf2juH8esy7nNukcPu68jyb8j4+2NtpgLSYnOVB+cda
+         Yz2qfz1dw6vrInYaLwv4rmeiQFEu8T40/pW1aub4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 52/71] libbpf: fix false uninitialized variable warning
-Date:   Tue,  1 Oct 2019 12:39:02 -0400
-Message-Id: <20191001163922.14735-52-sashal@kernel.org>
+Cc:     Xin Long <lucien.xin@gmail.com>, Xiumei Mu <xmu@redhat.com>,
+        Fei Liu <feliu@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 56/71] macsec: drop skb sk before calling gro_cells_receive
+Date:   Tue,  1 Oct 2019 12:39:06 -0400
+Message-Id: <20191001163922.14735-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191001163922.14735-1-sashal@kernel.org>
 References: <20191001163922.14735-1-sashal@kernel.org>
@@ -44,34 +44,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit aef70a1f44c0b570e6345c02c2d240471859f0a4 ]
+[ Upstream commit ba56d8ce38c8252fff5b745db3899cf092578ede ]
 
-Some compilers emit warning for potential uninitialized next_id usage.
-The code is correct, but control flow is too complicated for some
-compilers to figure this out. Re-initialize next_id to satisfy
-compiler.
+Fei Liu reported a crash when doing netperf on a topo of macsec
+dev over veth:
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+  [  448.919128] refcount_t: underflow; use-after-free.
+  [  449.090460] Call trace:
+  [  449.092895]  refcount_sub_and_test+0xb4/0xc0
+  [  449.097155]  tcp_wfree+0x2c/0x150
+  [  449.100460]  ip_rcv+0x1d4/0x3a8
+  [  449.103591]  __netif_receive_skb_core+0x554/0xae0
+  [  449.108282]  __netif_receive_skb+0x28/0x78
+  [  449.112366]  netif_receive_skb_internal+0x54/0x100
+  [  449.117144]  napi_gro_complete+0x70/0xc0
+  [  449.121054]  napi_gro_flush+0x6c/0x90
+  [  449.124703]  napi_complete_done+0x50/0x130
+  [  449.128788]  gro_cell_poll+0x8c/0xa8
+  [  449.132351]  net_rx_action+0x16c/0x3f8
+  [  449.136088]  __do_softirq+0x128/0x320
+
+The issue was caused by skb's true_size changed without its sk's
+sk_wmem_alloc increased in tcp/skb_gro_receive(). Later when the
+skb is being freed and the skb's truesize is subtracted from its
+sk's sk_wmem_alloc in tcp_wfree(), underflow occurs.
+
+macsec is calling gro_cells_receive() to receive a packet, which
+actually requires skb->sk to be NULL. However when macsec dev is
+over veth, it's possible the skb->sk is still set if the skb was
+not unshared or expanded from the peer veth.
+
+ip_rcv() is calling skb_orphan() to drop the skb's sk for tproxy,
+but it is too late for macsec's calling gro_cells_receive(). So
+fix it by dropping the skb's sk earlier on rx path of macsec.
+
+Fixes: 5491e7c6b1a9 ("macsec: enable GRO and RPS on macsec devices")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Reported-by: Fei Liu <feliu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 1 +
+ drivers/net/macsec.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index 7065bb5b27525..e1357dbb16c24 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1213,6 +1213,7 @@ static void btf_dump_emit_type_chain(struct btf_dump *d,
- 				return;
- 			}
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 8f46aa1ddec01..cb7637364b40d 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1235,6 +1235,7 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
+ 		macsec_rxsa_put(rx_sa);
+ 	macsec_rxsc_put(rx_sc);
  
-+			next_id = decls->ids[decls->cnt - 1];
- 			next_t = btf__type_by_id(d->btf, next_id);
- 			multidim = btf_kind_of(next_t) == BTF_KIND_ARRAY;
- 			/* we need space if we have named non-pointer */
++	skb_orphan(skb);
+ 	ret = gro_cells_receive(&macsec->gro_cells, skb);
+ 	if (ret == NET_RX_SUCCESS)
+ 		count_rx(dev, skb->len);
 -- 
 2.20.1
 
