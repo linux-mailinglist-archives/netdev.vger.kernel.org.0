@@ -2,109 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B41AC323A
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:18:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 371B5C323F
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731112AbfJALSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 07:18:43 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:34789 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbfJALSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:18:43 -0400
-Received: by mail-pl1-f193.google.com with SMTP id k7so5297260pll.1;
-        Tue, 01 Oct 2019 04:18:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Vclka+b6sA1d1SpG2he4SF2xiZ2zKDdA9WZvKEFU3Hc=;
-        b=DyDyEcCRTpyrEv2o5hM3Ae7vRm2wNIMODDZyvwFpmOAqPSFmgE5bTlxteZDTndAhex
-         KRGYPxad/uYvZl3jZSfERRyWvRW3AYm6uTfgYsNAAyecVecosDFcqq64XMd6iw7PPA7+
-         dVc5ELtiRxP7N8LoQQyGFHb/TSJfF9y92qZ1nctoaKRFojEq4e/Y7qy/3pQ73GQbzdx6
-         V/Yea2NIdPxqVqpggfrkrunzMb6JcEgUHK1aMK8rC34LoLpR2oJ4MsUriUgbm10e+XOs
-         bFCR5xMoSCF+JKK6oHjvjSBJ67s4IdTo7lKiCVbw12kY7Xi59vXnTeY7rpdFnm/0Ej2x
-         GPqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Vclka+b6sA1d1SpG2he4SF2xiZ2zKDdA9WZvKEFU3Hc=;
-        b=LOZ9Bc2kEG/Q5zEnS/VvQtyZFZmKCeHGZt7WoKtu0x8OdqIAchDzoqrPIG+Wra5E18
-         OILQBOkdjc0JQzWOVJPhsoQv+D10ZE25L7wQIZx8qxrfgeqLXfhw7cgnCHfKe7k2oYfZ
-         wSLpoQ/nvpsFr3+40+55TWQQufb1lg7a1uMhG6cF1QlWg+VhlLDPMQkSnlHDBSS3vXKo
-         TFZkeKV94bzkMIs1VT/rof6vRiSYkoU/L5rFGx7jQ/izZZBNmvdAn3isVSyKY/1l2WNn
-         If/opqBFcoofEA1eykEOAFQ/3YVfqifllExGN5Q0dsYXNnPt9lqNU0RMCdqSLY4AAI3k
-         Abtw==
-X-Gm-Message-State: APjAAAXXCJehCUG2U0o0xAFubIx+WHExmw4mq0foiXv4YqeNgG2AcLWS
-        9tBvghY0WQ17QdwoAT4r0J2dkkNTiOGVyQ==
-X-Google-Smtp-Source: APXvYqw4FzjxU/GlfKG6d544fkxfHBcf8khQWJLcswUlFFyikkOLY2i9xFfkB3R+U5qmL5qqK9dx2Q==
-X-Received: by 2002:a17:902:bc48:: with SMTP id t8mr25171504plz.255.1569928722448;
-        Tue, 01 Oct 2019 04:18:42 -0700 (PDT)
-Received: from gmail.com (ip-103-85-37-165.syd.xi.com.au. [103.85.37.165])
-        by smtp.gmail.com with ESMTPSA id m22sm6021121pgj.29.2019.10.01.04.18.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 04:18:41 -0700 (PDT)
-Date:   Tue, 1 Oct 2019 21:18:36 +1000
-From:   Adam Zerella <adam.zerella@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH] docs: networking: Add title caret and missing doc
-Message-ID: <20191001111836.GA10737@gmail.com>
-References: <20190928123917.GA6876@gmail.com>
- <20190930113754.5902855e@cakuba.netronome.com>
+        id S1731463AbfJALTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 07:19:14 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:58570 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725900AbfJALTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:19:13 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id A75D36014B; Tue,  1 Oct 2019 11:19:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1569928752;
+        bh=TBrp107vqvrm5nw0Dhs+vhjDes58fG5CBnoGfgq8iXI=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=VlXmjYoFUICdyB08W+dyJtvJIibcEmbJeznAgp567xSEcSHFhVFqh4kgmyHKDFnZX
+         aapgFOwWYW3SHtISGkJVVB3HA3/CAFoA3a4c3IfiDeOLvaYZUqpX/2pmEcEVxh+h1X
+         mK63UvmTF4CAszgawXTW41g90305LNcpCQHdNRY8=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 18BE8601D4;
+        Tue,  1 Oct 2019 11:19:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1569928751;
+        bh=TBrp107vqvrm5nw0Dhs+vhjDes58fG5CBnoGfgq8iXI=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=i/277xzREeUwLrLvgJRl7K3i3RaG8xSFWuw2pL4BELv8bKW64Bf5YlJiykvAyIN2v
+         csY63r99jCRCIWjYLYKavWg0j2RJQXAiYWpsw1vnPrxjLI1vwT+3gWPfs2cknQKJKZ
+         +fHDdkV/vJl4LcUyNEfncdNOZ7qKE1/u3eEjedxg=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 18BE8601D4
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190930113754.5902855e@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath9k_hw: fix uninitialized variable data
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190926225604.9342-1-efremov@linux.com>
+References: <20190926225604.9342-1-efremov@linux.com>
+To:     Denis Efremov <efremov@linux.com>
+Cc:     unlisted-recipients:; (no To-header on input)
+        Denis Efremov <efremov@linux.com>,
+        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rajkumar Manoharan <rmanohar@qca.qualcomm.com>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>, stable@vger.kernel.org
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     unlisted-recipients:; (no To-header on input)Denis Efremov <efremov@linux.com>
+                                                                     ^-missing end of address
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191001111912.A75D36014B@smtp.codeaurora.org>
+Date:   Tue,  1 Oct 2019 11:19:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 11:37:54AM -0700, Jakub Kicinski wrote:
-> On Sat, 28 Sep 2019 22:39:17 +1000, Adam Zerella wrote:
-> > Resolving a couple of Sphinx documentation warnings
-> > that are generated in the networking section.
-> > 
-> > - WARNING: document isn't included in any toctree
-> > - WARNING: Title underline too short.
-> > 
-> > Signed-off-by: Adam Zerella <adam.zerella@gmail.com>
-> > ---
-> >  Documentation/networking/device_drivers/index.rst | 1 +
-> >  Documentation/networking/j1939.rst                | 2 +-
-> >  2 files changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-> > index f51f92571e39..1f4a629e7caa 100644
-> > --- a/Documentation/networking/device_drivers/index.rst
-> > +++ b/Documentation/networking/device_drivers/index.rst
-> > @@ -24,6 +24,7 @@ Contents:
-> >     google/gve
-> >     mellanox/mlx5
-> >     pensando/ionic
-> > +   netronome/nfp
-> 
-> I wonder if it's worth keeping the entries in a roughly alphabetic
-> order?
+Denis Efremov <efremov@linux.com> wrote:
 
-For sure, I've re-submitted a v2 patch :)
-
-> >  .. only::  subproject and html
-> >  
-> > diff --git a/Documentation/networking/j1939.rst b/Documentation/networking/j1939.rst
-> > index ce7e7a044e08..dc60b13fcd09 100644
-> > --- a/Documentation/networking/j1939.rst
-> > +++ b/Documentation/networking/j1939.rst
-> > @@ -272,7 +272,7 @@ supported flags are:
-> >  * MSG_DONTWAIT, i.e. non-blocking operation.
-> >  
-> >  recvmsg(2)
-> > -^^^^^^^^^
-> > +^^^^^^^^^^
-> >  
-> >  In most cases recvmsg(2) is needed if you want to extract more information than
-> >  recvfrom(2) can provide. For example package priority and timestamp. The
+> Currently, data variable in ar9003_hw_thermo_cal_apply() could be
+> uninitialized if ar9300_otp_read_word() will fail to read the value.
+> Initialize data variable with 0 to prevent an undefined behavior. This
+> will be enough to handle error case when ar9300_otp_read_word() fails.
 > 
+> Fixes: 80fe43f2bbd5 ("ath9k_hw: Read and configure thermocal for AR9462")
+> Cc: Rajkumar Manoharan <rmanohar@qca.qualcomm.com>
+> Cc: John W. Linville <linville@tuxdriver.com>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+
+Patch applied to ath-next branch of ath.git, thanks.
+
+80e84f36412e ath9k_hw: fix uninitialized variable data
+
+-- 
+https://patchwork.kernel.org/patch/11163437/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
