@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1100BC3BD0
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D560BC3BD4
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:49:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390143AbfJAQpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:45:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57344 "EHLO mail.kernel.org"
+        id S2390164AbfJAQpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:45:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57490 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390133AbfJAQpA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:45:00 -0400
+        id S2390154AbfJAQpE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:45:04 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 61B4A21920;
-        Tue,  1 Oct 2019 16:44:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A18C520B7C;
+        Tue,  1 Oct 2019 16:45:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948299;
-        bh=aMYMszbyV6LpeIhYhtf7nTC8zBEf+25fE5is7feSnPk=;
+        s=default; t=1569948303;
+        bh=DdStZYFpYZrqCK5j5UIujWCDEOKqjXsCIKOn23cHrNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oxQyiIiUO5MNcW2mzlOdK9kQWdy4CBKu2tpK98xYMHrDQHrJtQGoA8Rgs3r5Yfw1O
-         s0lBgwmnK5WevVN7qeI9gSDGz581XsxW4+E20aPR60hxxuARE1czEAV290dFJVuZUH
-         I7CgxGJZJhGFDzFR71wfQE2ElszL5p0hvyCrBYow=
+        b=bcP3hhzaVAM4UOFTdEIy1LojEvaog28ogA5U2UHjWmYzNV1Va+U4PoKGdTRH4W/ad
+         Zy699cdYVZMKL2Nhmq0VSQY8Z0iNoEf0qvO1GJgysTam0EC3WE3hun0Yh5D4ONxFC9
+         K8EpJZ/cMjeyOfQKJrTjRSd80Fs7oZ13HDEfwFgk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xin Long <lucien.xin@gmail.com>, Xiumei Mu <xmu@redhat.com>,
-        Fei Liu <feliu@redhat.com>,
+Cc:     Oliver Neukum <oneukum@suse.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 26/29] macsec: drop skb sk before calling gro_cells_receive
-Date:   Tue,  1 Oct 2019 12:44:20 -0400
-Message-Id: <20191001164423.16406-26-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 28/29] usbnet: sanity checking of packet sizes and device mtu
+Date:   Tue,  1 Oct 2019 12:44:22 -0400
+Message-Id: <20191001164423.16406-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191001164423.16406-1-sashal@kernel.org>
 References: <20191001164423.16406-1-sashal@kernel.org>
@@ -44,64 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit ba56d8ce38c8252fff5b745db3899cf092578ede ]
+[ Upstream commit 280ceaed79f18db930c0cc8bb21f6493490bf29c ]
 
-Fei Liu reported a crash when doing netperf on a topo of macsec
-dev over veth:
+After a reset packet sizes and device mtu can change and need
+to be reevaluated to calculate queue sizes.
+Malicious devices can set this to zero and we divide by it.
+Introduce sanity checking.
 
-  [  448.919128] refcount_t: underflow; use-after-free.
-  [  449.090460] Call trace:
-  [  449.092895]  refcount_sub_and_test+0xb4/0xc0
-  [  449.097155]  tcp_wfree+0x2c/0x150
-  [  449.100460]  ip_rcv+0x1d4/0x3a8
-  [  449.103591]  __netif_receive_skb_core+0x554/0xae0
-  [  449.108282]  __netif_receive_skb+0x28/0x78
-  [  449.112366]  netif_receive_skb_internal+0x54/0x100
-  [  449.117144]  napi_gro_complete+0x70/0xc0
-  [  449.121054]  napi_gro_flush+0x6c/0x90
-  [  449.124703]  napi_complete_done+0x50/0x130
-  [  449.128788]  gro_cell_poll+0x8c/0xa8
-  [  449.132351]  net_rx_action+0x16c/0x3f8
-  [  449.136088]  __do_softirq+0x128/0x320
-
-The issue was caused by skb's true_size changed without its sk's
-sk_wmem_alloc increased in tcp/skb_gro_receive(). Later when the
-skb is being freed and the skb's truesize is subtracted from its
-sk's sk_wmem_alloc in tcp_wfree(), underflow occurs.
-
-macsec is calling gro_cells_receive() to receive a packet, which
-actually requires skb->sk to be NULL. However when macsec dev is
-over veth, it's possible the skb->sk is still set if the skb was
-not unshared or expanded from the peer veth.
-
-ip_rcv() is calling skb_orphan() to drop the skb's sk for tproxy,
-but it is too late for macsec's calling gro_cells_receive(). So
-fix it by dropping the skb's sk earlier on rx path of macsec.
-
-Fixes: 5491e7c6b1a9 ("macsec: enable GRO and RPS on macsec devices")
-Reported-by: Xiumei Mu <xmu@redhat.com>
-Reported-by: Fei Liu <feliu@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Reported-and-tested-by:  syzbot+6102c120be558c885f04@syzkaller.appspotmail.com
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/usb/usbnet.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 0c69dfbd28efa..aa204c98af79c 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1234,6 +1234,7 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
- 		macsec_rxsa_put(rx_sa);
- 	macsec_rxsc_put(rx_sc);
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 42e3244d3a705..cb9a18eda798f 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -356,6 +356,8 @@ void usbnet_update_max_qlen(struct usbnet *dev)
+ {
+ 	enum usb_device_speed speed = dev->udev->speed;
  
-+	skb_orphan(skb);
- 	ret = gro_cells_receive(&macsec->gro_cells, skb);
- 	if (ret == NET_RX_SUCCESS)
- 		count_rx(dev, skb->len);
++	if (!dev->rx_urb_size || !dev->hard_mtu)
++		goto insanity;
+ 	switch (speed) {
+ 	case USB_SPEED_HIGH:
+ 		dev->rx_qlen = MAX_QUEUE_MEMORY / dev->rx_urb_size;
+@@ -372,6 +374,7 @@ void usbnet_update_max_qlen(struct usbnet *dev)
+ 		dev->tx_qlen = 5 * MAX_QUEUE_MEMORY / dev->hard_mtu;
+ 		break;
+ 	default:
++insanity:
+ 		dev->rx_qlen = dev->tx_qlen = 4;
+ 	}
+ }
 -- 
 2.20.1
 
