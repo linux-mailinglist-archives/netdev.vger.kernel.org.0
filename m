@@ -2,89 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF87AC3C0B
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32E78C3C0F
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388610AbfJAQsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:48:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57788 "EHLO mail.kernel.org"
+        id S1732420AbfJAQs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:48:26 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34848 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390226AbfJAQpT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:45:19 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2388291AbfJAQsX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:48:23 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E57E0222C7;
-        Tue,  1 Oct 2019 16:45:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948318;
-        bh=YMjtigfnoF5xGSheDx+1AzgXp73xGeYEPv/dv5tU79g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RXCjmRybISxbFlktQzlkneRHRheQ61QGdWfiiy7J7qkxsWBlLZ/cNSFwZeKO0Fjaq
-         Aop01Eh7TcUoRWfmoOhEuVZHDF4upbtCfHKrZFPmLImKzBXXiqhnTbG+nCWcBvPbrC
-         Mf2IogiBThVMs6JUfi/C164Sa5FG6uZ9RMPhLn/w=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Mamonov <pmamonov@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 10/19] net/phy: fix DP83865 10 Mbps HDX loopback disable function
-Date:   Tue,  1 Oct 2019 12:44:56 -0400
-Message-Id: <20191001164505.16708-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191001164505.16708-1-sashal@kernel.org>
-References: <20191001164505.16708-1-sashal@kernel.org>
+        by mx1.redhat.com (Postfix) with ESMTPS id 6D1518AC6F5;
+        Tue,  1 Oct 2019 16:48:23 +0000 (UTC)
+Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F20A91001B11;
+        Tue,  1 Oct 2019 16:48:15 +0000 (UTC)
+Date:   Tue, 1 Oct 2019 18:48:13 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     brouer@redhat.com, <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <ast@fb.com>, <daniel@iogearbox.net>, <toke@redhat.com>,
+        <kpsingh@chromium.org>, <andrii.nakryiko@gmail.com>,
+        <kernel-team@fb.com>
+Subject: Re: [RFC][PATCH bpf-next] libbpf: add bpf_object__open_{file,mem}
+ w/ sized opts
+Message-ID: <20191001184813.23d004d2@carbon>
+In-Reply-To: <20190930164239.3697916-1-andriin@fb.com>
+References: <20190930164239.3697916-1-andriin@fb.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.69]); Tue, 01 Oct 2019 16:48:23 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Mamonov <pmamonov@gmail.com>
+On Mon, 30 Sep 2019 09:42:39 -0700
+Andrii Nakryiko <andriin@fb.com> wrote:
 
-[ Upstream commit e47488b2df7f9cb405789c7f5d4c27909fc597ae ]
+> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+> index 2e83a34f8c79..1cf2cf8d80f3 100644
+> --- a/tools/lib/bpf/libbpf_internal.h
+> +++ b/tools/lib/bpf/libbpf_internal.h
+> @@ -47,6 +47,12 @@ do {				\
+>  #define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
+>  #define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
+>  
+> +#define OPTS_VALID(opts) (!(opts) || (opts)->sz >= sizeof((opts)->sz))
 
-According to the DP83865 datasheet "the 10 Mbps HDX loopback can be
-disabled in the expanded memory register 0x1C0.1". The driver erroneously
-used bit 0 instead of bit 1.
+Do be aware that C sizeof() will include the padding the compiler does.
+Thus, when extending a struct (e.g. in a newer version) the size
+(sizeof) might not actually increase (if compiler padding room exist).
 
-Fixes: 4621bf129856 ("phy: Add file missed in previous commit.")
-Signed-off-by: Peter Mamonov <pmamonov@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/phy/national.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+> +#define OPTS_HAS(opts, field) \
+> +	((opts) && opts->sz >= offsetofend(typeof(*(opts)), field))
+> +#define OPTS_GET(opts, field, fallback_value) \
+> +	(OPTS_HAS(opts, field) ? (opts)->field : fallback_value)
 
-diff --git a/drivers/net/phy/national.c b/drivers/net/phy/national.c
-index 2a1b490bc5871..718cd3c59e92c 100644
---- a/drivers/net/phy/national.c
-+++ b/drivers/net/phy/national.c
-@@ -110,14 +110,17 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
- 
- static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
- {
-+	u16 lb_dis = BIT(1);
-+
- 	if (disable)
--		ns_exp_write(phydev, 0x1c0, ns_exp_read(phydev, 0x1c0) | 1);
-+		ns_exp_write(phydev, 0x1c0,
-+			     ns_exp_read(phydev, 0x1c0) | lb_dis);
- 	else
- 		ns_exp_write(phydev, 0x1c0,
--			     ns_exp_read(phydev, 0x1c0) & 0xfffe);
-+			     ns_exp_read(phydev, 0x1c0) & ~lb_dis);
- 
- 	pr_debug("10BASE-T HDX loopback %s\n",
--		 (ns_exp_read(phydev, 0x1c0) & 0x0001) ? "off" : "on");
-+		 (ns_exp_read(phydev, 0x1c0) & lb_dis) ? "off" : "on");
- }
- 
- static int ns_config_init(struct phy_device *phydev)
+I do think, that these two "accessor" defines address the padding issue
+I described above.
+
+p.s. I appreciate that you are working on this, and generally like the idea.
 -- 
-2.20.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
