@@ -2,83 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C444C2FC5
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:13:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EE95C2FC9
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387401AbfJAJNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 05:13:52 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:36250 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728748AbfJAJNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:13:52 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 3E25F608CE; Tue,  1 Oct 2019 09:13:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569921231;
-        bh=ceLRdOBekgc/KQVTfBLRZE1LgI2EFl5Zshh2kmXZHbg=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Uapre/KwW3pyIU0rWjuiRLmBZTIvtnx9sFIiKDA19/cyR8fWYTn17CNwM4rHx0PW4
-         wMGpvPbY8WhjMuo02K17YfVlK1btISHJZhIATaht07nf3KUCr+ZjNERbTcgHyPp3R+
-         vr75IOB+dE4QfrEoQTr5mL9tc26UzK808m7z865c=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DF034608CE;
-        Tue,  1 Oct 2019 09:13:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569921230;
-        bh=ceLRdOBekgc/KQVTfBLRZE1LgI2EFl5Zshh2kmXZHbg=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=Ji0zxpISp/m33foHKf7RDYQNVifM2HdP4nJ6R2IaN4vwDt2oI4tlHDzLztUxBu/to
-         BcE3Ew/b8oOu8yyNgBt+cXfZAyHqL2cxLVARFW/aAh+APFyUaEuYjxVVnqF0CYgqQ8
-         IdPldpOvrTprYLFAlP7GmcYW7TkH251CvgYmQEq0=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DF034608CE
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S2387424AbfJAJOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 05:14:09 -0400
+Received: from mail-qk1-f181.google.com ([209.85.222.181]:45187 "EHLO
+        mail-qk1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728748AbfJAJOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:14:08 -0400
+Received: by mail-qk1-f181.google.com with SMTP id z67so10454940qkb.12;
+        Tue, 01 Oct 2019 02:14:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=rbkqOgmCAmTchnhuT6j7dwG4a9biyzXaYvBZyg2/GrQ=;
+        b=Qt7MnjkhNYKBSOuQZz0mucQuFLRalnF5uLG+XoZU6jowxFZeFcS+ws6254IT1ieLO5
+         ugs+6gAmvYNMfNuzFtb9jvOc7bMHYLlNP0L0t3gRmk27Ujj777KPWIW8nYLbDXVIYT8r
+         BycZBT644xep/oTg7qqoEL0SCMHnUbWK7lb5YmK40Ho2eS5g2zdIxm4tUQxy7BEm3Vf1
+         bRhCAyvSq2tvuzHMbfYpHiuPBgdGPJARVrSjAMoh0dtRkV46FQ6V2sZBy6UVMBv2YbTQ
+         Q+AD0boWm/dudanSl7QRPrM/2gf3xp0eFV5Pjb47i6qPgTDzqc1Z3XgkeTbvKoB4AZtk
+         naXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=rbkqOgmCAmTchnhuT6j7dwG4a9biyzXaYvBZyg2/GrQ=;
+        b=uLeKXz0Bu9xGAsPyTYyOtl+FB8upFdZto/MxwOphjZyRGJ8YJ4TYPrt3fePY/jisdP
+         ac79aMLC90rjubWXjNs1R6epI5PANOKbefr5503rcfJVBuf5pR1dhoLNFUgwEo4v4uE6
+         SRQIb+4La+vzsszrKY9+O/4yWvianMFGlzYrgaL5kU+3A0aFuCk3nq/6lTqUchn1nfZ9
+         VbHabiUWICDlSELFnswFYpEsgtiGHGovPh9uXPyfNg6cNnrJ+WGELDJNAdsLJLqYUhEB
+         EnEN8R9lQsUY7nFNabEy2b8JmkthkxlbbPMOe7Sq5gB2KR2MBG0ZolluS5C4rQSuH9ED
+         CfXA==
+X-Gm-Message-State: APjAAAWaV4PoB0Gqz09kGfom4dHgoblrdmDCpQZJ0e2zIl+sJUDSKYnf
+        9a2TLcWGW8m2Y6qhSR++qvfYc3bgG7jteJ24f6d4lP6qLsu3aA==
+X-Google-Smtp-Source: APXvYqwREToTpGSyx66MnUvNYQkCjxLExuvnyImZvyqPyzlKPfWaTdvYt3NG0/sXk4DQ6nFC5ZFqBAmSsASMICvAeEQ=
+X-Received: by 2002:a37:68d4:: with SMTP id d203mr4840354qkc.333.1569921247721;
+ Tue, 01 Oct 2019 02:14:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] brcmsmac: remove a useless test
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190915193210.27357-1-christophe.jaillet@wanadoo.fr>
-References: <20190915193210.27357-1-christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     arend.vanspriel@broadcom.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
-        wright.feng@cypress.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191001091351.3E25F608CE@smtp.codeaurora.org>
-Date:   Tue,  1 Oct 2019 09:13:51 +0000 (UTC)
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 1 Oct 2019 11:13:56 +0200
+Message-ID: <CAJ+HfNgZGzOM70oTV35YfMdn6PRcGCjsybypGYqsDQRe-NZdyQ@mail.gmail.com>
+Subject: Broken samples/bpf build? (bisected)
+To:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>
+Cc:     yamada.masahiro@socionext.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+The samples/bpf/ build seems to be broken for bpf/master. I've
+bisected it to commit 394053f4a4b3 ("kbuild: make single targets work
+more correctly").
 
-> 'pih' is known to be non-NULL at this point, so the test can be removed.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+I'll take a look, but if someone with better kbuild-fu already had a
+look, please let me know.
 
-Patch applied to wireless-drivers-next.git, thanks.
 
-3f1b32bdbb0a brcmsmac: remove a useless test
-
--- 
-https://patchwork.kernel.org/patch/11146089/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Cheers,
+Bj=C3=B6rn
