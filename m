@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA46CC2C33
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 05:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E14EC2C36
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 05:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732515AbfJADDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 23:03:40 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34204 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732441AbfJADDj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 23:03:39 -0400
-Received: by mail-pf1-f193.google.com with SMTP id b128so6882536pfa.1
+        id S1732553AbfJADDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 23:03:44 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42102 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732465AbfJADDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 23:03:40 -0400
+Received: by mail-pg1-f195.google.com with SMTP id z12so8591258pgp.9
         for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 20:03:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EbQukDfpzbUuJFAghlKSb/xcCgZGvCvxXVSx0Ko+OTs=;
-        b=ZCxWbbvvo8erW8lFtGVF20BBt2Bh1bH4ZV7I2d9LxWjliFtj0pQf8Q5Z328a6IRokl
-         NgUaDezZU5aRKwf+pDdjAA8t0mU3ugNfH0+FowAaWlDX1Z7q3JlfVVISOMFOnAt46sMr
-         PgkbON86143znr8/kSDQwF8TF9UUEriJAKFg46NHCXtd8wXTJFtGrhyD/VjcP0PO6A6D
-         iLJdqDp3WTL3uHnAtCtf1FjKut82OJr0i0YA6RQiKfoZTbJGoY38Gi6WgIHWnSP+IdSf
-         a44bKb1SaZB31MlHt90Fr5Q3Gvy81ijxXTrgfUMaOR8eE3FzXr6utGdLNPqAnmWmxJZt
-         dL0A==
+        bh=iyER8ybMeuqZeGqNiP6Lbd8qMka3eAGMmkCKVrI0azE=;
+        b=GyOEW1Tv0katZ3klOjTdNjEFAroQ42O54NDxh+fpMPE/KNT8c6rz8XkgCJxTJUXqzg
+         L7ubF0vAVp/yxjQCgl7d0v5cc9LhPDUYEd6CNYUGW6vooJstEGkBMp+X1+ph9qXl7apk
+         5T2jY/wTA0ziiJp3/D66RKUaXRyD8YsoZP/c+vwcxBUpSBzrE46auWGcSppqclKKmRBL
+         AmQ1ByCNq3JN0WiqQfUJGLzrton+2g8ToWI2VqEeRKRanHi322/Da5yYq+mlrzvRwk0D
+         gz1C9Py7bVt+Kawv/lPAAmo4mgYIQortOJ3QAQH8nwlzBwsdBm5YDZ8OXtqSDMD6FV1r
+         1b7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=EbQukDfpzbUuJFAghlKSb/xcCgZGvCvxXVSx0Ko+OTs=;
-        b=pHO48SGolkKAf4TMH7u7VOvL2dvoSy2XdyyJr/gBr9mSqqfv5iDWXclWLsMOWgXNzA
-         Lh42Oy50S/KMxD4HrATqF/kJZ0g2w8ki/EZ89snOU1e8aKr8vJrrGT/sClUD7HMJxD0w
-         4971AoH8p9y06wH3b7AXw8y4OSHRDogfwSHw+JpdPIZJVxvbrCvIwejpLjxdf+BnpSE5
-         BI66jTFoYd/fenJqeifUGxXmWOGY+hoFHCCDghumWa/ubfOHqRIrWQTAgRJFy7B1h729
-         VYMLtk7zC3i/bwh86qvGDgF+JJOM7D264pEOk6LyDIAD5k09K+VFAQv0NgCFFJNFjyjE
-         57BA==
-X-Gm-Message-State: APjAAAUMYbDSLC17Ra7Q673OIVdDPMxF6tGAZZ4hoP66Vk9XrMX1ACEK
-        msEhhmR1LeTU8If5k19Yf9Mhz+/IO40YUg==
-X-Google-Smtp-Source: APXvYqwCwtRIGcBJk4tuA3FHN1mNpP26375b0fKzrwRJUOGtKV3GeEkoemqYo0bV72nkkHzT43kjLQ==
-X-Received: by 2002:a63:c7:: with SMTP id 190mr14031506pga.186.1569899018348;
-        Mon, 30 Sep 2019 20:03:38 -0700 (PDT)
+        bh=iyER8ybMeuqZeGqNiP6Lbd8qMka3eAGMmkCKVrI0azE=;
+        b=BVtHs6JwxEJwsMypBeEyZJcD/Myadskc66azcFkQtNE+zLpMP/W0LK7wOnsP7UiiTt
+         IplC2YIguiFySmGQbCasx6aEHEQm4mBf71OPhowUHqvx38kP1CKqN0opoPHQLa1h0yIc
+         RieTLVcMS73q1zazDMsjrzP7nGb3yK2aiW8u7HnDBtqEcpUoDwRcHz1nAzD+5UVq0WNA
+         eKUUuxWFaJsrdF+7oQFtxkYtIJX7O8aBjKhtpr5x8/V4ewIFHZJMTqfIpyv3MDW0KNHu
+         boG20jBmlIZvnb0YLchxSAeiRnTnas7o2u+Iq9IBCiL2y090zYLy1n0Kk3cyCstCcYRk
+         BAnw==
+X-Gm-Message-State: APjAAAUKycykBZncxO3pxN+3CSp/jEx+dRtF9rHNGpN6auZjaMyG9eSK
+        4AbQ7DRYo0/ogx9enr3r+ePDL2NXzaoZfQ==
+X-Google-Smtp-Source: APXvYqy2GY/nDdErq80a3VnNDVivVjw57t4a6kqfYunfbsJWf6DD+KDwoV8i8yS4Hm/fjSS4X0eOyQ==
+X-Received: by 2002:a05:6a00:8c:: with SMTP id c12mr24393283pfj.200.1569899019337;
+        Mon, 30 Sep 2019 20:03:39 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id y17sm14831062pfo.171.2019.09.30.20.03.37
+        by smtp.gmail.com with ESMTPSA id y17sm14831062pfo.171.2019.09.30.20.03.38
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 Sep 2019 20:03:37 -0700 (PDT)
+        Mon, 30 Sep 2019 20:03:38 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v3 net-next 3/5] ionic: report users coalesce request
-Date:   Mon, 30 Sep 2019 20:03:24 -0700
-Message-Id: <20191001030326.29623-4-snelson@pensando.io>
+Subject: [PATCH v3 net-next 4/5] ionic: implement ethtool set-fec
+Date:   Mon, 30 Sep 2019 20:03:25 -0700
+Message-Id: <20191001030326.29623-5-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191001030326.29623-1-snelson@pensando.io>
 References: <20191001030326.29623-1-snelson@pensando.io>
@@ -57,137 +57,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The user's request for an interrupt coalescing value gets
-translated into a hardware value to be used with the NIC,
-and was getting reported back based on the hw value, which,
-due to hw tic resolution, could be reported as a different
-number than what the user originally asked for.  This code
-now tracks both the user request and what was put into the
-hardware so we can report back to the user what they
-requested.
+Wire up the --set-fec and --show-fec features in the ethtool
+callbacks and pull the related code out of set_link_ksettings.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../ethernet/pensando/ionic/ionic_ethtool.c   | 22 +++++++++----------
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 11 +++++-----
- .../net/ethernet/pensando/ionic/ionic_lif.h   |  4 +++-
- 3 files changed, 19 insertions(+), 18 deletions(-)
+ .../ethernet/pensando/ionic/ionic_ethtool.c   | 94 +++++++++++++------
+ 1 file changed, 67 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index 7760fcd709b4..63cc14c060d6 100644
+index 63cc14c060d6..f778fff034f5 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -372,7 +372,6 @@ static int ionic_set_coalesce(struct net_device *netdev,
- 	struct ionic_identity *ident;
- 	struct ionic_qcq *qcq;
- 	unsigned int i;
--	u32 usecs;
- 	u32 coal;
- 
- 	if (coalesce->rx_max_coalesced_frames ||
-@@ -410,26 +409,27 @@ static int ionic_set_coalesce(struct net_device *netdev,
- 		return -EINVAL;
- 	}
- 
-+	/* Convert the usec request to a HW useable value.  If they asked
-+	 * for non-zero and it resolved to zero, bump it up
-+	 */
- 	coal = ionic_coal_usec_to_hw(lif->ionic, coalesce->rx_coalesce_usecs);
--
--	if (coal > IONIC_INTR_CTRL_COAL_MAX)
--		return -ERANGE;
--
--	/* If they asked for non-zero and it resolved to zero, bump it up */
- 	if (!coal && coalesce->rx_coalesce_usecs)
- 		coal = 1;
- 
--	/* Convert it back to get device resolution */
--	usecs = ionic_coal_hw_to_usec(lif->ionic, coal);
-+	if (coal > IONIC_INTR_CTRL_COAL_MAX)
-+		return -ERANGE;
- 
--	if (usecs != lif->rx_coalesce_usecs) {
--		lif->rx_coalesce_usecs = usecs;
-+	/* Save the new value */
-+	lif->rx_coalesce_usecs = coalesce->rx_coalesce_usecs;
-+	if (coal != lif->rx_coalesce_hw) {
-+		lif->rx_coalesce_hw = coal;
- 
- 		if (test_bit(IONIC_LIF_UP, lif->state)) {
- 			for (i = 0; i < lif->nxqs; i++) {
- 				qcq = lif->rxqcqs[i].qcq;
- 				ionic_intr_coal_init(lif->ionic->idev.intr_ctrl,
--						     qcq->intr.index, coal);
-+						     qcq->intr.index,
-+						     lif->rx_coalesce_hw);
- 			}
- 		}
- 	}
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 4d5883a7e586..372329389c84 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1430,7 +1430,6 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
- 	unsigned int flags;
- 	unsigned int i;
+@@ -254,12 +254,9 @@ static int ionic_set_link_ksettings(struct net_device *netdev,
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
+ 	struct ionic_dev *idev;
+-	u32 req_rs, req_fc;
+-	u8 fec_type;
  	int err = 0;
--	u32 coal;
  
- 	flags = IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
- 	for (i = 0; i < lif->nxqs; i++) {
-@@ -1447,7 +1446,6 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+ 	idev = &lif->ionic->idev;
+-	fec_type = IONIC_PORT_FEC_TYPE_NONE;
+ 
+ 	/* set autoneg */
+ 	if (ks->base.autoneg != idev->port_info->config.an_enable) {
+@@ -281,29 +278,6 @@ static int ionic_set_link_ksettings(struct net_device *netdev,
+ 			return err;
  	}
  
- 	flags = IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_INTR;
--	coal = ionic_coal_usec_to_hw(lif->ionic, lif->rx_coalesce_usecs);
- 	for (i = 0; i < lif->nxqs; i++) {
- 		err = ionic_qcq_alloc(lif, IONIC_QTYPE_RXQ, i, "rx", flags,
- 				      lif->nrxq_descs,
-@@ -1460,7 +1458,8 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
- 		lif->rxqcqs[i].qcq->stats = lif->rxqcqs[i].stats;
+-	/* set FEC */
+-	req_rs = ethtool_link_ksettings_test_link_mode(ks, advertising, FEC_RS);
+-	req_fc = ethtool_link_ksettings_test_link_mode(ks, advertising, FEC_BASER);
+-	if (req_rs && req_fc) {
+-		netdev_info(netdev, "Only select one FEC mode at a time\n");
+-		return -EINVAL;
+-	} else if (req_fc) {
+-		fec_type = IONIC_PORT_FEC_TYPE_FC;
+-	} else if (req_rs) {
+-		fec_type = IONIC_PORT_FEC_TYPE_RS;
+-	} else if (!(req_rs | req_fc)) {
+-		fec_type = IONIC_PORT_FEC_TYPE_NONE;
+-	}
+-
+-	if (fec_type != idev->port_info->config.fec_type) {
+-		mutex_lock(&ionic->dev_cmd_lock);
+-		ionic_dev_cmd_port_fec(idev, fec_type);
+-		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+-		mutex_unlock(&ionic->dev_cmd_lock);
+-		if (err)
+-			return err;
+-	}
+-
+ 	return 0;
+ }
  
- 		ionic_intr_coal_init(lif->ionic->idev.intr_ctrl,
--				     lif->rxqcqs[i].qcq->intr.index, coal);
-+				     lif->rxqcqs[i].qcq->intr.index,
-+				     lif->rx_coalesce_hw);
- 		ionic_link_qcq_interrupts(lif->rxqcqs[i].qcq,
- 					  lif->txqcqs[i].qcq);
- 	}
-@@ -1640,7 +1639,6 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
- 	struct net_device *netdev;
- 	struct ionic_lif *lif;
- 	int tbl_sz;
--	u32 coal;
- 	int err;
+@@ -353,6 +327,70 @@ static int ionic_set_pauseparam(struct net_device *netdev,
+ 	return 0;
+ }
  
- 	netdev = alloc_etherdev_mqs(sizeof(*lif),
-@@ -1671,8 +1669,9 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
- 	lif->nrxq_descs = IONIC_DEF_TXRX_DESC;
- 
- 	/* Convert the default coalesce value to actual hw resolution */
--	coal = ionic_coal_usec_to_hw(lif->ionic, IONIC_ITR_COAL_USEC_DEFAULT);
--	lif->rx_coalesce_usecs = ionic_coal_hw_to_usec(lif->ionic, coal);
-+	lif->rx_coalesce_usecs = IONIC_ITR_COAL_USEC_DEFAULT;
-+	lif->rx_coalesce_hw = ionic_coal_hw_to_usec(lif->ionic,
-+						    lif->rx_coalesce_usecs);
- 
- 	snprintf(lif->name, sizeof(lif->name), "lif%u", index);
- 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index b74f7e9ee82d..cf243a9d0168 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -175,7 +175,9 @@ struct ionic_lif {
- 	unsigned long *dbid_inuse;
- 	unsigned int dbid_count;
- 	struct dentry *dentry;
--	u32 rx_coalesce_usecs;
-+	u32 rx_coalesce_usecs;		/* what the user asked for */
-+	u32 rx_coalesce_hw;		/* what the hw is using */
++static int ionic_get_fecparam(struct net_device *netdev,
++			      struct ethtool_fecparam *fec)
++{
++	struct ionic_lif *lif = netdev_priv(netdev);
 +
- 	u32 flags;
- 	struct work_struct tx_timeout_work;
++	switch (lif->ionic->idev.port_info->config.fec_type) {
++	case IONIC_PORT_FEC_TYPE_NONE:
++		fec->active_fec = ETHTOOL_FEC_OFF;
++		break;
++	case IONIC_PORT_FEC_TYPE_RS:
++		fec->active_fec = ETHTOOL_FEC_RS;
++		break;
++	case IONIC_PORT_FEC_TYPE_FC:
++		fec->active_fec = ETHTOOL_FEC_BASER;
++		break;
++	}
++
++	fec->fec = ETHTOOL_FEC_OFF | ETHTOOL_FEC_RS | ETHTOOL_FEC_BASER;
++
++	return 0;
++}
++
++static int ionic_set_fecparam(struct net_device *netdev,
++			      struct ethtool_fecparam *fec)
++{
++	struct ionic_lif *lif = netdev_priv(netdev);
++	u8 fec_type;
++	int ret = 0;
++
++	if (lif->ionic->idev.port_info->config.an_enable) {
++		netdev_err(netdev, "FEC request not allowed while autoneg is enabled\n");
++		return -EINVAL;
++	}
++
++	switch (fec->fec) {
++	case ETHTOOL_FEC_NONE:
++		fec_type = IONIC_PORT_FEC_TYPE_NONE;
++		break;
++	case ETHTOOL_FEC_OFF:
++		fec_type = IONIC_PORT_FEC_TYPE_NONE;
++		break;
++	case ETHTOOL_FEC_RS:
++		fec_type = IONIC_PORT_FEC_TYPE_RS;
++		break;
++	case ETHTOOL_FEC_BASER:
++		fec_type = IONIC_PORT_FEC_TYPE_FC;
++		break;
++	case ETHTOOL_FEC_AUTO:
++	default:
++		netdev_err(netdev, "FEC request 0x%04x not supported\n",
++			   fec->fec);
++		return -EINVAL;
++	}
++
++	if (fec_type != lif->ionic->idev.port_info->config.fec_type) {
++		mutex_lock(&lif->ionic->dev_cmd_lock);
++		ionic_dev_cmd_port_fec(&lif->ionic->idev, fec_type);
++		ret = ionic_dev_cmd_wait(lif->ionic, DEVCMD_TIMEOUT);
++		mutex_unlock(&lif->ionic->dev_cmd_lock);
++	}
++
++	return ret;
++}
++
+ static int ionic_get_coalesce(struct net_device *netdev,
+ 			      struct ethtool_coalesce *coalesce)
+ {
+@@ -751,6 +789,7 @@ static const struct ethtool_ops ionic_ethtool_ops = {
+ 	.get_regs		= ionic_get_regs,
+ 	.get_link		= ethtool_op_get_link,
+ 	.get_link_ksettings	= ionic_get_link_ksettings,
++	.set_link_ksettings	= ionic_set_link_ksettings,
+ 	.get_coalesce		= ionic_get_coalesce,
+ 	.set_coalesce		= ionic_set_coalesce,
+ 	.get_ringparam		= ionic_get_ringparam,
+@@ -773,7 +812,8 @@ static const struct ethtool_ops ionic_ethtool_ops = {
+ 	.get_module_eeprom	= ionic_get_module_eeprom,
+ 	.get_pauseparam		= ionic_get_pauseparam,
+ 	.set_pauseparam		= ionic_set_pauseparam,
+-	.set_link_ksettings	= ionic_set_link_ksettings,
++	.get_fecparam		= ionic_get_fecparam,
++	.set_fecparam		= ionic_set_fecparam,
+ 	.nway_reset		= ionic_nway_reset,
  };
+ 
 -- 
 2.17.1
 
