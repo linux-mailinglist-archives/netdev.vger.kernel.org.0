@@ -2,74 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCD2DC2CB3
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 06:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7A3BC2CB5
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 06:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfJAEor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 00:44:47 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:32853 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbfJAEor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 00:44:47 -0400
-Received: by mail-ed1-f65.google.com with SMTP id c4so10654198edl.0
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 21:44:45 -0700 (PDT)
+        id S1726754AbfJAEw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 00:52:29 -0400
+Received: from mail-pf1-f182.google.com ([209.85.210.182]:42614 "EHLO
+        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbfJAEw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 00:52:28 -0400
+Received: by mail-pf1-f182.google.com with SMTP id q12so7024584pff.9
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 21:52:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nYHrc/En4nXXJUQZBsIs5NaWoR+ss41GDSBl7Yv+ZRM=;
-        b=eHRqFfhK7KXLaXzp1i6Lx2SYWBtfFgIDWQncmSJQFF2Boq2GJIsK+pX7P2Ss+uagWW
-         3K9uQZZUmSVhVTByXgz2KKtFsPyju7gvY2foRY8NuJTvhzumaf/d9sqLZ47sWTVGAmVt
-         IkonP8JeuAAKUdWOMuYZjXLFCLEZDx9PWSfY8=
+        h=from:to:cc:subject:date:message-id;
+        bh=OG0pkZNZcWl/U4txSf71sbo4PGMytDStDoGpMfRyMZI=;
+        b=Rx+TmNNfDDTHiHE8+Z/qjqhNhlyxT4WKOqf1/4QVIBa6cRy5HJz3dNBQvtuUQi/wys
+         +ElZLxF3wgMbk29IzGgXAULSnTxe5R7JC3//m6t31vJeYQ76pZz4fegBaiT3CdtmHpE8
+         KrYED2IX9UvnFswfN92L+w6HgaP+1G7HgZUU8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nYHrc/En4nXXJUQZBsIs5NaWoR+ss41GDSBl7Yv+ZRM=;
-        b=GiaE7cLQlehzggk0DwDy/ZJ5CDD5iLrIk5WKuvoichAfoPhOPsIKtrpJeiOX6xKj7W
-         pNhgpydOOgxGViqKXP3KcISPJgzDvnFw7IFM/qZLrw+4GZFJB6yH7hu6eCF0QIgtOuXf
-         ctg3lufkfI9BD3DEWEXFWWqK+IS2HK1jrlGEBrN5fag4YnVfUwvvKPNnKhg0FtanT925
-         STqRQJJSjEHPh9g/nERzVpUALKyPqI8KQh7MZ6ZB4fNAOdOGx9cJ/zY3CVf7Ew2WSCzS
-         k288Ez8PfZ+9nXjJP+8Hrc1YWDqt4+9oOj+qZO6k8sW/vOsScw+2l7Pkrc1Gv5tEwEbT
-         5uug==
-X-Gm-Message-State: APjAAAV+E+Kvj40G54Cs0lR/loCIUx7MDawrbLij3W5J9hpKxIV9k14e
-        hFk0nMHne9+effEQ7dfsr1YnhtGBBAAWkiAlvIDgzQ==
-X-Google-Smtp-Source: APXvYqzcBc3o2uG9OTe9HDmgTqfOkQAoTUdhqD8Xj/paf6LuDZtayeZM7wCq9TEm+RyNbGaMCbLnfV4mEEfcTk51hiQ=
-X-Received: by 2002:a17:906:6848:: with SMTP id a8mr22855647ejs.104.1569905084260;
- Mon, 30 Sep 2019 21:44:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <1569702130-46433-1-git-send-email-roopa@cumulusnetworks.com>
- <1569702130-46433-3-git-send-email-roopa@cumulusnetworks.com> <d256f178-ec5a-abaa-1528-0690d059b243@gmail.com>
-In-Reply-To: <d256f178-ec5a-abaa-1528-0690d059b243@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=OG0pkZNZcWl/U4txSf71sbo4PGMytDStDoGpMfRyMZI=;
+        b=tn8UGjy6p3wYAKS7DHEmY/MpITAiNtNmF/4VsUqGS2OaARGF0J7T20L7TyMCKDOnEA
+         r12vR627opTmadV58U1Jxw8FmGum7Feaaj0R4GnDdQoBIyZewtoHkgI8SVXWCvO2xf1K
+         ffKzZKmApMNU/zsjtz9+4NV4T6AWZI0101RSZyU6z3bmgUxm9r6TYDIEfSxrrl/yT2Zq
+         ais+pV3MBa2Rp0p3fFz0gSi9+CKkD8V9RVJCV65B+CnpjHTeoDSZSUEfOl/IobFQVrRP
+         3DjFOeXp60YVCi5FXavtakAoIxPDV7puP2C0IKhcjjM6qFbBHYNgpgSxZRwwaGNN+x1L
+         cr5w==
+X-Gm-Message-State: APjAAAWjf0yCu0V9fA8cPIXqnwADFO/k1ajEFTBtfl361EXc2RvIzkRM
+        HWZjrDYtycQcsQZjXdbIJHeSbw==
+X-Google-Smtp-Source: APXvYqyq2d2WD6DtflEVcf330J60sWK+O96FdPfhvdpUKccLEM1J9pW/+uMRrOm1OOxDgyTthjAJRA==
+X-Received: by 2002:a17:90a:fb91:: with SMTP id cp17mr3334968pjb.51.1569905548046;
+        Mon, 30 Sep 2019 21:52:28 -0700 (PDT)
+Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
+        by smtp.googlemail.com with ESMTPSA id h66sm1896638pjb.0.2019.09.30.21.52.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 30 Sep 2019 21:52:27 -0700 (PDT)
 From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-Date:   Mon, 30 Sep 2019 21:44:32 -0700
-Message-ID: <CAJieiUgziCGhqe8-tXh1hkD_fzjXVS4HfsedT20tDwrXMm3SRA@mail.gmail.com>
-Subject: Re: [PATCH iproute2 net-next v2 2/2] ipneigh: neigh get support
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Google-Original-From: Roopa Prabhu
+To:     dsahern@gmail.com
+Cc:     netdev@vger.kernel.org, ivecera@redhat.com,
+        nikolay@cumulusnetworks.com, stephen@networkplumber.org
+Subject: [PATCH iproute2 net-next v3 0/2] support for bridge fdb and neigh get
+Date:   Mon, 30 Sep 2019 21:52:21 -0700
+Message-Id: <1569905543-33478-1-git-send-email-roopa@cumulusnetworks.com>
+X-Mailer: git-send-email 2.1.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 9:42 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 9/28/19 2:22 PM, Roopa Prabhu wrote:
-> > +
-> > +     req.ndm.ndm_family = dst.family;
-> > +     if (addattr_l(&req.n, sizeof(req), NDA_DST, &dst.data, dst.bytelen) < 0)
-> > +             return -1;
-> > +
-> > +     if (d) {
-> > +             ll_init_map(&rth);
->
-> ll_init_map is not needed and really not something you want to do (it
-> does a full link dump)
->
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-ok got it, the get index macro does a getlink if map is not initialized.
-(there are still many calls to init_map... possibly for cases that
-require querying of multiple links)
+This series adds iproute2 support to lookup a bridge fdb and
+neigh entry.
+example:
+$bridge fdb get 02:02:00:00:00:03 dev test-dummy0 vlan 1002
+02:02:00:00:00:03 dev test-dummy0 vlan 1002 master bridge
+
+$ip neigh get 10.0.2.4 dev test-dummy0
+10.0.2.4 dev test-dummy0 lladdr de:ad:be:ef:13:37 PERMANENT
+
+
+v2 - remove cast around stdout in print_fdb as pointed out by stephen
+
+v3 - add Tested by Ivan. and address feedback from david ahern
+
+
+Roopa Prabhu (2):
+  bridge: fdb get support
+  ipneigh: neigh get support
+
+ bridge/fdb.c            | 113 +++++++++++++++++++++++++++++++++++++++++++++++-
+ ip/ipneigh.c            |  72 ++++++++++++++++++++++++++++--
+ man/man8/bridge.8       |  35 +++++++++++++++
+ man/man8/ip-neighbour.8 |  25 +++++++++++
+ 4 files changed, 240 insertions(+), 5 deletions(-)
+
+-- 
+2.1.4
+
