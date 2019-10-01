@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6F1C43EA
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 00:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53EE5C440B
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 00:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728370AbfJAWrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 18:47:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48860 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727111AbfJAWrg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 18:47:36 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 33E40215EA;
-        Tue,  1 Oct 2019 22:47:33 +0000 (UTC)
-Date:   Tue, 1 Oct 2019 18:47:31 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Andy Lutomirski <luto@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "LSM List" <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <Kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-Message-ID: <20191001184731.0ec98c7a@gandalf.local.home>
-In-Reply-To: <6e8b910c-a739-857d-4867-395bd369bc6a@fb.com>
-References: <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
-        <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
-        <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
-        <20190828044340.zeha3k3cmmxgfqj7@ast-mbp.dhcp.thefacebook.com>
-        <CALCETrW1o+Lazi2Ng6b9JN6jeJffgdW9f3HvqYhNo4TpHRXW=g@mail.gmail.com>
-        <20190828225512.q6qbvkdiqih2iewk@ast-mbp.dhcp.thefacebook.com>
-        <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
-        <20190829040721.ef6rumbaunkavyrr@ast-mbp.dhcp.thefacebook.com>
-        <20190928193727.1769e90c@oasis.local.home>
-        <201909301129.5A1129C@keescook>
-        <20191001012226.vwpe56won5r7gbrz@ast-mbp.dhcp.thefacebook.com>
-        <20191001181052.43c9fabb@gandalf.local.home>
-        <6e8b910c-a739-857d-4867-395bd369bc6a@fb.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726430AbfJAWv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 18:51:27 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:44310 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726070AbfJAWv0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 18:51:26 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x91Mn65L117946;
+        Tue, 1 Oct 2019 22:51:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2019-08-05;
+ bh=lTwY/uvL5YO77PmS6ZkaXeD/gwtR9uILaRrOxXEqrwc=;
+ b=ZhbXsj3b6iHdkqj4P7S6zUmDDs+9gVjJJFM9mQ2Gqoy7TPJ1cxeuPOzDTkRV712urImp
+ XGvls91omhq3Vuvn2o0XL5YEtjYmmTIkSDaD4TrPuVRgbAQVBpYhu6Gstu2hc55stKwR
+ 4JJGU+O5qpuZgF18KClOCdfq6SSrDXKWKVhGYH7xLtZ1s1gzvx7tYCwa4TPBVH8fXJBe
+ CPzqtat9soabXujhN+i+h4+KwAAuqFvbTMhlHLWcn07Lv/XAa8noG8pvw+Yag3xWiG9B
+ 7kKKpGsALdJVxML4c04o3hpT2UHsORh9hI7m476FID44+PbBXgtW7Q8QetgDqLVZUDWT zQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2v9yfq9dep-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Oct 2019 22:51:19 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x91MmxIa152178;
+        Tue, 1 Oct 2019 22:51:19 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 2vbqd1nec4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 01 Oct 2019 22:51:19 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x91MpIVu158277;
+        Tue, 1 Oct 2019 22:51:18 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2vbqd1nebr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Oct 2019 22:51:18 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x91MpIxv007832;
+        Tue, 1 Oct 2019 22:51:18 GMT
+Received: from ca-dev92.us.oracle.com (/10.129.135.31)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 01 Oct 2019 15:51:17 -0700
+From:   Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net,
+        santosh.shilimkar@oracle.com, rds-devel@oss.oracle.com
+Cc:     Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>
+Subject: [PATCH net-next] net/rds: Log vendor error if send/recv Work requests fail
+Date:   Tue,  1 Oct 2019 15:41:16 -0700
+Message-Id: <1569969676-46142-1-git-send-email-sudhakar.dindukurti@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910010192
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Oct 2019 22:18:18 +0000
-Alexei Starovoitov <ast@fb.com> wrote:
+Logs vendor error if work requests fail. Vendor error provides
+more information that is used for debugging the issue.
 
-> > And then you can just format the string from the bpf_trace_printk()
-> > into msg, and then have:
-> > 
-> > 	trace_bpf_print(msg);  
-> 
-> It's an interesting idea, but I don't think it can work.
-> Please see bpf_trace_printk implementation in kernel/trace/bpf_trace.c
-> It's a lot more than string printing.
+Signed-off-by: Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>
+---
+ net/rds/ib_recv.c | 5 +++--
+ net/rds/ib_send.c | 4 ++--
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-Well, trace_printk() is just string printing. I was thinking that the
-bpf_trace_printk() could just use a vsnprintf() into a temporary buffer
-(like trace_printk() does), and then call the trace event to write it
-out.
+diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
+index 3cae88c..e668bac 100644
+--- a/net/rds/ib_recv.c
++++ b/net/rds/ib_recv.c
+@@ -983,10 +983,11 @@ void rds_ib_recv_cqe_handler(struct rds_ib_connection *ic,
+ 	} else {
+ 		/* We expect errors as the qp is drained during shutdown */
+ 		if (rds_conn_up(conn) || rds_conn_connecting(conn))
+-			rds_ib_conn_error(conn, "recv completion on <%pI6c,%pI6c, %d> had status %u (%s), disconnecting and reconnecting\n",
++			rds_ib_conn_error(conn, "recv completion on <%pI6c,%pI6c, %d> had status %u (%s), vendor err 0x%x, disconnecting and reconnecting\n",
+ 					  &conn->c_laddr, &conn->c_faddr,
+ 					  conn->c_tos, wc->status,
+-					  ib_wc_status_msg(wc->status));
++					  ib_wc_status_msg(wc->status),
++					  wc->vendor_err);
+ 	}
+ 
+ 	/* rds_ib_process_recv() doesn't always consume the frag, and
+diff --git a/net/rds/ib_send.c b/net/rds/ib_send.c
+index dfe6237..102c5c5 100644
+--- a/net/rds/ib_send.c
++++ b/net/rds/ib_send.c
+@@ -300,10 +300,10 @@ void rds_ib_send_cqe_handler(struct rds_ib_connection *ic, struct ib_wc *wc)
+ 
+ 	/* We expect errors as the qp is drained during shutdown */
+ 	if (wc->status != IB_WC_SUCCESS && rds_conn_up(conn)) {
+-		rds_ib_conn_error(conn, "send completion on <%pI6c,%pI6c,%d> had status %u (%s), disconnecting and reconnecting\n",
++		rds_ib_conn_error(conn, "send completion on <%pI6c,%pI6c,%d> had status %u (%s), vendor err 0x%x, disconnecting and reconnecting\n",
+ 				  &conn->c_laddr, &conn->c_faddr,
+ 				  conn->c_tos, wc->status,
+-				  ib_wc_status_msg(wc->status));
++				  ib_wc_status_msg(wc->status), wc->vendor_err);
+ 	}
+ }
+ 
+-- 
+1.8.3.1
 
-> 
-> > The user could then just enable the trace event from the file system. I
-> > could also work on making instances work like /tmp does (with the
-> > sticky bit) in creation. That way people with write access to the
-> > instances directory, can make their own buffers that they can use (and
-> > others can't access).  
-> 
-> We tried instances in bcc in the past and eventually removed all the 
-> support. The overhead of instances is too high to be usable.
-
-What overhead? An ftrace instance should not have any more overhead than
-the root one does (it's the same code). Or are you talking about memory
-overhead?
-
-> 
-> > 
-> >   
-> >>
-> >> Both 'trace' and 'trace_pipe' have quirky side effects.
-> >> Like opening 'trace' file will make all parallel trace_printk() to be ignored.
-> >> While reading 'trace_pipe' file will clear it.
-> >> The point that traditional 'read' and 'write' ACLs don't map as-is
-> >> to tracefs, so I would be careful categorizing things into
-> >> confidentiality vs integrity only based on access type.  
-> > 
-> > What exactly is the bpf_trace_printk() used for? I may have other ideas
-> > that can help.  
-> 
-> It's debugging of bpf programs. Same is what printk() is used for
-> by kernel developers.
-> 
-
-How is it extracted? Just read from the trace or trace_pipe file?
-
--- Steve
