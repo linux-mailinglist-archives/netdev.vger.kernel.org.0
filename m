@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 482FBC3B44
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:43:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D67C3B74
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:46:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732567AbfJAQnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:43:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55294 "EHLO mail.kernel.org"
+        id S2387722AbfJAQoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:44:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732536AbfJAQnR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:43:17 -0400
+        id S1726881AbfJAQoQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:44:16 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0AD6920B7C;
-        Tue,  1 Oct 2019 16:43:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DB9DE21855;
+        Tue,  1 Oct 2019 16:44:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948196;
-        bh=GpHbb/LaO6aeMHRI2StGRXtT6KWoyzfJ8Y94lMYThn0=;
+        s=default; t=1569948255;
+        bh=N27q7NOfgceFo9b0NtkaQ5lqPWfXnY0W8qj859OqZo4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cVH9ySx7xDUbRDluS3P/iYTQe9hyHLDQ8wQwF06dubW9EAtbvrGNKpnKL4z7Tjeiu
-         fxwk7UOGfjevREbqaZRm7Iro+ifCevR1hxw9SKGX8VosCYpRl8gkHwrawBI/icEuHv
-         NpZK23OEFK3469oMfu11jNVYlfnMHrh0aSjzBRQY=
+        b=rIIsuzKGt/OGiMheOBgw50ACk09GcE9CPlHg1MziP2TTgFw3FK5YUPBB08MyPapJC
+         4oNropvZyDQ6lTAAiyvGROPcqP8vTRdjBwFYUtVEe1FW1ZeLV9e1MSDRnh9PGJP1LK
+         E4BWEG+eu5vcg95M6df2+cncblPMcawE76qCJFig=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lu Shuaibing <shuaibinglu@126.com>,
-        Dominique Martinet <dominique.martinet@cea.fr>,
-        Sasha Levin <sashal@kernel.org>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 04/43] 9p: Transport error uninitialized
-Date:   Tue,  1 Oct 2019 12:42:32 -0400
-Message-Id: <20191001164311.15993-4-sashal@kernel.org>
+Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, oss-drivers@netronome.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 39/43] nfp: flower: fix memory leak in nfp_flower_spawn_vnic_reprs
+Date:   Tue,  1 Oct 2019 12:43:07 -0400
+Message-Id: <20191001164311.15993-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191001164311.15993-1-sashal@kernel.org>
 References: <20191001164311.15993-1-sashal@kernel.org>
@@ -44,89 +45,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lu Shuaibing <shuaibinglu@126.com>
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
 
-[ Upstream commit 0ce772fe79b68f83df40f07f28207b292785c677 ]
+[ Upstream commit 8ce39eb5a67aee25d9f05b40b673c95b23502e3e ]
 
-The p9_tag_alloc() does not initialize the transport error t_err field.
-The struct p9_req_t *req is allocated and stored in a struct p9_client
-variable. The field t_err is never initialized before p9_conn_cancel()
-checks its value.
+In nfp_flower_spawn_vnic_reprs in the loop if initialization or the
+allocations fail memory is leaked. Appropriate releases are added.
 
-KUMSAN(KernelUninitializedMemorySantizer, a new error detection tool)
-reports this bug.
-
-==================================================================
-BUG: KUMSAN: use of uninitialized memory in p9_conn_cancel+0x2d9/0x3b0
-Read of size 4 at addr ffff88805f9b600c by task kworker/1:2/1216
-
-CPU: 1 PID: 1216 Comm: kworker/1:2 Not tainted 5.2.0-rc4+ #28
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Ubuntu-1.8.2-1ubuntu1 04/01/2014
-Workqueue: events p9_write_work
-Call Trace:
- dump_stack+0x75/0xae
- __kumsan_report+0x17c/0x3e6
- kumsan_report+0xe/0x20
- p9_conn_cancel+0x2d9/0x3b0
- p9_write_work+0x183/0x4a0
- process_one_work+0x4d1/0x8c0
- worker_thread+0x6e/0x780
- kthread+0x1ca/0x1f0
- ret_from_fork+0x35/0x40
-
-Allocated by task 1979:
- save_stack+0x19/0x80
- __kumsan_kmalloc.constprop.3+0xbc/0x120
- kmem_cache_alloc+0xa7/0x170
- p9_client_prepare_req.part.9+0x3b/0x380
- p9_client_rpc+0x15e/0x880
- p9_client_create+0x3d0/0xac0
- v9fs_session_init+0x192/0xc80
- v9fs_mount+0x67/0x470
- legacy_get_tree+0x70/0xd0
- vfs_get_tree+0x4a/0x1c0
- do_mount+0xba9/0xf90
- ksys_mount+0xa8/0x120
- __x64_sys_mount+0x62/0x70
- do_syscall_64+0x6d/0x1e0
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 0:
-(stack is not available)
-
-The buggy address belongs to the object at ffff88805f9b6008
- which belongs to the cache p9_req_t of size 144
-The buggy address is located 4 bytes inside of
- 144-byte region [ffff88805f9b6008, ffff88805f9b6098)
-The buggy address belongs to the page:
-page:ffffea00017e6d80 refcount:1 mapcount:0 mapping:ffff888068b63740 index:0xffff88805f9b7d90 compound_mapcount: 0
-flags: 0x100000000010200(slab|head)
-raw: 0100000000010200 ffff888068b66450 ffff888068b66450 ffff888068b63740
-raw: ffff88805f9b7d90 0000000000100001 00000001ffffffff 0000000000000000
-page dumped because: kumsan: bad access detected
-==================================================================
-
-Link: http://lkml.kernel.org/r/20190613070854.10434-1-shuaibinglu@126.com
-Signed-off-by: Lu Shuaibing <shuaibinglu@126.com>
-[dominique.martinet@cea.fr: grouped the added init with the others]
-Signed-off-by: Dominique Martinet <dominique.martinet@cea.fr>
+Fixes: b94524529741 ("nfp: flower: add per repr private data for LAG offload")
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/9p/client.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/netronome/nfp/flower/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index b615aae5a0f81..d62f83f93d7bb 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -296,6 +296,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+index e57d23746585f..c197f3e058817 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+@@ -259,6 +259,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
+ 		repr_priv = kzalloc(sizeof(*repr_priv), GFP_KERNEL);
+ 		if (!repr_priv) {
+ 			err = -ENOMEM;
++			nfp_repr_free(repr);
+ 			goto err_reprs_clean;
+ 		}
  
- 	p9pdu_reset(&req->tc);
- 	p9pdu_reset(&req->rc);
-+	req->t_err = 0;
- 	req->status = REQ_STATUS_ALLOC;
- 	init_waitqueue_head(&req->wq);
- 	INIT_LIST_HEAD(&req->req_list);
+@@ -271,6 +272,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
+ 		port = nfp_port_alloc(app, port_type, repr);
+ 		if (IS_ERR(port)) {
+ 			err = PTR_ERR(port);
++			kfree(repr_priv);
+ 			nfp_repr_free(repr);
+ 			goto err_reprs_clean;
+ 		}
+@@ -291,6 +293,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
+ 		err = nfp_repr_init(app, repr,
+ 				    port_id, port, priv->nn->dp.netdev);
+ 		if (err) {
++			kfree(repr_priv);
+ 			nfp_port_free(port);
+ 			nfp_repr_free(repr);
+ 			goto err_reprs_clean;
 -- 
 2.20.1
 
