@@ -2,141 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E41DAC379A
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 16:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6671C37A4
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 16:39:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389092AbfJAOhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 10:37:02 -0400
-Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:57750 "EHLO
-        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727143AbfJAOhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 10:37:01 -0400
-Received: from pps.filterd (m0122331.ppops.net [127.0.0.1])
-        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x91EasIZ002528;
-        Tue, 1 Oct 2019 15:36:54 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=jan2016.eng;
- bh=nEy9c4lD3P2x/ZR8fS+JwUY4pdhFEVNThKY5qbNjg4c=;
- b=kz7f7apEJ1o5B+AOI6RBPQ0N7NcxSVVx7LfmuV4GMkwMoztbXpOAml9bxBF5KDIUyFzj
- rjxVDh15WiOV89awfCp14nvOVB6FSh3U5v8iC3oWW/+IynITh7GfWeFxBxREb6UHIFxi
- SIRJx4BSnpZmWUYQ6u9r0Fd4UG8FB66/C1hVmLHCRksPk1tO8Z3SX8xWfhbTA+00XxW9
- bP9ZY53dJph9HWSO9MyA46f8fCchAZKR2ze8bmAduk6vCOLkP0nLX0nagdDfy/6gaBV5
- vflpXexxKu47HQBNqgCsEculTRwwZ1nTKN7ngIqZ/ir1Zd31uIlJWXx4AsNEFQqcHEcc RA== 
-Received: from prod-mail-ppoint3 (prod-mail-ppoint3.akamai.com [96.6.114.86] (may be forged))
-        by mx0b-00190b01.pphosted.com with ESMTP id 2v9vcudj5b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Oct 2019 15:36:54 +0100
-Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
-        by prod-mail-ppoint3.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x91EWDOT012300;
-        Tue, 1 Oct 2019 10:36:53 -0400
-Received: from prod-mail-relay14.akamai.com ([172.27.17.39])
-        by prod-mail-ppoint3.akamai.com with ESMTP id 2va2uycr1v-1;
-        Tue, 01 Oct 2019 10:36:52 -0400
-Received: from [0.0.0.0] (prod-ssh-gw02.sanmateo.corp.akamai.com [172.22.187.166])
-        by prod-mail-relay14.akamai.com (Postfix) with ESMTP id 40E6A80E97;
-        Tue,  1 Oct 2019 14:36:50 +0000 (GMT)
-Subject: Re: [PATCH 2/2] udp: only do GSO if # of segs > 1
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "Duyck, Alexander H" <alexander.h.duyck@intel.com>
-References: <1569881518-21885-1-git-send-email-johunt@akamai.com>
- <1569881518-21885-2-git-send-email-johunt@akamai.com>
- <CAKgT0UfXYHDiz7uf51araHXTizRQpQgi8tDqNp6nX2YzeOoZ3A@mail.gmail.com>
-From:   Josh Hunt <johunt@akamai.com>
-Message-ID: <5ba4beb7-2ad5-476a-403b-c37f6c761e08@akamai.com>
-Date:   Tue, 1 Oct 2019 07:36:49 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <CAKgT0UfXYHDiz7uf51araHXTizRQpQgi8tDqNp6nX2YzeOoZ3A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-01_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910010131
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-01_07:2019-10-01,2019-10-01 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 suspectscore=0
- bulkscore=0 mlxlogscore=999 mlxscore=0 clxscore=1015 spamscore=0
- impostorscore=0 adultscore=0 malwarescore=0 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910010132
+        id S2389133AbfJAOjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 10:39:10 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39252 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388932AbfJAOjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 10:39:09 -0400
+Received: by mail-qk1-f194.google.com with SMTP id 4so11430333qki.6
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 07:39:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Yq2wftt2X+S/LjR697B2w5o4NIynHga4LSIVsTk7uQU=;
+        b=E2rphrZaiB6jGAsoojWOALkRTkVNfcU6g/XtTRAAD2GJH358T5zaemmi/sK7/IpBw5
+         IemUV2LwDiq5qXXC3V9wAcvt+QW5m3QQ5mXGEuoyCrnbNj1dn/uanmPbvbiMzWlUAZFo
+         R/NQ644rqU9g00gIKgODYWp6fKov+15wgD8Fkvw4RO01efz5mnDO+HHlexSOOoIfkuB+
+         63cogGCPMfhn1uRKFUJroenqMcSNvfzyhCpB9/rOSNGf0UvvR5+lF4TYYZ5kzWvj+MDD
+         AOeKjKecvEu/PiE43ICpoXZ0ZFxiYE0a+H5eO4P8RPFXxKzjRjIoDleRYjFPCyFTwLZ2
+         4JvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Yq2wftt2X+S/LjR697B2w5o4NIynHga4LSIVsTk7uQU=;
+        b=Ql3/j4faxR+KS9hb/NVsu/189EB6aclu8xI+w0t1XTjU2DP5p3n2LBmO0dS6xmYfhD
+         D9/2ckokAds9jU8efjt2k9y4VhvTziRvgGpi2HX/+vpR4/ZsXSMV4mrw/kolcIVUpD3E
+         /RCTu2Q6kKYqAi5KgUKruoO04KmrffY59N4DG+egN38d4+LPBbeTIs/ASjgvoi4fT7zb
+         ajEI+51oubryrUAWFz5Q0fF1W/I9zubO1mqHNu1db3PrutVKUqRxkCe9OOO+JLqIztQt
+         msCqijamXozWk7Jl0aeVGirozdMjTwfEkep+Czi3wocqP+oOg03HrWKidnLadHQadEk0
+         Kpvg==
+X-Gm-Message-State: APjAAAX7TJ+X4IY9WHeTEfPbvTl/8i3ODUDLy+ySWWLxIcAQROWG6wOX
+        KAaXCesnYohoq0d5kKO15AC/6GwqZSU=
+X-Google-Smtp-Source: APXvYqwim5HYz84ilcVVsMUbHbKD3ijiKsMwGomyhTqhr59EzrSyUayEGi/b4MGyavxVD9shQ2Grxg==
+X-Received: by 2002:a05:620a:12d5:: with SMTP id e21mr6411130qkl.152.1569940748823;
+        Tue, 01 Oct 2019 07:39:08 -0700 (PDT)
+Received: from ubuntu.default ([32.104.18.203])
+        by smtp.gmail.com with ESMTPSA id 62sm8232542qki.130.2019.10.01.07.39.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Oct 2019 07:39:08 -0700 (PDT)
+From:   jcfaracco@gmail.com
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v2] net: core: dev: replace state xoff flag comparison by netif_xmit_stopped method
+Date:   Tue,  1 Oct 2019 11:39:04 -0300
+Message-Id: <20191001143904.6549-1-jcfaracco@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Julio Faracco <jcfaracco@gmail.com>
 
+Function netif_schedule_queue() has a hardcoded comparison between queue
+state and any xoff flag. This comparison does the same thing as method
+netif_xmit_stopped(). In terms of code clarity, it is better. See other
+methods like: generic_xdp_tx() and dev_direct_xmit().
 
-On 9/30/19 4:56 PM, Alexander Duyck wrote:
-> On Mon, Sep 30, 2019 at 3:13 PM Josh Hunt <johunt@akamai.com> wrote:
->>
->> Prior to this change an application sending <= 1MSS worth of data and
->> enabling UDP GSO would fail if the system had SW GSO enabled, but the
->> same send would succeed if HW GSO offload is enabled. In addition to this
->> inconsistency the error in the SW GSO case does not get back to the
->> application if sending out of a real device so the user is unaware of this
->> failure.
->>
->> With this change we only perform GSO if the # of segments is > 1 even
->> if the application has enabled segmentation. I've also updated the
->> relevant udpgso selftests.
->>
->> Fixes: bec1f6f69736 ("udp: generate gso with UDP_SEGMENT")
->> Signed-off-by: Josh Hunt <johunt@akamai.com>
->> ---
->>   net/ipv4/udp.c                       |  5 +++--
->>   net/ipv6/udp.c                       |  5 +++--
->>   tools/testing/selftests/net/udpgso.c | 16 ++++------------
->>   3 files changed, 10 insertions(+), 16 deletions(-)
->>
->> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
->> index be98d0b8f014..ac0baf947560 100644
->> --- a/net/ipv4/udp.c
->> +++ b/net/ipv4/udp.c
->> @@ -821,6 +821,7 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
->>          int is_udplite = IS_UDPLITE(sk);
->>          int offset = skb_transport_offset(skb);
->>          int len = skb->len - offset;
->> +       int datalen = len - sizeof(*uh);
->>          __wsum csum = 0;
->>
->>          /*
->> @@ -832,7 +833,7 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
->>          uh->len = htons(len);
->>          uh->check = 0;
->>
->> -       if (cork->gso_size) {
->> +       if (cork->gso_size && datalen > cork->gso_size) {
->>                  const int hlen = skb_network_header_len(skb) +
->>                                   sizeof(struct udphdr);
->>
-> 
-> So what about the datalen == cork->gso_size case? That would only
-> generate one segment wouldn't it?
-> 
-> Shouldn't the test really be "datalen < cork->gso_size"? That should
-> be the only check you need since if gso_size is 0 this statement would
-> always fail anyway.
-> 
-> Thanks.
-> 
-> - Alex
-> 
+Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
+---
+Resubmitted as a V2 because V1 was sent during net-next closed window.
+This commit message and change have the same structure as V1.
+---
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Alex thanks for the review. The intent of the patch is to only use GSO 
-when the # of segs > 1. The two cases you've mentioned are when the # of 
-segs == 1. In those cases we don't want to set gso_size and treat this 
-as a non-GSO case, skipping the if block. Let me know if I misunderstood 
-your points or you'd like further clarification.
+diff --git a/net/core/dev.c b/net/core/dev.c
+index bf3ed413abaf..21a9c2987cbb 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2771,7 +2771,7 @@ static struct dev_kfree_skb_cb *get_kfree_skb_cb(const struct sk_buff *skb)
+ void netif_schedule_queue(struct netdev_queue *txq)
+ {
+ 	rcu_read_lock();
+-	if (!(txq->state & QUEUE_STATE_ANY_XOFF)) {
++	if (!netif_xmit_stopped(txq)) {
+ 		struct Qdisc *q = rcu_dereference(txq->qdisc);
+ 
+ 		__netif_schedule(q);
+-- 
+2.17.1
 
-Thanks!
-Josh
