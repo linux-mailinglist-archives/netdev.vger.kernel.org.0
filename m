@@ -2,81 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC78C3209
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:12:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D3AC3237
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:18:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730648AbfJALMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 07:12:10 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:55104 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbfJALMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:12:10 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 7514F6087B; Tue,  1 Oct 2019 11:12:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569928329;
-        bh=9kO3QL+L5rr63Ix2ww95YvRUF57iILCa5Qi4MlOlhxM=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=dIZIpk9bKmKDhnfIWS9jfSnDm4DVoaXx77uUsEOO9K13B67BQkaKbnNxON+csseoV
-         1JuCuFeooNuzQ/UYwecK8v2PitycNxQosak4+abcMAbpQUBVjMiBcU5V0RmV4QISwe
-         hnAA74SgzCPkycDnXeqti/0dRhJdKlyUE+w2TBYk=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4B91E6014B;
-        Tue,  1 Oct 2019 11:12:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569928328;
-        bh=9kO3QL+L5rr63Ix2ww95YvRUF57iILCa5Qi4MlOlhxM=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=Dff0axe8hdiOON+Jklx4brxGX76YkVHfkiIOQIY82uYhhIpU1BAIJ+ncj8fSYzaqM
-         anWwISLIwCbpYPDEmfqvXp8TA6IO32F52uTrw/J8nUbDSQc4+34NZebE2beqryLLdl
-         vQVfictCs0UzuZwbaG/naQM63KNlDtd68ZK8cAVY=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4B91E6014B
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1731535AbfJALRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 07:17:07 -0400
+Received: from mail-pf1-f180.google.com ([209.85.210.180]:42843 "EHLO
+        mail-pf1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731290AbfJALRH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:17:07 -0400
+Received: by mail-pf1-f180.google.com with SMTP id q12so7697721pff.9;
+        Tue, 01 Oct 2019 04:17:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:cc:subject:message-id:reply-to:mime-version
+         :content-disposition:user-agent;
+        bh=PHBPieEoIEiHbvbeeHJjltGH3wFRSgkergj3wcnFLm4=;
+        b=sTsqsndb21GR8aB81yIio35zSa+c9ao6uAOjuhyJCrvEg1cm1TE3Rg+TrTF88trpRy
+         Jp0GQQh5BOUrorDIhUTIhRlFf6A+/SkIx/3uE2J5qTYLV6vfTXjb/L8WcZC2mXR4HiTG
+         piG9rpekDDJe/31t7cRi8KKWopw2EQW6C1VPsJVDuNL2LN7nh3NhLSq5XnWtNysDZAhv
+         26IpcWXV/U8fMk97GdpDw8YoFjoB6UHZ97qlflksChFi6MGYYnIoSSY4dm+pnfUBcUG2
+         CiLTdv1sSU/V3k4IlxgueZ2pLimV3X13o/s/melWl5ufOHPNsi298HimjpHmIKEdAMdo
+         6k8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:cc:subject:message-id:reply-to
+         :mime-version:content-disposition:user-agent;
+        bh=PHBPieEoIEiHbvbeeHJjltGH3wFRSgkergj3wcnFLm4=;
+        b=MjMlBZLisxdjH7v/sPidgqPlx9Yzt9cScA5zRyHn6olyE2AjBHKmp48kYT96RUDEWl
+         H/2HXMk4ozaR8r93q1D4wz0qMIaeJhi3Fg+qrN4wfP0rpJJ9M9djBFwzoKZdo/DLs27e
+         BEO2fwIeQ6XLaiRelrl3Ri+WfqbGn4ZdlxM+5ibx1Qxksll+t+IsuU3LY2reDtOY+VFo
+         onDuaUd5zIlUoeRZ4hBblt8DIfOJmddjg3rBqO5uDWqZKkBbuaHgNoBi1p8pDDk0YGd0
+         c8Q1k+9+vuizLqxU0ec70NtnqMiSS/febcpBpmSzH0/868heder8lEqz+4WW5SIhhLSR
+         fCOQ==
+X-Gm-Message-State: APjAAAV4KAYljfscLZmKefCPqq2Ucbbp+xZARk6X/p193XnhTsBEhsZp
+        ChQLplldQob4y8pQlM02Ado=
+X-Google-Smtp-Source: APXvYqzzT28dhBVJfRRaYBc/gUpXA0OfOFDvLV5YLDiedbEgCmlLs62xDNsRB959hfxbEBuQLPRSIA==
+X-Received: by 2002:a17:90a:617:: with SMTP id j23mr5067390pjj.130.1569928626641;
+        Tue, 01 Oct 2019 04:17:06 -0700 (PDT)
+Received: from gmail.com (ip-103-85-37-165.syd.xi.com.au. [103.85.37.165])
+        by smtp.gmail.com with ESMTPSA id l27sm18022696pgc.53.2019.10.01.04.17.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Oct 2019 04:17:04 -0700 (PDT)
+Date:   Tue, 1 Oct 2019 21:16:58 +1000
+From:   Adam Zerella <adam.zerella@gmail.com>
+Cc:     jakub.kicinski@netronome.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        adam.zerella@gmail.com
+Subject: [PATCH v2] docs: networking: Add title caret and missing doc
+Message-ID: <20191001111658.GA10429@gmail.com>
+Reply-To: <20190930113754.5902855e@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath9k: remove unused including <linux/version.h>
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190923135632.145051-1-yuehaibing@huawei.com>
-References: <20190923135632.145051-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <ath9k-devel@qca.qualcomm.com>, <afaerber@suse.de>,
-        <manivannan.sadhasivam@linaro.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        <linux-wireless@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191001111209.7514F6087B@smtp.codeaurora.org>
-Date:   Tue,  1 Oct 2019 11:12:09 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.1 (2019-06-15)
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
+Resolving a couple of Sphinx documentation warnings
+that are generated in the networking section.
 
-> Remove including <linux/version.h> that don't need it.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+- WARNING: document isn't included in any toctree
+- WARNING: Title underline too short.
 
-Patch applied to ath-next branch of ath.git, thanks.
+Signed-off-by: Adam Zerella <adam.zerella@gmail.com>
+---
 
-6aff90c5bab7 ath9k: remove unused including <linux/version.h>
+v2: Moved 'netronome/nfp' into alphabetical order
+---
+ Documentation/networking/device_drivers/index.rst | 1 +
+ Documentation/networking/j1939.rst                | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+index f51f92571e39..c1f7f75e5fd9 100644
+--- a/Documentation/networking/device_drivers/index.rst
++++ b/Documentation/networking/device_drivers/index.rst
+@@ -23,6 +23,7 @@ Contents:
+    intel/ice
+    google/gve
+    mellanox/mlx5
++   netronome/nfp
+    pensando/ionic
+ 
+ .. only::  subproject and html
+diff --git a/Documentation/networking/j1939.rst b/Documentation/networking/j1939.rst
+index ce7e7a044e08..dc60b13fcd09 100644
+--- a/Documentation/networking/j1939.rst
++++ b/Documentation/networking/j1939.rst
+@@ -272,7 +272,7 @@ supported flags are:
+ * MSG_DONTWAIT, i.e. non-blocking operation.
+ 
+ recvmsg(2)
+-^^^^^^^^^
++^^^^^^^^^^
+ 
+ In most cases recvmsg(2) is needed if you want to extract more information than
+ recvfrom(2) can provide. For example package priority and timestamp. The
 -- 
-https://patchwork.kernel.org/patch/11156945/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.21.0
 
