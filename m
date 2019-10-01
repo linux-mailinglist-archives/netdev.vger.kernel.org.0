@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BAC8C3CD3
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36477C3CD0
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730651AbfJAQzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:55:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54864 "EHLO mail.kernel.org"
+        id S1730342AbfJAQyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:54:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54894 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732206AbfJAQmv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:42:51 -0400
+        id S1732239AbfJAQmy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:42:54 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 179C4205C9;
-        Tue,  1 Oct 2019 16:42:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 79E9E2168B;
+        Tue,  1 Oct 2019 16:42:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948170;
-        bh=H1nrnkt44PLeur88B5tlQvgD/Hp4H1avEpbWadrLVH0=;
+        s=default; t=1569948173;
+        bh=/9/aMWttHsVjoz7AtQoEnuhw9IY82C4nqkSpLrTWbSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KvwOBnvrT74z3slJ+GypY5ecab5PDk3VvsbRTb/zfrq264MQPVb+wO5Nk7z/4xmM7
-         17K8FeXPFnc90Hm4vRJwZOslJTwqje3C1K7JEG2pKOxKdQWTW/gVMkHybg35dKEUDT
-         DFWPKNUSB5/0X+kmT/49jBvOVw2uX5+qyzg1gqDs=
+        b=ir/I0k69WobuEjqX4ukG5B9A3HV/BYz91VHmGBoWXpV0tgmZm2Nw/ftqFdx0iTxz5
+         2FkPzx15FY4UxjJppG1LTr7TJfudS0POwkB/dtRd5RRr8fgqDPJm+wXHj09Xga37lm
+         NjdXQGeOwQc9nk4BEY/Hn4tri7Tz2fKRFwD6S5zQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+Cc:     Danielle Ratson <danieller@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oss-drivers@netronome.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 53/63] nfp: flower: fix memory leak in nfp_flower_spawn_vnic_reprs
-Date:   Tue,  1 Oct 2019 12:41:15 -0400
-Message-Id: <20191001164125.15398-53-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 55/63] mlxsw: spectrum_flower: Fail in case user specifies multiple mirror actions
+Date:   Tue,  1 Oct 2019 12:41:17 -0400
+Message-Id: <20191001164125.15398-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191001164125.15398-1-sashal@kernel.org>
 References: <20191001164125.15398-1-sashal@kernel.org>
@@ -45,50 +45,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Navid Emamdoost <navid.emamdoost@gmail.com>
+From: Danielle Ratson <danieller@mellanox.com>
 
-[ Upstream commit 8ce39eb5a67aee25d9f05b40b673c95b23502e3e ]
+[ Upstream commit 52feb8b588f6d23673dd7cc2b44b203493b627f6 ]
 
-In nfp_flower_spawn_vnic_reprs in the loop if initialization or the
-allocations fail memory is leaked. Appropriate releases are added.
+The ASIC can only mirror a packet to one port, but when user is trying
+to set more than one mirror action, it doesn't fail.
 
-Fixes: b94524529741 ("nfp: flower: add per repr private data for LAG offload")
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Add a check if more than one mirror action was specified per rule and if so,
+fail for not being supported.
+
+Fixes: d0d13c1858a11 ("mlxsw: spectrum_acl: Add support for mirror action")
+Signed-off-by: Danielle Ratson <danieller@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/flower/main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
-index eb846133943b2..5331e01f373e0 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/main.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
-@@ -400,6 +400,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
- 		repr_priv = kzalloc(sizeof(*repr_priv), GFP_KERNEL);
- 		if (!repr_priv) {
- 			err = -ENOMEM;
-+			nfp_repr_free(repr);
- 			goto err_reprs_clean;
- 		}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+index 96b23c856f4de..ca31c26e98c1e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+@@ -21,6 +21,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
+ 					 struct netlink_ext_ack *extack)
+ {
+ 	const struct flow_action_entry *act;
++	int mirror_act_count = 0;
+ 	int err, i;
  
-@@ -413,6 +414,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
- 		port = nfp_port_alloc(app, port_type, repr);
- 		if (IS_ERR(port)) {
- 			err = PTR_ERR(port);
-+			kfree(repr_priv);
- 			nfp_repr_free(repr);
- 			goto err_reprs_clean;
- 		}
-@@ -433,6 +435,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
- 		err = nfp_repr_init(app, repr,
- 				    port_id, port, priv->nn->dp.netdev);
- 		if (err) {
-+			kfree(repr_priv);
- 			nfp_port_free(port);
- 			nfp_repr_free(repr);
- 			goto err_reprs_clean;
+ 	if (!flow_action_has_entries(flow_action))
+@@ -95,6 +96,11 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
+ 		case FLOW_ACTION_MIRRED: {
+ 			struct net_device *out_dev = act->dev;
+ 
++			if (mirror_act_count++) {
++				NL_SET_ERR_MSG_MOD(extack, "Multiple mirror actions per rule are not supported");
++				return -EOPNOTSUPP;
++			}
++
+ 			err = mlxsw_sp_acl_rulei_act_mirror(mlxsw_sp, rulei,
+ 							    block, out_dev,
+ 							    extack);
 -- 
 2.20.1
 
