@@ -2,94 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 371B5C323F
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:21:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68F61C3244
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731463AbfJALTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 07:19:14 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:58570 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbfJALTN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:19:13 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id A75D36014B; Tue,  1 Oct 2019 11:19:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569928752;
-        bh=TBrp107vqvrm5nw0Dhs+vhjDes58fG5CBnoGfgq8iXI=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=VlXmjYoFUICdyB08W+dyJtvJIibcEmbJeznAgp567xSEcSHFhVFqh4kgmyHKDFnZX
-         aapgFOwWYW3SHtISGkJVVB3HA3/CAFoA3a4c3IfiDeOLvaYZUqpX/2pmEcEVxh+h1X
-         mK63UvmTF4CAszgawXTW41g90305LNcpCQHdNRY8=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 18BE8601D4;
-        Tue,  1 Oct 2019 11:19:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569928751;
-        bh=TBrp107vqvrm5nw0Dhs+vhjDes58fG5CBnoGfgq8iXI=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=i/277xzREeUwLrLvgJRl7K3i3RaG8xSFWuw2pL4BELv8bKW64Bf5YlJiykvAyIN2v
-         csY63r99jCRCIWjYLYKavWg0j2RJQXAiYWpsw1vnPrxjLI1vwT+3gWPfs2cknQKJKZ
-         +fHDdkV/vJl4LcUyNEfncdNOZ7qKE1/u3eEjedxg=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 18BE8601D4
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1731273AbfJALVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 07:21:38 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:35083 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725951AbfJALVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:21:38 -0400
+Received: by mail-qk1-f195.google.com with SMTP id w2so10801748qkf.2;
+        Tue, 01 Oct 2019 04:21:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=T/9aZl1U9GrlNoj5M1zx7ZaXKGBZu2N7Er57Y3lw2mA=;
+        b=d6h4dqflK6dJrS3DyVHleQcC9Pg9WDR7VFgEP34yZDHFCiqOD5kl2X1P8zXfTpNPyh
+         Bzus2FED9RuFvA7ona/fcHkmbgK7VQfZwXRTQf181PrIkRU/SnVGN3FxTPKh9ApCYmyn
+         rfQhblHLMHp980TkwN6gV3EuybMNuh+ZNtZOmyri/ZEq8nXj7HzWRwYbDi3xaA0MHccg
+         3se3uEv6CQa38cioAfsForcsnDKsvQgFqGmBQW2McZHT0AfuwydSBx3oozx8be83tnbH
+         SqAsoJOUljSjHxW1JqrmfQ+KUEoFVlCVfnxdbH02hfw0EoViaxq82j7set6VWYBACkKb
+         c8aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=T/9aZl1U9GrlNoj5M1zx7ZaXKGBZu2N7Er57Y3lw2mA=;
+        b=Z7g8uMTEl+J8PywF+KbEPNWsDbeEhZBhZHg2pp0vWpv1DdVI+s8HcwEYFGZnetT5Bv
+         +WmG0VChAm7+L2pHX8DlHxKSjM9ZHWQHN+Dtdz1RwKGiZdayRPzbaaPtvPXX5554bLJ3
+         rs7xffLnJAv0Q6TdreYHNol7aZx31+ZA0Ev17G0of3WGSaXXzw7s6SvNZ/2hzQjyzLHA
+         Emt+AT9xMcne3h0yx9NWBpTBqgi11O49OVmp03fptKfceJMickCqMmedLysMVqwWf/EV
+         cHOkvB46jbM4UE6ZUyBUGd8P6kSwGrlX0QNKvtVAJjMixoy7YzO83Hyu5K8tt221c3Pe
+         5bSA==
+X-Gm-Message-State: APjAAAUaJvKjpQldVx4p2Pxl4aXTfOoiuB3dPSyrVsmnxQgkY63awnHD
+        +HFFjLIcUTicDXvelsZ28noxOB2Ymt0A5P+mS9o=
+X-Google-Smtp-Source: APXvYqyl9bVaXSVKnL22wKbGEcI8r30XZN9ZmuFl1zpfV4lXfZCyrG9S9ePOWNXJDXBNtEiWOudM/5L8lfXgPG0eab4=
+X-Received: by 2002:a37:a946:: with SMTP id s67mr5524550qke.470.1569928897381;
+ Tue, 01 Oct 2019 04:21:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath9k_hw: fix uninitialized variable data
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190926225604.9342-1-efremov@linux.com>
-References: <20190926225604.9342-1-efremov@linux.com>
-To:     Denis Efremov <efremov@linux.com>
-Cc:     unlisted-recipients:; (no To-header on input)
-        Denis Efremov <efremov@linux.com>,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rajkumar Manoharan <rmanohar@qca.qualcomm.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>, stable@vger.kernel.org
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)Denis Efremov <efremov@linux.com>
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191001111912.A75D36014B@smtp.codeaurora.org>
-Date:   Tue,  1 Oct 2019 11:19:12 +0000 (UTC)
+References: <20190917065044.GA173797@LGEARND20B15> <20191001092020.B3C7B60AD9@smtp.codeaurora.org>
+In-Reply-To: <20191001092020.B3C7B60AD9@smtp.codeaurora.org>
+From:   Austin Kim <austindh.kim@gmail.com>
+Date:   Tue, 1 Oct 2019 20:21:26 +0900
+Message-ID: <CADLLry48nTtopZ9qzSxd7NBOGFV2V8nf7tNDA-8-BeTpDVf9wQ@mail.gmail.com>
+Subject: Re: [PATCH] rtlwifi: rtl8723ae: Remove unused 'rtstatus' variable
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     pkshih@realtek.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Denis Efremov <efremov@linux.com> wrote:
+2019=EB=85=84 10=EC=9B=94 1=EC=9D=BC (=ED=99=94) =EC=98=A4=ED=9B=84 6:20, K=
+alle Valo <kvalo@codeaurora.org>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
+>
+> Austin Kim <austindh.kim@gmail.com> wrote:
+>
+> > 'rtstatus' local variable is not used,
+> > so remove it for clean-up.
+> >
+> > Signed-off-by: Austin Kim <austindh.kim@gmail.com>
+>
+> Patch applied to wireless-drivers-next.git, thanks.
 
-> Currently, data variable in ar9003_hw_thermo_cal_apply() could be
-> uninitialized if ar9300_otp_read_word() will fail to read the value.
-> Initialize data variable with 0 to prevent an undefined behavior. This
-> will be enough to handle error case when ar9300_otp_read_word() fails.
-> 
-> Fixes: 80fe43f2bbd5 ("ath9k_hw: Read and configure thermocal for AR9462")
-> Cc: Rajkumar Manoharan <rmanohar@qca.qualcomm.com>
-> Cc: John W. Linville <linville@tuxdriver.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-
-Patch applied to ath-next branch of ath.git, thanks.
-
-80e84f36412e ath9k_hw: fix uninitialized variable data
-
--- 
-https://patchwork.kernel.org/patch/11163437/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Thanks for information.
