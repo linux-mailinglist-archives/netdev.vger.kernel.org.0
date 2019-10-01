@@ -2,154 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AC0FC2E8D
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 10:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73BA3C2E9B
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 10:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727722AbfJAIEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 04:04:30 -0400
-Received: from relay.sw.ru ([185.231.240.75]:37952 "EHLO relay.sw.ru"
+        id S1732658AbfJAIHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 04:07:49 -0400
+Received: from mga06.intel.com ([134.134.136.31]:18682 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726148AbfJAIE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 04:04:29 -0400
-Received: from [172.16.24.163] (helo=snorch.sw.ru)
-        by relay.sw.ru with esmtp (Exim 4.92.2)
-        (envelope-from <ptikhomirov@virtuozzo.com>)
-        id 1iFD8l-0001vD-Nl; Tue, 01 Oct 2019 11:04:11 +0300
-From:   Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-To:     "J . Bruce Fields" <bfields@fieldses.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH] sunrpc: fix crash when cache_head become valid before update
-Date:   Tue,  1 Oct 2019 11:03:59 +0300
-Message-Id: <20191001080359.6034-1-ptikhomirov@virtuozzo.com>
-X-Mailer: git-send-email 2.21.0
+        id S1726460AbfJAIHt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 04:07:49 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Oct 2019 01:07:48 -0700
+X-IronPort-AV: E=Sophos;i="5.64,570,1559545200"; 
+   d="scan'208";a="190517127"
+Received: from jnikula-mobl3.fi.intel.com (HELO localhost) ([10.237.66.161])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Oct 2019 01:07:44 -0700
+From:   Jani Nikula <jani.nikula@intel.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jani Nikula <jani.nikula@intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        intel-gfx@lists.freedesktop.org,
+        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <julia.lawall@lip6.fr>
+Subject: [PATCH v3] string-choice: add yesno(), onoff(), enableddisabled(), plural() helpers
+Date:   Tue,  1 Oct 2019 11:07:39 +0300
+Message-Id: <20191001080739.18513-1-jani.nikula@intel.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <8e697984-03b5-44f3-304e-42d303724eaa@rasmusvillemoes.dk>
+References: <8e697984-03b5-44f3-304e-42d303724eaa@rasmusvillemoes.dk>
 MIME-Version: 1.0
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I was investigating a crash in our Virtuozzo7 kernel which happened in
-in svcauth_unix_set_client. I found out that we access m_client field
-in ip_map structure, which was received from sunrpc_cache_lookup (we
-have a bit older kernel, now the code is in sunrpc_cache_add_entry), and
-these field looks uninitialized (m_client == 0x74 don't look like a
-pointer) but in the cache_head in flags we see 0x1 which is CACHE_VALID.
+The kernel has plenty of ternary operators to choose between constant
+strings, such as condition ? "yes" : "no", as well as value == 1 ? "" :
+"s":
 
-It looks like the problem appeared from our previous fix to sunrpc (1):
-commit 4ecd55ea0742 ("sunrpc: fix cache_head leak due to queued
-request")
+$ git grep '? "yes" : "no"' | wc -l
+258
+$ git grep '? "on" : "off"' | wc -l
+204
+$ git grep '? "enabled" : "disabled"' | wc -l
+196
+$ git grep '? "" : "s"' | wc -l
+25
 
-And we've also found a patch already fixing our patch (2):
-commit d58431eacb22 ("sunrpc: don't mark uninitialised items as VALID.")
+Additionally, there are some occurences of the same in reverse order,
+split to multiple lines, or otherwise not caught by the simple grep.
 
-Though the crash is eliminated, I think the core of the problem is not
-completely fixed:
+Add helpers to return the constant strings. Remove existing equivalent
+and conflicting functions in i915, cxgb4, and USB core. Further
+conversion can be done incrementally.
 
-Neil in the patch (2) makes cache_head CACHE_NEGATIVE, before
-cache_fresh_locked which was added in (1) to fix crash. These way
-cache_is_valid won't say the cache is valid anymore and in
-svcauth_unix_set_client the function cache_check will return error
-instead of 0, and we don't count entry as initialized.
+While the main goal here is to abstract recurring patterns, and slightly
+clean up the code base by not open coding the ternary operators, there
+are also some space savings to be had via better string constant
+pooling.
 
-But it looks like we need to remove cache_fresh_locked completely in
-sunrpc_cache_lookup:
-
-In (1) we've only wanted to make cache_fresh_unlocked->cache_dequeue so
-that cache_requests with no readers also release corresponding
-cache_head, to fix their leak.  We with Vasily were not sure if
-cache_fresh_locked and cache_fresh_unlocked should be used in pair or
-not, so we've guessed to use them in pair.
-
-Now we see that we don't want the CACHE_VALID bit set here by
-cache_fresh_locked, as "valid" means "initialized" and there is no
-initialization in sunrpc_cache_add_entry. Both expiry_time and
-last_refresh are not used in cache_fresh_unlocked code-path and also not
-required for the initial fix.
-
-So to conclude cache_fresh_locked was called by mistake, and we can just
-safely remove it instead of crutching it with CACHE_NEGATIVE. It looks
-ideologically better for me. Hope I don't miss something here.
-
-Here is our crash backtrace:
-[13108726.326291] BUG: unable to handle kernel NULL pointer dereference at 0000000000000074
-[13108726.326365] IP: [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
-[13108726.326448] PGD 0
-[13108726.326468] Oops: 0002 [#1] SMP
-[13108726.326497] Modules linked in: nbd isofs xfs loop kpatch_cumulative_81_0_r1(O) xt_physdev nfnetlink_queue bluetooth rfkill ip6table_nat nf_nat_ipv6 ip_vs_wrr ip_vs_wlc ip_vs_sh nf_conntrack_netlink ip_vs_sed ip_vs_pe_sip nf_conntrack_sip ip_vs_nq ip_vs_lc ip_vs_lblcr ip_vs_lblc ip_vs_ftp ip_vs_dh nf_nat_ftp nf_conntrack_ftp iptable_raw xt_recent nf_log_ipv6 xt_hl ip6t_rt nf_log_ipv4 nf_log_common xt_LOG xt_limit xt_TCPMSS xt_tcpmss vxlan ip6_udp_tunnel udp_tunnel xt_statistic xt_NFLOG nfnetlink_log dummy xt_mark xt_REDIRECT nf_nat_redirect raw_diag udp_diag tcp_diag inet_diag netlink_diag af_packet_diag unix_diag rpcsec_gss_krb5 xt_addrtype ip6t_rpfilter ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 ebtable_nat ebtable_broute nf_conntrack_ipv6 nf_defrag_ipv6 ip6table_mangle ip6table_raw nfsv4
-[13108726.327173]  dns_resolver cls_u32 binfmt_misc arptable_filter arp_tables ip6table_filter ip6_tables devlink fuse_kio_pcs ipt_MASQUERADE nf_nat_masquerade_ipv4 xt_nat iptable_nat nf_nat_ipv4 xt_comment nf_conntrack_ipv4 nf_defrag_ipv4 xt_wdog_tmo xt_multiport bonding xt_set xt_conntrack iptable_filter iptable_mangle kpatch(O) ebtable_filter ebt_among ebtables ip_set_hash_ip ip_set nfnetlink vfat fat skx_edac intel_powerclamp coretemp intel_rapl iosf_mbi kvm_intel kvm irqbypass fuse pcspkr ses enclosure joydev sg mei_me hpwdt hpilo lpc_ich mei ipmi_si shpchp ipmi_devintf ipmi_msghandler xt_ipvs acpi_power_meter ip_vs_rr nfsv3 nfsd auth_rpcgss nfs_acl nfs lockd grace fscache nf_nat cls_fw sch_htb sch_cbq sch_sfq ip_vs em_u32 nf_conntrack tun br_netfilter veth overlay ip6_vzprivnet ip6_vznetstat ip_vznetstat
-[13108726.327817]  ip_vzprivnet vziolimit vzevent vzlist vzstat vznetstat vznetdev vzmon vzdev bridge pio_kaio pio_nfs pio_direct pfmt_raw pfmt_ploop1 ploop ip_tables ext4 mbcache jbd2 sd_mod crc_t10dif crct10dif_generic mgag200 i2c_algo_bit drm_kms_helper scsi_transport_iscsi 8021q syscopyarea sysfillrect garp sysimgblt fb_sys_fops mrp stp ttm llc bnx2x crct10dif_pclmul crct10dif_common crc32_pclmul crc32c_intel drm dm_multipath ghash_clmulni_intel uas aesni_intel lrw gf128mul glue_helper ablk_helper cryptd tg3 smartpqi scsi_transport_sas mdio libcrc32c i2c_core usb_storage ptp pps_core wmi sunrpc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: kpatch_cumulative_82_0_r1]
-[13108726.328403] CPU: 35 PID: 63742 Comm: nfsd ve: 51332 Kdump: loaded Tainted: G        W  O   ------------   3.10.0-862.20.2.vz7.73.29 #1 73.29
-[13108726.328491] Hardware name: HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 10/02/2018
-[13108726.328554] task: ffffa0a6a41b1160 ti: ffffa0c2a74bc000 task.ti: ffffa0c2a74bc000
-[13108726.328610] RIP: 0010:[<ffffffffc01f79eb>]  [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
-[13108726.328706] RSP: 0018:ffffa0c2a74bfd80  EFLAGS: 00010246
-[13108726.328750] RAX: 0000000000000001 RBX: ffffa0a6183ae000 RCX: 0000000000000000
-[13108726.328811] RDX: 0000000000000074 RSI: 0000000000000286 RDI: ffffa0c2a74bfcf0
-[13108726.328864] RBP: ffffa0c2a74bfe00 R08: ffffa0bab8c22960 R09: 0000000000000001
-[13108726.328916] R10: 0000000000000001 R11: 0000000000000001 R12: ffffa0a32aa7f000
-[13108726.328969] R13: ffffa0a6183afac0 R14: ffffa0c233d88d00 R15: ffffa0c2a74bfdb4
-[13108726.329022] FS:  0000000000000000(0000) GS:ffffa0e17f9c0000(0000) knlGS:0000000000000000
-[13108726.329081] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[13108726.332311] CR2: 0000000000000074 CR3: 00000026a1b28000 CR4: 00000000007607e0
-[13108726.334606] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[13108726.336754] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[13108726.338908] PKRU: 00000000
-[13108726.341047] Call Trace:
-[13108726.343074]  [<ffffffff8a2c78b4>] ? groups_alloc+0x34/0x110
-[13108726.344837]  [<ffffffffc01f5eb4>] svc_set_client+0x24/0x30 [sunrpc]
-[13108726.346631]  [<ffffffffc01f2ac1>] svc_process_common+0x241/0x710 [sunrpc]
-[13108726.348332]  [<ffffffffc01f3093>] svc_process+0x103/0x190 [sunrpc]
-[13108726.350016]  [<ffffffffc07d605f>] nfsd+0xdf/0x150 [nfsd]
-[13108726.351735]  [<ffffffffc07d5f80>] ? nfsd_destroy+0x80/0x80 [nfsd]
-[13108726.353459]  [<ffffffff8a2bf741>] kthread+0xd1/0xe0
-[13108726.355195]  [<ffffffff8a2bf670>] ? create_kthread+0x60/0x60
-[13108726.356896]  [<ffffffff8a9556dd>] ret_from_fork_nospec_begin+0x7/0x21
-[13108726.358577]  [<ffffffff8a2bf670>] ? create_kthread+0x60/0x60
-[13108726.360240] Code: 4c 8b 45 98 0f 8e 2e 01 00 00 83 f8 fe 0f 84 76 fe ff ff 85 c0 0f 85 2b 01 00 00 49 8b 50 40 b8 01 00 00 00 48 89 93 d0 1a 00 00 <f0> 0f c1 02 83 c0 01 83 f8 01 0f 8e 53 02 00 00 49 8b 44 24 38
-[13108726.363769] RIP  [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
-[13108726.365530]  RSP <ffffa0c2a74bfd80>
-[13108726.367179] CR2: 0000000000000074
-
-Fixes: d58431eacb22 ("sunrpc: don't mark uninitialised items as VALID.")
-Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: intel-gfx@lists.freedesktop.org
+Cc: Vishal Kulkarni <vishal@chelsio.com>
+Cc: netdev@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-usb@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org
+Cc: Julia Lawall <julia.lawall@lip6.fr>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # v1
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
 
 ---
- net/sunrpc/cache.c | 6 ------
- 1 file changed, 6 deletions(-)
 
-diff --git a/net/sunrpc/cache.c b/net/sunrpc/cache.c
-index a349094f6fb7..f740cb51802a 100644
---- a/net/sunrpc/cache.c
-+++ b/net/sunrpc/cache.c
-@@ -53,9 +53,6 @@ static void cache_init(struct cache_head *h, struct cache_detail *detail)
- 	h->last_refresh = now;
- }
+v2: add string-choice.[ch] to not clutter kernel.h and to actually save
+space on string constants.
+
+v3: back to static inlines based on Rasmus' feedback
+
+Example of further cleanup possibilities are at [1], to be done
+incrementally afterwards.
+
+[1] http://lore.kernel.org/r/20190903133731.2094-2-jani.nikula@intel.com
+---
+ drivers/gpu/drm/i915/i915_utils.h             | 16 +---------
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    | 12 +------
+ drivers/usb/core/config.c                     |  6 +---
+ drivers/usb/core/generic.c                    |  6 +---
+ include/linux/string-choice.h                 | 31 +++++++++++++++++++
+ 5 files changed, 35 insertions(+), 36 deletions(-)
+ create mode 100644 include/linux/string-choice.h
+
+diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
+index 562f756da421..794f02a90efe 100644
+--- a/drivers/gpu/drm/i915/i915_utils.h
++++ b/drivers/gpu/drm/i915/i915_utils.h
+@@ -28,6 +28,7 @@
+ #include <linux/list.h>
+ #include <linux/overflow.h>
+ #include <linux/sched.h>
++#include <linux/string-choice.h>
+ #include <linux/types.h>
+ #include <linux/workqueue.h>
  
--static inline int cache_is_valid(struct cache_head *h);
--static void cache_fresh_locked(struct cache_head *head, time_t expiry,
--				struct cache_detail *detail);
- static void cache_fresh_unlocked(struct cache_head *head,
- 				struct cache_detail *detail);
+@@ -395,21 +396,6 @@ wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
+ #define MBps(x) KBps(1000 * (x))
+ #define GBps(x) ((u64)1000 * MBps((x)))
  
-@@ -105,9 +102,6 @@ static struct cache_head *sunrpc_cache_add_entry(struct cache_detail *detail,
- 			if (cache_is_expired(detail, tmp)) {
- 				hlist_del_init_rcu(&tmp->cache_list);
- 				detail->entries --;
--				if (cache_is_valid(tmp) == -EAGAIN)
--					set_bit(CACHE_NEGATIVE, &tmp->flags);
--				cache_fresh_locked(tmp, 0, detail);
- 				freeme = tmp;
- 				break;
- 			}
+-static inline const char *yesno(bool v)
+-{
+-	return v ? "yes" : "no";
+-}
+-
+-static inline const char *onoff(bool v)
+-{
+-	return v ? "on" : "off";
+-}
+-
+-static inline const char *enableddisabled(bool v)
+-{
+-	return v ? "enabled" : "disabled";
+-}
+-
+ static inline void add_taint_for_CI(unsigned int taint)
+ {
+ 	/*
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index ae6a47dd7dc9..d9123dae1d00 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -35,6 +35,7 @@
+ #include <linux/seq_file.h>
+ #include <linux/debugfs.h>
+ #include <linux/string_helpers.h>
++#include <linux/string-choice.h>
+ #include <linux/sort.h>
+ #include <linux/ctype.h>
+ 
+@@ -2023,17 +2024,6 @@ static const struct file_operations rss_debugfs_fops = {
+ /* RSS Configuration.
+  */
+ 
+-/* Small utility function to return the strings "yes" or "no" if the supplied
+- * argument is non-zero.
+- */
+-static const char *yesno(int x)
+-{
+-	static const char *yes = "yes";
+-	static const char *no = "no";
+-
+-	return x ? yes : no;
+-}
+-
+ static int rss_config_show(struct seq_file *seq, void *v)
+ {
+ 	struct adapter *adapter = seq->private;
+diff --git a/drivers/usb/core/config.c b/drivers/usb/core/config.c
+index 151a74a54386..52cee9067eb4 100644
+--- a/drivers/usb/core/config.c
++++ b/drivers/usb/core/config.c
+@@ -10,6 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/device.h>
++#include <linux/string-choice.h>
+ #include <asm/byteorder.h>
+ #include "usb.h"
+ 
+@@ -19,11 +20,6 @@
+ #define USB_MAXCONFIG			8	/* Arbitrary limit */
+ 
+ 
+-static inline const char *plural(int n)
+-{
+-	return (n == 1 ? "" : "s");
+-}
+-
+ static int find_next_descriptor(unsigned char *buffer, int size,
+     int dt1, int dt2, int *num_skipped)
+ {
+diff --git a/drivers/usb/core/generic.c b/drivers/usb/core/generic.c
+index 38f8b3e31762..a784a09794d6 100644
+--- a/drivers/usb/core/generic.c
++++ b/drivers/usb/core/generic.c
+@@ -21,14 +21,10 @@
+ 
+ #include <linux/usb.h>
+ #include <linux/usb/hcd.h>
++#include <linux/string-choice.h>
+ #include <uapi/linux/usb/audio.h>
+ #include "usb.h"
+ 
+-static inline const char *plural(int n)
+-{
+-	return (n == 1 ? "" : "s");
+-}
+-
+ static int is_rndis(struct usb_interface_descriptor *desc)
+ {
+ 	return desc->bInterfaceClass == USB_CLASS_COMM
+diff --git a/include/linux/string-choice.h b/include/linux/string-choice.h
+new file mode 100644
+index 000000000000..320b598bd8f0
+--- /dev/null
++++ b/include/linux/string-choice.h
+@@ -0,0 +1,31 @@
++/* SPDX-License-Identifier: MIT */
++/*
++ * Copyright © 2019 Intel Corporation
++ */
++
++#ifndef __STRING_CHOICE_H__
++#define __STRING_CHOICE_H__
++
++#include <linux/types.h>
++
++static inline const char *yesno(bool v)
++{
++	return v ? "yes" : "no";
++}
++
++static inline const char *onoff(bool v)
++{
++	return v ? "on" : "off";
++}
++
++static inline const char *enableddisabled(bool v)
++{
++	return v ? "enabled" : "disabled";
++}
++
++static inline const char *plural(long v)
++{
++	return v == 1 ? "" : "s";
++}
++
++#endif /* __STRING_CHOICE_H__ */
 -- 
-2.21.0
+2.20.1
 
