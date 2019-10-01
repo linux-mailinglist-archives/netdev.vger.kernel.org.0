@@ -2,117 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B89DC2D15
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 08:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43589C2D5C
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 08:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731693AbfJAGIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 02:08:17 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:37057 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727669AbfJAGIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 02:08:17 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iFBKY-0005n4-S4; Tue, 01 Oct 2019 08:08:14 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iFBKW-0006Ne-R5; Tue, 01 Oct 2019 08:08:12 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] net: phy: at803x: remove probe and struct at803x_priv
-Date:   Tue,  1 Oct 2019 08:08:11 +0200
-Message-Id: <20191001060811.24291-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191001060811.24291-1-o.rempel@pengutronix.de>
-References: <20191001060811.24291-1-o.rempel@pengutronix.de>
+        id S1732382AbfJAGST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 02:18:19 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:48030 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729457AbfJAGST (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 02:18:19 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 649CF200AC;
+        Tue,  1 Oct 2019 08:18:17 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 5Z0-dVSthMg6; Tue,  1 Oct 2019 08:18:16 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E7A9520536;
+        Tue,  1 Oct 2019 08:18:16 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 1 Oct 2019
+ 08:18:16 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 97643318002D;
+ Tue,  1 Oct 2019 08:18:16 +0200 (CEST)
+Date:   Tue, 1 Oct 2019 08:18:16 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: Re: [PATCH RFC 3/5] net: Add a netdev software feature set that
+ defaults to off.
+Message-ID: <20191001061816.GP2879@gauss3.secunet.de>
+References: <20190920044905.31759-1-steffen.klassert@secunet.com>
+ <20190920044905.31759-4-steffen.klassert@secunet.com>
+ <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
+ <20190930062427.GF2879@gauss3.secunet.de>
+ <CA+FuTScxNZKdb0FqAXjxPXY4XEhFFh+_COy0QjCfvw4phSQF3g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CA+FuTScxNZKdb0FqAXjxPXY4XEhFFh+_COy0QjCfvw4phSQF3g@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct at803x_priv is never used in this driver. So remove it
-and the probe function allocating it.
+On Mon, Sep 30, 2019 at 11:26:55AM -0400, Willem de Bruijn wrote:
+> On Mon, Sep 30, 2019 at 2:24 AM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
+> >
+> > On Mon, Sep 23, 2019 at 08:38:56AM -0400, Willem de Bruijn wrote:
+> > >
+> > > The UDP GRO benchmarks were largely positive, but not a strict win if
+> > > I read Paolo's previous results correctly. Even if enabling to by
+> > > default, it probably should come with a sysctl to disable for specific
+> > > workloads.
+> >
+> > Maybe we can just keep the default for the local input path
+> > as is and enable GRO as this:
+> >
+> > For standard UDP GRO on local input, do GRO only if a GRO enabled
+> > socket is found.
+> >
+> > If there is no local socket found and forwarding is enabled,
+> > assume forwarding and do standard GRO.
+> >
+> > If fraglist GRO is enabled, do it as default on local input and
+> > forwarding because it is explicitly configured.
+> >
+> > Would such a policy make semse?
+> 
+> Making the choice between fraglist or non-fraglist GRO explicitly
+> configurable sounds great. Per device through ethtool over global
+> sysctl, too.
+> 
+> My main concern is not this patch, but 1/5 that enables UDP GRO by
+> default. There should be a way to disable it, at least.
+> 
+> I guess your suggestion is to only enable it with forwarding, which is
+> unlikely to see a cycle regression. And if there is a latency
+> regression, disable all GRO to disable UDP GRO.
 
-Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/at803x.c | 21 ---------------------
- 1 file changed, 21 deletions(-)
+Yes, do GRO only for forwarding or if there is a GRO capable socket.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 42492f83c8d7..e64f77e152f4 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -63,10 +63,6 @@ MODULE_DESCRIPTION("Atheros 803x PHY driver");
- MODULE_AUTHOR("Matus Ujhelyi");
- MODULE_LICENSE("GPL");
- 
--struct at803x_priv {
--	bool phy_reset:1;
--};
--
- struct at803x_context {
- 	u16 bmcr;
- 	u16 advertise;
-@@ -232,20 +228,6 @@ static int at803x_resume(struct phy_device *phydev)
- 	return phy_modify(phydev, MII_BMCR, BMCR_PDOWN | BMCR_ISOLATE, 0);
- }
- 
--static int at803x_probe(struct phy_device *phydev)
--{
--	struct device *dev = &phydev->mdio.dev;
--	struct at803x_priv *priv;
--
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
--
--	phydev->priv = priv;
--
--	return 0;
--}
--
- static int at803x_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -367,7 +349,6 @@ static struct phy_driver at803x_driver[] = {
- 	/* ATHEROS 8035 */
- 	PHY_ID_MATCH_EXACT(ATH8035_PHY_ID),
- 	.name			= "Atheros 8035 ethernet",
--	.probe			= at803x_probe,
- 	.config_init		= at803x_config_init,
- 	.set_wol		= at803x_set_wol,
- 	.get_wol		= at803x_get_wol,
-@@ -380,7 +361,6 @@ static struct phy_driver at803x_driver[] = {
- 	/* ATHEROS 8030 */
- 	PHY_ID_MATCH_EXACT(ATH8030_PHY_ID),
- 	.name			= "Atheros 8030 ethernet",
--	.probe			= at803x_probe,
- 	.config_init		= at803x_config_init,
- 	.link_change_notify	= at803x_link_change_notify,
- 	.set_wol		= at803x_set_wol,
-@@ -394,7 +374,6 @@ static struct phy_driver at803x_driver[] = {
- 	/* ATHEROS 8031 */
- 	PHY_ID_MATCH_EXACT(ATH8031_PHY_ID),
- 	.name			= "Atheros 8031 ethernet",
--	.probe			= at803x_probe,
- 	.config_init		= at803x_config_init,
- 	.set_wol		= at803x_set_wol,
- 	.get_wol		= at803x_get_wol,
--- 
-2.23.0
+In this case it can be disabled only by disable all GRO.
+It might be a disadvantage, but that's how it is with other
+protocols too.
+
+> 
+> Instead, how about adding a UDP GRO ethtool feature independent of
+> forwarding, analogous to fraglist GRO? Then both are explicitly under
+> admin control. And can be enabled by default (either now, or after
+> getting more data).
+
+We could add a protocol specific feature, but what would it mean
+if UDP GRO is enabled?
+
+Would it be enabled for forwarding, and for local input only if there
+is a GRO capable socket? Or would it be enabled even if there
+is no GRO capable socket? Same question when UDP GRO is disabled.
+
+Also, what means enabling GRO then? Enable GRO for all protocols
+but UDP? Either UDP becomes something special then, or we need
+to create protocol specific features for the other protocols
+too. Same would apply for fraglist GRO.
 
