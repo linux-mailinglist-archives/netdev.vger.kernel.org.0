@@ -2,87 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9ECC3EF1
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E19C3EF3
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730617AbfJARrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 13:47:55 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45830 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725951AbfJARry (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 13:47:54 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y72so8537381pfb.12
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 10:47:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=SoOSPipuE33jULe97DufiIcM26KAvulqtCWdOasdfOc=;
-        b=Gt56L8w1v5zwU157k7mYgChNAKCLkkvgOLzG56/nYZ8pK5jDXgA0tfvBAzl4lW51oL
-         uO+NU+Y33bGvOo3xDJxVhEHTmkmLRtyl/1MK0XaqabPoExaiQmE3WtL93fkjUtqOJpbP
-         nS14jOdTR8VA2fAmxsyPy+Y9VPWTceINwAYyGx3tXbzXmCoHd6Wj4/3o192nsMY5CKRm
-         +hDIhYWw+4Zb73iaRsO4pX4wG6R1oVB3IAMaSxIvzex3svPTK5Z1CfhQtW2Yu3bSgtDn
-         TK5RRfG4856AMFq4SOAx+sFby9HihmUjJvGi8pfg5XdAFXfaH0uQV6h0Z1dmoFuvxoX9
-         UFdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SoOSPipuE33jULe97DufiIcM26KAvulqtCWdOasdfOc=;
-        b=qExFLCm7jXoXCDFurCfjoOuZ/2Mh8GO0k9hZI/jlJJM6mspoCQ/OF0qWTMLFlz122F
-         4fqE8wGcaKKhdlSZNMaptWchc7WK9Wdl315M0sS8OS9py6zWzBAwIvMH0YmBqM9oh0yH
-         Xg1cjnDRbQW0sgqLQkOxkIiQxlZ6hvm0QU4YWPLRuCH3O6fYkN9GfFd70v02dFVsPweI
-         5q4zbIzFXMTEByWBYZLjkb4QDM1n3Z/57fgBhEAR6HxPlhZrC34I2j85dBnE+oDVuenP
-         N7kfHvQvoRVLpXIycn+u0/VO2kpPTly4PnKTJ42XS4dckvJDCKz8/dND8RFIb7JhTWmp
-         t6CA==
-X-Gm-Message-State: APjAAAX+R4Qv07ogZOXRwfsk+sAGkFlT/D45Gk+Dnh+mbNoZ3mEQBN9S
-        CIKQXcrUYjp9A1vGa2HVHHbblw==
-X-Google-Smtp-Source: APXvYqyakcnmqkudv3y2xd4f1EkwDl0BTY3KUNGODhaZa8QBXhCiE73fXWyT+f7Q5kYz+rtdOTz61Q==
-X-Received: by 2002:a63:6e4c:: with SMTP id j73mr31127847pgc.452.1569952073325;
-        Tue, 01 Oct 2019 10:47:53 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id b24sm16963529pgs.15.2019.10.01.10.47.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 10:47:52 -0700 (PDT)
-Date:   Tue, 1 Oct 2019 10:47:52 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Brian Vazquez <brianvv@google.com>
-Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf 0/2] selftests/bpf: test_progs: don't leak fd in bpf
-Message-ID: <20191001174752.GA3223377@mini-arch>
-References: <20191001173728.149786-1-brianvv@google.com>
+        id S1730730AbfJARsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 13:48:07 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:57820 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728620AbfJARsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 13:48:06 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x91HXuwr054313;
+        Tue, 1 Oct 2019 17:47:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=9HzbbCzumrTnxYClqOVyxHEU1V1QW0oSv6zzOxbRfHE=;
+ b=Frzv0W9dM4h35yiRCZMpczl+OrLEXy87CmYpGBFxuRDgU9I8FE8+lwhXbdss2PTnRsny
+ 0MSeOWcs1ieS/HgV6BG76XtqSQYPr45PGaOLT08cEpHe0fODGzCXjdjlS0fSzICyUVHb
+ D3B2c5JUmFnIklL7lqH03bo+jb56BF7VEAIkh2nnNapBSqhRbksoBkUD5A3K6VESlWVo
+ G0ToAN1/hwGLvIXoa4+oM6CmrnoUldGWWU8Qz2finoMQ6yo8RKMgto3pwdMmnNsQrHxW
+ hQoJETqs4KVXuXsmVFUtIFFS1RS2zugw32Ffqcx4PFTlXboCel9TcIsFaUdh+GeuEvwJ 1w== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 2v9yfq7s77-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Oct 2019 17:47:58 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x91HYF2r150082;
+        Tue, 1 Oct 2019 17:47:57 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 2vc9dhqh2k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 01 Oct 2019 17:47:57 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x91Hlvq6191014;
+        Tue, 1 Oct 2019 17:47:57 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 2vc9dhqh24-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Oct 2019 17:47:57 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x91Hlulv003512;
+        Tue, 1 Oct 2019 17:47:56 GMT
+Received: from [10.209.227.25] (/10.209.227.25)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 01 Oct 2019 10:47:56 -0700
+Subject: Re: [PATCH net] net/rds: Fix error handling in rds_ib_add_one()
+To:     Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        rds-devel@oss.oracle.com
+Cc:     Dotan Barak <dotanb@dev.mellanox.co.il>
+References: <1569950462-37680-1-git-send-email-sudhakar.dindukurti@oracle.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <7b8bade4-fc23-6741-452a-23c36f24c57d@oracle.com>
+Date:   Tue, 1 Oct 2019 10:47:55 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191001173728.149786-1-brianvv@google.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <1569950462-37680-1-git-send-email-sudhakar.dindukurti@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910010144
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/01, Brian Vazquez wrote:
-> This patch series fixes some fd leaks in tcp_rtt and
-> test_sockopt_inherit bpf prof_tests.
-Thanks! For the series:
+On 10/1/19 10:21 AM, Sudhakar Dindukurti wrote:
+> From: Dotan Barak <dotanb@dev.mellanox.co.il>
+> 
+> rds_ibdev:ipaddr_list and rds_ibdev:conn_list are initialized
+> after allocation some resources such as protection domain.
+> If allocation of such resources fail, then these uninitialized
+> variables are accessed in rds_ib_dev_free() in failure path. This
+> can potentially crash the system. The code has been updated to
+> initialize these variables very early in the function.
+> 
+> Signed-off-by: Dotan Barak <dotanb@dev.mellanox.co.il>
+> Signed-off-by: Sudhakar Dindukurti <sudhakar.dindukurti@oracle.com>
+> ---
+Thanks Sudhakar !!
 
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
-
-> Brian Vazquez (2):
->   selftests/bpf: test_progs: don't leak server_fd in tcp_rtt
->   selftests/bpf: test_progs: don't leak server_fd in
->     test_sockopt_inherit
-> 
->  tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c | 2 +-
->  tools/testing/selftests/bpf/prog_tests/tcp_rtt.c         | 3 ++-
->  2 files changed, 3 insertions(+), 2 deletions(-)
-> 
-> -- 
-> 2.23.0.444.g18eeb5a265-goog
-> 
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
