@@ -2,101 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5F7BC2BB4
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 03:33:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DA39C2BBF
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 03:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728424AbfJABdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 21:33:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34044 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726106AbfJABdt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 21:33:49 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0570D20815;
-        Tue,  1 Oct 2019 01:33:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569893629;
-        bh=G3DThRgEYFHM4GdnYQ7LuLK4cKwARD1lQAXhF63pF1k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WfwRgqv6KArYYP2m1GFohwA3yQjEFNYH9w1vY3tA+jkO9mO41Q2usbctKLQMUtQ5c
-         tP5VdvbHxRaSJRU8OWWQPR8dW/pMU6kF01WSBDwDYUE6Dxz8QD/3EcFiavcEnpkyOV
-         /aZ/cOLe5fbPz3GrG1U1U7UIdtG7UwukqN5Cc8eg=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] ipv6: Handle race in addrconf_dad_work
-Date:   Mon, 30 Sep 2019 18:37:36 -0700
-Message-Id: <20191001013736.25119-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1727469AbfJAByd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 21:54:33 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46504 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbfJAByd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 21:54:33 -0400
+Received: by mail-pg1-f195.google.com with SMTP id a3so8466121pgm.13
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 18:54:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=rTG198avqUudOdJvNS7+5NFwmrkw4LJQyvU4/hRNwO0=;
+        b=hjMeVkCFkaC0PN0FkK+zvBmhYlMCQ5CpXtLvRqF1IdJJ809dq7vxXseZAgBst/QeKe
+         Ih02Bss6TRxpwY32PsSbiR8D0kVBlKRhZ32wb12JF6fPszx3RNcz4YK3hSg46nRNKx4Y
+         wB2LmtTNks0L3gUHiBUQ8Ynz2w5j+0QyEuAh5xyX1mk7gcAGFY2SmPWbFsuCNfy0UUXT
+         DM25ErQEX79dSiAiSV7aYlVGA6p2ouGjGArMzR0H+5wkQsiRSjHoui96ILsti+4QJbaC
+         uA01onb8r2YneN+sNvdD+UtjRWJ2ROwbLSsfRnqnVF16JJnXmA3Uleq8gb1oDcdQ+peR
+         O0HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=rTG198avqUudOdJvNS7+5NFwmrkw4LJQyvU4/hRNwO0=;
+        b=pvL6rU6i7u246TQICAsoG6/sg3HxHIZOc4lxqmVRGO8yvHH3oV7SmouLAByuIWNF1f
+         NmEOsneXelHmJkn1unrVXFVWeEZ2n3xZWZxj4IT4l+9NWzkUI9Wfc1YGK6IgFGYmZhz0
+         pHbbcX4mdFXXfy+iLxjlDX7InrUYgoB41VSA9Zrgg3Yv3y5KrhomLY1dU8LuFcquCqjT
+         zrbA1ltG/SChMZUu+WwexfLmaLlEEwKwgpSTJ9jkhXNVfxzKbFambh7SWeEWfeQRxWnR
+         qYUxqxUqy4sXUKtlUcrF8MkHzy1KPKgQU7+lGRBVXRm+jzKfyHbJtI5RkbhDgrD68A4M
+         cpFQ==
+X-Gm-Message-State: APjAAAWeyjbNA4cEW+U39m2zwRFf3vjPzVJjbRJs3yIq43iqp2pgvpxy
+        4e0IUuOx+Ys6sw2XVohG7/JPfPw0uy3Fig==
+X-Google-Smtp-Source: APXvYqwjKWUXX+usLdxmEmB2onvKfWUBTcKBmuheiowaPz/fM0DODGyExGHXNSoZG83onaB5g09MbQ==
+X-Received: by 2002:aa7:8750:: with SMTP id g16mr24357484pfo.190.1569894872170;
+        Mon, 30 Sep 2019 18:54:32 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id i74sm17943414pfe.28.2019.09.30.18.54.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Sep 2019 18:54:31 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 0/5] ionic: driver updates
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20190930214920.18764-1-snelson@pensando.io>
+ <20190930.164857.1326063600782757885.davem@davemloft.net>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <134a674a-4d66-e00b-9f74-935e7728c8f0@pensando.io>
+Date:   Mon, 30 Sep 2019 18:54:29 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20190930.164857.1326063600782757885.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
 
-Rajendra reported a kernel panic when a link was taken down:
 
-[ 6870.263084] BUG: unable to handle kernel NULL pointer dereference at 00000000000000a8
-[ 6870.271856] IP: [<ffffffff8efc5764>] __ipv6_ifa_notify+0x154/0x290
+On 9/30/19 4:48 PM, David Miller wrote:
+> From: Shannon Nelson <snelson@pensando.io>
+> Date: Mon, 30 Sep 2019 14:49:15 -0700
+>
+>> These patches are a few updates to clean up some code
+>> issues and add an ethtool feature.
+>>
+>> v2: add cover letter
+>>      edit a couple of patch descriptions for clarity and add Fixes tags
+> I agree with Jakub that Fixes: tags for cleanups really doesn't fit the
+> character and usage of Fixes:.
+>
+> Please address this and the rest of his feedback, thank you.
+Sure.  I was on the edge on those Fixes tags as well, and only added 
+them in as a last minute thought, even tho' I was only aiming these at 
+net-next.  I'll clean those up.
 
-<snip>
-
-[ 6870.570501] Call Trace:
-[ 6870.573238] [<ffffffff8efc58c6>] ? ipv6_ifa_notify+0x26/0x40
-[ 6870.579665] [<ffffffff8efc98ec>] ? addrconf_dad_completed+0x4c/0x2c0
-[ 6870.586869] [<ffffffff8efe70c6>] ? ipv6_dev_mc_inc+0x196/0x260
-[ 6870.593491] [<ffffffff8efc9c6a>] ? addrconf_dad_work+0x10a/0x430
-[ 6870.600305] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-[ 6870.606732] [<ffffffff8ea93a7a>] ? process_one_work+0x18a/0x430
-[ 6870.613449] [<ffffffff8ea93d6d>] ? worker_thread+0x4d/0x490
-[ 6870.619778] [<ffffffff8ea93d20>] ? process_one_work+0x430/0x430
-[ 6870.626495] [<ffffffff8ea99dd9>] ? kthread+0xd9/0xf0
-[ 6870.632145] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-[ 6870.638573] [<ffffffff8ea99d00>] ? kthread_park+0x60/0x60
-[ 6870.644707] [<ffffffff8f01ae77>] ? ret_from_fork+0x57/0x70
-[ 6870.650936] Code: 31 c0 31 d2 41 b9 20 00 08 02 b9 09 00 00 0
-
-addrconf_dad_work is kicked to be scheduled when a device is brought
-up. There is a race between addrcond_dad_work getting scheduled and
-taking the rtnl lock and a process taking the link down (under rtnl).
-The latter removes the host route from the inet6_addr as part of
-addrconf_ifdown which is run for NETDEV_DOWN. The former attempts
-to use the host route in ipv6_ifa_notify. If the down event removes
-the host route due to the race to the rtnl, then the BUG listed above
-occurs.
-
-This scenario does not occur when the ipv6 address is not kept
-(net.ipv6.conf.all.keep_addr_on_down = 0) as addrconf_ifdown sets the
-state of the ifp to DEAD. Handle when the addresses are kept by checking
-IF_READY which is reset by addrconf_ifdown.
-
-Fixes: f1705ec197e7 ("net: ipv6: Make address flushing on ifdown optional")
-Reported-by: Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- net/ipv6/addrconf.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 6a576ff92c39..e2759ef73b03 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4032,6 +4032,12 @@ static void addrconf_dad_work(struct work_struct *w)
- 
- 	rtnl_lock();
- 
-+	/* check if device was taken down before this delayed work
-+	 * function could be canceled
-+	 */
-+	if (!(idev->if_flags & IF_READY))
-+		goto out;
-+
- 	spin_lock_bh(&ifp->lock);
- 	if (ifp->state == INET6_IFADDR_STATE_PREDAD) {
- 		action = DAD_BEGIN;
--- 
-2.11.0
+sln
 
