@@ -2,111 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A6FC3349
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:48:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1431FC3367
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 13:55:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732669AbfJALsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 07:48:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50458 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725839AbfJALr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 07:47:59 -0400
-Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F54021920;
-        Tue,  1 Oct 2019 11:47:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569930479;
-        bh=r0AH0m7sGkMjVUf3KFX7VMraEdgm+Lq1IlONtPcyjC8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qKT1c5kbuINCo4NmwJEYNFCG226+C+QtcNBGYlU0q8w5odNJabdKUoTrpEPGc13iS
-         GhRGtGUWFMkBto3H2Df9eDTXCZRgeQMcB3XCjFR7Wg9hRZxAkMaPc4R6Rhch7Li7c3
-         Fid2KN3W6/4MOjCJAoidTWcKPQCetslX+nPGVxFU=
-Date:   Tue, 1 Oct 2019 13:47:53 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        ilias.apalodimas@linaro.org, mcroce@redhat.com
-Subject: Re: [RFC 3/4] net: mvneta: add basic XDP support
-Message-ID: <20191001114753.GB30888@localhost.localdomain>
-References: <cover.1569920973.git.lorenzo@kernel.org>
- <5119bf5e9c33205196cf0e8b6dc7cf0d69a7e6e9.1569920973.git.lorenzo@kernel.org>
- <20191001125246.0000230a@gmail.com>
- <87zhiku3lv.fsf@toke.dk>
- <20191001133048.108b056a@carbon>
+        id S1726486AbfJALzL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Oct 2019 07:55:11 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:37735 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725941AbfJALzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 07:55:10 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x91Bt7nh004267, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x91Bt7nh004267
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 1 Oct 2019 19:55:07 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0468.000; Tue, 1 Oct 2019 19:55:06 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Prashant Malani <pmalani@chromium.org>
+CC:     "grundler@chromium.org" <grundler@chromium.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [PATCH net-next] r8152: Factor out OOB link list waits
+Thread-Topic: [PATCH net-next] r8152: Factor out OOB link list waits
+Thread-Index: AQHVeDNfmaxBtpNUCEmUKe17zwc5HKdFrTkw
+Date:   Tue, 1 Oct 2019 11:55:05 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18E5B1B@RTITMBSVM03.realtek.com.tw>
+References: <20191001083556.195271-1-pmalani@chromium.org>
+In-Reply-To: <20191001083556.195271-1-pmalani@chromium.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="uQr8t48UFsdbeI+V"
-Content-Disposition: inline
-In-Reply-To: <20191001133048.108b056a@carbon>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Prashant Malani [mailto:pmalani@chromium.org]
+> Sent: Tuesday, October 01, 2019 4:36 PM
+> To: Hayes Wang
+> Cc: grundler@chromium.org; netdev@vger.kernel.org; nic_swsd; Prashant
+> Malani
+> Subject: [PATCH net-next] r8152: Factor out OOB link list waits
+> 
+> The same for-loop check for the LINK_LIST_READY bit of an OOB_CTRL
+> register is used in several places. Factor these out into a single
+> function to reduce the lines of code.
+> 
+> Change-Id: I20e8f327045a72acc0a83e2d145ae2993ab62915
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> Reviewed-by: Grant Grundler <grundler@chromium.org>
 
---uQr8t48UFsdbeI+V
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Hayes Wang <hayeswang@realtek.com>
 
-> On Tue, 01 Oct 2019 13:06:36 +0200
-> Toke H=F8iland-J=F8rgensen <toke@redhat.com> wrote:
->=20
-> > Maciej Fijalkowski <maciejromanfijalkowski@gmail.com> writes:
-> >=20
-> > > On Tue,  1 Oct 2019 11:24:43 +0200
-> > > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> > > =20
-> > >> Add basic XDP support to mvneta driver for devices that rely on soft=
-ware
-> > >> buffer management. Currently supported verdicts are:
-> > >> - XDP_DROP
-> > >> - XDP_PASS
-> > >> - XDP_REDIRECT =20
-> > >
-> > > You're supporting XDP_ABORTED as well :P any plans for XDP_TX? =20
-> >=20
-> > Wait, if you are supporting REDIRECT but not TX, that means redirect
-> > only works to other, non-mvneta, devices, right? Maybe that should be
-> > made clear in the commit message :)
->=20
-> If you implemented XDP_REDIRECT, then it should be trivial to implement
-> XDP_TX, as you can just convert the xdp_buff to xdp_frame and call your
-> ndo_xdp_xmit function directly (and do the tail-flush).
->=20
-> Or maybe you are missing a ndo_xdp_xmit function (as Toke indirectly
-> points out).
+Best Regards,
+Hayes
 
-Hi Jesper and Toke,
-
-my plan is to add XDP_TX before posting a formal series (I am working on it=
-).
-I shared this RFC series to get some comments and share the current status.
-
-Regards,
-Lorenzo
-
->=20
-> --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
-
---uQr8t48UFsdbeI+V
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXZM85wAKCRA6cBh0uS2t
-rFjPAQC+PGzPdyOYNyRDU+5v2uP0elrQEcPbW45x0NI229AY6AEAkgvMx/bMJEKL
-gV2ZEh7+KGN/zC0RGrdwXa/+fyT+9QM=
-=sIoJ
------END PGP SIGNATURE-----
-
---uQr8t48UFsdbeI+V--
