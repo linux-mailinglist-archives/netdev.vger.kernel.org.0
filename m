@@ -2,79 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54859C3035
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96D79C303F
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:32:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfJAJar convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Oct 2019 05:30:47 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44172 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725765AbfJAJar (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 05:30:47 -0400
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2ECF85945B
-        for <netdev@vger.kernel.org>; Tue,  1 Oct 2019 09:30:47 +0000 (UTC)
-Received: by mail-lj1-f200.google.com with SMTP id e3so3907265ljj.16
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 02:30:47 -0700 (PDT)
+        id S1729282AbfJAJcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 05:32:25 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34735 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729292AbfJAJcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:32:25 -0400
+Received: by mail-qt1-f196.google.com with SMTP id 3so20750556qta.1
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 02:32:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OFYZf47XM4r0xE8wHoVEHk7v0YQ69pCu6pGafD2jwco=;
+        b=iDAM+R9ANcbzIjKCTN6ZYSi+Aksa0PboAWyf4s6tXCRILXfjN3srMVk9rzXdIqonNN
+         C9tv2GNLMLTLlcZF4RTX407fQQa7EBvmm2QK21l9IcRLfczMl3ma6kDFRqqyBPouORRx
+         JZ/RhDpKYXtEX30EgeQ56tCgIuBlcbFg9y2srZkbkZX+E7tUi8PYPAYd2r/N17AWhvVG
+         s4Et//tI2AlllqkmYdaS8QVYEKC15gqaZ4bH6rNd9y/yNi15b2pDCdtRFyPfJjHI46yl
+         sGHyzAzz7QTQhSZLZoWbeNkX5FWMhPnhPPCFNgYOPGekKsGpB5/ZkIhxmOuO4a8p+QWr
+         jTJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=j4UjdwwciBVRjCwhEvj+BSlcvwlX1pGSkfY8Zt8n0ak=;
-        b=qpRnxUjd4q1SfOKa9UPZGtKTisycbDu29Yi74Vd3W7gxESJXw+MwDeCnZrPvfRQv87
-         AzzePqGb2cJIYZr9ZsgwmyfeUaAZQFEb3qwMT21KeLc32hpV68bQobS0uatj5RkA1iwI
-         vWMPGXycNQ/cgcuRM9uwkyvTv9Qlf7OCN7zgvTsH7UnyWoIRUyVhn9ObRlyB83xcPTB6
-         7+qbgeotZt+bZTNzc/tW8eR1eiMzNjTt3f3c98yKaRH/xrYKFyMQJuHqytNY05+zExql
-         z1CboAAjaqdO8JL5DuvNZpJUXQ4Ku6absNSh6US3Q8eEczv/vH4pfH9AonemSxryowIY
-         Vu3A==
-X-Gm-Message-State: APjAAAW1V+PpZFSl7bsEo5n5b+vfqgsCYMBRF6zc8aRXO3uCinjPeuB2
-        SRISWgZg9Q9eqiab/OZENduF8e0r8/9VBZH4rXvpkcG6m/3813BPPLBSGSplLx5biXOUrDWaiWD
-        hXWCBT2umbPVmhfMR
-X-Received: by 2002:a2e:890c:: with SMTP id d12mr933869lji.85.1569922245779;
-        Tue, 01 Oct 2019 02:30:45 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqz594zWJifbnKKITD9pn4eaDVgw1AJ1tMqQX6grprbSVRCgeNM8w15Ar8WKEeqBSZo2Ows0EQ==
-X-Received: by 2002:a2e:890c:: with SMTP id d12mr933864lji.85.1569922245643;
-        Tue, 01 Oct 2019 02:30:45 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id e10sm3862190ljg.38.2019.10.01.02.30.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 02:30:44 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0716718063D; Tue,  1 Oct 2019 11:30:44 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH net] net: socionext: netsec: always grab descriptor lock
-In-Reply-To: <24b0644bf4e2c1de36e774a8cd95bd39697f9b12.1569918386.git.lorenzo@kernel.org>
-References: <24b0644bf4e2c1de36e774a8cd95bd39697f9b12.1569918386.git.lorenzo@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 01 Oct 2019 11:30:43 +0200
-Message-ID: <87o8z0vmm4.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OFYZf47XM4r0xE8wHoVEHk7v0YQ69pCu6pGafD2jwco=;
+        b=iu8uCvZxvBEJg4Z0Bhd6HP3dIlVU0j+ODAoNlUFTvcZJrTljYYB5VMEBBDmimdNb1H
+         HhGt2GmWwluQ+ukJaMNUa06zjW27aBXvMU+ei5h4iEP0CKOy57JLs2pl60m0Id+fnK9Q
+         mLcRe6As3uB+hTSGudbVFiwGyXchfqRb/WycpFtT0lNANFH5k5u6/pa90vgiBPrM6abi
+         /TySf1UHYGNtBoSnmi0PPxHUqHMXaJV5t9ReKAdF1xLvF02cz3xYpylHHBhXM8JUloub
+         VjCXEuJrPiL6YfUKYabc091yxh+rItbDoIzH9/RR9nvM7Y3+4xDOI2b12LYGEJ+hYr2u
+         zrFA==
+X-Gm-Message-State: APjAAAXUFDmhHKR3E6iX2F2pfJu1LN3N/ZbDhSesEMVSWN8t64q8Mbjh
+        7OfHoCWb0v+Be/Rhs/2leLOH0rmkj3A9wK4dZ06xvQ==
+X-Google-Smtp-Source: APXvYqx/69O5IdHsZutFRVhhkJCSDgmYpJbh7WyfugO2INdJv/xpqNfiengrZJKHyEPhWEsJ/6sllro9UJLiTLagBoI=
+X-Received: by 2002:a05:6214:30d:: with SMTP id i13mr24557854qvu.101.1569922344454;
+ Tue, 01 Oct 2019 02:32:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+References: <20190911025045.20918-1-chiu@endlessm.com> <CAB4CAwcs4zn4Sg0AkFnSUE-tbkdrHE=3yYeF8g+-ak5NyPBkuQ@mail.gmail.com>
+In-Reply-To: <CAB4CAwcs4zn4Sg0AkFnSUE-tbkdrHE=3yYeF8g+-ak5NyPBkuQ@mail.gmail.com>
+From:   Chris Chiu <chiu@endlessm.com>
+Date:   Tue, 1 Oct 2019 17:32:13 +0800
+Message-ID: <CAB4CAwdO5evU8K5qjGe0rXJPmQA8gSd0tLkN6nh-EzyATU9aOw@mail.gmail.com>
+Subject: Re: [PATCH v2] rtl8xxxu: add bluetooth co-existence support for
+ single antenna
+To:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
-
-> Always acquire tx descriptor spinlock even if a xdp program is not loaded
-> on the netsec device since ndo_xdp_xmit can run concurrently with
-> netsec_netdev_start_xmit and netsec_clean_tx_dring. This can happen
-> loading a xdp program on a different device (e.g virtio-net) and
-> xdp_do_redirect_map/xdp_do_redirect_slow can redirect to netsec even if
-> we do not have a xdp program on it.
+On Thu, Sep 19, 2019 at 9:44 AM Chris Chiu <chiu@endlessm.com> wrote:
 >
-> Fixes: ba2b232108d3 ("net: netsec: add XDP support")
-> Tested-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> On Wed, Sep 11, 2019 at 10:50 AM Chris Chiu <chiu@endlessm.com> wrote:
+> >
+> >
+> > Notes:
+> >   v2:
+> >    - Add helper functions to replace bunch of tdma settings
+> >    - Reformat some lines to meet kernel coding style
+> >
+> >
+>
+Hi Jes,
+    I've refactored the code per your suggestion. Any comment for further
+improvement? Thanks.
 
-Yeah, the "must load XDP program on dest interface" pattern is not a
-good UI, so avoiding it when possible is good. Thanks for fixing this!
-
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Chris
