@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD4EC3ACD
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88822C3AF9
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729559AbfJAQkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:40:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51220 "EHLO mail.kernel.org"
+        id S1730279AbfJAQkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:40:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729530AbfJAQkE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:40:04 -0400
+        id S1730241AbfJAQko (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:40:44 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 662CA21A4C;
-        Tue,  1 Oct 2019 16:40:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D3E7421D79;
+        Tue,  1 Oct 2019 16:40:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948004;
-        bh=XUvMcZuHtDRI4BwWKfBCSDQZ3OMqlA23MkrdA8f8wb8=;
+        s=default; t=1569948043;
+        bh=8rXf1rcCw3zLras7kS4IMtEFY7Dv0pAdekM63Zo4p1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qmB4/mRsH6Li2xFef9YrMa70zcA1qjTe/GzBEkLnUvzdZwqv7EJ5jCA+XEkw2/aO+
-         1zPlvPM5Je5xQ1uz3xXEMySMsM4+G39hWsrsIhAEyeyZJ4hvrG9wNihXSWYNKDaJCH
-         0VMKzn3l0XOpQ6Js+eQdRI+VdNUG0amSTqvPuBas=
+        b=hw0rp2UpCOnwwt+y7MLvTR0/AixA8DMxxoqItXLEpo8mN62bPcckG4dLPgwngg5sa
+         fAly+fz7licAcUa4bDyQbh5j7svzd2NDiSRVgveSwisIaGynvGm/TjlFalFjfB7jxe
+         9aOf+oiI/rE7GyTrF3sYpVLYl6ejHNffhzFPlfjE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 29/71] net_sched: add max len check for TCA_KIND
-Date:   Tue,  1 Oct 2019 12:38:39 -0400
-Message-Id: <20191001163922.14735-29-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.3 50/71] selftests/bpf: adjust strobemeta loop to satisfy latest clang
+Date:   Tue,  1 Oct 2019 12:39:00 -0400
+Message-Id: <20191001163922.14735-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191001163922.14735-1-sashal@kernel.org>
 References: <20191001163922.14735-1-sashal@kernel.org>
@@ -47,42 +45,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit 62794fc4fbf52f2209dc094ea255eaef760e7d01 ]
+[ Upstream commit 4670d68b9254710fdeaf794cad54d8b2c9929e0a ]
 
-The TCA_KIND attribute is of NLA_STRING which does not check
-the NUL char. KMSAN reported an uninit-value of TCA_KIND which
-is likely caused by the lack of NUL.
+Some recent changes in latest Clang started causing the following
+warning when unrolling strobemeta test case main loop:
 
-Change it to NLA_NUL_STRING and add a max len too.
+  progs/strobemeta.h:416:2: warning: loop not unrolled: the optimizer was
+  unable to perform the requested transformation; the transformation might
+  be disabled or specified as part of an unsupported transformation
+  ordering [-Wpass-failed=transform-warning]
 
-Fixes: 8b4c3cdd9dd8 ("net: sched: Add policy validation for tc attributes")
-Reported-and-tested-by: syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+This patch simplifies loop's exit condition to depend only on constant
+max iteration number (STROBE_MAX_MAP_ENTRIES), while moving early
+termination logic inside the loop body. The changes are equivalent from
+program logic standpoint, but fixes the warning. It also appears to
+improve generated BPF code, as it fixes previously failing non-unrolled
+strobemeta test cases.
+
+Cc: Alexei Starovoitov <ast@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_api.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/progs/strobemeta.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 1047825d9f48d..81d58b2806122 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1390,7 +1390,8 @@ check_loop_fn(struct Qdisc *q, unsigned long cl, struct qdisc_walker *w)
- }
- 
- const struct nla_policy rtm_tca_policy[TCA_MAX + 1] = {
--	[TCA_KIND]		= { .type = NLA_STRING },
-+	[TCA_KIND]		= { .type = NLA_NUL_STRING,
-+				    .len = IFNAMSIZ - 1 },
- 	[TCA_RATE]		= { .type = NLA_BINARY,
- 				    .len = sizeof(struct tc_estimator) },
- 	[TCA_STAB]		= { .type = NLA_NESTED },
+diff --git a/tools/testing/selftests/bpf/progs/strobemeta.h b/tools/testing/selftests/bpf/progs/strobemeta.h
+index 8a399bdfd9203..067eb625d01c5 100644
+--- a/tools/testing/selftests/bpf/progs/strobemeta.h
++++ b/tools/testing/selftests/bpf/progs/strobemeta.h
+@@ -413,7 +413,10 @@ static __always_inline void *read_map_var(struct strobemeta_cfg *cfg,
+ #else
+ #pragma unroll
+ #endif
+-	for (int i = 0; i < STROBE_MAX_MAP_ENTRIES && i < map.cnt; ++i) {
++	for (int i = 0; i < STROBE_MAX_MAP_ENTRIES; ++i) {
++		if (i >= map.cnt)
++			break;
++
+ 		descr->key_lens[i] = 0;
+ 		len = bpf_probe_read_str(payload, STROBE_MAX_STR_LEN,
+ 					 map.entries[i].key);
 -- 
 2.20.1
 
