@@ -2,102 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C4FC398D
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 17:53:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92952C39C3
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389780AbfJAPww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 11:52:52 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:35152 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727236AbfJAPww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 11:52:52 -0400
-Received: by mail-yb1-f196.google.com with SMTP id f4so2486067ybm.2
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 08:52:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V4V5jIWn5TMskOGj1VKmy8D65TjwneLbv47G5q3wYlA=;
-        b=gDD8pfoNze5RsniU9r11QB8zd/KUJlt0Q+RcWfdBo50CKMkpUeIlky7lpimlrREF4j
-         h8jKpoTXPR5irMaFgCYtW5rWlfQwAOoS9bkbOFaTs4Lx0Rkwpj2Oep5l2PSXB/C/5NRH
-         i3cHdHfPVZMSfsqbnUyb/FOymgIjlgWjcp7GWMEs/ifqfdu9ESH1L8mLktPyum3291H5
-         zYv0sk+cLhwKhvLP7ufvg9R+y4PSwdkt7kve0IE3xzk+UUMyHhiI6oe6C1HBV/sQiifl
-         HnSM4bFQfz3SkOGT7GX1YhBE+rx2F34YtzTGl8kHKIgkceOW2Px12vaKKuh5cTkJR3N8
-         Xujw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V4V5jIWn5TMskOGj1VKmy8D65TjwneLbv47G5q3wYlA=;
-        b=dtgjO5Yk1JrlgItbIMTwJBC02kDF2G8DJ7MwvpDwIap+cfjoNRVzDfvUY/w19s2cex
-         x3XAsmEUCRk9Oz/5Km+sd+ycU1QT4M6bukleyp4yOUFTwan7bqi2yNWiLL/9EUB9XDXo
-         j8+JC0jFG66ZJl6CMxRcnNuzfV4KcF0c3SLI0vbK/ZknrOFizLHjvKzMm20c6OPkyBM9
-         Ko4p67yX7BWUYwwvWya0rIuJ9U/NW55tijUfYMExxAT1lnw8Fhuwvp61FBExWBHOtUD0
-         ZcTakjiVrKyTImOPIau1chliiZRp+vhC5Tna6dlpBq7xahobI5FTvGror792ZBX+PxTd
-         WoaA==
-X-Gm-Message-State: APjAAAUh6tekJ3IA8kO8ojT4AykNk5JpgIO0xih98cCrAXKvETY+Wq+y
-        6XFWmvA1dJR1lEeX7wtLLsUIu4IN
-X-Google-Smtp-Source: APXvYqxetlkAkuFHR4dPu0eD3bzDp1CxDY4wKFX/MPoqWLOL2wCGIyNrBfIUoee0JhnVVXC1odnaYQ==
-X-Received: by 2002:a25:34d3:: with SMTP id b202mr18569758yba.165.1569945169862;
-        Tue, 01 Oct 2019 08:52:49 -0700 (PDT)
-Received: from mail-yw1-f54.google.com (mail-yw1-f54.google.com. [209.85.161.54])
-        by smtp.gmail.com with ESMTPSA id f127sm3226619ywe.89.2019.10.01.08.52.48
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Oct 2019 08:52:48 -0700 (PDT)
-Received: by mail-yw1-f54.google.com with SMTP id r134so5002042ywg.2
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 08:52:48 -0700 (PDT)
-X-Received: by 2002:a81:9bd7:: with SMTP id s206mr18834302ywg.193.1569945168004;
- Tue, 01 Oct 2019 08:52:48 -0700 (PDT)
+        id S2389832AbfJAQBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:01:32 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:36858 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732809AbfJAQBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 12:01:32 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1iFKaa-0004tD-LK; Tue, 01 Oct 2019 18:01:24 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211 2019-10-01
+Date:   Tue,  1 Oct 2019 18:01:16 +0200
+Message-Id: <20191001160117.13628-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1569646705-10585-1-git-send-email-srirakr2@cisco.com>
- <CA+FuTSfN5=xkYUKiafM3uKF37kV6mg0Cn5WGv2QF887Pyw5A5g@mail.gmail.com> <20191001084427.73f130c0@hermes.lan>
-In-Reply-To: <20191001084427.73f130c0@hermes.lan>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 1 Oct 2019 11:52:11 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScbrrjBucQ0YvncyAFaO5DAoDywgjn8LFt2p0NVusOErg@mail.gmail.com>
-Message-ID: <CA+FuTScbrrjBucQ0YvncyAFaO5DAoDywgjn8LFt2p0NVusOErg@mail.gmail.com>
-Subject: Re: [PATCH] AF_PACKET doesnt strip VLAN information
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Sriram Krishnan <srirakr2@cisco.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 1, 2019 at 11:44 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Mon, 30 Sep 2019 11:16:14 -0400
-> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
->
-> > On Mon, Sep 30, 2019 at 1:24 AM Sriram Krishnan <srirakr2@cisco.com> wrote:
-> > >
-> > > When an application sends with AF_PACKET and places a vlan header on
-> > > the raw packet; then the AF_PACKET needs to move the tag into the skb
-> > > so that it gets processed normally through the rest of the transmit
-> > > path.
-> > >
-> > > This is particularly a problem on Hyper-V where the host only allows
-> > > vlan in the offload info.
-> >
-> > This sounds like behavior that needs to be addressed in the driver, instead?
->
-> This was what we did first, but the problem was more general.
-> For example, many filtering functions assume that vlan tag is in
-> skb meta data, not the packet data itself.
+Hi Dave,
 
-Out of curiosity, can you share an example?
+Here's a list of fixes - the BHs disabled one has been reported
+multiple times, and the SSID/MBSSID ordering one has over-the-air
+security implementations.
 
-> Therefore AF_PACKET would
-> get around any filter rules.
+Please pull and let me know if there's any problem.
 
-Packet sockets are not the only way to inject packets into the kernel.
-This probably also affects tap.
+Thanks,
+johannes
+
+
+
+The following changes since commit 68ce6688a5baefde30914fc07fc27292dbbe8320:
+
+  net: sched: taprio: Fix potential integer overflow in taprio_set_picos_per_byte (2019-09-30 18:32:20 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-davem-2019-10-01
+
+for you to fetch changes up to d8dec42b5c2d2b273bc30b0e073cfbe832d69902:
+
+  mac80211: keep BHs disabled while calling drv_tx_wake_queue() (2019-10-01 17:56:19 +0200)
+
+----------------------------------------------------------------
+A small list of fixes this time:
+ * two null pointer dereference fixes
+ * a fix for preempt-enabled/BHs-enabled (lockdep) splats
+   (that correctly pointed out a bug)
+ * a fix for multi-BSSID ordering assumptions
+ * a fix for the EDMG support, on-stack chandefs need to
+   be initialized properly (now that they're bigger)
+ * beacon (head) data from userspace should be validated
+
+----------------------------------------------------------------
+Johannes Berg (4):
+      nl80211: validate beacon head
+      cfg80211: validate SSID/MBSSID element ordering assumption
+      cfg80211: initialize on-stack chandefs
+      mac80211: keep BHs disabled while calling drv_tx_wake_queue()
+
+Miaoqing Pan (2):
+      nl80211: fix null pointer dereference
+      mac80211: fix txq null pointer dereference
+
+ net/mac80211/debugfs_netdev.c | 11 +++++++++--
+ net/mac80211/util.c           | 13 ++++++++-----
+ net/wireless/nl80211.c        | 44 ++++++++++++++++++++++++++++++++++++++++---
+ net/wireless/reg.c            |  2 +-
+ net/wireless/scan.c           |  7 ++++++-
+ net/wireless/wext-compat.c    |  2 +-
+ 6 files changed, 66 insertions(+), 13 deletions(-)
+
