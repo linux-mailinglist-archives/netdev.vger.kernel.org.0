@@ -2,89 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89914C3D77
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5A5C3DDC
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:03:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732604AbfJAQ76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:59:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52536 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730545AbfJAQlF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:41:05 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8FECF2168B;
-        Tue,  1 Oct 2019 16:41:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948064;
-        bh=lg4NZhD6aEiaPEorh6MHcLCVlbXhvN9IA9cMZA+xJcI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W5W2Jz99PPkHkl2IGDR0cf/R/2mwrc+Q9IIbfQ6SI0KDuLJBoz2VjYLWO0fUkSvzb
-         a5p5F7ODZAZ4MVAqFzhBov+MPiOsceOdvncLcYDOHmkGZVZ7rUEJxPvNq46dMfvzEz
-         6mbezP+KGxtSyBlbxxX/Bwk02fE3K25YCBV3i5EA=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thierry Reding <treding@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 61/71] net: stmmac: Fix page pool size
-Date:   Tue,  1 Oct 2019 12:39:11 -0400
-Message-Id: <20191001163922.14735-61-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191001163922.14735-1-sashal@kernel.org>
-References: <20191001163922.14735-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        id S1732552AbfJARCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 13:02:36 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:50000 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729383AbfJARCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 13:02:35 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0E4B1154ECD6A;
+        Tue,  1 Oct 2019 10:02:34 -0700 (PDT)
+Date:   Tue, 01 Oct 2019 10:02:33 -0700 (PDT)
+Message-Id: <20191001.100233.2002881947003652758.davem@davemloft.net>
+To:     wenyang@linux.alibaba.com
+Cc:     alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        xlpang@linux.alibaba.com, zhiche.yy@alibaba-inc.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mscc: ocelot: add missing of_node_put after
+ calling of_get_child_by_name
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190929065424.2437-1-wenyang@linux.alibaba.com>
+References: <20190929065424.2437-1-wenyang@linux.alibaba.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 01 Oct 2019 10:02:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Wen Yang <wenyang@linux.alibaba.com>
+Date: Sun, 29 Sep 2019 14:54:24 +0800
 
-[ Upstream commit 4f28bd956e081fc018fe9b41ffa31573f17bfb61 ]
+> of_node_put needs to be called when the device node which is got
+> from of_get_child_by_name finished using.
+> In both cases of success and failure, we need to release 'ports',
+> so clean up the code using goto.
+> 
+> fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
+> Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
 
-The size of individual pages in the page pool in given by an order. The
-order is the binary logarithm of the number of pages that make up one of
-the pages in the pool. However, the driver currently passes the number
-of pages rather than the order, so it ends up wasting quite a bit of
-memory.
-
-Fix this by taking the binary logarithm and passing that in the order
-field.
-
-Fixes: 2af6106ae949 ("net: stmmac: Introducing support for Page Pool")
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index b19ab09cb18f7..5c4408bdc843a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1532,13 +1532,15 @@ static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
- 	for (queue = 0; queue < rx_count; queue++) {
- 		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
- 		struct page_pool_params pp_params = { 0 };
-+		unsigned int num_pages;
- 
- 		rx_q->queue_index = queue;
- 		rx_q->priv_data = priv;
- 
- 		pp_params.flags = PP_FLAG_DMA_MAP;
- 		pp_params.pool_size = DMA_RX_SIZE;
--		pp_params.order = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
-+		num_pages = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
-+		pp_params.order = ilog2(num_pages);
- 		pp_params.nid = dev_to_node(priv->device);
- 		pp_params.dev = priv->device;
- 		pp_params.dma_dir = DMA_FROM_DEVICE;
--- 
-2.20.1
-
+Applied.
