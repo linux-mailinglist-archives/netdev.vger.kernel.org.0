@@ -2,92 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22986C30B1
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:54:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6FCBC30C6
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 12:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729844AbfJAJyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 05:54:20 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:34398 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729792AbfJAJyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:54:20 -0400
-Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id 665AB25BDFF;
-        Tue,  1 Oct 2019 19:54:17 +1000 (AEST)
-Received: by reginn.horms.nl (Postfix, from userid 7100)
-        id 5EC7094046A; Tue,  1 Oct 2019 11:54:15 +0200 (CEST)
-Date:   Tue, 1 Oct 2019 11:54:15 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] ipvs: speedup ipvs netns dismantle
-Message-ID: <20191001095415.fari4ntiszkbkgxr@verge.net.au>
-References: <1569560091-20553-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
- <alpine.LFD.2.21.1909302205360.2706@ja.home.ssi.bg>
+        id S1729716AbfJAJ7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 05:59:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37010 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725765AbfJAJ7R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 05:59:17 -0400
+Received: from localhost (unknown [89.205.130.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1BAED2190F;
+        Tue,  1 Oct 2019 09:59:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1569923954;
+        bh=6BQj7mEtfMmysioXhhYw2T2ycMJfZtHk5KXS+5M9J/I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gsqEsnnhnu/YvGG69TnK4g5a2xTa+FgrBXr/RiK7xIdHcSVquGY5kk5UCPw0iPfki
+         6IRV7Bm90LEpF2HwXQ4tSoA/ymTVqyAIm66I8530Ysgg8KutObDwHg80mjPMs70gDR
+         DwW9tjRLUXtLNXrmKQhvnYg1xEvyDLnKrCMVglag=
+Date:   Tue, 1 Oct 2019 11:59:11 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jani Nikula <jani.nikula@intel.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        intel-gfx@lists.freedesktop.org,
+        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [PATCH v3] string-choice: add yesno(), onoff(),
+ enableddisabled(), plural() helpers
+Message-ID: <20191001095911.GA2945944@kroah.com>
+References: <8e697984-03b5-44f3-304e-42d303724eaa@rasmusvillemoes.dk>
+ <20191001080739.18513-1-jani.nikula@intel.com>
+ <20191001093849.GA2945163@kroah.com>
+ <87blv0dcol.fsf@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LFD.2.21.1909302205360.2706@ja.home.ssi.bg>
-Organisation: Horms Solutions BV
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <87blv0dcol.fsf@intel.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 10:08:23PM +0300, Julian Anastasov wrote:
+On Tue, Oct 01, 2019 at 12:42:34PM +0300, Jani Nikula wrote:
+> On Tue, 01 Oct 2019, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> > On Tue, Oct 01, 2019 at 11:07:39AM +0300, Jani Nikula wrote:
+> >> The kernel has plenty of ternary operators to choose between constant
+> >> strings, such as condition ? "yes" : "no", as well as value == 1 ? "" :
+> >> "s":
+> >> 
+> >> $ git grep '? "yes" : "no"' | wc -l
+> >> 258
+> >> $ git grep '? "on" : "off"' | wc -l
+> >> 204
+> >> $ git grep '? "enabled" : "disabled"' | wc -l
+> >> 196
+> >> $ git grep '? "" : "s"' | wc -l
+> >> 25
+> >> 
+> >> Additionally, there are some occurences of the same in reverse order,
+> >> split to multiple lines, or otherwise not caught by the simple grep.
+> >> 
+> >> Add helpers to return the constant strings. Remove existing equivalent
+> >> and conflicting functions in i915, cxgb4, and USB core. Further
+> >> conversion can be done incrementally.
+> >> 
+> >> While the main goal here is to abstract recurring patterns, and slightly
+> >> clean up the code base by not open coding the ternary operators, there
+> >> are also some space savings to be had via better string constant
+> >> pooling.
+> >> 
+> >> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> >> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> >> Cc: intel-gfx@lists.freedesktop.org
+> >> Cc: Vishal Kulkarni <vishal@chelsio.com>
+> >> Cc: netdev@vger.kernel.org
+> >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> >> Cc: linux-usb@vger.kernel.org
+> >> Cc: Andrew Morton <akpm@linux-foundation.org>
+> >> Cc: linux-kernel@vger.kernel.org
+> >> Cc: Julia Lawall <julia.lawall@lip6.fr>
+> >> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> >> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # v1
+> >
+> > As this is a totally different version, please drop my reviewed-by as
+> > that's really not true here :(
 > 
-> 	Hello,
-> 
-> On Fri, 27 Sep 2019, Haishuang Yan wrote:
-> 
-> > Implement exit_batch() method to dismantle more ipvs netns
-> > per round.
-> > 
-> > Tested:
-> > $  cat add_del_unshare.sh
-> > #!/bin/bash
-> > 
-> > for i in `seq 1 100`
-> >     do
-> >      (for j in `seq 1 40` ; do  unshare -n ipvsadm -A -t 172.16.$i.$j:80 >/dev/null ; done) &
-> >     done
-> > wait; grep net_namespace /proc/slabinfo
-> > 
-> > Befor patch:
-> > $  time sh add_del_unshare.sh
-> > net_namespace       4020   4020   4736    6    8 : tunables    0    0    0 : slabdata    670    670      0
-> > 
-> > real    0m8.086s
-> > user    0m2.025s
-> > sys     0m36.956s
-> > 
-> > After patch:
-> > $  time sh add_del_unshare.sh
-> > net_namespace       4020   4020   4736    6    8 : tunables    0    0    0 : slabdata    670    670      0
-> > 
-> > real    0m7.623s
-> > user    0m2.003s
-> > sys     0m32.935s
-> > 
-> > Haishuang Yan (2):
-> >   ipvs: batch __ip_vs_cleanup
-> >   ipvs: batch __ip_vs_dev_cleanup
-> > 
-> >  include/net/ip_vs.h             |  2 +-
-> >  net/netfilter/ipvs/ip_vs_core.c | 47 ++++++++++++++++++++++++-----------------
-> >  net/netfilter/ipvs/ip_vs_ctl.c  | 12 ++++++++---
-> >  3 files changed, 38 insertions(+), 23 deletions(-)
-> 
-> 	Both patches in v2 look good to me, thanks!
-> 
-> Acked-by: Julian Anastasov <ja@ssi.bg>
-> 
-> 	This is for the -next kernels...
+> I did indicate it was for v1. Indeed v2 was different, but care to
+> elaborate what's wrong with v3?
 
-Thanks, applied to ipvs-next.
+No idea, but I haven't reviewed it yet, so to put my tag on there isn't
+the nicest...
+
+greg k-h
