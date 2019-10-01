@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7479FC42B2
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF48C42BC
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbfJAV2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 17:28:23 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39056 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727401AbfJAV2X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:28:23 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 4so12789555qki.6;
-        Tue, 01 Oct 2019 14:28:23 -0700 (PDT)
+        id S1727877AbfJAVbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 17:31:14 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37386 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726943AbfJAVbO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:31:14 -0400
+Received: by mail-qt1-f194.google.com with SMTP id l3so23606924qtr.4;
+        Tue, 01 Oct 2019 14:31:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=m788TzaW3lTt2qveERkXsEu3Dbp7t1XTD2e9ldYS4vg=;
-        b=dr7jH38OjXx19xmlb8OkXnxbu0239eKx/VkYdBy8WMOOFw9bAx6JnhwlI/TA9VO6jz
-         9OlM6TBURXfCTD8QWMKlZtHNB4ZzeoXKyuaZy+0DqiuJDwFhPVsHSz3zy17MIPLcvsk6
-         NgvJjalWDBKpCrNACuGCXnSOr9QyVpOfE0k6spo9I162LuCqp07gjeC/kFP4zpoCYprV
-         pmZawcwd6kxmF1qmeUtA8bR/Gu17AXiNwLcmzctgs9VdRReg3b6xHrACgGL+zQBofiqj
-         AjbcSDs5gK3murGoN3NcHIAy0xILZ4xStvAYvbQG5mrl035PdzXfFW9FZMjOxSB0heF+
-         iP7w==
+        bh=H03/7bvNNBNTOdxvTEc5izwmYBaCQnPa6PU2xDhsBpU=;
+        b=W26cn0yOFQyamHCrFN+JCYUsIp+K3+RUY+HX5hOaLVAaWHfv/M1+gzNd5TURhIhVNQ
+         Jb8QqxFtkSMq9Ah7YUSCC4HYL4oQcnpmeaYDA8cdfamNFomivcADv0Do9axibJMHtX1w
+         4u6S7BR0BnNz3/BtmAGzJ43hllSsxoo2l/4Fa1eMm8fxprdfI5LzgGur2Ov9ziQC+0QW
+         Kn+gFvcHaup0nQ72LOblCNbv4jKuIwbemrMD6FcN2G/ZUj4JTuqkbSzSFHuyxOPDd4J9
+         dIPTivkNtLpUHuFlHFznBJN3VZCBT5rkJh+BLz0IDRNRaatnbe50DcfDS9r+Y9vQjDYx
+         ukUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=m788TzaW3lTt2qveERkXsEu3Dbp7t1XTD2e9ldYS4vg=;
-        b=XFbMFXZwVNSP0IQwR10m2Z+xtPp/rhUJaE+deUl6xLFn7yO6qxNZ7kslISYUPBNecw
-         O7hofcc0JCX5mKl85XgTl0mJcFYZ2luz/bVcQTBhM2xx9SOMCy6dOsGPaP4IcuvZ/tq1
-         s5Ikwq9ecb2MvBMailyndJZ88o+3SzozKX3MOjapDmLKdyu/bePegcUejVfuKzNp5Gee
-         QCHlJr7IjGzVyXjdjeD+pLZSoolRrgiziAu3HOhDmH4jL5uuQAY+1pu73eK6fyuCcWHd
-         EY1C5fZjFic699/jsEfcElJb4aN/Xrh35WEd6GCgvsUzxUvvCudoVDTX/HIej1WPRAc9
-         coUw==
-X-Gm-Message-State: APjAAAURyaeGnOEILcKgP1+Mi7BxX8vdMflED3aF9RVeA1nHFlok6vkQ
-        /Lneb8swTKSK3rQCPTzpupfY9eTozC5vQ2AljII=
-X-Google-Smtp-Source: APXvYqzEslv0Je9r2688d8Etv/XPLQxMoAoxxX0zAzebX51PO3vnJGNjA3AFFr0/xMrZFodatiC+NbftSoDwMlCKhkk=
-X-Received: by 2002:a37:98f:: with SMTP id 137mr208661qkj.449.1569965302510;
- Tue, 01 Oct 2019 14:28:22 -0700 (PDT)
+        bh=H03/7bvNNBNTOdxvTEc5izwmYBaCQnPa6PU2xDhsBpU=;
+        b=CEX3IC3T/aZqNvl+qans9zIB1BexB9KlN8PjAbHTKqsdM74JTaYLtxh79/05UgKZ44
+         39RXxjKCaIyVIZemgk9Fz/YX12ScPJLFW9MJxDLblgSvJ4zaVkctA7zRz2/X708VDlU5
+         kuTulksphk06te5CoYoLH+sYk2bTJwIh9Sll0vEKvcSDEFkt+BNFOudIYCGKFCQz4GwE
+         OKNrozzScNGjfby/hUi3FnABoxrefHFeOb8YmRLJfcrkA+x4Urm8ICSgdBJdQCikfZ5e
+         CPD6A23AMvz7ZhW7phkWHqIwf7UDm6ymA0gg3ZZrUEfcvOj7gYFl4CV2j/FkTlFXPhn4
+         zqxA==
+X-Gm-Message-State: APjAAAU0IaPLBLoEVfSNB8pjaEGic3rPZ8/3nDnikxgUncG7+y+SMMXs
+        ExRLgSQo2W44JCndFIDLPiBMySsBNKMStjDyD/E=
+X-Google-Smtp-Source: APXvYqxafwz9gOfLJ6bIosFFj58XKKXq6uA0QG3Ap2BmwjfB2TUFj67lKMHNkU6nsVk4eyXxGh2jMO2JQsZWzA4TM4E=
+X-Received: by 2002:ac8:7401:: with SMTP id p1mr464592qtq.141.1569965473477;
+ Tue, 01 Oct 2019 14:31:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190930185855.4115372-1-andriin@fb.com> <20190930185855.4115372-3-andriin@fb.com>
- <E0A2B793-7660-481B-9ADB-6B544518865A@fb.com>
-In-Reply-To: <E0A2B793-7660-481B-9ADB-6B544518865A@fb.com>
+References: <20190930185855.4115372-1-andriin@fb.com> <20190930185855.4115372-6-andriin@fb.com>
+ <5d93a58be3b5f_85b2b0fc76de5b4e@john-XPS-13-9370.notmuch>
+In-Reply-To: <5d93a58be3b5f_85b2b0fc76de5b4e@john-XPS-13-9370.notmuch>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 1 Oct 2019 14:28:11 -0700
-Message-ID: <CAEf4BzZdjFotwX-ngjBCr+2mc4XOsYAxBe8rUBbw7mgQMMdc1w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/6] libbpf: move bpf_helpers.h, bpf_endian.h
- into libbpf
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+Date:   Tue, 1 Oct 2019 14:31:02 -0700
+Message-ID: <CAEf4BzZYLhimf+7s6oTorwFHS=+=-0OYt6Me14PQqz3_MbJRbw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/6] selftests/bpf: adjust CO-RE reloc tests for
+ new BPF_CORE_READ macro
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 1, 2019 at 2:19 PM Song Liu <songliubraving@fb.com> wrote:
+On Tue, Oct 1, 2019 at 12:14 PM John Fastabend <john.fastabend@gmail.com> wrote:
 >
->
->
-> > On Sep 30, 2019, at 11:58 AM, Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > Make bpf_helpers.h and bpf_endian.h official part of libbpf. Ensure they
-> > are installed along the other libbpf headers.
+> Andrii Nakryiko wrote:
+> > Given introduction of variadic BPF_CORE_READ with slightly different
+> > syntax and semantics, define CORE_READ, which is a thin wrapper around
+> > low-level bpf_core_read() macro, which in turn is just a wrapper around
+> > bpf_probe_read(). BPF_CORE_READ is higher-level variadic macro
+> > supporting multi-pointer reads and are tested separately.
 > >
 > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > > ---
-> > tools/lib/bpf/Makefile      |   4 +-
-> > tools/lib/bpf/bpf_endian.h  |  72 +++++
-> > tools/lib/bpf/bpf_helpers.h | 527 ++++++++++++++++++++++++++++++++++++
-> > 3 files changed, 602 insertions(+), 1 deletion(-)
-> > create mode 100644 tools/lib/bpf/bpf_endian.h
-> > create mode 100644 tools/lib/bpf/bpf_helpers.h
+> >  .../bpf/progs/test_core_reloc_arrays.c         | 10 ++++++----
+> >  .../bpf/progs/test_core_reloc_flavors.c        |  8 +++++---
+> >  .../selftests/bpf/progs/test_core_reloc_ints.c | 18 ++++++++++--------
+> >  .../bpf/progs/test_core_reloc_kernel.c         |  6 ++++--
+> >  .../selftests/bpf/progs/test_core_reloc_misc.c |  8 +++++---
+> >  .../selftests/bpf/progs/test_core_reloc_mods.c | 18 ++++++++++--------
+> >  .../bpf/progs/test_core_reloc_nesting.c        |  6 ++++--
+> >  .../bpf/progs/test_core_reloc_primitives.c     | 12 +++++++-----
+> >  .../bpf/progs/test_core_reloc_ptr_as_arr.c     |  4 +++-
+> >  9 files changed, 54 insertions(+), 36 deletions(-)
 > >
-
-[...]
-
-> > +#endif /* __BPF_ENDIAN__ */
-> > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > new file mode 100644
-> > index 000000000000..a1d9b97b8e15
-> > --- /dev/null
-> > +++ b/tools/lib/bpf/bpf_helpers.h
-> > @@ -0,0 +1,527 @@
-> > +/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-> > +#ifndef __BPF_HELPERS__
-> > +#define __BPF_HELPERS__
-> > +
-> > +#define __uint(name, val) int (*name)[val]
-> > +#define __type(name, val) val *name
 >
-> Similar to the concern with 4/6, maybe we should rename/prefix/postfix
-> these two macros?
+> Starting to get many layers of macros here but makes sense here.
 
-Those were specifically named so they are as clear and clean in user
-code as possible, it was an explicit goal. Ideally they would be
-"uint" and "type", but that's pushing it too far :)
+Yeah, a bit. I was considering to either switch to bpf_core_read()
+with explicit sizeof or making bpf_core_read() deriving sizeof(), but
+didn't because:
+
+1. wanted to keep bpf_core_read() a direct "substitute" for bpf_probe_read()
+2. figured one copy-pasted #define for each of few files is small
+enough price for much more readable tests
 
 >
-> Thanks,
-> Song
->
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+
+Thanks for review!
