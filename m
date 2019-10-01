@@ -2,133 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BEC5C3FC1
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 20:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6A8C3FEB
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 20:34:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732216AbfJASYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 14:24:06 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:43777 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731560AbfJASYG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 14:24:06 -0400
-Received: by mail-lf1-f68.google.com with SMTP id u3so10661155lfl.10;
-        Tue, 01 Oct 2019 11:24:05 -0700 (PDT)
+        id S1726182AbfJASeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 14:34:19 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38503 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725851AbfJASeT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 14:34:19 -0400
+Received: by mail-pf1-f194.google.com with SMTP id h195so8666912pfe.5
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 11:34:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xsb8X67G1dgu/8EsNnROg1igCsh1++gnvS+/mAQM0dU=;
-        b=V/FIMLaPog/lK3+LFmJucz8381bvDo5ayEdKyZgtHCDNw7ntbb/uvHcVtBZ9whSuiN
-         4NLT7UbPei21ad3LRXwWzQp1+Ax4bwIjb8IDNZtBGspToZ1ebYILzy07ZWKP0qTWpQ4E
-         hQIOrssNVxZdYNTWni+0WECaLpeEPJQ6P9KgJR1A8KhmpXQmJx13HAocjl61fQ6HI9VI
-         oXhV5DFfGXbQqJCQLGQD9YXyA3jeVIqSRNwPytThbz46vGCkQFgkT6CWvjrbNjCiKP7z
-         cm5h0/KOxUg+CPKrlDWuRRX1AVfSMMR0C5fjjnVu5mN7zMvGL9toRQcJm9pQ4zWN7BAF
-         mSUA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oS5PW+4QnzLVAvwWJ/ZARTfHIbAcu6zQYLL5Cfd0X+c=;
+        b=DKfHvNc5dvmwx+BzC8PdJnMdYttIzyqjhfpbeE/1YDPBCr+uqGHclt29bb4e2fzQPB
+         UY7mtfWB8eizlf7wwHcIFz3TxIztCqYqyCLyjdtpqGiBQ5/VHjTnpjCRe/VHLgTBGIDC
+         qK2OVydwf6RK5Yk+SrK6AhN4/+ige68KlUeLZGAEGopYHU3Jf82BlkXQB/Jy6ClyXNyW
+         mAl8To9i06UXmbdu8SmrbnFvhr9tXJPpJLXM3+VjpnJhtZpXrjEXeW5jhMcv8YbEtQyq
+         bvFMQjjV+MVfjegYk6hXszBIlBdtKSYv3Cdzw9w45fSNaX9He7zyRvfnqrjtNNHQhtMA
+         jo5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xsb8X67G1dgu/8EsNnROg1igCsh1++gnvS+/mAQM0dU=;
-        b=BlOhKQdgYYFYw2Ivt600IpdywLZ8Q7krTmEikb78V7aZRRtlrguGmlYxUYqeWkDENz
-         k8/auBALrEkc79fvTSVMgSVYCLMShBXGIOgm+TRsCNZDMFwC80C+6HxwUxRh1bdDlSZ5
-         J1fesd2o+FwDvU2zFYkvFWL++US4TM+rWAaiRYrRP5n3y2K2NtmP74fOY6wrk9TyvRX2
-         6/upCse7cPXmfmEDTNS/mQA62vKvcE67yIY4oSsGjc0K/Vroz3i2Kha4Zb2c+SWexlv+
-         WLxIQmUg2Q8OwaSdDXsSSaiBkKXu8uM/0VORIx8/yB5K7tP96OoQ4BnM6gt1UnzkgAMB
-         SDCw==
-X-Gm-Message-State: APjAAAU1O4Bk8gbos85/cIKf4KgMx6e1dv3PRF+iRZDZpLQ5qkavJJn9
-        3ZgjvqYNCbQl2CHsT2SSVtElfJMezwrSWvyKhog=
-X-Google-Smtp-Source: APXvYqy//C5+mNC2SlSAWAkfG107LouiPyJyATxU/tw4ZQCaMxuKXdE/Ray9bj9ZbDnhwVc7b6IbwwTvWSRztK4UrPk=
-X-Received: by 2002:a19:cc15:: with SMTP id c21mr15571875lfg.64.1569954244189;
- Tue, 01 Oct 2019 11:24:04 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oS5PW+4QnzLVAvwWJ/ZARTfHIbAcu6zQYLL5Cfd0X+c=;
+        b=ianu36qOYwyPJFLOqOCdMedMAEbq8vL29I0CAHM4OAXFsggtQ/BJga9o+i1tA7XfNI
+         NzsFHFKhAS5+ebFJOHUUap1KqyMgS/u3il+6UthllBhsQv5ClWVXaZKAGw4IkgWBLsIG
+         i2VtVeVMu0OSB8lOEPVk+3DpAzq3gUygj33ASJGYlihzqwwyli+JSg/4zBZy189wy8OM
+         bhOzVYyTLGCJ4o6UrsFZQzfCcVaYUH8DwY7cQIOQq/jlpdZ9tlc++7EMba0KTkNNJ483
+         Os+hCRklYty6qZjq5aQvJ4n+XH1NI88G82eNpxC3ic2iS8Nayffpfg5YQH6WEHJ9NfC4
+         3KYw==
+X-Gm-Message-State: APjAAAUGRTkYa4IWYCxfxnBu6SxIJW8Ox5T9aKoGmj2Tu0jrlzPzZb7/
+        uc5UP2vsmvA72FP4YfU7OpCeIdML
+X-Google-Smtp-Source: APXvYqzhQt3cSfpcT8X6r3zR2sAEZBjLs1gtaRpPmmXXhNjeD7g8VI0+VDyucU6fzBgiohWoLST1lw==
+X-Received: by 2002:aa7:858c:: with SMTP id w12mr29580788pfn.113.1569954858082;
+        Tue, 01 Oct 2019 11:34:18 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id f74sm20499901pfa.34.2019.10.01.11.34.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Oct 2019 11:34:17 -0700 (PDT)
+Subject: Re: BUG: sk_backlog.len can overestimate
+To:     John Ousterhout <ouster@cs.stanford.edu>
+Cc:     netdev@vger.kernel.org
+References: <CAGXJAmwQw1ohc48NfAvMyNDpDgHGkdVO89Jo8B0j0TuMr7wLpA@mail.gmail.com>
+ <CAGXJAmz5izfnamHA3Y_hU-AT1CX5K2MN=6BPjRXXcTCWvPeWng@mail.gmail.com>
+ <01ac3ff4-4c06-7a6c-13fc-29ca9ed3ad88@gmail.com>
+ <CAGXJAmxmJ-Vm379N4nbjXeQCAgY9ur53wmr0HZy23dQ_t++r-Q@mail.gmail.com>
+ <f4520c32-3133-fb3b-034e-d492d40eb066@gmail.com>
+ <CAGXJAmygtKtt18nKV6qRCKXfO93DoK4C2Gv_RaMuahsZG3TS6A@mail.gmail.com>
+ <c5886aed-8448-fe62-b2a3-4ae8fe23e2a6@gmail.com>
+ <CAGXJAmzHvKzKb1wzxtZK_KCu-pEQghznM4qmfzYmWeWR1CaJ7Q@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <47fef079-635d-483e-b530-943b2a55fc22@gmail.com>
+Date:   Tue, 1 Oct 2019 11:34:16 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190928164843.31800-1-ap420073@gmail.com> <20190928164843.31800-2-ap420073@gmail.com>
- <d1b5d944fef2a2d5875a0f12f3cdc490586da475.camel@sipsolutions.net>
- <CAMArcTUgcPv+kg5rhw0i2iwX-CiD00v3ZCvw0b_Q0jb_-eo=UQ@mail.gmail.com>
- <39e879f59ad3b219901839d1511fc96886bf94fb.camel@sipsolutions.net>
- <CAMArcTW6q=ga1juv_Qp-dKwRwxneAEsX4xQxN-n19oWM-VUQ+w@mail.gmail.com> <9bbf73e318df17d179014937cb6c1335fb303611.camel@sipsolutions.net>
-In-Reply-To: <9bbf73e318df17d179014937cb6c1335fb303611.camel@sipsolutions.net>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Wed, 2 Oct 2019 03:23:52 +0900
-Message-ID: <CAMArcTX7RLaqxYXMfKbC5Kw0JdXauwaxRQGxh=bZqqYafYAPLQ@mail.gmail.com>
-Subject: Re: [PATCH net v4 01/12] net: core: limit nested device depth
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        j.vosburgh@gmail.com, vfalico@gmail.com,
-        Andy Gospodarek <andy@greyhouse.net>,
-        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
-        sd@queasysnail.net, Roopa Prabhu <roopa@cumulusnetworks.com>,
-        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
-        kys@microsoft.com, haiyangz@microsoft.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
-        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Cody Schuffelen <schuffelen@google.com>, bjorn@mork.no
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAGXJAmzHvKzKb1wzxtZK_KCu-pEQghznM4qmfzYmWeWR1CaJ7Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Oct 2019 at 22:57, Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> Hi,
->
 
-Hi!
 
-> (jumping out now, forgive me for being so brief)
->
-> > If I understand correctly, you said about the alignment of
-> > "lower_level" and "upper_level".
-> > I thought this place is a fine position for variables as regards the
-> > alignment and I didn't try to put each variable in different places.
-> >
-> > If I misunderstood your mention, please let me know.
->
-> Not sure what you mean, alignment doesn't matter for them (they're u8).
->
-> I was thinking of the packing for the overall struct, we have:
->
->         unsigned int            max_mtu;
->         unsigned short          type;
->         unsigned short          hard_header_len;
->         unsigned char           min_header_len;
->
-> +       unsigned char           upper_level, lower_level;
->
->         unsigned short          needed_headroom;
->         unsigned short          needed_tailroom;
->
->
-> Previously, there was a one byte hole at that spot due to a single
-> "unsigned char" (after something aligned at least 4 bytes) followed by
-> "unsigned short" - now you push that out a bit.
->
-> If you place the variables a bit lower, below "name_assign_type", you
-> probably fill a hole instead.
->
-> Check out the 'pahole' tool.
->
+On 10/1/19 10:25 AM, John Ousterhout wrote:
+> On Tue, Oct 1, 2019 at 9:19 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>> ...
+>> Sorry, I have no idea what is the problem you see.
+> 
+> OK, let me try again from the start. Consider two values:
+> * sk->sk_backlog.len
+> * The actual number of bytes in buffers in the current backlog list
+> 
+> Now consider a series of propositions:
+> 
+> 1. These two are not always the same. As packets get processed by
+> calling sk_backlog_rcv, they are removed from the backlog list, so the
+> actual amount of memory consumed by the backlog list drops. However,
+> sk->sk_backlog.len doesn't change until the entire backlog is cleared,
+> at which point it is reset to zero. So, there can be periods of time
+> where sk->sk_backlog.len overstates the actual memory consumption of
+> the backlog.
 
-Thank you for the detailed explanation.
-I tested the pahole and found holes.
+Yes, this is done on purpose (and documented in __release_sock()
 
-$ pahole ./vmlinux.o -C net_device
-        unsigned char              addr_assign_type;     /*   598     1 */
-        unsigned char              addr_len;             /*   599     1 */
-        short unsigned int         neigh_priv_len;       /*   600     2 */
-        short unsigned int         dev_id;               /*   602     2 */
-        short unsigned int         dev_port;             /*   604     2 */
+Otherwise you could have a livelock situation, with user thread being
+trapped forever in system, and never return to user land.
 
-        /* XXX 2 bytes hole, try to pack */
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8eae939f1400326b06d0c9afe53d2a484a326871
 
-I will place the variables here.
 
-> johannes
->
+> 
+> 2. The gap between sk->sk_backlog.len and actual backlog size can grow
+> quite large. This happens if new packets arrive while sk_backlog_rcv
+> is working. The socket is locked, so these new packets will be added
+> to the backlog, which will increase sk->sk_backlog_len. Under high
+> load, this could continue indefinitely: packets keep arriving, so the
+> backlog never empties, so sk->sk_backlog_len never gets reset.
+> However, packets are actually being processed from the backlog, so
+> it's possible that the actual size of the backlog isn't changing, yet
+> sk->sk_backlog.len continues to grow.
+> 
+> 3. Eventually, the growth in sk->sk_backlog.len will be limited by the
+> "limit" argument to sk_add_backlog. When this happens, packets will be
+> dropped.
 
-Thank you so much!
-Taehee
+_Exactly_ WAI
+
+> 
+> 4. Now suppose I pass a value of 1000000 as the limit to
+> sk_add_backlog. It's possible that sk_add_backlog will reject my
+> request even though the backlog only contains a total of 10000 bytes.
+> The other 990000 bytes were present on the backlog at one time (though
+> not necessarily all at the same time), but they have been processed
+> and removed; __release_sock hasn't gotten around to updating
+> sk->sk_backlog.len, because it hasn't been able to completely clear
+> the backlog.
+
+WAI
+
+> 
+> 5. Bottom line: under high load, a socket can be forced to drop
+> packets even though it never actually exceeded its memory budget. This
+> isn't a case of a sender trying to fool us; we fooled ourselves,
+> because of the delay in resetting sk->sk_backlog.len.
+> 
+> Does this make sense?
+
+Yes, just increase your socket limits. setsockopt(...  SO_RCVBUF ...),
+and risk user threads having bigger socket syscall latencies, obviously.
+
+> 
+> By the way, I have actually observed this phenomenon in an
+> implementation of the Homa transport protocol.
+> 
+
+Maybe this transport protocol should size correctly its sockets limits :)
