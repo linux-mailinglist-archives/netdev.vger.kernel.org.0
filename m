@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2A4BC3EBF
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E03C3EC0
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 19:38:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731083AbfJARhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 13:37:46 -0400
-Received: from mail-pl1-f201.google.com ([209.85.214.201]:53955 "EHLO
-        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731050AbfJARhq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 13:37:46 -0400
-Received: by mail-pl1-f201.google.com with SMTP id g13so7655537plq.20
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 10:37:44 -0700 (PDT)
+        id S1731199AbfJARhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 13:37:52 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:57293 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731156AbfJARhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 13:37:52 -0400
+Received: by mail-pf1-f201.google.com with SMTP id b17so10537801pfo.23
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 10:37:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=3+w4QsZSJoLh853gBsFQX1yVGVE86OfZ0POYrmn9pHU=;
-        b=EKLc4BdVvrOA881KZYHEn6ikBQGKo5TVuNhmnxKpZVyWpOn45UQ6LoQyiOxOx7L3hC
-         mS3/3bAje8xM3gD1wCAsNpKY5mjWKNa/VF3Qz1Bo8Ds0b7JImYv9gPI1wlbKmTMvRO+D
-         ZOOOMgU9Oxd/GpCEXArPBkf0RpH8/sef+NwED+gM8hTMZjtfLkPqU+AJ5jK6GwGQlksn
-         2GoKJ8aD5hc1j3KTNEpy8xco2s657h+8msI8UttOH5kixwSEtJongK3rMLvzD7Bi2Hv1
-         UKNLkTc9jNHtufNJdVoQbvS/KncrjsHzpTe/cFiSCYGEtTsz7GXG1ktsrtxbWC6kIT/8
-         mAzA==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=N9RFaaUyKsxWingVv0Hbs7K3osgkOr8SsFI9Tp5Z20k=;
+        b=pkUaCWUsUNn5GOGIGsw9ewd3WuO5fY7ACvpKIOrqGyJIGOpRMoiSevDRoraYlU3g1E
+         MRQok2xDgzcgI/rR/T5km2Yh4E9uF2eul+yE6YGP9ayIfhNL40yFgBmiJU0Vre7wkx/m
+         J8bSPFKjN3JqL5FJ2V7Iqq7fL1qCfDYM6rXNgdNXU5/uekhj5e/DizKb7wzQtZhqvjgP
+         +iRdatoeZwIjcN5DI5ClBFP7tc6oCcFI1Pws3TfQ3tBJEvM6iWD3qeWJCoMRUvSj2aqC
+         Y1WKkR8aHva576d8/Yuys12+opTnZ4IJSPGffybI3W7ot7aQoZFS0AYOq1b73DtAPkVQ
+         f+ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=3+w4QsZSJoLh853gBsFQX1yVGVE86OfZ0POYrmn9pHU=;
-        b=SyyY8jg7DVt+HywmlRFzSZNFBMKhrvgg6qxkrB4vzC+mQYFxFabYfkd8aqT0dUAr1m
-         lYXvrLvQb/gRMpQz2vA/Zx9xeYDRoJT6uutOoZ/yGlzUV4tjVgmcoR9M/R1tuFQTUEE/
-         19lFpJlHGVFT/H76rDZ3rZJXzGFRGok8ovsl1JCVcbGZVMUcZuUcI7UoNhD8in3K34VW
-         MU5nWsrt/yTBO6R6fPg+o+MOGL+6N0z/mX5H9vQbtTJSZs/FENW+ztRMEUUxlMevdAYd
-         k2gHvGP7u7QKc2+eaG/ActhCpSih7194oX4/DUsSD4lOI/tw+C3We5XqvceLFI7q00hj
-         +RMw==
-X-Gm-Message-State: APjAAAW2+P1eqPmaUN8xk+v1XuvVCYJozCRvocYOkLRuwKlrIdGAarD/
-        OOXvqJGMNLpxyy3ISvivZF+lfa2ChD38
-X-Google-Smtp-Source: APXvYqzh7leVxFKHdDQPmZYu3Us5x9qMqvVeWemq0AVPn1urC7cQbYSuTPtSo0OyKCw3z1h198Q2hecUAQG9
-X-Received: by 2002:a63:4924:: with SMTP id w36mr15608050pga.113.1569951463622;
- Tue, 01 Oct 2019 10:37:43 -0700 (PDT)
-Date:   Tue,  1 Oct 2019 10:37:26 -0700
-Message-Id: <20191001173728.149786-1-brianvv@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=N9RFaaUyKsxWingVv0Hbs7K3osgkOr8SsFI9Tp5Z20k=;
+        b=GjpWHNa2J5tyJBvB8czEGeUTYYJak6r9wznuPBUBcb7UmEE3fWISyljL+6UIWDdwn/
+         xTLtYMMfd6eEAgVCuMIwQiV5+XehcrHvAFIgP+LhitlggjGeAmNqNWB/5wpkDREWFlNp
+         G1G9sYmZ8n/BUbcm6ovXWv2U0ht7J57agvX2sakQjwz3kYG2G4jVzH5dpfj9awVpc9DS
+         D0aKQaJxtqOnkPwwL8PijdmKyI0oUtpKY3Ar1Fy6J4OqsTptQ5rYR5l8v9DDXTqdNEab
+         GXJ8QQnH4PvS2Lxdur7WXORP22lCUzbH32Z+SNNIQMaYCZhjsadnWhCoZNSxKyUWTlGr
+         RabA==
+X-Gm-Message-State: APjAAAX0F21HHWtPSauNm2vQj7rHvyfJ4I8KTjGYFo35WP48gAUxW/nq
+        YlTLm2HwZWGwu9o7s3drcvWBPbPgunlM
+X-Google-Smtp-Source: APXvYqzVpPUbmcD+5G95ld1l74Kl0q1JKw4guiKi0Cn9su/VfVfZUXHpnnxGewNd71ggaNYtdoEFjanI20ey
+X-Received: by 2002:a63:d30f:: with SMTP id b15mr30940913pgg.341.1569951470992;
+ Tue, 01 Oct 2019 10:37:50 -0700 (PDT)
+Date:   Tue,  1 Oct 2019 10:37:27 -0700
+In-Reply-To: <20191001173728.149786-1-brianvv@google.com>
+Message-Id: <20191001173728.149786-2-brianvv@google.com>
 Mime-Version: 1.0
+References: <20191001173728.149786-1-brianvv@google.com>
 X-Mailer: git-send-email 2.23.0.444.g18eeb5a265-goog
-Subject: [PATCH bpf 0/2] selftests/bpf: test_progs: don't leak fd in bpf
+Subject: [PATCH bpf 1/2] selftests/bpf: test_progs: don't leak server_fd in tcp_rtt
 From:   Brian Vazquez <brianvv@google.com>
 To:     Brian Vazquez <brianvv.kernel@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -57,18 +61,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series fixes some fd leaks in tcp_rtt and
-test_sockopt_inherit bpf prof_tests.
+server_fd needs to be closed if pthread can't be created.
 
-Brian Vazquez (2):
-  selftests/bpf: test_progs: don't leak server_fd in tcp_rtt
-  selftests/bpf: test_progs: don't leak server_fd in
-    test_sockopt_inherit
+Fixes: 8a03222f508b ("selftests/bpf: test_progs: fix client/server race
+in tcp_rtt")
+Cc: Stanislav Fomichev <sdf@google.com>
 
- tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c | 2 +-
- tools/testing/selftests/bpf/prog_tests/tcp_rtt.c         | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+Signed-off-by: Brian Vazquez <brianvv@google.com>
+---
+ tools/testing/selftests/bpf/prog_tests/tcp_rtt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
+index a82da555b1b02..f4cd60d6fba2e 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
++++ b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
+@@ -260,13 +260,14 @@ void test_tcp_rtt(void)
+ 
+ 	if (CHECK_FAIL(pthread_create(&tid, NULL, server_thread,
+ 				      (void *)&server_fd)))
+-		goto close_cgroup_fd;
++		goto close_server_fd;
+ 
+ 	pthread_mutex_lock(&server_started_mtx);
+ 	pthread_cond_wait(&server_started, &server_started_mtx);
+ 	pthread_mutex_unlock(&server_started_mtx);
+ 
+ 	CHECK_FAIL(run_test(cgroup_fd, server_fd));
++close_server_fd:
+ 	close(server_fd);
+ close_cgroup_fd:
+ 	close(cgroup_fd);
 -- 
 2.23.0.444.g18eeb5a265-goog
 
