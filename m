@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF48C42BC
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9093FC42D7
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:41:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727877AbfJAVbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 17:31:14 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:37386 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726943AbfJAVbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:31:14 -0400
-Received: by mail-qt1-f194.google.com with SMTP id l3so23606924qtr.4;
-        Tue, 01 Oct 2019 14:31:14 -0700 (PDT)
+        id S1727602AbfJAVl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 17:41:56 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38575 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726326AbfJAVl4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:41:56 -0400
+Received: by mail-qt1-f193.google.com with SMTP id j31so23645409qta.5;
+        Tue, 01 Oct 2019 14:41:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H03/7bvNNBNTOdxvTEc5izwmYBaCQnPa6PU2xDhsBpU=;
-        b=W26cn0yOFQyamHCrFN+JCYUsIp+K3+RUY+HX5hOaLVAaWHfv/M1+gzNd5TURhIhVNQ
-         Jb8QqxFtkSMq9Ah7YUSCC4HYL4oQcnpmeaYDA8cdfamNFomivcADv0Do9axibJMHtX1w
-         4u6S7BR0BnNz3/BtmAGzJ43hllSsxoo2l/4Fa1eMm8fxprdfI5LzgGur2Ov9ziQC+0QW
-         Kn+gFvcHaup0nQ72LOblCNbv4jKuIwbemrMD6FcN2G/ZUj4JTuqkbSzSFHuyxOPDd4J9
-         dIPTivkNtLpUHuFlHFznBJN3VZCBT5rkJh+BLz0IDRNRaatnbe50DcfDS9r+Y9vQjDYx
-         ukUw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dCGK32JDvXA2yj00yZHhKu501jn4soQW983UquahcWs=;
+        b=EaAVSHgUIGh2Mk7dZnRNzfu+HlQryucOTaF2TcBEI8nr64mFjzpjHgIiHDyDSaVpJE
+         0yVhW1PTAW7AoY312AqE2q2RjYlX4xWT4gy9uPIQWzSe3VVcq/a7mcsNzT8/DKz1S1Ph
+         BQFWue6663UjLERt4Wl0a6cwD44AmJj5cJfLLLZEn5pTVsO1qYSdaY0W2UpbchZfHsxL
+         K+OYgFd23p1U0jsTZbrjH8JM+UaLXWsP8aLNm/6JnV8u6g0lAHxw9uFRlEeWJGC5LgWK
+         0Bvgse12vKm4XkRWCzaOWCyvWpL+ajFw9N8grDCjZngERiXt8NVlT9j4gQmX3EmgW4a8
+         qISw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H03/7bvNNBNTOdxvTEc5izwmYBaCQnPa6PU2xDhsBpU=;
-        b=CEX3IC3T/aZqNvl+qans9zIB1BexB9KlN8PjAbHTKqsdM74JTaYLtxh79/05UgKZ44
-         39RXxjKCaIyVIZemgk9Fz/YX12ScPJLFW9MJxDLblgSvJ4zaVkctA7zRz2/X708VDlU5
-         kuTulksphk06te5CoYoLH+sYk2bTJwIh9Sll0vEKvcSDEFkt+BNFOudIYCGKFCQz4GwE
-         OKNrozzScNGjfby/hUi3FnABoxrefHFeOb8YmRLJfcrkA+x4Urm8ICSgdBJdQCikfZ5e
-         CPD6A23AMvz7ZhW7phkWHqIwf7UDm6ymA0gg3ZZrUEfcvOj7gYFl4CV2j/FkTlFXPhn4
-         zqxA==
-X-Gm-Message-State: APjAAAU0IaPLBLoEVfSNB8pjaEGic3rPZ8/3nDnikxgUncG7+y+SMMXs
-        ExRLgSQo2W44JCndFIDLPiBMySsBNKMStjDyD/E=
-X-Google-Smtp-Source: APXvYqxafwz9gOfLJ6bIosFFj58XKKXq6uA0QG3Ap2BmwjfB2TUFj67lKMHNkU6nsVk4eyXxGh2jMO2JQsZWzA4TM4E=
-X-Received: by 2002:ac8:7401:: with SMTP id p1mr464592qtq.141.1569965473477;
- Tue, 01 Oct 2019 14:31:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dCGK32JDvXA2yj00yZHhKu501jn4soQW983UquahcWs=;
+        b=NhDi2X/icYh23pnMawhBZaR1xwZnmf9pOBv42fcany6vtXW1HtunRJi2jiaUyGQOdM
+         pzUl7t7FHfYZUjuTXJXNQPxu6FXDDxiJyfkp6GZR/vcrBad9tBxDOG1zl/1qAKlpYqjK
+         eNjUh+pdyLFEcH2gWZ9rAzVQicdGJJaxcyVU47hFmSbok8ssO2CiZEYOxVsv0aNOPcLr
+         YxjFPsXejWhKO9LzpZa6uXDJ6sRIjf4onPhvB+qnBTcHQGbbfRmIB3PJ3SbyC8xFCMQK
+         4b/fdW4Hh35hHKYJXWXNVf3hsUPfS+W18FWHA2F/NHwhdGEP9xUkGT4lxOhY2MG6Cu5I
+         DJ8g==
+X-Gm-Message-State: APjAAAXg4lsc3Imp8sWlMOSHmf1LVmvNOSvIQs3vKb2q+w4GMJPUwBv4
+        4b1MwJAXMqRig5nTll3HYbcprb5KlzY=
+X-Google-Smtp-Source: APXvYqzOalIG3aemcA/pxsyEgX2V5YzGcFA39kbvsRze7kjU2d6wGj/KEqGE1w2ZilgwOk4GTFiPbw==
+X-Received: by 2002:ac8:41c1:: with SMTP id o1mr491952qtm.341.1569966115146;
+        Tue, 01 Oct 2019 14:41:55 -0700 (PDT)
+Received: from ebpf00.byteswizards.com ([190.162.109.190])
+        by smtp.googlemail.com with ESMTPSA id v13sm8559352qtp.61.2019.10.01.14.41.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Oct 2019 14:41:54 -0700 (PDT)
+From:   Carlos Neira <cneirabustos@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
+        bpf@vger.kernel.org, cneirabustos@gmail.com
+Subject: [PATCH V12 0/4] BPF: New helper to obtain namespace data from current task 
+Date:   Tue,  1 Oct 2019 18:41:37 -0300
+Message-Id: <20191001214141.6294-1-cneirabustos@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190930185855.4115372-1-andriin@fb.com> <20190930185855.4115372-6-andriin@fb.com>
- <5d93a58be3b5f_85b2b0fc76de5b4e@john-XPS-13-9370.notmuch>
-In-Reply-To: <5d93a58be3b5f_85b2b0fc76de5b4e@john-XPS-13-9370.notmuch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 1 Oct 2019 14:31:02 -0700
-Message-ID: <CAEf4BzZYLhimf+7s6oTorwFHS=+=-0OYt6Me14PQqz3_MbJRbw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/6] selftests/bpf: adjust CO-RE reloc tests for
- new BPF_CORE_READ macro
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 1, 2019 at 12:14 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Andrii Nakryiko wrote:
-> > Given introduction of variadic BPF_CORE_READ with slightly different
-> > syntax and semantics, define CORE_READ, which is a thin wrapper around
-> > low-level bpf_core_read() macro, which in turn is just a wrapper around
-> > bpf_probe_read(). BPF_CORE_READ is higher-level variadic macro
-> > supporting multi-pointer reads and are tested separately.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  .../bpf/progs/test_core_reloc_arrays.c         | 10 ++++++----
-> >  .../bpf/progs/test_core_reloc_flavors.c        |  8 +++++---
-> >  .../selftests/bpf/progs/test_core_reloc_ints.c | 18 ++++++++++--------
-> >  .../bpf/progs/test_core_reloc_kernel.c         |  6 ++++--
-> >  .../selftests/bpf/progs/test_core_reloc_misc.c |  8 +++++---
-> >  .../selftests/bpf/progs/test_core_reloc_mods.c | 18 ++++++++++--------
-> >  .../bpf/progs/test_core_reloc_nesting.c        |  6 ++++--
-> >  .../bpf/progs/test_core_reloc_primitives.c     | 12 +++++++-----
-> >  .../bpf/progs/test_core_reloc_ptr_as_arr.c     |  4 +++-
-> >  9 files changed, 54 insertions(+), 36 deletions(-)
-> >
->
-> Starting to get many layers of macros here but makes sense here.
+Currently bpf_get_current_pid_tgid(), is used to do pid filtering in bcc's
+scripts but this helper returns the pid as seen by the root namespace which is
+fine when a bcc script is not executed inside a container.
+When the process of interest is inside a container, pid filtering will not work
+if bpf_get_current_pid_tgid() is used.
+This helper addresses this limitation returning the pid as it's seen by the current
+namespace where the script is executing.
 
-Yeah, a bit. I was considering to either switch to bpf_core_read()
-with explicit sizeof or making bpf_core_read() deriving sizeof(), but
-didn't because:
+In the future different pid_ns files may belong to different devices, according to the
+discussion between Eric Biederman and Yonghong in 2017 Linux plumbers conference.
+To address that situation the helper requires inum and dev_t from /proc/self/ns/pid.
+This helper has the same use cases as bpf_get_current_pid_tgid() as it can be
+used to do pid filtering even inside a container.
 
-1. wanted to keep bpf_core_read() a direct "substitute" for bpf_probe_read()
-2. figured one copy-pasted #define for each of few files is small
-enough price for much more readable tests
+Changes from V11:
 
->
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
+- helper: Input changed dev from u32 to u64.
+- Moved self-test to test_progs.
+- Remove unneeded maps in self-test.
 
-Thanks for review!
+Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+
+Carlos Neira (4):
+  fs/nsfs.c: added ns_match
+  bpf: added new helper bpf_get_ns_current_pid_tgid
+  tools: Added bpf_get_ns_current_pid_tgid helper
+  tools/testing/selftests/bpf: Add self-tests for new helper.
+
+ fs/nsfs.c                                     |  8 ++
+ include/linux/bpf.h                           |  1 +
+ include/linux/proc_ns.h                       |  2 +
+ include/uapi/linux/bpf.h                      | 18 +++-
+ kernel/bpf/core.c                             |  1 +
+ kernel/bpf/helpers.c                          | 36 ++++++++
+ kernel/trace/bpf_trace.c                      |  2 +
+ tools/include/uapi/linux/bpf.h                | 18 +++-
+ tools/testing/selftests/bpf/bpf_helpers.h     |  3 +
+ .../bpf/prog_tests/get_ns_current_pid_tgid.c  | 85 +++++++++++++++++++
+ .../bpf/progs/get_ns_current_pid_tgid_kern.c  | 47 ++++++++++
+ 11 files changed, 219 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
+ create mode 100644 tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
+
+-- 
+2.20.1
+
