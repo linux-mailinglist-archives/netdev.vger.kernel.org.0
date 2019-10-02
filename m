@@ -2,125 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12B00C90B6
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 20:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D9DDC90C1
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 20:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728861AbfJBSVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 14:21:22 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35372 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728773AbfJBSVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 14:21:22 -0400
-Received: by mail-wm1-f66.google.com with SMTP id y21so7961598wmi.0
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 11:21:20 -0700 (PDT)
+        id S1728926AbfJBSXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 14:23:10 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33909 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728806AbfJBSXI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 14:23:08 -0400
+Received: by mail-wm1-f67.google.com with SMTP id y135so5522133wmc.1;
+        Wed, 02 Oct 2019 11:23:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZcdhzacrDgvQn7XlMkm7i106xpcGRQuSmJrk/gGOHHM=;
-        b=2MfTiqdwShY24hzqb0nqK7lx+6fl46Dyc400N7K9H+I8w04k9YIveiB5Kipcxldfv7
-         nKtbKReGcpLnhXP+tC6lkhDmFnOK/LTyp4tCj0BAumEvi6DxvTLQL/pSIyqQ6xcecRKQ
-         ExzJrTeZJ4tCuiI1EnfPM8OpHvmOrJonTKhWCD/Yp/s/ZK5Tpq8jft+HXg8h+7Xvjh0F
-         gRnvAw4FgsDappCXS80d13CbR89raDfmGm7BwfSPajYAmohznga+RMWpLaUqjgtf9TTm
-         9Zzy0lcdTOaRhWpD7Yi0i2yfy7kSDCqC070H/WtypeVIhJ03aPtpF4/Uj/i7SbGrmlGd
-         THjw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FSUCt1LD5y9mlrWBYl2U48Y4AhIXh+tutDGzQFeAW+A=;
+        b=ABuZrmyFf6KFypYuZVS8OSgVfdTPFLiU97l3+pQOZ6fvOIYqo1SW3D17JEjpG3YIwq
+         mOLqb+1ldVk9PqFmSVRfCdmFRS79FSu2L8tK8WkVpXTFR8Rg2AmGtOrqeVjGjCS9opRZ
+         ztvO+UvlhINYZdD9T8lEEDYP3TIq+lVQphygG+AhsadTdi9lvyE8Ms7iXm+Ta/tU1/z0
+         lloa1ZO3bfhvY+R/Bboo/Gf9HG5+tAsP0/iIdybf55NXpi8kkdVBWdLAYHxqL08iP9RB
+         v84FU4cESSWXn7KAtT2tytrpJrLZsNTCxKY++xlfdebbkOp6+Mlhuasb3pAKj17QUIty
+         VSuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZcdhzacrDgvQn7XlMkm7i106xpcGRQuSmJrk/gGOHHM=;
-        b=a3ZkbpP7E/6rwTQKPOAUE0gQFJPy9WZbrTrXEZA/xnunFevb27PyfCtAsjmK/iDdf+
-         jCYdYidpIuJjA134Jl1D50GlIzTctHkvXQa8x9uRlOxdR2D50aI1hzNexadxbW8+4F+2
-         eAzHuLi5Q038ORlgoE8igcN3FQqqwmfLV72o4d4Skyo2sN/rEQUqXHJhIGA2x5jC/Mgv
-         gL7h2/Rvu9TvPhxuzetsaS4uAEPy9qCyrH44nqF+Vbn1V5qLLB+xQMio9qfXWsJX3tWy
-         koTT96nWoktxkxuFiDMOWx7cbwlWwScu7NrQh4smqVejIFZj278/Ikb1LFzGA5sdSO+p
-         dUgg==
-X-Gm-Message-State: APjAAAXjh1ToBo8IevQQUq8UmvJRyaOznvdYYdQp2ZQ654MbmmqitJ/W
-        aXWheMd6oa4KwG20eJ62aMUh2Q==
-X-Google-Smtp-Source: APXvYqxyLaG0lhTUCA/mP/3jkOGuNlgE6NejSs+rm4GGXwvW5nesT/aaiqJ7iajKxEOWm4YKuocCKw==
-X-Received: by 2002:a1c:ba08:: with SMTP id k8mr4038647wmf.63.1570040479999;
-        Wed, 02 Oct 2019 11:21:19 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id b16sm288889wrh.5.2019.10.02.11.21.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 11:21:19 -0700 (PDT)
-Date:   Wed, 2 Oct 2019 20:21:19 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 12/15] ipv4: Add "in hardware" indication to
- routes
-Message-ID: <20191002182119.GF2279@nanopsycho>
-References: <20191002084103.12138-1-idosch@idosch.org>
- <20191002084103.12138-13-idosch@idosch.org>
- <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FSUCt1LD5y9mlrWBYl2U48Y4AhIXh+tutDGzQFeAW+A=;
+        b=LMChAyWfRPZfoJ3gGBe/J9dMrpJrzrrrLBWQ3ulIKxRq9VULa2Wv2GqwdvaCgrTuJK
+         anCYdsDbHJhFXiyBoEK39WLINvN5l2K+5VLzKDgrWAmDu4gMJpnRNHWhAwnhtdGoXraO
+         RBd1l9Gsww9gUVS9TQ3eT0mRRrtsVAbeR9QEl1Yc1Ky8XEJjUvyoVAEsIwNwgp0JeTJn
+         5xZVFMPcL2RLRgWyielhjbuKR/MX7yemJwrNR1oz61Ka5wBceZ7S8jv5jGbdM2qcw4wZ
+         UGvIhW3K4NZuIdQIGyFKpTdzP82I1GyfZIT0Qd7ZTmKAtpfncIn41QhKLmenZH4WV55n
+         XJmQ==
+X-Gm-Message-State: APjAAAVasS2nxzFfijONQUfvFcKbjJK+Qm4k4/v0peFi/V9KbKdWYPqN
+        m8vLPXrzYCkiXuozu+JN6fnFLSB1nC4X+b4Uz6s=
+X-Google-Smtp-Source: APXvYqyb4kIlEkWgIrBHdNYypTbVR2PCKC4qhzD9w41JftTz5VHlz7M9+uF0SWpgSiQFwQPIMjShgnV6hk2AQxomUMM=
+X-Received: by 2002:a1c:a74f:: with SMTP id q76mr4061260wme.16.1570040586400;
+ Wed, 02 Oct 2019 11:23:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <acd60f4797143dc6e9817b3dce38e1408caf65e5.1569849018.git.lucien.xin@gmail.com>
+ <20191002010356.GG3499@localhost.localdomain> <CADvbK_ctLG+vnhmWwN=cWmZV7FgZreVRmoU+23PExdk=goF8cQ@mail.gmail.com>
+ <20191002125511.GH3499@localhost.localdomain> <CADvbK_fD+yuCCUTf41n+3oVwVjLUdT8+-wfwppVL8ZmbJegTWA@mail.gmail.com>
+ <20191002174127.GL3431@localhost.localdomain>
+In-Reply-To: <20191002174127.GL3431@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 3 Oct 2019 02:23:37 +0800
+Message-ID: <CADvbK_dgNB3Cgd8v+VP3iWKCr0-UkS6vUBxLOTTCi_SPcQj7-w@mail.gmail.com>
+Subject: Re: [PATCH net] sctp: set newsk sk_socket before processing listening
+ sk backlog
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem <davem@davemloft.net>, Neil Horman <nhorman@tuxdriver.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Oct 02, 2019 at 05:58:52PM CEST, roopa@cumulusnetworks.com wrote:
->On Wed, Oct 2, 2019 at 1:41 AM Ido Schimmel <idosch@idosch.org> wrote:
->>
->> From: Ido Schimmel <idosch@mellanox.com>
->>
->> When performing L3 offload, routes and nexthops are usually programmed
->> into two different tables in the underlying device. Therefore, the fact
->> that a nexthop resides in hardware does not necessarily mean that all
->> the associated routes also reside in hardware and vice-versa.
->>
-
-*****
-
->> While the kernel can signal to user space the presence of a nexthop in
->> hardware (via 'RTNH_F_OFFLOAD'), it does not have a corresponding flag
->> for routes. In addition, the fact that a route resides in hardware does
->> not necessarily mean that the traffic is offloaded. For example,
->> unreachable routes (i.e., 'RTN_UNREACHABLE') are programmed to trap
->> packets to the CPU so that the kernel will be able to generate the
->> appropriate ICMP error packet.
-
-*****
-
-
->>
->> This patch adds an "in hardware" indication to IPv4 routes, so that
->> users will have better visibility into the offload process. In the
->> future IPv6 will be extended with this indication as well.
->>
->> 'struct fib_alias' is extended with a new field that indicates if
->> the route resides in hardware or not. Note that the new field is added
->> in the 6 bytes hole and therefore the struct still fits in a single
->> cache line [1].
->>
->> Capable drivers are expected to invoke fib_alias_in_hw_{set,clear}()
->> with the route's key in order to set / clear the "in hardware
->> indication".
->>
->> The new indication is dumped to user space via a new flag (i.e.,
->> 'RTM_F_IN_HW') in the 'rtm_flags' field in the ancillary header.
->>
+On Thu, Oct 3, 2019 at 1:41 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
 >
->nice series Ido. why not call this RTM_F_OFFLOAD to keep it consistent
->with the nexthop offload indication ?.
-
-See the second paragraph of this description.
-
-
->But this again does not seem to be similar to the other request flags
->like: RTM_F_FIB_MATCH
+> On Thu, Oct 03, 2019 at 01:26:46AM +0800, Xin Long wrote:
+> > On Wed, Oct 2, 2019 at 8:55 PM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+> > >
+> > > On Wed, Oct 02, 2019 at 04:23:52PM +0800, Xin Long wrote:
+> > > > On Wed, Oct 2, 2019 at 9:04 AM Marcelo Ricardo Leitner
+> > > > <marcelo.leitner@gmail.com> wrote:
+> > > > >
+> > > > > On Mon, Sep 30, 2019 at 09:10:18PM +0800, Xin Long wrote:
+> > > > > > This patch is to fix a NULL-ptr deref crash in selinux_sctp_bind_connect:
+> > > > > >
+> > > > > >   [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
+> > > > > >   [...] RIP: 0010:selinux_sctp_bind_connect+0x16a/0x230
+> > > > > >   [...] Call Trace:
+> > > > > >   [...]  security_sctp_bind_connect+0x58/0x90
+> > > > > >   [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
+> > > > > >   [...]  sctp_sf_do_asconf+0x782/0x980 [sctp]
+> > > > > >   [...]  sctp_do_sm+0x139/0x520 [sctp]
+> > > > > >   [...]  sctp_assoc_bh_rcv+0x284/0x5c0 [sctp]
+> > > > > >   [...]  sctp_backlog_rcv+0x45f/0x880 [sctp]
+> > > > > >   [...]  __release_sock+0x120/0x370
+> > > > > >   [...]  release_sock+0x4f/0x180
+> > > > > >   [...]  sctp_accept+0x3f9/0x5a0 [sctp]
+> > > > > >   [...]  inet_accept+0xe7/0x6f0
+> > > > > >
+> > > > > > It was caused by that the 'newsk' sk_socket was not set before going to
+> > > > > > security sctp hook when doing accept() on a tcp-type socket:
+> > > > > >
+> > > > > >   inet_accept()->
+> > > > > >     sctp_accept():
+> > > > > >       lock_sock():
+> > > > > >           lock listening 'sk'
+> > > > > >                                           do_softirq():
+> > > > > >                                             sctp_rcv():  <-- [1]
+> > > > > >                                                 asconf chunk arrived and
+> > > > > >                                                 enqueued in 'sk' backlog
+> > > > > >       sctp_sock_migrate():
+> > > > > >           set asoc's sk to 'newsk'
+> > > > > >       release_sock():
+> > > > > >           sctp_backlog_rcv():
+> > > > > >             lock 'newsk'
+> > > > > >             sctp_process_asconf()  <-- [2]
+> > > > > >             unlock 'newsk'
+> > > > > >     sock_graft():
+> > > > > >         set sk_socket  <-- [3]
+> > > > > >
+> > > > > > As it shows, at [1] the asconf chunk would be put into the listening 'sk'
+> > > > > > backlog, as accept() was holding its sock lock. Then at [2] asconf would
+> > > > > > get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
+> > > > > > 'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
+> > > > > > would deref it, then kernel crashed.
+> > > > >
+> > > > > Note that sctp will migrate such incoming chunks from sk to newsk in
+> > > > > sctp_rcv() if they arrived after the mass-migration performed at
+> > > > > sctp_sock_migrate().
+> > > > >
+> > > > > That said, did you explore changing inet_accept() so that
+> > > > > sk1->sk_prot->accept() would return sk2 still/already locked?
+> > > > > That would be enough to block [2] from happening as then it would be
+> > > > > queued on newsk backlog this time and avoid nearly duplicating
+> > > > > inet_accept(). (too bad for this chunk, hit 2 backlogs..)
+> > > > We don't have to bother inet_accept() for it. I had this one below,
+> > > > and I was just thinking the locks order doesn't look nice. Do you
+> > > > think this is more acceptable?
+> > > >
+> > > > @@ -4963,15 +4963,19 @@ static struct sock *sctp_accept(struct sock
+> > > > *sk, int flags, int *err, bool kern)
+> > > >          * asoc to the newsk.
+> > > >          */
+> > > >         error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
+> > > > -       if (error) {
+> > > > -               sk_common_release(newsk);
+> > > > -               newsk = NULL;
+> > > > +       if (!error) {
+> > > > +               lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
+> > > > +               release_sock(sk);
+> > >
+> > > Interesting. It fixes the backlog processing, ok. Question:
+> > >
+> > > > +               release_sock(newsk);
+> > >
+> > > As newsk is hashed already and unlocked here to be locked again later
+> > > on inet_accept(), it could receive a packet in between (thus before
+> > > sock_graft() could have a chance to run), no?
+> >
+> > You're right, it explains another call trace happened once in our testing.
+> >
+> > The way to changing inet_accept() will also have to change all protocols'
+> > .accept(). Given that this issue is only triggered in a very small moment,
+> > can we just silently discard this asconf chunk if sk->sk_socket is NULL?
+> > and let peer's T4-timer retransmit it.
 >
->(so far i think all the RTNH_F_* flags are used on routes too IIRC
->(see iproute2: print_rt_flags)
->RTNH_F_DEAD seems to fall in this category)
+> No no. If the change doesn't hurt other protocols, we should try that
+> first.  Otherwise this adds overhead to the network and we could get a
+> bug report soon on "valid asconf being ignored".
+Thanks, I will give it a try tomorrow.
+
+>
+> If that doesn't pan out, maybe your initial suggestion is the way out.
+> More custom code but keeps the expected behavior.
+okay
+
+>
+> >
+> > @@ -3709,6 +3709,9 @@ enum sctp_disposition sctp_sf_do_asconf(struct net *net,
+> >         struct sctp_addiphdr *hdr;
+> >         __u32 serial;
+> >
+> > +       if (asoc->base.sk->sk_socket)
+> > +               return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+> > +
+> >
+> > Note we can't do this in sctp_process_asconf_param(), as an asconf_ack
+> > will be sent back.
+> >
+> > >
+> > > > +               *err = error;
+> > > > +
+> > > > +               return newsk;
+> > > >         }
+> > > >
+> > > >  out:
+> > > >         release_sock(sk);
+> > > >         *err = error;
+> > > > -       return newsk;
+> > > > +       return NULL;
+> > > >  }
+> > > >
+> > > > >
+> > > > > AFAICT TCP code would be fine with such change. Didn't check other
+> > > > > protocols.
+> > > > >
+> > > >
