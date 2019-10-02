@@ -2,161 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85C63C4B46
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 12:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3885DC86BA
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 12:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbfJBKXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 06:23:07 -0400
-Received: from mail-vk1-f196.google.com ([209.85.221.196]:44910 "EHLO
-        mail-vk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726697AbfJBKXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 06:23:07 -0400
-Received: by mail-vk1-f196.google.com with SMTP id j21so4189894vki.11
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 03:23:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/jUUFpwTFmW5dFyAGDc97uDanV/D5VTHXHSx1PRA2NA=;
-        b=dIzaFpJqUYIfg1tzQu7aopdJchA5p4ywAbr5sl7UK5NW3t4SmLNWNCvoefJme/jDtK
-         KrLEru/TqK9orDxoWW+Gcnw13b0AucMrh/ASwRrjf68bg3j0iCMJMZ0uYEjjnWKb+Fk0
-         A/dt1Dgttou+z8GtMk0h1HS1bE/SLQYPk+aoiYZLXzqGbj8WT94R0vlBeeKfRTdkU+Zo
-         Vg4wG0tciv1UaVS/1GzhD+9PX/cpdu6dkSptp2Am2rN5SUnd+aBkD3DgkAFOnAAccn5z
-         jENlsWDj3mwLkx3xUygqEg5p5Bb86qH8Chb+ajuDNn8ULCFBaVZEIrhlmHnApT3KmCKY
-         8I/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/jUUFpwTFmW5dFyAGDc97uDanV/D5VTHXHSx1PRA2NA=;
-        b=W16a50mVUUHGSNl4A16oChosKaQXrE2BhO13eJoVoTj6fbxdCKR5PnZhuPpSYXPVbu
-         AFcAPJh39yXtiVVTtn6noGLwVPU+Pf/AE3G24UUXORap5XY6dyy7I3t72V8HeyR8gxux
-         Ec+VyAJFi3fbsvnOthSFRupqRxoWekkC87152jm5DyRImVH70whx8iPhfa+UL212LLC0
-         dS3xnXmIDNAMs96V1NMOppHGwZjRPZa6HjF5q0NhPDbgzOFOo1ZFat3JFA22vi0dDFB5
-         DVH+aeIEzyjNh6LS+qirLGpy35RJjsMUJmJhkIzwDz46UIta2o3vRlEK+NEMjeM8KtuB
-         FlHw==
-X-Gm-Message-State: APjAAAUUitgtIwK2VJICjxVg7m1sSOC7K0P/WBcGItcWDc4AOdGYWYol
-        /kk5kzeQ9fSsjHY4DGWoYNRgCCv/8OPyPPkaS0bUbg==
-X-Google-Smtp-Source: APXvYqwRmHjZ3eZir5reMowy1hVTb73IlreG7jEHPpVscHxVmVTgaTZ5vkeSDVJW4fP5tSjdOgI90SlLp2wQDIgexmE=
-X-Received: by 2002:a1f:4154:: with SMTP id o81mr1564318vka.56.1570011785313;
- Wed, 02 Oct 2019 03:23:05 -0700 (PDT)
+        id S1726995AbfJBKwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 06:52:33 -0400
+Received: from www62.your-server.de ([213.133.104.62]:38208 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726738AbfJBKwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 06:52:33 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iFcFB-0001JE-TV; Wed, 02 Oct 2019 12:52:29 +0200
+Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iFcFB-00071q-NJ; Wed, 02 Oct 2019 12:52:29 +0200
+Subject: Re: [PATCH V12 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
+To:     Carlos Neira <cneirabustos@gmail.com>, netdev@vger.kernel.org
+Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
+        bpf@vger.kernel.org
+References: <20191001214141.6294-1-cneirabustos@gmail.com>
+ <20191001214141.6294-3-cneirabustos@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <79645731-da32-6071-e05f-6345cf47bcd1@iogearbox.net>
+Date:   Wed, 2 Oct 2019 12:52:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <CAPpJ_ed7dSCfWPt8PiK3_LNw=MDPrFwo-5M1xcpKw-3x7dxsrA@mail.gmail.com>
- <e178221e-4f48-b9b9-2451-048e8f4a0f9f@gmail.com> <a3066098-9fba-c2f4-f2d3-b95b08ef5637@gmail.com>
- <71ccd182-beec-31f4-5a25-a81a7457ca55@gmail.com>
-In-Reply-To: <71ccd182-beec-31f4-5a25-a81a7457ca55@gmail.com>
-From:   Jian-Hong Pan <jian-hong@endlessm.com>
-Date:   Wed, 2 Oct 2019 18:22:28 +0800
-Message-ID: <CAPpJ_efajCONc=7LaUdGftEpKpnpSMXn8YBE6=epJ57fF_WekA@mail.gmail.com>
-Subject: Re: Driver support for Realtek RTL8125 2.5GB Ethernet
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Linux Upstreaming Team <linux@endlessm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191001214141.6294-3-cneirabustos@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25590/Wed Oct  2 10:31:24 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Heiner Kallweit <hkallweit1@gmail.com> =E6=96=BC 2019=E5=B9=B410=E6=9C=882=
-=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=881:54=E5=AF=AB=E9=81=93=EF=BC=
-=9A
->
-> On 26.07.2019 21:05, Heiner Kallweit wrote:
-> > On 24.07.2019 22:02, Heiner Kallweit wrote:
-> >> On 24.07.2019 10:19, Jian-Hong Pan wrote:
-> >>> Hi all,
-> >>>
-> >>> We have got a consumer desktop equipped with Realtek RTL8125 2.5GB
-> >>> Ethernet [1] recently.  But, there is no related driver in mainline
-> >>> kernel yet.  So, we can only use the vendor driver [2] and customize
-> >>> it [3] right now.
-> >>>
-> >>> Is anyone working on an upstream driver for this hardware?
-> >>>
-> >> At least I'm not aware of any such work. Issue with Realtek is that
-> >> they answer individual questions very quickly but company policy is
-> >> to not release any datasheets or errata documentation.
-> >> RTL8169 inherited a lot from RTL8139, so I would expect that the
-> >> r8169 driver could be a good basis for a RTL8125 mainline driver.
-> >>
-> > Meanwhile I had a look at the RTL8125 vendor driver. Most parts are
-> > quite similar to RTL8168. However the PHY handling is quite weird.
-> > 2.5Gbps isn't covered by Clause 22, but instead of switching to
-> > Clause 45 Realtek uses Clause 22 plus a proprietary chip register
-> > (for controlling the 2.5Gbps mode) that doesn't seem to be accessible
-> > via MDIO bus. This may make using phylib tricky.
-> >
-> In case you haven't seen it yet: Meanwhile I added RTL8125 support to
-> phylib and r8169, it's included in 5.4-rc1. I tested it on a
-> RTL8125-based PCIe add-on card, feedback from your system would be
-> appreciated. Note that you also need latest linux-firmware package
-> from Sep 23rd.
+On 10/1/19 11:41 PM, Carlos Neira wrote:
+> New bpf helper bpf_get_ns_current_pid_tgid,
+> This helper will return pid and tgid from current task
+> which namespace matches dev_t and inode number provided,
+> this will allows us to instrument a process inside a container.
+> 
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> ---
+>   include/linux/bpf.h      |  1 +
+>   include/uapi/linux/bpf.h | 18 +++++++++++++++++-
+>   kernel/bpf/core.c        |  1 +
+>   kernel/bpf/helpers.c     | 36 ++++++++++++++++++++++++++++++++++++
+>   kernel/trace/bpf_trace.c |  2 ++
+>   5 files changed, 57 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 5b9d22338606..231001475504 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+>   extern const struct bpf_func_proto bpf_strtol_proto;
+>   extern const struct bpf_func_proto bpf_strtoul_proto;
+>   extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
+>   
+>   /* Shared helpers among cBPF and eBPF. */
+>   void bpf_user_rnd_init_once(void);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 77c6be96d676..ea8145d7f897 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2750,6 +2750,21 @@ union bpf_attr {
+>    *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+>    *
+>    *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> + *
+> + * u64 bpf_get_ns_current_pid_tgid(u64 dev, u64 inum)
+> + *	Return
+> + *		A 64-bit integer containing the current tgid and pid from current task
+> + *              which namespace inode and dev_t matches , and is create as such:
+> + *		*current_task*\ **->tgid << 32 \|**
+> + *		*current_task*\ **->pid**.
+> + *
+> + *		On failure, the returned value is one of the following:
+> + *
+> + *		**-EINVAL** if dev and inum supplied don't match dev_t and inode number
+> + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
+> + *
+> + *		**-ENOENT** if /proc/self/ns does not exists.
+> + *
+>    */
+>   #define __BPF_FUNC_MAPPER(FN)		\
+>   	FN(unspec),			\
+> @@ -2862,7 +2877,8 @@ union bpf_attr {
+>   	FN(sk_storage_get),		\
+>   	FN(sk_storage_delete),		\
+>   	FN(send_signal),		\
+> -	FN(tcp_gen_syncookie),
+> +	FN(tcp_gen_syncookie),          \
+> +	FN(get_ns_current_pid_tgid),
+>   
+>   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>    * function eBPF program intends to call
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 66088a9e9b9e..b2fd5358f472 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+>   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+>   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+>   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
+>   
+>   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+>   {
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 5e28718928ca..8777181d1717 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -11,6 +11,8 @@
+>   #include <linux/uidgid.h>
+>   #include <linux/filter.h>
+>   #include <linux/ctype.h>
+> +#include <linux/pid_namespace.h>
+> +#include <linux/proc_ns.h>
+>   
+>   #include "../../lib/kstrtox.h"
+>   
+> @@ -487,3 +489,37 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+>   	.arg4_type	= ARG_PTR_TO_LONG,
+>   };
+>   #endif
+> +
+> +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u64, dev, u64, inum)
+> +{
+> +	struct task_struct *task = current;
+> +	struct pid_namespace *pidns;
+> +	pid_t pid, tgid;
+> +
+> +	if ((u64)(dev_t)dev != dev)
+> +		return -EINVAL;
+> +
+> +	if (unlikely(!task))
+> +		return -EINVAL;
+> +
+> +	pidns = task_active_pid_ns(task);
+> +	if (unlikely(!pidns))
+> +		return -ENOENT;
+> +
+> +
+> +	if (!ns_match(&pidns->ns, (dev_t)dev, inum))
+> +		return -EINVAL;
+> +
+> +	pid = task_pid_nr_ns(task, pidns);
+> +	tgid = task_tgid_nr_ns(task, pidns);
+> +
+> +	return (u64) tgid << 32 | pid;
 
-Thank you!!!
+Basically here you are overlapping the 64-bit return value for the valid
+outcome with the error codes above for the invalid case. If you look at
+bpf_perf_event_read() we already had such broken occasion that bit us in
+the past, and needed to introduce bpf_perf_event_read_value() instead.
+Lets not go there again and design it similarly to the latter.
 
-I tried kernel 5.4.0-rc1 on the desktop equipped with Realtek RTL8125
-2.5GB Ethernet.
+> +}
+> +
+> +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
+> +	.func		= bpf_get_ns_current_pid_tgid,
+> +	.gpl_only	= false,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_ANYTHING,
+> +	.arg2_type	= ARG_ANYTHING,
+> +};
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 44bd08f2443b..32331a1dcb6d 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   #endif
+>   	case BPF_FUNC_send_signal:
+>   		return &bpf_send_signal_proto;
+> +	case BPF_FUNC_get_ns_current_pid_tgid:
+> +		return &bpf_get_ns_current_pid_tgid_proto;
+>   	default:
+>   		return NULL;
+>   	}
+> 
 
-$ sudo lspci -nnvs 04:00.0
-[sudo] password for dev:
-04:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd.
-Device [10ec:8125] (rev 01)
-    Subsystem: Acer Incorporated [ALI] Device [1025:1354]
-    Flags: bus master, fast devsel, latency 0, IRQ 17
-    I/O ports at 3000 [size=3D256]
-    Memory at a4200000 (64-bit, non-prefetchable) [size=3D64K]
-    Memory at a4210000 (64-bit, non-prefetchable) [size=3D16K]
-    Capabilities: [40] Power Management version 3
-    Capabilities: [50] MSI: Enable- Count=3D1/1 Maskable+ 64bit+
-    Capabilities: [70] Express Endpoint, MSI 01
-    Capabilities: [b0] MSI-X: Enable+ Count=3D4 Masked-
-    Capabilities: [d0] Vital Product Data
-    Capabilities: [100] Advanced Error Reporting
-    Capabilities: [148] Virtual Channel
-    Capabilities: [168] Device Serial Number 01-00-00-00-68-4c-e0-00
-    Capabilities: [178] Alternative Routing-ID Interpretation (ARI)
-    Capabilities: [188] Single Root I/O Virtualization (SR-IOV)
-    Capabilities: [1c8] Transaction Processing Hints
-    Capabilities: [254] Latency Tolerance Reporting
-    Capabilities: [25c] L1 PM Substates
-    Capabilities: [26c] Vendor Specific Information: ID=3D0002 Rev=3D4 Len=
-=3D100 <?>
-    Kernel driver in use: r8169
-    Kernel modules: r8169
-
-Module r8169 works for it.
-
-$ dmesg | grep r8169
-[   19.631623] libphy: r8169: probed
-[   19.631978] r8169 0000:04:00.0 eth0: RTL8125, 94:c6:91:5f:1f:45,
-XID 609, IRQ 127
-[   19.631983] r8169 0000:04:00.0 eth0: jumbo features [frames: 9200
-bytes, tx checksumming: ko]
-[   19.635492] r8169 0000:04:00.0 enp4s0: renamed from eth0
-[   21.778431] RTL8125 2.5Gbps internal r8169-400:00: attached PHY
-driver [RTL8125 2.5Gbps internal] (mii_bus:phy_addr=3Dr8169-400:00,
-irq=3DIGNORE)
-[   21.871953] r8169 0000:04:00.0 enp4s0: Link is Down
-[   24.668516] r8169 0000:04:00.0 enp4s0: Link is Up - 1Gbps/Full -
-flow control off
-
-Jian-Hong Pan
-
-> >>> [1] https://www.realtek.com/en/press-room/news-releases/item/realtek-=
-launches-world-s-first-single-chip-2-5g-ethernet-controller-for-multiple-ap=
-plications-including-gaming-solution
-> >>> [2] https://www.realtek.com/en/component/zoo/category/network-interfa=
-ce-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
-> >>> [3] https://github.com/endlessm/linux/commit/da1e43f58850d272eb72f571=
-524ed71fd237d32b
-> >>>
-> >>> Jian-Hong Pan
-> >>>
-> >> Heiner
-> >>
-> > Heiner
-> >
-> Heiner
