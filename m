@@ -2,69 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D6CEC882E
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 14:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE533C8836
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 14:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbfJBMTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 08:19:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57530 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725917AbfJBMTS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 08:19:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=8+XPirIFL3wwh4Sm8SBX/JjgmXIT7ID1SFOfDdOf4ko=; b=wX5DeKY20a17K09XNjGbiXyNsc
-        /QGMlJpufLlCZqV2oOUdpI+pnX7Z4MwOytJ9c0MPZ8X1uNKZP96Kd3jPPUJK4OSMlvuPpQsGp+cam
-        1iZWELF3gAorRaMD6AMi7gMXc3lxjQmOKcSEGJafjS1X0X0+AXo6auaGqyYDQ4RgOrUg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iFdbA-0005La-Cr; Wed, 02 Oct 2019 14:19:16 +0200
-Date:   Wed, 2 Oct 2019 14:19:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Denis Odintsov <d.odintsov@traviangames.com>
-Cc:     "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "h.feurstein@gmail.com" <h.feurstein@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Marvell 88E6141 DSA degrades after
- 7fb5a711545d7d25fe9726a9ad277474dd83bd06
-Message-ID: <20191002121916.GB20028@lunn.ch>
-References: <DE1D3FAD-959D-4A56-8C68-F713D44A1FED@traviangames.com>
+        id S1727175AbfJBMUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 08:20:25 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:42908 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726062AbfJBMUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 08:20:24 -0400
+Received: by mail-qk1-f195.google.com with SMTP id f16so14692629qkl.9
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 05:20:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=C1s9Qnx4QYX1Pe4YvbI9Mrmen/6O6spmAXKtAR6a1ZE=;
+        b=An5AsPzQ4GR89OtegxJb25YpLgigqWoWCZiR6bHJ3Oy8G7LBFQ9lHWHv97ZAOvUMRf
+         qBFoIIkJBF+lGTGRADqXCQnQv0dJaQ2Tb3simsA0gp/q7XK87lnc/I6Wb4hCrsL9cr2U
+         tnWFx1OSik5XrzVuMTGjNbGDd9gVKtHxu5iQ5kgXr9zINb3tz18A91zKydbJEYyeX1jg
+         j6CPcHp/e6Gs6xMaXa0S87DG++j5DyklgYFQNdvOm57ylruD9P2xJlnRk+wMLEqlCy4L
+         mJX2IcfNwDDViWo4vKL+Rv3ig7gfVLQE5+QqKxAV6w2qdCg4/8JIaWw4fTGT2tF0GkL/
+         cHkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C1s9Qnx4QYX1Pe4YvbI9Mrmen/6O6spmAXKtAR6a1ZE=;
+        b=MP4Mcq/EI3D6pxELmPFi998X4Vx83vdT2GdfCO7RhrK6ndJUbEQ4YE8PO+OTmH46Dl
+         XYwkHmmzZ55CMAYLyGSiIayLkjgU1AWn+tmMgdMjJDT9xiZGqqMp0LWKDedK9gNrpUD5
+         NBA5c1roB34N+9XFxSYJGeRRQ48QoEQZDaT4QfA1rlKTril9BevQK8JAmJmg05nkSGIX
+         IS+3Jc+/nIlum/6RYWSnhi9CsHA4rDvyIj/XJkeq2McuMB9l6b+AIHPjBTif2GM3ow/U
+         MzmkRBH9KBkNImnY1InGVldyb1ADBn33NSUWB5gBWG9FGetMdLxjl6DZ2hqIm+uD6Ie/
+         xsPw==
+X-Gm-Message-State: APjAAAWNKVKvmi54KMIzJjvvJN6BfVKoxUFGbIGXnh0A0/HpB5eiU+kH
+        lrmtp+0y2IReu4EPg3pIjPlAGHp9PG/77mjJRNGRiQ==
+X-Google-Smtp-Source: APXvYqySws1GAC2DEPn4qcev8riMOaMww0CmrYHzV/wKuehgOE3MUUOakPXd6Z5eg0QtzaNjHsPHjYFRsekMDu+WfOc=
+X-Received: by 2002:ae9:e30a:: with SMTP id v10mr3437798qkf.369.1570018821860;
+ Wed, 02 Oct 2019 05:20:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DE1D3FAD-959D-4A56-8C68-F713D44A1FED@traviangames.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190917074007.92259-1-chiu@endlessm.com> <20191002043018.65FD86118F@smtp.codeaurora.org>
+In-Reply-To: <20191002043018.65FD86118F@smtp.codeaurora.org>
+From:   Chris Chiu <chiu@endlessm.com>
+Date:   Wed, 2 Oct 2019 20:20:11 +0800
+Message-ID: <CAB4CAwfQB5V59xdO_70-tVMWLKTZ3_4x_atkBD+i16GSFjQjRw@mail.gmail.com>
+Subject: Re: [PATCH v7] rtl8xxxu: Improve TX performance of RTL8723BU on
+ rtl8xxxu driver
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>,
+        Daniel Drake <drake@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 02, 2019 at 11:57:30AM +0000, Denis Odintsov wrote:
-> Hello,
-> 
-> Hope you are doing fine, I have a report regarding Marvell DSA after 7fb5a711545d7d25fe9726a9ad277474dd83bd06<https://github.com/torvalds/linux/commit/7fb5a711545d7d25fe9726a9ad277474dd83bd06> patch.
-> 
-> Thing is that after this commit:
-> https://github.com/torvalds/linux/commit/7fb5a711545d7d25fe9726a9ad277474dd83bd06
-> on linux 5.3 DSA stopped working properly for me.
-> I'm using Clearfog GT 8k board, with 88E6141 switch and bridge config where all lanN interfaces are bridged together and ip is assigned to the bridge.
-> 
-> It stopped working properly in the matter that everything fires up from the board point of view, interfaces are there, all is good, but there are never any packet registered as RX on lanN interfaces in counters. Packets are always TX'ed and 0 as RX. But! This is where weird starts, the actual link is negotiated fine (I have 100Mb clients, and interfaces have correct speed and duplex, meaning they actually handshake with the other end). Even more, if I would set ip lanN interface itself with ip address, the networks somehow work, meaning a client, if set ip manually, can kind of ping the router, but with huge volatile times, like >300ms round trip. And still not a single RX packet on the interface shown in the counter.
-> 
-> So this is really weird behaviour, and the most sad part in that is that while on 5.3 with this patch reverted everything start to work fine, the trick doesn't work for 5.4 anymore.
+On Wed, Oct 2, 2019 at 12:30 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+> New warning:
+>
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c: In function 'rtl8xxxu_refresh_rate_mask':
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5907:7: warning: this statement may fall through [-Wimplicit-fallthrough=]
+>     if (priv->tx_paths == 2 && priv->rx_paths == 2)
+>        ^
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5911:3: note: here
+>    case (WIRELESS_MODE_B | WIRELESS_MODE_G | WIRELESS_MODE_N_24G):
+>    ^~~~
+>
+> Patch set to Changes Requested.
+>
+> --
+> https://patchwork.kernel.org/patch/11148163/
+>
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
 
-Hi Denis
+Thanks for pointing this out, I've sent a v8 version to fix it.
 
-Could you give us the call stack when mv88e6xxx_adjust_link() is used
-in 5.3. A WARN_ON(1) should do that.
-
-We are probably missing a use case where it is used, but we did not
-expect it to be used. The call stack should help us find that use
-case.
-
-Thanks
-	Andrew
+Chris
