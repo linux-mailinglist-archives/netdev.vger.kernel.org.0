@@ -2,123 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 784D2C941A
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 00:10:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34CFEC9420
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 00:11:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbfJBWKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 18:10:08 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:38516 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725928AbfJBWKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 18:10:07 -0400
-Received: by mail-io1-f65.google.com with SMTP id u8so955824iom.5
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 15:10:07 -0700 (PDT)
+        id S1727464AbfJBWKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 18:10:53 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40112 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726128AbfJBWKw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 18:10:52 -0400
+Received: by mail-wm1-f66.google.com with SMTP id b24so446315wmj.5
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 15:10:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=6c+UtI1uYDbyYxUQwSa9jl5b6+0JQI0MJumhi18xfQg=;
-        b=kboGfl6VR6AFG/YCMnKlVG1+DLAnMRlmrb8TUPJMLPA8HrsPJg1Wv8qBfjT/1q4Bki
-         bBHNbIFDJCUEivY6JcJ8nmU4c1/OM5zE+nbfYeEhQBMkd4DgnMpt27LQCB66JR4ey7Zc
-         LS2WLuNO7xZj1wj/3HEnrW2rj2gpzQnUmlwALGcM0Wm9pCjPbLzsr0mq1mz7Kq+YUbob
-         9ht8eU3m5L9/xHmvhA1RZaSsMCPDzEHDCd0xVDaqVHUzRaHAY/ldADDT6KFMPW0FPa54
-         yvmv+K2YV95Qr4Cy6BOpBN7bF6oZcWYlKVB7T3RlKmOz/SK53j9xC0hFrC1dwk4swq6R
-         0EfQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XBeTS2U2w8sXRV1i6bNHX9iNyksRjgScH9zrIaBN26c=;
+        b=miBqy6qDm0H3EvmToYPvQ5BxCHfnosR4tfwQb33Sa+pQqgDmlLgmgeU44ckfxTEsaR
+         9WJeIh0JHABiNO16e9n5lvlkg8EGQbilIal+y9MaxqQVKVIGNAFNqQyg1WAMEPjm1k3O
+         ULanEHxUq7pn/bVPqDdKHVtKHas+QZGJBBk7plkYH621pfdrPYfxU4nmuhoAAiBH9nU/
+         RRKQSKyM8bT9Hxm2d3mRf2371FRQL3J6LTKLItCZR39wAoQqhdsZFDhSiCfYewrx0L4/
+         8oWL6lwWTXyek74ORIEOw0pOqHS4f+z9F4dRGYyRKzxGOUJ93mKbkAWcZbN4mQdCxJ+j
+         7UeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=6c+UtI1uYDbyYxUQwSa9jl5b6+0JQI0MJumhi18xfQg=;
-        b=HWkfk7dTBNSpizukoeC/VoQfz9vKcenz4MWcoy7fUr9i5Lje2wCAARimDDxDDOKNEo
-         Zg6Ko3vLNWo+rXBHUQOjD4r41n42srI/rg2VcwaAW/YyDaYW7Jpi7n2kFwBAuyTNHid/
-         XIhZsXaILS2wt5Cf68Nxpg1/RoTwEUE0RqRLE2MGvhsTZ62cS4I+uU4IuviZOFtEc5b2
-         wPdKBmrN15m0QAaPr/RtrLoqAkygyRJFuR1nKEgaN7XOED3bH1H7SrYRPOJDGilxISP+
-         bYZQc/zhvms6QygOZXg9vDyvxs0BfflsBgD+fIT1/1qd0FF/ko0Qtaev7+EBlMJ7FnW9
-         wsPw==
-X-Gm-Message-State: APjAAAXTc4nwyWIvxPZu91OcZV8qOp9fJ3lh5mACPPJ2XqKv7jY+yACL
-        ZPPgqwzSNNZIy546lY3YYIzzlg==
-X-Google-Smtp-Source: APXvYqwYei1g/xOWE2U+PJHvvft5qrbaOfrE6nk3lP1n8pcWvN76f2qecpvDskoigtVrXYEOtuSqcA==
-X-Received: by 2002:a6b:8bd4:: with SMTP id n203mr5741864iod.133.1570054206751;
-        Wed, 02 Oct 2019 15:10:06 -0700 (PDT)
-Received: from localhost (67-0-10-3.albq.qwest.net. [67.0.10.3])
-        by smtp.gmail.com with ESMTPSA id l16sm350067ilm.67.2019.10.02.15.10.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XBeTS2U2w8sXRV1i6bNHX9iNyksRjgScH9zrIaBN26c=;
+        b=BPcn7yIqoYl87yoiAHw4FGHcQHvro0i1r1BKeMA4YWFvwZBuQWd+Y7EcgNvX8MiYOg
+         TQRJK/BjIt8O+fiPAT7SortqHpqX3MTzYKCDbazqsqqG4iF+DOatfh5S/h0XAwWyENw4
+         wByXEY3temqLROzkdpemekLWbW0e9a4zoWL5g0ctOglra0MEbz3Hz9U4wnk5gBdh4HNw
+         noAh3wzlb9bs9Hop6sy0PlPZRyKPscitrZgWAP4U61oTDBUS0JT5j/8ocxvfqjCu5TvZ
+         TG5lxXIyojLaOuOOgskyjADG9pIyBpXMKioBQKhyApej1tko6buGOHAEC5Gp+D7kIZjN
+         NDtA==
+X-Gm-Message-State: APjAAAUfBt3gJeUPaEa6OUV0rroVrUowke/onUj0pXdkt3I7mGvLD7i5
+        pRi5Wt+sd8QvVP2b8anQbPHftih8
+X-Google-Smtp-Source: APXvYqxN+rsZXR/79hfVeKh6k5JjMbf8eYEg/iw8Xwz0QGOWlFp6qGPvd7bST2cJB1XHwcMipfHD2g==
+X-Received: by 2002:a1c:1fd3:: with SMTP id f202mr4409058wmf.18.1570054250251;
+        Wed, 02 Oct 2019 15:10:50 -0700 (PDT)
+Received: from pif.criteois.lan ([91.199.242.236])
+        by smtp.gmail.com with ESMTPSA id h6sm707973wru.60.2019.10.02.15.10.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 15:10:05 -0700 (PDT)
-Date:   Wed, 2 Oct 2019 15:10:05 -0700 (PDT)
-From:   Paul Walmsley <paul.walmsley@sifive.com>
-X-X-Sender: paulw@viisi.sifive.com
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>, corbet@lwn.net,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Hogan <jhogan@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Palmer Dabbelt <palmer@sifive.com>, linux-mips@vger.kernel.org,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-cifs@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        linux-rdma@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
-        Jean Delvare <jdelvare@suse.com>,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Pensando Drivers <drivers@pensando.io>,
-        linux-hwmon@vger.kernel.org, netdev@vger.kernel.org,
-        samba-technical@lists.samba.org, linux-kernel@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Steve French <sfrench@samba.org>,
-        Paul Burton <paul.burton@mips.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/3] docs: fix some broken references
-In-Reply-To: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
-Message-ID: <alpine.DEB.2.21.9999.1910021509260.3732@viisi.sifive.com>
-References: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
-User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
+        Wed, 02 Oct 2019 15:10:49 -0700 (PDT)
+From:   William Dauchy <wdauchy@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, William Dauchy <wdauchy@gmail.com>
+Subject: [PATCH] tcp: add tsval and tsecr to TCP_INFO
+Date:   Thu,  3 Oct 2019 00:10:17 +0200
+Message-Id: <20191002221017.2085-1-wdauchy@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Sep 2019, Mauro Carvalho Chehab wrote:
+tsval and tsecr are useful in some cases to diagnose TCP issues from the
+sender point of view where unexplained RTT values are seen. Getting the
+the timestamps from both ends will help understand those issues more
+easily.
 
-> There are a number of documentation files that got moved or
-> renamed. update their references.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> ---
->  Documentation/devicetree/bindings/cpu/cpu-topology.txt    | 2 +-
->  Documentation/devicetree/bindings/timer/ingenic,tcu.txt   | 2 +-
->  Documentation/driver-api/gpio/driver.rst                  | 2 +-
->  Documentation/hwmon/inspur-ipsps1.rst                     | 2 +-
->  Documentation/mips/ingenic-tcu.rst                        | 2 +-
->  Documentation/networking/device_drivers/mellanox/mlx5.rst | 2 +-
->  MAINTAINERS                                               | 2 +-
->  drivers/net/ethernet/faraday/ftgmac100.c                  | 2 +-
->  drivers/net/ethernet/pensando/ionic/ionic_if.h            | 4 ++--
->  fs/cifs/cifsfs.c                                          | 2 +-
->  10 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/cpu/cpu-topology.txt b/Documentation/devicetree/bindings/cpu/cpu-topology.txt
-> index 99918189403c..9bd530a35d14 100644
-> --- a/Documentation/devicetree/bindings/cpu/cpu-topology.txt
-> +++ b/Documentation/devicetree/bindings/cpu/cpu-topology.txt
-> @@ -549,5 +549,5 @@ Example 3: HiFive Unleashed (RISC-V 64 bit, 4 core system)
->  [2] Devicetree NUMA binding description
->      Documentation/devicetree/bindings/numa.txt
->  [3] RISC-V Linux kernel documentation
-> -    Documentation/devicetree/bindings/riscv/cpus.txt
-> +    Documentation/devicetree/bindings/riscv/cpus.yaml
->  [4] https://www.devicetree.org/specifications/
+Signed-off-by: William Dauchy <wdauchy@gmail.com>
+---
+ include/uapi/linux/tcp.h | 3 +++
+ net/ipv4/tcp.c           | 5 ++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-For the RISC-V related change:
+diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+index 81e697978e8b..fecd4d0f177c 100644
+--- a/include/uapi/linux/tcp.h
++++ b/include/uapi/linux/tcp.h
+@@ -276,6 +276,9 @@ struct tcp_info {
+ 	__u32	tcpi_snd_wnd;	     /* peer's advertised receive window after
+ 				      * scaling (bytes)
+ 				      */
++
++	__u32	tcpi_tsval;          /* Time stamp value */
++	__u32	tcpi_tsecr;          /* Time stamp echo reply */
+ };
+ 
+ /* netlink attributes types for SCM_TIMESTAMPING_OPT_STATS */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 79c325a07ba5..7d0968df99c9 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3229,8 +3229,11 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
+ 	info->tcpi_probes = icsk->icsk_probes_out;
+ 	info->tcpi_backoff = icsk->icsk_backoff;
+ 
+-	if (tp->rx_opt.tstamp_ok)
++	if (tp->rx_opt.tstamp_ok) {
+ 		info->tcpi_options |= TCPI_OPT_TIMESTAMPS;
++		info->tcpi_tsval = tp->rx_opt.rcv_tsval;
++		info->tcpi_tsecr = tp->rx_opt.rcv_tsecr;
++	}
+ 	if (tcp_is_sack(tp))
+ 		info->tcpi_options |= TCPI_OPT_SACK;
+ 	if (tp->rx_opt.wscale_ok) {
+-- 
+2.23.0
 
-Acked-by: Paul Walmsley <paul.walmsley@sifive.com> # RISC-V
-
-
-- Paul
