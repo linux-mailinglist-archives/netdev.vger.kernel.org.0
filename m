@@ -2,199 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FCB3C93BF
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 23:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D3CCC93B9
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 23:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729620AbfJBVvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 17:51:12 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63624 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729594AbfJBVvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 17:51:10 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x92LnrTt028770
-        for <netdev@vger.kernel.org>; Wed, 2 Oct 2019 14:51:09 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=pzzBOP9XCbc1KXJUBvFuHOCNtDmVCcr7DcjTOX9/77Y=;
- b=VlBmkHrsma9vMJ8VTsriS56m4eRWk1vqFGLaeRWgEa6073jcQcqgZDXs5qgb5F2W4m1m
- cIoxyGZpOuI/wv3M9D9jmr7z2gMOgDebORUbbHMRS9tUkMzl5qOrnVZFdMflPyS3+hJW
- yE8XL+bfFTcQ9W8oKPAdtbKuWJHklX/U20w= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2vcy1g9jww-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 14:51:09 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 2 Oct 2019 14:51:08 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 79DF3861822; Wed,  2 Oct 2019 14:51:03 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 7/7] selftests/bpf: add BPF_CORE_READ and BPF_CORE_READ_STR_INTO macro tests
-Date:   Wed, 2 Oct 2019 14:50:41 -0700
-Message-ID: <20191002215041.1083058-8-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191002215041.1083058-1-andriin@fb.com>
-References: <20191002215041.1083058-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1729577AbfJBVvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 17:51:03 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58952 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726887AbfJBVvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 17:51:02 -0400
+Received: from 57.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.57] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iFmWJ-0005sg-V3; Wed, 02 Oct 2019 23:50:52 +0200
+Date:   Wed, 2 Oct 2019 23:50:51 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: test_progs: don't leak server_fd
+ in test_sockopt_inherit
+Message-ID: <20191002215051.GB9196@pc-66.home>
+References: <20191001173728.149786-1-brianvv@google.com>
+ <20191001173728.149786-3-brianvv@google.com>
+ <CAEf4BzYxs6Ace8s64ML3pA9H4y0vgdWv_vDF57oy3i-O_G7c-g@mail.gmail.com>
+ <CABCgpaWbPN+2vSNdynHtmDxrgGbyzHa_D-y4-X8hLrQYbhTx=A@mail.gmail.com>
+ <20191002085553.GA6226@pc-66.home>
+ <CAEf4BzZAywR2g4bRu8Bs-YJxzf64GTrR7NvgOaXG2fqaKiJpSQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-02_09:2019-10-01,2019-10-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- suspectscore=8 clxscore=1015 adultscore=0 mlxlogscore=999 spamscore=0
- mlxscore=0 malwarescore=0 bulkscore=0 phishscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910020173
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZAywR2g4bRu8Bs-YJxzf64GTrR7NvgOaXG2fqaKiJpSQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25590/Wed Oct  2 10:31:24 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Validate BPF_CORE_READ correctness and handling of up to 9 levels of
-nestedness using cyclic task->(group_leader->)*->tgid chains.
+On Wed, Oct 02, 2019 at 01:30:14PM -0700, Andrii Nakryiko wrote:
+> On Wed, Oct 2, 2019 at 1:56 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > On Tue, Oct 01, 2019 at 08:42:30PM -0700, Brian Vazquez wrote:
+> > > Thanks for reviewing the patches Andrii!
+> > >
+> > > Although Daniel fixed them and applied them correctly.
+> >
+> > After last kernel/maintainer summit at LPC, I reworked all my patchwork scripts [0]
+> > which I use for bpf trees in order to further reduce manual work and add more sanity
+> > checks at the same time. Therefore, the broken Fixes: tag was a good test-case. ;-)
+> 
+> Do you scripts also capitalize first word after libbpf: prefix? Is
+> that intentional? Is that a recommended subject casing:
+> 
+> "libbpf: Do awesome stuff" vs "libbpf: do awesome stuff"?
 
-Also add a test of maximum-dpeth BPF_CORE_READ_STR_INTO() macro.
+Right now we have a bit of a mix on that regard, and basically what the
+pw-apply script from [0] is doing, is the following to provide some more
+context:
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/core_reloc.c     |  8 ++-
- .../selftests/bpf/progs/core_reloc_types.h    |  9 ++++
- .../bpf/progs/test_core_reloc_kernel.c        | 54 ++++++++++++++++++-
- 3 files changed, 68 insertions(+), 3 deletions(-)
+- Pulls the series mbox specified by series id from patchwork, dumps all
+  necessary information about the series, e.g. whether it's complete and
+  all patches are present, etc.
+- Pushes the mbox through mb2q which is a script that x86 maintainers and
+  few others use for their patch management and spills out a new mbox.
+  This is effectively 'normalizing' the patches from the mbox to bring in
+  some more consistency, meaning it adds Link: tags to every patch based
+  on the message id and checks whether the necessary mailing list aka
+  bpf was in Cc, so we always have lore BPF archive links, sorts tags so
+  they all have a consistent order, it allows to propagate Acked-by,
+  Reviewed-by, Tested-by tags from cover letter into the individual
+  patches, it also capitalizes the first word after the subsystem prefix.
+- It applies and merges the resulting mbox, and performs additional checks
+  for the newly added commit range, that is, it checks whether Fixes tags
+  are correctly formatted, whether the commit exists at all in the tree or
+  whether subject / sha is wrong, and throws warnings to me so I can fix
+  them up if needed or toss out the series again worst case, as well as
+  checks whether SOB from the patch authors is present and matches their
+  name.
+- It allows to set the patches from the series into accepted state in
+  patchwork.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index f3863f976a48..21a0dff66241 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -193,8 +193,12 @@ static struct core_reloc_test_case test_cases[] = {
- 		.btf_src_file = NULL, /* load from /lib/modules/$(uname -r) */
- 		.input = "",
- 		.input_len = 0,
--		.output = "\1", /* true */
--		.output_len = 1,
-+		.output = STRUCT_TO_CHAR_PTR(core_reloc_kernel_output) {
-+			.valid = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-+			.comm = "test_progs\0\0\0\0\0",
-+			.comm_len = 11,
-+		},
-+		.output_len = sizeof(struct core_reloc_kernel_output),
- 	},
- 
- 	/* validate BPF program can use multiple flavors to match against
-diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-index f686a8138d90..9a6bdeb4894c 100644
---- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
-+++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -1,5 +1,14 @@
- #include <stdint.h>
- #include <stdbool.h>
-+/*
-+ * KERNEL
-+ */
-+
-+struct core_reloc_kernel_output {
-+	int valid[10];
-+	char comm[16];
-+	int comm_len;
-+};
- 
- /*
-  * FLAVORS
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
-index e5308026cfda..f318d39623b5 100644
---- a/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
-@@ -12,9 +12,17 @@ static volatile struct data {
- 	char out[256];
- } data;
- 
-+struct core_reloc_kernel_output {
-+	int valid[10];
-+	char comm[16];
-+	int comm_len;
-+};
-+
- struct task_struct {
- 	int pid;
- 	int tgid;
-+	char comm[16];
-+	struct task_struct *group_leader;
- };
- 
- #define CORE_READ(dst, src) bpf_core_read(dst, sizeof(*dst), src)
-@@ -23,7 +31,9 @@ SEC("raw_tracepoint/sys_enter")
- int test_core_kernel(void *ctx)
- {
- 	struct task_struct *task = (void *)bpf_get_current_task();
-+	struct core_reloc_kernel_output *out = (void *)&data.out;
- 	uint64_t pid_tgid = bpf_get_current_pid_tgid();
-+	uint32_t real_tgid = (uint32_t)pid_tgid;
- 	int pid, tgid;
- 
- 	if (CORE_READ(&pid, &task->pid) ||
-@@ -31,7 +41,49 @@ int test_core_kernel(void *ctx)
- 		return 1;
- 
- 	/* validate pid + tgid matches */
--	data.out[0] = (((uint64_t)pid << 32) | tgid) == pid_tgid;
-+	out->valid[0] = (((uint64_t)pid << 32) | tgid) == pid_tgid;
-+
-+	/* test variadic BPF_CORE_READ macros */
-+	out->valid[1] = BPF_CORE_READ(task,
-+				      tgid) == real_tgid;
-+	out->valid[2] = BPF_CORE_READ(task,
-+				      group_leader,
-+				      tgid) == real_tgid;
-+	out->valid[3] = BPF_CORE_READ(task,
-+				      group_leader, group_leader,
-+				      tgid) == real_tgid;
-+	out->valid[4] = BPF_CORE_READ(task,
-+				      group_leader, group_leader, group_leader,
-+				      tgid) == real_tgid;
-+	out->valid[5] = BPF_CORE_READ(task,
-+				      group_leader, group_leader, group_leader,
-+				      group_leader,
-+				      tgid) == real_tgid;
-+	out->valid[6] = BPF_CORE_READ(task,
-+				      group_leader, group_leader, group_leader,
-+				      group_leader, group_leader,
-+				      tgid) == real_tgid;
-+	out->valid[7] = BPF_CORE_READ(task,
-+				      group_leader, group_leader, group_leader,
-+				      group_leader, group_leader, group_leader,
-+				      tgid) == real_tgid;
-+	out->valid[8] = BPF_CORE_READ(task,
-+				      group_leader, group_leader, group_leader,
-+				      group_leader, group_leader, group_leader,
-+				      group_leader,
-+				      tgid) == real_tgid;
-+	out->valid[9] = BPF_CORE_READ(task,
-+				      group_leader, group_leader, group_leader,
-+				      group_leader, group_leader, group_leader,
-+				      group_leader, group_leader,
-+				      tgid) == real_tgid;
-+
-+	/* test BPF_CORE_READ_STR_INTO() returns correct code and contents */
-+	out->comm_len = BPF_CORE_READ_STR_INTO(
-+		&out->comm, task,
-+		group_leader, group_leader, group_leader, group_leader,
-+		group_leader, group_leader, group_leader, group_leader,
-+		comm);
- 
- 	return 0;
- }
--- 
-2.17.1
+So overall less manual work / checks than what used to be before while
+improving / ensuring more consistency in the commits at the same time.
+If you have further suggestions / improvements / patches to pw.git,
+happy to hear. :)
 
+Thanks,
+Daniel
+
+> >   [0] https://git.kernel.org/pub/scm/linux/kernel/git/dborkman/pw.git/
+> >
+> > > On Tue, Oct 1, 2019 at 8:20 PM Andrii Nakryiko
+> > > <andrii.nakryiko@gmail.com> wrote:
+> > > >
+> > > > On Tue, Oct 1, 2019 at 10:40 AM Brian Vazquez <brianvv@google.com> wrote:
+> > > > >
+> > > >
+> > > > I don't think there is a need to add "test_progs:" to subject, "
+> > > > test_sockopt_inherit" is specific enough ;)
+> > > >
+> > > > > server_fd needs to be close if pthread can't be created.
+> > > >
+> > > > typo: closed
+> > > >
+> > > > > Fixes: e3e02e1d9c24 ("selftests/bpf: test_progs: convert test_sockopt_inherit")
+> > > > > Cc: Stanislav Fomichev <sdf@google.com>
+> > > > > Signed-off-by: Brian Vazquez <brianvv@google.com>
+> > > > > ---
+> > > >
+> > > > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > > >
+> > > > >  tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
