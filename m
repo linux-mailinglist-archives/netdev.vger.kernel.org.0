@@ -2,103 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B29AC8E82
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C5F1C8E84
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:39:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbfJBQhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:37:40 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:34196 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725916AbfJBQhj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:37:39 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 7915C60ADE; Wed,  2 Oct 2019 16:37:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570034258;
-        bh=W2ugWw+g4hwqvYP2PhDRDzBcHTHI03rkdLJkiNE2ZS4=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=ECEaEuCdVLCu0VGh+t83VcJoK2eLJ7R45a7tTf4HuXJV+PQY9u5ffT9cerhhfsRSH
-         xeoUe0uammn+/2fCqp1beres+SokK8vmhOfjh1aKCEhpp5qckbCopF5R2h8VPtmvno
-         g5W58616BfgNGGorME3ps27xTJ2VU2zz50q6t6BE=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 02B866013C;
-        Wed,  2 Oct 2019 16:37:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570034257;
-        bh=W2ugWw+g4hwqvYP2PhDRDzBcHTHI03rkdLJkiNE2ZS4=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=LCCnEHegaZm4ZAkRYFxwZTKdrfata2y9wMVg6baYREWLFcYar8o3lPxqA7BfWZ9Xz
-         D4K1iPLMihgyTD+hgPrvxz38jSFqv0WKdxvWIaIZ9oCuc/1QwQ/LFVcEq1jav1XlWC
-         EgQiFPTXtQZKPfW8W+L1gFLLRM0+bPLVpqwUtnrs=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 02B866013C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Chris Chiu <chiu@endlessm.com>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>
-Subject: Re: [PATCH v2] rtl8xxxu: add bluetooth co-existence support for single antenna
-References: <20190911025045.20918-1-chiu@endlessm.com>
-        <20191002042911.2E755611BF@smtp.codeaurora.org>
-        <CAB4CAwdvJSjamjUgu2BJxKxEW_drCyRFVTbwN_v-suXc2ZjeAg@mail.gmail.com>
-Date:   Wed, 02 Oct 2019 19:37:33 +0300
-In-Reply-To: <CAB4CAwdvJSjamjUgu2BJxKxEW_drCyRFVTbwN_v-suXc2ZjeAg@mail.gmail.com>
-        (Chris Chiu's message of "Wed, 2 Oct 2019 20:38:07 +0800")
-Message-ID: <87pnjf2jea.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1726698AbfJBQjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:39:00 -0400
+Received: from mail-vs1-f74.google.com ([209.85.217.74]:48641 "EHLO
+        mail-vs1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726101AbfJBQjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:39:00 -0400
+Received: by mail-vs1-f74.google.com with SMTP id h11so2456275vsj.15
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=7lKqCJ9TVE8tFLHn5rVQZEyU0CT5dgJIILtE31aRTEE=;
+        b=LwFeArPrN3lOc+JAjSdxu/LRTczKq7JPhcfiq6rkaHS+Tc1CQEiNIPPU3ktKTY303K
+         86J/uvny0Z88aY1kvLRy5cnEuQ/uSZW6tWKj3wvHYb/fu9ues9xq+NhcnaPG6Zj4C54e
+         DQhXgapPQlGly5zl79UqbwRYipO7993BkpFZ9pNGT57xC8+cJIHw3KpDctKs1SXCyzHD
+         O5tjZ8iwGQIIkMbfO7FRhJ2vMAqIxJIkJb7/17qIUZy5dTAwUUFd7Nzng0AaSw2b84xF
+         GyRUllqRiuB3MtCxZJlzUyyBuA+1cReZh+K4C8LLctNPJJg53JOedh1bTzei4JdTfIIx
+         OUwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=7lKqCJ9TVE8tFLHn5rVQZEyU0CT5dgJIILtE31aRTEE=;
+        b=Plk5kB0EaRbXe6mZuK2Wk+ZbrrJ/c1g1GjdLYYjDesyRtjDGChBZ2kyT307Zsuq96p
+         FIaaQ6AWSEbm72L3MmZLi/3mXbi86TNCbRk8VnThvQodlXky3IENwfx+2CBfkh2bPaTt
+         L/K2tnJYLSVoaAOTGpg0nqGYxr6MsD/RNfNCDBfXSXwjUeRxjDWK7DwtH9uFyxlSh2dR
+         zlGI6pMH8tHnq34GiqFzd8o4q4uX9zdwCH9hMsEshsF6rEbLoHyjy3XgwRDr+T68fQVK
+         QUjR8aoZqeZ0N1im+umyrucDZATeO3wwo90cKvwg2RztCfeky8+Zpwuy9maYdnVEPUv/
+         Bm5Q==
+X-Gm-Message-State: APjAAAWlCQZ/cEAcLk8DKkvg0iob3aigvJpJEl60ayQGDtXZJujY4CQ2
+        1gqjSbuTTbznlEEJnLFvnGTpX2DvAejcJA==
+X-Google-Smtp-Source: APXvYqyej8JFQybhoa/Gz8umL/7KFXyEtM522gU/6NfVgMrA/3pz1VJzEEW2cVfGq0H3DEKsfqgY4wRuJziGDA==
+X-Received: by 2002:ab0:30e1:: with SMTP id d1mr2196242uam.29.1570034339184;
+ Wed, 02 Oct 2019 09:38:59 -0700 (PDT)
+Date:   Wed,  2 Oct 2019 09:38:55 -0700
+Message-Id: <20191002163855.145178-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+Subject: [PATCH net] ipv6: drop incoming packets having a v4mapped source address
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Chris Chiu <chiu@endlessm.com> writes:
+This began with a syzbot report. syzkaller was injecting
+IPv6 TCP SYN packets having a v4mapped source address.
 
-> On Wed, Oct 2, 2019 at 12:29 PM Kalle Valo <kvalo@codeaurora.org> wrote:
->
->> Failed to apply, please rebase on top of wireless-drivers-next.
->>
->> fatal: sha1 information is lacking or useless
->> (drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h).
->> error: could not build fake ancestor
->> Applying: rtl8xxxu: add bluetooth co-existence support for single antenna
->> Patch failed at 0001 rtl8xxxu: add bluetooth co-existence support for single antenna
->> The copy of the patch that failed is found in: .git/rebase-apply/patch
->>
->> Patch set to Changes Requested.
->>
->> --
->> https://patchwork.kernel.org/patch/11140223/
->>
->> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
->>
->
-> The failure is because this patch needs the 'enum wireless_mode' from another
-> patch https://patchwork.kernel.org/patch/11148163/ which I already submit the
-> new v8 version. I didn't put them in the same series due to it really
-> took me a long
-> time to come out after tx performance improvement patch upstream. Please apply
-> this one after
-> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg2117331.html.
+After an unsuccessful 4-tuple lookup, TCP creates a request
+socket (SYN_RECV) and calls reqsk_queue_hash_req()
 
-Ok, but please always clearly document if there are any dependencies. I
-don't have time to start testing in which order I'm supposed to apply
-them. And the best is if you submit the patches in same patchset, that
-way I don't need to do anything extra.
+reqsk_queue_hash_req() calls sk_ehashfn(sk)
 
+At this point we have AF_INET6 sockets, and the heuristic
+used by sk_ehashfn() to either hash the IPv4 or IPv6 addresses
+is to use ipv6_addr_v4mapped(&sk->sk_v6_daddr)
+
+For the particular spoofed packet, we end up hashing V4 addresses
+which were not initialized by the TCP IPv6 stack, so KMSAN fired
+a warning.
+
+I first fixed sk_ehashfn() to test both source and destination addresses,
+but then faced various problems, including user-space programs
+like packetdrill that had similar assumptions.
+
+Instead of trying to fix the whole ecosystem, it is better
+to admit that we have a dual stack behavior, and that we
+can not build linux kernels without V4 stack anyway.
+
+The dual stack API automatically forces the traffic to be IPv4
+if v4mapped addresses are used at bind() or connect(), so it makes
+no sense to allow IPv6 traffic to use the same v4mapped class.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/ipv6/ip6_input.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index d432d0011c160f41aec09640e95179dd7b364cfc..2bb0b66181a741c7fb73cacbdf34c5160f52d186 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -223,6 +223,16 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	if (ipv6_addr_is_multicast(&hdr->saddr))
+ 		goto err;
+ 
++	/* While RFC4291 is not explicit about v4mapped addresses
++	 * in IPv6 headers, it seems clear linux dual-stack
++	 * model can not deal properly with these.
++	 * Security models could be fooled by ::ffff:127.0.0.1 for example.
++	 *
++	 * https://tools.ietf.org/html/draft-itojun-v6ops-v4mapped-harmful-02
++	 */
++	if (ipv6_addr_v4mapped(&hdr->saddr))
++		goto err;
++
+ 	skb->transport_header = skb->network_header + sizeof(*hdr);
+ 	IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
+ 
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.23.0.581.g78d2f28ef7-goog
+
