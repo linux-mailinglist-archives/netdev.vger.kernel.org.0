@@ -2,211 +2,311 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB6CFC8E78
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D52DBC8E7A
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727452AbfJBQe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:34:28 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:40754 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbfJBQe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:34:27 -0400
-Received: by mail-io1-f65.google.com with SMTP id h144so58313634iof.7;
-        Wed, 02 Oct 2019 09:34:26 -0700 (PDT)
+        id S1726101AbfJBQfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:35:30 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:45670 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbfJBQfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:35:30 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r5so20376767wrm.12
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=L5yzv1HKm2KvXDWTbTeXvO+EhVNRDX+DbnXraQLBFn0=;
-        b=lFSnoA1vCQpaBdmO0hm7yIKAyoyWDoNwr7eXT187a3yItzzUqNF4p7h9h0/VDB8hUU
-         jm438X7eGij266KCQ0y61xgk9bmYwzDJwjY80G/uIrLyXk/Yhr4COgnnqueB/V62JQpK
-         r+ZdfLoovwWH9fMeqv5uJSu2Qz2yFsv3KZe4DHfEY8OeyVyDOC6IGO0OnpPNa5x11VGs
-         UvoVMLV9tV1Wlil4QncV7WPhcvIEM4wVfbrgvr8iJnf1O5JddZ7FLnZNeOhNpxp6fMxn
-         uQEv0WaKEj4wGGfx4+ixlEu/i+H8PekTXF9C9WrPq704L2bLOwsl3dFw0WySKBxTJcG4
-         VT4w==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=/vAHg6YpuAM+T8hSe2G21rYXSPfkdYvVRxvzFLiOgwg=;
+        b=JCDmCpdGFhRUco2xouUiynSfrCujChPIU1V4TWhV6VyHWnIsVgItc8ijH3Hmj1P8IL
+         HYdXInNPrFGyAs7RtQP+jM2TZa5r3zLTu26i0aItC1elelRMUYsRFH8z/TggvZvyI+LH
+         2GRdct8mCtIehQ6VFyHvSBAa6nPCM0aBUtx0Z7KV0JsfEUda/cC557J8C3ax5bPfCZD5
+         PME13OtKtKiOHYxddWwGZUSAjQLyIBnIJlCc7MitTd9P3JASMaCWSaQtD0iqx8Iqm/pC
+         pTOvv6KQkJ2N/JMczVvMrThtIu/ntQgRMgyEf0LlTHDoLeLiB80gL5iMdGMZ/io8gRJ+
+         HZWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=L5yzv1HKm2KvXDWTbTeXvO+EhVNRDX+DbnXraQLBFn0=;
-        b=TMXS5ei6+cF2WqsOZosKOSfj2QVbcqBaCS+ZkRb9fRQL4ssFPU7TDxauiL1yq7LRgn
-         ONGxnMjVQ5LAiIlwAvlw+XIkpHwgNUqBLSO0MvzPp+nb/M49Q4mC09jEDBFnEODSVlE2
-         4g59G5+mSEEPSjXzwWSQNKA2brwgHxbbMjmbGXvUcehndsyqCHa14iRzwCg4zD/i/Iz9
-         Fjd0qK1S95F+4GW/SHKuu5OHfkMlRl1j/o7QP/Zy+tZs+dyHWw/7cmzRRQQOtF0HbntQ
-         Hnz5e0n288+SEQ/EOrdU69e9RDfvkYKEXqvfo/lGzlpke/5F9MD0nCgp6ZR04lZO2o3k
-         NZ9A==
-X-Gm-Message-State: APjAAAVM3VVIzS/h/FJ2hFVtl8uQc5AwPTShvG83goEGPZ4A8bf7VLwf
-        oACnMCHTRxiQTmkYuTj50Sg=
-X-Google-Smtp-Source: APXvYqx2XYfRz9ULn6fLoAoZ7Ax/aD7xiyHVHTjdgCOEfj4pxYMon+wDfzZN+JyL6TDwiG7t6gklQg==
-X-Received: by 2002:a02:7405:: with SMTP id o5mr4836748jac.44.1570034066364;
-        Wed, 02 Oct 2019 09:34:26 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id d26sm5063049ioc.16.2019.10.02.09.34.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 09:34:25 -0700 (PDT)
-Date:   Wed, 02 Oct 2019 09:34:16 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alan Maguire <alan.maguire@oracle.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <5d94d188e4cca_22502b00ea21a5b425@john-XPS-13-9370.notmuch>
-In-Reply-To: <87bluzrwks.fsf@toke.dk>
-References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
- <alpine.LRH.2.20.1910021540270.24629@dhcp-10-175-191-98.vpn.oracle.com>
- <87bluzrwks.fsf@toke.dk>
-Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
- interface through chain calls
-Mime-Version: 1.0
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=/vAHg6YpuAM+T8hSe2G21rYXSPfkdYvVRxvzFLiOgwg=;
+        b=OKVpJ74dwuYRJ4lvkETuSe2Uuk6LQy7LyM1xAPRkObo0pTnuHhAgis+pxhncUz6fwH
+         YvCFCj+e4U8qFcGLU0pnWTIXxptdn/3tq0BERgcjhhkrpnaq81HHR1QZi+AwWYBzxfL8
+         onSbMhrpGsWYOFR5YiIXTDFWpoKwvO6c2b33Z3bEoGOPSCQjWJVmYGuHM/wnxQxJFjZw
+         VJLjtZKWKf8ExRlhrtagNHnwmNGIz4wV3UATUyJHMoNQnWAl75uCMieR1SOZlVQ5vxeT
+         0fDlfJjAw8ZMq0qcn9PIL+qvfennJ3Or24mdA/gmuQSk4fM0FsLw6lurHqiWGakdlfiw
+         CXHQ==
+X-Gm-Message-State: APjAAAXgwHKdrHGV5B5w0twSf6Zx/zofx4Pr9R5lTREhYatrveICSXfj
+        oLC0BIB0TbtKzUi8qi+0RVXmgrRtvI4=
+X-Google-Smtp-Source: APXvYqx7+d1vZ+otmDTrUFbgO92bnbzaAjt2tkaYIPu/5iRjf46cqPlsPvq9HZ9LENlOf25YKeYE/Q==
+X-Received: by 2002:a5d:4ecf:: with SMTP id s15mr3361707wrv.234.1570034127163;
+        Wed, 02 Oct 2019 09:35:27 -0700 (PDT)
+Received: from mail.hipco.ch ([185.243.164.39])
+        by smtp.gmail.com with ESMTPSA id g1sm18547606wrv.68.2019.10.02.09.35.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Oct 2019 09:35:26 -0700 (PDT)
+X-Virus-Scanned: HIPCO Annihilation Daemon
 Content-Type: text/plain;
- charset=utf-8
+        charset=us-ascii
+Mime-Version: 1.0 (HIPCO Message Framework v1091)
+Subject: Re: Gentoo Linux 5.x - Tigon3
+From:   Rudolf Spring <rudolf.spring@gmail.com>
+In-Reply-To: <CACKFLikbp+sTxFBNEnUYFK2oAqeYm58uULE=AXfCp2Afg3x4ew@mail.gmail.com>
+Date:   Wed, 2 Oct 2019 17:35:23 +0100
+Cc:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <A1527477-EC6E-4B64-880F-B014E8CFCB9D@gmail.com>
+References: <1923F6C8-A3CC-4904-B2E7-176BDB52AF1B@gmail.com>
+ <CACKFLikbp+sTxFBNEnUYFK2oAqeYm58uULE=AXfCp2Afg3x4ew@mail.gmail.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+X-Mailer: HIPCO Mail (2.1091)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> Alan Maguire <alan.maguire@oracle.com> writes:
-> =
+The output of dmesg and ethtool is identical between 4.19.72 and 5.3.2. =
+Any suggestions ?
 
-> > On Wed, 2 Oct 2019, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >
-> >> This series adds support for executing multiple XDP programs on a si=
-ngle
-> >> interface in sequence, through the use of chain calls, as discussed =
-at the Linux
-> >> Plumbers Conference last month:
-> >> =
+0000:01:00.0: enabling device (0000 -> 0002)
+[    1.140738] tg3 0000:01:00.0 eth0: Tigon3 [partno(BCM957766a) rev =
+57766001] (PCI Express) MAC address a8:20:66:28:e6:95
+[    1.140741] tg3 0000:01:00.0 eth0: attached PHY is 57765 =
+(10/100/1000Base-T Ethernet) (WireSpeed[1], EEE[1])
+[    1.140743] tg3 0000:01:00.0 eth0: RXcsums[1] LinkChgREG[0] MIirq[0] =
+ASF[0] TSOcap[1]
+[    1.140744] tg3 0000:01:00.0 eth0: dma_rwctrl[00000001] =
+dma_mask[64-bit]
+[   10.290239] tg3 0000:01:00.0 eth0: Link is up at 1000 Mbps, full =
+duplex
+[   10.290241] tg3 0000:01:00.0 eth0: Flow control is on for TX and on =
+for RX
+[   10.290242] tg3 0000:01:00.0 eth0: EEE is enabled
 
-> >> https://linuxplumbersconf.org/event/4/contributions/460/
-> >> =
+ethtool eth0
+Settings for eth0:
+	Supported ports: [ TP ]
+	Supported link modes:   10baseT/Half 10baseT/Full=20
+	                        100baseT/Half 100baseT/Full=20
+	                        1000baseT/Half 1000baseT/Full=20
+	Supported pause frame use: No
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  10baseT/Half 10baseT/Full=20
+	                        100baseT/Half 100baseT/Full=20
+	                        1000baseT/Half 1000baseT/Full=20
+	Advertised pause frame use: Symmetric
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  10baseT/Half 10baseT/Full=20=
 
-> >> # HIGH-LEVEL IDEA
-> >> =
+	                                     100baseT/Half 100baseT/Full=20=
 
-> >> The basic idea is to express the chain call sequence through a speci=
-al map type,
-> >> which contains a mapping from a (program, return code) tuple to anot=
-her program
-> >> to run in next in the sequence. Userspace can populate this map to e=
-xpress
-> >> arbitrary call sequences, and update the sequence by updating or rep=
-lacing the
-> >> map.
-> >> =
+	                                     1000baseT/Full=20
+	Link partner advertised pause frame use: Symmetric
+	Link partner advertised auto-negotiation: Yes
+	Link partner advertised FEC modes: Not reported
+	Speed: 1000Mb/s
+	Duplex: Full
+	Port: Twisted Pair
+	PHYAD: 1
+	Transceiver: internal
+	Auto-negotiation: on
+	MDI-X: off
+	Supports Wake-on: g
+	Wake-on: g
+	Current message level: 0x000000ff (255)
+			       drv probe link timer ifdown ifup rx_err =
+tx_err
+	Link detected: yes
 
-> >> The actual execution of the program sequence is done in bpf_prog_run=
-_xdp(),
-> >> which will lookup the chain sequence map, and if found, will loop th=
-rough calls
-> >> to BPF_PROG_RUN, looking up the next XDP program in the sequence bas=
-ed on the
-> >> previous program ID and return code.
-> >> =
+ethtool -a eth0
+Pause parameters for eth0:
+Autonegotiate:	on
+RX:		on
+TX:		on
+RX negotiated:	on
+TX negotiated:	on
 
-> >> An XDP chain call map can be installed on an interface by means of a=
- new netlink
-> >> attribute containing an fd pointing to a chain call map. This can be=
- supplied
-> >> along with the XDP prog fd, so that a chain map is always installed =
-together
-> >> with an XDP program.
-> >> =
+ethtool -g eth0
+Ring parameters for eth0:
+Pre-set maximums:
+RX:		511
+RX Mini:	0
+RX Jumbo:	255
+TX:		511
+Current hardware settings:
+RX:		200
+RX Mini:	0
+RX Jumbo:	100
+TX:		511
 
-> >
-> > This is great stuff Toke!
-> =
+ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: off  TX: off
+stats-block-usecs: 0
+sample-interval: 0
+pkt-rate-low: 0
+pkt-rate-high: 0
 
-> Thanks! :)
-> =
+rx-usecs: 20
+rx-frames: 5
+rx-usecs-irq: 0
+rx-frames-irq: 5
 
-> > One thing that wasn't immediately clear to me - and this may be just
-> > me - is the relationship between program behaviour for the XDP_DROP
-> > case and chain call execution. My initial thought was that a program
-> > in the chain XDP_DROP'ping the packet would terminate the call chain,=
+tx-usecs: 72
+tx-frames: 53
+tx-usecs-irq: 0
+tx-frames-irq: 5
 
-> > but on looking at patch #4 it seems that the only way the call chain
-> > execution is terminated is if
-> >
-> > - XDP_ABORTED is returned from a program in the call chain; or
-> =
+rx-usecs-low: 0
+rx-frame-low: 0
+tx-usecs-low: 0
+tx-frame-low: 0
 
-> Yes. Not actually sure about this one...
-> =
+rx-usecs-high: 0
+rx-frame-high: 0
+tx-usecs-high: 0
+tx-frame-high: 0
 
-> > - the map entry for the next program (determined by the return value
-> >   of the current program) is empty; or
-> =
+ethtool -k eth0
+Features for eth0:
+rx-checksumming: on
+tx-checksumming: on
+	tx-checksum-ipv4: on
+	tx-checksum-ip-generic: off [fixed]
+	tx-checksum-ipv6: on
+	tx-checksum-fcoe-crc: off [fixed]
+	tx-checksum-sctp: off [fixed]
+scatter-gather: on
+	tx-scatter-gather: on
+	tx-scatter-gather-fraglist: off [fixed]
+tcp-segmentation-offload: on
+	tx-tcp-segmentation: on
+	tx-tcp-ecn-segmentation: on
+	tx-tcp-mangleid-segmentation: off
+	tx-tcp6-segmentation: on
+udp-fragmentation-offload: off
+generic-segmentation-offload: on
+generic-receive-offload: on
+large-receive-offload: off [fixed]
+rx-vlan-offload: on [fixed]
+tx-vlan-offload: on [fixed]
+ntuple-filters: off [fixed]
+receive-hashing: off [fixed]
+highdma: on
+rx-vlan-filter: off [fixed]
+vlan-challenged: off [fixed]
+tx-lockless: off [fixed]
+netns-local: off [fixed]
+tx-gso-robust: off [fixed]
+tx-fcoe-segmentation: off [fixed]
+tx-gre-segmentation: off [fixed]
+tx-gre-csum-segmentation: off [fixed]
+tx-ipxip4-segmentation: off [fixed]
+tx-ipxip6-segmentation: off [fixed]
+tx-udp_tnl-segmentation: off [fixed]
+tx-udp_tnl-csum-segmentation: off [fixed]
+tx-gso-partial: off [fixed]
+tx-sctp-segmentation: off [fixed]
+tx-esp-segmentation: off [fixed]
+tx-udp-segmentation: off [fixed]
+fcoe-mtu: off [fixed]
+tx-nocache-copy: off
+loopback: off [fixed]
+rx-fcs: off [fixed]
+rx-all: off [fixed]
+tx-vlan-stag-hw-insert: off [fixed]
+rx-vlan-stag-hw-parse: off [fixed]
+rx-vlan-stag-filter: off [fixed]
+l2-fwd-offload: off [fixed]
+hw-tc-offload: off [fixed]
+esp-hw-offload: off [fixed]
+esp-tx-csum-hw-offload: off [fixed]
+rx-udp_tunnel-port-offload: off [fixed]
+tls-hw-tx-offload: off [fixed]
+tls-hw-rx-offload: off [fixed]
+rx-gro-hw: off [fixed]
+tls-hw-record: off [fixed]
 
-> This will be the common exit condition, I expect
-> =
+ethtool -n eth0
+4 RX rings available
+rxclass: Cannot get RX class rule count: Operation not supported
+RX classification rule retrieval failed
 
-> > - we run out of entries in the map
-> =
+ethtool -t eth0
+The test result is PASS
+The test extra info:
+nvram test        (online) 	 0
+link test         (online) 	 0
+register test     (offline)	 0
+memory test       (offline)	 0
+mac loopback test (offline)	 0
+phy loopback test (offline)	 0
+ext loopback test (offline)	 0
+interrupt test    (offline)	 0
 
-> You mean if we run the iteration counter to zero, right?
-> =
+ethtool -T eth0
+Time stamping parameters for eth0:
+Capabilities:
+	software-transmit     (SOF_TIMESTAMPING_TX_SOFTWARE)
+	software-receive      (SOF_TIMESTAMPING_RX_SOFTWARE)
+	software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
+PTP Hardware Clock: none
+Hardware Transmit Timestamp Modes:
+	off                   (HWTSTAMP_TX_OFF)
+	on                    (HWTSTAMP_TX_ON)
+Hardware Receive Filter Modes:
+	none                  (HWTSTAMP_FILTER_NONE)
+	ptpv1-l4-event        (HWTSTAMP_FILTER_PTP_V1_L4_EVENT)
+	ptpv2-l4-event        (HWTSTAMP_FILTER_PTP_V2_L4_EVENT)
+	ptpv2-l2-event        (HWTSTAMP_FILTER_PTP_V2_L2_EVENT)
 
-> > The return value of the last-executed program in the chain seems to b=
-e
-> > what determines packet processing behaviour after executing the chain=
+ethtool -l eth0
+Channel parameters for eth0:
+Pre-set maximums:
+RX:		4
+TX:		1
+Other:		0
+Combined:	0
+Current hardware settings:
+RX:		4
+TX:		1
+Other:		0
+Combined:	0
 
-> > (_DROP, _TX, _PASS, etc). So there's no way to both XDP_PASS and
-> > XDP_TX a packet from the same chain, right? Just want to make sure
-> > I've got the semantics correct. Thanks!
-> =
+ethtool --show-eee eth0
+EEE Settings for eth0:
+	EEE status: enabled - active
+	Tx LPI: 2047 (us)
+	Supported EEE link modes:  100baseT/Full=20
+	                           1000baseT/Full=20
+	Advertised EEE link modes:  100baseT/Full=20
+	                            1000baseT/Full=20
+	Link partner advertised EEE link modes:  100baseT/Full=20
+	                                         1000baseT/Full=20
 
-> Yeah, you've got all this right. The chain call mechanism itself doesn'=
-t
-> change any of the underlying fundamentals of XDP. I.e., each packet get=
-s
-> exactly one verdict.
-> =
+> These are all the tg3 changes between 4.19 and 5.0:
+>=20
+> 750afb08ca71 cross-tree: phase out dma_zalloc_coherent()
+> cddaf02bcb73 tg3: optionally use eth_platform_get_mac_address() to get
+> mac address
+> 3c1bcc8614db net: ethernet: Convert phydev advertize and supported
+> from u32 to link mode
+> 6fe42e228dc2 tg3: extend PTP gettime function to read system clock
+> 310fc0513ea9 tg3: Fix fall-through annotations
+> 22b7d29926b5 net: ethernet: Add helper to determine if pause
+> configuration is supported
+> 70814e819c11 net: ethernet: Add helper for set_pauseparam for Asym =
+Pause
+> af8d9bb2f2f4 net: ethernet: Add helper for MACs which support asym =
+pause
+> 04b7d41d8046 net: ethernet: Fix up drivers masking pause support
+> 58056c1e1b0e net: ethernet: Use phy_set_max_speed() to limit =
+advertised speed
+>=20
+> Most of the changes are related to PHY settings.  I suggest that you
+> check the link settings, including speed, pause, asym pause, etc
+> between the working kernel and the non-working kernel to see if there
+> are differences in the settings.
 
-> For chaining actual XDP programs that do different things to the packet=
-,
-> I expect that the most common use case will be to only run the next
-> program if the previous one returns XDP_PASS. That will make the most
-> semantic sense I think.
-> =
-
-> But there are also use cases where one would want to match on the other=
-
-> return codes; such as packet capture, for instance, where one might
-> install a capture program that would carry forward the previous return
-> code, but do something to the packet (throw it out to userspace) first.=
-
-> =
-
-> For the latter use case, the question is if we need to expose the
-> previous return code to the program when it runs. You can do things
-> without it (by just using a different program per return code), but it
-> may simplify things if we just expose the return code. However, since
-> this will also change the semantics for running programs, I decided to
-> leave that off for now.
-> =
-
-> -Toke
-
-In other cases where programs (e.g. cgroups) are run in an array the
-return codes are 'AND'ed together so that we get
-
-   result1 & result2 & ... & resultN
-
-The result is if any program returns a drop then the packet should
-be dropped, but all programs at least "see" the packet. There was
-a lot of debate over this semantic and I think in hind sight it
-actually works pretty well so any chaining in XDP should also keep
-those semantics. For things like redirect we can already, even in
-the same program, do multiple calls to the redirect helper and it
-will overwrite the last call so those semantics can stay the same.
-
-.John=
