@@ -2,229 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E8CC94AD
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:15:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E5BC94A8
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728432AbfJBXPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 19:15:05 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46180 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727993AbfJBXPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 19:15:05 -0400
-Received: by mail-wr1-f68.google.com with SMTP id o18so753359wrv.13
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 16:15:04 -0700 (PDT)
+        id S1728486AbfJBXOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 19:14:40 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:38135 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbfJBXOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 19:14:40 -0400
+Received: by mail-pl1-f195.google.com with SMTP id w8so564268plq.5
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 16:14:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KOk3S0EtkAcNYMb/vn1TJfFbgQqYuT2xPMVheCZK9u0=;
-        b=1M5e6cg7CTzoYN3rG01R44n7hJp0gTjqcWGQV84mtSAgOgPy1K6IwaUi2QBjKYkIqQ
-         y7GE+q9TuzrQSs6oQ6+iqy/NVzxfjQMbWJWsupV300n3Tr+jINlTWL2Tv7CMBYKsZYus
-         YRmNyAG5dCfYmncj39zvKA3D7AfzJwmBt8+VldsR0oo2oRLPWBkF2hqRONwbOPwypseb
-         DVvr/M6PnWUeD0U9she4ssjKqRC3clwl1RSXLuZAyJugeOY5RE9Xce8ps6EMg6zpmDs6
-         Uiqmqp7o572VzIV7SFAbGEV2Q5a0Z7v7mApRmaNBwisYekyz1BlBvuoWlpYbY6vsYQd8
-         vOcg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4rtTmpsVhlx8+e7wdoUm8AEZSQTyNsPFhjsOUnFs8oo=;
+        b=cijraE47bIyHH6ByGaihiLMd1jrZwbUQr0fbbJWEy5oGG+GVB/RLXSXkgWkM1fAmRw
+         A6lQcEjHTf5P/c4HLtOnzm+vtbafH7XUPSmq06DGWm2rSuv1w+0/llF53Vod+KC22Ph6
+         z454CQZLiPIb8Hey6CNg7cUSW0k4gQUkpKEpRuFT+0OwQMNLin9FTJmoyV6D9WEl4kk3
+         WyNOPQte/FzNIjYz2igcNYn9jvJ6Az/+tjcEGBlit5MfxlmMRn5PHBs0vU7PWdJn5dPB
+         hpHIwwRCrHSk40oDLarPcJBdEOCSxnIbm3hEz+xJPJOVyF4dckU13yHq5M18JGTJIkuz
+         YaCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=KOk3S0EtkAcNYMb/vn1TJfFbgQqYuT2xPMVheCZK9u0=;
-        b=bEnOAsLP/LMZ+f0BEQvmECAJAc/cGeSbN9qwkyC1N0XGaDt1/m6Ks92yFZ5Aetc+zL
-         6faIkw0vduu5J8Svhj+7zT75n55kTF8hpwuvR+LNBVBlqVew/m6DobakKUUv0fDNUmJt
-         tt8PMKzjeN28qWwHKiq8Tb+nLQQr/3NiBtfNeI5IGDzWymvTFDpIl8cLeoBuhxJotT/V
-         kNTazlkiHDPBBRtg/wTaGxHhcxLv/Sepwd5x171qxXVOAd29uQtuPo/1HANjVGuXgIOQ
-         XUyqMmrGZkhimhCxvZZqPYWGMKb6Wr4kJUPuTaRLp36YeUms5bL4x6oFVJqnAIgXRoPV
-         19cg==
-X-Gm-Message-State: APjAAAXMUA7JjnT9JqQoREgQsHoCPn68PpU0mQ9WrfeXfH+Z3ypWkfjr
-        mGsHf90XUfDz8AkOGX4GwbchFA==
-X-Google-Smtp-Source: APXvYqw3oZWPqp26Ul3zOvPf/dYDObQOnkbCX/5JJXZ4STcLtAx1laFDwR9c9FAOy9Kwo7bQFQrpXw==
-X-Received: by 2002:adf:f60b:: with SMTP id t11mr4168256wrp.179.1570058103404;
-        Wed, 02 Oct 2019 16:15:03 -0700 (PDT)
-Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id l11sm643895wmh.34.2019.10.02.16.15.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 02 Oct 2019 16:15:02 -0700 (PDT)
-From:   John Hurley <john.hurley@netronome.com>
-To:     vladbu@mellanox.com
-Cc:     jiri@mellanox.com, netdev@vger.kernel.org,
-        simon.horman@netronome.com, jakub.kicinski@netronome.com,
-        oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
-Subject: [RFC net-next 2/2] net: sched: fix tp destroy race conditions in flower
-Date:   Thu,  3 Oct 2019 00:14:32 +0100
-Message-Id: <1570058072-12004-3-git-send-email-john.hurley@netronome.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1570058072-12004-1-git-send-email-john.hurley@netronome.com>
-References: <1570058072-12004-1-git-send-email-john.hurley@netronome.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4rtTmpsVhlx8+e7wdoUm8AEZSQTyNsPFhjsOUnFs8oo=;
+        b=g3TdVho9N028cfwaR6LZZCLG5PV4/+YbvD9HsA6KR3e2nYx5HQ+Ve9wkG+QOgdDl9+
+         8rX2ZMoFWcfXdfixbD8LNxXItdcCPJN4Wl2EylP+x4PTgX3X3g2Fa3L+OJC+Bi1WABCQ
+         vnu7qODLUUr2Uze0pvGMDSZTH8OEmYkuq25TYsTny57ayTQ/1fjPUUkvqMDP/01zOFAj
+         jRiJyLLU4I1uePc3eAl5ACEGO2c4onKN1qQ9pgjPBeJ/4ELo0HzgbJB/zT1PCdB6vb5D
+         p+BFnUEgUMF+ZSK/f4q1vxr8L41v5hu1OWLpGT6DpJHMWif8sQT58E/UXov1nmmywjyE
+         0cdA==
+X-Gm-Message-State: APjAAAVr5wKJWZquxHAAX5bUZwzuuSLKNgY9uK/Z61Rr1OGU+hSXL+zm
+        bUY95XpEKSs0MODtirxWbuw=
+X-Google-Smtp-Source: APXvYqwoHXpkffR8GtEsgHS8zQEcJj/q73WJQAOl/y5IqPRzAFljtGrqciqk1GVwFwYD/kxf81Fssg==
+X-Received: by 2002:a17:902:67:: with SMTP id 94mr6529982pla.121.1570058079739;
+        Wed, 02 Oct 2019 16:14:39 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id r1sm398877pgv.70.2019.10.02.16.14.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Oct 2019 16:14:38 -0700 (PDT)
+Subject: Re: [PATCH] tcp: add tsval and tsecr to TCP_INFO
+To:     William Dauchy <wdauchy@gmail.com>
+Cc:     NETDEV <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20191002221017.2085-1-wdauchy@gmail.com>
+ <025bcf1e-b7d4-5fa2-ec68-074c62b9d63c@gmail.com>
+ <CAJ75kXZT1Mt_=dqG+YEZHpzDLUZaPK=Nep=S85t9V+cT1TNMfA@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d0b1f5b1-8182-a1d0-4abf-924a0f050393@gmail.com>
+Date:   Wed, 2 Oct 2019 16:14:37 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <CAJ75kXZT1Mt_=dqG+YEZHpzDLUZaPK=Nep=S85t9V+cT1TNMfA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flower has rule HW offload functions available that drivers can choose to
-register for. For the deletion case, these are triggered after filters
-have been removed from lookup tables both at the flower level, and the
-higher cls_api level. With flower running without RTNL locking, this can
-lead to races where HW offload messages get out of order.
 
-Ensure HW offloads stay in line with the kernel tables by triggering
-the sending of messages before the kernel processing is completed. For
-destroyed tcf_protos, do this at the new pre_destroy hook. Similarly, if
-a filter is being added, check that it is not concurrently being deleted
-before offloading to hw, rather than the current approach of offloading,
-then checking and reversing the offload if required.
 
-Fixes: 1d965c4def07 ("Refactor flower classifier to remove dependency on rtnl lock")
-Fixes: 272ffaadeb3e ("net: sched: flower: handle concurrent tcf proto deletion")
-Signed-off-by: John Hurley <john.hurley@netronome.com>
-Reported-by: Louis Peens <louis.peens@netronome.com>
----
- net/sched/cls_flower.c | 55 +++++++++++++++++++++++++++-----------------------
- 1 file changed, 30 insertions(+), 25 deletions(-)
+On 10/2/19 3:54 PM, William Dauchy wrote:
+> Hello Eric,
+> 
+> On Thu, Oct 3, 2019 at 12:33 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>> On 10/2/19 3:10 PM, William Dauchy wrote:
+>> Reporting the last recorded values is really not good,
+>> a packet capture will give you all this information in a non
+>> racy way.
+> 
+> Thank you for your quick answer.
+> In my use case I use it on a http server where I tag my requests with
+> such informations coming from tcp, which later helps to diagnose some
+> issues and create some useful metrics to give me a general signal.
+> Does it still sound like an invalid use case?
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 74221e3..3ac47b5 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -513,13 +513,16 @@ static struct cls_fl_filter *__fl_get(struct cls_fl_head *head, u32 handle)
- }
- 
- static int __fl_delete(struct tcf_proto *tp, struct cls_fl_filter *f,
--		       bool *last, bool rtnl_held,
-+		       bool *last, bool rtnl_held, bool do_hw,
- 		       struct netlink_ext_ack *extack)
- {
- 	struct cls_fl_head *head = fl_head_dereference(tp);
- 
- 	*last = false;
- 
-+	if (do_hw && !tc_skip_hw(f->flags))
-+		fl_hw_destroy_filter(tp, f, rtnl_held, extack);
-+
- 	spin_lock(&tp->lock);
- 	if (f->deleted) {
- 		spin_unlock(&tp->lock);
-@@ -534,8 +537,6 @@ static int __fl_delete(struct tcf_proto *tp, struct cls_fl_filter *f,
- 	spin_unlock(&tp->lock);
- 
- 	*last = fl_mask_put(head, f->mask);
--	if (!tc_skip_hw(f->flags))
--		fl_hw_destroy_filter(tp, f, rtnl_held, extack);
- 	tcf_unbind_filter(tp, &f->res);
- 	__fl_put(f);
- 
-@@ -563,7 +564,7 @@ static void fl_destroy(struct tcf_proto *tp, bool rtnl_held,
- 
- 	list_for_each_entry_safe(mask, next_mask, &head->masks, list) {
- 		list_for_each_entry_safe(f, next, &mask->filters, list) {
--			__fl_delete(tp, f, &last, rtnl_held, extack);
-+			__fl_delete(tp, f, &last, rtnl_held, false, extack);
- 			if (last)
- 				break;
- 		}
-@@ -574,6 +575,19 @@ static void fl_destroy(struct tcf_proto *tp, bool rtnl_held,
- 	tcf_queue_work(&head->rwork, fl_destroy_sleepable);
- }
- 
-+static void fl_pre_destroy(struct tcf_proto *tp, bool rtnl_held,
-+			   struct netlink_ext_ack *extack)
-+{
-+	struct cls_fl_head *head = fl_head_dereference(tp);
-+	struct fl_flow_mask *mask, *next_mask;
-+	struct cls_fl_filter *f, *next;
-+
-+	list_for_each_entry_safe(mask, next_mask, &head->masks, list)
-+		list_for_each_entry_safe(f, next, &mask->filters, list)
-+			if (!tc_skip_hw(f->flags))
-+				fl_hw_destroy_filter(tp, f, rtnl_held, extack);
-+}
-+
- static void fl_put(struct tcf_proto *tp, void *arg)
- {
- 	struct cls_fl_filter *f = arg;
-@@ -1588,6 +1602,13 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- 	if (err)
- 		goto errout_mask;
- 
-+	spin_lock(&tp->lock);
-+	if (tp->deleting || (fold && fold->deleted)) {
-+		err = -EAGAIN;
-+		goto errout_lock;
-+	}
-+	spin_unlock(&tp->lock);
-+
- 	if (!tc_skip_hw(fnew->flags)) {
- 		err = fl_hw_replace_filter(tp, fnew, rtnl_held, extack);
- 		if (err)
-@@ -1598,22 +1619,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- 		fnew->flags |= TCA_CLS_FLAGS_NOT_IN_HW;
- 
- 	spin_lock(&tp->lock);
--
--	/* tp was deleted concurrently. -EAGAIN will cause caller to lookup
--	 * proto again or create new one, if necessary.
--	 */
--	if (tp->deleting) {
--		err = -EAGAIN;
--		goto errout_hw;
--	}
--
- 	if (fold) {
--		/* Fold filter was deleted concurrently. Retry lookup. */
--		if (fold->deleted) {
--			err = -EAGAIN;
--			goto errout_hw;
--		}
--
- 		fnew->handle = handle;
- 
- 		if (!in_ht) {
-@@ -1624,7 +1630,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- 						     &fnew->ht_node,
- 						     params);
- 			if (err)
--				goto errout_hw;
-+				goto errout_lock;
- 			in_ht = true;
- 		}
- 
-@@ -1667,7 +1673,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- 					    INT_MAX, GFP_ATOMIC);
- 		}
- 		if (err)
--			goto errout_hw;
-+			goto errout_lock;
- 
- 		refcount_inc(&fnew->refcnt);
- 		fnew->handle = handle;
-@@ -1683,11 +1689,9 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- 
- errout_ht:
- 	spin_lock(&tp->lock);
--errout_hw:
-+errout_lock:
- 	fnew->deleted = true;
- 	spin_unlock(&tp->lock);
--	if (!tc_skip_hw(fnew->flags))
--		fl_hw_destroy_filter(tp, fnew, rtnl_held, NULL);
- 	if (in_ht)
- 		rhashtable_remove_fast(&fnew->mask->ht, &fnew->ht_node,
- 				       fnew->mask->filter_ht_params);
-@@ -1713,7 +1717,7 @@ static int fl_delete(struct tcf_proto *tp, void *arg, bool *last,
- 	bool last_on_mask;
- 	int err = 0;
- 
--	err = __fl_delete(tp, f, &last_on_mask, rtnl_held, extack);
-+	err = __fl_delete(tp, f, &last_on_mask, rtnl_held, true, extack);
- 	*last = list_empty(&head->masks);
- 	__fl_put(f);
- 
-@@ -2509,6 +2513,7 @@ static struct tcf_proto_ops cls_fl_ops __read_mostly = {
- 	.kind		= "flower",
- 	.classify	= fl_classify,
- 	.init		= fl_init,
-+	.pre_destroy	= fl_pre_destroy,
- 	.destroy	= fl_destroy,
- 	.get		= fl_get,
- 	.put		= fl_put,
--- 
-2.7.4
+I would rather use a new getsockopt() to fetch this specific data,
+instead of making TCP_INFO bigger for everyone :/
+
+ss command can dump millions of sockets in busy hosts, we need to be
+careful of TCP_INFO size.
 
