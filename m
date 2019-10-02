@@ -2,52 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2895DC9361
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 23:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 802AEC936D
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 23:22:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729101AbfJBVRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 17:17:45 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:37036 "EHLO
+        id S1729482AbfJBVWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 17:22:16 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:37100 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728713AbfJBVRp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 17:17:45 -0400
+        with ESMTP id S1728713AbfJBVWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 17:22:16 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9D4821550C5DA;
-        Wed,  2 Oct 2019 14:17:44 -0700 (PDT)
-Date:   Wed, 02 Oct 2019 14:17:41 -0700 (PDT)
-Message-Id: <20191002.141741.760314650556672160.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: Remove unused __DSA_SKB_CB macro
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7DF32154F41D6;
+        Wed,  2 Oct 2019 14:22:15 -0700 (PDT)
+Date:   Wed, 02 Oct 2019 14:22:14 -0700 (PDT)
+Message-Id: <20191002.142214.252882219207569928.davem@davemloft.net>
+To:     yzhai003@ucr.edu
+Cc:     csong@cs.ucr.edu, zhiyunq@cs.ucr.edu, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: hisilicon: Fix usage of uninitialized variable in
+ function mdio_sc_cfg_reg_write()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191001191250.7337-1-olteanv@gmail.com>
-References: <20191001191250.7337-1-olteanv@gmail.com>
+In-Reply-To: <20191001202439.15766-1-yzhai003@ucr.edu>
+References: <20191001202439.15766-1-yzhai003@ucr.edu>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 02 Oct 2019 14:17:44 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 02 Oct 2019 14:22:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Tue,  1 Oct 2019 22:12:50 +0300
+From: Yizhuo <yzhai003@ucr.edu>
+Date: Tue,  1 Oct 2019 13:24:39 -0700
 
-> The struct __dsa_skb_cb is supposed to span the entire 48-byte skb
-> control block, while the struct dsa_skb_cb only the portion of it which
-> is used by the DSA core (the rest is available as private data to
-> drivers).
+> In function mdio_sc_cfg_reg_write(), variable "reg_value" could be
+> uninitialized if regmap_read() fails. However, "reg_value" is used
+> to decide the control flow later in the if statement, which is
+> potentially unsafe.
 > 
-> The DSA_SKB_CB and __DSA_SKB_CB helpers are supposed to help retrieve
-> this pointer based on a skb, but it turns out there is nobody directly
-> interested in the struct __dsa_skb_cb in the kernel. So remove it.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Yizhuo <yzhai003@ucr.edu>
 
-Applied.
+Applied, but really this is such a pervasive problem.
+
+So much code doesn't check the return value from either regmap_read
+or regmap_write.
+
+_EVEN_ in the code you are editing, the patch context shows an unchecked
+regmap_write() call.
+
+> @@ -148,11 +148,15 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
+>  {
+>  	u32 time_cnt;
+>  	u32 reg_value;
+> +	int ret;
+>  
+>  	regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
+        ^^^^^^^^^^^^
+
+Grepping for regmap_{read,write}() shows how big an issue this is.
+
+I don't know what to do, maybe we can work over time to add checks to
+all calls and then force warnings on unchecked return values so that
+the problem is not introduced in the future.
