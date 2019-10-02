@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 048FCC9461
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 00:33:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F04C9465
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 00:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727875AbfJBWdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 18:33:44 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:44345 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbfJBWdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 18:33:43 -0400
-Received: by mail-pg1-f195.google.com with SMTP id i14so451823pgt.11
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 15:33:43 -0700 (PDT)
+        id S1727103AbfJBWgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 18:36:49 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:45398 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725799AbfJBWgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 18:36:49 -0400
+Received: by mail-pl1-f196.google.com with SMTP id u12so507123pls.12
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 15:36:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Sx3xlJg7GOZyUod4vSscLgIDT8VPjvBDgm1sgN0BggM=;
-        b=vhJB22153Y29sTrpqalUMsod5gjwLr0NfhEWf5zdny9CWCV8XjGdG5ztFUcZMm8N+P
-         f5w437+JVM6zr/ivXTTVUUwefLeqoL7SXMmp28NJf5sKguNSQ3aBzfQBkC4gtBFmQWsH
-         dC3Dn5jL2Ors4uk3aBR+n01zyf3WHImzuJsftlyxz8dRKKvQlczWm7p682UIXBxLTC2/
-         mOsjC/FXwEqQALBgvk4zUdB+ENVt/jXM1o8ldC1U/B7A3NQ/AVVIl6xxL51vWSD+vpdp
-         Typ5gCBWUkClE/e9v/maxbHNymcEyAUtihFJoTuAQ1JALS5ousbL+H4xeyQUove7wvDi
-         u5Iw==
+        bh=rqMlx/qkwuOcoyzH9cUhrGA427PGTQG7iAtyzC9L+F0=;
+        b=VBe/RqWjD/IswAlHGPOnLh70Cc6+H2XRSaxI7seB+UwfxtjcBi5Z8i2DkbfDNSsNlz
+         K+BiaX6wOZVsVRHaeS2jqImUTRcz0wxgn3Ddl7pINjnXIG5TWn+ef43DCEh1yytZ1mc8
+         5ItryvPOomj73X0aaXJTsIBG4DgUHIsQRV6TdiepAIMc2zpF2GKgGF8UP/8cia764ta4
+         DjVuEP0Yed8uaS23nAfWCWyYF3DWpR+W9KSEj092x0RKaMtRUYnzFigLysB0I8+nySL3
+         qz6v6gEIlzxIB3etdXa4nAmQ6lL6ZhV7eOVkqhx0gWF7GqjwHXdkszOaAok/DsEI/NEN
+         FGbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Sx3xlJg7GOZyUod4vSscLgIDT8VPjvBDgm1sgN0BggM=;
-        b=mJ97jdQ9QY7+RRH3FZZJPnVNWofLZd2BrfcimGUqEv5Qtci1hWM/ZyDDmcIj/+kJ/G
-         jMZDBLeRl7bNiHDmR7fkf1EM9xsDnWU0l3HxiGeFRmjhpBlFs1z5JsU1cY6M5hVP8+y4
-         5gq8D9c7Z7lU+68LbL+BME0S90De8EXk9Co455e0bFvWeuRtHj03unoUei3dInHUeDJu
-         JWaoCpRkoruPYBx//azfTt0AaeH7liS/LHD2PsboUBbJAVeuWb7ZMzdP8B6HsdU/It50
-         dwEtjxbuQ5caKVap68MpTZ3dEAAJPktXY28o9EFug9jD1GdBjM5oSZfNdz2hpMmmZnGV
-         Kzew==
-X-Gm-Message-State: APjAAAX9UStK/ne1QsgnA16J2AQKA1OhGxEHzE2xhTOCsVQpsfrDAIrO
-        uSFIuzaATiuc6tjGrvERels=
-X-Google-Smtp-Source: APXvYqy+BNaDJ4/08RPAz9wcU/nqZg2SPFOEpRxKuH64R6+WiraVEGsgAbvf7a+vRGk+kLEtuEtTyA==
-X-Received: by 2002:a63:9742:: with SMTP id d2mr5988814pgo.356.1570055623199;
-        Wed, 02 Oct 2019 15:33:43 -0700 (PDT)
-Received: from dahern-DO-MB.local (c-73-169-115-106.hsd1.co.comcast.net. [73.169.115.106])
-        by smtp.googlemail.com with ESMTPSA id f62sm471162pfg.74.2019.10.02.15.33.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 02 Oct 2019 15:33:41 -0700 (PDT)
+        bh=rqMlx/qkwuOcoyzH9cUhrGA427PGTQG7iAtyzC9L+F0=;
+        b=H75uPIZk3+88i/n9SqreiHcugHn2ZIuorzKnykrnfdCUdFAtImbuC2SNibpbhHvl7X
+         mjiO6rfOBSh4sItzNkycqRtN/oaBoVzsYVVX3SAw8x6oKapAe9icX5BhMwAuKcXwYTJm
+         tfRf8Fphqtp4NmgQRFh+5LDGeyha8Kb2xJBkmy02B9IZWjfkWfFixF+hN9DZwUR4Hd2C
+         /uDhtrgeHlXYIffSskxFq8hH/f214t2qBGZPHT6LAuzret3UOmti97bRe87r9clpPqQ0
+         Gd22YQYFhU8Bmb274y47y2hngH8UozquMwaGSo8kan1PLFmmqbwtIKayY/Hpdkf/l4G2
+         UPwA==
+X-Gm-Message-State: APjAAAXLf7q1UaL9sbg+ozv9sIRr7Pu2+8sFnFxgZgNBRDEGbIcfkzHH
+        s90c3cI99JMRNVPVxVnlaas=
+X-Google-Smtp-Source: APXvYqyg19hAsAIcwNIdZM+ExQmJdNIj2yXMNq4rv4C2S2B3K9Rm0fj60Ln/YXyYjDCmBO+YsFe4dQ==
+X-Received: by 2002:a17:902:a413:: with SMTP id p19mr6393682plq.210.1570055808814;
+        Wed, 02 Oct 2019 15:36:48 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id c8sm464028pfi.117.2019.10.02.15.36.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Oct 2019 15:36:48 -0700 (PDT)
 Subject: Re: [PATCH net v2] ipv6: Handle race in addrconf_dad_work
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
-        jakub.kicinski@netronome.com
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        davem@davemloft.net, jakub.kicinski@netronome.com
 Cc:     netdev@vger.kernel.org, rajendra.dendukuri@broadcom.com
 References: <20191001032834.5330-1-dsahern@kernel.org>
  <1ab3e0d0-fb37-d367-fd5f-c6b3262b6583@gmail.com>
@@ -56,13 +55,14 @@ References: <20191001032834.5330-1-dsahern@kernel.org>
  <146a2f8a-8ee9-65f3-1013-ef60a96aa27b@gmail.com>
  <8d13d82c-6a91-1434-f1af-a2f39ecadbfb@gmail.com>
  <3dc05826-4661-8a8e-0c15-1a711ec84d07@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <45e62fee-1580-4c5d-7cac-5f0db935fa9e@gmail.com>
-Date:   Wed, 2 Oct 2019 16:33:40 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+ <45e62fee-1580-4c5d-7cac-5f0db935fa9e@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7bd928cb-1abf-bbae-e1db-505788254e5b@gmail.com>
+Date:   Wed, 2 Oct 2019 15:36:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <3dc05826-4661-8a8e-0c15-1a711ec84d07@gmail.com>
+In-Reply-To: <45e62fee-1580-4c5d-7cac-5f0db935fa9e@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,40 +71,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/2/19 4:21 PM, Eric Dumazet wrote:
-> o syzbot this time, but complete lack of connectivity on some of my test hosts.
+
+
+On 10/2/19 3:33 PM, David Ahern wrote:
+> On 10/2/19 4:21 PM, Eric Dumazet wrote:
+>> o syzbot this time, but complete lack of connectivity on some of my test hosts.
+>>
+>> Incoming IPv6 packets go to ip6_forward() (!!!) and are dropped there.
 > 
-> Incoming IPv6 packets go to ip6_forward() (!!!) and are dropped there.
+> what does 'ip -6 addr sh' show when it is in this state? Any idea of the
+> order of events?
 
-what does 'ip -6 addr sh' show when it is in this state? Any idea of the
-order of events?
+This might be related to a use of a bonding device, with a mlx4 slave.
+
+"ip -6 addr sh" shows the same output before/after the patch.
+
+lpaa23:~# ip -6 addr sh dev eth0
+2: eth0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 5102 state UP 
+    inet6 2607:f8b0:8099:e17::/128 scope global nodad 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::21a:11ff:fec3:d7f/64 scope link 
+       valid_lft forever preferred_lft forever
 
 > 
-> There seems to be something missing.
+> I flipped to IF_READY based on addrconf_ifdown and idev checks seeming
+> more appropriate.
 > 
-> ifp->state stays at INET6_IFADDR_STATE_PREDAD instead of INET6_IFADDR_STATE_DAD
-> 
 
-My original suggestion to Rajendra was this:
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 6a576ff92c39..5ec795086432 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4032,6 +4032,12 @@ static void addrconf_dad_work(struct work_struct *w)
-
-        rtnl_lock();
-
-+       /* device was taken down before this delayed work function
-+        * could be canceled
-+        */
-+       if (!(idev->dev->flags & IFF_UP))
-+               goto out;
-+
-        spin_lock_bh(&ifp->lock);
-        if (ifp->state == INET6_IFADDR_STATE_PREDAD) {
-                action = DAD_BEGIN;
-
-
-I flipped to IF_READY based on addrconf_ifdown and idev checks seeming
-more appropriate.
