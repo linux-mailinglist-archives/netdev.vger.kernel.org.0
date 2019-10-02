@@ -2,135 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D25BC4974
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 10:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DA8FC49BF
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 10:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbfJBI1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 04:27:37 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:39340 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726497AbfJBI1h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 04:27:37 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id A44DC20571;
-        Wed,  2 Oct 2019 10:27:34 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id IgdF7cTA5Xsj; Wed,  2 Oct 2019 10:27:34 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 26C502026E;
-        Wed,  2 Oct 2019 10:27:34 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 2 Oct 2019
- 10:27:33 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 4DD1A3180089;
- Wed,  2 Oct 2019 10:27:33 +0200 (CEST)
-Date:   Wed, 2 Oct 2019 10:27:33 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: Re: [PATCH RFC 3/5] net: Add a netdev software feature set that
- defaults to off.
-Message-ID: <20191002082733.GR2879@gauss3.secunet.de>
-References: <20190920044905.31759-1-steffen.klassert@secunet.com>
- <20190920044905.31759-4-steffen.klassert@secunet.com>
- <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
- <20190930062427.GF2879@gauss3.secunet.de>
- <CA+FuTScxNZKdb0FqAXjxPXY4XEhFFh+_COy0QjCfvw4phSQF3g@mail.gmail.com>
- <20191001061816.GP2879@gauss3.secunet.de>
- <CA+FuTSdTDAG95XCc8qcb7pJJn_6HuxCrCJnta+sJZa7Bi9x6tw@mail.gmail.com>
+        id S1727850AbfJBIlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 04:41:31 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:40287 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726102AbfJBIlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 04:41:31 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 286292071B;
+        Wed,  2 Oct 2019 04:41:30 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 02 Oct 2019 04:41:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=JFX3qP3WCHNnv5TYn
+        fMD8/Nqvo1PgjNPC/2RODXI+34=; b=lLIQeFv6P1x5WlRjoFHiRTmyN/0c8rRE7
+        5/dsnymPZyZ5Ob/MexN5crqOg33AFLBpzBGUuBSsTVx80e7GqdgVU3kiMW0t5arG
+        sxDnlwZi1Cmbt/IQ4YVNxKabmfB2FC66OvKy3wjRL7LErmn3GBsAD2gT+5huFF8k
+        N08KU2BdQbU3+w1eLk6EmOpGnKVJcQt8YZ/Ufc+t/L2QEcrS8qe0kEP9z1Dhjq2G
+        0qJJy3QjiparRC9H92vPLONa8eXA6pNMVJuSBaHKrfp5WxT6OmTfl26gGbrAFYCr
+        siCTWts0C+RkJRpUbbrZuysHA3PMNUT04dGLMgbXfWz4qQfUQqW9Q==
+X-ME-Sender: <xms:uWKUXRSEU4K3YzWz1e3axxnUbfFUE2P_eV7HVo3AA2qWZcDxY3p9nw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrgeeigddtkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucffohhmrghinhepsggvrhhnrghtrdgthhdpghhithhhuhgsrdgtohhmpd
+    hoiihlrggsshdrohhrghenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgr
+    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsth
+    gvrhfuihiivgeptd
+X-ME-Proxy: <xmx:uWKUXaeiYUKXIMfq_K7f5K-FIfrGGwaJtjOb-KqiiTb_xnBZY0bk4A>
+    <xmx:uWKUXcz9Ra6Ir-i7xn2vIDNEKjrqtxSLYM7tuynKb3Gp1IuH_7_dvg>
+    <xmx:uWKUXTQUii3WLpr69-sAyBGIt9jeJVGGA8xIoxilMGgqd5h3vVXF_g>
+    <xmx:umKUXf94qOSrmXDirQ5n3Owop0nLl4U8dVMAluOOC2J7AFFmLxwT4A>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4E64DD60057;
+        Wed,  2 Oct 2019 04:41:28 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dsahern@gmail.com, jiri@mellanox.com,
+        jakub.kicinski@netronome.com, saeedm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [RFC PATCH net-next 00/15] Simplify IPv4 route offload API
+Date:   Wed,  2 Oct 2019 11:40:48 +0300
+Message-Id: <20191002084103.12138-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSdTDAG95XCc8qcb7pJJn_6HuxCrCJnta+sJZa7Bi9x6tw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 01, 2019 at 08:43:05AM -0400, Willem de Bruijn wrote:
-> On Tue, Oct 1, 2019 at 2:18 AM Steffen Klassert
-> <steffen.klassert@secunet.com> wrote:
-> >
-> > On Mon, Sep 30, 2019 at 11:26:55AM -0400, Willem de Bruijn wrote:
-> > >
-> > > Instead, how about adding a UDP GRO ethtool feature independent of
-> > > forwarding, analogous to fraglist GRO? Then both are explicitly under
-> > > admin control. And can be enabled by default (either now, or after
-> > > getting more data).
-> >
-> > We could add a protocol specific feature, but what would it mean
-> > if UDP GRO is enabled?
-> >
-> > Would it be enabled for forwarding, and for local input only if there
-> > is a GRO capable socket? Or would it be enabled even if there
-> > is no GRO capable socket? Same question when UDP GRO is disabled.
-> 
-> Enable UDP GRO for all traffic if GRO and UDP GRO are set, and only
-> then. 
+From: Ido Schimmel <idosch@mellanox.com>
 
-But this means that we would need to enable UDP GRO by default then.
-Currently, if an application uses a UDP GRO capable socket, it
-can expect that it gets GROed packets without doing any additional
-configuration. This would change if we disable it by default.
-Unfortunately, enabling UDP GRO by default has the biggest
-risk because most applications don't use UDP GRO capable sockets.
+Today, whenever an IPv4 route is added or deleted a notification is sent
+in the FIB notification chain and it is up to offload drivers to decide
+if the route should be programmed to the hardware or not. This is not an
+easy task as in hardware routes are keyed by {prefix, prefix length,
+table id}, whereas the kernel can store multiple such routes that only
+differ in metric / TOS / nexthop info.
 
-The most condervative way would be to leave standard GRO as it is.
-But on some workloads standard GRO might be preferable, in
-particular on forwarding to a NIC that can do UDP segmentation
-in hardware.
+This series makes sure that only routes that are actually used in the
+data path are notified to offload drivers. This greatly simplifies the
+work these drivers need to do, as they are now only concerned with
+programming the hardware and do not need to replicate the IPv4 route
+insertion logic and store multiple identical routes.
 
-> That seems like the easiest to understand behavior to me, and
-> gives administrators an opt-out for workloads where UDP GRO causes a
-> regression. We cannot realistically turn off all GRO on a mixed
-> TCP/UDP workload (like, say, hosting TCP and QUIC).
-> 
-> > Also, what means enabling GRO then? Enable GRO for all protocols
-> > but UDP? Either UDP becomes something special then,
-> 
-> Yes and true. But it is something special. We don't know whether UDP
-> GRO is safe to deploy everywhere.
-> 
-> Only enabling it for the forwarding case is more conservative, but
-> gives no path to enabling it systemwide, is arguably confusing and
-> still lacks the admin control to turn off in case of unexpected
-> regressions. I do think that for a time this needs to be configurable
-> unless you're confident that the forwarding path is such a win that
-> no plan B is needed. But especially without fraglist, I'm not sure.
+The route that is notified is the first FIB alias in the FIB node with
+the given {prefix, prefix length, table ID}. In case the route is
+deleted and there is another route with the same key, a replace
+notification is emitted. Otherwise, a delete notification is emitted.
 
-On my tests it was a win on forwarding, but there might be
-usecases where it is not. I guess the only way to find this out
-is to enable is and wait what happens.
+The above means that in the case of multiple routes with the same key,
+but different TOS, only the route with the highest TOS is notified.
+While the kernel can route a packet based on its TOS, this is not
+supported by any hardware devices I'm familiar with. Moreover, this is
+not supported by IPv6 nor by BIRD/FRR from what I could see. Offload
+drivers should therefore use the presence of a non-zero TOS as an
+indication to trap packets matching the route and let the kernel route
+them instead. mlxsw has been doing it for the past two years.
 
-I'm a bit hesitating on adding a feature flag that might be only
-temporary usefull. In particular on the background of the talk
-that Jesse Brandeburg gave on the LPC last year. Maybe you
-remember the slide where he showed the output of
-ethtool --show-offloads, it filled the whole page.
+The series also adds an "in hardware" indication to routes, in addition
+to the offload indication we already have on nexthops today. Besides
+being long overdue, the reason this is done in this series is that it
+makes it possible to easily test the new FIB notification API over
+netdevsim.
 
-> 
-> > or we need
-> > to create protocol specific features for the other protocols
-> > too. Same would apply for fraglist GRO.
-> 
-> We don't need it for other protocols after the fact, but it's a good
-> question: I don't know how it was enabled for them. Perhaps confidence
-> was gained based on testing. Or it was enabled for -rc1, no one
-> complained and stayed turned on. In which case you could do the same.
+To ensure there is no degradation in route insertion rates, I used
+Vincent Bernat's script [1][2] from [3] to inject 500,000 routes from an
+MRT dump from a router with a full view. On a system with Intel(R)
+Xeon(R) CPU D-1527 @ 2.20GHz I measured 8.184 seconds, averaged over 10
+runs and saw no degradation compared to net-next from today.
 
-Maybe we should go that way to enable it and wait whether somebody
-complains. A patch to add the feature flag could be prepared
-beforehand for that case.
+Patchset overview:
+Patches #1-#7 introduce the new FIB notifications
+Patches #8-#9 convert listeners to make use of the new notifications
+Patches #10-#14 add "in hardware" indication for IPv4 routes, including
+a dummy FIB offload implementation in netdevsim
+Patch #15 adds a selftest for the new FIB notifications API over
+netdevsim
 
-It is easy to make a suboptimal design decision here, so
-some more opinions would be helpfull.
+The series is based on Jiri's "devlink: allow devlink instances to
+change network namespace" series [4]. The patches can be found here [5]
+and patched iproute2 with the "in hardware" indication can be found here
+[6].
+
+IPv6 is next on my TODO list.
+
+[1] https://github.com/vincentbernat/network-lab/blob/master/common/helpers/lab-routes-ipvX/insert-from-bgp
+[2] https://gist.github.com/idosch/2eb96efe50eb5234d205e964f0814859
+[3] https://vincent.bernat.ch/en/blog/2017-ipv4-route-lookup-linux
+[4] https://patchwork.ozlabs.org/cover/1162295/
+[5] https://github.com/idosch/linux/tree/fib-notifier
+[6] https://github.com/idosch/iproute2/tree/fib-notifier
+
+Ido Schimmel (15):
+  ipv4: Add temporary events to the FIB notification chain
+  ipv4: Notify route after insertion to the routing table
+  ipv4: Notify route if replacing currently offloaded one
+  ipv4: Notify newly added route if should be offloaded
+  ipv4: Handle route deletion notification
+  ipv4: Handle route deletion notification during flush
+  ipv4: Only Replay routes of interest to new listeners
+  mlxsw: spectrum_router: Start using new IPv4 route notifications
+  ipv4: Remove old route notifications and convert listeners
+  ipv4: Replace route in list before notifying
+  ipv4: Encapsulate function arguments in a struct
+  ipv4: Add "in hardware" indication to routes
+  mlxsw: spectrum_router: Mark routes as "in hardware"
+  netdevsim: fib: Mark routes as "in hardware"
+  selftests: netdevsim: Add test for route offload API
+
+ .../net/ethernet/mellanox/mlx5/core/lag_mp.c  |   4 -
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 152 ++-----
+ drivers/net/ethernet/rocker/rocker_main.c     |   4 +-
+ drivers/net/netdevsim/fib.c                   | 263 ++++++++++-
+ include/net/ip_fib.h                          |   5 +
+ include/uapi/linux/rtnetlink.h                |   1 +
+ net/ipv4/fib_lookup.h                         |  18 +-
+ net/ipv4/fib_semantics.c                      |  30 +-
+ net/ipv4/fib_trie.c                           | 223 ++++++++--
+ net/ipv4/route.c                              |  12 +-
+ .../drivers/net/netdevsim/fib_notifier.sh     | 411 ++++++++++++++++++
+ 11 files changed, 938 insertions(+), 185 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/fib_notifier.sh
+
+-- 
+2.21.0
 
