@@ -2,164 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F300C9135
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 20:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA69DC9186
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 21:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728635AbfJBSzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 14:55:15 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22642 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727685AbfJBSzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 14:55:15 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x92Iejbl015963;
-        Wed, 2 Oct 2019 11:54:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=p4GzwkYUjNacvbZVUNTzCoAZlFTrl92awwQGfE3+oq4=;
- b=pqiwZe9Xj83qK+wsXtlyjz/qZSENBbQIek1rbRRuwMXXk3jsYV2YkmQaEnWC7RRRZZCp
- qJyqWut3QJRCdM+UOLqmjkNSq6tvv7TX98/6llPAUzVz/vMTwnNlc3urEJBuW6iUO5Ww
- MsrQkiz7FMZ7/OHF0X6iBlkMES0HVZxlW+Q= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vc8tay3ps-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 02 Oct 2019 11:54:57 -0700
-Received: from prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 2 Oct 2019 11:54:56 -0700
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 2 Oct 2019 11:54:56 -0700
-Received: from NAM03-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 2 Oct 2019 11:54:56 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WGYDSGR7/PgCvg8ET8yb7WqEAk9D2qPVsBchAqWSi3RjqWcJjgoha4arzOCRQlKRHSMgP3n1KI4I0cqswLvOvoY3lMbPQTKlmxvXsEsHCz9P+AQj0OGObha9o442fMEpak/A6O2FFYcm6y+r66cAoCx7qonZDvtl7rDVMZgA7TJ799VEvsbRMIp9uV9r5/tJgTVkt57yX2W6hzaRGy8gnUKzhYLXK43Nq0ZqjKfQW2ckb97pXUTxzvsC8he2TRK/Ej/DYb7MYkRau+TiqD8gXWbRbQQsa+tUIvG9aOS30dg/snDvqVGysHphwXhCIa4hNqRVqX3WsKT7cEUkS4EXRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p4GzwkYUjNacvbZVUNTzCoAZlFTrl92awwQGfE3+oq4=;
- b=KiO7u9ut59Mz7FZNCtY/9A+yMGHNlXh/7AOmYYy6eISCfbxAnscBqwbkbhyD8HoCBXBLgJWG6Qb42Mjr+NtM06Bv3pdsebEttoPq1/Qu4zwpqUX8PILiiLQ3Q8YsKMnuJgxbbNUvd644/LtS5Hxp83vpKudt0QP3u/qOjprFkaDWZqD5A5ff4OO+OA+2dLzfdOZ0tbF/bf9J3osXwIWlldtu2QuSWltTV7OC9Qfne3z41zibjVIZnnzIn1aIYVsD2j5WVbh0UcBnGOFEoGQHs46LPptlGAwlHUKv3t694btP8t9U6/Urc+xI/tVVywUerY67bSe6TgiT9z5pjQP9yA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p4GzwkYUjNacvbZVUNTzCoAZlFTrl92awwQGfE3+oq4=;
- b=Pt+wKfXU+xEQdT+2EA3Fy8fvyyR0hA8cUZaLCaKLKZA6xLYqH++dJvwLsDeNwtmCTdFhXIwtjh+Ps5MRnIKXHB3wqNrjJDW4PBpfHm2vgnJYytX6R9DKXgrJDoCJA7rr0DI6oKg5R6HJDL+/D9zMvBXaEevLQlI39kFt17cN1w0=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1293.namprd15.prod.outlook.com (10.175.3.19) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.15; Wed, 2 Oct 2019 18:54:55 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1%8]) with mapi id 15.20.2305.022; Wed, 2 Oct 2019
- 18:54:55 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
+        id S1729654AbfJBTJj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Oct 2019 15:09:39 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56744 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729649AbfJBTJj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 15:09:39 -0400
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CE93769060
+        for <netdev@vger.kernel.org>; Wed,  2 Oct 2019 19:09:37 +0000 (UTC)
+Received: by mail-ed1-f71.google.com with SMTP id d7so11498952edp.23
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 12:09:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=2tQMWrghaMwoMjWv34nUUSY2iBHmEPWkKzy78LjQ1Z4=;
+        b=pQklfvf59DJqgUIO3P/ef1B1JWXQOOhClYSAoPFKX+pVys/gqtzW4e0oHIA1T2GYVZ
+         2i15q94ZyyhijGK6I4OupTKmnDKCZgZhGW/r9qt7AaNZvAbpYAZeWN06gVqou9FjP5Lr
+         fmIspynIUnEQ3u3WPZKOftbFi4kSfrEkfQzg6gu2Nu9Z1jAmo6Gsan0Y4b4qvrcTauW1
+         2liaLIBl/H/EnL/z8lp2JtDyUEBSDiZk5AMwt6Wwzbc9nXKNDlGbPB2o8OEuhS1pZm3x
+         NV7f0gF6C4k3LzeyC2NIO16Eh05OatpmtUk/Snt38tFOq9bA58vIS4qBzcVah/2DFsed
+         6zkA==
+X-Gm-Message-State: APjAAAVc9XgfctlHcDuDEmLhIU4oI37tunhIdBDvGsdRklR4ct/ucC6d
+        OL/eSshroVg7aPzeddkMBQL03UAFuF7oX6oblkW6fNhdDNcdxNLB/2fInzzKovBwe339wbuKwss
+        WPabH8LcXDvc9nw+r
+X-Received: by 2002:a17:906:b283:: with SMTP id q3mr4557881ejz.7.1570043376378;
+        Wed, 02 Oct 2019 12:09:36 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzadcvRQPN5dNJWmvgXDKKyowhYYpsdqB2khB6mli3rMJHB+Ox23QUPTzN/4I0ogE5je7BQBA==
+X-Received: by 2002:a17:906:b283:: with SMTP id q3mr4557856ejz.7.1570043376064;
+        Wed, 02 Oct 2019 12:09:36 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id j8sm4255edy.44.2019.10.02.12.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2019 12:09:34 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 05B3C18063D; Wed,  2 Oct 2019 21:09:33 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Marek Majkowski <marek@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
         David Miller <davem@davemloft.net>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
- interface through chain calls
-Thread-Topic: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
- interface through chain calls
-Thread-Index: AQHVeSWTQAdoySCg4UqxsTtsFl4XrqdHrwIAgAAEdAA=
-Date:   Wed, 2 Oct 2019 18:54:55 +0000
-Message-ID: <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com>
-References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
- <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com>
-In-Reply-To: <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:180::2338]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e8490f3f-c335-4663-1356-08d7476a03fa
-x-ms-traffictypediagnostic: MWHPR15MB1293:
-x-ms-exchange-purlcount: 1
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB1293E0B800A927930A81DEFFB39C0@MWHPR15MB1293.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0178184651
-x-forefront-antispam-report: SFV:NSPM;SFS:(10001)(10019020)(346002)(39860400002)(376002)(396003)(136003)(366004)(199004)(189003)(7736002)(6116002)(229853002)(81166006)(54906003)(6916009)(71190400001)(66574012)(2906002)(86362001)(102836004)(8936002)(4326008)(71200400001)(186003)(8676002)(316002)(53546011)(81156014)(36756003)(256004)(14444005)(6506007)(305945005)(46003)(476003)(6486002)(486006)(25786009)(6512007)(5660300002)(6306002)(99286004)(2616005)(64756008)(966005)(6436002)(14454004)(66946007)(33656002)(66446008)(66556008)(66476007)(11346002)(446003)(76116006)(6246003)(478600001)(50226002)(76176011)(62610400005);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1293;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SSVzyUTU9tKGb6tzOm4+khOytrBvatuNTEXby3imuB4wkWK0BySwWkXK8cHPb+ZcjIHL8Ew94WAJaPlQ4dtdfOejUAzqBd6xUl6y7rE9l1oQZTOEhyFsm5J0Wj05YLzcNRbtyCdmaTXiKm8psHh/RGPVto4mb83P90lgVb3bpV0Nq3W4VZZlTxz2x22pxcOYrXE03DQPI7gLBHjnUfi8mVltdSXiagmqEs6YBSmLdtK820VL1j9xc+5JNv1SE6uEroDBjoNEqk2TQH0ff7XjPz2BJjTPcLAw3agub5GeG9bMe1a9VoejCk8Zt5pRDSfsvqths+TBN35vVkCb+U/40VuW9P4dnzrgu6Tjn4bXf96ke1wzC/jhHUR2mGfNs6uHRiGvhmCrZmuqrGszWpSHceDXtuMkvB6G9IQzOELhXGzLRhpdH3FLIQsRzbKITrOeNTrGTEgQuEaKkPHJOsh7W2AZ/WtIypi0FFOFyToJJgg=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4C81F5FD8904F746AE01418E152DC5E3@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: RE: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single interface through chain calls
+In-Reply-To: <5d94d3c5a238f_22502b00ea21a5b4e9@john-XPS-13-9370.notmuch>
+References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1> <5d94d3c5a238f_22502b00ea21a5b4e9@john-XPS-13-9370.notmuch>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 02 Oct 2019 21:09:33 +0200
+Message-ID: <87wodnq80i.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8490f3f-c335-4663-1356-08d7476a03fa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 18:54:55.3231
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /1T84jWF98KRYtKvrwA1vQ3vbFiZtwOdNtAeXAQ0C7FcCvubHHzDbOQpCd14SPU6sE9RvLJOJGKx5tMbneejWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1293
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-02_08:2019-10-01,2019-10-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
- spamscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0 bulkscore=0
- mlxlogscore=999 malwarescore=0 clxscore=1015 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910020150
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gT2N0IDIsIDIwMTksIGF0IDExOjM4IEFNLCBTb25nIExpdSA8c29uZ2xpdWJyYXZp
-bmdAZmIuY29tPiB3cm90ZToNCj4gDQo+IA0KPiANCj4+IE9uIE9jdCAyLCAyMDE5LCBhdCA2OjMw
-IEFNLCBUb2tlIEjDuGlsYW5kLUrDuHJnZW5zZW4gPHRva2VAcmVkaGF0LmNvbT4gd3JvdGU6DQo+
-PiANCj4+IFRoaXMgc2VyaWVzIGFkZHMgc3VwcG9ydCBmb3IgZXhlY3V0aW5nIG11bHRpcGxlIFhE
-UCBwcm9ncmFtcyBvbiBhIHNpbmdsZQ0KPj4gaW50ZXJmYWNlIGluIHNlcXVlbmNlLCB0aHJvdWdo
-IHRoZSB1c2Ugb2YgY2hhaW4gY2FsbHMsIGFzIGRpc2N1c3NlZCBhdCB0aGUgTGludXgNCj4+IFBs
-dW1iZXJzIENvbmZlcmVuY2UgbGFzdCBtb250aDoNCj4+IA0KPj4gaHR0cHM6Ly91cmxkZWZlbnNl
-LnByb29mcG9pbnQuY29tL3YyL3VybD91PWh0dHBzLTNBX19saW51eHBsdW1iZXJzY29uZi5vcmdf
-ZXZlbnRfNF9jb250cmlidXRpb25zXzQ2MF8mZD1Ed0lEYVEmYz01VkQwUlR0TmxUaDN5Y2Q0MWIz
-TVV3JnI9ZFI4NjkycTBfdWFpenkwamtyQkpRTTVrMmhmbTRDaUZ4WVQ4S2F5c0ZyZyZtPVlYcXFI
-VEM1MXpYQnZpUEJFazU1eS1mUWpGUXdjWFdGbEgwSW9PcW0yS1Umcz1ORjR3M2VTUG1OaFNwSnIx
-LTBGTHFxbHFmZ0VWOGdzQ1FiOVlxV1E5cC1rJmU9IA0KPj4gDQo+PiAjIEhJR0gtTEVWRUwgSURF
-QQ0KPj4gDQo+PiBUaGUgYmFzaWMgaWRlYSBpcyB0byBleHByZXNzIHRoZSBjaGFpbiBjYWxsIHNl
-cXVlbmNlIHRocm91Z2ggYSBzcGVjaWFsIG1hcCB0eXBlLA0KPj4gd2hpY2ggY29udGFpbnMgYSBt
-YXBwaW5nIGZyb20gYSAocHJvZ3JhbSwgcmV0dXJuIGNvZGUpIHR1cGxlIHRvIGFub3RoZXIgcHJv
-Z3JhbQ0KPj4gdG8gcnVuIGluIG5leHQgaW4gdGhlIHNlcXVlbmNlLiBVc2Vyc3BhY2UgY2FuIHBv
-cHVsYXRlIHRoaXMgbWFwIHRvIGV4cHJlc3MNCj4+IGFyYml0cmFyeSBjYWxsIHNlcXVlbmNlcywg
-YW5kIHVwZGF0ZSB0aGUgc2VxdWVuY2UgYnkgdXBkYXRpbmcgb3IgcmVwbGFjaW5nIHRoZQ0KPj4g
-bWFwLg0KPj4gDQo+PiBUaGUgYWN0dWFsIGV4ZWN1dGlvbiBvZiB0aGUgcHJvZ3JhbSBzZXF1ZW5j
-ZSBpcyBkb25lIGluIGJwZl9wcm9nX3J1bl94ZHAoKSwNCj4+IHdoaWNoIHdpbGwgbG9va3VwIHRo
-ZSBjaGFpbiBzZXF1ZW5jZSBtYXAsIGFuZCBpZiBmb3VuZCwgd2lsbCBsb29wIHRocm91Z2ggY2Fs
-bHMNCj4+IHRvIEJQRl9QUk9HX1JVTiwgbG9va2luZyB1cCB0aGUgbmV4dCBYRFAgcHJvZ3JhbSBp
-biB0aGUgc2VxdWVuY2UgYmFzZWQgb24gdGhlDQo+PiBwcmV2aW91cyBwcm9ncmFtIElEIGFuZCBy
-ZXR1cm4gY29kZS4NCj4+IA0KPj4gQW4gWERQIGNoYWluIGNhbGwgbWFwIGNhbiBiZSBpbnN0YWxs
-ZWQgb24gYW4gaW50ZXJmYWNlIGJ5IG1lYW5zIG9mIGEgbmV3IG5ldGxpbmsNCj4+IGF0dHJpYnV0
-ZSBjb250YWluaW5nIGFuIGZkIHBvaW50aW5nIHRvIGEgY2hhaW4gY2FsbCBtYXAuIFRoaXMgY2Fu
-IGJlIHN1cHBsaWVkDQo+PiBhbG9uZyB3aXRoIHRoZSBYRFAgcHJvZyBmZCwgc28gdGhhdCBhIGNo
-YWluIG1hcCBpcyBhbHdheXMgaW5zdGFsbGVkIHRvZ2V0aGVyDQo+PiB3aXRoIGFuIFhEUCBwcm9n
-cmFtLg0KPiANCj4gSW50ZXJlc3Rpbmcgd29yayENCj4gDQo+IFF1aWNrIHF1ZXN0aW9uOiBjYW4g
-d2UgYWNoaWV2ZSB0aGUgc2FtZSBieSBhZGRpbmcgYSAicmV0dmFsIHRvIGNhbGxfdGFpbF9uZXh0
-IiANCj4gbWFwIHRvIGVhY2ggcHJvZ3JhbT8gSSB0aGluayBvbmUgaXNzdWUgaXMgaG93IHRvIGF2
-b2lkIGxvb3AgbGlrZSBBLT5CLT5DLT5BLCANCj4gYnV0IHRoaXMgc2hvdWxkIGJlIHNvbHZhYmxl
-PyANCg0KQWxzbywgY291bGQgeW91IHBsZWFzZSBzaGFyZSBhIHJlYWwgd29yZCBleGFtcGxlPyBJ
-IHNhdyB0aGUgZXhhbXBsZSBmcm9tIExQQw0Kc2xpZGVzLCBidXQgSSBhbSBtb3JlIGN1cmlvdXMg
-YWJvdXQgd2hhdCBkb2VzIGVhY2ggcHJvZ3JhbSBkbyBpbiByZWFsIHVzZSBjYXNlcy4NCg0KVGhh
-bmtzLA0KU29uZw0KDQoNCg0KDQo=
+John Fastabend <john.fastabend@gmail.com> writes:
+
+> Toke Høiland-Jørgensen wrote:
+>> This series adds support for executing multiple XDP programs on a single
+>> interface in sequence, through the use of chain calls, as discussed at the Linux
+>> Plumbers Conference last month:
+>> 
+>> https://linuxplumbersconf.org/event/4/contributions/460/
+>> 
+>> # HIGH-LEVEL IDEA
+>> 
+>> The basic idea is to express the chain call sequence through a special map type,
+>> which contains a mapping from a (program, return code) tuple to another program
+>> to run in next in the sequence. Userspace can populate this map to express
+>> arbitrary call sequences, and update the sequence by updating or replacing the
+>> map.
+>> 
+>> The actual execution of the program sequence is done in bpf_prog_run_xdp(),
+>> which will lookup the chain sequence map, and if found, will loop through calls
+>> to BPF_PROG_RUN, looking up the next XDP program in the sequence based on the
+>> previous program ID and return code.
+>> 
+>> An XDP chain call map can be installed on an interface by means of a new netlink
+>> attribute containing an fd pointing to a chain call map. This can be supplied
+>> along with the XDP prog fd, so that a chain map is always installed together
+>> with an XDP program.
+>> 
+>> # PERFORMANCE
+>> 
+>> I performed a simple performance test to get an initial feel for the overhead of
+>> the chain call mechanism. This test consists of running only two programs in
+>> sequence: One that returns XDP_PASS and another that returns XDP_DROP. I then
+>> measure the drop PPS performance and compare it to a baseline of just a single
+>> program that only returns XDP_DROP.
+>> 
+>> For comparison, a test case that uses regular eBPF tail calls to sequence two
+>> programs together is also included. Finally, because 'perf' showed that the
+>> hashmap lookup was the largest single source of overhead, I also added a test
+>> case where I removed the jhash() call from the hashmap code, and just use the
+>> u32 key directly as an index into the hash bucket structure.
+>> 
+>> The performance for these different cases is as follows (with retpolines disabled):
+>
+> retpolines enabled would also be interesting.
+
+Yes, I'll try that as well.
+
+>> 
+>> | Test case                       | Perf      | Add. overhead | Total overhead |
+>> |---------------------------------+-----------+---------------+----------------|
+>> | Before patch (XDP DROP program) | 31.0 Mpps |               |                |
+>> | After patch (XDP DROP program)  | 28.9 Mpps |        2.3 ns |         2.3 ns |
+>
+> IMO even 1 Mpps overhead is too much for a feature that is primarily
+> about ease of use. Sacrificing performance to make userland a bit
+> easier is hard to justify for me when XDP _is_ singularly about
+> performance. Also that is nearly 10% overhead which is fairly large.
+> So I think going forward the performance gab needs to be removed.
+
+It's not just about ease of use. If we really want XDP to catch on and
+be integrated into third-party applications, we *need* to solve the
+multi-program problem. Otherwise users are going to have to choose
+between running their DDOS protection application and their IDS; which
+means no one is going to be able to rely on XDP support, and so no one
+is going to bother to implement it. Or at least, I'm afraid it'll end up
+that way.
+
+That being said, I agree that the performance impact should be kept at
+an absolute minimum. In terms of code it already is: it's a single if
+statement to check if a chain map is loaded. I haven't looked into why
+that takes 2.3 ns to do yet. I suspect it may just be because we're
+taking a cache miss: the chain map pointer is not stored anywhere near
+the rest of the XDP data structures...
+
+>> | XDP tail call                   | 26.6 Mpps |        3.0 ns |         5.3 ns |
+>> | XDP chain call (no jhash)       | 19.6 Mpps |       13.4 ns |        18.7 ns |
+>> | XDP chain call (this series)    | 17.0 Mpps |        7.9 ns |        26.6 ns |
+>> 
+>> From this it is clear that while there is some overhead from this mechanism; but
+>> the jhash removal example indicates that it is probably possible to optimise the
+>> code to the point where the overhead becomes low enough that it is acceptable.
+>
+> I'm missing why 'in theory' at least this can't be made as-fast as
+> tail calls? Again I can't see why someone would lose 30% of their
+> performance when a userland program could populate a tail call map for
+> the same effect. Sure userland would also have to enforce some program
+> standards/conventions but it could be done and at 30% overhead that
+> pain is probably worth it IMO.
+>
+> My thinking though is if we are a bit clever chaining and tail calls
+> could be performance-wise equivalent?
+
+Oh, I totally agree that 30% overhead is way too much. I just
+prioritised getting this to work and send it out for comments to get the
+conversation going around the API before I spend too much time
+optimising the performance bits.
+
+I think it should be possible to get it pretty close to pure tail calls.
+A tail call compiles down to a direct jump instruction without leaving
+the BPF execution environment, though, so maybe not *exactly* as fast.
+But I'd settle for an overhead of, say, a handful of nanoseconds
+compared to a pure tail call. Certainly not the tens of nanoseconds I
+get right now.
+
+Also, bear in mind that an overhead of say 4-6 nanoseconds only
+translates into such a large percentage-wise overhead in this test
+because the XDP programs being run don't actually do anything - not even
+touch the packet data. As the programs themselves get larger, the
+percentage-wise overhead becomes smaller as well. So a test like this
+shows the worst-case performance.
+
+-Toke
