@@ -2,156 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 435FEC8E60
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:29:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DA20C8E5B
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:29:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727287AbfJBQ33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:29:29 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39966 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725893AbfJBQ32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:29:28 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x92GOVrm009486;
-        Wed, 2 Oct 2019 09:29:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=ucIlUSGzatolV/CCe86yGBwq3N/RgD63RCaceS12Uy8=;
- b=iu7XR4CQOK3aPN9x4IVnWX8TDbnlg4CVlQk7R/OmLZ/j0r2KWeyxxNlRIkg5OdivwhdU
- 1wsHQPs6qvI44fr7UBAb6LOST020OmNge4lmbpKWJqCGcGVH2oM6kQZiBK+jGox60knc
- U8Qj+7lJaunCHfT6MxBI29wX1LGbk24T83Y= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vcen4434t-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 02 Oct 2019 09:29:12 -0700
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 2 Oct 2019 09:28:50 -0700
-Received: from NAM03-DM3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 2 Oct 2019 09:28:50 -0700
+        id S1726698AbfJBQ3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:29:13 -0400
+Received: from mail-eopbgr690086.outbound.protection.outlook.com ([40.107.69.86]:33349
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725893AbfJBQ3N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 12:29:13 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KluBPwH9rLB5ytxKXVL0h58zG2PvZ2zSL6BLQAimv+VPKTef9uk8Un405V8HyvkePA6mFvlN+Pju1ylI8x6WA/vYd3PEzy9l24kCbCuCuX1tY3VpI46n9ABt2lCOsZ49EAme+cG7Yl9Rgs5CYAMxAcd9Sit7Iho8BlJE8/zvAmRY2MGwRHKG/wvtjWDQNV8GnXd6pEIgTwXTOEZVKnja67bMH1X5Tj/Zoq5BFmoDWKCSIcXwqp4qP4qb9+B6mnHdl1hTwkdfvkJS2SlXaR93bdF17s1SJiDl6nvoExJDZ2XfdRP0EhtzS1gicLWBAWmnb/qCC7a1JzQnzYR7tsH6dQ==
+ b=JeG8pnKI27sED2lt/Cm3LhfUHRpszzgv3bo/NiSoPaic/dGPOdSUFeZ1sA8I6TIW+kWKd1/+/oie8iT2DyxVe1ljbjj7ZlSKO4vJy2x1vSjnKi+TuXHJlAZaSuOf/q/AmNwJ/c7bHmGVFNhNte6fNZtpJcycpw0KfbM8qjn06BrMj1h10GqFaCaYTLP2+2Us1sLTnexbMcBGs1gmrfjNhVf4wr/vrOoYf65FLahd2aUFXUf1y+31MGlpKZTTXW/MVHaqLzP7DMzoK0dKKeAtzeJYB58E4JUYifsnvmeT0iuLXSRbsKQj9fISUQfEKTJnaxRD6u5CL3HWeyJW6EkheQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ucIlUSGzatolV/CCe86yGBwq3N/RgD63RCaceS12Uy8=;
- b=GOi/QnBsfIVY5SQ0bVm4u28ZHSHPgwgd6svMvMZCsyzrtjntz+FahztmhouhUfZRrLFnN4dsKPXzHZDAqkO9uojQo5eMAnF7btJELGU4whDYW2gSBMWXTyFn7JS6FQ9QNR297sEcN0kfedM78LR0mHZSqY20o/HWBu4vOuqQZpZj4h/VY/eBpz/Sa8ZYngBWw/v5hcTthX51mj1aQEimJc5RHbKzT0aZWmLwVawWEwRGUyl7vlzgbflN81q5GKgwwJr+V1kdIxLkVB35eRyuJdasetJzUxjy/wi7oIg4mGk+mNCFKCgh7EMOnHE3gYBihjIyQWm4vUK3+K04OGKtjg==
+ bh=TqsS9yAkHZKgkTTaiYIT3edGEKPEbqJuGoXtqtPCSvs=;
+ b=aFL2h0/8vLQkmJqUiGL24GCzeKZIVi23+Evg4CPebqTvwfUvfOGGJDCARjTANL4ysN+iyMEt8y10phOEDlFJi3Rz8Gjwg6eJlYbzorpllQbUPG7NbQPUBTR74slBFM8FdLgUs7862eWpvpKmirydEx9xcxujvAZ6X7SE+CRePTa9mL3gXaD9q2YwkATzkseB7u+1RnSoNyG963VM4WmuLjCHf+Pd1mygZvFPxeazBwauhwIHHJEwP4V4d7++TBT9tJ7rv1Y0OCxcge6A0IyKxjAmG9GQcAbWZyC67BJWUPnNl97gaM/layGaokhbP3jHGfIJzK7d87tiriYAHvSWlQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ucIlUSGzatolV/CCe86yGBwq3N/RgD63RCaceS12Uy8=;
- b=Gn6izt4UPUkBmChA+r7D/2dlKOMRZaTFRmsqt0XmTcpqNRqygTpMb1FUdkll22MF47MzRtQoEMER9llj33DSHdQS4DBYPUc2wilBzd6OoL+eW45TkBrXPyrwEvW4RdOrTaoGtD0ZoxHe/N0U0d5Q66GEyfdUu4GQNPhEcYe7oBU=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1294.namprd15.prod.outlook.com (10.175.3.150) with Microsoft SMTP
+ bh=TqsS9yAkHZKgkTTaiYIT3edGEKPEbqJuGoXtqtPCSvs=;
+ b=jDllI+cwSsvLD4jw+GDof5ttQyYQsl18kr9JmpbER+s1SUuEg4Ins8u/shLAF0aIqoZ/kugqAhQk37FgJ/eCNWJ1OsuzMShP69J2LpeRPwoGJd0r5y1ArvAFbKzhbER7ATr+c6nuhUldCcXjTZ2FFP6ew7xX84eE0cCd6tZjR6I=
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com (10.255.180.22) by
+ MN2PR11MB3791.namprd11.prod.outlook.com (20.178.254.78) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.18; Wed, 2 Oct 2019 16:28:48 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1%8]) with mapi id 15.20.2305.022; Wed, 2 Oct 2019
- 16:28:48 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-CC:     "shuah@kernel.org" <shuah@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ 15.20.2305.20; Wed, 2 Oct 2019 16:29:09 +0000
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::ac8c:fc55:d1e2:465f]) by MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::ac8c:fc55:d1e2:465f%5]) with mapi id 15.20.2305.017; Wed, 2 Oct 2019
+ 16:29:09 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: correct path to include msg +
- path
-Thread-Topic: [PATCH bpf-next 2/2] selftests/bpf: correct path to include msg
- + path
-Thread-Index: AQHVeRmIJK9O2PZTNUal3Rd8mzrRf6dHiruA
-Date:   Wed, 2 Oct 2019 16:28:47 +0000
-Message-ID: <CB640650-0E50-49DA-8264-9C02D5B1A7A2@fb.com>
-References: <20191002120404.26962-1-ivan.khoronzhuk@linaro.org>
- <20191002120404.26962-3-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20191002120404.26962-3-ivan.khoronzhuk@linaro.org>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Le Goff <David.Legoff@silabs.com>
+Subject: Re: [PATCH 02/20] staging: wfx: add support for I/O access
+Thread-Topic: [PATCH 02/20] staging: wfx: add support for I/O access
+Thread-Index: AQHVbthYAz5BV9jhoUCLDh42xNi6RaczMoaAgBRsfQA=
+Date:   Wed, 2 Oct 2019 16:29:09 +0000
+Message-ID: <4024590.nSQgSsaaFe@pc-42>
+References: <20190919105153.15285-1-Jerome.Pouiller@silabs.com>
+ <20190919105153.15285-3-Jerome.Pouiller@silabs.com>
+ <20190919163429.GB27277@lunn.ch>
+In-Reply-To: <20190919163429.GB27277@lunn.ch>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:180::2338]
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Jerome.Pouiller@silabs.com; 
+x-originating-ip: [37.71.187.125]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 20f761b2-cb9b-40d9-5b3a-08d747559a2c
-x-ms-traffictypediagnostic: MWHPR15MB1294:
+x-ms-office365-filtering-correlation-id: 2eb31fd8-11e1-46e2-4d21-08d74755a6fb
+x-ms-traffictypediagnostic: MN2PR11MB3791:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB12945BD97E1ECE90DC2073BAB39C0@MWHPR15MB1294.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:497;
+x-microsoft-antispam-prvs: <MN2PR11MB3791ED0AF9533F49D20B82FE939C0@MN2PR11MB3791.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 0178184651
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(346002)(366004)(376002)(39860400002)(199004)(189003)(52314003)(2616005)(14454004)(6916009)(6512007)(99286004)(478600001)(4326008)(33656002)(76116006)(7736002)(66446008)(5660300002)(66946007)(305945005)(64756008)(66476007)(66556008)(36756003)(6246003)(6116002)(81166006)(81156014)(50226002)(2906002)(446003)(6486002)(46003)(8936002)(11346002)(476003)(8676002)(486006)(316002)(186003)(54906003)(71190400001)(71200400001)(229853002)(14444005)(6506007)(256004)(25786009)(76176011)(6436002)(102836004)(86362001)(53546011);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1294;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(366004)(39850400004)(346002)(396003)(136003)(376002)(199004)(189003)(256004)(26005)(14444005)(33716001)(9686003)(6512007)(6916009)(14454004)(478600001)(4326008)(6246003)(107886003)(229853002)(71200400001)(71190400001)(6436002)(6486002)(8676002)(81156014)(81166006)(476003)(8936002)(486006)(86362001)(7736002)(11346002)(3846002)(54906003)(316002)(6116002)(2906002)(25786009)(99286004)(446003)(91956017)(76116006)(76176011)(4744005)(102836004)(5660300002)(66574012)(6506007)(66556008)(64756008)(66476007)(186003)(66946007)(66446008)(66066001)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3791;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: silabs.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NXjt9iVapFXXgiHMZyWOd6M9s+SfX7k+rjxYbkSybv6D+QFP5WuWbaBVNyBVY5+MaEsUGIOuGTIdAJIM4VLvb3RMnwrj62KpXMu1noyFQYP59tfs8YxRorggpDiE0hCBdXYX5uuicX6B/5XFLIU0ZTOApiuW9V6FLdIovHg61teBg8ngTahbCebE4AkOejs/ShonIo9dpIlixLcv3bai3/WHYBAtwAjQoMWTcgg++2Eb5d9QU0/R6U5GaTEF9R8aopfRoJ8mHxsiOhtecgPB8DnzVxdrkIDNqRV0xEFB37Uq7lqIcB6y2lAowpbCbSAulMQQApkJ0/hqMYbx4A7QiR1Bt1/WXaHi/Z4SekWLRDPfRpNBFItSrGFPqET1k87CPRt8zB7FAqVNS2q4JiCUKwBo89UFQnZFTFgUICaBcnQ=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2FBD3FC9168DF84BB20AD2196CAD24B3@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: WQuT9ru85Fw+Ub7ypbsVbkV5is1kD44Y82p6zyJISqF8pj5t5NxA6+stQ0LXQxvMmJLCO8kuPwj546yJtHU4YuW+JFVbHAYGEeLjORAE8B7KPZPFnDqiMmmJlwi79luy1psh4BjYhRS/iDQXcx8Ejb9QMWXqG3ivL+0CXd1zykQQMTQcb73AK0Cx2HS65gNv0xlkACQPmZneOnqVjg4dnHVIT1yCLJcP1GxVYaCZnN55l3iWhd5kJ0aVPKMIgtpY9cgRoepSLTUR9B0KLXB7JvxvV0NJUnL9jJD4VazP3AkFGuxa1DIMBf+i6aHD6314zlqaaBOyKsz/MBFsPyjMJJ0VaXfoapbItasPSLkz6+jKZpvDBelTTZlRtJOKjDsZuTXMb67FqvWQeUgsbnl7AilRB8kFdstWC7zps2kRems=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <D76D8AC44FFF174E98879F79DC311406@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20f761b2-cb9b-40d9-5b3a-08d747559a2c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 16:28:47.9425
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2eb31fd8-11e1-46e2-4d21-08d74755a6fb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 16:29:09.3634
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7nXDa9pL4n1WPoJdiow/yjJM7f746sNSbs0rPjXqbhAj4saR7/BuQqQrb3SjzrmvA25quJxq1ZdTLdrxtWyjiA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1294
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-02_07:2019-10-01,2019-10-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 malwarescore=0 bulkscore=0 priorityscore=1501
- adultscore=0 clxscore=1015 spamscore=0 suspectscore=0 mlxlogscore=999
- impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1910020143
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: zveEeK6gmYX/NPcpOPJa+E8D6619Rq/y6xubiDnrFIdQig1uNEA00n6aR36P4SUWdxv0ojy/vsD0ZnZr+tTr7g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3791
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gT2N0IDIsIDIwMTksIGF0IDU6MDQgQU0sIEl2YW4gS2hvcm9uemh1ayA8aXZhbi5r
-aG9yb256aHVrQGxpbmFyby5vcmc+IHdyb3RlOg0KPiANCj4gVGhlICJwYXRoIiBidWYgaXMgc3Vw
-cG9zZWQgdG8gY29udGFpbiBwYXRoICsgcHJpbnRmIG1zZyB1cCB0byAyNCBieXRlcy4NCj4gSXQg
-d2lsbCBiZSBjdXQgYW55d2F5LCBidXQgY29tcGlsZXIgZ2VuZXJhdGVzIHRydW5jYXRpb24gd2Fy
-bnMgbGlrZToNCj4gDQo+ICINCj4gc2FtcGxlcy9icGYvLi4vLi4vdG9vbHMvdGVzdGluZy9zZWxm
-dGVzdHMvYnBmL2Nncm91cF9oZWxwZXJzLmM6IEluDQo+IGZ1bmN0aW9uIOKAmHNldHVwX2Nncm91
-cF9lbnZpcm9ubWVudOKAmToNCj4gc2FtcGxlcy9icGYvLi4vLi4vdG9vbHMvdGVzdGluZy9zZWxm
-dGVzdHMvYnBmL2Nncm91cF9oZWxwZXJzLmM6NTI6MzQ6DQo+IHdhcm5pbmc6IOKAmC9jZ3JvdXAu
-Y29udHJvbGxlcnPigJkgZGlyZWN0aXZlIG91dHB1dCBtYXkgYmUgdHJ1bmNhdGVkDQo+IHdyaXRp
-bmcgMTkgYnl0ZXMgaW50byBhIHJlZ2lvbiBvZiBzaXplIGJldHdlZW4gMSBhbmQgNDA5Nw0KPiBb
-LVdmb3JtYXQtdHJ1bmNhdGlvbj1dDQo+IHNucHJpbnRmKHBhdGgsIHNpemVvZihwYXRoKSwgIiVz
-L2Nncm91cC5jb250cm9sbGVycyIsIGNncm91cF9wYXRoKTsNCj4gCQkJCSAgXn5+fn5+fn5+fn5+
-fn5+fn5+fg0KPiBzYW1wbGVzL2JwZi8uLi8uLi90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYv
-Y2dyb3VwX2hlbHBlcnMuYzo1MjoyOg0KPiBub3RlOiDigJhzbnByaW50ZuKAmSBvdXRwdXQgYmV0
-d2VlbiAyMCBhbmQgNDExNiBieXRlcyBpbnRvIGEgZGVzdGluYXRpb24NCj4gb2Ygc2l6ZSA0MDk3
-DQo+IHNucHJpbnRmKHBhdGgsIHNpemVvZihwYXRoKSwgIiVzL2Nncm91cC5jb250cm9sbGVycyIs
-IGNncm91cF9wYXRoKTsNCj4gXn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+
-fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+DQo+IHNhbXBsZXMvYnBmLy4uLy4uL3Rvb2xzL3Rl
-c3Rpbmcvc2VsZnRlc3RzL2JwZi9jZ3JvdXBfaGVscGVycy5jOjcyOjM0Og0KPiB3YXJuaW5nOiDi
-gJgvY2dyb3VwLnN1YnRyZWVfY29udHJvbOKAmSBkaXJlY3RpdmUgb3V0cHV0IG1heSBiZSB0cnVu
-Y2F0ZWQNCj4gd3JpdGluZyAyMyBieXRlcyBpbnRvIGEgcmVnaW9uIG9mIHNpemUgYmV0d2VlbiAx
-IGFuZCA0MDk3DQo+IFstV2Zvcm1hdC10cnVuY2F0aW9uPV0NCj4gc25wcmludGYocGF0aCwgc2l6
-ZW9mKHBhdGgpLCAiJXMvY2dyb3VwLnN1YnRyZWVfY29udHJvbCIsDQo+IAkJCQkgIF5+fn5+fn5+
-fn5+fn5+fn5+fn5+fn5+DQo+IGNncm91cF9wYXRoKTsNCj4gc2FtcGxlcy9icGYvLi4vLi4vdG9v
-bHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL2Nncm91cF9oZWxwZXJzLmM6NzI6MjoNCj4gbm90ZTog
-4oCYc25wcmludGbigJkgb3V0cHV0IGJldHdlZW4gMjQgYW5kIDQxMjAgYnl0ZXMgaW50byBhIGRl
-c3RpbmF0aW9uDQo+IG9mIHNpemUgNDA5Nw0KPiBzbnByaW50ZihwYXRoLCBzaXplb2YocGF0aCks
-ICIlcy9jZ3JvdXAuc3VidHJlZV9jb250cm9sIiwNCj4gY2dyb3VwX3BhdGgpOw0KPiAiDQo+IA0K
-PiBJbiBvcmRlciB0byBhdm9pZCB3YXJucywgbGV0cyBkZWNyZWFzZSBidWYgc2l6ZSBmb3IgY2dy
-b3VwIHdvcmtkaXIgb24NCj4gMjQgYnl0ZXMgd2l0aCBhc3N1bXB0aW9uIHRvIGluY2x1ZGUgYWxz
-byAiL2Nncm91cC5zdWJ0cmVlX2NvbnRyb2wiIHRvDQo+IHRoZSBhZGRyZXNzLiBUaGUgY3V0IHdp
-bGwgbmV2ZXIgaGFwcGVuIGFueXdheS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEl2YW4gS2hvcm9u
-emh1ayA8aXZhbi5raG9yb256aHVrQGxpbmFyby5vcmc+DQoNCg0KQWNrZWQtYnk6IFNvbmcgTGl1
-IDxzb25nbGl1YnJhdmluZ0BmYi5jb20+IA0KDQo=
+On Thursday 19 September 2019 18:34:48 CEST Andrew Lunn wrote:
+> On Thu, Sep 19, 2019 at 10:52:35AM +0000, Jerome Pouiller wrote:
+> > +static int wfx_sdio_copy_from_io(void *priv, unsigned int reg_id,
+> > +                              void *dst, size_t count)
+> > +{
+> > +     struct wfx_sdio_priv *bus =3D priv;
+> > +     unsigned int sdio_addr =3D reg_id << 2;
+> > +     int ret;
+> > +
+> > +     BUG_ON(reg_id > 7);
+>=20
+> Hi Jerome
+>=20
+> BUG_ON should only be used when the system is corrupted, and there is
+> no alternative than to stop the machine, so it does not further
+> corrupt itself. Accessing a register which does not exist is not a
+> reason the kill the machine. A WARN() and a return of -EINVAL would be
+> better.
+
+Hi Andrew,
+
+I did not forget your suggestion. However, if everyone is agree with that, =
+I'd=20
+prefer to address it in a next pull request. Indeed, I'd prefer to keep thi=
+s=20
+version in sync with version 2.3.1 published on github.
+
+--=20
+J=E9r=F4me Pouiller
+
