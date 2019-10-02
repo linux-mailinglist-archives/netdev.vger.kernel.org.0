@@ -2,137 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF8BC8A93
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 16:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 969A1C8B0B
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 16:20:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727639AbfJBOIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 10:08:13 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:53772 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbfJBOIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 10:08:13 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x92E3uep070461;
-        Wed, 2 Oct 2019 14:07:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=+FGGI5TvFktU0/JRb3dnLjz/7hh1wncwHFnR3J2FD1U=;
- b=YMj7eUT/xa6f248L9zN5raJaaIPi2upRO7Tba4zBrhB/FFYYDkLKPeAcFy5TFSfP5k9I
- 1TmW52eOj6+7BwliM/xSp+aXKkD9Aw8fOFaJQV7NEYzXst+1zeAP0vEdAKLSu90leQQr
- Ax38400CmkNxEGa3batH2Nvg7Ye3yBx1oVsfqbK75h5gN8BXYyvdPJimVWUXhgBDzAJX
- 6DAEn+5GvMsY51gaBich2d7ikokUg6Umcvq2MrHBJrGhMLi52DIvpgACn/6+7omszspn
- A6FoQP/JZkDXPVa+b9YpiKu4IwnWPi+XIZdJ5387AKPtoX42DwvVV9jwP9XLrNXmKxv+ EQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 2va05rw3pu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Oct 2019 14:07:53 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x92E3SKB024837;
-        Wed, 2 Oct 2019 14:07:53 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3020.oracle.com with ESMTP id 2vc9dkju5d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Oct 2019 14:07:53 +0000
-Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x92E7pgg001505;
-        Wed, 2 Oct 2019 14:07:51 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 02 Oct 2019 07:07:50 -0700
-Date:   Wed, 2 Oct 2019 17:07:33 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: xgmac: add missing parentheses to fix
- precendence error
-Message-ID: <20191002140733.GQ29696@kadam>
-References: <20191002110849.13405-1-colin.king@canonical.com>
- <20191002133356.GP22609@kadam>
- <20191002134238.GP29696@kadam>
- <a995eee6-5b26-f9a9-4d6a-5533da050a3b@canonical.com>
+        id S1728326AbfJBOTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 10:19:36 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45345 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728230AbfJBOTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 10:19:34 -0400
+Received: by mail-qt1-f196.google.com with SMTP id c21so26492019qtj.12;
+        Wed, 02 Oct 2019 07:19:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:from:subject:references
+         :in-reply-to:mime-version:content-transfer-encoding:cc:cc:to;
+        bh=xEcXpQ/NEwyCKzNgI7asImKqcpzGOLlroU+HXRPzw4Y=;
+        b=pbl8cfHVjygWxRJrxDOT49+2J+Ri/7m9++D1QRchMBW3FEQG7zQUcPOUe3cs5urfnb
+         Q0gi2YkQr/rIhtBd4h2+T8G1NFLNChz2+zexhlEqwu4rmW2YMR9lB7T64NehQhKocP4q
+         9Oof/LI67NNKSHmCrrDHJEOuPP6bBGCyBGC5smgkm7/bkFddY6Ro0A5olq3/DoKy8LPT
+         VSz4k0vEnlmGSeeBekTIGef9GXNwC/JLQmW6DhDUdufbYzI+SLB5g9gL1v8HuBvHeHht
+         7F7uup4R07DdNjMlFi/n+lQ8sl+Q5OYoOegcWTcoFqzJjEBOqGmw4nIkEZp46o3gLEfY
+         HqUg==
+X-Gm-Message-State: APjAAAUH2F5bdtEQ+UKEMKF0F+bvtIM7tC0pjFVK6R7af0s0XgIMZNEW
+        OOmvhU5p749tQMYsynvR6f4F9yQQOA==
+X-Google-Smtp-Source: APXvYqxaLnHeciWkdlweE2LBBH7eoNN5RyZrMPdqv69QmbChVl6tENsSTpMqu/HDsjtpBHL6zYeZPA==
+X-Received: by 2002:a0c:a5a5:: with SMTP id z34mr3240240qvz.110.1570025972605;
+        Wed, 02 Oct 2019 07:19:32 -0700 (PDT)
+Received: from localhost ([132.205.230.8])
+        by smtp.gmail.com with ESMTPSA id d45sm12737320qtc.70.2019.10.02.07.19.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2019 07:19:32 -0700 (PDT)
+Message-ID: <5d94b1f4.1c69fb81.6f9ad.2586@mx.google.com>
+Date:   Wed, 02 Oct 2019 09:19:29 -0500
+From:   Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/3] docs: fix some broken references
+References: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
+In-Reply-To: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a995eee6-5b26-f9a9-4d6a-5533da050a3b@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910020136
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910020136
+Content-Transfer-Encoding: 8bit
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>, corbet@lwn.net
+Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Steve French <sfrench@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-riscv@lists.infradead.org
+To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 02, 2019 at 02:53:17PM +0100, Colin Ian King wrote:
-> On 02/10/2019 14:42, Dan Carpenter wrote:
-> > On Wed, Oct 02, 2019 at 04:33:57PM +0300, Dan Carpenter wrote:
-> >> On Wed, Oct 02, 2019 at 12:08:49PM +0100, Colin King wrote:
-> >>> From: Colin Ian King <colin.king@canonical.com>
-> >>>
-> >>> The expression !(hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10 is always zero, so
-> >>> the masking operation is incorrect. Fix this by adding the missing
-> >>> parentheses to correctly bind the negate operator on the entire expression.
-> >>>
-> >>> Addresses-Coverity: ("Operands don't affect result")
-> >>> Fixes: c2b69474d63b ("net: stmmac: xgmac: Correct RAVSEL field interpretation")
-> >>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> >>> ---
-> >>>  drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 2 +-
-> >>>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-> >>> index 965cbe3e6f51..2e814aa64a5c 100644
-> >>> --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-> >>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-> >>> @@ -369,7 +369,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
-> >>>  	dma_cap->eee = (hw_cap & XGMAC_HWFEAT_EEESEL) >> 13;
-> >>>  	dma_cap->atime_stamp = (hw_cap & XGMAC_HWFEAT_TSSEL) >> 12;
-> >>>  	dma_cap->av = (hw_cap & XGMAC_HWFEAT_AVSEL) >> 11;
-> >>> -	dma_cap->av &= !(hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10;
-> >>> +	dma_cap->av &= !((hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10);
-> >>
-> >> There is no point to the shift at all.
-> > 
-> > Sorry I meant to say it should be a bitwise NOT, right?  I was just
-> > looking at some other dma_cap stuff that did this same thing...  I can't
-> > find it now...
+On Tue, 24 Sep 2019 10:01:28 -0300, Mauro Carvalho Chehab wrote:
+> There are a number of documentation files that got moved or
+> renamed. update their references.
 > 
-> In drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c it is being used like
-> a boolean and not a bitmask'd value:
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/cpu/cpu-topology.txt    | 2 +-
+>  Documentation/devicetree/bindings/timer/ingenic,tcu.txt   | 2 +-
+>  Documentation/driver-api/gpio/driver.rst                  | 2 +-
+>  Documentation/hwmon/inspur-ipsps1.rst                     | 2 +-
+>  Documentation/mips/ingenic-tcu.rst                        | 2 +-
+>  Documentation/networking/device_drivers/mellanox/mlx5.rst | 2 +-
+>  MAINTAINERS                                               | 2 +-
+>  drivers/net/ethernet/faraday/ftgmac100.c                  | 2 +-
+>  drivers/net/ethernet/pensando/ionic/ionic_if.h            | 4 ++--
+>  fs/cifs/cifsfs.c                                          | 2 +-
+>  10 files changed, 11 insertions(+), 11 deletions(-)
 > 
->         if (!priv->dma_cap.av)
-> 
-> so the original logic is to do boolean flag merging rather than bit-wise
-> logic.
 
-Oh yeah.  Thanks.  This code is hard to read.
-
-It would be better to just write it like this:
-
-	if (hw_cap & XGMAC_HWFEAT_AVSEL) && !(hw_cap & XGMAC_HWFEAT_RAVSEL)
-		dma_cap->av = true;
-	else
-		dma_cap->av = false;
-
-All these very shifts are concise but they introduce bugs like this one
-you have found.
-
-regards,
-dan carpenter
+Acked-by: Rob Herring <robh@kernel.org>
 
