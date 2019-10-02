@@ -2,193 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5744AC94DE
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF0DC94E2
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728546AbfJBXe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 19:34:56 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:36378 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726453AbfJBXe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 19:34:56 -0400
-Received: by mail-wm1-f66.google.com with SMTP id m18so585817wmc.1
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 16:34:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=hl8UETHarieeI4t2FcbAJcKHUr1QHu+lOq8qQPfuh1s=;
-        b=UchHWZk8uSmE5mh3BJBChQyjs+WuMPenfIt1E6OL0iuiFHBNe+h1HYN7cGCOL7ZJns
-         +r9Y/OdboxMjFN2+5hBLdXyIz+epADFZg2sZd40mCvkIBPpJUQ1PixstS48pDqDLJaWD
-         Q8MjJlKDbonHlK13/2t0eGxvGWcKAfzS5LiOgjV5fF/26BMF6j8s9lhV1lc6mO6obAhx
-         HylpS0VIyG0Ek+h7mYi+AYw0ehluGBLbk9ZxnlLO44JX277bJC3hTPckNLmtmJcALI3T
-         tRoQCzW35rCqCZtAgXur0tjvxlQjk3VL+vmLAFnEtmE7PFzwV5jGZflEW8KXnyMw8MaW
-         abKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=hl8UETHarieeI4t2FcbAJcKHUr1QHu+lOq8qQPfuh1s=;
-        b=R0km/jscXi3E5O7b1mZsC8KovUoRZVOaUwxBlLFKRVAueqSVx2nB0u9atC8SyS1C/u
-         /wdEFDrDEuv10oWJAW+RfE6Y9hh4BPnzjLYEOAQbAFH0Rx7z2O6GtqjFqC6dE2zr11wX
-         mlKpM7KiCw9SmtycPGPmau2Gm1aFDTkQNV1VE89ticNaPJrBPUqY5VIEsywJxKLJG8rK
-         //cfXFwJYG2IdWjJx9aOs05dqHAiH1lR3X8aMCTCLzzAgrttrzt2pqICFqFlzhXnaMze
-         wuKxbOELIuoxyCUouuAeyFwupvT8m6RHk7y3fGgCY+vGhTqARPEio1qu+Jd4vqJNgxGx
-         jXhw==
-X-Gm-Message-State: APjAAAUVksFVXuV80rqo6UfKhFLrNv33SG5KZ2haiOXvxI6Jw3c1Y42l
-        QknCE4k1GckyACQsfD9OXjg=
-X-Google-Smtp-Source: APXvYqw2slqes6LeaICjdaAtCwgBsieQBhUvp5m3hvTp/QNW1Zq5bRSZWAfzRk+3lgdRhrb0DJmwcw==
-X-Received: by 2002:a05:600c:10cc:: with SMTP id l12mr4538216wmd.165.1570059293309;
-        Wed, 02 Oct 2019 16:34:53 -0700 (PDT)
-Received: from localhost.localdomain ([86.124.196.40])
-        by smtp.gmail.com with ESMTPSA id 26sm601451wmf.20.2019.10.02.16.34.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 16:34:52 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next] net: dsa: sja1105: Add support for port mirroring
-Date:   Thu,  3 Oct 2019 02:34:43 +0300
-Message-Id: <20191002233443.12345-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728703AbfJBXhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 19:37:20 -0400
+Received: from mga04.intel.com ([192.55.52.120]:16447 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728405AbfJBXhU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 19:37:20 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 16:37:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,250,1566889200"; 
+   d="scan'208";a="366862577"
+Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.30.230])
+  by orsmga005.jf.intel.com with ESMTP; 02 Oct 2019 16:37:19 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org, edumazet@google.com
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        cpaasch@apple.com, fw@strlen.de, pabeni@redhat.com,
+        peter.krystad@linux.intel.com, dcaratti@redhat.com,
+        matthieu.baerts@tessares.net
+Subject: [RFC PATCH v2 00/45] Multipath TCP
+Date:   Wed,  2 Oct 2019 16:36:10 -0700
+Message-Id: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Amazingly, of all features, this does not require a switch reset.
+The MPTCP upstreaming community has prepared a net-next RFCv2 patch set
+for review.
 
-Tested with:
+Clone/fetch:
+https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-rfcv2)
 
-tc qdisc add dev swp2 clsact
-tc filter add dev swp2 ingress matchall skip_sw \
-	action mirred egress mirror dev swp3
-tc filter show dev swp2 ingress
-tc filter del dev swp2 ingress pref 49152
+Browse:
+https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-rfcv2
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 87 ++++++++++++++++++++++++--
- 1 file changed, 83 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index e95039727c1c..3795feb9177a 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -382,8 +382,8 @@ static int sja1105_init_l2_forwarding_params(struct sja1105_private *priv)
- static int sja1105_init_general_params(struct sja1105_private *priv)
- {
- 	struct sja1105_general_params_entry default_general_params = {
--		/* Disallow dynamic changing of the mirror port */
--		.mirr_ptacu = 0,
-+		/* Allow dynamic changing of the mirror port */
-+		.mirr_ptacu = true,
- 		.switchid = priv->ds->index,
- 		/* Priority queue for link-local management frames
- 		 * (both ingress to and egress from CPU - PTP, STP etc)
-@@ -403,8 +403,8 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
- 		 * by installing a temporary 'management route'
- 		 */
- 		.host_port = dsa_upstream_port(priv->ds, 0),
--		/* Same as host port */
--		.mirr_port = dsa_upstream_port(priv->ds, 0),
-+		/* Default to an invalid value */
-+		.mirr_port = SJA1105_NUM_PORTS,
- 		/* Link-local traffic received on casc_port will be forwarded
- 		 * to host_port without embedding the source port and device ID
- 		 * info in the destination MAC address (presumably because it
-@@ -2069,6 +2069,83 @@ static int sja1105_port_setup_tc(struct dsa_switch *ds, int port,
- 	}
- }
- 
-+/* We have a single mirror (@to) port, but can configure ingress and egress
-+ * mirroring on all other (@from) ports.
-+ * We need to allow mirroring rules only as long as the @to port is always the
-+ * same, and we need to unset the @to port from mirr_port only when there is no
-+ * mirroring rule that references it.
-+ */
-+static int sja1105_mirror_apply(struct sja1105_private *priv, int from, int to,
-+				bool ingress, bool enabled)
-+{
-+	struct sja1105_general_params_entry *general_params;
-+	struct sja1105_mac_config_entry *mac;
-+	struct sja1105_table *table;
-+	bool already_enabled;
-+	u64 new_mirr_port;
-+	int rc;
-+
-+	table = &priv->static_config.tables[BLK_IDX_GENERAL_PARAMS];
-+	general_params = table->entries;
-+
-+	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
-+
-+	already_enabled = (general_params->mirr_port != SJA1105_NUM_PORTS);
-+	if (already_enabled && enabled && general_params->mirr_port != to) {
-+		dev_err(priv->ds->dev,
-+			"Delete mirroring rules towards port %d first", to);
-+		return -EBUSY;
-+	}
-+
-+	new_mirr_port = to;
-+	if (!enabled) {
-+		bool keep = false;
-+		int port;
-+
-+		/* Anybody still referencing mirr_port? */
-+		for (port = 0; port < SJA1105_NUM_PORTS; port++) {
-+			if (mac[port].ing_mirr || mac[port].egr_mirr) {
-+				keep = true;
-+				break;
-+			}
-+		}
-+		/* Unset already_enabled for next time */
-+		if (!keep)
-+			new_mirr_port = SJA1105_NUM_PORTS;
-+	}
-+	if (new_mirr_port != general_params->mirr_port) {
-+		general_params->mirr_port = new_mirr_port;
-+
-+		rc = sja1105_dynamic_config_write(priv, BLK_IDX_GENERAL_PARAMS,
-+						  0, general_params, true);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	if (ingress)
-+		mac[from].ing_mirr = enabled;
-+	else
-+		mac[from].egr_mirr = enabled;
-+
-+	return sja1105_dynamic_config_write(priv, BLK_IDX_MAC_CONFIG, from,
-+					    &mac[from], true);
-+}
-+
-+static int sja1105_mirror_add(struct dsa_switch *ds, int port,
-+			      struct dsa_mall_mirror_tc_entry *mirror,
-+			      bool ingress)
-+{
-+	return sja1105_mirror_apply(ds->priv, port, mirror->to_local_port,
-+				    ingress, true);
-+}
-+
-+static void sja1105_mirror_del(struct dsa_switch *ds, int port,
-+			       struct dsa_mall_mirror_tc_entry *mirror)
-+{
-+	sja1105_mirror_apply(ds->priv, port, mirror->to_local_port,
-+			     mirror->ingress, false);
-+}
-+
- static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.get_tag_protocol	= sja1105_get_tag_protocol,
- 	.setup			= sja1105_setup,
-@@ -2102,6 +2179,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.port_rxtstamp		= sja1105_port_rxtstamp,
- 	.port_txtstamp		= sja1105_port_txtstamp,
- 	.port_setup_tc		= sja1105_port_setup_tc,
-+	.port_mirror_add	= sja1105_mirror_add,
-+	.port_mirror_del	= sja1105_mirror_del,
- };
- 
- static int sja1105_check_device_id(struct sja1105_private *priv)
+With CONFIG_MPTCP=y, a socket created with IPPROTO_MPTCP will attempt to
+create an MPTCP connection but remains compatible with regular
+TCP. IPPROTO_TCP socket behavior is unchanged.
+
+This implementation makes use of ULP between the userspace-facing MPTCP
+socket and the set of in-kernel TCP sockets it controls. ULP has been
+extended for use with listening sockets. skb_ext is used to carry MPTCP
+metadata.
+
+The patch set includes self-tests to exercise MPTCP in various
+connection and routing scenarios.
+
+
+We have more work planned to reach the initial feature set for merging,
+notably:
+
+* IPv6
+
+* Comply with MPTCPv1 (RFC6824bis). This patch set supports only
+  MPTCPv0 (RFC 6824 / experimental)
+
+* Proper MPTCP-level connection closing with DATA_FIN
+
+* Couple receive windows across sibling subflow TCP sockets as required
+  by RFC 6824
+
+* Limit subflow ULP visibility to kernel space
+
+* Simple transmit scheduler that respects subflow 'backup' flags
+
+
+In order to simplify both code review and the development process, we
+propose splitting the patch set in to smaller chunks. The first patch
+set for merging would include patches 1 to 31 and basic IPv6 support.
+
+Thank you for your review. You can find us at mptcp@lists.01.org and
+https://is.gd/mptcp_upstream
+
+
+Florian Westphal (7):
+  mptcp: add mptcp_poll
+  mptcp: add basic kselftest for mptcp
+  selftests: mptcp: make tc delays random
+  selftests: mptcp: extend mptcp_connect tool for ipv6 family
+  selftests: mptcp: add accept/getpeer checks
+  selftests: mptcp: add ipv6 connectivity
+  selftests: mptcp: random ethtool tweaking
+
+Mat Martineau (13):
+  tcp: Add MPTCP option number
+  net: Make sock protocol value checks more specific
+  sock: Make sk_protocol a 16-bit value
+  tcp: Define IPPROTO_MPTCP
+  mptcp: Add MPTCP socket stubs
+  tcp, ulp: Add clone operation to tcp_ulp_ops
+  mptcp: Add MPTCP to skb extensions
+  tcp: Prevent coalesce/collapse when skb has MPTCP extensions
+  tcp: Export low-level TCP functions
+  mptcp: Write MPTCP DSS headers to outgoing data packets
+  mptcp: Implement MPTCP receive path
+  tcp: Check for filled TCP option space before SACK
+  mptcp: Make MPTCP socket block/wakeup ignore sk_receive_queue
+
+Matthieu Baerts (1):
+  mptcp: new sysctl to control the activation per NS
+
+Paolo Abeni (11):
+  tcp: clean ext on tx recycle
+  mptcp: use sk_page_frag() in sendmsg
+  mptcp: sendmsg() do spool all the provided data
+  mptcp: allow collapsing consecutive sendpages on the same substream
+  mptcp: harmonize locking on all socket operations.
+  mptcp: update per unacked sequence on pkt reception
+  mptcp: queue data for mptcp level retransmission
+  mptcp: introduce MPTCP retransmission timer
+  mptcp: implement memory accounting for mptcp rtx queue
+  mptcp: rework mptcp_sendmsg_frag to accept optional dfrag
+  mptcp: implement and use MPTCP-level retransmission
+
+Peter Krystad (13):
+  mptcp: Handle MPTCP TCP options
+  mptcp: Associate MPTCP context with TCP socket
+  tcp: Expose tcp struct and routine for MPTCP
+  mptcp: Handle MP_CAPABLE options for outgoing connections
+  mptcp: Create SUBFLOW socket for incoming connections
+  mptcp: Add key generation and token tree
+  mptcp: Add shutdown() socket operation
+  mptcp: Add setsockopt()/getsockopt() socket operations
+  mptcp: Add path manager interface
+  mptcp: Add ADD_ADDR handling
+  mptcp: Add handling of incoming MP_JOIN requests
+  mptcp: Add handling of outgoing MP_JOIN requests
+  mptcp: Implement path manager interface commands
+
+ include/linux/skbuff.h                        |   11 +
+ include/linux/tcp.h                           |   51 +
+ include/net/mptcp.h                           |  149 ++
+ include/net/sock.h                            |    6 +-
+ include/net/tcp.h                             |   20 +
+ include/trace/events/sock.h                   |    5 +-
+ include/uapi/linux/in.h                       |    2 +
+ net/Kconfig                                   |    1 +
+ net/Makefile                                  |    1 +
+ net/ax25/af_ax25.c                            |    2 +-
+ net/core/skbuff.c                             |    7 +
+ net/decnet/af_decnet.c                        |    2 +-
+ net/ipv4/inet_connection_sock.c               |    2 +
+ net/ipv4/tcp.c                                |    8 +-
+ net/ipv4/tcp_input.c                          |   29 +-
+ net/ipv4/tcp_ipv4.c                           |    4 +-
+ net/ipv4/tcp_minisocks.c                      |    6 +
+ net/ipv4/tcp_output.c                         |   62 +-
+ net/ipv4/tcp_ulp.c                            |   12 +
+ net/mptcp/Kconfig                             |   11 +
+ net/mptcp/Makefile                            |    4 +
+ net/mptcp/crypto.c                            |  128 ++
+ net/mptcp/ctrl.c                              |  112 ++
+ net/mptcp/options.c                           |  753 +++++++++
+ net/mptcp/pm.c                                |  181 ++
+ net/mptcp/protocol.c                          | 1455 +++++++++++++++++
+ net/mptcp/protocol.h                          |  319 ++++
+ net/mptcp/subflow.c                           |  537 ++++++
+ net/mptcp/token.c                             |  217 +++
+ tools/include/uapi/linux/in.h                 |    2 +
+ tools/testing/selftests/Makefile              |    1 +
+ tools/testing/selftests/net/mptcp/.gitignore  |    2 +
+ tools/testing/selftests/net/mptcp/Makefile    |   11 +
+ tools/testing/selftests/net/mptcp/config      |    1 +
+ .../selftests/net/mptcp/mptcp_connect.c       |  522 ++++++
+ .../selftests/net/mptcp/mptcp_connect.sh      |  401 +++++
+ 36 files changed, 5021 insertions(+), 16 deletions(-)
+ create mode 100644 include/net/mptcp.h
+ create mode 100644 net/mptcp/Kconfig
+ create mode 100644 net/mptcp/Makefile
+ create mode 100644 net/mptcp/crypto.c
+ create mode 100644 net/mptcp/ctrl.c
+ create mode 100644 net/mptcp/options.c
+ create mode 100644 net/mptcp/pm.c
+ create mode 100644 net/mptcp/protocol.c
+ create mode 100644 net/mptcp/protocol.h
+ create mode 100644 net/mptcp/subflow.c
+ create mode 100644 net/mptcp/token.c
+ create mode 100644 tools/testing/selftests/net/mptcp/.gitignore
+ create mode 100644 tools/testing/selftests/net/mptcp/Makefile
+ create mode 100644 tools/testing/selftests/net/mptcp/config
+ create mode 100644 tools/testing/selftests/net/mptcp/mptcp_connect.c
+ create mode 100755 tools/testing/selftests/net/mptcp/mptcp_connect.sh
+
 -- 
-2.17.1
+2.23.0
 
