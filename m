@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E2A9C8DF6
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D8EC8DFC
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:13:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728157AbfJBQMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:12:47 -0400
-Received: from mail-wr1-f41.google.com ([209.85.221.41]:36134 "EHLO
-        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726698AbfJBQMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:12:45 -0400
-Received: by mail-wr1-f41.google.com with SMTP id y19so20356741wrd.3
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:12:43 -0700 (PDT)
+        id S1727912AbfJBQMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:12:45 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37281 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725928AbfJBQMm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:12:42 -0400
+Received: by mail-wr1-f68.google.com with SMTP id i1so20363606wro.4
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:12:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=J4u4bSlPc8DSXSOGofoupAdXFaD4t05KQi8uYC22nDY=;
-        b=QwKFTyTpumbz6CthU6Ljanz0TiWvNge7HbJ206ARSkwmMN2GHeUU/un32A9KoPkhoy
-         88htjap2JPosgwsh3R5FHrv3F1LbNshn1LkojSNZEhEOtxzB3Fkgl5gOxY/JmJsM9Kvw
-         oeZb7qCarDhsFSIikQ4sX21Peg8L8y3Opfp1tGgrfU+auC0wlqmtVYKqAVl8JeV7dvse
-         Eg9xwZe967VcB8NRTdFPVwcavZmGO6J8ZIh3CdTwV68PCc6Y7evCif8YBGRbL7FVo3bq
-         y8K/UDrVdCJzqpeVLBJ+Pp4IE5VFLI67KxOUgh8YMDag0jiBSOx2xxnPrPn/pX+jXtCe
-         sZqA==
+        bh=gKhKIeZQO4PLxR8hjsn0TTvjRgdzYwngyrAcsjqQxhw=;
+        b=1QEUfE+G9ElcRPSMl/4N6GfJhnC8+i8djaKjp982PGyKeaGbmVh4QLuQtXPNJoxz5O
+         OzozZXti9QODACz5O3k61cx2H3/mud43m1+E54XkKX8Irx11Hm9fbH+yKsL2zqN6qgFS
+         cINgZQQbGLFH6BnJtBVpbtyelJLuIKyenSY6GctNDZgF5BMBiOy0NCaUALi18xcd8oul
+         8WvDmjD51EQwSU8Mv8md4et40DpMbF5RF5QRGO+hi6mBR7eCBy8l/DfNQdUQSGJWXe5l
+         f3QPnUuwm8063WfkjS9SVMgSLiwSIKnL/G0blTmq3CJF/05dymeUp3fq/ghTBrRQqb0f
+         M82A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=J4u4bSlPc8DSXSOGofoupAdXFaD4t05KQi8uYC22nDY=;
-        b=JNZipx2H0B28Uu+EEnnuYCCipLfg2dKEWRfbYsaB0eJU27VKZJD0JV+aDakcley7hA
-         XVp5XxNaGpg7AVIuAkhFGboWeNk9SHqPjusgJPtmMub9It+yw8DXtJdA0XZXoaHjDGm5
-         jgfalwCn0kzlLkSMGw9euPFxRBxwfKI0bvJDWhH0CbpfM1NdQVvGDf5d80l3lOUPOAvQ
-         btNWYr2LBDRWYSXRFCyqD+TT2uVUKw3hQXbzB+hZWZn+JhK7kjm3GU2yDCaWE34e9X8E
-         oG59z3Xaywbd87T858ih1WL319Bzgn0e/TXBOXqXbepmD7RYltcqOy+ll1ZSPaFF9kVK
-         V3Wg==
-X-Gm-Message-State: APjAAAV/x46gBNO6RxhBIMMR5s4ZUWyPIp2iEcZSzRuPbokpuIpst2BQ
-        yrW+w2Z5NGmIaEKxtxuQJtfNqRSfRSw=
-X-Google-Smtp-Source: APXvYqyJv+00UGPsl8oElTafU206avpfHb5BPZOveB++l+rQi9zZIOMhJwW8WLy8Cb5xn4MGm+KArg==
-X-Received: by 2002:adf:ec91:: with SMTP id z17mr3572562wrn.346.1570032760069;
-        Wed, 02 Oct 2019 09:12:40 -0700 (PDT)
+        bh=gKhKIeZQO4PLxR8hjsn0TTvjRgdzYwngyrAcsjqQxhw=;
+        b=sZRzHMK9nIvEMFFBxZNQ4SPbGhSgzXUZ370eBth87zCDlUfZtsw8x+h2ea7oWIyoBe
+         HdCe3tLmQc2CqkIgrdXuxQT2Y9/5DTzajT9BJfiHwhf2+m5dXMZLBCNhknVo/BdFT15J
+         956woeQ3xUk0PJz2VNGvJIZxgM6meoaeJnPRIRmpLTDDov+Hwwe27p+OQavDVHVoIJti
+         +xu2A9OoOuD1OkHMqWKwMOVHDcKf2JZZu56RU+bTOUuJhQnP2uF303MTz0Sle7mC4z3X
+         fRDQUtjGkaoKdvD+CAyeQdSu4Ps4wXZMV56427UqcuFv2Zj6R+Z4oLiPg2CsUAbygENO
+         Adcw==
+X-Gm-Message-State: APjAAAVV83Mdwx7Hj1+KfX/mQrARzcgf0eCkVX+AC9e0rzcQJ63YQT5V
+        fre1qMFtjdT8LS2ckpDlV5o+7ysD7b0=
+X-Google-Smtp-Source: APXvYqyXjj6gKWHLkLIVd66uSUffQdIk6V10Z7g83LOVoROUBTM75s/c26VUW6PdaGPezq5NCIRGUg==
+X-Received: by 2002:adf:ed04:: with SMTP id a4mr3411689wro.77.1570032761014;
+        Wed, 02 Oct 2019 09:12:41 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f18sm20884923wrv.38.2019.10.02.09.12.39
+        by smtp.gmail.com with ESMTPSA id b7sm16726342wrj.28.2019.10.02.09.12.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 09:12:39 -0700 (PDT)
+        Wed, 02 Oct 2019 09:12:40 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, tariqt@mellanox.com,
         saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
         shuah@kernel.org, mlxsw@mellanox.com
-Subject: [patch net-next v2 07/15] mlxsw: spectrum: Take devlink net instead of init_net
-Date:   Wed,  2 Oct 2019 18:12:23 +0200
-Message-Id: <20191002161231.2987-8-jiri@resnulli.us>
+Subject: [patch net-next v2 08/15] mlxsw: Register port netdevices into net of core
+Date:   Wed,  2 Oct 2019 18:12:24 +0200
+Message-Id: <20191002161231.2987-9-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191002161231.2987-1-jiri@resnulli.us>
 References: <20191002161231.2987-1-jiri@resnulli.us>
@@ -65,231 +65,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Follow-up patch is going to allow to reload devlink instance into
-different network namespace, so use devlink_net() helper instead
-of init_net.
+When creating netdevices for ports, put them under network namespace
+that the core/parent devlink belongs to.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v1->v2:
-- change forgotten init_net usage in mlxsw_sp_router_fib_rule_event()
-- rebased on top of per-netns netdevice notifier patch
+- s/then/them/ in the patch description
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.h    |  6 ++++
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  6 ++--
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  6 ++++
- .../ethernet/mellanox/mlxsw/spectrum_nve.c    |  2 +-
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 29 +++++++++++--------
- .../mellanox/mlxsw/spectrum_switchdev.c       |  2 +-
- 6 files changed, 34 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c  | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/switchx2.c | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 5d7d2ab6d155..e1ef4d255b93 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -11,6 +11,7 @@
- #include <linux/types.h>
- #include <linux/skbuff.h>
- #include <linux/workqueue.h>
-+#include <linux/net_namespace.h>
- #include <net/devlink.h>
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+index 471b0ca6d69a..cee16ad58307 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+@@ -172,6 +172,7 @@ mlxsw_m_port_create(struct mlxsw_m *mlxsw_m, u8 local_port, u8 module)
+ 	}
  
- #include "trap.h"
-@@ -350,6 +351,11 @@ u64 mlxsw_core_res_get(struct mlxsw_core *mlxsw_core,
- #define MLXSW_CORE_RES_GET(mlxsw_core, short_res_id)			\
- 	mlxsw_core_res_get(mlxsw_core, MLXSW_RES_ID_##short_res_id)
- 
-+static inline struct net *mlxsw_core_net(struct mlxsw_core *mlxsw_core)
-+{
-+	return devlink_net(priv_to_devlink(mlxsw_core));
-+}
-+
- #define MLXSW_BUS_F_TXRX	BIT(0)
- #define MLXSW_BUS_F_RESET	BIT(1)
- 
+ 	SET_NETDEV_DEV(dev, mlxsw_m->bus_info->dev);
++	dev_net_set(dev, mlxsw_core_net(mlxsw_m->core));
+ 	mlxsw_m_port = netdev_priv(dev);
+ 	mlxsw_m_port->dev = dev;
+ 	mlxsw_m_port->mlxsw_m = mlxsw_m;
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index a54a0dc82ff2..250448aecd67 100644
+index 250448aecd67..a9ea9c7b9e59 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4864,7 +4864,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
- 	 * respin.
- 	 */
- 	mlxsw_sp->netdevice_nb.notifier_call = mlxsw_sp_netdevice_event;
--	err = register_netdevice_notifier_net(&init_net,
-+	err = register_netdevice_notifier_net(mlxsw_sp_net(mlxsw_sp),
- 					      &mlxsw_sp->netdevice_nb);
- 	if (err) {
- 		dev_err(mlxsw_sp->bus_info->dev, "Failed to register netdev notifier\n");
-@@ -4888,7 +4888,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
- err_ports_create:
- 	mlxsw_sp_dpipe_fini(mlxsw_sp);
- err_dpipe_init:
--	unregister_netdevice_notifier_net(&init_net,
-+	unregister_netdevice_notifier_net(mlxsw_sp_net(mlxsw_sp),
- 					  &mlxsw_sp->netdevice_nb);
- err_netdev_notifier:
- 	if (mlxsw_sp->clock)
-@@ -4975,7 +4975,7 @@ static void mlxsw_sp_fini(struct mlxsw_core *mlxsw_core)
- 
- 	mlxsw_sp_ports_remove(mlxsw_sp);
- 	mlxsw_sp_dpipe_fini(mlxsw_sp);
--	unregister_netdevice_notifier_net(&init_net,
-+	unregister_netdevice_notifier_net(mlxsw_sp_net(mlxsw_sp),
- 					  &mlxsw_sp->netdevice_nb);
- 	if (mlxsw_sp->clock) {
- 		mlxsw_sp->ptp_ops->fini(mlxsw_sp->ptp_state);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index b2a0028b1694..f58d45e770cd 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -14,6 +14,7 @@
- #include <linux/dcbnl.h>
- #include <linux/in6.h>
- #include <linux/notifier.h>
-+#include <linux/net_namespace.h>
- #include <net/psample.h>
- #include <net/pkt_cls.h>
- #include <net/red.h>
-@@ -982,4 +983,9 @@ int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
- int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
- 			     const struct devlink_trap_group *group);
- 
-+static inline struct net *mlxsw_sp_net(struct mlxsw_sp *mlxsw_sp)
-+{
-+	return mlxsw_core_net(mlxsw_sp->core);
-+}
-+
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
-index 17f334b46c40..2153bcc4b585 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
-@@ -870,7 +870,7 @@ void mlxsw_sp_nve_fid_disable(struct mlxsw_sp *mlxsw_sp,
- 		    mlxsw_sp_fid_vni(fid, &vni)))
- 		goto out;
- 
--	nve_dev = dev_get_by_index(&init_net, nve_ifindex);
-+	nve_dev = dev_get_by_index(mlxsw_sp_net(mlxsw_sp), nve_ifindex);
- 	if (!nve_dev)
- 		goto out;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 445e2daa54ac..3479f805b377 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -16,6 +16,7 @@
- #include <linux/if_macvlan.h>
- #include <linux/refcount.h>
- #include <linux/jhash.h>
-+#include <linux/net_namespace.h>
- #include <net/netevent.h>
- #include <net/neighbour.h>
- #include <net/arp.h>
-@@ -2551,14 +2552,14 @@ static int mlxsw_sp_router_schedule_work(struct net *net,
- 	struct mlxsw_sp_netevent_work *net_work;
- 	struct mlxsw_sp_router *router;
- 
--	if (!net_eq(net, &init_net))
-+	router = container_of(nb, struct mlxsw_sp_router, netevent_nb);
-+	if (!net_eq(net, mlxsw_sp_net(router->mlxsw_sp)))
- 		return NOTIFY_DONE;
- 
- 	net_work = kzalloc(sizeof(*net_work), GFP_ATOMIC);
- 	if (!net_work)
- 		return NOTIFY_BAD;
- 
--	router = container_of(nb, struct mlxsw_sp_router, netevent_nb);
- 	INIT_WORK(&net_work->work, cb);
- 	net_work->mlxsw_sp = router->mlxsw_sp;
- 	mlxsw_core_schedule_work(&net_work->work);
-@@ -6195,7 +6196,7 @@ static int mlxsw_sp_router_fib_rule_event(unsigned long event,
- 	rule = fr_info->rule;
- 
- 	/* Rule only affects locally generated traffic */
--	if (rule->iifindex == init_net.loopback_dev->ifindex)
-+	if (rule->iifindex == mlxsw_sp_net(mlxsw_sp)->loopback_dev->ifindex)
- 		return 0;
- 
- 	switch (info->family) {
-@@ -7953,9 +7954,10 @@ static void mlxsw_sp_mp_hash_field_set(char *recr2_pl, int field)
- 	mlxsw_reg_recr2_outer_header_fields_enable_set(recr2_pl, field, true);
- }
- 
--static void mlxsw_sp_mp4_hash_init(char *recr2_pl)
-+static void mlxsw_sp_mp4_hash_init(struct mlxsw_sp *mlxsw_sp, char *recr2_pl)
- {
--	bool only_l3 = !init_net.ipv4.sysctl_fib_multipath_hash_policy;
-+	struct net *net = mlxsw_sp_net(mlxsw_sp);
-+	bool only_l3 = !net->ipv4.sysctl_fib_multipath_hash_policy;
- 
- 	mlxsw_sp_mp_hash_header_set(recr2_pl,
- 				    MLXSW_REG_RECR2_IPV4_EN_NOT_TCP_NOT_UDP);
-@@ -7970,9 +7972,9 @@ static void mlxsw_sp_mp4_hash_init(char *recr2_pl)
- 	mlxsw_sp_mp_hash_field_set(recr2_pl, MLXSW_REG_RECR2_TCP_UDP_DPORT);
- }
- 
--static void mlxsw_sp_mp6_hash_init(char *recr2_pl)
-+static void mlxsw_sp_mp6_hash_init(struct mlxsw_sp *mlxsw_sp, char *recr2_pl)
- {
--	bool only_l3 = !ip6_multipath_hash_policy(&init_net);
-+	bool only_l3 = !ip6_multipath_hash_policy(mlxsw_sp_net(mlxsw_sp));
- 
- 	mlxsw_sp_mp_hash_header_set(recr2_pl,
- 				    MLXSW_REG_RECR2_IPV6_EN_NOT_TCP_NOT_UDP);
-@@ -8000,8 +8002,8 @@ static int mlxsw_sp_mp_hash_init(struct mlxsw_sp *mlxsw_sp)
- 
- 	seed = jhash(mlxsw_sp->base_mac, sizeof(mlxsw_sp->base_mac), 0);
- 	mlxsw_reg_recr2_pack(recr2_pl, seed);
--	mlxsw_sp_mp4_hash_init(recr2_pl);
--	mlxsw_sp_mp6_hash_init(recr2_pl);
-+	mlxsw_sp_mp4_hash_init(mlxsw_sp, recr2_pl);
-+	mlxsw_sp_mp6_hash_init(mlxsw_sp, recr2_pl);
- 
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(recr2), recr2_pl);
- }
-@@ -8032,7 +8034,8 @@ static int mlxsw_sp_dscp_init(struct mlxsw_sp *mlxsw_sp)
- 
- static int __mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp)
- {
--	bool usp = init_net.ipv4.sysctl_ip_fwd_update_priority;
-+	struct net *net = mlxsw_sp_net(mlxsw_sp);
-+	bool usp = net->ipv4.sysctl_ip_fwd_update_priority;
- 	char rgcr_pl[MLXSW_REG_RGCR_LEN];
- 	u64 max_rifs;
- 	int err;
-@@ -8134,7 +8137,8 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp)
- 		goto err_dscp_init;
- 
- 	mlxsw_sp->router->fib_nb.notifier_call = mlxsw_sp_router_fib_event;
--	err = register_fib_notifier(&init_net, &mlxsw_sp->router->fib_nb,
-+	err = register_fib_notifier(mlxsw_sp_net(mlxsw_sp),
-+				    &mlxsw_sp->router->fib_nb,
- 				    mlxsw_sp_router_fib_dump_flush, NULL);
- 	if (err)
- 		goto err_register_fib_notifier;
-@@ -8174,7 +8178,8 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp)
- 
- void mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
- {
--	unregister_fib_notifier(&init_net, &mlxsw_sp->router->fib_nb);
-+	unregister_fib_notifier(mlxsw_sp_net(mlxsw_sp),
-+				&mlxsw_sp->router->fib_nb);
- 	unregister_netevent_notifier(&mlxsw_sp->router->netevent_nb);
- 	mlxsw_sp_neigh_fini(mlxsw_sp);
- 	mlxsw_sp_vrs_fini(mlxsw_sp);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 5ecb45118400..a3af171c6358 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -2591,7 +2591,7 @@ __mlxsw_sp_fdb_notify_mac_uc_tunnel_process(struct mlxsw_sp *mlxsw_sp,
- 	if (err)
- 		return err;
- 
--	dev = __dev_get_by_index(&init_net, nve_ifindex);
-+	dev = __dev_get_by_index(mlxsw_sp_net(mlxsw_sp), nve_ifindex);
+@@ -3635,6 +3635,7 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
+ 		goto err_alloc_etherdev;
+ 	}
+ 	SET_NETDEV_DEV(dev, mlxsw_sp->bus_info->dev);
++	dev_net_set(dev, mlxsw_sp_net(mlxsw_sp));
+ 	mlxsw_sp_port = netdev_priv(dev);
+ 	mlxsw_sp_port->dev = dev;
+ 	mlxsw_sp_port->mlxsw_sp = mlxsw_sp;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+index 1c14c051ee52..a4d09392a8d7 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+@@ -992,6 +992,7 @@ static int __mlxsw_sx_port_eth_create(struct mlxsw_sx *mlxsw_sx, u8 local_port,
  	if (!dev)
- 		return -EINVAL;
- 	*nve_dev = dev;
+ 		return -ENOMEM;
+ 	SET_NETDEV_DEV(dev, mlxsw_sx->bus_info->dev);
++	dev_net_set(dev, mlxsw_core_net(mlxsw_sx->core));
+ 	mlxsw_sx_port = netdev_priv(dev);
+ 	mlxsw_sx_port->dev = dev;
+ 	mlxsw_sx_port->mlxsw_sx = mlxsw_sx;
 -- 
 2.21.0
 
