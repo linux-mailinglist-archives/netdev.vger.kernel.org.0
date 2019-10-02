@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB48C4693
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 06:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1150DC4698
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 06:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729835AbfJBE0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 00:26:06 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:46296 "EHLO
+        id S1729860AbfJBE3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 00:29:13 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:46722 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726411AbfJBE0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 00:26:06 -0400
+        with ESMTP id S1725766AbfJBE3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 00:29:12 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 529B0601E7; Wed,  2 Oct 2019 04:26:05 +0000 (UTC)
+        id 6FB52611C5; Wed,  2 Oct 2019 04:29:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569990365;
-        bh=RIa0/sdQ4wDolecD+VCTngmzACfLt9L4lzi0R6k4E7A=;
+        s=default; t=1569990551;
+        bh=ShTKPTs4KOdaImLZFk6yFEClFsbgGy3rpclnBAkALO8=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=WOPiIfLFoOs+YRPyFtvYe0a9OKs+lNBDKbGIOg+Bc3cytUSLc/Z6s9e1h6N07g0ec
-         L5dWi12rIQZPrHHtBHialIb5YK3HeLqGD4YhmEKbhqYs67yqxgiHwOGOpbTAS5m724
-         H0sSNoHr2bbEYytlsRSZJC0Nx8HSADYSugBefIfM=
+        b=PxDtrRd9iWyLeIoep1axeT0pDjKslnlcU+I/ZXdIDIxVMndxHLaCoRbFvVt7kndyW
+         e2+0Ly1gSg5QMiPwaBeldBCuPLu10+8n6VglQ6ak2HMUusUf6zTHkGx6n2OsFJzquH
+         3ZdFoXVdq730zyYABSwkbcG7QbXjBgm+U6kCSbFA=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,58 +30,75 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1966F6074F;
-        Wed,  2 Oct 2019 04:26:02 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 40191608CC;
+        Wed,  2 Oct 2019 04:29:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569990364;
-        bh=RIa0/sdQ4wDolecD+VCTngmzACfLt9L4lzi0R6k4E7A=;
+        s=default; t=1569990550;
+        bh=ShTKPTs4KOdaImLZFk6yFEClFsbgGy3rpclnBAkALO8=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=F8Bf25ffzaX6jT8ld8RKtehbV9/0kh0YGduNRjUHlPfOLdbmTKwQqLQwTM3d3bAwv
-         ajIcGmmPEo5wC6N8HQ3y/k1DFct655Oqe+cbQSeWEY3/McDtcNb4ZsooRSXeubt2Uc
-         NYY78Nl7LnJkskH76EGsg5AsHI4DTk79srMZGJgs=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1966F6074F
+        b=aXi7aoGaHtbaezobUtr1BxMha4SVYgsM6XrSqSQbQGANpWRQY+o0xO9ItfoR2ub0Q
+         qu5ghSISXEMjdxZErz587OGh14tOTMqDZ0uAfUN5gGC1lPLc2GJtlxgCbeAx7uVOwa
+         tCWOmxyzD4GaXOAWfrPpZpir4vYhuRnwYc0m8HG4=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 40191608CC
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 3/6] rtlwifi: rtl8192ee: Remove set but not used variable
- 'err'
+Subject: Re: [PATCH v2] rtl8xxxu: add bluetooth co-existence support for
+ single antenna
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1569833692-93288-4-git-send-email-zhengbin13@huawei.com>
-References: <1569833692-93288-4-git-send-email-zhengbin13@huawei.com>
-To:     zhengbin <zhengbin13@huawei.com>
-Cc:     <pkshih@realtek.com>, <davem@davemloft.net>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <zhengbin13@huawei.com>
+In-Reply-To: <20190911025045.20918-1-chiu@endlessm.com>
+References: <20190911025045.20918-1-chiu@endlessm.com>
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191002042605.529B0601E7@smtp.codeaurora.org>
-Date:   Wed,  2 Oct 2019 04:26:05 +0000 (UTC)
+Message-Id: <20191002042911.6FB52611C5@smtp.codeaurora.org>
+Date:   Wed,  2 Oct 2019 04:29:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhengbin <zhengbin13@huawei.com> wrote:
+Chris Chiu <chiu@endlessm.com> wrote:
 
-> Fixes gcc '-Wunused-but-set-variable' warning:
+> The RTL8723BU suffers the wifi disconnection problem while bluetooth
+> device connected. While wifi is doing tx/rx, the bluetooth will scan
+> without results. This is due to the wifi and bluetooth share the same
+> single antenna for RF communication and they need to have a mechanism
+> to collaborate.
 > 
-> drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c: In function rtl92ee_download_fw:
-> drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c:111:6: warning: variable err set but not used [-Wunused-but-set-variable]
+> BT information is provided via the packet sent from co-processor to
+> host (C2H). It contains the status of BT but the rtl8723bu_handle_c2h
+> dose not really handle it. And there's no bluetooth coexistence
+> mechanism to deal with it.
 > 
-> It is not used since commit c93ac39da006 ("rtlwifi:
-> Remove some redundant code")
+> This commit adds a workqueue to set the tdma configurations and
+> coefficient table per the parsed bluetooth link status and given
+> wifi connection state. The tdma/coef table comes from the vendor
+> driver code of the RTL8192EU and RTL8723BU. However, this commit is
+> only for single antenna scenario which RTL8192EU is default dual
+> antenna. The rtl8xxxu_parse_rxdesc24 which invokes the handle_c2h
+> is only for 8723b and 8192e so the mechanism is expected to work
+> on both chips with single antenna. Note RTL8192EU dual antenna is
+> not supported.
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: zhengbin <zhengbin13@huawei.com>
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
 
-Dropping this patch per Ping's comment, please fix and resend this
-patch.
+Failed to apply, please rebase on top of wireless-drivers-next.
+
+fatal: sha1 information is lacking or useless (drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h).
+error: could not build fake ancestor
+Applying: rtl8xxxu: add bluetooth co-existence support for single antenna
+Patch failed at 0001 rtl8xxxu: add bluetooth co-existence support for single antenna
+The copy of the patch that failed is found in: .git/rebase-apply/patch
 
 Patch set to Changes Requested.
 
 -- 
-https://patchwork.kernel.org/patch/11166207/
+https://patchwork.kernel.org/patch/11140223/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
