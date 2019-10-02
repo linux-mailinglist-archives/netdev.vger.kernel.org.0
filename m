@@ -2,75 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B43C8DC0
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DBC1C8DEB
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728255AbfJBQH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:07:29 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:39841 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727978AbfJBQH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:07:29 -0400
-Received: by mail-ed1-f66.google.com with SMTP id a15so15758403edt.6
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UGa2u1OX6iCVBPb+wzk9Ci70IztieIqU/DbP4J4eknU=;
-        b=TdjKXCoGbaZzBnM8p4/zT2qbSouVAWyn77oeJTxgzq3nohByBf1/Y+0T0L9BxfvrsW
-         +XDWOC/gVU7fT6GgGqU1rtSLS2JtGvJ2TT5S39dMrtf1GBVH3gspTTZG0Cy4YAf7kwEQ
-         +xCY/2tk0Bb7dTk9xmg7gdhhmGf/vGTHEUjxU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UGa2u1OX6iCVBPb+wzk9Ci70IztieIqU/DbP4J4eknU=;
-        b=t73iYDjxlZHpivqDwI5Y/C3EydhLfSHVU2rbHFB9imT2z+EMrJ91jGyG2l3dxb5QC2
-         BgVlzPxwYO69PTAdXFAh23q9Lw9Jeusq2xzH1iyh36wHDTBtkpYpRqGDtQklWSeN/9jC
-         6Z0COB+eHwV7/thy75Q8br0/FdGumtk14SeojiuQhiaN7/QZnDJ7uk3EATZvMe27mxba
-         WnZDCzTNkiaY9d4FaBqS8h9/L+F5dSB2SNPg9N4YBp5e2LZwCFnJrXZYvF0TBJawcokz
-         mff6PxPr9/OJT+Aj57hEI5EyttwxiYpkognDVskuNWWJH7np7cQWi0g0tSjH0bzRUhNi
-         NaEA==
-X-Gm-Message-State: APjAAAU8uSIfTAWjSDppJyUo3mO64OuLyYRHPMPgM95DwYWK6Tx36ri2
-        nfwzpG3eZLRQiNaEYYASOGt/hpFGdYRoYcB79TiZxQ==
-X-Google-Smtp-Source: APXvYqwLOlrtRXmSu2iMl4gnxy6YHuM00GHsrWEKcGKT3jn35ahOFTs8Zx72kOwYDm+F25aXzX8Y7VAATX7ihF6DgSM=
-X-Received: by 2002:a17:906:e10a:: with SMTP id gj10mr3705143ejb.134.1570032448006;
- Wed, 02 Oct 2019 09:07:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <1569905543-33478-1-git-send-email-roopa@cumulusnetworks.com>
- <1569905543-33478-2-git-send-email-roopa@cumulusnetworks.com> <20191001075928.26f1dd43@hermes.lan>
-In-Reply-To: <20191001075928.26f1dd43@hermes.lan>
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-Date:   Wed, 2 Oct 2019 09:07:17 -0700
-Message-ID: <CAJieiUhs1Hr-LxEhO7Keary3MwPWtWTwwhZ=1+5kiawfxRU4Pw@mail.gmail.com>
-Subject: Re: [PATCH iproute2 net-next v3 1/2] bridge: fdb get support
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727003AbfJBQKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:10:09 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33414 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725852AbfJBQKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:10:09 -0400
+Received: from localhost (unknown [172.58.43.221])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B12F3153BF449;
+        Wed,  2 Oct 2019 09:10:07 -0700 (PDT)
+Date:   Wed, 02 Oct 2019 12:10:04 -0400 (EDT)
+Message-Id: <20191002.121004.2212668620537376356.davem@davemloft.net>
+To:     linus.walleij@linaro.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: rtl8366: Check VLAN ID and not ports
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191001142843.10746-1-linus.walleij@linaro.org>
+References: <20191001142843.10746-1-linus.walleij@linaro.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 02 Oct 2019 09:10:08 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 1, 2019 at 7:59 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Mon, 30 Sep 2019 21:52:22 -0700
-> Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
->
-> > +
-> > +     if (sscanf(addr, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
-> > +                abuf, abuf+1, abuf+2,
-> > +                abuf+3, abuf+4, abuf+5) != 6) {
-> > +             fprintf(stderr, "Invalid mac address %s\n", addr);
-> > +             return -1;
-> > +     }
->
-> You could use ether_aton here if that would help.
-> Not required, but ether_ntoa already used in iplink_bridge.
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Tue,  1 Oct 2019 16:28:43 +0200
 
-ok ack, i will take a look. I think i picked this up from
-bridge/fdb.c:fdb_modify
+> There has been some confusion between the port number and
+> the VLAN ID in this driver. What we need to check for
+> validity is the VLAN ID, nothing else.
+> 
+> The current confusion came from assigning a few default
+> VLANs for default routing and we need to rewrite that
+> properly.
+> 
+> Instead of checking if the port number is a valid VLAN
+> ID, check the actual VLAN IDs passed in to the callback
+> one by one as expected.
+> 
+> Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+
+Applied and queued up for -stable, thanks.
