@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D180C49CE
+	by mail.lfdr.de (Postfix) with ESMTP id DC130C49CF
 	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 10:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727966AbfJBIl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 04:41:56 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44515 "EHLO
+        id S1727973AbfJBIl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 04:41:58 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44349 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727953AbfJBIlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 04:41:53 -0400
+        by vger.kernel.org with ESMTP id S1726002AbfJBIly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 04:41:54 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id DFEB9217DD;
-        Wed,  2 Oct 2019 04:41:51 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 76DB62071B;
+        Wed,  2 Oct 2019 04:41:53 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 02 Oct 2019 04:41:51 -0400
+  by compute3.internal (MEProxy); Wed, 02 Oct 2019 04:41:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=lI9z6oZvFsu38XwrJPCEMvqLB6Phbtm6rnDVLysCJPA=; b=TYfjTYrE
-        o4eH5G1DZ+oJsrXi6wjVSwfQCk1Dr1b8GSy36opm5Gl2b3dLjC/EvZ9yYJNKD+a5
-        3Ql8XlA8MK92ezpqebzCJoilKurbjr7jz/W8n7LudlLi6RrNx+gKhbmOM2/HW/6z
-        SK+tx4VgjFwZ0QaO2j2HMitdKNHAwoyDBnkuorJQcyP0tZQeNESJA1nOYtvQjfVR
-        duqkoKhrmHi4+xVCJ0BbuK1TBHraBS7yBB2DNO8K8FXLu5hTkW1NeJTjpiyKTIkE
-        nxRS787EMx8yH3OPjKbB1OfNVrj40aXRZumxz6kuwBnqIeWFBlqSm8XPFPSIKwd3
-        rQskcRrTKxiqHA==
-X-ME-Sender: <xms:z2KUXVMWpiFBS6OpSDKGVoKDrWux0PWuYqM4hnvHhQk87PlSwcKm5w>
+        fm3; bh=7qTmf4CpCa4jeOw0bwEtYeIdf7GpAeyuBH+pS+mL8qY=; b=VDI6fkdw
+        YSg1xtn6EIqwPZC3jzQbnpjqfPPcAzQa2EfXwxJnW/HG4bi5/mcgO/ffrlY/+nkL
+        dCqTmGdSHfjgq7goOlCK/IjEyOcOqwRU70VhZdYpVLjbE6LTJ45L/2MdENDq5RVd
+        VWUjiiuhEx1KWUUVzy7hY8vzkMg9Q9GtoJCol6g0L3iL/ehd5V//UltT5srHzLRj
+        3oBFY3ZclQmBG4pocSf91Wjv9eevjEwoQQQ9q85imLsVChMW7KjpRDR29qR/KRZY
+        o4BTkFKVlEEVGbIu+rQn9Pxt8NfhL0F4T6+1Wqs6CHYqztt/Mo2mIDZGdyXwOCiu
+        hM3TkOIhdiiHzw==
+X-ME-Sender: <xms:0WKUXRM2DM7QIsdlMQ3kfuD_dndyV4wzc739k88oTDkTDVODDJdF8Q>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrgeeigddtkecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepuddt
-X-ME-Proxy: <xmx:z2KUXdao4uok0YT1gx4_dxECm4PVLKLjt2PUyI1cjjxH9lwIgkJSsA>
-    <xmx:z2KUXZBGgbKh1HYColPT9jWkoUgOaSzCNQGtb18EQP0oJNhlTvnzew>
-    <xmx:z2KUXSrUo1cfxvFcD1CgemtI4QO6c7Z4iFToBuQ4oeS-g8S7rhMwNg>
-    <xmx:z2KUXQSljEPy0C0FWY4vEBQabrXp4ZixxG9lgQBSLnxPC5KVlnjIrA>
+    ihiivgepudeg
+X-ME-Proxy: <xmx:0WKUXa51LxyQbzW02JcrY8-SNA6B6nh2bzWdx1W-C_m8dKd2TwRs9A>
+    <xmx:0WKUXVXBRrbVzf3ypTjvC9qt6xr91GpoMpVsBFddxWCVr-QXENdwSQ>
+    <xmx:0WKUXU3n5ELHKslH8HpMN41kkL2KyvcRU2gsOq0bsFQTlZOhg4ayvQ>
+    <xmx:0WKUXX0HZoyPCN4chno8s8KH5_FFDt4SLukfNcjJ5_LFdLqqzQV8kQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 50FA9D6005E;
-        Wed,  2 Oct 2019 04:41:50 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id DE356D60057;
+        Wed,  2 Oct 2019 04:41:51 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, dsahern@gmail.com, jiri@mellanox.com,
         jakub.kicinski@netronome.com, saeedm@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH net-next 14/15] netdevsim: fib: Mark routes as "in hardware"
-Date:   Wed,  2 Oct 2019 11:41:02 +0300
-Message-Id: <20191002084103.12138-15-idosch@idosch.org>
+Subject: [RFC PATCH net-next 15/15] selftests: netdevsim: Add test for route offload API
+Date:   Wed,  2 Oct 2019 11:41:03 +0300
+Message-Id: <20191002084103.12138-16-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191002084103.12138-1-idosch@idosch.org>
 References: <20191002084103.12138-1-idosch@idosch.org>
@@ -62,344 +62,432 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Implement dummy IPv4 FIB "offload" in the driver by storing currently
-"offloaded" routes in a hash table. Each route in the hash table is
-marked as "in hardware". The indication is cleared when the route is
-replaced or when the netdevsim instance is deleted.
-
-This will later allow us to test the route offload API on top of
-netdevsim.
+Test various aspects of the route offload API on top of the netdevsim
+implementation. Both good and error flows are tested.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/netdevsim/fib.c | 259 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 256 insertions(+), 3 deletions(-)
+ .../drivers/net/netdevsim/fib_notifier.sh     | 411 ++++++++++++++++++
+ 1 file changed, 411 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/fib_notifier.sh
 
-diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index 4e02a4231fcb..ab08d6e73356 100644
---- a/drivers/net/netdevsim/fib.c
-+++ b/drivers/net/netdevsim/fib.c
-@@ -14,6 +14,9 @@
-  * THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
-  */
- 
-+#include <linux/in6.h>
-+#include <linux/kernel.h>
-+#include <linux/rhashtable.h>
- #include <net/fib_notifier.h>
- #include <net/ip_fib.h>
- #include <net/ip6_fib.h>
-@@ -36,6 +39,34 @@ struct nsim_fib_data {
- 	struct notifier_block fib_nb;
- 	struct nsim_per_fib_data ipv4;
- 	struct nsim_per_fib_data ipv6;
-+	struct rhashtable fib_rt_ht;
-+	struct devlink *devlink;
-+};
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/fib_notifier.sh b/tools/testing/selftests/drivers/net/netdevsim/fib_notifier.sh
+new file mode 100755
+index 000000000000..27b0752df67f
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/netdevsim/fib_notifier.sh
+@@ -0,0 +1,411 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# This test is for checking the FIB notification API. It makes use of netdevsim
++# which registers a listener to the FIB notification chain.
 +
-+struct nsim_fib_rt_key {
-+	unsigned char addr[sizeof(struct in6_addr)];
-+	unsigned char prefix_len;
-+	int family;
-+	u32 tb_id;
-+};
++lib_dir=$(dirname $0)/../../../net/forwarding
 +
-+struct nsim_fib_rt {
-+	struct nsim_fib_rt_key key;
-+	struct rhash_head ht_node;
-+};
++ALL_TESTS="
++	ipv4_identical_routes
++	ipv4_tos
++	ipv4_metric
++	ipv4_replace
++	ipv4_delete
++	ipv4_plen
++	ipv4_replay
++	ipv4_error_path
++	ipv4_flush
++"
++NETDEVSIM_PATH=/sys/bus/netdevsim/
++DEV_ADDR=1337
++DEV=netdevsim${DEV_ADDR}
++DEVLINK_DEV=netdevsim/${DEV}
++NUM_NETIFS=0
++source $lib_dir/lib.sh
++source $lib_dir/devlink_lib.sh
 +
-+struct nsim_fib4_rt {
-+	struct nsim_fib_rt common;
-+	struct fib_info *fi;
-+	u8 type;
-+	u8 tos;
-+};
-+
-+static const struct rhashtable_params nsim_fib_rt_ht_params = {
-+	.key_offset = offsetof(struct nsim_fib_rt, key),
-+	.head_offset = offsetof(struct nsim_fib_rt, ht_node),
-+	.key_len = sizeof(struct nsim_fib_rt_key),
-+	.automatic_shrinking = true,
- };
- 
- u64 nsim_fib_get_val(struct nsim_fib_data *fib_data,
-@@ -144,6 +175,191 @@ static int nsim_fib_account(struct nsim_fib_entry *entry, bool add,
- 	return err;
- }
- 
-+static void nsim_fib_rt_init(struct nsim_fib_rt *fib_rt, const void *addr,
-+			     size_t addr_len, unsigned int prefix_len,
-+			     int family, u32 tb_id)
++route_in_hw_check()
 +{
-+	memcpy(fib_rt->key.addr, addr, addr_len);
-+	fib_rt->key.prefix_len = prefix_len;
-+	fib_rt->key.family = family;
-+	fib_rt->key.tb_id = tb_id;
++	local route=$1; shift
++
++	ip -n testns1 route show $route | grep -q "in_hw"
 +}
 +
-+static struct nsim_fib_rt *nsim_fib_rt_lookup(struct rhashtable *fib_rt_ht,
-+					      const void *addr, size_t addr_len,
-+					      unsigned int prefix_len,
-+					      int family, u32 tb_id)
++ipv4_identical_routes()
 +{
-+	struct nsim_fib_rt_key key;
++	local i
 +
-+	memset(&key, 0, sizeof(key));
-+	memcpy(key.addr, addr, addr_len);
-+	key.prefix_len = prefix_len;
-+	key.family = family;
-+	key.tb_id = tb_id;
++	RET=0
 +
-+	return rhashtable_lookup_fast(fib_rt_ht, &key, nsim_fib_rt_ht_params);
++	for i in $(seq 1 3); do
++		ip -n testns1 link add name dummy$i type dummy
++		ip -n testns1 link set dev dummy$i up
++	done
++
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 tos 0 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 0 metric 1024"
++	check_err $? "Route not in hardware when should"
++
++	ip -n testns1 route append 192.0.2.0/24 dev dummy2 tos 0 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy2 tos 0 metric 1024"
++	check_fail $? "Appended route in hardware when should not"
++
++	ip -n testns1 route prepend 192.0.2.0/24 dev dummy3 tos 0 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy3 tos 0 metric 1024"
++	check_err $? "Prepended route not in hardware when should"
++
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 0 metric 1024"
++	check_fail $? "Route was not replaced in hardware by prepended one"
++
++	log_test "IPv4 identical routes"
++
++	for i in $(seq 1 3); do
++		ip -n testns1 link del dev dummy$i
++	done
 +}
 +
-+static struct nsim_fib4_rt *
-+nsim_fib4_rt_create(struct fib_entry_notifier_info *fen_info)
++ipv4_tos()
 +{
-+	struct nsim_fib4_rt *fib4_rt;
++	RET=0
 +
-+	fib4_rt = kzalloc(sizeof(*fib4_rt), GFP_ATOMIC);
-+	if (!fib4_rt)
-+		return NULL;
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
 +
-+	nsim_fib_rt_init(&fib4_rt->common, &fen_info->dst, sizeof(u32),
-+			 fen_info->dst_len, AF_INET, fen_info->tb_id);
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 tos 0 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 0 metric 1024"
++	check_err $? "Route not in hardware when should"
 +
-+	fib4_rt->fi = fen_info->fi;
-+	fib_info_hold(fib4_rt->fi);
-+	fib4_rt->tos = fen_info->tos;
-+	fib4_rt->type = fen_info->type;
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 tos 2 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 2 metric 1024"
++	check_err $? "Highest TOS route not in hardware when should"
 +
-+	return fib4_rt;
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 0 metric 1024"
++	check_fail $? "Lowest TOS route still in hardware when should not"
++
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 tos 1 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 1 metric 1024"
++	check_fail $? "Middle TOS route in hardware when should not"
++
++	log_test "IPv4 routes with TOS"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
-+static void nsim_fib4_rt_destroy(struct nsim_fib4_rt *fib4_rt)
++ipv4_metric()
 +{
-+	fib_info_put(fib4_rt->fi);
-+	kfree(fib4_rt);
++	RET=0
++
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
++
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1024"
++	check_err $? "Route not in hardware when should"
++
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric 1022
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1022"
++	check_err $? "Lowest metric route not in hardware when should"
++
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1024"
++	check_fail $? "Highest metric route still in hardware when should not"
++
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric 1023
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 1 metric 1023"
++	check_fail $? "Middle metric route in hardware when should not"
++
++	log_test "IPv4 routes with metric"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
-+static struct nsim_fib4_rt *
-+nsim_fib4_rt_lookup(struct rhashtable *fib_rt_ht,
-+		    const struct fib_entry_notifier_info *fen_info)
++ipv4_replace()
 +{
-+	struct nsim_fib_rt *fib_rt;
++	local i
 +
-+	fib_rt = nsim_fib_rt_lookup(fib_rt_ht, &fen_info->dst, sizeof(u32),
-+				    fen_info->dst_len, AF_INET,
-+				    fen_info->tb_id);
-+	if (!fib_rt)
-+		return NULL;
++	RET=0
 +
-+	return container_of(fib_rt, struct nsim_fib4_rt, common);
++	for i in $(seq 1 2); do
++		ip -n testns1 link add name dummy$i type dummy
++		ip -n testns1 link set dev dummy$i up
++	done
++
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1024"
++	check_err $? "Route not in hardware when should"
++
++	ip -n testns1 route replace 192.0.2.0/24 dev dummy2 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy2 metric 1024"
++	check_err $? "Replacement route not in hardware when should"
++
++	# Add a route with an higher metric and make sure that replacing it
++	# does not affect the lower metric one.
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric 1025
++	ip -n testns1 route replace 192.0.2.0/24 dev dummy2 metric 1025
++
++	route_in_hw_check "192.0.2.0/24 dev dummy2 metric 1024"
++	check_err $? "Lowest metric route not in hardware when should"
++	route_in_hw_check "192.0.2.0/24 dev dummy2 metric 1025"
++	check_fail $? "Highest metric route in hardware when should not"
++
++	log_test "IPv4 route replace"
++
++	for i in $(seq 1 2); do
++		ip -n testns1 link del dev dummy$i
++	done
 +}
 +
-+static int nsim_fib4_rt_add(struct nsim_fib_data *data,
-+			    struct nsim_fib4_rt *fib4_rt,
-+			    struct netlink_ext_ack *extack)
++ipv4_delete()
 +{
-+	struct nsim_fib_rt *fib_rt = &fib4_rt->common;
-+	struct net *net = devlink_net(data->devlink);
-+	u32 *addr = (u32 *) fib_rt->key.addr;
-+	int err;
++	local metric
 +
-+	err = nsim_fib_account(&data->ipv4.fib, true, extack);
-+	if (err)
-+		return err;
++	RET=0
 +
-+	err = rhashtable_insert_fast(&data->fib_rt_ht,
-+				     &fib4_rt->common.ht_node,
-+				     nsim_fib_rt_ht_params);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to insert IPv4 route");
-+		goto err_fib_dismiss;
-+	}
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
 +
-+	fib_alias_in_hw_set(net, *addr, fib_rt->key.prefix_len, fib4_rt->fi,
-+			    fib4_rt->tos, fib4_rt->type, fib_rt->key.tb_id);
++	# Insert multiple routes with the same prefix and length and varying
++	# metrics. Make sure that throughout delete operations the lowest
++	# metric route is the one in hardware.
++	for metric in $(seq 1024 1026); do
++		ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric $metric
++	done
 +
-+	return 0;
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1024"
++	check_err $? "Route not in hardware when should"
 +
-+err_fib_dismiss:
-+	nsim_fib_account(&data->ipv4.fib, false, extack);
-+	return err;
++	ip -n testns1 route del 192.0.2.0/24 dev dummy1 metric 1024
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1025"
++	check_err $? "Lowest metric route not in hardware when should"
++
++	ip -n testns1 route del 192.0.2.0/24 dev dummy1 metric 1026
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1025"
++	check_err $? "Sole route not in hardware when should"
++
++	log_test "IPv4 route delete"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
-+static int nsim_fib4_rt_replace(struct nsim_fib_data *data,
-+				struct nsim_fib4_rt *fib4_rt,
-+				struct nsim_fib4_rt *fib4_rt_old,
-+				struct netlink_ext_ack *extack)
++ipv4_plen()
 +{
-+	struct nsim_fib_rt *fib_rt = &fib4_rt->common;
-+	struct net *net = devlink_net(data->devlink);
-+	u32 *addr = (u32 *) fib_rt->key.addr;
-+	int err;
++	RET=0
 +
-+	/* We are replacing a route, so no need to change the accounting. */
-+	err = rhashtable_replace_fast(&data->fib_rt_ht,
-+				      &fib4_rt_old->common.ht_node,
-+				      &fib4_rt->common.ht_node,
-+				      nsim_fib_rt_ht_params);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to replace IPv4 route");
-+		return err;
-+	}
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
 +
-+	fib_alias_in_hw_clear(net, *addr, fib_rt->key.prefix_len,
-+			      fib4_rt_old->fi, fib4_rt_old->tos,
-+			      fib4_rt_old->type, fib_rt->key.tb_id);
-+	nsim_fib4_rt_destroy(fib4_rt_old);
++	# Add two routes with the same key and different prefix length and
++	# make sure both are in hardware. It can be verfied that both are
++	# sharing the same leaf by checking the /proc/net/fib_trie
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1
++	ip -n testns1 route add 192.0.2.0/25 dev dummy1
 +
-+	fib_alias_in_hw_set(net, *addr, fib_rt->key.prefix_len,
-+			    fib4_rt->fi, fib4_rt->tos, fib4_rt->type,
-+			    fib_rt->key.tb_id);
++	route_in_hw_check "192.0.2.0/24 dev dummy1"
++	check_err $? "/24 not in hardware when should"
 +
-+	return 0;
++	route_in_hw_check "192.0.2.0/25 dev dummy1"
++	check_err $? "/25 not in hardware when should"
++
++	log_test "IPv4 routes with different prefix length"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
-+static int nsim_fib4_rt_insert(struct nsim_fib_data *data,
-+			       struct fib_entry_notifier_info *fen_info)
++ipv4_replay_metric()
 +{
-+	struct netlink_ext_ack *extack = fen_info->info.extack;
-+	struct nsim_fib4_rt *fib4_rt, *fib4_rt_old;
-+	int err;
++	RET=0
 +
-+	fib4_rt = nsim_fib4_rt_create(fen_info);
-+	if (!fib4_rt)
-+		return -ENOMEM;
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
 +
-+	fib4_rt_old = nsim_fib4_rt_lookup(&data->fib_rt_ht, fen_info);
-+	if (!fib4_rt_old)
-+		err = nsim_fib4_rt_add(data, fib4_rt, extack);
-+	else
-+		err = nsim_fib4_rt_replace(data, fib4_rt, fib4_rt_old, extack);
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric 1024
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric 1025
 +
-+	if (err)
-+		nsim_fib4_rt_destroy(fib4_rt);
++	devlink -N testns1 dev reload $DEVLINK_DEV
 +
-+	return err;
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1024"
++	check_err $? "Lowest metric route not in hardware when should"
++
++	route_in_hw_check "192.0.2.0/24 dev dummy1 metric 1025"
++	check_fail $? "Highest metric route in hardware when should not"
++
++	log_test "IPv4 routes replay - metric"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
-+static void nsim_fib4_rt_remove(struct nsim_fib_data *data,
-+				const struct fib_entry_notifier_info *fen_info)
++ipv4_replay_tos()
 +{
-+	struct netlink_ext_ack *extack = fen_info->info.extack;
-+	struct nsim_fib4_rt *fib4_rt;
++	RET=0
 +
-+	fib4_rt = nsim_fib4_rt_lookup(&data->fib_rt_ht, fen_info);
-+	if (WARN_ON_ONCE(!fib4_rt))
-+		return;
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
 +
-+	rhashtable_remove_fast(&data->fib_rt_ht, &fib4_rt->common.ht_node,
-+			       nsim_fib_rt_ht_params);
-+	nsim_fib_account(&data->ipv4.fib, false, extack);
-+	nsim_fib4_rt_destroy(fib4_rt);
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 tos 0
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1 tos 1
++
++	devlink -N testns1 dev reload $DEVLINK_DEV
++
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 1"
++	check_err $? "Highest TOS route not in hardware when should"
++
++	route_in_hw_check "192.0.2.0/24 dev dummy1 tos 0"
++	check_fail $? "Lowest TOS route in hardware when should not"
++
++	log_test "IPv4 routes replay - TOS"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
-+static int nsim_fib4_event(struct nsim_fib_data *data,
-+			   struct fib_notifier_info *info, bool add)
++ipv4_replay_plen()
 +{
-+	struct fib_entry_notifier_info *fen_info;
-+	int err = 0;
++	RET=0
 +
-+	fen_info = container_of(info, struct fib_entry_notifier_info, info);
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
 +
-+	if (add)
-+		err = nsim_fib4_rt_insert(data, fen_info);
-+	else
-+		nsim_fib4_rt_remove(data, fen_info);
++	ip -n testns1 route add 192.0.2.0/24 dev dummy1
++	ip -n testns1 route add 192.0.2.0/25 dev dummy1
 +
-+	return err;
++	devlink -N testns1 dev reload $DEVLINK_DEV
++
++	route_in_hw_check "192.0.2.0/24 dev dummy1"
++	check_err $? "/24 not in hardware when should"
++
++	route_in_hw_check "192.0.2.0/25 dev dummy1"
++	check_err $? "/25 not in hardware when should"
++
++	log_test "IPv4 routes replay - prefix length"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
- static int nsim_fib_event(struct nsim_fib_data *data,
- 			  struct fib_notifier_info *info, bool add)
- {
-@@ -152,7 +368,7 @@ static int nsim_fib_event(struct nsim_fib_data *data,
- 
- 	switch (info->family) {
- 	case AF_INET:
--		err = nsim_fib_account(&data->ipv4.fib, add, extack);
-+		err = nsim_fib4_event(data, info, add);
- 		break;
- 	case AF_INET6:
- 		err = nsim_fib_account(&data->ipv6.fib, add, extack);
-@@ -247,6 +463,33 @@ static void nsim_fib_set_max_all(struct nsim_fib_data *data,
- 	}
- }
- 
-+static void nsim_fib4_rt_free(struct nsim_fib_rt *fib_rt,
-+			      struct devlink *devlink)
++ipv4_replay()
 +{
-+	u32 *addr = (u32 *) fib_rt->key.addr;
-+	struct nsim_fib4_rt *fib4_rt;
-+
-+	fib4_rt = container_of(fib_rt, struct nsim_fib4_rt, common);
-+	fib_alias_in_hw_clear(devlink_net(devlink), *addr,
-+			      fib_rt->key.prefix_len, fib4_rt->fi, fib4_rt->tos,
-+			      fib4_rt->type, fib_rt->key.tb_id);
-+	nsim_fib4_rt_destroy(fib4_rt);
++	# Install multiple routes with the same prefix and length and make sure
++	# that after reload only the routes that should be in hardware are
++	# replayed.
++	ipv4_replay_metric
++	ipv4_replay_tos
++	ipv4_replay_plen
 +}
 +
-+static void nsim_fib_rt_free(void *ptr, void *arg)
++ipv4_error_path_add()
 +{
-+	struct nsim_fib_rt *fib_rt = ptr;
-+	struct devlink *devlink = arg;
++	local lsb
 +
-+	switch (fib_rt->key.family) {
-+	case AF_INET:
-+		nsim_fib4_rt_free(fib_rt, devlink);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+	}
++	RET=0
++
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
++
++	devlink -N testns1 resource set $DEVLINK_DEV path IPv4/fib size 10
++	devlink -N testns1 dev reload $DEVLINK_DEV
++
++	for lsb in $(seq 1 20); do
++		ip -n testns1 route add 192.0.2.${lsb}/32 dev dummy1 \
++			&> /dev/null
++	done
++
++	log_test "IPv4 error path - add"
++
++	ip -n testns1 link del dev dummy1
 +}
 +
- struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- 				      struct netlink_ext_ack *extack)
- {
-@@ -256,6 +499,11 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- 	data = kzalloc(sizeof(*data), GFP_KERNEL);
- 	if (!data)
- 		return ERR_PTR(-ENOMEM);
-+	data->devlink = devlink;
++ipv4_error_path_replay()
++{
++	local lsb
 +
-+	err = rhashtable_init(&data->fib_rt_ht, &nsim_fib_rt_ht_params);
-+	if (err)
-+		goto err_data_free;
- 
- 	nsim_fib_set_max_all(data, devlink);
- 
-@@ -264,7 +512,7 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- 				    nsim_fib_dump_inconsistent, extack);
- 	if (err) {
- 		pr_err("Failed to register fib notifier\n");
--		goto err_out;
-+		goto err_rhashtable_destroy;
- 	}
- 
- 	devlink_resource_occ_get_register(devlink,
-@@ -285,7 +533,10 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- 					  data);
- 	return data;
- 
--err_out:
-+err_rhashtable_destroy:
-+	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
-+				    devlink);
-+err_data_free:
- 	kfree(data);
- 	return ERR_PTR(err);
- }
-@@ -301,5 +552,7 @@ void nsim_fib_destroy(struct devlink *devlink, struct nsim_fib_data *data)
- 	devlink_resource_occ_get_unregister(devlink,
- 					    NSIM_RESOURCE_IPV4_FIB);
- 	unregister_fib_notifier(devlink_net(devlink), &data->fib_nb);
-+	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
-+				    devlink);
- 	kfree(data);
- }
++	RET=0
++
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
++
++	devlink -N testns1 resource set $DEVLINK_DEV path IPv4/fib size 100
++	devlink -N testns1 dev reload $DEVLINK_DEV
++
++	for lsb in $(seq 1 20); do
++		ip -n testns1 route add 192.0.2.${lsb}/32 dev dummy1
++	done
++
++	devlink -N testns1 resource set $DEVLINK_DEV path IPv4/fib size 10
++	devlink -N testns1 dev reload $DEVLINK_DEV &> /dev/null
++
++	log_test "IPv4 error path - replay"
++
++	ip -n testns1 link del dev dummy1
++
++	# Successfully reload after deleting all the routes.
++	devlink -N testns1 resource set $DEVLINK_DEV path IPv4/fib size 100
++	devlink -N testns1 dev reload $DEVLINK_DEV
++}
++
++ipv4_error_path()
++{
++	# Test the different error paths of the notifiers by limiting the size
++	# of the "IPv4/fib" resource.
++	ipv4_error_path_add
++	ipv4_error_path_replay
++}
++
++ipv4_flush()
++{
++	local metric
++
++	RET=0
++
++	ip -n testns1 link add name dummy1 type dummy
++	ip -n testns1 link set dev dummy1 up
++
++	# Exercise the routes flushing code paths by inserting various
++	# prefix routes on a netdev and then deleting it.
++	for metric in $(seq 1 20); do
++		ip -n testns1 route add 192.0.2.0/24 dev dummy1 metric $metric
++	done
++
++	ip -n testns1 link del dev dummy1
++
++	log_test "IPv4 routes flushing"
++}
++
++setup_prepare()
++{
++	local netdev
++
++	modprobe netdevsim &> /dev/null
++
++	echo "$DEV_ADDR 0" > ${NETDEVSIM_PATH}/new_device
++
++	if [ ! -d "${NETDEVSIM_PATH}/devices/${DEV}" ]; then
++		echo "Failed to create netdevsim device"
++		exit 1
++	fi
++
++	ip netns add testns1
++	if [ $? -ne 0 ]; then
++		echo "Failed to add netns \"testns1\""
++		exit 1
++	fi
++
++	devlink dev reload $DEVLINK_DEV netns testns1
++	if [ $? -ne 0 ]; then
++		echo "Failed to reload into netns \"testns1\""
++		exit 1
++	fi
++}
++
++cleanup()
++{
++	pre_cleanup
++	ip netns del testns1
++	echo "$DEV_ADDR" > ${NETDEVSIM_PATH}/del_device
++	modprobe -r netdevsim &> /dev/null
++}
++
++trap cleanup EXIT
++
++setup_prepare
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.21.0
 
