@@ -2,33 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 361A2C94F9
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61D4FC9505
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:39:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729283AbfJBXhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 19:37:52 -0400
+        id S1729392AbfJBXiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 19:38:18 -0400
 Received: from mga04.intel.com ([192.55.52.120]:16472 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729170AbfJBXhl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 19:37:41 -0400
+        id S1729181AbfJBXhm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 19:37:42 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 16:37:23 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 16:37:24 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,250,1566889200"; 
-   d="scan'208";a="366862629"
+   d="scan'208";a="366862630"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.30.230])
   by orsmga005.jf.intel.com with ESMTP; 02 Oct 2019 16:37:23 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org, edumazet@google.com
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        cpaasch@apple.com, fw@strlen.de, pabeni@redhat.com,
+Cc:     Paolo Abeni <pabeni@redhat.com>, cpaasch@apple.com, fw@strlen.de,
         peter.krystad@linux.intel.com, dcaratti@redhat.com,
         matthieu.baerts@tessares.net
-Subject: [RFC PATCH v2 34/45] mptcp: Make MPTCP socket block/wakeup ignore sk_receive_queue
-Date:   Wed,  2 Oct 2019 16:36:44 -0700
-Message-Id: <20191002233655.24323-35-mathew.j.martineau@linux.intel.com>
+Subject: [RFC PATCH v2 35/45] mptcp: update per unacked sequence on pkt reception
+Date:   Wed,  2 Oct 2019 16:36:45 -0700
+Message-Id: <20191002233655.24323-36-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com>
 References: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com>
@@ -39,120 +38,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MPTCP-level socket doesn't use sk_receive_queue, so it was possible
-for mptcp_recvmsg() to remain blocked when there was data ready for it
-to read. When the MPTCP socket is waiting for additional data and it
-releases the subflow socket lock, the subflow may have incoming packets
-ready to process and it sometimes called subflow_data_ready() before the
-MPTCP socket called sk_wait_data().
+From: Paolo Abeni <pabeni@redhat.com>
 
-This change adds a new function for the MPTCP socket to use when waiting
-for a data ready signal. Atomic bitops with memory barriers are used to
-set, test, and clear a MPTCP socket flag that indicates waiting subflow
-data. This flag replaces the sk_receive_queue checks used by other
-socket types.
+So that we keep per unacked sequence number consistent; since
+we update per msk data, use an atomic64 cmpxcgh() to protect
+against concurrent updates from multiple subflows.
 
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Initialize the snd_una at connect()/accept() time.
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/protocol.c | 31 ++++++++++++++++++++++++++++++-
- net/mptcp/protocol.h |  4 ++++
- net/mptcp/subflow.c  |  5 +++++
- 3 files changed, 39 insertions(+), 1 deletion(-)
+ net/mptcp/options.c  | 45 ++++++++++++++++++++++++++++++++++++++------
+ net/mptcp/protocol.c |  2 ++
+ net/mptcp/protocol.h |  1 +
+ 3 files changed, 42 insertions(+), 6 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 445800eae767..c8ee20963887 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -367,6 +367,31 @@ static enum mapping_status mptcp_get_mapping(struct sock *ssk)
- 	return ret;
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index ce298ecc64f5..2427fff98091 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -540,6 +540,39 @@ bool mptcp_synack_options(const struct request_sock *req, unsigned int *size,
+ 	return false;
  }
  
-+static void mptcp_wait_data(struct sock *sk, long *timeo)
++static u64 expand_ack(u64 old_ack, u64 cur_ack, bool use_64bit)
 +{
-+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+	int data_ready;
++	u32 old_ack32, cur_ack32;
 +
-+	add_wait_queue(sk_sleep(sk), &wait);
-+	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
++	if (use_64bit)
++		return cur_ack;
 +
-+	release_sock(sk);
-+
-+	smp_mb__before_atomic();
-+	data_ready = test_and_clear_bit(MPTCP_DATA_READY, &msk->flags);
-+	smp_mb__after_atomic();
-+
-+	if (!data_ready)
-+		*timeo = wait_woken(&wait, TASK_INTERRUPTIBLE, *timeo);
-+
-+	sched_annotate_sleep();
-+	lock_sock(sk);
-+
-+	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
-+	remove_wait_queue(sk_sleep(sk), &wait);
++	old_ack32 = (u32)old_ack;
++	cur_ack32 = (u32)cur_ack;
++	cur_ack = (old_ack & GENMASK_ULL(63, 32)) + cur_ack32;
++	if (unlikely(before(cur_ack32, old_ack32)))
++		return cur_ack + (1LL << 32);
++	return cur_ack;
 +}
 +
- static void warn_bad_map(struct mptcp_subflow_context *subflow, u32 ssn)
- {
- 	WARN_ONCE(1, "Bad mapping: ssn=%d map_seq=%d map_data_len=%d",
-@@ -423,6 +448,10 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		u64 old_ack;
- 		u32 ssn;
- 
-+		smp_mb__before_atomic();
-+		clear_bit(MPTCP_DATA_READY, &msk->flags);
-+		smp_mb__after_atomic();
++void update_una(struct mptcp_sock *msk, struct mptcp_options_received *mp_opt)
++{
++	u64 new_snd_una, snd_una, old_snd_una = atomic64_read(&msk->snd_una);
 +
- 		status = mptcp_get_mapping(ssk);
++	/* avoid ack expansion on update conflict, to reduce the risk of
++	 * wrongly expanding to a future ack sequence number, which is way
++	 * more dangerous than missing an ack
++	 */
++	new_snd_una = expand_ack(old_snd_una, mp_opt->data_ack, mp_opt->ack64);
++	while (after64(new_snd_una, old_snd_una)) {
++		snd_una = old_snd_una;
++		old_snd_una = atomic64_cmpxchg(&msk->snd_una, snd_una,
++					       new_snd_una);
++		if (old_snd_una == snd_una)
++			break;
++	}
++}
++
+ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 			    struct tcp_options_received *opt_rx)
+ {
+@@ -563,6 +596,12 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 	if (!mp_opt->dss)
+ 		return;
  
- 		if (status == MAPPING_ADDED) {
-@@ -550,7 +579,7 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 
- 		pr_debug("block");
- 		release_sock(ssk);
--		sk_wait_data(sk, &timeo, NULL);
-+		mptcp_wait_data(sk, &timeo);
- 		lock_sock(ssk);
++	/* we can't wait for recvmsg() to update the ack_seq, otherwise
++	 * monodirectional flows will stuck
++	 */
++	if (msk && mp_opt->use_ack)
++		update_una(msk, mp_opt);
++
+ 	mpext = skb_ext_add(skb, SKB_EXT_MPTCP);
+ 	if (!mpext)
+ 		return;
+@@ -579,12 +618,6 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 		mpext->use_checksum = mp_opt->use_checksum;
  	}
  
+-	if (mp_opt->use_ack) {
+-		mpext->data_ack = mp_opt->data_ack;
+-		mpext->use_ack = 1;
+-		mpext->ack64 = mp_opt->ack64;
+-	}
+-
+ 	mpext->data_fin = mp_opt->data_fin;
+ 
+ 	if (msk)
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index c8ee20963887..2c64435aedd8 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -688,6 +688,7 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
+ 
+ 		mptcp_crypto_key_sha1(msk->remote_key, NULL, &ack_seq);
+ 		msk->write_seq = subflow->idsn + 1;
++		atomic64_set(&msk->snd_una, msk->write_seq);
+ 		ack_seq++;
+ 		msk->ack_seq = ack_seq;
+ 		subflow->map_seq = ack_seq;
+@@ -822,6 +823,7 @@ void mptcp_finish_connect(struct sock *sk, int mp_capable)
+ 
+ 		mptcp_crypto_key_sha1(msk->remote_key, NULL, &ack_seq);
+ 		msk->write_seq = subflow->idsn + 1;
++		atomic64_set(&msk->snd_una, msk->write_seq);
+ 		ack_seq++;
+ 		msk->ack_seq = ack_seq;
+ 		subflow->map_seq = ack_seq;
 diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 4a1171b75ec6..56df4f46f313 100644
+index 56df4f46f313..45646e38aa4c 100644
 --- a/net/mptcp/protocol.h
 +++ b/net/mptcp/protocol.h
-@@ -74,6 +74,9 @@
- #define MPTCP_ADDR_IPVERSION_4	4
- #define MPTCP_ADDR_IPVERSION_6	6
- 
-+/* MPTCP socket flags */
-+#define MPTCP_DATA_READY	BIT(0)
-+
- static inline __be32 mptcp_option(u8 subopt, u8 len, u8 nib, u8 field)
- {
- 	return htonl((TCPOPT_MPTCP << 24) | (len << 16) | (subopt << 12) |
-@@ -117,6 +120,7 @@ struct mptcp_sock {
+@@ -119,6 +119,7 @@ struct mptcp_sock {
+ 	u64		remote_key;
  	u64		write_seq;
  	u64		ack_seq;
++	atomic64_t	snd_una;
  	u32		token;
-+	unsigned long	flags;
+ 	unsigned long	flags;
  	u16		dport;
- 	struct list_head conn_list;
- 	struct socket	*subflow; /* outgoing connect/listener/!mp_capable */
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 257e52d9595e..7a94049587cc 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -311,6 +311,11 @@ static void subflow_data_ready(struct sock *sk)
- 
- 	if (parent) {
- 		pr_debug("parent=%p", parent);
-+
-+		smp_mb__before_atomic();
-+		set_bit(MPTCP_DATA_READY, &mptcp_sk(parent)->flags);
-+		smp_mb__after_atomic();
-+
- 		parent->sk_data_ready(parent);
- 	}
- }
 -- 
 2.23.0
 
