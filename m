@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD0EC8E0F
+	by mail.lfdr.de (Postfix) with ESMTP id 8E656C8E10
 	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728338AbfJBQOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:14:40 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38731 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727181AbfJBQOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:14:40 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 3so7609965wmi.3
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:14:37 -0700 (PDT)
+        id S1728383AbfJBQOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:14:42 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37307 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727810AbfJBQOm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:14:42 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f22so7598817wmc.2
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:14:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yNX90eP3HpzGbm5vFYAF66JzZEub29yqqveUIJJeS8Y=;
-        b=HRZLoLca1VMJgfdLL/2W8tv81m7ZoBwtAct6x011oS9ow8AE/u+mb0TCa62RJkLUYS
-         g7kCH53mE2pvTrmEGS0nII++sTjeNCLGGGVgvsZVVbXokpkxsTjzlKWYSsWYneShS8Vm
-         xmaBYBetzvpUvWXhfXNnogX9oDM5yYIGuHJah0yjkNQ/AGvFnzIkQdPTC3WPchH/8p2m
-         2slrNEVc4G8pr7UpOlkIuvPCARKM7aAdcuK5GlEsNSmd8J9j4odv8sbn/U1XVvv5SdQI
-         plZaSpHo3hFIXxT3bCZ5PzUB6N4vu3oIjHj//QkzDn/3MJ+iPy2oznvTUuJ3Q2mS5VLQ
-         xYFA==
+        bh=+sGSeiq6M+4Q0J4lpDwAsVEooTbxBn8OQfpxTpaQJJc=;
+        b=aEZBBtFvDrhoIVr1hxHgHFsVhE+f4vedT1TwUxm+mP1kdGt291z8e9NEtrmQLZxhVD
+         lcVYFo5DyTfbSrTpRykdEvGXeQos3xyKoHUAnkRLb5T3QdP4K7sjHrqw3zBnt6uzbMnF
+         R+ECsrpKVPgIwkvUi33inrJzPoHmHeV3NtVocarz4Ql/zleK4iEOzS9cOgvlqSNxDcee
+         v+Yj8KJGrzom4GacADCH2mB/Nt2yCOlvp45jNQl42W74Nj3Vh/lUCJ6IrrKEQxFGSgbY
+         KkVdzMl8CiCyw6wxyjI/9uRF5PzOko9PwWnmvwOiM1GYkJLYYTO5pIYECSBonWnslHBh
+         1bsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yNX90eP3HpzGbm5vFYAF66JzZEub29yqqveUIJJeS8Y=;
-        b=KkaUsi+JuCnbjjzkxhIo00kqpT5gKZtsy0s/ZFqZK8jKjBnqijbgF+eKmr85GOkCCm
-         DCf7eXA50WS2qs6Bvgprg5wfFTOzd++OAx4i1RpIE2J5JX7mfSjHEaN+7wtH5U3UjEBz
-         4Z76/aX3fvqSqyiZaawZOmvKCeCMN3ZZs5Kkdp7P2MO83pT8qeVYkNDZKDtRbA+e36ed
-         qCETcFeI1JTm8RgeJBt/OO5V62azIHecvOTjICwisLcmBP9J6FjpvzrRGFMVB43qtgqR
-         RZcOKYXtdC6rIcuh9eTzf+N4wXG7m39eD5N36GSV4LE2V2yTK6C8yIfCxLe5JH6/gvnP
-         o94A==
-X-Gm-Message-State: APjAAAViMdvcEuEhi47kIbcT2IufIoRbTOMn7C1lkRrMx68l8jL0rxNl
-        2Yfnsd09yLVxbSRmbElLeYSl8oZjYPk=
-X-Google-Smtp-Source: APXvYqz5vOVdU0yqJgbESFRop+Eh9k1CCmu4pBesp7uIAVMMhtSCxeKJLSsMcbu537Rz3q2gZ/HUjg==
-X-Received: by 2002:a05:600c:241:: with SMTP id 1mr3500313wmj.162.1570032876812;
-        Wed, 02 Oct 2019 09:14:36 -0700 (PDT)
+        bh=+sGSeiq6M+4Q0J4lpDwAsVEooTbxBn8OQfpxTpaQJJc=;
+        b=pxxm/xSscK2anQEm9WwNMHvFszYsdvwODSrAlL48wl6R26rmTFpvZw1Ztyz1+FmjS9
+         sQyXLtse8vO+ncM26Uf9nQj7QUq4/DwNntWwstU8/b9qDReBhF3RZpygnmBbLSQIqE02
+         BazUp3CZSURs2RYrETyv+lzk8OOZ/bQkc+Pt4m98Be8zIkNo31zTyaCcjpO1ikZ7upOv
+         D0UrWaP7uHYgL7s1j2WxBR4Jp2r8HgCHWFX5FxbPceqhIdq99Dt3g79ewj2Ot007Z5tN
+         geLG3i/ia0QjPZcrBhLeN1xEUydrnEo7ATqvKBV/8TVwK2UFzZ680M0cD0x1cfeBbg2C
+         OnSg==
+X-Gm-Message-State: APjAAAU1ufBhJbW7drzq7yYkSKqfUZaD+a68WZuYaUTYKILpH86bv9NW
+        7TtOxDb2lVOhzAN1dacc2qJEMFPsrvU=
+X-Google-Smtp-Source: APXvYqzE75viyFGhhITqKujlskYa8XYITC3UoJ2XQGGs5b7pcDRxDtWBwZriYB8SjSLkMdmGI3zrtQ==
+X-Received: by 2002:a05:600c:d4:: with SMTP id u20mr3765637wmm.66.1570032877782;
+        Wed, 02 Oct 2019 09:14:37 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id q19sm45847343wra.89.2019.10.02.09.14.36
+        by smtp.gmail.com with ESMTPSA id g1sm18477963wrv.68.2019.10.02.09.14.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 09:14:36 -0700 (PDT)
+        Wed, 02 Oct 2019 09:14:37 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, tariqt@mellanox.com,
         saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
         shuah@kernel.org, mlxsw@mellanox.com
-Subject: [patch iproute2-next v2 1/2] devlink: introduce cmdline option to switch to a different namespace
-Date:   Wed,  2 Oct 2019 18:14:34 +0200
-Message-Id: <20191002161435.3243-1-jiri@resnulli.us>
+Subject: [patch iproute2-next v2 2/2] devlink: extend reload command to add support for network namespace change
+Date:   Wed,  2 Oct 2019 18:14:35 +0200
+Message-Id: <20191002161435.3243-2-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191002161231.2987-1-jiri@resnulli.us>
 References: <20191002161231.2987-1-jiri@resnulli.us>
@@ -65,89 +65,150 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Similar to ip tool, add an option to devlink to operate under certain
-network namespace. Unfortunately, "-n" is already taken, so use "-N"
-instead.
+Extend existing devlink reload command by adding option "netns" by which
+user can instruct kernel to reload the devlink instance into specified
+network namespace.
 
 Example:
 
-$ devlink -N testns1 dev show
+$ ip netns add testns1
+$ devlink dev reload netdevsim/netdevsim10 netns testns1
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v1->v2:
+- fixed manpage
 - added patch description
 ---
- devlink/devlink.c  | 12 ++++++++++--
- man/man8/devlink.8 |  4 ++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ devlink/devlink.c            | 31 +++++++++++++++++++++++++++----
+ include/uapi/linux/devlink.h |  4 ++++
+ man/man8/devlink-dev.8       |  7 +++++++
+ 3 files changed, 38 insertions(+), 4 deletions(-)
 
 diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 5e762e37540c..852e2257cb64 100644
+index 852e2257cb64..a0cd6a47d26f 100644
 --- a/devlink/devlink.c
 +++ b/devlink/devlink.c
-@@ -32,6 +32,7 @@
- #include "mnlg.h"
- #include "json_writer.h"
- #include "utils.h"
-+#include "namespace.h"
+@@ -261,6 +261,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_TRAP_NAME		BIT(30)
+ #define DL_OPT_TRAP_ACTION		BIT(31)
+ #define DL_OPT_TRAP_GROUP_NAME		BIT(32)
++#define DL_OPT_NETNS	BIT(33)
  
- #define ESWITCH_MODE_LEGACY "legacy"
- #define ESWITCH_MODE_SWITCHDEV "switchdev"
-@@ -7023,7 +7024,7 @@ static int cmd_trap(struct dl *dl)
- static void help(void)
- {
- 	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
--	       "       devlink [ -f[orce] ] -b[atch] filename\n"
-+	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
- 	       "where  OBJECT := { dev | port | sb | monitor | dpipe | resource | region | health | trap }\n"
- 	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] }\n");
- }
-@@ -7173,6 +7174,7 @@ int main(int argc, char **argv)
- 		{ "pretty",		no_argument,		NULL, 'p' },
- 		{ "verbose",		no_argument,		NULL, 'v' },
- 		{ "statistics",		no_argument,		NULL, 's' },
-+		{ "Netns",		required_argument,	NULL, 'N' },
- 		{ NULL, 0, NULL, 0 }
- 	};
- 	const char *batch_file = NULL;
-@@ -7188,7 +7190,7 @@ int main(int argc, char **argv)
- 		return EXIT_FAILURE;
- 	}
+ struct dl_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -300,6 +301,8 @@ struct dl_opts {
+ 	const char *trap_name;
+ 	const char *trap_group_name;
+ 	enum devlink_trap_action trap_action;
++	bool netns_is_pid;
++	uint32_t netns;
+ };
  
--	while ((opt = getopt_long(argc, argv, "Vfb:njpvs",
-+	while ((opt = getopt_long(argc, argv, "Vfb:njpvsN:",
- 				  long_options, NULL)) >= 0) {
- 
- 		switch (opt) {
-@@ -7217,6 +7219,12 @@ int main(int argc, char **argv)
- 		case 's':
- 			dl->stats = true;
- 			break;
-+		case 'N':
-+			if (netns_switch(optarg)) {
-+				ret = EXIT_FAILURE;
-+				goto dl_free;
-+			}
-+			break;
- 		default:
- 			pr_err("Unknown option.\n");
- 			help();
-diff --git a/man/man8/devlink.8 b/man/man8/devlink.8
-index 12d489440a3d..7f4eda568081 100644
---- a/man/man8/devlink.8
-+++ b/man/man8/devlink.8
-@@ -55,6 +55,10 @@ Turn on verbose output.
- .BR "\-s" , " --statistics"
- Output statistics.
- 
-+.TP
-+.BR "\-N", " \-Netns " <NETNSNAME>
-+Switches to the specified network namespace.
+ struct dl {
+@@ -1440,6 +1443,22 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_TRAP_ACTION;
++		} else if (dl_argv_match(dl, "netns") &&
++			(o_all & DL_OPT_NETNS)) {
++			const char *netns_str;
 +
- .SS
- .I OBJECT
++			dl_arg_inc(dl);
++			err = dl_argv_str(dl, &netns_str);
++			if (err)
++				return err;
++			opts->netns = netns_get_fd(netns_str);
++			if (opts->netns < 0) {
++				err = dl_argv_uint32_t(dl, &opts->netns);
++				if (err)
++					return err;
++				opts->netns_is_pid = true;
++			}
++			o_found |= DL_OPT_NETNS;
+ 		} else {
+ 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
+ 			return -EINVAL;
+@@ -1562,7 +1581,11 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ 	if (opts->present & DL_OPT_TRAP_ACTION)
+ 		mnl_attr_put_u8(nlh, DEVLINK_ATTR_TRAP_ACTION,
+ 				opts->trap_action);
+-
++	if (opts->present & DL_OPT_NETNS)
++		mnl_attr_put_u32(nlh,
++				 opts->netns_is_pid ? DEVLINK_ATTR_NETNS_PID :
++						      DEVLINK_ATTR_NETNS_FD,
++				 opts->netns);
+ }
  
+ static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
+@@ -1623,7 +1646,7 @@ static void cmd_dev_help(void)
+ 	pr_err("       devlink dev eswitch show DEV\n");
+ 	pr_err("       devlink dev param set DEV name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
+ 	pr_err("       devlink dev param show [DEV name PARAMETER]\n");
+-	pr_err("       devlink dev reload DEV\n");
++	pr_err("       devlink dev reload DEV [ netns { PID | NAME | ID } ]\n");
+ 	pr_err("       devlink dev info [ DEV ]\n");
+ 	pr_err("       devlink dev flash DEV file PATH [ component NAME ]\n");
+ }
+@@ -2724,7 +2747,7 @@ static int cmd_dev_show(struct dl *dl)
+ 
+ static void cmd_dev_reload_help(void)
+ {
+-	pr_err("Usage: devlink dev reload [ DEV ]\n");
++	pr_err("Usage: devlink dev reload DEV [ netns { PID | NAME | ID } ]\n");
+ }
+ 
+ static int cmd_dev_reload(struct dl *dl)
+@@ -2740,7 +2763,7 @@ static int cmd_dev_reload(struct dl *dl)
+ 	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_RELOAD,
+ 			       NLM_F_REQUEST | NLM_F_ACK);
+ 
+-	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, 0);
++	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, DL_OPT_NETNS);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 79e1405db67c..ab09b3b83675 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -421,6 +421,10 @@ enum devlink_attr {
+ 
+ 	DEVLINK_ATTR_RELOAD_FAILED,			/* u8 0 or 1 */
+ 
++	DEVLINK_ATTR_NETNS_FD,			/* u32 */
++	DEVLINK_ATTR_NETNS_PID,			/* u32 */
++	DEVLINK_ATTR_NETNS_ID,			/* u32 */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
+index 1021ee8d064c..2c6acbd3af69 100644
+--- a/man/man8/devlink-dev.8
++++ b/man/man8/devlink-dev.8
+@@ -62,6 +62,9 @@ devlink-dev \- devlink device configuration
+ .ti -8
+ .BR "devlink dev reload"
+ .IR DEV
++.RI "[ "
++.BI "netns { " PID " | " NAME " | " ID " }
++.RI "]"
+ 
+ .ti -8
+ .BR "devlink dev info"
+@@ -167,6 +170,10 @@ If this argument is omitted all parameters supported by devlink devices are list
+ .I "DEV"
+ - Specifies the devlink device to reload.
+ 
++.BR netns
++.BI { " PID " | " NAME " | " ID " }
++- Specifies the network namespace to reload into, either by pid, name or id.
++
+ .SS devlink dev info - display device information.
+ Display device information provided by the driver. This command can be used
+ to query versions of the hardware components or device components which
 -- 
 2.21.0
 
