@@ -2,147 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96889C4968
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 10:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D25BC4974
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 10:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbfJBIX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 04:23:28 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54448 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbfJBIX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 04:23:27 -0400
-Received: by mail-wm1-f68.google.com with SMTP id p7so6138140wmp.4;
-        Wed, 02 Oct 2019 01:23:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fjdNl+PoTY9jdW12WzpwvTBCSOavhiTQp0zXpkH751c=;
-        b=T/mqmM587yOS6XkKYkloyc4yPJFeu0xgXyu6xm+JQO60F6y+5o+DFfIiy0Th0kDP+m
-         bYSUfIaUQY0FLq6Pig7JlEXOMcznpOv08Dy5LvhtFQYSckW068NG5NjDakQ0qE5HRj+u
-         OTpBrFcuxMGsZhQ8zjU+ziJlVRqVzQ+HepSePHTwUtBrddyKQDTNVfx+SiC7Tww5tGm/
-         XeUZ4GpUGldZwz9nC2MDbq8RQN6dd+5XPZJ/YSoWKc+6i6kgf13KLg6N8IyMUFLa3DdN
-         B796kUBeRpVyXdk21yoKL/nh6dseiqgnlsurPOCRs7/SGi1V8WAWw/HyiwzckQbEH7Pd
-         +FyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fjdNl+PoTY9jdW12WzpwvTBCSOavhiTQp0zXpkH751c=;
-        b=t1TaZScoD5uuOvRnhjo6F/W8UW897T5OGnHCHM1146X28HOB6uB7LQdDIVtUg7K7gX
-         BlzSikucAoTY5PdufFrUcDHvZO9EN6GzUhqNNsXMRxmogO0sg9k1F1vdPro8HIfmxk56
-         Fe16iZriU7LaTYLKZB/WoqP27gl35P+M5WOwE49d5ZCHy98ocnkoFY0iYNSjT0vXSiy8
-         j2HAI1rR8hLN1rPXq68A8Jyp+IldPESZuJ7yZvyy72LF6fX/Y9hWknSI4ogjnZXXwGQp
-         2KrHi1R1Vx0r1mzkAQQlyKhocTeDY+5qYhMo7qKgqHIAqaARWlIItarJFdDsK8efXjwg
-         fZtQ==
-X-Gm-Message-State: APjAAAWVvqybXYxRy8SJzRrczFgmlo8Fw35VApPdvL4NlAz3Wwu0FNIQ
-        /fLudMxb2B2audwLZk9HOSONLX6J0yZtFHiAbzPuyEw+
-X-Google-Smtp-Source: APXvYqzlRf65qhU4kTSHqIBi40tevjd+qK5g3NR32ui50naslg4CkhfAeOuBw3nDmmOtAYHmmwPA1e/2KKItWyrGQWk=
-X-Received: by 2002:a1c:a74f:: with SMTP id q76mr1887806wme.16.1570004603664;
- Wed, 02 Oct 2019 01:23:23 -0700 (PDT)
+        id S1727117AbfJBI1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 04:27:37 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:39340 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726497AbfJBI1h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 04:27:37 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id A44DC20571;
+        Wed,  2 Oct 2019 10:27:34 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id IgdF7cTA5Xsj; Wed,  2 Oct 2019 10:27:34 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 26C502026E;
+        Wed,  2 Oct 2019 10:27:34 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 2 Oct 2019
+ 10:27:33 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 4DD1A3180089;
+ Wed,  2 Oct 2019 10:27:33 +0200 (CEST)
+Date:   Wed, 2 Oct 2019 10:27:33 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: Re: [PATCH RFC 3/5] net: Add a netdev software feature set that
+ defaults to off.
+Message-ID: <20191002082733.GR2879@gauss3.secunet.de>
+References: <20190920044905.31759-1-steffen.klassert@secunet.com>
+ <20190920044905.31759-4-steffen.klassert@secunet.com>
+ <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
+ <20190930062427.GF2879@gauss3.secunet.de>
+ <CA+FuTScxNZKdb0FqAXjxPXY4XEhFFh+_COy0QjCfvw4phSQF3g@mail.gmail.com>
+ <20191001061816.GP2879@gauss3.secunet.de>
+ <CA+FuTSdTDAG95XCc8qcb7pJJn_6HuxCrCJnta+sJZa7Bi9x6tw@mail.gmail.com>
 MIME-Version: 1.0
-References: <acd60f4797143dc6e9817b3dce38e1408caf65e5.1569849018.git.lucien.xin@gmail.com>
- <20191002010356.GG3499@localhost.localdomain>
-In-Reply-To: <20191002010356.GG3499@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 2 Oct 2019 16:23:52 +0800
-Message-ID: <CADvbK_ctLG+vnhmWwN=cWmZV7FgZreVRmoU+23PExdk=goF8cQ@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: set newsk sk_socket before processing listening
- sk backlog
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        davem <davem@davemloft.net>, Neil Horman <nhorman@tuxdriver.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSdTDAG95XCc8qcb7pJJn_6HuxCrCJnta+sJZa7Bi9x6tw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 2, 2019 at 9:04 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Mon, Sep 30, 2019 at 09:10:18PM +0800, Xin Long wrote:
-> > This patch is to fix a NULL-ptr deref crash in selinux_sctp_bind_connect:
+On Tue, Oct 01, 2019 at 08:43:05AM -0400, Willem de Bruijn wrote:
+> On Tue, Oct 1, 2019 at 2:18 AM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
 > >
-> >   [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
-> >   [...] RIP: 0010:selinux_sctp_bind_connect+0x16a/0x230
-> >   [...] Call Trace:
-> >   [...]  security_sctp_bind_connect+0x58/0x90
-> >   [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
-> >   [...]  sctp_sf_do_asconf+0x782/0x980 [sctp]
-> >   [...]  sctp_do_sm+0x139/0x520 [sctp]
-> >   [...]  sctp_assoc_bh_rcv+0x284/0x5c0 [sctp]
-> >   [...]  sctp_backlog_rcv+0x45f/0x880 [sctp]
-> >   [...]  __release_sock+0x120/0x370
-> >   [...]  release_sock+0x4f/0x180
-> >   [...]  sctp_accept+0x3f9/0x5a0 [sctp]
-> >   [...]  inet_accept+0xe7/0x6f0
+> > On Mon, Sep 30, 2019 at 11:26:55AM -0400, Willem de Bruijn wrote:
+> > >
+> > > Instead, how about adding a UDP GRO ethtool feature independent of
+> > > forwarding, analogous to fraglist GRO? Then both are explicitly under
+> > > admin control. And can be enabled by default (either now, or after
+> > > getting more data).
 > >
-> > It was caused by that the 'newsk' sk_socket was not set before going to
-> > security sctp hook when doing accept() on a tcp-type socket:
+> > We could add a protocol specific feature, but what would it mean
+> > if UDP GRO is enabled?
 > >
-> >   inet_accept()->
-> >     sctp_accept():
-> >       lock_sock():
-> >           lock listening 'sk'
-> >                                           do_softirq():
-> >                                             sctp_rcv():  <-- [1]
-> >                                                 asconf chunk arrived and
-> >                                                 enqueued in 'sk' backlog
-> >       sctp_sock_migrate():
-> >           set asoc's sk to 'newsk'
-> >       release_sock():
-> >           sctp_backlog_rcv():
-> >             lock 'newsk'
-> >             sctp_process_asconf()  <-- [2]
-> >             unlock 'newsk'
-> >     sock_graft():
-> >         set sk_socket  <-- [3]
-> >
-> > As it shows, at [1] the asconf chunk would be put into the listening 'sk'
-> > backlog, as accept() was holding its sock lock. Then at [2] asconf would
-> > get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
-> > 'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
-> > would deref it, then kernel crashed.
->
-> Note that sctp will migrate such incoming chunks from sk to newsk in
-> sctp_rcv() if they arrived after the mass-migration performed at
-> sctp_sock_migrate().
->
-> That said, did you explore changing inet_accept() so that
-> sk1->sk_prot->accept() would return sk2 still/already locked?
-> That would be enough to block [2] from happening as then it would be
-> queued on newsk backlog this time and avoid nearly duplicating
-> inet_accept(). (too bad for this chunk, hit 2 backlogs..)
-We don't have to bother inet_accept() for it. I had this one below,
-and I was just thinking the locks order doesn't look nice. Do you
-think this is more acceptable?
+> > Would it be enabled for forwarding, and for local input only if there
+> > is a GRO capable socket? Or would it be enabled even if there
+> > is no GRO capable socket? Same question when UDP GRO is disabled.
+> 
+> Enable UDP GRO for all traffic if GRO and UDP GRO are set, and only
+> then. 
 
-@@ -4963,15 +4963,19 @@ static struct sock *sctp_accept(struct sock
-*sk, int flags, int *err, bool kern)
-         * asoc to the newsk.
-         */
-        error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
--       if (error) {
--               sk_common_release(newsk);
--               newsk = NULL;
-+       if (!error) {
-+               lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
-+               release_sock(sk);
-+               release_sock(newsk);
-+               *err = error;
-+
-+               return newsk;
-        }
+But this means that we would need to enable UDP GRO by default then.
+Currently, if an application uses a UDP GRO capable socket, it
+can expect that it gets GROed packets without doing any additional
+configuration. This would change if we disable it by default.
+Unfortunately, enabling UDP GRO by default has the biggest
+risk because most applications don't use UDP GRO capable sockets.
 
- out:
-        release_sock(sk);
-        *err = error;
--       return newsk;
-+       return NULL;
- }
+The most condervative way would be to leave standard GRO as it is.
+But on some workloads standard GRO might be preferable, in
+particular on forwarding to a NIC that can do UDP segmentation
+in hardware.
 
->
-> AFAICT TCP code would be fine with such change. Didn't check other
-> protocols.
->
+> That seems like the easiest to understand behavior to me, and
+> gives administrators an opt-out for workloads where UDP GRO causes a
+> regression. We cannot realistically turn off all GRO on a mixed
+> TCP/UDP workload (like, say, hosting TCP and QUIC).
+> 
+> > Also, what means enabling GRO then? Enable GRO for all protocols
+> > but UDP? Either UDP becomes something special then,
+> 
+> Yes and true. But it is something special. We don't know whether UDP
+> GRO is safe to deploy everywhere.
+> 
+> Only enabling it for the forwarding case is more conservative, but
+> gives no path to enabling it systemwide, is arguably confusing and
+> still lacks the admin control to turn off in case of unexpected
+> regressions. I do think that for a time this needs to be configurable
+> unless you're confident that the forwarding path is such a win that
+> no plan B is needed. But especially without fraglist, I'm not sure.
+
+On my tests it was a win on forwarding, but there might be
+usecases where it is not. I guess the only way to find this out
+is to enable is and wait what happens.
+
+I'm a bit hesitating on adding a feature flag that might be only
+temporary usefull. In particular on the background of the talk
+that Jesse Brandeburg gave on the LPC last year. Maybe you
+remember the slide where he showed the output of
+ethtool --show-offloads, it filled the whole page.
+
+> 
+> > or we need
+> > to create protocol specific features for the other protocols
+> > too. Same would apply for fraglist GRO.
+> 
+> We don't need it for other protocols after the fact, but it's a good
+> question: I don't know how it was enabled for them. Perhaps confidence
+> was gained based on testing. Or it was enabled for -rc1, no one
+> complained and stayed turned on. In which case you could do the same.
+
+Maybe we should go that way to enable it and wait whether somebody
+complains. A patch to add the feature flag could be prepared
+beforehand for that case.
+
+It is easy to make a suboptimal design decision here, so
+some more opinions would be helpfull.
+
