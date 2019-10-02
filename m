@@ -2,126 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69CDFC901B
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 19:43:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4268C901D
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 19:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbfJBRnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 13:43:42 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35954 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726076AbfJBRnm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 13:43:42 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 029293082231;
-        Wed,  2 Oct 2019 17:43:42 +0000 (UTC)
-Received: from krava (ovpn-204-114.brq.redhat.com [10.40.204.114])
-        by smtp.corp.redhat.com (Postfix) with SMTP id A7E83600CE;
-        Wed,  2 Oct 2019 17:43:32 +0000 (UTC)
-Date:   Wed, 2 Oct 2019 19:43:31 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Julia Kartseva <hex@fb.com>, Yonghong Song <yhs@fb.com>
-Cc:     "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "md@linux.it" <md@linux.it>, Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        iovisor-dev@lists.iovisor.org
-Subject: libbpf-devel rpm uapi headers
-Message-ID: <20191002174331.GA13941@krava>
+        id S1728145AbfJBRoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 13:44:06 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53604 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726076AbfJBRoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 13:44:05 -0400
+Received: by mail-wm1-f65.google.com with SMTP id i16so8120643wmd.3
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 10:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xobYEG0AEaPhaGje+6DN+Ep8BZLhFrNhLiVQA67AVaE=;
+        b=yrnWKsjLScjxxNWKS8/eQkCGaAkjM4/CI4WwiB4JXJKI37bSyoXntwqQdEZI5t1AFZ
+         k7qVt9hXJKqEZt5VWZ3dKNZYJp7vETCaPGh/YQEP2QyjiyHiQ1SsvwtKqVAhC3Lw7ZaS
+         iBSEjf3DkIZCYZplbSGvrJzJyxv1EhAbOztLMSCaEOX5tMD8ijUsCrejiR3D/3ZcDOOv
+         L81NEPuZjhUc0RX1jFili9CfwuajQQGrYDp36V36q8VB84forWk3MhvmbIFe3jA4Tskv
+         JP1vZ71qm2kcaYIXLvaVHxqkv7ySqILpxC/2sh6IAoR5w9xMkNh2oFKEbfya1UDbM5le
+         9UOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xobYEG0AEaPhaGje+6DN+Ep8BZLhFrNhLiVQA67AVaE=;
+        b=GgUbriHe7SyGgy0DFcvRC2eQYKAQpJx3adrM8No0F6nw+I6TtPwuIVdn1q4QRWKSo1
+         rF1AHqviFtvLcl5iE0LS619V54TZAg8OPlCmCpct7Rp4FrpZZtJ97i/peVRpsOH4iiR5
+         JMaoFSdyFVl7lvLn8R6uro4yCeyRBarspG7yc5KpEUaCfB51VdtrKJ09Mfc01BjSC2Ev
+         jVVbtSK2i3Qyx7oixJVj8fr9yXhW/A3R4QJwmpT4frQy1AjuBPde/SGehUAHB3zuBGsn
+         bCri4Kt5trBkkY2FLO3hcOZ54GuarQAqn7XazFwz3qf3nao13oLQ/8X1U2Bo9B/cpubo
+         wrrw==
+X-Gm-Message-State: APjAAAW3QBY+y/FsPHkjm2u/65rC3meG3EK/OJqmrv2ns9DL5l+rO7VZ
+        qVd6DysdI3kYv/BcF9NHTrwYOA==
+X-Google-Smtp-Source: APXvYqzi7LiPSBq7paxrDKIZWpAO7XEm5V68Te8WmxmWr/NONhS1syCyo6iPvAcRTHCB5ZMngSlpZw==
+X-Received: by 2002:a1c:c589:: with SMTP id v131mr3667706wmf.163.1570038243687;
+        Wed, 02 Oct 2019 10:44:03 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id c9sm97071wrt.7.2019.10.02.10.44.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2019 10:44:03 -0700 (PDT)
+Date:   Wed, 2 Oct 2019 19:44:02 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
+        jiri@mellanox.com, jakub.kicinski@netronome.com,
+        saeedm@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 07/15] ipv4: Only Replay routes of interest
+ to new listeners
+Message-ID: <20191002174402.GB2279@nanopsycho>
+References: <20191002084103.12138-1-idosch@idosch.org>
+ <20191002084103.12138-8-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Wed, 02 Oct 2019 17:43:42 +0000 (UTC)
+In-Reply-To: <20191002084103.12138-8-idosch@idosch.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-we'd like to have bcc linked with libbpf instead of the
-github submodule, initial change is discussed in here:
-  https://github.com/iovisor/bcc/pull/2535
+Wed, Oct 02, 2019 at 10:40:55AM CEST, idosch@idosch.org wrote:
+>From: Ido Schimmel <idosch@mellanox.com>
+>
+>When a new listener is registered to the FIB notification chain it
+>receives a dump of all the available routes in the system. Instead, make
+>sure to only replay the IPv4 routes that are actually used in the data
+>path and are of any interest to the new listener.
+>
+>Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+>---
+> net/ipv4/fib_trie.c | 10 ++++++++++
+> 1 file changed, 10 insertions(+)
+>
+>diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+>index dc4c4e2cb0b3..4937a3503f4f 100644
+>--- a/net/ipv4/fib_trie.c
+>+++ b/net/ipv4/fib_trie.c
+>@@ -2096,6 +2096,7 @@ static int fib_leaf_notify(struct key_vector *l, struct fib_table *tb,
+> 			   struct netlink_ext_ack *extack)
+> {
+> 	struct fib_alias *fa;
+>+	int last_slen = -1;
+> 	int err;
+> 
+> 	hlist_for_each_entry_rcu(fa, &l->leaf, fa_list) {
+>@@ -2110,6 +2111,15 @@ static int fib_leaf_notify(struct key_vector *l, struct fib_table *tb,
+> 		if (tb->tb_id != fa->tb_id)
+> 			continue;
+> 
+>+		if (fa->fa_slen == last_slen)
+>+			continue;
 
-In order to do that, we need to have access to uapi headers
-compatible with libbpf rpm, bcc is attaching and using them
-during compilation.
-
-I added them in the fedora spec below (not submitted yet),
-so libbpf would carry those headers.
-
-Thoughts? thanks,
-jirka
+Hmm, I wonder, don't you want to continue only for FIB_EVENT_ENTRY_REPLACE_TMP
+and keep the notifier call for FIB_EVENT_ENTRY_ADD?
 
 
----
-Subject: [PATCH] Package uapi headers under /usr/include/bpf/uapi/linux
-
-The full list of files for libbpf-devel is now:
-
-  /usr/include/bpf
-  /usr/include/bpf/bpf.h
-  /usr/include/bpf/btf.h
-  /usr/include/bpf/libbpf.h
-  /usr/include/bpf/libbpf_util.h
-  /usr/include/bpf/uapi
-  /usr/include/bpf/uapi/linux
-  /usr/include/bpf/uapi/linux/compiler.h
-  /usr/include/bpf/uapi/linux/err.h
-  /usr/include/bpf/uapi/linux/filter.h
-  /usr/include/bpf/uapi/linux/kernel.h
-  /usr/include/bpf/uapi/linux/list.h
-  /usr/include/bpf/uapi/linux/overflow.h
-  /usr/include/bpf/uapi/linux/ring_buffer.h
-  /usr/include/bpf/uapi/linux/types.h
-  /usr/include/bpf/xsk.h
-  /usr/lib64/libbpf.so
-  /usr/lib64/pkgconfig/libbpf.pc
----
- libbpf.spec | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/libbpf.spec b/libbpf.spec
-index 5d0f29718cac..681800c7f93e 100644
---- a/libbpf.spec
-+++ b/libbpf.spec
-@@ -4,7 +4,7 @@
- 
- Name:           %{githubname}
- Version:        %{githubver}
--Release:        2%{?dist}
-+Release:        3%{?dist}
- Summary:        Libbpf library
- 
- License:        LGPLv2 or BSD
-@@ -48,6 +48,8 @@ developing applications that use %{name}
- 
- %install
- %make_install -C ./src %{make_flags}
-+install -d -m 755  %{buildroot}/usr/include/bpf/uapi/linux
-+cp include/linux/* %{buildroot}/usr/include/bpf/uapi/linux
- 
- %files
- %{_libdir}/libbpf.so.%{version}
-@@ -62,6 +64,9 @@ developing applications that use %{name}
- %{_libdir}/libbpf.a
- 
- %changelog
-+* Wed Oct 02 2019 Jiri Olsa <jolsa@redhat.com> - 0.0.3-3
-+- Add uapi headers
-+
- * Wed Sep 25 2019 Jiri Olsa <jolsa@redhat.com> - 0.0.3-2
- - Fix libelf linking (BZ#1755317)
- 
--- 
-2.21.0
-
+>+
+>+		last_slen = fa->fa_slen;
+>+		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_REPLACE_TMP,
+>+					      l->key, KEYLENGTH - fa->fa_slen,
+>+					      fa, extack);
+>+		if (err)
+>+			return err;
+> 		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_ADD, l->key,
+> 					      KEYLENGTH - fa->fa_slen,
+> 					      fa, extack);
+>-- 
+>2.21.0
+>
