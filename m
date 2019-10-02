@@ -2,122 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FC5C94D7
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5744AC94DE
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:34:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728885AbfJBX3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 19:29:52 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39474 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726798AbfJBX3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 19:29:51 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 4so493679qki.6;
-        Wed, 02 Oct 2019 16:29:51 -0700 (PDT)
+        id S1728546AbfJBXe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 19:34:56 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36378 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726453AbfJBXe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 19:34:56 -0400
+Received: by mail-wm1-f66.google.com with SMTP id m18so585817wmc.1
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 16:34:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=px76N5Ygyt1+IaPaI8lPcGpZkxeisLsbA6YBoyUGZsk=;
-        b=kpc6N+43kHEhQsTbxUhs1VlXqZ/4llzRMyDhVnOUlpAkjcuvRyrD3CjG/lbI3Dktgw
-         O07IgARrj4egPxvsrn6bJTr8MOOXXRvvHr/KgSgTTj7jVJTabWuYFVCGDM4FpcUuItJN
-         JnIh77eBrBBHgmYPtggm9jT6MSii32eedAhVNi/HJSZB+JO8kVEAF71uhfyJwA+X8M5v
-         6HsZnHnSrMISDX/0znO1VAG3cE0gzxKSvyfQKEPccnHY8Qqny1wV3ZQbRbOAyGpnB7qw
-         eaX5d1OLznV8uLf0exSpqJtE1Yzm0mb36buAWekadlwFTO5aj7YSRoFFJyxW5Ct+mRoI
-         bIBg==
+        h=from:to:cc:subject:date:message-id;
+        bh=hl8UETHarieeI4t2FcbAJcKHUr1QHu+lOq8qQPfuh1s=;
+        b=UchHWZk8uSmE5mh3BJBChQyjs+WuMPenfIt1E6OL0iuiFHBNe+h1HYN7cGCOL7ZJns
+         +r9Y/OdboxMjFN2+5hBLdXyIz+epADFZg2sZd40mCvkIBPpJUQ1PixstS48pDqDLJaWD
+         Q8MjJlKDbonHlK13/2t0eGxvGWcKAfzS5LiOgjV5fF/26BMF6j8s9lhV1lc6mO6obAhx
+         HylpS0VIyG0Ek+h7mYi+AYw0ehluGBLbk9ZxnlLO44JX277bJC3hTPckNLmtmJcALI3T
+         tRoQCzW35rCqCZtAgXur0tjvxlQjk3VL+vmLAFnEtmE7PFzwV5jGZflEW8KXnyMw8MaW
+         abKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=px76N5Ygyt1+IaPaI8lPcGpZkxeisLsbA6YBoyUGZsk=;
-        b=a1TfU7kgwOv1pU5hRZIJOSqRDyGmZDxajH7QNPD436Xenl2eRtCssvk0yzspz1rb5U
-         vPizF/zDpsfPDrgYNe5p9PEEIOPZDOe44NtSjlhwrIyd0QK803lGiK+LCY7sbZWyGTDw
-         KRsHPQBPwEQd0PCqIwURD3YARF7MwCPp2RiJb/HAjtOfnp5e6MT5nIz2sHXmPJw82rLn
-         dCI31Lgd1YzBQ7045M3b2IKqjW5TAp/oTkqHm6nrYdJlwzghinJyfM9uikno/LtdOzjB
-         4+nNRkHMkxp7pcw0V62xLmhsAWZZy6IXNn6LN5YxbrjsFIIoisxIQQqFgsd5JUKrnh71
-         qhVw==
-X-Gm-Message-State: APjAAAWGplOT1sZ+QTCa9GPGZWKkG0we5zIezuRAKVSkn38Qt21JyShx
-        Kmh1pemC1jKOsRQDm7ggle7Oh1BbgRDsSFU55XE=
-X-Google-Smtp-Source: APXvYqyHFJy8nYfCoKUjZpUzSzmYzsMlShEropZlNJ4z2f11vlFDW5/mLSDeK/ebISRMUSZO8n1lT7SO8CF3/OUIM4o=
-X-Received: by 2002:a37:4e55:: with SMTP id c82mr1479110qkb.437.1570058990712;
- Wed, 02 Oct 2019 16:29:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191002173357.253643-1-sdf@google.com> <20191002173357.253643-2-sdf@google.com>
-In-Reply-To: <20191002173357.253643-2-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Oct 2019 16:29:39 -0700
-Message-ID: <CAEf4BzZuEChOL828F91wLxUr3h2yfAkZvhsyoSx18uSFSxOtqw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf/flow_dissector: add mode to enforce
- global BPF flow dissector
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Petar Penkov <ppenkov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=hl8UETHarieeI4t2FcbAJcKHUr1QHu+lOq8qQPfuh1s=;
+        b=R0km/jscXi3E5O7b1mZsC8KovUoRZVOaUwxBlLFKRVAueqSVx2nB0u9atC8SyS1C/u
+         /wdEFDrDEuv10oWJAW+RfE6Y9hh4BPnzjLYEOAQbAFH0Rx7z2O6GtqjFqC6dE2zr11wX
+         mlKpM7KiCw9SmtycPGPmau2Gm1aFDTkQNV1VE89ticNaPJrBPUqY5VIEsywJxKLJG8rK
+         //cfXFwJYG2IdWjJx9aOs05dqHAiH1lR3X8aMCTCLzzAgrttrzt2pqICFqFlzhXnaMze
+         wuKxbOELIuoxyCUouuAeyFwupvT8m6RHk7y3fGgCY+vGhTqARPEio1qu+Jd4vqJNgxGx
+         jXhw==
+X-Gm-Message-State: APjAAAUVksFVXuV80rqo6UfKhFLrNv33SG5KZ2haiOXvxI6Jw3c1Y42l
+        QknCE4k1GckyACQsfD9OXjg=
+X-Google-Smtp-Source: APXvYqw2slqes6LeaICjdaAtCwgBsieQBhUvp5m3hvTp/QNW1Zq5bRSZWAfzRk+3lgdRhrb0DJmwcw==
+X-Received: by 2002:a05:600c:10cc:: with SMTP id l12mr4538216wmd.165.1570059293309;
+        Wed, 02 Oct 2019 16:34:53 -0700 (PDT)
+Received: from localhost.localdomain ([86.124.196.40])
+        by smtp.gmail.com with ESMTPSA id 26sm601451wmf.20.2019.10.02.16.34.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2019 16:34:52 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next] net: dsa: sja1105: Add support for port mirroring
+Date:   Thu,  3 Oct 2019 02:34:43 +0300
+Message-Id: <20191002233443.12345-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 2, 2019 at 10:35 AM Stanislav Fomichev <sdf@google.com> wrote:
->
-> Always use init_net flow dissector BPF program if it's attached and fall
-> back to the per-net namespace one. Also, deny installing new programs if
-> there is already one attached to the root namespace.
-> Users can still detach their BPF programs, but can't attach any
-> new ones (-EPERM).
->
-> Cc: Petar Penkov <ppenkov@google.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  Documentation/bpf/prog_flow_dissector.rst |  3 +++
->  net/core/flow_dissector.c                 | 11 ++++++++++-
->  2 files changed, 13 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/bpf/prog_flow_dissector.rst b/Documentation/bpf/prog_flow_dissector.rst
-> index a78bf036cadd..4d86780ab0f1 100644
-> --- a/Documentation/bpf/prog_flow_dissector.rst
-> +++ b/Documentation/bpf/prog_flow_dissector.rst
-> @@ -142,3 +142,6 @@ BPF flow dissector doesn't support exporting all the metadata that in-kernel
->  C-based implementation can export. Notable example is single VLAN (802.1Q)
->  and double VLAN (802.1AD) tags. Please refer to the ``struct bpf_flow_keys``
->  for a set of information that's currently can be exported from the BPF context.
-> +
-> +When BPF flow dissector is attached to the root network namespace (machine-wide
-> +policy), users can't override it in their child network namespaces.
-> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-> index 7c09d87d3269..494e2016fe84 100644
-> --- a/net/core/flow_dissector.c
-> +++ b/net/core/flow_dissector.c
-> @@ -115,6 +115,11 @@ int skb_flow_dissector_bpf_prog_attach(const union bpf_attr *attr,
->         struct bpf_prog *attached;
->         struct net *net;
->
-> +       if (rcu_access_pointer(init_net.flow_dissector_prog)) {
-> +               /* Can't override root flow dissector program */
-> +               return -EPERM;
-> +       }
+Amazingly, of all features, this does not require a switch reset.
 
-This is racy, shouldn't this be checked after grabbing a lock below?
+Tested with:
 
-> +
->         net = current->nsproxy->net_ns;
->         mutex_lock(&flow_dissector_mutex);
->         attached = rcu_dereference_protected(net->flow_dissector_prog,
-> @@ -910,7 +915,11 @@ bool __skb_flow_dissect(const struct net *net,
->         WARN_ON_ONCE(!net);
->         if (net) {
->                 rcu_read_lock();
-> -               attached = rcu_dereference(net->flow_dissector_prog);
-> +               attached =
-> +                       rcu_dereference(init_net.flow_dissector_prog);
-> +
-> +               if (!attached)
-> +                       attached = rcu_dereference(net->flow_dissector_prog);
->
->                 if (attached) {
->                         struct bpf_flow_keys flow_keys;
-> --
-> 2.23.0.444.g18eeb5a265-goog
->
+tc qdisc add dev swp2 clsact
+tc filter add dev swp2 ingress matchall skip_sw \
+	action mirred egress mirror dev swp3
+tc filter show dev swp2 ingress
+tc filter del dev swp2 ingress pref 49152
+
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/sja1105/sja1105_main.c | 87 ++++++++++++++++++++++++--
+ 1 file changed, 83 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index e95039727c1c..3795feb9177a 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -382,8 +382,8 @@ static int sja1105_init_l2_forwarding_params(struct sja1105_private *priv)
+ static int sja1105_init_general_params(struct sja1105_private *priv)
+ {
+ 	struct sja1105_general_params_entry default_general_params = {
+-		/* Disallow dynamic changing of the mirror port */
+-		.mirr_ptacu = 0,
++		/* Allow dynamic changing of the mirror port */
++		.mirr_ptacu = true,
+ 		.switchid = priv->ds->index,
+ 		/* Priority queue for link-local management frames
+ 		 * (both ingress to and egress from CPU - PTP, STP etc)
+@@ -403,8 +403,8 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+ 		 * by installing a temporary 'management route'
+ 		 */
+ 		.host_port = dsa_upstream_port(priv->ds, 0),
+-		/* Same as host port */
+-		.mirr_port = dsa_upstream_port(priv->ds, 0),
++		/* Default to an invalid value */
++		.mirr_port = SJA1105_NUM_PORTS,
+ 		/* Link-local traffic received on casc_port will be forwarded
+ 		 * to host_port without embedding the source port and device ID
+ 		 * info in the destination MAC address (presumably because it
+@@ -2069,6 +2069,83 @@ static int sja1105_port_setup_tc(struct dsa_switch *ds, int port,
+ 	}
+ }
+ 
++/* We have a single mirror (@to) port, but can configure ingress and egress
++ * mirroring on all other (@from) ports.
++ * We need to allow mirroring rules only as long as the @to port is always the
++ * same, and we need to unset the @to port from mirr_port only when there is no
++ * mirroring rule that references it.
++ */
++static int sja1105_mirror_apply(struct sja1105_private *priv, int from, int to,
++				bool ingress, bool enabled)
++{
++	struct sja1105_general_params_entry *general_params;
++	struct sja1105_mac_config_entry *mac;
++	struct sja1105_table *table;
++	bool already_enabled;
++	u64 new_mirr_port;
++	int rc;
++
++	table = &priv->static_config.tables[BLK_IDX_GENERAL_PARAMS];
++	general_params = table->entries;
++
++	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
++
++	already_enabled = (general_params->mirr_port != SJA1105_NUM_PORTS);
++	if (already_enabled && enabled && general_params->mirr_port != to) {
++		dev_err(priv->ds->dev,
++			"Delete mirroring rules towards port %d first", to);
++		return -EBUSY;
++	}
++
++	new_mirr_port = to;
++	if (!enabled) {
++		bool keep = false;
++		int port;
++
++		/* Anybody still referencing mirr_port? */
++		for (port = 0; port < SJA1105_NUM_PORTS; port++) {
++			if (mac[port].ing_mirr || mac[port].egr_mirr) {
++				keep = true;
++				break;
++			}
++		}
++		/* Unset already_enabled for next time */
++		if (!keep)
++			new_mirr_port = SJA1105_NUM_PORTS;
++	}
++	if (new_mirr_port != general_params->mirr_port) {
++		general_params->mirr_port = new_mirr_port;
++
++		rc = sja1105_dynamic_config_write(priv, BLK_IDX_GENERAL_PARAMS,
++						  0, general_params, true);
++		if (rc < 0)
++			return rc;
++	}
++
++	if (ingress)
++		mac[from].ing_mirr = enabled;
++	else
++		mac[from].egr_mirr = enabled;
++
++	return sja1105_dynamic_config_write(priv, BLK_IDX_MAC_CONFIG, from,
++					    &mac[from], true);
++}
++
++static int sja1105_mirror_add(struct dsa_switch *ds, int port,
++			      struct dsa_mall_mirror_tc_entry *mirror,
++			      bool ingress)
++{
++	return sja1105_mirror_apply(ds->priv, port, mirror->to_local_port,
++				    ingress, true);
++}
++
++static void sja1105_mirror_del(struct dsa_switch *ds, int port,
++			       struct dsa_mall_mirror_tc_entry *mirror)
++{
++	sja1105_mirror_apply(ds->priv, port, mirror->to_local_port,
++			     mirror->ingress, false);
++}
++
+ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.get_tag_protocol	= sja1105_get_tag_protocol,
+ 	.setup			= sja1105_setup,
+@@ -2102,6 +2179,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.port_rxtstamp		= sja1105_port_rxtstamp,
+ 	.port_txtstamp		= sja1105_port_txtstamp,
+ 	.port_setup_tc		= sja1105_port_setup_tc,
++	.port_mirror_add	= sja1105_mirror_add,
++	.port_mirror_del	= sja1105_mirror_del,
+ };
+ 
+ static int sja1105_check_device_id(struct sja1105_private *priv)
+-- 
+2.17.1
+
