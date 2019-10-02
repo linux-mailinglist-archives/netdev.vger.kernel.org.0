@@ -2,237 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 339BCC89EA
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 15:39:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83139C89F6
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 15:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbfJBNjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 09:39:43 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:35565 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726687AbfJBNjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 09:39:43 -0400
-Received: by mail-pg1-f194.google.com with SMTP id a24so11875912pgj.2;
-        Wed, 02 Oct 2019 06:39:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6VcOYbiMtfSp75brRYu+wOZCVtITZ2k75g02wJDdsQQ=;
-        b=pYWF3ACokblJI+Ye2mivZYsXL1z1gfKKeuJAFd17eoLlctS++pukFZ8oZWlk4fC7Rl
-         62B6MoBjzdPobwSjBdyn1TP3od98G/fu9mbxkMeqEL/gj5xs6TIb2JVeH/gAlevz8yvf
-         G1GQ/LtAzAtF71kjlIfdM/vSk0S85vcYRz3YvwWjfjljKv0P2eWP/1CxSLmoVyAQD5ep
-         4z/8RcBmBA7maMmbDyTy2tQb9ec9laiXlpNLZq9Xf/0b6mDGiebH/bkPIzczqpwQkqP7
-         SPcWwDenSifG1UIZwSEPDQPoivLvFTXoQ2iKQgazsKAQHujwYZ+kscwgYUi78WJJdY5H
-         olPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6VcOYbiMtfSp75brRYu+wOZCVtITZ2k75g02wJDdsQQ=;
-        b=aQk5EDMk0PEppi2bOyhpMTXRHg7rg1kxODVP7IHEvSbh7ZOBby6ns25HroT4zI68MT
-         tIImr9dNm6ekltLPRg9PKunMP84oOTOMeRlkvNkea4I+svr2H4FUY5Q3HRqzGuUsiOrC
-         H+ow7OnZX0KwTJFZkji970xV4qEt9hSCeLlniuBgyWJrJlshkxGUwrARrKQkbLun0gfF
-         wukmb148GlKqh8oIR5TWB4cE6IcYLzKC8h4rgCaVVSXr2a+tyEKoJMJM00DDYaA8RU9B
-         TzsZGsEAWNB4b9TbhSHtRy7zycn09uCWzM2KLkYBRbuPfA/8hB4XDclNiw2drYumLvl8
-         gnQQ==
-X-Gm-Message-State: APjAAAWp0RBSjCrESzq2lswwXzgcEIduPA9j5xYRT+84HI3VE4sp7Zc2
-        F6jYs+7oM9hp0S9BTAo9EXQ=
-X-Google-Smtp-Source: APXvYqwNGNt1SHI/Kw11oFI1x12Y7sHTzCioXskj8GgCT3rfCp8rn89Xg15Ak8p7yfNjIVKbO4yfHw==
-X-Received: by 2002:aa7:96ab:: with SMTP id g11mr4796821pfk.61.1570023581602;
-        Wed, 02 Oct 2019 06:39:41 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r1sm17307241pgv.70.2019.10.02.06.39.40
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 02 Oct 2019 06:39:40 -0700 (PDT)
-Date:   Wed, 2 Oct 2019 06:39:40 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>, corbet@lwn.net,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Steve French <sfrench@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 1/3] docs: fix some broken references
-Message-ID: <20191002133940.GA29214@roeck-us.net>
-References: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
+        id S1727399AbfJBNkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 09:40:35 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:46131 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726233AbfJBNkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 09:40:35 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1iFero-0005jt-99; Wed, 02 Oct 2019 13:40:32 +0000
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20191002110849.13405-1-colin.king@canonical.com>
+ <20191002133356.GP22609@kadam>
+From:   Colin Ian King <colin.king@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH] net: stmmac: xgmac: add missing parentheses to fix
+ precendence error
+Message-ID: <693a7640-68fc-9f68-8290-3542a9f02fd7@canonical.com>
+Date:   Wed, 2 Oct 2019 14:40:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20191002133356.GP22609@kadam>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 24, 2019 at 10:01:28AM -0300, Mauro Carvalho Chehab wrote:
-> There are a number of documentation files that got moved or
-> renamed. update their references.
+On 02/10/2019 14:33, Dan Carpenter wrote:
+> On Wed, Oct 02, 2019 at 12:08:49PM +0100, Colin King wrote:
+>> From: Colin Ian King <colin.king@canonical.com>
+>>
+>> The expression !(hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10 is always zero, so
+>> the masking operation is incorrect. Fix this by adding the missing
+>> parentheses to correctly bind the negate operator on the entire expression.
+>>
+>> Addresses-Coverity: ("Operands don't affect result")
+>> Fixes: c2b69474d63b ("net: stmmac: xgmac: Correct RAVSEL field interpretation")
+>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>> ---
+>>  drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+>> index 965cbe3e6f51..2e814aa64a5c 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+>> @@ -369,7 +369,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
+>>  	dma_cap->eee = (hw_cap & XGMAC_HWFEAT_EEESEL) >> 13;
+>>  	dma_cap->atime_stamp = (hw_cap & XGMAC_HWFEAT_TSSEL) >> 12;
+>>  	dma_cap->av = (hw_cap & XGMAC_HWFEAT_AVSEL) >> 11;
+>> -	dma_cap->av &= !(hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10;
+>> +	dma_cap->av &= !((hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10);
 > 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> Acked-by: Shannon Nelson <snelson@pensando.io>
-> ---
->  Documentation/devicetree/bindings/cpu/cpu-topology.txt    | 2 +-
->  Documentation/devicetree/bindings/timer/ingenic,tcu.txt   | 2 +-
->  Documentation/driver-api/gpio/driver.rst                  | 2 +-
->  Documentation/hwmon/inspur-ipsps1.rst                     | 2 +-
+> There is no point to the shift at all.
 
-For hwmon:
+I must admit I was so focused on figuring out the original intent of the
+code I totally missed that optimization step. I'll send a V2.
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-
->  Documentation/mips/ingenic-tcu.rst                        | 2 +-
->  Documentation/networking/device_drivers/mellanox/mlx5.rst | 2 +-
->  MAINTAINERS                                               | 2 +-
->  drivers/net/ethernet/faraday/ftgmac100.c                  | 2 +-
->  drivers/net/ethernet/pensando/ionic/ionic_if.h            | 4 ++--
->  fs/cifs/cifsfs.c                                          | 2 +-
->  10 files changed, 11 insertions(+), 11 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/cpu/cpu-topology.txt b/Documentation/devicetree/bindings/cpu/cpu-topology.txt
-> index 99918189403c..9bd530a35d14 100644
-> --- a/Documentation/devicetree/bindings/cpu/cpu-topology.txt
-> +++ b/Documentation/devicetree/bindings/cpu/cpu-topology.txt
-> @@ -549,5 +549,5 @@ Example 3: HiFive Unleashed (RISC-V 64 bit, 4 core system)
->  [2] Devicetree NUMA binding description
->      Documentation/devicetree/bindings/numa.txt
->  [3] RISC-V Linux kernel documentation
-> -    Documentation/devicetree/bindings/riscv/cpus.txt
-> +    Documentation/devicetree/bindings/riscv/cpus.yaml
->  [4] https://www.devicetree.org/specifications/
-> diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
-> index 5a4b9ddd9470..7f6fe20503f5 100644
-> --- a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
-> +++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
-> @@ -2,7 +2,7 @@ Ingenic JZ47xx SoCs Timer/Counter Unit devicetree bindings
->  ==========================================================
->  
->  For a description of the TCU hardware and drivers, have a look at
-> -Documentation/mips/ingenic-tcu.txt.
-> +Documentation/mips/ingenic-tcu.rst.
->  
->  Required properties:
->  
-> diff --git a/Documentation/driver-api/gpio/driver.rst b/Documentation/driver-api/gpio/driver.rst
-> index 3fdb32422f8a..9076cc76d5bf 100644
-> --- a/Documentation/driver-api/gpio/driver.rst
-> +++ b/Documentation/driver-api/gpio/driver.rst
-> @@ -493,7 +493,7 @@ available but we try to move away from this:
->    gpiochip. It will pass the struct gpio_chip* for the chip to all IRQ
->    callbacks, so the callbacks need to embed the gpio_chip in its state
->    container and obtain a pointer to the container using container_of().
-> -  (See Documentation/driver-model/design-patterns.txt)
-> +  (See Documentation/driver-api/driver-model/design-patterns.rst)
->  
->  - gpiochip_irqchip_add_nested(): adds a nested cascaded irqchip to a gpiochip,
->    as discussed above regarding different types of cascaded irqchips. The
-> diff --git a/Documentation/hwmon/inspur-ipsps1.rst b/Documentation/hwmon/inspur-ipsps1.rst
-> index 2b871ae3448f..ed32a65c30e1 100644
-> --- a/Documentation/hwmon/inspur-ipsps1.rst
-> +++ b/Documentation/hwmon/inspur-ipsps1.rst
-> @@ -17,7 +17,7 @@ Usage Notes
->  -----------
->  
->  This driver does not auto-detect devices. You will have to instantiate the
-> -devices explicitly. Please see Documentation/i2c/instantiating-devices for
-> +devices explicitly. Please see Documentation/i2c/instantiating-devices.rst for
->  details.
->  
->  Sysfs entries
-> diff --git a/Documentation/mips/ingenic-tcu.rst b/Documentation/mips/ingenic-tcu.rst
-> index c4ef4c45aade..c5a646b14450 100644
-> --- a/Documentation/mips/ingenic-tcu.rst
-> +++ b/Documentation/mips/ingenic-tcu.rst
-> @@ -68,4 +68,4 @@ and frameworks can be controlled from the same registers, all of these
->  drivers access their registers through the same regmap.
->  
->  For more information regarding the devicetree bindings of the TCU drivers,
-> -have a look at Documentation/devicetree/bindings/mfd/ingenic,tcu.txt.
-> +have a look at Documentation/devicetree/bindings/timer/ingenic,tcu.txt.
-> diff --git a/Documentation/networking/device_drivers/mellanox/mlx5.rst b/Documentation/networking/device_drivers/mellanox/mlx5.rst
-> index d071c6b49e1f..a74422058351 100644
-> --- a/Documentation/networking/device_drivers/mellanox/mlx5.rst
-> +++ b/Documentation/networking/device_drivers/mellanox/mlx5.rst
-> @@ -258,7 +258,7 @@ mlx5 tracepoints
->  ================
->  
->  mlx5 driver provides internal trace points for tracking and debugging using
-> -kernel tracepoints interfaces (refer to Documentation/trace/ftrase.rst).
-> +kernel tracepoints interfaces (refer to Documentation/trace/ftrace.rst).
->  
->  For the list of support mlx5 events check /sys/kernel/debug/tracing/events/mlx5/
->  
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 54f1286087e9..65b7d9a0a44a 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3680,7 +3680,7 @@ M:	Oleksij Rempel <o.rempel@pengutronix.de>
->  R:	Pengutronix Kernel Team <kernel@pengutronix.de>
->  L:	linux-can@vger.kernel.org
->  S:	Maintained
-> -F:	Documentation/networking/j1939.txt
-> +F:	Documentation/networking/j1939.rst
->  F:	net/can/j1939/
->  F:	include/uapi/linux/can/j1939.h
->  
-> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-> index 9b7af94a40bb..8abe5e90d268 100644
-> --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> @@ -1835,7 +1835,7 @@ static int ftgmac100_probe(struct platform_device *pdev)
->  		}
->  
->  		/* Indicate that we support PAUSE frames (see comment in
-> -		 * Documentation/networking/phy.txt)
-> +		 * Documentation/networking/phy.rst)
->  		 */
->  		phy_support_asym_pause(phy);
->  
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-> index 5bfdda19f64d..80028f781c83 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-> @@ -596,8 +596,8 @@ enum ionic_txq_desc_opcode {
->   *                      the @encap is set, the device will
->   *                      offload the outer header checksums using
->   *                      LCO (local checksum offload) (see
-> - *                      Documentation/networking/checksum-
-> - *                      offloads.txt for more info).
-> + *                      Documentation/networking/checksum-offloads.rst
-> + *                      for more info).
->   *
->   *                   IONIC_TXQ_DESC_OPCODE_CSUM_HW:
->   *
-> diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-> index 2e9c7f493f99..811f510578cb 100644
-> --- a/fs/cifs/cifsfs.c
-> +++ b/fs/cifs/cifsfs.c
-> @@ -1529,7 +1529,7 @@ init_cifs(void)
->  	/*
->  	 * Consider in future setting limit!=0 maybe to min(num_of_cores - 1, 3)
->  	 * so that we don't launch too many worker threads but
-> -	 * Documentation/workqueue.txt recommends setting it to 0
-> +	 * Documentation/core-api/workqueue.rst recommends setting it to 0
->  	 */
->  
->  	/* WQ_UNBOUND allows decrypt tasks to run on any CPU */
+> regards,
+> dan carpenter
+> 
+
