@@ -2,113 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77964C8A03
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 15:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C500C8A35
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 15:49:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727647AbfJBNoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 09:44:21 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:40128 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726373AbfJBNoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 09:44:21 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x92Dhxsp055767;
-        Wed, 2 Oct 2019 13:44:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=BaJ95um3KKSqNF7ksQIDUZ17nwsj4pbKXWWuet88V/4=;
- b=m7+YUN6Me/CDdeG4Fykh8l7bhBM07SQgUfoVn8ODAlI3+90o14CiGc7E2YjTcHhvQJsg
- EMAcdOEPtfameewP7QjmgW1g023ncU8mMZfQq6x7KdSqzh2L5vtVtYm48QHCUyfYcOOQ
- nogUAijf9MdDKZfohhi6xg36L66hwwwtkuykqjJKPaJgPgTLvEcGoMgIpEoE9Cv3unyQ
- zNxjiN4hq8v/zdI9uJUKy8+zw3fnIgA8hXDlBU26Y3Its8UCHL+ecf1c4jeaEOmcxleE
- qmQz0qFgpH/1wGz0+te7GcfJDno4GDCKj1ahqweigMuHMlRQ3ECrGgDvKVEGI67wl8Mx sg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 2v9xxuw28t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Oct 2019 13:44:07 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x92Dhtrv037305;
-        Wed, 2 Oct 2019 13:44:06 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 2vbsm3vjfe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Oct 2019 13:44:06 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x92Dglas017501;
-        Wed, 2 Oct 2019 13:42:47 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 02 Oct 2019 06:42:46 -0700
-Date:   Wed, 2 Oct 2019 16:42:38 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: xgmac: add missing parentheses to fix
- precendence error
-Message-ID: <20191002134238.GP29696@kadam>
-References: <20191002110849.13405-1-colin.king@canonical.com>
- <20191002133356.GP22609@kadam>
+        id S1728167AbfJBNtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 09:49:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53380 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726150AbfJBNtl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 09:49:41 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 798A821783;
+        Wed,  2 Oct 2019 13:49:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570024180;
+        bh=H4MJVYsZJO/6VO8DXButzSaRTg+PIdVczRyRW0Kz44s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=zx0ObmtNO0OIiDZM7ZoFvl4nP91oCLt63Od0FQRGCsZ2sg2E8dqScO5GN0KIZlza6
+         zS6/Ih+YgFQX4UOS0NdVRUzi76Kd6ibI1pS94iv6oy4xRG9Zjp3tVC8wBW8SiXK2/j
+         T1upSM7vFqiVChdwHy6LqQdibEo0oWUqKNwfYiW8=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2-next] rdma: Relax requirement to have PID for HW objects
+Date:   Wed,  2 Oct 2019 16:49:34 +0300
+Message-Id: <20191002134934.19226-1-leon@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191002133356.GP22609@kadam>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910020132
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910020132
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 02, 2019 at 04:33:57PM +0300, Dan Carpenter wrote:
-> On Wed, Oct 02, 2019 at 12:08:49PM +0100, Colin King wrote:
-> > From: Colin Ian King <colin.king@canonical.com>
-> > 
-> > The expression !(hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10 is always zero, so
-> > the masking operation is incorrect. Fix this by adding the missing
-> > parentheses to correctly bind the negate operator on the entire expression.
-> > 
-> > Addresses-Coverity: ("Operands don't affect result")
-> > Fixes: c2b69474d63b ("net: stmmac: xgmac: Correct RAVSEL field interpretation")
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-> > index 965cbe3e6f51..2e814aa64a5c 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-> > @@ -369,7 +369,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
-> >  	dma_cap->eee = (hw_cap & XGMAC_HWFEAT_EEESEL) >> 13;
-> >  	dma_cap->atime_stamp = (hw_cap & XGMAC_HWFEAT_TSSEL) >> 12;
-> >  	dma_cap->av = (hw_cap & XGMAC_HWFEAT_AVSEL) >> 11;
-> > -	dma_cap->av &= !(hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10;
-> > +	dma_cap->av &= !((hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10);
-> 
-> There is no point to the shift at all.
+From: Leon Romanovsky <leonro@mellanox.com>
 
-Sorry I meant to say it should be a bitwise NOT, right?  I was just
-looking at some other dma_cap stuff that did this same thing...  I can't
-find it now...
+RDMA has weak connection between PIDs and HW objects, because
+the latter tied to file descriptors for their lifetime management.
 
-regards,
-dan carpenter
+The outcome of such connection is that for the following scenario,
+the returned PID will be 0 (not-valid):
+ 1. Create FD and context
+ 2. Share it with ephemeral child
+ 3. Create any object and exit that child
+
+This flow was revealed in testing environment and of course real users
+are not running such scenario, because it makes no sense at all in RDMA
+world.
+
+Let's do two changes in the code to support such workflow anyway:
+ 1. Remove need to provide PID/kernel name. Code already supports it,
+    just need to remove extra validation.
+ 2. Ball-out in case PID is 0.
+
+Link: https://lore.kernel.org/linux-rdma/20191002123245.18153-2-leon@kernel.org
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+---
+ rdma/res-cmid.c | 5 +----
+ rdma/res-cq.c   | 5 +----
+ rdma/res-mr.c   | 5 +----
+ rdma/res-pd.c   | 5 +----
+ rdma/res-qp.c   | 5 +----
+ rdma/res.c      | 3 +++
+ 6 files changed, 8 insertions(+), 20 deletions(-)
+
+diff --git a/rdma/res-cmid.c b/rdma/res-cmid.c
+index 0b830088..0ee9c3d4 100644
+--- a/rdma/res-cmid.c
++++ b/rdma/res-cmid.c
+@@ -120,11 +120,8 @@ static int res_cm_id_line(struct rd *rd, const char *name, int idx,
+ 	char *comm = NULL;
+ 
+ 	if (!nla_line[RDMA_NLDEV_ATTR_RES_STATE] ||
+-	    !nla_line[RDMA_NLDEV_ATTR_RES_PS] ||
+-	    (!nla_line[RDMA_NLDEV_ATTR_RES_PID] &&
+-	     !nla_line[RDMA_NLDEV_ATTR_RES_KERN_NAME])) {
++	    !nla_line[RDMA_NLDEV_ATTR_RES_PS])
+ 		return MNL_CB_ERROR;
+-	}
+ 
+ 	if (nla_line[RDMA_NLDEV_ATTR_PORT_INDEX])
+ 		port = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_PORT_INDEX]);
+diff --git a/rdma/res-cq.c b/rdma/res-cq.c
+index d2591fbe..6855e798 100644
+--- a/rdma/res-cq.c
++++ b/rdma/res-cq.c
+@@ -56,11 +56,8 @@ static int res_cq_line(struct rd *rd, const char *name, int idx,
+ 	uint32_t cqe;
+ 
+ 	if (!nla_line[RDMA_NLDEV_ATTR_RES_CQE] ||
+-	    !nla_line[RDMA_NLDEV_ATTR_RES_USECNT] ||
+-	    (!nla_line[RDMA_NLDEV_ATTR_RES_PID] &&
+-	     !nla_line[RDMA_NLDEV_ATTR_RES_KERN_NAME])) {
++	    !nla_line[RDMA_NLDEV_ATTR_RES_USECNT])
+ 		return MNL_CB_ERROR;
+-	}
+ 
+ 	cqe = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_CQE]);
+ 
+diff --git a/rdma/res-mr.c b/rdma/res-mr.c
+index f4a24dc1..c1b8069a 100644
+--- a/rdma/res-mr.c
++++ b/rdma/res-mr.c
+@@ -17,11 +17,8 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
+ 	uint32_t mrn = 0;
+ 	uint32_t pid = 0;
+ 
+-	if (!nla_line[RDMA_NLDEV_ATTR_RES_MRLEN] ||
+-	    (!nla_line[RDMA_NLDEV_ATTR_RES_PID] &&
+-	     !nla_line[RDMA_NLDEV_ATTR_RES_KERN_NAME])) {
++	if (!nla_line[RDMA_NLDEV_ATTR_RES_MRLEN])
+ 		return MNL_CB_ERROR;
+-	}
+ 
+ 	if (nla_line[RDMA_NLDEV_ATTR_RES_RKEY])
+ 		rkey = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_RKEY]);
+diff --git a/rdma/res-pd.c b/rdma/res-pd.c
+index 07c836e8..6e5e4e6b 100644
+--- a/rdma/res-pd.c
++++ b/rdma/res-pd.c
+@@ -17,11 +17,8 @@ static int res_pd_line(struct rd *rd, const char *name, int idx,
+ 	uint32_t pdn = 0;
+ 	uint64_t users;
+ 
+-	if (!nla_line[RDMA_NLDEV_ATTR_RES_USECNT] ||
+-	    (!nla_line[RDMA_NLDEV_ATTR_RES_PID] &&
+-	     !nla_line[RDMA_NLDEV_ATTR_RES_KERN_NAME])) {
++	if (!nla_line[RDMA_NLDEV_ATTR_RES_USECNT])
+ 		return MNL_CB_ERROR;
+-	}
+ 
+ 	if (nla_line[RDMA_NLDEV_ATTR_RES_LOCAL_DMA_LKEY])
+ 		local_dma_lkey = mnl_attr_get_u32(
+diff --git a/rdma/res-qp.c b/rdma/res-qp.c
+index 954e465d..e30d68ed 100644
+--- a/rdma/res-qp.c
++++ b/rdma/res-qp.c
+@@ -90,11 +90,8 @@ static int res_qp_line(struct rd *rd, const char *name, int idx,
+ 	if (!nla_line[RDMA_NLDEV_ATTR_RES_LQPN] ||
+ 	    !nla_line[RDMA_NLDEV_ATTR_RES_SQ_PSN] ||
+ 	    !nla_line[RDMA_NLDEV_ATTR_RES_TYPE] ||
+-	    !nla_line[RDMA_NLDEV_ATTR_RES_STATE] ||
+-	    (!nla_line[RDMA_NLDEV_ATTR_RES_PID] &&
+-	     !nla_line[RDMA_NLDEV_ATTR_RES_KERN_NAME])) {
++	    !nla_line[RDMA_NLDEV_ATTR_RES_STATE])
+ 		return MNL_CB_ERROR;
+-	}
+ 
+ 	if (nla_line[RDMA_NLDEV_ATTR_PORT_INDEX])
+ 		port = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_PORT_INDEX]);
+diff --git a/rdma/res.c b/rdma/res.c
+index 6003006e..e8607808 100644
+--- a/rdma/res.c
++++ b/rdma/res.c
+@@ -211,6 +211,9 @@ char *get_task_name(uint32_t pid)
+ 	char *comm;
+ 	FILE *f;
+ 
++	if (!pid)
++		return NULL;
++
+ 	if (asprintf(&comm, "/proc/%d/comm", pid) < 0)
+ 		return NULL;
+ 
+-- 
+2.20.1
 
