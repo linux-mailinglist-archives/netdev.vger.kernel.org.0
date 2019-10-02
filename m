@@ -2,95 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEB23C8F10
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:56:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A79AC8F84
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 19:15:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727978AbfJBQ4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:56:04 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40006 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725928AbfJBQ4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:56:04 -0400
-Received: by mail-qk1-f194.google.com with SMTP id y144so15685948qkb.7;
-        Wed, 02 Oct 2019 09:56:03 -0700 (PDT)
+        id S1728424AbfJBRPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 13:15:00 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40710 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728143AbfJBRPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 13:15:00 -0400
+Received: by mail-wm1-f67.google.com with SMTP id b24so7741514wmj.5
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 10:14:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OIrEl09ToJjHqpU/fbMoIlF4w9O4I9epnXRXCxHSJXM=;
-        b=tXmz5bKBSc00vUbQztfRLEAKvUWd6F97z7tbFn99q/Rrx+R8lFDYZQVVJkbK1oD9yy
-         exBxNZmz/0tH4YbDDCk2JiRsbwSJNnQn18LI2Cl9GQXEjDDoBjel5ce4eEBAizoDxQUz
-         INJyCmKa7SqZrJP3iN6Hh7INojFifdkUDzDkxYxi/LlexqiFkPOrWQigCugKwYaPvYI4
-         xh1kuuC7oDIaPKtfw30w3YWIJmF3/RuvWUj8kNHKdLFE8GA4YAmv3c/JBJV1WnHLT3zx
-         wnlYV6JnaYsAzXGwGXj4r2cY5hZKhzR0f/NeRqpfRVMdFXc2lWh4YLVf8OM5CrzQ57HX
-         zIkQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=HQW+9aqjxMOR7vd6s7gSeaPG2jgjHjlQLEDCR/i0xYc=;
+        b=v1qvBSqdk1Seo8pZyjVK7YfnquALxOlzFlUDmXBXvtkFLC8kOELOuembxY6iGHru/N
+         tAp9kNFPmhT/b97I6NR22ESJzVZF5EXvTOb2YK7aHxUXnAFCoSttx35He3nfSm7YGwcA
+         0Gg1SZlcwGw4XsVtgwNuaggEbHft6qPaQw/TqPV4xVMmOguTpDW9nyy6SsSJMQxZxcvD
+         yyk4lSg82fMR224w9wKYupDhyyZNVNj0LnhcdmR5ahFU6pXjKac+ZjXK+icohEtwcEw4
+         gIKuUoLfi9PWpfF+1eqXHesKBbCA8ESShPMU18c4ttUSDwl34wwT6YoOccivRxFWr8OS
+         vfrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OIrEl09ToJjHqpU/fbMoIlF4w9O4I9epnXRXCxHSJXM=;
-        b=KRPCv+EIqNt+fRl91rQlFlsTl7nODJL9fB4AKDX16BF781AJ5uiJ9bH/DZYckh1+xE
-         bKO4uBu9CRirICsLhiBJpypH58gFQhLKJbxqCNbkVdbSf1WQqvhDogJs6oYOrviMAUVI
-         LM+PgSkHMiEkTrZr9rFD92iZ+sSyApQGscAIAxOi6hJTmi0DpxTem+O7xCrz+d/1w9Of
-         YswCbE2inneRBwWDjALTPzZvz8bTuaBU6m60KajDKWeFxfx5FoCexI175BhuLBTreL3X
-         e+DwMHlL7/InndZWFu8JODWFUy5Gc8BqvRli53CUXzQL5y3MpZ9H8jjCztqJBXg7EeLP
-         Detw==
-X-Gm-Message-State: APjAAAUzKzop2Nsx2/SRQX74EqIf1tFqHPH6XqL6OiGLyhhmyx5ZQSMV
-        2ou4lC1SbI6Q3u0g0EXWsW+C+37Zcy2CMUl30tM=
-X-Google-Smtp-Source: APXvYqxd1ktORxdnJwwg4BImPkehqyUedweYvhk7uiareg9EEVg4RjqZeDkV+a30ifztSTdpkINIVGqi9aldRksn7LU=
-X-Received: by 2002:a05:620a:119a:: with SMTP id b26mr4773459qkk.39.1570035363234;
- Wed, 02 Oct 2019 09:56:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HQW+9aqjxMOR7vd6s7gSeaPG2jgjHjlQLEDCR/i0xYc=;
+        b=DJgYiWxLhaH37EHur06BT38uA4Y52rZ4A67dHOo/RJhHgPbqwshwupVYl0GJbqLE+j
+         XcnDIjfVZDv3uzWHOYGgHspsDTaRwFYmvcHhwkdF5tAB7yYO024jgPWWsJgZkEo5qkJB
+         LlDhplPxzI3KotxjUAFN5qz9eUQ8Ua+ho8t9Q8+qLSZZgAOjZye6vzwWQFs8XWWdY3y2
+         RCZiyA2v6xk0aJ+dtZmiruzSE6sXthhI19JAbG9QKlYnyfXfb0BcqvT+6sOi7Ygxg9Ew
+         1H+kaKsbvxpLHRRGbYCma/aXbiQC5RHTsKSa9yp2D+9KlnaZixF88grY6p5eS3yLhPRY
+         wtIw==
+X-Gm-Message-State: APjAAAU0QHrRSuVrQePqOya7VYHD03BbPEm4x8fASA2JV9Cms131O0Rj
+        g/OL3q9d0Wu3lRd4tJ9dSOxvXeAUzIs=
+X-Google-Smtp-Source: APXvYqztbqJLO4BvN/B5LzPQVHVjWuluRi4ssOP9f646FRlFrGo7AQvFTy0/KtpSndCjNGbKF4VDyQ==
+X-Received: by 2002:a1c:c789:: with SMTP id x131mr3664040wmf.20.1570036497064;
+        Wed, 02 Oct 2019 10:14:57 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id f20sm6364520wmb.6.2019.10.02.10.14.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2019 10:14:56 -0700 (PDT)
+Date:   Wed, 2 Oct 2019 19:14:55 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Tariq Toukan <tariqt@mellanox.com>,
+        David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>, Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH V2 iproute2 1/3] devlink: Add helper for left
+ justification print
+Message-ID: <20191002171455.GA2279@nanopsycho>
+References: <1570026916-27592-1-git-send-email-tariqt@mellanox.com>
+ <1570026916-27592-2-git-send-email-tariqt@mellanox.com>
+ <20191002074804.3ad4e5e2@hermes.lan>
 MIME-Version: 1.0
-References: <20190930164239.3697916-1-andriin@fb.com> <871rvwx3fg.fsf@toke.dk>
- <CAEf4BzYvx7wpy79mTgKMuZop3_qYCCOzk4XWoDKiq7Fbj+gAow@mail.gmail.com>
- <87lfu4t9up.fsf@toke.dk> <CAEf4BzZJFBdjCSAzJ3-rOrCkkaTJmPSDhx_0xKJt4+Vg2TEFwg@mail.gmail.com>
- <87imp7tz46.fsf@toke.dk>
-In-Reply-To: <87imp7tz46.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Oct 2019 09:55:51 -0700
-Message-ID: <CAEf4BzZ6--Vy5=FHDC0EiFnwF79hBz=PXKd21nSdASpfG2y7pQ@mail.gmail.com>
-Subject: Re: [RFC][PATCH bpf-next] libbpf: add bpf_object__open_{file,mem} w/
- sized opts
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        KP Singh <kpsingh@chromium.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191002074804.3ad4e5e2@hermes.lan>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 1, 2019 at 11:56 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+Wed, Oct 02, 2019 at 04:48:04PM CEST, stephen@networkplumber.org wrote:
+>On Wed,  2 Oct 2019 17:35:14 +0300
+>Tariq Toukan <tariqt@mellanox.com> wrote:
 >
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>  static void pr_out_str(struct dl *dl, const char *name, const char *val)
+>>  {
+>> -	if (dl->json_output) {
+>> +	__pr_out_indent_newline(dl);
+>> +	if (dl->json_output)
+>>  		jsonw_string_field(dl->jw, name, val);
+>> -	} else {
+>> -		if (g_indent_newline)
+>> -			pr_out("%s %s", name, val);
+>> -		else
+>> -			pr_out(" %s %s", name, val);
+>> -	}
+>> +	else
+>> +		pr_out("%s %s", name, val)
 >
-> >> Sure, LGTM! Should we still keep the bit where it expands _opts in the
-> >> struct name as part of the macro, or does that become too obtuse?
-> >
-> > For me it's a question of code navigation. When I'll have a code
-> >
-> > LIBBPF_OPTS(bpf_object_open, <whatever>);
-> >
-> > I'll want to jump to the definition of "bpf_object_open" (e.g., w/
-> > cscope)... and will find nothing, because it's actually
-> > bpf_object_open_opts. So I prefer user to spell it out exactly and in
-> > full, this is more maintainable in the long run, IMO.
+>Overall this looks like an improvement.
 >
-> That's a good point; we shouldn't break cscope!
->
-> BTW, speaking of cscope, how about having a 'make cscope' target for
-> libbpf to generate the definition file? :)
+>Why doesn't devlink already use existing json_print infrastructure?
 
-I'm all for it, probably both `make cscope` and `make tags`, like
-Linux's make has? Feel free to add them, I can also replicate it to
-Github's Makefile after that.
-
->
-> -Toke
->
+It will happen soon hopefully. I have it on the todo list and hopefully
+also a person to do it :)
