@@ -2,116 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53427C46EC
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 07:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E40EC473B
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 07:54:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727024AbfJBFUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 01:20:42 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:59048 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726326AbfJBFUm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 01:20:42 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x925IT8d041940;
-        Wed, 2 Oct 2019 05:20:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=6u9vSbVHAHG4ySAdsyMKURtODpAw0cz0ZW5EGW53z1Q=;
- b=kImxtGpRVFy0YmGTM7xiMn5Lm9yiOseME8lBHoJ6ZBnTvWl7Z9X3YJXf8cn1ifik8wBk
- YMlJZr5QnzTpPqNMLqGJAHCOJOKeywBRKY7oKhc7/fuoJ6Zbe1wSH4RehcBmNTN4t+gi
- heya3do4Q3bWOtqn9c4WAFAGhNnQ8oLjUxbN5GI9DMGrwSJbaTERDdERdekblCeHn3wq
- I8K/Zhcc93qm3gu9uoFOkVCMch4ZVmH7aKGLYgpEg/2PhFX/Wo9HizuB5N/y8TtdiBR5
- jhUv/tWMxFsTV34agwjRNJEsAOqnGAkXaPwUzYA1viOkxS0JilCt0D5DIB7y1kN7mWkW Rw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 2va05rtmtf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Oct 2019 05:20:33 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x925Ia8t192415;
-        Wed, 2 Oct 2019 05:20:32 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 2vckynbyk2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 02 Oct 2019 05:20:32 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x925KWn7001766;
-        Wed, 2 Oct 2019 05:20:32 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 2vckynbyj6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Oct 2019 05:20:32 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x925KUi3008940;
-        Wed, 2 Oct 2019 05:20:30 GMT
-Received: from [10.159.211.29] (/10.159.211.29)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 01 Oct 2019 22:20:30 -0700
-Subject: Re: [PATCH net-next] net/rds: Use DMA memory pool allocation for
- rds_header
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, santosh.shilimkar@oracle.com,
-        rds-devel@oss.oracle.com
-References: <1569834480-25584-1-git-send-email-ka-cheong.poon@oracle.com>
- <20191001.101615.1260420946739435364.davem@davemloft.net>
-From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <7a388623-b2c5-2ade-69af-2e295784afca@oracle.com>
-Date:   Wed, 2 Oct 2019 13:20:22 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726806AbfJBFy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 01:54:27 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38120 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726266AbfJBFy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 01:54:27 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 3so5511780wmi.3
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 22:54:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BJ5XkARjrsctTr6v4jjomtgn5oAoTYjYzSRS5j9aZeU=;
+        b=NGYuqHtNro6mqKkqOgwfqIdNk7O9vaJQfgCQArHg1Y6Iyp+qRjQHXUu/OhZqQ2jhyd
+         BmVHdVtXlCTZzs1UX9ywtXDJGKcMzkkvbdFvjP4MEUwW8xZ3q9jz8Dor34ArCQxrbMOa
+         Q+uAQ9iWrcGRTMm2R9S3NXJPlSmqDjr0cZXdogGL6xbOOU/1do0pHqbu5OhdiKhsTIkp
+         sRpNTauxSHZJiQ5gW6CLj/YTDpPsiPsV9nPCuVpR6pzUdMmkcAj+huAlx8mhfHJ+Ncpy
+         +cFlGJdiFtfoJJoCDd5Ydx9goZ2CgYSPDrVOJJaNDoJqeqb6C4RVA8U3vfJLOXFSqlWC
+         e/yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BJ5XkARjrsctTr6v4jjomtgn5oAoTYjYzSRS5j9aZeU=;
+        b=syYDM5jaoInM6Gkaex6rrvyFZWKSvcWzqosUbQJGYVG7g7gI0EK/ZT27YMMuUW2CsB
+         uDimT/FjZJlcm41YRpb10R7nUdA4GmZ4Gulx85+NCBNH9ROfym4csXfU4KlV6lWpzZvI
+         oUI77frDSxGwZmA9fPesRM/tzrTzbtt7wtqO4rg8Oz3muembZT4A60AZTY8JUDTryqtS
+         Nbk5pNi7z9e60EYZFqwFp/rOsD8Lh/EC2u+IWBXoXFdiludqZF9ftsH+on/i9tbUmV5d
+         fYmHnt/DY7WO1jBvDZwKDIZqSlLJ5vMokAUt0v4iflfcU02fZttbakQNfUvcHZPRkjol
+         VTdw==
+X-Gm-Message-State: APjAAAVkx99k+l1AicPG5JKdSi7BY3o/au01pobHWTVjQCCuJEN10VhH
+        u39P7Bp5KCPN0fVUbqWB6IY=
+X-Google-Smtp-Source: APXvYqyWTKAkl6QWIjp6OWJCYH0BEpKLfuBZYoX7iTbJS4pIHHHVRejebd8lB6muLeiaoizuF4Gkrg==
+X-Received: by 2002:a1c:28d4:: with SMTP id o203mr1360477wmo.142.1569995665637;
+        Tue, 01 Oct 2019 22:54:25 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:5848:5aae:a901:904c? (p200300EA8F26640058485AAEA901904C.dip0.t-ipconnect.de. [2003:ea:8f26:6400:5848:5aae:a901:904c])
+        by smtp.googlemail.com with ESMTPSA id z1sm35866369wre.40.2019.10.01.22.54.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 01 Oct 2019 22:54:24 -0700 (PDT)
+Subject: Re: Driver support for Realtek RTL8125 2.5GB Ethernet
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jian-Hong Pan <jian-hong@endlessm.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>
+Cc:     Linux Upstreaming Team <linux@endlessm.com>
+References: <CAPpJ_ed7dSCfWPt8PiK3_LNw=MDPrFwo-5M1xcpKw-3x7dxsrA@mail.gmail.com>
+ <e178221e-4f48-b9b9-2451-048e8f4a0f9f@gmail.com>
+ <a3066098-9fba-c2f4-f2d3-b95b08ef5637@gmail.com>
+Message-ID: <71ccd182-beec-31f4-5a25-a81a7457ca55@gmail.com>
+Date:   Wed, 2 Oct 2019 07:54:06 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191001.101615.1260420946739435364.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <a3066098-9fba-c2f4-f2d3-b95b08ef5637@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9397 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910020049
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/2/19 1:16 AM, David Miller wrote:
-> From: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-> Date: Mon, 30 Sep 2019 02:08:00 -0700
-> 
->> Currently, RDS calls ib_dma_alloc_coherent() to allocate a large piece
->> of contiguous DMA coherent memory to store struct rds_header for
->> sending/receiving packets.  The memory allocated is then partitioned
->> into struct rds_header.  This is not necessary and can be costly at
->> times when memory is fragmented.  Instead, RDS should use the DMA
->> memory pool interface to handle this.
+On 26.07.2019 21:05, Heiner Kallweit wrote:
+> On 24.07.2019 22:02, Heiner Kallweit wrote:
+>> On 24.07.2019 10:19, Jian-Hong Pan wrote:
+>>> Hi all,
+>>>
+>>> We have got a consumer desktop equipped with Realtek RTL8125 2.5GB
+>>> Ethernet [1] recently.  But, there is no related driver in mainline
+>>> kernel yet.  So, we can only use the vendor driver [2] and customize
+>>> it [3] right now.
+>>>
+>>> Is anyone working on an upstream driver for this hardware?
+>>>
+>> At least I'm not aware of any such work. Issue with Realtek is that
+>> they answer individual questions very quickly but company policy is
+>> to not release any datasheets or errata documentation.
+>> RTL8169 inherited a lot from RTL8139, so I would expect that the
+>> r8169 driver could be a good basis for a RTL8125 mainline driver.
 >>
->> Suggested-by: Håkon Bugge <haakon.bugge@oracle.com>
->> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+> Meanwhile I had a look at the RTL8125 vendor driver. Most parts are
+> quite similar to RTL8168. However the PHY handling is quite weird.
+> 2.5Gbps isn't covered by Clause 22, but instead of switching to
+> Clause 45 Realtek uses Clause 22 plus a proprietary chip register
+> (for controlling the 2.5Gbps mode) that doesn't seem to be accessible
+> via MDIO bus. This may make using phylib tricky.
 > 
-> This is trading a one-time overhead for extra levels of dereferencing
-> on every single descriptor access in the fast paths.
+In case you haven't seen it yet: Meanwhile I added RTL8125 support to
+phylib and r8169, it's included in 5.4-rc1. I tested it on a
+RTL8125-based PCIe add-on card, feedback from your system would be
+appreciated. Note that you also need latest linux-firmware package
+from Sep 23rd.
+
+>>> [1] https://www.realtek.com/en/press-room/news-releases/item/realtek-launches-world-s-first-single-chip-2-5g-ethernet-controller-for-multiple-applications-including-gaming-solution
+>>> [2] https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
+>>> [3] https://github.com/endlessm/linux/commit/da1e43f58850d272eb72f571524ed71fd237d32b
+>>>
+>>> Jian-Hong Pan
+>>>
+>> Heiner
+>>
+> Heiner
 > 
-> I do not agree with this tradeoff, please implement this more
-> reasonably.
-
-
-The problem with the existing way of pre-allocation is
-that when there are a lot of RDS connections, the call to
-ib_dma_alloc_coherent() can fail because there are not
-enough contiguous memory pages available.  It is causing
-problems in production systems.
-
-And the i_{recv|send|_hdrs_dma array dereferencing is done
-at send/receive ring initialization and refill.  It is not
-done at every access of the header.
-
-Thanks.
-
-
--- 
-K. Poon
-ka-cheong.poon@oracle.com
-
-
+Heiner
