@@ -2,123 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA20C8E5B
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:29:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB6CFC8E78
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbfJBQ3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:29:13 -0400
-Received: from mail-eopbgr690086.outbound.protection.outlook.com ([40.107.69.86]:33349
-        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725893AbfJBQ3N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 12:29:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JeG8pnKI27sED2lt/Cm3LhfUHRpszzgv3bo/NiSoPaic/dGPOdSUFeZ1sA8I6TIW+kWKd1/+/oie8iT2DyxVe1ljbjj7ZlSKO4vJy2x1vSjnKi+TuXHJlAZaSuOf/q/AmNwJ/c7bHmGVFNhNte6fNZtpJcycpw0KfbM8qjn06BrMj1h10GqFaCaYTLP2+2Us1sLTnexbMcBGs1gmrfjNhVf4wr/vrOoYf65FLahd2aUFXUf1y+31MGlpKZTTXW/MVHaqLzP7DMzoK0dKKeAtzeJYB58E4JUYifsnvmeT0iuLXSRbsKQj9fISUQfEKTJnaxRD6u5CL3HWeyJW6EkheQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TqsS9yAkHZKgkTTaiYIT3edGEKPEbqJuGoXtqtPCSvs=;
- b=aFL2h0/8vLQkmJqUiGL24GCzeKZIVi23+Evg4CPebqTvwfUvfOGGJDCARjTANL4ysN+iyMEt8y10phOEDlFJi3Rz8Gjwg6eJlYbzorpllQbUPG7NbQPUBTR74slBFM8FdLgUs7862eWpvpKmirydEx9xcxujvAZ6X7SE+CRePTa9mL3gXaD9q2YwkATzkseB7u+1RnSoNyG963VM4WmuLjCHf+Pd1mygZvFPxeazBwauhwIHHJEwP4V4d7++TBT9tJ7rv1Y0OCxcge6A0IyKxjAmG9GQcAbWZyC67BJWUPnNl97gaM/layGaokhbP3jHGfIJzK7d87tiriYAHvSWlQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S1727452AbfJBQe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:34:28 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:40754 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbfJBQe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:34:27 -0400
+Received: by mail-io1-f65.google.com with SMTP id h144so58313634iof.7;
+        Wed, 02 Oct 2019 09:34:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TqsS9yAkHZKgkTTaiYIT3edGEKPEbqJuGoXtqtPCSvs=;
- b=jDllI+cwSsvLD4jw+GDof5ttQyYQsl18kr9JmpbER+s1SUuEg4Ins8u/shLAF0aIqoZ/kugqAhQk37FgJ/eCNWJ1OsuzMShP69J2LpeRPwoGJd0r5y1ArvAFbKzhbER7ATr+c6nuhUldCcXjTZ2FFP6ew7xX84eE0cCd6tZjR6I=
-Received: from MN2PR11MB4063.namprd11.prod.outlook.com (10.255.180.22) by
- MN2PR11MB3791.namprd11.prod.outlook.com (20.178.254.78) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.20; Wed, 2 Oct 2019 16:29:09 +0000
-Received: from MN2PR11MB4063.namprd11.prod.outlook.com
- ([fe80::ac8c:fc55:d1e2:465f]) by MN2PR11MB4063.namprd11.prod.outlook.com
- ([fe80::ac8c:fc55:d1e2:465f%5]) with mapi id 15.20.2305.017; Wed, 2 Oct 2019
- 16:29:09 +0000
-From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Le Goff <David.Legoff@silabs.com>
-Subject: Re: [PATCH 02/20] staging: wfx: add support for I/O access
-Thread-Topic: [PATCH 02/20] staging: wfx: add support for I/O access
-Thread-Index: AQHVbthYAz5BV9jhoUCLDh42xNi6RaczMoaAgBRsfQA=
-Date:   Wed, 2 Oct 2019 16:29:09 +0000
-Message-ID: <4024590.nSQgSsaaFe@pc-42>
-References: <20190919105153.15285-1-Jerome.Pouiller@silabs.com>
- <20190919105153.15285-3-Jerome.Pouiller@silabs.com>
- <20190919163429.GB27277@lunn.ch>
-In-Reply-To: <20190919163429.GB27277@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Jerome.Pouiller@silabs.com; 
-x-originating-ip: [37.71.187.125]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2eb31fd8-11e1-46e2-4d21-08d74755a6fb
-x-ms-traffictypediagnostic: MN2PR11MB3791:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR11MB3791ED0AF9533F49D20B82FE939C0@MN2PR11MB3791.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0178184651
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(366004)(39850400004)(346002)(396003)(136003)(376002)(199004)(189003)(256004)(26005)(14444005)(33716001)(9686003)(6512007)(6916009)(14454004)(478600001)(4326008)(6246003)(107886003)(229853002)(71200400001)(71190400001)(6436002)(6486002)(8676002)(81156014)(81166006)(476003)(8936002)(486006)(86362001)(7736002)(11346002)(3846002)(54906003)(316002)(6116002)(2906002)(25786009)(99286004)(446003)(91956017)(76116006)(76176011)(4744005)(102836004)(5660300002)(66574012)(6506007)(66556008)(64756008)(66476007)(186003)(66946007)(66446008)(66066001)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3791;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: silabs.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WQuT9ru85Fw+Ub7ypbsVbkV5is1kD44Y82p6zyJISqF8pj5t5NxA6+stQ0LXQxvMmJLCO8kuPwj546yJtHU4YuW+JFVbHAYGEeLjORAE8B7KPZPFnDqiMmmJlwi79luy1psh4BjYhRS/iDQXcx8Ejb9QMWXqG3ivL+0CXd1zykQQMTQcb73AK0Cx2HS65gNv0xlkACQPmZneOnqVjg4dnHVIT1yCLJcP1GxVYaCZnN55l3iWhd5kJ0aVPKMIgtpY9cgRoepSLTUR9B0KLXB7JvxvV0NJUnL9jJD4VazP3AkFGuxa1DIMBf+i6aHD6314zlqaaBOyKsz/MBFsPyjMJJ0VaXfoapbItasPSLkz6+jKZpvDBelTTZlRtJOKjDsZuTXMb67FqvWQeUgsbnl7AilRB8kFdstWC7zps2kRems=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <D76D8AC44FFF174E98879F79DC311406@namprd11.prod.outlook.com>
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=L5yzv1HKm2KvXDWTbTeXvO+EhVNRDX+DbnXraQLBFn0=;
+        b=lFSnoA1vCQpaBdmO0hm7yIKAyoyWDoNwr7eXT187a3yItzzUqNF4p7h9h0/VDB8hUU
+         jm438X7eGij266KCQ0y61xgk9bmYwzDJwjY80G/uIrLyXk/Yhr4COgnnqueB/V62JQpK
+         r+ZdfLoovwWH9fMeqv5uJSu2Qz2yFsv3KZe4DHfEY8OeyVyDOC6IGO0OnpPNa5x11VGs
+         UvoVMLV9tV1Wlil4QncV7WPhcvIEM4wVfbrgvr8iJnf1O5JddZ7FLnZNeOhNpxp6fMxn
+         uQEv0WaKEj4wGGfx4+ixlEu/i+H8PekTXF9C9WrPq704L2bLOwsl3dFw0WySKBxTJcG4
+         VT4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=L5yzv1HKm2KvXDWTbTeXvO+EhVNRDX+DbnXraQLBFn0=;
+        b=TMXS5ei6+cF2WqsOZosKOSfj2QVbcqBaCS+ZkRb9fRQL4ssFPU7TDxauiL1yq7LRgn
+         ONGxnMjVQ5LAiIlwAvlw+XIkpHwgNUqBLSO0MvzPp+nb/M49Q4mC09jEDBFnEODSVlE2
+         4g59G5+mSEEPSjXzwWSQNKA2brwgHxbbMjmbGXvUcehndsyqCHa14iRzwCg4zD/i/Iz9
+         Fjd0qK1S95F+4GW/SHKuu5OHfkMlRl1j/o7QP/Zy+tZs+dyHWw/7cmzRRQQOtF0HbntQ
+         Hnz5e0n288+SEQ/EOrdU69e9RDfvkYKEXqvfo/lGzlpke/5F9MD0nCgp6ZR04lZO2o3k
+         NZ9A==
+X-Gm-Message-State: APjAAAVM3VVIzS/h/FJ2hFVtl8uQc5AwPTShvG83goEGPZ4A8bf7VLwf
+        oACnMCHTRxiQTmkYuTj50Sg=
+X-Google-Smtp-Source: APXvYqx2XYfRz9ULn6fLoAoZ7Ax/aD7xiyHVHTjdgCOEfj4pxYMon+wDfzZN+JyL6TDwiG7t6gklQg==
+X-Received: by 2002:a02:7405:: with SMTP id o5mr4836748jac.44.1570034066364;
+        Wed, 02 Oct 2019 09:34:26 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id d26sm5063049ioc.16.2019.10.02.09.34.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2019 09:34:25 -0700 (PDT)
+Date:   Wed, 02 Oct 2019 09:34:16 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alan Maguire <alan.maguire@oracle.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <5d94d188e4cca_22502b00ea21a5b425@john-XPS-13-9370.notmuch>
+In-Reply-To: <87bluzrwks.fsf@toke.dk>
+References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
+ <alpine.LRH.2.20.1910021540270.24629@dhcp-10-175-191-98.vpn.oracle.com>
+ <87bluzrwks.fsf@toke.dk>
+Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
+ interface through chain calls
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2eb31fd8-11e1-46e2-4d21-08d74755a6fb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 16:29:09.3634
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zveEeK6gmYX/NPcpOPJa+E8D6619Rq/y6xubiDnrFIdQig1uNEA00n6aR36P4SUWdxv0ojy/vsD0ZnZr+tTr7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3791
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 19 September 2019 18:34:48 CEST Andrew Lunn wrote:
-> On Thu, Sep 19, 2019 at 10:52:35AM +0000, Jerome Pouiller wrote:
-> > +static int wfx_sdio_copy_from_io(void *priv, unsigned int reg_id,
-> > +                              void *dst, size_t count)
-> > +{
-> > +     struct wfx_sdio_priv *bus =3D priv;
-> > +     unsigned int sdio_addr =3D reg_id << 2;
-> > +     int ret;
-> > +
-> > +     BUG_ON(reg_id > 7);
->=20
-> Hi Jerome
->=20
-> BUG_ON should only be used when the system is corrupted, and there is
-> no alternative than to stop the machine, so it does not further
-> corrupt itself. Accessing a register which does not exist is not a
-> reason the kill the machine. A WARN() and a return of -EINVAL would be
-> better.
+Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Alan Maguire <alan.maguire@oracle.com> writes:
+> =
 
-Hi Andrew,
+> > On Wed, 2 Oct 2019, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> >
+> >> This series adds support for executing multiple XDP programs on a si=
+ngle
+> >> interface in sequence, through the use of chain calls, as discussed =
+at the Linux
+> >> Plumbers Conference last month:
+> >> =
 
-I did not forget your suggestion. However, if everyone is agree with that, =
-I'd=20
-prefer to address it in a next pull request. Indeed, I'd prefer to keep thi=
-s=20
-version in sync with version 2.3.1 published on github.
+> >> https://linuxplumbersconf.org/event/4/contributions/460/
+> >> =
 
---=20
-J=E9r=F4me Pouiller
+> >> # HIGH-LEVEL IDEA
+> >> =
 
+> >> The basic idea is to express the chain call sequence through a speci=
+al map type,
+> >> which contains a mapping from a (program, return code) tuple to anot=
+her program
+> >> to run in next in the sequence. Userspace can populate this map to e=
+xpress
+> >> arbitrary call sequences, and update the sequence by updating or rep=
+lacing the
+> >> map.
+> >> =
+
+> >> The actual execution of the program sequence is done in bpf_prog_run=
+_xdp(),
+> >> which will lookup the chain sequence map, and if found, will loop th=
+rough calls
+> >> to BPF_PROG_RUN, looking up the next XDP program in the sequence bas=
+ed on the
+> >> previous program ID and return code.
+> >> =
+
+> >> An XDP chain call map can be installed on an interface by means of a=
+ new netlink
+> >> attribute containing an fd pointing to a chain call map. This can be=
+ supplied
+> >> along with the XDP prog fd, so that a chain map is always installed =
+together
+> >> with an XDP program.
+> >> =
+
+> >
+> > This is great stuff Toke!
+> =
+
+> Thanks! :)
+> =
+
+> > One thing that wasn't immediately clear to me - and this may be just
+> > me - is the relationship between program behaviour for the XDP_DROP
+> > case and chain call execution. My initial thought was that a program
+> > in the chain XDP_DROP'ping the packet would terminate the call chain,=
+
+> > but on looking at patch #4 it seems that the only way the call chain
+> > execution is terminated is if
+> >
+> > - XDP_ABORTED is returned from a program in the call chain; or
+> =
+
+> Yes. Not actually sure about this one...
+> =
+
+> > - the map entry for the next program (determined by the return value
+> >   of the current program) is empty; or
+> =
+
+> This will be the common exit condition, I expect
+> =
+
+> > - we run out of entries in the map
+> =
+
+> You mean if we run the iteration counter to zero, right?
+> =
+
+> > The return value of the last-executed program in the chain seems to b=
+e
+> > what determines packet processing behaviour after executing the chain=
+
+> > (_DROP, _TX, _PASS, etc). So there's no way to both XDP_PASS and
+> > XDP_TX a packet from the same chain, right? Just want to make sure
+> > I've got the semantics correct. Thanks!
+> =
+
+> Yeah, you've got all this right. The chain call mechanism itself doesn'=
+t
+> change any of the underlying fundamentals of XDP. I.e., each packet get=
+s
+> exactly one verdict.
+> =
+
+> For chaining actual XDP programs that do different things to the packet=
+,
+> I expect that the most common use case will be to only run the next
+> program if the previous one returns XDP_PASS. That will make the most
+> semantic sense I think.
+> =
+
+> But there are also use cases where one would want to match on the other=
+
+> return codes; such as packet capture, for instance, where one might
+> install a capture program that would carry forward the previous return
+> code, but do something to the packet (throw it out to userspace) first.=
+
+> =
+
+> For the latter use case, the question is if we need to expose the
+> previous return code to the program when it runs. You can do things
+> without it (by just using a different program per return code), but it
+> may simplify things if we just expose the return code. However, since
+> this will also change the semantics for running programs, I decided to
+> leave that off for now.
+> =
+
+> -Toke
+
+In other cases where programs (e.g. cgroups) are run in an array the
+return codes are 'AND'ed together so that we get
+
+   result1 & result2 & ... & resultN
+
+The result is if any program returns a drop then the packet should
+be dropped, but all programs at least "see" the packet. There was
+a lot of debate over this semantic and I think in hind sight it
+actually works pretty well so any chaining in XDP should also keep
+those semantics. For things like redirect we can already, even in
+the same program, do multiple calls to the redirect helper and it
+will overwrite the last call so those semantics can stay the same.
+
+.John=
