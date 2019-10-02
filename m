@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D955C94FB
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7F9C94FF
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:39:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729311AbfJBXhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 19:37:55 -0400
+        id S1729346AbfJBXh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 19:37:59 -0400
 Received: from mga04.intel.com ([192.55.52.120]:16479 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729207AbfJBXhn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729221AbfJBXhn (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 2 Oct 2019 19:37:43 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 16:37:24 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 16:37:25 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,250,1566889200"; 
-   d="scan'208";a="366862639"
+   d="scan'208";a="366862640"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.30.230])
   by orsmga005.jf.intel.com with ESMTP; 02 Oct 2019 16:37:24 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -25,9 +25,9 @@ To:     netdev@vger.kernel.org, edumazet@google.com
 Cc:     Florian Westphal <fw@strlen.de>, cpaasch@apple.com,
         pabeni@redhat.com, peter.krystad@linux.intel.com,
         dcaratti@redhat.com, matthieu.baerts@tessares.net
-Subject: [RFC PATCH v2 42/45] selftests: mptcp: extend mptcp_connect tool for ipv6 family
-Date:   Wed,  2 Oct 2019 16:36:52 -0700
-Message-Id: <20191002233655.24323-43-mathew.j.martineau@linux.intel.com>
+Subject: [RFC PATCH v2 43/45] selftests: mptcp: add accept/getpeer checks
+Date:   Wed,  2 Oct 2019 16:36:53 -0700
+Message-Id: <20191002233655.24323-44-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com>
 References: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com>
@@ -40,87 +40,163 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-At this time socket() will fail when requesting an ipv6 mptcp socket.
-This is ok for now, as the test script won't request ipv6 tests yet.
+Check that the result coming from accept matches that of getpeername.
+For initiator side, check getpeername matches address passed to connect().
 
-Tested with a tcp <-> tcp connection.
+At this time, kernel returns the address of the first subflow in the list.
+Right now, we do not yet implement fate-sharing, i.e. if the original
+subflow goes away, the result of getpeername would change.
+
+There are different ways to fix that.  One would be to copy the quadruple
+from the first subflow socket to the mptcp socket.
+
+If we do that, this test should catch a possible bug (such as accidental
+reversal of saddr/daddr).
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- .../testing/selftests/net/mptcp/mptcp_connect.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ .../selftests/net/mptcp/mptcp_connect.c       | 107 ++++++++++++++++++
+ 1 file changed, 107 insertions(+)
 
 diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-index cac71f0ac8f8..32a1630b7fa3 100644
+index 32a1630b7fa3..8df2b1b24695 100644
 --- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
 +++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-@@ -32,11 +32,11 @@ static int  poll_timeout;
- static const char *cfg_host;
- static const char *cfg_port	= "12000";
- static int cfg_sock_proto	= IPPROTO_MPTCP;
--
-+static int pf = AF_INET;
- 
- static void die_usage(void)
- {
--	fprintf(stderr, "Usage: mptcp_connect [-s MPTCP|TCP] [-p port] "
-+	fprintf(stderr, "Usage: mptcp_connect [ -6 ] [-s MPTCP|TCP] [-p port] "
- 		"[ -l ] [ -t timeout ] connect_address\n");
- 	exit(1);
+@@ -49,6 +49,21 @@ static const char *getxinfo_strerr(int err)
+ 	return gai_strerror(err);
  }
-@@ -74,12 +74,13 @@ static int sock_listen_mptcp(const char * const listenaddr,
- 		.ai_flags = AI_PASSIVE | AI_NUMERICHOST
- 	};
  
--	hints.ai_family = AF_INET;
-+	hints.ai_family = pf;
- 
- 	struct addrinfo *a, *addr;
- 	int one = 1;
- 
- 	xgetaddrinfo(listenaddr, port, &hints, &addr);
-+	hints.ai_family = pf;
- 
- 	for (a = addr; a; a = a->ai_next) {
- 		sock = socket(a->ai_family, a->ai_socktype, cfg_sock_proto);
-@@ -124,7 +125,7 @@ static int sock_connect_mptcp(const char * const remoteaddr,
- 	struct addrinfo *a, *addr;
- 	int sock = -1;
- 
--	hints.ai_family = AF_INET;
-+	hints.ai_family = pf;
- 
- 	xgetaddrinfo(remoteaddr, port, &hints, &addr);
- 	for (a = addr; a; a = a->ai_next) {
-@@ -362,7 +363,7 @@ static void parse_opts(int argc, char **argv)
- {
- 	int c;
- 
--	while ((c = getopt(argc, argv, "lp:s:ht:")) != -1) {
-+	while ((c = getopt(argc, argv, "6lp:s:ht:")) != -1) {
- 		switch (c) {
- 		case 'l':
- 			listen_mode = true;
-@@ -376,6 +377,9 @@ static void parse_opts(int argc, char **argv)
- 		case 'h':
- 			die_usage();
- 			break;
-+		case '6':
-+			pf = AF_INET6;
-+			break;
- 		case 't':
- 			poll_timeout = atoi(optarg) * 1000;
- 			if (poll_timeout <= 0)
-@@ -387,6 +391,9 @@ static void parse_opts(int argc, char **argv)
- 	if (optind + 1 != argc)
- 		die_usage();
- 	cfg_host = argv[optind];
++static void xgetnameinfo(const struct sockaddr *addr, socklen_t addrlen,
++			 char *host, socklen_t hostlen,
++			 char *serv, socklen_t servlen)
++{
++	int flags = NI_NUMERICHOST | NI_NUMERICSERV;
++	int err = getnameinfo(addr, addrlen, host, hostlen, serv, servlen, flags);
 +
-+	if (strchr(cfg_host, ':'))
-+		pf = AF_INET6;
++	if (err) {
++		const char *errstr = getxinfo_strerr(err);
++
++		fprintf(stderr, "Fatal: getnameinfo: %s\n", errstr);
++		exit(1);
++	}
++}
++
+ static void xgetaddrinfo(const char *node, const char *service,
+ 			 const struct addrinfo *hints,
+ 			 struct addrinfo **res)
+@@ -285,6 +300,94 @@ static int copyfd_io(int infd, int peerfd, int outfd)
+ 	return 0;
  }
  
- int main(int argc, char *argv[])
++static void check_sockaddr(int pf, struct sockaddr_storage *ss,
++			   socklen_t salen)
++{
++	char addr[INET6_ADDRSTRLEN];
++	char serv[INET6_ADDRSTRLEN];
++	struct sockaddr_in6 *sin6;
++	struct sockaddr_in *sin;
++	int wanted_size = 0;
++
++	switch (pf) {
++	case AF_INET:
++		wanted_size = sizeof(*sin);
++		sin = (void *)ss;
++		if (!sin->sin_port)
++			fprintf(stderr, "accept: something wrong: ip connection from port 0");
++		break;
++	case AF_INET6:
++		wanted_size = sizeof(*sin6);
++		sin6 = (void *)ss;
++		if (!sin6->sin6_port)
++			fprintf(stderr, "accept: something wrong: ipv6 connection from port 0");
++		break;
++	default:
++		fprintf(stderr, "accept: Unknown pf %d, salen %u\n", pf, salen);
++		return;
++	}
++
++	if (salen != wanted_size)
++		fprintf(stderr, "accept: size mismatch, got %d expected %d\n",
++				(int)salen, wanted_size);
++
++	if (ss->ss_family != pf)
++		fprintf(stderr, "accept: pf mismatch, expect %d, ss_family is %d\n",
++				(int)ss->ss_family, pf);
++}
++
++static void check_getpeername(int fd, struct sockaddr_storage *ss, socklen_t salen)
++{
++	struct sockaddr_storage peerss;
++	socklen_t peersalen = sizeof(peerss);
++
++	if (getpeername(fd, (struct sockaddr *)&peerss, &peersalen)) {
++		perror("getpeername");
++		return;
++	}
++
++	if (peersalen != salen) {
++		fprintf(stderr, "%s: %d vs %d\n", __func__, peersalen, salen);
++		return;
++	}
++
++	if (memcmp(ss, &peerss, peersalen)) {
++		char a[INET6_ADDRSTRLEN];
++		char b[INET6_ADDRSTRLEN];
++		char c[INET6_ADDRSTRLEN];
++		char d[INET6_ADDRSTRLEN];
++
++		xgetnameinfo((struct sockaddr *)ss, salen,
++			     a, sizeof(a), b, sizeof(b));
++
++		xgetnameinfo((struct sockaddr *)&peerss, peersalen,
++			     c, sizeof(c), d, sizeof(d));
++
++		fprintf(stderr, "%s: memcmp failure: accept %s vs peername %s, %s vs %s salen %d vs %d\n",
++			__func__, a, c, b, d, peersalen, salen);
++	}
++}
++
++static void check_getpeername_connect(int fd)
++{
++	struct sockaddr_storage ss;
++	socklen_t salen = sizeof(ss);
++	char a[INET6_ADDRSTRLEN];
++	char b[INET6_ADDRSTRLEN];
++
++	if (!getpeername(fd, (struct sockaddr *)&ss, &salen)) {
++		perror("getpeername");
++		return;
++	}
++
++	xgetnameinfo((struct sockaddr *)&ss, salen,
++		     a, sizeof(a), b, sizeof(b));
++
++	if (strcmp(cfg_host, a) || strcmp(cfg_port, b))
++		fprintf(stderr, "%s: %s vs %s, %s vs %s\n", __func__,
++			cfg_host, a, cfg_port, b);
++}
++
+ int main_loop_s(int listensock)
+ {
+ 	struct sockaddr_storage ss;
+@@ -308,6 +411,9 @@ int main_loop_s(int listensock)
+ 	salen = sizeof(ss);
+ 	remotesock = accept(listensock, (struct sockaddr *)&ss, &salen);
+ 	if (remotesock >= 0) {
++		check_sockaddr(pf, &ss, salen);
++		check_getpeername(remotesock, &ss, salen);
++
+ 		copyfd_io(0, remotesock, 1);
+ 		return 0;
+ 	}
+@@ -342,6 +448,7 @@ int main_loop(void)
+ 	if (fd < 0)
+ 		return 2;
+ 
++	check_getpeername_connect(fd);
+ 	return copyfd_io(0, fd, 1);
+ }
+ 
 -- 
 2.23.0
 
