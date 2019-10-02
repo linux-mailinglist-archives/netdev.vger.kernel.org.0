@@ -2,116 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4268C901D
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 19:44:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14333C9031
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 19:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728145AbfJBRoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 13:44:06 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53604 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726076AbfJBRoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 13:44:05 -0400
-Received: by mail-wm1-f65.google.com with SMTP id i16so8120643wmd.3
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 10:44:04 -0700 (PDT)
+        id S1728231AbfJBRs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 13:48:59 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38005 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727737AbfJBRs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 13:48:59 -0400
+Received: by mail-qt1-f193.google.com with SMTP id j31so27496840qta.5;
+        Wed, 02 Oct 2019 10:48:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=xobYEG0AEaPhaGje+6DN+Ep8BZLhFrNhLiVQA67AVaE=;
-        b=yrnWKsjLScjxxNWKS8/eQkCGaAkjM4/CI4WwiB4JXJKI37bSyoXntwqQdEZI5t1AFZ
-         k7qVt9hXJKqEZt5VWZ3dKNZYJp7vETCaPGh/YQEP2QyjiyHiQ1SsvwtKqVAhC3Lw7ZaS
-         iBSEjf3DkIZCYZplbSGvrJzJyxv1EhAbOztLMSCaEOX5tMD8ijUsCrejiR3D/3ZcDOOv
-         L81NEPuZjhUc0RX1jFili9CfwuajQQGrYDp36V36q8VB84forWk3MhvmbIFe3jA4Tskv
-         JP1vZ71qm2kcaYIXLvaVHxqkv7ySqILpxC/2sh6IAoR5w9xMkNh2oFKEbfya1UDbM5le
-         9UOw==
+        bh=cp3R+VTBVIz7B9NMAOiPgfLAmBefCSqpuqm+aCntVPU=;
+        b=WVeg8SYnaQdTxBTq3riXf56J9QpB4UrWJhM83u2mkul44qnwO1fIbYbUlEWV19bjwS
+         G/R6qqnfiGbgzkGOTN0q83irjs9CXThavEzqMv/OcxLsdsd/Z4dV8D8+yBEBdZBmJyh3
+         fkairqlLvUEYuhu5W9QXQmu90a16n5heTw6kUbViXg/PbZWSRRRbVW8at3OUrl6t0Ki2
+         6HacsRXSWmIYJodfKxCiAkge+STgzcMVK0CRSWqc0tfvgJZ/lOyNg0GRh7TUv6nxFHbg
+         iLmzmxGLu1Zc5RgYnPOlKqj2Sl4V27knZ4AtDucXfqqTWcoruMMEaUP0VPnK5GYT5cby
+         MKvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xobYEG0AEaPhaGje+6DN+Ep8BZLhFrNhLiVQA67AVaE=;
-        b=GgUbriHe7SyGgy0DFcvRC2eQYKAQpJx3adrM8No0F6nw+I6TtPwuIVdn1q4QRWKSo1
-         rF1AHqviFtvLcl5iE0LS619V54TZAg8OPlCmCpct7Rp4FrpZZtJ97i/peVRpsOH4iiR5
-         JMaoFSdyFVl7lvLn8R6uro4yCeyRBarspG7yc5KpEUaCfB51VdtrKJ09Mfc01BjSC2Ev
-         jVVbtSK2i3Qyx7oixJVj8fr9yXhW/A3R4QJwmpT4frQy1AjuBPde/SGehUAHB3zuBGsn
-         bCri4Kt5trBkkY2FLO3hcOZ54GuarQAqn7XazFwz3qf3nao13oLQ/8X1U2Bo9B/cpubo
-         wrrw==
-X-Gm-Message-State: APjAAAW3QBY+y/FsPHkjm2u/65rC3meG3EK/OJqmrv2ns9DL5l+rO7VZ
-        qVd6DysdI3kYv/BcF9NHTrwYOA==
-X-Google-Smtp-Source: APXvYqzi7LiPSBq7paxrDKIZWpAO7XEm5V68Te8WmxmWr/NONhS1syCyo6iPvAcRTHCB5ZMngSlpZw==
-X-Received: by 2002:a1c:c589:: with SMTP id v131mr3667706wmf.163.1570038243687;
-        Wed, 02 Oct 2019 10:44:03 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id c9sm97071wrt.7.2019.10.02.10.44.03
+        bh=cp3R+VTBVIz7B9NMAOiPgfLAmBefCSqpuqm+aCntVPU=;
+        b=cCb0PnFUI3djcmD3RSITZoioHsrQrnP9ppRPhwV/lSFOC/xeqY3Swhb5CYM3tbk306
+         17vSW9eO84UF+Sg0LC3h3H/B3FJ576fjzcvARfKL75wEmr7M3AxOVHVlhw7hnIyEvznV
+         BiZsdUZYZDDaNvKFehzNiX0wgkm7GeTAX+VUv8rARUh2IU7kNabtpreWjb22eZbO6NvO
+         swgXVd/2/BAWE7/aGN6nrUMoIV0vIyt0yT1xF/6m2mGPZyzH0sC8BR3rXhEP43YTj3dE
+         7A1Wx0RtsUCHWBFa3WbsRjFXyljcj+iALCj78DW41XAwW/dVui28XAGUfN/f4HTeTT/e
+         v3jQ==
+X-Gm-Message-State: APjAAAUaMGysEEvMp6S7ABHxBn4XakPL2fvPAqiFJ+7w38/F4ZbkdzeG
+        59sqwGp4SZYnX1SrU7PFTj0=
+X-Google-Smtp-Source: APXvYqz+jus6+wBvN46TETy/JSgARs+Tea+f2Hv6wxejgdrtf8gTvD+1h65Kblu3xlfWZcXyBlDChQ==
+X-Received: by 2002:a0c:aadb:: with SMTP id g27mr4192739qvb.149.1570038537587;
+        Wed, 02 Oct 2019 10:48:57 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:43d:1f86:9ada:9b75:29f5])
+        by smtp.gmail.com with ESMTPSA id 62sm10568468qki.130.2019.10.02.10.48.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 10:44:03 -0700 (PDT)
-Date:   Wed, 2 Oct 2019 19:44:02 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
-        jiri@mellanox.com, jakub.kicinski@netronome.com,
-        saeedm@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 07/15] ipv4: Only Replay routes of interest
- to new listeners
-Message-ID: <20191002174402.GB2279@nanopsycho>
-References: <20191002084103.12138-1-idosch@idosch.org>
- <20191002084103.12138-8-idosch@idosch.org>
+        Wed, 02 Oct 2019 10:48:56 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 6F3EFC07B9; Wed,  2 Oct 2019 14:48:54 -0300 (-03)
+Date:   Wed, 2 Oct 2019 14:48:54 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem <davem@davemloft.net>, Neil Horman <nhorman@tuxdriver.com>
+Subject: Re: [PATCH net] sctp: set newsk sk_socket before processing
+ listening sk backlog
+Message-ID: <20191002174854.GI3499@localhost.localdomain>
+References: <acd60f4797143dc6e9817b3dce38e1408caf65e5.1569849018.git.lucien.xin@gmail.com>
+ <20191002010356.GG3499@localhost.localdomain>
+ <CADvbK_ctLG+vnhmWwN=cWmZV7FgZreVRmoU+23PExdk=goF8cQ@mail.gmail.com>
+ <20191002125511.GH3499@localhost.localdomain>
+ <CADvbK_fD+yuCCUTf41n+3oVwVjLUdT8+-wfwppVL8ZmbJegTWA@mail.gmail.com>
+ <20191002174127.GL3431@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191002084103.12138-8-idosch@idosch.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20191002174127.GL3431@localhost.localdomain>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Oct 02, 2019 at 10:40:55AM CEST, idosch@idosch.org wrote:
->From: Ido Schimmel <idosch@mellanox.com>
->
->When a new listener is registered to the FIB notification chain it
->receives a dump of all the available routes in the system. Instead, make
->sure to only replay the IPv4 routes that are actually used in the data
->path and are of any interest to the new listener.
->
->Signed-off-by: Ido Schimmel <idosch@mellanox.com>
->---
-> net/ipv4/fib_trie.c | 10 ++++++++++
-> 1 file changed, 10 insertions(+)
->
->diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
->index dc4c4e2cb0b3..4937a3503f4f 100644
->--- a/net/ipv4/fib_trie.c
->+++ b/net/ipv4/fib_trie.c
->@@ -2096,6 +2096,7 @@ static int fib_leaf_notify(struct key_vector *l, struct fib_table *tb,
-> 			   struct netlink_ext_ack *extack)
-> {
-> 	struct fib_alias *fa;
->+	int last_slen = -1;
-> 	int err;
+On Wed, Oct 02, 2019 at 02:41:27PM -0300, Marcelo Ricardo Leitner wrote:
+> On Thu, Oct 03, 2019 at 01:26:46AM +0800, Xin Long wrote:
+> > On Wed, Oct 2, 2019 at 8:55 PM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+> > >
+> > > On Wed, Oct 02, 2019 at 04:23:52PM +0800, Xin Long wrote:
+> > > > On Wed, Oct 2, 2019 at 9:04 AM Marcelo Ricardo Leitner
+> > > > <marcelo.leitner@gmail.com> wrote:
+> > > > >
+> > > > > On Mon, Sep 30, 2019 at 09:10:18PM +0800, Xin Long wrote:
+> > > > > > This patch is to fix a NULL-ptr deref crash in selinux_sctp_bind_connect:
+> > > > > >
+> > > > > >   [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
+> > > > > >   [...] RIP: 0010:selinux_sctp_bind_connect+0x16a/0x230
+> > > > > >   [...] Call Trace:
+> > > > > >   [...]  security_sctp_bind_connect+0x58/0x90
+> > > > > >   [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
+> > > > > >   [...]  sctp_sf_do_asconf+0x782/0x980 [sctp]
+> > > > > >   [...]  sctp_do_sm+0x139/0x520 [sctp]
+> > > > > >   [...]  sctp_assoc_bh_rcv+0x284/0x5c0 [sctp]
+> > > > > >   [...]  sctp_backlog_rcv+0x45f/0x880 [sctp]
+> > > > > >   [...]  __release_sock+0x120/0x370
+> > > > > >   [...]  release_sock+0x4f/0x180
+> > > > > >   [...]  sctp_accept+0x3f9/0x5a0 [sctp]
+> > > > > >   [...]  inet_accept+0xe7/0x6f0
+> > > > > >
+> > > > > > It was caused by that the 'newsk' sk_socket was not set before going to
+> > > > > > security sctp hook when doing accept() on a tcp-type socket:
+> > > > > >
+> > > > > >   inet_accept()->
+> > > > > >     sctp_accept():
+> > > > > >       lock_sock():
+> > > > > >           lock listening 'sk'
+> > > > > >                                           do_softirq():
+> > > > > >                                             sctp_rcv():  <-- [1]
+> > > > > >                                                 asconf chunk arrived and
+> > > > > >                                                 enqueued in 'sk' backlog
+> > > > > >       sctp_sock_migrate():
+> > > > > >           set asoc's sk to 'newsk'
+> > > > > >       release_sock():
+> > > > > >           sctp_backlog_rcv():
+> > > > > >             lock 'newsk'
+> > > > > >             sctp_process_asconf()  <-- [2]
+> > > > > >             unlock 'newsk'
+> > > > > >     sock_graft():
+> > > > > >         set sk_socket  <-- [3]
+> > > > > >
+> > > > > > As it shows, at [1] the asconf chunk would be put into the listening 'sk'
+> > > > > > backlog, as accept() was holding its sock lock. Then at [2] asconf would
+> > > > > > get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
+> > > > > > 'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
+> > > > > > would deref it, then kernel crashed.
+> > > > >
+> > > > > Note that sctp will migrate such incoming chunks from sk to newsk in
+> > > > > sctp_rcv() if they arrived after the mass-migration performed at
+> > > > > sctp_sock_migrate().
+> > > > >
+> > > > > That said, did you explore changing inet_accept() so that
+> > > > > sk1->sk_prot->accept() would return sk2 still/already locked?
+> > > > > That would be enough to block [2] from happening as then it would be
+> > > > > queued on newsk backlog this time and avoid nearly duplicating
+> > > > > inet_accept(). (too bad for this chunk, hit 2 backlogs..)
+> > > > We don't have to bother inet_accept() for it. I had this one below,
+> > > > and I was just thinking the locks order doesn't look nice. Do you
+> > > > think this is more acceptable?
+> > > >
+> > > > @@ -4963,15 +4963,19 @@ static struct sock *sctp_accept(struct sock
+> > > > *sk, int flags, int *err, bool kern)
+> > > >          * asoc to the newsk.
+> > > >          */
+> > > >         error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
+> > > > -       if (error) {
+> > > > -               sk_common_release(newsk);
+> > > > -               newsk = NULL;
+> > > > +       if (!error) {
+> > > > +               lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
+> > > > +               release_sock(sk);
+> > >
+> > > Interesting. It fixes the backlog processing, ok. Question:
+> > >
+> > > > +               release_sock(newsk);
+> > >
+> > > As newsk is hashed already and unlocked here to be locked again later
+> > > on inet_accept(), it could receive a packet in between (thus before
+> > > sock_graft() could have a chance to run), no?
+> > 
+> > You're right, it explains another call trace happened once in our testing.
+> > 
+> > The way to changing inet_accept() will also have to change all protocols'
+> > .accept(). Given that this issue is only triggered in a very small moment,
+> > can we just silently discard this asconf chunk if sk->sk_socket is NULL?
+> > and let peer's T4-timer retransmit it.
 > 
-> 	hlist_for_each_entry_rcu(fa, &l->leaf, fa_list) {
->@@ -2110,6 +2111,15 @@ static int fib_leaf_notify(struct key_vector *l, struct fib_table *tb,
-> 		if (tb->tb_id != fa->tb_id)
-> 			continue;
+> No no. If the change doesn't hurt other protocols, we should try that
+> first.  Otherwise this adds overhead to the network and we could get a
+> bug report soon on "valid asconf being ignored".
 > 
->+		if (fa->fa_slen == last_slen)
->+			continue;
+> If that doesn't pan out, maybe your initial suggestion is the way out.
+> More custom code but keeps the expected behavior.
+> 
+> > 
+> > @@ -3709,6 +3709,9 @@ enum sctp_disposition sctp_sf_do_asconf(struct net *net,
+> >         struct sctp_addiphdr *hdr;
+> >         __u32 serial;
+> > 
+> > +       if (asoc->base.sk->sk_socket)
+> > +               return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
 
-Hmm, I wonder, don't you want to continue only for FIB_EVENT_ENTRY_REPLACE_TMP
-and keep the notifier call for FIB_EVENT_ENTRY_ADD?
-
-
->+
->+		last_slen = fa->fa_slen;
->+		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_REPLACE_TMP,
->+					      l->key, KEYLENGTH - fa->fa_slen,
->+					      fa, extack);
->+		if (err)
->+			return err;
-> 		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_ADD, l->key,
-> 					      KEYLENGTH - fa->fa_slen,
-> 					      fa, extack);
->-- 
->2.21.0
->
+What if we add this to sctp_backlog_rcv() instead?  As in, do not
+process the backlog if so.
+And force doing backlog on sctp_rcv() also.
+As we are sure that there will be a subsequent lock/unlock and that it
+will handle it, this could work.
