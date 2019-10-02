@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB34C87D2
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 14:05:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3FFFC87D8
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 14:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728362AbfJBMEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 08:04:16 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:45199 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728302AbfJBMEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 08:04:15 -0400
-Received: by mail-lj1-f193.google.com with SMTP id q64so16805174ljb.12
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 05:04:14 -0700 (PDT)
+        id S1728385AbfJBMES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 08:04:18 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:41056 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728351AbfJBMER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 08:04:17 -0400
+Received: by mail-lf1-f68.google.com with SMTP id r2so12496933lfn.8
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 05:04:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Y95OajR8Z4EhoKVV/d/GtPK38UmcXtK59LFx+wA+Kn4=;
-        b=OmP5kq+z+zbFpIxkBNzdy160yYdL/tMN7p+YDlhaPbcErQwKwPUXwv2VJg5sUXmyup
-         ygBxLJXG5geeSgJTdIEycdXlvcJ4VTiDNeCAcPjC9oX6zR5voiv5Ww3rBRcWuZD7otui
-         XmJuS4uPT/e5ZSoyF4+mdfA9VFyOem72gpoqPJVVo9aWJuI2LHax7Cs3gE8ErSWQazFK
-         JaESnbyXsinx1R/cgxTvkqrAHVdAH6gFw5ZUBlVLwH3Uwfnogt6FlnURjAsPrds0wVmq
-         reyXAR9+mGKS3WAcXU8dMUB8XLZ00ncKR8c6OPrSVvIyojBl/q0L730b+Ns7dEOXDGfS
-         0eeg==
+        bh=TMB6TblY53+4VyVSJtgn0L5ohD/FsUtecY9KXTnnDX4=;
+        b=DqsD2s9P1SD/PtORTHEVfyScMUoIU61jGf1MvpZNqMizg2xPfFl/kReztOBlI4GO3e
+         z1Go2J83GjLF8pQSMiXB4U4w1NUvICHnzC5UOXJa6j9dnv/CmSOdsXIclmhJu5ouVmiw
+         cToPMiZ4rCxpRNxFnHuHNzLsiDwWc6LOOlN33hmZjj6W70SdmDvDd62PT+QmGNFua/B7
+         ooS7xH/oMHWaQ+xWj4FiiNRXj3PsjC+LqWib6sHftimrqCDAbyBFNlAuAVZcAXcj4Adn
+         h8uW+B5LXmgVaa0IuMpmJC5qHZGVXmUXkW+tsLgrdOjtHofRERJ3R5BekTtFZDNYZVUk
+         fx9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Y95OajR8Z4EhoKVV/d/GtPK38UmcXtK59LFx+wA+Kn4=;
-        b=SDVy5JYMVYzPF3xKzQnCqA5UtN11rSicNno+84vPdFMYdLO6mh8dMLdnMeZuAAzP/t
-         8zszWiMkhIXHsTuXVaPCY+NPCh4aQWpWe6KODuaFxV6abAxp4uN/HK6SpPPQWrxGQALI
-         8q5S8rdCeRP53SEtv7qBeMG+8lDeH+liHwykeW2FMHNtBqLi5CQNdS4Wfg3Y8+qPFSFs
-         jxyCGmjXEAFfcJxm+ssVGJbtgVMAWu2qHee6JOPI3zm9/Je6mRFEqAvL2EniM5k/Kpmu
-         Ou6CtTgs0CirB0veYN5u4ngivbzUGab9xTmtbhO76TGLJj6x9lFASuuIi9MhClbFnbCs
-         AzpQ==
-X-Gm-Message-State: APjAAAXy8N7mtyB/ZrYcWBqO6mRO/l7lMt1WwNcRkpvUWXfgkQ+UjJF0
-        1Eyvj9eecj3szN6xYCUdrQuurw==
-X-Google-Smtp-Source: APXvYqwCgHv5cQQHT5flHSQGpsA/3qpFgY9BqKRSoHwTcS8bpTuL/U1VGR2qPBiljcvG8ANgpwX2YQ==
-X-Received: by 2002:a2e:5c09:: with SMTP id q9mr2285090ljb.4.1570017853751;
-        Wed, 02 Oct 2019 05:04:13 -0700 (PDT)
+        bh=TMB6TblY53+4VyVSJtgn0L5ohD/FsUtecY9KXTnnDX4=;
+        b=qtL7g5XzokvtC9j4pWfKBiPcF5/zW8UWGYtsPu1YaBeRRqckc19rXgMn2LNpyGdu4/
+         e/BhOyX3cRlSVV0gLJnmqH5TsRV3DfSYSwi1y+LtJ+DnhysfiKDsFietytzypl369sx0
+         yCDuLA6igp5yIrQoFvmH2TlYqF+SFz9kuslRqoXQzVEICuE6nIiC26OGasGHgzI6REGn
+         FxBZs3t+daHQEVvvolLONJMDZzxwpyNFw6hhAMSJbDI4jFA+23ay90ydKkEUH5hs+dPt
+         s0mTtJ2V7A8KxBJzw2dzwTfruTM/GblGYUpdG9wVbEtmKBPnC7lXkb0VsmOZ5OGNThQa
+         BPlg==
+X-Gm-Message-State: APjAAAWl0XTjnYQjVmzMZthijBAwjjiFO0PqBpSzBKrZF3p7O8tRnzcO
+        GULhKYb0GZrfzknlojysfD6h3A==
+X-Google-Smtp-Source: APXvYqzf1bxl3vPpwa5mq2B5jjzpp5yAncmvsE9rUg1AJrtdAyaV4drWRLAx9gwUoPb8uqukbTOHWA==
+X-Received: by 2002:ac2:4a69:: with SMTP id q9mr2037834lfp.86.1570017855074;
+        Wed, 02 Oct 2019 05:04:15 -0700 (PDT)
 Received: from localhost.localdomain (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id x2sm4833827ljj.94.2019.10.02.05.04.12
+        by smtp.gmail.com with ESMTPSA id x2sm4833827ljj.94.2019.10.02.05.04.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 05:04:13 -0700 (PDT)
+        Wed, 02 Oct 2019 05:04:14 -0700 (PDT)
 From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 To:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH bpf-next 1/2] selftests/bpf: add static to enable_all_controllers()
-Date:   Wed,  2 Oct 2019 15:04:03 +0300
-Message-Id: <20191002120404.26962-2-ivan.khoronzhuk@linaro.org>
+Subject: [PATCH bpf-next 2/2] selftests/bpf: correct path to include msg + path
+Date:   Wed,  2 Oct 2019 15:04:04 +0300
+Message-Id: <20191002120404.26962-3-ivan.khoronzhuk@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191002120404.26962-1-ivan.khoronzhuk@linaro.org>
 References: <20191002120404.26962-1-ivan.khoronzhuk@linaro.org>
@@ -64,14 +64,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add static to enable_all_controllers() to get rid from annoying warn:
+The "path" buf is supposed to contain path + printf msg up to 24 bytes.
+It will be cut anyway, but compiler generates truncation warns like:
 
-samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c:44:5:
-warning: no previous prototype for ‘enable_all_controllers’
-[-Wmissing-prototypes]
- int enable_all_controllers(char *cgroup_path)
+"
+samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c: In
+function ‘setup_cgroup_environment’:
+samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c:52:34:
+warning: ‘/cgroup.controllers’ directive output may be truncated
+writing 19 bytes into a region of size between 1 and 4097
+[-Wformat-truncation=]
+snprintf(path, sizeof(path), "%s/cgroup.controllers", cgroup_path);
+				  ^~~~~~~~~~~~~~~~~~~
+samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c:52:2:
+note: ‘snprintf’ output between 20 and 4116 bytes into a destination
+of size 4097
+snprintf(path, sizeof(path), "%s/cgroup.controllers", cgroup_path);
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c:72:34:
+warning: ‘/cgroup.subtree_control’ directive output may be truncated
+writing 23 bytes into a region of size between 1 and 4097
+[-Wformat-truncation=]
+snprintf(path, sizeof(path), "%s/cgroup.subtree_control",
+				  ^~~~~~~~~~~~~~~~~~~~~~~
+cgroup_path);
+samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c:72:2:
+note: ‘snprintf’ output between 24 and 4120 bytes into a destination
+of size 4097
+snprintf(path, sizeof(path), "%s/cgroup.subtree_control",
+cgroup_path);
+"
 
-while samples/bpf build.
+In order to avoid warns, lets decrease buf size for cgroup workdir on
+24 bytes with assumption to include also "/cgroup.subtree_control" to
+the address. The cut will never happen anyway.
 
 Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 ---
@@ -79,18 +105,18 @@ Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/bpf/cgroup_helpers.c b/tools/testing/selftests/bpf/cgroup_helpers.c
-index e95c33e333a4..4d74f3c4619b 100644
+index 4d74f3c4619b..0fb910df5387 100644
 --- a/tools/testing/selftests/bpf/cgroup_helpers.c
 +++ b/tools/testing/selftests/bpf/cgroup_helpers.c
-@@ -41,7 +41,7 @@
-  *
-  * If successful, 0 is returned.
+@@ -98,7 +98,7 @@ static int enable_all_controllers(char *cgroup_path)
   */
--int enable_all_controllers(char *cgroup_path)
-+static int enable_all_controllers(char *cgroup_path)
+ int setup_cgroup_environment(void)
  {
- 	char path[PATH_MAX + 1];
- 	char buf[PATH_MAX];
+-	char cgroup_workdir[PATH_MAX + 1];
++	char cgroup_workdir[PATH_MAX - 24];
+ 
+ 	format_cgroup_path(cgroup_workdir, "");
+ 
 -- 
 2.17.1
 
