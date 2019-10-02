@@ -2,99 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F04C9465
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 00:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BA59C9484
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 00:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbfJBWgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 18:36:49 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:45398 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbfJBWgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 18:36:49 -0400
-Received: by mail-pl1-f196.google.com with SMTP id u12so507123pls.12
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 15:36:49 -0700 (PDT)
+        id S1728214AbfJBWy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 18:54:29 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:35377 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727103AbfJBWy3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 18:54:29 -0400
+Received: by mail-lf1-f65.google.com with SMTP id w6so313790lfl.2
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 15:54:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rqMlx/qkwuOcoyzH9cUhrGA427PGTQG7iAtyzC9L+F0=;
-        b=VBe/RqWjD/IswAlHGPOnLh70Cc6+H2XRSaxI7seB+UwfxtjcBi5Z8i2DkbfDNSsNlz
-         K+BiaX6wOZVsVRHaeS2jqImUTRcz0wxgn3Ddl7pINjnXIG5TWn+ef43DCEh1yytZ1mc8
-         5ItryvPOomj73X0aaXJTsIBG4DgUHIsQRV6TdiepAIMc2zpF2GKgGF8UP/8cia764ta4
-         DjVuEP0Yed8uaS23nAfWCWyYF3DWpR+W9KSEj092x0RKaMtRUYnzFigLysB0I8+nySL3
-         qz6v6gEIlzxIB3etdXa4nAmQ6lL6ZhV7eOVkqhx0gWF7GqjwHXdkszOaAok/DsEI/NEN
-         FGbQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LuKn0yMGsula0qz5RapziKUyAoMNwVeNzzbmW1Cw7/w=;
+        b=Jr1ddmUWeweEVtyYQSVxWNJRuyceX3XpL0WKxYYCi0OUo1xyCpNUxqN7Ty2XGlgQoc
+         3a9KUKVOPXV3edwTCEPUec9QYAXYgi+skMyfbZISDZ/qiAzl5PntzEHH73zgiTUWNKS7
+         DY4aVUe1WTbtrpPD7kOyTCI4pQbLZJmn0R3pi8tRQNdU+UtCQS21G8rmgwokbNFkxiFV
+         jptKdu/3SPS/SGkpyIcaHR/8eEkJDaFM9FvAt2oWhWvp+9BkZO6UzwabTO9ab4FORc8G
+         /mbEadRucnqlzb/1whMLTfmVAuIyI6kbKl0MEnbrwmi+6Fv3lmBmuYBeofyJ5A/bOXJd
+         c5KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rqMlx/qkwuOcoyzH9cUhrGA427PGTQG7iAtyzC9L+F0=;
-        b=H75uPIZk3+88i/n9SqreiHcugHn2ZIuorzKnykrnfdCUdFAtImbuC2SNibpbhHvl7X
-         mjiO6rfOBSh4sItzNkycqRtN/oaBoVzsYVVX3SAw8x6oKapAe9icX5BhMwAuKcXwYTJm
-         tfRf8Fphqtp4NmgQRFh+5LDGeyha8Kb2xJBkmy02B9IZWjfkWfFixF+hN9DZwUR4Hd2C
-         /uDhtrgeHlXYIffSskxFq8hH/f214t2qBGZPHT6LAuzret3UOmti97bRe87r9clpPqQ0
-         Gd22YQYFhU8Bmb274y47y2hngH8UozquMwaGSo8kan1PLFmmqbwtIKayY/Hpdkf/l4G2
-         UPwA==
-X-Gm-Message-State: APjAAAXLf7q1UaL9sbg+ozv9sIRr7Pu2+8sFnFxgZgNBRDEGbIcfkzHH
-        s90c3cI99JMRNVPVxVnlaas=
-X-Google-Smtp-Source: APXvYqyg19hAsAIcwNIdZM+ExQmJdNIj2yXMNq4rv4C2S2B3K9Rm0fj60Ln/YXyYjDCmBO+YsFe4dQ==
-X-Received: by 2002:a17:902:a413:: with SMTP id p19mr6393682plq.210.1570055808814;
-        Wed, 02 Oct 2019 15:36:48 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id c8sm464028pfi.117.2019.10.02.15.36.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Oct 2019 15:36:48 -0700 (PDT)
-Subject: Re: [PATCH net v2] ipv6: Handle race in addrconf_dad_work
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, rajendra.dendukuri@broadcom.com
-References: <20191001032834.5330-1-dsahern@kernel.org>
- <1ab3e0d0-fb37-d367-fd5f-c6b3262b6583@gmail.com>
- <18c18892-3f1c-6eb8-abbb-00fd6c9c64d3@gmail.com>
- <146a2f8a-8ee9-65f3-1013-ef60a96aa27b@gmail.com>
- <8d13d82c-6a91-1434-f1af-a2f39ecadbfb@gmail.com>
- <3dc05826-4661-8a8e-0c15-1a711ec84d07@gmail.com>
- <45e62fee-1580-4c5d-7cac-5f0db935fa9e@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <7bd928cb-1abf-bbae-e1db-505788254e5b@gmail.com>
-Date:   Wed, 2 Oct 2019 15:36:47 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LuKn0yMGsula0qz5RapziKUyAoMNwVeNzzbmW1Cw7/w=;
+        b=XoY5+oiOHKPDK3cns3X6oeoL6pQaPJ/5eIxjumj+66cVHTAHWF+JKfh5PRE2qcBMAH
+         LuD8plqPNyHItmnnMbArs1tww0eHeAsKcKqq523CP2799tXilOx3HzxAXnZP5EjTre91
+         MlyiEjhSo4PqAzbZQnZ6pIz5GxSSrjv/vugPZBPa3jygiXrar6ODxAYRR42XZNyTb7rM
+         pxxITzwpgfrfMJuqSnu1RAa1ccNxJsk9JMdkvFMjV4iQl83RWZ3iQbFCFOTowO24KZSi
+         f9T6bz8xjb5fcMX/n23MLlHnxvx6xleUyEUnMt/einXMH0Re07PBEkIg9iH8Reg+aP5J
+         AbzQ==
+X-Gm-Message-State: APjAAAXRv0J68qx60ZiNREyJn5E49GKJGKjblbZe5+y8K7Lwkk+94RLI
+        q37iPkHJjWlZd6cTskYQKTkkW1hO6JLW2zyS/gk=
+X-Google-Smtp-Source: APXvYqz00cNLER3uqJWVH+gjQRFCnaBSoKbz1fJTRd9Idz6TjTCg5Cl+IPd0lZChPbbfWrM05HFg1E2vef7AP9xzJCc=
+X-Received: by 2002:ac2:515b:: with SMTP id q27mr3798328lfd.154.1570056866969;
+ Wed, 02 Oct 2019 15:54:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <45e62fee-1580-4c5d-7cac-5f0db935fa9e@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191002221017.2085-1-wdauchy@gmail.com> <025bcf1e-b7d4-5fa2-ec68-074c62b9d63c@gmail.com>
+In-Reply-To: <025bcf1e-b7d4-5fa2-ec68-074c62b9d63c@gmail.com>
+From:   William Dauchy <wdauchy@gmail.com>
+Date:   Thu, 3 Oct 2019 00:54:15 +0200
+Message-ID: <CAJ75kXZT1Mt_=dqG+YEZHpzDLUZaPK=Nep=S85t9V+cT1TNMfA@mail.gmail.com>
+Subject: Re: [PATCH] tcp: add tsval and tsecr to TCP_INFO
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     NETDEV <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Eric,
 
+On Thu, Oct 3, 2019 at 12:33 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> On 10/2/19 3:10 PM, William Dauchy wrote:
+> Reporting the last recorded values is really not good,
+> a packet capture will give you all this information in a non
+> racy way.
 
-On 10/2/19 3:33 PM, David Ahern wrote:
-> On 10/2/19 4:21 PM, Eric Dumazet wrote:
->> o syzbot this time, but complete lack of connectivity on some of my test hosts.
->>
->> Incoming IPv6 packets go to ip6_forward() (!!!) and are dropped there.
-> 
-> what does 'ip -6 addr sh' show when it is in this state? Any idea of the
-> order of events?
+Thank you for your quick answer.
+In my use case I use it on a http server where I tag my requests with
+such informations coming from tcp, which later helps to diagnose some
+issues and create some useful metrics to give me a general signal.
+Does it still sound like an invalid use case?
 
-This might be related to a use of a bonding device, with a mlx4 slave.
-
-"ip -6 addr sh" shows the same output before/after the patch.
-
-lpaa23:~# ip -6 addr sh dev eth0
-2: eth0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 5102 state UP 
-    inet6 2607:f8b0:8099:e17::/128 scope global nodad 
-       valid_lft forever preferred_lft forever
-    inet6 fe80::21a:11ff:fec3:d7f/64 scope link 
-       valid_lft forever preferred_lft forever
-
-> 
-> I flipped to IF_READY based on addrconf_ifdown and idev checks seeming
-> more appropriate.
-> 
-
+Best regards,
+-- 
+William
