@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5376C89AF
+	by mail.lfdr.de (Postfix) with ESMTP id 5B332C89AD
 	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 15:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728001AbfJBNal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 09:30:41 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58422 "EHLO mx1.redhat.com"
+        id S1727990AbfJBNaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 09:30:39 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52312 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727975AbfJBNah (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 09:30:37 -0400
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
+        id S1727964AbfJBNai (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 09:30:38 -0400
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com [209.85.208.198])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 292BB88302
-        for <netdev@vger.kernel.org>; Wed,  2 Oct 2019 13:30:36 +0000 (UTC)
-Received: by mail-lj1-f197.google.com with SMTP id m81so4882710lje.4
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 06:30:36 -0700 (PDT)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8B1A95117D
+        for <netdev@vger.kernel.org>; Wed,  2 Oct 2019 13:30:37 +0000 (UTC)
+Received: by mail-lj1-f198.google.com with SMTP id q185so4862097ljb.20
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 06:30:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=pqLC3K0zosC/Ijfelepo4fx24olc2AqeXpVeWBxBt4o=;
-        b=gpb/rkdA7D1mYmumIRTNbzIy0I0EfoqEzfvIk9xOrN4lxuNzrbkgVGQs8cvD9ktWLh
-         oepMn8g4AzjXZk+IUYcLsJdUMt/tLVrL5+92jTYl0z7nhDPwfbNl2INNsqVfy38ti5u+
-         MknLwFSDxPTwnAukafDrLO/p/xyac+6fYNo5CxGeqZOM2GmCuj+RueOqlOnhZZi8VrRs
-         98RL0NACBCJ5uy6Aocf8x4mRnP9VGQNHvw5iQv1RG7QeO/9OmtsKSzDk9q1oB1KTh2PV
-         cHFP0pH08Jlzlu6VHO0PXMmgFx9zNYDpV2G37n5xeaYgqTdsPRdSDfG92V/4C/7VHGlr
-         V+eg==
-X-Gm-Message-State: APjAAAV/nqjEMzEwv5LPkH/LM31COj9UypSwWZ3J3BLdmcott07a1fTf
-        /SE7bKta79+J1WSS3N0Tc+5eFn73nS+tLzdpHC8AwOQIElDQH6lTANXcDS8rJrWOhoPQaNw1DLA
-        b+FhIqs01oV31jrPQ
-X-Received: by 2002:a19:ef17:: with SMTP id n23mr2264336lfh.109.1570023034729;
-        Wed, 02 Oct 2019 06:30:34 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyf+i0aehSnS03SCOX01y6ZKk/kXFw701LZVoGDGz5WSDlfP1vxr3k6yYRK8vjW24yO32CIcQ==
-X-Received: by 2002:a19:ef17:: with SMTP id n23mr2264329lfh.109.1570023034557;
-        Wed, 02 Oct 2019 06:30:34 -0700 (PDT)
+        bh=9HOtLr1nND6QqUI8Q8VdibuQQQmxuKzuYOHS9mRlR1E=;
+        b=TVZq4ZB6D1/j316fuwRFLGWMjHOjVPrvlg9zH4Kfsu2fQ3ZL744MWWAAQs8Da2Wj1e
+         6x+KtryUP1IBlhcmVkY92xwJgNU+gtAuCO0br6ueJdTiUtAZiv0z9qrmOHHgazKgaT/g
+         cok2ar0ZGCkXPz4/TSMRwz6QqeUPQ8sNQhF4dVtjcpy5SKzyRtj5SwV+AjmpvqQomWpD
+         6MkyI2YYHug9g7m59RqaWC/6xsvuEf+YoJm/5XH1h3p8iP1OvIVplXIIDTqIbmER81tz
+         vx7ay3srnVNT5pv1UZyp3cSXNx42+hgrSQuGkh+fp7t8QW2PAnJzHcFdXVMjVJNX4g+k
+         ppQA==
+X-Gm-Message-State: APjAAAV83b4gKuGVudmnkvwxwh5D2tTYKidRj17lcuWvHXj7INznDhll
+        qO+/5KPAZq2Y5i71O8Us5ql2WT6txP85jVHR+PltJk8iUhVUbllzaXv/zuBcv3PCFnhElMgwdt4
+        HTEEZrYH+J3cN0zXm
+X-Received: by 2002:a19:f111:: with SMTP id p17mr2355940lfh.187.1570023036089;
+        Wed, 02 Oct 2019 06:30:36 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqy9kGDVLmWBlBvzv2M3kxJrEQfwC6ZwPk5RsZde6tZUzWzlKrvuyJvNTEy7zCPgqiLgNzPocA==
+X-Received: by 2002:a19:f111:: with SMTP id p17mr2355926lfh.187.1570023035866;
+        Wed, 02 Oct 2019 06:30:35 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id c16sm4543320lfj.8.2019.10.02.06.30.32
+        by smtp.gmail.com with ESMTPSA id s6sm145355ljg.43.2019.10.02.06.30.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 06:30:33 -0700 (PDT)
+        Wed, 02 Oct 2019 06:30:34 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 46661180641; Wed,  2 Oct 2019 15:30:32 +0200 (CEST)
-Subject: [PATCH bpf-next 7/9] bpftool: Add definitions for xdp_chain map type
+        id 5B94F180640; Wed,  2 Oct 2019 15:30:33 +0200 (CEST)
+Subject: [PATCH bpf-next 8/9] libbpf: Add support for setting and getting XDP
+ chain maps
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -54,8 +55,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         David Miller <davem@davemloft.net>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Date:   Wed, 02 Oct 2019 15:30:32 +0200
-Message-ID: <157002303220.1302756.13509533392771604835.stgit@alrua-x1>
+Date:   Wed, 02 Oct 2019 15:30:33 +0200
+Message-ID: <157002303329.1302756.18388939731361871849.stgit@alrua-x1>
 In-Reply-To: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
 References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
 User-Agent: StGit/0.19-dirty
@@ -69,63 +70,153 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Adds bash completion and definition types for the xdp_chain map type to
-bpftool.
+This adds two new API functions for setting and getting XDP programs with
+associated chain map IDs. Programs are expected to pair them, so that if a
+program uses the chain map-aware setter, it should also use the associated
+getter.
+
+Programs using the old non-chain aware variants of the functions will not
+set the XDP chain map attribute on the netlink message, resulting in the
+kernel rejecting the command if a chain map has already been loaded.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- tools/bpf/bpftool/Documentation/bpftool-map.rst |    4 ++--
- tools/bpf/bpftool/bash-completion/bpftool       |    2 +-
- tools/bpf/bpftool/map.c                         |    3 ++-
- 3 files changed, 5 insertions(+), 4 deletions(-)
+ tools/lib/bpf/libbpf.h   |    4 ++++
+ tools/lib/bpf/libbpf.map |    2 ++
+ tools/lib/bpf/netlink.c  |   49 ++++++++++++++++++++++++++++++++++++++++++----
+ 3 files changed, 51 insertions(+), 4 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-map.rst b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-index 1c0f7146aab0..9aefcef50b53 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-@@ -47,8 +47,8 @@ MAP COMMANDS
- |	*TYPE* := { **hash** | **array** | **prog_array** | **perf_event_array** | **percpu_hash**
- |		| **percpu_array** | **stack_trace** | **cgroup_array** | **lru_hash**
- |		| **lru_percpu_hash** | **lpm_trie** | **array_of_maps** | **hash_of_maps**
--|		| **devmap** | **devmap_hash** | **sockmap** | **cpumap** | **xskmap** | **sockhash**
--|		| **cgroup_storage** | **reuseport_sockarray** | **percpu_cgroup_storage**
-+|		| **devmap** | **devmap_hash** | **xdp_chain** | **sockmap** | **cpumap** | **xskmap**
-+|		| **sockhash** | **cgroup_storage** | **reuseport_sockarray** | **percpu_cgroup_storage**
- |		| **queue** | **stack** }
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index e8f70977d137..0a459840e32c 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -357,7 +357,11 @@ LIBBPF_API int bpf_prog_load(const char *file, enum bpf_prog_type type,
+ 			     struct bpf_object **pobj, int *prog_fd);
  
- DESCRIPTION
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 70493a6da206..95f19191b8d1 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -489,7 +489,7 @@ _bpftool()
-                                 perf_event_array percpu_hash percpu_array \
-                                 stack_trace cgroup_array lru_hash \
-                                 lru_percpu_hash lpm_trie array_of_maps \
--                                hash_of_maps devmap devmap_hash sockmap cpumap \
-+                                hash_of_maps devmap devmap_hash xdp_chain sockmap cpumap \
-                                 xskmap sockhash cgroup_storage reuseport_sockarray \
-                                 percpu_cgroup_storage queue stack' -- \
-                                                    "$cur" ) )
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index de61d73b9030..97b5b42df79c 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -38,6 +38,7 @@ const char * const map_type_name[] = {
- 	[BPF_MAP_TYPE_HASH_OF_MAPS]		= "hash_of_maps",
- 	[BPF_MAP_TYPE_DEVMAP]			= "devmap",
- 	[BPF_MAP_TYPE_DEVMAP_HASH]		= "devmap_hash",
-+	[BPF_MAP_TYPE_XDP_CHAIN]		= "xdp_chain",
- 	[BPF_MAP_TYPE_SOCKMAP]			= "sockmap",
- 	[BPF_MAP_TYPE_CPUMAP]			= "cpumap",
- 	[BPF_MAP_TYPE_XSKMAP]			= "xskmap",
-@@ -1326,7 +1327,7 @@ static int do_help(int argc, char **argv)
- 		"       TYPE := { hash | array | prog_array | perf_event_array | percpu_hash |\n"
- 		"                 percpu_array | stack_trace | cgroup_array | lru_hash |\n"
- 		"                 lru_percpu_hash | lpm_trie | array_of_maps | hash_of_maps |\n"
--		"                 devmap | devmap_hash | sockmap | cpumap | xskmap | sockhash |\n"
-+		"                 devmap | devmap_hash | xdp_chain | sockmap | cpumap | xskmap | sockhash |\n"
- 		"                 cgroup_storage | reuseport_sockarray | percpu_cgroup_storage }\n"
- 		"       " HELP_SPEC_OPTIONS "\n"
- 		"",
+ LIBBPF_API int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
++LIBBPF_API int bpf_set_link_xdp_chain(int ifindex, int prog_fd, int chain_map_fd,
++				      __u32 flags);
+ LIBBPF_API int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags);
++LIBBPF_API int bpf_get_link_xdp_chain(int ifindex, __u32 *prog_id, __u32 *chain_map_id,
++				      __u32 flags);
+ 
+ struct perf_buffer;
+ 
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 8d10ca03d78d..59f412680292 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -192,4 +192,6 @@ LIBBPF_0.0.5 {
+ } LIBBPF_0.0.4;
+ 
+ LIBBPF_0.0.6 {
++		bpf_set_link_xdp_chain;
++		bpf_get_link_xdp_chain;
+ } LIBBPF_0.0.5;
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index ce3ec81b71c0..c6f63bdab2e6 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -25,6 +25,7 @@ struct xdp_id_md {
+ 	int ifindex;
+ 	__u32 flags;
+ 	__u32 id;
++	__u32 chain_map_id;
+ };
+ 
+ int libbpf_netlink_open(__u32 *nl_pid)
+@@ -128,7 +129,8 @@ static int bpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+ 	return ret;
+ }
+ 
+-int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
++static int __bpf_set_link_xdp_fd(int ifindex, int *prog_fd, int *chain_map_fd,
++				 __u32 flags)
+ {
+ 	int sock, seq = 0, ret;
+ 	struct nlattr *nla, *nla_xdp;
+@@ -162,9 +164,19 @@ int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
+ 	nla_xdp = (struct nlattr *)((char *)nla + nla->nla_len);
+ 	nla_xdp->nla_type = IFLA_XDP_FD;
+ 	nla_xdp->nla_len = NLA_HDRLEN + sizeof(int);
+-	memcpy((char *)nla_xdp + NLA_HDRLEN, &fd, sizeof(fd));
++	memcpy((char *)nla_xdp + NLA_HDRLEN, prog_fd, sizeof(*prog_fd));
+ 	nla->nla_len += nla_xdp->nla_len;
+ 
++	if (chain_map_fd) {
++		/* add XDP chain map */
++		nla_xdp = (struct nlattr *)((char *)nla + nla->nla_len);
++		nla_xdp->nla_type = IFLA_XDP_CHAIN_MAP_FD;
++		nla_xdp->nla_len = NLA_HDRLEN + sizeof(int);
++		memcpy((char *)nla_xdp + NLA_HDRLEN, chain_map_fd,
++		       sizeof(*chain_map_fd));
++		nla->nla_len += nla_xdp->nla_len;
++	}
++
+ 	/* if user passed in any flags, add those too */
+ 	if (flags) {
+ 		nla_xdp = (struct nlattr *)((char *)nla + nla->nla_len);
+@@ -187,6 +199,17 @@ int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
+ 	return ret;
+ }
+ 
++int bpf_set_link_xdp_chain(int ifindex, int prog_fd, int chain_map_fd,
++			   __u32 flags)
++{
++	return __bpf_set_link_xdp_fd(ifindex, &prog_fd, &chain_map_fd, flags);
++}
++
++int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
++{
++	return __bpf_set_link_xdp_fd(ifindex, &fd, NULL, flags);
++}
++
+ static int __dump_link_nlmsg(struct nlmsghdr *nlh,
+ 			     libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
+ {
+@@ -247,10 +270,13 @@ static int get_xdp_id(void *cookie, void *msg, struct nlattr **tb)
+ 
+ 	xdp_id->id = libbpf_nla_getattr_u32(xdp_tb[xdp_attr]);
+ 
++	if (xdp_tb[IFLA_XDP_CHAIN_MAP_ID])
++		xdp_id->chain_map_id = libbpf_nla_getattr_u32(xdp_tb[IFLA_XDP_CHAIN_MAP_ID]);
++
+ 	return 0;
+ }
+ 
+-int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
++static int __bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 *chain_map_id, __u32 flags)
+ {
+ 	struct xdp_id_md xdp_id = {};
+ 	int sock, ret;
+@@ -274,13 +300,28 @@ int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
+ 	xdp_id.flags = flags;
+ 
+ 	ret = libbpf_nl_get_link(sock, nl_pid, get_xdp_id, &xdp_id);
+-	if (!ret)
++	if (!ret) {
+ 		*prog_id = xdp_id.id;
+ 
++		if (chain_map_id)
++			*chain_map_id = xdp_id.chain_map_id;
++	}
++
+ 	close(sock);
+ 	return ret;
+ }
+ 
++int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
++{
++	return __bpf_get_link_xdp_id(ifindex, prog_id, NULL, flags);
++}
++
++int bpf_get_link_xdp_chain(int ifindex, __u32 *prog_id, __u32 *chain_map_id,
++			   __u32 flags)
++{
++	return __bpf_get_link_xdp_id(ifindex, prog_id, chain_map_id, flags);
++}
++
+ int libbpf_nl_get_link(int sock, unsigned int nl_pid,
+ 		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
+ {
 
