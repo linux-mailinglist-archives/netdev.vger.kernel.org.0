@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E79C4640
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 05:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38F27C4658
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 06:16:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729828AbfJBDmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 23:42:45 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:43040 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729544AbfJBDmo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 23:42:44 -0400
-Received: by mail-lf1-f68.google.com with SMTP id u3so11556270lfl.10;
-        Tue, 01 Oct 2019 20:42:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q94dRKz4b2ujZyKh9SewW/ndsUtNsYD4cEorXSz3XVw=;
-        b=qFyG9DZQ7twICwXXtyaC33AGqD2ZcSCuLMQxI8xqX4oec3Qwc3VyjHiGEt8L/DTZJi
-         HiqtYc+86a8ki6XHnCf0TSMpx7IlX3PD1ipdOrtkVSI55L/Y/SR2e/pvewiwbVINhhHa
-         swRyAgh6ISWbnd2LhAK3/kDfPa8HEib9KcR8V2/b0M/1hLIVA3SiwptWp7EkEPczyojB
-         z7vXDINXU9rhOo+NbF2vo82ZkYm84zmyIxQ59zJE3Qbva9aWipwjT8zSTY+R8LYBA5jD
-         i3ijX/Fj/Pv5H0LXiweDAmp+H7HK/Dc3L1H4nTanQk5V2MFRuaZxSHR+Zwwc3thJ3L2b
-         0sCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q94dRKz4b2ujZyKh9SewW/ndsUtNsYD4cEorXSz3XVw=;
-        b=e87LEWFIfxeUfS7Q2oD/A/bramwqeUbpta9Pr3iFg4meLFIleCbTGxVIt5KJ45+87Y
-         B6/lS+cPye1TUxkNqh3huebLj5z782qFNvSfqnO1teJ/75GeNlXbkg/sUIwNVuEyZi0q
-         mplCQZrVAZ1rEHN6EvliS9ppOQO84CiqFfmRJDXjZiiGnPqh14eEiWWdhE/6H0R2qnVb
-         0AmlTxI/t4ZF7+QzBguhD4idNK/wmInraZ2DUkO1KNIFk46zQe2UBTJCCnZQx6BSNGLo
-         i4Y9stF0ljl5/D9wsJyHc6MNi2Ul9Mvma7pYxI9fYWDfCyjJGWEXUjbWMSg2OEUfEPoE
-         T68g==
-X-Gm-Message-State: APjAAAXSP/JbJZYSD/YWO8uG3EXn3CcuXUqWP0o0v2dqKZXTGfJbj7vg
-        np+fK29uau7sE2MZ9+ck+PI1DjfTwbP8NLVMnQg=
-X-Google-Smtp-Source: APXvYqyCQssuItLz9aYH+PDanYdN1gv8cCFPj0Upq+xJKeo7vnQlfhGfWPhMzayMe9UaPZ09ZW5jNHb3jIddpn6fdJ8=
-X-Received: by 2002:a19:2d19:: with SMTP id k25mr700605lfj.76.1569987762302;
- Tue, 01 Oct 2019 20:42:42 -0700 (PDT)
+        id S1726435AbfJBEQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 00:16:33 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:44536 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725766AbfJBEQd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 00:16:33 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 202C960A4E; Wed,  2 Oct 2019 04:16:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1569989792;
+        bh=ABMSwBPwGo1QU011XzMyCQf5av246ZTYkO7iYK1Iv8A=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=E/kpD2TKLbsKCl65STaq83aE+IVbolqVruutjM0ylvbvgSw8kO5T50441zM4iV2ku
+         iHOaS/gmbXxJdicCZypVxbNHXyechFWNN5eU3vTrkYtkgyZVpEA+02g8jz505L/W9s
+         pjnxFusWqknlHLc/Hh7n9DHIo/7JiJ8H+JPpjeo4=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DDF1A6074F;
+        Wed,  2 Oct 2019 04:16:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1569989791;
+        bh=ABMSwBPwGo1QU011XzMyCQf5av246ZTYkO7iYK1Iv8A=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=WlNBoBd4jLJRy7tJL0lWaKCnBxumVD9vivjPf5RU0WmEZ45W0gPnso1Vgkcd3nAwy
+         ztfgsT6O66D5DF3NwBnnlW/CcEpWhCbMHO1Lu+lC+R+lGEeUltGee1AOQHERJu6kh3
+         qzxO7htY7LWLkDjUbny2UhIaeOzCTbf++uAo5iOc=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DDF1A6074F
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20191001173728.149786-1-brianvv@google.com> <20191001173728.149786-3-brianvv@google.com>
- <CAEf4BzYxs6Ace8s64ML3pA9H4y0vgdWv_vDF57oy3i-O_G7c-g@mail.gmail.com>
-In-Reply-To: <CAEf4BzYxs6Ace8s64ML3pA9H4y0vgdWv_vDF57oy3i-O_G7c-g@mail.gmail.com>
-From:   Brian Vazquez <brianvv.kernel@gmail.com>
-Date:   Tue, 1 Oct 2019 20:42:30 -0700
-Message-ID: <CABCgpaWbPN+2vSNdynHtmDxrgGbyzHa_D-y4-X8hLrQYbhTx=A@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/2] selftests/bpf: test_progs: don't leak server_fd
- in test_sockopt_inherit
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Brian Vazquez <brianvv@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 17/35] net/wireless: Use kmemdup rather than
+ duplicating its implementation
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190703162934.32645-1-huangfq.daxian@gmail.com>
+References: <20190703162934.32645-1-huangfq.daxian@gmail.com>
+To:     Fuqian Huang <huangfq.daxian@gmail.com>
+Cc:     unlisted-recipients:; (no To-header on input)
         "David S . Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Solomon Peachy <pizza@shaftnet.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Fuqian Huang <huangfq.daxian@gmail.com>
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     unlisted-recipients:; (no To-header on input)"David S . Miller" <davem@davemloft.net>
+                                                                     ^-missing end of address
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191002041632.202C960A4E@smtp.codeaurora.org>
+Date:   Wed,  2 Oct 2019 04:16:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for reviewing the patches Andrii!
+Fuqian Huang <huangfq.daxian@gmail.com> wrote:
 
-Although Daniel fixed them and applied them correctly.
+> kmemdup is introduced to duplicate a region of memory in a neat way.
+> Rather than kmalloc/kzalloc + memcpy, which the programmer needs to
+> write the size twice (sometimes lead to mistakes), kmemdup improves
+> readability, leads to smaller code and also reduce the chances of mistakes.
+> Suggestion to use kmemdup rather than using kmalloc/kzalloc + memcpy.
+> 
+> Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
 
-On Tue, Oct 1, 2019 at 8:20 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Oct 1, 2019 at 10:40 AM Brian Vazquez <brianvv@google.com> wrote:
-> >
->
-> I don't think there is a need to add "test_progs:" to subject, "
-> test_sockopt_inherit" is specific enough ;)
->
-> > server_fd needs to be close if pthread can't be created.
->
-> typo: closed
->
-> >
-> > Fixes: e3e02e1d9c24 ("selftests/bpf: test_progs: convert test_sockopt_inherit")
-> > Cc: Stanislav Fomichev <sdf@google.com>
-> > Signed-off-by: Brian Vazquez <brianvv@google.com>
-> > ---
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
->
-> >  tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c b/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c
-> > index 6cbeea7b4bf16..8547ecbdc61ff 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c
-> > @@ -195,7 +195,7 @@ static void run_test(int cgroup_fd)
-> >
-> >         if (CHECK_FAIL(pthread_create(&tid, NULL, server_thread,
-> >                                       (void *)&server_fd)))
-> > -               goto close_bpf_object;
-> > +               goto close_server_fd;
-> >
-> >         pthread_mutex_lock(&server_started_mtx);
-> >         pthread_cond_wait(&server_started, &server_started_mtx);
-> > --
-> > 2.23.0.444.g18eeb5a265-goog
-> >
+Patch applied to wireless-drivers-next.git, thanks.
+
+ab8c31dd8c8a net/wireless: Use kmemdup rather than duplicating its implementation
+
+-- 
+https://patchwork.kernel.org/patch/11029833/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
