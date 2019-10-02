@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BADFC89A3
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 15:30:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51473C89B3
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 15:30:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727884AbfJBNab (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 09:30:31 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39858 "EHLO mx1.redhat.com"
+        id S1727943AbfJBNae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 09:30:34 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54684 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727869AbfJBNaa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 09:30:30 -0400
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
+        id S1727933AbfJBNad (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 09:30:33 -0400
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A3C868763B
-        for <netdev@vger.kernel.org>; Wed,  2 Oct 2019 13:30:29 +0000 (UTC)
-Received: by mail-lj1-f200.google.com with SMTP id l13so4865684lji.7
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 06:30:29 -0700 (PDT)
+        by mx1.redhat.com (Postfix) with ESMTPS id EA40281127
+        for <netdev@vger.kernel.org>; Wed,  2 Oct 2019 13:30:32 +0000 (UTC)
+Received: by mail-lj1-f197.google.com with SMTP id b90so4859758ljf.11
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 06:30:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=zxVp0oQW9P1sFKHaI9R9o1AFUMKzBOp7SdYP5JimPZo=;
-        b=O92C3MYDkJ9yxM4UlO6buWBZfTtTvEBwB+x9ckLUGccMDrwDy4dVYMVIO8nbOsl4MD
-         UGZI49+F83WPEylgNyMSKjyaonP21dCdRv8//P/b+oVmk1vHamcA8i7KjUf4r05WogMN
-         Os9BGmXIHuOjfjTJxowK2fGG2XzuFeG5GyXdAy6baW1Hw9sjQlx87mmfr0C/laFbyzUH
-         +ty0xgVXwTX4B/W5jXKnh9DUXAkyaAEL/vUAf5JJFNLZdcfpOb7ciAR5gIWWChRIij/j
-         Clr/1kupS5IjaW5UxbpHUZziVBe+V/LZbwNRngui8OLvNfyZ9Wuc+Ryf5DlFK0BBYPp9
-         XMKQ==
-X-Gm-Message-State: APjAAAUih/CPO+g6ATW8q+4+BSthV7UyVz3N4Tviwke31xiLUCeI9eq+
-        A3wJEU+S/ZYFeFsKseslrIYRZy9rC6NTpILFvzM0auFIvaWbrq8fItEkk91sM5rgz6qldi0T98X
-        1tl/pLkcBK3ajtWd/
-X-Received: by 2002:a2e:7010:: with SMTP id l16mr2531612ljc.30.1570023027364;
-        Wed, 02 Oct 2019 06:30:27 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxEYmgbkp2r9lxcYPcJPq1Rm82i91/W2uU9/3M8voFck9WzQxTtYO4FjuRGn4ap9COXrQn2xA==
-X-Received: by 2002:a2e:7010:: with SMTP id l16mr2531601ljc.30.1570023027166;
-        Wed, 02 Oct 2019 06:30:27 -0700 (PDT)
+        bh=1Wsj/lXR0FWl5TJU2feRxQ1sy5OmHjYGRJ/DyODED4I=;
+        b=EF8MWAF5vpEOPYtqxDgGLFMnklmZL/HawVUPY5aAumgb/AzLIfsCD2DqoOHI25tro4
+         OBNYVD+x/LVQMXldcalSySrAoORehv+4CyeHaEc56fDI75AGySMPoYhhA64IrZkS4s8D
+         vAA1y4oe5t/+encT2UNbrN3LL2dhsQubVAv0aNjUCGRCym3J7ugPbmZqj63eJWCFkhTE
+         ZCH9uESiYIjS4Fc7Q2nPtLSfdYA7rzS4K3SIIb0ZKlPWntPwUsMeryH/vB2RgJP8JO9H
+         uhHsVXwPoUpadBFve4t/h6R53RzXpx2M4HTqui9DU++XAA39WepLTont/U052tbI2wiQ
+         NeHQ==
+X-Gm-Message-State: APjAAAWOoVdsAFUl2PX6xxRoF7ccN+n313JVb8DJPM3QcJXUFXBmUFnZ
+        41NDsERLJDfnfu4XSR150InXf0OMDNZsE6TYNXE39NQzz5yAcxk62W2B6NwCthcP8ZDen8JlJSt
+        uCMtDB4c8BG2nZSYZ
+X-Received: by 2002:a2e:b009:: with SMTP id y9mr2473334ljk.185.1570023031346;
+        Wed, 02 Oct 2019 06:30:31 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzxpvV1HU+8j/DE1KIvlQwjx6aFy5Y3VD//w5fRCydHkdEsxNoSEY/t/ptTvvccOhDhuMZ+sQ==
+X-Received: by 2002:a2e:b009:: with SMTP id y9mr2473304ljk.185.1570023031046;
+        Wed, 02 Oct 2019 06:30:31 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id 202sm4772280ljf.75.2019.10.02.06.30.26
+        by smtp.gmail.com with ESMTPSA id l3sm4668906lfc.31.2019.10.02.06.30.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 06:30:26 -0700 (PDT)
+        Wed, 02 Oct 2019 06:30:29 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B0BBD180640; Wed,  2 Oct 2019 15:30:25 +0200 (CEST)
-Subject: [PATCH bpf-next 1/9] hashtab: Add new bpf_map_fd_put_value op
+        id CE0CD18063D; Wed,  2 Oct 2019 15:30:26 +0200 (CEST)
+Subject: [PATCH bpf-next 2/9] xdp: Add new xdp_chain_map type for specifying
+ XDP call sequences
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -54,8 +55,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         David Miller <davem@davemloft.net>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Date:   Wed, 02 Oct 2019 15:30:25 +0200
-Message-ID: <157002302565.1302756.3212597038181844705.stgit@alrua-x1>
+Date:   Wed, 02 Oct 2019 15:30:26 +0200
+Message-ID: <157002302672.1302756.10579143571088111093.stgit@alrua-x1>
 In-Reply-To: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
 References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
 User-Agent: StGit/0.19-dirty
@@ -69,115 +70,298 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-The fd type maps all resolve the fd into a pointer to the underlying object
-when it is inserted into the map, and stores that pointer as the real array
-value. The htab code assumes that the map value is this single pointer, and
-dereferences it before passing it to the map fd_put_ptr() op.
+To specify call sequences for XDP programs, we need to do a lookup after an
+XDP program runs to get the next program to run. Introduce a new map type
+for this use which allows specifying one action per return code of the
+original program.
 
-For xdp chain maps we want to be able to store multiple pointers, so we
-need to get the pointer to the map value store, not the dereferenced
-pointer to the actual object. So add a new more general
-bpf_map_fd_put_value() op that takes the map value instead of the
-dereferenced pointer, and use this on map element free.
+The new map type is derived from the hashmap type, and uses the program ID
+as the lookup key. The value is a struct of program pointers specifying the
+next program in the call sequence for each return code of the previous
+program. A special wildcard pointer can also be specified which will match
+on all program return codes if no more specific entry is included in the
+structure (i.e., LPM-style matching).
+
+Userspace fills in a struct of program fds and passes that as the value,
+and the map converts the fds to pointers before inserting the structure
+into the map. Using the map type directly from an eBPF program is
+disallowed; instead, a subsequent commit will add lookup code to the XDP
+dispatch function, and the ability for userspace to set the current chain
+call map when attaching an XDP program to an interface.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- include/linux/bpf.h     |    1 +
- kernel/bpf/hashtab.c    |   16 ++++++----------
- kernel/bpf/map_in_map.c |    7 +++++++
- kernel/bpf/map_in_map.h |    1 +
- 4 files changed, 15 insertions(+), 10 deletions(-)
+ include/linux/bpf.h       |    9 +++
+ include/linux/bpf_types.h |    1 
+ include/uapi/linux/bpf.h  |   12 ++++
+ kernel/bpf/hashtab.c      |  153 +++++++++++++++++++++++++++++++++++++++++++++
+ kernel/bpf/syscall.c      |   11 +++
+ 5 files changed, 186 insertions(+)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 5b9d22338606..be3e9e9109c7 100644
+index be3e9e9109c7..e72702c4cb12 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -50,6 +50,7 @@ struct bpf_map_ops {
- 	void *(*map_fd_get_ptr)(struct bpf_map *map, struct file *map_file,
- 				int fd);
- 	void (*map_fd_put_ptr)(void *ptr);
-+	void (*map_fd_put_value)(void *value);
- 	u32 (*map_gen_lookup)(struct bpf_map *map, struct bpf_insn *insn_buf);
- 	u32 (*map_fd_sys_lookup_elem)(void *ptr);
- 	void (*map_seq_show_elem)(struct bpf_map *map, void *key,
+@@ -689,6 +689,15 @@ int bpf_fd_htab_map_update_elem(struct bpf_map *map, struct file *map_file,
+ 				void *key, void *value, u64 map_flags);
+ int bpf_fd_htab_map_lookup_elem(struct bpf_map *map, void *key, u32 *value);
+ 
++int bpf_xdp_chain_map_update_elem(struct bpf_map *map, void *key, void *value,
++				  u64 map_flags);
++int bpf_xdp_chain_map_lookup_elem(struct bpf_map *map, void *key, void *value);
++struct bpf_prog *bpf_xdp_chain_map_get_prog(struct bpf_map *map,
++					    u32 prev_id,
++					    enum xdp_action action);
++
++
++
+ int bpf_get_file_flag(int flags);
+ int bpf_check_uarg_tail_zero(void __user *uaddr, size_t expected_size,
+ 			     size_t actual_size);
+diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+index 36a9c2325176..95650ed86a12 100644
+--- a/include/linux/bpf_types.h
++++ b/include/linux/bpf_types.h
+@@ -63,6 +63,7 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_HASH_OF_MAPS, htab_of_maps_map_ops)
+ #ifdef CONFIG_NET
+ BPF_MAP_TYPE(BPF_MAP_TYPE_DEVMAP, dev_map_ops)
+ BPF_MAP_TYPE(BPF_MAP_TYPE_DEVMAP_HASH, dev_map_hash_ops)
++BPF_MAP_TYPE(BPF_MAP_TYPE_XDP_CHAIN, xdp_chain_map_ops)
+ BPF_MAP_TYPE(BPF_MAP_TYPE_SK_STORAGE, sk_storage_map_ops)
+ #if defined(CONFIG_BPF_STREAM_PARSER)
+ BPF_MAP_TYPE(BPF_MAP_TYPE_SOCKMAP, sock_map_ops)
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 77c6be96d676..8b336fb68880 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -136,6 +136,7 @@ enum bpf_map_type {
+ 	BPF_MAP_TYPE_STACK,
+ 	BPF_MAP_TYPE_SK_STORAGE,
+ 	BPF_MAP_TYPE_DEVMAP_HASH,
++	BPF_MAP_TYPE_XDP_CHAIN,
+ };
+ 
+ /* Note that tracing related programs such as
+@@ -3153,6 +3154,17 @@ enum xdp_action {
+ 	XDP_PASS,
+ 	XDP_TX,
+ 	XDP_REDIRECT,
++
++	__XDP_ACT_MAX /* leave at end */
++};
++#define XDP_ACT_MAX	(__XDP_ACT_MAX - 1)
++
++struct xdp_chain_acts {
++	__u32 wildcard_act;
++	__u32 drop_act;
++	__u32 pass_act;
++	__u32 tx_act;
++	__u32 redirect_act;
+ };
+ 
+ /* user accessible metadata for XDP packet hook
 diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 22066a62c8c9..113e1286e184 100644
+index 113e1286e184..ab855095c830 100644
 --- a/kernel/bpf/hashtab.c
 +++ b/kernel/bpf/hashtab.c
-@@ -87,11 +87,6 @@ static inline void __percpu *htab_elem_get_ptr(struct htab_elem *l, u32 key_size
- 	return *(void __percpu **)(l->key + key_size);
- }
- 
--static void *fd_htab_map_get_ptr(const struct bpf_map *map, struct htab_elem *l)
--{
--	return *(void **)(l->key + roundup(map->key_size, 8));
--}
--
- static struct htab_elem *get_htab_elem(struct bpf_htab *htab, int i)
- {
- 	return (struct htab_elem *) (htab->elems + i * htab->elem_size);
-@@ -679,10 +674,10 @@ static void free_htab_elem(struct bpf_htab *htab, struct htab_elem *l)
- {
- 	struct bpf_map *map = &htab->map;
- 
--	if (map->ops->map_fd_put_ptr) {
--		void *ptr = fd_htab_map_get_ptr(map, l);
-+	if (map->ops->map_fd_put_value) {
-+		void *value = l->key + round_up(map->key_size, 8);
- 
--		map->ops->map_fd_put_ptr(ptr);
-+		map->ops->map_fd_put_value(value);
- 	}
- 
- 	if (htab_is_prealloc(htab)) {
-@@ -1400,9 +1395,9 @@ static void fd_htab_map_free(struct bpf_map *map)
- 		head = select_bucket(htab, i);
- 
- 		hlist_nulls_for_each_entry_safe(l, n, head, hash_node) {
--			void *ptr = fd_htab_map_get_ptr(map, l);
-+			void *value = l->key + round_up(map->key_size, 8);
- 
--			map->ops->map_fd_put_ptr(ptr);
-+			map->ops->map_fd_put_value(value);
- 		}
- 	}
- 
-@@ -1510,6 +1505,7 @@ const struct bpf_map_ops htab_of_maps_map_ops = {
- 	.map_delete_elem = htab_map_delete_elem,
- 	.map_fd_get_ptr = bpf_map_fd_get_ptr,
- 	.map_fd_put_ptr = bpf_map_fd_put_ptr,
-+	.map_fd_put_value = bpf_map_fd_put_value,
- 	.map_fd_sys_lookup_elem = bpf_map_fd_sys_lookup_elem,
+@@ -1510,3 +1510,156 @@ const struct bpf_map_ops htab_of_maps_map_ops = {
  	.map_gen_lookup = htab_of_map_gen_lookup,
  	.map_check_btf = map_check_no_btf,
-diff --git a/kernel/bpf/map_in_map.c b/kernel/bpf/map_in_map.c
-index fab4fb134547..1b4e8b6da777 100644
---- a/kernel/bpf/map_in_map.c
-+++ b/kernel/bpf/map_in_map.c
-@@ -114,6 +114,13 @@ void bpf_map_fd_put_ptr(void *ptr)
- 	bpf_map_put(ptr);
- }
- 
-+void bpf_map_fd_put_value(void *value)
-+{
-+	void **ptr = value;
+ };
 +
-+	bpf_map_fd_put_ptr(*ptr);
++struct xdp_chain_table {
++	struct bpf_prog *wildcard_act;
++	struct bpf_prog *act[XDP_ACT_MAX];
++};
++
++static int xdp_chain_map_alloc_check(union bpf_attr *attr)
++{
++	BUILD_BUG_ON(sizeof(struct xdp_chain_table) / sizeof(void *) !=
++		     sizeof(struct xdp_chain_acts) / sizeof(u32));
++
++	if (attr->key_size != sizeof(u32) ||
++	    attr->value_size != sizeof(struct xdp_chain_acts))
++		return -EINVAL;
++
++	attr->value_size = sizeof(struct xdp_chain_table);
++	return htab_map_alloc_check(attr);
 +}
 +
- u32 bpf_map_fd_sys_lookup_elem(void *ptr)
- {
- 	return ((struct bpf_map *)ptr)->id;
-diff --git a/kernel/bpf/map_in_map.h b/kernel/bpf/map_in_map.h
-index a507bf6ef8b9..68d1a52e1757 100644
---- a/kernel/bpf/map_in_map.h
-+++ b/kernel/bpf/map_in_map.h
-@@ -16,6 +16,7 @@ bool bpf_map_meta_equal(const struct bpf_map *meta0,
- void *bpf_map_fd_get_ptr(struct bpf_map *map, struct file *map_file,
- 			 int ufd);
- void bpf_map_fd_put_ptr(void *ptr);
-+void bpf_map_fd_put_value(void *value);
- u32 bpf_map_fd_sys_lookup_elem(void *ptr);
++struct bpf_prog *bpf_xdp_chain_map_get_prog(struct bpf_map *map,
++					    u32 prev_id,
++					    enum xdp_action action)
++{
++	struct xdp_chain_table *tab;
++	void *ptr;
++
++	ptr = htab_map_lookup_elem(map, &prev_id);
++
++	if (!ptr)
++		return NULL;
++
++	tab = READ_ONCE(ptr);
++	return tab->act[action - 1] ?: tab->wildcard_act;
++}
++EXPORT_SYMBOL_GPL(bpf_xdp_chain_map_get_prog);
++
++/* only called from syscall */
++int bpf_xdp_chain_map_lookup_elem(struct bpf_map *map, void *key, void *value)
++{
++	struct xdp_chain_acts *act = value;
++	struct xdp_chain_table *tab;
++	void *ptr;
++	u32 *cur;
++	int i;
++
++	ptr = htab_map_lookup_elem(map, key);
++	if (!ptr)
++		return -ENOENT;
++
++	tab = READ_ONCE(ptr);
++
++	if (tab->wildcard_act)
++		act->wildcard_act = tab->wildcard_act->aux->id;
++
++	cur = &act->drop_act;
++	for (i = 0; i < XDP_ACT_MAX; i++, cur++)
++		if(tab->act[i])
++			*cur = tab->act[i]->aux->id;
++
++	return 0;
++}
++
++static void *xdp_chain_map_get_ptr(int fd)
++{
++	struct bpf_prog *prog = bpf_prog_get(fd);
++
++	if (IS_ERR(prog))
++		return prog;
++
++	if (prog->type != BPF_PROG_TYPE_XDP ||
++	    bpf_prog_is_dev_bound(prog->aux)) {
++		bpf_prog_put(prog);
++		return ERR_PTR(-EINVAL);
++	}
++
++	return prog;
++}
++
++static void xdp_chain_map_put_ptrs(void *value)
++{
++	struct xdp_chain_table *tab = value;
++	int i;
++
++	for (i = 0; i < XDP_ACT_MAX; i++)
++		if (tab->act[i])
++			bpf_prog_put(tab->act[i]);
++
++	if (tab->wildcard_act)
++		bpf_prog_put(tab->wildcard_act);
++}
++
++/* only called from syscall */
++int bpf_xdp_chain_map_update_elem(struct bpf_map *map, void *key, void *value,
++				  u64 map_flags)
++{
++	struct xdp_chain_acts *act = value;
++	struct xdp_chain_table tab = {};
++	u32 lookup_key = *((u32*)key);
++	u32 *cur = &act->drop_act;
++	bool found_val = false;
++	int ret, i;
++	void *ptr;
++
++	if (!lookup_key)
++		return -EINVAL;
++
++	if (act->wildcard_act) {
++		ptr = xdp_chain_map_get_ptr(act->wildcard_act);
++		if (IS_ERR(ptr))
++			return PTR_ERR(ptr);
++		tab.wildcard_act = ptr;
++		found_val = true;
++	}
++
++	for (i = 0; i < XDP_ACT_MAX; i++, cur++) {
++		if (*cur) {
++			ptr = xdp_chain_map_get_ptr(*cur);
++			if (IS_ERR(ptr)) {
++				ret = PTR_ERR(ptr);
++				goto out_err;
++			}
++			tab.act[i] = ptr;
++			found_val = true;
++		}
++	}
++
++	if (!found_val) {
++		ret = -EINVAL;
++		goto out_err;
++	}
++
++	ret = htab_map_update_elem(map, key, &tab, map_flags);
++	if (ret)
++		goto out_err;
++
++	return ret;
++
++out_err:
++	xdp_chain_map_put_ptrs(&tab);
++
++	return ret;
++}
++
++
++const struct bpf_map_ops xdp_chain_map_ops = {
++	.map_alloc_check = xdp_chain_map_alloc_check,
++	.map_alloc = htab_map_alloc,
++	.map_free = fd_htab_map_free,
++	.map_get_next_key = htab_map_get_next_key,
++	.map_delete_elem = htab_map_delete_elem,
++	.map_fd_put_value = xdp_chain_map_put_ptrs,
++	.map_check_btf = map_check_no_btf,
++};
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 82eabd4e38ad..c9afaace048d 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -778,6 +778,8 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 		value_size = round_up(map->value_size, 8) * num_possible_cpus();
+ 	else if (IS_FD_MAP(map))
+ 		value_size = sizeof(u32);
++	else if (map->map_type == BPF_MAP_TYPE_XDP_CHAIN)
++		value_size = sizeof(struct xdp_chain_acts);
+ 	else
+ 		value_size = map->value_size;
  
- #endif
+@@ -806,6 +808,8 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 		err = bpf_fd_array_map_lookup_elem(map, key, value);
+ 	} else if (IS_FD_HASH(map)) {
+ 		err = bpf_fd_htab_map_lookup_elem(map, key, value);
++	} else if (map->map_type == BPF_MAP_TYPE_XDP_CHAIN) {
++		err = bpf_xdp_chain_map_lookup_elem(map, key, value);
+ 	} else if (map->map_type == BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) {
+ 		err = bpf_fd_reuseport_array_lookup_elem(map, key, value);
+ 	} else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
+@@ -908,6 +912,8 @@ static int map_update_elem(union bpf_attr *attr)
+ 	    map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY ||
+ 	    map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
+ 		value_size = round_up(map->value_size, 8) * num_possible_cpus();
++	else if (map->map_type == BPF_MAP_TYPE_XDP_CHAIN)
++		value_size = sizeof(struct xdp_chain_acts);
+ 	else
+ 		value_size = map->value_size;
+ 
+@@ -954,6 +960,11 @@ static int map_update_elem(union bpf_attr *attr)
+ 		err = bpf_fd_htab_map_update_elem(map, f.file, key, value,
+ 						  attr->flags);
+ 		rcu_read_unlock();
++	} else if (map->map_type == BPF_MAP_TYPE_XDP_CHAIN) {
++		rcu_read_lock();
++		err = bpf_xdp_chain_map_update_elem(map, key, value,
++						    attr->flags);
++		rcu_read_unlock();
+ 	} else if (map->map_type == BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) {
+ 		/* rcu_read_lock() is not needed */
+ 		err = bpf_fd_reuseport_array_update_elem(map, key, value,
 
