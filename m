@@ -2,171 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8294C4960
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 10:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96889C4968
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 10:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727731AbfJBIV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 04:21:29 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:50263 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727723AbfJBIV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 04:21:28 -0400
+        id S1726654AbfJBIX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 04:23:28 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54448 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726073AbfJBIX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 04:23:27 -0400
+Received: by mail-wm1-f68.google.com with SMTP id p7so6138140wmp.4;
+        Wed, 02 Oct 2019 01:23:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1570004488; x=1601540488;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=ETNoVm/41DkpMwoTtztpjFcb9Yd2jPEoveAieIZWcug=;
-  b=uyLTsk4AOuFIbo5LAqacX8vUEDagOM2Po3V40KwX6Xynsuw7Paa94VNs
-   ENBL4AmZfVCbfN8LLxcbSZimU4YgGWZIhLV4uU4+htfx72OblAZcySr/p
-   rwFpSBzi+olcI6/KYZ5WurKqFLqb9mJpKhJuFGGU4IL+jdTaPdmmZXM6B
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.64,573,1559520000"; 
-   d="scan'208";a="789041974"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-8549039f.us-west-2.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 02 Oct 2019 08:21:25 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-8549039f.us-west-2.amazon.com (Postfix) with ESMTPS id 17F61A1DCC;
-        Wed,  2 Oct 2019 08:21:25 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB001.ant.amazon.com (10.43.60.129) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 2 Oct 2019 08:21:15 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (10.43.60.96) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 2 Oct 2019 08:21:15 +0000
-Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.52.90) by
- mail-relay.amazon.com (10.43.60.129) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Wed, 2 Oct 2019 08:21:12 +0000
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>
-Subject: [PATCH V2 net-next 5/5] net: ena: ethtool: support set_channels callback
-Date:   Wed, 2 Oct 2019 11:20:52 +0300
-Message-ID: <20191002082052.14051-6-sameehj@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191002082052.14051-1-sameehj@amazon.com>
-References: <20191002082052.14051-1-sameehj@amazon.com>
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fjdNl+PoTY9jdW12WzpwvTBCSOavhiTQp0zXpkH751c=;
+        b=T/mqmM587yOS6XkKYkloyc4yPJFeu0xgXyu6xm+JQO60F6y+5o+DFfIiy0Th0kDP+m
+         bYSUfIaUQY0FLq6Pig7JlEXOMcznpOv08Dy5LvhtFQYSckW068NG5NjDakQ0qE5HRj+u
+         OTpBrFcuxMGsZhQ8zjU+ziJlVRqVzQ+HepSePHTwUtBrddyKQDTNVfx+SiC7Tww5tGm/
+         XeUZ4GpUGldZwz9nC2MDbq8RQN6dd+5XPZJ/YSoWKc+6i6kgf13KLg6N8IyMUFLa3DdN
+         B796kUBeRpVyXdk21yoKL/nh6dseiqgnlsurPOCRs7/SGi1V8WAWw/HyiwzckQbEH7Pd
+         +FyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fjdNl+PoTY9jdW12WzpwvTBCSOavhiTQp0zXpkH751c=;
+        b=t1TaZScoD5uuOvRnhjo6F/W8UW897T5OGnHCHM1146X28HOB6uB7LQdDIVtUg7K7gX
+         BlzSikucAoTY5PdufFrUcDHvZO9EN6GzUhqNNsXMRxmogO0sg9k1F1vdPro8HIfmxk56
+         Fe16iZriU7LaTYLKZB/WoqP27gl35P+M5WOwE49d5ZCHy98ocnkoFY0iYNSjT0vXSiy8
+         j2HAI1rR8hLN1rPXq68A8Jyp+IldPESZuJ7yZvyy72LF6fX/Y9hWknSI4ogjnZXXwGQp
+         2KrHi1R1Vx0r1mzkAQQlyKhocTeDY+5qYhMo7qKgqHIAqaARWlIItarJFdDsK8efXjwg
+         fZtQ==
+X-Gm-Message-State: APjAAAWVvqybXYxRy8SJzRrczFgmlo8Fw35VApPdvL4NlAz3Wwu0FNIQ
+        /fLudMxb2B2audwLZk9HOSONLX6J0yZtFHiAbzPuyEw+
+X-Google-Smtp-Source: APXvYqzlRf65qhU4kTSHqIBi40tevjd+qK5g3NR32ui50naslg4CkhfAeOuBw3nDmmOtAYHmmwPA1e/2KKItWyrGQWk=
+X-Received: by 2002:a1c:a74f:: with SMTP id q76mr1887806wme.16.1570004603664;
+ Wed, 02 Oct 2019 01:23:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <acd60f4797143dc6e9817b3dce38e1408caf65e5.1569849018.git.lucien.xin@gmail.com>
+ <20191002010356.GG3499@localhost.localdomain>
+In-Reply-To: <20191002010356.GG3499@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 2 Oct 2019 16:23:52 +0800
+Message-ID: <CADvbK_ctLG+vnhmWwN=cWmZV7FgZreVRmoU+23PExdk=goF8cQ@mail.gmail.com>
+Subject: Re: [PATCH net] sctp: set newsk sk_socket before processing listening
+ sk backlog
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem <davem@davemloft.net>, Neil Horman <nhorman@tuxdriver.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+On Wed, Oct 2, 2019 at 9:04 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Mon, Sep 30, 2019 at 09:10:18PM +0800, Xin Long wrote:
+> > This patch is to fix a NULL-ptr deref crash in selinux_sctp_bind_connect:
+> >
+> >   [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
+> >   [...] RIP: 0010:selinux_sctp_bind_connect+0x16a/0x230
+> >   [...] Call Trace:
+> >   [...]  security_sctp_bind_connect+0x58/0x90
+> >   [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
+> >   [...]  sctp_sf_do_asconf+0x782/0x980 [sctp]
+> >   [...]  sctp_do_sm+0x139/0x520 [sctp]
+> >   [...]  sctp_assoc_bh_rcv+0x284/0x5c0 [sctp]
+> >   [...]  sctp_backlog_rcv+0x45f/0x880 [sctp]
+> >   [...]  __release_sock+0x120/0x370
+> >   [...]  release_sock+0x4f/0x180
+> >   [...]  sctp_accept+0x3f9/0x5a0 [sctp]
+> >   [...]  inet_accept+0xe7/0x6f0
+> >
+> > It was caused by that the 'newsk' sk_socket was not set before going to
+> > security sctp hook when doing accept() on a tcp-type socket:
+> >
+> >   inet_accept()->
+> >     sctp_accept():
+> >       lock_sock():
+> >           lock listening 'sk'
+> >                                           do_softirq():
+> >                                             sctp_rcv():  <-- [1]
+> >                                                 asconf chunk arrived and
+> >                                                 enqueued in 'sk' backlog
+> >       sctp_sock_migrate():
+> >           set asoc's sk to 'newsk'
+> >       release_sock():
+> >           sctp_backlog_rcv():
+> >             lock 'newsk'
+> >             sctp_process_asconf()  <-- [2]
+> >             unlock 'newsk'
+> >     sock_graft():
+> >         set sk_socket  <-- [3]
+> >
+> > As it shows, at [1] the asconf chunk would be put into the listening 'sk'
+> > backlog, as accept() was holding its sock lock. Then at [2] asconf would
+> > get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
+> > 'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
+> > would deref it, then kernel crashed.
+>
+> Note that sctp will migrate such incoming chunks from sk to newsk in
+> sctp_rcv() if they arrived after the mass-migration performed at
+> sctp_sock_migrate().
+>
+> That said, did you explore changing inet_accept() so that
+> sk1->sk_prot->accept() would return sk2 still/already locked?
+> That would be enough to block [2] from happening as then it would be
+> queued on newsk backlog this time and avoid nearly duplicating
+> inet_accept(). (too bad for this chunk, hit 2 backlogs..)
+We don't have to bother inet_accept() for it. I had this one below,
+and I was just thinking the locks order doesn't look nice. Do you
+think this is more acceptable?
 
-Set channels callback enables the user to change the count of queues
-used by the driver using ethtool. We decided to currently support only
-equal number of rx and tx queues, this might change in the future.
+@@ -4963,15 +4963,19 @@ static struct sock *sctp_accept(struct sock
+*sk, int flags, int *err, bool kern)
+         * asoc to the newsk.
+         */
+        error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
+-       if (error) {
+-               sk_common_release(newsk);
+-               newsk = NULL;
++       if (!error) {
++               lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
++               release_sock(sk);
++               release_sock(newsk);
++               *err = error;
++
++               return newsk;
+        }
 
-Also rename dev_up to dev_was_up in ena_update_queue_count() to make
-it clearer.
-
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 17 ++++++++++++++
- drivers/net/ethernet/amazon/ena/ena_netdev.c  | 22 ++++++++++++++++---
- drivers/net/ethernet/amazon/ena/ena_netdev.h  |  3 +++
- 3 files changed, 39 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index c9d760465..f58fc3c68 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -744,6 +744,22 @@ static void ena_get_channels(struct net_device *netdev,
- 	channels->combined_count = 0;
+ out:
+        release_sock(sk);
+        *err = error;
+-       return newsk;
++       return NULL;
  }
- 
-+static int ena_set_channels(struct net_device *netdev,
-+			    struct ethtool_channels *channels)
-+{
-+	struct ena_adapter *adapter = netdev_priv(netdev);
-+	u32 new_channel_count;
-+
-+	if (channels->rx_count != channels->tx_count ||
-+	    channels->max_tx != channels->max_rx)
-+		return -EINVAL;
-+
-+	new_channel_count = clamp_val(channels->tx_count,
-+				      ENA_MIN_NUM_IO_QUEUES, channels->max_tx);
-+
-+	return ena_update_queue_count(adapter, new_channel_count);
-+}
-+
- static int ena_get_tunable(struct net_device *netdev,
- 			   const struct ethtool_tunable *tuna, void *data)
- {
-@@ -807,6 +823,7 @@ static const struct ethtool_ops ena_ethtool_ops = {
- 	.get_rxfh		= ena_get_rxfh,
- 	.set_rxfh		= ena_set_rxfh,
- 	.get_channels		= ena_get_channels,
-+	.set_channels		= ena_set_channels,
- 	.get_tunable		= ena_get_tunable,
- 	.set_tunable		= ena_set_tunable,
- };
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index e964783c4..7d44b3440 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -2044,14 +2044,30 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
- 			   u32 new_tx_size,
- 			   u32 new_rx_size)
- {
--	bool dev_up;
-+	bool dev_was_up;
- 
--	dev_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
-+	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
- 	ena_close(adapter->netdev);
- 	adapter->requested_tx_ring_size = new_tx_size;
- 	adapter->requested_rx_ring_size = new_rx_size;
- 	ena_init_io_rings(adapter);
--	return dev_up ? ena_up(adapter) : 0;
-+	return dev_was_up ? ena_up(adapter) : 0;
-+}
-+
-+int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count)
-+{
-+	struct ena_com_dev *ena_dev = adapter->ena_dev;
-+	bool dev_was_up;
-+
-+	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
-+	ena_close(adapter->netdev);
-+	adapter->num_io_queues = new_channel_count;
-+       /* We need to destroy the rss table so that the indirection
-+	* table will be reinitialized by ena_up()
-+	*/
-+	ena_com_rss_destroy(ena_dev);
-+	ena_init_io_rings(adapter);
-+	return dev_was_up ? ena_open(adapter->netdev) : 0;
- }
- 
- static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 7499afb58..bffd778f2 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -82,6 +82,8 @@
- #define ENA_DEFAULT_RING_SIZE	(1024)
- #define ENA_MIN_RING_SIZE	(256)
- 
-+#define ENA_MIN_NUM_IO_QUEUES	(1)
-+
- #define ENA_TX_WAKEUP_THRESH		(MAX_SKB_FRAGS + 2)
- #define ENA_DEFAULT_RX_COPYBREAK	(256 - NET_IP_ALIGN)
- 
-@@ -388,6 +390,7 @@ void ena_dump_stats_to_buf(struct ena_adapter *adapter, u8 *buf);
- int ena_update_queue_sizes(struct ena_adapter *adapter,
- 			   u32 new_tx_size,
- 			   u32 new_rx_size);
-+int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count);
- 
- int ena_get_sset_count(struct net_device *netdev, int sset);
- 
--- 
-2.17.1
 
+>
+> AFAICT TCP code would be fine with such change. Didn't check other
+> protocols.
+>
