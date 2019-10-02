@@ -2,85 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81FF6C8C5B
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 17:08:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D0BAC8C5A
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 17:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728129AbfJBPIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 11:08:41 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:45230 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725766AbfJBPIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 11:08:41 -0400
-Received: by mail-ot1-f65.google.com with SMTP id 41so14935730oti.12;
-        Wed, 02 Oct 2019 08:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gJIjCiQ2NYS0xuLDviUg5MNMrtpokzrxmaZaxyzzQ+w=;
-        b=viD9ISzUoE03KqyTDPzoGP5j7FlOzU6mIDolt0h5q17eo4s0bbNtYO0SCEQDhsOKCT
-         6z8A4Aw+NZiXBrTm/90NusQPpxsxKuQrjh4AYIix1zsDunIBFO1plI8+TIpsbx8u0tcc
-         Af/d55bFh3bFxuC+ik3uSOfON+5CxEREUwnsKHDFZwQf13fsN5wOIT/IWuI8RJTMbDiT
-         gP8zSUP0rjg3pqyWqS5a6tEQbcF8UHL7srBmiG0kR2vEh1+839GItKkdKDhokgs+K+GP
-         nloKBSUyBicIiMoOGR0dmEloHru3Mvmug3YyNgqta1AVPGMhw+XGsyZ/EOPOz5mor0YU
-         8ayg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gJIjCiQ2NYS0xuLDviUg5MNMrtpokzrxmaZaxyzzQ+w=;
-        b=O6W5HCiOZ1vkiud1sAKn8yK0CrPcX5ctu1IIpKpP7kh6UntM5igszxE8GGhbxeCDup
-         l1qURAqFuLyXCtyKnZH7bLpH/jdf6hkArRNncg0NMt8LvwdGq6zUKXeS0l8lYn8PS/xv
-         a9AoEAg6qjEAWf/XJIIRDmw5nzs1464a87qAyJdxQR8CJIdR5ADrR+3oRu7VJPRw12w1
-         vc5BZcZf0TFdvTuRB6rx5CSKM0grE5+qCDcZF5ukGTIBKZH7PiKFIiO0ghxDXt42b9Jn
-         p7nmdluz56GO0LvMk2przrgCtyqon4pW9eMGfTtPXjDRgJPT7ckDsAUxrEbDEpgdDYdZ
-         2DNA==
-X-Gm-Message-State: APjAAAW20hOH3i0KVwsRHc9jGldEM0nQE0/u4A+mIYo1PiXa7qz0OGid
-        mqkYW+7vfKZD9QIavqt2C3kvwBx1f4fgzvcDMuo=
-X-Google-Smtp-Source: APXvYqzVt2LfQjyE/WxPgCJo/TBcWbnj6q/XHQzZrBF0p8HsfEx2NDpJWLQjANJ2HG+Zzz35jRfV3NXTHRGPA9UV6sQ=
-X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr2939034otp.332.1570028920662;
- Wed, 02 Oct 2019 08:08:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190918183552.28959-1-TheSven73@gmail.com> <20190918183552.28959-6-TheSven73@gmail.com>
- <20190930140519.GA2280096@kroah.com>
-In-Reply-To: <20190930140519.GA2280096@kroah.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Wed, 2 Oct 2019 11:08:29 -0400
-Message-ID: <CAGngYiXet4-2zUZ0oEO1iOqFM22zgVPZQ24Dzz5Q9TzTOTzjJQ@mail.gmail.com>
-Subject: Re: [PATCH v1 5/5] staging: fieldbus: add support for HMS FL-NET
- industrial controller
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Enrico Weigelt <lkml@metux.net>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "J. Kiszka" <jan.kiszka@siemens.com>,
-        Frank Iwanitz <friw@hms-networks.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728187AbfJBPIn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Oct 2019 11:08:43 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:32798 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725766AbfJBPIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 11:08:42 -0400
+Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:b5c5:ae11:3e54:6a07])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AE8EE14BBED93;
+        Wed,  2 Oct 2019 08:08:41 -0700 (PDT)
+Date:   Wed, 02 Oct 2019 11:08:41 -0400 (EDT)
+Message-Id: <20191002.110841.1635125794151710562.davem@davemloft.net>
+To:     valex@mellanox.com
+Cc:     mkubecek@suse.cz, saeedm@mellanox.com, leon@kernel.org,
+        bp@alien8.de, stephen@networkplumber.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] mlx5: avoid 64-bit division in
+ dr_icm_pool_mr_create()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <57dc9ea7-e925-e8e8-af71-35326bb5c673@mellanox.com>
+References: <20191002121241.D74DAE04C7@unicorn.suse.cz>
+        <57dc9ea7-e925-e8e8-af71-35326bb5c673@mellanox.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 02 Oct 2019 08:08:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 10:09 AM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> Discussing "patented" in a changelog text is a big no-no.  Please don't
-> do that.  Talk to your corporate lawyers for why not...
+From: Alex Vesker <valex@mellanox.com>
+Date: Wed, 2 Oct 2019 14:58:44 +0000
 
-Interesting. I will definitely have to investigate what's covered by those
-patents.
+> On 10/2/2019 3:12 PM, Michal Kubecek wrote:
+>> Recently added code introduces 64-bit division in dr_icm_pool_mr_create()
+>> so that build on 32-bit architectures fails with
+>>
+>>    ERROR: "__umoddi3" [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
+>>
+>> As the divisor is always a power of 2, we can use bitwise operation
+>> instead.
+>>
+>> Fixes: 29cf8febd185 ("net/mlx5: DR, ICM pool memory allocator")
+>> Reported-by: Borislav Petkov <bp@alien8.de>
+>> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+ ...
+> Align diff is power of 2,  looks good to me.
+> Thanks for fixing it Michal.
 
->
-> Why are you adding support for new things here?  New hardware support
-> should _only_ be added once the code is out of staging, otherwise there
-> is no pressure to get it out of this directory structure.
->
+I'll just apply this directly, thanks everyone.
 
-Because I am adding configuration support, and the existing supported h/w
-does not require this to operate. So I thought it'd make sense to add at
-least one in-kernel user of the new config interface.
-
-Would it be a better strategy to add an (optional) config interface to the
-existing supported h/w in staging/, rather than introducing new h/w ?
