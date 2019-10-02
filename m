@@ -2,105 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F993C9315
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 22:53:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD3FC9318
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 22:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728719AbfJBUxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 16:53:03 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42637 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbfJBUxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 16:53:03 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q12so185146pff.9
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 13:53:03 -0700 (PDT)
+        id S1728696AbfJBU5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 16:57:20 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:44414 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbfJBU5T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 16:57:19 -0400
+Received: by mail-qt1-f196.google.com with SMTP id u40so509619qth.11;
+        Wed, 02 Oct 2019 13:57:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Teht8krjV9I4yoAGotugiVYKYlwLiVfKSfSqCO8cNf4=;
-        b=jlO+NBPyz5tQDZY3RDxFnyu8Rcjfnq1ndJUH+zU/dejpBmvQ1oYCQL37A62CESeFsA
-         OLZXA9IM92ZVhJl/Gdz8aaqfWhniBPVbkgjzL2OhtNuvL8I/qJuWcdMUg6t7T1J7kQ7X
-         VED/vH0i8d/iEIoMjDbmzKYBysNutlFszdEVQ=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lBRtIu7khuvHqmEcKRJqmLxKD+g3RDOIkNxY/EmNt24=;
+        b=kTWePzepNBi9G2bJZ8mA1g/rDGjH6Nk2yHtXNovG/ac0AAsLnQ8oVtVBXYJhzsFeXO
+         gwrbvCKbzrU+A9z1ihqApJm8O0VVK+4j34UdCMm/rGhizVDe2LYuRyPulWKcX4eWY6kD
+         qvWqZHOkKFeJmwhPN/DF44HPJR+sgQE6sax40WQAYxQDjYgVuiOODa56Xd/MO6ct8M2O
+         g3u+M/J3wL2Ovt5DaGbbEhG5NfpD9bN0hL6MHIXsXodEzDovm7fOKP8CCgVLqZ9UTYBb
+         KsVEg9eEXB44fQcqOi+PE4znXZrcCA44KS004PCeUX2miTbf7dJry5ee/8U+8NFgjYKN
+         liVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Teht8krjV9I4yoAGotugiVYKYlwLiVfKSfSqCO8cNf4=;
-        b=F8qtvc22ZpiSDDMIZ46Z2EWakTgy31wxYfnxqzs1EpVdfmfBpVDM9a1xIasTdCh1ka
-         68RMbkqQ0cH5f6qZQeAWULHGbj+eTdvD76noH6CtE33122c5tzezbGKSqyxTc224oiuZ
-         nu0xZ3YdHyOLgxj9Ay9+CCXq11K+2dpdOrRJ97rQaIIW5MyE2NlDW7vILdgbO25LojjF
-         xM+qYcys2YPatAv+8Tt6ODl/LdvTrP3TtWYnCFqw6m0lBCuhvWIV8KwAxSlhjIQ5I+/7
-         bzgI0en1ZRd8y5XCrYLVdS3IeauFwW5biFO9r/jOUAFu2CF/oJ3nJtwQOVjoZJaboYYA
-         Pi3w==
-X-Gm-Message-State: APjAAAWxqq+u/jH3R7tCQRXpK8ZeCpcNovVe5WHHlCq7++lwqzZ2Igee
-        uIuBH7qM/5OC9SyG7NUdq+eIVw==
-X-Google-Smtp-Source: APXvYqz56NGqvNvM7wNZehM8lOTKZaqznv7OGeNO25LGl5UqtgpsSqdJxQLNnpGeTB2FDnioEMMVzA==
-X-Received: by 2002:a63:5356:: with SMTP id t22mr5429101pgl.400.1570049582624;
-        Wed, 02 Oct 2019 13:53:02 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j24sm340646pff.71.2019.10.02.13.53.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 13:53:01 -0700 (PDT)
-Date:   Wed, 2 Oct 2019 13:53:00 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     torvalds@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        pankaj.laxminarayan.bharadiya@intel.com, joe@perches.com,
-        adobriyan@gmail.com, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>
-Subject: Re: renaming FIELD_SIZEOF to sizeof_member
-Message-ID: <201910021349.9B19DCFD6@keescook>
-References: <CAHk-=wg8+eNK+SK1Ekqm0qNQHVM6e6YOdZx3yhsX6Ajo3gEupg@mail.gmail.com>
- <201909261347.3F04AFA0@keescook>
- <201910021115.9888E9B@keescook>
- <20191002.132121.402975401040540710.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lBRtIu7khuvHqmEcKRJqmLxKD+g3RDOIkNxY/EmNt24=;
+        b=TF8ArF8XH8OClwGxxE+s8IXPzBL3Dad57ZHhBLzfYBAKQtTHU9DgyMA26H+8uqSIiP
+         NBHwT+8WdtXx9Wt9tfiw+IXtLxa6ePIHAwgcgSX0KRAg7vOtDX21wEE5sW+KRLATqRa/
+         sp50ltwsLugwUYdyc5LRsXjO0QmDIdfPnhyWg/YmZfGTCewJapjKtYFMdiQSxXmX33i+
+         kiKB/NrLHGVxADILT5UXF00UKsUBE+cnGU88//jGETKyO0zWv4vDnx3ziftBa81ksdsI
+         /H1nvoX+2MonNmVGs6bH6qr1OdgKgoiixGj0WWLvY//I0TK9GVEYyo8Zkl6o2ECMT5Zf
+         I07Q==
+X-Gm-Message-State: APjAAAXA5VvxCOA23X9PnVeL8tnQ/CENzTQl+w9k+xjFh1qp/EngJWaH
+        G519iuttOhpO9skVDjpBuNcMHCwgZWWgpymaHbo=
+X-Google-Smtp-Source: APXvYqxLTy1mtbVueW4MPazVD8PiMqUsG8g8EPrwshM1czo2mde/7BhrkkCX1p8q9TuGyK0Act2L4NSKiaTSp9yPjbY=
+X-Received: by 2002:ac8:37cb:: with SMTP id e11mr6530720qtc.22.1570049838775;
+ Wed, 02 Oct 2019 13:57:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191002.132121.402975401040540710.davem@davemloft.net>
+References: <20191002173357.253643-1-sdf@google.com> <20191002173357.253643-2-sdf@google.com>
+In-Reply-To: <20191002173357.253643-2-sdf@google.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Wed, 2 Oct 2019 13:57:07 -0700
+Message-ID: <CAPhsuW6ywq5yySKjtdna8rXGBWdUyFgxQuy0+=2-gReXSTQ=ow@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf/flow_dissector: add mode to enforce
+ global BPF flow dissector
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Petar Penkov <ppenkov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 02, 2019 at 01:21:21PM -0700, David Miller wrote:
-> From: Kees Cook <keescook@chromium.org>
-> Date: Wed, 2 Oct 2019 11:19:16 -0700
-> 
-> > On Thu, Sep 26, 2019 at 01:56:55PM -0700, Kees Cook wrote:
-> >> On Thu, Sep 26, 2019 at 01:06:01PM -0700, Linus Torvalds wrote:
-> >> >  (a) why didn't this use the already existing and well-named macro
-> >> > that nobody really had issues with?
-> >> 
-> >> That was suggested, but other folks wanted the more accurate "member"
-> >> instead of "field" since a treewide change was happening anyway:
-> >> https://www.openwall.com/lists/kernel-hardening/2019/07/02/2
-> >> 
-> >> At the end of the day, I really don't care -- I just want to have _one_
-> >> macro. :)
-> >> 
-> >> >  (b) I see no sign of the networking people having been asked about
-> >> > their preferences.
-> >> 
-> >> Yeah, that's entirely true. Totally my mistake; it seemed like a trivial
-> >> enough change that I didn't want to bother too many people. But let's
-> >> fix that now... Dave, do you have any concerns about this change of
-> >> FIELD_SIZEOF() to sizeof_member() (or if it prevails, sizeof_field())?
-> > 
-> > David, can you weight in on this? Are you okay with a mass renaming of
-> > FIELD_SIZEOF() to sizeof_member(), as the largest user of the old macro
-> > is in networking?
-> 
-> I have no objection to moving to sizeof_member().
+On Wed, Oct 2, 2019 at 10:36 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> Always use init_net flow dissector BPF program if it's attached and fall
+> back to the per-net namespace one. Also, deny installing new programs if
+> there is already one attached to the root namespace.
+> Users can still detach their BPF programs, but can't attach any
+> new ones (-EPERM).
+>
+> Cc: Petar Penkov <ppenkov@google.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  Documentation/bpf/prog_flow_dissector.rst |  3 +++
+>  net/core/flow_dissector.c                 | 11 ++++++++++-
+>  2 files changed, 13 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/bpf/prog_flow_dissector.rst b/Documentation/bpf/prog_flow_dissector.rst
+> index a78bf036cadd..4d86780ab0f1 100644
+> --- a/Documentation/bpf/prog_flow_dissector.rst
+> +++ b/Documentation/bpf/prog_flow_dissector.rst
+> @@ -142,3 +142,6 @@ BPF flow dissector doesn't support exporting all the metadata that in-kernel
+>  C-based implementation can export. Notable example is single VLAN (802.1Q)
+>  and double VLAN (802.1AD) tags. Please refer to the ``struct bpf_flow_keys``
+>  for a set of information that's currently can be exported from the BPF context.
+> +
+> +When BPF flow dissector is attached to the root network namespace (machine-wide
+> +policy), users can't override it in their child network namespaces.
+> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+> index 7c09d87d3269..494e2016fe84 100644
+> --- a/net/core/flow_dissector.c
+> +++ b/net/core/flow_dissector.c
+> @@ -115,6 +115,11 @@ int skb_flow_dissector_bpf_prog_attach(const union bpf_attr *attr,
+>         struct bpf_prog *attached;
+>         struct net *net;
+>
+> +       if (rcu_access_pointer(init_net.flow_dissector_prog)) {
+> +               /* Can't override root flow dissector program */
+> +               return -EPERM;
 
-Great; thank you!
+Maybe -EBUSY is more accurate?
 
-Linus, are you still open to taking this series with Dave's buy-in? I'd
-really hate to break it up since it's such a mechanical treewide
-change. I'm also happy to wait until the next -rc1 window; whatever you
-think is best here.
-
-Thanks!
-
--- 
-Kees Cook
+Thanks,
+Song
