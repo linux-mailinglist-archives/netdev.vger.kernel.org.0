@@ -2,213 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E656C8E10
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E9F9C8E14
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 18:16:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728383AbfJBQOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 12:14:42 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37307 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727810AbfJBQOm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:14:42 -0400
-Received: by mail-wm1-f67.google.com with SMTP id f22so7598817wmc.2
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 09:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+sGSeiq6M+4Q0J4lpDwAsVEooTbxBn8OQfpxTpaQJJc=;
-        b=aEZBBtFvDrhoIVr1hxHgHFsVhE+f4vedT1TwUxm+mP1kdGt291z8e9NEtrmQLZxhVD
-         lcVYFo5DyTfbSrTpRykdEvGXeQos3xyKoHUAnkRLb5T3QdP4K7sjHrqw3zBnt6uzbMnF
-         R+ECsrpKVPgIwkvUi33inrJzPoHmHeV3NtVocarz4Ql/zleK4iEOzS9cOgvlqSNxDcee
-         v+Yj8KJGrzom4GacADCH2mB/Nt2yCOlvp45jNQl42W74Nj3Vh/lUCJ6IrrKEQxFGSgbY
-         KkVdzMl8CiCyw6wxyjI/9uRF5PzOko9PwWnmvwOiM1GYkJLYYTO5pIYECSBonWnslHBh
-         1bsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+sGSeiq6M+4Q0J4lpDwAsVEooTbxBn8OQfpxTpaQJJc=;
-        b=pxxm/xSscK2anQEm9WwNMHvFszYsdvwODSrAlL48wl6R26rmTFpvZw1Ztyz1+FmjS9
-         sQyXLtse8vO+ncM26Uf9nQj7QUq4/DwNntWwstU8/b9qDReBhF3RZpygnmBbLSQIqE02
-         BazUp3CZSURs2RYrETyv+lzk8OOZ/bQkc+Pt4m98Be8zIkNo31zTyaCcjpO1ikZ7upOv
-         D0UrWaP7uHYgL7s1j2WxBR4Jp2r8HgCHWFX5FxbPceqhIdq99Dt3g79ewj2Ot007Z5tN
-         geLG3i/ia0QjPZcrBhLeN1xEUydrnEo7ATqvKBV/8TVwK2UFzZ680M0cD0x1cfeBbg2C
-         OnSg==
-X-Gm-Message-State: APjAAAU1ufBhJbW7drzq7yYkSKqfUZaD+a68WZuYaUTYKILpH86bv9NW
-        7TtOxDb2lVOhzAN1dacc2qJEMFPsrvU=
-X-Google-Smtp-Source: APXvYqzE75viyFGhhITqKujlskYa8XYITC3UoJ2XQGGs5b7pcDRxDtWBwZriYB8SjSLkMdmGI3zrtQ==
-X-Received: by 2002:a05:600c:d4:: with SMTP id u20mr3765637wmm.66.1570032877782;
-        Wed, 02 Oct 2019 09:14:37 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id g1sm18477963wrv.68.2019.10.02.09.14.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 09:14:37 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
-        jakub.kicinski@netronome.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        shuah@kernel.org, mlxsw@mellanox.com
-Subject: [patch iproute2-next v2 2/2] devlink: extend reload command to add support for network namespace change
-Date:   Wed,  2 Oct 2019 18:14:35 +0200
-Message-Id: <20191002161435.3243-2-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191002161231.2987-1-jiri@resnulli.us>
-References: <20191002161231.2987-1-jiri@resnulli.us>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727981AbfJBQPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 12:15:44 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33604 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbfJBQPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 12:15:44 -0400
+Received: from localhost (unknown [172.58.43.221])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1C59615404E23;
+        Wed,  2 Oct 2019 09:15:41 -0700 (PDT)
+Date:   Wed, 02 Oct 2019 12:15:38 -0400 (EDT)
+Message-Id: <20191002.121538.299094926277817963.davem@davemloft.net>
+To:     pc@cjr.nz
+Cc:     netdev@vger.kernel.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, smfrench@gmail.com
+Subject: Re: [PATCH net-next 0/2] Experimental SMB rootfs support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191001171028.23356-1-pc@cjr.nz>
+References: <20191001171028.23356-1-pc@cjr.nz>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 02 Oct 2019 09:15:43 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+From: "Paulo Alcantara (SUSE)" <pc@cjr.nz>
+Date: Tue,  1 Oct 2019 14:10:26 -0300
 
-Extend existing devlink reload command by adding option "netns" by which
-user can instruct kernel to reload the devlink instance into specified
-network namespace.
+> This patch series enables Linux to mount root file systems over the
+> network by utilizing SMB protocol.
+ ...
 
-Example:
-
-$ ip netns add testns1
-$ devlink dev reload netdevsim/netdevsim10 netns testns1
-
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v1->v2:
-- fixed manpage
-- added patch description
----
- devlink/devlink.c            | 31 +++++++++++++++++++++++++++----
- include/uapi/linux/devlink.h |  4 ++++
- man/man8/devlink-dev.8       |  7 +++++++
- 3 files changed, 38 insertions(+), 4 deletions(-)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 852e2257cb64..a0cd6a47d26f 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -261,6 +261,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
- #define DL_OPT_TRAP_NAME		BIT(30)
- #define DL_OPT_TRAP_ACTION		BIT(31)
- #define DL_OPT_TRAP_GROUP_NAME		BIT(32)
-+#define DL_OPT_NETNS	BIT(33)
- 
- struct dl_opts {
- 	uint64_t present; /* flags of present items */
-@@ -300,6 +301,8 @@ struct dl_opts {
- 	const char *trap_name;
- 	const char *trap_group_name;
- 	enum devlink_trap_action trap_action;
-+	bool netns_is_pid;
-+	uint32_t netns;
- };
- 
- struct dl {
-@@ -1440,6 +1443,22 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
- 			if (err)
- 				return err;
- 			o_found |= DL_OPT_TRAP_ACTION;
-+		} else if (dl_argv_match(dl, "netns") &&
-+			(o_all & DL_OPT_NETNS)) {
-+			const char *netns_str;
-+
-+			dl_arg_inc(dl);
-+			err = dl_argv_str(dl, &netns_str);
-+			if (err)
-+				return err;
-+			opts->netns = netns_get_fd(netns_str);
-+			if (opts->netns < 0) {
-+				err = dl_argv_uint32_t(dl, &opts->netns);
-+				if (err)
-+					return err;
-+				opts->netns_is_pid = true;
-+			}
-+			o_found |= DL_OPT_NETNS;
- 		} else {
- 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
- 			return -EINVAL;
-@@ -1562,7 +1581,11 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
- 	if (opts->present & DL_OPT_TRAP_ACTION)
- 		mnl_attr_put_u8(nlh, DEVLINK_ATTR_TRAP_ACTION,
- 				opts->trap_action);
--
-+	if (opts->present & DL_OPT_NETNS)
-+		mnl_attr_put_u32(nlh,
-+				 opts->netns_is_pid ? DEVLINK_ATTR_NETNS_PID :
-+						      DEVLINK_ATTR_NETNS_FD,
-+				 opts->netns);
- }
- 
- static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
-@@ -1623,7 +1646,7 @@ static void cmd_dev_help(void)
- 	pr_err("       devlink dev eswitch show DEV\n");
- 	pr_err("       devlink dev param set DEV name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
- 	pr_err("       devlink dev param show [DEV name PARAMETER]\n");
--	pr_err("       devlink dev reload DEV\n");
-+	pr_err("       devlink dev reload DEV [ netns { PID | NAME | ID } ]\n");
- 	pr_err("       devlink dev info [ DEV ]\n");
- 	pr_err("       devlink dev flash DEV file PATH [ component NAME ]\n");
- }
-@@ -2724,7 +2747,7 @@ static int cmd_dev_show(struct dl *dl)
- 
- static void cmd_dev_reload_help(void)
- {
--	pr_err("Usage: devlink dev reload [ DEV ]\n");
-+	pr_err("Usage: devlink dev reload DEV [ netns { PID | NAME | ID } ]\n");
- }
- 
- static int cmd_dev_reload(struct dl *dl)
-@@ -2740,7 +2763,7 @@ static int cmd_dev_reload(struct dl *dl)
- 	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_RELOAD,
- 			       NLM_F_REQUEST | NLM_F_ACK);
- 
--	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, 0);
-+	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, DL_OPT_NETNS);
- 	if (err)
- 		return err;
- 
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 79e1405db67c..ab09b3b83675 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -421,6 +421,10 @@ enum devlink_attr {
- 
- 	DEVLINK_ATTR_RELOAD_FAILED,			/* u8 0 or 1 */
- 
-+	DEVLINK_ATTR_NETNS_FD,			/* u32 */
-+	DEVLINK_ATTR_NETNS_PID,			/* u32 */
-+	DEVLINK_ATTR_NETNS_ID,			/* u32 */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
-index 1021ee8d064c..2c6acbd3af69 100644
---- a/man/man8/devlink-dev.8
-+++ b/man/man8/devlink-dev.8
-@@ -62,6 +62,9 @@ devlink-dev \- devlink device configuration
- .ti -8
- .BR "devlink dev reload"
- .IR DEV
-+.RI "[ "
-+.BI "netns { " PID " | " NAME " | " ID " }
-+.RI "]"
- 
- .ti -8
- .BR "devlink dev info"
-@@ -167,6 +170,10 @@ If this argument is omitted all parameters supported by devlink devices are list
- .I "DEV"
- - Specifies the devlink device to reload.
- 
-+.BR netns
-+.BI { " PID " | " NAME " | " ID " }
-+- Specifies the network namespace to reload into, either by pid, name or id.
-+
- .SS devlink dev info - display device information.
- Display device information provided by the driver. This command can be used
- to query versions of the hardware components or device components which
--- 
-2.21.0
-
+Series applied, thanks.
