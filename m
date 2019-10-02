@@ -2,197 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9DDC90C1
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 20:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34571C90C9
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 20:25:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728926AbfJBSXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 14:23:10 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33909 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728806AbfJBSXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 14:23:08 -0400
-Received: by mail-wm1-f67.google.com with SMTP id y135so5522133wmc.1;
-        Wed, 02 Oct 2019 11:23:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FSUCt1LD5y9mlrWBYl2U48Y4AhIXh+tutDGzQFeAW+A=;
-        b=ABuZrmyFf6KFypYuZVS8OSgVfdTPFLiU97l3+pQOZ6fvOIYqo1SW3D17JEjpG3YIwq
-         mOLqb+1ldVk9PqFmSVRfCdmFRS79FSu2L8tK8WkVpXTFR8Rg2AmGtOrqeVjGjCS9opRZ
-         ztvO+UvlhINYZdD9T8lEEDYP3TIq+lVQphygG+AhsadTdi9lvyE8Ms7iXm+Ta/tU1/z0
-         lloa1ZO3bfhvY+R/Bboo/Gf9HG5+tAsP0/iIdybf55NXpi8kkdVBWdLAYHxqL08iP9RB
-         v84FU4cESSWXn7KAtT2tytrpJrLZsNTCxKY++xlfdebbkOp6+Mlhuasb3pAKj17QUIty
-         VSuA==
+        id S1728495AbfJBSZh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Oct 2019 14:25:37 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42936 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727756AbfJBSZh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 14:25:37 -0400
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 92C0410B78
+        for <netdev@vger.kernel.org>; Wed,  2 Oct 2019 18:25:36 +0000 (UTC)
+Received: by mail-lj1-f199.google.com with SMTP id q185so41281ljb.20
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 11:25:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FSUCt1LD5y9mlrWBYl2U48Y4AhIXh+tutDGzQFeAW+A=;
-        b=LMChAyWfRPZfoJ3gGBe/J9dMrpJrzrrrLBWQ3ulIKxRq9VULa2Wv2GqwdvaCgrTuJK
-         anCYdsDbHJhFXiyBoEK39WLINvN5l2K+5VLzKDgrWAmDu4gMJpnRNHWhAwnhtdGoXraO
-         RBd1l9Gsww9gUVS9TQ3eT0mRRrtsVAbeR9QEl1Yc1Ky8XEJjUvyoVAEsIwNwgp0JeTJn
-         5xZVFMPcL2RLRgWyielhjbuKR/MX7yemJwrNR1oz61Ka5wBceZ7S8jv5jGbdM2qcw4wZ
-         UGvIhW3K4NZuIdQIGyFKpTdzP82I1GyfZIT0Qd7ZTmKAtpfncIn41QhKLmenZH4WV55n
-         XJmQ==
-X-Gm-Message-State: APjAAAVasS2nxzFfijONQUfvFcKbjJK+Qm4k4/v0peFi/V9KbKdWYPqN
-        m8vLPXrzYCkiXuozu+JN6fnFLSB1nC4X+b4Uz6s=
-X-Google-Smtp-Source: APXvYqyb4kIlEkWgIrBHdNYypTbVR2PCKC4qhzD9w41JftTz5VHlz7M9+uF0SWpgSiQFwQPIMjShgnV6hk2AQxomUMM=
-X-Received: by 2002:a1c:a74f:: with SMTP id q76mr4061260wme.16.1570040586400;
- Wed, 02 Oct 2019 11:23:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=ibQgq7pRDE4NMnwf0Oe/pHy9vleqF3n5ofWwZ/N+LVo=;
+        b=iccct3jMoMTE4rvtusZol+tfW6Di0g9fLsxziQja2jBb27lSBs7pS+UV2UcGIioLFA
+         dEp6rsBYpQS9gHtw1ntvdv80z4IxYn+qcdw7xFAPVKfZasTUoZXrpWL+APWLLLIWav21
+         DMLgiWZ/HFOyO882JaA8s2dVFb8W7r/tT43LfhVwGN6iVaQlW5h/Zy3Ig0f30n3MXLfR
+         fpvDMDW+pOOPcVyGMHGJuHoZF5bZQv5Ot1r4m6VA0UcGZogsEU5dm7U+8gdfrz1RbHTh
+         OOAxpWPDINJTZDUZOErhbsrxuxZJPj+9LmAWkh5l+ugBI/mRbzNruZpKqYM9Of0WsDVF
+         HaXQ==
+X-Gm-Message-State: APjAAAVIS6yUrXdYu7X6Kble3Bg6O8fCi/X6RlUy5vfODrD93Qi8wX+3
+        joPsoeYFp5b8YcBV8PQXKLCZPOsNaPBvUxdie39CzmLuZMObI+rbuh6aDO79uMWjjXvZ1mRc4Sg
+        ZLTunlYt/uqfQ0s8v
+X-Received: by 2002:ac2:5445:: with SMTP id d5mr3083136lfn.43.1570040735055;
+        Wed, 02 Oct 2019 11:25:35 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwtkK9eR9QNvCdWZq+zcFWwZHEcXsn/QQSCkOeyIwohrymf7Lk80K5KxPvs6bNY5aCBfXdIgg==
+X-Received: by 2002:ac2:5445:: with SMTP id d5mr3083115lfn.43.1570040734763;
+        Wed, 02 Oct 2019 11:25:34 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id p22sm39930ljp.69.2019.10.02.11.25.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2019 11:25:34 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0EEFA18063D; Wed,  2 Oct 2019 20:25:33 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Subject: Re: [PATCH bpf-next 2/9] xdp: Add new xdp_chain_map type for specifying XDP call sequences
+In-Reply-To: <CACAyw9-u7oAmC1F4rW8wH2a2aoxrDHCENcM4j5WmriS7YLmevQ@mail.gmail.com>
+References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1> <157002302672.1302756.10579143571088111093.stgit@alrua-x1> <CACAyw9-u7oAmC1F4rW8wH2a2aoxrDHCENcM4j5WmriS7YLmevQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 02 Oct 2019 20:25:32 +0200
+Message-ID: <878sq3romb.fsf@toke.dk>
 MIME-Version: 1.0
-References: <acd60f4797143dc6e9817b3dce38e1408caf65e5.1569849018.git.lucien.xin@gmail.com>
- <20191002010356.GG3499@localhost.localdomain> <CADvbK_ctLG+vnhmWwN=cWmZV7FgZreVRmoU+23PExdk=goF8cQ@mail.gmail.com>
- <20191002125511.GH3499@localhost.localdomain> <CADvbK_fD+yuCCUTf41n+3oVwVjLUdT8+-wfwppVL8ZmbJegTWA@mail.gmail.com>
- <20191002174127.GL3431@localhost.localdomain>
-In-Reply-To: <20191002174127.GL3431@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 3 Oct 2019 02:23:37 +0800
-Message-ID: <CADvbK_dgNB3Cgd8v+VP3iWKCr0-UkS6vUBxLOTTCi_SPcQj7-w@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: set newsk sk_socket before processing listening
- sk backlog
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        davem <davem@davemloft.net>, Neil Horman <nhorman@tuxdriver.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 3, 2019 at 1:41 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Thu, Oct 03, 2019 at 01:26:46AM +0800, Xin Long wrote:
-> > On Wed, Oct 2, 2019 at 8:55 PM Marcelo Ricardo Leitner
-> > <marcelo.leitner@gmail.com> wrote:
-> > >
-> > > On Wed, Oct 02, 2019 at 04:23:52PM +0800, Xin Long wrote:
-> > > > On Wed, Oct 2, 2019 at 9:04 AM Marcelo Ricardo Leitner
-> > > > <marcelo.leitner@gmail.com> wrote:
-> > > > >
-> > > > > On Mon, Sep 30, 2019 at 09:10:18PM +0800, Xin Long wrote:
-> > > > > > This patch is to fix a NULL-ptr deref crash in selinux_sctp_bind_connect:
-> > > > > >
-> > > > > >   [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
-> > > > > >   [...] RIP: 0010:selinux_sctp_bind_connect+0x16a/0x230
-> > > > > >   [...] Call Trace:
-> > > > > >   [...]  security_sctp_bind_connect+0x58/0x90
-> > > > > >   [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
-> > > > > >   [...]  sctp_sf_do_asconf+0x782/0x980 [sctp]
-> > > > > >   [...]  sctp_do_sm+0x139/0x520 [sctp]
-> > > > > >   [...]  sctp_assoc_bh_rcv+0x284/0x5c0 [sctp]
-> > > > > >   [...]  sctp_backlog_rcv+0x45f/0x880 [sctp]
-> > > > > >   [...]  __release_sock+0x120/0x370
-> > > > > >   [...]  release_sock+0x4f/0x180
-> > > > > >   [...]  sctp_accept+0x3f9/0x5a0 [sctp]
-> > > > > >   [...]  inet_accept+0xe7/0x6f0
-> > > > > >
-> > > > > > It was caused by that the 'newsk' sk_socket was not set before going to
-> > > > > > security sctp hook when doing accept() on a tcp-type socket:
-> > > > > >
-> > > > > >   inet_accept()->
-> > > > > >     sctp_accept():
-> > > > > >       lock_sock():
-> > > > > >           lock listening 'sk'
-> > > > > >                                           do_softirq():
-> > > > > >                                             sctp_rcv():  <-- [1]
-> > > > > >                                                 asconf chunk arrived and
-> > > > > >                                                 enqueued in 'sk' backlog
-> > > > > >       sctp_sock_migrate():
-> > > > > >           set asoc's sk to 'newsk'
-> > > > > >       release_sock():
-> > > > > >           sctp_backlog_rcv():
-> > > > > >             lock 'newsk'
-> > > > > >             sctp_process_asconf()  <-- [2]
-> > > > > >             unlock 'newsk'
-> > > > > >     sock_graft():
-> > > > > >         set sk_socket  <-- [3]
-> > > > > >
-> > > > > > As it shows, at [1] the asconf chunk would be put into the listening 'sk'
-> > > > > > backlog, as accept() was holding its sock lock. Then at [2] asconf would
-> > > > > > get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
-> > > > > > 'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
-> > > > > > would deref it, then kernel crashed.
-> > > > >
-> > > > > Note that sctp will migrate such incoming chunks from sk to newsk in
-> > > > > sctp_rcv() if they arrived after the mass-migration performed at
-> > > > > sctp_sock_migrate().
-> > > > >
-> > > > > That said, did you explore changing inet_accept() so that
-> > > > > sk1->sk_prot->accept() would return sk2 still/already locked?
-> > > > > That would be enough to block [2] from happening as then it would be
-> > > > > queued on newsk backlog this time and avoid nearly duplicating
-> > > > > inet_accept(). (too bad for this chunk, hit 2 backlogs..)
-> > > > We don't have to bother inet_accept() for it. I had this one below,
-> > > > and I was just thinking the locks order doesn't look nice. Do you
-> > > > think this is more acceptable?
-> > > >
-> > > > @@ -4963,15 +4963,19 @@ static struct sock *sctp_accept(struct sock
-> > > > *sk, int flags, int *err, bool kern)
-> > > >          * asoc to the newsk.
-> > > >          */
-> > > >         error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
-> > > > -       if (error) {
-> > > > -               sk_common_release(newsk);
-> > > > -               newsk = NULL;
-> > > > +       if (!error) {
-> > > > +               lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
-> > > > +               release_sock(sk);
-> > >
-> > > Interesting. It fixes the backlog processing, ok. Question:
-> > >
-> > > > +               release_sock(newsk);
-> > >
-> > > As newsk is hashed already and unlocked here to be locked again later
-> > > on inet_accept(), it could receive a packet in between (thus before
-> > > sock_graft() could have a chance to run), no?
-> >
-> > You're right, it explains another call trace happened once in our testing.
-> >
-> > The way to changing inet_accept() will also have to change all protocols'
-> > .accept(). Given that this issue is only triggered in a very small moment,
-> > can we just silently discard this asconf chunk if sk->sk_socket is NULL?
-> > and let peer's T4-timer retransmit it.
->
-> No no. If the change doesn't hurt other protocols, we should try that
-> first.  Otherwise this adds overhead to the network and we could get a
-> bug report soon on "valid asconf being ignored".
-Thanks, I will give it a try tomorrow.
+Lorenz Bauer <lmb@cloudflare.com> writes:
 
+> On Wed, 2 Oct 2019 at 14:30, Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+>> index 113e1286e184..ab855095c830 100644
+>> --- a/kernel/bpf/hashtab.c
+>> +++ b/kernel/bpf/hashtab.c
+>> @@ -1510,3 +1510,156 @@ const struct bpf_map_ops htab_of_maps_map_ops = {
+>>         .map_gen_lookup = htab_of_map_gen_lookup,
+>>         .map_check_btf = map_check_no_btf,
+>>  };
+>> +
+>> +struct xdp_chain_table {
+>> +       struct bpf_prog *wildcard_act;
+>> +       struct bpf_prog *act[XDP_ACT_MAX];
+>> +};
+>> +
+>> +static int xdp_chain_map_alloc_check(union bpf_attr *attr)
+>> +{
+>> +       BUILD_BUG_ON(sizeof(struct xdp_chain_table) / sizeof(void *) !=
+>> +                    sizeof(struct xdp_chain_acts) / sizeof(u32));
+>> +
+>> +       if (attr->key_size != sizeof(u32) ||
+>> +           attr->value_size != sizeof(struct xdp_chain_acts))
+>> +               return -EINVAL;
 >
-> If that doesn't pan out, maybe your initial suggestion is the way out.
-> More custom code but keeps the expected behavior.
-okay
+> How are we going to extend xdp_chain_acts if a new XDP action is
+> introduced?
 
+By just checking the size and reacting appropriately? Don't think that
+is problematic, just takes a few if statements here?
+
+>> +
+>> +       attr->value_size = sizeof(struct xdp_chain_table);
+>> +       return htab_map_alloc_check(attr);
+>> +}
+>> +
+>> +struct bpf_prog *bpf_xdp_chain_map_get_prog(struct bpf_map *map,
+>> +                                           u32 prev_id,
+>> +                                           enum xdp_action action)
+>> +{
+>> +       struct xdp_chain_table *tab;
+>> +       void *ptr;
+>> +
+>> +       ptr = htab_map_lookup_elem(map, &prev_id);
+>> +
+>> +       if (!ptr)
+>> +               return NULL;
+>> +
+>> +       tab = READ_ONCE(ptr);
+>> +       return tab->act[action - 1] ?: tab->wildcard_act;
+>> +}
+>> +EXPORT_SYMBOL_GPL(bpf_xdp_chain_map_get_prog);
+>> +
+>> +/* only called from syscall */
+>> +int bpf_xdp_chain_map_lookup_elem(struct bpf_map *map, void *key, void *value)
+>> +{
+>> +       struct xdp_chain_acts *act = value;
+>> +       struct xdp_chain_table *tab;
+>> +       void *ptr;
+>> +       u32 *cur;
+>> +       int i;
+>> +
+>> +       ptr = htab_map_lookup_elem(map, key);
+>> +       if (!ptr)
+>> +               return -ENOENT;
+>> +
+>> +       tab = READ_ONCE(ptr);
+>> +
+>> +       if (tab->wildcard_act)
+>> +               act->wildcard_act = tab->wildcard_act->aux->id;
+>> +
+>> +       cur = &act->drop_act;
+>> +       for (i = 0; i < XDP_ACT_MAX; i++, cur++)
+>> +               if(tab->act[i])
+>> +                       *cur = tab->act[i]->aux->id;
 >
-> >
-> > @@ -3709,6 +3709,9 @@ enum sctp_disposition sctp_sf_do_asconf(struct net *net,
-> >         struct sctp_addiphdr *hdr;
-> >         __u32 serial;
-> >
-> > +       if (asoc->base.sk->sk_socket)
-> > +               return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> > +
-> >
-> > Note we can't do this in sctp_process_asconf_param(), as an asconf_ack
-> > will be sent back.
-> >
-> > >
-> > > > +               *err = error;
-> > > > +
-> > > > +               return newsk;
-> > > >         }
-> > > >
-> > > >  out:
-> > > >         release_sock(sk);
-> > > >         *err = error;
-> > > > -       return newsk;
-> > > > +       return NULL;
-> > > >  }
-> > > >
-> > > > >
-> > > > > AFAICT TCP code would be fine with such change. Didn't check other
-> > > > > protocols.
-> > > > >
-> > > >
+> For completeness, zero out *cur in the else case?
+
+Ah, good point. I assumed the caller was kzalloc'ing; seems that's not
+the case; will fix.
+
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static void *xdp_chain_map_get_ptr(int fd)
+>> +{
+>> +       struct bpf_prog *prog = bpf_prog_get(fd);
+>> +
+>> +       if (IS_ERR(prog))
+>> +               return prog;
+>> +
+>> +       if (prog->type != BPF_PROG_TYPE_XDP ||
+>> +           bpf_prog_is_dev_bound(prog->aux)) {
+>> +               bpf_prog_put(prog);
+>> +               return ERR_PTR(-EINVAL);
+>> +       }
+>> +
+>> +       return prog;
+>> +}
+>> +
+>> +static void xdp_chain_map_put_ptrs(void *value)
+>> +{
+>> +       struct xdp_chain_table *tab = value;
+>> +       int i;
+>> +
+>> +       for (i = 0; i < XDP_ACT_MAX; i++)
+>> +               if (tab->act[i])
+>> +                       bpf_prog_put(tab->act[i]);
+>> +
+>> +       if (tab->wildcard_act)
+>> +               bpf_prog_put(tab->wildcard_act);
+>> +}
+>> +
+>> +/* only called from syscall */
+>> +int bpf_xdp_chain_map_update_elem(struct bpf_map *map, void *key, void *value,
+>> +                                 u64 map_flags)
+>
+> Nit: check that map_flags == 0
+
+Yup, will fix.
+
+>> +{
+>> +       struct xdp_chain_acts *act = value;
+>> +       struct xdp_chain_table tab = {};
+>> +       u32 lookup_key = *((u32*)key);
+>> +       u32 *cur = &act->drop_act;
+>> +       bool found_val = false;
+>> +       int ret, i;
+>> +       void *ptr;
+>> +
+>> +       if (!lookup_key)
+>> +               return -EINVAL;
+>
+> Is it possible to check that this is a valid prog id / fd or whatever
+> it is?
+
+I suppose we could. The reason I didn't was that I figured it would be
+valid to insert IDs into the map that don't exist (yet, or any longer).
+Theoretically, if you can predict the program ID, you could insert it
+into the map before it's allocated. There's no clearing of maps when
+program IDs are freed either.
+
+>> +
+>> +       if (act->wildcard_act) {
+>
+> If this is an fd, 0 is a valid value no?
+
+Yes, technically. But if we actually allow fd 0, that means the
+userspace caller can't just pass a 0-initialised struct, but will have
+to loop through and explicitly set everything to -1. Whereas if we just
+disallow fd 0, that is no longer a problem (and normally you have to
+jump through some hoops to end up with a bpf program pointer as standard
+input, no?).
+
+It's not ideal, but I figured this was the least ugly way to do it. If
+you have a better idea I'm all ears? :)
+
+>> +               ptr = xdp_chain_map_get_ptr(act->wildcard_act);
+>> +               if (IS_ERR(ptr))
+>> +                       return PTR_ERR(ptr);
+>> +               tab.wildcard_act = ptr;
+>> +               found_val = true;
+>> +       }
+>> +
+>> +       for (i = 0; i < XDP_ACT_MAX; i++, cur++) {
+>> +               if (*cur) {
+>> +                       ptr = xdp_chain_map_get_ptr(*cur);
+>> +                       if (IS_ERR(ptr)) {
+>> +                               ret = PTR_ERR(ptr);
+>> +                               goto out_err;
+>> +                       }
+>> +                       tab.act[i] = ptr;
+>> +                       found_val = true;
+>> +               }
+>> +       }
+>> +
+>> +       if (!found_val) {
+>> +               ret = -EINVAL;
+>> +               goto out_err;
+>> +       }
+>> +
+>> +       ret = htab_map_update_elem(map, key, &tab, map_flags);
+>> +       if (ret)
+>> +               goto out_err;
+>> +
+>> +       return ret;
+>> +
+>> +out_err:
+>> +       xdp_chain_map_put_ptrs(&tab);
+>> +
+>> +       return ret;
+>> +}
+>> +
+>> +
+>> +const struct bpf_map_ops xdp_chain_map_ops = {
+>> +       .map_alloc_check = xdp_chain_map_alloc_check,
+>> +       .map_alloc = htab_map_alloc,
+>> +       .map_free = fd_htab_map_free,
+>> +       .map_get_next_key = htab_map_get_next_key,
+>> +       .map_delete_elem = htab_map_delete_elem,
+>> +       .map_fd_put_value = xdp_chain_map_put_ptrs,
+>> +       .map_check_btf = map_check_no_btf,
+>> +};
+>
+> --
+> Lorenz Bauer  |  Systems Engineer
+> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+>
+> www.cloudflare.com
