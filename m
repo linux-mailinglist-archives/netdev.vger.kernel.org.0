@@ -2,138 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC02CA068
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 16:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 222E4CA0A2
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 16:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730239AbfJCOdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 10:33:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37660 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728407AbfJCOdR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 10:33:17 -0400
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5934C793C4
-        for <netdev@vger.kernel.org>; Thu,  3 Oct 2019 14:33:17 +0000 (UTC)
-Received: by mail-lj1-f200.google.com with SMTP id p18so933607ljn.1
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 07:33:17 -0700 (PDT)
+        id S1729373AbfJCOwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 10:52:18 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39618 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728608AbfJCOwS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 10:52:18 -0400
+Received: by mail-qt1-f195.google.com with SMTP id n7so3970406qtb.6;
+        Thu, 03 Oct 2019 07:52:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=N3/hgHIgFHAEc4D3l90bst0MRiCB8lnQXRGxCdOTQXE=;
+        b=CqyYB+I8rwq2r8tJ5+HkW2YP1Cy3Ey4GEQNqvaDj2a78UMRWRFxqNn4THrgAmdx74D
+         rV5gwRAxVkGP3K7QlL8THB9PQIcpsKf6vjxhCC3LvHGvQES6gizayQo9VLNvKBRq2UTJ
+         3eXhqo4R8wqmFp2UR0F8rlvWMIIp2LK8rzd4wGODj+LE1JvpQgZosjKVuQ5XggoM1L8c
+         58sC/7nAyhyuL/+yD1bORS0bkilcpeHtkFHjsl2fll7iDxfrPlMSEXURXmchoyiKlKjh
+         Z5lWe8J8jglMFM+wANa5eSAgRT5JdIhRpgSGgglPLEg5vr+P2jaYZO1vHBgZXumMwWf/
+         L8lQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=PlNbdekHjIXNTK1VHxjBK8lXGmbPJyCX++L2MditMcE=;
-        b=hTaLpX0glowIcoJBxbHvTNwI0v5zMMRSISBkNwq+SSIYDj+eIGnNaqD/Pd9oXJLgeW
-         PXVgjLE5i4uVzJx2qHtTsm1iT12tPFkjwd5rejPj8Qja0Ym8vnao4tI9R9hFOEdtmqON
-         2Jh8RcL0MU3g2vhwG0IAnxxcGcjdApKwsCSOCA7ZDZscWroZI5d2uH5a0aNqEtjHa0w9
-         XGq9aFo8qxbv+HMZvyebVS0Ueaiqs0TX1ofIjDVi4ttC6PooKgfPnu8PtbpYdbqWg1UU
-         wFlwfYI/H8K3P8YLUiMNHi1/g8q8ebnxJfgAN5rS8mVNjVTVMBpkNmbvcPo3aBnrEmcf
-         X1KA==
-X-Gm-Message-State: APjAAAWUKbLkv2+jXE+3oTjMuBfT3y7oIG16ssPOTQMw1HhPZVG7AOUN
-        SDWxlJg7GRPEUXLhz3tQQ6LhGNHRweVe8qV0Or9HDIz5HE+P3ry6dI2Edx5iUkeSsEIJHooq/U7
-        nhRAT5J1a9JHkkmt3
-X-Received: by 2002:a2e:924f:: with SMTP id v15mr6403453ljg.199.1570113195665;
-        Thu, 03 Oct 2019 07:33:15 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwdgbGsjVfpkCpHe3SGNdaKKEoMEpby7oghNSXIiAuKe88nabCR7n0YMSkKCvRdeK2l7QtH0g==
-X-Received: by 2002:a2e:924f:: with SMTP id v15mr6403439ljg.199.1570113195441;
-        Thu, 03 Oct 2019 07:33:15 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id s6sm563223ljg.43.2019.10.03.07.33.14
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=N3/hgHIgFHAEc4D3l90bst0MRiCB8lnQXRGxCdOTQXE=;
+        b=ltAtnU281EXMqhsZmNASXpX+yyAegTS/umGxLXGUg5COhuTQuJlGPi/DLwaumyqw7l
+         /dJzSdJX5wXE7MgEUnKlKKOSldx+SrnI0Lhh7hHzmVbRfIetSlXvM/yOfHEsgLBV9YV9
+         tBj63qDzmlbwbEJ1vnVSKL9lSGrHpPaTB25CJfj9pRXdF30yBvFUjC3xUPY6rXMZzSnJ
+         1vnaPoFIbAYTzYnxUg7euvOCJ0zMW8XRVH4Ns2+cXuZ55DV44Zuv3nTS0o2C6qdK+Tdf
+         8KdodM7qHWLkyYx8wJqPIkU4LxN5EmoPiO/HQeC+yExupelhKXKRmSvMved+1fOQP62J
+         Uhew==
+X-Gm-Message-State: APjAAAWy8jMWNIwv9LJ2oCaEd29lFzP/aMQkEOR92/PL3a8GyeZmuCY0
+        LautXdxk93mEpqWWDK7R3hA=
+X-Google-Smtp-Source: APXvYqxcq5nAS58NLFhfHzXTFHmuEigLFFtUs6Cgu1R+pT9Nyo/Xsm2Dl7s4d4GwIg9ubSyO9OW1Pg==
+X-Received: by 2002:ac8:3f96:: with SMTP id d22mr10570499qtk.36.1570114336300;
+        Thu, 03 Oct 2019 07:52:16 -0700 (PDT)
+Received: from frodo.byteswizards.com ([190.162.109.190])
+        by smtp.gmail.com with ESMTPSA id p77sm1801981qke.6.2019.10.03.07.52.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 07:33:14 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9719F18063D; Thu,  3 Oct 2019 16:33:13 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single interface through chain calls
-In-Reply-To: <CAADnVQKTbaxJhkukxXM7Ue7=kA9eWsGMpnkXc=Z8O3iWGSaO0A@mail.gmail.com>
-References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1> <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com> <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com> <87r23vq79z.fsf@toke.dk> <20191003105335.3cc65226@carbon> <CAADnVQKTbaxJhkukxXM7Ue7=kA9eWsGMpnkXc=Z8O3iWGSaO0A@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 03 Oct 2019 16:33:13 +0200
-Message-ID: <87pnjdq4pi.fsf@toke.dk>
+        Thu, 03 Oct 2019 07:52:15 -0700 (PDT)
+Date:   Thu, 3 Oct 2019 11:52:11 -0300
+From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, yhs@fb.com, ebiederm@xmission.com,
+        brouer@redhat.com, bpf@vger.kernel.org
+Subject: Re: [PATCH V12 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
+Message-ID: <20191003145211.GA3657@frodo.byteswizards.com>
+References: <20191001214141.6294-1-cneirabustos@gmail.com>
+ <20191001214141.6294-3-cneirabustos@gmail.com>
+ <79645731-da32-6071-e05f-6345cf47bcd1@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <79645731-da32-6071-e05f-6345cf47bcd1@iogearbox.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+On Wed, Oct 02, 2019 at 12:52:29PM +0200, Daniel Borkmann wrote:
+> On 10/1/19 11:41 PM, Carlos Neira wrote:
+> > New bpf helper bpf_get_ns_current_pid_tgid,
+> > This helper will return pid and tgid from current task
+> > which namespace matches dev_t and inode number provided,
+> > this will allows us to instrument a process inside a container.
+> > 
+> > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > ---
+> >   include/linux/bpf.h      |  1 +
+> >   include/uapi/linux/bpf.h | 18 +++++++++++++++++-
+> >   kernel/bpf/core.c        |  1 +
+> >   kernel/bpf/helpers.c     | 36 ++++++++++++++++++++++++++++++++++++
+> >   kernel/trace/bpf_trace.c |  2 ++
+> >   5 files changed, 57 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 5b9d22338606..231001475504 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> >   extern const struct bpf_func_proto bpf_strtol_proto;
+> >   extern const struct bpf_func_proto bpf_strtoul_proto;
+> >   extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
+> >   /* Shared helpers among cBPF and eBPF. */
+> >   void bpf_user_rnd_init_once(void);
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 77c6be96d676..ea8145d7f897 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -2750,6 +2750,21 @@ union bpf_attr {
+> >    *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+> >    *
+> >    *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> > + *
+> > + * u64 bpf_get_ns_current_pid_tgid(u64 dev, u64 inum)
+> > + *	Return
+> > + *		A 64-bit integer containing the current tgid and pid from current task
+> > + *              which namespace inode and dev_t matches , and is create as such:
+> > + *		*current_task*\ **->tgid << 32 \|**
+> > + *		*current_task*\ **->pid**.
+> > + *
+> > + *		On failure, the returned value is one of the following:
+> > + *
+> > + *		**-EINVAL** if dev and inum supplied don't match dev_t and inode number
+> > + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
+> > + *
+> > + *		**-ENOENT** if /proc/self/ns does not exists.
+> > + *
+> >    */
+> >   #define __BPF_FUNC_MAPPER(FN)		\
+> >   	FN(unspec),			\
+> > @@ -2862,7 +2877,8 @@ union bpf_attr {
+> >   	FN(sk_storage_get),		\
+> >   	FN(sk_storage_delete),		\
+> >   	FN(send_signal),		\
+> > -	FN(tcp_gen_syncookie),
+> > +	FN(tcp_gen_syncookie),          \
+> > +	FN(get_ns_current_pid_tgid),
+> >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> >    * function eBPF program intends to call
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index 66088a9e9b9e..b2fd5358f472 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+> >   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+> >   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+> >   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
+> >   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+> >   {
+> > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> > index 5e28718928ca..8777181d1717 100644
+> > --- a/kernel/bpf/helpers.c
+> > +++ b/kernel/bpf/helpers.c
+> > @@ -11,6 +11,8 @@
+> >   #include <linux/uidgid.h>
+> >   #include <linux/filter.h>
+> >   #include <linux/ctype.h>
+> > +#include <linux/pid_namespace.h>
+> > +#include <linux/proc_ns.h>
+> >   #include "../../lib/kstrtox.h"
+> > @@ -487,3 +489,37 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+> >   	.arg4_type	= ARG_PTR_TO_LONG,
+> >   };
+> >   #endif
+> > +
+> > +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u64, dev, u64, inum)
+> > +{
+> > +	struct task_struct *task = current;
+> > +	struct pid_namespace *pidns;
+> > +	pid_t pid, tgid;
+> > +
+> > +	if ((u64)(dev_t)dev != dev)
+> > +		return -EINVAL;
+> > +
+> > +	if (unlikely(!task))
+> > +		return -EINVAL;
+> > +
+> > +	pidns = task_active_pid_ns(task);
+> > +	if (unlikely(!pidns))
+> > +		return -ENOENT;
+> > +
+> > +
+> > +	if (!ns_match(&pidns->ns, (dev_t)dev, inum))
+> > +		return -EINVAL;
+> > +
+> > +	pid = task_pid_nr_ns(task, pidns);
+> > +	tgid = task_tgid_nr_ns(task, pidns);
+> > +
+> > +	return (u64) tgid << 32 | pid;
+> 
+> Basically here you are overlapping the 64-bit return value for the valid
+> outcome with the error codes above for the invalid case. If you look at
+> bpf_perf_event_read() we already had such broken occasion that bit us in
+> the past, and needed to introduce bpf_perf_event_read_value() instead.
+> Lets not go there again and design it similarly to the latter.
+> 
+> > +}
+> > +
+> > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
+> > +	.func		= bpf_get_ns_current_pid_tgid,
+> > +	.gpl_only	= false,
+> > +	.ret_type	= RET_INTEGER,
+> > +	.arg1_type	= ARG_ANYTHING,
+> > +	.arg2_type	= ARG_ANYTHING,
+> > +};
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index 44bd08f2443b..32331a1dcb6d 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >   #endif
+> >   	case BPF_FUNC_send_signal:
+> >   		return &bpf_send_signal_proto;
+> > +	case BPF_FUNC_get_ns_current_pid_tgid:
+> > +		return &bpf_get_ns_current_pid_tgid_proto;
+> >   	default:
+> >   		return NULL;
+> >   	}
+> > 
+> 
+Daniel,
+If I understand correctly, to avoid problems I need to change the helper's function signature to something like the following:
 
-> On Thu, Oct 3, 2019 at 1:53 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
->>> The xdpcap use-case is to trap any XDP return action code (and tcpdump
->> via perf event ring_buffer).  For system administrators the xdpcap
->> use-case is something we hear about all the time, so one of the missing
->> features for XDP.  As Toke also wrote, we want to extend this to ALSO
->> be-able to see/dump the packet BEFORE a given XDP program.
->
-> It sounds to me that 'xdpdump/xdpcap' (tcpdump equivalent) is
-> the only use case both you and Toke are advocating for.
-> I think such case we can do already without new kernel code:
-> - retrieve prog_id of the program attached to given xdp ifindex
-> - convert to fd
-> - create prog_array of one element and store that prog_fd
-> - create xdpump bpf prog that prints to ring buffer
->   and tail_calls into that prog_array
-> - replace xdp prog on that ifindex
->
-> Now it see all the traffic first and existing xdp progs keep working.
-> What am I missing?
+struct bpf_ns_current_pid_tgid_storage {
+	__u64 dev;
+	__u64 inum;
+	__u64 pidtgid;
+};
 
-Yeah, that takes care of the "run xdpdump as the first thing" use case.
-But we also want to be able to run it *after* another program, *without*
-modifying that program to add a tail call.
+BPF_CALL_2(bpf_get_ns_current_pid_tgid,
+	   struct bpf_ns_current_pid_tgid_storage *, buf, u32, size);  
 
-More generally, we want to be able to chain XDP programs from multiple
-sources in arbitrary ways. Let me try to provide a more fleshed-out
-usage example:
+then use dev and inum provided by the user and return the requested
+value into pidtgid of the struct. Would that work?
 
-Say a distro ships MyFirewall and MyIDS, two different upstream
-projects, both of which support XDP acceleration. MyFirewall has
-specified in its documentation that its XDP program will return XDP_PASS
-for anything that it has determined should not be dropped. So the
-sysadmin decides he wants to enable both, and of course he wants both to
-be XDP-accelerated.
+Thanks for your help. 
+ 
 
-This particular sysadmin doesn't want to expend IDS resources on traffic
-that the firewall has already decided to drop, so he'll just install the
-firewall first, and then run the IDS on any traffic that gets XDP_PASS.
-So he installs IDS as a chain-call XDP program on the XDP_PASS action
-after the firewall.
 
-Another sysadmin might be more paranoid (or have more CPU resources
-available), and so he wants to run the IDS first, and the firewall
-afterwards. So he installs the two XDP programs in the reverse order, by
-chaining the firewall to the IDS' XDP_PASS action.
 
-At the same time, the sysadmin wants to inspect what the firewall is
-actually dropping, so he fires up xdpdump and tells it to show him
-everything dropped by the firewall. The xdpdump tool does this by
-attaching itself as a chain call program to the XDP_DROP action of the
-firewall program.
-
-In all cases, the sysadmin can't (or doesn't want to) modify any of the
-XDP programs. In fact, they may just be installed as pre-compiled .so
-BPF files on his system. So he needs to be able to configure the call
-chain of different programs without modifying the eBPF program source
-code.
-
-This is basically what we're trying to support with XDP chain calls
-(which I guess is now turning into more general eBPF chain calls). I
-think it is doable with something based on the BPF_PROG_CHAIN_* series
-you posted a link to earlier; but instead of having an explicit
-tail_call_next() helper, I'll just make the verifier insert the chain
-calls before each BPF_EXIT instruction when this feature is turned on.
-Do you see any reason why this wouldn't work?
-
--Toke
