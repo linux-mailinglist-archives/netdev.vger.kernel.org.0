@@ -2,73 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE64CB084
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 22:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BD49CB091
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 22:56:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730707AbfJCUw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 16:52:27 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36170 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727587AbfJCUw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 16:52:26 -0400
-Received: by mail-qt1-f194.google.com with SMTP id o12so5609171qtf.3;
-        Thu, 03 Oct 2019 13:52:26 -0700 (PDT)
+        id S1730794AbfJCU4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 16:56:43 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:33878 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730405AbfJCU4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 16:56:41 -0400
+Received: by mail-ed1-f66.google.com with SMTP id p10so3951569edq.1
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 13:56:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Fd92yCGjcK8Q9vbQjHTIvNq1EPtzw5PFxZpME5UvlKc=;
-        b=jv0u/kP1kYnE3p1bQFj8W5PnzbxjxEdOcfHiMWUIgzj9NeaWD0QvucgMPJTIjUiDfX
-         Yz33koSB4JoEUcpTfU/pKw1NIN6QVlnxWIr/+NtTQ3ZbW+dSKC+IIrL1H63v/qx0RVVJ
-         YJE21hl4SbOuPqv4moDqgjtSopd8XakZ1JYMbGfQm0lal1lb67ubtQR2+t8VCsj4wnEt
-         KFLpIJJZayZwaRjt4vFd7GURK37gatmNVqGhxHogG46auKD/kmZumMvHZg41QZRzp/sV
-         SpDnVVaaEGPWphLDC+Yxubdocxr3buLmE6kOYnsWULa/IyP/GfG8ScauweEmX9zRlTjx
-         MqpA==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=BTfVQUPvkSd3zwtzD41gJMj25Cg2Y0JL+4smmLswzXk=;
+        b=F6/Tmi2+gUyjaVvJ2wK3fTR2sBNckqLfVqfjk2asu/RuZp3rOovhMMMe3ehDsmYJTo
+         mDe+0nStJ/5oQdAW+xASSxerDDseZ3ynS6kXYbH6es7fhczv+s92ll7dUiOZujCvP3Rw
+         6CbX2DtioEj3bQfn91AtLBkQP8xSjMmZ6UEmTEMLlI8qYWYXWRwWg6+iHkZuNjF7m2Y1
+         8eJYAu7gy5CR3+jiRkxWF+/jgPfOOFUTG/g0x16oVg4QXCU6T4bsdH3IQO4+t0/yJ4w3
+         Iic4d5HIGrshjCCkyI8PzpP/JD66sPvYrdru0rhzE4VTStKBM0DL6dxgMFQZHDbzLN1Y
+         UwHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Fd92yCGjcK8Q9vbQjHTIvNq1EPtzw5PFxZpME5UvlKc=;
-        b=t1f76omWIXPd2zFGyjpS1w8dq0hDMBPzJjBkY1UbztPA3Ey50g87+Ibmfnp8cDvDRt
-         ATwdZMycncwrELMK7QEPFI7BAxw0GUR/+wvw9TpqVaqTdwrC1KzAA+WRP++bAVVwcR0k
-         OiNIhkAcTNwVVxVwZ+j30RdFCpvbMItPCQmXyAQKCOaJgNe977BGgX6WWX1Tp8lAKeRF
-         qxcLQ0U/kZ9z3kvmLIbLicKgqqbbQOitlLuSKAKNhBI+g6MplDbvl5Ni7EGyIlMF0xis
-         GN2g1vLKcfOWyNAhMlPklrmME3+VIct3mOvt7h1ILQCo5JO2TzbtkPobKIfSGdZ0PZUK
-         wGPA==
-X-Gm-Message-State: APjAAAVd5Xn7L77iRHcQ+g3H1foZ/6DUa1JWMkzzNA6tq3xhRk9ow4Ts
-        sFJpvnOatNizZ1Scc+nzC3ktIfvwRqfy4pn4Ryo=
-X-Google-Smtp-Source: APXvYqxkv8rerDFWmbferqiZ2NDV+sLIi1PoseuP0HFJ9xlnB0nxFAs/FkN6WkNd6Gkur5s1Iy8OBbho4cCA4VMX9wI=
-X-Received: by 2002:ac8:37cb:: with SMTP id e11mr12491917qtc.22.1570135945995;
- Thu, 03 Oct 2019 13:52:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=BTfVQUPvkSd3zwtzD41gJMj25Cg2Y0JL+4smmLswzXk=;
+        b=EWpM3dWicrtkFpMI+L2TV2E9lWXmiVXTswe15BRo16C2mQmAQBgrDo0hfvUK8SXslq
+         6lch2FdfTbCZKgmJgtfEPGNIJJclCZSWQSvpant6Gy+b0e3YOH/jaQ2qFi122llbkPz0
+         BoRTpe8llHwe5snmTjsQCDbEOzsjx5abTnEk8gIzE1w/n8EsJNYiwJcZucbdZNVsxm1M
+         x/M+KX7FKGK3Pa/nWW1oIdjGtNBBnL6fLHWKbhAQcBP1+ShSeTJuRsttvjvI08YkMayt
+         V2OoFYItTvoroF0tdJMC+6kz/mVHdxgVIGf0JNGTsHLAU5b2IsV567H5sRZEdesOPHPg
+         H8lg==
+X-Gm-Message-State: APjAAAWqC2fZTxkdZObIYzxjt0eivJkNajbYiuzhVXxyrPLQ5+ChJHCy
+        qZbC6tEB+WTEG9ShuSDG0vWcHT4=
+X-Google-Smtp-Source: APXvYqxdhSeOWOCaImAE+sCdOwl87+8ySxwk4pxF7OHrbM9IZlM7lDlpoJg4MeC6HzD+h5SjjraEJQ==
+X-Received: by 2002:a17:906:454c:: with SMTP id s12mr9425931ejq.69.1570136199266;
+        Thu, 03 Oct 2019 13:56:39 -0700 (PDT)
+Received: from avx2 ([46.53.250.203])
+        by smtp.gmail.com with ESMTPSA id h1sm375983ejb.86.2019.10.03.13.56.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 03 Oct 2019 13:56:38 -0700 (PDT)
+Date:   Thu, 3 Oct 2019 23:56:37 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] net: spread "enum sock_flags"
+Message-ID: <20191003205637.GA24270@avx2>
 MIME-Version: 1.0
-References: <20191002234512.25902-1-daniel@iogearbox.net>
-In-Reply-To: <20191002234512.25902-1-daniel@iogearbox.net>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 3 Oct 2019 13:52:14 -0700
-Message-ID: <CAPhsuW6==Ukxjh69SVLusC=GMf=65Y2T0gLNig55obwbS-7VqQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf, x86: Small optimization in comparing
- against imm0
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 2, 2019 at 5:30 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Replace 'cmp reg, 0' with 'test reg, reg' for comparisons against
-> zero. Saves 1 byte of instruction encoding per occurrence. The flag
-> results of test 'reg, reg' are identical to 'cmp reg, 0' in all
-> cases except for AF which we don't use/care about. In terms of
-> macro-fusibility in combination with a subsequent conditional jump
-> instruction, both have the same properties for the jumps used in
-> the JIT translation. For example, same JITed Cilium program can
-> shrink a bit from e.g. 12,455 to 12,317 bytes as tests with 0 are
-> used quite frequently.
->
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Some ints are "enum sock_flags" in fact.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+---
+
+ include/net/sock.h |    2 +-
+ net/core/sock.c    |    5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2512,7 +2512,7 @@ static inline bool sk_listener(const struct sock *sk)
+ 	return (1 << sk->sk_state) & (TCPF_LISTEN | TCPF_NEW_SYN_RECV);
+ }
+ 
+-void sock_enable_timestamp(struct sock *sk, int flag);
++void sock_enable_timestamp(struct sock *sk, enum sock_flags flag);
+ int sock_recv_errqueue(struct sock *sk, struct msghdr *msg, int len, int level,
+ 		       int type);
+ 
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -687,7 +687,8 @@ static int sock_getbindtodevice(struct sock *sk, char __user *optval,
+ 	return ret;
+ }
+ 
+-static inline void sock_valbool_flag(struct sock *sk, int bit, int valbool)
++static inline void sock_valbool_flag(struct sock *sk, enum sock_flags bit,
++				     int valbool)
+ {
+ 	if (valbool)
+ 		sock_set_flag(sk, bit);
+@@ -3033,7 +3034,7 @@ int sock_gettstamp(struct socket *sock, void __user *userstamp,
+ }
+ EXPORT_SYMBOL(sock_gettstamp);
+ 
+-void sock_enable_timestamp(struct sock *sk, int flag)
++void sock_enable_timestamp(struct sock *sk, enum sock_flags flag)
+ {
+ 	if (!sock_flag(sk, flag)) {
+ 		unsigned long previous_flags = sk->sk_flags;
