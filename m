@@ -2,92 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5094CC9BF7
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 12:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45685C9C6E
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 12:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728604AbfJCKQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 06:16:44 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:15750 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726070AbfJCKQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 06:16:44 -0400
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x93A1YhG005393;
-        Thu, 3 Oct 2019 12:16:30 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=STMicroelectronics;
- bh=L4LLR9A842To83iMCr2kJJo+nQXIiFznTI7PhQwWL6M=;
- b=PFe9zeM2Zoy1K7RCpNUac4jSDN/qZtCabQVNCg/lYvXkJTRfa2Urog1hqg/aPyduHn8w
- MndtdtMz929onq4Rl3dbaFLli/rBuv/P/EZR6XvsdAJ1rMchgHJg3zvQNrocnJcmYtWN
- LbJEXZvBrQ/TKtzJHzULUkJnDEA/uw3N8AZi3hr6Cje012lbHwT+DAtYV1dfuSUgqMpu
- m1plOZpHDWATmcEigXunX2TEIHNsPIpoBrN2Z2pdeuSj1Dd5gbJZ+IfT2z5QEe5j2low
- 05hPwvGKQpwo5bCPf0PqOQFtFFKWpVkxqwG7oWrsJ+1Pt7i3w11boqtPDguVugdvBkSH qg== 
-Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2vcem38uxw-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 03 Oct 2019 12:16:29 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 43A0322;
-        Thu,  3 Oct 2019 10:16:26 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 978052B7B2E;
-        Thu,  3 Oct 2019 12:16:25 +0200 (CEST)
-Received: from lmecxl0912.lme.st.com (10.75.127.48) by SFHDAG3NODE2.st.com
- (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 3 Oct
- 2019 12:16:24 +0200
-Subject: Re: [PATCH 0/5] net: ethernet: stmmac: some fixes and optimization
-To:     Christophe Roullier <christophe.roullier@st.com>,
-        <robh@kernel.org>, <davem@davemloft.net>, <joabreu@synopsys.com>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <peppe.cavallaro@st.com>
-CC:     <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <andrew@lunn.ch>
-References: <20190920053817.13754-1-christophe.roullier@st.com>
-From:   Alexandre Torgue <alexandre.torgue@st.com>
-Message-ID: <7575369f-0f42-9afa-4212-bb82100a7a1b@st.com>
-Date:   Thu, 3 Oct 2019 12:16:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728955AbfJCKhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 06:37:37 -0400
+Received: from conssluserg-02.nifty.com ([210.131.2.81]:44016 "EHLO
+        conssluserg-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727756AbfJCKhg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 06:37:36 -0400
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id x93AbNR8004089;
+        Thu, 3 Oct 2019 19:37:24 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com x93AbNR8004089
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1570099044;
+        bh=n1PGXVvMl6n5rOY+jPDvgNuS8cWYEdmV5YtD+HFJn0A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kkuURiblyI9hPRD2Am3ni0EbtBFyhkDf3Ux1pllNGSWCGRJh2lz3661jTFvNjOPet
+         9r79JDB7tkf0noYXkn/SWgB1M+RDl4EAsEBL3gP5YTXqAGe0FMSuyHVIE/01tNbU4K
+         QBuXv/PvXMOk6x/DhJeD05U4d5Chuurbsh12sKqqP0AKcj1GDVEkn4CGvLYC1008Ad
+         O5Nwlv8K371NaRRx393FqpAqnUdPusvWS290p4vIyq9CQ+RRsifLB/B2VUNFB6eOB1
+         6CrXGltHwL6MW4pJnmOMcOoln4+bvyD+fMpTvx5S55h7O1KvIXuRUolVxogRBvJ2jK
+         Rwj30t763b0HA==
+X-Nifty-SrcIP: [209.85.217.53]
+Received: by mail-vs1-f53.google.com with SMTP id v19so1358297vsv.3;
+        Thu, 03 Oct 2019 03:37:24 -0700 (PDT)
+X-Gm-Message-State: APjAAAWqnVBrBj/gwT+riOfLbKLA0NXGz7+6SlePF1nzEJc0YzP5CK7O
+        jlAJR79knMJytwjegRt1pzPXs+F0pzAqYpJw5s0=
+X-Google-Smtp-Source: APXvYqwjodpygq++B1e36Zfn5tPGl4dsCKAK3qEhLmC8Jk1EtgiEuAkIOdYPl5KPu16KcZ42HDUceOxLIO/eOpgxeFY=
+X-Received: by 2002:a67:1a41:: with SMTP id a62mr4732113vsa.54.1570099043250;
+ Thu, 03 Oct 2019 03:37:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190920053817.13754-1-christophe.roullier@st.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG8NODE3.st.com (10.75.127.24) To SFHDAG3NODE2.st.com
- (10.75.127.8)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-03_04:2019-10-01,2019-10-03 signatures=0
+References: <20191001101429.24965-1-bjorn.topel@gmail.com> <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
+ <CAJ+HfNgvxornSfqnbAthNy6u6=-enGCdA8K1e6rLXhCzGgmONQ@mail.gmail.com>
+ <CAK7LNATD4vCQnNsHXP8A2cyWDkCNX=LGh0ej-dkDajm-+Lfw8Q@mail.gmail.com>
+ <CAJ+HfNgem7ijzQkz7BU-Z_A-CqWXY_uMF6_p0tGZ6eUMx_N3QQ@mail.gmail.com>
+ <20191002231448.GA10649@khorivan> <CAJ+HfNiCrcVDwQw4nxsntnTSy2pUgV2n6pW206==hUmq1=ZUTA@mail.gmail.com>
+In-Reply-To: <CAJ+HfNiCrcVDwQw4nxsntnTSy2pUgV2n6pW206==hUmq1=ZUTA@mail.gmail.com>
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Thu, 3 Oct 2019 19:36:47 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARd4_o4E=TSONZjJ9iyyeUE1=L_njU7LiEZFpNunSEEkw@mail.gmail.com>
+Message-ID: <CAK7LNARd4_o4E=TSONZjJ9iyyeUE1=L_njU7LiEZFpNunSEEkw@mail.gmail.com>
+Subject: Re: [PATCH bpf] samples/bpf: kbuild: add CONFIG_SAMPLE_BPF Kconfig
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christophe
+On Thu, Oct 3, 2019 at 3:28 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com=
+> wrote:
+>
+> On Thu, 3 Oct 2019 at 01:14, Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>=
+ wrote:
+> >
+> > On Wed, Oct 02, 2019 at 09:41:15AM +0200, Bj=C3=B6rn T=C3=B6pel wrote:
+> > >On Wed, 2 Oct 2019 at 03:49, Masahiro Yamada
+> > ><yamada.masahiro@socionext.com> wrote:
+> > >>
+> > >[...]
+> > >> > Yes, the BPF samples require clang/LLVM with BPF support to build.=
+ Any
+> > >> > suggestion on a good way to address this (missing tools), better t=
+han
+> > >> > the warning above? After the commit 394053f4a4b3 ("kbuild: make si=
+ngle
+> > >> > targets work more correctly"), it's no longer possible to build
+> > >> > samples/bpf without support in the samples/Makefile.
+> > >>
+> > >>
+> > >> You can with
+> > >>
+> > >> "make M=3Dsamples/bpf"
+> > >>
+> > >
+> > >Oh, I didn't know that. Does M=3D support "output" builds (O=3D)?
 
-On 9/20/19 7:38 AM, Christophe Roullier wrote:
-> Some improvements (manage syscfg as optional clock, update slew rate of
-> ETH_MDIO pin, Enable gating of the MAC TX clock during TX low-power mode)
-> Fix warning build message when W=1
-> 
-> Christophe Roullier (5):
->    net: ethernet: stmmac: Add support for syscfg clock
->    net: ethernet: stmmac: fix warning when w=1 option is used during
->      build
->    ARM: dts: stm32: remove syscfg clock on stm32mp157c ethernet
->    ARM: dts: stm32: adjust slew rate for Ethernet
->    ARM: dts: stm32: Enable gating of the MAC TX clock during TX low-power
->      mode on stm32mp157c
-> 
+No.
+O=3D points to the output directory of vmlinux,
+not of the external module.
 
-DT patches will be applied on stm32-next after dwmac-stm32 patches merge 
-in net-next.
+You cannot put the build artifacts from samples/bpf/
+in a separate directory.
 
->   arch/arm/boot/dts/stm32mp157-pinctrl.dtsi     |  9 +++-
->   arch/arm/boot/dts/stm32mp157c.dtsi            |  7 ++--
->   .../net/ethernet/stmicro/stmmac/dwmac-stm32.c | 42 ++++++++++++-------
->   3 files changed, 38 insertions(+), 20 deletions(-)
-> 
+
+
+> > >I usually just build samples/bpf/ with:
+> > >
+> > >  $ make V=3D1 O=3D/home/foo/build/bleh samples/bpf/
+> > >
+> > >
+> > >Bj=C3=B6rn
+> >
+> > Shouldn't README be updated?
+> >
+>
+> Hmm, the M=3D variant doesn't work at all for me. The build is still
+> broken for me. Maybe I'm missing anything obvious...
+>
+>
+> > --
+> > Regards,
+> > Ivan Khoronzhuk
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
