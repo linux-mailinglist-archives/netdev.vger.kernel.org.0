@@ -2,71 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9DC8C9596
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 02:25:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6011C95A8
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 02:28:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729019AbfJCAZ1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Oct 2019 20:25:27 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38748 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbfJCAZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 20:25:27 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E3C1B155283C1;
-        Wed,  2 Oct 2019 17:25:26 -0700 (PDT)
-Date:   Wed, 02 Oct 2019 17:25:26 -0700 (PDT)
-Message-Id: <20191002.172526.1832563406015085740.davem@davemloft.net>
-To:     j.neuschaefer@gmx.net
-Cc:     linux-doc@vger.kernel.org, jeffrey.t.kirsher@intel.com,
-        corbet@lwn.net, snelson@pensando.io, drivers@pensando.io,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Documentation: networking: device drivers: Remove
- stray asterisks
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191002150956.16234-1-j.neuschaefer@gmx.net>
-References: <20191002150956.16234-1-j.neuschaefer@gmx.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 02 Oct 2019 17:25:27 -0700 (PDT)
+        id S1729832AbfJCA1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 20:27:15 -0400
+Received: from mga09.intel.com ([134.134.136.24]:45949 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729714AbfJCA1O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Oct 2019 20:27:14 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 17:27:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,250,1566889200"; 
+   d="scan'208";a="366875160"
+Received: from syitbare-mobl.amr.corp.intel.com ([10.251.8.3])
+  by orsmga005.jf.intel.com with ESMTP; 02 Oct 2019 17:27:13 -0700
+Date:   Wed, 2 Oct 2019 17:27:13 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@syitbare-mobl.amr.corp.intel.com
+To:     David Miller <davem@davemloft.net>
+cc:     netdev@vger.kernel.org, edumazet@google.com, cpaasch@apple.com,
+        fw@strlen.de, pabeni@redhat.com, peter.krystad@linux.intel.com,
+        dcaratti@redhat.com, matthieu.baerts@tessares.net
+Subject: Re: [RFC PATCH v2 00/45] Multipath TCP
+In-Reply-To: <20191002.171229.1495727500341484392.davem@davemloft.net>
+Message-ID: <alpine.OSX.2.21.1910021715070.33041@syitbare-mobl.amr.corp.intel.com>
+References: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com> <20191002.171229.1495727500341484392.davem@davemloft.net>
+User-Agent: Alpine 2.21 (OSX 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Date: Wed,  2 Oct 2019 17:09:55 +0200
 
-> These asterisks were once references to a line that said:
->   "* Other names and brands may be claimed as the property of others."
-> But now, they serve no purpose; they can only irritate the reader.
-> 
-> Fixes: de3edab4276c ("e1000: update README for e1000")
-> Fixes: a3fb65680f65 ("e100.txt: Cleanup license info in kernel doc")
-> Fixes: da8c01c4502a ("e1000e.txt: Add e1000e documentation")
-> Fixes: f12a84a9f650 ("Documentation: fm10k: Add kernel documentation")
-> Fixes: b55c52b1938c ("igb.txt: Add igb documentation")
-> Fixes: c4e9b56e2442 ("igbvf.txt: Add igbvf Documentation")
-> Fixes: d7064f4c192c ("Documentation/networking/: Update Intel wired LAN driver documentation")
-> Fixes: c4b8c01112a1 ("ixgbevf.txt: Update ixgbevf documentation")
-> Fixes: 1e06edcc2f22 ("Documentation: i40e: Prepare documentation for RST conversion")
-> Fixes: 105bf2fe6b32 ("i40evf: add driver to kernel build system")
-> Fixes: 1fae869bcf3d ("Documentation: ice: Prepare documentation for RST conversion")
-> Fixes: df69ba43217d ("ionic: Add basic framework for IONIC Network device driver")
-> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+On Wed, 2 Oct 2019, David Miller wrote:
 
-Jon, how do you want to handle changes like this?
+> From: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Date: Wed,  2 Oct 2019 16:36:10 -0700
+>
+>> The MPTCP upstreaming community has prepared a net-next RFCv2 patch set
+>> for review.
+>
+> Nobody is going to read 45 patches and properly review them.
+>
+> And I do mean nobody.
+>
+> Please make smaller, more reasonable (like 12-20 MAX), patch sets to
+> start building up the MPTCP infrastructure.
+>
+> This is for your sake as well as everyone else's.
 
-I mean, there are unlikely to be conflicts from something like this so it
-could simply go via the documentation tree.
+Thanks David.
 
-Acked-by: David S. Miller <davem@davemloft.net>
+We were proposing a shorter series for our later non-RFC posting, but will 
+do some further squashing and partitioning to fit in the under 12-20 range 
+for all future MPTCP patch sets posted on netdev.
 
-I could also take it via net-next, either way is fine with me.
+And for my sake as well as everyone elses, I'll skip resending the 
+correction to this series since it's only slightly shorter.
 
-Just let me know.
+--
+Mat Martineau
+Intel
