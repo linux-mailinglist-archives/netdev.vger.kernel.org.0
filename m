@@ -2,118 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F73C99AE
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 10:21:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F35DC99BB
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 10:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728288AbfJCIVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 04:21:23 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:54201 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725827AbfJCIVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 04:21:23 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iFwMR-00031C-PP; Thu, 03 Oct 2019 10:21:19 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iFwMO-0003f2-6w; Thu, 03 Oct 2019 10:21:16 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] net: phy: at803x: remove probe and struct at803x_priv
-Date:   Thu,  3 Oct 2019 10:21:13 +0200
-Message-Id: <20191003082113.13993-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191003082113.13993-1-o.rempel@pengutronix.de>
-References: <20191003082113.13993-1-o.rempel@pengutronix.de>
+        id S1728172AbfJCIXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 04:23:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60006 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727382AbfJCIXh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Oct 2019 04:23:37 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E25BD2070B;
+        Thu,  3 Oct 2019 08:23:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570091016;
+        bh=kMVLItmWOvHbHYHw3FLdwWFyBWipkFaY3U7hgdBVMcc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KvKn/xFquMuOqyoKN59d0YD7/x9dYeLd+2q9Et965cYgH/p8V29tfYJA02mQZ03e/
+         n7prZWHJayKdRN3LyvdNZp6zBe4AA34NyhLK1HiXme+hwZ6ICbzrXxDKcjH/PfKy8x
+         WbH6YpDia5kymRRDFW+poUNYpdhCoE/8qXm/SYTU=
+Date:   Thu, 3 Oct 2019 11:23:33 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dennis Dalessandro <dennis.dalessandro@intel.com>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "jgg@mellanox.com" <jgg@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [RFC 20/20] RDMA/i40iw: Mark i40iw as deprecated
+Message-ID: <20191003082333.GL5855@unreal>
+References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
+ <20190926164519.10471-21-jeffrey.t.kirsher@intel.com>
+ <20190926174009.GD14368@unreal>
+ <9DD61F30A802C4429A01CA4200E302A7AC702BDA@fmsmsx123.amr.corp.intel.com>
+ <20190926195517.GA1743170@kroah.com>
+ <bc18503dcace47150d5f45e8669d7978e18a38f9.camel@redhat.com>
+ <20190928055511.GI14368@unreal>
+ <64752160-e8cc-5dcd-d0f9-f26f81057324@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <64752160-e8cc-5dcd-d0f9-f26f81057324@intel.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct at803x_priv is never used in this driver. So remove it
-and the probe function allocating it.
+On Wed, Oct 02, 2019 at 05:15:45PM -0400, Dennis Dalessandro wrote:
+> On 9/28/2019 1:55 AM, Leon Romanovsky wrote:
+> > On Fri, Sep 27, 2019 at 04:17:15PM -0400, Doug Ledford wrote:
+> > > On Thu, 2019-09-26 at 21:55 +0200, gregkh@linuxfoundation.org wrote:
+> > > > On Thu, Sep 26, 2019 at 07:49:44PM +0000, Saleem, Shiraz wrote:
+> > > > > > Subject: Re: [RFC 20/20] RDMA/i40iw: Mark i40iw as deprecated
+> > > > > >
+> > > > > > On Thu, Sep 26, 2019 at 09:45:19AM -0700, Jeff Kirsher wrote:
+> > > > > > > From: Shiraz Saleem <shiraz.saleem@intel.com>
+> > > > > > >
+> > > > > > > Mark i40iw as deprecated/obsolete.
+> > > > > > >
+> > > > > > > irdma is the replacement driver that supports X722.
+> > > > > >
+> > > > > > Can you simply delete old one and add MODULE_ALIAS() in new
+> > > > > > driver?
+> > > > > >
+> > > > >
+> > > > > Yes, but we thought typically driver has to be deprecated for a few
+> > > > > cycles before removing it.
+> > > >
+> > > > If you completely replace it with something that works the same, why
+> > > > keep the old one around at all?
+> > > >
+> > > > Unless you don't trust your new code?  :)
+> > >
+> > > I have yet to see, in over 20 years of kernel experience, a new driver
+> > > replace an old driver and not initially be more buggy and troublesome
+> > > than the old driver.  It takes time and real world usage for the final
+> > > issues to get sorted out.  During that time, the fallback is often
+> > > necessary for those real world users.
+> >
+> > How many real users exist in RDMA world who run pure upstream kernel?
+>
+> I doubt too many especially the latest bleeding edge upstream kernel. That
+> could be interesting, but I don't think it's the reality.
+>
+> Distro kernels could certainly still keep the old driver, and that makes a
+> lot of sense.
 
-Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/at803x.c | 21 ---------------------
- 1 file changed, 21 deletions(-)
+Also, they are invited to run their regression suite to verify
+stability and report any arising problems to upstream/vendor.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 8fb7abdf10d0..463fc681dead 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -63,10 +63,6 @@ MODULE_DESCRIPTION("Atheros 803x PHY driver");
- MODULE_AUTHOR("Matus Ujhelyi");
- MODULE_LICENSE("GPL");
- 
--struct at803x_priv {
--	bool phy_reset:1;
--};
--
- struct at803x_context {
- 	u16 bmcr;
- 	u16 advertise;
-@@ -232,20 +228,6 @@ static int at803x_resume(struct phy_device *phydev)
- 	return phy_modify(phydev, MII_BMCR, BMCR_PDOWN | BMCR_ISOLATE, 0);
- }
- 
--static int at803x_probe(struct phy_device *phydev)
--{
--	struct device *dev = &phydev->mdio.dev;
--	struct at803x_priv *priv;
--
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
--
--	phydev->priv = priv;
--
--	return 0;
--}
--
- static int at803x_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -368,7 +350,6 @@ static struct phy_driver at803x_driver[] = {
- 	.phy_id			= ATH8035_PHY_ID,
- 	.name			= "Atheros 8035 ethernet",
- 	.phy_id_mask		= AT803X_PHY_ID_MASK,
--	.probe			= at803x_probe,
- 	.config_init		= at803x_config_init,
- 	.set_wol		= at803x_set_wol,
- 	.get_wol		= at803x_get_wol,
-@@ -382,7 +363,6 @@ static struct phy_driver at803x_driver[] = {
- 	.phy_id			= ATH8030_PHY_ID,
- 	.name			= "Atheros 8030 ethernet",
- 	.phy_id_mask		= AT803X_PHY_ID_MASK,
--	.probe			= at803x_probe,
- 	.config_init		= at803x_config_init,
- 	.link_change_notify	= at803x_link_change_notify,
- 	.set_wol		= at803x_set_wol,
-@@ -397,7 +377,6 @@ static struct phy_driver at803x_driver[] = {
- 	.phy_id			= ATH8031_PHY_ID,
- 	.name			= "Atheros 8031 ethernet",
- 	.phy_id_mask		= AT803X_PHY_ID_MASK,
--	.probe			= at803x_probe,
- 	.config_init		= at803x_config_init,
- 	.set_wol		= at803x_set_wol,
- 	.get_wol		= at803x_get_wol,
--- 
-2.23.0
+Thanks
 
+>
+> -Denny
+>
