@@ -2,78 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E8ABC9693
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 04:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DDECC96BA
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 04:34:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726798AbfJCCD5 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Oct 2019 22:03:57 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:43541 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726070AbfJCCD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 22:03:56 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9323r0R007321, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9323r0R007321
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 3 Oct 2019 10:03:53 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Thu, 3 Oct
- 2019 10:03:52 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Prashant Malani <pmalani@chromium.org>
-CC:     "grundler@chromium.org" <grundler@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [PATCH net-next] r8152: Add identifier names for function pointers
-Thread-Topic: [PATCH net-next] r8152: Add identifier names for function
- pointers
-Thread-Index: AQHVeWXNzrpZgHvMJkGzPL+J096QNqdIKCHQ
-Date:   Thu, 3 Oct 2019 02:03:51 +0000
-Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18E612E@RTITMBSVM03.realtek.com.tw>
-References: <20191002210933.122122-1-pmalani@chromium.org>
-In-Reply-To: <20191002210933.122122-1-pmalani@chromium.org>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727333AbfJCCe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 22:34:26 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:32974 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbfJCCeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 22:34:25 -0400
+Received: by mail-io1-f65.google.com with SMTP id z19so2115743ior.0
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 19:34:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7KasjAOsUmvtgdRLEuqxKGaAkvxihLuuVFRLHF9qhmU=;
+        b=PxyQFb7W+0gc5DBx6IACmU0RSARxE3BZsU/2O3yUz5rBd2RFx5MRPCOdJ4LqMCz5Kc
+         Dacy0/+hTvO2J7mMh5zNjHb8I0KHESFOXmc4nfTaBjirCizf6wBf9/73DA1Qlu2khppa
+         1ZszjjtBeUL1ick2F5XLHRjBTb2Kh9RKRZ7lyOO1x5k0JEwj5oKdxx+IgWy0KEwMlTz0
+         1FUB3nlzL9aeMFpODZtV5KNFcVzuq/4cInXkSSS9D4SL5tHV9Ps/Nj9HojK6EfwC2GhJ
+         2YBNjrkjyCQ52oeRtE9bBeJIb4fE788p1SGi8dIGb0T/rrNa2i0g2pAKa+ioW0AhXHwz
+         Mgug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7KasjAOsUmvtgdRLEuqxKGaAkvxihLuuVFRLHF9qhmU=;
+        b=Uz4DNJuzCxy+0y9ywaPC33BSG+ABuiJrFOjoEzOoEldIH/oBeYXdSaHJNMmEtdBWOM
+         nG+0dPiJ0AwhjHYHS746OYhk8Y0ddtu+MDcZoeXAAT3S43oIh/JhiDHKNBlinFgqxuV6
+         XoyoHcMAfW2f/o2a0KJVdvzy07nEy1moK0DAswsNV69eSv0Jg6JTNdPlqOwRCPJaafln
+         VEH2HOuJCYippNTsnEODDDuxaVf37ziZYVC+asjpq77ALHGfvIeMUQ7euQuddpDokGlh
+         33KkMxVPVZvqGzuRlvnz3PbUuYSZELc5TXfwF3UYntVnxfXtP7WO3i5mxm2/J+LlNKqu
+         +Yhw==
+X-Gm-Message-State: APjAAAVHf6I+J6dQcl7ZwjtaTv6NLMWo/VydScW0Jgi4gogDDnVgjpI4
+        X4hFrhSxqN0AHrMVHDReF94=
+X-Google-Smtp-Source: APXvYqw2/eYaLwQ59ghCq8cGW6m0yj79XjlovH7BJsw944LngabbOB27l2PLJ5IwtIwuNyFY+4Y3uw==
+X-Received: by 2002:a5e:c641:: with SMTP id s1mr6273929ioo.308.1570070065208;
+        Wed, 02 Oct 2019 19:34:25 -0700 (PDT)
+Received: from [172.16.99.106] (c-73-169-115-106.hsd1.co.comcast.net. [73.169.115.106])
+        by smtp.googlemail.com with ESMTPSA id d9sm452509ioq.9.2019.10.02.19.34.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Oct 2019 19:34:23 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 12/15] ipv4: Add "in hardware" indication to
+ routes
+To:     Jiri Pirko <jiri@resnulli.us>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
+References: <20191002084103.12138-1-idosch@idosch.org>
+ <20191002084103.12138-13-idosch@idosch.org>
+ <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
+ <20191002182119.GF2279@nanopsycho>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1eea9e93-dbd9-8b50-9bf1-f8f6c6842dcc@gmail.com>
+Date:   Wed, 2 Oct 2019 20:34:22 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
+In-Reply-To: <20191002182119.GF2279@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prashant Malani [mailto:pmalani@chromium.org]
-> Sent: Thursday, October 03, 2019 5:10 AM
-> To: Hayes Wang
-> Cc: grundler@chromium.org; netdev@vger.kernel.org; nic_swsd; Prashant
-> Malani
-> Subject: [PATCH net-next] r8152: Add identifier names for function pointers
+On 10/2/19 12:21 PM, Jiri Pirko wrote:
+>>> This patch adds an "in hardware" indication to IPv4 routes, so that
+>>> users will have better visibility into the offload process. In the
+>>> future IPv6 will be extended with this indication as well.
+>>>
+>>> 'struct fib_alias' is extended with a new field that indicates if
+>>> the route resides in hardware or not. Note that the new field is added
+>>> in the 6 bytes hole and therefore the struct still fits in a single
+>>> cache line [1].
+>>>
+>>> Capable drivers are expected to invoke fib_alias_in_hw_{set,clear}()
+>>> with the route's key in order to set / clear the "in hardware
+>>> indication".
+>>>
+>>> The new indication is dumped to user space via a new flag (i.e.,
+>>> 'RTM_F_IN_HW') in the 'rtm_flags' field in the ancillary header.
+>>>
+>>
+>> nice series Ido. why not call this RTM_F_OFFLOAD to keep it consistent
+>> with the nexthop offload indication ?.
 > 
-> Checkpatch throws warnings for function pointer declarations which lack
-> identifier names.
-> 
-> An example of such a warning is:
-> 
-> WARNING: function definition argument 'struct r8152 *' should
-> also have an identifier name
-> 739: FILE: drivers/net/usb/r8152.c:739:
-> +               void (*init)(struct r8152 *);
-> 
-> So, fix those warnings by adding the identifier names.
-> 
-> While we are at it, also fix a character limit violation which was
-> causing another checkpatch warning.
-> 
-> Change-Id: Idec857ce2dc9592caf3173188be1660052c052ce
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
-> Reviewed-by: Grant Grundler <grundler@chromium.org>
+> See the second paragraph of this description.
 
-Acked-by: Hayes Wang <hayeswang@realtek.com>
-
-Best Regards,
-Hayes
-
+I read it multiple times. It does not explain why RTM_F_OFFLOAD is not
+used. Unless there is good reason RTM_F_OFFLOAD should be the name for
+consistency with all of the other OFFLOAD flags. I realize rtm_flags is
+overloaded and the lower 8 bits contains RTNH_F flags, but that can be
+managed with good documentation - that RTNH_F is for the nexthop and
+RTM_F is for the prefix.
