@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E810ACAE0E
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:20:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C9DBCAE0F
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388727AbfJCSTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 14:19:51 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35634 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388630AbfJCSTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:19:47 -0400
-Received: by mail-qt1-f195.google.com with SMTP id m15so4970905qtq.2
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 11:19:47 -0700 (PDT)
+        id S2388816AbfJCSTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 14:19:54 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37924 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388667AbfJCSTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:19:49 -0400
+Received: by mail-qk1-f195.google.com with SMTP id u186so3333480qkc.5
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 11:19:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=F8G4IBswBjxBsJFHpUVO/1AaagCDKoeUnSETOs15G9o=;
-        b=rvVjpl91XpHG9c71ZvNaEmrlYk5pFJHFQYwSM08kNpV2yKFpdpCMvKUN7N5+ij1eIh
-         atZl3PROmzE4FwTwpTi7U81kM7bH2w+rmSDrqI6ardJC2ITjtbzySaeX80KHldaSxz+5
-         5Ljnw0vAgkdkdOf0TCPRQ90hEebPfFCxpVSM5rdyAx0t+6fuuWR7pjrWVW9TTc5ndajV
-         jKlh7oOg17rjl3Sfcosh1WaGlyoq7Hrla2Fftb7YELwijl5qpOKNas4WrGOeatXAZyx5
-         mBDrOHU7I975Ss0Hr8Wl8JY9oq2E9FJ2u9pDA6vLtQJCfLyiyDvTZk/rlQJ8AZj+25M3
-         b44g==
+        bh=DcE+UamZif/tZqIFXQiUhVwqdZa1A6gpoZRzqbUbJPs=;
+        b=QIP6u/wLCunghfpa/RdV+aAudxpHIyHnJuxs22zSXr1Pt64XmszJ4U2Ab4gzUNc5C7
+         JZ2e86QPs5rw9wG+1nKTHN5uUhLbgQneXuVttxl9FdQJwJc4sj/Kbwir0qaVvE+3iIaw
+         0Oxjn45cRB2SFsCzwE3cTKeOzFPnojMqAyNZlX5Kh1Aus4G92f3EYsG5FQIqRKAFVmxH
+         5mFO2bTLL7S3dzPGo/fk4aBpKlb/VElwOxfEuEpR6f0AVAZHZhf89FzppcKEyq4QOSkV
+         zUiH/1MnOppBFDw6cTgKyIsoRABpZ/VgaAEsR9viPWegl7dvBj2JIIlTDSZTV57FJkN3
+         wE2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=F8G4IBswBjxBsJFHpUVO/1AaagCDKoeUnSETOs15G9o=;
-        b=fgKD9xY2Qy82Isp0dgCe+FZoQQxHddRhkVs+tbn6NPUtqdcb2VD2pydXo27GoXy0hX
-         A16OeR4KQBItM62/eWImUcZDiLClj4i5h17MVr0cs/+kM+RL6QBoeluH+uCA3HhP6nmz
-         SpSWhyZTEVm8yRDDBJW/ekwcj7x7fNlqX7c0SVAK1jD7ItKNxaQBWkpfXM/Xkx7G2B6x
-         9ty4h/r6n9O4mXmYG1OhpI7lhhVIs/GQTv2zJgvn+mgbVgACoFrOblHWENMCnlls407j
-         AYJN6EP6dyxg3LuIr412V3iqooaJyiFHuuBY+gUCszBhivtgVaigezkJPthMZxKZ5g8x
-         kqfw==
-X-Gm-Message-State: APjAAAUW9ehWO4DQ7C+maMMNjXsRvyzfIsTfhxZ/DYBgt38sa+7y5tYR
-        XUhVnOpBa2w2z1VNRroq2xtgMQ==
-X-Google-Smtp-Source: APXvYqzTupVgHWF6q1MmZts/PO12UpNVMNcwWWrnQHc44B5coVJJVB0Q2b/xO7ZNWOBQF/Zcmbh9Sg==
-X-Received: by 2002:ac8:748e:: with SMTP id v14mr11347225qtq.371.1570126786794;
-        Thu, 03 Oct 2019 11:19:46 -0700 (PDT)
+        bh=DcE+UamZif/tZqIFXQiUhVwqdZa1A6gpoZRzqbUbJPs=;
+        b=kjMNbyov6TnkQ41xVNOIcjFP7vC1LnoChPgJosdCp8/ou+locQ5owdNDEab2N68GNS
+         c1ughNLJ3/dmpzfjrx+T0g6kxssrzp+tXYtibyUs0FRYdoG28tY1LUhfO7qoLdAYxiiA
+         x6wXVrsUGEqlRmO3a5pTfmzaBZXrLxFksKhHeBOUTz/w0T0fa4W+NYeYplKRSqURSm8w
+         WAZz6MeE91Ch5EkeFqRID4gGsWWy4ROCkirJJpWiZEoMQLCHdKzL5a11+4j5ea4Rgu+G
+         /yyxXfEeDb7Up/gvMRQ3kRueli22Fv7D8AvNE+5uaXpTVFkCHlDoJyX1gJRXTyPyuii4
+         x0sA==
+X-Gm-Message-State: APjAAAXh1fyAXrBk60/kwEFoIPFmT2U35XLO4q4Edpg5diRSRpbbiXob
+        g5Oib4T6261HJjwP1FVozMy43w==
+X-Google-Smtp-Source: APXvYqwAiNKHEGtle/f8aLxiAbWrYSL4TL/JfC/eDhH9sOzz72Iv6RoM4ylHtJoe7VvgzZf1vIzLHw==
+X-Received: by 2002:a37:a2c3:: with SMTP id l186mr5472693qke.461.1570126788643;
+        Thu, 03 Oct 2019 11:19:48 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m91sm1592984qte.8.2019.10.03.11.19.45
+        by smtp.gmail.com with ESMTPSA id m91sm1592984qte.8.2019.10.03.11.19.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Oct 2019 11:19:46 -0700 (PDT)
+        Thu, 03 Oct 2019 11:19:48 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -53,9 +53,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         John Hurley <john.hurley@netronome.com>,
         Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net-next 5/6] net/tls: rename tls_hw_* functions tls_toe_*
-Date:   Thu,  3 Oct 2019 11:18:58 -0700
-Message-Id: <20191003181859.24958-6-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 6/6] net/tls: allow compiling TLS TOE out
+Date:   Thu,  3 Oct 2019 11:18:59 -0700
+Message-Id: <20191003181859.24958-7-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191003181859.24958-1-jakub.kicinski@netronome.com>
 References: <20191003181859.24958-1-jakub.kicinski@netronome.com>
@@ -66,118 +66,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tls_hw_* functions are quite confusingly named, since they
-are related to the TOE-offload, not TLS_HW offload which doesn't
-require TOE. Rename them.
+TLS "record layer offload" requires TOE, and bypasses most of
+the normal networking stack. It is also significantly less
+maintained. Allow users to compile it out to avoid issues.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: John Hurley <john.hurley@netronome.com>
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 ---
- include/net/tls_toe.h |  6 +++---
- net/tls/tls_main.c    |  6 +++---
- net/tls/tls_toe.c     | 12 ++++++------
- 3 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/crypto/chelsio/Kconfig |  2 +-
+ net/tls/Kconfig                | 10 ++++++++++
+ net/tls/Makefile               |  3 ++-
+ net/tls/tls_main.c             |  5 ++++-
+ 4 files changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/tls_toe.h b/include/net/tls_toe.h
-index 3bb39c795aed..b3aa7593ce2c 100644
---- a/include/net/tls_toe.h
-+++ b/include/net/tls_toe.h
-@@ -69,9 +69,9 @@ struct tls_toe_device {
- 	struct kref kref;
- };
+diff --git a/drivers/crypto/chelsio/Kconfig b/drivers/crypto/chelsio/Kconfig
+index 250150560e68..91e424378217 100644
+--- a/drivers/crypto/chelsio/Kconfig
++++ b/drivers/crypto/chelsio/Kconfig
+@@ -35,7 +35,7 @@ config CHELSIO_IPSEC_INLINE
+ config CRYPTO_DEV_CHELSIO_TLS
+         tristate "Chelsio Crypto Inline TLS Driver"
+         depends on CHELSIO_T4
+-        depends on TLS
++        depends on TLS_TOE
+         select CRYPTO_DEV_CHELSIO
+         ---help---
+           Support Chelsio Inline TLS with Chelsio crypto accelerator.
+diff --git a/net/tls/Kconfig b/net/tls/Kconfig
+index e4328b3b72eb..61ec78521a60 100644
+--- a/net/tls/Kconfig
++++ b/net/tls/Kconfig
+@@ -26,3 +26,13 @@ config TLS_DEVICE
+ 	Enable kernel support for HW offload of the TLS protocol.
  
--int tls_hw_prot(struct sock *sk);
--int tls_hw_hash(struct sock *sk);
--void tls_hw_unhash(struct sock *sk);
-+int tls_toe_bypass(struct sock *sk);
-+int tls_toe_hash(struct sock *sk);
-+void tls_toe_unhash(struct sock *sk);
+ 	If unsure, say N.
++
++config TLS_TOE
++	bool "Transport Layer Security TCP stack bypass"
++	depends on TLS
++	default n
++	help
++	Enable kernel support for legacy HW offload of the TLS protocol,
++	which is incompatible with the Linux networking stack semantics.
++
++	If unsure, say N.
+diff --git a/net/tls/Makefile b/net/tls/Makefile
+index 322250e912db..95d8c06a14b9 100644
+--- a/net/tls/Makefile
++++ b/net/tls/Makefile
+@@ -5,6 +5,7 @@
  
- void tls_toe_register_device(struct tls_toe_device *device);
- void tls_toe_unregister_device(struct tls_toe_device *device);
+ obj-$(CONFIG_TLS) += tls.o
+ 
+-tls-y := tls_main.o tls_sw.o tls_toe.o
++tls-y := tls_main.o tls_sw.o
+ 
++tls-$(CONFIG_TLS_TOE) += tls_toe.o
+ tls-$(CONFIG_TLS_DEVICE) += tls_device.o tls_device_fallback.o
 diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 9d0cf14b2f7e..483dda6c3155 100644
+index 483dda6c3155..237e58e4928a 100644
 --- a/net/tls/tls_main.c
 +++ b/net/tls/tls_main.c
-@@ -681,8 +681,8 @@ static void build_protos(struct proto prot[TLS_NUM_CONFIG][TLS_NUM_CONFIG],
- #endif
+@@ -679,10 +679,11 @@ static void build_protos(struct proto prot[TLS_NUM_CONFIG][TLS_NUM_CONFIG],
  
+ 	prot[TLS_HW][TLS_HW] = prot[TLS_HW][TLS_SW];
+ #endif
+-
++#ifdef CONFIG_TLS_TOE
  	prot[TLS_HW_RECORD][TLS_HW_RECORD] = *base;
--	prot[TLS_HW_RECORD][TLS_HW_RECORD].hash		= tls_hw_hash;
--	prot[TLS_HW_RECORD][TLS_HW_RECORD].unhash	= tls_hw_unhash;
-+	prot[TLS_HW_RECORD][TLS_HW_RECORD].hash		= tls_toe_hash;
-+	prot[TLS_HW_RECORD][TLS_HW_RECORD].unhash	= tls_toe_unhash;
+ 	prot[TLS_HW_RECORD][TLS_HW_RECORD].hash		= tls_toe_hash;
+ 	prot[TLS_HW_RECORD][TLS_HW_RECORD].unhash	= tls_toe_unhash;
++#endif
  }
  
  static int tls_init(struct sock *sk)
-@@ -692,7 +692,7 @@ static int tls_init(struct sock *sk)
+@@ -692,8 +693,10 @@ static int tls_init(struct sock *sk)
  
  	tls_build_proto(sk);
  
--	if (tls_hw_prot(sk))
-+	if (tls_toe_bypass(sk))
++#ifdef CONFIG_TLS_TOE
+ 	if (tls_toe_bypass(sk))
  		return 0;
++#endif
  
  	/* The TLS ulp is currently supported only for TCP sockets
-diff --git a/net/tls/tls_toe.c b/net/tls/tls_toe.c
-index 89a7014a05f7..7e1330f19165 100644
---- a/net/tls/tls_toe.c
-+++ b/net/tls/tls_toe.c
-@@ -41,7 +41,7 @@
- static LIST_HEAD(device_list);
- static DEFINE_SPINLOCK(device_spinlock);
- 
--static void tls_hw_sk_destruct(struct sock *sk)
-+static void tls_toe_sk_destruct(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tls_context *ctx = tls_get_ctx(sk);
-@@ -52,7 +52,7 @@ static void tls_hw_sk_destruct(struct sock *sk)
- 	tls_ctx_free(sk, ctx);
- }
- 
--int tls_hw_prot(struct sock *sk)
-+int tls_toe_bypass(struct sock *sk)
- {
- 	struct tls_toe_device *dev;
- 	struct tls_context *ctx;
-@@ -66,7 +66,7 @@ int tls_hw_prot(struct sock *sk)
- 				goto out;
- 
- 			ctx->sk_destruct = sk->sk_destruct;
--			sk->sk_destruct = tls_hw_sk_destruct;
-+			sk->sk_destruct = tls_toe_sk_destruct;
- 			ctx->rx_conf = TLS_HW_RECORD;
- 			ctx->tx_conf = TLS_HW_RECORD;
- 			update_sk_prot(sk, ctx);
-@@ -79,7 +79,7 @@ int tls_hw_prot(struct sock *sk)
- 	return rc;
- }
- 
--void tls_hw_unhash(struct sock *sk)
-+void tls_toe_unhash(struct sock *sk)
- {
- 	struct tls_context *ctx = tls_get_ctx(sk);
- 	struct tls_toe_device *dev;
-@@ -98,7 +98,7 @@ void tls_hw_unhash(struct sock *sk)
- 	ctx->sk_proto->unhash(sk);
- }
- 
--int tls_hw_hash(struct sock *sk)
-+int tls_toe_hash(struct sock *sk)
- {
- 	struct tls_context *ctx = tls_get_ctx(sk);
- 	struct tls_toe_device *dev;
-@@ -118,7 +118,7 @@ int tls_hw_hash(struct sock *sk)
- 	spin_unlock_bh(&device_spinlock);
- 
- 	if (err)
--		tls_hw_unhash(sk);
-+		tls_toe_unhash(sk);
- 	return err;
- }
- 
+ 	 * in ESTABLISHED state.
 -- 
 2.21.0
 
