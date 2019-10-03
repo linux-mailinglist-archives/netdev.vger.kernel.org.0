@@ -2,78 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CBC5CA629
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 18:55:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53EC2CA787
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 18:58:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404925AbfJCQke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 12:40:34 -0400
-Received: from vsmx012.vodafonemail.xion.oxcs.net ([153.92.174.90]:60421 "EHLO
-        vsmx012.vodafonemail.xion.oxcs.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731501AbfJCQkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 12:40:32 -0400
-X-Greylist: delayed 326 seconds by postgrey-1.27 at vger.kernel.org; Thu, 03 Oct 2019 12:40:31 EDT
-Received: from vsmx004.vodafonemail.xion.oxcs.net (unknown [192.168.75.198])
-        by mta-8-out.mta.xion.oxcs.net (Postfix) with ESMTP id 0C0D1F34DD8;
-        Thu,  3 Oct 2019 16:35:04 +0000 (UTC)
-Received: from arcor.de (unknown [91.40.26.191])
-        by mta-8-out.mta.xion.oxcs.net (Postfix) with ESMTPA id B70B019A6ED;
-        Thu,  3 Oct 2019 16:34:59 +0000 (UTC)
-Date:   Thu, 3 Oct 2019 18:34:39 +0200
-From:   Reinhard Speyerer <rspmn@arcor.de>
-To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] qmi_wwan: add support for Cinterion CLS8 devices
-Message-ID: <20191003163439.GA1556@arcor.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-VADE-STATUS: LEGIT
+        id S2406481AbfJCQyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 12:54:53 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:26284 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2406371AbfJCQyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 12:54:51 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x93GmpAV109559;
+        Thu, 3 Oct 2019 12:54:40 -0400
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vdm171dpe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Oct 2019 12:54:39 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x93GrPOS020802;
+        Thu, 3 Oct 2019 16:54:37 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma04dal.us.ibm.com with ESMTP id 2v9y58h8wg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Oct 2019 16:54:37 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x93GsZTq56754432
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 3 Oct 2019 16:54:35 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BF680136051;
+        Thu,  3 Oct 2019 16:54:35 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2EAB9136055;
+        Thu,  3 Oct 2019 16:54:35 +0000 (GMT)
+Received: from oc5348122405.ibm.com.austin.ibm.com (unknown [9.53.179.215])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu,  3 Oct 2019 16:54:34 +0000 (GMT)
+From:   David Dai <zdai@linux.vnet.ibm.com>
+To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zdai@us.ibm.com,
+        zdai@linux.vnet.ibm.com
+Subject: [v1] e1000e: EEH on e1000e adapter detects io perm failure can trigger crash
+Date:   Thu,  3 Oct 2019 11:54:32 -0500
+Message-Id: <1570121672-12172-1-git-send-email-zdai@linux.vnet.ibm.com>
+X-Mailer: git-send-email 1.7.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-03_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=989 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910030146
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for Cinterion CLS8 devices.
-Use QMI_QUIRK_SET_DTR as required for Qualcomm MDM9x07 chipsets. 
+We see the behavior when EEH e1000e adapter detects io permanent failure,
+it will crash kernel with this stack:
+EEH: Beginning: 'error_detected(permanent failure)'
+EEH: PE#900000 (PCI 0115:90:00.1): Invoking e1000e->error_detected(permanent failure)
+EEH: PE#900000 (PCI 0115:90:00.1): e1000e driver reports: 'disconnect'
+EEH: PE#900000 (PCI 0115:90:00.0): Invoking e1000e->error_detected(permanent failure)
+EEH: PE#900000 (PCI 0115:90:00.0): e1000e driver reports: 'disconnect'
+EEH: Finished:'error_detected(permanent failure)'
+Oops: Exception in kernel mode, sig: 5 [#1]
+NIP [c0000000007b1be0] free_msi_irqs+0xa0/0x280
+ LR [c0000000007b1bd0] free_msi_irqs+0x90/0x280
+Call Trace:
+[c0000004f491ba10] [c0000000007b1bd0] free_msi_irqs+0x90/0x280 (unreliable)
+[c0000004f491ba70] [c0000000007b260c] pci_disable_msi+0x13c/0x180
+[c0000004f491bab0] [d0000000046381ac] e1000_remove+0x234/0x2a0 [e1000e]
+[c0000004f491baf0] [c000000000783cec] pci_device_remove+0x6c/0x120
+[c0000004f491bb30] [c00000000088da6c] device_release_driver_internal+0x2bc/0x3f0
+[c0000004f491bb80] [c00000000076f5a8] pci_stop_and_remove_bus_device+0xb8/0x110
+[c0000004f491bbc0] [c00000000006e890] pci_hp_remove_devices+0x90/0x130
+[c0000004f491bc50] [c00000000004ad34] eeh_handle_normal_event+0x1d4/0x660
+[c0000004f491bd10] [c00000000004bf10] eeh_event_handler+0x1c0/0x1e0
+[c0000004f491bdc0] [c00000000017c4ac] kthread+0x1ac/0x1c0
+[c0000004f491be30] [c00000000000b75c] ret_from_kernel_thread+0x5c/0x80
 
-T:  Bus=01 Lev=03 Prnt=05 Port=01 Cnt=02 Dev#= 25 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00b0 Rev= 3.18
-S:  Manufacturer=GEMALTO
-S:  Product=USB Modem
-C:* #Ifs= 5 Cfg#= 1 Atr=80 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-E:  Ad=89(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+Basically the e1000e irqs haven't been freed at the time eeh is trying to 
+remove the the e1000e device.
+Need to make sure when e1000e_close is called to bring down the NIC,
+if adapter error_state is pci_channel_io_perm_failure, it should also 
+bring down the link and free irqs.
 
-Signed-off-by: Reinhard Speyerer <rspmn@arcor.de>
+Reported-by: Morumuri Srivalli  <smorumu1@in.ibm.com>
+Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
 ---
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index b6dc5d714b5e..3d77cd402ba9 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1350,6 +1350,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x1e2d, 0x0082, 4)},	/* Cinterion PHxx,PXxx (2 RmNet) */
- 	{QMI_FIXED_INTF(0x1e2d, 0x0082, 5)},	/* Cinterion PHxx,PXxx (2 RmNet) */
- 	{QMI_FIXED_INTF(0x1e2d, 0x0083, 4)},	/* Cinterion PHxx,PXxx (1 RmNet + USB Audio)*/
-+	{QMI_QUIRK_SET_DTR(0x1e2d, 0x00b0, 4)},	/* Cinterion CLS8 */
- 	{QMI_FIXED_INTF(0x413c, 0x81a2, 8)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
- 	{QMI_FIXED_INTF(0x413c, 0x81a3, 8)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
- 	{QMI_FIXED_INTF(0x413c, 0x81a4, 8)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+ drivers/net/ethernet/intel/e1000e/netdev.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index d7d56e4..cf618e1 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -4715,7 +4715,8 @@ int e1000e_close(struct net_device *netdev)
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
+-	if (!test_bit(__E1000_DOWN, &adapter->state)) {
++	if (!test_bit(__E1000_DOWN, &adapter->state) ||
++	    (adapter->pdev->error_state == pci_channel_io_perm_failure)) {
+ 		e1000e_down(adapter, true);
+ 		e1000_free_irq(adapter);
+ 
+-- 
+1.7.1
+
