@@ -2,99 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA37CB0A0
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 22:58:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 155A0CB0D2
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 23:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730140AbfJCU60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 16:58:26 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38407 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728503AbfJCU6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 16:58:25 -0400
-Received: by mail-qt1-f193.google.com with SMTP id j31so5622079qta.5;
-        Thu, 03 Oct 2019 13:58:25 -0700 (PDT)
+        id S1731004AbfJCVIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 17:08:45 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:40978 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727789AbfJCVIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 17:08:45 -0400
+Received: by mail-io1-f68.google.com with SMTP id n26so8827323ioj.8;
+        Thu, 03 Oct 2019 14:08:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WIrZFzsJy4iycGCbOe0uKReizu+dGey8/8JfUByM3aY=;
-        b=TUELeMGj1bnZp0T6dXOObTKSWjB6GhVTk1U3pAbRQWpYvWEnGpJn32dyCPfgJp8vBY
-         1ItpjtUQhm0H3CCe2Q19Udml9dQVWGhA+H+RMyxdiHETM4e+fjkgK6Z2BrCxgJUcRMuW
-         /HhwXEwBK9x2MqZ+rntfhF7v3koRfj6cB8IwDJ0mRXXx6h4OCkFkM9ya1El9wHBPYSQq
-         Vxl577u3dj6cBqUM6718XQugrH3kn+KenZdor2eb5QxyGE2BEDOX8Shg80PpCs+zbf/g
-         KEEJmaVWe0lTBDGZ4vVvdPNxyKCVwhhHBZ1F+EyGNCwvtiJTHEqZTgZFoMTtjZ9QfD56
-         6mKQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=hBpK7xDzlnL8ljzox/cnUXn1+XMnoCD9cuKEJvoy/bQ=;
+        b=abQckxYajH8Ep6BsTg5flUXpmTGWgQpUt1mvGnnXhvciAyQDlGUSyq6VFHTpJrdB/b
+         twWMgl7gPsL28dz/gvl8rE7DVmNVR2uqqGzizy6NLccjgc11J3Q73WjudbfMVgjBzhlR
+         9ZKsdOFoXdXUpjwn1+NNhiwi4rcFZZAJ+ru6IkecY3hQ4SmoxRo/WBCfN5hS6nN8VWF1
+         hTgbOMswYrEiAuYX/TYPLwbCYGhAKgHGtBXK2fh3c1v4JfW5Ord6bPdnJ3R2FUDeRKv+
+         81xME6wP7sqh9dBweh0IlsnIQ07qFR+x8ZfAqJyfSkCh/pwbacaLq9LMaOFCfdXZL529
+         xVwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WIrZFzsJy4iycGCbOe0uKReizu+dGey8/8JfUByM3aY=;
-        b=ihub32iBSiCoT4JbmcCrGH8o0bHTTQMhyFe68U8A0g12dXGmwlVLJNQG0kQH7e/p52
-         K6A7QANMjYihVkgDa2QTmjXgk9vX/8O0FDMt/UJdDvxQebSVCR+n4Y1czid6LKC+TTgZ
-         z2KOXzfyKQ5v9YAdj3edg1+p8L66E0rB/SwYRelXbpi4qIVyXhQl2vrqYLpy5F+SZK0c
-         Sz3DMnTMwqhUo+RTOjFnSXoBjAGhpVaZlAl1NjoUGCFfLUNX9HyynhpORzvV2w2kngaj
-         n/t10mRlBCCYqtmUOmVRs1IwBcW5Kxdm8AyBD3KGk23k8T+pEOtfLIXwOC1+iQUJ0wz8
-         bLeA==
-X-Gm-Message-State: APjAAAUNkStSpLb6aih7weDxR52VY/NbnI1D5uwpygOUbBG2v2e/nHVn
-        05tIj1c43NVXcE/LEu6uARPso1BFXO37urN8Uq0=
-X-Google-Smtp-Source: APXvYqx8pJ3WWpgB3HKjBdeqRnKtSmk9B7++9MNYZYl5YXKOTp5N2c7zor6mXaH+z8duvvJ7CrD6z/1c6qd6N82m9Zk=
-X-Received: by 2002:a0c:9846:: with SMTP id e6mr10462518qvd.114.1570136304688;
- Thu, 03 Oct 2019 13:58:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191003014153.GA13156@paulmck-ThinkPad-P72> <20191003014310.13262-6-paulmck@kernel.org>
- <CAEf4BzaBuktutCZr2ZUC6b-XK_JJ7prWZmO-5Yew2tVp5DxbBA@mail.gmail.com>
-In-Reply-To: <CAEf4BzaBuktutCZr2ZUC6b-XK_JJ7prWZmO-5Yew2tVp5DxbBA@mail.gmail.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 3 Oct 2019 13:58:13 -0700
-Message-ID: <CAPhsuW6vFwhhYngbftZk4NrSJ+qQx3F6ChUCm=n16HDK-N9vMg@mail.gmail.com>
-Subject: Re: [PATCH tip/core/rcu 6/9] bpf/cgroup: Replace rcu_swap_protected()
- with rcu_replace()
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     paulmck@kernel.org, rcu@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>, jiangshanlai@gmail.com,
-        dipankar@in.ibm.com, Andrew Morton <akpm@linux-foundation.org>,
-        mathieu.desnoyers@efficios.com, josh@joshtriplett.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>, dhowells@redhat.com,
-        Eric Dumazet <edumazet@google.com>, fweisbec@gmail.com,
-        Oleg Nesterov <oleg@redhat.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=hBpK7xDzlnL8ljzox/cnUXn1+XMnoCD9cuKEJvoy/bQ=;
+        b=ownq6ZS178wFmBbVuvQYHt+3lM4k8QMfaByKnIvy/3tvm6+DHkdoqIibxD1GgDa6uh
+         FTzjTNBYEhf7D4S/MVmRiZELPexnPrcHAyvgi+wvXysXKuedjbbT8XoBkXpPRgBaCDj9
+         yXpJ7AvVH8+9j+EP0JKmzZw/Np1iBjS8HNC1hiloolNQczalSJOLAWdsBG1zb5knaLwO
+         7ujUVJEKGM0qbkdLQ2G/Ypk1QFrYd1Pdy5MIf5j9RvC0IRNBjQRQ2OglcXFoeQ1WPa13
+         yzLgVs7rX64b+One0ssLqxEkbR0w7IXGzjo9B/thFZcyzD6isoaqOkxQg4Ija4qiCgD2
+         KzdQ==
+X-Gm-Message-State: APjAAAWR3y9iWw4N/kKKnltbX0Ou5/89w5C8LaqENJkc0GJx5bBen2Yv
+        dSZFT75vgjbu/Q1olyj/Mew=
+X-Google-Smtp-Source: APXvYqyeLamt4Vrvvg3V9M8HIDonzdOp9yzO11yxhdfUc4UIUBYQHme8WoxyNruVBN/2w6nPY5vgCA==
+X-Received: by 2002:a92:d806:: with SMTP id y6mr974169ilm.22.1570136923989;
+        Thu, 03 Oct 2019 14:08:43 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id d197sm1389346iog.15.2019.10.03.14.08.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Oct 2019 14:08:43 -0700 (PDT)
+Date:   Thu, 03 Oct 2019 14:08:36 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Song Liu <liu.song.a23@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Message-ID: <5d9663547acce_59e82ace6a9345b4a3@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAPhsuW6==Ukxjh69SVLusC=GMf=65Y2T0gLNig55obwbS-7VqQ@mail.gmail.com>
+References: <20191002234512.25902-1-daniel@iogearbox.net>
+ <CAPhsuW6==Ukxjh69SVLusC=GMf=65Y2T0gLNig55obwbS-7VqQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf, x86: Small optimization in comparing
+ against imm0
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 3, 2019 at 10:43 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, Oct 2, 2019 at 6:45 PM <paulmck@kernel.org> wrote:
+Song Liu wrote:
+> On Wed, Oct 2, 2019 at 5:30 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 > >
-> > From: "Paul E. McKenney" <paulmck@kernel.org>
+> > Replace 'cmp reg, 0' with 'test reg, reg' for comparisons against
+> > zero. Saves 1 byte of instruction encoding per occurrence. The flag
+> > results of test 'reg, reg' are identical to 'cmp reg, 0' in all
+> > cases except for AF which we don't use/care about. In terms of
+> > macro-fusibility in combination with a subsequent conditional jump
+> > instruction, both have the same properties for the jumps used in
+> > the JIT translation. For example, same JITed Cilium program can
+> > shrink a bit from e.g. 12,455 to 12,317 bytes as tests with 0 are
+> > used quite frequently.
 > >
-> > This commit replaces the use of rcu_swap_protected() with the more
-> > intuitively appealing rcu_replace() as a step towards removing
-> > rcu_swap_protected().
-> >
-> > Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
-> > Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > Cc: Alexei Starovoitov <ast@kernel.org>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Cc: Song Liu <songliubraving@fb.com>
-> > Cc: Yonghong Song <yhs@fb.com>
-> > Cc: <netdev@vger.kernel.org>
-> > Cc: <bpf@vger.kernel.org>
-> > ---
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> 
+> Acked-by: Song Liu <songliubraving@fb.com>
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Bonus points for causing me to spend the morning remembering the
+differences between cmd, and, or, and test.
+
+Also wonder if at some point we should clean up the jit a bit and
+add some defines/helpers for all the open coded opcodes and such.
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
