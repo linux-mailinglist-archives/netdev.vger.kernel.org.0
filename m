@@ -2,109 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2728CA0D7
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 17:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93379CA0EE
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 17:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729912AbfJCPBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 11:01:02 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39862 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727326AbfJCPBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 11:01:01 -0400
-Received: from 57.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.57] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iG2b9-0001c2-3b; Thu, 03 Oct 2019 17:00:55 +0200
-Date:   Thu, 3 Oct 2019 17:00:54 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>
-Cc:     bjorn.topel@intel.com, ast@kernel.org, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf v2] xsk: fix crash in poll when device does not
- support ndo_xsk_wakeup
-Message-ID: <20191003150054.GD9196@pc-66.home>
-References: <1569997919-11541-1-git-send-email-magnus.karlsson@intel.com>
+        id S1729034AbfJCPKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 11:10:40 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:56305 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726364AbfJCPKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 11:10:39 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id DC35421FE5;
+        Thu,  3 Oct 2019 11:10:38 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 03 Oct 2019 11:10:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=5FAGn8
+        gQH6gqgQViDm3DmSm6o0eLqO/erkFaY7oUQnU=; b=nYEyMCVmFxTp1ZnJSZJZhr
+        gQDn7Yj4gAZaZJ3oUZkfPE/XFBpGy4pNtfUpY5lbXI0ZLMXjP1ZPHms7P0z1hIbQ
+        1WLMsnHf2JntJJD13FYROl9Q769B9dqh2ga7CBfAPLe1TIN6ptk4sJkuOG3iKitY
+        KtBBfp6edygMMJJSxtm+cj/pc9/9pMDEX+AJ9QSchrYVuyBzdc4ZR7cbyzDWziiO
+        oLGjkx5x+9zow/LIARuXPKr/btVNEPDo7f0TDUeZnMusMzG0zmqieJDWu5zUsL35
+        GJe6bwVejkckFxdYjYLpcdioG9YSmaifD6Onp8r2sTbDb4OL/KjKdXvbCKPUshyQ
+        ==
+X-ME-Sender: <xms:bg-WXSX3tZ6my964LHqlcQoIyMMeRU9xTIUP8N57Y7IzWXK1uflc1g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrgeekgdekiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
+    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:bg-WXQ4dm5iX3rBGP1cGmB0oc4JsJqs-rymU-tE-3X98xGUisoRpdQ>
+    <xmx:bg-WXVFQ4V9qLCRKZSagxhULW09UJaPhPUheui83mxKi7Fvu3JSdEg>
+    <xmx:bg-WXWQO8QLPMHYGyjVG-PH6oFH2K9wRWMUmLArVVY0-z4wlWkhOLA>
+    <xmx:bg-WXWvDaeUduKBuboFWuhz8c5TIMgBuJf3QC4afusTeQK-F6aGygw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id AAF38D60066;
+        Thu,  3 Oct 2019 11:10:37 -0400 (EDT)
+Date:   Thu, 3 Oct 2019 18:10:35 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
+        jiri@mellanox.com, jakub.kicinski@netronome.com,
+        saeedm@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 08/15] mlxsw: spectrum_router: Start using
+ new IPv4 route notifications
+Message-ID: <20191003151035.GA26217@splinter>
+References: <20191002084103.12138-1-idosch@idosch.org>
+ <20191002084103.12138-9-idosch@idosch.org>
+ <20191002175230.GC2279@nanopsycho>
+ <20191002180144.GD2279@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1569997919-11541-1-git-send-email-magnus.karlsson@intel.com>
+In-Reply-To: <20191002180144.GD2279@nanopsycho>
 User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25591/Thu Oct  3 10:30:38 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 02, 2019 at 08:31:59AM +0200, Magnus Karlsson wrote:
-> Fixes a crash in poll() when an AF_XDP socket is opened in copy mode
-> and the bound device does not have ndo_xsk_wakeup defined. Avoid
-> trying to call the non-existing ndo and instead call the internal xsk
-> sendmsg function to send packets in the same way (from the
-> application's point of view) as calling sendmsg() in any mode or
-> poll() in zero-copy mode would have done. The application should
-> behave in the same way independent on if zero-copy mode or copy mode
-> is used.
+On Wed, Oct 02, 2019 at 08:01:44PM +0200, Jiri Pirko wrote:
+> Wed, Oct 02, 2019 at 07:52:30PM CEST, jiri@resnulli.us wrote:
+> >Wed, Oct 02, 2019 at 10:40:56AM CEST, idosch@idosch.org wrote:
+> >>From: Ido Schimmel <idosch@mellanox.com>
+> >>
+> >>With the new notifications mlxsw does not need to handle identical
+> >>routes itself, as this is taken care of by the core IPv4 code.
+> >>
+> >>Instead, mlxsw only needs to take care of inserting and removing routes
+> >>from the device.
+> >>
+> >>Convert mlxsw to use the new IPv4 route notifications and simplify the
+> >>code.
+> >>
+> >
+> >[...]
+> >
+> >
+> >>@@ -6246,9 +6147,10 @@ static int mlxsw_sp_router_fib_event(struct notifier_block *nb,
+> >> 		err = mlxsw_sp_router_fib_rule_event(event, info,
+> >> 						     router->mlxsw_sp);
+> >> 		return notifier_from_errno(err);
+> >>-	case FIB_EVENT_ENTRY_ADD:
+> >>+	case FIB_EVENT_ENTRY_ADD: /* fall through */
+> >> 	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
+> >> 	case FIB_EVENT_ENTRY_APPEND:  /* fall through */
+> >
+> >Why don't you skip the three above with just return of NOTIFY_DONE?
 > 
-> Fixes: 77cd0d7b3f25 ("xsk: add support for need_wakeup flag in AF_XDP rings")
-> Reported-by: syzbot+a5765ed8cdb1cca4d249@syzkaller.appspotmail.com
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> if (info->family == AF_INET)
+> 	return NOTIFY_DONE;
 
-Applied, thanks!
+It's not really needed given ADD and APPEND are not sent for AF_INET
+after this patchset. But I did find out that I forgot to remove them
+from mlxsw_sp_router_fib4_event(), so I'll do that in v1.
 
-[...]
-> +static int xsk_generic_xmit(struct sock *sk)
->  {
-> -	u32 max_batch = TX_BATCH_SIZE;
->  	struct xdp_sock *xs = xdp_sk(sk);
-> +	u32 max_batch = TX_BATCH_SIZE;
->  	bool sent_frame = false;
->  	struct xdp_desc desc;
->  	struct sk_buff *skb;
-> @@ -394,6 +392,18 @@ static int xsk_generic_xmit(struct sock *sk, struct msghdr *m,
->  	return err;
->  }
->  
-> +static int __xsk_sendmsg(struct sock *sk)
+Thanks!
 
-Bit unclear why you don't just pass xs directly in here from both call
-sites ...
-
-> +{
-> +	struct xdp_sock *xs = xdp_sk(sk);
-> +
-> +	if (unlikely(!(xs->dev->flags & IFF_UP)))
-> +		return -ENETDOWN;
-> +	if (unlikely(!xs->tx))
-> +		return -ENOBUFS;
-> +
-> +	return xs->zc ? xsk_zc_xmit(xs) : xsk_generic_xmit(sk);
-
-... and for the xsk_generic_xmit() pass in &xs->sk. Presumably generated
-code should be the same, but maybe small cleanup for next batch of AF_XDP
-patches.
-
-> +}
-> +
->  static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
->  {
->  	bool need_wait = !(m->msg_flags & MSG_DONTWAIT);
-> @@ -402,21 +412,18 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
->  
->  	if (unlikely(!xsk_is_bound(xs)))
->  		return -ENXIO;
-> -	if (unlikely(!(xs->dev->flags & IFF_UP)))
-> -		return -ENETDOWN;
-> -	if (unlikely(!xs->tx))
-> -		return -ENOBUFS;
-> -	if (need_wait)
-> +	if (unlikely(need_wait))
->  		return -EOPNOTSUPP;
->  
-> -	return (xs->zc) ? xsk_zc_xmit(sk) : xsk_generic_xmit(sk, m, total_len);
-> +	return __xsk_sendmsg(sk);
->  }
-
-Thanks,
-Daniel
+> 
+> >
+> >
+> >>+	case FIB_EVENT_ENTRY_REPLACE_TMP:
+> >> 		if (router->aborted) {
+> >> 			NL_SET_ERR_MSG_MOD(info->extack, "FIB offload was aborted. Not configuring route");
+> >> 			return notifier_from_errno(-EINVAL);
+> >>-- 
+> >>2.21.0
+> >>
