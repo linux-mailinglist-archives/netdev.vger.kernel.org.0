@@ -2,56 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C5AECAAE5
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:26:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D429CAB01
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404259AbfJCRPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:15:09 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40919 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391063AbfJCRPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:15:08 -0400
-Received: by mail-qt1-f194.google.com with SMTP id f7so4642950qtq.7;
-        Thu, 03 Oct 2019 10:15:08 -0700 (PDT)
+        id S2391212AbfJCRQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:16:44 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41575 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389869AbfJCRQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:16:43 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d16so4634707qtq.8;
+        Thu, 03 Oct 2019 10:16:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=1kB+HNMetC19qZY2o5gFAydwEbfXL/aBhCptGyZn1AQ=;
-        b=lLixvvNE/Ob5XE12pVNrGVxwsqRBK7Ms+5GZ7Cw4jptNfPS06bagODYaVro1z7OYf1
-         Dxa84Cp6gXDVku2eq9+nRIkZWkNKKjLZt9a3pAagryEHezkDcPVrMM+78F5HHbTTzxrF
-         B3UcHwt1uujkZOvTfmqRGoUqdVTmIOpSK2yl61TWE8b8jbStfqlxW4OmzHyLxFiBNu5r
-         0+gzfi7tc2lJIeurCBad2qTMagdRTc8cDfsILp2AbWOmaQ2t7mHbJm1SLsdyaDpRhbxL
-         255XNTBnf6Xi7LeuMLJnjaT6hWTB4DEujbs9Q4SOetpobeNzeQx/aWMp4xLJoxOPlO3x
-         6N3g==
+        bh=JYtDMQDuVwNG8RqJRwPjaq6fFD8Re73+f293ZD4Wuu8=;
+        b=X65WtpVrZDIrxBVNWICeND5pIWhjgoOYVvKncTm9QbFMbaL5r9hckYjcpXRgaPZyLa
+         JqVw0XcKNXHml026LmzXPcsIEPtG4rXqZfHLJjgs49cVhrcGQgSqwxy+LDiYM7y+i4yE
+         786uxyRDJrbFAP9ghhzYguh/0Y5piaG2/PSQNcWIca3qCXgC+6q7ZMRpDEmju0CCvmKH
+         oo3NXQQwgJUvelIATdto/0clFKpv3DPDhBTl8nxsogTCraf/qBTXyC8o7uiAY5uoMSYM
+         TTTpylbrrqyI29KMsdxcB4U+boLAjZq0C50zSlNzh5noBPAUZPBFlfqsL2502R7iQHde
+         v3bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1kB+HNMetC19qZY2o5gFAydwEbfXL/aBhCptGyZn1AQ=;
-        b=ARWj+0eZ7H2Bum/sAUVuIuMrCAF9sUtPpPWomPH/9dglwfiq+ZKIb7qmmSesgJxtzj
-         wkqRAczZBaXNbvLYpdPkLxzbH3wUgByWGOB2nxKu2xhkR8V62gv1onsOQ6MoI/7m2jxZ
-         cLG6mfv4jIYld+h1wD0zb28Va5X7TRfBthYkGXQbnSlGvnPtiGLwQlDTJYG351zNF45r
-         TbkSmpzsHebN6EN+/LunhZf3NNvMdgxPMPP4utu4sJQAJhuz68FOMSwmYeQ/NtzvyOH4
-         tx25uK6p830uAlINPHwzDC2usc/MwdGDJa8TywMKM9UutVibN9i+rPHhot3Rtq50C1Pz
-         Ccxw==
-X-Gm-Message-State: APjAAAViAoToElzWG8es5c0Y0mTwNS2E9Ip9MJ7swzuxg2boPZyArHha
-        JXZ4SrKO/pC6gdgIMaHVnkdxP4whmSwidC5W5UQ=
-X-Google-Smtp-Source: APXvYqyD4sXOBPspLCS9RDJhkjw4yYOX82nJzQ7J8KVNRjGPNI+l27yfBwVTIwm0m+59blZ3YNOYC5DhWgvvZurIqKo=
-X-Received: by 2002:aed:2726:: with SMTP id n35mr10829218qtd.171.1570122907296;
- Thu, 03 Oct 2019 10:15:07 -0700 (PDT)
+        bh=JYtDMQDuVwNG8RqJRwPjaq6fFD8Re73+f293ZD4Wuu8=;
+        b=BFDdWZOCLQ21AvalC4owxB4JfQtAL7cnTPIGQBKxRKYYxREuwL88wlz+nyWquAn45d
+         agLAejxCW2ifUhtKt7oXElxG8wRtpK8S5G8ljZN+QRW4hMNaWW29rjfnVuNheSFJGhLi
+         PhpmJt3ZGYQ5EPHmFlxWNJQjKV8nza6nUIcW6f/bt5LWLgIxKjFItRhNXrfasGfUHiVZ
+         +o7a9wQ3iowbcHV4bb4Q3HH3ODjcgnpAd8oOaU6ExfnKzhoSP9L93hHorSBNnL+MzcxR
+         l6ri/v9xFRUu7wCTjySc6uyLGTZCcSHG4ZDS8UGoBwAN8ZMC9WR2dQwtaopY7mkqPILr
+         5EaQ==
+X-Gm-Message-State: APjAAAUXuKF7bGCxxgNlq04B9eYcL41/OQCx3ycN/2olUg2jkJNFmT8s
+        3y7CGl8GVBwfGXxCGl+VmuUCj9aOrZxnRP8Xqh7RxMS9Cq8=
+X-Google-Smtp-Source: APXvYqzriFgfsaOb+zMayUMrzzyhk7sKU1aDErcpfzuTPS3JYASAuhxXYTY9J0+rlPuyNmp6vaxcjnhpvJTRRKRaAKw=
+X-Received: by 2002:ad4:4649:: with SMTP id y9mr6155437qvv.247.1570123002156;
+ Thu, 03 Oct 2019 10:16:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191003084321.1431906-1-toke@redhat.com>
-In-Reply-To: <20191003084321.1431906-1-toke@redhat.com>
+References: <20191001101429.24965-1-bjorn.topel@gmail.com> <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
+ <CAJ+HfNgvxornSfqnbAthNy6u6=-enGCdA8K1e6rLXhCzGgmONQ@mail.gmail.com>
+ <CAK7LNATD4vCQnNsHXP8A2cyWDkCNX=LGh0ej-dkDajm-+Lfw8Q@mail.gmail.com>
+ <CAJ+HfNgem7ijzQkz7BU-Z_A-CqWXY_uMF6_p0tGZ6eUMx_N3QQ@mail.gmail.com>
+ <20191002231448.GA10649@khorivan> <CAJ+HfNiCrcVDwQw4nxsntnTSy2pUgV2n6pW206==hUmq1=ZUTA@mail.gmail.com>
+ <CAK7LNARd4_o4E=TSONZjJ9iyyeUE1=L_njU7LiEZFpNunSEEkw@mail.gmail.com> <CAJ+HfNhx+gQmRMb18UDRrmzciDYUbdezUh9bRhWG8_HTUCLk9w@mail.gmail.com>
+In-Reply-To: <CAJ+HfNhx+gQmRMb18UDRrmzciDYUbdezUh9bRhWG8_HTUCLk9w@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Oct 2019 10:14:56 -0700
-Message-ID: <CAEf4BzZpksMGZhggHd=wHVStrN9Wb8RRw-PyDm7fGL3A7YSXdQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Add cscope and TAGS targets to Makefile
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
+Date:   Thu, 3 Oct 2019 10:16:31 -0700
+Message-ID: <CAEf4BzbZxa3iGZEWB03rdL+7ErmhdpB0e3aeOQvbLPu0o8XFqw@mail.gmail.com>
+Subject: Re: [PATCH bpf] samples/bpf: kbuild: add CONFIG_SAMPLE_BPF Kconfig
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -59,85 +68,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 3, 2019 at 1:46 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
+On Thu, Oct 3, 2019 at 3:52 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com=
+> wrote:
 >
-> Using cscope and/or TAGS files for navigating the source code is useful.
-> Add simple targets to the Makefile to generate the index files for both
-> tools.
+> On Thu, 3 Oct 2019 at 12:37, Masahiro Yamada
+> <yamada.masahiro@socionext.com> wrote:
+> >
+> > On Thu, Oct 3, 2019 at 3:28 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail=
+.com> wrote:
+> > >
+> > > On Thu, 3 Oct 2019 at 01:14, Ivan Khoronzhuk <ivan.khoronzhuk@linaro.=
+org> wrote:
+> > > >
+> > > > On Wed, Oct 02, 2019 at 09:41:15AM +0200, Bj=C3=B6rn T=C3=B6pel wro=
+te:
+> > > > >On Wed, 2 Oct 2019 at 03:49, Masahiro Yamada
+> > > > ><yamada.masahiro@socionext.com> wrote:
+> > > > >>
+> > > > >[...]
+> > > > >> > Yes, the BPF samples require clang/LLVM with BPF support to bu=
+ild. Any
+> > > > >> > suggestion on a good way to address this (missing tools), bett=
+er than
+> > > > >> > the warning above? After the commit 394053f4a4b3 ("kbuild: mak=
+e single
+> > > > >> > targets work more correctly"), it's no longer possible to buil=
+d
+> > > > >> > samples/bpf without support in the samples/Makefile.
+> > > > >>
+> > > > >>
+> > > > >> You can with
+> > > > >>
+> > > > >> "make M=3Dsamples/bpf"
+> > > > >>
+> > > > >
+> > > > >Oh, I didn't know that. Does M=3D support "output" builds (O=3D)?
+> >
+> > No.
+> > O=3D points to the output directory of vmlinux,
+> > not of the external module.
+> >
+> > You cannot put the build artifacts from samples/bpf/
+> > in a separate directory.
+> >
 >
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+> Hmm, I can't even get "make M=3Dsamples/bpf/" to build. Am I missing
+> something obvious?
 
-Thanks a lot for adding this!
+There were 3 or 4 separate fixes submitted for samples/bpf yesterday,
+maybe you are hitting some of those issues. Try to pull latest (not
+sure if bpf or bpf-next tree). I tried make M=3Dsamples/bpf and it
+worked for me.
 
-I tested cscope only and it works (especially without -k), so:
-
-Tested-by: Andrii Nakryiko <andriin@fb.com>
-
-
->  tools/lib/bpf/.gitignore |  2 ++
->  tools/lib/bpf/Makefile   | 10 +++++++++-
->  2 files changed, 11 insertions(+), 1 deletion(-)
 >
-> diff --git a/tools/lib/bpf/.gitignore b/tools/lib/bpf/.gitignore
-> index d9e9dec04605..c1057c01223e 100644
-> --- a/tools/lib/bpf/.gitignore
-> +++ b/tools/lib/bpf/.gitignore
-> @@ -3,3 +3,5 @@ libbpf.pc
->  FEATURE-DUMP.libbpf
->  test_libbpf
->  libbpf.so.*
-> +TAGS
-> +cscope.*
-> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> index c6f94cffe06e..57df6b933196 100644
-> --- a/tools/lib/bpf/Makefile
-> +++ b/tools/lib/bpf/Makefile
-> @@ -262,7 +262,7 @@ clean:
+> Prior 394053f4a4b3 "make samples/bpf/" and "make O=3D/foo/bar
+> samples/bpf/" worked, but I guess I can live with that...
 >
 >
+> Thanks!
+> Bj=C3=B6rn
 >
-> -PHONY +=3D force elfdep bpfdep
-> +PHONY +=3D force elfdep bpfdep cscope TAGS
->  force:
 >
->  elfdep:
-> @@ -271,6 +271,14 @@ elfdep:
->  bpfdep:
->         @if [ "$(feature-bpf)" !=3D "1" ]; then echo "BPF API too old"; e=
-xit 1 ; fi
->
-> +cscope:
-> +       (echo \-k; echo \-q; for f in *.c *.h; do echo $$f; done) > cscop=
-e.files
-> +       cscope -b -f cscope.out
-
-1. I'd drop -k, given libbpf is user-land library, so it's convenient
-to jump into system headers for some of BPF definitions.
-2. Wouldn't this be simpler and work exactly the same?
-
-ls *.c *.h > cscope.files
-cscope -b -q -f cscope.out
-
-
-> +
-> +TAGS:
-
-let's make it lower-case, please? Linux makefile supports both `make
-tags` and `make TAGS`, but all-caps is terrible :)
-
-> +       rm -f TAGS
-> +       echo *.c *.h | xargs etags -a
-
-nit: might as well do ls *.c *.h for consistency with cscope
-suggestion above (though in both cases we just rely on shell expansion
-logic, so doesn't matter).
-
-> +
->  # Declare the contents of the .PHONY variable as phony.  We keep that
->  # information in a variable so we can use it in if_changed and friends.
->  .PHONY: $(PHONY)
-> --
-> 2.23.0
->
+> >
+> >
+> > > > >I usually just build samples/bpf/ with:
+> > > > >
+> > > > >  $ make V=3D1 O=3D/home/foo/build/bleh samples/bpf/
+> > > > >
+> > > > >
+> > > > >Bj=C3=B6rn
+> > > >
+> > > > Shouldn't README be updated?
+> > > >
+> > >
+> > > Hmm, the M=3D variant doesn't work at all for me. The build is still
+> > > broken for me. Maybe I'm missing anything obvious...
+> > >
+> > >
+> > > > --
+> > > > Regards,
+> > > > Ivan Khoronzhuk
+> >
+> >
+> >
+> > --
+> > Best Regards
+> > Masahiro Yamada
