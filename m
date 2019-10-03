@@ -2,114 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53EC2CA787
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 18:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F446CA86C
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:19:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406481AbfJCQyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 12:54:53 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:26284 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2406371AbfJCQyv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 12:54:51 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x93GmpAV109559;
-        Thu, 3 Oct 2019 12:54:40 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2vdm171dpe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Oct 2019 12:54:39 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x93GrPOS020802;
-        Thu, 3 Oct 2019 16:54:37 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04dal.us.ibm.com with ESMTP id 2v9y58h8wg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Oct 2019 16:54:37 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x93GsZTq56754432
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 3 Oct 2019 16:54:35 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BF680136051;
-        Thu,  3 Oct 2019 16:54:35 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2EAB9136055;
-        Thu,  3 Oct 2019 16:54:35 +0000 (GMT)
-Received: from oc5348122405.ibm.com.austin.ibm.com (unknown [9.53.179.215])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  3 Oct 2019 16:54:34 +0000 (GMT)
-From:   David Dai <zdai@linux.vnet.ibm.com>
-To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zdai@us.ibm.com,
-        zdai@linux.vnet.ibm.com
-Subject: [v1] e1000e: EEH on e1000e adapter detects io perm failure can trigger crash
-Date:   Thu,  3 Oct 2019 11:54:32 -0500
-Message-Id: <1570121672-12172-1-git-send-email-zdai@linux.vnet.ibm.com>
-X-Mailer: git-send-email 1.7.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-03_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=989 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910030146
+        id S2391108AbfJCQ0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 12:26:38 -0400
+Received: from mail-eopbgr10073.outbound.protection.outlook.com ([40.107.1.73]:53316
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2391081AbfJCQ0g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Oct 2019 12:26:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PGFBrsHAGEhC8CHhjkMDJsNozNx3CZqtG5PWl9oYecHUMbiDPOtbtKDIoBQVrIDT0X/ty7YxrTGRYTexSEpzFZwSoAQjM3ZgKiXX68bJIGP4rKrG8dJjqdFYtK03Ae+DY4S4Q+FquTsGse5c9vHAsikHPvUshr//2uENnd8X3gqbmPhoZWndO0yyjl6ENYGjiyfNT4W9vFXVGlU6WROa9bXmaXVSiJ9opMNyVZIC45PRJ7FWRCw9wHKTQ+TzQGc+e7ISjgl/ejTf8r9SMgzWRg9bLwCkzAZOnFxa78L/A3Qtcvl47g36L9drq7zx5Qe6dhPcEN73atMm2i1kJVg4sQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8m0OgLMXrlnN1S1LWjf5bBgposl1eYuNgcDSK2N504E=;
+ b=HHfM940CWKKbZEYRmakGktK5bY7/Cht1z4RU/eGeoFaaYGdVT085rTifWsvNepeTDHxtnT7xqe2y4yTQynmWtFSxjI7CCqV9OhS1oI+VUiArJnXa9vv/7T5b2E+azk8QP/JMaOi72c5PegnAS9pFwImwFz1KAekgr8rvIzSkIDmoqeq6ZXKHr3BtXucmwg4/RigwonnMEieIdwB1Rqn7nRgW+3iEsKtHk0w/1wFs32fW5e1WH/HPULr47qqkr5i548ZVTzrSvuHG1RY94tJsTNhxIZ0OT3wdz2ExQkMG0cpu1MfihP9OweVT5T51l63MRJsqjW4VtRvjTRXv0tEyKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8m0OgLMXrlnN1S1LWjf5bBgposl1eYuNgcDSK2N504E=;
+ b=i6UwknwbvmMMxx4Vab9t2zLn1UQMQNcFZutFnJnfQtPqOVs+YywXcQ+tFK22saknqLqCVOtunBeDBrEmjBkLM3NpFj6lMjDVeUQ5clc5u3SQiCsJjWavI2xYtT+liisXX4CrPrdB0FbgKdXP3zmlYbI4R4ec6UhU0sbTs67v46w=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB6029.eurprd05.prod.outlook.com (20.178.127.207) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2305.20; Thu, 3 Oct 2019 16:26:28 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2305.023; Thu, 3 Oct 2019
+ 16:26:28 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     John Hurley <john.hurley@netronome.com>
+CC:     Vlad Buslov <vladbu@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>
+Subject: Re: [RFC net-next 0/2] prevent sync issues with hw offload of flower
+Thread-Topic: [RFC net-next 0/2] prevent sync issues with hw offload of flower
+Thread-Index: AQHVeXc5O/tBF1cs/0KKA2t1J+rpTKdJG6uA
+Date:   Thu, 3 Oct 2019 16:26:28 +0000
+Message-ID: <vbfk19lokwe.fsf@mellanox.com>
+References: <1570058072-12004-1-git-send-email-john.hurley@netronome.com>
+In-Reply-To: <1570058072-12004-1-git-send-email-john.hurley@netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0184.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a::28) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 217056ba-9293-42b6-b4ee-08d7481e711d
+x-ms-office365-filtering-ht: Tenant
+x-ms-traffictypediagnostic: VI1PR05MB6029:|VI1PR05MB6029:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB6029C367E31D164C33910F3FAD9F0@VI1PR05MB6029.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 01792087B6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(366004)(346002)(136003)(39850400004)(189003)(199004)(6116002)(3846002)(4326008)(99286004)(5660300002)(52116002)(26005)(186003)(7736002)(6436002)(86362001)(256004)(6512007)(64756008)(66446008)(36756003)(66476007)(11346002)(446003)(6246003)(2616005)(476003)(486006)(66556008)(76176011)(229853002)(478600001)(6486002)(25786009)(305945005)(14444005)(66066001)(6916009)(66946007)(386003)(81166006)(14454004)(102836004)(6506007)(54906003)(316002)(71190400001)(81156014)(71200400001)(8676002)(8936002)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6029;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2m5s7BRJqoCgmc2M2cT/0M3PyBLI36DP78FHvg+FdGRPEfJcbwdFb4Kwf1z73Mkw5a7z5Hke5tbY8+ukEjuaBFIfvyRDSk8GWSpzrU50wURGt2Ezcd1N+BqdelaTTk0FL5sjdrIl7sIM7w1dfU+xV0qnR2RD7GpmAJOxFvJ5G7+IXvVn9VVxjv2dpiCbtS+xyX+BCux73a+O8c0QuJIofN73zlf9HEAeryoXREYKMBeUZy22KbuUQlviDlIIuQL+2rl+aKd2qmT15wDDgTAOdSP60tJpqzq0AyVhMYP5LSK3XhdWE8QXFYWaJ/ZRbSE0T+7/lMNQcmw6KbAXqWXbAK+Qh5eCGd7lYRRvoXIVzjedKRb5H0JUHMmyuFNk/d6LqqlslP7XLCauqN9jQzxGm4E7/rvhPxZ7lo4aDC0zV34=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 217056ba-9293-42b6-b4ee-08d7481e711d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Oct 2019 16:26:28.2234
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MW4MCjerjsYyR2Vhm8Nr82Z8nGmStgvskUoWtL9UmHmPZKBNdxBJwzB2HdBEeHd9jzapcWmXdKTzyErqdKJ9Bw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6029
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We see the behavior when EEH e1000e adapter detects io permanent failure,
-it will crash kernel with this stack:
-EEH: Beginning: 'error_detected(permanent failure)'
-EEH: PE#900000 (PCI 0115:90:00.1): Invoking e1000e->error_detected(permanent failure)
-EEH: PE#900000 (PCI 0115:90:00.1): e1000e driver reports: 'disconnect'
-EEH: PE#900000 (PCI 0115:90:00.0): Invoking e1000e->error_detected(permanent failure)
-EEH: PE#900000 (PCI 0115:90:00.0): e1000e driver reports: 'disconnect'
-EEH: Finished:'error_detected(permanent failure)'
-Oops: Exception in kernel mode, sig: 5 [#1]
-NIP [c0000000007b1be0] free_msi_irqs+0xa0/0x280
- LR [c0000000007b1bd0] free_msi_irqs+0x90/0x280
-Call Trace:
-[c0000004f491ba10] [c0000000007b1bd0] free_msi_irqs+0x90/0x280 (unreliable)
-[c0000004f491ba70] [c0000000007b260c] pci_disable_msi+0x13c/0x180
-[c0000004f491bab0] [d0000000046381ac] e1000_remove+0x234/0x2a0 [e1000e]
-[c0000004f491baf0] [c000000000783cec] pci_device_remove+0x6c/0x120
-[c0000004f491bb30] [c00000000088da6c] device_release_driver_internal+0x2bc/0x3f0
-[c0000004f491bb80] [c00000000076f5a8] pci_stop_and_remove_bus_device+0xb8/0x110
-[c0000004f491bbc0] [c00000000006e890] pci_hp_remove_devices+0x90/0x130
-[c0000004f491bc50] [c00000000004ad34] eeh_handle_normal_event+0x1d4/0x660
-[c0000004f491bd10] [c00000000004bf10] eeh_event_handler+0x1c0/0x1e0
-[c0000004f491bdc0] [c00000000017c4ac] kthread+0x1ac/0x1c0
-[c0000004f491be30] [c00000000000b75c] ret_from_kernel_thread+0x5c/0x80
 
-Basically the e1000e irqs haven't been freed at the time eeh is trying to 
-remove the the e1000e device.
-Need to make sure when e1000e_close is called to bring down the NIC,
-if adapter error_state is pci_channel_io_perm_failure, it should also 
-bring down the link and free irqs.
+On Thu 03 Oct 2019 at 02:14, John Hurley <john.hurley@netronome.com> wrote:
+> Hi,
+>
+> Putting this out an RFC built on net-next. It fixes some issues
+> discovered in testing when using the TC API of OvS to generate flower
+> rules and subsequently offloading them to HW. Rules seen contain the same
+> match fields or may be rule modifications run as a delete plus an add.
+> We're seeing race conditions whereby the rules present in kernel flower
+> are out of sync with those offloaded. Note that there are some issues
+> that will need fixed in the RFC before it becomes a patch such as
+> potential races between releasing locks and re-taking them. However, I'm
+> putting this out for comments or potential alternative solutions.
+>
+> The main cause of the races seem to be in the chain table of cls_api. If
+> a tcf_proto is destroyed then it is removed from its chain. If a new
+> filter is then added to the same chain with the same priority and protoco=
+l
+> a new tcf_proto will be created - this may happen before the first is
+> fully removed and the hw offload message sent to the driver. In cls_flowe=
+r
+> this means that the fl_ht_insert_unique() function can pass as its
+> hashtable is associated with the tcf_proto. We are then in a position
+> where the 'delete' and the 'add' are in a race to get offloaded. We also
+> noticed that doing an offload add, then checking if a tcf_proto is
+> concurrently deleting, then remove the offload if it is, can extend the
+> out of order messages. Drivers do not expect to get duplicate rules.
+> However, the kernel TC datapath they are not duplicates so we can get out
+> of sync here.
+>
+> The RFC fixes this by adding a pre_destroy hook to cls_api that is called
+> when a tcf_proto is signaled to be destroyed but before it is removed fro=
+m
+> its chain (which is essentially the lock for allowing duplicates in
+> flower). Flower then uses this new hook to send the hw delete messages
+> from tcf_proto destroys, preventing them racing with duplicate adds. It
+> also moves the check for 'deleting' to before the sending the hw add
+> message.
+>
+> John Hurley (2):
+>   net: sched: add tp_op for pre_destroy
+>   net: sched: fix tp destroy race conditions in flower
+>
+>  include/net/sch_generic.h |  3 +++
+>  net/sched/cls_api.c       | 29 ++++++++++++++++++++++++-
+>  net/sched/cls_flower.c    | 55 ++++++++++++++++++++++++++---------------=
+------
+>  3 files changed, 61 insertions(+), 26 deletions(-)
 
-Reported-by: Morumuri Srivalli  <smorumu1@in.ibm.com>
-Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
----
- drivers/net/ethernet/intel/e1000e/netdev.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+Hi John,
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index d7d56e4..cf618e1 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -4715,7 +4715,8 @@ int e1000e_close(struct net_device *netdev)
- 
- 	pm_runtime_get_sync(&pdev->dev);
- 
--	if (!test_bit(__E1000_DOWN, &adapter->state)) {
-+	if (!test_bit(__E1000_DOWN, &adapter->state) ||
-+	    (adapter->pdev->error_state == pci_channel_io_perm_failure)) {
- 		e1000e_down(adapter, true);
- 		e1000_free_irq(adapter);
- 
--- 
-1.7.1
+Thanks for working on this!
 
+Are there any other sources for race conditions described in this
+letter? When you describe tcf_proto deletion you say "main cause" but
+don't provide any others. If tcf_proto is the only problematic part,
+then it might be worth to look into alternative ways to force concurrent
+users to wait for proto deletion/destruction to be properly finished.
+Maybe having some table that maps chain id + prio to completion would be
+simpler approach? With such infra tcf_proto_create() can wait for
+previous proto with same prio and chain to be fully destroyed (including
+offloads) before creating a new one.
+
+Regards,
+Vlad
