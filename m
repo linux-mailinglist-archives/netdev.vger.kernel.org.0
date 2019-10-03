@@ -2,107 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B307C9804
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 07:41:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52625C9805
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 07:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727409AbfJCFk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 01:40:58 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:47041 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbfJCFk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 01:40:58 -0400
-Received: by mail-wr1-f67.google.com with SMTP id o18so1389005wrv.13
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 22:40:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=H4huWPZtNw5mPzVvLLaG4sYvweJySVhT/oDBAIc5ews=;
-        b=BggMJ1tbRvTS6PJ+MS4F+83Cx4x9FMnaLa0+h8CaU7tszX/HX6uINjh/hrnac8bd/0
-         sEPRoujysJDhzbqJwrPHVNHwcdKVaTjxQhoENaemaf2EDwpSvkCMVTB3cf2rMrGiRUWM
-         4pruWtfl4hne0M7DPWC8hJxEIHa/gg74NGxJgLVYMECFq+rgfACz5Mzk7gejVFaosnSi
-         3Ifico4pxMyUiAIPzzX6b8h9QFJsV/9pEtZuCW8Oj9yTGP4VS+SlR6xj0MA9Z+msw2xA
-         Glwn72Bdf+Rglemv900LzJlQ1VJ5ZA8QlKeg/88SujGpAde6QY6gcfte1of98lWXNgov
-         xVOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=H4huWPZtNw5mPzVvLLaG4sYvweJySVhT/oDBAIc5ews=;
-        b=VZIg+oIhYhBkXoO8PPywuKWz4ethzPh7wfD11t19Km5R7/85OqkKBHG865vyAWRTyO
-         HiDg23x3mq8GOnqDf7kyyNe2fjcLWKFUtpSUCpMMRRFfoj+qAkpkJYGcN2/4dPN2Zi5j
-         ACOWBpx6vWIB9TJQXl3q6xUYGeytdhQjcv8H6BiFLVoIhW/Tz0YppwHGiWRxlm9ikqcr
-         1kRcZlP/VfK0CSfywFpGL18kdb2kAuJhsZJXJS3X0HvQwu+6UF26R1/KYqppPsHLGVY4
-         nFnbjLa8cB/8Hv1GPGXf9w3LUgPIRgdTtVFWwS5YhGsv78WDCz3Txk2c/XjyO+q3T4bl
-         ndQw==
-X-Gm-Message-State: APjAAAXwjHfp+Q1v0k9krXE+GXtDNN+FStuPT08t3IRn+Wh8X4r+6x1D
-        GJX0yGBxJFc8C+WnLziLHdvwIg==
-X-Google-Smtp-Source: APXvYqw1g7WYTy+Q+tQNLQfhqGlUbu5KRsQ6Gl61Qr+wUJiYPJG2HggFSgPPuGucJxEWXK+f5L7Ipg==
-X-Received: by 2002:adf:f0c7:: with SMTP id x7mr5732437wro.2.1570081254850;
-        Wed, 02 Oct 2019 22:40:54 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id t1sm1473868wrn.57.2019.10.02.22.40.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2019 22:40:54 -0700 (PDT)
-Date:   Thu, 3 Oct 2019 07:40:53 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 12/15] ipv4: Add "in hardware" indication to
- routes
-Message-ID: <20191003054053.GI2279@nanopsycho>
-References: <20191002084103.12138-1-idosch@idosch.org>
- <20191002084103.12138-13-idosch@idosch.org>
- <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
- <20191002182119.GF2279@nanopsycho>
- <1eea9e93-dbd9-8b50-9bf1-f8f6c6842dcc@gmail.com>
+        id S1727849AbfJCFqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 01:46:16 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:59217 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727409AbfJCFqQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 01:46:16 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id D2A7322083;
+        Thu,  3 Oct 2019 01:46:14 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 03 Oct 2019 01:46:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=nhrCK29SaMeP3cl4Y
+        oQo5myt5ig+rC6EFtG9ztUDDFA=; b=0RH5HL1UhknBjvo/YeagCkoQDJiBjHhXr
+        hvxLRlblcPRd8yM5aTfnoqbKl6tLw6B2dESWgVRWCKuxNyGdhWFdfGv80FolExJe
+        CkryhYEf/RDMZuDd3earoxCDHrnxUAZGPJ7XeBcqyiXlps+abfL2OMcslw6WuHCI
+        AWdt3afo4eYTqFvwn8Xxh9nr3N6MEFZKC4LDgIe4MxvnwkMvdBox4HYfquuQ7+Ub
+        y8rdpn5QstlcqqBzrFXe91/Yx4W9Ff9FEOWbcV+Fk6HG0+n1jKHfFYc7u99sJOyZ
+        J1L4tBuN3cUcHaRN2mj9+JWPVJsQnRnjY0oGv5bgLQmIs53TlLi/g==
+X-ME-Sender: <xms:JYuVXUZV5gp52psZeKTjUI2hr3oWUm22xFT-EXmGzrkkpYhN60-DFg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrgeejgdelkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:JYuVXWqArqz4pW7VVhl0eEXJT2udDwx27mJrbt0EDSNaCPxVjOVjXA>
+    <xmx:JYuVXZ0w5Ms-fzfagwWa1fllz-WxiPCB3f15rWte9kfEiS_0RcXrZQ>
+    <xmx:JYuVXelI_OlkMUehgSoO9VoBH0nnwwXC57lAQIrdIeM1zNxeIOHCiw>
+    <xmx:JouVXfR9-k1DqoXAzXEHDHVEWdTWr74kFOisyJE84vaVvVCnvm5DnA>
+Received: from localhost.localdomain (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id D1417D6005E;
+        Thu,  3 Oct 2019 01:46:11 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next] mlxsw: PCI: Send EMAD traffic on a separate queue
+Date:   Thu,  3 Oct 2019 08:44:49 +0300
+Message-Id: <20191003054449.8659-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1eea9e93-dbd9-8b50-9bf1-f8f6c6842dcc@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Oct 03, 2019 at 04:34:22AM CEST, dsahern@gmail.com wrote:
->On 10/2/19 12:21 PM, Jiri Pirko wrote:
->>>> This patch adds an "in hardware" indication to IPv4 routes, so that
->>>> users will have better visibility into the offload process. In the
->>>> future IPv6 will be extended with this indication as well.
->>>>
->>>> 'struct fib_alias' is extended with a new field that indicates if
->>>> the route resides in hardware or not. Note that the new field is added
->>>> in the 6 bytes hole and therefore the struct still fits in a single
->>>> cache line [1].
->>>>
->>>> Capable drivers are expected to invoke fib_alias_in_hw_{set,clear}()
->>>> with the route's key in order to set / clear the "in hardware
->>>> indication".
->>>>
->>>> The new indication is dumped to user space via a new flag (i.e.,
->>>> 'RTM_F_IN_HW') in the 'rtm_flags' field in the ancillary header.
->>>>
->>>
->>> nice series Ido. why not call this RTM_F_OFFLOAD to keep it consistent
->>> with the nexthop offload indication ?.
->> 
->> See the second paragraph of this description.
->
->I read it multiple times. It does not explain why RTM_F_OFFLOAD is not
->used. Unless there is good reason RTM_F_OFFLOAD should be the name for
->consistency with all of the other OFFLOAD flags. I realize rtm_flags is
->overloaded and the lower 8 bits contains RTNH_F flags, but that can be
->managed with good documentation - that RTNH_F is for the nexthop and
->RTM_F is for the prefix.
+From: Petr Machata <petrm@mellanox.com>
 
-"In addition, the fact that a route resides in hardware does
-not necessarily mean that the traffic is offloaded."
+Currently mlxsw distributes sent traffic among all the available send
+queues. That includes control traffic as well as EMADs, which are used for
+configuration of the device.
+
+However because all the queues have the same traffic class of 3, they all
+end up being directed to the same traffic class buffer. If the control
+traffic in the buffer cannot be serviced quickly enough, the EMAD traffic
+might be shut out, which causes transient failures, typically in FDB
+maintenance, counter upkeep and other periodic work.
+
+To address this issue, dedicate SDQ 0 to EMAD traffic, with TC 0.
+Distribute the control traffic among the remaining queues, which are left
+with their current TC 3.
+
+Suggested-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: Petr Machata <petrm@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/pci.c    | 16 ++++++++++++++--
+ drivers/net/ethernet/mellanox/mlxsw/pci_hw.h |  5 +++++
+ 2 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index 615455a21567..f1294b00efdf 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -284,15 +284,18 @@ static dma_addr_t __mlxsw_pci_queue_page_get(struct mlxsw_pci_queue *q,
+ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 			      struct mlxsw_pci_queue *q)
+ {
++	int tclass;
+ 	int i;
+ 	int err;
+ 
+ 	q->producer_counter = 0;
+ 	q->consumer_counter = 0;
++	tclass = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_PCI_SDQ_EMAD_TC :
++						      MLXSW_PCI_SDQ_CTL_TC;
+ 
+ 	/* Set CQ of same number of this SDQ. */
+ 	mlxsw_cmd_mbox_sw2hw_dq_cq_set(mbox, q->num);
+-	mlxsw_cmd_mbox_sw2hw_dq_sdq_tclass_set(mbox, 3);
++	mlxsw_cmd_mbox_sw2hw_dq_sdq_tclass_set(mbox, tclass);
+ 	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3); /* 8 pages */
+ 	for (i = 0; i < MLXSW_PCI_AQ_PAGES; i++) {
+ 		dma_addr_t mapaddr = __mlxsw_pci_queue_page_get(q, i);
+@@ -963,6 +966,7 @@ static int mlxsw_pci_aqs_init(struct mlxsw_pci *mlxsw_pci, char *mbox)
+ 	eq_log2sz = mlxsw_cmd_mbox_query_aq_cap_log_max_eq_sz_get(mbox);
+ 
+ 	if (num_sdqs + num_rdqs > num_cqs ||
++	    num_sdqs < MLXSW_PCI_SDQS_MIN ||
+ 	    num_cqs > MLXSW_PCI_CQS_MAX || num_eqs != MLXSW_PCI_EQS_COUNT) {
+ 		dev_err(&pdev->dev, "Unsupported number of queues\n");
+ 		return -EINVAL;
+@@ -1520,7 +1524,15 @@ static struct mlxsw_pci_queue *
+ mlxsw_pci_sdq_pick(struct mlxsw_pci *mlxsw_pci,
+ 		   const struct mlxsw_tx_info *tx_info)
+ {
+-	u8 sdqn = tx_info->local_port % mlxsw_pci_sdq_count(mlxsw_pci);
++	u8 ctl_sdq_count = mlxsw_pci_sdq_count(mlxsw_pci) - 1;
++	u8 sdqn;
++
++	if (tx_info->is_emad) {
++		sdqn = MLXSW_PCI_SDQ_EMAD_INDEX;
++	} else {
++		BUILD_BUG_ON(MLXSW_PCI_SDQ_EMAD_INDEX != 0);
++		sdqn = 1 + (tx_info->local_port % ctl_sdq_count);
++	}
+ 
+ 	return mlxsw_pci_sdq_get(mlxsw_pci, sdqn);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h b/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
+index e57e42e2d2b2..2b3aec482742 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
+@@ -51,6 +51,11 @@
+ #define MLXSW_PCI_EQ_ASYNC_NUM	0
+ #define MLXSW_PCI_EQ_COMP_NUM	1
+ 
++#define MLXSW_PCI_SDQS_MIN	2 /* EMAD and control traffic */
++#define MLXSW_PCI_SDQ_EMAD_INDEX	0
++#define MLXSW_PCI_SDQ_EMAD_TC	0
++#define MLXSW_PCI_SDQ_CTL_TC	3
++
+ #define MLXSW_PCI_AQ_PAGES	8
+ #define MLXSW_PCI_AQ_SIZE	(MLXSW_PCI_PAGE_SIZE * MLXSW_PCI_AQ_PAGES)
+ #define MLXSW_PCI_WQE_SIZE	32 /* 32 bytes per element */
+-- 
+2.21.0
+
