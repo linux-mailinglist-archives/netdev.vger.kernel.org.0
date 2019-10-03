@@ -2,108 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1EB4CACCE
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD408CACE3
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:47:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730225AbfJCR3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:29:47 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38530 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730558AbfJCR3q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 13:29:46 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E5CE41DB8;
-        Thu,  3 Oct 2019 17:29:45 +0000 (UTC)
-Received: from krava (ovpn-204-51.brq.redhat.com [10.40.204.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3A19A60BEC;
-        Thu,  3 Oct 2019 17:29:39 +0000 (UTC)
-Date:   Thu, 3 Oct 2019 19:29:38 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Julia Kartseva <hex@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "md@linux.it" <md@linux.it>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>
-Subject: Re: libbpf distro packaging
-Message-ID: <20191003172938.GA17036@krava>
-References: <20190823092253.GA20775@krava>
- <a00bab9b-dae8-23d8-8de0-3751a1d1b023@fb.com>
- <20190826064235.GA17554@krava>
- <A2E805DD-8237-4703-BE6F-CC96A4D4D909@fb.com>
- <20190828071237.GA31023@krava>
- <20190930111305.GE602@krava>
- <A273A3DB-C63E-488F-BB0C-B7B2AB6D99BE@fb.com>
- <8B38D651-7F77-485F-A054-0519AF3A9243@fb.com>
- <20191003111029.GC23291@krava>
- <CAEf4BzamREOTYvspbg5yp1igg8pY_0MQu93Y34w1t_WT9VJXNg@mail.gmail.com>
+        id S1731231AbfJCRbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:31:13 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:42935 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732760AbfJCRaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:30:19 -0400
+Received: by mail-qt1-f196.google.com with SMTP id w14so4683192qto.9;
+        Thu, 03 Oct 2019 10:30:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OwHzOlv94fNEQPzUN9beE8wR2Nx0PGCIq76ElwD91IY=;
+        b=Kbfq1mSN6XsOJJ/hmRdAjfrwBr+ox+iLgaKkLdzPJeIQfnIY0MML3TLZCO/dvp94Q9
+         rqVMaifyKHSu1yvsQgEU7rbHiPpghd6NdVs7s2NGC0fHenPikkmn21UFqpIAWNkUSijs
+         CfsmewYSQH/tffSahrrtYwtqA4NXDUiV+CoMt8DvRrjkkqX+9smoyvlO7yYJpiiAuxsh
+         gAwGJ3D3kgR+XLPKIxelQ2RTNDXvLJ6/62HYY1IGyS0FrcwUaQUb2esICGUo3z9Wl4+j
+         1w+v5OpSY+CruNbhv2Q4EWNke7+ol1n66hqhvpigt1YNfqA/6R0gzFGYa+TuA2JglWT6
+         kTAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OwHzOlv94fNEQPzUN9beE8wR2Nx0PGCIq76ElwD91IY=;
+        b=LM3Zu15rREJqJMJKY13YboqzNvOujoSpC2WAugiZtvHsr/YiMIP3EWoCd5p331a076
+         7DlLubkOCFF4I00YeF/IOZPN7QOyPaWoNRRrh8Mv0RlS9PR3DNgO8IMqCUs7wpdOx8N1
+         4s2FoGApJVQOTF9P8LHQgWb4qzjjoIIx//e2VNPL3+nnkrmE/hi8c7xBNCboztrf4zbm
+         3Nz6ZL34zjkEDMXX/U68wtTKEZexjMQBLg3Rkdm3tpdTDE4ggr2Zok3ltaVL1pxi3GZt
+         CRhv6y4Kc5n1qIx0/dUnXyGF3xFZcBRASFMazSzIOK3rnv2ZF6C9TJJO9tCs6khitA2Q
+         oRNg==
+X-Gm-Message-State: APjAAAV5vi/QlsQuU9khxV7MeQYfPvcbqf5OGlmzHrc3rI4qhNOi1Qtj
+        daa/pWB6qhrxW9gnp63lWtSP6ngfckc3U2sfyo0=
+X-Google-Smtp-Source: APXvYqytRvSGXPWUuop07pHcGjG3SqMoK6kaJugGE40KgcI3ho0s3kDM604BRnKN98+RZdamFAv6b3DBCaNpyly7YLc=
+X-Received: by 2002:ac8:7401:: with SMTP id p1mr10966238qtq.141.1570123817595;
+ Thu, 03 Oct 2019 10:30:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEf4BzamREOTYvspbg5yp1igg8pY_0MQu93Y34w1t_WT9VJXNg@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.71]); Thu, 03 Oct 2019 17:29:46 +0000 (UTC)
+References: <20191001214141.6294-1-cneirabustos@gmail.com> <20191001214141.6294-3-cneirabustos@gmail.com>
+ <79645731-da32-6071-e05f-6345cf47bcd1@iogearbox.net> <20191003145211.GA3657@frodo.byteswizards.com>
+In-Reply-To: <20191003145211.GA3657@frodo.byteswizards.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 3 Oct 2019 10:30:06 -0700
+Message-ID: <CAEf4BzZvTvGcyVfM=RB7GA+WHxsDkS+OGmUrNLpMhfa7bMBA1w@mail.gmail.com>
+Subject: Re: [PATCH V12 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
+To:     Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        ebiederm@xmission.com, Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 03, 2019 at 09:24:21AM -0700, Andrii Nakryiko wrote:
-> On Thu, Oct 3, 2019 at 4:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Thu, Oct 03, 2019 at 12:50:08AM +0000, Julia Kartseva wrote:
-> > > Hi Jiri,
+On Thu, Oct 3, 2019 at 8:01 AM Carlos Antonio Neira Bustos
+<cneirabustos@gmail.com> wrote:
+>
+> On Wed, Oct 02, 2019 at 12:52:29PM +0200, Daniel Borkmann wrote:
+> > On 10/1/19 11:41 PM, Carlos Neira wrote:
+> > > New bpf helper bpf_get_ns_current_pid_tgid,
+> > > This helper will return pid and tgid from current task
+> > > which namespace matches dev_t and inode number provided,
+> > > this will allows us to instrument a process inside a container.
 > > >
-> > > v0.0.5 is out: [1] which brings questions regarding further maintenance
-> > > of rpm.
-> > > Who'll maintain the most recent version of rpm up-to-date?
+> > > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > > ---
+> > >   include/linux/bpf.h      |  1 +
+> > >   include/uapi/linux/bpf.h | 18 +++++++++++++++++-
+> > >   kernel/bpf/core.c        |  1 +
+> > >   kernel/bpf/helpers.c     | 36 ++++++++++++++++++++++++++++++++++++
+> > >   kernel/trace/bpf_trace.c |  2 ++
+> > >   5 files changed, 57 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > index 5b9d22338606..231001475504 100644
+> > > --- a/include/linux/bpf.h
+> > > +++ b/include/linux/bpf.h
+> > > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> > >   extern const struct bpf_func_proto bpf_strtol_proto;
+> > >   extern const struct bpf_func_proto bpf_strtoul_proto;
+> > >   extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > > +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
+> > >   /* Shared helpers among cBPF and eBPF. */
+> > >   void bpf_user_rnd_init_once(void);
+> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > index 77c6be96d676..ea8145d7f897 100644
+> > > --- a/include/uapi/linux/bpf.h
+> > > +++ b/include/uapi/linux/bpf.h
+> > > @@ -2750,6 +2750,21 @@ union bpf_attr {
+> > >    *                **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+> > >    *
+> > >    *                **-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> > > + *
+> > > + * u64 bpf_get_ns_current_pid_tgid(u64 dev, u64 inum)
+> > > + * Return
+> > > + *         A 64-bit integer containing the current tgid and pid from current task
+> > > + *              which namespace inode and dev_t matches , and is create as such:
+> > > + *         *current_task*\ **->tgid << 32 \|**
+> > > + *         *current_task*\ **->pid**.
+> > > + *
+> > > + *         On failure, the returned value is one of the following:
+> > > + *
+> > > + *         **-EINVAL** if dev and inum supplied don't match dev_t and inode number
+> > > + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
+> > > + *
+> > > + *         **-ENOENT** if /proc/self/ns does not exists.
+> > > + *
+> > >    */
+> > >   #define __BPF_FUNC_MAPPER(FN)             \
+> > >     FN(unspec),                     \
+> > > @@ -2862,7 +2877,8 @@ union bpf_attr {
+> > >     FN(sk_storage_get),             \
+> > >     FN(sk_storage_delete),          \
+> > >     FN(send_signal),                \
+> > > -   FN(tcp_gen_syncookie),
+> > > +   FN(tcp_gen_syncookie),          \
+> > > +   FN(get_ns_current_pid_tgid),
+> > >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> > >    * function eBPF program intends to call
+> > > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > > index 66088a9e9b9e..b2fd5358f472 100644
+> > > --- a/kernel/bpf/core.c
+> > > +++ b/kernel/bpf/core.c
+> > > @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+> > >   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+> > >   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+> > >   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
+> > >   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+> > >   {
+> > > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> > > index 5e28718928ca..8777181d1717 100644
+> > > --- a/kernel/bpf/helpers.c
+> > > +++ b/kernel/bpf/helpers.c
+> > > @@ -11,6 +11,8 @@
+> > >   #include <linux/uidgid.h>
+> > >   #include <linux/filter.h>
+> > >   #include <linux/ctype.h>
+> > > +#include <linux/pid_namespace.h>
+> > > +#include <linux/proc_ns.h>
+> > >   #include "../../lib/kstrtox.h"
+> > > @@ -487,3 +489,37 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+> > >     .arg4_type      = ARG_PTR_TO_LONG,
+> > >   };
+> > >   #endif
+> > > +
+> > > +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u64, dev, u64, inum)
+> > > +{
+> > > +   struct task_struct *task = current;
+> > > +   struct pid_namespace *pidns;
+> > > +   pid_t pid, tgid;
+> > > +
+> > > +   if ((u64)(dev_t)dev != dev)
+> > > +           return -EINVAL;
+> > > +
+> > > +   if (unlikely(!task))
+> > > +           return -EINVAL;
+> > > +
+> > > +   pidns = task_active_pid_ns(task);
+> > > +   if (unlikely(!pidns))
+> > > +           return -ENOENT;
+> > > +
+> > > +
+> > > +   if (!ns_match(&pidns->ns, (dev_t)dev, inum))
+> > > +           return -EINVAL;
+> > > +
+> > > +   pid = task_pid_nr_ns(task, pidns);
+> > > +   tgid = task_tgid_nr_ns(task, pidns);
+> > > +
+> > > +   return (u64) tgid << 32 | pid;
 > >
-> > I will do that on fedora/rhel side now
+> > Basically here you are overlapping the 64-bit return value for the valid
+> > outcome with the error codes above for the invalid case. If you look at
+> > bpf_perf_event_read() we already had such broken occasion that bit us in
+> > the past, and needed to introduce bpf_perf_event_read_value() instead.
+> > Lets not go there again and design it similarly to the latter.
 > >
-> > > Are you looking into making the procedure automated and do you need any
-> > > help from the side of libbpf devs if so? In particular, we can have the *.spec file
-> > > in GH mirror synchronized with the most recent tag so you can take it from the
-> > > mirror along with tarball.
+> > > +}
+> > > +
+> > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
+> > > +   .func           = bpf_get_ns_current_pid_tgid,
+> > > +   .gpl_only       = false,
+> > > +   .ret_type       = RET_INTEGER,
+> > > +   .arg1_type      = ARG_ANYTHING,
+> > > +   .arg2_type      = ARG_ANYTHING,
+> > > +};
+> > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > > index 44bd08f2443b..32331a1dcb6d 100644
+> > > --- a/kernel/trace/bpf_trace.c
+> > > +++ b/kernel/trace/bpf_trace.c
+> > > @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > >   #endif
+> > >     case BPF_FUNC_send_signal:
+> > >             return &bpf_send_signal_proto;
+> > > +   case BPF_FUNC_get_ns_current_pid_tgid:
+> > > +           return &bpf_get_ns_current_pid_tgid_proto;
+> > >     default:
+> > >             return NULL;
+> > >     }
+> > >
 > >
-> > some notification of new tag/sync would be great
-> 
-> Hey Jiri! You can watch Github repo for new releases, see
-> https://help.github.com/en/articles/watching-and-unwatching-releases-for-a-repository.
+> Daniel,
+> If I understand correctly, to avoid problems I need to change the helper's function signature to something like the following:
+>
+> struct bpf_ns_current_pid_tgid_storage {
+>         __u64 dev;
+>         __u64 inum;
+>         __u64 pidtgid;
 
-cool, I was hoping there's something like this
+if you do it this way, please do
 
-thanks,
-jirka
+__u32 pid;
+__u34 tgid;
 
-> 
-> >
-> > the spec file update is not a big deal because I need to do its
-> > changelog update anyway.. but I can put the fedora rpm spec in
-> > GH repo for reference, I will do a pull request for that
-> >
-> > jirka
-> >
-> > > Thanks!
-> > >
-> > > [1] https://github.com/libbpf/libbpf/releases/tag/v0.0.5
-> > >
-> > > ﻿On 9/30/19, 11:18 AM, "Julia Kartseva" <hex@fb.com> wrote:
-> > >
-> > > > Thank you Jiri, that's great news.
-> > > >
-> > > > > On 9/30/19, 4:13 AM, "Jiri Olsa" <jolsa@redhat.com> wrote:
-> > > > >
-> > > > > heya,
-> > > > > FYI we got it through.. there's libbpf-0.0.3 available on fedora 30/31/32
-> > > > > I'll update to 0.0.5 version as soon as there's the v0.0.5 tag available
-> > >
-> > >
-> > >
+I have to look up where pid and tgid is in that 64-bit number every
+single time, let's not do it here for no good reason.
+
+> };
+>
+> BPF_CALL_2(bpf_get_ns_current_pid_tgid,
+>            struct bpf_ns_current_pid_tgid_storage *, buf, u32, size);
+>
+> then use dev and inum provided by the user and return the requested
+> value into pidtgid of the struct. Would that work?
+>
+> Thanks for your help.
+>
+>
+>
+>
