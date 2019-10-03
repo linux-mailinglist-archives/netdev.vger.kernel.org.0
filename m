@@ -2,102 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2D80CB05C
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 22:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE64CB084
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 22:52:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389533AbfJCUnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 16:43:52 -0400
-Received: from mout.gmx.net ([212.227.17.20]:52565 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726669AbfJCUnw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 16:43:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1570135423;
-        bh=l2CbPv9jk4BcyrfIzeSPwwhOsl4Gd994nCXq0Vmbh28=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=itpAuLG84a5TUKCzS4QroJhxcXIOyGIK/3l0uC3RRKfoPQmpDO7JLQIvbookLTHts
-         5qzFd/FfR01jdjjd6UgWr1vwXo6doCEnrZoe7VP2Ho6JUDGwTGU6SwYp+h00/0jAL9
-         NZmXkkdtm8x73zM6BjEfa98fe1NlgLSkLQ8k/FPk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([89.0.25.131]) by mail.gmx.com (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N8GQy-1i30vu3TRA-014Gha; Thu, 03
- Oct 2019 22:43:42 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-doc@vger.kernel.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] docs: networking: phy: Improve phrasing
-Date:   Thu,  3 Oct 2019 22:43:22 +0200
-Message-Id: <20191003204322.32349-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.20.1
+        id S1730707AbfJCUw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 16:52:27 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:36170 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727587AbfJCUw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 16:52:26 -0400
+Received: by mail-qt1-f194.google.com with SMTP id o12so5609171qtf.3;
+        Thu, 03 Oct 2019 13:52:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fd92yCGjcK8Q9vbQjHTIvNq1EPtzw5PFxZpME5UvlKc=;
+        b=jv0u/kP1kYnE3p1bQFj8W5PnzbxjxEdOcfHiMWUIgzj9NeaWD0QvucgMPJTIjUiDfX
+         Yz33koSB4JoEUcpTfU/pKw1NIN6QVlnxWIr/+NtTQ3ZbW+dSKC+IIrL1H63v/qx0RVVJ
+         YJE21hl4SbOuPqv4moDqgjtSopd8XakZ1JYMbGfQm0lal1lb67ubtQR2+t8VCsj4wnEt
+         KFLpIJJZayZwaRjt4vFd7GURK37gatmNVqGhxHogG46auKD/kmZumMvHZg41QZRzp/sV
+         SpDnVVaaEGPWphLDC+Yxubdocxr3buLmE6kOYnsWULa/IyP/GfG8ScauweEmX9zRlTjx
+         MqpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fd92yCGjcK8Q9vbQjHTIvNq1EPtzw5PFxZpME5UvlKc=;
+        b=t1f76omWIXPd2zFGyjpS1w8dq0hDMBPzJjBkY1UbztPA3Ey50g87+Ibmfnp8cDvDRt
+         ATwdZMycncwrELMK7QEPFI7BAxw0GUR/+wvw9TpqVaqTdwrC1KzAA+WRP++bAVVwcR0k
+         OiNIhkAcTNwVVxVwZ+j30RdFCpvbMItPCQmXyAQKCOaJgNe977BGgX6WWX1Tp8lAKeRF
+         qxcLQ0U/kZ9z3kvmLIbLicKgqqbbQOitlLuSKAKNhBI+g6MplDbvl5Ni7EGyIlMF0xis
+         GN2g1vLKcfOWyNAhMlPklrmME3+VIct3mOvt7h1ILQCo5JO2TzbtkPobKIfSGdZ0PZUK
+         wGPA==
+X-Gm-Message-State: APjAAAVd5Xn7L77iRHcQ+g3H1foZ/6DUa1JWMkzzNA6tq3xhRk9ow4Ts
+        sFJpvnOatNizZ1Scc+nzC3ktIfvwRqfy4pn4Ryo=
+X-Google-Smtp-Source: APXvYqxkv8rerDFWmbferqiZ2NDV+sLIi1PoseuP0HFJ9xlnB0nxFAs/FkN6WkNd6Gkur5s1Iy8OBbho4cCA4VMX9wI=
+X-Received: by 2002:ac8:37cb:: with SMTP id e11mr12491917qtc.22.1570135945995;
+ Thu, 03 Oct 2019 13:52:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:XJsOsYtApZH0rV1lXp8DalL+58oNvmqsYzOrgY1nQM537zaV0ba
- ZYqC9w+If/nsL+aYKTkGs5WUHTh8PUsl4tu+ktuXKF334p4voyzC8wB+i7abuL8W5XVomVN
- +IxsM5+75B3cfxmQQPhc1xMDPkY30Xgbh0BcXRIbXla+94DHHu0z6djVOt4Q4sQ3L4UuA/v
- eH//bM8/btqpZ0Y8uyckg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yH8n8hS1C+o=:PeQ8fC747eH8ki7EEwTzEO
- ncS3Zp4nIDKNYBs4EyIyjkeIGO1yhVPyvv/0EP/KSNcH4zF/Y8QZArL2HmTuYQJkrbOdbWkag
- CFQwrlvZyQPYmzfFPCSluR94hpIpzk+OjUT2AIXHBMsjolfKRFcGKuPD2BAUVkJmbUSk+i0H2
- g/2fmZbaVoE/8aYgOVUNgEtKPWsL6Jq1AQ2Me26ITtA2tDSqDKVc/wcOpbP818j1l6XVv+gWn
- l+qD+LSkFlP3vBb2s6avIYCzstS5it+IDYzdkLAo1ScuGcM0bzJYOhq1NlduVi9Ddir7nbEmi
- w3iYRJ4tO8v6hfZ0Ha1p2oRRF+e7LxEspnSehQs0zeVLUG34JM19+wvv+NFxk+mdPpahVDT9G
- fUAORsHlsNx0yqaBHB1NYBRc1Y6mXiZxtrVo5fgkklM4RKPkWbXDJCtCEZaCc+XAYBnVOakEx
- e08MlaE/pzgIXZBc0fi9pQTOz/lIk0f8ZCS3E/zQXkdKIqKoVRPOoH+12XzJ6ek9NMnVKPRRU
- JiagGotCF8tEEDf7lxC8l7Y84/koh/IPe7hkAs2FuTaqhVwJKZFoCcSIw3TMf3RFDCB/OLCx5
- C2+S9ZvlFEACFFyzR6bAOYsY5t/PmlCLOkz4oBS+KOc28Y5CqR3psFuurVF0emO2TcG+yQxbu
- QJaxxXojsyKLoi/mztSo1YoGxP0Cxi+51hPle3s0xiQy/Z46h/RGMiB01CCZi8ywBF0nL5BxQ
- P6KpcdZnTudijwWg3+DifpDUKq05OzUxXElnDC0EavWLF72hpVa3ICglD+yor5D/yxSf9LW4n
- f3E8UXba79OYiOLe0FZujqtsfuZKuCfN5QwRpoXb3eUZpvVeUgf5Zzp9zJ1vnt7iSdwOtjQuY
- /+ESeDcIDCylrMCJzPr/7InF+oEI5Ey7d0/XEI29rfBZ6PZ5CCyo31FwpbvtPS5nqgG4AMZ3l
- 8x9o3jJQ/62YZ4SbsmKUVpSFTYzUWT0aeFiKbz/4J66+b0EdF/bO5s8sXUHoLqCwGDNfRsjx6
- suVeLmOYnYZm4knRgUVXv9SGLddPou9+3rUwTwamqmxkVbG4jtLpRjjTc9LniqqcORCpWs10O
- YO0zNoKYZXXzIP4UrJkDwxFqz7NoFTrdU73iwOeXfs9uVUosl7drKOlxE+CkkHDpTR3GQh9mM
- Umafhbn3yjr+6gEQOEakDOCbi2LvbB9SEBx4htN0Op0wUBTxLbOeyZjhpUo69r9W2t//RyX6N
- Sv/ZDuAx3yGIEa4rHZDAN6+6wzak/nrTblfPJmeLpYdwkchxzyuZoqq938+c=
+References: <20191002234512.25902-1-daniel@iogearbox.net>
+In-Reply-To: <20191002234512.25902-1-daniel@iogearbox.net>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Thu, 3 Oct 2019 13:52:14 -0700
+Message-ID: <CAPhsuW6==Ukxjh69SVLusC=GMf=65Y2T0gLNig55obwbS-7VqQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf, x86: Small optimization in comparing
+ against imm0
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's not about times (multiple occurences of an event) but about the
-duration of a time interval.
+On Wed, Oct 2, 2019 at 5:30 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Replace 'cmp reg, 0' with 'test reg, reg' for comparisons against
+> zero. Saves 1 byte of instruction encoding per occurrence. The flag
+> results of test 'reg, reg' are identical to 'cmp reg, 0' in all
+> cases except for AF which we don't use/care about. In terms of
+> macro-fusibility in combination with a subsequent conditional jump
+> instruction, both have the same properties for the jumps used in
+> the JIT translation. For example, same JITed Cilium program can
+> shrink a bit from e.g. 12,455 to 12,317 bytes as tests with 0 are
+> used quite frequently.
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- Documentation/networking/phy.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/networking/phy.rst b/Documentation/networking/p=
-hy.rst
-index a689966bc4be..3f5bd83034df 100644
-=2D-- a/Documentation/networking/phy.rst
-+++ b/Documentation/networking/phy.rst
-@@ -73,7 +73,7 @@ The Reduced Gigabit Medium Independent Interface (RGMII)=
- is a 12-pin
- electrical signal interface using a synchronous 125Mhz clock signal and s=
-everal
- data lines. Due to this design decision, a 1.5ns to 2ns delay must be add=
-ed
- between the clock line (RXC or TXC) and the data lines to let the PHY (cl=
-ock
--sink) have enough setup and hold times to sample the data lines correctly=
-. The
-+sink) have a large enough setup and hold time to sample the data lines co=
-rrectly. The
- PHY library offers different types of PHY_INTERFACE_MODE_RGMII* values to=
- let
- the PHY driver and optionally the MAC driver, implement the required dela=
-y. The
- values of phy_interface_t must be understood from the perspective of the =
-PHY
-=2D-
-2.20.1
-
+Acked-by: Song Liu <songliubraving@fb.com>
