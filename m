@@ -2,102 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AFA1CAB93
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6010CCAD65
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:48:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730637AbfJCP4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 11:56:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38458 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730614AbfJCP4c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 11:56:32 -0400
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2B18C222C8;
-        Thu,  3 Oct 2019 15:56:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570118191;
-        bh=i4Gdla/qLYCwUY8TXC0PxpCn/O4eLhZk3Oh4yJNbqjQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=y+LYdsAyYVPU+ogedopimwB/UhsnGsp2oUl5tLvk654eTHDmIeoSWG2nCGII7q6zW
-         8/Axawckxy8TxeX/6wm6AHbtuWHbXt5CjRRIqm68o9nzigMg4+pQjLefid3sH8WUKU
-         BEnk+1qMQXkvQCMtJdagzQSxknxFVWIvIJHvHP7U=
-Received: by mail-qt1-f170.google.com with SMTP id n7so4287238qtb.6;
-        Thu, 03 Oct 2019 08:56:31 -0700 (PDT)
-X-Gm-Message-State: APjAAAXmlS7+fJ+TCZeTTUwZUbiSyFC4mD20SWVSlrHlcalh1isF0IVD
-        19fiWqBYLdnmAq2IrNU5s82NfCD3LZqHh0OP7w==
-X-Google-Smtp-Source: APXvYqx6BBDgfwU9lYgWoBXJNLC1ki+lOywVLMS4eE76V10EcL1hEp0zvvi4cS5atfEMr32Ls+zx4zC9aO+o+md64fo=
-X-Received: by 2002:ac8:31b3:: with SMTP id h48mr11022378qte.300.1570118190216;
- Thu, 03 Oct 2019 08:56:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <1568837198-27211-1-git-send-email-vincent.cheng.xh@renesas.com>
- <5d93ce84.1c69fb81.8e964.4dc1@mx.google.com> <20191003145546.GA19695@renesas.com>
-In-Reply-To: <20191003145546.GA19695@renesas.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 3 Oct 2019 10:56:19 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqK12p48gqZdwNfYGNsBafmjMY=5U=QcHPHZy5sD-nGntA@mail.gmail.com>
-Message-ID: <CAL_JsqK12p48gqZdwNfYGNsBafmjMY=5U=QcHPHZy5sD-nGntA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: ptp: Add binding doc for IDT ClockMatrix
- based PTP clock
-To:     Vincent Cheng <vincent.cheng.xh@renesas.com>
-Cc:     "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        id S2389976AbfJCRk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:40:57 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:37545 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731338AbfJCP7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 11:59:30 -0400
+Received: by mail-pl1-f201.google.com with SMTP id p15so2026036plq.4
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 08:59:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=yhyVhYskhPWbCHGPCTfMn8ZN5jtGEjOfpveHWoTCZq4=;
+        b=DvV2srjw630dkyTgOkwxffOASQqFC08laTSQZVAD9I5gnN2tffLObAHO0CdLmguGrE
+         Li0MuLNT93F3WQ2l0uPzbKLSDcDKGr5KvTEg1F8VMNL7Dx+aJSCMQq2vVbyA9aFKNQrd
+         SSmA8eDQg5HcIbRxy6Qcih2zq48ZPEpr0mtkEIUPuRmuxrBuhDQs+qTQ+I19SPmvnJPY
+         KYF1mPn8pOv9+pPF2+T6lrKtKCPHP8Gs3sA4SbN4EFEslNu/V0U3kLWffbMCahCcrAn7
+         Hxd9xSbZH+QKHL9dVVKX7Y9ajef2ib08+avaikf3mSz0pUFEmzjSgzzMQCd5Mq04TQDK
+         bnCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=yhyVhYskhPWbCHGPCTfMn8ZN5jtGEjOfpveHWoTCZq4=;
+        b=OfAtLM0qYgYF53ZbL57a++rrEaNip6Glz3qE+gSAJDeg/EjS53MjHW1vEBzJeHUH5g
+         tIG8eIghLxJ+Tpsv18GHyS0lC/o8xjeoCMXodPw5sQanpE8XNYFEutyAYxOtnKCg2LJ1
+         WjxSNuKJq5KaMxtdrnmXPfP9nqxS3kXkcyF8u0D+nYqgoNjBHk0TkiSAEg3+JcU41Dcd
+         SIQGNiVZ/rOxo/KGUTRb9s6BS8KDhSdxOjIIJyFhs1brMaixb+zu+0znHJApaCXtc7VM
+         W0DyuulyJcn9y4AA/KaakTLUBQhErNYN71dw1mKC04f2dB0Umv7qPez2BDKivIlkTBwU
+         tLiw==
+X-Gm-Message-State: APjAAAXqaOhJLnjLEhaI9YkDohaKnmtx52Ku+J0D+/JPjbnM1/1rPOw3
+        oc7rfVpLWpZknOcBU3q6zhhSi90cFIhJ9Q==
+X-Google-Smtp-Source: APXvYqxeAfRmyyyS63uFYt1xqdvSmfrjc4RhMIubr/4m0J6skQ6gTmpKrKQz4awOdWmFSs3lwLGUg8mrSVb63g==
+X-Received: by 2002:a63:8943:: with SMTP id v64mr10154661pgd.209.1570118367873;
+ Thu, 03 Oct 2019 08:59:27 -0700 (PDT)
+Date:   Thu,  3 Oct 2019 08:59:24 -0700
+Message-Id: <20191003155924.71666-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+Subject: [PATCH net-next] net: propagate errors correctly in register_netdevice()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 3, 2019 at 10:12 AM Vincent Cheng
-<vincent.cheng.xh@renesas.com> wrote:
->
-> On Tue, Oct 01, 2019 at 06:09:06PM EDT, Rob Herring wrote:
-> >On Wed, Sep 18, 2019 at 04:06:37PM -0400, vincent.cheng.xh@renesas.com wrote:
-> >> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
->
-> Hi Rob,
->
-> Welcome back.  Thank-you for providing feedback.
->
-> >>
-> >> Add device tree binding doc for the IDT ClockMatrix PTP clock driver.
-> >
-> >Bindings are for h/w, not drivers...
->
-> Yes, will remove 'driver'.
->
-> >>  Documentation/devicetree/bindings/ptp/ptp-idtcm.txt | 15 +++++++++++++++
-> >>  1 file changed, 15 insertions(+)
-> >>  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idtcm.txt
-> >
-> >Please make this a DT schema.
->
-> Sure, will give it a try.
->
-> >> +  - compatible  Should be "idt,8a3400x-ptp" for System Synchronizer
-> >> +                Should be "idt,8a3401x-ptp" for Port Synchronizer
-> >> +                Should be "idt,8a3404x-ptp" for Universal Frequency Translator (UFT)
-> >
-> >If PTP is the only function of the chip, you don't need to append
-> >'-ptp'.
->
-> Okay, will remove '-ptp'.  Thanks.
->
->
-> >What's the 'x' for? We generally don't use wildcards in compatible
-> >strings.
->
-> We were hoping to use 'x' to represent a single driver to match the various
-> part numbers 8A34001, 8A34002, 8A34003, 8A34004, 8A34011, 8A34012, etc.
->
-> What should be used instead of 'x'?
+If netdev_name_node_head_alloc() fails to allocate
+memory, we absolutely want register_netdevice() to return
+-ENOMEM instead of zero :/
 
-Enumerate all the part numbers. Are the differences discoverable in
-some other way? If so, then 'x' is fine, but just add a note how
-models are distinguished.
+One of the syzbot report looked like :
 
-Rob
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 8760 Comm: syz-executor839 Not tainted 5.3.0+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ovs_vport_add+0x185/0x500 net/openvswitch/vport.c:205
+Code: 89 c6 e8 3e b6 3a fa 49 81 fc 00 f0 ff ff 0f 87 6d 02 00 00 e8 8c b4 3a fa 4c 89 e2 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f 85 d3 02 00 00 49 8d 7c 24 08 49 8b 34 24 48 b8 00
+RSP: 0018:ffff88808fe5f4e0 EFLAGS: 00010247
+RAX: dffffc0000000000 RBX: ffffffff89be8820 RCX: ffffffff87385162
+RDX: 0000000000000000 RSI: ffffffff87385174 RDI: 0000000000000007
+RBP: ffff88808fe5f510 R08: ffff8880933c6600 R09: fffffbfff14ee13c
+R10: fffffbfff14ee13b R11: ffffffff8a7709df R12: 0000000000000004
+R13: ffffffff89be8850 R14: ffff88808fe5f5e0 R15: 0000000000000002
+FS:  0000000001d71880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000280 CR3: 0000000096e4c000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ new_vport+0x1b/0x1d0 net/openvswitch/datapath.c:194
+ ovs_dp_cmd_new+0x5e5/0xe30 net/openvswitch/datapath.c:1644
+ genl_family_rcv_msg+0x74b/0xf90 net/netlink/genetlink.c:629
+ genl_rcv_msg+0xca/0x170 net/netlink/genetlink.c:654
+ netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+ genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+ netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+ netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+ netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:657
+ ___sys_sendmsg+0x803/0x920 net/socket.c:2311
+ __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
+ __do_sys_sendmsg net/socket.c:2365 [inline]
+ __se_sys_sendmsg net/socket.c:2363 [inline]
+ __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
+
+Fixes: ff92741270bf ("net: introduce name_node struct to be used in hashlist")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jiri Pirko <jiri@mellanox.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/core/dev.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index c680225e0da844bbbd66c9044851880fa7885117..944de67ee95d621a1cde98d3fadfdab392b5aa98 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8935,6 +8935,7 @@ int register_netdevice(struct net_device *dev)
+ 	if (ret < 0)
+ 		goto out;
+ 
++	ret = -ENOMEM;
+ 	dev->name_node = netdev_name_node_head_alloc(dev);
+ 	if (!dev->name_node)
+ 		goto out;
+-- 
+2.23.0.581.g78d2f28ef7-goog
+
