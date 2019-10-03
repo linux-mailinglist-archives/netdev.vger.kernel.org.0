@@ -2,236 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD408CACE3
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C495FCACEA
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731231AbfJCRbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:31:13 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:42935 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732760AbfJCRaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:30:19 -0400
-Received: by mail-qt1-f196.google.com with SMTP id w14so4683192qto.9;
-        Thu, 03 Oct 2019 10:30:18 -0700 (PDT)
+        id S1732061AbfJCRb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:31:27 -0400
+Received: from mail-io1-f50.google.com ([209.85.166.50]:34764 "EHLO
+        mail-io1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731946AbfJCRbZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:31:25 -0400
+Received: by mail-io1-f50.google.com with SMTP id q1so7511575ion.1;
+        Thu, 03 Oct 2019 10:31:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OwHzOlv94fNEQPzUN9beE8wR2Nx0PGCIq76ElwD91IY=;
-        b=Kbfq1mSN6XsOJJ/hmRdAjfrwBr+ox+iLgaKkLdzPJeIQfnIY0MML3TLZCO/dvp94Q9
-         rqVMaifyKHSu1yvsQgEU7rbHiPpghd6NdVs7s2NGC0fHenPikkmn21UFqpIAWNkUSijs
-         CfsmewYSQH/tffSahrrtYwtqA4NXDUiV+CoMt8DvRrjkkqX+9smoyvlO7yYJpiiAuxsh
-         gAwGJ3D3kgR+XLPKIxelQ2RTNDXvLJ6/62HYY1IGyS0FrcwUaQUb2esICGUo3z9Wl4+j
-         1w+v5OpSY+CruNbhv2Q4EWNke7+ol1n66hqhvpigt1YNfqA/6R0gzFGYa+TuA2JglWT6
-         kTAA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=f4r+K3y3nqXc3SI3VEfZUkUo3eN/bYW8k+rWr3yspv0=;
+        b=sUP5WhImszFptgTBOakqcyoSspnLZ+BmVTcd+z9TsQKoYE5gXVc7iGc8EQjENSeJKG
+         n8cvNBwRSfNx1QtOCay2kOMmI1yHCOVmlrKySn9EScvEBLToeto4fbTB8CQEXho+2kK6
+         rV5xE7FpKIPyvdb5CXcYEiACCKQDYWqliZWoFh6MEhLogLmtiLlhs7P6Jgeu7hCJHXCn
+         jUPB1NfxBBUrGz/TDNx6mBW/n2UnwbkPD0X1X/G+RkLuDlzG+5QUSFU6fY/KmarrUL0z
+         Atxn65aBvRgajzh6wKZdEgQzeA+RXuf5IXJ+lxZo68kZ/TEtloklFN5PY0IQe7xtasls
+         gnNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OwHzOlv94fNEQPzUN9beE8wR2Nx0PGCIq76ElwD91IY=;
-        b=LM3Zu15rREJqJMJKY13YboqzNvOujoSpC2WAugiZtvHsr/YiMIP3EWoCd5p331a076
-         7DlLubkOCFF4I00YeF/IOZPN7QOyPaWoNRRrh8Mv0RlS9PR3DNgO8IMqCUs7wpdOx8N1
-         4s2FoGApJVQOTF9P8LHQgWb4qzjjoIIx//e2VNPL3+nnkrmE/hi8c7xBNCboztrf4zbm
-         3Nz6ZL34zjkEDMXX/U68wtTKEZexjMQBLg3Rkdm3tpdTDE4ggr2Zok3ltaVL1pxi3GZt
-         CRhv6y4Kc5n1qIx0/dUnXyGF3xFZcBRASFMazSzIOK3rnv2ZF6C9TJJO9tCs6khitA2Q
-         oRNg==
-X-Gm-Message-State: APjAAAV5vi/QlsQuU9khxV7MeQYfPvcbqf5OGlmzHrc3rI4qhNOi1Qtj
-        daa/pWB6qhrxW9gnp63lWtSP6ngfckc3U2sfyo0=
-X-Google-Smtp-Source: APXvYqytRvSGXPWUuop07pHcGjG3SqMoK6kaJugGE40KgcI3ho0s3kDM604BRnKN98+RZdamFAv6b3DBCaNpyly7YLc=
-X-Received: by 2002:ac8:7401:: with SMTP id p1mr10966238qtq.141.1570123817595;
- Thu, 03 Oct 2019 10:30:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191001214141.6294-1-cneirabustos@gmail.com> <20191001214141.6294-3-cneirabustos@gmail.com>
- <79645731-da32-6071-e05f-6345cf47bcd1@iogearbox.net> <20191003145211.GA3657@frodo.byteswizards.com>
-In-Reply-To: <20191003145211.GA3657@frodo.byteswizards.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Oct 2019 10:30:06 -0700
-Message-ID: <CAEf4BzZvTvGcyVfM=RB7GA+WHxsDkS+OGmUrNLpMhfa7bMBA1w@mail.gmail.com>
-Subject: Re: [PATCH V12 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
-To:     Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        ebiederm@xmission.com, Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=f4r+K3y3nqXc3SI3VEfZUkUo3eN/bYW8k+rWr3yspv0=;
+        b=ogdp0uGZob0fR52S+U4ZsXFQeyQTcgnzO4CSMxgT/qT0LmcfS8GzlCkfugBip9yrl8
+         DYzu3zpaSN5BKXYSL50LChEMrJdHNAZhgktS2tlAKHOA9abaljicpXc0veNlqyuwMhXy
+         CemlmvQISLZO3NHHf5Otd9j6k5Zwe0o5pAUpU0MISMkm/LpnIwSPdbh0s8mU+AiS8LEp
+         Rr3QclL9hJ9EheZC/4WaDLdYmW7OXSLx8NNEigivdGw83vFd5adJ6c2ppPz319mZWw4/
+         ibK6z9DMVAcLcfRIIm+3tuVh9saOFf9YbKmDP4E/JSuMRiurjWt3oOaB2uz//1y2TGn0
+         q1ew==
+X-Gm-Message-State: APjAAAVPd7T+or4hkmcZQ1NzpV0INXYVYxdB4l9dt+YmU2g1+STTN+on
+        D2r5plTWKafX/SBtQozUqCs=
+X-Google-Smtp-Source: APXvYqzxLOEDOuTX7xAB3sjzdrGcJYADMiD5e8cq8GcNIr3TQmKuPLr/hpAhCTYl9lUr9+qZl7TGyA==
+X-Received: by 2002:a02:c65a:: with SMTP id k26mr10360713jan.56.1570123884448;
+        Thu, 03 Oct 2019 10:31:24 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id s78sm2459089ila.40.2019.10.03.10.31.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Oct 2019 10:31:23 -0700 (PDT)
+Date:   Thu, 03 Oct 2019 10:31:16 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Message-ID: <5d96306468d97_55732aec43fe05c4f6@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191002215041.1083058-3-andriin@fb.com>
+References: <20191002215041.1083058-1-andriin@fb.com>
+ <20191002215041.1083058-3-andriin@fb.com>
+Subject: RE: [PATCH v2 bpf-next 2/7] selftests/bpf: samples/bpf: split off
+ legacy stuff from bpf_helpers.h
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 3, 2019 at 8:01 AM Carlos Antonio Neira Bustos
-<cneirabustos@gmail.com> wrote:
->
-> On Wed, Oct 02, 2019 at 12:52:29PM +0200, Daniel Borkmann wrote:
-> > On 10/1/19 11:41 PM, Carlos Neira wrote:
-> > > New bpf helper bpf_get_ns_current_pid_tgid,
-> > > This helper will return pid and tgid from current task
-> > > which namespace matches dev_t and inode number provided,
-> > > this will allows us to instrument a process inside a container.
-> > >
-> > > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> > > ---
-> > >   include/linux/bpf.h      |  1 +
-> > >   include/uapi/linux/bpf.h | 18 +++++++++++++++++-
-> > >   kernel/bpf/core.c        |  1 +
-> > >   kernel/bpf/helpers.c     | 36 ++++++++++++++++++++++++++++++++++++
-> > >   kernel/trace/bpf_trace.c |  2 ++
-> > >   5 files changed, 57 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > index 5b9d22338606..231001475504 100644
-> > > --- a/include/linux/bpf.h
-> > > +++ b/include/linux/bpf.h
-> > > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
-> > >   extern const struct bpf_func_proto bpf_strtol_proto;
-> > >   extern const struct bpf_func_proto bpf_strtoul_proto;
-> > >   extern const struct bpf_func_proto bpf_tcp_sock_proto;
-> > > +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
-> > >   /* Shared helpers among cBPF and eBPF. */
-> > >   void bpf_user_rnd_init_once(void);
-> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > index 77c6be96d676..ea8145d7f897 100644
-> > > --- a/include/uapi/linux/bpf.h
-> > > +++ b/include/uapi/linux/bpf.h
-> > > @@ -2750,6 +2750,21 @@ union bpf_attr {
-> > >    *                **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
-> > >    *
-> > >    *                **-EPROTONOSUPPORT** IP packet version is not 4 or 6
-> > > + *
-> > > + * u64 bpf_get_ns_current_pid_tgid(u64 dev, u64 inum)
-> > > + * Return
-> > > + *         A 64-bit integer containing the current tgid and pid from current task
-> > > + *              which namespace inode and dev_t matches , and is create as such:
-> > > + *         *current_task*\ **->tgid << 32 \|**
-> > > + *         *current_task*\ **->pid**.
-> > > + *
-> > > + *         On failure, the returned value is one of the following:
-> > > + *
-> > > + *         **-EINVAL** if dev and inum supplied don't match dev_t and inode number
-> > > + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
-> > > + *
-> > > + *         **-ENOENT** if /proc/self/ns does not exists.
-> > > + *
-> > >    */
-> > >   #define __BPF_FUNC_MAPPER(FN)             \
-> > >     FN(unspec),                     \
-> > > @@ -2862,7 +2877,8 @@ union bpf_attr {
-> > >     FN(sk_storage_get),             \
-> > >     FN(sk_storage_delete),          \
-> > >     FN(send_signal),                \
-> > > -   FN(tcp_gen_syncookie),
-> > > +   FN(tcp_gen_syncookie),          \
-> > > +   FN(get_ns_current_pid_tgid),
-> > >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > >    * function eBPF program intends to call
-> > > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> > > index 66088a9e9b9e..b2fd5358f472 100644
-> > > --- a/kernel/bpf/core.c
-> > > +++ b/kernel/bpf/core.c
-> > > @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
-> > >   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
-> > >   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
-> > >   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
-> > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
-> > >   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
-> > >   {
-> > > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-> > > index 5e28718928ca..8777181d1717 100644
-> > > --- a/kernel/bpf/helpers.c
-> > > +++ b/kernel/bpf/helpers.c
-> > > @@ -11,6 +11,8 @@
-> > >   #include <linux/uidgid.h>
-> > >   #include <linux/filter.h>
-> > >   #include <linux/ctype.h>
-> > > +#include <linux/pid_namespace.h>
-> > > +#include <linux/proc_ns.h>
-> > >   #include "../../lib/kstrtox.h"
-> > > @@ -487,3 +489,37 @@ const struct bpf_func_proto bpf_strtoul_proto = {
-> > >     .arg4_type      = ARG_PTR_TO_LONG,
-> > >   };
-> > >   #endif
-> > > +
-> > > +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u64, dev, u64, inum)
-> > > +{
-> > > +   struct task_struct *task = current;
-> > > +   struct pid_namespace *pidns;
-> > > +   pid_t pid, tgid;
-> > > +
-> > > +   if ((u64)(dev_t)dev != dev)
-> > > +           return -EINVAL;
-> > > +
-> > > +   if (unlikely(!task))
-> > > +           return -EINVAL;
-> > > +
-> > > +   pidns = task_active_pid_ns(task);
-> > > +   if (unlikely(!pidns))
-> > > +           return -ENOENT;
-> > > +
-> > > +
-> > > +   if (!ns_match(&pidns->ns, (dev_t)dev, inum))
-> > > +           return -EINVAL;
-> > > +
-> > > +   pid = task_pid_nr_ns(task, pidns);
-> > > +   tgid = task_tgid_nr_ns(task, pidns);
-> > > +
-> > > +   return (u64) tgid << 32 | pid;
-> >
-> > Basically here you are overlapping the 64-bit return value for the valid
-> > outcome with the error codes above for the invalid case. If you look at
-> > bpf_perf_event_read() we already had such broken occasion that bit us in
-> > the past, and needed to introduce bpf_perf_event_read_value() instead.
-> > Lets not go there again and design it similarly to the latter.
-> >
-> > > +}
-> > > +
-> > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
-> > > +   .func           = bpf_get_ns_current_pid_tgid,
-> > > +   .gpl_only       = false,
-> > > +   .ret_type       = RET_INTEGER,
-> > > +   .arg1_type      = ARG_ANYTHING,
-> > > +   .arg2_type      = ARG_ANYTHING,
-> > > +};
-> > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > > index 44bd08f2443b..32331a1dcb6d 100644
-> > > --- a/kernel/trace/bpf_trace.c
-> > > +++ b/kernel/trace/bpf_trace.c
-> > > @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> > >   #endif
-> > >     case BPF_FUNC_send_signal:
-> > >             return &bpf_send_signal_proto;
-> > > +   case BPF_FUNC_get_ns_current_pid_tgid:
-> > > +           return &bpf_get_ns_current_pid_tgid_proto;
-> > >     default:
-> > >             return NULL;
-> > >     }
-> > >
-> >
-> Daniel,
-> If I understand correctly, to avoid problems I need to change the helper's function signature to something like the following:
->
-> struct bpf_ns_current_pid_tgid_storage {
->         __u64 dev;
->         __u64 inum;
->         __u64 pidtgid;
+Andrii Nakryiko wrote:
+> Split off few legacy things from bpf_helpers.h into separate
+> bpf_legacy.h file:
+> - load_{byte|half|word};
+> - remove extra inner_idx and numa_node fields from bpf_map_def and
+>   introduce bpf_map_def_legacy for use in samples;
+> - move BPF_ANNOTATE_KV_PAIR into bpf_legacy.h.
+> 
+> Adjust samples and selftests accordingly by either including
+> bpf_legacy.h and using bpf_map_def_legacy, or switching to BTF-defined
+> maps altogether.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
 
-if you do it this way, please do
+Eventually we convert tests to use bpf_create_map_in_map() and friends
+so we can drop legacy. Assuming this is what you have in mind but agree
+thats a next step.
 
-__u32 pid;
-__u34 tgid;
-
-I have to look up where pid and tgid is in that 64-bit number every
-single time, let's not do it here for no good reason.
-
-> };
->
-> BPF_CALL_2(bpf_get_ns_current_pid_tgid,
->            struct bpf_ns_current_pid_tgid_storage *, buf, u32, size);
->
-> then use dev and inum provided by the user and return the requested
-> value into pidtgid of the struct. Would that work?
->
-> Thanks for your help.
->
->
->
->
+Acked-by: John Fastabend <john.fastabend@gmail.com>
