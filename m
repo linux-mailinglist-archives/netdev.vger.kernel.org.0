@@ -2,251 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D91F2CADE4
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F58FCAE04
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:19:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387574AbfJCSM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 14:12:27 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33157 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732980AbfJCSM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:12:27 -0400
-Received: by mail-qt1-f195.google.com with SMTP id r5so4954434qtd.0;
-        Thu, 03 Oct 2019 11:12:26 -0700 (PDT)
+        id S2387847AbfJCSTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 14:19:38 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:36180 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729906AbfJCSTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:19:38 -0400
+Received: by mail-qt1-f193.google.com with SMTP id o12so4956309qtf.3
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 11:19:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XuztriFrsPpSAdIkduTSl85a7Dc8Oqk8iZypNjD113A=;
-        b=AXzzktxXQm7CDwOuM0VBhEC1B/vlU+ok/OLCaX/bu3AeE7fqL/Bq1/GDfBK20Lv4d2
-         skwrCusgFWvLHdpXRK6kx7NpzX07uI/9vV8FHD7PM7XDDDL1srLPqpYXEkqVHgfY4rab
-         wGMK44aafPPbkIJj6G4fnrXf9YQ8khGYvQbbn3pClNWTo+wsqauPxmDIJAzFMjtpWNSI
-         1P5gJez2A3pMlkTx3CBNG2XB6Ipd7kcRkXT97wYsH0WqphCCuy5rU7O2956UPYfxaDEQ
-         5XBcXtPdk6uj1F2ZLCfo7BciMFSGyybmuJTit5Gc1406N8yLtq23osQcG+xjzuH5a9Ya
-         Y1yQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=56dQt4QRF2SuQCAdT1VIYpsb1hq4uXvpEX+7LvkGdzc=;
+        b=dNauUMGZkVh6eLPWZWbfFRK9m+oFt54CKa77flZoZxy4IHQcScHXsZKkRkW1iv9dSS
+         l7vDJJfUPf756amDdYLwuB6TWCqK/wKAS5NntjBKyCjXkAQ/mt+80GtRx1Qe5IEirwrW
+         i4X0n9Ai2ZaSWO/iiz9cXFBm6cUxUZIBkqZBE9QnwsE0f3BPhkTM7gXRcLOmXhpi0fIF
+         0jQjKp9lNICpqJ/2VoxiuDzjuM7ToTwMe7mkgrvMfb6grOslt+SJH80DkUxZKM27If1+
+         1+obSeljTTvrLFmS/+xQoCrpkrq2VRfq07ZBrgk+/I6NWnPQt0OTheRdAzPs6J0Foy/u
+         16uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XuztriFrsPpSAdIkduTSl85a7Dc8Oqk8iZypNjD113A=;
-        b=bo5Y0oqDdMS9Frarf3rrGALDDUTsgW5ACHkGkV45+1b5qLOcVAgRVpSruAu4a6Mige
-         Ro672CSrikjhfZWEk2tMDOY9rbnit+Do2lV/u6N3yXKgr0cN6rlaOJCyPbPp4e8SZPEB
-         Ic3v9Rsbp2bVmeaF5FRhkKqd8LqLo5Zmq+ok5ic5QSvu1vZXwphtCtx+PP8qAo5kYsAk
-         DIMfYJk3KVaRyjdBlovAkzvVjNBopqAEP+nGQQB383lqmMo0ZkTfpcTvszV3MhL2NhbY
-         OVqyl1JxtR31tFjcjl8AUv71vPyONbik7GyrHTtoduNsslM+frdOSPxCG0hUhD96grKI
-         B8CA==
-X-Gm-Message-State: APjAAAUnbZ9aoe5boGuC0k9jNYeLSZwd5zmEUGymn+qkIMQq5kfoFdFN
-        RxteBuybAMnhsVcIcaJt2Ws=
-X-Google-Smtp-Source: APXvYqzaVRotZ5xQyEzeewQ1a3WeIyM7e38yOasaxmf/6ck7h/sUtXokLOMDSKjHCEbAJCvTu8vc1w==
-X-Received: by 2002:ac8:3a84:: with SMTP id x4mr10746424qte.334.1570126345291;
-        Thu, 03 Oct 2019 11:12:25 -0700 (PDT)
-Received: from frodo.byteswizards.com ([190.162.109.190])
-        by smtp.gmail.com with ESMTPSA id o38sm2098361qtc.39.2019.10.03.11.12.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 11:12:23 -0700 (PDT)
-Date:   Thu, 3 Oct 2019 15:12:18 -0300
-From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        ebiederm@xmission.com, Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH V12 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
-Message-ID: <20191003181218.GA12598@frodo.byteswizards.com>
-References: <20191001214141.6294-1-cneirabustos@gmail.com>
- <20191001214141.6294-3-cneirabustos@gmail.com>
- <79645731-da32-6071-e05f-6345cf47bcd1@iogearbox.net>
- <20191003145211.GA3657@frodo.byteswizards.com>
- <CAEf4BzZvTvGcyVfM=RB7GA+WHxsDkS+OGmUrNLpMhfa7bMBA1w@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=56dQt4QRF2SuQCAdT1VIYpsb1hq4uXvpEX+7LvkGdzc=;
+        b=AibxZCmNUC9CdBwkaZOWp0IrzNe7o+5xdPtW+RF/BERH94ArxgSaEAWwzS0H3rZUPP
+         ZmzxIgvLSJBRHpHenRAxC3ESzIbiRoxOlVS5OY4qSVarXwBGa/+B3jfoOZLXBSr4HzNn
+         e5+t6cHyPwrOXfn5xtA4BAcq2B67tFu/F9S8w+F2dNAg4Ul6V8sVnzqZDlGWeSb/lt9c
+         L7Eeg03wKL2mSdnw0yb+wcoeFFATmOJMLoB3Dgk8ASftqthriPRdkzjElUZ+HawrsGAB
+         2dsn116g16GYsgpsWwtj9ZErGCY45eyKVpvHPZT675TQ3Euw7CE0YNNH7OH00ybAk3rJ
+         c5pw==
+X-Gm-Message-State: APjAAAUIbrFrcknVsXQ7QnMA1eKlPlbAZho9vlcpneJBkxO4+q9aEEL3
+        2EVgUkkhOcEHtq/+gaOIbBV3PA==
+X-Google-Smtp-Source: APXvYqzUyn9iCVG43i7QUjnCMaJCXjbjsEr9+ZEEaX7NBGvW6gZITH9bOOMIyLqDofrh0U1HzmA0TA==
+X-Received: by 2002:a0c:8171:: with SMTP id 104mr9880456qvc.168.1570126777468;
+        Thu, 03 Oct 2019 11:19:37 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id m91sm1592984qte.8.2019.10.03.11.19.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 03 Oct 2019 11:19:36 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        atul.gupta@chelsio.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 0/6] net/tls: separate the TLS TOE code out
+Date:   Thu,  3 Oct 2019 11:18:53 -0700
+Message-Id: <20191003181859.24958-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZvTvGcyVfM=RB7GA+WHxsDkS+OGmUrNLpMhfa7bMBA1w@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 03, 2019 at 10:30:06AM -0700, Andrii Nakryiko wrote:
-> On Thu, Oct 3, 2019 at 8:01 AM Carlos Antonio Neira Bustos
-> <cneirabustos@gmail.com> wrote:
-> >
-> > On Wed, Oct 02, 2019 at 12:52:29PM +0200, Daniel Borkmann wrote:
-> > > On 10/1/19 11:41 PM, Carlos Neira wrote:
-> > > > New bpf helper bpf_get_ns_current_pid_tgid,
-> > > > This helper will return pid and tgid from current task
-> > > > which namespace matches dev_t and inode number provided,
-> > > > this will allows us to instrument a process inside a container.
-> > > >
-> > > > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> > > > ---
-> > > >   include/linux/bpf.h      |  1 +
-> > > >   include/uapi/linux/bpf.h | 18 +++++++++++++++++-
-> > > >   kernel/bpf/core.c        |  1 +
-> > > >   kernel/bpf/helpers.c     | 36 ++++++++++++++++++++++++++++++++++++
-> > > >   kernel/trace/bpf_trace.c |  2 ++
-> > > >   5 files changed, 57 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > > index 5b9d22338606..231001475504 100644
-> > > > --- a/include/linux/bpf.h
-> > > > +++ b/include/linux/bpf.h
-> > > > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
-> > > >   extern const struct bpf_func_proto bpf_strtol_proto;
-> > > >   extern const struct bpf_func_proto bpf_strtoul_proto;
-> > > >   extern const struct bpf_func_proto bpf_tcp_sock_proto;
-> > > > +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
-> > > >   /* Shared helpers among cBPF and eBPF. */
-> > > >   void bpf_user_rnd_init_once(void);
-> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > index 77c6be96d676..ea8145d7f897 100644
-> > > > --- a/include/uapi/linux/bpf.h
-> > > > +++ b/include/uapi/linux/bpf.h
-> > > > @@ -2750,6 +2750,21 @@ union bpf_attr {
-> > > >    *                **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
-> > > >    *
-> > > >    *                **-EPROTONOSUPPORT** IP packet version is not 4 or 6
-> > > > + *
-> > > > + * u64 bpf_get_ns_current_pid_tgid(u64 dev, u64 inum)
-> > > > + * Return
-> > > > + *         A 64-bit integer containing the current tgid and pid from current task
-> > > > + *              which namespace inode and dev_t matches , and is create as such:
-> > > > + *         *current_task*\ **->tgid << 32 \|**
-> > > > + *         *current_task*\ **->pid**.
-> > > > + *
-> > > > + *         On failure, the returned value is one of the following:
-> > > > + *
-> > > > + *         **-EINVAL** if dev and inum supplied don't match dev_t and inode number
-> > > > + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
-> > > > + *
-> > > > + *         **-ENOENT** if /proc/self/ns does not exists.
-> > > > + *
-> > > >    */
-> > > >   #define __BPF_FUNC_MAPPER(FN)             \
-> > > >     FN(unspec),                     \
-> > > > @@ -2862,7 +2877,8 @@ union bpf_attr {
-> > > >     FN(sk_storage_get),             \
-> > > >     FN(sk_storage_delete),          \
-> > > >     FN(send_signal),                \
-> > > > -   FN(tcp_gen_syncookie),
-> > > > +   FN(tcp_gen_syncookie),          \
-> > > > +   FN(get_ns_current_pid_tgid),
-> > > >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > > >    * function eBPF program intends to call
-> > > > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> > > > index 66088a9e9b9e..b2fd5358f472 100644
-> > > > --- a/kernel/bpf/core.c
-> > > > +++ b/kernel/bpf/core.c
-> > > > @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
-> > > >   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
-> > > >   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
-> > > >   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
-> > > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
-> > > >   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
-> > > >   {
-> > > > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-> > > > index 5e28718928ca..8777181d1717 100644
-> > > > --- a/kernel/bpf/helpers.c
-> > > > +++ b/kernel/bpf/helpers.c
-> > > > @@ -11,6 +11,8 @@
-> > > >   #include <linux/uidgid.h>
-> > > >   #include <linux/filter.h>
-> > > >   #include <linux/ctype.h>
-> > > > +#include <linux/pid_namespace.h>
-> > > > +#include <linux/proc_ns.h>
-> > > >   #include "../../lib/kstrtox.h"
-> > > > @@ -487,3 +489,37 @@ const struct bpf_func_proto bpf_strtoul_proto = {
-> > > >     .arg4_type      = ARG_PTR_TO_LONG,
-> > > >   };
-> > > >   #endif
-> > > > +
-> > > > +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u64, dev, u64, inum)
-> > > > +{
-> > > > +   struct task_struct *task = current;
-> > > > +   struct pid_namespace *pidns;
-> > > > +   pid_t pid, tgid;
-> > > > +
-> > > > +   if ((u64)(dev_t)dev != dev)
-> > > > +           return -EINVAL;
-> > > > +
-> > > > +   if (unlikely(!task))
-> > > > +           return -EINVAL;
-> > > > +
-> > > > +   pidns = task_active_pid_ns(task);
-> > > > +   if (unlikely(!pidns))
-> > > > +           return -ENOENT;
-> > > > +
-> > > > +
-> > > > +   if (!ns_match(&pidns->ns, (dev_t)dev, inum))
-> > > > +           return -EINVAL;
-> > > > +
-> > > > +   pid = task_pid_nr_ns(task, pidns);
-> > > > +   tgid = task_tgid_nr_ns(task, pidns);
-> > > > +
-> > > > +   return (u64) tgid << 32 | pid;
-> > >
-> > > Basically here you are overlapping the 64-bit return value for the valid
-> > > outcome with the error codes above for the invalid case. If you look at
-> > > bpf_perf_event_read() we already had such broken occasion that bit us in
-> > > the past, and needed to introduce bpf_perf_event_read_value() instead.
-> > > Lets not go there again and design it similarly to the latter.
-> > >
-> > > > +}
-> > > > +
-> > > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
-> > > > +   .func           = bpf_get_ns_current_pid_tgid,
-> > > > +   .gpl_only       = false,
-> > > > +   .ret_type       = RET_INTEGER,
-> > > > +   .arg1_type      = ARG_ANYTHING,
-> > > > +   .arg2_type      = ARG_ANYTHING,
-> > > > +};
-> > > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > > > index 44bd08f2443b..32331a1dcb6d 100644
-> > > > --- a/kernel/trace/bpf_trace.c
-> > > > +++ b/kernel/trace/bpf_trace.c
-> > > > @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> > > >   #endif
-> > > >     case BPF_FUNC_send_signal:
-> > > >             return &bpf_send_signal_proto;
-> > > > +   case BPF_FUNC_get_ns_current_pid_tgid:
-> > > > +           return &bpf_get_ns_current_pid_tgid_proto;
-> > > >     default:
-> > > >             return NULL;
-> > > >     }
-> > > >
-> > >
-> > Daniel,
-> > If I understand correctly, to avoid problems I need to change the helper's function signature to something like the following:
-> >
-> > struct bpf_ns_current_pid_tgid_storage {
-> >         __u64 dev;
-> >         __u64 inum;
-> >         __u64 pidtgid;
-> 
-> if you do it this way, please do
-> 
-> __u32 pid;
-> __u34 tgid;
-> 
-> I have to look up where pid and tgid is in that 64-bit number every
-> single time, let's not do it here for no good reason.
-> 
-> > };
-> >
-> > BPF_CALL_2(bpf_get_ns_current_pid_tgid,
-> >            struct bpf_ns_current_pid_tgid_storage *, buf, u32, size);
-> >
-> > then use dev and inum provided by the user and return the requested
-> > value into pidtgid of the struct. Would that work?
-> >
-> > Thanks for your help.
-> >
-> >
-> >
-> >
-Andrii,
+Hi!
 
-You are right, I'll do so.
+We have 3 modes of operation of TLS - software, crypto offload
+(Mellanox, Netronome) and TCP Offload Engine-based (Chelsio).
+The last one takes over the socket, like any TOE would, and
+is not really compatible with how we want to do things in the
+networking stack.
 
-Bests.
+Confusingly the name of the crypto-only offload mode is TLS_HW,
+while TOE-offload related functions use tls_hw_ as their prefix.
+
+Engineers looking to implement offload are also be faced with
+TOE artefacts like struct tls_device (while, again,
+CONFIG_TLS_DEVICE actually gates the non-TOE offload).
+
+To improve the clarity of the offload code move the TOE code
+into new files, and rename the functions and structures
+appropriately.
+
+Because TOE-offload takes over the socket, and makes no use of
+the TLS infrastructure in the kernel, the rest of the code
+(anything beyond the ULP setup handlers) do not have to worry
+about the mode == TLS_HW_RECORD case.
+
+The increase in code size is due to duplication of the full
+license boilerplate. Unfortunately original author (Dave Watson)
+seems unreachable :(
+
+Jakub Kicinski (6):
+  net/tls: move TOE-related structures to a separate header
+  net/tls: rename tls_device to tls_toe_device
+  net/tls: move tls_build_proto() on init path
+  net/tls: move TOE-related code to a separate file
+  net/tls: rename tls_hw_* functions tls_toe_*
+  net/tls: allow compiling TLS TOE out
+
+ drivers/crypto/chelsio/Kconfig            |   2 +-
+ drivers/crypto/chelsio/chtls/chtls.h      |   5 +-
+ drivers/crypto/chelsio/chtls/chtls_main.c |  20 ++--
+ include/net/tls.h                         |  37 +-----
+ include/net/tls_toe.h                     |  77 ++++++++++++
+ net/tls/Kconfig                           |  10 ++
+ net/tls/Makefile                          |   1 +
+ net/tls/tls_main.c                        | 124 ++-----------------
+ net/tls/tls_toe.c                         | 139 ++++++++++++++++++++++
+ 9 files changed, 257 insertions(+), 158 deletions(-)
+ create mode 100644 include/net/tls_toe.h
+ create mode 100644 net/tls/tls_toe.c
+
+-- 
+2.21.0
+
