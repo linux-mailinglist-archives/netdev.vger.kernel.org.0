@@ -2,173 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 346BCCB0D7
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 23:10:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DDABCB0FE
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 23:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730883AbfJCVKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 17:10:15 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:41250 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727789AbfJCVKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 17:10:15 -0400
-Received: by mail-qk1-f193.google.com with SMTP id p10so3837209qkg.8;
-        Thu, 03 Oct 2019 14:10:14 -0700 (PDT)
+        id S1730930AbfJCVVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 17:21:45 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37843 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730306AbfJCVVo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 17:21:44 -0400
+Received: by mail-ed1-f66.google.com with SMTP id r4so3982326edy.4
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 14:21:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2tjulN517pEVQ3k4gO1et/ao7+Rl99KeHDcwuCD25KQ=;
-        b=ABHQosbD4eilfxpIENJT8rYDamWkeQ6IIpkQryBCyU7fSYP20juaivLe354fOLsGTp
-         i25PhSPQBfED6bXSoJ7xJbAyVDpWstGq0YoAe9uc63fsmJsHxYDa8zTrySktOohRXXfH
-         wvpJ/myiucQls3AYHHm5JY2Ouv0fiWnv63dxM7IwSYG+AJ9bUj2+QsVt3K7Ex68DZ3YR
-         rKe4yVU1mxmSHQhSrPaxKiI0r+f8rVTJqLZaC0mwfcnqcFNIDgmUcDB54EwI67KVQkda
-         gGcQjuHptsO904VJg3oz1fZBkdbUkV+rJzy3Sim9QP0dgj3UN7vLKWQr/m8W5OMJWm98
-         jvsQ==
+        bh=/y5wVzJjjbl/Vn1Lr3gSHaAXMHhISRU05cnKzoEvpag=;
+        b=E+5pxO9W3oNTUh1auqzsx+4w5rPmLvPQ0cwnhYE5qcOOMLwns5+Lizk5HO0la8qPPC
+         rtqOuBFePv9Oe6AJw5yFVZJSJtmCYl6qT/FMO9vJJUpR+cEpQJ/4lJER3P+nyDTujIjL
+         Ccg63UPI/7e8HgQHs+O2tSiqG0xZBmTMDJtu9whO9OSVbPCjLPjCJdUlKhHpKFq/Y3HV
+         rZ09GpHo2wh2flmoWUWw6GQ9M0RCkiLl5KC5yyGx6PYFNpGMXz+dg9OIdDH8aS4dvTsC
+         cLq00oHxrw2aHgqHXBCtyi/i4k+Tj88wToA47oU8QUaH3PQ8oiD4MXztKnUbwmlG980+
+         o+9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2tjulN517pEVQ3k4gO1et/ao7+Rl99KeHDcwuCD25KQ=;
-        b=C6NVEmrWIILKo6pSMipp6O3huJvriWUPmKWml78npMm/RHYDINVgAm54NxIaxJbZBo
-         C/O32HCp7xuJpWGYweXBaciY5oTc2zj+CtHyGKudG7dJg7T0F9dsg+WHk2ashr+qg0wC
-         hFwi9tEFt+8JEFTyTqz69iqH0wl2fllPdMxDiwEWaEO7yxfBR0aJUWNZFoRiUjOrZbIy
-         jJVoCaBaQIX54PbYCA6VahGuf4BgM4TybzXTZEuZ30EN++zm8g/jWrDvneC+ZSUeR3ka
-         4NnYO6o6fRju5rUtyE3+5QAj29FuOanTphlQ1rRFFKcC8j1Uyc8LlLryOdCPvcsuHdGr
-         m+pQ==
-X-Gm-Message-State: APjAAAW7d/qT7eUnHi8hgdisUnh6QCVaNMjt1dwdsCgnq1/H2+zRDGnx
-        u8ZimqGu1uq4cZngVaMlFJwXVbGoKwWLlhSOTSc=
-X-Google-Smtp-Source: APXvYqyv11QK01UWJ4YpFyAyUlmZzOqKWF7PyC/vBMZhLWYu3bSbH2PatDVxWk7+rNX5aPlW4wP8GNiQffnk1MvAKYQ=
-X-Received: by 2002:a37:4e55:: with SMTP id c82mr6688317qkb.437.1570137013428;
- Thu, 03 Oct 2019 14:10:13 -0700 (PDT)
+        bh=/y5wVzJjjbl/Vn1Lr3gSHaAXMHhISRU05cnKzoEvpag=;
+        b=cf/R7Bxq+MrZc5BEg0VahuLp9Z2de8aQGG+QVDgsnI6ES+RXbP+3YiI27ZeM6Cu12g
+         Oy2M6fPEVvKNgzFRQrH51D4BbsCTFiE0mVgOU9iW2RmnBNSBrgJyjGeL8gTeIAko3J81
+         Tb42VPgRxuUG5SLn0jJPuT4vOhhmwdTShh+Zv1LPXFsaWE+kz7/L0KZxg09c7O5PVI6c
+         T/sE+g53JodHTLUgBSuOdoWblmQCi/BU+PXrVzoTeZwZCRSJZWU/Ad2tmC39uZ+PG8AI
+         d4+Lea+KFDf6Ys/vhxnhUjeaDjbvvMPE+5QDBPJvaHLfpCv8w9q6gGeWUvhXMbpmmkaI
+         fzwQ==
+X-Gm-Message-State: APjAAAWAlv64ZrGU5WDF1ouL/nXGm9voZ5Jc7FGmo6Lo52iDzqO51oTA
+        7ahmAOuATnbiIwzv2ioGm3SV2LiSLF+JgbYquNHeVA==
+X-Google-Smtp-Source: APXvYqx54H8FJpbEJJWaU/lmpDMeXqW1Bww/XDUwK3EKEdHP5JTdAzVdla9S5dYWOwhAakg0MeOeLYJ3J8gVsWuDYjY=
+X-Received: by 2002:a50:eac4:: with SMTP id u4mr12068242edp.36.1570137701146;
+ Thu, 03 Oct 2019 14:21:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191002215041.1083058-1-andriin@fb.com> <20191002215041.1083058-4-andriin@fb.com>
- <CAPhsuW7CHQAq-N9-OE=jRqgYhq71ZhzEYexNcHCP=docrhNptg@mail.gmail.com>
- <CAEf4BzbhDw0GZ0eY2ctH+--LCk99oCTLGJ=2zaG-_vcyqvYLTw@mail.gmail.com> <CAPhsuW70RCb5hMGvFN99R+HxkQMMzu-ZbyRwwGL17SgGyp8t9g@mail.gmail.com>
-In-Reply-To: <CAPhsuW70RCb5hMGvFN99R+HxkQMMzu-ZbyRwwGL17SgGyp8t9g@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Oct 2019 14:10:02 -0700
-Message-ID: <CAEf4BzZhaK2G8hPNGAgt7nKAczN2sro=dsa9W-HiXm4n0gZFbA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/7] selftests/bpf: adjust CO-RE reloc tests
- for new bpf_core_read() macro
-To:     Song Liu <liu.song.a23@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <20191002233750.13566-1-olteanv@gmail.com> <20191003192445.GD21875@lunn.ch>
+In-Reply-To: <20191003192445.GD21875@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 4 Oct 2019 00:21:30 +0300
+Message-ID: <CA+h21hrYvCaNLDbDFzU9LEjodJUnR01BNV=CFwF8DNJqU33hYw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: Allow port mirroring to the CPU port
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 3, 2019 at 1:42 PM Song Liu <liu.song.a23@gmail.com> wrote:
+On Thu, 3 Oct 2019 at 22:24, Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> On Thu, Oct 3, 2019 at 1:29 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
+> On Thu, Oct 03, 2019 at 02:37:50AM +0300, Vladimir Oltean wrote:
+> > On a regular netdev, putting it in promiscuous mode means receiving all
+> > traffic passing through it, whether or not it was destined to its MAC
+> > address. Then monitoring applications such as tcpdump can see all
+> > traffic transiting it.
 > >
-> > On Thu, Oct 3, 2019 at 1:17 PM Song Liu <liu.song.a23@gmail.com> wrote:
-> > >
-> > > On Wed, Oct 2, 2019 at 3:01 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> > > >
-> > > > To allow adding a variadic BPF_CORE_READ macro with slightly different
-> > > > syntax and semantics, define CORE_READ in CO-RE reloc tests, which is
-> > > > a thin wrapper around low-level bpf_core_read() macro, which in turn is
-> > > > just a wrapper around bpf_probe_read().
-> > > >
-> > > > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > > > Acked-by: Song Liu <songliubraving@fb.com>
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > > ---
-> > > >  tools/testing/selftests/bpf/bpf_helpers.h      |  8 ++++----
-> > > >  .../bpf/progs/test_core_reloc_arrays.c         | 10 ++++++----
-> > > >  .../bpf/progs/test_core_reloc_flavors.c        |  8 +++++---
-> > > >  .../selftests/bpf/progs/test_core_reloc_ints.c | 18 ++++++++++--------
-> > > >  .../bpf/progs/test_core_reloc_kernel.c         |  6 ++++--
-> > > >  .../selftests/bpf/progs/test_core_reloc_misc.c |  8 +++++---
-> > > >  .../selftests/bpf/progs/test_core_reloc_mods.c | 18 ++++++++++--------
-> > > >  .../bpf/progs/test_core_reloc_nesting.c        |  6 ++++--
-> > > >  .../bpf/progs/test_core_reloc_primitives.c     | 12 +++++++-----
-> > > >  .../bpf/progs/test_core_reloc_ptr_as_arr.c     |  4 +++-
-> > > >  10 files changed, 58 insertions(+), 40 deletions(-)
-> > > >
-> > > > diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-> > > > index 7b75c38238e4..5210cc7d7c5c 100644
-> > > > --- a/tools/testing/selftests/bpf/bpf_helpers.h
-> > > > +++ b/tools/testing/selftests/bpf/bpf_helpers.h
-> > > > @@ -483,7 +483,7 @@ struct pt_regs;
-> > > >  #endif
-> > > >
-> > > >  /*
-> > > > - * BPF_CORE_READ abstracts away bpf_probe_read() call and captures offset
-> > > > + * bpf_core_read() abstracts away bpf_probe_read() call and captures offset
-> > > >   * relocation for source address using __builtin_preserve_access_index()
-> > > >   * built-in, provided by Clang.
-> > > >   *
-> > > > @@ -498,8 +498,8 @@ struct pt_regs;
-> > > >   * actual field offset, based on target kernel BTF type that matches original
-> > > >   * (local) BTF, used to record relocation.
-> > > >   */
-> > > > -#define BPF_CORE_READ(dst, src)                                                \
-> > > > -       bpf_probe_read((dst), sizeof(*(src)),                           \
-> > > > -                      __builtin_preserve_access_index(src))
-> > > > +#define bpf_core_read(dst, sz, src)                                        \
-> > > > +       bpf_probe_read(dst, sz,                                             \
-> > > > +                      (const void *)__builtin_preserve_access_index(src))
-> > > >
-> > > >  #endif
-> > > > diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c b/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
-> > > > index bf67f0fdf743..58efe4944594 100644
-> > > > --- a/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
-> > > > +++ b/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
-> > > > @@ -31,6 +31,8 @@ struct core_reloc_arrays {
-> > > >         struct core_reloc_arrays_substruct d[1][2];
-> > > >  };
-> > > >
-> > > > +#define CORE_READ(dst, src) bpf_core_read(dst, sizeof(*dst), src)
-> > >
-> > > We are using sizeof(*dst) now, but I guess sizeof(*src) is better?
-> > > And it should be sizeof(*(src)).
+> > On Ethernet switches, clearly all ports are in promiscuous mode by
+> > definition, since they accept frames destined to any MAC address.
+> > However tcpdump does not capture all frames transiting switch ports,
+> > only the ones destined to, or originating from the CPU port.
 > >
-> > There is no clear winner and I've debated which one I should go with,
-> > but I'm leaning towards using destination for the following reason.
-> > Size of destination doesn't change, it's not relocatable and whatnot,
-> > so this represents actual amount of storage we can safely read into
-> > (if the program logic is correct, of course). On the other hand, size
-> > of source might be different between kernels and we don't support
-> > relocating it when it's passed into bpf_probe_read() as second arg.
+> > To be able to monitor frames with tcpdump on the CPU port, extend the tc
+> > matchall classifier and mirred action to support the DSA master port as
+> > a possible mirror target.
 > >
-> > There is at least one valid case where we should use destination size,
-> > not source size: if we have an array of something (e.g, chars) and we
-> > want to read only up to first N elements. In this case sizeof(*dst) is
-> > what you really want: program will pre-allocate exact amount of data
-> > and we'll do, say, char comm[16]; bpf_core_read(dst,
-> > task_struct->comm). If task_struct->comm ever increases, this all will
-> > work: we'll read first 16 characters only.
-> >
-> > In almost every other case it doesn't matter whether its dst or src,
-> > they have to match (i.e., we don't support relocation from int32 to
-> > int64 right now).
+> > Tested with:
+> > tc qdisc add dev swp2 clsact
+> > tc filter add dev swp2 ingress matchall skip_sw \
+> >       action mirred egress mirror dev eth2
+> > tcpdump -i swp2
 >
-> Hmm.. We could also reading multiple items into the same array, no?
-
-Yeah, absolutely, there are cases in which BPF_CORE_READ won't work,
-unfortunately. That's why it was an internal debate, because there is
-no perfect answer :)
-
-> Maybe we need another marco that takes size as an third parameter?
-
-So my thinking for cases that are not compatible with BPF_CORE_READ
-intended use cases was that users will just do bpf_core_read(), which
-accepts same params as bpf_probe_read(), so they can do whatever they
-need to do.
-
-
+> Humm.
 >
-> Also, for dst, it needs to be sizeof(*(dst)).
-
-You mean extra () around dst? Sure, will add.
-
+> O.K, i don't like this for a few reasons.
 >
-> Thanks,
-> Song
+> egress mirror dev eth2
+>
+> Frames are supported to egress eth2. But in fact they will ingress on
+> eth2. That is not intuitive.
+>
+
+But you are just arguing that the tc mirred syntax is confusing.
+'ingress'/'egress' has nothing to do with 'eth2'. You just specify the
+direction of the frames transiting swp2 that you want to capture. And
+the destination port, as a net device. Because there is no net device
+for the CPU port, 'eth2' acts as substitute. Florian's br0 could have
+acted as substitute as well, but then there may not be a br0...
+But that is only to fit the existing tc mirred command pattern. I'm
+not using 'tcpdump -i eth2' to capture the mirrored traffic, but still
+'tcpdump -i swp2'.
+
+> I'm also no sure how safe this it is to ingress mirror packets on the
+> master interface. Will they have DSA tags? I think that will vary from
+
+Generally speaking, I would say that a device which does not push DSA
+tags towards the CPU port is broken. Yes, I know, I don't need to be
+reminded about cc1939e4b3aa ("net: dsa: Allow drivers to filter
+packets they can decode source port from").
+But there might be other exceptions too: maybe some switches support
+cascaded setups, but don't stack DSA tags, and they need an awareness
+of the switches beneath them, case in which it's reasonable for them
+not to push a second tag. But then it isn't possible to enable port
+mirroring on a DSA port anyway, due to lack of both net devices in
+this case.
+
+> device to device. Are we going to see some packets twice? Once for the
+> mirror, and a second time because they are destined to the CPU? Do we
+> end up processing the packets twice?
+>
+
+Does it matter?
+FWIW, my device does not duplicate frames which already had the CPU in
+the destination ports mask. But you will, nonetheless, see as
+duplicated the frames transmitted from the CPU towards a port with
+egress mirroring enabled towards the CPU. But then you could just keep
+only ingress mirroring enabled, if that bothered you.
+
+> For your use case of wanting to see packets in tcpdump, i think we are
+> back to the discussion of what promisc mode means. I would prefer that
+> when a DSA slave interface is put into promisc mode for tcpdump, the
+> switch then forwards a copy of frames to the CPU, without
+> duplication. That is a much more intuitive model.
+>
+
+So I'm not disagreeing that the patch I'm proposing isn't very
+intuitive. But I think the reasons you pointed out are not the real
+ones why.
+I would like to see DSA switch net devices (and not only) as
+'offloaded net devices', some of the traffic not reaching the CPU for
+whatever reason. And have a switch to copy the offloaded traffic
+towards the CPU as well. Then it would not matter that it's DSA or
+switchdev or capable of offloaded IP routing or promiscuous or
+whatever.
+Would I want that switch to get flipped by default by the driver when
+I run tcpdump? Not so sure. I mean there are already switches like
+'--monitor-mode' in tcpdump specifically for Wi-Fi, so it's not as
+though users who want to 'see everything' aren't able to understand a
+new concept (in this case an 'offloaded net device').
+And piggybacking on top of the promiscuity concept maybe isn't the
+most intuitive way to get this solved either: you can already be
+promiscuous and still not 'see everything'. And there's a second
+reason too: mirroring (or copy-to-cpu) in many devices is a lot more
+configurable than promiscuity is. Even 'dumb' devices like sja1105
+support port-based mirroring and flow-based mirroring (classification
+done at least by {DMAC, VLAN} keys), configured separately for the RX
+and TX direction of each port. I suppose you want the driver to just
+enable something really simple, like egress and ingress port-based
+mirroring? Maybe that is less useful in a real debugging scenario than
+just copying what you're interested in.
+And this slowly glides towards the idea that if there's already this
+much degree of configurability in what you want to mirror, then maybe
+it doesn't make much sense at all in even having that switch put in
+tcpdump (where it would only be something trivial, if not implicit),
+and not in a more dedicated place for this kind of stuff, like tc.
+Maybe the discussion should be about how to represent traffic destined
+towards the CPU in a more abstract way in the tc mirred command?
+
+>           Andrew
+
+Thanks,
+-Vladimir
