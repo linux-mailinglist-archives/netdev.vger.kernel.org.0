@@ -2,59 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F58FCAE04
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F73CAE0B
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387847AbfJCSTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 14:19:38 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36180 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729906AbfJCSTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:19:38 -0400
-Received: by mail-qt1-f193.google.com with SMTP id o12so4956309qtf.3
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 11:19:38 -0700 (PDT)
+        id S2388340AbfJCSTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 14:19:41 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:44244 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729906AbfJCSTk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:19:40 -0400
+Received: by mail-qk1-f194.google.com with SMTP id u22so3300283qkk.11
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 11:19:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=56dQt4QRF2SuQCAdT1VIYpsb1hq4uXvpEX+7LvkGdzc=;
-        b=dNauUMGZkVh6eLPWZWbfFRK9m+oFt54CKa77flZoZxy4IHQcScHXsZKkRkW1iv9dSS
-         l7vDJJfUPf756amDdYLwuB6TWCqK/wKAS5NntjBKyCjXkAQ/mt+80GtRx1Qe5IEirwrW
-         i4X0n9Ai2ZaSWO/iiz9cXFBm6cUxUZIBkqZBE9QnwsE0f3BPhkTM7gXRcLOmXhpi0fIF
-         0jQjKp9lNICpqJ/2VoxiuDzjuM7ToTwMe7mkgrvMfb6grOslt+SJH80DkUxZKM27If1+
-         1+obSeljTTvrLFmS/+xQoCrpkrq2VRfq07ZBrgk+/I6NWnPQt0OTheRdAzPs6J0Foy/u
-         16uA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=h0vkSi8FKdKEx+ZhBbrjV/lm760w4pXTyW6JeJp2RXU=;
+        b=hLXlcZgrrgL7S5SWLM5SqS+mbD9ErXIF4SZWGd6d43yMERKx/4aMzeRUZfoatuZTeV
+         lk/y2Jh6CEEfuCIa7xk59f8Ijj2L4Un8ABMPgst5+R9xuWYsP9ANNZSwSoi/G+OwzhgA
+         XKgMwVbei9qzw2AkAcgdSaAm6ZfTh1BN+Ko27NgCnhiAnPY9+5GtfXFP8PCtZpVwU9Pl
+         dEPLqZtAPX1hpFB7Ni7TP1Pt4rQdZMkvKu6N1P0zIGM2aUrRxG/DRxnOF6vS4xz4mSsZ
+         4ZLyYAp9SgoqLPJb2dp5h9aiE/d/KRA5G/OKWnJm0ZivcFmTy1lyn/nol4Gzwdz5jNNf
+         LCsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=56dQt4QRF2SuQCAdT1VIYpsb1hq4uXvpEX+7LvkGdzc=;
-        b=AibxZCmNUC9CdBwkaZOWp0IrzNe7o+5xdPtW+RF/BERH94ArxgSaEAWwzS0H3rZUPP
-         ZmzxIgvLSJBRHpHenRAxC3ESzIbiRoxOlVS5OY4qSVarXwBGa/+B3jfoOZLXBSr4HzNn
-         e5+t6cHyPwrOXfn5xtA4BAcq2B67tFu/F9S8w+F2dNAg4Ul6V8sVnzqZDlGWeSb/lt9c
-         L7Eeg03wKL2mSdnw0yb+wcoeFFATmOJMLoB3Dgk8ASftqthriPRdkzjElUZ+HawrsGAB
-         2dsn116g16GYsgpsWwtj9ZErGCY45eyKVpvHPZT675TQ3Euw7CE0YNNH7OH00ybAk3rJ
-         c5pw==
-X-Gm-Message-State: APjAAAUIbrFrcknVsXQ7QnMA1eKlPlbAZho9vlcpneJBkxO4+q9aEEL3
-        2EVgUkkhOcEHtq/+gaOIbBV3PA==
-X-Google-Smtp-Source: APXvYqzUyn9iCVG43i7QUjnCMaJCXjbjsEr9+ZEEaX7NBGvW6gZITH9bOOMIyLqDofrh0U1HzmA0TA==
-X-Received: by 2002:a0c:8171:: with SMTP id 104mr9880456qvc.168.1570126777468;
-        Thu, 03 Oct 2019 11:19:37 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=h0vkSi8FKdKEx+ZhBbrjV/lm760w4pXTyW6JeJp2RXU=;
+        b=Ltv/bbHBlmljO9+VnIJWqigy4WodoVPx+8cKjCJNFFVnRbAOdh8L1fWpaBugXFSEFV
+         GaS4tsQ9VswFBA93m2vT76t4Be865QiDV0uTtrONbWbAFq2dNst1OFkkwQ1WH6Jtf1Oj
+         VdDv/1qYwY7uM9jsKjmV+kQDRuUJOQcvU7w5quu1RTplSn6hyTUcxNHEIqGaxv/Vzl9l
+         z+KWZte5hQU2bo3yjemRhB8j56isM9iUgWa+fY/YGOx+ZwUIlC5Dd8niTOIvDm6YBsL7
+         tg0PSWztGn2qMumizoaBFl3umkXZAdYcJBDjawwj22zVTa4A2IkSYrQxn8VN/YmkY7iK
+         sX1A==
+X-Gm-Message-State: APjAAAURIrVCXgATPm3MbolI19u/yQ0rKt1pJ25oDtPHHgFf+ZgViKLM
+        Ig20XPsKlXB3BtsuobtPDLFq1dNEON0=
+X-Google-Smtp-Source: APXvYqx0hkAWHSSiVoPAd7WrLz/jJpPfv1/up7/G37JPABg30MPEQk4svKTy2X6zF/pTwWKYCTkwIw==
+X-Received: by 2002:a37:5c06:: with SMTP id q6mr5797499qkb.236.1570126779377;
+        Thu, 03 Oct 2019 11:19:39 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m91sm1592984qte.8.2019.10.03.11.19.35
+        by smtp.gmail.com with ESMTPSA id m91sm1592984qte.8.2019.10.03.11.19.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Oct 2019 11:19:36 -0700 (PDT)
+        Thu, 03 Oct 2019 11:19:38 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
         john.fastabend@gmail.com, daniel@iogearbox.net,
         atul.gupta@chelsio.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 0/6] net/tls: separate the TLS TOE code out
-Date:   Thu,  3 Oct 2019 11:18:53 -0700
-Message-Id: <20191003181859.24958-1-jakub.kicinski@netronome.com>
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net-next 1/6] net/tls: move TOE-related structures to a separate header
+Date:   Thu,  3 Oct 2019 11:18:54 -0700
+Message-Id: <20191003181859.24958-2-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20191003181859.24958-1-jakub.kicinski@netronome.com>
+References: <20191003181859.24958-1-jakub.kicinski@netronome.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -62,55 +66,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Move tls_device structure and register/unregister functions
+to a new header to avoid confusion with normal, non-TOE offload.
 
-We have 3 modes of operation of TLS - software, crypto offload
-(Mellanox, Netronome) and TCP Offload Engine-based (Chelsio).
-The last one takes over the socket, like any TOE would, and
-is not really compatible with how we want to do things in the
-networking stack.
-
-Confusingly the name of the crypto-only offload mode is TLS_HW,
-while TOE-offload related functions use tls_hw_ as their prefix.
-
-Engineers looking to implement offload are also be faced with
-TOE artefacts like struct tls_device (while, again,
-CONFIG_TLS_DEVICE actually gates the non-TOE offload).
-
-To improve the clarity of the offload code move the TOE code
-into new files, and rename the functions and structures
-appropriately.
-
-Because TOE-offload takes over the socket, and makes no use of
-the TLS infrastructure in the kernel, the rest of the code
-(anything beyond the ULP setup handlers) do not have to worry
-about the mode == TLS_HW_RECORD case.
-
-The increase in code size is due to duplication of the full
-license boilerplate. Unfortunately original author (Dave Watson)
-seems unreachable :(
-
-Jakub Kicinski (6):
-  net/tls: move TOE-related structures to a separate header
-  net/tls: rename tls_device to tls_toe_device
-  net/tls: move tls_build_proto() on init path
-  net/tls: move TOE-related code to a separate file
-  net/tls: rename tls_hw_* functions tls_toe_*
-  net/tls: allow compiling TLS TOE out
-
- drivers/crypto/chelsio/Kconfig            |   2 +-
- drivers/crypto/chelsio/chtls/chtls.h      |   5 +-
- drivers/crypto/chelsio/chtls/chtls_main.c |  20 ++--
- include/net/tls.h                         |  37 +-----
- include/net/tls_toe.h                     |  77 ++++++++++++
- net/tls/Kconfig                           |  10 ++
- net/tls/Makefile                          |   1 +
- net/tls/tls_main.c                        | 124 ++-----------------
- net/tls/tls_toe.c                         | 139 ++++++++++++++++++++++
- 9 files changed, 257 insertions(+), 158 deletions(-)
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: John Hurley <john.hurley@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+---
+ drivers/crypto/chelsio/chtls/chtls.h |  1 +
+ include/net/tls.h                    | 34 -------------
+ include/net/tls_toe.h                | 73 ++++++++++++++++++++++++++++
+ net/tls/tls_main.c                   |  1 +
+ 4 files changed, 75 insertions(+), 34 deletions(-)
  create mode 100644 include/net/tls_toe.h
- create mode 100644 net/tls/tls_toe.c
 
+diff --git a/drivers/crypto/chelsio/chtls/chtls.h b/drivers/crypto/chelsio/chtls/chtls.h
+index 025c831d0899..e353c42fea91 100644
+--- a/drivers/crypto/chelsio/chtls/chtls.h
++++ b/drivers/crypto/chelsio/chtls/chtls.h
+@@ -21,6 +21,7 @@
+ #include <crypto/internal/hash.h>
+ #include <linux/tls.h>
+ #include <net/tls.h>
++#include <net/tls_toe.h>
+ 
+ #include "t4fw_api.h"
+ #include "t4_msg.h"
+diff --git a/include/net/tls.h b/include/net/tls.h
+index c664e6dba0d1..57865c944095 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -60,7 +60,6 @@
+ #define TLS_RECORD_TYPE_DATA		0x17
+ 
+ #define TLS_AAD_SPACE_SIZE		13
+-#define TLS_DEVICE_NAME_MAX		32
+ 
+ #define MAX_IV_SIZE			16
+ #define TLS_MAX_REC_SEQ_SIZE		8
+@@ -74,37 +73,6 @@
+  */
+ #define TLS_AES_CCM_IV_B0_BYTE		2
+ 
+-/*
+- * This structure defines the routines for Inline TLS driver.
+- * The following routines are optional and filled with a
+- * null pointer if not defined.
+- *
+- * @name: Its the name of registered Inline tls device
+- * @dev_list: Inline tls device list
+- * int (*feature)(struct tls_device *device);
+- *     Called to return Inline TLS driver capability
+- *
+- * int (*hash)(struct tls_device *device, struct sock *sk);
+- *     This function sets Inline driver for listen and program
+- *     device specific functioanlity as required
+- *
+- * void (*unhash)(struct tls_device *device, struct sock *sk);
+- *     This function cleans listen state set by Inline TLS driver
+- *
+- * void (*release)(struct kref *kref);
+- *     Release the registered device and allocated resources
+- * @kref: Number of reference to tls_device
+- */
+-struct tls_device {
+-	char name[TLS_DEVICE_NAME_MAX];
+-	struct list_head dev_list;
+-	int  (*feature)(struct tls_device *device);
+-	int  (*hash)(struct tls_device *device, struct sock *sk);
+-	void (*unhash)(struct tls_device *device, struct sock *sk);
+-	void (*release)(struct kref *kref);
+-	struct kref kref;
+-};
+-
+ enum {
+ 	TLS_BASE,
+ 	TLS_SW,
+@@ -643,8 +611,6 @@ static inline bool tls_offload_tx_resync_pending(struct sock *sk)
+ 
+ int tls_proccess_cmsg(struct sock *sk, struct msghdr *msg,
+ 		      unsigned char *record_type);
+-void tls_register_device(struct tls_device *device);
+-void tls_unregister_device(struct tls_device *device);
+ int decrypt_skb(struct sock *sk, struct sk_buff *skb,
+ 		struct scatterlist *sgout);
+ struct sk_buff *tls_encrypt_skb(struct sk_buff *skb);
+diff --git a/include/net/tls_toe.h b/include/net/tls_toe.h
+new file mode 100644
+index 000000000000..81b66c76b31f
+--- /dev/null
++++ b/include/net/tls_toe.h
+@@ -0,0 +1,73 @@
++/*
++ * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
++ * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights reserved.
++ *
++ * This software is available to you under a choice of one of two
++ * licenses.  You may choose to be licensed under the terms of the GNU
++ * General Public License (GPL) Version 2, available from the file
++ * COPYING in the main directory of this source tree, or the
++ * OpenIB.org BSD license below:
++ *
++ *     Redistribution and use in source and binary forms, with or
++ *     without modification, are permitted provided that the following
++ *     conditions are met:
++ *
++ *      - Redistributions of source code must retain the above
++ *        copyright notice, this list of conditions and the following
++ *        disclaimer.
++ *
++ *      - Redistributions in binary form must reproduce the above
++ *        copyright notice, this list of conditions and the following
++ *        disclaimer in the documentation and/or other materials
++ *        provided with the distribution.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
++ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
++ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
++ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ */
++
++#include <linux/kref.h>
++#include <linux/list.h>
++
++struct sock;
++
++#define TLS_DEVICE_NAME_MAX		32
++
++/*
++ * This structure defines the routines for Inline TLS driver.
++ * The following routines are optional and filled with a
++ * null pointer if not defined.
++ *
++ * @name: Its the name of registered Inline tls device
++ * @dev_list: Inline tls device list
++ * int (*feature)(struct tls_device *device);
++ *     Called to return Inline TLS driver capability
++ *
++ * int (*hash)(struct tls_device *device, struct sock *sk);
++ *     This function sets Inline driver for listen and program
++ *     device specific functioanlity as required
++ *
++ * void (*unhash)(struct tls_device *device, struct sock *sk);
++ *     This function cleans listen state set by Inline TLS driver
++ *
++ * void (*release)(struct kref *kref);
++ *     Release the registered device and allocated resources
++ * @kref: Number of reference to tls_device
++ */
++struct tls_device {
++	char name[TLS_DEVICE_NAME_MAX];
++	struct list_head dev_list;
++	int  (*feature)(struct tls_device *device);
++	int  (*hash)(struct tls_device *device, struct sock *sk);
++	void (*unhash)(struct tls_device *device, struct sock *sk);
++	void (*release)(struct kref *kref);
++	struct kref kref;
++};
++
++void tls_register_device(struct tls_device *device);
++void tls_unregister_device(struct tls_device *device);
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index ac88877dcade..a19c6a1e034a 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -42,6 +42,7 @@
+ #include <linux/inet_diag.h>
+ 
+ #include <net/tls.h>
++#include <net/tls_toe.h>
+ 
+ MODULE_AUTHOR("Mellanox Technologies");
+ MODULE_DESCRIPTION("Transport Layer Security Support");
 -- 
 2.21.0
 
