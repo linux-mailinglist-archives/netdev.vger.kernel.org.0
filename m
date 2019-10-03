@@ -2,157 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F446CA86C
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A299FCAA1F
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:25:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391108AbfJCQ0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 12:26:38 -0400
-Received: from mail-eopbgr10073.outbound.protection.outlook.com ([40.107.1.73]:53316
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2391081AbfJCQ0g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 12:26:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PGFBrsHAGEhC8CHhjkMDJsNozNx3CZqtG5PWl9oYecHUMbiDPOtbtKDIoBQVrIDT0X/ty7YxrTGRYTexSEpzFZwSoAQjM3ZgKiXX68bJIGP4rKrG8dJjqdFYtK03Ae+DY4S4Q+FquTsGse5c9vHAsikHPvUshr//2uENnd8X3gqbmPhoZWndO0yyjl6ENYGjiyfNT4W9vFXVGlU6WROa9bXmaXVSiJ9opMNyVZIC45PRJ7FWRCw9wHKTQ+TzQGc+e7ISjgl/ejTf8r9SMgzWRg9bLwCkzAZOnFxa78L/A3Qtcvl47g36L9drq7zx5Qe6dhPcEN73atMm2i1kJVg4sQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8m0OgLMXrlnN1S1LWjf5bBgposl1eYuNgcDSK2N504E=;
- b=HHfM940CWKKbZEYRmakGktK5bY7/Cht1z4RU/eGeoFaaYGdVT085rTifWsvNepeTDHxtnT7xqe2y4yTQynmWtFSxjI7CCqV9OhS1oI+VUiArJnXa9vv/7T5b2E+azk8QP/JMaOi72c5PegnAS9pFwImwFz1KAekgr8rvIzSkIDmoqeq6ZXKHr3BtXucmwg4/RigwonnMEieIdwB1Rqn7nRgW+3iEsKtHk0w/1wFs32fW5e1WH/HPULr47qqkr5i548ZVTzrSvuHG1RY94tJsTNhxIZ0OT3wdz2ExQkMG0cpu1MfihP9OweVT5T51l63MRJsqjW4VtRvjTRXv0tEyKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8m0OgLMXrlnN1S1LWjf5bBgposl1eYuNgcDSK2N504E=;
- b=i6UwknwbvmMMxx4Vab9t2zLn1UQMQNcFZutFnJnfQtPqOVs+YywXcQ+tFK22saknqLqCVOtunBeDBrEmjBkLM3NpFj6lMjDVeUQ5clc5u3SQiCsJjWavI2xYtT+liisXX4CrPrdB0FbgKdXP3zmlYbI4R4ec6UhU0sbTs67v46w=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB6029.eurprd05.prod.outlook.com (20.178.127.207) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.20; Thu, 3 Oct 2019 16:26:28 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2305.023; Thu, 3 Oct 2019
- 16:26:28 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     John Hurley <john.hurley@netronome.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "simon.horman@netronome.com" <simon.horman@netronome.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>
-Subject: Re: [RFC net-next 0/2] prevent sync issues with hw offload of flower
-Thread-Topic: [RFC net-next 0/2] prevent sync issues with hw offload of flower
-Thread-Index: AQHVeXc5O/tBF1cs/0KKA2t1J+rpTKdJG6uA
-Date:   Thu, 3 Oct 2019 16:26:28 +0000
-Message-ID: <vbfk19lokwe.fsf@mellanox.com>
-References: <1570058072-12004-1-git-send-email-john.hurley@netronome.com>
-In-Reply-To: <1570058072-12004-1-git-send-email-john.hurley@netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0184.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a::28) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 217056ba-9293-42b6-b4ee-08d7481e711d
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: VI1PR05MB6029:|VI1PR05MB6029:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB6029C367E31D164C33910F3FAD9F0@VI1PR05MB6029.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 01792087B6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(366004)(346002)(136003)(39850400004)(189003)(199004)(6116002)(3846002)(4326008)(99286004)(5660300002)(52116002)(26005)(186003)(7736002)(6436002)(86362001)(256004)(6512007)(64756008)(66446008)(36756003)(66476007)(11346002)(446003)(6246003)(2616005)(476003)(486006)(66556008)(76176011)(229853002)(478600001)(6486002)(25786009)(305945005)(14444005)(66066001)(6916009)(66946007)(386003)(81166006)(14454004)(102836004)(6506007)(54906003)(316002)(71190400001)(81156014)(71200400001)(8676002)(8936002)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6029;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2m5s7BRJqoCgmc2M2cT/0M3PyBLI36DP78FHvg+FdGRPEfJcbwdFb4Kwf1z73Mkw5a7z5Hke5tbY8+ukEjuaBFIfvyRDSk8GWSpzrU50wURGt2Ezcd1N+BqdelaTTk0FL5sjdrIl7sIM7w1dfU+xV0qnR2RD7GpmAJOxFvJ5G7+IXvVn9VVxjv2dpiCbtS+xyX+BCux73a+O8c0QuJIofN73zlf9HEAeryoXREYKMBeUZy22KbuUQlviDlIIuQL+2rl+aKd2qmT15wDDgTAOdSP60tJpqzq0AyVhMYP5LSK3XhdWE8QXFYWaJ/ZRbSE0T+7/lMNQcmw6KbAXqWXbAK+Qh5eCGd7lYRRvoXIVzjedKRb5H0JUHMmyuFNk/d6LqqlslP7XLCauqN9jQzxGm4E7/rvhPxZ7lo4aDC0zV34=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2389765AbfJCQTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 12:19:49 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:51397 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2389753AbfJCQTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 12:19:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1570119585;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AkcMZ0vXJw2fM4NbI74MKkqeiUornhUFHGHSjLzluk4=;
+        b=Uoe260nfSplZyNYjH+8SOWy+XFmac8wgDhYVcFh7Ei/FTL0zPVZi9kE9nuimgaLZArq3YA
+        qIA11v8vD+I35X7hDA0r0C0XwR2O9q9/6tuQJBA/7DyQSyWGer88rE4SpLuqHKOOEnGDni
+        QghHzjBh2MxI5tF6IsiKs5z6zMFuDU0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-331-vj7dKT_UP5a61gHUkTfgVA-1; Thu, 03 Oct 2019 12:19:43 -0400
+Received: by mail-wm1-f69.google.com with SMTP id o8so1341349wmc.2
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 09:19:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=eq/B97dVVGa05wBfdg3Irt1piSr2B9K1quPUW238cNk=;
+        b=ckcZvnjKQ2bkhFXgXq/+lFwDzV+VFF+DIU3NbXyTIF4QTOzAxYyv6GU9rTyLYQPFB0
+         /ncd4LZ5gE6HigYnqbxSC4bbNfdKcEj01bE46vscAgywXAlp1jkYKUOCWDS1m3cK0knf
+         UckIfOqGk36TqaEkNuskXeRBf/peF+rmfj7dHT9JE2rs6NGMklSdA8eG9ezDAMtuzXvB
+         946yQDBjFWkdrFIa5ZE+3cbH9YZtjGLo75tTkEdkRngz9fHqy+ZS0rVBnQZ2Luq0P7cQ
+         E+xFa4Q5h0b8Tr/J0fGY4xYQyWNlX9+9BUl9h2sWfgNeeJO3HfbK/wwUSQ6I5q37Tl7M
+         PM3Q==
+X-Gm-Message-State: APjAAAWMnVOww4VfLh8GgtIiQz4/fd3+hapB2SliQ1j1EWUjuea2iTGt
+        3BafvrNfZmtLsJPHS6QELSz88KWsh67PYV4S1pWKopoVu4rnsYNbepCfwSB0bUKMQnYwxaxP4Gg
+        r646HyW4/3dupRzCu
+X-Received: by 2002:a7b:cb08:: with SMTP id u8mr7985938wmj.6.1570119582594;
+        Thu, 03 Oct 2019 09:19:42 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxT2JZqiia0R/m+IWVWcMMURfBr+zKVxKDqf4uyXTa8c4XEoAzj4fB2BVwN2oRoUtaWmLWETQ==
+X-Received: by 2002:a7b:cb08:: with SMTP id u8mr7985923wmj.6.1570119582360;
+        Thu, 03 Oct 2019 09:19:42 -0700 (PDT)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id f13sm3884098wmj.17.2019.10.03.09.19.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Oct 2019 09:19:41 -0700 (PDT)
+Date:   Thu, 3 Oct 2019 18:19:40 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] Ease nsid allocation
+Message-ID: <20191003161940.GA31862@linux.home>
+References: <20190930160214.4512-1-nicolas.dichtel@6wind.com>
+ <20191001.212027.1363612671973318110.davem@davemloft.net>
+ <30d50c1d-d4c8-f339-816b-eb28ec4c0154@6wind.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 217056ba-9293-42b6-b4ee-08d7481e711d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Oct 2019 16:26:28.2234
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MW4MCjerjsYyR2Vhm8Nr82Z8nGmStgvskUoWtL9UmHmPZKBNdxBJwzB2HdBEeHd9jzapcWmXdKTzyErqdKJ9Bw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6029
+In-Reply-To: <30d50c1d-d4c8-f339-816b-eb28ec4c0154@6wind.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: vj7dKT_UP5a61gHUkTfgVA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 02, 2019 at 10:46:03AM +0200, Nicolas Dichtel wrote:
+> Le 02/10/2019 =E0 03:20, David Miller a =E9crit=A0:
+> > From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> > Date: Mon, 30 Sep 2019 18:02:12 +0200
+> >=20
+> >> The goal of the series is to ease nsid allocation from userland.
+> >> The first patch is a preparation work and the second enables to receiv=
+e the
+> >> new nsid in the answer to RTM_NEWNSID.
+> >=20
+> > The new reply message could break existing apps.
+> >=20
+> > If an app only performs netnsid operations, and fills up the receive
+> > queue because it isn't reading these new replies (it had no reason to,
+> > they didn't exist previously), operations will start failing that
+> > would not fail previously because the receive queue is full.
+> Yes I see the problem. I was wondering if this was acceptable because the=
+ nl ack
+> is sent at the end. But nl ack are optional :/
+>=20
+> >=20
+> > Given this, I don't see how we can make the change.
+> >=20
+> Is a new flag attribute ok to turn on this reply?
+>=20
+Why not using the existing NLM_F_ECHO mechanism?
 
-On Thu 03 Oct 2019 at 02:14, John Hurley <john.hurley@netronome.com> wrote:
-> Hi,
->
-> Putting this out an RFC built on net-next. It fixes some issues
-> discovered in testing when using the TC API of OvS to generate flower
-> rules and subsequently offloading them to HW. Rules seen contain the same
-> match fields or may be rule modifications run as a delete plus an add.
-> We're seeing race conditions whereby the rules present in kernel flower
-> are out of sync with those offloaded. Note that there are some issues
-> that will need fixed in the RFC before it becomes a patch such as
-> potential races between releasing locks and re-taking them. However, I'm
-> putting this out for comments or potential alternative solutions.
->
-> The main cause of the races seem to be in the chain table of cls_api. If
-> a tcf_proto is destroyed then it is removed from its chain. If a new
-> filter is then added to the same chain with the same priority and protoco=
-l
-> a new tcf_proto will be created - this may happen before the first is
-> fully removed and the hw offload message sent to the driver. In cls_flowe=
-r
-> this means that the fl_ht_insert_unique() function can pass as its
-> hashtable is associated with the tcf_proto. We are then in a position
-> where the 'delete' and the 'add' are in a race to get offloaded. We also
-> noticed that doing an offload add, then checking if a tcf_proto is
-> concurrently deleting, then remove the offload if it is, can extend the
-> out of order messages. Drivers do not expect to get duplicate rules.
-> However, the kernel TC datapath they are not duplicates so we can get out
-> of sync here.
->
-> The RFC fixes this by adding a pre_destroy hook to cls_api that is called
-> when a tcf_proto is signaled to be destroyed but before it is removed fro=
-m
-> its chain (which is essentially the lock for allowing duplicates in
-> flower). Flower then uses this new hook to send the hw delete messages
-> from tcf_proto destroys, preventing them racing with duplicate adds. It
-> also moves the check for 'deleting' to before the sending the hw add
-> message.
->
-> John Hurley (2):
->   net: sched: add tp_op for pre_destroy
->   net: sched: fix tp destroy race conditions in flower
->
->  include/net/sch_generic.h |  3 +++
->  net/sched/cls_api.c       | 29 ++++++++++++++++++++++++-
->  net/sched/cls_flower.c    | 55 ++++++++++++++++++++++++++---------------=
-------
->  3 files changed, 61 insertions(+), 26 deletions(-)
+IIUC, if rtnl_net_notifyid() did pass the proper nlmsghdr and portid to
+rtnl_notify(), the later would automatically notify the caller with
+updated information if the original request had the NLM_F_ECHO flag.
 
-Hi John,
-
-Thanks for working on this!
-
-Are there any other sources for race conditions described in this
-letter? When you describe tcf_proto deletion you say "main cause" but
-don't provide any others. If tcf_proto is the only problematic part,
-then it might be worth to look into alternative ways to force concurrent
-users to wait for proto deletion/destruction to be properly finished.
-Maybe having some table that maps chain id + prio to completion would be
-simpler approach? With such infra tcf_proto_create() can wait for
-previous proto with same prio and chain to be fully destroyed (including
-offloads) before creating a new one.
-
-Regards,
-Vlad
