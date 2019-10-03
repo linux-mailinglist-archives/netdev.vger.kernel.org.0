@@ -2,105 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D514CAB65
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C50E7CAAF0
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389599AbfJCRVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:21:07 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47493 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2388932AbfJCRVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:21:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570123265;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z7rXGAQSbiGa4/7Bkctjr6dl8SSz5zO8pwOGZPcMe1w=;
-        b=NU0NjsnYacZz1enidRUEoKwj3PyOFFhxijklWQirZv/IeVC2hmh0mmUip0q4qwfKyfyWIB
-        5mYgvcnLZULfxeExF1ll7P94ua+TJXsl1GWZ9d9OiC/v3oGe2XFmj794/BdJU7TSeuaTpJ
-        tUlb0fFqAjizOeeRvGrrq+ExCzJJnRM=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-191-t4KWp3iCOcWx9LTXeJC1iQ-1; Thu, 03 Oct 2019 13:21:04 -0400
-Received: by mail-lf1-f71.google.com with SMTP id g24so335732lfh.4
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 10:21:03 -0700 (PDT)
+        id S1731549AbfJCRZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:25:40 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:36635 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390881AbfJCRVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:21:50 -0400
+Received: by mail-qt1-f195.google.com with SMTP id o12so4699988qtf.3;
+        Thu, 03 Oct 2019 10:21:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h5Rim9i4R2dtqePdDLpMCbY7rNwA6OH+nyEYI7LKahs=;
+        b=face39Zit5ry5Kv5MEk6wx4lT9nUPV/Qw7+B489XY4veUQ8Vg1354MpUcaarHInvO1
+         aEzb6pTQwv9J9IvU8iaZzbfOuYaNy9AWHG5qsRqVP2rR54qVMbGeueL2E/3PgqTc4MXR
+         ERYhWFZjcnZZ/O7s7ZxeaayQozjcO04gBOE/16ykGd3/zHrsTlW8iQme/sniIEngN3iJ
+         03xPKJsMjHyvHH9hSqX25xoaOz2boH7cgLVicayHXn2As2h41G5rhsna0OLOKET9aJLB
+         qSvFRZlxtr6FK0tcZQp0sH5NOthVXZtUhKxno5yWREXFDOzZpgs27BgDPFKAdTCJ1bIO
+         jpSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Z7rXGAQSbiGa4/7Bkctjr6dl8SSz5zO8pwOGZPcMe1w=;
-        b=rHi7J7aEcmzQeG3rqQ9b+LtBMTT9uRkaauu+5z5asYi3+1OMZ5WWXuUUA7yU5pqkJ7
-         0fFCjM1oSsxuxQW/or5E826DXBCZSGLKDCnAfe8qj7TbL3tAKhGcCJAvSYDcJwE+SQfH
-         VEK/zplUy+pa86yFmhV8SNR0GxqG4WlWc2ofe8bXTS4uX4ZtHw9rw36IkUJ4TZLtbPE0
-         0FzD66R2GTnYXITukxAIj2V5LgaT16TGH7Hq4hJpJ+77Ys7wuHJrKYKuqQCS4j96JOlV
-         eWz93QCHTyl9InYCjUJZTCkTg5WN11Vvx97xX/RbnLBTThxn1Z199Aotb9Wszg0v+URA
-         2G8w==
-X-Gm-Message-State: APjAAAWFbssbLqqnyVSFym60YX6zyqTS0c4tTg80lDF8w7cfp/vgD94S
-        iHE9mLRVbc9ZQu23nJo8/6qVJ4FNirGQk3D6zYpZbMzA5jWAfSKYfek7wVmufZkmb3a3B/qDiJB
-        8qxpPffb+QiB7IzL9
-X-Received: by 2002:a2e:301a:: with SMTP id w26mr6813884ljw.168.1570123262607;
-        Thu, 03 Oct 2019 10:21:02 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxdVca8Nh/s/XnjRxYBzzGYfahRNbeqRheVUMUAoTyrgPFZWpEK8rXkXg5jaqOA/m79I5yRKA==
-X-Received: by 2002:a2e:301a:: with SMTP id w26mr6813876ljw.168.1570123262441;
-        Thu, 03 Oct 2019 10:21:02 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id i142sm571559lfi.5.2019.10.03.10.21.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 10:21:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C5D8E18063D; Thu,  3 Oct 2019 19:21:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 4/7] selftests/bpf: split off tracing-only helpers into bpf_tracing.h
-In-Reply-To: <CAEf4BzZa9aSz_FXkexKWse_k-m0WvxZJZG6qOqacaKKxgHb1OA@mail.gmail.com>
-References: <20191002215041.1083058-1-andriin@fb.com> <20191002215041.1083058-5-andriin@fb.com> <87imp6qo1o.fsf@toke.dk> <CAEf4BzZa9aSz_FXkexKWse_k-m0WvxZJZG6qOqacaKKxgHb1OA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 03 Oct 2019 19:21:00 +0200
-Message-ID: <87ftk9pwxv.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h5Rim9i4R2dtqePdDLpMCbY7rNwA6OH+nyEYI7LKahs=;
+        b=I4EpVSL9YNC+Lu7aJw9cSEOw36qC7eK7ZkKES5NcoXXjnXeyNKqUUKml1dtLwsHEtK
+         IYYEBqMZGMSx4y9IR9jrhT8sxzj12ZtxaYxIzfldrJczoAKB4izga/LishtIiW2tlMp2
+         2w3RmI/LnFv/eV5bDd1Qh+lbc6tTQam6XIp5y4Ews41WAAQJ4lwaEYVVwL99hH3ayB21
+         ANrxuO6FNHy3NHY8lFM75YUz3HPLiANPtBGDMQX/7wMOCn6PyVIeEFwZMv7ooffcXPmp
+         8rOwY5kjEfIJRFVvzWeVsk4qMZhiLR+aQ3Wtle2s0h5ubX6jhbihycF87+chumURS/QJ
+         kZKA==
+X-Gm-Message-State: APjAAAXg17UfeBrmBIhZAm6pUQIM1AcQ85PC45jWAlbAKCSukqrZB0nt
+        ZSC0pmgDCd1UXZs8RBB/eTZfASEXc/nnj3jOjKFODxGSUbE=
+X-Google-Smtp-Source: APXvYqz4TrdMivyXDTK0GQ13yFmR3JItdHh5McZQkymTQsopcQ3vLgBQWOsNamCBOfIzbAPoIMHO57B910EUdBEE4mk=
+X-Received: by 2002:aed:2726:: with SMTP id n35mr10864628qtd.171.1570123309206;
+ Thu, 03 Oct 2019 10:21:49 -0700 (PDT)
 MIME-Version: 1.0
-X-MC-Unique: t4KWp3iCOcWx9LTXeJC1iQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20191003014153.GA13156@paulmck-ThinkPad-P72> <20191003014310.13262-6-paulmck@kernel.org>
+In-Reply-To: <20191003014310.13262-6-paulmck@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 3 Oct 2019 10:21:38 -0700
+Message-ID: <CAEf4BzaBuktutCZr2ZUC6b-XK_JJ7prWZmO-5Yew2tVp5DxbBA@mail.gmail.com>
+Subject: Re: [PATCH tip/core/rcu 6/9] bpf/cgroup: Replace rcu_swap_protected()
+ with rcu_replace()
+To:     paulmck@kernel.org
+Cc:     rcu@vger.kernel.org, open list <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, jiangshanlai@gmail.com,
+        dipankar@in.ibm.com, Andrew Morton <akpm@linux-foundation.org>,
+        mathieu.desnoyers@efficios.com, josh@joshtriplett.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>, dhowells@redhat.com,
+        Eric Dumazet <edumazet@google.com>, fweisbec@gmail.com,
+        oleg@redhat.com, Joel Fernandes <joel@joelfernandes.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-
-> On Thu, Oct 3, 2019 at 12:35 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Andrii Nakryiko <andriin@fb.com> writes:
->>
->> > +/* a helper structure used by eBPF C program
->> > + * to describe BPF map attributes to libbpf loader
->> > + */
->> > +struct bpf_map_def {
->> > +     unsigned int type;
->> > +     unsigned int key_size;
->> > +     unsigned int value_size;
->> > +     unsigned int max_entries;
->> > +     unsigned int map_flags;
->> > +};
->>
->> Why is this still here? There's already an identical definition in libbp=
-f.h...
->>
+On Wed, Oct 2, 2019 at 6:45 PM <paulmck@kernel.org> wrote:
 >
-> It's a BPF (kernel) side vs userspace side difference. bpf_helpers.h
-> are included from BPF program, while libbpf.h won't work on kernel
-> side. So we have to have a duplicate of bpf_map_def.
+> From: "Paul E. McKenney" <paulmck@kernel.org>
+>
+> This commit replaces the use of rcu_swap_protected() with the more
+> intuitively appealing rcu_replace() as a step towards removing
+> rcu_swap_protected().
+>
+> Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
+> Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: <netdev@vger.kernel.org>
+> Cc: <bpf@vger.kernel.org>
+> ---
 
-Ah, yes, of course. Silly me :)
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
--Toke
-
+>  kernel/bpf/cgroup.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index ddd8add..06a0657 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -180,8 +180,8 @@ static void activate_effective_progs(struct cgroup *cgrp,
+>                                      enum bpf_attach_type type,
+>                                      struct bpf_prog_array *old_array)
+>  {
+> -       rcu_swap_protected(cgrp->bpf.effective[type], old_array,
+> -                          lockdep_is_held(&cgroup_mutex));
+> +       old_array = rcu_replace(cgrp->bpf.effective[type], old_array,
+> +                               lockdep_is_held(&cgroup_mutex));
+>         /* free prog array after grace period, since __cgroup_bpf_run_*()
+>          * might be still walking the array
+>          */
+> --
+> 2.9.5
+>
