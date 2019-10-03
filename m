@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7181CB23E
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 01:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5157DCB23F
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 01:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731087AbfJCXRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 19:17:38 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:36625 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727452AbfJCXRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 19:17:38 -0400
-Received: by mail-qk1-f194.google.com with SMTP id y189so4146210qkc.3
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 16:17:37 -0700 (PDT)
+        id S1731018AbfJCXV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 19:21:29 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38478 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727452AbfJCXV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 19:21:28 -0400
+Received: by mail-qt1-f194.google.com with SMTP id j31so6091663qta.5
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 16:21:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=9ZVLY2HvhTlLb0xV1IdoghTmpYsvGhnKq7pTUJcXu04=;
-        b=GFeEA6dN1Id3Q9DRIFb9v/QiQqba5SgqhPiQjcbMV6xmklR0U/frPk9r1RQV+CpIpi
-         bmmaIuPen9+oxKBl84KaUqqZDtSz+HHBG8jeK8t+hYINugoYpC/EhqX9ceuSFvNP63m0
-         /jYtqGOsgmoO4O2HBQ+NIEZ0sJInoo1YtDgRPEZdjX8wbPzfZJ/5lwwiTMS38e7XgkrH
-         jgXiUe5qnFTFqbi4bO+Zbavq5XWlnL8L9TF08TYMO84Ly7oQ1MSNlSX7BMn5zD4WhC0t
-         fi72f7O56DXwI056bnJGif1rfSVhgAiuu6sGgFzN/MNZ+O96H21rOHqvp80Qtazuc9rO
-         Jp5w==
+        bh=bDGFVKN18wriUwk6FxdwjN0VtjasCQxZD6jHLFTJDxY=;
+        b=TD4fM3Cg8v9ivFHYV7rsNthzKHHR3PzyaQn7gIeh23XiU6qpT4l+J2loragRrtZqiK
+         y4g6pwRzSDS4u84OCUTP8o5/XV87aJXBLNsvYZCZNtaFQ5FRBL8V6MQOWR6K7ROX68q7
+         6RZl+vdUj6V3bF3hIqvUpXcZ4vkJPzExRunTxAtqCIIiTZamhIaDtcDMoxOCJH/I9+bM
+         tMavd6oDI9WV0e1Ia/tMAeGEo+SgvLyXXysk7u9qKRaGyPTgs25mNDYVAFRhfV5CpK3a
+         smFRj+xcXDRdJS/fYoQhH8s8hVGVMyc5Abs3TH3Lk3IaE1FL380OuXQget+ccxbwMIi2
+         6CMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=9ZVLY2HvhTlLb0xV1IdoghTmpYsvGhnKq7pTUJcXu04=;
-        b=GwpaMx3mM/0BlsnLtyb8PQ/ulC/ilM+nxUOavgcny3FkRiCONY5Zebli8O+bVyMx2d
-         unTE4gT1J47k59ipx/d1s/WEQ2HpCv5ElM5gnqPLFJp9KqFKxVHu9DkpodoydgHVGbdi
-         duOfm1tD9sWqQtJCVJc17CfgbPl52oqN2saaiQF51eBCnH7pki4FUXw7yUYfyBpFXSyW
-         hNWMWLLBa80fP6DZjj1FPrlGxM6BPNkwM/vs9ywibrz8xbBKhPof6005OV94RBWNyaGL
-         E4HbumHrq33qeAIJCD9hb6+sXRbHCK26G8cqiTxzEgRVzATNrCYHo6XEGZK1Z3l5qr8r
-         VFtQ==
-X-Gm-Message-State: APjAAAWWxA/JZVfZzAUpXxAeoC8gzP64rfODaLv7iw3kNaxIrSXMoWtV
-        EUb3COBsKkfJ1pqSPqhwHORXyg==
-X-Google-Smtp-Source: APXvYqxSd6RDC7DQLWbfAfhnwt5n/H1hZMDXSCfgGUJ8m87fvnDFuX5GZp0ImOOxuJA/G2FsRH1fuQ==
-X-Received: by 2002:a37:a704:: with SMTP id q4mr6773822qke.385.1570144657343;
-        Thu, 03 Oct 2019 16:17:37 -0700 (PDT)
+        bh=bDGFVKN18wriUwk6FxdwjN0VtjasCQxZD6jHLFTJDxY=;
+        b=jCrZuaPG8xJFGuheDndBcNOV2syQWhbl5hrK/snW4O+WmSg7efEPVT9EHC+zC54ZDk
+         xHxbjt3ISlCQOAlwKifQS2rXbLibmaegx2XxmVkFMnXo1NvPEB+9i9utEMtOM5IOsjbP
+         Cnq8hvnqRUxBNC1RM74pGDbXsiLEtSXbuE0XEQyRmpCZyQWie7dzpi9IvwdUUMPOoHWf
+         ZpRZEqP8LC2d77n2qp/yX4iwu8xuePs9++hnz4+fg/fS4x9Crdap7FZLb7TNtXLYwV2M
+         ui/rzaeFcoSWxXJ6Ap6BfaycNY7B9FEsqY23Slvpi+xsMco+T+VrRKcMweoqhH0fNh6h
+         8aGw==
+X-Gm-Message-State: APjAAAXDu2nhc8h6YsDKlf6mFMUhLdiD3bznxij5wxTika1ALP/5AbLn
+        fWBzjUVvVgP2t9Os0Uy6u6s/qQ==
+X-Google-Smtp-Source: APXvYqyzCfr1681XYI4w9T9PUf17nF28+zeWQHmhu5NOdIsO6QneRR5DF/uj3hpkt7xDETLsWfgxqw==
+X-Received: by 2002:a0c:fa85:: with SMTP id o5mr11237683qvn.183.1570144887907;
+        Thu, 03 Oct 2019 16:21:27 -0700 (PDT)
 Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j80sm2124320qke.94.2019.10.03.16.17.36
+        by smtp.gmail.com with ESMTPSA id b50sm2593626qte.48.2019.10.03.16.21.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 16:17:37 -0700 (PDT)
-Date:   Thu, 3 Oct 2019 16:17:30 -0700
+        Thu, 03 Oct 2019 16:21:27 -0700 (PDT)
+Date:   Thu, 3 Oct 2019 16:21:21 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
         dsahern@gmail.com, tariqt@mellanox.com, saeedm@mellanox.com,
         kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, shuah@kernel.org,
         mlxsw@mellanox.com
-Subject: Re: [patch net-next v3 11/15] netdevsim: implement proper devlink
- reload
-Message-ID: <20191003161730.6c61b48c@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20191003094940.9797-12-jiri@resnulli.us>
+Subject: Re: [patch net-next v3 12/15] netdevsim: register port netdevices
+ into net of device
+Message-ID: <20191003162121.0bfd2576@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20191003094940.9797-13-jiri@resnulli.us>
 References: <20191003094940.9797-1-jiri@resnulli.us>
-        <20191003094940.9797-12-jiri@resnulli.us>
+        <20191003094940.9797-13-jiri@resnulli.us>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -66,67 +66,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  3 Oct 2019 11:49:36 +0200, Jiri Pirko wrote:
+On Thu,  3 Oct 2019 11:49:37 +0200, Jiri Pirko wrote:
 > From: Jiri Pirko <jiri@mellanox.com>
 > 
-> During devlink reload, all driver objects should be reinstantiated with
-> the exception of devlink instance and devlink resources and params.
-> Move existing devlink_resource_size_get() calls into fib_create() just
-> before fib notifier is registered. Also, make sure that extack is
-> propagated down to fib_notifier_register() call.
+> Register newly created port netdevice into net namespace
+> that the parent device belongs to.
 > 
 > Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 
 Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-> diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-> index d2aeac0f4c2c..fdc682f3a09a 100644
-> --- a/drivers/net/netdevsim/fib.c
-> +++ b/drivers/net/netdevsim/fib.c
-> @@ -63,12 +63,10 @@ u64 nsim_fib_get_val(struct nsim_fib_data *fib_data,
->  	return max ? entry->max : entry->num;
->  }
+> diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
+> index 0740940f41b1..2908e0a0d6e1 100644
+> --- a/drivers/net/netdevsim/netdev.c
+> +++ b/drivers/net/netdevsim/netdev.c
+> @@ -290,6 +290,7 @@ nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
+>  	if (!dev)
+>  		return ERR_PTR(-ENOMEM);
 >  
-> -int nsim_fib_set_max(struct nsim_fib_data *fib_data,
-> -		     enum nsim_resource_id res_id, u64 val,
-> -		     struct netlink_ext_ack *extack)
-> +static void nsim_fib_set_max(struct nsim_fib_data *fib_data,
-> +			     enum nsim_resource_id res_id, u64 val)
->  {
->  	struct nsim_fib_entry *entry;
-> -	int err = 0;
+> +	dev_net_set(dev, nsim_dev_net(nsim_dev));
+>  	ns = netdev_priv(dev);
+>  	ns->netdev = dev;
+>  	ns->nsim_dev = nsim_dev;
+> diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+> index 702d951fe160..198ca31cec94 100644
+> --- a/drivers/net/netdevsim/netdevsim.h
+> +++ b/drivers/net/netdevsim/netdevsim.h
+> @@ -164,6 +164,11 @@ struct nsim_dev {
+>  	struct devlink_region *dummy_region;
+>  };
 >  
->  	switch (res_id) {
->  	case NSIM_RESOURCE_IPV4_FIB:
-> @@ -84,20 +82,10 @@ int nsim_fib_set_max(struct nsim_fib_data *fib_data,
->  		entry = &fib_data->ipv6.rules;
->  		break;
->  	default:
-> -		return 0;
-> -	}
-> -
-> -	/* not allowing a new max to be less than curren occupancy
-> -	 * --> no means of evicting entries
-> -	 */
-> -	if (val < entry->num) {
-> -		NL_SET_ERR_MSG_MOD(extack, "New size is less than current occupancy");
-> -		err = -EINVAL;
+> +static inline struct net *nsim_dev_net(struct nsim_dev *nsim_dev)
+> +{
+> +	return devlink_net(priv_to_devlink(nsim_dev));
+> +}
 
-This change in behaviour should perhaps be mentioned in the commit
-message. The reload will no longer fail if the resources are
-insufficient. 
+Slight overkill to have a single-use helper for this? ;)
 
-Since we want to test reload more widely than just for the FIB limits
-that does make sense to me. Is that the thinking?
+>  int nsim_dev_init(void);
+>  void nsim_dev_exit(void);
+>  int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev);
 
-> -	} else {
-> -		entry->max = val;
-> +		WARN_ON(1);
-> +		return;
->  	}
-> -
-> -	return err;
-> +	entry->max = val;
->  }
->  
->  static int nsim_fib_rule_account(struct nsim_fib_entry *entry, bool add,
