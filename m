@@ -2,196 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D4AC9928
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 09:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 747ECC9944
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 09:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728486AbfJCHs2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Oct 2019 03:48:28 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51568 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725907AbfJCHs1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 03:48:27 -0400
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D046B88309
-        for <netdev@vger.kernel.org>; Thu,  3 Oct 2019 07:48:26 +0000 (UTC)
-Received: by mail-lj1-f197.google.com with SMTP id y28so570228ljn.2
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 00:48:26 -0700 (PDT)
+        id S1727796AbfJCHxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 03:53:21 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:34570 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727368AbfJCHxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 03:53:20 -0400
+Received: by mail-oi1-f194.google.com with SMTP id 83so1777381oii.1
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 00:53:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=OjGOtM7igFnxOTkazDzEAF1mbsEsRdgokYn8LnXlxak=;
+        b=0ljP/Xqkv8mT++dxL9IDYrrnXlEv9lrJP90Bahq1OBLUXK3btgYh5wyHlZssI3YurN
+         pFDAkt12ppGUrER632fCfdihcSkLnFygz07D3eEGii2r2Puunq5JCKwhf/olqSyQJkhe
+         y4sxSAWaYpjr9f5Wrxp90qzT0eir6UjXXj2LeikUk8mVJIBX5nJR3znXBIO9CoTmsRr6
+         LkMnSa//LbiPkRtmhxr1iEvteUzvh1LjMwn00n5k+Q+R5FcGfpoYjlNwxgcL0FpK8Y1W
+         tjUDW9f2sxUGKn5ZjbjT1ogyxC+SzYQbv5HTFeCum1+SvlQU5DzEXntInmz46VsYXXrg
+         dQMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=6PnWrQYlOfNUBU+0gyRB97YJLfhbOToGAsduT3RsUT8=;
-        b=oRchB8HJj6h4t6ef9evOE+EZ/ZItrdkPkRMJeFCVS9i1LbKPXZue3TJTQnfEaWfDbK
-         d2/hs5Aun1EvmKeXfOJjSSScHOXypvMyE0m8+kviTBwt/XWyvVNKVrskXlvCRdpEYtpv
-         DzG2G/gPgrO4IJ6oJeI5D9n7OaGKuv5+7B5WoA+a3x2fJZgm7Z0o/AoV5rU+ED7CcBiL
-         n5aRTBsRZL4J39Cbf5RtrU2eilpZl27CVRED18dlp/2osU0Upse5miRpXmOFweWxqYFZ
-         mFOL1fcWZnZQMvHDTJwILskY9fzwua+8ABR1aXZTOQc4AHCdA5TnjfpMyM0us4WkMWcx
-         Erow==
-X-Gm-Message-State: APjAAAWfCxEaJejyo8sWp0x1DBBOd9Ly10yXv7s4Bm+zUbAl/YZ/jkOa
-        qgHnGaX3k6n9ggMRyY5v2bGlCKtKnsMjH/iE9RyskLAfJmZBYdSWyZlcncbfwrePeMsLEHnTmKE
-        M5SHff11XiXW8C1eI
-X-Received: by 2002:ac2:50c5:: with SMTP id h5mr4922020lfm.105.1570088905268;
-        Thu, 03 Oct 2019 00:48:25 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqx5WH3Yg+DVyr/OkOYxjqzRekSDaPkJqYT7a0NrWYEsO0p4JdKlfEb6qW0oH1RmRvd4WCJ0gg==
-X-Received: by 2002:ac2:50c5:: with SMTP id h5mr4922000lfm.105.1570088904963;
-        Thu, 03 Oct 2019 00:48:24 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id r75sm278319lff.7.2019.10.03.00.48.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 00:48:23 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C6F7718063D; Thu,  3 Oct 2019 09:48:22 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alan Maguire <alan.maguire@oracle.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single interface through chain calls
-In-Reply-To: <5d9509de4acb6_32c02ab4bb3b05c052@john-XPS-13-9370.notmuch>
-References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1> <alpine.LRH.2.20.1910021540270.24629@dhcp-10-175-191-98.vpn.oracle.com> <87bluzrwks.fsf@toke.dk> <5d94d188e4cca_22502b00ea21a5b425@john-XPS-13-9370.notmuch> <8736gbro8x.fsf@toke.dk> <5d9509de4acb6_32c02ab4bb3b05c052@john-XPS-13-9370.notmuch>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 03 Oct 2019 09:48:22 +0200
-Message-ID: <87ftkaqng9.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=OjGOtM7igFnxOTkazDzEAF1mbsEsRdgokYn8LnXlxak=;
+        b=svL2IFrIQZq1biKN8GYqSIRPBWJP8utFto2oc5RR/KbG+hILeVhcNDpbMOQZkNj8Em
+         1sKA8dFTF7NawyRkiO5gW/5ocyiYfGfcC5rRwt/Rjc2hzSWJgXwck2fxMr/DrOmlzdxC
+         aHfUtGLaVJHkc5levYcKfURjGj13DoEndjp+KQZm16K9dqK25+sSjFx0ty34ltjgxrbd
+         cI7O0+UFxPqb09rACbhUYJIE7roaLeVR7Fc9hjFRdU2SRcBspDssK1IUKTXKvhDeL1Th
+         ANqUCOdFNY3BbkcaY/e2P50rUFOBW+M8pUhwJsB+I2nCxIaXkGFE/u6MfYinXWnBk6dd
+         Toaw==
+X-Gm-Message-State: APjAAAUqvuiBbhISTfGxDP6lOb43O0FF3IoDqdVDlejgm/fSRV8tuxtL
+        MQHHLrTUyfUGlFc9XbV7N3WuM8yOsgkIfc3k1ehy1w==
+X-Google-Smtp-Source: APXvYqz7m7kCXZYIv7j5R46VZcpbdhhoa42pgCHxxwP/titPUyQPDIy7EJgb+avLl4yWojBI9F0QLe5D/MGpfKQJ+94=
+X-Received: by 2002:a54:4f8a:: with SMTP id g10mr1832202oiy.147.1570089199061;
+ Thu, 03 Oct 2019 00:53:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+References: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
+In-Reply-To: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Thu, 3 Oct 2019 09:53:08 +0200
+Message-ID: <CAMpxmJUYZ-6p_uD=ktO+mDMZ3VooRkjLBwDVDieT1gvo3474uw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] docs: fix some broken references
+To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Steve French <sfrench@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        linux-gpio <linux-gpio@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend <john.fastabend@gmail.com> writes:
-
-> Toke Høiland-Jørgensen wrote:
->> John Fastabend <john.fastabend@gmail.com> writes:
->> 
->> > Toke Høiland-Jørgensen wrote:
->> >> Alan Maguire <alan.maguire@oracle.com> writes:
->> >> 
->> >> > On Wed, 2 Oct 2019, Toke Høiland-Jørgensen wrote:
->> >> >
->> >> >> This series adds support for executing multiple XDP programs on a single
->> >> >> interface in sequence, through the use of chain calls, as discussed at the Linux
->> >> >> Plumbers Conference last month:
->> >> >> 
->> >> >> https://linuxplumbersconf.org/event/4/contributions/460/
->> >> >> 
->> >> >> # HIGH-LEVEL IDEA
->> >> >> 
->> >> >> The basic idea is to express the chain call sequence through a special map type,
->> >> >> which contains a mapping from a (program, return code) tuple to another program
->> >> >> to run in next in the sequence. Userspace can populate this map to express
->> >> >> arbitrary call sequences, and update the sequence by updating or replacing the
->> >> >> map.
->> >> >> 
->> >> >> The actual execution of the program sequence is done in bpf_prog_run_xdp(),
->> >> >> which will lookup the chain sequence map, and if found, will loop through calls
->> >> >> to BPF_PROG_RUN, looking up the next XDP program in the sequence based on the
->> >> >> previous program ID and return code.
->> >> >> 
->> >> >> An XDP chain call map can be installed on an interface by means of a new netlink
->> >> >> attribute containing an fd pointing to a chain call map. This can be supplied
->> >> >> along with the XDP prog fd, so that a chain map is always installed together
->> >> >> with an XDP program.
->> >> >> 
->> >> >
->> >> > This is great stuff Toke!
->> >> 
->> >> Thanks! :)
->> >> 
->> >> > One thing that wasn't immediately clear to me - and this may be just
->> >> > me - is the relationship between program behaviour for the XDP_DROP
->> >> > case and chain call execution. My initial thought was that a program
->> >> > in the chain XDP_DROP'ping the packet would terminate the call chain,
->> >> > but on looking at patch #4 it seems that the only way the call chain
->> >> > execution is terminated is if
->> >> >
->> >> > - XDP_ABORTED is returned from a program in the call chain; or
->> >> 
->> >> Yes. Not actually sure about this one...
->> >> 
->> >> > - the map entry for the next program (determined by the return value
->> >> >   of the current program) is empty; or
->> >> 
->> >> This will be the common exit condition, I expect
->> >> 
->> >> > - we run out of entries in the map
->> >> 
->> >> You mean if we run the iteration counter to zero, right?
->> >> 
->> >> > The return value of the last-executed program in the chain seems to be
->> >> > what determines packet processing behaviour after executing the chain
->> >> > (_DROP, _TX, _PASS, etc). So there's no way to both XDP_PASS and
->> >> > XDP_TX a packet from the same chain, right? Just want to make sure
->> >> > I've got the semantics correct. Thanks!
->> >> 
->> >> Yeah, you've got all this right. The chain call mechanism itself doesn't
->> >> change any of the underlying fundamentals of XDP. I.e., each packet gets
->> >> exactly one verdict.
->> >> 
->> >> For chaining actual XDP programs that do different things to the packet,
->> >> I expect that the most common use case will be to only run the next
->> >> program if the previous one returns XDP_PASS. That will make the most
->> >> semantic sense I think.
->> >> 
->> >> But there are also use cases where one would want to match on the other
->> >> return codes; such as packet capture, for instance, where one might
->> >> install a capture program that would carry forward the previous return
->> >> code, but do something to the packet (throw it out to userspace) first.
->> >> 
->> >> For the latter use case, the question is if we need to expose the
->> >> previous return code to the program when it runs. You can do things
->> >> without it (by just using a different program per return code), but it
->> >> may simplify things if we just expose the return code. However, since
->> >> this will also change the semantics for running programs, I decided to
->> >> leave that off for now.
->> >> 
->> >> -Toke
->> >
->> > In other cases where programs (e.g. cgroups) are run in an array the
->> > return codes are 'AND'ed together so that we get
->> >
->> >    result1 & result2 & ... & resultN
->> 
->> How would that work with multiple programs, though? PASS -> DROP seems
->> obvious, but what if the first program returns TX? Also, programs may
->> want to be able to actually override return codes (e.g., say you want to
->> turn DROPs into REDIRECTs, to get all your dropped packets mirrored to
->> your IDS or something).
+wt., 24 wrz 2019 o 15:01 Mauro Carvalho Chehab
+<mchehab+samsung@kernel.org> napisa=C5=82(a):
 >
-> In general I think either you hard code a precedence that will have to
-> be overly conservative because if one program (your firewall) tells
-> XDP to drop the packet and some other program redirects it, passes,
-> etc. that seems incorrect to me. Or you get creative with the
-> precedence rules and they become complex and difficult to manage,
-> where a drop will drop a packet unless a previous/preceding program
-> redirects it, etc. I think any hard coded precedence you come up with
-> will make some one happy and some other user annoyed. Defeating the
-> programability of BPF.
+> There are a number of documentation files that got moved or
+> renamed. update their references.
+>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/cpu/cpu-topology.txt    | 2 +-
+>  Documentation/devicetree/bindings/timer/ingenic,tcu.txt   | 2 +-
+>  Documentation/driver-api/gpio/driver.rst                  | 2 +-
+>  Documentation/hwmon/inspur-ipsps1.rst                     | 2 +-
+>  Documentation/mips/ingenic-tcu.rst                        | 2 +-
+>  Documentation/networking/device_drivers/mellanox/mlx5.rst | 2 +-
+>  MAINTAINERS                                               | 2 +-
+>  drivers/net/ethernet/faraday/ftgmac100.c                  | 2 +-
+>  drivers/net/ethernet/pensando/ionic/ionic_if.h            | 4 ++--
+>  fs/cifs/cifsfs.c                                          | 2 +-
+>  10 files changed, 11 insertions(+), 11 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/cpu/cpu-topology.txt b/Doc=
+umentation/devicetree/bindings/cpu/cpu-topology.txt
+> index 99918189403c..9bd530a35d14 100644
+> --- a/Documentation/devicetree/bindings/cpu/cpu-topology.txt
+> +++ b/Documentation/devicetree/bindings/cpu/cpu-topology.txt
+> @@ -549,5 +549,5 @@ Example 3: HiFive Unleashed (RISC-V 64 bit, 4 core sy=
+stem)
+>  [2] Devicetree NUMA binding description
+>      Documentation/devicetree/bindings/numa.txt
+>  [3] RISC-V Linux kernel documentation
+> -    Documentation/devicetree/bindings/riscv/cpus.txt
+> +    Documentation/devicetree/bindings/riscv/cpus.yaml
+>  [4] https://www.devicetree.org/specifications/
+> diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt b/Do=
+cumentation/devicetree/bindings/timer/ingenic,tcu.txt
+> index 5a4b9ddd9470..7f6fe20503f5 100644
+> --- a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+> +++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+> @@ -2,7 +2,7 @@ Ingenic JZ47xx SoCs Timer/Counter Unit devicetree binding=
+s
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>  For a description of the TCU hardware and drivers, have a look at
+> -Documentation/mips/ingenic-tcu.txt.
+> +Documentation/mips/ingenic-tcu.rst.
+>
+>  Required properties:
+>
+> diff --git a/Documentation/driver-api/gpio/driver.rst b/Documentation/dri=
+ver-api/gpio/driver.rst
+> index 3fdb32422f8a..9076cc76d5bf 100644
+> --- a/Documentation/driver-api/gpio/driver.rst
+> +++ b/Documentation/driver-api/gpio/driver.rst
+> @@ -493,7 +493,7 @@ available but we try to move away from this:
+>    gpiochip. It will pass the struct gpio_chip* for the chip to all IRQ
+>    callbacks, so the callbacks need to embed the gpio_chip in its state
+>    container and obtain a pointer to the container using container_of().
+> -  (See Documentation/driver-model/design-patterns.txt)
+> +  (See Documentation/driver-api/driver-model/design-patterns.rst)
+>
+>  - gpiochip_irqchip_add_nested(): adds a nested cascaded irqchip to a gpi=
+ochip,
+>    as discussed above regarding different types of cascaded irqchips. The
+> diff --git a/Documentation/hwmon/inspur-ipsps1.rst b/Documentation/hwmon/=
+inspur-ipsps1.rst
+> index 2b871ae3448f..ed32a65c30e1 100644
+> --- a/Documentation/hwmon/inspur-ipsps1.rst
+> +++ b/Documentation/hwmon/inspur-ipsps1.rst
+> @@ -17,7 +17,7 @@ Usage Notes
+>  -----------
+>
+>  This driver does not auto-detect devices. You will have to instantiate t=
+he
+> -devices explicitly. Please see Documentation/i2c/instantiating-devices f=
+or
+> +devices explicitly. Please see Documentation/i2c/instantiating-devices.r=
+st for
+>  details.
+>
+>  Sysfs entries
+> diff --git a/Documentation/mips/ingenic-tcu.rst b/Documentation/mips/inge=
+nic-tcu.rst
+> index c4ef4c45aade..c5a646b14450 100644
+> --- a/Documentation/mips/ingenic-tcu.rst
+> +++ b/Documentation/mips/ingenic-tcu.rst
+> @@ -68,4 +68,4 @@ and frameworks can be controlled from the same register=
+s, all of these
+>  drivers access their registers through the same regmap.
+>
+>  For more information regarding the devicetree bindings of the TCU driver=
+s,
+> -have a look at Documentation/devicetree/bindings/mfd/ingenic,tcu.txt.
+> +have a look at Documentation/devicetree/bindings/timer/ingenic,tcu.txt.
+> diff --git a/Documentation/networking/device_drivers/mellanox/mlx5.rst b/=
+Documentation/networking/device_drivers/mellanox/mlx5.rst
+> index d071c6b49e1f..a74422058351 100644
+> --- a/Documentation/networking/device_drivers/mellanox/mlx5.rst
+> +++ b/Documentation/networking/device_drivers/mellanox/mlx5.rst
+> @@ -258,7 +258,7 @@ mlx5 tracepoints
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>  mlx5 driver provides internal trace points for tracking and debugging us=
+ing
+> -kernel tracepoints interfaces (refer to Documentation/trace/ftrase.rst).
+> +kernel tracepoints interfaces (refer to Documentation/trace/ftrace.rst).
+>
+>  For the list of support mlx5 events check /sys/kernel/debug/tracing/even=
+ts/mlx5/
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 54f1286087e9..65b7d9a0a44a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3680,7 +3680,7 @@ M:        Oleksij Rempel <o.rempel@pengutronix.de>
+>  R:     Pengutronix Kernel Team <kernel@pengutronix.de>
+>  L:     linux-can@vger.kernel.org
+>  S:     Maintained
+> -F:     Documentation/networking/j1939.txt
+> +F:     Documentation/networking/j1939.rst
+>  F:     net/can/j1939/
+>  F:     include/uapi/linux/can/j1939.h
+>
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ether=
+net/faraday/ftgmac100.c
+> index 9b7af94a40bb..8abe5e90d268 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -1835,7 +1835,7 @@ static int ftgmac100_probe(struct platform_device *=
+pdev)
+>                 }
+>
+>                 /* Indicate that we support PAUSE frames (see comment in
+> -                * Documentation/networking/phy.txt)
+> +                * Documentation/networking/phy.rst)
+>                  */
+>                 phy_support_asym_pause(phy);
+>
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net=
+/ethernet/pensando/ionic/ionic_if.h
+> index 5bfdda19f64d..80028f781c83 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+> @@ -596,8 +596,8 @@ enum ionic_txq_desc_opcode {
+>   *                      the @encap is set, the device will
+>   *                      offload the outer header checksums using
+>   *                      LCO (local checksum offload) (see
+> - *                      Documentation/networking/checksum-
+> - *                      offloads.txt for more info).
+> + *                      Documentation/networking/checksum-offloads.rst
+> + *                      for more info).
+>   *
+>   *                   IONIC_TXQ_DESC_OPCODE_CSUM_HW:
+>   *
+> diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+> index 2e9c7f493f99..811f510578cb 100644
+> --- a/fs/cifs/cifsfs.c
+> +++ b/fs/cifs/cifsfs.c
+> @@ -1529,7 +1529,7 @@ init_cifs(void)
+>         /*
+>          * Consider in future setting limit!=3D0 maybe to min(num_of_core=
+s - 1, 3)
+>          * so that we don't launch too many worker threads but
+> -        * Documentation/workqueue.txt recommends setting it to 0
+> +        * Documentation/core-api/workqueue.rst recommends setting it to =
+0
+>          */
+>
+>         /* WQ_UNBOUND allows decrypt tasks to run on any CPU */
+> --
+> 2.21.0
+>
 
-Yeah, exactly. That's basically why I punted on that completely.
-Besides, technically you can get this by just installing different
-programs in each slot if you really need it.
+For GPIO:
 
-> Better if its programmable. I would prefer to pass the context into
-> the next program then programs can build their own semantics. Then
-> leave the & of return codes so any program can if needed really drop a
-> packet. The context could be pushed into a shared memory region and
-> then it doesn't even need to be part of the program signature.
-
-Since it seems I'll be going down the rabbit hole of baking this into
-the BPF execution environment itself, I guess I'll keep this in mind as
-well. Either by stuffing the previous program return code into the
-context object(s), or by adding a new helper to retrieve it.
-
--Toke
+Acked-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
