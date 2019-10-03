@@ -2,151 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76814CAA9A
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:26:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C5AECAAE5
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:26:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389685AbfJCRJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:09:37 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:45278 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393421AbfJCRJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:09:36 -0400
-Received: by mail-qt1-f196.google.com with SMTP id c21so4563613qtj.12
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 10:09:35 -0700 (PDT)
+        id S2404259AbfJCRPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:15:09 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40919 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391063AbfJCRPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:15:08 -0400
+Received: by mail-qt1-f194.google.com with SMTP id f7so4642950qtq.7;
+        Thu, 03 Oct 2019 10:15:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3PcIEXw/jTjSDo0D2gJ5Oo/H7k5jfF9FWK4owTr+vCM=;
-        b=Jy2/dNcTnYEKdxWZmvceFRXitIEMomkQfluHbl1dkA7CC0TT3S80c0rlzNjmSPjeSO
-         0l2LXpFj4yOTMPr/fAiX9xDXzJg1F5lLo+EcZ3iRFVJpwhlG1z2+iZ06Hi8rcT3gEZrD
-         82fCbG8NKLcqy1vg1QnfRcUa7XcXXb/ytuHOeKpNnxWPbfIke7ZINsfX9Hwb9nceV8Ra
-         2NPDP0ePGywAN6wlfyENOTTKwvzfVC/PUwEYqnuHolwbIvOGCKGI5bjIy5DTVawpT+O4
-         Kek7ufiCV9BN9VxKqXd9tI9MLxpcuOYBRV7vpB8r7W6dTv75esCdy8R0kIJEeH33CCB7
-         fLEA==
+         :cc:content-transfer-encoding;
+        bh=1kB+HNMetC19qZY2o5gFAydwEbfXL/aBhCptGyZn1AQ=;
+        b=lLixvvNE/Ob5XE12pVNrGVxwsqRBK7Ms+5GZ7Cw4jptNfPS06bagODYaVro1z7OYf1
+         Dxa84Cp6gXDVku2eq9+nRIkZWkNKKjLZt9a3pAagryEHezkDcPVrMM+78F5HHbTTzxrF
+         B3UcHwt1uujkZOvTfmqRGoUqdVTmIOpSK2yl61TWE8b8jbStfqlxW4OmzHyLxFiBNu5r
+         0+gzfi7tc2lJIeurCBad2qTMagdRTc8cDfsILp2AbWOmaQ2t7mHbJm1SLsdyaDpRhbxL
+         255XNTBnf6Xi7LeuMLJnjaT6hWTB4DEujbs9Q4SOetpobeNzeQx/aWMp4xLJoxOPlO3x
+         6N3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3PcIEXw/jTjSDo0D2gJ5Oo/H7k5jfF9FWK4owTr+vCM=;
-        b=pDP/vBG3H2KkSpKtKBAsdLKxqeGnsd03lgmBjzh6+ROO4VjYiAET4ZCypHn8f6YKAp
-         kUgNlGo6hY+lBBxf0NGyX49qyKoSjx0jOAwlCUQ1x6NCW7yzQ8YaW8PZnMjE82qqDvk7
-         wz/c9OCZclO5YN3ZDTmg7XYwCWpwl2Mvw7zayyV59jhF5iRbysF+fqwtAE4Yiupy0GZi
-         KDHmFBQ00ap0nevkyII93ZWRPIkA5mHZVoEiSezE1VNs7mk3IYs3MdxTC2feZjfkh3Zk
-         KSrjH+aqW1t5hONfRAgI8f6FN6LrMYTkGiUeg2qMfcu95fV6PBbKOfrQ6rqa9pHsMmKd
-         Ba9Q==
-X-Gm-Message-State: APjAAAXANHGhYLlEvwgeqWGX7Hye2j7p5YNtsoJ8EwbpEEgUVQqxW5j4
-        YYd7XwlIzmK+1rY711cIB+Z15ulOF+G0X19EOWE=
-X-Google-Smtp-Source: APXvYqyBzmh1fJCVPz6MQFvxNvZtufUthWuIW39n7VM24g2F3hjdn0jyT4sLw6Yn/q5sdvYxf0F3N6INaytlZJE0o8I=
-X-Received: by 2002:a05:6214:1590:: with SMTP id m16mr9367262qvw.20.1570122574666;
- Thu, 03 Oct 2019 10:09:34 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1kB+HNMetC19qZY2o5gFAydwEbfXL/aBhCptGyZn1AQ=;
+        b=ARWj+0eZ7H2Bum/sAUVuIuMrCAF9sUtPpPWomPH/9dglwfiq+ZKIb7qmmSesgJxtzj
+         wkqRAczZBaXNbvLYpdPkLxzbH3wUgByWGOB2nxKu2xhkR8V62gv1onsOQ6MoI/7m2jxZ
+         cLG6mfv4jIYld+h1wD0zb28Va5X7TRfBthYkGXQbnSlGvnPtiGLwQlDTJYG351zNF45r
+         TbkSmpzsHebN6EN+/LunhZf3NNvMdgxPMPP4utu4sJQAJhuz68FOMSwmYeQ/NtzvyOH4
+         tx25uK6p830uAlINPHwzDC2usc/MwdGDJa8TywMKM9UutVibN9i+rPHhot3Rtq50C1Pz
+         Ccxw==
+X-Gm-Message-State: APjAAAViAoToElzWG8es5c0Y0mTwNS2E9Ip9MJ7swzuxg2boPZyArHha
+        JXZ4SrKO/pC6gdgIMaHVnkdxP4whmSwidC5W5UQ=
+X-Google-Smtp-Source: APXvYqyD4sXOBPspLCS9RDJhkjw4yYOX82nJzQ7J8KVNRjGPNI+l27yfBwVTIwm0m+59blZ3YNOYC5DhWgvvZurIqKo=
+X-Received: by 2002:aed:2726:: with SMTP id n35mr10829218qtd.171.1570122907296;
+ Thu, 03 Oct 2019 10:15:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <1569777006-7435-1-git-send-email-xiangxia.m.yue@gmail.com> <12EAB90C-827E-4BC5-8CED-08DA510CF566@redhat.com>
-In-Reply-To: <12EAB90C-827E-4BC5-8CED-08DA510CF566@redhat.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Thu, 3 Oct 2019 10:08:57 -0700
-Message-ID: <CALDO+SYW1-Or7z93+qzKvx-wtMAH-h1fpsTcPCXNuWDfOepBnQ@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH net-next 0/9] optimize openvswitch flow looking up
-To:     xiangxia.m.yue@gmail.com
-Cc:     ovs dev <dev@openvswitch.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Greg Rose <gvrose8192@gmail.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        pravin shelar <pshelar@ovn.org>
+References: <20191003084321.1431906-1-toke@redhat.com>
+In-Reply-To: <20191003084321.1431906-1-toke@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 3 Oct 2019 10:14:56 -0700
+Message-ID: <CAEf4BzZpksMGZhggHd=wHVStrN9Wb8RRw-PyDm7fGL3A7YSXdQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: Add cscope and TAGS targets to Makefile
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tonghao,
-
-Thanks for the patch.
-
-> On 29 Sep 2019, at 19:09, xiangxia.m.yue@gmail.com wrote:
+On Thu, Oct 3, 2019 at 1:46 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
 >
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > This series patch optimize openvswitch.
-> >
-> > Patch 1, 2, 4: Port Pravin B Shelar patches to
-> > linux upstream with little changes.
-> >
+> Using cscope and/or TAGS files for navigating the source code is useful.
+> Add simple targets to the Makefile to generate the index files for both
+> tools.
+>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
 
-I thought the idea of adding another cache before the flow mask
-was rejected before, due to all the potential issue of caches, ex:
-cache is exploitable, and performance still suffers when your cache
-is full. See David's slides below:
-[1] http://vger.kernel.org/~davem/columbia2012.pdf
+Thanks a lot for adding this!
 
-Do you have a rough number about how many flows this flow mask
-cache can handle?
+I tested cscope only and it works (especially without -k), so:
 
-> > Patch 5, 6, 7: Optimize the flow looking up and
-> > simplify the flow hash.
+Tested-by: Andrii Nakryiko <andriin@fb.com>
 
-I think this is great.
-I wonder what's the performance improvement when flow mask
-cache is full?
 
-Thanks
-William
+>  tools/lib/bpf/.gitignore |  2 ++
+>  tools/lib/bpf/Makefile   | 10 +++++++++-
+>  2 files changed, 11 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/.gitignore b/tools/lib/bpf/.gitignore
+> index d9e9dec04605..c1057c01223e 100644
+> --- a/tools/lib/bpf/.gitignore
+> +++ b/tools/lib/bpf/.gitignore
+> @@ -3,3 +3,5 @@ libbpf.pc
+>  FEATURE-DUMP.libbpf
+>  test_libbpf
+>  libbpf.so.*
+> +TAGS
+> +cscope.*
+> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> index c6f94cffe06e..57df6b933196 100644
+> --- a/tools/lib/bpf/Makefile
+> +++ b/tools/lib/bpf/Makefile
+> @@ -262,7 +262,7 @@ clean:
+>
+>
+>
+> -PHONY +=3D force elfdep bpfdep
+> +PHONY +=3D force elfdep bpfdep cscope TAGS
+>  force:
+>
+>  elfdep:
+> @@ -271,6 +271,14 @@ elfdep:
+>  bpfdep:
+>         @if [ "$(feature-bpf)" !=3D "1" ]; then echo "BPF API too old"; e=
+xit 1 ; fi
+>
+> +cscope:
+> +       (echo \-k; echo \-q; for f in *.c *.h; do echo $$f; done) > cscop=
+e.files
+> +       cscope -b -f cscope.out
 
-> >
-> > Patch 8: is a bugfix.
-> >
-> > The performance test is on Intel Xeon E5-2630 v4.
-> > The test topology is show as below:
-> >
-> > +-----------------------------------+
-> > |   +---------------------------+   |
-> > |   | eth0   ovs-switch    eth1 |   | Host0
-> > |   +---------------------------+   |
-> > +-----------------------------------+
-> >       ^                       |
-> >       |                       |
-> >       |                       |
-> >       |                       |
-> >       |                       v
-> > +-----+----+             +----+-----+
-> > | netperf  | Host1       | netserver| Host2
-> > +----------+             +----------+
-> >
-> > We use netperf send the 64B frame, and insert 255+ flow-mask:
-> > $ ovs-dpctl add-flow ovs-switch
-> > "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)"
-> > 2
-> > ...
-> > $ ovs-dpctl add-flow ovs-switch
-> > "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)"
-> > 2
-> > $ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
-> >
-> > * Without series patch, throughput 8.28Mbps
-> > * With series patch, throughput 46.05Mbps
-> >
-> > Tonghao Zhang (9):
-> >   net: openvswitch: add flow-mask cache for performance
-> >   net: openvswitch: convert mask list in mask array
-> >   net: openvswitch: shrink the mask array if necessary
-> >   net: openvswitch: optimize flow mask cache hash collision
-> >   net: openvswitch: optimize flow-mask looking up
-> >   net: openvswitch: simplify the flow_hash
-> >   net: openvswitch: add likely in flow_lookup
-> >   net: openvswitch: fix possible memleak on destroy flow table
-> >   net: openvswitch: simplify the ovs_dp_cmd_new
-> >
-> >  net/openvswitch/datapath.c   |  63 +++++----
-> >  net/openvswitch/flow.h       |   1 -
-> >  net/openvswitch/flow_table.c | 318
-> > +++++++++++++++++++++++++++++++++++++------
-> >  net/openvswitch/flow_table.h |  19 ++-
-> >  4 files changed, 330 insertions(+), 71 deletions(-)
-> >
-> > --
-> > 1.8.3.1
-> _______________________________________________
-> dev mailing list
-> dev@openvswitch.org
-> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+1. I'd drop -k, given libbpf is user-land library, so it's convenient
+to jump into system headers for some of BPF definitions.
+2. Wouldn't this be simpler and work exactly the same?
+
+ls *.c *.h > cscope.files
+cscope -b -q -f cscope.out
+
+
+> +
+> +TAGS:
+
+let's make it lower-case, please? Linux makefile supports both `make
+tags` and `make TAGS`, but all-caps is terrible :)
+
+> +       rm -f TAGS
+> +       echo *.c *.h | xargs etags -a
+
+nit: might as well do ls *.c *.h for consistency with cscope
+suggestion above (though in both cases we just rely on shell expansion
+logic, so doesn't matter).
+
+> +
+>  # Declare the contents of the .PHONY variable as phony.  We keep that
+>  # information in a variable so we can use it in if_changed and friends.
+>  .PHONY: $(PHONY)
+> --
+> 2.23.0
+>
