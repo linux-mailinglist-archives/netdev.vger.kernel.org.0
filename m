@@ -2,148 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB7ACAAD5
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 397BDCA948
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391228AbfJCROb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:14:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38925 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2390540AbfJCQ1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 12:27:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570120026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hl97RRcZcrIYJupRDULXM2IOdbeRQMpGH096RnGRTkc=;
-        b=POUKyGRUAIccAAkFTrmAgWWrLrOttgB5T2B3KrmvbOQiZBIG4iK9KlfRd1A27TcP869tB+
-        eEitwhCoH+mZebCy4FG1aOkcDbGHPXV9IMrEnp5rklVdpNUYcp6y3YjDyyBGOXBnUZKYzf
-        Umi2DmRgqQW/2OQTn7HnrZ6D9WiZuy0=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-146-Qxleb9jaNRKhYoLGkQpFQg-1; Thu, 03 Oct 2019 12:27:03 -0400
-Received: by mail-lj1-f198.google.com with SMTP id l15so1023158lje.17
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 09:27:03 -0700 (PDT)
+        id S2404910AbfJCQkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 12:40:05 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:37636 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392440AbfJCQkD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 12:40:03 -0400
+Received: by mail-io1-f65.google.com with SMTP id b19so7100540iob.4
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 09:40:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qMQ79L19zLA8+V2V5SAkp5Lpb5k/cMQIg/SGtpo1q78=;
+        b=SSFstXAiynmwZ1zCN6oK1iqyFF9NudIbBxsHQOnWOl+5SV9S+hj03pEXRmxqRxe3Wc
+         b4yt3qNA+DknhJFWQrWhNP6g4NYgZjBK6Thu+6vgYxvrn2EgzzcO8sepvHj6fStwaXFn
+         9MQSWIPIHGtinq7BHd+PZu4YQ84hcTWdFUkh8kMS2ZqQZ4eDr1Zvu7E3HqlmwT7pIDct
+         DwtfBNhF0F/+ZCa7x5htYhOg3/z++ve9lCZW86n21yzUkGet8uw+76EyGsL+nmrfIJSZ
+         2Xuv2L7KIiGw80bsImYoNcRtQjBVZQ6e8tVjsVzf8zVCWUp6YqAQmlE+Uh7CdnF2I2xF
+         /wRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=hl97RRcZcrIYJupRDULXM2IOdbeRQMpGH096RnGRTkc=;
-        b=MN9P1cUp2JGxLBFfXISU5tH8LB1Tq6oo0eyBLZAALQO4L5yexJgrP8spyk5nazDjbF
-         veju7PuxF0+Qy7AR79K5aAqqRwgcb6uDNrMqwpHbDewuvCRe3+dlrInsgpEDXUr/mOK1
-         nlUyxBf/Nl9gkG9KfYUm74xxildlyqKTDE9QmbwgVA9qoSqaWjngAUORaJej9CDGo+6G
-         mBxMxqNQYO2MpXFumDm6bZLNvZeLQbMzpQyf2lsaon/0yJig6ehixdgu+OdDuIJzhWFq
-         cb3VkoKb3pkIF5c+fY2PuO27ND/ubOVjlevGxE9QPL1MtYBt6UYR0KN9y27zclEmgTAw
-         FJgg==
-X-Gm-Message-State: APjAAAXXZB0llo+ujN+UeS1qxSeOAFDTNBRzQNgJOidtapreerJA4tST
-        DAyE/bpaK5vSvEOhLO3tM0JTNBl6RwVyU2hmpCC2Hd1TeCwmFD90gIucwXdrWU48E1wGK36E5v5
-        GbMNYMuOG1K7MpDcB
-X-Received: by 2002:a2e:9d50:: with SMTP id y16mr6545196ljj.70.1570120022255;
-        Thu, 03 Oct 2019 09:27:02 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwWiuLcSKoRaVxkebUdfhoE89oH6oA58jgXqlx0RaM08Hae5JDAPB1m+IXJqWcW3kr12KzXiA==
-X-Received: by 2002:a2e:9d50:: with SMTP id y16mr6545181ljj.70.1570120022010;
-        Thu, 03 Oct 2019 09:27:02 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id y3sm547356lfh.97.2019.10.03.09.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 09:27:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 5EB9C18063D; Thu,  3 Oct 2019 18:27:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 2/7] selftests/bpf: samples/bpf: split off legacy stuff from bpf_helpers.h
-In-Reply-To: <CAEf4Bzb7ikPkrxCVMtHK5rS2kdoF_mo5_Bn5U78zKBiYYHS8ig@mail.gmail.com>
-References: <20191002215041.1083058-1-andriin@fb.com> <20191002215041.1083058-3-andriin@fb.com> <87k19mqo1z.fsf@toke.dk> <CAEf4Bzb7ikPkrxCVMtHK5rS2kdoF_mo5_Bn5U78zKBiYYHS8ig@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 03 Oct 2019 18:27:00 +0200
-Message-ID: <87k19lpzfv.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qMQ79L19zLA8+V2V5SAkp5Lpb5k/cMQIg/SGtpo1q78=;
+        b=BO3X6+mAYuPHJq52V0S1RmOz4K1HsLYk62eiw3OpPSb9CqaCU7zRbRYqRTKO+tleSS
+         FityIvwwSS7GhSQJwZ7ubl4LHkzHzNPb4ySBtdktRlEiIyJQvjhPNnLwB5tVJe84A9+c
+         d0sYhR/kM53rvXSGtDP6BWhYa8lxB4wIqGhbyagMweUhGxM1n+S5H/XPQD9s7QWITrA4
+         yoAgQdwQ63NY5pCQ7aCynYzDVbokFSwgI9tyrFGZqOThw4tvCo9YIW58uRC2iWZ9xn4x
+         gD86cNKqlv0wvL/VKxrmP/z+DzUZR0vVdKzfcIwSi/d6XON7TseLTaIT7fCwVBe/KfCo
+         ioNQ==
+X-Gm-Message-State: APjAAAWuMjiJjE30kenD4dB+NjEvbXM3l7FwBL3KvGh3UWl34lSmC7lh
+        F3/6DTVALpSpWhrFTKdaAM5RP6FYrc5aG3NsoKDoow==
+X-Google-Smtp-Source: APXvYqy5pZqpxuhyF7GbiBdqtlLtJuN/El7hdB274V6kjHgykrijcD5aAhWarngfQ4mJ+8OjwcGv7ydx6ammqjoYVCM=
+X-Received: by 2002:a5e:8c15:: with SMTP id n21mr8720849ioj.246.1570120801923;
+ Thu, 03 Oct 2019 09:40:01 -0700 (PDT)
 MIME-Version: 1.0
-X-MC-Unique: Qxleb9jaNRKhYoLGkQpFQg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <1570058072-12004-1-git-send-email-john.hurley@netronome.com>
+ <1570058072-12004-3-git-send-email-john.hurley@netronome.com> <vbflfu1olaj.fsf@mellanox.com>
+In-Reply-To: <vbflfu1olaj.fsf@mellanox.com>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Thu, 3 Oct 2019 17:39:51 +0100
+Message-ID: <CAK+XE=kKyfrm8Zf1j5YqA0Bz_S9j9=_xR0p4c_n-QyUPddE2pA@mail.gmail.com>
+Subject: Re: [RFC net-next 2/2] net: sched: fix tp destroy race conditions in flower
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-
-> On Thu, Oct 3, 2019 at 12:35 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Andrii Nakryiko <andriin@fb.com> writes:
->>
->> > diff --git a/samples/bpf/map_perf_test_kern.c b/samples/bpf/map_perf_t=
-est_kern.c
->> > index 2b2ffb97018b..f47ee513cb7c 100644
->> > --- a/samples/bpf/map_perf_test_kern.c
->> > +++ b/samples/bpf/map_perf_test_kern.c
->> > @@ -9,25 +9,26 @@
->> >  #include <linux/version.h>
->> >  #include <uapi/linux/bpf.h>
->> >  #include "bpf_helpers.h"
->> > +#include "bpf_legacy.h"
->> >
->> >  #define MAX_ENTRIES 1000
->> >  #define MAX_NR_CPUS 1024
->> >
->> > -struct bpf_map_def SEC("maps") hash_map =3D {
->> > +struct bpf_map_def_legacy SEC("maps") hash_map =3D {
->> >       .type =3D BPF_MAP_TYPE_HASH,
->> >       .key_size =3D sizeof(u32),
->> >       .value_size =3D sizeof(long),
->> >       .max_entries =3D MAX_ENTRIES,
->> >  };
->>
->> Why switch these when they're not actually using any of the extra fields
->> in map_def_legacy?
+On Thu, Oct 3, 2019 at 5:18 PM Vlad Buslov <vladbu@mellanox.com> wrote:
 >
-> See below, they have to be uniform-sized.
 >
->> >
->> > -struct bpf_map_def SEC("maps") lru_hash_map =3D {
->> > +struct bpf_map_def_legacy SEC("maps") lru_hash_map =3D {
->> >       .type =3D BPF_MAP_TYPE_LRU_HASH,
->> >       .key_size =3D sizeof(u32),
->> >       .value_size =3D sizeof(long),
->> >       .max_entries =3D 10000,
->> >  };
->> >
->> > -struct bpf_map_def SEC("maps") nocommon_lru_hash_map =3D {
->> > +struct bpf_map_def_legacy SEC("maps") nocommon_lru_hash_map =3D {
->> >       .type =3D BPF_MAP_TYPE_LRU_HASH,
->> >       .key_size =3D sizeof(u32),
->> >       .value_size =3D sizeof(long),
->> > @@ -35,7 +36,7 @@ struct bpf_map_def SEC("maps") nocommon_lru_hash_map=
- =3D {
->> >       .map_flags =3D BPF_F_NO_COMMON_LRU,
->> >  };
->> >
->> > -struct bpf_map_def SEC("maps") inner_lru_hash_map =3D {
->> > +struct bpf_map_def_legacy SEC("maps") inner_lru_hash_map =3D {
->> >       .type =3D BPF_MAP_TYPE_LRU_HASH,
->> >       .key_size =3D sizeof(u32),
->> >       .value_size =3D sizeof(long),
->> > @@ -44,20 +45,20 @@ struct bpf_map_def SEC("maps") inner_lru_hash_map =
-=3D {
->> >       .numa_node =3D 0,
->> >  };
->>
->> Or are you just switching everything because of this one?
+> On Thu 03 Oct 2019 at 02:14, John Hurley <john.hurley@netronome.com> wrote:
+> > Flower has rule HW offload functions available that drivers can choose to
+> > register for. For the deletion case, these are triggered after filters
+> > have been removed from lookup tables both at the flower level, and the
+> > higher cls_api level. With flower running without RTNL locking, this can
+> > lead to races where HW offload messages get out of order.
+> >
+> > Ensure HW offloads stay in line with the kernel tables by triggering
+> > the sending of messages before the kernel processing is completed. For
+> > destroyed tcf_protos, do this at the new pre_destroy hook. Similarly, if
+> > a filter is being added, check that it is not concurrently being deleted
+> > before offloading to hw, rather than the current approach of offloading,
+> > then checking and reversing the offload if required.
+> >
+> > Fixes: 1d965c4def07 ("Refactor flower classifier to remove dependency on rtnl lock")
+> > Fixes: 272ffaadeb3e ("net: sched: flower: handle concurrent tcf proto deletion")
+> > Signed-off-by: John Hurley <john.hurley@netronome.com>
+> > Reported-by: Louis Peens <louis.peens@netronome.com>
+> > ---
+> >  net/sched/cls_flower.c | 55 +++++++++++++++++++++++++++-----------------------
+> >  1 file changed, 30 insertions(+), 25 deletions(-)
+> >
+> > diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+> > index 74221e3..3ac47b5 100644
+> > --- a/net/sched/cls_flower.c
+> > +++ b/net/sched/cls_flower.c
+> > @@ -513,13 +513,16 @@ static struct cls_fl_filter *__fl_get(struct cls_fl_head *head, u32 handle)
+> >  }
+> >
+> >  static int __fl_delete(struct tcf_proto *tp, struct cls_fl_filter *f,
+> > -                    bool *last, bool rtnl_held,
+> > +                    bool *last, bool rtnl_held, bool do_hw,
+> >                      struct netlink_ext_ack *extack)
+> >  {
+> >       struct cls_fl_head *head = fl_head_dereference(tp);
+> >
+> >       *last = false;
+> >
+> > +     if (do_hw && !tc_skip_hw(f->flags))
+> > +             fl_hw_destroy_filter(tp, f, rtnl_held, extack);
+> > +
+> >       spin_lock(&tp->lock);
+> >       if (f->deleted) {
+> >               spin_unlock(&tp->lock);
+> > @@ -534,8 +537,6 @@ static int __fl_delete(struct tcf_proto *tp, struct cls_fl_filter *f,
+> >       spin_unlock(&tp->lock);
+> >
+> >       *last = fl_mask_put(head, f->mask);
+> > -     if (!tc_skip_hw(f->flags))
+> > -             fl_hw_destroy_filter(tp, f, rtnl_held, extack);
+> >       tcf_unbind_filter(tp, &f->res);
+> >       __fl_put(f);
+> >
+> > @@ -563,7 +564,7 @@ static void fl_destroy(struct tcf_proto *tp, bool rtnl_held,
+> >
+> >       list_for_each_entry_safe(mask, next_mask, &head->masks, list) {
+> >               list_for_each_entry_safe(f, next, &mask->filters, list) {
+> > -                     __fl_delete(tp, f, &last, rtnl_held, extack);
+> > +                     __fl_delete(tp, f, &last, rtnl_held, false, extack);
+> >                       if (last)
+> >                               break;
+> >               }
+> > @@ -574,6 +575,19 @@ static void fl_destroy(struct tcf_proto *tp, bool rtnl_held,
+> >       tcf_queue_work(&head->rwork, fl_destroy_sleepable);
+> >  }
+> >
+> > +static void fl_pre_destroy(struct tcf_proto *tp, bool rtnl_held,
+> > +                        struct netlink_ext_ack *extack)
+> > +{
+> > +     struct cls_fl_head *head = fl_head_dereference(tp);
+> > +     struct fl_flow_mask *mask, *next_mask;
+> > +     struct cls_fl_filter *f, *next;
+> > +
+> > +     list_for_each_entry_safe(mask, next_mask, &head->masks, list)
+> > +             list_for_each_entry_safe(f, next, &mask->filters, list)
+> > +                     if (!tc_skip_hw(f->flags))
+> > +                             fl_hw_destroy_filter(tp, f, rtnl_held, extack);
+> > +}
+> > +
+> >  static void fl_put(struct tcf_proto *tp, void *arg)
+> >  {
+> >       struct cls_fl_filter *f = arg;
+> > @@ -1588,6 +1602,13 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+> >       if (err)
+> >               goto errout_mask;
+> >
+> > +     spin_lock(&tp->lock);
+> > +     if (tp->deleting || (fold && fold->deleted)) {
+> > +             err = -EAGAIN;
+> > +             goto errout_lock;
+> > +     }
+> > +     spin_unlock(&tp->lock);
+> > +
 >
-> Exactly. Another way would be to switch all but this to BTF-based one,
-> but I didn't want to make this patch set even bigger, we can always do
-> that later
+> But what if one of these flag are set after this block? It would be
+> possible to insert dangling filters on tp that is being deleted, or
+> double list_replace_rcu() and idr replace() if same filter is replaced
+> concurrently, etc.
+>
 
-Right, fair enough :)
+Hi Vlad, yes, I alluded to this in the cover letter - 'Note that there
+are some issues that will need fixed in the RFC before it becomes a
+patch such as potential races between releasing locks and re-taking
+them.'
+It is definitely an issue I'd need to think on more. Maybe mark the tp
+as 'cant delete' in the first lock here or something. Although perhaps
+this may just push the races to a different place.
 
--Toke
-
+> >       if (!tc_skip_hw(fnew->flags)) {
+> >               err = fl_hw_replace_filter(tp, fnew, rtnl_held, extack);
+> >               if (err)
+> > @@ -1598,22 +1619,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+> >               fnew->flags |= TCA_CLS_FLAGS_NOT_IN_HW;
+> >
+> >       spin_lock(&tp->lock);
+> > -
+> > -     /* tp was deleted concurrently. -EAGAIN will cause caller to lookup
+> > -      * proto again or create new one, if necessary.
+> > -      */
+> > -     if (tp->deleting) {
+> > -             err = -EAGAIN;
+> > -             goto errout_hw;
+> > -     }
+> > -
+> >       if (fold) {
+> > -             /* Fold filter was deleted concurrently. Retry lookup. */
+> > -             if (fold->deleted) {
+> > -                     err = -EAGAIN;
+> > -                     goto errout_hw;
+> > -             }
+> > -
+> >               fnew->handle = handle;
+> >
+> >               if (!in_ht) {
+> > @@ -1624,7 +1630,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+> >                                                    &fnew->ht_node,
+> >                                                    params);
+> >                       if (err)
+> > -                             goto errout_hw;
+> > +                             goto errout_lock;
+> >                       in_ht = true;
+> >               }
+> >
+> > @@ -1667,7 +1673,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+> >                                           INT_MAX, GFP_ATOMIC);
+> >               }
+> >               if (err)
+> > -                     goto errout_hw;
+> > +                     goto errout_lock;
+> >
+> >               refcount_inc(&fnew->refcnt);
+> >               fnew->handle = handle;
+> > @@ -1683,11 +1689,9 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+> >
+> >  errout_ht:
+> >       spin_lock(&tp->lock);
+> > -errout_hw:
+> > +errout_lock:
+> >       fnew->deleted = true;
+> >       spin_unlock(&tp->lock);
+> > -     if (!tc_skip_hw(fnew->flags))
+> > -             fl_hw_destroy_filter(tp, fnew, rtnl_held, NULL);
+> >       if (in_ht)
+> >               rhashtable_remove_fast(&fnew->mask->ht, &fnew->ht_node,
+> >                                      fnew->mask->filter_ht_params);
+> > @@ -1713,7 +1717,7 @@ static int fl_delete(struct tcf_proto *tp, void *arg, bool *last,
+> >       bool last_on_mask;
+> >       int err = 0;
+> >
+> > -     err = __fl_delete(tp, f, &last_on_mask, rtnl_held, extack);
+> > +     err = __fl_delete(tp, f, &last_on_mask, rtnl_held, true, extack);
+> >       *last = list_empty(&head->masks);
+> >       __fl_put(f);
+> >
+> > @@ -2509,6 +2513,7 @@ static struct tcf_proto_ops cls_fl_ops __read_mostly = {
+> >       .kind           = "flower",
+> >       .classify       = fl_classify,
+> >       .init           = fl_init,
+> > +     .pre_destroy    = fl_pre_destroy,
+> >       .destroy        = fl_destroy,
+> >       .get            = fl_get,
+> >       .put            = fl_put,
+>
