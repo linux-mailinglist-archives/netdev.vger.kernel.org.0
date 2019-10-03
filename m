@@ -2,78 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D39D6C962F
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 03:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87ABEC963B
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 03:34:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728039AbfJCB3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 21:29:52 -0400
-Received: from eddie.linux-mips.org ([148.251.95.138]:43768 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726214AbfJCB3w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 21:29:52 -0400
-Received: (from localhost user: 'macro', uid#1010) by eddie.linux-mips.org
-        with ESMTP id S23992741AbfJCB3r1Jipn (ORCPT
-        <rfc822;linux-alpha@vger.kernel.org> + 2 others);
-        Thu, 3 Oct 2019 03:29:47 +0200
-Date:   Thu, 3 Oct 2019 02:29:47 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@linux-mips.org>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-cc:     Helge Deller <deller@gmx.de>,
-        John David Anglin <dave.anglin@bell.net>,
-        Arlie Davis <arlied@google.com>, Andrew Lunn <andrew@lunn.ch>,
-        netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-alpha@vger.kernel.org
-Subject: Re: Bug report (with fix) for DEC Tulip driver (de2104x.c)
-In-Reply-To: <20190918132736.GA9231@alpha.franken.de>
-Message-ID: <alpine.LFD.2.21.1910030146380.29399@eddie.linux-mips.org>
-References: <CAK-9enMxA68mRYFG=2zD02guvCqe-aa3NO0YZuJcTdBWn5MPqg@mail.gmail.com> <20190917212844.GJ9591@lunn.ch> <CAK-9enOx8xt_+t6-rpCGEL0j-HJGm=sFXYq9-pgHQ26AwrGm5Q@mail.gmail.com> <df0f961d-2d53-63e3-8087-6f0b09e14317@bell.net> <f71e9773-5cfb-f20b-956f-d98b11a5d4a7@gmx.de>
- <20190918132736.GA9231@alpha.franken.de>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1727811AbfJCBej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 21:34:39 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33618 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725799AbfJCBej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 21:34:39 -0400
+Received: by mail-pg1-f194.google.com with SMTP id q1so737835pgb.0
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 18:34:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wTBi/WGvWr+yPKlCjekySaNYX1DdK5ws+t/6UDsCIaM=;
+        b=f+nGo2291SMl0tb0V/vS6JKTv4wjWbylAk49IBtjick2gDJ1cYe7MUjOznE3NQYl9A
+         PAEq2dvwXelcwJ7wAyZv5uf+HIqo1K/HXskQp6/3UJgasy03RdwmSFrlyLTiI2Q+V2GT
+         KvyoAM8R0Uc7niH6CBdvxrvunYdcyksGMGOzPOIEPlnk1H7D1T2fEBvIIBIim8vwNMBL
+         U7X885haIQaSmzglxzGuWnn0tYOKduoY5NmyPk8GLVUiO5SEsGB6uVaSOAgHLLloUCHb
+         h0UUck5qWIotjxCSkadDHrq1hwlZVAn9DyIgHftrDiUXgU0CEMu7EOmr4oOFNUvNnWa8
+         MIUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wTBi/WGvWr+yPKlCjekySaNYX1DdK5ws+t/6UDsCIaM=;
+        b=nMzXOqXgTCne9ObWBnPRuHifz966RrxppOCW4dbVpnTyOaDbQLs5l0oNUgAqTDp1eB
+         bH8MN3n8W3/RVk6esO6mXSyfvSWTkl6Au7c5OanhPsF1dVy7+UkqgJW2z0wO9S8/w6On
+         D1bkOIsvpAqh0MQK3KVO94dpacPZOO1ZtMpexmAaoGc8vvcQMS1lXUDDNV2MJLIP6aaN
+         mgNRpiiqW6LijfEvaFgDrNNHcGvdEiiENI+Q8gkPHi0Qfx+T17sFMMpXBUhyg0xTQWzx
+         mQR7pxQJDKayYLSz4c4qLUnHi2vDjh2HAH7vnZrWO+MsolT295hU0DcmPM1c31n8tBuR
+         LNKw==
+X-Gm-Message-State: APjAAAUKlD0gs6Esx4CPPFrAuF9XskYKK0JYkbcOeE95cGSffrVx5+eL
+        6VsBl2ESGG/akpubx3RFtmw=
+X-Google-Smtp-Source: APXvYqyLXe4NTByrTtPeJjwR3hJkGJEvBJkINgRCtM7yyjdY2D71YQq7lDlBZ4R4WX8VOq8ueqG09Q==
+X-Received: by 2002:a63:cb07:: with SMTP id p7mr6880234pgg.232.1570066478745;
+        Wed, 02 Oct 2019 18:34:38 -0700 (PDT)
+Received: from [172.27.227.234] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id x10sm782365pfr.44.2019.10.02.18.34.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Oct 2019 18:34:37 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 02/15] ipv4: Notify route after insertion to
+ the routing table
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com,
+        jakub.kicinski@netronome.com, saeedm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+References: <20191002084103.12138-1-idosch@idosch.org>
+ <20191002084103.12138-3-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <576d658d-6aab-558c-0a20-13133217d3b6@gmail.com>
+Date:   Wed, 2 Oct 2019 19:34:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20191002084103.12138-3-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Sep 2019, Thomas Bogendoerfer wrote:
+On 10/2/19 2:40 AM, Ido Schimmel wrote:
+> @@ -1269,14 +1269,19 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
+>  	new_fa->tb_id = tb->tb_id;
+>  	new_fa->fa_default = -1;
+>  
+> -	err = call_fib_entry_notifiers(net, event, key, plen, new_fa, extack);
+> +	/* Insert new entry to the list. */
+> +	err = fib_insert_alias(t, tp, l, new_fa, fa, key);
+>  	if (err)
+>  		goto out_free_new_fa;
+>  
+> -	/* Insert new entry to the list. */
+> -	err = fib_insert_alias(t, tp, l, new_fa, fa, key);
+> +	/* The alias was already inserted, so the node must exist. */
+> +	l = fib_find_node(t, &tp, key);
+> +	if (WARN_ON_ONCE(!l))
+> +		goto out_free_new_fa;
 
-> > >> Likewise, I'm at a loss for testing with real hardware. It's hard to
-> > >> find such things, now.
-> > > How does de2104x compare to ds2142/43?  I have a c3750 with ds2142/43 tulip.  Helge
-> > > or some others might have a machine with a de2104x.
-> > 
-> > The machines we could test are
-> > * a C240 with a DS21140 tulip chip (Sven has one),
-> > * a C3000 or similiar with DS21142 and/or DS21143 (me).
-> > 
-> > If the patch does not show any regressions, I'd suggest to
-> > apply it upstream.
+Maybe I am missing something but, the 'l' is only needed for the error
+path, so optimize for the success case and only lookup the node if the
+notifier fails.
+
+> +
+> +	err = call_fib_entry_notifiers(net, event, key, plen, new_fa, extack);
+>  	if (err)
+> -		goto out_fib_notif;
+> +		goto out_remove_new_fa;
+>  
+>  	if (!plen)
+>  		tb->tb_num_default++;
+> @@ -1287,14 +1292,8 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
+>  succeeded:
+>  	return 0;
+>  
+> -out_fib_notif:
+> -	/* notifier was sent that entry would be added to trie, but
+> -	 * the add failed and need to recover. Only failure for
+> -	 * fib_insert_alias is ENOMEM.
+> -	 */
+> -	NL_SET_ERR_MSG(extack, "Failed to insert route into trie");
+> -	call_fib_entry_notifiers(net, FIB_EVENT_ENTRY_DEL, key,
+> -				 plen, new_fa, NULL);
+> +out_remove_new_fa:
+> +	fib_remove_alias(t, tp, l, new_fa);
+>  out_free_new_fa:
+>  	kmem_cache_free(fn_alias_kmem, new_fa);
+>  out:
 > 
-> 2114x chips use a different driver, so it won't help here.
 
- Asking at `linux-alpha' (cc-ed) might help; these chips used to be 
-ubiquitous with older Alpha systems, so someone subscribed there might be 
-able to step in and help right away.  Also testing with an Alpha always 
-has the advantage of exposing any weak ordering issues.
-
- Myself I have an AS 300 (or AS 250 really as I suspect a mismatch between 
-the enclosure and the MB; the two systems are almost identical anyway) and 
-it does have a real 21040 chip on its riser I/O module.  However I have 
-never got to setting up Linux on that machine and it may take me a bit to 
-get it running suitably to get any verification done I'm afraid.
-
- NB for the original 21040 part "DECchip 21040 Ethernet LAN Controller for 
-PCI Hardware Reference Manual", Order Number: EC-N0752-72, available here:
-<ftp://ftp.netbsd.org/pub/NetBSD/misc/dec-docs/ec-n0752-72.ps.gz> is 
-probably more relevant, although in the area concerned here it seems the 
-same.
-
- Finally I don't expect any race condition in possibly examining control 
-bits in the transmit interrupt handler as this is what the descriptor 
-ownership bit guards against -- only when a descriptor is owned by the 
-host accesses from the CPU side are allowed, and then it is safe to fiddle 
-with any field.
-
-  Maciej
