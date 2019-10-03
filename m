@@ -2,94 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51921C9A3C
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 10:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB28AC9A41
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 10:53:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728883AbfJCIw7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Oct 2019 04:52:59 -0400
-Received: from mailout10.rmx.de ([94.199.88.75]:43811 "EHLO mailout10.rmx.de"
+        id S1728973AbfJCIxq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Oct 2019 04:53:46 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47938 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727382AbfJCIw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 04:52:59 -0400
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        id S1727357AbfJCIxq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Oct 2019 04:53:46 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout10.rmx.de (Postfix) with ESMTPS id 46kRbn468Cz2ynT;
-        Thu,  3 Oct 2019 10:52:53 +0200 (CEST)
-Received: from SRV-EX03.muc.traviantest.lan (unknown [10.64.2.31])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 46kRbQ5qZ4z2ywf;
-        Thu,  3 Oct 2019 10:52:34 +0200 (CEST)
-Received: from SRV-EX03.muc.traviangames.lan (10.64.2.31) by
- SRV-EX03.muc.traviangames.lan (10.64.2.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 3 Oct 2019 10:52:34 +0200
-Received: from SRV-EX03.muc.traviangames.lan ([fe80::24a4:13fd:f7e3:12a1]) by
- SRV-EX03.muc.traviangames.lan ([fe80::24a4:13fd:f7e3:12a1%3]) with mapi id
- 15.01.1779.002; Thu, 3 Oct 2019 10:52:34 +0200
-From:   Denis Odintsov <d.odintsov@traviangames.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "h.feurstein@gmail.com" <h.feurstein@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Marvell 88E6141 DSA degrades after
- 7fb5a711545d7d25fe9726a9ad277474dd83bd06
-Thread-Topic: Marvell 88E6141 DSA degrades after
- 7fb5a711545d7d25fe9726a9ad277474dd83bd06
-Thread-Index: AQHVeRiR5JyXjvwWeUCkhMRfeb02DqdHI38AgAFYlAA=
-Date:   Thu, 3 Oct 2019 08:52:34 +0000
-Message-ID: <73A3CAFD-56DB-4E09-8830-606B489C3754@traviangames.com>
-References: <DE1D3FAD-959D-4A56-8C68-F713D44A1FED@traviangames.com>
- <20191002121916.GB20028@lunn.ch>
-In-Reply-To: <20191002121916.GB20028@lunn.ch>
-Accept-Language: en-US, de-DE
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [192.168.168.61]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <46FDA190BD510944A9CC09AB58928EF8@muc.traviangames.lan>
-Content-Transfer-Encoding: 8BIT
+        by mx1.redhat.com (Postfix) with ESMTPS id 7320E3090FD7;
+        Thu,  3 Oct 2019 08:53:45 +0000 (UTC)
+Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D4C85D6A9;
+        Thu,  3 Oct 2019 08:53:36 +0000 (UTC)
+Date:   Thu, 3 Oct 2019 10:53:35 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
+ interface through chain calls
+Message-ID: <20191003105335.3cc65226@carbon>
+In-Reply-To: <87r23vq79z.fsf@toke.dk>
+References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
+        <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com>
+        <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com>
+        <87r23vq79z.fsf@toke.dk>
 MIME-Version: 1.0
-X-RMX-ID: 20191003-105234-46kRbQ5qZ4z2ywf-0@kdin01
-X-RMX-SOURCE: 10.64.2.31
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 03 Oct 2019 08:53:45 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 02 Oct 2019 21:25:28 +0200
+Toke Høiland-Jørgensen <toke@redhat.com> wrote:
 
-Thank you for your reply, now that you've said that I actually put WARN_ON(1) into mv88e6xxx_adjust_link and found out that it is not actually being called. Not even on 5.3. What I saw was a warning produced by block like "if (ds->ops->adjust_link)" in net/dsa/ code, but not the actual call. My bad. So it seems the content of the function is irrelevant, and as I can see there are many block like this, so most probably it is something one of these blocks were doing on 5.3 which changed to 5.4, which is way harder to debug I guess. Any other things I could check in that matter?
+> Song Liu <songliubraving@fb.com> writes:
+> 
+> >> On Oct 2, 2019, at 11:38 AM, Song Liu <songliubraving@fb.com> wrote:
+> >>   
+> >>> On Oct 2, 2019, at 6:30 AM, Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> >>> 
+> >>> This series adds support for executing multiple XDP programs on a single
+> >>> interface in sequence, through the use of chain calls, as discussed at the Linux
+> >>> Plumbers Conference last month:
+> >>>
 
-Denis. 
+[1] https://linuxplumbersconf.org/event/4/contributions/460/
+- [2] Slides: http://people.netfilter.org/hawk/presentations/LinuxPlumbers2019/xdp-distro-view.pdf
+- [3] Source: https://github.com/xdp-project/xdp-project/tree/master/conference/LinuxPlumbers2019
+ 
+[...]
+> >
+> > Also, could you please share a real word example? I saw the example
+> > from LPC slides, but I am more curious about what does each program do
+> > in real use cases.  
+> 
+> The only concrete program that I have that needs this is xdpcap:
+> https://github.com/cloudflare/xdpcap
+> 
+> Right now that needs to be integrated into the calling program to work;
+> I want to write a tool like it, but that can insert itself before or
+> after arbitrary XDP programs.
 
-> Am 02.10.2019 um 14:19 schrieb Andrew Lunn <andrew@lunn.ch>:
-> 
-> On Wed, Oct 02, 2019 at 11:57:30AM +0000, Denis Odintsov wrote:
->> Hello,
->> 
->> Hope you are doing fine, I have a report regarding Marvell DSA after 7fb5a711545d7d25fe9726a9ad277474dd83bd06<https://github.com/torvalds/linux/commit/7fb5a711545d7d25fe9726a9ad277474dd83bd06> patch.
->> 
->> Thing is that after this commit:
->> https://github.com/torvalds/linux/commit/7fb5a711545d7d25fe9726a9ad277474dd83bd06
->> on linux 5.3 DSA stopped working properly for me.
->> I'm using Clearfog GT 8k board, with 88E6141 switch and bridge config where all lanN interfaces are bridged together and ip is assigned to the bridge.
->> 
->> It stopped working properly in the matter that everything fires up from the board point of view, interfaces are there, all is good, but there are never any packet registered as RX on lanN interfaces in counters. Packets are always TX'ed and 0 as RX. But! This is where weird starts, the actual link is negotiated fine (I have 100Mb clients, and interfaces have correct speed and duplex, meaning they actually handshake with the other end). Even more, if I would set ip lanN interface itself with ip address, the networks somehow work, meaning a client, if set ip manually, can kind of ping the router, but with huge volatile times, like >300ms round trip. And still not a single RX packet on the interface shown in the counter.
->> 
->> So this is really weird behaviour, and the most sad part in that is that while on 5.3 with this patch reverted everything start to work fine, the trick doesn't work for 5.4 anymore.
-> 
-> Hi Denis
-> 
-> Could you give us the call stack when mv88e6xxx_adjust_link() is used
-> in 5.3. A WARN_ON(1) should do that.
-> 
-> We are probably missing a use case where it is used, but we did not
-> expect it to be used. The call stack should help us find that use
-> case.
-> 
-> Thanks
-> 	Andrew
+The other real world use-case it Facebooks katran, you should be aware:
+ https://github.com/facebookincubator/katran
 
+It might be important to understand that the patchset/intent is a hybrid
+that satisfy both xdpcap ([2] slide-26) and katran ([2] slide-27), see
+later slides how this is done. Notice there a requirement is that users
+don't (need to) modify the BPF ELF file, to make it cooperate with this
+system.
+
+The katran use-case is to chain several eBPF programs.
+
+The xdpcap use-case is to trap any XDP return action code (and tcpdump
+via perf event ring_buffer).  For system administrators the xdpcap
+use-case is something we hear about all the time, so one of the missing
+features for XDP.  As Toke also wrote, we want to extend this to ALSO
+be-able to see/dump the packet BEFORE a given XDP program.
+
+
+> Lorenz, can you say more about your use case? :)
+
+AFAIK Cloudflare also have a chaining eBPF program use-case for XDP.  I
+could not find the blog post.
+ 
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
