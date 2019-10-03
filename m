@@ -2,156 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74B41CADB8
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91F2CADE4
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:14:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731113AbfJCR6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:58:50 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41467 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729265AbfJCR6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:58:50 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q7so2224284pfh.8
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 10:58:49 -0700 (PDT)
+        id S2387574AbfJCSM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 14:12:27 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33157 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732980AbfJCSM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:12:27 -0400
+Received: by mail-qt1-f195.google.com with SMTP id r5so4954434qtd.0;
+        Thu, 03 Oct 2019 11:12:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=3hQthO6lsPW8RRlhAk9IrovIeEkiWds5m8qIvV55R+c=;
-        b=odf+AoESJ8mx+ysTYVvVr0XyZt0N28owHfGYhFX1UwxarbVqZ0vU4j4xQWT6rUOhn3
-         Dqi12DmCOYAHNofFl0fo+8KB53/DKGuIL7Xw2PtcW/8gbtD07Dw7NMHA8Swiwxbggk0y
-         diG2jYm4rMdrHHzwVrwql4omfWW8Hry5DPtyaLENaYMXpMeOqUSkx18m7j3Yc8ZLtYPN
-         PXmJMV4x8wvSVh22zJ3BqWumlMzFjqejr1tFSmO9wqXxccU73k/iQoGhyXS1WQzrYujM
-         udDsZDK5mrolQCoodPBGUPhQ5oYxTsUAGRXDlphe2LfzzjwU4V6QWgC+8OGTc9faIWPd
-         B19Q==
+        bh=XuztriFrsPpSAdIkduTSl85a7Dc8Oqk8iZypNjD113A=;
+        b=AXzzktxXQm7CDwOuM0VBhEC1B/vlU+ok/OLCaX/bu3AeE7fqL/Bq1/GDfBK20Lv4d2
+         skwrCusgFWvLHdpXRK6kx7NpzX07uI/9vV8FHD7PM7XDDDL1srLPqpYXEkqVHgfY4rab
+         wGMK44aafPPbkIJj6G4fnrXf9YQ8khGYvQbbn3pClNWTo+wsqauPxmDIJAzFMjtpWNSI
+         1P5gJez2A3pMlkTx3CBNG2XB6Ipd7kcRkXT97wYsH0WqphCCuy5rU7O2956UPYfxaDEQ
+         5XBcXtPdk6uj1F2ZLCfo7BciMFSGyybmuJTit5Gc1406N8yLtq23osQcG+xjzuH5a9Ya
+         Y1yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3hQthO6lsPW8RRlhAk9IrovIeEkiWds5m8qIvV55R+c=;
-        b=r90bHW9YdSXnCA7JD3tIE7ZzTlPs4MpzbX8dUSmRd395dBrpyLzyJ9lcPAngSSWV0Q
-         C24NQxwe1OiVVwOjY2qKC8T4bx9J00d2Lp0c09mgaAG1OwpnSUzzNBtWj+4yEoOim7oE
-         AYpNKYjpeJORjA6vuZrswoABsg2jm0RQMBC2mfGWENxSPlPInxNdIGp6CTSzm0jGu/wX
-         Gfa5iLO//wSZFFTWq6KvW6z27p1+MBHKhKIlaUAiLlzMaFfmRBDaiwBiJcFRExHPLAZE
-         9lkLSzYx8oNjaunhxujTuAoPvL09t1dZmZ01DlHF+r9vH7bvoL26HOI2RrFzZ3SxQEVP
-         kGTw==
-X-Gm-Message-State: APjAAAV82D3Vh1wFziIlUcabeQEqR3aAae+N1FL0P8+PhdPfe1fDbwBW
-        m1Uwqwg+gNLrFXbjnL2kMV6x4w==
-X-Google-Smtp-Source: APXvYqwVjt79jy1JSYGuTINvBJpvLywL17Bl2CZcPoAXQYejyShispvcJFXxUKsryed9kMiXkfrcAQ==
-X-Received: by 2002:aa7:9f0e:: with SMTP id g14mr12554603pfr.100.1570125529529;
-        Thu, 03 Oct 2019 10:58:49 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id s73sm2942765pjb.15.2019.10.03.10.58.48
+        bh=XuztriFrsPpSAdIkduTSl85a7Dc8Oqk8iZypNjD113A=;
+        b=bo5Y0oqDdMS9Frarf3rrGALDDUTsgW5ACHkGkV45+1b5qLOcVAgRVpSruAu4a6Mige
+         Ro672CSrikjhfZWEk2tMDOY9rbnit+Do2lV/u6N3yXKgr0cN6rlaOJCyPbPp4e8SZPEB
+         Ic3v9Rsbp2bVmeaF5FRhkKqd8LqLo5Zmq+ok5ic5QSvu1vZXwphtCtx+PP8qAo5kYsAk
+         DIMfYJk3KVaRyjdBlovAkzvVjNBopqAEP+nGQQB383lqmMo0ZkTfpcTvszV3MhL2NhbY
+         OVqyl1JxtR31tFjcjl8AUv71vPyONbik7GyrHTtoduNsslM+frdOSPxCG0hUhD96grKI
+         B8CA==
+X-Gm-Message-State: APjAAAUnbZ9aoe5boGuC0k9jNYeLSZwd5zmEUGymn+qkIMQq5kfoFdFN
+        RxteBuybAMnhsVcIcaJt2Ws=
+X-Google-Smtp-Source: APXvYqzaVRotZ5xQyEzeewQ1a3WeIyM7e38yOasaxmf/6ck7h/sUtXokLOMDSKjHCEbAJCvTu8vc1w==
+X-Received: by 2002:ac8:3a84:: with SMTP id x4mr10746424qte.334.1570126345291;
+        Thu, 03 Oct 2019 11:12:25 -0700 (PDT)
+Received: from frodo.byteswizards.com ([190.162.109.190])
+        by smtp.gmail.com with ESMTPSA id o38sm2098361qtc.39.2019.10.03.11.12.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 10:58:48 -0700 (PDT)
-Date:   Thu, 3 Oct 2019 10:58:48 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Petar Penkov <ppenkov@google.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf/flow_dissector: add mode to enforce
- global BPF flow dissector
-Message-ID: <20191003175848.GE3223377@mini-arch>
-References: <20191002173357.253643-1-sdf@google.com>
- <20191002173357.253643-2-sdf@google.com>
- <CAEf4BzZuEChOL828F91wLxUr3h2yfAkZvhsyoSx18uSFSxOtqw@mail.gmail.com>
- <20191003014356.GC3223377@mini-arch>
- <CAEf4BzZnWkdFpSUsSBenDDfrvgjGvBxUnJmQRwb7xjNQBaKXdQ@mail.gmail.com>
- <20191003160137.GD3223377@mini-arch>
- <CAEf4BzYbJZz7AwW_N=Q2b-V8ZQCJVTHeUaGo6Ji848aB_z8nXA@mail.gmail.com>
- <5d9633a2de69c_55732aec43fe05c41@john-XPS-13-9370.notmuch>
+        Thu, 03 Oct 2019 11:12:23 -0700 (PDT)
+Date:   Thu, 3 Oct 2019 15:12:18 -0300
+From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        ebiederm@xmission.com, Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH V12 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
+Message-ID: <20191003181218.GA12598@frodo.byteswizards.com>
+References: <20191001214141.6294-1-cneirabustos@gmail.com>
+ <20191001214141.6294-3-cneirabustos@gmail.com>
+ <79645731-da32-6071-e05f-6345cf47bcd1@iogearbox.net>
+ <20191003145211.GA3657@frodo.byteswizards.com>
+ <CAEf4BzZvTvGcyVfM=RB7GA+WHxsDkS+OGmUrNLpMhfa7bMBA1w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5d9633a2de69c_55732aec43fe05c41@john-XPS-13-9370.notmuch>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <CAEf4BzZvTvGcyVfM=RB7GA+WHxsDkS+OGmUrNLpMhfa7bMBA1w@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/03, John Fastabend wrote:
-> Andrii Nakryiko wrote:
-> > On Thu, Oct 3, 2019 at 9:01 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > >
-> > > On 10/02, Andrii Nakryiko wrote:
-> > > > On Wed, Oct 2, 2019 at 6:43 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > > >
-> > > > > On 10/02, Andrii Nakryiko wrote:
-> > > > > > On Wed, Oct 2, 2019 at 10:35 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > > > > > >
-> > > > > > > Always use init_net flow dissector BPF program if it's attached and fall
-> > > > > > > back to the per-net namespace one. Also, deny installing new programs if
-> > > > > > > there is already one attached to the root namespace.
-> > > > > > > Users can still detach their BPF programs, but can't attach any
-> > > > > > > new ones (-EPERM).
+On Thu, Oct 03, 2019 at 10:30:06AM -0700, Andrii Nakryiko wrote:
+> On Thu, Oct 3, 2019 at 8:01 AM Carlos Antonio Neira Bustos
+> <cneirabustos@gmail.com> wrote:
+> >
+> > On Wed, Oct 02, 2019 at 12:52:29PM +0200, Daniel Borkmann wrote:
+> > > On 10/1/19 11:41 PM, Carlos Neira wrote:
+> > > > New bpf helper bpf_get_ns_current_pid_tgid,
+> > > > This helper will return pid and tgid from current task
+> > > > which namespace matches dev_t and inode number provided,
+> > > > this will allows us to instrument a process inside a container.
 > > > >
-> > > > I find this quite confusing for users, honestly. If there is no root
-> > > > namespace dissector we'll successfully attach per-net ones and they
-> > > > will be working fine. That some process will attach root one and all
-> > > > the previously successfully working ones will suddenly "break" without
-> > > > users potentially not realizing why. I bet this will be hair-pulling
-> > > > investigation for someone. Furthermore, if root net dissector is
-> > > > already attached, all subsequent attachment will now start failing.
-> > > The idea is that if sysadmin decides to use system-wide dissector it would
-> > > be attached from the init scripts/systemd early in the boot process.
-> > > So the users in your example would always get EPERM/EBUSY/EXIST.
-> > > I don't really see a realistic use-case where root and non-root
-> > > namespaces attach/detach flow dissector programs at non-boot
-> > > time (or why non-root containers could have BPF dissector and root
-> > > could have C dissector; multi-nic machine?).
+> > > > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > > > ---
+> > > >   include/linux/bpf.h      |  1 +
+> > > >   include/uapi/linux/bpf.h | 18 +++++++++++++++++-
+> > > >   kernel/bpf/core.c        |  1 +
+> > > >   kernel/bpf/helpers.c     | 36 ++++++++++++++++++++++++++++++++++++
+> > > >   kernel/trace/bpf_trace.c |  2 ++
+> > > >   5 files changed, 57 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > > index 5b9d22338606..231001475504 100644
+> > > > --- a/include/linux/bpf.h
+> > > > +++ b/include/linux/bpf.h
+> > > > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> > > >   extern const struct bpf_func_proto bpf_strtol_proto;
+> > > >   extern const struct bpf_func_proto bpf_strtoul_proto;
+> > > >   extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > > > +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
+> > > >   /* Shared helpers among cBPF and eBPF. */
+> > > >   void bpf_user_rnd_init_once(void);
+> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > index 77c6be96d676..ea8145d7f897 100644
+> > > > --- a/include/uapi/linux/bpf.h
+> > > > +++ b/include/uapi/linux/bpf.h
+> > > > @@ -2750,6 +2750,21 @@ union bpf_attr {
+> > > >    *                **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+> > > >    *
+> > > >    *                **-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> > > > + *
+> > > > + * u64 bpf_get_ns_current_pid_tgid(u64 dev, u64 inum)
+> > > > + * Return
+> > > > + *         A 64-bit integer containing the current tgid and pid from current task
+> > > > + *              which namespace inode and dev_t matches , and is create as such:
+> > > > + *         *current_task*\ **->tgid << 32 \|**
+> > > > + *         *current_task*\ **->pid**.
+> > > > + *
+> > > > + *         On failure, the returned value is one of the following:
+> > > > + *
+> > > > + *         **-EINVAL** if dev and inum supplied don't match dev_t and inode number
+> > > > + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
+> > > > + *
+> > > > + *         **-ENOENT** if /proc/self/ns does not exists.
+> > > > + *
+> > > >    */
+> > > >   #define __BPF_FUNC_MAPPER(FN)             \
+> > > >     FN(unspec),                     \
+> > > > @@ -2862,7 +2877,8 @@ union bpf_attr {
+> > > >     FN(sk_storage_get),             \
+> > > >     FN(sk_storage_delete),          \
+> > > >     FN(send_signal),                \
+> > > > -   FN(tcp_gen_syncookie),
+> > > > +   FN(tcp_gen_syncookie),          \
+> > > > +   FN(get_ns_current_pid_tgid),
+> > > >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> > > >    * function eBPF program intends to call
+> > > > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > > > index 66088a9e9b9e..b2fd5358f472 100644
+> > > > --- a/kernel/bpf/core.c
+> > > > +++ b/kernel/bpf/core.c
+> > > > @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+> > > >   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+> > > >   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+> > > >   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> > > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
+> > > >   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+> > > >   {
+> > > > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> > > > index 5e28718928ca..8777181d1717 100644
+> > > > --- a/kernel/bpf/helpers.c
+> > > > +++ b/kernel/bpf/helpers.c
+> > > > @@ -11,6 +11,8 @@
+> > > >   #include <linux/uidgid.h>
+> > > >   #include <linux/filter.h>
+> > > >   #include <linux/ctype.h>
+> > > > +#include <linux/pid_namespace.h>
+> > > > +#include <linux/proc_ns.h>
+> > > >   #include "../../lib/kstrtox.h"
+> > > > @@ -487,3 +489,37 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+> > > >     .arg4_type      = ARG_PTR_TO_LONG,
+> > > >   };
+> > > >   #endif
+> > > > +
+> > > > +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u64, dev, u64, inum)
+> > > > +{
+> > > > +   struct task_struct *task = current;
+> > > > +   struct pid_namespace *pidns;
+> > > > +   pid_t pid, tgid;
+> > > > +
+> > > > +   if ((u64)(dev_t)dev != dev)
+> > > > +           return -EINVAL;
+> > > > +
+> > > > +   if (unlikely(!task))
+> > > > +           return -EINVAL;
+> > > > +
+> > > > +   pidns = task_active_pid_ns(task);
+> > > > +   if (unlikely(!pidns))
+> > > > +           return -ENOENT;
+> > > > +
+> > > > +
+> > > > +   if (!ns_match(&pidns->ns, (dev_t)dev, inum))
+> > > > +           return -EINVAL;
+> > > > +
+> > > > +   pid = task_pid_nr_ns(task, pidns);
+> > > > +   tgid = task_tgid_nr_ns(task, pidns);
+> > > > +
+> > > > +   return (u64) tgid << 32 | pid;
 > > >
-> > > But I totally see your point about confusion. See below.
+> > > Basically here you are overlapping the 64-bit return value for the valid
+> > > outcome with the error codes above for the invalid case. If you look at
+> > > bpf_perf_event_read() we already had such broken occasion that bit us in
+> > > the past, and needed to introduce bpf_perf_event_read_value() instead.
+> > > Lets not go there again and design it similarly to the latter.
 > > >
-> > > > I'm not sure what's the better behavior here is, but maybe at least
-> > > > forcibly detach already attached ones, so when someone goes and tries
-> > > > to investigate, they will see that their BPF program is not attached
-> > > > anymore. Printing dmesg warning would be hugely useful here as well.
-> > > We can do for_each_net and detach non-root ones; that sounds
-> > > feasible and may avoid the confusion (at least when you query
-> > > non-root ns to see if the prog is still there, you get a valid
-> > > indication that it's not).
+> > > > +}
+> > > > +
+> > > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
+> > > > +   .func           = bpf_get_ns_current_pid_tgid,
+> > > > +   .gpl_only       = false,
+> > > > +   .ret_type       = RET_INTEGER,
+> > > > +   .arg1_type      = ARG_ANYTHING,
+> > > > +   .arg2_type      = ARG_ANYTHING,
+> > > > +};
+> > > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > > > index 44bd08f2443b..32331a1dcb6d 100644
+> > > > --- a/kernel/trace/bpf_trace.c
+> > > > +++ b/kernel/trace/bpf_trace.c
+> > > > @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > > >   #endif
+> > > >     case BPF_FUNC_send_signal:
+> > > >             return &bpf_send_signal_proto;
+> > > > +   case BPF_FUNC_get_ns_current_pid_tgid:
+> > > > +           return &bpf_get_ns_current_pid_tgid_proto;
+> > > >     default:
+> > > >             return NULL;
+> > > >     }
+> > > >
 > > >
-> > > > Alternatively, if there is any per-net dissector attached, we might
-> > > > disallow root net dissector to be installed. Sort of "too late to the
-> > > > party" way, but at least not surprising to successfully installed
-> > > > dissectors.
-> > > We can do this as well.
-> > >
-> > > > Thoughts?
-> > > Let me try to implement both of your suggestions and see which one makes
-> > > more sense. I'm leaning towards the later (simple check to see if
-> > > any non-root ns has the prog attached).
-> > >
-> > > I'll follow up with a v2 if all goes well.
-> > 
-> > Thanks! I don't have strong opinion on either, see what makes most
-> > sense from an actual user perspective.
+> > Daniel,
+> > If I understand correctly, to avoid problems I need to change the helper's function signature to something like the following:
+> >
+> > struct bpf_ns_current_pid_tgid_storage {
+> >         __u64 dev;
+> >         __u64 inum;
+> >         __u64 pidtgid;
 > 
+> if you do it this way, please do
 > 
-> From my point of view the second option is better. The root namespace flow
-> dissector attach should always happen first before any other namespaces are
-> created. If any namespaces have already attached then just fail the root
-> namespace. 
+> __u32 pid;
+> __u34 tgid;
 > 
-> Otherwise if you detach existing dissectors from a container these were
-> probably attached by the init container which might not be running anymore
-> and I have no easy way to learn/find out about this without creating another
-> container specifically to watch for this. If I'm relying on the dissector
-> for something now I can seemingly random errors. So its a bit ugly and I'll
-> probably just tell users to always attach the root namespace first to avoid
-> this headache. On the other side if the root namespace already has a
-> flow dissector attached and my init container fails its attach cmd I
-> can handle the error gracefully or even fail to launch the container with
-> a nice error message and the administrator can figure something out.
-> I'm always in favor of hard errors vs trying to guess what the right
-> choice is for any particular setup.
+> I have to look up where pid and tgid is in that 64-bit number every
+> single time, let's not do it here for no good reason.
 > 
-> Also it seems to me just checking if anything is attached is going to make
-> the code simpler vs trying to detach things in all namespaces.
-Agreed, I was also leaning towards this option. Thanks!
+> > };
+> >
+> > BPF_CALL_2(bpf_get_ns_current_pid_tgid,
+> >            struct bpf_ns_current_pid_tgid_storage *, buf, u32, size);
+> >
+> > then use dev and inum provided by the user and return the requested
+> > value into pidtgid of the struct. Would that work?
+> >
+> > Thanks for your help.
+> >
+> >
+> >
+> >
+Andrii,
+
+You are right, I'll do so.
+
+Bests.
