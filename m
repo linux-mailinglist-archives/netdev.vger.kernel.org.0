@@ -2,129 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 159C4CAD60
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:48:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F24ACAD77
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:48:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389785AbfJCRkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:40:02 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39502 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731560AbfJCRkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:40:01 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 4so3211729qki.6;
-        Thu, 03 Oct 2019 10:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=F4BANh4jYufVlD3yr9K5ti4yNN2QxjNsJv2HL10KC7Q=;
-        b=E3CklpvfMzqofh3/d/MYvH+IMRSZL64nyVP7noUQOtvqvLhML7zXDv2JX81PwDTriG
-         Mc1vXfC77IHwsRJhCoTCFZflcR0wWMH28iLEoYxwN6lU8qxBmYd3rou5QhT+lrrQn2Jl
-         2QNmX3d7XKjYg1dsQjRxDttu8zmPfccNm8dj5UHDsXdn7+6xbyYc0K96CFlKhj2Mp8J3
-         e0cmJ3hwN8RXLG2oZyzkYZlQ0GtbRjlrugDkdSxdsfsZv/H8DuYKZuN62gppYQIl+hub
-         QMvTM6eKjggx5qazaDHGzB86YoVCMLhVMK8ClwNl7fx+W+kb3IGq2j/j7ng3zpcjiVJH
-         WYQg==
+        id S2390403AbfJCRmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:42:23 -0400
+Received: from mx2.ucr.edu ([138.23.62.3]:45431 "EHLO mx2.ucr.edu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732374AbfJCRmS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Oct 2019 13:42:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1570124537; x=1601660537;
+  h=mime-version:references:in-reply-to:from:date:message-id:
+   subject:to:cc;
+  bh=2oSVnWrA/ed2JzasVs3JgdgieJU/Tv5Q4JjDOo4kYyI=;
+  b=SpaGV/wayM93jNINO+cvDhmNcdyLInESdxEmD9+E8tDQPhnoMQ3jW1N5
+   6g1N3IfICH01AxEldzCWLSVM4WVBLrHo3Oss9czziYzGtKLcODVVuS8Bp
+   /OFrXEZEdjxqttoNf8EoRPMaCh8Yo+SSsbAXFqeUnTBHLy6bekthyEupC
+   X3Q0nFfrTkkGPxomo2j5Q9CJXYFmMZv3KlM2VdgdsTLBnLs3enNQavuQ4
+   aV1r5NkaDmvDLfe7sbIPhKUclRE4JOoXEC5BnvD5LrNm+rE9cQdPLcEef
+   yoT1kYunZLVrA4Ih+SIomGYVvpaUZr5SO4+HdfUeSjxDXEOQnIZlsmPsf
+   g==;
+IronPort-SDR: jUAJvDFM+Gw5duK6SeyHcgDqirlZRuRCDqsT8gFMjNrN3hX+QTJo7XH7YFqlWRjCmag+BDcQs4
+ gd+m1qDyxtOz9UfioO5+RAK1KhCPgKA8vXr278SvR7hPr7z1+srvN4dEvwcscuPi5vCsRrWkGN
+ D4NyMGvfaReC67tsBgNKl+SLe437n6jBBQV84QWVKBSTGvVZFaHSYS2Iavq14sDhYuJPaal0gu
+ nbAs3L8OwoKxsZz5SAel39tjBKCPzAaknH4kmofAR6cVBzLwEPP66P4dmj0yKLbrnl71oZ6KHz
+ I6o=
+IronPort-PHdr: =?us-ascii?q?9a23=3Ai8kVuB8+TazEYf9uRHKM819IXTAuvvDOBiVQ1K?=
+ =?us-ascii?q?B41OocTK2v8tzYMVDF4r011RmVBN6dt6IP0rON+4nbGkU4qa6bt34DdJEeHz?=
+ =?us-ascii?q?Qksu4x2zIaPcieFEfgJ+TrZSFpVO5LVVti4m3peRMNQJW2aFLduGC94iAPER?=
+ =?us-ascii?q?vjKwV1Ov71GonPhMiryuy+4ZLebxhGiTanbr5/Lxq6oRjMusQYnIBvNrs/xh?=
+ =?us-ascii?q?zVr3VSZu9Y33loJVWdnxb94se/4ptu+DlOtvwi6sBNT7z0c7w3QrJEAjsmNX?=
+ =?us-ascii?q?s15NDwuhnYUQSP/HocXX4InRdOHgPI8Qv1Xpb1siv9q+p9xCyXNtD4QLwoRT?=
+ =?us-ascii?q?iv6bpgRQT2gykbKTE27GDXitRxjK1FphKhuwd/yJPQbI2MKfZyYr/RcdYcSG?=
+ =?us-ascii?q?FcXMheSjZBD5uzYIsBDeUPPehWoYrgqVUQsRSzHhWsCP/1xzNUmnP6wa833u?=
+ =?us-ascii?q?I8Gg/GxgwgGNcOvWzWo9X0NaYSUf21zK7VxjrAb/NZwzb945XPfxEhoPCMXa?=
+ =?us-ascii?q?h/ccvNxUUzGQ7IlUiQppD/Pz+PyOsCrnWb4vNmWOmyiGAnsxl8riazysookI?=
+ =?us-ascii?q?XEhYIYxkra+Sllw4s5P8O0RFJnbdOiDZBerTuVN5FsTcMnW2xovSE6xaAYtp?=
+ =?us-ascii?q?OjZygKzYgnxwbYa/yab4iE+hLjW/iVITd/nH9lfaiwhxe28US5zu38VNS43E?=
+ =?us-ascii?q?9EriZbjtXAqmoB1xPU6siARft9+lmu1SyT2ADU7+FIOUE0lazFJJ492rM8iI?=
+ =?us-ascii?q?YfvEDZEiL1mEj6lrGaelkn9+Sy9ejrfqnqqoeZN4BuiwH+Nqoumta4AeQ9Kg?=
+ =?us-ascii?q?UPX2ma+eSm273i4UH1XLtHg+YrkqbFqpDWP9oUqbOkAwNNyIYs9w6/Dyu60N?=
+ =?us-ascii?q?QfhXQHKkxKeA6agIf3JVHDO+74DfihjFS2ijtrxO7JPqfnAprTKnjPirDhfa?=
+ =?us-ascii?q?xy6x0U9A1m4dlB5p4cL7AFJP/pEhv9vcLVCzc1OhK5xuLgBsk70I4CDzGhGK?=
+ =?us-ascii?q?icZZLTo1+V4aodI+CNLNsEqjb0KqB9vNbzhmV/lFMAK/r6laALYWy1S6w1a3?=
+ =?us-ascii?q?6SZmDh15JYST8H?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2EZAACmMpZdgMjQVdFlHAEBAQQBAQw?=
+ =?us-ascii?q?EAQGBUwcBAQsBhA8qhCKIIoY7gg+TfoUogXsBCAEBAQ4vAQGEQAKCRiM0CQ4?=
+ =?us-ascii?q?CAwkBAQUBAQEBAQUEAQECEAEBCQ0JCCeFQoI6KQGDPAEBAQEDEhEEUhALCwM?=
+ =?us-ascii?q?GAQMCAh8HAgIiEgEFARwGEyKDAIILojOBAzyKMXV/M4hmAQkNgUgSeigBjA2?=
+ =?us-ascii?q?CF4N1Lj6HUYJYBIE3AQEBlSuWUgEGAoIRFIxUiEQbgjqLeosMLadIDyOBL4I?=
+ =?us-ascii?q?SMxolLVIGZ4FOUBAUggeOLiQwkV0BAQ?=
+X-IPAS-Result: =?us-ascii?q?A2EZAACmMpZdgMjQVdFlHAEBAQQBAQwEAQGBUwcBAQsBh?=
+ =?us-ascii?q?A8qhCKIIoY7gg+TfoUogXsBCAEBAQ4vAQGEQAKCRiM0CQ4CAwkBAQUBAQEBA?=
+ =?us-ascii?q?QUEAQECEAEBCQ0JCCeFQoI6KQGDPAEBAQEDEhEEUhALCwMGAQMCAh8HAgIiE?=
+ =?us-ascii?q?gEFARwGEyKDAIILojOBAzyKMXV/M4hmAQkNgUgSeigBjA2CF4N1Lj6HUYJYB?=
+ =?us-ascii?q?IE3AQEBlSuWUgEGAoIRFIxUiEQbgjqLeosMLadIDyOBL4ISMxolLVIGZ4FOU?=
+ =?us-ascii?q?BAUggeOLiQwkV0BAQ?=
+X-IronPort-AV: E=Sophos;i="5.67,253,1566889200"; 
+   d="scan'208";a="12603420"
+Received: from mail-lj1-f200.google.com ([209.85.208.200])
+  by smtp2.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 03 Oct 2019 10:42:16 -0700
+Received: by mail-lj1-f200.google.com with SMTP id v24so1076313ljh.23
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 10:42:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=F4BANh4jYufVlD3yr9K5ti4yNN2QxjNsJv2HL10KC7Q=;
-        b=XoXR5hlPAtMtiCMRAFop6CLgT3UMaWAIglZjAKaCMZjJPkUlQFbkaRFnw2jD0fXhlL
-         +8xymWMVjHwUDmOEMRkkhja7dbkghgWHygq7rWftZ1o7/emQ3zC1ltt5Z0AlNmrKr9Vk
-         dR9HfuYWGiBfaZlawEQMXj4b83WZpcwV6y9tXjc2zxI+SRflttz9BEsJf1ug+DvEitX6
-         gNCqbaV/vNXDZAcOFyH2EHiBX6b7H7TCwDVWdJ7+J4Nkvj5hX0EoydS5Ht9dD9mN1WJE
-         EzSJyU785sPmbbW0Du0DImenj3n2bPyTrOgFJPsXZw+DY9RvfUT8kW0GudSAmLqdod3g
-         gahw==
-X-Gm-Message-State: APjAAAWqEgYViOhCb8ABJjWV/bIYrqo90ZyqccNY7DZAeoCukTiW1+PI
-        RzB/VH+UEKYeVUYKmiHENRD+INy1yUj0MlJWruA=
-X-Google-Smtp-Source: APXvYqxcw1iiyKTIaWlMALLu1SIiLnBEhqmQUcvXKh/g7GsD/FPGgDPe2jnhBf9a0lyCI4xaSLzIkbeQMvujiaYmftY=
-X-Received: by 2002:a05:620a:249:: with SMTP id q9mr5601851qkn.491.1570124400731;
- Thu, 03 Oct 2019 10:40:00 -0700 (PDT)
+        bh=wd1GZqfs3ucUwfHbxzulPDp/Jo879CDaNWhNw++ir9w=;
+        b=NU3+d4gad/7QN1gvGtxRmg4VlGphugp30q0/JMgqEoTWtiXzeWIB0RTaKKbZhQdyK4
+         APE8g+8fIy3cB2r6/bSDI30WED2RD3bQUbBsKYz4Ks71NKTmSqmEJgz6A4mrW8+xiWU4
+         n39gvYY5K2PiToGi7GKvZz1puC7Lo6AQaBDKdHkUE6VpbISYTK4w0sqe/OC7RKnYcA1N
+         7rwzhKWgWgMBpOGSNITwIg0pyeR9TLDxOqnSvG9xgDQkLSurF8DOilF7HmEgi6AGYLl4
+         gIByMlFbA5OXx2CcECh3ayws2UYcn58OCZ+7ys26wYxGnhwFer19f65YTIX1MwutiNaU
+         z/eQ==
+X-Gm-Message-State: APjAAAWIjNf0vQdeQJM5/doNC36SM0BCu8I7NI+28Lne6M59IKCYeSee
+        TUSyO6eYzGQeuzZE7gvlNYFgqDANsavV7tzMbHNSCjnk/X+CSOCMU6yEsu+c88NpCpee23CpI7a
+        8d0BDQKSaG5c465+wj2J7opqKJKSiSJyiYw==
+X-Received: by 2002:a2e:89cd:: with SMTP id c13mr6816565ljk.92.1570124534491;
+        Thu, 03 Oct 2019 10:42:14 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzgu0O4OmhLkdiHm32veyD7C/ytrOWhZhDZJotP5u235A/EygW4DdMB91Rj/Yujb4YY94JdkOSA+bQNUAlgoYs=
+X-Received: by 2002:a2e:89cd:: with SMTP id c13mr6816554ljk.92.1570124534252;
+ Thu, 03 Oct 2019 10:42:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <1570121672-12172-1-git-send-email-zdai@linux.vnet.ibm.com>
-In-Reply-To: <1570121672-12172-1-git-send-email-zdai@linux.vnet.ibm.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 3 Oct 2019 10:39:49 -0700
-Message-ID: <CAKgT0Udz7vt5C=+6vpFPbys4sODAZtCjrkSvOdgP80rX7Ww+Ng@mail.gmail.com>
-Subject: Re: [v1] e1000e: EEH on e1000e adapter detects io perm failure can
- trigger crash
-To:     David Dai <zdai@linux.vnet.ibm.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Miller <davem@davemloft.net>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, zdai@us.ibm.com
+References: <20191001202439.15766-1-yzhai003@ucr.edu> <20191002.142214.252882219207569928.davem@davemloft.net>
+In-Reply-To: <20191002.142214.252882219207569928.davem@davemloft.net>
+From:   Yizhuo Zhai <yzhai003@ucr.edu>
+Date:   Thu, 3 Oct 2019 10:42:58 -0700
+Message-ID: <CABvMjLTzcwN5h+Fn-nNc4VcSr71skh-813u+mCb+EW5wGOT0+g@mail.gmail.com>
+Subject: Re: [PATCH] net: hisilicon: Fix usage of uninitialized variable in
+ function mdio_sc_cfg_reg_write()
+To:     David Miller <davem@davemloft.net>
+Cc:     Chengyu Song <csong@cs.ucr.edu>, Zhiyun Qian <zhiyunq@cs.ucr.edu>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 3, 2019 at 9:59 AM David Dai <zdai@linux.vnet.ibm.com> wrote:
->
-> We see the behavior when EEH e1000e adapter detects io permanent failure,
-> it will crash kernel with this stack:
-> EEH: Beginning: 'error_detected(permanent failure)'
-> EEH: PE#900000 (PCI 0115:90:00.1): Invoking e1000e->error_detected(permanent failure)
-> EEH: PE#900000 (PCI 0115:90:00.1): e1000e driver reports: 'disconnect'
-> EEH: PE#900000 (PCI 0115:90:00.0): Invoking e1000e->error_detected(permanent failure)
-> EEH: PE#900000 (PCI 0115:90:00.0): e1000e driver reports: 'disconnect'
-> EEH: Finished:'error_detected(permanent failure)'
-> Oops: Exception in kernel mode, sig: 5 [#1]
-> NIP [c0000000007b1be0] free_msi_irqs+0xa0/0x280
->  LR [c0000000007b1bd0] free_msi_irqs+0x90/0x280
-> Call Trace:
-> [c0000004f491ba10] [c0000000007b1bd0] free_msi_irqs+0x90/0x280 (unreliable)
-> [c0000004f491ba70] [c0000000007b260c] pci_disable_msi+0x13c/0x180
-> [c0000004f491bab0] [d0000000046381ac] e1000_remove+0x234/0x2a0 [e1000e]
-> [c0000004f491baf0] [c000000000783cec] pci_device_remove+0x6c/0x120
-> [c0000004f491bb30] [c00000000088da6c] device_release_driver_internal+0x2bc/0x3f0
-> [c0000004f491bb80] [c00000000076f5a8] pci_stop_and_remove_bus_device+0xb8/0x110
-> [c0000004f491bbc0] [c00000000006e890] pci_hp_remove_devices+0x90/0x130
-> [c0000004f491bc50] [c00000000004ad34] eeh_handle_normal_event+0x1d4/0x660
-> [c0000004f491bd10] [c00000000004bf10] eeh_event_handler+0x1c0/0x1e0
-> [c0000004f491bdc0] [c00000000017c4ac] kthread+0x1ac/0x1c0
-> [c0000004f491be30] [c00000000000b75c] ret_from_kernel_thread+0x5c/0x80
->
-> Basically the e1000e irqs haven't been freed at the time eeh is trying to
-> remove the the e1000e device.
-> Need to make sure when e1000e_close is called to bring down the NIC,
-> if adapter error_state is pci_channel_io_perm_failure, it should also
-> bring down the link and free irqs.
->
-> Reported-by: Morumuri Srivalli  <smorumu1@in.ibm.com>
-> Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
-> ---
->  drivers/net/ethernet/intel/e1000e/netdev.c |    3 ++-
->  1 files changed, 2 insertions(+), 1 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index d7d56e4..cf618e1 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> @@ -4715,7 +4715,8 @@ int e1000e_close(struct net_device *netdev)
->
->         pm_runtime_get_sync(&pdev->dev);
->
-> -       if (!test_bit(__E1000_DOWN, &adapter->state)) {
-> +       if (!test_bit(__E1000_DOWN, &adapter->state) ||
-> +           (adapter->pdev->error_state == pci_channel_io_perm_failure)) {
->                 e1000e_down(adapter, true);
->                 e1000_free_irq(adapter);
+Hi David:
 
-It seems like the issue is the fact that e1000_io_error_detected is
-calling e1000e_down without the e1000_free_irq() bit. Instead of doing
-this couldn't you simply add the following to e1000_is_slot_reset in
-the "result = PCI_ERS_RESULT_DISCONNECT" case:
-    if (netif_running(netdev)
-        e1000_free_irq(adapter);
+Thanks for your feedback. "regmap_write()" could also fail and cause
+influence on the caller. If patches for "regmap_write()" are needed,
+then the title could be changed from "uninitialized use" to "miss
+return check".
 
-Alternatively we could look at freeing and reallocating the IRQs in
-the event of an error like we do for the e1000e_pm_freeze and
-e1000e_pm_thaw cases. That might make more sense since we are dealing
-with an error we might want to free and reallocate the IRQ resources
-assigned to the device.
+On Wed, Oct 2, 2019 at 2:22 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Yizhuo <yzhai003@ucr.edu>
+> Date: Tue,  1 Oct 2019 13:24:39 -0700
+>
+> > In function mdio_sc_cfg_reg_write(), variable "reg_value" could be
+> > uninitialized if regmap_read() fails. However, "reg_value" is used
+> > to decide the control flow later in the if statement, which is
+> > potentially unsafe.
+> >
+> > Signed-off-by: Yizhuo <yzhai003@ucr.edu>
+>
+> Applied, but really this is such a pervasive problem.
+>
+> So much code doesn't check the return value from either regmap_read
+> or regmap_write.
+>
+> _EVEN_ in the code you are editing, the patch context shows an unchecked
+> regmap_write() call.
+>
+> > @@ -148,11 +148,15 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
+> >  {
+> >       u32 time_cnt;
+> >       u32 reg_value;
+> > +     int ret;
+> >
+> >       regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
+>         ^^^^^^^^^^^^
+>
+> Grepping for regmap_{read,write}() shows how big an issue this is.
+>
+> I don't know what to do, maybe we can work over time to add checks to
+> all calls and then force warnings on unchecked return values so that
+> the problem is not introduced in the future.
 
-Thanks.
 
-- Alex
+
+-- 
+Kind Regards,
+
+Yizhuo Zhai
+
+Computer Science, Graduate Student
+University of California, Riverside
