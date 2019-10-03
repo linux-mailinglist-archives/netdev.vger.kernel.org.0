@@ -2,172 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DDABCB0FE
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 23:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F319CCB0FF
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 23:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730930AbfJCVVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 17:21:45 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37843 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730306AbfJCVVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 17:21:44 -0400
-Received: by mail-ed1-f66.google.com with SMTP id r4so3982326edy.4
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 14:21:41 -0700 (PDT)
+        id S1731462AbfJCVWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 17:22:02 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:35943 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727789AbfJCVWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 17:22:01 -0400
+Received: by mail-ed1-f67.google.com with SMTP id h2so3996077edn.3
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 14:22:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/y5wVzJjjbl/Vn1Lr3gSHaAXMHhISRU05cnKzoEvpag=;
-        b=E+5pxO9W3oNTUh1auqzsx+4w5rPmLvPQ0cwnhYE5qcOOMLwns5+Lizk5HO0la8qPPC
-         rtqOuBFePv9Oe6AJw5yFVZJSJtmCYl6qT/FMO9vJJUpR+cEpQJ/4lJER3P+nyDTujIjL
-         Ccg63UPI/7e8HgQHs+O2tSiqG0xZBmTMDJtu9whO9OSVbPCjLPjCJdUlKhHpKFq/Y3HV
-         rZ09GpHo2wh2flmoWUWw6GQ9M0RCkiLl5KC5yyGx6PYFNpGMXz+dg9OIdDH8aS4dvTsC
-         cLq00oHxrw2aHgqHXBCtyi/i4k+Tj88wToA47oU8QUaH3PQ8oiD4MXztKnUbwmlG980+
-         o+9A==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=U/9Eh6X5Sc43sajYoAyDEOIB2h/OjBJ2wmPgaz2KgAg=;
+        b=rBobQjxWMCxsFNSJvL6FoF+fQmU8a4AC5Xc2qemZfYBKSA4uk4K1jPYmUUHdWM5KWS
+         EMZHwFTfuTgCAunlTn6znDZIM1wWY4GcyxScm1UqNsn2ZLzW/q+tWBcVW+75PgZUgfwo
+         FS3sgyevALVgWIAlE/jvk8nPTgRPSyMmf9O6HYHEM5TQouRa0Ha8T1Ca8BTD7gcyG+0B
+         etIDjYiEl82joQz1qrdSFn6OatbEKNd6Oe5x8sII9sOW9QezxQVGXHfrRgRNcl54dvOY
+         CNPzI36cMz0zOEc7Qrz6YBeW+KoLjTgkHBxdB/pXE6I2e1jO8B6JnswIHBBrK079giJX
+         ofgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/y5wVzJjjbl/Vn1Lr3gSHaAXMHhISRU05cnKzoEvpag=;
-        b=cf/R7Bxq+MrZc5BEg0VahuLp9Z2de8aQGG+QVDgsnI6ES+RXbP+3YiI27ZeM6Cu12g
-         Oy2M6fPEVvKNgzFRQrH51D4BbsCTFiE0mVgOU9iW2RmnBNSBrgJyjGeL8gTeIAko3J81
-         Tb42VPgRxuUG5SLn0jJPuT4vOhhmwdTShh+Zv1LPXFsaWE+kz7/L0KZxg09c7O5PVI6c
-         T/sE+g53JodHTLUgBSuOdoWblmQCi/BU+PXrVzoTeZwZCRSJZWU/Ad2tmC39uZ+PG8AI
-         d4+Lea+KFDf6Ys/vhxnhUjeaDjbvvMPE+5QDBPJvaHLfpCv8w9q6gGeWUvhXMbpmmkaI
-         fzwQ==
-X-Gm-Message-State: APjAAAWAlv64ZrGU5WDF1ouL/nXGm9voZ5Jc7FGmo6Lo52iDzqO51oTA
-        7ahmAOuATnbiIwzv2ioGm3SV2LiSLF+JgbYquNHeVA==
-X-Google-Smtp-Source: APXvYqx54H8FJpbEJJWaU/lmpDMeXqW1Bww/XDUwK3EKEdHP5JTdAzVdla9S5dYWOwhAakg0MeOeLYJ3J8gVsWuDYjY=
-X-Received: by 2002:a50:eac4:: with SMTP id u4mr12068242edp.36.1570137701146;
- Thu, 03 Oct 2019 14:21:41 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=U/9Eh6X5Sc43sajYoAyDEOIB2h/OjBJ2wmPgaz2KgAg=;
+        b=VYXWwtkE6NplMd8EeDsrXw4IdpQzNgZD8xlnV7bct4iu8Bgm/YRsvtbxnfjEw+QvSt
+         JWvXISBOdZtTiygd4/zL/0OS3xcPvAsDwY9XfoJptTQ9TGXwzQTfu5SLnxQlqQmQHxvD
+         COX8yTf+M/5RyVz94voyMjx52tOO2vPAV1r7BhWZxcZK6nZd5mXn82BULWjW30ukSZIF
+         xbyNPufolIfA4+ap13PEx3t3hJO2pz3ZsApRE/e3kN+b0FoxTn9ykAYSe3A8rK+y2FR5
+         oH+hacVpDPSRB3ZdxFNhombIZhXvcNoF6F3s8PI2pUlyH9TBBhxYUP1waLu711hUjaet
+         XoRg==
+X-Gm-Message-State: APjAAAVSAfxml9eHLXWBep3yhc6sZNe/+B3T/2F+4hZn89E3b5XDY+Ej
+        GYkl7fjXosq9u//ziwBZC5twvCM=
+X-Google-Smtp-Source: APXvYqyDc7lH8SL2VfS4khnf0qjQ96Y2Afx/5WukiVFaVBnq2NWmDWef8lVbOG8YQhcf4WVD7/vkJw==
+X-Received: by 2002:a17:907:205b:: with SMTP id pg27mr9564287ejb.135.1570137720115;
+        Thu, 03 Oct 2019 14:22:00 -0700 (PDT)
+Received: from avx2 ([46.53.250.203])
+        by smtp.gmail.com with ESMTPSA id i5sm678326edq.30.2019.10.03.14.21.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 03 Oct 2019 14:21:59 -0700 (PDT)
+Date:   Fri, 4 Oct 2019 00:21:57 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     davem@davemloft.net, steffen.klassert@secunet.com,
+        herbert@gondor.apana.org.au
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] xfrm: ifdef
+ setsockopt(UDP_ENCAP_ESPINUDP/UDP_ENCAP_ESPINUDP_NON_IKE)
+Message-ID: <20191003212157.GA6943@avx2>
 MIME-Version: 1.0
-References: <20191002233750.13566-1-olteanv@gmail.com> <20191003192445.GD21875@lunn.ch>
-In-Reply-To: <20191003192445.GD21875@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 4 Oct 2019 00:21:30 +0300
-Message-ID: <CA+h21hrYvCaNLDbDFzU9LEjodJUnR01BNV=CFwF8DNJqU33hYw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: Allow port mirroring to the CPU port
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Oct 2019 at 22:24, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Thu, Oct 03, 2019 at 02:37:50AM +0300, Vladimir Oltean wrote:
-> > On a regular netdev, putting it in promiscuous mode means receiving all
-> > traffic passing through it, whether or not it was destined to its MAC
-> > address. Then monitoring applications such as tcpdump can see all
-> > traffic transiting it.
-> >
-> > On Ethernet switches, clearly all ports are in promiscuous mode by
-> > definition, since they accept frames destined to any MAC address.
-> > However tcpdump does not capture all frames transiting switch ports,
-> > only the ones destined to, or originating from the CPU port.
-> >
-> > To be able to monitor frames with tcpdump on the CPU port, extend the tc
-> > matchall classifier and mirred action to support the DSA master port as
-> > a possible mirror target.
-> >
-> > Tested with:
-> > tc qdisc add dev swp2 clsact
-> > tc filter add dev swp2 ingress matchall skip_sw \
-> >       action mirred egress mirror dev eth2
-> > tcpdump -i swp2
->
-> Humm.
->
-> O.K, i don't like this for a few reasons.
->
-> egress mirror dev eth2
->
-> Frames are supported to egress eth2. But in fact they will ingress on
-> eth2. That is not intuitive.
->
+If IPsec is not configured, there is no reason to delay the inevitable.
 
-But you are just arguing that the tc mirred syntax is confusing.
-'ingress'/'egress' has nothing to do with 'eth2'. You just specify the
-direction of the frames transiting swp2 that you want to capture. And
-the destination port, as a net device. Because there is no net device
-for the CPU port, 'eth2' acts as substitute. Florian's br0 could have
-acted as substitute as well, but then there may not be a br0...
-But that is only to fit the existing tc mirred command pattern. I'm
-not using 'tcpdump -i eth2' to capture the mirrored traffic, but still
-'tcpdump -i swp2'.
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+---
 
-> I'm also no sure how safe this it is to ingress mirror packets on the
-> master interface. Will they have DSA tags? I think that will vary from
+ include/net/xfrm.h |    7 -------
+ net/ipv4/udp.c     |    2 ++
+ 2 files changed, 2 insertions(+), 7 deletions(-)
 
-Generally speaking, I would say that a device which does not push DSA
-tags towards the CPU port is broken. Yes, I know, I don't need to be
-reminded about cc1939e4b3aa ("net: dsa: Allow drivers to filter
-packets they can decode source port from").
-But there might be other exceptions too: maybe some switches support
-cascaded setups, but don't stack DSA tags, and they need an awareness
-of the switches beneath them, case in which it's reasonable for them
-not to push a second tag. But then it isn't possible to enable port
-mirroring on a DSA port anyway, due to lack of both net devices in
-this case.
-
-> device to device. Are we going to see some packets twice? Once for the
-> mirror, and a second time because they are destined to the CPU? Do we
-> end up processing the packets twice?
->
-
-Does it matter?
-FWIW, my device does not duplicate frames which already had the CPU in
-the destination ports mask. But you will, nonetheless, see as
-duplicated the frames transmitted from the CPU towards a port with
-egress mirroring enabled towards the CPU. But then you could just keep
-only ingress mirroring enabled, if that bothered you.
-
-> For your use case of wanting to see packets in tcpdump, i think we are
-> back to the discussion of what promisc mode means. I would prefer that
-> when a DSA slave interface is put into promisc mode for tcpdump, the
-> switch then forwards a copy of frames to the CPU, without
-> duplication. That is a much more intuitive model.
->
-
-So I'm not disagreeing that the patch I'm proposing isn't very
-intuitive. But I think the reasons you pointed out are not the real
-ones why.
-I would like to see DSA switch net devices (and not only) as
-'offloaded net devices', some of the traffic not reaching the CPU for
-whatever reason. And have a switch to copy the offloaded traffic
-towards the CPU as well. Then it would not matter that it's DSA or
-switchdev or capable of offloaded IP routing or promiscuous or
-whatever.
-Would I want that switch to get flipped by default by the driver when
-I run tcpdump? Not so sure. I mean there are already switches like
-'--monitor-mode' in tcpdump specifically for Wi-Fi, so it's not as
-though users who want to 'see everything' aren't able to understand a
-new concept (in this case an 'offloaded net device').
-And piggybacking on top of the promiscuity concept maybe isn't the
-most intuitive way to get this solved either: you can already be
-promiscuous and still not 'see everything'. And there's a second
-reason too: mirroring (or copy-to-cpu) in many devices is a lot more
-configurable than promiscuity is. Even 'dumb' devices like sja1105
-support port-based mirroring and flow-based mirroring (classification
-done at least by {DMAC, VLAN} keys), configured separately for the RX
-and TX direction of each port. I suppose you want the driver to just
-enable something really simple, like egress and ingress port-based
-mirroring? Maybe that is less useful in a real debugging scenario than
-just copying what you're interested in.
-And this slowly glides towards the idea that if there's already this
-much degree of configurability in what you want to mirror, then maybe
-it doesn't make much sense at all in even having that switch put in
-tcpdump (where it would only be something trivial, if not implicit),
-and not in a more dedicated place for this kind of stuff, like tc.
-Maybe the discussion should be about how to represent traffic destined
-towards the CPU in a more abstract way in the tc mirred command?
-
->           Andrew
-
-Thanks,
--Vladimir
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1613,13 +1613,6 @@ static inline int xfrm_user_policy(struct sock *sk, int optname, u8 __user *optv
+ {
+  	return -ENOPROTOOPT;
+ }
+-
+-static inline int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+-{
+- 	/* should not happen */
+- 	kfree_skb(skb);
+-	return 0;
+-}
+ #endif
+ 
+ struct dst_entry *__xfrm_dst_lookup(struct net *net, int tos, int oif,
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2520,9 +2520,11 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+ 	case UDP_ENCAP:
+ 		switch (val) {
+ 		case 0:
++#ifdef CONFIG_XFRM
+ 		case UDP_ENCAP_ESPINUDP:
+ 		case UDP_ENCAP_ESPINUDP_NON_IKE:
+ 			up->encap_rcv = xfrm4_udp_encap_rcv;
++#endif
+ 			/* FALLTHROUGH */
+ 		case UDP_ENCAP_L2TPINUDP:
+ 			up->encap_type = val;
