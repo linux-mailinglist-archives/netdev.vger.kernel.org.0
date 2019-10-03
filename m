@@ -2,101 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F319CCB0FF
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 23:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF70CB101
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 23:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731462AbfJCVWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 17:22:02 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:35943 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727789AbfJCVWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 17:22:01 -0400
-Received: by mail-ed1-f67.google.com with SMTP id h2so3996077edn.3
-        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 14:22:00 -0700 (PDT)
+        id S1731720AbfJCVWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 17:22:32 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46350 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728763AbfJCVWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 17:22:32 -0400
+Received: by mail-qt1-f195.google.com with SMTP id u22so5651867qtq.13;
+        Thu, 03 Oct 2019 14:22:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=U/9Eh6X5Sc43sajYoAyDEOIB2h/OjBJ2wmPgaz2KgAg=;
-        b=rBobQjxWMCxsFNSJvL6FoF+fQmU8a4AC5Xc2qemZfYBKSA4uk4K1jPYmUUHdWM5KWS
-         EMZHwFTfuTgCAunlTn6znDZIM1wWY4GcyxScm1UqNsn2ZLzW/q+tWBcVW+75PgZUgfwo
-         FS3sgyevALVgWIAlE/jvk8nPTgRPSyMmf9O6HYHEM5TQouRa0Ha8T1Ca8BTD7gcyG+0B
-         etIDjYiEl82joQz1qrdSFn6OatbEKNd6Oe5x8sII9sOW9QezxQVGXHfrRgRNcl54dvOY
-         CNPzI36cMz0zOEc7Qrz6YBeW+KoLjTgkHBxdB/pXE6I2e1jO8B6JnswIHBBrK079giJX
-         ofgw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KudO1+oRE7OC5W3PIQ9AjHPMoLOpGH+EnWx+p184Uzc=;
+        b=M+lZAgO63rkB50z2QKfYXN2dvaDO4QYwdYN5rOcquRhXCWprrRkRJI0Lq+RbW5eqbm
+         TQRStc7NP4C1i5QmV/K8RE7c9m8VNW7fI3I/74U+XaCnwayNAa/xlSN64BOx8wO3s2C0
+         I4nX5DSy2fsQwWwlu+xrE7La0UZP193+wLNfNRQJ0GMz7JzoiYysPy6LdmPiKJUwaiYw
+         x83acIIkhdlFAM/0R+Mxl7mNEvCXq2jL/ntI/LN7Zw9L8KOAg6LNxgMAYEfD8HvhxJrt
+         2fzjmgxY55knnqVdNaA/0eEYw2UycSeoRsjAg4OeD4INVCuoIBI3tQ1foygde7BXTRRv
+         hung==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=U/9Eh6X5Sc43sajYoAyDEOIB2h/OjBJ2wmPgaz2KgAg=;
-        b=VYXWwtkE6NplMd8EeDsrXw4IdpQzNgZD8xlnV7bct4iu8Bgm/YRsvtbxnfjEw+QvSt
-         JWvXISBOdZtTiygd4/zL/0OS3xcPvAsDwY9XfoJptTQ9TGXwzQTfu5SLnxQlqQmQHxvD
-         COX8yTf+M/5RyVz94voyMjx52tOO2vPAV1r7BhWZxcZK6nZd5mXn82BULWjW30ukSZIF
-         xbyNPufolIfA4+ap13PEx3t3hJO2pz3ZsApRE/e3kN+b0FoxTn9ykAYSe3A8rK+y2FR5
-         oH+hacVpDPSRB3ZdxFNhombIZhXvcNoF6F3s8PI2pUlyH9TBBhxYUP1waLu711hUjaet
-         XoRg==
-X-Gm-Message-State: APjAAAVSAfxml9eHLXWBep3yhc6sZNe/+B3T/2F+4hZn89E3b5XDY+Ej
-        GYkl7fjXosq9u//ziwBZC5twvCM=
-X-Google-Smtp-Source: APXvYqyDc7lH8SL2VfS4khnf0qjQ96Y2Afx/5WukiVFaVBnq2NWmDWef8lVbOG8YQhcf4WVD7/vkJw==
-X-Received: by 2002:a17:907:205b:: with SMTP id pg27mr9564287ejb.135.1570137720115;
-        Thu, 03 Oct 2019 14:22:00 -0700 (PDT)
-Received: from avx2 ([46.53.250.203])
-        by smtp.gmail.com with ESMTPSA id i5sm678326edq.30.2019.10.03.14.21.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Oct 2019 14:21:59 -0700 (PDT)
-Date:   Fri, 4 Oct 2019 00:21:57 +0300
-From:   Alexey Dobriyan <adobriyan@gmail.com>
-To:     davem@davemloft.net, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] xfrm: ifdef
- setsockopt(UDP_ENCAP_ESPINUDP/UDP_ENCAP_ESPINUDP_NON_IKE)
-Message-ID: <20191003212157.GA6943@avx2>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KudO1+oRE7OC5W3PIQ9AjHPMoLOpGH+EnWx+p184Uzc=;
+        b=tUSLhJuxhtmndajTnVDYqXhspRUzQqqi/0bGJPXv/X/zx02nzbMoE//LD1b4z1mhl6
+         no2wrvLuak5s14t9VQbtFcSLHUyzslEH67/7e7Yb0HLxrO0JPP6HlDAlEDmJ9tGkELKZ
+         bL+7HMuTUIaru4U1eSrENWbyTZrE84RXFzU26zqXdabZ/SFykrXT1fLSjKDs+GCwsvqy
+         bVWDHmuy2se9qJzr0QvqZeR5CqO2HqAN5nk5hL/LPMvFELGvLnH+1Y3cBaYSB8pinMgI
+         7JVQrxelcWjf9BXZxmU/oJ2hK6AY/qvqgdKod8mC8RAUN2vEpSeG7ahEN3I/IdFXAQCi
+         Edbw==
+X-Gm-Message-State: APjAAAVmXR+N7GhHLS6SH62BO8RraPGMwNH4O3bbcp8IWxH1ip3mDCsT
+        /Grp1YsX5i5f/PqT7b6YI5zoGHtquw9qKT5knHE=
+X-Google-Smtp-Source: APXvYqw1dT/OHlkVzUujoWq2u+CNNDKvrfQWas0nyYXxDGLMTGlwC6eqnHDDNwJbaYPrPyakf2MBJR33ljZ7liUijCA=
+X-Received: by 2002:ac8:7401:: with SMTP id p1mr12170728qtq.141.1570137750969;
+ Thu, 03 Oct 2019 14:22:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191002215041.1083058-1-andriin@fb.com> <20191002215041.1083058-3-andriin@fb.com>
+ <CAPhsuW4pS_P0n+UCB40uSVKp6W0N4Xas4UT9oofLxSZjhmyeGw@mail.gmail.com>
+In-Reply-To: <CAPhsuW4pS_P0n+UCB40uSVKp6W0N4Xas4UT9oofLxSZjhmyeGw@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 3 Oct 2019 14:22:20 -0700
+Message-ID: <CAEf4BzY2dG0QrBQF8g2w=yvSeVJ7LtWrLOckrWsCAnBvtZgMiQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/7] selftests/bpf: samples/bpf: split off
+ legacy stuff from bpf_helpers.h
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If IPsec is not configured, there is no reason to delay the inevitable.
+On Thu, Oct 3, 2019 at 1:09 PM Song Liu <liu.song.a23@gmail.com> wrote:
+>
+> On Wed, Oct 2, 2019 at 3:01 PM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Split off few legacy things from bpf_helpers.h into separate
+> > bpf_legacy.h file:
+> > - load_{byte|half|word};
+> > - remove extra inner_idx and numa_node fields from bpf_map_def and
+> >   introduce bpf_map_def_legacy for use in samples;
+> > - move BPF_ANNOTATE_KV_PAIR into bpf_legacy.h.
+> >
+> > Adjust samples and selftests accordingly by either including
+> > bpf_legacy.h and using bpf_map_def_legacy, or switching to BTF-defined
+> > maps altogether.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> Acked-by: Song Liu <songliubraving@fb.com>
+>
+> with a nit below
+>
+> > ---
+> >  samples/bpf/hbm_kern.h                        | 28 +++++++------
+> >  samples/bpf/map_perf_test_kern.c              | 23 +++++------
+> >  samples/bpf/parse_ldabs.c                     |  1 +
+> >  samples/bpf/sockex1_kern.c                    |  1 +
+> >  samples/bpf/sockex2_kern.c                    |  1 +
+> >  samples/bpf/sockex3_kern.c                    |  1 +
+> >  samples/bpf/tcbpf1_kern.c                     |  1 +
+> >  samples/bpf/test_map_in_map_kern.c            | 15 +++----
+> >  tools/testing/selftests/bpf/bpf_helpers.h     | 24 +-----------
+> >  tools/testing/selftests/bpf/bpf_legacy.h      | 39 +++++++++++++++++++
+> >  .../testing/selftests/bpf/progs/sockopt_sk.c  | 13 +++----
+> >  tools/testing/selftests/bpf/progs/tcp_rtt.c   | 13 +++----
+> >  .../selftests/bpf/progs/test_btf_haskv.c      |  1 +
+> >  .../selftests/bpf/progs/test_btf_newkv.c      |  1 +
+> >  14 files changed, 92 insertions(+), 70 deletions(-)
+> >  create mode 100644 tools/testing/selftests/bpf/bpf_legacy.h
+> >
+> > diff --git a/samples/bpf/hbm_kern.h b/samples/bpf/hbm_kern.h
+> > index aa207a2eebbd..91880a0e9c2f 100644
+> > --- a/samples/bpf/hbm_kern.h
+> > +++ b/samples/bpf/hbm_kern.h
+> > @@ -24,6 +24,7 @@
+> >  #include <net/inet_ecn.h>
+> >  #include "bpf_endian.h"
+> >  #include "bpf_helpers.h"
+> > +#include "bpf_legacy.h"
+>
+> nit: I guess we don't need bpf_legacy.h here?
 
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
----
-
- include/net/xfrm.h |    7 -------
- net/ipv4/udp.c     |    2 ++
- 2 files changed, 2 insertions(+), 7 deletions(-)
-
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1613,13 +1613,6 @@ static inline int xfrm_user_policy(struct sock *sk, int optname, u8 __user *optv
- {
-  	return -ENOPROTOOPT;
- }
--
--static inline int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
--{
-- 	/* should not happen */
-- 	kfree_skb(skb);
--	return 0;
--}
- #endif
- 
- struct dst_entry *__xfrm_dst_lookup(struct net *net, int tos, int oif,
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2520,9 +2520,11 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 	case UDP_ENCAP:
- 		switch (val) {
- 		case 0:
-+#ifdef CONFIG_XFRM
- 		case UDP_ENCAP_ESPINUDP:
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			up->encap_rcv = xfrm4_udp_encap_rcv;
-+#endif
- 			/* FALLTHROUGH */
- 		case UDP_ENCAP_L2TPINUDP:
- 			up->encap_type = val;
+You are right, I converted maps to BTF-defined ones, dropping bpf_legacy.h.
