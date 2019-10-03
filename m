@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB88C9663
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 03:44:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A60C9660
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 03:44:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727662AbfJCBnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727575AbfJCBnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 2 Oct 2019 21:43:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46572 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:46612 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727426AbfJCBnP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725799AbfJCBnP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 2 Oct 2019 21:43:15 -0400
 Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0E5F32245D;
+        by mail.kernel.org (Postfix) with ESMTPSA id 6FAF4222D0;
         Thu,  3 Oct 2019 01:43:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1570066994;
-        bh=tR2Ftbl9i13HtX5M9bHcSCjGuAffBub91l5STBd040o=;
+        bh=xq8wmWF+0DYuEKeGS/ddPyJZMDAJsFE60aB2Uqwti3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NZGHP7VrCvyQQJJUIwd9i3qzG/fI/7dsvkeCIWw+P5a8kspjr/mUDHkOn1VhYJ2Aj
-         2TLVK8aXsSLhceY5Cd5uHGckiHZQUtXOdQfgxGklTwuHTEtuM1aDmrPKgb9N3vsAH3
-         xCZgOR+/imbnLaCY+jfIbWLXqFrbx6xWyRgVaonc=
+        b=hme6n4Ct0Suv+l2Qm305v/Ju/zEgOuS6xD0Vf/X69g2ny2htKdl2dMRUzrx6JpTUy
+         SZqldfIaXWvz29wFwhciGdLHURIzm2ZMuldSVe9XUp0RVFlsA/iUzSWRqmDKsSe+eU
+         9M4hFETLInKX3BGorqhaibyKIJx9R2Ls61MSmgcA=
 From:   paulmck@kernel.org
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, mingo@kernel.org,
@@ -32,14 +32,15 @@ Cc:     linux-kernel@vger.kernel.org, mingo@kernel.org,
         rostedt@goodmis.org, dhowells@redhat.com, edumazet@google.com,
         fweisbec@gmail.com, oleg@redhat.com, joel@joelfernandes.org,
         "Paul E. McKenney" <paulmck@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH tip/core/rcu 7/9] net/core: Replace rcu_swap_protected() with rcu_replace()
-Date:   Wed,  2 Oct 2019 18:43:08 -0700
-Message-Id: <20191003014310.13262-7-paulmck@kernel.org>
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH tip/core/rcu 8/9] net/netfilter: Replace rcu_swap_protected() with rcu_replace()
+Date:   Wed,  2 Oct 2019 18:43:09 -0700
+Message-Id: <20191003014310.13262-8-paulmck@kernel.org>
 X-Mailer: git-send-email 2.9.5
 In-Reply-To: <20191003014153.GA13156@paulmck-ThinkPad-P72>
 References: <20191003014153.GA13156@paulmck-ThinkPad-P72>
@@ -57,48 +58,33 @@ rcu_swap_protected().
 Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
 Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
 Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Ido Schimmel <idosch@mellanox.com>
-Cc: Petr Machata <petrm@mellanox.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: <netfilter-devel@vger.kernel.org>
+Cc: <coreteam@netfilter.org>
 Cc: <netdev@vger.kernel.org>
 ---
- net/core/dev.c            | 4 ++--
- net/core/sock_reuseport.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ net/netfilter/nf_tables_api.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index bf3ed41..41f6936 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1288,8 +1288,8 @@ int dev_set_alias(struct net_device *dev, const char *alias, size_t len)
- 	}
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index d481f9b..8499baf 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -1461,8 +1461,9 @@ static void nft_chain_stats_replace(struct nft_trans *trans)
+ 	if (!nft_trans_chain_stats(trans))
+ 		return;
  
- 	mutex_lock(&ifalias_mutex);
--	rcu_swap_protected(dev->ifalias, new_alias,
--			   mutex_is_locked(&ifalias_mutex));
-+	new_alias = rcu_replace(dev->ifalias, new_alias,
-+				mutex_is_locked(&ifalias_mutex));
- 	mutex_unlock(&ifalias_mutex);
+-	rcu_swap_protected(chain->stats, nft_trans_chain_stats(trans),
+-			   lockdep_commit_lock_is_held(trans->ctx.net));
++	nft_trans_chain_stats(trans) =
++		rcu_replace(chain->stats, nft_trans_chain_stats(trans),
++			    lockdep_commit_lock_is_held(trans->ctx.net));
  
- 	if (new_alias)
-diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-index f3ceec9..805287b 100644
---- a/net/core/sock_reuseport.c
-+++ b/net/core/sock_reuseport.c
-@@ -356,8 +356,8 @@ int reuseport_detach_prog(struct sock *sk)
- 	spin_lock_bh(&reuseport_lock);
- 	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
- 					  lockdep_is_held(&reuseport_lock));
--	rcu_swap_protected(reuse->prog, old_prog,
--			   lockdep_is_held(&reuseport_lock));
-+	old_prog = rcu_replace(reuse->prog, old_prog,
-+			       lockdep_is_held(&reuseport_lock));
- 	spin_unlock_bh(&reuseport_lock);
- 
- 	if (!old_prog)
+ 	if (!nft_trans_chain_stats(trans))
+ 		static_branch_inc(&nft_counters_enabled);
 -- 
 2.9.5
 
