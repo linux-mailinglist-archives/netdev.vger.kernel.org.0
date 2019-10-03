@@ -2,62 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCCFEC953F
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 01:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0FA6C9560
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 02:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729000AbfJBXxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 19:53:05 -0400
-Received: from mga04.intel.com ([192.55.52.120]:17485 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727659AbfJBXxE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Oct 2019 19:53:04 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 16:53:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,250,1566889200"; 
-   d="scan'208";a="195032806"
-Received: from syitbare-mobl.amr.corp.intel.com ([10.251.8.3])
-  by orsmga003.jf.intel.com with ESMTP; 02 Oct 2019 16:53:04 -0700
-Date:   Wed, 2 Oct 2019 16:53:04 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@syitbare-mobl.amr.corp.intel.com
-To:     netdev@vger.kernel.org, edumazet@google.com
-cc:     cpaasch@apple.com, fw@strlen.de, pabeni@redhat.com,
-        peter.krystad@linux.intel.com, dcaratti@redhat.com,
-        matthieu.baerts@tessares.net
-Subject: Re: [RFC PATCH v2 00/45] Multipath TCP
-In-Reply-To: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com>
-Message-ID: <alpine.OSX.2.21.1910021649400.33041@syitbare-mobl.amr.corp.intel.com>
-References: <20191002233655.24323-1-mathew.j.martineau@linux.intel.com>
-User-Agent: Alpine 2.21 (OSX 202 2017-01-01)
+        id S1727911AbfJCAIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 20:08:19 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:55198 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbfJCAIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 20:08:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=LX3dKDMWbmfdXy+k1nvUJV+7PrVhFHyukz+qUS83wpQ=; b=PI/aMGexMso1KjocPJKaNhNdu
+        4kUfwLq8UJLQn4nt+Y2SiyqL4CVAuymhlW0g7tGnbdgDfLyvDUeaCJQl78mZoD6SwfCsCjqeSTeRd
+        tbTIdnBECyfKnbCX4pSN2+2S4gNKzXci1Ux38EoAl6xNapt06rcKyBJXC/2mJBt0O9IM9O9vZLix1
+        pfO+HJWEwIzsUuIeSshT8jfbUbmIkuwZG9Dq6aUFXFYrMUzBLnj1MVQ80wOipvXhBZjEy6h0Pr8Je
+        oxt+nHVOCLCuB2yO8QV5dnDxYKa/hjirf+0Qz2J2UOj9j6Q3+WS914UMBsQq8tIUtHvjOKjfgDk9z
+        1Y0FLukiQ==;
+Received: from [2601:1c0:6280:3f0::9a1f]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
+        id 1iFofK-00082B-Ig; Thu, 03 Oct 2019 00:08:18 +0000
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Al Viro <viro@ZenIV.linux.org.uk>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] lib: textsearch: fix escapes in example code
+Message-ID: <86cf431b-9dbc-d608-205d-1f161bb14533@infradead.org>
+Date:   Wed, 2 Oct 2019 17:08:18 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Randy Dunlap <rdunlap@infradead.org>
 
-On Wed, 2 Oct 2019, Mat Martineau wrote:
+This textsearch code example does not need the '\' escapes and they can
+be misleading to someone reading the example. Also, gcc and sparse warn
+that the "\%d" is an unknown escape sequence.
 
-> The MPTCP upstreaming community has prepared a net-next RFCv2 patch set
-> for review.
->
-> Clone/fetch:
-> https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-rfcv2)
->
-> Browse:
-> https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-rfcv2
+Fixes: 5968a70d7af5 ("textsearch: fix kernel-doc warnings and add kernel-api section")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+---
+ lib/textsearch.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+--- lnx-54-rc1.orig/lib/textsearch.c
++++ lnx-54-rc1/lib/textsearch.c
+@@ -89,9 +89,9 @@
+  *       goto errout;
+  *   }
+  *
+- *   pos = textsearch_find_continuous(conf, \&state, example, strlen(example));
++ *   pos = textsearch_find_continuous(conf, &state, example, strlen(example));
+  *   if (pos != UINT_MAX)
+- *       panic("Oh my god, dancing chickens at \%d\n", pos);
++ *       panic("Oh my god, dancing chickens at %d\n", pos);
+  *
+  *   textsearch_destroy(conf);
+  */
 
-Huge apologies everyone: while the branches referenced above are correct, 
-the email patch series I just posted was not generated from the correct 
-git commits.
-
-Please disregard, I will send v3 shortly.
-
---
-Mat Martineau
-Intel
