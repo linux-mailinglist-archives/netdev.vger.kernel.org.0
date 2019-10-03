@@ -2,120 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2EEC9F09
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 15:04:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FB80C9FD9
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 15:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730332AbfJCNEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 09:04:32 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:38425 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729677AbfJCNEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 09:04:31 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id F022421CDD;
-        Thu,  3 Oct 2019 09:04:30 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 03 Oct 2019 09:04:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=0vNiPs
-        Um7dIGm4+F73chv6XOmKwLdMRF3RzyhHs+XjQ=; b=PE3Oz1tvTA+w0f76NaYsgW
-        Wr63m7GmVVX99bTJOkNquriaYRmqt+YSXt3kjK8SSj7KZ4FMn07B0EBwa6z2+I9K
-        U92+oKt7oYmtA+zm1gW3GwOnuThU9er2789qKXwwrhZPDAbNJOI/v1Q1XfVEG8Kk
-        hIx7SE93mJjSYzwVvsWyYSi2rJtepD34jggMhpJjKcUHPmURX8Mn0A1FfCcf/QJO
-        ONyDbbtXty5HOu58beOrnJPmmapw+VUM7GhrYFDSmaGYaeBQ5yRx7pbTUaJ8eKrQ
-        yB3jvmUO1Mdk57ikePeXnoSYubI5Dwjkjle3GQEl/rcz/LrsQOLc6NMBqLt8L1+A
-        ==
-X-ME-Sender: <xms:3vGVXT4BVBB44cgH6e1vx-v1kvgl4cGdzLule77BcMSfxf0ddXbeSA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrgeekgdeiudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
-    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:3vGVXWYzfCJgjeEKRE_MRWD8XIaqvdA6fZkupwXQcYO3u9vCs8ZNmg>
-    <xmx:3vGVXQxHBGm_fGpH_oEiRH7XqwANBEK3l8qfUhXJea20Id0avzfa7g>
-    <xmx:3vGVXbQvp5xuDEqDo56cQhPmk_08mvsQORM0HRugUYhydjT7hQKJ1w>
-    <xmx:3vGVXcD2Nu_9iL41PbK0MIbI-EzYD5VQPuMjcVAVa5fzbz8G7-G7Nw>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B8EBED6005E;
-        Thu,  3 Oct 2019 09:04:29 -0400 (EDT)
-Date:   Thu, 3 Oct 2019 16:04:27 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
-        jiri@mellanox.com, jakub.kicinski@netronome.com,
-        saeedm@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 07/15] ipv4: Only Replay routes of interest
- to new listeners
-Message-ID: <20191003130427.GA21529@splinter>
-References: <20191002084103.12138-1-idosch@idosch.org>
- <20191002084103.12138-8-idosch@idosch.org>
- <20191002174402.GB2279@nanopsycho>
+        id S1729029AbfJCNus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 09:50:48 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:43864 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728257AbfJCNur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 09:50:47 -0400
+Received: by mail-qt1-f196.google.com with SMTP id c3so3621226qtv.10;
+        Thu, 03 Oct 2019 06:50:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=wd7tBqBSSEmGFgyOp4VhZ6hdLUak5SsJ+mT0116Ujn0=;
+        b=RcDHF1VBJS1LsGtb3uKaw5MRfIH9CAzxBc4pP7oERBIZ8PJxMZzBOhU/NFKlnu4cqT
+         bEJGo9oXggGTXeWJ7BF3s30XqWk+LQEbRyUZcEU71pY+vETYUnnoQaUHhsSknD7B8gOE
+         +cRzS85acUz/tA1cijRJHWhohvTK19yU8v6LSjJg+vBYzvKGszfA8Km5np2/mbZ8ciPI
+         Da95gmg+Xqm5MQOzo+lvzSPYJoFi6KX82f9Qh1Y8nysIW+5LH7ck36SEZbHjfjqD8Kjs
+         SUdFSfEH/4O1bbDYhY7tytV5+Pb9zfESiofz5CsNucT+SZW6KfiaNEUmVdoIZ7YP76z4
+         hOPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=wd7tBqBSSEmGFgyOp4VhZ6hdLUak5SsJ+mT0116Ujn0=;
+        b=mzLb8FuIFnfS7j+gA0yRef2LGR9Midv2t7g+qDo6IZSh2Os3/6F4kmfPgnEML2J/h6
+         yYQYt0apL0nP9u6ChWgSGRCoRVh16kM0YxFKqtNUxupH7HiDDemK7aHkUzOA9PW6y9Fu
+         +gsf/BizZG2F0KEtxJQX+HMV4FZaCOSoLj0fpVJX/gB9vqFhIxMVdmNjcZcNENDjp8Hu
+         EXZyD4jnF9NQCyRFHeAazMm/qyNSuevY8/pkfgyrf5fX7F4b4KLSlbgxnEKB1ZgUPhgf
+         FRsZOd+ZFGDbs55IjzMVj6gcswms4NK5xH0LGYgtb5KeLtvIUS+mDO9s3XuKFookRvQo
+         hR/Q==
+X-Gm-Message-State: APjAAAUapJgCllneyAjA3bDtY8iVeHqXrR4c84qL4NGc7cTN9Q9iSrco
+        3lb4KfGVSLOVKEtgxhTBgoE=
+X-Google-Smtp-Source: APXvYqxHZtIth9FbpgdLK6Ef363ni24MYUaFEHRAqKVcuMuiQ3qJHYf0ICzlNtr9yuxMKPDU4/EnPA==
+X-Received: by 2002:a0c:f6cd:: with SMTP id d13mr8594377qvo.146.1570110646613;
+        Thu, 03 Oct 2019 06:50:46 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.35.50])
+        by smtp.gmail.com with ESMTPSA id u27sm2057569qta.90.2019.10.03.06.50.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Oct 2019 06:50:44 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 4E24E40DD3; Thu,  3 Oct 2019 10:50:42 -0300 (-03)
+Date:   Thu, 3 Oct 2019 10:50:42 -0300
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, adrian.hunter@intel.com, jolsa@kernel.org,
+        namhyung@kernel.org
+Subject: Re: [PATCH 1/2] perf tools: Make usage of test_attr__* optional for
+ perf-sys.h
+Message-ID: <20191003135042.GA18973@kernel.org>
+References: <20191001113307.27796-1-bjorn.topel@gmail.com>
+ <20191001113307.27796-2-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20191002174402.GB2279@nanopsycho>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191001113307.27796-2-bjorn.topel@gmail.com>
+X-Url:  http://acmel.wordpress.com
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 02, 2019 at 07:44:02PM +0200, Jiri Pirko wrote:
-> Wed, Oct 02, 2019 at 10:40:55AM CEST, idosch@idosch.org wrote:
-> >From: Ido Schimmel <idosch@mellanox.com>
-> >
-> >When a new listener is registered to the FIB notification chain it
-> >receives a dump of all the available routes in the system. Instead, make
-> >sure to only replay the IPv4 routes that are actually used in the data
-> >path and are of any interest to the new listener.
-> >
-> >Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> >---
-> > net/ipv4/fib_trie.c | 10 ++++++++++
-> > 1 file changed, 10 insertions(+)
-> >
-> >diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-> >index dc4c4e2cb0b3..4937a3503f4f 100644
-> >--- a/net/ipv4/fib_trie.c
-> >+++ b/net/ipv4/fib_trie.c
-> >@@ -2096,6 +2096,7 @@ static int fib_leaf_notify(struct key_vector *l, struct fib_table *tb,
-> > 			   struct netlink_ext_ack *extack)
-> > {
-> > 	struct fib_alias *fa;
-> >+	int last_slen = -1;
-> > 	int err;
-> > 
-> > 	hlist_for_each_entry_rcu(fa, &l->leaf, fa_list) {
-> >@@ -2110,6 +2111,15 @@ static int fib_leaf_notify(struct key_vector *l, struct fib_table *tb,
-> > 		if (tb->tb_id != fa->tb_id)
-> > 			continue;
-> > 
-> >+		if (fa->fa_slen == last_slen)
-> >+			continue;
+Em Tue, Oct 01, 2019 at 01:33:06PM +0200, Björn Töpel escreveu:
+> From: Björn Töpel <bjorn.topel@intel.com>
 > 
-> Hmm, I wonder, don't you want to continue only for FIB_EVENT_ENTRY_REPLACE_TMP
-> and keep the notifier call for FIB_EVENT_ENTRY_ADD?
+> For users of perf-sys.h outside perf, e.g. samples/bpf/bpf_load.c,
+> it's convenient not to depend on test_attr__*.
+> 
+> After commit 91854f9a077e ("perf tools: Move everything related to
+> sys_perf_event_open() to perf-sys.h"), all users of perf-sys.h will
+> depend on test_attr__enabled and test_attr__open.
+> 
+> This commit enables a user to define HAVE_ATTR_TEST to zero in order
+> to omit the test dependency.
 
-Yea, I think you're right. As-is this introduces a small regression
-until later in the series. Will fix. Thanks!
+Woah, I wasn't expecting tools/perf/ stuff to be included from outside
+tools/perf/, so thanks for fixing that odd user.
 
+Applied.
+
+- Arnaldo
+ 
+> Fixes: 91854f9a077e ("perf tools: Move everything related to sys_perf_event_open() to perf-sys.h")
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> ---
+>  tools/perf/perf-sys.h | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> 
-> >+
-> >+		last_slen = fa->fa_slen;
-> >+		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_REPLACE_TMP,
-> >+					      l->key, KEYLENGTH - fa->fa_slen,
-> >+					      fa, extack);
-> >+		if (err)
-> >+			return err;
-> > 		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_ADD, l->key,
-> > 					      KEYLENGTH - fa->fa_slen,
-> > 					      fa, extack);
-> >-- 
-> >2.21.0
-> >
+> diff --git a/tools/perf/perf-sys.h b/tools/perf/perf-sys.h
+> index 63e4349a772a..15e458e150bd 100644
+> --- a/tools/perf/perf-sys.h
+> +++ b/tools/perf/perf-sys.h
+> @@ -15,7 +15,9 @@ void test_attr__init(void);
+>  void test_attr__open(struct perf_event_attr *attr, pid_t pid, int cpu,
+>  		     int fd, int group_fd, unsigned long flags);
+>  
+> -#define HAVE_ATTR_TEST
+> +#ifndef HAVE_ATTR_TEST
+> +#define HAVE_ATTR_TEST 1
+> +#endif
+>  
+>  static inline int
+>  sys_perf_event_open(struct perf_event_attr *attr,
+> @@ -27,7 +29,7 @@ sys_perf_event_open(struct perf_event_attr *attr,
+>  	fd = syscall(__NR_perf_event_open, attr, pid, cpu,
+>  		     group_fd, flags);
+>  
+> -#ifdef HAVE_ATTR_TEST
+> +#if HAVE_ATTR_TEST
+>  	if (unlikely(test_attr__enabled))
+>  		test_attr__open(attr, pid, cpu, fd, group_fd, flags);
+>  #endif
+> -- 
+> 2.20.1
+
+-- 
+
+- Arnaldo
