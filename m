@@ -2,113 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C50E7CAAF0
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AFA1CAB93
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:45:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731549AbfJCRZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:25:40 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:36635 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390881AbfJCRVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:21:50 -0400
-Received: by mail-qt1-f195.google.com with SMTP id o12so4699988qtf.3;
-        Thu, 03 Oct 2019 10:21:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h5Rim9i4R2dtqePdDLpMCbY7rNwA6OH+nyEYI7LKahs=;
-        b=face39Zit5ry5Kv5MEk6wx4lT9nUPV/Qw7+B489XY4veUQ8Vg1354MpUcaarHInvO1
-         aEzb6pTQwv9J9IvU8iaZzbfOuYaNy9AWHG5qsRqVP2rR54qVMbGeueL2E/3PgqTc4MXR
-         ERYhWFZjcnZZ/O7s7ZxeaayQozjcO04gBOE/16ykGd3/zHrsTlW8iQme/sniIEngN3iJ
-         03xPKJsMjHyvHH9hSqX25xoaOz2boH7cgLVicayHXn2As2h41G5rhsna0OLOKET9aJLB
-         qSvFRZlxtr6FK0tcZQp0sH5NOthVXZtUhKxno5yWREXFDOzZpgs27BgDPFKAdTCJ1bIO
-         jpSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h5Rim9i4R2dtqePdDLpMCbY7rNwA6OH+nyEYI7LKahs=;
-        b=I4EpVSL9YNC+Lu7aJw9cSEOw36qC7eK7ZkKES5NcoXXjnXeyNKqUUKml1dtLwsHEtK
-         IYYEBqMZGMSx4y9IR9jrhT8sxzj12ZtxaYxIzfldrJczoAKB4izga/LishtIiW2tlMp2
-         2w3RmI/LnFv/eV5bDd1Qh+lbc6tTQam6XIp5y4Ews41WAAQJ4lwaEYVVwL99hH3ayB21
-         ANrxuO6FNHy3NHY8lFM75YUz3HPLiANPtBGDMQX/7wMOCn6PyVIeEFwZMv7ooffcXPmp
-         8rOwY5kjEfIJRFVvzWeVsk4qMZhiLR+aQ3Wtle2s0h5ubX6jhbihycF87+chumURS/QJ
-         kZKA==
-X-Gm-Message-State: APjAAAXg17UfeBrmBIhZAm6pUQIM1AcQ85PC45jWAlbAKCSukqrZB0nt
-        ZSC0pmgDCd1UXZs8RBB/eTZfASEXc/nnj3jOjKFODxGSUbE=
-X-Google-Smtp-Source: APXvYqz4TrdMivyXDTK0GQ13yFmR3JItdHh5McZQkymTQsopcQ3vLgBQWOsNamCBOfIzbAPoIMHO57B910EUdBEE4mk=
-X-Received: by 2002:aed:2726:: with SMTP id n35mr10864628qtd.171.1570123309206;
- Thu, 03 Oct 2019 10:21:49 -0700 (PDT)
+        id S1730637AbfJCP4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 11:56:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38458 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730614AbfJCP4c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Oct 2019 11:56:32 -0400
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B18C222C8;
+        Thu,  3 Oct 2019 15:56:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570118191;
+        bh=i4Gdla/qLYCwUY8TXC0PxpCn/O4eLhZk3Oh4yJNbqjQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=y+LYdsAyYVPU+ogedopimwB/UhsnGsp2oUl5tLvk654eTHDmIeoSWG2nCGII7q6zW
+         8/Axawckxy8TxeX/6wm6AHbtuWHbXt5CjRRIqm68o9nzigMg4+pQjLefid3sH8WUKU
+         BEnk+1qMQXkvQCMtJdagzQSxknxFVWIvIJHvHP7U=
+Received: by mail-qt1-f170.google.com with SMTP id n7so4287238qtb.6;
+        Thu, 03 Oct 2019 08:56:31 -0700 (PDT)
+X-Gm-Message-State: APjAAAXmlS7+fJ+TCZeTTUwZUbiSyFC4mD20SWVSlrHlcalh1isF0IVD
+        19fiWqBYLdnmAq2IrNU5s82NfCD3LZqHh0OP7w==
+X-Google-Smtp-Source: APXvYqx6BBDgfwU9lYgWoBXJNLC1ki+lOywVLMS4eE76V10EcL1hEp0zvvi4cS5atfEMr32Ls+zx4zC9aO+o+md64fo=
+X-Received: by 2002:ac8:31b3:: with SMTP id h48mr11022378qte.300.1570118190216;
+ Thu, 03 Oct 2019 08:56:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191003014153.GA13156@paulmck-ThinkPad-P72> <20191003014310.13262-6-paulmck@kernel.org>
-In-Reply-To: <20191003014310.13262-6-paulmck@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Oct 2019 10:21:38 -0700
-Message-ID: <CAEf4BzaBuktutCZr2ZUC6b-XK_JJ7prWZmO-5Yew2tVp5DxbBA@mail.gmail.com>
-Subject: Re: [PATCH tip/core/rcu 6/9] bpf/cgroup: Replace rcu_swap_protected()
- with rcu_replace()
-To:     paulmck@kernel.org
-Cc:     rcu@vger.kernel.org, open list <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>, jiangshanlai@gmail.com,
-        dipankar@in.ibm.com, Andrew Morton <akpm@linux-foundation.org>,
-        mathieu.desnoyers@efficios.com, josh@joshtriplett.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>, dhowells@redhat.com,
-        Eric Dumazet <edumazet@google.com>, fweisbec@gmail.com,
-        oleg@redhat.com, Joel Fernandes <joel@joelfernandes.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <1568837198-27211-1-git-send-email-vincent.cheng.xh@renesas.com>
+ <5d93ce84.1c69fb81.8e964.4dc1@mx.google.com> <20191003145546.GA19695@renesas.com>
+In-Reply-To: <20191003145546.GA19695@renesas.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 3 Oct 2019 10:56:19 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqK12p48gqZdwNfYGNsBafmjMY=5U=QcHPHZy5sD-nGntA@mail.gmail.com>
+Message-ID: <CAL_JsqK12p48gqZdwNfYGNsBafmjMY=5U=QcHPHZy5sD-nGntA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: ptp: Add binding doc for IDT ClockMatrix
+ based PTP clock
+To:     Vincent Cheng <vincent.cheng.xh@renesas.com>
+Cc:     "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 2, 2019 at 6:45 PM <paulmck@kernel.org> wrote:
+On Thu, Oct 3, 2019 at 10:12 AM Vincent Cheng
+<vincent.cheng.xh@renesas.com> wrote:
 >
-> From: "Paul E. McKenney" <paulmck@kernel.org>
+> On Tue, Oct 01, 2019 at 06:09:06PM EDT, Rob Herring wrote:
+> >On Wed, Sep 18, 2019 at 04:06:37PM -0400, vincent.cheng.xh@renesas.com wrote:
+> >> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
 >
-> This commit replaces the use of rcu_swap_protected() with the more
-> intuitively appealing rcu_replace() as a step towards removing
-> rcu_swap_protected().
+> Hi Rob,
 >
-> Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
-> Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Cc: Song Liu <songliubraving@fb.com>
-> Cc: Yonghong Song <yhs@fb.com>
-> Cc: <netdev@vger.kernel.org>
-> Cc: <bpf@vger.kernel.org>
-> ---
+> Welcome back.  Thank-you for providing feedback.
+>
+> >>
+> >> Add device tree binding doc for the IDT ClockMatrix PTP clock driver.
+> >
+> >Bindings are for h/w, not drivers...
+>
+> Yes, will remove 'driver'.
+>
+> >>  Documentation/devicetree/bindings/ptp/ptp-idtcm.txt | 15 +++++++++++++++
+> >>  1 file changed, 15 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idtcm.txt
+> >
+> >Please make this a DT schema.
+>
+> Sure, will give it a try.
+>
+> >> +  - compatible  Should be "idt,8a3400x-ptp" for System Synchronizer
+> >> +                Should be "idt,8a3401x-ptp" for Port Synchronizer
+> >> +                Should be "idt,8a3404x-ptp" for Universal Frequency Translator (UFT)
+> >
+> >If PTP is the only function of the chip, you don't need to append
+> >'-ptp'.
+>
+> Okay, will remove '-ptp'.  Thanks.
+>
+>
+> >What's the 'x' for? We generally don't use wildcards in compatible
+> >strings.
+>
+> We were hoping to use 'x' to represent a single driver to match the various
+> part numbers 8A34001, 8A34002, 8A34003, 8A34004, 8A34011, 8A34012, etc.
+>
+> What should be used instead of 'x'?
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Enumerate all the part numbers. Are the differences discoverable in
+some other way? If so, then 'x' is fine, but just add a note how
+models are distinguished.
 
->  kernel/bpf/cgroup.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index ddd8add..06a0657 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -180,8 +180,8 @@ static void activate_effective_progs(struct cgroup *cgrp,
->                                      enum bpf_attach_type type,
->                                      struct bpf_prog_array *old_array)
->  {
-> -       rcu_swap_protected(cgrp->bpf.effective[type], old_array,
-> -                          lockdep_is_held(&cgroup_mutex));
-> +       old_array = rcu_replace(cgrp->bpf.effective[type], old_array,
-> +                               lockdep_is_held(&cgroup_mutex));
->         /* free prog array after grace period, since __cgroup_bpf_run_*()
->          * might be still walking the array
->          */
-> --
-> 2.9.5
->
+Rob
