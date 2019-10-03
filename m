@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DDECC96BA
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 04:34:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44ECBC96C4
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 04:42:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727333AbfJCCe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 22:34:26 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:32974 "EHLO
+        id S1727724AbfJCCmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 22:42:45 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:34349 "EHLO
         mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbfJCCeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 22:34:25 -0400
-Received: by mail-io1-f65.google.com with SMTP id z19so2115743ior.0
-        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 19:34:25 -0700 (PDT)
+        with ESMTP id S1725860AbfJCCmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 22:42:45 -0400
+Received: by mail-io1-f65.google.com with SMTP id q1so2129259ion.1
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 19:42:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7KasjAOsUmvtgdRLEuqxKGaAkvxihLuuVFRLHF9qhmU=;
-        b=PxyQFb7W+0gc5DBx6IACmU0RSARxE3BZsU/2O3yUz5rBd2RFx5MRPCOdJ4LqMCz5Kc
-         Dacy0/+hTvO2J7mMh5zNjHb8I0KHESFOXmc4nfTaBjirCizf6wBf9/73DA1Qlu2khppa
-         1ZszjjtBeUL1ick2F5XLHRjBTb2Kh9RKRZ7lyOO1x5k0JEwj5oKdxx+IgWy0KEwMlTz0
-         1FUB3nlzL9aeMFpODZtV5KNFcVzuq/4cInXkSSS9D4SL5tHV9Ps/Nj9HojK6EfwC2GhJ
-         2YBNjrkjyCQ52oeRtE9bBeJIb4fE788p1SGi8dIGb0T/rrNa2i0g2pAKa+ioW0AhXHwz
-         Mgug==
+        bh=I9Hc25c1CIJ8bV6Dfe+zt6ovN8RaKMdn58fNYcXa+Kc=;
+        b=GgjCe+UJzGIGxKFSSpNz7erd5Ep6zFfB51BD9QieafK/oV8KPlhO5LmgNseEvxtHbR
+         FKikjJpemBsQhybQ4IXWxz8N4WbEENdQLRukVtVc2RVVg32ZQLcyWtZhh8nrnxCU54jd
+         T+H1MyjrHmR0QYelONMrL8uQF7/O0Zds8Ke3RO7+Xq5hIzcFMoIKNYcIhktDxng0zVX+
+         6ZSoVpYKze7OVTSmk31jRLBEp74Wv4xDQ2TxQmdQSeOOZe/UquROOL9zAVKtkUE7v2fQ
+         Pvgt8bHiGKubpaoF3FOv8AJ5UGs5PKMEWuWAE/H5zDkF9E7eqXvob2nDmzChfgS0AFfd
+         yxFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7KasjAOsUmvtgdRLEuqxKGaAkvxihLuuVFRLHF9qhmU=;
-        b=Uz4DNJuzCxy+0y9ywaPC33BSG+ABuiJrFOjoEzOoEldIH/oBeYXdSaHJNMmEtdBWOM
-         nG+0dPiJ0AwhjHYHS746OYhk8Y0ddtu+MDcZoeXAAT3S43oIh/JhiDHKNBlinFgqxuV6
-         XoyoHcMAfW2f/o2a0KJVdvzy07nEy1moK0DAswsNV69eSv0Jg6JTNdPlqOwRCPJaafln
-         VEH2HOuJCYippNTsnEODDDuxaVf37ziZYVC+asjpq77ALHGfvIeMUQ7euQuddpDokGlh
-         33KkMxVPVZvqGzuRlvnz3PbUuYSZELc5TXfwF3UYntVnxfXtP7WO3i5mxm2/J+LlNKqu
-         +Yhw==
-X-Gm-Message-State: APjAAAVHf6I+J6dQcl7ZwjtaTv6NLMWo/VydScW0Jgi4gogDDnVgjpI4
-        X4hFrhSxqN0AHrMVHDReF94=
-X-Google-Smtp-Source: APXvYqw2/eYaLwQ59ghCq8cGW6m0yj79XjlovH7BJsw944LngabbOB27l2PLJ5IwtIwuNyFY+4Y3uw==
-X-Received: by 2002:a5e:c641:: with SMTP id s1mr6273929ioo.308.1570070065208;
-        Wed, 02 Oct 2019 19:34:25 -0700 (PDT)
-Received: from [172.16.99.106] (c-73-169-115-106.hsd1.co.comcast.net. [73.169.115.106])
-        by smtp.googlemail.com with ESMTPSA id d9sm452509ioq.9.2019.10.02.19.34.23
+        bh=I9Hc25c1CIJ8bV6Dfe+zt6ovN8RaKMdn58fNYcXa+Kc=;
+        b=Kbair0rs+OOkRmb+kNRiYkbN47iQUM+WAmqoel9mQEbLx0MdUM9gG8Gxp1/PfMptfd
+         K5Jhnvf777ASeN94USvwE2+2h3oEZoKcA/Lh7wMrEaFMwsfG619N5A27Lrx+HbbQ8lyY
+         +SoSwokEbyNvRmN6Zbv7zwddauXYaIyvlorsjjKEHbc6lS/0zT498461bv1OXYMj2D0Q
+         eZge2Y1+t8dfp47B6sspEvavBRbDWQJ46Qqfx8itL5ZVITfdmmqpKe8OdfNNqj4EEl9g
+         0vK8HFLQDQfxti6gHfJs0+2uEsejzcGdYvtzcHqT8LIUwPTOp87QiK+8FViGiGlCHhHU
+         84RQ==
+X-Gm-Message-State: APjAAAVpBJgLF/+1GNV+6UNpnXOw3OyWUDtA0l4UeQCFBaN9FEou97uf
+        Lhx43jx6aZlN/42Zpk7hKAs=
+X-Google-Smtp-Source: APXvYqxcZZKF4pa5WfzDx51b/dACwNj5VLxcIm4nq8P+ZAuKFVkVn2TUqCtYZsEuWXR4W3IBELAf+g==
+X-Received: by 2002:a6b:b213:: with SMTP id b19mr5998203iof.58.1570070563167;
+        Wed, 02 Oct 2019 19:42:43 -0700 (PDT)
+Received: from [10.230.159.14] ([73.95.134.170])
+        by smtp.googlemail.com with ESMTPSA id u124sm535423ioe.63.2019.10.02.19.42.41
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 02 Oct 2019 19:34:23 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 12/15] ipv4: Add "in hardware" indication to
- routes
-To:     Jiri Pirko <jiri@resnulli.us>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
-References: <20191002084103.12138-1-idosch@idosch.org>
- <20191002084103.12138-13-idosch@idosch.org>
- <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
- <20191002182119.GF2279@nanopsycho>
+        Wed, 02 Oct 2019 19:42:42 -0700 (PDT)
+Subject: Re: [PATCH net v2] ipv6: Handle race in addrconf_dad_work
+To:     Eric Dumazet <erdnetdev@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
+        jakub.kicinski@netronome.com
+Cc:     netdev@vger.kernel.org, rajendra.dendukuri@broadcom.com
+References: <20191001032834.5330-1-dsahern@kernel.org>
+ <1ab3e0d0-fb37-d367-fd5f-c6b3262b6583@gmail.com>
+ <18c18892-3f1c-6eb8-abbb-00fd6c9c64d3@gmail.com>
+ <146a2f8a-8ee9-65f3-1013-ef60a96aa27b@gmail.com>
+ <8d13d82c-6a91-1434-f1af-a2f39ecadbfb@gmail.com>
+ <3dc05826-4661-8a8e-0c15-1a711ec84d07@gmail.com>
+ <45e62fee-1580-4c5d-7cac-5f0db935fa9e@gmail.com>
+ <7bd928cb-1abf-bbae-e1db-505788254e5b@gmail.com>
+ <6b74af81-d12d-6abd-fd4f-5c1e758fdde7@gmail.com>
+ <f896d905-9f69-465f-23c0-7e9a6014d990@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1eea9e93-dbd9-8b50-9bf1-f8f6c6842dcc@gmail.com>
-Date:   Wed, 2 Oct 2019 20:34:22 -0600
+Message-ID: <0a2a936a-9b20-be61-2301-dfe83e41e605@gmail.com>
+Date:   Wed, 2 Oct 2019 20:42:28 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <20191002182119.GF2279@nanopsycho>
+In-Reply-To: <f896d905-9f69-465f-23c0-7e9a6014d990@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -74,32 +76,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/2/19 12:21 PM, Jiri Pirko wrote:
->>> This patch adds an "in hardware" indication to IPv4 routes, so that
->>> users will have better visibility into the offload process. In the
->>> future IPv6 will be extended with this indication as well.
->>>
->>> 'struct fib_alias' is extended with a new field that indicates if
->>> the route resides in hardware or not. Note that the new field is added
->>> in the 6 bytes hole and therefore the struct still fits in a single
->>> cache line [1].
->>>
->>> Capable drivers are expected to invoke fib_alias_in_hw_{set,clear}()
->>> with the route's key in order to set / clear the "in hardware
->>> indication".
->>>
->>> The new indication is dumped to user space via a new flag (i.e.,
->>> 'RTM_F_IN_HW') in the 'rtm_flags' field in the ancillary header.
+On 10/2/19 6:36 PM, Eric Dumazet wrote:
+> 
+> 
+> On 10/2/19 5:10 PM, David Ahern wrote:
+>> On 10/2/19 4:36 PM, Eric Dumazet wrote:
+>>> This might be related to a use of a bonding device, with a mlx4 slave.
 >>>
 >>
->> nice series Ido. why not call this RTM_F_OFFLOAD to keep it consistent
->> with the nexthop offload indication ?.
+>> does it only happen with bonds?
 > 
-> See the second paragraph of this description.
+> All my hosts have bonds, some are just fine with your patch, but others are not.
 
-I read it multiple times. It does not explain why RTM_F_OFFLOAD is not
-used. Unless there is good reason RTM_F_OFFLOAD should be the name for
-consistency with all of the other OFFLOAD flags. I realize rtm_flags is
-overloaded and the lower 8 bits contains RTNH_F flags, but that can be
-managed with good documentation - that RTNH_F is for the nexthop and
-RTM_F is for the prefix.
+I have a setup now where the bond is reliably showing tentative for the
+address. Something to use to debug this weird little side effect.
