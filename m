@@ -2,174 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14104CAD4A
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74819CAD5A
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 19:48:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389364AbfJCRiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 13:38:08 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36309 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389289AbfJCRiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 13:38:04 -0400
-Received: by mail-qt1-f194.google.com with SMTP id o12so4771264qtf.3;
-        Thu, 03 Oct 2019 10:38:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=v8XmbpBJ+gEOl64AXh0Pf5wUInfxzFXC/UuayhxnpMk=;
-        b=rt5dCao8iPmw1012acsU1AIGQu5XI7yo1HPVSYHPXrSMOcd4OXUbPr2F8CgMZMT2Vr
-         SnMhXp8KkKNNRd9s19tX150S3ane4rzcWnvJ8aWgD9sTgRUFBVvE/+AGljtYcB4/GX4m
-         OW//ICaWEOqtwltNl1CV9RxQVoEQ7i2BPQ/6oU5fJHIu0ZciTQEY4zKFHDzDV27YM3v9
-         i0PKmb8L+VMJM7iL+PrSc5SdP5wAcry9zrO73Az9jvdwM12dScIHvg96eI/uiNrnSiK8
-         IygOtBQJChONiYYF+aPzda+mZorupmFfNulolHkSi6QpLdvbn8RINVwRJa7y2xvJGyRW
-         T5yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=v8XmbpBJ+gEOl64AXh0Pf5wUInfxzFXC/UuayhxnpMk=;
-        b=rACBuNocL7olThEFYr9sZI1L11a0niCppFAp5XzSCcSBRpwPG+KWQEyCKNlGWwIsIZ
-         L/0gZ/FX7GddEcjG2ln0vlSFPWCdtm4euU9on3ugkjBdGoVgD/FHkXgAVbbdjdmkKwUe
-         97j/3wPO9BoPU64snNY0gtLzpB4z7UNna9QmEpofRiZ12HFdh0AzXUPYSPxewzfSKXYk
-         +QuP35vuxd8UAgJFujGhTe9eQhtSK4LA1czMC6ePyt/oYmW9sojPylBAGDfkLffT7+uD
-         3vEt0gG/yAIyfhhQs6zkk53gAWl2FOW/jcxvHIxoYLHKQh+9MK2LHdJ7jYi9zDfn8XjK
-         u4HQ==
-X-Gm-Message-State: APjAAAX00mXxMJkJy80R9ulYkhWBSKDlTTFthlcSioGludriCfuS5aXi
-        seKpdn6/a/WnWd8gZTHo89j+7LVI3dZIfkhmA4c=
-X-Google-Smtp-Source: APXvYqys6FXV9SDmyMY1yhxPBTgUjw4e+dhiseP2HSsqO9/a/3VQxdSlt7+Lj/R/ECIo3B0/D/LRtEor6+F5b2EUnFQ=
-X-Received: by 2002:a05:6214:2e4:: with SMTP id h4mr9656529qvu.127.1570124283426;
- Thu, 03 Oct 2019 10:38:03 -0700 (PDT)
+        id S2389679AbfJCRjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 13:39:06 -0400
+Received: from mout.gmx.net ([212.227.15.19]:37879 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730405AbfJCRjF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Oct 2019 13:39:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1570124327;
+        bh=/TbK1mymQEaa2H+046Wrhdb127ERFuPBUEYgqSfKjCo=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=I/tqS1OqKdC6MCVWUUEoyf64re8NeYUOm04KtuqTmHFD9zxl72LuyMfY8AVKjLJr3
+         CkGD07es8AA0tVfCcOYQIJbvxvkop6CqI4437no1asQRE3ZmHn40dLkdvgsNwSHGAl
+         KV7FqcUakhx+OrxkSexSWAv5d0/PM/zwlXDv+AM8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([89.0.25.131]) by mail.gmx.com (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M6lpM-1iCDyz1GvO-008HpZ; Thu, 03
+ Oct 2019 19:38:47 +0200
+Date:   Thu, 3 Oct 2019 19:38:43 +0200
+From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        linux-doc@vger.kernel.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Documentation: networking: device drivers: Remove stray
+ asterisks
+Message-ID: <20191003173843.GA19803@latitude>
+References: <20191002150956.16234-1-j.neuschaefer@gmx.net>
+ <20191003104737.3774a00f@lwn.net>
 MIME-Version: 1.0
-References: <20191001101429.24965-1-bjorn.topel@gmail.com> <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
- <CAJ+HfNgvxornSfqnbAthNy6u6=-enGCdA8K1e6rLXhCzGgmONQ@mail.gmail.com>
- <CAK7LNATD4vCQnNsHXP8A2cyWDkCNX=LGh0ej-dkDajm-+Lfw8Q@mail.gmail.com>
- <CAJ+HfNgem7ijzQkz7BU-Z_A-CqWXY_uMF6_p0tGZ6eUMx_N3QQ@mail.gmail.com>
- <20191002231448.GA10649@khorivan> <CAJ+HfNiCrcVDwQw4nxsntnTSy2pUgV2n6pW206==hUmq1=ZUTA@mail.gmail.com>
- <CAK7LNARd4_o4E=TSONZjJ9iyyeUE1=L_njU7LiEZFpNunSEEkw@mail.gmail.com>
- <CAJ+HfNhx+gQmRMb18UDRrmzciDYUbdezUh9bRhWG8_HTUCLk9w@mail.gmail.com> <CAEf4BzbZxa3iGZEWB03rdL+7ErmhdpB0e3aeOQvbLPu0o8XFqw@mail.gmail.com>
-In-Reply-To: <CAEf4BzbZxa3iGZEWB03rdL+7ErmhdpB0e3aeOQvbLPu0o8XFqw@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 3 Oct 2019 19:37:51 +0200
-Message-ID: <CAJ+HfNi1cTvCxcgjU4r03eJt_mc7L4Zwn7vfgWHAPWyjH0q4Bw@mail.gmail.com>
-Subject: Re: [PATCH bpf] samples/bpf: kbuild: add CONFIG_SAMPLE_BPF Kconfig
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lrZ03NoBR/3+SXJZ"
+Content-Disposition: inline
+In-Reply-To: <20191003104737.3774a00f@lwn.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Provags-ID: V03:K1:IwwsrWR/0STQtQnGk01FB0eTCBKrJppKW8/DjClPV/XAPz0A3yh
+ bH4GjKQfaB+pdfh0SKsLkoLfPfKGo8fCiGReYHq+CYsncV9zyeKsddxRgjH2m5kdg33iB6b
+ d71jqPXCHEdoGNoiqC4Fcn/DL2e9SLCs0bFx/andqOQGDxv+QI5EwHru2NKAyglMXnfxGHe
+ IlaAaTIUEIZPe0MjunJOg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:KxC9MUHuFSE=:RplwkCc4Y029tfvsaEStjk
+ PQreAmrgqL0zQKzu+r/jU9JbGt7E408nDWt5rzGeXEmr7GbJg7lUWNIPelQyPugTccxAGUVQx
+ DSwZt/2qsVRiDpZ04oXZ75rndEzfnWLMcfD+Yi0FVzt+Tsv2MQMxyu2C5KsksXff00g5vPlbU
+ 6VhWZfMLEx2jNX8Eq93pZdM3Ntg/FLkMa9jKItRaRapy6y4tocNddCLR32sHEywQrfKxerBbi
+ /HVzR4la0ueaZlBRCy9kpvwXh8l8sdQf6X+loOQupwjyWk5xJgWKnW14MS+4+MDb5ATfT+TCI
+ 3lZJhZJb09+KSgGZ0GPsGxb5vx9SMR7nRYYHagHX5uclyNhkC/Irt8CgHd5sGdciW7x5zW4SB
+ xwajpisovtWlYvgUh9fuB7jFrHQ4OYRdLykOhM0h8NhIhOQzajCZVKDw3WeI1bVs3ceqDBS1a
+ DNTRJtIapT6vrW/QSHOO5g88bY/wHPKhjtg1o6xxdOlZ96UDo9XRDZyYhI0GNAFKTnmCeBpR2
+ V9JmzKOfv9mXO9MV10oLDZMp5w4g/2DBwa2UzJuXP8NLBIiwdalfqBEYZRaktzL26mTM/9Fua
+ 4AKQwmYENqrDTEl5FglcO+abE7i8E/S6Pw0MtSeM5lcXC3L/42fANT+1Jy3ubsmwTRMNJdDHp
+ vAjdbUDoVzAUvg/g44QYUUYd1h3Er2G17GaXwUGW/32Ex6WyypOqiHFD/79g+MtRZa5x4SZIQ
+ b9ZYq4CvY3lCz2MaDufdItDVU2cAOoPVtgn2PqMBu8Is3CUExjZssvPTJHhGyJ+LW8swPUCVd
+ RkxSKtK948JH6zebZUqWOsLzTYDla5oNRM3xNOV8jvRC9ave9D2AFsdDBVX0zMySJWaTlg/iO
+ ztx/mgNyhlZSUTnuMUwJnt+5OSn7XqumDHEaMk0x70IX6kilEV1Nrr3+PdSzhPnc61dQPjj3i
+ Jwd/ZH9lk/NkYzEDyTsgD/uc+3uJ0fUmFdznFnX1F01FjG9dyeasFXn1L6eXvw9KBt1UA+t+j
+ NULaUafEgiIuZnbt6iBVQr8Dz5FxZYsh4u0/d+OeVMu+nDE0+Aj4Zqouco+Lf3J67zOlCxeMC
+ 1IcvGBaqWdDvLxIwKDQQNC27Roayv3wFweZbXlDv0u61cmKf5qn3WSWHnHvfhZNAVXsHmAQkq
+ DwZ26h0ZaXnt9y3HWJULFrSpyMMcGkkD2bwKC6ChrpAUkrxXOWsuK9vlsWkaVYisTuGKMr2mA
+ jJBMR4ZdpN4P6XaHBiEG3ZkGi26vflyocBK2Nq7MrJviHsSTZtCxOi6Gzfsk=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Oct 2019 at 19:16, Andrii Nakryiko <andrii.nakryiko@gmail.com> wr=
-ote:
->
-> On Thu, Oct 3, 2019 at 3:52 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.c=
-om> wrote:
-> >
-> > On Thu, 3 Oct 2019 at 12:37, Masahiro Yamada
-> > <yamada.masahiro@socionext.com> wrote:
-> > >
-> > > On Thu, Oct 3, 2019 at 3:28 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gma=
-il.com> wrote:
-> > > >
-> > > > On Thu, 3 Oct 2019 at 01:14, Ivan Khoronzhuk <ivan.khoronzhuk@linar=
-o.org> wrote:
-> > > > >
-> > > > > On Wed, Oct 02, 2019 at 09:41:15AM +0200, Bj=C3=B6rn T=C3=B6pel w=
-rote:
-> > > > > >On Wed, 2 Oct 2019 at 03:49, Masahiro Yamada
-> > > > > ><yamada.masahiro@socionext.com> wrote:
-> > > > > >>
-> > > > > >[...]
-> > > > > >> > Yes, the BPF samples require clang/LLVM with BPF support to =
-build. Any
-> > > > > >> > suggestion on a good way to address this (missing tools), be=
-tter than
-> > > > > >> > the warning above? After the commit 394053f4a4b3 ("kbuild: m=
-ake single
-> > > > > >> > targets work more correctly"), it's no longer possible to bu=
-ild
-> > > > > >> > samples/bpf without support in the samples/Makefile.
-> > > > > >>
-> > > > > >>
-> > > > > >> You can with
-> > > > > >>
-> > > > > >> "make M=3Dsamples/bpf"
-> > > > > >>
-> > > > > >
-> > > > > >Oh, I didn't know that. Does M=3D support "output" builds (O=3D)=
-?
-> > >
-> > > No.
-> > > O=3D points to the output directory of vmlinux,
-> > > not of the external module.
-> > >
-> > > You cannot put the build artifacts from samples/bpf/
-> > > in a separate directory.
-> > >
-> >
-> > Hmm, I can't even get "make M=3Dsamples/bpf/" to build. Am I missing
-> > something obvious?
->
-> There were 3 or 4 separate fixes submitted for samples/bpf yesterday,
-> maybe you are hitting some of those issues. Try to pull latest (not
-> sure if bpf or bpf-next tree). I tried make M=3Dsamples/bpf and it
-> worked for me.
->
 
-Yeah, it was PEBKAC. "make M=3Dsamples/bpf" works if you have a proper
-.config + "make prepare" ;-)
+--lrZ03NoBR/3+SXJZ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I guess I need to change my workflow. I build all my kernels "O=3D", and
-did so with samples/bpf as well. Everything ended up in the same
-output directory. Now I need to have all this build output in source
-tree, and need to manage the .config files in where the source is at.
-Oh well... I'll stop complaining now. :-)
+On Thu, Oct 03, 2019 at 10:47:37AM -0600, Jonathan Corbet wrote:
+> On Wed,  2 Oct 2019 17:09:55 +0200
+> Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net> wrote:
+>=20
+> > These asterisks were once references to a line that said:
+> >   "* Other names and brands may be claimed as the property of others."
+> > But now, they serve no purpose; they can only irritate the reader.
+> >=20
+> > Fixes: de3edab4276c ("e1000: update README for e1000")
+> > Fixes: a3fb65680f65 ("e100.txt: Cleanup license info in kernel doc")
+> > Fixes: da8c01c4502a ("e1000e.txt: Add e1000e documentation")
+> > Fixes: f12a84a9f650 ("Documentation: fm10k: Add kernel documentation")
+> > Fixes: b55c52b1938c ("igb.txt: Add igb documentation")
+> > Fixes: c4e9b56e2442 ("igbvf.txt: Add igbvf Documentation")
+> > Fixes: d7064f4c192c ("Documentation/networking/: Update Intel wired LAN=
+ driver documentation")
+> > Fixes: c4b8c01112a1 ("ixgbevf.txt: Update ixgbevf documentation")
+> > Fixes: 1e06edcc2f22 ("Documentation: i40e: Prepare documentation for RS=
+T conversion")
+> > Fixes: 105bf2fe6b32 ("i40evf: add driver to kernel build system")
+> > Fixes: 1fae869bcf3d ("Documentation: ice: Prepare documentation for RST=
+ conversion")
+> > Fixes: df69ba43217d ("ionic: Add basic framework for IONIC Network devi=
+ce driver")
+> > Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+>=20
+> So just FYI: as I applied this, I removed most of the "Fixes" tags.  The
+> cited commits were adding documentation as plain-text files, so the extra
+> asterisk was *not* an error to be fixed at that point.  The RST-conversion
+> patches, instead, should have caught that...
 
-Thanks,
-Bj=C3=B6rn
+Ah, ok. My reasoning here was more that the asterisks had no meaning
+when the text files were added, rather than about potential ReST syntax
+errors.
 
-> >
-> > Prior 394053f4a4b3 "make samples/bpf/" and "make O=3D/foo/bar
-> > samples/bpf/" worked, but I guess I can live with that...
-> >
-> >
-> > Thanks!
-> > Bj=C3=B6rn
-> >
-> >
-> > >
-> > >
-> > > > > >I usually just build samples/bpf/ with:
-> > > > > >
-> > > > > >  $ make V=3D1 O=3D/home/foo/build/bleh samples/bpf/
-> > > > > >
-> > > > > >
-> > > > > >Bj=C3=B6rn
-> > > > >
-> > > > > Shouldn't README be updated?
-> > > > >
-> > > >
-> > > > Hmm, the M=3D variant doesn't work at all for me. The build is stil=
-l
-> > > > broken for me. Maybe I'm missing anything obvious...
-> > > >
-> > > >
-> > > > > --
-> > > > > Regards,
-> > > > > Ivan Khoronzhuk
-> > >
-> > >
-> > >
-> > > --
-> > > Best Regards
-> > > Masahiro Yamada
+
+Thanks
+
+--lrZ03NoBR/3+SXJZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAl2WMhsACgkQCDBEmo7z
+X9s/sQ/+Lco7NZOLyMdMnHgNzdP9zdwEygec/+bKavlX+Ryx0TIHoL0wtTX83vAZ
+ef68QPhiZ6HsctpZuukxbFw1Hx9bPwMPWVbNSgavGv73YC6h8Ez9ev9SzGsEMVjL
+vFZOd9qMiPN1wJOt7aSxeeth41NOjqEswjYSdYN2No+C/YIFWLwLRF7oQ1co1wm9
+qHpeBUULMHNuCQ2rXQy6L+3hFDztpoviRIb8i01Mj5pc/2qaHNuca+LiIsApVdEw
+P+kEfov1zpHOoE5nZdZ7runSUR866aGWWMKHsrKNQu1zHWaMh4wTZn227GSypTYY
+PoNTbOQOO0ckECSlXEMFmEIpJmJsefbzhl9LnDdFJs73v4wEb29hSxt62RHQpdpd
+v9SwDb1bVO04kGeptyLKMIK2sGASQzyKU4fCijEV98IS3EUv/lQQBu29Ng6Z3Ldt
+6kDbh5eye5iBepQSVO4OXrpauvIKdeb/gU474o2qqTBHjwLOZNtOh1IL0/guj2m0
+a/VEzaS1Xbf6u0Plc8ZVUy+a7rCiqUoZEv5iz9H2uvNDRgV/Gf3s/o9A5oODOErR
+/oNthdxtvhPF/wAahDva/U8+Fgw5Bbu9yzgic3xMXvXzi/j/FcLqbnrZ9RFFMXXx
+ALutVWTyj/Rczdryz3q/iv2yNZP7xPJ9i8u4saPzk+yZ6B00Chk=
+=ae3K
+-----END PGP SIGNATURE-----
+
+--lrZ03NoBR/3+SXJZ--
