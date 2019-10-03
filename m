@@ -2,107 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26071CAE68
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:44:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA65CCAE84
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 20:49:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388183AbfJCSoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 14:44:06 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:42574 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728458AbfJCSoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 14:44:05 -0400
-Received: by mail-pl1-f193.google.com with SMTP id e5so1912308pls.9;
-        Thu, 03 Oct 2019 11:44:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=2zykc3aIa4pRoxK9eihG+83EwwxjGFm5ctchyIo+HaI=;
-        b=mE65RoOFj4VFuDMRx6anpOikl7WDLVt0K8+HiD6p4wyBWqIKVM8IgwFXh7ikK+DFmW
-         JcdeIggzyxjHoWJW4GkS6mx1g3mhkj0ErOa2F56BDKis1tLg2kJFwl9+DyrntuhmGGaY
-         3oTxDOy8rENeWJF8gLWnYAaer2dTBw3ygpnWXiGuYDSjWThqdiqN6q7AMzh5DtL3g2UZ
-         qQQEXYRXq652+vz6RFR2WRGcVEets1az6PSDi4f9N+cTwjOBHoF++mW2FdlERQKpBlOY
-         6unfXXqdKPEUyGK9YvLMn2OnHJyZ1nuwMkhAH8KK2oxGVOXWiSLOY1sZoaTKZygh7RFu
-         Da4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=2zykc3aIa4pRoxK9eihG+83EwwxjGFm5ctchyIo+HaI=;
-        b=LEsVMLzNQCprpVr3cTO+b81SGOc9IN+HG3mxNTnMQFRXcdvRZb9zVtBTa0XyWVmVeV
-         ZC3n3hXembfR782HHmUslRxcYq3m8ZNhh5doRsmk8fHATmNsZShP2dZv9B5pdD8oDsoo
-         TdTQ8GMpqf8C9TScdqkrD7StsYCZBvyi8tYjR+X9RWx72g3EQbrw7tkQdbHri4Nv/j3B
-         mdt9U7oxIker3nO1kMRXQ5t5VjR5g6J8J/R7Q4J3m3JlF0gp0Ns28Vqy84e6Az6Px4Ih
-         l9+YIRUZte+/9XJ4Yo1G3YKJXonoVB4uAQqhiFKaL5Dt3SLVXSe+eZT8bx+DBNaFdhdb
-         /qCA==
-X-Gm-Message-State: APjAAAXt+LEIeYd+lTrz+oH4E+VUE7XQ3SD8OsqqRpZe9aew1fLf6uya
-        vViwRFlhFy+Wv/EBH1eda2ts574h
-X-Google-Smtp-Source: APXvYqwtIG33yCwYu8qdw8jZIOqf2kJEkqHo8XNTly/DI92Ej7oI7T7PhejIx/EKr0oMHOZscDRI5w==
-X-Received: by 2002:a17:902:7c0c:: with SMTP id x12mr11189557pll.238.1570128242589;
-        Thu, 03 Oct 2019 11:44:02 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x9sm3568268pje.27.2019.10.03.11.44.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 11:44:01 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org (open list), hkallweit1@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        manasa.mudireddy@broadcom.com, ray.jui@broadcom.com,
-        olteanv@gmail.com, rafal@milecki.pl
-Subject: [PATCH 2/2] net: phy: broadcom: Use bcm54xx_config_clock_delay() for BCM54612E
-Date:   Thu,  3 Oct 2019 11:43:52 -0700
-Message-Id: <20191003184352.24356-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191003184352.24356-1-f.fainelli@gmail.com>
-References: <20191003184352.24356-1-f.fainelli@gmail.com>
+        id S1730701AbfJCStg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Oct 2019 14:49:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59628 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726677AbfJCStg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Oct 2019 14:49:36 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id ED8012A09D8;
+        Thu,  3 Oct 2019 18:49:35 +0000 (UTC)
+Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AABB75C226;
+        Thu,  3 Oct 2019 18:49:27 +0000 (UTC)
+Date:   Thu, 3 Oct 2019 20:49:26 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        "Alexei Starovoitov" <alexei.starovoitov@gmail.com>,
+        Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
+ interface through chain calls
+Message-ID: <20191003204926.113813f5@carbon>
+In-Reply-To: <1c9b72f9-1b61-d89a-49a4-e0b8eead853d@solarflare.com>
+References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
+        <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com>
+        <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com>
+        <87r23vq79z.fsf@toke.dk>
+        <20191003105335.3cc65226@carbon>
+        <CAADnVQKTbaxJhkukxXM7Ue7=kA9eWsGMpnkXc=Z8O3iWGSaO0A@mail.gmail.com>
+        <87pnjdq4pi.fsf@toke.dk>
+        <1c9b72f9-1b61-d89a-49a4-e0b8eead853d@solarflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 03 Oct 2019 18:49:36 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bcm54612e_config_init() duplicates what bcm54xx_config_clock_delay()
-does with respect to configuring RGMII TX/RX delays appropriately.
+On Thu, 3 Oct 2019 15:53:50 +0100
+Edward Cree <ecree@solarflare.com> wrote:
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/phy/broadcom.c | 21 +--------------------
- 1 file changed, 1 insertion(+), 20 deletions(-)
+> On 03/10/2019 15:33, Toke Høiland-Jørgensen wrote:
+> > In all cases, the sysadmin can't (or doesn't want to) modify any of the
+> > XDP programs. In fact, they may just be installed as pre-compiled .so
+> > BPF files on his system. So he needs to be able to configure the call
+> > chain of different programs without modifying the eBPF program source
+> > code.  
+>
+> Perhaps I'm being dumb, but can't we solve this if we make linking work?
+> I.e. myIDS.so has ids_main() function, myFirewall.so has firewall()
+>  function, and sysadmin writes a little XDP prog to call these:
+> 
+> int main(struct xdp_md *ctx)
+> {
+>         int rc = firewall(ctx), rc2;
+> 
+>         switch(rc) {
+>         case XDP_DROP:
+>         case XDP_ABORTED:
+>         default:
+>                 return rc;
+>         case XDP_PASS:
+>                 return ids_main(ctx);
+>         case XDP_TX:
+>         case XDP_REDIRECT:
+>                 rc2 = ids_main(ctx);
+>                 if (rc2 == XDP_PASS)
+>                         return rc;
+>                 return rc2;
+>         }
+> }
+> 
+> Now he compiles this and links it against those .so files, giving him
+> a new object file which he can then install.
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 5e956089bf52..4313c74b4fd8 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -47,26 +47,7 @@ static int bcm54612e_config_init(struct phy_device *phydev)
- {
- 	int reg;
- 
--	/* Clear TX internal delay unless requested. */
--	if ((phydev->interface != PHY_INTERFACE_MODE_RGMII_ID) &&
--	    (phydev->interface != PHY_INTERFACE_MODE_RGMII_TXID)) {
--		/* Disable TXD to GTXCLK clock delay (default set) */
--		/* Bit 9 is the only field in shadow register 00011 */
--		bcm_phy_write_shadow(phydev, 0x03, 0);
--	}
--
--	/* Clear RX internal delay unless requested. */
--	if ((phydev->interface != PHY_INTERFACE_MODE_RGMII_ID) &&
--	    (phydev->interface != PHY_INTERFACE_MODE_RGMII_RXID)) {
--		reg = bcm54xx_auxctl_read(phydev,
--					  MII_BCM54XX_AUXCTL_SHDWSEL_MISC);
--		/* Disable RXD to RXC delay (default set) */
--		reg &= ~MII_BCM54XX_AUXCTL_SHDWSEL_MISC_RGMII_SKEW_EN;
--		/* Clear shadow selector field */
--		reg &= ~MII_BCM54XX_AUXCTL_SHDWSEL_MASK;
--		bcm54xx_auxctl_write(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_MISC,
--				     MII_BCM54XX_AUXCTL_MISC_WREN | reg);
--	}
-+	bcm54xx_config_clock_delay(phydev);
- 
- 	/* Enable CLK125 MUX on LED4 if ref clock is enabled. */
- 	if (!(phydev->dev_flags & PHY_BRCM_RX_REFCLK_UNUSED)) {
+Sorry, but I don't think this makes sense. 
+
+We are not dealing with .so (shared-object) files.  These are BPF
+ELF-object files, which is not really ELF-objects in a normal sense.
+The role of libbpf is to load the BPF elements in the ELF-file, via the
+BPF-syscall.  First the maps are loaded (gets back a FD from
+BPF-syscall), and then program sections are "opened" and ELF-relocation
+is preformed replacing map accesses with map-FD's, before loading the
+BPF byte-code via BPF-syscall.
+
+Next issue is that the program loading the BPF-ELF object will get the
+map FD's, which it expect and need to query and also populate with for
+example its config.  Thus, you would need to pass the FD to the
+original userspace application.
+
 -- 
-2.17.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
