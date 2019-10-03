@@ -2,167 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58392C96CF
-	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 04:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B6CC96EC
+	for <lists+netdev@lfdr.de>; Thu,  3 Oct 2019 05:20:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728245AbfJCCrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Oct 2019 22:47:16 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:39409 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725860AbfJCCrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 22:47:15 -0400
-Received: by mail-qt1-f196.google.com with SMTP id n7so1537758qtb.6;
-        Wed, 02 Oct 2019 19:47:14 -0700 (PDT)
+        id S1728507AbfJCDUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Oct 2019 23:20:07 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:44614 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728432AbfJCDUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Oct 2019 23:20:06 -0400
+Received: by mail-pf1-f201.google.com with SMTP id b204so1083228pfb.11
+        for <netdev@vger.kernel.org>; Wed, 02 Oct 2019 20:20:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pwuUcNwfLJmUgbZ/recv15iJIKnaqtwVcxZNVlHAusM=;
-        b=SFdiQuMkLMDgzmTsFkdjyQpAJA1OncM+bCGdNgL87KgxsjXwbTswp23HxyfKoNkDJA
-         V3fN2i7kUHv0tbr5FhiIHHYf7CzfvEMF+78wtk5X8nK/iyeOLc052vKdK7iipzhDMxMV
-         qxXHDiLSpZgUunLTRhucPzHEf0iEuV4/EQzrs+jRymBJ7YREKTMkaKiy/R5fs/kBd4rT
-         VrRDRmE2xsFldO/1YVN/tM+TuzbezIqtuaKvel8zPDL2EJGg3tg9mPjAcwBITVeOK/2+
-         ZkGHe1nIZ/n9JQ70mgKqyXdG8K8uZesVQTxyXfT0igB4SiPTXM6YqoYNo/PET6I5x2jG
-         I76Q==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=7mvO5xNauCshK5y/aDFS2tqp481mA6WcOqYrTpHAqT0=;
+        b=dLVGDKVIl2m75hXUF4s9ZPwrzylSPO/huAM6F+xYMBQWcI+SoCc4CnbrzbDS/rgxsp
+         TonPXbxMvS1P8KyJ0IeLsJWBlZ4Hn8MceqUK3aB2B+iqi/mRh+TxGyucl9veQlPwj4JE
+         dLWETgVL2nLAy44hjQaMj+HHT66PAzXPjm+MrhAb7jKchfTiamc3sqL882KBD8metn5r
+         Y6qaCFpbxGVQ9XMjxKSd/z5Prg/atBiedn5ad9av3ln1mKJh6wf0vodlJAJ5F5m+ShZB
+         ozB3Q8I8GMXkFjUlZeVy2si+QYurvkTB8Q0pAUmZf8XbjyupHGdjH41V7x7r0l/VEJij
+         Jv0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pwuUcNwfLJmUgbZ/recv15iJIKnaqtwVcxZNVlHAusM=;
-        b=rAP/jRyhclKtUjnFQ9Eqw3ljpI37QusUxsy1apBvCVLUpINYQAEBwgMifvqtuF3Do2
-         pNRc/ftDQevGHs4lDi/knALo7hAhDg+pl5tdLjjVOg726XPU9votdc246KZA/SHVtMab
-         9hyKpgp4J6ckl2t8bwtxvwMmQtydK/O3FsZn5YYoYzAzdh/HofGRua/vzLgKwmrJFlOb
-         CBvXZySTchs2f4DPQT0/enAUS5c5qU/1rtmWp7e5k7Ezj7yR2TbFM9LeYpYHl+HEzMM9
-         KlUYMVv4AG9Ut7APqEgLAVd0MwlGKMiTEr818GXukC11McKyVKH6xVDBWtVIln3V0FnQ
-         UYAg==
-X-Gm-Message-State: APjAAAVknFQnLbsbjSq3xvtJDr7krL7Klc9m3JNiZ5Cu8HaDMwecsgRm
-        jh6OSlSZ+B+To1ble8CoCYygDOouh9Av6wBp3B4=
-X-Google-Smtp-Source: APXvYqxmyENdypIbJ63XmK5BNaVqUpjtljOeo7js/viCjXq4h0DBsm8b/JwaE5HJrKZHaa02WW3xMNQUYnD8LRC8k3A=
-X-Received: by 2002:a0c:d284:: with SMTP id q4mr6318864qvh.228.1570070834025;
- Wed, 02 Oct 2019 19:47:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191002173357.253643-1-sdf@google.com> <20191002173357.253643-2-sdf@google.com>
- <CAEf4BzZuEChOL828F91wLxUr3h2yfAkZvhsyoSx18uSFSxOtqw@mail.gmail.com> <20191003014356.GC3223377@mini-arch>
-In-Reply-To: <20191003014356.GC3223377@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Oct 2019 19:47:02 -0700
-Message-ID: <CAEf4BzZnWkdFpSUsSBenDDfrvgjGvBxUnJmQRwb7xjNQBaKXdQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf/flow_dissector: add mode to enforce
- global BPF flow dissector
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Petar Penkov <ppenkov@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=7mvO5xNauCshK5y/aDFS2tqp481mA6WcOqYrTpHAqT0=;
+        b=X8aptVCwUrNXSoaR/j3lPS7HrPg6RYBB2jeQHiZHNRp1KUJ5/GUJMnRRSE0hBLvGk4
+         uiQiogJeiHMXqL9eZhwR+SKxdEzhfbpeace8bUiMhyEqiDvelC1T7sPMHODn99XoR7j6
+         L1ZLISTE0Oq6PvpF98L/bQugUmuhq3PlHR6vAFTu/Q1Km1ji09t/KBxYhwJYP9nY3RnU
+         nx9iPiXOO5/z2E55X0Sj2YIWRp4O5BIbRFYZ8vXgh0o5qZuL8tf7d62ZCjUbAUzWIvbZ
+         RstnF922SNAXIa+FZHTLc01HfN3lysPeNq9QYYoCKMrWxUkhkLYcWmEFQKwvA3EbUWqf
+         zImg==
+X-Gm-Message-State: APjAAAVk+E7zhxrsv6gNAa3v/VcPE0d7GAFypxpGW4/9obEy+Xkv0g29
+        O9A0lsV9qjWIQ0+T3aP92q3sGUifRESJEQ==
+X-Google-Smtp-Source: APXvYqyWY5x0iZqrAoSRBDqtNXirdCV5fJKlPosgmrzYkNhpo3WqB3wGZtoyAZC5RrC6l47ttYIrMUoiWK/pcg==
+X-Received: by 2002:a63:1950:: with SMTP id 16mr7424241pgz.213.1570072805688;
+ Wed, 02 Oct 2019 20:20:05 -0700 (PDT)
+Date:   Wed,  2 Oct 2019 20:19:59 -0700
+Message-Id: <20191003031959.165054-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+Subject: [PATCH net] tcp: fix slab-out-of-bounds in tcp_zerocopy_receive()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 2, 2019 at 6:43 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 10/02, Andrii Nakryiko wrote:
-> > On Wed, Oct 2, 2019 at 10:35 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > Always use init_net flow dissector BPF program if it's attached and fall
-> > > back to the per-net namespace one. Also, deny installing new programs if
-> > > there is already one attached to the root namespace.
-> > > Users can still detach their BPF programs, but can't attach any
-> > > new ones (-EPERM).
+Apparently a refactoring patch brought a bug, that was caught
+by syzbot [1]
 
-I find this quite confusing for users, honestly. If there is no root
-namespace dissector we'll successfully attach per-net ones and they
-will be working fine. That some process will attach root one and all
-the previously successfully working ones will suddenly "break" without
-users potentially not realizing why. I bet this will be hair-pulling
-investigation for someone. Furthermore, if root net dissector is
-already attached, all subsequent attachment will now start failing.
+Original code was correct, do not try to be smarter than the
+compiler :/
 
-I'm not sure what's the better behavior here is, but maybe at least
-forcibly detach already attached ones, so when someone goes and tries
-to investigate, they will see that their BPF program is not attached
-anymore. Printing dmesg warning would be hugely useful here as well.
+[1]
+BUG: KASAN: slab-out-of-bounds in tcp_zerocopy_receive net/ipv4/tcp.c:1807 [inline]
+BUG: KASAN: slab-out-of-bounds in do_tcp_getsockopt.isra.0+0x2c6c/0x3120 net/ipv4/tcp.c:3654
+Read of size 4 at addr ffff8880943cf188 by task syz-executor.2/17508
 
-Alternatively, if there is any per-net dissector attached, we might
-disallow root net dissector to be installed. Sort of "too late to the
-party" way, but at least not surprising to successfully installed
-dissectors.
+CPU: 0 PID: 17508 Comm: syz-executor.2 Not tainted 5.3.0-rc7+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ print_address_description.cold+0xd4/0x306 mm/kasan/report.c:351
+ __kasan_report.cold+0x1b/0x36 mm/kasan/report.c:482
+ kasan_report+0x12/0x17 mm/kasan/common.c:618
+ __asan_report_load4_noabort+0x14/0x20 mm/kasan/generic_report.c:131
+ tcp_zerocopy_receive net/ipv4/tcp.c:1807 [inline]
+ do_tcp_getsockopt.isra.0+0x2c6c/0x3120 net/ipv4/tcp.c:3654
+ tcp_getsockopt+0xbf/0xe0 net/ipv4/tcp.c:3680
+ sock_common_getsockopt+0x94/0xd0 net/core/sock.c:3098
+ __sys_getsockopt+0x16d/0x310 net/socket.c:2129
+ __do_sys_getsockopt net/socket.c:2144 [inline]
+ __se_sys_getsockopt net/socket.c:2141 [inline]
+ __x64_sys_getsockopt+0xbe/0x150 net/socket.c:2141
+ do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
 
-Thoughts?
+Fixes: d8e18a516f8f ("net: Use skb accessors in network core")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/ipv4/tcp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> > >
-> > > Cc: Petar Penkov <ppenkov@google.com>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  Documentation/bpf/prog_flow_dissector.rst |  3 +++
-> > >  net/core/flow_dissector.c                 | 11 ++++++++++-
-> > >  2 files changed, 13 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/Documentation/bpf/prog_flow_dissector.rst b/Documentation/bpf/prog_flow_dissector.rst
-> > > index a78bf036cadd..4d86780ab0f1 100644
-> > > --- a/Documentation/bpf/prog_flow_dissector.rst
-> > > +++ b/Documentation/bpf/prog_flow_dissector.rst
-> > > @@ -142,3 +142,6 @@ BPF flow dissector doesn't support exporting all the metadata that in-kernel
-> > >  C-based implementation can export. Notable example is single VLAN (802.1Q)
-> > >  and double VLAN (802.1AD) tags. Please refer to the ``struct bpf_flow_keys``
-> > >  for a set of information that's currently can be exported from the BPF context.
-> > > +
-> > > +When BPF flow dissector is attached to the root network namespace (machine-wide
-> > > +policy), users can't override it in their child network namespaces.
-> > > diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-> > > index 7c09d87d3269..494e2016fe84 100644
-> > > --- a/net/core/flow_dissector.c
-> > > +++ b/net/core/flow_dissector.c
-> > > @@ -115,6 +115,11 @@ int skb_flow_dissector_bpf_prog_attach(const union bpf_attr *attr,
-> > >         struct bpf_prog *attached;
-> > >         struct net *net;
-> > >
-> > > +       if (rcu_access_pointer(init_net.flow_dissector_prog)) {
-> > > +               /* Can't override root flow dissector program */
-> > > +               return -EPERM;
-> > > +       }
-> >
-> > This is racy, shouldn't this be checked after grabbing a lock below?
-> What kind of race do you have in mind?
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 79c325a07ba5dc7cfad0a846d1f03bf1787f840b..f98a1882e537dca0102e829cb349be50302d83ab 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1798,13 +1798,11 @@ static int tcp_zerocopy_receive(struct sock *sk,
+ 		}
+ 		if (skb_frag_size(frags) != PAGE_SIZE || skb_frag_off(frags)) {
+ 			int remaining = zc->recv_skip_hint;
+-			int size = skb_frag_size(frags);
+ 
+-			while (remaining && (size != PAGE_SIZE ||
++			while (remaining && (skb_frag_size(frags) != PAGE_SIZE ||
+ 					     skb_frag_off(frags))) {
+-				remaining -= size;
++				remaining -= skb_frag_size(frags);
+ 				frags++;
+-				size = skb_frag_size(frags);
+ 			}
+ 			zc->recv_skip_hint -= remaining;
+ 			break;
+-- 
+2.23.0.581.g78d2f28ef7-goog
 
-I was thinking about the case of two competing attaches for root
-init_net, but it seems like we will double-check again under lock, so
-this is fine as is.
-
->
-> Even if I put this check under the mutex, it's still possible that if
-> two cpus concurrently start attaching flow dissector programs (i.e. call
-> sys_bpf(BPF_PROG_ATTACH)) at the same time (one to root ns, the other
-> to non-root ns), the cpu that is attaching to non-root can grab mutex first,
-> pass all the checks and attach the prog (higher frequency, tubo boost, etc).
->
-> The mutex is there to protect only against concurrent attaches to the
-> _same_ netns. For the sake of simplicity we have a global one instead
-> of a mutex per net-ns.
->
-> So I'd rather not grab the mutex and keep it simple. Even in there is a
-> race, in __skb_flow_dissect we always check init_net first.
->
-> > > +
-> > >         net = current->nsproxy->net_ns;
-> > >         mutex_lock(&flow_dissector_mutex);
-> > >         attached = rcu_dereference_protected(net->flow_dissector_prog,
-> > > @@ -910,7 +915,11 @@ bool __skb_flow_dissect(const struct net *net,
-> > >         WARN_ON_ONCE(!net);
-> > >         if (net) {
-> > >                 rcu_read_lock();
-> > > -               attached = rcu_dereference(net->flow_dissector_prog);
-> > > +               attached =
-> > > +                       rcu_dereference(init_net.flow_dissector_prog);
-> > > +
-> > > +               if (!attached)
-> > > +                       attached = rcu_dereference(net->flow_dissector_prog);
-> > >
-> > >                 if (attached) {
-> > >                         struct bpf_flow_keys flow_keys;
-> > > --
-> > > 2.23.0.444.g18eeb5a265-goog
-> > >
