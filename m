@@ -2,57 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BAA6CC203
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 19:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC15CC227
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 19:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388625AbfJDRwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 13:52:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33166 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729291AbfJDRwc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Oct 2019 13:52:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=GjkUemf66RqujS4OgGuAy5dPQA6zRNCF5j1XQ3wUVMY=; b=VasWnnOw3AyHtS1+AXv5gHlLDj
-        3kvJwnGk1SLnzdV2L+VrxO9tcaYieelG98kNYtViuU/shmU6WWExUxluXlhpU2TpxJHUIOCUOWfDF
-        TZR4YsBIi7i2ZpeD2272V+vRz6y72FfE/nyfBaAymupjlB5ldHTRCdnUheeVx0SOoRpQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iGRkf-0002dT-U3; Fri, 04 Oct 2019 19:52:25 +0200
-Date:   Fri, 4 Oct 2019 19:52:25 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        tinywrkb <tinywrkb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2 2/4] net: phy: extract link partner advertisement
- reading
-Message-ID: <20191004175225.GA9935@lunn.ch>
-References: <20191004160525.GZ25745@shell.armlinux.org.uk>
- <E1iGQ5k-0001Qg-5X@rmk-PC.armlinux.org.uk>
+        id S2389176AbfJDRxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 13:53:35 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34357 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388195AbfJDRxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 13:53:34 -0400
+Received: by mail-qt1-f194.google.com with SMTP id 3so9740238qta.1;
+        Fri, 04 Oct 2019 10:53:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XZtPrAuiyJow88xMJcgaW2oGIpQkaG6LyvDnnhFC908=;
+        b=I0IC1K0PJvUuKC9eZ+WY49NbkALLddx7G3URSB0o8HusFSIY2hVILSebarp0s5ZoeB
+         R0yezv6zjfLTg/5dFgIGXaM2/JHEFkUfIJOt0OCXizJSsUaG36D5Rr2yQ0krxvkTvrPT
+         WTwjPZNqgiPiXD0Dpci4VM1HtPoo0AEPhRuYrwuyAKEnO9QASCYH9xOfoVkTAA/o7IjB
+         rfkssMvYXtpUp/LpbcDqs2NMqvq/XXXdG8c9UR5MZZSFV4zoZ8smuqjMtR5chctDguGD
+         5vsROsyHWulhGMxNrPTrN7YkZCJgNewG5XHS5xDeVZJZMTF+xc5KP/f32J4k5kPhbTk0
+         14fA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XZtPrAuiyJow88xMJcgaW2oGIpQkaG6LyvDnnhFC908=;
+        b=m+usZCdsLfa9UgRgGBg8iLeUmoM/o046YRXvSzYdHGsv6titwSjKBIGFDjYJ+Q7dLh
+         o15ezyb9B4EPW2H1ziPVexxXIts9gHQGCOXylCCdxePovuP9+KVQ6f0f1qIUOaV2BjxA
+         MpYUqjeMYgZkiuONaWJEVELDQN6QoPq2tye/tY4ez8mZy6N7YOi0ljNd0VMxYkEczWWw
+         TmKwTf2hlVGAZO6fv9zUIjYdSZmoRkSwlkALqyqWmSaSmZXlFfgqC7BRB2M5c7JsyX5Q
+         +1DUvmLLyyn4fEYvXF9R1k9WSZ2b7bKGOnM3CX+yF+n6ThgENS1Dif9ojDHK/ht1oRYj
+         qlaA==
+X-Gm-Message-State: APjAAAUMODXG7fCcrQWDnTTmePMC7f7EP7/r78q6rIIRVYVgj5TUil8A
+        /swxHEtIu6CK6Q3Ztx2bznViFjpFsVR4fbNiqS0=
+X-Google-Smtp-Source: APXvYqykZtTePGrXzDyF0uJ1d3l98isG+Z4F2EB5FFRtHnRgeS1A2/vR+i72fl3ua3Ephx4PVb314qmXWv/xshvk6Ow=
+X-Received: by 2002:ac8:37cb:: with SMTP id e11mr17615377qtc.22.1570211613271;
+ Fri, 04 Oct 2019 10:53:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1iGQ5k-0001Qg-5X@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191004155615.95469-1-sdf@google.com> <20191004155615.95469-2-sdf@google.com>
+In-Reply-To: <20191004155615.95469-2-sdf@google.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Fri, 4 Oct 2019 10:53:22 -0700
+Message-ID: <CAPhsuW6-mdSLFDUdGL1eh2n2Wx32GDsvjCSSyv1dxom1g=uUow@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/2] bpf/flow_dissector: add mode to enforce
+ global BPF flow dissector
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Petar Penkov <ppenkov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 04, 2019 at 05:06:04PM +0100, Russell King wrote:
-> Move reading the link partner advertisement out of genphy_read_status()
-> into its own separate function.  This will allow re-use of this code by
-> PHY drivers that are able to read the resolved status from the PHY.
-> 
-> Tested-by: tinywrkb <tinywrkb@gmail.com>
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+On Fri, Oct 4, 2019 at 8:58 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> Always use init_net flow dissector BPF program if it's attached and fall
+> back to the per-net namespace one. Also, deny installing new programs if
+> there is already one attached to the root namespace.
+> Users can still detach their BPF programs, but can't attach any
+> new ones (-EEXIST).
+>
+> Cc: Petar Penkov <ppenkov@google.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Acked-by: Song Liu <songliubraving@fb.com>
