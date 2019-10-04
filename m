@@ -2,84 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ACD3CBC27
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 15:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C30CBC31
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 15:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388872AbfJDNrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 09:47:37 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:51540 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388438AbfJDNrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 09:47:37 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 2D517619F4; Fri,  4 Oct 2019 13:47:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570196856;
-        bh=YTbkcIOSoT6sfkliDWftlO8oLXWgzNqKOEziTUyn0HU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=jNOBjg77Md9jO1ArgJgRIulK23TEMZaqZ/JV6WLuLYPcAFqvLwYV/wrUhKsdbZa4+
-         w5LGElS3knZUK4dg6HW4O6t6a/0zSuO2ftehftqW3qQTHvWkSwaLXZ9pn86g47c82J
-         HQLKAoo1QS7TwMt4KXNd4OicHVBiI7ipjxfJor+Q=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2388696AbfJDNsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 09:48:53 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34066 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388662AbfJDNsx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 09:48:53 -0400
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 28C4A6081C;
-        Fri,  4 Oct 2019 13:47:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570196855;
-        bh=YTbkcIOSoT6sfkliDWftlO8oLXWgzNqKOEziTUyn0HU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=ESd3wgaBuhMt7Vw0LAcQG80pZLg82sIGccWfnpkFvmJvHKErgvVz/Gwg7OXZMo5M+
-         2QkIUoWqLvWjT5dvTYuD+71vcJusxAhvcD6cEp3WP/XQEpGC9Nr0KI1Jot1RNOuFy3
-         7JvVAlt3hoq+UDbGBByU5Qq4YWhuDrZol0TMOWzM=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 28C4A6081C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mx1.redhat.com (Postfix) with ESMTPS id 04A95C06513B
+        for <netdev@vger.kernel.org>; Fri,  4 Oct 2019 13:48:53 +0000 (UTC)
+Received: by mail-lj1-f200.google.com with SMTP id q185so1786667ljb.20
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 06:48:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Wva8vraPObqOZIt8st2114o0Y/gX0tBPWrlisaTLCDs=;
+        b=n1NV3f1R75irsQJ37O+PS2KdNHdMuJ18Hv1BjLA+tq2It9qjA99aseqf8oMx+ajy7J
+         irlNeBh5T9NyoISfsLdlTidt8Q1wKvJNhVhpDqMWdtlXiMUuodWQjv2ifR0Y2/ZsqHgE
+         hThi+27OF1jTw1bhrdOaXXrdQJLcuy+wVRkoqpeN8fbIGV6r+hsjWoHuCCdmOCIj3acz
+         TqWsvfdbL1KPvaCkk5eToOpZYylzorWslv2+CIB97m2xqHH95QYmhu0gfE0bUjbrUx86
+         esurwUDS+qw377gLNOHKwDMAkOrBzBQFqZtyvTXIL1Xaewjv8rVCPbvjiWLAo6PQ7aka
+         hSVA==
+X-Gm-Message-State: APjAAAXRN4IlBPFoOG4sKH/QUi4nw5owyU/Vpdax1axndrvA1ULW46HO
+        MSr2wL+Ec43rRvIc507rN0nAka/bKwqQ2sGgoBV7dgK4MQHi9fA9Sbv4H7KCFjSC6o/cQhT/UNC
+        NiBets3URx749uLpB
+X-Received: by 2002:ac2:43b8:: with SMTP id t24mr7404835lfl.24.1570196931381;
+        Fri, 04 Oct 2019 06:48:51 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxsskEcvwDYz9YZe4y2yQ9EnxR7lxymDUYlzH+PFQR609PHcycvN2SMYeIJ1smwipxCk+ZZYg==
+X-Received: by 2002:ac2:43b8:: with SMTP id t24mr7404825lfl.24.1570196931194;
+        Fri, 04 Oct 2019 06:48:51 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id h5sm1340786ljf.83.2019.10.04.06.48.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Oct 2019 06:48:50 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 426C218063D; Fri,  4 Oct 2019 15:48:49 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [v4 1/4] samples: pktgen: make variable consistent with option
+In-Reply-To: <CAEKGpzhmkDBGV5BmwwYgb0ng+Eyyzp2CFoGeZ65aEgR=CxWnMg@mail.gmail.com>
+References: <20191004013301.8686-1-danieltimlee@gmail.com> <20191004145153.6192fb09@carbon> <CAEKGpzhmkDBGV5BmwwYgb0ng+Eyyzp2CFoGeZ65aEgR=CxWnMg@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 04 Oct 2019 15:48:49 +0200
+Message-ID: <87lfu0oc3i.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rsi: fix potential null dereference in rsi_probe()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191002171811.23993-1-efremov@linux.com>
-References: <20191002171811.23993-1-efremov@linux.com>
-To:     Denis Efremov <efremov@linux.com>
-Cc:     linux-wireless@vger.kernel.org, Denis Efremov <efremov@linux.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191004134736.2D517619F4@smtp.codeaurora.org>
-Date:   Fri,  4 Oct 2019 13:47:36 +0000 (UTC)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Denis Efremov <efremov@linux.com> wrote:
+"Daniel T. Lee" <danieltimlee@gmail.com> writes:
 
-> The id pointer can be NULL in rsi_probe(). It is checked everywhere except
-> for the else branch in the idProduct condition. The patch adds NULL check
-> before the id dereference in the rsi_dbg() call.
-> 
-> Fixes: 54fdb318c111 ("rsi: add new device model for 9116")
-> Cc: Amitkumar Karwar <amitkarwar@gmail.com>
-> Cc: Siva Rebbagondla <siva8118@gmail.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Signed-off-by: Denis Efremov <efremov@linux.com>
+> On Fri, Oct 4, 2019 at 9:52 PM Jesper Dangaard Brouer <brouer@redhat.com>
+> wrote:
+>
+>>
+>> On Fri,  4 Oct 2019 10:32:58 +0900 "Daniel T. Lee" <danieltimlee@gmail.com>
+>> wrote:
+>>
+>> > [...]
+>>
+>>
+> Thanks for the review!
+>
+>
+>> A general comment, you forgot a cover letter for your patchset.
+>>
+>>
+> At first, I thought the size of the patchset (the feature to enhance) was
+> small so
+> I didn't include it with intent, but now it gets bigger and it seems
+> necessary for cover letter.
+>
+> When the next version is needed, I'll include it.
+>
+>
+>> And also forgot the "PATCH" part of subj. but patchwork still found it:
+>> https://patchwork.ozlabs.org/project/netdev/list/?series=134102&state=2a
+>>
+>>
+> I'm not sure I'm following.
+> Are you saying that the word "PATCH" should be included in prefix?
+>     $ git format-patch --subject-prefix="PATCH,v5"
+> like this?
 
-Patch applied to wireless-drivers-next.git, thanks.
+$ git format-patch --subject-prefix="PATCH bpf-next" -v5
 
-f170d44bc4ec rsi: fix potential null dereference in rsi_probe()
+would be the right incantation for this :)
 
--- 
-https://patchwork.kernel.org/patch/11171695/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+-Toke
