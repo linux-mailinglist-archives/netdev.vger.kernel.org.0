@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC15CC227
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 19:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72DDECC22D
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 19:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389176AbfJDRxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 13:53:35 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:34357 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388195AbfJDRxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 13:53:34 -0400
-Received: by mail-qt1-f194.google.com with SMTP id 3so9740238qta.1;
-        Fri, 04 Oct 2019 10:53:33 -0700 (PDT)
+        id S2388554AbfJDRyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 13:54:38 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:39278 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbfJDRyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 13:54:38 -0400
+Received: by mail-qt1-f196.google.com with SMTP id n7so9692306qtb.6;
+        Fri, 04 Oct 2019 10:54:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XZtPrAuiyJow88xMJcgaW2oGIpQkaG6LyvDnnhFC908=;
-        b=I0IC1K0PJvUuKC9eZ+WY49NbkALLddx7G3URSB0o8HusFSIY2hVILSebarp0s5ZoeB
-         R0yezv6zjfLTg/5dFgIGXaM2/JHEFkUfIJOt0OCXizJSsUaG36D5Rr2yQ0krxvkTvrPT
-         WTwjPZNqgiPiXD0Dpci4VM1HtPoo0AEPhRuYrwuyAKEnO9QASCYH9xOfoVkTAA/o7IjB
-         rfkssMvYXtpUp/LpbcDqs2NMqvq/XXXdG8c9UR5MZZSFV4zoZ8smuqjMtR5chctDguGD
-         5vsROsyHWulhGMxNrPTrN7YkZCJgNewG5XHS5xDeVZJZMTF+xc5KP/f32J4k5kPhbTk0
-         14fA==
+        bh=Pn1lEr0tFf8WcG/pP9C0+kwkDcrhVdevTkVqHR5JdFw=;
+        b=Ridhwle7HOhw3AuJ6vTKi2/N2ulOhayX6/yfclN0Fvd1/8VlPygBp1PAOFY5ywO/Uv
+         fel2OTVetwkfevGKSJ5JZnvbWSXDHCRYMy+YGcfBP/z9U9S16DacEcbWN2jBApXIiiuo
+         y8ngh+rAkY8cTwdV2VDjNft/HKPOZr4GQwlKDjgQ8Vj+wvXK/Z1X9zm05Y25yzf2f1fU
+         cDeOxdupWgSjOjOh1qOZ/0MHi0/2f3bc22Odv38kpyz7C1cLnGyqVEoFTl3mY9NzYj9+
+         cUPIfMM2nTJji2VD7jLbEO3yObA3dGW1em2j+uT1N+1ENA6Cn2lVPg5xwPvZQT1sQc+q
+         z42g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XZtPrAuiyJow88xMJcgaW2oGIpQkaG6LyvDnnhFC908=;
-        b=m+usZCdsLfa9UgRgGBg8iLeUmoM/o046YRXvSzYdHGsv6titwSjKBIGFDjYJ+Q7dLh
-         o15ezyb9B4EPW2H1ziPVexxXIts9gHQGCOXylCCdxePovuP9+KVQ6f0f1qIUOaV2BjxA
-         MpYUqjeMYgZkiuONaWJEVELDQN6QoPq2tye/tY4ez8mZy6N7YOi0ljNd0VMxYkEczWWw
-         TmKwTf2hlVGAZO6fv9zUIjYdSZmoRkSwlkALqyqWmSaSmZXlFfgqC7BRB2M5c7JsyX5Q
-         +1DUvmLLyyn4fEYvXF9R1k9WSZ2b7bKGOnM3CX+yF+n6ThgENS1Dif9ojDHK/ht1oRYj
-         qlaA==
-X-Gm-Message-State: APjAAAUMODXG7fCcrQWDnTTmePMC7f7EP7/r78q6rIIRVYVgj5TUil8A
-        /swxHEtIu6CK6Q3Ztx2bznViFjpFsVR4fbNiqS0=
-X-Google-Smtp-Source: APXvYqykZtTePGrXzDyF0uJ1d3l98isG+Z4F2EB5FFRtHnRgeS1A2/vR+i72fl3ua3Ephx4PVb314qmXWv/xshvk6Ow=
-X-Received: by 2002:ac8:37cb:: with SMTP id e11mr17615377qtc.22.1570211613271;
- Fri, 04 Oct 2019 10:53:33 -0700 (PDT)
+        bh=Pn1lEr0tFf8WcG/pP9C0+kwkDcrhVdevTkVqHR5JdFw=;
+        b=OqlSKzmooF+Un3lUOAA8Iy7QY7Y4i5A7vq2vYCXGfbmpB0s1BacBhUrran4dq6FCUu
+         JYYdqUEiYla7Bs2pSpGrEFdEiuyih+Y7KJl4FxZDp4jpZIvuMYsoYNyGPyu2fWPha1uk
+         ODlFOu7fSV+mI50soz58gPItwX2PyF4Z+yXRNxvBoZTI5IKWRYdzf/VNZBr6nJ3qJfNc
+         ubnBPVKngTuENpdBOzeHJbbpwhNj2Pude8BOa7l/B2dT3d1Gf5Ssyy/MAEmoyekBQy/Q
+         SMpvNbxpAl5+X4+2jx41cuBTJIgOdO78ak/ngsGKwjRnICvjZry2feWsFpg/fl8gt5Cl
+         e6fg==
+X-Gm-Message-State: APjAAAXXi43dvXbN1geCVTZ7YTdr4LQu6zTl4ZmPBPv+WsbckuqnsTMT
+        S7YaxnGk5C7scW8xxiygODurrDEZyXzvtAC+44o=
+X-Google-Smtp-Source: APXvYqwAWbwK7yQBJt5yyi/sKiflrZ5VBB0HCxfxOrXOMdbyX7VP/sLqtE6r1lLuOGPvUDQPpEA/itE6KBIV6DePhoI=
+X-Received: by 2002:ac8:4704:: with SMTP id f4mr17024775qtp.183.1570211677076;
+ Fri, 04 Oct 2019 10:54:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191004155615.95469-1-sdf@google.com> <20191004155615.95469-2-sdf@google.com>
-In-Reply-To: <20191004155615.95469-2-sdf@google.com>
+References: <20191004155615.95469-1-sdf@google.com> <20191004155615.95469-3-sdf@google.com>
+In-Reply-To: <20191004155615.95469-3-sdf@google.com>
 From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Fri, 4 Oct 2019 10:53:22 -0700
-Message-ID: <CAPhsuW6-mdSLFDUdGL1eh2n2Wx32GDsvjCSSyv1dxom1g=uUow@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] bpf/flow_dissector: add mode to enforce
- global BPF flow dissector
+Date:   Fri, 4 Oct 2019 10:54:25 -0700
+Message-ID: <CAPhsuW4PC4Oo7fRL60EkiMvyY9pohKYznBhAe=HndKqX6PxqSA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: add test for BPF flow
+ dissector in the root namespace
 To:     Stanislav Fomichev <sdf@google.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
@@ -62,11 +62,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Oct 4, 2019 at 8:58 AM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> Always use init_net flow dissector BPF program if it's attached and fall
-> back to the per-net namespace one. Also, deny installing new programs if
-> there is already one attached to the root namespace.
-> Users can still detach their BPF programs, but can't attach any
-> new ones (-EEXIST).
+> Make sure non-root namespaces get an error if root flow dissector is
+> attached.
 >
 > Cc: Petar Penkov <ppenkov@google.com>
 > Signed-off-by: Stanislav Fomichev <sdf@google.com>
