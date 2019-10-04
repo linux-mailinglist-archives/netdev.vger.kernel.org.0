@@ -2,180 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D76CC028
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 18:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BA65CC0EC
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 18:38:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390360AbfJDQGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 12:06:42 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:33762 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389835AbfJDQGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 12:06:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=KxCvbYmfHj72Fmw3ybcEyWCtfiwGqSSMUc6d32YUwU0=; b=KMXW7lu1Xz4nibD8rAxLUsKwUX
-        6NDqsv8ymVBtqTsWhfSK0QeuownSYgg5v4v68r+3qMx2sltgIyITP1MzE7LGtGEBkfDa73NgplHEu
-        q7OwtGb891o0bSScgqZoiq7HGK53HuixR0qY29c3fbEy3kXXSst9yiZnbhty0Ds65kCjcfx8QiXTc
-        TC5nOw42YkFcGOXCmRGBULIFuGbwpwT2SdPj0eBE7ptSUnA3e8esDUyNSNGpZ2QxB85JnMBKjQQwJ
-        FtdCn6bwV7IauNQ+DKQBYPyy8/1MRdapZU7prjBV4kFxi45swhpPkdP0kHNDIera0Wtt5e1oACJbd
-        IbOMNwkQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:39866 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iGQ5y-0005LR-LA; Fri, 04 Oct 2019 17:06:18 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iGQ5u-0001Qv-EF; Fri, 04 Oct 2019 17:06:14 +0100
-In-Reply-To: <20191004160525.GZ25745@shell.armlinux.org.uk>
-References: <20191004160525.GZ25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        tinywrkb <tinywrkb@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net v2 4/4] net: phy: at803x: use operating parameters from
- PHY-specific status
-MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iGQ5u-0001Qv-EF@rmk-PC.armlinux.org.uk>
-Date:   Fri, 04 Oct 2019 17:06:14 +0100
+        id S1729554AbfJDQiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 12:38:11 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:35988 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727264AbfJDQiK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 12:38:10 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 23so4062884pgk.3
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 09:38:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=B4O1M0b3ByS/E8WnqjiwQjVvVNgrqnmluzp4B44F3OI=;
+        b=i5CxeDyN20kDLsfTZwQIJJmWqwrMcrbfNQmG1QivAzWJmQbIypibjliubZXRxzoh9q
+         iO2RW9ON728MZzfmF7Jq83XxcCDAHJUMCYnOUiLKBZO2AMLsujM9UaIeewpAwFLBrnzv
+         GnF+0XVKbt+YTc2wyL5ymO8oaPy4rPuWSeKqEyVcVGYVQmMI2KZD8+KyrdjlS5vxvbMp
+         JApCzTB/qpn3xvNYApnYqtIG6gWmbJLEoWk/i7ogqxV2v090CE7XCNI54b3cI8Iin7vO
+         koEecWbnC/UYBs3uQUzdu1zD3MjpHRc5ZGiV7edP9W5K6pxJ43bvHdQfc50ijQBjswb4
+         95PA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=B4O1M0b3ByS/E8WnqjiwQjVvVNgrqnmluzp4B44F3OI=;
+        b=Zkxpom5bz5cWTmHYnvkrQNNU/RSqYiWx6urJZBxUsS+K+jKAM2GLzpO4tZexZb2F6L
+         /ARNazCYv7AajnsrxlNoPiFCHticeHiI+OYFZ62unBWWMLRJUdl5obi2mpXLAvDw0NBz
+         wcxrzud8rdh0i9TdF4RnZ0yoqS/MdgFy/UDqf9U6tR/HpQmybd+Yh3r49R83rn5dG+rB
+         BBxb3jmmpIzpqXschG8UbS+exkqJxr9zu2q1kppA88dtUfax1PGSP8W7qT/VrLvHpomf
+         F9ZFGBjHFcmNuItsuOCyFG3lzeVr7E5snbWxQjfMHLM639k6LrOeH4wdShpupzkR9Vt0
+         ydBw==
+X-Gm-Message-State: APjAAAV58gu9KYlfEcvU8SbdRmmI6H05R39J8C632/+Q8yZK6Eun1N1Q
+        UVzbEpmUybpuTV9GmpYKnyHoQX6wbh0=
+X-Google-Smtp-Source: APXvYqxCyzoYifRPKj9gJ6Z8QNq+nQZ90qYC+yWWRg2hNtwpfwARi+7qU8Ga5CEqUotA9eqPTukJkA==
+X-Received: by 2002:a63:1e1e:: with SMTP id e30mr15336969pge.405.1570207089455;
+        Fri, 04 Oct 2019 09:38:09 -0700 (PDT)
+Received: from Husky.eng.vmware.com ([66.170.99.1])
+        by smtp.gmail.com with ESMTPSA id c7sm6125069pfr.75.2019.10.04.09.38.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 04 Oct 2019 09:38:08 -0700 (PDT)
+From:   Yi-Hung Wei <yihung.wei@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Yi-Hung Wei <yihung.wei@gmail.com>
+Subject: [PATCH net-next v2] openvswitch: Allow attaching helper in later commit
+Date:   Fri,  4 Oct 2019 09:26:44 -0700
+Message-Id: <1570206404-10565-1-git-send-email-yihung.wei@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Read the PHY-specific status register for the current operating mode
-(speed and duplex) of the PHY.  This register reflects the actual
-mode that the PHY has resolved depending on either the advertisements
-of autoneg is enabled, or the forced mode if autoneg is disabled.
+This patch allows to attach conntrack helper to a confirmed conntrack
+entry.  Currently, we can only attach alg helper to a conntrack entry
+when it is in the unconfirmed state.  This patch enables an use case
+that we can firstly commit a conntrack entry after it passed some
+initial conditions.  After that the processing pipeline will further
+check a couple of packets to determine if the connection belongs to
+a particular application, and attach alg helper to the connection
+in a later stage.
 
-This ensures that phylib's software state always tracks the hardware
-state.
-
-It seems both AR8033 (which uses the AR8031 ID) and AR8035 support
-this status register.  AR8030 is not known at the present time.
-
-This patch depends on "net: phy: extract pause mode" and "net: phy:
-extract link partner advertisement reading".
-
-Reported-by: tinywrkb <tinywrkb@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Tested-by: tinywrkb <tinywrkb@gmail.com>
-Fixes: 5502b218e001 ("net: phy: use phy_resolve_aneg_linkmode in genphy_read_status")
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
 ---
- drivers/net/phy/at803x.c | 69 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 69 insertions(+)
+v1->v2, Use logical OR instead of bitwise OR as Dave suggested.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 2aa7b2e60046..1eb5d4fb8925 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -15,6 +15,15 @@
- #include <linux/of_gpio.h>
- #include <linux/gpio/consumer.h>
+---
+ net/openvswitch/conntrack.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index 05249eb45082..df9c80bf621d 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -971,6 +971,8 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
  
-+#define AT803X_SPECIFIC_STATUS			0x11
-+#define AT803X_SS_SPEED_MASK			(3 << 14)
-+#define AT803X_SS_SPEED_1000			(2 << 14)
-+#define AT803X_SS_SPEED_100			(1 << 14)
-+#define AT803X_SS_SPEED_10			(0 << 14)
-+#define AT803X_SS_DUPLEX			BIT(13)
-+#define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
-+#define AT803X_SS_MDIX				BIT(6)
+ 	ct = nf_ct_get(skb, &ctinfo);
+ 	if (ct) {
++		bool add_helper = false;
 +
- #define AT803X_INTR_ENABLE			0x12
- #define AT803X_INTR_ENABLE_AUTONEG_ERR		BIT(15)
- #define AT803X_INTR_ENABLE_SPEED_CHANGED	BIT(14)
-@@ -357,6 +366,64 @@ static int at803x_aneg_done(struct phy_device *phydev)
- 	return aneg_done;
- }
+ 		/* Packets starting a new connection must be NATted before the
+ 		 * helper, so that the helper knows about the NAT.  We enforce
+ 		 * this by delaying both NAT and helper calls for unconfirmed
+@@ -988,16 +990,17 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
+ 		}
  
-+static int at803x_read_status(struct phy_device *phydev)
-+{
-+	int ss, err, old_link = phydev->link;
-+
-+	/* Update the link, but return if there was an error */
-+	err = genphy_update_link(phydev);
-+	if (err)
-+		return err;
-+
-+	/* why bother the PHY if nothing can have changed */
-+	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
-+		return 0;
-+
-+	phydev->speed = SPEED_UNKNOWN;
-+	phydev->duplex = DUPLEX_UNKNOWN;
-+	phydev->pause = 0;
-+	phydev->asym_pause = 0;
-+
-+	err = genphy_read_lpa(phydev);
-+	if (err < 0)
-+		return err;
-+
-+	/* Read the AT8035 PHY-Specific Status register, which indicates the
-+	 * speed and duplex that the PHY is actually using, irrespective of
-+	 * whether we are in autoneg mode or not.
-+	 */
-+	ss = phy_read(phydev, AT803X_SPECIFIC_STATUS);
-+	if (ss < 0)
-+		return ss;
-+
-+	if (ss & AT803X_SS_SPEED_DUPLEX_RESOLVED) {
-+		switch (ss & AT803X_SS_SPEED_MASK) {
-+		case AT803X_SS_SPEED_10:
-+			phydev->speed = SPEED_10;
-+			break;
-+		case AT803X_SS_SPEED_100:
-+			phydev->speed = SPEED_100;
-+			break;
-+		case AT803X_SS_SPEED_1000:
-+			phydev->speed = SPEED_1000;
-+			break;
-+		}
-+		if (ss & AT803X_SS_DUPLEX)
-+			phydev->duplex = DUPLEX_FULL;
-+		else
-+			phydev->duplex = DUPLEX_HALF;
-+		if (ss & AT803X_SS_MDIX)
-+			phydev->mdix = ETH_TP_MDI_X;
-+		else
-+			phydev->mdix = ETH_TP_MDI;
-+	}
-+
-+	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete)
-+		phy_resolve_aneg_pause(phydev);
-+
-+	return 0;
-+}
-+
- static struct phy_driver at803x_driver[] = {
- {
- 	/* ATHEROS 8035 */
-@@ -370,6 +437,7 @@ static struct phy_driver at803x_driver[] = {
- 	.suspend		= at803x_suspend,
- 	.resume			= at803x_resume,
- 	/* PHY_GBIT_FEATURES */
-+	.read_status		= at803x_read_status,
- 	.ack_interrupt		= at803x_ack_interrupt,
- 	.config_intr		= at803x_config_intr,
- }, {
-@@ -399,6 +467,7 @@ static struct phy_driver at803x_driver[] = {
- 	.suspend		= at803x_suspend,
- 	.resume			= at803x_resume,
- 	/* PHY_GBIT_FEATURES */
-+	.read_status		= at803x_read_status,
- 	.aneg_done		= at803x_aneg_done,
- 	.ack_interrupt		= &at803x_ack_interrupt,
- 	.config_intr		= &at803x_config_intr,
+ 		/* Userspace may decide to perform a ct lookup without a helper
+-		 * specified followed by a (recirculate and) commit with one.
+-		 * Therefore, for unconfirmed connections which we will commit,
+-		 * we need to attach the helper here.
++		 * specified followed by a (recirculate and) commit with one,
++		 * or attach a helper in a later commit.  Therefore, for
++		 * connections which we will commit, we may need to attach
++		 * the helper here.
+ 		 */
+-		if (!nf_ct_is_confirmed(ct) && info->commit &&
+-		    info->helper && !nfct_help(ct)) {
++		if (info->commit && info->helper && !nfct_help(ct)) {
+ 			int err = __nf_ct_try_assign_helper(ct, info->ct,
+ 							    GFP_ATOMIC);
+ 			if (err)
+ 				return err;
++			add_helper = true;
+ 
+ 			/* helper installed, add seqadj if NAT is required */
+ 			if (info->nat && !nfct_seqadj(ct)) {
+@@ -1007,11 +1010,13 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
+ 		}
+ 
+ 		/* Call the helper only if:
+-		 * - nf_conntrack_in() was executed above ("!cached") for a
+-		 *   confirmed connection, or
++		 * - nf_conntrack_in() was executed above ("!cached") or a
++		 *   helper was just attached ("add_helper") for a confirmed
++		 *   connection, or
+ 		 * - When committing an unconfirmed connection.
+ 		 */
+-		if ((nf_ct_is_confirmed(ct) ? !cached : info->commit) &&
++		if ((nf_ct_is_confirmed(ct) ? !cached || add_helper :
++					      info->commit) &&
+ 		    ovs_ct_helper(skb, info->family) != NF_ACCEPT) {
+ 			return -EINVAL;
+ 		}
 -- 
 2.7.4
 
