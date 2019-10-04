@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB3CECC49C
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 23:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE3ECC49F
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 23:11:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730675AbfJDVKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 17:10:45 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:32917 "EHLO
+        id S1731140AbfJDVLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 17:11:08 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:41487 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728781AbfJDVKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 17:10:44 -0400
+        with ESMTP id S1728781AbfJDVLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 17:11:07 -0400
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iGUqW-0006xR-VO; Fri, 04 Oct 2019 23:10:41 +0200
+        id 1iGUqr-00071r-KS; Fri, 04 Oct 2019 23:11:01 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:44c4:7f7f:9bfe:66b5] (unknown [IPv6:2a03:f580:87bc:d400:44c4:7f7f:9bfe:66b5])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3DDDC460480;
-        Fri,  4 Oct 2019 21:10:39 +0000 (UTC)
-Subject: Re: [PATCH] can: flexcan: use devm_platform_ioremap_resource() to
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E523E460485;
+        Fri,  4 Oct 2019 21:10:58 +0000 (UTC)
+Subject: Re: [PATCH -next] can: grcan: use devm_platform_ioremap_resource() to
  simplify code
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sean@geanix.com" <sean@geanix.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-References: <20190929082854.11952-1-qiangqing.zhang@nxp.com>
+To:     YueHaibing <yuehaibing@huawei.com>, wg@grandegger.com,
+        davem@davemloft.net
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190930094909.49672-1-yuehaibing@huawei.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
@@ -95,15 +93,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
  lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
  QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
-Message-ID: <246a3760-d8e0-cc52-6d46-f6f4c350ea51@pengutronix.de>
-Date:   Fri, 4 Oct 2019 23:10:35 +0200
+Message-ID: <5a3ed3bd-580d-448c-9ab2-880b5d9ba3c5@pengutronix.de>
+Date:   Fri, 4 Oct 2019 23:10:55 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20190929082854.11952-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20190930094909.49672-1-yuehaibing@huawei.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="OuQhmicYX9t4n2PLAXo3R8NEu2Gq0dsEJ"
+ boundary="3WVs5nsC4Uhmw7DbaTre7Jg2QUPg5h5fB"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -114,33 +112,30 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---OuQhmicYX9t4n2PLAXo3R8NEu2Gq0dsEJ
-Content-Type: multipart/mixed; boundary="iKbLX40TPLku3VHIdDyM7ISs763CJx9Wl";
+--3WVs5nsC4Uhmw7DbaTre7Jg2QUPg5h5fB
+Content-Type: multipart/mixed; boundary="QQ1lPPiiYZFtK40mmFeyoRHn5nrhJo8IT";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: "wg@grandegger.com" <wg@grandegger.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "sean@geanix.com" <sean@geanix.com>, dl-linux-imx <linux-imx@nxp.com>
-Message-ID: <246a3760-d8e0-cc52-6d46-f6f4c350ea51@pengutronix.de>
-Subject: Re: [PATCH] can: flexcan: use devm_platform_ioremap_resource() to
+To: YueHaibing <yuehaibing@huawei.com>, wg@grandegger.com, davem@davemloft.net
+Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <5a3ed3bd-580d-448c-9ab2-880b5d9ba3c5@pengutronix.de>
+Subject: Re: [PATCH -next] can: grcan: use devm_platform_ioremap_resource() to
  simplify code
-References: <20190929082854.11952-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20190929082854.11952-1-qiangqing.zhang@nxp.com>
+References: <20190930094909.49672-1-yuehaibing@huawei.com>
+In-Reply-To: <20190930094909.49672-1-yuehaibing@huawei.com>
 
---iKbLX40TPLku3VHIdDyM7ISs763CJx9Wl
+--QQ1lPPiiYZFtK40mmFeyoRHn5nrhJo8IT
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 9/29/19 10:32 AM, Joakim Zhang wrote:
-> Use the new helper devm_platform_ioremap_resource() which wraps the
-> platform_get_resource() and devm_ioremap_resource() together to simplif=
-y
-> the code.
+On 9/30/19 11:49 AM, YueHaibing wrote:
+> Use devm_platform_ioremap_resource() to simplify the code a bit.
+> This is detected by coccinelle.
 >=20
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
 Applied to linux-can-next.
 
@@ -154,23 +149,23 @@ Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
 Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
 
 
---iKbLX40TPLku3VHIdDyM7ISs763CJx9Wl--
+--QQ1lPPiiYZFtK40mmFeyoRHn5nrhJo8IT--
 
---OuQhmicYX9t4n2PLAXo3R8NEu2Gq0dsEJ
+--3WVs5nsC4Uhmw7DbaTre7Jg2QUPg5h5fB
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2XtUsACgkQWsYho5Hk
-nSAa3Qf9GOnHb7vZe2FZVqafL8p7QAJPAhLPLgFL9OuVcggBhLNKM0w2w/pBf9x9
-IkcMbFWJkkn3VL4ONq+q10MFcjvXt5uanZyExeKyV37Ze8NRhYaGytBn8kO+KAs1
-gWjhLgtCZecxLAZ5MomS4T7SKo2w0i2xX+y42J62CDnZAy52DenyHyZ2XHKPC6tw
-lH51ljfaDkTFez2ykuecYXXCWT97lImOl+myPBk4WIUpbOpWTq5VYz2GgvLsYkFL
-lAGwE4hv4UU7Kb6f2px3EwBCt/p8EJfymtVUZOK1R5Q0e9HBHClVTopvOH6yDBN4
-2ZTcHiBhvZ+tiwR5ZdnZbt7N5+9s/g==
-=f3bq
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2XtV8ACgkQWsYho5Hk
+nSBlvgf+NGoVOHjE7fObIou7tepHaBlpOebiZGg2fenrYrKgfpuMrMMeSAxO4K/Q
+IDP2zNpdjnMecLKXndEtcNQxlV3q0ISCwlmGIgU3dfSpQBU2OAt2hj37TbvKcnEp
+U5+IJ1Gl9Lw6FSM6tEmGDmJnxSVpAyueDCvqZeaLkjxJ+haAThOVldbvLHnBT6yf
+FYkgTt08abIP+vna7fz+2ubyrmCdZnk72o8ZyMuorYYYOVwZbJr8pfi8LbpGdrGi
++YDzVCmnmqGcbNETWbGM1kqmtueprgVzjxWFB/qccyM0YrFI/bQ7ql3EBSQlw7eN
+9XV9awLHEaDjeIkcJWdkSh7DwniIqQ==
+=1Dbe
 -----END PGP SIGNATURE-----
 
---OuQhmicYX9t4n2PLAXo3R8NEu2Gq0dsEJ--
+--3WVs5nsC4Uhmw7DbaTre7Jg2QUPg5h5fB--
