@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C76CBB1C
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 15:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01133CBB50
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 15:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387573AbfJDNAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 09:00:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60896 "EHLO vps0.lunn.ch"
+        id S2387870AbfJDNMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 09:12:02 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52900 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726024AbfJDNAU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Oct 2019 09:00:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=6oMY2Xf4PcAVGvb/9bMHLxqJleYs+YlqxCz69/6OLTU=; b=Lb4pEcCpK1x1EAgp31OEmDMKSz
-        1M/s9ssNAupizlQMUc5HalbgWpRcgFx13NETzTTnMUQZrFAFYC8tytfXytRSna0M6VLGHNR9q9pFN
-        UhGYkLo+FTPxdwbHKzmnjyntolK1+WjA22ZYE9iZfPdFFtbALEj5gYGo7JLyA87NzlpI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iGNBy-00014o-Mx; Fri, 04 Oct 2019 15:00:18 +0200
-Date:   Fri, 4 Oct 2019 15:00:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next 0/2] mv88e6xxx: Allow config of ATU hash
- algorithm
-Message-ID: <20191004130018.GB3817@lunn.ch>
-References: <20191004013523.28306-1-andrew@lunn.ch>
- <CA+h21hq8G2fMZenAF_inYxQXePJe41Lk6U8AsJ-7e19YYTp7Wg@mail.gmail.com>
+        id S2387545AbfJDNMC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 09:12:02 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id BC339305FC56;
+        Fri,  4 Oct 2019 13:12:01 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-116-58.ams2.redhat.com [10.36.116.58])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1AC6C5C1D8;
+        Fri,  4 Oct 2019 13:11:57 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, lbianconi@redhat.com,
+        xmu@redhat.com
+Subject: [PATCH net] net: ipv4: avoid mixed n_redirects and rate_tokens usage
+Date:   Fri,  4 Oct 2019 15:11:17 +0200
+Message-Id: <25ac83a5c5660b43a27712d692266cd97668a2e4.1570194598.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hq8G2fMZenAF_inYxQXePJe41Lk6U8AsJ-7e19YYTp7Wg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Fri, 04 Oct 2019 13:12:01 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 04, 2019 at 11:44:02AM +0300, Vladimir Oltean wrote:
-> Hi Andrew,
-> 
-> On Fri, 4 Oct 2019 at 10:55, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > The Marvell switches allow the hash algorithm for MAC addresses in the
-> > address translation unit to be configured. Add support to the DSA core
-> > to allow DSA drivers to make use of devlink parameters, and allow the
-> > ATU hash to be get/set via such a parameter.
-> >
-> 
-> What is the hash algorithm used by mv88e6xxx? In sja1105 it is simply
-> crc32 over the {DMAC, VLAN} key, with a configurable polynomial
-> (stored in Koopman notation, but that is maybe irrelevant).
-> Are you really changing the algorithm, but only the hashing function's seed?
-> If the sja1105 is in any way similar to mv88e6xxx, maybe it would make
-> sense to devise a more generic devlink attribute?
-> Also, I believe the hashing function is only relevant if the ATU's CAM
-> is set- (not fully-) associative. Then it would make sense to maybe
-> let the user know what the total number of FDB entries and buckets is?
-> I am not clear even after looking at the mv88e6xxx_g1_atu_* functions.
-> How would they know they need to change the hash function, and what to
-> change it to?
+Since commit c09551c6ff7f ("net: ipv4: use a dedicated counter
+for icmp_v4 redirect packets") we use 'n_redirects' to account
+for redirect packets, but we still use 'rate_tokens' to compute
+the redirect packets exponential backoff.
 
-Hi Vladimir
+If the device sent to the relevant peer any ICMP error packet
+after sending a redirect, it will also update 'rate_token' according
+to the leaking bucket schema; typically 'rate_token' will raise
+above BITS_PER_LONG and the redirect packets backoff algorithm
+will produce undefined behavior.
 
-I have a second patchset which gives you an idea of the fill level. It
-is documented that there are 4 buckets, and you can get the number of
-buckets which are used at each level. The patch will also give the
-total number of ATU entries.
+Fix the issue using 'n_redirects' to compute the exponential backoff
+in ip_rt_send_redirect().
 
-The datasheet does not specify how the hashing is performed, just that
-there are 4 possible configurations. We founds that the default
-configuration does not work too well when all the equipment is from
-one vendor, so the OUI is the same. By changing the algorithm we got a
-better spread. Maybe it is giving more weight to the lower bits of the
-MAC address?
+Note that we still clear rate_tokens after a redirect silence period,
+to avoid changing an established behaviour.
 
-Given the level of undocumented black magic, i don't know if we can do
-a more generic configuration.
+The root cause predates git history; before the mentioned commit in
+the critical scenario, the kernel stopped sending redirects, after
+the mentioned commit the behavior more randomic.
 
-  Andrew
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: c09551c6ff7f ("net: ipv4: use a dedicated counter for icmp_v4 redirect packets")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/ipv4/route.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 7dcce724c78b..14654876127e 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -916,16 +916,15 @@ void ip_rt_send_redirect(struct sk_buff *skb)
+ 	if (peer->rate_tokens == 0 ||
+ 	    time_after(jiffies,
+ 		       (peer->rate_last +
+-			(ip_rt_redirect_load << peer->rate_tokens)))) {
++			(ip_rt_redirect_load << peer->n_redirects)))) {
+ 		__be32 gw = rt_nexthop(rt, ip_hdr(skb)->daddr);
+ 
+ 		icmp_send(skb, ICMP_REDIRECT, ICMP_REDIR_HOST, gw);
+ 		peer->rate_last = jiffies;
+-		++peer->rate_tokens;
+ 		++peer->n_redirects;
+ #ifdef CONFIG_IP_ROUTE_VERBOSE
+ 		if (log_martians &&
+-		    peer->rate_tokens == ip_rt_redirect_number)
++		    peer->n_redirects == ip_rt_redirect_number)
+ 			net_warn_ratelimited("host %pI4/if%d ignores redirects for %pI4 to %pI4\n",
+ 					     &ip_hdr(skb)->saddr, inet_iif(skb),
+ 					     &ip_hdr(skb)->daddr, &gw);
+-- 
+2.21.0
+
