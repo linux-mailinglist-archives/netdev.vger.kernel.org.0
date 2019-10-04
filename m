@@ -2,81 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B0DFCBDC8
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:47:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34CB6CBDCD
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389166AbfJDOrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 10:47:19 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34564 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388870AbfJDOrT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:47:19 -0400
-Received: by mail-io1-f66.google.com with SMTP id q1so14170492ion.1;
-        Fri, 04 Oct 2019 07:47:19 -0700 (PDT)
+        id S2389176AbfJDOrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 10:47:43 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:33223 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388870AbfJDOrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:47:43 -0400
+Received: by mail-qt1-f193.google.com with SMTP id r5so8945811qtd.0
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 07:47:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tEuKXeJozCB5XdqG/5wokzjQB+A76H6zYaN7XHSNPps=;
-        b=Bj4gG/GDy5LQfSN1wSliRg7+cAgFeHbqrkkQm2tIDpTG/remxqlzjxwC3jgAkd1bNJ
-         StV4yv1gl7Ne+oWEZ3Q+nHZ+GMpiIHtim0MvAh7fdhea28DV0QrSVeJG7bzK9KW9UuJt
-         MKJEVm2gTEhBOo8LXIgGGTL22M/okZLLM/HeM9ttu+Nsv/BRdF2bAmC2+hsTpuoruBMv
-         WHVk7R9wdGHDaUZCqXcHe3trSipE3KH78HO3/FAnsrzAbIQCsCcuczZ4GflBgIiPxLjx
-         GeTb2Hh7ZD6bfPxmxBigZh2i/SHRWPLgeVnHkCqquE9PAZcv6bb94nbEUPb/UvAxZno8
-         Lttg==
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=s4y5wtlEyd2oMP9WTjwTUlNjmjHaZBKzycyijDa/ORs=;
+        b=oio1guMX2vOOtD8Nz9onXIJynOp3hXwXVPA3E0bBIP/RIh1UKA/aj6IoZusMo1UIWF
+         zleOkYbBrNvhIdYVRIRKQWNM3szbFRkJiKIbuC53xAmZuYKZ9rbSPPFUNTkJOUduOJPn
+         yq0bDUYXla9YbQ/Bzyj+vaIIdnPWfUCAKrX37F+g8JOv5FHDhAYiLfP+ROCW15STXdtH
+         ANNWCOUuP7Xn92WePFB5jotT7IPHwCZg7DAisq7mkdBwNRmDHA26TsRPUmrqUskP87kO
+         cYjbuCM3+3G+rdYCjzuRJgh163iZDFvl5ouW+HgRyTU6PVkWwy+M1+XEojvC1PRjI2ZP
+         JRdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
          :content-transfer-encoding;
-        bh=tEuKXeJozCB5XdqG/5wokzjQB+A76H6zYaN7XHSNPps=;
-        b=ETt745M6sjnBqwwX/2EfiiOcZBxyUOUBtm4R2ZnYGf6D7+3Hr4ngPI/VBDWNI6qWbU
-         4k/CcK+OXcu6uf/ng83ngdyVv2ukUMiE+pA8mEcDep16KKoOnvXb3bnSTQiYamUz/sOx
-         x8VljwD9Z1e0C8dzOeQkPJdFHpuXCxoQaDgQWwllMHy99lHR9Y6ys+Oytm2rfh0oO3e3
-         x4JhgWnWFOf13BNFsOZ6i1K8EnDEVKVmi5KfGmMXxTjFgQit/A02l1ycQA7HS7DSmydl
-         nbvLlwWtZHcYkIEJ6jsigGNzD2PcSADm9IcUo3eTMb3Blp4xSdYWcFbEkZfgw9iDmy+8
-         kC7w==
-X-Gm-Message-State: APjAAAUrFz6oQ4+lRm5a7JYv6SonJGMLewahZi07r3wddRx3n0C9rYkU
-        9T2tAFIHs5+QPBN5/EoUsds=
-X-Google-Smtp-Source: APXvYqz+VJhBLvgJhoUw3EsQa5REjBvuUpICuHrJRdPYpsbt+OJ0gsxSWu0ZGOxlBkly/oQNcazYAw==
-X-Received: by 2002:a92:d847:: with SMTP id h7mr16035211ilq.85.1570200438614;
-        Fri, 04 Oct 2019 07:47:18 -0700 (PDT)
-Received: from [172.16.99.106] (c-73-169-115-106.hsd1.co.comcast.net. [73.169.115.106])
-        by smtp.googlemail.com with ESMTPSA id a24sm2122030iok.37.2019.10.04.07.47.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 04 Oct 2019 07:47:17 -0700 (PDT)
-Subject: Re: [PATCH v3 bpf-next 5/7] libbpf: move
- bpf_{helpers,endian,tracing}.h into libbpf
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
-References: <20191003212856.1222735-1-andriin@fb.com>
- <20191003212856.1222735-6-andriin@fb.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <da73636f-7d81-1fe0-65af-aa32f7654c57@gmail.com>
-Date:   Fri, 4 Oct 2019 08:47:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        bh=s4y5wtlEyd2oMP9WTjwTUlNjmjHaZBKzycyijDa/ORs=;
+        b=VOljYtHGr6I2+nQppKzaYWKiElGf9HAOK8AkmC7y5o9om6G8DX82yR1zgy79DA/v2A
+         0uJAo0PdS3y0kBhSlTFOk5PpPLc1aO/iZJiMiOZ4XUadFmUDgjtYe4I/b03Ga/herU9E
+         tkIi4/0lXzdHAkOJGKb/+dhzYBUV2urUv/6Iqt1HmaSiy1Pr3PvYC+xjnrgnV1MBF2lS
+         Nfw+W2x2IWFhSrxInFOMPgYRzZwWyufPYMOkaHMJIQj546uY9WddJLAEB1Gi9VgoCNfg
+         DrXqfkN1MGDiIZZAK6Vg1qtUP2DQm/c0m6fMYDbVidFtnW6K3FwNUP9DKAXlkzoiaTzR
+         RPKQ==
+X-Gm-Message-State: APjAAAXShesYfe6QRn3lwOBQDK1F3/7mJdD56P6eRyRPw5+YkRp808Tq
+        9XlEAgOQsqG1eCUBQ8FNhTxAaXQz
+X-Google-Smtp-Source: APXvYqyA2D/J9ZM9evhSgqXWnPq7Iw+Rd9am4i6nLNCYokHbQPWaD4D3wroo/qkcKquGUzrDSIv1pA==
+X-Received: by 2002:a0c:ca02:: with SMTP id c2mr13970992qvk.209.1570200460855;
+        Fri, 04 Oct 2019 07:47:40 -0700 (PDT)
+Received: from localhost (modemcable127.163-178-173.mc.videotron.ca. [173.178.163.127])
+        by smtp.gmail.com with ESMTPSA id t199sm3040483qke.36.2019.10.04.07.47.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Oct 2019 07:47:40 -0700 (PDT)
+Date:   Fri, 4 Oct 2019 10:47:38 -0400
+Message-ID: <20191004104738.GB80061@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 2/2] net: dsa: mv88e6xxx: Add devlink param for
+ ATU hash algorithm.
+In-Reply-To: <20191004013523.28306-3-andrew@lunn.ch>
+References: <20191004013523.28306-1-andrew@lunn.ch>
+ <20191004013523.28306-3-andrew@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20191003212856.1222735-6-andriin@fb.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/3/19 3:28 PM, Andrii Nakryiko wrote:
-> Move bpf_helpers.h, bpf_tracing.h, and bpf_endian.h into libbpf. Ensure
-> they are installed along the other libbpf headers. Also, adjust
-> selftests and samples include path to include libbpf now.
+Hi Andrew,
 
-There are side effects to bringing bpf_helpers.h into libbpf if this
-gets propagated to the github sync.
+On Fri,  4 Oct 2019 03:35:23 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
+> Some of the marvell switches have bits controlling the hash algorithm
+> the ATU uses for MAC addresses. In some industrial settings, where all
+> the devices are from the same manufacture, and hence use the same OUI,
+> the default hashing algorithm is not optimal. Allow the other
+> algorithms to be selected via devlink.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c        | 136 +++++++++++++++++++++++-
+>  drivers/net/dsa/mv88e6xxx/chip.h        |   4 +
+>  drivers/net/dsa/mv88e6xxx/global1.h     |   3 +
+>  drivers/net/dsa/mv88e6xxx/global1_atu.c |  30 ++++++
+>  4 files changed, 172 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 6787d560e9e3..ebadcdba03df 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -1370,6 +1370,22 @@ static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
+>  	return mv88e6xxx_g1_atu_flush(chip, *fid, true);
+>  }
+>  
+> +static int mv88e6xxx_atu_get_hash(struct mv88e6xxx_chip *chip)
+> +{
+> +	if (chip->info->ops->atu_get_hash)
+> +		return chip->info->ops->atu_get_hash(chip);
+> +
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static int mv88e6xxx_atu_set_hash(struct mv88e6xxx_chip *chip, u8 hash)
+> +{
+> +	if (chip->info->ops->atu_set_hash)
+> +		return chip->info->ops->atu_set_hash(chip, hash);
+> +
+> +	return -EOPNOTSUPP;
+> +}
+> +
+>  static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+>  					u16 vid_begin, u16 vid_end)
+>  {
+> @@ -2641,6 +2657,83 @@ static int mv88e6390_setup_errata(struct mv88e6xxx_chip *chip)
+>  	return mv88e6xxx_software_reset(chip);
+>  }
+>  
+> +enum mv88e6xxx_devlink_param_id {
+> +	MV88E6XXX_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+> +	MV88E6XXX_DEVLINK_PARAM_ID_ATU_HASH,
+> +};
+> +
+> +static int mv88e6xxx_devlink_param_get(struct dsa_switch *ds, u32 id,
+> +				       struct devlink_param_gset_ctx *ctx)
+> +{
+> +	struct mv88e6xxx_chip *chip = ds->priv;
+> +	int err = 0;
+> +	int hash;
+> +
+> +	mv88e6xxx_reg_lock(chip);
+> +
+> +	switch (id) {
+> +	case MV88E6XXX_DEVLINK_PARAM_ID_ATU_HASH:
+> +		hash = mv88e6xxx_atu_get_hash(chip);
+> +		if (hash < 0) {
+> +			err = hash;
+> +			break;
+> +		}
 
-bpf_helpers.h references BPF_FUNC_* which are defined in the
-uapi/linux/bpf.h header. That is a kernel version dependent api file
-which means attempts to use newer libbpf with older kernel headers is
-going to throw errors when compiling bpf programs -- bpf_helpers.h will
-contain undefined BPF_FUNC references.
+Could you please keep the common construct used in the driver for
+functions which may fail, that is to say using a pointer to the correct
+type and only returning error codes, so that we end up with something
+like this:
+
+    u8 hash;
+    int err;
+
+    err = mv88e6xxx_atu_get_hash(chip, &hash);
+    if (err)
+        ...
+
+
+Thanks,
+
+	Vivien
