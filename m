@@ -2,104 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9663CC258
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 20:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4159CC27D
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 20:20:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729806AbfJDSMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 14:12:14 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:45773 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728095AbfJDSMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 14:12:14 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y72so4333182pfb.12
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 11:12:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pdHMMpjel8RdnM2F9EJay3Hb/Al9qo9LoHLfxzvIKoE=;
-        b=inXUd4wNquggiifhkn+Cj0FOZpRMvrFFRpP+lkZYHX3PyIaMfTIvmUgfWiXUR2U+Yf
-         RHhWDHqUjsIjUsV3IjXU0/HazyVhE2FWrkaLRlkqXQp199PsF75x0s/frrRp3LNO4/YS
-         BXgrKKAXbhi9i8XNyBP/imeY/sXNLjuS9Xgn/Y0xv/I9r1j9ZwQfdI1yibiJWmFS2rp8
-         CL16aH4//HhaQdd981Wv/h8r7OA+2HUytgytKxqkSALM4LZk4RH0SX1C/c5wJCR4LBvt
-         HrtgW541fEbYXL5WMP7kyLbCL4+ecp95BAXu+3ZTPuj7vaPDL8HNeKNgvEdcRTJyy+1Z
-         6ZbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pdHMMpjel8RdnM2F9EJay3Hb/Al9qo9LoHLfxzvIKoE=;
-        b=IOUT3TAr7CrILHrmi+TeE4hxMcL7E4JesayCGzpHnFmhvW9/DqdEtGDlEBz7XDAmfh
-         WlFrHFK3ghtj3lrd90irJJur1TSagcR2bw1cXL9Eml1n5k4cIgHWyfOmOKvPrghH09rs
-         1oO8qbS6u7++qz3H2liIk3TQOs4SMsyVcnSkyei1tsulYBeHGbMCkQwg5oTnrDVZ4Uza
-         7syEqEIDBgdqcRCNNQTSkO14NhSN0N8OFzUXn+pRocfZvg4jYolFkkkmy7PyE+L7TarY
-         oLxkLknY7nc4C8obyPgrjZPsgk1M+dIHUcHZGrxN2pqm3WYttfc7KqORy3OmLSQn7bud
-         USEw==
-X-Gm-Message-State: APjAAAX5YWnIYk3Z5P0NiwFQ3Dcu/dttHc4gCT3u0jsLjoEOOZIdqIyh
-        Kqmf/mpQTMXbaUQkcmq7ceE=
-X-Google-Smtp-Source: APXvYqzWFH8PlDVWHK4y0YrpOdGu5adUg4vuMqKdHsMcwL6VFU0rXiM2dsyWZ8E1dD352l2sgl++Mw==
-X-Received: by 2002:a17:90a:3387:: with SMTP id n7mr17801977pjb.26.1570212732845;
-        Fri, 04 Oct 2019 11:12:12 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id k5sm9471003pfp.109.2019.10.04.11.12.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Oct 2019 11:12:12 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: Handle missing host route in __ipv6_ifa_notify
-To:     David Ahern <dsahern@kernel.org>, davem@davemloft.net,
-        jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, rajendra.dendukuri@broadcom.com,
-        eric.dumazet@gmail.com, David Ahern <dsahern@gmail.com>
-References: <20191004150309.4715-1-dsahern@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <dfd4b59a-f0f0-21d8-7b94-a8985d724ae6@gmail.com>
-Date:   Fri, 4 Oct 2019 11:12:10 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728671AbfJDSSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 14:18:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33198 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725775AbfJDSSe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 14:18:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=KgvhD2KWl5QxHzscY/loy1FsMMZ1HUlegulTjj4OyJE=; b=52FMSBoGGOKPLgNs3i/kbh/7FL
+        eXbUyHUHxfa+uhxWpnFAnNmgIkMdYavEoPyi4t47cNMSLnnMluHzr/hoE+H0V8RDJQrQ/fTnGqeot
+        shjdKR8VdNOjmbrk/ZXthPGEmDhZnAT7yFngWxrSHtluHeyDUrU4WWngdUWrXXGP4X90=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iGS9s-0002jd-Ix; Fri, 04 Oct 2019 20:18:28 +0200
+Date:   Fri, 4 Oct 2019 20:18:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Subject: Re: [PATCH 3/3] dpaa2-eth: Avoid unbounded while loops
+Message-ID: <20191004181828.GB9935@lunn.ch>
+References: <1570180893-9538-1-git-send-email-ioana.ciornei@nxp.com>
+ <1570180893-9538-4-git-send-email-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20191004150309.4715-1-dsahern@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1570180893-9538-4-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/4/19 8:03 AM, David Ahern wrote:
-> From: David Ahern <dsahern@gmail.com>
+On Fri, Oct 04, 2019 at 12:21:33PM +0300, Ioana Ciornei wrote:
+> From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 > 
-> Rajendra reported a kernel panic when a link was taken down:
+> Throughout the driver there are several places where we wait
+> indefinitely for DPIO portal commands to be executed, while
+> the portal returns a busy response code.
 > 
->
-
-
-> up. There is a race between addrcond_dad_work getting scheduled and
-> taking the rtnl lock and a process taking the link down (under rtnl).
-> The latter removes the host route from the inet6_addr as part of
-> addrconf_ifdown which is run for NETDEV_DOWN. The former attempts
-> to use the host route in __ipv6_ifa_notify. If the down event removes
-> the host route due to the race to the rtnl, then the BUG listed above
-> occurs.
+> Even though in theory we are guaranteed the portals become
+> available eventually, in practice the QBMan hardware module
+> may become unresponsive in various corner cases.
 > 
-> Since the DAD sequence can not be aborted, add a check for the missing
-> host route in __ipv6_ifa_notify. The only way this should happen is due
-> to the previously mentioned race. The host route is created when the
-> address is added to an interface; it is only removed on a down event
-> where the address is kept. Add a warning if the host route is missing
-> AND the device is up; this is a situation that should never happen.
+> Make sure we can never get stuck in an infinite while loop
+> by adding a retry counter for all portal commands.
 > 
-> Fixes: f1705ec197e7 ("net: ipv6: Make address flushing on ifdown optional")
-> Reported-by: Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 > ---
->  net/ipv6/addrconf.c | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
->
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 30 ++++++++++++++++++++----
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h |  8 +++++++
+>  2 files changed, 33 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index 2c5072fa9aa0..29702756734c 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -221,6 +221,7 @@ static void xdp_release_buf(struct dpaa2_eth_priv *priv,
+>  			    struct dpaa2_eth_channel *ch,
+>  			    dma_addr_t addr)
+>  {
+> +	int retries = 0;
+>  	int err;
+>  
+>  	ch->xdp.drop_bufs[ch->xdp.drop_cnt++] = addr;
+> @@ -229,8 +230,11 @@ static void xdp_release_buf(struct dpaa2_eth_priv *priv,
+>  
+>  	while ((err = dpaa2_io_service_release(ch->dpio, priv->bpid,
+>  					       ch->xdp.drop_bufs,
+> -					       ch->xdp.drop_cnt)) == -EBUSY)
+> +					       ch->xdp.drop_cnt)) == -EBUSY) {
+> +		if (retries++ >= DPAA2_ETH_SWP_BUSY_RETRIES)
+> +			break;
+>  		cpu_relax();
+> +	}
+>  
+>  	if (err) {
+>  		free_bufs(priv, ch->xdp.drop_bufs, ch->xdp.drop_cnt);
+> @@ -458,7 +462,7 @@ static int consume_frames(struct dpaa2_eth_channel *ch,
+>  	struct dpaa2_eth_fq *fq = NULL;
+>  	struct dpaa2_dq *dq;
+>  	const struct dpaa2_fd *fd;
+> -	int cleaned = 0;
+> +	int cleaned = 0, retries = 0;
+>  	int is_last;
+>  
+>  	do {
+> @@ -469,6 +473,11 @@ static int consume_frames(struct dpaa2_eth_channel *ch,
+>  			 * the store until we get some sort of valid response
+>  			 * token (either a valid frame or an "empty dequeue")
+>  			 */
+> +			if (retries++ >= DPAA2_ETH_SWP_BUSY_RETRIES) {
+> +				netdev_err_once(priv->net_dev,
+> +						"Unable to read a valid dequeue response\n");
+> +				return 0;
+> +			}
+>  			continue;
 
-This seems goot to me, thanks.
+Hi Ioana
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+It seems a bit odd that here you could return -ETIMEDOUT, but you
+print an error, and return 0. But in the two cases above in void
+functions, you don't print anything.
 
+Please at least return -ETIMEDOUT when you can.
+
+       Andrew
