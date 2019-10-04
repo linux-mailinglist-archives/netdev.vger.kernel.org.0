@@ -2,57 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F56CBD89
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:40:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64361CBD93
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:41:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389126AbfJDOkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 10:40:08 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46550 "EHLO mx1.redhat.com"
+        id S2389329AbfJDOky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 10:40:54 -0400
+Received: from mail.bitwise.fi ([109.204.228.163]:44302 "EHLO mail.bitwise.fi"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389062AbfJDOkH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Oct 2019 10:40:07 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2389119AbfJDOkx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 10:40:53 -0400
+X-Greylist: delayed 476 seconds by postgrey-1.27 at vger.kernel.org; Fri, 04 Oct 2019 10:40:52 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.bitwise.fi (Postfix) with ESMTP id A3E8260027;
+        Fri,  4 Oct 2019 17:32:55 +0300 (EEST)
+X-Virus-Scanned: Debian amavisd-new at mail.bitwise.fi
+Received: from mail.bitwise.fi ([127.0.0.1])
+        by localhost (mail.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 1_nSWJbb_H5q; Fri,  4 Oct 2019 17:32:52 +0300 (EEST)
+Received: from [192.168.5.238] (fw1.dmz.bitwise.fi [192.168.69.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES128-SHA (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 4C07518CB911;
-        Fri,  4 Oct 2019 14:40:07 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-125-72.rdu2.redhat.com [10.10.125.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6640119C5B;
-        Fri,  4 Oct 2019 14:40:05 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20190921122737.14884-1-hdanton@sina.com>
-References: <20190921122737.14884-1-hdanton@sina.com> 
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     dhowells@redhat.com,
-        syzbot <syzbot+eed305768ece6682bb7f@syzkaller.appspotmail.com>,
-        davem@davemloft.net, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: use-after-free Read in rxrpc_release_call
+        (Authenticated sender: anssiha)
+        by mail.bitwise.fi (Postfix) with ESMTPSA id C99FB60064;
+        Fri,  4 Oct 2019 17:32:52 +0300 (EEST)
+Subject: Re: [PATCH 2/6] net: can: xilinx_can: Fix flags field initialization
+ for axi can and canps
+To:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-can@vger.kernel.org
+References: <1552908766-26753-1-git-send-email-appana.durga.rao@xilinx.com>
+ <1552908766-26753-3-git-send-email-appana.durga.rao@xilinx.com>
+From:   Anssi Hannula <anssi.hannula@bitwise.fi>
+Message-ID: <d1bedb13-f66f-b0fd-bd6d-9f95b64fc405@bitwise.fi>
+Date:   Fri, 4 Oct 2019 17:32:52 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <17921.1570200004.1@warthog.procyon.org.uk>
-Date:   Fri, 04 Oct 2019 15:40:04 +0100
-Message-ID: <17922.1570200004@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Fri, 04 Oct 2019 14:40:07 +0000 (UTC)
+In-Reply-To: <1552908766-26753-3-git-send-email-appana.durga.rao@xilinx.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hillf Danton <hdanton@sina.com> wrote:
+On 18.3.2019 13.32, Appana Durga Kedareswara rao wrote:
+> AXI CAN IP and CANPS IP supports tx fifo empty feature, this patch updates
+> the flags field for the same.
+>
+> Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+> ---
+>  drivers/net/can/xilinx_can.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+> index 2de51ac..22569ef 100644
+> --- a/drivers/net/can/xilinx_can.c
+> +++ b/drivers/net/can/xilinx_can.c
+> @@ -1428,6 +1428,7 @@ static const struct dev_pm_ops xcan_dev_pm_ops = {
+>  };
+>  
+>  static const struct xcan_devtype_data xcan_zynq_data = {
+> +	.flags = XCAN_FLAG_TXFEMP,
+>  	.bittiming_const = &xcan_bittiming_const,
+>  	.btr_ts2_shift = XCAN_BTR_TS2_SHIFT,
+>  	.btr_sjw_shift = XCAN_BTR_SJW_SHIFT,
 
->  	if (conn) {
-> -		rxrpc_disconnect_call(call);
->  		conn->security->free_call_crypto(call);
-> +		rxrpc_disconnect_call(call);
->  	}
+Thanks for catching this, this line seemed to have been incorrectly
+removed by my 9e5f1b273e ("can: xilinx_can: add support for Xilinx CAN
+FD core").
 
-Better to cache the security pointer in the call struct, I think.
+But:
 
-David
+> @@ -1435,6 +1436,7 @@ static const struct xcan_devtype_data xcan_zynq_data = {
+>  };
+>  
+>  static const struct xcan_devtype_data xcan_axi_data = {
+> +	.flags = XCAN_FLAG_TXFEMP,
+>  	.bittiming_const = &xcan_bittiming_const,
+>  	.btr_ts2_shift = XCAN_BTR_TS2_SHIFT,
+>  	.btr_sjw_shift = XCAN_BTR_SJW_SHIFT,
+
+
+Are you sure this is right?
+In the documentation [1] there does not seem to be any TXFEMP interrupt,
+it would be interrupt bit 14 but AXI CAN 5.0 seems to only go up to 11.
+
+Or maybe it is undocumented or there is a newer version somewhere?
+
+[1]
+https://www.xilinx.com/support/documentation/ip_documentation/can/v5_0/pg096-can.pdf
+
+-- 
+Anssi Hannula / Bitwise Oy
++358 503803997
+
