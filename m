@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3BECC66C
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 01:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE08DCC66D
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 01:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731547AbfJDXTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 19:19:50 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:38394 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731461AbfJDXTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 19:19:49 -0400
-Received: by mail-qk1-f193.google.com with SMTP id u186so7394531qkc.5
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 16:19:49 -0700 (PDT)
+        id S1731628AbfJDXTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 19:19:53 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43709 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731461AbfJDXTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 19:19:53 -0400
+Received: by mail-qt1-f195.google.com with SMTP id c3so10820655qtv.10
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 16:19:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CXfifb6bYDRxcf0uxkKHuRVZMD6qU6qHFLXrnM88Gns=;
-        b=gHXh13QzhO+dM6vSktks9wt0ZzfveH91LsEAVgKVCkOvpEuhp80J7kth1kjz/0pasg
-         xIaNaA9kQ3v7z8qb1aohmoNLhgBGb9QB4J0QPPykDS4dL2+MrE2vlMwWqbNoI/R1JwkR
-         n24cqy0XU5Zuh7Ha1CO5dS0G/IA2dq/P2UGC1Fagtdk87qkIn30e5MBP5Dq6T9OgsG/X
-         Qc3Q0O68H7DODmV1DN8MF0zPr7j55dCb9cH0/NWaNFot8yhZNTkrgqJOpPi+Jgvr89MD
-         KCu3hDTjiXdfGP/t90mQu8/Rd7upvemvKg1+mJ/IFRqLfzNqKSo0bjO4ijSMR7FqD0OZ
-         /k0Q==
+        bh=+0eqHGTyvAmjESpJMkU3b/crAwl9rLtoJF/dY89RqiA=;
+        b=QsY8YstujIUBXQj3GXSOT8Rf84QZ4ybTvC63fpmNZ2b+c9AQcIQHzZrhiMXPbLM+W+
+         berQVt4F75Tn+MTe5PLB5V+XT1Rm3HQSM2Br0Yl5AQaC0dUz347wsidt0dyYLg5qR+u2
+         N+/B7ZBNW1c0FFXPail3bBklTBxHz6siujMRjG8rvcCJR3ITDyNx7jm3Z+LpnTrtfZO4
+         BQb9IAK/LmVhniDJTt9xDjRYivzeFqnJZVgy5MiuoQz9GOkSY+zU0iHuuCr3otajxmaV
+         HENe/ZaonE1PQ9s0iCOiqqdsy2OarmhKfF/dcVFl04JL81QBjm7TW9j+v9boXtiYecxX
+         FbuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CXfifb6bYDRxcf0uxkKHuRVZMD6qU6qHFLXrnM88Gns=;
-        b=MdQHuyNmNwL9RKFh2NG54DrA/POmO7xhTPatWTzhHjit28gi/skgg8fWLCWpwEW+t+
-         VKw1dHpYY1X/9fLdOm6EI5X59A3B+LChqw9ptduYd099OEnXUHca1IdSzGDp5TSRaeMJ
-         2t0iQGM/0V+4T0LnBdvafSBpFJ/l0pRfUwosCP27IsqLTHSZPczr6NU518PeilApSNKV
-         aB0cGThqQGAmbOBJfTyWTbVIg12B0Y79fUnQVsevAtDQxM9UgQKu5wr2A/U9rUG+kdG7
-         bjHK5fwZ9pvszwRn98c4IIGq028SOTFzQinHpdl4e7zXnYc6KL8hTVpQz4EDXzwE1/9X
-         RM5A==
-X-Gm-Message-State: APjAAAURAIFtxt+/2JMFqmmz4iia+W7M/ZnOndXrqs24RCC4miSRTZqQ
-        U/Nm9jYucpbZ2NkVNfukvK61sdUxYnU=
-X-Google-Smtp-Source: APXvYqx6uF2TD1p+oHWhIAmYR7yIHlvvxxLyfH+6occcurERM0vN8KkQVOLRntcoWz4HKUQCW+jraQ==
-X-Received: by 2002:ae9:dd42:: with SMTP id r63mr12758067qkf.394.1570231188906;
-        Fri, 04 Oct 2019 16:19:48 -0700 (PDT)
+        bh=+0eqHGTyvAmjESpJMkU3b/crAwl9rLtoJF/dY89RqiA=;
+        b=n9S0XYEpu1ejuzdS2u1XMLnUqbzbZhZTl2y1Do3lD6or+gWlBQe7GS6ADYierDjva1
+         6NyTmLA0MTVo3UwS3T7YQ6mdxGP1G83Kh2bMsUdoUuWeFFZ9M+9LaH1h6cJy/jsKy7kF
+         o0kqW9kL6r/typ61ju1pIE6jjMcMM/IE8Yd4/B2ep6ms0whLRRxdMZqfM5d2yWiphr0A
+         Ty46yfeMm/AeCPUZ8ZWVoGNG2NQY75n8Afn1BhZixPcUHsh1+6fX38pLxNpaS2bb00Ub
+         nuG4aEfzLlvGwPTywJUWu0tu4gkIFoRO1rJHXHipiNNM2x6SEqNb6O2Vn231KaJnAU10
+         LsXw==
+X-Gm-Message-State: APjAAAWXUac11geE7tjCmJ2B3P6ovABpwXegeHz7KncV2/cU3qhOWfho
+        b5c+FtMiEUpLH5DntUy/75Y2Ig==
+X-Google-Smtp-Source: APXvYqw/YWa5hSNIE2hgiQg6N4Mr3x/S0cWOnk5Fj5Y939qZhuu2upcLaK9dd02Jnd8LLpSLIWLxNA==
+X-Received: by 2002:ac8:3195:: with SMTP id h21mr19534949qte.350.1570231191099;
+        Fri, 04 Oct 2019 16:19:51 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z46sm4653398qth.62.2019.10.04.16.19.47
+        by smtp.gmail.com with ESMTPSA id z46sm4653398qth.62.2019.10.04.16.19.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 04 Oct 2019 16:19:48 -0700 (PDT)
+        Fri, 04 Oct 2019 16:19:49 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, davejwatson@fb.com, borisp@mellanox.com,
         aviadye@mellanox.com, john.fastabend@gmail.com,
         daniel@iogearbox.net, Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 4/6] net/tls: add statistics for installed sessions
-Date:   Fri,  4 Oct 2019 16:19:25 -0700
-Message-Id: <20191004231927.21134-5-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 5/6] net/tls: add TlsDecryptError stat
+Date:   Fri,  4 Oct 2019 16:19:26 -0700
+Message-Id: <20191004231927.21134-6-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191004231927.21134-1-jakub.kicinski@netronome.com>
 References: <20191004231927.21134-1-jakub.kicinski@netronome.com>
@@ -62,138 +62,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add SNMP stats for number of sockets with successfully
-installed sessions.  Break them down to software and
-hardware ones.  Note that if hardware offload fails
-stack uses software implementation, and counts the
-session appropriately.
+Add a statistic for TLS record decryption errors.
+
+Since devices are supposed to pass records as-is when they
+encounter errors this statistic will count bad records in
+both pure software and inline crypto configurations.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- Documentation/networking/tls.rst | 14 ++++++++++++++
- include/uapi/linux/snmp.h        |  8 ++++++++
- net/tls/tls_main.c               | 23 +++++++++++++++++++----
- net/tls/tls_proc.c               |  8 ++++++++
- 4 files changed, 49 insertions(+), 4 deletions(-)
+ Documentation/networking/tls.rst | 3 +++
+ include/uapi/linux/snmp.h        | 1 +
+ net/tls/tls_proc.c               | 1 +
+ net/tls/tls_sw.c                 | 5 +++++
+ 4 files changed, 10 insertions(+)
 
 diff --git a/Documentation/networking/tls.rst b/Documentation/networking/tls.rst
-index a6ee595630ed..cfba587af5c9 100644
+index cfba587af5c9..ab82362dd819 100644
 --- a/Documentation/networking/tls.rst
 +++ b/Documentation/networking/tls.rst
-@@ -219,3 +219,17 @@ Statistics
+@@ -233,3 +233,6 @@ TLS implementation exposes the following per-namespace statistics
  
- TLS implementation exposes the following per-namespace statistics
- (``/proc/net/tls_stat``):
+ - ``TlsTxDevice``, ``TlsRxDevice`` -
+   number of TX and RX sessions opened with NIC cryptography
 +
-+- ``TlsCurrTxSw``, ``TlsCurrRxSw`` -
-+  number of TX and RX sessions currently installed where host handles
-+  cryptography
-+
-+- ``TlsCurrTxDevice``, ``TlsCurrRxDevice`` -
-+  number of TX and RX sessions currently installed where NIC handles
-+  cryptography
-+
-+- ``TlsTxSw``, ``TlsRxSw`` -
-+  number of TX and RX sessions opened with host cryptography
-+
-+- ``TlsTxDevice``, ``TlsRxDevice`` -
-+  number of TX and RX sessions opened with NIC cryptography
++- ``TlsDecryptError`` -
++  record decryption failed (e.g. due to incorrect authentication tag)
 diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 4abd57948ad4..1b4613b5af70 100644
+index 1b4613b5af70..c9e4963e26f0 100644
 --- a/include/uapi/linux/snmp.h
 +++ b/include/uapi/linux/snmp.h
-@@ -327,6 +327,14 @@ enum
- enum
- {
- 	LINUX_MIB_TLSNUM = 0,
-+	LINUX_MIB_TLSCURRTXSW,			/* TlsCurrTxSw */
-+	LINUX_MIB_TLSCURRRXSW,			/* TlsCurrRxSw */
-+	LINUX_MIB_TLSCURRTXDEVICE,		/* TlsCurrTxDevice */
-+	LINUX_MIB_TLSCURRRXDEVICE,		/* TlsCurrRxDevice */
-+	LINUX_MIB_TLSTXSW,			/* TlsTxSw */
-+	LINUX_MIB_TLSRXSW,			/* TlsRxSw */
-+	LINUX_MIB_TLSTXDEVICE,			/* TlsTxDevice */
-+	LINUX_MIB_TLSRXDEVICE,			/* TlsRxDevice */
+@@ -335,6 +335,7 @@ enum
+ 	LINUX_MIB_TLSRXSW,			/* TlsRxSw */
+ 	LINUX_MIB_TLSTXDEVICE,			/* TlsTxDevice */
+ 	LINUX_MIB_TLSRXDEVICE,			/* TlsRxDevice */
++	LINUX_MIB_TLSDECRYPTERROR,		/* TlsDecryptError */
  	__LINUX_MIB_TLSMAX
  };
  
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 686eba0df590..f144b965704e 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -286,14 +286,19 @@ static void tls_sk_proto_cleanup(struct sock *sk,
- 		kfree(ctx->tx.rec_seq);
- 		kfree(ctx->tx.iv);
- 		tls_sw_release_resources_tx(sk);
-+		TLS_DEC_STATS(sock_net(sk), LINUX_MIB_TLSCURRTXSW);
- 	} else if (ctx->tx_conf == TLS_HW) {
- 		tls_device_free_resources_tx(sk);
-+		TLS_DEC_STATS(sock_net(sk), LINUX_MIB_TLSCURRTXDEVICE);
- 	}
- 
--	if (ctx->rx_conf == TLS_SW)
-+	if (ctx->rx_conf == TLS_SW) {
- 		tls_sw_release_resources_rx(sk);
--	else if (ctx->rx_conf == TLS_HW)
-+		TLS_DEC_STATS(sock_net(sk), LINUX_MIB_TLSCURRRXSW);
-+	} else if (ctx->rx_conf == TLS_HW) {
- 		tls_device_offload_cleanup_rx(sk);
-+		TLS_DEC_STATS(sock_net(sk), LINUX_MIB_TLSCURRRXDEVICE);
-+	}
- }
- 
- static void tls_sk_proto_close(struct sock *sk, long timeout)
-@@ -534,19 +539,29 @@ static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
- 	if (tx) {
- 		rc = tls_set_device_offload(sk, ctx);
- 		conf = TLS_HW;
--		if (rc) {
-+		if (!rc) {
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSTXDEVICE);
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSCURRTXDEVICE);
-+		} else {
- 			rc = tls_set_sw_offload(sk, ctx, 1);
- 			if (rc)
- 				goto err_crypto_info;
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSTXSW);
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSCURRTXSW);
- 			conf = TLS_SW;
- 		}
- 	} else {
- 		rc = tls_set_device_offload_rx(sk, ctx);
- 		conf = TLS_HW;
--		if (rc) {
-+		if (!rc) {
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSRXDEVICE);
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSCURRRXDEVICE);
-+		} else {
- 			rc = tls_set_sw_offload(sk, ctx, 0);
- 			if (rc)
- 				goto err_crypto_info;
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSRXSW);
-+			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSCURRRXSW);
- 			conf = TLS_SW;
- 		}
- 		tls_sw_strparser_arm(sk, ctx);
 diff --git a/net/tls/tls_proc.c b/net/tls/tls_proc.c
-index 4ecc7c35d2f7..1b1f3783badc 100644
+index 1b1f3783badc..2bea7ef4823c 100644
 --- a/net/tls/tls_proc.c
 +++ b/net/tls/tls_proc.c
-@@ -7,6 +7,14 @@
- #include <net/tls.h>
- 
- static const struct snmp_mib tls_mib_list[] = {
-+	SNMP_MIB_ITEM("TlsCurrTxSw", LINUX_MIB_TLSCURRTXSW),
-+	SNMP_MIB_ITEM("TlsCurrRxSw", LINUX_MIB_TLSCURRRXSW),
-+	SNMP_MIB_ITEM("TlsCurrTxDevice", LINUX_MIB_TLSCURRTXDEVICE),
-+	SNMP_MIB_ITEM("TlsCurrRxDevice", LINUX_MIB_TLSCURRRXDEVICE),
-+	SNMP_MIB_ITEM("TlsTxSw", LINUX_MIB_TLSTXSW),
-+	SNMP_MIB_ITEM("TlsRxSw", LINUX_MIB_TLSRXSW),
-+	SNMP_MIB_ITEM("TlsTxDevice", LINUX_MIB_TLSTXDEVICE),
-+	SNMP_MIB_ITEM("TlsRxDevice", LINUX_MIB_TLSRXDEVICE),
+@@ -15,6 +15,7 @@ static const struct snmp_mib tls_mib_list[] = {
+ 	SNMP_MIB_ITEM("TlsRxSw", LINUX_MIB_TLSRXSW),
+ 	SNMP_MIB_ITEM("TlsTxDevice", LINUX_MIB_TLSTXDEVICE),
+ 	SNMP_MIB_ITEM("TlsRxDevice", LINUX_MIB_TLSRXDEVICE),
++	SNMP_MIB_ITEM("TlsDecryptError", LINUX_MIB_TLSDECRYPTERROR),
  	SNMP_MIB_SENTINEL
  };
  
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index c2b5e0d2ba1a..0b1e86f856eb 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -168,6 +168,9 @@ static void tls_decrypt_done(struct crypto_async_request *req, int err)
+ 
+ 	/* Propagate if there was an err */
+ 	if (err) {
++		if (err == -EBADMSG)
++			TLS_INC_STATS(sock_net(skb->sk),
++				      LINUX_MIB_TLSDECRYPTERROR);
+ 		ctx->async_wait.err = err;
+ 		tls_err_abort(skb->sk, err);
+ 	} else {
+@@ -253,6 +256,8 @@ static int tls_do_decryption(struct sock *sk,
+ 			return ret;
+ 
+ 		ret = crypto_wait_req(ret, &ctx->async_wait);
++	} else if (ret == -EBADMSG) {
++		TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSDECRYPTERROR);
+ 	}
+ 
+ 	if (async)
 -- 
 2.21.0
 
