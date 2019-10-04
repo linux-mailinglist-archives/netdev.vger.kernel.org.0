@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A411CC3B3
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 21:42:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DA6ACC3C9
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 21:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730814AbfJDTma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 15:42:30 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34092 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727978AbfJDTm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 15:42:29 -0400
-Received: by mail-io1-f66.google.com with SMTP id q1so16130919ion.1;
-        Fri, 04 Oct 2019 12:42:29 -0700 (PDT)
+        id S1731032AbfJDTxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 15:53:24 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:40488 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730746AbfJDTxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 15:53:24 -0400
+Received: by mail-io1-f68.google.com with SMTP id h144so16072146iof.7;
+        Fri, 04 Oct 2019 12:53:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=6BXYfSwt6S2bUCRJ7kdKcLjYfKsE5OTiBqsT8oWEIdk=;
-        b=Z+fbZVxeP1BB9h3aBY5Vc8ABBOQxPOQSDHr68Bj2NCOV/Yco6n4WR+H+PyOjRpVR0l
-         W8UMqQK3aTsDmpvC0oQgybcWw/OR8QY0D5jCJoBRXEyyE7MAabJRAX+PL15VlNxpQWNX
-         7QqYiKVavN9RZqC62dZLLaDCDNGCUOh79LH0oEtIjOSJU2xqHn4GzcG4OjjdY4c75Ske
-         AshyucaJYg6uBjcXZ2vYpgBQ4A578gA3cUC3n6JowKvJkBjQBCc6x9FgQCoWZf64GpKk
-         xuOFui0U22GNKVuIl92m5jRO5TSUVc1UvhNQF1RNCIz4JQckcS5wz9MWpTFbNN+WH3pz
-         d4kA==
+        bh=MS6KPA7Zwid+VvXpcQaJcC4Lhg7r0UTgc+r5bTRTQzQ=;
+        b=GxQstqbCOnLx126tgUZiwbsF2HdhWFfLVbG+e7xb9YbNaC6njmdUbzMzN9hS0DGF2R
+         sCdH2HCG67lanBOwPlb0dywPzS3GkIh1bQJmVjcTxJfy9IcXrGP3gydoilg6SbK1D3WU
+         fTopxDbTJUzZJOrOm43pQT6TPyanbS/pZdUjRmpaHAFag65or/YOsJ/m9nCcx7FPiFfU
+         5EZ78zQXs2t1aBxFtr3v+0Vj4gwQ5VOaA2R+0vc1ZcLUf8EqHrSK/krgcsi3Ne1wet/m
+         dD0goUMsqDttAaGSGJKTqO5zk3zwpfQg9NLaMCi7Tm6dYbWl5QPU3bH/JKcau1qQvcKN
+         INFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=6BXYfSwt6S2bUCRJ7kdKcLjYfKsE5OTiBqsT8oWEIdk=;
-        b=O39cNC4B2daowrL+rmU7sDH3e2vudZo8Pa9Mt/aBHhxH/XvEA63BtqSa1VInNjEwb7
-         B+MN0jdOIDyW8TawS1+25QPWK8rZl4V/cMAiLMma1st+/GKETvQCwT4tc0Lewat5WSEB
-         bbOiSj9ir8H2nRRAEGIuTK3u02U/x1kQp27yi86V57Ak21Q9I4zMUBlyQYsk45+GsH1J
-         2TjkSbdKpH3hvBGyHnIKhV63Tkjy8DvR8CkXdGvEFbK2Krj6/69YXaA9G/LxjJ04qgEE
-         Sn5hBK8dO97w43qw/jT+Z2/WCeI4x1LmagXO3hr0egRn3TN7Lroh0qbEFw+EuVw0E46V
-         w8Ng==
-X-Gm-Message-State: APjAAAXaLIwo3UbzfunZrkI06lR479VbNn9sclUoI2nTNhI/+Sd753k2
-        6J6vcL4YY7m3BQWku/qYk5mT9Uou43M=
-X-Google-Smtp-Source: APXvYqwIqPqUaUtZkxGmJFCcYz2Kv1eMF8I2/gMKXeYv75IkMbeSZCgbZUJY49EEiRw7gNQQZaytFg==
-X-Received: by 2002:a92:8fda:: with SMTP id r87mr17155295ilk.210.1570218148669;
-        Fri, 04 Oct 2019 12:42:28 -0700 (PDT)
+        bh=MS6KPA7Zwid+VvXpcQaJcC4Lhg7r0UTgc+r5bTRTQzQ=;
+        b=slJE3/amUNdhsDLKpndhZkaLmtiq+9Fj7lGj0GbJn4qH5mI/8BfmaKa2pBJ/Po9da+
+         XsJP059xy5OcCHNBOPD5GLeNMaCgfhh2tRdJ+OTY/n00Vf3H/Sn0zi6U6e+eDMytNOnA
+         a0B9OPc/euWHI6n9lrDb31dkuTf4vRrt7Q+7zakEceZsvs43SS9OBLycubjMy4Q2E0k4
+         Ba/nxv0maIWzhG2w8+YKjETokh+CmRFLHN28Tq4UzC4m044oMkFr9dNHm6tLxTdIvR7y
+         ZILwNQ61ed6I5kVc0zjXeqoOwW6wVDccdjJU2TQ1PrYB6JGtfD1WwhHZYafYqZh+treD
+         74KQ==
+X-Gm-Message-State: APjAAAXocd0F+QrGt2dZL7u7sg2b5PGrdcHM89B+AWOSmERHsgFdAt5T
+        +cHCW7KLfnOGkrJY3YwOTs6atrnaBqc=
+X-Google-Smtp-Source: APXvYqydhL1ReOzniYD5VzA4lRSsmW1hKT4R+X4IRWehJs3tidGK8O1cUqJEdOSyeOWpsRQpCOoyaQ==
+X-Received: by 2002:a92:db0c:: with SMTP id b12mr16542465iln.27.1570218803179;
+        Fri, 04 Oct 2019 12:53:23 -0700 (PDT)
 Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id d9sm2458243ioq.9.2019.10.04.12.42.27
+        by smtp.googlemail.com with ESMTPSA id t9sm2420224iop.86.2019.10.04.12.53.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2019 12:42:28 -0700 (PDT)
+        Fri, 04 Oct 2019 12:53:22 -0700 (PDT)
 From:   Navid Emamdoost <navid.emamdoost@gmail.com>
 Cc:     emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
         Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] nl80211: fix memory leak in nl80211_get_ftm_responder_stats
-Date:   Fri,  4 Oct 2019 14:42:19 -0500
-Message-Id: <20191004194220.19412-1-navid.emamdoost@gmail.com>
+Subject: [PATCH] rtlwifi: fix memory leak in rtl_usb_probe
+Date:   Fri,  4 Oct 2019 14:53:14 -0500
+Message-Id: <20191004195315.21168-1-navid.emamdoost@gmail.com>
 X-Mailer: git-send-email 2.17.1
 To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
@@ -59,29 +60,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In nl80211_get_ftm_responder_stats, a new skb is created via nlmsg_new
-named msg. If nl80211hdr_put() fails, then msg should be released. The
-return statement should be replace by goto to error handling code.
+In rtl_usb_probe, a new hw is allocated via ieee80211_alloc_hw(). This
+allocation should be released in case of allocation failure for
+rtlpriv->usb_data.
 
-Fixes: 81e54d08d9d8 ("cfg80211: support FTM responder configuration/statistics")
+Fixes: a7959c1394d4 ("rtlwifi: Preallocate USB read buffers and eliminate kalloc in read routine")
 Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 ---
- net/wireless/nl80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtlwifi/usb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index d21b1581a665..cecd3bf101f8 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -13644,7 +13644,7 @@ static int nl80211_get_ftm_responder_stats(struct sk_buff *skb,
- 	hdr = nl80211hdr_put(msg, info->snd_portid, info->snd_seq, 0,
- 			     NL80211_CMD_GET_FTM_RESPONDER_STATS);
- 	if (!hdr)
--		return -ENOBUFS;
-+		goto nla_put_failure;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+index 4b59f3b46b28..265f95261da8 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/usb.c
++++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+@@ -1021,8 +1021,10 @@ int rtl_usb_probe(struct usb_interface *intf,
+ 	rtlpriv->hw = hw;
+ 	rtlpriv->usb_data = kcalloc(RTL_USB_MAX_RX_COUNT, sizeof(u32),
+ 				    GFP_KERNEL);
+-	if (!rtlpriv->usb_data)
++	if (!rtlpriv->usb_data) {
++		ieee80211_free_hw(hw);
+ 		return -ENOMEM;
++	}
  
- 	if (nla_put_u32(msg, NL80211_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
+ 	/* this spin lock must be initialized early */
+ 	spin_lock_init(&rtlpriv->locks.usb_lock);
 -- 
 2.17.1
 
