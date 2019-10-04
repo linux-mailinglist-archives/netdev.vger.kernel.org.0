@@ -2,76 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 873C3CB34C
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 04:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2787FCB363
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 05:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731961AbfJDCgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 22:36:36 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:52336 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728360AbfJDCgg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 22:36:36 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 9083BD9F2CCEE641D326;
-        Fri,  4 Oct 2019 10:36:34 +0800 (CST)
-Received: from [127.0.0.1] (10.184.213.217) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Fri, 4 Oct 2019
- 10:36:27 +0800
-To:     <pkshih@realtek.com>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>
-From:   "zhengbin (A)" <zhengbin13@huawei.com>
-Subject: [PATCH v2] rtlwifi: rtl8192ee: Remove set but not used variable 'err'
-Message-ID: <2ca176f2-e9ef-87cd-7f7d-cd51c67da38b@huawei.com>
-Date:   Fri, 4 Oct 2019 10:36:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
+        id S1731296AbfJDDBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 23:01:04 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46046 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730699AbfJDDBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 23:01:03 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x942Nt8F015358
+        for <netdev@vger.kernel.org>; Thu, 3 Oct 2019 20:01:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=ry7uGk2pvEOmHIRzfhCW4AeNGhraKP1gsnpmqAu7Hq4=;
+ b=UCVq6wbgylYQ2hFxIZUZC4K7m38PGryyezozk04GPN5RFkztSo9YwQJzewJlp2nfqvYS
+ hnYn1pyE0TJUyXO5RIiQwExXYvzEFH/P/2fQ2WNSja7QCCGhwyqMtMYozNY0dKsxxvsC
+ W4M4ZY3TiIrhKXyQBSFbTfaH05LcSM6Hkbs= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vdjr2k2d0-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 20:01:02 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 3 Oct 2019 20:01:01 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 1313A861895; Thu,  3 Oct 2019 20:01:00 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next 0/2] Add new-style bpf_object__open APIs
+Date:   Thu, 3 Oct 2019 20:00:56 -0700
+Message-ID: <20191004030058.2248514-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.184.213.217]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-04_01:2019-10-03,2019-10-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 mlxlogscore=999 priorityscore=1501 adultscore=0 spamscore=0
+ clxscore=1015 mlxscore=0 suspectscore=8 lowpriorityscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910040018
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+Add bpf_object__open_file() and bpf_object__open_mem() APIs that use a new
+approach to providing future-proof non-ABI-breaking API changes. It relies on
+APIs accepting optional self-describing "opts" struct, containing its own
+size, filled out and provided by potentially outdated (as well as
+newer-than-libbpf) user application. A set of internal helper macros
+(OPTS_VALID, OPTS_HAS, and OPTS_GET) streamline and simplify a graceful
+handling forward and backward compatibility for user applications dynamically
+linked against different versions of libbpf shared library.
 
-drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c: In function rtl92ee_download_fw:
-drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c:111:6: warning: variable err set but not used [-Wunused-but-set-variable]
+Users of libbpf are provided with convenience macro LIBBPF_OPTS that takes
+care of populating correct structure size and zero-initializes options struct,
+which helps avoid obscure issues of unitialized padding. Uninitialized padding
+in a struct might turn into garbage-populated new fields understood by future
+versions of libbpf.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: zhengbin <zhengbin13@huawei.com>
----
- drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Andrii Nakryiko (2):
+  libbpf: stop enforcing kern_version, populate it for users
+  libbpf: add bpf_object__open_{file,mem} w/ extensible opts
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c
-index 67305ce..0546242 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c
-@@ -108,7 +108,6 @@ int rtl92ee_download_fw(struct ieee80211_hw *hw, bool buse_wake_on_wlan_fw)
-        struct rtlwifi_firmware_header *pfwheader;
-        u8 *pfwdata;
-        u32 fwsize;
--       int err;
-        enum version_8192e version = rtlhal->version;
+ tools/lib/bpf/libbpf.c                        | 128 +++++++++---------
+ tools/lib/bpf/libbpf.h                        |  37 ++++-
+ tools/lib/bpf/libbpf.map                      |   3 +
+ tools/lib/bpf/libbpf_internal.h               |  31 +++++
+ .../selftests/bpf/progs/test_attach_probe.c   |   1 -
+ .../bpf/progs/test_get_stack_rawtp.c          |   1 -
+ .../selftests/bpf/progs/test_perf_buffer.c    |   1 -
+ .../selftests/bpf/progs/test_stacktrace_map.c |   1 -
+ 8 files changed, 131 insertions(+), 72 deletions(-)
 
-        if (!rtlhal->pfirmware)
-@@ -146,9 +145,7 @@ int rtl92ee_download_fw(struct ieee80211_hw *hw, bool buse_wake_on_wlan_fw)
-        _rtl92ee_write_fw(hw, version, pfwdata, fwsize);
-        _rtl92ee_enable_fw_download(hw, false);
-
--       err = _rtl92ee_fw_free_to_go(hw);
--
--       return 0;
-+       return _rtl92ee_fw_free_to_go(hw);
- }
-
- static bool _rtl92ee_check_fw_read_last_h2c(struct ieee80211_hw *hw, u8 boxnum)
---
-2.7.4
-
+-- 
+2.17.1
 
