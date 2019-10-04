@@ -2,120 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20F75CBDA1
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 579E6CBDB2
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389221AbfJDOns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 10:43:48 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:56999 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388724AbfJDOns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:43:48 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id AF05E22053;
-        Fri,  4 Oct 2019 10:43:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 04 Oct 2019 10:43:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=owUA1Z
-        pjp+x4/g0JFT8auxrSKERepQlK+SlKKMcrKSA=; b=PjG78ril2mVb5msWnt+uxU
-        k4Ql+H6C31tn1kCftu8nmx8sOoh1X88Szn3pjZY08bGmGwZs+cYXp3a0EQb+sDpH
-        D9nFGwGlyIaJXjRRa+TAb+Y2aRlFFk5Rsa9oIPcksmiCEeyUyUVpcHhkWG+ilCMX
-        +s+PH75mb9XyYrLCPYUERZ8aq+l808HIJFXr7/Mx5a36cFfD/QOpUDRUTw054pJc
-        E5+bhi9Z452qTa/KbRntrgsKH1DHVKTazE1lHbMTUsFh9m+7y5JLwDEjD+0qrjus
-        aFd8wHjHtUEYSj8rrUnJrDzgKpjbH2VJNj09fE34d7jJhkv1zUWZ2t4guhKXEcOQ
-        ==
-X-ME-Sender: <xms:oVqXXWemfh0yIZnM9KAm72YhmI2pZ32ODs_4OOt0Bhbd7j4QbZRA8Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrhedugdejfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepjeelrd
-    dujeejrdefkedrvddtheenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehi
-    ughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:oVqXXT6l0giHn2tYjcnv0OmXDl3jhhtkSdqZ6frbsFtJZMPOPrNY4g>
-    <xmx:oVqXXRVqEWQFXkW59hvoKKby2krRBL4ebQFIJzpgxUR0YkAy4cB3lw>
-    <xmx:oVqXXa54AiaY0_vNnO1lvTCYZdweKo2Fcf4skehG6YXxzvvNuvTUeQ>
-    <xmx:olqXXTuYCYrPqS9ZmgTR8quWRHnRk2ULHK1Ug6TZgDU5OV9sZmbQPA>
-Received: from localhost (bzq-79-177-38-205.red.bezeqint.net [79.177.38.205])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DE515D60062;
-        Fri,  4 Oct 2019 10:43:44 -0400 (EDT)
-Date:   Fri, 4 Oct 2019 17:43:40 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>, roopa@cumulusnetworks.com
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 12/15] ipv4: Add "in hardware" indication to
- routes
-Message-ID: <20191004144340.GA15825@splinter>
-References: <20191002084103.12138-1-idosch@idosch.org>
- <20191002084103.12138-13-idosch@idosch.org>
- <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
- <20191002182119.GF2279@nanopsycho>
- <1eea9e93-dbd9-8b50-9bf1-f8f6c6842dcc@gmail.com>
- <20191003053750.GC4325@splinter>
- <e4f0dbf6-2852-c658-667b-65374e73a27d@gmail.com>
+        id S2389377AbfJDOpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 10:45:53 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:37077 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389136AbfJDOpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:45:52 -0400
+Received: by mail-lf1-f65.google.com with SMTP id w67so4681330lff.4;
+        Fri, 04 Oct 2019 07:45:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=41QFKhTKVw0r48ZhA+a3ExQuzLOYbcSClKQP6ZHYplY=;
+        b=NaCJdxmirxyJP/KpxD50qItbwZDFQIlUdsA5gju1LjFOBei/0mpmX24PiLKH4+jHZt
+         Jr5lZ/2/B+mafNMIzNw1eTNGV/Bk2E5AcohEw9J0ViJ93Lzy42uOL13G54n4+YCrdbxz
+         NsRCslGUZGhT+Ccf6F0kQK27WHVbkj8n9MrFJuXxNof5kJdD8n09sTt46FPd9ekwRSf/
+         VjpZxorAFTi9PVu5cBB9VfdwirMAJGd6xoQjbUkrwUTnYYLXdSsWGGgpPODj3WT7q6Ka
+         GQ0mlV4T4rqCagbvyP6yUA+S2S6d9WhONmvvsLMp5JFtdTf30qsnmT6/yjy0w5S9Blh0
+         CiUA==
+X-Gm-Message-State: APjAAAWCL63Z3nM7htbpoz59iyIpn96mK9tl7gnic6pKO6mPgJsogP8w
+        H6/P0rhkxHSAfF9Y/76WIEEsx3k5
+X-Google-Smtp-Source: APXvYqwoyp2pDz11DUVf5PxE3ytN1hgT396kAmXEEpx4FfU2SPT2GaaBEfvO/egu9MZI9T25qQkHRA==
+X-Received: by 2002:a19:710c:: with SMTP id m12mr9438052lfc.41.1570200349750;
+        Fri, 04 Oct 2019 07:45:49 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id g3sm1326422ljj.59.2019.10.04.07.45.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 04 Oct 2019 07:45:48 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92.2)
+        (envelope-from <johan@xi.terra>)
+        id 1iGOqG-0005V1-1n; Fri, 04 Oct 2019 16:46:00 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Denis Efremov <efremov@linux.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 1/2] Revert "rsi: fix potential null dereference in rsi_probe()"
+Date:   Fri,  4 Oct 2019 16:44:21 +0200
+Message-Id: <20191004144422.13003-1-johan@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e4f0dbf6-2852-c658-667b-65374e73a27d@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 03, 2019 at 07:55:16PM -0600, David Ahern wrote:
-> On 10/2/19 11:37 PM, Ido Schimmel wrote:
-> >>>>> The new indication is dumped to user space via a new flag (i.e.,
-> >>>>> 'RTM_F_IN_HW') in the 'rtm_flags' field in the ancillary header.
-> >>>>>
-> >>>>
-> >>>> nice series Ido. why not call this RTM_F_OFFLOAD to keep it consistent
-> >>>> with the nexthop offload indication ?.
-> >>>
-> >>> See the second paragraph of this description.
-> >>
-> >> I read it multiple times. It does not explain why RTM_F_OFFLOAD is not
-> >> used. Unless there is good reason RTM_F_OFFLOAD should be the name for
-> >> consistency with all of the other OFFLOAD flags.
-> > 
-> > David, I'm not sure I understand the issue. You want the flag to be
-> > called "RTM_F_OFFLOAD" to be consistent with "RTNH_F_OFFLOAD"? Are you
-> > OK with iproute2 displaying it as "in_hw"? Displaying it as "offload" is
-> > really wrong for the reasons I mentioned above. Host routes (for
-> > example) do not offload anything from the kernel, they just reside in
-> > hardware and trap packets...
-> > 
-> > The above is at least consistent with tc where we already have
-> > "TCA_CLS_FLAGS_IN_HW".
-> > 
-> >> I realize rtm_flags is overloaded and the lower 8 bits contains RTNH_F
-> >> flags, but that can be managed with good documentation - that RTNH_F
-> >> is for the nexthop and RTM_F is for the prefix.
-> > 
-> > Are you talking about documenting the display strings in "ip-route" man
-> > page or something else? If we stick with "offload" and "in_hw" then they
-> > should probably be documented there to avoid confusion.
-> > 
-> 
-> Sounds like there are 2 cases for prefixes that should be flagged to the
-> user -- "offloaded" (as in traffic is offloaded) and  "in_hw" (prefix is
-> in hardware but forwarding is not offloaded).
+This reverts commit f170d44bc4ec2feae5f6206980e7ae7fbf0432a0.
 
-Sounds good. Are you and Roopa OK with the below?
+USB core will never call a USB-driver probe function with a NULL
+device-id pointer.
 
-RTM_F_IN_HW - route is in hardware
-RTM_F_OFFLOAD - route is offloaded
+Reverting before removing the existing checks in order to document this
+and prevent the offending commit from being "autoselected" for stable.
 
-For example, host routes will have the first flag set, whereas prefix
-routes will have both flags set.
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/net/wireless/rsi/rsi_91x_usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Together with the existing offload flags for nexthops and neighbours
-this provides great visibility into the entire offload process.
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 23a1d00b5f38..760eaffeebd6 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -793,7 +793,7 @@ static int rsi_probe(struct usb_interface *pfunction,
+ 		adapter->device_model = RSI_DEV_9116;
+ 	} else {
+ 		rsi_dbg(ERR_ZONE, "%s: Unsupported RSI device id 0x%x\n",
+-			__func__, id ? id->idProduct : 0x0);
++			__func__, id->idProduct);
+ 		goto err1;
+ 	}
+ 
+-- 
+2.23.0
+
