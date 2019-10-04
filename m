@@ -2,92 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 890A8CB725
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 11:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF99FCB72B
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 11:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731221AbfJDJPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 05:15:52 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39891 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729874AbfJDJPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 05:15:52 -0400
-Received: by mail-pf1-f194.google.com with SMTP id v4so3518306pff.6;
-        Fri, 04 Oct 2019 02:15:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=s8tqsqMy+G0/tcU7luJERjELtm00m1qaFN1WnG1XMF0=;
-        b=Hkj0H1a17gfTA4IBRSDEr6jhOfHZKhPzQr7hTppiuNBr3rWcHa/1fVLIkJ7nLgY4MS
-         rpwqpba5HkFXM8g3eza+y2a9Z5Fu8jqQM8g61sED46Fzj8LDnDTTOtLerEFsicimyY9u
-         wtPARiHwWAULUZ0lDo8Ismp0mWIJJD0Z7yKJqRL+4uqQ062DbR9/y+6sQfqTxvaD1/Ps
-         77pPN3urY0mkMJ0KY4uN63apCjxPV482S+HU7GTuU9JfEPT75wb8JWK8L4yzI3jflByi
-         iPhYVTjwxRUhjQyKDNmCSrhynfidTWyls8p5tlPx4fz+TMCLYc0nH+at53J0y8lQMafG
-         wOVA==
+        id S1731331AbfJDJQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 05:16:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:36870 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729379AbfJDJQL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 05:16:11 -0400
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 207AC58
+        for <netdev@vger.kernel.org>; Fri,  4 Oct 2019 09:16:10 +0000 (UTC)
+Received: by mail-wr1-f72.google.com with SMTP id w2so2448321wrn.4
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 02:16:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=s8tqsqMy+G0/tcU7luJERjELtm00m1qaFN1WnG1XMF0=;
-        b=RiZQbDe7xr3Qw5oXxeufNTEbVANIaBJu04wQRgKvhuSji+guu5Tx7p9/HcjovmjvBQ
-         xdIDKCDtYAOropsQwgMcTWyLjTt1TnOCJwR79yKixnkh9XCZJZjj4oyj3ZIBW0TPXMKN
-         754KF7AnTI4HSK3T7BJWnHtRqR/V3yvRJgTAG3J5ytBs8ZHh8nVGv6WPq8ZurCdsJV+E
-         /+w6R+ZRHY3vYv9SCT5F6t52x/MDyMYgZTnixWZsQtw3Vt2rYPADXjC7cjsXlmmBorth
-         BfJxzghPtVv7WJaDaO3+SvbM9qZq5S6HYRuonO64C6ba63dil287Hltt4FZKS6KKf8mk
-         cfKg==
-X-Gm-Message-State: APjAAAXLvDGWNDpRl1awymimjg23DFKVP0dz228R6cJXGBm3YdA0wAXo
-        /FwpIHesAX9kYfoLktDUPOuSbSUrHj4=
-X-Google-Smtp-Source: APXvYqx9jVrJypPIFTpq5omupfOySz1o3av2IBN3FGqG+lYUCL6l0UwNhhdXupVN4qNFWjnTwQYi8w==
-X-Received: by 2002:a17:90a:e50b:: with SMTP id t11mr15594108pjy.50.1570180551460;
-        Fri, 04 Oct 2019 02:15:51 -0700 (PDT)
-Received: from f1 (ag061063.dynamic.ppp.asahi-net.or.jp. [157.107.61.63])
-        by smtp.gmail.com with ESMTPSA id bb15sm3451428pjb.2.2019.10.04.02.15.48
+        bh=hhPEpgLhkjexE7wGXfmiyqeRzNcW/U3S79ip8ewXhIg=;
+        b=RTTloq6sJa3uoZvaw9QCtrmiiMeJgS3TMZJ5TWdLn44QXXxDHNsTghGBC/bZJmvIFE
+         R6n+PGkpzGzq1llNH7E0SPkkgq0GnvZun6rBEmvozBJ/EnVmuXwlPOaTz+9/vmnLYFXi
+         BtU5Hd9jlDP5mVM+LARZRBoBgcK13PZy9kU2v5hLWEVCReWoOm0xJ4UzHZBtmhsgdulN
+         KmrbVJ7rUzpyP8yFhsLKfyx223MuUxffOvPIkmU7G1c1P0Lu4qn8uXjxpvTwhaUhMH+O
+         rV5NRVfod3rX0j2fN7O1sTuw/KPEgDPuqJpWJoIAM9l1DBtLvSHE2rE1j3dIR4OWa0Gm
+         fLIw==
+X-Gm-Message-State: APjAAAVv7mD5l1ao4IGUK2Oz15chz4hHcY8jrWH1e9ptBFLbr81gClnV
+        Fgsj4pUZZCC0PL8VshzzNoGr9OjVLCx15oaq/8DuegmuiJfI1KgqAHS+yI9ypuxEQKKfQsvSCeZ
+        ovcdh8xsC8INPJ3ox
+X-Received: by 2002:a1c:9d15:: with SMTP id g21mr10287382wme.96.1570180568808;
+        Fri, 04 Oct 2019 02:16:08 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwYyFXc0psA9cM79xGyuf3QCE7kgh2CziA2e0KZxOqK4U+Rh82+kx6tnfpcYC/+KSgegIYtMA==
+X-Received: by 2002:a1c:9d15:: with SMTP id g21mr10287358wme.96.1570180568530;
+        Fri, 04 Oct 2019 02:16:08 -0700 (PDT)
+Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
+        by smtp.gmail.com with ESMTPSA id q192sm7660110wme.23.2019.10.04.02.16.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2019 02:15:50 -0700 (PDT)
-Date:   Fri, 4 Oct 2019 18:15:45 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devel@driverdev.osuosl.org, netdev@vger.kernel.org,
-        GR-Linux-NIC-Dev@marvell.com, linux-kernel@vger.kernel.org,
-        Manish Chopra <manishc@marvell.com>
-Subject: Re: [PATCH v2 0/17] staging: qlge: Fix rx stall in case of
- allocation failures
-Message-ID: <20191004091545.GA29467@f1>
-References: <20190927101210.23856-1-bpoirier@suse.com>
- <20191004081931.GA67764@kroah.com>
+        Fri, 04 Oct 2019 02:16:07 -0700 (PDT)
+Date:   Fri, 4 Oct 2019 11:16:05 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>
+Subject: Re: [RFC PATCH 00/13] vsock: add multi-transports support
+Message-ID: <20191004091605.ayed7iqjhurzrdap@steredhat>
+References: <20190927112703.17745-1-sgarzare@redhat.com>
+ <PU1P153MB0169970A7DD4383F06CDAB60BF9E0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191004081931.GA67764@kroah.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <PU1P153MB0169970A7DD4383F06CDAB60BF9E0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/10/04 10:19, Greg Kroah-Hartman wrote:
-> On Fri, Sep 27, 2019 at 07:11:54PM +0900, Benjamin Poirier wrote:
-[...]
+On Fri, Oct 04, 2019 at 12:04:46AM +0000, Dexuan Cui wrote:
+> > From: Stefano Garzarella <sgarzare@redhat.com>
+> > Sent: Friday, September 27, 2019 4:27 AM
+> >  ...
+> > Patch 9 changes the hvs_remote_addr_init(). setting the
+> > VMADDR_CID_HOST as remote CID instead of VMADDR_CID_ANY to make
+> > the choice of transport to be used work properly.
+> > @Dexuan Could this change break anything?
 > 
-> As this code got moved to staging with the goal to drop it from the
-> tree, why are you working on fixing it up?  Do you want it moved back
-> out of staging into the "real" part of the tree, or are you just fixing
-> things that you find in order to make it cleaner before we delete it?
-> 
-> confused,
+> This patch looks good to me.
 > 
 
-I expected one of two possible outcomes after moving the qlge driver to
-staging:
-1) it gets the attention of people looking for something to work on and
-the driver is improved and submitted for normal inclusion in the future
-2) it doesn't get enough attention and the driver is removed
+Thank you very much for your reviews!
 
-I don't plan to do further work on it and I'm admittedly not holding my
-breath for others to rush in but I already had those patches; it wasn't
-a big effort to submit them as a first step towards outcome #1.
+> > @Dexuan please can you test on HyperV that I didn't break anything
+> > even without nested VMs?
+> 
+> I did some quick tests with the 13 patches in a Linux VM (this is not
+> a nested VM) on Hyper-V and it looks nothing is broken. :-)
+> 
 
-If #2 is a foregone conclusion, then there's little point in applying
-the patches. The only benefit I can think of that if the complete
-removal is reverted in the future, this specific problem will at least
-be fixed.
+Great :-)
+
+> > I'll try to setup a Windows host where to test the nested VMs
+> 
+> I suppose you're going to run a Linux VM on a Hyper-V host,
+> and the Linux VM itself runs KVM/VmWare so it can create its own child 
+> VMs. IMO this is similar to the test "nested KVM ( ..., virtio-transport[L1,L2]"
+> you have done.
+
+Yes, I think so. If the Hyper-V transport works well without nested VM,
+it should work the same with a nested KVM/VMware.
+
+Thanks,
+Stefano
