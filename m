@@ -2,162 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A32ECBEB2
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 17:12:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D217CBEE0
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 17:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389572AbfJDPMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 11:12:09 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:36573 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389196AbfJDPMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 11:12:09 -0400
-Received: by mail-yw1-f66.google.com with SMTP id x64so2447542ywg.3
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 08:12:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W8Qik6CxLCk47wn0wFCq4Awps9BJ72NBHmb83Tu5eyM=;
-        b=t6e/J8ivuGROYPd8ItygWymps151i21B5Q2bHiSgtti3h1Y9ElNXQkIxh1nyCfCcGD
-         TGmDDKwgnL4tYdozYbNRKlWwGmVSRm9/yAaBoGK/M6aIavYb4srs3s8kYjz5V4kl2S8D
-         /h8vEC+8sjWFay6fnBA3Wn+odAc2BYpYKQLLtrMNmIgHn8PI7B6CprCIRnm2nwKP6ZIV
-         Pb5NN1Y3W4MRCPWBMrZc+6LsCpl+e+l+YXeC+pAcY6T2AFRAQuVEbbDoyKs6KvOo/QXH
-         Pvti7rMOZ4AMVxeMAzvMvLTZ85c3gKoVheK2smQHt9FYwAK05bRn1pXVfPfEndbIhAd6
-         fQdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W8Qik6CxLCk47wn0wFCq4Awps9BJ72NBHmb83Tu5eyM=;
-        b=cGyCtZTmlgJmd4DamB/PulO6puEyu7EDh9vz4H36a/MBgsV4qh8jUl9Ow4uF0jtbWh
-         8abeD/cLiD/vD3SBehGJjjW5Dm6qWUBJRcOTNTSKDEDry5FIAqaafWIoa47oxx+TSMib
-         2A52pbDxKsHU96haIHpW7q9oMePZ7H0haXaVojpU9cBlkWlK6O8Zzj72PdEG5j2buQ5o
-         18RWiTrGstAdx1UxUcRchBwphP6ECQryvgKl+EAiXGCQVk0vjwVu1GBIWoKmdpF1bHGC
-         pKQJa0HrXz1TDXhmMGEiswN60eBRKVAdHgFbbDYPLQNTuCTrtGwMbocayFILUBo867LM
-         dGuQ==
-X-Gm-Message-State: APjAAAVR6XE6ZtO54lQ5TeP1HOaxVev2KKd0jnCiieGUS1egnGHiq8Qh
-        zmLXJ6Um6oZcKe9cdb45pGIpriBD0L91X6O0OwBR3aA09Q==
-X-Google-Smtp-Source: APXvYqwQEMFj7mTA9IjyFKukNZLMsORVZJK4nxwBz5ps3xRXK+iZlBg96jhXA3dRGtgltLlRn6NFRwwggd/jTJFOJoA=
-X-Received: by 2002:a81:7dc5:: with SMTP id y188mr10713464ywc.69.1570201927394;
- Fri, 04 Oct 2019 08:12:07 -0700 (PDT)
+        id S2389760AbfJDPR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 11:17:29 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:57584 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389378AbfJDPR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 11:17:29 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C058B4C0059;
+        Fri,  4 Oct 2019 15:17:27 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 4 Oct
+ 2019 08:17:23 -0700
+Subject: Re: [PATCH net-next] net: ipv6: fix listify ip6_rcv_finish in case of
+ forwarding
+To:     David Miller <davem@davemloft.net>, <lucien.xin@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-sctp@vger.kernel.org>,
+        <marcelo.leitner@gmail.com>, <nhorman@tuxdriver.com>,
+        <brouer@redhat.com>, <dvyukov@google.com>,
+        <syzkaller-bugs@googlegroups.com>
+References: <e355527b374f6ce70fcc286457f87592cd8f3dcc.1566559983.git.lucien.xin@gmail.com>
+ <20190823.144250.2063544404229146484.davem@davemloft.net>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <3bda6dee-7b8b-1f50-b4ea-47857ca97279@solarflare.com>
+Date:   Fri, 4 Oct 2019 16:17:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20191004013301.8686-1-danieltimlee@gmail.com> <20191004013301.8686-2-danieltimlee@gmail.com>
- <20191004152409.55bb1ae0@carbon>
-In-Reply-To: <20191004152409.55bb1ae0@carbon>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Sat, 5 Oct 2019 00:11:49 +0900
-Message-ID: <CAEKGpzj3AyU2cn4MTL_W2u2oFJEnC4MJLWx7WvdsvckzC2kOnQ@mail.gmail.com>
-Subject: Re: [v4 2/4] samples: pktgen: fix proc_cmd command result check logic
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190823.144250.2063544404229146484.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24952.005
+X-TM-AS-Result: No-2.177000-4.000000-10
+X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9V447DNvw38Yd0WOKRkwsh9KE
+        CfhYwuaGqgI39lWBXGAUEDo1iEscxd4V9K8RueK0A9lly13c/gEmKH/Kj46+VRQ/lwYCtWexa2B
+        yQZcfaSeez3LtmC83o9pBtcKWt1N2oqn18XUssBWPR2u912hYROq6JaIt1QeicPafKCoXYH+i9X
+        HgDvVgUQ/A2snAmapTvAKx+JIfqjGCWMXx8ovaCefOVcxjDhcwPcCXjNqUmkXCttcwYNipX/VTw
+        0XgOy3awCzXHDVFEl2B4AlVArCKt5tkF5V3GvR6cBtTaYZDTyEQaVht4wZdeap9+7rsHqGXKW7D
+        b5HSK2/ZYleOlkWn56UgMC6A1KHaUdNvZjjOj9C63BPMcrcQuXeYWV2RaAfD8VsfdwUmMsnAvpL
+        E+mvX8g==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.177000-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24952.005
+X-MDID: 1570202248-rlK6pP-ULooE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 4, 2019 at 10:24 PM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
+On 23/08/2019 22:42, David Miller wrote:
+> From: Xin Long <lucien.xin@gmail.com>
+> Date: Fri, 23 Aug 2019 19:33:03 +0800
 >
-> [...]
->
-> Is this comment still relevant?  You just excluded "pgctrl" from
-> getting into this section.
->
-
-Oops, will fix it right away.
-
-> > +        if [[ "$result" == "" ]]; then
-> > +        grep "Result:" $proc_ctrl >&2
->
-> Missing tap/indention?
->
-> > +        fi
-> >      fi
-> >      if (( $status != 0 )); then
-> >       err 5 "Write error($status) occurred cmd: \"$@ > $proc_ctrl\""
-> > @@ -105,6 +109,8 @@ function pgset() {
-> >      fi
-> >  }
-> >
-> > +trap 'pg_ctrl "reset"' EXIT
-> > +
->
-> This line is activated when I ctrl-C the scripts, but something weird
-> happens, it reports:
->
->  ERROR: proc file:/proc/net/pktgen/pgctrl not writable, not root?!
->
-
-Seems, the error is shown when the script is executed without sudo.
-By grep-ing the debug info with 'set -x', you can find out that script elevate
-itself to sudo by 'root_check_run_with_sudo'.
-
-As you can see, there are three 'pg_ctrl reset'.
-
-First one is called as preparation for packet sending,
-Second is called as trap EXIT when sudo elevated script is done and exit.
-Last one is also called as trap EXIT, but it is not executed as sudo.
-
-
-
-$ ./pktgen_sample01_simple.sh 1>/dev/null 2>out
-$ cat out | egrep -A 2 -B 2 'trap|sudo|pg_ctrl reset'
-...
-++ trap 'pg_ctrl "reset"' EXIT
-+ root_check_run_with_sudo
-+ '[' 1000 -ne 0 ']'
-+ '[' -x ./pktgen_sample01_simple.sh ']'
-+ info 'Not root, running with sudo'
-+ [[ -n '' ]]
-+ sudo ./pktgen_sample01_simple.sh
-++ export PROC_DIR=/proc/net/pktgen
-++ PROC_DIR=/proc/net/pktgen
-++ trap 'pg_ctrl "reset"' EXIT
-+ root_check_run_with_sudo
-+ '[' 0 -ne 0 ']'
-+ source ./parameters.sh
---
-+ UDP_SRC_MIN=9
-+ UDP_SRC_MAX=109
-+ pg_ctrl reset
-+ local proc_file=pgctrl
-+ proc_cmd pgctrl reset
---
-+ echo 'Result device: wlp2s0'
-+ cat /proc/net/pktgen/wlp2s0
-+ pg_ctrl reset
-+ local proc_file=pgctrl
-+ proc_cmd pgctrl reset
---
-+ ((  0 != 0  ))
-+ exit 0
-+ pg_ctrl reset
-+ local proc_file=pgctrl
-+ proc_cmd pgctrl reset
-
-
-As for solution, only call 'pg_ctrl reset' when it's running as sudo
-will solve the problem.
--trap 'pg_ctrl "reset"' EXIT
-+trap '[[ $EUID -eq 0 ]] && pg_ctrl "reset"' EXIT
-
-Will apply this at next version of patch.
-
-Thanks,
-Daniel
-
->
-> >  ## -- General shell tricks --
-> >
-> >  function root_check_run_with_sudo() {
->
->
->
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
+>> We need a similar fix for ipv6 as Commit 0761680d5215 ("net: ipv4: fix
+>> listify ip_rcv_finish in case of forwarding") does for ipv4.
+>>
+>> This issue can be reprocuded by syzbot since Commit 323ebb61e32b ("net:
+>> use listified RX for handling GRO_NORMAL skbs") on net-next. The call
+>> trace was:
+>  ...
+>> Fixes: d8269e2cbf90 ("net: ipv6: listify ipv6_rcv() and ip6_rcv_finish()")
+>> Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
+>> Reported-by: syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com
+>> Reported-by: syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com
+>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> Applied, thanks.
+Just noticed that this only went to net-next (and 5.4-rc1), when actually
+ it's needed on all kernels back to 4.19 (per the first Fixes: tag).  The
+ second Fixes: reference, 323ebb61e32b, merely enables syzbot to hit it on
+ whatever hardware it has, but the bug was already there, and hittable on
+ sfc NICs.
+David, can this go to stable please?
