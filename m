@@ -2,133 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F208CB2A2
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 02:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E84CB2A7
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 02:10:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732375AbfJDAFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Oct 2019 20:05:03 -0400
-Received: from mail-eopbgr1310097.outbound.protection.outlook.com ([40.107.131.97]:22752
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729684AbfJDAFC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Oct 2019 20:05:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y+p3BP3H0I8zpiOwMU0OV1LhkcOQ2SF5WCfk67dzI6qEHy5XcUaXTCWDqxwPcfQieJmp91vpmeVW5dzJwHm+rbmiM3e9p2cKQdbWHSrNdygVnQ5k9RwT1gbZqhcc8XCtL7VStqr6IZWvyRRnnBT/KdKA6ptY3aVfOcdRW8HxxUNZK9Kg4YiuvzLYTE+IaYseO0ljcBAnkCFRugT3GZk7D5wH4JleJZem01wjAmdM4j/mVMM8roBkkYfb0NkCom67hoUF4lcuQuV8OxoRe7Ul+aTZ9HgUl8fLFCyBvnpaYH9HCJ/9MA/yTzn6oSOdtiLgK1nkA+c5SKW8CFY6Ia14iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rX0V24f2B3f5UdHJ3wJ/Xf3mWITdvriNw4SAM3c2t44=;
- b=htjZed7ycwOrHEkiyD4oYqCa5mgeUsVDa4ny3ADYAUX02DfCmidLnJrcNlcLy3tSBX+WFe8gpZk8jSDEyZij/i9gasUNqHS8mB5Hx4fITuH8LDRKrq+PVys7sdc10lIi6L/f9xZ2B0cd+ppbXg4OgXo2h1JIlMyEDJvbpgWh+KI3jAn/FESnJEprqnFwnAIx6+V8LjFxRB+LIHX4uJamVtATvt1fOEwFU8MR1LfhqsbIv0O1FvIpBfyzrutYjPjzLA2UzFQdcf20k/pI5HRrlAbrIf+jX1sFUiUWoykEGY62oZFJrj1sHW+2dQHygmUNsnC4tARm4BdwWuUbKy3Cpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rX0V24f2B3f5UdHJ3wJ/Xf3mWITdvriNw4SAM3c2t44=;
- b=CeyU2U6uPk4kW71e+OHmesvMIo55bw/s8dfgzzH7k7mb552U8r3wieavj4LsXWe8LPuJeLB68A7bazT61PmaTwOWCay6wuAQRUx1u6HdIcYCucmfNvHQflGOwLQf6nQ9WEGb6lPo4wyaR4pR0b/hRy1Ay6sklXQUqDMVFSIdSeI=
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
- PU1P153MB0124.APCP153.PROD.OUTLOOK.COM (10.170.188.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.6; Fri, 4 Oct 2019 00:04:46 +0000
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::fc44:a784:73e6:c1c2]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::fc44:a784:73e6:c1c2%9]) with mapi id 15.20.2347.011; Fri, 4 Oct 2019
- 00:04:46 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: RE: [RFC PATCH 00/13] vsock: add multi-transports support
-Thread-Topic: [RFC PATCH 00/13] vsock: add multi-transports support
-Thread-Index: AQHVdSaH864CZhNQp0+75TF0dHxgwadJn5+g
-Date:   Fri, 4 Oct 2019 00:04:46 +0000
-Message-ID: <PU1P153MB0169970A7DD4383F06CDAB60BF9E0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-References: <20190927112703.17745-1-sgarzare@redhat.com>
-In-Reply-To: <20190927112703.17745-1-sgarzare@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-10-04T00:04:44.5644714Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=56687db4-1763-42eb-a64d-0901b0bd148e;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=decui@microsoft.com; 
-x-originating-ip: [131.107.174.148]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 52f94434-2fc0-45ce-f561-08d7485e777f
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: PU1P153MB0124:|PU1P153MB0124:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PU1P153MB012446EAABEF25A6DC8C0297BF9E0@PU1P153MB0124.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-forefront-prvs: 018093A9B5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(189003)(199004)(6506007)(26005)(33656002)(86362001)(66066001)(76116006)(305945005)(74316002)(66946007)(66556008)(66476007)(54906003)(64756008)(6116002)(66446008)(102836004)(3846002)(71200400001)(110136005)(71190400001)(10290500003)(6246003)(22452003)(478600001)(316002)(7696005)(7736002)(76176011)(14454004)(81166006)(8676002)(4326008)(81156014)(256004)(8936002)(476003)(8990500004)(4744005)(2906002)(486006)(186003)(2501003)(229853002)(11346002)(5660300002)(446003)(10090500001)(55016002)(6436002)(7416002)(25786009)(9686003)(99286004)(52536014);DIR:OUT;SFP:1102;SCL:1;SRVR:PU1P153MB0124;H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Si3ZLR0WKQIZ9Qd9sVwCX6lgvnp5G6+TitAsRyqyZSTwLkXyf8q6OKFRQ6CabWu97Y8p/MJyqiG+Sd7g/kahtHdPK7BMk6F7U+pY1Fcvyr4pGo7J4cp+yBbkqWkPXMYUL68gFs5SRzPCOuEPAOl05ryO0dC5apYEpxi5h7FNY+Rp0BluYh4LymnPQ4gjoKmPbhcGDOUQ0O0SbyXfIKcUiYG1sKd009NiChxjTzHpmLT4crbLZ+9HMRAbqFdFgGiWS8B6/lhYbqi4StoQT3kcRtKo4AsC+XymPz1DOCD66Lkmvq6VB5R0qy7MPab42kHBJ576Z2T+iux0+FLjgvt1TfrdxjvXo3ADLXNbETiWx2oZN/B/aCdBI/pJCWr6EUuX+eFvaKqhd52j5wXLByjsAY+Vlw4/2dSjX/vg+BGvmkI=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1732538AbfJDAJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Oct 2019 20:09:57 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39440 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729940AbfJDAJ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Oct 2019 20:09:57 -0400
+Received: by mail-pg1-f193.google.com with SMTP id e1so2705451pgj.6
+        for <netdev@vger.kernel.org>; Thu, 03 Oct 2019 17:09:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aJSnURvrTnKRW7XCAUl3csqPTcgWZWsUjhaWf0zhO5g=;
+        b=gSADe+cFeT+SNla0USBTTbchOiQAsLsRGopRcflGKL9W5IS3MZZoAp5zvVcQxKEobL
+         0+BvUipTyKtCca0sEjQt7eqoBiJ+flXQzgKMFNQ/N3iKesdiWlqD2Pp7jIcOoWLV4+XB
+         FzpHiowmCWE1ZCeO9vMa6CPlQ7XWKtY/kd0+QY+sgpXwGJSt0fLhGaflhT/j+xp8gtd2
+         PHvXETltk4MySeO015s3XAkDt/wi8Oo4/N5lw6i8GNafH91OOVZC+4MRN3iOXqdEr0Kl
+         GUcxgD4g/eSQkLZfUvO/X9RrLxeGOqsErk1D/MlPz/mv+RVoqwl0i6AVUZ2+2u9KKfLB
+         NHBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aJSnURvrTnKRW7XCAUl3csqPTcgWZWsUjhaWf0zhO5g=;
+        b=cgrHcOHz5Wa2DsVo/2eav3HUVttGw+D88JmommJVRZUxyjtz3YE1XXikePI+/gXFF1
+         QuIHPjehgwQ3sfRB/IvvVOkpILYZxAH7adSKbpp6lb6hTrpi9uJ8Y0l+jkn0D/wzWWoS
+         hd/RRf6BO0EhI04BaFU55vmtFxEATv05X3OTGQSgCrbJ6y0cBFiuDO86jU5CIMitg+gT
+         hxbZBByoKDx4qzDKK/i3wS9MJx2MJTPXb7WObXftwFOhcd27bszQS8qte52TylxOjxjo
+         KYvPGW/UloR34tBZIqk4bXqV/qoXIA21Rlfxrn6JSkRK/o8TBVb2uq6U1nc9Nf5mkJG7
+         1O2Q==
+X-Gm-Message-State: APjAAAXl/utZLHqBDAXLE1Y/dRzkwhdhNG5tNNDac1dbReVX19L0oOhu
+        1FHmo3If5KMa46UFmgUNZJwVDA==
+X-Google-Smtp-Source: APXvYqxCQMs3UqvPro/uqk4/SIPuDqadTVA4fcofBe/lfbWVzELrP9px1CS+soylpvxJoqmS0m7Zjg==
+X-Received: by 2002:a62:8749:: with SMTP id i70mr13449404pfe.12.1570147795117;
+        Thu, 03 Oct 2019 17:09:55 -0700 (PDT)
+Received: from mkorpershoek-XPS-13-9370.hsd1.ca.comcast.net ([2601:647:5700:f97e:44ec:171c:55e2:48])
+        by smtp.gmail.com with ESMTPSA id g4sm4267913pfo.33.2019.10.03.17.09.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Oct 2019 17:09:54 -0700 (PDT)
+From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
+To:     linux-bluetooth@vger.kernel.org
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Bluetooth: hci_core: fix init with HCI_QUIRK_NON_PERSISTENT_SETUP
+Date:   Thu,  3 Oct 2019 17:09:32 -0700
+Message-Id: <20191004000933.24575-1-mkorpershoek@baylibre.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 52f94434-2fc0-45ce-f561-08d7485e777f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Oct 2019 00:04:46.1696
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nZ9xBu5JZzFMpSZk8j34iHM7XsjJVHeoPVcN1tbky+ZVFDlW1ZE8C0e4lMws6NprzU4aCXBuEDxqMiO/lNPDBA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0124
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Stefano Garzarella <sgarzare@redhat.com>
-> Sent: Friday, September 27, 2019 4:27 AM
->  ...
-> Patch 9 changes the hvs_remote_addr_init(). setting the
-> VMADDR_CID_HOST as remote CID instead of VMADDR_CID_ANY to make
-> the choice of transport to be used work properly.
-> @Dexuan Could this change break anything?
+Some HCI devices which have the HCI_QUIRK_NON_PERSISTENT_SETUP [1]
+require a call to setup() to be ran after every open().
 
-This patch looks good to me.
+During the setup() stage, these devices expect the chip to acknowledge
+its setup() completion via vendor specific frames.
 
-> @Dexuan please can you test on HyperV that I didn't break anything
-> even without nested VMs?
+If userspace opens() such HCI device in HCI_USER_CHANNEL [2] mode,
+the vendor specific frames are never tranmitted to the driver, as
+they are filtered in hci_rx_work().
 
-I did some quick tests with the 13 patches in a Linux VM (this is not
-a nested VM) on Hyper-V and it looks nothing is broken. :-)
+Allow HCI devices which have HCI_QUIRK_NON_PERSISTENT_SETUP to process
+frames if the HCI device is is HCI_INIT state.
 
-> I'll try to setup a Windows host where to test the nested VMs
+[1] https://lore.kernel.org/patchwork/patch/965071/
+[2] https://www.spinics.net/lists/linux-bluetooth/msg37345.html
 
-I suppose you're going to run a Linux VM on a Hyper-V host,
-and the Linux VM itself runs KVM/VmWare so it can create its own child=20
-VMs. IMO this is similar to the test "nested KVM ( ..., virtio-transport[L1=
-,L2]"
-you have done.
-.
-Thanks!
-Dexuan
+Fixes: 740011cfe948 ("Bluetooth: Add new quirk for non-persistent setup settings")
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+---
+Some more background on the change follows:
+
+The Android bluetooth stack (Bluedroid) also has a HAL implementation
+which follows Linux's standard rfkill interface [1].
+
+This implementation relies on the HCI_CHANNEL_USER feature to get
+exclusive access to the underlying bluetooth device.
+
+When testing this along with the btkmtksdio driver, the
+chip appeared unresponsive when calling the following from userspace:
+
+    struct sockaddr_hci addr;
+    int fd;
+
+    fd = socket(AF_BLUETOOTH, SOCK_RAW, BTPROTO_HCI);
+
+    memset(&addr, 0, sizeof(addr));
+    addr.hci_family = AF_BLUETOOTH;
+    addr.hci_dev = 0;
+    addr.hci_channel = HCI_CHANNEL_USER;
+
+    bind(fd, (struct sockaddr *) &addr, sizeof(addr)); # device hangs
+
+In the case of bluetooth drivers exposing QUIRK_NON_PERSISTENT_SETUP
+such as btmtksdio, setup() is called each multiple times.
+In particular, when userspace calls bind(), the setup() is called again
+and vendor specific commands might be send to re-initialize the chip.
+
+Those commands are filtered out by hci_core in HCI_CHANNEL_USER mode,
+preventing setup() from completing successfully.
+
+This has been tested on a 4.19 kernel based on Android Common Kernel.
+It has also been compile tested on bluetooth-next.
+
+[1] https://android.googlesource.com/platform/system/bt/+/refs/heads/master/vendor_libs/linux/interface/
+
+ net/bluetooth/hci_core.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 04bc79359a17..5f12e8574d54 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -4440,9 +4440,20 @@ static void hci_rx_work(struct work_struct *work)
+ 			hci_send_to_sock(hdev, skb);
+ 		}
+ 
++		/* If the device has been opened in HCI_USER_CHANNEL,
++		 * the userspace has exclusive access to device.
++		 * When HCI_QUIRK_NON_PERSISTENT_SETUP is set and
++		 * device is HCI_INIT,  we still need to process
++		 * the data packets to the driver in order
++		 * to complete its setup().
++		 */
+ 		if (hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
+-			kfree_skb(skb);
+-			continue;
++			if (!test_bit(HCI_QUIRK_NON_PERSISTENT_SETUP,
++				      &hdev->quirks) ||
++			    !test_bit(HCI_INIT, &hdev->flags)) {
++				kfree_skb(skb);
++				continue;
++			}
+ 		}
+ 
+ 		if (test_bit(HCI_INIT, &hdev->flags)) {
+-- 
+2.20.1
+
