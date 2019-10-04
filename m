@@ -2,128 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA65CC0EC
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 18:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB04CC0EB
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 18:38:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729554AbfJDQiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 12:38:11 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:35988 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727264AbfJDQiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 12:38:10 -0400
-Received: by mail-pg1-f193.google.com with SMTP id 23so4062884pgk.3
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 09:38:10 -0700 (PDT)
+        id S1729440AbfJDQiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 12:38:06 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33342 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728219AbfJDQiG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 12:38:06 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q10so4251577pfl.0
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 09:38:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=B4O1M0b3ByS/E8WnqjiwQjVvVNgrqnmluzp4B44F3OI=;
-        b=i5CxeDyN20kDLsfTZwQIJJmWqwrMcrbfNQmG1QivAzWJmQbIypibjliubZXRxzoh9q
-         iO2RW9ON728MZzfmF7Jq83XxcCDAHJUMCYnOUiLKBZO2AMLsujM9UaIeewpAwFLBrnzv
-         GnF+0XVKbt+YTc2wyL5ymO8oaPy4rPuWSeKqEyVcVGYVQmMI2KZD8+KyrdjlS5vxvbMp
-         JApCzTB/qpn3xvNYApnYqtIG6gWmbJLEoWk/i7ogqxV2v090CE7XCNI54b3cI8Iin7vO
-         koEecWbnC/UYBs3uQUzdu1zD3MjpHRc5ZGiV7edP9W5K6pxJ43bvHdQfc50ijQBjswb4
-         95PA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ff2TtPDgelOhF/V4IJgzbVbqgE+IJacVffOJshj6t4w=;
+        b=M6omj/VeS76hxVs+EZG54oHDzJFmPkF0IJUtU0VV6BZN89r3g6XSEBiOtfaTDp5cxW
+         6zljgnc8rG+6Er3OtDDgzqioJ0hvIkKMMnTnLol1tge5MouKASgOCkVDJOWrrgiE/LMm
+         CuYRhnw7zLnnvc0bYyAnzTThaboyLe2AYHQ4Uy4a/KlZMFYF652BTUYMDblI0kuBTq38
+         m2XdLxjrLpcm2AxIV4xqEZo2SB4D4KjrJ6omqdswmnvWvXL+n8C+k7W+1BT2Y2px4nO0
+         MQJZm7imdMmWM61oTOa40wcTMARNLKg75dZ4eo2SbR/AmPXrA1Fsrxh4zFUinwecP+yD
+         RM0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=B4O1M0b3ByS/E8WnqjiwQjVvVNgrqnmluzp4B44F3OI=;
-        b=Zkxpom5bz5cWTmHYnvkrQNNU/RSqYiWx6urJZBxUsS+K+jKAM2GLzpO4tZexZb2F6L
-         /ARNazCYv7AajnsrxlNoPiFCHticeHiI+OYFZ62unBWWMLRJUdl5obi2mpXLAvDw0NBz
-         wcxrzud8rdh0i9TdF4RnZ0yoqS/MdgFy/UDqf9U6tR/HpQmybd+Yh3r49R83rn5dG+rB
-         BBxb3jmmpIzpqXschG8UbS+exkqJxr9zu2q1kppA88dtUfax1PGSP8W7qT/VrLvHpomf
-         F9ZFGBjHFcmNuItsuOCyFG3lzeVr7E5snbWxQjfMHLM639k6LrOeH4wdShpupzkR9Vt0
-         ydBw==
-X-Gm-Message-State: APjAAAV58gu9KYlfEcvU8SbdRmmI6H05R39J8C632/+Q8yZK6Eun1N1Q
-        UVzbEpmUybpuTV9GmpYKnyHoQX6wbh0=
-X-Google-Smtp-Source: APXvYqxCyzoYifRPKj9gJ6Z8QNq+nQZ90qYC+yWWRg2hNtwpfwARi+7qU8Ga5CEqUotA9eqPTukJkA==
-X-Received: by 2002:a63:1e1e:: with SMTP id e30mr15336969pge.405.1570207089455;
-        Fri, 04 Oct 2019 09:38:09 -0700 (PDT)
-Received: from Husky.eng.vmware.com ([66.170.99.1])
-        by smtp.gmail.com with ESMTPSA id c7sm6125069pfr.75.2019.10.04.09.38.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 04 Oct 2019 09:38:08 -0700 (PDT)
-From:   Yi-Hung Wei <yihung.wei@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Yi-Hung Wei <yihung.wei@gmail.com>
-Subject: [PATCH net-next v2] openvswitch: Allow attaching helper in later commit
-Date:   Fri,  4 Oct 2019 09:26:44 -0700
-Message-Id: <1570206404-10565-1-git-send-email-yihung.wei@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ff2TtPDgelOhF/V4IJgzbVbqgE+IJacVffOJshj6t4w=;
+        b=e/RXk1RrQXPB7t03QRF39tRdOcWca3HPrnLEc1UQU8x6bBhu8WtDUNtbfE7yrlq/kQ
+         EIYqZQKkmj3tAQBU8f9QT6AABJcsjyfi9FZ0LqB3XI/a6dqaTVgauWw2ZTUGjUj/YHft
+         bf5clJ7pOTDm9FrvRJNwIDfO8ougvL57VaV7ADjzbdQJ/bZTWO/fUprsyo/rCWsB074u
+         DrseY1UhKdVPpnW8cRUEEMZQwObCejNQ0cidXw7F7UtjWHvlSI4mqT0UNXbcoBQbztk3
+         dwcTJwAeNboD2gGZVfjqBDGUFi17Vrd+8PpABpUb0QY0JoVkRN+Z9vDA1NF3ZGZ6dum6
+         CxgQ==
+X-Gm-Message-State: APjAAAUMjaGYAeMAoVq2ukedDqnBwMA8alTnbUwbCPBgrAWqHJOcJ+dQ
+        O8SkID3ptCg7pwFXzvrhbxo=
+X-Google-Smtp-Source: APXvYqz5tBV5kvQW0wJ0lBoR+PcZfkPOsTyLvBbUalEBRZfhxr2L4LWYHphCInTS2HtsbrKGIX7/bA==
+X-Received: by 2002:aa7:953c:: with SMTP id c28mr18138569pfp.106.1570207085801;
+        Fri, 04 Oct 2019 09:38:05 -0700 (PDT)
+Received: from dahern-DO-MB.local (c-73-169-115-106.hsd1.co.comcast.net. [73.169.115.106])
+        by smtp.googlemail.com with ESMTPSA id z4sm9013054pfn.45.2019.10.04.09.38.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 04 Oct 2019 09:38:04 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 12/15] ipv4: Add "in hardware" indication to
+ routes
+To:     Ido Schimmel <idosch@idosch.org>, roopa@cumulusnetworks.com
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
+References: <20191002084103.12138-1-idosch@idosch.org>
+ <20191002084103.12138-13-idosch@idosch.org>
+ <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
+ <20191002182119.GF2279@nanopsycho>
+ <1eea9e93-dbd9-8b50-9bf1-f8f6c6842dcc@gmail.com>
+ <20191003053750.GC4325@splinter>
+ <e4f0dbf6-2852-c658-667b-65374e73a27d@gmail.com>
+ <20191004144340.GA15825@splinter>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0ba448e3-3c27-d440-ee16-55f778b57bb1@gmail.com>
+Date:   Fri, 4 Oct 2019 10:38:03 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20191004144340.GA15825@splinter>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows to attach conntrack helper to a confirmed conntrack
-entry.  Currently, we can only attach alg helper to a conntrack entry
-when it is in the unconfirmed state.  This patch enables an use case
-that we can firstly commit a conntrack entry after it passed some
-initial conditions.  After that the processing pipeline will further
-check a couple of packets to determine if the connection belongs to
-a particular application, and attach alg helper to the connection
-in a later stage.
+On 10/4/19 8:43 AM, Ido Schimmel wrote:
+>> Sounds like there are 2 cases for prefixes that should be flagged to the
+>> user -- "offloaded" (as in traffic is offloaded) and  "in_hw" (prefix is
+>> in hardware but forwarding is not offloaded).
+> Sounds good. Are you and Roopa OK with the below?
+> 
+> RTM_F_IN_HW - route is in hardware
+> RTM_F_OFFLOAD - route is offloaded
+> 
+> For example, host routes will have the first flag set, whereas prefix
+> routes will have both flags set.
 
-Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
----
-v1->v2, Use logical OR instead of bitwise OR as Dave suggested.
+if "offload" always includes "in_hw", then are both needed? ie., why not
+document that offload means in hardware with offloaded traffic, and then
+"in_hw" is a lesser meaning - only in hardware with a trap to CPU?
 
----
- net/openvswitch/conntrack.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 05249eb45082..df9c80bf621d 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -971,6 +971,8 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
- 
- 	ct = nf_ct_get(skb, &ctinfo);
- 	if (ct) {
-+		bool add_helper = false;
-+
- 		/* Packets starting a new connection must be NATted before the
- 		 * helper, so that the helper knows about the NAT.  We enforce
- 		 * this by delaying both NAT and helper calls for unconfirmed
-@@ -988,16 +990,17 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
- 		}
- 
- 		/* Userspace may decide to perform a ct lookup without a helper
--		 * specified followed by a (recirculate and) commit with one.
--		 * Therefore, for unconfirmed connections which we will commit,
--		 * we need to attach the helper here.
-+		 * specified followed by a (recirculate and) commit with one,
-+		 * or attach a helper in a later commit.  Therefore, for
-+		 * connections which we will commit, we may need to attach
-+		 * the helper here.
- 		 */
--		if (!nf_ct_is_confirmed(ct) && info->commit &&
--		    info->helper && !nfct_help(ct)) {
-+		if (info->commit && info->helper && !nfct_help(ct)) {
- 			int err = __nf_ct_try_assign_helper(ct, info->ct,
- 							    GFP_ATOMIC);
- 			if (err)
- 				return err;
-+			add_helper = true;
- 
- 			/* helper installed, add seqadj if NAT is required */
- 			if (info->nat && !nfct_seqadj(ct)) {
-@@ -1007,11 +1010,13 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
- 		}
- 
- 		/* Call the helper only if:
--		 * - nf_conntrack_in() was executed above ("!cached") for a
--		 *   confirmed connection, or
-+		 * - nf_conntrack_in() was executed above ("!cached") or a
-+		 *   helper was just attached ("add_helper") for a confirmed
-+		 *   connection, or
- 		 * - When committing an unconfirmed connection.
- 		 */
--		if ((nf_ct_is_confirmed(ct) ? !cached : info->commit) &&
-+		if ((nf_ct_is_confirmed(ct) ? !cached || add_helper :
-+					      info->commit) &&
- 		    ovs_ct_helper(skb, info->family) != NF_ACCEPT) {
- 			return -EINVAL;
- 		}
--- 
-2.7.4
+> 
+> Together with the existing offload flags for nexthops and neighbours
+> this provides great visibility into the entire offload process.
 
