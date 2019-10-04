@@ -2,78 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71EA7CB6CA
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 11:00:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACFE1CB70B
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 11:09:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387735AbfJDJAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 05:00:37 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:48635 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387635AbfJDJAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 05:00:37 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9490F8H011441, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9490F8H011441
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 4 Oct 2019 17:00:15 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
- 14.03.0468.000; Fri, 4 Oct 2019 17:00:15 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "zhengbin13@huawei.com" <zhengbin13@huawei.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 0/8] net/rtlwifi: remove some unused variables
-Thread-Topic: [PATCH 0/8] net/rtlwifi: remove some unused variables
-Thread-Index: AQHVeo7lDKTf4SmafEKiXdEX2jA93qdJqQoA
-Date:   Fri, 4 Oct 2019 09:00:14 +0000
-Message-ID: <1570179614.7613.0.camel@realtek.com>
-References: <1570178635-57582-1-git-send-email-zhengbin13@huawei.com>
-In-Reply-To: <1570178635-57582-1-git-send-email-zhengbin13@huawei.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.95]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8AD1F375A6D6F748821A731DCF73225C@realtek.com>
-Content-Transfer-Encoding: base64
+        id S1730560AbfJDJJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 05:09:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35612 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725730AbfJDJJq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 05:09:46 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F2D9A20867;
+        Fri,  4 Oct 2019 09:09:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570180185;
+        bh=hm9yY4mY6cAad/FS1LSmCGDFTnHyfdN4fmY2yqMQxzM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=17pnv8iBTAvOsSYGBVxGkVbDS9BdRJYY/2WIpvd2Zd/zgyS36I7AxeKuUf0E0xSFQ
+         UuqHUn4K0QMnphSNfcR2pPU/m4gk/bcCPKSN6Ys4XwiSoC4zRTH+g+CFGKqGhGZpbP
+         3qMHJFANMlS43Mk0L9U0tJaOorP0MFBscY+E7cqI=
+Date:   Fri, 4 Oct 2019 11:09:43 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jani Nikula <jani.nikula@intel.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        intel-gfx@lists.freedesktop.org,
+        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [PATCH v3] string-choice: add yesno(), onoff(),
+ enableddisabled(), plural() helpers
+Message-ID: <20191004090943.GA306905@kroah.com>
+References: <8e697984-03b5-44f3-304e-42d303724eaa@rasmusvillemoes.dk>
+ <20191001080739.18513-1-jani.nikula@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191001080739.18513-1-jani.nikula@intel.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTEwLTA0IGF0IDE2OjQzICswODAwLCB6aGVuZ2JpbiB3cm90ZToNCj4gemhl
-bmdiaW4gKDgpOg0KPiDCoCBydGx3aWZpOiBydGw4ODIxYWU6IFJlbW92ZSBzZXQgYnV0IG5vdCB1
-c2VkIHZhcmlhYmxlcyAncnRzdGF0dXMnLCdiZCcNCj4gwqAgcnRsd2lmaTogcnRsODcyM2FlOiBS
-ZW1vdmUgc2V0IGJ1dCBub3QgdXNlZCB2YXJpYWJsZXMNCj4gwqDCoMKgwqAncmVnX2VjYycsJ3Jl
-Z19lYzQnLCdyZWdfZWFjJywnYl9wYXRoYl9vaycNCj4gwqAgcnRsd2lmaTogcnRsODE5MmM6IFJl
-bW92ZSBzZXQgYnV0IG5vdCB1c2VkIHZhcmlhYmxlcw0KPiDCoMKgwqDCoCdyZWdfZWNjJywncmVn
-X2VhYycNCj4gwqAgcnRsd2lmaTogcnRsODE4OGVlOiBSZW1vdmUgc2V0IGJ1dCBub3QgdXNlZCB2
-YXJpYWJsZXMNCj4gwqDCoMKgwqAndjMnLCdydHN0YXR1cycsJ3JlZ19lY2MnLCdyZWdfZWM0Jywn
-cmVnX2VhYycsJ2JfcGF0aGJfb2snDQo+IMKgIHJ0bHdpZmk6IHJ0bDgxODhlZTogUmVtb3ZlIHNl
-dCBidXQgbm90IHVzZWQgdmFyaWFibGUgJ2gyY19wYXJhbWV0ZXInDQo+IMKgIHJ0bHdpZmk6IGJ0
-Y29leDogUmVtb3ZlIHNldCBidXQgbm90IHVzZWQgdmFyaWFibGUgJ3Jlc3VsdCcNCj4gwqAgcnRs
-d2lmaTogYnRjb2V4OiBSZW1vdmUgc2V0IGJ1dCBub3QgdXNlZCB2YXJpYWJsZXMNCj4gwqDCoMKg
-wqAnd2lmaV9idXN5JywnYnRfaW5mb19leHQnDQo+IMKgIHJ0bHdpZmk6IHJ0bDg3MjM6IFJlbW92
-ZSBzZXQgYnV0IG5vdCB1c2VkIHZhcmlhYmxlICdvd24nDQoNClRoaXMgcGF0Y2hzZXQgbG9va3Mg
-Z29vZC4gVGhhbmtzLg0KDQpBY2tlZC1ieTogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5j
-b20+DQoNCj4gDQo+IMKgLi4uL3JlYWx0ZWsvcnRsd2lmaS9idGNvZXhpc3QvaGFsYnRjODE5MmUy
-YW50LmPCoMKgwqDCoMKgfMKgwqA5IC0tLS0tLS0tLQ0KPiDCoC4uLi9yZWFsdGVrL3J0bHdpZmkv
-YnRjb2V4aXN0L2hhbGJ0Yzg3MjNiMWFudC5jwqDCoMKgwqDCoHzCoMKgOSArLS0tLS0tLS0NCj4g
-wqBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE4OGVlL2RtLmMgfMKg
-wqA4ICstLS0tLS0tDQo+IMKgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE4
-OGVlL3BoeS5jwqDCoMKgwqB8IDIxICsrKystLS0tLS0tLS0tLS0tLQ0KPiAtLS0NCj4gwqAuLi4v
-d2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxOTJjL3BoeV9jb21tb24uY8KgwqB8wqDCoDgg
-KystLS0tLS0NCj4gwqAuLi4vbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4NzIzYWUv
-cGh5LmPCoMKgwqDCoHwgMTQgKysrLS0tLS0tLS0tLS0NCj4gwqAuLi4vd2lyZWxlc3MvcmVhbHRl
-ay9ydGx3aWZpL3J0bDg3MjNjb20vZndfY29tbW9uLmMgfMKgwqA0IC0tLS0NCj4gwqAuLi4vbmV0
-L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4ODIxYWUvcGh5LmPCoMKgwqDCoHzCoMKgNyAr
-LS0tLS0tDQo+IMKgOCBmaWxlcyBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCA2OCBkZWxldGlv
-bnMoLSkNCj4gDQo+IC0tDQo+IDIuNy40DQo+IA0KPiANCj4gLS0tLS0tUGxlYXNlIGNvbnNpZGVy
-IHRoZSBlbnZpcm9ubWVudCBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlLW1haWwuDQoNCg0KDQo=
+On Tue, Oct 01, 2019 at 11:07:39AM +0300, Jani Nikula wrote:
+> The kernel has plenty of ternary operators to choose between constant
+> strings, such as condition ? "yes" : "no", as well as value == 1 ? "" :
+> "s":
+> 
+> $ git grep '? "yes" : "no"' | wc -l
+> 258
+> $ git grep '? "on" : "off"' | wc -l
+> 204
+> $ git grep '? "enabled" : "disabled"' | wc -l
+> 196
+> $ git grep '? "" : "s"' | wc -l
+> 25
+> 
+> Additionally, there are some occurences of the same in reverse order,
+> split to multiple lines, or otherwise not caught by the simple grep.
+> 
+> Add helpers to return the constant strings. Remove existing equivalent
+> and conflicting functions in i915, cxgb4, and USB core. Further
+> conversion can be done incrementally.
+> 
+> While the main goal here is to abstract recurring patterns, and slightly
+> clean up the code base by not open coding the ternary operators, there
+> are also some space savings to be had via better string constant
+> pooling.
+> 
+> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> Cc: intel-gfx@lists.freedesktop.org
+> Cc: Vishal Kulkarni <vishal@chelsio.com>
+> Cc: netdev@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-usb@vger.kernel.org
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Julia Lawall <julia.lawall@lip6.fr>
+> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # v1
+> Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+For this version at least :)
