@@ -2,89 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F24DCCB7E2
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 12:07:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18295CB85F
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 12:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731066AbfJDKHZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Oct 2019 06:07:25 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40428 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729466AbfJDKHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Oct 2019 06:07:25 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2387478AbfJDKef (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 06:34:35 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:53232 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729427AbfJDKef (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 06:34:35 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D2722C05AA56;
-        Fri,  4 Oct 2019 10:07:24 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-125-72.rdu2.redhat.com [10.10.125.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5ED85600C4;
-        Fri,  4 Oct 2019 10:07:22 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20190911052849.7344-1-hdanton@sina.com>
-References: <20190911052849.7344-1-hdanton@sina.com> 
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     dhowells@redhat.com,
-        syzbot <syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com>,
-        MAILER_DAEMON@email.uscc.net, davem@davemloft.net,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: use-after-free Read in rxrpc_send_keepalive
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 34056280072;
+        Fri,  4 Oct 2019 10:34:33 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 4 Oct
+ 2019 03:34:28 -0700
+Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
+ interface through chain calls
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+CC:     Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
+ <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com>
+ <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com> <87r23vq79z.fsf@toke.dk>
+ <20191003105335.3cc65226@carbon>
+ <CAADnVQKTbaxJhkukxXM7Ue7=kA9eWsGMpnkXc=Z8O3iWGSaO0A@mail.gmail.com>
+ <87pnjdq4pi.fsf@toke.dk>
+ <1c9b72f9-1b61-d89a-49a4-e0b8eead853d@solarflare.com>
+ <5d964d8ccfd90_55732aec43fe05c47b@john-XPS-13-9370.notmuch>
+ <87tv8pnd9c.fsf@toke.dk>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <68466316-c796-7808-6932-01d9d8c0a40b@solarflare.com>
+Date:   Fri, 4 Oct 2019 11:34:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7411.1570183641.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: 8BIT
-Date:   Fri, 04 Oct 2019 11:07:21 +0100
-Message-ID: <7412.1570183641@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Fri, 04 Oct 2019 10:07:25 +0000 (UTC)
+In-Reply-To: <87tv8pnd9c.fsf@toke.dk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24952.005
+X-TM-AS-Result: No-8.024700-4.000000-10
+X-TMASE-MatchedRID: C/snMIRQLS3mLzc6AOD8DfHkpkyUphL9v/9ovxpTvIBsMPuLZB/IR3Iw
+        ECVgOaniXZv12elAXYk2hlVDX2S+Ib+VKRYHl/ubX8aoF+qHHJ3oorYAfwrokEl/J9Ro+MABZFZ
+        4+6wVBoyFhiX9bwPywDYOCES74k4UnKg65KVB+P1uh7qwx+D6TzFcf92WG8u/pNE6/wmkFAdpMf
+        +k42Q07N0WkH6V+0rg9+eIYd9Ox/ayKRsiGe6y+QCSHRN4FLBrWw/S0HB7eoOykL7HJ0lm46BgO
+        8/7EYOVf92MZgce96dCPYF0gRjARUrYfGvC1HVr0+C2Y9ztgG2eutXlSdRVjakNinB6fCXe1Is5
+        GvhmGbw1aWq/d65GNQgBkd8UysKO5rARkHdbWIXN+qWlu2ZxaAeCHewokHM/kYldHqNEW7g+msb
+        ci1PK/1QefH+t7oMfYRiQMlWnaceBDKLdTkiM2zdfT4zyWoZS64sVlliWKx+/WXZS/HqJ2gtuKB
+        GekqUpOlxBO2IcOBZguiWqT9xKU1I0aMzN6p4NceTRNcWETPbMtA/VKIJbbioKap+HeVtzQwymt
+        xuJ6y0=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.024700-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24952.005
+X-MDID: 1570185274-z_Dgpes2vve4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the fix, I think.
+On 04/10/2019 09:09, Toke Høiland-Jørgensen wrote:
+> Having the mechanism be in-kernel makes solving these problems a lot
+> easier, because the kernel can be responsible for state management, and
+> it can enforce the chain call execution logic.
+I would argue this isn't mechanism, but rather policy, because the
+ mechanism we already have is sufficient to express the policy.
 
-David
----
-rxrpc: Fix call ref leak
+Enforcement is easily dealt with: you just don't give people the caps/
+ perms to load XDP programs directly, so the only way they can do it is
+ via your loader (which you give them a socket or dbus or something to
+ talk to).  (Whereas your chain map doesn't really 'enforce' anything;
+ anyone who can add themselves to the chain can also remove others.)
+Then state inspection happens by querying the loader; if we assume that
+ the distro provided the central loader, then they can also include the
+ query in their standard system-dump tools.
+Dynamic changes would just mean compiling a new dispatcher, then
+ atomically replacing the old prog with the new (which we can already
+ do), since the central loader daemon knows the call graph and can make
+ changed versions easily.
+Centralisation is something that happens normally in userspace; just
+ count how many daemons your favourite init system runs to administer
+ system resources and multiplex requests.  Probably we'd end up with
+ one or two standard loaders and interfaces to them.
+In any case, it seems like XDP users in userspace still need to
+ communicate with each other in order to update the chain map (which
+ seems to rely on knowing where one's own program fits into it); you
+ suggest they might communicate through the chain map itself, and then
+ veer off into the weeds of finding race-free ways of doing that.  This
+ seems (to me) needlessly complex.
 
-When sendmsg() finds a call to continue on with, if the call is in an
-inappropriate state, it doesn't release the ref it just got on that call
-before returning an error.
+Incidentally, there's also a performance advantage to an eBPF dispatcher,
+ because it means the calls to the individual programs can be JITted and
+ therefore be direct, whereas an in-kernel data-driven dispatcher has to
+ use indirect calls (*waves at spectre*).
 
-This causes the following symptom to show up with kasan:
+> The fact that Lorenz et al are interested in this feature (even though
+> they are essentially already doing what you suggested, by having a
+> centralised daemon to manage all XDP programs), tells me that having
+> kernel support for this is the right thing to do.
+Maybe Lorenz could describe what he sees as the difficulties with the
+ centralised daemon approach.  In what ways is his current "xdpd"
+ solution unsatisfactory?
 
-        BUG: KASAN: use-after-free in rxrpc_send_keepalive+0x8a2/0x940
-        net/rxrpc/output.c:635
-        Read of size 8 at addr ffff888064219698 by task kworker/0:3/11077
-
-where line 635 is:
-
-        whdr.epoch      = htonl(peer->local->rxnet->epoch);
-
-The local endpoint (which cannot be pinned by the call) has been released,
-but not the peer (which is pinned by the call).
-
-Fixes: 37411cad633f ("rxrpc: Fix potential NULL-pointer exception")
-Reported-by: syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
----
- sendmsg.c |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 6cd55b1d79f9..79b5b23db4c1 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -661,6 +661,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 		case RXRPC_CALL_SERVER_PREALLOC:
- 		case RXRPC_CALL_SERVER_SECURING:
- 		case RXRPC_CALL_SERVER_ACCEPTING:
-+			rxrpc_put_call(call, rxrpc_call_put);
- 			ret = -EBUSY;
- 			goto error_release_sock;
- 		default:
+-Ed
