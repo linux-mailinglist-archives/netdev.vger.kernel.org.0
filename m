@@ -2,136 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F39CBBA0
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 15:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A06BCBBA7
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 15:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388517AbfJDNYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 09:24:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57660 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387952AbfJDNYS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Oct 2019 09:24:18 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2A9DF305FC56;
-        Fri,  4 Oct 2019 13:24:18 +0000 (UTC)
-Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4CCA319C68;
-        Fri,  4 Oct 2019 13:24:11 +0000 (UTC)
-Date:   Fri, 4 Oct 2019 15:24:09 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        brouer@redhat.com
-Subject: Re: [v4 2/4] samples: pktgen: fix proc_cmd command result check
- logic
-Message-ID: <20191004152409.55bb1ae0@carbon>
-In-Reply-To: <20191004013301.8686-2-danieltimlee@gmail.com>
-References: <20191004013301.8686-1-danieltimlee@gmail.com>
-        <20191004013301.8686-2-danieltimlee@gmail.com>
+        id S2388333AbfJDN2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 09:28:43 -0400
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:45065 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387917AbfJDN2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 09:28:43 -0400
+Received: by mail-yw1-f68.google.com with SMTP id x65so2296530ywf.12
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 06:28:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SJ7CCnD1jTxfZuxTs/1AVjjbv5IpNVPSc0ZEPRh0OKI=;
+        b=FadOvkOXdWEiDuMssODR6PdMLpTYUWUWQq5QEJlTWwy/qqEYDdjlFzUXSDcloL5VGP
+         /r9RGWkYOZT2/Ro9bqPTDZrYvQdqpsWMzdgrpRW6uzT4AMOZz5sb+vfaBGxEimJ7MZBf
+         euZv5kj752ZSTD4Av+r5wek6xoXDQeteJ8b9ZjR68Lvcc4k+aLv3Vp6xSWPNyokgYMas
+         QHbv0bP9TslsQ/Eo3oGty1b8UPmjmeRJQ+ThZxfDIk2hvMQZGxMW6L+zJ7a8+lRKSzxJ
+         69DjSuMmItu2t5pY1KkxRV4a8u39Ekqb8TXcVpQ45tVx3TiyfdW2DNNz/X7DpCZwCGDL
+         P1xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SJ7CCnD1jTxfZuxTs/1AVjjbv5IpNVPSc0ZEPRh0OKI=;
+        b=lDTxJgvtOk2hCSgVUYE0ndX+9UWAKDhGaauAvSvNMtvCHKmEPIbFZOt9x16iz7HPTQ
+         Rd5edTKu9FF/EoudfTZfa77554c0DnQwKBa/fdv0SS20wvUFmazUUq3hzkq3z1/muTPf
+         mM9x6Gr5fw1sKf72vXcbCJEfhGbTJI/pWQ1GwRAeh6s2yTLb380NeIAU8Yx47iBN0xDZ
+         hqzI1dwPNTFOgi1xHJ5JVhlnHJQKev775umFAf2YW0Gjqd6wq4Vu9AfvL0Lbo+qOh8Ns
+         tk5CNs+sVWrsyiL/ABphtSnnFUuoLWiEckqB/xoirvBfXpTUr2BqiVAVpRJmrzBwY5VK
+         951Q==
+X-Gm-Message-State: APjAAAVhTKUlzhUtPpWY6wHJKxZhA7XxrW9vuZB1+UuQQ/M+uP/lZiXH
+        4sLxFeEH/Hiv737258ar7+F77pTaNg5yledgRXn2y20H1g==
+X-Google-Smtp-Source: APXvYqw4YRPNuFii01nJ/wiZ26SR8mVbF3dB8B/jWLnz4YG09rgvvPmQYw0mai2jDEMjmrDS0m4Nt2ZtpgYQZBLdb6I=
+X-Received: by 2002:a81:7dc5:: with SMTP id y188mr10304818ywc.69.1570195722335;
+ Fri, 04 Oct 2019 06:28:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Fri, 04 Oct 2019 13:24:18 +0000 (UTC)
+References: <20191004013301.8686-1-danieltimlee@gmail.com> <20191004145153.6192fb09@carbon>
+In-Reply-To: <20191004145153.6192fb09@carbon>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Fri, 4 Oct 2019 22:28:26 +0900
+Message-ID: <CAEKGpzj9WGepw4LPJeFhbtONYJyvLcO_ChnMRrEB5-BVTfKqMQ@mail.gmail.com>
+Subject: Re: [v4 1/4] samples: pktgen: make variable consistent with option
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  4 Oct 2019 10:32:59 +0900
-"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+On Fri, Oct 4, 2019 at 9:52 PM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>
+>
+> On Fri,  4 Oct 2019 10:32:58 +0900 "Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+>
+> > [...]
+>
 
-> Currently, proc_cmd is used to dispatch command to 'pg_ctrl', 'pg_thread',
-> 'pg_set'. proc_cmd is designed to check command result with grep the
-> "Result:", but this might fail since this string is only shown in
-> 'pg_thread' and 'pg_set'.
-> 
-> This commit fixes this logic by grep-ing the "Result:" string only when
-> the command is not for 'pg_ctrl'.
-> 
-> For clarity of an execution flow, 'errexit' flag has been set.
-> 
-> To cleanup pktgen on exit, trap has been added for EXIT signal.
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/pktgen/functions.sh | 20 +++++++++++++-------
->  1 file changed, 13 insertions(+), 7 deletions(-)
-> 
-> diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
-> index 4af4046d71be..e1865660b033 100644
-> --- a/samples/pktgen/functions.sh
-> +++ b/samples/pktgen/functions.sh
-> @@ -5,6 +5,8 @@
->  # Author: Jesper Dangaaard Brouer
->  # License: GPL
->  
-> +set -o errexit
-> +
->  ## -- General shell logging cmds --
->  function err() {
->      local exitcode=$1
-> @@ -58,6 +60,7 @@ function pg_set() {
->  function proc_cmd() {
->      local result
->      local proc_file=$1
-> +    local status=0
->      # after shift, the remaining args are contained in $@
->      shift
->      local proc_ctrl=${PROC_DIR}/$proc_file
-> @@ -73,13 +76,14 @@ function proc_cmd() {
->  	echo "cmd: $@ > $proc_ctrl"
->      fi
->      # Quoting of "$@" is important for space expansion
-> -    echo "$@" > "$proc_ctrl"
-> -    local status=$?
-> -
-> -    result=$(grep "Result: OK:" $proc_ctrl)
-> -    # Due to pgctrl, cannot use exit code $? from grep
-> -    if [[ "$result" == "" ]]; then
-> -	grep "Result:" $proc_ctrl >&2
-> +    echo "$@" > "$proc_ctrl" || status=$?
-> +
-> +    if [[ "$proc_file" != "pgctrl" ]]; then
-> +        result=$(grep "Result: OK:" $proc_ctrl) || true
-> +        # Due to pgctrl, cannot use exit code $? from grep
+Thanks for the review!
 
-Is this comment still relevant?  You just excluded "pgctrl" from
-getting into this section.
+> A general comment, you forgot a cover letter for your patchset.
+>
 
-> +        if [[ "$result" == "" ]]; then
-> +        grep "Result:" $proc_ctrl >&2
+At first, I thought the size of the patchset (the feature to enhance)
+was small so
+I didn't include it with intent, but now it gets bigger and it seems
+necessary for cover letter.
 
-Missing tap/indention?
+When the next version is needed, I'll include it.
 
-> +        fi
->      fi
->      if (( $status != 0 )); then
->  	err 5 "Write error($status) occurred cmd: \"$@ > $proc_ctrl\""
-> @@ -105,6 +109,8 @@ function pgset() {
->      fi
->  }
->  
-> +trap 'pg_ctrl "reset"' EXIT
-> +
+> And also forgot the "PATCH" part of subj. but patchwork still found it:
+> https://patchwork.ozlabs.org/project/netdev/list/?series=134102&state=2a
+>
 
-This line is activated when I ctrl-C the scripts, but something weird
-happens, it reports:
+I'm not sure I'm following.
+Are you saying that the word "PATCH" should be included in prefix?
+    $ git format-patch --subject-prefix="PATCH,v5"
+like this?
 
- ERROR: proc file:/proc/net/pktgen/pgctrl not writable, not root?!
+And again, I really appreciate your time and effort for the review.
 
-
->  ## -- General shell tricks --
->  
->  function root_check_run_with_sudo() {
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Thanks,
+Daniel
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
