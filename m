@@ -2,138 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44347CBFE7
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 17:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E3A6CBFEC
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 17:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390190AbfJDP6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 11:58:50 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:37254 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389794AbfJDP6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 11:58:50 -0400
-Received: by mail-ot1-f65.google.com with SMTP id k32so5713369otc.4
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 08:58:48 -0700 (PDT)
+        id S2390150AbfJDP7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 11:59:41 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:40980 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389773AbfJDP7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 11:59:40 -0400
+Received: by mail-io1-f65.google.com with SMTP id n26so14576443ioj.8;
+        Fri, 04 Oct 2019 08:59:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kii2t84FnpnUt+XgKeXePx9ynfaDpkgw73Li78q+P1g=;
-        b=J3H7HHcpkA4nMMNjy8hzRpc9bYvv2Qp5Ao4uFjr6zVyKTGFd/1zIIzSsdUbnXKDejt
-         PXOf+WJhfVQ1cEuHg4W+YdxfNnClR9ZEgbPbvO48b6CuWnyHM7jaVLqU9oDkGDmGbN7p
-         Fg4sxQWdn5g606/E4II2GwxDufXL3ZnsGhL2Q=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=1fDIFwSxbB6EMoy6o2ey6HkUyTmcSFfa0LxeDRrvOZ8=;
+        b=AuRjYOSGaY8hut+10T/VFGkLt7H2WTV9oSsW74YJ6iYTACT2qYvLAZlaxrW3pxTOFL
+         fanYZrilkEJG6b0+jnRxdMfP95rbGKiNd3AfkWTH67C1aebD5ohVrJcppPtrS58REmRH
+         qkD+llJhMO2AR+X9hLB8osrpheRcYVitiVTycI9FeoTCvHty7p4ksmniHIyir16WfiPB
+         by880AjdGZWe92cjw9iIGS/03GNATRyrC0Sd4suYVGqOo4VUoZMqrxpYLO3jKTaWRvtr
+         H9ylXkxUdR1889CHtJ2g5uW83xZCu/dt9JyS3IX5FS7scZmpnbO206ztVSxtpCM8NNnO
+         Viug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kii2t84FnpnUt+XgKeXePx9ynfaDpkgw73Li78q+P1g=;
-        b=UZZEG84tlbuW7vBxWdtnZrk44cJMaKygN030WG3iETBu63MzHfpHRRDMVwNqzJ4jiQ
-         ZBGhj8WX6fpArS94lCca7ZVzuc+yrhw82X+6JyyF8RCrGJV33ZJ9KgsAf6CSAED8bMGd
-         hZEVJ/PXuzybUqMEnESWKZldrHnqn55OaZ2AWpGicMPWrJGr8nvrHtbFsIPAxbsbMvOk
-         0I8tivDYU1NerqDM8iCzT6BZaIeyqheIi6l0JQp1v766fvstlgUEuY3ZC+zLMPB8kGgS
-         zwy5s3injCP4/gL4S2BTISwvLrdmupOLc9lY+pBRlgMfJQYhxvZo3J6Dk4j/rUqTzrD1
-         cjCQ==
-X-Gm-Message-State: APjAAAXZLQNjU6+kABdTbfHJl+FyEbs3nPiYab5UqTrlaOnl6Z7p37+2
-        7c47cmkm/qqZ0bsyVKRqfo2CsEjx0W8Jz05jQ8LiVw==
-X-Google-Smtp-Source: APXvYqyKL1Kens97wBLPLsOvsJYc8PCr4lRbH4sMcBrXV994Y/EKtcQCA14vCjdq7k4WHKF1OgG7W4aVju1mSLnylQA=
-X-Received: by 2002:a9d:7398:: with SMTP id j24mr10951958otk.289.1570204727971;
- Fri, 04 Oct 2019 08:58:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
- <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com> <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com>
- <87r23vq79z.fsf@toke.dk> <20191003105335.3cc65226@carbon> <CAADnVQKTbaxJhkukxXM7Ue7=kA9eWsGMpnkXc=Z8O3iWGSaO0A@mail.gmail.com>
- <87pnjdq4pi.fsf@toke.dk> <1c9b72f9-1b61-d89a-49a4-e0b8eead853d@solarflare.com>
- <5d964d8ccfd90_55732aec43fe05c47b@john-XPS-13-9370.notmuch>
- <87tv8pnd9c.fsf@toke.dk> <68466316-c796-7808-6932-01d9d8c0a40b@solarflare.com>
-In-Reply-To: <68466316-c796-7808-6932-01d9d8c0a40b@solarflare.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 4 Oct 2019 16:58:36 +0100
-Message-ID: <CACAyw99oUfst5LDaPZmbKNfQtM2wF8fP0rz7qMk+Qn7SMaF_vw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
- interface through chain calls
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Song Liu <songliubraving@fb.com>,
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=1fDIFwSxbB6EMoy6o2ey6HkUyTmcSFfa0LxeDRrvOZ8=;
+        b=TFRv986sG3eKg8f3W1D9ZA+swef9Fw6mkto9PmWnwB2+XFs0XchMBP3y/7kHW8OStT
+         DLHqzD9185WCwn1p2xFIuI88lXXW45QLCVA+MhTO1HrlOBn2dpwBNSZECS0P3Q8QCrxq
+         8X/fQq+aMb125iTAxDH+gPgepahxyy9n8rUk+8YjgwzX4137KGK1rjwSNE1DYTOy6Ybh
+         FAyXZIwkG6OdvwA1c5GBo1d9Z+u54dkpkwcJ2vW6C9tTrBriEfzkw0lTuYOQer27rlMd
+         xMmrC1fiIvKQNsdupZc4+T3nHQ54Nw4+jzr82/OC/LnePes7ALxCfQG3KH2zRlp7gN0y
+         AYVw==
+X-Gm-Message-State: APjAAAXZFFnn1gx5q3CqdDL+vp5nqVxt/E3nz+7iRTSLYdBpJf30Ja16
+        6IxCqLNWaxDFS/VJ3uS/h54=
+X-Google-Smtp-Source: APXvYqwY7z2ki6AJWRIZNK+N6VDl22mf6vq3VhxLTstHSHxs79JhPf3wcy7MDzUjUroB3CbKD8U8vQ==
+X-Received: by 2002:a6b:2c8d:: with SMTP id s135mr12935589ios.98.1570204779924;
+        Fri, 04 Oct 2019 08:59:39 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id i4sm2104821iop.6.2019.10.04.08.59.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Oct 2019 08:59:39 -0700 (PDT)
+Date:   Fri, 04 Oct 2019 08:59:30 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@fb.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+        Kernel Team <Kernel-team@fb.com>
+Message-ID: <5d976c62bb52b_583b2ae668e6e5b41@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAEf4BzbUSQdYqce+gyjO7-VSrF45nqXuLBMU6qRd63LHD+-JLg@mail.gmail.com>
+References: <20191004030058.2248514-1-andriin@fb.com>
+ <20191004030058.2248514-2-andriin@fb.com>
+ <5d97519e9e7f3_4e6d2b183260e5bcbf@john-XPS-13-9370.notmuch>
+ <CAEf4BzbP=k72O2UXA=Om+Gv1Laj+Ya4QaTNKy7AVkMze6GqLEw@mail.gmail.com>
+ <fb67f98a-08b4-3184-22f8-7d3fb91c9515@fb.com>
+ <CAEf4BzbUSQdYqce+gyjO7-VSrF45nqXuLBMU6qRd63LHD+-JLg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] libbpf: stop enforcing kern_version,
+ populate it for users
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Oct 2019 at 11:34, Edward Cree <ecree@solarflare.com> wrote:
->
-> Enforcement is easily dealt with: you just don't give people the caps/
->  perms to load XDP programs directly, so the only way they can do it is
->  via your loader (which you give them a socket or dbus or something to
->  talk to).
+Andrii Nakryiko wrote:
+> On Fri, Oct 4, 2019 at 7:36 AM Alexei Starovoitov <ast@fb.com> wrote:
+> >
+> > On 10/4/19 7:32 AM, Andrii Nakryiko wrote:
+> > >> If we are not going to validate the section should we also skip collect'ing it?
+> > > Well, if user supplied version, we will parse and use it to override
+> > > out prepopulated one, so in that sense we do have validation.
+> > >
+> > > But I think it's fine just to drop it altogether. Will do in v3.
+> > >
+> >
+> > what about older kernel that still enforce it?
+> > May be populate it in bpf_attr while loading, but
+> > don't check it in elf from libbpf?
+> 
+> That's what my change does. I pre-populate correct kernel version in
+> bpf_object->kern_version from uname(). If ELF has "version" section,
+> we still parse it and override bpf_object->kern_version.
+> bpf_object->kern_version then is always specified as part of
+> bpf_prog_load->kern_version.
+> 
+> So what we are discussing here is to not even look at user-provided
+> version, but just always specify correct current kernel version. So I
+> don't think we are going to break anything, except we might allow to
+> pass some programs that were failing before due to unspecified or zero
+> version.
+> 
+> So with that, do you think it's ok to get rid of version section altogether?
 
-Writing this daemon is actually harder than it sounds. Loading eBPF
-programs can become fairly complex, with eBPF
-maps being shared between different programs. If you want to support
-all use cases (which you kind of have to) then you'll end up writing an
-RPC wrapper for libbpf, which sounds very painful to me.
-
-So I think for this to work at all, loading has to happen in the user space
-components. Only construction of the control flow should be centralised.
-This has the knock on effect that these components need
-CAP_NET_ADMIN, since too much of eBPF relies on having that
-capability right now: various map types, safety features applied to non-root
-eBPF, etc. Given time this will be fixed, and maybe these programs can then
-just have CAP_BPF or whatever.
-
-I chatted with my colleague Arthur, and we think this might work if all
-programs are forced to comply with the xdpcap-style tail call map:
-a prog array with MAX_XDP_ACTION slots, which each program
-calls into via
-
-  tail_call(map, action);
-  return action; // to handle the empty slot case
-
-You could then send (program fd, tail call map fd) along with a priority
-of some sort via SCM_RIGHTS. The daemon can then update the tail
-call maps as needed. The problem is that this only allows
-for linear (not tree-like) control flow.
-
-We'll try and hack up a POC to see if it works at all.
-
-> In any case, it seems like XDP users in userspace still need to
->  communicate with each other in order to update the chain map (which
->  seems to rely on knowing where one's own program fits into it); you
->  suggest they might communicate through the chain map itself, and then
->  veer off into the weeds of finding race-free ways of doing that.  This
->  seems (to me) needlessly complex.
-
-I agree.
-
-> Incidentally, there's also a performance advantage to an eBPF dispatcher,
->  because it means the calls to the individual programs can be JITted and
->  therefore be direct, whereas an in-kernel data-driven dispatcher has to
->  use indirect calls (*waves at spectre*).
-
-This is if we somehow got full blown calls between distinct eBPF programs?
-
-> Maybe Lorenz could describe what he sees as the difficulties with the
->  centralised daemon approach.  In what ways is his current "xdpd"
->  solution unsatisfactory?
-
-xdpd contains the logic to load and install all the different XDP programs
-we have. If we want to change one of them we have to redeploy the whole
-thing. Same if we want to add one. It also makes life-cycle management
-harder than it should be. So our xdpd is not at all like the "loader"
-you envision.
-
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+Should be fine on my side. Go for it.
