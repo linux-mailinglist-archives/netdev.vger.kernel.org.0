@@ -2,154 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34CB6CBDCD
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 842FBCBDDA
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:49:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389176AbfJDOrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 10:47:43 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:33223 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388870AbfJDOrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:47:43 -0400
-Received: by mail-qt1-f193.google.com with SMTP id r5so8945811qtd.0
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 07:47:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=s4y5wtlEyd2oMP9WTjwTUlNjmjHaZBKzycyijDa/ORs=;
-        b=oio1guMX2vOOtD8Nz9onXIJynOp3hXwXVPA3E0bBIP/RIh1UKA/aj6IoZusMo1UIWF
-         zleOkYbBrNvhIdYVRIRKQWNM3szbFRkJiKIbuC53xAmZuYKZ9rbSPPFUNTkJOUduOJPn
-         yq0bDUYXla9YbQ/Bzyj+vaIIdnPWfUCAKrX37F+g8JOv5FHDhAYiLfP+ROCW15STXdtH
-         ANNWCOUuP7Xn92WePFB5jotT7IPHwCZg7DAisq7mkdBwNRmDHA26TsRPUmrqUskP87kO
-         cYjbuCM3+3G+rdYCjzuRJgh163iZDFvl5ouW+HgRyTU6PVkWwy+M1+XEojvC1PRjI2ZP
-         JRdQ==
+        id S2389460AbfJDOtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 10:49:23 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:33515 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388870AbfJDOtX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:49:23 -0400
+Received: by mail-lj1-f193.google.com with SMTP id a22so6839371ljd.0;
+        Fri, 04 Oct 2019 07:49:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=s4y5wtlEyd2oMP9WTjwTUlNjmjHaZBKzycyijDa/ORs=;
-        b=VOljYtHGr6I2+nQppKzaYWKiElGf9HAOK8AkmC7y5o9om6G8DX82yR1zgy79DA/v2A
-         0uJAo0PdS3y0kBhSlTFOk5PpPLc1aO/iZJiMiOZ4XUadFmUDgjtYe4I/b03Ga/herU9E
-         tkIi4/0lXzdHAkOJGKb/+dhzYBUV2urUv/6Iqt1HmaSiy1Pr3PvYC+xjnrgnV1MBF2lS
-         Nfw+W2x2IWFhSrxInFOMPgYRzZwWyufPYMOkaHMJIQj546uY9WddJLAEB1Gi9VgoCNfg
-         DrXqfkN1MGDiIZZAK6Vg1qtUP2DQm/c0m6fMYDbVidFtnW6K3FwNUP9DKAXlkzoiaTzR
-         RPKQ==
-X-Gm-Message-State: APjAAAXShesYfe6QRn3lwOBQDK1F3/7mJdD56P6eRyRPw5+YkRp808Tq
-        9XlEAgOQsqG1eCUBQ8FNhTxAaXQz
-X-Google-Smtp-Source: APXvYqyA2D/J9ZM9evhSgqXWnPq7Iw+Rd9am4i6nLNCYokHbQPWaD4D3wroo/qkcKquGUzrDSIv1pA==
-X-Received: by 2002:a0c:ca02:: with SMTP id c2mr13970992qvk.209.1570200460855;
-        Fri, 04 Oct 2019 07:47:40 -0700 (PDT)
-Received: from localhost (modemcable127.163-178-173.mc.videotron.ca. [173.178.163.127])
-        by smtp.gmail.com with ESMTPSA id t199sm3040483qke.36.2019.10.04.07.47.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2019 07:47:40 -0700 (PDT)
-Date:   Fri, 4 Oct 2019 10:47:38 -0400
-Message-ID: <20191004104738.GB80061@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 2/2] net: dsa: mv88e6xxx: Add devlink param for
- ATU hash algorithm.
-In-Reply-To: <20191004013523.28306-3-andrew@lunn.ch>
-References: <20191004013523.28306-1-andrew@lunn.ch>
- <20191004013523.28306-3-andrew@lunn.ch>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AICnQvY7QcNF7f+/M4M7hIgheGhg17w1bpamNJvqPmY=;
+        b=tkFCdZAg4Bda89sCDZdt5sY+A7SR+mRB2xixkQwgQYXtIOqtianMUj9xnGc9CSwxk0
+         j7CkLl4Nx4qmVBoQYiSlS1R9j6fceFFBPBEkrgmNSQZoLyUVWQkrKfINIuKZ8A+yHK5s
+         xik8zoiLQR3SQO0wIP0dlqRhivoMRG6coI6yBgm7dF1jsBZ3yyEbyd2wiweMKu9vgHyb
+         qIUKOi/w3czVQXQbAiDCJQZTYqPdr0P3t1bGm880P9ekuu5jNBMBeYtk6rrWhK743e/n
+         rGJ9gFaH3k8H3TABiXKj9GjQ84QoFP5oVBtTyV7bSamN8UlNPBq9svgoQUo1ClxPYoIA
+         98xA==
+X-Gm-Message-State: APjAAAVDw8qc+Bn5SAPvNGxiMSW/966+UslxN73ZcKLalRi7sKhSLXzH
+        W76PAi6JU9d+UJEXBz2bb+o=
+X-Google-Smtp-Source: APXvYqxeivwiGvJSLj2qnzaww/e3vxhBx0aQeGAz7MOTp/aSTBo8DiGeHX+enW/cZawQMX4B5qQb1A==
+X-Received: by 2002:a2e:9585:: with SMTP id w5mr4088615ljh.220.1570200560185;
+        Fri, 04 Oct 2019 07:49:20 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id y26sm1584105ljj.90.2019.10.04.07.49.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 04 Oct 2019 07:49:19 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92.2)
+        (envelope-from <johan@kernel.org>)
+        id 1iGOte-0005Vp-Uy; Fri, 04 Oct 2019 16:49:31 +0200
+Date:   Fri, 4 Oct 2019 16:49:30 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Denis Efremov <efremov@linux.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>
+Subject: Re: [PATCH] rsi: fix potential null dereference in rsi_probe()
+Message-ID: <20191004144930.GC13531@localhost>
+References: <20191002171811.23993-1-efremov@linux.com>
+ <20191004134736.2D517619F4@smtp.codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191004134736.2D517619F4@smtp.codeaurora.org>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Fri,  4 Oct 2019 03:35:23 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
-> Some of the marvell switches have bits controlling the hash algorithm
-> the ATU uses for MAC addresses. In some industrial settings, where all
-> the devices are from the same manufacture, and hence use the same OUI,
-> the default hashing algorithm is not optimal. Allow the other
-> algorithms to be selected via devlink.
+On Fri, Oct 04, 2019 at 01:47:36PM +0000, Kalle Valo wrote:
+> Denis Efremov <efremov@linux.com> wrote:
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c        | 136 +++++++++++++++++++++++-
->  drivers/net/dsa/mv88e6xxx/chip.h        |   4 +
->  drivers/net/dsa/mv88e6xxx/global1.h     |   3 +
->  drivers/net/dsa/mv88e6xxx/global1_atu.c |  30 ++++++
->  4 files changed, 172 insertions(+), 1 deletion(-)
+> > The id pointer can be NULL in rsi_probe().
+
+While the existing code in rsi_probe() may lead you to believe that,
+this statement is false. 
+
+> > It is checked everywhere except
+> > for the else branch in the idProduct condition. The patch adds NULL check
+> > before the id dereference in the rsi_dbg() call.
+> > 
+> > Fixes: 54fdb318c111 ("rsi: add new device model for 9116")
+> > Cc: Amitkumar Karwar <amitkarwar@gmail.com>
+> > Cc: Siva Rebbagondla <siva8118@gmail.com>
+> > Cc: Kalle Valo <kvalo@codeaurora.org>
+> > Signed-off-by: Denis Efremov <efremov@linux.com>
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 6787d560e9e3..ebadcdba03df 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -1370,6 +1370,22 @@ static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
->  	return mv88e6xxx_g1_atu_flush(chip, *fid, true);
->  }
->  
-> +static int mv88e6xxx_atu_get_hash(struct mv88e6xxx_chip *chip)
-> +{
-> +	if (chip->info->ops->atu_get_hash)
-> +		return chip->info->ops->atu_get_hash(chip);
-> +
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static int mv88e6xxx_atu_set_hash(struct mv88e6xxx_chip *chip, u8 hash)
-> +{
-> +	if (chip->info->ops->atu_set_hash)
-> +		return chip->info->ops->atu_set_hash(chip, hash);
-> +
-> +	return -EOPNOTSUPP;
-> +}
-> +
->  static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
->  					u16 vid_begin, u16 vid_end)
->  {
-> @@ -2641,6 +2657,83 @@ static int mv88e6390_setup_errata(struct mv88e6xxx_chip *chip)
->  	return mv88e6xxx_software_reset(chip);
->  }
->  
-> +enum mv88e6xxx_devlink_param_id {
-> +	MV88E6XXX_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
-> +	MV88E6XXX_DEVLINK_PARAM_ID_ATU_HASH,
-> +};
-> +
-> +static int mv88e6xxx_devlink_param_get(struct dsa_switch *ds, u32 id,
-> +				       struct devlink_param_gset_ctx *ctx)
-> +{
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +	int err = 0;
-> +	int hash;
-> +
-> +	mv88e6xxx_reg_lock(chip);
-> +
-> +	switch (id) {
-> +	case MV88E6XXX_DEVLINK_PARAM_ID_ATU_HASH:
-> +		hash = mv88e6xxx_atu_get_hash(chip);
-> +		if (hash < 0) {
-> +			err = hash;
-> +			break;
-> +		}
+> Patch applied to wireless-drivers-next.git, thanks.
+> 
+> f170d44bc4ec rsi: fix potential null dereference in rsi_probe()
 
-Could you please keep the common construct used in the driver for
-functions which may fail, that is to say using a pointer to the correct
-type and only returning error codes, so that we end up with something
-like this:
+I just sent a revert to prevent the confusion from spreading (e.g. to
+stable autosel and contributers looking for things to work on). Hope you
+don't mind, Kalle.
 
-    u8 hash;
-    int err;
-
-    err = mv88e6xxx_atu_get_hash(chip, &hash);
-    if (err)
-        ...
-
-
-Thanks,
-
-	Vivien
+Johan
