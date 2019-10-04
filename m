@@ -2,99 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1734CC667
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 01:18:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FF89CC668
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 01:19:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731218AbfJDXSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 19:18:51 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42129 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729976AbfJDXSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 19:18:51 -0400
-Received: by mail-qt1-f195.google.com with SMTP id w14so10818876qto.9
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 16:18:49 -0700 (PDT)
+        id S1730568AbfJDXTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 19:19:43 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46544 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbfJDXTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 19:19:43 -0400
+Received: by mail-qt1-f194.google.com with SMTP id u22so10801049qtq.13
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 16:19:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=1+eAwPd7FbcDM7p9NcQuldxH/whjSXNbTrEgndrkW+8=;
-        b=mfQQR1HvxQplYK3NjqdnlZhOPW36X09DhYrSg0IFUK4TVl0W4e1i6D7gGSvAlAZ04n
-         vlFGSzYWB0Mck7sq8a07nLeYnQj1iKkFI3gFtf8UcvuINWsIOaRzGIk5OBkHi0B43Nng
-         qudCD328GB980aoUqZ0bveVqXwUwZZAwJpDQk+IdTkHBApirpRIhwhtx4lRXOWL5NxaE
-         o7kPuGv2rpZJ73bYwjWaMj812+lc2CxxuyHIgFxqQRBiQJvaPSJPm4KVsGiYyk9oNmZN
-         +uGWuzvjCiyG2nPs6176MCx1DzoU4bYXarqljj9kHXbze33bXAV5727loDiVAHTZnaXQ
-         ZgDQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JLr7bExcnmQvsGjy61840oTbll0Y4GYLRzDw92J99Uc=;
+        b=XX/VGP24QAitc5KCDGUPSp406yGxt8unaNbNB2aGIckToyPsTahwFqcksI8h8+xIDW
+         hAAdQiyqB+k6fYp+MfmdRgN78SsbFDduCMeIZehEos/iXn+p4Ym7lANSwU+HjimNypGE
+         Hfi8vp+erP9yWg9JGN53WaKRc2qa7ycKqthgZOFd/shxLGLo6vlRjIYHXIpyLL6ruche
+         gcEcMq92GtE3fWAY0uqryx/5oj3Qv/W248Z1dcvqwHQ7qH3UeKNUFJCM9nImS0r5qwcJ
+         pDrspltqutxBxPaZbNLIjaC4BnLtRYRkUVkjagqno8xyMuavtul9KcvW0pPIJkHHYTHC
+         pNBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=1+eAwPd7FbcDM7p9NcQuldxH/whjSXNbTrEgndrkW+8=;
-        b=ubPd+oF98E+si1d/+VH5AqwaI1Lzgy3XUrDz+8BbvPu6y/yVneM1FR0jnKpo3tRPU3
-         bEsepHLNZBXxmAEwE5sWQkMZyLKABqTgyEgi87FVQQZLtalecwLCEVIckWWpZGWJ8WtT
-         6GFNAJ85ch2+Gg3pUBvdFpldXhqmVKP2Jqhw46jPlb0a0GDM9SYdU556OiSiunlUmCqv
-         BgSuEGfuKspesu41KyUMPFKV0ON2qnpIa3gIhhDo+xSVClkPD58TmfmOICv6UbKYPXY/
-         5dNJleExKQ3kZWKAhCOP5ah6IWiaKZ/FFydKv9EdEn/wSprvQYS4uFXyZ+Ffw/h0pMT5
-         Gkcw==
-X-Gm-Message-State: APjAAAVgwh9UzWpu+750wRb7tOuHYtOI4VP4vFFTbIiSfSuFQjf7ve9n
-        qJ8MG1e4VWc/F9ZdTVy3Pk8NAg==
-X-Google-Smtp-Source: APXvYqx3N3dR5GjGvLpnLM0HmSXF87zCtn+iZ3C6Vc3xXzCXllaR/Cq7cf/pAWqdiRXNdb+98Prz6g==
-X-Received: by 2002:ac8:7a8d:: with SMTP id x13mr18680391qtr.155.1570231128895;
-        Fri, 04 Oct 2019 16:18:48 -0700 (PDT)
-Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id p53sm3843047qtk.23.2019.10.04.16.18.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2019 16:18:48 -0700 (PDT)
-Date:   Fri, 4 Oct 2019 16:18:42 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JLr7bExcnmQvsGjy61840oTbll0Y4GYLRzDw92J99Uc=;
+        b=SgSGT0oVLsjD3O+51SjAehmG7CiZA5CtLZPFoX5o+jhJUuh1vBLU8DhXCdGPEz9ktr
+         6f4ZjPwSZn3hiHRpzoRyDPktVPWqF2mobVDAcczmtebvVN3SLPVGIDbiolGZCS+W7dIT
+         Z04pjuOGFCWir2Z3wPevxbS6l3tUgCzJdH0h9FjxIxxolkY/YLSo5N0KBHzJFb4CaPw1
+         RUIIt3LOFRY00ORE1WXQRVPIMY6eqZ15b6ilBrpea50BVmKkg0ktVvFKLnAN1UsdwSin
+         e0CJvANMqhHwAOUXYPI+htCnqlSI8kxQjELq+StR8lhQVQ3Ayi8fJmzS5l0yGFFnl4rR
+         2U0Q==
+X-Gm-Message-State: APjAAAWUX2tw0wrGTcMvkqs1mEWFZoT5jzK9WZtctgpObAlwvOSzbjbq
+        knwR0SnNRmtuYfg7QTdv+vo19g==
+X-Google-Smtp-Source: APXvYqzZohaqceDFCdR3yd5vca0geeA7wOdvSrX1ZxI5CH6K/wbeLEtBumkNP6989k5XNRYOFixH1A==
+X-Received: by 2002:a0c:9638:: with SMTP id 53mr16851154qvx.13.1570231182417;
+        Fri, 04 Oct 2019 16:19:42 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z46sm4653398qth.62.2019.10.04.16.19.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 04 Oct 2019 16:19:41 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 2/5] bpf: Add support for setting chain call
- sequence for programs
-Message-ID: <20191004161842.617b8bd8@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <157020976257.1824887.7683650534515359703.stgit@alrua-x1>
-References: <157020976030.1824887.7191033447861395957.stgit@alrua-x1>
-        <157020976257.1824887.7683650534515359703.stgit@alrua-x1>
-Organization: Netronome Systems, Ltd.
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, davejwatson@fb.com, borisp@mellanox.com,
+        aviadye@mellanox.com, john.fastabend@gmail.com,
+        daniel@iogearbox.net, Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 0/6] net/tls: add ctrl path tracing and statistics
+Date:   Fri,  4 Oct 2019 16:19:21 -0700
+Message-Id: <20191004231927.21134-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 04 Oct 2019 19:22:42 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> From: Alan Maguire <alan.maguire@oracle.com>
->=20
-> This adds support for setting and deleting bpf chain call programs through
-> a couple of new commands in the bpf() syscall. The CHAIN_ADD and CHAIN_DEL
-> commands take two eBPF program fds and a return code, and install the
-> 'next' program to be chain called after the 'prev' program if that program
-> returns 'retcode'. A retcode of -1 means "wildcard", so that the program
-> will be executed regardless of the previous program's return code.
->=20
->=20
-> The syscall command names are based on Alexei's prog_chain example[0],
-> which Alan helpfully rebased on current bpf-next. However, the logic and
-> program storage is obviously adapted to the execution logic in the previo=
-us
-> commit.
->=20
-> [0] https://git.kernel.org/pub/scm/linux/kernel/git/ast/bpf.git/commit/?h=
-=3Dprog_chain&id=3Df54f45d00f91e083f6aec2abe35b6f0be52ae85b&context=3D15
->=20
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Hi!
 
-It'd be good to explain why not just allocate a full prog array (or=20
-in fact get one from the user), instead of having a hidden one which
-requires new command to interact with?
+This set adds trace events related to TLS offload and basic MIB stats
+for TLS.
+
+First patch contains the TLS offload related trace points. Those are
+helpful in troubleshooting offload issues, especially around the
+resync paths.
+
+Second patch adds a tracepoint to the fastpath of device offload,
+it's separated out in case there will be objections to adding
+fast path tracepoints. Again, it's quite useful for debugging
+offload issues.
+
+Next four patches add MIB statistics. The statistics are implemented
+as per-cpu per-netns counters. Since there are currently no fast path
+statistics we could move to atomic variables. Per-CPU seem more common.
+
+Most basic statistics are number of created and live sessions, broken
+out to offloaded and non-offloaded. Users seem to like those a lot.
+
+Next there is a statistic for decryption errors. These are primarily
+useful for device offload debug, in normal deployments decryption
+errors should not be common.
+
+Last but not least a counter for device RX resync.
+
+Jakub Kicinski (6):
+  net/tls: add tracing for device/offload events
+  net/tls: add device decrypted trace point
+  net/tls: add skeleton of MIB statistics
+  net/tls: add statistics for installed sessions
+  net/tls: add TlsDecryptError stat
+  net/tls: add TlsDeviceRxResync statistic
+
+ Documentation/networking/tls.rst              |  30 +++
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   3 +-
+ include/net/netns/mib.h                       |   3 +
+ include/net/snmp.h                            |   6 +
+ include/net/tls.h                             |  21 +-
+ include/uapi/linux/snmp.h                     |  17 ++
+ net/tls/Makefile                              |   4 +-
+ net/tls/tls_device.c                          |  36 +++-
+ net/tls/tls_main.c                            |  60 +++++-
+ net/tls/tls_proc.c                            |  47 ++++
+ net/tls/tls_sw.c                              |   5 +
+ net/tls/trace.c                               |  10 +
+ net/tls/trace.h                               | 202 ++++++++++++++++++
+ 13 files changed, 429 insertions(+), 15 deletions(-)
+ create mode 100644 net/tls/tls_proc.c
+ create mode 100644 net/tls/trace.c
+ create mode 100644 net/tls/trace.h
+
+-- 
+2.21.0
+
