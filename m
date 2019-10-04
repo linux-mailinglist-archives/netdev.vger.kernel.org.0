@@ -2,121 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18295CB85F
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 12:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61B98CBACA
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 14:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387478AbfJDKef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 06:34:35 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:53232 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729427AbfJDKef (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 06:34:35 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 34056280072;
-        Fri,  4 Oct 2019 10:34:33 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 4 Oct
- 2019 03:34:28 -0700
-Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
- interface through chain calls
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-CC:     Song Liu <songliubraving@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
- <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com>
- <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com> <87r23vq79z.fsf@toke.dk>
- <20191003105335.3cc65226@carbon>
- <CAADnVQKTbaxJhkukxXM7Ue7=kA9eWsGMpnkXc=Z8O3iWGSaO0A@mail.gmail.com>
- <87pnjdq4pi.fsf@toke.dk>
- <1c9b72f9-1b61-d89a-49a4-e0b8eead853d@solarflare.com>
- <5d964d8ccfd90_55732aec43fe05c47b@john-XPS-13-9370.notmuch>
- <87tv8pnd9c.fsf@toke.dk>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <68466316-c796-7808-6932-01d9d8c0a40b@solarflare.com>
-Date:   Fri, 4 Oct 2019 11:34:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2387573AbfJDMsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 08:48:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60860 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726024AbfJDMsC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 08:48:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=sFSABVM5xhY1ofChx6SKGM+3GUKOlIR3njAIBzmp/bY=; b=eMr9PklEC15Az75KSoxZeTOFjK
+        MYyGZxFFwQfcH/dfktNDBZaGX5z4N14LybFsWuupnmRSu1zf/qt95K3Heo1anOGfSpuHd1/1vKVOb
+        p8tGpKYRePUeUGRMn6dSJgwnT1tGkxISvrSj5F0CrshfC+G9OJR2ht4dBvt9Mj72RBS8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iGMzz-000113-GF; Fri, 04 Oct 2019 14:47:55 +0200
+Date:   Fri, 4 Oct 2019 14:47:55 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 0/2] mv88e6xxx: Allow config of ATU hash
+ algorithm
+Message-ID: <20191004124755.GA3817@lunn.ch>
+References: <20191004013523.28306-1-andrew@lunn.ch>
+ <20191003191455.021156d2@cakuba.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-In-Reply-To: <87tv8pnd9c.fsf@toke.dk>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24952.005
-X-TM-AS-Result: No-8.024700-4.000000-10
-X-TMASE-MatchedRID: C/snMIRQLS3mLzc6AOD8DfHkpkyUphL9v/9ovxpTvIBsMPuLZB/IR3Iw
-        ECVgOaniXZv12elAXYk2hlVDX2S+Ib+VKRYHl/ubX8aoF+qHHJ3oorYAfwrokEl/J9Ro+MABZFZ
-        4+6wVBoyFhiX9bwPywDYOCES74k4UnKg65KVB+P1uh7qwx+D6TzFcf92WG8u/pNE6/wmkFAdpMf
-        +k42Q07N0WkH6V+0rg9+eIYd9Ox/ayKRsiGe6y+QCSHRN4FLBrWw/S0HB7eoOykL7HJ0lm46BgO
-        8/7EYOVf92MZgce96dCPYF0gRjARUrYfGvC1HVr0+C2Y9ztgG2eutXlSdRVjakNinB6fCXe1Is5
-        GvhmGbw1aWq/d65GNQgBkd8UysKO5rARkHdbWIXN+qWlu2ZxaAeCHewokHM/kYldHqNEW7g+msb
-        ci1PK/1QefH+t7oMfYRiQMlWnaceBDKLdTkiM2zdfT4zyWoZS64sVlliWKx+/WXZS/HqJ2gtuKB
-        GekqUpOlxBO2IcOBZguiWqT9xKU1I0aMzN6p4NceTRNcWETPbMtA/VKIJbbioKap+HeVtzQwymt
-        xuJ6y0=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.024700-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24952.005
-X-MDID: 1570185274-z_Dgpes2vve4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191003191455.021156d2@cakuba.hsd1.ca.comcast.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/10/2019 09:09, Toke Høiland-Jørgensen wrote:
-> Having the mechanism be in-kernel makes solving these problems a lot
-> easier, because the kernel can be responsible for state management, and
-> it can enforce the chain call execution logic.
-I would argue this isn't mechanism, but rather policy, because the
- mechanism we already have is sufficient to express the policy.
+On Thu, Oct 03, 2019 at 07:14:55PM -0700, Jakub Kicinski wrote:
+> On Fri,  4 Oct 2019 03:35:21 +0200, Andrew Lunn wrote:
+> > The Marvell switches allow the hash algorithm for MAC addresses in the
+> > address translation unit to be configured. Add support to the DSA core
+> > to allow DSA drivers to make use of devlink parameters, and allow the
+> > ATU hash to be get/set via such a parameter.
+> > 
+> > Andrew Lunn (2):
+> >   net: dsa: Add support for devlink device parameters
+> >   net: dsa: mv88e6xxx: Add devlink param for ATU hash algorithm.
+> > 
+> >  drivers/net/dsa/mv88e6xxx/chip.c        | 136 +++++++++++++++++++++++-
+> >  drivers/net/dsa/mv88e6xxx/chip.h        |   4 +
+> >  drivers/net/dsa/mv88e6xxx/global1.h     |   3 +
+> >  drivers/net/dsa/mv88e6xxx/global1_atu.c |  30 ++++++
+> >  include/net/dsa.h                       |  23 ++++
+> >  net/dsa/dsa.c                           |  48 +++++++++
+> >  net/dsa/dsa2.c                          |   7 +-
+> >  7 files changed, 249 insertions(+), 2 deletions(-)
+> 
+> We try to make sure devlink parameters are documented under
+> Documentation/networking/devlink-params-$drv. Could you add 
+> a simple doc for mv88e6xxx with a short description?
 
-Enforcement is easily dealt with: you just don't give people the caps/
- perms to load XDP programs directly, so the only way they can do it is
- via your loader (which you give them a socket or dbus or something to
- talk to).  (Whereas your chain map doesn't really 'enforce' anything;
- anyone who can add themselves to the chain can also remove others.)
-Then state inspection happens by querying the loader; if we assume that
- the distro provided the central loader, then they can also include the
- query in their standard system-dump tools.
-Dynamic changes would just mean compiling a new dispatcher, then
- atomically replacing the old prog with the new (which we can already
- do), since the central loader daemon knows the call graph and can make
- changed versions easily.
-Centralisation is something that happens normally in userspace; just
- count how many daemons your favourite init system runs to administer
- system resources and multiplex requests.  Probably we'd end up with
- one or two standard loaders and interfaces to them.
-In any case, it seems like XDP users in userspace still need to
- communicate with each other in order to update the chain map (which
- seems to rely on knowing where one's own program fits into it); you
- suggest they might communicate through the chain map itself, and then
- veer off into the weeds of finding race-free ways of doing that.  This
- seems (to me) needlessly complex.
+Jakub
 
-Incidentally, there's also a performance advantage to an eBPF dispatcher,
- because it means the calls to the individual programs can be JITted and
- therefore be direct, whereas an in-kernel data-driven dispatcher has to
- use indirect calls (*waves at spectre*).
+Sure, no problem.
 
-> The fact that Lorenz et al are interested in this feature (even though
-> they are essentially already doing what you suggested, by having a
-> centralised daemon to manage all XDP programs), tells me that having
-> kernel support for this is the right thing to do.
-Maybe Lorenz could describe what he sees as the difficulties with the
- centralised daemon approach.  In what ways is his current "xdpd"
- solution unsatisfactory?
+I don't know what the hash algorithms actually are, we have just
+played around and found that in some settings, a different value
+helps. So the documentation will be limited.
 
--Ed
+	Andrew
