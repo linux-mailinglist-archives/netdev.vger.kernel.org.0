@@ -2,97 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CEFCBD8F
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F75CBDA1
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:43:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389219AbfJDOkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 10:40:51 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39502 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389119AbfJDOku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:40:50 -0400
-Received: by mail-wr1-f65.google.com with SMTP id r3so7554797wrj.6
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 07:40:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=bVYB3iaBKu6hqEMy7IiK8W2xGcuTKRwNP5QMtv3wYFQ=;
-        b=tJopKaUBlABenT4ylmGSDy+I7t0hIGjesgfpNtSX0xCQ4wdftG4tbz0fWZ1ZW9yfVn
-         qnor0XLIlQJe3nszHCPcuh5nQF/kpXBia4CYizl15KL/+djYfrXQCqNMoFvQkeb6xbw8
-         9iDF6a1qCpXZ3KfIzHm/41NSPoHZpt5eZ3UhrCrZ9FFeb3HlSVchIWIPy0R6jWISxeIq
-         xgc7P2GJSJ+8CZTFUhR1PjY5KCBKUXCNlGxEt2BIY8/Zf41oIgMW961ZPQJPVlqK1QeW
-         OwRJz1zdzDOjxWO6iC7SjAGCOC3mJ59hlp8jnqGV0O0w1TbvbSZIGWMp6u3cQ7sMyrih
-         0/Kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=bVYB3iaBKu6hqEMy7IiK8W2xGcuTKRwNP5QMtv3wYFQ=;
-        b=OPk/5hlZtzhT75M6dNbOnSRmTQXvcWaxtlr+mr/buRgE4CoZBGVh6eNQjTwGKko9nM
-         83eSej/mu58/fvLkTzjG4Q1WGEjIkdL3nG5eSoGRQT5vbKidGyidx0fUHGe26p3gTul8
-         LjvV/q59Im8eoUTrAJFsItPEHI0Lw5YKYbISBfSNNfMp446vou7mtgyYXIYqWV1U2t8x
-         vGo8gkYHhco5xhxP8Et2Vp7DUkemRRYwr4alWQ6yh6W2pTZnv3W3tLtB4FvFO/5JfIeA
-         UYRVevEzQGYYobf3TxDHyjlUhLUjNAkAnOnUirYMJGvgBNia/N6eWKNNP4UYGRrRItL7
-         OWUQ==
-X-Gm-Message-State: APjAAAWGKMHw+xkC9k88caJuoCIV2Zbezpmn6rdTtlbyTqyLJG/W8/xb
-        Rk2mIiRHi3NorQm1NxjwtKu/Mw==
-X-Google-Smtp-Source: APXvYqy9slbJZlb7IwHee5m1NXEKgsFSSD+s3ZkGv7TbF7FJLKEyUO3VrYbQ2U8x31bmys0HDopIvg==
-X-Received: by 2002:adf:97cb:: with SMTP id t11mr5495100wrb.312.1570200049218;
-        Fri, 04 Oct 2019 07:40:49 -0700 (PDT)
-Received: from dell ([2.27.167.122])
-        by smtp.gmail.com with ESMTPSA id r2sm5638979wrm.3.2019.10.04.07.40.48
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 04 Oct 2019 07:40:48 -0700 (PDT)
-Date:   Fri, 4 Oct 2019 15:40:46 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     kbuild test robot <lkp@intel.com>
-Cc:     Thomas Bogendoerfer <tbogendoerfer@suse.de>, kbuild-all@01.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 3/4] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-ID: <20191004144046.GP18429@dell>
-References: <20190923114636.6748-4-tbogendoerfer@suse.de>
- <201909232145.eyOJqt2k%lkp@intel.com>
- <20191004143718.GM18429@dell>
+        id S2389221AbfJDOns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 10:43:48 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:56999 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388724AbfJDOns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 10:43:48 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id AF05E22053;
+        Fri,  4 Oct 2019 10:43:46 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Fri, 04 Oct 2019 10:43:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=owUA1Z
+        pjp+x4/g0JFT8auxrSKERepQlK+SlKKMcrKSA=; b=PjG78ril2mVb5msWnt+uxU
+        k4Ql+H6C31tn1kCftu8nmx8sOoh1X88Szn3pjZY08bGmGwZs+cYXp3a0EQb+sDpH
+        D9nFGwGlyIaJXjRRa+TAb+Y2aRlFFk5Rsa9oIPcksmiCEeyUyUVpcHhkWG+ilCMX
+        +s+PH75mb9XyYrLCPYUERZ8aq+l808HIJFXr7/Mx5a36cFfD/QOpUDRUTw054pJc
+        E5+bhi9Z452qTa/KbRntrgsKH1DHVKTazE1lHbMTUsFh9m+7y5JLwDEjD+0qrjus
+        aFd8wHjHtUEYSj8rrUnJrDzgKpjbH2VJNj09fE34d7jJhkv1zUWZ2t4guhKXEcOQ
+        ==
+X-ME-Sender: <xms:oVqXXWemfh0yIZnM9KAm72YhmI2pZ32ODs_4OOt0Bhbd7j4QbZRA8Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrhedugdejfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepjeelrd
+    dujeejrdefkedrvddtheenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehi
+    ughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:oVqXXT6l0giHn2tYjcnv0OmXDl3jhhtkSdqZ6frbsFtJZMPOPrNY4g>
+    <xmx:oVqXXRVqEWQFXkW59hvoKKby2krRBL4ebQFIJzpgxUR0YkAy4cB3lw>
+    <xmx:oVqXXa54AiaY0_vNnO1lvTCYZdweKo2Fcf4skehG6YXxzvvNuvTUeQ>
+    <xmx:olqXXTuYCYrPqS9ZmgTR8quWRHnRk2ULHK1Ug6TZgDU5OV9sZmbQPA>
+Received: from localhost (bzq-79-177-38-205.red.bezeqint.net [79.177.38.205])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DE515D60062;
+        Fri,  4 Oct 2019 10:43:44 -0400 (EDT)
+Date:   Fri, 4 Oct 2019 17:43:40 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>, roopa@cumulusnetworks.com
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 12/15] ipv4: Add "in hardware" indication to
+ routes
+Message-ID: <20191004144340.GA15825@splinter>
+References: <20191002084103.12138-1-idosch@idosch.org>
+ <20191002084103.12138-13-idosch@idosch.org>
+ <CAJieiUiEHyU1UbX_rJGb-Ggnwk6SA6paK_zXvxyuYJSrah+8vg@mail.gmail.com>
+ <20191002182119.GF2279@nanopsycho>
+ <1eea9e93-dbd9-8b50-9bf1-f8f6c6842dcc@gmail.com>
+ <20191003053750.GC4325@splinter>
+ <e4f0dbf6-2852-c658-667b-65374e73a27d@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191004143718.GM18429@dell>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <e4f0dbf6-2852-c658-667b-65374e73a27d@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >    drivers//mfd/ioc3.c: In function 'ioc3_eth_setup':
-> > >> drivers//mfd/ioc3.c:281:54: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'resource_size_t {aka unsigned int}' [-Wformat=]
-> >        sizeof(ioc3_w1_platform_data.dev_id), "ioc3-%012llx",
-> >                                                    ~~~~~~^
-> >                                                    %012x
-> >        ipd->pdev->resource->start);
-> >        ~~~~~~~~~~~~~~~~~~~~~~~~~~                         
+On Thu, Oct 03, 2019 at 07:55:16PM -0600, David Ahern wrote:
+> On 10/2/19 11:37 PM, Ido Schimmel wrote:
+> >>>>> The new indication is dumped to user space via a new flag (i.e.,
+> >>>>> 'RTM_F_IN_HW') in the 'rtm_flags' field in the ancillary header.
+> >>>>>
+> >>>>
+> >>>> nice series Ido. why not call this RTM_F_OFFLOAD to keep it consistent
+> >>>> with the nexthop offload indication ?.
+> >>>
+> >>> See the second paragraph of this description.
+> >>
+> >> I read it multiple times. It does not explain why RTM_F_OFFLOAD is not
+> >> used. Unless there is good reason RTM_F_OFFLOAD should be the name for
+> >> consistency with all of the other OFFLOAD flags.
+> > 
+> > David, I'm not sure I understand the issue. You want the flag to be
+> > called "RTM_F_OFFLOAD" to be consistent with "RTNH_F_OFFLOAD"? Are you
+> > OK with iproute2 displaying it as "in_hw"? Displaying it as "offload" is
+> > really wrong for the reasons I mentioned above. Host routes (for
+> > example) do not offload anything from the kernel, they just reside in
+> > hardware and trap packets...
+> > 
+> > The above is at least consistent with tc where we already have
+> > "TCA_CLS_FLAGS_IN_HW".
+> > 
+> >> I realize rtm_flags is overloaded and the lower 8 bits contains RTNH_F
+> >> flags, but that can be managed with good documentation - that RTNH_F
+> >> is for the nexthop and RTM_F is for the prefix.
+> > 
+> > Are you talking about documenting the display strings in "ip-route" man
+> > page or something else? If we stick with "offload" and "in_hw" then they
+> > should probably be documented there to avoid confusion.
+> > 
 > 
-> I assume you plan on fixing this Thomas?
+> Sounds like there are 2 cases for prefixes that should be flagged to the
+> user -- "offloaded" (as in traffic is offloaded) and  "in_hw" (prefix is
+> in hardware but forwarding is not offloaded).
 
-Ah, I see the new set - ignore this.
+Sounds good. Are you and Roopa OK with the below?
 
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+RTM_F_IN_HW - route is in hardware
+RTM_F_OFFLOAD - route is offloaded
+
+For example, host routes will have the first flag set, whereas prefix
+routes will have both flags set.
+
+Together with the existing offload flags for nexthops and neighbours
+this provides great visibility into the entire offload process.
