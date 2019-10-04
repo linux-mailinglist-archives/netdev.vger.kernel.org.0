@@ -2,117 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C32F9CBE54
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 16:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2488CBE93
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 17:07:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389387AbfJDO7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 10:59:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47948 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389043AbfJDO7N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Oct 2019 10:59:13 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C0EE92084D;
-        Fri,  4 Oct 2019 14:59:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570201152;
-        bh=L8C4Aa+U7ADyHjexBNbIvbPNV+ijlDg+iRTHCpTG2RI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=2HZOGBLHmiIevD2aHouSn5HOMLvBcrdLcc3BLdbuFDxiVqExhakLXAv2NiHiXhtpN
-         INBjwUdp1pPADut69dJskLhtYz1Kq+QtECEksVwCY8vl+5N8HO3O7ZnLh9NarJDLZL
-         jvxkL1jOsA1Uz6f90YU5DWK766SbfN/pLJ1O9CDg=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, rajendra.dendukuri@broadcom.com,
-        eric.dumazet@gmail.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] ipv6: Handle missing host route in __ipv6_ifa_notify
-Date:   Fri,  4 Oct 2019 08:03:09 -0700
-Message-Id: <20191004150309.4715-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S2389652AbfJDPHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 11:07:54 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:37704 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389378AbfJDPHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 11:07:52 -0400
+Received: by mail-qt1-f193.google.com with SMTP id l3so9016020qtr.4;
+        Fri, 04 Oct 2019 08:07:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FvxIqPZHfYy0lbcU7SrdV2tBJ6wQQiMjuW0t3DLykX0=;
+        b=r9FX3CBBu/pe3dJXSvgC9gU3PqZUDz154CBBsWItJrp7Q/qqmWJxdeYpphdG54zJYP
+         PQkcfYk6khIbXpPjDHtiDTCCnt0mM7ss5I63twTwDnKUfvZp1D1PSF0JS03ilwfqrhqZ
+         uQYZq9LzLOoEVamBZXxTnXIiMJLkI+MVWzs+e68tVYG/7iVHAZE4+qw1Mj2/C+Xwx0Ee
+         5rcp0nYrr2y5dRN2kgRxHquKZYehs73CTDL47rxNq0wAyU8KjmQMFafUcc/ZtmbBB/Mg
+         N/w8tcqLLiSs2Avq8eQYJ/PgtcdS2U7FlEnpmqMtOgwESDi+zasTEzdtzYggAC+3fYpE
+         QuVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FvxIqPZHfYy0lbcU7SrdV2tBJ6wQQiMjuW0t3DLykX0=;
+        b=rhQHSSY0rmLNJeWj0ZWxn9VDyE3l+4bujKVNeigiKsMbgyW9npYl467YuWVkdMwyDM
+         XlsQhbz66Rs7P35A6AymXNzfSoTnh4CR04dRR7YdINg/dXfZsdg4NS4V/mx0QS4AStoB
+         jVWXsWZ/he8rYyQw3PLNZSwoCGqdSj80Ue+3k2IiQU+YyXeiyfEsRo91O2IQhTTM+xiD
+         xkDaZtzgFprozo9Kvj79VZVGRIkrFYCKubD7Hxv+G50bkefvPkHhF7ggimKa1ZHCeOeB
+         chwBMtEnEmATbvJK0af4Nmj4dcOZsIn2HwaMTaAPonBB3OdHwOcp8jEYO/gZXUM3GIdw
+         Jnnw==
+X-Gm-Message-State: APjAAAV2VUBKCMfeggqEsbby+dPFqRangOsAyujJH+qzLX+CGWDqJctq
+        NVhUewOgevne+0JVViYU636TlY3OYoVm46+bweE=
+X-Google-Smtp-Source: APXvYqzipKdcf9sweUI0APw8dkwezeEWtU3GLHvWykRbCPhPAXDbnGoIMnK5dhUmphYX6rcizsEPOF0xEppuSTeOJ1M=
+X-Received: by 2002:a0c:d284:: with SMTP id q4mr14034802qvh.228.1570201671689;
+ Fri, 04 Oct 2019 08:07:51 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191004030058.2248514-1-andriin@fb.com> <20191004030058.2248514-2-andriin@fb.com>
+ <5d97519e9e7f3_4e6d2b183260e5bcbf@john-XPS-13-9370.notmuch>
+ <CAEf4BzbP=k72O2UXA=Om+Gv1Laj+Ya4QaTNKy7AVkMze6GqLEw@mail.gmail.com> <fb67f98a-08b4-3184-22f8-7d3fb91c9515@fb.com>
+In-Reply-To: <fb67f98a-08b4-3184-22f8-7d3fb91c9515@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 4 Oct 2019 08:07:40 -0700
+Message-ID: <CAEf4BzbUSQdYqce+gyjO7-VSrF45nqXuLBMU6qRd63LHD+-JLg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] libbpf: stop enforcing kern_version,
+ populate it for users
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On Fri, Oct 4, 2019 at 7:36 AM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 10/4/19 7:32 AM, Andrii Nakryiko wrote:
+> >> If we are not going to validate the section should we also skip collect'ing it?
+> > Well, if user supplied version, we will parse and use it to override
+> > out prepopulated one, so in that sense we do have validation.
+> >
+> > But I think it's fine just to drop it altogether. Will do in v3.
+> >
+>
+> what about older kernel that still enforce it?
+> May be populate it in bpf_attr while loading, but
+> don't check it in elf from libbpf?
 
-Rajendra reported a kernel panic when a link was taken down:
+That's what my change does. I pre-populate correct kernel version in
+bpf_object->kern_version from uname(). If ELF has "version" section,
+we still parse it and override bpf_object->kern_version.
+bpf_object->kern_version then is always specified as part of
+bpf_prog_load->kern_version.
 
-    [ 6870.263084] BUG: unable to handle kernel NULL pointer dereference at 00000000000000a8
-    [ 6870.271856] IP: [<ffffffff8efc5764>] __ipv6_ifa_notify+0x154/0x290
+So what we are discussing here is to not even look at user-provided
+version, but just always specify correct current kernel version. So I
+don't think we are going to break anything, except we might allow to
+pass some programs that were failing before due to unspecified or zero
+version.
 
-    <snip>
-
-    [ 6870.570501] Call Trace:
-    [ 6870.573238] [<ffffffff8efc58c6>] ? ipv6_ifa_notify+0x26/0x40
-    [ 6870.579665] [<ffffffff8efc98ec>] ? addrconf_dad_completed+0x4c/0x2c0
-    [ 6870.586869] [<ffffffff8efe70c6>] ? ipv6_dev_mc_inc+0x196/0x260
-    [ 6870.593491] [<ffffffff8efc9c6a>] ? addrconf_dad_work+0x10a/0x430
-    [ 6870.600305] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-    [ 6870.606732] [<ffffffff8ea93a7a>] ? process_one_work+0x18a/0x430
-    [ 6870.613449] [<ffffffff8ea93d6d>] ? worker_thread+0x4d/0x490
-    [ 6870.619778] [<ffffffff8ea93d20>] ? process_one_work+0x430/0x430
-    [ 6870.626495] [<ffffffff8ea99dd9>] ? kthread+0xd9/0xf0
-    [ 6870.632145] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-    [ 6870.638573] [<ffffffff8ea99d00>] ? kthread_park+0x60/0x60
-    [ 6870.644707] [<ffffffff8f01ae77>] ? ret_from_fork+0x57/0x70
-    [ 6870.650936] Code: 31 c0 31 d2 41 b9 20 00 08 02 b9 09 00 00 0
-
-addrconf_dad_work is kicked to be scheduled when a device is brought
-up. There is a race between addrcond_dad_work getting scheduled and
-taking the rtnl lock and a process taking the link down (under rtnl).
-The latter removes the host route from the inet6_addr as part of
-addrconf_ifdown which is run for NETDEV_DOWN. The former attempts
-to use the host route in __ipv6_ifa_notify. If the down event removes
-the host route due to the race to the rtnl, then the BUG listed above
-occurs.
-
-Since the DAD sequence can not be aborted, add a check for the missing
-host route in __ipv6_ifa_notify. The only way this should happen is due
-to the previously mentioned race. The host route is created when the
-address is added to an interface; it is only removed on a down event
-where the address is kept. Add a warning if the host route is missing
-AND the device is up; this is a situation that should never happen.
-
-Fixes: f1705ec197e7 ("net: ipv6: Make address flushing on ifdown optional")
-Reported-by: Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- net/ipv6/addrconf.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 6a576ff92c39..34ccef18b40e 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5964,13 +5964,20 @@ static void __ipv6_ifa_notify(int event, struct inet6_ifaddr *ifp)
- 	switch (event) {
- 	case RTM_NEWADDR:
- 		/*
--		 * If the address was optimistic
--		 * we inserted the route at the start of
--		 * our DAD process, so we don't need
--		 * to do it again
-+		 * If the address was optimistic we inserted the route at the
-+		 * start of our DAD process, so we don't need to do it again.
-+		 * If the device was taken down in the middle of the DAD
-+		 * cycle there is a race where we could get here without a
-+		 * host route, so nothing to insert. That will be fixed when
-+		 * the device is brought up.
- 		 */
--		if (!rcu_access_pointer(ifp->rt->fib6_node))
-+		if (ifp->rt && !rcu_access_pointer(ifp->rt->fib6_node)) {
- 			ip6_ins_rt(net, ifp->rt);
-+		} else if (!ifp->rt && (ifp->idev->dev->flags & IFF_UP)) {
-+			pr_warn("BUG: Address %pI6c on device %s is missing its host route.\n",
-+				&ifp->addr, ifp->idev->dev->name);
-+		}
-+
- 		if (ifp->idev->cnf.forwarding)
- 			addrconf_join_anycast(ifp);
- 		if (!ipv6_addr_any(&ifp->peer_addr))
--- 
-2.11.0
-
+So with that, do you think it's ok to get rid of version section altogether?
