@@ -2,101 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 300AECB696
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 10:44:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71EA7CB6CA
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 11:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728288AbfJDIoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 04:44:15 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:33619 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbfJDIoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 04:44:15 -0400
-Received: by mail-ed1-f65.google.com with SMTP id c4so5134697edl.0
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 01:44:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I/WyVUJa+u8medY7nHbZcpEc/41V0xxInaEJMyN+W80=;
-        b=ryTUr5LEM6kBRQEE7cLLi2vrv8sTQqg4T7XVMjSLXW/h8oAuU8e6uWCfzcYaADL50c
-         PU7x1ZxRvpzLmNZpIn/Z6GzHZM2GKmdOF/NInN10aGwFRku20fuk7cFP/Gmj3ltSV9yV
-         bBgA0bS6yD7eboaPGwowybFI7ufRAE0x/KjN6bv94Puy/zPcVEQ7/MLyr+XIqWIcACF0
-         fB9vRsrf37u3E+zm/MLzUdm0vC8c3pSQjoh2Eov8RqOa/zhe5i8fsr2oaLIrJelzpyy9
-         TgI15LFnXJrrhVjPSBSf84IFMaveLh0InT/H5k7xujulqqiWTLQG4d30s5/oBeYZO/cb
-         1sTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I/WyVUJa+u8medY7nHbZcpEc/41V0xxInaEJMyN+W80=;
-        b=tVGZ9IpaVkte8HqddesyEytlInt3kCZl7GaOxpp+slmpPaffEm66M/wzhMD8RTC+nH
-         tEpsPlTuSvJRbhV+BjiKDz8Oopb3rDXhtZ0QaJzBfATjFMAwwttOxdZBvDq3Tbm9HaKy
-         zT5rPUmXF4lfTUO6NoPh1Hohky59Ux15RTdlM3WI+j+Aq463tB4YqPiP4K7mVCuzvrYA
-         IbSpaXfTaTjfroaHvVLtBo+gVvzEroleUUxV82SLQ0k8LUhzAeycqZM713asX7Vm/Jbv
-         UfahBk43llOG/8JgTqp0iw9fX5eaKa6OAXGdJKiTOUvCvDjRDtS1LdVRo5N9hugp8cfa
-         VFnQ==
-X-Gm-Message-State: APjAAAVKOBfqCiU/A2PDs4++Uh5m2TIY1crz7P5sk3VJC/m380qxyQp9
-        19wZWAE8RnHzo7UvGYUg7kWTOWFE1555hhZo2Bg=
-X-Google-Smtp-Source: APXvYqzRCIc5mRHpZPkiSZlE47szY3RCd3+U8dyxKwJqvUHTlwaBS0hqbyf7P6ClkoqdLM6WvuVDM1D4MI4eMQBVFVk=
-X-Received: by 2002:a17:906:7294:: with SMTP id b20mr11145219ejl.216.1570178653171;
- Fri, 04 Oct 2019 01:44:13 -0700 (PDT)
+        id S2387735AbfJDJAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 05:00:37 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:48635 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387635AbfJDJAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 05:00:37 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9490F8H011441, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9490F8H011441
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 4 Oct 2019 17:00:15 +0800
+Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0468.000; Fri, 4 Oct 2019 17:00:15 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "zhengbin13@huawei.com" <zhengbin13@huawei.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 0/8] net/rtlwifi: remove some unused variables
+Thread-Topic: [PATCH 0/8] net/rtlwifi: remove some unused variables
+Thread-Index: AQHVeo7lDKTf4SmafEKiXdEX2jA93qdJqQoA
+Date:   Fri, 4 Oct 2019 09:00:14 +0000
+Message-ID: <1570179614.7613.0.camel@realtek.com>
+References: <1570178635-57582-1-git-send-email-zhengbin13@huawei.com>
+In-Reply-To: <1570178635-57582-1-git-send-email-zhengbin13@huawei.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.95]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8AD1F375A6D6F748821A731DCF73225C@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20191004013523.28306-1-andrew@lunn.ch>
-In-Reply-To: <20191004013523.28306-1-andrew@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 4 Oct 2019 11:44:02 +0300
-Message-ID: <CA+h21hq8G2fMZenAF_inYxQXePJe41Lk6U8AsJ-7e19YYTp7Wg@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] mv88e6xxx: Allow config of ATU hash algorithm
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Fri, 4 Oct 2019 at 10:55, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> The Marvell switches allow the hash algorithm for MAC addresses in the
-> address translation unit to be configured. Add support to the DSA core
-> to allow DSA drivers to make use of devlink parameters, and allow the
-> ATU hash to be get/set via such a parameter.
->
-
-What is the hash algorithm used by mv88e6xxx? In sja1105 it is simply
-crc32 over the {DMAC, VLAN} key, with a configurable polynomial
-(stored in Koopman notation, but that is maybe irrelevant).
-Are you really changing the algorithm, but only the hashing function's seed?
-If the sja1105 is in any way similar to mv88e6xxx, maybe it would make
-sense to devise a more generic devlink attribute?
-Also, I believe the hashing function is only relevant if the ATU's CAM
-is set- (not fully-) associative. Then it would make sense to maybe
-let the user know what the total number of FDB entries and buckets is?
-I am not clear even after looking at the mv88e6xxx_g1_atu_* functions.
-How would they know they need to change the hash function, and what to
-change it to?
-
-> Andrew Lunn (2):
->   net: dsa: Add support for devlink device parameters
->   net: dsa: mv88e6xxx: Add devlink param for ATU hash algorithm.
->
->  drivers/net/dsa/mv88e6xxx/chip.c        | 136 +++++++++++++++++++++++-
->  drivers/net/dsa/mv88e6xxx/chip.h        |   4 +
->  drivers/net/dsa/mv88e6xxx/global1.h     |   3 +
->  drivers/net/dsa/mv88e6xxx/global1_atu.c |  30 ++++++
->  include/net/dsa.h                       |  23 ++++
->  net/dsa/dsa.c                           |  48 +++++++++
->  net/dsa/dsa2.c                          |   7 +-
->  7 files changed, 249 insertions(+), 2 deletions(-)
->
-> --
-> 2.23.0
->
-
-Regards,
--Vladimir
+T24gRnJpLCAyMDE5LTEwLTA0IGF0IDE2OjQzICswODAwLCB6aGVuZ2JpbiB3cm90ZToNCj4gemhl
+bmdiaW4gKDgpOg0KPiDCoCBydGx3aWZpOiBydGw4ODIxYWU6IFJlbW92ZSBzZXQgYnV0IG5vdCB1
+c2VkIHZhcmlhYmxlcyAncnRzdGF0dXMnLCdiZCcNCj4gwqAgcnRsd2lmaTogcnRsODcyM2FlOiBS
+ZW1vdmUgc2V0IGJ1dCBub3QgdXNlZCB2YXJpYWJsZXMNCj4gwqDCoMKgwqAncmVnX2VjYycsJ3Jl
+Z19lYzQnLCdyZWdfZWFjJywnYl9wYXRoYl9vaycNCj4gwqAgcnRsd2lmaTogcnRsODE5MmM6IFJl
+bW92ZSBzZXQgYnV0IG5vdCB1c2VkIHZhcmlhYmxlcw0KPiDCoMKgwqDCoCdyZWdfZWNjJywncmVn
+X2VhYycNCj4gwqAgcnRsd2lmaTogcnRsODE4OGVlOiBSZW1vdmUgc2V0IGJ1dCBub3QgdXNlZCB2
+YXJpYWJsZXMNCj4gwqDCoMKgwqAndjMnLCdydHN0YXR1cycsJ3JlZ19lY2MnLCdyZWdfZWM0Jywn
+cmVnX2VhYycsJ2JfcGF0aGJfb2snDQo+IMKgIHJ0bHdpZmk6IHJ0bDgxODhlZTogUmVtb3ZlIHNl
+dCBidXQgbm90IHVzZWQgdmFyaWFibGUgJ2gyY19wYXJhbWV0ZXInDQo+IMKgIHJ0bHdpZmk6IGJ0
+Y29leDogUmVtb3ZlIHNldCBidXQgbm90IHVzZWQgdmFyaWFibGUgJ3Jlc3VsdCcNCj4gwqAgcnRs
+d2lmaTogYnRjb2V4OiBSZW1vdmUgc2V0IGJ1dCBub3QgdXNlZCB2YXJpYWJsZXMNCj4gwqDCoMKg
+wqAnd2lmaV9idXN5JywnYnRfaW5mb19leHQnDQo+IMKgIHJ0bHdpZmk6IHJ0bDg3MjM6IFJlbW92
+ZSBzZXQgYnV0IG5vdCB1c2VkIHZhcmlhYmxlICdvd24nDQoNClRoaXMgcGF0Y2hzZXQgbG9va3Mg
+Z29vZC4gVGhhbmtzLg0KDQpBY2tlZC1ieTogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5j
+b20+DQoNCj4gDQo+IMKgLi4uL3JlYWx0ZWsvcnRsd2lmaS9idGNvZXhpc3QvaGFsYnRjODE5MmUy
+YW50LmPCoMKgwqDCoMKgfMKgwqA5IC0tLS0tLS0tLQ0KPiDCoC4uLi9yZWFsdGVrL3J0bHdpZmkv
+YnRjb2V4aXN0L2hhbGJ0Yzg3MjNiMWFudC5jwqDCoMKgwqDCoHzCoMKgOSArLS0tLS0tLS0NCj4g
+wqBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE4OGVlL2RtLmMgfMKg
+wqA4ICstLS0tLS0tDQo+IMKgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE4
+OGVlL3BoeS5jwqDCoMKgwqB8IDIxICsrKystLS0tLS0tLS0tLS0tLQ0KPiAtLS0NCj4gwqAuLi4v
+d2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxOTJjL3BoeV9jb21tb24uY8KgwqB8wqDCoDgg
+KystLS0tLS0NCj4gwqAuLi4vbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4NzIzYWUv
+cGh5LmPCoMKgwqDCoHwgMTQgKysrLS0tLS0tLS0tLS0NCj4gwqAuLi4vd2lyZWxlc3MvcmVhbHRl
+ay9ydGx3aWZpL3J0bDg3MjNjb20vZndfY29tbW9uLmMgfMKgwqA0IC0tLS0NCj4gwqAuLi4vbmV0
+L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4ODIxYWUvcGh5LmPCoMKgwqDCoHzCoMKgNyAr
+LS0tLS0tDQo+IMKgOCBmaWxlcyBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCA2OCBkZWxldGlv
+bnMoLSkNCj4gDQo+IC0tDQo+IDIuNy40DQo+IA0KPiANCj4gLS0tLS0tUGxlYXNlIGNvbnNpZGVy
+IHRoZSBlbnZpcm9ubWVudCBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlLW1haWwuDQoNCg0KDQo=
