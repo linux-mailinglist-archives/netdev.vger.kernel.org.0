@@ -2,84 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79883CB60D
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 10:23:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B96E0CB680
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 10:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729586AbfJDIXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 04:23:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47568 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728095AbfJDIXq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Oct 2019 04:23:46 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D49FA215EA;
-        Fri,  4 Oct 2019 08:23:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570177425;
-        bh=y0a26l5BoLt6LDIhhczFXqNAIo+MU2bPPx6nwZoc6ew=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pc7kKbLNjQ60Htp2grrbUQKS6/ezg4x7E2dvUqm7GjZwB/+c01cbuC/1jTgthnBwS
-         FYO0NB/mrWJG5TxGokI8FzLZf56xeesfHRx/lS98REBrATcIqoZBTxyVbvyC4JHiQS
-         eAlEvYuj7lqvu3QDYCyPIxqk3KM0oRlAMRi6A2Kg=
-Date:   Fri, 4 Oct 2019 10:23:42 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Le Goff <David.Legoff@silabs.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH v3 01/20] staging: wfx: add infrastructure for new driver
-Message-ID: <20191004082342.GA94454@kroah.com>
-References: <20190919142527.31797-1-Jerome.Pouiller@silabs.com>
- <20190919142527.31797-2-Jerome.Pouiller@silabs.com>
+        id S2387531AbfJDIg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 04:36:59 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:43572 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731358AbfJDIg6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 04:36:58 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id F3546F6D39FB9BE3089B;
+        Fri,  4 Oct 2019 16:36:52 +0800 (CST)
+Received: from huawei.com (10.90.53.225) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Fri, 4 Oct 2019
+ 16:36:43 +0800
+From:   zhengbin <zhengbin13@huawei.com>
+To:     <pkshih@realtek.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <Larry.Finger@lwfinger.net>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>
+Subject: [PATCH 0/8] net/rtlwifi: remove some unused variables
+Date:   Fri, 4 Oct 2019 16:43:47 +0800
+Message-ID: <1570178635-57582-1-git-send-email-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190919142527.31797-2-Jerome.Pouiller@silabs.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Type: text/plain
+X-Originating-IP: [10.90.53.225]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 02:25:36PM +0000, Jerome Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> 
-> Instantiate build infrastructure WFx driver. This driver provides support
-> for Wifi chipset Silicon Labs WF200 and further:
-> 
->    https://www.silabs.com/documents/public/data-sheets/wf200-datasheet.pdf
-> 
-> This chip support SPI and SDIO bus.
-> 
-> SDIO interface has two particularities:
->     1. Some parameters may be useful for end user (I will talk about
->        gpio_wakeup later).
->     2. The SDIO VID and PID of WF200 are 0000:0001 which are too much
->        generic to rely on.
-> 
-> So, current code checks VID/PID and looks for a node in DT (since WF200
-> targets embedded platforms, I don't think it is a problem to rely on
-> DT). DT can also be used to define to parameters for driver. Currently,
-> if no node is found, a warning is emitted, but it could be changed in
-> error.
-> 
-> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
+zhengbin (8):
+  rtlwifi: rtl8821ae: Remove set but not used variables 'rtstatus','bd'
+  rtlwifi: rtl8723ae: Remove set but not used variables
+    'reg_ecc','reg_ec4','reg_eac','b_pathb_ok'
+  rtlwifi: rtl8192c: Remove set but not used variables
+    'reg_ecc','reg_eac'
+  rtlwifi: rtl8188ee: Remove set but not used variables
+    'v3','rtstatus','reg_ecc','reg_ec4','reg_eac','b_pathb_ok'
+  rtlwifi: rtl8188ee: Remove set but not used variable 'h2c_parameter'
+  rtlwifi: btcoex: Remove set but not used variable 'result'
+  rtlwifi: btcoex: Remove set but not used variables
+    'wifi_busy','bt_info_ext'
+  rtlwifi: rtl8723: Remove set but not used variable 'own'
 
-Personally, I think you are going to find that this is going to take
-more work to get this cleaned up in the staging tree and then out of it
-into the "real" part of the kernel, instead of just doing the needed
-work out of the tree now and then submitting it "properly" to the right
-part of the tree.
+ .../realtek/rtlwifi/btcoexist/halbtc8192e2ant.c     |  9 ---------
+ .../realtek/rtlwifi/btcoexist/halbtc8723b1ant.c     |  9 +--------
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c |  8 +-------
+ .../net/wireless/realtek/rtlwifi/rtl8188ee/phy.c    | 21 ++++-----------------
+ .../wireless/realtek/rtlwifi/rtl8192c/phy_common.c  |  8 ++------
+ .../net/wireless/realtek/rtlwifi/rtl8723ae/phy.c    | 14 +++-----------
+ .../wireless/realtek/rtlwifi/rtl8723com/fw_common.c |  4 ----
+ .../net/wireless/realtek/rtlwifi/rtl8821ae/phy.c    |  7 +------
+ 8 files changed, 12 insertions(+), 68 deletions(-)
 
-But hey, who am I to judge people who like to do extra work!  :)
+--
+2.7.4
 
-I'll go queue this up now, good luck!
-
-greg k-h
