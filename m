@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9381CCC479
-	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 22:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C4DCC47C
+	for <lists+netdev@lfdr.de>; Fri,  4 Oct 2019 22:58:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730131AbfJDU4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 16:56:09 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:58882 "EHLO
+        id S1729276AbfJDU6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 16:58:09 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58908 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725826AbfJDU4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 16:56:09 -0400
+        with ESMTP id S1725730AbfJDU6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 16:58:09 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B304E14EC3082;
-        Fri,  4 Oct 2019 13:56:08 -0700 (PDT)
-Date:   Fri, 04 Oct 2019 13:56:05 -0700 (PDT)
-Message-Id: <20191004.135605.2028145564221142133.davem@davemloft.net>
-To:     rspmn@arcor.de
-Cc:     bjorn@mork.no, netdev@vger.kernel.org
-Subject: Re: [PATCH] qmi_wwan: add support for Cinterion CLS8 devices
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9EBF714EC308F;
+        Fri,  4 Oct 2019 13:58:08 -0700 (PDT)
+Date:   Fri, 04 Oct 2019 13:58:08 -0700 (PDT)
+Message-Id: <20191004.135808.1163821632992434445.davem@davemloft.net>
+To:     dhowells@redhat.com
+Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] rxrpc: Fix rxrpc_recvmsg tracepoint
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191003163439.GA1556@arcor.de>
-References: <20191003163439.GA1556@arcor.de>
+In-Reply-To: <157012108434.20904.8998254800982940866.stgit@warthog.procyon.org.uk>
+References: <157012108434.20904.8998254800982940866.stgit@warthog.procyon.org.uk>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 04 Oct 2019 13:56:08 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 04 Oct 2019 13:58:08 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Reinhard Speyerer <rspmn@arcor.de>
-Date: Thu, 3 Oct 2019 18:34:39 +0200
+From: David Howells <dhowells@redhat.com>
+Date: Thu, 03 Oct 2019 17:44:44 +0100
 
-> Add support for Cinterion CLS8 devices.
-> Use QMI_QUIRK_SET_DTR as required for Qualcomm MDM9x07 chipsets. 
- ...
-> Signed-off-by: Reinhard Speyerer <rspmn@arcor.de>
+> Fix the rxrpc_recvmsg tracepoint to handle being called with a NULL call
+> parameter.
+> 
+> Fixes: a25e21f0bcd2 ("rxrpc, afs: Use debug_ids rather than pointers in traces")
+> Signed-off-by: David Howells <dhowells@redhat.com>
 
-Applied.
+Applied and queued up for -stable, thanks David.
