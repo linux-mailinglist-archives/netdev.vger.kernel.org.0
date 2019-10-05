@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 135FDCC99D
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 13:27:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B382CC9B9
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 13:47:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727801AbfJEL1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 07:27:43 -0400
-Received: from mail-ed1-f44.google.com ([209.85.208.44]:39925 "EHLO
-        mail-ed1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbfJEL1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 07:27:43 -0400
-Received: by mail-ed1-f44.google.com with SMTP id a15so8281242edt.6
-        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 04:27:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=dbbFzFbuYXFMklSehmYBYG0x3kGiIqCFoN5zFUGHdbc=;
-        b=eGiBaKFgnxiBHXXbWrvdiEz8/N7wBwD9z8DZEyfjzdcSBLW6ZtwtMtcRfc9Inn2Fu3
-         VKfiOxaj4G+ZhfkLLS8amX6YGpgw8DKKMmbuUlCMN9PKOAGHrvkBHjFaDRBua4EC0Fmi
-         9iuagXSthViRzBOJqPY6SnuzGoOjgHSwUwThJCGm1ur8n/7ZmftY5DitwwTVP/4dhce0
-         foE4BfWxk3QCxHehvY8h2EePNfMecnv/yCBW85cxtdeJk64BEs8o5Nix4Lqp2/ScBuz6
-         7Yq1GkWHwk6aW6mh9paYv/AWvrhNFcFgzlEaUmODWuKGpn1KkXW0f7phLHgbgdzUylW6
-         ickQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=dbbFzFbuYXFMklSehmYBYG0x3kGiIqCFoN5zFUGHdbc=;
-        b=ObMmsNCRMslStHnubKiMTxlYZsYPod19jQi/UJN7+zhfylRJQucshbFkt7RpfhGW33
-         PrLizCsWiEMc8+OD9iKP4+1hpLicsFQAdxfS2Gpu/elLtpLVMzm4kOdaob6EtJYQVAkB
-         gXt/U0b16DUDQF59n8QqSJTRCVmdYcFnsWGzPvVuLGHxFZh9Wr/NvRONfovp7Sb4F0f7
-         KItty+KTMuv+hUwNrZtcyf11xOY8gVRrYbYLwD4GtWnDJmUYKZ+a/JgmAOfdzWOyJvht
-         61GFjBQ/lMGajMaEPiZSKN1jk1xlj59P9e+kAlf2PsBYpIU8t0EAmknC7yWWHoi/+YoB
-         nAhA==
-X-Gm-Message-State: APjAAAUGzFqc1PlAlL1+gQxz18WF0qXwCFGLW7XfaDFmnsqzRwweERl9
-        aOtbKf6L87R1pcwc9qN2txRPl3595BoobQ==
-X-Google-Smtp-Source: APXvYqyRnF7nd0LNhhIXuvcqKh6epCrXAVpc0UlpY27YRrYWUL8FB50FG2WodQ5p0nqMgmDHRntoRQ==
-X-Received: by 2002:a50:b0c5:: with SMTP id j63mr20193781edd.90.1570274860814;
-        Sat, 05 Oct 2019 04:27:40 -0700 (PDT)
-Received: from [192.168.1.2] (host-109-89-151-97.dynamic.voo.be. [109.89.151.97])
-        by smtp.gmail.com with ESMTPSA id a18sm1010679ejy.88.2019.10.05.04.27.39
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Oct 2019 04:27:40 -0700 (PDT)
-To:     netdev@vger.kernel.org
-From:   =?UTF-8?Q?Fran=c3=a7ois_Valenduc?= <francoisvalenduc@gmail.com>
-Subject: RTL8723de support
-Message-ID: <beb6c2d5-43fa-7dbb-17a0-a15bc98de690@gmail.com>
-Date:   Sat, 5 Oct 2019 13:27:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728331AbfJELqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 07:46:39 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:41650 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727990AbfJELqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 07:46:39 -0400
+Received: from penelope.horms.nl (ip4dab7138.direct-adsl.nl [77.171.113.56])
+        by kirsty.vergenet.net (Postfix) with ESMTPA id 8C01025B7B0;
+        Sat,  5 Oct 2019 21:46:36 +1000 (AEST)
+Received: by penelope.horms.nl (Postfix, from userid 7100)
+        id 85D9DE22CAB; Sat,  5 Oct 2019 13:46:34 +0200 (CEST)
+Date:   Sat, 5 Oct 2019 13:46:34 +0200
+From:   Simon Horman <horms@verge.net.au>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     davem@davemloft.net, hayeswang@realtek.com,
+        mario.limonciello@dell.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] r8152: Set macpassthru in reset_resume callback
+Message-ID: <20191005114634.wvv4yfdte7qchzxs@verge.net.au>
+References: <20191004125104.13202-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: fr-moderne
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191004125104.13202-1-kai.heng.feng@canonical.com>
+Organisation: Horms Solutions BV
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello everybody,
+On Fri, Oct 04, 2019 at 08:51:04PM +0800, Kai-Heng Feng wrote:
+> r8152 may fail to establish network connection after resume from system
+> suspend.
+> 
+> If the USB port connects to r8152 lost its power during system suspend,
+> the MAC address was written before is lost. The reason is that The MAC
+> address doesn't get written again in its reset_resume callback.
+> 
+> So let's set MAC address again in reset_resume callback. Also remove
+> unnecessary lock as no other locking attempt will happen during
+> reset_resume.
 
-I am thinking of buying a new laptop which has a Realtek 8723DE wifi
-adapter. I found this driver which is apparently now included in the
-main kernel: https://github.com/lwfinger/rtlwifi_new
-The instruction there says to load the rtl8723de driver, which seems not
-to exist anymore. The rtl8723de folder is also almost empty. Can
-somebody clarify this ? Does the rtr8723be now also support the
-rtl8723de card ?
+This is two separate seemingly unrelated, other than locality in the code,
+changes. One is a fix, the other seems to be a cleanup. Perhaps they would
+be better addressed in separate patches.
 
-Thanks in advance for your help,
-Best regards.
-
-François Valenduc
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+>  drivers/net/usb/r8152.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index 08726090570e..cee9fef925cd 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -4799,10 +4799,9 @@ static int rtl8152_reset_resume(struct usb_interface *intf)
+>  	struct r8152 *tp = usb_get_intfdata(intf);
+>  
+>  	clear_bit(SELECTIVE_SUSPEND, &tp->flags);
+> -	mutex_lock(&tp->control);
+>  	tp->rtl_ops.init(tp);
+>  	queue_delayed_work(system_long_wq, &tp->hw_phy_work, 0);
+> -	mutex_unlock(&tp->control);
+> +	set_ethernet_addr(tp);
+>  	return rtl8152_resume(intf);
+>  }
+>  
+> -- 
+> 2.17.1
+> 
