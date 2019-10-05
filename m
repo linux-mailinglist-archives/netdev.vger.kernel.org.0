@@ -2,46 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B960CC828
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 07:34:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3A7CC82B
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 07:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726894AbfJEFeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 01:34:10 -0400
-Received: from mga02.intel.com ([134.134.136.20]:43294 "EHLO mga02.intel.com"
+        id S1726894AbfJEFjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 01:39:33 -0400
+Received: from mga01.intel.com ([192.55.52.88]:49692 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725773AbfJEFeK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Oct 2019 01:34:10 -0400
+        id S1725773AbfJEFjc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Oct 2019 01:39:32 -0400
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Oct 2019 22:34:08 -0700
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Oct 2019 22:39:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,259,1566889200"; 
-   d="gz'50?scan'50,208,50";a="392517599"
+   d="gz'50?scan'50,208,50";a="192615580"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 04 Oct 2019 22:34:05 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 04 Oct 2019 22:39:27 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
         (envelope-from <lkp@intel.com>)
-        id 1iGchg-000ERW-LK; Sat, 05 Oct 2019 13:34:04 +0800
-Date:   Sat, 5 Oct 2019 13:33:31 +0800
+        id 1iGcms-0008vt-Or; Sat, 05 Oct 2019 13:39:26 +0800
+Date:   Sat, 5 Oct 2019 13:38:42 +0800
 From:   kbuild test robot <lkp@intel.com>
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Cc:     kbuild-all@01.org, "David S . Miller" <davem@davemloft.net>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH 1/3] net: phylink: switch to using
- fwnode_gpiod_get_index()
-Message-ID: <201910051318.cIBCUhO7%lkp@intel.com>
-References: <20191004231356.135996-2-dmitry.torokhov@gmail.com>
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH 3/3] net: phy: fixed_phy: switch to using
+ fwnode_gpiod_get_index
+Message-ID: <201910051329.3MzBhkTH%lkp@intel.com>
+References: <20191004231356.135996-4-dmitry.torokhov@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="c5amyijf6mwqnf56"
+Content-Type: multipart/mixed; boundary="xxut7vqlhoke7u3v"
 Content-Disposition: inline
-In-Reply-To: <20191004231356.135996-2-dmitry.torokhov@gmail.com>
+In-Reply-To: <20191004231356.135996-4-dmitry.torokhov@gmail.com>
 X-Patchwork-Hint: ignore
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
@@ -50,7 +48,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---c5amyijf6mwqnf56
+--xxut7vqlhoke7u3v
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -78,124 +76,67 @@ Reported-by: kbuild test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
-   drivers/net/phy/phylink.c: In function 'phylink_parse_fixedlink':
-   drivers/net/phy/phylink.c:171:11: error: implicit declaration of function 'fwnode_gpiod_get_index'; did you mean 'devm_gpiod_get_index'? [-Werror=implicit-function-declaration]
-       desc = fwnode_gpiod_get_index(fixed_node, "link", 0,
-              ^~~~~~~~~~~~~~~~~~~~~~
-              devm_gpiod_get_index
->> drivers/net/phy/phylink.c:171:9: warning: assignment to 'struct gpio_desc *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-       desc = fwnode_gpiod_get_index(fixed_node, "link", 0,
-            ^
+   drivers/net/phy/fixed_phy.c: In function 'fixed_phy_get_gpiod':
+   drivers/net/phy/fixed_phy.c:213:10: error: implicit declaration of function 'fwnode_gpiod_get_index'; did you mean 'devm_gpiod_get_index'? [-Werror=implicit-function-declaration]
+     gpiod = fwnode_gpiod_get_index(of_fwnode_handle(fixed_link_node),
+             ^~~~~~~~~~~~~~~~~~~~~~
+             devm_gpiod_get_index
+>> drivers/net/phy/fixed_phy.c:213:8: warning: assignment to 'struct gpio_desc *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     gpiod = fwnode_gpiod_get_index(of_fwnode_handle(fixed_link_node),
+           ^
    cc1: some warnings being treated as errors
 
-vim +171 drivers/net/phy/phylink.c
+vim +213 drivers/net/phy/fixed_phy.c
 
-   143	
-   144	static int phylink_parse_fixedlink(struct phylink *pl,
-   145					   struct fwnode_handle *fwnode)
-   146	{
-   147		struct fwnode_handle *fixed_node;
-   148		const struct phy_setting *s;
-   149		struct gpio_desc *desc;
-   150		u32 speed;
-   151		int ret;
-   152	
-   153		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
-   154		if (fixed_node) {
-   155			ret = fwnode_property_read_u32(fixed_node, "speed", &speed);
-   156	
-   157			pl->link_config.speed = speed;
-   158			pl->link_config.duplex = DUPLEX_HALF;
-   159	
-   160			if (fwnode_property_read_bool(fixed_node, "full-duplex"))
-   161				pl->link_config.duplex = DUPLEX_FULL;
-   162	
-   163			/* We treat the "pause" and "asym-pause" terminology as
-   164			 * defining the link partner's ability. */
-   165			if (fwnode_property_read_bool(fixed_node, "pause"))
-   166				pl->link_config.pause |= MLO_PAUSE_SYM;
-   167			if (fwnode_property_read_bool(fixed_node, "asym-pause"))
-   168				pl->link_config.pause |= MLO_PAUSE_ASYM;
-   169	
-   170			if (ret == 0) {
- > 171				desc = fwnode_gpiod_get_index(fixed_node, "link", 0,
-   172							      GPIOD_IN, "?");
-   173	
-   174				if (!IS_ERR(desc))
-   175					pl->link_gpio = desc;
-   176				else if (desc == ERR_PTR(-EPROBE_DEFER))
-   177					ret = -EPROBE_DEFER;
-   178			}
-   179			fwnode_handle_put(fixed_node);
-   180	
-   181			if (ret)
-   182				return ret;
-   183		} else {
-   184			u32 prop[5];
-   185	
-   186			ret = fwnode_property_read_u32_array(fwnode, "fixed-link",
-   187							     NULL, 0);
-   188			if (ret != ARRAY_SIZE(prop)) {
-   189				phylink_err(pl, "broken fixed-link?\n");
-   190				return -EINVAL;
-   191			}
-   192	
-   193			ret = fwnode_property_read_u32_array(fwnode, "fixed-link",
-   194							     prop, ARRAY_SIZE(prop));
-   195			if (!ret) {
-   196				pl->link_config.duplex = prop[1] ?
-   197							DUPLEX_FULL : DUPLEX_HALF;
-   198				pl->link_config.speed = prop[2];
-   199				if (prop[3])
-   200					pl->link_config.pause |= MLO_PAUSE_SYM;
-   201				if (prop[4])
-   202					pl->link_config.pause |= MLO_PAUSE_ASYM;
-   203			}
-   204		}
-   205	
-   206		if (pl->link_config.speed > SPEED_1000 &&
-   207		    pl->link_config.duplex != DUPLEX_FULL)
-   208			phylink_warn(pl, "fixed link specifies half duplex for %dMbps link?\n",
-   209				     pl->link_config.speed);
-   210	
-   211		bitmap_fill(pl->supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-   212		linkmode_copy(pl->link_config.advertising, pl->supported);
-   213		phylink_validate(pl, pl->supported, &pl->link_config);
-   214	
-   215		s = phy_lookup_setting(pl->link_config.speed, pl->link_config.duplex,
-   216				       pl->supported, true);
-   217		linkmode_zero(pl->supported);
-   218		phylink_set(pl->supported, MII);
-   219		phylink_set(pl->supported, Pause);
-   220		phylink_set(pl->supported, Asym_Pause);
-   221		if (s) {
-   222			__set_bit(s->bit, pl->supported);
-   223		} else {
-   224			phylink_warn(pl, "fixed link %s duplex %dMbps not recognised\n",
-   225				     pl->link_config.duplex == DUPLEX_FULL ? "full" : "half",
-   226				     pl->link_config.speed);
-   227		}
-   228	
-   229		linkmode_and(pl->link_config.advertising, pl->link_config.advertising,
-   230			     pl->supported);
+   194	
+   195	#ifdef CONFIG_OF_GPIO
+   196	static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
+   197	{
+   198		struct device_node *fixed_link_node;
+   199		struct gpio_desc *gpiod;
+   200	
+   201		if (!np)
+   202			return NULL;
+   203	
+   204		fixed_link_node = of_get_child_by_name(np, "fixed-link");
+   205		if (!fixed_link_node)
+   206			return NULL;
+   207	
+   208		/*
+   209		 * As the fixed link is just a device tree node without any
+   210		 * Linux device associated with it, we simply have obtain
+   211		 * the GPIO descriptor from the device tree like this.
+   212		 */
+ > 213		gpiod = fwnode_gpiod_get_index(of_fwnode_handle(fixed_link_node),
+   214					       "link-gpios", 0, GPIOD_IN, "mdio");
+   215		if (IS_ERR(gpiod) && PTR_ERR(gpiod) != -EPROBE_DEFER) {
+   216			if (PTR_ERR(gpiod) != -ENOENT)
+   217				pr_err("error getting GPIO for fixed link %pOF, proceed without\n",
+   218				       fixed_link_node);
+   219			gpiod = NULL;
+   220		}
+   221		of_node_put(fixed_link_node);
+   222	
+   223		return gpiod;
+   224	}
+   225	#else
+   226	static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
+   227	{
+   228		return NULL;
+   229	}
+   230	#endif
    231	
-   232		pl->link_config.link = 1;
-   233		pl->link_config.an_complete = 1;
-   234	
-   235		return 0;
-   236	}
-   237	
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---c5amyijf6mwqnf56
+--xxut7vqlhoke7u3v
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICB8pmF0AAy5jb25maWcAjFzZc9w20n/PXzHlvOzWVrI67FnvfqUHkAQ5yPASgZnR6IUl
+H4sICOErmF0AAy5jb25maWcAjFzZc9w20n/PXzHlvOzWVrI67FnvfqUHkAQ5yPASgZnR6IUl
 y2NHFVly6dhN/vuvG7y6AXDkVCoR+9cAcfQNcH7+6eeFeH15/Hbzcnd7c3//1+Lr4eHwdPNy
 +Lz4cnd/+L9FUi3KyixkosyvwJzfPbz++c+Hz8/nZ4sPv57/erJYH54eDveL+PHhy93XV2h6
 9/jw088/wb8/A/Hbd+jl6T8L2+L+8Ms9tv/l6+3t4m9ZHP998fHX019PgDeuylRlbRy3SreA
@@ -1183,4 +1124,4 @@ lkrvGjrhqJ2JeD7EVhFzOI1ve57s+UKrgebiV0skRvi9+Zt22ER7dCTyTkNZ9aV9ySvNr5ZL
 8FXPqmjqUFUKbR3KbevM/OQkUqH3LWmybJea6kHMT9SdqSReZym7HbPtZPhJHDJH387OQ8Yr
 Ob4AyYNt2mz+/w/DrUpoeWsDAA==
 
---c5amyijf6mwqnf56--
+--xxut7vqlhoke7u3v--
