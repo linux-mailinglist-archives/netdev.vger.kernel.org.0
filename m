@@ -2,103 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9373CCBFF
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 20:24:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 214C4CCC01
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 20:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387726AbfJESYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 14:24:46 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45685 "EHLO
+        id S2387855AbfJES1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 14:27:14 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40035 "EHLO
         mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387486AbfJESYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 14:24:46 -0400
-Received: by mail-qt1-f193.google.com with SMTP id c21so13330777qtj.12;
-        Sat, 05 Oct 2019 11:24:45 -0700 (PDT)
+        with ESMTP id S2387486AbfJES1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 14:27:13 -0400
+Received: by mail-qt1-f193.google.com with SMTP id m61so2310349qte.7;
+        Sat, 05 Oct 2019 11:27:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xBG8csLHdWLZa/9fnq0t3Giy1lbj4du9KpSdXIUyiS8=;
-        b=sbPhFyKLL01SUKlLEe/E3ZgPudxoBAa6LMHr5Qza3OUpfUbPOMgzl9y5PotlvIVfQw
-         bGpJTVjJ2pyfEMrdxSJsdLfypk3Qeov8Q1ekB19JLCe3gqd/fCt9cObGYce/aYamGgBT
-         ToEPkr/PvHCNMCIjeiUsUlU5xP2cc7xrW4RrWFRQeuXWxBfzcTaCzA6OnG7dQOxUtR8n
-         pat5y2g0qZiLE+V5q1ZIISdSXTW1Ou8C+CSfzpPjpRB3GegmC3elD+OFy7eoSTdoA2db
-         xn0jWXlFxYNAS66QYu4qhufVsxZUeOYznBmjIRrFUw2Vy3QouHMtLhSeqV12HXDlVASj
-         33yw==
+        bh=WiYxA8/Lc/2RKZGBWIDDHQzUjhgfV3db1iR4c7W/LTY=;
+        b=mbA9c8eU8F8aetfsWaLJDATNxQTJnODH3KD7FHrJ4fv9SMDNRKd9QfvqY/H0aQGmZ8
+         7qQMvTkyLsvfEPZCyIpw0J1u4O+s7yL4cF0kbp7dZTmGWu5LVyJa/67cLZYGDmcWOilh
+         bO+4CIvVUqSmn3uzdOn+xb6UkCwUc/uSQbiERSbpOiYcnA7PtugddvfS9bz3axqerrvj
+         JvpNrFQ2h6NaGhzr/Wpr+eAZJr+f+0LFI1vvN/Kwp2PMlz0cWyzeFgKamzRrIPeAauKn
+         jeIPjQoRWARtQnaAiksBKKCHuwWOwK6MLYN1Wa6qcMqaQKUspTJvbHPXgUmhYXm3qkcU
+         LgnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xBG8csLHdWLZa/9fnq0t3Giy1lbj4du9KpSdXIUyiS8=;
-        b=udJDizay09JfRusKy5ZvV8wkjJyQXweTh3NTuxvHbT5No0bs7vWfzPTPlHsNKnQeU6
-         tHVq0Woh4YV9Q8iEErPKKjaYSiVWbVQasHZGwH/wFJVw4P0H88F0ns4mSAafS6woPtU9
-         s49GAZ80zzliZQw8xsqWSL2U7ZAdquRN2AXnZ+OFfEZiIL619Fbdj9Za0O4Wd/LV60Z3
-         HPpvoDiC8bpEcbWzBa2vOAC6+6xDSoyZ0ZYoaSS8nZMOHotYXBge5OrbM0zUOB/RXEhY
-         6IReqlOkzlPvmshCgORllXmJdWYjDNQ5ZB8wEEjZ4UGAxkq/2DdKykONtojFUjrMMJc5
-         FuNQ==
-X-Gm-Message-State: APjAAAX+GSzy8fC8CGKrbpcWrvCkdaRkht5rqPkiGkD9gQQs71dyhCZM
-        dQqeCRVb/kq5uvfqpObLKVxSuQjLU8YUe6z1LDP3nsGZ
-X-Google-Smtp-Source: APXvYqzej2RpaNDfzeAaW8XsIJABw/6s2A4hjhcA+7flDYWYn26FGy1AU4dXQJcnsmX0DcD7Y4Q1yFrdES4T1s8t4vc=
-X-Received: by 2002:aed:2726:: with SMTP id n35mr21956452qtd.171.1570299885083;
- Sat, 05 Oct 2019 11:24:45 -0700 (PDT)
+        bh=WiYxA8/Lc/2RKZGBWIDDHQzUjhgfV3db1iR4c7W/LTY=;
+        b=apJ7ZdUS56s06eytqqVHV24m0lmDMtJw0OvSIWqv1ezdtb93T7tYUarJ5vwd3sK4La
+         XkAMx+vkNBWrLShMKL1zNjv4LrMrOCzycfDSjVJf2iygdg/h5FyPHQzltQ4aW5tktczP
+         6WpDro8PEnlT3MzKw7ndcfxmNV2obNtajub3Rps9go7NNt1Tpn+l66ufkcm2Zc3KiMq3
+         Egr4RXFixMUwEAKMse7o/97uxQz55XdQHBbm7cEj2ItSFETderYiqofGlxroMhCZ6ne+
+         pZZuCTIjF2ZVBhQJoHI8BF5K9X0A+QWjl4JbEhlOvrdyMAoRqzUiJDZPCxHOQfpGR0Ej
+         kNRQ==
+X-Gm-Message-State: APjAAAUVJEgpjldm0e/vJgexxEePajoHlDC0Os8VR4whFlRQSPZejuKn
+        tMVvecdcWg7A6TIsPMQe8fsOenrFMrkU2aAmfD4U6978
+X-Google-Smtp-Source: APXvYqy8cMkAjKtuH1d3/5HQFOCCK0Od14KUgtvblw7meVmV1ILSiZy4kPXEjC6XTccQxfF3LVVi4f1iHx6b1gRoHLQ=
+X-Received: by 2002:ac8:1417:: with SMTP id k23mr21180914qtj.93.1570300032502;
+ Sat, 05 Oct 2019 11:27:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191005075921.3310139-1-andriin@fb.com> <20191005075921.3310139-4-andriin@fb.com>
- <b0df96f6-dc41-8baf-baa3-e98da94c54b7@fb.com>
-In-Reply-To: <b0df96f6-dc41-8baf-baa3-e98da94c54b7@fb.com>
+References: <CAEKGpzhoYHrE4NTvaWSpy-R6CiLYehGHzLM6v+-9j8iemNyK0g@mail.gmail.com>
+In-Reply-To: <CAEKGpzhoYHrE4NTvaWSpy-R6CiLYehGHzLM6v+-9j8iemNyK0g@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 5 Oct 2019 11:24:33 -0700
-Message-ID: <CAEf4BzZdhBTovTfv+Ar0En__RmuP6Lr=RWF2ix3uo9hZ84oHcg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] libbpf: auto-generate list of BPF helper definitions
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
+Date:   Sat, 5 Oct 2019 11:27:01 -0700
+Message-ID: <CAEf4BzbCoP6R0UbbW4HU6jqK8T3F-0SCTj_5ex8brnfCJLeBAA@mail.gmail.com>
+Subject: Re: samples/bpf not working?
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, xdp-newbies@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 5, 2019 at 10:10 AM Alexei Starovoitov <ast@fb.com> wrote:
+On Fri, Oct 4, 2019 at 3:28 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 >
-> On 10/5/19 12:59 AM, Andrii Nakryiko wrote:
-> > Get rid of list of BPF helpers in bpf_helpers.h (irony...) and
-> > auto-generate it into bpf_helpers_defs.h, which is now included from
-> > bpf_helpers.h.
+> Currently, building the bpf samples isn't working.
+> Running make from the directory 'samples/bpf' will just shows following
+> result without compiling any samples.
+>
+> $ make
+> make -C ../../ /git/linux/samples/bpf/ BPF_SAMPLES_PATH=/git/linux/samples/bpf
+> make[1]: Entering directory '/git/linux'
+>   CALL    scripts/checksyscalls.sh
+>   CALL    scripts/atomic/check-atomics.sh
+>   DESCEND  objtool
+> make[1]: Leaving directory '/git/linux'
+> $ ls *kern.o
+> ls: cannot access '*kern.o': No such file or directory
+>
+> By using 'git bisect', found the problem is derived from below commit.
+> commit 394053f4a4b3 ("kbuild: make single targets work more correctly")
+>
+> > Currently, the single target build directly descends into the directory
+> > of the target. For example,
 > >
-> > Suggested-by: Alexei Starovoitov<ast@fb.com>
-> > Signed-off-by: Andrii Nakryiko<andriin@fb.com>
-> > ---
-> >   tools/lib/bpf/Makefile           |    8 +-
-> >   tools/lib/bpf/bpf_helpers.h      |  264 +--
-> >   tools/lib/bpf/bpf_helpers_defs.h | 2677 ++++++++++++++++++++++++++++++
-> >   3 files changed, 2685 insertions(+), 264 deletions(-)
-> >   create mode 100644 tools/lib/bpf/bpf_helpers_defs.h
+> >     $ make foo/bar/baz.o
+> >
+> > ... directly descends into foo/bar/.
+> >
+> > On the other hand, the normal build usually descends one directory at
+> > a time, i.e. descends into foo/, and then foo/bar/.
+> >
+> > This difference causes some problems.
+> >
+> > [...]
+> >
+> > This commit fixes those problems by making the single target build
+> > descend in the same way as the normal build does.
 >
-> Approach looks good to me.
-> imo that's better than messing with macros.
+> Not familiar with kbuild, so I'm not sure why this led to build failure.
+> My humble guess is, samples/bpf/Makefile tries to run make from current
+> directory, 'sample/bpf', but somehow upper commit changed the way it works.
 >
-> Using bpf_helpers_doc.py as part of build will help man pages too.
-> I think we were sloppy documenting helpers, since only Quentin
-> was running that script regularly.
-
-Yep, I agree, I had to fix few things, as well as (char *) vs (void *)
-vs (__u8 *) differences were causing some extra warnings.
-Please check the list of type translations whether they make sense.
-
+> samples/bpf/Makefile:232
+> # Trick to allow make to be run from this directory
+> all:
+>         $(MAKE) -C ../../ $(CURDIR)/ BPF_SAMPLES_PATH=$(CURDIR)
 >
-> Only question is what is the reason to commit generated .h into git?
+> I've tried to figure out the problem with 'make --trace', but not sure why
+> it's not working. Just a hunch with build directory.
+>
+> Any ideas to fix this problem?
 
-So originally I didn't want to depend on system UAPI headers during
-Github build. But now I recalled that we do have latest UAPI synced
-into Github's include/ subdir, so that's not an obstacle really. We'll
-just need to re-license bpf_helpers_doc.py (I don't think Quentin will
-mind) and start syncing it to Github (not a big deal at all).
-
-There is still a benefit in having it checked in: easy to spot if
-script does something wrong and double-check the changes (after
-initial big commit, of course).
-
-If you think that's not reason enough, let me know and I can drop it in v2.
+Yes, it's now a known problem. You need to run it as `make
+M=samples/bpf` from root directory, as well as have all the recent
+fixes both from bpf and bpf-next trees (:(, this will be a bit better
+once bpf is merged into bpf-next).
