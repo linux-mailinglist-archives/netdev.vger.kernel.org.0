@@ -2,178 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7AC1CCBE5
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 20:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9373CCBFF
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 20:24:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387527AbfJESE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 14:04:58 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:36664 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729669AbfJESEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 14:04:55 -0400
-Received: by mail-wm1-f67.google.com with SMTP id m18so8685777wmc.1
-        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 11:04:53 -0700 (PDT)
+        id S2387726AbfJESYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 14:24:46 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:45685 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387486AbfJESYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 14:24:46 -0400
+Received: by mail-qt1-f193.google.com with SMTP id c21so13330777qtj.12;
+        Sat, 05 Oct 2019 11:24:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=e13oY/jcB2hfgEI8mocTN7O+j2f/oNmSYRJH7vusZLc=;
-        b=BARbttHnE9dB98gwqyj2WTDff2FNwaOlri4g/V8SjkOwIal8tvabmhqCJMNxx59PLf
-         W1nVBonFK+7D9TP2/kzDd/4By4xvEKveO0BqUmMbcoRxC4LU1jvp8DuNh4RelzWAU1up
-         Z9O0fb/N2EuoxQ8eTYPbvUCaKsUVAdy4zymCzGEfWq28nvfFcCL24eVE8IwMS7dmH+zK
-         jUeRxNQQgDRkq0ZUxSOdN/UHMr5sHlts+EFdj5ZUvk0p9PmLYt1I3QXkRxeRbfBaS/hU
-         +5MrTH+TrUgySX3aTnrHHVsBwwaA7ZKvjabBhcxiMBfnubD16ovg4r/5p5+E++fDmt/c
-         7QcQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xBG8csLHdWLZa/9fnq0t3Giy1lbj4du9KpSdXIUyiS8=;
+        b=sbPhFyKLL01SUKlLEe/E3ZgPudxoBAa6LMHr5Qza3OUpfUbPOMgzl9y5PotlvIVfQw
+         bGpJTVjJ2pyfEMrdxSJsdLfypk3Qeov8Q1ekB19JLCe3gqd/fCt9cObGYce/aYamGgBT
+         ToEPkr/PvHCNMCIjeiUsUlU5xP2cc7xrW4RrWFRQeuXWxBfzcTaCzA6OnG7dQOxUtR8n
+         pat5y2g0qZiLE+V5q1ZIISdSXTW1Ou8C+CSfzpPjpRB3GegmC3elD+OFy7eoSTdoA2db
+         xn0jWXlFxYNAS66QYu4qhufVsxZUeOYznBmjIRrFUw2Vy3QouHMtLhSeqV12HXDlVASj
+         33yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=e13oY/jcB2hfgEI8mocTN7O+j2f/oNmSYRJH7vusZLc=;
-        b=VvxdGcdY6MzJmFafPfiOdLrVYYDhgyEWUvstdCGuzkpB5mj4y6IunNKL5qPOhzGilm
-         7LsV4zIjiE8Yogmvi0oyNs5GqCjQkJ6XbtL46rZVrUUseBDWwHWnham+V1htJgkCqf2Y
-         spUkYXKz/KuFXC9QxFL2xF6m01S1d114SlD7A1BP/pF/WK6Ix/MNckl8UF43/MoH8Yep
-         d3c+tYn3JRuDD3/WLu4hL5F+nDJiA0jZgi3OiU7VSlkzWZ+NvOoGuJdkXcXk6egPY8Xq
-         eCoOpZp9rcT4vDGxCLSqflmJskMGlJFawPNm5a/Kvx3uLD4ZOdBWtzvemQhVUKRHmrF6
-         TQuQ==
-X-Gm-Message-State: APjAAAWnLz9jgPoAHhFa/VsFlFKvnM3YRdHqvxcmjFx9aXfNEo/ZfWu9
-        Y9Tu2U6r1qYDF0ztzCIIOweGKUPm5yg=
-X-Google-Smtp-Source: APXvYqwNWj+tNXR5xIpOAvZ0nGJDhFw4aOxyOEIpv6ZQsRZ+3b4qfc7C1XCw2vghsoHSsH6Aa4F6vA==
-X-Received: by 2002:a1c:4e01:: with SMTP id g1mr13746795wmh.134.1570298693053;
-        Sat, 05 Oct 2019 11:04:53 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id c9sm9999343wrt.7.2019.10.05.11.04.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Oct 2019 11:04:52 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        alex.aring@gmail.com, stefan@datenfreihafen.org,
-        jon.maloy@ericsson.com, ying.xue@windriver.com,
-        johannes.berg@intel.com, mkubecek@suse.cz, yuehaibing@huawei.com,
-        mlxsw@mellanox.com
-Subject: [patch net-next 10/10] devlink: have genetlink code to parse the attrs during dumpit
-Date:   Sat,  5 Oct 2019 20:04:42 +0200
-Message-Id: <20191005180442.11788-11-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191005180442.11788-1-jiri@resnulli.us>
-References: <20191005180442.11788-1-jiri@resnulli.us>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xBG8csLHdWLZa/9fnq0t3Giy1lbj4du9KpSdXIUyiS8=;
+        b=udJDizay09JfRusKy5ZvV8wkjJyQXweTh3NTuxvHbT5No0bs7vWfzPTPlHsNKnQeU6
+         tHVq0Woh4YV9Q8iEErPKKjaYSiVWbVQasHZGwH/wFJVw4P0H88F0ns4mSAafS6woPtU9
+         s49GAZ80zzliZQw8xsqWSL2U7ZAdquRN2AXnZ+OFfEZiIL619Fbdj9Za0O4Wd/LV60Z3
+         HPpvoDiC8bpEcbWzBa2vOAC6+6xDSoyZ0ZYoaSS8nZMOHotYXBge5OrbM0zUOB/RXEhY
+         6IReqlOkzlPvmshCgORllXmJdWYjDNQ5ZB8wEEjZ4UGAxkq/2DdKykONtojFUjrMMJc5
+         FuNQ==
+X-Gm-Message-State: APjAAAX+GSzy8fC8CGKrbpcWrvCkdaRkht5rqPkiGkD9gQQs71dyhCZM
+        dQqeCRVb/kq5uvfqpObLKVxSuQjLU8YUe6z1LDP3nsGZ
+X-Google-Smtp-Source: APXvYqzej2RpaNDfzeAaW8XsIJABw/6s2A4hjhcA+7flDYWYn26FGy1AU4dXQJcnsmX0DcD7Y4Q1yFrdES4T1s8t4vc=
+X-Received: by 2002:aed:2726:: with SMTP id n35mr21956452qtd.171.1570299885083;
+ Sat, 05 Oct 2019 11:24:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191005075921.3310139-1-andriin@fb.com> <20191005075921.3310139-4-andriin@fb.com>
+ <b0df96f6-dc41-8baf-baa3-e98da94c54b7@fb.com>
+In-Reply-To: <b0df96f6-dc41-8baf-baa3-e98da94c54b7@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 5 Oct 2019 11:24:33 -0700
+Message-ID: <CAEf4BzZdhBTovTfv+Ar0En__RmuP6Lr=RWF2ix3uo9hZ84oHcg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/3] libbpf: auto-generate list of BPF helper definitions
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On Sat, Oct 5, 2019 at 10:10 AM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 10/5/19 12:59 AM, Andrii Nakryiko wrote:
+> > Get rid of list of BPF helpers in bpf_helpers.h (irony...) and
+> > auto-generate it into bpf_helpers_defs.h, which is now included from
+> > bpf_helpers.h.
+> >
+> > Suggested-by: Alexei Starovoitov<ast@fb.com>
+> > Signed-off-by: Andrii Nakryiko<andriin@fb.com>
+> > ---
+> >   tools/lib/bpf/Makefile           |    8 +-
+> >   tools/lib/bpf/bpf_helpers.h      |  264 +--
+> >   tools/lib/bpf/bpf_helpers_defs.h | 2677 ++++++++++++++++++++++++++++++
+> >   3 files changed, 2685 insertions(+), 264 deletions(-)
+> >   create mode 100644 tools/lib/bpf/bpf_helpers_defs.h
+>
+> Approach looks good to me.
+> imo that's better than messing with macros.
+>
+> Using bpf_helpers_doc.py as part of build will help man pages too.
+> I think we were sloppy documenting helpers, since only Quentin
+> was running that script regularly.
 
-Benefit from the fact that the generic netlink code can parse the attrs
-for dumpit op and avoid need to parse it in the op callback.
+Yep, I agree, I had to fix few things, as well as (char *) vs (void *)
+vs (__u8 *) differences were causing some extra warnings.
+Please check the list of type translations whether they make sense.
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- net/core/devlink.c | 38 ++++++--------------------------------
- 1 file changed, 6 insertions(+), 32 deletions(-)
+>
+> Only question is what is the reason to commit generated .h into git?
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 6d16908f34b0..ae07ddb65f34 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3935,29 +3935,19 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
- static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 					     struct netlink_callback *cb)
- {
-+	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
- 	u64 ret_offset, start_offset, end_offset = 0;
-+	struct nlattr **attrs = info->attrs;
- 	struct devlink_region *region;
- 	struct nlattr *chunks_attr;
- 	const char *region_name;
- 	struct devlink *devlink;
--	struct nlattr **attrs;
- 	bool dump = true;
- 	void *hdr;
- 	int err;
- 
- 	start_offset = *((u64 *)&cb->args[0]);
- 
--	attrs = kmalloc_array(DEVLINK_ATTR_MAX + 1, sizeof(*attrs), GFP_KERNEL);
--	if (!attrs)
--		return -ENOMEM;
--
--	err = nlmsg_parse_deprecated(cb->nlh,
--				     GENL_HDRLEN + devlink_nl_family.hdrsize,
--				     attrs, DEVLINK_ATTR_MAX,
--				     devlink_nl_family.policy, cb->extack);
--	if (err)
--		goto out_free;
--
- 	mutex_lock(&devlink_mutex);
- 	devlink = devlink_get_from_attrs(sock_net(cb->skb->sk), attrs);
- 	if (IS_ERR(devlink)) {
-@@ -4034,7 +4024,6 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 	genlmsg_end(skb, hdr);
- 	mutex_unlock(&devlink->lock);
- 	mutex_unlock(&devlink_mutex);
--	kfree(attrs);
- 
- 	return skb->len;
- 
-@@ -4044,8 +4033,6 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 	mutex_unlock(&devlink->lock);
- out_dev:
- 	mutex_unlock(&devlink_mutex);
--out_free:
--	kfree(attrs);
- 	return err;
- }
- 
-@@ -4987,21 +4974,10 @@ devlink_health_reporter_get_from_info(struct devlink *devlink,
- static struct devlink_health_reporter *
- devlink_health_reporter_get_from_cb(struct netlink_callback *cb)
- {
-+	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
- 	struct devlink_health_reporter *reporter;
-+	struct nlattr **attrs = info->attrs;
- 	struct devlink *devlink;
--	struct nlattr **attrs;
--	int err;
--
--	attrs = kmalloc_array(DEVLINK_ATTR_MAX + 1, sizeof(*attrs), GFP_KERNEL);
--	if (!attrs)
--		return NULL;
--
--	err = nlmsg_parse_deprecated(cb->nlh,
--				     GENL_HDRLEN + devlink_nl_family.hdrsize,
--				     attrs, DEVLINK_ATTR_MAX,
--				     devlink_nl_family.policy, cb->extack);
--	if (err)
--		goto free;
- 
- 	mutex_lock(&devlink_mutex);
- 	devlink = devlink_get_from_attrs(sock_net(cb->skb->sk), attrs);
-@@ -5010,12 +4986,9 @@ devlink_health_reporter_get_from_cb(struct netlink_callback *cb)
- 
- 	reporter = devlink_health_reporter_get_from_attrs(devlink, attrs);
- 	mutex_unlock(&devlink_mutex);
--	kfree(attrs);
- 	return reporter;
- unlock:
- 	mutex_unlock(&devlink_mutex);
--free:
--	kfree(attrs);
- 	return NULL;
- }
- 
-@@ -6146,7 +6119,8 @@ static const struct genl_ops devlink_nl_ops[] = {
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_REGION_READ,
--		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.validate = GENL_DONT_VALIDATE_STRICT |
-+			    GENL_DONT_VALIDATE_DUMP_STRICT,
- 		.dumpit = devlink_nl_cmd_region_read_dumpit,
- 		.flags = GENL_ADMIN_PERM,
- 		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
--- 
-2.21.0
+So originally I didn't want to depend on system UAPI headers during
+Github build. But now I recalled that we do have latest UAPI synced
+into Github's include/ subdir, so that's not an obstacle really. We'll
+just need to re-license bpf_helpers_doc.py (I don't think Quentin will
+mind) and start syncing it to Github (not a big deal at all).
 
+There is still a benefit in having it checked in: easy to spot if
+script does something wrong and double-check the changes (after
+initial big commit, of course).
+
+If you think that's not reason enough, let me know and I can drop it in v2.
