@@ -2,104 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DF6FCC84A
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 08:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13EE1CC857
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 08:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbfJEGDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 02:03:12 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35091 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726511AbfJEGDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 02:03:12 -0400
-Received: by mail-pl1-f195.google.com with SMTP id c3so2677625plo.2;
-        Fri, 04 Oct 2019 23:03:09 -0700 (PDT)
+        id S1727014AbfJEGKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 02:10:37 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36244 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725796AbfJEGKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 02:10:37 -0400
+Received: by mail-wm1-f66.google.com with SMTP id m18so7724840wmc.1
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 23:10:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+kB/pDJbKSOYQnNsLM6RtWH27TRijztzTo4+rcGO0Yg=;
-        b=NDMddipupK/KoPoWPZ1PcfBVagdqiAyoVjNPqq4M+QQNpwNO9Z1M1bxLBMyWA6QKUw
-         DgsTwVvTf1ieXEPr1Cj2GPxVKsH74JFhhxj4174oBa4sdnkKAwRWT9MGNxVshvbOnwsW
-         dU0QmnE4riGE453+4iEyARcv6m1EATafVWEuwFtNn/5LvCUqyR2uoy+CSq4RYmicczaT
-         cimn/k5umAU0lrhcPkkRs+nMyMaBEJ9wG+uakAobPPThTltLeH9aYkSuHrUm27N+Do9u
-         B6QMPE+NN8uBQDmdsoXwSFszhQ54eCbqHCdM4rzVOjop+M7I/ZS64LALvMAdwaCKuDxX
-         cGug==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S+d4Sch2NHCbJQULit4vXAoDLZ36M6vGI/12sLLyd5w=;
+        b=bQhlYjQvllDbfeAeqt8C9/hyCGHgXUNuTcYr19HG4GfqcGVL1Z6Y/fBKgUzhlBftFy
+         Bn8gtxrUw/xFx3RjmBXJC8gx7Tzzif1fh69rfZvJYAjnCB3yPRLJ9Z06K/OUCB07zdTX
+         6N9wQ/2URp3VQ6XJOtRYTKUiK5R5geJ5BQ0lAn13qHLaUe5QLwS0+NvpNV2scBO9mCqm
+         uXrF1rRrlni85q07ZPWIDhwW1E5PMlmN/79x3FAfjcx+2wOD0B7WZuNMoMHDugxWJ9lP
+         UHAH2btaELHIrZG8G5sk9FTx0SAF6IowNl12rZf3ekS5p12oXe4f4E1wGtYZWbutWC30
+         WAfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+kB/pDJbKSOYQnNsLM6RtWH27TRijztzTo4+rcGO0Yg=;
-        b=TGz0/LlfjYNVe7lE92iyvRnlzZdGk9p2kv0YWeju6AMrL4jnvH7YMilu+agI4Wce+N
-         HxpwNEjZOLCm3UABlG3YBhPNPKlPkHLalOrxnTxdNLL3yBgaw7Y6zZQ1EO04f2/C6OU0
-         j1e+em6YcD5w9bcwKWMYIzbzv4IA4DTyRwfpLzKSLvuRHgkoDERBtPa+CGE6vp/Mlz6r
-         XRqmL5ou48TBgNL2hE38o7pe64lNHtKpVmqW8+2JSpgblNVo5047Or86/24nRZ3T7LeH
-         7qseJBvzrITxYY988tODNwhowGc4fXB1y+c6/YJgJAotejalWFIsfnU1wYC7qX6k0d7Z
-         UbgQ==
-X-Gm-Message-State: APjAAAXSGN7gb5RoBSPSpc62/QJunXBm4koT8wwEaj4+7E0CEq1vhhRV
-        Q9Nalah6NZ1rpiht3O3ckiA=
-X-Google-Smtp-Source: APXvYqyEyQzZtk858jgozNsaLtvUc2A1erHbtCtzCodSLVIBSssUHbS15t8kObbBHXYldeUwZAZEJA==
-X-Received: by 2002:a17:902:8bc4:: with SMTP id r4mr18191999plo.341.1570255389372;
-        Fri, 04 Oct 2019 23:03:09 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id v5sm9628752pfv.76.2019.10.04.23.03.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Oct 2019 23:03:08 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 07/10] bpf: add support for BTF pointers to x86
- JIT
-To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
-Cc:     daniel@iogearbox.net, x86@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-References: <20191005050314.1114330-1-ast@kernel.org>
- <20191005050314.1114330-8-ast@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <74e72059-7961-a65d-5a8c-5c50c7a4a453@gmail.com>
-Date:   Fri, 4 Oct 2019 23:03:06 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        bh=S+d4Sch2NHCbJQULit4vXAoDLZ36M6vGI/12sLLyd5w=;
+        b=HHN17U6ZYfRqrq6TZr9pdjGYidzNkwugvtJmRkn6HJG3AuFeQWYH5wYVQ8ZratLwGI
+         DZ681dqd6ZTLyJFbKK8QpWrUKzSlTvuvcq6aBa6koGZ5gUOS0xnGiCOS4/FYM1pQ8BMV
+         hXviPZpRbUTXLloaGR0mgJB7WUdCAhjH11FqPV9ZMo6gBQK6sraHltRdtQtqyxEkFySA
+         V9oViJJ5F9Vx8HTU4NH/m3Ptt/dd3QHe7jlpkXYTbkwyrEsxevKWS34T2sTW5/K5wTyp
+         9AgXg3ncZf//C99XdREqgTR9zX/AqhYiQQzlUgMi5c99OcwaLXMhJimmzCx5tS1062Px
+         vUaQ==
+X-Gm-Message-State: APjAAAXEiAF7nHmNEafxwmP0MeSjsaWQjN97shLOIEPiZVrul930iCXC
+        5+BV3qcFwxOZDo15b7z2BIHdQF7GPbI=
+X-Google-Smtp-Source: APXvYqwI3OBTtoOSI1BaOVT5iMf6jWOem34yTSZ/L/AvXUQPffNA21GDXhniX4DiKXZzNWi7+y8Rhw==
+X-Received: by 2002:a1c:2501:: with SMTP id l1mr12314121wml.74.1570255834452;
+        Fri, 04 Oct 2019 23:10:34 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id l13sm6343510wmj.25.2019.10.04.23.10.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Oct 2019 23:10:33 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, idosch@mellanox.com,
+        jakub.kicinski@netronome.com, petrm@mellanox.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, shuah@kernel.org,
+        mlxsw@mellanox.com
+Subject: [patch net-next 0/3] create netdevsim instances in namespace
+Date:   Sat,  5 Oct 2019 08:10:30 +0200
+Message-Id: <20191005061033.24235-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20191005050314.1114330-8-ast@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jiri Pirko <jiri@mellanox.com>
 
+Allow user to create netdevsim devlink and netdevice instances in a
+network namespace according to the namespace where the user resides in.
+Add a selftest to test this.
 
-On 10/4/19 10:03 PM, Alexei Starovoitov wrote:
-> Pointer to BTF object is a pointer to kernel object or NULL.
-> Such pointers can only be used by BPF_LDX instructions.
-> The verifier changed their opcode from LDX|MEM|size
-> to LDX|PROBE_MEM|size to make JITing easier.
-> The number of entries in extable is the number of BPF_LDX insns
-> that access kernel memory via "pointer to BTF type".
+Jiri Pirko (3):
+  net: devlink: export devlink net setter
+  netdevsim: create devlink and netdev instances in namespace
+  selftests: test creating netdevsim inside network namespace
 
-...
+ drivers/net/netdevsim/bus.c                   |  1 +
+ drivers/net/netdevsim/dev.c                   |  1 +
+ drivers/net/netdevsim/netdevsim.h             |  3 +
+ include/net/devlink.h                         |  2 +
+ net/core/devlink.c                            | 15 +++-
+ .../drivers/net/netdevsim/devlink_in_netns.sh | 72 +++++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |  7 +-
+ 7 files changed, 97 insertions(+), 4 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/devlink_in_netns.sh
 
->  		}
->  		if (proglen == oldproglen) {
-> -			header = bpf_jit_binary_alloc(proglen, &image,
-> -						      1, jit_fill_hole);
-> +			/*
-> +			 * The number of entries in extable is the number of BPF_LDX
-> +			 * insns that access kernel memory via "pointer to BTF type".
-> +			 * The verifier changed their opcode from LDX|MEM|size
-> +			 * to LDX|PROBE_MEM|size to make JITing easier.
-> +			 */
-> +			u32 extable_size = prog->aux->num_exentries *
-> +				sizeof(struct exception_table_entry);
-> +
-> +			/* allocate module memory for x86 insns and extable */
-> +			header = bpf_jit_binary_alloc(proglen + extable_size,
-> +						      &image, 1, jit_fill_hole);
->  			if (!header) {
->  				prog = orig_prog;
->  				goto out_addrs;
->  			}
-> +			prog->aux->extable = (void *) image + proglen;
-
-You might want to align ->extable to __alignof__(struct exception_table_entry) (4 bytes currently)
+-- 
+2.21.0
 
