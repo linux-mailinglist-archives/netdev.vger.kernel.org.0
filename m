@@ -2,128 +2,507 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2AFCCC746
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 03:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3739CC751
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 04:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbfJEBwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 21:52:00 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:41670 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725887AbfJEBv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 21:51:59 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x951oUxb029524;
-        Fri, 4 Oct 2019 18:51:55 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=YQGfsH0shssQjKa2A9r/wSWebplsjsw02CKkIbDxKaE=;
- b=sZi9wHpbSS/eLsULcFxxrCTL6dZQCiNoRsGu+UZeextTKwoh/zC2wueLgP4N9nqiBUBB
- 0JUYaUx1oKTPmoYyIk6zMSHW8XdOGqG17nCNUq3rEp0pGddWPVFH6U5nY4BXlFoqXj6R
- RlTw86G8vzO0cRCcn3ch0/s6jIOY2q2yWRZiXnDG7flbYC2suGbbFqx6d++8BqnGYwwD
- 9hURVMRygUiUDV5S3Tnu/4H8VvmKGQkXCNLeTsOLeijbYelrfRocaHz8ktot3+73T2uw
- BRbByfv0bP/wA1WbQs41sqooCPkwruMU3l9ozNwx2Ce/8HulfSRFttCx0u0piIcNa6qF EQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2vd0y7at74-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 04 Oct 2019 18:51:55 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 4 Oct
- 2019 18:51:54 -0700
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (104.47.33.58) by
- SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Fri, 4 Oct 2019 18:51:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QGHYu2kIT/LBI10LNmO0/1v+g86+04zYpa8MLxwsIa/avmPuu3A+MgcoTFVts+Y0bY3hgfiE1J09zkLM2wkUmiJkO1O1hY85jhhwC6yDvl8q8O4sOk3JUAWU22qefBQej0DEMSuBcC7k579w1zAMKiGh9Eh9OrKCO9ckwtD+IhqUMCbus8Bsn4u4kF3hD9MyPqHwMOmSzZER1/DQMG/dZqi4v8DRxMBGhHzVsLEwy/zHZKT6DpkuKbHYT3XbmnMdvw8bp6q6L/nG7DAhxCfyIhmY/POs9XNba8u8ubCXZaUPbneXsGj7YBYXDSeyN5g2Knqwb2rPK2bUuqs3nTvPvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YQGfsH0shssQjKa2A9r/wSWebplsjsw02CKkIbDxKaE=;
- b=Ni3zHo7HdMER2cEjstbUkF9FQOcDWDffBKuwsWpeNZtXw9vhty1ZMAB0XWvfNE1skE43pbBJmhe0nYN/Zfb6Z53VC4C3/dcWDhIiclMI6Tc1vwdlZiGjM0dcfcK5zK5FLlfmaF4y94Dd/kk6VPj22CzInfCgKpkEvF8hwLQA8q2xdc+bqA7K9speccBxl2Kg9TFLI5kofG2vw2YccKPsndwjK1JkqsnUyogNhS2MAr79wyoTQx6HJZVe9MxWjRbbbh2+QtjE9e29pD9GZpGwHnU3sAlD6/ZsAVoz6nE8QH+oAb/r8WQGLLOtbjbmqzw4nXbzBFhMR9A1orHdx5/C8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YQGfsH0shssQjKa2A9r/wSWebplsjsw02CKkIbDxKaE=;
- b=c+OtHLALv6iwXt/FjENSOHyN4Ieu6FJwyl+GUIHydUhtZMIzXwhpDV2cYwiZreh0NARddZOsQ5idnNaU0T3cKFiCD/vnN0lUxLLwb0SbPc03n9/DkwsigVQZ9dOdOMLkQiggBKaSlh3wQRDdSXMwv/KDzOMyn3dPbNHX01CTI9s=
-Received: from MN2PR18MB2637.namprd18.prod.outlook.com (20.179.80.147) by
- MN2PR18MB3085.namprd18.prod.outlook.com (20.179.21.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.20; Sat, 5 Oct 2019 01:51:52 +0000
-Received: from MN2PR18MB2637.namprd18.prod.outlook.com
- ([fe80::cf1:1b59:ac77:5828]) by MN2PR18MB2637.namprd18.prod.outlook.com
- ([fe80::cf1:1b59:ac77:5828%7]) with mapi id 15.20.2305.023; Sat, 5 Oct 2019
- 01:51:52 +0000
-From:   Ganapathi Bhat <gbhat@marvell.com>
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-CC:     "emamd001@umn.edu" <emamd001@umn.edu>,
-        "kjlu@umn.edu" <kjlu@umn.edu>,
-        "smccaman@umn.edu" <smccaman@umn.edu>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Nishant Sarmukadam <nishants@marvell.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] [PATCH] mwifiex: pcie: Fix memory leak in
- mwifiex_pcie_init_evt_ring
-Thread-Topic: [EXT] [PATCH] mwifiex: pcie: Fix memory leak in
- mwifiex_pcie_init_evt_ring
-Thread-Index: AQHVevCvqZz3fSipjUm3Cukc3coKCqdLQXcA
-Date:   Sat, 5 Oct 2019 01:51:51 +0000
-Message-ID: <MN2PR18MB2637C5898C7F09F8C208439DA0990@MN2PR18MB2637.namprd18.prod.outlook.com>
-References: <20191004201649.25087-1-navid.emamdoost@gmail.com>
-In-Reply-To: <20191004201649.25087-1-navid.emamdoost@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [106.193.243.133]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7acb441c-cc51-4b3c-24f4-08d7493697d1
-x-ms-traffictypediagnostic: MN2PR18MB3085:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR18MB30856FA6735EA19E2FA7C622A0990@MN2PR18MB3085.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0181F4652A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(376002)(346002)(396003)(39860400002)(51914003)(189003)(199004)(66476007)(86362001)(55016002)(229853002)(558084003)(9686003)(66946007)(4326008)(3846002)(6116002)(66066001)(66556008)(316002)(6436002)(81166006)(81156014)(54906003)(6246003)(8936002)(446003)(71190400001)(476003)(26005)(33656002)(7416002)(7736002)(478600001)(74316002)(2906002)(5660300002)(25786009)(52536014)(6916009)(305945005)(186003)(11346002)(71200400001)(7696005)(256004)(76176011)(99286004)(76116006)(6506007)(102836004)(64756008)(14454004)(66446008)(8676002)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB3085;H:MN2PR18MB2637.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ztbXzWB5IRiryAQ2NegbdeiK3k6jaadVlwm4X8YXk5r845xyxiK/Fap9bR7NSA5ehYgeYhmfppGcqH6NTwj6UZJazIiy0EwYYhZYiu8vQFy5t9Db7bL719Qz8fBRnnznTtV4z3dYREV18DXWwFk7nYt/1NYOtPSo4+cyc6r7oWz7mK/LpD2VHHu1xj78/qNk0jOgZfYYIQY9Wd5UJSE+zTuQa+0V1hrjLU6u0yVInyIqfXQYHG0eJ37a8dEO9yOCRnfaWDviuv6RuZI0VZ3egB3fYOXJZzBe6C8Tf0GaEhVwD6LQ+ZfseA+viPdGLE+Lwy/FHT1ZJBnK6mMnaKWoV85fLHuYsrfMKC4rtVVEZaEVsFJTFNDlHxxEyJGqwoh3qR09elF7eKOHzBGCYU/2j86RRCjKFG9TtUf3vGd5Sxg=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726215AbfJECG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 22:06:57 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3247 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725887AbfJECG4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Oct 2019 22:06:56 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 304A96C75F61F2E24409;
+        Sat,  5 Oct 2019 10:06:54 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Sat, 5 Oct 2019
+ 10:06:46 +0800
+Subject: Re: [RFC PATCH] net: hns3: add devlink health dump support for hw mac
+ tbl
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     <jiri@mellanox.com>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1569759223-200101-1-git-send-email-linyunsheng@huawei.com>
+ <20190930092724.GB2211@nanopsycho>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <f82df09f-fe13-5583-2cac-5ceaf3aeff2a@huawei.com>
+Date:   Sat, 5 Oct 2019 10:06:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7acb441c-cc51-4b3c-24f4-08d7493697d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2019 01:51:51.8543
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NF2rTlDQ6GqopP9I4/mmjIx+ehU8GRBpRMOiLOcZimmDuIb2FqC71ICYarTiM5dXJCM7AgxQBrrS93eDueW5NA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3085
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-04_15:2019-10-03,2019-10-04 signatures=0
+In-Reply-To: <20190930092724.GB2211@nanopsycho>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Navid,
+On 2019/9/30 17:27, Jiri Pirko wrote:
+> Sun, Sep 29, 2019 at 02:13:43PM CEST, linyunsheng@huawei.com wrote:
+>> This patch adds the devlink health dump support for hw mac tbl,
+>> which helps to debug some hardware packet switching problem or
+>> misconfiguation of the hardware mac table.
+> 
+> So you basically make internal hw table available to the user to see if
+> I understand that correctly. There is a "devlink dpipe" api that
+> basically serves the purpose of describing the hw pipeline and also
+> allows user to see content of individual tables in the pipeline. Perhaps
+> that would be more suitable for you?
+> 
 
-> Fixes: 0732484b47b5 ("mwifiex: separate ring initialization and ring crea=
-tion
-> routines")
+Thanks.
+I will look into the "devlink dpipe" api.
+It seems the dpipe api is a little complicated than health api, and
+there seems to be no mention of it in man page in below:
+http://man7.org/linux/man-pages/man8/devlink.8.html
 
-Thanks for the this change as well;
+Any more detail info about "devlink dpipe" api would be very helpful.
 
-Acked-by: Ganapathi Bhat <gbhat@marvell.com>
+> 
+>>
+>> And diagnose and recover support has not been added because
+>> RAS and misc error handling has done the recover process, we
+>> may also support the recover process through the devlink health
+>> api in the future.
+> 
+> What would be the point for the reporter and what would you recover
+> from? It that related to the mac table? How?
 
-Regards,
-Ganapathi
+There is some error that can be detected by hw when it is accessing some
+internal memory, such as below error types defined in
+ethernet/hisilicon/hns3/hns3pf/hclge_err.c:
+
+static const struct hclge_hw_error hclge_ppp_mpf_abnormal_int_st1[] = {
+	{ .int_msk = BIT(0), .msg = "vf_vlan_ad_mem_ecc_mbit_err",
+	  .reset_level = HNAE3_GLOBAL_RESET },
+	{ .int_msk = BIT(1), .msg = "umv_mcast_group_mem_ecc_mbit_err",
+	  .reset_level = HNAE3_GLOBAL_RESET },
+	{ .int_msk = BIT(2), .msg = "umv_key_mem0_ecc_mbit_err",
+	  .reset_level = HNAE3_GLOBAL_RESET },
+	{ .int_msk = BIT(3), .msg = "umv_key_mem1_ecc_mbit_err",
+	  .reset_level = HNAE3_GLOBAL_RESET },
+.....
+
+The above errors can be reported to the driver through struct pci_error_handlers
+api, and the driver can record the error and recover the error by asserting a PF
+or global reset according to the error type.
+
+As for the relation to the mac table, we may need to dump everything including
+the internal memory content to further analyze the root cause of the problem.
+
+Does above make sense?
+
+Thanks for taking a look at this.
+
+> 
+> 
+>>
+>> Command example and output:
+>>
+>> root@(none):~# devlink health dump show pci/0000:7d:00.2 reporter hw_mac_tbl
+>> index: 556 mac: 33:33:00:00:00:01 vlan: 0 port: 0 type: 2 mc_mac_en: 1 egress_port: 255 egress_queue: 0 vsi: 0 mc bitmap:
+>>   1 0 0 0 0 0 0 0
+>> index: 648 mac: 00:18:2d:02:00:10 vlan: 0 port: 1 type: 0 mc_mac_en: 0 egress_port: 2 egress_queue: 0 vsi: 0
+>> index: 728 mac: 00:18:2d:00:00:10 vlan: 0 port: 0 type: 0 mc_mac_en: 0 egress_port: 0 egress_queue: 0 vsi: 0
+>> index: 1028 mac: 00:18:2d:01:00:10 vlan: 0 port: 2 type: 0 mc_mac_en: 0 egress_port: 1 egress_queue: 0 vsi: 0
+>> index: 1108 mac: 00:18:2d:03:00:10 vlan: 0 port: 3 type: 0 mc_mac_en: 0 egress_port: 3 egress_queue: 0 vsi: 0
+>> index: 1204 mac: 33:33:00:00:00:01 vlan: 0 port: 1 type: 2 mc_mac_en: 1 egress_port: 253 egress_queue: 0 vsi: 0 mc bitmap:
+>>   4 0 0 0 0 0 0 0
+>> index: 2844 mac: 01:00:5e:00:00:01 vlan: 0 port: 0 type: 2 mc_mac_en: 1 egress_port: 254 egress_queue: 0 vsi: 0 mc bitmap:
+>>   1 0 0 0 0 0 0 0
+>> index: 3460 mac: 01:00:5e:00:00:01 vlan: 0 port: 1 type: 2 mc_mac_en: 1 egress_port: 252 egress_queue: 0 vsi: 0 mc bitmap:
+>>   4 0 0 0 0 0 0 0
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>> drivers/net/ethernet/hisilicon/Kconfig             |   1 +
+>> .../net/ethernet/hisilicon/hns3/hns3pf/Makefile    |   2 +-
+>> .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  20 +-
+>> .../ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c | 201 +++++++++++++++++++++
+>> .../ethernet/hisilicon/hns3/hns3pf/hclge_devlink.h |  36 ++++
+>> .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |   3 +
+>> .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   2 +
+>> 7 files changed, 263 insertions(+), 2 deletions(-)
+>> create mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+>> create mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.h
+>>
+>> diff --git a/drivers/net/ethernet/hisilicon/Kconfig b/drivers/net/ethernet/hisilicon/Kconfig
+>> index 3892a20..48ec9e2 100644
+>> --- a/drivers/net/ethernet/hisilicon/Kconfig
+>> +++ b/drivers/net/ethernet/hisilicon/Kconfig
+>> @@ -102,6 +102,7 @@ config HNS3_HCLGE
+>> 	tristate "Hisilicon HNS3 HCLGE Acceleration Engine & Compatibility Layer Support"
+>> 	default m
+>> 	depends on PCI_MSI
+>> +	select NET_DEVLINK
+>> 	---help---
+>> 	  This selects the HNS3_HCLGE network acceleration engine & its hardware
+>> 	  compatibility layer. The engine would be used in Hisilicon hip08 family of
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/Makefile b/drivers/net/ethernet/hisilicon/hns3/hns3pf/Makefile
+>> index 0fb61d4..9840a7c 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/Makefile
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/Makefile
+>> @@ -6,6 +6,6 @@
+>> ccflags-y := -I $(srctree)/drivers/net/ethernet/hisilicon/hns3
+>>
+>> obj-$(CONFIG_HNS3_HCLGE) += hclge.o
+>> -hclge-objs = hclge_main.o hclge_cmd.o hclge_mdio.o hclge_tm.o hclge_mbx.o hclge_err.o  hclge_debugfs.o
+>> +hclge-objs = hclge_main.o hclge_cmd.o hclge_mdio.o hclge_tm.o hclge_mbx.o hclge_err.o  hclge_debugfs.o hclge_devlink.o
+>>
+>> hclge-$(CONFIG_HNS3_DCB) += hclge_dcb.o
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+>> index 4821fe0..09fc101 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+>> @@ -3,9 +3,9 @@
+>>
+>> #ifndef __HCLGE_CMD_H
+>> #define __HCLGE_CMD_H
+>> +#include <linux/etherdevice.h>
+>> #include <linux/types.h>
+>> #include <linux/io.h>
+>> -
+>> #define HCLGE_CMDQ_TX_TIMEOUT		30000
+>>
+>> struct hclge_dev;
+>> @@ -292,6 +292,7 @@ enum hclge_opcode_type {
+>> 	HCLGE_TM_QCN_MEM_INT_CFG	= 0x1A14,
+>> 	HCLGE_PPP_CMD0_INT_CMD		= 0x2100,
+>> 	HCLGE_PPP_CMD1_INT_CMD		= 0x2101,
+>> +	HCLGE_PPP_MAC_VLAN_IDX_RD       = 0x2104,
+>> 	HCLGE_MAC_ETHERTYPE_IDX_RD      = 0x2105,
+>> 	HCLGE_NCSI_INT_EN		= 0x2401,
+>> };
+>> @@ -750,6 +751,23 @@ struct hclge_mac_vlan_remove_cmd {
+>> 	u8      rsv[4];
+>> };
+>>
+>> +#pragma pack(1)
+>> +struct hclge_mac_vlan_idx_rd_cmd {
+>> +	u8      rsv0;
+>> +	u8      resp_code;
+>> +	__le16  vlan_tag;
+>> +	u8      mac_addr[ETH_ALEN];
+>> +	__le16  port;
+>> +	u8      entry_type;
+>> +	u8      mc_mac_en;
+>> +	__le16  egress_port;
+>> +	__le16  egress_queue;
+>> +	__le16  vsi;
+>> +	__le32  index;
+>> +};
+>> +
+>> +#pragma pack()
+>> +
+>> struct hclge_vlan_filter_ctrl_cmd {
+>> 	u8 vlan_type;
+>> 	u8 vlan_fe;
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+>> new file mode 100644
+>> index 0000000..3fbbd33
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+>> @@ -0,0 +1,201 @@
+>> +// SPDX-License-Identifier: GPL-2.0+
+>> +// Copyright (c) 2018-2019 Hisilicon Limited.
+>> +
+>> +#include <linux/pci.h>
+>> +#include <linux/netdevice.h>
+>> +#include <net/devlink.h>
+>> +
+>> +#include "hclge_cmd.h"
+>> +#include "hclge_devlink.h"
+>> +
+>> +#define HCLGE_HW_MAC_TBL_MAX	4223U
+>> +#define HCLGE_HW_MAC_MC_TYPY	2U
+>> +
+>> +/* dummpy for now */
+>> +static const struct devlink_ops hclge_dl_ops = {
+>> +};
+>> +
+>> +static int
+>> +hclge_hw_mac_reporter_dump(struct devlink_health_reporter *reporter,
+>> +			   struct devlink_fmsg *fmsg, void *priv_ctx)
+>> +{
+>> +	struct hclge_dev *hdev = devlink_health_reporter_priv(reporter);
+>> +	struct hclge_mac_vlan_idx_rd_cmd *mac_cmd;
+>> +	char macstr[3 * ETH_ALEN + 1];
+>> +	struct hclge_desc desc[3];
+>> +	int ret;
+>> +	u32 i;
+>> +
+>> +	for (i = 0; i < HCLGE_HW_MAC_TBL_MAX; i++) {
+>> +		u32 value;
+>> +
+>> +		hclge_cmd_setup_basic_desc(&desc[0], HCLGE_PPP_MAC_VLAN_IDX_RD,
+>> +					   true);
+>> +		desc[0].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
+>> +
+>> +		hclge_cmd_setup_basic_desc(&desc[1], HCLGE_PPP_MAC_VLAN_IDX_RD,
+>> +					   true);
+>> +		desc[1].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
+>> +
+>> +		hclge_cmd_setup_basic_desc(&desc[2], HCLGE_PPP_MAC_VLAN_IDX_RD,
+>> +					   true);
+>> +
+>> +		mac_cmd = (struct hclge_mac_vlan_idx_rd_cmd *)desc[0].data;
+>> +		mac_cmd->index = cpu_to_le32(i);
+>> +		ret = hclge_cmd_send(&hdev->hw, desc, 3);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		if (mac_cmd->resp_code)
+>> +			continue;
+>> +
+>> +		ret = devlink_fmsg_obj_nest_start(fmsg);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = devlink_fmsg_u32_pair_put(fmsg, "index", i);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		snprintf(macstr, sizeof(macstr), "%pM", mac_cmd->mac_addr);
+>> +		ret = devlink_fmsg_string_pair_put(fmsg, "mac", macstr);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		value = le16_to_cpu(mac_cmd->vlan_tag);
+>> +		ret = devlink_fmsg_u32_pair_put(fmsg, "vlan", value);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		value = le16_to_cpu(mac_cmd->port);
+>> +		ret = devlink_fmsg_u32_pair_put(fmsg, "port", value);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = devlink_fmsg_u8_pair_put(fmsg, "type",
+>> +					       mac_cmd->entry_type);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = devlink_fmsg_u8_pair_put(fmsg, "mc_mac_en",
+>> +					       mac_cmd->mc_mac_en);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		value = le16_to_cpu(mac_cmd->egress_port);
+>> +		ret = devlink_fmsg_u32_pair_put(fmsg, "egress_port",
+>> +						value);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		value = le16_to_cpu(mac_cmd->egress_queue);
+>> +		ret = devlink_fmsg_u32_pair_put(fmsg, "egress_queue",
+>> +						value);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		value = le32_to_cpu(mac_cmd->vsi);
+>> +		ret = devlink_fmsg_u32_pair_put(fmsg, "vsi", value);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		if (mac_cmd->entry_type == HCLGE_HW_MAC_MC_TYPY) {
+>> +			int j;
+>> +
+>> +			ret = devlink_fmsg_arr_pair_nest_start(fmsg,
+>> +							       "mc bitmap");
+>> +			if (ret)
+>> +				return ret;
+>> +
+>> +			for (j = 0; j < 6; j++) {
+>> +				value = le32_to_cpu(desc[1].data[j]);
+>> +				ret = devlink_fmsg_u32_put(fmsg, value);
+>> +				if (ret)
+>> +					return ret;
+>> +			}
+>> +
+>> +			for (j = 0; j < 2; j++) {
+>> +				value = le32_to_cpu(desc[2].data[j]);
+>> +				ret = devlink_fmsg_u32_put(fmsg, value);
+>> +				if (ret)
+>> +					return ret;
+>> +			}
+>> +
+>> +			ret = devlink_fmsg_arr_pair_nest_end(fmsg);
+>> +			if (ret)
+>> +				return ret;
+>> +		}
+>> +
+>> +		ret = devlink_fmsg_obj_nest_end(fmsg);
+>> +		if (ret)
+>> +			return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct
+>> +devlink_health_reporter_ops hclge_hw_mac_tbl_reporter_ops = {
+>> +		.name = "hw_mac_tbl",
+>> +		.dump = hclge_hw_mac_reporter_dump,
+>> +};
+>> +
+>> +int hclge_dl_register(struct hclge_dev *hdev)
+>> +{
+>> +	struct hclge_dl *priv;
+>> +	struct devlink *dl;
+>> +	int ret;
+>> +
+>> +	dl = devlink_alloc(&hclge_dl_ops, sizeof(struct hclge_dl));
+>> +	if (!dl) {
+>> +		dev_err(&hdev->pdev->dev, "devlink_alloc failed");
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	hclge_link_hdev_to_dl(hdev, dl);
+>> +
+>> +	ret = devlink_register(dl, &hdev->pdev->dev);
+>> +	if (ret) {
+>> +		dev_err(&hdev->pdev->dev, "devlink_register failed. ret=%d",
+>> +			ret);
+>> +		hclge_link_hdev_to_dl(hdev, NULL);
+>> +		goto err;
+>> +	}
+>> +
+>> +	priv = devlink_priv(dl);
+>> +
+>> +	priv->hw_mac_tbl =
+>> +		devlink_health_reporter_create(dl,
+>> +					       &hclge_hw_mac_tbl_reporter_ops,
+>> +					       0, false, hdev);
+>> +
+>> +	if (IS_ERR(priv->hw_mac_tbl)) {
+>> +		ret = PTR_ERR(priv->hw_mac_tbl);
+>> +		dev_err(&hdev->pdev->dev,
+>> +			"Failed to create hw mac tbl reporter, err = %d\n",
+>> +			ret);
+>> +		goto err;
+>> +	}
+>> +
+>> +	return 0;
+>> +err:
+>> +	hclge_link_hdev_to_dl(hdev, NULL);
+>> +	devlink_free(dl);
+>> +	return ret;
+>> +}
+>> +
+>> +void hclge_dl_unregister(struct hclge_dev *hdev)
+>> +{
+>> +	struct devlink *dl = hdev->dl;
+>> +	struct hclge_dl *priv;
+>> +
+>> +	if (!dl)
+>> +		return;
+>> +
+>> +	priv = devlink_priv(dl);
+>> +	if (!IS_ERR_OR_NULL(priv->hw_mac_tbl))
+>> +		devlink_health_reporter_destroy(priv->hw_mac_tbl);
+>> +
+>> +	devlink_unregister(dl);
+>> +	devlink_free(dl);
+>> +}
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.h
+>> new file mode 100644
+>> index 0000000..da33380
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.h
+>> @@ -0,0 +1,36 @@
+>> +// SPDX-License-Identifier: GPL-2.0+
+>> +// Copyright (c) 2018-2019 Hisilicon Limited.
+>> +
+>> +#ifndef __HCLGE_DEVLINK_H
+>> +#define __HCLGE_DEVLINK_H
+>> +
+>> +#include "hclge_main.h"
+>> +
+>> +struct hclge_dl {
+>> +	struct hclge_dev *hdev;	/* back ptr to the controlling dev */
+>> +	struct devlink_health_reporter *hw_mac_tbl;
+>> +};
+>> +
+>> +static inline struct hclge_dev *hclge_get_hdev_from_dl(struct devlink *dl)
+>> +{
+>> +	return ((struct hclge_dl *)devlink_priv(dl))->hdev;
+>> +}
+>> +
+>> +/* To clear devlink pointer from hdev, pass NULL dl */
+>> +static inline void hclge_link_hdev_to_dl(struct hclge_dev *hdev,
+>> +					 struct devlink *dl)
+>> +{
+>> +	hdev->dl = dl;
+>> +
+>> +	/* add a back pointer in dl to hdev */
+>> +	if (dl) {
+>> +		struct hclge_dl *hdev_dl = devlink_priv(dl);
+>> +
+>> +		hdev_dl->hdev = hdev;
+>> +	}
+>> +}
+>> +
+>> +int hclge_dl_register(struct hclge_dev *hdev);
+>> +void hclge_dl_unregister(struct hclge_dev *hdev);
+>> +
+>> +#endif
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> index fd7f943..23f46e8 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> @@ -16,6 +16,7 @@
+>> #include <net/rtnetlink.h>
+>> #include "hclge_cmd.h"
+>> #include "hclge_dcb.h"
+>> +#include "hclge_devlink.h"
+>> #include "hclge_main.h"
+>> #include "hclge_mbx.h"
+>> #include "hclge_mdio.h"
+>> @@ -9290,6 +9291,7 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+>>
+>> 	hclge_state_init(hdev);
+>> 	hdev->last_reset_time = jiffies;
+>> +	hclge_dl_register(hdev);
+>>
+>> 	dev_info(&hdev->pdev->dev, "%s driver initialization finished.\n",
+>> 		 HCLGE_DRIVER_NAME);
+>> @@ -9430,6 +9432,7 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+>> 	struct hclge_dev *hdev = ae_dev->priv;
+>> 	struct hclge_mac *mac = &hdev->hw.mac;
+>>
+>> +	hclge_dl_unregister(hdev);
+>> 	hclge_misc_affinity_teardown(hdev);
+>> 	hclge_state_uninit(hdev);
+>>
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+>> index 3e9574a..f83fe21 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+>> @@ -8,6 +8,7 @@
+>> #include <linux/phy.h>
+>> #include <linux/if_vlan.h>
+>> #include <linux/kfifo.h>
+>> +#include <net/devlink.h>
+>>
+>> #include "hclge_cmd.h"
+>> #include "hnae3.h"
+>> @@ -835,6 +836,7 @@ struct hclge_dev {
+>> 	/* affinity mask and notify for misc interrupt */
+>> 	cpumask_t affinity_mask;
+>> 	struct irq_affinity_notify affinity_notify;
+>> +	struct devlink *dl;
+>> };
+>>
+>> /* VPort level vlan tag configuration for TX direction */
+>> -- 
+>> 2.8.1
+>>
+> 
+> .
+> 
+
