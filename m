@@ -2,58 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4735ACCD26
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 00:51:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDEC0CCD4D
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 01:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725978AbfJEWvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 18:51:41 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40022 "EHLO
+        id S1726083AbfJEXai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 19:30:38 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40364 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbfJEWvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 18:51:41 -0400
+        with ESMTP id S1725801AbfJEXai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 19:30:38 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8421B133F308D;
-        Sat,  5 Oct 2019 15:51:40 -0700 (PDT)
-Date:   Sat, 05 Oct 2019 15:51:37 -0700 (PDT)
-Message-Id: <20191005.155137.1627674818732662913.davem@davemloft.net>
-To:     dmitry.torokhov@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk
-Subject: Re: [PATCH 0/3] net: phy: switch to using fwnode_gpiod_get_index
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0E9061341111C;
+        Sat,  5 Oct 2019 16:30:37 -0700 (PDT)
+Date:   Sat, 05 Oct 2019 16:29:39 -0700 (PDT)
+Message-Id: <20191005.162939.1991929224721158826.davem@davemloft.net>
+To:     jakub.kicinski@netronome.com
+Cc:     netdev@vger.kernel.org, davejwatson@fb.com, borisp@mellanox.com,
+        aviadye@mellanox.com, john.fastabend@gmail.com,
+        daniel@iogearbox.net
+Subject: Re: [PATCH net-next 0/6] net/tls: add ctrl path tracing and
+ statistics
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191004231356.135996-1-dmitry.torokhov@gmail.com>
-References: <20191004231356.135996-1-dmitry.torokhov@gmail.com>
+In-Reply-To: <20191004231927.21134-1-jakub.kicinski@netronome.com>
+References: <20191004231927.21134-1-jakub.kicinski@netronome.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 05 Oct 2019 15:51:40 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 05 Oct 2019 16:30:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Date: Fri,  4 Oct 2019 16:13:53 -0700
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
+Date: Fri,  4 Oct 2019 16:19:21 -0700
 
-> This series switches phy drivers form using fwnode_get_named_gpiod() and
-> gpiod_get_from_of_node() that are scheduled to be removed in favor
-> of fwnode_gpiod_get_index() that behaves more like standard
-> gpiod_get_index() and will potentially handle secondary software
-> nodes in cases we need to augment platform firmware.
-> 
-> This depends on the new code that can be bound in
-> ib-fwnode-gpiod-get-index immutable branch of Linus' Walleij tree:
-> 
->         git pull git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git ib-fwnode-gpiod-get-index
-> 
-> I hope that it would be possible to pull in this immutable branch and
-> not wait until after 5.5 merge window.
+> This set adds trace events related to TLS offload and basic MIB stats
+> for TLS.
 
-For series:
-
-Acked-by: David S. Miller <davem@davemloft.net>
+Series applied, thanks Jakub.
