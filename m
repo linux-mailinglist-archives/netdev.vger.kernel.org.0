@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 518A9CC8C0
+	by mail.lfdr.de (Postfix) with ESMTP id C49F7CC8C1
 	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 10:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727523AbfJEIZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 04:25:24 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38197 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725862AbfJEIZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 04:25:23 -0400
-Received: by mail-pf1-f193.google.com with SMTP id h195so5340757pfe.5
-        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 01:25:23 -0700 (PDT)
+        id S1727548AbfJEIZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 04:25:27 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40993 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725862AbfJEIZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 04:25:26 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q7so5323096pfh.8
+        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 01:25:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3n6oBPP8THr+Q5q143x/UKX/r66TtV/GuGpDebRbkXE=;
-        b=WltONObssCFpsOrpe1F88q708A58GGcS+XN7+Rx2AmJ45rkli5t5S48MtqVU6393hi
-         nNIEcB99w5rdWImjKpqW4T8A9NxPhhcLEJy0FayVIAOoltcz2TaQLwyANyBOyefq0cWK
-         WB+jr707xRtAsKiDx/vwz89C/fSs0KP3QTvCNgrpxTCJ/u1qmWJekmpF9Wpv+PCOGGxo
-         jK0d3HaPa6KSWOS9cjwWgQIQ1xKuVkV3h9NculQ0TUA089pk4uup1mPwvMagGkruwOD+
-         V9bebsJdc2090FSintrqgKrnB5Jxx1RrLuNs4cPT0rZR/sHHCuc1K2BKFja8n+ADj+2Q
-         KN7A==
+        bh=MFmnRi94+zpsRDYdL6fIBXxi3C/274QzZDxbFl/sdNw=;
+        b=LysozNL57Y+Y7yVaAGZ1xqcCC2Y41oPw0B1QbObsiaoul9WqnfqvMpRs2Hee8Ss0Vb
+         uzTN3JPuXuf8lyc+tf4PgDqaq7JOHiAMyzsFt+2aN3+eI4qGnVh8Lsjsu2uaXzguYg/F
+         zFBIqg96pPMBuBIQ/gVtvRktuPfeLJ9s+4dPiYPF6g9S5PEa7OBt83MOaWjrgW2CbTjb
+         x9oRfs/Llst2JiJV0A82rPCoS040fEdJ/wiTPeWtWa4eNDd1HKkzXuoNakLP2dN3Z/CN
+         40niLzHaC457vI6mFsz2vfuCMcLazGvJvzr/HUJ1HGHyI2zkQ5giy45BeyEoub+RyXzM
+         +ReQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3n6oBPP8THr+Q5q143x/UKX/r66TtV/GuGpDebRbkXE=;
-        b=VLSB0vjBaWXZIm5NLGCKQmUPnQ6IlgBq5/lfzuiGo1RK9ah50edC5FhFSVdq4qyLoF
-         tLUpxTd1gRh70XP+gV9Z+A0l4/UeLen4u2Ue8Oug1Re+zhBO0xRiFb3gY/4kMKnx9+Uw
-         rJjX2WAzFhrnB76iSPCxGi06rUZDjyKCLTdWF4MSb1o13xb6q3gZtnbwY83QtbpF/D7j
-         QJGlipYHz//RzxHGUd3TSFzLajRRLDp8cHTK/FzPYdZrjKZ7fR7UoxRKgwdu2u2poJjh
-         fakotIKIWsG4ZiqUamjtd6kswx0kojEgSnaK7ibutrDfxwz2Jb7zIIdQsUrU0nSjdj7t
-         HaBQ==
-X-Gm-Message-State: APjAAAWrZ2sYiV9vTiGa9ZO7Yg/Vq+VWi3w3E0eAinOJgh1C8L8Pt+CL
-        gyBkGOmnpepT64/zjxis0out2NV1W6Bq
-X-Google-Smtp-Source: APXvYqx3YQiK2kbQwNjIZ1yeJzoY/mFfQUqih0VYVE3mcHhQ0Ziua7Ea641PKxjF6PVFGpl5akPYsA==
-X-Received: by 2002:a63:4924:: with SMTP id w36mr20078314pga.113.1570263923067;
-        Sat, 05 Oct 2019 01:25:23 -0700 (PDT)
+        bh=MFmnRi94+zpsRDYdL6fIBXxi3C/274QzZDxbFl/sdNw=;
+        b=A2D8ATLFaQmkoT/yNPZ/oHVTS2BLhHbudI4zzx4kBjs/o8GrdGN82qAD6yzRrF0ZM8
+         RdhW3BJcgG2LWLyDh/oHku/F0FoztjAdEFq0Lhsxxe/qI6ZfgkKPmLP0pmFpdzqgQlPy
+         rPHrBZQFFj4Mj8cakAM4WUXoW6UOK9uY8OfEeiK9jREoHR67y4gLgyOgJH9l6BOeRCmM
+         s3aqpf/KYODHO+apg8B5rq59mT8Oly1htwZCOyi2R0ZZF8P8MTXwWzGfIIhautcHeVsR
+         jtgBm2OR7cw1IWStFDkjw3ug7yHklsx3giI2fQ46gAoqppMVEPXmf068NyOtu3QA+lHO
+         05Qw==
+X-Gm-Message-State: APjAAAXgIjkJe2Ai+haBEVD1825KvTvYUiYRJmc6FadJy/jnTXaDIJU+
+        JCrEq6WxlqA7S9tSKCSdHA==
+X-Google-Smtp-Source: APXvYqzR+SCv03HnmvIXzL30K79rA7O7Ba6g1M2L7smh/CYMsZNBZ2VG9Z/kzJrF+mTWUKHBW6X6aw==
+X-Received: by 2002:a63:531d:: with SMTP id h29mr6109999pgb.52.1570263925687;
+        Sat, 05 Oct 2019 01:25:25 -0700 (PDT)
 Received: from localhost.localdomain ([106.254.212.20])
-        by smtp.gmail.com with ESMTPSA id dw19sm7161838pjb.27.2019.10.05.01.25.20
+        by smtp.gmail.com with ESMTPSA id dw19sm7161838pjb.27.2019.10.05.01.25.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Oct 2019 01:25:22 -0700 (PDT)
+        Sat, 05 Oct 2019 01:25:25 -0700 (PDT)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         "David S . Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next v5 2/4] samples: pktgen: fix proc_cmd command result check logic
-Date:   Sat,  5 Oct 2019 17:25:07 +0900
-Message-Id: <20191005082509.16137-3-danieltimlee@gmail.com>
+Subject: [PATCH net-next v5 3/4] samples: pktgen: add helper functions for IP(v4/v6) CIDR parsing
+Date:   Sat,  5 Oct 2019 17:25:08 +0900
+Message-Id: <20191005082509.16137-4-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191005082509.16137-1-danieltimlee@gmail.com>
 References: <20191005082509.16137-1-danieltimlee@gmail.com>
@@ -62,77 +62,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This commit adds CIDR parsing and IP validate helper function to parse
+single IP or range of IP with CIDR. (e.g. 198.18.0.0/15)
 
-Currently, proc_cmd is used to dispatch command to 'pg_ctrl', 'pg_thread',
-'pg_set'. proc_cmd is designed to check command result with grep the
-"Result:", but this might fail since this string is only shown in
-'pg_thread' and 'pg_set'.
-
-This commit fixes this logic by grep-ing the "Result:" string only when
-the command is not for 'pg_ctrl'.
-
-For clarity of an execution flow, 'errexit' flag has been set.
-
-To cleanup pktgen on exit, trap has been added for EXIT signal.
+Validating the address should be preceded prior to the parsing.
+Helpers will be used in prior to set target address in samples/pktgen.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
-Changes since v5:
- * when script runs sudo, run 'pg_ctrl "reset"' on EXIT with trap
+Changes since v3:
+ * Set errexit option to stop script execution on error
 
- samples/pktgen/functions.sh | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+Changes since v4:
+ * Set errexit option moved to previous commit
+ * previously, the reason 'parse_addr' won't exit on error was using
+   here-string which runs on subshell.
+ * to avoid this, 'validate_addr' is removed from the 'parse_addr' flow.
+ * to remove duplicated comparison, added 'in_between' helper func
+
+ samples/pktgen/functions.sh | 137 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 134 insertions(+), 3 deletions(-)
 
 diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
-index 4af4046d71be..40873a5d1461 100644
+index 40873a5d1461..858e74ae2279 100644
 --- a/samples/pktgen/functions.sh
 +++ b/samples/pktgen/functions.sh
-@@ -5,6 +5,8 @@
- # Author: Jesper Dangaaard Brouer
- # License: GPL
- 
-+set -o errexit
-+
- ## -- General shell logging cmds --
- function err() {
-     local exitcode=$1
-@@ -58,6 +60,7 @@ function pg_set() {
- function proc_cmd() {
-     local result
-     local proc_file=$1
-+    local status=0
-     # after shift, the remaining args are contained in $@
-     shift
-     local proc_ctrl=${PROC_DIR}/$proc_file
-@@ -73,13 +76,13 @@ function proc_cmd() {
- 	echo "cmd: $@ > $proc_ctrl"
-     fi
-     # Quoting of "$@" is important for space expansion
--    echo "$@" > "$proc_ctrl"
--    local status=$?
-+    echo "$@" > "$proc_ctrl" || status=$?
- 
--    result=$(grep "Result: OK:" $proc_ctrl)
--    # Due to pgctrl, cannot use exit code $? from grep
--    if [[ "$result" == "" ]]; then
--	grep "Result:" $proc_ctrl >&2
-+    if [[ "$proc_file" != "pgctrl" ]]; then
-+        result=$(grep "Result: OK:" $proc_ctrl) || true
-+        if [[ "$result" == "" ]]; then
-+            grep "Result:" $proc_ctrl >&2
-+        fi
-     fi
-     if (( $status != 0 )); then
- 	err 5 "Write error($status) occurred cmd: \"$@ > $proc_ctrl\""
-@@ -105,6 +108,8 @@ function pgset() {
-     fi
+@@ -168,6 +168,137 @@ function get_node_cpus()
+ 	echo $node_cpu_list
  }
  
-+[[ $EUID -eq 0 ]] && trap 'pg_ctrl "reset"' EXIT
++# Check $1 is in between $2, $3 ($2 <= $1 <= $3)
++function in_between() { [[ ($1 -ge $2) && ($1 -le $3) ]] ; }
 +
- ## -- General shell tricks --
++# Extend shrunken IPv6 address.
++# fe80::42:bcff:fe84:e10a => fe80:0:0:0:42:bcff:fe84:e10a
++function extend_addr6()
++{
++    local addr=$1
++    local sep=: sep2=::
++    local sep_cnt=$(tr -cd $sep <<< $1 | wc -c)
++    local shrink
++
++    # separator count should be (2 <= $sep_cnt <= 7)
++    if ! (in_between $sep_cnt 2 7); then
++        err 5 "Invalid IP6 address: $1"
++    fi
++
++    # if shrink '::' occurs multiple, it's malformed.
++    shrink=( $(egrep -o "$sep{2,}" <<< $addr) )
++    if [[ ${#shrink[@]} -ne 0 ]]; then
++        if [[ ${#shrink[@]} -gt 1 || ( ${shrink[0]} != $sep2 ) ]]; then
++            err 5 "Invalid IP6 address: $1"
++        fi
++    fi
++
++    # add 0 at begin & end, and extend addr by adding :0
++    [[ ${addr:0:1} == $sep ]] && addr=0${addr}
++    [[ ${addr: -1} == $sep ]] && addr=${addr}0
++    echo "${addr/$sep2/$(printf ':0%.s' $(seq $[8-sep_cnt])):}"
++}
++
++# Given a single IP(v4/v6) address, whether it is valid.
++function validate_addr()
++{
++    # check function is called with (funcname)6
++    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
++    local bitlen=$[ IP6 ? 128 : 32 ]
++    local len=$[ IP6 ? 8 : 4 ]
++    local max=$[ 2**(len*2)-1 ]
++    local net prefix
++    local addr sep
++
++    IFS='/' read net prefix <<< $1
++    [[ $IP6 ]] && net=$(extend_addr6 $net)
++
++    # if prefix exists, check (0 <= $prefix <= $bitlen)
++    if [[ -n $prefix ]]; then
++        if ! (in_between $prefix 0 $bitlen); then
++            err 5 "Invalid prefix: /$prefix"
++        fi
++    fi
++
++    # set separator for each IP(v4/v6)
++    [[ $IP6 ]] && sep=: || sep=.
++    IFS=$sep read -a addr <<< $net
++
++    # array length
++    if [[ ${#addr[@]} != $len ]]; then
++        err 5 "Invalid IP$IP6 address: $1"
++    fi
++
++    # check each digit (0 <= $digit <= $max)
++    for digit in "${addr[@]}"; do
++        [[ $IP6 ]] && digit=$[ 16#$digit ]
++        if ! (in_between $digit 0 $max); then
++            err 5 "Invalid IP$IP6 address: $1"
++        fi
++    done
++
++    return 0
++}
++
++function validate_addr6() { validate_addr $@ ; }
++
++# Given a single IP(v4/v6) or CIDR, return minimum and maximum IP addr.
++function parse_addr()
++{
++    # check function is called with (funcname)6
++    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
++    local net prefix
++    local min_ip max_ip
++
++    IFS='/' read net prefix <<< $1
++    [[ $IP6 ]] && net=$(extend_addr6 $net)
++
++    if [[ -z $prefix ]]; then
++        min_ip=$net
++        max_ip=$net
++    else
++        # defining array for converting Decimal 2 Binary
++        # 00000000 00000001 00000010 00000011 00000100 ...
++        local d2b='{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}'
++        [[ $IP6 ]] && d2b+=$d2b
++        eval local D2B=($d2b)
++
++        local bitlen=$[ IP6 ? 128 : 32 ]
++        local remain=$[ bitlen-prefix ]
++        local octet=$[ IP6 ? 16 : 8 ]
++        local min_mask max_mask
++        local min max
++        local ip_bit
++        local ip sep
++
++        # set separator for each IP(v4/v6)
++        [[ $IP6 ]] && sep=: || sep=.
++        IFS=$sep read -ra ip <<< $net
++
++        min_mask="$(printf '1%.s' $(seq $prefix))$(printf '0%.s' $(seq $remain))"
++        max_mask="$(printf '0%.s' $(seq $prefix))$(printf '1%.s' $(seq $remain))"
++
++        # calculate min/max ip with &,| operator
++        for i in "${!ip[@]}"; do
++            digit=$[ IP6 ? 16#${ip[$i]} : ${ip[$i]} ]
++            ip_bit=${D2B[$digit]}
++
++            idx=$[ octet*i ]
++            min[$i]=$[ 2#$ip_bit & 2#${min_mask:$idx:$octet} ]
++            max[$i]=$[ 2#$ip_bit | 2#${max_mask:$idx:$octet} ]
++            [[ $IP6 ]] && { min[$i]=$(printf '%X' ${min[$i]});
++                            max[$i]=$(printf '%X' ${max[$i]}); }
++        done
++
++        min_ip=$(IFS=$sep; echo "${min[*]}")
++        max_ip=$(IFS=$sep; echo "${max[*]}")
++    fi
++
++    echo $min_ip $max_ip
++}
++
++function parse_addr6() { parse_addr $@ ; }
++
+ # Given a single or range of port(s), return minimum and maximum port number.
+ function parse_ports()
+ {
+@@ -190,9 +321,9 @@ function validate_ports()
+     local min_port=$1
+     local max_port=$2
  
- function root_check_run_with_sudo() {
+-    # 0 < port < 65536
+-    if [[ $min_port -gt 0 && $min_port -lt 65536 ]]; then
+-	if [[ $max_port -gt 0 && $max_port -lt 65536 ]]; then
++    # 1 <= port <= 65535
++    if (in_between $min_port 1 65535); then
++	if (in_between $max_port 1 65535); then
+ 	    if [[ $min_port -le $max_port ]]; then
+ 		return 0
+ 	    fi
 -- 
 2.20.1
 
