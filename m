@@ -2,113 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98FCDCC6A4
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 01:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8BF6CC6E3
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 02:25:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731596AbfJDXrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Oct 2019 19:47:09 -0400
-Received: from mail-qt1-f177.google.com ([209.85.160.177]:34847 "EHLO
-        mail-qt1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbfJDXrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 19:47:08 -0400
-Received: by mail-qt1-f177.google.com with SMTP id m15so10968772qtq.2
-        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 16:47:08 -0700 (PDT)
+        id S1728172AbfJEAV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Oct 2019 20:21:26 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:41451 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbfJEAV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Oct 2019 20:21:26 -0400
+Received: by mail-qt1-f195.google.com with SMTP id d16so10990064qtq.8
+        for <netdev@vger.kernel.org>; Fri, 04 Oct 2019 17:21:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=47CXNoT/kSH5ycRh7j1vW5rNHN5aWIAEmJwiS7zuX4Q=;
-        b=ettzJgmlWoFyRq10V3MYPk/2PWPrdxH7gaqCr/tdTd+YWqzchYofOjbn8Vd/SNjKeP
-         1Gge1eRhwByVgZ2F4peDw9Z5MoPkXPX6w6e/mVFPAIP+MIVKgDvGUHOQpG88LbdQGQcf
-         YWoeqLMhckQs6F0+IGHcl1jWTQYMW5h9rdQYhZueFZX3A3ozm6q4AWuj3jxr3tXIDImI
-         LooYV2j0Gj/MpN7eymc0vX1Qg/gkPTxWU1Q2qC43pk6n63OBorR5roH6IIQorUbnDBAT
-         YhaIehusdMq3rk7cYJW5xjbf7fBxTQf2n08ddzgsYOF9CVWR0CihxNYJo7eSBwVyl2Xl
-         mAMA==
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=3BXMRo7GcHR6jbOQn8vhsjnlmJpeUZMP1yGrNaTGUq4=;
+        b=aqkErZ3vSx2SVrxJXsJVZVSziSYPhXGf9l8Z3WaNiIRgPjqlU+ZmGjRTYFi9RKBlTM
+         yjgG2UGL0PzUbbGp+j8YSHbz47ZDpTZmFw1tvctzuVWU5/FWNly51hhM/yDrbGcMQugP
+         +V88bPkckEjN2VbNQkHC1jFzVRa4VG67y4DEFjvUAZ83CI2yzWyR0xdkeyXqzaa713bm
+         lOcIwMTpB9ZdQ89dkq5voKksHTSwtBCuY/49kR+FJaM51SAXwFCkxEf55Kv5nCqU1fvi
+         6whIgLVdE5NJEJD4xJPtYaBJdy4iUHukac/oSu2Eb1swUS5At/Dt3NbyXppNX3daVoI9
+         8KQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=47CXNoT/kSH5ycRh7j1vW5rNHN5aWIAEmJwiS7zuX4Q=;
-        b=kbWfrgbYkWoV0xW+bclY/lP7tshEDnBAqS/3IPHm0F5AxRxgTvY+Yd4tLcLfnRwMYO
-         fPsRNPWa3VgIXhsVrD0OHxobjDGGdoP/i+iNaWGzCX+ERLxhHhToLXwnUYS5SBql4pQK
-         8mKgr/2nT038UNRScp9XTFBoLuNO1dal92m5aBvd9RLE9CXX7i8H0LZTDXOqzxqenuBg
-         CcgZRLdcBQwuXCMfNLtemB4AI/qyXAJ536zsnfTmnsSsFyeEyyGQn6EmckVkyCsCc7+E
-         Y2gyg5rSbGISJzHMwfz++cAbhbC5Qg6S9vkMrqCJYzAuzjvQAYwsZkVhlNAZKjQdVJLw
-         2EWw==
-X-Gm-Message-State: APjAAAXdPDedSKXm6dPRSFW1rdyMyxKYjLRxqbZ2rfwvTYzdZ70UAWpc
-        MJvKe1l+3Nso56UnlYNJTLel3g==
-X-Google-Smtp-Source: APXvYqyJyKDlKMaUYl/1d3dSWhDgBjUxV3++XWtrtmmq8ogv5vORznczfr/qaCe5wp5sqVbA+WD6rQ==
-X-Received: by 2002:a0c:fdcc:: with SMTP id g12mr16978271qvs.104.1570232827717;
-        Fri, 04 Oct 2019 16:47:07 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 54sm5505867qts.75.2019.10.04.16.47.06
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=3BXMRo7GcHR6jbOQn8vhsjnlmJpeUZMP1yGrNaTGUq4=;
+        b=LZnm81n+qmOif/7kApbYMyIo4HD59pWNlhXFlcvs87p24Hzn/cs8AUMVzU8q60SoLK
+         GPJQC9yo8f4d1CyDNikVLJLsAj+t211eXbfTN0ZtYJZ8rhyQ/Wi9MRjrcohGz1rgm8Lw
+         Bow3t5qioqOyrQEV4lfXTNg5DV4hRZX4wwV8WQPVw7Upmn4AM6BEZ+P/GYmxR6QrkcM9
+         VlysM5opr0sAOuvpghWxjesmnZIRjwJ+AXAnsnfwClPIIjHoFyw8wPzZmyTgsSqVTctZ
+         slf88WViwL31DKlQApQMblzPQbApJm0SlmMse8zztdTQ71Ng/7oiR10+rTa8ZOMzRoH0
+         GGOg==
+X-Gm-Message-State: APjAAAVa1P6FPjXT1azqn2G/CEADChtqZlhTUgnapM47sPo3FkMqOV8Y
+        DyP9RIwgroeQm6nrOG4H+4E=
+X-Google-Smtp-Source: APXvYqy2FtrRHuE+CNGBrq9aJXvXJ3/7f3v9p/nNEZqjCPBDvxssziK4AhXqbgOwAMouEGvzRrKqRg==
+X-Received: by 2002:ac8:3243:: with SMTP id y3mr19365927qta.245.1570234884567;
+        Fri, 04 Oct 2019 17:21:24 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id o28sm3206545qkk.106.2019.10.04.17.21.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2019 16:47:07 -0700 (PDT)
-Date:   Fri, 4 Oct 2019 16:47:01 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [Patch net] net_sched: add max len check for TCA_KIND
-Message-ID: <20191004164701.148644ec@cakuba.netronome.com>
-In-Reply-To: <CAM_iQpUomr7PkWahew9WkhNnKB7QGg0gTjurccLEwkgh24TARw@mail.gmail.com>
-References: <20190918232412.16718-1-xiyou.wangcong@gmail.com>
-        <36471b0d-cc83-40aa-3ded-39e864dcceb0@gmail.com>
-        <CAM_iQpXa=Kru2tXKwrErM9VsO40coBf9gKLRfwC3e8owKZG+0w@mail.gmail.com>
-        <20190921192434.765d7604@cakuba.netronome.com>
-        <20191003194525.GD3498@localhost.localdomain>
-        <20191004155420.19bd68d2@cakuba.hsd1.ca.comcast.net>
-        <CAM_iQpUomr7PkWahew9WkhNnKB7QGg0gTjurccLEwkgh24TARw@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        Fri, 04 Oct 2019 17:21:23 -0700 (PDT)
+Date:   Fri, 4 Oct 2019 20:21:22 -0400
+Message-ID: <20191004202122.GD32368@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v2 net-next 1/2] net: dsa: Add support for devlink device
+ parameters
+In-Reply-To: <20191004210934.12813-2-andrew@lunn.ch>
+References: <20191004210934.12813-1-andrew@lunn.ch>
+ <20191004210934.12813-2-andrew@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Oct 2019 16:23:40 -0700, Cong Wang wrote:
-> On Fri, Oct 4, 2019 at 3:54 PM Jakub Kicinski wrote:
-> > On Thu, 3 Oct 2019 16:45:25 -0300, Marcelo Ricardo Leitner wrote:  
-> > > On Sat, Sep 21, 2019 at 07:24:34PM -0700, Jakub Kicinski wrote:  
-> > > > Applied, queued for 4.14+, thanks!  
-> > >
-> > > Ahm, this breaks some user applications.
-> > >
-> > > I'm getting "Attribute failed policy validation" extack error while
-> > > adding ingress qdisc on an app using libmnl, because it just doesn't
-> > > pack the null byte there if it uses mnl_attr_put_str():
-> > > https://git.netfilter.org/libmnl/tree/src/attr.c#n481
-> > > Unless it uses mnl_attr_put_strz() instead.
-> > >
-> > > Though not sure who's to blame here, as one could argue that the
-> > > app should have been using the latter in the first place, but well..
-> > > it worked and produced the right results.
-> > >
-> > > Ditto for 199ce850ce11 ("net_sched: add policy validation for action
-> > > attributes") on TCA_ACT_KIND.  
-> >
-> > Thanks for the report Marcelo! This netlink validation stuff is always
-> > super risky I figured better find out if something breaks sooner than
-> > later, hence the backport.
-> >
-> > So if I'm understanding this would be the fix?  
+On Fri,  4 Oct 2019 23:09:33 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
+> Add plumbing to allow DSA drivers to register parameters with devlink.
 > 
-> Of course not, you just break KMSAN again. Please read the original
-> report.
+> To keep with the abstraction, the DSA drivers pass the ds structure to
+> these helpers, and the DSA core then translates that to the devlink
+> structure associated to the device.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  include/net/dsa.h | 23 +++++++++++++++++++++++
+>  net/dsa/dsa.c     | 48 +++++++++++++++++++++++++++++++++++++++++++++++
+>  net/dsa/dsa2.c    |  7 ++++++-
+>  3 files changed, 77 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 8c3ea0530f65..6623f4428930 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -541,6 +541,29 @@ struct dsa_switch_ops {
+>  	 */
+>  	netdev_tx_t (*port_deferred_xmit)(struct dsa_switch *ds, int port,
+>  					  struct sk_buff *skb);
+> +	/* Devlink parameters */
+> +	int	(*devlink_param_get)(struct dsa_switch *ds, u32 id,
+> +				     struct devlink_param_gset_ctx *ctx);
+> +	int	(*devlink_param_set)(struct dsa_switch *ds, u32 id,
+> +				     struct devlink_param_gset_ctx *ctx);
 
-The fix for the regression. I'm establishing the rest of 199ce850ce11
-("net_sched: add policy validation for action attributes") is fine.
+Unless that is how devlink is designed, shouldn't ctx be const on _set?
 
-I mentioned this brings back the problem KMSAN reported in the part of
-the email you cut off. str*cpy is the obvious answer for reimplementing
-that fix.
 
-> I will send a patch
+Thanks,
 
-Please do.
+	Vivien
+
+> +};
+> +
+> +#define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
+> +	DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes,		\
+> +			     dsa_dl_param_get,	dsa_dl_param_set, NULL)
+> +
+> +int dsa_dl_param_get(struct devlink *dl, u32 id,
+> +		     struct devlink_param_gset_ctx *ctx);
+> +int dsa_dl_param_set(struct devlink *dl, u32 id,
+> +		     struct devlink_param_gset_ctx *ctx);
+> +int dsa_devlink_params_register(struct dsa_switch *ds,
+> +				const struct devlink_param *params,
+> +				size_t params_count);
+> +void dsa_devlink_params_unregister(struct dsa_switch *ds,
+> +				   const struct devlink_param *params,
+> +				   size_t params_count);
+> +struct dsa_devlink_priv {
+> +	struct dsa_switch *ds;
+>  };
+>  
+>  struct dsa_switch_driver {
+> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+> index 43120a3fb06f..ea7678650d8c 100644
+> --- a/net/dsa/dsa.c
+> +++ b/net/dsa/dsa.c
+> @@ -329,6 +329,54 @@ int call_dsa_notifiers(unsigned long val, struct net_device *dev,
+>  }
+>  EXPORT_SYMBOL_GPL(call_dsa_notifiers);
+>  
+> +int dsa_dl_param_get(struct devlink *dl, u32 id,
+> +		     struct devlink_param_gset_ctx *ctx)
+> +{
+> +	struct dsa_devlink_priv *dl_priv;
+> +	struct dsa_switch *ds;
+> +
+> +	dl_priv = devlink_priv(dl);
+> +	ds = dl_priv->ds;
+> +
+> +	if (!ds->ops->devlink_param_get)
+> +		return -EOPNOTSUPP;
+> +
+> +	return ds->ops->devlink_param_get(ds, id, ctx);
+> +}
+> +EXPORT_SYMBOL_GPL(dsa_dl_param_get);
+> +
+> +int dsa_dl_param_set(struct devlink *dl, u32 id,
+> +		     struct devlink_param_gset_ctx *ctx)
+> +{
+> +	struct dsa_devlink_priv *dl_priv;
+> +	struct dsa_switch *ds;
+> +
+> +	dl_priv = devlink_priv(dl);
+> +	ds = dl_priv->ds;
+> +
+> +	if (!ds->ops->devlink_param_set)
+> +		return -EOPNOTSUPP;
+> +
+> +	return ds->ops->devlink_param_set(ds, id, ctx);
+> +}
+> +EXPORT_SYMBOL_GPL(dsa_dl_param_set);
+> +
+> +int dsa_devlink_params_register(struct dsa_switch *ds,
+> +				const struct devlink_param *params,
+> +				size_t params_count)
+> +{
+> +	return devlink_params_register(ds->devlink, params, params_count);
+> +}
+> +EXPORT_SYMBOL_GPL(dsa_devlink_params_register);
+> +
+> +void dsa_devlink_params_unregister(struct dsa_switch *ds,
+> +				   const struct devlink_param *params,
+> +				   size_t params_count)
+> +{
+> +	devlink_params_unregister(ds->devlink, params, params_count);
+> +}
+> +EXPORT_SYMBOL_GPL(dsa_devlink_params_unregister);
+> +
+>  static int __init dsa_init_module(void)
+>  {
+>  	int rc;
+> diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+> index 73002022c9d8..d74cc82fb44a 100644
+> --- a/net/dsa/dsa2.c
+> +++ b/net/dsa/dsa2.c
+> @@ -367,6 +367,7 @@ static void dsa_port_teardown(struct dsa_port *dp)
+>  
+>  static int dsa_switch_setup(struct dsa_switch *ds)
+>  {
+> +	struct dsa_devlink_priv *dl_priv;
+>  	int err = 0;
+>  
+>  	/* Initialize ds->phys_mii_mask before registering the slave MDIO bus
+> @@ -379,9 +380,11 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+>  	/* Add the switch to devlink before calling setup, so that setup can
+>  	 * add dpipe tables
+>  	 */
+> -	ds->devlink = devlink_alloc(&dsa_devlink_ops, 0);
+> +	ds->devlink = devlink_alloc(&dsa_devlink_ops, sizeof(*devlink_priv));
+>  	if (!ds->devlink)
+>  		return -ENOMEM;
+> +	dl_priv = devlink_priv(ds->devlink);
+> +	dl_priv->ds = ds;
+>  
+>  	err = devlink_register(ds->devlink, ds->dev);
+>  	if (err)
+> @@ -395,6 +398,8 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+>  	if (err < 0)
+>  		goto unregister_notifier;
+>  
+> +	devlink_params_publish(ds->devlink);
+> +
+>  	if (!ds->slave_mii_bus && ds->ops->phy_read) {
+>  		ds->slave_mii_bus = devm_mdiobus_alloc(ds->dev);
+>  		if (!ds->slave_mii_bus) {
+> -- 
+> 2.23.0
+> 
