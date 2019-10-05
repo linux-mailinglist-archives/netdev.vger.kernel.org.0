@@ -2,163 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBCBECCBA4
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 19:23:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 914E2CCBC6
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 19:48:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729081AbfJERXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 13:23:08 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:41723 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725826AbfJERXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 13:23:07 -0400
-Received: by mail-io1-f68.google.com with SMTP id n26so20185538ioj.8;
-        Sat, 05 Oct 2019 10:23:07 -0700 (PDT)
+        id S1729411AbfJERsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 13:48:19 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:46919 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728245AbfJERsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 13:48:19 -0400
+Received: by mail-ed1-f65.google.com with SMTP id t3so8776744edw.13
+        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 10:48:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pxUjmIbw13CFxUgTRwyvWTjL0FCOWPTaQat66nHsxn0=;
-        b=GjHYE04fxu3DN13Mnf7fbSHz1nFx//ZjX7nE9aR/qHFSe2rn6p59OexXtYrrEraHOa
-         cXCoRJk2iT1G5LdGA6mTi8hUidXPkXUBu+tOw+Tx2dvt0IUcjmL41mT7b4dRX8eUrTyk
-         607GLwODe1OC5tQeDGdWeIkX+MYfVZVXXswoWXtm70D9EHTsWqAr/FZsMS7GpIuokoPm
-         9/8/yAHZaDs3AstB1kp0qbEECIodqnVJfQ+l7AG/akZsUlPGpW+a1VQXF08r15qDG0UX
-         a+JybUpzNaVL93WAYik84iCfzADKmk1AcZ4f7dLGNeuLteK+YraQ3dkxhHswE/HTi/kP
-         Qp+w==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=JdxTjZHOYunTMtiHW4RMA9FUy7l6bYMn8x9aB5OphDw=;
+        b=gR0eUTpmG5aDrcWOFuLxo8IbEW9hgOFZwmsxjBwlY7J3+S45wS0s//kKnlx7IsOc6d
+         3f3vDC60GOsqyqZxTEtIdLrq67+grveeFXH2GbMqHuRz7lvpjwXjPcbv0hsmbLWMEi6A
+         QbgQfL6WnGIjnGtO6wpu9Cqq04URMavYuTV3rxazTMZfNh0yDMlMNUYekDOcbY5Daiq+
+         ilHE5k9kB5jYxCqfCt1pVyOfNFy61AK+dUxuloXrKihnciBq/f6RqLuEY9PHOoXoF+Nv
+         FS8x+zxTWEYTCAQasrCNE9gQMPm61O66YAIVdiKdZ3D72mqODnRQLQj0zCCfaOsyouig
+         La5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pxUjmIbw13CFxUgTRwyvWTjL0FCOWPTaQat66nHsxn0=;
-        b=XjCDmB2QcTjEQA/14iaHdBh3qk+/njOBDrQE4CCHfZ+jCNoa15+152nFbDyBX+im4H
-         HShQOhSB46rwuXM/QgbojnV9Xayf+fZGavlUotxL8SdjrMIZWblE9RE5pyZLuhXuwVNg
-         DJf4+lAaEL3ckkwc5hCzXIiDQ0+NrFgGRTTbgxzDUrRx/zmy0S14bjSGgiTz3+MC+s8F
-         +AR+zBc7LwjdHxTucL0OKNvpaUqQvqamfNe4Llpu3z3EIOYnie39SE7dGFDg1dgISb8r
-         MbrAqx4yMF34chxNPHTO8nSCTMmKPIrNJR30xlx85s3oCJT7w4wLKqMFsKS89GWrXl/M
-         5nVw==
-X-Gm-Message-State: APjAAAWDFfeyDAfXRlfEquZ4BwtOqglIiBXO191iBlKrBbZKz8yjkXhl
-        A1TTByoiRKBrqZeewisH3KKko3hbpWGChrws5KY=
-X-Google-Smtp-Source: APXvYqw5Yui+O5GuTNL9SpPqBww1zkYRVIwN1ybYrEwInOuQbbnSEOAw3FiqxgVcoXVCZ2BQo2WQINUT+MLaImyTfPk=
-X-Received: by 2002:a6b:da06:: with SMTP id x6mr9478783iob.42.1570296186664;
- Sat, 05 Oct 2019 10:23:06 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=JdxTjZHOYunTMtiHW4RMA9FUy7l6bYMn8x9aB5OphDw=;
+        b=ZXjykO0H27bhNpQ0wT/QX5I5H5uos0I1nqtlmc7MLElzLHzR2it06gVJceisx3h0HY
+         +XGBUaUB5YstKnkUU9LsE7hrADnZxKFMwX0X/uukjj6gJ5DsGfgrlS0gXac4/HkyuPYQ
+         LDFx5YJyR5HouzizU7vAZTUuKOYyKTCEvy/M/pY6yYgez0GMsirRGUs/2EEN0Xb+kwl4
+         SwbD1tdhWlzmLOihJgnqGBHEPly4e41vDjnlCyNZ55e0xsrSME3GLsmhcF2l5rmdA5WR
+         +75D8cW8CsId+vjfCimZ/uQAV25SiQeBrpfAltupo8dQPcJMz4r+PPHv9QGnYJSFi7Pf
+         GfQg==
+X-Gm-Message-State: APjAAAUZb1ntAeMt5zaE81pgWoZVFK/BbqlNGNGLrinuTABNcnak82c3
+        b9u9teMTPTaP7tYQSGV48rsXJAEN7wRNnJ9np6o=
+X-Google-Smtp-Source: APXvYqyitYt2T0iWE0B05tguFYEyOQ3JthAV9BScISjd7jw+WHBqYbLIot90w3YxUFOhnAphs+XX0mxBumxfKppGk9U=
+X-Received: by 2002:a17:906:3108:: with SMTP id 8mr17614511ejx.11.1570297697820;
+ Sat, 05 Oct 2019 10:48:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <1570208647.1250.55.camel@oc5348122405> <20191004233052.28865.1609.stgit@localhost.localdomain>
- <1570241926.10511.7.camel@oc5348122405>
-In-Reply-To: <1570241926.10511.7.camel@oc5348122405>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Sat, 5 Oct 2019 10:22:55 -0700
-Message-ID: <CAKgT0Ud7SupVd3RQmTEJ8e0fixiptS-1wFg+8V4EqpHEuAC3wQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] e1000e: Use rtnl_lock to prevent race conditions
- between net and pci/pm
-To:     "David Z. Dai" <zdai@linux.vnet.ibm.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>, zdai@us.ibm.com,
-        David Miller <davem@davemloft.net>
+Received: by 2002:a50:b850:0:0:0:0:0 with HTTP; Sat, 5 Oct 2019 10:48:17 -0700 (PDT)
+Reply-To: walmart.b100263@gmail.com
+From:   "DR.Mike Benz" <eco.bank1204@gmail.com>
+Date:   Sat, 5 Oct 2019 18:48:17 +0100
+Message-ID: <CAOE+jAA6OM_JmMQsh1Nig8Ud=fcRg5d_hHsL9viCquJ70DhaiQ@mail.gmail.com>
+Subject: Happy to inform you, CONTACT WALMART TRANSFER To pick up $8000.00
+ sent to you this morning.
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 4, 2019 at 7:18 PM David Z. Dai <zdai@linux.vnet.ibm.com> wrote:
->
-> On Fri, 2019-10-04 at 16:36 -0700, Alexander Duyck wrote:
-> > From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> >
-> > This patch is meant to address possible race conditions that can exist
-> > between network configuration and power management. A similar issue was
-> > fixed for igb in commit 9474933caf21 ("igb: close/suspend race in
-> > netif_device_detach").
-> >
-> > In addition it consolidates the code so that the PCI error handling code
-> > will essentially perform the power management freeze on the device prior to
-> > attempting a reset, and will thaw the device afterwards if that is what it
-> > is planning to do. Otherwise when we call close on the interface it should
-> > see it is detached and not attempt to call the logic to down the interface
-> > and free the IRQs again.
-> >
-> > >From what I can tell the check that was adding the check for __E1000_DOWN
-> > in e1000e_close was added when runtime power management was added. However
-> > it should not be relevant for us as we perform a call to
-> > pm_runtime_get_sync before we call e1000_down/free_irq so it should always
-> > be back up before we call into this anyway.
-> >
-> > Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> > ---
-> >
-> > I'm putting this out as an RFC for now. I haven't had a chance to do much
-> > testing yet, but I have verified no build issues, and the driver appears
-> > to load, link, and pass traffic without problems.
-> >
-> > This should address issues seen with either double freeing or never freeing
-> > IRQs that have been seen on this and similar drivers in the past.
-> >
-> > I'll submit this formally after testing it over the weekend assuming there
-> > are no issues.
-> >
-> >  drivers/net/ethernet/intel/e1000e/netdev.c |   33 ++++++++++++++--------------
-> >  1 file changed, 17 insertions(+), 16 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> > index d7d56e42a6aa..182a2c8f12d8 100644
-> > --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> > +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+Attn Dear Beneficiary.
+Happy to inform you, CONTACT WALMART TRANSFER To pick up $8000.00 sent
+to you this morning.
 
-<snip>
+I have deposited your payment funds $2.500,000MillionUS Dollars
+With Walmart international money transfers.
+Receive the Money with Walmart | MoneyGram service.
+Walmart partners with MoneyGram to allow customers
+easily receive money transfers abroad,
+Contact Walmart international money transfers office -Benin
+Receive your approval payment funds $10.500,000MillionUS Dollars
+HERE IS WALMART CONTACT INFORMATIONS.
+Contact person. Mrs. Mary Anderson,Dir. Walmart transfers-Benin
+Email: walmart.b100263@gmail.com
+Telephone. +229 68823234
+Text Her on this international phone line. (256) 284-4886
 
-> >
-> > -#ifdef CONFIG_PM_SLEEP
-> >  static int e1000e_pm_thaw(struct device *dev)
-> >  {
-> >       struct net_device *netdev = dev_get_drvdata(dev);
-> >       struct e1000_adapter *adapter = netdev_priv(netdev);
-> > +     int rc = 0;
-> >
-> >       e1000e_set_interrupt_capability(adapter);
-> > -     if (netif_running(netdev)) {
-> > -             u32 err = e1000_request_irq(adapter);
-> >
-> > -             if (err)
-> > -                     return err;
-> > +     rtnl_lock();
-> > +     if (netif_running(netdev)) {
-> > +             rc = e1000_request_irq(adapter);
-> > +             if (rc)
-> > +                     goto err_irq;
-> >
-> >               e1000e_up(adapter);
-> >       }
-> >
-> >       netif_device_attach(netdev);
-> > -
-> > -     return 0;
-> > +     rtnl_unlock();
-> > +err_irq:
-> > +     return rc;
-> >  }
-> >
-> In e1000e_pm_thaw(), these 2 lines need to switch order to avoid
-> deadlock.
-> from:
-> +       rtnl_unlock();
-> +err_irq:
->
-> to:
-> +err_irq:
-> +       rtnl_unlock();
->
-> I will find hardware to test this patch next week. Will update the test
-> result later.
->
-> Thanks! - David
-
-Thanks for spotting that. I will update my copy of the patch for when
-I submit the final revision.
-
-I'll probably wait to submit it for acceptance until you have had a
-chance to verify that it resolves the issue you were seeing.
-
-Thanks.
-
-- Alex
+Ask Mrs. Mary Anderson,Dir. Walmart transfers-Benin to send the transfer
+as i instructed.
+we agreed to keep sending the transfer to you $8000.00 daily.
+Until you received your total payment $10.500,000 from the office
+Once again,
+make sure you contact Mrs. Mary Anderson,Dir. Walmart transfers-Benin
+today including your infos.
+(1) Your  Full Name==============
+(2) house address=============
+(3) Your Phone Numbers=============
+Urgent to receive your transfer now without any further delay.
+Finally, Send your first payment transfer fees to Walmart office on
+below address
+Receiver's Name====== ALAN UDE
+Country=====BENIN
+City=======COTONOU
+AMOUNT =====$58.00 only. Your first payment $8000.00 transfer fee.
+Question======God
+Answer=========Creator
+Thanks
+DR.Mike Benz
