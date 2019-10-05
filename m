@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7397CCBE7
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 20:05:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68980CCBE4
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 20:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387556AbfJESFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 14:05:00 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42454 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727466AbfJESEx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 14:04:53 -0400
-Received: by mail-wr1-f65.google.com with SMTP id n14so10655928wrw.9
+        id S1729737AbfJESE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 14:04:56 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54774 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729658AbfJESEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 14:04:54 -0400
+Received: by mail-wm1-f68.google.com with SMTP id p7so8705212wmp.4
         for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 11:04:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EwuIzklYF/EmlvjnlnIv7EG4mHTt/uPbZNf9bEpwLZs=;
-        b=UATqotWeiecONOd/kdLnk68Lp03HQ9sVYN3Lrr8b+vfUqRR8Wd+XvVntcF31469P0B
-         zDx1lFypWNWmxEFpCszCDX7Av+62aYLAiyis1BRJxTNw+rpXcZpV+pWWPS+1Hne5YBr+
-         MJZgvrFbGTrA7jqlAfGt51zC+W5V9Vwt9/3hEKRgJaTiFZJnwktwtQ7Wt6IpaO533K+L
-         AQOMnqAmZZfFRQWyHt9/f9bFZnTy9fkTScBkD45cvip2eKFtjtAVrLSkaiXiPx7xJu6+
-         IkdGYYHqqbjEECGo7JomBSpEKK71aLIL/8jAsa0jpUgkuDvBjp4/6ZYme/3x3p5J2oFm
-         8Smg==
+        bh=TZbt8V7XbqK46DYXQGK9NA1bOhHetznYLUFFGtGQyTU=;
+        b=A6avTxam0LxYrMIAEy3Pyao6UiSlwxjXp7fViTx9EfEeKVlKS6CdGFGidxlRmP/o/8
+         Yk2ewkrc4KBXvy6fGWPEuKOeEaxpOmaIzjjASFRpq3ldh8p9SGWzs2+Ns5dxtpPgiKWu
+         o704KIHVPAGVRFxkCGiUdkJnpYGPtm93Dew0oQODvOzzPHBHV6JJg7xSPSyTEHwt5D3Q
+         q6ypUJjD/ehNGgAvbd2LYbIYd7pZgw++2XhviFLM+OltikPJGz9Hs0DOkwYfygKfqpRU
+         jJo0VtAVQ8jDocHJSALY6/irro86OR5aGKKM0WqaLmMubrUymBKNBv/b3fgKKLnW+DzA
+         cAjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EwuIzklYF/EmlvjnlnIv7EG4mHTt/uPbZNf9bEpwLZs=;
-        b=RMJgyzqpkV+zNqL9bqxeU1VxRR82A7p9pesO2TNiGjlXQjtVQOxPn+0uTqFmgdGIPL
-         8kgG71FaT9iGExPQT4ShJe8OeXgEDMAbrbXkMH6G/SCwfGC8u58dywY2iuhmbtPOc+kH
-         9l4SMeil6SxtKMHIaeP5/H7mzrPO5HEu32Z17UXSGxYDHykqGCn7MhEYiUAx1c3T18GF
-         MeSKZ+4IG8BxYo5BOdMJ34fzMG1Jf/jbGDWzYL7IfOLfRwC/4C0egxh2E1os3igqNHB9
-         3g/KPksEHMxLztcG9T9HiYWDbgpc6JyAfI+fbhVgSq3Osggp9SaKKP1oQ0MOrqWYehOw
-         cPUQ==
-X-Gm-Message-State: APjAAAX4l5Jp912OKZRPaYofy7lAEioCCvkFJl95pzrgUB0Bza/gzmu9
-        JI6UaLTBYDWosfOarvDudBGHcYFzRM8=
-X-Google-Smtp-Source: APXvYqzHNGQTUxykOKtoUXtMA9IE8je4wCIcEJxQaSb4Co8rty8fr3z31tEBjVTtKuX1tUUQQlPGgA==
-X-Received: by 2002:a5d:52c2:: with SMTP id r2mr16718224wrv.367.1570298691317;
-        Sat, 05 Oct 2019 11:04:51 -0700 (PDT)
+        bh=TZbt8V7XbqK46DYXQGK9NA1bOhHetznYLUFFGtGQyTU=;
+        b=QmOCUuCbi6t9f0mGY0x2jVQrimu+holkbse5nXScPzMFPSKWfW5YymlXc3wx+TMjxA
+         qdJ1tu3yKZfR2PWYqqoRY4rRlwktSZRTLJSpBB7qyJFNwGbIC76YTmZkbmpqt2WhcC3l
+         zTzqJ2vLxWmgyIyy8nQs4wU0zwQp0d/zHjO6+ILzIlGt3Qmz4zq4Y1m878qiL4FGm10w
+         Nclb13kXKbD+fW2FtFbaPtwdplcDuJNotQqo3Fbi83FhToLJv1tWSCBf4MVpAKM1h0mI
+         Q1xM9TUxVkfTdYjIR6zx4wDm0DJVgCDJY6E0yZG87DpkmhUvXc7T7+r66unxOsvriXto
+         DxLQ==
+X-Gm-Message-State: APjAAAW8G1eEU9Jzayehr82RiI59xVePlVED5VfkeD/JnUS+sFea/RiF
+        FU4V3FQrNRSjUSCMIMS3oTnMzdPnkhs=
+X-Google-Smtp-Source: APXvYqydWAa7n9N4FHMQKCpSxWTcOYlNTSvEyLSQgua7RtYwrh9eAhowNVm1+REmaRXJMjMyc2TD2Q==
+X-Received: by 2002:a7b:c7c5:: with SMTP id z5mr13975669wmk.37.1570298692172;
+        Sat, 05 Oct 2019 11:04:52 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id h10sm9815445wrq.95.2019.10.05.11.04.50
+        by smtp.gmail.com with ESMTPSA id b130sm6794086wmh.12.2019.10.05.11.04.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Oct 2019 11:04:50 -0700 (PDT)
+        Sat, 05 Oct 2019 11:04:51 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         jon.maloy@ericsson.com, ying.xue@windriver.com,
         johannes.berg@intel.com, mkubecek@suse.cz, yuehaibing@huawei.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 08/10] net: tipc: allocate attrs locally instead of using genl_family_attrbuf in compat_dumpit()
-Date:   Sat,  5 Oct 2019 20:04:40 +0200
-Message-Id: <20191005180442.11788-9-jiri@resnulli.us>
+Subject: [patch net-next 09/10] net: genetlink: remove unused genl_family_attrbuf()
+Date:   Sat,  5 Oct 2019 20:04:41 +0200
+Message-Id: <20191005180442.11788-10-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191005180442.11788-1-jiri@resnulli.us>
 References: <20191005180442.11788-1-jiri@resnulli.us>
@@ -66,104 +66,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-As this is the last user of genl_family_attrbuf, convert to allocate
-attrs locally and do it in a similar way this is done in compat_doit().
+genl_family_attrbuf() function is no longer used by anyone, so remove it.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- net/tipc/netlink.c        | 12 ------------
- net/tipc/netlink.h        |  1 -
- net/tipc/netlink_compat.c | 19 +++++++++++++++----
- 3 files changed, 15 insertions(+), 17 deletions(-)
+ include/net/genetlink.h |  2 --
+ net/netlink/genetlink.c | 19 -------------------
+ 2 files changed, 21 deletions(-)
 
-diff --git a/net/tipc/netlink.c b/net/tipc/netlink.c
-index 5f5df232d72b..d32bbd0f5e46 100644
---- a/net/tipc/netlink.c
-+++ b/net/tipc/netlink.c
-@@ -271,18 +271,6 @@ struct genl_family tipc_genl_family __ro_after_init = {
- 	.n_ops		= ARRAY_SIZE(tipc_genl_v2_ops),
+diff --git a/include/net/genetlink.h b/include/net/genetlink.h
+index 922dcc9348b1..74950663bb00 100644
+--- a/include/net/genetlink.h
++++ b/include/net/genetlink.h
+@@ -75,8 +75,6 @@ struct genl_family {
+ 	struct module		*module;
  };
  
--int tipc_nlmsg_parse(const struct nlmsghdr *nlh, struct nlattr ***attr)
+-struct nlattr **genl_family_attrbuf(const struct genl_family *family);
+-
+ /**
+  * struct genl_info - receiving information
+  * @snd_seq: sending sequence number
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 8059118ee5a1..1b5046436765 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -1164,25 +1164,6 @@ static int __init genl_init(void)
+ 
+ subsys_initcall(genl_init);
+ 
+-/**
+- * genl_family_attrbuf - return family's attrbuf
+- * @family: the family
+- *
+- * Return the family's attrbuf, while validating that it's
+- * actually valid to access it.
+- *
+- * You cannot use this function with a family that has parallel_ops
+- * and you can only use it within (pre/post) doit/dumpit callbacks.
+- */
+-struct nlattr **genl_family_attrbuf(const struct genl_family *family)
 -{
--	u32 maxattr = tipc_genl_family.maxattr;
+-	if (!WARN_ON(family->parallel_ops))
+-		lockdep_assert_held(&genl_mutex);
 -
--	*attr = genl_family_attrbuf(&tipc_genl_family);
--	if (!*attr)
--		return -EOPNOTSUPP;
--
--	return nlmsg_parse_deprecated(nlh, GENL_HDRLEN, *attr, maxattr,
--				      tipc_nl_policy, NULL);
+-	return family->attrbuf;
 -}
+-EXPORT_SYMBOL(genl_family_attrbuf);
 -
- int __init tipc_netlink_start(void)
+ static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
+ 			 gfp_t flags)
  {
- 	int res;
-diff --git a/net/tipc/netlink.h b/net/tipc/netlink.h
-index 4ba0ad422110..7cf777723e3e 100644
---- a/net/tipc/netlink.h
-+++ b/net/tipc/netlink.h
-@@ -38,7 +38,6 @@
- #include <net/netlink.h>
- 
- extern struct genl_family tipc_genl_family;
--int tipc_nlmsg_parse(const struct nlmsghdr *nlh, struct nlattr ***buf);
- 
- struct tipc_nl_msg {
- 	struct sk_buff *skb;
-diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-index e135d4e11231..4950b754dacd 100644
---- a/net/tipc/netlink_compat.c
-+++ b/net/tipc/netlink_compat.c
-@@ -186,6 +186,7 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 	struct sk_buff *buf;
- 	struct nlmsghdr *nlmsg;
- 	struct netlink_callback cb;
-+	struct nlattr **attrbuf;
- 
- 	memset(&cb, 0, sizeof(cb));
- 	cb.nlh = (struct nlmsghdr *)arg->data;
-@@ -201,19 +202,28 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 		return -ENOMEM;
- 	}
- 
-+	attrbuf = kmalloc_array(tipc_genl_family.maxattr + 1,
-+				sizeof(struct nlattr *), GFP_KERNEL);
-+	if (!attrbuf) {
-+		err = -ENOMEM;
-+		goto err_out;
-+	}
-+
- 	do {
- 		int rem;
- 
- 		len = (*cmd->dumpit)(buf, &cb);
- 
- 		nlmsg_for_each_msg(nlmsg, nlmsg_hdr(buf), len, rem) {
--			struct nlattr **attrs;
--
--			err = tipc_nlmsg_parse(nlmsg, &attrs);
-+			err = nlmsg_parse_deprecated(nlmsg, GENL_HDRLEN,
-+						     attrbuf,
-+						     tipc_genl_family.maxattr,
-+						     tipc_genl_family.policy,
-+						     NULL);
- 			if (err)
- 				goto err_out;
- 
--			err = (*cmd->format)(msg, attrs);
-+			err = (*cmd->format)(msg, attrbuf);
- 			if (err)
- 				goto err_out;
- 
-@@ -231,6 +241,7 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 	err = 0;
- 
- err_out:
-+	kfree(attrbuf);
- 	tipc_dump_done(&cb);
- 	kfree_skb(buf);
- 
 -- 
 2.21.0
 
