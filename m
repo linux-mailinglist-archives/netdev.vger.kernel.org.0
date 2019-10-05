@@ -2,93 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44715CC9D5
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 14:12:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 005DFCCAC3
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 17:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728006AbfJEMM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 08:12:27 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:42346 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727033AbfJEMM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 08:12:27 -0400
-Received: from penelope.horms.nl (ip4dab7138.direct-adsl.nl [77.171.113.56])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id D5A3125B7B0;
-        Sat,  5 Oct 2019 22:12:24 +1000 (AEST)
-Received: by penelope.horms.nl (Postfix, from userid 7100)
-        id AFB91E22CAB; Sat,  5 Oct 2019 14:12:22 +0200 (CEST)
-Date:   Sat, 5 Oct 2019 14:12:22 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     David Miller <davem@davemloft.net>, hayeswang@realtek.com,
-        mario.limonciello@dell.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] r8152: Set macpassthru in reset_resume callback
-Message-ID: <20191005121222.6szwmuc4tjws4z23@verge.net.au>
-References: <20191004125104.13202-1-kai.heng.feng@canonical.com>
- <20191005114634.wvv4yfdte7qchzxs@verge.net.au>
- <AAD739ED-478D-42CE-A0C9-FFBD209B5E38@canonical.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AAD739ED-478D-42CE-A0C9-FFBD209B5E38@canonical.com>
-Organisation: Horms Solutions BV
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1726636AbfJEPTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 11:19:37 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:48302 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725826AbfJEPTh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 11:19:37 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x95F91aW050859;
+        Sat, 5 Oct 2019 15:19:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2019-08-05;
+ bh=oGOdeFTOCYRQYQ9d+ryLcttvRz8VQfHVuZKZJpIb3AM=;
+ b=i5OLs3uaETaLdVpgLC/nr1i72eDrj2nkFOz9dZFaD560e6XilneBOxYRMxGXxJirAzSq
+ 9tRYyrQfVVE8sNNFNLscVpwHrXngJIFEg+NSnqVM4ewqzNQX5knoX/UnL9ZhI/pFq6u8
+ CSzF4ZDiRIk6YgVMqfZ+DImQEBWJxIuOJdDgrm6MW5BKxPlbsXZB0oUWIhfVJ1y8Nz+2
+ 14Zc+P75fv5lLwI4ieOfedRFbjHviA2u0gKhT9x/bFkRDgeekbSfd3t0MvxLiINsnEGi
+ 6MQ67x9nEeg1zApzWDuC4qhSCCEo68H7tlRYKQ5OuibkwSxEC1GUOhbtjzuiVQ83auNY Ag== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2vek4q1jdn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 05 Oct 2019 15:19:27 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x95FEFGO195351;
+        Sat, 5 Oct 2019 15:19:26 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 2vek0bbwud-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 05 Oct 2019 15:19:26 +0000
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x95FJNwb016063;
+        Sat, 5 Oct 2019 15:19:23 GMT
+Received: from manjunathpatil.us.oracle.com (/10.211.44.52)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 05 Oct 2019 08:19:23 -0700
+From:   Manjunath Patil <manjunath.b.patil@oracle.com>
+To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     manjunath.b.patil@oracle.com, cspradlin@google.com,
+        christophe.jaillet@wanadoo.fr
+Subject: [PATCH 1/1] ixgbe: protect TX timestamping from API misuse
+Date:   Sat,  5 Oct 2019 08:20:03 -0700
+Message-Id: <1570288803-14880-1-git-send-email-manjunath.b.patil@oracle.com>
+X-Mailer: git-send-email 1.7.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9401 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910050154
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9401 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910050154
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 05, 2019 at 07:54:15PM +0800, Kai-Heng Feng wrote:
-> 
-> 
-> > On Oct 5, 2019, at 19:46, Simon Horman <horms@verge.net.au> wrote:
-> > 
-> > On Fri, Oct 04, 2019 at 08:51:04PM +0800, Kai-Heng Feng wrote:
-> >> r8152 may fail to establish network connection after resume from system
-> >> suspend.
-> >> 
-> >> If the USB port connects to r8152 lost its power during system suspend,
-> >> the MAC address was written before is lost. The reason is that The MAC
-> >> address doesn't get written again in its reset_resume callback.
-> >> 
-> >> So let's set MAC address again in reset_resume callback. Also remove
-> >> unnecessary lock as no other locking attempt will happen during
-> >> reset_resume.
-> > 
-> > This is two separate seemingly unrelated, other than locality in the code,
-> > changes. One is a fix, the other seems to be a cleanup. Perhaps they would
-> > be better addressed in separate patches.
-> 
-> rtl8152_set_mac_address() which gets called by set_ethernet_addr(), also holds the same mutex.
-> So this is more then a cleanup and I should mention it in commit log.
+HW timestamping can only be requested for a packet if the NIC is first
+setup via ioctl(SIOCSHWTSTAMP). If this step was skipped, then the ixgbe
+driver still allowed TX packets to request HW timestamping. In this
+situation, we see 'clearing Tx Timestamp hang' noise in the log.
 
-Thanks, I agree that is a good idea.
+Fix this by checking that the NIC is configured for HW TX timestamping
+before accepting a HW TX timestamping request.
 
-> Kai-Heng
-> 
-> > 
-> >> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> >> ---
-> >> drivers/net/usb/r8152.c | 3 +--
-> >> 1 file changed, 1 insertion(+), 2 deletions(-)
-> >> 
-> >> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> >> index 08726090570e..cee9fef925cd 100644
-> >> --- a/drivers/net/usb/r8152.c
-> >> +++ b/drivers/net/usb/r8152.c
-> >> @@ -4799,10 +4799,9 @@ static int rtl8152_reset_resume(struct usb_interface *intf)
-> >> 	struct r8152 *tp = usb_get_intfdata(intf);
-> >> 
-> >> 	clear_bit(SELECTIVE_SUSPEND, &tp->flags);
-> >> -	mutex_lock(&tp->control);
-> >> 	tp->rtl_ops.init(tp);
-> >> 	queue_delayed_work(system_long_wq, &tp->hw_phy_work, 0);
-> >> -	mutex_unlock(&tp->control);
-> >> +	set_ethernet_addr(tp);
-> >> 	return rtl8152_resume(intf);
-> >> }
-> >> 
-> >> -- 
-> >> 2.17.1
-> >> 
-> 
+similar-to:
+	(26bd4e2 igb: protect TX timestamping from API misuse)
+	(0a6f2f0 igb: Fix a test with HWTSTAMP_TX_ON)
+
+Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 1ce2397..dd24aeb 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -8640,7 +8640,8 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
+ 
+ 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+ 	    adapter->ptp_clock) {
+-		if (!test_and_set_bit_lock(__IXGBE_PTP_TX_IN_PROGRESS,
++		if (adapter->tstamp_config.tx_type == HWTSTAMP_TX_ON &&
++		    !test_and_set_bit_lock(__IXGBE_PTP_TX_IN_PROGRESS,
+ 					   &adapter->state)) {
+ 			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+ 			tx_flags |= IXGBE_TX_FLAGS_TSTAMP;
+-- 
+1.7.1
+
