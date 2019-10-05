@@ -2,58 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 632D3CCAFB
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 18:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C52F3CCB03
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 18:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729155AbfJEQJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 12:09:13 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:33791 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbfJEQJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 12:09:13 -0400
-Received: by mail-yw1-f67.google.com with SMTP id w140so1836038ywd.0
-        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 09:09:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=qr+aQscpAMhQMS2wz59MLNfkNrfAg8Hu/mwUy8Nob9s=;
-        b=JfVhKmGq8aj5Tk200AtZCfTD1Ra4D/IyYgmZvab1OePtNbwXHBgOV6uARcDPd2LSGz
-         AZIi4Kn3qRpMN0SeiZ6u+7dGmAjPssTOw4uT6ynHZkU8VIBHu21cofDcZF3rcKXeyMBD
-         bO3X2N5MvL9cCiRBJgq0FKjVO8G3e4Bd2ze7cSub50Htzit/2U1dd0Q0rVP0/AvU0Sja
-         i+GzJCDLH6JTvHvoj8gE+dkpVlxpoiUycT8v7mcPg4AFd9V+NMn/Y2DjafPgP8M7DovD
-         pZpFCaaHSBLlAbvx6AlVhzifRQTpIfzGjxcYeNntb2JMcccT/tvOveMS5fvVfFF4rQj0
-         yJKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=qr+aQscpAMhQMS2wz59MLNfkNrfAg8Hu/mwUy8Nob9s=;
-        b=QBVkazfs6eF5bqOjjVzUQfFCRsLzf2UKe1LmGE6+RZrg3nMLdlafegunWgaVtrah1H
-         tGxHvzWW6wLDuvStDBdz4oiPflL0zGjIHOu1mYsirw4vorwtUgI++0lz9ia81loA3lTO
-         K8ff3CttS0shNta4IkKG6XxaoIkSp2HLIts7dFZuDU9LNM12dpMRYCYTYMfkLu6ruMN3
-         7u4j+aE6L9sfvxllqZypgAykZlqp3mifIADzyI0K7jiAUxNXVM4CIFqP6H9ay32TKwnY
-         tOPKZrDzkBJd97BPAPXoUUCloBxVx29JYSywh8OxeRjPALkqh2lJtYiQZeczfiwzuOK3
-         wDqA==
-X-Gm-Message-State: APjAAAVYtM1dBNedtmSHLIda9yHQ3c+f17JZ2bq3SHu7NJptrjYL+pKy
-        8yfGc5jRZvMGX2a4spP0M8nREpsvFWSwL8iMu+M=
-X-Google-Smtp-Source: APXvYqw3BXSYGPgXWq01ZVbaMj7HI8/jxO/5AOCPc7tnWRr3bUe1PtZSCVq7lXVIDTH7m5/BPKT5RkEUdSwdIJAsZgE=
-X-Received: by 2002:a81:7d55:: with SMTP id y82mr15256947ywc.111.1570291752446;
- Sat, 05 Oct 2019 09:09:12 -0700 (PDT)
+        id S1729341AbfJEQL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 12:11:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37650 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726069AbfJEQL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Oct 2019 12:11:56 -0400
+Received: from paulmck-ThinkPad-P72 (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F0585222C0;
+        Sat,  5 Oct 2019 16:11:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570291915;
+        bh=uVvN8miFlyBBEL1s+R/jjVoYmf+OtDC+ppk3W/XU+LA=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=VrOhGxHBUp2QBoaABNkTv59q46KU+zMgoXVjo4A+z8jyTemuC+d+MnJsoKBSsLKyk
+         ab+nbGBh74pV2MAWEd6dae0UUaaGgTHUo+Pxk5q4buhnWbsEjUplJRXx2cQJmszJIH
+         SRZCjP7IRd5OSeWeBIWD3gEfvjE8KJ7BdrXylHRw=
+Date:   Sat, 5 Oct 2019 09:11:53 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>, rcu@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, jiangshanlai@gmail.com,
+        dipankar@in.ibm.com, Andrew Morton <akpm@linux-foundation.org>,
+        mathieu.desnoyers@efficios.com, josh@joshtriplett.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>, dhowells@redhat.com,
+        Eric Dumazet <edumazet@google.com>, fweisbec@gmail.com,
+        Oleg Nesterov <oleg@redhat.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH tip/core/rcu 6/9] bpf/cgroup: Replace
+ rcu_swap_protected() with rcu_replace()
+Message-ID: <20191005161153.GG2689@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20191003014153.GA13156@paulmck-ThinkPad-P72>
+ <20191003014310.13262-6-paulmck@kernel.org>
+ <CAEf4BzaBuktutCZr2ZUC6b-XK_JJ7prWZmO-5Yew2tVp5DxbBA@mail.gmail.com>
+ <CAPhsuW6vFwhhYngbftZk4NrSJ+qQx3F6ChUCm=n16HDK-N9vMg@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a25:880d:0:0:0:0:0 with HTTP; Sat, 5 Oct 2019 09:09:12 -0700 (PDT)
-Reply-To: annabelle.edo@yandex.ua
-From:   "Mrs. Annabelle Edo." <vitaekehsan@gmail.com>
-Date:   Sat, 5 Oct 2019 18:09:12 +0200
-Message-ID: <CAKmBLHQA5ytn8NGXeD-G-VFUnX2BJGt6_PyBxOX-r1ZdW_A-hg@mail.gmail.com>
-Subject: How are you and your Family,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW6vFwhhYngbftZk4NrSJ+qQx3F6ChUCm=n16HDK-N9vMg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-How are you and your family?  did you received my prevours message?
+On Thu, Oct 03, 2019 at 01:58:13PM -0700, Song Liu wrote:
+> On Thu, Oct 3, 2019 at 10:43 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, Oct 2, 2019 at 6:45 PM <paulmck@kernel.org> wrote:
+> > >
+> > > From: "Paul E. McKenney" <paulmck@kernel.org>
+> > >
+> > > This commit replaces the use of rcu_swap_protected() with the more
+> > > intuitively appealing rcu_replace() as a step towards removing
+> > > rcu_swap_protected().
+> > >
+> > > Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
+> > > Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+> > > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > > Cc: Alexei Starovoitov <ast@kernel.org>
+> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > Cc: Martin KaFai Lau <kafai@fb.com>
+> > > Cc: Song Liu <songliubraving@fb.com>
+> > > Cc: Yonghong Song <yhs@fb.com>
+> > > Cc: <netdev@vger.kernel.org>
+> > > Cc: <bpf@vger.kernel.org>
+> > > ---
+> >
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> 
+> Acked-by: Song Liu <songliubraving@fb.com>
 
-Kind Regards.
-Mrs. Annabelle Edo.
+Applied, thank you both!
+
+							Thanx, Paul
