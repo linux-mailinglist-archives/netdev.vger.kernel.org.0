@@ -2,253 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99441CCCDE
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 23:35:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA2ECCCF6
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 00:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725848AbfJEVfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 17:35:01 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39975 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbfJEVfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 17:35:00 -0400
-Received: by mail-wm1-f67.google.com with SMTP id b24so8879457wmj.5
-        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 14:34:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+e1Y8RxIoVE0ZPHX9amUuhjp7DwnN1krgfl5YE3nta4=;
-        b=C/pyWpcySWXUZm8H5NzUkgZ+TcLeAQPUO0Nfw65ESD5Fu2RRXnimgB4/jLQEfhiB2M
-         9EXZ0nQPFq9crTmFwAcY1uwObnUMsVMMl9Kypo94ZukZxXSS81LI6EK7WfiaVwsJBpKA
-         8gkU2eKlCuef2VZNqLyOCYfL95GX52+grmHr+Tquw6PTGoIGUM/qw/e+XmxKhd/DnSXT
-         tipCXN5BHd4GYMpJRPbn66u3FKkMyPIhNgb60f21Vm1HK9KOy4lHDLtH4t0oFV8NkhFy
-         TCfecLnz3pNwqOkMFi/oo37YWdwVLUV0nQ1EzBpn9f7zazJztn8dRbBVfsGzWrsxhD7k
-         pdrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+e1Y8RxIoVE0ZPHX9amUuhjp7DwnN1krgfl5YE3nta4=;
-        b=JOgwYAq45jJ6eZE08xRJ5Dm1aybFQC48MLhWKLNl6bUnYPTguEPqCkqnbdGtj8zA9C
-         jIPqp6eIGoa35pOpp0Qel9wD8k9fj25Up7L67CxUAGh17nRtUT+f5wHKGP6nFxqIfvUS
-         Ueed3IKOFn7sRTguJ/r9fDzXhc21lIt6JeJkgO3sM1U8KzIhO13nvp0uiEnNFc9CTnUz
-         PeIY/+Oh4IUigbq6C16/5AEc+fFwAgTq3BmX72KlQE00vv/S601XtBrILF7w+iXr6a86
-         A/ZdYJHuVEbhSxB/iO3dQCpSWIyaqby0Vas8VyaluAC0gBZ94tKXMXPAHimOeuhng9GI
-         bsEA==
-X-Gm-Message-State: APjAAAVnRRd81jW8VhGeuqw9getpzC5UPNAsgLEEsH3YGvTUW8dW5eLN
-        PyU/Vlujfuu3UIvxxTdmLSSAaQ==
-X-Google-Smtp-Source: APXvYqytIgAW37d+kBm6+2O+h8dunefnkJ1gf70LarEeS9ZdW7KlNd/Ha7tzGwLnRlh94Ws6YPa58A==
-X-Received: by 2002:a1c:80d0:: with SMTP id b199mr6717092wmd.102.1570311297795;
-        Sat, 05 Oct 2019 14:34:57 -0700 (PDT)
-Received: from PC192.168.49.172 (ppp-94-65-93-45.home.otenet.gr. [94.65.93.45])
-        by smtp.gmail.com with ESMTPSA id s12sm13662385wrn.90.2019.10.05.14.34.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Oct 2019 14:34:57 -0700 (PDT)
-Date:   Sun, 6 Oct 2019 00:34:52 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        thomas.petazzoni@bootlin.com, brouer@redhat.com,
-        lorenzo.bianconi@redhat.com, matteo.croce@redhat.com
-Subject: Re: [PATCH 2/7] net: mvneta: introduce page pool API for sw buffer
- manager
-Message-ID: <20191005213452.GA5019@PC192.168.49.172>
-References: <cover.1570307172.git.lorenzo@kernel.org>
- <61f2fd6fc6a84083fe5d35c19f84da60ea373fe6.1570307172.git.lorenzo@kernel.org>
+        id S1726034AbfJEWBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 18:01:14 -0400
+Received: from mail-eopbgr140047.outbound.protection.outlook.com ([40.107.14.47]:6567
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725801AbfJEWBO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Oct 2019 18:01:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CiaeL/1XEfIFkh+1y+f4yyYwBVskUMV5fdMis5oxcfTMmkoAs7lRGuDQ+lSEqAP7GFruIFsVJ8tFSAVp1O+4ktCsT91r8gjCjSXMrG4C7mSjSXG6fg59/TyQ0Pxa9VoztrEHv0gQd2GP/3oq79q6D2Tuof9D1BOHiGLIICP8w3i+IVeG0JVI9hPt5T8qniFugtLky6EdWIOTTnP1SR9vYZRhAkcJ9WRptsNqN0Fdjzxjp3puoCvd6vtF4jjatMjmE5NO83xPcjj4lIcv1BrqU/glFCCrMEte98kgPT8raLfu/iqeDJqWwheOZ0pnqa7NfAOZlcVBVCVTIqGO0MVQsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7jBqrgDTxjCCYcf8HESJuQj0hmNoab6h7Y1XTr1sYBA=;
+ b=cgnzM2+afIN3jN4qfrJzyLT4S9IyrZ+scVK3wQttyMcOKOpphy2PoD0j/HDc5VrBC/ZdBIgdYy9UJS/rOTfsh69uIeWnhG8IT3il4IPj1GAsPVMunJ4oistqkrab8PEUCVmu7PzA7FWlyKER8J/fxQ0DvK3YzSDGlQBqi1EhH6XCOS8se3/0QVDusQDH9mb7fiXzq8XMHeGX7z5TBpop3RMlAB5z4TxtAgOg/wyRE5aiQh84nXppNWRbD2oz8SgTPpFBXIrkRSNOfJqgWOd3LANzEVdmFODqWIbEf+guwb1o/hcWQXQlPeC5s6CZ4HDOgCE4I+pP+qpqy2A4/v1NGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7jBqrgDTxjCCYcf8HESJuQj0hmNoab6h7Y1XTr1sYBA=;
+ b=dB3m9B4sviIe7Vl/3dP4MOIlDKv+ByIBEaJ/rgtll9E/iKimFMbZdYXEmFm2mcQRKIwvsA9NO6bSEy6hTyVpyn3WXemmxTR7GX+qGrRdR+HBh5hZTUPNgnGcrCZOeNlDf87W147xNFScE+IDnr2Va7VLz83xpR0d4LVe/Db+nZc=
+Received: from DB7PR05MB4138.eurprd05.prod.outlook.com (52.135.129.16) by
+ DB7PR05MB6266.eurprd05.prod.outlook.com (20.176.236.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2284.20; Sat, 5 Oct 2019 22:01:08 +0000
+Received: from DB7PR05MB4138.eurprd05.prod.outlook.com
+ ([fe80::18c2:3d9e:4f04:4043]) by DB7PR05MB4138.eurprd05.prod.outlook.com
+ ([fe80::18c2:3d9e:4f04:4043%3]) with mapi id 15.20.2305.023; Sat, 5 Oct 2019
+ 22:01:08 +0000
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>
+Subject: Re: [RFC 04/20] RDMA/irdma: Add driver framework definitions
+Thread-Topic: [RFC 04/20] RDMA/irdma: Add driver framework definitions
+Thread-Index: AQHVdInRxKc9Xqm18UKMerHkf/S7lqc+Ny4AgAy/zgCAADt/gIAAEQaAgAFkLAA=
+Date:   Sat, 5 Oct 2019 22:01:08 +0000
+Message-ID: <20191005220102.GJ13974@mellanox.com>
+References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
+ <20190926164519.10471-5-jeffrey.t.kirsher@intel.com>
+ <20190926173046.GB14368@unreal>
+ <04e8a95837ba8f6a0b1d001dff2e905f5c6311b4.camel@intel.com>
+ <20191004234519.GF13974@mellanox.com>
+ <cd1712dc03721a01ac786ec878701a1823027434.camel@intel.com>
+In-Reply-To: <cd1712dc03721a01ac786ec878701a1823027434.camel@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MN2PR01CA0027.prod.exchangelabs.com (2603:10b6:208:10c::40)
+ To DB7PR05MB4138.eurprd05.prod.outlook.com (2603:10a6:5:23::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [142.162.113.180]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 317ed863-b899-4120-9eac-08d749df86a4
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600167)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB7PR05MB6266;
+x-ms-traffictypediagnostic: DB7PR05MB6266:
+x-microsoft-antispam-prvs: <DB7PR05MB6266770DCF2DCA1888E66934CF990@DB7PR05MB6266.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0181F4652A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(396003)(136003)(376002)(39850400004)(199004)(189003)(6246003)(11346002)(2616005)(64756008)(5660300002)(446003)(33656002)(256004)(229853002)(6506007)(66446008)(66556008)(99286004)(476003)(305945005)(386003)(14444005)(2906002)(66476007)(6916009)(66946007)(25786009)(102836004)(7736002)(3846002)(36756003)(6486002)(52116002)(81156014)(81166006)(76176011)(6436002)(8936002)(54906003)(4326008)(478600001)(186003)(66066001)(86362001)(8676002)(6116002)(316002)(486006)(14454004)(71200400001)(71190400001)(6512007)(1076003)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR05MB6266;H:DB7PR05MB4138.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: qMQlv3aqQ/U8PmFyncYlsyMwhpcvMgE5lSGIHIaFVCEE8hSz5ZAsL6J5xghHBpT51tNfja2ZziFng5y53RVxHCj7X+PtWZWd2NJJ7RIPm2P048fJVipuU9OnZVZAIw2xODNfsuYESv/VyrJGi3bAtOYibTLW7pBPpfRbObiNvtWDJ9iY0JZIa92E0wAgqkTyuDT/GOin/C2581eGPWd0cxk5oR40fAVXK7IlC6/GuXDvy5D7/sPoQDfFeXAOaeoNmQhD+1yMa0YDTgNgKZKTcc5exnP7Cn7K0gUqh/nJL4/G50oy8k/aNZPrEfXifPV5GJOUu1LKV1rWUtqyxkfLKEsVkmZ60LAbmO9OK02g9HOPle8LVhWwyfCoTacGlzieNdxcPgRvuOhil1gIXx27gj72WIjOXbreGv+5EPAGu3Q=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <85A50DB784B6E14592C5A04C791D2455@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61f2fd6fc6a84083fe5d35c19f84da60ea373fe6.1570307172.git.lorenzo@kernel.org>
-User-Agent: Mutt/1.9.5 (2018-04-13)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 317ed863-b899-4120-9eac-08d749df86a4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2019 22:01:08.3433
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6gImX9dD3RlT6BF7KxiVbF+5gi2lrVht/EifS1LvbSbZpn7BOP+BUqTijC5nb2M8HsdUg0x5vPU2lIbRNq6ECw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB6266
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo, 
+On Fri, Oct 04, 2019 at 05:46:15PM -0700, Jeff Kirsher wrote:
+> On Fri, 2019-10-04 at 23:45 +0000, Jason Gunthorpe wrote:
+> > On Fri, Oct 04, 2019 at 01:12:22PM -0700, Jeff Kirsher wrote:
+> >=20
+> > > > > +	if (ldev->version.major !=3D I40E_CLIENT_VERSION_MAJOR ||
+> > > > > +	    ldev->version.minor !=3D I40E_CLIENT_VERSION_MINOR) {
+> > > > > +		pr_err("version mismatch:\n");
+> > > > > +		pr_err("expected major ver %d, caller specified
+> > > > > major
+> > > > > ver %d\n",
+> > > > > +		       I40E_CLIENT_VERSION_MAJOR, ldev-
+> > > > > >version.major);
+> > > > > +		pr_err("expected minor ver %d, caller specified
+> > > > > minor
+> > > > > ver %d\n",
+> > > > > +		       I40E_CLIENT_VERSION_MINOR, ldev-
+> > > > > >version.minor);
+> > > > > +		return -EINVAL;
+> > > > > +	}
+> > > >=20
+> > > > This is can't be in upstream code, we don't support out-of-tree
+> > > > modules,
+> > > > everything else will have proper versions.
+> > >=20
+> > > Who is the "we" in this context?
+> >=20
+> > Upstream sensibility - if we start doing stuff like this then we will
+> > end up doing it everwhere.
+>=20
+> I see you cut out the part of my response about Linux distributions
+> disagreeing with this stance.
 
-On Sat, Oct 05, 2019 at 10:44:35PM +0200, Lorenzo Bianconi wrote:
-> Use the page_pool api for allocations and DMA handling instead of
-> __dev_alloc_page()/dma_map_page() and free_page()/dma_unmap_page().
-> Pages are unmapped using page_pool_release_page before packets
-> go into the network stack.
-> 
-> The page_pool API offers buffer recycling capabilities for XDP but
-> allocates one page per packet, unless the driver splits and manages
-> the allocated page.
-> This is a preliminary patch to add XDP support to mvneta driver
-> 
-> Tested-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/marvell/Kconfig  |  1 +
->  drivers/net/ethernet/marvell/mvneta.c | 76 ++++++++++++++++++++-------
->  2 files changed, 58 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/Kconfig b/drivers/net/ethernet/marvell/Kconfig
-> index fb942167ee54..3d5caea096fb 100644
-> --- a/drivers/net/ethernet/marvell/Kconfig
-> +++ b/drivers/net/ethernet/marvell/Kconfig
-> @@ -61,6 +61,7 @@ config MVNETA
->  	depends on ARCH_MVEBU || COMPILE_TEST
->  	select MVMDIO
->  	select PHYLINK
-> +	select PAGE_POOL
->  	---help---
->  	  This driver supports the network interface units in the
->  	  Marvell ARMADA XP, ARMADA 370, ARMADA 38x and
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index 128b9fded959..8beae0e1eda7 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -37,6 +37,7 @@
->  #include <net/ip.h>
->  #include <net/ipv6.h>
->  #include <net/tso.h>
-> +#include <net/page_pool.h>
->  
->  /* Registers */
->  #define MVNETA_RXQ_CONFIG_REG(q)                (0x1400 + ((q) << 2))
-> @@ -603,6 +604,10 @@ struct mvneta_rx_queue {
->  	u32 pkts_coal;
->  	u32 time_coal;
->  
-> +	/* page_pool */
-> +	struct page_pool *page_pool;
-> +	struct xdp_rxq_info xdp_rxq;
-> +
->  	/* Virtual address of the RX buffer */
->  	void  **buf_virt_addr;
->  
-> @@ -1815,19 +1820,12 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
->  	dma_addr_t phys_addr;
->  	struct page *page;
->  
-> -	page = __dev_alloc_page(gfp_mask);
-> +	page = page_pool_alloc_pages(rxq->page_pool,
-> +				     gfp_mask | __GFP_NOWARN);
->  	if (!page)
->  		return -ENOMEM;
+Sure, this is an upstream decision.. I think everyone knows distros
+hate the stable-api-nonsense policy?
 
-Is the driver syncing the buffer somewhere else? (for_device)
-If not you'll have to do this here. 
+> > I don't see how this is any different from any of the other myriad of
+> > problems out of tree modules face.=20
+> >=20
+> > Someone providing out of tree modules has to provide enough parts of
+> > their driver so that it only consumes the stable ABI from the distro
+> > kernel.
+> >=20
+> > Pretty normal stuff really.
+>=20
+> Your right, if the dependency was reversed and the out-of-tree (OOT) driv=
+er
+> was dependent upon the RDMA driver, but in this case it is not.  The LAN
+> driver does not "need" the RDMA driver to work.  So the RDMA driver shoul=
+d
+> at least check that the LAN driver loaded has the required version to wor=
+k.
 
-On a non-cache coherent machine (and i think this one is) you may get dirty
-cache lines handed to the device. Those dirty cache lines might get written back
-*after* the device has DMA'ed it's data. You need to flush those first to avoid
-any data corruption
+So? IMHO you have to provide both drivers if you want to have an OOT
+solution as the lan driver is providing and changing kABI outside the
+distro promise of kABI stability.
 
->  
-> -	/* map page for use */
-> -	phys_addr = dma_map_page(pp->dev->dev.parent, page, 0, PAGE_SIZE,
-> -				 DMA_FROM_DEVICE);
-> -	if (unlikely(dma_mapping_error(pp->dev->dev.parent, phys_addr))) {
-> -		__free_page(page);
-> -		return -ENOMEM;
-> -	}
-> -
-> -	phys_addr += pp->rx_offset_correction;
-> +	phys_addr = page_pool_get_dma_addr(page) + pp->rx_offset_correction;
->  	mvneta_rx_desc_fill(rx_desc, phys_addr, page, rxq);
->  	return 0;
->  }
-> @@ -1894,10 +1892,11 @@ static void mvneta_rxq_drop_pkts(struct mvneta_port *pp,
->  		if (!data || !(rx_desc->buf_phys_addr))
->  			continue;
->  
-> -		dma_unmap_page(pp->dev->dev.parent, rx_desc->buf_phys_addr,
-> -			       PAGE_SIZE, DMA_FROM_DEVICE);
-> -		__free_page(data);
-> +		page_pool_put_page(rxq->page_pool, data, false);
->  	}
-> +	if (xdp_rxq_info_is_reg(&rxq->xdp_rxq))
-> +		xdp_rxq_info_unreg(&rxq->xdp_rxq);
-> +	page_pool_destroy(rxq->page_pool);
->  }
->  
->  static void
-> @@ -2029,8 +2028,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
->  				skb_add_rx_frag(rxq->skb, frag_num, page,
->  						frag_offset, frag_size,
->  						PAGE_SIZE);
-> -				dma_unmap_page(dev->dev.parent, phys_addr,
-> -					       PAGE_SIZE, DMA_FROM_DEVICE);
-> +				page_pool_release_page(rxq->page_pool, page);
->  				rxq->left_size -= frag_size;
->  			}
->  		} else {
-> @@ -2060,9 +2058,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
->  						frag_offset, frag_size,
->  						PAGE_SIZE);
->  
-> -				dma_unmap_page(dev->dev.parent, phys_addr,
-> -					       PAGE_SIZE, DMA_FROM_DEVICE);
-> -
-> +				page_pool_release_page(rxq->page_pool, page);
->  				rxq->left_size -= frag_size;
->  			}
->  		} /* Middle or Last descriptor */
-> @@ -2829,11 +2825,53 @@ static int mvneta_poll(struct napi_struct *napi, int budget)
->  	return rx_done;
->  }
->  
-> +static int mvneta_create_page_pool(struct mvneta_port *pp,
-> +				   struct mvneta_rx_queue *rxq, int size)
-> +{
-> +	struct page_pool_params pp_params = {
-> +		.order = 0,
-> +		.flags = PP_FLAG_DMA_MAP,
-> +		.pool_size = size,
-> +		.nid = cpu_to_node(0),
-> +		.dev = pp->dev->dev.parent,
-> +		.dma_dir = DMA_FROM_DEVICE,
-> +	};
-> +	int err;
-> +
-> +	rxq->page_pool = page_pool_create(&pp_params);
-> +	if (IS_ERR(rxq->page_pool)) {
-> +		err = PTR_ERR(rxq->page_pool);
-> +		rxq->page_pool = NULL;
-> +		return err;
-> +	}
-> +
-> +	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, 0);
-> +	if (err < 0)
-> +		goto err_free_pp;
-> +
-> +	err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq, MEM_TYPE_PAGE_POOL,
-> +					 rxq->page_pool);
-> +	if (err)
-> +		goto err_unregister_rxq;
-> +
-> +	return 0;
-> +
-> +err_unregister_rxq:
-> +	xdp_rxq_info_unreg(&rxq->xdp_rxq);
-> +err_free_pp:
-> +	page_pool_destroy(rxq->page_pool);
-> +	return err;
-> +}
-> +
->  /* Handle rxq fill: allocates rxq skbs; called when initializing a port */
->  static int mvneta_rxq_fill(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
->  			   int num)
->  {
-> -	int i;
-> +	int i, err;
-> +
-> +	err = mvneta_create_page_pool(pp, rxq, num);
-> +	if (err < 0)
-> +		return err;
->  
->  	for (i = 0; i < num; i++) {
->  		memset(rxq->descs + i, 0, sizeof(struct mvneta_rx_desc));
-> -- 
-> 2.21.0
-> 
+It is no different than replacing, say, the entire core RDMA subsystem as
+many people tend to do.
 
+> This line of thinking, "marries" the in-kernel RDMA driver with the in-
+> kernel LAN driver(s) so the end users and Linux distro's can not choose t=
+o
+> upgrade or use any other driver than what comes with the kernel. =20
 
-Thanks
-/Ilias
+Yes, but upgrade is possible, you have to provide both.
+
+> agree that any out-of-tree (OOT) driver needs to make sure they have all
+> kernel ABI's figured out for whatever kernel they are being installed on.=
+=20
+> But what is the problem with the in-kernel RDMA driver to do it's own
+> checks to ensure the driver it is dependent upon meets its minimum
+> requirements?
+
+It is against the upstream policy and we'd have a proliferation of
+these checks if it was allowed, IMHO.
+=20
+> Similar checks are done in the Intel LAN driver to ensure the firmware is
+> of a certain level, which is no different than what is being done here.
+
+External dependencies are expected to check compatability.
+
+Jason
