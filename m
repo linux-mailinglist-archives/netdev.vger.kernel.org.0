@@ -2,92 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C52F3CCB03
-	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 18:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 593BACCB0F
+	for <lists+netdev@lfdr.de>; Sat,  5 Oct 2019 18:17:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729341AbfJEQL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 12:11:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37650 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726069AbfJEQL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Oct 2019 12:11:56 -0400
-Received: from paulmck-ThinkPad-P72 (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0585222C0;
-        Sat,  5 Oct 2019 16:11:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570291915;
-        bh=uVvN8miFlyBBEL1s+R/jjVoYmf+OtDC+ppk3W/XU+LA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=VrOhGxHBUp2QBoaABNkTv59q46KU+zMgoXVjo4A+z8jyTemuC+d+MnJsoKBSsLKyk
-         ab+nbGBh74pV2MAWEd6dae0UUaaGgTHUo+Pxk5q4buhnWbsEjUplJRXx2cQJmszJIH
-         SRZCjP7IRd5OSeWeBIWD3gEfvjE8KJ7BdrXylHRw=
-Date:   Sat, 5 Oct 2019 09:11:53 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Song Liu <liu.song.a23@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>, rcu@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>, jiangshanlai@gmail.com,
-        dipankar@in.ibm.com, Andrew Morton <akpm@linux-foundation.org>,
-        mathieu.desnoyers@efficios.com, josh@joshtriplett.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>, dhowells@redhat.com,
-        Eric Dumazet <edumazet@google.com>, fweisbec@gmail.com,
-        Oleg Nesterov <oleg@redhat.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH tip/core/rcu 6/9] bpf/cgroup: Replace
- rcu_swap_protected() with rcu_replace()
-Message-ID: <20191005161153.GG2689@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20191003014153.GA13156@paulmck-ThinkPad-P72>
- <20191003014310.13262-6-paulmck@kernel.org>
- <CAEf4BzaBuktutCZr2ZUC6b-XK_JJ7prWZmO-5Yew2tVp5DxbBA@mail.gmail.com>
- <CAPhsuW6vFwhhYngbftZk4NrSJ+qQx3F6ChUCm=n16HDK-N9vMg@mail.gmail.com>
+        id S1729254AbfJEQRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 12:17:00 -0400
+Received: from mail-pf1-f171.google.com ([209.85.210.171]:37852 "EHLO
+        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728101AbfJEQRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 12:17:00 -0400
+Received: by mail-pf1-f171.google.com with SMTP id y5so5772741pfo.4
+        for <netdev@vger.kernel.org>; Sat, 05 Oct 2019 09:17:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=+NxVeQilGOZgHjUgyF2RdYtat9ECLUkDHf4z5oCUZPE=;
+        b=ydsZGFURhhHqnxpj2aOHOqJnXXXrZPrrYXVqYOc1kq5pqmPspBJRuKg0bfcGyQN2P2
+         p+EoI0kWfg17c2ObD370xHMUeVTFPOjK1JrKUO69KcTPPD3442nfjBnFBtuns40YMUSZ
+         7nD8uhlbFGWnN5rD/9zrx7or7MVO5PBQaBVH73oDIr5Z7kALHF8yOW1xN9Knkll1RMEj
+         vkVCpwEBfTBPRqdJPmQY4UnsvUDny1rZ2xw5mrR0Ehk6B8bIMffB9kbVSh4hVtYwoB0R
+         WM7A1k9vI2ZFdHywmQbmOBsIee9uhFCnVNsivD5X3ZOXM2kGu1xg/PsAE+8yTScXyCZf
+         UNkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=+NxVeQilGOZgHjUgyF2RdYtat9ECLUkDHf4z5oCUZPE=;
+        b=lkqu8K5lwl9F6RLg6k4KlL2LVz8qSkydfjBHko/c8qNBMuTlos09RvgxhYDpAONLTG
+         8qw5cBFoVXGLA1tlJT4iIVYPuElf+cfBaKhhPRpiKiRxR7zJ9UiQvivwq2VlGAL2DWae
+         19mIM5M+t2wR+DlGdLzcLMO6FAcCppU7+hx8eWwB9wndE0RVjO+V/fFtdb2v4MFe48WC
+         vgm2E3+fKujWHt1MpE6VS0H/LZRktkeW8V6kLdR7FFrlBivt4ndvt9NbcafyqSEDPEkI
+         8JGbSwBP6Lc6L7rf7gupvhBIvNWFDG0dbyFAKxWhgxAT/UoJnzhZw5eZJX6bLjs2/9xW
+         4RJQ==
+X-Gm-Message-State: APjAAAUGeyYFxeJfd+FgaVpCOMeYHbgkqMnEbIGe4SsjBLAIs2zZHvg5
+        1CKoHUNQi/CLFnS6TXzYYvHhZw==
+X-Google-Smtp-Source: APXvYqx/7ifPi1j7Gc4Ll40XnD/hYN+BcK1b5/JGkOh2in1dTdIArtWDcRAqtmj2iQRq+Q7bSabsrg==
+X-Received: by 2002:a17:90a:b012:: with SMTP id x18mr24205048pjq.116.1570292219574;
+        Sat, 05 Oct 2019 09:16:59 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id s1sm3943824pgi.52.2019.10.05.09.16.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Oct 2019 09:16:59 -0700 (PDT)
+Date:   Sat, 5 Oct 2019 09:16:54 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
+        petrm@mellanox.com, tariqt@mellanox.com, saeedm@mellanox.com,
+        shuah@kernel.org, mlxsw@mellanox.com
+Subject: Re: [patch net-next 0/3] create netdevsim instances in namespace
+Message-ID: <20191005091654.346ced3a@cakuba.netronome.com>
+In-Reply-To: <20191005061033.24235-1-jiri@resnulli.us>
+References: <20191005061033.24235-1-jiri@resnulli.us>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW6vFwhhYngbftZk4NrSJ+qQx3F6ChUCm=n16HDK-N9vMg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 03, 2019 at 01:58:13PM -0700, Song Liu wrote:
-> On Thu, Oct 3, 2019 at 10:43 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Wed, Oct 2, 2019 at 6:45 PM <paulmck@kernel.org> wrote:
-> > >
-> > > From: "Paul E. McKenney" <paulmck@kernel.org>
-> > >
-> > > This commit replaces the use of rcu_swap_protected() with the more
-> > > intuitively appealing rcu_replace() as a step towards removing
-> > > rcu_swap_protected().
-> > >
-> > > Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
-> > > Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > > Cc: Alexei Starovoitov <ast@kernel.org>
-> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > Cc: Martin KaFai Lau <kafai@fb.com>
-> > > Cc: Song Liu <songliubraving@fb.com>
-> > > Cc: Yonghong Song <yhs@fb.com>
-> > > Cc: <netdev@vger.kernel.org>
-> > > Cc: <bpf@vger.kernel.org>
-> > > ---
-> >
-> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+On Sat,  5 Oct 2019 08:10:30 +0200, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
 > 
-> Acked-by: Song Liu <songliubraving@fb.com>
+> Allow user to create netdevsim devlink and netdevice instances in a
+> network namespace according to the namespace where the user resides in.
+> Add a selftest to test this.
 
-Applied, thank you both!
-
-							Thanx, Paul
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
