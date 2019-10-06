@@ -2,111 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8578BCD34A
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 18:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2756CD37B
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 18:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbfJFQAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 12:00:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726349AbfJFQAU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Oct 2019 12:00:20 -0400
-Received: from localhost (unknown [77.137.89.37])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A425620862;
-        Sun,  6 Oct 2019 16:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570377620;
-        bh=DGKP/JNhMkqhnGAiwp2ESxKKl7LcAXgnEh2r/sQavvo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U3BE3AQ5m+tOUayCLSXn3hfpASlJYoLyq2VzAY3B1DoGHiBB/l5lmDl7eqqSUkY3o
-         P3YJu4aCbaSDpXlW1izAg9p3FIl0T/DCQt+/lWvmicnoj6OWh+V/8jnYwRjvA85+Ba
-         Ra1KokSwq3y9/ZAXwolVOVrxmoH1kR8mEWcOHfjo=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next 3/3] RDMA/rw: Support threshold for registration vs scattering to local pages
-Date:   Sun,  6 Oct 2019 18:59:55 +0300
-Message-Id: <20191006155955.31445-4-leon@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191006155955.31445-1-leon@kernel.org>
-References: <20191006155955.31445-1-leon@kernel.org>
+        id S1726450AbfJFQUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 12:20:03 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42944 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726333AbfJFQUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 12:20:03 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n14so12381013wrw.9
+        for <netdev@vger.kernel.org>; Sun, 06 Oct 2019 09:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=21XlraqO5v6935P75+EMAYXu0ZygoFz0HfWWT7WbXtQ=;
+        b=JVHHFKzVfhizC7csayuDKOdq+cBIglc6oMuE7oL1zrc1aKxwV4ZHk1NamFZVMr3kUe
+         YkRFJMnwcHs5N0juMeb1rU1Xxl6/eff4/yRJgDEGKOasYZHJ6xK7QKcKoVE6/IZtsxmO
+         7pDQMxC1nkLhDtLYIGzJY1HsfC5CVljIokV76XglC/Xdk5/ElR631ahuSUz8A9L3Ti52
+         Zy8WwZoyeIuki6JdPbZeMfMIAdg3Zd0Co58RfmbiML2iGBk2jNNA+40lnKnlRXGuDhJv
+         PZHPnjhURX3DrYxLNUeAqXEzWcNHukiq9+mYKraKoIaNAPzqmc92X5ssv8pDgj/4BIHW
+         EFtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=21XlraqO5v6935P75+EMAYXu0ZygoFz0HfWWT7WbXtQ=;
+        b=CXn7euZvXh9/6vif1tHPg2Ms+Y5LyiASmfhac1b1P078UwM/HixblyqOp2swP3YBlN
+         2v7ymmuOrYYbRQa5AVZlpyKI5wLywH1oTEWReRT8P6hsmsOwncCcnTTmDb/EyzFJaR99
+         f6FklF/PpUGzduoMRnkLYLiy12EXWZuAjXWxeow6+8raci2AP3QMJcXXlkQ/caKBD20W
+         pzp1ymW+yj5Cukm7Xsn03NEt0IGYP5Ef3P1OM2frhR0HJ93o+FtLrLDTxP6eRa3AiQEU
+         DbbiW4RHJqtXPVTnec7NpPZydtrsklpOrkp9XFWFXI0qiiokbdmotJ5oIrVNTJcA0VPn
+         TShQ==
+X-Gm-Message-State: APjAAAXXtrszk2kQSjriUWMfowy0AnyQEZFHY2Gqmndztl42THn/Kwv7
+        4E6CQUk51krLip3J+RuWYmRMBj7a
+X-Google-Smtp-Source: APXvYqzbJZgWHnoo/1WCdPwbMKlt6df8mDLlOUJpWwnmKrrY6fEU8gzr7KrOL0Vh0S3e8LY1uSfpPQ==
+X-Received: by 2002:adf:f20e:: with SMTP id p14mr18108423wro.212.1570378800628;
+        Sun, 06 Oct 2019 09:20:00 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:64e8:8137:5430:1a37? (p200300EA8F26640064E8813754301A37.dip0.t-ipconnect.de. [2003:ea:8f26:6400:64e8:8137:5430:1a37])
+        by smtp.googlemail.com with ESMTPSA id t4sm11069506wrm.13.2019.10.06.09.19.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 06 Oct 2019 09:20:00 -0700 (PDT)
+To:     David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] net: core: change return type of pskb_may_pull to
+ bool
+Message-ID: <8c993693-cbef-e401-bfc3-c2a915621c51@gmail.com>
+Date:   Sun, 6 Oct 2019 18:19:54 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yamin Friedman <yaminf@mellanox.com>
+This function de-facto returns a bool, so let's change the return type
+accordingly.
 
-If there are more scatter entries than the recommended limit provided by
-the ib device, UMR registration is used. This will provide optimal
-performance when performing large RDMA READs over devices that advertise
-the threshold capability.
-
-With ConnectX-5 running NVMeoF RDMA with FIO single QP 128KB writes:
-Without use of cap: 70Gb/sec
-With use of cap: 84Gb/sec
-
-Signed-off-by: Yamin Friedman <yaminf@mellanox.com>
-Reviewed-by: Or Gerlitz <ogerlitz@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/infiniband/core/rw.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ include/linux/skbuff.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/core/rw.c b/drivers/infiniband/core/rw.c
-index 5337393d4dfe..ecff40efcb88 100644
---- a/drivers/infiniband/core/rw.c
-+++ b/drivers/infiniband/core/rw.c
-@@ -20,9 +20,7 @@ module_param_named(force_mr, rdma_rw_force_mr, bool, 0);
- MODULE_PARM_DESC(force_mr, "Force usage of MRs for RDMA READ/WRITE operations");
- 
- /*
-- * Check if the device might use memory registration.  This is currently only
-- * true for iWarp devices. In the future we can hopefully fine tune this based
-- * on HCA driver input.
-+ * Check if the device might use memory registration.
-  */
- static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
- {
-@@ -30,6 +28,8 @@ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
- 		return true;
- 	if (unlikely(rdma_rw_force_mr))
- 		return true;
-+	if (dev->attrs.max_sgl_rd)
-+		return true;
- 	return false;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 4351577b1..0a58402a1 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2261,12 +2261,12 @@ static inline void *pskb_pull(struct sk_buff *skb, unsigned int len)
+ 	return unlikely(len > skb->len) ? NULL : __pskb_pull(skb, len);
  }
  
-@@ -37,9 +37,6 @@ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
-  * Check if the device will use memory registration for this RW operation.
-  * We currently always use memory registrations for iWarp RDMA READs, and
-  * have a debug option to force usage of MRs.
-- *
-- * XXX: In the future we can hopefully fine tune this based on HCA driver
-- * input.
-  */
- static inline bool rdma_rw_io_needs_mr(struct ib_device *dev, u8 port_num,
- 		enum dma_data_direction dir, int dma_nents)
-@@ -48,6 +45,9 @@ static inline bool rdma_rw_io_needs_mr(struct ib_device *dev, u8 port_num,
- 		return true;
- 	if (unlikely(rdma_rw_force_mr))
- 		return true;
-+	if (dev->attrs.max_sgl_rd && dir == DMA_FROM_DEVICE
-+	    && dma_nents > dev->attrs.max_sgl_rd)
+-static inline int pskb_may_pull(struct sk_buff *skb, unsigned int len)
++static inline bool pskb_may_pull(struct sk_buff *skb, unsigned int len)
+ {
+ 	if (likely(len <= skb_headlen(skb)))
+-		return 1;
 +		return true;
- 	return false;
+ 	if (unlikely(len > skb->len))
+-		return 0;
++		return false;
+ 	return __pskb_pull_tail(skb, len - skb_headlen(skb)) != NULL;
  }
  
 -- 
-2.20.1
+2.23.0
+
 
