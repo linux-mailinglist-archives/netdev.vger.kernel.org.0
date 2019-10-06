@@ -2,167 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 442B0CD1EE
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 14:35:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26DA3CD1F8
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 15:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbfJFMfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 08:35:52 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:37708 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726291AbfJFMfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 08:35:52 -0400
+        id S1726421AbfJFNAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 09:00:37 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:34658 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbfJFNAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 09:00:37 -0400
+Received: by mail-ed1-f68.google.com with SMTP id p10so9975586edq.1
+        for <netdev@vger.kernel.org>; Sun, 06 Oct 2019 06:00:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1570365351; x=1601901351;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=FROkbysKC9tOttBHprTq0X08lSAHy/o5+pZUl6HZZqw=;
-  b=eo3AMMfY4xzI4M4HAgPg+cup8mNP6AAMLz8OIas3fXjYuNf92ZwUimBd
-   wyLwwHkdMb1nE5goxfIws2ImBl1vUmlVN0mbuz+P9zd2BZzghGG0gtpbh
-   BasxmqgNWSnpL8u34XhYbZckKHrLZaTI7DXAKo+9NuzNaUNPnJHmEQDjy
-   o=;
-X-IronPort-AV: E=Sophos;i="5.67,263,1566864000"; 
-   d="scan'208";a="839638222"
-Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-2b-baacba05.us-west-2.amazon.com) ([10.47.22.34])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 06 Oct 2019 12:34:33 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2b-baacba05.us-west-2.amazon.com (Postfix) with ESMTPS id C1FD2A07A3;
-        Sun,  6 Oct 2019 12:34:02 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
- EX13MTAUEB001.ant.amazon.com (10.43.60.96) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 6 Oct 2019 12:33:51 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (10.43.60.96) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 6 Oct 2019 12:33:51 +0000
-Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.52.96) by
- mail-relay.amazon.com (10.43.60.129) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Sun, 6 Oct 2019 12:33:48 +0000
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>
-Subject: [PATCH V3 net-next 6/6] net: ena: ethtool: support set_channels callback
-Date:   Sun, 6 Oct 2019 15:33:28 +0300
-Message-ID: <20191006123328.24210-7-sameehj@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191006123328.24210-1-sameehj@amazon.com>
-References: <20191006123328.24210-1-sameehj@amazon.com>
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4oeU6G9etNS3vLvXtCz0JCbt0CzSepxL7D2cW0lcQH8=;
+        b=Dtwjytc8O3bW3qam/SMyCFN/gwS3+jBD0BivXJ6xRS6/frAruDNkAiVO/bISJMAvmG
+         htpErpdqTklEg/qIaWZnY2xBp6NfRcWm6FAhgxy4WtZTeSwdHGKpX6J5VwQtusMHbTQW
+         oT3jvXbZ8FlTu+2qGZw+iuQ1PSFlaXeutZqPFl09GC8+at3V+1Hx56251/m7qL9rLbOW
+         yVf3il0oMD/Ul0PqsxcFf3uv0X/BkfUjIoajwRfcP+/ky2XHMEWsB6+VAL0+zEslrGes
+         84D035rBa2Pjg1BdYoNmBgQRVtFSJMKhW5GGnbmYw70atHpq7Mi6CuWhij0N+wljfaO3
+         1+Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4oeU6G9etNS3vLvXtCz0JCbt0CzSepxL7D2cW0lcQH8=;
+        b=fh3mXhQqgzLDI731FoCHKhY/7DemRZmMOxsArxx3L9seUAQqtg5MrEdxgrB6kcrp51
+         MPZLeBIpgEYAa4fYbm+Fw2llkv+FMqNRZpqha2kmKc5CeSMqRXNM/TAt9reFwqO3s3UZ
+         SLSyRKuGH2hzx1x+Ek0yqSol+LpHWgVouVw5493lpdeI9wX/cvfuJ4NQKgWVsi3FDZEd
+         sOACfIZYyd6lFoaGEfWfLDjhAL0kXZP1j2SfJKjxknlYf9MMmvbnktccFBen2pTX7pP6
+         YAisZHt4/ri1T+d8IRhOsXcUYx7Q3PycQmWqK8pC/A3b0zY1Jp1jxvOPJbl/ejld+8V7
+         bzUg==
+X-Gm-Message-State: APjAAAXTYDDZ423PVv93X9zeu+MkbgBvgghvsoR7cAGAksrlR4sMip7a
+        rROrcIVkbMVmFMUmHlmws5I6BVeu/Io=
+X-Google-Smtp-Source: APXvYqzUV9DjBeAd9MrmhA/d1OHCVN7c6tomi77Nj+8QIDkJ4jn8OoVgzHVZd6SRKz42X1eAJNVkTw==
+X-Received: by 2002:a17:906:6805:: with SMTP id k5mr19510358ejr.50.1570366835434;
+        Sun, 06 Oct 2019 06:00:35 -0700 (PDT)
+Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
+        by smtp.gmail.com with ESMTPSA id t30sm2775802edt.91.2019.10.06.06.00.33
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 06 Oct 2019 06:00:34 -0700 (PDT)
+Date:   Sun, 6 Oct 2019 15:00:32 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Tom Herbert <tom@quantonium.net>
+Subject: Re: [PATCH v5 net-next 2/7] ipeh: Move generic EH functions to
+ exthdrs_common.c
+Message-ID: <20191006130030.rv4tjcu2qkk7baf6@netronome.com>
+References: <1570139884-20183-1-git-send-email-tom@herbertland.com>
+ <1570139884-20183-3-git-send-email-tom@herbertland.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1570139884-20183-3-git-send-email-tom@herbertland.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+On Thu, Oct 03, 2019 at 02:57:59PM -0700, Tom Herbert wrote:
+> From: Tom Herbert <tom@quantonium.net>
+> 
+> Move generic functions in exthdrs.c to new exthdrs_common.c so that
+> exthdrs.c only contains functions that are specific to IPv6 processing,
+> and exthdrs_common.c contains functions that are generic. These
+> functions include those that will be used with IPv4 extension headers.
+> Generic extension header related functions are prefixed by ipeh_.
+> 
+> Signed-off-by: Tom Herbert <tom@herbertland.com>
 
-Set channels callback enables the user to change the count of queues
-used by the driver using ethtool. We decided to currently support only
-equal number of rx and tx queues, this might change in the future.
+...
 
-Also rename dev_up to dev_was_up in ena_update_queue_count() to make
-it clearer.
+> diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> index 25aab67..b8843c1 100644
+> --- a/net/dccp/ipv6.c
+> +++ b/net/dccp/ipv6.c
+> @@ -515,7 +515,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
+>  	if (!opt)
+>  		opt = rcu_dereference(np->opt);
+>  	if (opt) {
+> -		opt = ipv6_dup_options(newsk, opt);
+> +		opt = ipeh_dup_options(newsk, opt);
+>  		RCU_INIT_POINTER(newnp->opt, opt);
+>  	}
+>  	inet_csk(newsk)->icsk_ext_hdr_len = 0;
+> diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+> index ae1344e..700fcea 100644
+> --- a/net/ipv6/Kconfig
+> +++ b/net/ipv6/Kconfig
+> @@ -3,9 +3,13 @@
+>  # IPv6 configuration
+>  #
+>  
+> +config EXTHDRS
+> +	bool
+> +
+>  #   IPv6 as module will cause a CRASH if you try to unload it
+>  menuconfig IPV6
+>  	tristate "The IPv6 protocol"
+> +	select EXTHDRS
+>  	default y
+>  	---help---
+>  	  Support for IP version 6 (IPv6).
 
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 13 +++++++++++
- drivers/net/ethernet/amazon/ena/ena_netdev.c  | 22 ++++++++++++++++---
- drivers/net/ethernet/amazon/ena/ena_netdev.h  |  3 +++
- 3 files changed, 35 insertions(+), 3 deletions(-)
+Hi Tom,
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index b75dafb79..a3250dcf7 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -738,6 +738,18 @@ static void ena_get_channels(struct net_device *netdev,
- 	channels->combined_count = adapter->num_io_queues;
- }
- 
-+static int ena_set_channels(struct net_device *netdev,
-+			    struct ethtool_channels *channels)
-+{
-+	struct ena_adapter *adapter = netdev_priv(netdev);
-+	u32 count = channels->combined_count;
-+	/* The check for max value is already done in ethtool */
-+	if (count < ENA_MIN_NUM_IO_QUEUES)
-+		return -EINVAL;
-+
-+	return ena_update_queue_count(adapter, count);
-+}
-+
- static int ena_get_tunable(struct net_device *netdev,
- 			   const struct ethtool_tunable *tuna, void *data)
- {
-@@ -801,6 +813,7 @@ static const struct ethtool_ops ena_ethtool_ops = {
- 	.get_rxfh		= ena_get_rxfh,
- 	.set_rxfh		= ena_set_rxfh,
- 	.get_channels		= ena_get_channels,
-+	.set_channels		= ena_set_channels,
- 	.get_tunable		= ena_get_tunable,
- 	.set_tunable		= ena_set_tunable,
- };
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 6386554b1..d46a91200 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -2043,14 +2043,30 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
- 			   u32 new_tx_size,
- 			   u32 new_rx_size)
- {
--	bool dev_up;
-+	bool dev_was_up;
- 
--	dev_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
-+	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
- 	ena_close(adapter->netdev);
- 	adapter->requested_tx_ring_size = new_tx_size;
- 	adapter->requested_rx_ring_size = new_rx_size;
- 	ena_init_io_rings(adapter);
--	return dev_up ? ena_up(adapter) : 0;
-+	return dev_was_up ? ena_up(adapter) : 0;
-+}
-+
-+int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count)
-+{
-+	struct ena_com_dev *ena_dev = adapter->ena_dev;
-+	bool dev_was_up;
-+
-+	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
-+	ena_close(adapter->netdev);
-+	adapter->num_io_queues = new_channel_count;
-+	/* We need to destroy the rss table so that the indirection
-+	 * table will be reinitialized by ena_up()
-+	 */
-+	ena_com_rss_destroy(ena_dev);
-+	ena_init_io_rings(adapter);
-+	return dev_was_up ? ena_open(adapter->netdev) : 0;
- }
- 
- static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 7499afb58..bffd778f2 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -82,6 +82,8 @@
- #define ENA_DEFAULT_RING_SIZE	(1024)
- #define ENA_MIN_RING_SIZE	(256)
- 
-+#define ENA_MIN_NUM_IO_QUEUES	(1)
-+
- #define ENA_TX_WAKEUP_THRESH		(MAX_SKB_FRAGS + 2)
- #define ENA_DEFAULT_RX_COPYBREAK	(256 - NET_IP_ALIGN)
- 
-@@ -388,6 +390,7 @@ void ena_dump_stats_to_buf(struct ena_adapter *adapter, u8 *buf);
- int ena_update_queue_sizes(struct ena_adapter *adapter,
- 			   u32 new_tx_size,
- 			   u32 new_rx_size);
-+int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count);
- 
- int ena_get_sset_count(struct net_device *netdev, int sset);
- 
--- 
-2.17.1
+could you expand on the motivation for this new Kconfig symbol.
+It seems that at this time exthdrs_common.o could simply depend on IPV6.
 
+Otherwise this patch seems fine to me.
+
+> diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
+> index df3919b..0bcab81 100644
+> --- a/net/ipv6/Makefile
+> +++ b/net/ipv6/Makefile
+> @@ -44,6 +44,7 @@ obj-$(CONFIG_IPV6_SIT) += sit.o
+>  obj-$(CONFIG_IPV6_TUNNEL) += ip6_tunnel.o
+>  obj-$(CONFIG_IPV6_GRE) += ip6_gre.o
+>  obj-$(CONFIG_IPV6_FOU) += fou6.o
+> +obj-$(CONFIG_EXTHDRS) += exthdrs_common.o
+>  
+>  obj-y += addrconf_core.o exthdrs_core.o ip6_checksum.o ip6_icmp.o
+>  obj-$(CONFIG_INET) += output_core.o protocol.o $(ipv6-offload)
+
+...
