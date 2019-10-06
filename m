@@ -2,78 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 441E9CCE69
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 06:46:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 750C9CCEB9
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 07:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbfJFEoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 00:44:07 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:35038 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfJFEoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 00:44:06 -0400
-Received: by mail-qt1-f193.google.com with SMTP id m15so14589418qtq.2;
-        Sat, 05 Oct 2019 21:44:06 -0700 (PDT)
+        id S1726086AbfJFFeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 01:34:06 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39781 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbfJFFeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 01:34:06 -0400
+Received: by mail-qk1-f194.google.com with SMTP id 4so9697184qki.6;
+        Sat, 05 Oct 2019 22:34:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=kB/2w61oZEEDGxbrCbsRG0VuZG0GVdwPCxnFggz0cLA=;
-        b=M4CU5YWvaVJ944N26oDgpXQsy2aR1zNuNwSiJtdycs06E1qlNroM8+Qeizdw9sG1cd
-         9MkYCVd3d29lrb+w6Ip7E7CaJWw6qspTZy15Lg3gFNHjfPAckLR3mehq5HVjgXsRMkRj
-         T0ZVTBL1Q9HhVhE3t11O0nIHoWMEC53CnTX0gCep+Z+u7ciFUW5AavZhCkiYJ3qT6WzG
-         PJA8SqBkT9NwxauIXg9xzIyicFVRLTyHIgqaaGbwTQ+khF2dW5mucxqG4bGQIkwHjx7N
-         prlw8/yya69BJsP6d6SAqzJ5h+62sScye2BONrjzdwcnWXoXTInPv24tbOVGuHm9NcD3
-         t8FA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YWBlzp7j5NtHO50MUKYcfjT/iC11Ax2IBgxkPAUPhj0=;
+        b=k3xTPvI1WyMnsGBxQgt8I3+aNHrBISBiuKOrzzUI7VuzNZTaKiBGVk0fI01DI6ndCI
+         iCGjbWvUG7nA0XyKVyyBK3z0PXwN/AisDab/RqwP/0qWBrwqvpAVGkyjhGveaEswAJ3o
+         LiCO/EM1yI6VCipX0aMvfSE9OKjbX9t5ngIahKihnRAQ7B3j91ta/w4c2v3CiumZ2dWj
+         zuiPVQjnqth2ewj8dERiaXOlC90tEkmHSYV9+Hd8FqBd+YVUqbhGgGt2tQUbAeTckyop
+         2xONGz/C2I3h51wjLi40skBbgbV6wDWsG06ztvSiUALnd0YDYhizpcBDjJWHYvbVbt8t
+         tu0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=kB/2w61oZEEDGxbrCbsRG0VuZG0GVdwPCxnFggz0cLA=;
-        b=emmG2q8OjxazTTls3q/I2+Co98T2hS2FrrPQ2Vpec43dVHskuNOaq9qqTSVoOrgOTe
-         4huuzVyJihuDO3Iap/g9RjBtC2nsVwHHOZ+3PKhJnSe/A+D17igh6mJjKxEfi4FIiDvF
-         h78lr5bQnbKQD7j+IAnL5hdvaSuRSHdn8e6DbD9rnVqy6sGxuuS0eivOFWKJyBU99eqi
-         5AFKngZ/KpvpyRFKc0oxL03reEf4FiUybhwy2ihHO7Sme4oTeoyPTaHjGkTfCtP+zS3M
-         jvU5BzPqCzc9Jm+HEhNxiCyWH2ZDQzqQZFvIXxNzC8NVWrWxhQL4+x6ozCyweepBw2kh
-         WkjA==
-X-Gm-Message-State: APjAAAUWZFsNLg63lx8jrG4YPtUUQlTUbSDiK6Hn4O0zJFuchglHc5yU
-        dRQdYVDuK0WFyep+++ftU3E=
-X-Google-Smtp-Source: APXvYqyiWBhEDCgSLul9zWwJiBJzk2MCHTxnFgnSxR4sGrmaoMdKyQJD58Gz+hrhZAVkr4kgPmczKA==
-X-Received: by 2002:ac8:1099:: with SMTP id a25mr23919221qtj.308.1570337045549;
-        Sat, 05 Oct 2019 21:44:05 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id 199sm5890955qkk.112.2019.10.05.21.44.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Oct 2019 21:44:04 -0700 (PDT)
-Date:   Sun, 6 Oct 2019 00:44:03 -0400
-Message-ID: <20191006004403.GB709015@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Hubert Feurstein <h.feurstein@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: dsa: b53: Do not clear existing mirrored port
- mask
-In-Reply-To: <20191005220518.14008-1-f.fainelli@gmail.com>
-References: <20191005220518.14008-1-f.fainelli@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YWBlzp7j5NtHO50MUKYcfjT/iC11Ax2IBgxkPAUPhj0=;
+        b=lIytF9zqYEqnFsKScpE18Q3O6uXobgRUiQX8NNj/wHdb5iqFr8+O5AsCN9tMo1EPXa
+         KjKaGXxHLG/fsCx6nokAd8exN2xWhXm3reCOzDwPIUmuJg+/aSWSlPHx9DJgOPF4V8dl
+         c9P6MxV3cEAn4mfOvsK8xgmLBKOVH91VjFmyx0yVhQjaCdCUy8OQ9K5cNPP2uXRr0CTC
+         KXJB/ejJz9GXzNI2k90oK6E6Esd9q4vqN5DqCpYEotyttMEdrNhx1+/3bHcTfioGrsAx
+         YpuJcRx08tY9z5yJPt2ukPd0HpMi72d3j5oNCmMYd9XO49VkV1Hl9CTfzz5YsHb7s1g1
+         BHqg==
+X-Gm-Message-State: APjAAAUejBs8iTUYalClHLBNCVO/36Eczmg+l7+ZFBPL95be47/LHukh
+        hJqw0I5XMWbB4MICoay4XWbRD/k7sMg9OmCu5BOubdgk
+X-Google-Smtp-Source: APXvYqyk6QNMDXjjLRAqYriqgrFQyNLUF+XBlyf41KtbFkB141HGkP84h58q3qso/vKzweg4fkxc+arkGRRSiaPf73Y=
+X-Received: by 2002:ae9:eb93:: with SMTP id b141mr18515802qkg.36.1570340044539;
+ Sat, 05 Oct 2019 22:34:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20191006032008.2571427-1-andriin@fb.com> <20191006032008.2571427-3-andriin@fb.com>
+ <c2302e65-90e4-adc1-7e6d-7dc324a133c9@fb.com>
+In-Reply-To: <c2302e65-90e4-adc1-7e6d-7dc324a133c9@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 5 Oct 2019 22:33:53 -0700
+Message-ID: <CAEf4BzZsKNx=y2WtA2=bV4SBfvEhogudMjx=nrBVBVEFVbrGUQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/3] scripts/bpf: teach bpf_helpers_doc.py to
+ dump BPF helper definitions
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  5 Oct 2019 15:05:18 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> Clearing the existing bitmask of mirrored ports essentially prevents us
-> from capturing more than one port at any given time. This is clearly
-> wrong, do not clear the bitmask prior to setting up the new port.
-> 
-> Reported-by: Hubert Feurstein <h.feurstein@gmail.com>
-> Fixes: ed3af5fd08eb ("net: dsa: b53: Add support for port mirroring")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+On Sat, Oct 5, 2019 at 9:21 PM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 10/5/19 8:20 PM, Andrii Nakryiko wrote:
+> > Enhance scripts/bpf_helpers_doc.py to emit C header with BPF helper
+> > definitions (to be included from libbpf's bpf_helpers.h).
+> >
+> > Signed-off-by: Andrii Nakryiko<andriin@fb.com>
+> > ---
+> >   scripts/bpf_helpers_doc.py      |  155 +-
+> >   tools/lib/bpf/bpf_helper_defs.h | 2677 +++++++++++++++++++++++++++++++
+> >   2 files changed, 2831 insertions(+), 1 deletion(-)
+> >   create mode 100644 tools/lib/bpf/bpf_helper_defs.h
+>
+> patch 2 adds it. patch 3 deletes it? stress testing git? ;)
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+oh, wow... I checked cover letter's summary stats, didn't see
+bpf_helpers_defs.h there and figured I didn't screw up.. wrong!
