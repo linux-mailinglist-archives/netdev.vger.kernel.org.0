@@ -2,74 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5680CCDA4
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 03:05:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 413DBCCDB7
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 03:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727121AbfJFBFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Oct 2019 21:05:17 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42414 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726986AbfJFBFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 21:05:17 -0400
-Received: by mail-lf1-f68.google.com with SMTP id c195so6898903lfg.9;
-        Sat, 05 Oct 2019 18:05:14 -0700 (PDT)
+        id S1727091AbfJFBYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Oct 2019 21:24:23 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:32850 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726967AbfJFBYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Oct 2019 21:24:22 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q10so6263389pfl.0;
+        Sat, 05 Oct 2019 18:24:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hi2TQ3gnQO+4LnruDAUXH/KsUjTzayhRfdN3zee+DKM=;
-        b=NsEE7Nc/YRadFRPWkLjNPDifxqJKsJkkFWG8HSBa9DDmlx72STNUpRoDOxawe9iK7P
-         Oh9R04kQHmsptWmvg3Wosbcnr4hqUEGIOoos9mGPiWUPvGXwXTpqW6orLZ7fnVPn7QMp
-         dzCDCjrPjTTuHlcyuECaTHo6ey4LLjyslptZzJGL+C2PoAGKvtPDDT5n8wcSTPOwQ5mw
-         0I8bDl3MarMEp+/xbtAhjXG4RsFZZTQmT+pqV8nOJip8M9BEXjO+pYIg1Vt7X3Cwlb7e
-         Z4lrFkWhVO/uGH0uXzLU/GM6bJUr1enck7lSYlB4F/lHAkBVBWcynt+xXztt5xLC7vi2
-         GPMw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GP1jZ0/ZpDTCrDHKY0Qf+ZjmJomNMuLdiTBOuMV4ANw=;
+        b=mWGwsk+eb3rWLBc4UY66YuKF31+KlEE3eRDInsQlEA8w7SaGavoPDfvnef8AyTOXfi
+         SHn1GOwxPQ5CH0PdZDl0Fi2hJvAhLc2ER9l/v93VqXH0p/aNP5vlz7Eya2Dtz9Ap8ebO
+         0cEWI0RqXEg7/ApcyejuuxrqX6hPOAyUTAEo4YkH0L7WIpkIBZafcydHCjoFUtpuMuhp
+         mP6XQeoahZR0FVyO3z4ibOMPIVubZfC2K3NFK9gm52WwYcnIaK7jTmiLNB9nEHnk9NnU
+         LvjDpfHaUJXs+FG66TL6M2HdWgVetaXxI7bHSU0JmFtpwMrhONIE3ClKeVnl5IIJQaGf
+         DBJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hi2TQ3gnQO+4LnruDAUXH/KsUjTzayhRfdN3zee+DKM=;
-        b=EnA0q7Oaa/bJMQZiCa9vDfvPPMy4XdaI19BQdiox27voTWOg5NHTvm/c6SD1tIvUww
-         FGz8PYVK+qDITnibuvQoRgDVIuDB/5vw/Qth5U69pb9+Nrgy0p8Gj9LXg6z98gKzWzMG
-         vJTIJ2bnLa5XMW97c851l4JN5Tw2zBJx/78SX92B3tvyHm1yaq4kgWQUundfbAK2FN7U
-         xVBggS2CqHJx8/CXtTvoPTfAwo+mKJ1AcYFMsLAjnUXtUNUHZSK0A/TjoqENecXhFBG7
-         IwK6x+SrRK/MW7dBHrM0Y0wNVkBAt3DXpdAWHn8+8ap+ur65JXLS6KYDThX7o8ALLBxb
-         zggQ==
-X-Gm-Message-State: APjAAAXCV8HN5oAohTITzozqPMJCMtKc57lKW9o3xw/Dz5PWkV+K2LXp
-        3ZCcDxtNGEy2lbYlr9mIOfXWlJyi+7AQyd8vWmTmSA==
-X-Google-Smtp-Source: APXvYqwy7jEyIOE7kcTNnfKVBBBdnVEuoum8v+smwyQbw1FH8x2N2KyHxZW2NgKjZ7Ft9P/AlD2oaGbks2Cu4X/KHms=
-X-Received: by 2002:a19:ac45:: with SMTP id r5mr12721753lfc.6.1570323913319;
- Sat, 05 Oct 2019 18:05:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191004040211.2434033-1-andriin@fb.com>
-In-Reply-To: <20191004040211.2434033-1-andriin@fb.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GP1jZ0/ZpDTCrDHKY0Qf+ZjmJomNMuLdiTBOuMV4ANw=;
+        b=S0bKO0vHeB/XtQ5jOYGv4396vF3soMV/fG21uz9ubUQZjoDxYysKEbzgYc9GqRrkb0
+         dVdZZQ1UptUOuYC0G//8MNcO8THr7WFpiiBu/7mTEhXjeYPwrsAsV3UqTmUPLixmZiFS
+         q3A1xH2i502dohfr6u0jeOLSSQb3WhrgudApXDrc7NmwKKrCtNU+3EPhHCrGheFtmGqp
+         K207W1abCHftMyb0wJLlWbZRW31CAEErTo8nrpr60FkDGmgQ1FwPiPZOWrDJzfdM5tRB
+         iV/yUuihMIvX64IsD6bLfzyaCiS3Uc35gZUFCISN9+kfqhMfEBxWa/FIpewSCu81xdvK
+         sNfg==
+X-Gm-Message-State: APjAAAUHmQSgJuPEsqwITnZsHP7XzVAislH4OdeAvxnSu68w68NxhrAt
+        sq+q0Ft1QpMop+W8UYjLYeg=
+X-Google-Smtp-Source: APXvYqyL+gUyMDr1TvTLsOE1gTDHAZzbh+CAv2acj5rF9u/KXEDDJDvp0kkw4GARgpfbc/gYeaHGnQ==
+X-Received: by 2002:a17:90a:b704:: with SMTP id l4mr26237806pjr.132.1570325061591;
+        Sat, 05 Oct 2019 18:24:21 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:180::7b19])
+        by smtp.gmail.com with ESMTPSA id e192sm12077190pfh.83.2019.10.05.18.24.20
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 05 Oct 2019 18:24:20 -0700 (PDT)
+Date:   Sat, 5 Oct 2019 18:24:18 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 5 Oct 2019 18:05:01 -0700
-Message-ID: <CAADnVQJ-GhhZskSjWq-rfNCZfUoNn4vMxwPHoGSRng3A5aaBsw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix BTF-defined map's __type macro
- handling of arrays
 To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH v3 bpf-next 2/4] libbpf: add bpf_object__open_{file,mem}
+ w/ extensible opts
+Message-ID: <20191006012416.5lq4xhhmdtgcoemc@ast-mbp>
+References: <20191004224037.1625049-1-andriin@fb.com>
+ <20191004224037.1625049-3-andriin@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191004224037.1625049-3-andriin@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 4, 2019 at 1:10 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Due to a quirky C syntax of declaring pointers to array or function
-> prototype, existing __type() macro doesn't work with map key/value types
-> that are array or function prototype. One has to create a typedef first
-> and use it to specify key/value type for a BPF map.  By using typeof(),
-> pointer to type is now handled uniformly for all kinds of types. Convert
-> one of self-tests as a demonstration.
->
+On Fri, Oct 04, 2019 at 03:40:35PM -0700, Andrii Nakryiko wrote:
+> Add new set of bpf_object__open APIs using new approach to optional
+> parameters extensibility allowing simpler ABI compatibility approach.
+> 
+> This patch demonstrates an approach to implementing libbpf APIs that
+> makes it easy to extend existing APIs with extra optional parameters in
+> such a way, that ABI compatibility is preserved without having to do
+> symbol versioning and generating lots of boilerplate code to handle it.
+> To facilitate succinct code for working with options, add OPTS_VALID,
+> OPTS_HAS, and OPTS_GET macros that hide all the NULL, size, and zero
+> checks.
+> 
+> Additionally, newly added libbpf APIs are encouraged to follow similar
+> pattern of having all mandatory parameters as formal function parameters
+> and always have optional (NULL-able) xxx_opts struct, which should
+> always have real struct size as a first field and the rest would be
+> optional parameters added over time, which tune the behavior of existing
+> API, if specified by user.
+> 
 > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+...
+> +/* Helper macro to declare and initialize libbpf options struct
+> + *
+> + * This dance with uninitialized declaration, followed by memset to zero,
+> + * followed by assignment using compound literal syntax is done to preserve
+> + * ability to use a nice struct field initialization syntax and **hopefully**
+> + * have all the padding bytes initialized to zero. It's not guaranteed though,
+> + * when copying literal, that compiler won't copy garbage in literal's padding
+> + * bytes, but that's the best way I've found and it seems to work in practice.
+> + */
+> +#define LIBBPF_OPTS(TYPE, NAME, ...)					    \
+> +	struct TYPE NAME;						    \
+> +	memset(&NAME, 0, sizeof(struct TYPE));				    \
+> +	NAME = (struct TYPE) {						    \
+> +		.sz = sizeof(struct TYPE),				    \
+> +		__VA_ARGS__						    \
+> +	}
+> +
+> +struct bpf_object_open_opts {
+> +	/* size of this struct, for forward/backward compatiblity */
+> +	size_t sz;
+> +	/* object name override, if provided:
+> +	 * - for object open from file, this will override setting object
+> +	 *   name from file path's base name;
+> +	 * - for object open from memory buffer, this will specify an object
+> +	 *   name and will override default "<addr>-<buf-size>" name;
+> +	 */
+> +	const char *object_name;
+> +	/* parse map definitions non-strictly, allowing extra attributes/data */
+> +	bool relaxed_maps;
+> +};
+> +#define bpf_object_open_opts__last_field relaxed_maps
+
+LIBBPF_OPTS macro doesn't inspire confidence, but despite the ugliness
+it is strictly better than what libbpf is using internally to interface
+into kernel via similar bpf_attr api.
+So I think it's an improvement.
+Should this macro be used inside libbpf as well?
+May be rename it too to show that it's not libbpf specific?
+
+Anyhow all that can be done in follow up.
 
 Applied. Thanks
+
