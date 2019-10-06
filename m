@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A94CD348
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 18:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8578BCD34A
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 18:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbfJFQAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 12:00:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35052 "EHLO mail.kernel.org"
+        id S1726672AbfJFQAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 12:00:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35094 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726349AbfJFQAO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Oct 2019 12:00:14 -0400
+        id S1726349AbfJFQAU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Oct 2019 12:00:20 -0400
 Received: from localhost (unknown [77.137.89.37])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 971C42084B;
-        Sun,  6 Oct 2019 16:00:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A425620862;
+        Sun,  6 Oct 2019 16:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570377613;
-        bh=CJx7f+FNEmjE8DUtf1fUmTY+NGFr8JWXDzKQxCBCc3E=;
+        s=default; t=1570377620;
+        bh=DGKP/JNhMkqhnGAiwp2ESxKKl7LcAXgnEh2r/sQavvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OX7BHEH/x/db9pun0htLPpJ/c5Ik8cXg3Ah2Ib5l2nyQHLKPR/K54duPXD6c6FF+n
-         BQYndqwLRbuUfJF50VkbXILM9+fRdsB2oB3z5qzDBDZuYRJFo7AYFEsCeTp0ruPyp6
-         OG+FYkb5vX6QY+iqRTexQlLkhh8+C54UpmgKT15M=
+        b=U3BE3AQ5m+tOUayCLSXn3hfpASlJYoLyq2VzAY3B1DoGHiBB/l5lmDl7eqqSUkY3o
+         P3YJu4aCbaSDpXlW1izAg9p3FIl0T/DCQt+/lWvmicnoj6OWh+V/8jnYwRjvA85+Ba
+         Ra1KokSwq3y9/ZAXwolVOVrxmoH1kR8mEWcOHfjo=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -32,9 +32,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Yamin Friedman <yaminf@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next 2/3] RDMA/mlx5: Add capability for max sge to get optimized performance
-Date:   Sun,  6 Oct 2019 18:59:54 +0300
-Message-Id: <20191006155955.31445-3-leon@kernel.org>
+Subject: [PATCH rdma-next 3/3] RDMA/rw: Support threshold for registration vs scattering to local pages
+Date:   Sun,  6 Oct 2019 18:59:55 +0300
+Message-Id: <20191006155955.31445-4-leon@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191006155955.31445-1-leon@kernel.org>
 References: <20191006155955.31445-1-leon@kernel.org>
@@ -47,50 +47,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yamin Friedman <yaminf@mellanox.com>
 
-Allows the IB device to provide a value of maximum scatter gather entries
-per RDMA READ.
+If there are more scatter entries than the recommended limit provided by
+the ib device, UMR registration is used. This will provide optimal
+performance when performing large RDMA READs over devices that advertise
+the threshold capability.
 
-In certain cases it may be preferable for a device to perform UMR memory
-registration rather than have many scatter entries in a single RDMA READ.
-This provides a significant performance increase in devices capable of
-using different memory registration schemes based on the number of scatter
-gather entries. This general capability allows each device vendor to fine
-tune when it is better to use memory registration.
+With ConnectX-5 running NVMeoF RDMA with FIO single QP 128KB writes:
+Without use of cap: 70Gb/sec
+With use of cap: 84Gb/sec
 
 Signed-off-by: Yamin Friedman <yaminf@mellanox.com>
 Reviewed-by: Or Gerlitz <ogerlitz@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/hw/mlx5/main.c | 2 ++
- include/rdma/ib_verbs.h           | 2 ++
- 2 files changed, 4 insertions(+)
+ drivers/infiniband/core/rw.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index fa23c8e7043b..39d54e285ae9 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -1012,6 +1012,8 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
- 		1 << MLX5_CAP_GEN(mdev, log_max_klm_list_size);
- 	props->max_pi_fast_reg_page_list_len =
- 		props->max_fast_reg_page_list_len / 2;
-+	props->max_sgl_rd =
-+		MLX5_CAP_GEN(mdev, max_sgl_for_optimized_performance);
- 	get_atomic_caps_qp(dev, props);
- 	props->masked_atomic_cap   = IB_ATOMIC_NONE;
- 	props->max_mcast_grp	   = 1 << MLX5_CAP_GEN(mdev, log_max_mcg);
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index 4f671378dbfc..60fd98a9b7e8 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -445,6 +445,8 @@ struct ib_device_attr {
- 	struct ib_tm_caps	tm_caps;
- 	struct ib_cq_caps       cq_caps;
- 	u64			max_dm_size;
-+	/* Max entries for sgl for optimized performance per READ */
-+	u32			max_sgl_rd;
- };
+diff --git a/drivers/infiniband/core/rw.c b/drivers/infiniband/core/rw.c
+index 5337393d4dfe..ecff40efcb88 100644
+--- a/drivers/infiniband/core/rw.c
++++ b/drivers/infiniband/core/rw.c
+@@ -20,9 +20,7 @@ module_param_named(force_mr, rdma_rw_force_mr, bool, 0);
+ MODULE_PARM_DESC(force_mr, "Force usage of MRs for RDMA READ/WRITE operations");
  
- enum ib_mtu {
+ /*
+- * Check if the device might use memory registration.  This is currently only
+- * true for iWarp devices. In the future we can hopefully fine tune this based
+- * on HCA driver input.
++ * Check if the device might use memory registration.
+  */
+ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
+ {
+@@ -30,6 +28,8 @@ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
+ 		return true;
+ 	if (unlikely(rdma_rw_force_mr))
+ 		return true;
++	if (dev->attrs.max_sgl_rd)
++		return true;
+ 	return false;
+ }
+ 
+@@ -37,9 +37,6 @@ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
+  * Check if the device will use memory registration for this RW operation.
+  * We currently always use memory registrations for iWarp RDMA READs, and
+  * have a debug option to force usage of MRs.
+- *
+- * XXX: In the future we can hopefully fine tune this based on HCA driver
+- * input.
+  */
+ static inline bool rdma_rw_io_needs_mr(struct ib_device *dev, u8 port_num,
+ 		enum dma_data_direction dir, int dma_nents)
+@@ -48,6 +45,9 @@ static inline bool rdma_rw_io_needs_mr(struct ib_device *dev, u8 port_num,
+ 		return true;
+ 	if (unlikely(rdma_rw_force_mr))
+ 		return true;
++	if (dev->attrs.max_sgl_rd && dir == DMA_FROM_DEVICE
++	    && dma_nents > dev->attrs.max_sgl_rd)
++		return true;
+ 	return false;
+ }
+ 
 -- 
 2.20.1
 
