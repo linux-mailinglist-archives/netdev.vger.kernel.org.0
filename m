@@ -2,36 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F4147CD3CB
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 19:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F42BCD8AE
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 20:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbfJFRTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 13:19:15 -0400
-Received: from smtprelay0194.hostedemail.com ([216.40.44.194]:56694 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726508AbfJFRTP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 13:19:15 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 41882180A68B1;
-        Sun,  6 Oct 2019 17:19:13 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:152:355:379:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2376:2393:2553:2559:2562:2903:3138:3139:3140:3141:3142:3352:3865:3867:3868:3871:3872:4321:5007:8603:10004:10400:10848:11026:11473:11657:11658:11914:12043:12262:12297:12438:12555:12679:12740:12895:12986:13069:13311:13357:13894:14096:14097:14181:14659:14721:21080:21365:21433:21451:21627:30054:30055:30064:30091,0,RBL:error,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:260,LUA_SUMMARY:none
-X-HE-Tag: road46_333b5ec2ba205
-X-Filterd-Recvd-Size: 2145
-Received: from XPS-9350.home (unknown [47.151.152.152])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Sun,  6 Oct 2019 17:19:11 +0000 (UTC)
-Message-ID: <edf91d8284a2a19d956eb8b7e8b6c4984ceaa1ab.camel@perches.com>
-Subject: i40e_pto.c: Odd use of strlcpy converted from strncpy
-From:   Joe Perches <joe@perches.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>
-Cc:     Mitch Williams <mitch.a.williams@intel.com>,
-        Patryk =?UTF-8?Q?Ma=C5=82ek?= <patryk.malek@intel.com>
-Date:   Sun, 06 Oct 2019 10:19:10 -0700
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.1-2 
+        id S1726170AbfJFSpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 14:45:22 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39025 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725905AbfJFSpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 14:45:22 -0400
+Received: by mail-qt1-f195.google.com with SMTP id n7so16132183qtb.6;
+        Sun, 06 Oct 2019 11:45:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FDtNMGd4vIkTEBG4VnbaIfDNYKUEZ4dNcxWAbUNY7uo=;
+        b=MONqvAWV2NArFHCXriHQxTaQbsAXGUnRmgCUu0KX2YD7MqciBZlmnJpiG7T3dpIScw
+         Mn6BbVydeTbNOp/4ICc1FILS5izg1W0wvsNf3f9QaRECvWj/fDOjTK6XhWWKutlZp8fv
+         w84reqYic+PpIpn6EC7Y2/DufCRjpztwJYeXsy3baD78Jjs+3DfZu7CbAxeTlbG9SuZf
+         hz/v2WFpSBkLGavhfZofgYx3ogLuymC43+RKur87RkrIs7QsxFlgSTdCEeRm2FVjkNOp
+         Jn9AQDtAA/5QiE8cLZ1cVAlwuu01nU2cmG02pEPNkbxHPAt/sUvbZhDZ0wISfzHNMojq
+         Xt1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FDtNMGd4vIkTEBG4VnbaIfDNYKUEZ4dNcxWAbUNY7uo=;
+        b=fu9nHp2cwObLMpbdWjLpuu6geSEIW4SALWx4DwTF/X8PnsV4MbGUO46ax/AgtzOe0r
+         JB2oNXB1WMQULsF8GLbkuWik2cEinsD0/CNSNJJV9ffFFxXi8UJV3X88TWIJ2eYBo72U
+         CBNhiuI3g5qRa1ZGBBRTcsBGEHQn5cddMxqZgbdfOXZZvfGpuDgoY6cOGGr8vqvPwF3g
+         w+rDLAlFrzKuK3L3UjObETnWlwbNrQuzVWNSprtqhyceL710c/ztvbN0dtNp4MrWYUr0
+         CTgvRtGFbmRsYXijddtwhW0vpZlXtoxGuVhKwvVXxWIUIsEOxqMgEpDLHT7U2deN4a6y
+         j0CA==
+X-Gm-Message-State: APjAAAWuivZKwh+5PWNMpG9/skgYkp4vRjOeCV2GDJ5f+2lQzGCo01Po
+        e1VGa0xtWZsgkOX0vVVWYRQm1FM/
+X-Google-Smtp-Source: APXvYqzTgC0tNHX/1kg7nS97bMQhXuCqAxgVHWRofRl0lCE9xwQis8uTGV52SavGw0YEnwQZvl4PPQ==
+X-Received: by 2002:ac8:5243:: with SMTP id y3mr26218021qtn.51.1570387520605;
+        Sun, 06 Oct 2019 11:45:20 -0700 (PDT)
+Received: from localhost.localdomain ([2804:431:c7cb:21c2:d505:73c7:4df5:8eac])
+        by smtp.gmail.com with ESMTPSA id l23sm11275578qta.53.2019.10.06.11.45.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Oct 2019 11:45:19 -0700 (PDT)
+From:   jcfaracco@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, dnmendes76@gmail.com
+Subject: [PATCH RFC net-next 0/2] drivers: net: virtio_net: Implement 
+Date:   Sun,  6 Oct 2019 15:45:13 -0300
+Message-Id: <20191006184515.23048-1-jcfaracco@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -39,46 +60,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This got converted from strncpy to strlcpy but it's
-now not necessary to use one character less than the
-actual size.
+From: Julio Faracco <jcfaracco@gmail.com>
 
-Perhaps the sizeof() - 1 is now not correct and it
-should use strscpy and a normal sizeof.
+Driver virtio_net is not handling error events for TX provided by 
+dev_watchdog. This event is reached when transmission queue is having 
+problems to transmit packets. To enable it, driver should have 
+.ndo_tx_timeout implemented. This serie has two commits:
 
-from:
+In the past, we implemented a function to recover driver state when this
+kind of event happens, but the structure was to complex for virtio_net
+that moment. Alternativelly, this skeleton should be enough for now.
 
-commit 7eb74ff891b4e94b8bac48f648a21e4b94ddee64
-Author: Mitch Williams <mitch.a.williams@intel.com>
-Date:   Mon Aug 20 08:12:30 2018 -0700
+For further details, see thread:
+https://lkml.org/lkml/2015/6/23/691
 
-    i40e: use correct length for strncpy
+Patch 1/2:
+  Add statistic field for TX timeout events.
 
-and
+Patch 2/2:
+  Implement a skeleton function to debug TX timeout events.
 
-commit 4ff2d8540321324e04c1306f85d4fe68a0c2d0ae
-Author: Patryk Małek <patryk.malek@intel.com>
-Date:   Tue Oct 30 10:50:44 2018 -0700
+Julio Faracco (2):
+  drivers: net: virtio_net: Add tx_timeout stats field
+  drivers: net: virtio_net: Add tx_timeout function
 
-    i40e: Replace strncpy with strlcpy to ensure null termination
----
- drivers/net/ethernet/intel/i40e/i40e_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/virtio_net.c | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ptp.c b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
-index 9bf1ad4319f5..627b1c02bb4b 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ptp.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
-@@ -700,8 +700,8 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
- 	if (!IS_ERR_OR_NULL(pf->ptp_clock))
- 		return 0;
- 
--	strlcpy(pf->ptp_caps.name, i40e_driver_name,
--		sizeof(pf->ptp_caps.name) - 1);
-+	strscpy(pf->ptp_caps.name, i40e_driver_name, sizeof(pf->ptp_caps.name));
-+
- 	pf->ptp_caps.owner = THIS_MODULE;
- 	pf->ptp_caps.max_adj = 999999999;
- 	pf->ptp_caps.n_ext_ts = 0;
-
+-- 
+2.21.0
 
