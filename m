@@ -2,155 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 764BBCD94F
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 23:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 802CECD95D
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 23:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbfJFV3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 17:29:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59730 "EHLO mail.kernel.org"
+        id S1726266AbfJFVvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 17:51:23 -0400
+Received: from mga11.intel.com ([192.55.52.93]:30873 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726091AbfJFV3C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Oct 2019 17:29:02 -0400
-Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9C6E22077B
-        for <netdev@vger.kernel.org>; Sun,  6 Oct 2019 21:29:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570397341;
-        bh=qLvRQsok7yap2UmJosxY8CUF92CnskhRGVgg/HdR96Q=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=wjp8mE3CCA10B0krCtBkAcB+yqMYRzL3cIiu9xmMAfVQdFsF2X6ch8+koI9VaN6Uf
-         ymsnJVbqnwtWGQ5nX9rV5rGwGR6w4rWNS/pzAcbGsUaF3D9v57jf6DEH4i5TcoGOhv
-         B/EAHLc9cMT86iGupmNzORbbpsTfNhn1OU59zG7c=
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org
-Subject: [PATCH net 4/4] llc: fix sk_buff refcounting in llc_conn_state_process()
-Date:   Sun,  6 Oct 2019 14:24:27 -0700
-Message-Id: <20191006212427.427682-5-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191006212427.427682-1-ebiggers@kernel.org>
-References: <20191006212427.427682-1-ebiggers@kernel.org>
+        id S1726000AbfJFVvX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Oct 2019 17:51:23 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Oct 2019 14:51:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,265,1566889200"; 
+   d="scan'208";a="217779937"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 06 Oct 2019 14:51:19 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iHEQx-000AgY-9V; Mon, 07 Oct 2019 05:51:19 +0800
+Date:   Mon, 7 Oct 2019 05:50:44 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     kbuild-all@01.org, netdev@vger.kernel.org,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] net: stmmac: Fallback to VLAN Perfect
+ filtering if HASH is not available
+Message-ID: <201910070529.LpPdh7OD%lkp@intel.com>
+References: <3504067666a0cee6ecf636cf30081b09a6b79710.1570360411.git.Jose.Abreu@synopsys.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3504067666a0cee6ecf636cf30081b09a6b79710.1570360411.git.Jose.Abreu@synopsys.com>
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+Hi Jose,
 
-If llc_conn_state_process() sees that llc_conn_service() put the skb on
-a list, it will drop one fewer references to it.  This is wrong because
-the current behavior is that llc_conn_service() never consumes a
-reference to the skb.
+I love your patch! Perhaps something to improve:
 
-The code also makes the number of skb references being dropped
-conditional on which of ind_prim and cfm_prim are nonzero, yet neither
-of these affects how many references are *acquired*.  So there is extra
-code that tries to fix this up by sometimes taking another reference.
+[auto build test WARNING on net-next/master]
 
-Remove the unnecessary/broken refcounting logic and instead just add an
-skb_get() before the only two places where an extra reference is
-actually consumed.
+url:    https://github.com/0day-ci/linux/commits/Jose-Abreu/net-stmmac-Improvements-for-next/20191007-013324
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-42-g38eda53-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Biggers <ebiggers@google.com>
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void [noderef] <asn:2> *ioaddr @@    got void [noderef] <asn:2> *ioaddr @@
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17: sparse:    expected void [noderef] <asn:2> *ioaddr
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17: sparse:    got struct mac_device_info *hw
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:4224:21: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [assigned] [usertype] vid @@    got  short [assigned] [usertype] vid @@
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:4224:21: sparse:    expected unsigned short [assigned] [usertype] vid
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:4224:21: sparse:    got restricted __le16 [usertype]
+
+vim +4224 drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+
+  4206	
+  4207	static int stmmac_vlan_update(struct stmmac_priv *priv, bool is_double)
+  4208	{
+  4209		u32 crc, hash = 0;
+  4210		int count = 0;
+  4211		u16 vid = 0;
+  4212	
+  4213		for_each_set_bit(vid, priv->active_vlans, VLAN_N_VID) {
+  4214			__le16 vid_le = cpu_to_le16(vid);
+  4215			crc = bitrev32(~stmmac_vid_crc32_le(vid_le)) >> 28;
+  4216			hash |= (1 << crc);
+  4217			count++;
+  4218		}
+  4219	
+  4220		if (!priv->dma_cap.vlhash) {
+  4221			if (count > 2) /* VID = 0 always passes filter */
+  4222				return -EOPNOTSUPP;
+  4223	
+> 4224			vid = cpu_to_le16(vid);
+  4225			hash = 0;
+  4226		}
+  4227	
+  4228		return stmmac_update_vlan_hash(priv, priv->hw, hash, vid, is_double);
+  4229	}
+  4230	
+
 ---
- net/llc/llc_conn.c | 33 ++++++---------------------------
- 1 file changed, 6 insertions(+), 27 deletions(-)
-
-diff --git a/net/llc/llc_conn.c b/net/llc/llc_conn.c
-index 0b0c6f12153b..a79b739eb223 100644
---- a/net/llc/llc_conn.c
-+++ b/net/llc/llc_conn.c
-@@ -64,12 +64,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 	struct llc_sock *llc = llc_sk(skb->sk);
- 	struct llc_conn_state_ev *ev = llc_conn_ev(skb);
- 
--	/*
--	 * We have to hold the skb, because llc_conn_service will kfree it in
--	 * the sending path and we need to look at the skb->cb, where we encode
--	 * llc_conn_state_ev.
--	 */
--	skb_get(skb);
- 	ev->ind_prim = ev->cfm_prim = 0;
- 	/*
- 	 * Send event to state machine
-@@ -77,21 +71,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 	rc = llc_conn_service(skb->sk, skb);
- 	if (unlikely(rc != 0)) {
- 		printk(KERN_ERR "%s: llc_conn_service failed\n", __func__);
--		goto out_kfree_skb;
--	}
--
--	if (unlikely(!ev->ind_prim && !ev->cfm_prim)) {
--		/* indicate or confirm not required */
--		if (!skb->next)
--			goto out_kfree_skb;
- 		goto out_skb_put;
- 	}
- 
--	if (unlikely(ev->ind_prim && ev->cfm_prim)) /* Paranoia */
--		skb_get(skb);
--
- 	switch (ev->ind_prim) {
- 	case LLC_DATA_PRIM:
-+		skb_get(skb);
- 		llc_save_primitive(sk, skb, LLC_DATA_PRIM);
- 		if (unlikely(sock_queue_rcv_skb(sk, skb))) {
- 			/*
-@@ -108,6 +93,7 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 		 * skb->sk pointing to the newly created struct sock in
- 		 * llc_conn_handler. -acme
- 		 */
-+		skb_get(skb);
- 		skb_queue_tail(&sk->sk_receive_queue, skb);
- 		sk->sk_state_change(sk);
- 		break;
-@@ -123,7 +109,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 				sk->sk_state_change(sk);
- 			}
- 		}
--		kfree_skb(skb);
- 		sock_put(sk);
- 		break;
- 	case LLC_RESET_PRIM:
-@@ -132,14 +117,11 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 		 * RESET is not being notified to upper layers for now
- 		 */
- 		printk(KERN_INFO "%s: received a reset ind!\n", __func__);
--		kfree_skb(skb);
- 		break;
- 	default:
--		if (ev->ind_prim) {
-+		if (ev->ind_prim)
- 			printk(KERN_INFO "%s: received unknown %d prim!\n",
- 				__func__, ev->ind_prim);
--			kfree_skb(skb);
--		}
- 		/* No indication */
- 		break;
- 	}
-@@ -181,15 +163,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 		printk(KERN_INFO "%s: received a reset conf!\n", __func__);
- 		break;
- 	default:
--		if (ev->cfm_prim) {
-+		if (ev->cfm_prim)
- 			printk(KERN_INFO "%s: received unknown %d prim!\n",
- 					__func__, ev->cfm_prim);
--			break;
--		}
--		goto out_skb_put; /* No confirmation */
-+		/* No confirmation */
-+		break;
- 	}
--out_kfree_skb:
--	kfree_skb(skb);
- out_skb_put:
- 	kfree_skb(skb);
- 	return rc;
--- 
-2.23.0
-
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
