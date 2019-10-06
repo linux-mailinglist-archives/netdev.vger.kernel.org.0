@@ -2,111 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27740CD3B4
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 18:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F4147CD3CB
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 19:19:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726516AbfJFQwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 12:52:50 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:46546 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726443AbfJFQwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 12:52:50 -0400
-Received: by mail-wr1-f67.google.com with SMTP id o18so12421083wrv.13
-        for <netdev@vger.kernel.org>; Sun, 06 Oct 2019 09:52:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=wwXdTKTajbJ7TPYKouzpxzEyxfxSC/Vyi6g2qa/sIn4=;
-        b=c39iA/GFsfosiWBQ/mHiwpOoLIJ2P0l6VMMAoajm6fCMMS47vFNB/U1l1uDC3JGXYp
-         Fmmt/YQ2tR1mTWJyNphgnYdLiAct4MlXSKxZQtlutSiFgbhXOZcIUprRo5UKpYbNhrwe
-         kwi4nG9AbhP7LQlxbsHuzDMmMVQGfJegPPc5PSarra7n7MnTx15NVWpItrQWEtdaXIUG
-         XuxcPnUeLbJkQ5hiMDNLFgBWGq+GH0X5iovqxRbbudWekug3JvGW4I76XTHeiI9cBd3V
-         QcWk9fq8ibhvNleV2sabylxdXLU2s7Ov71DHNnMUIy7bV/r/Jo1HN3l2LRh3/y15Nos/
-         Hn8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=wwXdTKTajbJ7TPYKouzpxzEyxfxSC/Vyi6g2qa/sIn4=;
-        b=RjOYSZtFd6VUaneiQnZAvh6ssPnp2P1IB91rPQwZuBcW26wqocr2QGHZhi/yjLuGMq
-         ta2+GNjvyA4wYBuPMIrVIAJyRY+i4IIsOD5y96dz8gfKKwU68eIYQnmICUzicX7TZuFt
-         eTBtiakKe+UiHJ1ZqfXhrfRyoAaG9aRcaB/4TAMe2vt+vx6xckc7tpd/uImVDGxNi02o
-         O0fK9keqn3cZo3jADbbJF6fWtJ1AGWPzs9Fo1hWPmYpmIXWktqWj2qLcpRDgncESUZV2
-         6T34M5g5lLFUOGJepDL1Wk3eWP5LLW0I1dR1NYy6T7SlGJBQsXAmFnovUQwPdIlSZIx2
-         J17A==
-X-Gm-Message-State: APjAAAWN0dzj3H6nYHRm4YkXUzFvbAMN93WAlZC0nXYY1wuaXU4iwF13
-        j0Abh4O62ETqF6F2R+hZieezMVGj
-X-Google-Smtp-Source: APXvYqxT+cO+MXO9W/JcWyHbNjJm1B3SSeyU+kWZzZ+D8DTJkuyhpOr+AbhkDkop5ULY1yj+Rhr7MA==
-X-Received: by 2002:a5d:660c:: with SMTP id n12mr20069439wru.286.1570380767726;
-        Sun, 06 Oct 2019 09:52:47 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f26:6400:64e8:8137:5430:1a37? (p200300EA8F26640064E8813754301A37.dip0.t-ipconnect.de. [2003:ea:8f26:6400:64e8:8137:5430:1a37])
-        by smtp.googlemail.com with ESMTPSA id y19sm29621745wmi.13.2019.10.06.09.52.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Oct 2019 09:52:47 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: core: use helper skb_ensure_writable in more
- places
-To:     David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <26c7f285-1923-5f09-6ea5-24fd8a5c78b6@gmail.com>
-Date:   Sun, 6 Oct 2019 18:52:43 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726583AbfJFRTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 13:19:15 -0400
+Received: from smtprelay0194.hostedemail.com ([216.40.44.194]:56694 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726508AbfJFRTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 13:19:15 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 41882180A68B1;
+        Sun,  6 Oct 2019 17:19:13 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:152:355:379:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2376:2393:2553:2559:2562:2903:3138:3139:3140:3141:3142:3352:3865:3867:3868:3871:3872:4321:5007:8603:10004:10400:10848:11026:11473:11657:11658:11914:12043:12262:12297:12438:12555:12679:12740:12895:12986:13069:13311:13357:13894:14096:14097:14181:14659:14721:21080:21365:21433:21451:21627:30054:30055:30064:30091,0,RBL:error,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:260,LUA_SUMMARY:none
+X-HE-Tag: road46_333b5ec2ba205
+X-Filterd-Recvd-Size: 2145
+Received: from XPS-9350.home (unknown [47.151.152.152])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Sun,  6 Oct 2019 17:19:11 +0000 (UTC)
+Message-ID: <edf91d8284a2a19d956eb8b7e8b6c4984ceaa1ab.camel@perches.com>
+Subject: i40e_pto.c: Odd use of strlcpy converted from strncpy
+From:   Joe Perches <joe@perches.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>
+Cc:     Mitch Williams <mitch.a.williams@intel.com>,
+        Patryk =?UTF-8?Q?Ma=C5=82ek?= <patryk.malek@intel.com>
+Date:   Sun, 06 Oct 2019 10:19:10 -0700
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use helper skb_ensure_writable in two more places to simplify the code.
+This got converted from strncpy to strlcpy but it's
+now not necessary to use one character less than the
+actual size.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Perhaps the sizeof() - 1 is now not correct and it
+should use strscpy and a normal sizeof.
+
+from:
+
+commit 7eb74ff891b4e94b8bac48f648a21e4b94ddee64
+Author: Mitch Williams <mitch.a.williams@intel.com>
+Date:   Mon Aug 20 08:12:30 2018 -0700
+
+    i40e: use correct length for strncpy
+
+and
+
+commit 4ff2d8540321324e04c1306f85d4fe68a0c2d0ae
+Author: Patryk Małek <patryk.malek@intel.com>
+Date:   Tue Oct 30 10:50:44 2018 -0700
+
+    i40e: Replace strncpy with strlcpy to ensure null termination
 ---
- net/core/dev.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_ptp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 944de67ee..7d05e042c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3165,12 +3165,9 @@ int skb_checksum_help(struct sk_buff *skb)
- 	offset += skb->csum_offset;
- 	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ptp.c b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
+index 9bf1ad4319f5..627b1c02bb4b 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ptp.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
+@@ -700,8 +700,8 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
+ 	if (!IS_ERR_OR_NULL(pf->ptp_clock))
+ 		return 0;
  
--	if (skb_cloned(skb) &&
--	    !skb_clone_writable(skb, offset + sizeof(__sum16))) {
--		ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
--		if (ret)
--			goto out;
--	}
-+	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
-+	if (ret)
-+		goto out;
- 
- 	*(__sum16 *)(skb->data + offset) = csum_fold(csum) ?: CSUM_MANGLED_0;
- out_set_summed:
-@@ -3205,12 +3202,11 @@ int skb_crc32c_csum_help(struct sk_buff *skb)
- 		ret = -EINVAL;
- 		goto out;
- 	}
--	if (skb_cloned(skb) &&
--	    !skb_clone_writable(skb, offset + sizeof(__le32))) {
--		ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
--		if (ret)
--			goto out;
--	}
+-	strlcpy(pf->ptp_caps.name, i40e_driver_name,
+-		sizeof(pf->ptp_caps.name) - 1);
++	strscpy(pf->ptp_caps.name, i40e_driver_name, sizeof(pf->ptp_caps.name));
 +
-+	ret = skb_ensure_writable(skb, offset + sizeof(__le32));
-+	if (ret)
-+		goto out;
-+
- 	crc32c_csum = cpu_to_le32(~__skb_checksum(skb, start,
- 						  skb->len - start, ~(__u32)0,
- 						  crc32c_csum_stub));
--- 
-2.23.0
+ 	pf->ptp_caps.owner = THIS_MODULE;
+ 	pf->ptp_caps.max_adj = 999999999;
+ 	pf->ptp_caps.n_ext_ts = 0;
+
 
