@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4029CCF01
-	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 08:35:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27E17CCF02
+	for <lists+netdev@lfdr.de>; Sun,  6 Oct 2019 08:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726268AbfJFGfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 02:35:24 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:47447 "EHLO
+        id S1726276AbfJFGf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 02:35:28 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:60501 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726259AbfJFGfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 02:35:23 -0400
+        by vger.kernel.org with ESMTP id S1726270AbfJFGfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 02:35:25 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3EA5B20F25;
-        Sun,  6 Oct 2019 02:35:23 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 918442104C;
+        Sun,  6 Oct 2019 02:35:24 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 06 Oct 2019 02:35:23 -0400
+  by compute3.internal (MEProxy); Sun, 06 Oct 2019 02:35:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=5w5ZZTmzyoWAwXXL805JmA2ST9w5QD2sV4mZh3PHTiQ=; b=cKrIA7rG
-        elIxvPE9dnE+IE7nCH1mq1dPWX1QnpQ7Rh7mZ1LCsmgJ1TpkqAONvrKo6Zg5eMrm
-        SKxmcFQ6I2gGj3Hmf2JxAVfoWCALYHMPm+WVuyHH2fYfDOECDBxn3A1qsJdt/IYT
-        O/fnTlSr88IomLSWjg/2uJo2ca1xQd0nJvBbRZgBFg/CixcEiad3BOcdGQ00+LAY
-        cCLjB+VZn1CcssqiQcMG4an6/pL57/Th9x8Gb9qun6OhoOk8d6yNs1qwbZXUxtrv
-        WVmf5vkJZZR7IbB4aGe+g9OZLI4ESjquxzjpMjCfvGvb1wxKMWKS1pCH52yIPWtt
-        8DzZrYDsLsuxZw==
-X-ME-Sender: <xms:K4uZXdsW3AGrs87h_6oyvE_5YhfWhLPiB3FGYO9N_LM2OBpMcKu-Nw>
+        fm3; bh=v0P+QmA8SdVjya/Fi9Wlr0DWzggxiDAvd9QZhf8OYRw=; b=QY7gzuAj
+        KFjIwwZoj1qm1ADpeGad4AIDK4vrioomeAqNExODZsWxS7jHQUhSr8kL5YHVhLNW
+        Jff5W7jiJYh3JjI9zWn5g0R5bOLwnoLvquyGp/PlF4plhJxwjTgEvt4IR7Y1nTVA
+        6adsxFwPFKgmXGb/jIaxA8HlVFJfn41fvywG92F5wcBaNg7HQMRQgaU1uYz3W3Hf
+        dVZ81mCcaUOAo1z8G6HVhSxpFCcbTEbtqrg9rkbob2p/uB3cGvW30mj/RLcdcTEs
+        pVxPLJCOcg+F6YkIBGF1E/EtfaMVHEOeMZlDxhjbS2xj/AvtDJaQrbgDzto4BpGr
+        m4m9PWGySZJeBg==
+X-ME-Sender: <xms:LIuZXTlqyZAk1-lhZw5bOSTXhX9TFmwGX-Xbx0MZv0wuwv5toVwoFw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrheeggdejhecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrheeggdejhecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgepfe
-X-ME-Proxy: <xmx:K4uZXYXlEOZmMoqY88vcM8MIHW8wpkxQXnq2MbGTla90HvqeEkEPYQ>
-    <xmx:K4uZXVZ0wxrInzRWc0STGLYVOJEorGt5rQC0MS_8MwYu_YSjm1W2oA>
-    <xmx:K4uZXSsVb2bJZwx9vbQ1kj6wi3_mHyjA7g-WUFAvNBqoiJw-Bg1KVw>
-    <xmx:K4uZXZfDf6kYFl5NrDHhAaUdvLJeWfO_rGha79uL5iCowPfjQVuCrA>
+X-ME-Proxy: <xmx:LIuZXay358M93LqKq5bkRg9CejfVE00B7Gc2DjU05y1nMIOQ_X-Wdg>
+    <xmx:LIuZXSL8-lv41OxTn7e4rbAOQjtrSPP4ssuah871rqBZWfL8DnS8zg>
+    <xmx:LIuZXVL3lwV6t62N-Look5HF6n2FRYNFHCLqwoWRYjye-NE18qyDnQ>
+    <xmx:LIuZXdSwz_A6VGZZ4TZ9Q5wgzUJ-QbpuGvCR7wh3C201lWphSvrddg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id ED4CED60057;
-        Sun,  6 Oct 2019 02:35:21 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 447CCD6005A;
+        Sun,  6 Oct 2019 02:35:23 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, vadimp@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 4/5] mlxsw: core: Push minor/subminor fw version check into helper
-Date:   Sun,  6 Oct 2019 09:34:51 +0300
-Message-Id: <20191006063452.7666-5-idosch@idosch.org>
+Subject: [PATCH net-next 5/5] mlxsw: minimal: Add validation for FW version
+Date:   Sun,  6 Oct 2019 09:34:52 +0300
+Message-Id: <20191006063452.7666-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191006063452.7666-1-idosch@idosch.org>
 References: <20191006063452.7666-1-idosch@idosch.org>
@@ -61,78 +61,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadim Pasternak <vadimp@mellanox.com>
 
-Add new API for FW "minor" and "subminor" version validation for
-sharing it between "spectrum" and "minimal" drivers.
-Use it in "spectrum" driver.
+Add validation for FW version in order to prevent driver initialization
+in case FW version is older than expected. FW version validation is
+necessary, because use of a new field 'num_of_modules' in MGPIR register
+is not backward compatible. FW 'minor' and 'subminor' versions are
+expected to be greater than or equal to 2000 and 1886, respectively.
 
 Signed-off-by: Vadim Pasternak <vadimp@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c     | 10 ++++++++++
- drivers/net/ethernet/mellanox/mlxsw/core.h     |  5 +++++
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c |  4 +---
- 3 files changed, 16 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 1c29522a2af3..2b59f84b14f9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -127,6 +127,16 @@ bool mlxsw_core_res_query_enabled(const struct mlxsw_core *mlxsw_core)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+index 5edd8de57a24..2b543911ae00 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+@@ -16,6 +16,14 @@
+ 
+ static const char mlxsw_m_driver_name[] = "mlxsw_minimal";
+ 
++#define MLXSW_M_FWREV_MINOR	2000
++#define MLXSW_M_FWREV_SUBMINOR	1886
++
++static const struct mlxsw_fw_rev mlxsw_m_fw_rev = {
++	.minor = MLXSW_M_FWREV_MINOR,
++	.subminor = MLXSW_M_FWREV_SUBMINOR,
++};
++
+ struct mlxsw_m_port;
+ 
+ struct mlxsw_m {
+@@ -326,6 +334,24 @@ static void mlxsw_m_ports_remove(struct mlxsw_m *mlxsw_m)
+ 	kfree(mlxsw_m->ports);
  }
- EXPORT_SYMBOL(mlxsw_core_res_query_enabled);
  
-+bool
-+mlxsw_core_fw_rev_minor_subminor_validate(const struct mlxsw_fw_rev *rev,
-+					  const struct mlxsw_fw_rev *req_rev)
++static int mlxsw_m_fw_rev_validate(struct mlxsw_m *mlxsw_m)
 +{
-+	return rev->minor > req_rev->minor ||
-+	       (rev->minor == req_rev->minor &&
-+		rev->subminor >= req_rev->subminor);
++	const struct mlxsw_fw_rev *rev = &mlxsw_m->bus_info->fw_rev;
++
++	/* Validate driver and FW are compatible.
++	 * Do not check major version, since it defines chip type, while
++	 * driver is supposed to support any type.
++	 */
++	if (mlxsw_core_fw_rev_minor_subminor_validate(rev, &mlxsw_m_fw_rev))
++		return 0;
++
++	dev_err(mlxsw_m->bus_info->dev, "The firmware version %d.%d.%d is incompatible with the driver (required >= %d.%d.%d)\n",
++		rev->major, rev->minor, rev->subminor, rev->major,
++		mlxsw_m_fw_rev.minor, mlxsw_m_fw_rev.subminor);
++
++	return -EINVAL;
 +}
-+EXPORT_SYMBOL(mlxsw_core_fw_rev_minor_subminor_validate);
 +
- struct mlxsw_rx_listener_item {
- 	struct list_head list;
- 	struct mlxsw_rx_listener rxl;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 3377a1b39b03..f25037074e2d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -24,6 +24,7 @@ struct mlxsw_core_port;
- struct mlxsw_driver;
- struct mlxsw_bus;
- struct mlxsw_bus_info;
-+struct mlxsw_fw_rev;
+ static int mlxsw_m_init(struct mlxsw_core *mlxsw_core,
+ 			const struct mlxsw_bus_info *mlxsw_bus_info,
+ 			struct netlink_ext_ack *extack)
+@@ -336,6 +362,10 @@ static int mlxsw_m_init(struct mlxsw_core *mlxsw_core,
+ 	mlxsw_m->core = mlxsw_core;
+ 	mlxsw_m->bus_info = mlxsw_bus_info;
  
- unsigned int mlxsw_core_max_ports(const struct mlxsw_core *mlxsw_core);
- 
-@@ -31,6 +32,10 @@ void *mlxsw_core_driver_priv(struct mlxsw_core *mlxsw_core);
- 
- bool mlxsw_core_res_query_enabled(const struct mlxsw_core *mlxsw_core);
- 
-+bool
-+mlxsw_core_fw_rev_minor_subminor_validate(const struct mlxsw_fw_rev *rev,
-+					  const struct mlxsw_fw_rev *req_rev);
++	err = mlxsw_m_fw_rev_validate(mlxsw_m);
++	if (err)
++		return err;
 +
- int mlxsw_core_driver_register(struct mlxsw_driver *mlxsw_driver);
- void mlxsw_core_driver_unregister(struct mlxsw_driver *mlxsw_driver);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index c91b8238c8c5..3c5154e559b2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -409,9 +409,7 @@ static int mlxsw_sp_fw_rev_validate(struct mlxsw_sp *mlxsw_sp)
- 	}
- 	if (MLXSW_SP_FWREV_MINOR_TO_BRANCH(rev->minor) ==
- 	    MLXSW_SP_FWREV_MINOR_TO_BRANCH(req_rev->minor) &&
--	    (rev->minor > req_rev->minor ||
--	     (rev->minor == req_rev->minor &&
--	      rev->subminor >= req_rev->subminor)))
-+	    mlxsw_core_fw_rev_minor_subminor_validate(rev, req_rev))
- 		return 0;
- 
- 	dev_info(mlxsw_sp->bus_info->dev, "The firmware version %d.%d.%d is incompatible with the driver\n",
+ 	err = mlxsw_m_base_mac_get(mlxsw_m);
+ 	if (err) {
+ 		dev_err(mlxsw_m->bus_info->dev, "Failed to get base mac\n");
 -- 
 2.21.0
 
