@@ -2,100 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A300CDA6B
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 04:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9676CDA88
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 05:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbfJGCYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Oct 2019 22:24:36 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46782 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726797AbfJGCYg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 22:24:36 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 201so11181126qkd.13;
-        Sun, 06 Oct 2019 19:24:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oQVDfdvpNuS9LR4+M9rlMhnhNaHXLejC2F/bb7MSgEE=;
-        b=a4OhdPIxsRJdogOCym2L/I1Pyr+JQE1pHa9X1g1s78QKEgy5IYRMP98l37beHT3fmp
-         +KgvSpY1RZI/6vzCZz25HIeBAae05KDjreapCmiTBhNVdl677epogwGfinx9uZJ/NfYL
-         GLYI+30ybg9/D9jO87ISLpBDJFgyMLpUKrpqP8WoGV4cTOYcdKHP5wL7EpXRhubQrm0p
-         Z92D6mOCjv6j/Fn3tHPNpZviJTGtkGvZkVb0TOJgI9NMHi+1cY4aQQAs1oFlQQbUoCbK
-         2U6+sNBr+YZGo8RmnLP5T5aA3XkPrgLcYTT8tP8J831b4NcNfpx3QbHOcLkylZRysGqd
-         tJxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oQVDfdvpNuS9LR4+M9rlMhnhNaHXLejC2F/bb7MSgEE=;
-        b=X34VK1HHoOCPvAdvm407ArM2vdWHG5dGRH1gDzgFJ7rrWzYOcpDstf5Aw3nChxKRZY
-         sfpI3zm5/gUmJhHWRl2pCus8ADe3+4P5M9EUbeQIuugeOHhywRaTTBaeFgfhu8wwkP/a
-         Evb66YsRWUh9od5P7ViXElQKraoyMlOeumFtZ1jgqusud1gPk30Rkjr4m7ZsmZLVsFhm
-         xHdBaLALG4OxSd8pTART2YtBO0xJ6lhYNow6lzb4TeHLHWF8DOkqK4/maICw1sUMJJBZ
-         xLwtzZlQOcyEFdzmmEohWhP3YMJ/8BMaWkJgiR6SPGtlselvpBedbyqKoTLWA32OnJSA
-         pGWw==
-X-Gm-Message-State: APjAAAU6uJRAfo5GM14PQsh70IVmkmOpZ9QKzIKEgFLcUlQ+IlClDJKX
-        Epp+TQtNIuMKFe1AIZXQvihHyfALbRwpPa+9R/8=
-X-Google-Smtp-Source: APXvYqwt1V+qOGtXOZp6pXd5iquuU7ZgbCZ+nKAk8RaJ//dLCQHrx31MOiuVQHe5XlBEYk4zkRwY90vmrbjsHWjgb4U=
-X-Received: by 2002:a37:98f:: with SMTP id 137mr22224385qkj.449.1570415074875;
- Sun, 06 Oct 2019 19:24:34 -0700 (PDT)
+        id S1726908AbfJGDHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Oct 2019 23:07:44 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3330 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726828AbfJGDHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Oct 2019 23:07:44 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9734kJD015686
+        for <netdev@vger.kernel.org>; Sun, 6 Oct 2019 20:07:43 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=5+Gc5Z92poLAaQdb4q2FzQYYMOFWoe69lURCb/39oq4=;
+ b=d6ECUsQMt+cuKTp4ArX1WETZsaCdl+0KAJj3pAe0WJ+8aexhLBqGuhhy2kZTbD6s4KgH
+ QCHkfs2390q4dHtiV229wzKAzy2JbAeixdJx+uEO3sYsuUxqh1YXNp6qMSPOHSVtJHAG
+ Ypw3IyMgxTk7J/f+Arde6ue79+qPNIQ6z0g= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2verwq64g7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 06 Oct 2019 20:07:43 -0700
+Received: from 2401:db00:30:600c:face:0:1f:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sun, 6 Oct 2019 20:07:42 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 21B0786190E; Sun,  6 Oct 2019 20:07:40 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <quentin.monnet@netronome.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v4 bpf-next 0/3] Auto-generate list of BPF helpers
+Date:   Sun, 6 Oct 2019 20:07:35 -0700
+Message-ID: <20191007030738.2627420-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <20191006054350.3014517-1-andriin@fb.com> <20191006054350.3014517-4-andriin@fb.com>
- <CAADnVQ+CmZ+=GTrW=GOOnaJBB-th60SEnPacX4w7+gt8bKKueQ@mail.gmail.com>
- <CAEf4BzZ5KUX5obfqxd7RkguaQ0g1JYbKs=RkrHKdDFDGbaSJ_w@mail.gmail.com> <CAADnVQJDFhqqxzFXoWxJk5KAnnfxwyZw-QGT+e-9mOUsGEi8_g@mail.gmail.com>
-In-Reply-To: <CAADnVQJDFhqqxzFXoWxJk5KAnnfxwyZw-QGT+e-9mOUsGEi8_g@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 6 Oct 2019 19:24:23 -0700
-Message-ID: <CAEf4BzbGOyCa3OXFMQHmtwrC2uB3K0QFs3GBDeVt8PDDOAnSVQ@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 3/3] libbpf: auto-generate list of BPF helper definitions
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-06_11:2019-10-03,2019-10-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=779
+ lowpriorityscore=0 adultscore=0 priorityscore=1501 clxscore=1015
+ suspectscore=9 mlxscore=0 malwarescore=0 phishscore=0 spamscore=0
+ impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1908290000 definitions=main-1910070032
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 6, 2019 at 5:32 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sun, Oct 6, 2019 at 5:13 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Sun, Oct 6, 2019 at 4:56 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Sat, Oct 5, 2019 at 10:46 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> > > >
-> > > > Get rid of list of BPF helpers in bpf_helpers.h (irony...) and
-> > > > auto-generate it into bpf_helpers_defs.h, which is now included from
-> > > > bpf_helpers.h.
-> > > >
-> > > > Suggested-by: Alexei Starovoitov <ast@fb.com>
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > > ---
-> > > >  tools/lib/bpf/.gitignore    |   1 +
-> > > >  tools/lib/bpf/Makefile      |  10 +-
-> > > >  tools/lib/bpf/bpf_helpers.h | 264 +-----------------------------------
-> > > >  3 files changed, 10 insertions(+), 265 deletions(-)
-> > >
-> > > This patch doesn't apply to bpf-next.
-> >
-> > Yes, it has to be applied on top of bpf_helpers.h move patch set. I
-> > can bundle them together and re-submit as one patch set, but I don't
-> > think there were any remaining issues besides the one solved in this
-> > patch set (independence from any specific bpf.h UAPI), so that one can
-> > be applied as is.
->
-> It looks to me that auto-gen of bpf helpers set is ready,
-> whereas move is till being debated.
-> I also would like to test autogen-ed .h in my environment first
-> before we move things around.
+This patch set adds ability to auto-generate list of BPF helper definitions.
+It relies on existing scripts/bpf_helpers_doc.py and include/uapi/linux/bpf.h
+having a well-defined set of comments. bpf_helper_defs.h contains all BPF
+helper signatures which stay in sync with latest bpf.h UAPI. This
+auto-generated header is included from bpf_helpers.h, while all previously
+hand-written BPF helper definitions are simultaneously removed in patch #3.
+The end result is less manually maintained and redundant boilerplate code,
+while also more consistent and well-documented set of BPF helpers. Generated
+helper definitions are completely independent from a specific bpf.h on
+a target system, because it doesn't use BPF_FUNC_xxx enums.
 
-Alright, will post v4 based on master with bpf_helpers.h still in selftests/bpf
+v3->v4:
+- instead of libbpf's Makefile, integrate with selftest/bpf's Makefile (Alexei);
+
+v2->v3:
+- delete bpf_helper_defs.h properly (Alexei);
+
+v1->v2:
+- add bpf_helper_defs.h to .gitignore and `make clean` (Alexei).
+
+Andrii Nakryiko (3):
+  uapi/bpf: fix helper docs
+  scripts/bpf: teach bpf_helpers_doc.py to dump BPF helper definitions
+  libbpf: auto-generate list of BPF helper definitions
+
+ include/uapi/linux/bpf.h                  |  32 +--
+ scripts/bpf_helpers_doc.py                | 155 ++++++++++++-
+ tools/include/uapi/linux/bpf.h            |  32 +--
+ tools/testing/selftests/bpf/.gitignore    |   1 +
+ tools/testing/selftests/bpf/Makefile      |   8 +-
+ tools/testing/selftests/bpf/bpf_helpers.h | 264 +---------------------
+ 6 files changed, 195 insertions(+), 297 deletions(-)
+
+-- 
+2.17.1
+
