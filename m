@@ -2,77 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04DBDCE2DC
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A02CE2D5
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbfJGNOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 09:14:21 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38168 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727010AbfJGNOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 09:14:21 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Oct 2019 15:14:14 +0200
-Received: from dev-l-vrt-207-011.mtl.labs.mlnx. (dev-l-vrt-207-011.mtl.labs.mlnx [10.134.207.11])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x97DEEc4028225;
-        Mon, 7 Oct 2019 16:14:14 +0300
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        alaa@mellanox.com, moshe@mellanox.com,
-        Alex Vesker <valex@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH net] net/mlx5: DR, Allow insertion of duplicate rules
-Date:   Mon,  7 Oct 2019 16:13:25 +0300
-Message-Id: <1570454005-23749-1-git-send-email-tariqt@mellanox.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1727881AbfJGNN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 09:13:28 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52530 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727010AbfJGNN2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 09:13:28 -0400
+Received: from localhost (unknown [144.121.20.163])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CADFE14047968;
+        Mon,  7 Oct 2019 06:13:27 -0700 (PDT)
+Date:   Mon, 07 Oct 2019 15:13:26 +0200 (CEST)
+Message-Id: <20191007.151326.1436550597950881500.davem@davemloft.net>
+To:     dhowells@redhat.com
+Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/6] rxrpc: Syzbot-inspired fixes
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <157044333551.32635.10133219357337058780.stgit@warthog.procyon.org.uk>
+References: <157044333551.32635.10133219357337058780.stgit@warthog.procyon.org.uk>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 07 Oct 2019 06:13:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Vesker <valex@mellanox.com>
+From: David Howells <dhowells@redhat.com>
+Date: Mon, 07 Oct 2019 11:15:35 +0100
 
-Duplicate rules were not allowed to be configured with SW steering.
-This restriction caused failures with the replace rule logic done by
-upper layers.
+> 
+> Here's a series of patches that fix a number of issues found by syzbot:
+> 
+>  (1) A reference leak on rxrpc_call structs in a sendmsg error path.
+> 
+>  (2) A tracepoint that looked in the rxrpc_peer record after putting it.
+> 
+>      Analogous with this, though not presently detected, the same bug is
+>      also fixed in relation to rxrpc_connection and rxrpc_call records.
+> 
+>  (3) Peer records don't pin local endpoint records, despite accessing them.
+> 
+>  (4) Access to connection crypto ops to clean up a call after the call's
+>      ref on that connection has been put.
+> 
+> The patches are tagged here:
+> 
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+> 	rxrpc-fixes-20191007
 
-This fix allows for multiple rules with the same match values, in
-such case the first inserted rules will match.
-
-Fixes: 41d07074154c ("net/mlx5: DR, Expose steering rule functionality")
-Signed-off-by: Alex Vesker <valex@mellanox.com>
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-Hi Dave,
-I'm temporarily replacing Saeed with the submissions, as he's on vacation.
-This patch by Alex removes the rule duplication restriction, as it disrupted
-valid flows.
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-index 4187f2b112b8..e8b656075c6f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-@@ -788,12 +788,10 @@ static int dr_rule_handle_empty_entry(struct mlx5dr_matcher *matcher,
- 			 * it means that all the previous stes are the same,
- 			 * if so, this rule is duplicated.
- 			 */
--			if (mlx5dr_ste_is_last_in_rule(nic_matcher,
--						       matched_ste->ste_chain_location)) {
--				mlx5dr_info(dmn, "Duplicate rule inserted, aborting!!\n");
--				return NULL;
--			}
--			return matched_ste;
-+			if (!mlx5dr_ste_is_last_in_rule(nic_matcher, ste_location))
-+				return matched_ste;
-+
-+			mlx5dr_dbg(dmn, "Duplicate rule inserted\n");
- 		}
- 
- 		if (!skip_rehash && dr_rule_need_enlarge_hash(cur_htbl, dmn, nic_dmn)) {
--- 
-1.8.3.1
-
+Pulled, thanks David.
