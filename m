@@ -2,238 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3E9CCDDDC
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 11:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEAABCDE05
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 11:11:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727403AbfJGJAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 05:00:35 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49344 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727103AbfJGJAf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 05:00:35 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 720AE10CC1E0;
-        Mon,  7 Oct 2019 09:00:34 +0000 (UTC)
-Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F29CD19C7F;
-        Mon,  7 Oct 2019 09:00:21 +0000 (UTC)
-Date:   Mon, 7 Oct 2019 11:00:20 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Eric Sage <eric@sage.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        xdp-newbies@vger.kernel.org, brouer@redhat.org, ast@kernel.org,
-        brouer@redhat.com, Jiri Olsa <jolsa@redhat.com>
-Subject: Re: [PATCH] samples/bpf: make xdp_monitor use raw_tracepoints
-Message-ID: <20191007110020.6bf8dbc2@carbon>
-In-Reply-To: <20191007045726.21467-1-eric@sage.org>
-References: <20191007045726.21467-1-eric@sage.org>
+        id S1727514AbfJGJLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 05:11:41 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:39701 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727467AbfJGJLk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 05:11:40 -0400
+Received: by mail-lf1-f65.google.com with SMTP id 72so8695764lfh.6
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 02:11:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Cyl/d6woglokg3lWDB7KNeNlo4vuXNsoS2nIQA2trnw=;
+        b=Do5ngV7ZevOio4SOll3FkAN8jA73SOFVhrGaV12CCdmjbi/hznO7QcSUTbiJPsJ47G
+         cpUCaS1BWcn3A9rl0UexfDC8z1ERdFUUeiRIVijtNn/cXW7KQKMQsIOfzk1Kx/lTOvfr
+         ajJkQD4OzSD1ZcY3Buf9FBV9Yeje9udup0IdI0dQNatBPrRfgK8XIETn7wOVWLP1Da0q
+         bZXVtpzWBnYQJjCcq0dF6kehOwEhXV9+lfTgwQ5booYHcpLpfqpKN97kL3yt5tqdaHpU
+         NnPm1Acs5VgBF91mi1E+WxFFQhly8bT+1AxSq97DnZaZwyA7CGAqSx2waV5jq24XNopN
+         Op6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=Cyl/d6woglokg3lWDB7KNeNlo4vuXNsoS2nIQA2trnw=;
+        b=tBF1edUOqCHYypX9WC/Z5yD4ySVox2G8UYzY73a2qUEGB8npIPuhVrZnU8xnkYuZMU
+         jxhm6sB4OvBSTFwxL8PQ9iyJxuK+sGrfTKryQDUQZw4j3WJxWSiDuFMYLaxMIIaNKZXa
+         ODpO6qJuZCrSxO4CN5il+odKD1HfXEmfptWVcoyPLuQmGKjWAZkPUAsUqZnAw5MHoog6
+         27T3pF3PhOqfDZOAnGdLmdCf6d8U/SYdX/70B1VrIJuVGmWuj+u4LvdoN3dxOtR71JqT
+         izeqwdloDPSquMGy5OxmNQaQiPCFCSjTuR0365wPBRKFb2rrZS0TR1seoRX/UmW+Gpt6
+         FUkw==
+X-Gm-Message-State: APjAAAUGQ/Lkf4O31A3bdfh4Ue4ZHeH/W2LjJLNgtvp99zfMDK5Rtf91
+        1ACkoZKgIg2EsjQS1Jea3u6gbpxSWfKBRthY5CU=
+X-Google-Smtp-Source: APXvYqzOzaE63bzd3FMfiDyGxUgdG8Dcblf79lnlUDX7ozjO6cIMDAlSfxMcYSX5wuIjn1lR6xq8p7L9q0ggh8GduIg=
+X-Received: by 2002:a19:98e:: with SMTP id 136mr16633016lfj.156.1570439496501;
+ Mon, 07 Oct 2019 02:11:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.65]); Mon, 07 Oct 2019 09:00:34 +0000 (UTC)
+Received: by 2002:ac2:508b:0:0:0:0:0 with HTTP; Mon, 7 Oct 2019 02:11:36 -0700 (PDT)
+Reply-To: aishaelgaddafi@hotmail.com
+From:   aisha Gaddafi <gadafi.aishael13@gmail.com>
+Date:   Mon, 7 Oct 2019 11:11:36 +0200
+Message-ID: <CALywuU8YyWRN4zvq886q5m0xsXLL+LYzw67z=xgRCOrAuUO7og@mail.gmail.com>
+Subject: Can I invest in your country from Mrs. Aisha El Gaddafi?
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dearest One
 
-On Mon,  7 Oct 2019 04:57:26 +0000 Eric Sage <eric@sage.org> wrote:
+Please I want you to exercise some patience reading through this mail
+so that it will enable you have good understanding, meanwhile I will
+appreciate you to ignore and delete this mail from your mail box if
+you are not interested been my partner for the investment project in
+your country.
 
-> raw_tracepoints are an eBPF alternative to standard tracepoints which
-> attach to a tracepoint without the perf layer being executed, making
-> them faster.
-> 
-> Since xdp_monitor is supposed to have as little impact on the system as
-> possible it is switched to using them by append raw_ to the SEC names.
-> 
-> There was also a small issues with 'samples/bpf/bpf_load' - it was
-> loading the raw_tracepoints with the tracing subsystem name still
-> attached, which the bpf syscall rejects with a No such file or directory
-> error. This is now fixed.
-> 
-> Signed-off-by: Eric Sage <eric@sage.org>
-> ---
->  samples/bpf/bpf_load.c         |  5 +++--
->  samples/bpf/xdp_monitor_kern.c | 26 +++++++++++++-------------
->  2 files changed, 16 insertions(+), 15 deletions(-)
+This letter may come to you as a surprise, but I want you to
+understand that it is only through an opportunity that people can meet
+each other and become friends and business partners in life. Though,
+the society today is so unpredictable that the good and the bad live
+side by side coupled with the monumental hype and crap of the abuse of
+the Internet by some unscrupulous persons in the recent times, thereby
+making it extremely difficult for genuine and legitimate business
+class persons to get attention and recognition. However, Internet was
+established for easy communication and business transaction of far
+partners but today, the same internet is use to deceived some business
+class persons so i will not be surprise to see you rejecting this
+proposal just because of what bad eggs has done to internet today.
 
-If there is an issue in the loader 'samples/bpf/bpf_load.c' then we
-should of-cause fix it, but you should be aware that we are in general
-trying to deprecate this loader, and we want to convert users over to
-libbpf.
+Nevertheless, i want you to understand that there is still genuine and
+legitimate business class persons in internet world today so i am
+assuring you that this transaction is 100% genuine. You can give it a
+trial.
 
-This patch seems like a good first step forward.  Longer term, I would
-like to see this converted into using libbpf.  The library are missing
-attach helpers for regular tracepoints, but for raw_tracepoints it does
-contain bpf_raw_tracepoint_open().
+I decided to contact you over this business, after a careful thought
+and also going the way of my instincts, believing that you are capable
+of handling this business in honesty and sincerity and also be of
+immense help towards the smooth completion of this transaction.
 
-You can see an example of how xdp_monitor have been converted into
-using libbpf and raw_tracepoints here (by Jiri Olsa):
+Before I introduce myself, I wish to inform you that this letter is
+not a hoax mail and I urge you to treat it serious. This letter must,
+come to you as a big surprise, but I believe it is only a day that
+people meet and become great friends and business partners.
 
- https://github.com/xdp-project/xdp-tutorial/blob/master/tracing02-xdp-monitor/trace_prog_kern.c
+Please I want you to read this letter very carefully and I must
+apologize for barging this message into your mail box without any
+formal introduction due to the urgency and confidentiality of this
+business and I know that this message will come to you as a surprise.
+Please, this is not a joke and I will not like you to joke with it OK.
+With due respect to your person and much sincerity of purpose, I make
+this contact with you as I believe that you can be of great
+assistance,  to me.
 
+Introductions; My names are Aisha Gaddafi,the only biological daughter
+of late Libya president Gaddafi, I want to use this opportunity to
+inform you that I need a very honest and reliable person that can help
+me look for a profitable business/ company to invest into there in
+your country then you let me know while and provide account where I
+can transfer the sum of$30,500,000.00.Dollars (Thirty million five
+hundred and fifty thousand united state dollars) for the investment in
+your country.
 
-> diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
-> index 4574b1939e49..6f57eee8e913 100644
-> --- a/samples/bpf/bpf_load.c
-> +++ b/samples/bpf/bpf_load.c
-> @@ -156,9 +156,10 @@ static int load_and_attach(const char *event, struct bpf_insn *prog, int size)
->  	}
->  
->  	if (is_raw_tracepoint) {
-> -		efd = bpf_raw_tracepoint_open(event + 15, fd);
-> +		efd = bpf_raw_tracepoint_open(event + 19, fd);
->  		if (efd < 0) {
-> -			printf("tracepoint %s %s\n", event + 15, strerror(errno));
-> +			printf("tracepoint %s %s\n", event + 19,
-> +						strerror(errno));
+My late father also deposited 37kg of (GOLD) in Accra Ghana a
+neighboring country where i am presently now. My plan is after
+claiming this fund, we will have enough fund to move for the claim of
+the GOLD.
 
-Are you sure this is the correct fix?
+ I am currently residing in  one of the African Countries,
+unfortunately as a refugee. At the meantime, my family is the target
+of Western nations led by Nato who  lead the death of my father at all
+costs and Our investments and bank accounts in several countries are
+their targets to freeze.
 
-You might break: test_overhead_raw_tp_kern.c
+I have no option rather to contact an interested foreign
+investor/partner who will be able to take absolute control of part of
+the vast cash available in a private account that my late father open
+on my behalf here in the country before his sudden death by the
+western world.
 
+If this transaction interest you, kindly reply me back immediately for
+more details on how to execute the project.Please one more
+veryimportant thing here, is that you don=E2=80=99t have to disclose it to =
+any
+body because of what is going with my entire family, if the united
+nation happens to know this account, they will freeze it as they
+freeze others so keep this transaction for yourself only until we
+finalize it. I want to transfer this money into your account
+immediately for onward investment in your country because I don=E2=80=99t w=
+ant
+the united nation to know about this account of which you are aware of
+my family problems.
 
->  			return -1;
->  		}
->  		event_fd[prog_cnt - 1] = efd;
-> diff --git a/samples/bpf/xdp_monitor_kern.c b/samples/bpf/xdp_monitor_kern.c
-> index ad10fe700d7d..6f67c38468b9 100644
-> --- a/samples/bpf/xdp_monitor_kern.c
-> +++ b/samples/bpf/xdp_monitor_kern.c
-> @@ -23,10 +23,10 @@ struct bpf_map_def SEC("maps") exception_cnt = {
->  };
->  
->  /* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_redirect/format
-> + * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
->   * Code in:                kernel/include/trace/events/xdp.h
->   */
->  struct xdp_redirect_ctx {
-> -	u64 __pad;		// First 8 bytes are not accessible by bpf code
->  	int prog_id;		//	offset:8;  size:4; signed:1;
->  	u32 act;		//	offset:12  size:4; signed:0;
->  	int ifindex;		//	offset:16  size:4; signed:1;
-> @@ -65,44 +65,44 @@ int xdp_redirect_collect_stat(struct xdp_redirect_ctx *ctx)
->  	 */
->  }
->  
-> -SEC("tracepoint/xdp/xdp_redirect_err")
-> +SEC("raw_tracepoint/xdp/xdp_redirect_err")
->  int trace_xdp_redirect_err(struct xdp_redirect_ctx *ctx)
->  {
->  	return xdp_redirect_collect_stat(ctx);
->  }
->  
->  
-> -SEC("tracepoint/xdp/xdp_redirect_map_err")
-> +SEC("raw_tracepoint/xdp/xdp_redirect_map_err")
->  int trace_xdp_redirect_map_err(struct xdp_redirect_ctx *ctx)
->  {
->  	return xdp_redirect_collect_stat(ctx);
->  }
->  
->  /* Likely unloaded when prog starts */
-> -SEC("tracepoint/xdp/xdp_redirect")
-> +SEC("raw_tracepoint/xdp/xdp_redirect")
->  int trace_xdp_redirect(struct xdp_redirect_ctx *ctx)
->  {
->  	return xdp_redirect_collect_stat(ctx);
->  }
->  
->  /* Likely unloaded when prog starts */
-> -SEC("tracepoint/xdp/xdp_redirect_map")
-> +SEC("raw_tracepoint/xdp/xdp_redirect_map")
->  int trace_xdp_redirect_map(struct xdp_redirect_ctx *ctx)
->  {
->  	return xdp_redirect_collect_stat(ctx);
->  }
->  
->  /* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_exception/format
-> + * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
->   * Code in:                kernel/include/trace/events/xdp.h
->   */
->  struct xdp_exception_ctx {
-> -	u64 __pad;	// First 8 bytes are not accessible by bpf code
->  	int prog_id;	//	offset:8;  size:4; signed:1;
->  	u32 act;	//	offset:12; size:4; signed:0;
->  	int ifindex;	//	offset:16; size:4; signed:1;
->  };
->  
-> -SEC("tracepoint/xdp/xdp_exception")
-> +SEC("raw_tracepoint/xdp/xdp_exception")
->  int trace_xdp_exception(struct xdp_exception_ctx *ctx)
->  {
->  	u64 *cnt;
-> @@ -144,10 +144,10 @@ struct bpf_map_def SEC("maps") cpumap_kthread_cnt = {
->  };
->  
->  /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_enqueue/format
-> + * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
->   * Code in:         kernel/include/trace/events/xdp.h
->   */
->  struct cpumap_enqueue_ctx {
-> -	u64 __pad;		// First 8 bytes are not accessible by bpf code
->  	int map_id;		//	offset:8;  size:4; signed:1;
->  	u32 act;		//	offset:12; size:4; signed:0;
->  	int cpu;		//	offset:16; size:4; signed:1;
-> @@ -156,7 +156,7 @@ struct cpumap_enqueue_ctx {
->  	int to_cpu;		//	offset:28; size:4; signed:1;
->  };
->  
-> -SEC("tracepoint/xdp/xdp_cpumap_enqueue")
-> +SEC("raw_tracepoint/xdp/xdp_cpumap_enqueue")
->  int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
->  {
->  	u32 to_cpu = ctx->to_cpu;
-> @@ -179,10 +179,10 @@ int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
->  }
->  
->  /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_kthread/format
-> + * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
->   * Code in:         kernel/include/trace/events/xdp.h
->   */
->  struct cpumap_kthread_ctx {
-> -	u64 __pad;		// First 8 bytes are not accessible by bpf code
->  	int map_id;		//	offset:8;  size:4; signed:1;
->  	u32 act;		//	offset:12; size:4; signed:0;
->  	int cpu;		//	offset:16; size:4; signed:1;
-> @@ -191,7 +191,7 @@ struct cpumap_kthread_ctx {
->  	int sched;		//	offset:28; size:4; signed:1;
->  };
->  
-> -SEC("tracepoint/xdp/xdp_cpumap_kthread")
-> +SEC("raw_tracepoint/xdp/xdp_cpumap_kthread")
->  int trace_xdp_cpumap_kthread(struct cpumap_kthread_ctx *ctx)
->  {
->  	struct datarec *rec;
-> @@ -218,10 +218,10 @@ struct bpf_map_def SEC("maps") devmap_xmit_cnt = {
->  };
->  
->  /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_devmap_xmit/format
-> + * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
->   * Code in:         kernel/include/trace/events/xdp.h
->   */
->  struct devmap_xmit_ctx {
-> -	u64 __pad;		// First 8 bytes are not accessible by bpf code
->  	int map_id;		//	offset:8;  size:4; signed:1;
->  	u32 act;		//	offset:12; size:4; signed:0;
->  	u32 map_index;		//	offset:16; size:4; signed:0;
-> @@ -232,7 +232,7 @@ struct devmap_xmit_ctx {
->  	int err;		//	offset:36; size:4; signed:1;
->  };
->  
-> -SEC("tracepoint/xdp/xdp_devmap_xmit")
-> +SEC("raw_tracepoint/xdp/xdp_devmap_xmit")
->  int trace_xdp_devmap_xmit(struct devmap_xmit_ctx *ctx)
->  {
->  	struct datarec *rec;
+About me and the reason why I am now in Burkina Faso as you can read
+more in the linked below Please inter the link to read and know more
+about me and the reason why I contacted you.
 
+http://www.telegraph.co.uk/news/worldnews/africaandindianocean/libya/996720=
+3/Gaddafis-daughter-thrown-out-of-Algeria-after-she-set-fire-to-presidentia=
+l-residence.html
 
+Once again, i have the sum of US$ 30.5 Thirty Million five hundred
+thousand in one bank in Burkina Faso Called  Banque Commerciale du
+Burkina (BCB).
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Therefore if you are capable of running an establishment and can
+maintain the high level of secrecy required in this project, kindly
+reply with the following information for details of the project and
+please always reach me on this my below alternative email address for
+urgent attention ok. (aishaelgaddafi@hotmail.com )
+
+You are advice to contact me immediately for more details if you are
+really interested. As soon as i hear from you, i will give you mor
+details of this transaction.
+
+Best Regard
+Mrs.Aisha El Gaddafi
