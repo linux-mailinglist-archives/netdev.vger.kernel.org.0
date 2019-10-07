@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00DB9CDD13
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 10:19:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84942CDD3E
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 10:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbfJGIT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 04:19:27 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54654 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727212AbfJGIT1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 04:19:27 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1FB7610C0929;
-        Mon,  7 Oct 2019 08:19:27 +0000 (UTC)
-Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A5E695D6D0;
-        Mon,  7 Oct 2019 08:19:20 +0000 (UTC)
-Date:   Mon, 7 Oct 2019 10:19:19 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next v5 4/4] samples: pktgen: allow to specify
- destination IP range (CIDR)
-Message-ID: <20191007101919.13c7f4cc@carbon>
-In-Reply-To: <20191005082509.16137-5-danieltimlee@gmail.com>
-References: <20191005082509.16137-1-danieltimlee@gmail.com>
-        <20191005082509.16137-5-danieltimlee@gmail.com>
+        id S1727262AbfJGI1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 04:27:13 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40890 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727103AbfJGI1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 04:27:13 -0400
+Received: by mail-wr1-f68.google.com with SMTP id h4so5368558wrv.7
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 01:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4udHZndUQFYsvFZtOogCUp1I4WFuuIj9oc+PhhR9hsQ=;
+        b=x30IUrKpkM4TYK8SD9N1eyMKY0IIKrA/W36335CE9AagQe7Rk079bzps9Lvabq40a6
+         lfq2EwX8Ow81cPFdhaHlanEDbypvL2cjxsLjJRDlTa3OvDMwPE7atFoqynDQ/uLZAaQa
+         688rMAaij7wphrzyZQlbtrXUDO4yreMz5CLz+71N/urAJd1GwmpJ2AS+mS2b1ijxftJC
+         nJRT0FRp0bosPNU6S6Bvmf+vM7murs+rMF3YcZVDHhbZPPhjsq9JqzRg8eoue0eRiUSl
+         bG33OESEz9tUufryalKV/vcLiueidlna47dJiY/KpDevxuMHh7RmWdFoT3KXqoWciSxn
+         +DUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4udHZndUQFYsvFZtOogCUp1I4WFuuIj9oc+PhhR9hsQ=;
+        b=UWX8TMtz+eXgTYZzGxdt7MjFWc5ArvKsM3IvuADlJEw0DGWYkYnGbti+zdYQq1XRRt
+         B7zJ5gDvucdCUxSjZQOw22fAL7EOXOmwc2Y1ADpvO8KmaU7yjfHfQXwkCuf23VA1qNT1
+         6QMVAlcl/c8tuEJ/qm0HRQchRhP0snBNKJgDNkRZKW5RQQJLTkCFlk8t2a/wRFkIgdcZ
+         L2EZR+RJ2APziytICzIslPgpFqx75jy1A83pWNhW3uhlPVhQHwczRDWb38AxgEnfiGRB
+         p027UXsSEbrfpUf24Pm0PcqGsyjQd9VtFF513L4x8+Etw8BOA0BvsCmWmFaiGUz3iJjc
+         agWg==
+X-Gm-Message-State: APjAAAUBALmiH0v713I0HWPzxuxd1tbq1cnYy7+/FkOvGA6OEHPnfu84
+        SAyhuVlAfGG5TughJpAzslDx/spwZGc=
+X-Google-Smtp-Source: APXvYqw1/QhQA/R2hkSNgWMuypfywleKL0/zu+oWTALV9MSAyeaSl2ZeFgupMxbCA4jTp8w9AsRaEg==
+X-Received: by 2002:adf:ef0d:: with SMTP id e13mr22344559wro.300.1570436831277;
+        Mon, 07 Oct 2019 01:27:11 -0700 (PDT)
+Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
+        by smtp.gmail.com with ESMTPSA id h7sm14303120wrs.15.2019.10.07.01.27.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Oct 2019 01:27:10 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        mlxsw@mellanox.com, shuah@kernel.org
+Subject: [patch net-next 0/2] netdevsim: implement devlink dev_info op
+Date:   Mon,  7 Oct 2019 10:27:07 +0200
+Message-Id: <20191007082709.13158-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Mon, 07 Oct 2019 08:19:27 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  5 Oct 2019 17:25:09 +0900
-"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+From: Jiri Pirko <jiri@mellanox.com>
 
-> Currently, kernel pktgen has the feature to specify destination
-> address range for sending packet. (e.g. pgset "dst_min/dst_max")
-> 
-> But on samples, each pktgen script doesn't have any option to achieve this.
-> 
-> This commit adds the feature to specify the destination address range with CIDR.
-> 
->     -d : ($DEST_IP)   destination IP. CIDR (e.g. 198.18.0.0/15) is also allowed
-> 
->     # ./pktgen_sample01_simple.sh -6 -d fe80::20/126 -p 3000 -n 4
->     # tcpdump ip6 and udp
->     05:14:18.082285 IP6 fe80::99.71 > fe80::23.3000: UDP, length 16
->     05:14:18.082564 IP6 fe80::99.43 > fe80::23.3000: UDP, length 16
->     05:14:18.083366 IP6 fe80::99.107 > fe80::22.3000: UDP, length 16
->     05:14:18.083585 IP6 fe80::99.97 > fe80::21.3000: UDP, length 16
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+Initial implementation of devlink dev_info op - just driver name is
+filled up and sent to user. Bundled with selftest.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Jiri Pirko (2):
+  netdevsim: implement devlink dev_info op
+  selftests: add netdevsim devlink dev info test
+
+ drivers/net/netdevsim/dev.c                   |  8 +++++++
+ .../drivers/net/netdevsim/devlink.sh          | 21 ++++++++++++++++++-
+ 2 files changed, 28 insertions(+), 1 deletion(-)
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.21.0
+
