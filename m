@@ -2,193 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DC9CCEC49
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 20:59:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF942CEC6A
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 21:04:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729031AbfJGS7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 14:59:16 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:52326 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728828AbfJGS7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 14:59:13 -0400
-Received: by mail-io1-f72.google.com with SMTP id g8so28142676iop.19
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 11:59:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=5yrzAejvRnTr8wu1Zk1HBSTQX/3upEGoygbf1ryx00M=;
-        b=Ny96/Xn5N14fDR268TAmpiztG7b1J5vAMjN+qC41yYrNev7kYdKfaHPcku8TJVzp5p
-         x/4SmSluhWr5IB2CbaZtfBeSEVoiQEnv1rsgKtHikg/aYlqXoVGAMJhKIVmC3FpZV6A8
-         AjcgPS7WvM3oJLpLJt9JVG9PsgnM0zenAFKhQzX186Z+8b/3CDkxtOnXgHN2EUOck2tJ
-         lQwnzCwfsn+vwQUSdItAz5ZCq/CAY4k+uu6eqj4Hc/CdEOrm2FH0wv8leFmulcOQuQbH
-         tMsI9J2CVI0ntPIRUmDA9JLKT5HVvPCtP613iElNZPlWK9ws7r/fOMVp6nQg7lWOqhP+
-         f3PQ==
-X-Gm-Message-State: APjAAAV/hDgQaGkmsTUBLcK32b+0AYx2+yfK/J3XcudbeCB8Uyq8+9kS
-        iMjD1myL7fFh8uyP/wJXXXR+IGZ65VLWONYGoe7U6tClwN/J
-X-Google-Smtp-Source: APXvYqy/M9nolAccDMv9jA2gYwbBVhH3RAGawIlcYiiQ/L1TLGX1QP5AfSi67AJRVyM4gd3Nsb3gU0wDETEi88VXnvq0b3mWalzl
-MIME-Version: 1.0
-X-Received: by 2002:a6b:c402:: with SMTP id y2mr20955977ioa.136.1570474752597;
- Mon, 07 Oct 2019 11:59:12 -0700 (PDT)
-Date:   Mon, 07 Oct 2019 11:59:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c1e5e8059456a5bf@google.com>
-Subject: KASAN: use-after-free Read in tipc_udp_nl_dump_remoteip
-From:   syzbot <syzbot+dbe02e13bcce52bcf182@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jon.maloy@ericsson.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1728711AbfJGTEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 15:04:31 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56540 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728079AbfJGTEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 15:04:31 -0400
+Received: from localhost (unknown [50.237.170.134])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 55D171477CBA6;
+        Mon,  7 Oct 2019 12:04:30 -0700 (PDT)
+Date:   Mon, 07 Oct 2019 21:04:29 +0200 (CEST)
+Message-Id: <20191007.210429.503454070833457558.davem@davemloft.net>
+To:     antonio.borneo@st.com
+Cc:     richardcochran@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ptp: fix typo of "mechanism" in Kconfig help text
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191007154306.95827-1-antonio.borneo@st.com>
+References: <20191007154306.95827-1-antonio.borneo@st.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 07 Oct 2019 12:04:30 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Antonio Borneo <antonio.borneo@st.com>
+Date: Mon, 7 Oct 2019 17:43:02 +0200
 
-syzbot found the following crash on:
+> Fix typo s/mechansim/mechanism/
+> 
+> Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
 
-HEAD commit:    056ddc38 Merge branch 'stmmac-next'
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=164f0c57600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9be300620399522
-dashboard link: https://syzkaller.appspot.com/bug?extid=dbe02e13bcce52bcf182
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=137ecdfb600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15dd0d0b600000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+dbe02e13bcce52bcf182@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in nla_parse_nested_deprecated  
-include/net/netlink.h:1166 [inline]
-BUG: KASAN: use-after-free in tipc_udp_nl_dump_remoteip+0xc19/0xc20  
-net/tipc/udp_media.c:459
-Read of size 2 at addr ffff888090c0f2d4 by task syz-executor616/8990
-
-CPU: 1 PID: 8990 Comm: syz-executor616 Not tainted 5.4.0-rc1+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:634
-  __asan_report_load2_noabort+0x14/0x20 mm/kasan/generic_report.c:130
-  nla_parse_nested_deprecated include/net/netlink.h:1166 [inline]
-  tipc_udp_nl_dump_remoteip+0xc19/0xc20 net/tipc/udp_media.c:459
-  genl_lock_dumpit+0x86/0xc0 net/netlink/genetlink.c:529
-  netlink_dump+0x558/0xfb0 net/netlink/af_netlink.c:2244
-  __netlink_dump_start+0x5b1/0x7d0 net/netlink/af_netlink.c:2352
-  genl_family_rcv_msg_dumpit net/netlink/genetlink.c:614 [inline]
-  genl_family_rcv_msg net/netlink/genetlink.c:710 [inline]
-  genl_rcv_msg+0xc9b/0x1000 net/netlink/genetlink.c:730
-  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
-  genl_rcv+0x29/0x40 net/netlink/genetlink.c:741
-  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:637 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:657
-  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
-  __do_sys_sendmsg net/socket.c:2365 [inline]
-  __se_sys_sendmsg net/socket.c:2363 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x445279
-Code: e8 ac e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 0b cd fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fffac1fc178 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000445279
-RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000005
-RBP: 0000000000010907 R08: 0000000000000000 R09: 00000000004002e0
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402410
-R13: 00000000004024a0 R14: 0000000000000000 R15: 0000000000000000
-
-Allocated by task 8992:
-  save_stack+0x23/0x90 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  __kasan_kmalloc mm/kasan/common.c:510 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:483
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
-  __do_kmalloc_node mm/slab.c:3615 [inline]
-  __kmalloc_node_track_caller+0x4e/0x70 mm/slab.c:3629
-  __kmalloc_reserve.isra.0+0x40/0xf0 net/core/skbuff.c:141
-  __alloc_skb+0x10b/0x5e0 net/core/skbuff.c:209
-  alloc_skb include/linux/skbuff.h:1049 [inline]
-  netlink_alloc_large_skb net/netlink/af_netlink.c:1174 [inline]
-  netlink_sendmsg+0x972/0xd60 net/netlink/af_netlink.c:1892
-  sock_sendmsg_nosec net/socket.c:637 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:657
-  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
-  __do_sys_sendmsg net/socket.c:2365 [inline]
-  __se_sys_sendmsg net/socket.c:2363 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 8992:
-  save_stack+0x23/0x90 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  kasan_set_free_info mm/kasan/common.c:332 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:471
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
-  __cache_free mm/slab.c:3425 [inline]
-  kfree+0x10a/0x2c0 mm/slab.c:3756
-  skb_free_head+0x93/0xb0 net/core/skbuff.c:591
-  skb_release_data+0x42d/0x7c0 net/core/skbuff.c:611
-  skb_release_all+0x4d/0x60 net/core/skbuff.c:665
-  __kfree_skb net/core/skbuff.c:679 [inline]
-  consume_skb net/core/skbuff.c:838 [inline]
-  consume_skb+0xfb/0x3b0 net/core/skbuff.c:832
-  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
-  netlink_unicast+0x539/0x710 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:637 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:657
-  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
-  __do_sys_sendmsg net/socket.c:2365 [inline]
-  __se_sys_sendmsg net/socket.c:2363 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff888090c0f2c0
-  which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 20 bytes inside of
-  512-byte region [ffff888090c0f2c0, ffff888090c0f4c0)
-The buggy address belongs to the page:
-page:ffffea00024303c0 refcount:1 mapcount:0 mapping:ffff8880aa400a80  
-index:0xffff888090c0fa40
-flags: 0x1fffc0000000200(slab)
-raw: 01fffc0000000200 ffffea0002441548 ffffea0002430608 ffff8880aa400a80
-raw: ffff888090c0fa40 ffff888090c0f040 0000000100000005 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff888090c0f180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff888090c0f200: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> ffff888090c0f280: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
-                                                  ^
-  ffff888090c0f300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff888090c0f380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Applied, thank you.
