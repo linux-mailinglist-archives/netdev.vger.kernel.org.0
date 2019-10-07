@@ -2,82 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5230CE47A
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:59:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FD4CE481
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728121AbfJGN7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 09:59:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44086 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727536AbfJGN7r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 09:59:47 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 72EBE20867;
-        Mon,  7 Oct 2019 13:59:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570456787;
-        bh=174nUUEc39BnPNjnjG3coCMSkyWpv0morokgjS6xmCA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rUd+0Qi6Pt7+4Sre7hWSZNTcQy77wWwBSNlOiOI4HoilPh0ObZwWBCgmeB1VTUphO
-         5knyoyX/IM2BCrTXlK8P4eIa4nOnZA2tGZ9kLKOd1Gm/uGmoe5XuVuW2WuxyBVLtmX
-         4BoWx0epSWGQwIFxgKAlgKl7L8cCxenc54KKWuTQ=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v2 3/3] RDMA/mlx5: Add capability for max sge to get optimized performance
-Date:   Mon,  7 Oct 2019 16:59:33 +0300
-Message-Id: <20191007135933.12483-4-leon@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191007135933.12483-1-leon@kernel.org>
-References: <20191007135933.12483-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728156AbfJGOA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 10:00:59 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52990 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727324AbfJGOA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:00:59 -0400
+Received: from localhost (unknown [144.121.20.163])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1CF581411EAF1;
+        Mon,  7 Oct 2019 07:00:58 -0700 (PDT)
+Date:   Mon, 07 Oct 2019 16:00:57 +0200 (CEST)
+Message-Id: <20191007.160057.2276197375290462580.davem@davemloft.net>
+To:     colin.king@canonical.com
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: hns: make arrays static, makes object smaller
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191007105510.31858-1-colin.king@canonical.com>
+References: <20191007105510.31858-1-colin.king@canonical.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 07 Oct 2019 07:00:58 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yamin Friedman <yaminf@mellanox.com>
+From: Colin King <colin.king@canonical.com>
+Date: Mon,  7 Oct 2019 11:55:10 +0100
 
-Allows the IB device to provide a value of maximum scatter gather entries
-per RDMA READ.
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Don't populate the arrays port_map and sl_map on the stack but
+> instead make them static. Makes the object code smaller by 64 bytes.
+> 
+> Before:
+>    text	   data	    bss	    dec	    hex	filename
+>   49575	   6872	     64	  56511	   dcbf	hisilicon/hns/hns_dsaf_main.o
+> 
+> After:
+>    text	   data	    bss	    dec	    hex	filename
+>   49350	   7032	     64	  56446	   dc7e	hisilicon/hns/hns_dsaf_main.o
+> 
+> (gcc version 9.2.1, amd64)
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-In certain cases it may be preferable for a device to perform UMR memory
-registration rather than have many scatter entries in a single RDMA READ.
-This provides a significant performance increase in devices capable of
-using different memory registration schemes based on the number of scatter
-gather entries. This general capability allows each device vendor to fine
-tune when it is better to use memory registration.
-
-Signed-off-by: Yamin Friedman <yaminf@mellanox.com>
-Reviewed-by: Or Gerlitz <ogerlitz@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/infiniband/hw/mlx5/main.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index fa23c8e7043b..39d54e285ae9 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -1012,6 +1012,8 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
- 		1 << MLX5_CAP_GEN(mdev, log_max_klm_list_size);
- 	props->max_pi_fast_reg_page_list_len =
- 		props->max_fast_reg_page_list_len / 2;
-+	props->max_sgl_rd =
-+		MLX5_CAP_GEN(mdev, max_sgl_for_optimized_performance);
- 	get_atomic_caps_qp(dev, props);
- 	props->masked_atomic_cap   = IB_ATOMIC_NONE;
- 	props->max_mcast_grp	   = 1 << MLX5_CAP_GEN(mdev, log_max_mcg);
---
-2.20.1
-
+Applied.
