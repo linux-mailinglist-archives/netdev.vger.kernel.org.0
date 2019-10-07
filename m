@@ -2,113 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A803CDF40
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 12:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 569A6CDF7C
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 12:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727531AbfJGK0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 06:26:18 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:41413 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727262AbfJGK0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 06:26:17 -0400
-Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x97AKml6026153;
-        Mon, 7 Oct 2019 12:25:57 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=STMicroelectronics;
- bh=cIh/B+QlT5Ufq0muAI8MFIZVmvtKiiVeIQjxYFeHv4U=;
- b=LqwFvsFeAgqwBt7UYWHD+Wuf+stCjxWldXnL+ZqqyTjv9PukoK6gjeJKuhHN9HtbFVk/
- qINdmJ8SJp4VZEqHmX8HX/OR77VCCUuep5iwlHbpCQWiz6LmXWlQaz8SRLbONPSU5q7f
- u5QLwVf799PJGBZoVV6fPP6+SEP+pv9mUyv98wqICqgKGn2A94yONlyyI7KdQFyNqdG8
- 9zLr5o5ct1m4k2jtoSx/F0kDFB2tW9EcrQESlnfGgWY3iqekCks4uvtZvOsjgzpa0Zb9
- cyZF3E7mbm2nk9Ev6T7CqfrdURgjwdJhs5igOpnTtDmBAgj0UPQO5hiatsex1g1i1Gjl /g== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2vegxvhrn6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Oct 2019 12:25:57 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EB15210002A;
-        Mon,  7 Oct 2019 12:25:56 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id DC7722BFE0A;
-        Mon,  7 Oct 2019 12:25:56 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SFHDAG3NODE2.st.com (10.75.127.8)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon, 7 Oct 2019 12:25:56
- +0200
-From:   Alexandre Torgue <alexandre.torgue@st.com>
-To:     Maxime Ripard <mripard@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Alexandru Ardelean <alexaundru.ardelean@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH 3/3] dt-bindings: regulator: Fix yaml verification for fixed-regulator schema
-Date:   Mon, 7 Oct 2019 12:25:52 +0200
-Message-ID: <20191007102552.19808-4-alexandre.torgue@st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191007102552.19808-1-alexandre.torgue@st.com>
-References: <20191007102552.19808-1-alexandre.torgue@st.com>
+        id S1727390AbfJGKkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 06:40:41 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:36406 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727252AbfJGKkl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 06:40:41 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 6A1C918C8906;
+        Mon,  7 Oct 2019 10:40:41 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 74CA75C1D4;
+        Mon,  7 Oct 2019 10:40:40 +0000 (UTC)
+Message-ID: <2525e069e337d617fd826eb7677a94131fb5643b.camel@redhat.com>
+Subject: Re: [PATCH] ss: allow dumping kTLS info
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Andrea Claudi <aclaudi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org
+In-Reply-To: <2531403b243c1c60afc175c164a02096ffcf89a5.1570442363.git.dcaratti@redhat.com>
+References: <2531403b243c1c60afc175c164a02096ffcf89a5.1570442363.git.dcaratti@redhat.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 07 Oct 2019 12:40:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG6NODE1.st.com (10.75.127.16) To SFHDAG3NODE2.st.com
- (10.75.127.8)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-07_02:2019-10-07,2019-10-07 signatures=0
+User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.70]); Mon, 07 Oct 2019 10:40:41 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit fixes an issue seen during yaml check ("make dt_binding_check").
-Compatible didn't seem to be seen as a string.
+On Mon, 2019-10-07 at 12:16 +0200, Davide Caratti wrote:
+> now that INET_DIAG_INFO requests can dump TCP ULP information, extend 'ss'
+> to allow diagnosing kTLS when it is attached to a TCP socket. While at it,
+> import kTLS uAPI definitions from the latest net-next tree.
+> 
+> CC: Andrea Claudi <aclaudi@redhat.com>
+> Co-developed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> ---
+>  include/uapi/linux/tls.h | 127 +++++++++++++++++++++++++++++++++++++++
+>  misc/ss.c                |  89 +++++++++++++++++++++++++++
+>  2 files changed, 216 insertions(+)
+>  create mode 100644 include/uapi/linux/tls.h
+> 
+> diff --git a/include/uapi/linux/tls.h b/include/uapi/linux/tls.h
+> new file mode 100644
+> index 000000000000..bcd2869ed472
 
-Reported issue:
-"properties:compatible:enum:0: {'const': 'regulator-fixed'}
-is not of type 'string'"
-And
-"properties:compatible:enum:1: {'const': 'regulator-fixed-clock'}
-is not of type 'string'"
+hello David,
 
-Fixes: 9c86d003d620 ("dt-bindings: regulator: add regulator-fixed-clock binding")
-Signed-off-by: Alexandre Torgue <alexandre.torgue@st.com>
+I forgot to set the subject-prefix correctly: it was meant to be "PATCH
+iproute2-next".
 
-diff --git a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-index a78150c47aa2..7725cedf1538 100644
---- a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-@@ -22,16 +22,20 @@ allOf:
- if:
-   properties:
-     compatible:
-+      allOf:
-+        - $ref: "/schemas/types.yaml#/definitions/string"
-       contains:
--        const: regulator-fixed-clock
-+        const: "regulator-fixed-clock"
-   required:
-     - clocks
- 
- properties:
-   compatible:
-+    allOf:
-+      - $ref: "/schemas/types.yaml#/definitions/string"
-     enum:
--      - const: regulator-fixed
--      - const: regulator-fixed-clock
-+      - "regulator-fixed"
-+      - "regulator-fixed-clock"
- 
-   regulator-name: true
- 
+Sorry for the noise (ant thanks to Andrea for noticing :) )
+
+regards,
 -- 
-2.17.1
+davide
 
