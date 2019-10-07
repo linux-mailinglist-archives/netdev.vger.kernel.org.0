@@ -2,114 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0FDCE978
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 18:41:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 849E4CE984
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 18:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728874AbfJGQl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 12:41:57 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:44448 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbfJGQl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 12:41:57 -0400
-Received: by mail-qk1-f195.google.com with SMTP id u22so13200108qkk.11;
-        Mon, 07 Oct 2019 09:41:56 -0700 (PDT)
+        id S1728939AbfJGQnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 12:43:12 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34088 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727830AbfJGQnL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 12:43:11 -0400
+Received: by mail-qt1-f196.google.com with SMTP id 3so20160654qta.1;
+        Mon, 07 Oct 2019 09:43:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6zFM+RFNtTCECjgV8K/Cr+PeiGDSTRKsIBWVJSjS360=;
-        b=MmgnAPioAY9ape0ZaHhj5zu875L3f2UXUYoiIxmVCQwV/Gc61x12xfZPLnghjAdfB4
-         xVu7TyMFJDugBMovFjwIUBiEjBtcS2YlTFMnPApajSZBX2olSPylpRM0a7fZE/tT4s95
-         avYjnYGwacIk8tbsVqB56fWtNqV/n4W1H/i1JpprPSEqKxauSQQGzjkVNQh6Ba56tfq/
-         VHHh+WrisL8G9FvrjAEIAat3fqTCE8n9yTSjCpYoq+SuKwcWjVF6/hMT92J0U3KfR+Ux
-         ICA8RI/1+ysf803Y+IEUz+kqTivK1njyq85R6myZcrXl4+aXe5BFOWzVT6e0P3Nr02ni
-         4+gw==
+         :cc:content-transfer-encoding;
+        bh=NKDBVKvk7HklO3S6yXtVYRim3kqnGNYLuGw93b2LDEI=;
+        b=C6fillda+CEVSSzy7P0O2Oyp9lICg7XKPSJl/D2iCkB/TL32L944CGbmHtWadDTv4l
+         2AuQKErVB6c18Bu96A8DzefRdmhPvl+hMBQI2FCBcgUU7z4WJUVixzIIvaFaPqERHVlI
+         8ZSsWGjQuqa6yCk4C1p9pFRMpcBlBBOumwW5oK39o4XxLKMbw4W8NfehzuqTQm4Z92fd
+         DMZGAHZ1K9ojViQeq2Nhay/MowUkocSP7yssWCqPAMyHMXQoCDKCQJfnfI+3UCWH5r6B
+         elIKls0jkh1l1wI4yaYfcdsXhJRYuPZW9cIPOEkBftWKCeKL4Pan5DmReEBCVVsxW/AL
+         /qSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6zFM+RFNtTCECjgV8K/Cr+PeiGDSTRKsIBWVJSjS360=;
-        b=BekZAxijG2KgUWlVSZABSyh14ky+mqYv3jpRb8+WeTlgJY94p8C7fkPvHqMLpBJcWq
-         2cz/T2GcCNolCdLtut5ouGjE/0vWmzmKYNMMiYjw/u9Rj6P8Cx+jkyinKEzmT6AIbbz3
-         lkYZnw3hqcnODJEr2nQatFHyr1AhI7mP6ap/VEFjgVSkBCpftVA38enGHMJDiK38xuXI
-         3VYrHjQUgij5cbXORA7D9rJDMcOOndUqPx5HIBHz6SLzwZW/VPXaGOqAe0F0JD+uuoRy
-         00USKheEDPudntAsw4JupUl09qVwWfqt5xyz4UbcDvzlnknIuJGrzsOip3L3Y+kY7Qjm
-         EDfA==
-X-Gm-Message-State: APjAAAUq9wjQyAWBnqaeLN478eUQ8TQAaEQCbV1vJMoB0d9ECZzilPui
-        YeqjaVH0DYoXT11R0bCf7k2K5YxiUDEPd1x++TI=
-X-Google-Smtp-Source: APXvYqyW+IiOcuC6GaL9m/1PxjErtVkC/h151rg8wZQoN2lax4niQ46WhIsjKCJq6MVZvUFFkTp0gl906IG5qlG3GGM=
-X-Received: by 2002:a05:620a:119a:: with SMTP id b26mr24065310qkk.39.1570466515979;
- Mon, 07 Oct 2019 09:41:55 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NKDBVKvk7HklO3S6yXtVYRim3kqnGNYLuGw93b2LDEI=;
+        b=kO+B1amx21K2nL6qlGNXG0XKDVMtd2aNOmKjzXbV3my5KHFqdOJ0wyC34STrU7COdP
+         8Aq+YgdVwrXt22/eKCn4xK36MvbI0GceOMjDsDPbTkXhPf6yFOyENun332MRonTKOIDA
+         VLGaL3njVXbDfELJlr9iXHQ7guRNyTclbgPpclwVMvmsqykB9iZbIYLBYPJNEsa48JQr
+         x3f3y6r7fDDeh5IoKjuyTaw6t5J00fUP83fZwSsNTD8Dpxn3PbQPKfQKWZVyQ0qC/G0K
+         Ti3D+q0QDTw0yRDHPR/jmd/MXHUIRMuQuF7y4fwq/1HP00LzCQtM6xQBfQjR445ES/t8
+         zpzQ==
+X-Gm-Message-State: APjAAAV5q+X6HVKmPwz8uBBAg4h5psCUYESgrlRTBgrV2me7vF6NNRnI
+        EdTZyy4EySdbaYSDm0HF8JB7A1/hGMSFyBcPE5DCWclT
+X-Google-Smtp-Source: APXvYqzF3vRRuI8I4hO1tJ6JI/MMOht4eWPtDw10plerRXjN9pjTPpdV1U7LMImVX5ic8NvTb5aN2EG3LOXdqEoAAu0=
+X-Received: by 2002:aed:2726:: with SMTP id n35mr30204149qtd.171.1570466590657;
+ Mon, 07 Oct 2019 09:43:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191007160635.1021-1-danieltimlee@gmail.com>
-In-Reply-To: <20191007160635.1021-1-danieltimlee@gmail.com>
+References: <20191004224037.1625049-1-andriin@fb.com> <20191004224037.1625049-2-andriin@fb.com>
+ <20191007161437.GB2096@mini-arch>
+In-Reply-To: <20191007161437.GB2096@mini-arch>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Oct 2019 09:41:44 -0700
-Message-ID: <CAEf4BzYV68OubcBFZWpMvkKsHhzb3uuMQ7HcMUgYgqigog4q0g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6] samples: bpf: add max_pckt_size option at xdp_adjust_tail
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Song Liu <liu.song.a23@gmail.com>,
+Date:   Mon, 7 Oct 2019 09:42:59 -0700
+Message-ID: <CAEf4Bza-8EtVagW8PG1pVVDp+jXGg59kW9FJNbYbWAxar3S6Gg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 1/4] libbpf: stop enforcing kern_version,
+ populate it for users
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 7, 2019 at 9:06 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+On Mon, Oct 7, 2019 at 9:14 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
 >
-> Currently, at xdp_adjust_tail_kern.c, MAX_PCKT_SIZE is limited
-> to 600. To make this size flexible, static global variable
-> 'max_pcktsz' is added.
+> On 10/04, Andrii Nakryiko wrote:
+> > Kernel version enforcement for kprobes/kretprobes was removed from
+> > 5.0 kernel in 6c4fc209fcf9 ("bpf: remove useless version check for prog=
+ load").
+> > Since then, BPF programs were specifying SEC("version") just to please
+> > libbpf. We should stop enforcing this in libbpf, if even kernel doesn't
+> > care. Furthermore, libbpf now will pre-populate current kernel version
+> > of the host system, in case we are still running on old kernel.
 >
-> By updating new packet size from the user space, xdp_adjust_tail_kern.o
-> will use this value as a new max packet size.
+> [..]
+> > This patch also removes __bpf_object__open_xattr from libbpf.h, as
+> > nothing in libbpf is relying on having it in that header. That function
+> > was never exported as LIBBPF_API and even name suggests its internal
+> > version. So this should be safe to remove, as it doesn't break ABI.
+> This gives me the following (I don't know why bpftool was allowed to link
+> against non-LIBBPF_API exposed function):
 >
-> This static global variable can be accesible from .data section with
-> bpf_object__find_map* from user space, since it is considered as
-> internal map (accessible with .bss/.data/.rodata suffix).
+> + make -s -j72 -C tools/bpf/bpftool
 >
-> If no '-P <MAX_PCKT_SIZE>' option is used, the size of maximum packet
-> will be 600 as a default.
+> prog.c: In function =E2=80=98load_with_options=E2=80=99:
+> prog.c:1227:8: warning: implicit declaration of function =E2=80=98__bpf_o=
+bject__open_xattr=E2=80=99; did you mean =E2=80=98bpf_object__open_xattr=E2=
+=80=99? [-Wimplicit-function-declaration]
+>   obj =3D __bpf_object__open_xattr(&open_attr, bpf_flags);
+>         ^~~~~~~~~~~~~~~~~~~~~~~~
+>         bpf_object__open_xattr
+> prog.c:1227:8: warning: nested extern declaration of =E2=80=98__bpf_objec=
+t__open_xattr=E2=80=99 [-Wnested-externs]
+> prog.c:1227:6: warning: assignment to =E2=80=98struct bpf_object *=E2=80=
+=99 from =E2=80=98int=E2=80=99 makes pointer from integer without a cast [-=
+Wint-conversion]
+>   obj =3D __bpf_object__open_xattr(&open_attr, bpf_flags);
+>       ^
 >
-> Changed the way to test prog_fd, map_fd from '!= 0' to '< 0',
-> since fd could be 0 when stdin is closed.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
->
-> ---
-> Changes in v6:
->     - Remove redundant error message
-> Changes in v5:
->     - Change pcktsz map to static global variable
-> Changes in v4:
->     - make pckt_size no less than ICMP_TOOBIG_SIZE
->     - Fix code style
-> Changes in v2:
->     - Change the helper to fetch map from 'bpf_map__next' to
->     'bpf_object__find_map_fd_by_name'.
+
+Cool, I somehow didn't find any users of that API, but I looked only
+in libbpf and selftests, forgot about bpftool. I'll fix it to use new
+APIs.
+
+Thanks for reporting!
 
 
-This should go into commit message, that's netdev preference.
 
-Otherwise looks good!
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
+> Warning: Kernel ABI header at 'tools/include/uapi/linux/if_link.h' differ=
+s from latest version at 'include/uapi/linux/if_link.h'
+> /usr/bin/ld: prog.o: in function `load_with_options':
+> prog.c:(.text+0x49b): undefined reference to `__bpf_object__open_xattr'
+> collect2: error: ld returned 1 exit statu
 >
->  samples/bpf/xdp_adjust_tail_kern.c |  7 +++++--
->  samples/bpf/xdp_adjust_tail_user.c | 29 ++++++++++++++++++++---------
->  2 files changed, 25 insertions(+), 11 deletions(-)
->
-> diff --git a/samples/bpf/xdp_adjust_tail_kern.c b/samples/bpf/xdp_adjust_tail_kern.c
-> index 411fdb21f8bc..c616508befb9 100644
-> --- a/samples/bpf/xdp_adjust_tail_kern.c
-> +++ b/samples/bpf/xdp_adjust_tail_kern.c
-> @@ -25,6 +25,9 @@
->  #define ICMP_TOOBIG_SIZE 98
->  #define ICMP_TOOBIG_PAYLOAD_SIZE 92
->
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
 
 [...]
