@@ -2,82 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 454ECCDC9F
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 09:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8B56CDCF5
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 10:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727422AbfJGHym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 03:54:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33736 "EHLO mail.kernel.org"
+        id S1727368AbfJGIPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 04:15:47 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43174 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727028AbfJGHym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 03:54:42 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726889AbfJGIPq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 04:15:46 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6A05A2133F;
-        Mon,  7 Oct 2019 07:54:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570434882;
-        bh=vcGFifv/FN2I5j8yx1asPPdxtr49ZmxuZ4+VHZfojsU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZpMf+B7eM4Xn0JRvD/C8P6GXqSdldQVDvribvai5UypGBnebqaVtofcxcORtEB+JS
-         TgNraA5CU/Wo1y2X+MfiGecVBF8KlSIVpgWw4GgtP3vPe/kIGtF5KpD6K70q88e2Mw
-         1IBLi4ZUCpG7/owlmYvOSH6hwwBlMqzLm2Phfk+o=
-Date:   Mon, 7 Oct 2019 10:54:37 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next 3/3] RDMA/rw: Support threshold for
- registration vs scattering to local pages
-Message-ID: <20191007075437.GV5855@unreal>
-References: <20191006155955.31445-1-leon@kernel.org>
- <20191006155955.31445-4-leon@kernel.org>
- <20191007065825.GA17401@infradead.org>
+        by mx1.redhat.com (Postfix) with ESMTPS id 20D50307D848;
+        Mon,  7 Oct 2019 08:15:46 +0000 (UTC)
+Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C6E3D5D6D0;
+        Mon,  7 Oct 2019 08:15:39 +0000 (UTC)
+Date:   Mon, 7 Oct 2019 10:15:37 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        brouer@redhat.com
+Subject: Re: [PATCH net-next v5 2/4] samples: pktgen: fix proc_cmd command
+ result check logic
+Message-ID: <20191007101537.24c1961c@carbon>
+In-Reply-To: <20191005082509.16137-3-danieltimlee@gmail.com>
+References: <20191005082509.16137-1-danieltimlee@gmail.com>
+        <20191005082509.16137-3-danieltimlee@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191007065825.GA17401@infradead.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 07 Oct 2019 08:15:46 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 06, 2019 at 11:58:25PM -0700, Christoph Hellwig wrote:
-> >  /*
-> > - * Check if the device might use memory registration.  This is currently only
-> > - * true for iWarp devices. In the future we can hopefully fine tune this based
-> > - * on HCA driver input.
-> > + * Check if the device might use memory registration.
-> >   */
->
-> Please keep the important bits of this comments instead of just
-> removing them.
->
-> >  {
-> > @@ -30,6 +28,8 @@ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
-> >  		return true;
-> >  	if (unlikely(rdma_rw_force_mr))
-> >  		return true;
-> > +	if (dev->attrs.max_sgl_rd)
-> > +		return true;
->
-> Logically this should go before the rdma_rw_force_mr check.
->
-> >  	if (unlikely(rdma_rw_force_mr))
-> >  		return true;
-> > +	if (dev->attrs.max_sgl_rd && dir == DMA_FROM_DEVICE
-> > +	    && dma_nents > dev->attrs.max_sgl_rd)
->
-> Wrong indendation.  The && belongs on the first line.  And again, this
-> logically belongs before the rdma_rw_force_mr check.
+On Sat,  5 Oct 2019 17:25:07 +0900
+"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
 
-I'll fix.
+> Currently, proc_cmd is used to dispatch command to 'pg_ctrl', 'pg_thread',
+> 'pg_set'. proc_cmd is designed to check command result with grep the
+> "Result:", but this might fail since this string is only shown in
+> 'pg_thread' and 'pg_set'.
+> 
+> This commit fixes this logic by grep-ing the "Result:" string only when
+> the command is not for 'pg_ctrl'.
+> 
+> For clarity of an execution flow, 'errexit' flag has been set.
+> 
+> To cleanup pktgen on exit, trap has been added for EXIT signal.
+> 
+> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> ---
 
-Thanks
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+> Changes since v5:
+>  * when script runs sudo, run 'pg_ctrl "reset"' on EXIT with trap
+> 
+>  samples/pktgen/functions.sh | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+> 
+> diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
+> index 4af4046d71be..40873a5d1461 100644
+> --- a/samples/pktgen/functions.sh
+> +++ b/samples/pktgen/functions.sh
+> @@ -5,6 +5,8 @@
+>  # Author: Jesper Dangaaard Brouer
+>  # License: GPL
+>  
+> +set -o errexit
+> +
+>  ## -- General shell logging cmds --
+>  function err() {
+>      local exitcode=$1
+> @@ -58,6 +60,7 @@ function pg_set() {
+>  function proc_cmd() {
+>      local result
+>      local proc_file=$1
+> +    local status=0
+>      # after shift, the remaining args are contained in $@
+>      shift
+>      local proc_ctrl=${PROC_DIR}/$proc_file
+> @@ -73,13 +76,13 @@ function proc_cmd() {
+>  	echo "cmd: $@ > $proc_ctrl"
+>      fi
+>      # Quoting of "$@" is important for space expansion
+> -    echo "$@" > "$proc_ctrl"
+> -    local status=$?
+> +    echo "$@" > "$proc_ctrl" || status=$?
+>  
+> -    result=$(grep "Result: OK:" $proc_ctrl)
+> -    # Due to pgctrl, cannot use exit code $? from grep
+> -    if [[ "$result" == "" ]]; then
+> -	grep "Result:" $proc_ctrl >&2
+> +    if [[ "$proc_file" != "pgctrl" ]]; then
+> +        result=$(grep "Result: OK:" $proc_ctrl) || true
+> +        if [[ "$result" == "" ]]; then
+> +            grep "Result:" $proc_ctrl >&2
+> +        fi
+>      fi
+>      if (( $status != 0 )); then
+>  	err 5 "Write error($status) occurred cmd: \"$@ > $proc_ctrl\""
+> @@ -105,6 +108,8 @@ function pgset() {
+>      fi
+>  }
+>  
+> +[[ $EUID -eq 0 ]] && trap 'pg_ctrl "reset"' EXIT
+> +
+
+This is fine, but you could have placed the 'trap' handler in
+parameters.sh file, as all scripts first source functions.sh and then
+call root_check_run_with_sudo, before sourcing parameters.sh.
+
+>  ## -- General shell tricks --
+>  
+>  function root_check_run_with_sudo() {
+
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
