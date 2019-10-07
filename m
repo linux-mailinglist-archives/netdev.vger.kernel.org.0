@@ -2,45 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F59DCE0F3
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 13:53:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70BAFCE0ED
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 13:52:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727717AbfJGLxZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Oct 2019 07:53:25 -0400
-Received: from v1-mobile.bet3000.exxs.net ([213.202.244.92]:35653 "EHLO
-        v1-mobile.bet3000.exxs.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727467AbfJGLxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 07:53:25 -0400
-X-Greylist: delayed 5877 seconds by postgrey-1.27 at vger.kernel.org; Mon, 07 Oct 2019 07:53:25 EDT
-Received: from crow2.exxs.net (crow2.exxs.net [176.9.71.126])
-        by v1-mobile.bet3000.exxs.net (Postfix) with ESMTP id 30D752CD2DD;
-        Mon,  7 Oct 2019 11:35:19 +0200 (CEST)
-Received: from [192.168.8.105] (unknown [41.144.71.4])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by crow2.exxs.net (Postfix) with ESMTP id 6AD523E1F504;
-        Mon,  7 Oct 2019 11:35:05 +0200 (CEST)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1727791AbfJGLwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 07:52:47 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:46688 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727467AbfJGLwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 07:52:47 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1iHRZA-0008VF-4y; Mon, 07 Oct 2019 11:52:40 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        oss-drivers@netronome.com
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] nfp: bpf: make array exp_mask static, makes object smaller
+Date:   Mon,  7 Oct 2019 12:52:39 +0100
+Message-Id: <20191007115239.1742-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Re:
-To:     Recipients <ops@exxs.net>
-From:   "Austin S. Miller" <ops@exxs.net>
-Date:   Mon, 07 Oct 2019 11:34:50 +0200
-Reply-To: austinsm1961@hotmail.com
-Message-Id: <20191007093505.6AD523E1F504@crow2.exxs.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
- 
-I am Austin S. Miller. I need your assistance
+From: Colin Ian King <colin.king@canonical.com>
 
-Thank you in advance
- 
-Sincerely,
- 
-Austin S. Miller
+Don't populate the array exp_mask on the stack but instead make it
+static. Makes the object code smaller by 224 bytes.
+
+Before:
+   text	   data	    bss	    dec	    hex	filename
+  77832	   2290	      0	  80122	  138fa	ethernet/netronome/nfp/bpf/jit.o
+
+After:
+   text	   data	    bss	    dec	    hex	filename
+  77544	   2354	      0	  79898	  1381a	ethernet/netronome/nfp/bpf/jit.o
+
+(gcc version 9.2.1, amd64)
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/netronome/nfp/bpf/jit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/netronome/nfp/bpf/jit.c b/drivers/net/ethernet/netronome/nfp/bpf/jit.c
+index 5afcb3c4c2ef..c80bb83c8ac9 100644
+--- a/drivers/net/ethernet/netronome/nfp/bpf/jit.c
++++ b/drivers/net/ethernet/netronome/nfp/bpf/jit.c
+@@ -3952,7 +3952,7 @@ static void nfp_bpf_opt_neg_add_sub(struct nfp_prog *nfp_prog)
+ static void nfp_bpf_opt_ld_mask(struct nfp_prog *nfp_prog)
+ {
+ 	struct nfp_insn_meta *meta1, *meta2;
+-	const s32 exp_mask[] = {
++	static const s32 exp_mask[] = {
+ 		[BPF_B] = 0x000000ffU,
+ 		[BPF_H] = 0x0000ffffU,
+ 		[BPF_W] = 0xffffffffU,
+-- 
+2.20.1
+
