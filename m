@@ -2,125 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B43CEA61
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:15:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA962CEA50
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:12:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728436AbfJGRPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 13:15:47 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:41979 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728031AbfJGRPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:15:47 -0400
-Received: by mail-yb1-f194.google.com with SMTP id 206so4921313ybc.8;
-        Mon, 07 Oct 2019 10:15:46 -0700 (PDT)
+        id S1729088AbfJGRMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 13:12:50 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:36732 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729034AbfJGRMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:12:49 -0400
+Received: by mail-oi1-f196.google.com with SMTP id k20so12372180oih.3
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 10:12:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0Nx7doSqP3vyMGuzBfy84px7RyjVFyVtPj4m80u5+fI=;
-        b=fpotnShtdpDup2DXvJaoGrtqQYYBSecr7fmSn4xZCy1x5vqeP+tYHPJGGNM3I1+QEs
-         Kz9yRsUrAItVCSp5XgFY8EiWRF5toWcO1WW1g78Zj+VHl9oud7+KREti4dwFMvT66ib9
-         0fvzTR9AveV/XNheaCMGxeaxdUUBNTovRCfLrkX8uuCXsSmJUFWDqu1UEvgWgb1wwRW1
-         sbbd2fby/5AA28HzuVW4uTUZUAEwohiwDxkRRZuFqfP6tUfx/rlOO2NaLwycc1tQssV0
-         gsKlMor9+KZi+4R0ClZ8Q24n2VyyD4gTOEBynNUootX/1Y3iqeK62vH1TZSCr+5XDayy
-         rliQ==
+         :cc:content-transfer-encoding;
+        bh=voxQqlXcqJ7mOo4KVvha7FaxVVFvUMitFdHwmuWnFVE=;
+        b=ylpNkZLTfv7jeQ1uzPQDjIlQb6tJXjGs1GaCB6dQH2B7VIscYPzQRG0T6AWuvQcAwX
+         UaYkok+r0Uct6mz8WKCK+drL+zFhLmfLLp0NwzSz7cb5q2uwYEArsL0/TqYuP3fg6QIE
+         lnjKbp0c96AZT4oxE9Etvd2re8yMC7bWAIymA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0Nx7doSqP3vyMGuzBfy84px7RyjVFyVtPj4m80u5+fI=;
-        b=sXeEugSYxmypgdvTjzVlaLFkGfgNiss56fptmLtBpULndgkeUaQbnwwv9JMMlZC0Gi
-         EUC8VwlLl/5W2sxN6Jhhe1Oh3bSBA72LFaQAkNxbBp006C/XigFzfXt/1DZMlQrFYeOF
-         6RkSsT5H0/+RmcERpz7X4uGq/SNTJgDg1h+gAaFkp2hP1MhZPJYQ4448Xq+s6PX3c9AR
-         b1zob9W5emK1CeesyaKlFdrSukznHHCY0GgWwRbFh/KolKVNrvzCMLzWsfgOB7Xy61ut
-         QZBpt7d+ZEOAW7WEyWVitWkTNOcy405f9pXCOIMLMnnkbN4bDv7MNhZfhdRYkQgD5gZF
-         KI1g==
-X-Gm-Message-State: APjAAAUq00wTVUA+wDRVmRfTewQAFgWm5f230GMh+pMeMwZn8r6SdvH7
-        vNPYwbLdmBTzpSR2B0xAbgpsR4lbjUeEfDLR0w==
-X-Google-Smtp-Source: APXvYqxAe6f6zBkaVphOXDXxxig/53h6NuLQA7tKjf0QoRvgjG8+bN0tffbGCZfpLCLBqAMTXYY8Sc01CmTKFXFb28k=
-X-Received: by 2002:a25:dcc6:: with SMTP id y189mr8963361ybe.9.1570468546254;
- Mon, 07 Oct 2019 10:15:46 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=voxQqlXcqJ7mOo4KVvha7FaxVVFvUMitFdHwmuWnFVE=;
+        b=NbnPEAKWBURxBAmkOFNmqFv555sfG1pMF28dgnZTdPeT8cD7JukCZVvWuUnnC5n6VX
+         y488EDlJoJB9zCvCMZfWP3H6Ruq5ceEsMJbqQbMgyx0Mpq4ryjFYQq+vO8O6W4FL/kH/
+         rNZq9VNXbU9wYNCZCdZH8mOgtlUhQovu2mh1i5Rw8Vvi59OnCmJLxQpB+/e2/w8469Jz
+         paH8hqPLlt6Jw5OGNhDLipOt6yyrARuWnsUjMBTHKFkGXxgcqrYmEfP5AZYr+8CjmfN3
+         PUzkgry1P7T3468TEgE2qr4ZtfP8TYuHpADbgCVBokf9p0xaYjRs85eEAwzyuheBXeJr
+         JSZA==
+X-Gm-Message-State: APjAAAXo6Z2hWw7FSaujNrxW57EGo2YSaVwESXXZM/9K/MF2aqXdxe+a
+        RVEW1MXQUzpEFgvq5b+4DZbPE1n+Qes9iCYLRumBSQ==
+X-Google-Smtp-Source: APXvYqxPJygoEvkl+rxpN2s9Nqb7Ree9yYY3K/Q5BCmPM8737XcrtX6MRYflZavuy2uNqaV0MkJ838fwSme1B8cSAug=
+X-Received: by 2002:aca:4f46:: with SMTP id d67mr286443oib.102.1570468368804;
+ Mon, 07 Oct 2019 10:12:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191007160635.1021-1-danieltimlee@gmail.com> <CAEf4BzYV68OubcBFZWpMvkKsHhzb3uuMQ7HcMUgYgqigog4q0g@mail.gmail.com>
-In-Reply-To: <CAEf4BzYV68OubcBFZWpMvkKsHhzb3uuMQ7HcMUgYgqigog4q0g@mail.gmail.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Tue, 8 Oct 2019 01:13:57 +0900
-Message-ID: <CAEKGpzhhTn6OTQShmg31epf_Jgmo6jrqwCs4=bd3PQ8+548dZQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6] samples: bpf: add max_pckt_size option at xdp_adjust_tail
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Song Liu <liu.song.a23@gmail.com>,
+References: <157002302448.1302756.5727756706334050763.stgit@alrua-x1>
+ <E7319D69-6450-4BC3-97B1-134B420298FF@fb.com> <A754440E-07BF-4CF4-8F15-C41179DCECEF@fb.com>
+ <87r23vq79z.fsf@toke.dk> <20191003105335.3cc65226@carbon> <CAADnVQKTbaxJhkukxXM7Ue7=kA9eWsGMpnkXc=Z8O3iWGSaO0A@mail.gmail.com>
+ <87pnjdq4pi.fsf@toke.dk> <1c9b72f9-1b61-d89a-49a4-e0b8eead853d@solarflare.com>
+ <5d964d8ccfd90_55732aec43fe05c47b@john-XPS-13-9370.notmuch>
+ <87tv8pnd9c.fsf@toke.dk> <68466316-c796-7808-6932-01d9d8c0a40b@solarflare.com>
+ <CACAyw99oUfst5LDaPZmbKNfQtM2wF8fP0rz7qMk+Qn7SMaF_vw@mail.gmail.com> <1871cacb-4a43-f906-9a9b-ba6a2ca866dd@solarflare.com>
+In-Reply-To: <1871cacb-4a43-f906-9a9b-ba6a2ca866dd@solarflare.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 7 Oct 2019 18:12:37 +0100
+Message-ID: <CACAyw98mYK3Psv61+BDcyk56PbnJf2JhdfDLsB0eD4vLJJnGYQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/9] xdp: Support multiple programs on a single
+ interface through chain calls
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Song Liu <songliubraving@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 8, 2019 at 1:41 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Mon, 7 Oct 2019 at 17:43, Edward Cree <ecree@solarflare.com> wrote:
 >
-> On Mon, Oct 7, 2019 at 9:06 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> >
-> > Currently, at xdp_adjust_tail_kern.c, MAX_PCKT_SIZE is limited
-> > to 600. To make this size flexible, static global variable
-> > 'max_pcktsz' is added.
-> >
-> > By updating new packet size from the user space, xdp_adjust_tail_kern.o
-> > will use this value as a new max packet size.
-> >
-> > This static global variable can be accesible from .data section with
-> > bpf_object__find_map* from user space, since it is considered as
-> > internal map (accessible with .bss/.data/.rodata suffix).
-> >
-> > If no '-P <MAX_PCKT_SIZE>' option is used, the size of maximum packet
-> > will be 600 as a default.
-> >
-> > Changed the way to test prog_fd, map_fd from '!= 0' to '< 0',
-> > since fd could be 0 when stdin is closed.
-> >
-> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> >
-> > ---
-> > Changes in v6:
-> >     - Remove redundant error message
-> > Changes in v5:
-> >     - Change pcktsz map to static global variable
-> > Changes in v4:
-> >     - make pckt_size no less than ICMP_TOOBIG_SIZE
-> >     - Fix code style
-> > Changes in v2:
-> >     - Change the helper to fetch map from 'bpf_map__next' to
-> >     'bpf_object__find_map_fd_by_name'.
->
->
-> This should go into commit message, that's netdev preference.
->
-> Otherwise looks good!
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
->
+> I might be being na=C3=AFve, but it doesn't sound more painful than is no=
+rmal
+>  for userland.  I mean, what operations have you got-
+> * create/destroy map (maybe, see above)
+> * load prog (pass it an fd from which it can read an ELF, and more fds
+>   for the maps it uses.  Everything else, e.g. BTFs, can just live in the
+>   ELF.)
+> * destroy prog
+> * bind prog to hook (admittedly there's a long list of hooks, but this is
+>   only to cover the XDP ones, so basically we just have to specify
+>   interface and generic/driver/hw)
+> -that doesn't seem like it presents great difficulties?
 
-Thanks for the feedback!
+Sure, but this is the simplest, not necessarily realistic use case. There
+is a reason that libbpf has the API it has. For example, we patch our
+eBPF before loading it. I'm sure there are other complications, which is
+why I prefer to keep loading my own programs.
 
-Will send the next patch with the modified commit message right away!
+> No, I'm talking about doing a linker step (using the 'full-blown calls'
+>  _within_ an eBPF program that Alexei added a few months back) before the
+>  program is submitted to the kernel.  So the BPF_CALL|BPF_PSEUDO_CALL ins=
+n
+>  gets JITed to a direct call.
 
-Thanks,
-Daniel
+Ah, I see. I'm not sure whether this restriction has been lifted, but those
+calls are incompatible with tail calls. So we wouldn't be able to use this.
 
-> >
-> >  samples/bpf/xdp_adjust_tail_kern.c |  7 +++++--
-> >  samples/bpf/xdp_adjust_tail_user.c | 29 ++++++++++++++++++++---------
-> >  2 files changed, 25 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/samples/bpf/xdp_adjust_tail_kern.c b/samples/bpf/xdp_adjust_tail_kern.c
-> > index 411fdb21f8bc..c616508befb9 100644
-> > --- a/samples/bpf/xdp_adjust_tail_kern.c
-> > +++ b/samples/bpf/xdp_adjust_tail_kern.c
-> > @@ -25,6 +25,9 @@
-> >  #define ICMP_TOOBIG_SIZE 98
-> >  #define ICMP_TOOBIG_PAYLOAD_SIZE 92
-> >
->
-> [...]
+> OK, but in that case xdpd isn't evidence that the "loader" approach doesn=
+'t
+>  work, so I still think it should be tried before we go to the lengths of
+>  pushing something into the kernel (that we then have to maintain forever=
+).
+
+Maybe this came across the wrong way, I never said it is. Merely that it's
+the status quo we'd like to move away from. If we can achieve that in
+userspace, great.
+
+Lorenz
+
+--=20
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
