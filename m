@@ -2,180 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1446CEAF0
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:47:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85285CEB1F
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:54:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729289AbfJGRrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 13:47:32 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33380 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728121AbfJGRrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:47:32 -0400
-Received: by mail-qt1-f196.google.com with SMTP id r5so20513747qtd.0;
-        Mon, 07 Oct 2019 10:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9brArzmow4+S+OwMgabAOaG8vYuIy/Dm4KOaavrwI6U=;
-        b=UcdJWd0RqmL1QOmxP3viGNDCUcWOcoJFSlVkkd6SeFWNyu/c09ziUkd0PLYin1hpux
-         lp3xlvoEOrhKBAUKGdt2szozYPZ4JWhU4wbP05YPn5OMBdIV2L8Bw6zDglLedwFmJjik
-         1A4ckaK5EdTfWPuzem2pmqdy33Uxpr9TiLkqbhLRqZGdBcfLPqZx4gZLqcE4yyW4hChd
-         LqGXno2EkN+5XDZfILuesYwKxdH7oy/g35wNlwRXKAcP6wpYmnBhnVYOCm0LHVkT2dLP
-         KK7EoS20FdPapeW0gDk6p/KqLrUVShtcWXBs/xNJxtEKDnlBA+YL0hnWTKFAttnX+D+K
-         Ieag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9brArzmow4+S+OwMgabAOaG8vYuIy/Dm4KOaavrwI6U=;
-        b=IpUNOy20Q1z1r3isZDDdRELKypacwi41XEJcXmFDkoK2ms1kl4BD1AJdxkvzFLjUh5
-         VMA+//FJc+BczAo+CiFvSNaqwwl24dyq80q9+9qgIgxar6C+tDdXmlHo4QnimgKDoL4t
-         5zv1fE9tBeGisUcO0xzlSZRcCQzuQWRDxiW4qzGb9djdprpiYibpgA4Wq+q+qmvWIluj
-         6qdyy+Cmk0qbbtn+UXbbAO4kIMZRUiIvFN3eT6Y5nYH24KN8+tuBwfRafEuFG6TUIwwJ
-         nmh+UZkKEUzJ5X+vEmOi45si6rir4FgBopvx37mx9hk7xbXNAV/JQ84EmSIz603dpbEh
-         r/Ug==
-X-Gm-Message-State: APjAAAUJ6hgDyGoFKH7og2AvpDVczXOp2FccTDc9SNpf0VETaPtNZVDp
-        Tap7qFMmOdj2zRhGLzzjn/2Xhpp4d6OpHXkKb98=
-X-Google-Smtp-Source: APXvYqx0HFGdoWbC5TIi5pACtp17u38tW2uDl6YUL2NdDJ/U4oQM7iFpHNGjq+kdlzryWPkzSnxst+xAudVMHV893qQ=
-X-Received: by 2002:ac8:c01:: with SMTP id k1mr30597139qti.59.1570470450780;
- Mon, 07 Oct 2019 10:47:30 -0700 (PDT)
+        id S1729359AbfJGRyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 13:54:06 -0400
+Received: from mail-eopbgr770107.outbound.protection.outlook.com ([40.107.77.107]:64679
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728031AbfJGRyF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 13:54:05 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QI2KEt0EO8sk2jvqTlvmCVke1+XTvaTXTO5qze6IYqXMdiMEVZQJoEEaRbgUmjQ6PJ3WtK9ZERsdhguIay4+xIoac5dQsfrf26rL8JncBZ0o3FMIX6FxxCGgkZ/0g3COejmGw4yAtU9M/LxoRNbwGyQgACQxoDh9kJN/j85zCnNgmucv2HdjQIl2+v10P8/wNDRQgo8YmNLQM3CQlIwWB6ea1FFv0uV68CTwCxPIVp+3Ko9CBDMDTJfAzfbqpUD8BRhYoqn5c9CzH1daGNtbHGZI0cqlwqu0l3Jkz4YjGrmJqOKMUxez3ATs9kShY/g2nu2wA8WcqtOjtfq9qXKxbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k67Yd9ComTsp/9U+8HFQTyGyRwGDjPa6W5Fcf8YIxck=;
+ b=TKnfxGbJ5tHaIwaSlntGen85gaFe5tRiVuJfNIlY2sU2+fESKf/Yu09w4GtPwVnCDtX5Ax4k4Z+WFnalMV9dwcWumc2wlMtF2M4x3Wd9ed0ws3Jl5idAQs9rxhMRULmY4mIkUs/19bQm5cvMvEQEWSzR640YGAcVNW5fuX2m4Kolw2cBxMeWwWFNk/2INzkByMFmWhnamQRjIjGj6GhEtRG26sr2gAH6gJTcgx5qWSehzKeOXkxO20RLoVtbxO5PSUytmd3787a3OWepGsUdbsh6UWVyB5PW8vcQLg67EOYduNFLAQdVrtgLcfXCrJk/CpgBZav3AavunZfYqVzznw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wavecomp.com; dmarc=pass action=none header.from=mips.com;
+ dkim=pass header.d=mips.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k67Yd9ComTsp/9U+8HFQTyGyRwGDjPa6W5Fcf8YIxck=;
+ b=Fw1BaNOyLMSYiKTWWSuMWQhnXUtJ5YC3jgyy8fYSTbYG9pZcKwIKIDDWf5xhLMeWjz+MC0beaDjgk7rAOacwBOfTGW/rqyCp3cJ9EEZLrwBUpDTKHYo8Gj39trkQX+/LDqgSxENS9rKDwYeEW+O0/aDTfWqgmyUWu6nZ7t+gIZE=
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.172.60.12) by
+ MWHPR2201MB1549.namprd22.prod.outlook.com (10.174.170.162) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2327.24; Mon, 7 Oct 2019 17:54:02 +0000
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::3050:9a38:9d8e:8033]) by MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::3050:9a38:9d8e:8033%5]) with mapi id 15.20.2327.025; Mon, 7 Oct 2019
+ 17:54:02 +0000
+From:   Paul Burton <paul.burton@mips.com>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+CC:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <pburton@wavecomp.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>
+Subject: Re: [PATCH v7 1/5] nvmem: core: add nvmem_device_find
+Thread-Topic: [PATCH v7 1/5] nvmem: core: add nvmem_device_find
+Thread-Index: AQHVfTg0kX/N0hhhMUmGtPbQOCMv9w==
+Date:   Mon, 7 Oct 2019 17:54:02 +0000
+Message-ID: <MWHPR2201MB12773F2193BDE76C4A5E1A74C19B0@MWHPR2201MB1277.namprd22.prod.outlook.com>
+References: <20191003095235.5158-2-tbogendoerfer@suse.de>
+In-Reply-To: <20191003095235.5158-2-tbogendoerfer@suse.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BY5PR04CA0013.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::23) To MWHPR2201MB1277.namprd22.prod.outlook.com
+ (2603:10b6:301:18::12)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=pburton@wavecomp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [12.94.197.246]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c995cd37-6b11-4d2d-c9fd-08d74b4f567b
+x-ms-traffictypediagnostic: MWHPR2201MB1549:
+x-ms-exchange-purlcount: 1
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR2201MB154984C25D295B1CE1B464E6C19B0@MWHPR2201MB1549.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 01834E39B7
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(346002)(396003)(366004)(39840400004)(189003)(199004)(52116002)(99286004)(476003)(7736002)(305945005)(54906003)(76176011)(25786009)(486006)(33656002)(42882007)(478600001)(2906002)(11346002)(446003)(52536014)(5660300002)(6246003)(7696005)(4744005)(71200400001)(71190400001)(66066001)(316002)(14454004)(229853002)(7416002)(102836004)(9686003)(81156014)(6436002)(81166006)(6116002)(55016002)(74316002)(3846002)(44832011)(4326008)(8676002)(186003)(6916009)(26005)(966005)(386003)(8936002)(6506007)(6306002)(66946007)(66556008)(64756008)(66446008)(66476007)(256004);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR2201MB1549;H:MWHPR2201MB1277.namprd22.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: wavecomp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: CZ7UIjHVFdHwAshDA9YdnVkvufhhc58mNYEhYlHxkGRAY80iwmpDl55Ep3hH46wi5qjE/4C+N2a1hjpHXCFrxcV0NvMIiIW1mXeshqy7fG9l590Juo979W6oTBKU04hVboqJmfbieGA4CcCkAXYotyhl5TSG2JqZOrVnCpLoFCsRFCJRfh0YrZeStX0L9tufM82ILx50Xx1QBQ6KxWMAwWyRbI3cknFNN698ZbNwrpufbV6mxbB1tfADjD9ycloDVjqe8YFr7Vz8FJEcKYp6ceuhgrrpiPYfP1p7wF3m0Zi0f6Dm02oShuV8g40JwOOH2jQVqmxBEIg61ip9gqbPib+TNkIoXYsRnF+Y1C+U4Jnr4jiR7SqKqlhpuIb00rQeHXU8ibJGG3MzdNUfK33M+cQS2o7aolrAN521XET8qh4Q7ruxBY6zbatMBLARwrxNSWg33OClobtPDbd229hkMw==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20191007030738.2627420-1-andriin@fb.com> <20191007030738.2627420-2-andriin@fb.com>
- <20191007094346.GC27307@pc-66.home>
-In-Reply-To: <20191007094346.GC27307@pc-66.home>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Oct 2019 10:47:19 -0700
-Message-ID: <CAEf4BzZDKkxtMGwnn+Zam58sYwS33EDuw3hrUTexmC9o7Xnj1w@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 1/3] uapi/bpf: fix helper docs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: mips.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c995cd37-6b11-4d2d-c9fd-08d74b4f567b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2019 17:54:02.5855
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rw3ZTW//Wxh6L1PlbNc2H5Xzh3WG/O++AFpzeiUw6Ct3UWuI2/f9/+QSi7A5CwUA08VQ/PoH4f2rn6PqqtmXUw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1549
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 7, 2019 at 2:43 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On Sun, Oct 06, 2019 at 08:07:36PM -0700, Andrii Nakryiko wrote:
-> > Various small fixes to BPF helper documentation comments, enabling
-> > automatic header generation with a list of BPF helpers.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  include/uapi/linux/bpf.h       | 32 ++++++++++++++++----------------
-> >  tools/include/uapi/linux/bpf.h | 32 ++++++++++++++++----------------
-> >  2 files changed, 32 insertions(+), 32 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 77c6be96d676..a65c3b0c6935 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -794,7 +794,7 @@ union bpf_attr {
-> >   *           A 64-bit integer containing the current GID and UID, and
-> >   *           created as such: *current_gid* **<< 32 \|** *current_uid*.
->
-> Overall, I do like the approach that we keep generating the BPF helpers header
-> file from this documentation as it really enforces that the signatures here
-> must be 100% correct, and given this also lands in the man page it is /always/
-> in sync.
->
-> > - * int bpf_get_current_comm(char *buf, u32 size_of_buf)
-> > + * int bpf_get_current_comm(void *buf, u32 size_of_buf)
->
-> You did not elaborate why this needs to change from char * to void *. What is
-> the reason? Those rules should probably be documented somewhere, otherwise
-> people might keep adding them.
+Hello,
 
-So here and below for __u8*, compiler is much more strict about
-**exact** type of pointer passed by program into helpers. E.g, in one
-selftest, we had struct like this
+Thomas Bogendoerfer wrote:
+> nvmem_device_find provides a way to search for nvmem devices with
+> the help of a match function simlair to bus_find_device.
 
-struct s {
-    char a[16];
-};
+Applied to mips-next.
 
-struct s = {};
-bpf_get_current_comm(&s.a);
+> commit 8c2a2b8c2ff6
+> https://git.kernel.org/mips/c/8c2a2b8c2ff6
+>=20
+> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> Signed-off-by: Paul Burton <paul.burton@mips.com>
 
-and compiler was complaining that program passes char (*)[16] (pointer
-to an array) instead of char *. So instead of forcing all the correct
-program to do extra casts, I think it's better to stick to void * for
-all the "pointer to a chunk of memory" use cases. With void *,
-usability is much better.
+Thanks,
+    Paul
 
->
-> >   *   Description
-> >   *           Copy the **comm** attribute of the current task into *buf* of
-> >   *           *size_of_buf*. The **comm** attribute contains the name of
-> > @@ -1023,7 +1023,7 @@ union bpf_attr {
-> >   *           The realm of the route for the packet associated to *skb*, or 0
-> >   *           if none was found.
-> >   *
-> > - * int bpf_perf_event_output(struct pt_regs *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
-> > + * int bpf_perf_event_output(void *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
->
-> This one here is because we have multiple program types with different input context.
-
-Yes.
-
->
-> >   *   Description
-> >   *           Write raw *data* blob into a special BPF perf event held by
-> >   *           *map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This perf
-> > @@ -1068,7 +1068,7 @@ union bpf_attr {
-> >   *   Return
-> >   *           0 on success, or a negative error in case of failure.
-> >   *
-> > - * int bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to, u32 len)
-> > + * int bpf_skb_load_bytes(const void *skb, u32 offset, void *to, u32 len)
->
-> Changing from struct sk_buff * to void * here, again due to struct sk_reuseport_kern *?
-
-Yep.
-
->
-> I'm wondering whether it would simply be much better to always just use 'void *ctx'
-> for everything that is BPF context as it may be just confusing to people why different
-> types are chosen sometimes leading to buggy drive-by attempts to 'fix' them back into
-> struct sk_buff * et al.
-
-I'm impartial on this issue. In some cases it might be helpful to
-specify what is the expected type of the context, if it's only ever
-one type, but there are lots of helpers that accept various contexts,
-so for consistency its better to just have "void *context".
-
->
-> >   *   Description
-> >   *           This helper was provided as an easy way to load data from a
-> >   *           packet. It can be used to load *len* bytes from *offset* from
-> > @@ -1085,7 +1085,7 @@ union bpf_attr {
-> >   *   Return
-> >   *           0 on success, or a negative error in case of failure.
-> >   *
-> > - * int bpf_get_stackid(struct pt_regs *ctx, struct bpf_map *map, u64 flags)
-> > + * int bpf_get_stackid(void *ctx, struct bpf_map *map, u64 flags)
-> >   *   Description
-> >   *           Walk a user or a kernel stack and return its id. To achieve
-> >   *           this, the helper needs *ctx*, which is a pointer to the context
-> > @@ -1154,7 +1154,7 @@ union bpf_attr {
-> >   *           The checksum result, or a negative error code in case of
-> >   *           failure.
-> >   *
-> > - * int bpf_skb_get_tunnel_opt(struct sk_buff *skb, u8 *opt, u32 size)
-> > + * int bpf_skb_get_tunnel_opt(struct sk_buff *skb, void *opt, u32 size)
->
-> Same here and in more places in this patch, why u8 * -> void * and the like?
-
-See above, making compiler less picky about pointer to a memory buffer.
-
->
-> >   *   Description
-> >   *           Retrieve tunnel options metadata for the packet associated to
-> >   *           *skb*, and store the raw tunnel option data to the buffer *opt*
-> [...]
+[ This message was auto-generated; if you believe anything is incorrect
+  then please email paul.burton@mips.com to report it. ]
