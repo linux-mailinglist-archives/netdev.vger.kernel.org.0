@@ -2,73 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EB7ACDFE7
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 13:09:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDC0CCE01F
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 13:22:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727502AbfJGLJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 07:09:41 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44881 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727317AbfJGLJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 07:09:41 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1iHQtU-0005Nj-0p; Mon, 07 Oct 2019 11:09:36 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Peng Li <lipeng321@huawei.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hns3: make array tick_array static, makes object smaller
-Date:   Mon,  7 Oct 2019 12:09:35 +0100
-Message-Id: <20191007110935.32607-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727604AbfJGLWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 07:22:24 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48368 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727394AbfJGLWY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 07:22:24 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id ABC753086228;
+        Mon,  7 Oct 2019 11:22:22 +0000 (UTC)
+Received: from bistromath.localdomain (ovpn-116-43.ams2.redhat.com [10.36.116.43])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7275360606;
+        Mon,  7 Oct 2019 11:22:17 +0000 (UTC)
+Date:   Mon, 7 Oct 2019 13:22:15 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, jakub.kicinski@netronome.com,
+        johannes@sipsolutions.net, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, jiri@resnulli.us, roopa@cumulusnetworks.com,
+        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
+        kys@microsoft.com, haiyangz@microsoft.com,
+        stephen@networkplumber.org, sashal@kernel.org, hare@suse.de,
+        varun@chelsio.com, ubraun@linux.ibm.com, kgraul@linux.ibm.com,
+        jay.vosburgh@canonical.com, schuffelen@google.com, bjorn@mork.no
+Subject: Re: [PATCH net v4 12/12] virt_wifi: fix refcnt leak in module exit
+ routine
+Message-ID: <20191007112215.GA1288400@bistromath.localdomain>
+References: <20190928164843.31800-1-ap420073@gmail.com>
+ <20190928164843.31800-13-ap420073@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190928164843.31800-13-ap420073@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Mon, 07 Oct 2019 11:22:23 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+2019-09-28, 16:48:43 +0000, Taehee Yoo wrote:
+> virt_wifi_newlink() calls netdev_upper_dev_link() and it internally
+> holds reference count of lower interface.
+> 
+> Current code does not release a reference count of the lower interface
+> when the lower interface is being deleted.
+> So, reference count leaks occur.
+> 
+> Test commands:
+>     ip link add dummy0 type dummy
+>     ip link add vw1 link dummy0 type virt_wifi
 
-Don't populate the array tick_array on the stack but instead make it
-static. Makes the object code smaller by 29 bytes.
+There should also be "ip link del dummy0" in this reproducer, right?
 
-Before:
-   text	   data	    bss	    dec	    hex	filename
-  19191	    432	      0	  19623	   4ca7	hisilicon/hns3/hns3pf/hclge_tm.o
+[...]
 
-After:
-   text	   data	    bss	    dec	    hex	filename
-  19098	    496	      0	  19594	   4c8a	hisilicon/hns3/hns3pf/hclge_tm.o
+> @@ -598,14 +634,24 @@ static int __init virt_wifi_init_module(void)
+>  	/* Guaranteed to be locallly-administered and not multicast. */
+>  	eth_random_addr(fake_router_bssid);
+>  
+> +	err = register_netdevice_notifier(&virt_wifi_notifier);
+> +	if (err)
+> +		return err;
+> +
 
-(gcc version 9.2.1, amd64)
+Here err is 0.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  	common_wiphy = virt_wifi_make_wiphy();
+>  	if (!common_wiphy)
+> -		return -ENOMEM;
+> +		goto notifier;
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index 9f0e35f27789..5cce9b7f1d3d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -46,7 +46,7 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
- #define DIVISOR_CLK		(1000 * 8)
- #define DIVISOR_IR_B_126	(126 * DIVISOR_CLK)
- 
--	const u16 tick_array[HCLGE_SHAPER_LVL_CNT] = {
-+	static const u16 tick_array[HCLGE_SHAPER_LVL_CNT] = {
- 		6 * 256,        /* Prioriy level */
- 		6 * 32,         /* Prioriy group level */
- 		6 * 8,          /* Port level */
+err is still 0 when we jump...
+
+>  	err = rtnl_link_register(&virt_wifi_link_ops);
+>  	if (err)
+> -		virt_wifi_destroy_wiphy(common_wiphy);
+> +		goto destroy_wiphy;
+>  
+> +	return 0;
+> +
+> +destroy_wiphy:
+> +	virt_wifi_destroy_wiphy(common_wiphy);
+> +notifier:
+> +	unregister_netdevice_notifier(&virt_wifi_notifier);
+>  	return err;
+>  }
+
+... so now we return 0 on failure. Can you add an "err = -ENOMEM"
+before "common_wiphy = ..."?
+
+Thanks.
+
 -- 
-2.20.1
-
+Sabrina
