@@ -2,165 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4DFCE499
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:04:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EE9CE4AD
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727838AbfJGOEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 10:04:14 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:35845 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727685AbfJGOEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:04:14 -0400
-Received: by mail-lj1-f196.google.com with SMTP id v24so13811791ljj.3;
-        Mon, 07 Oct 2019 07:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7sEOczYia3KOKHGEcMhkwGMtTevaZ3R4NRuGCoRYvdA=;
-        b=cKyDL7ABIR1BUZNmXm35gwM0xfdn5S4tvmbrFqSfzpRqMBMrRRJmldvuXRH2OIH5KR
-         7Wa5BdkX7uuiZJqDi17puIjACYQqO+BBV6Y/E9ctsbau6M3XPSMGP1unSpNVGwn6ROgC
-         C8/dcdwkbN2TMvoGO8ZJQQJGMh4SHRfosL7+Eu7GHng0xmHIiH+t1vOaON1lyWLL/cl3
-         E94i1Q8IN2C0+TX6it6guD6PaUgVkVrxLcQlzx5EhPREY2QlKnGaS7fYMfR9BUBNlhtk
-         Mh4y+7Y0qMDe6c+LWH8CL3QGZAqq9lV4L29fSuCD5veS/RtX3WzQLh7w+cm/dxqDpLSa
-         4Weg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7sEOczYia3KOKHGEcMhkwGMtTevaZ3R4NRuGCoRYvdA=;
-        b=bQBoNPDmFUJ1urepwQ16FrrcIIxgzfvQaNIkDv7VD35QXHoA7j/uDczg1SwLzGpOJk
-         N/nHRz9KPc6KuSMY25IT5AVSCXnXy9yjT16hnDoqOZWaigkCX7zo2q7xLNArQnjw61fg
-         DCxcpxSkmMAKRk2Kpj0/1ipTs+cfaGm/6moqKTmQd6m9sw7+7gv2JGfLAPJuI7JkUBMI
-         XgT9QWZAGVKv7F5X8GIOEvOC6WzWgw7Sq9qrw54l1zCrKn0TnYDFvu2Hd0qiK3TYKf9W
-         Z3Csmhz6tGJ5PJ9jQskf6MWfdRoGamr7jNh8zbZrCRjg22YC3X9c5zrncP72lJGa1Cta
-         ZZTw==
-X-Gm-Message-State: APjAAAULrP+mr3evoXoFAzvdxPG7WbUcfMdlFOYaA2j8QOi2AX9diIBC
-        orA0pW0e8qhHFA+5TPaxdLMdrCoxWB3jsB2W9P8tUQ==
-X-Google-Smtp-Source: APXvYqz9rauiSGXNFl9949c8WXsIKrXSSJ2p9Te0Emowvi+R4IoeeF0Fnh2b41vtw5Od7As9Ba6IikYV7IL9gHnaNt4=
-X-Received: by 2002:a2e:8ed2:: with SMTP id e18mr9988415ljl.180.1570457049844;
- Mon, 07 Oct 2019 07:04:09 -0700 (PDT)
+        id S1728222AbfJGOHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 10:07:39 -0400
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:17496 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727324AbfJGOHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:07:39 -0400
+Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x97E65HN008406;
+        Mon, 7 Oct 2019 16:07:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=STMicroelectronics;
+ bh=dUDvGL9/tLfF861YG+N5fHoN3xp+ryFxh/p5hYpUGqw=;
+ b=PpeUf25nys3+H52f/E1VXJDb7CXWsqs/XWjVWCryNs3MzJpmU6KdMvvhVDJxI4ZOfuuN
+ UNcHlEUCG2mpktU9oHYswT4KSlxCtXaXLXj+I18GqfHeW8KY5gf6F6k+XCnMCm7/cUUe
+ 48kZPPa8C1fWRJoCFPBg85WzDR8Xd6FlCQxm10efBDbSU1cI+xRUXKur1tBV1nLuuL/l
+ Y9N03z2bYQI0etZMy7dvMJLQDD6DGQ53ISavA0xaLNxmujbSbSE62uYDRSU7Yzr4qX5r
+ XkW6TmBapXm787Jf0zfrqW8djEl/MN8rEeJioSUhUPkH57G8Eh+tTgjqAThapFjOYWXb KQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2vegxvjpep-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Oct 2019 16:07:19 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 92009100038;
+        Mon,  7 Oct 2019 16:07:18 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 72D1B2C9064;
+        Mon,  7 Oct 2019 16:07:18 +0200 (CEST)
+Received: from lmecxl0912.lme.st.com (10.75.127.51) by SFHDAG3NODE2.st.com
+ (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon, 7 Oct
+ 2019 16:07:17 +0200
+Subject: Re: [PATCH 2/3] dt-bindings: net: adi: Fix yaml verification issue
+To:     Rob Herring <robh+dt@kernel.org>
+CC:     Maxime Ripard <mripard@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Alexandru Ardelean <alexaundru.ardelean@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20191007102552.19808-1-alexandre.torgue@st.com>
+ <20191007102552.19808-3-alexandre.torgue@st.com>
+ <CAL_JsqKFUTwjJefQvQE5aFmeJButYSLKm0RSpCHjSL=7pQHtxQ@mail.gmail.com>
+From:   Alexandre Torgue <alexandre.torgue@st.com>
+Message-ID: <01041a6b-7c70-bebd-d04b-9e47ce238e5e@st.com>
+Date:   Mon, 7 Oct 2019 16:07:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20191006184515.23048-1-jcfaracco@gmail.com> <20191006184515.23048-3-jcfaracco@gmail.com>
- <20191007034402-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20191007034402-mutt-send-email-mst@kernel.org>
-From:   Julio Faracco <jcfaracco@gmail.com>
-Date:   Mon, 7 Oct 2019 11:03:58 -0300
-Message-ID: <CAENf94L+KNJgq1V6kgcwnT0hyTZMDX5Jh6kYRCaeMHDU4GGHCg@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 2/2] drivers: net: virtio_net: Add tx_timeout function
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        davem@davemloft.net, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, Daiane Mendes <dnmendes76@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAL_JsqKFUTwjJefQvQE5aFmeJButYSLKm0RSpCHjSL=7pQHtxQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG8NODE3.st.com (10.75.127.24) To SFHDAG3NODE2.st.com
+ (10.75.127.8)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-07_02:2019-10-07,2019-10-07 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em seg, 7 de out de 2019 =C3=A0s 04:51, Michael S. Tsirkin <mst@redhat.com>=
- escreveu:
->
-> On Sun, Oct 06, 2019 at 03:45:15PM -0300, jcfaracco@gmail.com wrote:
-> > From: Julio Faracco <jcfaracco@gmail.com>
-> >
-> > To enable dev_watchdog, virtio_net should have a tx_timeout defined
-> > (.ndo_tx_timeout). This is only a skeleton to throw a warn message. It
-> > notifies the event in some specific queue of device. This function
-> > still counts tx_timeout statistic and consider this event as an error
-> > (one error per queue), reporting it.
-> >
-> > Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
-> > Signed-off-by: Daiane Mendes <dnmendes76@gmail.com>
-> > Cc: Jason Wang <jasowang@redhat.com>
-> > ---
-> >  drivers/net/virtio_net.c | 27 +++++++++++++++++++++++++++
-> >  1 file changed, 27 insertions(+)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 27f9b212c9f5..4b703b4b9441 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -2585,6 +2585,29 @@ static int virtnet_set_features(struct net_devic=
-e *dev,
-> >       return 0;
-> >  }
-> >
-> > +static void virtnet_tx_timeout(struct net_device *dev)
-> > +{
-> > +     struct virtnet_info *vi =3D netdev_priv(dev);
-> > +     u32 i;
-> > +
-> > +     /* find the stopped queue the same way dev_watchdog() does */
->
-> not really - the watchdog actually looks at trans_start.
+Hi Rob
 
-The comments are wrong. It is the negative logic from dev_watchdog.
-Watchdog requires queue stopped AND timeout.
+On 10/7/19 3:56 PM, Rob Herring wrote:
+> On Mon, Oct 7, 2019 at 5:26 AM Alexandre Torgue <alexandre.torgue@st.com> wrote:
+>>
+>> This commit fixes an issue seen during yaml check ("make dt_binding_check").
+>> Each enum were not declared as uint32.
+>>
+>> "Documentation/devicetree/bindings/net/adi,adin.yaml:
+>> properties:adi,rx-internal-delay-ps:
+>> ..., 'enum': [1600, 1800, 2000, 2200, 2400], 'default': 2000}
+>> is not valid under any of the given schemas"
+> 
+> You need to update dtschema. I fixed this in the meta-schema last
+> week. Any property with a standard property unit suffix has a defined
+> type already, so we don't need to define it again here.
+> 
+> I also added '-bits' to standard units.
 
-If the queue is not stopped, this queue does not reached a timeout event.
-So, continue... Do not report a timeout.
+Nice, I'm going to update my tools.
 
->
-> > +     for (i =3D 0; i < vi->curr_queue_pairs; i++) {
-> > +             struct send_queue *sq =3D &vi->sq[i];
-> > +
-> > +             if (!netif_xmit_stopped(netdev_get_tx_queue(dev, i)))
-> > +                     continue;
-> > +
-> > +             u64_stats_update_begin(&sq->stats.syncp);
-> > +             sq->stats.tx_timeouts++;
-> > +             u64_stats_update_end(&sq->stats.syncp);
-> > +
-> > +             netdev_warn(dev, "TX timeout on send queue: %d, sq: %s, v=
-q: %d, name: %s\n",
-> > +                         i, sq->name, sq->vq->index, sq->vq->name);
->
-> this seems to assume any running queue is timed out.
-> doesn't look right.
->
-> also - there's already a warning in this case in the core. do we need ano=
-ther one?
+thanks
+Alex
 
-Here, it can be a debug message if the idea is enhance debugging informatio=
-n.
-Other enhancements can be done to enable or disable debug messages.
-Using ethtool methods for instance.
-
->
-> > +             dev->stats.tx_errors++;
->
->
->
-> > +     }
-> > +}
-> > +
-> >  static const struct net_device_ops virtnet_netdev =3D {
-> >       .ndo_open            =3D virtnet_open,
-> >       .ndo_stop            =3D virtnet_close,
-> > @@ -2600,6 +2623,7 @@ static const struct net_device_ops virtnet_netdev=
- =3D {
-> >       .ndo_features_check     =3D passthru_features_check,
-> >       .ndo_get_phys_port_name =3D virtnet_get_phys_port_name,
-> >       .ndo_set_features       =3D virtnet_set_features,
-> > +     .ndo_tx_timeout         =3D virtnet_tx_timeout,
-> >  };
-> >
-> >  static void virtnet_config_changed_work(struct work_struct *work)
-> > @@ -3018,6 +3042,9 @@ static int virtnet_probe(struct virtio_device *vd=
-ev)
-> >       dev->netdev_ops =3D &virtnet_netdev;
-> >       dev->features =3D NETIF_F_HIGHDMA;
-> >
-> > +     /* Set up dev_watchdog cycle. */
-> > +     dev->watchdog_timeo =3D 5 * HZ;
-> > +
->
-> Seems to be still broken with napi_tx =3D false.
->
-> >       dev->ethtool_ops =3D &virtnet_ethtool_ops;
-> >       SET_NETDEV_DEV(dev, &vdev->dev);
-> >
-> > --
-> > 2.21.0
+> 
+> Rob
+> 
