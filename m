@@ -2,123 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D14EACDE5F
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 11:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A1B2CDE85
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 11:56:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727448AbfJGJnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 05:43:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36202 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727278AbfJGJnv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 05:43:51 -0400
-Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iHPYR-0004PX-5O; Mon, 07 Oct 2019 11:43:47 +0200
-Date:   Mon, 7 Oct 2019 11:43:46 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        quentin.monnet@netronome.com, andrii.nakryiko@gmail.com,
-        kernel-team@fb.com
-Subject: Re: [PATCH v4 bpf-next 1/3] uapi/bpf: fix helper docs
-Message-ID: <20191007094346.GC27307@pc-66.home>
-References: <20191007030738.2627420-1-andriin@fb.com>
- <20191007030738.2627420-2-andriin@fb.com>
+        id S1727327AbfJGJ42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 05:56:28 -0400
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:41259 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726010AbfJGJ42 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 05:56:28 -0400
+Received: by mail-wr1-f52.google.com with SMTP id q9so14476217wrm.8
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 02:56:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lrJbbVinyzS4tJSnvulsdUzjYBv7CtHU6r3nHxlQjY0=;
+        b=tUPCFi9IsRt68oqGyTEivLWyBZKuvQWOrK90jAh3KHJrDJQavtiOYxVsMIKJqFV2p1
+         caUqF9Oj2zmE2Ptdoz87cHQSlcgKr/8302uyK6iZE2QxT3wd3exrmhlE2KMKNrGTVb1h
+         QVx3PwjuT7XTpTcT66F1ia1L7BOsY+Q5AbrrT/OtUBJVU/j+p9qlLFX1MM4Xf8NKImN1
+         NDclcFFp0btTWv74G9Q9JfbRrjiDAZnvbkDneEMeSKKaplYCS+gmQb26vcfviPBx6rwD
+         /Bu5F+zypd79DF1ZhQnSQPwa9GOo5xkQMndw72ncjIGcymfI62ucgBcK70a//4DolFNG
+         OI/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lrJbbVinyzS4tJSnvulsdUzjYBv7CtHU6r3nHxlQjY0=;
+        b=Z0LIAiWasiSWclju1SrIgJXPQOg++Tl6DeEcgcKYL0bVh8DVOOjc1au7n6xmPouzJS
+         Gpug1OTXwEr5yHYn7rwQAWLIEDFBP55f3RVId+Ekh6yta9mCEXc/mED55KN1aVkvzP7p
+         i9RVW0SWDxbMExQdQLV4hjCyQkeesSr73dDD+FdU0IeIz3by2jqmLYHl+yd+Gr5w8Aov
+         agXVgi7xx9AAcOwl9iRwhsAzSnqDK4x6bkjIkDH76r32UL4+vzMcNUcY8s/OcNXtVZBW
+         YWgPfvPw7lbMzY2voRzkhj2h/M8NwvIT+9uUX38ZF6GwywicNVz6J9WbFeVIKRCux7er
+         8x8g==
+X-Gm-Message-State: APjAAAWzy5Zt/k2/3KSsSKzLlx3brDR9Trpe2ISTOHBGtL3Yrc+eb+YK
+        myF+n3BCcXS1ATtr0IL0yUeeyA==
+X-Google-Smtp-Source: APXvYqwTOGRjQFTyuUUtB48lRkEbk8WpBYaThIEsF/Im/42GOPoGTXRgwfHUtcwzaydclc1HaZ02Qg==
+X-Received: by 2002:a5d:4f0b:: with SMTP id c11mr21643226wru.63.1570442184635;
+        Mon, 07 Oct 2019 02:56:24 -0700 (PDT)
+Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
+        by smtp.gmail.com with ESMTPSA id q19sm40350444wra.89.2019.10.07.02.56.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Oct 2019 02:56:24 -0700 (PDT)
+Date:   Mon, 7 Oct 2019 11:56:23 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        vasundhara-v.volam@broadcom.com, ray.jui@broadcom.com,
+        Jiri Pirko <jiri@mellanox.com>, ayal@mellanox.com,
+        moshe@mellanox.com
+Subject: Re: [PATCH net-next v2 14/22] bnxt_en: Add new FW
+ devlink_health_reporter
+Message-ID: <20191007095623.GA2326@nanopsycho>
+References: <1567137305-5853-1-git-send-email-michael.chan@broadcom.com>
+ <1567137305-5853-15-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191007030738.2627420-2-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25595/Mon Oct  7 10:28:44 2019)
+In-Reply-To: <1567137305-5853-15-git-send-email-michael.chan@broadcom.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 06, 2019 at 08:07:36PM -0700, Andrii Nakryiko wrote:
-> Various small fixes to BPF helper documentation comments, enabling
-> automatic header generation with a list of BPF helpers.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  include/uapi/linux/bpf.h       | 32 ++++++++++++++++----------------
->  tools/include/uapi/linux/bpf.h | 32 ++++++++++++++++----------------
->  2 files changed, 32 insertions(+), 32 deletions(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 77c6be96d676..a65c3b0c6935 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -794,7 +794,7 @@ union bpf_attr {
->   * 		A 64-bit integer containing the current GID and UID, and
->   * 		created as such: *current_gid* **<< 32 \|** *current_uid*.
+Fri, Aug 30, 2019 at 05:54:57AM CEST, michael.chan@broadcom.com wrote:
+>From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+>
+>Create new FW devlink_health_reporter, to know the current health
+>status of FW.
+>
+>Command example and output:
+>$ devlink health show pci/0000:af:00.0 reporter fw
+>
+>pci/0000:af:00.0:
+>  name fw
+>    state healthy error 0 recover 0
+>
+> FW status: Healthy; Reset count: 1
 
-Overall, I do like the approach that we keep generating the BPF helpers header
-file from this documentation as it really enforces that the signatures here
-must be 100% correct, and given this also lands in the man page it is /always/
-in sync.
+I'm puzzled how did you get this output, since you put "FW status" into
+"diagnose" callback fmsg and that is called upon "devlink health diagnose".
 
-> - * int bpf_get_current_comm(char *buf, u32 size_of_buf)
-> + * int bpf_get_current_comm(void *buf, u32 size_of_buf)
+[...]
 
-You did not elaborate why this needs to change from char * to void *. What is
-the reason? Those rules should probably be documented somewhere, otherwise
-people might keep adding them.
 
->   * 	Description
->   * 		Copy the **comm** attribute of the current task into *buf* of
->   * 		*size_of_buf*. The **comm** attribute contains the name of
-> @@ -1023,7 +1023,7 @@ union bpf_attr {
->   * 		The realm of the route for the packet associated to *skb*, or 0
->   * 		if none was found.
->   *
-> - * int bpf_perf_event_output(struct pt_regs *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
-> + * int bpf_perf_event_output(void *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
+>+static int bnxt_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
+>+				     struct devlink_fmsg *fmsg)
+>+{
+>+	struct bnxt *bp = devlink_health_reporter_priv(reporter);
+>+	struct bnxt_fw_health *health = bp->fw_health;
+>+	u32 val, health_status;
+>+	int rc;
+>+
+>+	if (!health || test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
+>+		return 0;
+>+
+>+	val = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
+>+	health_status = val & 0xffff;
+>+
+>+	if (health_status == BNXT_FW_STATUS_HEALTHY) {
+>+		rc = devlink_fmsg_string_pair_put(fmsg, "FW status",
+>+						  "Healthy;");
 
-This one here is because we have multiple program types with different input context.
+First of all, the ";" is just wrong. You should put plain string if
+anything. You are trying to format user output here. Don't do that
+please.
 
->   * 	Description
->   * 		Write raw *data* blob into a special BPF perf event held by
->   * 		*map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This perf
-> @@ -1068,7 +1068,7 @@ union bpf_attr {
->   * 	Return
->   * 		0 on success, or a negative error in case of failure.
->   *
-> - * int bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to, u32 len)
-> + * int bpf_skb_load_bytes(const void *skb, u32 offset, void *to, u32 len)
+Please see json output:
+$ devlink health show pci/0000:af:00.0 reporter fw -j -p
 
-Changing from struct sk_buff * to void * here, again due to struct sk_reuseport_kern *?
+Please remove ";" from the strings.
 
-I'm wondering whether it would simply be much better to always just use 'void *ctx'
-for everything that is BPF context as it may be just confusing to people why different
-types are chosen sometimes leading to buggy drive-by attempts to 'fix' them back into
-struct sk_buff * et al.
 
->   * 	Description
->   * 		This helper was provided as an easy way to load data from a
->   * 		packet. It can be used to load *len* bytes from *offset* from
-> @@ -1085,7 +1085,7 @@ union bpf_attr {
->   * 	Return
->   * 		0 on success, or a negative error in case of failure.
->   *
-> - * int bpf_get_stackid(struct pt_regs *ctx, struct bpf_map *map, u64 flags)
-> + * int bpf_get_stackid(void *ctx, struct bpf_map *map, u64 flags)
->   * 	Description
->   * 		Walk a user or a kernel stack and return its id. To achieve
->   * 		this, the helper needs *ctx*, which is a pointer to the context
-> @@ -1154,7 +1154,7 @@ union bpf_attr {
->   * 		The checksum result, or a negative error code in case of
->   * 		failure.
->   *
-> - * int bpf_skb_get_tunnel_opt(struct sk_buff *skb, u8 *opt, u32 size)
-> + * int bpf_skb_get_tunnel_opt(struct sk_buff *skb, void *opt, u32 size)
+Second, I do not understand why you need this "FW status" at all. The
+reporter itself has state healthy/error:
+pci/0000:af:00.0:
+  name fw
+    state healthy error 0 recover 0
+          ^^^^^^^
 
-Same here and in more places in this patch, why u8 * -> void * and the like?
+"FW" is redundant of course as the reporter name is "fw".
 
->   * 	Description
->   * 		Retrieve tunnel options metadata for the packet associated to
->   * 		*skb*, and store the raw tunnel option data to the buffer *opt*
+Please remove "FW status" and replace with some pair indicating the
+actual error state.
+
+In mlx5 they call it "Description".
+
+
+>+		if (rc)
+>+			return rc;
+>+	} else if (health_status < BNXT_FW_STATUS_HEALTHY) {
+>+		rc = devlink_fmsg_string_pair_put(fmsg, "FW status",
+>+						  "Not yet completed initialization;");
+>+		if (rc)
+>+			return rc;
+>+	} else if (health_status > BNXT_FW_STATUS_HEALTHY) {
+>+		rc = devlink_fmsg_string_pair_put(fmsg, "FW status",
+>+						  "Encountered fatal error and cannot recover;");
+>+		if (rc)
+>+			return rc;
+>+	}
+>+
+>+	if (val >> 16) {
+>+		rc = devlink_fmsg_u32_pair_put(fmsg, "Error", val >> 16);
+
+Perhaps rather call this "Error code"?
+
+
+>+		if (rc)
+>+			return rc;
+>+	}
+>+
+>+	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
+>+	rc = devlink_fmsg_u32_pair_put(fmsg, "Reset count", val);
+
+What is this counter counting? Number of recoveries?
+If so, that is also already counted internally by devlink.
+
 [...]
