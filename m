@@ -2,109 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BBFCEA01
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9321CEA04
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728081AbfJGRBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 13:01:38 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:53998 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbfJGRBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:01:38 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x97GnWaQ038139;
-        Mon, 7 Oct 2019 17:01:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2019-08-05;
- bh=J37BsPBVXyz3hzyC4XHgrvBJ2wSxJAc823dvyPMeA40=;
- b=k1G+xzjJdubboDDZm4lNB8Hx1x8JKbgN7LfSoRcdedsK8rree6KK4/ddtJyEGgq9xJxq
- vRJVL4SfZdPcUUt/SOIr8BlzBHTP2Z+75VYb8mzbMJ+nh0yugYeNVfQf14Qi3gsYki+q
- 0oWcXB6NgO/iss89bxfqV1QGn0JKGKoBqhX5Ey3PTzS+b/GqGagMHVUkTnIDYZ2/9BXl
- fD/kdf8AYkVx65ZoWwcrhrNjROPZo4Ni+avZPLvN9SGJfv65+M+Ta/m+Pk/F8UY4h08Z
- 3t0PsK8gaG+ng1Gsae0fVfePib8D6v4E0R7pP1Ecg1rWzQxXjZvpAxBx3YO7x3lpTbnb 4g== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2vektr7xsn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 07 Oct 2019 17:01:22 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x97Gn5QW126833;
-        Mon, 7 Oct 2019 17:01:22 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2vf4n9nuwj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 07 Oct 2019 17:01:22 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x97H1L5K021779;
-        Mon, 7 Oct 2019 17:01:21 GMT
-Received: from dhcp-10-175-213-187.vpn.oracle.com (/10.175.213.187)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 07 Oct 2019 10:01:20 -0700
-Date:   Mon, 7 Oct 2019 18:01:10 +0100 (BST)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@dhcp-10-175-161-159.vpn.oracle.com
-To:     Andrii Nakryiko <andriin@fb.com>
-cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix dependency ordering for
- attach_probe test
-In-Reply-To: <20191007033037.2687437-1-andriin@fb.com>
-Message-ID: <alpine.LRH.2.20.1910071800480.21931@dhcp-10-175-161-159.vpn.oracle.com>
-References: <20191007033037.2687437-1-andriin@fb.com>
-User-Agent: Alpine 2.20 (LRH 67 2015-01-07)
+        id S1728519AbfJGRCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 13:02:22 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:35144 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727801AbfJGRCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:02:21 -0400
+Received: by mail-io1-f66.google.com with SMTP id q10so30267308iop.2;
+        Mon, 07 Oct 2019 10:02:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6A4rIUjcqGcThTcraJEF4GgxX4VhVAP8ORGNSx+WSeU=;
+        b=t8xl8m3dFqfl+nwGVBAgaXTXzMY7VAwFh7x79Jii2SiVGz8cM78abhKWq81YL4zJYC
+         Wo0hSD3B9QLLzEcwcpvTjO3VEHCYatyO2sl3a6SCvXi1vgTdAbzVIMQRdoKaRjuRWUS6
+         R9l1baAxytuK7awtgDHx0x9A735It9GgDptGwPIFHEJ3DAe807vfCjgu87HUA4nrhrUj
+         hlNsqonHVjgh0NCHpFMt9FfVOM6OuUr3rFjc3Rv/tM8mzhGTFs/L5YCxLHok5cID/1vf
+         xf/cFmgU1mdMo60rk4GHGxvvRYaC80bPMIODCgB5P4ofd3lf03gYGUW6MTBS9gIE4QF5
+         zyxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6A4rIUjcqGcThTcraJEF4GgxX4VhVAP8ORGNSx+WSeU=;
+        b=J0wV3ilZawKQccMDIfH3C56K9UGq+C910wtQPXCJ894mA+Dl8/1h3g6L7OlmL4TT9y
+         ckfnyBr1i6/tItxSfcdyqTUPNgpw4VHkwZDiK8pfPdVtrhd8Bq/yyJz2IWDqlrMpY8Ja
+         pgwG8JcfOk6RaqJjT4lIxF7jVXfp9Rx3s1LjBGxEKYGUN1jZu9K3kCp2NVWVki3ofIld
+         H/6ICqWeMKAKXRC1K1HlsyjQV8UovOl/qT2E0EgCvFkWmtnQL7w9fJ6Zof/nkk95ve0B
+         FrVw1arvKsBjAD8An+MUYEoZ3UHy/6/n+euV+VXnxFQWUggNKSAr3xrSoOWdmrKuk/W5
+         CsRg==
+X-Gm-Message-State: APjAAAVAnMotx1XcC8//2X2d+0eZl0wgE9iGt9A+ze/hXH5Ln2hxMM3a
+        yJ7MFLz9jDSN6SVG/XchyWZ2kLDmPJgfh8v63U5hrAjnvN4=
+X-Google-Smtp-Source: APXvYqzaH0lC5Ph8t3EsceUcseVjaditLHPO0o8A2nTOuouDjJdA5idRDEfF8wwdJbG6iixWv+/WD1T0PaCVR5bZXBU=
+X-Received: by 2002:a92:6a0c:: with SMTP id f12mr29492215ilc.64.1570467739448;
+ Mon, 07 Oct 2019 10:02:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9403 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910070157
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9403 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=3 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910070157
+References: <1570208647.1250.55.camel@oc5348122405> <20191004233052.28865.1609.stgit@localhost.localdomain>
+ <1570241926.10511.7.camel@oc5348122405> <CAKgT0Ud7SupVd3RQmTEJ8e0fixiptS-1wFg+8V4EqpHEuAC3wQ@mail.gmail.com>
+ <1570463459.1510.5.camel@oc5348122405>
+In-Reply-To: <1570463459.1510.5.camel@oc5348122405>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 7 Oct 2019 10:02:03 -0700
+Message-ID: <CAKgT0Ue6+JJqcoFO1AcP8GCShmMPiUm1SNkbq9BxxWA-b5=Oow@mail.gmail.com>
+Subject: Re: [RFC PATCH] e1000e: Use rtnl_lock to prevent race conditions
+ between net and pci/pm
+To:     "David Z. Dai" <zdai@linux.vnet.ibm.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>, zdai@us.ibm.com,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 6 Oct 2019, Andrii Nakryiko wrote:
+On Mon, Oct 7, 2019 at 8:51 AM David Z. Dai <zdai@linux.vnet.ibm.com> wrote:
+>
 
-> Current Makefile dependency chain is not strict enough and allows
-> test_attach_probe.o to be built before test_progs's
-> prog_test/attach_probe.o is built, which leads to assembler compainig
-> about missing included binary.
-> 
-> This patch is a minimal fix to fix this issue by enforcing that
-> test_attach_probe.o (BPF object file) is built before
-> prog_tests/attach_probe.c is attempted to be compiled.
-> 
-> Fixes: 928ca75e59d7 ("selftests/bpf: switch tests to new bpf_object__open_{file, mem}() APIs")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+<snip>
 
-Reviewed-by: Alan Maguire <alan.maguire@oracle.com>
+> We have tested on one of the test box.
+> With this patch, it doesn't crash kernel anymore, which is good!
+>
+> However we see this warning message from the log file for irq number 0:
+> [10206.317270] Trying to free already-free IRQ 0
+>
+> With this stack:
+> [10206.317344] NIP [c00000000018cbf8] __free_irq+0x308/0x370
+> [10206.317346] LR [c00000000018cbf4] __free_irq+0x304/0x370
+> [10206.317347] Call Trace:
+> [10206.317348] [c00000008b92b970] [c00000000018cbf4] __free_irq
+> +0x304/0x370 (unreliable)
+> [10206.317351] [c00000008b92ba00] [c00000000018cd84] free_irq+0x84/0xf0
+> [10206.317358] [c00000008b92ba30] [d000000007449e60] e1000_free_irq
+> +0x98/0xc0 [e1000e]
+> [10206.317365] [c00000008b92ba60] [d000000007458a70] e1000e_pm_freeze
+> +0xb8/0x100 [e1000e]
+> [10206.317372] [c00000008b92baa0] [d000000007458b6c]
+> e1000_io_error_detected+0x34/0x70 [e1000e]
+> [10206.317375] [c00000008b92bad0] [c000000000040358] eeh_report_failure
+> +0xc8/0x190
+> [10206.317377] [c00000008b92bb20] [c00000000003eb2c] eeh_pe_dev_traverse
+> +0x9c/0x170
+> [10206.317379] [c00000008b92bbb0] [c000000000040d84]
+> eeh_handle_normal_event+0xe4/0x580
+> [10206.317382] [c00000008b92bc60] [c000000000041330] eeh_handle_event
+> +0x30/0x340
+> [10206.317384] [c00000008b92bd10] [c000000000041780] eeh_event_handler
+> +0x140/0x200
+> [10206.317386] [c00000008b92bdc0] [c0000000001397c8] kthread+0x1a8/0x1b0
+> [10206.317389] [c00000008b92be30] [c00000000000b560]
+> ret_from_kernel_thread+0x5c/0x7c
+>
+> Thanks! - David
 
-> ---
->  tools/testing/selftests/bpf/Makefile | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 294d7472dad7..f899ed20ef4d 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -160,7 +160,8 @@ $(OUTPUT)/test_queue_map.o: test_queue_stack_map.h
->  $(OUTPUT)/test_stack_map.o: test_queue_stack_map.h
->  
->  $(OUTPUT)/flow_dissector_load.o: flow_dissector_load.h
-> -$(OUTPUT)/test_progs.o: flow_dissector_load.h $(OUTPUT)/test_attach_probe.o
-> +prog_tests/attach_probe.c: $(OUTPUT)/test_attach_probe.o
-> +$(OUTPUT)/test_progs.o: flow_dissector_load.h
->  
->  BTF_LLC_PROBE := $(shell $(LLC) -march=bpf -mattr=help 2>&1 | grep dwarfris)
->  BTF_PAHOLE_PROBE := $(shell $(BTF_PAHOLE) --help 2>&1 | grep BTF)
-> -- 
-> 2.17.1
-> 
-> 
+Hmm. I wonder if it is possibly calling the report
+e1000_io_error_detected multiple times. If so then the secondary calls
+to e1000_pm_freeze would cause issues.
+
+I will add a check so that we only down the interface and free the
+IRQs if the interface is in the present and running state.
+
+I'll submit an update patch shortly.
+
+Thanks.
+
+- Alex
