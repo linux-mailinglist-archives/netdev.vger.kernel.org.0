@@ -2,120 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7B9DCEF27
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 00:42:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 902F5CEF28
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 00:43:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729252AbfJGWmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 18:42:31 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:40005 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728654AbfJGWmb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 18:42:31 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46nFq871TRz9sPT;
-        Tue,  8 Oct 2019 09:42:28 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1570488149;
-        bh=t1+QL3NVj1xEg9Hc5TIAtTlFoQW7X/JWQPEMb3/QOac=;
-        h=Date:From:To:Cc:Subject:From;
-        b=EyeN0p85cgnBuFiDJtN2P3nFz0eRTOBUCTi1HnCx9p/NtPUyQOthHQTP3leGw6LuD
-         kDaA8zDv3pbxozTW08qSw3J+EqSqCGBvfdm93x99raTVh/j0ey789r1Roqlb5RdDPq
-         YTs3UcYZxt+Vn000Rg76r0/Q9gELvs9c9ayN6aTs09J8ihVx4nXOMuqk0h0n+qq8Iu
-         eKycxtgUlk/LnUjcNc042QOlQ+WJ/Dhqa5mFk//RUKG8DD3yDiI3+pAjccAybyOV9D
-         0GhohJ0WobOuA5izBl4yiAaAedPi/FjR+ejkzNu1l1lvuvlc8CxClTihDHDl6L5R5k
-         lVX1dDv14iqpA==
-Date:   Tue, 8 Oct 2019 09:42:21 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20191008094221.62d84587@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Xj_X7JA3EV9XdyAej7t7QRR";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S1729506AbfJGWnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 18:43:06 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:45863 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728654AbfJGWnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 18:43:05 -0400
+Received: by mail-pf1-f202.google.com with SMTP id a2so12171854pfo.12
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 15:43:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=DeUZvese4H7E5K4XrV0ImObRPffWCArXuIFX6+Cv1PE=;
+        b=GAH9JpOx9u65MwLIn1mUG2Lg0ntMwQfL+/XVtXU9uAVfEb/NoEL1RJZKUqnGPjCeVx
+         nAtu4U+86TCVx9/0Mft+dqUUjIVkocSvgIxOgiNB2+kmnIqgQfAfeZHoA/5BZ18JwmIk
+         3gNeMWile9S3SToshmtURfgXQVnhQ0mpTGo9el71b37yd+J6eZXL4o20HwC9I0xY6DLi
+         WrhrDv4k1ynt6CEobuI2Ybfo3FrpMYYSmoGmUS9RLxZkOw2ekq8rBwBga0VhMl/3xsnB
+         LyauuOj4PucNAepcBAYk1g1IV2FyaGIZxpzAfstQix4gm1rA1mfo4UH3DgTWcObP4/Ww
+         IsPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=DeUZvese4H7E5K4XrV0ImObRPffWCArXuIFX6+Cv1PE=;
+        b=tVHecs0bXRr5Gsq1RN0yXdKk2dpQIRHjt59KfMwjD4oIPiqV/k6Su660S48mNoDvP5
+         JI7YY1uX13Ggj9dCKKFt88lDEDCGEyBAT7BlavMOZPad4mbz4sIkMLHTVPsf1JkbrLeQ
+         uPoVdSzFco8yrSVl/hUnAxwNR6czGe9t/2Tt9AHN1bZ1CdhJv2bxb9TB2GhLtc6v79Nb
+         /TcRMvDaErgE59PcCQ3KGkmQ9E3ZXbdb2fE8b906u53ZfjpOjZ+Hz7uDp+sLtpNgZzAv
+         o80IfFFSb5shbpdFh8F5PLndRYSnKcv20Ntfi9zIUcO+wHQ9n7S4r3OH35TZd/iO8zow
+         jFoA==
+X-Gm-Message-State: APjAAAVhvvp1sjniNBMa5he3NoUdkXdwj6yAn5qvHN713gzqXuxaW3J4
+        R7tD+3+jnjrU86eDb5lArB3xn9iC1CREeQ==
+X-Google-Smtp-Source: APXvYqz3UulfxHJMpmgYrR0k/azCvEgesODxVfXGF9Db5+Eleu/zK4PYdcv38GN5uWK+ocqcm/66x4/1UNs/6Q==
+X-Received: by 2002:a65:4549:: with SMTP id x9mr32345440pgr.170.1570488184787;
+ Mon, 07 Oct 2019 15:43:04 -0700 (PDT)
+Date:   Mon,  7 Oct 2019 15:43:01 -0700
+Message-Id: <20191007224301.218272-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+Subject: [PATCH net] bonding: fix potential NULL deref in bond_update_slave_arr
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Mahesh Bandewar <maheshb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Xj_X7JA3EV9XdyAej7t7QRR
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+syzbot got a NULL dereference in bond_update_slave_arr() [1],
+happening after a failure to allocate bond->slave_arr
 
-Hi all,
+A workqueue (bond_slave_arr_handler) is supposed to retry
+the allocation later, but if the slave is removed before
+the workqueue had a chance to complete, bond->slave_err
+can still be NULL.
 
-After merging the net-next tree, today's linux-next build (x86_64
-allmodconfig) produced this warning:
+[1]
 
+Failed to build slave-array.
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] SMP KASAN PTI
+Modules linked in:
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:bond_update_slave_arr.cold+0xc6/0x198 drivers/net/bonding/bond_main.c:4039
+RSP: 0018:ffff88018fe33678 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000290b000
+RDX: 0000000000000000 RSI: ffffffff82b63037 RDI: ffff88019745ea20
+RBP: ffff88018fe33760 R08: ffff880170754280 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88019745ea00 R14: 0000000000000000 R15: ffff88018fe338b0
+FS:  00007febd837d700(0000) GS:ffff8801dad00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004540a0 CR3: 00000001c242e005 CR4: 00000000001626f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ [<ffffffff82b5b45e>] __bond_release_one+0x43e/0x500 drivers/net/bonding/bond_main.c:1923
+ [<ffffffff82b5b966>] bond_release drivers/net/bonding/bond_main.c:2039 [inline]
+ [<ffffffff82b5b966>] bond_do_ioctl+0x416/0x870 drivers/net/bonding/bond_main.c:3562
+ [<ffffffff83ae25f4>] dev_ifsioc+0x6f4/0x940 net/core/dev_ioctl.c:328
+ [<ffffffff83ae2e58>] dev_ioctl+0x1b8/0xc70 net/core/dev_ioctl.c:495
+ [<ffffffff83995ffd>] sock_do_ioctl+0x1bd/0x300 net/socket.c:1088
+ [<ffffffff83996a80>] sock_ioctl+0x300/0x5d0 net/socket.c:1196
+ [<ffffffff81b124db>] vfs_ioctl fs/ioctl.c:47 [inline]
+ [<ffffffff81b124db>] file_ioctl fs/ioctl.c:501 [inline]
+ [<ffffffff81b124db>] do_vfs_ioctl+0xacb/0x1300 fs/ioctl.c:688
+ [<ffffffff81b12dc6>] SYSC_ioctl fs/ioctl.c:705 [inline]
+ [<ffffffff81b12dc6>] SyS_ioctl+0xb6/0xe0 fs/ioctl.c:696
+ [<ffffffff8101ccc8>] do_syscall_64+0x528/0x770 arch/x86/entry/common.c:305
+ [<ffffffff84400091>] entry_SYSCALL_64_after_hwframe+0x42/0xb7
 
-Introduced by commit
-
-  033b2c7f0f26 ("rxrpc: Add missing "new peer" trace")
-
-interacting with commit
-
-  55f6c98e3674 ("rxrpc: Fix trace-after-put looking at the put peer record")
-
-from the net tree.
-
-I have applied the following merge fix patch.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 8 Oct 2019 09:37:50 +1100
-Subject: [PATCH] rxrpc: fix up for "rxrpc: Fix trace-after-put looking at t=
-he
- put peer record"
-
-interacting with commit
-
-  033b2c7f0f26 ("rxrpc: Add missing "new peer" trace")
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Mahesh Bandewar <maheshb@google.com>
 ---
- net/rxrpc/peer_object.c | 2 +-
+ drivers/net/bonding/bond_main.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index a7f1a2cdd198..452163eadb98 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -231,7 +231,7 @@ struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local =
-*local, gfp_t gfp)
- 			peer->cong_cwnd =3D 3;
- 		else
- 			peer->cong_cwnd =3D 4;
--		trace_rxrpc_peer(peer, rxrpc_peer_new, 1, here);
-+		trace_rxrpc_peer(peer->debug_id, rxrpc_peer_new, 1, here);
- 	}
-=20
- 	_leave(" =3D %p", peer);
---=20
-2.23.0.rc1
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 931d9d9356869b400c1b653414164a3e5ecb0b51..21d8fcc83c9ce958b6e9cb4c6f499ed9ef53f4d5 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4039,7 +4039,7 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
+ 		 * this to-be-skipped slave to send a packet out.
+ 		 */
+ 		old_arr = rtnl_dereference(bond->slave_arr);
+-		for (idx = 0; idx < old_arr->count; idx++) {
++		for (idx = 0; old_arr != NULL && idx < old_arr->count; idx++) {
+ 			if (skipslave == old_arr->arr[idx]) {
+ 				old_arr->arr[idx] =
+ 				    old_arr->arr[old_arr->count-1];
+-- 
+2.23.0.581.g78d2f28ef7-goog
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Xj_X7JA3EV9XdyAej7t7QRR
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl2bv00ACgkQAVBC80lX
-0Gw2zAf/W7h8UKvXttU794iCM0slur9fhK6ToIThd4CmP7wvbjIa3q9JO3NOi+VQ
-MU72DirzJ7mDVrOeJb+8NNagX48Njh+QYt20rHLEjBhNyvpvWweqaGoAXhwMIW5v
-H9osNyDGhwsbVabWa3h1Qnh+ZNJbyDbq3vPFNVFW/BiPvGeffqHKgaYYnWQCRenR
-FcLx8jS2133KzYpVwv7eWiXeMy6liLxjw7sIcvFWI7hrXMzBoUtmYIP1nwJsd0Xt
-Qslm+bsqppTl/fMTikJG/MGNu/bTLxhbj+qoCqGKnMdvh9k5JSNLy7k7JJsJyFyY
-eu/GylQPO5wfY4V4Hj21M7vxomX3zg==
-=83Rl
------END PGP SIGNATURE-----
-
---Sig_/Xj_X7JA3EV9XdyAej7t7QRR--
