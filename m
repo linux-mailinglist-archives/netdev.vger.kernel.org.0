@@ -2,172 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 482A5CE74E
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 17:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF476CE76A
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 17:27:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728264AbfJGPW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 11:22:56 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:51516 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727745AbfJGPW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 11:22:56 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id CA0B0C020B;
-        Mon,  7 Oct 2019 15:22:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1570461775; bh=zJBaBqkAq1Pv2LsRNBMG+vGbLR7GF3SkroEzJ98OAAk=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=KAeeKAyrQ/OavvYiDGzFtMD053upFig2wgkfysvWxjNaNMPzM8Icp/H4mERRBlO8r
-         rE9a0ui5lUqgHkUJEU8MAttuojFxQyNyuL0hj5AxfzPbABrIRqCaVLUK21XKPE3eKJ
-         DntCsewIgmAvtFePNZVZatINXsL9i/XBsXKnxdvLV5cPhDnfAkLCjupJYJlyZHJb4R
-         Mgz80jYPS1DDBEDNyUh7+14TA3rcQRDUd5GVvWJ0JIE9tDaEfgwtwCGq/5xmPOSDJU
-         rK/6GMR7PqDbpcoMiSJmeRKJBB2yUj0hh/ASOFj+BflKQFYCMhHuVM5S++UCswtzEH
-         +pDafgVSg8zWQ==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id EB1B0A006F;
-        Mon,  7 Oct 2019 15:22:53 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 7 Oct 2019 08:22:53 -0700
-Received: from NAM03-DM3-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Mon, 7 Oct 2019 08:22:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nkL/4EytKAfmFNrJbXa/dmYM4kjfnKfTMcCeTFV+FCfnGpZjPTKxSPpQtWP3AFYvHceXOElLCqoPvu7BsmQKWJryC/JoFg2CdH0NlacCpBJ8i6FRaAKjR2hyix+4DcNYdi67DIoUoizHJsl8HvRj8m8qWq97m4n3zkQqA4tEVmisUmP1bd2ZnvGPy15JHUOncRyVn4eCfN5m2qzDxIIe8unMMQ/Qs9JK0bs24mxC6joHZmRNwdE1YIZkUmYArpjzjbuZ2BsfU+9OWEhEl+zV2DKbJ/KY5KTs/xcRLUZThKR4rv8JBAvKrGoCUsKBNXndvxN57oLMcOSWYYuMoOveLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EfZskFUUBJ2mYJjg3KVbv5mMkBsE3CDTmVK5AHcvqx8=;
- b=hF53hieRmk0qIrLZVGf4CivELyjjSmL7kmFBSzUxhw4U405nX9jKMJ/0cWhg6drcvR5ngMCiHiQBIcXfdY1tQ8I+zWLTYSqMBtKZktTnE3b5soQOlCe95t4Jj8sVkXiKkvFIi3xrmrxAdktg+fitXl2XR/f1WLnWG7XUVhBKvNDj25vbFLwZqbgQreyN6HphWf2yR3wu7t8m3pnM0SPFQOIg8nmPl60tQEjDol/QVRE4c32Hy8dm6ZRx5N8s/LFHtGlUMHcxJ9cSlW5ON/HxwBvcXbo3rxPKroXiQSNOinSDgq3Vn6DDGudBuPPJ2ZMBPUZgzZcJeN7Ekm8arF766g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
+        id S1728641AbfJGP1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 11:27:15 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40795 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727970AbfJGP1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 11:27:14 -0400
+Received: by mail-pf1-f193.google.com with SMTP id x127so8871985pfb.7
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 08:27:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EfZskFUUBJ2mYJjg3KVbv5mMkBsE3CDTmVK5AHcvqx8=;
- b=fBtF/NHGkuQmHc/dT/NoArlReAmEmtivro6WuqKV1mIuCsRwNlukRSIhhC1YXhSTlg0IZdmdnEBXmZm6H8l6PgkYv92yytMdiYr6nfniXNKxJHDyv6gPhs80Q+q03RihqY36dz43qvNf/L1mCw2xw9jICrBAmABeY5xz4r/U/2I=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3297.namprd12.prod.outlook.com (20.179.65.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.24; Mon, 7 Oct 2019 15:22:50 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f431:f811:a1f9:b011]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f431:f811:a1f9:b011%3]) with mapi id 15.20.2327.025; Mon, 7 Oct 2019
- 15:22:50 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     David Miller <davem@davemloft.net>,
-        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] net: stmmac: Fix sparse warning
-Thread-Topic: [PATCH net-next] net: stmmac: Fix sparse warning
-Thread-Index: AQHVfRFyosdZXcdd1kO+/UasDUBusKdPOOkAgAASA6A=
-Date:   Mon, 7 Oct 2019 15:22:50 +0000
-Message-ID: <BN8PR12MB32660C9CE9B4F96517313E6BD39B0@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <b59904022c2f96aca956aa693040faf0dddeb802.1570454078.git.Jose.Abreu@synopsys.com>
- <20191007.161426.108032588372697075.davem@davemloft.net>
-In-Reply-To: <20191007.161426.108032588372697075.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 420e59dd-5743-4d44-4e95-08d74b3a376f
-x-ms-traffictypediagnostic: BN8PR12MB3297:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB32976CADC7792D711D1531E7D39B0@BN8PR12MB3297.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 01834E39B7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(396003)(39860400002)(366004)(346002)(199004)(189003)(6506007)(256004)(86362001)(14444005)(5660300002)(7696005)(71200400001)(66476007)(52536014)(66556008)(66446008)(66946007)(71190400001)(64756008)(229853002)(8676002)(76116006)(6436002)(6246003)(99286004)(55016002)(9686003)(76176011)(478600001)(14454004)(74316002)(476003)(26005)(66066001)(6636002)(316002)(110136005)(486006)(4326008)(81156014)(7736002)(8936002)(102836004)(11346002)(446003)(305945005)(186003)(54906003)(2906002)(81166006)(25786009)(6116002)(3846002)(33656002)(2501003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3297;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /uMP3CNUEbRcxbi316KXzfaSGdQ6qkv0e5oFx6JAhhHqv24TQLV583NZhKbKKKdZbKLzSm57H6GhU/m/mIDev/Z05cE1TmL7zHn/4EKo3+uYdh/URT4DqJEsyHl4XxcJK8hnBX+XuNiJT1SRidf/JSQymO0q3Xuew3KnOHpNX9+1YRcgQIGuQS3exL3jXzpPf+/PrIxZ2JcNtGqW1PsjvJAWW0Bq1gHJDXP4UOW2H/NwI1ECoQAnLoIDXhd6QHnN4mCJBYV2yqsDaxE6EllgQmeRAvnzgE9zxCdfklzr4DAZwFtlu8NCfmz+5SOdx3JGlvMw48z+bvyEkCsgtXTsxhHMchvxfxxwe+e17j4SwAoD5BYjyxcBEhzbVdHSR3qcFXPVMEcn/UEcIHnfZHLLSODP/UiRG/Mp44k8aswndbA=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=i7kGbGc2suN20OG7NxpXcj3YwXvFtg4ljyGOOGxKoRM=;
+        b=sBmKhVCcdi2z9cibVkTM9wSpCFHOj3kxh6BDo/O3zNbi9OkiHRtdSA3toEn71ZOVyR
+         IvxdpuIAoAsdeYIdnyOgC5o7neCeHUe9uenr8L+FfQKd9CKxj4nTYjjsOSma3ei1MleH
+         HOHIQgR6kt8JCQsb1RaS8C0zm4zbi0LwLF82I5bZ7KZ9wXDGV+vloilyQws559KdLwGG
+         fV1K0BHbMd0vdRTsBYEWsGGS+77IpRYB8xvSnhLq38a0q8iJstOUY8ofigD7XlsNPQBI
+         hgBWthZ49NkgUdEpJy1IADRajJRXCgIf/GUlASvA/1nTvn7ZumSnm8jrR6JSkiYslj5C
+         cPDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=i7kGbGc2suN20OG7NxpXcj3YwXvFtg4ljyGOOGxKoRM=;
+        b=l5uxDUUAhxj9HMgFTsl9NToHbUjIp0V7c1c7w75RARJOxWPJ0mKXXY+Sv3zdXDQ0D1
+         SbbaGb2lOWVuKhMFiXp4ilVteiLJGBTSll68WjQnPFkIeup5xHskniYO6s984bdsf0lJ
+         gvGEWimbzl8ZlyXKmmgWairG8aPtAknKfsSYzO0FUWHzpqZ9xunjszhnmo9CXsoSCE6M
+         wSRjx3oQ6eGPIfDZX8UMh2x9GckMpyLbO9BY9pwCjScDQvoA0/8upOUU8//6IVEFT6Gu
+         +t3dDpb+mKD/2fiYNxp3riOj19UoUkrqqoytWL6TVog1Fl0jmxa9+/4VFp3blc7MjbNn
+         Atpg==
+X-Gm-Message-State: APjAAAVSGewTrrvPoxXXb7ZWzM7vqjXi83fzekHcXh5KdSoBXSWwfZkn
+        RCW9WzkJ3224RvKxOcA7THJ1eg==
+X-Google-Smtp-Source: APXvYqzrmF+iwSPglJBqNfjhIRaA1MnhT5dX5t2mAgaEzZKEJRMxS5LbZ1O58w1z4HL1m5jl7ydj2w==
+X-Received: by 2002:a63:8bc1:: with SMTP id j184mr31170488pge.144.1570462033045;
+        Mon, 07 Oct 2019 08:27:13 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id s73sm13193496pjb.15.2019.10.07.08.27.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Oct 2019 08:27:12 -0700 (PDT)
+Date:   Mon, 7 Oct 2019 08:27:11 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Petar Penkov <ppenkov@google.com>
+Subject: Re: [PATCH bpf-next v2 1/2] bpf/flow_dissector: add mode to enforce
+ global BPF flow dissector
+Message-ID: <20191007152711.GA2096@mini-arch>
+References: <20191004155615.95469-1-sdf@google.com>
+ <20191004155615.95469-2-sdf@google.com>
+ <CAEf4BzYVGYsYZn7EVfSSy0UCx6B_w4hk2y6O6cP3qqbJYi8Pzw@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 420e59dd-5743-4d44-4e95-08d74b3a376f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2019 15:22:50.5492
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ct0h8My16hHxZwzxhz8dL+3Nly8L+00Ll814WGBtAwWzC/IxXRTY8X+7lidj0elTCqN0LdZK9mgJXlGTTvc5aQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3297
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYVGYsYZn7EVfSSy0UCx6B_w4hk2y6O6cP3qqbJYi8Pzw@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net>
-Date: Oct/07/2019, 15:14:26 (UTC+00:00)
-
-> From: Jose Abreu <Jose.Abreu@synopsys.com>
-> Date: Mon,  7 Oct 2019 15:16:08 +0200
->=20
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/driver=
-s/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > index 8b76745a7ec4..40b0756f3a14 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > @@ -4207,6 +4207,7 @@ static u32 stmmac_vid_crc32_le(__le16 vid_le)
-> >  static int stmmac_vlan_update(struct stmmac_priv *priv, bool is_double=
-)
+On 10/05, Andrii Nakryiko wrote:
+> On Fri, Oct 4, 2019 at 8:58 AM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > Always use init_net flow dissector BPF program if it's attached and fall
+> > back to the per-net namespace one. Also, deny installing new programs if
+> > there is already one attached to the root namespace.
+> > Users can still detach their BPF programs, but can't attach any
+> > new ones (-EEXIST).
+> >
+> > Cc: Petar Penkov <ppenkov@google.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> 
+> Looks good, but see my note below. Regardless:
+> 
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> 
+> >  Documentation/bpf/prog_flow_dissector.rst |  3 ++
+> >  net/core/flow_dissector.c                 | 42 ++++++++++++++++++++---
+> >  2 files changed, 41 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/Documentation/bpf/prog_flow_dissector.rst b/Documentation/bpf/prog_flow_dissector.rst
+> > index a78bf036cadd..4d86780ab0f1 100644
+> > --- a/Documentation/bpf/prog_flow_dissector.rst
+> > +++ b/Documentation/bpf/prog_flow_dissector.rst
+> > @@ -142,3 +142,6 @@ BPF flow dissector doesn't support exporting all the metadata that in-kernel
+> >  C-based implementation can export. Notable example is single VLAN (802.1Q)
+> >  and double VLAN (802.1AD) tags. Please refer to the ``struct bpf_flow_keys``
+> >  for a set of information that's currently can be exported from the BPF context.
+> > +
+> > +When BPF flow dissector is attached to the root network namespace (machine-wide
+> > +policy), users can't override it in their child network namespaces.
+> > diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+> > index 7c09d87d3269..9821e730fc70 100644
+> > --- a/net/core/flow_dissector.c
+> > +++ b/net/core/flow_dissector.c
+> > @@ -114,19 +114,50 @@ int skb_flow_dissector_bpf_prog_attach(const union bpf_attr *attr,
 > >  {
-> >  	u32 crc, hash =3D 0;
-> > +	__le16 pmatch =3D 0;
-> >  	int count =3D 0;
-> >  	u16 vid =3D 0;
-> > =20
-> > @@ -4221,11 +4222,11 @@ static int stmmac_vlan_update(struct stmmac_pri=
-v *priv, bool is_double)
-> >  		if (count > 2) /* VID =3D 0 always passes filter */
-> >  			return -EOPNOTSUPP;
-> > =20
-> > -		vid =3D cpu_to_le16(vid);
-> > +		pmatch =3D cpu_to_le16(vid);
-> >  		hash =3D 0;
-> >  	}
-> > =20
-> > -	return stmmac_update_vlan_hash(priv, priv->hw, hash, vid, is_double);
-> > +	return stmmac_update_vlan_hash(priv, priv->hw, hash, pmatch, is_doubl=
-e);
+> >         struct bpf_prog *attached;
+> >         struct net *net;
+> > +       int ret = 0;
+> >
+> >         net = current->nsproxy->net_ns;
+> >         mutex_lock(&flow_dissector_mutex);
+> > +
+> > +       if (net == &init_net) {
+> > +               /* BPF flow dissector in the root namespace overrides
+> > +                * any per-net-namespace one. When attaching to root,
+> > +                * make sure we don't have any BPF program attached
+> > +                * to the non-root namespaces.
+> > +                */
+> > +               struct net *ns;
+> > +
+> > +               for_each_net(ns) {
+> > +                       if (net == &init_net)
+> > +                               continue;
+> 
+> You don't need this condition, if something is attached to init_net,
+> you will return -EEXIST anyway. Or is this a performance optimization?
+Ah, I agree, will remove an respin.
+
+> > +
+> > +                       if (rcu_access_pointer(ns->flow_dissector_prog)) {
+> > +                               ret = -EEXIST;
+> > +                               goto out;
+> > +                       }
+> > +               }
+> > +       } else {
+> > +               /* Make sure root flow dissector is not attached
+> > +                * when attaching to the non-root namespace.
+> > +                */
+> > +
+> 
+> nit: extra empty line
+Thx, will fix.
+
+> > +               if (rcu_access_pointer(init_net.flow_dissector_prog)) {
+> > +                       ret = -EEXIST;
+> > +                       goto out;
+> > +               }
+> > +       }
+> > +
+> >         attached = rcu_dereference_protected(net->flow_dissector_prog,
+> >                                              lockdep_is_held(&flow_dissector_mutex));
+> >         if (attached) {
+> >                 /* Only one BPF program can be attached at a time */
+> > -               mutex_unlock(&flow_dissector_mutex);
+> > -               return -EEXIST;
+> > +               ret = -EEXIST;
+> > +               goto out;
+> >         }
+> >         rcu_assign_pointer(net->flow_dissector_prog, prog);
+> > +out:
+> >         mutex_unlock(&flow_dissector_mutex);
+> > -       return 0;
+> > +       return ret;
 > >  }
->=20
-> I dunno about this.
->=20
-> The original code would use the last "vid" iterated over in the
-> for_each_set_bit() loop if the priv->dma_cap.vlhash test does not
-> pass.
->=20
-> Now, it will use zero in that case.
->=20
-> This does not look like an equivalent transformation.
-
-It is intended behavior. HW specific callbacks:=20
-dwmac4_update_vlan_hash() / dwxgmac2_update_vlan_hash(), will either use=20
-Hash method or Perfect method so if priv->dma_cap.vlhash is not=20
-available then pmatch will be last vid. Otherwise, it will be zero and=20
-hash will be populated.
-
----
-Thanks,
-Jose Miguel Abreu
+> >
+> >  int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
+> > @@ -910,7 +941,10 @@ bool __skb_flow_dissect(const struct net *net,
+> >         WARN_ON_ONCE(!net);
+> >         if (net) {
+> >                 rcu_read_lock();
+> > -               attached = rcu_dereference(net->flow_dissector_prog);
+> > +               attached = rcu_dereference(init_net.flow_dissector_prog);
+> > +
+> > +               if (!attached)
+> > +                       attached = rcu_dereference(net->flow_dissector_prog);
+> >
+> >                 if (attached) {
+> >                         struct bpf_flow_keys flow_keys;
+> > --
+> > 2.23.0.581.g78d2f28ef7-goog
+> >
