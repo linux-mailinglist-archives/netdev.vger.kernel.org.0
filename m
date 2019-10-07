@@ -2,267 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 045DECEC44
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 20:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B3ECEC45
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 20:59:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbfJGS6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 14:58:25 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:36106 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728071AbfJGS6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 14:58:25 -0400
-Received: by mail-io1-f68.google.com with SMTP id b136so31030684iof.3;
-        Mon, 07 Oct 2019 11:58:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=HNfy0c9jaNnckiijPmAbgaw+sSGuMd+2WSHAvDEnKnc=;
-        b=TYVtgtG4PaiilFsfZ135jqvNDewOHox7RopB6JN42sRUEHk+0dDIucd0pMc6OkRj/Y
-         JmN9MkfDzJaxnx4yMQSyHW56Q3oCT8BVdNjx4jH3qF0NT8uIN9JkfFDDrQ3TbNRzCq4p
-         Ie8/38Jon4XPnWVp5ANwe0y0Ri15UPtQuC/f8IVH85B4vnE2tWh/Vi9RGDuOJKmRKH5c
-         JKebQzl+4dbYPt75SkSgVf4BaoEH9RrurabGgsMDoxTw9lCNZQBv571K6e123ee7pgnE
-         gTnFrCvK+4Ihi2n4k9QAgS6UOVPUi+P/HS3KMTlx9TLLaRBjqVa0lURqNc7j2yV7RJ8C
-         YVMg==
+        id S1728715AbfJGS7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 14:59:12 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:46088 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728116AbfJGS7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 14:59:12 -0400
+Received: by mail-io1-f70.google.com with SMTP id t11so28303972ioc.13
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 11:59:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=HNfy0c9jaNnckiijPmAbgaw+sSGuMd+2WSHAvDEnKnc=;
-        b=G8pNA5kv3u1wXdZbt5UV51n2oD3piZi+cIFdQPhYYabMEcoArgpfQr4vVf3+tIwMbl
-         nifsS5/UukmDTzfUzERkPpbgtVMsrORySC8pbF2DNOPoYEXqfn+FcBruLUafWU3b7QTa
-         /gH6NBeBwtSgrwmA3jrELEfAFdWzxhnD9lDRfy2uFWS32405DRFmT3p1qlTOhFm/2T2x
-         X9XXdaQGqm28rrBMWbuod+6kzbV47z+cxOjJ5opejyNmPM13cxIJdxvL39qGRPPvtK/X
-         SBmZrVnHHjgnTjHveHOqmF+6ijGemshO2hVSgHgz08hOtE0H1JfJE4cgi08mJjmhBST6
-         0obg==
-X-Gm-Message-State: APjAAAWgH/oiZgbEoPJzdr+gD1IpB+SqUV6p+ozxMRDJJ7FIUZfMKcy2
-        HpXIl+gBdZ+ahnmsDCqIOoE=
-X-Google-Smtp-Source: APXvYqzZ7gh0fCQgEu8adLKH/s2GKcR7YvXPIquDYDsUbODpU1YQHnnEFEDF76hqx8eJkO4sd8IonQ==
-X-Received: by 2002:a05:6e02:c27:: with SMTP id q7mr30576564ilg.148.1570474702646;
-        Mon, 07 Oct 2019 11:58:22 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id l1sm5323829ioc.30.2019.10.07.11.58.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Oct 2019 11:58:21 -0700 (PDT)
-Date:   Mon, 07 Oct 2019 11:58:13 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Message-ID: <5d9b8ac5655_2a4b2aed075a45b41@john-XPS-13-9370.notmuch>
-In-Reply-To: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
-References: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
-Subject: RE: [PATCH bpf-next v3 0/5] xdp: Support multiple programs on a
- single interface through chain calls
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=9qkx91fvrW7+nt2ig/5mXags+RS886ck9437k8F/HWE=;
+        b=nehvobcxhAxArhwa+PaxB5PpXoBiK+7HHkaXUozfmebLX/IfUunprmBiiTFEw3Kirm
+         n18oA47wfgK43i3guVOlCNwD9PlQIvZebkQ04XPHHwOmxeBEf7A2q7+jPIsrvmeMyLkr
+         OerzXquUZ7aUII0IIJyIPDJUq64NSsGovb3yLb8KRkFbhLAJW62vTmB6HDQGu6qAYbFH
+         MAs041gijVheZBBWRoaEl9FUWcy3Cz3xGHARGPpYEaGV+gWo6s11Gwf0edfXYs0Rer+T
+         uLUJPKYIYf9mwUMnJHHHiwI/R5E1osW5VrKj36UDlyLxt5a22mjT++2skjUpKdam04mU
+         JCnw==
+X-Gm-Message-State: APjAAAWZ38DFuucbpJfIT72bpw+v6Y0jyyp0TyTRaT4Dy/GxlkxHp3+F
+        sTnkb4TeDXYiWUhcBsGuFEnPFgzD7FN9nhtl/EaI/iCglVdT
+X-Google-Smtp-Source: APXvYqxKBsocfs6hrztTJyzwRVq+k2fLKzQNmGj9TkM4del9xykAefATNE29N658+MNPYEJBxDNIDkYbH2rvXRuNfUNaQrIZEF0V
+MIME-Version: 1.0
+X-Received: by 2002:a92:cac4:: with SMTP id m4mr29671240ilq.244.1570474751165;
+ Mon, 07 Oct 2019 11:59:11 -0700 (PDT)
+Date:   Mon, 07 Oct 2019 11:59:11 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ac10ee059456a5f2@google.com>
+Subject: general protection fault in tipc_nl_publ_dump
+From:   syzbot <syzbot+8d37c50ffb0f52941a5e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jon.maloy@ericsson.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> This series adds support for executing multiple XDP programs on a singl=
-e
-> interface in sequence, through the use of chain calls, as discussed at =
-the Linux
-> Plumbers Conference last month:
-> =
+Hello,
 
-> https://linuxplumbersconf.org/event/4/contributions/460/
-> =
+syzbot found the following crash on:
 
+HEAD commit:    056ddc38 Merge branch 'stmmac-next'
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=168bdd47600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9be300620399522
+dashboard link: https://syzkaller.appspot.com/bug?extid=8d37c50ffb0f52941a5e
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11ad0d0b600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=113f6d47600000
 
-Can we add RFC to the title if we are just iterating through idea-space h=
-ere.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+8d37c50ffb0f52941a5e@syzkaller.appspotmail.com
 
-> # HIGH-LEVEL IDEA
-> =
-
-> Since Alexei pointed out some issues with trying to rewrite the eBPF by=
-te code,
-> let's try a third approach: We add the ability to chain call programs i=
-nto the
-> eBPF execution core itself, but without rewriting the eBPF byte code.
-> =
-
-> As in the previous version, the bpf() syscall gets a couple of new comm=
-ands
-> which takes a pair of BPF program fds and a return code. It will then a=
-ttach the
-> second program to the first one in a structured keyed by return code. W=
-hen a
-> program chain is thus established, the former program will tail call to=
- the
-> latter at the end of its execution.
-> =
-
-> The actual tail calling is achieved by adding a new flag to struct bpf_=
-prog and
-> having BPF_PROG_RUN run the chain call logic if that flag is set. This =
-means
-> that if the feature is *not* used, the overhead is a single conditional=
- branch
-> (which means I couldn't measure a performance difference, as can be see=
-n in the
-> results below).
-> =
-
-
-I still believe user space should be able to link these multiple programs=
-
-together as Ed and I were suggesting in the last series. It seems much cl=
-eaner
-to handle this with calls and linker steps vs adding something on the sid=
-e to
-handle this. Also by doing it by linking your control program can be arbi=
-trary
-complex. For example not just taking the output of one program and jumpin=
-g
-to another but doing arbitrary more complex/interesting things. Taking th=
-e
-input from multiple programs to pick next call for example.
-
-Maybe I missed a point but it seems like the main complaint is tail calls=
- and
-regular calls don't mix well. We want to fix this regardless so I don't t=
-hink
-that should be a blocker on using a linking step in user space.
-
-> For this version I kept the load-time flag from the previous version, t=
-o avoid
-> having to remove the read-only memory protection from the bpf prog. Onl=
-y
-> programs loaded with this flag set can have other programs attached to =
-them for
-> chain calls.
-> =
-
-> As before, it shouldn't be necessary to set the flag on program load ti=
-me, but
-> rather we should enable the feature when a chain call program is first =
-loaded.
-> We could conceivably just remove the RO property from the first page of=
- struct
-> bpf_prog and set the flag as needed.
-> =
-
-> # PERFORMANCE
-> =
-
-> I performed a simple performance test to get an initial feel for the ov=
-erhead of
-> the chain call mechanism. This test consists of running only two progra=
-ms in
-> sequence: One that returns XDP_PASS and another that returns XDP_DROP. =
-I then
-> measure the drop PPS performance and compare it to a baseline of just a=
- single
-> program that only returns XDP_DROP.
-> =
-
-> For comparison, a test case that uses regular eBPF tail calls to sequen=
-ce two
-> programs together is also included.
-> =
-
-> | Test case                        | Perf      | Overhead |
-> |----------------------------------+-----------+----------|
-> | Before patch (XDP DROP program)  | 31.5 Mpps |          |
-> | After patch (XDP DROP program)   | 32.0 Mpps |          |
-> | XDP chain call (XDP_PASS return) | 28.5 Mpps | 3.8 ns   |
-> | XDP chain call (wildcard return) | 28.1 Mpps | 4.3 ns   |
-> =
-
-> I consider the "Before patch" and "After patch" to be identical; the .5=
- Mpps
-> difference is within the regular test variance I see between runs. Like=
-wise,
-> there is probably no significant difference between hooking the XDP_PAS=
-S return
-> code and using the wildcard slot.
-> =
-
-> # PATCH SET STRUCTURE
-> This series is structured as follows:
-> =
-
-> - Patch 1: Adds the call chain looping logic
-> - Patch 2: Adds the new commands added to the bpf() syscall
-> - Patch 3-4: Tools/ update and libbpf syscall wrappers
-> - Patch 5: Selftest  with example user space code (a bit hacky still)
-> =
-
-> The whole series is also available in my git repo on kernel.org:
-> https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/log/?h=3D=
-xdp-multiprog-03
-> =
-
-> Changelog:
-> =
-
-> v3:
->   - Keep the UAPI from v2, but change the implementation to hook into
->     BPF_PROG_RUN instead of trying to inject instructions into the eBPF=
- program
->     itself (since that had problems as Alexei pointed out).
-> v2:
->   - Completely new approach that integrates chain calls into the core e=
-BPF
->     runtime instead of doing the map XDP-specific thing with a new map =
-from v1.
-> =
-
-> ---
-> =
-
-> Toke H=C3=B8iland-J=C3=B8rgensen (5):
->       bpf: Support chain calling multiple BPF programs after each other=
-
->       bpf: Add support for setting chain call sequence for programs
->       tools: Update bpf.h header for program chain calls
->       libbpf: Add syscall wrappers for BPF_PROG_CHAIN_* commands
->       selftests: Add tests for XDP chain calls
-> =
-
-> =
-
->  include/linux/bpf.h                           |    3 =
-
->  include/linux/filter.h                        |   34 +++
->  include/uapi/linux/bpf.h                      |   16 +
->  kernel/bpf/core.c                             |    6 =
-
->  kernel/bpf/syscall.c                          |   82 ++++++-
->  tools/include/uapi/linux/bpf.h                |   16 +
->  tools/lib/bpf/bpf.c                           |   34 +++
->  tools/lib/bpf/bpf.h                           |    4 =
-
->  tools/lib/bpf/libbpf.map                      |    3 =
-
->  tools/testing/selftests/bpf/.gitignore        |    1 =
-
->  tools/testing/selftests/bpf/Makefile          |    3 =
-
->  tools/testing/selftests/bpf/progs/xdp_dummy.c |    6 =
-
->  tools/testing/selftests/bpf/test_xdp_chain.sh |   77 ++++++
->  tools/testing/selftests/bpf/xdp_chain.c       |  313 +++++++++++++++++=
-++++++++
->  14 files changed, 594 insertions(+), 4 deletions(-)
->  create mode 100755 tools/testing/selftests/bpf/test_xdp_chain.sh
->  create mode 100644 tools/testing/selftests/bpf/xdp_chain.c
-> =
+netlink: 20 bytes leftover after parsing attributes in process  
+`syz-executor671'.
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 8721 Comm: syz-executor671 Not tainted 5.4.0-rc1+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:tipc_nl_publ_dump+0x1c3/0xd60 net/tipc/socket.c:3591
+Code: 80 3c 02 00 0f 85 9d 09 00 00 48 8b 85 f0 fe ff ff 4c 8b 70 20 48 b8  
+00 00 00 00 00 fc ff df 49 8d 7e 10 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
+85 69 09 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b
+RSP: 0018:ffff88808e2c6eb8 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff870875af
+RDX: 0000000000000002 RSI: ffffffff870875bd RDI: 0000000000000010
+RBP: ffff88808e2c7040 R08: ffff888093c7a300 R09: ffffed1015d06b75
+R10: ffffed1015d06b74 R11: ffff8880ae835ba3 R12: ffffffff89986140
+R13: 0000000000000000 R14: 0000000000000000 R15: ffff8880a97b28c0
+FS:  0000000002434880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000043e990 CR3: 0000000093db1000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  __tipc_nl_compat_dumpit.isra.0+0x274/0xa80 net/tipc/netlink_compat.c:215
+  tipc_nl_compat_publ_dump net/tipc/netlink_compat.c:1013 [inline]
+  tipc_nl_compat_sk_dump+0x54d/0x970 net/tipc/netlink_compat.c:1065
+  __tipc_nl_compat_dumpit.isra.0+0x3fb/0xa80 net/tipc/netlink_compat.c:226
+  tipc_nl_compat_dumpit+0x24c/0x510 net/tipc/netlink_compat.c:299
+  tipc_nl_compat_handle net/tipc/netlink_compat.c:1264 [inline]
+  tipc_nl_compat_recv+0x5a0/0xae0 net/tipc/netlink_compat.c:1302
+  genl_family_rcv_msg_doit net/netlink/genetlink.c:668 [inline]
+  genl_family_rcv_msg net/netlink/genetlink.c:713 [inline]
+  genl_rcv_msg+0x678/0x1000 net/netlink/genetlink.c:730
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+  genl_rcv+0x29/0x40 net/netlink/genetlink.c:741
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:657
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
+  __do_sys_sendmsg net/socket.c:2365 [inline]
+  __se_sys_sendmsg net/socket.c:2363 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4441b9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffd2b43b478 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 00000000004441b9
+RDX: 0000000000000000 RSI: 0000000020000500 RDI: 0000000000000003
+RBP: 00000000006ce018 R08: 0000000000000000 R09: 00000000004002e0
+R10: 0000000000001900 R11: 0000000000000246 R12: 0000000000401e60
+R13: 0000000000401ef0 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 854b542c9f3952ec ]---
+RIP: 0010:tipc_nl_publ_dump+0x1c3/0xd60 net/tipc/socket.c:3591
+Code: 80 3c 02 00 0f 85 9d 09 00 00 48 8b 85 f0 fe ff ff 4c 8b 70 20 48 b8  
+00 00 00 00 00 fc ff df 49 8d 7e 10 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
+85 69 09 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b
+RSP: 0018:ffff88808e2c6eb8 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff870875af
+RDX: 0000000000000002 RSI: ffffffff870875bd RDI: 0000000000000010
+RBP: ffff88808e2c7040 R08: ffff888093c7a300 R09: ffffed1015d06b75
+R10: ffffed1015d06b74 R11: ffff8880ae835ba3 R12: ffffffff89986140
+R13: 0000000000000000 R14: 0000000000000000 R15: ffff8880a97b28c0
+FS:  0000000002434880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000043e990 CR3: 0000000093db1000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
