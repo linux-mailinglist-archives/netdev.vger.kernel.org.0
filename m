@@ -2,141 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D99E4CE4E3
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB4E3CE502
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728014AbfJGOPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 10:15:20 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54836 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726334AbfJGOPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:15:19 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x97E94pw065681
-        for <netdev@vger.kernel.org>; Mon, 7 Oct 2019 10:15:18 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2vg4a7x8tu-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 10:15:18 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
-        Mon, 7 Oct 2019 15:15:15 +0100
-Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 7 Oct 2019 15:15:11 +0100
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x97EEe9s32178436
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Oct 2019 14:14:40 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0CA8642054;
-        Mon,  7 Oct 2019 14:15:10 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BDDFC42049;
-        Mon,  7 Oct 2019 14:15:09 +0000 (GMT)
-Received: from [9.152.222.62] (unknown [9.152.222.62])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Oct 2019 14:15:09 +0000 (GMT)
-Subject: Re: [PATCH RFC net-next 1/2] drivers: net: virtio_net: Add tx_timeout
- stats field
-To:     jcfaracco@gmail.com, netdev@vger.kernel.org
-Cc:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, dnmendes76@gmail.com
-References: <20191006184515.23048-1-jcfaracco@gmail.com>
- <20191006184515.23048-2-jcfaracco@gmail.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-Date:   Mon, 7 Oct 2019 16:15:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728344AbfJGOTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 10:19:13 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:55503 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726334AbfJGOTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:19:13 -0400
+Received: by mail-io1-f69.google.com with SMTP id r13so26849905ioj.22
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 07:19:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=plYEj++ipHdBTXQ1PUYl3/fHMsbt8QG4MrJRzJt4AcU=;
+        b=Vm6dTBaTLD82KfONQr7mOwhmALWqfbatjgdj2hSRCIIl1jErHRrBfrzvCNglROwY4j
+         uqZRWmhctI9txrZ6lfn54BZnCnGH9FFU3SBrpdPkHHN16jSEvIfn1Xfmvs2bcWo4c45W
+         74e0FiP4wJNhRxKcr9wtJFAO0PMT6lUcccMquZXUKzIMy43cl16f7dxJeC61PoWj6kgx
+         UG+Iipi/kv7MZjj3yV8dcjzgiCjUubkBzN9LLawPriytKty66tFHagAtP9dCDIs/4/Ps
+         rBOBriz21MEJdU56j38ulD95YJDFHm7dt6NVSRb2Cs/G7tgywoeOS3jimo8OdW3/en0A
+         Vc6Q==
+X-Gm-Message-State: APjAAAWdLkN6IK0kk0hEVac/S7Zjzf3QTN+RaFMDf7m78DUTc0SEw7uy
+        WPylmqCrjc5jQ3+5XsQSbkWe+2gduHImVEEWDTxH0Ti7bq9x
+X-Google-Smtp-Source: APXvYqzxBnC5RCPnSQ5/pF44nS7nXBPwsSmkX2qzK2kUoW4qYR4mFul4YWwIiZUKU1Z4bmIZ5BYNdwf712u1iLyBvOfZ8T5PB4oD
 MIME-Version: 1.0
-In-Reply-To: <20191006184515.23048-2-jcfaracco@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 19100714-0016-0000-0000-000002B4DB47
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19100714-0017-0000-0000-00003315F338
-Message-Id: <52efa170-722c-334d-627e-30931fba7a7e@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-07_02:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910070140
+X-Received: by 2002:a92:844f:: with SMTP id l76mr28163018ild.218.1570457949409;
+ Mon, 07 Oct 2019 07:19:09 -0700 (PDT)
+Date:   Mon, 07 Oct 2019 07:19:09 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000035a04b059452bc21@google.com>
+Subject: KASAN: use-after-free Read in __cfg8NUM_wpan_dev_from_attrs
+From:   syzbot <syzbot+9cb7edb2906ea1e83006@syzkaller.appspotmail.com>
+To:     alex.aring@gmail.com, davem@davemloft.net, jiri@mellanox.com,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, stefan@datenfreihafen.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06.10.19 20:45, jcfaracco@gmail.com wrote:
-> From: Julio Faracco <jcfaracco@gmail.com>
-> 
-> For debug purpose of TX timeout events, a tx_timeout entry was added to
-> monitor this special case: when dev_watchdog identifies a tx_timeout and
-> throw an exception. We can both consider this event as an error, but
-> driver should report as a tx_timeout statistic.
-> 
+Hello,
 
-Hi Julio,
-dev_watchdog() updates txq->trans_timeout, why isn't that sufficient?
+syzbot found the following crash on:
+
+HEAD commit:    056ddc38 Merge branch 'stmmac-next'
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=125aaafd600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9be300620399522
+dashboard link: https://syzkaller.appspot.com/bug?extid=9cb7edb2906ea1e83006
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1232bb3f600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=162d0d0b600000
+
+The bug was bisected to:
+
+commit 75cdbdd089003cd53560ff87b690ae911fa7df8e
+Author: Jiri Pirko <jiri@mellanox.com>
+Date:   Sat Oct 5 18:04:37 2019 +0000
+
+     net: ieee802154: have genetlink code to parse the attrs during dumpit
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11be5d0b600000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=13be5d0b600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15be5d0b600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+9cb7edb2906ea1e83006@syzkaller.appspotmail.com
+Fixes: 75cdbdd08900 ("net: ieee802154: have genetlink code to parse the  
+attrs during dumpit")
+
+netlink: 'syz-executor134': attribute type 6 has an invalid length.
+==================================================================
+BUG: KASAN: use-after-free in nla_memcpy+0xa2/0xb0 lib/nlattr.c:572
+Read of size 2 at addr ffff8880a74fba94 by task syz-executor134/8714
+
+CPU: 1 PID: 8714 Comm: syz-executor134 Not tainted 5.4.0-rc1+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
+  kasan_report+0x12/0x20 mm/kasan/common.c:634
+  __asan_report_load2_noabort+0x14/0x20 mm/kasan/generic_report.c:130
+  nla_memcpy+0xa2/0xb0 lib/nlattr.c:572
+  nla_get_u64 include/net/netlink.h:1539 [inline]
+  __cfg802154_wpan_dev_from_attrs+0x41b/0x550 net/ieee802154/nl802154.c:55
+  nl802154_prepare_wpan_dev_dump.isra.0.constprop.0+0xf7/0x4b0  
+net/ieee802154/nl802154.c:245
+  nl802154_dump_llsec_seclevel+0xb9/0xae0 net/ieee802154/nl802154.c:1985
+  genl_lock_dumpit+0x86/0xc0 net/netlink/genetlink.c:529
+  netlink_dump+0x558/0xfb0 net/netlink/af_netlink.c:2244
+  __netlink_dump_start+0x5b1/0x7d0 net/netlink/af_netlink.c:2352
+  genl_family_rcv_msg_dumpit net/netlink/genetlink.c:614 [inline]
+  genl_family_rcv_msg net/netlink/genetlink.c:710 [inline]
+  genl_rcv_msg+0xc9b/0x1000 net/netlink/genetlink.c:730
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+  genl_rcv+0x29/0x40 net/netlink/genetlink.c:741
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:657
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
+  __do_sys_sendmsg net/socket.c:2365 [inline]
+  __se_sys_sendmsg net/socket.c:2363 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x441399
+Code: e8 ac e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 eb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe350885d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441399
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 00000000006cb018 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000402110
+R13: 00000000004021a0 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 8716:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc mm/kasan/common.c:510 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:483
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
+  __do_kmalloc_node mm/slab.c:3615 [inline]
+  __kmalloc_node_track_caller+0x4e/0x70 mm/slab.c:3629
+  __kmalloc_reserve.isra.0+0x40/0xf0 net/core/skbuff.c:141
+  __alloc_skb+0x10b/0x5e0 net/core/skbuff.c:209
+  alloc_skb include/linux/skbuff.h:1049 [inline]
+  netlink_alloc_large_skb net/netlink/af_netlink.c:1174 [inline]
+  netlink_sendmsg+0x972/0xd60 net/netlink/af_netlink.c:1892
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:657
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
+  __do_sys_sendmsg net/socket.c:2365 [inline]
+  __se_sys_sendmsg net/socket.c:2363 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 8716:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  kasan_set_free_info mm/kasan/common.c:332 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:471
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x10a/0x2c0 mm/slab.c:3756
+  skb_free_head+0x93/0xb0 net/core/skbuff.c:591
+  skb_release_data+0x42d/0x7c0 net/core/skbuff.c:611
+  skb_release_all+0x4d/0x60 net/core/skbuff.c:665
+  __kfree_skb net/core/skbuff.c:679 [inline]
+  consume_skb net/core/skbuff.c:838 [inline]
+  consume_skb+0xfb/0x3b0 net/core/skbuff.c:832
+  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+  netlink_unicast+0x539/0x710 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:657
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
+  __do_sys_sendmsg net/socket.c:2365 [inline]
+  __se_sys_sendmsg net/socket.c:2363 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff8880a74fba80
+  which belongs to the cache kmalloc-512 of size 512
+The buggy address is located 20 bytes inside of
+  512-byte region [ffff8880a74fba80, ffff8880a74fbc80)
+The buggy address belongs to the page:
+page:ffffea00029d3ec0 refcount:1 mapcount:0 mapping:ffff8880aa400a80  
+index:0x0
+flags: 0x1fffc0000000200(slab)
+raw: 01fffc0000000200 ffffea000232e1c8 ffffea00028722c8 ffff8880aa400a80
+raw: 0000000000000000 ffff8880a74fb080 0000000100000006 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff8880a74fb980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff8880a74fba00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> ffff8880a74fba80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                          ^
+  ffff8880a74fbb00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8880a74fbb80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-> Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
-> Signed-off-by: Daiane Mendes <dnmendes76@gmail.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/net/virtio_net.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 4f3de0ac8b0b..27f9b212c9f5 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -75,6 +75,7 @@ struct virtnet_sq_stats {
->  	u64 xdp_tx;
->  	u64 xdp_tx_drops;
->  	u64 kicks;
-> +	u64 tx_timeouts;
->  };
->  
->  struct virtnet_rq_stats {
-> @@ -98,6 +99,7 @@ static const struct virtnet_stat_desc virtnet_sq_stats_desc[] = {
->  	{ "xdp_tx",		VIRTNET_SQ_STAT(xdp_tx) },
->  	{ "xdp_tx_drops",	VIRTNET_SQ_STAT(xdp_tx_drops) },
->  	{ "kicks",		VIRTNET_SQ_STAT(kicks) },
-> +	{ "tx_timeouts",	VIRTNET_SQ_STAT(tx_timeouts) },
->  };
->  
->  static const struct virtnet_stat_desc virtnet_rq_stats_desc[] = {
-> @@ -1721,7 +1723,7 @@ static void virtnet_stats(struct net_device *dev,
->  	int i;
->  
->  	for (i = 0; i < vi->max_queue_pairs; i++) {
-> -		u64 tpackets, tbytes, rpackets, rbytes, rdrops;
-> +		u64 tpackets, tbytes, terrors, rpackets, rbytes, rdrops;
->  		struct receive_queue *rq = &vi->rq[i];
->  		struct send_queue *sq = &vi->sq[i];
->  
-> @@ -1729,6 +1731,7 @@ static void virtnet_stats(struct net_device *dev,
->  			start = u64_stats_fetch_begin_irq(&sq->stats.syncp);
->  			tpackets = sq->stats.packets;
->  			tbytes   = sq->stats.bytes;
-> +			terrors  = sq->stats.tx_timeouts;
->  		} while (u64_stats_fetch_retry_irq(&sq->stats.syncp, start));
->  
->  		do {
-> @@ -1743,6 +1746,7 @@ static void virtnet_stats(struct net_device *dev,
->  		tot->rx_bytes   += rbytes;
->  		tot->tx_bytes   += tbytes;
->  		tot->rx_dropped += rdrops;
-> +		tot->tx_errors  += terrors;
->  	}
->  
->  	tot->tx_dropped = dev->stats.tx_dropped;
-> 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
