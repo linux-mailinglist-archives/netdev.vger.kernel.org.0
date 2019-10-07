@@ -2,110 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16CC2CE109
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 13:58:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4DE4CE124
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 14:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727793AbfJGL6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 07:58:43 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:37901 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727467AbfJGL6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 07:58:43 -0400
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id 77669328D1C;
-        Mon,  7 Oct 2019 13:58:39 +0200 (CEST)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1iHRex-0004fj-CE; Mon, 07 Oct 2019 13:58:39 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     davem@davemloft.net
-Cc:     gnault@redhat.com, netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net] netns: fix NLM_F_ECHO mechanism for RTM_NEWNSID
-Date:   Mon,  7 Oct 2019 13:58:35 +0200
-Message-Id: <20191007115835.17882-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191003161940.GA31862@linux.home>
-References: <20191003161940.GA31862@linux.home>
+        id S1727916AbfJGMDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 08:03:13 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:47000 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727490AbfJGMDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 08:03:12 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1iHRjI-0000kj-96; Mon, 07 Oct 2019 12:03:08 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: phy: mscc: make arrays static, makes object smaller
+Date:   Mon,  7 Oct 2019 13:03:08 +0100
+Message-Id: <20191007120308.2392-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The flag NLM_F_ECHO aims to reply to the user the message notified to all
-listeners.
-It was not the case with the command RTM_NEWNSID, let's fix this.
+From: Colin Ian King <colin.king@canonical.com>
 
-Fixes: 0c7aecd4bde4 ("netns: add rtnl cmd to add and get peer netns ids")
-Reported-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Don't populate const arrays on the stack but instead make them
+static. Makes the object code smaller by 1058 bytes.
+
+Before:
+   text	   data	    bss	    dec	    hex	filename
+  29879	   6144	      0	  36023	   8cb7	drivers/net/phy/mscc.o
+
+After:
+   text	   data	    bss	    dec	    hex	filename
+  28437	   6528	      0	  34965	   8895	drivers/net/phy/mscc.o
+
+(gcc version 9.2.1, amd64)
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- net/core/net_namespace.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/net/phy/mscc.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index a0e0d298c991..f496ce0e8da8 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -245,7 +245,8 @@ static int __peernet2id(struct net *net, struct net *peer)
- 	return __peernet2id_alloc(net, peer, &no);
- }
- 
--static void rtnl_net_notifyid(struct net *net, int cmd, int id);
-+static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
-+			      struct nlmsghdr *nlh);
- /* This function returns the id of a peer netns. If no id is assigned, one will
-  * be allocated and returned.
-  */
-@@ -268,7 +269,7 @@ int peernet2id_alloc(struct net *net, struct net *peer)
- 	id = __peernet2id_alloc(net, peer, &alloc);
- 	spin_unlock_bh(&net->nsid_lock);
- 	if (alloc && id >= 0)
--		rtnl_net_notifyid(net, RTM_NEWNSID, id);
-+		rtnl_net_notifyid(net, RTM_NEWNSID, id, 0, NULL);
- 	if (alive)
- 		put_net(peer);
- 	return id;
-@@ -532,7 +533,7 @@ static void unhash_nsid(struct net *net, struct net *last)
- 			idr_remove(&tmp->netns_ids, id);
- 		spin_unlock_bh(&tmp->nsid_lock);
- 		if (id >= 0)
--			rtnl_net_notifyid(tmp, RTM_DELNSID, id);
-+			rtnl_net_notifyid(tmp, RTM_DELNSID, id, 0, NULL);
- 		if (tmp == last)
- 			break;
- 	}
-@@ -764,7 +765,8 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	err = alloc_netid(net, peer, nsid);
- 	spin_unlock_bh(&net->nsid_lock);
- 	if (err >= 0) {
--		rtnl_net_notifyid(net, RTM_NEWNSID, err);
-+		rtnl_net_notifyid(net, RTM_NEWNSID, err, NETLINK_CB(skb).portid,
-+				  nlh);
- 		err = 0;
- 	} else if (err == -ENOSPC && nsid >= 0) {
- 		err = -EEXIST;
-@@ -1051,7 +1053,8 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
- 	return err < 0 ? err : skb->len;
- }
- 
--static void rtnl_net_notifyid(struct net *net, int cmd, int id)
-+static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
-+			      struct nlmsghdr *nlh)
+diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
+index 7ada1fd9ca71..805cda3465d7 100644
+--- a/drivers/net/phy/mscc.c
++++ b/drivers/net/phy/mscc.c
+@@ -895,7 +895,7 @@ static void vsc85xx_tr_write(struct phy_device *phydev, u16 addr, u32 val)
+ static int vsc8531_pre_init_seq_set(struct phy_device *phydev)
  {
- 	struct net_fill_args fillargs = {
- 		.cmd = cmd,
-@@ -1068,7 +1071,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id)
- 	if (err < 0)
- 		goto err_out;
+ 	int rc;
+-	const struct reg_val init_seq[] = {
++	static const struct reg_val init_seq[] = {
+ 		{0x0f90, 0x00688980},
+ 		{0x0696, 0x00000003},
+ 		{0x07fa, 0x0050100f},
+@@ -939,7 +939,7 @@ static int vsc8531_pre_init_seq_set(struct phy_device *phydev)
  
--	rtnl_notify(msg, net, 0, RTNLGRP_NSID, NULL, 0);
-+	rtnl_notify(msg, net, portid, RTNLGRP_NSID, nlh, 0);
- 	return;
- 
- err_out:
+ static int vsc85xx_eee_init_seq_set(struct phy_device *phydev)
+ {
+-	const struct reg_val init_eee[] = {
++	static const struct reg_val init_eee[] = {
+ 		{0x0f82, 0x0012b00a},
+ 		{0x1686, 0x00000004},
+ 		{0x168c, 0x00d2c46f},
+@@ -1224,7 +1224,7 @@ static bool vsc8574_is_serdes_init(struct phy_device *phydev)
+ /* bus->mdio_lock should be locked when using this function */
+ static int vsc8574_config_pre_init(struct phy_device *phydev)
+ {
+-	const struct reg_val pre_init1[] = {
++	static const struct reg_val pre_init1[] = {
+ 		{0x0fae, 0x000401bd},
+ 		{0x0fac, 0x000f000f},
+ 		{0x17a0, 0x00a0f147},
+@@ -1272,7 +1272,7 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
+ 		{0x0fee, 0x0004a6a1},
+ 		{0x0ffe, 0x00b01807},
+ 	};
+-	const struct reg_val pre_init2[] = {
++	static const struct reg_val pre_init2[] = {
+ 		{0x0486, 0x0008a518},
+ 		{0x0488, 0x006dc696},
+ 		{0x048a, 0x00000912},
+@@ -1427,7 +1427,7 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
+ /* bus->mdio_lock should be locked when using this function */
+ static int vsc8584_config_pre_init(struct phy_device *phydev)
+ {
+-	const struct reg_val pre_init1[] = {
++	static const struct reg_val pre_init1[] = {
+ 		{0x07fa, 0x0050100f},
+ 		{0x1688, 0x00049f81},
+ 		{0x0f90, 0x00688980},
+@@ -1451,7 +1451,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
+ 		{0x16b2, 0x00007000},
+ 		{0x16b4, 0x00000814},
+ 	};
+-	const struct reg_val pre_init2[] = {
++	static const struct reg_val pre_init2[] = {
+ 		{0x0486, 0x0008a518},
+ 		{0x0488, 0x006dc696},
+ 		{0x048a, 0x00000912},
+@@ -1786,7 +1786,7 @@ static int vsc8514_config_pre_init(struct phy_device *phydev)
+ 	 * values to handle hardware performance of PHY. They
+ 	 * are set at Power-On state and remain until PHY Reset.
+ 	 */
+-	const struct reg_val pre_init1[] = {
++	static const struct reg_val pre_init1[] = {
+ 		{0x0f90, 0x00688980},
+ 		{0x0786, 0x00000003},
+ 		{0x07fa, 0x0050100f},
 -- 
-2.23.0
+2.20.1
 
