@@ -2,220 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A95F3CEE9F
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 23:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0854ECEEA5
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 23:52:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729211AbfJGVvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 17:51:03 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:34719 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728422AbfJGVvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 17:51:03 -0400
-Received: by mail-qt1-f194.google.com with SMTP id 3so21600810qta.1;
-        Mon, 07 Oct 2019 14:51:02 -0700 (PDT)
+        id S1729462AbfJGVwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 17:52:51 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40664 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728422AbfJGVwv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 17:52:51 -0400
+Received: by mail-pl1-f195.google.com with SMTP id d22so7503029pll.7
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 14:52:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Pqsi1G2S6slzrLepH9uMCQvxopMIQCHLk0pCryMosGY=;
-        b=M2p7970rrF+HsYIApS/yOv4+MIwZ/vihJpA0vc2JanFz6mYFxmC4d/jjRZWQR8qNpL
-         5SnNHq4PW56VAF4lSn4vcESHhsXbeSYVzvGoLTFaZtWP/9DA0RKi9E1eynmgn5ux8u1q
-         4eP/Ul+2Ozloai7+YUqT14FkHajaVRG1rRY5DuB2HP11A7oQi7LGhmjPOZsdI08jKuJD
-         hlZJbvaW4GzkAQfZbP8bnLuQiJ4VodTaFPydkD9xQ2eHMkmtva1QgeV8oGMkMATG/hri
-         FFBR05Cag4q6w/ddfgqpB3vCuP+j+t+Mqh5zCaoPP6J/KFlqG3bKRDtqdChWzDvYZ7mV
-         Y15w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ju+4uMQSwRWJTlv+kgQG+VR5no+Pogf7ScKDRiiu5Cs=;
+        b=inA7aytQ6ihOZFbqnUVjqvZ1yPZRQQmML3FOWYm3koLkRQUa5osKI0tgaCX4YOVZ1O
+         kk/JqS3VJqoyYMXIOdhC3KDdCowRvnSXUL36Mqbbo/jcY11HeN+N7D6acKxn9KIHh73m
+         l8sM9FQZd8BCRY7zhGh0IMNeDPJXGc2lOK4Uld9tNqUQv93rkRYsXjJ2yc0U2gbv5ONi
+         +/PRhAFBsKQQsVVlmsvpnYcF+aBTP+99I0vMKbApglrihg/N7e6jR78fXeOlCbvk31fO
+         4y+OfLDjRUYXHBsPTCn+azIuUQOIVmSV8YOfZI31V097yg/W5R3tTCfuF3DtNiGyAjbs
+         IlgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Pqsi1G2S6slzrLepH9uMCQvxopMIQCHLk0pCryMosGY=;
-        b=sYJnSJrHvLagfv7nnLWrJPclvLZadTJmcHSpLYvUWkLfgP08LzKxtQyacPvOOpYOPx
-         aJBTXFJkn48cPJfLZgPG9TWkCb0CTB//KfQ7W+pMQaafxO4hIwSDXR01+gPBn733YDB3
-         rSUNJ/X3RduGVFBzZxvi/Wt58cG5TvpGBpJTks7uFGOElBnV0xc4YBffG/Wa5dwsCcNU
-         +Wd3U1JFtDaef29NX7iBuGfM+gMVY5kRt1iL3kFwheMiErehT9vVC8AY83kkwZwF8fCE
-         cXWqCUjdi9hdXiVnQDxgM1vfGin4spWkMhDUEfPmZKGC2D2jnG3jpRMI+YwCyQkZ5QK0
-         OHQg==
-X-Gm-Message-State: APjAAAUKtz0EupaGNoFLxvfVwCVI2eN4cfc6GaNkWUWZh68TvxJTrjxo
-        jvJPXAGoF7t8tgCKSVKLYPS5gf660E9V9ozxD6c=
-X-Google-Smtp-Source: APXvYqzBzD2y/IwbzzyUS7Z+g7NivW1xfuNgeV2DyQXI0dRKEFR+AKx4dYpI3LQx16V86PkunHN8jxflG4rQI8t0uNM=
-X-Received: by 2002:ac8:5147:: with SMTP id h7mr32319071qtn.117.1570485061591;
- Mon, 07 Oct 2019 14:51:01 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ju+4uMQSwRWJTlv+kgQG+VR5no+Pogf7ScKDRiiu5Cs=;
+        b=Mn0MBqO6yG/vr++GHxixnK4bCyA45OsynmGxuJdHLOHdaE8YU58wx0yq9y8EGSoYGr
+         ByPq5dY2Cvoh+9ziINrb474yEHSC1qR9U6HOMx94P9GLVJKfDDQbLT1t9iLnaPubYe+a
+         RUCQayyLyCrJ61f+LvMPpxy3pGdY851gIaX6HOWIwQas7GlbvtPTewNgF8TVDKJP6SXv
+         dfCQqLSyXPuRqzslzrlZzPr6l/SCRNecA2v4PSoBOKzxs8e+7mhA4+EPF9GjjZb2QKca
+         bzPp3nibnckXMfGpq5C3nCyPPufzEnspTaaQF/S6Cq39/b6JHL4RKJI2LPiRBgkiBWiZ
+         dQkw==
+X-Gm-Message-State: APjAAAUHafH/L5p7PJ2YkEgAs9NWkA1GfOF/KlJV1qgTOeZozWX9IHHH
+        KZJ2mkZI/Yws9AvMdiq76Q0=
+X-Google-Smtp-Source: APXvYqy+FTQQrYVawD+xoVCNz61W/olRCIJe41E8cLkv1NLS36Fh/HXZC9Emw922P6bWiX6wCawrWA==
+X-Received: by 2002:a17:902:7796:: with SMTP id o22mr32148260pll.222.1570485170575;
+        Mon, 07 Oct 2019 14:52:50 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:dc58:1abd:13a8:f485])
+        by smtp.googlemail.com with ESMTPSA id w2sm14695147pfn.57.2019.10.07.14.52.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Oct 2019 14:52:49 -0700 (PDT)
+Subject: Re: [patch iproute2-next v2 2/2] ip: allow to use alternative names
+ as handle
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        roopa@cumulusnetworks.com, dcbw@redhat.com,
+        nikolay@cumulusnetworks.com, mkubecek@suse.cz, andrew@lunn.ch,
+        parav@mellanox.com, saeedm@mellanox.com, f.fainelli@gmail.com,
+        stephen@networkplumber.org, sd@queasysnail.net, sbrivio@redhat.com,
+        pabeni@redhat.com, mlxsw@mellanox.com
+References: <20191002105645.30756-1-jiri@resnulli.us>
+ <20191002105645.30756-3-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ad655086-3f95-3897-c93b-bf15a52c2903@gmail.com>
+Date:   Mon, 7 Oct 2019 15:52:46 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20191007212237.1704211-1-andriin@fb.com> <20191007214650.GC2096@mini-arch>
-In-Reply-To: <20191007214650.GC2096@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Oct 2019 14:50:50 -0700
-Message-ID: <CAEf4Bzba7S=hUkxTvL3Y+QYxAxZ-am5w-mzk8Aks7csx-g0FPA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpftool: fix bpftool build by switching to bpf_object__open_file()
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191002105645.30756-3-jiri@resnulli.us>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 7, 2019 at 2:46 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 10/07, Andrii Nakryiko wrote:
-> > As part of libbpf in 5e61f2707029 ("libbpf: stop enforcing kern_version,
-> > populate it for users") non-LIBBPF_API __bpf_object__open_xattr() API
-> > was removed from libbpf.h header. This broke bpftool, which relied on
-> > that function. This patch fixes the build by switching to newly added
-> > bpf_object__open_file() which provides the same capabilities, but is
-> > official and future-proof API.
-> >
-> > Fixes: 5e61f2707029 ("libbpf: stop enforcing kern_version, populate it for users")
-> > Reported-by: Stanislav Fomichev <sdf@google.com>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/bpf/bpftool/main.c |  4 ++--
-> >  tools/bpf/bpftool/main.h |  2 +-
-> >  tools/bpf/bpftool/prog.c | 22 ++++++++++++----------
-> >  3 files changed, 15 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-> > index 93d008687020..4764581ff9ea 100644
-> > --- a/tools/bpf/bpftool/main.c
-> > +++ b/tools/bpf/bpftool/main.c
-> > @@ -27,7 +27,7 @@ bool json_output;
-> >  bool show_pinned;
-> >  bool block_mount;
-> >  bool verifier_logs;
-> > -int bpf_flags;
-> > +bool relaxed_maps;
-> >  struct pinned_obj_table prog_table;
-> >  struct pinned_obj_table map_table;
-> >
-> > @@ -396,7 +396,7 @@ int main(int argc, char **argv)
-> >                       show_pinned = true;
-> >                       break;
-> >               case 'm':
-> > -                     bpf_flags = MAPS_RELAX_COMPAT;
-> > +                     relaxed_maps = true;
-> >                       break;
-> >               case 'n':
-> >                       block_mount = true;
-> > diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-> > index af9ad56c303a..2899095f8254 100644
-> > --- a/tools/bpf/bpftool/main.h
-> > +++ b/tools/bpf/bpftool/main.h
-> > @@ -94,7 +94,7 @@ extern bool json_output;
-> >  extern bool show_pinned;
-> >  extern bool block_mount;
-> >  extern bool verifier_logs;
-> > -extern int bpf_flags;
-> > +extern bool relaxed_maps;
-> >  extern struct pinned_obj_table prog_table;
-> >  extern struct pinned_obj_table map_table;
-> >
-> > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-> > index 43fdbbfe41bb..8191cd595963 100644
-> > --- a/tools/bpf/bpftool/prog.c
-> > +++ b/tools/bpf/bpftool/prog.c
-> > @@ -1092,9 +1092,7 @@ static int do_run(int argc, char **argv)
-> >  static int load_with_options(int argc, char **argv, bool first_prog_only)
-> >  {
-> >       struct bpf_object_load_attr load_attr = { 0 };
-> > -     struct bpf_object_open_attr open_attr = {
-> > -             .prog_type = BPF_PROG_TYPE_UNSPEC,
-> > -     };
-> > +     enum bpf_prog_type prog_type = BPF_PROG_TYPE_UNSPEC;
-> >       enum bpf_attach_type expected_attach_type;
-> >       struct map_replace *map_replace = NULL;
-> >       struct bpf_program *prog = NULL, *pos;
-> > @@ -1105,11 +1103,16 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
-> >       const char *pinfile;
-> >       unsigned int i, j;
-> >       __u32 ifindex = 0;
-> > +     const char *file;
-> >       int idx, err;
-> >
-> > +     LIBBPF_OPTS(bpf_object_open_opts, open_opts,
-> > +             .relaxed_maps = relaxed_maps,
-> > +     );
-> > +
-> >       if (!REQ_ARGS(2))
-> >               return -1;
-> > -     open_attr.file = GET_ARG();
-> > +     file = GET_ARG();
-> >       pinfile = GET_ARG();
-> >
-> >       while (argc) {
-> > @@ -1118,7 +1121,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
-> >
-> >                       NEXT_ARG();
-> >
-> > -                     if (open_attr.prog_type != BPF_PROG_TYPE_UNSPEC) {
-> > +                     if (prog_type != BPF_PROG_TYPE_UNSPEC) {
-> >                               p_err("program type already specified");
-> >                               goto err_free_reuse_maps;
-> >                       }
-> > @@ -1135,8 +1138,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
-> >                       strcat(type, *argv);
-> >                       strcat(type, "/");
-> >
-> > -                     err = libbpf_prog_type_by_name(type,
-> > -                                                    &open_attr.prog_type,
-> > +                     err = libbpf_prog_type_by_name(type, &prog_type,
-> >                                                      &expected_attach_type);
-> >                       free(type);
-> >                       if (err < 0)
-> > @@ -1224,16 +1226,16 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
-> >
-> >       set_max_rlimit();
-> >
-> > -     obj = __bpf_object__open_xattr(&open_attr, bpf_flags);
-> > +     obj = bpf_object__open_file(file, &open_opts);
-> >       if (IS_ERR_OR_NULL(obj)) {
-> >               p_err("failed to open object file");
-> >               goto err_free_reuse_maps;
-> >       }
-> >
-> >       bpf_object__for_each_program(pos, obj) {
-> > -             enum bpf_prog_type prog_type = open_attr.prog_type;
-> > +             enum bpf_prog_type prog_type = prog_type;
-> Are you sure it works that way?
+On 10/2/19 4:56 AM, Jiri Pirko wrote:
+> @@ -1106,7 +1106,8 @@ int iplink_get(char *name, __u32 filt_mask)
+>  
+>  	if (name) {
+>  		addattr_l(&req.n, sizeof(req),
+> -			  IFLA_IFNAME, name, strlen(name) + 1);
+> +			  !check_ifname(name) ? IFLA_IFNAME : IFLA_ALT_IFNAME,
 
-Oh, I did this pretty mechanically, didn't notice I'm shadowing. In
-either case I'd like to avoid shadowing, so I'll rename one of them,
-good catch!
+If this trick works here ...
 
->
-> $ cat tmp.c
-> #include <stdio.h>
->
-> int main()
-> {
->         int x = 1;
->         printf("outer x=%d\n", x);
->
->         {
->                 int x = x;
->                 printf("inner x=%d\n", x);
->         }
->
->         return 0;
-> }
->
-> $ gcc tmp.c && ./a.out
-> outer x=1
-> inner x=0
->
-> Other than that:
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
->
-> >
-> > -             if (open_attr.prog_type == BPF_PROG_TYPE_UNSPEC) {
-> > +             if (prog_type == BPF_PROG_TYPE_UNSPEC) {
-> >                       const char *sec_name = bpf_program__title(pos, false);
-> >
-> >                       err = libbpf_prog_type_by_name(sec_name, &prog_type,
-> > --
-> > 2.17.1
-> >
+> +			  name, strlen(name) + 1);
+>  	}
+>  	addattr32(&req.n, sizeof(req), IFLA_EXT_MASK, filt_mask);
+>  
+> diff --git a/lib/ll_map.c b/lib/ll_map.c
+> index e0ed54bf77c9..04dfb0f2320b 100644
+> --- a/lib/ll_map.c
+> +++ b/lib/ll_map.c
+> @@ -70,7 +70,7 @@ static struct ll_cache *ll_get_by_name(const char *name)
+>  		struct ll_cache *im
+>  			= container_of(n, struct ll_cache, name_hash);
+>  
+> -		if (strncmp(im->name, name, IFNAMSIZ) == 0)
+> +		if (strcmp(im->name, name) == 0)
+>  			return im;
+>  	}
+>  
+> @@ -240,6 +240,43 @@ int ll_index_to_flags(unsigned idx)
+>  	return im ? im->flags : -1;
+>  }
+>  
+> +static int altnametoindex(const char *name)
+> +{
+> +	struct {
+> +		struct nlmsghdr		n;
+> +		struct ifinfomsg	ifm;
+> +		char			buf[1024];
+> +	} req = {
+> +		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifinfomsg)),
+> +		.n.nlmsg_flags = NLM_F_REQUEST,
+> +		.n.nlmsg_type = RTM_GETLINK,
+> +	};
+> +	struct rtnl_handle rth = {};
+> +	struct nlmsghdr *answer;
+> +	struct ifinfomsg *ifm;
+> +	int rc = 0;
+> +
+> +	if (rtnl_open(&rth, 0) < 0)
+> +		return 0;
+> +
+> +	addattr32(&req.n, sizeof(req), IFLA_EXT_MASK,
+> +		  RTEXT_FILTER_VF | RTEXT_FILTER_SKIP_STATS);
+> +	addattr_l(&req.n, sizeof(req), IFLA_ALT_IFNAME, name, strlen(name) + 1);
+
+then why is altnametoindex even needed? why not just use the same check
+in the current ll_link_get?
+
+> +
+> +	if (rtnl_talk_suppress_rtnl_errmsg(&rth, &req.n, &answer) < 0)
+> +		goto out;
+> +
+> +	ifm = NLMSG_DATA(answer);
+> +	rc = ifm->ifi_index;
+> +
+> +	free(answer);
+> +
+> +	rtnl_close(&rth);
+> +out:
+> +	return rc;
+> +}
+> +
+> +
+>  unsigned ll_name_to_index(const char *name)
+>  {
+>  	const struct ll_cache *im;
+> @@ -257,6 +294,8 @@ unsigned ll_name_to_index(const char *name)
+>  		idx = if_nametoindex(name);
+>  	if (idx == 0)
+>  		idx = ll_idx_a2n(name);
+> +	if (idx == 0)
+> +		idx = altnametoindex(name);
+
+And then this ordering does not need to be fixed (altname check should
+come before if_nametoindex.
+
+>  	return idx;
+>  }
+>  
+> 
+
