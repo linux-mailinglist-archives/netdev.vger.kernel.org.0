@@ -2,83 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21797CE2EC
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:17:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3CF4CE34D
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:22:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728132AbfJGNRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 09:17:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56302 "EHLO mail.kernel.org"
+        id S1728571AbfJGNVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 09:21:48 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:24004 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727490AbfJGNRK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 09:17:10 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728337AbfJGNVT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 09:21:19 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A3BAD2084D;
-        Mon,  7 Oct 2019 13:17:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570454229;
-        bh=xa5tCod28JJBbGcKVRTOQ0XJYf74j2f5L1PTRdyyON0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xt+kDFhqe4uP3NTWqLWDms9Z8oW3IU2k63m2IJt2PTzUhhnifzKXjaMdY4RIutQmo
-         yJphlQZa3HY0TZfdrxJ2DGDO/4gmcpDKMWn1TOMOWmyCtfLGdbe19uMVctp04NWtF/
-         L8PsvC0idol+8rGuJiHrytl3f5HqiAdv6/vaYN2c=
-Date:   Mon, 7 Oct 2019 16:17:06 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v1 2/3] RDMA/rw: Support threshold for
- registration vs scattering to local pages
-Message-ID: <20191007131706.GX5855@unreal>
-References: <20191007115819.9211-1-leon@kernel.org>
- <20191007115819.9211-3-leon@kernel.org>
- <20191007121244.GA19843@infradead.org>
- <20191007123656.GW5855@unreal>
- <20191007124831.GA20840@infradead.org>
+        by mx1.redhat.com (Postfix) with ESMTPS id 06CE610DCC8E;
+        Mon,  7 Oct 2019 13:21:19 +0000 (UTC)
+Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E79769CAA;
+        Mon,  7 Oct 2019 13:20:59 +0000 (UTC)
+Date:   Mon, 7 Oct 2019 15:20:58 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH net-next v5 2/4] samples: pktgen: fix proc_cmd command
+ result check logic
+Message-ID: <20191007152058.3571dd60@carbon>
+In-Reply-To: <CAEKGpziOQ3PYeibyBK0pj6ZHhVyGsOahUHmXPC8zQYyV67mvqA@mail.gmail.com>
+References: <20191005082509.16137-1-danieltimlee@gmail.com>
+        <20191005082509.16137-3-danieltimlee@gmail.com>
+        <20191007101537.24c1961c@carbon>
+        <CAEKGpziOQ3PYeibyBK0pj6ZHhVyGsOahUHmXPC8zQYyV67mvqA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191007124831.GA20840@infradead.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Mon, 07 Oct 2019 13:21:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 07, 2019 at 05:48:31AM -0700, Christoph Hellwig wrote:
-> On Mon, Oct 07, 2019 at 03:36:56PM +0300, Leon Romanovsky wrote:
-> > > >  	if (rdma_protocol_iwarp(dev, port_num) && dir == DMA_FROM_DEVICE)
-> > > >  		return true;
-> > > > +	if (dev->attrs.max_sgl_rd && dir == DMA_FROM_DEVICE &&
-> > > > +	    dma_nents > dev->attrs.max_sgl_rd)
-> > > > +		return true;
-> > >
-> > > This can be simplified to:
-> > >
-> > > 	if (dir == DMA_FROM_DEVICE &&
-> > > 	    (rdma_protocol_iwarp(dev, port_num) ||
-> > > 	     (dev->attrs.max_sgl_rd && dma_nents > dev->attrs.max_sgl_rd)))
-> > > 		return true;
-> >
-> > I don't think that it simplifies and wanted to make separate checks to
-> > be separated. For example, rdma_protocol_iwarp() has nothing to do with
-> > attrs.max_sgl_rd.
->
-> The important bit is to have the DMA_FROM_DEVICE check only once, as
-> we only do the registration for reads with either parameter.  So if
-> you want it more verbose the wya would be:
->
->  	if (dir == DMA_FROM_DEVICE) {
-> 		if (rdma_protocol_iwarp(dev, port_num))
-> 			return true;
-> 		if (dev->attrs.max_sgl_rd && dma_nents > dev->attrs.max_sgl_rd)
-> 			return true;
-> 	}
+On Mon, 7 Oct 2019 20:37:31 +0900
+"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
 
-I'm doing it now, Thank you for taking time to explain.
+> On Mon, Oct 7, 2019 at 5:15 PM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> >
+> > On Sat,  5 Oct 2019 17:25:07 +0900
+> > "Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+> >  
+> > > Currently, proc_cmd is used to dispatch command to 'pg_ctrl', 'pg_thread',
+> > > 'pg_set'. proc_cmd is designed to check command result with grep the
+> > > "Result:", but this might fail since this string is only shown in
+> > > 'pg_thread' and 'pg_set'.
+> > >
+> > > This commit fixes this logic by grep-ing the "Result:" string only when
+> > > the command is not for 'pg_ctrl'.
+> > >
+> > > For clarity of an execution flow, 'errexit' flag has been set.
+> > >
+> > > To cleanup pktgen on exit, trap has been added for EXIT signal.
+> > >
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > > ---  
+> >
+> > Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> >  
+> > > Changes since v5:
+> > >  * when script runs sudo, run 'pg_ctrl "reset"' on EXIT with trap
+> > >
+> > >  samples/pktgen/functions.sh | 17 +++++++++++------
+> > >  1 file changed, 11 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
+> > > index 4af4046d71be..40873a5d1461 100644
+> > > --- a/samples/pktgen/functions.sh
+> > > +++ b/samples/pktgen/functions.sh
+> > > @@ -5,6 +5,8 @@
+> > >  # Author: Jesper Dangaaard Brouer
+> > >  # License: GPL
+> > >
+> > > +set -o errexit
+> > > +
+> > >  ## -- General shell logging cmds --
+> > >  function err() {
+> > >      local exitcode=$1
+> > > @@ -58,6 +60,7 @@ function pg_set() {
+> > >  function proc_cmd() {
+> > >      local result
+> > >      local proc_file=$1
+> > > +    local status=0
+> > >      # after shift, the remaining args are contained in $@
+> > >      shift
+> > >      local proc_ctrl=${PROC_DIR}/$proc_file
+> > > @@ -73,13 +76,13 @@ function proc_cmd() {
+> > >       echo "cmd: $@ > $proc_ctrl"
+> > >      fi
+> > >      # Quoting of "$@" is important for space expansion
+> > > -    echo "$@" > "$proc_ctrl"
+> > > -    local status=$?
+> > > +    echo "$@" > "$proc_ctrl" || status=$?
+> > >
+> > > -    result=$(grep "Result: OK:" $proc_ctrl)
+> > > -    # Due to pgctrl, cannot use exit code $? from grep
+> > > -    if [[ "$result" == "" ]]; then
+> > > -     grep "Result:" $proc_ctrl >&2
+> > > +    if [[ "$proc_file" != "pgctrl" ]]; then
+> > > +        result=$(grep "Result: OK:" $proc_ctrl) || true
+> > > +        if [[ "$result" == "" ]]; then
+> > > +            grep "Result:" $proc_ctrl >&2
+> > > +        fi
+> > >      fi
+> > >      if (( $status != 0 )); then
+> > >       err 5 "Write error($status) occurred cmd: \"$@ > $proc_ctrl\""
+> > > @@ -105,6 +108,8 @@ function pgset() {
+> > >      fi
+> > >  }
+> > >
+> > > +[[ $EUID -eq 0 ]] && trap 'pg_ctrl "reset"' EXIT
+> > > +  
+> >
+> > This is fine, but you could have placed the 'trap' handler in
+> > parameters.sh file, as all scripts first source functions.sh and then
+> > call root_check_run_with_sudo, before sourcing parameters.sh.
+> >  
+> 
+> Yes, this will work since 'parameters.sh' is only sourced when it is
+> on root, but I've thought this file only focuses on parsing parameters
+> not the general workflow of the pktgen script.
+> 
+> So I thought 'functions.sh' is more suitable place to add trap rather
+> than 'paramters.sh'.
+> 
+> What do you think?
+
+I agree.  I'm fine with this approach. I've already ACK'ed the patch.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
