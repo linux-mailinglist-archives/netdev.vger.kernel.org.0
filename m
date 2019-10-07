@@ -2,85 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF07CDEEB
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 12:15:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2C04CDEF1
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 12:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727448AbfJGKPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 06:15:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51868 "EHLO mx1.redhat.com"
+        id S1727606AbfJGKPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 06:15:46 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:3402 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726010AbfJGKPh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 06:15:37 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        id S1727570AbfJGKPp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 06:15:45 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2B4874FCD6;
-        Mon,  7 Oct 2019 10:15:37 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9D3E618C8907;
+        Mon,  7 Oct 2019 10:15:45 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-125-72.rdu2.redhat.com [10.10.125.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5F15F1001956;
-        Mon,  7 Oct 2019 10:15:36 +0000 (UTC)
-Subject: [PATCH net 0/6] rxrpc: Syzbot-inspired fixes
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CE7F75D9C9;
+        Mon,  7 Oct 2019 10:15:42 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+ Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+ Kingdom.
+ Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net 1/6] rxrpc: Fix call ref leak
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 07 Oct 2019 11:15:35 +0100
-Message-ID: <157044333551.32635.10133219357337058780.stgit@warthog.procyon.org.uk>
+Date:   Mon, 07 Oct 2019 11:15:42 +0100
+Message-ID: <157044334236.32635.6004840133677692694.stgit@warthog.procyon.org.uk>
+In-Reply-To: <157044333551.32635.10133219357337058780.stgit@warthog.procyon.org.uk>
+References: <157044333551.32635.10133219357337058780.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/unknown-version
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Mon, 07 Oct 2019 10:15:37 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.70]); Mon, 07 Oct 2019 10:15:45 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When sendmsg() finds a call to continue on with, if the call is in an
+inappropriate state, it doesn't release the ref it just got on that call
+before returning an error.
 
-Here's a series of patches that fix a number of issues found by syzbot:
+This causes the following symptom to show up with kasan:
 
- (1) A reference leak on rxrpc_call structs in a sendmsg error path.
+	BUG: KASAN: use-after-free in rxrpc_send_keepalive+0x8a2/0x940
+	net/rxrpc/output.c:635
+	Read of size 8 at addr ffff888064219698 by task kworker/0:3/11077
 
- (2) A tracepoint that looked in the rxrpc_peer record after putting it.
+where line 635 is:
 
-     Analogous with this, though not presently detected, the same bug is
-     also fixed in relation to rxrpc_connection and rxrpc_call records.
+	whdr.epoch	= htonl(peer->local->rxnet->epoch);
 
- (3) Peer records don't pin local endpoint records, despite accessing them.
+The local endpoint (which cannot be pinned by the call) has been released,
+but not the peer (which is pinned by the call).
 
- (4) Access to connection crypto ops to clean up a call after the call's
-     ref on that connection has been put.
+Fix this by releasing the call in the error path.
 
-The patches are tagged here:
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-	rxrpc-fixes-20191007
-
-and can also be found on the following branch:
-
-	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
-
-David
+Fixes: 37411cad633f ("rxrpc: Fix potential NULL-pointer exception")
+Reported-by: syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
-David Howells (6):
-      rxrpc: Fix call ref leak
-      rxrpc: Fix trace-after-put looking at the put peer record
-      rxrpc: Fix trace-after-put looking at the put connection record
-      rxrpc: Fix trace-after-put looking at the put call record
-      rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record
-      rxrpc: Fix call crypto state cleanup
 
+ net/rxrpc/sendmsg.c |    1 +
+ 1 file changed, 1 insertion(+)
 
- include/trace/events/rxrpc.h |   18 +++++++++---------
- net/rxrpc/ar-internal.h      |    1 +
- net/rxrpc/call_accept.c      |    5 +++--
- net/rxrpc/call_object.c      |   34 ++++++++++++++++++++--------------
- net/rxrpc/conn_client.c      |    9 +++++++--
- net/rxrpc/conn_object.c      |   13 +++++++------
- net/rxrpc/conn_service.c     |    2 +-
- net/rxrpc/peer_object.c      |   16 ++++++++++------
- net/rxrpc/recvmsg.c          |    6 +++---
- net/rxrpc/sendmsg.c          |    3 ++-
- 10 files changed, 63 insertions(+), 44 deletions(-)
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 6a1547b270fe..22f51a7e356e 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -661,6 +661,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 		case RXRPC_CALL_SERVER_PREALLOC:
+ 		case RXRPC_CALL_SERVER_SECURING:
+ 		case RXRPC_CALL_SERVER_ACCEPTING:
++			rxrpc_put_call(call, rxrpc_call_put);
+ 			ret = -EBUSY;
+ 			goto error_release_sock;
+ 		default:
 
