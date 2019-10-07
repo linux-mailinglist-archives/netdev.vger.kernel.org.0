@@ -2,89 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76C8ACE87F
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 17:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47539CE892
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 18:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727931AbfJGP6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 11:58:35 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34924 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727791AbfJGP6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 11:58:35 -0400
-Received: by mail-pg1-f195.google.com with SMTP id p30so6394596pgl.2
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 08:58:34 -0700 (PDT)
+        id S1728079AbfJGQDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 12:03:51 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:43330 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727935AbfJGQDu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 12:03:50 -0400
+Received: by mail-lf1-f66.google.com with SMTP id u3so9644998lfl.10;
+        Mon, 07 Oct 2019 09:03:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Q7rtzjnFJDzgl/cFLK/ImgYohSqUsKxMtww2iZ3LFxI=;
-        b=L2UEzrQNyW4qR/63zw8zkgy4pyfPvUqJc191PUYuwqqFBzcRgHsTNjOtcz6sShZIPb
-         dA/SN5iqkK380QeTr1TMQyMEyXWItFVoOPj0BTJNHvHvuYLm8lwTdbOSUuFCTyIH59hE
-         pzW6qE93mQZcysE7SxfrOnzobpeM0RpPQZ9ky1GwjbHD6Kd1PNsjg2bdQ46qNOywYScA
-         hRSrZvH5pu1GKgAXwZ2wpS+5O5gmxXTtnvm6JIiCE+/vjMomuawzyr7sRW5LQh9nYmYF
-         2X+6u2WLm9hpqjydnIc+4dnn/LIoudKifm2BFrmEQJ8LHa46ej0iFH/IjS8BvBCylDv5
-         4zkA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+U+56u4o7Na2WXoYropxhfczs8fHMA7M9mdUs+PWReE=;
+        b=Xh4TpPxCcQAoE6jyP1YluulUyU0xJq99mZooHAzrCwjs+h3iJqwxgrBLL+Wy6XP5zu
+         7H7sQCaGyVoocAeorqddNQnBfeg7IgCw3k0chvJ+97le1AO3l7y/xO+bxazhZvBf5HXl
+         F+YkI/0Qgt9+Kf3b1dCbr+kzhGSJxuQYPaadO8/HYmqhlO6Bh21MBxGakOQiWIraj0gh
+         zSuPl53c7b6JFXatVY1bROIXA+hu1lBKHGVXS1+x6eIMJpn4Bf1eQ54OFxEReF0RHbUB
+         Sn3AFVYRZByitYVpEkykP8r/sFOPgcYcs764VbjBEObc8yKI8axbTzDnPaZNi7SFOyBx
+         X6fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Q7rtzjnFJDzgl/cFLK/ImgYohSqUsKxMtww2iZ3LFxI=;
-        b=VgDZ+5Igi2uK56AGh/CAsttHMqyqyX2QD1UEHRLUOmdwEZkDJscEdrZJ5RQredRpZh
-         Bl8f8eAPLYw7vlG2xHnxrdPHiqf6op/cU5R+Z0z2LNW/wYOKJfL2Je/hmTguQXB9ajH0
-         yEyaE4w2LE426FoZJ6pkn64GhnhFx2MRlLn5Awuo4L3PQioU3JmjUp8rvrjPm6nSjLO5
-         XMm/vgTn5G3+A9+T/oZ9d0tTqOUYczuK8008dGfYI/F7U3ux7rI9tv0H9DezJTOhIFbq
-         LFoggKTG4ySPY11DuAYmX4s0nBiKGEOxDGtnKfaMvth5/rbKl7KhWH/VlUppHPkgtoHp
-         rMsQ==
-X-Gm-Message-State: APjAAAUMC2sm4ZudEjR+gRf8WX6BDElW9bOdJqoUPTyjAUXcBLh2d01H
-        S5O0iV36OMLAI2cv2CRvutM61Q==
-X-Google-Smtp-Source: APXvYqyhi32l/kmuUlMffnp2RlvNzUjYV7K3wiMTR7LXwgMxFjOP7LmfHSTRyJu+7lqWRtUm/ypu7w==
-X-Received: by 2002:a63:f915:: with SMTP id h21mr31135096pgi.269.1570463914153;
-        Mon, 07 Oct 2019 08:58:34 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id y2sm17266224pfe.126.2019.10.07.08.58.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Oct 2019 08:58:33 -0700 (PDT)
-Date:   Mon, 7 Oct 2019 08:58:24 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@netronome.com, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] nfp: bpf: make array exp_mask static, makes object
- smaller
-Message-ID: <20191007085824.64c89788@cakuba.netronome.com>
-In-Reply-To: <20191007115239.1742-1-colin.king@canonical.com>
-References: <20191007115239.1742-1-colin.king@canonical.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+U+56u4o7Na2WXoYropxhfczs8fHMA7M9mdUs+PWReE=;
+        b=eMdprjPtvvo7uGvHJDgv/buZiWqfbpWnukSMR1CiFjZ4QJMzVWyb56a/aTzfLcpD5+
+         pcIgo8Lqcr+FvlCgNXMZzcw4p8GyIRznebh4RKVNdX4SyhHP/o+qBP6G/FoqHiM5Cnn4
+         NUiLBqFxn/fBoMuXObwFnKR7zidnoDBvvb5lxVhHrFYAkMYziPeKl4oVZvxmyLC/fU9z
+         Ps+qRDpy9h0vcNWU2xuphqOf09F48L63Pf9JwpP2q+SypcRmulIxGr9Sg7lXkABJmxYs
+         Al5KwaDo1XQdGzJ68+5wWCc0we0z9NLovchjcJQ5kBykqlKtn/6koAu6ZKQN3mhyfsYn
+         XUAA==
+X-Gm-Message-State: APjAAAUFwLQNFKrqCh27yJTW5XwQ+URXRKQIjgl9rVkaqp9l/CxUicup
+        127sKZrJBjYwKd0z3+nDeDA1xLOsagJ1Xcyh88c=
+X-Google-Smtp-Source: APXvYqyRmoiXYFfRgwIoYqryNAgaJru+H6hRGUVhXzb+UTSl97Et5bj/A8oExgQP/f4gJ1WK9hUZ8B+pNN4lLaZdvfk=
+X-Received: by 2002:a19:ca07:: with SMTP id a7mr18643407lfg.181.1570464227676;
+ Mon, 07 Oct 2019 09:03:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191006184515.23048-1-jcfaracco@gmail.com> <20191006184515.23048-3-jcfaracco@gmail.com>
+ <20191007034402-mutt-send-email-mst@kernel.org> <CAENf94L+KNJgq1V6kgcwnT0hyTZMDX5Jh6kYRCaeMHDU4GGHCg@mail.gmail.com>
+In-Reply-To: <CAENf94L+KNJgq1V6kgcwnT0hyTZMDX5Jh6kYRCaeMHDU4GGHCg@mail.gmail.com>
+From:   Julio Faracco <jcfaracco@gmail.com>
+Date:   Mon, 7 Oct 2019 13:03:34 -0300
+Message-ID: <CAENf94Kamcd4TSy4wLGWLVCESiZr6q9+Kj2+3TFbFy2XncXOOw@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 2/2] drivers: net: virtio_net: Add tx_timeout function
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        davem@davemloft.net, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, Daiane Mendes <dnmendes76@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Oct 2019 12:52:39 +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Don't populate the array exp_mask on the stack but instead make it
-> static. Makes the object code smaller by 224 bytes.
-> 
-> Before:
->    text	   data	    bss	    dec	    hex	filename
->   77832	   2290	      0	  80122	  138fa	ethernet/netronome/nfp/bpf/jit.o
-> 
-> After:
->    text	   data	    bss	    dec	    hex	filename
->   77544	   2354	      0	  79898	  1381a	ethernet/netronome/nfp/bpf/jit.o
-> 
-> (gcc version 9.2.1, amd64)
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Em seg, 7 de out de 2019 =C3=A0s 11:03, Julio Faracco <jcfaracco@gmail.com>=
+ escreveu:
+>
+> Em seg, 7 de out de 2019 =C3=A0s 04:51, Michael S. Tsirkin <mst@redhat.co=
+m> escreveu:
+> >
+> > On Sun, Oct 06, 2019 at 03:45:15PM -0300, jcfaracco@gmail.com wrote:
+> > > From: Julio Faracco <jcfaracco@gmail.com>
+> > >
+> > > To enable dev_watchdog, virtio_net should have a tx_timeout defined
+> > > (.ndo_tx_timeout). This is only a skeleton to throw a warn message. I=
+t
+> > > notifies the event in some specific queue of device. This function
+> > > still counts tx_timeout statistic and consider this event as an error
+> > > (one error per queue), reporting it.
+> > >
+> > > Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
+> > > Signed-off-by: Daiane Mendes <dnmendes76@gmail.com>
+> > > Cc: Jason Wang <jasowang@redhat.com>
+> > > ---
+> > >  drivers/net/virtio_net.c | 27 +++++++++++++++++++++++++++
+> > >  1 file changed, 27 insertions(+)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 27f9b212c9f5..4b703b4b9441 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -2585,6 +2585,29 @@ static int virtnet_set_features(struct net_dev=
+ice *dev,
+> > >       return 0;
+> > >  }
+> > >
+> > > +static void virtnet_tx_timeout(struct net_device *dev)
+> > > +{
+> > > +     struct virtnet_info *vi =3D netdev_priv(dev);
+> > > +     u32 i;
+> > > +
+> > > +     /* find the stopped queue the same way dev_watchdog() does */
+> >
+> > not really - the watchdog actually looks at trans_start.
+>
+> The comments are wrong. It is the negative logic from dev_watchdog.
+> Watchdog requires queue stopped AND timeout.
+>
+> If the queue is not stopped, this queue does not reached a timeout event.
+> So, continue... Do not report a timeout.
+>
+> >
+> > > +     for (i =3D 0; i < vi->curr_queue_pairs; i++) {
+> > > +             struct send_queue *sq =3D &vi->sq[i];
+> > > +
+> > > +             if (!netif_xmit_stopped(netdev_get_tx_queue(dev, i)))
+> > > +                     continue;
+> > > +
+> > > +             u64_stats_update_begin(&sq->stats.syncp);
+> > > +             sq->stats.tx_timeouts++;
+> > > +             u64_stats_update_end(&sq->stats.syncp);
+> > > +
+> > > +             netdev_warn(dev, "TX timeout on send queue: %d, sq: %s,=
+ vq: %d, name: %s\n",
+> > > +                         i, sq->name, sq->vq->index, sq->vq->name);
+> >
+> > this seems to assume any running queue is timed out.
+> > doesn't look right.
+> >
+> > also - there's already a warning in this case in the core. do we need a=
+nother one?
+>
+> Here, it can be a debug message if the idea is enhance debugging informat=
+ion.
+> Other enhancements can be done to enable or disable debug messages.
+> Using ethtool methods for instance.
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Observation...
+Another important point, kernel will thrown WARN_ONCE, only if
+ndo_tx_timeout() is implemented.
+Even if we are adding an extra/unnecessary netdev_warn() we need this
+function to enable dev_watchdog().
+
+>
+> >
+> > > +             dev->stats.tx_errors++;
+> >
+> >
+> >
+> > > +     }
+> > > +}
+> > > +
+> > >  static const struct net_device_ops virtnet_netdev =3D {
+> > >       .ndo_open            =3D virtnet_open,
+> > >       .ndo_stop            =3D virtnet_close,
+> > > @@ -2600,6 +2623,7 @@ static const struct net_device_ops virtnet_netd=
+ev =3D {
+> > >       .ndo_features_check     =3D passthru_features_check,
+> > >       .ndo_get_phys_port_name =3D virtnet_get_phys_port_name,
+> > >       .ndo_set_features       =3D virtnet_set_features,
+> > > +     .ndo_tx_timeout         =3D virtnet_tx_timeout,
+> > >  };
+> > >
+> > >  static void virtnet_config_changed_work(struct work_struct *work)
+> > > @@ -3018,6 +3042,9 @@ static int virtnet_probe(struct virtio_device *=
+vdev)
+> > >       dev->netdev_ops =3D &virtnet_netdev;
+> > >       dev->features =3D NETIF_F_HIGHDMA;
+> > >
+> > > +     /* Set up dev_watchdog cycle. */
+> > > +     dev->watchdog_timeo =3D 5 * HZ;
+> > > +
+> >
+> > Seems to be still broken with napi_tx =3D false.
+> >
+> > >       dev->ethtool_ops =3D &virtnet_ethtool_ops;
+> > >       SET_NETDEV_DEV(dev, &vdev->dev);
+> > >
+> > > --
+> > > 2.21.0
