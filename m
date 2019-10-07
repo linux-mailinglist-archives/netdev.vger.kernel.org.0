@@ -2,138 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A2DCCEA88
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:24:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CEBACEA97
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728598AbfJGRYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 13:24:11 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:33736 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbfJGRYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:24:10 -0400
-Received: by mail-io1-f65.google.com with SMTP id z19so30487572ior.0;
-        Mon, 07 Oct 2019 10:24:10 -0700 (PDT)
+        id S1728592AbfJGR17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 13:27:59 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39252 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728079AbfJGR17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:27:59 -0400
+Received: by mail-pf1-f193.google.com with SMTP id v4so9077753pff.6;
+        Mon, 07 Oct 2019 10:27:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f19XKzeo7CREoxaZsVsRONVS5s0SLTB6t4SyKnXI7DM=;
-        b=CiigE7vs4fIku3bkBz3sbQ39z1nNKsl+M/ctOQzar/nVEoj4HtdTBA8Bq0/ZYP0ABo
-         dXzKL4fvKnjCSNCE9SOBMlsZB6JnS0vO8zWnK8SZbGWRZMjaV8IrchjiMDTbOvIHLUiw
-         07GxDyR3iO7BPpXhlEC+DBeQAMOUo9onvpPauAVbcm4ugyAn1tf+sezcCpisAZrhnLyF
-         PIWepPOOBbGNm64OXZxzO4Apgw09jQTaWvnHc7PCViQP5PIFeOPtNVxhVuJtIP4yMbAL
-         Z6tGsn3/Y/SiF2ixi5aoHeheVqOD6R81wgTZl0JWdsZwlthBWR7bputJbCzt7tDoSrk9
-         EHqg==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=rewVBm4IqqEvTaYiuvZUBNZZiDgXMthoGgqbVwwE7fI=;
+        b=RVrYNxECPmgNvxSfK06La7b07vRhlukaBBdvvvYhmTRZo+aO+qTFH2ZblgGiJxB9/5
+         OvP5MHzQJKg0rzKqupUtvizgdPVhCKRAfrl49yPNVOVlXxRj4npFks9mYqju8oOCAGQA
+         dGvcGzd+f++le3NzgBXVDh49kuno995vYdpX8WI3wyUL4iMiYtAfbzX3WrQnWf8RTa93
+         oupjUTkdAb3z8UShfYW7aIlM2F3OFyXoVUq5uLaols5fO7kLCvhUr4DbN49+FIN01Lyu
+         hBW1an4CIKtF0lcrO6Yfz34VNGvjnv0RBxADmA2g5Paue/HhIaFbgH57xCO8M/TXH8An
+         BGcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f19XKzeo7CREoxaZsVsRONVS5s0SLTB6t4SyKnXI7DM=;
-        b=n+g07cq8qtHizmRDiuj777yxDlCllHNuGgsxWTlQRzq9kPbgBEqU9uqd72a0IuNEne
-         Wkh6LjElpcekopoAZIh9LPYTfqZSCFLZnFQWlxGiYqEb93dsiijU5tTkd0fXTqmbKK/f
-         e0kAJ/FzymZ/0F5Q3vzFe28zBn+DGY1fa92WpxfW4+cgF0FlLqYUdSxwLLPFoN8wehSt
-         lcORTISeVhYcpKalMaX8+f9E9UJhDW+zFllrrBeIN6Z+M1hnB9uOthwmWsb4sOBAM6nI
-         fn2zhPOJ3/hiEja8Obam2jeEbt0WnnhWrBkXF9yquRXpNuGTCLwYxQMfU93tFA22BlSw
-         F7Fg==
-X-Gm-Message-State: APjAAAW0nHoIQl4ZCsK25oJcaRTQWzyLBXM5+MkVzXYMcg+8C0PT8RRS
-        LqGn08gh44EptJnKeW49gjd72eE6zNikeT/UURc=
-X-Google-Smtp-Source: APXvYqzgUWjOVexUVEoIKiFrSYPtJYgjVKLK+LdwKcl8jpZM7OSz2YINg0duXk2nz2yEQ2pbr1uB92Xz5qZFz+8zbsU=
-X-Received: by 2002:a6b:da06:: with SMTP id x6mr16936243iob.42.1570469049735;
- Mon, 07 Oct 2019 10:24:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <1570208647.1250.55.camel@oc5348122405> <20191004233052.28865.1609.stgit@localhost.localdomain>
- <1570241926.10511.7.camel@oc5348122405> <CAKgT0Ud7SupVd3RQmTEJ8e0fixiptS-1wFg+8V4EqpHEuAC3wQ@mail.gmail.com>
- <1570463459.1510.5.camel@oc5348122405> <CAKgT0Ue6+JJqcoFO1AcP8GCShmMPiUm1SNkbq9BxxWA-b5=Oow@mail.gmail.com>
- <1570468362.1510.9.camel@oc5348122405>
-In-Reply-To: <1570468362.1510.9.camel@oc5348122405>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 7 Oct 2019 10:23:58 -0700
-Message-ID: <CAKgT0UdwqGGKvaSJ+3vd-_d-6t9MB=No+7SpkbOT2PnynRK+2w@mail.gmail.com>
-Subject: Re: [RFC PATCH] e1000e: Use rtnl_lock to prevent race conditions
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=rewVBm4IqqEvTaYiuvZUBNZZiDgXMthoGgqbVwwE7fI=;
+        b=fCeL3WXvlkqGbjmy8aJUJMNyqOmxp6QhHLzwsLtOgx6+yZf5/7P383KB0YET+AUU4A
+         SCYFsrZ3EKVNT730U7bhLem7RpiBjQ7jl1JrSc5c0L0LEFbmx7I0rQubjHwniHVf3O8A
+         2ehDnTnlcikzJfK4GKh7z3a65wPlMtZsQpveD2ztc9pSkavs1q32oRYolm5VJOYaCRR9
+         mZwZOg04JK/V9qEgKSihFutXRxUP+rXjDpD/AiAP0/FdEntOawPe+6Rmn5dD3hI0RE15
+         MM7FT4BOST0vjGLR9i684DBRP0BJx1IjW+av5I9iV5VcR940WzOFiRUuii94Rbygj1C2
+         nj0g==
+X-Gm-Message-State: APjAAAUBJvZY8iyIVCO/OB6V+XQXDOACnCOuLdVboJa9Ed85gFFfhxhB
+        cgx5YqE9fM0+Ejv1Fh21sOA=
+X-Google-Smtp-Source: APXvYqyBCbO+Qi4CHuA8UQrMr7Jemry4iV0QSvxPw701kJ52QWmD9TrnfhS56eXUMVEYY/OzlknSgg==
+X-Received: by 2002:a17:90a:1aa9:: with SMTP id p38mr447244pjp.142.1570469276472;
+        Mon, 07 Oct 2019 10:27:56 -0700 (PDT)
+Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
+        by smtp.gmail.com with ESMTPSA id k95sm115110pje.10.2019.10.07.10.27.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Oct 2019 10:27:55 -0700 (PDT)
+Subject: [RFC PATCH v2] e1000e: Use rtnl_lock to prevent race conditions
  between net and pci/pm
-To:     "David Z. Dai" <zdai@linux.vnet.ibm.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>, zdai@us.ibm.com,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+To:     alexander.duyck@gmail.com
+Cc:     zdai@linux.vnet.ibm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        jeffrey.t.kirsher@intel.com, zdai@us.ibm.com, davem@davemloft.net
+Date:   Mon, 07 Oct 2019 10:27:55 -0700
+Message-ID: <20191007172559.11166.29328.stgit@localhost.localdomain>
+In-Reply-To: <CAKgT0UdwqGGKvaSJ+3vd-_d-6t9MB=No+7SpkbOT2PnynRK+2w@mail.gmail.com>
+References: <CAKgT0UdwqGGKvaSJ+3vd-_d-6t9MB=No+7SpkbOT2PnynRK+2w@mail.gmail.com>
+User-Agent: StGit/0.17.1-dirty
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 7, 2019 at 10:12 AM David Z. Dai <zdai@linux.vnet.ibm.com> wrote:
->
-> On Mon, 2019-10-07 at 10:02 -0700, Alexander Duyck wrote:
-> > On Mon, Oct 7, 2019 at 8:51 AM David Z. Dai <zdai@linux.vnet.ibm.com> wrote:
-> > >
-> >
-> > <snip>
-> >
-> > > We have tested on one of the test box.
-> > > With this patch, it doesn't crash kernel anymore, which is good!
-> > >
-> > > However we see this warning message from the log file for irq number 0:
-> > > [10206.317270] Trying to free already-free IRQ 0
-> > >
-> > > With this stack:
-> > > [10206.317344] NIP [c00000000018cbf8] __free_irq+0x308/0x370
-> > > [10206.317346] LR [c00000000018cbf4] __free_irq+0x304/0x370
-> > > [10206.317347] Call Trace:
-> > > [10206.317348] [c00000008b92b970] [c00000000018cbf4] __free_irq
-> > > +0x304/0x370 (unreliable)
-> > > [10206.317351] [c00000008b92ba00] [c00000000018cd84] free_irq+0x84/0xf0
-> > > [10206.317358] [c00000008b92ba30] [d000000007449e60] e1000_free_irq
-> > > +0x98/0xc0 [e1000e]
-> > > [10206.317365] [c00000008b92ba60] [d000000007458a70] e1000e_pm_freeze
-> > > +0xb8/0x100 [e1000e]
-> > > [10206.317372] [c00000008b92baa0] [d000000007458b6c]
-> > > e1000_io_error_detected+0x34/0x70 [e1000e]
-> > > [10206.317375] [c00000008b92bad0] [c000000000040358] eeh_report_failure
-> > > +0xc8/0x190
-> > > [10206.317377] [c00000008b92bb20] [c00000000003eb2c] eeh_pe_dev_traverse
-> > > +0x9c/0x170
-> > > [10206.317379] [c00000008b92bbb0] [c000000000040d84]
-> > > eeh_handle_normal_event+0xe4/0x580
-> > > [10206.317382] [c00000008b92bc60] [c000000000041330] eeh_handle_event
-> > > +0x30/0x340
-> > > [10206.317384] [c00000008b92bd10] [c000000000041780] eeh_event_handler
-> > > +0x140/0x200
-> > > [10206.317386] [c00000008b92bdc0] [c0000000001397c8] kthread+0x1a8/0x1b0
-> > > [10206.317389] [c00000008b92be30] [c00000000000b560]
-> > > ret_from_kernel_thread+0x5c/0x7c
-> > >
-> > > Thanks! - David
-> >
-> > Hmm. I wonder if it is possibly calling the report
-> > e1000_io_error_detected multiple times. If so then the secondary calls
-> > to e1000_pm_freeze would cause issues.
-> >
-> > I will add a check so that we only down the interface and free the
-> > IRQs if the interface is in the present and running state.
-> >
-> > I'll submit an update patch shortly.
-> >
-> > Thanks.
-> >
-> > - Alex
-> It only complains about IRQ number 0 in the log.
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-I suspect that is because the IRQ is already freed. So there are no
-other interrupts enabled and it thinks it is running in legacy IRQ
-mode.
+This patch is meant to address possible race conditions that can exist
+between network configuration and power management. A similar issue was
+fixed for igb in commit 9474933caf21 ("igb: close/suspend race in
+netif_device_detach").
 
-> Could you please let me know the actual place where you will add the
-> check?
-> I can retest it again.
->
-> Thanks! - David
+In addition it consolidates the code so that the PCI error handling code
+will essentially perform the power management freeze on the device prior to
+attempting a reset, and will thaw the device afterwards if that is what it
+is planning to do. Otherwise when we call close on the interface it should
+see it is detached and not attempt to call the logic to down the interface
+and free the IRQs again.
 
-So I will need to add another variable called "present" to
-e1000_pm_freeze, I will assign netif_device_present() to it after
-taking the rtnl_lock and before I detach the interface, and will test
-for it and netif_running() before calling the logic that calls
-e1000_down and e1000_free_irq.
+>From what I can tell the check that was adding the check for __E1000_DOWN
+in e1000e_close was added when runtime power management was added. However
+it should not be relevant for us as we perform a call to
+pm_runtime_get_sync before we call e1000_down/free_irq so it should always
+be back up before we call into this anyway.
 
-- Alex
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
+
+RFC v2: Dropped some unused variables
+	Added logic to check for device present before removing to pm_freeze
+	Fixed misplaced err_irq to before rtnl_unlock()
+
+ drivers/net/ethernet/intel/e1000e/netdev.c |   40 +++++++++++++++-------------
+ 1 file changed, 21 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index d7d56e42a6aa..8b4e589aca36 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -4715,12 +4715,12 @@ int e1000e_close(struct net_device *netdev)
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
+-	if (!test_bit(__E1000_DOWN, &adapter->state)) {
++	if (netif_device_present(netdev)) {
+ 		e1000e_down(adapter, true);
+ 		e1000_free_irq(adapter);
+ 
+ 		/* Link status message must follow this format */
+-		pr_info("%s NIC Link is Down\n", adapter->netdev->name);
++		pr_info("%s NIC Link is Down\n", netdev->name);
+ 	}
+ 
+ 	napi_disable(&adapter->napi);
+@@ -6298,10 +6298,14 @@ static int e1000e_pm_freeze(struct device *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
++	bool present;
+ 
++	rtnl_lock();
++
++	present = netif_device_present(netdev);
+ 	netif_device_detach(netdev);
+ 
+-	if (netif_running(netdev)) {
++	if (present && netif_running(netdev)) {
+ 		int count = E1000_CHECK_RESET_COUNT;
+ 
+ 		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
+@@ -6313,6 +6317,8 @@ static int e1000e_pm_freeze(struct device *dev)
+ 		e1000e_down(adapter, false);
+ 		e1000_free_irq(adapter);
+ 	}
++	rtnl_unlock();
++
+ 	e1000e_reset_interrupt_capability(adapter);
+ 
+ 	/* Allow time for pending master requests to run */
+@@ -6626,27 +6632,31 @@ static int __e1000_resume(struct pci_dev *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int e1000e_pm_thaw(struct device *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
++	int rc = 0;
+ 
+ 	e1000e_set_interrupt_capability(adapter);
+-	if (netif_running(netdev)) {
+-		u32 err = e1000_request_irq(adapter);
+ 
+-		if (err)
+-			return err;
++	rtnl_lock();
++	if (netif_running(netdev)) {
++		rc = e1000_request_irq(adapter);
++		if (rc)
++			goto err_irq;
+ 
+ 		e1000e_up(adapter);
+ 	}
+ 
+ 	netif_device_attach(netdev);
++err_irq:
++	rtnl_unlock();
+ 
+-	return 0;
++	return rc;
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
+ static int e1000e_pm_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+@@ -6818,16 +6828,11 @@ static void e1000_netpoll(struct net_device *netdev)
+ static pci_ers_result_t e1000_io_error_detected(struct pci_dev *pdev,
+ 						pci_channel_state_t state)
+ {
+-	struct net_device *netdev = pci_get_drvdata(pdev);
+-	struct e1000_adapter *adapter = netdev_priv(netdev);
+-
+-	netif_device_detach(netdev);
++	e1000e_pm_freeze(&pdev->dev);
+ 
+ 	if (state == pci_channel_io_perm_failure)
+ 		return PCI_ERS_RESULT_DISCONNECT;
+ 
+-	if (netif_running(netdev))
+-		e1000e_down(adapter, true);
+ 	pci_disable_device(pdev);
+ 
+ 	/* Request a slot slot reset. */
+@@ -6893,10 +6898,7 @@ static void e1000_io_resume(struct pci_dev *pdev)
+ 
+ 	e1000_init_manageability_pt(adapter);
+ 
+-	if (netif_running(netdev))
+-		e1000e_up(adapter);
+-
+-	netif_device_attach(netdev);
++	e1000e_pm_thaw(&pdev->dev);
+ 
+ 	/* If the controller has AMT, do not set DRV_LOAD until the interface
+ 	 * is up.  For all other cases, let the f/w know that the h/w is now
+
