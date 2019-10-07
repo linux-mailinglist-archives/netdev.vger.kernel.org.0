@@ -2,289 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 330D5CE3F6
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19CB4CE40F
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727975AbfJGNnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 09:43:18 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46688 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726334AbfJGNnS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 09:43:18 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 201so12533998qkd.13;
-        Mon, 07 Oct 2019 06:43:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=K+pUcPJyrjpykRGiVUmjMJ7TY7IW5jQUk/l6oR2E1B0=;
-        b=s0GM7LFfaODTdIhZWC89C1CPoetULRxViO0Az9sqdXnZPXl3O7+95Zkb0kmwgK960g
-         91PY5MaCMf4t37IOI18+3q4VIm5HP3ozKZfPj2SvuURkzSx6Ri/FPFLU8LDlLOgPdotp
-         wAKT+dUbQJy5rMZK/diqSbQWZPlSV4UutApDtiZcvFhKqqEAIRlvSTmHb5HlOk3te4sY
-         LGOSW4lJyEx7RJoN+2QIBAxfwkkGoZiMP71n9vw2ateZW5OKagn2E6rwZ2BI1IGASk3r
-         VrxI8IpcdsD8f4kB5bAzYSKu1NP9A4sRIgy3JpuWllkFS6xqSEHS2n5mpXzpFQFDDlVh
-         S6WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=K+pUcPJyrjpykRGiVUmjMJ7TY7IW5jQUk/l6oR2E1B0=;
-        b=JdzXGS7xd5P6I3RGH/bfxH3qcFjUrzrW+q/kNkK7kb/aDqxKiLm6fD3O/2fWZj74SF
-         Gv8/HCSTYkjrM6hUf9+Wm31i0ren1yb71XBWqtgJV1IV0aIp2747rhqCZDGgPXa9uR1k
-         A5KKObGYzdC8dS/k8sQsU6h6DbGfPh3N+LCJJLlKm4WCBXoikGWHy2DOI5nxxloPm8OK
-         9B5C2jLvhkw5JPjamGs7fNXI/qwui64n/Haehe25zOe9WMzloXDkyrgNNCeUG1uykfLz
-         ZzXUznWBkQ3LvpOkgaLHRXzclgzhttiBeaIBuLOBw9RsiVoe90OPNlSSAsIXZG5u6yN7
-         8OZg==
-X-Gm-Message-State: APjAAAVXBqMUS4yu7ipayIbX9bY42pxd0LZRbVp5ZTq/fomWFClA6DQB
-        FY6cdmdAXgVHFyZ1c4soy68=
-X-Google-Smtp-Source: APXvYqz2IvWx23o8jPkH3TIyab6bT4aOX0CvhBh+wnSFZqcwcJJcUi/gbyIFYE7CDVBxowqsvt9FHg==
-X-Received: by 2002:a37:4f94:: with SMTP id d142mr22624161qkb.421.1570455796980;
-        Mon, 07 Oct 2019 06:43:16 -0700 (PDT)
-Received: from auth2-smtp.messagingengine.com (auth2-smtp.messagingengine.com. [66.111.4.228])
-        by smtp.gmail.com with ESMTPSA id v7sm7330540qte.29.2019.10.07.06.43.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 07 Oct 2019 06:43:16 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 4492820F25;
-        Mon,  7 Oct 2019 09:43:15 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Mon, 07 Oct 2019 09:43:15 -0400
-X-ME-Sender: <xms:8kCbXWyfbl1NeLa42HwVcCs0QAcHWQyFdlcgxjGgjQ95azxVNKEf2A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrheejgdehgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
-    fuuhhsphgvtghtffhomhgrihhnucdlgeelmdenucfjughrpeffhffvuffkfhggtggugfgj
-    fgesthhqredttdervdenucfhrhhomhepuehoqhhunhcuhfgvnhhguceosghoqhhunhdrfh
-    gvnhhgsehgmhgrihhlrdgtohhmqeenucffohhmrghinhepghhithhhuhgsrdgtohhmpdgr
-    phhpshhpohhtrdgtohhmnecukfhppedukedtrdduheekrddukeefrddukeeinecurfgrrh
-    grmhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghsmhhtphgruhhthhhpvghrshhonhgr
-    lhhithihqdeiledvgeehtdeigedqudejjeekheehhedvqdgsohhquhhnrdhfvghngheppe
-    hgmhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvgenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:8kCbXfb-WdUp-L7JdKmeOOlX0lupnzfHMIvHYdtiYbvz5sLS8qm7Yg>
-    <xmx:8kCbXYx6m698Snepmw_4R2uzkj6_RB7fpz_DELGFjOav0v-Y6ALkAg>
-    <xmx:8kCbXdh2NnKDMPOa5oI2hJJtAQ-VJxwdnsZ6QgfSKY2CiRqWxcDINw>
-    <xmx:80CbXRRFC2-VeFPqt6_sinehiP--NeBVaPt8ll8bnqWAEALUc_HuftexAl0>
-Received: from localhost (unknown [180.158.183.186])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3044E8005C;
-        Mon,  7 Oct 2019 09:43:11 -0400 (EDT)
-Date:   Mon, 7 Oct 2019 21:43:04 +0800
-From:   Boqun Feng <boqun.feng@gmail.com>
-To:     Marco Elver <elver@google.com>
-Cc:     syzbot <syzbot+134336b86f728d6e55a0@syzkaller.appspotmail.com>,
-        paulmck@kernel.org, josh@joshtriplett.org, rostedt@goodmis.org,
-        mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com,
-        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
-        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, LKML <linux-kernel@vger.kernel.org>,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
-Subject: Re: KCSAN: data-race in find_next_bit / rcu_report_exp_cpu_mult
-Message-ID: <20191007134304.GA2609633@tardis>
-References: <000000000000604e8905944f211f@google.com>
- <CANpmjNNmSOagbTpffHr4=Yedckx9Rm2NuGqC9UqE+AOz5f1-ZQ@mail.gmail.com>
+        id S1728398AbfJGNpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 09:45:03 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:38327 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727490AbfJGNpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 09:45:03 -0400
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id 48F24328F02;
+        Mon,  7 Oct 2019 15:44:59 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1iHTJr-0005F9-1w; Mon, 07 Oct 2019 15:44:59 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Petr Oros <poros@redhat.com>
+Subject: [PATCH iproute2] ipnetns: enable to dump nsid conversion table
+Date:   Mon,  7 Oct 2019 15:44:47 +0200
+Message-Id: <20191007134447.20077-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CANpmjNNmSOagbTpffHr4=Yedckx9Rm2NuGqC9UqE+AOz5f1-ZQ@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marco,
+This patch enables to dump/get nsid from a netns into another netns.
 
-On Mon, Oct 07, 2019 at 12:04:16PM +0200, Marco Elver wrote:
-> +RCU maintainers
-> This might be a data-race in RCU itself.
->=20
-> On Mon, 7 Oct 2019 at 12:01, syzbot
-> <syzbot+134336b86f728d6e55a0@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    b4bd9343 x86, kcsan: Enable KCSAN for x86
-> > git tree:       https://github.com/google/ktsan.git kcsan
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=3D11edb20d600=
-000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=3Dc0906aa6207=
-13d80
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=3D134336b86f728=
-d6e55a0
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >
-> > Unfortunately, I don't have any reproducer for this crash yet.
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the comm=
-it:
-> > Reported-by: syzbot+134336b86f728d6e55a0@syzkaller.appspotmail.com
-> >
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > BUG: KCSAN: data-race in find_next_bit / rcu_report_exp_cpu_mult
-> >
-> > write to 0xffffffff85a7f140 of 8 bytes by task 7 on cpu 0:
-> >   rcu_report_exp_cpu_mult+0x4f/0xa0 kernel/rcu/tree_exp.h:244
-> >   rcu_report_exp_rdp+0x6c/0x90 kernel/rcu/tree_exp.h:254
-> >   rcu_preempt_deferred_qs_irqrestore+0x3bb/0x580 kernel/rcu/tree_plugin=
-=2Eh:475
-> >   rcu_read_unlock_special+0xec/0x370 kernel/rcu/tree_plugin.h:659
-> >   __rcu_read_unlock+0xcf/0xe0 kernel/rcu/tree_plugin.h:394
-> >   rcu_read_unlock include/linux/rcupdate.h:645 [inline]
-> >   batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:411 [inline]
-> >   batadv_nc_worker+0x13a/0x390 net/batman-adv/network-coding.c:718
-> >   process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
-> >   worker_thread+0xa0/0x800 kernel/workqueue.c:2415
-> >   kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
-> >   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
-> >
-> > read to 0xffffffff85a7f140 of 8 bytes by task 7251 on cpu 1:
-> >   _find_next_bit lib/find_bit.c:39 [inline]
-> >   find_next_bit+0x57/0xe0 lib/find_bit.c:70
-> >   sync_rcu_exp_select_node_cpus+0x28e/0x510 kernel/rcu/tree_exp.h:375
+Example:
+$ ./test.sh
++ ip netns add foo
++ ip netns add bar
++ touch /var/run/netns/init_net
++ mount --bind /proc/1/ns/net /var/run/netns/init_net
++ ip netns set init_net 11
++ ip netns set foo 12
++ ip netns set bar 13
++ ip netns
+init_net (id: 11)
+bar (id: 13)
+foo (id: 12)
++ ip -n foo netns set init_net 21
++ ip -n foo netns set foo 22
++ ip -n foo netns set bar 23
++ ip -n foo netns
+init_net (id: 21)
+bar (id: 23)
+foo (id: 22)
++ ip -n bar netns set init_net 31
++ ip -n bar netns set foo 32
++ ip -n bar netns set bar 33
++ ip -n bar netns
+init_net (id: 31)
+bar (id: 33)
+foo (id: 32)
++ ip netns list-id target-nsid 12
+nsid 21 current-nsid 11 (iproute2 netns name: init_net)
+nsid 22 current-nsid 12 (iproute2 netns name: foo)
+nsid 23 current-nsid 13 (iproute2 netns name: bar)
++ ip -n foo netns list-id target-nsid 21
+nsid 11 current-nsid 21 (iproute2 netns name: init_net)
+nsid 12 current-nsid 22 (iproute2 netns name: foo)
+nsid 13 current-nsid 23 (iproute2 netns name: bar)
++ ip -n bar netns list-id target-nsid 33 nsid 32
+nsid 32 current-nsid 32 (iproute2 netns name: foo)
++ ip -n bar netns list-id target-nsid 31 nsid 32
+nsid 12 current-nsid 32 (iproute2 netns name: foo)
++ ip netns list-id nsid 13
+nsid 13 (iproute2 netns name: bar)
 
-This is the second for_each_leaf_node_cpu_mask() loop in
-sync_rcu_exp_select_node_cpus(), the first loop is for collecting which
-CPU blocks current grace period (IOW, which CPU need to be sent an IPI
-to), and the second loop does the real work of sending IPI. The first
-loop is protected by proper lock (rcu node lock), so there is no race
-there. But the second one can't hold rcu node lock, because the IPI
-handler (rcu_exp_handler) needs to acquire the same lock, so rcu node
-lock has to be dropped before the second loop to avoid deadlock.
-
-Now for the racy find_next_bit() on rnp->expmask:
-
-1) if an extra bit appears: it's OK since there is checking on whether
-the bit exists in mask_ofl_ipi (the result of the first loop).
-
-2) if a bit is missing: it will be problematic, because the second loop
-will skip the CPU, and the rest of the code will treat the CPU as
-offline but hasn't reported a quesient state, and the
-rcu_report_exp_cpu_mult() will report the qs for it, even though the CPU
-may currenlty run inside a RCU read-side critical section.
-
-Note both "appears" and "missing" means some intermediate state of a
-plain unset for expmask contributed by compiler magic.
-
-Please see below for a compile-test-only patch:
-
-> >   sync_rcu_exp_select_cpus+0x30c/0x590 kernel/rcu/tree_exp.h:439
-> >   rcu_exp_sel_wait_wake kernel/rcu/tree_exp.h:575 [inline]
-> >   wait_rcu_exp_gp+0x25/0x40 kernel/rcu/tree_exp.h:589
-> >   process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
-> >   worker_thread+0xa0/0x800 kernel/workqueue.c:2415
-> >   kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
-> >   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
-> >
-> > Reported by Kernel Concurrency Sanitizer on:
-> > CPU: 1 PID: 7251 Comm: kworker/1:4 Not tainted 5.3.0+ #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > Google 01/01/2011
-> > Workqueue: rcu_gp wait_rcu_exp_gp
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >
-> >
-
-Regards,
-Boqun
-
-------------------->8
-Subject: [PATCH] rcu: exp: Avoid race on lockless rcu_node::expmask loop
-
-KCSAN reported an issue:
-
-| BUG: KCSAN: data-race in find_next_bit / rcu_report_exp_cpu_mult
-|
-| write to 0xffffffff85a7f140 of 8 bytes by task 7 on cpu 0:
-|   rcu_report_exp_cpu_mult+0x4f/0xa0 kernel/rcu/tree_exp.h:244
-|   rcu_report_exp_rdp+0x6c/0x90 kernel/rcu/tree_exp.h:254
-|   rcu_preempt_deferred_qs_irqrestore+0x3bb/0x580 kernel/rcu/tree_plugin.h=
-:475
-|   rcu_read_unlock_special+0xec/0x370 kernel/rcu/tree_plugin.h:659
-|   __rcu_read_unlock+0xcf/0xe0 kernel/rcu/tree_plugin.h:394
-|   rcu_read_unlock include/linux/rcupdate.h:645 [inline]
-|   batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:411 [inline]
-|   batadv_nc_worker+0x13a/0x390 net/batman-adv/network-coding.c:718
-|   process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
-|   worker_thread+0xa0/0x800 kernel/workqueue.c:2415
-|   kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
-|   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
-|
-| read to 0xffffffff85a7f140 of 8 bytes by task 7251 on cpu 1:
-|   _find_next_bit lib/find_bit.c:39 [inline]
-|   find_next_bit+0x57/0xe0 lib/find_bit.c:70
-|   sync_rcu_exp_select_node_cpus+0x28e/0x510 kernel/rcu/tree_exp.h:375
-|   sync_rcu_exp_select_cpus+0x30c/0x590 kernel/rcu/tree_exp.h:439
-|   rcu_exp_sel_wait_wake kernel/rcu/tree_exp.h:575 [inline]
-|   wait_rcu_exp_gp+0x25/0x40 kernel/rcu/tree_exp.h:589
-|   process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
-|   worker_thread+0xa0/0x800 kernel/workqueue.c:2415
-|   kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
-|   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
-
-The root cause of this is the second for_each_leaf_node_cpu_mask() loop
-in sync_rcu_exp_select_node_cpus() accesses the rcu_node::expmask
-without holding rcu_node's lock. This is by design, because the second
-loop may issue IPIs to other CPUs, and the IPI handler (rcu_exp_handler)
-may acquire the same rcu_node's lock. So the rcu_node's lock has to be
-dropped before the second loop.
-
-The problem will occur when the normal unsetting of rcu_node::expmask
-results into some intermediate state (because it's a plain access),
-where an extra bit gets zeroed. The second loop will skip the
-corrensponding CPU, but treat it as offline and in quesient state. This
-will cause trouble because that CPU may be in a RCU read-side critical
-section.
-
-To fix this, take a snapshot of mask_ofl_ipi, and make the second loop
-iterate on the snapshot's bits, as a result, the find_next_bit() of the
-second loop doesn't access any variables that may get changed in
-parallel, so the race is avoided.
-
-Reported-by: syzbot+134336b86f728d6e55a0@syzkaller.appspotmail.com
-Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+CC: Petr Oros <poros@redhat.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- kernel/rcu/tree_exp.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/libnetlink.h |   5 +-
+ ip/ip_common.h       |   1 +
+ ip/ipnetns.c         | 115 +++++++++++++++++++++++++++++++++++++++++--
+ lib/libnetlink.c     |  15 ++++--
+ 4 files changed, 126 insertions(+), 10 deletions(-)
 
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index af7e7b9c86af..7f3e19d0275e 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -335,6 +335,7 @@ static void sync_rcu_exp_select_node_cpus(struct work_s=
-truct *wp)
- 	unsigned long flags;
- 	unsigned long mask_ofl_test;
- 	unsigned long mask_ofl_ipi;
-+	unsigned long mask_ofl_ipi_snap;
- 	int ret;
- 	struct rcu_exp_work *rewp =3D
- 		container_of(wp, struct rcu_exp_work, rew_work);
-@@ -371,13 +372,12 @@ static void sync_rcu_exp_select_node_cpus(struct work=
-_struct *wp)
- 		rnp->exp_tasks =3D rnp->blkd_tasks.next;
- 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
-=20
-+	mask_ofl_ipi_snap =3D mask_ofl_ipi;
- 	/* IPI the remaining CPUs for expedited quiescent state. */
--	for_each_leaf_node_cpu_mask(rnp, cpu, rnp->expmask) {
-+	for_each_leaf_node_cpu_mask(rnp, cpu, mask_ofl_ipi_snap) {
- 		unsigned long mask =3D leaf_node_cpu_bit(rnp, cpu);
- 		struct rcu_data *rdp =3D per_cpu_ptr(&rcu_data, cpu);
-=20
--		if (!(mask_ofl_ipi & mask))
--			continue;
- retry_ipi:
- 		if (rcu_dynticks_in_eqs_since(rdp, rdp->exp_dynticks_snap)) {
- 			mask_ofl_test |=3D mask;
---=20
+diff --git a/include/libnetlink.h b/include/libnetlink.h
+index 311cf3fc90f8..8ebdc6d3d03e 100644
+--- a/include/libnetlink.h
++++ b/include/libnetlink.h
+@@ -71,8 +71,6 @@ int rtnl_mdbdump_req(struct rtnl_handle *rth, int family)
+ 	__attribute__((warn_unused_result));
+ int rtnl_netconfdump_req(struct rtnl_handle *rth, int family)
+ 	__attribute__((warn_unused_result));
+-int rtnl_nsiddump_req(struct rtnl_handle *rth, int family)
+-	__attribute__((warn_unused_result));
+ 
+ int rtnl_linkdump_req(struct rtnl_handle *rth, int fam)
+ 	__attribute__((warn_unused_result));
+@@ -85,6 +83,9 @@ int rtnl_linkdump_req_filter_fn(struct rtnl_handle *rth, int fam,
+ int rtnl_fdb_linkdump_req_filter_fn(struct rtnl_handle *rth,
+ 				    req_filter_fn_t filter_fn)
+ 	__attribute__((warn_unused_result));
++int rtnl_nsiddump_req_filter_fn(struct rtnl_handle *rth, int family,
++				req_filter_fn_t filter_fn)
++	__attribute__((warn_unused_result));
+ int rtnl_statsdump_req_filter(struct rtnl_handle *rth, int fam, __u32 filt_mask)
+ 	__attribute__((warn_unused_result));
+ int rtnl_dump_request(struct rtnl_handle *rth, int type, void *req,
+diff --git a/ip/ip_common.h b/ip/ip_common.h
+index cd916ec87c26..879287e3e506 100644
+--- a/ip/ip_common.h
++++ b/ip/ip_common.h
+@@ -24,6 +24,7 @@ struct link_filter {
+ 	int master;
+ 	char *kind;
+ 	char *slave_kind;
++	int target_nsid;
+ };
+ 
+ int get_operstate(const char *name);
+diff --git a/ip/ipnetns.c b/ip/ipnetns.c
+index a883f210d7ba..20110ef0f58e 100644
+--- a/ip/ipnetns.c
++++ b/ip/ipnetns.c
+@@ -36,7 +36,7 @@ static int usage(void)
+ 		"	ip netns pids NAME\n"
+ 		"	ip [-all] netns exec [NAME] cmd ...\n"
+ 		"	ip netns monitor\n"
+-		"	ip netns list-id\n"
++		"	ip netns list-id [target-nsid POSITIVE-INT] [nsid POSITIVE-INT]\n"
+ 		"NETNSID := auto | POSITIVE-INT\n");
+ 	exit(-1);
+ }
+@@ -46,6 +46,7 @@ static struct rtnl_handle rtnsh = { .fd = -1 };
+ 
+ static int have_rtnl_getnsid = -1;
+ static int saved_netns = -1;
++static struct link_filter filter;
+ 
+ static int ipnetns_accept_msg(struct rtnl_ctrl_data *ctrl,
+ 			      struct nlmsghdr *n, void *arg)
+@@ -294,7 +295,7 @@ int print_nsid(struct nlmsghdr *n, void *arg)
+ 	FILE *fp = (FILE *)arg;
+ 	struct nsid_cache *c;
+ 	char name[NAME_MAX];
+-	int nsid;
++	int nsid, current;
+ 
+ 	if (n->nlmsg_type != RTM_NEWNSID && n->nlmsg_type != RTM_DELNSID)
+ 		return 0;
+@@ -317,9 +318,22 @@ int print_nsid(struct nlmsghdr *n, void *arg)
+ 		print_bool(PRINT_ANY, "deleted", "Deleted ", true);
+ 
+ 	nsid = rta_getattr_u32(tb[NETNSA_NSID]);
+-	print_uint(PRINT_ANY, "nsid", "nsid %u ", nsid);
++	if (nsid < 0)
++		print_string(PRINT_ANY, "nsid", "nsid %s ", "not-assigned");
++	else
++		print_uint(PRINT_ANY, "nsid", "nsid %u ", nsid);
++
++	if (tb[NETNSA_CURRENT_NSID]) {
++		current = rta_getattr_u32(tb[NETNSA_CURRENT_NSID]);
++		if (current < 0)
++			print_string(PRINT_ANY, "current-nsid",
++				     "current-nsid %s ", "not-assigned");
++		else
++			print_uint(PRINT_ANY, "current-nsid",
++				   "current-nsid %u ", current);
++	}
+ 
+-	c = netns_map_get_by_nsid(nsid);
++	c = netns_map_get_by_nsid(tb[NETNSA_CURRENT_NSID] ? current : nsid);
+ 	if (c != NULL) {
+ 		print_string(PRINT_ANY, "name",
+ 			     "(iproute2 netns name: %s)", c->name);
+@@ -340,15 +354,106 @@ int print_nsid(struct nlmsghdr *n, void *arg)
+ 	return 0;
+ }
+ 
++static int get_netnsid_from_netnsid(int nsid)
++{
++	struct {
++		struct nlmsghdr n;
++		struct rtgenmsg g;
++		char            buf[1024];
++	} req = {
++		.n.nlmsg_len = NLMSG_LENGTH(NLMSG_ALIGN(sizeof(struct rtgenmsg))),
++		.n.nlmsg_flags = NLM_F_REQUEST,
++		.n.nlmsg_type = RTM_GETNSID,
++		.g.rtgen_family = AF_UNSPEC,
++	};
++	struct nlmsghdr *answer;
++	int err;
++
++	netns_nsid_socket_init();
++
++	err = addattr32(&req.n, sizeof(req), NETNSA_NSID, nsid);
++	if (err)
++		return err;
++
++	if (filter.target_nsid >= 0) {
++		err = addattr32(&req.n, sizeof(req), NETNSA_TARGET_NSID,
++				filter.target_nsid);
++		if (err)
++			return err;
++	}
++
++	if (rtnl_talk(&rtnsh, &req.n, &answer) < 0)
++		return -2;
++
++	/* Validate message and parse attributes */
++	if (answer->nlmsg_type == NLMSG_ERROR)
++		goto err_out;
++
++	new_json_obj(json);
++	err = print_nsid(answer, stdout);
++	delete_json_obj();
++err_out:
++	free(answer);
++	return err;
++}
++
++static int netns_filter_req(struct nlmsghdr *nlh, int reqlen)
++{
++	int err;
++
++	if (filter.target_nsid >= 0) {
++		err = addattr32(nlh, reqlen, NETNSA_TARGET_NSID,
++				filter.target_nsid);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
+ static int netns_list_id(int argc, char **argv)
+ {
++	int nsid = -1;
++
+ 	if (!ipnetns_have_nsid()) {
+ 		fprintf(stderr,
+ 			"RTM_GETNSID is not supported by the kernel.\n");
+ 		return -ENOTSUP;
+ 	}
+ 
+-	if (rtnl_nsiddump_req(&rth, AF_UNSPEC) < 0) {
++	filter.target_nsid = -1;
++	while (argc > 0) {
++		if (strcmp(*argv, "target-nsid") == 0) {
++			if (filter.target_nsid >= 0)
++				duparg("target-nsid", *argv);
++			NEXT_ARG();
++
++			if (get_integer(&filter.target_nsid, *argv, 0))
++				invarg("\"target-nsid\" value is invalid\n",
++				       *argv);
++			else if (filter.target_nsid < 0)
++				invarg("\"target-nsid\" value should be >= 0\n",
++				       argv[1]);
++		} else if (strcmp(*argv, "nsid") == 0) {
++			if (nsid >= 0)
++				duparg("nsid", *argv);
++			NEXT_ARG();
++
++			if (get_integer(&nsid, *argv, 0))
++				invarg("\"nsid\" value is invalid\n", *argv);
++			else if (nsid < 0)
++				invarg("\"nsid\" value should be >= 0\n",
++				       argv[1]);
++		} else
++			usage();
++		argc--; argv++;
++	}
++
++	if (nsid >= 0)
++		return get_netnsid_from_netnsid(nsid);
++
++	if (rtnl_nsiddump_req_filter_fn(&rth, AF_UNSPEC,
++					netns_filter_req) < 0) {
+ 		perror("Cannot send dump request");
+ 		exit(1);
+ 	}
+diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+index 8c490f896326..6ce8b199f441 100644
+--- a/lib/libnetlink.c
++++ b/lib/libnetlink.c
+@@ -438,12 +438,13 @@ int rtnl_netconfdump_req(struct rtnl_handle *rth, int family)
+ 	return send(rth->fd, &req, sizeof(req), 0);
+ }
+ 
+-int rtnl_nsiddump_req(struct rtnl_handle *rth, int family)
++int rtnl_nsiddump_req_filter_fn(struct rtnl_handle *rth, int family,
++				req_filter_fn_t filter_fn)
+ {
+ 	struct {
+ 		struct nlmsghdr nlh;
+ 		struct rtgenmsg rtm;
+-		char buf[0] __aligned(NLMSG_ALIGNTO);
++		char buf[1024];
+ 	} req = {
+ 		.nlh.nlmsg_len = NLMSG_LENGTH(NLMSG_ALIGN(sizeof(struct rtgenmsg))),
+ 		.nlh.nlmsg_type = RTM_GETNSID,
+@@ -451,8 +452,16 @@ int rtnl_nsiddump_req(struct rtnl_handle *rth, int family)
+ 		.nlh.nlmsg_seq = rth->dump = ++rth->seq,
+ 		.rtm.rtgen_family = family,
+ 	};
++	int err;
+ 
+-	return send(rth->fd, &req, sizeof(req), 0);
++	if (!filter_fn)
++		return -EINVAL;
++
++	err = filter_fn(&req.nlh, sizeof(req));
++	if (err)
++		return err;
++
++	return send(rth->fd, &req, req.nlh.nlmsg_len, 0);
+ }
+ 
+ static int __rtnl_linkdump_req(struct rtnl_handle *rth, int family)
+-- 
 2.23.0
 
