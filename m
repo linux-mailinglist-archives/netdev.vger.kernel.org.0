@@ -2,144 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3CF4CE34D
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:22:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB2E8CE352
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728571AbfJGNVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 09:21:48 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:24004 "EHLO mx1.redhat.com"
+        id S1728581AbfJGNWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 09:22:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728337AbfJGNVT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 09:21:19 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727010AbfJGNWX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 09:22:23 -0400
+Received: from paulmck-ThinkPad-P72 (unknown [12.12.162.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 06CE610DCC8E;
-        Mon,  7 Oct 2019 13:21:19 +0000 (UTC)
-Received: from carbon (ovpn-200-24.brq.redhat.com [10.40.200.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E79769CAA;
-        Mon,  7 Oct 2019 13:20:59 +0000 (UTC)
-Date:   Mon, 7 Oct 2019 15:20:58 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, brouer@redhat.com
-Subject: Re: [PATCH net-next v5 2/4] samples: pktgen: fix proc_cmd command
- result check logic
-Message-ID: <20191007152058.3571dd60@carbon>
-In-Reply-To: <CAEKGpziOQ3PYeibyBK0pj6ZHhVyGsOahUHmXPC8zQYyV67mvqA@mail.gmail.com>
-References: <20191005082509.16137-1-danieltimlee@gmail.com>
-        <20191005082509.16137-3-danieltimlee@gmail.com>
-        <20191007101537.24c1961c@carbon>
-        <CAEKGpziOQ3PYeibyBK0pj6ZHhVyGsOahUHmXPC8zQYyV67mvqA@mail.gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 821E820867;
+        Mon,  7 Oct 2019 13:22:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570454541;
+        bh=94FgQQQInriYcdaiwu3nO9LUTD1ig1lcCMAvKOjrqC4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=Wu2tRRwWmif60CLvRIfmXIIdxFUVzY/DAMy3D3xiCP2QeY68YVmor0hUkkGfC6XNh
+         HQ5HFPMwKqUTAOkE6hahJ8U/4Hip40f10Qx+/7iXubKwJtAux+CmTvfJi1CdRQvyIk
+         OJTLt4gus3H0Mindd4qm+p3wqKrjbVvaKu+k86uM=
+Date:   Mon, 7 Oct 2019 06:22:20 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Marco Elver <elver@google.com>
+Cc:     syzbot <syzbot+134336b86f728d6e55a0@syzkaller.appspotmail.com>,
+        josh@joshtriplett.org, rostedt@goodmis.org,
+        mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
+        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, LKML <linux-kernel@vger.kernel.org>,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
+Subject: Re: KCSAN: data-race in find_next_bit / rcu_report_exp_cpu_mult
+Message-ID: <20191007132220.GZ2689@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <000000000000604e8905944f211f@google.com>
+ <CANpmjNNmSOagbTpffHr4=Yedckx9Rm2NuGqC9UqE+AOz5f1-ZQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Mon, 07 Oct 2019 13:21:19 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANpmjNNmSOagbTpffHr4=Yedckx9Rm2NuGqC9UqE+AOz5f1-ZQ@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Oct 2019 20:37:31 +0900
-"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+On Mon, Oct 07, 2019 at 12:04:16PM +0200, Marco Elver wrote:
+> +RCU maintainers
+> This might be a data-race in RCU itself.
 
-> On Mon, Oct 7, 2019 at 5:15 PM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> >
-> > On Sat,  5 Oct 2019 17:25:07 +0900
-> > "Daniel T. Lee" <danieltimlee@gmail.com> wrote:
-> >  
-> > > Currently, proc_cmd is used to dispatch command to 'pg_ctrl', 'pg_thread',
-> > > 'pg_set'. proc_cmd is designed to check command result with grep the
-> > > "Result:", but this might fail since this string is only shown in
-> > > 'pg_thread' and 'pg_set'.
-> > >
-> > > This commit fixes this logic by grep-ing the "Result:" string only when
-> > > the command is not for 'pg_ctrl'.
-> > >
-> > > For clarity of an execution flow, 'errexit' flag has been set.
-> > >
-> > > To cleanup pktgen on exit, trap has been added for EXIT signal.
-> > >
-> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > > ---  
-> >
-> > Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> >  
-> > > Changes since v5:
-> > >  * when script runs sudo, run 'pg_ctrl "reset"' on EXIT with trap
-> > >
-> > >  samples/pktgen/functions.sh | 17 +++++++++++------
-> > >  1 file changed, 11 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
-> > > index 4af4046d71be..40873a5d1461 100644
-> > > --- a/samples/pktgen/functions.sh
-> > > +++ b/samples/pktgen/functions.sh
-> > > @@ -5,6 +5,8 @@
-> > >  # Author: Jesper Dangaaard Brouer
-> > >  # License: GPL
-> > >
-> > > +set -o errexit
-> > > +
-> > >  ## -- General shell logging cmds --
-> > >  function err() {
-> > >      local exitcode=$1
-> > > @@ -58,6 +60,7 @@ function pg_set() {
-> > >  function proc_cmd() {
-> > >      local result
-> > >      local proc_file=$1
-> > > +    local status=0
-> > >      # after shift, the remaining args are contained in $@
-> > >      shift
-> > >      local proc_ctrl=${PROC_DIR}/$proc_file
-> > > @@ -73,13 +76,13 @@ function proc_cmd() {
-> > >       echo "cmd: $@ > $proc_ctrl"
-> > >      fi
-> > >      # Quoting of "$@" is important for space expansion
-> > > -    echo "$@" > "$proc_ctrl"
-> > > -    local status=$?
-> > > +    echo "$@" > "$proc_ctrl" || status=$?
-> > >
-> > > -    result=$(grep "Result: OK:" $proc_ctrl)
-> > > -    # Due to pgctrl, cannot use exit code $? from grep
-> > > -    if [[ "$result" == "" ]]; then
-> > > -     grep "Result:" $proc_ctrl >&2
-> > > +    if [[ "$proc_file" != "pgctrl" ]]; then
-> > > +        result=$(grep "Result: OK:" $proc_ctrl) || true
-> > > +        if [[ "$result" == "" ]]; then
-> > > +            grep "Result:" $proc_ctrl >&2
-> > > +        fi
-> > >      fi
-> > >      if (( $status != 0 )); then
-> > >       err 5 "Write error($status) occurred cmd: \"$@ > $proc_ctrl\""
-> > > @@ -105,6 +108,8 @@ function pgset() {
-> > >      fi
-> > >  }
-> > >
-> > > +[[ $EUID -eq 0 ]] && trap 'pg_ctrl "reset"' EXIT
-> > > +  
-> >
-> > This is fine, but you could have placed the 'trap' handler in
-> > parameters.sh file, as all scripts first source functions.sh and then
-> > call root_check_run_with_sudo, before sourcing parameters.sh.
-> >  
-> 
-> Yes, this will work since 'parameters.sh' is only sourced when it is
-> on root, but I've thought this file only focuses on parsing parameters
-> not the general workflow of the pktgen script.
-> 
-> So I thought 'functions.sh' is more suitable place to add trap rather
-> than 'paramters.sh'.
-> 
-> What do you think?
+Quite possibly.  I will take a look, but there will be delays due to this
+week being bootcamp and all.
 
-I agree.  I'm fine with this approach. I've already ACK'ed the patch.
+							Thanx, Paul
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+> On Mon, 7 Oct 2019 at 12:01, syzbot
+> <syzbot+134336b86f728d6e55a0@syzkaller.appspotmail.com> wrote:
+> >
+> > Hello,
+> >
+> > syzbot found the following crash on:
+> >
+> > HEAD commit:    b4bd9343 x86, kcsan: Enable KCSAN for x86
+> > git tree:       https://github.com/google/ktsan.git kcsan
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=11edb20d600000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=c0906aa620713d80
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=134336b86f728d6e55a0
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> >
+> > Unfortunately, I don't have any reproducer for this crash yet.
+> >
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+134336b86f728d6e55a0@syzkaller.appspotmail.com
+> >
+> > ==================================================================
+> > BUG: KCSAN: data-race in find_next_bit / rcu_report_exp_cpu_mult
+> >
+> > write to 0xffffffff85a7f140 of 8 bytes by task 7 on cpu 0:
+> >   rcu_report_exp_cpu_mult+0x4f/0xa0 kernel/rcu/tree_exp.h:244
+> >   rcu_report_exp_rdp+0x6c/0x90 kernel/rcu/tree_exp.h:254
+> >   rcu_preempt_deferred_qs_irqrestore+0x3bb/0x580 kernel/rcu/tree_plugin.h:475
+> >   rcu_read_unlock_special+0xec/0x370 kernel/rcu/tree_plugin.h:659
+> >   __rcu_read_unlock+0xcf/0xe0 kernel/rcu/tree_plugin.h:394
+> >   rcu_read_unlock include/linux/rcupdate.h:645 [inline]
+> >   batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:411 [inline]
+> >   batadv_nc_worker+0x13a/0x390 net/batman-adv/network-coding.c:718
+> >   process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
+> >   worker_thread+0xa0/0x800 kernel/workqueue.c:2415
+> >   kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
+> >   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
+> >
+> > read to 0xffffffff85a7f140 of 8 bytes by task 7251 on cpu 1:
+> >   _find_next_bit lib/find_bit.c:39 [inline]
+> >   find_next_bit+0x57/0xe0 lib/find_bit.c:70
+> >   sync_rcu_exp_select_node_cpus+0x28e/0x510 kernel/rcu/tree_exp.h:375
+> >   sync_rcu_exp_select_cpus+0x30c/0x590 kernel/rcu/tree_exp.h:439
+> >   rcu_exp_sel_wait_wake kernel/rcu/tree_exp.h:575 [inline]
+> >   wait_rcu_exp_gp+0x25/0x40 kernel/rcu/tree_exp.h:589
+> >   process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
+> >   worker_thread+0xa0/0x800 kernel/workqueue.c:2415
+> >   kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
+> >   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
+> >
+> > Reported by Kernel Concurrency Sanitizer on:
+> > CPU: 1 PID: 7251 Comm: kworker/1:4 Not tainted 5.3.0+ #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > Google 01/01/2011
+> > Workqueue: rcu_gp wait_rcu_exp_gp
+> > ==================================================================
+> >
+> >
+> > ---
+> > This bug is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >
+> > syzbot will keep track of this bug report. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
