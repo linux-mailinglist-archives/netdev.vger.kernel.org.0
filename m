@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96BA3CEC48
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 20:59:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3168ACEC50
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 20:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728871AbfJGS7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 14:59:13 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:48867 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728702AbfJGS7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 14:59:12 -0400
-Received: by mail-io1-f72.google.com with SMTP id w16so28288817ioc.15
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 11:59:12 -0700 (PDT)
+        id S1728371AbfJGS7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 14:59:35 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:34136 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728882AbfJGS7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 14:59:13 -0400
+Received: by mail-io1-f71.google.com with SMTP id z10so28402896ioj.1
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 11:59:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=hcZ/rOmgx1gUO3ejejbmSDSQ+0Pvz2P/r/ne8Sia82Q=;
-        b=hyyZuByDpjmFZtkJ6g5KT3LhXAxK40m9x8nIS7V01oZz5yPV+A7dpNiebaDxjP755L
-         IRIEcQ/c5Qk9EkQGD9MZNMGOg78QtebNPqOJL3NPnDulAEiajRPQHHZn+n2l8cog89lT
-         hAaUoYRO71Qv6dh7wuWi3Bm9iIzqLdAE3Imr5gyT4coMDoPh+jSf6XEwyO7Q+Aj3v9kT
-         XWNIDobTsH6Tfk9efl6fqp2QnkBjLv/u3NfqWkGSN55EdO9Ikxcj3qPyLXKo+jdqaxQl
-         5xc1WZ/1/LEUm/DH+alFbBYW5+MNzExWv/156cY7EA/Jsy+rc/AxmcsM9sle3kTaqvsy
-         se8Q==
-X-Gm-Message-State: APjAAAWmSd5yzwuLr39XmwgIptr4Tpy/Dv9OmZVACtiqPZYbdc/GrD0e
-        Q57zFMBnEg3f/1RbEOsQu0JPhO3MVV20F4ozMiaRuj6WuNuE
-X-Google-Smtp-Source: APXvYqwKDV9bkJ3CbD1lTn7nhWmSEDVsQCa6LfIBWdqWXDABkI5OnzYeetKhzne6hfaVlJekLNHvwRkLfMslrr+O8HcvmHuuqZf4
+        bh=GrVx4R2TSBBXTVnwndCSWUFdFGmwDx1aYPlI5rVweMs=;
+        b=hm1m+/iJP0mgDo61WVJFNlI6Ha6wohJ8tKZfL0OHQfBYV7TNKXKVI1b1zZtvVfcOM0
+         Gzlu6LMpc7D2RdS0UW0B1AKqVOZAdltL23d/1c3vjYemKRMDLTnuqDGcMic8lRNxYL0b
+         hr6DV4xL3DFAIWxW2ClueK1v6hrZ0CYYygnMygjtXp2firnXw3HHVdIbbnUFKGY3O+yn
+         po+gu1XDW88qdJPNwKXjvyQWW9JV2eN7lB6ZbkoV0ODkMZDCvhM1SgSpxOxluBf/Bh7G
+         WCPS3o4yKHdKgCKdXVUjRCI0HcsORVmGNGmF33SRQmPC30INaCwIxjKOpJyIEqWpRJv2
+         GVTQ==
+X-Gm-Message-State: APjAAAX5i2JowJdyXjJcVqaLj/LTqWZ5AhNEmcsj8FFO2JRuS4uTJ92T
+        /SBWNGOI/PevAgJ1JGx4j62MWlNqPkcA5nfw1oMzm47DJyuR
+X-Google-Smtp-Source: APXvYqwejDKuAeexkMPDzZGVQwxrmuUIqx1wT/LFpoCz8L6mzXx+bksAIbMy/P68xH31YByWdWefyeK1irDcA0xmWbUjabXPP2Ip
 MIME-Version: 1.0
-X-Received: by 2002:a6b:9109:: with SMTP id t9mr23918993iod.16.1570474751802;
+X-Received: by 2002:a05:6602:10d:: with SMTP id s13mr16461353iot.244.1570474751494;
  Mon, 07 Oct 2019 11:59:11 -0700 (PDT)
 Date:   Mon, 07 Oct 2019 11:59:11 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b5c8d0059456a5c7@google.com>
-Subject: general protection fault in rxrpc_error_report
-From:   syzbot <syzbot+611164843bd48cc2190c@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Message-ID: <000000000000b11343059456a5f5@google.com>
+Subject: general protection fault in devlink_get_from_attrs
+From:   syzbot <syzbot+896295c817162503d359@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jiri@mellanox.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -48,98 +48,88 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    3b47fd5c Merge tag 'nfs-for-5.3-4' of git://git.linux-nfs...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12e278c1600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b89bb446a3faaba4
-dashboard link: https://syzkaller.appspot.com/bug?extid=611164843bd48cc2190c
+HEAD commit:    056ddc38 Merge branch 'stmmac-next'
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1590218f600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9be300620399522
+dashboard link: https://syzkaller.appspot.com/bug?extid=896295c817162503d359
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1014304e600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=134663de600000
-
-The bug was bisected to:
-
-commit 2baec2c3f854d1f79c7bb28386484e144e864a14
-Author: David Howells <dhowells@redhat.com>
-Date:   Wed May 24 16:02:32 2017 +0000
-
-     rxrpc: Support network namespacing
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15edda32600000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=17edda32600000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13edda32600000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a6a6c3600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15fd50dd600000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+611164843bd48cc2190c@syzkaller.appspotmail.com
-Fixes: 2baec2c3f854 ("rxrpc: Support network namespacing")
+Reported-by: syzbot+896295c817162503d359@syzkaller.appspotmail.com
 
 kasan: CONFIG_KASAN_INLINE enabled
 kasan: GPF could be caused by NULL-ptr deref or user memory access
 general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 16 Comm: ksoftirqd/1 Not tainted 5.3.0-rc7+ #0
+CPU: 1 PID: 8790 Comm: syz-executor447 Not tainted 5.4.0-rc1+ #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
-RIP: 0010:rxrpc_lookup_peer_icmp_rcu net/rxrpc/peer_event.c:37 [inline]
-RIP: 0010:rxrpc_error_report+0x23b/0x1a80 net/rxrpc/peer_event.c:175
-Code: ff ff ff ba 24 00 00 00 31 f6 48 89 df e8 ed ff 0f fb 49 8d be 5c 02  
-00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48  
-89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 16
-RSP: 0018:ffff8880a99174a0 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff8880a9917500 RCX: 0000000000000000
-RDX: 000000000000004b RSI: 0000000000000000 RDI: 000000000000025c
-RBP: ffff8880a99175a0 R08: 0000000000000004 R09: ffff8880a9917500
-R10: ffffed1015322ea4 R11: 0000000000000003 R12: ffff888098ca4d40
-R13: ffff88808dce9330 R14: 0000000000000000 R15: ffff8880a9917640
-FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+RIP: 0010:devlink_get_from_attrs+0x32/0x300 net/core/devlink.c:124
+Code: 41 55 41 54 53 48 89 f3 48 83 ec 10 48 89 7d c8 e8 03 f6 bf fb 48 8d  
+7b 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
+85 84 02 00 00 4c 8b 6b 08 4d 85 ed 0f 84 d9 01 00
+RSP: 0018:ffff8880944bf438 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff85b31cdd RDI: 0000000000000008
+RBP: ffff8880944bf470 R08: 1ffffffff13360d4 R09: fffffbfff13360d5
+R10: ffff8880944bf470 R11: ffffffff899b06a7 R12: ffff8880a1fa47b8
+R13: 0000000000000000 R14: 0000000000000000 R15: ffff8880a1fa4830
+FS:  00000000015e8880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004cde30 CR3: 0000000008c6d000 CR4: 00000000001406e0
+CR2: 0000000020000284 CR3: 00000000a1620000 CR4: 00000000001406e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
-  sock_queue_err_skb+0x34c/0x7c0 net/core/skbuff.c:4401
-  ip_icmp_error+0x3e3/0x580 net/ipv4/ip_sockglue.c:415
-  __udp4_lib_err+0x609/0x1320 net/ipv4/udp.c:713
-  udp_err+0x25/0x30 net/ipv4/udp.c:723
-  icmp_socket_deliver+0x1ea/0x370 net/ipv4/icmp.c:768
-  icmp_unreach+0x34a/0xaa0 net/ipv4/icmp.c:885
-  icmp_rcv+0xede/0x15a0 net/ipv4/icmp.c:1067
-  ip_protocol_deliver_rcu+0x5a/0x8b0 net/ipv4/ip_input.c:204
-  ip_local_deliver_finish+0x23b/0x390 net/ipv4/ip_input.c:231
-  NF_HOOK include/linux/netfilter.h:305 [inline]
-  NF_HOOK include/linux/netfilter.h:299 [inline]
-  ip_local_deliver+0x1e9/0x520 net/ipv4/ip_input.c:252
-  dst_input include/net/dst.h:442 [inline]
-  ip_rcv_finish+0x1d9/0x2e0 net/ipv4/ip_input.c:413
-  NF_HOOK include/linux/netfilter.h:305 [inline]
-  NF_HOOK include/linux/netfilter.h:299 [inline]
-  ip_rcv+0xe8/0x3f0 net/ipv4/ip_input.c:523
-  __netif_receive_skb_one_core+0x113/0x1a0 net/core/dev.c:5004
-  __netif_receive_skb+0x2c/0x1d0 net/core/dev.c:5118
-  process_backlog+0x206/0x750 net/core/dev.c:5929
-  napi_poll net/core/dev.c:6352 [inline]
-  net_rx_action+0x4d6/0x1030 net/core/dev.c:6418
-  __do_softirq+0x262/0x98c kernel/softirq.c:292
-  run_ksoftirqd kernel/softirq.c:603 [inline]
-  run_ksoftirqd+0x8e/0x110 kernel/softirq.c:595
-  smpboot_thread_fn+0x6a3/0xa40 kernel/smpboot.c:165
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+  devlink_health_reporter_get_from_cb net/core/devlink.c:4991 [inline]
+  devlink_nl_cmd_health_reporter_dump_get_dumpit+0x15b/0x930  
+net/core/devlink.c:5246
+  genl_lock_dumpit+0x86/0xc0 net/netlink/genetlink.c:529
+  netlink_dump+0x558/0xfb0 net/netlink/af_netlink.c:2244
+  __netlink_dump_start+0x5b1/0x7d0 net/netlink/af_netlink.c:2352
+  genl_family_rcv_msg_dumpit net/netlink/genetlink.c:614 [inline]
+  genl_family_rcv_msg net/netlink/genetlink.c:710 [inline]
+  genl_rcv_msg+0xc9b/0x1000 net/netlink/genetlink.c:730
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+  genl_rcv+0x29/0x40 net/netlink/genetlink.c:741
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:657
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
+  __do_sys_sendmsg net/socket.c:2365 [inline]
+  __se_sys_sendmsg net/socket.c:2363 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4401e9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe414d6368 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401e9
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a70
+R13: 0000000000401b00 R14: 0000000000000000 R15: 0000000000000000
 Modules linked in:
----[ end trace 7d3172ee2e4a713b ]---
-RIP: 0010:rxrpc_lookup_peer_icmp_rcu net/rxrpc/peer_event.c:37 [inline]
-RIP: 0010:rxrpc_error_report+0x23b/0x1a80 net/rxrpc/peer_event.c:175
-Code: ff ff ff ba 24 00 00 00 31 f6 48 89 df e8 ed ff 0f fb 49 8d be 5c 02  
-00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48  
-89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 16
-RSP: 0018:ffff8880a99174a0 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff8880a9917500 RCX: 0000000000000000
-RDX: 000000000000004b RSI: 0000000000000000 RDI: 000000000000025c
-RBP: ffff8880a99175a0 R08: 0000000000000004 R09: ffff8880a9917500
-R10: ffffed1015322ea4 R11: 0000000000000003 R12: ffff888098ca4d40
-R13: ffff88808dce9330 R14: 0000000000000000 R15: ffff8880a9917640
-FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+---[ end trace 9a97fc0240c52134 ]---
+RIP: 0010:devlink_get_from_attrs+0x32/0x300 net/core/devlink.c:124
+Code: 41 55 41 54 53 48 89 f3 48 83 ec 10 48 89 7d c8 e8 03 f6 bf fb 48 8d  
+7b 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
+85 84 02 00 00 4c 8b 6b 08 4d 85 ed 0f 84 d9 01 00
+RSP: 0018:ffff8880944bf438 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff85b31cdd RDI: 0000000000000008
+RBP: ffff8880944bf470 R08: 1ffffffff13360d4 R09: fffffbfff13360d5
+R10: ffff8880944bf470 R11: ffffffff899b06a7 R12: ffff8880a1fa47b8
+R13: 0000000000000000 R14: 0000000000000000 R15: ffff8880a1fa4830
+FS:  00000000015e8880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004cde30 CR3: 0000000008c6d000 CR4: 00000000001406e0
+CR2: 0000000020000284 CR3: 00000000a1620000 CR4: 00000000001406e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
@@ -151,6 +141,5 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this bug, for details see:
 https://goo.gl/tpsmEJ#testing-patches
