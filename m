@@ -2,141 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E53EDCEA52
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4969CCEA73
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 19:20:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729143AbfJGRNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 13:13:05 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17014 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728031AbfJGRNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 13:13:05 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x97H37Mk129416;
-        Mon, 7 Oct 2019 13:12:45 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2vg8jba5vw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Oct 2019 13:12:45 -0400
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x97H64Ku136871;
-        Mon, 7 Oct 2019 13:12:45 -0400
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2vg8jba5vj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Oct 2019 13:12:45 -0400
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x97H5i0Q024030;
-        Mon, 7 Oct 2019 17:12:44 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma05wdc.us.ibm.com with ESMTP id 2vejt72p35-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Oct 2019 17:12:44 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x97HChGK49938782
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Oct 2019 17:12:43 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 458212805A;
-        Mon,  7 Oct 2019 17:12:43 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B737528058;
-        Mon,  7 Oct 2019 17:12:42 +0000 (GMT)
-Received: from [9.53.179.215] (unknown [9.53.179.215])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Oct 2019 17:12:42 +0000 (GMT)
-Subject: Re: [RFC PATCH] e1000e: Use rtnl_lock to prevent race conditions
- between net and pci/pm
-From:   "David Z. Dai" <zdai@linux.vnet.ibm.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>, zdai@us.ibm.com,
-        David Miller <davem@davemloft.net>
-In-Reply-To: <CAKgT0Ue6+JJqcoFO1AcP8GCShmMPiUm1SNkbq9BxxWA-b5=Oow@mail.gmail.com>
-References: <1570208647.1250.55.camel@oc5348122405>
-         <20191004233052.28865.1609.stgit@localhost.localdomain>
-         <1570241926.10511.7.camel@oc5348122405>
-         <CAKgT0Ud7SupVd3RQmTEJ8e0fixiptS-1wFg+8V4EqpHEuAC3wQ@mail.gmail.com>
-         <1570463459.1510.5.camel@oc5348122405>
-         <CAKgT0Ue6+JJqcoFO1AcP8GCShmMPiUm1SNkbq9BxxWA-b5=Oow@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date:   Mon, 07 Oct 2019 12:12:42 -0500
-Message-ID: <1570468362.1510.9.camel@oc5348122405>
-Mime-Version: 1.0
-X-Mailer: Evolution 2.32.3 (2.32.3-36.el6) 
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-07_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=948 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910070158
+        id S1728598AbfJGRUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 13:20:40 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59626 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728660AbfJGRUj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 13:20:39 -0400
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 12978970DF
+        for <netdev@vger.kernel.org>; Mon,  7 Oct 2019 17:20:39 +0000 (UTC)
+Received: by mail-lj1-f200.google.com with SMTP id p14so3720124ljh.22
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 10:20:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=TV7l4rVSCPuFf6bf0/5mrz7z4gL0/i747x7OYxCnc2s=;
+        b=cPLy1c/QCNPQZvYW260rQe0CcpYwj21w/nMpKkisPFZY5Etes25a7f1C5Q7xdlWPY1
+         z1AiGb4jIilMzrjOaHVjbHc/+o8Ek/6UoDUX9WieTefXRLJ5axE/t1c8pyLinP0iHLgK
+         Fk74tV0kbKek+ieIMCxPbM4to7Caf464bo5s6iv8EA1bBPEGSBXMD7zD6iOCxeL9JOV2
+         XvbYUMT03DeMLXUP1P3UL9At7yddWpUN/YvqJaTcfC7OnZYr9QxelA+YefRfaa5PmLzA
+         Bo3vGq/TK40qQply1MytntkJ6t1Hq0iWfC3afoDdfCHN+EGxVQIsJeFHEeo8s7gJ1mw5
+         K14g==
+X-Gm-Message-State: APjAAAWBsmXxgIRY64X3tehELVZQ6ed4CZi6En1cKNEF52t9CN/muD3/
+        90R8HyXlmFCcUTrivQND/33FODD2SS40OBEHJDl0Uun3KIQw+ZRthsimlOMTN239LboAVJe/Kb9
+        evE3UpQbdb7pdndIS
+X-Received: by 2002:ac2:554e:: with SMTP id l14mr1792042lfk.32.1570468837494;
+        Mon, 07 Oct 2019 10:20:37 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyesdDW+CfnpzSajvJVOjsSH6iBuq8qinIiQOnNFJVtXvS5GuuPidY4qjRXkOAYaxw+9N1I0Q==
+X-Received: by 2002:ac2:554e:: with SMTP id l14mr1792022lfk.32.1570468837240;
+        Mon, 07 Oct 2019 10:20:37 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id v7sm2817572lfd.55.2019.10.07.10.20.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Oct 2019 10:20:36 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2989A18063D; Mon,  7 Oct 2019 19:20:35 +0200 (CEST)
+Subject: [PATCH bpf-next v3 0/5] xdp: Support multiple programs on a single
+ interface through chain calls
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Mon, 07 Oct 2019 19:20:35 +0200
+Message-ID: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
+User-Agent: StGit/0.19-dirty
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-10-07 at 10:02 -0700, Alexander Duyck wrote:
-> On Mon, Oct 7, 2019 at 8:51 AM David Z. Dai <zdai@linux.vnet.ibm.com> wrote:
-> >
-> 
-> <snip>
-> 
-> > We have tested on one of the test box.
-> > With this patch, it doesn't crash kernel anymore, which is good!
-> >
-> > However we see this warning message from the log file for irq number 0:
-> > [10206.317270] Trying to free already-free IRQ 0
-> >
-> > With this stack:
-> > [10206.317344] NIP [c00000000018cbf8] __free_irq+0x308/0x370
-> > [10206.317346] LR [c00000000018cbf4] __free_irq+0x304/0x370
-> > [10206.317347] Call Trace:
-> > [10206.317348] [c00000008b92b970] [c00000000018cbf4] __free_irq
-> > +0x304/0x370 (unreliable)
-> > [10206.317351] [c00000008b92ba00] [c00000000018cd84] free_irq+0x84/0xf0
-> > [10206.317358] [c00000008b92ba30] [d000000007449e60] e1000_free_irq
-> > +0x98/0xc0 [e1000e]
-> > [10206.317365] [c00000008b92ba60] [d000000007458a70] e1000e_pm_freeze
-> > +0xb8/0x100 [e1000e]
-> > [10206.317372] [c00000008b92baa0] [d000000007458b6c]
-> > e1000_io_error_detected+0x34/0x70 [e1000e]
-> > [10206.317375] [c00000008b92bad0] [c000000000040358] eeh_report_failure
-> > +0xc8/0x190
-> > [10206.317377] [c00000008b92bb20] [c00000000003eb2c] eeh_pe_dev_traverse
-> > +0x9c/0x170
-> > [10206.317379] [c00000008b92bbb0] [c000000000040d84]
-> > eeh_handle_normal_event+0xe4/0x580
-> > [10206.317382] [c00000008b92bc60] [c000000000041330] eeh_handle_event
-> > +0x30/0x340
-> > [10206.317384] [c00000008b92bd10] [c000000000041780] eeh_event_handler
-> > +0x140/0x200
-> > [10206.317386] [c00000008b92bdc0] [c0000000001397c8] kthread+0x1a8/0x1b0
-> > [10206.317389] [c00000008b92be30] [c00000000000b560]
-> > ret_from_kernel_thread+0x5c/0x7c
-> >
-> > Thanks! - David
-> 
-> Hmm. I wonder if it is possibly calling the report
-> e1000_io_error_detected multiple times. If so then the secondary calls
-> to e1000_pm_freeze would cause issues.
-> 
-> I will add a check so that we only down the interface and free the
-> IRQs if the interface is in the present and running state.
-> 
-> I'll submit an update patch shortly.
-> 
-> Thanks.
-> 
-> - Alex
-It only complains about IRQ number 0 in the log.
-Could you please let me know the actual place where you will add the
-check?
-I can retest it again.
+This series adds support for executing multiple XDP programs on a single
+interface in sequence, through the use of chain calls, as discussed at the Linux
+Plumbers Conference last month:
 
-Thanks! - David
+https://linuxplumbersconf.org/event/4/contributions/460/
+
+# HIGH-LEVEL IDEA
+
+Since Alexei pointed out some issues with trying to rewrite the eBPF byte code,
+let's try a third approach: We add the ability to chain call programs into the
+eBPF execution core itself, but without rewriting the eBPF byte code.
+
+As in the previous version, the bpf() syscall gets a couple of new commands
+which takes a pair of BPF program fds and a return code. It will then attach the
+second program to the first one in a structured keyed by return code. When a
+program chain is thus established, the former program will tail call to the
+latter at the end of its execution.
+
+The actual tail calling is achieved by adding a new flag to struct bpf_prog and
+having BPF_PROG_RUN run the chain call logic if that flag is set. This means
+that if the feature is *not* used, the overhead is a single conditional branch
+(which means I couldn't measure a performance difference, as can be seen in the
+results below).
+
+For this version I kept the load-time flag from the previous version, to avoid
+having to remove the read-only memory protection from the bpf prog. Only
+programs loaded with this flag set can have other programs attached to them for
+chain calls.
+
+As before, it shouldn't be necessary to set the flag on program load time, but
+rather we should enable the feature when a chain call program is first loaded.
+We could conceivably just remove the RO property from the first page of struct
+bpf_prog and set the flag as needed.
+
+# PERFORMANCE
+
+I performed a simple performance test to get an initial feel for the overhead of
+the chain call mechanism. This test consists of running only two programs in
+sequence: One that returns XDP_PASS and another that returns XDP_DROP. I then
+measure the drop PPS performance and compare it to a baseline of just a single
+program that only returns XDP_DROP.
+
+For comparison, a test case that uses regular eBPF tail calls to sequence two
+programs together is also included.
+
+| Test case                        | Perf      | Overhead |
+|----------------------------------+-----------+----------|
+| Before patch (XDP DROP program)  | 31.5 Mpps |          |
+| After patch (XDP DROP program)   | 32.0 Mpps |          |
+| XDP chain call (XDP_PASS return) | 28.5 Mpps | 3.8 ns   |
+| XDP chain call (wildcard return) | 28.1 Mpps | 4.3 ns   |
+
+I consider the "Before patch" and "After patch" to be identical; the .5 Mpps
+difference is within the regular test variance I see between runs. Likewise,
+there is probably no significant difference between hooking the XDP_PASS return
+code and using the wildcard slot.
+
+# PATCH SET STRUCTURE
+This series is structured as follows:
+
+- Patch 1: Adds the call chain looping logic
+- Patch 2: Adds the new commands added to the bpf() syscall
+- Patch 3-4: Tools/ update and libbpf syscall wrappers
+- Patch 5: Selftest  with example user space code (a bit hacky still)
+
+The whole series is also available in my git repo on kernel.org:
+https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/log/?h=xdp-multiprog-03
+
+Changelog:
+
+v3:
+  - Keep the UAPI from v2, but change the implementation to hook into
+    BPF_PROG_RUN instead of trying to inject instructions into the eBPF program
+    itself (since that had problems as Alexei pointed out).
+v2:
+  - Completely new approach that integrates chain calls into the core eBPF
+    runtime instead of doing the map XDP-specific thing with a new map from v1.
+
+---
+
+Toke Høiland-Jørgensen (5):
+      bpf: Support chain calling multiple BPF programs after each other
+      bpf: Add support for setting chain call sequence for programs
+      tools: Update bpf.h header for program chain calls
+      libbpf: Add syscall wrappers for BPF_PROG_CHAIN_* commands
+      selftests: Add tests for XDP chain calls
+
+
+ include/linux/bpf.h                           |    3 
+ include/linux/filter.h                        |   34 +++
+ include/uapi/linux/bpf.h                      |   16 +
+ kernel/bpf/core.c                             |    6 
+ kernel/bpf/syscall.c                          |   82 ++++++-
+ tools/include/uapi/linux/bpf.h                |   16 +
+ tools/lib/bpf/bpf.c                           |   34 +++
+ tools/lib/bpf/bpf.h                           |    4 
+ tools/lib/bpf/libbpf.map                      |    3 
+ tools/testing/selftests/bpf/.gitignore        |    1 
+ tools/testing/selftests/bpf/Makefile          |    3 
+ tools/testing/selftests/bpf/progs/xdp_dummy.c |    6 
+ tools/testing/selftests/bpf/test_xdp_chain.sh |   77 ++++++
+ tools/testing/selftests/bpf/xdp_chain.c       |  313 +++++++++++++++++++++++++
+ 14 files changed, 594 insertions(+), 4 deletions(-)
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_chain.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_chain.c
 
