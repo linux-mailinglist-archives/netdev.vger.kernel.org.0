@@ -2,143 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33F93CDEB8
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 12:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A42CDEE2
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 12:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727600AbfJGKHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 06:07:46 -0400
-Received: from mail-eopbgr40069.outbound.protection.outlook.com ([40.107.4.69]:55439
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726010AbfJGKHp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 06:07:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iCFV8SJ6XqFNfHa8sCCMwofzlhMaieXZw6m5nDuMpuMjl/DEzAXllW8Ahk+aOlPHtra5izCMaGoOvFGP6YrGk3bst6kSAkPk+I1mUFPebFxMscXcU7q01ohUoOqvbZOTFVUhND/gjsDKJ3+surz5F2qwlzTBVBsC375NF/0NpnhnKHOEbIaxLmSqKzeq6wk4++mDyDowHOPD6erl26sAq+mbg/bcMZIAF5SPpzwuwgsQBNregbda6ng3r6butOEIV4s3w7UGmzRlTZjsJSXUJKl9DMZHQvynCRPmUAvGcC6hW57j66LLChiatyzuYdJbKTNpiUo1HPvTh3NAsZJuxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KWonl1IQ0SjAPhe170jcyvodLv6PnX5p9JrFLuKguOk=;
- b=eSYHFJOqgAWjayv7rkwUG9u00pvKRzk5JolgcMgBb7RQi0V+UtgTmCfmtck4pUy2oICfSORFBzNie7HTBKKJtxTgGMu3cqZP2QCBSqcEX7Ahr4V6xCtAi6J86fY0w6vaAaaCASHWWkAgCJtc5VFW2Bd5B3bKl3ZbEPyYvZhNrUBjdljFpHehz9p8R9wILHaCRw6RtN1Jlvx9AzgqkD5p6DJ4QyjnUrkSbk1ATkZ8uMlIpTm/bqntAUjpnaaqeGfmNcbXO+wdCSyO/82Xydpnw/SBkTHyvzXxGZ0T7Hukt9ExyXuxi+akQzYt5m/G6UfF9B3KbI078BOhhMkyzfalkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.47.165.251) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=mellanox.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=mellanox.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KWonl1IQ0SjAPhe170jcyvodLv6PnX5p9JrFLuKguOk=;
- b=ZhNbuGBcXZgA43PSJeSFnr6BDYdYBQhx6LGUaI+m43Nor8INsBwh+3onUQYqCK9ywkXYZfteK1/PqlqJOnPR9kmFJVU06WmoHbMKMyqtcrG7PMrcCUy1CLwJ9E6bv8cMqr7vS9qnsearvCpAVDrq6J/VuwVXPCC3/7YKbz7HGBE=
-Received: from HE1PR05CA0261.eurprd05.prod.outlook.com (2603:10a6:3:fc::13) by
- VI1PR05MB5152.eurprd05.prod.outlook.com (2603:10a6:803:b2::30) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.24; Mon, 7 Oct 2019 10:07:41 +0000
-Received: from VE1EUR03FT039.eop-EUR03.prod.protection.outlook.com
- (2a01:111:f400:7e09::207) by HE1PR05CA0261.outlook.office365.com
- (2603:10a6:3:fc::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2327.23 via Frontend
- Transport; Mon, 7 Oct 2019 10:07:40 +0000
-Authentication-Results: spf=pass (sender IP is 193.47.165.251)
- smtp.mailfrom=mellanox.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none
- header.from=mellanox.com;
-Received-SPF: Pass (protection.outlook.com: domain of mellanox.com designates
- 193.47.165.251 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.47.165.251; helo=mtlcas13.mtl.com;
-Received: from mtlcas13.mtl.com (193.47.165.251) by
- VE1EUR03FT039.mail.protection.outlook.com (10.152.19.196) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.2305.15 via Frontend Transport; Mon, 7 Oct 2019 10:07:40 +0000
-Received: from MTLCAS13.mtl.com (10.0.8.78) by mtlcas13.mtl.com (10.0.8.78)
- with Microsoft SMTP Server (TLS) id 15.0.1178.4; Mon, 7 Oct 2019 13:07:38
- +0300
-Received: from MTLCAS01.mtl.com (10.0.8.71) by MTLCAS13.mtl.com (10.0.8.78)
- with Microsoft SMTP Server (TLS) id 15.0.1178.4 via Frontend Transport; Mon,
- 7 Oct 2019 13:07:38 +0300
-Received: from [10.223.0.100] (10.223.0.100) by MTLCAS01.mtl.com (10.0.8.71)
- with Microsoft SMTP Server (TLS) id 14.3.468.0; Mon, 7 Oct 2019 13:07:02
- +0300
-Subject: Re: [PATCH rdma-next 3/3] RDMA/rw: Support threshold for registration
- vs scattering to local pages
-To:     Leon Romanovsky <leon@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-References: <20191006155955.31445-1-leon@kernel.org>
- <20191006155955.31445-4-leon@kernel.org>
- <20191007065825.GA17401@infradead.org> <20191007075437.GV5855@unreal>
-From:   Max Gurtovoy <maxg@mellanox.com>
-Message-ID: <3b0f2757-eb84-f5f8-d036-4bdce21ae943@mellanox.com>
-Date:   Mon, 7 Oct 2019 13:07:02 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727549AbfJGKLg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Oct 2019 06:11:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46272 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727355AbfJGKLf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 06:11:35 -0400
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com [209.85.208.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E1CAFC057F2C
+        for <netdev@vger.kernel.org>; Mon,  7 Oct 2019 10:11:34 +0000 (UTC)
+Received: by mail-lj1-f198.google.com with SMTP id l13so3313254lji.7
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 03:11:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=xFJfvxGSxXmlG8uRezCO6P2oPcGamXrw9xhVuelSmow=;
+        b=Oac5V7LbyDNMRi/fo5oc+WdxRNPDwsEGElHoDsgzP84YD7v4vrmHWMRZe99M6p7UOC
+         YczNemUPiN7gs5jKOpT53NLRmVrIxKJ5dMhcMfW+PP6tWQOQTHeGoS5jPLQsrL9quD7O
+         Ump+aHSh4kIdZ5MXYHJwFZGENCMuM9SL/OOlKX0pSeb+TH2KOEjmwQgsN6slhXXSjHAS
+         FTRcT+8jmfTkn7LpcDEFR2rZIGvo+rvdCQpqbGPvP2r8AvIhZohX7pl787O8xLVF1gEM
+         I2muG+L8oZV7P302O/snJZWphkc8ENSzxB66mQtr2DtyERDFnd6V/v5UR43gDDSs0cx2
+         t6NQ==
+X-Gm-Message-State: APjAAAX48GHALIKBCYgAFW43CHLRiTdObJEgyoOW4crP6yY31uwy9xXg
+        4HBy6UdIYoPCAehFym4UTn/eXpPWdSmSTB0qDAxqgaVIDqmVrAXQRrT/4d7BxXx0u8sKhj7nA81
+        a8nkYHtM0+8Ttm6DL
+X-Received: by 2002:ac2:5dd0:: with SMTP id x16mr16758748lfq.38.1570443093368;
+        Mon, 07 Oct 2019 03:11:33 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqx2gFbEXRiqKPPXrCBizFB8ImxCZF7nNRmfGN7yLgLUqd2Ermfi23xtdcLo32ef7jpQ9FBUOw==
+X-Received: by 2002:ac2:5dd0:: with SMTP id x16mr16758719lfq.38.1570443093110;
+        Mon, 07 Oct 2019 03:11:33 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id 6sm2650023lfa.24.2019.10.07.03.11.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Oct 2019 03:11:32 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 52EA518063D; Mon,  7 Oct 2019 12:11:31 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 1/5] bpf: Support injecting chain calls into BPF programs on load
+In-Reply-To: <20191007002739.5seu2btppfjmhry4@ast-mbp.dhcp.thefacebook.com>
+References: <157020976030.1824887.7191033447861395957.stgit@alrua-x1> <157020976144.1824887.10249946730258092768.stgit@alrua-x1> <20191007002739.5seu2btppfjmhry4@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 07 Oct 2019 12:11:31 +0200
+Message-ID: <87h84kn9v0.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20191007075437.GV5855@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.223.0.100]
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:193.47.165.251;IPV:NLI;CTRY:IL;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(136003)(396003)(346002)(199004)(189003)(47776003)(106002)(70586007)(36756003)(478600001)(86362001)(4326008)(31696002)(70206006)(486006)(3846002)(6116002)(126002)(65956001)(65806001)(5660300002)(31686004)(76176011)(305945005)(316002)(16576012)(7736002)(36906005)(336012)(53546011)(229853002)(8936002)(58126008)(11346002)(81166006)(8676002)(2616005)(110136005)(50466002)(446003)(81156014)(476003)(26005)(14444005)(2906002)(6246003)(54906003)(230700001)(2486003)(23676004)(16526019)(186003)(356004)(3940600001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5152;H:mtlcas13.mtl.com;FPR:;SPF:Pass;LANG:en;PTR:InfoDomainNonexistent;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d1acdb01-4356-434c-09ec-08d74b0e300c
-X-MS-TrafficTypeDiagnostic: VI1PR05MB5152:
-X-Microsoft-Antispam-PRVS: <VI1PR05MB5152ADA9A3FA1AD2FE13531BB69B0@VI1PR05MB5152.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-Forefront-PRVS: 01834E39B7
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 81TwVSheUOntvq7bUm7h+HdELR5TkiKbzkioocrkCX36CK0EcFDwmVAMvB7FaLBE0MOMyokgB+Vd6X9lqXcC4ww3r0qPAgo8rGSbK/eJIViqV47+KNNZISWG41RWcFlwjb6z/VuqaDJcWyrq24m6CJ8bwQxXi0neJQDmYCsJNZM4kdNM6oyvhHnwn1Qg7qxsUXXvfsgPi+wiHFJeACQG/axBUSXy6s+2p6I11yUW5KkYaXsSQ25UMczThe/WXFI0fmSDRbfHoKnOvEBClTZmEVsN3dOZmlsbFW4T46hG2rXY3wN7fvlqm0zpJR9tJfV+UVRjHPb9HWXBCumnVg3cYcf9B3ysQ/uU03a5Hvf0TGS1QiNGQNN+z6HBmL5xWguLyMdEivIPOR6+Q5yI6jmnC/s5u6q6oZIYQuyUcXWHdnE=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2019 10:07:40.0312
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1acdb01-4356-434c-09ec-08d74b0e300c
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=a652971c-7d2e-4d9b-a6a4-d149256f461b;Ip=[193.47.165.251];Helo=[mtlcas13.mtl.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5152
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-On 10/7/2019 10:54 AM, Leon Romanovsky wrote:
-> On Sun, Oct 06, 2019 at 11:58:25PM -0700, Christoph Hellwig wrote:
->>>   /*
->>> - * Check if the device might use memory registration.  This is currently only
->>> - * true for iWarp devices. In the future we can hopefully fine tune this based
->>> - * on HCA driver input.
->>> + * Check if the device might use memory registration.
->>>    */
->> Please keep the important bits of this comments instead of just
->> removing them.
->>
->>>   {
->>> @@ -30,6 +28,8 @@ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u8 port_num)
->>>   		return true;
->>>   	if (unlikely(rdma_rw_force_mr))
->>>   		return true;
->>> +	if (dev->attrs.max_sgl_rd)
->>> +		return true;
->> Logically this should go before the rdma_rw_force_mr check.
->>
->>>   	if (unlikely(rdma_rw_force_mr))
->>>   		return true;
->>> +	if (dev->attrs.max_sgl_rd && dir == DMA_FROM_DEVICE
->>> +	    && dma_nents > dev->attrs.max_sgl_rd)
->> Wrong indendation.  The && belongs on the first line.  And again, this
->> logically belongs before the rdma_rw_force_mr check.
-> I'll fix.
+> On Fri, Oct 04, 2019 at 07:22:41PM +0200, Toke Høiland-Jørgensen wrote:
+>> From: Toke Høiland-Jørgensen <toke@redhat.com>
+>> 
+>> This adds support for injecting chain call logic into eBPF programs before
+>> they return. The code injection is controlled by a flag at program load
+>> time; if the flag is set, the verifier will add code to every BPF_EXIT
+>> instruction that first does a lookup into a chain call structure to see if
+>> it should call into another program before returning. The actual calls
+>> reuse the tail call infrastructure.
+>> 
+>> Ideally, it shouldn't be necessary to set the flag on program load time,
+>> but rather inject the calls when a chain call program is first loaded.
+>> However, rewriting the program reallocates the bpf_prog struct, which is
+>> obviously not possible after the program has been attached to something.
+>> 
+>> One way around this could be a sysctl to force the flag one (for enforcing
+>> system-wide support). Another could be to have the chain call support
+>> itself built into the interpreter and JIT, which could conceivably be
+>> re-run each time we attach a new chain call program. This would also allow
+>> the JIT to inject direct calls to the next program instead of using the
+>> tail call infrastructure, which presumably would be a performance win. The
+>> drawback is, of course, that it would require modifying all the JITs.
+>> 
+>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ...
+>>  
+>> +static int bpf_inject_chain_calls(struct bpf_verifier_env *env)
+>> +{
+>> +	struct bpf_prog *prog = env->prog;
+>> +	struct bpf_insn *insn = prog->insnsi;
+>> +	int i, cnt, delta = 0, ret = -ENOMEM;
+>> +	const int insn_cnt = prog->len;
+>> +	struct bpf_array *prog_array;
+>> +	struct bpf_prog *new_prog;
+>> +	size_t array_size;
+>> +
+>> +	struct bpf_insn call_next[] = {
+>> +		BPF_LD_IMM64(BPF_REG_2, 0),
+>> +		/* Save real return value for later */
+>> +		BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
+>> +		/* First try tail call with index ret+1 */
+>> +		BPF_MOV64_REG(BPF_REG_3, BPF_REG_0),
+>> +		BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 1),
+>> +		BPF_RAW_INSN(BPF_JMP | BPF_TAIL_CALL, 0, 0, 0, 0),
+>> +		/* If that doesn't work, try with index 0 (wildcard) */
+>> +		BPF_MOV64_IMM(BPF_REG_3, 0),
+>> +		BPF_RAW_INSN(BPF_JMP | BPF_TAIL_CALL, 0, 0, 0, 0),
+>> +		/* Restore saved return value and exit */
+>> +		BPF_MOV64_REG(BPF_REG_0, BPF_REG_6),
+>> +		BPF_EXIT_INSN()
+>> +	};
 >
-> Thanks
+> How did you test it?
+> With the only test from patch 5?
+> +int xdp_drop_prog(struct xdp_md *ctx)
+> +{
+> +       return XDP_DROP;
+> +}
+>
+> Please try different program with more than one instruction.
+> And then look at above asm and think how it can be changed to
+> get valid R1 all the way to each bpf_exit insn.
+> Do you see amount of headaches this approach has?
 
-The above comments looks reasonable.
+Ah yes, that's a good point. It seems that I totally overlooked that
+issue, somehow...
 
-Nice optimization Yamin.
+> The way you explained the use case of XDP-based firewall plus XDP-based
+> IPS/IDS it's about "knows nothing" admin that has to deal with more than
+> one XDP application on an unfamiliar server.
+> This is the case of debugging.
 
+This is not about debugging. The primary use case is about deploying
+multiple, independently developed, XDP-enabled applications on the same
+server.
+
+Basically, we want the admin to be able to do:
+
+# yum install MyIDS
+# yum install MyXDPFirewall
+
+and then have both of those *just work* in XDP mode, on the same
+interface.
+
+I originally started solving this in an XDP-specific way (v1 of this
+patch set), but the reactions to that was pretty unanimous that this
+could be useful as a general eBPF feature. Do you agree with this?
+
+-Toke
