@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7463CDADB
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 06:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51B28CDADC
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 06:10:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfJGEKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 00:10:00 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33274 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbfJGEJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 00:09:59 -0400
-Received: by mail-qk1-f195.google.com with SMTP id x134so11401782qkb.0
-        for <netdev@vger.kernel.org>; Sun, 06 Oct 2019 21:09:59 -0700 (PDT)
+        id S1727126AbfJGEKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 00:10:01 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:43331 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726007AbfJGEKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 00:10:01 -0400
+Received: by mail-qt1-f193.google.com with SMTP id c4so4649083qtn.10
+        for <netdev@vger.kernel.org>; Sun, 06 Oct 2019 21:10:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nF2jDfppo2d6pvEKAH1G/mg1VyQuIkewZYHBPdBsofs=;
-        b=oHP8JsJ6oSqCj1S9XNJP3CvfnVp6LkPp5MOAHrmbB3QwLr0e2LnWU7rnhvsaA8L+xX
-         NxaxAkPFhJHch1TBl6rs4NWlmrB4NUfCld45fhAqIj+Mu9TaIgkNOuhaQABMcxP8F1vq
-         2+Je8Ff8NHCDX0Y+oujMlzylYwgWgoj0xhM1T2FepLr867vipBVyYLPVDFKDF5T1uYPh
-         TASFWmjQCLHiCjALdegXyE/j+T+EoNaHV8dx3LtNaxYFYhjjkZ7bqOlUYnVeSGZmJpfS
-         0AJalEctgN/QNUWh6YGUvVKiYfzB3RGwV7rflP479O8zK5P+8YY4HtYDzzFV7oZ3n5j1
-         O0EQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+2+jI9bm9pSuj8YfLh9qySWHl8T1Wg6OrX5Uh1PkTo0=;
+        b=ge/0kq2sL+wQwp1mX+T+6LTQ9mVfhM36p+iHg49y8pM3w+NIuRRl6DuKfsgoU6hZn4
+         kLKgqh1PhzsH/koWudt9RPDDx6gUKOXBK+ZXxdQEP29tP3G6ZQd8mIvLIjeMfmlsqi/c
+         a9mpKkP8RhkBmkc9aQnrAKy4WzJ49Rd4HoU8vxXbeRFWifkYtz8A3irV0NF/gKfysJ7M
+         VdYRnWTs96lBMr6AIyJSujjcdZTNMlcdW1oIxB4aN4Cxp6KriLSoeN7CAysgGUQlt5Gb
+         W8IR0H7YqR2x52hlb98xuGRXJpJqso2HoOUGmlcEqWhKbmqwgN7PYKIFcmA5UwvoCKVK
+         fq7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nF2jDfppo2d6pvEKAH1G/mg1VyQuIkewZYHBPdBsofs=;
-        b=AmMM/Rgp92CKr+i++zLFoNvObGKSSEzcAPUPorjSSLP5JBttvh0VYq3VptEuiEX22N
-         QBvBLU7mroAlxAQvG0kr6FKFKW/pP4eKLR7ZYsHhZbciL0JAdiGkTMPuv6lVfi1FPTJj
-         IJtZbyt4pnN2kd0FsqAIFHNKFFFid0q4pcSyKmwSGWrDGiU23ZbCM9jCeGfTlw/6pvZm
-         CCm2XEecIOJ/sRgLlmXQ0/CHGeJzyJRsVffUd/wIGXLmJ5Xwfo5UsaK23EPC0KCYy2RP
-         N/JaP7Eqc+Jo5zM4RB5ZOLPNn/Xw14i3WTfSIqv8ZTorN2D2z9N/e3fOmvEbUfXkEA/5
-         z9ig==
-X-Gm-Message-State: APjAAAVeXu1PjXedL4WRAlZT2ev0VIbotpfyyT2TlSNdfoGr+LVlcoXF
-        IF+DGf3oXXMcpHdGWDsLQvXHnw==
-X-Google-Smtp-Source: APXvYqx0D/wTGKLMhpSnLX+X/v8z7LAN+WCN4ywQZq2cHFo8dpqkoG3mMkDNF7O4MEwVOfzIgqPTFA==
-X-Received: by 2002:a37:4d02:: with SMTP id a2mr21894478qkb.63.1570421398890;
-        Sun, 06 Oct 2019 21:09:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+2+jI9bm9pSuj8YfLh9qySWHl8T1Wg6OrX5Uh1PkTo0=;
+        b=JyJdOFIZRc79htq/u0moeNd1N7n7iKrYGjaCggx1hXEW+hW4DoBzuwTJDn0YKSoFyV
+         9SegfGQxVjAiv1LtzXcZN0teorp1e1BKvedIh19norr+BJvJGMJ8MLg08k8aKFeBIiGZ
+         1WCiDJisP9shHmtVhBUbxQbZoH59eRIOqbOsCv22BY/FkCc+cFvz1lqoKM3rqpJJqc3d
+         3rngiBJJJGxZeGgupLjVUYl/3CTPfuwOzI7OKtjSC/9Nz7nkka8WcAxDbjbx44wzB+iI
+         oTdHbESkMGGh9Np2av7NFJtgpmptY1fVvV9ZcYS4ajZrO0MCwaxrEnGlXJ8lno29Xj08
+         7wpg==
+X-Gm-Message-State: APjAAAUwEr6bW5fKElKRHv12LCYBdWj0quqSRStvJ1AoPNFViaH+DEP/
+        NhfOlZibYGNVUDarF8zbz8FXPQ==
+X-Google-Smtp-Source: APXvYqzfS5AQyfAcHV4OsbzJ85WutdexGBzmpuV4uS8AJy6ffAu4ZXrC2uLReWv5JNfwnrwOl7uY/g==
+X-Received: by 2002:ac8:134c:: with SMTP id f12mr27779587qtj.162.1570421400663;
+        Sun, 06 Oct 2019 21:10:00 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id y22sm3796058qka.59.2019.10.06.21.09.57
+        by smtp.gmail.com with ESMTPSA id y22sm3796058qka.59.2019.10.06.21.09.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Oct 2019 21:09:58 -0700 (PDT)
+        Sun, 06 Oct 2019 21:10:00 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
         john.fastabend@gmail.com, daniel@iogearbox.net,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 0/6] net/tls: minor micro optimizations
-Date:   Sun,  6 Oct 2019 21:09:26 -0700
-Message-Id: <20191007040932.26395-1-jakub.kicinski@netronome.com>
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+Subject: [PATCH net-next 1/6] net: sockmap: use bitmap for copy info
+Date:   Sun,  6 Oct 2019 21:09:27 -0700
+Message-Id: <20191007040932.26395-2-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20191007040932.26395-1-jakub.kicinski@netronome.com>
+References: <20191007040932.26395-1-jakub.kicinski@netronome.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -61,41 +64,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Don't use bool array in struct sk_msg_sg, save 12 bytes.
 
-This set brings a number of minor code changes from my tree which
-don't have a noticeable impact on performance but seem reasonable
-nonetheless.
-
-First sk_msg_sg copy array is converted to a bitmap, zeroing that
-structure takes a lot of time, hence we should try to keep it
-small.
-
-Next two conditions are marked as unlikely, GCC seemed to had
-little trouble correctly reasoning about those.
-
-Patch 4 adds parameters to tls_device_decrypted() to avoid
-walking structures, as all callers already have the relevant
-pointers.
-
-Lastly two boolean members of TLS context structures are
-converted to a bitfield.
-
-Jakub Kicinski (6):
-  net: sockmap: use bitmap for copy info
-  net/tls: mark sk->err being set as unlikely
-  net/tls: make allocation failure unlikely
-  net/tls: pass context to tls_device_decrypted()
-  net/tls: store async_capable on a single bit
-  net/tls: store decrypted on a single bit
-
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+---
  include/linux/skmsg.h | 12 ++++++++----
- include/net/tls.h     | 13 ++++++++-----
  net/core/filter.c     |  4 ++--
- net/tls/tls_device.c  | 12 +++++-------
- net/tls/tls_sw.c      | 13 +++++++------
- 5 files changed, 30 insertions(+), 24 deletions(-)
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index e4b3fb4bb77c..fe80d537945d 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -28,13 +28,14 @@ struct sk_msg_sg {
+ 	u32				end;
+ 	u32				size;
+ 	u32				copybreak;
+-	bool				copy[MAX_MSG_FRAGS];
++	unsigned long			copy;
+ 	/* The extra element is used for chaining the front and sections when
+ 	 * the list becomes partitioned (e.g. end < start). The crypto APIs
+ 	 * require the chaining.
+ 	 */
+ 	struct scatterlist		data[MAX_MSG_FRAGS + 1];
+ };
++static_assert(BITS_PER_LONG >= MAX_MSG_FRAGS);
+ 
+ /* UAPI in filter.c depends on struct sk_msg_sg being first element. */
+ struct sk_msg {
+@@ -227,7 +228,7 @@ static inline void sk_msg_compute_data_pointers(struct sk_msg *msg)
+ {
+ 	struct scatterlist *sge = sk_msg_elem(msg, msg->sg.start);
+ 
+-	if (msg->sg.copy[msg->sg.start]) {
++	if (test_bit(msg->sg.start, &msg->sg.copy)) {
+ 		msg->data = NULL;
+ 		msg->data_end = NULL;
+ 	} else {
+@@ -246,7 +247,7 @@ static inline void sk_msg_page_add(struct sk_msg *msg, struct page *page,
+ 	sg_set_page(sge, page, len, offset);
+ 	sg_unmark_end(sge);
+ 
+-	msg->sg.copy[msg->sg.end] = true;
++	__set_bit(msg->sg.end, &msg->sg.copy);
+ 	msg->sg.size += len;
+ 	sk_msg_iter_next(msg, end);
+ }
+@@ -254,7 +255,10 @@ static inline void sk_msg_page_add(struct sk_msg *msg, struct page *page,
+ static inline void sk_msg_sg_copy(struct sk_msg *msg, u32 i, bool copy_state)
+ {
+ 	do {
+-		msg->sg.copy[i] = copy_state;
++		if (copy_state)
++			__set_bit(i, &msg->sg.copy);
++		else
++			__clear_bit(i, &msg->sg.copy);
+ 		sk_msg_iter_var_next(i);
+ 		if (i == msg->sg.end)
+ 			break;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index ed6563622ce3..46196e212413 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2245,7 +2245,7 @@ BPF_CALL_4(bpf_msg_pull_data, struct sk_msg *, msg, u32, start,
+ 	 * account for the headroom.
+ 	 */
+ 	bytes_sg_total = start - offset + bytes;
+-	if (!msg->sg.copy[i] && bytes_sg_total <= len)
++	if (!test_bit(i, &msg->sg.copy) && bytes_sg_total <= len)
+ 		goto out;
+ 
+ 	/* At this point we need to linearize multiple scatterlist
+@@ -2450,7 +2450,7 @@ BPF_CALL_4(bpf_msg_push_data, struct sk_msg *, msg, u32, start,
+ 	/* Place newly allocated data buffer */
+ 	sk_mem_charge(msg->sk, len);
+ 	msg->sg.size += len;
+-	msg->sg.copy[new] = false;
++	__clear_bit(new, &msg->sg.copy);
+ 	sg_set_page(&msg->sg.data[new], page, len + copy, 0);
+ 	if (rsge.length) {
+ 		get_page(sg_page(&rsge));
 -- 
 2.21.0
 
