@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B303CEC4B
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 20:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DC9CCEC49
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 20:59:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728971AbfJGS7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729031AbfJGS7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 7 Oct 2019 14:59:16 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:55933 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728930AbfJGS7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 14:59:14 -0400
-Received: by mail-io1-f69.google.com with SMTP id r13so28147734ioj.22
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 11:59:12 -0700 (PDT)
+Received: from mail-io1-f72.google.com ([209.85.166.72]:52326 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728828AbfJGS7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 14:59:13 -0400
+Received: by mail-io1-f72.google.com with SMTP id g8so28142676iop.19
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 11:59:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=D1Rzqs57q4Yo8rGXxQE8fz7RbZ2OYbOlKi0YRILAdQ0=;
-        b=ZoQ+Cs+maAzuGmGBaGXmmVml5QnpIWrUk+d6yR6EhcePEaDhhI/n5kyoPu+jo6fvK7
-         4/Q5RqP4eryQQOlhgsScdmyPhWSMS74Dxm36M8ZZvDWTE5i/iM8hA3hhJpXiGwqISCS0
-         dKWTgIyQAaSy+lcweGhYC2dmO/VikFwgwM2YWv38Tp7157FZQkJFpGTlgxvvtlidHTxU
-         wJcsApAB4Tzuo1koVa+SpuY0VLrV5CfcX2MJXb/Uq3FtD2Xgs5SzjS6fSZj2BdY2uwCJ
-         l9IClUKVxvs8rjF5WW86UFFOXj/NFrCI9fTruNKAb9hs5s41L6/yTgYiXdv9vAxjPVUr
-         osgg==
-X-Gm-Message-State: APjAAAWVl9INPcOMSU1vYZVZOjLRwFNkzCA0DBttDcbxidzI8WsMqQE/
-        IRZrmkK0SJRyc2REmPUSJIMd//tKc7F7uLy9qrb9uOdrY3qb
-X-Google-Smtp-Source: APXvYqyBxWBZEb5lGFBokbhDsqR+DLYhL9ye6EpAn51e3WNudFfGKq+RFOZQoXzK7FYnkPWV78HNz6GqMYk39VsJbggqP9xb9hAt
+        bh=5yrzAejvRnTr8wu1Zk1HBSTQX/3upEGoygbf1ryx00M=;
+        b=Ny96/Xn5N14fDR268TAmpiztG7b1J5vAMjN+qC41yYrNev7kYdKfaHPcku8TJVzp5p
+         x/4SmSluhWr5IB2CbaZtfBeSEVoiQEnv1rsgKtHikg/aYlqXoVGAMJhKIVmC3FpZV6A8
+         AjcgPS7WvM3oJLpLJt9JVG9PsgnM0zenAFKhQzX186Z+8b/3CDkxtOnXgHN2EUOck2tJ
+         lQwnzCwfsn+vwQUSdItAz5ZCq/CAY4k+uu6eqj4Hc/CdEOrm2FH0wv8leFmulcOQuQbH
+         tMsI9J2CVI0ntPIRUmDA9JLKT5HVvPCtP613iElNZPlWK9ws7r/fOMVp6nQg7lWOqhP+
+         f3PQ==
+X-Gm-Message-State: APjAAAV/hDgQaGkmsTUBLcK32b+0AYx2+yfK/J3XcudbeCB8Uyq8+9kS
+        iMjD1myL7fFh8uyP/wJXXXR+IGZ65VLWONYGoe7U6tClwN/J
+X-Google-Smtp-Source: APXvYqy/M9nolAccDMv9jA2gYwbBVhH3RAGawIlcYiiQ/L1TLGX1QP5AfSi67AJRVyM4gd3Nsb3gU0wDETEi88VXnvq0b3mWalzl
 MIME-Version: 1.0
-X-Received: by 2002:a5e:da05:: with SMTP id x5mr11424319ioj.123.1570474752380;
+X-Received: by 2002:a6b:c402:: with SMTP id y2mr20955977ioa.136.1570474752597;
  Mon, 07 Oct 2019 11:59:12 -0700 (PDT)
 Date:   Mon, 07 Oct 2019 11:59:12 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000be9b38059456a529@google.com>
-Subject: KASAN: use-after-free Read in tipc_nl_publ_dump
-From:   syzbot <syzbot+ff59dc711f2cff879a05@syzkaller.appspotmail.com>
+Message-ID: <000000000000c1e5e8059456a5bf@google.com>
+Subject: KASAN: use-after-free Read in tipc_udp_nl_dump_remoteip
+From:   syzbot <syzbot+dbe02e13bcce52bcf182@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, jon.maloy@ericsson.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com,
@@ -51,24 +51,24 @@ syzbot found the following crash on:
 
 HEAD commit:    056ddc38 Merge branch 'stmmac-next'
 git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=176f00dd600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=164f0c57600000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=d9be300620399522
-dashboard link: https://syzkaller.appspot.com/bug?extid=ff59dc711f2cff879a05
+dashboard link: https://syzkaller.appspot.com/bug?extid=dbe02e13bcce52bcf182
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153b1e67600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1354f6c3600000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=137ecdfb600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15dd0d0b600000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+ff59dc711f2cff879a05@syzkaller.appspotmail.com
+Reported-by: syzbot+dbe02e13bcce52bcf182@syzkaller.appspotmail.com
 
 ==================================================================
 BUG: KASAN: use-after-free in nla_parse_nested_deprecated  
 include/net/netlink.h:1166 [inline]
-BUG: KASAN: use-after-free in tipc_nl_publ_dump+0xb5c/0xd60  
-net/tipc/socket.c:3597
-Read of size 2 at addr ffff888086ff7d54 by task syz-executor167/8888
+BUG: KASAN: use-after-free in tipc_udp_nl_dump_remoteip+0xc19/0xc20  
+net/tipc/udp_media.c:459
+Read of size 2 at addr ffff888090c0f2d4 by task syz-executor616/8990
 
-CPU: 0 PID: 8888 Comm: syz-executor167 Not tainted 5.4.0-rc1+ #0
+CPU: 1 PID: 8990 Comm: syz-executor616 Not tainted 5.4.0-rc1+ #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
 Call Trace:
@@ -79,7 +79,7 @@ Call Trace:
   kasan_report+0x12/0x20 mm/kasan/common.c:634
   __asan_report_load2_noabort+0x14/0x20 mm/kasan/generic_report.c:130
   nla_parse_nested_deprecated include/net/netlink.h:1166 [inline]
-  tipc_nl_publ_dump+0xb5c/0xd60 net/tipc/socket.c:3597
+  tipc_udp_nl_dump_remoteip+0xc19/0xc20 net/tipc/udp_media.c:459
   genl_lock_dumpit+0x86/0xc0 net/netlink/genetlink.c:529
   netlink_dump+0x558/0xfb0 net/netlink/af_netlink.c:2244
   __netlink_dump_start+0x5b1/0x7d0 net/netlink/af_netlink.c:2352
@@ -100,18 +100,18 @@ Call Trace:
   __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
   do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x445239
+RIP: 0033:0x445279
 Code: e8 ac e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
 ff 0f 83 0b cd fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fffd09ea0c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000445239
-RDX: 0000000000000000 RSI: 0000000020000680 RDI: 0000000000000003
-RBP: 000000000000fc90 R08: 0000000000000000 R09: 00000000004002e0
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004023d0
-R13: 0000000000402460 R14: 0000000000000000 R15: 0000000000000000
+RSP: 002b:00007fffac1fc178 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000445279
+RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000005
+RBP: 0000000000010907 R08: 0000000000000000 R09: 00000000004002e0
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402410
+R13: 00000000004024a0 R14: 0000000000000000 R15: 0000000000000000
 
-Allocated by task 8889:
+Allocated by task 8992:
   save_stack+0x23/0x90 mm/kasan/common.c:69
   set_track mm/kasan/common.c:77 [inline]
   __kasan_kmalloc mm/kasan/common.c:510 [inline]
@@ -134,7 +134,7 @@ Allocated by task 8889:
   do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-Freed by task 8889:
+Freed by task 8992:
   save_stack+0x23/0x90 mm/kasan/common.c:69
   set_track mm/kasan/common.c:77 [inline]
   kasan_set_free_info mm/kasan/common.c:332 [inline]
@@ -161,25 +161,25 @@ Freed by task 8889:
   do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-The buggy address belongs to the object at ffff888086ff7d40
+The buggy address belongs to the object at ffff888090c0f2c0
   which belongs to the cache kmalloc-512 of size 512
 The buggy address is located 20 bytes inside of
-  512-byte region [ffff888086ff7d40, ffff888086ff7f40)
+  512-byte region [ffff888090c0f2c0, ffff888090c0f4c0)
 The buggy address belongs to the page:
-page:ffffea00021bfdc0 refcount:1 mapcount:0 mapping:ffff8880aa400a80  
-index:0x0
+page:ffffea00024303c0 refcount:1 mapcount:0 mapping:ffff8880aa400a80  
+index:0xffff888090c0fa40
 flags: 0x1fffc0000000200(slab)
-raw: 01fffc0000000200 ffffea00029bfc48 ffffea00025f55c8 ffff8880aa400a80
-raw: 0000000000000000 ffff888086ff70c0 0000000100000006 0000000000000000
+raw: 01fffc0000000200 ffffea0002441548 ffffea0002430608 ffff8880aa400a80
+raw: ffff888090c0fa40 ffff888090c0f040 0000000100000005 0000000000000000
 page dumped because: kasan: bad access detected
 
 Memory state around the buggy address:
-  ffff888086ff7c00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  ffff888086ff7c80: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
-> ffff888086ff7d00: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+  ffff888090c0f180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff888090c0f200: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+> ffff888090c0f280: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
                                                   ^
-  ffff888086ff7d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff888086ff7e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff888090c0f300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff888090c0f380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
 ==================================================================
 
 
