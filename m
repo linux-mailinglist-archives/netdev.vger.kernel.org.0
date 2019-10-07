@@ -2,189 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C0ACEF4A
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 00:56:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44E2CEF58
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 01:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729244AbfJGW4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 18:56:16 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:57576 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729145AbfJGW4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 18:56:16 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x97MoiPe006067
-        for <netdev@vger.kernel.org>; Mon, 7 Oct 2019 15:56:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=bepGngE4TqGIZXtL5iwb6guDkckOOKctUvc26Ozp8Zk=;
- b=Qk8kgllZNdPSf1VriTN24Sq1xy08C8+guO5DnV8LmC05NPxsOh0RfMsiJEQQS+AylzAb
- dM9VYqVg0+eAN190/bHdlZrCpSKrYMF2TbUkomG0zKjW9067vorCKJPFxU1rGH4t6j8W
- QMQ3P4SHWhFBqy7UaOSt7sOwk4g6SQLjmd0= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vg6nmjbwh-11
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 15:56:14 -0700
-Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Mon, 7 Oct 2019 15:56:07 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 66DC98618CE; Mon,  7 Oct 2019 15:56:07 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <sdf@google.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next] bpftool: fix bpftool build by switching to bpf_object__open_file()
-Date:   Mon, 7 Oct 2019 15:56:04 -0700
-Message-ID: <20191007225604.2006146-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1729610AbfJGXBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 19:01:03 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35598 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729440AbfJGXBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 19:01:03 -0400
+Received: by mail-qk1-f193.google.com with SMTP id w2so14449296qkf.2;
+        Mon, 07 Oct 2019 16:01:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xTjqa5qn/Atk0L8cd3no/IgH0dWjaMBMqyCTniSMesY=;
+        b=kCoeQHUfUXBiU/Uung7W4E5ddCLcsU2A/hqEt4UM6/4Hqy7e7THIPJNXLvp3YeRGwI
+         SIH3f+pRanRbyJYmnVJ5Rx09PnMzkXjEvuqfizYNfavApV0EyV/35+gp61gQojCTyptN
+         adKiDzZ611w202Lzs9aHhEr5VoTamXmvPNWgm/ABrbCEdDBVrbDTP5pGrkaEWZuf6mB2
+         4hXmhMClvrB0kVQyRGfRxXOuIH6qTuTqwL4jYjRA/1nptc+3f7jpQnGz/upTBrbDxFfe
+         6TcM+LfaXD40/A1Z9K6DubESbtA6+LLlyA2cvJfux0duFVETIM1A/Sxwe7LhGxvQrjcY
+         UGtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xTjqa5qn/Atk0L8cd3no/IgH0dWjaMBMqyCTniSMesY=;
+        b=h760IHnYqXtj5umMCS8DuW1vLeFBDxTdK1zmnGxeuyLTLllDKIHKWRPo5No2XcTea9
+         DFl0OCosZKnF/l9K2RqmXxoSIvNPXgX0ZhBAli8xrEYhlDK2JZIqsBS2y7SBJN1k9YKz
+         zoWtJhhN9VCzYrchQ9omJjQ5ntktzVLubBB39C8oqUCFYJwuJDuG34vtg3Uvbuu29Bum
+         feAM4tuJDVrmbJoYyKD9NY743/leaJ5GnFh6Eia7r8D7qc5joKpJ2QeIuFcyUcK8eAmp
+         pl6XKmjmpUHu3SCOz/4lQFtNUqTdZFzvyswkqGLfmS0OQfun/icZBj5DPlxUoejofZft
+         I1sA==
+X-Gm-Message-State: APjAAAVCVDg5vPl5Ev3dRCwBw+mg4qlIV6TdyvDI0DXn5wW7W4j2yxlG
+        fbHlSiHmeaVvzejv9adfSu/qKmdej5eUui1sS4I=
+X-Google-Smtp-Source: APXvYqyb4hGra7pKCWcM590s2dTWwkXzN5V+gp1jzP+aXurHF2YycVQzLHrTNHFf6jQi57jVs8NFA0QD/SjDkeR4ihw=
+X-Received: by 2002:ae9:eb93:: with SMTP id b141mr26807911qkg.36.1570489260765;
+ Mon, 07 Oct 2019 16:01:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-07_04:2019-10-07,2019-10-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 mlxscore=0
- impostorscore=0 priorityscore=1501 adultscore=0 suspectscore=25
- lowpriorityscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910070204
-X-FB-Internal: deliver
+References: <20191007212237.1704211-1-andriin@fb.com> <20191007214650.GC2096@mini-arch>
+ <CAEf4Bzba7S=hUkxTvL3Y+QYxAxZ-am5w-mzk8Aks7csx-g0FPA@mail.gmail.com>
+In-Reply-To: <CAEf4Bzba7S=hUkxTvL3Y+QYxAxZ-am5w-mzk8Aks7csx-g0FPA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 7 Oct 2019 16:00:49 -0700
+Message-ID: <CAEf4BzYh4pN3FPYHRMRwAUFEK0E+wXqLSqjZE3FZEmyhzCwuig@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpftool: fix bpftool build by switching to bpf_object__open_file()
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As part of libbpf in 5e61f2707029 ("libbpf: stop enforcing kern_version,
-populate it for users") non-LIBBPF_API __bpf_object__open_xattr() API
-was removed from libbpf.h header. This broke bpftool, which relied on
-that function. This patch fixes the build by switching to newly added
-bpf_object__open_file() which provides the same capabilities, but is
-official and future-proof API.
+-- Andrii
 
-v1->v2:
-- fix prog_type shadowing (Stanislav).
+On Mon, Oct 7, 2019 at 2:50 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Mon, Oct 7, 2019 at 2:46 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 10/07, Andrii Nakryiko wrote:
+> > > As part of libbpf in 5e61f2707029 ("libbpf: stop enforcing kern_version,
+> > > populate it for users") non-LIBBPF_API __bpf_object__open_xattr() API
+> > > was removed from libbpf.h header. This broke bpftool, which relied on
+> > > that function. This patch fixes the build by switching to newly added
+> > > bpf_object__open_file() which provides the same capabilities, but is
+> > > official and future-proof API.
+> > >
+> > > Fixes: 5e61f2707029 ("libbpf: stop enforcing kern_version, populate it for users")
+> > > Reported-by: Stanislav Fomichev <sdf@google.com>
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >  tools/bpf/bpftool/main.c |  4 ++--
+> > >  tools/bpf/bpftool/main.h |  2 +-
+> > >  tools/bpf/bpftool/prog.c | 22 ++++++++++++----------
+> > >  3 files changed, 15 insertions(+), 13 deletions(-)
+> > >
 
-Fixes: 5e61f2707029 ("libbpf: stop enforcing kern_version, populate it for users")
-Reported-by: Stanislav Fomichev <sdf@google.com>
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/main.c |  4 ++--
- tools/bpf/bpftool/main.h |  2 +-
- tools/bpf/bpftool/prog.c | 22 ++++++++++++----------
- 3 files changed, 15 insertions(+), 13 deletions(-)
+[...]
 
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 93d008687020..4764581ff9ea 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -27,7 +27,7 @@ bool json_output;
- bool show_pinned;
- bool block_mount;
- bool verifier_logs;
--int bpf_flags;
-+bool relaxed_maps;
- struct pinned_obj_table prog_table;
- struct pinned_obj_table map_table;
- 
-@@ -396,7 +396,7 @@ int main(int argc, char **argv)
- 			show_pinned = true;
- 			break;
- 		case 'm':
--			bpf_flags = MAPS_RELAX_COMPAT;
-+			relaxed_maps = true;
- 			break;
- 		case 'n':
- 			block_mount = true;
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index af9ad56c303a..2899095f8254 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -94,7 +94,7 @@ extern bool json_output;
- extern bool show_pinned;
- extern bool block_mount;
- extern bool verifier_logs;
--extern int bpf_flags;
-+extern bool relaxed_maps;
- extern struct pinned_obj_table prog_table;
- extern struct pinned_obj_table map_table;
- 
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 43fdbbfe41bb..27da96a797ab 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -1092,9 +1092,7 @@ static int do_run(int argc, char **argv)
- static int load_with_options(int argc, char **argv, bool first_prog_only)
- {
- 	struct bpf_object_load_attr load_attr = { 0 };
--	struct bpf_object_open_attr open_attr = {
--		.prog_type = BPF_PROG_TYPE_UNSPEC,
--	};
-+	enum bpf_prog_type common_prog_type = BPF_PROG_TYPE_UNSPEC;
- 	enum bpf_attach_type expected_attach_type;
- 	struct map_replace *map_replace = NULL;
- 	struct bpf_program *prog = NULL, *pos;
-@@ -1105,11 +1103,16 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
- 	const char *pinfile;
- 	unsigned int i, j;
- 	__u32 ifindex = 0;
-+	const char *file;
- 	int idx, err;
- 
-+	LIBBPF_OPTS(bpf_object_open_opts, open_opts,
-+		.relaxed_maps = relaxed_maps,
-+	);
-+
- 	if (!REQ_ARGS(2))
- 		return -1;
--	open_attr.file = GET_ARG();
-+	file = GET_ARG();
- 	pinfile = GET_ARG();
- 
- 	while (argc) {
-@@ -1118,7 +1121,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
- 
- 			NEXT_ARG();
- 
--			if (open_attr.prog_type != BPF_PROG_TYPE_UNSPEC) {
-+			if (common_prog_type != BPF_PROG_TYPE_UNSPEC) {
- 				p_err("program type already specified");
- 				goto err_free_reuse_maps;
- 			}
-@@ -1135,8 +1138,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
- 			strcat(type, *argv);
- 			strcat(type, "/");
- 
--			err = libbpf_prog_type_by_name(type,
--						       &open_attr.prog_type,
-+			err = libbpf_prog_type_by_name(type, &common_prog_type,
- 						       &expected_attach_type);
- 			free(type);
- 			if (err < 0)
-@@ -1224,16 +1226,16 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
- 
- 	set_max_rlimit();
- 
--	obj = __bpf_object__open_xattr(&open_attr, bpf_flags);
-+	obj = bpf_object__open_file(file, &open_opts);
- 	if (IS_ERR_OR_NULL(obj)) {
- 		p_err("failed to open object file");
- 		goto err_free_reuse_maps;
- 	}
- 
- 	bpf_object__for_each_program(pos, obj) {
--		enum bpf_prog_type prog_type = open_attr.prog_type;
-+		enum bpf_prog_type prog_type = common_prog_type;
- 
--		if (open_attr.prog_type == BPF_PROG_TYPE_UNSPEC) {
-+		if (prog_type == BPF_PROG_TYPE_UNSPEC) {
- 			const char *sec_name = bpf_program__title(pos, false);
- 
- 			err = libbpf_prog_type_by_name(sec_name, &prog_type,
--- 
-2.17.1
+> > > --- a/tools/bpf/bpftool/prog.c
+> > > +++ b/tools/bpf/bpftool/prog.c
+> > > @@ -1092,9 +1092,7 @@ static int do_run(int argc, char **argv)
+> > >  static int load_with_options(int argc, char **argv, bool first_prog_only)
+> > >  {
+> > >       struct bpf_object_load_attr load_attr = { 0 };
+> > > -     struct bpf_object_open_attr open_attr = {
+> > > -             .prog_type = BPF_PROG_TYPE_UNSPEC,
+> > > -     };
+> > > +     enum bpf_prog_type prog_type = BPF_PROG_TYPE_UNSPEC;
+> > >       enum bpf_attach_type expected_attach_type;
+> > >       struct map_replace *map_replace = NULL;
 
+[...]
+
+> > >
+> > >       bpf_object__for_each_program(pos, obj) {
+> > > -             enum bpf_prog_type prog_type = open_attr.prog_type;
+> > > +             enum bpf_prog_type prog_type = prog_type;
+> > Are you sure it works that way?
+>
+> Oh, I did this pretty mechanically, didn't notice I'm shadowing. In
+> either case I'd like to avoid shadowing, so I'll rename one of them,
+> good catch!
+>
+> >
+> > $ cat tmp.c
+> > #include <stdio.h>
+> >
+> > int main()
+> > {
+> >         int x = 1;
+> >         printf("outer x=%d\n", x);
+> >
+> >         {
+> >                 int x = x;
+
+It's amazing `int x = x;` is compiled successfully when there is no x
+in outer scope. And it's also amazing that it's doing the wrong thing
+when there is a shadowed variable in outer scope. I can't imagine the
+case where this will be a meaningful behavior...
+
+> >                 printf("inner x=%d\n", x);
+> >         }
+> >
+> >         return 0;
+> > }
+> >
+> > $ gcc tmp.c && ./a.out
+> > outer x=1
+> > inner x=0
+> >
+> > Other than that:
+> > Reviewed-by: Stanislav Fomichev <sdf@google.com>
+> >
+> > >
+> > > -             if (open_attr.prog_type == BPF_PROG_TYPE_UNSPEC) {
+> > > +             if (prog_type == BPF_PROG_TYPE_UNSPEC) {
+> > >                       const char *sec_name = bpf_program__title(pos, false);
+> > >
+> > >                       err = libbpf_prog_type_by_name(sec_name, &prog_type,
+> > > --
+> > > 2.17.1
+> > >
