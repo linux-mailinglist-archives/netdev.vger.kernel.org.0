@@ -2,63 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1203CE3DB
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 273CDCE3E5
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:39:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbfJGNiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 09:38:06 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52776 "EHLO
+        id S1728107AbfJGNjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 09:39:00 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52796 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727715AbfJGNiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 09:38:05 -0400
+        with ESMTP id S1727685AbfJGNjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 09:39:00 -0400
 Received: from localhost (unknown [144.121.20.163])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 908F4140C3686
-        for <netdev@vger.kernel.org>; Mon,  7 Oct 2019 06:38:05 -0700 (PDT)
-Date:   Mon, 07 Oct 2019 15:38:04 +0200 (CEST)
-Message-Id: <20191007.153804.598102160154212516.davem@davemloft.net>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] ipv6: Make ipv6_mc_may_pull() return bool.
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D6B54140C368E;
+        Mon,  7 Oct 2019 06:38:59 -0700 (PDT)
+Date:   Mon, 07 Oct 2019 15:38:58 +0200 (CEST)
+Message-Id: <20191007.153858.1676506174832561154.davem@davemloft.net>
+To:     hkallweit1@gmail.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: core: use helper skb_ensure_writable in
+ more places
 From:   David Miller <davem@davemloft.net>
+In-Reply-To: <26c7f285-1923-5f09-6ea5-24fd8a5c78b6@gmail.com>
+References: <26c7f285-1923-5f09-6ea5-24fd8a5c78b6@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 07 Oct 2019 06:38:05 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 07 Oct 2019 06:39:00 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Date: Sun, 6 Oct 2019 18:52:43 +0200
 
-Consistent with how pskb_may_pull() also now does so.
+> Use helper skb_ensure_writable in two more places to simplify the code.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Signed-off-by: David S. Miller <davem@davemloft.net>
----
- include/net/addrconf.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index 3f62b347b04a..1bab88184d3c 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -202,11 +202,11 @@ u32 ipv6_addr_label(struct net *net, const struct in6_addr *addr,
- /*
-  *	multicast prototypes (mcast.c)
-  */
--static inline int ipv6_mc_may_pull(struct sk_buff *skb,
--				   unsigned int len)
-+static inline bool ipv6_mc_may_pull(struct sk_buff *skb,
-+				    unsigned int len)
- {
- 	if (skb_transport_offset(skb) + ipv6_transport_len(skb) < len)
--		return 0;
-+		return false;
- 
- 	return pskb_may_pull(skb, len);
- }
--- 
-2.21.0
-
+Looks good, applied.
