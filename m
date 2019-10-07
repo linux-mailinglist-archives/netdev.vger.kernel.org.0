@@ -2,203 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E721CEDA3
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 22:39:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA3FACEDCC
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 22:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729189AbfJGUjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 16:39:06 -0400
-Received: from www62.your-server.de ([213.133.104.62]:37738 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728187AbfJGUjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 16:39:05 -0400
-Received: from 55.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.55] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iHZmS-0005Sc-02; Mon, 07 Oct 2019 22:38:56 +0200
-Date:   Mon, 7 Oct 2019 22:38:55 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 2/5] bpf: Add support for setting chain call
- sequence for programs
-Message-ID: <20191007203855.GE27307@pc-66.home>
-References: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
- <157046883723.2092443.3902769602513209987.stgit@alrua-x1>
+        id S1729473AbfJGUmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 16:42:10 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18288 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729461AbfJGUmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 16:42:10 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x97KbV84017400
+        for <netdev@vger.kernel.org>; Mon, 7 Oct 2019 13:42:08 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=PlT+a3sf9wJ+tzBWqAKg0k0RAKfw0mhwC7ijrJMosGg=;
+ b=TUanhm+GCujz81/Us8kGI0NwTjQTanUDSkJZ4Vl0K59J4/g+bi7uP7bZIllvXNbNq37c
+ 3/arl2K88GImd/PyWoeot981QUdIyV4FAqERLS3zm0M2GsqLQ0pDhV43/v8H5WHZwyM0
+ mspdDWPSN2AALIUsGj8U05OrsxYicxqFZm0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2vepunt60n-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 13:42:08 -0700
+Received: from 2401:db00:30:6007:face:0:1:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 7 Oct 2019 13:41:52 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id CEF5D8618F1; Mon,  7 Oct 2019 13:41:50 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v2 bpf-next] selftests/bpf: fix dependency ordering for attach_probe test
+Date:   Mon, 7 Oct 2019 13:41:49 -0700
+Message-ID: <20191007204149.1575990-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <157046883723.2092443.3902769602513209987.stgit@alrua-x1>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25595/Mon Oct  7 10:28:44 2019)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-07_03:2019-10-07,2019-10-07 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 clxscore=1015
+ priorityscore=1501 mlxscore=0 malwarescore=0 phishscore=0 bulkscore=0
+ lowpriorityscore=0 impostorscore=0 suspectscore=8 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910070181
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 07, 2019 at 07:20:37PM +0200, Toke Høiland-Jørgensen wrote:
-> From: Toke Høiland-Jørgensen <toke@redhat.com>
-> 
-> This adds support for setting and deleting bpf chain call programs through
-> a couple of new commands in the bpf() syscall. The CHAIN_ADD and CHAIN_DEL
-> commands take two eBPF program fds and a return code, and install the
-> 'next' program to be chain called after the 'prev' program if that program
-> returns 'retcode'. A retcode of -1 means "wildcard", so that the program
-> will be executed regardless of the previous program's return code.
-> 
-> 
-> The syscall command names are based on Alexei's prog_chain example[0],
-> which Alan helpfully rebased on current bpf-next. However, the logic and
-> program storage is obviously adapted to the execution logic in the previous
-> commit.
-> 
-> [0] https://git.kernel.org/pub/scm/linux/kernel/git/ast/bpf.git/commit/?h=prog_chain&id=f54f45d00f91e083f6aec2abe35b6f0be52ae85b&context=15
-> 
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> ---
->  include/uapi/linux/bpf.h |   10 ++++++
->  kernel/bpf/syscall.c     |   78 ++++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 88 insertions(+)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 1ce80a227be3..b03c23963af8 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -107,6 +107,9 @@ enum bpf_cmd {
->  	BPF_MAP_LOOKUP_AND_DELETE_ELEM,
->  	BPF_MAP_FREEZE,
->  	BPF_BTF_GET_NEXT_ID,
-> +	BPF_PROG_CHAIN_ADD,
-> +	BPF_PROG_CHAIN_DEL,
-> +	BPF_PROG_CHAIN_GET,
->  };
->  
->  enum bpf_map_type {
-> @@ -516,6 +519,13 @@ union bpf_attr {
->  		__u64		probe_offset;	/* output: probe_offset */
->  		__u64		probe_addr;	/* output: probe_addr */
->  	} task_fd_query;
-> +
-> +	struct { /* anonymous struct used by BPF_PROG_CHAIN_* commands */
-> +		__u32		prev_prog_fd;
-> +		__u32		next_prog_fd;
-> +		__u32		retcode;
-> +		__u32		next_prog_id;   /* output: prog_id */
-> +	};
->  } __attribute__((aligned(8)));
->  
->  /* The description below is an attempt at providing documentation to eBPF
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index b8a203a05881..be8112e08a88 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2113,6 +2113,79 @@ static int bpf_prog_test_run(const union bpf_attr *attr,
->  	return ret;
->  }
->  
-> +#define BPF_PROG_CHAIN_LAST_FIELD next_prog_id
-> +
-> +static int bpf_prog_chain(int cmd, const union bpf_attr *attr,
-> +			  union bpf_attr __user *uattr)
-> +{
-> +	struct bpf_prog *prog, *next_prog, *old_prog;
-> +	struct bpf_prog **array;
-> +	int ret = -EOPNOTSUPP;
-> +	u32 index, prog_id;
-> +
-> +	if (CHECK_ATTR(BPF_PROG_CHAIN))
-> +		return -EINVAL;
-> +
-> +	/* Index 0 is wildcard, encoded as ~0 by userspace */
-> +	if (attr->retcode == ((u32) ~0))
-> +		index = 0;
-> +	else
-> +		index = attr->retcode + 1;
-> +
-> +	if (index >= BPF_NUM_CHAIN_SLOTS)
-> +		return -E2BIG;
-> +
-> +	prog = bpf_prog_get(attr->prev_prog_fd);
-> +	if (IS_ERR(prog))
-> +		return PTR_ERR(prog);
-> +
-> +	/* If the chain_calls bit is not set, that's because the chain call flag
-> +	 * was not set on program load, and so we can't support chain calls.
-> +	 */
-> +	if (!prog->chain_calls)
-> +		goto out;
-> +
-> +	array = prog->aux->chain_progs;
-> +
-> +	switch (cmd) {
-> +	case BPF_PROG_CHAIN_ADD:
-> +		next_prog = bpf_prog_get(attr->next_prog_fd);
-> +		if (IS_ERR(next_prog)) {
-> +			ret = PTR_ERR(next_prog);
-> +			break;
-> +		}
-> +		old_prog = xchg(array + index, next_prog);
-> +		if (old_prog)
-> +			bpf_prog_put(old_prog);
-> +		ret = 0;
-> +		break;
+Current Makefile dependency chain is not strict enough and allows
+test_attach_probe.o to be built before test_progs's
+prog_test/attach_probe.o is built, which leads to assembler complaining
+about missing included binary.
 
-How are circular dependencies resolved here? Seems the situation is
-not prevented, so progs unloaded via XDP won't get the __bpf_prog_free()
-call where they then drop the references of all the other progs in the
-chain.
+This patch is a minimal fix to fix this issue by enforcing that
+test_attach_probe.o (BPF object file) is built before
+prog_tests/attach_probe.c is attempted to be compiled.
 
-> +	case BPF_PROG_CHAIN_DEL:
-> +		old_prog = xchg(array + index, NULL);
-> +		if (old_prog) {
-> +			bpf_prog_put(old_prog);
-> +			ret = 0;
-> +		} else {
-> +			ret = -ENOENT;
-> +		}
-> +		break;
-> +	case BPF_PROG_CHAIN_GET:
-> +		old_prog = READ_ONCE(array[index]);
-> +		if (old_prog) {
-> +			prog_id = old_prog->aux->id;
-> +			if (put_user(prog_id, &uattr->next_prog_id))
-> +				ret = -EFAULT;
-> +			else
-> +				ret = 0;
-> +		} else
-> +			ret = -ENOENT;
-> +		break;
-> +	}
-> +
-> +out:
-> +	bpf_prog_put(prog);
-> +	return ret;
-> +}
-> +
->  #define BPF_OBJ_GET_NEXT_ID_LAST_FIELD next_id
->  
->  static int bpf_obj_get_next_id(const union bpf_attr *attr,
-> @@ -2885,6 +2958,11 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
->  	case BPF_PROG_TEST_RUN:
->  		err = bpf_prog_test_run(&attr, uattr);
->  		break;
-> +	case BPF_PROG_CHAIN_ADD:
-> +	case BPF_PROG_CHAIN_DEL:
-> +	case BPF_PROG_CHAIN_GET:
-> +		err = bpf_prog_chain(cmd, &attr, uattr);
-> +		break;
->  	case BPF_PROG_GET_NEXT_ID:
->  		err = bpf_obj_get_next_id(&attr, uattr,
->  					  &prog_idr, &prog_idr_lock);
-> 
+Fixes: 928ca75e59d7 ("selftests/bpf: switch tests to new bpf_object__open_{file, mem}() APIs")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index b59fb4e8afaf..771a4e82128b 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -164,7 +164,7 @@ $(OUTPUT)/test_queue_map.o: test_queue_stack_map.h
+ $(OUTPUT)/test_stack_map.o: test_queue_stack_map.h
+ 
+ $(OUTPUT)/flow_dissector_load.o: flow_dissector_load.h
+-$(OUTPUT)/test_progs.o: flow_dissector_load.h $(OUTPUT)/test_attach_probe.o
++$(OUTPUT)/test_progs.o: flow_dissector_load.h
+ 
+ BTF_LLC_PROBE := $(shell $(LLC) -march=bpf -mattr=help 2>&1 | grep dwarfris)
+ BTF_PAHOLE_PROBE := $(shell $(BTF_PAHOLE) --help 2>&1 | grep BTF)
+@@ -275,7 +275,7 @@ PROG_TESTS_H := $(PROG_TESTS_DIR)/tests.h
+ PROG_TESTS_FILES := $(wildcard prog_tests/*.c)
+ test_progs.c: $(PROG_TESTS_H)
+ $(OUTPUT)/test_progs: CFLAGS += $(TEST_PROGS_CFLAGS)
+-$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_FILES) | $(PROG_TESTS_H)
++$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_FILES) | $(OUTPUT)/test_attach_probe.o $(PROG_TESTS_H)
+ $(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
+ 	$(shell ( cd prog_tests/; \
+ 		  echo '/* Generated header, do not edit */'; \
+-- 
+2.17.1
+
