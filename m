@@ -2,79 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09489CDFB8
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 12:55:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AABD7CDFC4
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 13:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727691AbfJGKzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 06:55:17 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44336 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727252AbfJGKzR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 06:55:17 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1iHQfX-0004Il-2S; Mon, 07 Oct 2019 10:55:11 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hns: make arrays static, makes object smaller
-Date:   Mon,  7 Oct 2019 11:55:10 +0100
-Message-Id: <20191007105510.31858-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727467AbfJGLAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 07:00:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43958 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727252AbfJGLAo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 07:00:44 -0400
+Received: from localhost (lfbn-1-10718-76.w90-89.abo.wanadoo.fr [90.89.68.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3E1D920867;
+        Mon,  7 Oct 2019 11:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570446043;
+        bh=2hAjkYW/sfqFwCOnRXqcJFaaj969edeRaZ+eZJxXYHI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CqacMOAjiY9jXabDsPJfVFjUbmireDFbYDBflbIRNIeoFdqfxFDFMVmxqSxYVuqJM
+         MhlOiwI3o9iS1qxGhlo03ndHoIsQKVSvoayywiTF3JDXgyNm5d8cALyRFsiODGQwXv
+         c57dKe6UpQn8FQ0u1XvCUKzjj4EW+K0ogPe6qYR4=
+Date:   Mon, 7 Oct 2019 13:00:40 +0200
+From:   Maxime Ripard <mripard@kernel.org>
+To:     Alexandre Torgue <alexandre.torgue@st.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Alexandru Ardelean <alexaundru.ardelean@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: media: Fix id path for sun4i-a10-csi
+Message-ID: <20191007110040.2mt5uxroos3hz6ic@gilmour>
+References: <20191007102552.19808-1-alexandre.torgue@st.com>
+ <20191007102552.19808-2-alexandre.torgue@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wtovumvb4os5l27j"
+Content-Disposition: inline
+In-Reply-To: <20191007102552.19808-2-alexandre.torgue@st.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
 
-Don't populate the arrays port_map and sl_map on the stack but
-instead make them static. Makes the object code smaller by 64 bytes.
+--wtovumvb4os5l27j
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Before:
-   text	   data	    bss	    dec	    hex	filename
-  49575	   6872	     64	  56511	   dcbf	hisilicon/hns/hns_dsaf_main.o
+Hi Alexandre,
 
-After:
-   text	   data	    bss	    dec	    hex	filename
-  49350	   7032	     64	  56446	   dc7e	hisilicon/hns/hns_dsaf_main.o
+On Mon, Oct 07, 2019 at 12:25:50PM +0200, Alexandre Torgue wrote:
+> This commit fixes id path of allwinner,sun4i-a10-csi.yaml location.
+>
+> Fixes: c5e8f4ccd775 ("media: dt-bindings: media: Add Allwinner A10 CSI binding")
+> Signed-off-by: Alexandre Torgue <alexandre.torgue@st.com>
 
-(gcc version 9.2.1, amd64)
+I just merged a patch addressing the same issue earlier today.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks!
+Maxime
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
-index 3a14bbc26ea2..1c5243cc1dc6 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
-@@ -3049,7 +3049,7 @@ int hns_dsaf_roce_reset(struct fwnode_handle *dsaf_fwnode, bool dereset)
- 	u32 sl;
- 	u32 credit;
- 	int i;
--	const u32 port_map[DSAF_ROCE_CREDIT_CHN][DSAF_ROCE_CHAN_MODE_NUM] = {
-+	static const u32 port_map[DSAF_ROCE_CREDIT_CHN][DSAF_ROCE_CHAN_MODE_NUM] = {
- 		{DSAF_ROCE_PORT_0, DSAF_ROCE_PORT_0, DSAF_ROCE_PORT_0},
- 		{DSAF_ROCE_PORT_1, DSAF_ROCE_PORT_0, DSAF_ROCE_PORT_0},
- 		{DSAF_ROCE_PORT_2, DSAF_ROCE_PORT_1, DSAF_ROCE_PORT_0},
-@@ -3059,7 +3059,7 @@ int hns_dsaf_roce_reset(struct fwnode_handle *dsaf_fwnode, bool dereset)
- 		{DSAF_ROCE_PORT_5, DSAF_ROCE_PORT_3, DSAF_ROCE_PORT_1},
- 		{DSAF_ROCE_PORT_5, DSAF_ROCE_PORT_3, DSAF_ROCE_PORT_1},
- 	};
--	const u32 sl_map[DSAF_ROCE_CREDIT_CHN][DSAF_ROCE_CHAN_MODE_NUM] = {
-+	static const u32 sl_map[DSAF_ROCE_CREDIT_CHN][DSAF_ROCE_CHAN_MODE_NUM] = {
- 		{DSAF_ROCE_SL_0, DSAF_ROCE_SL_0, DSAF_ROCE_SL_0},
- 		{DSAF_ROCE_SL_0, DSAF_ROCE_SL_1, DSAF_ROCE_SL_1},
- 		{DSAF_ROCE_SL_0, DSAF_ROCE_SL_0, DSAF_ROCE_SL_2},
--- 
-2.20.1
+--wtovumvb4os5l27j
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXZsa2AAKCRDj7w1vZxhR
+xR8JAQCMAvM7SXG96je2bRTkUdjCkS6bG6EOoW4hgbX9bxr8cwEAmc4iiWubk//+
+S/jhKMDsvRBYt8C8CRty0bIvFTuRdQg=
+=+t0N
+-----END PGP SIGNATURE-----
+
+--wtovumvb4os5l27j--
