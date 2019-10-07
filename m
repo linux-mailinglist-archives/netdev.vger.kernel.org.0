@@ -2,93 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08812CEEBE
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 00:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE04CEED6
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 00:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729419AbfJGWBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 18:01:46 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:32782 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728422AbfJGWBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 18:01:45 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q10so9551316pfl.0
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 15:01:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=b1vxt3BHAdtVsNVcsaK+SHT0PO5pnrGIy4GUYFy07FQ=;
-        b=fN+AY2T0tU+a7p72Bps1sLCgivXpambggMKUJhYUIUCIfLaRXOCfAzEWLHHp8OWV2c
-         Yd0R/D0gxHvsUWpiXDLB66UWZidavR9/9V8YBdcg1FeB0Mi6V9OjBLuiRGeMBF9hj0kG
-         MXjqAgx0m3BbbtDNA8UX1g04D5uDNdiPSEFWlsnhcjr6WKs6Q7JKS22AVC4R44QbRIou
-         JA6RGCp+Wa3BQOkHNJP92RTq1zsL46NVSKzHo4m4V3aleuu95mjrV6NTbOwgSXeeVlzQ
-         IDDSahcrhlV5HTTSHjVlrFP/p1ERWXAhq94VjlbjH6WAsWjQRGOIZGGhayn5M/o4bfWy
-         Anng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=b1vxt3BHAdtVsNVcsaK+SHT0PO5pnrGIy4GUYFy07FQ=;
-        b=YGXvzOq6lCGTIFnqPbAM78qzszwv5gFrEhJJQaiepCThBv0cfvpW6VjdvxXdDf98ix
-         04pLm8lya7WLr5oA5p/GsFhB9smO3qz6Ym0OVxMw+JsUj/eu6XQitaSIWGe+kULIY2qg
-         tBgRodB5rS4QoTwuXemavO+bqOp/xEYv5TWWgfYiJHLd4Qn+95cHp9SgF0xYXYzhQRrJ
-         db+jntJ+J16+fovEXS18pzxfAmfd5w5ZJMkz3f6FtPGSpPuzjLZ0zAaKMukytLAL2GrL
-         +A+fhUoH89wEXronWjtb426Up9uyC3sYW+u3qKl3PhzT734jcnEsHml0WK+iU0tHVp+T
-         8PzA==
-X-Gm-Message-State: APjAAAXNDY9XbHWFxY1yuOKlQK44pUy2WS/zR/D6rV48B3yV6vslxCS1
-        uQc6vNnAljUGwuxslz7C5cs=
-X-Google-Smtp-Source: APXvYqxDxeJnNfjL5oK1chf0iijUhGMtJUBVCKc+hmjoTw1rNQe06kXtWqn37rMcPSS/NMCLaZZF+w==
-X-Received: by 2002:a17:90a:cb0b:: with SMTP id z11mr1664114pjt.122.1570485703729;
-        Mon, 07 Oct 2019 15:01:43 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:dc58:1abd:13a8:f485])
-        by smtp.googlemail.com with ESMTPSA id l1sm467324pja.30.2019.10.07.15.01.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 07 Oct 2019 15:01:42 -0700 (PDT)
-Subject: Re: [patch iproute2-next v3 1/2] devlink: introduce cmdline option to
- switch to a different namespace
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
-        jakub.kicinski@netronome.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        shuah@kernel.org, mlxsw@mellanox.com
-References: <20191003094940.9797-1-jiri@resnulli.us>
- <20191003095115.10098-1-jiri@resnulli.us>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8206fd09-08bd-f392-d550-9995c773e130@gmail.com>
-Date:   Mon, 7 Oct 2019 16:01:38 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        id S1729448AbfJGWIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 18:08:53 -0400
+Received: from correo.us.es ([193.147.175.20]:44250 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728422AbfJGWIw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 18:08:52 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 4668C81402
+        for <netdev@vger.kernel.org>; Tue,  8 Oct 2019 00:08:48 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 359C9DA840
+        for <netdev@vger.kernel.org>; Tue,  8 Oct 2019 00:08:48 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 299A5DA7B6; Tue,  8 Oct 2019 00:08:48 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2666EB7FFE;
+        Tue,  8 Oct 2019 00:08:46 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 08 Oct 2019 00:08:46 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 05E81426CCBB;
+        Tue,  8 Oct 2019 00:08:45 +0200 (CEST)
+Date:   Tue, 8 Oct 2019 00:08:47 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Linux NetDev <netdev@vger.kernel.org>
+Subject: Re: nf_conntrack_in() - is there a leak here?
+Message-ID: <20191007220847.s73l3x5tt74bzdxf@salvia>
+References: <CANP3RGdV1Rwkik21CmWq+3hreB-j5aRzLjwuxEvU3DuKdjK+mg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20191003095115.10098-1-jiri@resnulli.us>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANP3RGdV1Rwkik21CmWq+3hreB-j5aRzLjwuxEvU3DuKdjK+mg@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/3/19 3:51 AM, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Similar to ip tool, add an option to devlink to operate under certain
-> network namespace. Unfortunately, "-n" is already taken, so use "-N"
-> instead.
-> 
-> Example:
-> 
-> $ devlink -N testns1 dev show
-> 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> ---
-> v1->v2:
-> - added patch description
-> ---
->  devlink/devlink.c  | 12 ++++++++++--
->  man/man8/devlink.8 |  4 ++++
->  2 files changed, 14 insertions(+), 2 deletions(-)
-> 
+Hi,
 
-applied both to iproute2-next
+On Mon, Oct 07, 2019 at 07:10:37AM -0700, Maciej Żenczykowski wrote:
+> unsigned int
+> nf_conntrack_in(struct sk_buff *skb, const struct nf_hook_state *state)
+> {
+>         enum ip_conntrack_info ctinfo;
+>         struct nf_conn *ct, *tmpl;
+>         u_int8_t protonum;
+>         int dataoff, ret;
+> 
+>         tmpl = nf_ct_get(skb, &ctinfo);
+>                           <-----------
+>         if (tmpl || ctinfo == IP_CT_UNTRACKED) {
+>                 /* Previously seen (loopback or untracked)?  Ignore. */
+>                 if ((tmpl && !nf_ct_is_template(tmpl)) ||
+>                      ctinfo == IP_CT_UNTRACKED) {
+>                         NF_CT_STAT_INC_ATOMIC(state->net, ignore);
+>                         return NF_ACCEPT;
+>                              <----------
+>                 }
+>                 skb->_nfct = 0;
+>         }
+> 
+>         /* rcu_read_lock()ed by nf_hook_thresh */
+>         dataoff = get_l4proto(skb, skb_network_offset(skb), state->pf,
+> &protonum);
+>         if (dataoff <= 0) {
+>                 pr_debug("not prepared to track yet or error occurred\n");
+>                 NF_CT_STAT_INC_ATOMIC(state->net, error);
+>                 NF_CT_STAT_INC_ATOMIC(state->net, invalid);
+>                 ret = NF_ACCEPT;
+>                 goto out;
+>         }
+> 
+> ...
+> 
+> out:
+>         if (tmpl)
+>                 nf_ct_put(tmpl);
+>                        <---------
+> 
+>         return ret;
+> }
+> EXPORT_SYMBOL_GPL(nf_conntrack_in);
+> 
+> ---
+> 
+> Do we leak a nf_ct_get() on tmpl at that first 'return NF_ACCEPT' ?
+> ie. should it be 'ret = NF_ACCEPT; goto out;'
 
+This patch only entered for loopback and untracked traffic, in such
+case the special handling for the template is not required (because
+there is no template conntrack in place).
+
+> I'm confused by:
+>   include/net/netfilter/nf_conntrack.h:65:
+>   * beware nf_ct_get() is different and don't inc refcnt.
+
+Yes, this call has this semantics since the very beginning IIRC.
+
+> (internal reference b/141976661 & b/135110479 where we're getting kmemleak
+> complaints on 4.14 LTS,
+>  which would possibly be shut up by this 4.17 'silence fix', but:)
+> 
+> I have this gut feeling that:
+>   commit 114aa35d06d4920c537b72f9fa935de5dd205260
+>   'netfilter: conntrack: silent a memory leak warning'
+> is bogus...
+> 
+> By my understanding of kmemleak, such gymnastics shouldn't be needed.
+> And there's no other users in the network stack of kmemleak_not_leak()
+> [except for 2 staging drivers].
+
+Probably, are you observing a memleak there in conntrack? I see you
+searching for reason :-)
