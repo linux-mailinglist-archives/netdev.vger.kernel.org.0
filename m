@@ -2,102 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA07ACE4CA
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:12:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95C60CE4DE
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728229AbfJGOL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 10:11:56 -0400
-Received: from vps.xff.cz ([195.181.215.36]:55952 "EHLO vps.xff.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727324AbfJGOL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 10:11:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
-        t=1570457513; bh=vCAFf9C0br5VOI1ZEU2yHBKcKssDrCWtMjeUus4lEvs=;
-        h=Date:From:To:Cc:Subject:References:X-My-GPG-KeyId:From;
-        b=tKFYuF7CIbqBRHvfCbUenSAaxcz2/NEiihFPgquA588JE7l65OI+ZFs3BxqUXBeb3
-         TkIIg1l8zsVvcLmp9N/rKDlseQuzb2rM4cGMspVzIb7OTTU72+40vWEHTpVi6zq6NH
-         qiiN7TechdSJTKlkvQz+q9S8zk3HZuGQXQGL2Ylk=
-Date:   Mon, 7 Oct 2019 16:11:53 +0200
-From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>
-To:     Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [RESEND PATCH 0/5] Add bluetooth support for Orange Pi 3
-Message-ID: <20191007141153.7b76t4ntdzdojj5m@core.my.home>
-Mail-Followup-To: Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-References: <20190823103139.17687-1-megous@megous.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190823103139.17687-1-megous@megous.com>
-X-My-GPG-KeyId: EBFBDDE11FB918D44D1F56C1F9F0A873BE9777ED
- <https://xff.cz/key.txt>
+        id S1728223AbfJGOO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 10:14:29 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:53146 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727324AbfJGOO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:14:29 -0400
+Received: from localhost (unknown [144.121.20.163])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B623614218221;
+        Mon,  7 Oct 2019 07:14:27 -0700 (PDT)
+Date:   Mon, 07 Oct 2019 16:14:26 +0200 (CEST)
+Message-Id: <20191007.161426.108032588372697075.davem@davemloft.net>
+To:     Jose.Abreu@synopsys.com
+Cc:     netdev@vger.kernel.org, Joao.Pinto@synopsys.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        mcoquelin.stm32@gmail.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: stmmac: Fix sparse warning
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <b59904022c2f96aca956aa693040faf0dddeb802.1570454078.git.Jose.Abreu@synopsys.com>
+References: <b59904022c2f96aca956aa693040faf0dddeb802.1570454078.git.Jose.Abreu@synopsys.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 07 Oct 2019 07:14:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxime,
+From: Jose Abreu <Jose.Abreu@synopsys.com>
+Date: Mon,  7 Oct 2019 15:16:08 +0200
 
-On Fri, Aug 23, 2019 at 12:31:34PM +0200, megous hlavni wrote:
-> From: Ondrej Jirman <megous@megous.com>
-> 
-> (Resend to add missing lists, sorry for the noise.)
-> 
-> This series implements bluetooth support for Xunlong Orange Pi 3 board.
-> 
-> The board uses AP6256 WiFi/BT 5.0 chip.
-> 
-> Summary of changes:
-> 
-> - add more delay to let initialize the chip
-> - let the kernel detect firmware file path
-> - add new compatible and update dt-bindings
-> - update Orange Pi 3 / H6 DTS
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 8b76745a7ec4..40b0756f3a14 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -4207,6 +4207,7 @@ static u32 stmmac_vid_crc32_le(__le16 vid_le)
+>  static int stmmac_vlan_update(struct stmmac_priv *priv, bool is_double)
+>  {
+>  	u32 crc, hash = 0;
+> +	__le16 pmatch = 0;
+>  	int count = 0;
+>  	u16 vid = 0;
+>  
+> @@ -4221,11 +4222,11 @@ static int stmmac_vlan_update(struct stmmac_priv *priv, bool is_double)
+>  		if (count > 2) /* VID = 0 always passes filter */
+>  			return -EOPNOTSUPP;
+>  
+> -		vid = cpu_to_le16(vid);
+> +		pmatch = cpu_to_le16(vid);
+>  		hash = 0;
+>  	}
+>  
+> -	return stmmac_update_vlan_hash(priv, priv->hw, hash, vid, is_double);
+> +	return stmmac_update_vlan_hash(priv, priv->hw, hash, pmatch, is_double);
+>  }
 
-Please consider the DTS patches for 5.5.
+I dunno about this.
 
-Thanks,
-	Ondrej
+The original code would use the last "vid" iterated over in the
+for_each_set_bit() loop if the priv->dma_cap.vlhash test does not
+pass.
 
-> Please take a look.
-> 
-> thank you and regards,
->   Ondrej Jirman
-> 
-> Ondrej Jirman (5):
->   dt-bindings: net: Add compatible for BCM4345C5 bluetooth device
->   bluetooth: bcm: Add support for loading firmware for BCM4345C5
->   bluetooth: hci_bcm: Give more time to come out of reset
->   arm64: dts: allwinner: h6: Add pin configs for uart1
->   arm64: dts: allwinner: orange-pi-3: Enable UART1 / Bluetooth
-> 
->  .../bindings/net/broadcom-bluetooth.txt       |  1 +
->  .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 19 +++++++++++++++++++
->  arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  | 10 ++++++++++
->  drivers/bluetooth/btbcm.c                     |  3 +++
->  drivers/bluetooth/hci_bcm.c                   |  3 ++-
->  5 files changed, 35 insertions(+), 1 deletion(-)
-> 
-> -- 
-> 2.23.0
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Now, it will use zero in that case.
+
+This does not look like an equivalent transformation.
