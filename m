@@ -2,225 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2036DCDB31
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 06:58:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B90CDB72
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 07:29:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727121AbfJGE6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 00:58:06 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42137 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726889AbfJGE6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 00:58:05 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q12so7824914pff.9
-        for <netdev@vger.kernel.org>; Sun, 06 Oct 2019 21:58:05 -0700 (PDT)
+        id S1727259AbfJGF3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 01:29:13 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:39427 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726960AbfJGF3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 01:29:12 -0400
+Received: by mail-lf1-f65.google.com with SMTP id 72so8278242lfh.6;
+        Sun, 06 Oct 2019 22:29:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sage.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=8EdYmdtbrf6+F/MAWhTLypXhwqGJzWhD4XIFByfyPhE=;
-        b=GhJd0tc8YUTvVBQVfmwWKCxH8iiV75+AGU7hgrahFxssWhtLOtL/ndnUZxhrRa7+DI
-         ENwKGEZpw05lNfcmJxU1pGU8wpY+4YLDjrsVX4GkHZZAFTDGximUvN3iiNjJspnu6UtA
-         2q6LA42psEPxudGHskC07h2RHb1QrmZJhh/gjUSaPzmjEoRIu6e58PORwtCtXNhxK04F
-         eHh6LrzFEE5xNg5u6/+ohIZSXcATmNKetumDy5a9jmAaAQsu4ogHFhHCd42u8G35SEg0
-         K1U8fLjWBvM8toXvNLc9KBhKAsf3qhxC3ZsyY0GDSOwbSwim4lkZyQe+1OJOOYPD/kge
-         pHUA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hsJCVSfcXBoUu15ev7k1KyZ2vjOC4PYGSN4RwoF4JJQ=;
+        b=sTvAlYtu7z9WysFVrr4E4cWCA2gdJa5au0OEV0LigtT5j7LzyirfHEAhUloR6Zto9e
+         4gAag93r1V5k6yGI1BY8Pyr0UgzjtnApQTh4TjnuNwbefDjRyOOrV3EmHZxg63BrXB8F
+         U2q9nv7pvjm08pM6JVyot+/0CiSC8OVhbzqLtiCf6o9Cxp1XiYfmTcaZqBqjPCJBZU8b
+         UV0EUk3sTdlyuPwBJU56DoOjImXTnrXpYL6i2bh0iXe3Ub3ZDBaCoOybVe+qejkOJF2Z
+         IW89isc1Zylmjyj2BAA5ZmQwDCE/Link3joZ89rU1pBrbutn9gUdsfLLg8EShxK/1AsO
+         AFbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8EdYmdtbrf6+F/MAWhTLypXhwqGJzWhD4XIFByfyPhE=;
-        b=aFVCJuZxGInhMB4xu5CJfYIGS6A1V/XJYbdUMGu7WkQwR/9uwZfiHPWfc1UQtEZKJV
-         jBtePvymtSBQkJQwac1PRlSoUOhLvyqwGeqP6Rk2SmCgmb5VIWjFIpryw3H9AFFNoJO6
-         Hv2nYAL3rPT2cK5Odl+GWsx3Zn8/VT80ZMMKoKm5JX9SIxsyMCgx3NFhu7aXOd1NMPlS
-         DVU125xuBEnzwPuapXbEJOgS4Dxa6HoKuSqJgJU+RLOHas4sp29W6mSR9R+wfBhhDhkq
-         eJA2FPON7DD7ytkjJVAzQYcgWvw9Rt0CwfG6T/81F//jfUrSMPBrUy6M8IlGuAki9ATD
-         RPlw==
-X-Gm-Message-State: APjAAAV//ok8ymQtOXqWNVn65JQ5Mcbp+v3LF/H1ADv+njUoAmjLSHAx
-        ffx7MHS6UB6g1ON4i3XqLZfQxt2OJZpsnQ==
-X-Google-Smtp-Source: APXvYqwEW7sGlxlLCNdwYrt2isMJ2qxl5mQ1no94mpHb3sJhlDVb4U6beFGgbvpOkwBL726Z2h6Knw==
-X-Received: by 2002:a65:6681:: with SMTP id b1mr1090952pgw.393.1570424284665;
-        Sun, 06 Oct 2019 21:58:04 -0700 (PDT)
-Received: from dev-instance.c.sage-org.internal (143.139.82.34.bc.googleusercontent.com. [34.82.139.143])
-        by smtp.googlemail.com with ESMTPSA id x11sm21565092pja.3.2019.10.06.21.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Oct 2019 21:58:04 -0700 (PDT)
-From:   Eric Sage <eric@sage.org>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, daniel@iogearbox.net,
-        xdp-newbies@vger.kernel.org, brouer@redhat.org, ast@kernel.org,
-        Eric Sage <eric@sage.org>
-Subject: [PATCH] samples/bpf: make xdp_monitor use raw_tracepoints
-Date:   Mon,  7 Oct 2019 04:57:26 +0000
-Message-Id: <20191007045726.21467-1-eric@sage.org>
-X-Mailer: git-send-email 2.18.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hsJCVSfcXBoUu15ev7k1KyZ2vjOC4PYGSN4RwoF4JJQ=;
+        b=Hj2xFY6CkhsQRm6r473b31FHxwIsV/iZ9FyJ/BEQC+EFxi1IoAL99CJRTaOByvNIqn
+         Fofnr3SuOvcRciR655OfIqEuN01qIO98fDz1r609mfC8+vuPzZmGXMYUprqAayWvMgUd
+         KvqiHBsGB8ghuu03T4aZ029dXEGMqrn3KQ9uUTVujdc0AoQsUF2X8MXkwq4k4hP7M0PY
+         LVxPR+TW5D4n4huXXq2sjklQp0Nv2BFoYOXaq+KXpJakAHpoGHQpzkZSaxcAVJ7X9EMF
+         PjykeEh02zRLdULbxAn3/nQBChNvvLUBvIywATK3w1Z41IU4NU+oNieOPiW0z2/TmlKN
+         MmRg==
+X-Gm-Message-State: APjAAAVclHwR5p4Q+W1+EDy5GZlXhbJc8qxL6k43hZorl8ywCkjPsHY3
+        y2/VweDa1Wew1mVHRsJX7TE8u4LrNiLNGnSnpJ5iUmUu
+X-Google-Smtp-Source: APXvYqxp4PDQpxQK61cbKRyTigJaZ6+JB7RM+t6rRBd8dMisDKza6M15i+olsUCTs+OwewbMiyVxPCOewc4K6FEQc+k=
+X-Received: by 2002:a19:2c1:: with SMTP id 184mr11829227lfc.100.1570426150660;
+ Sun, 06 Oct 2019 22:29:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191007033037.2687437-1-andriin@fb.com>
+In-Reply-To: <20191007033037.2687437-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 6 Oct 2019 22:28:58 -0700
+Message-ID: <CAADnVQJwA-DbzncKJ_mjxvfk6PLu0HWuqkiOTWg0nVKyV6oRXQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix dependency ordering for
+ attach_probe test
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-raw_tracepoints are an eBPF alternative to standard tracepoints which
-attach to a tracepoint without the perf layer being executed, making
-them faster.
+On Sun, Oct 6, 2019 at 8:31 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Current Makefile dependency chain is not strict enough and allows
+> test_attach_probe.o to be built before test_progs's
+> prog_test/attach_probe.o is built, which leads to assembler compainig
+> about missing included binary.
+>
+> This patch is a minimal fix to fix this issue by enforcing that
+> test_attach_probe.o (BPF object file) is built before
+> prog_tests/attach_probe.c is attempted to be compiled.
+>
+> Fixes: 928ca75e59d7 ("selftests/bpf: switch tests to new bpf_object__open_{file, mem}() APIs")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Since xdp_monitor is supposed to have as little impact on the system as
-possible it is switched to using them by append raw_ to the SEC names.
-
-There was also a small issues with 'samples/bpf/bpf_load' - it was
-loading the raw_tracepoints with the tracing subsystem name still
-attached, which the bpf syscall rejects with a No such file or directory
-error. This is now fixed.
-
-Signed-off-by: Eric Sage <eric@sage.org>
----
- samples/bpf/bpf_load.c         |  5 +++--
- samples/bpf/xdp_monitor_kern.c | 26 +++++++++++++-------------
- 2 files changed, 16 insertions(+), 15 deletions(-)
-
-diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
-index 4574b1939e49..6f57eee8e913 100644
---- a/samples/bpf/bpf_load.c
-+++ b/samples/bpf/bpf_load.c
-@@ -156,9 +156,10 @@ static int load_and_attach(const char *event, struct bpf_insn *prog, int size)
- 	}
- 
- 	if (is_raw_tracepoint) {
--		efd = bpf_raw_tracepoint_open(event + 15, fd);
-+		efd = bpf_raw_tracepoint_open(event + 19, fd);
- 		if (efd < 0) {
--			printf("tracepoint %s %s\n", event + 15, strerror(errno));
-+			printf("tracepoint %s %s\n", event + 19,
-+						strerror(errno));
- 			return -1;
- 		}
- 		event_fd[prog_cnt - 1] = efd;
-diff --git a/samples/bpf/xdp_monitor_kern.c b/samples/bpf/xdp_monitor_kern.c
-index ad10fe700d7d..6f67c38468b9 100644
---- a/samples/bpf/xdp_monitor_kern.c
-+++ b/samples/bpf/xdp_monitor_kern.c
-@@ -23,10 +23,10 @@ struct bpf_map_def SEC("maps") exception_cnt = {
- };
- 
- /* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_redirect/format
-+ * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
-  * Code in:                kernel/include/trace/events/xdp.h
-  */
- struct xdp_redirect_ctx {
--	u64 __pad;		// First 8 bytes are not accessible by bpf code
- 	int prog_id;		//	offset:8;  size:4; signed:1;
- 	u32 act;		//	offset:12  size:4; signed:0;
- 	int ifindex;		//	offset:16  size:4; signed:1;
-@@ -65,44 +65,44 @@ int xdp_redirect_collect_stat(struct xdp_redirect_ctx *ctx)
- 	 */
- }
- 
--SEC("tracepoint/xdp/xdp_redirect_err")
-+SEC("raw_tracepoint/xdp/xdp_redirect_err")
- int trace_xdp_redirect_err(struct xdp_redirect_ctx *ctx)
- {
- 	return xdp_redirect_collect_stat(ctx);
- }
- 
- 
--SEC("tracepoint/xdp/xdp_redirect_map_err")
-+SEC("raw_tracepoint/xdp/xdp_redirect_map_err")
- int trace_xdp_redirect_map_err(struct xdp_redirect_ctx *ctx)
- {
- 	return xdp_redirect_collect_stat(ctx);
- }
- 
- /* Likely unloaded when prog starts */
--SEC("tracepoint/xdp/xdp_redirect")
-+SEC("raw_tracepoint/xdp/xdp_redirect")
- int trace_xdp_redirect(struct xdp_redirect_ctx *ctx)
- {
- 	return xdp_redirect_collect_stat(ctx);
- }
- 
- /* Likely unloaded when prog starts */
--SEC("tracepoint/xdp/xdp_redirect_map")
-+SEC("raw_tracepoint/xdp/xdp_redirect_map")
- int trace_xdp_redirect_map(struct xdp_redirect_ctx *ctx)
- {
- 	return xdp_redirect_collect_stat(ctx);
- }
- 
- /* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_exception/format
-+ * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
-  * Code in:                kernel/include/trace/events/xdp.h
-  */
- struct xdp_exception_ctx {
--	u64 __pad;	// First 8 bytes are not accessible by bpf code
- 	int prog_id;	//	offset:8;  size:4; signed:1;
- 	u32 act;	//	offset:12; size:4; signed:0;
- 	int ifindex;	//	offset:16; size:4; signed:1;
- };
- 
--SEC("tracepoint/xdp/xdp_exception")
-+SEC("raw_tracepoint/xdp/xdp_exception")
- int trace_xdp_exception(struct xdp_exception_ctx *ctx)
- {
- 	u64 *cnt;
-@@ -144,10 +144,10 @@ struct bpf_map_def SEC("maps") cpumap_kthread_cnt = {
- };
- 
- /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_enqueue/format
-+ * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
-  * Code in:         kernel/include/trace/events/xdp.h
-  */
- struct cpumap_enqueue_ctx {
--	u64 __pad;		// First 8 bytes are not accessible by bpf code
- 	int map_id;		//	offset:8;  size:4; signed:1;
- 	u32 act;		//	offset:12; size:4; signed:0;
- 	int cpu;		//	offset:16; size:4; signed:1;
-@@ -156,7 +156,7 @@ struct cpumap_enqueue_ctx {
- 	int to_cpu;		//	offset:28; size:4; signed:1;
- };
- 
--SEC("tracepoint/xdp/xdp_cpumap_enqueue")
-+SEC("raw_tracepoint/xdp/xdp_cpumap_enqueue")
- int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
- {
- 	u32 to_cpu = ctx->to_cpu;
-@@ -179,10 +179,10 @@ int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
- }
- 
- /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_kthread/format
-+ * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
-  * Code in:         kernel/include/trace/events/xdp.h
-  */
- struct cpumap_kthread_ctx {
--	u64 __pad;		// First 8 bytes are not accessible by bpf code
- 	int map_id;		//	offset:8;  size:4; signed:1;
- 	u32 act;		//	offset:12; size:4; signed:0;
- 	int cpu;		//	offset:16; size:4; signed:1;
-@@ -191,7 +191,7 @@ struct cpumap_kthread_ctx {
- 	int sched;		//	offset:28; size:4; signed:1;
- };
- 
--SEC("tracepoint/xdp/xdp_cpumap_kthread")
-+SEC("raw_tracepoint/xdp/xdp_cpumap_kthread")
- int trace_xdp_cpumap_kthread(struct cpumap_kthread_ctx *ctx)
- {
- 	struct datarec *rec;
-@@ -218,10 +218,10 @@ struct bpf_map_def SEC("maps") devmap_xmit_cnt = {
- };
- 
- /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_devmap_xmit/format
-+ * Notice: For raw_tracepoints first 8 bytes are not part of 'format' struct
-  * Code in:         kernel/include/trace/events/xdp.h
-  */
- struct devmap_xmit_ctx {
--	u64 __pad;		// First 8 bytes are not accessible by bpf code
- 	int map_id;		//	offset:8;  size:4; signed:1;
- 	u32 act;		//	offset:12; size:4; signed:0;
- 	u32 map_index;		//	offset:16; size:4; signed:0;
-@@ -232,7 +232,7 @@ struct devmap_xmit_ctx {
- 	int err;		//	offset:36; size:4; signed:1;
- };
- 
--SEC("tracepoint/xdp/xdp_devmap_xmit")
-+SEC("raw_tracepoint/xdp/xdp_devmap_xmit")
- int trace_xdp_devmap_xmit(struct devmap_xmit_ctx *ctx)
- {
- 	struct datarec *rec;
--- 
-2.18.1
-
+It doesn't help.
+Before and after I still see:
+$ cd selftests/bpf/
+$ make
+...
+/tmp/cco8plDk.s: Assembler messages:
+/tmp/cco8plDk.s:8: Error: file not found: test_attach_probe.o
