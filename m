@@ -2,67 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CC94CE272
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 14:58:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BB8ECE2BA
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 15:08:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727608AbfJGM6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 08:58:25 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52318 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727536AbfJGM6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 08:58:24 -0400
-Received: from localhost (unknown [144.121.20.163])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 52ECC14014BC1;
-        Mon,  7 Oct 2019 05:58:23 -0700 (PDT)
-Date:   Mon, 07 Oct 2019 14:58:17 +0200 (CEST)
-Message-Id: <20191007.145817.1363255118392494597.davem@davemloft.net>
-To:     jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, edumazet@google.com, willemb@google.com,
-        oss-drivers@netronome.com, davejwatson@fb.com, borisp@mellanox.com,
-        aviadye@mellanox.com, john.fastabend@gmail.com,
-        daniel@iogearbox.net, simon.horman@netronome.com
-Subject: Re: [RFC 1/2] net/tls: don't clear socket error if strparser
- aborted
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191007035323.4360-2-jakub.kicinski@netronome.com>
-References: <20191007035323.4360-1-jakub.kicinski@netronome.com>
-        <20191007035323.4360-2-jakub.kicinski@netronome.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 07 Oct 2019 05:58:24 -0700 (PDT)
+        id S1728096AbfJGNIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 09:08:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51290 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727847AbfJGNIc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 09:08:32 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2E61B21655;
+        Mon,  7 Oct 2019 13:08:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570453711;
+        bh=vxO/s54dTSEzl5R7GT884moYyXRk4GkYf/RtZPNdPqM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=E24C54eS5QstHHB+h3eQVSYk65KL+h5v4BqBRUMw7SxYY+pIuIpbwYFaEImNXipDy
+         SA+nl++VUFDCuNX/xtbtrfM6UohU5jGE32dgwZ4bQ/Vvi/aYvVNnDKzBWR20jCFiLj
+         BEJh7BCjEdlmWmsOF8XS1LALokCjjlxmb3RQXVV0=
+Received: by mail-qt1-f178.google.com with SMTP id u22so18942524qtq.13;
+        Mon, 07 Oct 2019 06:08:31 -0700 (PDT)
+X-Gm-Message-State: APjAAAWNos+PVt72+dHMdk9l+n+ANUjFYkKAQ9eckzFXMz9QRovl2PEa
+        GzaYC3XTeYD/SN6CZWWPljZU7Vji5XbaaD6dvg==
+X-Google-Smtp-Source: APXvYqyB1UEckrXSNhW8ewZ0xc0k0Qus+VSf2iK+Ax2D9HPzusjNm4QHm8QWK0UP3BYJ4kDT5C8PYG3hvZjHRXzJiL8=
+X-Received: by 2002:a05:6214:1590:: with SMTP id m16mr26758627qvw.20.1570453710240;
+ Mon, 07 Oct 2019 06:08:30 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191007102552.19808-1-alexandre.torgue@st.com> <20191007102552.19808-4-alexandre.torgue@st.com>
+In-Reply-To: <20191007102552.19808-4-alexandre.torgue@st.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 7 Oct 2019 08:08:18 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqL3sAwjKAJPZbbqg8k_R80kE9d9nbBaxWGt76RCMVMZFQ@mail.gmail.com>
+Message-ID: <CAL_JsqL3sAwjKAJPZbbqg8k_R80kE9d9nbBaxWGt76RCMVMZFQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] dt-bindings: regulator: Fix yaml verification for
+ fixed-regulator schema
+To:     Alexandre Torgue <alexandre.torgue@st.com>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Alexandru Ardelean <alexaundru.ardelean@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Sun,  6 Oct 2019 20:53:22 -0700
+On Mon, Oct 7, 2019 at 5:26 AM Alexandre Torgue <alexandre.torgue@st.com> wrote:
+>
+> This commit fixes an issue seen during yaml check ("make dt_binding_check").
+> Compatible didn't seem to be seen as a string.
+>
+> Reported issue:
+> "properties:compatible:enum:0: {'const': 'regulator-fixed'}
+> is not of type 'string'"
+> And
+> "properties:compatible:enum:1: {'const': 'regulator-fixed-clock'}
+> is not of type 'string'"
+>
+> Fixes: 9c86d003d620 ("dt-bindings: regulator: add regulator-fixed-clock binding")
+> Signed-off-by: Alexandre Torgue <alexandre.torgue@st.com>
 
-> If strparser encounters an error it reports it on the socket and
-> stops any further processing. TLS RX will currently pick up that
-> error code with sock_error(), and report it to user space once.
-> Subsequent read calls will block indefinitely.
-> 
-> Since the error condition is not cleared and processing is not
-> restarted it seems more correct to keep returning the error
-> rather than sleeping.
-> 
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
+There's already a fix queued up.
 
-So I guess this is all about what the usual socket error code
-semantics work, which is report-and-clear.
-
-States which should signal errors are always checked in the
-various code socket call paths and if necessary the socket
-error is resignalled.
-
-From what I'm seeing here, the issue is that the strparser stopped
-state isn't resampled at the appropriate spot.  So I would rather
-see that fixed rather than having socket errors become level
-triggered in this special case.
+Rob
