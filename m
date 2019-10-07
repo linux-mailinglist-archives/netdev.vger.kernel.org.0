@@ -2,379 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5946CE54D
-	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 163A3CE56F
+	for <lists+netdev@lfdr.de>; Mon,  7 Oct 2019 16:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbfJGOcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 10:32:48 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46561 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727589AbfJGOcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:32:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570458765;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=T2OuRtTehyGdu5tDLKoiUC7vGh/4x82BWj/yNHznFJY=;
-        b=Wxs9BEt5H8fep2EkCH1PVt2MT7Da2Y1lA7jF+C/mg6GwAorsTZ+1DgAP2EYAltTpZBRq7A
-        CG54ZH25NmnvYk1xp1fK/hF6ieR7gIBO55L4R1U2sQ3TIKyeBAGlmL/XO6/Znal0CVoQwV
-        JddzNNsx3uYEFRc4mXRuM6C9x8aXYsQ=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-256-O9gK9qmDNYeRavgC0_Ep5A-1; Mon, 07 Oct 2019 10:32:44 -0400
-Received: by mail-wm1-f70.google.com with SMTP id g67so3410749wmg.4
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 07:32:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:reply-to:to:cc:date
-         :in-reply-to:references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=vtbJJLtvJi0JrxkCRUbtcK4mGFzAMFdOK2nSBpU6YfE=;
-        b=DpE7PgMYHjs0SOnIuIYCpQtNmJgb0+VooFKYeK27Dx9Dq2DN13ruuZHaCDBdE+9kP2
-         2BZDaGeOCrXhiVidnhgt7Oj5kyrtVUr8FcvVfR6DMhZf2CPfuTQMW3Wbctf++qo77Luo
-         fcoPD/zY0teNitERioUcl6H/rSLU74EMoI/CyLHZFeibg1DNNCtNtNuj2d9P3WNXglDz
-         GywdtitKwonm+ozbDF4KcanwNF16h9ZH53RvUSIbwaA8EfseLCxaNQ7OeP+Q4iDZFjKP
-         NqRTVVjEvmK5/N0mqX7OB1EPu/sqZfjhhE9ARtWuleaOhjFu2XkdUxZpbC7OJrNorJD2
-         VR9g==
-X-Gm-Message-State: APjAAAVUGY2GztH69Zq6aDis6JHl7zfq8LffXfr5k7cQRyzUW2USG5I4
-        zIVtw4u7w9AHFDbCfkEgXlXJaHmOEdV0bJ3dAZp0WOjELtslr9wqnh3ulQeO9jQEmrZRQX3ALwm
-        9JUbmE1ZWfcUprOnv
-X-Received: by 2002:a1c:4384:: with SMTP id q126mr22520344wma.153.1570458763139;
-        Mon, 07 Oct 2019 07:32:43 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyvSTnKY/96vtBBgyavWwdMXQfduZTOCiqkw6pWLx3iNkByGdnpzq+EVVHeR0gVWB1HrYZGqA==
-X-Received: by 2002:a1c:4384:: with SMTP id q126mr22520320wma.153.1570458762780;
-        Mon, 07 Oct 2019 07:32:42 -0700 (PDT)
-Received: from [10.43.2.48] (nat-pool-brq-t.redhat.com. [213.175.37.10])
-        by smtp.gmail.com with ESMTPSA id r10sm15157444wml.46.2019.10.07.07.32.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Oct 2019 07:32:42 -0700 (PDT)
-Message-ID: <caf06d0ee97fe234daa3a375a1912dc4bf536f58.camel@redhat.com>
-Subject: Re: [PATCH iproute2] ipnetns: enable to dump nsid conversion table
-From:   Petr Oros <poros@redhat.com>
-Reply-To: poros@redhat.com
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com
-Date:   Mon, 07 Oct 2019 16:32:41 +0200
-In-Reply-To: <20191007134447.20077-1-nicolas.dichtel@6wind.com>
-References: <20191007134447.20077-1-nicolas.dichtel@6wind.com>
-Organization: Red Hat
-User-Agent: Evolution 3.30.5
+        id S1727939AbfJGOic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 10:38:32 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:37311 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727324AbfJGOic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Oct 2019 10:38:32 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iHU9Y-0006Np-KL; Mon, 07 Oct 2019 16:38:24 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:191f:bdfd:8a67:a1ba] (unknown [IPv6:2a03:f580:87bc:d400:191f:bdfd:8a67:a1ba])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C741D4618BE;
+        Mon,  7 Oct 2019 14:38:18 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kernel@pengutronix.de,
+        linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Bastian Stender <bst@pengutronix.de>,
+        Elenita Hinds <ecathinds@gmail.com>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <ore@pengutronix.de>,
+        David Jander <david@protonic.nl>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXzuQENBFxSzJYBCAC58uHRFEjVVE3J
+ 31eyEQT6H1zSFCccTMPO/ewwAnotQWo98Bc67ecmprcnjRjSUKTbyY/eFxS21JnC4ZB0pJKx
+ MNwK6zq71wLmpseXOgjufuG3kvCgwHLGf/nkBHXmSINHvW00eFK/kJBakwHEbddq8Dr4ewmr
+ G7yr8d6A3CSn/qhOYWhIxNORK3SVo4Io7ExNX/ljbisGsgRzsWvY1JlN4sabSNEr7a8YaqTd
+ 2CfFe/5fPcQRGsfhAbH2pVGigr7JddONJPXGE7XzOrx5KTwEv19H6xNe+D/W3FwjZdO4TKIo
+ vcZveSDrFWOi4o2Te4O5OB/2zZbNWPEON8MaXi9zABEBAAGJA3IEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXFLMlgIbAgUJAeKNmgFACRArXuIRxYrqVMB0IAQZAQoAHRYhBJrx
+ JF84Dn3PPNRrhVrGIaOR5J0gBQJcUsyWAAoJEFrGIaOR5J0grw4H/itil/yryJCvzi6iuZHS
+ suSHHOiEf+UQHib1MLP96LM7FmDabjVSmJDpH4TsMu17A0HTG+bPMAdeia0+q9FWSvSHYW8D
+ wNhfkb8zojpa37qBpVpiNy7r6BKGSRSoFOv6m/iIoRJuJ041AEKao6djj/FdQF8OV1EtWKRO
+ +nE2bNuDCcwHkhHP+FHExdzhKSmnIsMjGpGwIQKN6DxlJ7fN4W7UZFIQdSO21ei+akinBo4K
+ O0uNCnVmePU1UzrwXKG2sS2f97A+sZE89vkc59NtfPHhofI3JkmYexIF6uqLA3PumTqLQ2Lu
+ bywPAC3YNphlhmBrG589p+sdtwDQlpoH9O7NeBAAg/lyGOUUIONrheii/l/zR0xxr2TDE6tq
+ 6HZWdtjWoqcaky6MSyJQIeJ20AjzdV/PxMkd8zOijRVTnlK44bcfidqFM6yuT1bvXAO6NOPy
+ pvBRnfP66L/xECnZe7s07rXpNFy72XGNZwhj89xfpK4a9E8HQcOD0mNtCJaz7TTugqBOsQx2
+ 45VPHosmhdtBQ6/gjlf2WY9FXb5RyceeSuK4lVrz9uZB+fUHBge/giOSsrqFo/9fWAZsE67k
+ 6Mkdbpc7ZQwxelcpP/giB9N+XAfBsffQ8q6kIyuFV4ILsIECCIA4nt1rYmzphv6t5J6PmlTq
+ TzW9jNzbYANoOFAGnjzNRyc9i8UiLvjhTzaKPBOkQfhStEJaZrdSWuR/7Tt2wZBBoNTsgNAw
+ A+cEu+SWCvdX7vNpsCHMiHtcEmVt5R0Tex1Ky87EfXdnGR2mDi6Iyxi3MQcHez3C61Ga3Baf
+ P8UtXR6zrrrlX22xXtpNJf4I4Z6RaLpB/avIXTFXPbJ8CUUbVD2R2mZ/jyzaTzgiABDZspbS
+ gw17QQUrKqUog0nHXuaGGA1uvreHTnyBWx5P8FP7rhtvYKhw6XdJ06ns+2SFcQv0Bv6PcSDK
+ aRXmnW+OsDthn84x1YkfGIRJEPvvmiOKQsFEiB4OUtTX2pheYmZcZc81KFfJMmE8Z9+LT6Ry
+ uSS5AQ0EXFLNDgEIAL14qAzTMCE1PwRrYJRI/RSQGAGF3HLdYvjbQd9Ozzg02K3mNCF2Phb1
+ cjsbMk/V6WMxYoZCEtCh4X2GjQG2GDDW4KC9HOa8cTmr9Vcno+f+pUle09TMzWDgtnH92WKx
+ d0FIQev1zDbxU7lk1dIqyOjjpyhmR8Put6vgunvuIjGJ/GapHL/O0yjVlpumtmow6eME2muc
+ TeJjpapPWBGcy/8VU4LM8xMeMWv8DtQML5ogyJxZ0Smt+AntIzcF9miV2SeYXA3OFiojQstF
+ vScN7owL1XiQ3UjJotCp6pUcSVgVv0SgJXbDo5Nv87M2itn68VPfTu2uBBxRYqXQovsR++kA
+ EQEAAYkCPAQYAQoAJhYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUs0OAhsMBQkB4o0iAAoJ
+ ECte4hHFiupUbioQAJ40bEJmMOF28vFcGvQrpI+lfHJGk9zSrh4F4SlJyOVWV1yWyUAINr8w
+ v1aamg2nAppZ16z4nAnGU/47tWZ4P8blLVG8x4SWzz3D7MCy1FsQBTrWGLqWldPhkBAGp2VH
+ xDOK4rLhuQWx3H5zd3kPXaIgvHI3EliWaQN+u2xmTQSJN75I/V47QsaPvkm4TVe3JlB7l1Fg
+ OmSvYx31YC+3slh89ayjPWt8hFaTLnB9NaW9bLhs3E2ESF9Dei0FRXIt3qnFV/hnETsx3X4h
+ KEnXxhSRDVeURP7V6P/z3+WIfddVKZk5ZLHi39fJpxvsg9YLSfStMJ/cJfiPXk1vKdoa+FjN
+ 7nGAZyF6NHTNhsI7aHnvZMDavmAD3lK6CY+UBGtGQA3QhrUc2cedp1V53lXwor/D/D3Wo9wY
+ iSXKOl4fFCh2Peo7qYmFUaDdyiCxvFm+YcIeMZ8wO5udzkjDtP4lWKAn4tUcdcwMOT5d0I3q
+ WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
+ lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
+ QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
+Subject: pull-request: can-next 2019-10-07
+Message-ID: <2ffa00e7-d447-9216-587d-30396a47ca64@pengutronix.de>
+Date:   Mon, 7 Oct 2019 16:38:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-MC-Unique: O9gK9qmDNYeRavgC0_Ep5A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="G2zGIErEkGqwCcMiesMRCS1O5a2VRBjRB"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nicolas Dichtel p=C3=AD=C5=A1e v Po 07. 10. 2019 v 15:44 +0200:
-> This patch enables to dump/get nsid from a netns into another netns.
->=20
-> Example:
-> $ ./test.sh
-> + ip netns add foo
-> + ip netns add bar
-> + touch /var/run/netns/init_net
-> + mount --bind /proc/1/ns/net /var/run/netns/init_net
-> + ip netns set init_net 11
-> + ip netns set foo 12
-> + ip netns set bar 13
-> + ip netns
-> init_net (id: 11)
-> bar (id: 13)
-> foo (id: 12)
-> + ip -n foo netns set init_net 21
-> + ip -n foo netns set foo 22
-> + ip -n foo netns set bar 23
-> + ip -n foo netns
-> init_net (id: 21)
-> bar (id: 23)
-> foo (id: 22)
-> + ip -n bar netns set init_net 31
-> + ip -n bar netns set foo 32
-> + ip -n bar netns set bar 33
-> + ip -n bar netns
-> init_net (id: 31)
-> bar (id: 33)
-> foo (id: 32)
-> + ip netns list-id target-nsid 12
-> nsid 21 current-nsid 11 (iproute2 netns name: init_net)
-> nsid 22 current-nsid 12 (iproute2 netns name: foo)
-> nsid 23 current-nsid 13 (iproute2 netns name: bar)
-> + ip -n foo netns list-id target-nsid 21
-> nsid 11 current-nsid 21 (iproute2 netns name: init_net)
-> nsid 12 current-nsid 22 (iproute2 netns name: foo)
-> nsid 13 current-nsid 23 (iproute2 netns name: bar)
-> + ip -n bar netns list-id target-nsid 33 nsid 32
-> nsid 32 current-nsid 32 (iproute2 netns name: foo)
-> + ip -n bar netns list-id target-nsid 31 nsid 32
-> nsid 12 current-nsid 32 (iproute2 netns name: foo)
-> + ip netns list-id nsid 13
-> nsid 13 (iproute2 netns name: bar)
->=20
-> CC: Petr Oros <poros@redhat.com>
-> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> ---
->  include/libnetlink.h |   5 +-
->  ip/ip_common.h       |   1 +
->  ip/ipnetns.c         | 115 +++++++++++++++++++++++++++++++++++++++++--
->  lib/libnetlink.c     |  15 ++++--
->  4 files changed, 126 insertions(+), 10 deletions(-)
->=20
-> diff --git a/include/libnetlink.h b/include/libnetlink.h
-> index 311cf3fc90f8..8ebdc6d3d03e 100644
-> --- a/include/libnetlink.h
-> +++ b/include/libnetlink.h
-> @@ -71,8 +71,6 @@ int rtnl_mdbdump_req(struct rtnl_handle *rth, int famil=
-y)
->  =09__attribute__((warn_unused_result));
->  int rtnl_netconfdump_req(struct rtnl_handle *rth, int family)
->  =09__attribute__((warn_unused_result));
-> -int rtnl_nsiddump_req(struct rtnl_handle *rth, int family)
-> -=09__attribute__((warn_unused_result));
-> =20
->  int rtnl_linkdump_req(struct rtnl_handle *rth, int fam)
->  =09__attribute__((warn_unused_result));
-> @@ -85,6 +83,9 @@ int rtnl_linkdump_req_filter_fn(struct rtnl_handle *rth=
-, int fam,
->  int rtnl_fdb_linkdump_req_filter_fn(struct rtnl_handle *rth,
->  =09=09=09=09    req_filter_fn_t filter_fn)
->  =09__attribute__((warn_unused_result));
-> +int rtnl_nsiddump_req_filter_fn(struct rtnl_handle *rth, int family,
-> +=09=09=09=09req_filter_fn_t filter_fn)
-> +=09__attribute__((warn_unused_result));
->  int rtnl_statsdump_req_filter(struct rtnl_handle *rth, int fam, __u32 fi=
-lt_mask)
->  =09__attribute__((warn_unused_result));
->  int rtnl_dump_request(struct rtnl_handle *rth, int type, void *req,
-> diff --git a/ip/ip_common.h b/ip/ip_common.h
-> index cd916ec87c26..879287e3e506 100644
-> --- a/ip/ip_common.h
-> +++ b/ip/ip_common.h
-> @@ -24,6 +24,7 @@ struct link_filter {
->  =09int master;
->  =09char *kind;
->  =09char *slave_kind;
-> +=09int target_nsid;
->  };
-> =20
->  int get_operstate(const char *name);
-> diff --git a/ip/ipnetns.c b/ip/ipnetns.c
-> index a883f210d7ba..20110ef0f58e 100644
-> --- a/ip/ipnetns.c
-> +++ b/ip/ipnetns.c
-> @@ -36,7 +36,7 @@ static int usage(void)
->  =09=09"=09ip netns pids NAME\n"
->  =09=09"=09ip [-all] netns exec [NAME] cmd ...\n"
->  =09=09"=09ip netns monitor\n"
-> -=09=09"=09ip netns list-id\n"
-> +=09=09"=09ip netns list-id [target-nsid POSITIVE-INT] [nsid POSITIVE-INT=
-]\n"
->  =09=09"NETNSID :=3D auto | POSITIVE-INT\n");
->  =09exit(-1);
->  }
-> @@ -46,6 +46,7 @@ static struct rtnl_handle rtnsh =3D { .fd =3D -1 };
-> =20
->  static int have_rtnl_getnsid =3D -1;
->  static int saved_netns =3D -1;
-> +static struct link_filter filter;
-> =20
->  static int ipnetns_accept_msg(struct rtnl_ctrl_data *ctrl,
->  =09=09=09      struct nlmsghdr *n, void *arg)
-> @@ -294,7 +295,7 @@ int print_nsid(struct nlmsghdr *n, void *arg)
->  =09FILE *fp =3D (FILE *)arg;
->  =09struct nsid_cache *c;
->  =09char name[NAME_MAX];
-> -=09int nsid;
-> +=09int nsid, current;
-> =20
->  =09if (n->nlmsg_type !=3D RTM_NEWNSID && n->nlmsg_type !=3D RTM_DELNSID)
->  =09=09return 0;
-> @@ -317,9 +318,22 @@ int print_nsid(struct nlmsghdr *n, void *arg)
->  =09=09print_bool(PRINT_ANY, "deleted", "Deleted ", true);
-> =20
->  =09nsid =3D rta_getattr_u32(tb[NETNSA_NSID]);
-> -=09print_uint(PRINT_ANY, "nsid", "nsid %u ", nsid);
-> +=09if (nsid < 0)
-> +=09=09print_string(PRINT_ANY, "nsid", "nsid %s ", "not-assigned");
-> +=09else
-> +=09=09print_uint(PRINT_ANY, "nsid", "nsid %u ", nsid);
-> +
-> +=09if (tb[NETNSA_CURRENT_NSID]) {
-> +=09=09current =3D rta_getattr_u32(tb[NETNSA_CURRENT_NSID]);
-> +=09=09if (current < 0)
-> +=09=09=09print_string(PRINT_ANY, "current-nsid",
-> +=09=09=09=09     "current-nsid %s ", "not-assigned");
-> +=09=09else
-> +=09=09=09print_uint(PRINT_ANY, "current-nsid",
-> +=09=09=09=09   "current-nsid %u ", current);
-> +=09}
-> =20
-> -=09c =3D netns_map_get_by_nsid(nsid);
-> +=09c =3D netns_map_get_by_nsid(tb[NETNSA_CURRENT_NSID] ? current : nsid)=
-;
->  =09if (c !=3D NULL) {
->  =09=09print_string(PRINT_ANY, "name",
->  =09=09=09     "(iproute2 netns name: %s)", c->name);
-> @@ -340,15 +354,106 @@ int print_nsid(struct nlmsghdr *n, void *arg)
->  =09return 0;
->  }
-> =20
-> +static int get_netnsid_from_netnsid(int nsid)
-> +{
-> +=09struct {
-> +=09=09struct nlmsghdr n;
-> +=09=09struct rtgenmsg g;
-> +=09=09char            buf[1024];
-> +=09} req =3D {
-> +=09=09.n.nlmsg_len =3D NLMSG_LENGTH(NLMSG_ALIGN(sizeof(struct rtgenmsg))=
-),
-> +=09=09.n.nlmsg_flags =3D NLM_F_REQUEST,
-> +=09=09.n.nlmsg_type =3D RTM_GETNSID,
-> +=09=09.g.rtgen_family =3D AF_UNSPEC,
-> +=09};
-> +=09struct nlmsghdr *answer;
-> +=09int err;
-> +
-> +=09netns_nsid_socket_init();
-> +
-> +=09err =3D addattr32(&req.n, sizeof(req), NETNSA_NSID, nsid);
-> +=09if (err)
-> +=09=09return err;
-> +
-> +=09if (filter.target_nsid >=3D 0) {
-> +=09=09err =3D addattr32(&req.n, sizeof(req), NETNSA_TARGET_NSID,
-> +=09=09=09=09filter.target_nsid);
-> +=09=09if (err)
-> +=09=09=09return err;
-> +=09}
-> +
-> +=09if (rtnl_talk(&rtnsh, &req.n, &answer) < 0)
-> +=09=09return -2;
-> +
-> +=09/* Validate message and parse attributes */
-> +=09if (answer->nlmsg_type =3D=3D NLMSG_ERROR)
-> +=09=09goto err_out;
-> +
-> +=09new_json_obj(json);
-> +=09err =3D print_nsid(answer, stdout);
-> +=09delete_json_obj();
-> +err_out:
-> +=09free(answer);
-> +=09return err;
-> +}
-> +
-> +static int netns_filter_req(struct nlmsghdr *nlh, int reqlen)
-> +{
-> +=09int err;
-> +
-> +=09if (filter.target_nsid >=3D 0) {
-> +=09=09err =3D addattr32(nlh, reqlen, NETNSA_TARGET_NSID,
-> +=09=09=09=09filter.target_nsid);
-> +=09=09if (err)
-> +=09=09=09return err;
-> +=09}
-> +
-> +=09return 0;
-> +}
-> +
->  static int netns_list_id(int argc, char **argv)
->  {
-> +=09int nsid =3D -1;
-> +
->  =09if (!ipnetns_have_nsid()) {
->  =09=09fprintf(stderr,
->  =09=09=09"RTM_GETNSID is not supported by the kernel.\n");
->  =09=09return -ENOTSUP;
->  =09}
-> =20
-> -=09if (rtnl_nsiddump_req(&rth, AF_UNSPEC) < 0) {
-> +=09filter.target_nsid =3D -1;
-> +=09while (argc > 0) {
-> +=09=09if (strcmp(*argv, "target-nsid") =3D=3D 0) {
-> +=09=09=09if (filter.target_nsid >=3D 0)
-> +=09=09=09=09duparg("target-nsid", *argv);
-> +=09=09=09NEXT_ARG();
-> +
-> +=09=09=09if (get_integer(&filter.target_nsid, *argv, 0))
-> +=09=09=09=09invarg("\"target-nsid\" value is invalid\n",
-> +=09=09=09=09       *argv);
-> +=09=09=09else if (filter.target_nsid < 0)
-> +=09=09=09=09invarg("\"target-nsid\" value should be >=3D 0\n",
-> +=09=09=09=09       argv[1]);
-> +=09=09} else if (strcmp(*argv, "nsid") =3D=3D 0) {
-> +=09=09=09if (nsid >=3D 0)
-> +=09=09=09=09duparg("nsid", *argv);
-> +=09=09=09NEXT_ARG();
-> +
-> +=09=09=09if (get_integer(&nsid, *argv, 0))
-> +=09=09=09=09invarg("\"nsid\" value is invalid\n", *argv);
-> +=09=09=09else if (nsid < 0)
-> +=09=09=09=09invarg("\"nsid\" value should be >=3D 0\n",
-> +=09=09=09=09       argv[1]);
-> +=09=09} else
-> +=09=09=09usage();
-> +=09=09argc--; argv++;
-> +=09}
-> +
-> +=09if (nsid >=3D 0)
-> +=09=09return get_netnsid_from_netnsid(nsid);
-> +
-> +=09if (rtnl_nsiddump_req_filter_fn(&rth, AF_UNSPEC,
-> +=09=09=09=09=09netns_filter_req) < 0) {
->  =09=09perror("Cannot send dump request");
->  =09=09exit(1);
->  =09}
-> diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-> index 8c490f896326..6ce8b199f441 100644
-> --- a/lib/libnetlink.c
-> +++ b/lib/libnetlink.c
-> @@ -438,12 +438,13 @@ int rtnl_netconfdump_req(struct rtnl_handle *rth, i=
-nt family)
->  =09return send(rth->fd, &req, sizeof(req), 0);
->  }
-> =20
-> -int rtnl_nsiddump_req(struct rtnl_handle *rth, int family)
-> +int rtnl_nsiddump_req_filter_fn(struct rtnl_handle *rth, int family,
-> +=09=09=09=09req_filter_fn_t filter_fn)
->  {
->  =09struct {
->  =09=09struct nlmsghdr nlh;
->  =09=09struct rtgenmsg rtm;
-> -=09=09char buf[0] __aligned(NLMSG_ALIGNTO);
-> +=09=09char buf[1024];
->  =09} req =3D {
->  =09=09.nlh.nlmsg_len =3D NLMSG_LENGTH(NLMSG_ALIGN(sizeof(struct rtgenmsg=
-))),
->  =09=09.nlh.nlmsg_type =3D RTM_GETNSID,
-> @@ -451,8 +452,16 @@ int rtnl_nsiddump_req(struct rtnl_handle *rth, int f=
-amily)
->  =09=09.nlh.nlmsg_seq =3D rth->dump =3D ++rth->seq,
->  =09=09.rtm.rtgen_family =3D family,
->  =09};
-> +=09int err;
-> =20
-> -=09return send(rth->fd, &req, sizeof(req), 0);
-> +=09if (!filter_fn)
-> +=09=09return -EINVAL;
-> +
-> +=09err =3D filter_fn(&req.nlh, sizeof(req));
-> +=09if (err)
-> +=09=09return err;
-> +
-> +=09return send(rth->fd, &req, req.nlh.nlmsg_len, 0);
->  }
-> =20
->  static int __rtnl_linkdump_req(struct rtnl_handle *rth, int family)
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--G2zGIErEkGqwCcMiesMRCS1O5a2VRBjRB
+Content-Type: multipart/mixed; boundary="UQ2pdH5nZsxFmUghxOUXTaFmFt77m1Lgr";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: netdev@vger.kernel.org
+Cc: davem@davemloft.net, kernel@pengutronix.de, linux-can@vger.kernel.org,
+ Oliver Hartkopp <socketcan@hartkopp.net>,
+ Bastian Stender <bst@pengutronix.de>, Elenita Hinds <ecathinds@gmail.com>,
+ Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+ Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+ Robin van der Gracht <robin@protonic.nl>, Oleksij Rempel
+ <ore@pengutronix.de>, David Jander <david@protonic.nl>
+Message-ID: <2ffa00e7-d447-9216-587d-30396a47ca64@pengutronix.de>
+Subject: pull-request: can-next 2019-10-07
 
-Works great. Thanks, Nicolas.
+--UQ2pdH5nZsxFmUghxOUXTaFmFt77m1Lgr
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Petr Oros <poros@redhat.com>
+Hello David,
+
+this is a pull request for net-next/master consisting of 12 patches.
+
+The first patch is by Andy Shevchenko for the mcp251x driver and removes
+the legacy platform data from all in-tree users and the driver.
+
+The next two patches target the peak_canfd driver, the first one is by
+me and fixes several checkpatch warnings, the second one is by Stephane
+Grosjean and adds hardware timestamps to the rx skbs.
+
+Followed by two patches for the xilinx_can driver. Again the first is by
+me and fixes checkpatch warnings, the second one is by Anssi Hannula and
+avoids non-requested bus error frames, which improves performance.
+
+Pankaj Sharma's patch for the m_can driver adds support for the one shot
+mode.
+
+YueHaibing provides a patch for the grcan driver to use
+devm_platform_ioremap_resource() to simplify code.
+
+Joakim Zhang provides a similar patch for the flexcan driver.
+
+The last 4 patches are by me and target the rx-offload infrastructure.
+The first 3 fix checkpatch warnings, the last one removes a no-op
+function.
+
+regards,
+Marc
+
+---
+
+The following changes since commit 056ddc38e94105a7ee982ca06cc19448fc927f=
+6f:
+
+  Merge branch 'stmmac-next' (2019-10-06 18:46:31 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git ta=
+gs/linux-can-next-for-5.5-20191007
+
+for you to fetch changes up to f6008d6897270b492ec1b0a21814f9a99a113b17:
+
+  can: rx-offload: can_rx_offload_reset(): remove no-op function (2019-10=
+-07 16:34:39 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-5.5-20191007
+
+----------------------------------------------------------------
+Andy Shevchenko (1):
+      can: mcp251x: Get rid of legacy platform data
+
+Anssi Hannula (1):
+      can: xilinx_can: avoid non-requested bus error frames
+
+Joakim Zhang (1):
+      can: flexcan: use devm_platform_ioremap_resource() to simplify code=
 
 
+Marc Kleine-Budde (6):
+      can: peak_canfd: fix checkpatch warnings
+      can: xilinx_can: fix checkpatch warnings
+      can: rx-offload: fix long lines
+      can: rx-offload: can_rx_offload_compare(): fix typo
+      can: rx-offload: can_rx_offload_irq_offload_timestamp(): don't use =
+assignment in if condition
+      can: rx-offload: can_rx_offload_reset(): remove no-op function
+
+Pankaj Sharma (1):
+      can: m_can: add support for one shot mode
+
+Stephane Grosjean (1):
+      can: peak_canfd: provide hw timestamps in rx skbs
+
+YueHaibing (1):
+      can: grcan: use devm_platform_ioremap_resource() to simplify code
+
+ arch/arm/mach-pxa/icontrol.c                  |  9 +--
+ arch/arm/mach-pxa/zeus.c                      |  9 +--
+ drivers/net/can/flexcan.c                     |  4 +-
+ drivers/net/can/grcan.c                       |  4 +-
+ drivers/net/can/m_can/m_can.c                 | 12 +++-
+ drivers/net/can/peak_canfd/peak_canfd.c       | 25 +++++--
+ drivers/net/can/peak_canfd/peak_canfd_user.h  |  3 +-
+ drivers/net/can/peak_canfd/peak_pciefd_main.c |  6 +-
+ drivers/net/can/rx-offload.c                  | 55 ++++++++-------
+ drivers/net/can/spi/mcp251x.c                 |  9 ++-
+ drivers/net/can/xilinx_can.c                  | 98 ++++++++++++++-------=
+------
+ include/linux/can/platform/mcp251x.h          | 22 ------
+ include/linux/can/rx-offload.h                |  1 -
+ 13 files changed, 131 insertions(+), 126 deletions(-)
+ delete mode 100644 include/linux/can/platform/mcp251x.h
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |-
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--UQ2pdH5nZsxFmUghxOUXTaFmFt77m1Lgr--
+
+--G2zGIErEkGqwCcMiesMRCS1O5a2VRBjRB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2bTdYACgkQWsYho5Hk
+nSDSewf8CiX6VmyRk3LllGGOB+tpb6CSj4XYfGVvVIbSNz8d0r6atMNMEVRHnJS7
+P5CJ1qH+DSzz8POkEvyrjttmaKRsSLe5wCGhKUssErd7OEloB47jhL/GdSbgz7vy
+nGo1WTht3avdIJfjlV7g5oTlXBCk8EVxCaGCgIpWfn6S9NfeCpZ0eAegWH+vjGTv
+kLzpJd519cD4j0yCMyKWl+SyfaUBHQJyr07x1xUH9W6jyj0vhMj5wIOuRgjKfhBP
+tL0LZ170I+eRMqMNkP4MpXgfCuY2ndw4X7mxNYtbPAfjAooHUF0Vkcg/OLua0BZ+
++GxaIeCwHTo2HwjBiDlBvkU0Qd5Azg==
+=HN/L
+-----END PGP SIGNATURE-----
+
+--G2zGIErEkGqwCcMiesMRCS1O5a2VRBjRB--
