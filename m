@@ -2,164 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C363CF8E4
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB6FCCF923
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730839AbfJHLuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 07:50:52 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:51549 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730830AbfJHLuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:50:51 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id A241521731;
-        Tue,  8 Oct 2019 07:50:50 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 08 Oct 2019 07:50:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=from
-        :to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=fm3; bh=VrOAEo8fPhIsF
-        bZtqUbj1skBfTPYiCz0Pda7Yzm4W+M=; b=F0GFv3SHAweg9VKRWBWSm49fES2dG
-        DiL+MkSrWVl7JEvrPn5q2ebHFq9tIoDLcPOTeD1jL8+rJYrUJUzGU5ft3eLvt/z0
-        oeYb2+8elIjzXdljcieL9SbGtsZSfC7D1J2ZdwZJG0Mi/KhWhYFo6ORabsEXANBp
-        jueiQl2PF+9MgmT/hqKW6bSRQ4L95cA0USVTm1nkn6utt+R1EMF8tfONSqLjTTPf
-        Q6elFtq1UkzPJ7xwi2RJoaCr4zWFlPJsbqlgyb/mvem8TbIxUJrffoZR1o9yzEqe
-        6S+OPx7rkk6jX5Ic5DQ9GEdw10M+NFzLsJGYQ75mljExsMgu9e1ESqb+w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=VrOAEo8fPhIsFbZtqUbj1skBfTPYiCz0Pda7Yzm4W+M=; b=QYeT+5ty
-        bVq8RQ8KHMH7IYLgjjl9m0WyN/o1iD+luGHtgtuAFtsdYKOj8ozmj+qn8iLsJij5
-        g3ZSc5K+Nl0gPag46fYzzzXDqOrjkmKsAX+UuyN9Lln9+3Qtlnk+b4Z64++6Uysc
-        fxO0XX0Ez2h3MJRLXmOoIi79oW2LP7mx4hugqRH/S7a1CHkDFLNb5UvsTzQHHnJk
-        V9LjuFGBIHrx5AolvEo7TTJaDsb096K/3BKYEJhNOT9YCqjDcLA+LXyEBnehGo6M
-        ZjVPLaWJpA5gG7PlSZEQqoNwakiD0wRWqOtkcnryrGKDLvo4R4iVO6PHeDwGsZHP
-        N3sv/snH3yCLBg==
-X-ME-Sender: <xms:GnicXaS8VTXBAB32LzINknBRRVQD5VMtXniwjh9uqJ2b8WNlv8_GJA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrheelgdegjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpeetnhgurhgvficulfgvfhhfvghrhicuoegrnhgurhgvfiesrghj
-    rdhiugdrrghuqeenucfkphepvddtfedrheejrddvudehrddujeeknecurfgrrhgrmhepmh
-    grihhlfhhrohhmpegrnhgurhgvfiesrghjrdhiugdrrghunecuvehluhhsthgvrhfuihii
-    vgepvd
-X-ME-Proxy: <xmx:GnicXd9cW1aJF-3am5rhr-_SE9kCbS5Ko3nuOjj7VB-P10Pn19g0Yg>
-    <xmx:GnicXeLJWAwF2uBTDzCd8uM0APmjr28czYULdr6GyPkvxc9OjKJGgw>
-    <xmx:GnicXZ7G5wJhD6ZV7qg76dkWlxHhvHIxqVJH_nj1dhA-WVINuk5dlg>
-    <xmx:GnicXerjwpMXHNdHXRBeIOpkXrp9amYj3WsDJvcTIg0xrIqTiNrzng>
-Received: from mistburn.lan (203-57-215-178.dyn.iinet.net.au [203.57.215.178])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4738D8005A;
-        Tue,  8 Oct 2019 07:50:47 -0400 (EDT)
-From:   Andrew Jeffery <andrew@aj.id.au>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        joel@jms.id.au, benh@kernel.crashing.org
-Subject: [PATCH 3/3] net: ftgmac100: Ungate RCLK for RMII on ASPEED MACs
-Date:   Tue,  8 Oct 2019 22:21:43 +1030
-Message-Id: <20191008115143.14149-4-andrew@aj.id.au>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191008115143.14149-1-andrew@aj.id.au>
-References: <20191008115143.14149-1-andrew@aj.id.au>
+        id S1730861AbfJHMEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 08:04:11 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39844 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730764AbfJHMEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 08:04:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1570536247;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FbJLDy1ZPYHNz2LrI3z0iA4CSqhVHSIrwsz5DE58ic0=;
+        b=SRDqf8nA11ejKN2fL0796C+7omida2SDLDfZ4dhOYwUUPmzSlFzBpgxktYGMZJcrM4eaG2
+        5ufTfUVxgGxXih20X5F+6DffbhM/OQkBMsd2M33g/ft44BcXH3umBzAO+gTOX8Mh+MqByW
+        tHA3tmBUbOO0FGtXuNXfL3jILwBV7kA=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-103-PCcmyIrdMOKl7Y3bmrHpcw-1; Tue, 08 Oct 2019 08:04:03 -0400
+Received: by mail-oi1-f200.google.com with SMTP id g25so10211907oiy.12
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 05:04:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hZ3wKA1psc8IuEMyxTFIHivEE24aloWcVuBR0kLF7VU=;
+        b=cOwXXXTKgedCFBv5vFc+IxiFaVRHVGZfrIALKgiN9m8Rcq2cs3lHPIkCjVwEIJRB8w
+         wnjTGov8LxEWkcxXwunDQN3kvrrl9eU/8Qp6p1qWzmOEM/TkF2kZdfZALr2N4iqqEs0X
+         NtFFpnxJTinltaFfoIQP+QJwsLSFNiWDAIrxY2W33VYdj5aUBVG8/9W1XblThp1S+0V8
+         vgYjafTnDpmQOuiJ3zDAnwJKTosrO92Xcg1t+Fpk+rDCi2MaLE/yeF89ExeKPy3Uxk02
+         1UA06I3uZoD4AqXRooLCtRXDYylUDYRoHjRkNY50rUPHut6dlrGFEZM8LIQbZDexqdhP
+         CjVg==
+X-Gm-Message-State: APjAAAX/bPB9J+gZ1LOYRI+HHfOPR2/Xf29KurnSsNkAOK3EtCWbcRc7
+        uBKXX2tylD4e+ydRNDxf+W18hjAIbxH16fAfA7lFbSpcU3lEK+1KJXK+4kNA8Cv7H5tr5FyM0Nr
+        AK4Pe2DLrmyYC7Z0UMyY/P8XQBQ+9Clvn
+X-Received: by 2002:a9d:19e2:: with SMTP id k89mr25209001otk.197.1570536242867;
+        Tue, 08 Oct 2019 05:04:02 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzppXdnja8FupoG4zqGbhP+Wg9Igxeu6F+ydYIOK40i2kalVoBoZO3n6CAXDyz/uMWKz+QmQsP1Jr4VTk0HAKI=
+X-Received: by 2002:a9d:19e2:: with SMTP id k89mr25208970otk.197.1570536242483;
+ Tue, 08 Oct 2019 05:04:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <d8dd0065232e5c3629bf55e54e3a998110ec1aef.1570532963.git.lucien.xin@gmail.com>
+In-Reply-To: <d8dd0065232e5c3629bf55e54e3a998110ec1aef.1570532963.git.lucien.xin@gmail.com>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Tue, 8 Oct 2019 14:03:51 +0200
+Message-ID: <CAFqZXNu9dFc4uros8CTe7SxJPABzppAir9bpGnVMHge_MqMueQ@mail.gmail.com>
+Subject: Re: [PATCH net] sctp: add chunks to sk_backlog when the newsk
+ sk_socket is not set
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>
+X-MC-Unique: PCcmyIrdMOKl7Y3bmrHpcw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 50MHz RCLK has to be enabled before the RMII interface will function.
+On Tue, Oct 8, 2019 at 1:09 PM Xin Long <lucien.xin@gmail.com> wrote:
+> This patch is to fix a NULL-ptr deref in selinux_socket_connect_helper:
+>
+>   [...] kasan: GPF could be caused by NULL-ptr deref or user memory acces=
+s
+>   [...] RIP: 0010:selinux_socket_connect_helper+0x94/0x460
+>   [...] Call Trace:
+>   [...]  selinux_sctp_bind_connect+0x16a/0x1d0
+>   [...]  security_sctp_bind_connect+0x58/0x90
+>   [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
+>   [...]  sctp_sf_do_asconf+0x785/0x980 [sctp]
+>   [...]  sctp_do_sm+0x175/0x5a0 [sctp]
+>   [...]  sctp_assoc_bh_rcv+0x285/0x5b0 [sctp]
+>   [...]  sctp_backlog_rcv+0x482/0x910 [sctp]
+>   [...]  __release_sock+0x11e/0x310
+>   [...]  release_sock+0x4f/0x180
+>   [...]  sctp_accept+0x3f9/0x5a0 [sctp]
+>   [...]  inet_accept+0xe7/0x720
+>
+> It was caused by that the 'newsk' sk_socket was not set before going to
+> security sctp hook when processing asconf chunk with SCTP_PARAM_ADD_IP
+> or SCTP_PARAM_SET_PRIMARY:
+>
+>   inet_accept()->
+>     sctp_accept():
+>       lock_sock():
+>           lock listening 'sk'
+>                                           do_softirq():
+>                                             sctp_rcv():  <-- [1]
+>                                                 asconf chunk arrives and
+>                                                 enqueued in 'sk' backlog
+>       sctp_sock_migrate():
+>           set asoc's sk to 'newsk'
+>       release_sock():
+>           sctp_backlog_rcv():
+>             lock 'newsk'
+>             sctp_process_asconf()  <-- [2]
+>             unlock 'newsk'
+>     sock_graft():
+>         set sk_socket  <-- [3]
+>
+> As it shows, at [1] the asconf chunk would be put into the listening 'sk'
+> backlog, as accept() was holding its sock lock. Then at [2] asconf would
+> get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
+> 'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
+> would deref it, then kernel crashed.
+>
+> Here to fix it by adding the chunk to sk_backlog until newsk sk_socket is
+> set when .accept() is done.
+>
+> Note that sk->sk_socket can be NULL when the sock is closed, so SOCK_DEAD
+> flag is also needed to check in sctp_newsk_ready().
+>
+> Thanks to Ondrej for reviewing the code.
 
-Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
----
- drivers/net/ethernet/faraday/ftgmac100.c | 35 +++++++++++++++++++-----
- 1 file changed, 28 insertions(+), 7 deletions(-)
+And thank you, Long, for tracking it down and finding a fix :)
 
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index 9b7af94a40bb..9ff791fb0449 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -90,6 +90,9 @@ struct ftgmac100 {
- 	struct mii_bus *mii_bus;
- 	struct clk *clk;
- 
-+	/* 2600 RMII clock gate */
-+	struct clk *rclk;
-+
- 	/* Link management */
- 	int cur_speed;
- 	int cur_duplex;
-@@ -1718,12 +1721,14 @@ static void ftgmac100_ncsi_handler(struct ncsi_dev *nd)
- 		   nd->link_up ? "up" : "down");
- }
- 
--static void ftgmac100_setup_clk(struct ftgmac100 *priv)
-+static int ftgmac100_setup_clk(struct ftgmac100 *priv)
- {
--	priv->clk = devm_clk_get(priv->dev, NULL);
--	if (IS_ERR(priv->clk))
--		return;
-+	struct clk *clk;
- 
-+	clk = devm_clk_get(priv->dev, NULL /* MACCLK */);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+	priv->clk = clk;
- 	clk_prepare_enable(priv->clk);
- 
- 	/* Aspeed specifies a 100MHz clock is required for up to
-@@ -1732,6 +1737,14 @@ static void ftgmac100_setup_clk(struct ftgmac100 *priv)
- 	 */
- 	clk_set_rate(priv->clk, priv->use_ncsi ? FTGMAC_25MHZ :
- 			FTGMAC_100MHZ);
-+
-+	/* RCLK is for RMII, typically used for NCSI. Optional because its not
-+	 * necessary if it's the 2400 MAC or the MAC is configured for RGMII
-+	 */
-+	priv->rclk = devm_clk_get_optional(priv->dev, "RCLK");
-+	clk_prepare_enable(priv->rclk);
-+
-+	return 0;
- }
- 
- static int ftgmac100_probe(struct platform_device *pdev)
-@@ -1853,8 +1866,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 			goto err_setup_mdio;
- 	}
- 
--	if (priv->is_aspeed)
--		ftgmac100_setup_clk(priv);
-+	if (priv->is_aspeed) {
-+		err = ftgmac100_setup_clk(priv);
-+		if (err)
-+			goto err_ncsi_dev;
-+	}
- 
- 	/* Default ring sizes */
- 	priv->rx_q_entries = priv->new_rx_q_entries = DEF_RX_QUEUE_ENTRIES;
-@@ -1886,8 +1902,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
--err_ncsi_dev:
- err_register_netdev:
-+	if (priv->rclk)
-+		clk_disable_unprepare(priv->rclk);
-+	clk_disable_unprepare(priv->clk);
-+err_ncsi_dev:
- 	ftgmac100_destroy_mdio(netdev);
- err_setup_mdio:
- 	iounmap(priv->base);
-@@ -1909,6 +1928,8 @@ static int ftgmac100_remove(struct platform_device *pdev)
- 
- 	unregister_netdev(netdev);
- 
-+	if (priv->rclk)
-+		clk_disable_unprepare(priv->rclk);
- 	clk_disable_unprepare(priv->clk);
- 
- 	/* There's a small chance the reset task will have been re-queued,
--- 
-2.20.1
+Cc'ing also SELinux and LSM mailing lists as a heads-up.
+
+>
+> Fixes: d452930fd3b9 ("selinux: Add SCTP support")
+> Reported-by: Ying Xu <yinxu@redhat.com>
+> Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  include/net/sctp/sctp.h |  5 +++++
+>  net/sctp/input.c        | 12 +++++++++---
+>  2 files changed, 14 insertions(+), 3 deletions(-)
+>
+> diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
+> index 5d60f13..3ab5c6b 100644
+> --- a/include/net/sctp/sctp.h
+> +++ b/include/net/sctp/sctp.h
+> @@ -610,4 +610,9 @@ static inline __u32 sctp_min_frag_point(struct sctp_s=
+ock *sp, __u16 datasize)
+>         return sctp_mtu_payload(sp, SCTP_DEFAULT_MINSEGMENT, datasize);
+>  }
+>
+> +static inline bool sctp_newsk_ready(const struct sock *sk)
+> +{
+> +       return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
+> +}
+> +
+>  #endif /* __net_sctp_h__ */
+> diff --git a/net/sctp/input.c b/net/sctp/input.c
+> index 5a070fb..f277137 100644
+> --- a/net/sctp/input.c
+> +++ b/net/sctp/input.c
+> @@ -243,7 +243,7 @@ int sctp_rcv(struct sk_buff *skb)
+>                 bh_lock_sock(sk);
+>         }
+>
+> -       if (sock_owned_by_user(sk)) {
+> +       if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+>                 if (sctp_add_backlog(sk, skb)) {
+>                         bh_unlock_sock(sk);
+>                         sctp_chunk_free(chunk);
+> @@ -321,7 +321,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff =
+*skb)
+>                 local_bh_disable();
+>                 bh_lock_sock(sk);
+>
+> -               if (sock_owned_by_user(sk)) {
+> +               if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+>                         if (sk_add_backlog(sk, skb, sk->sk_rcvbuf))
+>                                 sctp_chunk_free(chunk);
+>                         else
+> @@ -336,7 +336,13 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff=
+ *skb)
+>                 if (backloged)
+>                         return 0;
+>         } else {
+> -               sctp_inq_push(inqueue, chunk);
+> +               if (!sctp_newsk_ready(sk)) {
+> +                       if (!sk_add_backlog(sk, skb, sk->sk_rcvbuf))
+> +                               return 0;
+> +                       sctp_chunk_free(chunk);
+> +               } else {
+> +                       sctp_inq_push(inqueue, chunk);
+> +               }
+>         }
+>
+>  done:
+> --
+> 2.1.0
+>
+
+--
+Ondrej Mosnacek <omosnace at redhat dot com>
+Software Engineer, Security Technologies
+Red Hat, Inc.
 
