@@ -2,112 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E05B8CF7B0
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 770C2CF7CA
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:09:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730419AbfJHLB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 07:01:56 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33941 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730409AbfJHLB4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:01:56 -0400
-Received: by mail-wr1-f66.google.com with SMTP id j11so13079668wrp.1
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 04:01:54 -0700 (PDT)
+        id S1730532AbfJHLJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 07:09:33 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:42844 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730156AbfJHLJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:09:33 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q12so10568372pff.9;
+        Tue, 08 Oct 2019 04:09:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jzuT4Mm77xLeHFlZGQjKrClU0JORArGXFfyv3K/uiq8=;
-        b=Wmrn3E9VvLe/s/uwbEf8hWQrZYoLS3Z9CwpGmBGYzUM+Ct0kVjfIK/bogJ+ZaWwJA6
-         PjxFDN0HqTmbTdNKv4rsNFV1kFcHFSDwKpfVYccaNPn1fVeRGn0OQozrSoz7DJzzTWjl
-         zXZRB6u6pB2tEtB+MC4Ki8iotNpWedDKKlI5Ya7iZOsHDbKLNVLGPsc/NLTHe8FKlvvS
-         Hi9Tc0ydGa8I/JF/9nlUGDtXRkl73ACFOIHML2G9BBJQJYoWFjuZMZzDZoFSknTp/hWQ
-         xs8O36pkNagixIA0cfE+Mzz63Gxg242PTG9qlI3dSnnhkQAd1wKPPqbF8ok4/8LiVEtA
-         eFfw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=piBYC+xTNu6MxV9+NOSh3zpO0sO8KESWgSUsgu3eNtU=;
+        b=ASdeA7+H2bVusTyCH1P+Q7Rhj97jmLuHTswSOkr0QHciMSY/aJw3XvcfHgADlYaGl6
+         xvqOk7HcUhflg9m9B7o/0eaGYEludwVxVyXfwmtcX/AeQO9APsGHXMLi/AXpBVSfJQI/
+         CR2On3GvcHVxACrT+qFwuVJDxM7J7QBvP1b/ZMmpskoKcPTKWGD+cChoo1wZ/AVSx07r
+         1r5DaA4IP3KNQFw3hGLKiZ1MTbi423kRfQ1RwrxRCCCs2C1ysbvuno8Ow0B1oqB1/Nxd
+         OZl3umhtmZ8hKkTSe3YALHx3OYgRDdmol38g4YCyW+FxTsGp/rGRiaTBH5XUSbTgkZd2
+         zfVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jzuT4Mm77xLeHFlZGQjKrClU0JORArGXFfyv3K/uiq8=;
-        b=m69foROyN2RZ8rr5A38gulWx3EvMeRb44X1qeopx7zuVtLtLh+TjnDx7RSjVeTLwQ+
-         OHlcsKhYZ96AQYWzz+spQm411H5wkRroH6pj+CJ53szsyukXY1CGcH1B3J0vmj5nWcaT
-         yM8X0MkkjJ8HbQVBVurg79ysJjtXa3U9ucPh6RWprF10gyLoGjuoi4saob/+JuB0cnZs
-         wcz4m9TLe03g5mXSr4L0j0JDnzhesXw28h0GT/hLfZNho5OmPRomBbSmZWV8okFkmY6L
-         +5sWzVsj4rpt5AoFPF8QHZlu1ac4m1QbbFzuWGhCgw1nKzpSe9CqHcsX7BLqYt+YkjoF
-         Y1Zg==
-X-Gm-Message-State: APjAAAXjZKBFWndu7feJdaKi6/W9oExSKW27M1dLL9SiB1vj1wg2flmA
-        h9rx2Ae94h5rSUzaIkAuhShMMQpTywo=
-X-Google-Smtp-Source: APXvYqwVbd0Y1V9EHFuIqPVBGKYrZ3RHE1PxCzG5FzfbIUui5Z5pvas37ihzWOj5OgbTByno2FTpdQ==
-X-Received: by 2002:adf:f88d:: with SMTP id u13mr26597562wrp.104.1570532513443;
-        Tue, 08 Oct 2019 04:01:53 -0700 (PDT)
-Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
-        by smtp.gmail.com with ESMTPSA id y186sm5144578wmb.41.2019.10.08.04.01.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 04:01:52 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jon.maloy@ericsson.com,
-        ying.xue@windriver.com, johannes.berg@intel.com, mkubecek@suse.cz,
-        mlxsw@mellanox.com
-Subject: [patch net-next] net: tipc: prepare attrs in __tipc_nl_compat_dumpit()
-Date:   Tue,  8 Oct 2019 13:01:51 +0200
-Message-Id: <20191008110151.6999-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=piBYC+xTNu6MxV9+NOSh3zpO0sO8KESWgSUsgu3eNtU=;
+        b=HHmGbr60sA4p6VPQo+VqedQkG4Ld/N3WIn2rlObJqZcV3mKww+Oe//7ookayzjJphX
+         xF+B0WBRrEqTQVv8mu0rw26dt4qXhBnJSWEF0kfruRmWychk5PNrckj4nYxleF6zt1FL
+         KDbP7N9laHy2bZHXyM03GnihfFl4oZAsAVAIrMXNtUMB4dqm9x7UbhifszL6ZD2A67Yv
+         1uQzMUgbSVXqZbfKth67R9tW+6j7q4hHFiHNKz4jw7OyC5/bnB7CDr/d6idsKDmSlMZe
+         nfmNA36hlND6fnJtRVDh87762Fz8ii5a+9ES+Iq2Y1LKOWuBv1MBr68bUU9Rjz+Q9Fgv
+         lcqg==
+X-Gm-Message-State: APjAAAXp0CJcsf/xwAtUGxsVIWe6YOLlk/jvskI73pAKDPx1Q2H+L3KU
+        hgOG5Fho/FacYl7AcYJulos9SCBu
+X-Google-Smtp-Source: APXvYqwATMXjt4xjrVHmjdh5oUqXwqirXyoR45x5pThzmAmfM6KlYsEg9eEgnn7dOxIg8AmoquAlQQ==
+X-Received: by 2002:a63:a06c:: with SMTP id u44mr16554713pgn.10.1570532971995;
+        Tue, 08 Oct 2019 04:09:31 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id s202sm21557187pfs.24.2019.10.08.04.09.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 08 Oct 2019 04:09:31 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>, omosnace@redhat.com
+Subject: [PATCH net] sctp: add chunks to sk_backlog when the newsk sk_socket is not set
+Date:   Tue,  8 Oct 2019 19:09:23 +0800
+Message-Id: <d8dd0065232e5c3629bf55e54e3a998110ec1aef.1570532963.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+This patch is to fix a NULL-ptr deref in selinux_socket_connect_helper:
 
-__tipc_nl_compat_dumpit() calls tipc_nl_publ_dump() which expects
-the attrs to be available by genl_dumpit_info(cb)->attrs. Add info
-struct and attr parsing in compat dumpit function.
+  [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
+  [...] RIP: 0010:selinux_socket_connect_helper+0x94/0x460
+  [...] Call Trace:
+  [...]  selinux_sctp_bind_connect+0x16a/0x1d0
+  [...]  security_sctp_bind_connect+0x58/0x90
+  [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
+  [...]  sctp_sf_do_asconf+0x785/0x980 [sctp]
+  [...]  sctp_do_sm+0x175/0x5a0 [sctp]
+  [...]  sctp_assoc_bh_rcv+0x285/0x5b0 [sctp]
+  [...]  sctp_backlog_rcv+0x482/0x910 [sctp]
+  [...]  __release_sock+0x11e/0x310
+  [...]  release_sock+0x4f/0x180
+  [...]  sctp_accept+0x3f9/0x5a0 [sctp]
+  [...]  inet_accept+0xe7/0x720
 
-Reported-by: syzbot+8d37c50ffb0f52941a5e@syzkaller.appspotmail.com
-Fixes: 057af7071344 ("net: tipc: have genetlink code to parse the attrs during dumpit")
+It was caused by that the 'newsk' sk_socket was not set before going to
+security sctp hook when processing asconf chunk with SCTP_PARAM_ADD_IP
+or SCTP_PARAM_SET_PRIMARY:
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+  inet_accept()->
+    sctp_accept():
+      lock_sock():
+          lock listening 'sk'
+                                          do_softirq():
+                                            sctp_rcv():  <-- [1]
+                                                asconf chunk arrives and
+                                                enqueued in 'sk' backlog
+      sctp_sock_migrate():
+          set asoc's sk to 'newsk'
+      release_sock():
+          sctp_backlog_rcv():
+            lock 'newsk'
+            sctp_process_asconf()  <-- [2]
+            unlock 'newsk'
+    sock_graft():
+        set sk_socket  <-- [3]
+
+As it shows, at [1] the asconf chunk would be put into the listening 'sk'
+backlog, as accept() was holding its sock lock. Then at [2] asconf would
+get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
+'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
+would deref it, then kernel crashed.
+
+Here to fix it by adding the chunk to sk_backlog until newsk sk_socket is
+set when .accept() is done.
+
+Note that sk->sk_socket can be NULL when the sock is closed, so SOCK_DEAD
+flag is also needed to check in sctp_newsk_ready().
+
+Thanks to Ondrej for reviewing the code.
+
+Fixes: d452930fd3b9 ("selinux: Add SCTP support")
+Reported-by: Ying Xu <yinxu@redhat.com>
+Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/tipc/netlink_compat.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ include/net/sctp/sctp.h |  5 +++++
+ net/sctp/input.c        | 12 +++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-index 4950b754dacd..17a529739f8d 100644
---- a/net/tipc/netlink_compat.c
-+++ b/net/tipc/netlink_compat.c
-@@ -181,6 +181,7 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 				   struct tipc_nl_compat_msg *msg,
- 				   struct sk_buff *arg)
- {
-+	struct genl_dumpit_info info;
- 	int len = 0;
- 	int err;
- 	struct sk_buff *buf;
-@@ -191,6 +192,7 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 	memset(&cb, 0, sizeof(cb));
- 	cb.nlh = (struct nlmsghdr *)arg->data;
- 	cb.skb = arg;
-+	cb.data = &info;
+diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
+index 5d60f13..3ab5c6b 100644
+--- a/include/net/sctp/sctp.h
++++ b/include/net/sctp/sctp.h
+@@ -610,4 +610,9 @@ static inline __u32 sctp_min_frag_point(struct sctp_sock *sp, __u16 datasize)
+ 	return sctp_mtu_payload(sp, SCTP_DEFAULT_MINSEGMENT, datasize);
+ }
  
- 	buf = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
- 	if (!buf)
-@@ -209,6 +211,13 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 		goto err_out;
++static inline bool sctp_newsk_ready(const struct sock *sk)
++{
++	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
++}
++
+ #endif /* __net_sctp_h__ */
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index 5a070fb..f277137 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -243,7 +243,7 @@ int sctp_rcv(struct sk_buff *skb)
+ 		bh_lock_sock(sk);
  	}
  
-+	info.attrs = attrbuf;
-+	err = nlmsg_parse_deprecated(cb.nlh, GENL_HDRLEN, attrbuf,
-+				     tipc_genl_family.maxattr,
-+				     tipc_genl_family.policy, NULL);
-+	if (err)
-+		goto err_out;
-+
- 	do {
- 		int rem;
+-	if (sock_owned_by_user(sk)) {
++	if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+ 		if (sctp_add_backlog(sk, skb)) {
+ 			bh_unlock_sock(sk);
+ 			sctp_chunk_free(chunk);
+@@ -321,7 +321,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+ 		local_bh_disable();
+ 		bh_lock_sock(sk);
  
+-		if (sock_owned_by_user(sk)) {
++		if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+ 			if (sk_add_backlog(sk, skb, sk->sk_rcvbuf))
+ 				sctp_chunk_free(chunk);
+ 			else
+@@ -336,7 +336,13 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+ 		if (backloged)
+ 			return 0;
+ 	} else {
+-		sctp_inq_push(inqueue, chunk);
++		if (!sctp_newsk_ready(sk)) {
++			if (!sk_add_backlog(sk, skb, sk->sk_rcvbuf))
++				return 0;
++			sctp_chunk_free(chunk);
++		} else {
++			sctp_inq_push(inqueue, chunk);
++		}
+ 	}
+ 
+ done:
 -- 
-2.21.0
+2.1.0
 
