@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D98DED0448
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 01:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10F93D046C
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 01:49:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbfJHXmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 19:42:03 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:44664 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726822AbfJHXmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 19:42:02 -0400
-Received: by mail-qt1-f193.google.com with SMTP id u40so716959qth.11;
-        Tue, 08 Oct 2019 16:42:02 -0700 (PDT)
+        id S1729841AbfJHXto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 19:49:44 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:36731 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726068AbfJHXto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 19:49:44 -0400
+Received: by mail-qk1-f193.google.com with SMTP id y189so568410qkc.3;
+        Tue, 08 Oct 2019 16:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6HiVuuo2rZvDIOVhBACObN7eVlMYASXv5ByWnYJPHms=;
-        b=Apk8SrN/aDgWVwvpPsca+YwWsR2qhEhxS2RFjArDN52HbeZCzq2bcrPhNByNhjA17K
-         s4ygyBzYPVGO1uBbKemEhx0d4xQ1/ksmagvZohLmd9u1tatMONUkqm32FNOV+/oRgW1i
-         77gN8OunkvYy/4qY1v3oWJqjJ/MVg0bJqqbLfXFfeVkLduw9YHq8wfWRE+HfCH2/QS0+
-         z/4ga94LUHYT6CgWbmN2yASnbKHjcMKz6P6tK/TGIhbRcyVda2sAW94Km7u+6WwYNZ34
-         tgkSEQt0UBqCdM3p1p+pwE+23btA3KZFDX6BCxOGU/shuZWQztF4EGW5CNkHKD2jftXW
-         liBg==
+        bh=BrmdGllCi4pkNabQlVzH6LCpXzZsXPLy+twfs8u15+k=;
+        b=J5cjkW3S+GCBQmjBm/BJE2T4HACLffFe1zupO76GxdZT7k9DbHc6LSuYPovrFP6oTa
+         8dMKnvzsB6tQbPePaB/fXw23y02OETyLZYEuXWIIoegkLR633er3779woyDNgV1BZ6nd
+         7/wdkvZdikr4T9gjGzwTMtakAL+shEKt1QO7UV+21Lzk8plj/NhEKhowB9wnRfcMvAFd
+         1XEhFgxtM2josF4zcRsYItAt/ZcE/Rh5p7ll6CLa1P50C1FjtkRpCbYZfrbLfaiaLqR2
+         H9YU0fmH8pReMLhWxRuaeoM/zgNXCASpAYBNRI9fUcVtaie5JKYpQASnQJhHTlk4zyZR
+         vdgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6HiVuuo2rZvDIOVhBACObN7eVlMYASXv5ByWnYJPHms=;
-        b=Yk3TscfGMFvW8I4iHefcW5MrU9OufRkrAtL0zMhPAnlTHgDZdKrN49p1pN07Pg9emO
-         nmiXC4LPLT9n//B3/RebezBh/+U7aO/ODhsgnq70KO1al5cZyosnOOanDRd4MMtGBgT1
-         MRZBNa8c/Qdzzhh/RMrL/hETMZi80/P+rYfVioA5FSter00gXtTD0y2NdaDPHiX831At
-         ySDk4BW1aBsxMWX0RwzrcdlR31bfswe1vL9yZ8lYy+lNGhjqis/eNOy2qgKOsrcsV6um
-         AawpY45f7wwemOJTJya2RLlgUCLrZeFa1FGRai2U8Vo/3FDxay5iS8AiCPE7EwSuzO/w
-         ZnrQ==
-X-Gm-Message-State: APjAAAXF8sGhG3KZ+xOGNX65AY5PzxjqZaUlXLjsXR/FskuNTZFazoRI
-        VdOCDxYVoY7/C1ScRyAkT/8gUYy5YGEzd85iVV8=
-X-Google-Smtp-Source: APXvYqzoVqrm6m26F8VOzUBLXy/bvK5WFaruQMtVBkbo+3Re9cR0zVkVziTEMvFcuYFcfII3tsUppcacGxkxD3ysxs4=
-X-Received: by 2002:ac8:1c34:: with SMTP id a49mr580016qtk.59.1570578121660;
- Tue, 08 Oct 2019 16:42:01 -0700 (PDT)
+        bh=BrmdGllCi4pkNabQlVzH6LCpXzZsXPLy+twfs8u15+k=;
+        b=Irt0/ulNSq+dBRFVrPsQc4/OFApLlTyaSS/mULfh/uNnvhY4r1UWKM2Os6RlKmLJ2N
+         JE9f0NFlbFBwaHiBdK3LSTV/uVIIDCn3XlYYw1zA0Q952F3cu/p7/KxjFwVwjWcOv618
+         kiUxJnl37NEIyl7zi/azR3+//ay/s8Sm/ZTuFgrQcMpNFCEVoSlCxy+6gX/KHB3FkszH
+         YKhlmYga8ocfPOQb5Iz9BKsWJT/CoaR8fFgNikBNmxlqJwtAwWNmmWR0IP5jewkPuBZY
+         +YUMGTCNFfBfT+UAB68T6diTFGgWRmEwuIXxfPwUwOadZFJ/vTlbDe3pCil/dYYWxcnV
+         9THQ==
+X-Gm-Message-State: APjAAAVsYuk9LoJOlnrYHy7oHE0dlUjUq8NlAYVNtiORMRhQSC4oS8Ke
+        tUR6HNwSbH0z5pxA1Iuz7Mhw8xz5M4uFAjA5uwM=
+X-Google-Smtp-Source: APXvYqxqJWXCUtKGJnKvXta/eKO8bXuslChltKG4QeF4p4qzSp3cir6K2MrRt9+Xds4VFc6mEnCVTtL1qn2Q79PzxzM=
+X-Received: by 2002:a37:520a:: with SMTP id g10mr846253qkb.39.1570578581220;
+ Tue, 08 Oct 2019 16:49:41 -0700 (PDT)
 MIME-Version: 1.0
 References: <20191008194548.2344473-1-andriin@fb.com> <20191008194548.2344473-2-andriin@fb.com>
- <20191008212945.GG27307@pc-66.home>
-In-Reply-To: <20191008212945.GG27307@pc-66.home>
+ <20191008215321.hrlrbgsdifnziji6@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191008215321.hrlrbgsdifnziji6@kafai-mbp.dhcp.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Oct 2019 16:41:50 -0700
-Message-ID: <CAEf4BzbeW-H1geNZ1EBvQrfhaG-FkWKNouLen3YCNEXzKEE4dg@mail.gmail.com>
+Date:   Tue, 8 Oct 2019 16:49:30 -0700
+Message-ID: <CAEf4BzaLHY9MHbp27VxvVZcKWvbO43F2n6frKi_8kgqCXMDKMg@mail.gmail.com>
 Subject: Re: [PATCH bpf-next 1/2] bpf: track contents of read-only maps as scalars
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+To:     Martin Lau <kafai@fb.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 8, 2019 at 2:29 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Tue, Oct 8, 2019 at 2:53 PM Martin Lau <kafai@fb.com> wrote:
 >
 > On Tue, Oct 08, 2019 at 12:45:47PM -0700, Andrii Nakryiko wrote:
 > > Maps that are read-only both from BPF program side and user space side
@@ -84,14 +85,97 @@ On Tue, Oct 8, 2019 at 2:29 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 > > +{
 > > +     return (map->map_flags & BPF_F_RDONLY_PROG) &&
 > > +            ((map->map_flags & BPF_F_RDONLY) || map->frozen);
->
-> This is definitely buggy. Testing for 'map->map_flags & BPF_F_RDONLY'
-> to assume it's RO from user space side is not correct as it's just
-> related to the current fd, but not the map itself. So the second part
-> definitely /must/ only be: && map->frozen
+> > +}
+> > +
+> > +static int bpf_map_direct_read(struct bpf_map *map, int off, int size, u64 *val)
+> > +{
+> > +     void *ptr;
+> > +     u64 addr;
+> > +     int err;
+> > +
+> > +     err = map->ops->map_direct_value_addr(map, &addr, off + size);
+> Should it be "off" instead of "off + size"?
 
-Yep, you are right, map->frozen and BPF_F_RDONLY_PROG only.
+From array_map_direct_value_addr() code, offset is used only to check
+that access is happening within array value bounds. It's not used to
+calculate returned pointer.
+But now re-reading its code again, I think this check is wrong:
+
+if (off >= map->value_size)
+        break;
+
+It has to be (off > map->value_size). But it seems like this whole
+interface is counter-intuitive.
+
+I'm wondering if Daniel can clarify the intent behind this particular behavior.
+
+For now the easiest fix is to pass (off + size - 1). But maybe we
+should change the contract to be something like
+
+int map_direct_value_addr(const struct bpf_map *map, u64 off, int
+size, void *ptr)
+
+This then can validate that entire access in the range of [off, off +
+size) is acceptable to a map, and then return void * pointer according
+to given off. Thoughts?
 
 >
-> Thanks,
-> Daniel
+> > +     if (err)
+> > +             return err;
+> > +     ptr = (void *)addr + off;
+> > +
+> > +     switch (size) {
+> > +     case sizeof(u8):
+> > +             *val = (u64)*(u8 *)ptr;
+> > +             break;
+> > +     case sizeof(u16):
+> > +             *val = (u64)*(u16 *)ptr;
+> > +             break;
+> > +     case sizeof(u32):
+> > +             *val = (u64)*(u32 *)ptr;
+> > +             break;
+> > +     case sizeof(u64):
+> > +             *val = *(u64 *)ptr;
+> > +             break;
+> > +     default:
+> > +             return -EINVAL;
+> > +     }
+> > +     return 0;
+> > +}
+> > +
+> >  /* check whether memory at (regno + off) is accessible for t = (read | write)
+> >   * if t==write, value_regno is a register which value is stored into memory
+> >   * if t==read, value_regno is a register which will receive the value from memory
+> > @@ -2776,9 +2812,27 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+> >               if (err)
+> >                       return err;
+> >               err = check_map_access(env, regno, off, size, false);
+> > -             if (!err && t == BPF_READ && value_regno >= 0)
+> > -                     mark_reg_unknown(env, regs, value_regno);
+> > +             if (!err && t == BPF_READ && value_regno >= 0) {
+> > +                     struct bpf_map *map = reg->map_ptr;
+> > +
+> > +                     /* if map is read-only, track its contents as scalars */
+> > +                     if (tnum_is_const(reg->var_off) &&
+> > +                         bpf_map_is_rdonly(map) &&
+> > +                         map->ops->map_direct_value_addr) {
+> > +                             int map_off = off + reg->var_off.value;
+> > +                             u64 val = 0;
+> >
+> > +                             err = bpf_map_direct_read(map, map_off, size,
+> > +                                                       &val);
+> > +                             if (err)
+> > +                                     return err;
+> > +
+> > +                             regs[value_regno].type = SCALAR_VALUE;
+> > +                             __mark_reg_known(&regs[value_regno], val);
+> > +                     } else {
+> > +                             mark_reg_unknown(env, regs, value_regno);
+> > +                     }
+> > +             }
+> >       } else if (reg->type == PTR_TO_CTX) {
+> >               enum bpf_reg_type reg_type = SCALAR_VALUE;
+> >
+> > --
+> > 2.17.1
+> >
