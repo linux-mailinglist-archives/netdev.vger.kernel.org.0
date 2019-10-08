@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF87CFF53
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 18:54:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D0ACFF55
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 18:54:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729524AbfJHQyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 12:54:02 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:38852 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727336AbfJHQyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 12:54:02 -0400
-Received: by mail-qt1-f195.google.com with SMTP id j31so26276782qta.5;
-        Tue, 08 Oct 2019 09:54:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/OEB+Mhn1/RkASIEDZnYEyLWcZxXtELcOxL6+uOZNG8=;
-        b=YL+DoRiE2rrTwbbTBXBbBZP1lTje6Hnc5DFa4oCZiOdQbplEpcWjGhP6WZ1L4EoupP
-         rc8mOsOi8PBVbYXIcfCaJJ/TETpZYpnDZaEKStALIfvJnHcQWBSvDcW025QHR7F/MxQh
-         wRyino047/8uLFLjuv4Rd8JrJPdb7MWlFh/65ukY2ksoXnBeLR3Wxgc1IXdXaKCnHtb5
-         FqEQWW5+NSFqmL/+M9gfUY4KsNQhbYWRwl0XlzcNqzhI48WgTvZpUJNv/Ra4uaAXzsS6
-         TwlOSHI4X1IOguYLWs9OkzQZEyN07f06xd2w/sg6JNzWmDBCbKkDqGbyinamdxYWkBm0
-         y6jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/OEB+Mhn1/RkASIEDZnYEyLWcZxXtELcOxL6+uOZNG8=;
-        b=Nbg/VEd55KoQZoZBsUVqU6o4m2JyOB5JY7sS5q88qCL7iit/oguKUDEUUtzuPjVufh
-         B54QaYmYtkP4C4wPA8rq2CNLsoq4d+yMxN1o6m5dzsSesNidgEFB85NjiIXC6LDgBJuS
-         lrB9m81Ne0S5mr9DDz5lgTiCOyDdDa5IUYBS6ncNEyKXrMIjhIF8Ru3e9ZlXuxBwCCVq
-         5Lrgj/EywWZpgGu0pvwhA8xVWJI4+420pmY2jzY9KMNo5FdkXx8F1UplTjtL4WJcI3qT
-         nSrDX2rYUZbkvO9Cc5i0USAT/eoc6MlHPIXutRMMBYqFewJVvvBTHjy7xHW8fgUplA0t
-         qIQQ==
-X-Gm-Message-State: APjAAAW7zz3m2oltUuM0aYf9Lh9yCwvTI15U0jJARcMLHGeGju2KOJG+
-        6jX6sKT9nkXuf2SSNErhpCz3irIihzS7qn+pkUI=
-X-Google-Smtp-Source: APXvYqxb84QAlDM2cXZAYQloqBmHXClymF4iB7QazM3pPZH2fkB+gqNqPXwtMgm6nvCgKa9K6ngFVFVHno41QeRA1Uk=
-X-Received: by 2002:ad4:4649:: with SMTP id y9mr30202230qvv.247.1570553640920;
- Tue, 08 Oct 2019 09:54:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191007224712.1984401-1-andriin@fb.com> <20191007224712.1984401-7-andriin@fb.com>
- <035617e9-2d0d-4082-8862-45bc4bb210fe@fb.com> <CAEf4Bzbe8mKFfd9yAN-i=f6jG50VL5SEqjVJTBcUe8=5eStYJA@mail.gmail.com>
- <5411bdae-a723-6dd3-d35a-8ec825924b4e@fb.com>
-In-Reply-To: <5411bdae-a723-6dd3-d35a-8ec825924b4e@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Oct 2019 09:53:49 -0700
-Message-ID: <CAEf4Bza8d+O0dRZy5NkQbpA-Fnk32PhZK2wqJxJw=Ve9eYUwUA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 6/7] libbpf: add BPF_CORE_READ/BPF_CORE_READ_INTO
- helpers
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        id S1729548AbfJHQyG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Oct 2019 12:54:06 -0400
+Received: from mga14.intel.com ([192.55.52.115]:16411 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727730AbfJHQyG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 12:54:06 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Oct 2019 09:54:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,270,1566889200"; 
+   d="scan'208";a="394735224"
+Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
+  by fmsmga006.fm.intel.com with ESMTP; 08 Oct 2019 09:54:05 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 8 Oct 2019 09:54:05 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 8 Oct 2019 09:54:05 -0700
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81]) by
+ fmsmsx601.amr.corp.intel.com ([10.18.126.81]) with mapi id 15.01.1713.004;
+ Tue, 8 Oct 2019 09:54:05 -0700
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH 1/1] ixgbe: protect TX timestamping from
+ API misuse
+Thread-Topic: [Intel-wired-lan] [PATCH 1/1] ixgbe: protect TX timestamping
+ from API misuse
+Thread-Index: AQHVfTO/dlmnz+fADEeNMRhKGINk9qdQ93Jw
+Date:   Tue, 8 Oct 2019 16:54:04 +0000
+Message-ID: <a53362a9afee4995919c117016209701@intel.com>
+References: <1570288803-14880-1-git-send-email-manjunath.b.patil@oracle.com>
+In-Reply-To: <1570288803-14880-1-git-send-email-manjunath.b.patil@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiODY3Mjk4YWUtYTgzNy00ZTYwLWJlMGItOWRjYzRhM2RhYzQ3IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiWUdEblVmbnM1b1NLVlYwVDlzN3B4NjJkMGlscFEzR3Rja3NpZVJERWh5M21wSWdkUEVHM2V0UFBPZFVzMDlXdiJ9
+dlp-reaction: no-action
+dlp-version: 11.0.400.15
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 8, 2019 at 8:10 AM Alexei Starovoitov <ast@fb.com> wrote:
->
-> On 10/7/19 11:15 PM, Andrii Nakryiko wrote:
-> >>> +#define BPF_CORE_READ(src, a, ...)                                       \
-> >>> +     ({                                                                  \
-> >>> +             ___type(src, a, ##__VA_ARGS__) __r;                         \
-> >>> +             BPF_CORE_READ_INTO(&__r, src, a, ##__VA_ARGS__);            \
-> >>> +             __r;                                                        \
-> >>> +     })
-> >>> +
-> >> Since we're splitting things into
-> >> bpf_{helpers,helper_defs,endian,tracing}.h
-> >> how about adding all core macros into bpf_core_read.h ?
-> > ok, but maybe just bpf_core.h then?
->
-> bpf_core.h is too generic. It either needs to be capitalized,
-> which is unheard of for header files or some suffix added.
-> I think bpf_core_read.h is short enough and doesn't look like
-> bpf_core_write.h will be coming any time soon.
-> If you're worried about _read part then may be
-> bpf_core_access.h ?
->
+> -----Original Message-----
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
+> Behalf Of Manjunath Patil
+> Sent: Saturday, October 5, 2019 8:20 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net;
+> intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org
+> Cc: manjunath.b.patil@oracle.com; christophe.jaillet@wanadoo.fr;
+> cspradlin@google.com
+> Subject: [Intel-wired-lan] [PATCH 1/1] ixgbe: protect TX timestamping from
+> API misuse
+> 
+> HW timestamping can only be requested for a packet if the NIC is first setup
+> via ioctl(SIOCSHWTSTAMP). If this step was skipped, then the ixgbe driver
+> still allowed TX packets to request HW timestamping. In this situation, we see
+> 'clearing Tx Timestamp hang' noise in the log.
+> 
+> Fix this by checking that the NIC is configured for HW TX timestamping before
+> accepting a HW TX timestamping request.
+> 
+> similar-to:
+> 	(26bd4e2 igb: protect TX timestamping from API misuse)
+> 	(0a6f2f0 igb: Fix a test with HWTSTAMP_TX_ON)
+> 
+> Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |    3 ++-
+>  1 files changed, 2 insertions(+), 1 deletions(-)
 
-Alright, I'll split it off into bpf_core_read.h.
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+
+
