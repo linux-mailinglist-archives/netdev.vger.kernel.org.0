@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49C34CFD65
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 17:17:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B95CCFD67
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 17:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbfJHPQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 11:16:51 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35676 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727503AbfJHPQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 11:16:51 -0400
-Received: by mail-pl1-f195.google.com with SMTP id c3so7113153plo.2
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 08:16:50 -0700 (PDT)
+        id S1727966AbfJHPQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 11:16:59 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:39518 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725839AbfJHPQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 11:16:59 -0400
+Received: by mail-pf1-f195.google.com with SMTP id v4so10944929pff.6
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 08:16:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=XeqeRvViHTLurBdfVnuCQjabXl9mX1x41fqyJbmvAjI=;
-        b=qgedUBgpBxkTNPPSYbtlcVlkvcTRPdBOFp0d7SQr5ZZYQg1nQs8bf89JKVTA/h0lh9
-         2urw8JCtYhrKGuc0lpY/WcW0tIz+d9xoGnmS2p29UEl4UF+otqNXgq4mNA7L9W6M3WoI
-         7k6nQZgxDsHtMc13Pf56UbczDUHNftFKEMXVDSQH8qSTRb8bYZA5O+xVrQuQTumiRVlw
-         O2KDkV5CzBw8VOBakZFhIZndCJ0sHFETUbTr+HJaxa2nZuHGsBh+MR8k8mZ160NNxA7l
-         srG7aIpxNB5ordhBjf0EJKWt80puGQvBYH/Lx9U+zaOnauIti+CF0rjoJos9MgcSLfq/
-         zaXQ==
+        bh=HpgMDO0y8NpLHlBoc1zHHS1hRFJIEnkYLrJIX17Y0cA=;
+        b=HvhXXTRboE1ytKENW4aIJwsWx5nRKGe+IDGR9ldg+hthHG+jwg/uoLPGw3KAffAtWb
+         LYhJeB9qeA+/gJHSN+JshUoCfP6bZ/HYM5vsNfVvGGcWAj4rNY7z6aPQDVxeX5V/mc2R
+         EkV9VDzq0mMgfX4MXsRurK8+lKM4zzXZIb341HHMZnOt3Yc4CfxGQF1d+CTQKVdly/yh
+         7JgK3yFA6l1jbutO5EtJnWRgNLG6WhoHFB9q2UdrxN4expBI120uEn3Lg9s/Y6IQ5wqV
+         jqHy21SOYTZy2c5+TvL7UG1Gr/kEfrCDnRjnoPbk3dsBFvLavgqDDq79+8o0R16w6MrH
+         XPWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=XeqeRvViHTLurBdfVnuCQjabXl9mX1x41fqyJbmvAjI=;
-        b=MDcb5agkgyZL9CkGb/VUQmqsU5nbo67EMnpEqNgeFP87grQw45ek4LGhHCkuqmkgCf
-         +PLGRb3gaH5Tz0HGUJ6hsPHS7tjSHsm/zAAzWFxo7yvdcskjkaqnkm8xbalEAtl+f4qm
-         ZyJB8ZavAHDRW3MWj+Xmv0e/pnbNuMnfzOSvYHSKkf0CIVxX4JqJHNZYKZGZI2QDIuLq
-         +heKGYQ7madMPKbHuy+CgyKxBKku8KfHOIUcn6U+YES6RbysWGfCw5sNmWzMuQdGwjDb
-         iEAcQSlV/KEG/sdETAP04/0lilr77BucIQqS6YwDip4EXopd5nTh2KXuayC3deeZzSN7
-         zTKQ==
-X-Gm-Message-State: APjAAAXBTEGrwHTFzCVMtOL/3s4/5ivPibpe5tiveOqU+lSevjWO45XU
-        iaOa0BoC/DdDWK8JpLmeyYaXK5AQ
-X-Google-Smtp-Source: APXvYqzGaa7sRGkfFc/tJCtupeS5KeQW2lwMSfz66cpcmd3Eg6zf9prIe9qNi21yViKqXIIYBZ2aaQ==
-X-Received: by 2002:a17:902:8bca:: with SMTP id r10mr35955919plo.233.1570547809772;
-        Tue, 08 Oct 2019 08:16:49 -0700 (PDT)
+        bh=HpgMDO0y8NpLHlBoc1zHHS1hRFJIEnkYLrJIX17Y0cA=;
+        b=A+OcJvCwd89T+0Hkvrpd2A8hMkkEzPIYpfdZvwyV6vgte6VThKln/7Mz+mYTo80ajz
+         u7J9yvEUTBQ/unApyQr3KYgTNaiNUnPnKGEZvGbubW9Y63IVC7YAlKDfr14u97vmxg5M
+         XIqmpa08lzz/yV17TkgVegQiaNw7xcfp8Iw8KiG/BKxT1sog7WgXlRVM8kJjPHN9O6fJ
+         05OiFJ4wTIQdD6wIHQApzQc+c6mItNY/s6vu671kAYXI9oCRvIIzSCi3/q9hTVbYIRFn
+         D++1YKI/hsaiOXPkIdxiLpFCR7aqT23pxBVXIVchGx3o//Pzbe4eqAxlO5xmGQ0wHvjI
+         ZxgA==
+X-Gm-Message-State: APjAAAWYI6l3VJtCwtLfmcoSWLZXrlpWkuDk6yPugGbV2OPhHg8WDnCs
+        EsZH6QuUrcypGzMbgxTyp0rYJPVo
+X-Google-Smtp-Source: APXvYqzaNwrt8UQejIXorFC7Oun5AW7Uh6a0xKMhnw1OLbn6yN7blY5+g3ARwNQg/HT2zbxv2xiBZw==
+X-Received: by 2002:a63:c449:: with SMTP id m9mr10828485pgg.159.1570547818324;
+        Tue, 08 Oct 2019 08:16:58 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f15sm16803396pfd.141.2019.10.08.08.16.48
+        by smtp.gmail.com with ESMTPSA id z2sm23397624pfq.58.2019.10.08.08.16.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Oct 2019 08:16:49 -0700 (PDT)
+        Tue, 08 Oct 2019 08:16:57 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, Jiri Benc <jbenc@redhat.com>,
         Thomas Graf <tgraf@suug.ch>, u9012063@gmail.com
-Subject: [PATCHv2 net-next 3/6] lwtunnel: add LWTUNNEL_IP6_OPTS support for lwtunnel_ip6
-Date:   Tue,  8 Oct 2019 23:16:13 +0800
-Message-Id: <db1089611398f17980ddfb54568c95837928e5a9.1570547676.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 4/6] vxlan: check tun_info options_len properly
+Date:   Tue,  8 Oct 2019 23:16:14 +0800
+Message-Id: <b870b739bf2819134a3de9f2a19132d978109e7a.1570547676.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <f73e560fafd61494146ff8f08bebead4b7ac6782.1570547676.git.lucien.xin@gmail.com>
+In-Reply-To: <db1089611398f17980ddfb54568c95837928e5a9.1570547676.git.lucien.xin@gmail.com>
 References: <cover.1570547676.git.lucien.xin@gmail.com>
  <d29fbb1833cea0e9aff96317b9e49f230ca6d3dc.1570547676.git.lucien.xin@gmail.com>
  <f73e560fafd61494146ff8f08bebead4b7ac6782.1570547676.git.lucien.xin@gmail.com>
+ <db1089611398f17980ddfb54568c95837928e5a9.1570547676.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1570547676.git.lucien.xin@gmail.com>
 References: <cover.1570547676.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -63,95 +64,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to lwtunnel_ip, this patch is to add options set/dump support
-for lwtunnel_ip6.
+This patch is to improve the tun_info options_len by dropping
+the skb when TUNNEL_VXLAN_OPT is set but options_len is less
+than vxlan_metadata. This can void a potential out-of-bounds
+access on ip_tun_info.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/uapi/linux/lwtunnel.h |  1 +
- net/ipv4/ip_tunnel_core.c     | 22 ++++++++++++++++++----
- 2 files changed, 19 insertions(+), 4 deletions(-)
+ drivers/net/vxlan.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/lwtunnel.h b/include/uapi/linux/lwtunnel.h
-index 93f2c05..4bed5e6 100644
---- a/include/uapi/linux/lwtunnel.h
-+++ b/include/uapi/linux/lwtunnel.h
-@@ -42,6 +42,7 @@ enum lwtunnel_ip6_t {
- 	LWTUNNEL_IP6_TC,
- 	LWTUNNEL_IP6_FLAGS,
- 	LWTUNNEL_IP6_PAD,
-+	LWTUNNEL_IP6_OPTS,
- 	__LWTUNNEL_IP6_MAX,
- };
- 
-diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index d9b7188..c8f5375a 100644
---- a/net/ipv4/ip_tunnel_core.c
-+++ b/net/ipv4/ip_tunnel_core.c
-@@ -353,6 +353,7 @@ static const struct nla_policy ip6_tun_policy[LWTUNNEL_IP6_MAX + 1] = {
- 	[LWTUNNEL_IP6_HOPLIMIT]		= { .type = NLA_U8 },
- 	[LWTUNNEL_IP6_TC]		= { .type = NLA_U8 },
- 	[LWTUNNEL_IP6_FLAGS]		= { .type = NLA_U16 },
-+	[LWTUNNEL_IP6_OPTS]		= { .type = NLA_BINARY },
- };
- 
- static int ip6_tun_build_state(struct nlattr *attr,
-@@ -363,14 +364,20 @@ static int ip6_tun_build_state(struct nlattr *attr,
- 	struct ip_tunnel_info *tun_info;
- 	struct lwtunnel_state *new_state;
- 	struct nlattr *tb[LWTUNNEL_IP6_MAX + 1];
--	int err;
-+	int err, opts_len = 0;
-+	void *opts;
- 
- 	err = nla_parse_nested_deprecated(tb, LWTUNNEL_IP6_MAX, attr,
- 					  ip6_tun_policy, extack);
- 	if (err < 0)
- 		return err;
- 
--	new_state = lwtunnel_state_alloc(sizeof(*tun_info));
-+	if (tb[LWTUNNEL_IP6_OPTS]) {
-+		opts = nla_data(tb[LWTUNNEL_IP6_OPTS]);
-+		opts_len = nla_len(tb[LWTUNNEL_IP6_OPTS]);
-+	}
-+
-+	new_state = lwtunnel_state_alloc(sizeof(*tun_info)  + opts_len);
- 	if (!new_state)
- 		return -ENOMEM;
- 
-@@ -396,8 +403,10 @@ static int ip6_tun_build_state(struct nlattr *attr,
- 	if (tb[LWTUNNEL_IP6_FLAGS])
- 		tun_info->key.tun_flags = nla_get_be16(tb[LWTUNNEL_IP6_FLAGS]);
- 
-+	if (opts_len)
-+		ip_tunnel_info_opts_set(tun_info, opts, opts_len, 0);
-+
- 	tun_info->mode = IP_TUNNEL_INFO_TX | IP_TUNNEL_INFO_IPV6;
--	tun_info->options_len = 0;
- 
- 	*ts = new_state;
- 
-@@ -417,6 +426,10 @@ static int ip6_tun_fill_encap_info(struct sk_buff *skb,
- 	    nla_put_u8(skb, LWTUNNEL_IP6_HOPLIMIT, tun_info->key.ttl) ||
- 	    nla_put_be16(skb, LWTUNNEL_IP6_FLAGS, tun_info->key.tun_flags))
- 		return -ENOMEM;
-+	if (tun_info->options_len &&
-+	    nla_put(skb, LWTUNNEL_IP6_OPTS,
-+		    tun_info->options_len, ip_tunnel_info_opts(tun_info)))
-+		return -ENOMEM;
- 
- 	return 0;
- }
-@@ -428,7 +441,8 @@ static int ip6_tun_encap_nlsize(struct lwtunnel_state *lwtstate)
- 		+ nla_total_size(16)	/* LWTUNNEL_IP6_SRC */
- 		+ nla_total_size(1)	/* LWTUNNEL_IP6_HOPLIMIT */
- 		+ nla_total_size(1)	/* LWTUNNEL_IP6_TC */
--		+ nla_total_size(2);	/* LWTUNNEL_IP6_FLAGS */
-+		+ nla_total_size(2)	/* LWTUNNEL_IP6_FLAGS */
-+		+ lwt_tun_info(lwtstate)->options_len;  /* LWTUNNEL_IP6_OPTS */
- }
- 
- static const struct lwtunnel_encap_ops ip6_tun_lwt_ops = {
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 3d9bcc9..e0787286 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -2487,9 +2487,11 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		vni = tunnel_id_to_key32(info->key.tun_id);
+ 		ifindex = 0;
+ 		dst_cache = &info->dst_cache;
+-		if (info->options_len &&
+-		    info->key.tun_flags & TUNNEL_VXLAN_OPT)
++		if (info->key.tun_flags & TUNNEL_VXLAN_OPT) {
++			if (info->options_len < sizeof(*md))
++				goto drop;
+ 			md = ip_tunnel_info_opts(info);
++		}
+ 		ttl = info->key.ttl;
+ 		tos = info->key.tos;
+ 		label = info->key.label;
 -- 
 2.1.0
 
