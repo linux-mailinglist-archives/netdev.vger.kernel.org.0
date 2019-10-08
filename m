@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 873BFCF7A5
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02270CF7A6
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730653AbfJHK5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 06:57:10 -0400
-Received: from mail-eopbgr750051.outbound.protection.outlook.com ([40.107.75.51]:48528
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        id S1730659AbfJHK5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 06:57:11 -0400
+Received: from mail-eopbgr790080.outbound.protection.outlook.com ([40.107.79.80]:64603
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729893AbfJHK5J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 06:57:09 -0400
+        id S1730647AbfJHK5I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 06:57:08 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ilYHGBkwMTVan0IYvt3R5ivV+eRQHzzFb5vfsxsQD36zZP0M5eLNhKUs0nWq2QZ7ctju2gZ2kGHjdtuGI2VLemZelW+Qd1NaEj7PDwYs3RuBLIWEDdHqtOW1r7WK++KxvVo4XysSWTuJTYq5/kdibzpXKmLso4/zNJhvebznDWAGIj2l6MEJEdlyVZEGZMYw09MskI1uvjr6bYAnOwHQPTk4tKP4cLfRvO2Ys0RorTaMIIIVgs0XB5CqVL/AUBL9TnjjmAbvzSbiRJr5n/8fn4C0PRJB9HbPha+szZWd/ylO0daTwg6oQQnu2NqLFAGragu06pGAtg3LOtR5kFU8dw==
+ b=lm5OrTGLN5hqEB0YCI8WYMAr8wCceZXYNWWpmwb89womxsFWxgzkLXmTATUPKFnqDlLPrlwhpJPYPMgIKvEkptv7HzhgWalChWa9OMAWm2ISKE7OPUJM8NWeAO0iv5yjjP0ZfNHS2wCGzNj99arSfP2pyZyDrftiZZ6Zyc7lrP+d5xDvgXQoMi8NCbJ6VTlnsdyhbadkDKl1GfHvySfczc50244BD0Yp9HmKWX3qoqmv6FoObjjp3xxygSL+zJfODMQzvDoZUOrzkSbOq3wdsxWY5SStrFGMyhf51ZNi0Je0g4SiI/jVqGfGjeFNXhuhBn3WagDIqEi+LfhDJ1KH1w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LTZ0ksdh+d2yK/so4WWu4g/bLGNTJL0LcHsYWvNjfVo=;
- b=mUR4PRGnhmzOgn7ZgpNpSNJ8kWii2VWCW5JqkcoouT3eeXuOOHGz5YyZEUEFGlte8r5jGvIzVzsJt7p9yS8WJnD/FC+bsQWhQBuuGeOGWWmxhVMaaoSGz2+vkTLd0UpGDgw2Ne7ob7GbWIbvToEEPxZD94hWJ1WtMhlZvtcOLsmfzwdmTk7HPYiNiBzQMSautFvldLCCXAGrgp5QLK8YfOGk91QqCbZ56uM+USQa8mz5fmzdvXxbDK6cc9adSTrf0hGJbKGBMZeFrUcdQ2s3tDY0qJt3kFlzzyCouaguZoDNYbar1rCh5FxOyh6jdPjH6ZlyxugCGDX+OEVZsIT78w==
+ bh=6fcJDcPY3zDjIzTW87FwBcxOu1hoJHGh81t7YUQ5DC8=;
+ b=nUmnWnWYYcSomX0o7DeGpaH21m+BYwYmCEkkwIfXnoumFBClAtDGh+bslfZL8EkUruweZJfAXBmxCMvgEVjZnRW8qIWf2FePpzL7yUyhan5otAYjF7aiEYYFozxbcdyppSVQ9UZRXl5KibjcWu7JWX01NKYk2hIsH2fJAwqYC9KH4JImSzPFIbmg90SYtsx/1SqE+cCrqgIUAzeSzIPxQvICAbgvtr74wb5+GOeNa86rq9D3ED+D4eC197cGHrzg+HftZyQsyX1iLgSWF+ZxHaGKhTLl1S4Eh5kH08Hzn2KaWOxxjZphSQdOfrDjmTAbQipnsgebifhu2zQvTGI9qw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
  dkim=pass header.d=aquantia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LTZ0ksdh+d2yK/so4WWu4g/bLGNTJL0LcHsYWvNjfVo=;
- b=EjoWtWqF0qGCfMSQSX424SwsDXREfNyR6koK6XyuQzMu/JKiN7Qbnl5F4VwtsWR5z2ugFTUqQPchZ6cbkbWkrn9RUPPdE7JsNNuhi+hvOPPpOk8HKZXxGw9bi+VTdYP/hXneFLbHF3BrzdUYkppQGTJ/E4UW/HL4G3RV3pVYcs4=
+ bh=6fcJDcPY3zDjIzTW87FwBcxOu1hoJHGh81t7YUQ5DC8=;
+ b=6TSo3tnoSuyfkJaQTdtMLvtUH4Gq9EZD3uhHNjDG+IY71WHq97kKX5FyJ9rSq7NQd4E9tbazFxNUlOVdGFexkjO9VOuBJvkqYRJk9mZXc3I9Nj+w9k00UpQRkshX55Q7Rff+sRgxMjn2nX0QSE72PxV582DQNNDIFcQeJ0KkZ0s=
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
  BN8PR11MB3666.namprd11.prod.outlook.com (20.178.221.19) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.24; Tue, 8 Oct 2019 10:56:57 +0000
+ 15.20.2327.24; Tue, 8 Oct 2019 10:56:59 +0000
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.016; Tue, 8 Oct 2019
- 10:56:57 +0000
+ 10:56:59 +0000
 From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "davem@davemloft.net" <davem@davemloft.net>,
@@ -44,13 +44,13 @@ CC:     "davem@davemloft.net" <davem@davemloft.net>,
         "andrew@lunn.ch" <andrew@lunn.ch>,
         Simon Edelhaus <sedelhaus@marvell.com>,
         Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Nikita Danilov <Nikita.Danilov@aquantia.com>
-Subject: [PATCH v2 net-next 10/12] net: aquantia: add support for Phy access
-Thread-Topic: [PATCH v2 net-next 10/12] net: aquantia: add support for Phy
- access
-Thread-Index: AQHVfccaHm7vyqrB/0i0TJjnhG/Tmw==
-Date:   Tue, 8 Oct 2019 10:56:56 +0000
-Message-ID: <09f7d525783b31730ca3bdbaa52c962a141284a5.1570531332.git.igor.russkikh@aquantia.com>
+        Pavel Belous <Pavel.Belous@aquantia.com>
+Subject: [PATCH v2 net-next 11/12] net: aquantia: add support for PIN funcs
+Thread-Topic: [PATCH v2 net-next 11/12] net: aquantia: add support for PIN
+ funcs
+Thread-Index: AQHVfccb1xbD53UwYU6+rlPsc16kIw==
+Date:   Tue, 8 Oct 2019 10:56:59 +0000
+Message-ID: <0142dcd43c84ab7bc26076c3eb48d43e67d195cc.1570531332.git.igor.russkikh@aquantia.com>
 References: <cover.1570531332.git.igor.russkikh@aquantia.com>
 In-Reply-To: <cover.1570531332.git.igor.russkikh@aquantia.com>
 Accept-Language: en-US
@@ -66,30 +66,30 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-mailer: git-send-email 2.17.1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b41a9814-259b-4405-2d6a-08d74bde3c81
+x-ms-office365-filtering-correlation-id: 8b50b123-4fbd-47a3-7417-08d74bde3dea
 x-ms-traffictypediagnostic: BN8PR11MB3666:
 x-ld-processed: 83e2e134-991c-4ede-8ced-34d47e38e6b1,ExtFwd
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR11MB3666794F0B2F12DD2210FCD4989A0@BN8PR11MB3666.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:212;
+x-microsoft-antispam-prvs: <BN8PR11MB3666E93FC98E0243B2259132989A0@BN8PR11MB3666.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:551;
 x-forefront-prvs: 01842C458A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(1496009)(366004)(346002)(376002)(396003)(39850400004)(136003)(189003)(199004)(118296001)(71190400001)(71200400001)(2501003)(256004)(14444005)(6916009)(305945005)(316002)(107886003)(2351001)(4326008)(2906002)(44832011)(6116002)(7736002)(3846002)(54906003)(6486002)(6436002)(11346002)(5640700003)(6512007)(99286004)(25786009)(66556008)(50226002)(76176011)(52116002)(5660300002)(8936002)(2616005)(81156014)(66446008)(102836004)(81166006)(8676002)(386003)(6506007)(508600001)(30864003)(14454004)(26005)(36756003)(86362001)(446003)(64756008)(476003)(486006)(66946007)(186003)(66476007)(66066001)(1730700003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3666;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(1496009)(366004)(346002)(376002)(396003)(39850400004)(136003)(189003)(199004)(118296001)(71190400001)(71200400001)(2501003)(256004)(14444005)(6916009)(305945005)(316002)(107886003)(2351001)(4326008)(2906002)(44832011)(6116002)(7736002)(3846002)(54906003)(6486002)(6436002)(11346002)(5640700003)(6512007)(99286004)(25786009)(66556008)(50226002)(76176011)(52116002)(5660300002)(8936002)(2616005)(81156014)(66446008)(102836004)(81166006)(8676002)(386003)(6506007)(508600001)(30864003)(14454004)(26005)(36756003)(86362001)(446003)(64756008)(476003)(486006)(66946007)(186003)(66476007)(66066001)(1730700003)(309714004);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3666;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: aquantia.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8h4CMjRcfaz5WzNeAMF5zCXvn0ln+P+aX2BHYSAtD55BMn5WVBlA9Jyy3HOmaQiGPs8a9kxfk4qkxSF2q64hgLGlYKGxq6pbgK1Mw67U0t51c19yugxAcqRHdXFf9rRjsMx4MfkoMHMqzkV/NF35fvbTxaQXqlDmfvGNvnBDGuLK4D6eqHkardkRi4BAMn/+g0/XEJRqk9LI+heE7vdVZ1z9zjHEBs3unfu6uWSSwWavO7lidhfvt6NaXs6mBDHTPWVIiG4ri+KivgGTGMAPiX+TH6CoAqQZhln2va0N8NANph5nqsW+oy12cK9AnwlarC/kPO7ffevIqKrA4Qxq4GivzJpINUR0D0xYZ6n+R4bomiWZ2aCsWwuIjcQGI0ctG9yC6rvGUG1m/wePnjIYcHTruVf1WjZcX7NEBqQnP9k=
+x-microsoft-antispam-message-info: fwd2SvP5rDuXe4cgNygqXI4aUQxt3RS0DczGK51n8tHd0APmraVTXeEgIPhZUQJZ+sN11/e+rwMtIyFMJzkwyEUmh8xQnkE9cpuXZ7F62PAMovbg2L6PfrLgbQH4/IdpwxtsgIHpcEjnrf94wY6/tnvvfgc8T0ybbAiCekRlwDdSp5ciCjUXd6TJQNLL4+F6twY3Zfx3qzpxO6TZTPS30WlqXCtgxnjSUMZMb9SFV2Mr2uyeRM4W9XJByuOUrbgK9ELpAX6BRmk3ZQk9Y2Fv5ZQxnF9q55t0Chpeog6yfRZbLJQC2Zp0yRheHLHCKjaiHM6nZLY9XhGP+0kwJimMaJX90lx/rUecdmbzsboQuUcExwdo4KFxee6HyuDC7u5vak7NA/riP+fddRkJX56AvxHASGISK+43CII6HHl2moA=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b41a9814-259b-4405-2d6a-08d74bde3c81
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2019 10:56:56.9364
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b50b123-4fbd-47a3-7417-08d74bde3dea
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2019 10:56:59.2331
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SqTFA+i0fHoYH2cZSIm+UX+9nVLlf8rq+5g0l+GiFZswwDarU36q3Mc4R+Zz90GgwIUnD1BN9UUN8DS1p3JacQ==
+X-MS-Exchange-CrossTenant-userprincipalname: oyJTFLd7y0zsKIJMc5BrQ/zSPQXWc/9/j2XklWZIfifrUgMNMwQmfF53VIBWfuP8qFcr5gzOWX4zTuG074YVyA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3666
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -98,533 +98,655 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
 
-GPIO PIN control and access is done by direct phy manipulation.
-Here we add an aq_phy module which is able to access phy registers
-via MDIO access mailbox.
+Depending on FW configuration we can manage from 0 to 3 PINs for periodic o=
+utput
+and from 0 to 1 ext ts PIN for getting TS for external event.
 
-Access is controlled via HW semaphore.
+Ext TS PIN functionality is implemented via periodic timestamps polling
+directly from PHY, because right now there is now way to received
+PIN trigger interrupt from phy.
 
-Co-developed-by: Nikita Danilov <nikita.danilov@aquantia.com>
-Signed-off-by: Nikita Danilov <nikita.danilov@aquantia.com>
+Poller delay is 15ms.
+
+Co-developed-by: Egor Pomozov <egor.pomozov@aquantia.com>
+Signed-off-by: Egor Pomozov <egor.pomozov@aquantia.com>
+Co-developed-by: Pavel Belous <pavel.belous@aquantia.com>
+Signed-off-by: Pavel Belous <pavel.belous@aquantia.com>
 Signed-off-by: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
 Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
 ---
- .../net/ethernet/aquantia/atlantic/Makefile   |   1 +
- .../net/ethernet/aquantia/atlantic/aq_hw.h    |   1 +
- .../net/ethernet/aquantia/atlantic/aq_nic.c   |   6 +
- .../net/ethernet/aquantia/atlantic/aq_phy.c   | 147 ++++++++++++++++++
- .../net/ethernet/aquantia/atlantic/aq_phy.h   |  32 ++++
- .../aquantia/atlantic/hw_atl/hw_atl_llh.c     |  62 ++++++++
- .../aquantia/atlantic/hw_atl/hw_atl_llh.h     |  35 +++++
- .../atlantic/hw_atl/hw_atl_llh_internal.h     | 115 ++++++++++++++
- 8 files changed, 399 insertions(+)
- create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_phy.c
- create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_phy.h
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |  10 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |   1 +
+ .../net/ethernet/aquantia/atlantic/aq_ptp.c   | 339 ++++++++++++++++++
+ .../net/ethernet/aquantia/atlantic/aq_ptp.h   |   2 +
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  63 +++-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |   8 +
+ 6 files changed, 422 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/Makefile b/drivers/net/=
-ethernet/aquantia/atlantic/Makefile
-index cd12d9d824ec..68c41141ede2 100644
---- a/drivers/net/ethernet/aquantia/atlantic/Makefile
-+++ b/drivers/net/ethernet/aquantia/atlantic/Makefile
-@@ -25,6 +25,7 @@ atlantic-objs :=3D aq_main.o \
- 	aq_drvinfo.o \
- 	aq_filters.o \
- 	aq_ptp.o \
-+	aq_phy.o \
- 	hw_atl/hw_atl_a0.o \
- 	hw_atl/hw_atl_b0.o \
- 	hw_atl/hw_atl_utils.o \
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/e=
 thernet/aquantia/atlantic/aq_hw.h
-index 5b0f42818033..c36c0d7d038e 100644
+index c36c0d7d038e..5246cf44ce51 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-@@ -140,6 +140,7 @@ struct aq_hw_s {
- 	u32 rpc_tid;
- 	struct hw_atl_utils_fw_rpc rpc;
- 	s64 ptp_clk_offset;
-+	u16 phy_id;
- };
+@@ -259,6 +259,16 @@ struct aq_hw_ops {
 =20
- struct aq_ring_s;
+ 	int (*hw_set_sys_clock)(struct aq_hw_s *self, u64 time, u64 ts);
+=20
++	int (*hw_ts_to_sys_clock)(struct aq_hw_s *self, u64 ts, u64 *time);
++
++	int (*hw_gpio_pulse)(struct aq_hw_s *self, u32 index, u64 start,
++			     u32 period);
++
++	int (*hw_extts_gpio_enable)(struct aq_hw_s *self, u32 index,
++				    u32 enable);
++
++	int (*hw_get_sync_ts)(struct aq_hw_s *self, u64 *ts);
++
+ 	u16 (*rx_extract_ts)(struct aq_hw_s *self, u8 *p, unsigned int len,
+ 			     u64 *timestamp);
+=20
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/=
 ethernet/aquantia/atlantic/aq_nic.c
-index 03ec778d0fcc..b7960490ca90 100644
+index b7960490ca90..3c821d1a4372 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -12,6 +12,7 @@
- #include "aq_hw.h"
- #include "aq_pci_func.h"
- #include "aq_main.h"
-+#include "aq_phy.h"
+@@ -152,6 +152,7 @@ static int aq_nic_update_link_status(struct aq_nic_s *s=
+elf)
+ 			aq_ptp_clock_init(self);
+ 			aq_ptp_tm_offset_set(self,
+ 					     self->aq_hw->aq_link_status.mbps);
++			aq_ptp_link_change(self);
+ 		}
+=20
+ 		/* Driver has to update flow control settings on RX block
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/=
+ethernet/aquantia/atlantic/aq_ptp.c
+index 39ba2d20728a..116c85e0b15a 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+@@ -15,10 +15,13 @@
+ #include "aq_nic.h"
  #include "aq_ptp.h"
+ #include "aq_ring.h"
++#include "aq_phy.h"
  #include "aq_filters.h"
 =20
-@@ -337,6 +338,11 @@ int aq_nic_init(struct aq_nic_s *self)
- 	if (err < 0)
- 		goto err_exit;
+ #define AQ_PTP_TX_TIMEOUT        (HZ *  10)
 =20
-+	if (self->aq_nic_cfg.aq_hw_caps->media_type =3D=3D AQ_HW_MEDIA_TYPE_TP) {
-+		self->aq_hw->phy_id =3D HW_ATL_PHY_ID_MAX;
-+		err =3D aq_phy_init(self->aq_hw);
++#define POLL_SYNC_TIMER_MS 15
++
+ enum ptp_speed_offsets {
+ 	ptp_offset_idx_10 =3D 0,
+ 	ptp_offset_idx_100,
+@@ -70,6 +73,12 @@ struct aq_ptp_s {
+=20
+ 	struct aq_rx_filter_l3l4 udp_filter;
+ 	struct aq_rx_filter_l2 eth_type_filter;
++
++	struct delayed_work poll_sync;
++	u32 poll_timeout_ms;
++
++	bool extts_pin_enabled;
++	u64 last_sync1588_ts;
+ };
+=20
+ struct ptp_tm_offset {
+@@ -359,6 +368,168 @@ static void aq_ptp_convert_to_hwtstamp(struct aq_ptp_=
+s *aq_ptp,
+ 	hwtstamp->hwtstamp =3D ns_to_ktime(timestamp);
+ }
+=20
++static int aq_ptp_hw_pin_conf(struct aq_nic_s *aq_nic, u32 pin_index, u64 =
+start,
++			      u64 period)
++{
++	if (period)
++		netdev_info(aq_nic->ndev,
++			    "Enable GPIO %d pulsing, start time %llu, period %u\n",
++			    pin_index, start, (u32)period);
++	else
++		netdev_info(aq_nic->ndev,
++			    "Disable GPIO %d pulsing, start time %llu, period %u\n",
++			    pin_index, start, (u32)period);
++
++	/* Notify hardware of request to being sending pulses.
++	 * If period is ZERO then pulsen is disabled.
++	 */
++	mutex_lock(&aq_nic->fwreq_mutex);
++	aq_nic->aq_hw_ops->hw_gpio_pulse(aq_nic->aq_hw, pin_index,
++					 start, (u32)period);
++	mutex_unlock(&aq_nic->fwreq_mutex);
++
++	return 0;
++}
++
++static int aq_ptp_perout_pin_configure(struct ptp_clock_info *ptp,
++				       struct ptp_clock_request *rq, int on)
++{
++	struct aq_ptp_s *aq_ptp =3D container_of(ptp, struct aq_ptp_s, ptp_info);
++	struct ptp_clock_time *t =3D &rq->perout.period;
++	struct ptp_clock_time *s =3D &rq->perout.start;
++	struct aq_nic_s *aq_nic =3D aq_ptp->aq_nic;
++	u64 start, period;
++	u32 pin_index =3D rq->perout.index;
++
++	/* verify the request channel is there */
++	if (pin_index >=3D ptp->n_per_out)
++		return -EINVAL;
++
++	/* we cannot support periods greater
++	 * than 4 seconds due to reg limit
++	 */
++	if (t->sec > 4 || t->sec < 0)
++		return -ERANGE;
++
++	/* convert to unsigned 64b ns,
++	 * verify we can put it in a 32b register
++	 */
++	period =3D on ? t->sec * NSEC_PER_SEC + t->nsec : 0;
++
++	/* verify the value is in range supported by hardware */
++	if (period > U32_MAX)
++		return -ERANGE;
++	/* convert to unsigned 64b ns */
++	/* TODO convert to AQ time */
++	start =3D on ? s->sec * NSEC_PER_SEC + s->nsec : 0;
++
++	aq_ptp_hw_pin_conf(aq_nic, pin_index, start, period);
++
++	return 0;
++}
++
++static int aq_ptp_pps_pin_configure(struct ptp_clock_info *ptp,
++				    struct ptp_clock_request *rq, int on)
++{
++	struct aq_ptp_s *aq_ptp =3D container_of(ptp, struct aq_ptp_s, ptp_info);
++	struct aq_nic_s *aq_nic =3D aq_ptp->aq_nic;
++	u64 start, period;
++	u32 pin_index =3D 0;
++	u32 rest =3D 0;
++
++	/* verify the request channel is there */
++	if (pin_index >=3D ptp->n_per_out)
++		return -EINVAL;
++
++	aq_nic->aq_hw_ops->hw_get_ptp_ts(aq_nic->aq_hw, &start);
++	div_u64_rem(start, NSEC_PER_SEC, &rest);
++	period =3D on ? NSEC_PER_SEC : 0; /* PPS - pulse per second */
++	start =3D on ? start - rest + NSEC_PER_SEC *
++		(rest > 990000000LL ? 2 : 1) : 0;
++
++	aq_ptp_hw_pin_conf(aq_nic, pin_index, start, period);
++
++	return 0;
++}
++
++static void aq_ptp_extts_pin_ctrl(struct aq_ptp_s *aq_ptp)
++{
++	struct aq_nic_s *aq_nic =3D aq_ptp->aq_nic;
++	u32 enable =3D aq_ptp->extts_pin_enabled;
++
++	if (aq_nic->aq_hw_ops->hw_extts_gpio_enable)
++		aq_nic->aq_hw_ops->hw_extts_gpio_enable(aq_nic->aq_hw, 0,
++							enable);
++}
++
++static int aq_ptp_extts_pin_configure(struct ptp_clock_info *ptp,
++				      struct ptp_clock_request *rq, int on)
++{
++	struct aq_ptp_s *aq_ptp =3D container_of(ptp, struct aq_ptp_s, ptp_info);
++
++	u32 pin_index =3D rq->extts.index;
++
++	if (pin_index >=3D ptp->n_ext_ts)
++		return -EINVAL;
++
++	aq_ptp->extts_pin_enabled =3D !!on;
++	if (on) {
++		aq_ptp->poll_timeout_ms =3D POLL_SYNC_TIMER_MS;
++		cancel_delayed_work_sync(&aq_ptp->poll_sync);
++		schedule_delayed_work(&aq_ptp->poll_sync,
++				      msecs_to_jiffies(aq_ptp->poll_timeout_ms));
 +	}
 +
- 	for (i =3D 0U, aq_vec =3D self->aq_vec[0];
- 		self->aq_vecs > i; ++i, aq_vec =3D self->aq_vec[i])
- 		aq_vec_init(aq_vec, self->aq_hw_ops, self->aq_hw);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_phy.c b/drivers/net/=
-ethernet/aquantia/atlantic/aq_phy.c
-new file mode 100644
-index 000000000000..51ae921e3e1f
---- /dev/null
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_phy.c
-@@ -0,0 +1,147 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* aQuantia Corporation Network Driver
-+ * Copyright (C) 2018-2019 aQuantia Corporation. All rights reserved
++	aq_ptp_extts_pin_ctrl(aq_ptp);
++	return 0;
++}
++
++/* aq_ptp_gpio_feature_enable
++ * @ptp: the ptp clock structure
++ * @rq: the requested feature to change
++ * @on: whether to enable or disable the feature
 + */
-+
-+#include "aq_phy.h"
-+
-+bool aq_mdio_busy_wait(struct aq_hw_s *aq_hw)
++static int aq_ptp_gpio_feature_enable(struct ptp_clock_info *ptp,
++				      struct ptp_clock_request *rq, int on)
 +{
-+	int err =3D 0;
-+	u32 val;
-+
-+	err =3D readx_poll_timeout_atomic(hw_atl_mdio_busy_get, aq_hw,
-+					val, val =3D=3D 0U, 10U, 100000U);
-+
-+	if (err < 0)
-+		return false;
-+
-+	return true;
-+}
-+
-+u16 aq_mdio_read_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr)
-+{
-+	u16 phy_addr =3D aq_hw->phy_id << 5 | mmd;
-+
-+	/* Set Address register. */
-+	hw_atl_glb_mdio_iface4_set(aq_hw, (addr & HW_ATL_MDIO_ADDRESS_MSK) <<
-+				   HW_ATL_MDIO_ADDRESS_SHIFT);
-+	/* Send Address command. */
-+	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
-+				   (3 << HW_ATL_MDIO_OP_MODE_SHIFT) |
-+				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
-+				    HW_ATL_MDIO_PHY_ADDRESS_SHIFT));
-+
-+	aq_mdio_busy_wait(aq_hw);
-+
-+	/* Send Read command. */
-+	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
-+				   (1 << HW_ATL_MDIO_OP_MODE_SHIFT) |
-+				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
-+				    HW_ATL_MDIO_PHY_ADDRESS_SHIFT));
-+	/* Read result. */
-+	aq_mdio_busy_wait(aq_hw);
-+
-+	return (u16)hw_atl_glb_mdio_iface5_get(aq_hw);
-+}
-+
-+void aq_mdio_write_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr, u16 data=
-)
-+{
-+	u16 phy_addr =3D aq_hw->phy_id << 5 | mmd;
-+
-+	/* Set Address register. */
-+	hw_atl_glb_mdio_iface4_set(aq_hw, (addr & HW_ATL_MDIO_ADDRESS_MSK) <<
-+				   HW_ATL_MDIO_ADDRESS_SHIFT);
-+	/* Send Address command. */
-+	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
-+				   (3 << HW_ATL_MDIO_OP_MODE_SHIFT) |
-+				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
-+				    HW_ATL_MDIO_PHY_ADDRESS_SHIFT));
-+
-+	aq_mdio_busy_wait(aq_hw);
-+
-+	hw_atl_glb_mdio_iface3_set(aq_hw, (data & HW_ATL_MDIO_WRITE_DATA_MSK) <<
-+				   HW_ATL_MDIO_WRITE_DATA_SHIFT);
-+	/* Send Write command. */
-+	hw_atl_glb_mdio_iface2_set(aq_hw, HW_ATL_MDIO_EXECUTE_OPERATION_MSK |
-+				   (2 << HW_ATL_MDIO_OP_MODE_SHIFT) |
-+				   ((phy_addr & HW_ATL_MDIO_PHY_ADDRESS_MSK) <<
-+				    HW_ATL_MDIO_PHY_ADDRESS_SHIFT));
-+
-+	aq_mdio_busy_wait(aq_hw);
-+}
-+
-+u16 aq_phy_read_reg(struct aq_hw_s *aq_hw, u16 mmd, u16 address)
-+{
-+	int err =3D 0;
-+	u32 val;
-+
-+	err =3D readx_poll_timeout_atomic(hw_atl_sem_mdio_get, aq_hw,
-+					val, val =3D=3D 1U, 10U, 100000U);
-+
-+	if (err < 0) {
-+		err =3D 0xffff;
-+		goto err_exit;
++	switch (rq->type) {
++	case PTP_CLK_REQ_EXTTS:
++		return aq_ptp_extts_pin_configure(ptp, rq, on);
++	case PTP_CLK_REQ_PEROUT:
++		return aq_ptp_perout_pin_configure(ptp, rq, on);
++	case PTP_CLK_REQ_PPS:
++		return aq_ptp_pps_pin_configure(ptp, rq, on);
++	default:
++		return -EOPNOTSUPP;
 +	}
 +
-+	err =3D aq_mdio_read_word(aq_hw, mmd, address);
-+
-+	hw_atl_reg_glb_cpu_sem_set(aq_hw, 1U, HW_ATL_FW_SM_MDIO);
-+
-+err_exit:
-+	return err;
++	return 0;
 +}
 +
-+void aq_phy_write_reg(struct aq_hw_s *aq_hw, u16 mmd, u16 address, u16 dat=
-a)
++/* aq_ptp_verify
++ * @ptp: the ptp clock structure
++ * @pin: index of the pin in question
++ * @func: the desired function to use
++ * @chan: the function channel index to use
++ */
++static int aq_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
++			 enum ptp_pin_function func, unsigned int chan)
 +{
-+	int err =3D 0;
-+	u32 val;
++	/* verify the requested pin is there */
++	if (!ptp->pin_config || pin >=3D ptp->n_pins)
++		return -EINVAL;
 +
-+	err =3D readx_poll_timeout_atomic(hw_atl_sem_mdio_get, aq_hw,
-+					val, val =3D=3D 1U, 10U, 100000U);
-+	if (err < 0)
++	/* enforce locked channels, no changing them */
++	if (chan !=3D ptp->pin_config[pin].chan)
++		return -EINVAL;
++
++	/* we want to keep the functions locked as well */
++	if (func !=3D ptp->pin_config[pin].func)
++		return -EINVAL;
++
++	return 0;
++}
++
+ /* aq_ptp_tx_hwtstamp - utility function which checks for TX time stamp
+  * @adapter: the private adapter struct
+  *
+@@ -866,6 +1037,8 @@ void aq_ptp_ring_free(struct aq_nic_s *aq_nic)
+ 	aq_ptp_skb_ring_release(&aq_ptp->skb_ring);
+ }
+=20
++#define MAX_PTP_GPIO_COUNT 4
++
+ static struct ptp_clock_info aq_ptp_clock =3D {
+ 	.owner		=3D THIS_MODULE,
+ 	.name		=3D "atlantic ptp",
+@@ -877,7 +1050,9 @@ static struct ptp_clock_info aq_ptp_clock =3D {
+ 	.gettime64	=3D aq_ptp_gettime,
+ 	.settime64	=3D aq_ptp_settime,
+ 	.n_per_out     =3D 0,
++	.enable        =3D aq_ptp_gpio_feature_enable,
+ 	.n_pins        =3D 0,
++	.verify        =3D aq_ptp_verify,
+ 	.pin_config    =3D NULL,
+ };
+=20
+@@ -935,6 +1110,57 @@ static void aq_ptp_offset_init(const struct hw_aq_ptp=
+_offset *offsets)
+ 	aq_ptp_offset_init_from_fw(offsets);
+ }
+=20
++static void aq_ptp_gpio_init(struct ptp_clock_info *info,
++			     struct hw_aq_info *hw_info)
++{
++	struct ptp_pin_desc pin_desc[MAX_PTP_GPIO_COUNT];
++	u32 extts_pin_cnt =3D 0;
++	u32 out_pin_cnt =3D 0;
++	u32 i;
++
++	memset(pin_desc, 0, sizeof(pin_desc));
++
++	for (i =3D 0; i < MAX_PTP_GPIO_COUNT - 1; i++) {
++		if (hw_info->gpio_pin[i] =3D=3D
++		    (GPIO_PIN_FUNCTION_PTP0 + out_pin_cnt)) {
++			snprintf(pin_desc[out_pin_cnt].name,
++				 sizeof(pin_desc[out_pin_cnt].name),
++				 "AQ_GPIO%d", i);
++			pin_desc[out_pin_cnt].index =3D out_pin_cnt;
++			pin_desc[out_pin_cnt].chan =3D out_pin_cnt;
++			pin_desc[out_pin_cnt++].func =3D PTP_PF_PEROUT;
++		}
++	}
++
++	info->n_per_out =3D out_pin_cnt;
++
++	if (hw_info->caps_ex & BIT(CAPS_EX_PHY_CTRL_TS_PIN)) {
++		extts_pin_cnt +=3D 1;
++
++		snprintf(pin_desc[out_pin_cnt].name,
++			 sizeof(pin_desc[out_pin_cnt].name),
++			  "AQ_GPIO%d", out_pin_cnt);
++		pin_desc[out_pin_cnt].index =3D out_pin_cnt;
++		pin_desc[out_pin_cnt].chan =3D 0;
++		pin_desc[out_pin_cnt].func =3D PTP_PF_EXTTS;
++	}
++
++	info->n_pins =3D out_pin_cnt + extts_pin_cnt;
++	info->n_ext_ts =3D extts_pin_cnt;
++
++	if (!info->n_pins)
 +		return;
 +
-+	aq_mdio_write_word(aq_hw, mmd, address, data);
-+	hw_atl_reg_glb_cpu_sem_set(aq_hw, 1U, HW_ATL_FW_SM_MDIO);
++	info->pin_config =3D kcalloc(info->n_pins, sizeof(struct ptp_pin_desc),
++				   GFP_KERNEL);
++
++	if (!info->pin_config)
++		return;
++
++	memcpy(info->pin_config, &pin_desc,
++	       sizeof(struct ptp_pin_desc) * info->n_pins);
 +}
 +
-+bool aq_phy_init_phy_id(struct aq_hw_s *aq_hw)
+ void aq_ptp_clock_init(struct aq_nic_s *aq_nic)
+ {
+ 	struct aq_ptp_s *aq_ptp =3D aq_nic->aq_ptp;
+@@ -944,6 +1170,8 @@ void aq_ptp_clock_init(struct aq_nic_s *aq_nic)
+ 	aq_ptp_settime(&aq_ptp->ptp_info, &ts);
+ }
+=20
++static void aq_ptp_poll_sync_work_cb(struct work_struct *w);
++
+ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int idx_vec)
+ {
+ 	struct hw_atl_utils_mbox mbox;
+@@ -982,6 +1210,7 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int =
+idx_vec)
+ 	spin_lock_init(&aq_ptp->ptp_ring_lock);
+=20
+ 	aq_ptp->ptp_info =3D aq_ptp_clock;
++	aq_ptp_gpio_init(&aq_ptp->ptp_info, &mbox.info);
+ 	clock =3D ptp_clock_register(&aq_ptp->ptp_info, &aq_nic->ndev->dev);
+ 	if (!clock) {
+ 		netdev_err(aq_nic->ndev, "ptp_clock_register failed\n");
+@@ -1008,6 +1237,7 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int=
+ idx_vec)
+ 	aq_ptp_clock_init(aq_nic);
+ 	mutex_unlock(&aq_nic->fwreq_mutex);
+=20
++	INIT_DELAYED_WORK(&aq_ptp->poll_sync, &aq_ptp_poll_sync_work_cb);
+ 	aq_ptp->eth_type_filter.location =3D
+ 			aq_nic_reserve_filter(aq_nic, aq_rx_filter_ethertype);
+ 	aq_ptp->udp_filter.location =3D
+@@ -1016,6 +1246,8 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int=
+ idx_vec)
+ 	return 0;
+=20
+ err_exit:
++	if (aq_ptp)
++		kfree(aq_ptp->ptp_info.pin_config);
+ 	kfree(aq_ptp);
+ 	aq_nic->aq_ptp =3D NULL;
+ 	return err;
+@@ -1042,11 +1274,14 @@ void aq_ptp_free(struct aq_nic_s *aq_nic)
+ 			      aq_ptp->eth_type_filter.location);
+ 	aq_nic_release_filter(aq_nic, aq_rx_filter_l3l4,
+ 			      aq_ptp->udp_filter.location);
++	cancel_delayed_work_sync(&aq_ptp->poll_sync);
+ 	/* disable ptp */
+ 	mutex_lock(&aq_nic->fwreq_mutex);
+ 	aq_nic->aq_fw_ops->enable_ptp(aq_nic->aq_hw, 0);
+ 	mutex_unlock(&aq_nic->fwreq_mutex);
+=20
++	kfree(aq_ptp->ptp_info.pin_config);
++
+ 	netif_napi_del(&aq_ptp->napi);
+ 	kfree(aq_ptp);
+ 	aq_nic->aq_ptp =3D NULL;
+@@ -1056,3 +1291,107 @@ struct ptp_clock *aq_ptp_get_ptp_clock(struct aq_pt=
+p_s *aq_ptp)
+ {
+ 	return aq_ptp->ptp_clock;
+ }
++
++/* PTP external GPIO nanoseconds count */
++static uint64_t aq_ptp_get_sync1588_ts(struct aq_nic_s *aq_nic)
 +{
-+	u16 val;
++	u64 ts =3D 0;
 +
-+	for (aq_hw->phy_id =3D 0; aq_hw->phy_id < HW_ATL_PHY_ID_MAX;
-+	     ++aq_hw->phy_id) {
-+		/* PMA Standard Device Identifier 2: Address 1.3 */
-+		val =3D aq_phy_read_reg(aq_hw, MDIO_MMD_PMAPMD, 3);
++	if (aq_nic->aq_hw_ops->hw_get_sync_ts)
++		aq_nic->aq_hw_ops->hw_get_sync_ts(aq_nic->aq_hw, &ts);
 +
-+		if (val !=3D 0xffff)
-+			return true;
++	return ts;
++}
++
++static void aq_ptp_start_work(struct aq_ptp_s *aq_ptp)
++{
++	if (aq_ptp->extts_pin_enabled) {
++		aq_ptp->poll_timeout_ms =3D POLL_SYNC_TIMER_MS;
++		aq_ptp->last_sync1588_ts =3D
++				aq_ptp_get_sync1588_ts(aq_ptp->aq_nic);
++		schedule_delayed_work(&aq_ptp->poll_sync,
++				      msecs_to_jiffies(aq_ptp->poll_timeout_ms));
 +	}
++}
 +
++int aq_ptp_link_change(struct aq_nic_s *aq_nic)
++{
++	struct aq_ptp_s *aq_ptp =3D aq_nic->aq_ptp;
++
++	if (!aq_ptp)
++		return 0;
++
++	if (aq_nic->aq_hw->aq_link_status.mbps)
++		aq_ptp_start_work(aq_ptp);
++	else
++		cancel_delayed_work_sync(&aq_ptp->poll_sync);
++
++	return 0;
++}
++
++static bool aq_ptp_sync_ts_updated(struct aq_ptp_s *aq_ptp, u64 *new_ts)
++{
++	struct aq_nic_s *aq_nic =3D aq_ptp->aq_nic;
++	u64 sync_ts2;
++	u64 sync_ts;
++
++	sync_ts =3D aq_ptp_get_sync1588_ts(aq_nic);
++
++	if (sync_ts !=3D aq_ptp->last_sync1588_ts) {
++		sync_ts2 =3D aq_ptp_get_sync1588_ts(aq_nic);
++		if (sync_ts !=3D sync_ts2) {
++			sync_ts =3D sync_ts2;
++			sync_ts2 =3D aq_ptp_get_sync1588_ts(aq_nic);
++			if (sync_ts !=3D sync_ts2) {
++				netdev_err(aq_nic->ndev,
++					   "%s: Unable to get correct GPIO TS",
++					   __func__);
++				sync_ts =3D 0;
++			}
++		}
++
++		*new_ts =3D sync_ts;
++		return true;
++	}
 +	return false;
 +}
 +
-+bool aq_phy_init(struct aq_hw_s *aq_hw)
++static int aq_ptp_check_sync1588(struct aq_ptp_s *aq_ptp)
 +{
-+	u32 dev_id;
++	struct aq_nic_s *aq_nic =3D aq_ptp->aq_nic;
++	u64 sync_ts;
 +
-+	if (aq_hw->phy_id =3D=3D HW_ATL_PHY_ID_MAX)
-+		if (!aq_phy_init_phy_id(aq_hw))
-+			return false;
++	 /* Sync1588 pin was triggered */
++	if (aq_ptp_sync_ts_updated(aq_ptp, &sync_ts)) {
++		if (aq_ptp->extts_pin_enabled) {
++			struct ptp_clock_event ptp_event;
++			u64 time =3D 0;
 +
-+	/* PMA Standard Device Identifier:
-+	 * Address 1.2 =3D MSW,
-+	 * Address 1.3 =3D LSW
-+	 */
-+	dev_id =3D aq_phy_read_reg(aq_hw, MDIO_MMD_PMAPMD, 2);
-+	dev_id <<=3D 16;
-+	dev_id |=3D aq_phy_read_reg(aq_hw, MDIO_MMD_PMAPMD, 3);
++			aq_nic->aq_hw_ops->hw_ts_to_sys_clock(aq_nic->aq_hw,
++							      sync_ts, &time);
++			ptp_event.index =3D aq_ptp->ptp_info.n_pins - 1;
++			ptp_event.timestamp =3D time;
 +
-+	if (dev_id =3D=3D 0xffffffff) {
-+		aq_hw->phy_id =3D HW_ATL_PHY_ID_MAX;
-+		return false;
++			ptp_event.type =3D PTP_CLOCK_EXTTS;
++			ptp_clock_event(aq_ptp->ptp_clock, &ptp_event);
++		}
++
++		aq_ptp->last_sync1588_ts =3D sync_ts;
 +	}
 +
-+	return true;
++	return 0;
 +}
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_phy.h b/drivers/net/=
-ethernet/aquantia/atlantic/aq_phy.h
-new file mode 100644
-index 000000000000..84b72ad04a4a
---- /dev/null
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_phy.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* aQuantia Corporation Network Driver
-+ * Copyright (C) 2018-2019 aQuantia Corporation. All rights reserved
-+ */
 +
-+#ifndef AQ_PHY_H
-+#define AQ_PHY_H
++void aq_ptp_poll_sync_work_cb(struct work_struct *w)
++{
++	struct delayed_work *dw =3D to_delayed_work(w);
++	struct aq_ptp_s *aq_ptp =3D container_of(dw, struct aq_ptp_s, poll_sync);
 +
-+#include <linux/mdio.h>
++	aq_ptp_check_sync1588(aq_ptp);
 +
-+#include "hw_atl/hw_atl_llh.h"
-+#include "hw_atl/hw_atl_llh_internal.h"
-+#include "aq_hw_utils.h"
-+#include "aq_hw.h"
++	if (aq_ptp->extts_pin_enabled) {
++		unsigned long timeout =3D msecs_to_jiffies(aq_ptp->poll_timeout_ms);
 +
-+#define HW_ATL_PHY_ID_MAX 32U
++		schedule_delayed_work(&aq_ptp->poll_sync, timeout);
++	}
++}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h b/drivers/net/=
+ethernet/aquantia/atlantic/aq_ptp.h
+index 7a7f36f43ce0..3de4682f7c06 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
+@@ -52,4 +52,6 @@ u16 aq_ptp_extract_ts(struct aq_nic_s *aq_nic, struct sk_=
+buff *skb, u8 *p,
+=20
+ struct ptp_clock *aq_ptp_get_ptp_clock(struct aq_ptp_s *aq_ptp);
+=20
++int aq_ptp_link_change(struct aq_nic_s *aq_nic);
 +
-+bool aq_mdio_busy_wait(struct aq_hw_s *aq_hw);
-+
-+u16 aq_mdio_read_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr);
-+
-+void aq_mdio_write_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr, u16 data=
-);
-+
-+u16 aq_phy_read_reg(struct aq_hw_s *aq_hw, u16 mmd, u16 address);
-+
-+void aq_phy_write_reg(struct aq_hw_s *aq_hw, u16 mmd, u16 address, u16 dat=
-a);
-+
-+bool aq_phy_init_phy_id(struct aq_hw_s *aq_hw);
-+
-+bool aq_phy_init(struct aq_hw_s *aq_hw);
-+
-+#endif /* AQ_PHY_H */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/d=
-rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-index 255572f00bbc..340f433a7e9b 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-@@ -1631,6 +1631,11 @@ u32 hw_atl_sem_ram_get(struct aq_hw_s *self)
- 	return hw_atl_reg_glb_cpu_sem_get(self, HW_ATL_FW_SM_RAM);
+ #endif /* AQ_PTP_H */
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/dr=
+ivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index f058ef1320c2..c6d540a670cd 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -10,6 +10,7 @@
+ #include "../aq_hw_utils.h"
+ #include "../aq_ring.h"
+ #include "../aq_nic.h"
++#include "../aq_phy.h"
+ #include "hw_atl_b0.h"
+ #include "hw_atl_utils.h"
+ #include "hw_atl_llh.h"
+@@ -1138,6 +1139,12 @@ static int hw_atl_b0_set_sys_clock(struct aq_hw_s *s=
+elf, u64 time, u64 ts)
+ 	return hw_atl_b0_adj_sys_clock(self, delta);
  }
 =20
-+u32 hw_atl_sem_mdio_get(struct aq_hw_s *self)
++int hw_atl_b0_ts_to_sys_clock(struct aq_hw_s *self, u64 ts, u64 *time)
 +{
-+	return hw_atl_reg_glb_cpu_sem_get(self, HW_ATL_FW_SM_MDIO);
++	*time =3D self->ptp_clk_offset + ts;
++	return 0;
 +}
 +
- u32 hw_atl_scrpad_get(struct aq_hw_s *aq_hw, u32 scratch_scp)
+ static int hw_atl_b0_adj_clock_freq(struct aq_hw_s *self, s32 ppb)
  {
- 	return aq_hw_read_reg(aq_hw,
-@@ -1646,3 +1651,60 @@ u32 hw_atl_scrpad25_get(struct aq_hw_s *self)
- {
- 	return hw_atl_scrpad_get(self, 0x18);
+ 	struct hw_fw_request_iface fwreq;
+@@ -1160,6 +1167,57 @@ static int hw_atl_b0_adj_clock_freq(struct aq_hw_s *=
+self, s32 ppb)
+ 	return self->aq_fw_ops->send_fw_request(self, &fwreq, size);
  }
-+
-+void hw_atl_glb_mdio_iface1_set(struct aq_hw_s *aq_hw, u32 value)
-+{
-+	aq_hw_write_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(1), value);
-+}
-+
-+u32 hw_atl_glb_mdio_iface1_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(1));
-+}
-+
-+void hw_atl_glb_mdio_iface2_set(struct aq_hw_s *aq_hw, u32 value)
-+{
-+	aq_hw_write_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(2), value);
-+}
-+
-+u32 hw_atl_glb_mdio_iface2_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(2));
-+}
-+
-+void hw_atl_glb_mdio_iface3_set(struct aq_hw_s *aq_hw, u32 value)
-+{
-+	aq_hw_write_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(3), value);
-+}
-+
-+u32 hw_atl_glb_mdio_iface3_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(3));
-+}
-+
-+void hw_atl_glb_mdio_iface4_set(struct aq_hw_s *aq_hw, u32 value)
-+{
-+	aq_hw_write_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(4), value);
-+}
-+
-+u32 hw_atl_glb_mdio_iface4_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(4));
-+}
-+
-+void hw_atl_glb_mdio_iface5_set(struct aq_hw_s *aq_hw, u32 value)
-+{
-+	aq_hw_write_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(5), value);
-+}
-+
-+u32 hw_atl_glb_mdio_iface5_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL_GLB_MDIO_IFACE_N_ADR(5));
-+}
-+
-+u32 hw_atl_mdio_busy_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg_bit(aq_hw, HW_ATL_MDIO_BUSY_ADR,
-+				  HW_ATL_MDIO_BUSY_MSK,
-+				  HW_ATL_MDIO_BUSY_SHIFT);
-+}
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h b/d=
-rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-index 00b41fe5f1eb..bfb75ffe315f 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-@@ -764,9 +764,44 @@ void hw_atl_rpfl3l4_ipv6_src_addr_set(struct aq_hw_s *=
-aq_hw, u8 location,
- void hw_atl_rpfl3l4_ipv6_dest_addr_set(struct aq_hw_s *aq_hw, u8 location,
- 				       u32 *ipv6_dest);
 =20
-+/* set Global MDIO Interface 1 */
-+void hw_atl_glb_mdio_iface1_set(struct aq_hw_s *hw, u32 value);
++static int hw_atl_b0_gpio_pulse(struct aq_hw_s *self, u32 index,
++				u64 start, u32 period)
++{
++	struct hw_fw_request_iface fwreq;
++	size_t size;
 +
-+/* get Global MDIO Interface 1 */
-+u32 hw_atl_glb_mdio_iface1_get(struct aq_hw_s *hw);
++	memset(&fwreq, 0, sizeof(fwreq));
 +
-+/* set Global MDIO Interface 2 */
-+void hw_atl_glb_mdio_iface2_set(struct aq_hw_s *hw, u32 value);
++	fwreq.msg_id =3D HW_AQ_FW_REQUEST_PTP_GPIO_CTRL;
++	fwreq.ptp_gpio_ctrl.index =3D index;
++	fwreq.ptp_gpio_ctrl.period =3D period;
++	/* Apply time offset */
++	fwreq.ptp_gpio_ctrl.start =3D start - self->ptp_clk_offset;
 +
-+/* get Global MDIO Interface 2 */
-+u32 hw_atl_glb_mdio_iface2_get(struct aq_hw_s *hw);
++	size =3D sizeof(fwreq.msg_id) + sizeof(fwreq.ptp_gpio_ctrl);
++	return self->aq_fw_ops->send_fw_request(self, &fwreq, size);
++}
 +
-+/* set Global MDIO Interface 3 */
-+void hw_atl_glb_mdio_iface3_set(struct aq_hw_s *hw, u32 value);
++static int hw_atl_b0_extts_gpio_enable(struct aq_hw_s *self, u32 index,
++				       u32 enable)
++{
++	/* Enable/disable Sync1588 GPIO Timestamping */
++	aq_phy_write_reg(self, MDIO_MMD_PCS, 0xc611, enable ? 0x71 : 0);
 +
-+/* get Global MDIO Interface 3 */
-+u32 hw_atl_glb_mdio_iface3_get(struct aq_hw_s *hw);
++	return 0;
++}
 +
-+/* set Global MDIO Interface 4 */
-+void hw_atl_glb_mdio_iface4_set(struct aq_hw_s *hw, u32 value);
++static int hw_atl_b0_get_sync_ts(struct aq_hw_s *self, u64 *ts)
++{
++	u64 sec_l;
++	u64 sec_h;
++	u64 nsec_l;
++	u64 nsec_h;
 +
-+/* get Global MDIO Interface 4 */
-+u32 hw_atl_glb_mdio_iface4_get(struct aq_hw_s *hw);
++	if (!ts)
++		return -1;
 +
-+/* set Global MDIO Interface 5 */
-+void hw_atl_glb_mdio_iface5_set(struct aq_hw_s *hw, u32 value);
++	/* PTP external GPIO clock seconds count 15:0 */
++	sec_l =3D aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc914);
++	/* PTP external GPIO clock seconds count 31:16 */
++	sec_h =3D aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc915);
++	/* PTP external GPIO clock nanoseconds count 15:0 */
++	nsec_l =3D aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc916);
++	/* PTP external GPIO clock nanoseconds count 31:16 */
++	nsec_h =3D aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc917);
 +
-+/* get Global MDIO Interface 5 */
-+u32 hw_atl_glb_mdio_iface5_get(struct aq_hw_s *hw);
++	*ts =3D (nsec_h << 16) + nsec_l + ((sec_h << 16) + sec_l) * NSEC_PER_SEC;
 +
-+u32 hw_atl_mdio_busy_get(struct aq_hw_s *aq_hw);
++	return 0;
++}
 +
- /* get global microprocessor ram semaphore */
- u32 hw_atl_sem_ram_get(struct aq_hw_s *self);
+ static u16 hw_atl_b0_rx_extract_ts(struct aq_hw_s *self, u8 *p,
+ 				   unsigned int len, u64 *timestamp)
+ {
+@@ -1403,8 +1461,11 @@ const struct aq_hw_ops hw_atl_ops_b0 =3D {
+ 	.hw_get_ptp_ts           =3D hw_atl_b0_get_ptp_ts,
+ 	.hw_adj_sys_clock        =3D hw_atl_b0_adj_sys_clock,
+ 	.hw_set_sys_clock        =3D hw_atl_b0_set_sys_clock,
++	.hw_ts_to_sys_clock      =3D hw_atl_b0_ts_to_sys_clock,
+ 	.hw_adj_clock_freq       =3D hw_atl_b0_adj_clock_freq,
+-
++	.hw_gpio_pulse           =3D hw_atl_b0_gpio_pulse,
++	.hw_extts_gpio_enable    =3D hw_atl_b0_extts_gpio_enable,
++	.hw_get_sync_ts          =3D hw_atl_b0_get_sync_ts,
+ 	.rx_extract_ts           =3D hw_atl_b0_rx_extract_ts,
+ 	.extract_hwts            =3D hw_atl_b0_extract_hwts,
+ 	.hw_set_offload          =3D hw_atl_b0_hw_offload_set,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b=
+/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+index 77132bda4696..37e6b696009d 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+@@ -288,6 +288,12 @@ struct __packed offload_info {
+ };
 =20
-+/* get global microprocessor mdio semaphore */
-+u32 hw_atl_sem_mdio_get(struct aq_hw_s *self);
+ /* Mailbox FW Request interface */
++struct __packed hw_fw_request_ptp_gpio_ctrl {
++	u32 index;
++	u32 period;
++	u64 start;
++};
 +
- /* get global microprocessor scratch pad register */
- u32 hw_atl_scrpad_get(struct aq_hw_s *aq_hw, u32 scratch_scp);
+ struct __packed hw_fw_request_ptp_adj_freq {
+ 	u32 ns_mac;
+ 	u32 fns_mac;
+@@ -303,6 +309,7 @@ struct __packed hw_fw_request_ptp_adj_clock {
+ 	int sign;
+ };
 =20
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_inter=
-nal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-index 79d5adc77e42..9526be06051d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-@@ -2575,6 +2575,121 @@
- /* default value of bitfield uP Force Interrupt */
- #define HW_ATL_MCP_UP_FORCE_INTERRUPT_DEFAULT 0x0
++#define HW_AQ_FW_REQUEST_PTP_GPIO_CTRL	         0x11
+ #define HW_AQ_FW_REQUEST_PTP_ADJ_FREQ	         0x12
+ #define HW_AQ_FW_REQUEST_PTP_ADJ_CLOCK	         0x13
 =20
-+/* Preprocessor definitions for Global MDIO Interfaces
-+ * Address: 0x00000280 + 0x4 * Number of interface
-+ */
-+#define HW_ATL_GLB_MDIO_IFACE_ADDR_BEGIN   0x00000280u
-+
-+#define HW_ATL_GLB_MDIO_IFACE_N_ADR(number) \
-+	(HW_ATL_GLB_MDIO_IFACE_ADDR_BEGIN + (((number) - 1) * 0x4))
-+
-+/* MIF MDIO Busy Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "MDIO Busy".
-+ * PORT=3D"mdio_pif_busy_o"
-+ */
-+
-+/* Register address for bitfield MDIO Busy */
-+#define HW_ATL_MDIO_BUSY_ADR 0x00000284
-+/* Bitmask for bitfield MDIO Busy */
-+#define HW_ATL_MDIO_BUSY_MSK 0x80000000
-+/* Inverted bitmask for bitfield MDIO Busy */
-+#define HW_ATL_MDIO_BUSY_MSKN 0x7FFFFFFF
-+/* Lower bit position of bitfield MDIO Busy */
-+#define HW_ATL_MDIO_BUSY_SHIFT 31
-+/* Width of bitfield MDIO Busy */
-+#define HW_ATL_MDIO_BUSY_WIDTH 1
-+
-+/* MIF MDIO Execute Operation Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "MDIO Execute Operation".
-+ * PORT=3D"pif_mdio_op_start_i"
-+ */
-+
-+/* Register address for bitfield MDIO Execute Operation */
-+#define HW_ATL_MDIO_EXECUTE_OPERATION_ADR 0x00000284
-+/* Bitmask for bitfield MDIO Execute Operation */
-+#define HW_ATL_MDIO_EXECUTE_OPERATION_MSK 0x00008000
-+/* Inverted bitmask for bitfield MDIO Execute Operation */
-+#define HW_ATL_MDIO_EXECUTE_OPERATION_MSKN 0xFFFF7FFF
-+/* Lower bit position of bitfield MDIO Execute Operation */
-+#define HW_ATL_MDIO_EXECUTE_OPERATION_SHIFT 15
-+/* Width of bitfield MDIO Execute Operation */
-+#define HW_ATL_MDIO_EXECUTE_OPERATION_WIDTH 1
-+/* Default value of bitfield MDIO Execute Operation */
-+#define HW_ATL_MDIO_EXECUTE_OPERATION_DEFAULT 0x0
-+
-+/* MIF Op Mode [1:0] Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "Op Mode [1:0]".
-+ * PORT=3D"pif_mdio_mode_i[1:0]"
-+ */
-+
-+/* Register address for bitfield Op Mode [1:0] */
-+#define HW_ATL_MDIO_OP_MODE_ADR 0x00000284
-+/* Bitmask for bitfield Op Mode [1:0] */
-+#define HW_ATL_MDIO_OP_MODE_MSK 0x00003000
-+/* Inverted bitmask for bitfield Op Mode [1:0] */
-+#define HW_ATL_MDIO_OP_MODE_MSKN 0xFFFFCFFF
-+/* Lower bit position of bitfield Op Mode [1:0] */
-+#define HW_ATL_MDIO_OP_MODE_SHIFT 12
-+/* Width of bitfield Op Mode [1:0] */
-+#define HW_ATL_MDIO_OP_MODE_WIDTH 2
-+/* Default value of bitfield Op Mode [1:0] */
-+#define HW_ATL_MDIO_OP_MODE_DEFAULT 0x0
-+
-+/* MIF PHY address Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "PHY address".
-+ * PORT=3D"pif_mdio_phy_addr_i[9:0]"
-+ */
-+
-+/* Register address for bitfield PHY address */
-+#define HW_ATL_MDIO_PHY_ADDRESS_ADR 0x00000284
-+/* Bitmask for bitfield PHY address */
-+#define HW_ATL_MDIO_PHY_ADDRESS_MSK 0x000003FF
-+/* Inverted bitmask for bitfield PHY address */
-+#define HW_ATL_MDIO_PHY_ADDRESS_MSKN 0xFFFFFC00
-+/* Lower bit position of bitfield PHY address */
-+#define HW_ATL_MDIO_PHY_ADDRESS_SHIFT 0
-+/* Width of bitfield PHY address */
-+#define HW_ATL_MDIO_PHY_ADDRESS_WIDTH 10
-+/* Default value of bitfield PHY address */
-+#define HW_ATL_MDIO_PHY_ADDRESS_DEFAULT 0x0
-+
-+/* MIF MDIO WriteData [F:0] Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "MDIO WriteData [F:0]".
-+ * PORT=3D"pif_mdio_wdata_i[15:0]"
-+ */
-+
-+/* Register address for bitfield MDIO WriteData [F:0] */
-+#define HW_ATL_MDIO_WRITE_DATA_ADR 0x00000288
-+/* Bitmask for bitfield MDIO WriteData [F:0] */
-+#define HW_ATL_MDIO_WRITE_DATA_MSK 0x0000FFFF
-+/* Inverted bitmask for bitfield MDIO WriteData [F:0] */
-+#define HW_ATL_MDIO_WRITE_DATA_MSKN 0xFFFF0000
-+/* Lower bit position of bitfield MDIO WriteData [F:0] */
-+#define HW_ATL_MDIO_WRITE_DATA_SHIFT 0
-+/* Width of bitfield MDIO WriteData [F:0] */
-+#define HW_ATL_MDIO_WRITE_DATA_WIDTH 16
-+/* Default value of bitfield MDIO WriteData [F:0] */
-+#define HW_ATL_MDIO_WRITE_DATA_DEFAULT 0x0
-+
-+/* MIF MDIO Address [F:0] Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "MDIO Address [F:0]".
-+ * PORT=3D"pif_mdio_addr_i[15:0]"
-+ */
-+
-+/* Register address for bitfield MDIO Address [F:0] */
-+#define HW_ATL_MDIO_ADDRESS_ADR 0x0000028C
-+/* Bitmask for bitfield MDIO Address [F:0] */
-+#define HW_ATL_MDIO_ADDRESS_MSK 0x0000FFFF
-+/* Inverted bitmask for bitfield MDIO Address [F:0] */
-+#define HW_ATL_MDIO_ADDRESS_MSKN 0xFFFF0000
-+/* Lower bit position of bitfield MDIO Address [F:0] */
-+#define HW_ATL_MDIO_ADDRESS_SHIFT 0
-+/* Width of bitfield MDIO Address [F:0] */
-+#define HW_ATL_MDIO_ADDRESS_WIDTH 16
-+/* Default value of bitfield MDIO Address [F:0] */
-+#define HW_ATL_MDIO_ADDRESS_DEFAULT 0x0
-+
-+#define HW_ATL_FW_SM_MDIO       0x0U
- #define HW_ATL_FW_SM_RAM        0x2U
-=20
- #endif /* HW_ATL_LLH_INTERNAL_H */
+@@ -310,6 +317,7 @@ struct __packed hw_fw_request_iface {
+ 	u32 msg_id;
+ 	union {
+ 		/* PTP FW Request */
++		struct hw_fw_request_ptp_gpio_ctrl ptp_gpio_ctrl;
+ 		struct hw_fw_request_ptp_adj_freq ptp_adj_freq;
+ 		struct hw_fw_request_ptp_adj_clock ptp_adj_clock;
+ 	};
 --=20
 2.17.1
 
