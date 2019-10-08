@@ -2,95 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B606D0128
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 21:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E8FDD012E
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 21:28:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730298AbfJHTY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 15:24:58 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:45308 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbfJHTY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 15:24:58 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 40B806030E; Tue,  8 Oct 2019 19:24:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570562697;
-        bh=5FMVmAW3Ja52+ywmDhHmqFHA5eUXnJXG1gM4BXqlJyw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=mzQbJBbIQz17z6gxE6gmUE+EEuZfrYY0Rs/LXxPo8bRRIJbBMOQa4uCzhVjAGWySO
-         AcoWFUONxjPNOgQzXCCtZq4TWjfpKCRQ5Aat39DXWRXnro1S7J9MpkigmSeOz0VUji
-         8f21v5DOpB2ExouEWh0ebaZRYRwuOPQnBcowTibw=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BAF9B6070D;
-        Tue,  8 Oct 2019 19:24:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570562696;
-        bh=5FMVmAW3Ja52+ywmDhHmqFHA5eUXnJXG1gM4BXqlJyw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=gJR4eyoRJXE5er+uuWDdyX1HPfvoINV9QUBimRTsqF8zU8pUCE7DSyYazEZKcpsZQ
-         iyfJwp8ZZw7OK//wBYQubqg35ziyewOp4M3QY8ggTwgQlDI7078DKJQUuEpEgx14W0
-         mim9qJBcC8oOfolXN+qH76jifCzcc8ZDbDpku/dY=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BAF9B6070D
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Denis Efremov <efremov@linux.com>
-Subject: Re: [PATCH 1/2] Revert "rsi: fix potential null dereference in rsi_probe()"
-References: <20191004144422.13003-1-johan@kernel.org>
-        <87a7aes2oh.fsf@codeaurora.org> <87pnj7grii.fsf@tynnyri.adurom.net>
-        <20191008164439.GA27819@localhost>
-Date:   Tue, 08 Oct 2019 22:24:51 +0300
-In-Reply-To: <20191008164439.GA27819@localhost> (Johan Hovold's message of
-        "Tue, 8 Oct 2019 18:44:39 +0200")
-Message-ID: <875zkz6nwc.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1728862AbfJHT2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 15:28:49 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:45220 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726439AbfJHT2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 15:28:49 -0400
+Received: by mail-io1-f67.google.com with SMTP id c25so39011473iot.12;
+        Tue, 08 Oct 2019 12:28:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=hKUGwdiN8CcAzSwm1K0zrzI1YBggiWbMrqJXJpOw9rI=;
+        b=noxZXtofntjndArr8gNgCk6HCpAHUeq3QEZZ0cRFis1JmEO8QpSsLaAodgVDk+Pk6L
+         OYzv0/rV7PDyMYKYWB1yGLW2H2mNd910OAoqlB0O7UO1VwjaBZgkXchrziyVeRZDdDTR
+         A6kQAGQ4FQo4/rg6iwMEg81aAwVj8BUBG8AopmYh9r3Vka/62E4jnX0z/+kUTfd92blY
+         /uB8XSnPEAk0KTCxh2r4IF4epahVcS+pHUsJuebCd9GPcs1Y8ph+yRd2FLSMsxsY7hh7
+         KqE3GLhI2xzixAGWChcwqdg+gvsf4jnZWEbdh8mGKQy1NhdDMcdlc1wBQFh5JOoqeUex
+         UBTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=hKUGwdiN8CcAzSwm1K0zrzI1YBggiWbMrqJXJpOw9rI=;
+        b=Q9ZC2Dwbnrf8/lBZGVu8kLsi+utCIht6DzM57VuJdt1GIjdnarj3SmE9b+nSlK+6UL
+         w62g7Lf+FUtiHprrPo5N/A2Yvd2B2eF/6SmvWm9CxSoZBQppOSLNxaJRoL4HYv/b/RCF
+         2U9vXg8mKl5VrSKyszpqP3Vu0WJsz/hjqcElQsWfsOqbLla4IeV69sYQo7rOnVOpCSVs
+         ShOXCJ8VUAdKyP70i1zwMi0v2QcOxHF3wR8ONwtnZioUH4bWcOlU6sl42EoXNwVskjVY
+         sBdV+CerODZz5wkBp5GTgONhmgMPY10T9JeN5yuozSiXMXqOSp+s4B5jrHi1uIRsbff/
+         pwdg==
+X-Gm-Message-State: APjAAAX75St9qRo/DgVcRJIDLM6IiyS3DamO0RVAu/daZk6ZQtBAkwSL
+        QVfXxUg6HYYlz1GFGjv88hg=
+X-Google-Smtp-Source: APXvYqy2e/8FcOcI62SHTcbBbl+r9RyeZVYuM2/15zjG3CoBI0yMr6FOv/ibHqWHCLcA9RBQ8HbVmg==
+X-Received: by 2002:a92:b74f:: with SMTP id c15mr383830ilm.43.1570562928746;
+        Tue, 08 Oct 2019 12:28:48 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id 28sm10601898ilq.61.2019.10.08.12.28.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2019 12:28:48 -0700 (PDT)
+Date:   Tue, 08 Oct 2019 12:28:41 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
+Message-ID: <5d9ce369d6e5_17cc2aba94c845b415@john-XPS-13-9370.notmuch>
+In-Reply-To: <1570530208-17720-1-git-send-email-magnus.karlsson@intel.com>
+References: <1570530208-17720-1-git-send-email-magnus.karlsson@intel.com>
+Subject: RE: [PATCH bpf] libbpf: fix compatibility for kernels without
+ need_wakeup
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johan Hovold <johan@kernel.org> writes:
+Magnus Karlsson wrote:
+> When the need_wakeup flag was added to AF_XDP, the format of the
+> XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the kernel
+> to take care of compatibility issues arrising from running
+> applications using any of the two formats. However, libbpf was not
+> extended to take care of the case when the application/libbpf uses the
+> new format but the kernel only supports the old format. This patch
+> adds support in libbpf for parsing the old format, before the
+> need_wakeup flag was added, and emulating a set of static need_wakeup
+> flags that will always work for the application.
+> 
+> Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in AF_XDP part")
+> Reported-by: Eloy Degen <degeneloy@gmail.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  tools/lib/bpf/xsk.c | 109 +++++++++++++++++++++++++++++++++++++---------------
+>  1 file changed, 78 insertions(+), 31 deletions(-)
+> 
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index a902838..46f9687 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -44,6 +44,25 @@
+>   #define PF_XDP AF_XDP
+>  #endif
+>  
+> +#define is_mmap_offsets_v1(optlen) \
+> +	((optlen) == sizeof(struct xdp_mmap_offsets_v1))
+> +
+> +#define get_prod_off(ring) \
+> +	(is_mmap_offsets_v1(optlen) ? \
+> +	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.producer : \
+> +	 off.ring.producer)
+> +#define get_cons_off(ring) \
+> +	(is_mmap_offsets_v1(optlen) ? \
+> +	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer : \
+> +	 off.ring.consumer)
+> +#define get_desc_off(ring) \
+> +	(is_mmap_offsets_v1(optlen) ? \
+> +	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.desc : off.ring.desc)
+> +#define get_flags_off(ring) \
+> +	(is_mmap_offsets_v1(optlen) ? \
+> +	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer + sizeof(u32) : \
+> +	 off.ring.flags)
+> +
+ 
+It seems the only thing added was flags right? If so seems we
+only need the last one there, get_flags_off(). I think it would
+be a bit cleaner to just use the macros where its actually
+needed IMO.
 
-> On Tue, Oct 08, 2019 at 06:56:37PM +0300, Kalle Valo wrote:
->> Kalle Valo <kvalo@codeaurora.org> writes:
->> 
->> > Johan Hovold <johan@kernel.org> writes:
->> >
->> >> This reverts commit f170d44bc4ec2feae5f6206980e7ae7fbf0432a0.
->> >>
->> >> USB core will never call a USB-driver probe function with a NULL
->> >> device-id pointer.
->> >>
->> >> Reverting before removing the existing checks in order to document this
->> >> and prevent the offending commit from being "autoselected" for stable.
->> >>
->> >> Signed-off-by: Johan Hovold <johan@kernel.org>
->> >
->> > I'll queue these two to v5.4.
->> 
->> Actually I'll take that back. Commit f170d44bc4ec is in -next so I have
->> to also queue these to -next.
->
-> That's right. I'm assuming you don't rebase your branches, otherwise
-> just dropping the offending patch might of course be an option instead
-> of the revert.
-
-Yeah, I don't rebase my trees so we have to do a revert.
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Thanks,
+John
