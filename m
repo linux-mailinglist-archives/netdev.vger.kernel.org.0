@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DCFACF98C
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F37CF98B
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731193AbfJHMMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 08:12:14 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:40818 "EHLO inva021.nxp.com"
+        id S1731128AbfJHML1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 08:11:27 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:54192 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731098AbfJHMLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 08:11:25 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DC2992002C9;
-        Tue,  8 Oct 2019 14:11:22 +0200 (CEST)
+        id S1731110AbfJHML0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 08:11:26 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F06481A00FC;
+        Tue,  8 Oct 2019 14:11:24 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CEDC620017B;
-        Tue,  8 Oct 2019 14:11:22 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E35421A002E;
+        Tue,  8 Oct 2019 14:11:24 +0200 (CEST)
 Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 84D6F205DB;
-        Tue,  8 Oct 2019 14:11:22 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id A250E205DB;
+        Tue,  8 Oct 2019 14:11:24 +0200 (CEST)
 From:   Madalin Bucur <madalin.bucur@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     roy.pledge@nxp.com, laurentiu.tudor@nxp.com,
         linux-kernel@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [PATCH 13/20] dpaa_eth: use a page to store the SGT
-Date:   Tue,  8 Oct 2019 15:10:34 +0300
-Message-Id: <1570536641-25104-14-git-send-email-madalin.bucur@nxp.com>
+Subject: [PATCH 14/20] soc: fsl: qbman: allow registering a device link for the portal user
+Date:   Tue,  8 Oct 2019 15:10:35 +0300
+Message-Id: <1570536641-25104-15-git-send-email-madalin.bucur@nxp.com>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
 References: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
@@ -37,119 +37,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use a page to store the scatter gather table on the transmit path.
+Introduce the API required to make sure that the devices that use
+the QMan portal are unbound when the portal is unbound.
 
 Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 43 +++++++++++++-------------
- 1 file changed, 21 insertions(+), 22 deletions(-)
+ drivers/soc/fsl/qbman/qman.c | 13 +++++++++++++
+ include/soc/fsl/qman.h       | 18 ++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 20f0062afdec..e2385c2fa81a 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -1592,9 +1592,9 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 	int i;
- 
- 	if (unlikely(qm_fd_get_format(fd) == qm_fd_sg)) {
--		dma_unmap_single(priv->tx_dma_dev, addr,
--				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
--				 dma_dir);
-+		dma_unmap_page(priv->tx_dma_dev, addr,
-+			       qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
-+			       dma_dir);
- 
- 		/* The sgt buffer has been allocated with netdev_alloc_frag(),
- 		 * it's from lowmem.
-@@ -1636,8 +1636,8 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 	}
- 
- 	if (qm_fd_get_format(fd) == qm_fd_sg)
--		/* Free the page frag that we allocated on Tx */
--		skb_free_frag(vaddr);
-+		/* Free the page that we allocated on Tx for the SGT */
-+		free_pages((unsigned long)vaddr, 0);
- 
- 	return skb;
+diff --git a/drivers/soc/fsl/qbman/qman.c b/drivers/soc/fsl/qbman/qman.c
+index bf68d86d80ee..bc75a5882b9e 100644
+--- a/drivers/soc/fsl/qbman/qman.c
++++ b/drivers/soc/fsl/qbman/qman.c
+@@ -1749,6 +1749,19 @@ struct qman_portal *qman_get_affine_portal(int cpu)
  }
-@@ -1885,21 +1885,20 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 	struct net_device *net_dev = priv->net_dev;
- 	struct qm_sg_entry *sgt;
- 	struct sk_buff **skbh;
--	int i, j, err, sz;
--	void *buffer_start;
-+	void *buff_start;
- 	skb_frag_t *frag;
- 	dma_addr_t addr;
- 	size_t frag_len;
--	void *sgt_buf;
--
--	/* get a page frag to store the SGTable */
--	sz = SKB_DATA_ALIGN(priv->tx_headroom + DPAA_SGT_SIZE);
--	sgt_buf = netdev_alloc_frag(sz);
--	if (unlikely(!sgt_buf)) {
--		netdev_err(net_dev, "netdev_alloc_frag() failed for size %d\n",
--			   sz);
-+	struct page *p;
-+	int i, j, err;
+ EXPORT_SYMBOL(qman_get_affine_portal);
+ 
++int qman_start_using_portal(struct qman_portal *p, struct device *dev)
++{
++	return (!device_link_add(dev, p->config->dev,
++				 DL_FLAG_AUTOREMOVE_CONSUMER)) ? -EINVAL : 0;
++}
++EXPORT_SYMBOL(qman_start_using_portal);
 +
-+	/* get a page to store the SGTable */
-+	p = dev_alloc_pages(0);
-+	if (unlikely(!p)) {
-+		netdev_err(net_dev, "dev_alloc_pages() failed\n");
- 		return -ENOMEM;
- 	}
-+	buff_start = page_address(p);
++void qman_stop_using_portal(struct qman_portal *p, struct device *dev)
++{
++	device_link_remove(dev, p->config->dev);
++}
++EXPORT_SYMBOL(qman_stop_using_portal);
++
+ int qman_p_poll_dqrr(struct qman_portal *p, unsigned int limit)
+ {
+ 	return __poll_portal_fast(p, limit);
+diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
+index aa31c05a103a..c499c5cfa7c9 100644
+--- a/include/soc/fsl/qman.h
++++ b/include/soc/fsl/qman.h
+@@ -32,6 +32,7 @@
+ #define __FSL_QMAN_H
  
- 	/* Enable L3/L4 hardware checksum computation.
- 	 *
-@@ -1907,7 +1906,7 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 	 * need to write into the skb.
- 	 */
- 	err = dpaa_enable_tx_csum(priv, skb, fd,
--				  sgt_buf + DPAA_TX_PRIV_DATA_SIZE);
-+				  buff_start + DPAA_TX_PRIV_DATA_SIZE);
- 	if (unlikely(err < 0)) {
- 		if (net_ratelimit())
- 			netif_err(priv, tx_err, net_dev, "HW csum error: %d\n",
-@@ -1916,7 +1915,7 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 	}
+ #include <linux/bitops.h>
++#include <linux/device.h>
  
- 	/* SGT[0] is used by the linear part */
--	sgt = (struct qm_sg_entry *)(sgt_buf + priv->tx_headroom);
-+	sgt = (struct qm_sg_entry *)(buff_start + priv->tx_headroom);
- 	frag_len = skb_headlen(skb);
- 	qm_sg_entry_set_len(&sgt[0], frag_len);
- 	sgt[0].bpid = FSL_DPAA_BPID_INV;
-@@ -1954,15 +1953,15 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 	/* Set the final bit in the last used entry of the SGT */
- 	qm_sg_entry_set_f(&sgt[nr_frags], frag_len);
+ /* Hardware constants */
+ #define QM_CHANNEL_SWPORTAL0 0
+@@ -915,6 +916,23 @@ u16 qman_affine_channel(int cpu);
+ struct qman_portal *qman_get_affine_portal(int cpu);
  
-+	/* set fd offset to priv->tx_headroom */
- 	qm_fd_set_sg(fd, priv->tx_headroom, skb->len);
- 
- 	/* DMA map the SGT page */
--	buffer_start = (void *)sgt - priv->tx_headroom;
--	skbh = (struct sk_buff **)buffer_start;
-+	skbh = (struct sk_buff **)buff_start;
- 	*skbh = skb;
- 
--	addr = dma_map_single(priv->tx_dma_dev, buffer_start,
--			      priv->tx_headroom + DPAA_SGT_SIZE, dma_dir);
-+	addr = dma_map_page(priv->tx_dma_dev, p, 0,
-+			    priv->tx_headroom + DPAA_SGT_SIZE, dma_dir);
- 	if (unlikely(dma_mapping_error(priv->tx_dma_dev, addr))) {
- 		netdev_err(priv->net_dev, "DMA mapping failed");
- 		err = -EINVAL;
-@@ -1982,7 +1981,7 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 			       qm_sg_entry_get_len(&sgt[j]), dma_dir);
- sg0_map_failed:
- csum_failed:
--	skb_free_frag(sgt_buf);
-+	free_pages((unsigned long)buff_start, 0);
- 
- 	return err;
- }
+ /**
++ * qman_start_using_portal - register a device link for the portal user
++ * @p: the portal that will be in use
++ * @dev: the device that will use the portal
++ *
++ * Makes sure that the devices that use the portal are unbound when the
++ * portal is unbound
++ */
++int qman_start_using_portal(struct qman_portal *p, struct device *dev);
++
++/**
++ * qman_stop_using_portal - deregister a device link for the portal user
++ * @p: the portal that will no longer be in use
++ * @dev: the device that uses the portal
++ */
++void qman_stop_using_portal(struct qman_portal *p, struct device *dev);
++
++/**
+  * qman_p_poll_dqrr - process DQRR (fast-path) entries
+  * @limit: the maximum number of DQRR entries to process
+  *
 -- 
 2.1.0
 
