@@ -2,82 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DE63CF253
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 07:58:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2505ACF257
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 08:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730000AbfJHF6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 01:58:46 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38080 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729440AbfJHF6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 01:58:46 -0400
-Received: by mail-pg1-f195.google.com with SMTP id x10so9667569pgi.5
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 22:58:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8LFQvAE524JS1+AAXneceXPOA6KJMPCeo2ATJ42QgOM=;
-        b=ajXqTJHntfq9KSCpKRrVScAJoeTMV+M6j1uXWbnKzo2r/yegaynayIOhECgkQM/m7V
-         LUdvOPNYfFtfRN0KY6GDvsfJ0bzNZcDwxEjMNVOoEw0JRbCZtidB0jjM5dBLB25Z/2a9
-         FLY2ihIz1aKVPHx306jqokk/ZG4B1fYH7QhhVVoRJVu7xbsbKZ0rQYZoF9+CQavRgjs+
-         MEtuTGBW7aVxj3+izyEnBwTKkdFMka+Mv6+Oe621AoMN2Zsawq5Be9WglXU7+ELJ6G2C
-         OKkd73C2u2f8VJMn9Ba1BP9v6g50szbgTCG2bI2onrHZf8MoEg7BdcsGf352WuluH0WQ
-         7crA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=8LFQvAE524JS1+AAXneceXPOA6KJMPCeo2ATJ42QgOM=;
-        b=Ba+sKLly5pwf7EdCftNujOAlxnBL329Hs+rkxg7SlD/bUOQ5vqndaQwK0Si8LEEMcv
-         3R0LZ6spVJKlYPE/qjLjsLO9Ub8CxCRTNABUqlR/eahEKbPkqPBPEdGxlm0IjTYhiigO
-         wVbbccHl0WSGpTgfGylTJ65QkursLoEj9M3jt2hBpDUZ5GIU1LvYmCysPSf25h68Uxdn
-         xoegKT3dyQSenlo50gluz+KwOxRGJoMcR0Rg+urG2B1ZxItJ60sc10iQofifPOAfjXKU
-         iMYNpFu9NMxz4WYUSmSBs2ujV/iQpK3yJSsY16MVWVfC/zFcMM0GRWsNUJMbtsoji/Jr
-         s4+A==
-X-Gm-Message-State: APjAAAW/yl2XjQXxm47AvJShriOLg8+5chfsLp8duUtgpNHhJw+UjWNG
-        OUIFSWDr3rrOXlzZAiCtK5gxvCcSKylL+9RkC8A=
-X-Google-Smtp-Source: APXvYqyvpEwANUTV3pFaxdx1N8A/p7NROc1n09VO1yDCPKJWBVC4ED0sMGAz/05L2t2ok4xhB4Mr5hPpjo5kaR6kDOQ=
-X-Received: by 2002:a63:cd10:: with SMTP id i16mr5844175pgg.104.1570514325218;
- Mon, 07 Oct 2019 22:58:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191008053507.252202-1-zenczykowski@gmail.com> <20191008053507.252202-2-zenczykowski@gmail.com>
-In-Reply-To: <20191008053507.252202-2-zenczykowski@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 7 Oct 2019 22:58:33 -0700
-Message-ID: <CAM_iQpVBrHy9-UP2ycHd0vXgtpfC1sVgJY8C+SMDoM98f3NVcQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] netfilter: revert "conntrack: silent a memory leak warning"
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        id S1729878AbfJHGBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 02:01:18 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:37038 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729847AbfJHGBS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 02:01:18 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1iHiYX-0000GB-Et; Tue, 08 Oct 2019 08:01:09 +0200
+Date:   Tue, 8 Oct 2019 08:01:09 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/2] netfilter: fix a memory leak in nf_conntrack_in
+Message-ID: <20191008060109.GA25052@breakpoint.cc>
+References: <20191008053507.252202-1-zenczykowski@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191008053507.252202-1-zenczykowski@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 7, 2019 at 10:35 PM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> From: Maciej =C5=BBenczykowski <maze@google.com>
->
-> This reverts commit 114aa35d06d4920c537b72f9fa935de5dd205260.
->
-> By my understanding of kmemleak the reasoning for this patch
-> is incorrect.  If kmemleak couldn't handle rcu we'd have it
-> reporting leaks all over the place.  My belief is that this
-> was instead papering over a real leak.
+Maciej Żenczykowski <zenczykowski@gmail.com> wrote:
+> From: Maciej Żenczykowski <maze@google.com>
+> 
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+> Signed-off-by: Maciej Żenczykowski <maze@google.com>
+> ---
+>  net/netfilter/nf_conntrack_core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> index 0c63120b2db2..35459d04a050 100644
+> --- a/net/netfilter/nf_conntrack_core.c
+> +++ b/net/netfilter/nf_conntrack_core.c
+> @@ -1679,7 +1679,8 @@ nf_conntrack_in(struct sk_buff *skb, const struct nf_hook_state *state)
+>  		if ((tmpl && !nf_ct_is_template(tmpl)) ||
+>  		     ctinfo == IP_CT_UNTRACKED) {
+>  			NF_CT_STAT_INC_ATOMIC(state->net, ignore);
+> -			return NF_ACCEPT;
+> +			ret = NF_ACCEPT;
 
-If you have this belief, please:
+This looks wrong.
 
-1. Explain in details why you believe it or what supports it. For
-example, did you see any kernel memory continue growing?
+> +			goto out;
 
-2. You want to fix the comment right above __krealloc() before fixing
-anything else.
+This puts tmpl, causing underflow of skb->nfct.
+When we enter nf_conntrack_in and this branch, then 'tmpl'
+is already assigned to skb->nfct, it will be put when skb
+is free'd.
 
-Thanks.
+nf_ct_get() doesn't increment the refcnt.
+
+tmpl only needs to be put in case of ...
+
+
+>  		}
+>  		skb->_nfct = 0;
+
+...this.
