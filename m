@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A849CF062
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 03:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABE05CF067
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 03:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729808AbfJHBXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Oct 2019 21:23:15 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:52958 "EHLO huawei.com"
+        id S1729830AbfJHBXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Oct 2019 21:23:21 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:52974 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729285AbfJHBWy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Oct 2019 21:22:54 -0400
+        id S1729389AbfJHBWx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Oct 2019 21:22:53 -0400
 Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 43B6DAB69B184AD771AB;
+        by Forcepoint Email with ESMTP id 4EE4D5238EA0AE084B97;
         Tue,  8 Oct 2019 09:22:51 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
@@ -22,9 +22,9 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>
-Subject: [PATCH net-next 3/6] net: hns3: add support for setting VF trust
-Date:   Tue, 8 Oct 2019 09:20:06 +0800
-Message-ID: <1570497609-36349-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 4/6] net: hns3: add support for configuring bandwidth of VF on the host
+Date:   Tue, 8 Oct 2019 09:20:07 +0800
+Message-ID: <1570497609-36349-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1570497609-36349-1-git-send-email-tanhuazhong@huawei.com>
 References: <1570497609-36349-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,210 +37,337 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Yonglong Liu <liuyonglong@huawei.com>
 
-This patch adds supports for setting VF trust by host. If specified
-VF is trusted, then it can enable promisc(include allmulti mode).
-If a trusted VF enabled promisc, and being untrusted, host will
-disable promisc mode for this VF.
+This patch adds support for configuring bandwidth of VF on the host
+for HNS3 drivers.
 
-For VF will update its promisc mode from set_rx_mode now, so it's
-unnecessary to set broadcst promisc mode when initialization or
-reset.
-
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |  1 +
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  4 ++
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 11 ++++
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  3 --
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 60 ++++++++++++++++++----
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  8 +--
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 36 +++++++++++--
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 34 +++++-------
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c   | 12 +++++
- 9 files changed, 129 insertions(+), 40 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   4 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  14 ++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |   2 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  79 +++++++++++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 130 +++++++++++++++++++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   2 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |  43 +++++++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h  |   8 ++
+ 8 files changed, 280 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-index f8a87f8..0059d44 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-@@ -45,6 +45,7 @@ enum HCLGE_MBX_OPCODE {
- 	HCLGE_MBX_GET_LINK_MODE,	/* (VF -> PF) get the link mode of pf */
- 	HCLGE_MBX_PUSH_VLAN_INFO,	/* (PF -> VF) push port base vlan */
- 	HCLGE_MBX_GET_MEDIA_TYPE,       /* (VF -> PF) get media type */
-+	HCLGE_MBX_PUSH_PROMISC_INFO,	/* (PF -> VF) push vf promisc info */
- 
- 	HCLGE_MBX_GET_VF_FLR_STATUS = 200, /* (M7 -> PF) get vf reset status */
- 	HCLGE_MBX_PUSH_LINK_STATUS,	/* (M7 -> PF) get port link status */
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index b7b8169..ef56f37 100644
+index ef56f37..1202bbc 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -370,6 +370,9 @@ struct hnae3_ae_dev {
-  *   Set VF link status
-  * set_vf_spoofchk
-  *   Enable/disable spoof check for specified vf
-+ * set_vf_trust
-+ *   Enable/disable trust for specified vf, if the vf being trusted, then
-+ *   it can enable promisc mode
+@@ -373,6 +373,8 @@ struct hnae3_ae_dev {
+  * set_vf_trust
+  *   Enable/disable trust for specified vf, if the vf being trusted, then
+  *   it can enable promisc mode
++ * set_vf_rate
++ *   Set the max tx rate of specified vf.
   */
  struct hnae3_ae_ops {
  	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
-@@ -541,6 +544,7 @@ struct hnae3_ae_ops {
- 				 int link_state);
+@@ -545,6 +547,8 @@ struct hnae3_ae_ops {
  	int (*set_vf_spoofchk)(struct hnae3_handle *handle, int vf,
  			       bool enable);
-+	int (*set_vf_trust)(struct hnae3_handle *handle, int vf, bool enable);
+ 	int (*set_vf_trust)(struct hnae3_handle *handle, int vf, bool enable);
++	int (*set_vf_rate)(struct hnae3_handle *handle, int vf,
++			   int min_tx_rate, int max_tx_rate, bool force);
  };
  
  struct hnae3_dcb_ops {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 4a5404e..5c50555 100644
+index 5c50555..5a8c316 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1656,6 +1656,16 @@ static int hns3_set_vf_spoofchk(struct net_device *netdev, int vf, bool enable)
- 	return handle->ae_algo->ops->set_vf_spoofchk(handle, vf, enable);
+@@ -1850,6 +1850,18 @@ static int hns3_nic_set_vf_link_state(struct net_device *ndev, int vf,
+ 	return h->ae_algo->ops->set_vf_link_state(h, vf, link_state);
  }
  
-+static int hns3_set_vf_trust(struct net_device *netdev, int vf, bool enable)
++static int hns3_nic_set_vf_rate(struct net_device *ndev, int vf,
++				int min_tx_rate, int max_tx_rate)
 +{
-+	struct hnae3_handle *handle = hns3_get_handle(netdev);
++	struct hnae3_handle *h = hns3_get_handle(ndev);
 +
-+	if (!handle->ae_algo->ops->set_vf_trust)
++	if (!h->ae_algo->ops->set_vf_rate)
 +		return -EOPNOTSUPP;
 +
-+	return handle->ae_algo->ops->set_vf_trust(handle, vf, enable);
++	return h->ae_algo->ops->set_vf_rate(h, vf, min_tx_rate, max_tx_rate,
++					    false);
 +}
 +
- static int hns3_nic_change_mtu(struct net_device *netdev, int new_mtu)
- {
- 	struct hnae3_handle *h = hns3_get_handle(netdev);
-@@ -1856,6 +1866,7 @@ static const struct net_device_ops hns3_nic_netdev_ops = {
- 	.ndo_vlan_rx_kill_vid	= hns3_vlan_rx_kill_vid,
- 	.ndo_set_vf_vlan	= hns3_ndo_set_vf_vlan,
- 	.ndo_set_vf_spoofchk	= hns3_set_vf_spoofchk,
-+	.ndo_set_vf_trust	= hns3_set_vf_trust,
- #ifdef CONFIG_RFS_ACCEL
- 	.ndo_rx_flow_steer	= hns3_rx_flow_steer,
+ static const struct net_device_ops hns3_nic_netdev_ops = {
+ 	.ndo_open		= hns3_nic_net_open,
+ 	.ndo_stop		= hns3_nic_net_stop,
+@@ -1872,7 +1884,7 @@ static const struct net_device_ops hns3_nic_netdev_ops = {
  #endif
+ 	.ndo_get_vf_config	= hns3_nic_get_vf_config,
+ 	.ndo_set_vf_link_state	= hns3_nic_set_vf_link_state,
+-
++	.ndo_set_vf_rate	= hns3_nic_set_vf_rate,
+ };
+ 
+ bool hns3_is_phys_func(struct pci_dev *pdev)
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 4821fe0..265695a 100644
+index 265695a..3578832 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -1090,9 +1090,6 @@ void hclge_cmd_setup_basic_desc(struct hclge_desc *desc,
- 				enum hclge_opcode_type opcode, bool is_read);
- void hclge_cmd_reuse_desc(struct hclge_desc *desc, bool is_read);
+@@ -244,7 +244,7 @@ enum hclge_opcode_type {
+ 	/* QCN commands */
+ 	HCLGE_OPC_QCN_MOD_CFG		= 0x1A01,
+ 	HCLGE_OPC_QCN_GRP_TMPLT_CFG	= 0x1A02,
+-	HCLGE_OPC_QCN_SHAPPING_IR_CFG	= 0x1A03,
++	HCLGE_OPC_QCN_SHAPPING_CFG	= 0x1A03,
+ 	HCLGE_OPC_QCN_SHAPPING_BS_CFG	= 0x1A04,
+ 	HCLGE_OPC_QCN_QSET_LINK_CFG	= 0x1A05,
+ 	HCLGE_OPC_QCN_RP_STATUS_GET	= 0x1A06,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index d0128d7..0ccc8e7 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -1110,6 +1110,82 @@ static void hclge_dbg_dump_mac_tnl_status(struct hclge_dev *hdev)
+ 	}
+ }
  
--int hclge_cmd_set_promisc_mode(struct hclge_dev *hdev,
--			       struct hclge_promisc_param *param);
--
- enum hclge_cmd_status hclge_cmd_mdio_write(struct hclge_hw *hw,
- 					   struct hclge_desc *desc);
- enum hclge_cmd_status hclge_cmd_mdio_read(struct hclge_hw *hw,
++static void hclge_dbg_dump_qs_shaper_single(struct hclge_dev *hdev, u16 qsid)
++{
++	struct hclge_qs_shapping_cmd *shap_cfg_cmd;
++	u8 ir_u, ir_b, ir_s, bs_b, bs_s;
++	struct hclge_desc desc;
++	u32 shapping_para;
++	int ret;
++
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_QCN_SHAPPING_CFG, true);
++
++	shap_cfg_cmd = (struct hclge_qs_shapping_cmd *)desc.data;
++	shap_cfg_cmd->qs_id = cpu_to_le16(qsid);
++
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"qs%u failed to get tx_rate, ret=%d\n",
++			qsid, ret);
++		return;
++	}
++
++	shapping_para = le32_to_cpu(shap_cfg_cmd->qs_shapping_para);
++	ir_b = hclge_tm_get_field(shapping_para, IR_B);
++	ir_u = hclge_tm_get_field(shapping_para, IR_U);
++	ir_s = hclge_tm_get_field(shapping_para, IR_S);
++	bs_b = hclge_tm_get_field(shapping_para, BS_B);
++	bs_s = hclge_tm_get_field(shapping_para, BS_S);
++
++	dev_info(&hdev->pdev->dev,
++		 "qs%u ir_b:%u, ir_u:%u, ir_s:%u, bs_b:%u, bs_s:%u\n",
++		 qsid, ir_b, ir_u, ir_s, bs_b, bs_s);
++}
++
++static void hclge_dbg_dump_qs_shaper_all(struct hclge_dev *hdev)
++{
++	struct hnae3_knic_private_info *kinfo;
++	struct hclge_vport *vport;
++	int vport_id, i;
++
++	for (vport_id = 0; vport_id <= pci_num_vf(hdev->pdev); vport_id++) {
++		vport = &hdev->vport[vport_id];
++		kinfo = &vport->nic.kinfo;
++
++		dev_info(&hdev->pdev->dev, "qs cfg of vport%d:\n", vport_id);
++
++		for (i = 0; i < kinfo->num_tc; i++) {
++			u16 qsid = vport->qs_offset + i;
++
++			hclge_dbg_dump_qs_shaper_single(hdev, qsid);
++		}
++	}
++}
++
++static void hclge_dbg_dump_qs_shaper(struct hclge_dev *hdev,
++				     const char *cmd_buf)
++{
++#define HCLGE_MAX_QSET_NUM 1024
++
++	u16 qsid;
++	int ret;
++
++	ret = kstrtou16(cmd_buf, 0, &qsid);
++	if (ret) {
++		hclge_dbg_dump_qs_shaper_all(hdev);
++		return;
++	}
++
++	if (qsid >= HCLGE_MAX_QSET_NUM) {
++		dev_err(&hdev->pdev->dev, "qsid(%u) out of range[0-1023]\n",
++			qsid);
++		return;
++	}
++
++	hclge_dbg_dump_qs_shaper_single(hdev, qsid);
++}
++
+ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ {
+ #define DUMP_REG	"dump reg"
+@@ -1145,6 +1221,9 @@ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ 					  &cmd_buf[sizeof("dump ncl_config")]);
+ 	} else if (strncmp(cmd_buf, "dump mac tnl status", 19) == 0) {
+ 		hclge_dbg_dump_mac_tnl_status(hdev);
++	} else if (strncmp(cmd_buf, "dump qs shaper", 14) == 0) {
++		hclge_dbg_dump_qs_shaper(hdev,
++					 &cmd_buf[sizeof("dump qs shaper")]);
+ 	} else {
+ 		dev_info(&hdev->pdev->dev, "unknown command\n");
+ 		return -EINVAL;
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 7c72862..c63f723 100644
+index c63f723..b88c0aa 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -2889,6 +2889,7 @@ static int hclge_get_vf_config(struct hnae3_handle *handle, int vf,
- 	ivf->vf = vf;
+@@ -1184,6 +1184,35 @@ static void hclge_parse_link_mode(struct hclge_dev *hdev, u8 speed_ability)
+ 		hclge_parse_backplane_link_mode(hdev, speed_ability);
+ }
+ 
++static u32 hclge_get_max_speed(u8 speed_ability)
++{
++	if (speed_ability & HCLGE_SUPPORT_100G_BIT)
++		return HCLGE_MAC_SPEED_100G;
++
++	if (speed_ability & HCLGE_SUPPORT_50G_BIT)
++		return HCLGE_MAC_SPEED_50G;
++
++	if (speed_ability & HCLGE_SUPPORT_40G_BIT)
++		return HCLGE_MAC_SPEED_40G;
++
++	if (speed_ability & HCLGE_SUPPORT_25G_BIT)
++		return HCLGE_MAC_SPEED_25G;
++
++	if (speed_ability & HCLGE_SUPPORT_10G_BIT)
++		return HCLGE_MAC_SPEED_10G;
++
++	if (speed_ability & HCLGE_SUPPORT_1G_BIT)
++		return HCLGE_MAC_SPEED_1G;
++
++	if (speed_ability & HCLGE_SUPPORT_100M_BIT)
++		return HCLGE_MAC_SPEED_100M;
++
++	if (speed_ability & HCLGE_SUPPORT_10M_BIT)
++		return HCLGE_MAC_SPEED_10M;
++
++	return HCLGE_MAC_SPEED_1G;
++}
++
+ static void hclge_parse_cfg(struct hclge_cfg *cfg, struct hclge_desc *desc)
+ {
+ 	struct hclge_cfg_param_cmd *req;
+@@ -1354,6 +1383,8 @@ static int hclge_configure(struct hclge_dev *hdev)
+ 
+ 	hclge_parse_link_mode(hdev, cfg.speed_ability);
+ 
++	hdev->hw.mac.max_speed = hclge_get_max_speed(cfg.speed_ability);
++
+ 	if ((hdev->tc_max > HNAE3_MAX_TC) ||
+ 	    (hdev->tc_max < 1)) {
+ 		dev_warn(&hdev->pdev->dev, "TC num = %d.\n",
+@@ -2890,6 +2921,8 @@ static int hclge_get_vf_config(struct hnae3_handle *handle, int vf,
  	ivf->linkstate = vport->vf_info.link_state;
  	ivf->spoofchk = vport->vf_info.spoofchk;
-+	ivf->trusted = vport->vf_info.trusted;
+ 	ivf->trusted = vport->vf_info.trusted;
++	ivf->min_tx_rate = 0;
++	ivf->max_tx_rate = vport->vf_info.max_tx_rate;
  	ether_addr_copy(ivf->mac, vport->vf_info.mac);
  
  	return 0;
-@@ -4614,8 +4615,8 @@ static int hclge_unmap_ring_frm_vector(struct hnae3_handle *handle, int vector,
- 	return ret;
- }
- 
--int hclge_cmd_set_promisc_mode(struct hclge_dev *hdev,
--			       struct hclge_promisc_param *param)
-+static int hclge_cmd_set_promisc_mode(struct hclge_dev *hdev,
-+				      struct hclge_promisc_param *param)
- {
- 	struct hclge_promisc_cfg_cmd *req;
- 	struct hclge_desc desc;
-@@ -4642,8 +4643,9 @@ int hclge_cmd_set_promisc_mode(struct hclge_dev *hdev,
- 	return ret;
- }
- 
--void hclge_promisc_param_init(struct hclge_promisc_param *param, bool en_uc,
--			      bool en_mc, bool en_bc, int vport_id)
-+static void hclge_promisc_param_init(struct hclge_promisc_param *param,
-+				     bool en_uc, bool en_mc, bool en_bc,
-+				     int vport_id)
- {
- 	if (!param)
- 		return;
-@@ -4658,12 +4660,21 @@ void hclge_promisc_param_init(struct hclge_promisc_param *param, bool en_uc,
- 	param->vf_id = vport_id;
- }
- 
-+int hclge_set_vport_promisc_mode(struct hclge_vport *vport, bool en_uc_pmc,
-+				 bool en_mc_pmc, bool en_bc_pmc)
-+{
-+	struct hclge_dev *hdev = vport->back;
-+	struct hclge_promisc_param param;
-+
-+	hclge_promisc_param_init(&param, en_uc_pmc, en_mc_pmc, en_bc_pmc,
-+				 vport->vport_id);
-+	return hclge_cmd_set_promisc_mode(hdev, &param);
-+}
-+
- static int hclge_set_promisc_mode(struct hnae3_handle *handle, bool en_uc_pmc,
- 				  bool en_mc_pmc)
- {
- 	struct hclge_vport *vport = hclge_get_vport(handle);
--	struct hclge_dev *hdev = vport->back;
--	struct hclge_promisc_param param;
- 	bool en_bc_pmc = true;
- 
- 	/* For revision 0x20, if broadcast promisc enabled, vlan filter is
-@@ -4673,9 +4684,8 @@ static int hclge_set_promisc_mode(struct hnae3_handle *handle, bool en_uc_pmc,
- 	if (handle->pdev->revision == 0x20)
- 		en_bc_pmc = handle->netdev_flags & HNAE3_BPE ? true : false;
- 
--	hclge_promisc_param_init(&param, en_uc_pmc, en_mc_pmc, en_bc_pmc,
--				 vport->vport_id);
--	return hclge_cmd_set_promisc_mode(hdev, &param);
-+	return hclge_set_vport_promisc_mode(vport, en_uc_pmc, en_mc_pmc,
-+					    en_bc_pmc);
- }
- 
- static int hclge_get_fd_mode(struct hclge_dev *hdev, u8 *fd_mode)
-@@ -9479,6 +9489,37 @@ static int hclge_reset_vport_spoofchk(struct hclge_dev *hdev)
+@@ -9520,6 +9553,97 @@ static int hclge_set_vf_trust(struct hnae3_handle *handle, int vf, bool enable)
  	return 0;
  }
  
-+static int hclge_set_vf_trust(struct hnae3_handle *handle, int vf, bool enable)
++static void hclge_reset_vf_rate(struct hclge_dev *hdev)
++{
++	int ret;
++	int vf;
++
++	/* reset vf rate to default value */
++	for (vf = HCLGE_VF_VPORT_START_NUM; vf < hdev->num_alloc_vport; vf++) {
++		struct hclge_vport *vport = &hdev->vport[vf];
++
++		vport->vf_info.max_tx_rate = 0;
++		ret = hclge_tm_qs_shaper_cfg(vport, vport->vf_info.max_tx_rate);
++		if (ret)
++			dev_err(&hdev->pdev->dev,
++				"vf%d failed to reset to default, ret=%d\n",
++				vf - HCLGE_VF_VPORT_START_NUM, ret);
++	}
++}
++
++static int hclge_vf_rate_param_check(struct hclge_dev *hdev, int vf,
++				     int min_tx_rate, int max_tx_rate)
++{
++	if (min_tx_rate != 0 ||
++	    max_tx_rate < 0 || max_tx_rate > hdev->hw.mac.max_speed) {
++		dev_err(&hdev->pdev->dev,
++			"min_tx_rate:%d [0], max_tx_rate:%d [0, %u]\n",
++			min_tx_rate, max_tx_rate, hdev->hw.mac.max_speed);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int hclge_set_vf_rate(struct hnae3_handle *handle, int vf,
++			     int min_tx_rate, int max_tx_rate, bool force)
 +{
 +	struct hclge_vport *vport = hclge_get_vport(handle);
 +	struct hclge_dev *hdev = vport->back;
-+	u32 new_trusted = enable ? 1 : 0;
-+	bool en_bc_pmc;
 +	int ret;
++
++	ret = hclge_vf_rate_param_check(hdev, vf, min_tx_rate, max_tx_rate);
++	if (ret)
++		return ret;
 +
 +	vport = hclge_get_vf_vport(hdev, vf);
 +	if (!vport)
 +		return -EINVAL;
 +
-+	if (vport->vf_info.trusted == new_trusted)
++	if (!force && max_tx_rate == vport->vf_info.max_tx_rate)
 +		return 0;
 +
-+	/* Disable promisc mode for VF if it is not trusted any more. */
-+	if (!enable && vport->vf_info.promisc_enable) {
-+		en_bc_pmc = hdev->pdev->revision != 0x20;
-+		ret = hclge_set_vport_promisc_mode(vport, false, false,
-+						   en_bc_pmc);
-+		if (ret)
-+			return ret;
-+		vport->vf_info.promisc_enable = 0;
-+		hclge_inform_vf_promisc_info(vport);
-+	}
++	ret = hclge_tm_qs_shaper_cfg(vport, max_tx_rate);
++	if (ret)
++		return ret;
 +
-+	vport->vf_info.trusted = new_trusted;
++	vport->vf_info.max_tx_rate = max_tx_rate;
++
++	return 0;
++}
++
++static int hclge_resume_vf_rate(struct hclge_dev *hdev)
++{
++	struct hnae3_handle *handle = &hdev->vport->nic;
++	struct hclge_vport *vport;
++	int ret;
++	int vf;
++
++	/* resume the vf max_tx_rate after reset */
++	for (vf = 0; vf < pci_num_vf(hdev->pdev); vf++) {
++		vport = hclge_get_vf_vport(hdev, vf);
++		if (!vport)
++			return -EINVAL;
++
++		/* zero means max rate, after reset, firmware already set it to
++		 * max rate, so just continue.
++		 */
++		if (!vport->vf_info.max_tx_rate)
++			continue;
++
++		ret = hclge_set_vf_rate(handle, vf, 0,
++					vport->vf_info.max_tx_rate, true);
++		if (ret) {
++			dev_err(&hdev->pdev->dev,
++				"vf%d failed to resume tx_rate:%u, ret=%d\n",
++				vf, vport->vf_info.max_tx_rate, ret);
++			return ret;
++		}
++	}
 +
 +	return 0;
 +}
@@ -248,214 +375,131 @@ index 7c72862..c63f723 100644
  static void hclge_reset_vport_state(struct hclge_dev *hdev)
  {
  	struct hclge_vport *vport = hdev->vport;
-@@ -10318,6 +10359,7 @@ static const struct hnae3_ae_ops hclge_ops = {
- 	.get_vf_config = hclge_get_vf_config,
+@@ -9623,6 +9747,10 @@ static int hclge_reset_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = hclge_resume_vf_rate(hdev);
++	if (ret)
++		return ret;
++
+ 	dev_info(&pdev->dev, "Reset done, %s driver initialization finished.\n",
+ 		 HCLGE_DRIVER_NAME);
+ 
+@@ -9634,6 +9762,7 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	struct hclge_dev *hdev = ae_dev->priv;
+ 	struct hclge_mac *mac = &hdev->hw.mac;
+ 
++	hclge_reset_vf_rate(hdev);
+ 	hclge_misc_affinity_teardown(hdev);
+ 	hclge_state_uninit(hdev);
+ 
+@@ -10360,6 +10489,7 @@ static const struct hnae3_ae_ops hclge_ops = {
  	.set_vf_link_state = hclge_set_vf_link_state,
  	.set_vf_spoofchk = hclge_set_vf_spoofchk,
-+	.set_vf_trust = hclge_set_vf_trust,
+ 	.set_vf_trust = hclge_set_vf_trust,
++	.set_vf_rate = hclge_set_vf_rate,
  };
  
  static struct hnae3_ae_algo ae_algo = {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 9483529..66e8833 100644
+index 66e8833..3153a96 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -889,6 +889,8 @@ struct hclge_vf_info {
+@@ -258,6 +258,7 @@ struct hclge_mac {
+ 	u8 support_autoneg;
+ 	u8 speed_type;	/* 0: sfp speed, 1: active speed */
+ 	u32 speed;
++	u32 max_speed;
+ 	u32 speed_ability; /* speed ability supported by current media */
+ 	u32 module_type; /* sub media type, e.g. kr/cr/sr/lr */
+ 	u32 fec_mode; /* active fec mode */
+@@ -889,6 +890,7 @@ struct hclge_vf_info {
  	int link_state;
  	u8 mac[ETH_ALEN];
  	u32 spoofchk;
-+	u32 trusted;
-+	u16 promisc_enable;
++	u32 max_tx_rate;
+ 	u32 trusted;
+ 	u16 promisc_enable;
  };
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 5cce9b7..0934954 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -511,6 +511,49 @@ static int hclge_tm_qs_bp_cfg(struct hclge_dev *hdev, u8 tc, u8 grp_id,
+ 	return hclge_cmd_send(&hdev->hw, &desc, 1);
+ }
  
- struct hclge_vport {
-@@ -929,9 +931,8 @@ struct hclge_vport {
- 	struct list_head vlan_list;     /* Store VF vlan table */
- };
- 
--void hclge_promisc_param_init(struct hclge_promisc_param *param, bool en_uc,
--			      bool en_mc, bool en_bc, int vport_id);
--
-+int hclge_set_vport_promisc_mode(struct hclge_vport *vport, bool en_uc_pmc,
-+				 bool en_mc_pmc, bool en_bc_pmc);
- int hclge_add_uc_addr_common(struct hclge_vport *vport,
- 			     const unsigned char *addr);
- int hclge_rm_uc_addr_common(struct hclge_vport *vport,
-@@ -1000,4 +1001,5 @@ int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev,
- 				struct hclge_desc *desc);
- void hclge_report_hw_error(struct hclge_dev *hdev,
- 			   enum hnae3_hw_error_type type);
-+void hclge_inform_vf_promisc_info(struct hclge_vport *vport);
- #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index cad7029..131b47b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -205,12 +205,38 @@ static int hclge_map_unmap_ring_to_vf_vector(struct hclge_vport *vport, bool en,
- static int hclge_set_vf_promisc_mode(struct hclge_vport *vport,
- 				     struct hclge_mbx_vf_to_pf_cmd *req)
- {
--	bool en_bc = req->msg[1] ? true : false;
--	struct hclge_promisc_param param;
-+#define HCLGE_MBX_BC_INDEX	1
-+#define HCLGE_MBX_UC_INDEX	2
-+#define HCLGE_MBX_MC_INDEX	3
- 
--	/* vf is not allowed to enable unicast/multicast broadcast */
--	hclge_promisc_param_init(&param, false, false, en_bc, vport->vport_id);
--	return hclge_cmd_set_promisc_mode(vport->back, &param);
-+	bool en_bc = req->msg[HCLGE_MBX_BC_INDEX] ? true : false;
-+	bool en_uc = req->msg[HCLGE_MBX_UC_INDEX] ? true : false;
-+	bool en_mc = req->msg[HCLGE_MBX_MC_INDEX] ? true : false;
-+	int ret;
++int hclge_tm_qs_shaper_cfg(struct hclge_vport *vport, int max_tx_rate)
++{
++	struct hnae3_knic_private_info *kinfo = &vport->nic.kinfo;
++	struct hclge_qs_shapping_cmd *shap_cfg_cmd;
++	struct hclge_dev *hdev = vport->back;
++	struct hclge_desc desc;
++	u8 ir_b, ir_u, ir_s;
++	u32 shaper_para;
++	int ret, i;
 +
-+	if (!vport->vf_info.trusted) {
-+		en_uc = false;
-+		en_mc = false;
++	if (!max_tx_rate)
++		max_tx_rate = HCLGE_ETHER_MAX_RATE;
++
++	ret = hclge_shaper_para_calc(max_tx_rate, HCLGE_SHAPER_LVL_QSET,
++				     &ir_b, &ir_u, &ir_s);
++	if (ret)
++		return ret;
++
++	shaper_para = hclge_tm_get_shapping_para(ir_b, ir_u, ir_s,
++						 HCLGE_SHAPER_BS_U_DEF,
++						 HCLGE_SHAPER_BS_S_DEF);
++
++	for (i = 0; i < kinfo->num_tc; i++) {
++		hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_QCN_SHAPPING_CFG,
++					   false);
++
++		shap_cfg_cmd = (struct hclge_qs_shapping_cmd *)desc.data;
++		shap_cfg_cmd->qs_id = cpu_to_le16(vport->qs_offset + i);
++		shap_cfg_cmd->qs_shapping_para = cpu_to_le32(shaper_para);
++
++		ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++		if (ret) {
++			dev_err(&hdev->pdev->dev,
++				"vf%d, qs%u failed to set tx_rate:%d, ret=%d\n",
++				vport->vport_id, shap_cfg_cmd->qs_id,
++				max_tx_rate, ret);
++			return ret;
++		}
 +	}
 +
-+	ret = hclge_set_vport_promisc_mode(vport, en_uc, en_mc, en_bc);
-+	if (req->mbx_need_resp)
-+		hclge_gen_resp_to_vf(vport, req, ret, NULL, 0);
-+
-+	vport->vf_info.promisc_enable = (en_uc || en_mc) ? 1 : 0;
-+
-+	return ret;
++	return 0;
 +}
 +
-+void hclge_inform_vf_promisc_info(struct hclge_vport *vport)
-+{
-+	u8 dest_vfid = (u8)vport->vport_id;
-+	u8 msg_data[2];
-+
-+	memcpy(&msg_data[0], &vport->vf_info.promisc_enable, sizeof(u16));
-+
-+	hclge_send_mbx_msg(vport, msg_data, sizeof(msg_data),
-+			   HCLGE_MBX_PUSH_PROMISC_INFO, dest_vfid);
- }
- 
- static int hclge_set_vf_uc_mac_addr(struct hclge_vport *vport,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 2b87b70..1732668 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1105,6 +1105,7 @@ static int hclgevf_put_vector(struct hnae3_handle *handle, int vector)
- }
- 
- static int hclgevf_cmd_set_promisc_mode(struct hclgevf_dev *hdev,
-+					bool en_uc_pmc, bool en_mc_pmc,
- 					bool en_bc_pmc)
+ static void hclge_tm_vport_tc_info_update(struct hclge_vport *vport)
  {
- 	struct hclge_mbx_vf_to_pf_cmd *req;
-@@ -1112,10 +1113,11 @@ static int hclgevf_cmd_set_promisc_mode(struct hclgevf_dev *hdev,
- 	int ret;
- 
- 	req = (struct hclge_mbx_vf_to_pf_cmd *)desc.data;
--
- 	hclgevf_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_VF_TO_PF, false);
- 	req->msg[0] = HCLGE_MBX_SET_PROMISC_MODE;
- 	req->msg[1] = en_bc_pmc ? 1 : 0;
-+	req->msg[2] = en_uc_pmc ? 1 : 0;
-+	req->msg[3] = en_mc_pmc ? 1 : 0;
- 
- 	ret = hclgevf_cmd_send(&hdev->hw, &desc, 1);
- 	if (ret)
-@@ -1125,9 +1127,17 @@ static int hclgevf_cmd_set_promisc_mode(struct hclgevf_dev *hdev,
- 	return ret;
- }
- 
--static int hclgevf_set_promisc_mode(struct hclgevf_dev *hdev, bool en_bc_pmc)
-+static int hclgevf_set_promisc_mode(struct hnae3_handle *handle, bool en_uc_pmc,
-+				    bool en_mc_pmc)
- {
--	return hclgevf_cmd_set_promisc_mode(hdev, en_bc_pmc);
-+	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
-+	struct pci_dev *pdev = hdev->pdev;
-+	bool en_bc_pmc;
-+
-+	en_bc_pmc = pdev->revision != 0x20;
-+
-+	return hclgevf_cmd_set_promisc_mode(hdev, en_uc_pmc, en_mc_pmc,
-+					    en_bc_pmc);
- }
- 
- static int hclgevf_tqp_enable(struct hclgevf_dev *hdev, unsigned int tqp_id,
-@@ -2626,12 +2636,6 @@ static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
- 		return ret;
- 	}
- 
--	if (pdev->revision >= 0x21) {
--		ret = hclgevf_set_promisc_mode(hdev, true);
--		if (ret)
--			return ret;
--	}
--
- 	dev_info(&hdev->pdev->dev, "Reset done\n");
- 
- 	return 0;
-@@ -2706,17 +2710,6 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
- 	if (ret)
- 		goto err_config;
- 
--	/* vf is not allowed to enable unicast/multicast promisc mode.
--	 * For revision 0x20, default to disable broadcast promisc mode,
--	 * firmware makes sure broadcast packets can be accepted.
--	 * For revision 0x21, default to enable broadcast promisc mode.
--	 */
--	if (pdev->revision >= 0x21) {
--		ret = hclgevf_set_promisc_mode(hdev, true);
--		if (ret)
--			goto err_config;
--	}
--
- 	/* Initialize RSS for this VF */
- 	ret = hclgevf_rss_init_hw(hdev);
- 	if (ret) {
-@@ -3130,6 +3123,7 @@ static const struct hnae3_ae_ops hclgevf_ops = {
- 	.get_global_queue_id = hclgevf_get_qid_global,
- 	.set_timer_task = hclgevf_set_timer_task,
- 	.get_link_mode = hclgevf_get_link_mode,
-+	.set_promisc_mode = hclgevf_set_promisc_mode,
+ 	struct hnae3_knic_private_info *kinfo = &vport->nic.kinfo;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+index 8186109..95ef6e1 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+@@ -96,6 +96,12 @@ struct hclge_pg_shapping_cmd {
+ 	__le32 pg_shapping_para;
  };
  
- static struct hnae3_ae_algo ae_algovf = {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-index a108191..72bacf8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-@@ -205,6 +205,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 		case HCLGE_MBX_ASSERTING_RESET:
- 		case HCLGE_MBX_LINK_STAT_MODE:
- 		case HCLGE_MBX_PUSH_VLAN_INFO:
-+		case HCLGE_MBX_PUSH_PROMISC_INFO:
- 			/* set this mbx event as pending. This is required as we
- 			 * might loose interrupt event when mbx task is busy
- 			 * handling. This shall be cleared when mbx task just
-@@ -248,6 +249,14 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 			  crq->next_to_use);
- }
- 
-+static void hclgevf_parse_promisc_info(struct hclgevf_dev *hdev,
-+				       u16 promisc_info)
-+{
-+	if (!promisc_info)
-+		dev_info(&hdev->pdev->dev,
-+			 "Promisc mode is closed by host for being untrusted.\n");
-+}
++struct hclge_qs_shapping_cmd {
++	__le16 qs_id;
++	u8 rsvd[2];
++	__le32 qs_shapping_para;
++};
 +
- void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
- {
- 	enum hnae3_reset_type reset_type;
-@@ -313,6 +322,9 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
- 			hclgevf_update_port_base_vlan_info(hdev, state,
- 							   (u8 *)vlan_info, 8);
- 			break;
-+		case HCLGE_MBX_PUSH_PROMISC_INFO:
-+			hclgevf_parse_promisc_info(hdev, msg_q[1]);
-+			break;
- 		default:
- 			dev_err(&hdev->pdev->dev,
- 				"fetched unsupported(%d) message from arq\n",
+ #define HCLGE_BP_GRP_NUM		32
+ #define HCLGE_BP_SUB_GRP_ID_S		0
+ #define HCLGE_BP_SUB_GRP_ID_M		GENMASK(4, 0)
+@@ -154,4 +160,6 @@ int hclge_mac_pause_en_cfg(struct hclge_dev *hdev, bool tx, bool rx);
+ int hclge_pause_addr_cfg(struct hclge_dev *hdev, const u8 *mac_addr);
+ int hclge_pfc_rx_stats_get(struct hclge_dev *hdev, u64 *stats);
+ int hclge_pfc_tx_stats_get(struct hclge_dev *hdev, u64 *stats);
++int hclge_tm_qs_shaper_cfg(struct hclge_vport *vport, int max_tx_rate);
++
+ #endif
 -- 
 2.7.4
 
