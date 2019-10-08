@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F841D0427
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 01:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 022ABD0440
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 01:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729768AbfJHXcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 19:32:14 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41960 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726822AbfJHXcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 19:32:14 -0400
-Received: by mail-qk1-f196.google.com with SMTP id p10so504608qkg.8;
-        Tue, 08 Oct 2019 16:32:13 -0700 (PDT)
+        id S1729747AbfJHXkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 19:40:14 -0400
+Received: from mail-qk1-f174.google.com ([209.85.222.174]:46043 "EHLO
+        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726822AbfJHXkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 19:40:14 -0400
+Received: by mail-qk1-f174.google.com with SMTP id z67so492634qkb.12
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 16:40:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wjNh5CUw5lUrvHTtLBGinf179u88y/gEO+POZbEDrVk=;
-        b=bmqe8KvZzFG3lAsu2WTSJaChViqFsCe6b2YcT1wr3mqbh7hx32FUZOD50N8flahUpx
-         7IuPDWw9QkL0s/QRKTytqaFGW3Ny6i9Ygtd51LtBpyatw8ZbiYofvrjSV64g1DettAPv
-         nX/09ARYoszP1ASyHHqljiPVKOEbj0EbDusK9QjzCtUPLL3zaptCXUsfECvoqbsAEAxh
-         +3bx5IdWCI5kAcSdT5avpiablOtACsaeotTaJJWavnLLBy6388++Eb6nqsrle1cT0Goe
-         6YNC3ZER5QmXrclDS7zNMjN76hkL0cSjwWLVS2YNXWD623veGy6Za+nLwk8+8RC+5DwE
-         wesw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=W2bXhmTOSd1/unXSE5hxivBLejKDsoLiWhaBevi5yVU=;
+        b=P/sSZi6UbyAaVGkHl0XoNp93LZsBBfYfDFg+lLgpU3hmXK6oQIm6GLrEyfiolmCybW
+         OeI4eJKOzNCF1qzbk+phSVW3q3Qm9ShQ4wRQqsi33N2IV0TJRin4rYp348AL46ro5+KF
+         8i3WNbuJQeQd3E348aD5tMPJzKxl1RMF8+ugC2poWJWmI3CVvsWJXcQRy445Pz8bGsc0
+         buv381oOwRHH5vWzviuktL8YR2qw+US1YIWE4bVMiTGhRmboNEcMDw0aMdKXEpezpizZ
+         srySoWyexdh/0ud41CHeQZ8JBEaWcOXuSCyHVxPM8bZ1JSRkcXhrfhDKo5ydyNStAQe+
+         1q+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wjNh5CUw5lUrvHTtLBGinf179u88y/gEO+POZbEDrVk=;
-        b=Fi/ETvUbfAWreRty0rWVg8WytSYh8g9/OzgSguF8GssriHI4R8/mUozqe7mD/8+UsO
-         aDNzJYFrZZefJ+uS05UAEnH3RShMkGppov4k5Rtlj3CCbJu84yk/C0XGY2wNY0hjKwAL
-         ns9jxoOhIbRwdvfaZw9II0El24RwUoLvJb1FakOtqo7kx0kTiZDkmfNpyI18DZumwRT+
-         aaYvF3f13AzUEze5nsxSLzfOfVA7twHkFx1YUQ2GuNS28GXTuztnktz/LMKAX6+juI1J
-         LpmJOyYD8VhzJuNrXpvdcjniiMMEDDzW2SyNZpeUmwS9USBb17HPNnxXx8GJZZJlyEO1
-         Marw==
-X-Gm-Message-State: APjAAAX+uvWDmIPirJrQP2UvmxBdwQXzCRNeJOe1U+sUYgmPo1oXZgYr
-        jFEys3gDsw+f8MeCYodQAMX1RG+NSnAxtSvEwzM=
-X-Google-Smtp-Source: APXvYqxd3+LktT9n7XdT/ePAXvLvLty4IQivusdUKsXfFXUt3GCeMlRMtXCFyunBwEafdtOAFbXNnZAGACGtNzRHHzg=
-X-Received: by 2002:a37:4c13:: with SMTP id z19mr778210qka.449.1570577532777;
- Tue, 08 Oct 2019 16:32:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=W2bXhmTOSd1/unXSE5hxivBLejKDsoLiWhaBevi5yVU=;
+        b=Wsmqgr1ulLHjLDIWF2jHKj58JyF1O8zaUr6D5f3KF8kQyY0oXjzLD457kNnpobNq9X
+         t+2d/EfpKO85DenXmllOWMOQ98iaufjdx/oHnyFW54UcIhgmbe1W0BtZZCaws8ypSn8T
+         heOFcFk2pIWzb8D4epCYULBdn6DS6zxRrIVEpTcr/L9Z0IjW+dkZqs6DBWCmzzWU1Qs1
+         XEdkJRNjXuhTYLfEy2mOiVEx6xKJXzsvHcAOA4x8Y3u9HgQnU+1EyL0OLXUQmE292Wyt
+         +llQkook4VbERX2r+3uwH16KT/0ksbk6eB4p4mReKqCX5JW2iIqhqbM2NkW96Hn6scjT
+         Ybig==
+X-Gm-Message-State: APjAAAVMP3giEPu6Wom2MNaQ1L2POT7cH6Yd2i4vFJAZGK9wo4lYyPDH
+        ZQqMI+4JBr3+7r88xKhTP6ZKjw==
+X-Google-Smtp-Source: APXvYqx4l4aUETb0S1tGb3/61m1KTEHYjBSlfVlKAXj5lRIXfB+0KDN41pm7bQBLTK4wNm5FkumF2Q==
+X-Received: by 2002:ae9:c302:: with SMTP id n2mr780658qkg.69.1570578013294;
+        Tue, 08 Oct 2019 16:40:13 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id m186sm129171qkd.119.2019.10.08.16.40.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2019 16:40:13 -0700 (PDT)
+Date:   Tue, 8 Oct 2019 16:40:01 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [Patch net] net_sched: fix backward compatibility for TCA_KIND
+Message-ID: <20191008164001.7c07fa9a@cakuba.netronome.com>
+In-Reply-To: <20191007202629.32462-1-xiyou.wangcong@gmail.com>
+References: <20191007202629.32462-1-xiyou.wangcong@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20191007030738.2627420-1-andriin@fb.com> <20191007030738.2627420-2-andriin@fb.com>
- <20191007094346.GC27307@pc-66.home> <CAEf4BzZDKkxtMGwnn+Zam58sYwS33EDuw3hrUTexmC9o7Xnj1w@mail.gmail.com>
- <20191008214937.GH27307@pc-66.home>
-In-Reply-To: <20191008214937.GH27307@pc-66.home>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Oct 2019 16:32:01 -0700
-Message-ID: <CAEf4Bza=p1uiV0mHvzrbisSYS1s2Gnx4S2109eGjtP0Vhr_mbg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 1/3] uapi/bpf: fix helper docs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 8, 2019 at 2:49 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On Mon, Oct 07, 2019 at 10:47:19AM -0700, Andrii Nakryiko wrote:
-> > On Mon, Oct 7, 2019 at 2:43 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > On Sun, Oct 06, 2019 at 08:07:36PM -0700, Andrii Nakryiko wrote:
-> > > > Various small fixes to BPF helper documentation comments, enabling
-> > > > automatic header generation with a list of BPF helpers.
-> > > >
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> [...]
-> > > I'm wondering whether it would simply be much better to always just use 'void *ctx'
-> > > for everything that is BPF context as it may be just confusing to people why different
-> > > types are chosen sometimes leading to buggy drive-by attempts to 'fix' them back into
-> > > struct sk_buff * et al.
-> >
-> > I'm impartial on this issue. In some cases it might be helpful to
-> > specify what is the expected type of the context, if it's only ever
-> > one type, but there are lots of helpers that accept various contexts,
-> > so for consistency its better to just have "void *context".
->
-> I would favor consistency here to always have "void *context". One
-> additional issue I could see happening otherwise on top of the 'fix'
-> attempts is that if existing helpers get enabled for multiple program
-> types and these have different BPF context, then it might be quite
-> easy to forget converting struct __sk_buff * and whatnot to void * in
-> the helper API doc, so the auto-generated BPF helpers will continue
-> to have only the old type.
+On Mon,  7 Oct 2019 13:26:28 -0700, Cong Wang wrote:
+> Marcelo noticed a backward compatibility issue of TCA_KIND
+> after we move from NLA_STRING to NLA_NUL_STRING, so it is probably
+> too late to change it.
+> 
+> Instead, to make everyone happy, we can just insert a NUL to
+> terminate the string with nla_strlcpy() like we do for TC actions.
+> 
+> Fixes: 62794fc4fbf5 ("net_sched: add max len check for TCA_KIND")
+> Reported-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> Cc: Jiri Pirko <jiri@resnulli.us>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-Ok, I can create a follow-up clean up patch changing all of them to
-void *. There is also a weird singular case of having three
-declarations of bpf_get_socket_cookie() with different contexts. I
-assume I should just combine them into a single
-declaration/description, right?
-
->
-> Thanks,
-> Daniel
+Applied, queued for 4.14+, thanks!
