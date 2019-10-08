@@ -2,99 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FA66CFBAD
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 15:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDDEFCFBE9
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 16:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726109AbfJHN4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 09:56:38 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33244 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725848AbfJHN4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 09:56:38 -0400
-Received: by mail-pg1-f196.google.com with SMTP id i76so3130944pgc.0
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 06:56:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fkFt6GAO/C3Itm9ELYYj+/vdhJb7a/vl0pJU6vDBgLk=;
-        b=R1th6dS25UnVHBai0JXu55aTGiky+Khl9QA5BODHlsWc1QrHbhh9yhvTmZ07fH5OP1
-         MVOjgqLegCmRXf9N3uTrYYhefA8R2FmcJ3qQtortRHqHDKWuaS/K6ZNu/gKnjkRs6aOC
-         9MqJb3nF+3NsrfkJvV0Y/w6SfAx6RQPzhP/FICuU/JsbNxX6FfBOXpe1FvsmEwEkRV04
-         +qSa5vCK8JaPK2Bi1HjCHvgGnsClRH+Z19iqoxgZdhLm3Vnn2tNAXcXLskF3ykdiQHzv
-         DlvyvalMJ28A8dp+AfcqNkcnGT1BALyroZi8z/kVyO2eUtlpBDpih2/WxP0pRPoiVbMe
-         Uudg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fkFt6GAO/C3Itm9ELYYj+/vdhJb7a/vl0pJU6vDBgLk=;
-        b=t8e6Cb5ND3Lj7gSYXNhXq9jT0cmNFynKv8N5egrzsN1WqK652WR0oFK/3JAxJTIJyN
-         6joLcDwgI1vvSsDE+7pnm7P5eV9c2detlpQrQiGf7xivCa1W4ZRQAY/haPA69/vigBR7
-         jIWGdUFNnCOJnWqpNCYGi/emJ4Te44UQkC96ukIeRMHv+Bg2iq7ys9QDdYBRbno97QoM
-         OPN/UqDZ98Rv2WUhWFhtUOo38aq0mMhW/pVi+fYNnOedaK/NOGf7XjPGJyY9U8OI31QN
-         tTmuMez4yq+oRdUr4JzKKRdGbMqmvJIpyX+obexA/d4xF4uMrSwq2gAwOWX44qT5UZoD
-         SUxw==
-X-Gm-Message-State: APjAAAW6pkDKcdql9UuFVSHarNG6Q1ZbruTBqXwsq3Os3qOL/V1+rCzh
-        DUQHpNb+VOneuJXg4rROpOz5ZFgpJjE=
-X-Google-Smtp-Source: APXvYqyp4WejFK/d+hr1RlVn7uPZtMq4UOj0FDBFoB8mspTOjVsDA7w0bJWO7/Bs0ZVHF9X7ZLWj/g==
-X-Received: by 2002:a63:205d:: with SMTP id r29mr787451pgm.211.1570542997095;
-        Tue, 08 Oct 2019 06:56:37 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f89sm2145961pje.20.2019.10.08.06.56.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 06:56:36 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] team: call RCU read lock when walking the port_list
-Date:   Tue,  8 Oct 2019 21:56:14 +0800
-Message-Id: <20191008135614.15224-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        id S1726252AbfJHOGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 10:06:02 -0400
+Received: from smtp2.goneo.de ([85.220.129.33]:38536 "EHLO smtp2.goneo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725795AbfJHOGB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 10:06:01 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by smtp2.goneo.de (Postfix) with ESMTP id 248F023F4C2;
+        Tue,  8 Oct 2019 16:05:58 +0200 (CEST)
+X-Virus-Scanned: by goneo
+X-Spam-Flag: NO
+X-Spam-Score: -3.099
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.099 tagged_above=-999 tests=[ALL_TRUSTED=-1,
+        AWL=-0.199, BAYES_00=-1.9] autolearn=ham
+Received: from smtp2.goneo.de ([127.0.0.1])
+        by localhost (smtp2.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id PdJ_mfceu7tW; Tue,  8 Oct 2019 16:05:56 +0200 (CEST)
+Received: from lem-wkst-02.lemonage.de. (hq.lemonage.de [87.138.178.34])
+        by smtp2.goneo.de (Postfix) with ESMTPA id 1807623F232;
+        Tue,  8 Oct 2019 16:05:55 +0200 (CEST)
+From:   Lars Poeschel <poeschel@lemonage.de>
+Cc:     Lars Poeschel <poeschel@lemonage.de>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jilayne Lovejoy <opensource@jilayne.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org, Steve Winslow <swinslow@gmail.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kees Cook <keescook@chromium.org>,
+        Allison Randal <allison@lohutok.net>,
+        Johan Hovold <johan@kernel.org>,
+        Simon Horman <horms@verge.net.au>
+Subject: [PATCH v9 0/7] nfc: pn533: add uart phy driver
+Date:   Tue,  8 Oct 2019 16:05:37 +0200
+Message-Id: <20191008140544.17112-1-poeschel@lemonage.de>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before reading the team port list, we need to acquire the RCU read lock.
-Also change list_for_each_entry() to list_for_each_entry_rcu().
+The purpose of this patch series is to add a uart phy driver to the
+pn533 nfc driver.
+It first changes the dt strings and docs. The dt compatible strings
+need to change, because I would add "pn532-uart" to the already
+existing "pn533-i2c" one. These two are now unified into just
+"pn532". Then the neccessary changes to the pn533 core driver are
+made. Then the uart phy is added.
+As the pn532 chip supports a autopoll, I wanted to use this instead
+of the software poll loop in the pn533 core driver. It is added and
+activated by the last to patches.
+The way to add the autopoll later in seperate patches is chosen, to
+show, that the uart phy driver can also work with the software poll
+loop, if someone needs that for some reason.
+This patchset is already rebased on Johans "NFC: pn533: fix
+use-after-free and memleaks" patch
+https://lore.kernel.org/netdev/20191007164059.5927-1-johan@kernel.org/
+as they would conflict.
+If for some reason Johans patch will not get merged, I can of course
+provide the patchset without depending on this patch.
 
-Fixes: 9ed68ca0d90b ("team: add ethtool get_link_ksettings")
-Reported-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
----
- drivers/net/team/team.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Cc: Lars Poeschel <poeschel@lemonage.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Jilayne Lovejoy <opensource@jilayne.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: devicetree@vger.kernel.org
+Cc: Steve Winslow <swinslow@gmail.com>
+Cc: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Allison Randal <allison@lohutok.net>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Simon Horman <horms@verge.net.au>
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index e8089def5a46..cb1d5fe60c31 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -2066,7 +2066,8 @@ static int team_ethtool_get_link_ksettings(struct net_device *dev,
- 	cmd->base.duplex = DUPLEX_UNKNOWN;
- 	cmd->base.port = PORT_OTHER;
- 
--	list_for_each_entry(port, &team->port_list, list) {
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(port, &team->port_list, list) {
- 		if (team_port_txable(port)) {
- 			if (port->state.speed != SPEED_UNKNOWN)
- 				speed += port->state.speed;
-@@ -2075,6 +2076,8 @@ static int team_ethtool_get_link_ksettings(struct net_device *dev,
- 				cmd->base.duplex = port->state.duplex;
- 		}
- 	}
-+	rcu_read_unlock();
-+
- 	cmd->base.speed = speed ? : SPEED_UNKNOWN;
- 
- 	return 0;
+Lars Poeschel (7):
+  nfc: pn533: i2c: "pn532" as dt compatible string
+  nfc: pn532: Add uart phy docs and rename it
+  nfc: pn533: Add dev_up/dev_down hooks to phy_ops
+  nfc: pn533: Split pn533 init & nfc_register
+  nfc: pn533: add UART phy driver
+  nfc: pn533: Add autopoll capability
+  nfc: pn532_uart: Make use of pn532 autopoll
+
+ .../net/nfc/{pn533-i2c.txt => pn532.txt}      |  25 +-
+ drivers/nfc/pn533/Kconfig                     |  11 +
+ drivers/nfc/pn533/Makefile                    |   2 +
+ drivers/nfc/pn533/i2c.c                       |  22 +-
+ drivers/nfc/pn533/pn533.c                     | 271 +++++++++++++--
+ drivers/nfc/pn533/pn533.h                     |  38 +-
+ drivers/nfc/pn533/uart.c                      | 324 ++++++++++++++++++
+ drivers/nfc/pn533/usb.c                       |  12 +-
+ 8 files changed, 646 insertions(+), 59 deletions(-)
+ rename Documentation/devicetree/bindings/net/nfc/{pn533-i2c.txt => pn532.txt} (42%)
+ create mode 100644 drivers/nfc/pn533/uart.c
+
 -- 
-2.19.2
+2.23.0
 
