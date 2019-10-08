@@ -2,109 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E173CCF595
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 11:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B678CF615
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 11:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730360AbfJHJEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 05:04:08 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:54189 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729624AbfJHJEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 05:04:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570525446;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7LiTc03LkyuPHndVZx+YUwXgw6EiaRzqV7jwSwvnOpk=;
-        b=LQhu5RVT4GRVgVrcEM6ocA9h4YJkPPv+kCIt5+pLksNKJBmwfXaLBRjSPoc0kJcajB4Gkx
-        Cld5uC3H+mz2JAc+XklqDz3UCHKGxJq4XY6ykPIIK2evVCX0EfqtT4RxngKawXe5TNlJT5
-        l4LhvW0EQTTpCkLD610p+hG21UbXdB0=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-276-c-aObWILPyW5rO4jeMBF2Q-1; Tue, 08 Oct 2019 05:04:03 -0400
-Received: by mail-ed1-f69.google.com with SMTP id o92so10776354edb.9
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 02:04:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=7LiTc03LkyuPHndVZx+YUwXgw6EiaRzqV7jwSwvnOpk=;
-        b=blNAN/Td0aKU/NDmtD7ucupfaovAuCy8rgBenOo+IdtAEgEwSFju3rsTPMmzwAfTUK
-         bJjiMoalEOspLz2JxM0QlnIo3kWnNtn/SLDvYvdXwBSRVmNe9NBdSZiJiG+e7gCUaA4G
-         ij6sbGBD7/YVHfAUY6LhqtsSDSX8v78Ul/W4QLSSoktBcdZE3Cqq2gXx0SqNrraHGysn
-         2ktrAHKXVb0DLNqK3NR1fPbS6ltped3sxZ62kzV0s6EaphGRctYshH1Zl254ExY3d5hg
-         xA28eY4V65brn2Nea0g9xeiCYCfHiC+LHUzyr/gBj7p0DS22kE2GbPwNxnNMoKHd4gXD
-         QFuw==
-X-Gm-Message-State: APjAAAUeQ3gYc4QTI0Gc26vmaZz04C8jT4DQkqRF7SRsF6bJL1iDHUPC
-        CHsmFUCZHMEdE8cv4bCaxzRYpVxXfCFkr+3utt2V3Ja2IbLk5hBUySA+S0neCRDCOJ0X8CccQHN
-        PRs4kpOFZACyP6ZCq
-X-Received: by 2002:a17:906:4910:: with SMTP id b16mr26878680ejq.301.1570525442111;
-        Tue, 08 Oct 2019 02:04:02 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqy8TcSRNTMv0iuCzK8zElHlrqwUttIOMympRata1iDWQHbT79yuK/s2FdSOFlHE1wLapUhP4w==
-X-Received: by 2002:a17:906:4910:: with SMTP id b16mr26878663ejq.301.1570525441907;
-        Tue, 08 Oct 2019 02:04:01 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id l19sm3806147edb.50.2019.10.08.02.04.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 02:04:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B884C18063D; Tue,  8 Oct 2019 11:04:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        maciej.fijalkowski@intel.com, tom.herbert@intel.com
-Subject: Re: [PATCH bpf-next 2/4] xsk: allow AF_XDP sockets to receive packets directly from a queue
-In-Reply-To: <CAJ+HfNhcvRP34L3px6ipAsCiZdvLXG02brecwB=T-sXMaT5yRw@mail.gmail.com>
-References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com> <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com> <875zkzn2pj.fsf@toke.dk> <CAJ+HfNhcvRP34L3px6ipAsCiZdvLXG02brecwB=T-sXMaT5yRw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 08 Oct 2019 11:04:00 +0200
-Message-ID: <878spvlibj.fsf@toke.dk>
+        id S1730024AbfJHJeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 05:34:01 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3220 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728866AbfJHJeB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 05:34:01 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id CE777E2A3884B38F2A20;
+        Tue,  8 Oct 2019 17:33:58 +0800 (CST)
+Received: from [127.0.0.1] (10.184.213.217) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Tue, 8 Oct 2019
+ 17:33:57 +0800
+Subject: Re: [PATCH] rtw88: 8822c: Remove set but not used variable 'corr_val'
+To:     <yhchuang@realtek.com>, <pkshih@realtek.com>,
+        <kvalo@codeaurora.org>, <davem@davemloft.net>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <1570180736-133907-1-git-send-email-zhengbin13@huawei.com>
+From:   "zhengbin (A)" <zhengbin13@huawei.com>
+Message-ID: <08492ba6-eaf6-8c72-74fe-f49e0a95639e@huawei.com>
+Date:   Tue, 8 Oct 2019 17:33:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.3.0
 MIME-Version: 1.0
-X-MC-Unique: c-aObWILPyW5rO4jeMBF2Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1570180736-133907-1-git-send-email-zhengbin13@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.184.213.217]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+Sorry for the noise, please ignore this
 
-> On Tue, 8 Oct 2019 at 08:59, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->>
->> Sridhar Samudrala <sridhar.samudrala@intel.com> writes:
->>
->> >  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->> >                   struct bpf_prog *xdp_prog)
->> >  {
->> >       struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info=
-);
->> >       struct bpf_map *map =3D READ_ONCE(ri->map);
->> > +     struct xdp_sock *xsk;
->> > +
->> > +     xsk =3D xdp_get_direct_xsk(ri);
->> > +     if (xsk)
->> > +             return xsk_rcv(xsk, xdp);
->>
->> This is a new branch and a read barrier in the XDP_REDIRECT fast path.
->> What's the performance impact of that for non-XSK redirect?
->>
+On 2019/10/4 17:18, zhengbin wrote:
+> Fixes gcc '-Wunused-but-set-variable' warning:
 >
-> The dependent-read-barrier in READ_ONCE? Another branch -- leave that
-> to the branch-predictor already! ;-) No, you're right, performance
-> impact here is interesting. I guess the same static_branch could be
-> used here as well...
-
-In any case, some measurements to see the impact (or lack thereof) would
-be useful :)
-
--Toke
+> drivers/net/wireless/realtek/rtw88/rtw8822c.c: In function rtw8822c_dpk_dc_corr_check:
+> drivers/net/wireless/realtek/rtw88/rtw8822c.c:2166:5: warning: variable corr_val set but not used [-Wunused-but-set-variable]
+>
+> It is not used since commit 5227c2ee453d ("rtw88:
+> 8822c: add SW DPK support")
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: zhengbin <zhengbin13@huawei.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/rtw8822c.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+> index a300efd..52682d5 100644
+> --- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+> @@ -2163,7 +2163,7 @@ static void rtw8822c_dpk_rxbb_dc_cal(struct rtw_dev *rtwdev, u8 path)
+>  static u8 rtw8822c_dpk_dc_corr_check(struct rtw_dev *rtwdev, u8 path)
+>  {
+>  	u16 dc_i, dc_q;
+> -	u8 corr_val, corr_idx;
+> +	u8 corr_idx;
+>
+>  	rtw_write32(rtwdev, REG_RXSRAM_CTL, 0x000900f0);
+>  	dc_i = (u16)rtw_read32_mask(rtwdev, REG_STAT_RPT, GENMASK(27, 16));
+> @@ -2176,7 +2176,6 @@ static u8 rtw8822c_dpk_dc_corr_check(struct rtw_dev *rtwdev, u8 path)
+>
+>  	rtw_write32(rtwdev, REG_RXSRAM_CTL, 0x000000f0);
+>  	corr_idx = (u8)rtw_read32_mask(rtwdev, REG_STAT_RPT, GENMASK(7, 0));
+> -	corr_val = (u8)rtw_read32_mask(rtwdev, REG_STAT_RPT, GENMASK(15, 8));
+>
+>  	if (dc_i > 200 || dc_q > 200 || corr_idx < 40 || corr_idx > 65)
+>  		return 1;
+> --
+> 2.7.4
+>
+>
+> .
+>
 
