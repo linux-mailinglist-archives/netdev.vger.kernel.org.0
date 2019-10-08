@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A3FD0105
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 21:13:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47C50D0109
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 21:15:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730050AbfJHTNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 15:13:33 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:38191 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727220AbfJHTNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 15:13:32 -0400
-Received: by mail-qk1-f194.google.com with SMTP id u186so17888801qkc.5
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 12:13:32 -0700 (PDT)
+        id S1730144AbfJHTPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 15:15:11 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:38941 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728465AbfJHTPL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 15:15:11 -0400
+Received: by mail-qt1-f195.google.com with SMTP id n7so26910095qtb.6
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 12:15:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=t6oyuMaPUmyNVT7v4DLW2+8p5dzVhG7Z1YsODEnTYJc=;
-        b=Ahx2xM/Ka2OvT+Z8TrK2ZtgnFwLp3ML09vr39yCsPXewB9cSBKn8r2C75aPi6CSdgT
-         hID2DzhcFNBPTAB1iBCdlYNlRTHMI8M7wA5syNbttRyBzqSNFtGU45Ts1Ugcs39sEsPF
-         xjUjS1QCBvajmZQ7S1vTHTHW8vhCM7R8i33/13MD3D5yXy/kfTyMfNVmq88CPZf9qvz/
-         x59LYN8gSkqOgtNPRZNlL8w4woGhJufgQvv3icIe5rxzORHPXHtFAPLAiIBMCNnQu4bc
-         zzunS0e+Wf5JkmeVa33HDlgw6/QORMS3ARhuwbWgytoODOGAw3z0IIeAynZuGiHWddPB
-         EO2Q==
+        bh=dxAtTWPQp4TAeXr8xO4IQ/pBkwmVo6wQB+eXQ6x/TLY=;
+        b=Dfe+1jeovnFdBVweXsJvOp5BXdxpHw9080gV/0Umo0I2a24FNdmFyl1kiPo4ge+iFa
+         XSOQDtE+tqvSG2aazcK/svPTXJbhuIQ1OJ4yekFUkLJCTRR1tySDi5nDjqHuM0NfHc9t
+         9jgXyZjdo4nmS8oyHaNOZB7JqN19UiGyG5HPs6wy6+Va5I3J9EynqE3QjgjVSADyXVQG
+         /hjCL+IcFA8R6EGs+CdTjpe6rumTcwilrCVAhumrpaLOlv+F/W6Sd4SVNdweiUEpPFCa
+         4utVrLXKeyetZXfxbGmeV6XZ7j9PTyjs9yBvdWDJ+YiY7FaHy2jIErDoC9kKpsVo5lF8
+         G9ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=t6oyuMaPUmyNVT7v4DLW2+8p5dzVhG7Z1YsODEnTYJc=;
-        b=HAbtKt4tQhLVc4hpRRJAJInIr1UprVh9G2/ir9FRPrSTBJwkMRP+QABE9NhFX904mb
-         BZ76jRo2PznOyNZyJfrnBhBznRn0ZZQVyVvWvw6Di0H+F5Mum7Ti9g+VybDWs1vyOH7o
-         iWq1xSLg4tHFfKJivGHK8YlwlxcytBMKvulxrRQUPBH3c47r9oaJFYhvdrV4Yh+I9MHV
-         CtwzNlaBCpBCySEowYwNfoyfbcGRUo4muV1wQrChx+tCeXqhkwJGBlrkpoJxHxwZBVgY
-         en3zwUGb90HtJOAPHRd3G41Kx5aJAMGw17gPveTNo2HJoHiA8o4fjp0jmxjRKpAZ8g39
-         ZI1Q==
-X-Gm-Message-State: APjAAAVF4ldzuAip+QVZxlpbJuqnN8WfiQYwu+p9qxhscQgspLMSCrEB
-        ljh2F5oe0m1Ib23dEHMOCPEwGQ==
-X-Google-Smtp-Source: APXvYqwIi/hxcdCKBT8nhkcuPpLBibqtX5z6zBX66YeevnNRqdhFxGxwgLWC6u6R7O5Jdy0QVwaWtQ==
-X-Received: by 2002:ae9:d803:: with SMTP id u3mr29765098qkf.131.1570562011888;
-        Tue, 08 Oct 2019 12:13:31 -0700 (PDT)
+        bh=dxAtTWPQp4TAeXr8xO4IQ/pBkwmVo6wQB+eXQ6x/TLY=;
+        b=AC3hxAKOxVhwKihICHvLAPN/KLAwKHifGy5P5SC6wLaM4XuOH6qekP/A94g/dNNT7+
+         s/I4dgnz8Bsw+0zJZQ66Tq7T7GHJnVLeSkF9JYSy2R6ay3zbbAK1q4Eve5S5Mvd2tRw0
+         /x0iKrOtAD+FCccDjr9YkSxVvlus/v+W9tb9sZuvDzqyAR/R+3xT7PGrwPhVaQ45DY2f
+         1RYEiM6GiFF8hqZN9cZkd0fLbV29n0RKzK6OYJdJ2jhRFWh5Cipwzqig15riMhz2zu00
+         0YBblnDCsMeBxIH1/PxpAL4ZcZHrWXiQvSTIDw5Spl388asgmjB6jxqT7Pdp0kYZBYnD
+         5L8A==
+X-Gm-Message-State: APjAAAUXrbnWkJqOv6CebnFFi+A2fGY/vp8Q60hrihdxj/NRGSEq6wNX
+        6HKvznDhayvMJW7aM2Svsf174A==
+X-Google-Smtp-Source: APXvYqzS0pTRdoYgQCvIqtrfKJbCdPzqZle2A/oqLtOkZCOi7IR/U1Hy7/FKxRoxWdHyuUsA3VINxw==
+X-Received: by 2002:a0c:a988:: with SMTP id a8mr7939928qvb.34.1570562110549;
+        Tue, 08 Oct 2019 12:15:10 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m14sm8803325qki.27.2019.10.08.12.13.30
+        by smtp.gmail.com with ESMTPSA id f21sm8763054qkl.51.2019.10.08.12.15.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 12:13:31 -0700 (PDT)
-Date:   Tue, 8 Oct 2019 12:13:20 -0700
+        Tue, 08 Oct 2019 12:15:10 -0700 (PDT)
+Date:   Tue, 8 Oct 2019 12:14:57 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+To:     "Maciej W. Rozycki" <macro@linux-mips.org>,
+        Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: make arrays static, makes object
- smaller
-Message-ID: <20191008121320.59959133@cakuba.netronome.com>
-In-Reply-To: <20191007120308.2392-1-colin.king@canonical.com>
-References: <20191007120308.2392-1-colin.king@canonical.com>
+Subject: Re: [PATCH][next] netdevsim: fix spelling mistake "forbidded" ->
+ "forbid"
+Message-ID: <20191008121457.34b570be@cakuba.netronome.com>
+In-Reply-To: <alpine.LFD.2.21.1910080921350.25653@eddie.linux-mips.org>
+References: <20191008081747.19431-1-colin.king@canonical.com>
+        <alpine.LFD.2.21.1910080921350.25653@eddie.linux-mips.org>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -66,22 +65,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Oct 2019 13:03:08 +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Tue, 8 Oct 2019 09:29:58 +0100 (BST), Maciej W. Rozycki wrote:
+> On Tue, 8 Oct 2019, Colin King wrote:
 > 
-> Don't populate const arrays on the stack but instead make them
-> static. Makes the object code smaller by 1058 bytes.
+> > diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> > index a3d7d39f231a..ff6ced5487b6 100644
+> > --- a/drivers/net/netdevsim/dev.c
+> > +++ b/drivers/net/netdevsim/dev.c
+> > @@ -486,7 +486,7 @@ static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
+> >  		/* For testing purposes, user set debugfs dont_allow_reload
+> >  		 * value to true. So forbid it.
+> >  		 */
+> > -		NL_SET_ERR_MSG_MOD(extack, "User forbidded reload for testing purposes");
+> > +		NL_SET_ERR_MSG_MOD(extack, "User forbid the reload for testing purposes");  
 > 
-> Before:
->    text	   data	    bss	    dec	    hex	filename
->   29879	   6144	      0	  36023	   8cb7	drivers/net/phy/mscc.o
+>  If nitpicking about grammar, then FWIW I believe it should actually be:
 > 
-> After:
->    text	   data	    bss	    dec	    hex	filename
->   28437	   6528	      0	  34965	   8895	drivers/net/phy/mscc.o
+> 		NL_SET_ERR_MSG_MOD(extack, "User forbade the reload for testing purposes");
 > 
-> (gcc version 9.2.1, amd64)
+> (and then:
 > 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> 		NL_SET_ERR_MSG_MOD(extack, "User set up the reload to fail for testing purposes");
+> 
+> elsewhere).
 
-Applied to net-next, thanks.
+So I consulted with someone vaguely British, and they said they'd use
+"forbid" here, therefore I've applied the patch to net-next.
