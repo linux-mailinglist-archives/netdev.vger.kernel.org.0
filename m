@@ -2,297 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3428FCF1CE
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 06:41:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C9FCF210
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 06:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730045AbfJHElc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 00:41:32 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36170 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729656AbfJHEl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 00:41:29 -0400
-Received: by mail-pg1-f194.google.com with SMTP id 23so9581824pgk.3
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 21:41:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=hdacB/xcYLGlOtsHJxm/C1/ssCga+9XVQUBZIpt1e1o=;
-        b=AWcgcJ8SVtTa4LY7oOoSulcFLKOg90VKam++RmDCRO10JQN1g33T4Ue37i8B2ZYV+2
-         EM7W4kA0U4ug95SzpUv/pAy+cXFbqzoTgyfUjEMe65tOhS5v+921jR5Eq/tVKdOpqVM9
-         uBTU6E2Ihriznlf++wCyjDZgSPNIkPwi56sGOR+OYmisZq/Q/BHQTn7gGAn+IRgVSloX
-         2NDvgVi4fWPfvMIoML025wqH1Ef0JEs4SR1z8w045bnsJChg1yZ4h24ZdKVxHyowQqdR
-         y8YkJxANVcYIAAPQBsbSQXiaLLdsrV9kCW2S0KzTZSgBB9M5gBDkFJJOMS1rDkZz9zWm
-         bA3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=hdacB/xcYLGlOtsHJxm/C1/ssCga+9XVQUBZIpt1e1o=;
-        b=CyvHVBxKlqoQSEOzbUdWi49EimRExUDPQZbwWPE95L6ay7jY6vH7uIZX7YJTl0SCvN
-         HMVOHTf4n6vr5oxkbcN7ihAWTO2neLsbhyMjq/0DLWQW5QRPsj8howVw+a92UWZmTHIr
-         s3+fxyWTzERhqQE3be8Hg+rxXs2lk/dstG4gFBvX6BgCZJHwCJpgzqtylZkUhidZjxXX
-         sLYHlK7952z8ENRbq64mTmqwIL3HQvGdsm3ag0INKkulpHOapCxanODGYj2eMfJRsUW0
-         ZQPv7SNZDceHuQwyKnwLvdtw+Awdj8eGVvPO8Xarn+ldCan0R4/yicYVR+kwTnk95bKm
-         X3YA==
-X-Gm-Message-State: APjAAAUnt5XMzH2CLry42+kEb+4gTv5+BlbVaHhhdfTK0kH5oPpM4+1U
-        Y+T+L5uQf+CLU2CxM9VWfxL4Y66v
-X-Google-Smtp-Source: APXvYqyG4jbPlySL4xH1JJUQPAjZvIsJJSj9Qr4KTK/jbAIvSsE/PGwhy8ikc/jPK8t8Cr8HLlXqVQ==
-X-Received: by 2002:aa7:97b0:: with SMTP id d16mr37491479pfq.54.1570509686870;
-        Mon, 07 Oct 2019 21:41:26 -0700 (PDT)
-Received: from martin-VirtualBox.dlink.router ([122.178.241.240])
-        by smtp.gmail.com with ESMTPSA id 127sm21778581pfy.56.2019.10.07.21.41.24
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 07 Oct 2019 21:41:26 -0700 (PDT)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, pshelar@ovn.org,
-        jbenc@redhat.com, scott.drennan@nokia.com,
-        martin.varghese@nokia.com
-Cc:     Martin Varghese <martinvarghesenokia@gmail.com>
-Subject: [PATCH net-next] Change in Openvswitch to support MPLS label depth of 3 in ingress direction
-Date:   Tue,  8 Oct 2019 10:10:31 +0530
-Message-Id: <1570509631-13008-1-git-send-email-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1729814AbfJHE4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 00:56:41 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:57658 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729426AbfJHE4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 00:56:41 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x984tNkj002898;
+        Mon, 7 Oct 2019 21:56:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=bbbS65SEMUMs0Ocuk7Bj0vkCrbOycbFoG34rNDT+e94=;
+ b=BxGmW7iyCLE3+L11FxTi1o43HN5M7U/xCuVFRj1HDuGgiJXdermb7i8yECIfegeT3Ors
+ 66uSQ3rJ/6qBgCs5gqYSu64kqgwMyOx+OeSLiSwBdZMp/HBMg/R9J441oNaWrjmaluch
+ DByBHiGVJjOWtwOHcfDEosnfrv3MwOAlEZ8= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vfaxprbx8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 07 Oct 2019 21:56:27 -0700
+Received: from prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 7 Oct 2019 21:56:27 -0700
+Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
+ prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 7 Oct 2019 21:56:26 -0700
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 7 Oct 2019 21:56:26 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EYYyPsbq3rVehdFAVK0pfy0XHe1roNGZPqWb5TcXzf8ToKfjTZkFgl/rSw4M/BLg5CwI49oi5jbNQmcFkCCyQHVoXie+C6YWDnY1clkh5FMSvTjVoPHac/dS3j8dqhF7QJ8dbhE/sCKoYT4wL4rAdMvOi0Wl4kWreV83L5r4cq3Gj52ynGRrDk6FYdR4894vkLqPjysZ9fMtVLFQJGZsMhBfJoMztMyirUEU0qRzbdo2x1IeT/qaqFlnS/YjemvIYQh0Tr4Q5iInU/c83Fs3XKzraXkLEVOY3s3yPNKDHvzC2qQtnvhaimqS1O7j3p5aVTtBOmuo+VDHwFKt36oq7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bbbS65SEMUMs0Ocuk7Bj0vkCrbOycbFoG34rNDT+e94=;
+ b=SqKp0YJ61cx/hV8iqMsqKVcsGBKqwbI+fs0KFu+ybf/GclsHeZE4wUdyyCKYmEQGXtz1mUyZGjiD5M3GDDNzxKOem6ZLhHXTrw5GMjyhv6lR/di4IcPuJzXXcxiQZ6Slrcw6rrunAfVPcOun6Olpc0LXY9Fq71hgMAAUYqSCprbd6JDnzYSXNJUExbcC3FcoCAvWl59nRYzDirG3yEzAQqLrOOwVDjux1tsp3+8x4QQdRj31aS31Ww2FEoLg/8Ckd1xWkaWc2qJxgMHPdGnAzQQ7RAmry/7OjivQSTVV3AjE0PdshZITCgenZ1KUv1YN86P+Ld6ZD0px66HFW+MrZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bbbS65SEMUMs0Ocuk7Bj0vkCrbOycbFoG34rNDT+e94=;
+ b=T6XamDzcBlF6DI0Em/ryOHrIYKJ0zVqd05ygjwOGM+ptXuR6QZTXt2fGjANiw9C1F1nnoYmKmaAFoXSQRYGLATrDMVZ83eVOAwuAQHMFHgusb0ziq8NRXVlYCXKuJ2pYdN52HDEDv/IfUzmdhgD+HSVjINdbecJ2IM6kyGxX4no=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB2199.namprd15.prod.outlook.com (52.135.193.156) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Tue, 8 Oct 2019 04:56:26 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0%5]) with mapi id 15.20.2327.026; Tue, 8 Oct 2019
+ 04:56:26 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v4 bpf-next 6/7] libbpf: add
+ BPF_CORE_READ/BPF_CORE_READ_INTO helpers
+Thread-Topic: [PATCH v4 bpf-next 6/7] libbpf: add
+ BPF_CORE_READ/BPF_CORE_READ_INTO helpers
+Thread-Index: AQHVfWFOcTsVfqP3i0KD6451oBFXlKdQLrSA
+Date:   Tue, 8 Oct 2019 04:56:25 +0000
+Message-ID: <035617e9-2d0d-4082-8862-45bc4bb210fe@fb.com>
+References: <20191007224712.1984401-1-andriin@fb.com>
+ <20191007224712.1984401-7-andriin@fb.com>
+In-Reply-To: <20191007224712.1984401-7-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR2001CA0003.namprd20.prod.outlook.com
+ (2603:10b6:301:15::13) To BYAPR15MB2501.namprd15.prod.outlook.com
+ (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::3ea3]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 534241e0-6be3-44c5-a53b-08d74babdf73
+x-ms-traffictypediagnostic: BYAPR15MB2199:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB21990A50036A6031C16A2C1FD79A0@BYAPR15MB2199.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2582;
+x-forefront-prvs: 01842C458A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(136003)(376002)(39850400004)(346002)(189003)(199004)(36756003)(2501003)(46003)(71200400001)(71190400001)(66476007)(66556008)(64756008)(66446008)(66946007)(6436002)(478600001)(2906002)(2201001)(6512007)(486006)(86362001)(6486002)(476003)(2616005)(31696002)(229853002)(31686004)(11346002)(6116002)(305945005)(14444005)(256004)(25786009)(186003)(76176011)(7736002)(316002)(6246003)(446003)(81166006)(52116002)(99286004)(81156014)(14454004)(6506007)(386003)(4326008)(110136005)(54906003)(53546011)(8676002)(8936002)(5660300002)(102836004);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2199;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: A4Uo+HywVXWD2yU2lCeUV4UOeO5dKabV5WR2YxDk8oM72+JdTg8Y19oxt6SH5vc84+owa9DxrIXmDOUeLWDnMbOE5TJz2APAv97UAiJqQKls3z5LB1lsKhEWMUodqbHWpRgbakzRzXw2NNDPDvAquVhFjmMgPIgy1Sg1vdea3oemj0RaayXHEndrlxJCEmQv01KLMLySdl7heK3Q7WaePAKcPZvzQgEyoVRDF/HpVGW6IRHEdJugOgBWmOlOFc6mX+svf/PnRbDy0JUyRIob+V+AP0XwDzsV/YmSM4z3xpuHwSFA2DAnsJmlQtNVdylgReIkcVE5PVGF0FgibUa+eMpmh567OTBxDdzFZdMOlaVFD07Lifq/kM2Bs1Om6IE3lubrLUJM88k/qwy3iQIj3ONm7yClApivFp6ii5iCGXY=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DAB8701433E93848B1B9C82AE20420B4@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 534241e0-6be3-44c5-a53b-08d74babdf73
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2019 04:56:25.8892
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: R4LEkcQOCPnMW45rInR0zIJM7X4HtFHHp9sIN830v6Gpvik/ifCtzRwPH+dBNvg1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2199
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-08_01:2019-10-07,2019-10-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ adultscore=0 clxscore=1015 phishscore=0 spamscore=0 mlxscore=0
+ mlxlogscore=999 suspectscore=0 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1908290000 definitions=main-1910080050
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
-
-The openvswitch was supporting a MPLS label depth of 1 in the ingress
-direction though the userspace OVS supports a max depth of 3 labels.
-This change enables openvswitch module to support a max depth of
-3 labels in the ingress.
-
-Signed-off-by: Martin Varghese <martinvarghesenokia@gmail.com>
----
- net/openvswitch/actions.c      | 10 +++++++-
- net/openvswitch/flow.c         | 20 ++++++++++-----
- net/openvswitch/flow.h         |  9 ++++---
- net/openvswitch/flow_netlink.c | 55 +++++++++++++++++++++++++++++++++---------
- 4 files changed, 72 insertions(+), 22 deletions(-)
-
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 3572e11..eb5bed5 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -178,10 +178,14 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- {
- 	int err;
- 
-+	if (!key->mpls.num_labels_mask)
-+		return -EINVAL;
-+
- 	err = skb_mpls_pop(skb, ethertype);
- 	if (err)
- 		return err;
- 
-+	key->mpls.num_labels_mask >>= 1;
- 	invalidate_flow_key(key);
- 	return 0;
- }
-@@ -192,6 +196,7 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
- 	struct mpls_shim_hdr *stack;
- 	__be32 lse;
- 	int err;
-+	u32 i = 0;
- 
- 	stack = mpls_hdr(skb);
- 	lse = OVS_MASKED(stack->label_stack_entry, *mpls_lse, *mask);
-@@ -199,7 +204,10 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
- 	if (err)
- 		return err;
- 
--	flow_key->mpls.top_lse = lse;
-+	for (i = MPLS_LABEL_DEPTH - 1; i > 0; i--)
-+		flow_key->mpls.lse[i] = flow_key->mpls.lse[i - 1];
-+
-+	flow_key->mpls.lse[i] = *mpls_lse;
- 	return 0;
- }
- 
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index dca3b1e..c101355 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -699,27 +699,35 @@ static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
- 			memset(&key->ipv4, 0, sizeof(key->ipv4));
- 		}
- 	} else if (eth_p_mpls(key->eth.type)) {
--		size_t stack_len = MPLS_HLEN;
-+		u8 label_count = 1;
- 
-+		memset(&key->mpls, 0, sizeof(key->mpls));
- 		skb_set_inner_network_header(skb, skb->mac_len);
- 		while (1) {
- 			__be32 lse;
- 
--			error = check_header(skb, skb->mac_len + stack_len);
-+			error = check_header(skb, skb->mac_len +
-+					     label_count * MPLS_HLEN);
- 			if (unlikely(error))
- 				return 0;
- 
- 			memcpy(&lse, skb_inner_network_header(skb), MPLS_HLEN);
- 
--			if (stack_len == MPLS_HLEN)
--				memcpy(&key->mpls.top_lse, &lse, MPLS_HLEN);
-+			if (label_count <= MPLS_LABEL_DEPTH)
-+				memcpy(&key->mpls.lse[label_count - 1], &lse,
-+				       MPLS_HLEN);
- 
--			skb_set_inner_network_header(skb, skb->mac_len + stack_len);
-+			skb_set_inner_network_header(skb, skb->mac_len +
-+						     label_count * MPLS_HLEN);
- 			if (lse & htonl(MPLS_LS_S_MASK))
- 				break;
- 
--			stack_len += MPLS_HLEN;
-+			label_count++;
- 		}
-+		if (label_count > MPLS_LABEL_DEPTH)
-+			label_count = MPLS_LABEL_DEPTH;
-+
-+		key->mpls.num_labels_mask = GENMASK(label_count - 1, 0);
- 	} else if (key->eth.type == htons(ETH_P_IPV6)) {
- 		int nh_len;             /* IPv6 Header + Extensions */
- 
-diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
-index 3e2cc22..d9eccbe 100644
---- a/net/openvswitch/flow.h
-+++ b/net/openvswitch/flow.h
-@@ -30,6 +30,7 @@ enum sw_flow_mac_proto {
- 	MAC_PROTO_ETHERNET,
- };
- #define SW_FLOW_KEY_INVALID	0x80
-+#define MPLS_LABEL_DEPTH       3
- 
- /* Store options at the end of the array if they are less than the
-  * maximum size. This allows us to get the benefits of variable length
-@@ -85,9 +86,6 @@ struct sw_flow_key {
- 					 */
- 	union {
- 		struct {
--			__be32 top_lse;	/* top label stack entry */
--		} mpls;
--		struct {
- 			u8     proto;	/* IP protocol or lower 8 bits of ARP opcode. */
- 			u8     tos;	    /* IP ToS. */
- 			u8     ttl;	    /* IP TTL/hop limit. */
-@@ -135,6 +133,11 @@ struct sw_flow_key {
- 				} nd;
- 			};
- 		} ipv6;
-+		struct {
-+			u32 num_labels_mask;    /* labels present bitmap of effective length MPLS_LABEL_DEPTH */
-+			__be32 lse[MPLS_LABEL_DEPTH];     /* label stack entry  */
-+		} mpls;
-+
- 		struct ovs_key_nsh nsh;         /* network service header */
- 	};
- 	struct {
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index d7559c6..4eb04e9 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -424,7 +424,7 @@ size_t ovs_key_attr_size(void)
- 	[OVS_KEY_ATTR_DP_HASH]	 = { .len = sizeof(u32) },
- 	[OVS_KEY_ATTR_TUNNEL]	 = { .len = OVS_ATTR_NESTED,
- 				     .next = ovs_tunnel_key_lens, },
--	[OVS_KEY_ATTR_MPLS]	 = { .len = sizeof(struct ovs_key_mpls) },
-+	[OVS_KEY_ATTR_MPLS]	 = { .len = OVS_ATTR_VARIABLE },
- 	[OVS_KEY_ATTR_CT_STATE]	 = { .len = sizeof(u32) },
- 	[OVS_KEY_ATTR_CT_ZONE]	 = { .len = sizeof(u16) },
- 	[OVS_KEY_ATTR_CT_MARK]	 = { .len = sizeof(u32) },
-@@ -1628,10 +1628,26 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
- 
- 	if (attrs & (1 << OVS_KEY_ATTR_MPLS)) {
- 		const struct ovs_key_mpls *mpls_key;
-+		u32 hdr_len = 0;
-+		u32 label_count = 0, i = 0;
-+		u32 label_count_mask = 0;
- 
- 		mpls_key = nla_data(a[OVS_KEY_ATTR_MPLS]);
--		SW_FLOW_KEY_PUT(match, mpls.top_lse,
--				mpls_key->mpls_lse, is_mask);
-+		hdr_len = nla_len(a[OVS_KEY_ATTR_MPLS]);
-+		label_count = hdr_len / sizeof(struct ovs_key_mpls);
-+
-+		if (label_count == 0 || label_count > MPLS_LABEL_DEPTH ||
-+		    hdr_len % sizeof(struct ovs_key_mpls))
-+			return -EINVAL;
-+
-+		label_count_mask =  GENMASK(label_count - 1, 0);
-+
-+		for (i = 0 ; i < label_count; i++)
-+			SW_FLOW_KEY_PUT(match, mpls.lse[i],
-+					mpls_key[i].mpls_lse, is_mask);
-+
-+		SW_FLOW_KEY_PUT(match, mpls.num_labels_mask,
-+				label_count_mask, is_mask);
- 
- 		attrs &= ~(1 << OVS_KEY_ATTR_MPLS);
- 	 }
-@@ -2114,13 +2130,22 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
- 		ether_addr_copy(arp_key->arp_sha, output->ipv4.arp.sha);
- 		ether_addr_copy(arp_key->arp_tha, output->ipv4.arp.tha);
- 	} else if (eth_p_mpls(swkey->eth.type)) {
-+		u8 i = 0;
-+		u8 num_labels;
- 		struct ovs_key_mpls *mpls_key;
- 
--		nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS, sizeof(*mpls_key));
-+		num_labels = hweight_long(output->mpls.num_labels_mask);
-+		if (num_labels >= MPLS_LABEL_DEPTH)
-+			num_labels = MPLS_LABEL_DEPTH;
-+
-+		nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS,
-+				  num_labels * sizeof(*mpls_key));
- 		if (!nla)
- 			goto nla_put_failure;
-+
- 		mpls_key = nla_data(nla);
--		mpls_key->mpls_lse = output->mpls.top_lse;
-+		for (i = 0; i < num_labels; i++)
-+			mpls_key[i].mpls_lse = output->mpls.lse[i];
- 	}
- 
- 	if ((swkey->eth.type == htons(ETH_P_IP) ||
-@@ -3068,22 +3093,28 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 			break;
- 		}
- 
--		case OVS_ACTION_ATTR_POP_MPLS:
-+		case OVS_ACTION_ATTR_POP_MPLS: {
-+			__be16  proto;
- 			if (vlan_tci & htons(VLAN_CFI_MASK) ||
- 			    !eth_p_mpls(eth_type))
- 				return -EINVAL;
- 
--			/* Disallow subsequent L2.5+ set and mpls_pop actions
--			 * as there is no check here to ensure that the new
--			 * eth_type is valid and thus set actions could
--			 * write off the end of the packet or otherwise
--			 * corrupt it.
-+			/* Disallow subsequent L2.5+ set actions as there is
-+			 * no check here to ensure that the new eth type is
-+			 * valid and thus set actions could write off the
-+			 * end of the packet or otherwise corrupt it.
- 			 *
- 			 * Support for these actions is planned using packet
- 			 * recirculation.
- 			 */
--			eth_type = htons(0);
-+
-+			proto = nla_get_be16(a);
-+			if (!eth_p_mpls(proto))
-+				eth_type = htons(0);
-+			else
-+				eth_type =  proto;
- 			break;
-+		}
- 
- 		case OVS_ACTION_ATTR_SET:
- 			err = validate_set(a, key, sfa,
--- 
-1.8.3.1
-
+T24gMTAvNy8xOSAzOjQ3IFBNLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6DQo+IEFkZCBmZXcgbWFj
+cm9zIHNpbXBsaWZ5aW5nIEJDQy1saWtlIG11bHRpLWxldmVsIHByb2JlIHJlYWRzLCB3aGlsZSBh
+bHNvDQo+IGVtaXR0aW5nIENPLVJFIHJlbG9jYXRpb25zIGZvciBlYWNoIHJlYWQuDQo+IA0KPiBB
+Y2tlZC1ieTogSm9obiBGYXN0YWJlbmQgPGpvaG4uZmFzdGFiZW5kQGdtYWlsLmNvbT4NCj4gQWNr
+ZWQtYnk6IFNvbmcgTGl1IDxzb25nbGl1YnJhdmluZ0BmYi5jb20+DQo+IFNpZ25lZC1vZmYtYnk6
+IEFuZHJpaSBOYWtyeWlrbyA8YW5kcmlpbkBmYi5jb20+DQouLi4NCj4gKy8qDQo+ICsgKiBCUEZf
+Q09SRV9SRUFEKCkgaXMgdXNlZCB0byBzaW1wbGlmeSBCUEYgQ08tUkUgcmVsb2NhdGFibGUgcmVh
+ZCwgZXNwZWNpYWxseQ0KPiArICogd2hlbiB0aGVyZSBhcmUgZmV3IHBvaW50ZXIgY2hhc2luZyBz
+dGVwcy4NCj4gKyAqIEUuZy4sIHdoYXQgaW4gbm9uLUJQRiB3b3JsZCAob3IgaW4gQlBGIHcvIEJD
+Qykgd291bGQgYmUgc29tZXRoaW5nIGxpa2U6DQo+ICsgKglpbnQgeCA9IHMtPmEuYi5jLT5kLmUt
+PmYtPmc7DQo+ICsgKiBjYW4gYmUgc3VjY2luY3RseSBhY2hpZXZlZCB1c2luZyBCUEZfQ09SRV9S
+RUFEIGFzOg0KPiArICoJaW50IHggPSBCUEZfQ09SRV9SRUFEKHMsIGEuYi5jLCBkLmUsIGYsIGcp
+Ow0KPiArICoNCj4gKyAqIEJQRl9DT1JFX1JFQUQgd2lsbCBkZWNvbXBvc2UgYWJvdmUgc3RhdGVt
+ZW50IGludG8gNCBicGZfY29yZV9yZWFkIChCUEYNCj4gKyAqIENPLVJFIHJlbG9jYXRhYmxlIGJw
+Zl9wcm9iZV9yZWFkKCkgd3JhcHBlcikgY2FsbHMsIGxvZ2ljYWxseSBlcXVpdmFsZW50IHRvOg0K
+PiArICogMS4gY29uc3Qgdm9pZCAqX190ID0gcy0+YS5iLmM7DQo+ICsgKiAyLiBfX3QgPSBfX3Qt
+PmQuZTsNCj4gKyAqIDMuIF9fdCA9IF9fdC0+ZjsNCj4gKyAqIDQuIHJldHVybiBfX3QtPmc7DQo+
+ICsgKg0KPiArICogRXF1aXZhbGVuY2UgaXMgbG9naWNhbCwgYmVjYXVzZSB0aGVyZSBpcyBhIGhl
+YXZ5IHR5cGUgY2FzdGluZy9wcmVzZXJ2YXRpb24NCj4gKyAqIGludm9sdmVkLCBhcyB3ZWxsIGFz
+IGFsbCB0aGUgcmVhZHMgYXJlIGhhcHBlbmluZyB0aHJvdWdoIGJwZl9wcm9iZV9yZWFkKCkNCj4g
+KyAqIGNhbGxzIHVzaW5nIF9fYnVpbHRpbl9wcmVzZXJ2ZV9hY2Nlc3NfaW5kZXgoKSB0byBlbWl0
+IENPLVJFIHJlbG9jYXRpb25zLg0KPiArICoNCj4gKyAqIE4uQi4gT25seSB1cCB0byA5ICJmaWVs
+ZCBhY2Nlc3NvcnMiIGFyZSBzdXBwb3J0ZWQsIHdoaWNoIHNob3VsZCBiZSBtb3JlDQo+ICsgKiB0
+aGFuIGVub3VnaCBmb3IgYW55IHByYWN0aWNhbCBwdXJwb3NlLg0KPiArICovDQo+ICsjZGVmaW5l
+IEJQRl9DT1JFX1JFQUQoc3JjLCBhLCAuLi4pCQkJCQkgICAgXA0KPiArCSh7CQkJCQkJCQkgICAg
+XA0KPiArCQlfX190eXBlKHNyYywgYSwgIyNfX1ZBX0FSR1NfXykgX19yOwkJCSAgICBcDQo+ICsJ
+CUJQRl9DT1JFX1JFQURfSU5UTygmX19yLCBzcmMsIGEsICMjX19WQV9BUkdTX18pOwkgICAgXA0K
+PiArCQlfX3I7CQkJCQkJCSAgICBcDQo+ICsJfSkNCj4gKw0KDQpTaW5jZSB3ZSdyZSBzcGxpdHRp
+bmcgdGhpbmdzIGludG8NCmJwZl97aGVscGVycyxoZWxwZXJfZGVmcyxlbmRpYW4sdHJhY2luZ30u
+aA0KaG93IGFib3V0IGFkZGluZyBhbGwgY29yZSBtYWNyb3MgaW50byBicGZfY29yZV9yZWFkLmgg
+Pw0KI2RlZmluZV9fX2NvbmNhdCwgX19fZW1wdHkgYXJlIHZlcnkgZ2VuZXJpYyBuYW1lcy4NCkkn
+ZCByYXRoZXIgY29udGFpbiB0aGUgcmlzayBvZiBjb25mbGljdHMgdG8gcHJvZ3MgdGhhdCBhcmUg
+Z29pbmcNCnRvIHVzZSBjby1yZSBpbnN0ZWFkIG9mIGZvcmNpbmcgaXQgb24gYWxsIHByb2dzIHRo
+YXQgdXNlIGJwZl9oZWxwZXJzLmguDQpXaXRoIG15IGJ0ZiB2bWxpbnV4IHN0dWZmIGFsbCB0aGVz
+ZSBicGZfcHJvYmVfcmVhZCooKSB3cmFwcGVycw0KaG9wZWZ1bGx5IHdpbGwgYmUgb2Jzb2xldGUg
+ZXZlbnR1YWxseS4gU28ga2VlcGluZyB0aGVtIHNlcGFyYXRlIGluIA0KYnBmX2NvcmVfcmVhZC5o
+IHdvdWxkIGhlbHAgdGhlIHRyYW5zaXRpb24gdG9vLg0K
