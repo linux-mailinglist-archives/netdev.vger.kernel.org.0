@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 788E3D03DA
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 01:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0A1D03E0
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 01:10:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729671AbfJHXKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 19:10:25 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54920 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725908AbfJHXKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 19:10:24 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x98N9vpg012220
-        for <netdev@vger.kernel.org>; Tue, 8 Oct 2019 16:10:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=oIhq0y55owKbTb1aWo8CNJEaH59x0DKJW3ggGY6nmBs=;
- b=KRDl1k8XX/Q50yOD0Yb4HPTjVDQ6cEHMBzsoJru5Q2QxaSGb0jc++jcXb/MLLdIJ6JjA
- GfXuMcfFRUKeZNctok4Q1oUP7eOl4+ts6vCKsfaCIuDem0LVPmBK/sZT1KnFYiUcqESA
- bhP1KhwLjJxliGeOz80QHpFmldUyh3whwxw= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2vgprk496a-19
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 16:10:23 -0700
-Received: from 2401:db00:12:9028:face:0:29:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 8 Oct 2019 16:10:17 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 098098618FA; Tue,  8 Oct 2019 16:10:17 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 3/3] selftests/bpf: fix btf_dump padding test case
-Date:   Tue, 8 Oct 2019 16:10:08 -0700
-Message-ID: <20191008231009.2991130-4-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191008231009.2991130-1-andriin@fb.com>
-References: <20191008231009.2991130-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1727966AbfJHXK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 19:10:56 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48723 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725908AbfJHXK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 19:10:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1570576254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8mQ/AQeOBE8ywKhgESd5kfsCunrLGPABoUZLkxezye0=;
+        b=Q/OiCMkRwc7FHrjMruB3w2Tiw41CWyRnUFcLtmIGKot2qrWQ5wOZKBakhvaXqLjYjoESHm
+        q0l9WMCGFw3XSnJ6FOPoJ1smP8fmSJVSA+kOGBMKPyqQ327gxpaE8ThpXDVhOFXAjb2X12
+        Pog2UeTcXbQzQNGjneNVNJ2bS4eDmr0=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-382-2mUTnoGWPDa98MIrTDQQOA-1; Tue, 08 Oct 2019 19:10:51 -0400
+Received: by mail-wr1-f70.google.com with SMTP id b6so203705wrw.2
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 16:10:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DFxgMKQmeN7Y/Loc2XddzVm+DZL4YYnrclUMj8Tltzw=;
+        b=QiA0eNPCAg4Z9XFiC6j9DDbNzFzhwFaiEvio3eocJy5WA8heaGwiRVD6/BgRIpmYZh
+         yzqtjAfy5reNdlxFpllQhYHlaq+pdBQ4URluaNSExVUwwvNMbXda/Du01vsAAfvpPx76
+         s44D84yciA9o7JHX5equXEK25SCHC6km4zUelB2amj5qV3YXo6X2Pq8l3wgWPczrsMVK
+         RZAkPMYqtkbLNGsH2rF81/G/d3mM9/KzFrRc8r5w+k/REfj2T4anCCepr4Xcln0Nmqsz
+         KHU29WaexS50Dnvda5M8NeiKUPLC6tRRVVahs4MCpr+rHpYwR7hoWYR+lCkvxyougHQX
+         949w==
+X-Gm-Message-State: APjAAAXE9+Huqb4qQsSW+FwU4kQccH925wRk3dkDX5NWlWc/TwliqMQz
+        eGpDasmzeebFg4vWkJyPF+q4fme1s/ANeKquItGNJETpfX7FZfv5rZBg/H4xvB4vDrq0Z3wprqt
+        T8GXkoq8Ed75f7Yz4
+X-Received: by 2002:a1c:7e10:: with SMTP id z16mr170440wmc.11.1570576249747;
+        Tue, 08 Oct 2019 16:10:49 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzx7+Hi4qLrdPP4cSQKpJqwzL9gnZXlLkmUPDIErTC21t1tHO8b+4iYng4leQFkuwOk6Z8ngg==
+X-Received: by 2002:a1c:7e10:: with SMTP id z16mr170432wmc.11.1570576249573;
+        Tue, 08 Oct 2019 16:10:49 -0700 (PDT)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id t13sm436705wra.70.2019.10.08.16.10.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2019 16:10:48 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 01:10:47 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net] netns: fix NLM_F_ECHO mechanism for RTM_NEWNSID
+Message-ID: <20191008231047.GB4779@linux.home>
+References: <20191003161940.GA31862@linux.home>
+ <20191007115835.17882-1-nicolas.dichtel@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-08_09:2019-10-08,2019-10-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- priorityscore=1501 adultscore=0 malwarescore=0 phishscore=0 mlxscore=0
- mlxlogscore=678 impostorscore=0 spamscore=0 clxscore=1015 suspectscore=8
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910080183
-X-FB-Internal: deliver
+In-Reply-To: <20191007115835.17882-1-nicolas.dichtel@6wind.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: 2mUTnoGWPDa98MIrTDQQOA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Existing padding test case for btf_dump has a good test that was
-supposed to test padding generation at the end of a struct, but its
-expected output was specified incorrectly. Fix this.
+On Mon, Oct 07, 2019 at 01:58:35PM +0200, Nicolas Dichtel wrote:
+> The flag NLM_F_ECHO aims to reply to the user the message notified to all
+> listeners.
+> It was not the case with the command RTM_NEWNSID, let's fix this.
+>=20
+> Fixes: 0c7aecd4bde4 ("netns: add rtnl cmd to add and get peer netns ids")
+> Reported-by: Guillaume Nault <gnault@redhat.com>
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> ---
+>  net/core/net_namespace.c | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+> index a0e0d298c991..f496ce0e8da8 100644
+> --- a/net/core/net_namespace.c
+> +++ b/net/core/net_namespace.c
+> -static void rtnl_net_notifyid(struct net *net, int cmd, int id)
+> +static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 port=
+id,
+> +=09=09=09      struct nlmsghdr *nlh)
+>  {
+>  =09struct net_fill_args fillargs =3D {
+>  =09=09.cmd =3D cmd,
 
-Fixes: 2d2a3ad872f8 ("selftests/bpf: add btf_dump BTF-to-C conversion tests")
-Reported-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../testing/selftests/bpf/progs/btf_dump_test_case_padding.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_padding.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_padding.c
-index 3a62119c7498..35c512818a56 100644
---- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_padding.c
-+++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_padding.c
-@@ -62,6 +62,10 @@ struct padded_a_lot {
-  *	long: 64;
-  *	long: 64;
-  *	int b;
-+ *	long: 32;
-+ *	long: 64;
-+ *	long: 64;
-+ *	long: 64;
-  *};
-  *
-  */
-@@ -95,7 +99,6 @@ struct zone_padding {
- struct zone {
- 	int a;
- 	short b;
--	short: 16;
- 	struct zone_padding __pad__;
- };
- 
--- 
-2.17.1
+We also need to set .portid and .seq otherwise rtnl_net_fill() builds
+a netlink message with invalid port id and sequence number (as you
+noted in your previous message).
 
