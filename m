@@ -2,179 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F660CF902
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:57:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E65B7CF8E5
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:51:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730800AbfJHL5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 07:57:16 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33648 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730495AbfJHL5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:57:15 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q10so10678089pfl.0
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 04:57:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=WeIHfo7ERuyeIDHUmtZRg3+/ZYCLq8h78OdWyljKhqg=;
-        b=u857IKg52gmpI2ROyRw0kCe3A4j61rjXTprHdCewHHnHqXH6/uQpqXDS3MfdLIZyjk
-         kq6MhncJVYdKRutzAxHRGD79bTPWMxwMQIujkZNTBdQ2WZP8Gg6/vlaPxSi9IKQUxPCc
-         nWfanMmClwE5sCWNASfpo+wjcg/t0APv0XXiLUgXyijab5Sv0a9ANqUywnMtrkNAKRTi
-         NilT7uGXHRloXkNGi1QGLqedcqD4PyL6Xif86CRZWh6pFaDMBYephCeF3D7c5Kbn5MH3
-         Ad4nkdgT+FX43FY9+eBKw0eCuv2IjL8NeZA0SQ8Ws0+CxvSIbPtQAYQwoJkXFAMfj3hr
-         OSEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=WeIHfo7ERuyeIDHUmtZRg3+/ZYCLq8h78OdWyljKhqg=;
-        b=FPKdkCb/enhU9ELZ2H8Wdh7icI/VnSzdo596b+JB24u32yqHK+VrvgTwcCn7/hFlm7
-         beOVk58dOi4FD3QtcfqxMl2n3e5PjkQI6sFK8IJ7zk6PLuO6yFr+OIMJ0EfdRXRUlaqr
-         2DL9KoUllsQK6G9fzA2/1gAoDlA4jJ+obKIMQNwk3AD4mdPyis4oLWSYgrPH/8NvgyU0
-         ioGeRUv1a0dSBVPQi/9gpUxre0raKrAVn1+SLJOp7hS1hx00j5smjJi9FoldUeAf4zXv
-         w8j5B3FML6umVWxmxCeTNr7Mt1CS/YOiG24WeWY71kYtwqRuKP7TvoxcwaACxQJKK9Vs
-         BFng==
-X-Gm-Message-State: APjAAAVTBGZOW8N8d2PgChqINpmw9a0uzmmXkKmFRycMPEtfbnW/RKe1
-        AppEmGNrVzTij4o7EXCLiVHI/vt8
-X-Google-Smtp-Source: APXvYqwvlhs3BFYamWDyobkMjwus1K4M65YbULz1F0bhWsHECTvw6HbSF8vqohY3UQ8cK7PvwKQRLw==
-X-Received: by 2002:a17:90a:2301:: with SMTP id f1mr5387893pje.121.1570535834429;
-        Tue, 08 Oct 2019 04:57:14 -0700 (PDT)
-Received: from local.opencloud.tech.localdomain ([203.100.54.194])
-        by smtp.gmail.com with ESMTPSA id b14sm18149932pfi.95.2019.10.08.04.57.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Oct 2019 04:57:13 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     gvrose8192@gmail.com, pshelar@ovn.org
-Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v2 10/10] net: openvswitch: simplify the ovs_dp_cmd_new
-Date:   Tue,  8 Oct 2019 09:00:38 +0800
-Message-Id: <1570496438-15460-11-git-send-email-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1570496438-15460-1-git-send-email-xiangxia.m.yue@gmail.com>
-References: <1570496438-15460-1-git-send-email-xiangxia.m.yue@gmail.com>
+        id S1730767AbfJHLum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 07:50:42 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:53749 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730503AbfJHLum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:50:42 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 756D521E3E;
+        Tue,  8 Oct 2019 07:50:41 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 08 Oct 2019 07:50:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=from
+        :to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=fm3; bh=umrX+JUQqbY3FSsNbyshpYr96O
+        AybZxQrPbWF4qGYPk=; b=FnxLoC7ArxtL3Donfyk9DyhnEcnCy4f3DHUDENkyBF
+        R0iHi7DxJ1sBcEcfxLT7KKv3sOPM6b3XGy77ILTf1UsjTP8Mef4ne9JYsrlkd6Ex
+        4Yz8LNs6mNtVmb/A+1CNifLLF0YrTRQgbE8ANRd2GNuckP3jLB2enf8jyjtO2+gS
+        f6SsuomM/Zo7cno71tR6/FAaDOZVofbD2teT2RzRPXacVeEOFK9+WOmsjKJ/S62x
+        30g7b7RjgXu6yRX2EOTg9zm1Zdi+t4DCsMZ35WGkr2n5RDLAg9AXC/4BKaRywF9F
+        EZSvP+kIFjA+vMiJSSI8w1rNFw4U2pO7N7KhN0u4NY8w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=umrX+JUQqbY3FSsNb
+        yshpYr96OAybZxQrPbWF4qGYPk=; b=RUjjnziVaMEWUEupHB139IudGeHAL0Cem
+        q3KPjI73IAVWg2jvCUfs1abtQMYibDRqIVtlMgFe5yXUWrWDLXnxSipUns+kRB4o
+        nHOuTlrrNYQcaFYQm78sFeo0IF0J6lc7oI52b22ze8jFapy2LDWUQOfnmmYoTmr/
+        Wbew3maW399k5qpzeuXM1U0rP3Sje1q/YVJnqatT5JzBh4DRbWOOYjXQl+iVGSys
+        z6aLXcH1557/T9CH+zZRtIaGnWiBTqt0vNPVEKy2/yE5EyHQbaX96Ck+YfhWcT3z
+        L1sO+i9A3gkDObd4ZhZV1aOGSgsDDCEjFZb4DYrEv2/7xRRwslmUg==
+X-ME-Sender: <xms:D3icXfIP6zDjWQAehaozBBeGxNJwHy4t9OvmcoNfMAFirxxK373MkQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrheelgdegjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpeetnhgurhgvficulfgvfhhfvghrhicuoegrnhgurhgvfiesrghjrdhi
+    ugdrrghuqeenucfkphepvddtfedrheejrddvudehrddujeeknecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpegrnhgurhgvfiesrghjrdhiugdrrghunecuvehluhhsthgvrhfuihiivgep
+    td
+X-ME-Proxy: <xmx:D3icXdFWTX2LSPxYLecgdzwmC8Y6ie71dIaTYYV4PooUsJ42OYVQIQ>
+    <xmx:D3icXeDmxPrV9bTn7d7TVSQm02yYzFMABpGn8T-4i78aqdoFA63jkA>
+    <xmx:D3icXe4j5oGFNEkaE2rzqLEHSOxGC52cCfGO2d817I4dsiVfa4TbAQ>
+    <xmx:EXicXR8ojn4PCVXzrojQcpAecFcp6SJcmaJnU5icZsgFg5X_0vMT1A>
+Received: from mistburn.lan (203-57-215-178.dyn.iinet.net.au [203.57.215.178])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5312680063;
+        Tue,  8 Oct 2019 07:50:36 -0400 (EDT)
+From:   Andrew Jeffery <andrew@aj.id.au>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        joel@jms.id.au, benh@kernel.crashing.org
+Subject: [PATCH 0/3] net: ftgmac100: Ungate RCLK for RMII on ASPEED MACs
+Date:   Tue,  8 Oct 2019 22:21:40 +1030
+Message-Id: <20191008115143.14149-1-andrew@aj.id.au>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Hello,
 
-use the specified functions to init resource.
+This series slightly extends the devicetree binding and driver for the
+FTGMAC100 to describe an optional RMII RCLK gate in the clocks property.
+Currently it's necessary for the kernel to ungate RCLK on the AST2600 in NCSI
+configurations as u-boot does not yet support NCSI (which uses the RMII).
 
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- net/openvswitch/datapath.c | 60 +++++++++++++++++++++++++++++-----------------
- 1 file changed, 38 insertions(+), 22 deletions(-)
+Please review!
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index aeb76e4..4d48e48 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1576,6 +1576,31 @@ static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
- 	return 0;
- }
- 
-+static int ovs_dp_stats_init(struct datapath *dp)
-+{
-+	dp->stats_percpu = netdev_alloc_pcpu_stats(struct dp_stats_percpu);
-+	if (!dp->stats_percpu)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static int ovs_dp_vport_init(struct datapath *dp)
-+{
-+	int i;
-+
-+	dp->ports = kmalloc_array(DP_VPORT_HASH_BUCKETS,
-+				  sizeof(struct hlist_head),
-+				  GFP_KERNEL);
-+	if (!dp->ports)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < DP_VPORT_HASH_BUCKETS; i++)
-+		INIT_HLIST_HEAD(&dp->ports[i]);
-+
-+	return 0;
-+}
-+
- static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct nlattr **a = info->attrs;
-@@ -1584,7 +1609,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	struct datapath *dp;
- 	struct vport *vport;
- 	struct ovs_net *ovs_net;
--	int err, i;
-+	int err;
- 
- 	err = -EINVAL;
- 	if (!a[OVS_DP_ATTR_NAME] || !a[OVS_DP_ATTR_UPCALL_PID])
-@@ -1597,35 +1622,26 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	err = -ENOMEM;
- 	dp = kzalloc(sizeof(*dp), GFP_KERNEL);
- 	if (dp == NULL)
--		goto err_free_reply;
-+		goto err_destroy_reply;
- 
- 	ovs_dp_set_net(dp, sock_net(skb->sk));
- 
- 	/* Allocate table. */
- 	err = ovs_flow_tbl_init(&dp->table);
- 	if (err)
--		goto err_free_dp;
-+		goto err_destroy_dp;
- 
--	dp->stats_percpu = netdev_alloc_pcpu_stats(struct dp_stats_percpu);
--	if (!dp->stats_percpu) {
--		err = -ENOMEM;
-+	err = ovs_dp_stats_init(dp);
-+	if (err)
- 		goto err_destroy_table;
--	}
- 
--	dp->ports = kmalloc_array(DP_VPORT_HASH_BUCKETS,
--				  sizeof(struct hlist_head),
--				  GFP_KERNEL);
--	if (!dp->ports) {
--		err = -ENOMEM;
--		goto err_destroy_percpu;
--	}
--
--	for (i = 0; i < DP_VPORT_HASH_BUCKETS; i++)
--		INIT_HLIST_HEAD(&dp->ports[i]);
-+	err = ovs_dp_vport_init(dp);
-+	if (err)
-+		goto err_destroy_stats;
- 
- 	err = ovs_meters_init(dp);
- 	if (err)
--		goto err_destroy_ports_array;
-+		goto err_destroy_ports;
- 
- 	/* Set up our datapath device. */
- 	parms.name = nla_data(a[OVS_DP_ATTR_NAME]);
-@@ -1675,15 +1691,15 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 
- err_destroy_meters:
- 	ovs_meters_exit(dp);
--err_destroy_ports_array:
-+err_destroy_ports:
- 	kfree(dp->ports);
--err_destroy_percpu:
-+err_destroy_stats:
- 	free_percpu(dp->stats_percpu);
- err_destroy_table:
- 	ovs_flow_tbl_destroy(&dp->table);
--err_free_dp:
-+err_destroy_dp:
- 	kfree(dp);
--err_free_reply:
-+err_destroy_reply:
- 	kfree_skb(reply);
- err:
- 	return err;
+Andrew
+
+Andrew Jeffery (3):
+  dt-bindings: net: ftgmac100: Document AST2600 compatible
+  dt-bindings: net: ftgmac100: Describe clock properties
+  net: ftgmac100: Ungate RCLK for RMII on ASPEED MACs
+
+ .../devicetree/bindings/net/ftgmac100.txt     |  7 ++++
+ drivers/net/ethernet/faraday/ftgmac100.c      | 35 +++++++++++++++----
+ 2 files changed, 35 insertions(+), 7 deletions(-)
+
 -- 
-1.8.3.1
+2.20.1
 
