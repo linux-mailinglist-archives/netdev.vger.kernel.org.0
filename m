@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94B42CF8FA
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 579DFCF8FB
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730668AbfJHL47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 07:56:59 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:45410 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729790AbfJHL46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:56:58 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y72so10605125pfb.12
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 04:56:56 -0700 (PDT)
+        id S1730678AbfJHL5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 07:57:00 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36395 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730495AbfJHL47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:56:59 -0400
+Received: by mail-pg1-f196.google.com with SMTP id 23so10136165pgk.3
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 04:56:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gJaIl+RfFTmhef/KM/zWIGJ5ByyxZNmZJQ6mhNGsVZc=;
-        b=VsLVEcKJmB6a5DnhcNchpTx4lWKsEKA478UYtJ8qfsjzUihoTkDk8VEdAF4oNod4W0
-         zrm/8hJItYYrdL8CrGmS+N3bDXriUPTO+Q/BoRwqbW49UJJpejLSPTb7XoIj0I5VBRMU
-         madteEyzNl1ipyBZHPu7KrcJnatPAwkW2G/IEdseFkb6VXaRM+QHD15gMbVzFOt0rkHr
-         m3m6EDuryU8pKQ30zdUPWi+s5gTcucGRXfkGEf9Rb5pPQW5q4eNG9dVEafAUTKYr7iE4
-         SCVVpJWqbL1Sx3MmDl69OWNMjc1refOvRvVSRZkfp8N1U2q9YXhuOb3xlFIoFj60tdNW
-         2CUg==
+        bh=PSQ6n7rEGH9ybWq76aljx63raNUc8N3PNSc/VIn9XVQ=;
+        b=lmuYwW1Hs1L5Boz44uCZKYWo204lVNQTbP61IpM7eXw7FT3ZECnl9ugVROQVJeNwOs
+         C3TOI13+uDxPORHBCtg+vk54rNcEKsfSug5PmJdNdW8wI7X+yPCSD7zkbg1nUTScMqdq
+         r1r32xV2OKSpYABX2Vi+7BImung2L3GKtt1PSEzbIGqvE8D/ccW381sS2OftF1HImPI2
+         UYfA5MHTt6ZI2H1098CRFjoo7aX4FUACNi1BOOGO/BD31UUjsoI5QQmoFV4nVNSqM0eo
+         Vi4c6YHOkcOmBpEuVp5qGEKDRqDb4ZZEBJxj8L7P8OU1eBn4oe/gIXF43EUqHm9z52no
+         /0hA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=gJaIl+RfFTmhef/KM/zWIGJ5ByyxZNmZJQ6mhNGsVZc=;
-        b=MM49hQX63KGky1nVCnFen8q5ZqnqnEuGSQNKAWb86dQZ7A95slOaOf/IK4xrMnxkS1
-         I2Za7i6oXsXkFWSHNW2+bbZOGDzoOXah11aCsjl1WCUFCx6g+pMJOTxCxZ/HYl81pHKL
-         fFVt47djrHLJcsUZRwtgA1EdI6IV0sXgn3gRA2Xp88oqyETeuTNfOJE9oH2KM8IttU6B
-         h73lKvoyZuuN4jOe8af/KTK9sSKZQlksLOlgzz6hFsl8sQGJJtAPTQKTl4CtZPRZGWop
-         pIoOPRhORGU4Vq6GmAINMLKcJCNsKMbOcF3AOWwG8uOUMsCuQH3Rr6ZEBkAccMOVjsRs
-         3FYA==
-X-Gm-Message-State: APjAAAVgq29obQceSWkKePVt3IWHhB/adkPAKY7+I36/uLgUo4gDXh9h
-        ic+vyjuyaPPNW8WYisOE7NbbVsms
-X-Google-Smtp-Source: APXvYqxfmirN0RuoeVd7lC9h/fMPGAXLkmEqXDWHtLFHicJfldmY7fST+mSLJEvWUUJcq3kBOLRuVw==
-X-Received: by 2002:a63:2447:: with SMTP id k68mr22309926pgk.214.1570535816357;
-        Tue, 08 Oct 2019 04:56:56 -0700 (PDT)
+        bh=PSQ6n7rEGH9ybWq76aljx63raNUc8N3PNSc/VIn9XVQ=;
+        b=RNU3pN4zqn0JgUVTwyGCOE8oqqWs4x+YppuTBac2vkjqZa6Q3Ome0db5v0zIeCluFj
+         2JkVlQc7ha0w8s5DMepMJY7CDAnp6TN7rBIda231AInrNCvyXsz9vcOhSbJbxpvEiPQL
+         SHIr+CznCEcW2rsAMk8PB2O2hSIK4B/TC/DuJswa5n8Buh2jDtWb8dNfrcUiWBOxk1Is
+         pHyUnQdHtNYTRwy8j+KCoKj63Bgxcwq2DqEEaw/9eq7TJBsJouxPr4IsRoQSn2m35gSB
+         VRiNH+0tg6DyLqhhttajbECJhtP9o20jHa7dvNr2zA1c+sOdKFVznQE2aEw0ReLclJVX
+         JC1w==
+X-Gm-Message-State: APjAAAXjY0W3ZHZS1dCnYwZQup2EclNUFdmCNbkLcetiMUyK0U1/hNAr
+        GrhE2ytBJnJFEUgH68U2GGLNctXP
+X-Google-Smtp-Source: APXvYqxCRBOAVAarXBXBZDM1WAS47eHSOxIZUrHJPWsw884RzG0DhH/KXf6EGuhTaaFc5jU8FsG6qw==
+X-Received: by 2002:a63:5615:: with SMTP id k21mr37006318pgb.323.1570535818499;
+        Tue, 08 Oct 2019 04:56:58 -0700 (PDT)
 Received: from local.opencloud.tech.localdomain ([203.100.54.194])
-        by smtp.gmail.com with ESMTPSA id b14sm18149932pfi.95.2019.10.08.04.56.54
+        by smtp.gmail.com with ESMTPSA id b14sm18149932pfi.95.2019.10.08.04.56.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Oct 2019 04:56:55 -0700 (PDT)
+        Tue, 08 Oct 2019 04:56:57 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     gvrose8192@gmail.com, pshelar@ovn.org
 Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v2 02/10] net: openvswitch: convert mask list in mask array
-Date:   Tue,  8 Oct 2019 09:00:30 +0800
-Message-Id: <1570496438-15460-3-git-send-email-xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v2 03/10] net: openvswitch: shrink the mask array if necessary
+Date:   Tue,  8 Oct 2019 09:00:31 +0800
+Message-Id: <1570496438-15460-4-git-send-email-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1570496438-15460-1-git-send-email-xiangxia.m.yue@gmail.com>
 References: <1570496438-15460-1-git-send-email-xiangxia.m.yue@gmail.com>
@@ -59,425 +59,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Port the codes to linux upstream and with little changes.
+When creating and inserting flow-mask, if there is no available
+flow-mask, we realloc the mask array. When removing flow-mask,
+if necessary, we shrink mask array.
 
-Pravin B Shelar, says:
-| mask caches index of mask in mask_list. On packet recv OVS
-| need to traverse mask-list to get cached mask. Therefore array
-| is better for retrieving cached mask. This also allows better
-| cache replacement algorithm by directly checking mask's existence.
-
-Link: https://github.com/openvswitch/ovs/commit/d49fc3ff53c65e4eca9cabd52ac63396746a7ef5
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- net/openvswitch/flow.h       |   1 -
- net/openvswitch/flow_table.c | 210 ++++++++++++++++++++++++++++++++-----------
- net/openvswitch/flow_table.h |   8 +-
- 3 files changed, 167 insertions(+), 52 deletions(-)
+ net/openvswitch/flow_table.c | 33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
-diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
-index b830d5f..8080518 100644
---- a/net/openvswitch/flow.h
-+++ b/net/openvswitch/flow.h
-@@ -166,7 +166,6 @@ struct sw_flow_key_range {
- struct sw_flow_mask {
- 	int ref_count;
- 	struct rcu_head rcu;
--	struct list_head list;
- 	struct sw_flow_key_range range;
- 	struct sw_flow_key key;
- };
 diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index 3d515c0..aab7a27 100644
+index aab7a27..ff4c4b049 100644
 --- a/net/openvswitch/flow_table.c
 +++ b/net/openvswitch/flow_table.c
-@@ -34,6 +34,7 @@
- #include <net/ndisc.h>
- 
- #define TBL_MIN_BUCKETS		1024
-+#define MASK_ARRAY_SIZE_MIN	16
- #define REHASH_INTERVAL		(10 * 60 * HZ)
- 
- #define MC_HASH_SHIFT		8
-@@ -168,9 +169,51 @@ static struct table_instance *table_instance_alloc(int new_size)
- 	return ti;
+@@ -693,6 +693,23 @@ static struct table_instance *table_instance_expand(struct table_instance *ti,
+ 	return table_instance_rehash(ti, ti->n_buckets * 2, ufid);
  }
  
-+static struct mask_array *tbl_mask_array_alloc(int size)
++static void tbl_mask_array_delete_mask(struct mask_array *ma,
++				       struct sw_flow_mask *mask)
 +{
-+	struct mask_array *new;
-+
-+	size = max(MASK_ARRAY_SIZE_MIN, size);
-+	new = kzalloc(sizeof(struct mask_array) +
-+		      sizeof(struct sw_flow_mask *) * size, GFP_KERNEL);
-+	if (!new)
-+		return NULL;
-+
-+	new->count = 0;
-+	new->max = size;
-+
-+	return new;
-+}
-+
-+static int tbl_mask_array_realloc(struct flow_table *tbl, int size)
-+{
-+	struct mask_array *old;
-+	struct mask_array *new;
-+
-+	new = tbl_mask_array_alloc(size);
-+	if (!new)
-+		return -ENOMEM;
-+
-+	old = ovsl_dereference(tbl->mask_array);
-+	if (old) {
-+		int i;
-+
-+		for (i = 0; i < old->max; i++) {
-+			if (ovsl_dereference(old->masks[i]))
-+				new->masks[new->count++] = old->masks[i];
-+		}
-+	}
-+
-+	rcu_assign_pointer(tbl->mask_array, new);
-+	kfree_rcu(old, rcu);
-+
-+	return 0;
-+}
-+
- int ovs_flow_tbl_init(struct flow_table *table)
- {
- 	struct table_instance *ti, *ufid_ti;
-+	struct mask_array *ma;
- 
- 	table->mask_cache = __alloc_percpu(sizeof(struct mask_cache_entry) *
- 					   MC_HASH_ENTRIES,
-@@ -178,9 +221,13 @@ int ovs_flow_tbl_init(struct flow_table *table)
- 	if (!table->mask_cache)
- 		return -ENOMEM;
- 
-+	ma = tbl_mask_array_alloc(MASK_ARRAY_SIZE_MIN);
-+	if (!ma)
-+		goto free_mask_cache;
-+
- 	ti = table_instance_alloc(TBL_MIN_BUCKETS);
- 	if (!ti)
--		goto free_mask_cache;
-+		goto free_mask_array;
- 
- 	ufid_ti = table_instance_alloc(TBL_MIN_BUCKETS);
- 	if (!ufid_ti)
-@@ -188,7 +235,7 @@ int ovs_flow_tbl_init(struct flow_table *table)
- 
- 	rcu_assign_pointer(table->ti, ti);
- 	rcu_assign_pointer(table->ufid_ti, ufid_ti);
--	INIT_LIST_HEAD(&table->mask_list);
-+	rcu_assign_pointer(table->mask_array, ma);
- 	table->last_rehash = jiffies;
- 	table->count = 0;
- 	table->ufid_count = 0;
-@@ -196,6 +243,8 @@ int ovs_flow_tbl_init(struct flow_table *table)
- 
- free_ti:
- 	__table_instance_destroy(ti);
-+free_mask_array:
-+	kfree(ma);
- free_mask_cache:
- 	free_percpu(table->mask_cache);
- 	return -ENOMEM;
-@@ -255,6 +304,7 @@ void ovs_flow_tbl_destroy(struct flow_table *table)
- 	struct table_instance *ufid_ti = rcu_dereference_raw(table->ufid_ti);
- 
- 	free_percpu(table->mask_cache);
-+	kfree_rcu(table->mask_array, rcu);
- 	table_instance_destroy(ti, ufid_ti, false);
- }
- 
-@@ -460,17 +510,27 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
- 
- static struct sw_flow *flow_lookup(struct flow_table *tbl,
- 				   struct table_instance *ti,
-+				   struct mask_array *ma,
- 				   const struct sw_flow_key *key,
--				   u32 *n_mask_hit)
-+				   u32 *n_mask_hit,
-+				   u32 *index)
- {
--	struct sw_flow_mask *mask;
- 	struct sw_flow *flow;
 +	int i;
- 
--	list_for_each_entry_rcu(mask, &tbl->mask_list, list) {
--		flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
--		if (flow)  /* Found */
--			return flow;
-+	for (i = 0; i < ma->max; i++)  {
-+		struct sw_flow_mask *mask;
 +
-+		mask = rcu_dereference_ovsl(ma->masks[i]);
-+		if (mask) {
-+			flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
-+			if (flow) { /* Found */
-+				*index = i;
-+				return flow;
-+			}
-+		}
- 	}
-+
- 	return NULL;
- }
- 
-@@ -486,6 +546,7 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 					  u32 skb_hash,
- 					  u32 *n_mask_hit)
- {
-+	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
- 	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
- 	struct mask_cache_entry  *entries, *ce, *del;
- 	struct sw_flow *flow;
-@@ -493,8 +554,11 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 	int seg;
- 
- 	*n_mask_hit = 0;
--	if (unlikely(!skb_hash))
--		return flow_lookup(tbl, ti, key, n_mask_hit);
-+	if (unlikely(!skb_hash)) {
-+		u32 __always_unused mask_index;
-+
-+		return flow_lookup(tbl, ti, ma, key, n_mask_hit, &mask_index);
-+	}
- 
- 	del = NULL;
- 	entries = this_cpu_ptr(tbl->mask_cache);
-@@ -507,37 +571,33 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 
- 		if (ce->skb_hash == skb_hash) {
- 			struct sw_flow_mask *mask;
--			int i;
--
--			i = 0;
--			list_for_each_entry_rcu(mask, &tbl->mask_list, list) {
--				if (ce->mask_index == i++) {
--					flow = masked_flow_lookup(ti, key, mask,
--								  n_mask_hit);
--					if (flow)  /* Found */
--						return flow;
--
--					break;
--				}
-+			struct sw_flow *flow;
-+
-+			mask = rcu_dereference_ovsl(ma->masks[ce->mask_index]);
-+			if (mask) {
-+				flow = masked_flow_lookup(ti, key, mask,
-+							  n_mask_hit);
-+				if (flow)  /* Found */
-+					return flow;
- 			}
- 
- 			del = ce;
- 			break;
- 		}
- 
--		if (!del || (del->skb_hash && !ce->skb_hash)) {
-+		if (!del || (del->skb_hash && !ce->skb_hash) ||
-+		    (rcu_dereference_ovsl(ma->masks[del->mask_index]) &&
-+		     !rcu_dereference_ovsl(ma->masks[ce->mask_index]))) {
- 			del = ce;
- 		}
- 
- 		hash >>= MC_HASH_SHIFT;
- 	}
- 
--	flow = flow_lookup(tbl, ti, key, n_mask_hit);
-+	flow = flow_lookup(tbl, ti, ma, key, n_mask_hit, &del->mask_index);
- 
--	if (flow) {
-+	if (flow)
- 		del->skb_hash = skb_hash;
--		del->mask_index = (*n_mask_hit - 1);
--	}
- 
- 	return flow;
- }
-@@ -546,26 +606,38 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
- 				    const struct sw_flow_key *key)
- {
- 	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
-+	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
-+
- 	u32 __always_unused n_mask_hit;
-+	u32 __always_unused index;
- 
--	return flow_lookup(tbl, ti, key, &n_mask_hit);
-+	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &index);
- }
- 
- struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
- 					  const struct sw_flow_match *match)
- {
--	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
--	struct sw_flow_mask *mask;
--	struct sw_flow *flow;
--	u32 __always_unused n_mask_hit;
-+	struct mask_array *ma = ovsl_dereference(tbl->mask_array);
-+	int i;
- 
- 	/* Always called under ovs-mutex. */
--	list_for_each_entry(mask, &tbl->mask_list, list) {
++	/* Remove the deleted mask pointers from the array */
 +	for (i = 0; i < ma->max; i++) {
-+		struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
-+		u32 __always_unused n_mask_hit;
-+		struct sw_flow_mask *mask;
-+		struct sw_flow *flow;
-+
-+		mask = ovsl_dereference(ma->masks[i]);
-+		if (!mask)
-+			continue;
-+
- 		flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
- 		if (flow && ovs_identifier_is_key(&flow->id) &&
--		    ovs_flow_cmp_unmasked_key(flow, match))
-+		    ovs_flow_cmp_unmasked_key(flow, match)) {
- 			return flow;
++		if (mask == ovsl_dereference(ma->masks[i])) {
++			RCU_INIT_POINTER(ma->masks[i], NULL);
++			ma->count--;
++			kfree_rcu(mask, rcu);
++			return;
 +		}
- 	}
++	}
++	BUG();
++}
 +
- 	return NULL;
- }
- 
-@@ -611,13 +683,8 @@ struct sw_flow *ovs_flow_tbl_lookup_ufid(struct flow_table *tbl,
- 
- int ovs_flow_tbl_num_masks(const struct flow_table *table)
+ /* Remove 'mask' from the mask list, if it is not needed any more. */
+ static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
  {
--	struct sw_flow_mask *mask;
--	int num = 0;
--
--	list_for_each_entry(mask, &table->mask_list, list)
--		num++;
--
--	return num;
-+	struct mask_array *ma = rcu_dereference_ovsl(table->mask_array);
-+	return ma->count;
- }
- 
- static struct table_instance *table_instance_expand(struct table_instance *ti,
-@@ -638,8 +705,19 @@ static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
- 		mask->ref_count--;
+@@ -706,18 +723,14 @@ static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
  
  		if (!mask->ref_count) {
--			list_del_rcu(&mask->list);
--			kfree_rcu(mask, rcu);
-+			struct mask_array *ma;
-+			int i;
+ 			struct mask_array *ma;
+-			int i;
+ 
+ 			ma = ovsl_dereference(tbl->mask_array);
+-			for (i = 0; i < ma->max; i++) {
+-				if (mask == ovsl_dereference(ma->masks[i])) {
+-					RCU_INIT_POINTER(ma->masks[i], NULL);
+-					ma->count--;
+-					kfree_rcu(mask, rcu);
+-					return;
+-				}
+-			}
+-			BUG();
++			tbl_mask_array_delete_mask(ma, mask);
 +
-+			ma = ovsl_dereference(tbl->mask_array);
-+			for (i = 0; i < ma->max; i++) {
-+				if (mask == ovsl_dereference(ma->masks[i])) {
-+					RCU_INIT_POINTER(ma->masks[i], NULL);
-+					ma->count--;
-+					kfree_rcu(mask, rcu);
-+					return;
-+				}
-+			}
-+			BUG();
++			/* Shrink the mask array if necessary. */
++			if (ma->max >= (MASK_ARRAY_SIZE_MIN * 2) &&
++			    ma->count <= (ma->max / 3))
++				tbl_mask_array_realloc(tbl, ma->max / 2);
  		}
  	}
  }
-@@ -689,13 +767,16 @@ static bool mask_equal(const struct sw_flow_mask *a,
- static struct sw_flow_mask *flow_mask_find(const struct flow_table *tbl,
- 					   const struct sw_flow_mask *mask)
- {
--	struct list_head *ml;
-+	struct mask_array *ma;
-+	int i;
- 
--	list_for_each(ml, &tbl->mask_list) {
--		struct sw_flow_mask *m;
--		m = container_of(ml, struct sw_flow_mask, list);
--		if (mask_equal(mask, m))
--			return m;
-+	ma = ovsl_dereference(tbl->mask_array);
-+	for (i = 0; i < ma->max; i++) {
-+		struct sw_flow_mask *t;
-+		t = ovsl_dereference(ma->masks[i]);
-+
-+		if (t && mask_equal(mask, t))
-+			return t;
- 	}
- 
- 	return NULL;
-@@ -706,15 +787,44 @@ static int flow_mask_insert(struct flow_table *tbl, struct sw_flow *flow,
- 			    const struct sw_flow_mask *new)
- {
- 	struct sw_flow_mask *mask;
-+
- 	mask = flow_mask_find(tbl, new);
- 	if (!mask) {
-+		struct mask_array *ma;
-+		int i;
-+
- 		/* Allocate a new mask if none exsits. */
- 		mask = mask_alloc();
- 		if (!mask)
- 			return -ENOMEM;
- 		mask->key = new->key;
- 		mask->range = new->range;
--		list_add_tail_rcu(&mask->list, &tbl->mask_list);
-+
-+		/* Add mask to mask-list. */
-+		ma = ovsl_dereference(tbl->mask_array);
-+		if (ma->count >= ma->max) {
-+			int err;
-+
-+			err = tbl_mask_array_realloc(tbl, ma->max +
-+						     MASK_ARRAY_SIZE_MIN);
-+			if (err) {
-+				kfree(mask);
-+				return err;
-+			}
-+
-+			ma = ovsl_dereference(tbl->mask_array);
-+		}
-+
-+		for (i = 0; i < ma->max; i++) {
-+			const struct sw_flow_mask *t;
-+
-+			t = ovsl_dereference(ma->masks[i]);
-+			if (!t) {
-+				rcu_assign_pointer(ma->masks[i], mask);
-+				ma->count++;
-+				break;
-+			}
-+		}
- 	} else {
- 		BUG_ON(!mask->ref_count);
- 		mask->ref_count++;
-diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
-index 04b6b1c..8a5cea6 100644
---- a/net/openvswitch/flow_table.h
-+++ b/net/openvswitch/flow_table.h
-@@ -27,6 +27,12 @@ struct mask_cache_entry {
- 	u32 mask_index;
- };
- 
-+struct mask_array {
-+	struct rcu_head rcu;
-+	int count, max;
-+	struct sw_flow_mask __rcu *masks[];
-+};
-+
- struct table_instance {
- 	struct hlist_head *buckets;
- 	unsigned int n_buckets;
-@@ -40,7 +46,7 @@ struct flow_table {
- 	struct table_instance __rcu *ti;
- 	struct table_instance __rcu *ufid_ti;
- 	struct mask_cache_entry __percpu *mask_cache;
--	struct list_head mask_list;
-+	struct mask_array __rcu *mask_array;
- 	unsigned long last_rehash;
- 	unsigned int count;
- 	unsigned int ufid_count;
 -- 
 1.8.3.1
 
