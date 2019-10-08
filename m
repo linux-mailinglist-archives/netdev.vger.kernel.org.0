@@ -2,86 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0246CFC59
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 16:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECF5CFCF5
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 16:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726271AbfJHOZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 10:25:02 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:48066 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725795AbfJHOZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 10:25:02 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 7873160767; Tue,  8 Oct 2019 14:25:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570544701;
-        bh=I2INBlXYMChgwc8/RBJLLPzDkUDaxbatBFHeY0+sfpU=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=LpFlYgD3kSnT33qyHKzOiIvsPulrl6fnmy60IpFtfmirOSDTPGoEH+14VBAs8DSpk
-         qBPeebnXNgqzmmurOrsoYbAez0YhUJwBMZaynli/psmpPj1XP7nhblfhm7Aurnth1T
-         rfq3Vuxo2lMGs7EuLKTRiEHFZXlaAfnIalp9E9O4=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DAEE66030E;
-        Tue,  8 Oct 2019 14:24:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570544700;
-        bh=I2INBlXYMChgwc8/RBJLLPzDkUDaxbatBFHeY0+sfpU=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=ay2/dFsGpa4//xVaVO3KLkLsd16fYQ4TV4KbV4RNxutTV4jmb/xi+1KzzvzAahL/V
-         W4am0PvpAlCvqa+HYKN2TS2UUKIfFTjOLFDGAePbMlGywTYuQ37g213w7Zz24PxftT
-         A2XMZSDH82aiPem6VLEh4c6DkuAevT52uW3jDzgg=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DAEE66030E
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     "zhengbin \(A\)" <zhengbin13@huawei.com>
-Cc:     <yhchuang@realtek.com>, <pkshih@realtek.com>,
-        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH] rtw88: 8822c: Remove set but not used variable 'corr_val'
-References: <1570180736-133907-1-git-send-email-zhengbin13@huawei.com>
-        <08492ba6-eaf6-8c72-74fe-f49e0a95639e@huawei.com>
-Date:   Tue, 08 Oct 2019 17:24:56 +0300
-In-Reply-To: <08492ba6-eaf6-8c72-74fe-f49e0a95639e@huawei.com> (zhengbin's
-        message of "Tue, 8 Oct 2019 17:33:51 +0800")
-Message-ID: <87d0f771s7.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726192AbfJHO6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 10:58:06 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:35412 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725821AbfJHO6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 10:58:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
+        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=um/YDnaMyJyTyg2497iRiQ1U1v5lC65azQYBJjF93eM=; b=PRr0Opr8UV7AUfTX7z0fwHzCS
+        6vw0As44Qw4HJ7kmKni2TCAMXlbcnZbyD8VvrVFnvewbIddZfkKcEsXG/B32LruTqfMSczgH4jOK0
+        XmzM1YdhLOO2pozR/AS7w3iSwt//ld18MVdpfjvh9ZftXc2F1hSFBJ3/gjAUmLy8pMDeeMJLIZUks
+        nnXNZ3MTjgGva9hFBWucr9NYviLhafzulEK25O3ddYkAHYwr6FgQiinBpopuc4oMITbym/VdoX2v7
+        lI5u1J5rdvYgLPcoNMaYojtdhZtg/yJouNESb9mz+IC4u6Rk8bLfh9T2coEOnu08REGJqK8pShRDb
+        4RNUxSQpA==;
+Received: from [2601:1c0:6280:3f0::9ef4]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
+        id 1iHqw6-0006CE-Fl; Tue, 08 Oct 2019 14:58:02 +0000
+Subject: Re: [PATCH net-next 1/2] UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+To:     Martin Varghese <martinvarghesenokia@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, corbet@lwn.net,
+        scott.drennan@nokia.com, jbenc@redhat.com,
+        martin.varghese@nokia.com
+References: <cover.1570455278.git.martinvarghesenokia@gmail.com>
+ <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <547e7e47-d2f3-c226-2384-7110eb019fec@infradead.org>
+Date:   Tue, 8 Oct 2019 07:57:58 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(PLEASE don't top post, fixing that manually)
+On 10/8/19 2:48 AM, Martin Varghese wrote:
+> From: Martin <martin.varghese@nokia.com>
+> 
+> The Bareudp tunnel module provides a generic L3 encapsulation
+> tunnelling module for tunnelling different protocols like MPLS,
+> IP,NSH etc inside a UDP tunnel.
+> 
+> Signed-off-by: Martin Varghese <martinvarghesenokia@gmail.com>
+> ---
+>  Documentation/networking/bareudp.txt |  23 +
+>  drivers/net/Kconfig                  |  13 +
+>  drivers/net/Makefile                 |   1 +
+>  drivers/net/bareudp.c                | 930 +++++++++++++++++++++++++++++++++++
+>  include/net/bareudp.h                |  19 +
+>  include/uapi/linux/if_link.h         |  12 +
+>  6 files changed, 998 insertions(+)
+>  create mode 100644 Documentation/networking/bareudp.txt
+>  create mode 100644 drivers/net/bareudp.c
+>  create mode 100644 include/net/bareudp.h
+> 
+> diff --git a/Documentation/networking/bareudp.txt b/Documentation/networking/bareudp.txt
+> new file mode 100644
+> index 0000000..d2530e2
+> --- /dev/null
+> +++ b/Documentation/networking/bareudp.txt
+> @@ -0,0 +1,23 @@
+> +Bare UDP Tunnelling Module Documentation
+> +========================================
+> +
+> +There are various L3 encapsulation standards using UDP being discussed to
+> +leverage the UDP based load balancing capability of different networks.
+> +MPLSoUDP (https://tools.ietf.org/html/rfc7510)is one among them.
 
-"zhengbin (A)" <zhengbin13@huawei.com> writes:
+add space after ')'.
 
->
-> On 2019/10/4 17:18, zhengbin wrote:
->> Fixes gcc '-Wunused-but-set-variable' warning:
->>
->> drivers/net/wireless/realtek/rtw88/rtw8822c.c: In function rtw8822c_dpk_dc_corr_check:
->> drivers/net/wireless/realtek/rtw88/rtw8822c.c:2166:5: warning: variable corr_val set but not used [-Wunused-but-set-variable]
->>
->> It is not used since commit 5227c2ee453d ("rtw88:
->> 8822c: add SW DPK support")
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: zhengbin <zhengbin13@huawei.com>
->
-> Sorry for the noise, please ignore this
+> +
+> +The Bareudp tunnel module provides a generic L3 encapsulation tunnelling
+> +support for tunnelling different L3 protocols like MPLS, IP, NSH etc. inside
+> +a UDP tunnel.
+> +
+> +Usage
+> +------
+> +
+> +1. Device creation & deletion
+> +
+> +a. ip link add dev bareudp0 type bareudp dstport 6635 ethertype 0x8847
+> +
+> +This creates a bareudp tunnel device which tunnels L3 traffic with ethertype
+> +0x8847 (MPLS traffic).The destination port of the UDP header will be set to 6635
 
-Why? What was wrong in the patch?
+add space after '.'.
+add ending '.'.
+
+> +The device will listen on UDP port 6635 to receive traffic.
+> +
+> +b. ip link delete bareudp0
+> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+> index 48e209e..a389fac 100644
+> --- a/drivers/net/Kconfig
+> +++ b/drivers/net/Kconfig
+> @@ -215,6 +215,19 @@ config GENEVE
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called geneve.
+>  
+> +config BAREUDP
+> +       tristate "Bare UDP  Encapsulation"
+
+	  drop one space between UDP and Encapsulation.
+
+> +       depends on INET && NET_UDP_TUNNEL
+> +       depends on IPV6 || !IPV6
+> +       select NET_IP_TUNNEL
+> +       select GRO_CELLS
+> +       help
+> +          This adds a bare udp tunnel module for tunnelling different
+
+		s/udp/UDP/
+
+> +          kind of traffic like MPLS, IP, etc. inside a UDP tunnel.
+> +
+> +          To compile this driver as a module, choose M here: the module
+> +          will be called bareudp.
+> +
+>  config GTP
+>  	tristate "GPRS Tunneling Protocol datapath (GTP-U)"
+>  	depends on INET
+
 
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+~Randy
