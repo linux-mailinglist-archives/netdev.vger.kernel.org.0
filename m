@@ -2,444 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9FF8CF77F
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:53:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA372CF79A
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730574AbfJHKxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 06:53:02 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:47810 "EHLO
-        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730535AbfJHKxA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 06:53:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sirena.org.uk; s=20170815-heliosphere; h=Date:Message-Id:In-Reply-To:
-        Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
-        List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=6qydJVWIMs3NGzu8wZwBFwvBTpc8rYldZSPGTk8lVxg=; b=iyuWQQMYd0Kc
-        ocCp7IluHWjAw8iQQbtuaWd6LJMcopX0E8iuwT+zkF2mK+TYISWFQpR+YFTNTqsFXkNjym3aUsr9+
-        aB0rfKkjJFAcN5ky0u8ToHRcvq/I/Q0n7I2IjiNBckX7AJ+65OhSwxIDGudZ02i658SCnMZ35vWZx
-        uXwHY=;
-Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
-        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <broonie@sirena.co.uk>)
-        id 1iHn6t-00084G-4U; Tue, 08 Oct 2019 10:52:55 +0000
-Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id 99A6D274299F; Tue,  8 Oct 2019 11:52:54 +0100 (BST)
-From:   Mark Brown <broonie@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     andrew@lunn.ch, broonie@kernel.org, f.fainelli@gmail.com,
-        h.feurstein@gmail.com, linux-spi@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>, mlichvar@redhat.com,
-        netdev@vger.kernel.org, richardcochran@gmail.com
-Subject: Applied "spi: Add a PTP system timestamp to the transfer structure" to the spi tree
-In-Reply-To: <20190905010114.26718-3-olteanv@gmail.com>
-X-Patchwork-Hint: ignore
-Message-Id: <20191008105254.99A6D274299F@ypsilon.sirena.org.uk>
-Date:   Tue,  8 Oct 2019 11:52:54 +0100 (BST)
+        id S1730475AbfJHK4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 06:56:45 -0400
+Received: from mail-eopbgr790080.outbound.protection.outlook.com ([40.107.79.80]:64603
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730016AbfJHK4o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 06:56:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=myv3gkvG9oylDQ3885YN+riMdUWHMd6Y8pHxg+jgybfGbq7sIKQnj22LyHxsKEpeCJwkzOz8OsBdzJX2bY5ktrHI/6x8/OIG7vhKR4S8i3bwM9clL35w1+iQ4zIrg0ijKWf7PiP5nWQoiAzFjVfJJMKSsIZC6/gmwqgLuYg2/WYrVrrAr4/QpipUkUNxLv80kO1CAwoXBZ9I3XDP/AN9nWU1fHxx9/bvgnJt3X/BdkWm9FBrUgsbipkv7zfqlpff/AYvNJkTjL41odz2DbEWqrHnw5IqdKj0dldQRAtlZNURrdOOrRAc1qZ1v0wmuocV3YuFxVAWFdRpCSlfhshq1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L9hYHroulyhGTIUQ8EU0fIXDnC7xIi9Wi/OsvkELgbQ=;
+ b=aTQ6yulBB5nJFAfIHEngWw1BgzzSv1WZ30rgwYvRPnxTcXlBPoGkSA1OMGbGrR6Y8QZpMT99b9oBTssGk9+PVEilkPTgFgk2gKqzM5/F5aYFbCWMqUgSde8tGwVXvFeuAd+QvzxXE1gjGm9h5emcf/ggUc93UoPxnB9lN8EDZDbHoRGB51VMaNyFwTrDwsqDuy5q/DFK7hFHTVZj6q1T13/7jWDaHqbWufoXuRKFwsM5hZR+QkdugOYllQ+1ZMq84OCiBlCcAQs7+hvpc6RA1v0gpK+lxqzPikhw4tuWUItM8EaqLDMFyRdpRiauVHhT0k4Hg/OXKIPqG+1NexAwZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
+ dkim=pass header.d=aquantia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L9hYHroulyhGTIUQ8EU0fIXDnC7xIi9Wi/OsvkELgbQ=;
+ b=pjEpp8R3MWIisgXi1x1Ouo9q0fh8GgENSR/IeQ/5PIBGnoQXwIrPWFcZyzkDT8iG1f+rZZrtpboIGaM0MN6PSDxLTkMnh00Qvmraxc4j/HU5MQgxpBmidCmvrsYQXDozEiBxD0YKHsF02IxvRrR30hzjBDMzYBYimmzYMNuuHVc=
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
+ BN8PR11MB3666.namprd11.prod.outlook.com (20.178.221.19) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2327.24; Tue, 8 Oct 2019 10:56:34 +0000
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.016; Tue, 8 Oct 2019
+ 10:56:34 +0000
+From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Egor Pomozov <Egor.Pomozov@aquantia.com>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Simon Edelhaus <sedelhaus@marvell.com>,
+        Igor Russkikh <Igor.Russkikh@aquantia.com>
+Subject: [PATCH v2 net-next 00/12] net: aquantia: PTP support for AQC devices
+Thread-Topic: [PATCH v2 net-next 00/12] net: aquantia: PTP support for AQC
+ devices
+Thread-Index: AQHVfccMcRm3gI8+aEqcGdQaLx7IMg==
+Date:   Tue, 8 Oct 2019 10:56:33 +0000
+Message-ID: <cover.1570531332.git.igor.russkikh@aquantia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR0P264CA0215.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1f::35) To BN8PR11MB3762.namprd11.prod.outlook.com
+ (2603:10b6:408:8d::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Igor.Russkikh@aquantia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.17.1
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 94992895-c076-4790-791b-08d74bde2ecf
+x-ms-traffictypediagnostic: BN8PR11MB3666:
+x-ld-processed: 83e2e134-991c-4ede-8ced-34d47e38e6b1,ExtFwd
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR11MB3666AD997ABA0BC93FBC0C0B989A0@BN8PR11MB3666.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:854;
+x-forefront-prvs: 01842C458A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(346002)(376002)(396003)(39850400004)(136003)(189003)(199004)(71190400001)(71200400001)(2501003)(256004)(14444005)(6916009)(305945005)(316002)(107886003)(2351001)(4326008)(2906002)(44832011)(6116002)(7736002)(3846002)(54906003)(6486002)(6436002)(5640700003)(6512007)(99286004)(25786009)(66556008)(50226002)(52116002)(5660300002)(8936002)(2616005)(81156014)(66446008)(102836004)(81166006)(8676002)(386003)(6506007)(508600001)(14454004)(26005)(36756003)(86362001)(64756008)(476003)(486006)(66946007)(186003)(66476007)(66066001)(1730700003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3666;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: aquantia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xzjoHXD1wXfKvROOuw0O03i1RvU0kmrwtlqtc+zJP+c4PQITXVldUFtiSlStIGnho2mV2gFGOs+aKOM7XM5bpyIADN18yxn+8kK2D+lZ45pMIX4YlINozx2uVcOs0BnGPRnQR+a4yp1afwj9rbVAL3pJpPXbijdpknSdUXBuuP9fspfKX/INK6nr+ylFPSwh8Y1W6MKajz8jQdLZxigyPJ8Km7Wdck3YrAle+/c5/LMNYser7C9W8I45e7XRpxMg71iXcNhxCJEPWLn558rKstBWrtI/aaFWk9X+A7aLlNIAELhMONxUnTEWFJzkWg/pm+9kNMgHA+jpN90HxCeqJvWUsHoYI5GHp2NTYtrw2cVrWexC01ygt+YzlFT3WNsTa/fTlGLFctIDMb167HPp+SXksZhLzODINn7ri2j6zS4=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: aquantia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 94992895-c076-4790-791b-08d74bde2ecf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2019 10:56:33.9894
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /NO4fV+bo+JxLxUewaNBS0i4tX3qxLr9fZ3Qv/pChz8OmzgbbMCJv36J04mO86FFVa9pFVDUqT4E7zjL318E4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3666
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patch
+This patchset introduces PTP feature support in Aquantia AQC atlantic drive=
+r.
 
-   spi: Add a PTP system timestamp to the transfer structure
+This implementation is a joined effort of aquantia developers:
+Egor is the main designer and driver/firmware architect on PTP,
+Sergey and Dmitry are included as co-developers.
+Dmitry also helped me in the overall patchset preparations.
 
-has been applied to the spi tree at
+Feature was verified on AQC hardware with testptp tool, linuxptp,
+gptp and with Motu hardware unit.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-5.5
+version2 updates:
+- Fixing issues from Andrew's review: replacing self with
+  ptp var name, making ptp_clk_offset a field in the ptp instance.
+  devm_kzalloc advice is actually non applicable, because ptp object gets
+  created/destroyed on each network device close/open and it should not be
+  linked with dev lifecycle.
+- Rearranging commit authorship, adding Egor as a ptp module main maintaine=
+r
+- Fixing kbuild 32bit division issues
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.  
+Dmitry Bezrukov (5):
+  net: aquantia: unify styling of bit enums
+  net: aquantia: styling fixes on ptp related functions
+  net: aquantia: rx filters for ptp
+  net: aquantia: add support for Phy access
+  net: aquantia: add support for PIN funcs
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+Egor Pomozov (6):
+  net: aquantia: PTP skeleton declarations and callbacks
+  net: aquantia: add basic ptp_clock callbacks
+  net: aquantia: add PTP rings infrastructure
+  net: aquantia: implement data PTP datapath
+  net: aquantia: add support for ptp ioctls
+  net: aquantia: implement get_ts_info ethtool
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+Igor Russkikh (1):
+  net: aquantia: adding atlantic ptp maintainer
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+ MAINTAINERS                                   |    7 +
+ .../net/ethernet/aquantia/atlantic/Makefile   |    2 +
+ .../net/ethernet/aquantia/atlantic/aq_cfg.h   |    4 +-
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |   35 +-
+ .../ethernet/aquantia/atlantic/aq_filters.c   |   17 +-
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |   48 +-
+ .../net/ethernet/aquantia/atlantic/aq_main.c  |  105 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |   96 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |   16 +-
+ .../ethernet/aquantia/atlantic/aq_pci_func.c  |    5 +-
+ .../net/ethernet/aquantia/atlantic/aq_phy.c   |  147 ++
+ .../net/ethernet/aquantia/atlantic/aq_phy.h   |   32 +
+ .../net/ethernet/aquantia/atlantic/aq_ptp.c   | 1397 +++++++++++++++++
+ .../net/ethernet/aquantia/atlantic/aq_ptp.h   |   57 +
+ .../net/ethernet/aquantia/atlantic/aq_ring.c  |   64 +-
+ .../net/ethernet/aquantia/atlantic/aq_ring.h  |    7 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  328 +++-
+ .../atlantic/hw_atl/hw_atl_b0_internal.h      |    9 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_llh.c     |   96 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_llh.h     |   58 +-
+ .../atlantic/hw_atl/hw_atl_llh_internal.h     |  223 ++-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |    7 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |  172 +-
+ .../atlantic/hw_atl/hw_atl_utils_fw2x.c       |   97 +-
+ 24 files changed, 2895 insertions(+), 134 deletions(-)
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_phy.c
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_phy.h
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
 
-Thanks,
-Mark
-
-From b42faeee718ce13ef6eb99c24880b58deb54c8fa Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Thu, 5 Sep 2019 04:01:12 +0300
-Subject: [PATCH] spi: Add a PTP system timestamp to the transfer structure
-
-SPI is one of the interfaces used to access devices which have a POSIX
-clock driver (real time clocks, 1588 timers etc). The fact that the SPI
-bus is slow is not what the main problem is, but rather the fact that
-drivers don't take a constant amount of time in transferring data over
-SPI. When there is a high delay in the readout of time, there will be
-uncertainty in the value that has been read out of the peripheral.
-When that delay is constant, the uncertainty can at least be
-approximated with a certain accuracy which is fine more often than not.
-
-Timing jitter occurs all over in the kernel code, and is mainly caused
-by having to let go of the CPU for various reasons such as preemption,
-servicing interrupts, going to sleep, etc. Another major reason is CPU
-dynamic frequency scaling.
-
-It turns out that the problem of retrieving time from a SPI peripheral
-with high accuracy can be solved by the use of "PTP system
-timestamping" - a mechanism to correlate the time when the device has
-snapshotted its internal time counter with the Linux system time at that
-same moment. This is sufficient for having a precise time measurement -
-it is not necessary for the whole SPI transfer to be transmitted "as
-fast as possible", or "as low-jitter as possible". The system has to be
-low-jitter for a very short amount of time to be effective.
-
-This patch introduces a PTP system timestamping mechanism in struct
-spi_transfer. This is to be used by SPI device drivers when they need to
-know the exact time at which the underlying device's time was
-snapshotted. More often than not, SPI peripherals have a very exact
-timing for when their SPI-to-interconnect bridge issues a transaction
-for snapshotting and reading the time register, and that will be
-dependent on when the SPI-to-interconnect bridge figures out that this
-is what it should do, aka as soon as it sees byte N of the SPI transfer.
-Since spi_device drivers are the ones who'd know best how the peripheral
-behaves in this regard, expose a mechanism in spi_transfer which allows
-them to specify which word (or word range) from the transfer should be
-timestamped.
-
-Add a default implementation of the PTP system timestamping in the SPI
-core. This is not going to be satisfactory performance-wise, but should
-at least increase the likelihood that SPI device drivers will use PTP
-system timestamping in the future.
-There are 3 entry points from the core towards the SPI controller
-drivers:
-
-- transfer_one: The driver is passed individual spi_transfers to
-  execute. This is the easiest to timestamp.
-
-- transfer_one_message: The core passes the driver an entire spi_message
-  (a potential batch of spi_transfers). The core puts the same pre and
-  post timestamp to all transfers within a message. This is not ideal,
-  but nothing better can be done by default anyway, since the core has
-  no insight into how the driver batches the transfers.
-
-- transfer: Like transfer_one_message, but for unqueued drivers (i.e.
-  the driver implements its own queue scheduling).
-
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20190905010114.26718-3-olteanv@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
----
- drivers/spi/spi.c       | 127 ++++++++++++++++++++++++++++++++++++++++
- include/linux/spi/spi.h |  61 +++++++++++++++++++
- 2 files changed, 188 insertions(+)
-
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index f9502dbbb5c1..9bb36c32cbf9 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -1171,6 +1171,11 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
- 		spi_statistics_add_transfer_stats(statm, xfer, ctlr);
- 		spi_statistics_add_transfer_stats(stats, xfer, ctlr);
- 
-+		if (!ctlr->ptp_sts_supported) {
-+			xfer->ptp_sts_word_pre = 0;
-+			ptp_read_system_prets(xfer->ptp_sts);
-+		}
-+
- 		if (xfer->tx_buf || xfer->rx_buf) {
- 			reinit_completion(&ctlr->xfer_completion);
- 
-@@ -1197,6 +1202,11 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
- 					xfer->len);
- 		}
- 
-+		if (!ctlr->ptp_sts_supported) {
-+			ptp_read_system_postts(xfer->ptp_sts);
-+			xfer->ptp_sts_word_post = xfer->len;
-+		}
-+
- 		trace_spi_transfer_stop(msg, xfer);
- 
- 		if (msg->status != -EINPROGRESS)
-@@ -1265,6 +1275,7 @@ EXPORT_SYMBOL_GPL(spi_finalize_current_transfer);
-  */
- static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
- {
-+	struct spi_transfer *xfer;
- 	struct spi_message *msg;
- 	bool was_busy = false;
- 	unsigned long flags;
-@@ -1391,6 +1402,13 @@ static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
- 		goto out;
- 	}
- 
-+	if (!ctlr->ptp_sts_supported && !ctlr->transfer_one) {
-+		list_for_each_entry(xfer, &msg->transfers, transfer_list) {
-+			xfer->ptp_sts_word_pre = 0;
-+			ptp_read_system_prets(xfer->ptp_sts);
-+		}
-+	}
-+
- 	ret = ctlr->transfer_one_message(ctlr, msg);
- 	if (ret) {
- 		dev_err(&ctlr->dev,
-@@ -1418,6 +1436,99 @@ static void spi_pump_messages(struct kthread_work *work)
- 	__spi_pump_messages(ctlr, true);
- }
- 
-+/**
-+ * spi_take_timestamp_pre - helper for drivers to collect the beginning of the
-+ *			    TX timestamp for the requested byte from the SPI
-+ *			    transfer. The frequency with which this function
-+ *			    must be called (once per word, once for the whole
-+ *			    transfer, once per batch of words etc) is arbitrary
-+ *			    as long as the @tx buffer offset is greater than or
-+ *			    equal to the requested byte at the time of the
-+ *			    call. The timestamp is only taken once, at the
-+ *			    first such call. It is assumed that the driver
-+ *			    advances its @tx buffer pointer monotonically.
-+ * @ctlr: Pointer to the spi_controller structure of the driver
-+ * @xfer: Pointer to the transfer being timestamped
-+ * @tx: Pointer to the current word within the xfer->tx_buf that the driver is
-+ *	preparing to transmit right now.
-+ * @irqs_off: If true, will disable IRQs and preemption for the duration of the
-+ *	      transfer, for less jitter in time measurement. Only compatible
-+ *	      with PIO drivers. If true, must follow up with
-+ *	      spi_take_timestamp_post or otherwise system will crash.
-+ *	      WARNING: for fully predictable results, the CPU frequency must
-+ *	      also be under control (governor).
-+ */
-+void spi_take_timestamp_pre(struct spi_controller *ctlr,
-+			    struct spi_transfer *xfer,
-+			    const void *tx, bool irqs_off)
-+{
-+	u8 bytes_per_word = DIV_ROUND_UP(xfer->bits_per_word, 8);
-+
-+	if (!xfer->ptp_sts)
-+		return;
-+
-+	if (xfer->timestamped_pre)
-+		return;
-+
-+	if (tx < (xfer->tx_buf + xfer->ptp_sts_word_pre * bytes_per_word))
-+		return;
-+
-+	/* Capture the resolution of the timestamp */
-+	xfer->ptp_sts_word_pre = (tx - xfer->tx_buf) / bytes_per_word;
-+
-+	xfer->timestamped_pre = true;
-+
-+	if (irqs_off) {
-+		local_irq_save(ctlr->irq_flags);
-+		preempt_disable();
-+	}
-+
-+	ptp_read_system_prets(xfer->ptp_sts);
-+}
-+EXPORT_SYMBOL_GPL(spi_take_timestamp_pre);
-+
-+/**
-+ * spi_take_timestamp_post - helper for drivers to collect the end of the
-+ *			     TX timestamp for the requested byte from the SPI
-+ *			     transfer. Can be called with an arbitrary
-+ *			     frequency: only the first call where @tx exceeds
-+ *			     or is equal to the requested word will be
-+ *			     timestamped.
-+ * @ctlr: Pointer to the spi_controller structure of the driver
-+ * @xfer: Pointer to the transfer being timestamped
-+ * @tx: Pointer to the current word within the xfer->tx_buf that the driver has
-+ *	just transmitted.
-+ * @irqs_off: If true, will re-enable IRQs and preemption for the local CPU.
-+ */
-+void spi_take_timestamp_post(struct spi_controller *ctlr,
-+			     struct spi_transfer *xfer,
-+			     const void *tx, bool irqs_off)
-+{
-+	u8 bytes_per_word = DIV_ROUND_UP(xfer->bits_per_word, 8);
-+
-+	if (!xfer->ptp_sts)
-+		return;
-+
-+	if (xfer->timestamped_post)
-+		return;
-+
-+	if (tx < (xfer->tx_buf + xfer->ptp_sts_word_post * bytes_per_word))
-+		return;
-+
-+	ptp_read_system_postts(xfer->ptp_sts);
-+
-+	if (irqs_off) {
-+		local_irq_restore(ctlr->irq_flags);
-+		preempt_enable();
-+	}
-+
-+	/* Capture the resolution of the timestamp */
-+	xfer->ptp_sts_word_post = (tx - xfer->tx_buf) / bytes_per_word;
-+
-+	xfer->timestamped_post = true;
-+}
-+EXPORT_SYMBOL_GPL(spi_take_timestamp_post);
-+
- /**
-  * spi_set_thread_rt - set the controller to pump at realtime priority
-  * @ctlr: controller to boost priority of
-@@ -1503,6 +1614,7 @@ EXPORT_SYMBOL_GPL(spi_get_next_queued_message);
-  */
- void spi_finalize_current_message(struct spi_controller *ctlr)
- {
-+	struct spi_transfer *xfer;
- 	struct spi_message *mesg;
- 	unsigned long flags;
- 	int ret;
-@@ -1511,6 +1623,13 @@ void spi_finalize_current_message(struct spi_controller *ctlr)
- 	mesg = ctlr->cur_msg;
- 	spin_unlock_irqrestore(&ctlr->queue_lock, flags);
- 
-+	if (!ctlr->ptp_sts_supported && !ctlr->transfer_one) {
-+		list_for_each_entry(xfer, &mesg->transfers, transfer_list) {
-+			ptp_read_system_postts(xfer->ptp_sts);
-+			xfer->ptp_sts_word_post = xfer->len;
-+		}
-+	}
-+
- 	spi_unmap_msg(ctlr, mesg);
- 
- 	if (ctlr->cur_msg_prepared && ctlr->unprepare_message) {
-@@ -3273,6 +3392,7 @@ static int __spi_validate(struct spi_device *spi, struct spi_message *message)
- static int __spi_async(struct spi_device *spi, struct spi_message *message)
- {
- 	struct spi_controller *ctlr = spi->controller;
-+	struct spi_transfer *xfer;
- 
- 	/*
- 	 * Some controllers do not support doing regular SPI transfers. Return
-@@ -3288,6 +3408,13 @@ static int __spi_async(struct spi_device *spi, struct spi_message *message)
- 
- 	trace_spi_message_submit(message);
- 
-+	if (!ctlr->ptp_sts_supported) {
-+		list_for_each_entry(xfer, &message->transfers, transfer_list) {
-+			xfer->ptp_sts_word_pre = 0;
-+			ptp_read_system_prets(xfer->ptp_sts);
-+		}
-+	}
-+
- 	return ctlr->transfer(spi, message);
- }
- 
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index af4f265d0f67..27f6b046cf92 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -13,6 +13,7 @@
- #include <linux/completion.h>
- #include <linux/scatterlist.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/ptp_clock_kernel.h>
- 
- struct dma_chan;
- struct property_entry;
-@@ -409,6 +410,12 @@ static inline void spi_unregister_driver(struct spi_driver *sdrv)
-  * @fw_translate_cs: If the boot firmware uses different numbering scheme
-  *	what Linux expects, this optional hook can be used to translate
-  *	between the two.
-+ * @ptp_sts_supported: If the driver sets this to true, it must provide a
-+ *	time snapshot in @spi_transfer->ptp_sts as close as possible to the
-+ *	moment in time when @spi_transfer->ptp_sts_word_pre and
-+ *	@spi_transfer->ptp_sts_word_post were transmitted.
-+ *	If the driver does not set this, the SPI core takes the snapshot as
-+ *	close to the driver hand-over as possible.
-  *
-  * Each SPI controller can communicate with one or more @spi_device
-  * children.  These make a small bus, sharing MOSI, MISO and SCK signals
-@@ -604,6 +611,15 @@ struct spi_controller {
- 	void			*dummy_tx;
- 
- 	int (*fw_translate_cs)(struct spi_controller *ctlr, unsigned cs);
-+
-+	/*
-+	 * Driver sets this field to indicate it is able to snapshot SPI
-+	 * transfers (needed e.g. for reading the time of POSIX clocks)
-+	 */
-+	bool			ptp_sts_supported;
-+
-+	/* Interrupt enable state during PTP system timestamping */
-+	unsigned long		irq_flags;
- };
- 
- static inline void *spi_controller_get_devdata(struct spi_controller *ctlr)
-@@ -644,6 +660,14 @@ extern struct spi_message *spi_get_next_queued_message(struct spi_controller *ct
- extern void spi_finalize_current_message(struct spi_controller *ctlr);
- extern void spi_finalize_current_transfer(struct spi_controller *ctlr);
- 
-+/* Helper calls for driver to timestamp transfer */
-+void spi_take_timestamp_pre(struct spi_controller *ctlr,
-+			    struct spi_transfer *xfer,
-+			    const void *tx, bool irqs_off);
-+void spi_take_timestamp_post(struct spi_controller *ctlr,
-+			     struct spi_transfer *xfer,
-+			     const void *tx, bool irqs_off);
-+
- /* the spi driver core manages memory for the spi_controller classdev */
- extern struct spi_controller *__spi_alloc_controller(struct device *host,
- 						unsigned int size, bool slave);
-@@ -753,6 +777,35 @@ extern void spi_res_release(struct spi_controller *ctlr,
-  * @transfer_list: transfers are sequenced through @spi_message.transfers
-  * @tx_sg: Scatterlist for transmit, currently not for client use
-  * @rx_sg: Scatterlist for receive, currently not for client use
-+ * @ptp_sts_word_pre: The word (subject to bits_per_word semantics) offset
-+ *	within @tx_buf for which the SPI device is requesting that the time
-+ *	snapshot for this transfer begins. Upon completing the SPI transfer,
-+ *	this value may have changed compared to what was requested, depending
-+ *	on the available snapshotting resolution (DMA transfer,
-+ *	@ptp_sts_supported is false, etc).
-+ * @ptp_sts_word_post: See @ptp_sts_word_post. The two can be equal (meaning
-+ *	that a single byte should be snapshotted).
-+ *	If the core takes care of the timestamp (if @ptp_sts_supported is false
-+ *	for this controller), it will set @ptp_sts_word_pre to 0, and
-+ *	@ptp_sts_word_post to the length of the transfer. This is done
-+ *	purposefully (instead of setting to spi_transfer->len - 1) to denote
-+ *	that a transfer-level snapshot taken from within the driver may still
-+ *	be of higher quality.
-+ * @ptp_sts: Pointer to a memory location held by the SPI slave device where a
-+ *	PTP system timestamp structure may lie. If drivers use PIO or their
-+ *	hardware has some sort of assist for retrieving exact transfer timing,
-+ *	they can (and should) assert @ptp_sts_supported and populate this
-+ *	structure using the ptp_read_system_*ts helper functions.
-+ *	The timestamp must represent the time at which the SPI slave device has
-+ *	processed the word, i.e. the "pre" timestamp should be taken before
-+ *	transmitting the "pre" word, and the "post" timestamp after receiving
-+ *	transmit confirmation from the controller for the "post" word.
-+ * @timestamped_pre: Set by the SPI controller driver to denote it has acted
-+ *	upon the @ptp_sts request. Not set when the SPI core has taken care of
-+ *	the task. SPI device drivers are free to print a warning if this comes
-+ *	back unset and they need the better resolution.
-+ * @timestamped_post: See above. The reason why both exist is that these
-+ *	booleans are also used to keep state in the core SPI logic.
-  *
-  * SPI transfers always write the same number of bytes as they read.
-  * Protocol drivers should always provide @rx_buf and/or @tx_buf.
-@@ -842,6 +895,14 @@ struct spi_transfer {
- 
- 	u32		effective_speed_hz;
- 
-+	unsigned int	ptp_sts_word_pre;
-+	unsigned int	ptp_sts_word_post;
-+
-+	struct ptp_system_timestamp *ptp_sts;
-+
-+	bool		timestamped_pre;
-+	bool		timestamped_post;
-+
- 	struct list_head transfer_list;
- };
- 
--- 
-2.20.1
+--=20
+2.17.1
 
