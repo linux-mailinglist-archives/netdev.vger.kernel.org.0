@@ -2,184 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 759AAD0203
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 22:18:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96188D0212
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 22:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730843AbfJHUSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 16:18:24 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:36265 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729935AbfJHUSY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 16:18:24 -0400
-Received: by mail-wm1-f65.google.com with SMTP id m18so4465994wmc.1
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 13:18:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Nq3aDYm94AahJpGhrYsvlsN5ms0WwXmMEmtpjxqNwwE=;
-        b=a1vGQOahAX5Rox6vpxGuc58xyibHOhq6A3IHNRcG8kRMKiMwGURVq5Jl+NzKvpEqGa
-         Oj0SUeBlvS1EOd19wP6FKIEfViLX89GgtkyhMbhy52oKJHUINQXmReOhqcP55R5+CW9g
-         bZpkSdy6lfZ1e7NMrZHi0NODVRPMrKhMNz+sKxxROWtMbqHC/2A8yGhtto2AHlN4MDJ9
-         hCmQUgO5X3mAao1z3bUc6KJe2UBxQGDy9FVXnRcShSMMayPuay2FyqjoXdiTWhb0tYpd
-         ukFsIRgIvpignXNQIz0lXEIH5AdLfyaVYqvAgiTWn5od0CCEDVnB1VEORIY51RPjl7ve
-         hzyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Nq3aDYm94AahJpGhrYsvlsN5ms0WwXmMEmtpjxqNwwE=;
-        b=PhY58dg1mFOMJS1ObLXuN+/AaDa1NKWE85QcRF1UUCMFUXwVTQBw+MVNf/gVJYi2rM
-         TsmgWzWaEO+NTsjIZ8tt3duFLn5sCohaVbqJh+hP0s4N6ChWqDatpHHK6pL8SZMktOQF
-         z/imEJUz+bgvY2mAUqDDz7E7TsKe02q5hb5VOiCNliHsqX7QyU+hG/j/TLaHCJc2V8es
-         UQ9IcdM7GbyyVt2ao6cQkKttRJkOyBoR/QDU4MedBtNtWn+2rmWJ+I15sC8uBSGbkGj6
-         +wyKof9pDu69hgIEAr7NoOt7Kd5Q8xfbAZf/5RnmzExYUcqT9bw7c4btMfc43zbYrQ7K
-         sqHQ==
-X-Gm-Message-State: APjAAAUOwp3Q3xIW7ikJqLRF6elQNq/EQbLR5SOKn7s7pOlpV8PezaRG
-        9DUcuAOkYNZhNEI9wuR7S+DxRuyI
-X-Google-Smtp-Source: APXvYqxkx2b/NEGuPG4lsA22XCL/tbtSIaewIFlH3LkFwpX9dTRophJNQ/pCBKSLLq/NhnYn7riOUg==
-X-Received: by 2002:a05:600c:d4:: with SMTP id u20mr5471360wmm.66.1570565901239;
-        Tue, 08 Oct 2019 13:18:21 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f26:6400:1dc6:b02d:53c2:ab45? (p200300EA8F2664001DC6B02D53C2AB45.dip0.t-ipconnect.de. [2003:ea:8f26:6400:1dc6:b02d:53c2:ab45])
-        by smtp.googlemail.com with ESMTPSA id m18sm40077633wrg.97.2019.10.08.13.18.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Oct 2019 13:18:20 -0700 (PDT)
-Subject: Re: Potential Bug Report
-To:     =?UTF-8?Q?Informationstechnik_W=c3=bcrfl?= <wuerfl@it-wuerfl.de>
-References: <1570539338.8498.0@it-wuerfl.de>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <c3f62cf5-d2ba-ac5b-47de-3e30a7f01abe@gmail.com>
-Date:   Tue, 8 Oct 2019 22:18:15 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1730778AbfJHUXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 16:23:34 -0400
+Received: from fieldses.org ([173.255.197.46]:47314 "EHLO fieldses.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727835AbfJHUXe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 16:23:34 -0400
+Received: by fieldses.org (Postfix, from userid 2815)
+        id 02F8A2C0; Tue,  8 Oct 2019 16:23:33 -0400 (EDT)
+Date:   Tue, 8 Oct 2019 16:23:32 -0400
+From:   "J . Bruce Fields" <bfields@fieldses.org>
+To:     Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Neil Brown <neilb@suse.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        Vasiliy Averin <vvs@virtuozzo.com>
+Subject: Re: [PATCH] sunrpc: fix crash when cache_head become valid before
+ update
+Message-ID: <20191008202332.GB9151@fieldses.org>
+References: <20191001080359.6034-1-ptikhomirov@virtuozzo.com>
+ <3e455bb4-2a03-551e-6efb-1d41b5258327@virtuozzo.com>
 MIME-Version: 1.0
-In-Reply-To: <1570539338.8498.0@it-wuerfl.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3e455bb4-2a03-551e-6efb-1d41b5258327@virtuozzo.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.10.2019 14:55, Informationstechnik Würfl wrote:
-> Hi Heiner,
-> 
-> i just wanted to inform you about a potential bug since Kernel 5.3 (since the realtek driver has been renamed and refactored).
-> 
-> Booting with Kernels > 5.2 always result in a kernel oops (r8169,libphy), i guess that in the structure  handed over to phy_modify_paged tp->phy_dev is null, instead a correct value or something like that.
-> My lspci for the network card lists:
-> 
-> 22:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)
-> 
-> Maybe its of use and other people have the same issues.
-> 
-Thanks for the report. I think in your case simply the Realtek PHY driver module isn't available.
-If you build it the problem should disappear. Nevertheless we may have to improve the Kconfig
-dependencies for r8169 to prevent such cases.
-Can you provide a full dmesg output and your kernel config?
+On Tue, Oct 08, 2019 at 10:02:53AM +0000, Pavel Tikhomirov wrote:
+> Add Neil to CC, sorry, had lost it somehow...
+
+Always happy when we can fix a bug by deleting code, and your
+explanation makes sense to me, but I'll give Neil a chance to look it
+over if he wants.
+
+--b.
 
 > 
+> On 10/1/19 11:03 AM, Pavel Tikhomirov wrote:
+> > I was investigating a crash in our Virtuozzo7 kernel which happened in
+> > in svcauth_unix_set_client. I found out that we access m_client field
+> > in ip_map structure, which was received from sunrpc_cache_lookup (we
+> > have a bit older kernel, now the code is in sunrpc_cache_add_entry), and
+> > these field looks uninitialized (m_client == 0x74 don't look like a
+> > pointer) but in the cache_head in flags we see 0x1 which is CACHE_VALID.
+> > 
+> > It looks like the problem appeared from our previous fix to sunrpc (1):
+> > commit 4ecd55ea0742 ("sunrpc: fix cache_head leak due to queued
+> > request")
+> > 
+> > And we've also found a patch already fixing our patch (2):
+> > commit d58431eacb22 ("sunrpc: don't mark uninitialised items as VALID.")
+> > 
+> > Though the crash is eliminated, I think the core of the problem is not
+> > completely fixed:
+> > 
+> > Neil in the patch (2) makes cache_head CACHE_NEGATIVE, before
+> > cache_fresh_locked which was added in (1) to fix crash. These way
+> > cache_is_valid won't say the cache is valid anymore and in
+> > svcauth_unix_set_client the function cache_check will return error
+> > instead of 0, and we don't count entry as initialized.
+> > 
+> > But it looks like we need to remove cache_fresh_locked completely in
+> > sunrpc_cache_lookup:
+> > 
+> > In (1) we've only wanted to make cache_fresh_unlocked->cache_dequeue so
+> > that cache_requests with no readers also release corresponding
+> > cache_head, to fix their leak.  We with Vasily were not sure if
+> > cache_fresh_locked and cache_fresh_unlocked should be used in pair or
+> > not, so we've guessed to use them in pair.
+> > 
+> > Now we see that we don't want the CACHE_VALID bit set here by
+> > cache_fresh_locked, as "valid" means "initialized" and there is no
+> > initialization in sunrpc_cache_add_entry. Both expiry_time and
+> > last_refresh are not used in cache_fresh_unlocked code-path and also not
+> > required for the initial fix.
+> > 
+> > So to conclude cache_fresh_locked was called by mistake, and we can just
+> > safely remove it instead of crutching it with CACHE_NEGATIVE. It looks
+> > ideologically better for me. Hope I don't miss something here.
+> > 
+> > Here is our crash backtrace:
+> > [13108726.326291] BUG: unable to handle kernel NULL pointer dereference at 0000000000000074
+> > [13108726.326365] IP: [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
+> > [13108726.326448] PGD 0
+> > [13108726.326468] Oops: 0002 [#1] SMP
+> > [13108726.326497] Modules linked in: nbd isofs xfs loop kpatch_cumulative_81_0_r1(O) xt_physdev nfnetlink_queue bluetooth rfkill ip6table_nat nf_nat_ipv6 ip_vs_wrr ip_vs_wlc ip_vs_sh nf_conntrack_netlink ip_vs_sed ip_vs_pe_sip nf_conntrack_sip ip_vs_nq ip_vs_lc ip_vs_lblcr ip_vs_lblc ip_vs_ftp ip_vs_dh nf_nat_ftp nf_conntrack_ftp iptable_raw xt_recent nf_log_ipv6 xt_hl ip6t_rt nf_log_ipv4 nf_log_common xt_LOG xt_limit xt_TCPMSS xt_tcpmss vxlan ip6_udp_tunnel udp_tunnel xt_statistic xt_NFLOG nfnetlink_log dummy xt_mark xt_REDIRECT nf_nat_redirect raw_diag udp_diag tcp_diag inet_diag netlink_diag af_packet_diag unix_diag rpcsec_gss_krb5 xt_addrtype ip6t_rpfilter ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 ebtable_nat ebtable_broute nf_conntrack_ipv6 nf_defrag_ipv6 ip6table_mangle ip6table_raw nfsv4
+> > [13108726.327173]  dns_resolver cls_u32 binfmt_misc arptable_filter arp_tables ip6table_filter ip6_tables devlink fuse_kio_pcs ipt_MASQUERADE nf_nat_masquerade_ipv4 xt_nat iptable_nat nf_nat_ipv4 xt_comment nf_conntrack_ipv4 nf_defrag_ipv4 xt_wdog_tmo xt_multiport bonding xt_set xt_conntrack iptable_filter iptable_mangle kpatch(O) ebtable_filter ebt_among ebtables ip_set_hash_ip ip_set nfnetlink vfat fat skx_edac intel_powerclamp coretemp intel_rapl iosf_mbi kvm_intel kvm irqbypass fuse pcspkr ses enclosure joydev sg mei_me hpwdt hpilo lpc_ich mei ipmi_si shpchp ipmi_devintf ipmi_msghandler xt_ipvs acpi_power_meter ip_vs_rr nfsv3 nfsd auth_rpcgss nfs_acl nfs lockd grace fscache nf_nat cls_fw sch_htb sch_cbq sch_sfq ip_vs em_u32 nf_conntrack tun br_netfilter veth overlay ip6_vzprivnet ip6_vznetstat ip_vznetstat
+> > [13108726.327817]  ip_vzprivnet vziolimit vzevent vzlist vzstat vznetstat vznetdev vzmon vzdev bridge pio_kaio pio_nfs pio_direct pfmt_raw pfmt_ploop1 ploop ip_tables ext4 mbcache jbd2 sd_mod crc_t10dif crct10dif_generic mgag200 i2c_algo_bit drm_kms_helper scsi_transport_iscsi 8021q syscopyarea sysfillrect garp sysimgblt fb_sys_fops mrp stp ttm llc bnx2x crct10dif_pclmul crct10dif_common crc32_pclmul crc32c_intel drm dm_multipath ghash_clmulni_intel uas aesni_intel lrw gf128mul glue_helper ablk_helper cryptd tg3 smartpqi scsi_transport_sas mdio libcrc32c i2c_core usb_storage ptp pps_core wmi sunrpc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: kpatch_cumulative_82_0_r1]
+> > [13108726.328403] CPU: 35 PID: 63742 Comm: nfsd ve: 51332 Kdump: loaded Tainted: G        W  O   ------------   3.10.0-862.20.2.vz7.73.29 #1 73.29
+> > [13108726.328491] Hardware name: HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 10/02/2018
+> > [13108726.328554] task: ffffa0a6a41b1160 ti: ffffa0c2a74bc000 task.ti: ffffa0c2a74bc000
+> > [13108726.328610] RIP: 0010:[<ffffffffc01f79eb>]  [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
+> > [13108726.328706] RSP: 0018:ffffa0c2a74bfd80  EFLAGS: 00010246
+> > [13108726.328750] RAX: 0000000000000001 RBX: ffffa0a6183ae000 RCX: 0000000000000000
+> > [13108726.328811] RDX: 0000000000000074 RSI: 0000000000000286 RDI: ffffa0c2a74bfcf0
+> > [13108726.328864] RBP: ffffa0c2a74bfe00 R08: ffffa0bab8c22960 R09: 0000000000000001
+> > [13108726.328916] R10: 0000000000000001 R11: 0000000000000001 R12: ffffa0a32aa7f000
+> > [13108726.328969] R13: ffffa0a6183afac0 R14: ffffa0c233d88d00 R15: ffffa0c2a74bfdb4
+> > [13108726.329022] FS:  0000000000000000(0000) GS:ffffa0e17f9c0000(0000) knlGS:0000000000000000
+> > [13108726.329081] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [13108726.332311] CR2: 0000000000000074 CR3: 00000026a1b28000 CR4: 00000000007607e0
+> > [13108726.334606] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > [13108726.336754] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > [13108726.338908] PKRU: 00000000
+> > [13108726.341047] Call Trace:
+> > [13108726.343074]  [<ffffffff8a2c78b4>] ? groups_alloc+0x34/0x110
+> > [13108726.344837]  [<ffffffffc01f5eb4>] svc_set_client+0x24/0x30 [sunrpc]
+> > [13108726.346631]  [<ffffffffc01f2ac1>] svc_process_common+0x241/0x710 [sunrpc]
+> > [13108726.348332]  [<ffffffffc01f3093>] svc_process+0x103/0x190 [sunrpc]
+> > [13108726.350016]  [<ffffffffc07d605f>] nfsd+0xdf/0x150 [nfsd]
+> > [13108726.351735]  [<ffffffffc07d5f80>] ? nfsd_destroy+0x80/0x80 [nfsd]
+> > [13108726.353459]  [<ffffffff8a2bf741>] kthread+0xd1/0xe0
+> > [13108726.355195]  [<ffffffff8a2bf670>] ? create_kthread+0x60/0x60
+> > [13108726.356896]  [<ffffffff8a9556dd>] ret_from_fork_nospec_begin+0x7/0x21
+> > [13108726.358577]  [<ffffffff8a2bf670>] ? create_kthread+0x60/0x60
+> > [13108726.360240] Code: 4c 8b 45 98 0f 8e 2e 01 00 00 83 f8 fe 0f 84 76 fe ff ff 85 c0 0f 85 2b 01 00 00 49 8b 50 40 b8 01 00 00 00 48 89 93 d0 1a 00 00 <f0> 0f c1 02 83 c0 01 83 f8 01 0f 8e 53 02 00 00 49 8b 44 24 38
+> > [13108726.363769] RIP  [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
+> > [13108726.365530]  RSP <ffffa0c2a74bfd80>
+> > [13108726.367179] CR2: 0000000000000074
+> > 
+> > Fixes: d58431eacb22 ("sunrpc: don't mark uninitialised items as VALID.")
+> > Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+> > 
+> > ---
+> >   net/sunrpc/cache.c | 6 ------
+> >   1 file changed, 6 deletions(-)
+> > 
+> > diff --git a/net/sunrpc/cache.c b/net/sunrpc/cache.c
+> > index a349094f6fb7..f740cb51802a 100644
+> > --- a/net/sunrpc/cache.c
+> > +++ b/net/sunrpc/cache.c
+> > @@ -53,9 +53,6 @@ static void cache_init(struct cache_head *h, struct cache_detail *detail)
+> >   	h->last_refresh = now;
+> >   }
+> >   
+> > -static inline int cache_is_valid(struct cache_head *h);
+> > -static void cache_fresh_locked(struct cache_head *head, time_t expiry,
+> > -				struct cache_detail *detail);
+> >   static void cache_fresh_unlocked(struct cache_head *head,
+> >   				struct cache_detail *detail);
+> >   
+> > @@ -105,9 +102,6 @@ static struct cache_head *sunrpc_cache_add_entry(struct cache_detail *detail,
+> >   			if (cache_is_expired(detail, tmp)) {
+> >   				hlist_del_init_rcu(&tmp->cache_list);
+> >   				detail->entries --;
+> > -				if (cache_is_valid(tmp) == -EAGAIN)
+> > -					set_bit(CACHE_NEGATIVE, &tmp->flags);
+> > -				cache_fresh_locked(tmp, 0, detail);
+> >   				freeme = tmp;
+> >   				break;
+> >   			}
+> > 
 > 
-> Regards 
-> 
-> Wolfgang
-> 
-Heiner
-> 
-> 
-> 
-> BUG: kernel NULL pointer dereference, address: 0000000000000000
-> Okt 08 08:48:11 gentoo kernel: #PF: supervisor instruction fetch in kernel mode
-> Okt 08 08:48:11 gentoo kernel: #PF: error_code(0x0010) - not-present page
-> Okt 08 08:48:11 gentoo kernel: PGD 0 P4D 0 
-> 
-> 
-> Okt 08 08:48:11 gentoo kernel: Oops: 0010 [#1] PREEMPT SMP
-> Okt 08 08:48:11 gentoo kernel: CPU: 9 PID: 7119 Comm: NetworkManager Tainted: P           O      5.4.0-rc2-BeoCore #1
-> Okt 08 08:48:11 gentoo kernel: Hardware name: Micro-Star International Co., Ltd MS-7B86/B450 GAMING PLUS MAX (MS-7B86), BIOS H.30 09/18/2019
-> Okt 08 08:48:11 gentoo kernel: RIP: 0010:0x0
-> Okt 08 08:48:11 gentoo kernel: Code: Bad RIP value.
-> Okt 08 08:48:11 gentoo kernel: RSP: 0018:ffffc900006ab528 EFLAGS: 00010246
-> Okt 08 08:48:11 gentoo kernel: RAX: ffffffffa00c72e0 RBX: 0000000000000004 RCX: 0000000000000004
-> Okt 08 08:48:11 gentoo kernel: RDX: ff ff8887ce6ba3c0 RSI: 0000000000000a43 RDI: ffff8887f58a0000
-> Okt 08 08:48:11 gentoo kernel: RBP: ffff8887f58a0000 R08: 0000000000000000 R09: 0000000000000000
-> Okt 08 08:48:11 gentoo kernel: R10: 0000000000000002 R11: 000000000000000f R12: 0000000000000009
-> Okt 08 08:48:11 gentoo kernel: R13: 0000000000000a43 R14: 0000000000000010 R15: ffff8887f2a38840
-> Okt 08 08:48:11 gentoo kernel: FS:  00007fe83535a880(0000) GS:ffff8887fea40000(0000) knlGS:0000000000000000
-> Okt 08 08:48:11 gentoo kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> Okt 08 08:48:11 gentoo kernel: CR2: ffffffffffffffd6 CR3: 00000007cd919000 CR4: 0000000000340ee0
-> Okt 08 08:48:11 gentoo kernel: Call Trace:
-> Okt 08 08:48:11 gentoo kernel:  phy_select_page+0x2b/0x60 [libphy]
-> Okt 08 08:48:11 gentoo kernel:  phy_modify_paged_changed+0x18/0x50 [libphy]
-> Okt 08 08:48:11 gentoo kernel:  phy_modify_paged+0 xc/0x20 [libphy]
-> Okt 08 08:48:11 gentoo kernel:  rtl8168h_2_hw_phy_config+0x253/0x2e0 [r8169]
-> Okt 08 08:48:11 gentoo kernel:  rtl8169_init_phy+0x20/0x80 [r8169]
-> Okt 08 08:48:11 gentoo kernel:  rtl_open+0x3bc/0x580 [r8169]
-> Okt 08 08:48:11 gentoo kernel:  __dev_open+0x91/0x110
-> Okt 08 08:48:11 gentoo kernel:  __dev_change_flags+0x155/0x1b0
-> Okt 08 08:48:11 gentoo kernel:  dev_change_flags+0x1c/0x50
-> Okt 08 08:48:11 gentoo kernel:  do_setlink+0x678/0xd80
-> Okt 08 08:48:11 gentoo kernel:  ? blk_mq_flush_plug_list+0x207/0x2b0
-> Okt 08 08:48:11 gentoo kernel:  ? inet6_validate_link_af+0x47/0xc0
-> Okt 08 08:48:11 gentoo kernel:  ? __nla_validate_parse+0x43/0x770
-> Okt 08 08:48:11 gentoo kernel:  ? __snmp6_fill_stats64.isra.0+0x53/0xe0
-> Okt 08 08:48:11 gentoo kernel:  __rtnl_newlink+0x545/0x8a0
-> Okt 08 08:48:11 gento o kernel:  ? __nla_reserve+0x38/0x50
-> Okt 08 08:48:11 gentoo kernel:  ? ___cache_free+0x1c/0x1d0
-> Okt 08 08:48:11 gentoo kernel:  ? pskb_expand_head+0xfa/0x2c0
-> Okt 08 08:48:11 gentoo kernel:  ? preempt_count_add+0x63/0x90
-> Okt 08 08:48:11 gentoo kernel:  ? _raw_spin_lock_irqsave+0x14/0x40
-> Okt 08 08:48:11 gentoo kernel:  ? __netlink_sendskb+0x2f/0x40
-> Okt 08 08:48:11 gentoo kernel:  ? _raw_spin_lock+0xe/0x30
-> Okt 08 08:48:11 gentoo kernel:  ? _raw_spin_lock_irq+0x20/0x30
-> Okt 08 08:48:11 gentoo kernel:  ? dbuf_rele_and_unlock+0x5a4/0x6d0 [zfs]
-> Okt 08 08:48:11 gentoo kernel:  ? kmem_cache_alloc_trace+0x141/0x1b0
-> Okt 08 08:48:11 gentoo kernel:  rtnl_newlink+0x3f/0x60
-> Okt 08 08:48:11 gentoo kernel:  rtnetlink_rcv_msg+0x10c/0x370
-> Okt 08 08:48:11 gentoo kernel:  ? dmu_buf_hold_array_by_bonus+0x17e/0x1c0 [zfs]
-> Okt 08 08:48:11 gentoo kernel:  ? rtnl_calcit.isra.0+0xe0/0xe0
-> Okt 08 08:48:11 gentoo kernel:  netlink_rcv_skb+0x41/0x110
-> Okt 08 08:48:11 gentoo kernel:  netlink_unicast+0x142/0x1d0
-> Okt 08 08:48:11 gentoo kernel:  netlink_sendmsg+0x1b8/0x3c0
-> Okt 08 08:48:11 gentoo kernel:  ? netlink_unicast+0x1d0/0x1d0
-> Okt 08 08:48:11 gentoo kernel:  ___sys_sendmsg+0x29d/0x2f0
-> Okt 08 08:48:11 gentoo kernel:  ? alloc_set_pte+0xf1/0x580
-> Okt 08 08:48:11 gentoo kernel:  ? filemap_map_pages+0x22d/0x300
-> Okt 08 08:48:11 gentoo kernel:  ? _raw_spin_unlock+0xd/0x20
-> Okt 08 08:48:11 gentoo kernel:  ? __handle_mm_fault+0xde1/0x1060
-> Okt 08 08:48:11 gentoo kernel:  ? __fget+0x6c/0xa0
-> Okt 08 08:48:11 gentoo kernel:  __sys_sendmsg+0x44/0x80
-> Okt 08 08:48:11 gentoo kernel:  do_syscall_64+0x4a/0x190
-> Okt 08 08:48:11 gent oo kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> 
-> Okt 08 08:48:11 gentoo kernel: RIP: 0033:0x7fe835b92649
-> Okt 08 08:48:11 gentoo kernel: Code: 00 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 3e e8 ff ff 41 89 c0 8b 54 24 1c 48 8b 74 24 10 b8 2e 00 00 00 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff ff 77 37 44 89 c7 48 89 44 24 08 e8 72 e8 ff ff 48
-> Okt 08 08:48:11 gentoo kernel: RSP: 002b:00007ffff5e76300 EFLAGS: 00000293 ORIG_RAX: 000000000000002e
-> Okt 08 08:48:11 gentoo kernel: RAX: ffffffffffffffda RBX: 000055e197f3d300 RCX: 00007fe835b92649
-> Okt 08 08:48:11 gentoo kernel: RDX: 0000000000000000 RSI: 00007ffff5e76360 RDI: 000000000000000a
-> Okt 08 08:48:11 gentoo kernel: RBP: 00007ffff5e76360 R08: 0000000000000000 R09: 0000000000000000
-> Okt 08 08:48:11 gentoo kernel: R10: 0000000000000001 R11: 0000000000000293 R12: 000055e197f3d300
-> Okt 08 08:48:11 gentoo kernel: R13: 00007 ffff5e76518 R14: 00007ffff5e7650c R15: 0000000000000000
-> Okt 08 08:48:11 gentoo kernel: Modules linked in: kvm_amd kvm irqbypass ppdev snd_hda_codec_ca0132 snd_hda_codec_hdmi snd_hda_intel snd_intel_nhlt aesni_intel snd_hda_codec glue_helper crypto_simd cryptd snd_hda_core snd_hwdep hid_holtek_mouse snd_pcm jo>
-> Okt 08 08:48:11 gentoo kernel:  hid_logitech hid_gyration hid_ezkey hid_cypress hid_chicony hid_cherry hid_a4tech sl811_hcd xhci_plat_hcd ohci_pci ohci_hcd uhci_hcd ehci_pci ehci_hcd aic94xx libsas lpfc crc_t10dif crct10dif_common qla2xxx megaraid_sas me>
-> Okt 08 08:48:11 gentoo kernel:  pata_pdc2027x pata_mpiix usb_storage led_class usbhid xhci_pci r8169 xhci_hcd ahci libahci libphy usbcore libata usb_common parport
-> Okt 08 08:48:11 gentoo kernel: CR2: 0000000000000000
-> Okt 08 08:48:11 gentoo kernel: ---[ end trace 648d7ccfb58c01c8 ]---
-> Okt 08 08:48:11 gentoo kernel: RIP: 0010:0x0
-> Okt 08 08:48: 11 gentoo kernel: Code: Bad RIP value.
-> Okt 08 08:48:11 gentoo kernel: RSP: 0018:ffffc900006ab528 EFLAGS: 00010246
-> Okt 08 08:48:11 gentoo kernel: RAX: ffffffffa00c72e0 RBX: 0000000000000004 RCX: 0000000000000004
-> Okt 08 08:48:11 gentoo kernel: RDX: ffff8887ce6ba3c0 RSI: 0000000000000a43 RDI: ffff8887f58a0000
-> Okt 08 08:48:11 gentoo kernel: RBP: ffff8887f58a0000 R08: 0000000000000000 R09: 0000000000000000
-> Okt 08 08:48:11 gentoo kernel: R10: 0000000000000002 R11: 000000000000000f R12: 0000000000000009
-> Okt 08 08:48:11 gentoo kernel: R13: 0000000000000a43 R14: 0000000000000010 R15: ffff8887f2a38840
-> Okt 08 08:48:11 gentoo kernel: FS:  00007fe83535a880(0000) GS:ffff8887fea40000(0000) knlGS:0000000000000000
-> Okt 08 08:48:11 gentoo kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> Okt 08 08:48:11 gentoo kernel: CR2: ffffffffffffffd6 CR3: 00000007cd919000 CR4: 0000000000340ee0
-> < /div>
-> 
-
+> -- 
+> Best regards, Tikhomirov Pavel
+> Software Developer, Virtuozzo.
