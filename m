@@ -2,309 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42E7DCFFF4
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 19:33:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EEB0D0048
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 20:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727604AbfJHRd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 13:33:27 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:43052 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726138AbfJHRd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 13:33:27 -0400
-Received: by mail-pg1-f196.google.com with SMTP id i32so3321636pgl.10
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 10:33:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=vnFcDGZJh2ysFJVi/dwhui31uHSh1Rc8fUgzeGxoe44=;
-        b=qUXQ8xOOG039kgGYSWpJeLoKEXBfrfJiP4dleGNmVQHkE9XFDAhDmNV6phvTqdg/re
-         Suw5VhOal+KgonMome0cduGCZru1SYcxz90Hf8IZgbRMQIR5u+OsRJG6uMbEYXz1VQ84
-         6qDplZJ8eSAy5+NGslzbcOhq4fL7zUCMRYzvgXbuQ1pJSiU9b55AspeSZn7Dv6PIY/7R
-         TKXHc7OjUjqjtTXySl1KCQVbOgqNPblePodvxxtops8i1pO1WbS9teHaCV7io4IXfpwy
-         yNYxIY6wTXjjhHBOHn8M67FrOubEoJjfY11+2mhPKgtG0xV//BSMnroO4JjiNt8M19jN
-         nGcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=vnFcDGZJh2ysFJVi/dwhui31uHSh1Rc8fUgzeGxoe44=;
-        b=I/5/qYIq2aMEb3NQ3B/zXjnF5SqSjjz83WZLE4m5FM2boW3qohyb54cUjBNAPV9Xrj
-         cJXOkSPLdNhnOo4iRmxlstdOiFNc2BzOHtelRw8P+fwYsJrdSXP8v5vBMLQinhKW+VOY
-         qnU6OCDidL+W3D1rceh1pxajtKzJs0cpoyAAcbMe0AM8dzQ/oLReIZCgmrT/cxnpLJRq
-         YEr1cZtYVS7BL66+KIP2WLqdTG7z8n+DjaXBHmSBsODVKK0vSkqQbUBtv/zzM2YWw7uC
-         9+PR8idQvl1vhYp6VvX269tTka02voGo4rH5R5/C/PY6xKQc1IYGJXDyHQtwoQtvY7c0
-         aByg==
-X-Gm-Message-State: APjAAAVvjvbIKRG2h2VJ7aalp7NXhPVd24CoYNcnzMQMqKqm+pfbabjp
-        HBEwlyVrfHKi1d5/6f4z9ndmuJBP
-X-Google-Smtp-Source: APXvYqwxSgzSjbPqw6RWZV61Vucp9hQ0u+K6Q3kfOonZID/6W4ldQOLmJofBwqsIEcrUV+2j0/mAOA==
-X-Received: by 2002:a63:f852:: with SMTP id v18mr3477143pgj.198.1570556004119;
-        Tue, 08 Oct 2019 10:33:24 -0700 (PDT)
-Received: from [192.168.0.16] (97-115-119-26.ptld.qwest.net. [97.115.119.26])
-        by smtp.gmail.com with ESMTPSA id v9sm17708818pfe.1.2019.10.08.10.33.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Oct 2019 10:33:23 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 00/10] optimize openvswitch flow looking up
-To:     xiangxia.m.yue@gmail.com, pshelar@ovn.org
-Cc:     netdev@vger.kernel.org
-References: <1570496438-15460-1-git-send-email-xiangxia.m.yue@gmail.com>
-From:   Gregory Rose <gvrose8192@gmail.com>
-Message-ID: <a9784bad-6e8d-eddc-4ddd-dd90ae31bc20@gmail.com>
-Date:   Tue, 8 Oct 2019 10:33:21 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729577AbfJHSAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 14:00:00 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:56386 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729535AbfJHSAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 14:00:00 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x98Hx3wQ005810
+        for <netdev@vger.kernel.org>; Tue, 8 Oct 2019 10:59:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=SG52qHX6FKCVGr46LRPtoytfiVCZ8Mt6PfeMOFU6bdg=;
+ b=Df9Mre3Tn3UJACXScybcaEG9Vps6GKcYfGHHP7uF32dJiedCAzJqNMsFyqI2IZ8vfnpv
+ D4KLz1dMHD4RPAl6sxsb7afHAReoegQQOAopPiINU0Q0Ku6OhQ50klXxIo3ARzlYwtwn
+ FrlT6p3ld7MhHYN8JYTFo8bcRRvpwHb5+V0= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vgdb3vr5q-19
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 10:59:59 -0700
+Received: from 2401:db00:30:6012:face:0:17:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 8 Oct 2019 10:59:52 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id B52B48618D3; Tue,  8 Oct 2019 10:59:49 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v5 bpf-next 0/7] Move bpf_helpers and add BPF_CORE_READ macros
+Date:   Tue, 8 Oct 2019 10:59:35 -0700
+Message-ID: <20191008175942.1769476-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <1570496438-15460-1-git-send-email-xiangxia.m.yue@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-08_07:2019-10-08,2019-10-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 phishscore=0 suspectscore=8 bulkscore=0 impostorscore=0
+ priorityscore=1501 malwarescore=0 mlxlogscore=999 clxscore=1015
+ spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910080143
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set makes bpf_helpers.h and bpf_endian.h a part of libbpf itself
+for consumption by user BPF programs, not just selftests. It also splits off
+tracing helpers into bpf_tracing.h, which also becomes part of libbpf. Some of
+the legacy stuff (BPF_ANNOTATE_KV_PAIR, load_{byte,half,word}, bpf_map_def
+with unsupported fields, etc, is extracted into selftests-only bpf_legacy.h.
+All the selftests and samples are switched to use libbpf's headers and
+selftests' ones are removed.
 
-On 10/7/2019 6:00 PM, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> This series patch optimize openvswitch for performance or simplify
-> codes.
->
-> Patch 1, 2, 4: Port Pravin B Shelar patches to
-> linux upstream with little changes.
->
-> Patch 5, 6, 7: Optimize the flow looking up and
-> simplify the flow hash.
->
-> Patch 8, 9: are bugfix.
->
-> The performance test is on Intel Xeon E5-2630 v4.
-> The test topology is show as below:
->
-> +-----------------------------------+
-> |   +---------------------------+   |
-> |   | eth0   ovs-switch    eth1 |   | Host0
-> |   +---------------------------+   |
-> +-----------------------------------+
->        ^                       |
->        |                       |
->        |                       |
->        |                       |
->        |                       v
-> +-----+----+             +----+-----+
-> | netperf  | Host1       | netserver| Host2
-> +----------+             +----------+
->
-> We use netperf send the 64B packets, and insert 255+ flow-mask:
-> $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)" 2
-> ...
-> $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)" 2
-> $
-> $ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
->
-> * Without series patch, throughput 8.28Mbps
-> * With series patch, throughput 46.05Mbps
->
-> v1 -> v2:
-> 1. use kfree_rcu instead of call_rcu.
-> 2. add barrier when changing the ma->count.
-> 3. change the ma->max to ma->count in flow_lookup.
->
-> Tonghao Zhang (10):
->    net: openvswitch: add flow-mask cache for performance
->    net: openvswitch: convert mask list in mask array
->    net: openvswitch: shrink the mask array if necessary
->    net: openvswitch: optimize flow-mask cache hash collision
->    net: openvswitch: optimize flow-mask looking up
->    net: openvswitch: simplify the flow_hash
->    net: openvswitch: add likely in flow_lookup
->    net: openvswitch: fix possible memleak on destroy flow-table
->    net: openvswitch: don't unlock mutex when changing the user_features
->      fails
->    net: openvswitch: simplify the ovs_dp_cmd_new
->
->   net/openvswitch/datapath.c   |  65 +++++----
->   net/openvswitch/flow.h       |   1 -
->   net/openvswitch/flow_table.c | 315 +++++++++++++++++++++++++++++++++++++------
->   net/openvswitch/flow_table.h |  19 ++-
->   4 files changed, 328 insertions(+), 72 deletions(-)
->
+As part of this patch set we also add BPF_CORE_READ variadic macros, that are
+simplifying BPF CO-RE reads, especially the ones that have to follow few
+pointers. E.g., what in non-BPF world (and when using BCC) would be:
 
-Hi Tonghao,
+int x = s->a->b.c->d; /* s, a, and b.c are pointers */
 
-I've applied your patch series and built a 5.4.0-rc1 kernel with them.
+today would have to be written using explicit bpf_probe_read() calls as:
 
-xxxxx@ubuntu-1604:~$ modinfo openvswitch
-filename: /lib/modules/5.4.0-rc1+/kernel/net/openvswitch/openvswitch.ko
-alias:          net-pf-16-proto-16-family-ovs_ct_limit
-alias:          net-pf-16-proto-16-family-ovs_meter
-alias:          net-pf-16-proto-16-family-ovs_packet
-alias:          net-pf-16-proto-16-family-ovs_flow
-alias:          net-pf-16-proto-16-family-ovs_vport
-alias:          net-pf-16-proto-16-family-ovs_datapath
-license:        GPL
-description:    Open vSwitch switching datapath
-srcversion:     F15EB8B4460D81BAA16216B
-depends: nf_conntrack,nf_nat,nf_conncount,libcrc32c,nf_defrag_ipv6,nsh
-retpoline:      Y
-intree:         Y
-name:           openvswitch
-vermagic:       5.4.0-rc1+ SMP mod_unload modversions
+  void *t;
+  int x;
+  bpf_probe_read(&t, sizeof(t), s->a);
+  bpf_probe_read(&t, sizeof(t), ((struct b *)t)->b.c);
+  bpf_probe_read(&x, sizeof(x), ((struct c *)t)->d);
 
-I then built openvswitch master branch from github and ran 'make 
-check-kernel'.
+This is super inconvenient and distracts from program logic a lot. Now, with
+added BPF_CORE_READ() macros, you can write the above as:
 
-In doing so I ran into the following splat in this test:
-63: conntrack - IPv6 fragmentation + vlan
+  int x = BPF_CORE_READ(s, a, b.c, d);
 
-Here is the splat:
-[  480.024215] ------------[ cut here ]------------
-[  480.024218] kernel BUG at net/openvswitch/flow_table.c:725!
-[  480.024267] invalid opcode: 0000 [#1] SMP PTI
-[  480.024297] CPU: 2 PID: 15717 Comm: ovs-vswitchd Tainted: G            E
-5.4.0-rc1+ #131
-[  480.024345] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-[  480.024386] RIP: 0010:ovs_flow_tbl_remove+0x151/0x160 [openvswitch]
-[  480.024424] Code: 55 f7 ea 89 f0 c1 f8 1f 29 c2 39 53 10 0f 8f 6a ff 
-ff ff 48 89 ef d1 fe 5b 5d e9 8a ed ff ff 0f 0b 0f 0b b8 18 00 00 00 eb 
-92 <0f> 0b 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 57
-[  480.024527] RSP: 0018:ffffaf32c05e38c8 EFLAGS: 00010246
-[  480.024560] RAX: 0000000000000010 RBX: ffff9e4f6cd5a000 RCX: 
-ffff9e4f6c585000
-[  480.024601] RDX: ffff9e4f6cd5a098 RSI: 0000000000000010 RDI: 
-ffff9e4f6b2c6d20
-[  480.024642] RBP: ffffaf32c05e3b70 R08: ffff9e4f6c1651c0 R09: 
-ffff9e4f756a43c0
-[  480.024684] R10: 0000000000000000 R11: ffffffffc06e5500 R12: 
-ffff9e4f6baf7800
-[  480.024742] R13: ffff9e4f6b2c6d20 R14: ffff9e4f724a4e14 R15: 
-0000000000000007
-[  480.024790] FS:  00007fdd76058980(0000) GS:ffff9e4f77b00000(0000) 
-knlGS:0000000000000000
-[  480.024836] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  480.024871] CR2: 00007ffd18a5ac60 CR3: 0000000230f3a002 CR4: 
-00000000001606e0
-[  480.024917] Call Trace:
-[  480.024941]  action_fifos_exit+0x3240/0x37b0 [openvswitch]
-[  480.024979]  ? __switch_to_asm+0x40/0x70
-[  480.025005]  ? __switch_to_asm+0x34/0x70
-[  480.025031]  ? __switch_to_asm+0x40/0x70
-[  480.025056]  ? __switch_to_asm+0x40/0x70
-[  480.025082]  ? __switch_to_asm+0x34/0x70
-[  480.025108]  ? __switch_to_asm+0x40/0x70
-[  480.025134]  ? __switch_to_asm+0x34/0x70
-[  480.025159]  ? __switch_to_asm+0x40/0x70
-[  480.025185]  ? __switch_to_asm+0x34/0x70
-[  480.025210]  ? __switch_to_asm+0x40/0x70
-[  480.025236]  ? __switch_to_asm+0x34/0x70
-[  480.025262]  ? __switch_to_asm+0x40/0x70
-[  480.025287]  ? __switch_to_asm+0x34/0x70
-[  480.025312]  ? __switch_to_asm+0x40/0x70
-[  480.025338]  ? __switch_to_asm+0x34/0x70
-[  480.025364]  ? __switch_to_asm+0x40/0x70
-[  480.025389]  ? __switch_to_asm+0x34/0x70
-[  480.025415]  ? __switch_to_asm+0x40/0x70
-[  480.025443]  ? __update_load_avg_se+0x11c/0x2e0
-[  480.025472]  ? __update_load_avg_se+0x11c/0x2e0
-[  480.025503]  ? update_load_avg+0x7e/0x600
-[  480.025529]  ? update_load_avg+0x7e/0x600
-[  480.025556]  ? update_curr+0x85/0x1d0
-[  480.025582]  ? cred_has_capability+0x85/0x130
-[  480.025611]  ? __nla_validate_parse+0x57/0x8a0
-[  480.025640]  ? _cond_resched+0x15/0x40
-[  480.025666]  ? genl_family_rcv_msg_attrs_parse.isra.14+0x93/0x100
-[  480.026523]  genl_rcv_msg+0x1d9/0x490
-[  480.027385]  ? __switch_to_asm+0x34/0x70
-[  480.028230]  ? __switch_to_asm+0x40/0x70
-[  480.029050]  ? __switch_to_asm+0x40/0x70
-[  480.029874]  ? genl_family_rcv_msg_attrs_parse.isra.14+0x100/0x100
-[  480.030673]  netlink_rcv_skb+0x4a/0x110
-[  480.031465]  genl_rcv+0x24/0x40
-[  480.032312]  netlink_unicast+0x1a0/0x250
-[  480.033059]  netlink_sendmsg+0x2b4/0x3b0
-[  480.033758]  sock_sendmsg+0x5b/0x60
-[  480.034422]  ___sys_sendmsg+0x278/0x2f0
-[  480.035083]  ? file_update_time+0x60/0x130
-[  480.035680]  ? pipe_write+0x286/0x400
-[  480.036290]  ? new_sync_write+0x12d/0x1d0
-[  480.036882]  ? __sys_sendmsg+0x5e/0xa0
-[  480.037452]  __sys_sendmsg+0x5e/0xa0
-[  480.038013]  do_syscall_64+0x52/0x1a0
-[  480.038546]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  480.039083] RIP: 0033:0x7fdd7537fa6d
-[  480.039596] Code: b9 20 00 00 75 10 b8 2e 00 00 00 0f 05 48 3d 01 f0 
-ff ff 73 31 c3 48 83 ec 08 e8 fe f6 ff ff 48 89 04 24 b8 2e 00 00 00 0f 
-05 <48> 8b 3c 24 48 89 c2 e8 47 f7 ff ff 48 89 d0 48 83 c4 08 48 3d 01
-[  480.040769] RSP: 002b:00007ffd18a6ad40 EFLAGS: 00000293 ORIG_RAX: 
-000000000000002e
-[  480.041391] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 
-00007fdd7537fa6d
-[  480.042045] RDX: 0000000000000000 RSI: 00007ffd18a6ada0 RDI: 
-0000000000000014
-[  480.042713] RBP: 0000000002300870 R08: 0000000000000000 R09: 
-00007ffd18a6bd58
-[  480.043438] R10: 0000000000000000 R11: 0000000000000293 R12: 
-00007ffd18a6bb70
-[  480.044138] R13: 00007ffd18a6bd00 R14: 00007ffd18a6bb78 R15: 
-00007ffd18a6b230
-[  480.044852] Modules linked in: vport_vxlan(E) vxlan(E) vport_gre(E) 
-ip_gre(E) ip_tunnel(E) vport_geneve(E) geneve(E) ip6_udp_tunnel(E) 
-udp_tunnel(E) openvswitch(E) nsh(E) nf_conncount(E) nf_nat_tftp(E) 
-nf_conntrack_tftp(E) nf_nat_ftp(E) nf_conntrack_ftp(E) nf_nat(E) 
-nf_conntrack_netlink(E) ip6table_filter(E) ip6_tables(E) 
-iptable_filter(E) ip_tables(E) x_tables(E) ip6_gre(E) ip6_tunnel(E) 
-tunnel6(E) gre(E) bonding(E) 8021q(E) garp(E) stp(E) mrp(E) llc(E) 
-veth(E) nfnetlink_cttimeout(E) nfnetlink(E) nf_conntrack(E) 
-nf_defrag_ipv6(E) nf_defrag_ipv4(E) binfmt_misc(E) intel_rapl_msr(E) 
-snd_hda_codec_generic(E) ledtrig_audio(E) snd_hda_intel(E) 
-snd_intel_nhlt(E) joydev(E) snd_hda_codec(E) input_leds(E) 
-snd_hda_core(E) snd_hwdep(E) intel_rapl_common(E) snd_pcm(E) 
-snd_timer(E) serio_raw(E) snd(E) soundcore(E) i2c_piix4(E) mac_hid(E) 
-ib_iser(E) rdma_cm(E) iw_cm(E) ib_cm(E) ib_core(E) configfs(E) 
-iscsi_tcp(E) libiscsi_tcp(E) libiscsi(E) scsi_transport_iscsi(E) 
-autofs4(E) btrfs(E) zstd_decompress(E)
-[  480.044888]  zstd_compress(E) raid10(E) raid456(E) 
-async_raid6_recov(E) async_memcpy(E) async_pq(E) async_xor(E) 
-async_tx(E) xor(E) raid6_pq(E) libcrc32c(E) raid1(E) raid0(E) 
-multipath(E) linear(E) crct10dif_pclmul(E) crc32_pclmul(E) 
-ghash_clmulni_intel(E) aesni_intel(E) qxl(E) crypto_simd(E) ttm(E) 
-cryptd(E) glue_helper(E) drm_kms_helper(E) syscopyarea(E) sysfillrect(E) 
-sysimgblt(E) fb_sys_fops(E) psmouse(E) drm(E) floppy(E) pata_acpi(E) 
-[last unloaded: nf_conntrack_ftp]
-[  480.056765] ---[ end trace 4a8c4eceeb9f5dec ]---
-[  480.057953] RIP: 0010:ovs_flow_tbl_remove+0x151/0x160 [openvswitch]
-[  480.059134] Code: 55 f7 ea 89 f0 c1 f8 1f 29 c2 39 53 10 0f 8f 6a ff 
-ff ff 48 89 ef d1 fe 5b 5d e9 8a ed ff ff 0f 0b 0f 0b b8 18 00 00 00 eb 
-92 <0f> 0b 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 57
-[  480.061623] RSP: 0018:ffffaf32c05e38c8 EFLAGS: 00010246
-[  480.062959] RAX: 0000000000000010 RBX: ffff9e4f6cd5a000 RCX: 
-ffff9e4f6c585000
-[  480.064248] RDX: ffff9e4f6cd5a098 RSI: 0000000000000010 RDI: 
-ffff9e4f6b2c6d20
-[  480.065524] RBP: ffffaf32c05e3b70 R08: ffff9e4f6c1651c0 R09: 
-ffff9e4f756a43c0
-[  480.066830] R10: 0000000000000000 R11: ffffffffc06e5500 R12: 
-ffff9e4f6baf7800
-[  480.068870] R13: ffff9e4f6b2c6d20 R14: ffff9e4f724a4e14 R15: 
-0000000000000007
-[  480.070081] FS:  00007fdd76058980(0000) GS:ffff9e4f77b00000(0000) 
-knlGS:0000000000000000
-[  480.071340] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  480.072610] CR2: 00007ffd18a5ac60 CR3: 0000000230f3a002 CR4: 
-00000000001606e0
+Up to 9 levels of pointer chasing are supported, which should be enough for
+any practical purpose, hopefully, without adding too much boilerplate macro
+definitions (though there is admittedly some, given how variadic and recursive
+C macro have to be implemented).
 
-You're hitting the BUG_ON here:
+There is also BPF_CORE_READ_INTO() variant, which relies on caller to allocate
+space for result:
 
-/* Must be called with OVS mutex held. */
-void ovs_flow_tbl_remove(struct flow_table *table, struct sw_flow *flow)
-{
-         struct table_instance *ti = ovsl_dereference(table->ti);
-         struct table_instance *ufid_ti = ovsl_dereference(table->ufid_ti);
+  int x;
+  BPF_CORE_READ_INTO(&x, s, a, b.c, d);
 
-         BUG_ON(table->count == 0); 
-<------------------------------------------------ Here
+Result of last bpf_probe_read() call in the chain of calls is the result of
+BPF_CORE_READ_INTO(). If any intermediate bpf_probe_read() aall fails, then
+all the subsequent ones will fail too, so this is sufficient to know whether
+overall "operation" succeeded or not. No short-circuiting of bpf_probe_read()s
+is done, though.
 
-Thanks,
+BPF_CORE_READ_STR_INTO() is added as well, which differs from
+BPF_CORE_READ_INTO() only in that last bpf_probe_read() call (to read final
+field after chasing pointers) is replaced with bpf_probe_read_str(). Result of
+bpf_probe_read_str() is returned as a result of BPF_CORE_READ_STR_INTO() macro
+itself, so that applications can track return code and/or length of read
+string.
 
-- Greg
+Patch set outline:
+- patch #1 undoes previously added GCC-specific bpf-helpers.h include;
+- patch #2 splits off legacy stuff we don't want to carry over;
+- patch #3 adjusts CO-RE reloc tests to avoid subsequent naming conflict with
+  BPF_CORE_READ;
+- patch #4 splits off bpf_tracing.h;
+- patch #5 moves bpf_{helpers,endian,tracing}.h and bpf_helper_defs.h
+  generation into libbpf and adjusts Makefiles to include libbpf for header
+  search;
+- patch #6 adds variadic BPF_CORE_READ() macro family, as described above;
+- patch #7 adds tests to verify all possible levels of pointer nestedness for
+  BPF_CORE_READ(), as well as correctness test for BPF_CORE_READ_STR_INTO().
+
+v4->v5:
+- move BPF_CORE_READ() stuff into bpf_core_read.h header (Alexei);
+
+v3->v4:
+- rebase on latest bpf-next master;
+- bpf_helper_defs.h generation is moved into libbpf's Makefile;
+
+v2->v3:
+- small formatting fixes and macro () fixes (Song);
+
+v1->v2:
+- fix CO-RE reloc tests before bpf_helpers.h move (Song);
+- split off legacy stuff we don't want to carry over (Daniel, Toke);
+- split off bpf_tracing.h (Daniel);
+- fix samples/bpf build (assuming other fixes are applied);
+- switch remaining maps either to bpf_map_def_legacy or BTF-defined maps;
+
+
+Andrii Nakryiko (7):
+  selftests/bpf: undo GCC-specific bpf_helpers.h changes
+  selftests/bpf: samples/bpf: split off legacy stuff from bpf_helpers.h
+  selftests/bpf: adjust CO-RE reloc tests for new bpf_core_read() macro
+  selftests/bpf: split off tracing-only helpers into bpf_tracing.h
+  libbpf: move bpf_{helpers,helper_defs,endian,tracing}.h into libbpf
+  libbpf: add BPF_CORE_READ/BPF_CORE_READ_INTO helpers
+  selftests/bpf: add BPF_CORE_READ and BPF_CORE_READ_STR_INTO macro
+    tests
+
+ samples/bpf/Makefile                          |   2 +-
+ samples/bpf/hbm_kern.h                        |  27 ++-
+ samples/bpf/map_perf_test_kern.c              |  24 +--
+ samples/bpf/offwaketime_kern.c                |   1 +
+ samples/bpf/parse_ldabs.c                     |   1 +
+ samples/bpf/sampleip_kern.c                   |   1 +
+ samples/bpf/sockex1_kern.c                    |   1 +
+ samples/bpf/sockex2_kern.c                    |   1 +
+ samples/bpf/sockex3_kern.c                    |   1 +
+ samples/bpf/spintest_kern.c                   |   1 +
+ samples/bpf/tcbpf1_kern.c                     |   1 +
+ samples/bpf/test_map_in_map_kern.c            |  16 +-
+ samples/bpf/test_overhead_kprobe_kern.c       |   1 +
+ samples/bpf/test_probe_write_user_kern.c      |   1 +
+ samples/bpf/trace_event_kern.c                |   1 +
+ samples/bpf/tracex1_kern.c                    |   1 +
+ samples/bpf/tracex2_kern.c                    |   1 +
+ samples/bpf/tracex3_kern.c                    |   1 +
+ samples/bpf/tracex4_kern.c                    |   1 +
+ samples/bpf/tracex5_kern.c                    |   1 +
+ tools/lib/bpf/.gitignore                      |   1 +
+ tools/lib/bpf/Makefile                        |  17 +-
+ tools/lib/bpf/bpf_core_read.h                 | 167 ++++++++++++++++++
+ .../selftests => lib}/bpf/bpf_endian.h        |   0
+ tools/lib/bpf/bpf_helpers.h                   |  41 +++++
+ .../bpf_helpers.h => lib/bpf/bpf_tracing.h}   |  94 +---------
+ tools/testing/selftests/bpf/.gitignore        |   1 -
+ tools/testing/selftests/bpf/Makefile          |  10 +-
+ tools/testing/selftests/bpf/bpf_legacy.h      |  39 ++++
+ .../selftests/bpf/prog_tests/core_reloc.c     |   8 +-
+ .../selftests/bpf/progs/core_reloc_types.h    |   9 +
+ tools/testing/selftests/bpf/progs/loop1.c     |   1 +
+ tools/testing/selftests/bpf/progs/loop2.c     |   1 +
+ tools/testing/selftests/bpf/progs/loop3.c     |   1 +
+ .../testing/selftests/bpf/progs/sockopt_sk.c  |  13 +-
+ tools/testing/selftests/bpf/progs/tcp_rtt.c   |  13 +-
+ .../selftests/bpf/progs/test_btf_haskv.c      |   1 +
+ .../selftests/bpf/progs/test_btf_newkv.c      |   1 +
+ .../bpf/progs/test_core_reloc_arrays.c        |  11 +-
+ .../bpf/progs/test_core_reloc_flavors.c       |   9 +-
+ .../bpf/progs/test_core_reloc_ints.c          |  19 +-
+ .../bpf/progs/test_core_reloc_kernel.c        |  61 ++++++-
+ .../bpf/progs/test_core_reloc_misc.c          |   9 +-
+ .../bpf/progs/test_core_reloc_mods.c          |  19 +-
+ .../bpf/progs/test_core_reloc_nesting.c       |   7 +-
+ .../bpf/progs/test_core_reloc_primitives.c    |  13 +-
+ .../bpf/progs/test_core_reloc_ptr_as_arr.c    |   5 +-
+ 47 files changed, 470 insertions(+), 186 deletions(-)
+ create mode 100644 tools/lib/bpf/bpf_core_read.h
+ rename tools/{testing/selftests => lib}/bpf/bpf_endian.h (100%)
+ create mode 100644 tools/lib/bpf/bpf_helpers.h
+ rename tools/{testing/selftests/bpf/bpf_helpers.h => lib/bpf/bpf_tracing.h} (68%)
+ create mode 100644 tools/testing/selftests/bpf/bpf_legacy.h
+
+-- 
+2.17.1
+
