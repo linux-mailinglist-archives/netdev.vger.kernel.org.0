@@ -2,129 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70FB7CF7A7
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:57:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71434CF7AB
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:59:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730662AbfJHK5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 06:57:13 -0400
-Received: from mail-eopbgr750051.outbound.protection.outlook.com ([40.107.75.51]:48528
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730278AbfJHK5K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 06:57:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NYIYjq0/SsVdRzAuD9qcR0KaMZ1CqP1BZ/fo80ewo0sovxWocW5nleY/VOGeJeOXC+34e38hVRD2t7GnsA7tPZpsas/XiNYGsXJmVCDYpVVjiEWFp7Pao/+Xpi6GYgqj5LziyQtdAkOoS2lr59fQ/rl4GxrADkt/EhLVJXMkgR9h2YRZfK/5dLpVyfC1WalFKmQ/MHBaC9oITG0ezU1SSdz+7UvwGPp3usl6rON2bWfiATTsdUtOFSTbY/toBjzNCnXZIroArDd8ZOdxwAGm8C8lHnJgR9s3Lumq+JxUKYFk384dMBEZx7Qrg98PdxypPTOKPEWMRUUIh1b1FI+neg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4bdM9WdcMV/fcWLs7Oz1+ANuYSif6tmWHvKqTKF+S+A=;
- b=O2p9bMa48JMSfqYWb3WDIIdwWkMiR75l3nIipaPrwACTzfBiaQ7XNqJewkN1BjiQYbb11jRraOGg78BHvpUxn37UVBXegZBviRD6OxF2U7CQ4OAWIESTLCQEq91jOHmbq2vqz4j757GoeI50vdnFVoPAuacsRwqzj3sMVh49RT+ECHD/FDzqdCMyAwBN3EY9Oztsv4gVsS/CNQE+FyR+Rc6uYVOKURZycoweMbk2zuPIeMNQ2hczAn2vbkkcAZFghiybWwUWhNKCQDhbCC/j9Vp4HeQPYculh/lGV4E6B7IDWU1t0yJofvzJ6EAlq7QjvRgIc24w8v4uV1TiQcEHhQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
- dkim=pass header.d=aquantia.com; arc=none
+        id S1730150AbfJHK7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 06:59:41 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38924 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729790AbfJHK7l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 06:59:41 -0400
+Received: by mail-pf1-f196.google.com with SMTP id v4so10563516pff.6
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 03:59:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4bdM9WdcMV/fcWLs7Oz1+ANuYSif6tmWHvKqTKF+S+A=;
- b=8BlVzWbUha06wglyUSAg5GF73nxrbnlK0seDVelEKlgW/nMJPgocB5KwHNbN9OC6IKo3fs+NWstIupR/rM8eHwxsyP8evyUUwbAw6cEa6KtbdXOllaZZWvf1cINwjIO2Ng902yD4DrlHfbOGkhC895VE1hGYQX8/18Rmt7W0d0M=
-Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
- BN8PR11MB3666.namprd11.prod.outlook.com (20.178.221.19) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.24; Tue, 8 Oct 2019 10:57:01 +0000
-Received: from BN8PR11MB3762.namprd11.prod.outlook.com
- ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
- ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.016; Tue, 8 Oct 2019
- 10:57:01 +0000
-From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Egor Pomozov <Egor.Pomozov@aquantia.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>
-Subject: [PATCH v2 net-next 12/12] net: aquantia: adding atlantic ptp
- maintainer
-Thread-Topic: [PATCH v2 net-next 12/12] net: aquantia: adding atlantic ptp
- maintainer
-Thread-Index: AQHVfccc9VyxUKgxOEKYM3nfa2Dk5g==
-Date:   Tue, 8 Oct 2019 10:57:01 +0000
-Message-ID: <8a7db3f57de8806a70faab18ab63e461159d58ae.1570531332.git.igor.russkikh@aquantia.com>
-References: <cover.1570531332.git.igor.russkikh@aquantia.com>
-In-Reply-To: <cover.1570531332.git.igor.russkikh@aquantia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0215.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1f::35) To BN8PR11MB3762.namprd11.prod.outlook.com
- (2603:10b6:408:8d::19)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Igor.Russkikh@aquantia.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.17.1
-x-originating-ip: [95.79.108.179]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: afb04121-368b-4dfa-36ce-08d74bde3f2e
-x-ms-traffictypediagnostic: BN8PR11MB3666:
-x-ld-processed: 83e2e134-991c-4ede-8ced-34d47e38e6b1,ExtFwd
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR11MB366670396AD6CCEBDE19BC37989A0@BN8PR11MB3666.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 01842C458A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(1496009)(366004)(346002)(376002)(396003)(39850400004)(136003)(189003)(199004)(118296001)(71190400001)(71200400001)(2501003)(256004)(6916009)(305945005)(316002)(107886003)(2351001)(4326008)(2906002)(44832011)(6116002)(7736002)(3846002)(54906003)(6486002)(6436002)(11346002)(5640700003)(6512007)(99286004)(6306002)(25786009)(66556008)(50226002)(76176011)(52116002)(5660300002)(8936002)(2616005)(81156014)(66446008)(102836004)(81166006)(8676002)(386003)(6506007)(508600001)(4744005)(14454004)(26005)(36756003)(86362001)(446003)(64756008)(476003)(486006)(66946007)(186003)(66476007)(66066001)(1730700003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3666;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: aquantia.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6TMNKqpjtYZbDKSA38UNi03hjnlysxxsCF+zIgpHXoXsb4PGwECD/TmBerlGrMQVhHaiVnTH5QkX42dQKB/g8cP2eEWbKKAtG3dTXAwltu2YRJUsg3R/8DVMKyrr/TMZanFuuH6bqm7U/RYcHJkIcVm8Ln6frxCbHr1Ur5dGVOH1sa43wh21PUugvlrPwr8KlqfrKbY0ESg8zYwk2GBiAlm+8ZH6yNjnYJgzj7HNje3ozo2wTHAn+xMOaV+BWW2tRc82zk1OThDun7IhbJuJ7EYMntV6EO80jxEnp7yoVvafADRRX7TqEUXQvUDC2d13AWdJMvzhg3uK/KMB6kS1v6FgbJsEXchgLU53pZ3zTKoaxP/3o/DP6CEpbmTM5Zsc76DYOmpiXLyiBnGo8lz2O/k30t+s3+kLtJZIPvkb/eU=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afb04121-368b-4dfa-36ce-08d74bde3f2e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2019 10:57:01.4818
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vY91p4AtQSoM91trayvIZRoONMhgk6G/pws3C4ZNBur6ifVOBk+toURj+91pGazfQ/pdr6CojQM8BeizsR8aZA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3666
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id;
+        bh=AqkueV0Lt9qDdfB1BJCxIGxiB546B16SW6VYPa83koI=;
+        b=qbwhTQOrk0eFJdbQELs1gTqu+ZbLWGJ87Ev/0v9a+CnUTY/Opegf3+kTRUcFrcc1Vy
+         H35t370LFU8bFEPnXPeoSQNJkS5gNN8A4CTHdSy43knzjKv4tWK0q48ZqrL3Tdk5KL/v
+         EBgMxY9QIn/ObU39+XwLPuNf4u4QSTGQw0ZJ9ZJY+sXuXDvxHm34jDo9eiwFvuQiXHyQ
+         OUF+w1mUfotm8yz8R29D07AQ6qx8581BLpvcaZrRjBVmf1c7AygTTH8AG9sE8RROmDXm
+         M9I6jgsaFWPNVSpRvv+0ia6SbeszE5B6eHzhXtXHhXpJTUh8WThj56DKGqZLY8n7NoU2
+         JZeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=AqkueV0Lt9qDdfB1BJCxIGxiB546B16SW6VYPa83koI=;
+        b=ObvT2zrV5bFc182p78Icoex90/6QgV1/8EpUV6pe2mBY3GRw/CMLNF2XhZHe4Q/VEN
+         os6U5xmzQPSmWKMUu6OYlVH8zbZCsQH3slHELp6766uUkwvybmPgr+rf9xvCVZz2G0ZX
+         gU2sHIPezwtlTCwCTJs3w4DsSwyF+zHt8AOC1k4Wg4s3Lhfx77YfQeK9K2Eq0QHfdYvU
+         WXQDIzfsWAuQUh1/0u43EQO3JEzyLC5osKI7MWTFsIH9YKquV9+YeqJVlu48InenZWZ+
+         bsWcXDY4YSLkiDhRNffHvXouKn5mwQPkijKEUXaroAO8I4myR5GPWnVZhzmE8qvdr8lg
+         X7Eg==
+X-Gm-Message-State: APjAAAXWB1FeFztzy0VtkyKEKWWVlHAWFVR2gzNViMtZAueDREdQYcOY
+        L4tXQ1pPQA+dh/s7/keDY7Q=
+X-Google-Smtp-Source: APXvYqyljGKVKKBtWc76GHrECWVQ8cggk4/+RfxIk7Xxb7Io0Yn+DHi8azjjEigClrhLJRr1bblwkQ==
+X-Received: by 2002:a63:38c:: with SMTP id 134mr14517489pgd.360.1570532380574;
+        Tue, 08 Oct 2019 03:59:40 -0700 (PDT)
+Received: from localhost.localdomain ([122.178.241.240])
+        by smtp.gmail.com with ESMTPSA id h4sm16686066pgg.81.2019.10.08.03.59.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 08 Oct 2019 03:59:40 -0700 (PDT)
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     stephen@networkplumber.org, netdev@vger.kernel.org,
+        scott.drennan@nokia.com, jbenc@redhat.com,
+        martin.varghese@nokia.com
+Subject: [PATCH iproute2] Bareudp device support
+Date:   Tue,  8 Oct 2019 16:29:21 +0530
+Message-Id: <1570532361-15163-1-git-send-email-martinvarghesenokia@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PTP implementation is designed and maintained by Egor Pomozov, adding
-him as this module maintainer. Egor is the author of the core
-functionality and the architect, and is to be contacted for
-all Aquantia PTP/AVB functionality.
+From: Martin <martin.varghese@nokia.com>
 
-Signed-off-by: Egor Pomozov <egor.pomozov@aquantia.com>
-Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
+The Bareudp device provides a generic L3 encapsulation for tunnelling
+different protocols like MPLS,IP,NSH, etc. inside a UDP tunnel.
+
+Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
 ---
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/uapi/linux/if_link.h |  12 ++++
+ ip/Makefile                  |   2 +-
+ ip/iplink_bareudp.c          | 154 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 167 insertions(+), 1 deletion(-)
+ create mode 100644 ip/iplink_bareudp.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 496e8f156925..c757749040f9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1190,6 +1190,13 @@ Q:	http://patchwork.ozlabs.org/project/netdev/list/
- F:	drivers/net/ethernet/aquantia/atlantic/
- F:	Documentation/networking/device_drivers/aquantia/atlantic.txt
-=20
-+AQUANTIA ETHERNET DRIVER PTP SUBSYSTEM
-+M:	Egor Pomozov <egor.pomozov@aquantia.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+W:	http://www.aquantia.com
-+F:	drivers/net/ethernet/aquantia/atlantic/aq_ptp*
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index d36919f..a3a876d 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -578,6 +578,18 @@ enum ifla_geneve_df {
+ 	GENEVE_DF_MAX = __GENEVE_DF_END - 1,
+ };
+ 
++/* Bareudp section  */
++enum {
++	IFLA_BAREUDP_UNSPEC,
++	IFLA_BAREUDP_PORT,
++	IFLA_BAREUDP_ETHERTYPE,
++	IFLA_BAREUDP_SRCPORT_MIN,
++	IFLA_BAREUDP_EXTMODE,
++	__IFLA_BAREUDP_MAX
++};
 +
- ARC FRAMEBUFFER DRIVER
- M:	Jaya Kumar <jayalk@intworks.biz>
- S:	Maintained
---=20
-2.17.1
++#define IFLA_BAREUDP_MAX (__IFLA_BAREUDP_MAX - 1)
++
+ /* PPP section */
+ enum {
+ 	IFLA_PPP_UNSPEC,
+diff --git a/ip/Makefile b/ip/Makefile
+index 5ab78d7..784d852 100644
+--- a/ip/Makefile
++++ b/ip/Makefile
+@@ -11,7 +11,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+     iplink_bridge.o iplink_bridge_slave.o ipfou.o iplink_ipvlan.o \
+     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+-    ipnexthop.o
++    ipnexthop.o iplink_bareudp.o
+ 
+ RTMONOBJ=rtmon.o
+ 
+diff --git a/ip/iplink_bareudp.c b/ip/iplink_bareudp.c
+new file mode 100644
+index 0000000..479ad1c
+--- /dev/null
++++ b/ip/iplink_bareudp.c
+@@ -0,0 +1,154 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#include <stdio.h>
++
++#include "rt_names.h"
++#include "utils.h"
++#include "ip_common.h"
++
++#define BAREUDP_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
++
++static void print_explain(FILE *f)
++{
++	fprintf(f,
++			"Usage: ........ bareudp dstport PORT\n"
++			"                ethertype ETHERTYPE|PROTOCOL\n"
++			"                [ext_mode]\n"
++			"                [srcportmin SRCPORTMIN]\n"
++			"\n"
++			"Where: PORT   := 0-65535\n"
++			"     : ETHERTYPE|PROTOCOL := ip|mpls|0-65535\n"
++			"     : SRCPORTMIN : = 0-65535\n"
++	       );
++}
++
++static void explain(void)
++{
++	print_explain(stderr);
++}
++
++static void check_duparg(__u64 *attrs, int type, const char *key,
++		const char *argv)
++{
++	if (!BAREUDP_ATTRSET(*attrs, type)) {
++		*attrs |= (1L << type);
++		return;
++	}
++	duparg2(key, argv);
++}
++
++static int bareudp_parse_opt(struct link_util *lu, int argc, char **argv,
++		struct nlmsghdr *n)
++{
++	__u16 dstport = 0;
++	__u16 ethertype = 0;
++	__u16 srcportmin = 0;
++	bool extmode = 0;
++	__u64 attrs = 0;
++
++	while (argc > 0) {
++		if (!matches(*argv, "dstport")) {
++			NEXT_ARG();
++			check_duparg(&attrs, IFLA_BAREUDP_PORT, "dstport",
++					*argv);
++			if (get_u16(&dstport, *argv, 0))
++				invarg("dstport", *argv);
++		} else if (!matches(*argv, "extmode")) {
++			check_duparg(&attrs, IFLA_BAREUDP_EXTMODE,
++					*argv, *argv);
++			extmode = true;
++		} else if (!matches(*argv, "ethertype"))  {
++			NEXT_ARG();
++			check_duparg(&attrs, IFLA_BAREUDP_ETHERTYPE,
++					*argv, *argv);
++			if (!matches(*argv, "mpls")) {
++				ethertype = 0x8847;
++				check_duparg(&attrs, IFLA_BAREUDP_EXTMODE,
++						*argv, *argv);
++				extmode = true;
++			} else if (!matches(*argv, "ip")) {
++				ethertype = 0x0800;
++				check_duparg(&attrs, IFLA_BAREUDP_EXTMODE,
++						*argv, *argv);
++				extmode = true;
++			} else {
++				if (get_u16(&ethertype, *argv, 0))
++					invarg("ethertype", *argv);
++			}
++		} else if (!matches(*argv, "srcportmin")) {
++			NEXT_ARG();
++			check_duparg(&attrs, IFLA_BAREUDP_SRCPORT_MIN,
++					*argv, *argv);
++			if (get_u16(&srcportmin, *argv, 0))
++				invarg("srcportmin", *argv);
++
++		} else if (matches(*argv, "help") == 0) {
++			explain();
++			return -1;
++		} else {
++			fprintf(stderr, "bareudp: unknown command \"%s\"?\n", *argv);
++			explain();
++			return -1;
++		}
++	argc--, argv++;
++	}
++
++	if (!dstport || !ethertype)  {
++		fprintf(stderr, "bareudp : Missing mandatory params\n");
++		return -1;
++	}
++
++	if (dstport)
++		addattr16(n, 1024, IFLA_BAREUDP_PORT, htons(dstport));
++	if (ethertype)
++		addattr16(n, 1024, IFLA_BAREUDP_ETHERTYPE, htons(ethertype));
++	if (extmode)
++		addattr(n, 1024, IFLA_BAREUDP_EXTMODE);
++	if (srcportmin)
++		addattr16(n, 1024, IFLA_BAREUDP_PORT, srcportmin);
++
++	return 0;
++}
++
++static void bareudp_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
++{
++
++	if (!tb)
++		return;
++
++	if (tb[IFLA_BAREUDP_PORT])
++		print_uint(PRINT_ANY,
++				"port",
++				"dstport %u ",
++				rta_getattr_be16(tb[IFLA_BAREUDP_PORT]));
++
++	if (tb[IFLA_BAREUDP_ETHERTYPE])
++		print_uint(PRINT_ANY,
++				"port",
++				"dstport %u ",
++				rta_getattr_be16(tb[IFLA_BAREUDP_ETHERTYPE]));
++	if (tb[IFLA_BAREUDP_SRCPORT_MIN])
++		print_uint(PRINT_ANY,
++				"port",
++				"dstport %u ",
++				rta_getattr_u16(tb[IFLA_BAREUDP_SRCPORT_MIN]));
++
++	if (tb[IFLA_BAREUDP_EXTMODE]) {
++		print_bool(PRINT_ANY, "extmode", "extmode ", true);
++		return;
++	}
++}
++
++static void bareudp_print_help(struct link_util *lu, int argc, char **argv,
++		FILE *f)
++{
++	print_explain(f);
++}
++
++struct link_util bareudp_link_util = {
++	.id		= "bareudp",
++	.maxattr	= IFLA_BAREUDP_MAX,
++	.parse_opt	= bareudp_parse_opt,
++	.print_opt	= bareudp_print_opt,
++	.print_help	= bareudp_print_help,
++};
+-- 
+1.8.3.1
 
