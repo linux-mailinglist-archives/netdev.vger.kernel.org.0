@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 717C2CFDBC
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 17:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEC4ECFDC5
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 17:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726349AbfJHPhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 11:37:14 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:45462 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725939AbfJHPhO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 11:37:14 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E09F63082E72;
-        Tue,  8 Oct 2019 15:37:13 +0000 (UTC)
-Received: from localhost (ovpn-204-214.brq.redhat.com [10.40.204.214])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9BDE419C69;
-        Tue,  8 Oct 2019 15:37:11 +0000 (UTC)
-Date:   Tue, 8 Oct 2019 17:37:09 +0200
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next 5/7] libbpf: move
- bpf_{helpers,endian,tracing}.h into libbpf
-Message-ID: <20191008173709.07da56ef@redhat.com>
-In-Reply-To: <62b1bc6b-8c8a-b766-6bfc-2fb16017d591@fb.com>
-References: <20191003212856.1222735-1-andriin@fb.com>
-        <20191003212856.1222735-6-andriin@fb.com>
-        <da73636f-7d81-1fe0-65af-aa32f7654c57@gmail.com>
-        <CAEf4BzYRJ4i05prEJF_aCQK5jnmpSUqrwTXYsj4FDahCWcNQdQ@mail.gmail.com>
-        <4fcbe7bf-201a-727a-a6f1-2088aea82a33@gmail.com>
-        <CAEf4BzZr9cxt=JrGYPUhDTRfbBocM18tFFaP+LiJSCF-g4hs2w@mail.gmail.com>
-        <20191004113026.4c23cd41@cakuba.hsd1.ca.comcast.net>
-        <62b1bc6b-8c8a-b766-6bfc-2fb16017d591@fb.com>
+        id S1727835AbfJHPjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 11:39:09 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:56306 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725989AbfJHPjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 11:39:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=gQ6yim/mQFooQMeP/zNoWTmRo6Z0q2Fo7+0BkS2ADW8=; b=DIs2aEC0JjMlCqmk42tU/gadH
+        fvYKfkxnjhAihwig0aqg82AYkTcXgIWEVo+hoM6pvcGQCbM1Rl3OGnVPAKfRQobFc9vH520Gdu2Rn
+        WGFtihPJg6/yVeoPYGy6ap85kxeLWLY4TUx4g7fL6zsdlTERTsQPuRmTDZ9VGy4l+9gPC4KgEUu/q
+        AC5TQM2o32HNEO1GAHtIyxW2S95rVNAAa7xixmcU/MjW0Gl6Jkl4wZmeEl1a0sEwBS8M4TAeElKHI
+        qStCOfzeu7T1uswwMIQ4aob1OHaUZpF/vAdfnTW+8UcO+x/IAsERuHFylChuwHWSMGDfIiSsq89/6
+        FOqtQCl3Q==;
+Received: from [2601:1c0:6280:3f0::9ef4]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
+        id 1iHrZr-0005Mg-T6; Tue, 08 Oct 2019 15:39:07 +0000
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH -net] phylink: fix kernel-doc warnings
+Message-ID: <9e756330-80b0-e613-c9df-85b58af064c9@infradead.org>
+Date:   Tue, 8 Oct 2019 08:39:04 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 08 Oct 2019 15:37:14 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Oct 2019 18:37:44 +0000, Yonghong Song wrote:
-> distro can package bpf/btf uapi headers into libbpf package.
-> Users linking with libbpf.a/libbpf.so can use bpf/btf.h with include
-> path pointing to libbpf dev package include directory.
-> Could this work?
+From: Randy Dunlap <rdunlap@infradead.org>
 
-I don't think it would. Distros have often a policy against bundling
-files that are available from one package (in this case, kernel-headers
-or similar) in a different package (libbpf).
+Fix kernel-doc warnings in phylink.c:
 
-The correct way is making the libbpf package depend on a particular
-version of kernel-headers (or newer). As I said, I don't see a problem
-here. It's not a special situation, it's just usual dependencies.
+../drivers/net/phy/phylink.c:595: warning: Function parameter or member 'config' not described in 'phylink_create'
+../drivers/net/phy/phylink.c:595: warning: Excess function parameter 'ndev' description in 'phylink_create'
 
- Jiri
+Fixes: 8796c8923d9c ("phylink: add documentation for kernel APIs")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- linux-next-20191008.orig/drivers/net/phy/phylink.c
++++ linux-next-20191008/drivers/net/phy/phylink.c
+@@ -576,7 +576,7 @@ static int phylink_register_sfp(struct p
+ 
+ /**
+  * phylink_create() - create a phylink instance
+- * @ndev: a pointer to the &struct net_device
++ * @config: a pointer to the target &struct phylink_config
+  * @fwnode: a pointer to a &struct fwnode_handle describing the network
+  *	interface
+  * @iface: the desired link mode defined by &typedef phy_interface_t
+
+
