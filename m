@@ -2,95 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A786CF25C
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 08:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7DB9CF265
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 08:05:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729983AbfJHGFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 02:05:16 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37209 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728297AbfJHGFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 02:05:15 -0400
-Received: by mail-pf1-f194.google.com with SMTP id y5so10175922pfo.4;
-        Mon, 07 Oct 2019 23:05:15 -0700 (PDT)
+        id S1729995AbfJHGFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 02:05:54 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:39972 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728297AbfJHGFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 02:05:54 -0400
+Received: by mail-pg1-f194.google.com with SMTP id d26so9671249pgl.7
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 23:05:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vBrl4vq49FCgbqgw2HnU3OTXMLhWTiLxjEoStuUa6mc=;
+        b=lYIVKldkL0OaGIeWmgzRz7Ti/mjoVou2PkyOFpMa68EuAGAR0/G1r2jm+mTKRUZIaA
+         UiaAAKFv+S/ezToYc4Ufm/Zv9juDAq16/3ALhJlBBwJAxBg9RzHb1O4TyZpSwiu9mJZs
+         E/8dKH/+tujCTHb2CUqtsic0hDl9H0sFjYWvpuo4pJ9ezHYGzn67bontAQaj8OvEBZ3f
+         u33zpjbuNUXsgqTD9IgyBOzdyPVsZ+MdvM6xRzLs5gRw229YPZBQIwijBZwMDppw7RTQ
+         9JhLaODHtZu/uZXECS3QnJMKWyEvQcCHjijv8BVEjlD7ZvNMhYOK3LU8AAua7mPKKzed
+         0hEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v6XPWvTzTNM9h297e855Iegd93fJRV+8wlRBEJwrHzk=;
-        b=LzK5smRLhxgfNNVkdeJ2/eBsdZqhSbwI76zXSst0Y4a7oj+3H/lyK9u74sGg7VYCTv
-         ulfLGOGUrXWdLi7JjH0PgUisrupW2N4lnatebslFpSpo2TyKOfygaTpSm/Ayofyrgjtn
-         Ns5e4ln8g5Wd9ryP8w//KsuPimSXmSLS9LkYZ5p0uuOWw8Kaf6nyYfFGdxs2GdDMHtNT
-         cPjoIJYLv7GpmiORg3iQulJvAhdgih23zD3H70LFMfN53wf/Qk4ec7n72lc6eqVt5TpA
-         A2a0Qf4AbNrZdxZV78LUOp16owiF4WuR1I9NQhM53B1mOKlaCjWfjxrHhY5sMJhU/RNa
-         bWpA==
-X-Gm-Message-State: APjAAAVBnpeNNp21YkeqR4/r+e8FaGg0qDHVI16+IfKtdEBw0GGSZDf2
-        P303qsGcZ9xxdf7OrMM2oKShZBBoNaM=
-X-Google-Smtp-Source: APXvYqwcshMidoQ5fZUhw7ynmteehEgUBfFn5kIT0zoo7uwr+6i431XEQrkyBBzhmWpWYPn95OD6Pg==
-X-Received: by 2002:a63:2406:: with SMTP id k6mr34458056pgk.420.1570514714468;
-        Mon, 07 Oct 2019 23:05:14 -0700 (PDT)
-Received: from localhost (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
-        by smtp.gmail.com with ESMTPSA id z4sm1052231pjt.17.2019.10.07.23.05.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Oct 2019 23:05:13 -0700 (PDT)
-From:   You-Sheng Yang <vicamo.yang@canonical.com>
-To:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
-        Sara Sharon <sara.sharon@intel.com>,
-        Gil Adam <gil.adam@intel.com>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Haim Dreyfuss <haim.dreyfuss@intel.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iwlwifi: fw: don't send GEO_TX_POWER_LIMIT command to FW version 29
-Date:   Tue,  8 Oct 2019 14:05:11 +0800
-Message-Id: <20191008060511.18474-1-vicamo.yang@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vBrl4vq49FCgbqgw2HnU3OTXMLhWTiLxjEoStuUa6mc=;
+        b=Bl0DbokrEZ66QCl48BPC2+GZP0Lc6W9EUhRnAPgLmaunzofpUY9yxfr05wJS/IhWOo
+         VZcwSdmmuyLFb0GrCLzCxUusX803HBbY+0KCUokF+zFBb5gPcmN6kRP0MtSjQVnmORtd
+         p8fxEljC3vHbQ5jQV1QZoCkdvrCcthrf8CmKIOG8zAa0yJbwry8+pgMKDUsUonGIBEJc
+         99JQ9oAaT5MC5DZOkOOuroUm19twBkXcmB/LmjaSoUoko4w6NCFt+7qP2Yrpz31m/Xyr
+         1kjwBZPUOWT59n6dbBH6l2pfFAbJCGNGz04+dlMmDyeBf7fPPDLfQT2pcgTGWuGJjZmQ
+         5KDA==
+X-Gm-Message-State: APjAAAVZW/TLbgWrdoTaTx3Vom/igeNN1J8cQxq/vckWIxZ8A8mtGat0
+        5zU34OKPeEV+PGGSxZXN2yLpQsBafB3/nYwz7Eg=
+X-Google-Smtp-Source: APXvYqxnNB6CK8fEPIryZQ370U+COLHBbB2uPQ6WpswQBUhlM8PJ58ozkbkHvPkxutAidjWlW0Iyj4cu3+gyK9pDfFQ=
+X-Received: by 2002:a62:7912:: with SMTP id u18mr2518688pfc.242.1570514753674;
+ Mon, 07 Oct 2019 23:05:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191008053507.252202-1-zenczykowski@gmail.com>
+In-Reply-To: <20191008053507.252202-1-zenczykowski@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 7 Oct 2019 23:05:42 -0700
+Message-ID: <CAM_iQpVqSg=kdR5TaXKyJmVaPATPrPv+v_H0ifjKB6U7e4zOHQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] netfilter: fix a memory leak in nf_conntrack_in
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follow-up for commit fddbfeece9c7 ("iwlwifi: fw: don't send
-GEO_TX_POWER_LIMIT command to FW version 36"). There is no
-GEO_TX_POWER_LIMIT command support for all revisions of FW version
-29, either.
+On Mon, Oct 7, 2019 at 10:35 PM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
+>
+> From: Maciej =C5=BBenczykowski <maze@google.com>
 
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=204151
-Signed-off-by: You-Sheng Yang <vicamo.yang@canonical.com>
----
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Please, at least a simple copy-n-paste of kmemleak report will
+help a lot here. A changelog would save your time and mine too.
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-index 32a5e4e5461f..dbba616c19de 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-@@ -889,14 +889,14 @@ static bool iwl_mvm_sar_geo_support(struct iwl_mvm *mvm)
- 	 * firmware versions.  Unfortunately, we don't have a TLV API
- 	 * flag to rely on, so rely on the major version which is in
- 	 * the first byte of ucode_ver.  This was implemented
--	 * initially on version 38 and then backported to29 and 17.
-+	 * initially on version 38 and then backported to 29 and 17.
- 	 * The intention was to have it in 36 as well, but not all
- 	 * 8000 family got this feature enabled.  The 8000 family is
- 	 * the only one using version 36, so skip this version
--	 * entirely.
-+	 * entirely. All revisions of -29 fw still don't have
-+	 * GEO_TX_POWER_LIMIT supported yet.
- 	 */
- 	return IWL_UCODE_SERIAL(mvm->fw->ucode_ver) >= 38 ||
--	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 29 ||
- 	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 17;
- }
- 
--- 
-2.20.1
-
+Thanks.
