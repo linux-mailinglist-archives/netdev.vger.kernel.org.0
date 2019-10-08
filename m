@@ -2,87 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F07E0CFE49
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 18:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DAA4CFE4F
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 18:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbfJHQAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 12:00:12 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45800 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725908AbfJHQAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 12:00:12 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y72so10983040pfb.12
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 09:00:11 -0700 (PDT)
+        id S1728212AbfJHQAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 12:00:41 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:34096 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726336AbfJHQAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 12:00:41 -0400
+Received: by mail-pl1-f193.google.com with SMTP id k7so8652861pll.1;
+        Tue, 08 Oct 2019 09:00:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kmaleHcADfeNrgrIaJqgXz0MuPWrRbnV500Be6ZH/08=;
-        b=mAkplfczFRshafPkjTJuZY9AcXOnJudyuwfQU8Ae0gmH2EElbI1vWdoBo7EJaWiqVy
-         89LUG8suoatmhE1+91n8jVsaYgq+ZrgMgwcx22StjCIPiykWnqgyS5oweNxYqu6f3fFH
-         SJg3uIxNvdN5PHr0rwQUoVbWKRQkP/FqeO+ND74Snv5QeMhEcurhMiyTQAEN5PhKp+4w
-         4MtyGoaDaQ0P7yqfNZoXPh2Daw/5Icw5ZKfUL3ugFodCykQjZt4d7V8GpN9W24XBT5PQ
-         eOWMdP2x4P6ICQCcwkq9rTyIUvzV66ZdDNlRUXbOMKhaE61Q824AhBblVXH7ERImDMc5
-         T//g==
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wjbVP6SypA/yqxO11UpZl9j4IvRacVDxxX21VBwViOY=;
+        b=QCRICrIihtFumFoyDtKyU2p+eUACHmtbZBnIV0I8OuOXiYPKh2f5BKz8oUUaXc3lvT
+         7LAq+EF9Fgn2LluD0gVmI534y4qpfDwOTaici1bPDAHhcFWqopXA409BSgIWJZcD/SDw
+         lPq3t7Qagr/CSAOx+VNnFuqDQ3iRUW2jC0/8GqvYkJRH49X+nF4LVgPgt53eoAwZW3OU
+         FQx2oeOWRBEY9LtdVjld21f0OccvhTzw1QxwYy7okCmg+c0QJb1/JU6D8S/wYv3wIOrj
+         6qLHELPGnSIcVnTP7jZ429gFuU945Tf5Ce4RL/f6z8JQWACBjcVBQT0YncITmG//Xk4h
+         mlsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kmaleHcADfeNrgrIaJqgXz0MuPWrRbnV500Be6ZH/08=;
-        b=OLnxK1V0EIhoiZYET2rOhA1rrkRi5/br4VfvcvxI1uSralJEjY/ohrisq+zktUohrX
-         4EdygfwBi0HkXA0rQJ9OQXo9OSh5DllhwP/x6BCM3e3MNzNOo3aNLGZyFSjrHBvhDr0+
-         BhYyeac0eN4RRe+8TyxNDQVcp10iV+ScIzsht/GxcH7ruEyELF8D/O5Faa9IgGHV5YTT
-         0RyM7YJPblBfz+o8BmNbhbhoWmei45gIaAnk56A40tKQAgvsPzPFRMN02xJgPel7xir3
-         F+Sqb+1Jt1gDMmzQCsNv6uuXCjxI/buGKlGYjv/LypDx6yqq48juVIxl0mwFA26D1xF3
-         n54A==
-X-Gm-Message-State: APjAAAX11+CA5THESd7tyj0utBbx7FyjynsE8CIFT/j2Y5BAY2n0zNXO
-        GRNl0iYZ7y0nyeOTpQSIFEsE6Q==
-X-Google-Smtp-Source: APXvYqy4aODBZhgA2sdbIqJkNnxoieHEZmubQmgxuRcAKps9YmYCsRNpzokFcYM+IL46nTRJYRMuiQ==
-X-Received: by 2002:a62:170b:: with SMTP id 11mr38470543pfx.243.1570550411411;
-        Tue, 08 Oct 2019 09:00:11 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q33sm20023871pgm.50.2019.10.08.09.00.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 09:00:11 -0700 (PDT)
-Date:   Tue, 8 Oct 2019 09:00:03 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     netdev@vger.kernel.org, scott.drennan@nokia.com, jbenc@redhat.com,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH iproute2] Bareudp device support
-Message-ID: <20191008090003.59a347eb@hermes.lan>
-In-Reply-To: <1570532361-15163-1-git-send-email-martinvarghesenokia@gmail.com>
-References: <1570532361-15163-1-git-send-email-martinvarghesenokia@gmail.com>
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wjbVP6SypA/yqxO11UpZl9j4IvRacVDxxX21VBwViOY=;
+        b=nt9z+2oFUPdZWwh40bDWyMoNsD1lPZpG1uSfSzJ0pIdCHt+RiNNDce2GS0VkjRWJFZ
+         M9LQR81Ob8CUo6wp3YzuFqfSAowJF2lxhicIUUO+zZfaee/yG36atQQrM1NH33BSfzWj
+         krx0v0e4nhiMNcv2xa28cws0gJLQozSL8Uv4XXLHwQ3/Ex4nVivQWM816CEI9cHK8SyX
+         CsOFhQ1zAtxk/hbzUsk3YyOf7HIjw3xx5ZfrzDrIKfTael1NnBFi6LwvzQalvwrtZABA
+         cQBrx7AVfFFzixeo7xtH4S9u1w38KPXi97ULfxY5v/1LfIwqf5p2KLm7vx8rR6jhcD1J
+         18pA==
+X-Gm-Message-State: APjAAAVTAaOlQpFqQO5V0PupOKqBSHdliteEziRpyH+C77a3leiGmeKg
+        OT291bR8C2i02dbuVStZ3wo=
+X-Google-Smtp-Source: APXvYqxTubSCND8Zeg5GzoPb4dZLEhBcUxVuv81AxxZDH2iL+IHH8/l2M59SrZ23dDtZksHH6C+Zuw==
+X-Received: by 2002:a17:902:b583:: with SMTP id a3mr36650807pls.169.1570550439806;
+        Tue, 08 Oct 2019 09:00:39 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c082:1055::2a69? ([2620:10d:c090:200::3:df92])
+        by smtp.gmail.com with ESMTPSA id c128sm19211093pfc.166.2019.10.08.09.00.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Oct 2019 09:00:38 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+Subject: Re: [PATCH v3] rtl8xxxu: add bluetooth co-existence support for
+ single antenna
+To:     Chris Chiu <chiu@endlessm.com>, kvalo@codeaurora.org,
+        davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+References: <20191005094826.90814-1-chiu@endlessm.com>
+Message-ID: <4603f17b-6739-1168-f784-58b0b9cf1a74@gmail.com>
+Date:   Tue, 8 Oct 2019 12:00:37 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20191005094826.90814-1-chiu@endlessm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Oct 2019 16:29:21 +0530
-Martin Varghese <martinvarghesenokia@gmail.com> wrote:
+On 10/5/19 5:48 AM, Chris Chiu wrote:
+> The RTL8723BU suffers the wifi disconnection problem while bluetooth
+> device connected. While wifi is doing tx/rx, the bluetooth will scan
+> without results. This is due to the wifi and bluetooth share the same
+> single antenna for RF communication and they need to have a mechanism
+> to collaborate.
+> 
+> BT information is provided via the packet sent from co-processor to
+> host (C2H). It contains the status of BT but the rtl8723bu_handle_c2h
+> dose not really handle it. And there's no bluetooth coexistence
+> mechanism to deal with it.
+> 
+> This commit adds a workqueue to set the tdma configurations and
+> coefficient table per the parsed bluetooth link status and given
+> wifi connection state. The tdma/coef table comes from the vendor
+> driver code of the RTL8192EU and RTL8723BU. However, this commit is
+> only for single antenna scenario which RTL8192EU is default dual
+> antenna. The rtl8xxxu_parse_rxdesc24 which invokes the handle_c2h
+> is only for 8723b and 8192e so the mechanism is expected to work
+> on both chips with single antenna. Note RTL8192EU dual antenna is
+> not supported.
+> 
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
+> ---
+> 
+> Notes:
+>    v2:
+>     - Add helper functions to replace bunch of tdma settings
+>     - Reformat some lines to meet kernel coding style
+>    v3:
+>     - Add comment for rtl8723bu_set_coex_with_type()
 
-Overall ok, but where is man page?
+Looks good to me!
 
-> +
-> +	if (tb[IFLA_BAREUDP_PORT])
-> +		print_uint(PRINT_ANY,
-> +				"port",
-> +				"dstport %u ",
-> +				rta_getattr_be16(tb[IFLA_BAREUDP_PORT]));
+Signed-off-by: Jes Sorensen <Jes.Sorensen@gmail.com>
 
-nit. these can be combined to be less lines.
+Jes
 
-> +	if (tb[IFLA_BAREUDP_EXTMODE]) {
-> +		print_bool(PRINT_ANY, "extmode", "extmode ", true);
-> +		return;
-> +	}
-
-One of the unwritten rules of ip commands is that the show format
-should match the command line arguments.  In this case extmode is
-really a presence flag not a boolean. best to print that with
-json null command.
-
-Also why the short circuit return.
