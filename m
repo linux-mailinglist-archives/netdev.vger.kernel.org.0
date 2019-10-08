@@ -2,85 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9AF8CF230
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 07:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 900D3CF232
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 07:38:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729891AbfJHFgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 01:36:43 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35677 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729682AbfJHFgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 01:36:42 -0400
-Received: by mail-qt1-f194.google.com with SMTP id m15so23361687qtq.2
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 22:36:42 -0700 (PDT)
+        id S1729948AbfJHFi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 01:38:29 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:34230 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729737AbfJHFi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 01:38:29 -0400
+Received: by mail-lj1-f194.google.com with SMTP id j19so16112967lja.1
+        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 22:38:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DLPHIzkkF9ezFThHyrTQhaKDEGQzpylYQSibbpf1y6w=;
-        b=x33VxGlYwPV3fXI4CVn6TCAccWkMA7kLD8FTUj+N52IOu8oY1apGxB+P7yNm6SA74X
-         iOIpxrjpy9L5HPubhg09DzBYM3Oe5QhHsC+rXQt+h04pgoymCWOsZwlEruxXI6hdf6DS
-         QUkbSivkU4vQSlfsYbNGLFgyIxmmZzvySMK2mKv10Co8McU7Y+IApTBCVlwn+KJohNco
-         FjwXflM9s2Ju/YWCrtFom9cvvA9OijB8o+MQ9DHITFw5AGYNfaH85DRQp/7+sh2+zcC5
-         IOw65MbUGb3oitfVBO8MUVQnHnjEkrUGdNwNbmFbGEByl2/8TrKPB8bPmiZjhWtK0Qzl
-         /qFA==
+         :cc:content-transfer-encoding;
+        bh=hXUsg3dK3YvsxOKvLbns9bJTtqXwir1uFTBiGzIm84U=;
+        b=cq883m+8QBz4ytdWXpL58OnG2f5EsNhgqerq7ULMULG+RS6Sa8PxgTixQxDXZaiFs3
+         qzVmvYjzcEHf4VbV4jefhAMV4XnU1gJ0qp41RY+TD0BMRIuUSUUKxZh4k4EKeIsveGfz
+         lOh71pnfWm1lwQf/Bo1FJGmby3XSLCgqz1cj3gAzeCWxcdxwKbROVdlwBPte/DcIUnJI
+         zb3HS6L6jMtYoQkhDVCeZZnqsbmCoam+mxraxUGEScLEr8S9gvbtaolWySFJtxBGjVZF
+         lbaH3yV0EX+lL7l++LNeosQynZ37hATgxJTbWtq98TYBNbbbGu0EDCqK3ESAcO1/DV0h
+         OMLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DLPHIzkkF9ezFThHyrTQhaKDEGQzpylYQSibbpf1y6w=;
-        b=r37ijCV2gGJtsCJUqiXweNg9BPYv1mN55nwNEg504bHhc1/2Ptaf84vyAoDT9OX5RG
-         kWONE+eX2hbLtoymbDXSbz0r8kDVgDQ2WAL4MD2M9oDRJOXe2YKmgA+fTn0ox4p8F2Qk
-         QfG0TceTD0d76r8IXmxbyEppdFs1rEaKEAAN/ObApBih9kFShlXsMWRCuJjI/kh6+G+n
-         twHcbiaf4MJ8A54NNHXdIBlZVz8FSCgOoZY/GH19KpelS1lNVkghZgQlTZXSIxjO6rwU
-         4W3oRUwhLAyOQtbgMHesw+5MsI5L3MD8eH4g6NY1FZn9i4Tm1HyFo5GwBU5RSjZjI/g6
-         4HGw==
-X-Gm-Message-State: APjAAAVJZYap2yOMf1m9a0k4nQtR6+LedApeBmI1QxVcxbEsGFLWX1xs
-        TUIDa59JRDuAnLmVy2HUE9eFErWa9xeM5GsUqfEXeg==
-X-Google-Smtp-Source: APXvYqz8dIGmMGe1TLdQVwirABfPVreobcIApuOIty+3ZDrBFsZWTLpIwa9tc6FWtMb+EXNIAFtyVGGitAImVM3qyG8=
-X-Received: by 2002:ac8:6796:: with SMTP id b22mr32097476qtp.95.1570513001536;
- Mon, 07 Oct 2019 22:36:41 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hXUsg3dK3YvsxOKvLbns9bJTtqXwir1uFTBiGzIm84U=;
+        b=U1M2lkrRJ/wuZbxGCXEPaHBXhDI+kOQSUQa6AeGGWlKQTiNZpOF3uQJTbv3BvVCzXp
+         SZ6jMoYR08UaFxYMWh7u+QlCcDvy1DARdSwOXpzGHHuiL+jCdohGnC8KZsxE/xcr4dGd
+         flmHeI1feKt44+dY4T0lSdgeyoKXDM40JNaCdH/okXzP7mvLlGaZ01rSLPPl5LDqv7KJ
+         hAgXLIXruKFbjE7aWUdFr/bcQ+eYSzjfr7dm1C4tPbfZy8CEYggNTAnudyb0NSApA+Ye
+         0t7fOkx1+ZDvM1GMmIeFon6slyXVVj9f8qC6WfUJMYX5bsgSVwOlu/Uh57Hy+8zC622+
+         yJTw==
+X-Gm-Message-State: APjAAAV1q11tTx+x8ewEmAJCkQr3QvYMKm0nqFM8x6/Jvo9muBmZtPip
+        ApJVeGXiNa7JdAwqBatfdCKJ7seW4LASeano3V8=
+X-Google-Smtp-Source: APXvYqztAfU0TWNyS7Mo2so/gIQcmYiVlhQF/UwmizNGrzBVIx9gbYt/rvZ3p44LXWhSSCW7MShRa0eJSDMbnts9vuE=
+X-Received: by 2002:a2e:b1d0:: with SMTP id e16mr6660172lja.0.1570513107387;
+ Mon, 07 Oct 2019 22:38:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191007135313.8443-1-colin.king@canonical.com>
-In-Reply-To: <20191007135313.8443-1-colin.king@canonical.com>
-From:   Chris Chiu <chiu@endlessm.com>
-Date:   Tue, 8 Oct 2019 13:36:28 +0800
-Message-ID: <CAB4CAwdd-+Oq+qrFTzUmG39yNgd_+Zn2rii=mXWOJb5x+4VHYw@mail.gmail.com>
-Subject: Re: [PATCH] rtl8xxxu: make arrays static, makes object smaller
-To:     Colin King <colin.king@canonical.com>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>
+References: <20191008053507.252202-1-zenczykowski@gmail.com> <20191008053507.252202-2-zenczykowski@gmail.com>
+In-Reply-To: <20191008053507.252202-2-zenczykowski@gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Mon, 7 Oct 2019 22:38:15 -0700
+Message-ID: <CAHo-OowZ2_2LkeREVua6PdTojam_AZQEa0OLL80+t+2xiKSCRQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] netfilter: revert "conntrack: silent a memory leak warning"
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Linux NetDev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 7, 2019 at 9:53 PM Colin King <colin.king@canonical.com> wrote:
+Please think both these patches through.
+I'm not going to claim I'm 100% certain of their correctness.
+
+I'm confused by:
+  include/net/netfilter/nf_conntrack.h:65:
+  * beware nf_ct_get() is different and don't inc refcnt.
+
+and maybe there's some subtlety to this krealloc+rcu+kmemleak thing I'm mis=
+sing.
+
+On Mon, Oct 7, 2019 at 10:35 PM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
 >
-> From: Colin Ian King <colin.king@canonical.com>
+> From: Maciej =C5=BBenczykowski <maze@google.com>
 >
-> Don't populate const arrays on the stack but instead make them
-> static. Makes the object code smaller by 60 bytes.
+> This reverts commit 114aa35d06d4920c537b72f9fa935de5dd205260.
 >
-> Before:
->    text    data     bss     dec     hex filename
->   15133    8768       0   23901    5d5d realtek/rtl8xxxu/rtl8xxxu_8192e.o
->   15209    6392       0   21601    5461 realtek/rtl8xxxu/rtl8xxxu_8723b.o
->  103254   31202     576  135032   20f78 realtek/rtl8xxxu/rtl8xxxu_core.o
+> By my understanding of kmemleak the reasoning for this patch
+> is incorrect.  If kmemleak couldn't handle rcu we'd have it
+> reporting leaks all over the place.  My belief is that this
+> was instead papering over a real leak.
 >
-> After:
->    text    data     bss     dec     hex filename
->   14861    9024       0   23885    5d4d realtek/rtl8xxxu/rtl8xxxu_8192e.o
->   14953    6616       0   21569    5441 realtek/rtl8xxxu/rtl8xxxu_8723b.o
->  102986   31458     576  135020   20f6c realtek/rtl8xxxu/rtl8xxxu_core.o
->
-> (gcc version 9.2.1, amd64)
->
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+> Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
 > ---
-Reviewed-by: Chris Chiu <chiu@endlessm.com>
+>  net/netfilter/nf_conntrack_extend.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/net/netfilter/nf_conntrack_extend.c b/net/netfilter/nf_connt=
+rack_extend.c
+> index d4ed1e197921..fb208877338a 100644
+> --- a/net/netfilter/nf_conntrack_extend.c
+> +++ b/net/netfilter/nf_conntrack_extend.c
+> @@ -68,7 +68,6 @@ void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_=
+id id, gfp_t gfp)
+>         rcu_read_unlock();
+>
+>         alloc =3D max(newlen, NF_CT_EXT_PREALLOC);
+> -       kmemleak_not_leak(old);
+>         new =3D __krealloc(old, alloc, gfp);
+>         if (!new)
+>                 return NULL;
+> --
+> 2.23.0.581.g78d2f28ef7-goog
+>
