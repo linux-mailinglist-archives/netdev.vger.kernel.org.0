@@ -2,119 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D408CF6E7
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:21:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30479CF6F4
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:23:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730154AbfJHKVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 06:21:05 -0400
-Received: from mail-eopbgr30080.outbound.protection.outlook.com ([40.107.3.80]:61422
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729790AbfJHKVE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 06:21:04 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RkgrUsj121XOTBvAwtKEnTZsFt8/IRXsHQPForIk4lAtcH68rNS+IMd5WSTj4OQzFl6uHXBspZGfmeot4Tctk5Y7vEV9ZHAq2sx7rhcPdmbupYziaD4l3CMhoI723lTyWDhb7LNcy3oNUjuy9dZ5IWEONqWu+I1YScw8xi+2IJI1GXHZt+hPRYYnoQUj9v1P/5mmjXDg2gwnyNhadX1/w8jjWBnZLHsi9fDEusNfHvdYU+zsYWwAOidsovG/ak18ua3Ga9dTp/C0jVWanq2wpa2zQHHI3mNp+vdaAiwW9mZu8iktu5f3d31nSJp+lxGo3/gNvXYetto8/xcpJPF4IA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eAXvZH0SC4IvclOFg9qdJiVXICY/bqoZh2mfnaphjeA=;
- b=ToDzhoP8Ji/oEBz6J1vhYDEJ3okQoXlQUpka040/le4sMnNTnCR4ZXlFGbyvr21QTKv56AieFGUbdnSbyLi4Ma+0oI+EQcnjdT3mEiSvLZSqOPopF3eW7c5apfA24KjTokhkqleHU3Ffy/pATlvCY6VXTsHmp4l4rwXnYaP2sDxkx/3EHevEmGCxpSraYEBHDdtHFXkV87tXRLnm23FsRnb4MBKp0unYy197SW8vO8aL/hnqa78AxjkWzKxJNAyc3egsNW8/RxD4jTz+wk5WVEy/vts7zzdx8UWEc2F5TaNu6WTEvMWqBAWuBwRRbmNFQ1roBIz3Kqugh511pN5NJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eAXvZH0SC4IvclOFg9qdJiVXICY/bqoZh2mfnaphjeA=;
- b=cNRIf2tEYWZvtTxuLQ3HROl4IgItL5iUliR1Qft2hCJYwhMfLGRDOL9pfIxHeIp6NjLXtel19nQf/GGSXbdw/7b0iPi/hmMSpNGzXNJHhZZhgk7qfvdMLcC+o9AboQThmRIbayzv6AGFB0ofqBwOo5gwsLvyMAbT6uqoXIBKx84=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB4604.eurprd04.prod.outlook.com (52.135.138.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.23; Tue, 8 Oct 2019 10:21:00 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::79f1:61a7:4076:8679]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::79f1:61a7:4076:8679%3]) with mapi id 15.20.2327.026; Tue, 8 Oct 2019
- 10:21:00 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Sean Nyekjaer <sean@geanix.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        =?utf-8?B?TWFydGluIEh1bmRlYsO4bGw=?= <martin@geanix.com>
-Subject: RE: [PATCH REPOST 1/2] can: flexcan: fix deadlock when using self
- wakeup
-Thread-Topic: [PATCH REPOST 1/2] can: flexcan: fix deadlock when using self
- wakeup
-Thread-Index: AQHVVAt+uezYlHzMP0yJKoK3YxkiS6cD2xAAgAAKUjCAAA71AIAMq3CAgAEuS9CACueJAIAAERoggAfqqoCALCoiMA==
-Date:   Tue, 8 Oct 2019 10:20:59 +0000
-Message-ID: <DB7PR04MB4618DEF0873D110536724818E69A0@DB7PR04MB4618.eurprd04.prod.outlook.com>
-References: <20190816081749.19300-1-qiangqing.zhang@nxp.com>
- <20190816081749.19300-2-qiangqing.zhang@nxp.com>
- <dd8f5269-8403-702b-b054-e031423ffc73@geanix.com>
- <DB7PR04MB4618A1F984F2281C66959B06E6AB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <35190c5b-f8be-8784-5b4f-32a691a6cffe@geanix.com>
- <6a9bc081-334a-df91-3a23-b74a6cdd3633@geanix.com>
- <DB7PR04MB4618E527339B69AEAD46FB06E6A20@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <588ab34d-613d-ac01-7949-921140ca4543@geanix.com>
- <DB7PR04MB461868320DA0B25CC8255213E6BB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <739eee2e-2919-93b4-24fe-8d0d198ae042@geanix.com>
-In-Reply-To: <739eee2e-2919-93b4-24fe-8d0d198ae042@geanix.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bdda9318-9a42-420b-5811-08d74bd93712
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: DB7PR04MB4604:|DB7PR04MB4604:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB46041326210F55765DFECB0CE69A0@DB7PR04MB4604.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-forefront-prvs: 01842C458A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(396003)(346002)(366004)(136003)(13464003)(189003)(199004)(86362001)(4744005)(486006)(14444005)(66574012)(2201001)(256004)(33656002)(6436002)(66066001)(9686003)(99286004)(8676002)(54906003)(478600001)(305945005)(25786009)(7736002)(74316002)(55016002)(26005)(71190400001)(186003)(71200400001)(110136005)(316002)(64756008)(6506007)(7696005)(6116002)(66446008)(66946007)(3846002)(52536014)(81156014)(76176011)(229853002)(102836004)(5660300002)(14454004)(53546011)(66556008)(6246003)(476003)(76116006)(11346002)(2906002)(2501003)(81166006)(8936002)(446003)(66476007)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4604;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OAh/j24/cg30GrvLICCM3Q20g43Yz8FISa6fbTr1T2DOwHWuu8bmp7HYl6BkTC9Uh9gvVENaQpcJbi7zrFQnKpjFN6pa69gD2oyyVhkFfNkUzy5A3YH2vA3ThpXTmN2blmi/s80FwH4+ExP0EsxNOYtcwfZtvM/aMShG9Tl6owROe2wwNLNrDBIIR42laao4BdNgVAkDxdC1FKShRKiyafYYAeihHKIY5BYl8iRrA1bGgVz93pvX8FHY58AUy3zUOtImW/Xw4ebMaeqeF08jMjdznnNCeuSZFijd3BKSe2iF9OoWaFbhVfwvKj3X6syu3tqZhEW2hmZhOXjsCUUPl8ED4btGUmh/Vn75M4LflT7yY0quHgTakXcvCSlSazZWK/5dp/+t89SC57lQelQk3vQSsDmHdbFEa+K6QXF1sV8=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bdda9318-9a42-420b-5811-08d74bd93712
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2019 10:20:59.8451
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: BJL3tA/hP4UnxMEuzkDGSAq8/eb/24iSDq5dt0Nm9iFvjB7uJ4Ot1nppxP125qfk37XSML3diURN0bKfIA/eCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4604
+        id S1730408AbfJHKXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 06:23:35 -0400
+Received: from mga02.intel.com ([134.134.136.20]:22769 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730051AbfJHKXf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 06:23:35 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Oct 2019 03:23:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,270,1566889200"; 
+   d="scan'208";a="345001950"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO VM.isw.intel.com) ([10.103.211.41])
+  by orsmga004.jf.intel.com with ESMTP; 08 Oct 2019 03:23:31 -0700
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
+Subject: [PATCH bpf] libbpf: fix compatibility for kernels without need_wakeup
+Date:   Tue,  8 Oct 2019 12:23:28 +0200
+Message-Id: <1570530208-17720-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFNlYW4gTnlla2phZXIgPHNl
-YW5AZ2Vhbml4LmNvbT4NCj4gU2VudDogMjAxOeW5tDnmnIgxMOaXpSAxNTo1Mw0KPiBUbzogSm9h
-a2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT47IG1rbEBwZW5ndXRyb25peC5kZTsN
-Cj4gbGludXgtY2FuQHZnZXIua2VybmVsLm9yZw0KPiBDYzogd2dAZ3JhbmRlZ2dlci5jb207IG5l
-dGRldkB2Z2VyLmtlcm5lbC5vcmc7IGRsLWxpbnV4LWlteA0KPiA8bGludXgtaW14QG54cC5jb20+
-OyBNYXJ0aW4gSHVuZGViw7hsbCA8bWFydGluQGdlYW5peC5jb20+DQo+IFN1YmplY3Q6IFJlOiBb
-UEFUQ0ggUkVQT1NUIDEvMl0gY2FuOiBmbGV4Y2FuOiBmaXggZGVhZGxvY2sgd2hlbiB1c2luZyBz
-ZWxmDQo+IHdha2V1cA0KPiANCj4gDQo+IA0KPiBPbiAwNS8wOS8yMDE5IDA5LjEwLCBKb2FraW0g
-Wmhhbmcgd3JvdGU6DQo+ID4gSGkgU2VhbiwNCj4gPg0KPiA+IENvdWxkIHlvdSB1cGRhdGUgbGFz
-dGVzdCBmbGV4Y2FuIGRyaXZlciB1c2luZyBsaW51eC1jYW4tbmV4dC9mbGV4Y2FuIGFuZCB0aGVu
-DQo+IG1lcmdlIGJlbG93IHR3byBwYXRjaGVzIGZyb20gbGludXgtY2FuL3Rlc3Rpbmc/DQo+ID4g
-ZDBiNTM2MTY3MTZlIChIRUFEIC0+IHRlc3RpbmcsIG9yaWdpbi90ZXN0aW5nKSBjYW46IGZsZXhj
-YW46IGFkZCBMUFNSDQo+ID4gbW9kZSBzdXBwb3J0IGZvciBpLk1YN0QgODAzZWI2YmFkNjViIGNh
-bjogZmxleGNhbjogZml4IGRlYWRsb2NrIHdoZW4NCj4gPiB1c2luZyBzZWxmIHdha2V1cA0KPiA+
-DQo+ID4gQmVzdCBSZWdhcmRzLA0KPiA+IEpvYWtpbSBaaGFuZw0KPiANCj4gSGkNCj4gDQo+IEkg
-cmV2ZXJ0ZWQgMiBjb21taXRzIG9uIHRodyBuYW5kIGRyaXZlciBhbmQgZ290IHRoZSB0ZXN0aW5n
-IGtlcm5lbCB0byB3b3JrLg0KPiANCj4gSSBjYW4gY29uZmlybSB0aGUgaXNzdWUgaXMgcmVzb2x2
-ZWQgd2l0aCB0aGlzIHBhdGNoIDotKQ0KDQpIaSBNYXJjLA0KDQpIb3cgYWJvdXQgdGhlc2UgdHdv
-IGZpeGVzIGZvciBGbGV4Y2FuPw0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCj4gL1Nl
-YW4NCg==
+When the need_wakeup flag was added to AF_XDP, the format of the
+XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the kernel
+to take care of compatibility issues arrising from running
+applications using any of the two formats. However, libbpf was not
+extended to take care of the case when the application/libbpf uses the
+new format but the kernel only supports the old format. This patch
+adds support in libbpf for parsing the old format, before the
+need_wakeup flag was added, and emulating a set of static need_wakeup
+flags that will always work for the application.
+
+Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in AF_XDP part")
+Reported-by: Eloy Degen <degeneloy@gmail.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ tools/lib/bpf/xsk.c | 109 +++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 78 insertions(+), 31 deletions(-)
+
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index a902838..46f9687 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -44,6 +44,25 @@
+  #define PF_XDP AF_XDP
+ #endif
+ 
++#define is_mmap_offsets_v1(optlen) \
++	((optlen) == sizeof(struct xdp_mmap_offsets_v1))
++
++#define get_prod_off(ring) \
++	(is_mmap_offsets_v1(optlen) ? \
++	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.producer : \
++	 off.ring.producer)
++#define get_cons_off(ring) \
++	(is_mmap_offsets_v1(optlen) ? \
++	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer : \
++	 off.ring.consumer)
++#define get_desc_off(ring) \
++	(is_mmap_offsets_v1(optlen) ? \
++	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.desc : off.ring.desc)
++#define get_flags_off(ring) \
++	(is_mmap_offsets_v1(optlen) ? \
++	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer + sizeof(u32) : \
++	 off.ring.flags)
++
+ struct xsk_umem {
+ 	struct xsk_ring_prod *fill;
+ 	struct xsk_ring_cons *comp;
+@@ -73,6 +92,20 @@ struct xsk_nl_info {
+ 	int fd;
+ };
+ 
++struct xdp_ring_offset_v1 {
++	__u64 producer;
++	__u64 consumer;
++	__u64 desc;
++};
++
++/* Up until and including Linux 5.3 */
++struct xdp_mmap_offsets_v1 {
++	struct xdp_ring_offset_v1 rx;
++	struct xdp_ring_offset_v1 tx;
++	struct xdp_ring_offset_v1 fr;
++	struct xdp_ring_offset_v1 cr;
++};
++
+ int xsk_umem__fd(const struct xsk_umem *umem)
+ {
+ 	return umem ? umem->fd : -EINVAL;
+@@ -196,7 +229,8 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+ 		goto out_socket;
+ 	}
+ 
+-	map = mmap(NULL, off.fr.desc + umem->config.fill_size * sizeof(__u64),
++	map = mmap(NULL, get_desc_off(fr) +
++		   umem->config.fill_size * sizeof(__u64),
+ 		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, umem->fd,
+ 		   XDP_UMEM_PGOFF_FILL_RING);
+ 	if (map == MAP_FAILED) {
+@@ -207,13 +241,18 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+ 	umem->fill = fill;
+ 	fill->mask = umem->config.fill_size - 1;
+ 	fill->size = umem->config.fill_size;
+-	fill->producer = map + off.fr.producer;
+-	fill->consumer = map + off.fr.consumer;
+-	fill->flags = map + off.fr.flags;
+-	fill->ring = map + off.fr.desc;
++	fill->producer = map + get_prod_off(fr);
++	fill->consumer = map + get_cons_off(fr);
++	fill->flags = map + get_flags_off(fr);
++	fill->ring = map + get_desc_off(fr);
+ 	fill->cached_cons = umem->config.fill_size;
+ 
+-	map = mmap(NULL, off.cr.desc + umem->config.comp_size * sizeof(__u64),
++	if (is_mmap_offsets_v1(optlen))
++		/* Initialized the flag to never signal wakeup */
++		*fill->flags = 0;
++
++	map = mmap(NULL, get_desc_off(cr) +
++		   umem->config.comp_size * sizeof(__u64),
+ 		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, umem->fd,
+ 		   XDP_UMEM_PGOFF_COMPLETION_RING);
+ 	if (map == MAP_FAILED) {
+@@ -224,16 +263,16 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+ 	umem->comp = comp;
+ 	comp->mask = umem->config.comp_size - 1;
+ 	comp->size = umem->config.comp_size;
+-	comp->producer = map + off.cr.producer;
+-	comp->consumer = map + off.cr.consumer;
+-	comp->flags = map + off.cr.flags;
+-	comp->ring = map + off.cr.desc;
++	comp->producer = map + get_prod_off(cr);
++	comp->consumer = map + get_cons_off(cr);
++	comp->flags = map + get_flags_off(cr);
++	comp->ring = map + get_desc_off(cr);
+ 
+ 	*umem_ptr = umem;
+ 	return 0;
+ 
+ out_mmap:
+-	munmap(map, off.fr.desc + umem->config.fill_size * sizeof(__u64));
++	munmap(map, get_desc_off(fr) + umem->config.fill_size * sizeof(__u64));
+ out_socket:
+ 	close(umem->fd);
+ out_umem_alloc:
+@@ -558,7 +597,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 	}
+ 
+ 	if (rx) {
+-		rx_map = mmap(NULL, off.rx.desc +
++		rx_map = mmap(NULL, get_desc_off(rx) +
+ 			      xsk->config.rx_size * sizeof(struct xdp_desc),
+ 			      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+ 			      xsk->fd, XDP_PGOFF_RX_RING);
+@@ -569,15 +608,15 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 
+ 		rx->mask = xsk->config.rx_size - 1;
+ 		rx->size = xsk->config.rx_size;
+-		rx->producer = rx_map + off.rx.producer;
+-		rx->consumer = rx_map + off.rx.consumer;
+-		rx->flags = rx_map + off.rx.flags;
+-		rx->ring = rx_map + off.rx.desc;
++		rx->producer = rx_map + get_prod_off(rx);
++		rx->consumer = rx_map + get_cons_off(rx);
++		rx->flags = rx_map + get_flags_off(rx);
++		rx->ring = rx_map + get_desc_off(rx);
+ 	}
+ 	xsk->rx = rx;
+ 
+ 	if (tx) {
+-		tx_map = mmap(NULL, off.tx.desc +
++		tx_map = mmap(NULL, get_desc_off(tx) +
+ 			      xsk->config.tx_size * sizeof(struct xdp_desc),
+ 			      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+ 			      xsk->fd, XDP_PGOFF_TX_RING);
+@@ -588,11 +627,15 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 
+ 		tx->mask = xsk->config.tx_size - 1;
+ 		tx->size = xsk->config.tx_size;
+-		tx->producer = tx_map + off.tx.producer;
+-		tx->consumer = tx_map + off.tx.consumer;
+-		tx->flags = tx_map + off.tx.flags;
+-		tx->ring = tx_map + off.tx.desc;
++		tx->producer = tx_map + get_prod_off(tx);
++		tx->consumer = tx_map + get_cons_off(tx);
++		tx->flags = tx_map + get_flags_off(tx);
++		tx->ring = tx_map + get_desc_off(tx);
+ 		tx->cached_cons = xsk->config.tx_size;
++
++		if (is_mmap_offsets_v1(optlen))
++			/* Initialized the flag to always signal wakeup */
++			*tx->flags = XDP_RING_NEED_WAKEUP;
+ 	}
+ 	xsk->tx = tx;
+ 
+@@ -620,11 +663,11 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 
+ out_mmap_tx:
+ 	if (tx)
+-		munmap(tx_map, off.tx.desc +
++		munmap(tx_map, get_desc_off(tx) +
+ 		       xsk->config.tx_size * sizeof(struct xdp_desc));
+ out_mmap_rx:
+ 	if (rx)
+-		munmap(rx_map, off.rx.desc +
++		munmap(rx_map, get_desc_off(rx) +
+ 		       xsk->config.rx_size * sizeof(struct xdp_desc));
+ out_socket:
+ 	if (--umem->refcount)
+@@ -649,10 +692,12 @@ int xsk_umem__delete(struct xsk_umem *umem)
+ 	optlen = sizeof(off);
+ 	err = getsockopt(umem->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
+ 	if (!err) {
+-		munmap(umem->fill->ring - off.fr.desc,
+-		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
+-		munmap(umem->comp->ring - off.cr.desc,
+-		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
++		munmap(umem->fill->ring - get_desc_off(fr),
++		       get_desc_off(fr) +
++		       umem->config.fill_size * sizeof(__u64));
++		munmap(umem->comp->ring - get_desc_off(cr),
++		       get_desc_off(cr) +
++		       umem->config.comp_size * sizeof(__u64));
+ 	}
+ 
+ 	close(umem->fd);
+@@ -680,12 +725,14 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+ 	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
+ 	if (!err) {
+ 		if (xsk->rx) {
+-			munmap(xsk->rx->ring - off.rx.desc,
+-			       off.rx.desc + xsk->config.rx_size * desc_sz);
++			munmap(xsk->rx->ring - get_desc_off(rx),
++			       get_desc_off(rx) +
++			       xsk->config.rx_size * desc_sz);
+ 		}
+ 		if (xsk->tx) {
+-			munmap(xsk->tx->ring - off.tx.desc,
+-			       off.tx.desc + xsk->config.tx_size * desc_sz);
++			munmap(xsk->tx->ring - get_desc_off(tx),
++			       get_desc_off(tx) +
++			       xsk->config.tx_size * desc_sz);
+ 		}
+ 
+ 	}
+-- 
+2.7.4
+
