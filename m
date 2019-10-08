@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23B0FCF98A
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DCFACF98C
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731114AbfJHMLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 08:11:25 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:54166 "EHLO inva020.nxp.com"
+        id S1731193AbfJHMMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 08:12:14 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:40818 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731099AbfJHMLY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 08:11:24 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D44221A0158;
-        Tue,  8 Oct 2019 14:11:20 +0200 (CEST)
+        id S1731098AbfJHMLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 08:11:25 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DC2992002C9;
+        Tue,  8 Oct 2019 14:11:22 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C53621A002E;
-        Tue,  8 Oct 2019 14:11:20 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CEDC620017B;
+        Tue,  8 Oct 2019 14:11:22 +0200 (CEST)
 Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 79183205DB;
-        Tue,  8 Oct 2019 14:11:20 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 84D6F205DB;
+        Tue,  8 Oct 2019 14:11:22 +0200 (CEST)
 From:   Madalin Bucur <madalin.bucur@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     roy.pledge@nxp.com, laurentiu.tudor@nxp.com,
         linux-kernel@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [PATCH 12/20] dpaa_eth: use fd information in dpaa_cleanup_tx_fd()
-Date:   Tue,  8 Oct 2019 15:10:33 +0300
-Message-Id: <1570536641-25104-13-git-send-email-madalin.bucur@nxp.com>
+Subject: [PATCH 13/20] dpaa_eth: use a page to store the SGT
+Date:   Tue,  8 Oct 2019 15:10:34 +0300
+Message-Id: <1570536641-25104-14-git-send-email-madalin.bucur@nxp.com>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
 References: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
@@ -37,57 +37,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of reading skb fields, use information from the DPAA frame
-descriptor.
+Use a page to store the scatter gather table on the transmit path.
 
 Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 43 +++++++++++++-------------
+ 1 file changed, 21 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index d4601e31261e..20f0062afdec 100644
+index 20f0062afdec..e2385c2fa81a 100644
 --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -1588,13 +1588,10 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 	void *vaddr = phys_to_virt(addr);
- 	const struct qm_sg_entry *sgt;
- 	struct sk_buff *skb;
--	int nr_frags, i;
- 	u64 ns;
--
--	skb = *(struct sk_buff **)vaddr;
-+	int i;
+@@ -1592,9 +1592,9 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+ 	int i;
  
  	if (unlikely(qm_fd_get_format(fd) == qm_fd_sg)) {
--		nr_frags = skb_shinfo(skb)->nr_frags;
- 		dma_unmap_single(priv->tx_dma_dev, addr,
- 				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
- 				 dma_dir);
-@@ -1609,7 +1606,8 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 				 qm_sg_entry_get_len(&sgt[0]), dma_dir);
+-		dma_unmap_single(priv->tx_dma_dev, addr,
+-				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
+-				 dma_dir);
++		dma_unmap_page(priv->tx_dma_dev, addr,
++			       qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
++			       dma_dir);
  
- 		/* remaining pages were mapped with skb_frag_dma_map() */
--		for (i = 1; i <= nr_frags; i++) {
-+		for (i = 1; (i < DPAA_SGT_MAX_ENTRIES) &&
-+		     !qm_sg_entry_is_final(&sgt[i - 1]); i++) {
- 			WARN_ON(qm_sg_entry_is_ext(&sgt[i]));
- 
- 			dma_unmap_page(priv->tx_dma_dev, qm_sg_addr(&sgt[i]),
-@@ -1617,9 +1615,12 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 		}
- 	} else {
- 		dma_unmap_single(priv->tx_dma_dev, addr,
--				 skb_tail_pointer(skb) - (u8 *)vaddr, dma_dir);
-+				 priv->tx_headroom + qm_fd_get_length(fd),
-+				 dma_dir);
+ 		/* The sgt buffer has been allocated with netdev_alloc_frag(),
+ 		 * it's from lowmem.
+@@ -1636,8 +1636,8 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
  	}
  
-+	skb = *(struct sk_buff **)vaddr;
+ 	if (qm_fd_get_format(fd) == qm_fd_sg)
+-		/* Free the page frag that we allocated on Tx */
+-		skb_free_frag(vaddr);
++		/* Free the page that we allocated on Tx for the SGT */
++		free_pages((unsigned long)vaddr, 0);
+ 
+ 	return skb;
+ }
+@@ -1885,21 +1885,20 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
+ 	struct net_device *net_dev = priv->net_dev;
+ 	struct qm_sg_entry *sgt;
+ 	struct sk_buff **skbh;
+-	int i, j, err, sz;
+-	void *buffer_start;
++	void *buff_start;
+ 	skb_frag_t *frag;
+ 	dma_addr_t addr;
+ 	size_t frag_len;
+-	void *sgt_buf;
+-
+-	/* get a page frag to store the SGTable */
+-	sz = SKB_DATA_ALIGN(priv->tx_headroom + DPAA_SGT_SIZE);
+-	sgt_buf = netdev_alloc_frag(sz);
+-	if (unlikely(!sgt_buf)) {
+-		netdev_err(net_dev, "netdev_alloc_frag() failed for size %d\n",
+-			   sz);
++	struct page *p;
++	int i, j, err;
 +
- 	/* DMA unmapping is required before accessing the HW provided info */
- 	if (ts && priv->tx_tstamp &&
- 	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
++	/* get a page to store the SGTable */
++	p = dev_alloc_pages(0);
++	if (unlikely(!p)) {
++		netdev_err(net_dev, "dev_alloc_pages() failed\n");
+ 		return -ENOMEM;
+ 	}
++	buff_start = page_address(p);
+ 
+ 	/* Enable L3/L4 hardware checksum computation.
+ 	 *
+@@ -1907,7 +1906,7 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
+ 	 * need to write into the skb.
+ 	 */
+ 	err = dpaa_enable_tx_csum(priv, skb, fd,
+-				  sgt_buf + DPAA_TX_PRIV_DATA_SIZE);
++				  buff_start + DPAA_TX_PRIV_DATA_SIZE);
+ 	if (unlikely(err < 0)) {
+ 		if (net_ratelimit())
+ 			netif_err(priv, tx_err, net_dev, "HW csum error: %d\n",
+@@ -1916,7 +1915,7 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
+ 	}
+ 
+ 	/* SGT[0] is used by the linear part */
+-	sgt = (struct qm_sg_entry *)(sgt_buf + priv->tx_headroom);
++	sgt = (struct qm_sg_entry *)(buff_start + priv->tx_headroom);
+ 	frag_len = skb_headlen(skb);
+ 	qm_sg_entry_set_len(&sgt[0], frag_len);
+ 	sgt[0].bpid = FSL_DPAA_BPID_INV;
+@@ -1954,15 +1953,15 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
+ 	/* Set the final bit in the last used entry of the SGT */
+ 	qm_sg_entry_set_f(&sgt[nr_frags], frag_len);
+ 
++	/* set fd offset to priv->tx_headroom */
+ 	qm_fd_set_sg(fd, priv->tx_headroom, skb->len);
+ 
+ 	/* DMA map the SGT page */
+-	buffer_start = (void *)sgt - priv->tx_headroom;
+-	skbh = (struct sk_buff **)buffer_start;
++	skbh = (struct sk_buff **)buff_start;
+ 	*skbh = skb;
+ 
+-	addr = dma_map_single(priv->tx_dma_dev, buffer_start,
+-			      priv->tx_headroom + DPAA_SGT_SIZE, dma_dir);
++	addr = dma_map_page(priv->tx_dma_dev, p, 0,
++			    priv->tx_headroom + DPAA_SGT_SIZE, dma_dir);
+ 	if (unlikely(dma_mapping_error(priv->tx_dma_dev, addr))) {
+ 		netdev_err(priv->net_dev, "DMA mapping failed");
+ 		err = -EINVAL;
+@@ -1982,7 +1981,7 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
+ 			       qm_sg_entry_get_len(&sgt[j]), dma_dir);
+ sg0_map_failed:
+ csum_failed:
+-	skb_free_frag(sgt_buf);
++	free_pages((unsigned long)buff_start, 0);
+ 
+ 	return err;
+ }
 -- 
 2.1.0
 
