@@ -2,85 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B678CF615
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 11:34:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FAFECF670
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 11:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730024AbfJHJeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 05:34:01 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3220 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728866AbfJHJeB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 05:34:01 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id CE777E2A3884B38F2A20;
-        Tue,  8 Oct 2019 17:33:58 +0800 (CST)
-Received: from [127.0.0.1] (10.184.213.217) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Tue, 8 Oct 2019
- 17:33:57 +0800
-Subject: Re: [PATCH] rtw88: 8822c: Remove set but not used variable 'corr_val'
-To:     <yhchuang@realtek.com>, <pkshih@realtek.com>,
-        <kvalo@codeaurora.org>, <davem@davemloft.net>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <1570180736-133907-1-git-send-email-zhengbin13@huawei.com>
-From:   "zhengbin (A)" <zhengbin13@huawei.com>
-Message-ID: <08492ba6-eaf6-8c72-74fe-f49e0a95639e@huawei.com>
-Date:   Tue, 8 Oct 2019 17:33:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
-MIME-Version: 1.0
-In-Reply-To: <1570180736-133907-1-git-send-email-zhengbin13@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.184.213.217]
-X-CFilter-Loop: Reflected
+        id S1730030AbfJHJvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 05:51:01 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33860 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729375AbfJHJvB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 05:51:01 -0400
+Received: by mail-pg1-f194.google.com with SMTP id y35so10001486pgl.1
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 02:50:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=9l5cnRw8FDs0uaiGoLrj/pAhu1qbnf2id0ZSkjkP52s=;
+        b=FgDaEes/QiiBklrrATLGwEpQr+mFxeRm/oCnFxru5UnDuz1G/aeOL7jMU0gJrMgAPc
+         KROm5nqDhdowPmW3RLCn31KE8ZPJk/IdEaexqrM+ASsSdpN9UlNhNKAapQ2H3e9farP9
+         Zfe5PgRf+bJu62ij/tjOA/dYXyr8P2PROWfbGypiWmCiWcUz4eFZa6p87PZqJKJ3o4QB
+         B3YWAd5uvgOkY3Be3rkUGcIL+K7EJ9mRTBpBnbhtihFl6pabk03vYD4JCVxJJ4mLHctU
+         HEuxwveQQWMsAMV6868GiYjs/qxwKUpttwERxiooC0U5Y5NWlx0/ISat/i0lDH5MQcnn
+         wocg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9l5cnRw8FDs0uaiGoLrj/pAhu1qbnf2id0ZSkjkP52s=;
+        b=j4FMt9hwgA+jhXj37U1TpVT3hs8w0LYQAvFGDoEBUfIbatSi79WA4YVJItENaeFUXq
+         P5+7hb8So7gBBqC/yKUX4BFJiBsp2zk7tauqgjVeqh3oGLG2d6bxwHeR+oiLQTsEOasA
+         NT245uadPGZUSKTEmlgiNLzeKfwzft5H/BGe+C+jd7GhSVQU6fesGH6CX6vW2ng/uMC1
+         HWd6UGvw7ZH+1Xi+wyd60S8sxTGo67pBV8glCo2J2tQM0zbb7oCQXMDbdXXUF0ZWiPeM
+         ilZMvcD9QTwiv1OtPIFAlUUPYG8zinfhrPTP0bmIiGMpd8Qn9Q9bVVpZj78V8hF07dR6
+         prSQ==
+X-Gm-Message-State: APjAAAXmTnjTK4AqP7OYbzM8O1WNc+08wDh4oDK8fcf2U1piaU41GQOq
+        es2Bh1XFTkU6PJv2gXnaIAe5gQvu
+X-Google-Smtp-Source: APXvYqxb+nrPdtO6tTuBBDbbox44pTvebkoO5jp7keabbT+swfr+1wAqu3UOXxle46/7nG9mvDDxPQ==
+X-Received: by 2002:a17:90a:ad48:: with SMTP id w8mr4822657pjv.43.1570528258886;
+        Tue, 08 Oct 2019 02:50:58 -0700 (PDT)
+Received: from martin-VirtualBox.dlink.router ([122.178.241.240])
+        by smtp.gmail.com with ESMTPSA id f188sm19970933pfa.170.2019.10.08.02.50.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 08 Oct 2019 02:50:58 -0700 (PDT)
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, corbet@lwn.net,
+        scott.drennan@nokia.com, jbenc@redhat.com,
+        martin.varghese@nokia.com
+Cc:     Martin Varghese <martinvarghesenokia@gmail.com>
+Subject: [PATCH net-next 0/2]  Bareudp Tunnel Module
+Date:   Tue,  8 Oct 2019 15:18:14 +0530
+Message-Id: <cover.1570455278.git.martinvarghesenokia@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for the noise, please ignore this
+There are various L3 encapsulation standards using UDP being discussed to
+leverage the UDP based load balancing capability of different networks.
+MPLSoUDP (https://tools.ietf.org/html/rfc7510)is one among them.
 
-On 2019/10/4 17:18, zhengbin wrote:
-> Fixes gcc '-Wunused-but-set-variable' warning:
->
-> drivers/net/wireless/realtek/rtw88/rtw8822c.c: In function rtw8822c_dpk_dc_corr_check:
-> drivers/net/wireless/realtek/rtw88/rtw8822c.c:2166:5: warning: variable corr_val set but not used [-Wunused-but-set-variable]
->
-> It is not used since commit 5227c2ee453d ("rtw88:
-> 8822c: add SW DPK support")
->
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: zhengbin <zhengbin13@huawei.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/rtw8822c.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-> index a300efd..52682d5 100644
-> --- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-> +++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-> @@ -2163,7 +2163,7 @@ static void rtw8822c_dpk_rxbb_dc_cal(struct rtw_dev *rtwdev, u8 path)
->  static u8 rtw8822c_dpk_dc_corr_check(struct rtw_dev *rtwdev, u8 path)
->  {
->  	u16 dc_i, dc_q;
-> -	u8 corr_val, corr_idx;
-> +	u8 corr_idx;
->
->  	rtw_write32(rtwdev, REG_RXSRAM_CTL, 0x000900f0);
->  	dc_i = (u16)rtw_read32_mask(rtwdev, REG_STAT_RPT, GENMASK(27, 16));
-> @@ -2176,7 +2176,6 @@ static u8 rtw8822c_dpk_dc_corr_check(struct rtw_dev *rtwdev, u8 path)
->
->  	rtw_write32(rtwdev, REG_RXSRAM_CTL, 0x000000f0);
->  	corr_idx = (u8)rtw_read32_mask(rtwdev, REG_STAT_RPT, GENMASK(7, 0));
-> -	corr_val = (u8)rtw_read32_mask(rtwdev, REG_STAT_RPT, GENMASK(15, 8));
->
->  	if (dc_i > 200 || dc_q > 200 || corr_idx < 40 || corr_idx > 65)
->  		return 1;
-> --
-> 2.7.4
->
->
-> .
->
+The Bareudp tunnel module provides a generic L3 encapsulation tunnelling
+support for tunnelling different L3 protocols like MPLS, IP, NSH etc. inside
+a UDP tunnel.
+
+Special Handling
+----------------
+The bareudp device supports special handling for MPLS & IP as they can have
+multiple ethertypes.
+MPLS procotcol can have ethertypes 0x8847 (unicast) & 0x8847 (multicast).
+IP proctocol can have ethertypes 0x0800 (v4) & 0x866 (v6).
+This special handling can be enabled only for ethertype 0x0800 & 0x88847 with a
+flag called extended mode.
+
+Usage
+------
+
+1. Device creation & deletion
+
+a. ip link add dev bareudp0 type bareudp dstport 6635 ethertype 0x8847
+
+This creates a bareudp tunnel device which tunnels L3 traffic with ethertype
+0x8847 (MPLS traffic).The destination port of the UDP header will be set to 6635
+The device will listen on UDP port 6635 to receive traffic.
+
+b. ip link delete bareudp0
+
+2. Device creation with extended mode enabled
+
+There are two ways to create a bareudp device for MPLS & IP with extended mode
+enabled
+
+a. ip link add dev  bareudp0 type bareudp dstport 6635 ethertype 0x8847 extmode 1
+
+b. ip link add dev  bareudp0 type bareudp dstport 6635 ethertype mpls
+
+Note - iproute2 & Selftests are implemented in seperate patches.
+
+
+Martin (2):
+  UDP tunnel encapsulation module for tunnelling different protocols    
+    like MPLS,IP,NSH etc.
+  Special handling for IP & MPLS.
+
+ Documentation/networking/bareudp.txt |  41 ++
+ drivers/net/Kconfig                  |  13 +
+ drivers/net/Makefile                 |   1 +
+ drivers/net/bareudp.c                | 998 +++++++++++++++++++++++++++++++++++
+ include/net/bareudp.h                |  20 +
+ include/uapi/linux/if_link.h         |  13 +
+ 6 files changed, 1086 insertions(+)
+ create mode 100644 Documentation/networking/bareudp.txt
+ create mode 100644 drivers/net/bareudp.c
+ create mode 100644 include/net/bareudp.h
+
+-- 
+1.8.3.1
 
