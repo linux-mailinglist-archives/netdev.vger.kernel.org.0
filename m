@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3560CF31B
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 08:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5FFCF33A
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 09:10:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730254AbfJHG6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 02:58:24 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:59763 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730026AbfJHG6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 02:58:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570517903;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BjiVfnfo3B219hJevj+nUA5nd9HYypooTjDbpxlfu2E=;
-        b=aw3SvIoBru9E25cI0qJmm707w3jzpsTGCS/b75o9/i4KhyygCyBvLxLqQr5puj9rMj7/Rh
-        F0tcZ4kRH15GYPg/r3w42zR/xvLoRuxtfMNz3c7IHXP2WcGrg14/xnjibBGJ5XSpeVfdg8
-        uzUH8oMXNDDIqlzkTlicjtU7Lz0TVDE=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-295-xp0mXQlqNHO62Le9YkzygQ-1; Tue, 08 Oct 2019 02:58:20 -0400
-Received: by mail-lf1-f72.google.com with SMTP id c13so2027024lfk.23
-        for <netdev@vger.kernel.org>; Mon, 07 Oct 2019 23:58:19 -0700 (PDT)
+        id S1730123AbfJHHKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 03:10:18 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:38867 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730057AbfJHHKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 03:10:18 -0400
+Received: by mail-lj1-f193.google.com with SMTP id b20so16331179ljj.5
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 00:10:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RNNp45PkXC6u86dJZigRwiXGQlgxYDX+Lhu3Y2ObAyI=;
+        b=Ysux192Z85VFSzHNyWXectFjwy4Fs7J7dT5BybeP2XyPKWbKidBHQjy8Zgp+6BlnRC
+         NBx+IBfya9j+CMaQBJ0epHbJf3BBHH1hIEKeUXqvyj4V2zul1MY7sbUk8AGvi+IHjsC6
+         qw8t1ud9eMoxVi1xAkG8stOXIv6iYVCoYikYq5mxyUVb/5m7HcyMEJFqXCG/uHJ1RNsf
+         XkJWxqcIp7McxEe7BSCgkdKl5fDZjxEuswCR+B23778W2khwSPGDRGftF/60CyvU+CyY
+         zhDXTwYQzbyYZ2ZW9zLp+Mk0a4c4tM4OUGJNAN7ixpep0KYbcv0PIZTH04Ti46sQSeTV
+         SnKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=S9PjHaofBE8WvE/gCT9+Hpu5GwookQh45Bj4/FXFqOI=;
-        b=Qz5ltdxpSMNvSL3Y9FLUKP9dfElNiEyy1nalw4Aef8+HNi6ssKFo+WXnv7e1WQ/jj2
-         p9hlSiV2l2GtEq7QBd7PfNgv7axtdNz+mCZsvg/+eghR0XPX73yaT+iQ0MXgWuoaUCdZ
-         pch45Gnt+2V560EwrxwaXCmPKNVJQU+g1VGU05pOY6D2UcnXn/fz/zow8RFaN4dVirzV
-         oDx9A1Rt5dzHECUM2WLJPczbkZcYN2uUSz9Yf0VjCa7GiMJVEU1T7SLLhjtEN5WgKgHZ
-         d/EKXypWePRI8V0PhdK5ZptBe2OnTIGssjsB5OULRjpg9kkh15IZxm0M22ZrjN2lionu
-         IVOQ==
-X-Gm-Message-State: APjAAAWWmgj/VFPuwBFKGGQmbEfvKWyGdxr/v5gkBu7a8KAVcErkgt9d
-        iQPSn7AYRbylA3YQYP0gLKPC35X5H2Jn7Q5WSNlEXfzesIa3zareNmtJVVUHfWUsGVlTW49jM3W
-        QZMMMM80nD3fj0jaR
-X-Received: by 2002:a2e:730a:: with SMTP id o10mr21912306ljc.214.1570517898816;
-        Mon, 07 Oct 2019 23:58:18 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzcpPsm8E/3M1oXM5bmklENMw0tvOHJJmGog/AgsVSfuHgI1NlUp2BPNtR6+WN3vcVRbtaEPA==
-X-Received: by 2002:a2e:730a:: with SMTP id o10mr21912299ljc.214.1570517898646;
-        Mon, 07 Oct 2019 23:58:18 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id b6sm3972837lfi.72.2019.10.07.23.58.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Oct 2019 23:58:17 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BF15F18063D; Tue,  8 Oct 2019 08:58:16 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        sridhar.samudrala@intel.com, intel-wired-lan@lists.osuosl.org,
-        maciej.fijalkowski@intel.com, tom.herbert@intel.com
-Subject: Re: [PATCH bpf-next 2/4] xsk: allow AF_XDP sockets to receive packets directly from a queue
-In-Reply-To: <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
-References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com> <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 08 Oct 2019 08:58:16 +0200
-Message-ID: <875zkzn2pj.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RNNp45PkXC6u86dJZigRwiXGQlgxYDX+Lhu3Y2ObAyI=;
+        b=ITx9e6AyDyF9j7b6PCSHrtwkljYqR/a7KmWINoOHpW60Mah9JebYBVnOUyowM7+RT0
+         68RO6eqBAOg56VeoA7CclJkZvfxPSjrkinLKWUCvWOIGAFc1zIT+Ar9SUbHHX4qkJ1o8
+         /7oMMzJ/GQzATnuhCg8sVu3uN4aeymHlOR9SjR2qMepNyHIXGuJh6flOpLHGCj+vS22D
+         tL45dt1v8A7o3UHgvC04JchCR+yb5WaLiy+e/ZsEBnYyhAMFHQ41PybeWwEQX6LNbWNl
+         Ltn+8rSj/p6H68HF/vKs4kOTU13Nyal69K3gz/kZBxCcvPh8lZOZU92W2x8OBB4D8BUn
+         VL+Q==
+X-Gm-Message-State: APjAAAXlp6X6LrFhoDTxHVx6G1i/Qdfl38facjSJXyjh2dhGt3vydVC6
+        QasGOSwYwNTZStYIDqboUxV+FHyhIVses8CozIM=
+X-Google-Smtp-Source: APXvYqyEZ5i9IbjjHS9CX3ntOwUzg9Xhga7+lepICc2U4zbPLpLWzYb0kRRQd/pcmgyDwpZ9DPloSK4+azkx6PJZbC0=
+X-Received: by 2002:a2e:9615:: with SMTP id v21mr21162871ljh.46.1570518616282;
+ Tue, 08 Oct 2019 00:10:16 -0700 (PDT)
 MIME-Version: 1.0
-X-MC-Unique: xp0mXQlqNHO62Le9YkzygQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <20191008053507.252202-1-zenczykowski@gmail.com>
+ <20191008053507.252202-2-zenczykowski@gmail.com> <20191008060414.GB25052@breakpoint.cc>
+ <CAHo-OowyjPdV-WbnDVqE4dJrHQUcT2q7JYfayVDZ9hhBoxY4DQ@mail.gmail.com>
+In-Reply-To: <CAHo-OowyjPdV-WbnDVqE4dJrHQUcT2q7JYfayVDZ9hhBoxY4DQ@mail.gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Tue, 8 Oct 2019 00:10:04 -0700
+Message-ID: <CAHo-Ooy=UC9pEQ8xGuJO+8-c0ZaBYind3mo7UHEz1Oo387hyww@mail.gmail.com>
+Subject: Re: [PATCH 2/2] netfilter: revert "conntrack: silent a memory leak warning"
+To:     Florian Westphal <fw@strlen.de>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sridhar Samudrala <sridhar.samudrala@intel.com> writes:
+Here's my reasoning:
 
->  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->  =09=09    struct bpf_prog *xdp_prog)
->  {
->  =09struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
->  =09struct bpf_map *map =3D READ_ONCE(ri->map);
-> +=09struct xdp_sock *xsk;
-> +
-> +=09xsk =3D xdp_get_direct_xsk(ri);
-> +=09if (xsk)
-> +=09=09return xsk_rcv(xsk, xdp);
+        old = ct->ext;
 
-This is a new branch and a read barrier in the XDP_REDIRECT fast path.
-What's the performance impact of that for non-XSK redirect?
+        //... stuff that doesn't change old.
 
--Toke
+        alloc = max(newlen, NF_CT_EXT_PREALLOC);  <-- will be >= 128,
+so not zero
+        kmemleak_not_leak(old);
+        new = __krealloc(old, alloc, gfp);
+        if (!new)
+                return NULL;  <--- if we return here, ct->ext still
+holds old, so no leak.
 
+        if (!old) {
+                memset(new->offset, 0, sizeof(new->offset));
+                ct->ext = new;  <--- old is NULL so can't leak
+        } else if (new != old) {
+                kfree_rcu(old, rcu);  <-- we free old, so doesn't leak
+                rcu_assign_pointer(ct->ext, new);
+        } <--- else new == old && it's still in ct->ext, so it doesn't leak
+
+Basically AFAICT our use of __krealloc() is exactly like krealloc()
+except instead of kfree() we do kfree_rcu().
+
+And thus I don't understand the need for kmemleak_not_leak(old).
+
+So... what's my mistake?
