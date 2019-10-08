@@ -2,189 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C45A6CF70F
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 557ABCF780
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:53:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730179AbfJHKbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 06:31:49 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33525 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728866AbfJHKbt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 06:31:49 -0400
-Received: by mail-wr1-f66.google.com with SMTP id b9so18803617wrs.0
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 03:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1e8KokhtAJu9Ixng89AHaYGeVagnVGaJRUSPgNUrOhE=;
-        b=CYj2nJmQPmE9B4FmMF1QNVJbK8yv//1rTgkR+aXTWhC3ngE4e50izF/qWYSpmQ0cEb
-         DC3iyjfosnrA12ifj3pEzbn6o8hBg+V0SUtItz/bkuV+ElxVAaF4CAJqrSuaiINF9gB6
-         HiRTq5R46DqXsS5TVmC+BcrKrLRyD3D2uEudNn2wQiwqu9uXGiukwD/CsV1Puj515AP+
-         vYqtINzmeYhkgkvyOdVtQFYp7bBaNbXahlEEr3L0rpf+dczCFXopg6+k6fZxlxgOV/Y7
-         cCiPj6ZsLpIDKv8Ce5ETJj5a0dYqkWICbqslVaiC5G0cHBN60Rdnjac5pBT8Tu1+3uk3
-         +IUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1e8KokhtAJu9Ixng89AHaYGeVagnVGaJRUSPgNUrOhE=;
-        b=G/8Op9/BeN5i2eTf11iAv0+47nsWodUBt3m6lMvpW/5tYbpAThayf8hgiwLDA/GZ51
-         ijbuiyqPtF8TouXA9Mje5yKk7li+lcAjrD88lqRknw8t1DtqYNOJq5yfjA0gEsWuK6vS
-         Ihw/lp3R4osWt7j9bRgV+5PxqvHz8gfB6izW8uyrWSfPeYNGmQJMr/4ylCfL1wmeW6D5
-         7AhsRCCfQlSp36qu5ZpgWRdWeWdkVlGKyWAu5e5hzuSqu6H9Q8IfuKSWsiG1XFNyHrub
-         4JhZGUh182/Ylcx/8wZLKlwDVlCFTmenynwB9BkZRorfzUVIbq4R5OJm7GSBMaVxC1kL
-         m5iw==
-X-Gm-Message-State: APjAAAXT9QqcPTxRlVczhjNzGHmjwC5lgWjTK1YX4X8qSzUJRC832x2E
-        cp9T78eq2RT0fDDdHTV2vhjMgRE8cXQ=
-X-Google-Smtp-Source: APXvYqyypBktgt//tDD4zNeHb9+pr74jfaKblkaeo33RkYsyr2sY79BeRAqg8055fF0JgSStABv/0g==
-X-Received: by 2002:adf:fa0e:: with SMTP id m14mr21320812wrr.11.1570530704920;
-        Tue, 08 Oct 2019 03:31:44 -0700 (PDT)
-Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
-        by smtp.gmail.com with ESMTPSA id e15sm21700035wrt.94.2019.10.08.03.31.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 03:31:44 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        alex.aring@gmail.com, stefan@datenfreihafen.org,
-        jon.maloy@ericsson.com, ying.xue@windriver.com,
-        johannes.berg@intel.com, mkubecek@suse.cz, yuehaibing@huawei.com,
-        mlxsw@mellanox.com
-Subject: [patch net-next] net: genetlink: always allocate separate attrs for dumpit ops,
-Date:   Tue,  8 Oct 2019 12:31:43 +0200
-Message-Id: <20191008103143.29200-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730584AbfJHKxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 06:53:05 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:47808 "EHLO
+        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730533AbfJHKw7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 06:52:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sirena.org.uk; s=20170815-heliosphere; h=Date:Message-Id:In-Reply-To:
+        Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
+        List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
+        List-Archive; bh=ttfY0g79SYV72PXPKl3+eOdB+v+wDuyZDPHH//Yon1U=; b=FncgHAwSuXtS
+        1fM9kBN3+yR7doR4Ydh3TgOuuRHnbL0uxqDe9zXPF1uroIINDQ6RvNXnuZaEUAgKBsyogMQE4hbyV
+        Tox7VLflQ6NhSWwZ65P5+eBAeSt9rKLV2/3wVn0j/u0pJpw8iXi0QY9eJUmS+cYdF+bYoMThN3eUr
+        irF/8=;
+Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
+        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <broonie@sirena.co.uk>)
+        id 1iHn6s-00084D-R8; Tue, 08 Oct 2019 10:52:54 +0000
+Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
+        id 58628274299B; Tue,  8 Oct 2019 11:52:54 +0100 (BST)
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     andrew@lunn.ch, broonie@kernel.org, f.fainelli@gmail.com,
+        h.feurstein@gmail.com, linux-spi@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, mlichvar@redhat.com,
+        netdev@vger.kernel.org, richardcochran@gmail.com
+Subject: Applied "spi: spi-fsl-dspi: Implement the PTP system timestamping for TCFQ mode" to the spi tree
+In-Reply-To: <20190905010114.26718-4-olteanv@gmail.com>
+X-Patchwork-Hint: ignore
+Message-Id: <20191008105254.58628274299B@ypsilon.sirena.org.uk>
+Date:   Tue,  8 Oct 2019 11:52:54 +0100 (BST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+The patch
 
-Individual dumpit ops (start, dumpit, done) are locked by genl_lock
-for if !family->parallel_ops. However, multiple
-genl_family_rcv_msg_dumpit() calls may in in flight in parallel.
-Each has a separate struct genl_dumpit_info allocated
-but they share the same family->attrbuf. Fix this by allocating separate
-memory for attrs for dumpit ops, for non-parallel_ops (for parallel_ops
-it is done already).
+   spi: spi-fsl-dspi: Implement the PTP system timestamping for TCFQ mode
 
-Reported-by: syzbot+495688b736534bb6c6ad@syzkaller.appspotmail.com
-Reported-by: syzbot+ff59dc711f2cff879a05@syzkaller.appspotmail.com
-Reported-by: syzbot+dbe02e13bcce52bcf182@syzkaller.appspotmail.com
-Reported-by: syzbot+9cb7edb2906ea1e83006@syzkaller.appspotmail.com
-Fixes: bf813b0afeae ("net: genetlink: parse attrs and store in contect info struct during dumpit")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+has been applied to the spi tree at
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-5.5
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.  
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
+
+From d6b71dfaeeba115dd61a7f367cf04c2d0ca77ebb Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Thu, 5 Sep 2019 04:01:13 +0300
+Subject: [PATCH] spi: spi-fsl-dspi: Implement the PTP system timestamping for
+ TCFQ mode
+
+In this mode, the DSPI controller uses PIO to transfer word by word. In
+comparison, in EOQ mode the 4-word deep FIFO is being used, hence the
+current logic will need some adaptation for which I do not have the
+hardware (Coldfire) to test. It is not clear what is the timing of DMA
+transfers and whether timestamping in the driver brings any overall
+performance increase compared to regular timestamping done in the core.
+
+Short phc2sys summary after 58 minutes of running on LS1021A-TSN with
+interrupts disabled during the critical section:
+
+  offset: min -26251 max 16416 mean -21.8672 std dev 863.416
+  delay: min 4720 max 57280 mean 5182.49 std dev 1607.19
+  lost servo lock 3 times
+
+Summary of the same phc2sys service running for 120 minutes with
+interrupts disabled:
+
+  offset: min -378 max 381 mean -0.0083089 std dev 101.495
+  delay: min 4720 max 5920 mean 5129.38 std dev 154.899
+  lost servo lock 0 times
+
+The minimum delay (pre to post time) in nanoseconds is the same, but the
+maximum delay is quite a bit higher, due to interrupts getting sometimes
+executed and interfering with the measurement. Hence set disable_irqs
+whenever possible (aka when the driver runs in poll mode - otherwise it
+would be a contradiction in terms).
+
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20190905010114.26718-4-olteanv@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- net/netlink/genetlink.c | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
+ drivers/spi/spi-fsl-dspi.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 1b5046436765..ecc2bd3e73e4 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -474,7 +474,8 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- 				struct netlink_ext_ack *extack,
- 				const struct genl_ops *ops,
- 				int hdrlen,
--				enum genl_validate_flags no_strict_flag)
-+				enum genl_validate_flags no_strict_flag,
-+				bool parallel)
- {
- 	enum netlink_validation validate = ops->validate & no_strict_flag ?
- 					   NL_VALIDATE_LIBERAL :
-@@ -482,7 +483,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- 	struct nlattr **attrbuf;
- 	int err;
+diff --git a/drivers/spi/spi-fsl-dspi.c b/drivers/spi/spi-fsl-dspi.c
+index c61074502145..c0e96cc7fc51 100644
+--- a/drivers/spi/spi-fsl-dspi.c
++++ b/drivers/spi/spi-fsl-dspi.c
+@@ -129,6 +129,7 @@ enum dspi_trans_mode {
+ struct fsl_dspi_devtype_data {
+ 	enum dspi_trans_mode	trans_mode;
+ 	u8			max_clock_factor;
++	bool			ptp_sts_supported;
+ 	bool			xspi_mode;
+ };
  
--	if (family->maxattr && family->parallel_ops) {
-+	if (parallel) {
- 		attrbuf = kmalloc_array(family->maxattr + 1,
- 					sizeof(struct nlattr *), GFP_KERNEL);
- 		if (!attrbuf)
-@@ -493,7 +494,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+@@ -140,12 +141,14 @@ static const struct fsl_dspi_devtype_data vf610_data = {
+ static const struct fsl_dspi_devtype_data ls1021a_v1_data = {
+ 	.trans_mode		= DSPI_TCFQ_MODE,
+ 	.max_clock_factor	= 8,
++	.ptp_sts_supported	= true,
+ 	.xspi_mode		= true,
+ };
  
- 	err = __nlmsg_parse(nlh, hdrlen, attrbuf, family->maxattr,
- 			    family->policy, validate, extack);
--	if (err && family->maxattr && family->parallel_ops) {
-+	if (err && parallel) {
- 		kfree(attrbuf);
- 		return ERR_PTR(err);
- 	}
-@@ -501,9 +502,10 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- }
+ static const struct fsl_dspi_devtype_data ls2085a_data = {
+ 	.trans_mode		= DSPI_TCFQ_MODE,
+ 	.max_clock_factor	= 8,
++	.ptp_sts_supported	= true,
+ };
  
- static void genl_family_rcv_msg_attrs_free(const struct genl_family *family,
--					   struct nlattr **attrbuf)
-+					   struct nlattr **attrbuf,
-+					   bool parallel)
- {
--	if (family->maxattr && family->parallel_ops)
-+	if (parallel)
- 		kfree(attrbuf);
- }
+ static const struct fsl_dspi_devtype_data coldfire_data = {
+@@ -654,6 +657,9 @@ static int dspi_rxtx(struct fsl_dspi *dspi)
+ 	u16 spi_tcnt;
+ 	u32 spi_tcr;
  
-@@ -542,7 +544,7 @@ static int genl_lock_done(struct netlink_callback *cb)
- 		rc = ops->done(cb);
- 		genl_unlock();
- 	}
--	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
-+	genl_family_rcv_msg_attrs_free(info->family, info->attrs, true);
- 	genl_dumpit_info_free(info);
- 	return rc;
- }
-@@ -555,7 +557,7 @@ static int genl_parallel_done(struct netlink_callback *cb)
++	spi_take_timestamp_post(dspi->ctlr, dspi->cur_transfer,
++				dspi->tx - dspi->bytes_per_word, !dspi->irq);
++
+ 	/* Get transfer counter (in number of SPI transfers). It was
+ 	 * reset to 0 when transfer(s) were started.
+ 	 */
+@@ -672,6 +678,9 @@ static int dspi_rxtx(struct fsl_dspi *dspi)
+ 		/* Success! */
+ 		return 0;
  
- 	if (ops->done)
- 		rc = ops->done(cb);
--	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
-+	genl_family_rcv_msg_attrs_free(info->family, info->attrs, true);
- 	genl_dumpit_info_free(info);
- 	return rc;
- }
-@@ -585,7 +587,8 @@ static int genl_family_rcv_msg_dumpit(const struct genl_family *family,
++	spi_take_timestamp_pre(dspi->ctlr, dspi->cur_transfer,
++			       dspi->tx, !dspi->irq);
++
+ 	if (trans_mode == DSPI_EOQ_MODE)
+ 		dspi_eoq_write(dspi);
+ 	else if (trans_mode == DSPI_TCFQ_MODE)
+@@ -779,6 +788,9 @@ static int dspi_transfer_one_message(struct spi_controller *ctlr,
+ 				     SPI_FRAME_EBITS(transfer->bits_per_word) |
+ 				     SPI_CTARE_DTCP(1));
  
- 	attrs = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
- 						ops, hdrlen,
--						GENL_DONT_VALIDATE_DUMP_STRICT);
-+						GENL_DONT_VALIDATE_DUMP_STRICT,
-+						true);
- 	if (IS_ERR(attrs))
- 		return PTR_ERR(attrs);
++		spi_take_timestamp_pre(dspi->ctlr, dspi->cur_transfer,
++				       dspi->tx, !dspi->irq);
++
+ 		trans_mode = dspi->devtype_data->trans_mode;
+ 		switch (trans_mode) {
+ 		case DSPI_EOQ_MODE:
+@@ -1155,6 +1167,7 @@ static int dspi_probe(struct platform_device *pdev)
+ 	init_waitqueue_head(&dspi->waitq);
  
-@@ -593,7 +596,7 @@ static int genl_family_rcv_msg_dumpit(const struct genl_family *family,
- 	/* Allocate dumpit info. It is going to be freed by done() callback. */
- 	info = genl_dumpit_info_alloc();
- 	if (!info) {
--		genl_family_rcv_msg_attrs_free(family, attrs);
-+		genl_family_rcv_msg_attrs_free(family, attrs, true);
- 		return -ENOMEM;
- 	}
+ poll_mode:
++
+ 	if (dspi->devtype_data->trans_mode == DSPI_DMA_MODE) {
+ 		ret = dspi_request_dma(dspi, res->start);
+ 		if (ret < 0) {
+@@ -1166,6 +1179,8 @@ static int dspi_probe(struct platform_device *pdev)
+ 	ctlr->max_speed_hz =
+ 		clk_get_rate(dspi->clk) / dspi->devtype_data->max_clock_factor;
  
-@@ -645,7 +648,9 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
++	ctlr->ptp_sts_supported = dspi->devtype_data->ptp_sts_supported;
++
+ 	platform_set_drvdata(pdev, ctlr);
  
- 	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
- 						  ops, hdrlen,
--						  GENL_DONT_VALIDATE_STRICT);
-+						  GENL_DONT_VALIDATE_STRICT,
-+						  family->maxattr &&
-+						  family->parallel_ops);
- 	if (IS_ERR(attrbuf))
- 		return PTR_ERR(attrbuf);
- 
-@@ -671,7 +676,8 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
- 		family->post_doit(ops, skb, &info);
- 
- out:
--	genl_family_rcv_msg_attrs_free(family, attrbuf);
-+	genl_family_rcv_msg_attrs_free(family, attrbuf,
-+				       family->maxattr && family->parallel_ops);
- 
- 	return err;
- }
+ 	ret = spi_register_controller(ctlr);
 -- 
-2.21.0
+2.20.1
 
