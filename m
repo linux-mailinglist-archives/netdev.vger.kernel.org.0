@@ -2,475 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DABCFAC0
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0844BCFADB
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 15:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731099AbfJHM7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 08:59:08 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:34920 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730301AbfJHM7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 08:59:06 -0400
-Received: by mail-ed1-f66.google.com with SMTP id v8so15549702eds.2;
-        Tue, 08 Oct 2019 05:59:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=12ySS54rU6eYC3sxbo9RRXiIU5uBovSP5etlEfFI3IA=;
-        b=YeBPsq8t8Sff/2zhA5v/RrtKlLDnIQTx7UL/j42kqBqUgIaIQjY6HYKm1vGQd7Qlc3
-         IzdA8uV6Jugn2bz1FsxHOxVTed1S38aGe56oV7ge+8nC5L9ehCofkKWAtsoETOY4/LQo
-         KVyB/bOjE4jd6KVAH1Q7LDmnMgYPcN5sraUPo+QjIZ/Hk+D2gcSg3Tsl0e468L4UkNqk
-         BerP7AOHSz/QD4sN4pNkt4Hi/KgyLwF4BF81tyB0G4fgKeEQVb2C5ElHNyAzADKfkqV2
-         IMKd1YbwSbZXT9F8YhREC/egrYd3GLoiHUtPNOXk+jcGPuzKWFRFDNEKYohlzSqESPXA
-         A0fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=12ySS54rU6eYC3sxbo9RRXiIU5uBovSP5etlEfFI3IA=;
-        b=UJAHaSVBXXMhOAyWoxpF2zUKgcV1IX5pwh6VO6Mf59ANTUaq6/fGm7kzxZW6X2NATO
-         MixmGZu3lTHON+hssC99838oAXy8gb2angmAa9dlx1KtdtbBDokZqzs50MAeT54VdWzC
-         xjmEbqcPJ2XPmQm0a8OQbOeh+AwZQ+8/ZftJ7iLy6mD3L/0C6AjA1ZWuPxAWGHOYVkR+
-         IqOUVTBubuge2lt+JIrC8YYN+7l8wx5CxCdJD3nfCTYoNmd4onpBEOocGw73T51PcsUb
-         aIjg9UldNbsYxVc06uDsZf/hv/bfR2DhkpDc/LS+144jZUso8AbCINE8LidPsTzoebj5
-         oJkg==
-X-Gm-Message-State: APjAAAWaAypbVPnrtyOK9y9c6XWa2+DDYfLiRmYExDbCW972B287kHH8
-        bbEk8fFqPSDtFRsNzSg4dbdHHCzY+A0499+dh7Q=
-X-Google-Smtp-Source: APXvYqwyt3WBhKLYeJy5FB/t2iRQA9JIXzrwlQKuVKPoAtvCFZcNkzDqd4UCakbi/FI+Gqn2lJMT3K/Nio71iRr5Ybo=
-X-Received: by 2002:a17:906:82d3:: with SMTP id a19mr27874701ejy.151.1570539542323;
- Tue, 08 Oct 2019 05:59:02 -0700 (PDT)
+        id S1731031AbfJHNDB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Oct 2019 09:03:01 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:25085 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731024AbfJHNDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 09:03:00 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-46-wxSGgauhNkmtrc5dkymLZQ-1; Tue, 08 Oct 2019 14:02:57 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 8 Oct 2019 14:02:57 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 8 Oct 2019 14:02:57 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Xin Long' <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
+CC:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCHv2 net-next 3/5] sctp: add
+ SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
+Thread-Topic: [PATCHv2 net-next 3/5] sctp: add
+ SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
+Thread-Index: AQHVfcsgrQL6OT4GuU648eHSKFH716dQtSlA
+Date:   Tue, 8 Oct 2019 13:02:57 +0000
+Message-ID: <60a7f76bd5f743dd8d057b32a4456ebd@AcuMS.aculab.com>
+References: <cover.1570533716.git.lucien.xin@gmail.com>
+ <066605f2269d5d92bc3fefebf33c6943579d8764.1570533716.git.lucien.xin@gmail.com>
+In-Reply-To: <066605f2269d5d92bc3fefebf33c6943579d8764.1570533716.git.lucien.xin@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <20190905010114.26718-3-olteanv@gmail.com> <20191008105254.99A6D274299F@ypsilon.sirena.org.uk>
-In-Reply-To: <20191008105254.99A6D274299F@ypsilon.sirena.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 8 Oct 2019 15:58:51 +0300
-Message-ID: <CA+h21hoid_bQ37qC30fDt62ces40PwSQ2v=KHTGkadV_ycrd5A@mail.gmail.com>
-Subject: Re: Applied "spi: Add a PTP system timestamp to the transfer
- structure" to the spi tree
-To:     Mark Brown <broonie@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>,
-        linux-spi@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MC-Unique: wxSGgauhNkmtrc5dkymLZQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Oct 2019 at 13:52, Mark Brown <broonie@kernel.org> wrote:
->
-> The patch
->
->    spi: Add a PTP system timestamp to the transfer structure
->
-> has been applied to the spi tree at
->
->    https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-5.5
->
-> All being well this means that it will be integrated into the linux-next
-> tree (usually sometime in the next 24 hours) and sent to Linus during
-> the next merge window (or sooner if it is a bug fix), however if
-> problems are discovered then the patch may be dropped or reverted.
->
-> You may get further e-mails resulting from automated or manual testing
-> and review of the tree, please engage with people reporting problems and
-> send followup patches addressing any issues that are reported if needed.
->
-> If any updates are required or you are submitting further changes they
-> should be sent as incremental updates against current git, existing
-> patches will not be replaced.
->
-> Please add any relevant lists and maintainers to the CCs when replying
-> to this mail.
->
-> Thanks,
-> Mark
->
+From: Xin Long
+> Sent: 08 October 2019 12:25
+> 
+> This is a sockopt defined in section 7.3 of rfc7829: "Exposing
+> the Potentially Failed Path State", by which users can change
+> pf_expose per sock and asoc.
 
-Thanks Mark!
+If I read these patches correctly the default for this sockopt in 'enabled'.
+Doesn't this mean that old application binaries will receive notifications
+that they aren't expecting?
 
-Dave, do you think you can somehow integrate this patch into net-next
-as well, so that I can send some further patches that depend on the
-newly introduced ptp_sts member of struct spi_transfer without waiting
-for another kernel release?
+I'd have thought that applications would be required to enable it.
 
-Regards,
--Vladimir
+	David
 
-> From b42faeee718ce13ef6eb99c24880b58deb54c8fa Mon Sep 17 00:00:00 2001
-> From: Vladimir Oltean <olteanv@gmail.com>
-> Date: Thu, 5 Sep 2019 04:01:12 +0300
-> Subject: [PATCH] spi: Add a PTP system timestamp to the transfer structure
->
-> SPI is one of the interfaces used to access devices which have a POSIX
-> clock driver (real time clocks, 1588 timers etc). The fact that the SPI
-> bus is slow is not what the main problem is, but rather the fact that
-> drivers don't take a constant amount of time in transferring data over
-> SPI. When there is a high delay in the readout of time, there will be
-> uncertainty in the value that has been read out of the peripheral.
-> When that delay is constant, the uncertainty can at least be
-> approximated with a certain accuracy which is fine more often than not.
->
-> Timing jitter occurs all over in the kernel code, and is mainly caused
-> by having to let go of the CPU for various reasons such as preemption,
-> servicing interrupts, going to sleep, etc. Another major reason is CPU
-> dynamic frequency scaling.
->
-> It turns out that the problem of retrieving time from a SPI peripheral
-> with high accuracy can be solved by the use of "PTP system
-> timestamping" - a mechanism to correlate the time when the device has
-> snapshotted its internal time counter with the Linux system time at that
-> same moment. This is sufficient for having a precise time measurement -
-> it is not necessary for the whole SPI transfer to be transmitted "as
-> fast as possible", or "as low-jitter as possible". The system has to be
-> low-jitter for a very short amount of time to be effective.
->
-> This patch introduces a PTP system timestamping mechanism in struct
-> spi_transfer. This is to be used by SPI device drivers when they need to
-> know the exact time at which the underlying device's time was
-> snapshotted. More often than not, SPI peripherals have a very exact
-> timing for when their SPI-to-interconnect bridge issues a transaction
-> for snapshotting and reading the time register, and that will be
-> dependent on when the SPI-to-interconnect bridge figures out that this
-> is what it should do, aka as soon as it sees byte N of the SPI transfer.
-> Since spi_device drivers are the ones who'd know best how the peripheral
-> behaves in this regard, expose a mechanism in spi_transfer which allows
-> them to specify which word (or word range) from the transfer should be
-> timestamped.
->
-> Add a default implementation of the PTP system timestamping in the SPI
-> core. This is not going to be satisfactory performance-wise, but should
-> at least increase the likelihood that SPI device drivers will use PTP
-> system timestamping in the future.
-> There are 3 entry points from the core towards the SPI controller
-> drivers:
->
-> - transfer_one: The driver is passed individual spi_transfers to
->   execute. This is the easiest to timestamp.
->
-> - transfer_one_message: The core passes the driver an entire spi_message
->   (a potential batch of spi_transfers). The core puts the same pre and
->   post timestamp to all transfers within a message. This is not ideal,
->   but nothing better can be done by default anyway, since the core has
->   no insight into how the driver batches the transfers.
->
-> - transfer: Like transfer_one_message, but for unqueued drivers (i.e.
->   the driver implements its own queue scheduling).
->
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Link: https://lore.kernel.org/r/20190905010114.26718-3-olteanv@gmail.com
-> Signed-off-by: Mark Brown <broonie@kernel.org>
-> ---
->  drivers/spi/spi.c       | 127 ++++++++++++++++++++++++++++++++++++++++
->  include/linux/spi/spi.h |  61 +++++++++++++++++++
->  2 files changed, 188 insertions(+)
->
-> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> index f9502dbbb5c1..9bb36c32cbf9 100644
-> --- a/drivers/spi/spi.c
-> +++ b/drivers/spi/spi.c
-> @@ -1171,6 +1171,11 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
->                 spi_statistics_add_transfer_stats(statm, xfer, ctlr);
->                 spi_statistics_add_transfer_stats(stats, xfer, ctlr);
->
-> +               if (!ctlr->ptp_sts_supported) {
-> +                       xfer->ptp_sts_word_pre = 0;
-> +                       ptp_read_system_prets(xfer->ptp_sts);
-> +               }
-> +
->                 if (xfer->tx_buf || xfer->rx_buf) {
->                         reinit_completion(&ctlr->xfer_completion);
->
-> @@ -1197,6 +1202,11 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
->                                         xfer->len);
->                 }
->
-> +               if (!ctlr->ptp_sts_supported) {
-> +                       ptp_read_system_postts(xfer->ptp_sts);
-> +                       xfer->ptp_sts_word_post = xfer->len;
-> +               }
-> +
->                 trace_spi_transfer_stop(msg, xfer);
->
->                 if (msg->status != -EINPROGRESS)
-> @@ -1265,6 +1275,7 @@ EXPORT_SYMBOL_GPL(spi_finalize_current_transfer);
->   */
->  static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
->  {
-> +       struct spi_transfer *xfer;
->         struct spi_message *msg;
->         bool was_busy = false;
->         unsigned long flags;
-> @@ -1391,6 +1402,13 @@ static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
->                 goto out;
->         }
->
-> +       if (!ctlr->ptp_sts_supported && !ctlr->transfer_one) {
-> +               list_for_each_entry(xfer, &msg->transfers, transfer_list) {
-> +                       xfer->ptp_sts_word_pre = 0;
-> +                       ptp_read_system_prets(xfer->ptp_sts);
-> +               }
-> +       }
-> +
->         ret = ctlr->transfer_one_message(ctlr, msg);
->         if (ret) {
->                 dev_err(&ctlr->dev,
-> @@ -1418,6 +1436,99 @@ static void spi_pump_messages(struct kthread_work *work)
->         __spi_pump_messages(ctlr, true);
->  }
->
-> +/**
-> + * spi_take_timestamp_pre - helper for drivers to collect the beginning of the
-> + *                         TX timestamp for the requested byte from the SPI
-> + *                         transfer. The frequency with which this function
-> + *                         must be called (once per word, once for the whole
-> + *                         transfer, once per batch of words etc) is arbitrary
-> + *                         as long as the @tx buffer offset is greater than or
-> + *                         equal to the requested byte at the time of the
-> + *                         call. The timestamp is only taken once, at the
-> + *                         first such call. It is assumed that the driver
-> + *                         advances its @tx buffer pointer monotonically.
-> + * @ctlr: Pointer to the spi_controller structure of the driver
-> + * @xfer: Pointer to the transfer being timestamped
-> + * @tx: Pointer to the current word within the xfer->tx_buf that the driver is
-> + *     preparing to transmit right now.
-> + * @irqs_off: If true, will disable IRQs and preemption for the duration of the
-> + *           transfer, for less jitter in time measurement. Only compatible
-> + *           with PIO drivers. If true, must follow up with
-> + *           spi_take_timestamp_post or otherwise system will crash.
-> + *           WARNING: for fully predictable results, the CPU frequency must
-> + *           also be under control (governor).
-> + */
-> +void spi_take_timestamp_pre(struct spi_controller *ctlr,
-> +                           struct spi_transfer *xfer,
-> +                           const void *tx, bool irqs_off)
-> +{
-> +       u8 bytes_per_word = DIV_ROUND_UP(xfer->bits_per_word, 8);
-> +
-> +       if (!xfer->ptp_sts)
-> +               return;
-> +
-> +       if (xfer->timestamped_pre)
-> +               return;
-> +
-> +       if (tx < (xfer->tx_buf + xfer->ptp_sts_word_pre * bytes_per_word))
-> +               return;
-> +
-> +       /* Capture the resolution of the timestamp */
-> +       xfer->ptp_sts_word_pre = (tx - xfer->tx_buf) / bytes_per_word;
-> +
-> +       xfer->timestamped_pre = true;
-> +
-> +       if (irqs_off) {
-> +               local_irq_save(ctlr->irq_flags);
-> +               preempt_disable();
-> +       }
-> +
-> +       ptp_read_system_prets(xfer->ptp_sts);
-> +}
-> +EXPORT_SYMBOL_GPL(spi_take_timestamp_pre);
-> +
-> +/**
-> + * spi_take_timestamp_post - helper for drivers to collect the end of the
-> + *                          TX timestamp for the requested byte from the SPI
-> + *                          transfer. Can be called with an arbitrary
-> + *                          frequency: only the first call where @tx exceeds
-> + *                          or is equal to the requested word will be
-> + *                          timestamped.
-> + * @ctlr: Pointer to the spi_controller structure of the driver
-> + * @xfer: Pointer to the transfer being timestamped
-> + * @tx: Pointer to the current word within the xfer->tx_buf that the driver has
-> + *     just transmitted.
-> + * @irqs_off: If true, will re-enable IRQs and preemption for the local CPU.
-> + */
-> +void spi_take_timestamp_post(struct spi_controller *ctlr,
-> +                            struct spi_transfer *xfer,
-> +                            const void *tx, bool irqs_off)
-> +{
-> +       u8 bytes_per_word = DIV_ROUND_UP(xfer->bits_per_word, 8);
-> +
-> +       if (!xfer->ptp_sts)
-> +               return;
-> +
-> +       if (xfer->timestamped_post)
-> +               return;
-> +
-> +       if (tx < (xfer->tx_buf + xfer->ptp_sts_word_post * bytes_per_word))
-> +               return;
-> +
-> +       ptp_read_system_postts(xfer->ptp_sts);
-> +
-> +       if (irqs_off) {
-> +               local_irq_restore(ctlr->irq_flags);
-> +               preempt_enable();
-> +       }
-> +
-> +       /* Capture the resolution of the timestamp */
-> +       xfer->ptp_sts_word_post = (tx - xfer->tx_buf) / bytes_per_word;
-> +
-> +       xfer->timestamped_post = true;
-> +}
-> +EXPORT_SYMBOL_GPL(spi_take_timestamp_post);
-> +
->  /**
->   * spi_set_thread_rt - set the controller to pump at realtime priority
->   * @ctlr: controller to boost priority of
-> @@ -1503,6 +1614,7 @@ EXPORT_SYMBOL_GPL(spi_get_next_queued_message);
->   */
->  void spi_finalize_current_message(struct spi_controller *ctlr)
->  {
-> +       struct spi_transfer *xfer;
->         struct spi_message *mesg;
->         unsigned long flags;
->         int ret;
-> @@ -1511,6 +1623,13 @@ void spi_finalize_current_message(struct spi_controller *ctlr)
->         mesg = ctlr->cur_msg;
->         spin_unlock_irqrestore(&ctlr->queue_lock, flags);
->
-> +       if (!ctlr->ptp_sts_supported && !ctlr->transfer_one) {
-> +               list_for_each_entry(xfer, &mesg->transfers, transfer_list) {
-> +                       ptp_read_system_postts(xfer->ptp_sts);
-> +                       xfer->ptp_sts_word_post = xfer->len;
-> +               }
-> +       }
-> +
->         spi_unmap_msg(ctlr, mesg);
->
->         if (ctlr->cur_msg_prepared && ctlr->unprepare_message) {
-> @@ -3273,6 +3392,7 @@ static int __spi_validate(struct spi_device *spi, struct spi_message *message)
->  static int __spi_async(struct spi_device *spi, struct spi_message *message)
->  {
->         struct spi_controller *ctlr = spi->controller;
-> +       struct spi_transfer *xfer;
->
->         /*
->          * Some controllers do not support doing regular SPI transfers. Return
-> @@ -3288,6 +3408,13 @@ static int __spi_async(struct spi_device *spi, struct spi_message *message)
->
->         trace_spi_message_submit(message);
->
-> +       if (!ctlr->ptp_sts_supported) {
-> +               list_for_each_entry(xfer, &message->transfers, transfer_list) {
-> +                       xfer->ptp_sts_word_pre = 0;
-> +                       ptp_read_system_prets(xfer->ptp_sts);
-> +               }
-> +       }
-> +
->         return ctlr->transfer(spi, message);
->  }
->
-> diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-> index af4f265d0f67..27f6b046cf92 100644
-> --- a/include/linux/spi/spi.h
-> +++ b/include/linux/spi/spi.h
-> @@ -13,6 +13,7 @@
->  #include <linux/completion.h>
->  #include <linux/scatterlist.h>
->  #include <linux/gpio/consumer.h>
-> +#include <linux/ptp_clock_kernel.h>
->
->  struct dma_chan;
->  struct property_entry;
-> @@ -409,6 +410,12 @@ static inline void spi_unregister_driver(struct spi_driver *sdrv)
->   * @fw_translate_cs: If the boot firmware uses different numbering scheme
->   *     what Linux expects, this optional hook can be used to translate
->   *     between the two.
-> + * @ptp_sts_supported: If the driver sets this to true, it must provide a
-> + *     time snapshot in @spi_transfer->ptp_sts as close as possible to the
-> + *     moment in time when @spi_transfer->ptp_sts_word_pre and
-> + *     @spi_transfer->ptp_sts_word_post were transmitted.
-> + *     If the driver does not set this, the SPI core takes the snapshot as
-> + *     close to the driver hand-over as possible.
->   *
->   * Each SPI controller can communicate with one or more @spi_device
->   * children.  These make a small bus, sharing MOSI, MISO and SCK signals
-> @@ -604,6 +611,15 @@ struct spi_controller {
->         void                    *dummy_tx;
->
->         int (*fw_translate_cs)(struct spi_controller *ctlr, unsigned cs);
-> +
-> +       /*
-> +        * Driver sets this field to indicate it is able to snapshot SPI
-> +        * transfers (needed e.g. for reading the time of POSIX clocks)
-> +        */
-> +       bool                    ptp_sts_supported;
-> +
-> +       /* Interrupt enable state during PTP system timestamping */
-> +       unsigned long           irq_flags;
->  };
->
->  static inline void *spi_controller_get_devdata(struct spi_controller *ctlr)
-> @@ -644,6 +660,14 @@ extern struct spi_message *spi_get_next_queued_message(struct spi_controller *ct
->  extern void spi_finalize_current_message(struct spi_controller *ctlr);
->  extern void spi_finalize_current_transfer(struct spi_controller *ctlr);
->
-> +/* Helper calls for driver to timestamp transfer */
-> +void spi_take_timestamp_pre(struct spi_controller *ctlr,
-> +                           struct spi_transfer *xfer,
-> +                           const void *tx, bool irqs_off);
-> +void spi_take_timestamp_post(struct spi_controller *ctlr,
-> +                            struct spi_transfer *xfer,
-> +                            const void *tx, bool irqs_off);
-> +
->  /* the spi driver core manages memory for the spi_controller classdev */
->  extern struct spi_controller *__spi_alloc_controller(struct device *host,
->                                                 unsigned int size, bool slave);
-> @@ -753,6 +777,35 @@ extern void spi_res_release(struct spi_controller *ctlr,
->   * @transfer_list: transfers are sequenced through @spi_message.transfers
->   * @tx_sg: Scatterlist for transmit, currently not for client use
->   * @rx_sg: Scatterlist for receive, currently not for client use
-> + * @ptp_sts_word_pre: The word (subject to bits_per_word semantics) offset
-> + *     within @tx_buf for which the SPI device is requesting that the time
-> + *     snapshot for this transfer begins. Upon completing the SPI transfer,
-> + *     this value may have changed compared to what was requested, depending
-> + *     on the available snapshotting resolution (DMA transfer,
-> + *     @ptp_sts_supported is false, etc).
-> + * @ptp_sts_word_post: See @ptp_sts_word_post. The two can be equal (meaning
-> + *     that a single byte should be snapshotted).
-> + *     If the core takes care of the timestamp (if @ptp_sts_supported is false
-> + *     for this controller), it will set @ptp_sts_word_pre to 0, and
-> + *     @ptp_sts_word_post to the length of the transfer. This is done
-> + *     purposefully (instead of setting to spi_transfer->len - 1) to denote
-> + *     that a transfer-level snapshot taken from within the driver may still
-> + *     be of higher quality.
-> + * @ptp_sts: Pointer to a memory location held by the SPI slave device where a
-> + *     PTP system timestamp structure may lie. If drivers use PIO or their
-> + *     hardware has some sort of assist for retrieving exact transfer timing,
-> + *     they can (and should) assert @ptp_sts_supported and populate this
-> + *     structure using the ptp_read_system_*ts helper functions.
-> + *     The timestamp must represent the time at which the SPI slave device has
-> + *     processed the word, i.e. the "pre" timestamp should be taken before
-> + *     transmitting the "pre" word, and the "post" timestamp after receiving
-> + *     transmit confirmation from the controller for the "post" word.
-> + * @timestamped_pre: Set by the SPI controller driver to denote it has acted
-> + *     upon the @ptp_sts request. Not set when the SPI core has taken care of
-> + *     the task. SPI device drivers are free to print a warning if this comes
-> + *     back unset and they need the better resolution.
-> + * @timestamped_post: See above. The reason why both exist is that these
-> + *     booleans are also used to keep state in the core SPI logic.
->   *
->   * SPI transfers always write the same number of bytes as they read.
->   * Protocol drivers should always provide @rx_buf and/or @tx_buf.
-> @@ -842,6 +895,14 @@ struct spi_transfer {
->
->         u32             effective_speed_hz;
->
-> +       unsigned int    ptp_sts_word_pre;
-> +       unsigned int    ptp_sts_word_post;
-> +
-> +       struct ptp_system_timestamp *ptp_sts;
-> +
-> +       bool            timestamped_pre;
-> +       bool            timestamped_post;
-> +
->         struct list_head transfer_list;
->  };
->
-> --
-> 2.20.1
->
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
