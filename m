@@ -2,261 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30479CF6F4
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:23:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45A6CF70F
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:31:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730408AbfJHKXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 06:23:35 -0400
-Received: from mga02.intel.com ([134.134.136.20]:22769 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730051AbfJHKXf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 06:23:35 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Oct 2019 03:23:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,270,1566889200"; 
-   d="scan'208";a="345001950"
-Received: from mkarlsso-mobl.ger.corp.intel.com (HELO VM.isw.intel.com) ([10.103.211.41])
-  by orsmga004.jf.intel.com with ESMTP; 08 Oct 2019 03:23:31 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org
-Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: [PATCH bpf] libbpf: fix compatibility for kernels without need_wakeup
-Date:   Tue,  8 Oct 2019 12:23:28 +0200
-Message-Id: <1570530208-17720-1-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
+        id S1730179AbfJHKbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 06:31:49 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33525 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728866AbfJHKbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 06:31:49 -0400
+Received: by mail-wr1-f66.google.com with SMTP id b9so18803617wrs.0
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 03:31:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1e8KokhtAJu9Ixng89AHaYGeVagnVGaJRUSPgNUrOhE=;
+        b=CYj2nJmQPmE9B4FmMF1QNVJbK8yv//1rTgkR+aXTWhC3ngE4e50izF/qWYSpmQ0cEb
+         DC3iyjfosnrA12ifj3pEzbn6o8hBg+V0SUtItz/bkuV+ElxVAaF4CAJqrSuaiINF9gB6
+         HiRTq5R46DqXsS5TVmC+BcrKrLRyD3D2uEudNn2wQiwqu9uXGiukwD/CsV1Puj515AP+
+         vYqtINzmeYhkgkvyOdVtQFYp7bBaNbXahlEEr3L0rpf+dczCFXopg6+k6fZxlxgOV/Y7
+         cCiPj6ZsLpIDKv8Ce5ETJj5a0dYqkWICbqslVaiC5G0cHBN60Rdnjac5pBT8Tu1+3uk3
+         +IUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1e8KokhtAJu9Ixng89AHaYGeVagnVGaJRUSPgNUrOhE=;
+        b=G/8Op9/BeN5i2eTf11iAv0+47nsWodUBt3m6lMvpW/5tYbpAThayf8hgiwLDA/GZ51
+         ijbuiyqPtF8TouXA9Mje5yKk7li+lcAjrD88lqRknw8t1DtqYNOJq5yfjA0gEsWuK6vS
+         Ihw/lp3R4osWt7j9bRgV+5PxqvHz8gfB6izW8uyrWSfPeYNGmQJMr/4ylCfL1wmeW6D5
+         7AhsRCCfQlSp36qu5ZpgWRdWeWdkVlGKyWAu5e5hzuSqu6H9Q8IfuKSWsiG1XFNyHrub
+         4JhZGUh182/Ylcx/8wZLKlwDVlCFTmenynwB9BkZRorfzUVIbq4R5OJm7GSBMaVxC1kL
+         m5iw==
+X-Gm-Message-State: APjAAAXT9QqcPTxRlVczhjNzGHmjwC5lgWjTK1YX4X8qSzUJRC832x2E
+        cp9T78eq2RT0fDDdHTV2vhjMgRE8cXQ=
+X-Google-Smtp-Source: APXvYqyypBktgt//tDD4zNeHb9+pr74jfaKblkaeo33RkYsyr2sY79BeRAqg8055fF0JgSStABv/0g==
+X-Received: by 2002:adf:fa0e:: with SMTP id m14mr21320812wrr.11.1570530704920;
+        Tue, 08 Oct 2019 03:31:44 -0700 (PDT)
+Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
+        by smtp.gmail.com with ESMTPSA id e15sm21700035wrt.94.2019.10.08.03.31.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2019 03:31:44 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        alex.aring@gmail.com, stefan@datenfreihafen.org,
+        jon.maloy@ericsson.com, ying.xue@windriver.com,
+        johannes.berg@intel.com, mkubecek@suse.cz, yuehaibing@huawei.com,
+        mlxsw@mellanox.com
+Subject: [patch net-next] net: genetlink: always allocate separate attrs for dumpit ops,
+Date:   Tue,  8 Oct 2019 12:31:43 +0200
+Message-Id: <20191008103143.29200-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the need_wakeup flag was added to AF_XDP, the format of the
-XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the kernel
-to take care of compatibility issues arrising from running
-applications using any of the two formats. However, libbpf was not
-extended to take care of the case when the application/libbpf uses the
-new format but the kernel only supports the old format. This patch
-adds support in libbpf for parsing the old format, before the
-need_wakeup flag was added, and emulating a set of static need_wakeup
-flags that will always work for the application.
+From: Jiri Pirko <jiri@mellanox.com>
 
-Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in AF_XDP part")
-Reported-by: Eloy Degen <degeneloy@gmail.com>
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Individual dumpit ops (start, dumpit, done) are locked by genl_lock
+for if !family->parallel_ops. However, multiple
+genl_family_rcv_msg_dumpit() calls may in in flight in parallel.
+Each has a separate struct genl_dumpit_info allocated
+but they share the same family->attrbuf. Fix this by allocating separate
+memory for attrs for dumpit ops, for non-parallel_ops (for parallel_ops
+it is done already).
+
+Reported-by: syzbot+495688b736534bb6c6ad@syzkaller.appspotmail.com
+Reported-by: syzbot+ff59dc711f2cff879a05@syzkaller.appspotmail.com
+Reported-by: syzbot+dbe02e13bcce52bcf182@syzkaller.appspotmail.com
+Reported-by: syzbot+9cb7edb2906ea1e83006@syzkaller.appspotmail.com
+Fixes: bf813b0afeae ("net: genetlink: parse attrs and store in contect info struct during dumpit")
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- tools/lib/bpf/xsk.c | 109 +++++++++++++++++++++++++++++++++++++---------------
- 1 file changed, 78 insertions(+), 31 deletions(-)
+ net/netlink/genetlink.c | 28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index a902838..46f9687 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -44,6 +44,25 @@
-  #define PF_XDP AF_XDP
- #endif
- 
-+#define is_mmap_offsets_v1(optlen) \
-+	((optlen) == sizeof(struct xdp_mmap_offsets_v1))
-+
-+#define get_prod_off(ring) \
-+	(is_mmap_offsets_v1(optlen) ? \
-+	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.producer : \
-+	 off.ring.producer)
-+#define get_cons_off(ring) \
-+	(is_mmap_offsets_v1(optlen) ? \
-+	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer : \
-+	 off.ring.consumer)
-+#define get_desc_off(ring) \
-+	(is_mmap_offsets_v1(optlen) ? \
-+	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.desc : off.ring.desc)
-+#define get_flags_off(ring) \
-+	(is_mmap_offsets_v1(optlen) ? \
-+	 ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer + sizeof(u32) : \
-+	 off.ring.flags)
-+
- struct xsk_umem {
- 	struct xsk_ring_prod *fill;
- 	struct xsk_ring_cons *comp;
-@@ -73,6 +92,20 @@ struct xsk_nl_info {
- 	int fd;
- };
- 
-+struct xdp_ring_offset_v1 {
-+	__u64 producer;
-+	__u64 consumer;
-+	__u64 desc;
-+};
-+
-+/* Up until and including Linux 5.3 */
-+struct xdp_mmap_offsets_v1 {
-+	struct xdp_ring_offset_v1 rx;
-+	struct xdp_ring_offset_v1 tx;
-+	struct xdp_ring_offset_v1 fr;
-+	struct xdp_ring_offset_v1 cr;
-+};
-+
- int xsk_umem__fd(const struct xsk_umem *umem)
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 1b5046436765..ecc2bd3e73e4 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -474,7 +474,8 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ 				struct netlink_ext_ack *extack,
+ 				const struct genl_ops *ops,
+ 				int hdrlen,
+-				enum genl_validate_flags no_strict_flag)
++				enum genl_validate_flags no_strict_flag,
++				bool parallel)
  {
- 	return umem ? umem->fd : -EINVAL;
-@@ -196,7 +229,8 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
- 		goto out_socket;
+ 	enum netlink_validation validate = ops->validate & no_strict_flag ?
+ 					   NL_VALIDATE_LIBERAL :
+@@ -482,7 +483,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ 	struct nlattr **attrbuf;
+ 	int err;
+ 
+-	if (family->maxattr && family->parallel_ops) {
++	if (parallel) {
+ 		attrbuf = kmalloc_array(family->maxattr + 1,
+ 					sizeof(struct nlattr *), GFP_KERNEL);
+ 		if (!attrbuf)
+@@ -493,7 +494,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ 
+ 	err = __nlmsg_parse(nlh, hdrlen, attrbuf, family->maxattr,
+ 			    family->policy, validate, extack);
+-	if (err && family->maxattr && family->parallel_ops) {
++	if (err && parallel) {
+ 		kfree(attrbuf);
+ 		return ERR_PTR(err);
+ 	}
+@@ -501,9 +502,10 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ }
+ 
+ static void genl_family_rcv_msg_attrs_free(const struct genl_family *family,
+-					   struct nlattr **attrbuf)
++					   struct nlattr **attrbuf,
++					   bool parallel)
+ {
+-	if (family->maxattr && family->parallel_ops)
++	if (parallel)
+ 		kfree(attrbuf);
+ }
+ 
+@@ -542,7 +544,7 @@ static int genl_lock_done(struct netlink_callback *cb)
+ 		rc = ops->done(cb);
+ 		genl_unlock();
+ 	}
+-	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
++	genl_family_rcv_msg_attrs_free(info->family, info->attrs, true);
+ 	genl_dumpit_info_free(info);
+ 	return rc;
+ }
+@@ -555,7 +557,7 @@ static int genl_parallel_done(struct netlink_callback *cb)
+ 
+ 	if (ops->done)
+ 		rc = ops->done(cb);
+-	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
++	genl_family_rcv_msg_attrs_free(info->family, info->attrs, true);
+ 	genl_dumpit_info_free(info);
+ 	return rc;
+ }
+@@ -585,7 +587,8 @@ static int genl_family_rcv_msg_dumpit(const struct genl_family *family,
+ 
+ 	attrs = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
+ 						ops, hdrlen,
+-						GENL_DONT_VALIDATE_DUMP_STRICT);
++						GENL_DONT_VALIDATE_DUMP_STRICT,
++						true);
+ 	if (IS_ERR(attrs))
+ 		return PTR_ERR(attrs);
+ 
+@@ -593,7 +596,7 @@ static int genl_family_rcv_msg_dumpit(const struct genl_family *family,
+ 	/* Allocate dumpit info. It is going to be freed by done() callback. */
+ 	info = genl_dumpit_info_alloc();
+ 	if (!info) {
+-		genl_family_rcv_msg_attrs_free(family, attrs);
++		genl_family_rcv_msg_attrs_free(family, attrs, true);
+ 		return -ENOMEM;
  	}
  
--	map = mmap(NULL, off.fr.desc + umem->config.fill_size * sizeof(__u64),
-+	map = mmap(NULL, get_desc_off(fr) +
-+		   umem->config.fill_size * sizeof(__u64),
- 		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, umem->fd,
- 		   XDP_UMEM_PGOFF_FILL_RING);
- 	if (map == MAP_FAILED) {
-@@ -207,13 +241,18 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
- 	umem->fill = fill;
- 	fill->mask = umem->config.fill_size - 1;
- 	fill->size = umem->config.fill_size;
--	fill->producer = map + off.fr.producer;
--	fill->consumer = map + off.fr.consumer;
--	fill->flags = map + off.fr.flags;
--	fill->ring = map + off.fr.desc;
-+	fill->producer = map + get_prod_off(fr);
-+	fill->consumer = map + get_cons_off(fr);
-+	fill->flags = map + get_flags_off(fr);
-+	fill->ring = map + get_desc_off(fr);
- 	fill->cached_cons = umem->config.fill_size;
+@@ -645,7 +648,9 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
  
--	map = mmap(NULL, off.cr.desc + umem->config.comp_size * sizeof(__u64),
-+	if (is_mmap_offsets_v1(optlen))
-+		/* Initialized the flag to never signal wakeup */
-+		*fill->flags = 0;
-+
-+	map = mmap(NULL, get_desc_off(cr) +
-+		   umem->config.comp_size * sizeof(__u64),
- 		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, umem->fd,
- 		   XDP_UMEM_PGOFF_COMPLETION_RING);
- 	if (map == MAP_FAILED) {
-@@ -224,16 +263,16 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
- 	umem->comp = comp;
- 	comp->mask = umem->config.comp_size - 1;
- 	comp->size = umem->config.comp_size;
--	comp->producer = map + off.cr.producer;
--	comp->consumer = map + off.cr.consumer;
--	comp->flags = map + off.cr.flags;
--	comp->ring = map + off.cr.desc;
-+	comp->producer = map + get_prod_off(cr);
-+	comp->consumer = map + get_cons_off(cr);
-+	comp->flags = map + get_flags_off(cr);
-+	comp->ring = map + get_desc_off(cr);
+ 	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
+ 						  ops, hdrlen,
+-						  GENL_DONT_VALIDATE_STRICT);
++						  GENL_DONT_VALIDATE_STRICT,
++						  family->maxattr &&
++						  family->parallel_ops);
+ 	if (IS_ERR(attrbuf))
+ 		return PTR_ERR(attrbuf);
  
- 	*umem_ptr = umem;
- 	return 0;
+@@ -671,7 +676,8 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
+ 		family->post_doit(ops, skb, &info);
  
- out_mmap:
--	munmap(map, off.fr.desc + umem->config.fill_size * sizeof(__u64));
-+	munmap(map, get_desc_off(fr) + umem->config.fill_size * sizeof(__u64));
- out_socket:
- 	close(umem->fd);
- out_umem_alloc:
-@@ -558,7 +597,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
- 	}
+ out:
+-	genl_family_rcv_msg_attrs_free(family, attrbuf);
++	genl_family_rcv_msg_attrs_free(family, attrbuf,
++				       family->maxattr && family->parallel_ops);
  
- 	if (rx) {
--		rx_map = mmap(NULL, off.rx.desc +
-+		rx_map = mmap(NULL, get_desc_off(rx) +
- 			      xsk->config.rx_size * sizeof(struct xdp_desc),
- 			      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
- 			      xsk->fd, XDP_PGOFF_RX_RING);
-@@ -569,15 +608,15 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
- 
- 		rx->mask = xsk->config.rx_size - 1;
- 		rx->size = xsk->config.rx_size;
--		rx->producer = rx_map + off.rx.producer;
--		rx->consumer = rx_map + off.rx.consumer;
--		rx->flags = rx_map + off.rx.flags;
--		rx->ring = rx_map + off.rx.desc;
-+		rx->producer = rx_map + get_prod_off(rx);
-+		rx->consumer = rx_map + get_cons_off(rx);
-+		rx->flags = rx_map + get_flags_off(rx);
-+		rx->ring = rx_map + get_desc_off(rx);
- 	}
- 	xsk->rx = rx;
- 
- 	if (tx) {
--		tx_map = mmap(NULL, off.tx.desc +
-+		tx_map = mmap(NULL, get_desc_off(tx) +
- 			      xsk->config.tx_size * sizeof(struct xdp_desc),
- 			      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
- 			      xsk->fd, XDP_PGOFF_TX_RING);
-@@ -588,11 +627,15 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
- 
- 		tx->mask = xsk->config.tx_size - 1;
- 		tx->size = xsk->config.tx_size;
--		tx->producer = tx_map + off.tx.producer;
--		tx->consumer = tx_map + off.tx.consumer;
--		tx->flags = tx_map + off.tx.flags;
--		tx->ring = tx_map + off.tx.desc;
-+		tx->producer = tx_map + get_prod_off(tx);
-+		tx->consumer = tx_map + get_cons_off(tx);
-+		tx->flags = tx_map + get_flags_off(tx);
-+		tx->ring = tx_map + get_desc_off(tx);
- 		tx->cached_cons = xsk->config.tx_size;
-+
-+		if (is_mmap_offsets_v1(optlen))
-+			/* Initialized the flag to always signal wakeup */
-+			*tx->flags = XDP_RING_NEED_WAKEUP;
- 	}
- 	xsk->tx = tx;
- 
-@@ -620,11 +663,11 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
- 
- out_mmap_tx:
- 	if (tx)
--		munmap(tx_map, off.tx.desc +
-+		munmap(tx_map, get_desc_off(tx) +
- 		       xsk->config.tx_size * sizeof(struct xdp_desc));
- out_mmap_rx:
- 	if (rx)
--		munmap(rx_map, off.rx.desc +
-+		munmap(rx_map, get_desc_off(rx) +
- 		       xsk->config.rx_size * sizeof(struct xdp_desc));
- out_socket:
- 	if (--umem->refcount)
-@@ -649,10 +692,12 @@ int xsk_umem__delete(struct xsk_umem *umem)
- 	optlen = sizeof(off);
- 	err = getsockopt(umem->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
- 	if (!err) {
--		munmap(umem->fill->ring - off.fr.desc,
--		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
--		munmap(umem->comp->ring - off.cr.desc,
--		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
-+		munmap(umem->fill->ring - get_desc_off(fr),
-+		       get_desc_off(fr) +
-+		       umem->config.fill_size * sizeof(__u64));
-+		munmap(umem->comp->ring - get_desc_off(cr),
-+		       get_desc_off(cr) +
-+		       umem->config.comp_size * sizeof(__u64));
- 	}
- 
- 	close(umem->fd);
-@@ -680,12 +725,14 @@ void xsk_socket__delete(struct xsk_socket *xsk)
- 	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
- 	if (!err) {
- 		if (xsk->rx) {
--			munmap(xsk->rx->ring - off.rx.desc,
--			       off.rx.desc + xsk->config.rx_size * desc_sz);
-+			munmap(xsk->rx->ring - get_desc_off(rx),
-+			       get_desc_off(rx) +
-+			       xsk->config.rx_size * desc_sz);
- 		}
- 		if (xsk->tx) {
--			munmap(xsk->tx->ring - off.tx.desc,
--			       off.tx.desc + xsk->config.tx_size * desc_sz);
-+			munmap(xsk->tx->ring - get_desc_off(tx),
-+			       get_desc_off(tx) +
-+			       xsk->config.tx_size * desc_sz);
- 		}
- 
- 	}
+ 	return err;
+ }
 -- 
-2.7.4
+2.21.0
 
