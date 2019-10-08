@@ -2,171 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96188D0212
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 22:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A840ED0280
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 22:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730778AbfJHUXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 16:23:34 -0400
-Received: from fieldses.org ([173.255.197.46]:47314 "EHLO fieldses.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727835AbfJHUXe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 16:23:34 -0400
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 02F8A2C0; Tue,  8 Oct 2019 16:23:33 -0400 (EDT)
-Date:   Tue, 8 Oct 2019 16:23:32 -0400
-From:   "J . Bruce Fields" <bfields@fieldses.org>
-To:     Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Neil Brown <neilb@suse.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        Vasiliy Averin <vvs@virtuozzo.com>
-Subject: Re: [PATCH] sunrpc: fix crash when cache_head become valid before
- update
-Message-ID: <20191008202332.GB9151@fieldses.org>
-References: <20191001080359.6034-1-ptikhomirov@virtuozzo.com>
- <3e455bb4-2a03-551e-6efb-1d41b5258327@virtuozzo.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3e455bb4-2a03-551e-6efb-1d41b5258327@virtuozzo.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+        id S1731138AbfJHUt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 16:49:57 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:46604 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730674AbfJHUt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 16:49:57 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x98KWluk121271;
+        Tue, 8 Oct 2019 16:49:48 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vf98j073a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Oct 2019 16:49:48 -0400
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x98KWpYE121438;
+        Tue, 8 Oct 2019 16:49:47 -0400
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vf98j0733-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Oct 2019 16:49:47 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x98KUpCc030366;
+        Tue, 8 Oct 2019 20:49:47 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma03wdc.us.ibm.com with ESMTP id 2vejt6v6ne-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Oct 2019 20:49:46 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x98KnkuR7274896
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Oct 2019 20:49:46 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6EEF3AC05B;
+        Tue,  8 Oct 2019 20:49:46 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DF5C6AC059;
+        Tue,  8 Oct 2019 20:49:45 +0000 (GMT)
+Received: from [9.53.179.215] (unknown [9.53.179.215])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  8 Oct 2019 20:49:45 +0000 (GMT)
+Subject: Re: [RFC PATCH v2] e1000e: Use rtnl_lock to prevent race
+ conditions between net and pci/pm
+From:   "David Z. Dai" <zdai@linux.vnet.ibm.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com,
+        zdai@us.ibm.com, davem@davemloft.net
+In-Reply-To: <20191007172559.11166.29328.stgit@localhost.localdomain>
+References: <CAKgT0UdwqGGKvaSJ+3vd-_d-6t9MB=No+7SpkbOT2PnynRK+2w@mail.gmail.com>
+         <20191007172559.11166.29328.stgit@localhost.localdomain>
+Content-Type: text/plain; charset="UTF-8"
+Date:   Tue, 08 Oct 2019 15:49:45 -0500
+Message-ID: <1570567785.1510.12.camel@oc5348122405>
+Mime-Version: 1.0
+X-Mailer: Evolution 2.32.3 (2.32.3-36.el6) 
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-08_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910080160
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 08, 2019 at 10:02:53AM +0000, Pavel Tikhomirov wrote:
-> Add Neil to CC, sorry, had lost it somehow...
-
-Always happy when we can fix a bug by deleting code, and your
-explanation makes sense to me, but I'll give Neil a chance to look it
-over if he wants.
-
---b.
-
+On Mon, 2019-10-07 at 10:27 -0700, Alexander Duyck wrote:
+> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 > 
-> On 10/1/19 11:03 AM, Pavel Tikhomirov wrote:
-> > I was investigating a crash in our Virtuozzo7 kernel which happened in
-> > in svcauth_unix_set_client. I found out that we access m_client field
-> > in ip_map structure, which was received from sunrpc_cache_lookup (we
-> > have a bit older kernel, now the code is in sunrpc_cache_add_entry), and
-> > these field looks uninitialized (m_client == 0x74 don't look like a
-> > pointer) but in the cache_head in flags we see 0x1 which is CACHE_VALID.
-> > 
-> > It looks like the problem appeared from our previous fix to sunrpc (1):
-> > commit 4ecd55ea0742 ("sunrpc: fix cache_head leak due to queued
-> > request")
-> > 
-> > And we've also found a patch already fixing our patch (2):
-> > commit d58431eacb22 ("sunrpc: don't mark uninitialised items as VALID.")
-> > 
-> > Though the crash is eliminated, I think the core of the problem is not
-> > completely fixed:
-> > 
-> > Neil in the patch (2) makes cache_head CACHE_NEGATIVE, before
-> > cache_fresh_locked which was added in (1) to fix crash. These way
-> > cache_is_valid won't say the cache is valid anymore and in
-> > svcauth_unix_set_client the function cache_check will return error
-> > instead of 0, and we don't count entry as initialized.
-> > 
-> > But it looks like we need to remove cache_fresh_locked completely in
-> > sunrpc_cache_lookup:
-> > 
-> > In (1) we've only wanted to make cache_fresh_unlocked->cache_dequeue so
-> > that cache_requests with no readers also release corresponding
-> > cache_head, to fix their leak.  We with Vasily were not sure if
-> > cache_fresh_locked and cache_fresh_unlocked should be used in pair or
-> > not, so we've guessed to use them in pair.
-> > 
-> > Now we see that we don't want the CACHE_VALID bit set here by
-> > cache_fresh_locked, as "valid" means "initialized" and there is no
-> > initialization in sunrpc_cache_add_entry. Both expiry_time and
-> > last_refresh are not used in cache_fresh_unlocked code-path and also not
-> > required for the initial fix.
-> > 
-> > So to conclude cache_fresh_locked was called by mistake, and we can just
-> > safely remove it instead of crutching it with CACHE_NEGATIVE. It looks
-> > ideologically better for me. Hope I don't miss something here.
-> > 
-> > Here is our crash backtrace:
-> > [13108726.326291] BUG: unable to handle kernel NULL pointer dereference at 0000000000000074
-> > [13108726.326365] IP: [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
-> > [13108726.326448] PGD 0
-> > [13108726.326468] Oops: 0002 [#1] SMP
-> > [13108726.326497] Modules linked in: nbd isofs xfs loop kpatch_cumulative_81_0_r1(O) xt_physdev nfnetlink_queue bluetooth rfkill ip6table_nat nf_nat_ipv6 ip_vs_wrr ip_vs_wlc ip_vs_sh nf_conntrack_netlink ip_vs_sed ip_vs_pe_sip nf_conntrack_sip ip_vs_nq ip_vs_lc ip_vs_lblcr ip_vs_lblc ip_vs_ftp ip_vs_dh nf_nat_ftp nf_conntrack_ftp iptable_raw xt_recent nf_log_ipv6 xt_hl ip6t_rt nf_log_ipv4 nf_log_common xt_LOG xt_limit xt_TCPMSS xt_tcpmss vxlan ip6_udp_tunnel udp_tunnel xt_statistic xt_NFLOG nfnetlink_log dummy xt_mark xt_REDIRECT nf_nat_redirect raw_diag udp_diag tcp_diag inet_diag netlink_diag af_packet_diag unix_diag rpcsec_gss_krb5 xt_addrtype ip6t_rpfilter ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 ebtable_nat ebtable_broute nf_conntrack_ipv6 nf_defrag_ipv6 ip6table_mangle ip6table_raw nfsv4
-> > [13108726.327173]  dns_resolver cls_u32 binfmt_misc arptable_filter arp_tables ip6table_filter ip6_tables devlink fuse_kio_pcs ipt_MASQUERADE nf_nat_masquerade_ipv4 xt_nat iptable_nat nf_nat_ipv4 xt_comment nf_conntrack_ipv4 nf_defrag_ipv4 xt_wdog_tmo xt_multiport bonding xt_set xt_conntrack iptable_filter iptable_mangle kpatch(O) ebtable_filter ebt_among ebtables ip_set_hash_ip ip_set nfnetlink vfat fat skx_edac intel_powerclamp coretemp intel_rapl iosf_mbi kvm_intel kvm irqbypass fuse pcspkr ses enclosure joydev sg mei_me hpwdt hpilo lpc_ich mei ipmi_si shpchp ipmi_devintf ipmi_msghandler xt_ipvs acpi_power_meter ip_vs_rr nfsv3 nfsd auth_rpcgss nfs_acl nfs lockd grace fscache nf_nat cls_fw sch_htb sch_cbq sch_sfq ip_vs em_u32 nf_conntrack tun br_netfilter veth overlay ip6_vzprivnet ip6_vznetstat ip_vznetstat
-> > [13108726.327817]  ip_vzprivnet vziolimit vzevent vzlist vzstat vznetstat vznetdev vzmon vzdev bridge pio_kaio pio_nfs pio_direct pfmt_raw pfmt_ploop1 ploop ip_tables ext4 mbcache jbd2 sd_mod crc_t10dif crct10dif_generic mgag200 i2c_algo_bit drm_kms_helper scsi_transport_iscsi 8021q syscopyarea sysfillrect garp sysimgblt fb_sys_fops mrp stp ttm llc bnx2x crct10dif_pclmul crct10dif_common crc32_pclmul crc32c_intel drm dm_multipath ghash_clmulni_intel uas aesni_intel lrw gf128mul glue_helper ablk_helper cryptd tg3 smartpqi scsi_transport_sas mdio libcrc32c i2c_core usb_storage ptp pps_core wmi sunrpc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: kpatch_cumulative_82_0_r1]
-> > [13108726.328403] CPU: 35 PID: 63742 Comm: nfsd ve: 51332 Kdump: loaded Tainted: G        W  O   ------------   3.10.0-862.20.2.vz7.73.29 #1 73.29
-> > [13108726.328491] Hardware name: HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 10/02/2018
-> > [13108726.328554] task: ffffa0a6a41b1160 ti: ffffa0c2a74bc000 task.ti: ffffa0c2a74bc000
-> > [13108726.328610] RIP: 0010:[<ffffffffc01f79eb>]  [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
-> > [13108726.328706] RSP: 0018:ffffa0c2a74bfd80  EFLAGS: 00010246
-> > [13108726.328750] RAX: 0000000000000001 RBX: ffffa0a6183ae000 RCX: 0000000000000000
-> > [13108726.328811] RDX: 0000000000000074 RSI: 0000000000000286 RDI: ffffa0c2a74bfcf0
-> > [13108726.328864] RBP: ffffa0c2a74bfe00 R08: ffffa0bab8c22960 R09: 0000000000000001
-> > [13108726.328916] R10: 0000000000000001 R11: 0000000000000001 R12: ffffa0a32aa7f000
-> > [13108726.328969] R13: ffffa0a6183afac0 R14: ffffa0c233d88d00 R15: ffffa0c2a74bfdb4
-> > [13108726.329022] FS:  0000000000000000(0000) GS:ffffa0e17f9c0000(0000) knlGS:0000000000000000
-> > [13108726.329081] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [13108726.332311] CR2: 0000000000000074 CR3: 00000026a1b28000 CR4: 00000000007607e0
-> > [13108726.334606] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > [13108726.336754] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > [13108726.338908] PKRU: 00000000
-> > [13108726.341047] Call Trace:
-> > [13108726.343074]  [<ffffffff8a2c78b4>] ? groups_alloc+0x34/0x110
-> > [13108726.344837]  [<ffffffffc01f5eb4>] svc_set_client+0x24/0x30 [sunrpc]
-> > [13108726.346631]  [<ffffffffc01f2ac1>] svc_process_common+0x241/0x710 [sunrpc]
-> > [13108726.348332]  [<ffffffffc01f3093>] svc_process+0x103/0x190 [sunrpc]
-> > [13108726.350016]  [<ffffffffc07d605f>] nfsd+0xdf/0x150 [nfsd]
-> > [13108726.351735]  [<ffffffffc07d5f80>] ? nfsd_destroy+0x80/0x80 [nfsd]
-> > [13108726.353459]  [<ffffffff8a2bf741>] kthread+0xd1/0xe0
-> > [13108726.355195]  [<ffffffff8a2bf670>] ? create_kthread+0x60/0x60
-> > [13108726.356896]  [<ffffffff8a9556dd>] ret_from_fork_nospec_begin+0x7/0x21
-> > [13108726.358577]  [<ffffffff8a2bf670>] ? create_kthread+0x60/0x60
-> > [13108726.360240] Code: 4c 8b 45 98 0f 8e 2e 01 00 00 83 f8 fe 0f 84 76 fe ff ff 85 c0 0f 85 2b 01 00 00 49 8b 50 40 b8 01 00 00 00 48 89 93 d0 1a 00 00 <f0> 0f c1 02 83 c0 01 83 f8 01 0f 8e 53 02 00 00 49 8b 44 24 38
-> > [13108726.363769] RIP  [<ffffffffc01f79eb>] svcauth_unix_set_client+0x2ab/0x520 [sunrpc]
-> > [13108726.365530]  RSP <ffffa0c2a74bfd80>
-> > [13108726.367179] CR2: 0000000000000074
-> > 
-> > Fixes: d58431eacb22 ("sunrpc: don't mark uninitialised items as VALID.")
-> > Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-> > 
-> > ---
-> >   net/sunrpc/cache.c | 6 ------
-> >   1 file changed, 6 deletions(-)
-> > 
-> > diff --git a/net/sunrpc/cache.c b/net/sunrpc/cache.c
-> > index a349094f6fb7..f740cb51802a 100644
-> > --- a/net/sunrpc/cache.c
-> > +++ b/net/sunrpc/cache.c
-> > @@ -53,9 +53,6 @@ static void cache_init(struct cache_head *h, struct cache_detail *detail)
-> >   	h->last_refresh = now;
-> >   }
-> >   
-> > -static inline int cache_is_valid(struct cache_head *h);
-> > -static void cache_fresh_locked(struct cache_head *head, time_t expiry,
-> > -				struct cache_detail *detail);
-> >   static void cache_fresh_unlocked(struct cache_head *head,
-> >   				struct cache_detail *detail);
-> >   
-> > @@ -105,9 +102,6 @@ static struct cache_head *sunrpc_cache_add_entry(struct cache_detail *detail,
-> >   			if (cache_is_expired(detail, tmp)) {
-> >   				hlist_del_init_rcu(&tmp->cache_list);
-> >   				detail->entries --;
-> > -				if (cache_is_valid(tmp) == -EAGAIN)
-> > -					set_bit(CACHE_NEGATIVE, &tmp->flags);
-> > -				cache_fresh_locked(tmp, 0, detail);
-> >   				freeme = tmp;
-> >   				break;
-> >   			}
-> > 
+> This patch is meant to address possible race conditions that can exist
+> between network configuration and power management. A similar issue was
+> fixed for igb in commit 9474933caf21 ("igb: close/suspend race in
+> netif_device_detach").
 > 
-> -- 
-> Best regards, Tikhomirov Pavel
-> Software Developer, Virtuozzo.
+> In addition it consolidates the code so that the PCI error handling code
+> will essentially perform the power management freeze on the device prior to
+> attempting a reset, and will thaw the device afterwards if that is what it
+> is planning to do. Otherwise when we call close on the interface it should
+> see it is detached and not attempt to call the logic to down the interface
+> and free the IRQs again.
+> 
+> >From what I can tell the check that was adding the check for __E1000_DOWN
+> in e1000e_close was added when runtime power management was added. However
+> it should not be relevant for us as we perform a call to
+> pm_runtime_get_sync before we call e1000_down/free_irq so it should always
+> be back up before we call into this anyway.
+> 
+> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> ---
+> 
+> RFC v2: Dropped some unused variables
+> 	Added logic to check for device present before removing to pm_freeze
+> 	Fixed misplaced err_irq to before rtnl_unlock()
+> 
+>  drivers/net/ethernet/intel/e1000e/netdev.c |   40 +++++++++++++++-------------
+>  1 file changed, 21 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index d7d56e42a6aa..8b4e589aca36 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -4715,12 +4715,12 @@ int e1000e_close(struct net_device *netdev)
+> 
+>  	pm_runtime_get_sync(&pdev->dev);
+> 
+> -	if (!test_bit(__E1000_DOWN, &adapter->state)) {
+> +	if (netif_device_present(netdev)) {
+>  		e1000e_down(adapter, true);
+>  		e1000_free_irq(adapter);
+> 
+>  		/* Link status message must follow this format */
+> -		pr_info("%s NIC Link is Down\n", adapter->netdev->name);
+> +		pr_info("%s NIC Link is Down\n", netdev->name);
+>  	}
+> 
+>  	napi_disable(&adapter->napi);
+> @@ -6298,10 +6298,14 @@ static int e1000e_pm_freeze(struct device *dev)
+>  {
+>  	struct net_device *netdev = dev_get_drvdata(dev);
+>  	struct e1000_adapter *adapter = netdev_priv(netdev);
+> +	bool present;
+> 
+> +	rtnl_lock();
+> +
+> +	present = netif_device_present(netdev);
+>  	netif_device_detach(netdev);
+> 
+> -	if (netif_running(netdev)) {
+> +	if (present && netif_running(netdev)) {
+>  		int count = E1000_CHECK_RESET_COUNT;
+> 
+>  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
+> @@ -6313,6 +6317,8 @@ static int e1000e_pm_freeze(struct device *dev)
+>  		e1000e_down(adapter, false);
+>  		e1000_free_irq(adapter);
+>  	}
+> +	rtnl_unlock();
+> +
+>  	e1000e_reset_interrupt_capability(adapter);
+> 
+>  	/* Allow time for pending master requests to run */
+> @@ -6626,27 +6632,31 @@ static int __e1000_resume(struct pci_dev *pdev)
+>  	return 0;
+>  }
+> 
+> -#ifdef CONFIG_PM_SLEEP
+>  static int e1000e_pm_thaw(struct device *dev)
+>  {
+>  	struct net_device *netdev = dev_get_drvdata(dev);
+>  	struct e1000_adapter *adapter = netdev_priv(netdev);
+> +	int rc = 0;
+> 
+>  	e1000e_set_interrupt_capability(adapter);
+> -	if (netif_running(netdev)) {
+> -		u32 err = e1000_request_irq(adapter);
+> 
+> -		if (err)
+> -			return err;
+> +	rtnl_lock();
+> +	if (netif_running(netdev)) {
+> +		rc = e1000_request_irq(adapter);
+> +		if (rc)
+> +			goto err_irq;
+> 
+>  		e1000e_up(adapter);
+>  	}
+> 
+>  	netif_device_attach(netdev);
+> +err_irq:
+> +	rtnl_unlock();
+> 
+> -	return 0;
+> +	return rc;
+>  }
+> 
+> +#ifdef CONFIG_PM_SLEEP
+>  static int e1000e_pm_suspend(struct device *dev)
+>  {
+>  	struct pci_dev *pdev = to_pci_dev(dev);
+> @@ -6818,16 +6828,11 @@ static void e1000_netpoll(struct net_device *netdev)
+>  static pci_ers_result_t e1000_io_error_detected(struct pci_dev *pdev,
+>  						pci_channel_state_t state)
+>  {
+> -	struct net_device *netdev = pci_get_drvdata(pdev);
+> -	struct e1000_adapter *adapter = netdev_priv(netdev);
+> -
+> -	netif_device_detach(netdev);
+> +	e1000e_pm_freeze(&pdev->dev);
+> 
+>  	if (state == pci_channel_io_perm_failure)
+>  		return PCI_ERS_RESULT_DISCONNECT;
+> 
+> -	if (netif_running(netdev))
+> -		e1000e_down(adapter, true);
+>  	pci_disable_device(pdev);
+> 
+>  	/* Request a slot slot reset. */
+> @@ -6893,10 +6898,7 @@ static void e1000_io_resume(struct pci_dev *pdev)
+> 
+>  	e1000_init_manageability_pt(adapter);
+> 
+> -	if (netif_running(netdev))
+> -		e1000e_up(adapter);
+> -
+> -	netif_device_attach(netdev);
+> +	e1000e_pm_thaw(&pdev->dev);
+> 
+>  	/* If the controller has AMT, do not set DRV_LOAD until the interface
+>  	 * is up.  For all other cases, let the f/w know that the h/w is now
+> 
+Tested this v2 version patch. There is no more crash, which is good.
+And It also eliminates the double free warning message.
+This patch is good to go.
+
+Thanks! - David
+
