@@ -2,268 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71434CF7AB
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 12:59:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E05B8CF7B0
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 13:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730150AbfJHK7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 06:59:41 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38924 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729790AbfJHK7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 06:59:41 -0400
-Received: by mail-pf1-f196.google.com with SMTP id v4so10563516pff.6
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 03:59:41 -0700 (PDT)
+        id S1730419AbfJHLB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 07:01:56 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33941 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730409AbfJHLB4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 07:01:56 -0400
+Received: by mail-wr1-f66.google.com with SMTP id j11so13079668wrp.1
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 04:01:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=AqkueV0Lt9qDdfB1BJCxIGxiB546B16SW6VYPa83koI=;
-        b=qbwhTQOrk0eFJdbQELs1gTqu+ZbLWGJ87Ev/0v9a+CnUTY/Opegf3+kTRUcFrcc1Vy
-         H35t370LFU8bFEPnXPeoSQNJkS5gNN8A4CTHdSy43knzjKv4tWK0q48ZqrL3Tdk5KL/v
-         EBgMxY9QIn/ObU39+XwLPuNf4u4QSTGQw0ZJ9ZJY+sXuXDvxHm34jDo9eiwFvuQiXHyQ
-         OUF+w1mUfotm8yz8R29D07AQ6qx8581BLpvcaZrRjBVmf1c7AygTTH8AG9sE8RROmDXm
-         M9I6jgsaFWPNVSpRvv+0ia6SbeszE5B6eHzhXtXHhXpJTUh8WThj56DKGqZLY8n7NoU2
-         JZeg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jzuT4Mm77xLeHFlZGQjKrClU0JORArGXFfyv3K/uiq8=;
+        b=Wmrn3E9VvLe/s/uwbEf8hWQrZYoLS3Z9CwpGmBGYzUM+Ct0kVjfIK/bogJ+ZaWwJA6
+         PjxFDN0HqTmbTdNKv4rsNFV1kFcHFSDwKpfVYccaNPn1fVeRGn0OQozrSoz7DJzzTWjl
+         zXZRB6u6pB2tEtB+MC4Ki8iotNpWedDKKlI5Ya7iZOsHDbKLNVLGPsc/NLTHe8FKlvvS
+         Hi9Tc0ydGa8I/JF/9nlUGDtXRkl73ACFOIHML2G9BBJQJYoWFjuZMZzDZoFSknTp/hWQ
+         xs8O36pkNagixIA0cfE+Mzz63Gxg242PTG9qlI3dSnnhkQAd1wKPPqbF8ok4/8LiVEtA
+         eFfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=AqkueV0Lt9qDdfB1BJCxIGxiB546B16SW6VYPa83koI=;
-        b=ObvT2zrV5bFc182p78Icoex90/6QgV1/8EpUV6pe2mBY3GRw/CMLNF2XhZHe4Q/VEN
-         os6U5xmzQPSmWKMUu6OYlVH8zbZCsQH3slHELp6766uUkwvybmPgr+rf9xvCVZz2G0ZX
-         gU2sHIPezwtlTCwCTJs3w4DsSwyF+zHt8AOC1k4Wg4s3Lhfx77YfQeK9K2Eq0QHfdYvU
-         WXQDIzfsWAuQUh1/0u43EQO3JEzyLC5osKI7MWTFsIH9YKquV9+YeqJVlu48InenZWZ+
-         bsWcXDY4YSLkiDhRNffHvXouKn5mwQPkijKEUXaroAO8I4myR5GPWnVZhzmE8qvdr8lg
-         X7Eg==
-X-Gm-Message-State: APjAAAXWB1FeFztzy0VtkyKEKWWVlHAWFVR2gzNViMtZAueDREdQYcOY
-        L4tXQ1pPQA+dh/s7/keDY7Q=
-X-Google-Smtp-Source: APXvYqyljGKVKKBtWc76GHrECWVQ8cggk4/+RfxIk7Xxb7Io0Yn+DHi8azjjEigClrhLJRr1bblwkQ==
-X-Received: by 2002:a63:38c:: with SMTP id 134mr14517489pgd.360.1570532380574;
-        Tue, 08 Oct 2019 03:59:40 -0700 (PDT)
-Received: from localhost.localdomain ([122.178.241.240])
-        by smtp.gmail.com with ESMTPSA id h4sm16686066pgg.81.2019.10.08.03.59.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 08 Oct 2019 03:59:40 -0700 (PDT)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        scott.drennan@nokia.com, jbenc@redhat.com,
-        martin.varghese@nokia.com
-Subject: [PATCH iproute2] Bareudp device support
-Date:   Tue,  8 Oct 2019 16:29:21 +0530
-Message-Id: <1570532361-15163-1-git-send-email-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jzuT4Mm77xLeHFlZGQjKrClU0JORArGXFfyv3K/uiq8=;
+        b=m69foROyN2RZ8rr5A38gulWx3EvMeRb44X1qeopx7zuVtLtLh+TjnDx7RSjVeTLwQ+
+         OHlcsKhYZ96AQYWzz+spQm411H5wkRroH6pj+CJ53szsyukXY1CGcH1B3J0vmj5nWcaT
+         yM8X0MkkjJ8HbQVBVurg79ysJjtXa3U9ucPh6RWprF10gyLoGjuoi4saob/+JuB0cnZs
+         wcz4m9TLe03g5mXSr4L0j0JDnzhesXw28h0GT/hLfZNho5OmPRomBbSmZWV8okFkmY6L
+         +5sWzVsj4rpt5AoFPF8QHZlu1ac4m1QbbFzuWGhCgw1nKzpSe9CqHcsX7BLqYt+YkjoF
+         Y1Zg==
+X-Gm-Message-State: APjAAAXjZKBFWndu7feJdaKi6/W9oExSKW27M1dLL9SiB1vj1wg2flmA
+        h9rx2Ae94h5rSUzaIkAuhShMMQpTywo=
+X-Google-Smtp-Source: APXvYqwVbd0Y1V9EHFuIqPVBGKYrZ3RHE1PxCzG5FzfbIUui5Z5pvas37ihzWOj5OgbTByno2FTpdQ==
+X-Received: by 2002:adf:f88d:: with SMTP id u13mr26597562wrp.104.1570532513443;
+        Tue, 08 Oct 2019 04:01:53 -0700 (PDT)
+Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
+        by smtp.gmail.com with ESMTPSA id y186sm5144578wmb.41.2019.10.08.04.01.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2019 04:01:52 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jon.maloy@ericsson.com,
+        ying.xue@windriver.com, johannes.berg@intel.com, mkubecek@suse.cz,
+        mlxsw@mellanox.com
+Subject: [patch net-next] net: tipc: prepare attrs in __tipc_nl_compat_dumpit()
+Date:   Tue,  8 Oct 2019 13:01:51 +0200
+Message-Id: <20191008110151.6999-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin <martin.varghese@nokia.com>
+From: Jiri Pirko <jiri@mellanox.com>
 
-The Bareudp device provides a generic L3 encapsulation for tunnelling
-different protocols like MPLS,IP,NSH, etc. inside a UDP tunnel.
+__tipc_nl_compat_dumpit() calls tipc_nl_publ_dump() which expects
+the attrs to be available by genl_dumpit_info(cb)->attrs. Add info
+struct and attr parsing in compat dumpit function.
 
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+Reported-by: syzbot+8d37c50ffb0f52941a5e@syzkaller.appspotmail.com
+Fixes: 057af7071344 ("net: tipc: have genetlink code to parse the attrs during dumpit")
+
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/uapi/linux/if_link.h |  12 ++++
- ip/Makefile                  |   2 +-
- ip/iplink_bareudp.c          | 154 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 167 insertions(+), 1 deletion(-)
- create mode 100644 ip/iplink_bareudp.c
+ net/tipc/netlink_compat.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index d36919f..a3a876d 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -578,6 +578,18 @@ enum ifla_geneve_df {
- 	GENEVE_DF_MAX = __GENEVE_DF_END - 1,
- };
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index 4950b754dacd..17a529739f8d 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -181,6 +181,7 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ 				   struct tipc_nl_compat_msg *msg,
+ 				   struct sk_buff *arg)
+ {
++	struct genl_dumpit_info info;
+ 	int len = 0;
+ 	int err;
+ 	struct sk_buff *buf;
+@@ -191,6 +192,7 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ 	memset(&cb, 0, sizeof(cb));
+ 	cb.nlh = (struct nlmsghdr *)arg->data;
+ 	cb.skb = arg;
++	cb.data = &info;
  
-+/* Bareudp section  */
-+enum {
-+	IFLA_BAREUDP_UNSPEC,
-+	IFLA_BAREUDP_PORT,
-+	IFLA_BAREUDP_ETHERTYPE,
-+	IFLA_BAREUDP_SRCPORT_MIN,
-+	IFLA_BAREUDP_EXTMODE,
-+	__IFLA_BAREUDP_MAX
-+};
-+
-+#define IFLA_BAREUDP_MAX (__IFLA_BAREUDP_MAX - 1)
-+
- /* PPP section */
- enum {
- 	IFLA_PPP_UNSPEC,
-diff --git a/ip/Makefile b/ip/Makefile
-index 5ab78d7..784d852 100644
---- a/ip/Makefile
-+++ b/ip/Makefile
-@@ -11,7 +11,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
-     iplink_bridge.o iplink_bridge_slave.o ipfou.o iplink_ipvlan.o \
-     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
-     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
--    ipnexthop.o
-+    ipnexthop.o iplink_bareudp.o
+ 	buf = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
+ 	if (!buf)
+@@ -209,6 +211,13 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ 		goto err_out;
+ 	}
  
- RTMONOBJ=rtmon.o
++	info.attrs = attrbuf;
++	err = nlmsg_parse_deprecated(cb.nlh, GENL_HDRLEN, attrbuf,
++				     tipc_genl_family.maxattr,
++				     tipc_genl_family.policy, NULL);
++	if (err)
++		goto err_out;
++
+ 	do {
+ 		int rem;
  
-diff --git a/ip/iplink_bareudp.c b/ip/iplink_bareudp.c
-new file mode 100644
-index 0000000..479ad1c
---- /dev/null
-+++ b/ip/iplink_bareudp.c
-@@ -0,0 +1,154 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#include <stdio.h>
-+
-+#include "rt_names.h"
-+#include "utils.h"
-+#include "ip_common.h"
-+
-+#define BAREUDP_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
-+
-+static void print_explain(FILE *f)
-+{
-+	fprintf(f,
-+			"Usage: ........ bareudp dstport PORT\n"
-+			"                ethertype ETHERTYPE|PROTOCOL\n"
-+			"                [ext_mode]\n"
-+			"                [srcportmin SRCPORTMIN]\n"
-+			"\n"
-+			"Where: PORT   := 0-65535\n"
-+			"     : ETHERTYPE|PROTOCOL := ip|mpls|0-65535\n"
-+			"     : SRCPORTMIN : = 0-65535\n"
-+	       );
-+}
-+
-+static void explain(void)
-+{
-+	print_explain(stderr);
-+}
-+
-+static void check_duparg(__u64 *attrs, int type, const char *key,
-+		const char *argv)
-+{
-+	if (!BAREUDP_ATTRSET(*attrs, type)) {
-+		*attrs |= (1L << type);
-+		return;
-+	}
-+	duparg2(key, argv);
-+}
-+
-+static int bareudp_parse_opt(struct link_util *lu, int argc, char **argv,
-+		struct nlmsghdr *n)
-+{
-+	__u16 dstport = 0;
-+	__u16 ethertype = 0;
-+	__u16 srcportmin = 0;
-+	bool extmode = 0;
-+	__u64 attrs = 0;
-+
-+	while (argc > 0) {
-+		if (!matches(*argv, "dstport")) {
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_BAREUDP_PORT, "dstport",
-+					*argv);
-+			if (get_u16(&dstport, *argv, 0))
-+				invarg("dstport", *argv);
-+		} else if (!matches(*argv, "extmode")) {
-+			check_duparg(&attrs, IFLA_BAREUDP_EXTMODE,
-+					*argv, *argv);
-+			extmode = true;
-+		} else if (!matches(*argv, "ethertype"))  {
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_BAREUDP_ETHERTYPE,
-+					*argv, *argv);
-+			if (!matches(*argv, "mpls")) {
-+				ethertype = 0x8847;
-+				check_duparg(&attrs, IFLA_BAREUDP_EXTMODE,
-+						*argv, *argv);
-+				extmode = true;
-+			} else if (!matches(*argv, "ip")) {
-+				ethertype = 0x0800;
-+				check_duparg(&attrs, IFLA_BAREUDP_EXTMODE,
-+						*argv, *argv);
-+				extmode = true;
-+			} else {
-+				if (get_u16(&ethertype, *argv, 0))
-+					invarg("ethertype", *argv);
-+			}
-+		} else if (!matches(*argv, "srcportmin")) {
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_BAREUDP_SRCPORT_MIN,
-+					*argv, *argv);
-+			if (get_u16(&srcportmin, *argv, 0))
-+				invarg("srcportmin", *argv);
-+
-+		} else if (matches(*argv, "help") == 0) {
-+			explain();
-+			return -1;
-+		} else {
-+			fprintf(stderr, "bareudp: unknown command \"%s\"?\n", *argv);
-+			explain();
-+			return -1;
-+		}
-+	argc--, argv++;
-+	}
-+
-+	if (!dstport || !ethertype)  {
-+		fprintf(stderr, "bareudp : Missing mandatory params\n");
-+		return -1;
-+	}
-+
-+	if (dstport)
-+		addattr16(n, 1024, IFLA_BAREUDP_PORT, htons(dstport));
-+	if (ethertype)
-+		addattr16(n, 1024, IFLA_BAREUDP_ETHERTYPE, htons(ethertype));
-+	if (extmode)
-+		addattr(n, 1024, IFLA_BAREUDP_EXTMODE);
-+	if (srcportmin)
-+		addattr16(n, 1024, IFLA_BAREUDP_PORT, srcportmin);
-+
-+	return 0;
-+}
-+
-+static void bareudp_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-+{
-+
-+	if (!tb)
-+		return;
-+
-+	if (tb[IFLA_BAREUDP_PORT])
-+		print_uint(PRINT_ANY,
-+				"port",
-+				"dstport %u ",
-+				rta_getattr_be16(tb[IFLA_BAREUDP_PORT]));
-+
-+	if (tb[IFLA_BAREUDP_ETHERTYPE])
-+		print_uint(PRINT_ANY,
-+				"port",
-+				"dstport %u ",
-+				rta_getattr_be16(tb[IFLA_BAREUDP_ETHERTYPE]));
-+	if (tb[IFLA_BAREUDP_SRCPORT_MIN])
-+		print_uint(PRINT_ANY,
-+				"port",
-+				"dstport %u ",
-+				rta_getattr_u16(tb[IFLA_BAREUDP_SRCPORT_MIN]));
-+
-+	if (tb[IFLA_BAREUDP_EXTMODE]) {
-+		print_bool(PRINT_ANY, "extmode", "extmode ", true);
-+		return;
-+	}
-+}
-+
-+static void bareudp_print_help(struct link_util *lu, int argc, char **argv,
-+		FILE *f)
-+{
-+	print_explain(f);
-+}
-+
-+struct link_util bareudp_link_util = {
-+	.id		= "bareudp",
-+	.maxattr	= IFLA_BAREUDP_MAX,
-+	.parse_opt	= bareudp_parse_opt,
-+	.print_opt	= bareudp_print_opt,
-+	.print_help	= bareudp_print_help,
-+};
 -- 
-1.8.3.1
+2.21.0
 
