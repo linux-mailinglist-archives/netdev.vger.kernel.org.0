@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3070ECFA38
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:43:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C0BCFA40
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730956AbfJHMnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 08:43:04 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:38061 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730719AbfJHMnE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 08:43:04 -0400
-Received: by mail-qt1-f195.google.com with SMTP id j31so25044978qta.5;
-        Tue, 08 Oct 2019 05:43:03 -0700 (PDT)
+        id S1730694AbfJHMoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 08:44:38 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39271 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730316AbfJHMoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 08:44:38 -0400
+Received: by mail-qk1-f194.google.com with SMTP id 4so16555102qki.6;
+        Tue, 08 Oct 2019 05:44:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=jms.id.au; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1UppyCbMsWAT7YFPxGZqvx3UTT7ui0zT5iHhMGwW6vU=;
-        b=c2NaqQYhTaLYQ+SdhBdPFFyH5v82CBLStq5IcHjVyox/QkA4YRuwcsIhlkpqlXzH/H
-         zZ1xgdrYF3AcpmAahz9PfOh2F4Z7UUatDv6rmFC9oYGyN7ob7QUgWNKgXx3rW7c7pX16
-         1Mk9AOwen5fcsCVo+nsSXjAT8mYoaG64nEWpA=
+        bh=qsTHL7dnG8pTfXN3LiTylz/fXdfLYFshNaGXKMPCVSA=;
+        b=ndycrZXm5sWbkE8ubUEk9cHyMk62s58AO9SvQliIZdhmcGyVW6JB7R2Wp5Do1V2PaJ
+         /hd6EOGnUQEJsWwJ8mHEXm9+21fl7spIUcZt6cR1YZ96BjWJc49O0fzW7e+7a8uQWMmR
+         mmMplhG2HZ7tYZ5LXMunI5Uukp1MZNqsrrBiw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1UppyCbMsWAT7YFPxGZqvx3UTT7ui0zT5iHhMGwW6vU=;
-        b=OzWd5+4a7GxhaRloUFP+zPMqw4qJY/JOUgm/oPDxZOloPxDSEsG6Lzopyp8eNOTEhR
-         kL+T+9pVPOgKlcUYXvB81Rs9t4YSdy61nkqi31PuyKARpjZouHMhayp+ZjTHYsXqTUGK
-         dWQrOG+W4xoP1pXs/bCyzOUa6rq8xgqGy/QqvGvjA3S/x3o5zhPTiwvAga303y7yJjxX
-         PYzHtYqorgifMrOgaFsWGexK3reKK/dPqlKC0bcoSa31UPFznKQNEREBXzw7rfLRRNi6
-         w0xt59q3eJLP0vjxaFltZTw/v9BW/TmdWEDsZM3ibXzHAS9y6lnfVe2M1xV7D1EUPJJO
-         jbEQ==
-X-Gm-Message-State: APjAAAWEbsOAM89BLJ6ybM5x/ky7JsYLQ2qK3KPp1CeQnmxIy5pKVJFE
-        yssU+3jIL8BYEClwDmJmgiSoVJORB2Nptb6/Obg=
-X-Google-Smtp-Source: APXvYqwVGP5UDPlHhVNwIbeMXipPnJtqO4XgNXWCIOwfUk1ZWseBIXlErjwslmqMf19cGZs9SXWwfgtTEcP1O1T/NTY=
-X-Received: by 2002:ac8:2f81:: with SMTP id l1mr35912975qta.269.1570538582975;
- Tue, 08 Oct 2019 05:43:02 -0700 (PDT)
+        bh=qsTHL7dnG8pTfXN3LiTylz/fXdfLYFshNaGXKMPCVSA=;
+        b=HDVpAeKzrl0o30ruahzWKxCpJFY433/BQylhRUsQ7XfzhgDno01c8+d3hvw8IIZQEH
+         Gu/IcQ6eds17B+ni4q67lU2WKORHjB8UFJBRcQrc0Moi55XFtKHWg8L1DZr3mco/n/Nt
+         Py4ivGAS6f8a0BP/PocvYHW5n3Oi6mc/JrdLwXaDMD9JCYAZM5xrZQ6m7HN53fLAfgUR
+         Kek2bfOdd1DUnWtXwrmwcEE2sP03Jc8iXFyq2YtYLvnpmZEUVw3MVEzUI1ZIp4UuBiNJ
+         yOZwqeoaPz1gYY0V9vBmScoUFQ/n4zCq3H/Tr6Akwov3Z8a7GrQQJV5ZoKl8HwOvYKSz
+         gcfw==
+X-Gm-Message-State: APjAAAXZ3ktZvn6yUSpNaqnqqpcx9ujz7zAxOrrxUddgNEvV1XsQqHha
+        YnKJWtK5o/lsdFRxb8LoH06k0gkz9uv5iwSoWz4=
+X-Google-Smtp-Source: APXvYqxEAEDnOLwffSmG/Z2LwTVkYy576Ya72Q2Xui9eD1qyySpI9l4M3DUkH5opaUufU4sk4GAaGv+dFqEtKObKxJQ=
+X-Received: by 2002:a37:a44f:: with SMTP id n76mr7330825qke.414.1570538677073;
+ Tue, 08 Oct 2019 05:44:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191008115143.14149-1-andrew@aj.id.au> <20191008115143.14149-3-andrew@aj.id.au>
-In-Reply-To: <20191008115143.14149-3-andrew@aj.id.au>
+References: <20191008115143.14149-1-andrew@aj.id.au> <20191008115143.14149-4-andrew@aj.id.au>
+In-Reply-To: <20191008115143.14149-4-andrew@aj.id.au>
 From:   Joel Stanley <joel@jms.id.au>
-Date:   Tue, 8 Oct 2019 12:42:51 +0000
-Message-ID: <CACPK8XcWLCGupAF1EX1LB6A=mQY0s9kjgagr3EKEKJhnbt+j0g@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: net: ftgmac100: Describe clock properties
+Date:   Tue, 8 Oct 2019 12:44:25 +0000
+Message-ID: <CACPK8XfmtW9AY7QyBVkWJPvTQncV5o1DVkDwaPUa+ARVYZ4wJQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] net: ftgmac100: Ungate RCLK for RMII on ASPEED MACs
 To:     Andrew Jeffery <andrew@aj.id.au>
 Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -59,37 +59,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, 8 Oct 2019 at 11:50, Andrew Jeffery <andrew@aj.id.au> wrote:
 >
-> Critically, the AST2600 requires ungating the RMII RCLK if e.g. NCSI is
-> in use.
+> The 50MHz RCLK has to be enabled before the RMII interface will function.
 >
 > Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
 > ---
->  Documentation/devicetree/bindings/net/ftgmac100.txt | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  drivers/net/ethernet/faraday/ftgmac100.c | 35 +++++++++++++++++++-----
+>  1 file changed, 28 insertions(+), 7 deletions(-)
 >
-> diff --git a/Documentation/devicetree/bindings/net/ftgmac100.txt b/Documentation/devicetree/bindings/net/ftgmac100.txt
-> index 04cc0191b7dd..c443b0b84be5 100644
-> --- a/Documentation/devicetree/bindings/net/ftgmac100.txt
-> +++ b/Documentation/devicetree/bindings/net/ftgmac100.txt
-> @@ -24,6 +24,12 @@ Optional properties:
->  - no-hw-checksum: Used to disable HW checksum support. Here for backward
->    compatibility as the driver now should have correct defaults based on
->    the SoC.
-> +- clocks: In accordance with the generic clock bindings. Must describe the MAC
-> +  IP clock, and optionally an RMII RCLK gate for the AST2600.
-
- or AST2500.
-
-With that fixed you can add my ack.
-
-
-> +- clock-names:
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> index 9b7af94a40bb..9ff791fb0449 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -90,6 +90,9 @@ struct ftgmac100 {
+>         struct mii_bus *mii_bus;
+>         struct clk *clk;
+>
+> +       /* 2600 RMII clock gate */
+> +       struct clk *rclk;
 > +
-> +      - "MACCLK": The MAC IP clock
-> +      - "RCLK": Clock gate for the RMII RCLK
+>         /* Link management */
+>         int cur_speed;
+>         int cur_duplex;
+> @@ -1718,12 +1721,14 @@ static void ftgmac100_ncsi_handler(struct ncsi_dev *nd)
+>                    nd->link_up ? "up" : "down");
+>  }
 >
->  Example:
+> -static void ftgmac100_setup_clk(struct ftgmac100 *priv)
+> +static int ftgmac100_setup_clk(struct ftgmac100 *priv)
+>  {
+> -       priv->clk = devm_clk_get(priv->dev, NULL);
+> -       if (IS_ERR(priv->clk))
+> -               return;
+> +       struct clk *clk;
 >
+> +       clk = devm_clk_get(priv->dev, NULL /* MACCLK */);
+> +       if (IS_ERR(clk))
+> +               return PTR_ERR(clk);
+> +       priv->clk = clk;
+>         clk_prepare_enable(priv->clk);
+>
+>         /* Aspeed specifies a 100MHz clock is required for up to
+> @@ -1732,6 +1737,14 @@ static void ftgmac100_setup_clk(struct ftgmac100 *priv)
+>          */
+>         clk_set_rate(priv->clk, priv->use_ncsi ? FTGMAC_25MHZ :
+>                         FTGMAC_100MHZ);
+> +
+> +       /* RCLK is for RMII, typically used for NCSI. Optional because its not
+> +        * necessary if it's the 2400 MAC or the MAC is configured for RGMII
+> +        */
+
+Or for non-ASPEED users of this driver, assuming they exist.
+
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+
+
+> +       priv->rclk = devm_clk_get_optional(priv->dev, "RCLK");
+> +       clk_prepare_enable(priv->rclk);
+> +
+> +       return 0;
+>  }
+>
+>  static int ftgmac100_probe(struct platform_device *pdev)
+> @@ -1853,8 +1866,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+>                         goto err_setup_mdio;
+>         }
+>
+> -       if (priv->is_aspeed)
+> -               ftgmac100_setup_clk(priv);
+> +       if (priv->is_aspeed) {
+> +               err = ftgmac100_setup_clk(priv);
+> +               if (err)
+> +                       goto err_ncsi_dev;
+> +       }
+>
+>         /* Default ring sizes */
+>         priv->rx_q_entries = priv->new_rx_q_entries = DEF_RX_QUEUE_ENTRIES;
+> @@ -1886,8 +1902,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+>
+>         return 0;
+>
+> -err_ncsi_dev:
+>  err_register_netdev:
+> +       if (priv->rclk)
+> +               clk_disable_unprepare(priv->rclk);
+> +       clk_disable_unprepare(priv->clk);
+> +err_ncsi_dev:
+>         ftgmac100_destroy_mdio(netdev);
+>  err_setup_mdio:
+>         iounmap(priv->base);
+> @@ -1909,6 +1928,8 @@ static int ftgmac100_remove(struct platform_device *pdev)
+>
+>         unregister_netdev(netdev);
+>
+> +       if (priv->rclk)
+> +               clk_disable_unprepare(priv->rclk);
+>         clk_disable_unprepare(priv->clk);
+>
+>         /* There's a small chance the reset task will have been re-queued,
 > --
 > 2.20.1
 >
