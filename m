@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2699ECFED2
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 18:21:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 178ACCFEE4
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 18:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728718AbfJHQVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 12:21:18 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:2546 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728440AbfJHQVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 12:21:17 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x98GD0Xj006660
-        for <netdev@vger.kernel.org>; Tue, 8 Oct 2019 12:21:15 -0400
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2vgu29fg30-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 12:21:15 -0400
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
-        Tue, 8 Oct 2019 17:21:13 +0100
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 8 Oct 2019 17:21:11 +0100
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x98GLAYe53608506
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Oct 2019 16:21:10 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4C51142041;
-        Tue,  8 Oct 2019 16:21:10 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F413C4203F;
-        Tue,  8 Oct 2019 16:21:09 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Oct 2019 16:21:09 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net 2/2] s390/qeth: Fix initialization of vnicc cmd masks during set online
-Date:   Tue,  8 Oct 2019 18:21:07 +0200
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191008162107.95259-1-jwi@linux.ibm.com>
-References: <20191008162107.95259-1-jwi@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 19100816-0020-0000-0000-0000037723E4
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19100816-0021-0000-0000-000021CD26A6
-Message-Id: <20191008162107.95259-3-jwi@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-08_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=983 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910080138
+        id S1729187AbfJHQ0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 12:26:19 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41291 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726066AbfJHQ0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 12:26:19 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q7so11045000pfh.8;
+        Tue, 08 Oct 2019 09:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nUEi7b2Xg516Vucqorkh6nwu1M0azdgypl+CVmTornQ=;
+        b=swu2CpUIg8OQXUWKvhzJvvxfnjce9dVwGW+Kp4Yhmnc1bony+SLXPqGadZxoMQ4X3K
+         ZbwuWTsEGJC+SSZBmHbdlkiEgJ6xLEoBool16ohacH09/pmV5epWPyyKXnGdpgJsJsd9
+         IH6K0bjoidSfQwjaQRtw1bEqSbsTqM9lfgFLYQKo8F2p2UogSrIS7Wy0+oWSt9EFwbFG
+         c5EgQ4SPBSHMMPpjRLT9thMWIthzCrKjCzqXqp40AYQZ846Lzj6LQincDbw44UjK7SFS
+         pc2KNdtk49cYUzCT6YF4+ikr61GIINh3zd9cL3YIsLqFxXRVCoV8L3kEk/tq8ZmlaG0b
+         VF3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nUEi7b2Xg516Vucqorkh6nwu1M0azdgypl+CVmTornQ=;
+        b=tt1SShwh/uVHrRcHtUlZ93LlobBNnPgur/Va5ADgMew2TbuCWBf9EXgK4F7aGxI3gu
+         DkVMnmhXFHge4c4hsxXjOmf1ACKBi6Ne4YXtEP2wgjtJLOxZiIVYvKN6vdcsEwUXSYbB
+         aeo7SzWcV+bWjuYGGUr7YCu7w0QS85K2pfK55DcmV8k5+qHzpQ1cH0cPDkixJMO05KKh
+         Pfdnm5HIdaVRWZ9gkt4Oy6sqKgE3q81SWrn4YWRJIuolCvJSV0IBXy1PIJBLMCd20pcR
+         fnsXGNg9gD+rMLSjxRTueIcZAOPvvhIA7P0paTfqYbRdtKX2phIfRIAt5MVtUNHLSbxH
+         oR4A==
+X-Gm-Message-State: APjAAAW88g/ghdgO4z8nAhw78gNC9TLzIcJcBm4yutvDCcW7Y6x+xQgD
+        LFf97HwfEogrD4FIbfdzxU9IMC3Z
+X-Google-Smtp-Source: APXvYqxSZ5mR4npwRvdNOAmaoGhD0NoABC2Uc6OTEhDb1PsXAYOYcKbb6QmxcLci24zWb95HA6Jg9A==
+X-Received: by 2002:a62:2f84:: with SMTP id v126mr40203018pfv.167.1570551977393;
+        Tue, 08 Oct 2019 09:26:17 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c082:1055::2a69? ([2620:10d:c090:200::3:df92])
+        by smtp.gmail.com with ESMTPSA id b5sm15704840pgb.68.2019.10.08.09.26.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Oct 2019 09:26:16 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+Subject: Re: [PATCH] rtl8xxxu: make arrays static, makes object smaller
+To:     Colin King <colin.king@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20191007135313.8443-1-colin.king@canonical.com>
+Message-ID: <87e99b3b-6b1d-4eeb-f08f-00cfff5e3b2b@gmail.com>
+Date:   Tue, 8 Oct 2019 12:26:15 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
+MIME-Version: 1.0
+In-Reply-To: <20191007135313.8443-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+On 10/7/19 9:53 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Don't populate const arrays on the stack but instead make them
+> static. Makes the object code smaller by 60 bytes.
+> 
+> Before:
+>     text	   data	    bss	    dec	    hex	filename
+>    15133	   8768	      0	  23901	   5d5d	realtek/rtl8xxxu/rtl8xxxu_8192e.o
+>    15209	   6392	      0	  21601	   5461	realtek/rtl8xxxu/rtl8xxxu_8723b.o
+>   103254	  31202	    576	 135032	  20f78	realtek/rtl8xxxu/rtl8xxxu_core.o
+> 
+> After:
+>     text	   data	    bss	    dec	    hex	filename
+>    14861	   9024	      0	  23885	   5d4d	realtek/rtl8xxxu/rtl8xxxu_8192e.o
+>    14953	   6616	      0	  21569	   5441	realtek/rtl8xxxu/rtl8xxxu_8723b.o
+>   102986	  31458	    576	 135020	  20f6c	realtek/rtl8xxxu/rtl8xxxu_core.o
+> 
+> (gcc version 9.2.1, amd64)
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Without this patch, a command bit in the supported commands mask is only
-ever set to unsupported during set online. If a command is ever marked as
-unsupported (e.g. because of error during qeth_l2_vnicc_query_cmds),
-subsequent successful initialization (offline/online) would not bring it
-back.
+Looks fine to me!
 
-Fixes: caa1f0b10d18 ("s390/qeth: add VNICC enable/disable support")
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_l2_main.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Assume you mean x86_64 since there's no such thing as an amd64 
+architecture :)
 
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index de62a9ccc882..bd8143e51747 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -2049,11 +2049,15 @@ static void qeth_l2_vnicc_init(struct qeth_card *card)
- 			sup_cmds = 0;
- 			error = true;
- 		}
--		if (!(sup_cmds & IPA_VNICC_SET_TIMEOUT) ||
--		    !(sup_cmds & IPA_VNICC_GET_TIMEOUT))
-+		if ((sup_cmds & IPA_VNICC_SET_TIMEOUT) &&
-+		    (sup_cmds & IPA_VNICC_GET_TIMEOUT))
-+			card->options.vnicc.getset_timeout_sup |= vnicc;
-+		else
- 			card->options.vnicc.getset_timeout_sup &= ~vnicc;
--		if (!(sup_cmds & IPA_VNICC_ENABLE) ||
--		    !(sup_cmds & IPA_VNICC_DISABLE))
-+		if ((sup_cmds & IPA_VNICC_ENABLE) &&
-+		    (sup_cmds & IPA_VNICC_DISABLE))
-+			card->options.vnicc.set_char_sup |= vnicc;
-+		else
- 			card->options.vnicc.set_char_sup &= ~vnicc;
- 	}
- 	/* enforce assumed default values and recover settings, if changed  */
--- 
-2.17.1
+Cheers,
+Jes
 
