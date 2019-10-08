@@ -2,117 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDDEFCFBE9
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 16:06:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDF3BCFBEC
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 16:07:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726252AbfJHOGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 10:06:02 -0400
-Received: from smtp2.goneo.de ([85.220.129.33]:38536 "EHLO smtp2.goneo.de"
+        id S1726421AbfJHOGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 10:06:06 -0400
+Received: from smtp2.goneo.de ([85.220.129.33]:38578 "EHLO smtp2.goneo.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725795AbfJHOGB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 10:06:01 -0400
+        id S1726322AbfJHOGG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 10:06:06 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by smtp2.goneo.de (Postfix) with ESMTP id 248F023F4C2;
-        Tue,  8 Oct 2019 16:05:58 +0200 (CEST)
+        by smtp2.goneo.de (Postfix) with ESMTP id DA0FF23F5D7;
+        Tue,  8 Oct 2019 16:06:03 +0200 (CEST)
 X-Virus-Scanned: by goneo
 X-Spam-Flag: NO
-X-Spam-Score: -3.099
+X-Spam-Score: -3.097
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.099 tagged_above=-999 tests=[ALL_TRUSTED=-1,
-        AWL=-0.199, BAYES_00=-1.9] autolearn=ham
+X-Spam-Status: No, score=-3.097 tagged_above=-999 tests=[ALL_TRUSTED=-1,
+        AWL=-0.197, BAYES_00=-1.9] autolearn=ham
 Received: from smtp2.goneo.de ([127.0.0.1])
         by localhost (smtp2.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id PdJ_mfceu7tW; Tue,  8 Oct 2019 16:05:56 +0200 (CEST)
+        with ESMTP id uCKexqNXTC1z; Tue,  8 Oct 2019 16:06:03 +0200 (CEST)
 Received: from lem-wkst-02.lemonage.de. (hq.lemonage.de [87.138.178.34])
-        by smtp2.goneo.de (Postfix) with ESMTPA id 1807623F232;
-        Tue,  8 Oct 2019 16:05:55 +0200 (CEST)
+        by smtp2.goneo.de (Postfix) with ESMTPA id A8DDC23F232;
+        Tue,  8 Oct 2019 16:06:02 +0200 (CEST)
 From:   Lars Poeschel <poeschel@lemonage.de>
-Cc:     Lars Poeschel <poeschel@lemonage.de>,
+To:     Lars Poeschel <poeschel@lemonage.de>,
         Kate Stewart <kstewart@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jilayne Lovejoy <opensource@jilayne.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, Steve Winslow <swinslow@gmail.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>,
         Allison Randal <allison@lohutok.net>,
-        Johan Hovold <johan@kernel.org>,
-        Simon Horman <horms@verge.net.au>
-Subject: [PATCH v9 0/7] nfc: pn533: add uart phy driver
-Date:   Tue,  8 Oct 2019 16:05:37 +0200
-Message-Id: <20191008140544.17112-1-poeschel@lemonage.de>
+        Steve Winslow <swinslow@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        netdev@vger.kernel.org (open list:NFC SUBSYSTEM),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     Johan Hovold <johan@kernel.org>, Simon Horman <horms@verge.net.au>
+Subject: [PATCH v9 1/7] nfc: pn533: i2c: "pn532" as dt compatible string
+Date:   Tue,  8 Oct 2019 16:05:38 +0200
+Message-Id: <20191008140544.17112-2-poeschel@lemonage.de>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191008140544.17112-1-poeschel@lemonage.de>
+References: <20191008140544.17112-1-poeschel@lemonage.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The purpose of this patch series is to add a uart phy driver to the
-pn533 nfc driver.
-It first changes the dt strings and docs. The dt compatible strings
-need to change, because I would add "pn532-uart" to the already
-existing "pn533-i2c" one. These two are now unified into just
-"pn532". Then the neccessary changes to the pn533 core driver are
-made. Then the uart phy is added.
-As the pn532 chip supports a autopoll, I wanted to use this instead
-of the software poll loop in the pn533 core driver. It is added and
-activated by the last to patches.
-The way to add the autopoll later in seperate patches is chosen, to
-show, that the uart phy driver can also work with the software poll
-loop, if someone needs that for some reason.
-This patchset is already rebased on Johans "NFC: pn533: fix
-use-after-free and memleaks" patch
-https://lore.kernel.org/netdev/20191007164059.5927-1-johan@kernel.org/
-as they would conflict.
-If for some reason Johans patch will not get merged, I can of course
-provide the patchset without depending on this patch.
+It is favourable to have one unified compatible string for devices that
+have multiple interfaces. So this adds simply "pn532" as the devicetree
+binding compatible string and makes a note that the old ones are
+deprecated.
 
-Cc: Lars Poeschel <poeschel@lemonage.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jilayne Lovejoy <opensource@jilayne.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: devicetree@vger.kernel.org
-Cc: Steve Winslow <swinslow@gmail.com>
-Cc: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Allison Randal <allison@lohutok.net>
 Cc: Johan Hovold <johan@kernel.org>
 Cc: Simon Horman <horms@verge.net.au>
+Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+---
+Changes in v9:
+- Rebased the patch series on v5.4-rc2
 
-Lars Poeschel (7):
-  nfc: pn533: i2c: "pn532" as dt compatible string
-  nfc: pn532: Add uart phy docs and rename it
-  nfc: pn533: Add dev_up/dev_down hooks to phy_ops
-  nfc: pn533: Split pn533 init & nfc_register
-  nfc: pn533: add UART phy driver
-  nfc: pn533: Add autopoll capability
-  nfc: pn532_uart: Make use of pn532 autopoll
+Changes in v6:
+- Rebased the patch series on v5.3-rc5
 
- .../net/nfc/{pn533-i2c.txt => pn532.txt}      |  25 +-
- drivers/nfc/pn533/Kconfig                     |  11 +
- drivers/nfc/pn533/Makefile                    |   2 +
- drivers/nfc/pn533/i2c.c                       |  22 +-
- drivers/nfc/pn533/pn533.c                     | 271 +++++++++++++--
- drivers/nfc/pn533/pn533.h                     |  38 +-
- drivers/nfc/pn533/uart.c                      | 324 ++++++++++++++++++
- drivers/nfc/pn533/usb.c                       |  12 +-
- 8 files changed, 646 insertions(+), 59 deletions(-)
- rename Documentation/devicetree/bindings/net/nfc/{pn533-i2c.txt => pn532.txt} (42%)
- create mode 100644 drivers/nfc/pn533/uart.c
+Changes in v3:
+- This patch is new in v3
 
+ drivers/nfc/pn533/i2c.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
+index 1832cd921ea7..1abd40398a5a 100644
+--- a/drivers/nfc/pn533/i2c.c
++++ b/drivers/nfc/pn533/i2c.c
+@@ -245,6 +245,11 @@ static int pn533_i2c_remove(struct i2c_client *client)
+ }
+ 
+ static const struct of_device_id of_pn533_i2c_match[] = {
++	{ .compatible = "nxp,pn532", },
++	/*
++	 * NOTE: The use of the compatibles with the trailing "...-i2c" is
++	 * deprecated and will be removed.
++	 */
+ 	{ .compatible = "nxp,pn533-i2c", },
+ 	{ .compatible = "nxp,pn532-i2c", },
+ 	{},
 -- 
 2.23.0
 
