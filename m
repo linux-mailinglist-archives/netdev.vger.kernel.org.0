@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFDF0CF96C
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BACBFCF976
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 14:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731186AbfJHMLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 08:11:35 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:40896 "EHLO inva021.nxp.com"
+        id S1731199AbfJHMLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 08:11:36 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:54318 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731162AbfJHMLd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 08:11:33 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1EDAC200301;
-        Tue,  8 Oct 2019 14:11:31 +0200 (CEST)
+        id S1731174AbfJHMLe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 08:11:34 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1344C1A0158;
+        Tue,  8 Oct 2019 14:11:33 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 129E22002DE;
-        Tue,  8 Oct 2019 14:11:31 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0626F1A00FC;
+        Tue,  8 Oct 2019 14:11:33 +0200 (CEST)
 Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id BB8C8205DB;
-        Tue,  8 Oct 2019 14:11:30 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B1AB2205DB;
+        Tue,  8 Oct 2019 14:11:32 +0200 (CEST)
 From:   Madalin Bucur <madalin.bucur@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     roy.pledge@nxp.com, laurentiu.tudor@nxp.com,
         linux-kernel@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [PATCH 17/20] dpaa_eth: remove netdev_err() for user errors
-Date:   Tue,  8 Oct 2019 15:10:38 +0300
-Message-Id: <1570536641-25104-18-git-send-email-madalin.bucur@nxp.com>
+Subject: [PATCH 18/20] dpaa_eth: extend delays in ndo_stop
+Date:   Tue,  8 Oct 2019 15:10:39 +0300
+Message-Id: <1570536641-25104-19-git-send-email-madalin.bucur@nxp.com>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
 References: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
@@ -37,51 +37,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-User reports that an application making an (incorrect) call to
-restart AN on a fixed link DPAA interface triggers an error in
-the kernel log while the returned EINVAL should be enough.
+Make sure all the frames that are in flight have time to be processed
+before the interface is completely brought down. Add a missing delay
+for the Rx path.
 
-Reported-by: Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
 Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 1c689e11c61f..126c0f1d8442 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -81,7 +81,6 @@ static int dpaa_get_link_ksettings(struct net_device *net_dev,
- 				   struct ethtool_link_ksettings *cmd)
- {
- 	if (!net_dev->phydev) {
--		netdev_dbg(net_dev, "phy device not initialized\n");
- 		return 0;
- 	}
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index 97fc067ae269..77edf2e026e8 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -266,7 +266,7 @@ static int dpaa_stop(struct net_device *net_dev)
+ 	/* Allow the Fman (Tx) port to process in-flight frames before we
+ 	 * try switching it off.
+ 	 */
+-	usleep_range(5000, 10000);
++	msleep(200);
  
-@@ -96,7 +95,6 @@ static int dpaa_set_link_ksettings(struct net_device *net_dev,
- 	int err;
+ 	err = mac_dev->stop(mac_dev);
+ 	if (err < 0)
+@@ -283,6 +283,8 @@ static int dpaa_stop(struct net_device *net_dev)
+ 		phy_disconnect(net_dev->phydev);
+ 	net_dev->phydev = NULL;
  
- 	if (!net_dev->phydev) {
--		netdev_err(net_dev, "phy device not initialized\n");
- 		return -ENODEV;
- 	}
- 
-@@ -143,7 +141,6 @@ static int dpaa_nway_reset(struct net_device *net_dev)
- 	int err;
- 
- 	if (!net_dev->phydev) {
--		netdev_err(net_dev, "phy device not initialized\n");
- 		return -ENODEV;
- 	}
- 
-@@ -168,7 +165,6 @@ static void dpaa_get_pauseparam(struct net_device *net_dev,
- 	mac_dev = priv->mac_dev;
- 
- 	if (!net_dev->phydev) {
--		netdev_err(net_dev, "phy device not initialized\n");
- 		return;
- 	}
++	msleep(200);
++
+ 	return err;
+ }
  
 -- 
 2.1.0
