@@ -2,101 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 040BBCF410
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 09:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4543DCF412
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 09:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730290AbfJHHj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 03:39:57 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47638 "EHLO mx1.redhat.com"
+        id S1730339AbfJHHkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 03:40:01 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35126 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729740AbfJHHj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 03:39:57 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        id S1729740AbfJHHkB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 03:40:01 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9627E793CC;
-        Tue,  8 Oct 2019 07:39:56 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-116-43.ams2.redhat.com [10.36.116.43])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 476725D71C;
-        Tue,  8 Oct 2019 07:39:54 +0000 (UTC)
-Date:   Tue, 8 Oct 2019 09:39:53 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     kbuild test robot <lkp@intel.com>, kbuild-all@01.org,
-        netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [ipsec-next:testing 7/8] include/net/espintcp.h:36:20: sparse:
- sparse: incorrect type in return expression (different address spaces)
-Message-ID: <20191008073953.GA1408676@bistromath.localdomain>
-References: <201910061039.jnJWPq01%lkp@intel.com>
- <20191008055509.GW2879@gauss3.secunet.de>
+        by mx1.redhat.com (Postfix) with ESMTPS id 47B3431752A4;
+        Tue,  8 Oct 2019 07:40:01 +0000 (UTC)
+Received: from krava (unknown [10.40.205.107])
+        by smtp.corp.redhat.com (Postfix) with SMTP id CC64519C68;
+        Tue,  8 Oct 2019 07:39:58 +0000 (UTC)
+Date:   Tue, 8 Oct 2019 09:39:58 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Julia Kartseva <hex@fb.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "labbott@redhat.com" <labbott@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "md@linux.it" <md@linux.it>
+Subject: Re: libbpf distro packaging
+Message-ID: <20191008073958.GA10009@krava>
+References: <FA139BA4-59E5-43C7-8E72-C7B2FC1C449E@fb.com>
+ <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com>
+ <20190821210906.GA31031@krava>
+ <20190823092253.GA20775@krava>
+ <a00bab9b-dae8-23d8-8de0-3751a1d1b023@fb.com>
+ <20190826064235.GA17554@krava>
+ <A2E805DD-8237-4703-BE6F-CC96A4D4D909@fb.com>
+ <20190828071237.GA31023@krava>
+ <20190930111305.GE602@krava>
+ <040A8497-C388-4B65-9562-6DB95D72BE0F@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191008055509.GW2879@gauss3.secunet.de>
+In-Reply-To: <040A8497-C388-4B65-9562-6DB95D72BE0F@fb.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Tue, 08 Oct 2019 07:39:56 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Tue, 08 Oct 2019 07:40:01 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-10-08, 07:55:09 +0200, Steffen Klassert wrote:
-> On Sun, Oct 06, 2019 at 10:46:40AM +0800, kbuild test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git testing
-> > head:   5374d99ba41893b4bb1ddbe35a88b1f08e860903
-> > commit: 735de2631f8680ac714df1ecc8e052785e9f9f8e [7/8] xfrm: add espintcp (RFC 8229)
-> > reproduce:
-> >         # apt-get install sparse
-> >         # sparse version: v0.6.1-rc1-42-g38eda53-dirty
-> >         git checkout 735de2631f8680ac714df1ecc8e052785e9f9f8e
-> >         make ARCH=x86_64 allmodconfig
-> >         make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-> > 
-> > If you fix the issue, kindly add following tag
-> > Reported-by: kbuild test robot <lkp@intel.com>
-> > 
-> > 
-> > >> include/net/espintcp.h:36:20: sparse:    expected struct espintcp_ctx *
-> > >> include/net/espintcp.h:36:20: sparse:    got void [noderef] <asn:4> *icsk_ulp_data
-> > >> include/net/espintcp.h:36:20: sparse: sparse: incorrect type in return expression (different address spaces) @@    expected struct espintcp_ctx * @@    got voistruct espintcp_ctx * @@
-> > >> include/net/espintcp.h:36:20: sparse:    expected struct espintcp_ctx *
-> > >> include/net/espintcp.h:36:20: sparse:    got void [noderef] <asn:4> *icsk_ulp_data
-> > 
-> > vim +36 include/net/espintcp.h
-> > 
-> >     31	
-> >     32	static inline struct espintcp_ctx *espintcp_getctx(const struct sock *sk)
-> >     33	{
-> >     34		struct inet_connection_sock *icsk = inet_csk(sk);
-> >     35	
-> >   > 36		return icsk->icsk_ulp_data;
+On Mon, Oct 07, 2019 at 12:25:51AM +0000, Julia Kartseva wrote:
+> On 9/30/19, 4:13 AM, "Jiri Olsa" <jolsa@redhat.com> wrote:
 > 
-> Sabrina, can you please fix this and resend the patchset?
+> > heya,
+> > FYI we got it through.. there's libbpf-0.0.3 available on fedora 30/31/32
+> > I'll update to 0.0.5 version as soon as there's the v0.0.5 tag available
+> >
+> > jirka
+> 
+> Hi Jiri,
+> 
+> I wonder what are the steps to make libbpf available for CentOS {7|8} as well?
+> One (likely the quickest) way to do that is to publish it to Fedora's EPEL [1].
+> 
+> I have a little concern about dependencies, namely elfutils-libelf-devel and 
+> elfutils-devel are sourced directly by CentOS repos, e.g. [2], not sure if 
+> dependencies from another repo are fine.
+> 
+> Thoughts? Thanks!
 
-Yep, will do.
+I think that should be ok, I'll ask around and let you know
 
-> Also, icsk_ulp_data has a __rcu annotation, so maybe better
-> using rcu primitives to access the pointer?
-
-Apparently RCU protection of icsk_ulp_data is only needed for diag
-(see commit 15a7dea750e0 ("net/tls: use RCU protection on
-icsk->icsk_ulp_data")). I'll check this and update the patch.
-
-> Another thing, where is espintcp_ctx that is assigned to
-> icsk_ulp_data freed?
-
-That's in espintcp_destruct:
-
-static void espintcp_destruct(struct sock *sk)
-{
-	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-
-	kfree(ctx);
-}
-
-
-Thanks,
-
--- 
-Sabrina
+jirka
