@@ -2,86 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE36CFE3A
-	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 17:57:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79E88CFE40
+	for <lists+netdev@lfdr.de>; Tue,  8 Oct 2019 17:58:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727814AbfJHP4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 11:56:46 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:47974 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726822AbfJHP4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 11:56:46 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 1FDAF61A39; Tue,  8 Oct 2019 15:56:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570550205;
-        bh=L02AIM1GDP5tyCdGCD4NsXNAC9LOxToRmZrIOu+Kfu4=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=eFBJapDyOcG98E4JlTFj2ucszzQQHNTzISpqVgQCvSJpzhbreSb5FZB/skJ51z9eT
-         OgqexAsOczd0e7VLxkVvlC0sK59lXZVIoIIOxGkOXTvHc7POCE2Xf+ZDA7k0nIW2MS
-         J9sneRvcCoOY/8a0XPcz3ANJgElFWmBLKo0KI+6Q=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C468960BE8;
-        Tue,  8 Oct 2019 15:56:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570550203;
-        bh=L02AIM1GDP5tyCdGCD4NsXNAC9LOxToRmZrIOu+Kfu4=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=V6kEAXsMzJLpIptKk8+/llAq38z07bU9/OGHNCA/Rvm6CLOGq6N1LzXb+aZs+qKPp
-         YlktqtQD136KHoY59UN4/9na7esCdnqwrUH/iLCIlnowRLH4w6RPf3YBRI3nhR5SnV
-         VJxoO5O5ZsGJ4m/+aXNphrlMWM1zE3XgXI/Fza0A=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C468960BE8
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Denis Efremov <efremov@linux.com>
-Subject: Re: [PATCH 1/2] Revert "rsi: fix potential null dereference in rsi_probe()"
-References: <20191004144422.13003-1-johan@kernel.org>
-        <87a7aes2oh.fsf@codeaurora.org>
-Date:   Tue, 08 Oct 2019 18:56:37 +0300
-In-Reply-To: <87a7aes2oh.fsf@codeaurora.org> (Kalle Valo's message of "Sun, 06
-        Oct 2019 11:23:10 +0300")
-Message-ID: <87pnj7grii.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1726593AbfJHP6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 11:58:06 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:44264 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725939AbfJHP6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 11:58:05 -0400
+Received: by mail-pl1-f196.google.com with SMTP id q15so8615037pll.11
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 08:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=6gOxaCzvxyQYLEEc3Fio6F/e2srKJMBHV7CJrvKM4Ik=;
+        b=nDudyy02/3mEDiFNhdvNbHjNKHwmMVHwOcLOacoWFLTKnvtW0fRDYfGpFixqygLfIX
+         NUi1AS5SX6JSh7F8e8x1Mzvzhya3n5O3vu2oWY4jYDXpqesar4EDIwrflLT8qa8yOHKe
+         S/uzqLzZ9sDJUBGnenXInbxlOmT2qDBvIhYll7+ApwTtebZO5mBTNxtObcp45LfapkZ/
+         JiNkwO+D2DRfX67++p6KFD8JzsItEfZ7Mjs92eZD0/ACkLczCu/AVGNL4Zu/KUuwAoKH
+         +YeoWfHIa96q9PG+ezvhijhjpijMIwswNHQ4sjSHESlwoeUdlXVdSnBSPb2YmjLT3TM5
+         7ZuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=6gOxaCzvxyQYLEEc3Fio6F/e2srKJMBHV7CJrvKM4Ik=;
+        b=aTy/g9oYxlMsyZYu3OCEycNpoVEDUjXJimCcUfotpQj9yDpT8NZylgHWWIBfeG34jg
+         Glhz6SKrxjB4q0bDy1EPzCdGgkrFpsJuxS8yBWb6acUK5ArO9p7+QGqWN9mdSjMCbOo/
+         8PfaA2DTpFA47e2YBEMDavjLrd9h1ayNVoR0H3AR6hyFuPYGsRG8XWviwDQ145cGZx3U
+         ideZ+D5nT8BYLwx6G03a4eXk6RfQjzWSmg59hFPkDSMk+McD0PnVGaDRbshdOBL1iTec
+         3OWSMdlqwoWdXAXvdMmlCejTMidJRXtpR9pW0eNkmTqnLP/Ro0q/+9tDovKq5d5ADqpo
+         tH5A==
+X-Gm-Message-State: APjAAAXbCotGS5qGEY984r9cRyW6deym1kNdrOuFi0LVkCkktrbS1qXf
+        wa7KpOSQDGJQjnBjaJwmvag5GplAfg896g==
+X-Google-Smtp-Source: APXvYqyMyd/vNlcSlAX+bFD6Da7BfqbIJ+bKdeB0IqWNLusQ+gHOnr5asV5zW8Lg2bOFLVdTYTbdQg==
+X-Received: by 2002:a17:902:7c94:: with SMTP id y20mr4501178pll.229.1570550285049;
+        Tue, 08 Oct 2019 08:58:05 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id k66sm2837304pjb.11.2019.10.08.08.58.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 08 Oct 2019 08:58:04 -0700 (PDT)
+Subject: Re: [PATCH -net] Doc: networking/device_drivers/pensando: fix
+ ionic.rst warnings
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <b93b6492-0ab8-46a6-1e1d-56f9cb627b0f@infradead.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <c4f5cb98-730f-2818-d166-b6aad9ef75f3@pensando.io>
+Date:   Tue, 8 Oct 2019 08:58:02 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <b93b6492-0ab8-46a6-1e1d-56f9cb627b0f@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@codeaurora.org> writes:
-
-> Johan Hovold <johan@kernel.org> writes:
+On 10/8/19 8:35 AM, Randy Dunlap wrote:
+> From: Randy Dunlap <rdunlap@infradead.org>
 >
->> This reverts commit f170d44bc4ec2feae5f6206980e7ae7fbf0432a0.
->>
->> USB core will never call a USB-driver probe function with a NULL
->> device-id pointer.
->>
->> Reverting before removing the existing checks in order to document this
->> and prevent the offending commit from being "autoselected" for stable.
->>
->> Signed-off-by: Johan Hovold <johan@kernel.org>
+> Fix documentation build warnings for Pensando ionic:
 >
-> I'll queue these two to v5.4.
+> Documentation/networking/device_drivers/pensando/ionic.rst:39: WARNING: Unexpected indentation.
+> Documentation/networking/device_drivers/pensando/ionic.rst:43: WARNING: Unexpected indentation.
+>
+> Fixes: df69ba43217d ("ionic: Add basic framework for IONIC Network device driver")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Shannon Nelson <snelson@pensando.io>
 
-Actually I'll take that back. Commit f170d44bc4ec is in -next so I have
-to also queue these to -next.
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> ---
+>   Documentation/networking/device_drivers/pensando/ionic.rst |    4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> --- linux-next-20191008.orig/Documentation/networking/device_drivers/pensando/ionic.rst
+> +++ linux-next-20191008/Documentation/networking/device_drivers/pensando/ionic.rst
+> @@ -36,8 +36,10 @@ Support
+>   =======
+>   For general Linux networking support, please use the netdev mailing
+>   list, which is monitored by Pensando personnel::
+> +
+>     netdev@vger.kernel.org
+>   
+>   For more specific support needs, please use the Pensando driver support
+>   email::
+> -	drivers@pensando.io
+> +
+> +  drivers@pensando.io
+>
+
