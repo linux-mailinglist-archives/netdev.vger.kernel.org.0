@@ -2,224 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E69D1C89
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B823ED1C8F
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732157AbfJIXPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 19:15:32 -0400
-Received: from mail-qt1-f202.google.com ([209.85.160.202]:56244 "EHLO
-        mail-qt1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732074AbfJIXPc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 19:15:32 -0400
-Received: by mail-qt1-f202.google.com with SMTP id o34so3751410qtf.22
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 16:15:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=wp7dIu278wEMBBUuCfrf0qEgr6vgPDW10s+bjv5+EHY=;
-        b=G1jnWwOb0+/1WWAz+D0cSc/7dmriQE0h0UnAzQhzjP/bqzPy3ybmpnVlDCP2AKjH1W
-         vFsIS6GI6MhKhOa49RxadfCkQ9ePpqRCh5N4aif3wNFu7hcmeuEijsOQep0wyzh3a2oe
-         BjlqjZqXteixUNlN0U2Zrhw8F84OlG2ZeyY4kJMY9XxUU8+m6plsHvbbqXdXza8w3Mf1
-         f/j/5M0rXjLkybIJu267mc3e2cmiFf2lPvJV2J1XVGp/vc2tCAVi7MkQh1Ov2MCzl2Tz
-         4LwmFkJ7V9UiN+sEa7IL3JgRPpJvhEWDHTRuEZ9zC3hbAkTu7/BtyS1hxcs80A4ZHELx
-         2u4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=wp7dIu278wEMBBUuCfrf0qEgr6vgPDW10s+bjv5+EHY=;
-        b=DffdRdQ2RtN6CIAthWcvOZUz736Egpu9OiIjCDUbjz1JM2kvyLgwNGeuGFkiBElILG
-         bDHzr6KrHwmruswoW9tiW5WIikj4uGw4By1LOg33ICWWxVbHUXps8+N3601MZvU4qlm3
-         9rt1uDcyLdQF4PMoIcu+q9uJKl/+IBEbQhLK2LGMV9kyO6saoC/6jXHSsp7TM/m6W8QX
-         Ra5auQEQ4h7eMWbuI8mlDVwcbuaD8v9g7L+21zLkC8SbOPCuAX4F5FAoRd5JRjSwcGTj
-         PI+xW0yAgsvXlyCz8m0Cngo6tiDgllJsh59p+GSVzUstGGVH3Vlxe5/NtOB7ZaL9CvsI
-         m4uA==
-X-Gm-Message-State: APjAAAWji2kUAKcKKnpwUoCezhmwj0PzDaylXTPVt/AvhDT8KoOyuSrK
-        ttRPB70rQwY2ptqKGiDutYRJBsomcmdj5qNUx0/WYglqcEBpZXBRS0Y2L8ynyziIzzfvXtH4JBQ
-        sRAoOndurnIMPC5Yx7pQRVA5e+ReQ+98m8XbS0cKa4xi/lnpbjIINGjWFHgmiqvBL
-X-Google-Smtp-Source: APXvYqyXxfR3EVVPUIFWm5urIt5B9JX68ec7RpaC0SOak5j467iiPVpe7YsylUmAVnSP19PeZgnop1NaXpAZ
-X-Received: by 2002:a37:9ad4:: with SMTP id c203mr6262316qke.17.1570662930945;
- Wed, 09 Oct 2019 16:15:30 -0700 (PDT)
-Date:   Wed,  9 Oct 2019 16:15:26 -0700
-Message-Id: <20191009231526.238985-1-maheshb@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
-Subject: [PATCH next] blackhole_netdev: fix syzkaller reported issue
-From:   Mahesh Bandewar <maheshb@google.com>
-To:     Netdev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
-        David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Mahesh Bandewar <maheshb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1732218AbfJIXSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 19:18:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36558 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731145AbfJIXSw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 19:18:52 -0400
+Received: from localhost.localdomain (unknown [151.66.37.67])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D95D1206C0;
+        Wed,  9 Oct 2019 23:18:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570663132;
+        bh=YwSebObcyXh1agm7q15cb4cv9xJB2D/ZByC7Z338erE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=p8KV8+bvZlRvBGnYRyvBESN3dqElsyBA+5dcfLFI+ZRB9R8hpCCqDrr27V3dcT7pt
+         Q64HmFAXrQ4xzlMiaf11VFH8bMmIMlu/zQZySZYf/bFrdAZ+isz364qlMARONmHPu9
+         2wPyjo8po4Ztw5D6bQ/ISdD3F54st6kzxRWbMV/s=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        thomas.petazzoni@bootlin.com, brouer@redhat.com,
+        ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
+        mw@semihalf.com
+Subject: [PATCH v2 net-next 0/8] add XDP support to mvneta driver
+Date:   Thu, 10 Oct 2019 01:18:30 +0200
+Message-Id: <cover.1570662004.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While invalidating the dst, we assign backhole_netdev instead of
-loopback device. However, this device does not have idev pointer
-and hence no ip6_ptr even if IPv6 is enabled. Possibly this has
-triggered the syzbot reported crash.
+Add XDP support to mvneta driver for devices that rely on software
+buffer management. Supported verdicts are:
+- XDP_DROP
+- XDP_PASS
+- XDP_REDIRECT
+- XDP_TX
+Moreover set ndo_xdp_xmit net_device_ops function pointer in order to support
+redirecting from other device (e.g. virtio-net).
+Convert mvneta driver to page_pool API.
+This series is based on previous work done by Jesper and Ilias.
 
-The syzbot report does not have reproducer, however, this is the
-only device that doesn't have matching idev created.
+Changes since v1:
+- sync dma buffers before refilling hw queues
+- fix stats accounting
 
-Crash instruction is :
+Changes since RFC:
+- implement XDP_TX
+- make tx pending buffer list agnostic
+- code refactoring
+- check if device is running in mvneta_xdp_setup
 
-static inline bool ip6_ignore_linkdown(const struct net_device *dev)
-{
-        const struct inet6_dev *idev = __in6_dev_get(dev);
+Lorenzo Bianconi (8):
+  net: mvneta: introduce mvneta_update_stats routine
+  net: mvneta: introduce page pool API for sw buffer manager
+  net: mvneta: rely on build_skb in mvneta_rx_swbm poll routine
+  net: mvneta: sync dma buffers before refilling hw queues
+  net: mvneta: add basic XDP support
+  net: mvneta: move header prefetch in mvneta_swbm_rx_frame
+  net: mvneta: make tx buffer array agnostic
+  net: mvneta: add XDP_TX support
 
-        return !!idev->cnf.ignore_routes_with_linkdown; <= crash
-}
+ drivers/net/ethernet/marvell/Kconfig  |   1 +
+ drivers/net/ethernet/marvell/mvneta.c | 630 +++++++++++++++++++-------
+ 2 files changed, 471 insertions(+), 160 deletions(-)
 
-Also ipv6 always assumes presence of idev and never checks for it
-being NULL (as does the above referenced code). So adding a idev
-for the blackhole_netdev to avoid this class of crashes in the future.
-
----
-
-syzbot has found the following crash on:
-
-HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-console output: https://syzkaller-buganizer.googleplex.com/text?tag=CrashLog&id=96236769ac48d9c2eb3a0db5385370ea6940be83
-kernel config:  https://syzkaller-buganizer.googleplex.com/text?tag=Config&id=1ed331b637302a68174fdbe34315b781b7c7ab1e
-dashboard link: https://syzkaller.appspot.com/bug?extid=86298614df433d7f3824
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-See http://go/syzbot for details on how to handle this bug.
-
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 16525 Comm: syz-executor.2 Not tainted 5.3.0-rc3+ #159
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-__find_rr_leaf+0x14e/0x750 net/ipv6/route.c:831
-find_rr_leaf net/ipv6/route.c:852 [inline]
-rt6_select net/ipv6/route.c:896 [inline]
-fib6_table_lookup+0x697/0xdb0 net/ipv6/route.c:2164
-ip6_pol_route+0x1f6/0xaf0 net/ipv6/route.c:2200
-ip6_pol_route_output+0x54/0x70 net/ipv6/route.c:2452
-fib6_rule_lookup+0x133/0x7a0 net/ipv6/fib6_rules.c:113
-ip6_route_output_flags_noref+0x2d6/0x360 net/ipv6/route.c:2484
-ip6_route_output_flags+0x106/0x4d0 net/ipv6/route.c:2497
-ip6_route_output include/net/ip6_route.h:98 [inline]
-ip6_dst_lookup_tail+0x1042/0x1ef0 net/ipv6/ip6_output.c:1022
-ip6_dst_lookup_flow+0xa8/0x220 net/ipv6/ip6_output.c:1150
-ip6_sk_dst_lookup_flow net/ipv6/ip6_output.c:1188 [inline]
-ip6_sk_dst_lookup_flow+0x62a/0xb90 net/ipv6/ip6_output.c:1178
-udpv6_sendmsg+0x17ba/0x2990 net/ipv6/udp.c:1439
-inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
-sock_sendmsg_nosec net/socket.c:637 [inline]
-sock_sendmsg+0xd7/0x130 net/socket.c:657
-__sys_sendto+0x262/0x380 net/socket.c:1952
-__do_sys_sendto net/socket.c:1964 [inline]
-__se_sys_sendto net/socket.c:1960 [inline]
-__x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
-do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459829
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fa15e7ddc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000459829
-RDX: 0000000000000001 RSI: 0000000020000000 RDI: 0000000000000007
-RBP: 000000000075c1c0 R08: 0000000020001000 R09: 000000000000001c
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa15e7de6d4
-R13: 00000000004c77e7 R14: 00000000004dd048 R15: 00000000ffffffff
-Modules linked in:
----[ end trace 4b3ce5eddd15c8f6 ]---
-RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Fixes: 8d7017fd621d ("blackhole_netdev: use blackhole_netdev to invalidate dst entries")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
----
- net/ipv6/addrconf.c | 6 +++++-
- net/ipv6/route.c    | 5 ++---
- 2 files changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 98d82305d6de..0f216f7cbe3e 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -6995,7 +6995,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
- 
- int __init addrconf_init(void)
- {
--	struct inet6_dev *idev;
-+	struct inet6_dev *idev, *bdev;
- 	int i, err;
- 
- 	err = ipv6_addr_label_init();
-@@ -7035,10 +7035,14 @@ int __init addrconf_init(void)
- 	 */
- 	rtnl_lock();
- 	idev = ipv6_add_dev(init_net.loopback_dev);
-+	bdev = ipv6_add_dev(blackhole_netdev);
- 	rtnl_unlock();
- 	if (IS_ERR(idev)) {
- 		err = PTR_ERR(idev);
- 		goto errlo;
-+	} else if (IS_ERR(bdev)) {
-+		err = PTR_ERR(bdev);
-+		goto errlo;
- 	}
- 
- 	ip6_route_init_special_entries();
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index a63ff85fe141..ea16e037ec13 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -155,10 +155,9 @@ void rt6_uncached_list_del(struct rt6_info *rt)
- 
- static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- {
--	struct net_device *loopback_dev = net->loopback_dev;
- 	int cpu;
- 
--	if (dev == loopback_dev)
-+	if (dev == net->loopback_dev)
- 		return;
- 
- 	for_each_possible_cpu(cpu) {
-@@ -171,7 +170,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- 			struct net_device *rt_dev = rt->dst.dev;
- 
- 			if (rt_idev->dev == dev) {
--				rt->rt6i_idev = in6_dev_get(loopback_dev);
-+				rt->rt6i_idev = in6_dev_get(blackhole_netdev);
- 				in6_dev_put(rt_idev);
- 			}
- 
 -- 
-2.23.0.581.g78d2f28ef7-goog
+2.21.0
 
