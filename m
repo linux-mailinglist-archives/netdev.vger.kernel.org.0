@@ -2,55 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 438CFD0ABF
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 11:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBCDBD0AD7
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 11:19:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729784AbfJIJPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 05:15:15 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:48044 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725989AbfJIJPP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 05:15:15 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 15E6B308C1E6;
-        Wed,  9 Oct 2019 09:15:15 +0000 (UTC)
-Received: from localhost (ovpn-204-237.brq.redhat.com [10.40.204.237])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4CFC81017E3C;
-        Wed,  9 Oct 2019 09:15:13 +0000 (UTC)
-Date:   Wed, 9 Oct 2019 11:15:11 +0200
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        Thomas Graf <tgraf@suug.ch>, u9012063@gmail.com
-Subject: Re: [PATCHv2 net-next 2/6] lwtunnel: add LWTUNNEL_IP_OPTS support
- for lwtunnel_ip
-Message-ID: <20191009111511.0e173396@redhat.com>
-In-Reply-To: <20191009075526.fcx5wqmotzq5j5bj@netronome.com>
-References: <cover.1570547676.git.lucien.xin@gmail.com>
-        <f73e560fafd61494146ff8f08bebead4b7ac6782.1570547676.git.lucien.xin@gmail.com>
-        <20191009075526.fcx5wqmotzq5j5bj@netronome.com>
+        id S1729865AbfJIJTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 05:19:20 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:46323 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727035AbfJIJTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 05:19:19 -0400
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id 17CC832A718;
+        Wed,  9 Oct 2019 11:19:17 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1iI87o-00017M-Oq; Wed, 09 Oct 2019 11:19:16 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net
+Cc:     gnault@redhat.com, netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net v2] netns: fix NLM_F_ECHO mechanism for RTM_NEWNSID
+Date:   Wed,  9 Oct 2019 11:19:10 +0200
+Message-Id: <20191009091910.4199-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191008231047.GB4779@linux.home>
+References: <20191008231047.GB4779@linux.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Wed, 09 Oct 2019 09:15:15 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Oct 2019 09:55:27 +0200, Simon Horman wrote:
-> This is the same concerned that was raised by others when I posed a patch
-> to allow setting of Geneve options in a similar manner. I think what is
-> called for here, as was the case in the Geneve work, is to expose netlink
-> attributes for each option that may be set and have the kernel form
-> these into the internal format (which appears to also be the wire format).
+The flag NLM_F_ECHO aims to reply to the user the message notified to all
+listeners.
+It was not the case with the command RTM_NEWNSID, let's fix this.
 
-I agree with Simon.
+Fixes: 0c7aecd4bde4 ("netns: add rtnl cmd to add and get peer netns ids")
+Reported-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
 
-Thanks,
+v2:
+  fix portid and seq number of the nl msg sent by the kernel
 
- Jiri
+ net/core/net_namespace.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index a0e0d298c991..6d3e4821b02d 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -245,7 +245,8 @@ static int __peernet2id(struct net *net, struct net *peer)
+ 	return __peernet2id_alloc(net, peer, &no);
+ }
+ 
+-static void rtnl_net_notifyid(struct net *net, int cmd, int id);
++static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
++			      struct nlmsghdr *nlh);
+ /* This function returns the id of a peer netns. If no id is assigned, one will
+  * be allocated and returned.
+  */
+@@ -268,7 +269,7 @@ int peernet2id_alloc(struct net *net, struct net *peer)
+ 	id = __peernet2id_alloc(net, peer, &alloc);
+ 	spin_unlock_bh(&net->nsid_lock);
+ 	if (alloc && id >= 0)
+-		rtnl_net_notifyid(net, RTM_NEWNSID, id);
++		rtnl_net_notifyid(net, RTM_NEWNSID, id, 0, NULL);
+ 	if (alive)
+ 		put_net(peer);
+ 	return id;
+@@ -532,7 +533,7 @@ static void unhash_nsid(struct net *net, struct net *last)
+ 			idr_remove(&tmp->netns_ids, id);
+ 		spin_unlock_bh(&tmp->nsid_lock);
+ 		if (id >= 0)
+-			rtnl_net_notifyid(tmp, RTM_DELNSID, id);
++			rtnl_net_notifyid(tmp, RTM_DELNSID, id, 0, NULL);
+ 		if (tmp == last)
+ 			break;
+ 	}
+@@ -764,7 +765,8 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	err = alloc_netid(net, peer, nsid);
+ 	spin_unlock_bh(&net->nsid_lock);
+ 	if (err >= 0) {
+-		rtnl_net_notifyid(net, RTM_NEWNSID, err);
++		rtnl_net_notifyid(net, RTM_NEWNSID, err, NETLINK_CB(skb).portid,
++				  nlh);
+ 		err = 0;
+ 	} else if (err == -ENOSPC && nsid >= 0) {
+ 		err = -EEXIST;
+@@ -1051,9 +1053,12 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
+ 	return err < 0 ? err : skb->len;
+ }
+ 
+-static void rtnl_net_notifyid(struct net *net, int cmd, int id)
++static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
++			      struct nlmsghdr *nlh)
+ {
+ 	struct net_fill_args fillargs = {
++		.portid = portid,
++		.seq = nlh ? nlh->nlmsg_seq : 0,
+ 		.cmd = cmd,
+ 		.nsid = id,
+ 	};
+@@ -1068,7 +1073,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id)
+ 	if (err < 0)
+ 		goto err_out;
+ 
+-	rtnl_notify(msg, net, 0, RTNLGRP_NSID, NULL, 0);
++	rtnl_notify(msg, net, portid, RTNLGRP_NSID, nlh, 0);
+ 	return;
+ 
+ err_out:
+-- 
+2.23.0
+
