@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99BFCD1C72
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CCBED1C73
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:08:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732466AbfJIXIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1732480AbfJIXIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 9 Oct 2019 19:08:53 -0400
-Received: from mga06.intel.com ([134.134.136.31]:40466 "EHLO mga06.intel.com"
+Received: from mga06.intel.com ([134.134.136.31]:40462 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732397AbfJIXIn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732388AbfJIXIn (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 9 Oct 2019 19:08:43 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Oct 2019 16:08:41 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Oct 2019 16:08:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,277,1566889200"; 
-   d="scan'208";a="205902517"
+   d="scan'208";a="205902518"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.254.70.56])
   by orsmga002.jf.intel.com with ESMTP; 09 Oct 2019 16:08:41 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -26,9 +26,9 @@ Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         cpaasch@apple.com, fw@strlen.de, pabeni@redhat.com,
         peter.krystad@linux.intel.com, dcaratti@redhat.com,
         matthieu.baerts@tessares.net
-Subject: [RFC PATCH v3 05/10] tcp, ulp: Add clone operation to tcp_ulp_ops
-Date:   Wed,  9 Oct 2019 16:08:04 -0700
-Message-Id: <20191009230809.27387-6-mathew.j.martineau@linux.intel.com>
+Subject: [RFC PATCH v3 06/10] mptcp: Add MPTCP to skb extensions
+Date:   Wed,  9 Oct 2019 16:08:05 -0700
+Message-Id: <20191009230809.27387-7-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191009230809.27387-1-mathew.j.martineau@linux.intel.com>
 References: <20191009230809.27387-1-mathew.j.martineau@linux.intel.com>
@@ -39,81 +39,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If ULP is used on a listening socket, icsk_ulp_ops and icsk_ulp_data are
-copied when the listener is cloned. Sometimes the clone is immediately
-deleted, which will invoke the release op on the clone and likely
-corrupt the listening socket's icsk_ulp_data.
-
-The clone operation is invoked immediately after the clone is copied and
-gives the ULP type an opportunity to set up the clone socket and its
-icsk_ulp_data.
+Add enum value for MPTCP and update config dependencies
 
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- include/net/tcp.h               |  5 +++++
- net/ipv4/inet_connection_sock.c |  2 ++
- net/ipv4/tcp_ulp.c              | 12 ++++++++++++
- 3 files changed, 19 insertions(+)
+ include/linux/skbuff.h |  3 +++
+ include/net/mptcp.h    | 27 +++++++++++++++++++++++++++
+ net/core/skbuff.c      |  7 +++++++
+ 3 files changed, 37 insertions(+)
+ create mode 100644 include/net/mptcp.h
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 382e245a7909..16c9f21243ca 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2126,6 +2126,9 @@ struct tcp_ulp_ops {
- 	/* diagnostic */
- 	int (*get_info)(const struct sock *sk, struct sk_buff *skb);
- 	size_t (*get_info_size)(const struct sock *sk);
-+	/* clone ulp */
-+	void (*clone)(const struct request_sock *req, struct sock *newsk,
-+		      const gfp_t priority);
- 
- 	char		name[TCP_ULP_NAME_MAX];
- 	struct module	*owner;
-@@ -2136,6 +2139,8 @@ int tcp_set_ulp(struct sock *sk, const char *name);
- void tcp_get_available_ulp(char *buf, size_t len);
- void tcp_cleanup_ulp(struct sock *sk);
- void tcp_update_ulp(struct sock *sk, struct proto *p);
-+void tcp_clone_ulp(const struct request_sock *req,
-+		   struct sock *newsk, const gfp_t priority);
- 
- #define MODULE_ALIAS_TCP_ULP(name)				\
- 	__MODULE_INFO(alias, alias_userspace, name);		\
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index a9183543ca30..64857672e0b5 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -810,6 +810,8 @@ struct sock *inet_csk_clone_lock(const struct sock *sk,
- 		/* Deinitialize accept_queue to trap illegal accesses. */
- 		memset(&newicsk->icsk_accept_queue, 0, sizeof(newicsk->icsk_accept_queue));
- 
-+		tcp_clone_ulp(req, newsk, priority);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0a58402a166e..618ee4b3ab7f 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4068,6 +4068,9 @@ enum skb_ext_id {
+ #endif
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	TC_SKB_EXT,
++#endif
++#if IS_ENABLED(CONFIG_MPTCP)
++	SKB_EXT_MPTCP,
+ #endif
+ 	SKB_EXT_NUM, /* must be last */
+ };
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+new file mode 100644
+index 000000000000..f9f668ac4339
+--- /dev/null
++++ b/include/net/mptcp.h
+@@ -0,0 +1,27 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Multipath TCP
++ *
++ * Copyright (c) 2017 - 2019, Intel Corporation.
++ */
 +
- 		security_inet_csk_clone(newsk, req);
- 	}
- 	return newsk;
-diff --git a/net/ipv4/tcp_ulp.c b/net/ipv4/tcp_ulp.c
-index 4849edb62d52..27f949846450 100644
---- a/net/ipv4/tcp_ulp.c
-+++ b/net/ipv4/tcp_ulp.c
-@@ -127,6 +127,18 @@ void tcp_cleanup_ulp(struct sock *sk)
- 	icsk->icsk_ulp_ops = NULL;
++#ifndef __NET_MPTCP_H
++#define __NET_MPTCP_H
++
++#include <linux/types.h>
++
++/* MPTCP sk_buff extension data */
++struct mptcp_ext {
++	u64		data_ack;
++	u64		data_seq;
++	u32		subflow_seq;
++	u16		data_len;
++	u8		use_map:1,
++			dsn64:1,
++			data_fin:1,
++			use_ack:1,
++			ack64:1,
++			__unused:2;
++};
++
++#endif /* __NET_MPTCP_H */
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 529133611ea2..b2dc326f748b 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -68,6 +68,7 @@
+ #include <net/ip6_checksum.h>
+ #include <net/xfrm.h>
+ #include <net/mpls.h>
++#include <net/mptcp.h>
+ 
+ #include <linux/uaccess.h>
+ #include <trace/events/skb.h>
+@@ -4109,6 +4110,9 @@ static const u8 skb_ext_type_len[] = {
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	[TC_SKB_EXT] = SKB_EXT_CHUNKSIZEOF(struct tc_skb_ext),
+ #endif
++#if IS_ENABLED(CONFIG_MPTCP)
++	[SKB_EXT_MPTCP] = SKB_EXT_CHUNKSIZEOF(struct mptcp_ext),
++#endif
+ };
+ 
+ static __always_inline unsigned int skb_ext_total_length(void)
+@@ -4122,6 +4126,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
+ #endif
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 		skb_ext_type_len[TC_SKB_EXT] +
++#endif
++#if IS_ENABLED(CONFIG_MPTCP)
++		skb_ext_type_len[SKB_EXT_MPTCP] +
+ #endif
+ 		0;
  }
- 
-+void tcp_clone_ulp(const struct request_sock *req, struct sock *newsk,
-+		   const gfp_t priority)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(newsk);
-+
-+	if (!icsk->icsk_ulp_ops)
-+		return;
-+
-+	if (icsk->icsk_ulp_ops->clone)
-+		icsk->icsk_ulp_ops->clone(req, newsk, priority);
-+}
-+
- static int __tcp_set_ulp(struct sock *sk, const struct tcp_ulp_ops *ulp_ops)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
 -- 
 2.23.0
 
