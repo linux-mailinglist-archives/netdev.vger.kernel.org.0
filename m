@@ -2,198 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D7AD0958
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 10:13:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA29BD0979
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 10:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729592AbfJIINL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 04:13:11 -0400
-Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:33604
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S1729616AbfJIITQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 04:19:16 -0400
+Received: from mail-eopbgr70053.outbound.protection.outlook.com ([40.107.7.53]:22524
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725962AbfJIINL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 04:13:11 -0400
+        id S1726765AbfJIITP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 04:19:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LovM6wvE2FNQT0LT/WY/odL2Gqs8IfHD91MvKp4ckQs=;
+ b=DhxPmsRUsbhl3sycth0Ju/o/D/xdKPJc0Vg4p8n3nQpKoUZS/8Kbwzg+Cv6ZNzkN5BJORDKco7rqYv/NABprhz9L65NVVO55vFsb2MwJ51aI4U8nS/ZKt2b7aNXR0lL1NkGzgfpBp/c7lHrQcnc9nRTub5pLuC5kmxeZk3bclvs=
+Received: from VE1PR08CA0017.eurprd08.prod.outlook.com (2603:10a6:803:104::30)
+ by DB6PR08MB2629.eurprd08.prod.outlook.com (2603:10a6:6:22::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2327.24; Wed, 9 Oct
+ 2019 08:19:04 +0000
+Received: from DB5EUR03FT046.eop-EUR03.prod.protection.outlook.com
+ (2a01:111:f400:7e0a::200) by VE1PR08CA0017.outlook.office365.com
+ (2603:10a6:803:104::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2347.16 via Frontend
+ Transport; Wed, 9 Oct 2019 08:19:04 +0000
+Authentication-Results: spf=temperror (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=none action=none
+ header.from=arm.com;
+Received-SPF: TempError (protection.outlook.com: error in processing during
+ lookup of arm.com: DNS Timeout)
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ DB5EUR03FT046.mail.protection.outlook.com (10.152.21.230) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.2305.15 via Frontend Transport; Wed, 9 Oct 2019 08:19:02 +0000
+Received: ("Tessian outbound 3fba803f6da3:v33"); Wed, 09 Oct 2019 08:18:56 +0000
+X-CR-MTA-TID: 64aa7808
+Received: from b6ba294ff628.2 (ip-172-16-0-2.eu-west-1.compute.internal [104.47.10.51])
+        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 47ED5A7E-4C35-4BCC-8C98-81C989C7C128.1;
+        Wed, 09 Oct 2019 08:18:51 +0000
+Received: from EUR03-DB5-obe.outbound.protection.outlook.com (mail-db5eur03lp2051.outbound.protection.outlook.com [104.47.10.51])
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id b6ba294ff628.2
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384);
+    Wed, 09 Oct 2019 08:18:50 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mOaXS6Jwb9D7sTAL1w+FmD8zngAjJov05p/SgzVJIs52CJ47f8bJSpsNXuipwLLEHRfBQVrnMGbbzYDIn3XmItlNvHL3ewNAJKFcG9EvJ6w3gVEHYuQWMc7fxnUXkNGZMl48YPWcbf4q1Qovcv/A+LLmcWtwyhv1Y15y1GjgTY42PIFfSvw6ZCbmrEU7Enx5EA4VMtf2aIfK/rnEU3mf+ux5Uzjf8Qg2w5wZRaCJije0Zaoz0FIinqd9YNMOgod1QIc8mxEl8ieeKluWxZgfN3ifaRIIL2lLHFPH0XkyLuAD7HbDfjgVGD/xtBRX+QBhisbAz920qq0o+nJ7oTPoDw==
+ b=KKVLnI6zvPBablkWcyp24S/aVV25EQsnBo8kqU3UCj4URIPIMaa8yA4VOmw69FDUZOl98rTVpkpaLVFQzeHOT4R69GiQLY6sxVSTgAFnMcBUFxY1oUzA92ty1YoLeYe/rxTQ6hv7eanvJH4XnOdkrJt0kAH+0JRDCcsOQBnNm8IFwdh3WQfLAhlzk6ZmJtwRoqldG+79Jwr+0H9gZrMmz6MAWYZCliCdoytu1jRi5CmWtI9pCvyQc0xB/+7WMpLkD5akimVqLDCoBxOzHvyth3gI603f2E+f11q80YM+ZOhC+yy189eKk3K1eod05+RSJnJJKNg/JLbPHpW30k+J/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vlyiha8cKiVunuLhL74uKPRSpxMhOhGgaWs+ZckFb2o=;
- b=QnTEhQ9cWLsl9j0ltUPpY6lMlWXkx+BnquMUpdx/PDoZDkeMIP+p0eXH886X0QGQBAPOppMgTTFoioN3b2ZuWeiSuvuilnfW+qaODoWzsfbp6y/QSZ6wQsK5BDmxFbVpyabxxoxqJH0wra2HR9xz5NR0N3LN8OuJ+FWkjIJqueCFUg2WesDDAEwOWI0mdC/Juk2RL3Va3wljUD3YRicWmFke0xchp0KmF0TeIt9iANvpWWUeNcHKq94h/OEVIF84IHZLg6BVrCMFqjmQkZdvx+EC43T9HT0JspNgrOVr7aWq9GJqJH+OM9x5yr6zytgwESFVzt5GIjULULri8cMf2g==
+ bh=LovM6wvE2FNQT0LT/WY/odL2Gqs8IfHD91MvKp4ckQs=;
+ b=eArrd87MmJHHW6k+1OHLsPXXDBrooaOU47jGya1ehiDOmdYedXuPzd4/PuIUz9qJ0Je5JOqI3bMB1zNALACapaILjf0ifxCke1kwIIQI+1uYD/4pJ7GHaaAwdVnCKwOnAuzR1P26Xzn7kHnSSi92R9VsOFUjy1/rLHrZaZlMzqcK58OBz+K5IsQQb6sT4Ie5tpZhOP3EgvzPALMkZ0K5YS3wEza9/ybu0XCsHUYOS7HVhM+IZ/cf7czSd5p9Puw910pvA1DFEb92sQ9gE86bBY+te8ddBKV94tlYP9cPGkRyUH5eWxtmFL8Y9VtNDX0um92W/EzfcDWEETiWPaUXcw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vlyiha8cKiVunuLhL74uKPRSpxMhOhGgaWs+ZckFb2o=;
- b=eiHgGSOeT9Jdn72TQ4bremFE28H2CtKKbU/pZh7ApR0NlK5wrbMbElpYYXJ3+kRN8Oc3Te8UIBTQEmcVWBJ0beOKae8TEZKLrlxmBLJ9QgnrN2weniJBHsm8L47S6KGML+JmPotznJZa9wdSCaUqXVeQ+rX8aYQgYKLP4y9n9ZM=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB5081.eurprd04.prod.outlook.com (20.176.236.212) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Wed, 9 Oct 2019 08:13:07 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::79f1:61a7:4076:8679]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::79f1:61a7:4076:8679%3]) with mapi id 15.20.2327.026; Wed, 9 Oct 2019
- 08:13:07 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     "wg@grandegger.com" <wg@grandegger.com>,
+ bh=LovM6wvE2FNQT0LT/WY/odL2Gqs8IfHD91MvKp4ckQs=;
+ b=DhxPmsRUsbhl3sycth0Ju/o/D/xdKPJc0Vg4p8n3nQpKoUZS/8Kbwzg+Cv6ZNzkN5BJORDKco7rqYv/NABprhz9L65NVVO55vFsb2MwJ51aI4U8nS/ZKt2b7aNXR0lL1NkGzgfpBp/c7lHrQcnc9nRTub5pLuC5kmxeZk3bclvs=
+Received: from HE1PR0801MB1676.eurprd08.prod.outlook.com (10.168.146.150) by
+ HE1PR0801MB1804.eurprd08.prod.outlook.com (10.168.150.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2327.25; Wed, 9 Oct 2019 08:18:48 +0000
+Received: from HE1PR0801MB1676.eurprd08.prod.outlook.com
+ ([fe80::b056:4113:e0bd:110d]) by HE1PR0801MB1676.eurprd08.prod.outlook.com
+ ([fe80::b056:4113:e0bd:110d%6]) with mapi id 15.20.2327.026; Wed, 9 Oct 2019
+ 08:18:47 +0000
+From:   "Jianyong Wu (Arm Technology China)" <Jianyong.Wu@arm.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, Marc Zyngier <maz@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sean@geanix.com" <sean@geanix.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH V4 2/2] can: flexcan: add LPSR mode support for i.MX7D
-Thread-Topic: [PATCH V4 2/2] can: flexcan: add LPSR mode support for i.MX7D
-Thread-Index: AQHVfnliD0Y3+X9f0kS5lPg5k0t1nw==
-Date:   Wed, 9 Oct 2019 08:13:07 +0000
-Message-ID: <20191009080956.29128-2-qiangqing.zhang@nxp.com>
-References: <20191009080956.29128-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20191009080956.29128-1-qiangqing.zhang@nxp.com>
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        Will Deacon <Will.Deacon@arm.com>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        "Kaly Xin (Arm Technology China)" <Kaly.Xin@arm.com>,
+        "Justin He (Arm Technology China)" <Justin.He@arm.com>,
+        nd <nd@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [RFC PATCH v3 4/6] psci: Add hvc call service for ptp_kvm.
+Thread-Topic: [RFC PATCH v3 4/6] psci: Add hvc call service for ptp_kvm.
+Thread-Index: AQHVbfg5HjMQ+p5UhEyfzqBy9sDEZacxGVuAgAAQMICAABDUgIABdZhAgAAo7ACAAAjcAIAACYiAgB7418CAABeSAIAAGcHg
+Date:   Wed, 9 Oct 2019 08:18:47 +0000
+Message-ID: <HE1PR0801MB1676B1AD68544561403C3196F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+References: <20190918080716.64242-1-jianyong.wu@arm.com>
+ <20190918080716.64242-5-jianyong.wu@arm.com>
+ <83ed7fac-277f-a31e-af37-8ec134f39d26@redhat.com>
+ <HE1PR0801MB1676F57B317AE85E3B934B32F48E0@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <629538ea-13fb-e666-8df6-8ad23f114755@redhat.com>
+ <HE1PR0801MB167639E2F025998058A77F86F4890@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <ef6ab8bd-41ad-88f8-9cfd-dc749ca65310@redhat.com>
+ <a1b554b8-4417-5305-3419-fe71a8c50842@kernel.org>
+ <56a5b885-62c8-c4ef-e2f8-e945c0eb700e@redhat.com>
+ <HE1PR0801MB1676115C248E6DF09F9DD5A6F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <1cc145ca-1af2-d46f-d530-0ae434005f0b@redhat.com>
+In-Reply-To: <1cc145ca-1af2-d46f-d530-0ae434005f0b@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.17.1
-x-clientproxiedby: SG2PR06CA0108.apcprd06.prod.outlook.com
- (2603:1096:3:14::34) To DB7PR04MB4618.eurprd04.prod.outlook.com
- (2603:10a6:5:38::23)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.71]
+x-ts-tracking-id: 7edb023d-6344-4990-8295-8b48b11cd589.1
+x-checkrecipientchecked: true
+Authentication-Results-Original: spf=none (sender IP is )
+ smtp.mailfrom=Jianyong.Wu@arm.com; 
+x-originating-ip: [113.29.88.7]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f1ee0919-e00b-4c84-b284-08d74c90845f
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: DB7PR04MB5081:|DB7PR04MB5081:
+X-MS-Office365-Filtering-Correlation-Id: fe90ef95-b7d0-496c-1684-08d74c9157cf
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-TrafficTypeDiagnostic: HE1PR0801MB1804:|HE1PR0801MB1804:|DB6PR08MB2629:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB508145CB0B24CE6779514756E6950@DB7PR04MB5081.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <DB6PR08MB2629ED2419B654F638E8EE3AF4950@DB6PR08MB2629.eurprd08.prod.outlook.com>
+x-checkrecipientrouted: true
+x-ms-oob-tlc-oobclassifiers: OLM:7691;OLM:7691;
 x-forefront-prvs: 018577E36E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(376002)(136003)(366004)(39860400002)(199004)(189003)(54534003)(54906003)(36756003)(6512007)(6116002)(66476007)(6486002)(26005)(7736002)(2906002)(66556008)(64756008)(66446008)(3846002)(186003)(81156014)(81166006)(99286004)(14444005)(50226002)(2501003)(256004)(110136005)(11346002)(2616005)(476003)(478600001)(446003)(486006)(8676002)(66946007)(6436002)(25786009)(305945005)(71200400001)(71190400001)(1076003)(316002)(102836004)(386003)(66066001)(5660300002)(6506007)(4326008)(14454004)(8936002)(76176011)(86362001)(52116002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5081;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
+X-Forefront-Antispam-Report-Untrusted: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(39860400002)(136003)(366004)(396003)(199004)(189003)(13464003)(486006)(305945005)(7696005)(74316002)(53546011)(52536014)(110136005)(33656002)(478600001)(25786009)(2201001)(476003)(5660300002)(86362001)(7736002)(8936002)(8676002)(446003)(186003)(6636002)(11346002)(316002)(102836004)(26005)(6506007)(76176011)(55236004)(54906003)(99286004)(81166006)(81156014)(9686003)(229853002)(71200400001)(64756008)(66476007)(256004)(6116002)(76116006)(4326008)(66446008)(71190400001)(7416002)(66946007)(2501003)(66556008)(6436002)(14454004)(2906002)(66066001)(3846002)(55016002)(6246003)(921003)(1121003);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR0801MB1804;H:HE1PR0801MB1676.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: arm.com does not designate
  permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7ENrYHFUzRc52xR0vAnojNaywZVMcNJqWwe5+yUODuO+7GWT2r88xrzcFwHEA7dqtf/Sc6l5MD3vHYrUvOJfF06NStNkBG7OFFFdSuVV2pWuEJpb46970BhsKsiXaQaPqoZf0+D+sieRSyDOoENyXZqjGTjyd+a2x8ZZKkm/UR646D0tSxGwXZKd85UguXcvKHlPHVhSOdPxNStAjYA+sjZ1myGDnYvdcPqH2mK02ZCxAFKzLPPY14U1gztZRowRmZJ8g4T7dKSmypMV6mAUtyUH+1j2fSFXTPBjq4IS4VpF/WwjqsZ+vdPKkjCzhmLr7efPGDYSsfcN68gFdKOqcWFonDizpa/aFFZh2bFC4w4tK+XoeEF+z5Mb0+581wqXojy5WgNjnMmLns9D784BtOrKrR460rBRLHLFxsGUU3U=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: IIJquPyoT8b5queayz+oQKbgVH6HNNWZz8pG8q6SyMGv/1FgMkZPRXZQhABYAH+KesDXJgkANJKBAG+u1pReDbOhAEDdkvM+XY/664X3eJ97+VLVzKuYesz351+xBHMXHAu0hJ1UDaJFzA0i7Mq7gTdjJt45hWQOX/aT/ypygppa25cnPoB+/lYKEPuErrsYLtq6out/0tmN/gUm+Pey5wKVbKuOBgy4AXQMhQ98jdXA698FJDI8+QH9wX52LfIH9k2Li8R/rF0l4O9qPYWPB37xbqGjCHB+H8RRcHoXhVfItGLVKd5USL0SX/X5t6mlRrcIbsTITguvSZH3dMrY4mlhYjfU7sOMxwhrEbUcSZOL86T++xsahqZi4h56Hkc2emaIAi+WNZW1FVmg4xzQtrtAf4z0Xr/gqY0Kg11lkp8=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1ee0919-e00b-4c84-b284-08d74c90845f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2019 08:13:07.8718
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0801MB1804
+Original-Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=Jianyong.Wu@arm.com; 
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT046.eop-EUR03.prod.protection.outlook.com
+X-Forefront-Antispam-Report: CIP:63.35.35.123;IPV:CAL;SCL:-1;CTRY:IE;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(346002)(136003)(376002)(189003)(199004)(13464003)(81156014)(22756006)(81166006)(8676002)(107886003)(102836004)(66066001)(2906002)(6506007)(53546011)(54906003)(110136005)(47776003)(8936002)(229853002)(52536014)(7696005)(55016002)(186003)(6246003)(23676004)(7736002)(2486003)(74316002)(76176011)(2501003)(305945005)(486006)(86362001)(2201001)(99286004)(126002)(25786009)(478600001)(26826003)(33656002)(436003)(336012)(50466002)(9686003)(11346002)(63350400001)(14454004)(316002)(76130400001)(6636002)(450100002)(26005)(4326008)(6116002)(356004)(3846002)(5660300002)(70206006)(70586007)(476003)(446003)(921003)(1121003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR08MB2629;H:64aa7808-outbound-1.mta.getcheckrecipient.com;FPR:;SPF:TempError;LANG:en;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;MX:1;A:1;
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 89651d3d-fec1-45dd-9bdf-08d74c914f44
+NoDisclaimer: True
+X-Forefront-PRVS: 018577E36E
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: i+q58H6JOq4PcyAXYFElEoA9GO/26MPP9SJV1U/AJaUK61uvGk9shqceSALdOoLbKVuzZ6GnlqgPKjY6dsOJ0KiriWDf9x8xYQ5TVDMhXdVunnn7a+tfn6e5ZcuklEn47wGA7t5xymkyZx0Tul/k+CC+1wtx0UEFZnqCyfn7+CnXShD4A7HeGxiCTGjSsi3bBIFwc/diVmkyqX/Zw/D2eyX1OPjMxiHbyQTbTiS7jNEtAQBFyxPowxqH32poaUeE1CXfkYISntOqNQ7JfBZV0pQlTczw1c9xH/dNhzpYXuyEu45i3f/mdbB7PeXOunU0RN8llwzlhaMr+H3mdh/i0LwB9Hp+rIHiklD05uBPv3dgxStM1TD4Z1eH8C31U7RT2vdooNJlX9HcX5iE6wOPq8klb/rto5+uoQBLssN6rrA=
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2019 08:19:02.2542
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Oaq30QcpT4IEkD4fBPh+fcohZ8aagbFoyuucVx35z7JtiiqkMVka6PoktFhNGzv2h57SmHV9WC9zKMapA+DZNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5081
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe90ef95-b7d0-496c-1684-08d74c9157cf
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR08MB2629
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For i.MX7D LPSR mode, the controller will lost power and got the
-configuration state lost after system resume back. (coming i.MX8QM/QXP
-will also completely power off the domain, the controller state will be
-lost and needs restore).
-So we need to set pinctrl state again and re-start chip to do
-re-configuration after resume.
-
-For wakeup case, it should not set pinctrl to sleep state by
-pinctrl_pm_select_sleep_state.
-For interface is not up before suspend case, we don't need
-re-configure as it will be configured by user later by interface up.
-
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-
-ChangeLog:
-V2->V3:
-	* rebase on linux-can/testing.
-	* change into patch set.
-V3->V4:
-	* rebase on linux-can/testing.
----
- drivers/net/can/flexcan.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 24cc386c4bce..e2bc5078615f 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -26,6 +26,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/regmap.h>
-=20
- #define DRV_NAME			"flexcan"
-@@ -1660,7 +1661,7 @@ static int __maybe_unused flexcan_suspend(struct devi=
-ce *device)
- {
- 	struct net_device *dev =3D dev_get_drvdata(device);
- 	struct flexcan_priv *priv =3D netdev_priv(dev);
--	int err =3D 0;
-+	int err;
-=20
- 	if (netif_running(dev)) {
- 		/* if wakeup is enabled, enter stop mode
-@@ -1674,25 +1675,27 @@ static int __maybe_unused flexcan_suspend(struct de=
-vice *device)
-=20
- 			priv->in_stop_mode =3D true;
- 		} else {
--			err =3D flexcan_chip_disable(priv);
-+			flexcan_chip_stop(dev);
-+
-+			err =3D pm_runtime_force_suspend(device);
- 			if (err)
- 				return err;
-=20
--			err =3D pm_runtime_force_suspend(device);
-+			pinctrl_pm_select_sleep_state(device);
- 		}
- 		netif_stop_queue(dev);
- 		netif_device_detach(dev);
- 	}
- 	priv->can.state =3D CAN_STATE_SLEEPING;
-=20
--	return err;
-+	return 0;
- }
-=20
- static int __maybe_unused flexcan_resume(struct device *device)
- {
- 	struct net_device *dev =3D dev_get_drvdata(device);
- 	struct flexcan_priv *priv =3D netdev_priv(dev);
--	int err =3D 0;
-+	int err;
-=20
- 	priv->can.state =3D CAN_STATE_ERROR_ACTIVE;
- 	if (netif_running(dev)) {
-@@ -1710,15 +1713,19 @@ static int __maybe_unused flexcan_resume(struct dev=
-ice *device)
-=20
- 			disable_irq_wake(dev->irq);
- 		} else {
-+			pinctrl_pm_select_default_state(device);
-+
- 			err =3D pm_runtime_force_resume(device);
- 			if (err)
- 				return err;
-=20
--			err =3D flexcan_chip_enable(priv);
-+			err =3D flexcan_chip_start(dev);
-+			if (err)
-+				return err;
- 		}
- 	}
-=20
--	return err;
-+	return 0;
- }
-=20
- static int __maybe_unused flexcan_runtime_suspend(struct device *device)
---=20
-2.17.1
-
+SGkgUGFvbG8sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGFvbG8g
+Qm9uemluaSA8cGJvbnppbmlAcmVkaGF0LmNvbT4NCj4gU2VudDogV2VkbmVzZGF5LCBPY3RvYmVy
+IDksIDIwMTkgMjozNiBQTQ0KPiBUbzogSmlhbnlvbmcgV3UgKEFybSBUZWNobm9sb2d5IENoaW5h
+KSA8SmlhbnlvbmcuV3VAYXJtLmNvbT47IE1hcmMNCj4gWnluZ2llciA8bWF6QGtlcm5lbC5vcmc+
+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyB5YW5nYm8ubHVAbnhwLmNvbTsNCj4gam9obi5zdHVs
+dHpAbGluYXJvLm9yZzsgdGdseEBsaW51dHJvbml4LmRlOyBzZWFuLmouY2hyaXN0b3BoZXJzb25A
+aW50ZWwuY29tOw0KPiByaWNoYXJkY29jaHJhbkBnbWFpbC5jb207IE1hcmsgUnV0bGFuZCA8TWFy
+ay5SdXRsYW5kQGFybS5jb20+OyBXaWxsDQo+IERlYWNvbiA8V2lsbC5EZWFjb25AYXJtLmNvbT47
+IFN1enVraSBQb3Vsb3NlDQo+IDxTdXp1a2kuUG91bG9zZUBhcm0uY29tPg0KPiBDYzogbGludXgt
+a2VybmVsQHZnZXIua2VybmVsLm9yZzsga3ZtQHZnZXIua2VybmVsLm9yZzsgU3RldmUgQ2FwcGVy
+DQo+IDxTdGV2ZS5DYXBwZXJAYXJtLmNvbT47IEthbHkgWGluIChBcm0gVGVjaG5vbG9neSBDaGlu
+YSkNCj4gPEthbHkuWGluQGFybS5jb20+OyBKdXN0aW4gSGUgKEFybSBUZWNobm9sb2d5IENoaW5h
+KQ0KPiA8SnVzdGluLkhlQGFybS5jb20+OyBuZCA8bmRAYXJtLmNvbT47IGxpbnV4LWFybS0NCj4g
+a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj4gU3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggdjMg
+NC82XSBwc2NpOiBBZGQgaHZjIGNhbGwgc2VydmljZSBmb3IgcHRwX2t2bS4NCj4gDQo+IE9uIDA5
+LzEwLzE5IDA3OjIxLCBKaWFueW9uZyBXdSAoQXJtIFRlY2hub2xvZ3kgQ2hpbmEpIHdyb3RlOg0K
+PiA+IEFzIHB0cF9rdm0gY2xvY2sgaGFzIGZpeGVkIHRvIGFybSBhcmNoIHN5c3RlbSBjb3VudGVy
+IGluIHBhdGNoIHNldCB2NCwNCj4gPiB3ZSBuZWVkIGNoZWNrIGlmIHRoZSBjdXJyZW50IGNsb2Nr
+c291cmNlIGlzIHN5c3RlbSBjb3VudGVyIHdoZW4gcmV0dXJuDQo+ID4gY2xvY2sgY3ljbGUgaW4g
+aG9zdCwgc28gYSBoZWxwZXIgbmVlZGVkIHRvIHJldHVybiB0aGUgY3VycmVudA0KPiA+IGNsb2Nr
+c291cmNlLiBDb3VsZCBJIGFkZCB0aGlzIGhlbHBlciBpbiBuZXh0IHBhdGNoIHNldD8NCj4gDQo+
+IFlvdSBkb24ndCBuZWVkIGEgaGVscGVyLiAgWW91IG5lZWQgdG8gcmV0dXJuIHRoZSBBUk0gYXJj
+aCBjb3VudGVyDQo+IGNsb2Nrc291cmNlIGluIHRoZSBzdHJ1Y3Qgc3lzdGVtX2NvdW50ZXJ2YWxf
+dCB0aGF0IHlvdSByZXR1cm4uDQo+IGdldF9kZXZpY2Vfc3lzdGVtX2Nyb3NzdHN0YW1wIHdpbGwg
+dGhlbiBjaGVjayB0aGF0IHRoZSBjbG9ja3NvdXJjZQ0KPiBtYXRjaGVzIHRoZSBhY3RpdmUgb25l
+Lg0KPiANCldlIG11c3QgZW5zdXJlIGJvdGggb2YgdGhlIGhvc3QgYW5kIGd1ZXN0IHVzaW5nIHRo
+ZSBzYW1lIGNsb2Nrc291cmNlLg0KZ2V0X2RldmljZV9zeXN0ZW1fY3Jvc3N0c3RhbXAgd2lsbCBj
+aGVjayB0aGUgY2xvY2tzb3VyY2Ugb2YgZ3Vlc3QgYW5kIHdlIGFsc28gbmVlZCBjaGVjaw0KdGhl
+IGNsb2Nrc291cmNlIGluIGhvc3QsIGFuZCBzdHJ1Y3QgdHlwZSBjYW4ndCBiZSB0cmFuc2ZlcnJl
+ZCBmcm9tIGhvc3QgdG8gZ3Vlc3QgdXNpbmcgYXJtIGh5cGVyY2FsbC4NCm5vdyB3ZSBsYWNrIG9m
+IGEgbWVjaGFuaXNtIHRvIGNoZWNrIHRoZSBjdXJyZW50IGNsb2Nrc291cmNlLiBJIHRoaW5rIHRo
+aXMgd2lsbCBiZSB1c2VmdWwgaWYgd2UgYWRkIG9uZS4NCg0KVGhhbmtzDQpKaWFueW9uZyAgV3UN
+Cg0KPiBQYW9sbw0KDQo=
