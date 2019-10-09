@@ -2,452 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F5AD0C27
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 12:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8B3D0C30
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 12:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730419AbfJIKEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 06:04:04 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56472 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729761AbfJIKD7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 06:03:59 -0400
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id BED195945B
-        for <netdev@vger.kernel.org>; Wed,  9 Oct 2019 10:03:58 +0000 (UTC)
-Received: by mail-wm1-f72.google.com with SMTP id m16so474685wmg.8
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 03:03:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nm4tgUTtfAGA91iZbiBcU/rtFWzTOBoRFaRHZuxuW9M=;
-        b=NgE484S5w8eZg6qpuUDhvOphiP/SUANVQEJZMKABXliRmrP5Gps3Cl+LwMTfgL/+jQ
-         OR1kqEDFiBuJ2A1TEhxH8IJRXHuAGFUPcrl6Q09xNtT53EO7RNcd+St5GYZunH0TkdBV
-         BjoNWsgF/p9Lwd4Yv4o2pi3u3P2OUTSw8ZIocURrFJzBtLKZ67uaeNEL91Lb+dwSPAPZ
-         np0Ptu/yGerhTGyG7LfEEePKRAql8I8ry86F+yCeQCQA4/vIRv/chBFQkTs2r0PaOpOd
-         PFMlsagoGuo6zizFSLXt0q0VIMcC5GnW1woRwywf623kLgYaobDmDhCCWItgja/NKXcc
-         PBXw==
-X-Gm-Message-State: APjAAAVnxydzrwqA5G6CJzlJJsGH/lTK9dys/yLZeM9RS0NtYR8cf4ek
-        eESM957VxWXpKwVocQpPQmvD+oNmPvn5OWw1q4ayEok8XZD9Ds4Z0pBW9I3flIDnNzY+9LrZaG0
-        N2/rVDfX7k4rYYM+g
-X-Received: by 2002:a1c:7c0a:: with SMTP id x10mr1987646wmc.48.1570615437006;
-        Wed, 09 Oct 2019 03:03:57 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqy+zveZ8xAKr0BHKF8ffWhbsRTFLY7qOsymMsPWJ8yuJN+EDryRlFKgw9ecO/DyjcLO48n3sA==
-X-Received: by 2002:a1c:7c0a:: with SMTP id x10mr1987610wmc.48.1570615436602;
-        Wed, 09 Oct 2019 03:03:56 -0700 (PDT)
-Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
-        by smtp.gmail.com with ESMTPSA id g3sm2501916wro.14.2019.10.09.03.03.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 03:03:55 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 12:03:53 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     kvm <kvm@vger.kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        virtualization@lists.linux-foundation.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 07/11] VSOCK: add AF_VSOCK test cases
-Message-ID: <CAGxU2F4N5ACePf6YLQCBFMHPu8wDLScF+AGQ2==JAuBUj0GB-A@mail.gmail.com>
-References: <20190801152541.245833-1-sgarzare@redhat.com>
- <20190801152541.245833-8-sgarzare@redhat.com>
+        id S1730523AbfJIKGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 06:06:16 -0400
+Received: from mail-eopbgr130074.outbound.protection.outlook.com ([40.107.13.74]:48091
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726211AbfJIKGP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 06:06:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=busMzihIkZvFRqLT24Nxld+vkaQhngaibRF4AT95XVPTyaYfvIpemwPbdJjC571/lwcFtshpQLwFhD0Z5tr/dgav2AHhGsKc3aP4Ddj3FOXUOBS09xWly1y2dPAk1hKVnMZ2JByR/NIw9StChxOXDyM9G/BITLqy8GrRfT+j/mV46R5VFlsxo+bhmjqMogrs1Ftj6rbjrPmDribRC+6WeDL2gc57bgHqHlg2+pRuuDEPD7urmkgSGp/HpI1Xic6dVg0h6/4uMTPb84ZOiSm1gfgOHJz1kjrOGW2rmkVntMxoN1CJjmOJ9vb0GWFjMD5IxLNHJqGYQVued+qXDwjpIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GZT9u+RBMF7VJB8rHfS+hh8hXsxwlSDetzzMFroy8pg=;
+ b=K05kw/ffdO6N+s8Xbf/loZo6qIzJpjSwTLv4FSqA3/N6bYh3UZWobbqIoBtiiFIiJdP/rVIADloJGBQAjyOWLXvb4tQDwCGrZN0P/Jbwd74TYST+gRySHOt0SNQz3o15M47tJAp7T2yNd0DMaCCGbl9WvqMwbeEUT6qLrknJFGgkmxJnW6GywH3pcOeGHOv3A2qozGUpqiUKUDxZVO0zOuk1WdCm1v9gYXQJ61rbnCeeA/GwI4JLkCqER41Wmj2V8MRgejJSkiuQ1JS+HBd0O93VuEBI90yw3LOhA+Zz0FqoNURAqp5kE5kf/VF4TD18Fh/EdFA5cGGfrctZzni3pg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GZT9u+RBMF7VJB8rHfS+hh8hXsxwlSDetzzMFroy8pg=;
+ b=NtwYq9c0ocEkWeOHluq/B88O2HGtBRMq9ZFZImnyJk/O8q6fwOtpi2NOKqOwzsIbY9exQxOIgUkjCK17BGLxqVMIiRnLgAEu/vjq80mwCdRJhhfgwhUDF42bRHd+h0kVA/HcCrW4yVL9efCTTKUlNaGBx1W8eq39h30sNeY9F+Y=
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.51.208) by
+ VI1PR04MB4400.eurprd04.prod.outlook.com (20.177.55.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Wed, 9 Oct 2019 10:06:12 +0000
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
+ ([fe80::10f0:af2c:76ac:dfb]) by VI1PR04MB5134.eurprd04.prod.outlook.com
+ ([fe80::10f0:af2c:76ac:dfb%7]) with mapi id 15.20.2347.016; Wed, 9 Oct 2019
+ 10:06:12 +0000
+From:   Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To:     Christoph Hellwig <hch@infradead.org>,
+        Madalin-cristian Bucur <madalin.bucur@nxp.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Roy Pledge <roy.pledge@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 19/20] dpaa_eth: add dpaa_dma_to_virt()
+Thread-Topic: [PATCH 19/20] dpaa_eth: add dpaa_dma_to_virt()
+Thread-Index: AQHVfdGJ8BuiEujlUEakPeKI2HGGx6dR7bYAgAApAYA=
+Date:   Wed, 9 Oct 2019 10:06:12 +0000
+Message-ID: <43b4dba2-cf0a-8f8f-e44a-d76833e28dd2@nxp.com>
+References: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
+ <1570536641-25104-20-git-send-email-madalin.bucur@nxp.com>
+ <20191009073926.GA6916@infradead.org>
+In-Reply-To: <20191009073926.GA6916@infradead.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=laurentiu.tudor@nxp.com; 
+x-originating-ip: [89.37.124.34]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 47de30cf-c49f-4f86-2651-08d74ca050a6
+x-ms-office365-filtering-ht: Tenant
+x-ms-traffictypediagnostic: VI1PR04MB4400:|VI1PR04MB4400:
+x-ms-exchange-purlcount: 1
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB4400C07EC25E3E43DF8771A8EC950@VI1PR04MB4400.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 018577E36E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(396003)(39860400002)(136003)(376002)(189003)(199004)(486006)(99286004)(446003)(476003)(966005)(2616005)(11346002)(76176011)(14454004)(478600001)(76116006)(25786009)(6116002)(26005)(91956017)(229853002)(66946007)(3846002)(66446008)(64756008)(66556008)(66476007)(86362001)(186003)(6512007)(2906002)(6246003)(31686004)(6506007)(53546011)(31696002)(4326008)(44832011)(6436002)(102836004)(6486002)(6636002)(7736002)(36756003)(110136005)(6306002)(81156014)(81166006)(54906003)(66066001)(5660300002)(71200400001)(71190400001)(8676002)(305945005)(316002)(256004)(4744005)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB4400;H:VI1PR04MB5134.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 57n5dgbSKs0auHVu7ntUPEYSqeooHTyF1VsLI6dJ4VThyVIqh3poG2S12VfrxzneH3r1yHFzQR4ca90IovqxdQcoyqdZLyqKNs6EQ3W+CiHLDTVTn5m6G9duCUeRBZYF/BjzVICy1bGK9RF0tkK0nB/oSMGTqtfDUKRrp5Kgy9/sQQ0BvC3jLO01CB8vbyQ0BZwjMV8GAOaiMaHkb1xttxiUL1QZao0Ftdp5US+Dcu9LrpDPiu4dal+DoSUvQ1B2wAXgC/UxYKaUSWPbpvc2x2+oeHYZyWkqMnFMpISdzLk/8iNEnhP9vjaNYh/+v+nzs48g8/Xbl4IsK8XONMH7A7sJnN0YLMbVqpquHKQiTdC7neTIgDq8TzVWiekoa0x+3CtiDz9q7BMKgl2vV/Mr7ukp2xACxoNIevQ/pJp9z6WmERJmqcLCcT2LqYAO5a+W4lL9LwA/fJ54HL6F7jsX7Q==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <130FB95E19AFDD4D806208373DE41922@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190801152541.245833-8-sgarzare@redhat.com>
-User-Agent: NeoMutt/20180716
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47de30cf-c49f-4f86-2651-08d74ca050a6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2019 10:06:12.5740
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jzrC5QPrQ/dcEUlWSTFD2/IV3QCxax9NeH7L3wxllzV1Lp3Ym07VR7WPSYT2uZqQ2A/jHuFULS1EY9bceqOJTA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4400
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
-I'm thinking about dividing this test into single applications, one
-for each test, do you think it makes sense?
-Or is it just a useless complication?
-
-Thanks,
-Stefano
-
-On Thu, Aug 1, 2019 at 5:27 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> From: Stefan Hajnoczi <stefanha@redhat.com>
->
-> The vsock_test.c program runs a test suite of AF_VSOCK test cases.
->
-> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
-> v2:
->  * Drop unnecessary includes [Stefan]
->  * Aligned with the current SPDX [Stefano]
->  * Set MULTICONN_NFDS to 100 [Stefano]
->  * Change (i % 1) in (i % 2) in the 'multiconn' test [Stefano]
-> ---
->  tools/testing/vsock/.gitignore   |   1 +
->  tools/testing/vsock/Makefile     |   5 +-
->  tools/testing/vsock/README       |   1 +
->  tools/testing/vsock/vsock_test.c | 312 +++++++++++++++++++++++++++++++
->  4 files changed, 317 insertions(+), 2 deletions(-)
->  create mode 100644 tools/testing/vsock/vsock_test.c
->
-> diff --git a/tools/testing/vsock/.gitignore b/tools/testing/vsock/.gitignore
-> index dc5f11faf530..7f7a2ccc30c4 100644
-> --- a/tools/testing/vsock/.gitignore
-> +++ b/tools/testing/vsock/.gitignore
-> @@ -1,2 +1,3 @@
->  *.d
-> +vsock_test
->  vsock_diag_test
-> diff --git a/tools/testing/vsock/Makefile b/tools/testing/vsock/Makefile
-> index a916878a2d8c..f8293c6910c9 100644
-> --- a/tools/testing/vsock/Makefile
-> +++ b/tools/testing/vsock/Makefile
-> @@ -1,10 +1,11 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  all: test
-> -test: vsock_diag_test
-> +test: vsock_test vsock_diag_test
-> +vsock_test: vsock_test.o timeout.o control.o util.o
->  vsock_diag_test: vsock_diag_test.o timeout.o control.o util.o
->
->  CFLAGS += -g -O2 -Werror -Wall -I. -I../../include -I../../../usr/include -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -D_GNU_SOURCE
->  .PHONY: all test clean
->  clean:
-> -       ${RM} *.o *.d vsock_diag_test
-> +       ${RM} *.o *.d vsock_test vsock_diag_test
->  -include *.d
-> diff --git a/tools/testing/vsock/README b/tools/testing/vsock/README
-> index cf7dc64273bf..4d5045e7d2c3 100644
-> --- a/tools/testing/vsock/README
-> +++ b/tools/testing/vsock/README
-> @@ -5,6 +5,7 @@ Hyper-V.
->
->  The following tests are available:
->
-> +  * vsock_test - core AF_VSOCK socket functionality
->    * vsock_diag_test - vsock_diag.ko module for listing open sockets
->
->  The following prerequisite steps are not automated and must be performed prior
-> diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-> new file mode 100644
-> index 000000000000..06099d037405
-> --- /dev/null
-> +++ b/tools/testing/vsock/vsock_test.c
-> @@ -0,0 +1,312 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * vsock_test - vsock.ko test suite
-> + *
-> + * Copyright (C) 2017 Red Hat, Inc.
-> + *
-> + * Author: Stefan Hajnoczi <stefanha@redhat.com>
-> + */
-> +
-> +#include <getopt.h>
-> +#include <stdio.h>
-> +#include <stdlib.h>
-> +#include <string.h>
-> +#include <errno.h>
-> +#include <unistd.h>
-> +
-> +#include "timeout.h"
-> +#include "control.h"
-> +#include "util.h"
-> +
-> +static void test_stream_connection_reset(const struct test_opts *opts)
-> +{
-> +       union {
-> +               struct sockaddr sa;
-> +               struct sockaddr_vm svm;
-> +       } addr = {
-> +               .svm = {
-> +                       .svm_family = AF_VSOCK,
-> +                       .svm_port = 1234,
-> +                       .svm_cid = opts->peer_cid,
-> +               },
-> +       };
-> +       int ret;
-> +       int fd;
-> +
-> +       fd = socket(AF_VSOCK, SOCK_STREAM, 0);
-> +
-> +       timeout_begin(TIMEOUT);
-> +       do {
-> +               ret = connect(fd, &addr.sa, sizeof(addr.svm));
-> +               timeout_check("connect");
-> +       } while (ret < 0 && errno == EINTR);
-> +       timeout_end();
-> +
-> +       if (ret != -1) {
-> +               fprintf(stderr, "expected connect(2) failure, got %d\n", ret);
-> +               exit(EXIT_FAILURE);
-> +       }
-> +       if (errno != ECONNRESET) {
-> +               fprintf(stderr, "unexpected connect(2) errno %d\n", errno);
-> +               exit(EXIT_FAILURE);
-> +       }
-> +
-> +       close(fd);
-> +}
-> +
-> +static void test_stream_client_close_client(const struct test_opts *opts)
-> +{
-> +       int fd;
-> +
-> +       fd = vsock_stream_connect(opts->peer_cid, 1234);
-> +       if (fd < 0) {
-> +               perror("connect");
-> +               exit(EXIT_FAILURE);
-> +       }
-> +
-> +       send_byte(fd, 1);
-> +       close(fd);
-> +       control_writeln("CLOSED");
-> +}
-> +
-> +static void test_stream_client_close_server(const struct test_opts *opts)
-> +{
-> +       int fd;
-> +
-> +       fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
-> +       if (fd < 0) {
-> +               perror("accept");
-> +               exit(EXIT_FAILURE);
-> +       }
-> +
-> +       control_expectln("CLOSED");
-> +
-> +       send_byte(fd, -EPIPE);
-> +       recv_byte(fd, 1);
-> +       recv_byte(fd, 0);
-> +       close(fd);
-> +}
-> +
-> +static void test_stream_server_close_client(const struct test_opts *opts)
-> +{
-> +       int fd;
-> +
-> +       fd = vsock_stream_connect(opts->peer_cid, 1234);
-> +       if (fd < 0) {
-> +               perror("connect");
-> +               exit(EXIT_FAILURE);
-> +       }
-> +
-> +       control_expectln("CLOSED");
-> +
-> +       send_byte(fd, -EPIPE);
-> +       recv_byte(fd, 1);
-> +       recv_byte(fd, 0);
-> +       close(fd);
-> +}
-> +
-> +static void test_stream_server_close_server(const struct test_opts *opts)
-> +{
-> +       int fd;
-> +
-> +       fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
-> +       if (fd < 0) {
-> +               perror("accept");
-> +               exit(EXIT_FAILURE);
-> +       }
-> +
-> +       send_byte(fd, 1);
-> +       close(fd);
-> +       control_writeln("CLOSED");
-> +}
-> +
-> +/* With the standard socket sizes, VMCI is able to support about 100
-> + * concurrent stream connections.
-> + */
-> +#define MULTICONN_NFDS 100
-> +
-> +static void test_stream_multiconn_client(const struct test_opts *opts)
-> +{
-> +       int fds[MULTICONN_NFDS];
-> +       int i;
-> +
-> +       for (i = 0; i < MULTICONN_NFDS; i++) {
-> +               fds[i] = vsock_stream_connect(opts->peer_cid, 1234);
-> +               if (fds[i] < 0) {
-> +                       perror("connect");
-> +                       exit(EXIT_FAILURE);
-> +               }
-> +       }
-> +
-> +       for (i = 0; i < MULTICONN_NFDS; i++) {
-> +               if (i % 2)
-> +                       recv_byte(fds[i], 1);
-> +               else
-> +                       send_byte(fds[i], 1);
-> +       }
-> +
-> +       for (i = 0; i < MULTICONN_NFDS; i++)
-> +               close(fds[i]);
-> +}
-> +
-> +static void test_stream_multiconn_server(const struct test_opts *opts)
-> +{
-> +       int fds[MULTICONN_NFDS];
-> +       int i;
-> +
-> +       for (i = 0; i < MULTICONN_NFDS; i++) {
-> +               fds[i] = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
-> +               if (fds[i] < 0) {
-> +                       perror("accept");
-> +                       exit(EXIT_FAILURE);
-> +               }
-> +       }
-> +
-> +       for (i = 0; i < MULTICONN_NFDS; i++) {
-> +               if (i % 2)
-> +                       send_byte(fds[i], 1);
-> +               else
-> +                       recv_byte(fds[i], 1);
-> +       }
-> +
-> +       for (i = 0; i < MULTICONN_NFDS; i++)
-> +               close(fds[i]);
-> +}
-> +
-> +static struct test_case test_cases[] = {
-> +       {
-> +               .name = "SOCK_STREAM connection reset",
-> +               .run_client = test_stream_connection_reset,
-> +       },
-> +       {
-> +               .name = "SOCK_STREAM client close",
-> +               .run_client = test_stream_client_close_client,
-> +               .run_server = test_stream_client_close_server,
-> +       },
-> +       {
-> +               .name = "SOCK_STREAM server close",
-> +               .run_client = test_stream_server_close_client,
-> +               .run_server = test_stream_server_close_server,
-> +       },
-> +       {
-> +               .name = "SOCK_STREAM multiple connections",
-> +               .run_client = test_stream_multiconn_client,
-> +               .run_server = test_stream_multiconn_server,
-> +       },
-> +       {},
-> +};
-> +
-> +static const char optstring[] = "";
-> +static const struct option longopts[] = {
-> +       {
-> +               .name = "control-host",
-> +               .has_arg = required_argument,
-> +               .val = 'H',
-> +       },
-> +       {
-> +               .name = "control-port",
-> +               .has_arg = required_argument,
-> +               .val = 'P',
-> +       },
-> +       {
-> +               .name = "mode",
-> +               .has_arg = required_argument,
-> +               .val = 'm',
-> +       },
-> +       {
-> +               .name = "peer-cid",
-> +               .has_arg = required_argument,
-> +               .val = 'p',
-> +       },
-> +       {
-> +               .name = "help",
-> +               .has_arg = no_argument,
-> +               .val = '?',
-> +       },
-> +       {},
-> +};
-> +
-> +static void usage(void)
-> +{
-> +       fprintf(stderr, "Usage: vsock_test [--help] [--control-host=<host>] --control-port=<port> --mode=client|server --peer-cid=<cid>\n"
-> +               "\n"
-> +               "  Server: vsock_test --control-port=1234 --mode=server --peer-cid=3\n"
-> +               "  Client: vsock_test --control-host=192.168.0.1 --control-port=1234 --mode=client --peer-cid=2\n"
-> +               "\n"
-> +               "Run vsock.ko tests.  Must be launched in both guest\n"
-> +               "and host.  One side must use --mode=client and\n"
-> +               "the other side must use --mode=server.\n"
-> +               "\n"
-> +               "A TCP control socket connection is used to coordinate tests\n"
-> +               "between the client and the server.  The server requires a\n"
-> +               "listen address and the client requires an address to\n"
-> +               "connect to.\n"
-> +               "\n"
-> +               "The CID of the other side must be given with --peer-cid=<cid>.\n");
-> +       exit(EXIT_FAILURE);
-> +}
-> +
-> +int main(int argc, char **argv)
-> +{
-> +       const char *control_host = NULL;
-> +       const char *control_port = NULL;
-> +       struct test_opts opts = {
-> +               .mode = TEST_MODE_UNSET,
-> +               .peer_cid = VMADDR_CID_ANY,
-> +       };
-> +
-> +       init_signals();
-> +
-> +       for (;;) {
-> +               int opt = getopt_long(argc, argv, optstring, longopts, NULL);
-> +
-> +               if (opt == -1)
-> +                       break;
-> +
-> +               switch (opt) {
-> +               case 'H':
-> +                       control_host = optarg;
-> +                       break;
-> +               case 'm':
-> +                       if (strcmp(optarg, "client") == 0)
-> +                               opts.mode = TEST_MODE_CLIENT;
-> +                       else if (strcmp(optarg, "server") == 0)
-> +                               opts.mode = TEST_MODE_SERVER;
-> +                       else {
-> +                               fprintf(stderr, "--mode must be \"client\" or \"server\"\n");
-> +                               return EXIT_FAILURE;
-> +                       }
-> +                       break;
-> +               case 'p':
-> +                       opts.peer_cid = parse_cid(optarg);
-> +                       break;
-> +               case 'P':
-> +                       control_port = optarg;
-> +                       break;
-> +               case '?':
-> +               default:
-> +                       usage();
-> +               }
-> +       }
-> +
-> +       if (!control_port)
-> +               usage();
-> +       if (opts.mode == TEST_MODE_UNSET)
-> +               usage();
-> +       if (opts.peer_cid == VMADDR_CID_ANY)
-> +               usage();
-> +
-> +       if (!control_host) {
-> +               if (opts.mode != TEST_MODE_SERVER)
-> +                       usage();
-> +               control_host = "0.0.0.0";
-> +       }
-> +
-> +       control_init(control_host, control_port,
-> +                    opts.mode == TEST_MODE_SERVER);
-> +
-> +       run_tests(test_cases, &opts);
-> +
-> +       control_cleanup();
-> +       return EXIT_SUCCESS;
-> +}
-> --
-> 2.20.1
+T24gMDkuMTAuMjAxOSAxMDozOSwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6DQo+IE9uIFR1ZSwg
+T2N0IDA4LCAyMDE5IGF0IDAzOjEwOjQwUE0gKzAzMDAsIE1hZGFsaW4gQnVjdXIgd3JvdGU6DQo+
+PiBDZW50cmFsaXplIHRoZSBwaHlzX3RvX3ZpcnQoKSBjYWxscy4NCj4gDQo+IFlvdSBkb24ndCBu
+ZWVkIHRvIGNlbnRyYWxpemUgdGhvc2UsIHlvdSBuZWVkIHRvIGZpeCB0aGVtLiAgQ2FsbGluZw0K
+PiBwaHlzX3RvX3ZpcnQgb24gYSBkbWFfYWRkciBpcyBjb21wbGV0ZWx5IGJvZ3VzLg0KPiANCg0K
+WWVhaCwgdGhhdCdzIG9uIG15IFRPRE8gbGlzdCBbMV0gZm9yIHF1aXRlIGEgd2hpbGUsIGFtb25n
+IG90aGVycy4gSSdsbCANCnJldHVybiB0byBpdCBhcyBzb29uIGFzIEknbSBkb25lIHdpdGggdGhl
+IGJ1cm5pbmcgc3R1ZmYgSSdtIGN1cnJlbnRseSBvbi4NCg0KWzFdIGh0dHBzOi8vcGF0Y2h3b3Jr
+Lmtlcm5lbC5vcmcvcGF0Y2gvMTA5Njg5NDcvDQoNCi0tLQ0KQmVzdCBSZWdhcmRzLCBMYXVyZW50
+aXU=
