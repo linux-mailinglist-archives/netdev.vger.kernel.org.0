@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A614BD1CA8
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:19:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11CB1D1C9E
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732524AbfJIXTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 19:19:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37028 "EHLO mail.kernel.org"
+        id S1732545AbfJIXTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 19:19:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37076 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732483AbfJIXTN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 19:19:13 -0400
+        id S1731072AbfJIXTQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 19:19:16 -0400
 Received: from localhost.localdomain (unknown [151.66.37.67])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69DAF21929;
-        Wed,  9 Oct 2019 23:19:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 918CE206C0;
+        Wed,  9 Oct 2019 23:19:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570663153;
-        bh=S1LhbpV16ZnX952Qwc5a9L7X3jghZgy1Yjs2LoAPoJ0=;
+        s=default; t=1570663155;
+        bh=JLNXVGLu3fSdLaagh2aiiYWWTJ0+ii7/kTh3wAQa5+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vtOXMZDGVi4TWiH8r66TosVTL9z0tyTikB8yWeBM1WGSv8izgyKCEKy+XLVsP1/59
-         KpQsXo+d+6ffZ8uYOIVzif2UO14YNr/EsIP5b/qWo9ifXv4objzH3XC8GMbsan11/D
-         rtdEdpPi+F0269hwbMrTIVpQ5bRXVfDuIraAZWNA=
+        b=ux9G77uhFrwpG4nDfDqJwArqpCh1qKMYlM8RRQ12GNAPtbi1htTsMAuMzTlt9Gq25
+         yjJgvmZvXsPyUlNXr0c1HiIFsVacpzyApQdpGLm/ssMeVnbpXXb/H3EOscavWAg6IS
+         3jl66AOZsyV3Tqst6DalTowS/DGdoVGjPLYchyiU=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
         thomas.petazzoni@bootlin.com, brouer@redhat.com,
         ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
         mw@semihalf.com
-Subject: [PATCH v2 net-next 6/8] net: mvneta: move header prefetch in mvneta_swbm_rx_frame
-Date:   Thu, 10 Oct 2019 01:18:36 +0200
-Message-Id: <eb0cdfc9f5f3e61e38e303f908abd7beb57360e4.1570662004.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 7/8] net: mvneta: make tx buffer array agnostic
+Date:   Thu, 10 Oct 2019 01:18:37 +0200
+Message-Id: <2f89b04bf35ed750bedd000c9b0117d7aa527014.1570662004.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1570662004.git.lorenzo@kernel.org>
 References: <cover.1570662004.git.lorenzo@kernel.org>
@@ -42,70 +42,212 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move data buffer prefetch in mvneta_swbm_rx_frame after
-dma_sync_single_range_for_cpu
+Allow tx buffer array to contain both skb and xdp buffers in order to
+enable xdp frame recycling adding XDP_TX verdict support
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c | 66 +++++++++++++++++----------
+ 1 file changed, 43 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index e2795dddbcaf..91d8cb45104f 100644
+index 91d8cb45104f..5a21d03e9c7b 100644
 --- a/drivers/net/ethernet/marvell/mvneta.c
 +++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2009,11 +2009,8 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
- 	struct net_device *dev = pp->dev;
- 	enum dma_data_direction dma_dir;
- 	struct xdp_buff xdp = {
--		.data_hard_start = data,
--		.data = data + MVNETA_SKB_HEADROOM + MVNETA_MH_SIZE,
- 		.rxq = &rxq->xdp_rxq,
- 	};
--	xdp_set_data_meta_invalid(&xdp);
+@@ -561,6 +561,20 @@ struct mvneta_rx_desc {
+ };
+ #endif
  
- 	if (MVNETA_SKB_SIZE(rx_desc->data_size) > PAGE_SIZE) {
- 		len = MVNETA_MAX_RX_BUF_SIZE;
-@@ -2022,13 +2019,20 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
- 		len = rx_desc->data_size;
- 		data_len += len - ETH_FCS_LEN;
++enum mvneta_tx_buf_type {
++	MVNETA_TYPE_SKB,
++	MVNETA_TYPE_XDP_TX,
++	MVNETA_TYPE_XDP_NDO,
++};
++
++struct mvneta_tx_buf {
++	enum mvneta_tx_buf_type type;
++	union {
++		struct xdp_frame *xdpf;
++		struct sk_buff *skb;
++	};
++};
++
+ struct mvneta_tx_queue {
+ 	/* Number of this TX queue, in the range 0-7 */
+ 	u8 id;
+@@ -576,8 +590,8 @@ struct mvneta_tx_queue {
+ 	int tx_stop_threshold;
+ 	int tx_wake_threshold;
+ 
+-	/* Array of transmitted skb */
+-	struct sk_buff **tx_skb;
++	/* Array of transmitted buffers */
++	struct mvneta_tx_buf *buf;
+ 
+ 	/* Index of last TX DMA descriptor that was inserted */
+ 	int txq_put_index;
+@@ -1780,14 +1794,9 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+ 	int i;
+ 
+ 	for (i = 0; i < num; i++) {
++		struct mvneta_tx_buf *buf = &txq->buf[txq->txq_get_index];
+ 		struct mvneta_tx_desc *tx_desc = txq->descs +
+ 			txq->txq_get_index;
+-		struct sk_buff *skb = txq->tx_skb[txq->txq_get_index];
+-
+-		if (skb) {
+-			bytes_compl += skb->len;
+-			pkts_compl++;
+-		}
+ 
+ 		mvneta_txq_inc_get(txq);
+ 
+@@ -1795,9 +1804,12 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+ 			dma_unmap_single(pp->dev->dev.parent,
+ 					 tx_desc->buf_phys_addr,
+ 					 tx_desc->data_size, DMA_TO_DEVICE);
+-		if (!skb)
++		if (!buf->skb)
+ 			continue;
+-		dev_kfree_skb_any(skb);
++
++		bytes_compl += buf->skb->len;
++		pkts_compl++;
++		dev_kfree_skb_any(buf->skb);
  	}
--	xdp.data_end = xdp.data + data_len;
  
- 	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
- 	dma_sync_single_range_for_cpu(dev->dev.parent,
- 				      rx_desc->buf_phys_addr, 0,
- 				      len, dma_dir);
+ 	netdev_tx_completed_queue(nq, pkts_compl, bytes_compl);
+@@ -2318,16 +2330,19 @@ static inline void
+ mvneta_tso_put_hdr(struct sk_buff *skb,
+ 		   struct mvneta_port *pp, struct mvneta_tx_queue *txq)
+ {
+-	struct mvneta_tx_desc *tx_desc;
+ 	int hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
++	struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
++	struct mvneta_tx_desc *tx_desc;
  
-+	/* Prefetch header */
-+	prefetch(data);
+-	txq->tx_skb[txq->txq_put_index] = NULL;
+ 	tx_desc = mvneta_txq_next_desc_get(txq);
+ 	tx_desc->data_size = hdr_len;
+ 	tx_desc->command = mvneta_skb_tx_csum(pp, skb);
+ 	tx_desc->command |= MVNETA_TXD_F_DESC;
+ 	tx_desc->buf_phys_addr = txq->tso_hdrs_phys +
+ 				 txq->txq_put_index * TSO_HEADER_SIZE;
++	buf->type = MVNETA_TYPE_SKB;
++	buf->skb = NULL;
 +
-+	xdp.data_hard_start = data;
-+	xdp.data = data + MVNETA_SKB_HEADROOM + MVNETA_MH_SIZE;
-+	xdp.data_end = xdp.data + data_len;
-+	xdp_set_data_meta_invalid(&xdp);
-+
- 	if (xdp_prog) {
- 		u32 ret;
+ 	mvneta_txq_inc_put(txq);
+ }
  
-@@ -2117,15 +2121,11 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 	/* Fairness NAPI loop */
- 	while (done < budget && done < rx_pending) {
- 		struct mvneta_rx_desc *rx_desc = mvneta_rxq_next_desc_get(rxq);
--		unsigned char *data;
- 		struct page *page;
- 		int index;
+@@ -2336,6 +2351,7 @@ mvneta_tso_put_data(struct net_device *dev, struct mvneta_tx_queue *txq,
+ 		    struct sk_buff *skb, char *data, int size,
+ 		    bool last_tcp, bool is_last)
+ {
++	struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
+ 	struct mvneta_tx_desc *tx_desc;
  
- 		index = rx_desc - rxq->descs;
- 		page = (struct page *)rxq->buf_virt_addr[index];
--		data = page_address(page);
--		/* Prefetch header */
--		prefetch(data);
+ 	tx_desc = mvneta_txq_next_desc_get(txq);
+@@ -2349,7 +2365,8 @@ mvneta_tso_put_data(struct net_device *dev, struct mvneta_tx_queue *txq,
+ 	}
  
- 		rxq->refill_num++;
- 		done++;
+ 	tx_desc->command = 0;
+-	txq->tx_skb[txq->txq_put_index] = NULL;
++	buf->type = MVNETA_TYPE_SKB;
++	buf->skb = NULL;
+ 
+ 	if (last_tcp) {
+ 		/* last descriptor in the TCP packet */
+@@ -2357,7 +2374,7 @@ mvneta_tso_put_data(struct net_device *dev, struct mvneta_tx_queue *txq,
+ 
+ 		/* last descriptor in SKB */
+ 		if (is_last)
+-			txq->tx_skb[txq->txq_put_index] = skb;
++			buf->skb = skb;
+ 	}
+ 	mvneta_txq_inc_put(txq);
+ 	return 0;
+@@ -2442,6 +2459,7 @@ static int mvneta_tx_frag_process(struct mvneta_port *pp, struct sk_buff *skb,
+ 	int i, nr_frags = skb_shinfo(skb)->nr_frags;
+ 
+ 	for (i = 0; i < nr_frags; i++) {
++		struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
+ 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+ 		void *addr = skb_frag_address(frag);
+ 
+@@ -2461,12 +2479,13 @@ static int mvneta_tx_frag_process(struct mvneta_port *pp, struct sk_buff *skb,
+ 		if (i == nr_frags - 1) {
+ 			/* Last descriptor */
+ 			tx_desc->command = MVNETA_TXD_L_DESC | MVNETA_TXD_Z_PAD;
+-			txq->tx_skb[txq->txq_put_index] = skb;
++			buf->skb = skb;
+ 		} else {
+ 			/* Descriptor in the middle: Not First, Not Last */
+ 			tx_desc->command = 0;
+-			txq->tx_skb[txq->txq_put_index] = NULL;
++			buf->skb = NULL;
+ 		}
++		buf->type = MVNETA_TYPE_SKB;
+ 		mvneta_txq_inc_put(txq);
+ 	}
+ 
+@@ -2494,6 +2513,7 @@ static netdev_tx_t mvneta_tx(struct sk_buff *skb, struct net_device *dev)
+ 	struct mvneta_port *pp = netdev_priv(dev);
+ 	u16 txq_id = skb_get_queue_mapping(skb);
+ 	struct mvneta_tx_queue *txq = &pp->txqs[txq_id];
++	struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
+ 	struct mvneta_tx_desc *tx_desc;
+ 	int len = skb->len;
+ 	int frags = 0;
+@@ -2526,16 +2546,17 @@ static netdev_tx_t mvneta_tx(struct sk_buff *skb, struct net_device *dev)
+ 		goto out;
+ 	}
+ 
++	buf->type = MVNETA_TYPE_SKB;
+ 	if (frags == 1) {
+ 		/* First and Last descriptor */
+ 		tx_cmd |= MVNETA_TXD_FLZ_DESC;
+ 		tx_desc->command = tx_cmd;
+-		txq->tx_skb[txq->txq_put_index] = skb;
++		buf->skb = skb;
+ 		mvneta_txq_inc_put(txq);
+ 	} else {
+ 		/* First but not Last */
+ 		tx_cmd |= MVNETA_TXD_F_DESC;
+-		txq->tx_skb[txq->txq_put_index] = NULL;
++		buf->skb = NULL;
+ 		mvneta_txq_inc_put(txq);
+ 		tx_desc->command = tx_cmd;
+ 		/* Continue with other skb fragments */
+@@ -3121,9 +3142,8 @@ static int mvneta_txq_sw_init(struct mvneta_port *pp,
+ 
+ 	txq->last_desc = txq->size - 1;
+ 
+-	txq->tx_skb = kmalloc_array(txq->size, sizeof(*txq->tx_skb),
+-				    GFP_KERNEL);
+-	if (!txq->tx_skb) {
++	txq->buf = kmalloc_array(txq->size, sizeof(*txq->buf), GFP_KERNEL);
++	if (!txq->buf) {
+ 		dma_free_coherent(pp->dev->dev.parent,
+ 				  txq->size * MVNETA_DESC_ALIGNED_SIZE,
+ 				  txq->descs, txq->descs_phys);
+@@ -3135,7 +3155,7 @@ static int mvneta_txq_sw_init(struct mvneta_port *pp,
+ 					   txq->size * TSO_HEADER_SIZE,
+ 					   &txq->tso_hdrs_phys, GFP_KERNEL);
+ 	if (!txq->tso_hdrs) {
+-		kfree(txq->tx_skb);
++		kfree(txq->buf);
+ 		dma_free_coherent(pp->dev->dev.parent,
+ 				  txq->size * MVNETA_DESC_ALIGNED_SIZE,
+ 				  txq->descs, txq->descs_phys);
+@@ -3188,7 +3208,7 @@ static void mvneta_txq_sw_deinit(struct mvneta_port *pp,
+ {
+ 	struct netdev_queue *nq = netdev_get_tx_queue(pp->dev, txq->id);
+ 
+-	kfree(txq->tx_skb);
++	kfree(txq->buf);
+ 
+ 	if (txq->tso_hdrs)
+ 		dma_free_coherent(pp->dev->dev.parent,
 -- 
 2.21.0
 
