@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93BD8D0C87
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 12:19:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71B26D0C94
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 12:19:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730763AbfJIKRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 06:17:32 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60986 "EHLO mx1.suse.de"
+        id S1731083AbfJIKSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 06:18:00 -0400
+Received: from mx2.suse.de ([195.135.220.15]:32784 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725935AbfJIKRb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 06:17:31 -0400
+        id S1730496AbfJIKRc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 06:17:32 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id DCCAFAF85;
+        by mx1.suse.de (Postfix) with ESMTP id DCC40AF77;
         Wed,  9 Oct 2019 10:17:27 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -31,105 +31,183 @@ To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
         netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH v7 0/5] Use MFD framework for SGI IOC3 drivers
-Date:   Wed,  9 Oct 2019 12:17:07 +0200
-Message-Id: <20191009101713.12238-1-tbogendoerfer@suse.de>
+Subject: [PATCH v8 1/5] nvmem: core: add nvmem_device_find
+Date:   Wed,  9 Oct 2019 12:17:08 +0200
+Message-Id: <20191009101713.12238-2-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20191009101713.12238-1-tbogendoerfer@suse.de>
+References: <20191009101713.12238-1-tbogendoerfer@suse.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGI IOC3 ASIC includes support for ethernet, PS2 keyboard/mouse,
-NIC (number in a can), GPIO and a byte  bus. By attaching a
-SuperIO chip to it, it also supports serial lines and a parallel
-port. The chip is used on a variety of SGI systems with different
-configurations. This patchset moves code out of the network driver,
-which doesn't belong there, into its new place a MFD driver and
-specific platform drivers for the different subfunctions.
+nvmem_device_find provides a way to search for nvmem devices with
+the help of a match function simlair to bus_find_device.
 
-Changes in v8:
- - Re-worked comments in drivers/mfd/ioc3.c
- - Added select CRC16 to ioc3-eth.c
- - Patches 1 and 2 are already taken to mips-next, but
-   for completeness of the series they are still included.
-   What's missing to get the remaining 3 patches via the MIPS
-   tree is an ack from a network maintainer
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+---
+ Documentation/driver-api/nvmem.rst |  2 ++
+ drivers/nvmem/core.c               | 61 +++++++++++++++++---------------------
+ include/linux/nvmem-consumer.h     |  9 ++++++
+ 3 files changed, 38 insertions(+), 34 deletions(-)
 
-Changes in v7:
- - added patch to enable ethernet phy for Origin 200 systems
- - depend on 64bit for ioc3 mfd driver
-
-Changes in v6:
- - dropped patches accepted for v5.4-rc1
- - moved serio patch to ip30 patch series
- - adapted nvmem patch
-
-Changes in v5:
- - requested by Jakub I've splited ioc3 ethernet driver changes into
-   more steps to make the transition more visible; on the way there 
-   I've "checkpatched" the driver and reduced code reorderings
- - dropped all uint16_t and uint32_t
- - added nvmem API extension to the documenation file
- - changed to use request_irq/free_irq in serio driver
- - removed wrong kfree() in serio error path
-
-Changes in v4:
- - added w1 drivers to the series after merge in 5.3 failed because
-   of no response from maintainer and other parts of this series
-   won't work without that drivers
- - moved ip30 systemboard support to the ip30 series, which will
-   deal with rtc oddity Lee found
- - converted to use devm_platform_ioremap_resource
- - use PLATFORM_DEVID_AUTO for serial, ethernet and serio in mfd driver
- - fixed reverse christmas order in ioc3-eth.c
- - formating issue found by Lee
- - re-worked irq request/free in serio driver to avoid crashes during
-   probe/remove
-
-Changes in v3:
- - use 1-wire subsystem for handling proms
- - pci-xtalk driver uses prom information to create PCI subsystem
-   ids for use in MFD driver
- - changed MFD driver to only use static declared mfd_cells
- - added IP30 system board setup to MFD driver
- - mac address is now read from ioc3-eth driver with nvmem framework
-
-Changes in v2:
- - fixed issue in ioc3kbd.c reported by Dmitry Torokhov
- - merged IP27 RTC removal and 8250 serial driver addition into
-   main MFD patch to keep patches bisectable
-
-Thomas Bogendoerfer (5):
-  nvmem: core: add nvmem_device_find
-  MIPS: PCI: use information from 1-wire PROM for IOC3 detection
-  mfd: ioc3: Add driver for SGI IOC3 chip
-  MIPS: SGI-IP27: fix readb/writeb addressing
-  MIPS: SGI-IP27: Enable ethernet phy on second Origin 200 module
-
- Documentation/driver-api/nvmem.rst            |   2 +
- arch/mips/include/asm/mach-ip27/mangle-port.h |   4 +-
- arch/mips/include/asm/pci/bridge.h            |   1 +
- arch/mips/include/asm/sn/ioc3.h               |  47 +-
- arch/mips/pci/pci-ip27.c                      |  22 +
- arch/mips/pci/pci-xtalk-bridge.c              | 135 +++++-
- arch/mips/sgi-ip27/ip27-timer.c               |  20 -
- arch/mips/sgi-ip27/ip27-xtalk.c               |  38 +-
- drivers/mfd/Kconfig                           |  13 +
- drivers/mfd/Makefile                          |   1 +
- drivers/mfd/ioc3.c                            | 588 ++++++++++++++++++++++++++
- drivers/net/ethernet/sgi/Kconfig              |   5 +-
- drivers/net/ethernet/sgi/ioc3-eth.c           | 561 +++++-------------------
- drivers/nvmem/core.c                          |  61 ++-
- drivers/rtc/rtc-m48t35.c                      |  11 +
- drivers/tty/serial/8250/8250_ioc3.c           |  98 +++++
- drivers/tty/serial/8250/Kconfig               |  11 +
- drivers/tty/serial/8250/Makefile              |   1 +
- include/linux/nvmem-consumer.h                |   9 +
- 19 files changed, 1080 insertions(+), 548 deletions(-)
- create mode 100644 drivers/mfd/ioc3.c
- create mode 100644 drivers/tty/serial/8250/8250_ioc3.c
-
+diff --git a/Documentation/driver-api/nvmem.rst b/Documentation/driver-api/nvmem.rst
+index d9d958d5c824..287e86819640 100644
+--- a/Documentation/driver-api/nvmem.rst
++++ b/Documentation/driver-api/nvmem.rst
+@@ -129,6 +129,8 @@ To facilitate such consumers NVMEM framework provides below apis::
+   struct nvmem_device *nvmem_device_get(struct device *dev, const char *name);
+   struct nvmem_device *devm_nvmem_device_get(struct device *dev,
+ 					   const char *name);
++  struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data));
+   void nvmem_device_put(struct nvmem_device *nvmem);
+   int nvmem_device_read(struct nvmem_device *nvmem, unsigned int offset,
+ 		      size_t bytes, void *buf);
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index 057d1ff87d5d..9f1ee9c766ec 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -76,33 +76,6 @@ static struct bus_type nvmem_bus_type = {
+ 	.name		= "nvmem",
+ };
+ 
+-static struct nvmem_device *of_nvmem_find(struct device_node *nvmem_np)
+-{
+-	struct device *d;
+-
+-	if (!nvmem_np)
+-		return NULL;
+-
+-	d = bus_find_device_by_of_node(&nvmem_bus_type, nvmem_np);
+-
+-	if (!d)
+-		return NULL;
+-
+-	return to_nvmem_device(d);
+-}
+-
+-static struct nvmem_device *nvmem_find(const char *name)
+-{
+-	struct device *d;
+-
+-	d = bus_find_device_by_name(&nvmem_bus_type, NULL, name);
+-
+-	if (!d)
+-		return NULL;
+-
+-	return to_nvmem_device(d);
+-}
+-
+ static void nvmem_cell_drop(struct nvmem_cell *cell)
+ {
+ 	blocking_notifier_call_chain(&nvmem_notifier, NVMEM_CELL_REMOVE, cell);
+@@ -532,13 +505,16 @@ int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
+ }
+ EXPORT_SYMBOL(devm_nvmem_unregister);
+ 
+-static struct nvmem_device *__nvmem_device_get(struct device_node *np,
+-					       const char *nvmem_name)
++static struct nvmem_device *__nvmem_device_get(void *data,
++			int (*match)(struct device *dev, const void *data))
+ {
+ 	struct nvmem_device *nvmem = NULL;
++	struct device *dev;
+ 
+ 	mutex_lock(&nvmem_mutex);
+-	nvmem = np ? of_nvmem_find(np) : nvmem_find(nvmem_name);
++	dev = bus_find_device(&nvmem_bus_type, NULL, data, match);
++	if (dev)
++		nvmem = to_nvmem_device(dev);
+ 	mutex_unlock(&nvmem_mutex);
+ 	if (!nvmem)
+ 		return ERR_PTR(-EPROBE_DEFER);
+@@ -587,7 +563,7 @@ struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
+ 	if (!nvmem_np)
+ 		return ERR_PTR(-ENOENT);
+ 
+-	return __nvmem_device_get(nvmem_np, NULL);
++	return __nvmem_device_get(nvmem_np, device_match_of_node);
+ }
+ EXPORT_SYMBOL_GPL(of_nvmem_device_get);
+ #endif
+@@ -613,10 +589,26 @@ struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
+ 
+ 	}
+ 
+-	return __nvmem_device_get(NULL, dev_name);
++	return __nvmem_device_get((void *)dev_name, device_match_name);
+ }
+ EXPORT_SYMBOL_GPL(nvmem_device_get);
+ 
++/**
++ * nvmem_device_find() - Find nvmem device with matching function
++ *
++ * @data: Data to pass to match function
++ * @match: Callback function to check device
++ *
++ * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
++ * on success.
++ */
++struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data))
++{
++	return __nvmem_device_get(data, match);
++}
++EXPORT_SYMBOL_GPL(nvmem_device_find);
++
+ static int devm_nvmem_device_match(struct device *dev, void *res, void *data)
+ {
+ 	struct nvmem_device **nvmem = res;
+@@ -710,7 +702,8 @@ nvmem_cell_get_from_lookup(struct device *dev, const char *con_id)
+ 		if ((strcmp(lookup->dev_id, dev_id) == 0) &&
+ 		    (strcmp(lookup->con_id, con_id) == 0)) {
+ 			/* This is the right entry. */
+-			nvmem = __nvmem_device_get(NULL, lookup->nvmem_name);
++			nvmem = __nvmem_device_get((void *)lookup->nvmem_name,
++						   device_match_name);
+ 			if (IS_ERR(nvmem)) {
+ 				/* Provider may not be registered yet. */
+ 				cell = ERR_CAST(nvmem);
+@@ -780,7 +773,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
+ 	if (!nvmem_np)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	nvmem = __nvmem_device_get(nvmem_np, NULL);
++	nvmem = __nvmem_device_get(nvmem_np, device_match_of_node);
+ 	of_node_put(nvmem_np);
+ 	if (IS_ERR(nvmem))
+ 		return ERR_CAST(nvmem);
+diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
+index 8f8be5b00060..02dc4aa992b2 100644
+--- a/include/linux/nvmem-consumer.h
++++ b/include/linux/nvmem-consumer.h
+@@ -89,6 +89,9 @@ void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries,
+ int nvmem_register_notifier(struct notifier_block *nb);
+ int nvmem_unregister_notifier(struct notifier_block *nb);
+ 
++struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data));
++
+ #else
+ 
+ static inline struct nvmem_cell *nvmem_cell_get(struct device *dev,
+@@ -204,6 +207,12 @@ static inline int nvmem_unregister_notifier(struct notifier_block *nb)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static inline struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data))
++{
++	return NULL;
++}
++
+ #endif /* CONFIG_NVMEM */
+ 
+ #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
 -- 
 2.16.4
 
