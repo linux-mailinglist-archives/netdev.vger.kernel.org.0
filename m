@@ -2,272 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 741BFD1977
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 22:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 059EED1991
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 22:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731144AbfJIUPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 16:15:10 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63512 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729865AbfJIUPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 16:15:10 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x99KDkRL021294
-        for <netdev@vger.kernel.org>; Wed, 9 Oct 2019 13:15:09 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=b/37hP6aVO7euZ6+MHCFQ+qA9swSTSWlr9O/veB7rbc=;
- b=o6WSPOMxOYXWxshOKZRfd4uT33I72f7ed2luUccBVdad2h4g9F+FFxSzy7QrSL9e/auI
- ouAKw0SyeCiIHNgQ5TB/VtDBpF7d/Fks5Bpa103da/xKTWw1XMVhGw3YBz5vvuec6Fjr
- 31C/usvwHnxibR2OgV+SRbxtWXW0e0oqwOE= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vhfsdt7hr-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 13:15:09 -0700
-Received: from 2401:db00:12:9028:face:0:29:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 9 Oct 2019 13:15:08 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 86DF086191B; Wed,  9 Oct 2019 13:15:05 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 2/2] selftests/bpf: add read-only map values propagation tests
-Date:   Wed, 9 Oct 2019 13:14:58 -0700
-Message-ID: <20191009201458.2679171-3-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191009201458.2679171-1-andriin@fb.com>
-References: <20191009201458.2679171-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1731134AbfJIUaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 16:30:22 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44207 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729865AbfJIUaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 16:30:22 -0400
+Received: by mail-qk1-f195.google.com with SMTP id u22so3448343qkk.11;
+        Wed, 09 Oct 2019 13:30:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=IH91dgLlN0Tlm+Q4KwaoXlMCUMJAKJ0Ox5izNMk7G/g=;
+        b=Kfi8mntnZ0oUNHI0ctYxy8ArWIXUYiibKDamxEm8M1FadgxIcxt+fl6kKPUXu0dq7k
+         pgXaFKJaImLgb5pSB6m9ggOroRhT2gwRcpkd8jQZwbIOQWLboTxaTqNqH76fNqaRhLTy
+         sqE9nrzoT041bp4t6lkriBGbPAqsz+6VDywwShAHyizdL3jpNS4ZM3vRPbt77OPtEQ50
+         Hrn+qwnzAkZE1fzJIeZbSXXzY7QD9Vaiw18YSMcwo+gwV5KC9OxJYmpgDx/fbSiSUFu2
+         qrkqGEd6pcgrflH0YLzbVRr1fRkAdgy3BPGFewXPlAMFCxZrkS3N/vC3e1HMCO22SrWo
+         3H/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=IH91dgLlN0Tlm+Q4KwaoXlMCUMJAKJ0Ox5izNMk7G/g=;
+        b=KYA7rMW2aCklooTZVjtqt6FdQ0fHlL+5e80LkG11sNeoh8ikZLlop2YWFV4jY38jTX
+         zEjbNvSFDbmtYwMIB91XOCYlqp01hn10larGc6narml5Gkoku5hCLJ4JGbPf+9GqQpI5
+         ImyPuuebfXDjQPQTALlrLwzt8p6zOdq0x+FNySXweaSgVyM++1kuFbhHF3LwhVPsobSl
+         JIlrqcSGGIWVdL1HSZwwcbP550XvIe2NyVKaNQJ0KkCvVgMddt5B8neba6jIJ7selkqk
+         T8blRncVMnbDMTc1+Acko+4vPKBu5K56GFneYVWnGfCAlxfznCOb2eWbs+5Rfkp76yCA
+         XKhw==
+X-Gm-Message-State: APjAAAUCVodcLNXQkXr838gW4uQG+uX9XhnHe7GDIkcUBg97KjDgHa2y
+        2ZzdLTg53jbWqEfv427HBm7y+dlv2aI=
+X-Google-Smtp-Source: APXvYqyaXASz+39OGKF2Pb/p/3uzM9rL1BT5WttM/J//oXnzJqRKv+sHu78ZQxWzhX/CoHjbh9BduA==
+X-Received: by 2002:ae9:f714:: with SMTP id s20mr5521503qkg.262.1570653020434;
+        Wed, 09 Oct 2019 13:30:20 -0700 (PDT)
+Received: from frodo.byteswizards.com ([190.162.109.190])
+        by smtp.gmail.com with ESMTPSA id w85sm1452587qkb.57.2019.10.09.13.30.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2019 13:30:19 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 17:30:15 -0300
+From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        ebiederm@xmission.com, Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH v13 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
+Message-ID: <20191009203015.GA14829@frodo.byteswizards.com>
+References: <20191009152632.14218-1-cneirabustos@gmail.com>
+ <20191009152632.14218-3-cneirabustos@gmail.com>
+ <CAEf4BzYf77BxVy9bNBhW5SFA7nkMLyt_BfDEKC1Nis8Hcc2MqA@mail.gmail.com>
+ <20191009174538.GB12351@frodo.byteswizards.com>
+ <CAEf4BzanTFDV6rXTewJYLN_BXsFbDnJoJ-58fAxE9XBVuVVSNA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-09_09:2019-10-08,2019-10-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 suspectscore=8
- clxscore=1015 mlxlogscore=704 spamscore=0 mlxscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910090161
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzanTFDV6rXTewJYLN_BXsFbDnJoJ-58fAxE9XBVuVVSNA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests checking that verifier does proper constant propagation for
-read-only maps. If constant propagation didn't work, skipp_loop and
-part_loop BPF programs would be rejected due to BPF verifier otherwise
-not being able to prove they ever complete. With constant propagation,
-though, they are succesfully validated as properly terminating loops.
+On Wed, Oct 09, 2019 at 12:50:10PM -0700, Andrii Nakryiko wrote:
+> On Wed, Oct 9, 2019 at 10:45 AM Carlos Antonio Neira Bustos
+> <cneirabustos@gmail.com> wrote:
+> >
+> > On Wed, Oct 09, 2019 at 09:14:42AM -0700, Andrii Nakryiko wrote:
+> > > On Wed, Oct 9, 2019 at 8:27 AM Carlos Neira <cneirabustos@gmail.com> wrote:
+> > > >
+> > > > New bpf helper bpf_get_ns_current_pid_tgid,
+> > > > This helper will return pid and tgid from current task
+> > > > which namespace matches dev_t and inode number provided,
+> > > > this will allows us to instrument a process inside a container.
+> > > >
+> > > > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > > > ---
+> > > >  include/linux/bpf.h      |  1 +
+> > > >  include/uapi/linux/bpf.h | 22 +++++++++++++++++++-
+> > > >  kernel/bpf/core.c        |  1 +
+> > > >  kernel/bpf/helpers.c     | 43 ++++++++++++++++++++++++++++++++++++++++
+> > > >  kernel/trace/bpf_trace.c |  2 ++
+> > > >  5 files changed, 68 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > > index 5b9d22338606..231001475504 100644
+> > > > --- a/include/linux/bpf.h
+> > > > +++ b/include/linux/bpf.h
+> > > > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> > > >  extern const struct bpf_func_proto bpf_strtol_proto;
+> > > >  extern const struct bpf_func_proto bpf_strtoul_proto;
+> > > >  extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > > > +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
+> > > >
+> > > >  /* Shared helpers among cBPF and eBPF. */
+> > > >  void bpf_user_rnd_init_once(void);
+> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > index 77c6be96d676..6ad3f2abf00d 100644
+> > > > --- a/include/uapi/linux/bpf.h
+> > > > +++ b/include/uapi/linux/bpf.h
+> > > > @@ -2750,6 +2750,19 @@ union bpf_attr {
+> > > >   *             **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+> > > >   *
+> > > >   *             **-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> > > > + *
+> > > > + * u64 bpf_get_ns_current_pid_tgid(struct *bpf_pidns_info, u32 size)
+> > >
+> > > Should be:
+> > >
+> > > struct bpf_pidns_info *nsdata
+> > >
+> > > > + *     Return
+> > > > + *             0 on success, values for pid and tgid from nsinfo will be as seen
+> > > > + *             from the namespace that matches dev and inum from nsinfo.
+> > >
+> > > I think its cleaner to have a Description section, explaining that it
+> > > will return pid/tgid in bpf_pidns_info, and then describe exit codes
+> > > in Return section.
+> > >
+> > > > + *
+> > > > + *             On failure, the returned value is one of the following:
+> > > > + *
+> > > > + *             **-EINVAL** if dev and inum supplied don't match dev_t and inode number
+> > > > + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
+> > > > + *
+> > > > + *             **-ENOENT** if /proc/self/ns does not exists.
+> > > > + *
+> > > >   */
+> > > >  #define __BPF_FUNC_MAPPER(FN)          \
+> > > >         FN(unspec),                     \
+> > > > @@ -2862,7 +2875,8 @@ union bpf_attr {
+> > > >         FN(sk_storage_get),             \
+> > > >         FN(sk_storage_delete),          \
+> > > >         FN(send_signal),                \
+> > > > -       FN(tcp_gen_syncookie),
+> > > > +       FN(tcp_gen_syncookie),          \
+> > > > +       FN(get_ns_current_pid_tgid),
+> > > >
+> > > >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> > > >   * function eBPF program intends to call
+> > > > @@ -3613,4 +3627,10 @@ struct bpf_sockopt {
+> > > >         __s32   retval;
+> > > >  };
+> > > >
+> > > > +struct bpf_pidns_info {
+> > > > +       __u64 dev;
+> > > > +       __u64 inum;
+> > >
+> > > seems like conventionally this should be named "ino", this is what
+> > > ns_match calls it, so let's stay consistent.
+> > >
+> > > > +       __u32 pid;
+> > > > +       __u32 tgid;
+> > > > +};
+> > >
+> > > So it seems like dev and inum are treated as input parameters, while
+> > > pid/tgid is output parameter, right? Wouldn't it be cleaner to have
+> > > dev and inum as explicit arguments into bpf_get_ns_current_pid_tgid()?
+> > > What's also not great, is that on failure you'll memset this entire
+> > > struct to zero, and user will lose its dev/inum. So in practice you'll
+> > > be keeping dev/inum somewhere else, then constructing and filling in
+> > > this bpf_pidns_info struct every time you need to invoke
+> > > bpf_get_ns_current_pid_tgid.
+> > >
+> > > Maybe it was discussed already, but IMO feels cleaner to have only
+> > > pid/tgid in bpf_pidns_info and pass dev/inum as direct arguments.
+> > >
+> > > >  #endif /* _UAPI__LINUX_BPF_H__ */
+> > > > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > > > index 66088a9e9b9e..b2fd5358f472 100644
+> > > > --- a/kernel/bpf/core.c
+> > > > +++ b/kernel/bpf/core.c
+> > > > @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+> > > >  const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+> > > >  const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+> > > >  const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> > > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
+> > > >
+> > > >  const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+> > > >  {
+> > > > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> > > > index 5e28718928ca..78a1ce7726aa 100644
+> > > > --- a/kernel/bpf/helpers.c
+> > > > +++ b/kernel/bpf/helpers.c
+> > > > @@ -11,6 +11,8 @@
+> > > >  #include <linux/uidgid.h>
+> > > >  #include <linux/filter.h>
+> > > >  #include <linux/ctype.h>
+> > > > +#include <linux/pid_namespace.h>
+> > > > +#include <linux/proc_ns.h>
+> > > >
+> > > >  #include "../../lib/kstrtox.h"
+> > > >
+> > > > @@ -487,3 +489,44 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+> > > >         .arg4_type      = ARG_PTR_TO_LONG,
+> > > >  };
+> > > >  #endif
+> > > > +
+> > > > +BPF_CALL_2(bpf_get_ns_current_pid_tgid, struct bpf_pidns_info *, nsdata, u32,
+> > > > +       size)
+> > > > +{
+> > > > +       struct task_struct *task = current;
+> > > > +       struct pid_namespace *pidns;
+> > > > +       int err = -EINVAL;
+> > > > +
+> > > > +       if (unlikely(size != sizeof(struct bpf_pidns_info)))
+> > > > +               goto clear;
+> > > > +
+> > > > +       if ((u64)(dev_t)nsdata->dev != nsdata->dev)
+> > >
+> > > this seems unlikely() as well :)
+> > >
+> > > > +               goto clear;
+> > > > +
+> > > > +       if (unlikely(!task))
+> > > > +               goto clear;
+> > > > +
+> > > > +       pidns = task_active_pid_ns(task);
+> > > > +       if (unlikely(!pidns)) {
+> > > > +               err = -ENOENT;
+> > > > +               goto clear;
+> > > > +       }
+> > > > +
+> > > > +       if (!ns_match(&pidns->ns, (dev_t)nsdata->dev, nsdata->inum))
+> > > > +               goto clear;
+> > > > +
+> > > > +       nsdata->pid = task_pid_nr_ns(task, pidns);
+> > > > +       nsdata->tgid = task_tgid_nr_ns(task, pidns);
+> > > > +       return 0;
+> > > > +clear:
+> > > > +       memset((void *)nsdata, 0, (size_t) size);
+> > > > +       return err;
+> > > > +}
+> > > > +
+> > > > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
+> > > > +       .func           = bpf_get_ns_current_pid_tgid,
+> > > > +       .gpl_only       = false,
+> > > > +       .ret_type       = RET_INTEGER,
+> > > > +       .arg1_type      = ARG_PTR_TO_UNINIT_MEM,
+> > >
+> > > So this is a lie, you do expect part of that struct to be initialized.
+> > > One more reason to just split off dev/inum(ino?).
+> > >
+> > >
+> > > > +       .arg2_type      = ARG_CONST_SIZE,
+> > > > +};
+> > > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > > > index 44bd08f2443b..32331a1dcb6d 100644
+> > > > --- a/kernel/trace/bpf_trace.c
+> > > > +++ b/kernel/trace/bpf_trace.c
+> > > > @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > > >  #endif
+> > > >         case BPF_FUNC_send_signal:
+> > > >                 return &bpf_send_signal_proto;
+> > > > +       case BPF_FUNC_get_ns_current_pid_tgid:
+> > > > +               return &bpf_get_ns_current_pid_tgid_proto;
+> > > >         default:
+> > > >                 return NULL;
+> > > >         }
+> > > > --
+> > > > 2.20.1
+> > > >
+> > Thanks for reviewing this, I'll make the changes you suggest.
+> > I'm not sure about removing dev and ino from struct bpf_pidns_info, I
+> > think is useful to know to which ns pid/tgid belong to using dev and ino
+> > to figure it out. Maybe in the future we could filter bpf_pidns_info
+> > structs by dev/ino, just an idea.
+> 
+> I'm not following. dev/ino are specified by the caller to this helper,
+> right? So caller already know those values. With current set up,
+> though, the behavior is weird: this struct's dev/ino is preserved on
+> success, but zeroed out on failure, even though helper itself has
+> nothing to do with returning dev/ino. It also plays badly with
+> ARG_PTR_TO_UNINT_MEM, because that memory is expected to be at least
+> partially initialized. I see only downsides, to be honest.
+> 
+> >
+> > Bests
+Andrii,
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/rdonly_maps.c    | 99 +++++++++++++++++++
- .../selftests/bpf/progs/test_rdonly_maps.c    | 83 ++++++++++++++++
- 2 files changed, 182 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_rdonly_maps.c
+Oh you are right dev/ino are specific to the caller of this helper,
+and what you state is correct dev/ino are also not returned by the caller
+based on that, yes this should be changed. Now I see the point, I'll
+change the helper to take dev/ino and just return pid/tgid.
+Thanks again!.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c b/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
-new file mode 100644
-index 000000000000..9bf9de0aaeea
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
-@@ -0,0 +1,99 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+
-+struct bss {
-+	unsigned did_run;
-+	unsigned iters;
-+	unsigned sum;
-+};
-+
-+struct rdonly_map_subtest {
-+	const char *subtest_name;
-+	const char *prog_name;
-+	unsigned exp_iters;
-+	unsigned exp_sum;
-+};
-+
-+void test_rdonly_maps(void)
-+{
-+	const char *prog_name_skip_loop = "raw_tracepoint/sys_enter:skip_loop";
-+	const char *prog_name_part_loop = "raw_tracepoint/sys_enter:part_loop";
-+	const char *prog_name_full_loop = "raw_tracepoint/sys_enter:full_loop";
-+	const char *file = "test_rdonly_maps.o";
-+	struct rdonly_map_subtest subtests[] = {
-+		{ "skip loop", prog_name_skip_loop, 0, 0 },
-+		{ "part loop", prog_name_part_loop, 3, 2 + 3 + 4 },
-+		{ "full loop", prog_name_full_loop, 4, 2 + 3 + 4 + 5 },
-+	};
-+	int i, err, zero = 0, duration = 0;
-+	struct bpf_link *link = NULL;
-+	struct bpf_program *prog;
-+	struct bpf_map *bss_map;
-+	struct bpf_object *obj;
-+	struct bss bss;
-+
-+	obj = bpf_object__open_file(file, NULL);
-+	if (CHECK(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
-+		return;
-+
-+	bpf_object__for_each_program(prog, obj) {
-+		bpf_program__set_raw_tracepoint(prog);
-+	}
-+
-+	err = bpf_object__load(obj);
-+	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
-+		goto cleanup;
-+
-+	bss_map = bpf_object__find_map_by_name(obj, "test_rdo.bss");
-+	if (CHECK(!bss_map, "find_bss_map", "failed\n"))
-+		goto cleanup;
-+
-+	for (i = 0; i < ARRAY_SIZE(subtests); i++) {
-+		const struct rdonly_map_subtest *t = &subtests[i];
-+
-+		if (!test__start_subtest(t->subtest_name))
-+			continue;
-+
-+		prog = bpf_object__find_program_by_title(obj, t->prog_name);
-+		if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
-+			  t->prog_name))
-+			goto cleanup;
-+
-+		memset(&bss, 0, sizeof(bss));
-+		err = bpf_map_update_elem(bpf_map__fd(bss_map), &zero, &bss, 0);
-+		if (CHECK(err, "set_bss", "failed to set bss data: %d\n", err))
-+			goto cleanup;
-+
-+		link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
-+		if (CHECK(IS_ERR(link), "attach_prog", "prog '%s', err %ld\n",
-+			  t->prog_name, PTR_ERR(link))) {
-+			link = NULL;
-+			goto cleanup;
-+		}
-+
-+		/* trigger probe */
-+		usleep(1);
-+
-+		bpf_link__destroy(link);
-+		link = NULL;
-+
-+		err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &zero, &bss);
-+		if (CHECK(err, "get_bss", "failed to get bss data: %d\n", err))
-+			goto cleanup;
-+		if (CHECK(bss.did_run == 0, "check_run",
-+			  "prog '%s' didn't run?\n", t->prog_name))
-+			goto cleanup;
-+		if (CHECK(bss.iters != t->exp_iters, "check_iters",
-+			  "prog '%s' iters: %d, expected: %d\n",
-+			  t->prog_name, bss.iters, t->exp_iters))
-+			goto cleanup;
-+		if (CHECK(bss.sum != t->exp_sum, "check_sum",
-+			  "prog '%s' sum: %d, expected: %d\n",
-+			  t->prog_name, bss.sum, t->exp_sum))
-+			goto cleanup;
-+	}
-+
-+cleanup:
-+	bpf_link__destroy(link);
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_rdonly_maps.c b/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
-new file mode 100644
-index 000000000000..52d94e8b214d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
-@@ -0,0 +1,83 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <linux/ptrace.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+static volatile const struct {
-+	unsigned a[4];
-+	/*
-+	 * if the struct's size is multiple of 16, compiler will put it into
-+	 * .rodata.cst16 section, which is not recognized by libbpf; work
-+	 * around this by ensuring we don't have 16-aligned struct
-+	 */
-+	char _y;
-+} rdonly_values = { .a = {2, 3, 4, 5} };
-+
-+static volatile struct {
-+	unsigned did_run;
-+	unsigned iters;
-+	unsigned sum;
-+} res;
-+
-+SEC("raw_tracepoint/sys_enter:skip_loop")
-+int skip_loop(struct pt_regs *ctx)
-+{
-+	/* prevent compiler to optimize everything out */
-+	unsigned * volatile p = (void *)&rdonly_values.a;
-+	unsigned iters = 0, sum = 0;
-+
-+	/* we should never enter this loop */
-+	while (*p & 1) {
-+		iters++;
-+		sum += *p;
-+		p++;
-+	}
-+	res.did_run = 1;
-+	res.iters = iters;
-+	res.sum = sum;
-+	return 0;
-+}
-+
-+SEC("raw_tracepoint/sys_enter:part_loop")
-+int part_loop(struct pt_regs *ctx)
-+{
-+	/* prevent compiler to optimize everything out */
-+	unsigned * volatile p = (void *)&rdonly_values.a;
-+	unsigned iters = 0, sum = 0;
-+
-+	/* validate verifier can derive loop termination */
-+	while (*p < 5) {
-+		iters++;
-+		sum += *p;
-+		p++;
-+	}
-+	res.did_run = 1;
-+	res.iters = iters;
-+	res.sum = sum;
-+	return 0;
-+}
-+
-+SEC("raw_tracepoint/sys_enter:full_loop")
-+int full_loop(struct pt_regs *ctx)
-+{
-+	/* prevent compiler to optimize everything out */
-+	unsigned * volatile p = (void *)&rdonly_values.a;
-+	int i = sizeof(rdonly_values.a) / sizeof(rdonly_values.a[0]);
-+	unsigned iters = 0, sum = 0;
-+
-+	/* validate verifier can allow full loop as well */
-+	while (i > 0 ) {
-+		iters++;
-+		sum += *p;
-+		p++;
-+		i--;
-+	}
-+	res.did_run = 1;
-+	res.iters = iters;
-+	res.sum = sum;
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.17.1
+Bests
 
