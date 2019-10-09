@@ -2,132 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BDB7D13D9
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A6C3D13DB
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731688AbfJIQTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 12:19:06 -0400
-Received: from mga07.intel.com ([134.134.136.100]:26530 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731173AbfJIQTF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 12:19:05 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Oct 2019 09:19:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,276,1566889200"; 
-   d="scan'208";a="198054835"
-Received: from unknown (HELO [10.241.228.165]) ([10.241.228.165])
-  by orsmga006.jf.intel.com with ESMTP; 09 Oct 2019 09:19:05 -0700
-Subject: Re: [PATCH bpf-next 0/4] Enable direct receive on AF_XDP sockets
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        maciej.fijalkowski@intel.com, tom.herbert@intel.com
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>
-References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
- <4c316f09-0691-4a1b-f798-73299e978946@intel.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <411a0287-13fb-672b-740b-10a199e34836@intel.com>
-Date:   Wed, 9 Oct 2019 09:19:04 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <4c316f09-0691-4a1b-f798-73299e978946@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1731749AbfJIQTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 12:19:18 -0400
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:54767 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731173AbfJIQTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 12:19:17 -0400
+Received: by mail-pl1-f202.google.com with SMTP id j9so1777588plk.21
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 09:19:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=FFXVGfca53SiSL7HqaRqfk9Hg68uxc6K6z/nepNQII8=;
+        b=EUnGVRCqYymy2Sq/LMdSpcx2rxJHRSnPqmH66R3NvRjfhqeNWd/S3XXFRMMlN+cqu6
+         uA29QA1U+xgIRZuJUKxptgvtaMI6bHHD1hya6aoUJmLqMLBETjuOaTaHj5yD3RMiq9HF
+         NIzyJR25Jc1ld2cM6+aAV6z8WCQy0aVRr/lI/XIY7LqQ19rcGel9CCKSUXCHY+ln2r3Z
+         C0sUp9KwNN7AT7KyyMyqn0nTIkHKrEzMlM/eKLaMwvRWP/xDr1CVpR7wy30vKuaP0968
+         Wy+Cv41M5KDhd7uZYs1qVfTqtYkfoaBv6wEKidX1kHVey6FoXvaxFbok1w93KNYiMYP8
+         MpqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=FFXVGfca53SiSL7HqaRqfk9Hg68uxc6K6z/nepNQII8=;
+        b=B6F4UmE+36gOrkOOX5C3BTVERPAWWlK/3/ydJScLc9BPKiDvbNvLrOn2IGLxWCoze7
+         pgV8oPzSDjGxj28WlUKz4PezQhB1kjnWFUws3l2GhokdU8RkdHssYFd2XhIv390PjRze
+         oqofiPgj88ZVjWeG3W89GnmcBLA359QraZeRi426/A7HOecU/SszOgGGZZVQaD2aAl/3
+         MULZ0oG3+aWhKZm7BwHQWjGQ69xo1+jnHmAlyL5G6Dz4PoiHRpzQhsInFjkvcFXmYJ+3
+         ophzgsA6ltmKSDbw9r92hS0cHB8GzRW+7tgglUtm57O/JcKYPBB65JyQjhD3qtLxvlAk
+         lrFw==
+X-Gm-Message-State: APjAAAXpd9se/n45d/gSWXQriLx56FjmRTeiC2vwc3E0HaB9ter42Hfp
+        c3jwnzelVY3OX4r23qKrsdXvT0H1EFNnlg==
+X-Google-Smtp-Source: APXvYqwmU1FFrtv+wXrGnf2TMoVSzSEk1J5FQ8b5ObV2cM7Fn1mzSuNLKCS5Hik7xTV07sHREOLf9tgFXkN9BQ==
+X-Received: by 2002:a63:ff1c:: with SMTP id k28mr5277749pgi.281.1570637956834;
+ Wed, 09 Oct 2019 09:19:16 -0700 (PDT)
+Date:   Wed,  9 Oct 2019 09:19:13 -0700
+Message-Id: <20191009161913.18600-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+Subject: [PATCH net] netfilter: conntrack: avoid possible false sharing
+From:   Eric Dumazet <edumazet@google.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/8/2019 1:05 AM, Björn Töpel wrote:
-> On 2019-10-08 08:16, Sridhar Samudrala wrote:
->> This is a rework of the following patch series
->> https://lore.kernel.org/netdev/1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com/#r 
->>
->> that tried to enable direct receive by bypassing XDP program attached
->> to the device.
->>
->> Based on the community feedback and some suggestions from Bjorn, changed
->> the semantics of the implementation to enable direct receive on AF_XDP
->> sockets that are bound to a queue only when there is no normal XDP 
->> program
->> attached to the device.
->>
->> This is accomplished by introducing a special BPF prog pointer 
->> (DIRECT_XSK)
->> that is attached at the time of binding an AF_XDP socket to a queue of a
->> device. This is done only if there is no other XDP program attached to
->> the device. The normal XDP program has precedence and will replace the
->> DIRECT_XSK prog if it is attached later. The main reason to introduce a
->> special BPF prog pointer is to minimize the driver changes. The only 
->> change
->> is to use the bpf_get_prog_id() helper when QUERYING the prog id.
->>
->> Any attach of a normal XDP program will take precedence and the direct 
->> xsk
->> program will be removed. The direct XSK program will be attached
->> automatically when the normal XDP program is removed when there are any
->> AF_XDP direct sockets associated with that device.
->>
->> A static key is used to control this feature in order to avoid any 
->> overhead
->> for normal XDP datapath when there are no AF_XDP sockets in direct-xsk 
->> mode.
->>
->> Here is some performance data i collected on my Intel Ivybridge based
->> development system (Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz)
->> NIC: Intel 40Gb ethernet (i40e)
->>
->> xdpsock rxdrop 1 core (both app and queue's irq pinned to the same core)
->>     default : taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1
->>     direct-xsk :taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1
->> 6.1x improvement in drop rate
->>
->> xdpsock rxdrop 2 core (app and queue's irq pinned to different cores)
->>     default : taskset -c 3 ./xdpsock -i enp66s0f0 -r -q 1
->>     direct-xsk :taskset -c 3 ./xdpsock -i enp66s0f0 -r -d -q 1
->> 6x improvement in drop rate
->>
->> xdpsock l2fwd 1 core (both app and queue's irq pinned to the same core)
->>     default : taskset -c 1 ./xdpsock -i enp66s0f0 -l -q 1
->>     direct-xsk :taskset -c 1 ./xdpsock -i enp66s0f0 -l -d -q 1
->> 3.5x improvement in l2fwd rate
->>
->> xdpsock rxdrop 2 core (app and queue'sirq pinned to different cores)
->>     default : taskset -c 3 ./xdpsock -i enp66s0f0 -l -q 1
->>     direct-xsk :taskset -c 3 ./xdpsock -i enp66s0f0 -l -d -q 1
->> 4.5x improvement in l2fwd rate
->>
->> dpdk-pktgen is used to send 64byte UDP packets from a link partner and
->> ethtool ntuple flow rule is used to redirect packets to queue 1 on the
->> system under test.
->>
-> 
-> Thanks for working on this Sridhar! I like this approach! Except from
-> the bpf_get_prog_id() changes, no driver changes are needed.
-> 
-> It's also a cleaner (IMO) approach than my previous attempts [1,2,3]
-> 
-> Would be interesting to see NFP support AF_XDP offloading with this
-> option. (nudge, nudge).
-> 
-> A thought: From userland, a direct AF_XDP socket will not appear as an
-> XDP program is attached to the device (id == 0). Maybe show in ss(8)
-> (via xsk_diag.c) that the socket is direct?
+As hinted by KCSAN, we need at least one READ_ONCE()
+to prevent a compiler optimization.
 
-Sure. will add this in the next revision.
+More details on :
+https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
 
-> 
-> [1] 
-> https://lore.kernel.org/netdev/CAJ+HfNj63QcLY8=y1fF93PZd3XcfiGSrbbWdiGByjTzZQydSSg@mail.gmail.com/ 
-> 
-> [2] 
-> https://lore.kernel.org/netdev/cd952f99-6bad-e0c8-5bcd-f0010218238c@intel.com/ 
-> 
-> [3] 
-> https://lore.kernel.org/netdev/20181207114431.18038-1-bjorn.topel@gmail.com/ 
-> 
+sysbot report :
+BUG: KCSAN: data-race in __nf_ct_refresh_acct / __nf_ct_refresh_acct
+
+read to 0xffff888123eb4f08 of 4 bytes by interrupt on cpu 0:
+ __nf_ct_refresh_acct+0xd4/0x1b0 net/netfilter/nf_conntrack_core.c:1796
+ nf_ct_refresh_acct include/net/netfilter/nf_conntrack.h:201 [inline]
+ nf_conntrack_tcp_packet+0xd40/0x3390 net/netfilter/nf_conntrack_proto_tcp.c:1161
+ nf_conntrack_handle_packet net/netfilter/nf_conntrack_core.c:1633 [inline]
+ nf_conntrack_in+0x410/0xaa0 net/netfilter/nf_conntrack_core.c:1727
+ ipv4_conntrack_in+0x27/0x40 net/netfilter/nf_conntrack_proto.c:178
+ nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+ nf_hook_slow+0x83/0x160 net/netfilter/core.c:512
+ nf_hook include/linux/netfilter.h:260 [inline]
+ NF_HOOK include/linux/netfilter.h:303 [inline]
+ ip_rcv+0x12f/0x1a0 net/ipv4/ip_input.c:523
+ __netif_receive_skb_one_core+0xa7/0xe0 net/core/dev.c:5004
+ __netif_receive_skb+0x37/0xf0 net/core/dev.c:5118
+ netif_receive_skb_internal+0x59/0x190 net/core/dev.c:5208
+ napi_skb_finish net/core/dev.c:5671 [inline]
+ napi_gro_receive+0x28f/0x330 net/core/dev.c:5704
+ receive_buf+0x284/0x30b0 drivers/net/virtio_net.c:1061
+ virtnet_receive drivers/net/virtio_net.c:1323 [inline]
+ virtnet_poll+0x436/0x7d0 drivers/net/virtio_net.c:1428
+ napi_poll net/core/dev.c:6352 [inline]
+ net_rx_action+0x3ae/0xa50 net/core/dev.c:6418
+ __do_softirq+0x115/0x33f kernel/softirq.c:292
+
+write to 0xffff888123eb4f08 of 4 bytes by task 7191 on cpu 1:
+ __nf_ct_refresh_acct+0xfb/0x1b0 net/netfilter/nf_conntrack_core.c:1797
+ nf_ct_refresh_acct include/net/netfilter/nf_conntrack.h:201 [inline]
+ nf_conntrack_tcp_packet+0xd40/0x3390 net/netfilter/nf_conntrack_proto_tcp.c:1161
+ nf_conntrack_handle_packet net/netfilter/nf_conntrack_core.c:1633 [inline]
+ nf_conntrack_in+0x410/0xaa0 net/netfilter/nf_conntrack_core.c:1727
+ ipv4_conntrack_local+0xbe/0x130 net/netfilter/nf_conntrack_proto.c:200
+ nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+ nf_hook_slow+0x83/0x160 net/netfilter/core.c:512
+ nf_hook include/linux/netfilter.h:260 [inline]
+ __ip_local_out+0x1f7/0x2b0 net/ipv4/ip_output.c:114
+ ip_local_out+0x31/0x90 net/ipv4/ip_output.c:123
+ __ip_queue_xmit+0x3a8/0xa40 net/ipv4/ip_output.c:532
+ ip_queue_xmit+0x45/0x60 include/net/ip.h:236
+ __tcp_transmit_skb+0xdeb/0x1cd0 net/ipv4/tcp_output.c:1158
+ __tcp_send_ack+0x246/0x300 net/ipv4/tcp_output.c:3685
+ tcp_send_ack+0x34/0x40 net/ipv4/tcp_output.c:3691
+ tcp_cleanup_rbuf+0x130/0x360 net/ipv4/tcp.c:1575
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 7191 Comm: syz-fuzzer Not tainted 5.3.0+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: cc16921351d8 ("netfilter: conntrack: avoid same-timeout update")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+---
+ net/netfilter/nf_conntrack_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 0c63120b2db2e1ea9983a6b1ce8d2aefebc29501..5cd610b547e0d1e3463a65ba3627f265c836bdc5 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -1792,8 +1792,8 @@ void __nf_ct_refresh_acct(struct nf_conn *ct,
+ 	if (nf_ct_is_confirmed(ct))
+ 		extra_jiffies += nfct_time_stamp;
+ 
+-	if (ct->timeout != extra_jiffies)
+-		ct->timeout = extra_jiffies;
++	if (READ_ONCE(ct->timeout) != extra_jiffies)
++		WRITE_ONCE(ct->timeout, extra_jiffies);
+ acct:
+ 	if (do_acct)
+ 		nf_ct_acct_update(ct, ctinfo, skb->len);
+-- 
+2.23.0.581.g78d2f28ef7-goog
+
