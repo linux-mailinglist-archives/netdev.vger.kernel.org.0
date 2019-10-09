@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B2E7D0D5F
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 13:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFCCD0D61
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 13:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730765AbfJILEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 07:04:54 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39055 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730398AbfJILEw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 07:04:52 -0400
-Received: by mail-wr1-f66.google.com with SMTP id r3so2349708wrj.6
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 04:04:50 -0700 (PDT)
+        id S1730824AbfJILE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 07:04:56 -0400
+Received: from mail-wr1-f46.google.com ([209.85.221.46]:34587 "EHLO
+        mail-wr1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730741AbfJILEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 07:04:53 -0400
+Received: by mail-wr1-f46.google.com with SMTP id j11so2371344wrp.1
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 04:04:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fXoOyWRE0pzINSVeSGTfzb5PM8lot/rrs9M2wd4nfYs=;
-        b=Vq7l+Ory4S1f2ExvteN9cQ5d/4DIWv54cWFh5+lWb8ZY3qmKkDM6Ag8xux6oTepyqj
-         LalSGOTEY9T7AtUAktXlQjtfXATp9d9hUui8XZaUE2g5Cp9NFM5ANZ80Yw+aIYpWOdPE
-         8k1bxeW6icGPYBWe15SKDdNnCiw74I/h763kr8lm8P7L+XV24S9ffFhvCV/S+i0trJZQ
-         7g0SZYxykQdgKJhd6c9pqqKAcWjT5MPToV1zhkTyx7xzRjuJmOiLQr82PLOiSLzbjUvH
-         k2032Q/mvIdBrcdlV+xllrSCsoyMXzRZTyqOjEltLFQi6HQvsnhyrZY2hENZmtbyOEK/
-         fMYQ==
+        bh=+BKt9qSWSNWQpa4AgVq2InG7JAhSeNAvhd7CRZjKhiQ=;
+        b=qM3UWOOJjkkNec65dT2j+kRd+w0mL924l2yCrbIp1b2KizIOD4jyGAciV3RzRwgSiS
+         VnXQXSMd+sSkzcvOR6TLZUe0t584DdcKLRpkXjn68ijchZJlvCm2CkCHL92mkwK2Dbqd
+         NpuDTkK/WUi3HB6d4LAUkkSffIUq6Z1HNlT9846GkZxip8E9lVdvLKZ06QTkDwgJaaS+
+         a8H9RXf9lkEks6VOOKf7Lb1Hozat/GYOWk/vqi15huUnEK7i6pHC/+wIw9HXuh3G/nJ8
+         3DA2he/NCknXfSDfNvjx2RGDDGhLNsvEAaXvw5Gh59it62nSSYSVNz5HYVvkUPMUbxlk
+         LjQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fXoOyWRE0pzINSVeSGTfzb5PM8lot/rrs9M2wd4nfYs=;
-        b=D5m0Tt5MbhRw+Tvo3Hf53maFIUfSZIUnC3JR6iJ1jyt7CkcQzz9NH23ragSOrxLWam
-         tRsBWwZvpA05U2MqW3HHFX9XLG6czUKiCy8yWJd3goYIZwXV0A7+1iE0me7Ll6y6VXqv
-         JXcfnudpyE9snillrV9DkQQEPTtX7nUGW9Mk9ZrO4geE3H6kX3I17PrctGYoE457jbxN
-         TIgCoqmCa+8Llx6bmhv1rsgsZIINkJ7u7OBl/9uvyC4mAaSFF7ymyo6qjx1XwI9Tvz7J
-         bUTRulYa/0UWQN2f7BwHckJM/FfMPnR/WTEBSGGxJokf7uPb1lEXROGouPgmaaRwArUR
-         q6Pw==
-X-Gm-Message-State: APjAAAX4n7zDEFr/M94Dpp8CoUjJcsIDUErCcvs8LaenIMVowwk6dnUj
-        USzIKJPv58GyQ29ekfaRZd7CfvIlIH8=
-X-Google-Smtp-Source: APXvYqxFPmw8pnlmNdjObl84/CZui9UA9SgTXVnZMYbPhzwSYlTj+s+TVReksxCMgmxeJ+sq4E48zQ==
-X-Received: by 2002:adf:fe8d:: with SMTP id l13mr2405285wrr.365.1570619089386;
-        Wed, 09 Oct 2019 04:04:49 -0700 (PDT)
+        bh=+BKt9qSWSNWQpa4AgVq2InG7JAhSeNAvhd7CRZjKhiQ=;
+        b=b0LHq7rR3Wb7Sz/sAlm1GC6Or5iyL7KbeFv5EXxNOw6/SG/PyRtcDbJc3zbBoEyL/P
+         PjRLw2VQWrdgC9rPNCYKIWw4AefDlrgWWnajf7aCS2TkHYuAcPgfuXxuEdiDaY9OVLw9
+         T41xfYICKJSkjX9VvQ6nJ1CKnlExjmRg/6ChcqHHdis/V80P9nBH6CNOsYmPhAaZXaRc
+         n0L4Hw0IpFwNwSpylHV8idkNNlaDMVWge389m1f/qZhRNGCleU5T6QlRT5BfgUVxgV8b
+         OTOPMNyBVlgK+4nRvQssw2niVAf0xSFqQGXSARn6oXLziqYLiRkpirRKGR0ityhx9xyl
+         wV2g==
+X-Gm-Message-State: APjAAAXWGfbsQfnB8/EKsEPEzQ9CCua7SoH0hKLWe2ZegarSJ8v77QRR
+        Tkj9ku8vNgSFYuRGHaw/28sfDMfttp0=
+X-Google-Smtp-Source: APXvYqzY8LLAFbCvUEm7tejDhcjLtsvCvSc6gl9jDnXt3XNtCGo87QK5nuX+1PMCl5Foxm+yhBoAYQ==
+X-Received: by 2002:adf:fe4c:: with SMTP id m12mr2239892wrs.137.1570619090280;
+        Wed, 09 Oct 2019 04:04:50 -0700 (PDT)
 Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
-        by smtp.gmail.com with ESMTPSA id y8sm2158132wrm.64.2019.10.09.04.04.48
+        by smtp.gmail.com with ESMTPSA id a13sm4644789wrf.73.2019.10.09.04.04.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 04:04:48 -0700 (PDT)
+        Wed, 09 Oct 2019 04:04:49 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         ayal@mellanox.com, moshe@mellanox.com, eranbe@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 3/4] netdevsim: implement couple of testing devlink health reporters
-Date:   Wed,  9 Oct 2019 13:04:44 +0200
-Message-Id: <20191009110445.23237-4-jiri@resnulli.us>
+Subject: [patch net-next 4/4] selftests: add netdevsim devlink health tests
+Date:   Wed,  9 Oct 2019 13:04:45 +0200
+Message-Id: <20191009110445.23237-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191009110445.23237-1-jiri@resnulli.us>
 References: <20191009110445.23237-1-jiri@resnulli.us>
@@ -64,450 +64,155 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Implement "empty" and "dummy" reporters. The first one is really simple
-and does nothing. The other one has debugfs files to trigger breakage
-and it is able to do recovery. The ops also implement dummy fmsg
-content.
+Add basic tests to verify functionality of netdevsim reporters.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/netdevsim/Makefile    |   2 +-
- drivers/net/netdevsim/dev.c       |  17 +-
- drivers/net/netdevsim/health.c    | 315 ++++++++++++++++++++++++++++++
- drivers/net/netdevsim/netdevsim.h |  14 ++
- 4 files changed, 345 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/netdevsim/health.c
+ .../drivers/net/netdevsim/devlink.sh          | 124 +++++++++++++++++-
+ 1 file changed, 123 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/netdevsim/Makefile b/drivers/net/netdevsim/Makefile
-index 09f1315d2f2a..f4d8f62f28c2 100644
---- a/drivers/net/netdevsim/Makefile
-+++ b/drivers/net/netdevsim/Makefile
-@@ -3,7 +3,7 @@
- obj-$(CONFIG_NETDEVSIM) += netdevsim.o
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+index cb0f17e17abc..ff84aede8c73 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+@@ -4,7 +4,8 @@
+ lib_dir=$(dirname $0)/../../../net/forwarding
  
- netdevsim-objs := \
--	netdev.o dev.o fib.o bus.o
-+	netdev.o dev.o fib.o bus.o health.o
+ ALL_TESTS="fw_flash_test params_test regions_test reload_test \
+-	   netns_reload_test resource_test dev_info_test"
++	   netns_reload_test resource_test dev_info_test \
++	   empty_reporter_test dummy_reporter_test"
+ NUM_NETIFS=0
+ source $lib_dir/lib.sh
  
- ifeq ($(CONFIG_BPF_SYSCALL),y)
- netdevsim-objs += \
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index e47fa7b6ca7c..468e157a7cb1 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -730,12 +730,18 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
- 	if (err)
- 		goto err_dummy_region_exit;
+@@ -303,6 +304,127 @@ dev_info_test()
+ 	log_test "dev_info test"
+ }
  
--	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
-+	err = nsim_dev_health_init(nsim_dev, devlink);
- 	if (err)
- 		goto err_traps_exit;
- 
-+	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
-+	if (err)
-+		goto err_health_exit;
-+
- 	return 0;
- 
-+err_health_exit:
-+	nsim_dev_health_exit(nsim_dev);
- err_traps_exit:
- 	nsim_dev_traps_exit(devlink);
- err_dummy_region_exit:
-@@ -797,10 +803,14 @@ static struct nsim_dev *nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev)
- 	if (err)
- 		goto err_traps_exit;
- 
--	err = nsim_bpf_dev_init(nsim_dev);
-+	err = nsim_dev_health_init(nsim_dev, devlink);
- 	if (err)
- 		goto err_debugfs_exit;
- 
-+	err = nsim_bpf_dev_init(nsim_dev);
-+	if (err)
-+		goto err_health_exit;
-+
- 	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
- 	if (err)
- 		goto err_bpf_dev_exit;
-@@ -810,6 +820,8 @@ static struct nsim_dev *nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev)
- 
- err_bpf_dev_exit:
- 	nsim_bpf_dev_exit(nsim_dev);
-+err_health_exit:
-+	nsim_dev_health_exit(nsim_dev);
- err_debugfs_exit:
- 	nsim_dev_debugfs_exit(nsim_dev);
- err_traps_exit:
-@@ -837,6 +849,7 @@ static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev)
- 	if (devlink_is_reload_failed(devlink))
- 		return;
- 	nsim_dev_port_del_all(nsim_dev);
-+	nsim_dev_health_exit(nsim_dev);
- 	nsim_dev_traps_exit(devlink);
- 	nsim_dev_dummy_region_exit(nsim_dev);
- 	mutex_destroy(&nsim_dev->port_list_lock);
-diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
-new file mode 100644
-index 000000000000..088ae8fd89fc
---- /dev/null
-+++ b/drivers/net/netdevsim/health.c
-@@ -0,0 +1,315 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
-+
-+#include <linux/debugfs.h>
-+#include <linux/err.h>
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+
-+#include "netdevsim.h"
-+
-+static int
-+nsim_dev_empty_reporter_dump(struct devlink_health_reporter *reporter,
-+			     struct devlink_fmsg *fmsg, void *priv_ctx,
-+			     struct netlink_ext_ack *extack)
++empty_reporter_test()
 +{
-+	return 0;
++	RET=0
++
++	devlink health show $DL_HANDLE reporter empty >/dev/null
++	check_err $? "Failed show empty reporter"
++
++	devlink health dump show $DL_HANDLE reporter empty >/dev/null
++	check_err $? "Failed show dump of empty reporter"
++
++	devlink health diagnose $DL_HANDLE reporter empty >/dev/null
++	check_err $? "Failed diagnose empty reporter"
++
++	devlink health recover $DL_HANDLE reporter empty
++	check_err $? "Failed recover empty reporter"
++
++	log_test "empty reporter test"
 +}
 +
-+static int
-+nsim_dev_empty_reporter_diagnose(struct devlink_health_reporter *reporter,
-+				 struct devlink_fmsg *fmsg,
-+				 struct netlink_ext_ack *extack)
++check_reporter_info()
 +{
-+	return 0;
++	local name=$1
++	local expected_state=$2
++	local expected_error=$3
++	local expected_recover=$4
++	local expected_grace_period=$5
++	local expected_auto_recover=$6
++
++	local show=$(devlink health show $DL_HANDLE reporter $name -j | jq -e -r ".[][][]")
++	check_err $? "Failed show $name reporter"
++
++	local state=$(echo $show | jq -r ".state")
++	[ "$state" == "$expected_state" ]
++	check_err $? "Unexpected \"state\" value (got $state, expected $expected_state)"
++
++	local error=$(echo $show | jq -r ".error")
++	[ "$error" == "$expected_error" ]
++	check_err $? "Unexpected \"error\" value (got $error, expected $expected_error)"
++
++	local recover=`echo $show | jq -r ".recover"`
++	[ "$recover" == "$expected_recover" ]
++	check_err $? "Unexpected \"recover\" value (got $recover, expected $expected_recover)"
++
++	local grace_period=$(echo $show | jq -r ".grace_period")
++	check_err $? "Failed get $name reporter grace_period"
++	[ "$grace_period" == "$expected_grace_period" ]
++	check_err $? "Unexpected \"grace_period\" value (got $grace_period, expected $expected_grace_period)"
++
++	local auto_recover=$(echo $show | jq -r ".auto_recover")
++	[ "$auto_recover" == "$expected_auto_recover" ]
++	check_err $? "Unexpected \"auto_recover\" value (got $auto_recover, expected $expected_auto_recover)"
 +}
 +
-+static const
-+struct devlink_health_reporter_ops nsim_dev_empty_reporter_ops = {
-+	.name = "empty",
-+	.dump = nsim_dev_empty_reporter_dump,
-+	.diagnose = nsim_dev_empty_reporter_diagnose,
-+};
-+
-+struct nsim_dev_dummy_reporter_ctx {
-+	char *break_msg;
-+};
-+
-+static int
-+nsim_dev_dummy_reporter_recover(struct devlink_health_reporter *reporter,
-+				void *priv_ctx,
-+				struct netlink_ext_ack *extack)
++dummy_reporter_test()
 +{
-+	struct nsim_dev_health *health = devlink_health_reporter_priv(reporter);
-+	struct nsim_dev_dummy_reporter_ctx *ctx = priv_ctx;
++	RET=0
 +
-+	if (health->fail_recover) {
-+		/* For testing purposes, user set debugfs fail_recover
-+		 * value to true. Fail right away.
-+		 */
-+		NL_SET_ERR_MSG_MOD(extack, "User setup the recover to fail for testing purposes");
-+		return -EINVAL;
-+	}
-+	if (ctx) {
-+		health->recovered_break_msg = kstrdup(ctx->break_msg,
-+						      GFP_KERNEL);
-+		if (!health->recovered_break_msg)
-+			return -ENOMEM;
-+	}
-+	return 0;
++	check_reporter_info dummy healthy 0 0 0 false
++
++	local BREAK_MSG="foo bar"
++	echo "$BREAK_MSG"> $DEBUGFS_DIR/health/break_health
++	check_err $? "Failed to break dummy reporter"
++
++	check_reporter_info dummy error 1 0 0 false
++
++	local dump=$(devlink health dump show $DL_HANDLE reporter dummy -j)
++	check_err $? "Failed show dump of dummy reporter"
++
++	local dump_break_msg=$(echo $dump | jq -r ".break_message")
++	[ "$dump_break_msg" == "$BREAK_MSG" ]
++	check_err $? "Unexpected dump break message value (got $dump_break_msg, expected $BREAK_MSG)"
++
++	devlink health dump clear $DL_HANDLE reporter dummy
++	check_err $? "Failed clear dump of dummy reporter"
++
++	devlink health recover $DL_HANDLE reporter dummy
++	check_err $? "Failed recover dummy reporter"
++
++	check_reporter_info dummy healthy 1 1 0 false
++
++	devlink health set $DL_HANDLE reporter dummy auto_recover true
++	check_err $? "Failed to dummy reporter auto_recover option"
++
++	check_reporter_info dummy healthy 1 1 0 true
++
++	echo "$BREAK_MSG"> $DEBUGFS_DIR/health/break_health
++	check_err $? "Failed to break dummy reporter"
++
++	check_reporter_info dummy healthy 2 2 0 true
++
++	local diagnose=$(devlink health diagnose $DL_HANDLE reporter dummy -j -p)
++	check_err $? "Failed show diagnose of dummy reporter"
++
++	local rcvrd_break_msg=$(echo $diagnose | jq -r ".recovered_break_message")
++	[ "$rcvrd_break_msg" == "$BREAK_MSG" ]
++	check_err $? "Unexpected recovered break message value (got $rcvrd_break_msg, expected $BREAK_MSG)"
++
++	devlink health set $DL_HANDLE reporter dummy grace_period 10
++	check_err $? "Failed to dummy reporter grace_period option"
++
++	check_reporter_info dummy healthy 2 2 10 true
++	
++	echo "Y"> $DEBUGFS_DIR/health/fail_recover
++	check_err $? "Failed set dummy reporter recovery to fail"
++
++	echo "$BREAK_MSG"> $DEBUGFS_DIR/health/break_health
++	check_fail $? "Unexpected success of dummy reporter break"
++	
++	check_reporter_info dummy error 3 2 10 true
++
++	echo "N"> $DEBUGFS_DIR/health/fail_recover
++	check_err $? "Failed set dummy reporter recovery to be successful"
++	
++	devlink health recover $DL_HANDLE reporter dummy
++	check_err $? "Failed recover dummy reporter"
++	
++	check_reporter_info dummy healthy 3 3 10 true
++
++	log_test "dummy reporter test"
 +}
 +
-+static int nsim_dev_dummy_fmsg_put(struct devlink_fmsg *fmsg, u32 binary_len)
-+{
-+	char *binary;
-+	int err;
-+	int i;
-+
-+	err = devlink_fmsg_bool_pair_put(fmsg, "test_bool", true);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u8_pair_put(fmsg, "test_u8", 1);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u32_pair_put(fmsg, "test_u32", 3);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "test_u64", 4);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_string_pair_put(fmsg, "test_string", "somestring");
-+	if (err)
-+		return err;
-+
-+	binary = kmalloc(binary_len, GFP_KERNEL);
-+	if (!binary)
-+		return -ENOMEM;
-+	get_random_bytes(binary, binary_len);
-+	err = devlink_fmsg_binary_pair_put(fmsg, "test_binary",
-+					   binary, binary_len);
-+	kfree(binary);
-+	if (err)
-+		return err;
-+
-+	err = devlink_fmsg_pair_nest_start(fmsg, "test_nest");
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_obj_nest_start(fmsg);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_bool_pair_put(fmsg, "nested_test_bool", false);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u8_pair_put(fmsg, "nested_test_u8", false);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_obj_nest_end(fmsg);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_pair_nest_end(fmsg);
-+	if (err)
-+		return err;
-+
-+	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_bool_array");
-+	if (err)
-+		return err;
-+	for (i = 0; i < 10; i++) {
-+		err = devlink_fmsg_bool_put(fmsg, true);
-+		if (err)
-+			return err;
-+	}
-+	err = devlink_fmsg_arr_pair_nest_end(fmsg);
-+	if (err)
-+		return err;
-+
-+	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u8_array");
-+	if (err)
-+		return err;
-+	for (i = 0; i < 10; i++) {
-+		err = devlink_fmsg_u8_put(fmsg, i);
-+		if (err)
-+			return err;
-+	}
-+	err = devlink_fmsg_arr_pair_nest_end(fmsg);
-+	if (err)
-+		return err;
-+
-+	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u32_array");
-+	if (err)
-+		return err;
-+	for (i = 0; i < 10; i++) {
-+		err = devlink_fmsg_u32_put(fmsg, i);
-+		if (err)
-+			return err;
-+	}
-+	err = devlink_fmsg_arr_pair_nest_end(fmsg);
-+	if (err)
-+		return err;
-+
-+	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u64_array");
-+	if (err)
-+		return err;
-+	for (i = 0; i < 10; i++) {
-+		err = devlink_fmsg_u64_put(fmsg, i);
-+		if (err)
-+			return err;
-+	}
-+	err = devlink_fmsg_arr_pair_nest_end(fmsg);
-+	if (err)
-+		return err;
-+
-+	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_array_of_objects");
-+	if (err)
-+		return err;
-+	for (i = 0; i < 10; i++) {
-+		err = devlink_fmsg_obj_nest_start(fmsg);
-+		if (err)
-+			return err;
-+		err = devlink_fmsg_bool_pair_put(fmsg,
-+						 "in_array_nested_test_bool",
-+						 false);
-+		if (err)
-+			return err;
-+		err = devlink_fmsg_u8_pair_put(fmsg,
-+					       "in_array_nested_test_u8",
-+					       i);
-+		if (err)
-+			return err;
-+		err = devlink_fmsg_obj_nest_end(fmsg);
-+		if (err)
-+			return err;
-+	}
-+	return devlink_fmsg_arr_pair_nest_end(fmsg);
-+}
-+
-+static int
-+nsim_dev_dummy_reporter_dump(struct devlink_health_reporter *reporter,
-+			     struct devlink_fmsg *fmsg, void *priv_ctx,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct nsim_dev_health *health = devlink_health_reporter_priv(reporter);
-+	struct nsim_dev_dummy_reporter_ctx *ctx = priv_ctx;
-+	int err;
-+
-+	if (ctx) {
-+		err = devlink_fmsg_string_pair_put(fmsg, "break_message",
-+						   ctx->break_msg);
-+		if (err)
-+			return err;
-+	}
-+	return nsim_dev_dummy_fmsg_put(fmsg, health->binary_len);
-+}
-+
-+static int
-+nsim_dev_dummy_reporter_diagnose(struct devlink_health_reporter *reporter,
-+				 struct devlink_fmsg *fmsg,
-+				 struct netlink_ext_ack *extack)
-+{
-+	struct nsim_dev_health *health = devlink_health_reporter_priv(reporter);
-+	int err;
-+
-+	if (health->recovered_break_msg) {
-+		err = devlink_fmsg_string_pair_put(fmsg,
-+						   "recovered_break_message",
-+						   health->recovered_break_msg);
-+		if (err)
-+			return err;
-+	}
-+	return nsim_dev_dummy_fmsg_put(fmsg, health->binary_len);
-+}
-+
-+static const
-+struct devlink_health_reporter_ops nsim_dev_dummy_reporter_ops = {
-+	.name = "dummy",
-+	.recover = nsim_dev_dummy_reporter_recover,
-+	.dump = nsim_dev_dummy_reporter_dump,
-+	.diagnose = nsim_dev_dummy_reporter_diagnose,
-+};
-+
-+static ssize_t nsim_dev_health_break_write(struct file *file,
-+					   const char __user *data,
-+					   size_t count, loff_t *ppos)
-+{
-+	struct nsim_dev_health *health = file->private_data;
-+	struct nsim_dev_dummy_reporter_ctx ctx;
-+	char *break_msg;
-+	int err;
-+
-+	break_msg = kmalloc(count + 1, GFP_KERNEL);
-+	if (!break_msg)
-+		return -ENOMEM;
-+
-+	if (copy_from_user(break_msg, data, count)) {
-+		err = -EFAULT;
-+		goto out;
-+	}
-+	break_msg[count] = '\0';
-+	if (break_msg[count - 1] == '\n')
-+		break_msg[count - 1] = '\0';
-+
-+	ctx.break_msg = break_msg;
-+	err = devlink_health_report(health->dummy_reporter, break_msg, &ctx);
-+	if (err)
-+		goto out;
-+
-+out:
-+	kfree(break_msg);
-+	return err ? err : count;
-+}
-+
-+static const struct file_operations nsim_dev_health_break_fops = {
-+	.open = simple_open,
-+	.write = nsim_dev_health_break_write,
-+	.llseek = generic_file_llseek,
-+};
-+
-+int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
-+{
-+	struct nsim_dev_health *health = &nsim_dev->health;
-+	int err;
-+
-+	health->empty_reporter =
-+		devlink_health_reporter_create(devlink,
-+					       &nsim_dev_empty_reporter_ops,
-+					       0, false, health);
-+	if (IS_ERR(health->empty_reporter))
-+		return PTR_ERR(health->empty_reporter);
-+
-+	health->dummy_reporter =
-+		devlink_health_reporter_create(devlink,
-+					       &nsim_dev_dummy_reporter_ops,
-+					       0, false, health);
-+	if (IS_ERR(health->dummy_reporter)) {
-+		err = PTR_ERR(health->dummy_reporter);
-+		goto err_empty_reporter_destroy;
-+	}
-+
-+	health->ddir = debugfs_create_dir("health", nsim_dev->ddir);
-+	if (IS_ERR_OR_NULL(health->ddir))
-+		return PTR_ERR_OR_ZERO(health->ddir) ?: -EINVAL;
-+
-+	health->recovered_break_msg = NULL;
-+	debugfs_create_file("break_health", 0200, health->ddir, health,
-+			    &nsim_dev_health_break_fops);
-+	health->binary_len = 16;
-+	debugfs_create_u32("binary_len", 0600, health->ddir,
-+			   &health->binary_len);
-+	health->fail_recover = false;
-+	debugfs_create_bool("fail_recover", 0600, health->ddir,
-+			    &health->fail_recover);
-+	return 0;
-+
-+err_empty_reporter_destroy:
-+	devlink_health_reporter_destroy(health->empty_reporter);
-+	return err;
-+}
-+
-+void nsim_dev_health_exit(struct nsim_dev *nsim_dev)
-+{
-+	struct nsim_dev_health *health = &nsim_dev->health;
-+
-+	debugfs_remove_recursive(health->ddir);
-+	kfree(health->recovered_break_msg);
-+	devlink_health_reporter_destroy(health->dummy_reporter);
-+	devlink_health_reporter_destroy(health->empty_reporter);
-+}
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 24358385d869..657cbae50293 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -18,6 +18,7 @@
- #include <linux/list.h>
- #include <linux/netdevice.h>
- #include <linux/u64_stats_sync.h>
-+#include <linux/debugfs.h>
- #include <net/devlink.h>
- #include <net/xdp.h>
- 
-@@ -134,6 +135,18 @@ enum nsim_resource_id {
- 	NSIM_RESOURCE_IPV6_FIB_RULES,
- };
- 
-+struct nsim_dev_health {
-+	struct devlink_health_reporter *empty_reporter;
-+	struct devlink_health_reporter *dummy_reporter;
-+	struct dentry *ddir;
-+	char *recovered_break_msg;
-+	u32 binary_len;
-+	bool fail_recover;
-+};
-+
-+int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink);
-+void nsim_dev_health_exit(struct nsim_dev *nsim_dev);
-+
- struct nsim_dev_port {
- 	struct list_head list;
- 	struct devlink_port devlink_port;
-@@ -164,6 +177,7 @@ struct nsim_dev {
- 	bool dont_allow_reload;
- 	bool fail_reload;
- 	struct devlink_region *dummy_region;
-+	struct nsim_dev_health health;
- };
- 
- static inline struct net *nsim_dev_net(struct nsim_dev *nsim_dev)
+ setup_prepare()
+ {
+ 	modprobe netdevsim
 -- 
 2.21.0
 
