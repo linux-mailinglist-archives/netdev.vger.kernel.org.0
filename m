@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6FC1D15F3
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A586D15E7
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732097AbfJIR02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 13:26:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49714 "EHLO mail.kernel.org"
+        id S1732680AbfJIR0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 13:26:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732433AbfJIRYp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 13:24:45 -0400
+        id S1732462AbfJIRYr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 13:24:47 -0400
 Received: from sasha-vm.mshome.net (unknown [167.220.2.234])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4AA6F20B7C;
-        Wed,  9 Oct 2019 17:24:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 339A121929;
+        Wed,  9 Oct 2019 17:24:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570641885;
-        bh=h8lq4nixI4nM9csfCj+ze8GYtJp/yVBqr0i/cifHhj4=;
+        s=default; t=1570641887;
+        bh=rJpc/GW8OOqRXsrjaiIX1kdq+qgdelKGmq0A41L9ncI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uj9/EGSVo7PDcdA330BQ0gc5wI9DJpkQ6LbB+Scb+tPBJkGEZvCtTKZOfF2PCQ5TM
-         EJduyiqVZjDWnFJR6x8o9TvpkkLKx0vt2Pp/RRh9s3WwHxIpKJfut/EM6wtb2Yn1ll
-         wdwhH49YD9bhOvjcWu2WHfD8WmwQOOBWqgHbzUwE=
+        b=Tten3cK5ENc+UCbkFhdRjn5xH7lbh7Pp6i880r+k6bZwey/tbLCRWmJNQz+68JyKu
+         dze/Sb8Lo5qY/atMDPwGpis58sA8qsVQifL6mY85GjRyjbKLP5Kw6gKxVjMuhTdKgg
+         aTpB9cMfGYlYq6Ky0PyEZnwiilO8iYR07VIkXSFo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 09/13] mac80211: fix txq null pointer dereference
-Date:   Wed,  9 Oct 2019 13:06:28 -0400
-Message-Id: <20191009170635.536-9-sashal@kernel.org>
+Cc:     Yizhuo <yzhai003@ucr.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 11/13] net: hisilicon: Fix usage of uninitialized variable in function mdio_sc_cfg_reg_write()
+Date:   Wed,  9 Oct 2019 13:06:30 -0400
+Message-Id: <20191009170635.536-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191009170635.536-1-sashal@kernel.org>
 References: <20191009170635.536-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,72 +43,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaoqing Pan <miaoqing@codeaurora.org>
+From: Yizhuo <yzhai003@ucr.edu>
 
-[ Upstream commit 8ed31a264065ae92058ce54aa3cc8da8d81dc6d7 ]
+[ Upstream commit 53de429f4e88f538f7a8ec2b18be8c0cd9b2c8e1 ]
 
-If the interface type is P2P_DEVICE or NAN, read the file of
-'/sys/kernel/debug/ieee80211/phyx/netdev:wlanx/aqm' will get a
-NULL pointer dereference. As for those interface type, the
-pointer sdata->vif.txq is NULL.
+In function mdio_sc_cfg_reg_write(), variable "reg_value" could be
+uninitialized if regmap_read() fails. However, "reg_value" is used
+to decide the control flow later in the if statement, which is
+potentially unsafe.
 
-Unable to handle kernel NULL pointer dereference at virtual address 00000011
-CPU: 1 PID: 30936 Comm: cat Not tainted 4.14.104 #1
-task: ffffffc0337e4880 task.stack: ffffff800cd20000
-PC is at ieee80211_if_fmt_aqm+0x34/0xa0 [mac80211]
-LR is at ieee80211_if_fmt_aqm+0x34/0xa0 [mac80211]
-[...]
-Process cat (pid: 30936, stack limit = 0xffffff800cd20000)
-[...]
-[<ffffff8000b7cd00>] ieee80211_if_fmt_aqm+0x34/0xa0 [mac80211]
-[<ffffff8000b7c414>] ieee80211_if_read+0x60/0xbc [mac80211]
-[<ffffff8000b7ccc4>] ieee80211_if_read_aqm+0x28/0x30 [mac80211]
-[<ffffff80082eff94>] full_proxy_read+0x2c/0x48
-[<ffffff80081eef00>] __vfs_read+0x2c/0xd4
-[<ffffff80081ef084>] vfs_read+0x8c/0x108
-[<ffffff80081ef494>] SyS_read+0x40/0x7c
-
-Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/r/1569549796-8223-1-git-send-email-miaoqing@codeaurora.org
-[trim useless data from commit message]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Yizhuo <yzhai003@ucr.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/debugfs_netdev.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns_mdio.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/mac80211/debugfs_netdev.c b/net/mac80211/debugfs_netdev.c
-index bcec1240f41d9..9769db9818d2f 100644
---- a/net/mac80211/debugfs_netdev.c
-+++ b/net/mac80211/debugfs_netdev.c
-@@ -490,9 +490,14 @@ static ssize_t ieee80211_if_fmt_aqm(
- 	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
+diff --git a/drivers/net/ethernet/hisilicon/hns_mdio.c b/drivers/net/ethernet/hisilicon/hns_mdio.c
+index de23a0ead5d76..d06efcd5f13b1 100644
+--- a/drivers/net/ethernet/hisilicon/hns_mdio.c
++++ b/drivers/net/ethernet/hisilicon/hns_mdio.c
+@@ -166,11 +166,15 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
  {
- 	struct ieee80211_local *local = sdata->local;
--	struct txq_info *txqi = to_txq_info(sdata->vif.txq);
-+	struct txq_info *txqi;
- 	int len;
+ 	u32 time_cnt;
+ 	u32 reg_value;
++	int ret;
  
-+	if (!sdata->vif.txq)
-+		return 0;
+ 	regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
+ 
+ 	for (time_cnt = MDIO_TIMEOUT; time_cnt; time_cnt--) {
+-		regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
++		ret = regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
++		if (ret)
++			return ret;
 +
-+	txqi = to_txq_info(sdata->vif.txq);
-+
- 	spin_lock_bh(&local->fq.lock);
- 	rcu_read_lock();
- 
-@@ -657,7 +662,9 @@ static void add_common_files(struct ieee80211_sub_if_data *sdata)
- 	DEBUGFS_ADD(rc_rateidx_vht_mcs_mask_5ghz);
- 	DEBUGFS_ADD(hw_queues);
- 
--	if (sdata->local->ops->wake_tx_queue)
-+	if (sdata->local->ops->wake_tx_queue &&
-+	    sdata->vif.type != NL80211_IFTYPE_P2P_DEVICE &&
-+	    sdata->vif.type != NL80211_IFTYPE_NAN)
- 		DEBUGFS_ADD(aqm);
- }
- 
+ 		reg_value &= st_msk;
+ 		if ((!!check_st) == (!!reg_value))
+ 			break;
 -- 
 2.20.1
 
