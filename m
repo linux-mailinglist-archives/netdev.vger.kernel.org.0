@@ -2,578 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE392D1412
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9F6AD1416
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:33:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731584AbfJIQcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 12:32:50 -0400
-Received: from mga02.intel.com ([134.134.136.20]:32606 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729644AbfJIQct (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 12:32:49 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Oct 2019 09:32:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,276,1566889200"; 
-   d="scan'208";a="198058339"
-Received: from unknown (HELO [10.241.228.165]) ([10.241.228.165])
-  by orsmga006.jf.intel.com with ESMTP; 09 Oct 2019 09:32:48 -0700
-Subject: Re: [PATCH bpf-next 2/4] xsk: allow AF_XDP sockets to receive packets
- directly from a queue
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        maciej.fijalkowski@intel.com, tom.herbert@intel.com
-References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
- <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
- <0c8a45d6-3bd1-6771-3859-7990660f74a3@intel.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <93b1a415-37a3-d495-b52f-cdc18a21ac74@intel.com>
-Date:   Wed, 9 Oct 2019 09:32:47 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1731595AbfJIQdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 12:33:44 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:35982 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729644AbfJIQdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 12:33:44 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 23so1755379pgk.3
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 09:33:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=QgwemIWq3VINHKqURhAdHEgxvF02MUo2zrpnX5QOSew=;
+        b=r4Nd7VM+qwC4lYE8DHhMQNdVODWc3pSqCLEN44KTQwiHx0LJZKdZm2w4KOPa99RnpI
+         wgYUkICPvelzxyLD9C9bFnzImlPf33E5lfSazvQOnprnw8bOoj5ZlZBuaoXIY0HzcWk/
+         51iEFAWnRGJcmRnTK9mwfPZRYi27mhjNt6Aj9RyGIhyPp9aW4gp/fzeJefs31pd94Yk6
+         dvdQrIujqb9yYNd057RMvXXTrJJXF1VWZX3Xy97hrbp/K+vsgAa592QjYo0DoBEqLwrg
+         hxPEyZ+7sFg528uaFsg2lur5AlwycQSzPPzUBJswMkKQLf7Zz9vFyTSTSpQJAxAp+dtm
+         w+Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QgwemIWq3VINHKqURhAdHEgxvF02MUo2zrpnX5QOSew=;
+        b=gcYYL+8PlaKy8jaB5kuj5Dd20YQikISQwOKaDRhK7kIDyoSac5Ga5MBt/pSHQqvtr8
+         dtkuJa/JRMoCFG2rl4ZJm/AZGStLD34wpwWUXYpTFXQWm6P0GGP0pq3MjEYWvdHEP/Oy
+         7EFOuXx2aAsvcGKMJ8jFDd5SWU+VP23UMW9GWAtJYxRK0+nMVTrz7JpXsjl+oBzk6PCa
+         E4ThaxVhU8h1dgjbJ8yCW5cMmFzOYN9o+Bllpz9SOsztlk86k30nEnRv44v89SfImhbn
+         IcPgE2JO6Vm3v5TdLJL7Kyykz2JPai7c0O0zuBrE1xU7uu0zixKhaZDuufGh2fcLOAJ3
+         zOxA==
+X-Gm-Message-State: APjAAAUxR8gabFoKf7aU2YkhJUJV3htg7HY+9b0AtEpVsrJgg1yIgHvx
+        FH+PXmZh9tfQv2xmsinbEoXOVA==
+X-Google-Smtp-Source: APXvYqxxB7Rwv1aOn/ZYgvJ9Oc9fhA+g5Yen89NZnTGR978Q3Oo1sGPvoG3g9Ja08rpG9PiLCc5BPw==
+X-Received: by 2002:a63:5025:: with SMTP id e37mr2626785pgb.7.1570638823181;
+        Wed, 09 Oct 2019 09:33:43 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id 74sm4079234pfy.78.2019.10.09.09.33.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2019 09:33:42 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 09:33:41 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATH bpf-next 2/2] selftests/bpf: Check that flow dissector can
+ be re-attached
+Message-ID: <20191009163341.GE2096@mini-arch>
+References: <20191009094312.15284-1-jakub@cloudflare.com>
+ <20191009094312.15284-2-jakub@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <0c8a45d6-3bd1-6771-3859-7990660f74a3@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191009094312.15284-2-jakub@cloudflare.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/8/2019 1:05 AM, Björn Töpel wrote:
-> On 2019-10-08 08:16, Sridhar Samudrala wrote:
->> Introduce a flag that can be specified during the bind() call
->> of an AF_XDP socket to receive packets directly from a queue when 
->> there is
->> no XDP program attached to the device.
->>
->> This is enabled by introducing a special BPF prog pointer called
->> BPF_PROG_DIRECT_XSK and a new bind flag XDP_DIRECT that can be specified
->> when binding an AF_XDP socket to a queue. At the time of bind(), an 
->> AF_XDP
->> socket in XDP_DIRECT mode, will attach BPF_PROG_DIRECT_XSK as a bpf 
->> program
->> if there is no other XDP program attached to the device. The device 
->> receive
->> queue is also associated with the AF_XDP socket.
->>
->> In the XDP receive path, if the bpf program is a DIRECT_XSK program, the
->> XDP buffer is passed to the AF_XDP socket that is associated with the
->> receive queue on which the packet is received.
->>
->> To avoid any overhead for nomal XDP programs, a static key is used to 
->> keep
->> a count of AF_XDP direct xsk sockets and static_branch_unlikely() is used
->> to handle receives for direct XDP sockets.
->>
->> Any attach of a normal XDP program will take precedence and the direct 
->> xsk
->> program will be removed. The direct XSK program will be attached
->> automatically when the normal XDP program is removed when there are any
->> AF_XDP direct sockets associated with that device.
->>
->> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
->> ---
->>   include/linux/filter.h            | 18 ++++++++++++
->>   include/linux/netdevice.h         | 10 +++++++
->>   include/net/xdp_sock.h            |  5 ++++
->>   include/uapi/linux/if_xdp.h       |  5 ++++
->>   kernel/bpf/syscall.c              |  7 +++--
->>   net/core/dev.c                    | 50 
->> +++++++++++++++++++++++++++++++++
->>   net/core/filter.c                 | 58 
->> +++++++++++++++++++++++++++++++++++++++
->>   net/xdp/xsk.c                     | 51 
->> ++++++++++++++++++++++++++++++++--
->>   tools/include/uapi/linux/if_xdp.h |  5 ++++
->>   9 files changed, 204 insertions(+), 5 deletions(-)
->>
->> diff --git a/include/linux/filter.h b/include/linux/filter.h
->> index 2ce57645f3cd..db4ad85d8321 100644
->> --- a/include/linux/filter.h
->> +++ b/include/linux/filter.h
->> @@ -585,6 +585,9 @@ struct bpf_redirect_info {
->>       struct bpf_map *map;
->>       struct bpf_map *map_to_flush;
->>       u32 kern_flags;
->> +#ifdef CONFIG_XDP_SOCKETS
->> +    struct xdp_sock *xsk;
->> +#endif
->>   };
->>   DECLARE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
->> @@ -693,6 +696,16 @@ static inline u32 bpf_prog_run_clear_cb(const 
->> struct bpf_prog *prog,
->>       return res;
->>   }
->> +#ifdef CONFIG_XDP_SOCKETS
->> +#define BPF_PROG_DIRECT_XSK    0x1
->> +#define bpf_is_direct_xsk_prog(prog) \
->> +    ((unsigned long)prog == BPF_PROG_DIRECT_XSK)
->> +DECLARE_STATIC_KEY_FALSE(xdp_direct_xsk_needed);
->> +u32 bpf_direct_xsk(const struct bpf_prog *prog, struct xdp_buff *xdp);
->> +#else
->> +#define bpf_is_direct_xsk_prog(prog) (false)
->> +#endif
->> +
->>   static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog 
->> *prog,
->>                           struct xdp_buff *xdp)
->>   {
->> @@ -702,6 +715,11 @@ static __always_inline u32 bpf_prog_run_xdp(const 
->> struct bpf_prog *prog,
->>        * already takes rcu_read_lock() when fetching the program, so
->>        * it's not necessary here anymore.
->>        */
->> +#ifdef CONFIG_XDP_SOCKETS
->> +    if (static_branch_unlikely(&xdp_direct_xsk_needed) &&
->> +        bpf_is_direct_xsk_prog(prog))
->> +        return bpf_direct_xsk(prog, xdp);
->> +#endif
->>       return BPF_PROG_RUN(prog, xdp);
->>   }
->> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->> index 48cc71aae466..f4d0f70aa718 100644
->> --- a/include/linux/netdevice.h
->> +++ b/include/linux/netdevice.h
->> @@ -743,6 +743,7 @@ struct netdev_rx_queue {
->>       struct xdp_rxq_info        xdp_rxq;
->>   #ifdef CONFIG_XDP_SOCKETS
->>       struct xdp_umem                 *umem;
->> +    struct xdp_sock            *xsk;
->>   #endif
->>   } ____cacheline_aligned_in_smp;
->> @@ -1836,6 +1837,10 @@ struct net_device {
->>       atomic_t        carrier_up_count;
->>       atomic_t        carrier_down_count;
->> +#ifdef CONFIG_XDP_SOCKETS
->> +    u16            direct_xsk_count;
-> 
-> Why u16? num_rx/tx_queues are unsigned ints.
+On 10/09, Jakub Sitnicki wrote:
+> Make sure a new flow dissector program can be attached to replace the old
+> one with a single syscall. Also check that attaching the same program twice
+> is prohibited.
+Overall the series looks good, left a bunch of nits/questions below.
 
-OK. Will changes to unsigned int
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  .../bpf/prog_tests/flow_dissector_reattach.c  | 93 +++++++++++++++++++
+>  1 file changed, 93 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+> new file mode 100644
+> index 000000000000..0f0006c93956
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+> @@ -0,0 +1,93 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Test that the flow_dissector program can be updated with a single
+> + * syscall by attaching a new program that replaces the existing one.
+> + *
+> + * Corner case - the same program cannot be attached twice.
+> + */
+> +#include <errno.h>
+> +#include <fcntl.h>
+> +#include <stdbool.h>
+> +#include <unistd.h>
+> +
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf.h>
+> +
+> +#include "test_progs.h"
+> +
+[..]
+> +/* Not used here. For CHECK macro sake only. */
+> +static int duration;
+nit: you can use CHECK_FAIL macro instead which doesn't require this.
 
-> 
->> +#endif
->> +
->>   #ifdef CONFIG_WIRELESS_EXT
->>       const struct iw_handler_def *wireless_handlers;
->>       struct iw_public_data    *wireless_data;
->> @@ -3712,6 +3717,11 @@ int dev_forward_skb(struct net_device *dev, 
->> struct sk_buff *skb);
->>   bool is_skb_forwardable(const struct net_device *dev,
->>               const struct sk_buff *skb);
->> +#ifdef CONFIG_XDP_SOCKETS
->> +int dev_set_direct_xsk_prog(struct net_device *dev);
->> +int dev_clear_direct_xsk_prog(struct net_device *dev);
->> +#endif
->> +
->>   static __always_inline int ____dev_forward_skb(struct net_device *dev,
->>                              struct sk_buff *skb)
->>   {
->> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
->> index c9398ce7960f..9158233d34e1 100644
->> --- a/include/net/xdp_sock.h
->> +++ b/include/net/xdp_sock.h
->> @@ -76,6 +76,9 @@ struct xsk_map_node {
->>       struct xdp_sock **map_entry;
->>   };
->> +/* Flags for the xdp_sock flags field. */
->> +#define XDP_SOCK_DIRECT (1 << 0)
->> +
->>   struct xdp_sock {
->>       /* struct sock must be the first member of struct xdp_sock */
->>       struct sock sk;
->> @@ -104,6 +107,7 @@ struct xdp_sock {
->>       struct list_head map_list;
->>       /* Protects map_list */
->>       spinlock_t map_list_lock;
->> +    u16 flags;
-> 
-> Right now only the XDP_DIRECT is tracked here. Maybe track all flags, 
-> and show them in xsk_diag.
+if (CHECK_FAIL(expr)) {
+	printf("something bad has happened\n");
+	return/goto;
+}
 
-I see zc as the other field that can be converted into a flag.
-Do you want to include that as part of this series or can it be done later?
+It may be more verbose than doing CHECK() with its embedded error
+message, so I leave it up to you to decide on whether you want to switch
+to CHECK_FAIL or stick to CHECK.
 
-> 
->>   };
->>   struct xdp_buff;
->> @@ -129,6 +133,7 @@ void xsk_set_tx_need_wakeup(struct xdp_umem *umem);
->>   void xsk_clear_rx_need_wakeup(struct xdp_umem *umem);
->>   void xsk_clear_tx_need_wakeup(struct xdp_umem *umem);
->>   bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem);
->> +struct xdp_sock *xdp_get_xsk_from_qid(struct net_device *dev, u16 
->> queue_id);
->>   void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
->>                    struct xdp_sock **map_entry);
->> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
->> index be328c59389d..d202b5d40859 100644
->> --- a/include/uapi/linux/if_xdp.h
->> +++ b/include/uapi/linux/if_xdp.h
->> @@ -25,6 +25,11 @@
->>    * application.
->>    */
->>   #define XDP_USE_NEED_WAKEUP (1 << 3)
->> +/* This option allows an AF_XDP socket bound to a queue to receive all
->> + * the packets directly from that queue when there is no XDP program
->> + * attached to the device.
->> + */
->> +#define XDP_DIRECT    (1 << 4)
->>   /* Flags for xsk_umem_config flags */
->>   #define XDP_UMEM_UNALIGNED_CHUNK_FLAG (1 << 0)
->> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
->> index 205f95af67d2..871d738a78d2 100644
->> --- a/kernel/bpf/syscall.c
->> +++ b/kernel/bpf/syscall.c
->> @@ -1349,13 +1349,14 @@ static void __bpf_prog_put(struct bpf_prog 
->> *prog, bool do_idr_lock)
->>   void bpf_prog_put(struct bpf_prog *prog)
->>   {
->> -    __bpf_prog_put(prog, true);
->> +    if (!bpf_is_direct_xsk_prog(prog))
->> +        __bpf_prog_put(prog, true);
->>   }
->>   EXPORT_SYMBOL_GPL(bpf_prog_put);
->>   u32 bpf_get_prog_id(const struct bpf_prog *prog)
->>   {
->> -    if (prog)
->> +    if (prog && !bpf_is_direct_xsk_prog(prog))
->>           return prog->aux->id;
->>       return 0;
->> @@ -1364,7 +1365,7 @@ EXPORT_SYMBOL(bpf_get_prog_id);
->>   void bpf_set_prog_id(struct bpf_prog *prog, u32 id)
->>   {
->> -    if (prog)
->> +    if (prog && !bpf_is_direct_xsk_prog(prog))
->>           prog->aux->id = id;
->>   }
->>   EXPORT_SYMBOL(bpf_set_prog_id);
->> diff --git a/net/core/dev.c b/net/core/dev.c
->> index 866d0ad936a5..eb3cd718e580 100644
->> --- a/net/core/dev.c
->> +++ b/net/core/dev.c
->> @@ -8269,6 +8269,10 @@ int dev_change_xdp_fd(struct net_device *dev, 
->> struct netlink_ext_ack *extack,
->>       } else {
->>           if (!__dev_xdp_query(dev, bpf_op, query))
->>               return 0;
->> +#ifdef CONFIG_XDP_SOCKETS
->> +        if (dev->direct_xsk_count)
->> +            prog = (void *)BPF_PROG_DIRECT_XSK;
->> +#endif
-> 
-> Nit, but maybe hide this weirdness in a function?
+> +static bool is_attached(void)
+> +{
+> +	bool attached = true;
+> +	int err, net_fd = -1;
+nit: maybe don't need to initialize net_fd to -1 here as well.
 
-OK.
+> +	__u32 cnt;
+> +
+> +	net_fd = open("/proc/self/ns/net", O_RDONLY);
+> +	if (net_fd < 0)
+> +		goto out;
+> +
+> +	err = bpf_prog_query(net_fd, BPF_FLOW_DISSECTOR, 0, NULL, NULL, &cnt);
+> +	if (CHECK(err, "bpf_prog_query", "ret %d errno %d\n", err, errno))
+> +		goto out;
+> +
+> +	attached = (cnt > 0);
+> +out:
+> +	close(net_fd);
+> +	return attached;
+> +}
+> +
+> +static int load_prog(void)
+> +{
+> +	struct bpf_insn prog[] = {
+> +		BPF_MOV64_IMM(BPF_REG_0, BPF_OK),
+> +		BPF_EXIT_INSN(),
+> +	};
+> +	int fd;
+> +
+> +	fd = bpf_load_program(BPF_PROG_TYPE_FLOW_DISSECTOR, prog,
+> +			      ARRAY_SIZE(prog), "GPL", 0, NULL, 0);
+> +	CHECK(fd < 0, "bpf_load_program", "ret %d errno %d\n", fd, errno);
+> +
+> +	return fd;
+> +}
+> +
+> +void test_flow_dissector_reattach(void)
+> +{
+> +	int prog_fd[2] = { -1, -1 };
+> +	int err;
+> +
+> +	if (is_attached())
+> +		return;
+Should we call test__skip() here to indicate that the test has been
+skipped?
+Also, do we need to run this test against non-root namespace as well?
 
+> +	prog_fd[0] = load_prog();
+> +	if (prog_fd[0] < 0)
+> +		return;
+> +
+> +	prog_fd[1] = load_prog();
+> +	if (prog_fd[1] < 0)
+> +		goto out_close;
+> +
+> +	err = bpf_prog_attach(prog_fd[0], 0, BPF_FLOW_DISSECTOR, 0);
+> +	if (CHECK(err, "bpf_prog_attach-0", "ret %d errno %d\n", err, errno))
+> +		goto out_close;
+> +
+> +	/* Expect success when attaching a different program */
+> +	err = bpf_prog_attach(prog_fd[1], 0, BPF_FLOW_DISSECTOR, 0);
+> +	if (CHECK(err, "bpf_prog_attach-1", "ret %d errno %d\n", err, errno))
+> +		goto out_detach;
+> +
+> +	/* Expect failure when attaching the same program twice */
+> +	err = bpf_prog_attach(prog_fd[1], 0, BPF_FLOW_DISSECTOR, 0);
+> +	CHECK(!err || errno != EINVAL, "bpf_prog_attach-2",
+> +	      "ret %d errno %d\n", err, errno);
+> +
+> +out_detach:
+> +	err = bpf_prog_detach(0, BPF_FLOW_DISSECTOR);
+> +	CHECK(err, "bpf_prog_detach", "ret %d errno %d\n", err, errno);
+> +
+> +out_close:
+> +	close(prog_fd[1]);
+> +	close(prog_fd[0]);
+> +}
+> -- 
+> 2.20.1
 > 
->>       }
->>       err = dev_xdp_install(dev, bpf_op, extack, flags, prog);
->> @@ -8278,6 +8282,52 @@ int dev_change_xdp_fd(struct net_device *dev, 
->> struct netlink_ext_ack *extack,
->>       return err;
->>   }
->> +#ifdef CONFIG_XDP_SOCKETS
->> +int dev_set_direct_xsk_prog(struct net_device *dev)
->> +{
->> +    const struct net_device_ops *ops = dev->netdev_ops;
->> +    struct bpf_prog *prog;
->> +    bpf_op_t bpf_op;
->> +
->> +    ASSERT_RTNL();
->> +
->> +    dev->direct_xsk_count++;
->> +
->> +    bpf_op = ops->ndo_bpf;
->> +    if (!bpf_op)
->> +        return -EOPNOTSUPP;
->> +
->> +    if (__dev_xdp_query(dev, bpf_op, XDP_QUERY_PROG))
->> +        return 0;
->> +
->> +    prog = (void *)BPF_PROG_DIRECT_XSK;
->> +
->> +    return dev_xdp_install(dev, bpf_op, NULL, XDP_FLAGS_DRV_MODE, prog);
->> +}
->> +
->> +int dev_clear_direct_xsk_prog(struct net_device *dev)
->> +{
->> +    const struct net_device_ops *ops = dev->netdev_ops;
->> +    bpf_op_t bpf_op;
->> +
->> +    ASSERT_RTNL();
->> +
->> +    dev->direct_xsk_count--;
->> +
->> +    if (dev->direct_xsk_count)
->> +        return 0;
->> +
->> +    bpf_op = ops->ndo_bpf;
->> +    if (!bpf_op)
->> +        return -EOPNOTSUPP;
->> +
->> +    if (__dev_xdp_query(dev, bpf_op, XDP_QUERY_PROG))
->> +        return 0;
->> +
->> +    return dev_xdp_install(dev, bpf_op, NULL, XDP_FLAGS_DRV_MODE, NULL);
->> +}
->> +#endif
->> +
->>   /**
->>    *    dev_new_index    -    allocate an ifindex
->>    *    @net: the applicable net namespace
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index ed6563622ce3..391d7d600284 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -73,6 +73,7 @@
->>   #include <net/lwtunnel.h>
->>   #include <net/ipv6_stubs.h>
->>   #include <net/bpf_sk_storage.h>
->> +#include <linux/static_key.h>
->>   /**
->>    *    sk_filter_trim_cap - run a packet through a socket filter
->> @@ -3546,6 +3547,22 @@ static int __bpf_tx_xdp_map(struct net_device 
->> *dev_rx, void *fwd,
->>       return 0;
->>   }
->> +#ifdef CONFIG_XDP_SOCKETS
->> +static void xdp_do_flush_xsk(struct bpf_redirect_info *ri)
->> +{
->> +    struct xdp_sock *xsk = READ_ONCE(ri->xsk);
-> 
-> Why READ_ONCE here?
-> 
->> +
->> +    if (xsk) {
->> +        ri->xsk = NULL;
->> +        xsk_flush(xsk);
->> +    }
->> +}
->> +#else
->> +static inline void xdp_do_flush_xsk(struct bpf_redirect_info *ri)
->> +{
->> +}
->> +#endif
->> +
-> 
-> Move CONFIG_XDP_SOCKETS into the function, and remove the empty/bottom one.
-> 
->>   void xdp_do_flush_map(void)
->>   {
->>       struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->> @@ -3568,6 +3585,8 @@ void xdp_do_flush_map(void)
->>               break;
->>           }
->>       }
->> +
->> +    xdp_do_flush_xsk(ri);
->>   }
->>   EXPORT_SYMBOL_GPL(xdp_do_flush_map);
->> @@ -3631,11 +3650,28 @@ static int xdp_do_redirect_map(struct 
->> net_device *dev, struct xdp_buff *xdp,
->>       return err;
->>   }
->> +#ifdef CONFIG_XDP_SOCKETS
->> +static inline struct xdp_sock *xdp_get_direct_xsk(struct 
->> bpf_redirect_info *ri)
->> +{
->> +    return READ_ONCE(ri->xsk);
-> 
-> Again, why READ_ONCE? Please leave the inlining to the compiler in .c 
-> files.
-> 
->> +}
->> +#else
->> +static inline struct xdp_sock *xdp_get_direct_xsk(struct 
->> bpf_redirect_info *ri)
->> +{
->> +    return NULL;
->> +}
->> +#endif
->> +
->>   int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->>               struct bpf_prog *xdp_prog)
->>   {
->>       struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>       struct bpf_map *map = READ_ONCE(ri->map);
->> +    struct xdp_sock *xsk;
->> +
->> +    xsk = xdp_get_direct_xsk(ri);
->> +    if (xsk)
->> +        return xsk_rcv(xsk, xdp);
-> 
-> Hmm, maybe you need a xsk_to_flush as well. Say that a user swaps in a
-> regular XDP program, then xsk_rcv() will be called until the flush
-> occurs, right? IOW, all packets processed (napi budget) in the napi_poll
-> will end up in the socket.
-
-I originally had xsk_to_flush considering this possibility of the XDP 
-program changing before call to flush.
-Will re-introduce it in the next revision.
-Should i create a separate structure bpf_direct_xsk_info rather than 
-adding these fields to bpf_redirect_info?
-
-
-> 
->>       if (likely(map))
->>           return xdp_do_redirect_map(dev, xdp, xdp_prog, map, ri);
->> @@ -8934,4 +8970,26 @@ const struct bpf_verifier_ops 
->> sk_reuseport_verifier_ops = {
->>   const struct bpf_prog_ops sk_reuseport_prog_ops = {
->>   };
->> +
->> +#ifdef CONFIG_XDP_SOCKETS
->> +DEFINE_STATIC_KEY_FALSE(xdp_direct_xsk_needed);
->> +EXPORT_SYMBOL_GPL(xdp_direct_xsk_needed);
->> +
->> +u32 bpf_direct_xsk(const struct bpf_prog *prog, struct xdp_buff *xdp)
->> +{
->> +    struct xdp_sock *xsk;
->> +
->> +    xsk = xdp_get_xsk_from_qid(xdp->rxq->dev, xdp->rxq->queue_index);
->> +    if (xsk) {
->> +        struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->> +
->> +        ri->xsk = xsk;
->> +        return XDP_REDIRECT;
-> 
->  From the comment above. I *think* you need to ri->xsk_to_flush. Can the
-> direct socket (swap socket) change before flush?
-
-Yes.
-
-> 
->> +    }
->> +
->> +    return XDP_PASS;
->> +}
->> +EXPORT_SYMBOL(bpf_direct_xsk);
->> +#endif
->> +
->>   #endif /* CONFIG_INET */
->> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
->> index fa8fbb8fa3c8..8a29939bac7e 100644
->> --- a/net/xdp/xsk.c
->> +++ b/net/xdp/xsk.c
->> @@ -24,6 +24,7 @@
->>   #include <linux/rculist.h>
->>   #include <net/xdp_sock.h>
->>   #include <net/xdp.h>
->> +#include <linux/if_link.h>
->>   #include "xsk_queue.h"
->>   #include "xdp_umem.h"
->> @@ -264,6 +265,45 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct 
->> xdp_buff *xdp)
->>       return err;
->>   }
->> +static void xdp_clear_direct_xsk(struct xdp_sock *xsk)
-> 
-> Use xs, and not xsk for consistency.
-
-OK.
-
-> 
->> +{
->> +    struct net_device *dev = xsk->dev;
->> +    u32 qid = xsk->queue_id;
->> +
->> +    if (!dev->_rx[qid].xsk)
->> +        return;
->> +
->> +    dev_clear_direct_xsk_prog(dev);
->> +    dev->_rx[qid].xsk = NULL;
->> +    static_branch_dec(&xdp_direct_xsk_needed);
->> +    xsk->flags &= ~XDP_SOCK_DIRECT;
->> +}
->> +
->> +static int xdp_set_direct_xsk(struct xdp_sock *xsk)
-> 
-> Same here.
-> 
->> +{
->> +    struct net_device *dev = xsk->dev;
->> +    u32 qid = xsk->queue_id;
->> +    int err = 0;
->> +
->> +    if (dev->_rx[qid].xsk)
->> +        return -EEXIST;
->> +
->> +    xsk->flags |= XDP_SOCK_DIRECT;
->> +    static_branch_inc(&xdp_direct_xsk_needed);
->> +    dev->_rx[qid].xsk = xsk;
->> +    err = dev_set_direct_xsk_prog(dev);
->> +    if (err)
->> +        xdp_clear_direct_xsk(xsk);
->> +
->> +    return err;
->> +}
->> +
->> +struct xdp_sock *xdp_get_xsk_from_qid(struct net_device *dev, u16 
->> queue_id)
->> +{
->> +    return dev->_rx[queue_id].xsk;
->> +}
->> +EXPORT_SYMBOL(xdp_get_xsk_from_qid);
->> +
->>   void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries)
->>   {
->>       xskq_produce_flush_addr_n(umem->cq, nb_entries);
->> @@ -464,6 +504,11 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
->>           return;
->>       WRITE_ONCE(xs->state, XSK_UNBOUND);
->> +    if (xs->flags & XDP_SOCK_DIRECT) {
->> +        rtnl_lock();
->> +        xdp_clear_direct_xsk(xs);
->> +        rtnl_unlock();
->> +    }
->>       /* Wait for driver to stop using the xdp socket. */
->>       xdp_del_sk_umem(xs->umem, xs);
->>       xs->dev = NULL;
->> @@ -604,7 +649,7 @@ static int xsk_bind(struct socket *sock, struct 
->> sockaddr *addr, int addr_len)
->>       flags = sxdp->sxdp_flags;
->>       if (flags & ~(XDP_SHARED_UMEM | XDP_COPY | XDP_ZEROCOPY |
->> -              XDP_USE_NEED_WAKEUP))
->> +              XDP_USE_NEED_WAKEUP | XDP_DIRECT))
->>           return -EINVAL;
->>       rtnl_lock();
->> @@ -632,7 +677,7 @@ static int xsk_bind(struct socket *sock, struct 
->> sockaddr *addr, int addr_len)
->>           struct socket *sock;
->>           if ((flags & XDP_COPY) || (flags & XDP_ZEROCOPY) ||
->> -            (flags & XDP_USE_NEED_WAKEUP)) {
->> +            (flags & XDP_USE_NEED_WAKEUP) || (flags & XDP_DIRECT)) {
->>               /* Cannot specify flags for shared sockets. */
->>               err = -EINVAL;
->>               goto out_unlock;
->> @@ -688,6 +733,8 @@ static int xsk_bind(struct socket *sock, struct 
->> sockaddr *addr, int addr_len)
->>       xskq_set_umem(xs->rx, xs->umem->size, xs->umem->chunk_mask);
->>       xskq_set_umem(xs->tx, xs->umem->size, xs->umem->chunk_mask);
->>       xdp_add_sk_umem(xs->umem, xs);
->> +    if (flags & XDP_DIRECT)
->> +        err = xdp_set_direct_xsk(xs);
->>   out_unlock:
->>       if (err) {
->> diff --git a/tools/include/uapi/linux/if_xdp.h 
->> b/tools/include/uapi/linux/if_xdp.h
->> index be328c59389d..d202b5d40859 100644
->> --- a/tools/include/uapi/linux/if_xdp.h
->> +++ b/tools/include/uapi/linux/if_xdp.h
->> @@ -25,6 +25,11 @@
->>    * application.
->>    */
->>   #define XDP_USE_NEED_WAKEUP (1 << 3)
->> +/* This option allows an AF_XDP socket bound to a queue to receive all
->> + * the packets directly from that queue when there is no XDP program
->> + * attached to the device.
->> + */
->> +#define XDP_DIRECT    (1 << 4)
->>   /* Flags for xsk_umem_config flags */
->>   #define XDP_UMEM_UNALIGNED_CHUNK_FLAG (1 << 0)
->>
