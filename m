@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 241A2D0EEB
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 14:34:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC27D0EF3
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 14:35:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731267AbfJIMe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 08:34:28 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:43834 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731229AbfJIMe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 08:34:28 -0400
-Received: by mail-wr1-f66.google.com with SMTP id j18so2732000wrq.10;
-        Wed, 09 Oct 2019 05:34:26 -0700 (PDT)
+        id S1731145AbfJIMf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 08:35:29 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33152 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730662AbfJIMf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 08:35:29 -0400
+Received: by mail-wm1-f67.google.com with SMTP id r17so4676578wme.0;
+        Wed, 09 Oct 2019 05:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=M4DGzZVz3C9CsIT3+orcem5mC7xRelRKri3ygcgFcYg=;
-        b=Z6Vl8jzwQZv1XXQ8Mh9He/cTpu97fQsfQ1cBmapxrThVkgpqVmy7iiglrNrsC5cwvA
-         6IBWyUGhvzVd5dfOS6+lL1zTXjc4zliF5u8ROdz7wF+d4iNr9lc+3q+kGVj91ZHEOJCU
-         KWEBZTD6ETHecKoRnKjnjDsrMTsfHZXE4IasyxVGusXKO6jWu7i2N62HMTD3W1mTxpUt
-         aIEBA3zVKnhpy140JOHqe+f8Tq0cE/s4Enn5W0O54FTnsp1Jvvw1Q5tB7FkVnOsNisXr
-         7mme3cylQ/y7LAc4TxD/ZIps/GWHqcE/hGZ/tggDg4aWu/kUBfnDGjUZtYpFbe2CjSc6
-         Y0mQ==
+        bh=zrukuNIIpELS1SFhnaqgjV+S03DcpwgywhfpTJYGiQY=;
+        b=YXWWoxP687A4XDYTVavYfNNciK2iQ3bmHf87UHCsApkdu79BpNx2//OcEqWcVxnCyi
+         xLJgx28lRn8/3stvBve9smtm0pdcFk5rF6GR32ipf7KGFWBiSDNJ/G313z/GJbOLOyf1
+         0GgmM4KMdLcmEr2tkc2lUPvzB9oV1LKtFNj5r1N1ztWPV3Ihq78w4at+y9KLqPFjD2dr
+         wCUpV6hILJU9EpH4psIpdxWw/p5i64tRaF8FSoAJB6NFaftHNxo7ruiynw+UvZgN0PXt
+         vjlD/f63gHYQPqtUD/uzBOMUaPgw9i4Bx9EbeTD923ox9nnMe3Eo1FhGzxATp5KDB48A
+         5spw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=M4DGzZVz3C9CsIT3+orcem5mC7xRelRKri3ygcgFcYg=;
-        b=GxkxmNJYLoEOrb1HJ7jBuSDj1avHb8+wALE6IOuaxHu+zPyB1GWQk7Rf94X/KVzeTU
-         zWdBI3bC2Urlbnq/2dbtEMQeG5U6yWPfj8ICQBf3XRBwyfnKCjRXv0bVLtReYELIxX+x
-         0+nGSIEFHr2I9iWy+k4pUyCjUc49ffxLqOwmp5p7nRDPX0vY6gTGHA6UKzl+jWu1moXH
-         IRxnavb+4Q/NYUMtgOthDRutfsl8oIkvp3jp55rOJa6LEjS7U4nflh8b0u61D+G3uBdG
-         oIJWMKKs7hhN9QoJMM01YNozxseUYftnz6NGdx/t1ThbclRxCmDVAgMm5WxFgETeYAJH
-         xhcw==
-X-Gm-Message-State: APjAAAU8ELRbfMtD6aNa2FYUNADY6lvd7PYAEd20ZVSldr5JURAbmcKs
-        yu9uRJGM5BLE/XdLFhOAbCY=
-X-Google-Smtp-Source: APXvYqwApF/DZjfteDasDL2Kkb76g7OqjJVm+JG00dcX3k7i+hz7lkgviUk2SMygweyq2OJ7IZaCyQ==
-X-Received: by 2002:adf:e284:: with SMTP id v4mr2653792wri.21.1570624466138;
-        Wed, 09 Oct 2019 05:34:26 -0700 (PDT)
+        bh=zrukuNIIpELS1SFhnaqgjV+S03DcpwgywhfpTJYGiQY=;
+        b=qW9QJ+LgomqnTpkiGoXM/ymUIu9J6xR5z//GCto1U9Goo4nQzxGMU47OIfAEynakS9
+         W8UPBBDpL6ZBYMZEoV074umoyPp2MN88a8LGLQXHwkxZGynLa7KHYRSWvztc3QM6cLeD
+         OjZ0+0bs7xw14ZJpPMBtPwzOC6XXNL4P7Sb75qZkSuUpOsHHNoc5qmWwHbZdRBoQ3S+t
+         bvu89vEuJ97BoRl/KMvKrtRhf74WIv8qP1Ff1A6FycaSHIMtZQ2Hssf5+aP5Wm3N4T/a
+         YfKXg8cf2heiOEPMJg61/+kjSdOmRYguh+4NerAud4TI7SeQFQUO7nh9gQhumaSVx5WR
+         JjJg==
+X-Gm-Message-State: APjAAAVUdb+kcX7SCxf/p7vL4vBihj9ED5FLWJ+14PaqwkI1bYM75o6n
+        KJMTQCQ7Mr4e8LBxE+2CuhI=
+X-Google-Smtp-Source: APXvYqyIM0rgTcW2Gxf93OV7hWpxtlNpWqt+guqqmn2grspSyMcKu7E2vZauZhYTsT6VIMg9UDo/NQ==
+X-Received: by 2002:a1c:a8c7:: with SMTP id r190mr2445724wme.162.1570624526496;
+        Wed, 09 Oct 2019 05:35:26 -0700 (PDT)
 Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id t13sm4438023wra.70.2019.10.09.05.34.24
+        by smtp.gmail.com with ESMTPSA id d15sm2260310wru.50.2019.10.09.05.35.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 05:34:25 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 13:34:23 +0100
+        Wed, 09 Oct 2019 05:35:25 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 13:35:24 +0100
 From:   Stefan Hajnoczi <stefanha@gmail.com>
 To:     Stefano Garzarella <sgarzare@redhat.com>
 Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
@@ -58,16 +58,16 @@ Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
         Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [RFC PATCH 08/13] vsock: move vsock_insert_unbound() in the
- vsock_create()
-Message-ID: <20191009123423.GI5747@stefanha-x1.localdomain>
+Subject: Re: [RFC PATCH 09/13] hv_sock: set VMADDR_CID_HOST in the
+ hvs_remote_addr_init()
+Message-ID: <20191009123524.GJ5747@stefanha-x1.localdomain>
 References: <20190927112703.17745-1-sgarzare@redhat.com>
- <20190927112703.17745-9-sgarzare@redhat.com>
+ <20190927112703.17745-10-sgarzare@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+PbGPm1eXpwOoWkI"
+        protocol="application/pgp-signature"; boundary="5me2qT3T17SWzdxI"
 Content-Disposition: inline
-In-Reply-To: <20190927112703.17745-9-sgarzare@redhat.com>
+In-Reply-To: <20190927112703.17745-10-sgarzare@redhat.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -75,46 +75,35 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---+PbGPm1eXpwOoWkI
+--5me2qT3T17SWzdxI
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 27, 2019 at 01:26:58PM +0200, Stefano Garzarella wrote:
-> vsock_insert_unbound() was called only when 'sock' parameter of
-> __vsock_create() was not null. This only happened when
-> __vsock_create() was called by vsock_create().
->=20
-> In order to simplify the multi-transports support, this patch
-> moves vsock_insert_unbound() at the end of vsock_create().
+On Fri, Sep 27, 2019 at 01:26:59PM +0200, Stefano Garzarella wrote:
+> Remote peer is always the host, so we set VMADDR_CID_HOST as
+> remote CID instead of VMADDR_CID_ANY.
 >=20
 > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 > ---
->  net/vmw_vsock/af_vsock.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
-
-Maybe transports shouldn't call __vsock_create() directly.  They always
-pass NULL as the parent socket, so we could have a more specific
-function that transports call without a parent sock argument.  This
-would eliminate any concern over moving vsock_insert_unbound() out of
-this function.  In any case, I've checked the code and this patch is
-correct.
+>  net/vmw_vsock/hyperv_transport.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
 Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
---+PbGPm1eXpwOoWkI
+--5me2qT3T17SWzdxI
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2d088ACgkQnKSrs4Gr
-c8jGUgf/flGT/To2png0jPgQV5oe1jDDk+0D39ubcCGjdMLuOwLdwey4BUbOWK3I
-KFEzw7U6CmXNnW15vqqckacUNgL6OXgHKrOxKpiwYvonz2/C0JNLMaTIbsSfcR8u
-sXWnnoihq8NTRIJhSxHFaWgqBLWFW8G3sAfFA2oCIiNI8HQhewIy0Sfh2vfuyypU
-SjCHAwlodeIMuEmeIlTUEd4RKWqZ3dDAOs5xnl87OWUdzTtgmKEccQLZSvJ/t2Qi
-QVVO07S3r7ASe2bpjmTgQuV1ZZ3iz/jyFOYAD3WmE6D6a+afcU+4gUTa9Tbu1TL4
-en7c7jB5XF98CqjwO5kjMLozykqVWg==
-=Fgki
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2d1AwACgkQnKSrs4Gr
+c8jb5wf/RiXbiexvEEg0hOVPHCNYSDBNEehuU8/ZUOo11ueiWzI9+b5rFidWUcc9
+4VZ3SCtzOW/3meXooyF42QP97QPJ0sQO3jpPZjCECe9McxAbm0zum+N3Cb/0AbjT
+xrpQ1FHtTgGBHydsxFcsyIcZMvp91o4Q7qNtExg/CB7vbOEJXFkSmh5968GD3o1f
+uK0Rqjqgx1Fm30mT41uRe41JvrE7QtJr8yc/uFB2h2JL7RgxRa+G+mIV1+66P2t+
+xIwq8Nj/JyQBfvD82Bvezuvf6ITNloJ7/97xTnHgg2U0YcslB/cU8gArZJlWHAKv
+O9b3imMu/xyzY1oO4yJ+mmOM3cEtFQ==
+=ktlx
 -----END PGP SIGNATURE-----
 
---+PbGPm1eXpwOoWkI--
+--5me2qT3T17SWzdxI--
