@@ -2,118 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBCDBD0AD7
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 11:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26235D0AF7
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 11:22:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729865AbfJIJTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 05:19:20 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:46323 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727035AbfJIJTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 05:19:19 -0400
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id 17CC832A718;
-        Wed,  9 Oct 2019 11:19:17 +0200 (CEST)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1iI87o-00017M-Oq; Wed, 09 Oct 2019 11:19:16 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     davem@davemloft.net
-Cc:     gnault@redhat.com, netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net v2] netns: fix NLM_F_ECHO mechanism for RTM_NEWNSID
-Date:   Wed,  9 Oct 2019 11:19:10 +0200
-Message-Id: <20191009091910.4199-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191008231047.GB4779@linux.home>
-References: <20191008231047.GB4779@linux.home>
+        id S1730708AbfJIJWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 05:22:04 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:52669 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730004AbfJIJWD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 05:22:03 -0400
+Received: by mail-io1-f69.google.com with SMTP id g8so3568434iop.19
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 02:22:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=HPZvvZ/9gjJip4a0YxXlSMk8fxyxykOWKERE6MG24B8=;
+        b=oBDgaXiUo+ODQlDqpIGknVLB+tPMg/SQJdIb1OQSNqqs066Uw2l1HV+F070r7vTwf+
+         rWZxND3RBUVONpnOfWjxgIFjuRwJB+Ot9Pql7fDonAuVLlcRpsuidDZ6WtvRtwDubvOZ
+         07QDlN09jzkDwk25to8EPlpGeDsfOzy8iYVnh2n1sX+WKt9l2k3zcgJYG05SoOEOoiu7
+         Du1vRGGAu1ZS7mtshYIX3lWPN/PdhuXYFifglw5FaQJX670tYswpIxqZxcZnq7YJmuYl
+         ciu0ogmU7GInmfqIlJwOzcrN8Fq+IlIshTF5NIaVTC7Xgr4r/Kd8Gw/Po8hdzZ1OPzp2
+         zZBQ==
+X-Gm-Message-State: APjAAAWHQ6uzCc4ZcdJt/ju4y/T3XmGTCKVc37QEOh/9SIniNNUkWcoH
+        VrM28pkajVBCPzBM81yUnuIJbHP/AvBDHIlkZ6GnoKLv+8VG
+X-Google-Smtp-Source: APXvYqzusl152j/JV35SyZSwQmWMSoEboM9LDlzkJhrF5z5FXK489gY6noXCILJxl+gcSeoJuYNvC0rsereWl09pW8rCFBXW5FsW
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:6018:: with SMTP id r24mr2427870iog.25.1570612920964;
+ Wed, 09 Oct 2019 02:22:00 -0700 (PDT)
+Date:   Wed, 09 Oct 2019 02:22:00 -0700
+In-Reply-To: <0000000000003dc9ba059475614f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003bdc5f059476d153@google.com>
+Subject: Re: KASAN: use-after-free Read in tipc_nl_node_dump_monitor_peer
+From:   syzbot <syzbot+d2a8670576fa63d18623@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jiri@mellanox.com, jon.maloy@ericsson.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The flag NLM_F_ECHO aims to reply to the user the message notified to all
-listeners.
-It was not the case with the command RTM_NEWNSID, let's fix this.
+syzbot has bisected this bug to:
 
-Fixes: 0c7aecd4bde4 ("netns: add rtnl cmd to add and get peer netns ids")
-Reported-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
+commit 057af70713445fad2459aa348c9c2c4ecf7db938
+Author: Jiri Pirko <jiri@mellanox.com>
+Date:   Sat Oct 5 18:04:39 2019 +0000
 
-v2:
-  fix portid and seq number of the nl msg sent by the kernel
+     net: tipc: have genetlink code to parse the attrs during dumpit
 
- net/core/net_namespace.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14ac08e7600000
+start commit:   f9867b51 netdevsim: fix spelling mistake "forbidded" -> "f..
+git tree:       net-next
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=16ac08e7600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12ac08e7600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9be300620399522
+dashboard link: https://syzkaller.appspot.com/bug?extid=d2a8670576fa63d18623
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16d3e04f600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a76593600000
 
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index a0e0d298c991..6d3e4821b02d 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -245,7 +245,8 @@ static int __peernet2id(struct net *net, struct net *peer)
- 	return __peernet2id_alloc(net, peer, &no);
- }
- 
--static void rtnl_net_notifyid(struct net *net, int cmd, int id);
-+static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
-+			      struct nlmsghdr *nlh);
- /* This function returns the id of a peer netns. If no id is assigned, one will
-  * be allocated and returned.
-  */
-@@ -268,7 +269,7 @@ int peernet2id_alloc(struct net *net, struct net *peer)
- 	id = __peernet2id_alloc(net, peer, &alloc);
- 	spin_unlock_bh(&net->nsid_lock);
- 	if (alloc && id >= 0)
--		rtnl_net_notifyid(net, RTM_NEWNSID, id);
-+		rtnl_net_notifyid(net, RTM_NEWNSID, id, 0, NULL);
- 	if (alive)
- 		put_net(peer);
- 	return id;
-@@ -532,7 +533,7 @@ static void unhash_nsid(struct net *net, struct net *last)
- 			idr_remove(&tmp->netns_ids, id);
- 		spin_unlock_bh(&tmp->nsid_lock);
- 		if (id >= 0)
--			rtnl_net_notifyid(tmp, RTM_DELNSID, id);
-+			rtnl_net_notifyid(tmp, RTM_DELNSID, id, 0, NULL);
- 		if (tmp == last)
- 			break;
- 	}
-@@ -764,7 +765,8 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	err = alloc_netid(net, peer, nsid);
- 	spin_unlock_bh(&net->nsid_lock);
- 	if (err >= 0) {
--		rtnl_net_notifyid(net, RTM_NEWNSID, err);
-+		rtnl_net_notifyid(net, RTM_NEWNSID, err, NETLINK_CB(skb).portid,
-+				  nlh);
- 		err = 0;
- 	} else if (err == -ENOSPC && nsid >= 0) {
- 		err = -EEXIST;
-@@ -1051,9 +1053,12 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
- 	return err < 0 ? err : skb->len;
- }
- 
--static void rtnl_net_notifyid(struct net *net, int cmd, int id)
-+static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
-+			      struct nlmsghdr *nlh)
- {
- 	struct net_fill_args fillargs = {
-+		.portid = portid,
-+		.seq = nlh ? nlh->nlmsg_seq : 0,
- 		.cmd = cmd,
- 		.nsid = id,
- 	};
-@@ -1068,7 +1073,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id)
- 	if (err < 0)
- 		goto err_out;
- 
--	rtnl_notify(msg, net, 0, RTNLGRP_NSID, NULL, 0);
-+	rtnl_notify(msg, net, portid, RTNLGRP_NSID, nlh, 0);
- 	return;
- 
- err_out:
--- 
-2.23.0
+Reported-by: syzbot+d2a8670576fa63d18623@syzkaller.appspotmail.com
+Fixes: 057af7071344 ("net: tipc: have genetlink code to parse the attrs  
+during dumpit")
 
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
