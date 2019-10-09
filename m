@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 782B2D090B
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 10:03:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D65B3D0913
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 10:05:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbfJIIDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 04:03:48 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40228 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725440AbfJIIDr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 04:03:47 -0400
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com [209.85.208.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 85D2C69095
-        for <netdev@vger.kernel.org>; Wed,  9 Oct 2019 08:03:47 +0000 (UTC)
-Received: by mail-lj1-f198.google.com with SMTP id h19so171497ljc.5
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 01:03:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=e6PDWY+jCDc15XxVDO6PNOmfYxpRrFsL3Dg/nclfQ5Q=;
-        b=KgdFR35ahxvHpdOEJS97NCeig5+nhgM+jtNAMK4gFUOhsy/c3HV05GkHQPKQdRmAMC
-         8O0vnxQaE53kNfZcSrE+pTNmHbKZQyWbooMtF8k/R8iIcmLbdDQvK869yJkqTa+ft/Yr
-         Jt9eJtebR/bj7ZYKl/MdZ8EzYbXsZgK3f6k9Z12jkxWP29kez4n4aXwCPgjtbUKmV0/r
-         LIvQtQUleObKBKwJtNRzxXPS31AYu5QsdDzMGB5ozyM87TsrjDjtKLu6n6uzW5xbpVpo
-         tERPTmvJyKxebZHuccdZzoU/p5GlGp9eBQS7G+LEAkw/tbnW8NaswZLV+IEH7LDln82z
-         eLyA==
-X-Gm-Message-State: APjAAAUaW3lmjgeIgDmENWoB7QfcJn36WIU7py5MeQlwA0eZQd4nkYCq
-        HFl8W/7XQdC0BQ747/rJMVXQs3t0GKMX+GQwFl0VBFQzNHaNWEcO64ZY9QnIqK2OEzFseTg8pjW
-        0oQFu3sohhnRRaTAT
-X-Received: by 2002:a19:4849:: with SMTP id v70mr1266874lfa.40.1570608226086;
-        Wed, 09 Oct 2019 01:03:46 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqw8KUkRcnDDp+F0kxjHINAA1UwC3GB9awdIdon0aDan85L+Ki3CJuQUEi/AcdLBoEiIYovPxA==
-X-Received: by 2002:a19:4849:: with SMTP id v70mr1266855lfa.40.1570608225842;
-        Wed, 09 Oct 2019 01:03:45 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id v7sm291317lfd.55.2019.10.09.01.03.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 01:03:45 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E105318063D; Wed,  9 Oct 2019 10:03:43 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF programs after each other
-In-Reply-To: <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com>
-References: <157046883502.2092443.146052429591277809.stgit@alrua-x1> <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com> <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 09 Oct 2019 10:03:43 +0200
-Message-ID: <87o8yqjqg0.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1729859AbfJIIFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 04:05:04 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:53416 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725953AbfJIIFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 04:05:04 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9982UBi082600
+        for <netdev@vger.kernel.org>; Wed, 9 Oct 2019 04:05:03 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vha0bb2sy-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 04:05:02 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
+        Wed, 9 Oct 2019 09:04:58 +0100
+Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 9 Oct 2019 09:04:55 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9984swI46072168
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Oct 2019 08:04:54 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 011B211C05E;
+        Wed,  9 Oct 2019 08:04:54 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AB6F511C066;
+        Wed,  9 Oct 2019 08:04:53 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Oct 2019 08:04:53 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        gor@linux.ibm.com, heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net 0/3] net/smc: fixes for -net
+Date:   Wed,  9 Oct 2019 10:04:38 +0200
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19100908-4275-0000-0000-000003705EEF
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19100908-4276-0000-0000-00003883622C
+Message-Id: <20191009080441.76077-1-kgraul@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-09_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=579 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910090076
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+Fixes for -net, more info in commit logs.
 
-> Please implement proper indirect calls and jumps.
+Karsten Graul (2):
+  net/smc: receive returns without data
+  net/smc: receive pending data after RCV_SHUTDOWN
 
-I am still not convinced this will actually solve our problem; but OK, I
-can give it a shot.
+Ursula Braun (1):
+  net/smc: fix SMCD link group creation with VLAN id
 
-However, I don't actually have a clear picture of what exactly is
-missing to add this support. Could you please provide a pointer or two?
+ net/smc/smc_core.c |  5 ++++-
+ net/smc/smc_rx.c   | 29 +++++++++++++++++++++--------
+ 2 files changed, 25 insertions(+), 9 deletions(-)
 
--Toke
+-- 
+2.17.1
+
