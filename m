@@ -2,80 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F827D14A7
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:54:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B35E4D14AB
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:55:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731452AbfJIQyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 12:54:14 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:41565 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731432AbfJIQyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 12:54:14 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t3so1774480pga.8
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 09:54:12 -0700 (PDT)
+        id S1731665AbfJIQzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 12:55:07 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:42749 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731145AbfJIQzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 12:55:06 -0400
+Received: by mail-qk1-f193.google.com with SMTP id f16so2830353qkl.9;
+        Wed, 09 Oct 2019 09:55:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=FWquouYqKBd7amD18urRls6Y6gtLx6j4gbRFX8vfpcA=;
-        b=tyktbH9E1xZYVxbf2IRLPSbtOnJAiG0rW/0c5WCWbuy8c4r8FPIL0X55nHn53qkQpd
-         N/0S+JB9m39QziSsYYKCAt0JSnU9ZCny5eS0E0tEEUUs5p8ASxnapxafcxo3iwTuogAO
-         lewh/W1lUFpKc43PnicB0nJs4hSDJF/47m+ONJ6pGRydxBwaILK1HUmGWqgLQiHKgsBN
-         Sgmga5tkGNm+JYjXzDP+5PJotOy0P/8CgN/GOFbUsnDIGrUh0gZwDhpwaL3n7/OoLspN
-         TPJD813EHaDL77sT6jHyKq86NZHc+V0V+lIM86k95Rpb9eCTfmAlm3U2rC/cuQYVmwV3
-         kUcw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2/HF9NREfSQkdboNiYLB4mdV2BC4zZWqkjbH6CrigBU=;
+        b=Ik9UQ1pVjDXAXl5D9zROUvPBuhjWeO0V8nn6PnzCOIuP5EQuq5LQEaSrM+cyyPW3qp
+         faauOXKazJwuaxqCKuYJfs+WkOjQEb4T/JMn/m8tGie6IxEYLvTp7KeUI6KfkKfudlw6
+         GITXuCJTf4PhMkMgXjVhtQfUB5bVwmkOdwm7R499I9enV9JTtSajL0hfMfrZx3pH2NtL
+         woDtjvZ4TuDQotmDSoHv4MJWWA/N6i+7d3rwvvdoV/8m9iYYvioqdqZbdwEUb56AlyZB
+         FMz6K+Tp6XkJlIntRYhqhh0YNvzlcLSoST9pjwVQhDsNB7Tpe3VXZNsZ4HKmNUychf3q
+         9AAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=FWquouYqKBd7amD18urRls6Y6gtLx6j4gbRFX8vfpcA=;
-        b=klYOgCQxyrIjWR7WfhM5pKPP5KXWX6kwO3oyYhDzfg1wELA/s0fwnrypDXWE6zW9MT
-         3/okxEhGXv6M2SZSC8U7R4nmNlf7BdX5GliUDS58NBKdSrxPxokHsl2IMMoGy2syz3MJ
-         15ZmseOhCm3mBM+52nmziRYW0HCm4WNvyzJ2TVMKzoAs8D4f//VPzVeskaIZv0BUHD99
-         41unbtuK2l1rPKaoCPbQ6gnJtevV0fvWjtE+UGSSXbcxCbcmzucQhz5csk4jao8ro+DF
-         3bmvqxpmy3MJ5NjBJf0N0RVDyC3VUTZGvrXYaheQxAPMuzXKa2SZljNAJX0I1jV4cDfX
-         nuwQ==
-X-Gm-Message-State: APjAAAX1lqoC2n8v27pqvB9ygIS3dq+xUN09uUYVLqefRKpw0FxrjJsp
-        MsBFmjeB3BlaKNgLXkNWHUzCDQ==
-X-Google-Smtp-Source: APXvYqz33xg6mGHwZzY2rBVPIF3+9OEjT1Iym8OqIXZgdg5lCtvXcB+wk3KGe6fY9b73P2JfvTAQ4g==
-X-Received: by 2002:a17:90a:9e2:: with SMTP id 89mr5312445pjo.67.1570640051867;
-        Wed, 09 Oct 2019 09:54:11 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id r18sm4172935pfc.3.2019.10.09.09.54.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 09:54:11 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 09:53:58 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
-        tom.herbert@intel.com
-Subject: Re: [PATCH bpf-next 0/4] Enable direct receive on AF_XDP sockets
-Message-ID: <20191009095358.34cddd95@cakuba.netronome.com>
-In-Reply-To: <ce255470-6bf7-0ba4-c24f-0808e3331977@intel.com>
-References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
-        <20191008174919.2160737a@cakuba.netronome.com>
-        <ce255470-6bf7-0ba4-c24f-0808e3331977@intel.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2/HF9NREfSQkdboNiYLB4mdV2BC4zZWqkjbH6CrigBU=;
+        b=ZqNA9w+1CefhFQskq0jnIHxmDbWPKxoE5ZCvN1DTR+cpDyr8bmf5ywpuLk2+lbMMfr
+         f90G6WnlXns4CNgMpo/UP2L95t3XZ+we4dyaSpMabgsjTEH1kJssfIaY1Zh60g+emir7
+         mAF3akPX0HfTUVNlyfoKfeePqShc3IYLxBgQsaRgulkwp+Bg1Mh0BNMWcN8EN7loEnhk
+         7ubGKQX3aS7wrVWdx99gOXM/MwiUKGqapZsDnGoxSdaDvwOKY15G3w8s8XhdWDli7vFw
+         OpdQX2OnM40Ab/A2plw21OUdB9SOcQlFTf7zVCYNa825gH7ZA0fiXRq7ihhU8R2qNqAZ
+         VQ1Q==
+X-Gm-Message-State: APjAAAXRQKMeLo9F+DwN5HLOH0SuXb55FsNGoF7LaUQgisW75IZ6OhHJ
+        KYHa/0d7NJ+F9D1ITqAV/0xe8foR1n7uhfsRgbM=
+X-Google-Smtp-Source: APXvYqwkjEP6LQDwqyHgGNWPt2O8X8oEf9t3UY72mJKFPYOpn1GVrTNy2vlG4+DasgIr1qwwNWVKWBVGof7jwzagf7U=
+X-Received: by 2002:a37:520a:: with SMTP id g10mr4604504qkb.39.1570640103797;
+ Wed, 09 Oct 2019 09:55:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191009164929.17242-1-i.maximets@ovn.org>
+In-Reply-To: <20191009164929.17242-1-i.maximets@ovn.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 9 Oct 2019 09:54:52 -0700
+Message-ID: <CAEf4BzbL1qxyZaS=3-++Z=WDAK+0gVtVEFijgj_SJFi_NpAwyw@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] libbpf: fix passing uninitialized bytes to setsockopt
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Oct 2019 23:29:59 -0700, Samudrala, Sridhar wrote:
-> On 10/8/2019 5:49 PM, Jakub Kicinski wrote:
-> > I asked you to add numbers for handling those use cases in the kernel
-> > directly.  
-> 
-> Forgot to explicitly mention that I didn't see any regressions with 
-> xdp1, xdp2 or xdpsock in default mode with these patches. Performance 
-> remained the same.
+On Wed, Oct 9, 2019 at 9:49 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+>
+> 'struct xdp_umem_reg' has 4 bytes of padding at the end that makes
+> valgrind complain about passing uninitialized stack memory to the
+> syscall:
+>
+>   Syscall param socketcall.setsockopt() points to uninitialised byte(s)
+>     at 0x4E7AB7E: setsockopt (in /usr/lib64/libc-2.29.so)
+>     by 0x4BDE035: xsk_umem__create@@LIBBPF_0.0.4 (xsk.c:172)
+>   Uninitialised value was created by a stack allocation
+>     at 0x4BDDEBA: xsk_umem__create@@LIBBPF_0.0.4 (xsk.c:140)
+>
+> Padding bytes appeared after introducing of a new 'flags' field.
+> memset() is required to clear them.
+>
+> Fixes: 10d30e301732 ("libbpf: add flags to umem config")
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
+>
 
-I'm not looking for regressions. The in-kernel path is faster, and
-should be used for speeding things up rather than a "direct path to
-user space". Your comparison should have 3 numbers - current AF_XDP,
-patched AF_XDP, in-kernel handling.
+Thanks!
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+> Version 2:
+>   * Struct initializer replaced with explicit memset(). [Andrii]
+>
+>  tools/lib/bpf/xsk.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index a902838f9fcc..9d5348086203 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -163,6 +163,7 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+>         umem->umem_area = umem_area;
+>         xsk_set_umem_config(&umem->config, usr_config);
+>
+> +       memset(&mr, 0, sizeof(mr));
+>         mr.addr = (uintptr_t)umem_area;
+>         mr.len = size;
+>         mr.chunk_size = umem->config.frame_size;
+> --
+> 2.17.1
+>
