@@ -2,81 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F6EBD0504
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 03:07:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36874D0512
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 03:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730080AbfJIBHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 21:07:33 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:46920 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729601AbfJIBHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 21:07:32 -0400
-Received: by mail-qt1-f194.google.com with SMTP id u22so952745qtq.13
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 18:07:32 -0700 (PDT)
+        id S1730093AbfJIBLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 21:11:49 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:36421 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729601AbfJIBLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 21:11:49 -0400
+Received: by mail-qk1-f196.google.com with SMTP id y189so720693qkc.3;
+        Tue, 08 Oct 2019 18:11:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=xi2d8YnbPtNoKTE5MU434pjnJ7aieZH7aFLuNWVyKe4=;
-        b=W1kqXHCu22QuOrcxpJGLDjJHqPpsK3drYlpZe3QyjjRTtOxBuZU5VH2Ou9CjN/1UwH
-         PqDLnmxlk4A3VTMDpHhUsKlH9S7NvaR1jUx5+AI7dmnWFbfWWCZGV0bzxodMsnrbOGh1
-         3QJ2ghwcbtqW1/Gy59MZtzRcc1pfSc8Vm3iqjZuoNBXc2R+katI7mf6LGWsWAul30FI3
-         Xryymh8NQVduawo12ynFEO24SrjpLzHSDd4ogF2tH+S9x65UMHSPWNGeVpXZwwO5Oi2t
-         RtB7ZJJMo5sw3oShGoEDKnqxCM2hP/tBKrsE81sU8Z8v4bpAD2YjNqdtGK4ExuhkZU08
-         nbEg==
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HizNyR9oSlLvlCtnlJYLHBFqDkX7aFm+VeoMRezWJZE=;
+        b=Uj6ATkvA7rW9rRPZLKFvR1rm6wPB9QiuLvRLoK3brrJs5XBXt2fAH5zMOQqBMdLvff
+         o9/yNnLVBG1kWSb2iHPvorhEhRwLExpETtI2gpCsekFqiGTdBOYqrEV03ds6n7vMmBe7
+         yhaqtfjJ5aNCUWt1x7jdXZFfPhortJrxN2SKA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=xi2d8YnbPtNoKTE5MU434pjnJ7aieZH7aFLuNWVyKe4=;
-        b=knv18yeQnWMq2/MjDMi+L4uLnpXbl9vQf+PF94M1k39Mlch+81SEzvMwvt2wffOIaS
-         TAK174ZJEkdm7zjIEX2seLRPVJBTM0ZHWGkizWwjMBRKX0MEjGPVVCfGhCgyx/oibdm4
-         LobJF1sjThJKEHgS4UxhG8oRiqtFjMtcFAsx2j3a7XYjix8lSbK61z2xZ9gCXu57gBd+
-         JG3EhWWTY1bxwxzYBhcGEg5IDSNG3J/Zn1RHm2Ddp+UL7iV3Zgwcl/B9AAw2xdW8Yboq
-         ZC4YqlFBHv4UFWy9FKgP6y/0SGYXzerqulY+KtVHU1/NuwzuzQdVNfqhv7fBWynNRkJF
-         4MLw==
-X-Gm-Message-State: APjAAAVkxuxOqtVc+Mjsm+ESkMP4h9HH+ZNlr0J2/6mK6JEkkHmoCido
-        487PTfccXc1qKjuV1pUKHzh1tg==
-X-Google-Smtp-Source: APXvYqw+Jl9QTkYHgPejcZ71bkGLE+/o7ly/iDYvs7q9750j7UKiedQF32/x3n4bY13zKX+dcdBYWA==
-X-Received: by 2002:ac8:141a:: with SMTP id k26mr983395qtj.372.1570583251909;
-        Tue, 08 Oct 2019 18:07:31 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s23sm290842qte.72.2019.10.08.18.07.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 18:07:31 -0700 (PDT)
-Date:   Tue, 8 Oct 2019 18:07:19 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jon.maloy@ericsson.com, ying.xue@windriver.com,
-        johannes.berg@intel.com, mkubecek@suse.cz, mlxsw@mellanox.com
-Subject: Re: [patch net-next] net: tipc: prepare attrs in
- __tipc_nl_compat_dumpit()
-Message-ID: <20191008180719.2189ee8d@cakuba.netronome.com>
-In-Reply-To: <20191008110151.6999-1-jiri@resnulli.us>
-References: <20191008110151.6999-1-jiri@resnulli.us>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HizNyR9oSlLvlCtnlJYLHBFqDkX7aFm+VeoMRezWJZE=;
+        b=WMmtTOFtx1PV1bvGwlKNyVjbQCLBpj3L99j1X36GzTLy9rQ1RdboUhQVuahFpBR5Yj
+         cY4bVH7bfhfiy1LmMjeSlWy2U0HY3FvckE2y+VFU94yVT5pDHvt0x8pR+IoOzkfQhG/j
+         AIgmZYf5XxIqa76hdM/GGmqoQodwo+TV8Gkk+dbUjjFlApDUIFHR9c8x/T5CNdo6eatK
+         e0hwt80vMhiHCwBIScAMke/UCVN2okLbIYDfe2ZyT5QKTAqt9BaJQaeQvnqmmkoWuh+/
+         D67t3F8VmnOlLamRO2EFgDF3l1VZuL7qKweauSXgTq9kDdPDDUBxX+5xyslBTu/uocla
+         alUw==
+X-Gm-Message-State: APjAAAXpkmm8i6CxO4RpHv5+tlyhx8DeU1BnQq0TkfZEKwnCbspZo3dc
+        mzYkqt2BQkEbs+5P/B45ck4hZWu26m42Sv7huu45nqo3X3Y=
+X-Google-Smtp-Source: APXvYqx3M96C65FFqJOXj6SLv7cKXGek3vuS8RjdW5ODTS1Z9zAoE0DcsuXwdOYx+Idi0Y+c4sHGrghyGe2X/1pmGqQ=
+X-Received: by 2002:ae9:e30d:: with SMTP id v13mr1198369qkf.208.1570583506281;
+ Tue, 08 Oct 2019 18:11:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191008115143.14149-1-andrew@aj.id.au> <938706da-d329-c4aa-fcce-2d390a4e98f7@gmail.com>
+In-Reply-To: <938706da-d329-c4aa-fcce-2d390a4e98f7@gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 9 Oct 2019 01:11:33 +0000
+Message-ID: <CACPK8XeNvHLqurE=bEzJ3qJubpnzP=KqgQZU_4THCvGa3zHYxg@mail.gmail.com>
+Subject: Re: [PATCH 0/3] net: ftgmac100: Ungate RCLK for RMII on ASPEED MACs
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Oct 2019 13:01:51 +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> __tipc_nl_compat_dumpit() calls tipc_nl_publ_dump() which expects
-> the attrs to be available by genl_dumpit_info(cb)->attrs. Add info
-> struct and attr parsing in compat dumpit function.
-> 
-> Reported-by: syzbot+8d37c50ffb0f52941a5e@syzkaller.appspotmail.com
-> Fixes: 057af7071344 ("net: tipc: have genetlink code to parse the attrs during dumpit")
-> 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+On Wed, 9 Oct 2019 at 00:38, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 10/8/2019 4:51 AM, Andrew Jeffery wrote:
+> > Hello,
+> >
+> > This series slightly extends the devicetree binding and driver for the
+> > FTGMAC100 to describe an optional RMII RCLK gate in the clocks property.
+> > Currently it's necessary for the kernel to ungate RCLK on the AST2600 in NCSI
+> > configurations as u-boot does not yet support NCSI (which uses the RMII).
+>
+> RMII as in Reduced MII or Reverse MII in that context?
 
-Dropped the empty line between Fixes and the signoff and applied.
+Reduced MII ( https://en.wikipedia.org/wiki/NC-SI#Hardware_interface )
 
-Jon, please post a fully formed Acked-by: ... tag, if you could,
-otherwise automation doesn't pick it up.
+Cheers,
+
+Joel
