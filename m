@@ -2,96 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64880D09EF
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 10:32:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C71D0A5C
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 10:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726211AbfJIIcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 04:32:35 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44898 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725440AbfJIIcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 04:32:35 -0400
-Received: by mail-wr1-f68.google.com with SMTP id z9so1665351wrl.11
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 01:32:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0L8KhSBedc1ORGEmw25dchbEDXW19aN+b4PJJKXx/f4=;
-        b=YbIs+K7OBBIurXIxZG0RTZeOXdX3ptrxeyOWzOE9U5NUUeNSPYcWebw4gVOs9zQK4O
-         QIo4WrP4/iIo/TtrrEETaKrk57AM4qH1RzXYYqEJj2SZbwWVPMVLJjmR05/q8pJA0vQX
-         Oqgdk89C6ryromuRgk7BhPF0XYj8nZdMV2ec/59DiC3sOz1Gz3ad3IiPLBjoLOt/5PSJ
-         jQHfmziNa9AJrQQXfsDAwzX/2YLaCvOOk4x5JShwwwhm/WuZZbQOGEJGrjn57Oak8HPH
-         EqogNcFbO/A7dqUH9pw5u1SazaeeXzkN46uCj5VIh1QJW414GtGJ/GFnqb/3/AuHMBhx
-         e+sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0L8KhSBedc1ORGEmw25dchbEDXW19aN+b4PJJKXx/f4=;
-        b=diIuzI3R7UknS0BUYm1k0BaCqnskAck4RogWAaL2WpDWANkKEqgL3gYcDLX8zyIdfz
-         siN9P3QEe4bU8s6LLF+iFr2/AzD7lg+7E+jU6tmjkMjD2tHtVdti2x6fKjDO4M/BsNdD
-         WGFYUCQnekhggV+7GLO7ESEM8rUD2Ijmc1KRJPU61p39vAr6jVGJcJL1XNbWND/LFaNf
-         ETiXG/3rwWF53nrbjz8i40q/Dl4gLiruO6htNO9UoHd1ic17LRbQwYDdUUtxxp+pGBzE
-         BPJBhq02lZ5DpTIrymvam2tTxcPVZa3HW/rfaw936l3CPtC8ZmH+UL4C0y3abnbFfDhN
-         iicA==
-X-Gm-Message-State: APjAAAW1HCKN8eBojKrSavGqLWSfsjBOdb2ZWmbATC7k7w/WSvbPZLpX
-        ykYTFikgmX0kgoVTjfrJZKVB0CH0nwA=
-X-Google-Smtp-Source: APXvYqxcie65q1JTwjXjYlp+UVUW84oz1UGhReR+N1vkK+z/VD7DCodzrLyhSHd5Ftt0YraCiNNycg==
-X-Received: by 2002:a5d:4ac6:: with SMTP id y6mr1753323wrs.173.1570609953509;
-        Wed, 09 Oct 2019 01:32:33 -0700 (PDT)
-Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
-        by smtp.gmail.com with ESMTPSA id c9sm1332795wrt.7.2019.10.09.01.32.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 01:32:33 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, ayal@mellanox.com,
-        mlxsw@mellanox.com
-Subject: [patch iproute2c] devlink: fix json binary printout of arrays
-Date:   Wed,  9 Oct 2019 10:32:32 +0200
-Message-Id: <20191009083232.21147-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        id S1727228AbfJII5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 04:57:02 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:32595 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725903AbfJII5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 04:57:01 -0400
+X-UUID: ae68042141024aaabfa5129b66cc3be6-20191009
+X-UUID: ae68042141024aaabfa5129b66cc3be6-20191009
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+        with ESMTP id 298233966; Wed, 09 Oct 2019 16:56:56 +0800
+Received: from mtkcas09.mediatek.inc (172.21.101.178) by
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Wed, 9 Oct 2019 16:56:52 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas09.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Wed, 9 Oct 2019 16:56:51 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     <davem@davemloft.net>, Jose Abreu <joabreu@synopsys.com>,
+        <andrew@lunn.ch>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
+        <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.com>,
+        <boon.leong.ong@intel.com>
+Subject: [PATCH] net: stmmac: disable/enable ptp_ref_clk in suspend/resume flow
+Date:   Wed, 9 Oct 2019 16:56:49 +0800
+Message-ID: <20191009085649.6736-1-biao.huang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+disable ptp_ref_clk in suspend flow, and enable it in resume flow.
 
-The binary is printed out into json as an array of byte values.
-Add missing (removed) start and end array json calls.
-
-Fixes: f359942a25d3 ("devlink: Remove enclosing array brackets binary print with json format")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 ---
- devlink/devlink.c | 4 ++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 51aba6e200cd..8fc1f3b8b35a 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -1930,6 +1930,8 @@ static void pr_out_binary_value(struct dl *dl, uint8_t *data, uint32_t len)
- {
- 	int i = 0;
- 
-+	if (dl->json_output)
-+		jsonw_start_array(dl->jw);
- 	while (i < len) {
- 		if (dl->json_output)
- 			jsonw_printf(dl->jw, "%d", data[i]);
-@@ -1941,6 +1943,8 @@ static void pr_out_binary_value(struct dl *dl, uint8_t *data, uint32_t len)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index c7c9e5f162e6..b592aeecc3dd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4469,6 +4469,8 @@ int stmmac_suspend(struct device *dev)
+ 		stmmac_mac_set(priv, priv->ioaddr, false);
+ 		pinctrl_pm_select_sleep_state(priv->device);
+ 		/* Disable clock in case of PWM is off */
++		if (priv->plat->clk_ptp_ref)
++			clk_disable_unprepare(priv->plat->clk_ptp_ref);
+ 		clk_disable(priv->plat->pclk);
+ 		clk_disable(priv->plat->stmmac_clk);
  	}
- 	if (!dl->json_output && !is_binary_eol(i))
- 		__pr_out_newline();
-+	if (dl->json_output)
-+		jsonw_end_array(dl->jw);
- }
- 
- static void pr_out_str_value(struct dl *dl, const char *value)
+@@ -4535,6 +4537,8 @@ int stmmac_resume(struct device *dev)
+ 		/* enable the clk previously disabled */
+ 		clk_enable(priv->plat->stmmac_clk);
+ 		clk_enable(priv->plat->pclk);
++		if (priv->plat->clk_ptp_ref)
++			clk_prepare_enable(priv->plat->clk_ptp_ref);
+ 		/* reset the phy so that it's ready */
+ 		if (priv->mii)
+ 			stmmac_mdio_reset(priv->mii);
 -- 
-2.21.0
+2.18.0
 
