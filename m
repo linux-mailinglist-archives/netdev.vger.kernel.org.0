@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58019D1682
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5621D165B
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732783AbfJIRai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 13:30:38 -0400
+        id S1732186AbfJIRYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 13:24:10 -0400
 Received: from mail.kernel.org ([198.145.29.99]:48600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732127AbfJIRYI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 13:24:08 -0400
+        id S1732157AbfJIRYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 13:24:09 -0400
 Received: from sasha-vm.mshome.net (unknown [167.220.2.234])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6C12E21D7B;
-        Wed,  9 Oct 2019 17:24:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0DA6A21D80;
+        Wed,  9 Oct 2019 17:24:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570641847;
-        bh=rGny4XQJJmR/FcSrQJVmBrytLBojLgJUKL71KbpCzCA=;
+        s=default; t=1570641849;
+        bh=a/MCXoavl9JvhK3hpE2GJaVA161WW/cC61fw8BtEg2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pnrqKjYMu1uuvmvunKHnyLfvfUOo/eyIRe9wFPOskO3IVARcgXQoP+lck/r4KO6BT
-         Fhb1NgrJl4jIr9qhlRIKF2Z+u3rD1igQrjuQMH/p1pONuKrxbJbHWmb4u4NFrrK6iB
-         M+7qPJEq83eZLMh0lBWxPifWjGEPCdqIGp+q1knw=
+        b=wr+TnJ2NkdBAfNOGnbBgScESL1GYfdPyIDf9mhwUXZBmQ/sl1i8oPISYiDtdiPQfv
+         obrD6t3v69yMoKJyNJ9QcNLlJ79WnmusUIZRqH483Md9lPJvM8hvAHHdpL2tkdZe50
+         khdugWbICmTsEbobkGJQBJKFy4Dd3BXn7BVQqpvk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 12/26] net: dsa: qca8k: Use up to 7 ports for all operations
-Date:   Wed,  9 Oct 2019 13:05:44 -0400
-Message-Id: <20191009170558.32517-12-sashal@kernel.org>
+Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 16/26] nl80211: fix null pointer dereference
+Date:   Wed,  9 Oct 2019 13:05:48 -0400
+Message-Id: <20191009170558.32517-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191009170558.32517-1-sashal@kernel.org>
 References: <20191009170558.32517-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,51 +44,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Vokáč <michal.vokac@ysoft.com>
+From: Miaoqing Pan <miaoqing@codeaurora.org>
 
-[ Upstream commit 7ae6d93c8f052b7a77ba56ed0f654e22a2876739 ]
+[ Upstream commit b501426cf86e70649c983c52f4c823b3c40d72a3 ]
 
-The QCA8K family supports up to 7 ports. So use the existing
-QCA8K_NUM_PORTS define to allocate the switch structure and limit all
-operations with the switch ports.
+If the interface is not in MESH mode, the command 'iw wlanx mpath del'
+will cause kernel panic.
 
-This was not an issue until commit 0394a63acfe2 ("net: dsa: enable and
-disable all ports") disabled all unused ports. Since the unused ports 7-11
-are outside of the correct register range on this switch some registers
-were rewritten with invalid content.
+The root cause is null pointer access in mpp_flush_by_proxy(), as the
+pointer 'sdata->u.mesh.mpp_paths' is NULL for non MESH interface.
 
-Fixes: 6b93fb46480a ("net-next: dsa: add new driver for qca8xxx family")
-Fixes: a0c02161ecfc ("net: dsa: variable number of ports")
-Fixes: 0394a63acfe2 ("net: dsa: enable and disable all ports")
-Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Unable to handle kernel NULL pointer dereference at virtual address 00000068
+[...]
+PC is at _raw_spin_lock_bh+0x20/0x5c
+LR is at mesh_path_del+0x1c/0x17c [mac80211]
+[...]
+Process iw (pid: 4537, stack limit = 0xd83e0238)
+[...]
+[<c021211c>] (_raw_spin_lock_bh) from [<bf8c7648>] (mesh_path_del+0x1c/0x17c [mac80211])
+[<bf8c7648>] (mesh_path_del [mac80211]) from [<bf6cdb7c>] (extack_doit+0x20/0x68 [compat])
+[<bf6cdb7c>] (extack_doit [compat]) from [<c05c309c>] (genl_rcv_msg+0x274/0x30c)
+[<c05c309c>] (genl_rcv_msg) from [<c05c25d8>] (netlink_rcv_skb+0x58/0xac)
+[<c05c25d8>] (netlink_rcv_skb) from [<c05c2e14>] (genl_rcv+0x20/0x34)
+[<c05c2e14>] (genl_rcv) from [<c05c1f90>] (netlink_unicast+0x11c/0x204)
+[<c05c1f90>] (netlink_unicast) from [<c05c2420>] (netlink_sendmsg+0x30c/0x370)
+[<c05c2420>] (netlink_sendmsg) from [<c05886d0>] (sock_sendmsg+0x70/0x84)
+[<c05886d0>] (sock_sendmsg) from [<c0589f4c>] (___sys_sendmsg.part.3+0x188/0x228)
+[<c0589f4c>] (___sys_sendmsg.part.3) from [<c058add4>] (__sys_sendmsg+0x4c/0x70)
+[<c058add4>] (__sys_sendmsg) from [<c0208c80>] (ret_fast_syscall+0x0/0x44)
+Code: e2822c02 e2822001 e5832004 f590f000 (e1902f9f)
+---[ end trace bbd717600f8f884d ]---
+
+Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
+Link: https://lore.kernel.org/r/1569485810-761-1-git-send-email-miaoqing@codeaurora.org
+[trim useless data from commit message]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/qca8k.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/wireless/nl80211.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index bdd8f2df66303..33232cc9fb04d 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -543,7 +543,7 @@ qca8k_setup(struct dsa_switch *ds)
- 		    BIT(0) << QCA8K_GLOBAL_FW_CTRL1_UC_DP_S);
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 6168db3c35e4c..9af8e5c60e13d 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -5803,6 +5803,9 @@ static int nl80211_del_mpath(struct sk_buff *skb, struct genl_info *info)
+ 	if (!rdev->ops->del_mpath)
+ 		return -EOPNOTSUPP;
  
- 	/* Setup connection between CPU port & user ports */
--	for (i = 0; i < DSA_MAX_PORTS; i++) {
-+	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
- 		/* CPU port gets connected to all user ports of the switch */
- 		if (dsa_is_cpu_port(ds, i)) {
- 			qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(QCA8K_CPU_PORT),
-@@ -897,7 +897,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 	if (id != QCA8K_ID_QCA8337)
- 		return -ENODEV;
- 
--	priv->ds = dsa_switch_alloc(&mdiodev->dev, DSA_MAX_PORTS);
-+	priv->ds = dsa_switch_alloc(&mdiodev->dev, QCA8K_NUM_PORTS);
- 	if (!priv->ds)
- 		return -ENOMEM;
++	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_MESH_POINT)
++		return -EOPNOTSUPP;
++
+ 	return rdev_del_mpath(rdev, dev, dst);
+ }
  
 -- 
 2.20.1
