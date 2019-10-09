@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F65DD0D60
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 13:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B2E7D0D5F
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 13:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727228AbfJILEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 07:04:55 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:37066 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730728AbfJILEx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 07:04:53 -0400
-Received: by mail-wm1-f65.google.com with SMTP id f22so2081095wmc.2
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 04:04:49 -0700 (PDT)
+        id S1730765AbfJILEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 07:04:54 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:39055 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730398AbfJILEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 07:04:52 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r3so2349708wrj.6
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 04:04:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LM6cFBPp3CDNz1sjZBsu45pZ5JW4xwrotf5tv22e8k8=;
-        b=X+0pgm3HS5AA8zB8WIB7/O58xlZk5ZOrY2d4fWH5Q8P18lLIQB1UXmEeBJ/IBj7TW6
-         JwxgPYTIvc0Jah2Onng9newK54LGRe0F0jo0PCvDoebvTLR8a56Hys/GXKaGrmUVo6l0
-         rinhK6vQos7zWme4WbGxx7wTUzdrLXkja5NWvTvk8SlD6I+s/9hOk7U9bFcQyRyht/Mu
-         hC6uDfCxjpbfRWKb2/Zf3+MdlGZ5baycFNCQwKf31vPVB9o4hQepxgcHMRSov0ev1/xR
-         3uK19ZMP/W2KkYS8mJB5SdIOP+/ZbwlbfkNjR0Hk5ZZm19uygBEEIIteHWjHmyH+UWqb
-         2a6Q==
+        bh=fXoOyWRE0pzINSVeSGTfzb5PM8lot/rrs9M2wd4nfYs=;
+        b=Vq7l+Ory4S1f2ExvteN9cQ5d/4DIWv54cWFh5+lWb8ZY3qmKkDM6Ag8xux6oTepyqj
+         LalSGOTEY9T7AtUAktXlQjtfXATp9d9hUui8XZaUE2g5Cp9NFM5ANZ80Yw+aIYpWOdPE
+         8k1bxeW6icGPYBWe15SKDdNnCiw74I/h763kr8lm8P7L+XV24S9ffFhvCV/S+i0trJZQ
+         7g0SZYxykQdgKJhd6c9pqqKAcWjT5MPToV1zhkTyx7xzRjuJmOiLQr82PLOiSLzbjUvH
+         k2032Q/mvIdBrcdlV+xllrSCsoyMXzRZTyqOjEltLFQi6HQvsnhyrZY2hENZmtbyOEK/
+         fMYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LM6cFBPp3CDNz1sjZBsu45pZ5JW4xwrotf5tv22e8k8=;
-        b=bg4R1syMeAsdaASjWvC7X54HkpbTMkQlb1zxZVKfkiSWYYAe6xfCGMGlZ62kXb6CMt
-         NdtxzMdgNfbahh/Uc6dFz+DBrXa3Yr7tazKQrBjG/OqUDHcpnfJxJ+DCL88QyU0M72gK
-         ce2S7Xk2QvXLGC8H/w2Gq1OmY1bORBwP05EzdiJA+hqF4nv4A2b1m/vt3NY++jZHL4e2
-         kE3Y1OFIl8yZQxQ9PSDFAYY/VyfQJ/8XesqxM8k1mgH6HjPrgcHyXpk4qxhUUjun4p6z
-         Rfp0gCx+Aa+LqWfna/Ol23G0upycO1jwmYi6VZPewT6YgFEfVCO85xt1YxZzP8SqTOje
-         QJ5w==
-X-Gm-Message-State: APjAAAXovxhY2sEUDGtx+A4wagKUP/RzCbXAfQtCIs+1h30mQNkEuImG
-        GI60UvgVSjlHpvScJsdxMnoCDNXmw8Q=
-X-Google-Smtp-Source: APXvYqxZaz9rET7gmQTfEuFOAoeyVuZhHG7M83vr+BNl1LUug4cYdcA0SkY6ShhTxVz4VlS5UfZrmQ==
-X-Received: by 2002:a1c:9cc6:: with SMTP id f189mr2310068wme.80.1570619088228;
-        Wed, 09 Oct 2019 04:04:48 -0700 (PDT)
+        bh=fXoOyWRE0pzINSVeSGTfzb5PM8lot/rrs9M2wd4nfYs=;
+        b=D5m0Tt5MbhRw+Tvo3Hf53maFIUfSZIUnC3JR6iJ1jyt7CkcQzz9NH23ragSOrxLWam
+         tRsBWwZvpA05U2MqW3HHFX9XLG6czUKiCy8yWJd3goYIZwXV0A7+1iE0me7Ll6y6VXqv
+         JXcfnudpyE9snillrV9DkQQEPTtX7nUGW9Mk9ZrO4geE3H6kX3I17PrctGYoE457jbxN
+         TIgCoqmCa+8Llx6bmhv1rsgsZIINkJ7u7OBl/9uvyC4mAaSFF7ymyo6qjx1XwI9Tvz7J
+         bUTRulYa/0UWQN2f7BwHckJM/FfMPnR/WTEBSGGxJokf7uPb1lEXROGouPgmaaRwArUR
+         q6Pw==
+X-Gm-Message-State: APjAAAX4n7zDEFr/M94Dpp8CoUjJcsIDUErCcvs8LaenIMVowwk6dnUj
+        USzIKJPv58GyQ29ekfaRZd7CfvIlIH8=
+X-Google-Smtp-Source: APXvYqxFPmw8pnlmNdjObl84/CZui9UA9SgTXVnZMYbPhzwSYlTj+s+TVReksxCMgmxeJ+sq4E48zQ==
+X-Received: by 2002:adf:fe8d:: with SMTP id l13mr2405285wrr.365.1570619089386;
+        Wed, 09 Oct 2019 04:04:49 -0700 (PDT)
 Received: from localhost (ip-213-220-235-50.net.upcbroadband.cz. [213.220.235.50])
-        by smtp.gmail.com with ESMTPSA id a9sm2923829wmf.14.2019.10.09.04.04.47
+        by smtp.gmail.com with ESMTPSA id y8sm2158132wrm.64.2019.10.09.04.04.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 04:04:47 -0700 (PDT)
+        Wed, 09 Oct 2019 04:04:48 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         ayal@mellanox.com, moshe@mellanox.com, eranbe@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 2/4] devlink: propagate extack down to health reporter ops
-Date:   Wed,  9 Oct 2019 13:04:43 +0200
-Message-Id: <20191009110445.23237-3-jiri@resnulli.us>
+Subject: [patch net-next 3/4] netdevsim: implement couple of testing devlink health reporters
+Date:   Wed,  9 Oct 2019 13:04:44 +0200
+Message-Id: <20191009110445.23237-4-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191009110445.23237-1-jiri@resnulli.us>
 References: <20191009110445.23237-1-jiri@resnulli.us>
@@ -64,250 +64,450 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-During health reporter operations, driver might want to fill-up
-the extack message, so propagate extack down to the health reporter ops.
+Implement "empty" and "dummy" reporters. The first one is really simple
+and does nothing. The other one has debugfs files to trigger breakage
+and it is able to do recovery. The ops also implement dummy fmsg
+content.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  9 ++++++---
- .../mellanox/mlx5/core/en/reporter_rx.c       |  6 ++++--
- .../mellanox/mlx5/core/en/reporter_tx.c       |  6 ++++--
- .../net/ethernet/mellanox/mlx5/core/health.c  | 12 +++++++----
- include/net/devlink.h                         |  9 ++++++---
- net/core/devlink.c                            | 20 ++++++++++---------
- 6 files changed, 39 insertions(+), 23 deletions(-)
+ drivers/net/netdevsim/Makefile    |   2 +-
+ drivers/net/netdevsim/dev.c       |  17 +-
+ drivers/net/netdevsim/health.c    | 315 ++++++++++++++++++++++++++++++
+ drivers/net/netdevsim/netdevsim.h |  14 ++
+ 4 files changed, 345 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/netdevsim/health.c
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index e664392dccc0..ff1bc0ec2e7c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -16,7 +16,8 @@
- #include "bnxt_devlink.h"
+diff --git a/drivers/net/netdevsim/Makefile b/drivers/net/netdevsim/Makefile
+index 09f1315d2f2a..f4d8f62f28c2 100644
+--- a/drivers/net/netdevsim/Makefile
++++ b/drivers/net/netdevsim/Makefile
+@@ -3,7 +3,7 @@
+ obj-$(CONFIG_NETDEVSIM) += netdevsim.o
  
- static int bnxt_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
--				     struct devlink_fmsg *fmsg)
-+				     struct devlink_fmsg *fmsg,
-+				     struct netlink_ext_ack *extack)
- {
- 	struct bnxt *bp = devlink_health_reporter_priv(reporter);
- 	struct bnxt_fw_health *health = bp->fw_health;
-@@ -66,7 +67,8 @@ static const struct devlink_health_reporter_ops bnxt_dl_fw_reporter_ops = {
- };
+ netdevsim-objs := \
+-	netdev.o dev.o fib.o bus.o
++	netdev.o dev.o fib.o bus.o health.o
  
- static int bnxt_fw_reset_recover(struct devlink_health_reporter *reporter,
--				 void *priv_ctx)
-+				 void *priv_ctx,
-+				 struct netlink_ext_ack *extack)
- {
- 	struct bnxt *bp = devlink_health_reporter_priv(reporter);
+ ifeq ($(CONFIG_BPF_SYSCALL),y)
+ netdevsim-objs += \
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index e47fa7b6ca7c..468e157a7cb1 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -730,12 +730,18 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
+ 	if (err)
+ 		goto err_dummy_region_exit;
  
-@@ -84,7 +86,8 @@ struct devlink_health_reporter_ops bnxt_dl_fw_reset_reporter_ops = {
- };
+-	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
++	err = nsim_dev_health_init(nsim_dev, devlink);
+ 	if (err)
+ 		goto err_traps_exit;
  
- static int bnxt_fw_fatal_recover(struct devlink_health_reporter *reporter,
--				 void *priv_ctx)
-+				 void *priv_ctx,
-+				 struct netlink_ext_ack *extack)
- {
- 	struct bnxt *bp = devlink_health_reporter_priv(reporter);
- 	struct bnxt_fw_reporter_ctx *fw_reporter_ctx = priv_ctx;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-index b860569d4247..6c72b592315b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-@@ -222,7 +222,8 @@ static int mlx5e_rx_reporter_recover_from_ctx(struct mlx5e_err_ctx *err_ctx)
- }
- 
- static int mlx5e_rx_reporter_recover(struct devlink_health_reporter *reporter,
--				     void *context)
-+				     void *context,
-+				     struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
- 	struct mlx5e_err_ctx *err_ctx = context;
-@@ -301,7 +302,8 @@ static int mlx5e_rx_reporter_build_diagnose_output(struct mlx5e_rq *rq,
- }
- 
- static int mlx5e_rx_reporter_diagnose(struct devlink_health_reporter *reporter,
--				      struct devlink_fmsg *fmsg)
-+				      struct devlink_fmsg *fmsg,
-+				      struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
- 	struct mlx5e_params *params = &priv->channels.params;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index bfed558637c2..b468549e96ff 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -135,7 +135,8 @@ static int mlx5e_tx_reporter_recover_from_ctx(struct mlx5e_err_ctx *err_ctx)
- }
- 
- static int mlx5e_tx_reporter_recover(struct devlink_health_reporter *reporter,
--				     void *context)
-+				     void *context,
-+				     struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
- 	struct mlx5e_err_ctx *err_ctx = context;
-@@ -205,7 +206,8 @@ mlx5e_tx_reporter_build_diagnose_output(struct devlink_fmsg *fmsg,
- }
- 
- static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
--				      struct devlink_fmsg *fmsg)
-+				      struct devlink_fmsg *fmsg,
-+				      struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
- 	struct mlx5e_txqsq *generic_sq = priv->txq2sq[0];
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-index d685122d9ff7..be3c3c704bfc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-@@ -390,7 +390,8 @@ static void print_health_info(struct mlx5_core_dev *dev)
- 
- static int
- mlx5_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
--			  struct devlink_fmsg *fmsg)
-+			  struct devlink_fmsg *fmsg,
-+			  struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_health_reporter_priv(reporter);
- 	struct mlx5_core_health *health = &dev->priv.health;
-@@ -491,7 +492,8 @@ mlx5_fw_reporter_heath_buffer_data_put(struct mlx5_core_dev *dev,
- 
- static int
- mlx5_fw_reporter_dump(struct devlink_health_reporter *reporter,
--		      struct devlink_fmsg *fmsg, void *priv_ctx)
-+		      struct devlink_fmsg *fmsg, void *priv_ctx,
-+		      struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_health_reporter_priv(reporter);
- 	int err;
-@@ -545,7 +547,8 @@ static const struct devlink_health_reporter_ops mlx5_fw_reporter_ops = {
- 
- static int
- mlx5_fw_fatal_reporter_recover(struct devlink_health_reporter *reporter,
--			       void *priv_ctx)
-+			       void *priv_ctx,
-+			       struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_health_reporter_priv(reporter);
- 
-@@ -555,7 +558,8 @@ mlx5_fw_fatal_reporter_recover(struct devlink_health_reporter *reporter,
- #define MLX5_CR_DUMP_CHUNK_SIZE 256
- static int
- mlx5_fw_fatal_reporter_dump(struct devlink_health_reporter *reporter,
--			    struct devlink_fmsg *fmsg, void *priv_ctx)
-+			    struct devlink_fmsg *fmsg, void *priv_ctx,
-+			    struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_health_reporter_priv(reporter);
- 	u32 crdump_size = dev->priv.health.crdump_size;
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 4095657fc23f..d35a1be107b5 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -507,11 +507,14 @@ enum devlink_health_reporter_state {
- struct devlink_health_reporter_ops {
- 	char *name;
- 	int (*recover)(struct devlink_health_reporter *reporter,
--		       void *priv_ctx);
-+		       void *priv_ctx, struct netlink_ext_ack *extack);
- 	int (*dump)(struct devlink_health_reporter *reporter,
--		    struct devlink_fmsg *fmsg, void *priv_ctx);
-+		    struct devlink_fmsg *fmsg, void *priv_ctx,
-+		    struct netlink_ext_ack *extack);
- 	int (*diagnose)(struct devlink_health_reporter *reporter,
--			struct devlink_fmsg *fmsg);
-+			struct devlink_fmsg *fmsg,
-+			struct netlink_ext_ack *extack);
++	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
++	if (err)
++		goto err_health_exit;
 +
+ 	return 0;
+ 
++err_health_exit:
++	nsim_dev_health_exit(nsim_dev);
+ err_traps_exit:
+ 	nsim_dev_traps_exit(devlink);
+ err_dummy_region_exit:
+@@ -797,10 +803,14 @@ static struct nsim_dev *nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev)
+ 	if (err)
+ 		goto err_traps_exit;
+ 
+-	err = nsim_bpf_dev_init(nsim_dev);
++	err = nsim_dev_health_init(nsim_dev, devlink);
+ 	if (err)
+ 		goto err_debugfs_exit;
+ 
++	err = nsim_bpf_dev_init(nsim_dev);
++	if (err)
++		goto err_health_exit;
++
+ 	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
+ 	if (err)
+ 		goto err_bpf_dev_exit;
+@@ -810,6 +820,8 @@ static struct nsim_dev *nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev)
+ 
+ err_bpf_dev_exit:
+ 	nsim_bpf_dev_exit(nsim_dev);
++err_health_exit:
++	nsim_dev_health_exit(nsim_dev);
+ err_debugfs_exit:
+ 	nsim_dev_debugfs_exit(nsim_dev);
+ err_traps_exit:
+@@ -837,6 +849,7 @@ static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev)
+ 	if (devlink_is_reload_failed(devlink))
+ 		return;
+ 	nsim_dev_port_del_all(nsim_dev);
++	nsim_dev_health_exit(nsim_dev);
+ 	nsim_dev_traps_exit(devlink);
+ 	nsim_dev_dummy_region_exit(nsim_dev);
+ 	mutex_destroy(&nsim_dev->port_list_lock);
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+new file mode 100644
+index 000000000000..088ae8fd89fc
+--- /dev/null
++++ b/drivers/net/netdevsim/health.c
+@@ -0,0 +1,315 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
++
++#include <linux/debugfs.h>
++#include <linux/err.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++
++#include "netdevsim.h"
++
++static int
++nsim_dev_empty_reporter_dump(struct devlink_health_reporter *reporter,
++			     struct devlink_fmsg *fmsg, void *priv_ctx,
++			     struct netlink_ext_ack *extack)
++{
++	return 0;
++}
++
++static int
++nsim_dev_empty_reporter_diagnose(struct devlink_health_reporter *reporter,
++				 struct devlink_fmsg *fmsg,
++				 struct netlink_ext_ack *extack)
++{
++	return 0;
++}
++
++static const
++struct devlink_health_reporter_ops nsim_dev_empty_reporter_ops = {
++	.name = "empty",
++	.dump = nsim_dev_empty_reporter_dump,
++	.diagnose = nsim_dev_empty_reporter_diagnose,
++};
++
++struct nsim_dev_dummy_reporter_ctx {
++	char *break_msg;
++};
++
++static int
++nsim_dev_dummy_reporter_recover(struct devlink_health_reporter *reporter,
++				void *priv_ctx,
++				struct netlink_ext_ack *extack)
++{
++	struct nsim_dev_health *health = devlink_health_reporter_priv(reporter);
++	struct nsim_dev_dummy_reporter_ctx *ctx = priv_ctx;
++
++	if (health->fail_recover) {
++		/* For testing purposes, user set debugfs fail_recover
++		 * value to true. Fail right away.
++		 */
++		NL_SET_ERR_MSG_MOD(extack, "User setup the recover to fail for testing purposes");
++		return -EINVAL;
++	}
++	if (ctx) {
++		health->recovered_break_msg = kstrdup(ctx->break_msg,
++						      GFP_KERNEL);
++		if (!health->recovered_break_msg)
++			return -ENOMEM;
++	}
++	return 0;
++}
++
++static int nsim_dev_dummy_fmsg_put(struct devlink_fmsg *fmsg, u32 binary_len)
++{
++	char *binary;
++	int err;
++	int i;
++
++	err = devlink_fmsg_bool_pair_put(fmsg, "test_bool", true);
++	if (err)
++		return err;
++	err = devlink_fmsg_u8_pair_put(fmsg, "test_u8", 1);
++	if (err)
++		return err;
++	err = devlink_fmsg_u32_pair_put(fmsg, "test_u32", 3);
++	if (err)
++		return err;
++	err = devlink_fmsg_u64_pair_put(fmsg, "test_u64", 4);
++	if (err)
++		return err;
++	err = devlink_fmsg_string_pair_put(fmsg, "test_string", "somestring");
++	if (err)
++		return err;
++
++	binary = kmalloc(binary_len, GFP_KERNEL);
++	if (!binary)
++		return -ENOMEM;
++	get_random_bytes(binary, binary_len);
++	err = devlink_fmsg_binary_pair_put(fmsg, "test_binary",
++					   binary, binary_len);
++	kfree(binary);
++	if (err)
++		return err;
++
++	err = devlink_fmsg_pair_nest_start(fmsg, "test_nest");
++	if (err)
++		return err;
++	err = devlink_fmsg_obj_nest_start(fmsg);
++	if (err)
++		return err;
++	err = devlink_fmsg_bool_pair_put(fmsg, "nested_test_bool", false);
++	if (err)
++		return err;
++	err = devlink_fmsg_u8_pair_put(fmsg, "nested_test_u8", false);
++	if (err)
++		return err;
++	err = devlink_fmsg_obj_nest_end(fmsg);
++	if (err)
++		return err;
++	err = devlink_fmsg_pair_nest_end(fmsg);
++	if (err)
++		return err;
++
++	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_bool_array");
++	if (err)
++		return err;
++	for (i = 0; i < 10; i++) {
++		err = devlink_fmsg_bool_put(fmsg, true);
++		if (err)
++			return err;
++	}
++	err = devlink_fmsg_arr_pair_nest_end(fmsg);
++	if (err)
++		return err;
++
++	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u8_array");
++	if (err)
++		return err;
++	for (i = 0; i < 10; i++) {
++		err = devlink_fmsg_u8_put(fmsg, i);
++		if (err)
++			return err;
++	}
++	err = devlink_fmsg_arr_pair_nest_end(fmsg);
++	if (err)
++		return err;
++
++	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u32_array");
++	if (err)
++		return err;
++	for (i = 0; i < 10; i++) {
++		err = devlink_fmsg_u32_put(fmsg, i);
++		if (err)
++			return err;
++	}
++	err = devlink_fmsg_arr_pair_nest_end(fmsg);
++	if (err)
++		return err;
++
++	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u64_array");
++	if (err)
++		return err;
++	for (i = 0; i < 10; i++) {
++		err = devlink_fmsg_u64_put(fmsg, i);
++		if (err)
++			return err;
++	}
++	err = devlink_fmsg_arr_pair_nest_end(fmsg);
++	if (err)
++		return err;
++
++	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_array_of_objects");
++	if (err)
++		return err;
++	for (i = 0; i < 10; i++) {
++		err = devlink_fmsg_obj_nest_start(fmsg);
++		if (err)
++			return err;
++		err = devlink_fmsg_bool_pair_put(fmsg,
++						 "in_array_nested_test_bool",
++						 false);
++		if (err)
++			return err;
++		err = devlink_fmsg_u8_pair_put(fmsg,
++					       "in_array_nested_test_u8",
++					       i);
++		if (err)
++			return err;
++		err = devlink_fmsg_obj_nest_end(fmsg);
++		if (err)
++			return err;
++	}
++	return devlink_fmsg_arr_pair_nest_end(fmsg);
++}
++
++static int
++nsim_dev_dummy_reporter_dump(struct devlink_health_reporter *reporter,
++			     struct devlink_fmsg *fmsg, void *priv_ctx,
++			     struct netlink_ext_ack *extack)
++{
++	struct nsim_dev_health *health = devlink_health_reporter_priv(reporter);
++	struct nsim_dev_dummy_reporter_ctx *ctx = priv_ctx;
++	int err;
++
++	if (ctx) {
++		err = devlink_fmsg_string_pair_put(fmsg, "break_message",
++						   ctx->break_msg);
++		if (err)
++			return err;
++	}
++	return nsim_dev_dummy_fmsg_put(fmsg, health->binary_len);
++}
++
++static int
++nsim_dev_dummy_reporter_diagnose(struct devlink_health_reporter *reporter,
++				 struct devlink_fmsg *fmsg,
++				 struct netlink_ext_ack *extack)
++{
++	struct nsim_dev_health *health = devlink_health_reporter_priv(reporter);
++	int err;
++
++	if (health->recovered_break_msg) {
++		err = devlink_fmsg_string_pair_put(fmsg,
++						   "recovered_break_message",
++						   health->recovered_break_msg);
++		if (err)
++			return err;
++	}
++	return nsim_dev_dummy_fmsg_put(fmsg, health->binary_len);
++}
++
++static const
++struct devlink_health_reporter_ops nsim_dev_dummy_reporter_ops = {
++	.name = "dummy",
++	.recover = nsim_dev_dummy_reporter_recover,
++	.dump = nsim_dev_dummy_reporter_dump,
++	.diagnose = nsim_dev_dummy_reporter_diagnose,
++};
++
++static ssize_t nsim_dev_health_break_write(struct file *file,
++					   const char __user *data,
++					   size_t count, loff_t *ppos)
++{
++	struct nsim_dev_health *health = file->private_data;
++	struct nsim_dev_dummy_reporter_ctx ctx;
++	char *break_msg;
++	int err;
++
++	break_msg = kmalloc(count + 1, GFP_KERNEL);
++	if (!break_msg)
++		return -ENOMEM;
++
++	if (copy_from_user(break_msg, data, count)) {
++		err = -EFAULT;
++		goto out;
++	}
++	break_msg[count] = '\0';
++	if (break_msg[count - 1] == '\n')
++		break_msg[count - 1] = '\0';
++
++	ctx.break_msg = break_msg;
++	err = devlink_health_report(health->dummy_reporter, break_msg, &ctx);
++	if (err)
++		goto out;
++
++out:
++	kfree(break_msg);
++	return err ? err : count;
++}
++
++static const struct file_operations nsim_dev_health_break_fops = {
++	.open = simple_open,
++	.write = nsim_dev_health_break_write,
++	.llseek = generic_file_llseek,
++};
++
++int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
++{
++	struct nsim_dev_health *health = &nsim_dev->health;
++	int err;
++
++	health->empty_reporter =
++		devlink_health_reporter_create(devlink,
++					       &nsim_dev_empty_reporter_ops,
++					       0, false, health);
++	if (IS_ERR(health->empty_reporter))
++		return PTR_ERR(health->empty_reporter);
++
++	health->dummy_reporter =
++		devlink_health_reporter_create(devlink,
++					       &nsim_dev_dummy_reporter_ops,
++					       0, false, health);
++	if (IS_ERR(health->dummy_reporter)) {
++		err = PTR_ERR(health->dummy_reporter);
++		goto err_empty_reporter_destroy;
++	}
++
++	health->ddir = debugfs_create_dir("health", nsim_dev->ddir);
++	if (IS_ERR_OR_NULL(health->ddir))
++		return PTR_ERR_OR_ZERO(health->ddir) ?: -EINVAL;
++
++	health->recovered_break_msg = NULL;
++	debugfs_create_file("break_health", 0200, health->ddir, health,
++			    &nsim_dev_health_break_fops);
++	health->binary_len = 16;
++	debugfs_create_u32("binary_len", 0600, health->ddir,
++			   &health->binary_len);
++	health->fail_recover = false;
++	debugfs_create_bool("fail_recover", 0600, health->ddir,
++			    &health->fail_recover);
++	return 0;
++
++err_empty_reporter_destroy:
++	devlink_health_reporter_destroy(health->empty_reporter);
++	return err;
++}
++
++void nsim_dev_health_exit(struct nsim_dev *nsim_dev)
++{
++	struct nsim_dev_health *health = &nsim_dev->health;
++
++	debugfs_remove_recursive(health->ddir);
++	kfree(health->recovered_break_msg);
++	devlink_health_reporter_destroy(health->dummy_reporter);
++	devlink_health_reporter_destroy(health->empty_reporter);
++}
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 24358385d869..657cbae50293 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -18,6 +18,7 @@
+ #include <linux/list.h>
+ #include <linux/netdevice.h>
+ #include <linux/u64_stats_sync.h>
++#include <linux/debugfs.h>
+ #include <net/devlink.h>
+ #include <net/xdp.h>
+ 
+@@ -134,6 +135,18 @@ enum nsim_resource_id {
+ 	NSIM_RESOURCE_IPV6_FIB_RULES,
  };
  
- /**
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 95887462eecf..97e9a2246929 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4847,7 +4847,7 @@ EXPORT_SYMBOL_GPL(devlink_health_reporter_state_update);
++struct nsim_dev_health {
++	struct devlink_health_reporter *empty_reporter;
++	struct devlink_health_reporter *dummy_reporter;
++	struct dentry *ddir;
++	char *recovered_break_msg;
++	u32 binary_len;
++	bool fail_recover;
++};
++
++int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink);
++void nsim_dev_health_exit(struct nsim_dev *nsim_dev);
++
+ struct nsim_dev_port {
+ 	struct list_head list;
+ 	struct devlink_port devlink_port;
+@@ -164,6 +177,7 @@ struct nsim_dev {
+ 	bool dont_allow_reload;
+ 	bool fail_reload;
+ 	struct devlink_region *dummy_region;
++	struct nsim_dev_health health;
+ };
  
- static int
- devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
--				void *priv_ctx)
-+				void *priv_ctx, struct netlink_ext_ack *extack)
- {
- 	int err;
- 
-@@ -4857,7 +4857,7 @@ devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
- 	if (!reporter->ops->recover)
- 		return -EOPNOTSUPP;
- 
--	err = reporter->ops->recover(reporter, priv_ctx);
-+	err = reporter->ops->recover(reporter, priv_ctx, extack);
- 	if (err)
- 		return err;
- 
-@@ -4878,7 +4878,8 @@ devlink_health_dump_clear(struct devlink_health_reporter *reporter)
- }
- 
- static int devlink_health_do_dump(struct devlink_health_reporter *reporter,
--				  void *priv_ctx)
-+				  void *priv_ctx,
-+				  struct netlink_ext_ack *extack)
- {
- 	int err;
- 
-@@ -4899,7 +4900,7 @@ static int devlink_health_do_dump(struct devlink_health_reporter *reporter,
- 		goto dump_err;
- 
- 	err = reporter->ops->dump(reporter, reporter->dump_fmsg,
--				  priv_ctx);
-+				  priv_ctx, extack);
- 	if (err)
- 		goto dump_err;
- 
-@@ -4946,11 +4947,12 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
- 
- 	mutex_lock(&reporter->dump_lock);
- 	/* store current dump of current error, for later analysis */
--	devlink_health_do_dump(reporter, priv_ctx);
-+	devlink_health_do_dump(reporter, priv_ctx, NULL);
- 	mutex_unlock(&reporter->dump_lock);
- 
- 	if (reporter->auto_recover)
--		return devlink_health_reporter_recover(reporter, priv_ctx);
-+		return devlink_health_reporter_recover(reporter,
-+						       priv_ctx, NULL);
- 
- 	return 0;
- }
-@@ -5188,7 +5190,7 @@ static int devlink_nl_cmd_health_reporter_recover_doit(struct sk_buff *skb,
- 	if (!reporter)
- 		return -EINVAL;
- 
--	err = devlink_health_reporter_recover(reporter, NULL);
-+	err = devlink_health_reporter_recover(reporter, NULL, info->extack);
- 
- 	devlink_health_reporter_put(reporter);
- 	return err;
-@@ -5221,7 +5223,7 @@ static int devlink_nl_cmd_health_reporter_diagnose_doit(struct sk_buff *skb,
- 	if (err)
- 		goto out;
- 
--	err = reporter->ops->diagnose(reporter, fmsg);
-+	err = reporter->ops->diagnose(reporter, fmsg, info->extack);
- 	if (err)
- 		goto out;
- 
-@@ -5256,7 +5258,7 @@ devlink_nl_cmd_health_reporter_dump_get_dumpit(struct sk_buff *skb,
- 	}
- 	mutex_lock(&reporter->dump_lock);
- 	if (!start) {
--		err = devlink_health_do_dump(reporter, NULL);
-+		err = devlink_health_do_dump(reporter, NULL, cb->extack);
- 		if (err)
- 			goto unlock;
- 		cb->args[1] = reporter->dump_ts;
+ static inline struct net *nsim_dev_net(struct nsim_dev *nsim_dev)
 -- 
 2.21.0
 
