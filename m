@@ -2,83 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FB21D04B1
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 02:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51391D04B5
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 02:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729944AbfJIARn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 20:17:43 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:42206 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727051AbfJIARn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Oct 2019 20:17:43 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 9E12ABA33B87CEBD8A5B;
-        Wed,  9 Oct 2019 08:17:41 +0800 (CST)
-Received: from [127.0.0.1] (10.184.213.217) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Wed, 9 Oct 2019
- 08:17:39 +0800
-Subject: Re: [PATCH] rtw88: 8822c: Remove set but not used variable 'corr_val'
-To:     Kalle Valo <kvalo@codeaurora.org>
-CC:     <yhchuang@realtek.com>, <pkshih@realtek.com>,
-        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <1570180736-133907-1-git-send-email-zhengbin13@huawei.com>
- <08492ba6-eaf6-8c72-74fe-f49e0a95639e@huawei.com>
- <87d0f771s7.fsf@kamboji.qca.qualcomm.com>
-From:   "zhengbin (A)" <zhengbin13@huawei.com>
-Message-ID: <4441d56d-b7d0-00dc-2d54-93ca02db6f67@huawei.com>
-Date:   Wed, 9 Oct 2019 08:17:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
-MIME-Version: 1.0
-In-Reply-To: <87d0f771s7.fsf@kamboji.qca.qualcomm.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.184.213.217]
-X-CFilter-Loop: Reflected
+        id S1729970AbfJIASy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 20:18:54 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:46701 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727051AbfJIASy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 20:18:54 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8CC6921AD0;
+        Tue,  8 Oct 2019 20:18:53 -0400 (EDT)
+Received: from imap2 ([10.202.2.52])
+  by compute4.internal (MEProxy); Tue, 08 Oct 2019 20:18:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=
+        mime-version:message-id:in-reply-to:references:date:from:to:cc
+        :subject:content-type; s=fm3; bh=XnTGS6EOP6i6blqf35sCohVJUtOChfq
+        97RDyhHyjVP8=; b=k334bLsmf3nZcFTvoGADphWQLRg4YnOvWJcbv5/ViJdoR5k
+        c1vZk4WDtE3au4qSQ0bOQ7e2Oty3Gf12e9bFL798kweYwz3j00GawU37okQus2A4
+        FX0Fd5/ma+LEOYhFUkqkepZJdo3U8l2Fmn3pEyzFuJ34CpuI9s1kiQAqgqdoLGa7
+        Y3dU3RCBzuD7xmpE6Llh4E5BWDdQ3MhdOBuFnm0HdNY1q5RyXWqdNeGS3eu75mOR
+        XZZcLH723N3nYyapxZrUSLmlWXuPNLibwbJts7dstq84UKq8G4bm73TrMgFmbNKV
+        FRmaOA4YWSehIrE3liubKN7BLbJeswolf1747vA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=XnTGS6
+        EOP6i6blqf35sCohVJUtOChfq97RDyhHyjVP8=; b=fe9QewgoY1CdSMOVn9Iy9b
+        LxP6J5zHQVSHDbreULfK3aPNsgZukHLiryHHzePS46MvJm5F7HguOYgUXsqoVtgx
+        pQiIn0FUjv2zdpGOSjtZHDsXbDReH5Ju4RYWZh4WynM2E71SVo1+FheCULQHmF0h
+        /83qARjQIWSojk4KS/eilFouppv6PcOky+PFbvFeggp10Y9ZEzm145v6cs50f2SF
+        r3w4XIujwU4WziApbkNsyGnTSvE6xJ1BDLMR2pPCu33XolvEGDX9QT8/I/OrBVha
+        uLFVX+1Bg9GEOHNDB8LOlGgpuCztDq2lQQ840AYt2neh/Qs2jT86a1WINZon2YUg
+        ==
+X-ME-Sender: <xms:bCedXdsdrnUsQjR1kKY8PimpNyMZ-l0OZRlXHuS8hKOBk7_9GkgfNw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedriedtgdefudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderreejnecuhfhrohhmpedftehnughr
+    vgifucflvghffhgvrhihfdcuoegrnhgurhgvfiesrghjrdhiugdrrghuqeenucfrrghrrg
+    hmpehmrghilhhfrhhomheprghnughrvgifsegrjhdrihgurdgruhenucevlhhushhtvghr
+    ufhiiigvpedt
+X-ME-Proxy: <xmx:bCedXZy8sk7W2oCcCyBGnJ3neOvOzOEhSK1JjyFMbK42f1-qL_HStQ>
+    <xmx:bCedXclk8DW4tIKPTG08rp41zNiKoWePrZVjxhUUBC_lwxT0Kx7WTw>
+    <xmx:bCedXXYpazfgIPIC5F0VUy_2SQEanfFaMkOMb5PsYR2ukBQwzhrzxA>
+    <xmx:bSedXVLjDUOgh3UnCeQ3W-e1L40xAuN2IAN7SWk4ATyOiR3E-szLKQ>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 3EF58E00A5; Tue,  8 Oct 2019 20:18:52 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.1.7-360-g7dda896-fmstable-20191004v2
+Mime-Version: 1.0
+Message-Id: <01c7cafe-8b41-4099-af29-3593e27a1d20@www.fastmail.com>
+In-Reply-To: <CACPK8XcWLCGupAF1EX1LB6A=mQY0s9kjgagr3EKEKJhnbt+j0g@mail.gmail.com>
+References: <20191008115143.14149-1-andrew@aj.id.au>
+ <20191008115143.14149-3-andrew@aj.id.au>
+ <CACPK8XcWLCGupAF1EX1LB6A=mQY0s9kjgagr3EKEKJhnbt+j0g@mail.gmail.com>
+Date:   Wed, 09 Oct 2019 10:49:45 +1030
+From:   "Andrew Jeffery" <andrew@aj.id.au>
+To:     "Joel Stanley" <joel@jms.id.au>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David Miller" <davem@davemloft.net>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        "Mark Rutland" <mark.rutland@arm.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>
+Subject: =?UTF-8?Q?Re:_[PATCH_2/3]_dt-bindings:_net:_ftgmac100:_Describe_clock_pr?=
+ =?UTF-8?Q?operties?=
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/10/8 22:24, Kalle Valo wrote:
 
-> (PLEASE don't top post, fixing that manually)
->
-> "zhengbin (A)" <zhengbin13@huawei.com> writes:
->
->> On 2019/10/4 17:18, zhengbin wrote:
->>> Fixes gcc '-Wunused-but-set-variable' warning:
->>>
->>> drivers/net/wireless/realtek/rtw88/rtw8822c.c: In function rtw8822c_dpk_dc_corr_check:
->>> drivers/net/wireless/realtek/rtw88/rtw8822c.c:2166:5: warning: variable corr_val set but not used [-Wunused-but-set-variable]
->>>
->>> It is not used since commit 5227c2ee453d ("rtw88:
->>> 8822c: add SW DPK support")
->>>
->>> Reported-by: Hulk Robot <hulkci@huawei.com>
->>> Signed-off-by: zhengbin <zhengbin13@huawei.com>
->> Sorry for the noise, please ignore this
-> Why? What was wrong in the patch?
 
-I am not sure whether we can just remove
+On Tue, 8 Oct 2019, at 23:12, Joel Stanley wrote:
+> On Tue, 8 Oct 2019 at 11:50, Andrew Jeffery <andrew@aj.id.au> wrote:
+> >
+> > Critically, the AST2600 requires ungating the RMII RCLK if e.g. NCSI is
+> > in use.
+> >
+> > Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
+> > ---
+> >  Documentation/devicetree/bindings/net/ftgmac100.txt | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/ftgmac100.txt b/Documentation/devicetree/bindings/net/ftgmac100.txt
+> > index 04cc0191b7dd..c443b0b84be5 100644
+> > --- a/Documentation/devicetree/bindings/net/ftgmac100.txt
+> > +++ b/Documentation/devicetree/bindings/net/ftgmac100.txt
+> > @@ -24,6 +24,12 @@ Optional properties:
+> >  - no-hw-checksum: Used to disable HW checksum support. Here for backward
+> >    compatibility as the driver now should have correct defaults based on
+> >    the SoC.
+> > +- clocks: In accordance with the generic clock bindings. Must describe the MAC
+> > +  IP clock, and optionally an RMII RCLK gate for the AST2600.
+> 
+>  or AST2500.
+> 
+> With that fixed you can add my ack.
 
-corr_val = (u8)rtw_read32_mask(rtwdev, REG_STAT_RPT, GENMASK(15, 8))?
+I'll do a v2 and fix the comments in the driver patch as well.
 
-rtw_read32_mask
+Cheers,
 
-  rtw_read32
-
-    ops->read32
-
- 
-
-Thank you for your remind of do not top post.
-
-BTW:  patchset 'net/rtlwifi: remove some unused variables' & patch 'rtlwifi: rtl8192ee: Remove set but not used variable 'err''
-
-are acked-by Ping-Ke Shih, can you help deal with it?
-
->
-
+Andrew
