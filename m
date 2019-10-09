@@ -2,51 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DE7D0872
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 09:39:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7B63D087B
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 09:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725989AbfJIHj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 03:39:28 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:48254 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbfJIHj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 03:39:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=baiVv4a2Uea2yTZJrebYsEwZaUn70mxXYupOEm3dQbc=; b=qRZLYML8fZIGPOUFVit/FLmvx
-        qgVXvUHJYoCdC+71GLaypG+EIWHXjTQXPpbTF2mxm9WrpMRbP6OJRVJWjFgaiaW/llFXBOJAR78Vs
-        9Q+px+8LlW9mqzCJImURq9QaryTQdwKGtD4cnbhbuoFslmYUkQs3Extmb7giDPFCEMrtrUyQAPIWT
-        sU9OIgrOfYqTm+AVwzxif+67dDyGiyPrTbb8IxwoQhmR1hy8v0P9oxWmwhhPGm4qq+NDnM38pGTbc
-        9xdXEex2JMqcg6uVZDb36+pDd/1yMHL7h5UhJzoV1OSxImjVtAOzjkWdN4KrKTazYF5G4uilXa9hW
-        0Qgz+JOTA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.2 #3 (Red Hat Linux))
-        id 1iI6ZC-0006WF-Mu; Wed, 09 Oct 2019 07:39:26 +0000
-Date:   Wed, 9 Oct 2019 00:39:26 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Madalin Bucur <madalin.bucur@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, roy.pledge@nxp.com,
-        laurentiu.tudor@nxp.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 19/20] dpaa_eth: add dpaa_dma_to_virt()
-Message-ID: <20191009073926.GA6916@infradead.org>
-References: <1570536641-25104-1-git-send-email-madalin.bucur@nxp.com>
- <1570536641-25104-20-git-send-email-madalin.bucur@nxp.com>
+        id S1729567AbfJIHkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 03:40:52 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:49507 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726336AbfJIHkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 03:40:52 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iI6aT-000473-NX; Wed, 09 Oct 2019 09:40:45 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:c0ba:f7df:a30d:f61c] (unknown [IPv6:2a03:f580:87bc:d400:c0ba:f7df:a30d:f61c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 96BBF4633C5;
+        Wed,  9 Oct 2019 07:40:42 +0000 (UTC)
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de,
+        linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Bastian Stender <bst@pengutronix.de>,
+        Elenita Hinds <ecathinds@gmail.com>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <ore@pengutronix.de>,
+        David Jander <david@protonic.nl>
+References: <2ffa00e7-d447-9216-587d-30396a47ca64@pengutronix.de>
+ <20191008120953.515a3dbd@cakuba.netronome.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: pull-request: can-next 2019-10-07
+Message-ID: <1196c661-5145-4931-031b-13b16249d632@pengutronix.de>
+Date:   Wed, 9 Oct 2019 09:40:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1570536641-25104-20-git-send-email-madalin.bucur@nxp.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20191008120953.515a3dbd@cakuba.netronome.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="VUbsAWRtBp9W8DFzy5mWxLdBxWS0jO2sD"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 08, 2019 at 03:10:40PM +0300, Madalin Bucur wrote:
-> Centralize the phys_to_virt() calls.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--VUbsAWRtBp9W8DFzy5mWxLdBxWS0jO2sD
+Content-Type: multipart/mixed; boundary="GfjgU16etsgk1AHcE1guZ0fzL3X7cKcIC";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de,
+ linux-can@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+ Bastian Stender <bst@pengutronix.de>, Elenita Hinds <ecathinds@gmail.com>,
+ Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+ Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+ Robin van der Gracht <robin@protonic.nl>, Oleksij Rempel
+ <ore@pengutronix.de>, David Jander <david@protonic.nl>
+Message-ID: <1196c661-5145-4931-031b-13b16249d632@pengutronix.de>
+Subject: Re: pull-request: can-next 2019-10-07
+References: <2ffa00e7-d447-9216-587d-30396a47ca64@pengutronix.de>
+ <20191008120953.515a3dbd@cakuba.netronome.com>
+In-Reply-To: <20191008120953.515a3dbd@cakuba.netronome.com>
 
-You don't need to centralize those, you need to fix them.  Calling
-phys_to_virt on a dma_addr is completely bogus.
+--GfjgU16etsgk1AHcE1guZ0fzL3X7cKcIC
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+
+On 10/8/19 9:09 PM, Jakub Kicinski wrote:
+> On Mon, 7 Oct 2019 16:38:14 +0200, Marc Kleine-Budde wrote:
+>> Hello David,
+>>
+>> this is a pull request for net-next/master consisting of 12 patches.
+>>
+>> The first patch is by Andy Shevchenko for the mcp251x driver and remov=
+es
+>> the legacy platform data from all in-tree users and the driver.
+>>
+>> The next two patches target the peak_canfd driver, the first one is by=
+
+>> me and fixes several checkpatch warnings, the second one is by Stephan=
+e
+>> Grosjean and adds hardware timestamps to the rx skbs.
+>>
+>> Followed by two patches for the xilinx_can driver. Again the first is =
+by
+>> me and fixes checkpatch warnings, the second one is by Anssi Hannula a=
+nd
+>> avoids non-requested bus error frames, which improves performance.
+>>
+>> Pankaj Sharma's patch for the m_can driver adds support for the one sh=
+ot
+>> mode.
+>>
+>> YueHaibing provides a patch for the grcan driver to use
+>> devm_platform_ioremap_resource() to simplify code.
+>>
+>> Joakim Zhang provides a similar patch for the flexcan driver.
+>>
+>> The last 4 patches are by me and target the rx-offload infrastructure.=
+
+>> The first 3 fix checkpatch warnings, the last one removes a no-op
+>> function.
+>=20
+> Hi Marc,
+>=20
+> I think the correction should have been s/Substract/Subtract/,
+> sorry for the nit pick.
+
+Thanks for noticing that. checkpatch wasn't complaining about my new
+typo though :)
+
+> Would you be able to fix that up or do you prefer to do a follow up?
+
+As another patch from the pull request is broken, I've asked David to
+not merge it. I've squashed your fix into the original patch.
+
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--GfjgU16etsgk1AHcE1guZ0fzL3X7cKcIC--
+
+--VUbsAWRtBp9W8DFzy5mWxLdBxWS0jO2sD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2djvYACgkQWsYho5Hk
+nSDg8wf/YBpCDX9enE+SKB1cCRgc+Am6QaAyPuHl1lX1Je+gIr3GOs88ZDkP8HKS
+MfkGbvbkh8ntJlRzZ/6q8yJjIscYmcYlV0Ev14yzvKHJBru2Vn9DXU+uRA8UHhnO
+BoZMnBnac5bJS75sJO+BJI96A50YXoQY1pOC0IA/VkTiruV1XrP11q8Vsif7C6KW
+3LO+bkIdCzvBUYJyZeUwZ+sgT2J4Z8CEk7GcngGfzKxfs3CBMBbaYPRWHm7KVEiJ
+KdKHVEcTo9foBjZQnC5A4MXYEM53HQHfe+df6HzPaJfs4iStfgGVy68pHoLmtyWP
+aOvIJdWLoCPdJwAEDFcyIJsV7AhMHA==
+=hw2I
+-----END PGP SIGNATURE-----
+
+--VUbsAWRtBp9W8DFzy5mWxLdBxWS0jO2sD--
