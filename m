@@ -2,78 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9003BD10FE
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 16:16:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E686D113C
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 16:29:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730503AbfJIOQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 10:16:15 -0400
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.25]:27585 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729491AbfJIOQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 10:16:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1570630570;
-        s=strato-dkim-0002; d=pixelbox.red;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=XSSL21NdaClI94p1jn2W9ASCiLNEtcEZcSQFd9LgbO4=;
-        b=tpKjI8EzDBgjnHsnCMlh4+J3Faho3LhjZLW5D0A4mA+0+NNg2dVb0Y00kSR8L59j+Y
-        dZzYBhbGXHXW6o2xscgZTtT5nPTqzDpmBcIIUESF5wNw5C8NkLqVLSRE0oO6/v8yuXvm
-        r900DYdgZsZWqEarK9XP1k5zGFMJDkI0YIPqH8UkH8OdTuGKyhT+0d8cgXtWd2UNJrQi
-        awnd4N9vbID+VmyLV9mvpxWuGTRsjqcTfAqewZCwJye7jVeHB4sw26AhnfTVtrZowRDS
-        cVSjt8sAgcGDC5u9dpiVYybU89rtoiR+TVpJpX2za6EzcaSo0vsaBL8y86fTOKeg3CLk
-        WClA==
-X-RZG-AUTH: ":PGkAZ0+Ia/aHbZh+i/9QzqYeH5BDcTFH98iPmzDT881S1Jv9Y40I0vUpkEK3poY1KyL7e8vwUVd6rhLT+3nQPD/JTWrS4IlCVOSV0M8="
-X-RZG-CLASS-ID: mo00
-Received: from localhost.localdomain
-        by smtp.strato.de (RZmta 44.28.0 AUTH)
-        with ESMTPSA id d0520cv99EG5lyf
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Wed, 9 Oct 2019 16:16:05 +0200 (CEST)
-From:   Peter Fink <pedro@pixelbox.red>
-To:     netdev@vger.kernel.org
-Cc:     pfink@christ-es.de, davem@davemloft.net
-Subject: [PATCH net-next] net: usb: ax88179_178a: write mac to hardware in get_mac_addr
-Date:   Wed,  9 Oct 2019 16:15:49 +0200
-Message-Id: <1570630549-23976-1-git-send-email-pedro@pixelbox.red>
-X-Mailer: git-send-email 2.7.4
+        id S1731494AbfJIO3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 10:29:18 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:40192 "EHLO
+        mail.loongson.cn" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731133AbfJIO3S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 10:29:18 -0400
+Received: from linux.loongson.cn (unknown [10.20.41.27])
+        by mail (Coremail) with SMTP id QMiowPAxycSw7p1dSqQMAA--.37S2;
+        Wed, 09 Oct 2019 22:29:04 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     davem@davemloft.net, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: stmmac: Remove break after a return
+Date:   Wed,  9 Oct 2019 22:29:00 +0800
+Message-Id: <1570631340-5467-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: QMiowPAxycSw7p1dSqQMAA--.37S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtF4rKr4xAF1kCr4kKr45KFg_yoWkCFX_Cr
+        y0qr4fXa90kF1jyw12yayUXryj9FnrXFs3GFsIqF93u3y2qwn5tasxurZYyr1a9ay8AFnr
+        GFn3tFy7A34kKjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4AYjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_JFC_Wr1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
+        A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26F4j6r4UJw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7xvr2IYc2Ij64vIr40E4x8a
+        64kEw24l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67
+        AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIY
+        rxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14
+        v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVW3JVWrJr1lIxAIcVC2z280aVAFwI0_Jr0_
+        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8PDG5
+        UUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Fink <pfink@christ-es.de>
+Since break is not useful after a return, remove it.
 
-When the MAC address is supplied via device tree or a random
-MAC is generated it has to be written to the asix chip in
-order to receive any data.
-
-In the previous commit (9fb137a) this line was omitted
-because it seemed to work perfectly fine without it.
-But it was simply not detected because the chip keeps the mac
-stored even beyond a reset and it was tested on a hardware
-with an integrated UPS where the asix chip was permanently
-powered on even throughout power cycles.
-
-Signed-off-by: Peter Fink <pfink@christ-es.de>
+Fixes: 3b57de958e2a ("net: stmmac: Support devicetree configs for mcast and ucast filter entries")
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- drivers/net/usb/ax88179_178a.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index 5a58766..c5a6e75 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1235,6 +1235,9 @@ static void ax88179_get_mac_addr(struct usbnet *dev)
- 		netdev_info(dev->net, "invalid MAC address, using random\n");
- 		eth_hw_addr_random(dev->net);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+index 3d69da1..d0356fb 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+@@ -130,7 +130,6 @@ static void dwmac1000_set_mchash(void __iomem *ioaddr, u32 *mcfilterbits,
+ 		writel(mcfilterbits[0], ioaddr + GMAC_HASH_LOW);
+ 		writel(mcfilterbits[1], ioaddr + GMAC_HASH_HIGH);
+ 		return;
+-		break;
+ 	case 7:
+ 		numhashregs = 4;
+ 		break;
+@@ -140,7 +139,6 @@ static void dwmac1000_set_mchash(void __iomem *ioaddr, u32 *mcfilterbits,
+ 	default:
+ 		pr_debug("STMMAC: err in setting multicast filter\n");
+ 		return;
+-		break;
  	}
-+
-+	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN, ETH_ALEN,
-+			  dev->net->dev_addr);
- }
- 
- static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	for (regs = 0; regs < numhashregs; regs++)
+ 		writel(mcfilterbits[regs],
 -- 
-2.7.4
+2.1.0
+
 
