@@ -2,241 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41887D1271
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 17:26:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98941D1296
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 17:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731686AbfJIP0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 11:26:55 -0400
-Received: from mail-qt1-f179.google.com ([209.85.160.179]:33356 "EHLO
-        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729644AbfJIP0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 11:26:54 -0400
-Received: by mail-qt1-f179.google.com with SMTP id r5so4036705qtd.0;
-        Wed, 09 Oct 2019 08:26:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vV8z+kyEhV7bZFxf5/wDgbHy4ySE7RP8RD7gYio5VZ4=;
-        b=s/Mu1NbQKtr8r0/EFI72ij/HltRJezBNZN09sKYTK/WgE1rs1R6F6fnyIPpe9t/dVb
-         HTOnDlEoMXWr9/Lzrd3YPA4+PAvM11PtZEq78J8C4lKKoczqXueQxLFz9zUvStA2t9nx
-         MNah1xWy59iVOk2D1J2rRzDqC1+tV208AM8oSI2dc780AhqVbNDBtN/DJFhQ8QzN2Zmu
-         erGGX/KAIz/E7Z06C+xi6xDC5NR+TCIrULcV8DUj1ZrpagNgCB6l4C2FajPqv1yOLspk
-         OWRK4sacKrun4yqPgZw13gyq+TX2Dh/TYKHyKiPEv+SCBa8RlnpkIYJHGzo6T3zln6oK
-         xjXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vV8z+kyEhV7bZFxf5/wDgbHy4ySE7RP8RD7gYio5VZ4=;
-        b=Nyo/XMbDYVGOiCR8LG7qxVwCc7DHSGUMDw+RJCQt9oLYwmV9yv8cxoz/sh9UborMMP
-         BoDAh5g5SgoxiTlzqZXyQlX1v6X/onSPeRMFK/h3JpaeVTpYdr9BoWp1To4N+05YQ1hC
-         EXm6aj3B7b/O1gHIV6KyRj7RBRDQ/+s+opNclGB4bTWanAYFJ8bk8KXEXv4cpsZUtJSG
-         8ahs4ykQWEtxtxf4ALuTAZWkYA1AaPcDnQM1/I1LmY8f9WDW6adCD9A63OpFXj4C4Sjn
-         2Y2z+8EhhcBjWv3Ypfj7rab2gpgZNQvJUEW98MTtJG/2dcCbGiwi8LuitPtEXqgiumm8
-         PBpQ==
-X-Gm-Message-State: APjAAAUbrIG06cEO3HVTJhPfPknRxcnIvd6KtFwoP6p80N3SnyhThSQj
-        V0cUJhlgpaFYGCZAjM4D6RtR8AgQzPo=
-X-Google-Smtp-Source: APXvYqz0ziUxgBi0wOQqVP/tHfoeVRmK+MV3fDrBUH7LuNdiy282Apbvsl3e8w5UT6y8P5QKxeopjg==
-X-Received: by 2002:ac8:664b:: with SMTP id j11mr4318355qtp.137.1570634811396;
-        Wed, 09 Oct 2019 08:26:51 -0700 (PDT)
-Received: from ebpf00.byteswizards.com ([190.162.109.190])
-        by smtp.googlemail.com with ESMTPSA id l189sm1049895qke.69.2019.10.09.08.26.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 08:26:50 -0700 (PDT)
-From:   Carlos Neira <cneirabustos@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
-        bpf@vger.kernel.org, cneirabustos@gmail.com
-Subject: [PATCH v13 4/4] tools/testing/selftests/bpf: Add self-tests for new helper.
-Date:   Wed,  9 Oct 2019 12:26:32 -0300
-Message-Id: <20191009152632.14218-5-cneirabustos@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191009152632.14218-1-cneirabustos@gmail.com>
-References: <20191009152632.14218-1-cneirabustos@gmail.com>
+        id S1731817AbfJIP2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 11:28:03 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:33116 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731822AbfJIP2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 11:28:01 -0400
+Received: from cpe-2606-a000-111b-43ee-0-0-0-115f.dyn6.twc.com ([2606:a000:111b:43ee::115f] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1iIDsV-000651-EY; Wed, 09 Oct 2019 11:27:58 -0400
+Date:   Wed, 9 Oct 2019 11:27:46 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        omosnace@redhat.com
+Subject: Re: [PATCH net] sctp: add chunks to sk_backlog when the newsk
+ sk_socket is not set
+Message-ID: <20191009152746.GA25555@hmswarspite.think-freely.org>
+References: <d8dd0065232e5c3629bf55e54e3a998110ec1aef.1570532963.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d8dd0065232e5c3629bf55e54e3a998110ec1aef.1570532963.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Self tests added for new helper
-
-Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
----
- tools/testing/selftests/bpf/bpf_helpers.h     |  4 +
- .../bpf/prog_tests/get_ns_current_pid_tgid.c  | 85 +++++++++++++++++++
- .../bpf/progs/get_ns_current_pid_tgid_kern.c  | 53 ++++++++++++
- 3 files changed, 142 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
- create mode 100644 tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
-
-diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-index 54a50699bbfd..16261b23e011 100644
---- a/tools/testing/selftests/bpf/bpf_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_helpers.h
-@@ -233,6 +233,10 @@ static int (*bpf_send_signal)(unsigned sig) = (void *)BPF_FUNC_send_signal;
- static long long (*bpf_tcp_gen_syncookie)(struct bpf_sock *sk, void *ip,
- 					  int ip_len, void *tcp, int tcp_len) =
- 	(void *) BPF_FUNC_tcp_gen_syncookie;
-+static unsigned long long (*bpf_get_ns_current_pid_tgid)(struct bpf_pidns_info *nsinfo,
-+		unsigned int buf_size) =
-+	(void *) BPF_FUNC_get_ns_current_pid_tgid;
-+
- 
- /* llvm builtin functions that eBPF C program may use to
-  * emit BPF_LD_ABS and BPF_LD_IND instructions
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c b/tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
-new file mode 100644
-index 000000000000..a7bff0ef6677
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
-@@ -0,0 +1,85 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Carlos Neira cneirabustos@gmail.com */
-+#include <test_progs.h>
-+#include <sys/stat.h>
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+#include <unistd.h>
-+#include <sys/syscall.h>
-+
-+void test_get_ns_current_pid_tgid(void)
-+{
-+	const char *probe_name = "syscalls/sys_enter_nanosleep";
-+	const char *file = "get_ns_current_pid_tgid_kern.o";
-+	int ns_data_map_fd, duration = 0;
-+	struct perf_event_attr attr = {};
-+	int err, efd, prog_fd, pmu_fd;
-+	__u64 ino, dev, id, nspid;
-+	struct bpf_object *obj;
-+	struct stat st;
-+	__u32 key = 0;
-+	char buf[256];
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_TRACEPOINT, &obj, &prog_fd);
-+	if (CHECK(err, "prog_load", "err %d errno %d\n", err, errno))
-+		return;
-+
-+	ns_data_map_fd = bpf_find_map(__func__, obj, "ns_data_map");
-+	if (CHECK_FAIL(ns_data_map_fd < 0))
-+		goto close_prog;
-+
-+	pid_t tid = syscall(SYS_gettid);
-+	pid_t pid = getpid();
-+
-+	id = (__u64) tid << 32 | pid;
-+	bpf_map_update_elem(ns_data_map_fd, &key, &id, 0);
-+
-+	if (stat("/proc/self/ns/pid", &st))
-+		goto close_prog;
-+
-+	dev = st.st_dev;
-+	ino = st.st_ino;
-+	key = 1;
-+	bpf_map_update_elem(ns_data_map_fd, &key, &dev, 0);
-+	key = 2;
-+	bpf_map_update_elem(ns_data_map_fd, &key, &ino, 0);
-+
-+	snprintf(buf, sizeof(buf),
-+		 "/sys/kernel/debug/tracing/events/%s/id", probe_name);
-+	efd = open(buf, O_RDONLY, 0);
-+	read(efd, buf, sizeof(buf));
-+	close(efd);
-+	attr.config = strtol(buf, NULL, 0);
-+	attr.type = PERF_TYPE_TRACEPOINT;
-+	attr.sample_type = PERF_SAMPLE_RAW;
-+	attr.sample_period = 1;
-+	attr.wakeup_events = 1;
-+
-+	pmu_fd = syscall(__NR_perf_event_open, &attr, getpid(), -1, -1, 0);
-+	if (CHECK_FAIL(pmu_fd < 0))
-+		goto cleanup;
-+
-+	err = ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0);
-+	if (CHECK_FAIL(err))
-+		goto cleanup;
-+
-+	err = ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
-+	if (CHECK_FAIL(err))
-+		goto cleanup;
-+
-+	/* trigger some syscalls */
-+	sleep(1);
-+	key = 3;
-+	err = bpf_map_lookup_elem(ns_data_map_fd, &key, &nspid);
-+	if (CHECK_FAIL(err))
-+		goto cleanup;
-+
-+	if (CHECK(id != nspid, "Compare user pid/tgid vs. bpf pid/tgid",
-+		  "Userspace pid/tgid %llu EBPF pid/tgid %llu\n", id, nspid))
-+		goto cleanup;
-+
-+cleanup:
-+	close(pmu_fd);
-+close_prog:
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c b/tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
-new file mode 100644
-index 000000000000..3659aaa7c71f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Carlos Neira cneirabustos@gmail.com */
-+
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 4);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} ns_data_map SEC(".maps");
-+
-+
-+SEC("tracepoint/syscalls/sys_enter_nanosleep")
-+int trace(void *ctx)
-+{
-+	__u64 *val, *inum, *dev, nspidtgid, *expected_pid;
-+	struct bpf_pidns_info nsdata;
-+	__u32 key = 1;
-+
-+	dev = bpf_map_lookup_elem(&ns_data_map, &key);
-+	if (!dev)
-+		return 0;
-+	key = 2;
-+	inum = bpf_map_lookup_elem(&ns_data_map, &key);
-+	if (!inum)
-+		return 0;
-+
-+	nsdata.dev = *dev;
-+	nsdata.inum = *inum;
-+
-+	if (bpf_get_ns_current_pid_tgid(&nsdata, sizeof(struct bpf_pidns_info)))
-+		return 0;
-+
-+	nspidtgid = (__u64)nsdata.tgid << 32 | nsdata.pid;
-+	key = 0;
-+	expected_pid = bpf_map_lookup_elem(&ns_data_map, &key);
-+
-+	if (!expected_pid || *expected_pid != nspidtgid)
-+		return 0;
-+
-+	key = 3;
-+	val = bpf_map_lookup_elem(&ns_data_map, &key);
-+
-+	if (val)
-+		*val = nspidtgid;
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-+__u32 _version SEC("version") = 1;
--- 
-2.20.1
+On Tue, Oct 08, 2019 at 07:09:23PM +0800, Xin Long wrote:
+> This patch is to fix a NULL-ptr deref in selinux_socket_connect_helper:
+> 
+>   [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
+>   [...] RIP: 0010:selinux_socket_connect_helper+0x94/0x460
+>   [...] Call Trace:
+>   [...]  selinux_sctp_bind_connect+0x16a/0x1d0
+>   [...]  security_sctp_bind_connect+0x58/0x90
+>   [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
+>   [...]  sctp_sf_do_asconf+0x785/0x980 [sctp]
+>   [...]  sctp_do_sm+0x175/0x5a0 [sctp]
+>   [...]  sctp_assoc_bh_rcv+0x285/0x5b0 [sctp]
+>   [...]  sctp_backlog_rcv+0x482/0x910 [sctp]
+>   [...]  __release_sock+0x11e/0x310
+>   [...]  release_sock+0x4f/0x180
+>   [...]  sctp_accept+0x3f9/0x5a0 [sctp]
+>   [...]  inet_accept+0xe7/0x720
+> 
+> It was caused by that the 'newsk' sk_socket was not set before going to
+> security sctp hook when processing asconf chunk with SCTP_PARAM_ADD_IP
+> or SCTP_PARAM_SET_PRIMARY:
+> 
+>   inet_accept()->
+>     sctp_accept():
+>       lock_sock():
+>           lock listening 'sk'
+>                                           do_softirq():
+>                                             sctp_rcv():  <-- [1]
+>                                                 asconf chunk arrives and
+>                                                 enqueued in 'sk' backlog
+>       sctp_sock_migrate():
+>           set asoc's sk to 'newsk'
+>       release_sock():
+>           sctp_backlog_rcv():
+>             lock 'newsk'
+>             sctp_process_asconf()  <-- [2]
+>             unlock 'newsk'
+>     sock_graft():
+>         set sk_socket  <-- [3]
+> 
+> As it shows, at [1] the asconf chunk would be put into the listening 'sk'
+> backlog, as accept() was holding its sock lock. Then at [2] asconf would
+> get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
+> 'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
+> would deref it, then kernel crashed.
+> 
+> Here to fix it by adding the chunk to sk_backlog until newsk sk_socket is
+> set when .accept() is done.
+> 
+> Note that sk->sk_socket can be NULL when the sock is closed, so SOCK_DEAD
+> flag is also needed to check in sctp_newsk_ready().
+> 
+> Thanks to Ondrej for reviewing the code.
+> 
+> Fixes: d452930fd3b9 ("selinux: Add SCTP support")
+> Reported-by: Ying Xu <yinxu@redhat.com>
+> Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  include/net/sctp/sctp.h |  5 +++++
+>  net/sctp/input.c        | 12 +++++++++---
+>  2 files changed, 14 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
+> index 5d60f13..3ab5c6b 100644
+> --- a/include/net/sctp/sctp.h
+> +++ b/include/net/sctp/sctp.h
+> @@ -610,4 +610,9 @@ static inline __u32 sctp_min_frag_point(struct sctp_sock *sp, __u16 datasize)
+>  	return sctp_mtu_payload(sp, SCTP_DEFAULT_MINSEGMENT, datasize);
+>  }
+>  
+> +static inline bool sctp_newsk_ready(const struct sock *sk)
+> +{
+> +	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
+> +}
+> +
+>  #endif /* __net_sctp_h__ */
+> diff --git a/net/sctp/input.c b/net/sctp/input.c
+> index 5a070fb..f277137 100644
+> --- a/net/sctp/input.c
+> +++ b/net/sctp/input.c
+> @@ -243,7 +243,7 @@ int sctp_rcv(struct sk_buff *skb)
+>  		bh_lock_sock(sk);
+>  	}
+>  
+> -	if (sock_owned_by_user(sk)) {
+> +	if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+>  		if (sctp_add_backlog(sk, skb)) {
+>  			bh_unlock_sock(sk);
+>  			sctp_chunk_free(chunk);
+> @@ -321,7 +321,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+>  		local_bh_disable();
+>  		bh_lock_sock(sk);
+>  
+> -		if (sock_owned_by_user(sk)) {
+> +		if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+>  			if (sk_add_backlog(sk, skb, sk->sk_rcvbuf))
+>  				sctp_chunk_free(chunk);
+>  			else
+> @@ -336,7 +336,13 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+>  		if (backloged)
+>  			return 0;
+>  	} else {
+> -		sctp_inq_push(inqueue, chunk);
+> +		if (!sctp_newsk_ready(sk)) {
+> +			if (!sk_add_backlog(sk, skb, sk->sk_rcvbuf))
+> +				return 0;
+> +			sctp_chunk_free(chunk);
+> +		} else {
+> +			sctp_inq_push(inqueue, chunk);
+> +		}
+>  	}
+>  
+>  done:
+> -- 
+> 2.1.0
+> 
+> 
+Acked-by: Neil Horman <nhorman@tuxdriver.com>
 
