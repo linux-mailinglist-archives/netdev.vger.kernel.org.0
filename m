@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6DBD166D
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5127ED1666
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:30:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732179AbfJIRaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 13:30:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48626 "EHLO mail.kernel.org"
+        id S1732879AbfJIR3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 13:29:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48592 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732165AbfJIRYK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 13:24:10 -0400
+        id S1732174AbfJIRYL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 13:24:11 -0400
 Received: from sasha-vm.mshome.net (unknown [167.220.2.234])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD11821D6C;
-        Wed,  9 Oct 2019 17:24:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17D7120B7C;
+        Wed,  9 Oct 2019 17:24:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570641849;
-        bh=WxL+isxSLqVyP/vPvSWCFfVBslLsA4hnCVMimY/E5uU=;
+        s=default; t=1570641850;
+        bh=trbv+VX8ypWF9nLMq+Swrlq2rc9HVtwaARcsqoqOohU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RuPvJtzWPaNkQYPMmFawFJJIsZe5ktwdYsAiNueWKyipNKr5iwq+6aETsBjxPOjfB
-         6yIe0wJbHQvhYIWCE8mYtaLWmuTsXEGvBRBfNHkMButOFXh8PeAcdabDuQLQjJ3+Z3
-         lAb0wxRHIqetiZoNORdsL6g+/JIZrMAi7h6N23wc=
+        b=JLNYICiAgrSxDEW66ZUwe9PnfaJzc8G56lTIK4LHTFzu6fgx1okLLmrQbX/FJEsDA
+         zdS3yg1Cl0vupBP/ZK53iCrS7pdafPBzzr6DdzLuHegk0m5Zxir3euTbeltW4YL+v3
+         Cq2O8j1S8YelVriajSLHEiLwNQQ7pVY74pF5r040=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Laura Garcia Liebana <nevola@gmail.com>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 18/26] netfilter: nft_connlimit: disable bh on garbage collection
-Date:   Wed,  9 Oct 2019 13:05:50 -0400
-Message-Id: <20191009170558.32517-18-sashal@kernel.org>
+Cc:     Wen Yang <wenyang@linux.alibaba.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 19/26] net: dsa: rtl8366rb: add missing of_node_put after calling of_get_child_by_name
+Date:   Wed,  9 Oct 2019 13:05:51 -0400
+Message-Id: <20191009170558.32517-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191009170558.32517-1-sashal@kernel.org>
 References: <20191009170558.32517-1-sashal@kernel.org>
@@ -45,68 +47,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Wen Yang <wenyang@linux.alibaba.com>
 
-[ Upstream commit 34a4c95abd25ab41fb390b985a08a651b1fa0b0f ]
+[ Upstream commit f32eb9d80470dab05df26b6efd02d653c72e6a11 ]
 
-BH must be disabled when invoking nf_conncount_gc_list() to perform
-garbage collection, otherwise deadlock might happen.
+of_node_put needs to be called when the device node which is got
+from of_get_child_by_name finished using.
+irq_domain_add_linear() also calls of_node_get() to increase refcount,
+so irq_domain will not be affected when it is released.
 
-  nf_conncount_add+0x1f/0x50 [nf_conncount]
-  nft_connlimit_eval+0x4c/0xe0 [nft_connlimit]
-  nft_dynset_eval+0xb5/0x100 [nf_tables]
-  nft_do_chain+0xea/0x420 [nf_tables]
-  ? sch_direct_xmit+0x111/0x360
-  ? noqueue_init+0x10/0x10
-  ? __qdisc_run+0x84/0x510
-  ? tcp_packet+0x655/0x1610 [nf_conntrack]
-  ? ip_finish_output2+0x1a7/0x430
-  ? tcp_error+0x130/0x150 [nf_conntrack]
-  ? nf_conntrack_in+0x1fc/0x4c0 [nf_conntrack]
-  nft_do_chain_ipv4+0x66/0x80 [nf_tables]
-  nf_hook_slow+0x44/0xc0
-  ip_rcv+0xb5/0xd0
-  ? ip_rcv_finish_core.isra.19+0x360/0x360
-  __netif_receive_skb_one_core+0x52/0x70
-  netif_receive_skb_internal+0x34/0xe0
-  napi_gro_receive+0xba/0xe0
-  e1000_clean_rx_irq+0x1e9/0x420 [e1000e]
-  e1000e_poll+0xbe/0x290 [e1000e]
-  net_rx_action+0x149/0x3b0
-  __do_softirq+0xde/0x2d8
-  irq_exit+0xba/0xc0
-  do_IRQ+0x85/0xd0
-  common_interrupt+0xf/0xf
-  </IRQ>
-  RIP: 0010:nf_conncount_gc_list+0x3b/0x130 [nf_conncount]
-
-Fixes: 2f971a8f4255 ("netfilter: nf_conncount: move all list iterations under spinlock")
-Reported-by: Laura Garcia Liebana <nevola@gmail.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Vivien Didelot <vivien.didelot@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_connlimit.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/dsa/rtl8366rb.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/net/netfilter/nft_connlimit.c b/net/netfilter/nft_connlimit.c
-index af1497ab94642..69d6173f91e2b 100644
---- a/net/netfilter/nft_connlimit.c
-+++ b/net/netfilter/nft_connlimit.c
-@@ -218,8 +218,13 @@ static void nft_connlimit_destroy_clone(const struct nft_ctx *ctx,
- static bool nft_connlimit_gc(struct net *net, const struct nft_expr *expr)
- {
- 	struct nft_connlimit *priv = nft_expr_priv(expr);
-+	bool ret;
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index a4d5049df6928..f4b14b6acd22d 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -507,7 +507,8 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
+ 	irq = of_irq_get(intc, 0);
+ 	if (irq <= 0) {
+ 		dev_err(smi->dev, "failed to get parent IRQ\n");
+-		return irq ? irq : -EINVAL;
++		ret = irq ? irq : -EINVAL;
++		goto out_put_node;
+ 	}
  
--	return nf_conncount_gc_list(net, &priv->list);
-+	local_bh_disable();
-+	ret = nf_conncount_gc_list(net, &priv->list);
-+	local_bh_enable();
-+
+ 	/* This clears the IRQ status register */
+@@ -515,7 +516,7 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
+ 			  &val);
+ 	if (ret) {
+ 		dev_err(smi->dev, "can't read interrupt status\n");
+-		return ret;
++		goto out_put_node;
+ 	}
+ 
+ 	/* Fetch IRQ edge information from the descriptor */
+@@ -537,7 +538,7 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
+ 				 val);
+ 	if (ret) {
+ 		dev_err(smi->dev, "could not configure IRQ polarity\n");
+-		return ret;
++		goto out_put_node;
+ 	}
+ 
+ 	ret = devm_request_threaded_irq(smi->dev, irq, NULL,
+@@ -545,7 +546,7 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
+ 					"RTL8366RB", smi);
+ 	if (ret) {
+ 		dev_err(smi->dev, "unable to request irq: %d\n", ret);
+-		return ret;
++		goto out_put_node;
+ 	}
+ 	smi->irqdomain = irq_domain_add_linear(intc,
+ 					       RTL8366RB_NUM_INTERRUPT,
+@@ -553,12 +554,15 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
+ 					       smi);
+ 	if (!smi->irqdomain) {
+ 		dev_err(smi->dev, "failed to create IRQ domain\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto out_put_node;
+ 	}
+ 	for (i = 0; i < smi->num_ports; i++)
+ 		irq_set_parent(irq_create_mapping(smi->irqdomain, i), irq);
+ 
+-	return 0;
++out_put_node:
++	of_node_put(intc);
 +	return ret;
  }
  
- static struct nft_expr_type nft_connlimit_type;
+ static int rtl8366rb_set_addr(struct realtek_smi *smi)
 -- 
 2.20.1
 
