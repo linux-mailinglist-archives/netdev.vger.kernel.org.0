@@ -2,115 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F25D0C76
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 12:17:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13ADAD0CB0
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 12:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731004AbfJIKRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 06:17:44 -0400
-Received: from canardo.mork.no ([148.122.252.1]:56653 "EHLO canardo.mork.no"
+        id S1730881AbfJIKUN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Oct 2019 06:20:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58430 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730888AbfJIKRh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 06:17:37 -0400
-Received: from miraculix.mork.no ([IPv6:2a02:2121:2c8:bfe9:9043:eeff:fe9f:3336])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x99AHUFm013883
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Wed, 9 Oct 2019 12:17:30 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1570616250; bh=8TSd/oi/I3E/lJ74zyHIVWrlWRE5Ij+1becalJXfTu8=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=Wdv3FPsCthNkuAR3Zvr0RUxYdqIR3e6BPGuctdJOxoB2Iz31DRCg3A0vTU1GdFu8n
-         wL4pWySf3jiAM2TmpCzN8uJEZqI98B9AFUQHhDUhhW6erEHiBio1goWWugsdoJtqTd
-         6qJ0NwZH2iCqYF7P8ENw7LXc/mQFhF2Msv+cziQg=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1iI924-0003gY-QI; Wed, 09 Oct 2019 12:17:24 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: add Telit 0x1050 composition
-Organization: m
-References: <20191009090718.12879-1-dnlplm@gmail.com>
-Date:   Wed, 09 Oct 2019 12:17:24 +0200
-In-Reply-To: <20191009090718.12879-1-dnlplm@gmail.com> (Daniele Palmas's
-        message of "Wed, 9 Oct 2019 11:07:18 +0200")
-Message-ID: <8736g2xlxn.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1730824AbfJIKUM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 06:20:12 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id EE103C0546FE;
+        Wed,  9 Oct 2019 10:20:11 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6B31D1001B30;
+        Wed,  9 Oct 2019 10:19:57 +0000 (UTC)
+Date:   Wed, 9 Oct 2019 12:19:55 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, brouer@redhat.com
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF
+ programs after each other
+Message-ID: <20191009121955.29cad5bb@carbon>
+In-Reply-To: <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
+        <157046883614.2092443.9861796174814370924.stgit@alrua-x1>
+        <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com>
+        <87sgo3lkx9.fsf@toke.dk>
+        <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.101.4 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Wed, 09 Oct 2019 10:20:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniele Palmas <dnlplm@gmail.com> writes:
+On Tue, 8 Oct 2019 18:51:19 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-> This patch adds support for Telit FN980 0x1050 composition
->
-> 0x1050: tty, adb, rmnet, tty, tty, tty, tty
+> On Tue, Oct 08, 2019 at 10:07:46AM +0200, Toke Høiland-Jørgensen wrote:
+> > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> >   
+> > > On Mon, Oct 07, 2019 at 07:20:36PM +0200, Toke Høiland-Jørgensen wrote:  
+> > >> From: Toke Høiland-Jørgensen <toke@redhat.com>
+> > >> 
+> > >> This adds support for wrapping eBPF program dispatch in chain calling
+> > >> logic. The code injection is controlled by a flag at program load time; if
+> > >> the flag is set, the BPF program will carry a flag bit that changes the
+> > >> program dispatch logic to wrap it in a chain call loop.
+[...]
+> > >> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> > >> index 2ce57645f3cd..3d1e4991e61d 100644
+> > >> --- a/include/linux/filter.h
+> > >> +++ b/include/linux/filter.h
+[...]
+> > >>  #define BPF_PROG_RUN(prog, ctx)	({				\
+> > >> @@ -559,14 +585,18 @@ DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+> > >>  	if (static_branch_unlikely(&bpf_stats_enabled_key)) {	\
+> > >>  		struct bpf_prog_stats *stats;			\
+> > >>  		u64 start = sched_clock();			\
+> > >> -		ret = (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\
+> > >> +		ret = prog->chain_calls ?			\
+> > >> +			do_chain_calls(prog, ctx) :			\
+> > >> +			 (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\  
+> > >
+> > > I thought you agreed on 'no performance regressions' rule?  
+> > 
+> > As I wrote in the cover letter I could not measurable a performance
+> > impact from this, even with the simplest possible XDP program (where
+> > program setup time has the largest impact).
+> > 
+> > This was the performance before/after patch (also in the cover letter):
+> > 
+> > Before patch (XDP DROP program):  31.5 Mpps
+> > After patch (XDP DROP program):   32.0 Mpps
+> > 
+> > So actually this *increases* performance ;)
+> > (Or rather, the difference is within the measurement uncertainty on my
+> > system).  
+> 
+> I have hard time believing such numbers.
 
-Great!  I must admit I have been a bit curious about this since you
-submitted the option patch.  And I'm still curious about what to expect
-from X55 modems in general.  There was a lot of discussion about future
-modems using PCIe instead of USB etc.  I'd appreciate any info you have
-on relative performance, quirks, firmware workarounds etc.  If you are
-allowed to share any of it..
+Don't look at this as +/- 500Kpps.  Instead you have to realize that the
+performance difference in ns (nano-seconds) is only 0.5 ns (0.496 ns).
 
-Acked-by: Bj=C3=B8rn Mork" <bjorn@mork.no>
+ (1/31.5*1000)-(1/32.0*1000) = 0.4960 ns
 
-> please find below usb-devices output
->
-> T:  Bus=3D03 Lev=3D01 Prnt=3D01 Port=3D06 Cnt=3D02 Dev#=3D 10 Spd=3D480 M=
-xCh=3D 0
-
-480 Mbps is a bit slow for this device, isn't it? :-)
-
-I assume you've tested with higher bus speeds?  Not that it matters for
-this patch.  Just curious again.
-
-> D:  Ver=3D 2.10 Cls=3D00(>ifc ) Sub=3D00 Prot=3D00 MxPS=3D64 #Cfgs=3D  1
-> P:  Vendor=3D1bc7 ProdID=3D1050 Rev=3D04.14
-> S:  Manufacturer=3DTelit Wireless Solutions
-> S:  Product=3DFN980m
-> S:  SerialNumber=3D270b8241
-> C:  #Ifs=3D 7 Cfg#=3D 1 Atr=3D80 MxPwr=3D500mA
-> I:  If#=3D 0 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3D30 Driver=
-=3Doption
-> I:  If#=3D 1 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3D42 Prot=3D01 Driver=
-=3Dusbfs
-> I:  If#=3D 2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Driver=
-=3Dqmi_wwan
-> I:  If#=3D 3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Driver=
-=3Doption
-> I:  If#=3D 4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Driver=
-=3Doption
-> I:  If#=3D 5 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Driver=
-=3Doption
-> I:  If#=3D 6 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Driver=
-=3Doption
->
-> Thanks,
-> Daniele
-> ---
->  drivers/net/usb/qmi_wwan.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-> index 3d77cd402ba9..596428ec71df 100644
-> --- a/drivers/net/usb/qmi_wwan.c
-> +++ b/drivers/net/usb/qmi_wwan.c
-> @@ -1327,6 +1327,7 @@ static const struct usb_device_id products[] =3D {
->  	{QMI_FIXED_INTF(0x2357, 0x0201, 4)},	/* TP-LINK HSUPA Modem MA180 */
->  	{QMI_FIXED_INTF(0x2357, 0x9000, 4)},	/* TP-LINK MA260 */
->  	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
-> +	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
->  	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
->  	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
->  	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
+This "half-a-nanosec" is below the measurement uncertainty of any
+system. My system have approx 2-3 ns measurement variance, which I'm
+proud of.  At these speeds (32Mpps) this e.g. 3 ns variance would
+result in -2.8 Mpps (29.2Mpps).
 
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+The change Toke did in BPF_PROG_RUN does not introduce any measurable
+performance change, as least on high-end Intel CPUs.  This DOES satisfy
+'no performance regressions' rule.  You can dislike the solution for
+other reasons ;-)
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
