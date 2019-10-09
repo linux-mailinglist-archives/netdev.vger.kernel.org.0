@@ -2,132 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDC4AD1A2B
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 22:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94F1DD1A39
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 22:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731593AbfJIU4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 16:56:51 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55996 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728804AbfJIU4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 16:56:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570654609;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:openpgp:openpgp;
-        bh=ghIP95f1Z5BF2VVaSb+qX/U3Se4vmJoP2nIW78TEjoY=;
-        b=fbAMSDzDhd7hqSH10xuAaVSNsOqqpDARzuJGdBsLeSiJlMuuaenV/G+pOQ07qJhUP6lF3j
-        hk/MI4hq4miPX8vpSS9o9eniwGKcd9q1V9jwNjN4t8j6ZnnrGqqTL7yumByNbKkGnRM7Sh
-        GXOn8zchFw1lVzlzHR3yhxP0VoR1JV0=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-347-4mHeRIrdPxWScbDKRFA5yg-1; Wed, 09 Oct 2019 16:56:47 -0400
-Received: by mail-wr1-f72.google.com with SMTP id v18so1643058wro.16
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 13:56:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XMFIvbI7tuwGap0RnIGe77DNy9RYz81HW2Xoa3VtEyQ=;
-        b=B23kZk3uJrZz49V0UAMHE8jOXjmmcWwAto6XOXsRLClq6EaiGO/bov8MToXIVR49Z4
-         2rYeuNtC6axoN0URxBGWIA1/zYMbkzOJ9B+WGqfD23Gk8ufhsY77s3eTp1T0KqHuBu8z
-         HOtOFrS6pOUcMAMVJ6E0gijc/W19H9AvsztGMWBpwjukTUITLS1nR1XZbV1f7lHALNZ6
-         x2NbSWmom4g/Quecbt8muouki7JN4BhfqKhCeFBQi5bMIYUftRz+dYucQPU5+1fNKE21
-         +Cg4w3fok9l/uGaGyHBAaYQhshCeFdJzDs5zgzmCC/sK8OqIABDZ2k9QqA04X1lcgzb4
-         pnhQ==
-X-Gm-Message-State: APjAAAWHEacsGTlTKs28kGbCa8hrUX1NubkXJHBHoGpMuwCdCy+5Tk5S
-        i9ccriZ4nuzZ2V24VZMO8iA30kgOzXnDkjKPI1H4HTtGhdvKd4132FlBRjEtGPt7/s59yhG20pL
-        0Cucl7tmxykkUrRKm
-X-Received: by 2002:adf:dc8c:: with SMTP id r12mr4466699wrj.107.1570654606018;
-        Wed, 09 Oct 2019 13:56:46 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwZbo4bXoTjFZE108uPgBJL+qA7fSP/aC9lBHXyp9WbL/rbcJp5yfR1JCu/z5rB8uYb5DGCLQ==
-X-Received: by 2002:adf:dc8c:: with SMTP id r12mr4466689wrj.107.1570654605662;
-        Wed, 09 Oct 2019 13:56:45 -0700 (PDT)
-Received: from ?IPv6:2001:b07:6468:f312:1032:7ea1:7f8f:1e5? ([2001:b07:6468:f312:1032:7ea1:7f8f:1e5])
-        by smtp.gmail.com with ESMTPSA id z189sm6026703wmc.25.2019.10.09.13.56.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Oct 2019 13:56:44 -0700 (PDT)
-Subject: Re: [RFC PATCH v3 4/6] psci: Add hvc call service for ptp_kvm.
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     "Jianyong Wu (Arm Technology China)" <Jianyong.Wu@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Will Deacon <Will.Deacon@arm.com>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        "Kaly Xin (Arm Technology China)" <Kaly.Xin@arm.com>,
-        "Justin He (Arm Technology China)" <Justin.He@arm.com>,
-        nd <nd@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20190918080716.64242-1-jianyong.wu@arm.com>
- <20190918080716.64242-5-jianyong.wu@arm.com>
- <83ed7fac-277f-a31e-af37-8ec134f39d26@redhat.com>
- <HE1PR0801MB1676F57B317AE85E3B934B32F48E0@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <629538ea-13fb-e666-8df6-8ad23f114755@redhat.com>
- <HE1PR0801MB167639E2F025998058A77F86F4890@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <ef6ab8bd-41ad-88f8-9cfd-dc749ca65310@redhat.com>
- <a1b554b8-4417-5305-3419-fe71a8c50842@kernel.org>
- <56a5b885-62c8-c4ef-e2f8-e945c0eb700e@redhat.com>
- <HE1PR0801MB1676115C248E6DF09F9DD5A6F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <1cc145ca-1af2-d46f-d530-0ae434005f0b@redhat.com>
- <HE1PR0801MB1676B1AD68544561403C3196F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <6b8b59b2-a07e-7e33-588c-1da7658e3f1e@redhat.com>
- <CALAqxLVa-BSY0i007GfzKEVU1uak4=eY=TJ3wj6JL_Y-EfY3ng@mail.gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Openpgp: preference=signencrypt
-Message-ID: <797af843-6ed4-349c-55bf-73a0dab1249b@redhat.com>
-Date:   Wed, 9 Oct 2019 22:56:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1731956AbfJIU6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 16:58:49 -0400
+Received: from correo.us.es ([193.147.175.20]:59666 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731940AbfJIU6s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 16:58:48 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 5E06F129182D
+        for <netdev@vger.kernel.org>; Wed,  9 Oct 2019 22:58:44 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4F7C5A7D62
+        for <netdev@vger.kernel.org>; Wed,  9 Oct 2019 22:58:44 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4D16FFB362; Wed,  9 Oct 2019 22:58:44 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C3A29DA72F;
+        Wed,  9 Oct 2019 22:58:41 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 09 Oct 2019 22:58:41 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 9888742EE38E;
+        Wed,  9 Oct 2019 22:58:41 +0200 (CEST)
+Date:   Wed, 9 Oct 2019 22:58:43 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+Subject: Re: [PATCH net] netfilter: conntrack: avoid possible false sharing
+Message-ID: <20191009205843.fxs3bn6bjd5i7lzh@salvia>
+References: <20191009161913.18600-1-edumazet@google.com>
 MIME-Version: 1.0
-In-Reply-To: <CALAqxLVa-BSY0i007GfzKEVU1uak4=eY=TJ3wj6JL_Y-EfY3ng@mail.gmail.com>
-Content-Language: en-US
-X-MC-Unique: 4mHeRIrdPxWScbDKRFA5yg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191009161913.18600-1-edumazet@google.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/10/19 18:05, John Stultz wrote:
-> On Wed, Oct 9, 2019 at 2:13 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->> John (Stultz), does that sound good to you?  The context is that
->> Jianyong would like to add a hypercall that returns a (cycles,
->> nanoseconds) pair to the guest.  On x86 we're relying on the vclock_mode
->> field that is already there for the vDSO, but being able to just use
->> ktime_get_snapshot would be much nicer.
->=20
-> I've not really looked at the code closely in awhile, so I'm not sure
-> my suggestions will be too useful.
->=20
-> My only instinct is maybe to not include the clocksource pointer in
-> the system_time_snapshot, as I worry that structure will then be
-> abused by the interface users.  If you're just wanting to make sure
-> the clocksource is what you're expecting, would instead putting only
-> the clocksource name in the structure suffice?
+On Wed, Oct 09, 2019 at 09:19:13AM -0700, Eric Dumazet wrote:
+> As hinted by KCSAN, we need at least one READ_ONCE()
+> to prevent a compiler optimization.
+> 
+> More details on :
+> https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
+> 
+> sysbot report :
+> BUG: KCSAN: data-race in __nf_ct_refresh_acct / __nf_ct_refresh_acct
+> 
+> read to 0xffff888123eb4f08 of 4 bytes by interrupt on cpu 0:
+>  __nf_ct_refresh_acct+0xd4/0x1b0 net/netfilter/nf_conntrack_core.c:1796
+>  nf_ct_refresh_acct include/net/netfilter/nf_conntrack.h:201 [inline]
+>  nf_conntrack_tcp_packet+0xd40/0x3390 net/netfilter/nf_conntrack_proto_tcp.c:1161
+>  nf_conntrack_handle_packet net/netfilter/nf_conntrack_core.c:1633 [inline]
+>  nf_conntrack_in+0x410/0xaa0 net/netfilter/nf_conntrack_core.c:1727
+>  ipv4_conntrack_in+0x27/0x40 net/netfilter/nf_conntrack_proto.c:178
+>  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+>  nf_hook_slow+0x83/0x160 net/netfilter/core.c:512
+>  nf_hook include/linux/netfilter.h:260 [inline]
+>  NF_HOOK include/linux/netfilter.h:303 [inline]
+>  ip_rcv+0x12f/0x1a0 net/ipv4/ip_input.c:523
+>  __netif_receive_skb_one_core+0xa7/0xe0 net/core/dev.c:5004
+>  __netif_receive_skb+0x37/0xf0 net/core/dev.c:5118
+>  netif_receive_skb_internal+0x59/0x190 net/core/dev.c:5208
+>  napi_skb_finish net/core/dev.c:5671 [inline]
+>  napi_gro_receive+0x28f/0x330 net/core/dev.c:5704
+>  receive_buf+0x284/0x30b0 drivers/net/virtio_net.c:1061
+>  virtnet_receive drivers/net/virtio_net.c:1323 [inline]
+>  virtnet_poll+0x436/0x7d0 drivers/net/virtio_net.c:1428
+>  napi_poll net/core/dev.c:6352 [inline]
+>  net_rx_action+0x3ae/0xa50 net/core/dev.c:6418
+>  __do_softirq+0x115/0x33f kernel/softirq.c:292
+> 
+> write to 0xffff888123eb4f08 of 4 bytes by task 7191 on cpu 1:
+>  __nf_ct_refresh_acct+0xfb/0x1b0 net/netfilter/nf_conntrack_core.c:1797
+>  nf_ct_refresh_acct include/net/netfilter/nf_conntrack.h:201 [inline]
+>  nf_conntrack_tcp_packet+0xd40/0x3390 net/netfilter/nf_conntrack_proto_tcp.c:1161
+>  nf_conntrack_handle_packet net/netfilter/nf_conntrack_core.c:1633 [inline]
+>  nf_conntrack_in+0x410/0xaa0 net/netfilter/nf_conntrack_core.c:1727
+>  ipv4_conntrack_local+0xbe/0x130 net/netfilter/nf_conntrack_proto.c:200
+>  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+>  nf_hook_slow+0x83/0x160 net/netfilter/core.c:512
+>  nf_hook include/linux/netfilter.h:260 [inline]
+>  __ip_local_out+0x1f7/0x2b0 net/ipv4/ip_output.c:114
+>  ip_local_out+0x31/0x90 net/ipv4/ip_output.c:123
+>  __ip_queue_xmit+0x3a8/0xa40 net/ipv4/ip_output.c:532
+>  ip_queue_xmit+0x45/0x60 include/net/ip.h:236
+>  __tcp_transmit_skb+0xdeb/0x1cd0 net/ipv4/tcp_output.c:1158
+>  __tcp_send_ack+0x246/0x300 net/ipv4/tcp_output.c:3685
+>  tcp_send_ack+0x34/0x40 net/ipv4/tcp_output.c:3691
+>  tcp_cleanup_rbuf+0x130/0x360 net/ipv4/tcp.c:1575
+> 
+> Reported by Kernel Concurrency Sanitizer on:
+> CPU: 1 PID: 7191 Comm: syz-fuzzer Not tainted 5.3.0+ #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> 
+> Fixes: cc16921351d8 ("netfilter: conntrack: avoid same-timeout update")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+> Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+> Cc: Florian Westphal <fw@strlen.de>
 
-Well, it would suffice but it would be quite ugly to do a string
-comparison later.
+Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
 
-What kind of abuse are you thinking of?  We already have struct
-system_counterval_t for a clocksource+cycles tuple, so it seemed obvious
-to me to make system_time_snapshot a superset of it...  In fact,
-system_time_snapshot's cycles member is even unused currently, so it
-could even be easily replaced by a struct system_counterval_t, instead
-of adding an extra field.
+Thanks.
 
-Paolo
-
+> ---
+>  net/netfilter/nf_conntrack_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> index 0c63120b2db2e1ea9983a6b1ce8d2aefebc29501..5cd610b547e0d1e3463a65ba3627f265c836bdc5 100644
+> --- a/net/netfilter/nf_conntrack_core.c
+> +++ b/net/netfilter/nf_conntrack_core.c
+> @@ -1792,8 +1792,8 @@ void __nf_ct_refresh_acct(struct nf_conn *ct,
+>  	if (nf_ct_is_confirmed(ct))
+>  		extra_jiffies += nfct_time_stamp;
+>  
+> -	if (ct->timeout != extra_jiffies)
+> -		ct->timeout = extra_jiffies;
+> +	if (READ_ONCE(ct->timeout) != extra_jiffies)
+> +		WRITE_ONCE(ct->timeout, extra_jiffies);
+>  acct:
+>  	if (do_acct)
+>  		nf_ct_acct_update(ct, ctinfo, skb->len);
+> -- 
+> 2.23.0.581.g78d2f28ef7-goog
+> 
