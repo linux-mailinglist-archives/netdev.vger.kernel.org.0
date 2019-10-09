@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 107A3D17E9
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 20:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EAECD17F7
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 21:06:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731234AbfJIS6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 14:58:14 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46809 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729535AbfJIS6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 14:58:14 -0400
-Received: by mail-qt1-f196.google.com with SMTP id u22so4883748qtq.13
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 11:58:13 -0700 (PDT)
+        id S1731144AbfJITGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 15:06:37 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:39236 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728804AbfJITGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 15:06:37 -0400
+Received: by mail-qk1-f196.google.com with SMTP id 4so3232403qki.6
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 12:06:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=WckHyLuLfvmH0ByNBUogLAcMNwQZXHspjWto9XtrKHE=;
-        b=BnbsuEHTHGtTwuaM7SDhWeIDRxYc8Fg5bNo990yCtcB7PNH8XqxNb7zsyR8b99gr4k
-         ezpJbgSDPPufyLeLjEnl2TDTgS+9Pt4MI6fLjmK0SdXMgUlfnZlk+FSigPKIHHzNZXSF
-         fxq2xRTve+TIgs3cjXbgX6k/0wMv2iU/0NSj8QiWO3cb68Tx71vEfM84UOdmpDTtU/qv
-         8HhMNELV17PbFduhdLMab3vj6wfi+Y0qR6PAULDXwRyAjllbjrLynL5mbbg8DxlTNRl8
-         oi8mtun6jpXicJGQzW6oPiYFUhK2duwMBWee+5qXLhVymaZ2kzxAzS5tX/SdqjWa5G02
-         7acA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JpBVfudJYQlRvLLRFQnsLItxi/YinYg39fsS6SrSYA4=;
+        b=k6tzurN7NU4HrUlQI8MfTR2V97/W8UvXLk59NRYVEqW5GxRimhAIZBgWTH659PRmI0
+         TlC7/ZEc2SeUDVSoj/eBBDwYu3E8zXPNHPgn4RherYmwCxDJa7MZOamMTRrdpVh8L5rj
+         ExM242XldmcR1sLE4HrnKZOlSN5+jrc7sFRVPmI2Zmkcz7a785hG9Jup8c7UnwnAPtev
+         9DIJvEH6T36yTHzPgtsxXEkdkRrvqEE30az3hDMXlHf0mt4QAHCztEwZ0yvhG5T7DCbR
+         nsdV3Aw81+trgNdrDrnIiSNXlnzuWylo/LSa6qL5wu5EN0Z/ud0yUim8SqFuevVKge/A
+         DEog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=WckHyLuLfvmH0ByNBUogLAcMNwQZXHspjWto9XtrKHE=;
-        b=pjW23G9GGfvYiBlodf8zCrBTcDUef0MRz236TZQo69JAkRvZjSPtU7DlsZDq+fLkAC
-         9Gg+VIHXmWibyiS9nYDkQHp38Yu2DqB6N4IDk+CN2TaJ8F2/Rx3LBLgBitj2zjA8ruQG
-         Yzd5jH/CgUsw2KD5oSFX9eFSpJGFww2AQzxiGhNBSbMYMjKU846ehGaqXtyFUBbMFsmx
-         5G0wAGb8Lrb1QgYfzr/+qJsBj5pWHS6hy/lbkAmsmDWRPCJ4ZdeI2W4ea+hvMM0QAUct
-         g9xG8QgEelbxcMVLBeefhbSPc32iU41BRErMP58j+apU2OszknSNc9hQa6/9zCaSZ7EJ
-         g6Ww==
-X-Gm-Message-State: APjAAAW52OIUdpfKbw7mZfNbmrcgEl3LQ5A4qN4SETnl+H+mQpK30X/I
-        E/5BZLvrlLrUo/xdGG7CaBuqkg==
-X-Google-Smtp-Source: APXvYqzxyO/3zuz4ilVbrEORGakaKgPnUMVEuaYThlCn4uNO7nYm8C2KSh4AZf/bNvgMRFi+7O8gIA==
-X-Received: by 2002:a0c:f985:: with SMTP id t5mr5157823qvn.95.1570647492699;
-        Wed, 09 Oct 2019 11:58:12 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id d45sm1483179qtc.70.2019.10.09.11.58.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 11:58:12 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 11:57:59 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JpBVfudJYQlRvLLRFQnsLItxi/YinYg39fsS6SrSYA4=;
+        b=AQ2gzLt3QlnDr62HatX2/p/UxCoPtZtTGYkAldaJr1knpeyrfeUJOnhSF5lXvtKMYl
+         27e+Wh0pQZBaTgVX47oNz8/2EO2o9tDFAulez0uTFzbpqoN5I5hhfKa3raZzOEaSQnKs
+         /BKYLirdv+np11DqAjCym3u0/VBwU66SYZ2IiDR7ZBDaKFRNa3+BMG0s+lwy73XuV0IW
+         55ouaZ6N6sxbeoHkX7M+4mHTvOb/xQhtcC2VdPXcS2c8ShZiMv43KMzsqtVEF3UelKLu
+         WyRv+YY1WYyX8UEsz87Ok55iUnKXtRaLXBBoH3qLdqoWdQK2UuEWtBG6kU+zPg45zCKE
+         G22w==
+X-Gm-Message-State: APjAAAUHZXmQD2e/nl/3+qdzNG5bfhVvI3BDZG95qBzxP2iLZXaH49+w
+        0f8chsx1DztI+YwIkjyN5jITtw==
+X-Google-Smtp-Source: APXvYqykGfcgWy1fS85p2yizfTwjlKdwn6hF/N01bkF2m5qGVk4jclTLGU9KDIzcQt2jcedioj8ITA==
+X-Received: by 2002:a05:620a:896:: with SMTP id b22mr5399208qka.390.1570647996176;
+        Wed, 09 Oct 2019 12:06:36 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id d45sm1496520qtc.70.2019.10.09.12.06.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 09 Oct 2019 12:06:35 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [net] net: update net_dim documentation after rename
-Message-ID: <20191009115759.04196ba2@cakuba.netronome.com>
-In-Reply-To: <20191008175941.12913-1-jacob.e.keller@intel.com>
-References: <20191008175941.12913-1-jacob.e.keller@intel.com>
-Organization: Netronome Systems, Ltd.
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        idosch@mellanox.com, jiri@resnulli.us,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net] Documentation: net: fix path to devlink-trap-netdevsim
+Date:   Wed,  9 Oct 2019 12:06:21 -0700
+Message-Id: <20191009190621.27131-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Oct 2019 10:59:41 -0700, Jacob Keller wrote:
-> Commit 8960b38932be ("linux/dim: Rename externally used net_dim
-> members") renamed the net_dim API, removing the "net_" prefix from the
-> structures and functions. The patch didn't update the net_dim.txt
-> documentation file.
-> 
-> Fix the documentation so that its examples match the current code.
-> 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+make htmldocs complains:
+Documentation/networking/devlink-trap.rst:175: WARNING: unknown document: /devlink-trap-netdevsim
 
-For net patches we will need a Fixes tag pointing to the commit which
-caused the divergence. Please also make sure to CC the authors and
-maintainers so they get a chance to review your patch.
+make the path relative.
 
-> @@ -132,13 +132,13 @@ usage is not complete but it should make the outline of the usage clear.
->  
->  my_driver.c:
->  
-> -#include <linux/net_dim.h>
-> +#include <linux/dim.h>
->  
->  /* Callback for net DIM to schedule on a decision to change moderation */
->  void my_driver_do_dim_work(struct work_struct *work)
->  {
-> -	/* Get struct net_dim from struct work_struct */
-> -	struct net_dim *dim = container_of(work, struct net_dim,
-> +	/* Get struct dim from struct work_struct */
-> +	struct dim *dim = container_of(work, struct dim,
->  					   work);
+Fixes: 9e0874570488 ("Documentation: Add description of netdevsim traps")
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+---
+ Documentation/networking/devlink-trap.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-nit: looks like you broke the alignment here 
+diff --git a/Documentation/networking/devlink-trap.rst b/Documentation/networking/devlink-trap.rst
+index 8e90a85f3bd5..70335c3ed3c3 100644
+--- a/Documentation/networking/devlink-trap.rst
++++ b/Documentation/networking/devlink-trap.rst
+@@ -172,7 +172,7 @@ help debug packet drops caused by these exceptions. The following list includes
+ links to the description of driver-specific traps registered by various device
+ drivers:
+ 
+-  * :doc:`/devlink-trap-netdevsim`
++  * :doc:`./devlink-trap-netdevsim`
+ 
+ Generic Packet Trap Groups
+ ==========================
+-- 
+2.23.0
 
->  	/* Do interrupt moderation related stuff */
->  	...
