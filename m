@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 505E0D1C98
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:19:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 869D5D1C9B
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 01:19:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732460AbfJIXTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 19:19:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36830 "EHLO mail.kernel.org"
+        id S1732008AbfJIXTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 19:19:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36880 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731145AbfJIXTF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 19:19:05 -0400
+        id S1731103AbfJIXTH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 19:19:07 -0400
 Received: from localhost.localdomain (unknown [151.66.37.67])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6B0FC218AC;
-        Wed,  9 Oct 2019 23:19:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9127B21920;
+        Wed,  9 Oct 2019 23:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570663144;
-        bh=Jqo8vGpDiDuaYietd2xoTKI2iY3jSzgyCjwAbnxPLB8=;
+        s=default; t=1570663146;
+        bh=5NjspdkOhMrSdsEnytl86qffFZGl0C5xfD6/Y98oRPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PQ77tI4ob2+741L0Cx5GQDRx6EKaO3eJX5/FKHFAea1eXKh7QCv8JSh3XtFChePWq
-         KOoa7UrAsnAvbAR9ONz+BYwjPVZHJgFWfMhtGdgFR2Su90rVbhY1KRBU5GyfQ07mu7
-         u6iuWTFs6gPOGxWNSL50zTGuDIhgwMjYkO0gpZmw=
+        b=zAZomtzGv9xbRA8tEebu2kHfDMt2sdyncGXEjvOQjEWK20U3LzYK0up6dXJatfRDA
+         cqQWjGPCk7+KkPZLnTTOfaM7vCPZE0Z4XXPRczAtPZfx53GVfQH7qgKx8r/cyyfn/Y
+         vFyhogHf++5tH0DNCVfvpvk7R7rAjIbDGVGWocXI=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
         thomas.petazzoni@bootlin.com, brouer@redhat.com,
         ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
         mw@semihalf.com
-Subject: [PATCH v2 net-next 2/8] net: mvneta: introduce page pool API for sw buffer manager
-Date:   Thu, 10 Oct 2019 01:18:32 +0200
-Message-Id: <bfef90c0ca5bf6fa172a63830533d9a783f5ceea.1570662004.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 3/8] net: mvneta: rely on build_skb in mvneta_rx_swbm poll routine
+Date:   Thu, 10 Oct 2019 01:18:33 +0200
+Message-Id: <e9ad915633d1e7e02d4b9021761d325d4b130101.1570662004.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1570662004.git.lorenzo@kernel.org>
 References: <cover.1570662004.git.lorenzo@kernel.org>
@@ -42,175 +42,311 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the page_pool api for allocations and DMA handling instead of
-__dev_alloc_page()/dma_map_page() and free_page()/dma_unmap_page().
-Pages are unmapped using page_pool_release_page before packets
-go into the network stack.
-
-The page_pool API offers buffer recycling capabilities for XDP but
-allocates one page per packet, unless the driver splits and manages
-the allocated page.
-This is a preliminary patch to add XDP support to mvneta driver
+Refactor mvneta_rx_swbm code introducing mvneta_swbm_rx_frame and
+mvneta_swbm_add_rx_fragment routines. Rely on build_skb in oreder to
+allocate skb since the previous patch introduced buffer recycling using
+the page_pool API.
+This patch fixes even an issue in the original driver where dma buffers
+are accessed before dma sync
 
 Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/Kconfig  |  1 +
- drivers/net/ethernet/marvell/mvneta.c | 77 ++++++++++++++++++++-------
- 2 files changed, 59 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c | 198 ++++++++++++++------------
+ 1 file changed, 104 insertions(+), 94 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/Kconfig b/drivers/net/ethernet/marvell/Kconfig
-index fb942167ee54..3d5caea096fb 100644
---- a/drivers/net/ethernet/marvell/Kconfig
-+++ b/drivers/net/ethernet/marvell/Kconfig
-@@ -61,6 +61,7 @@ config MVNETA
- 	depends on ARCH_MVEBU || COMPILE_TEST
- 	select MVMDIO
- 	select PHYLINK
-+	select PAGE_POOL
- 	---help---
- 	  This driver supports the network interface units in the
- 	  Marvell ARMADA XP, ARMADA 370, ARMADA 38x and
 diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 128b9fded959..31cecc1ed848 100644
+index 31cecc1ed848..79a6bac0192b 100644
 --- a/drivers/net/ethernet/marvell/mvneta.c
 +++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -37,6 +37,7 @@
- #include <net/ip.h>
- #include <net/ipv6.h>
- #include <net/tso.h>
-+#include <net/page_pool.h>
+@@ -323,6 +323,11 @@
+ 	      ETH_HLEN + ETH_FCS_LEN,			     \
+ 	      cache_line_size())
  
- /* Registers */
- #define MVNETA_RXQ_CONFIG_REG(q)                (0x1400 + ((q) << 2))
-@@ -603,6 +604,10 @@ struct mvneta_rx_queue {
- 	u32 pkts_coal;
- 	u32 time_coal;
- 
-+	/* page_pool */
-+	struct page_pool *page_pool;
-+	struct xdp_rxq_info xdp_rxq;
++#define MVNETA_SKB_PAD	(SKB_DATA_ALIGN(sizeof(struct skb_shared_info) + \
++			 NET_SKB_PAD))
++#define MVNETA_SKB_SIZE(len)	(SKB_DATA_ALIGN(len) + MVNETA_SKB_PAD)
++#define MVNETA_MAX_RX_BUF_SIZE	(PAGE_SIZE - MVNETA_SKB_PAD)
 +
- 	/* Virtual address of the RX buffer */
- 	void  **buf_virt_addr;
+ #define IS_TSO_HEADER(txq, addr) \
+ 	((addr >= txq->tso_hdrs_phys) && \
+ 	 (addr < txq->tso_hdrs_phys + txq->size * TSO_HEADER_SIZE))
+@@ -646,7 +651,6 @@ static int txq_number = 8;
+ static int rxq_def;
  
-@@ -1815,20 +1820,14 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
- 	dma_addr_t phys_addr;
- 	struct page *page;
+ static int rx_copybreak __read_mostly = 256;
+-static int rx_header_size __read_mostly = 128;
  
--	page = __dev_alloc_page(gfp_mask);
-+	page = page_pool_alloc_pages(rxq->page_pool,
-+				     gfp_mask | __GFP_NOWARN);
- 	if (!page)
- 		return -ENOMEM;
- 
--	/* map page for use */
--	phys_addr = dma_map_page(pp->dev->dev.parent, page, 0, PAGE_SIZE,
--				 DMA_FROM_DEVICE);
--	if (unlikely(dma_mapping_error(pp->dev->dev.parent, phys_addr))) {
--		__free_page(page);
--		return -ENOMEM;
--	}
--
--	phys_addr += pp->rx_offset_correction;
-+	phys_addr = page_pool_get_dma_addr(page) + pp->rx_offset_correction;
- 	mvneta_rx_desc_fill(rx_desc, phys_addr, page, rxq);
-+
- 	return 0;
+ /* HW BM need that each port be identify by a unique ID */
+ static int global_port_id;
+@@ -1942,30 +1946,102 @@ int mvneta_rx_refill_queue(struct mvneta_port *pp, struct mvneta_rx_queue *rxq)
+ 	return i;
  }
  
-@@ -1894,10 +1893,11 @@ static void mvneta_rxq_drop_pkts(struct mvneta_port *pp,
- 		if (!data || !(rx_desc->buf_phys_addr))
- 			continue;
- 
--		dma_unmap_page(pp->dev->dev.parent, rx_desc->buf_phys_addr,
--			       PAGE_SIZE, DMA_FROM_DEVICE);
--		__free_page(data);
-+		page_pool_put_page(rxq->page_pool, data, false);
- 	}
-+	if (xdp_rxq_info_is_reg(&rxq->xdp_rxq))
-+		xdp_rxq_info_unreg(&rxq->xdp_rxq);
-+	page_pool_destroy(rxq->page_pool);
- }
- 
- static void
-@@ -2029,8 +2029,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 				skb_add_rx_frag(rxq->skb, frag_num, page,
- 						frag_offset, frag_size,
- 						PAGE_SIZE);
--				dma_unmap_page(dev->dev.parent, phys_addr,
--					       PAGE_SIZE, DMA_FROM_DEVICE);
-+				page_pool_release_page(rxq->page_pool, page);
- 				rxq->left_size -= frag_size;
- 			}
- 		} else {
-@@ -2060,9 +2059,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 						frag_offset, frag_size,
- 						PAGE_SIZE);
- 
--				dma_unmap_page(dev->dev.parent, phys_addr,
--					       PAGE_SIZE, DMA_FROM_DEVICE);
--
-+				page_pool_release_page(rxq->page_pool, page);
- 				rxq->left_size -= frag_size;
- 			}
- 		} /* Middle or Last descriptor */
-@@ -2829,11 +2826,53 @@ static int mvneta_poll(struct napi_struct *napi, int budget)
- 	return rx_done;
- }
- 
-+static int mvneta_create_page_pool(struct mvneta_port *pp,
-+				   struct mvneta_rx_queue *rxq, int size)
++static int
++mvneta_swbm_rx_frame(struct mvneta_port *pp,
++		     struct mvneta_rx_desc *rx_desc,
++		     struct mvneta_rx_queue *rxq,
++		     struct page *page)
 +{
-+	struct page_pool_params pp_params = {
-+		.order = 0,
-+		.flags = PP_FLAG_DMA_MAP,
-+		.pool_size = size,
-+		.nid = cpu_to_node(0),
-+		.dev = pp->dev->dev.parent,
-+		.dma_dir = DMA_FROM_DEVICE,
-+	};
-+	int err;
++	unsigned char *data = page_address(page);
++	int data_len = -MVNETA_MH_SIZE, len;
++	struct net_device *dev = pp->dev;
++	enum dma_data_direction dma_dir;
 +
-+	rxq->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(rxq->page_pool)) {
-+		err = PTR_ERR(rxq->page_pool);
-+		rxq->page_pool = NULL;
-+		return err;
++	if (MVNETA_SKB_SIZE(rx_desc->data_size) > PAGE_SIZE) {
++		len = MVNETA_MAX_RX_BUF_SIZE;
++		data_len += len;
++	} else {
++		len = rx_desc->data_size;
++		data_len += len - ETH_FCS_LEN;
 +	}
 +
-+	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, 0);
-+	if (err < 0)
-+		goto err_free_pp;
++	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
++	dma_sync_single_range_for_cpu(dev->dev.parent,
++				      rx_desc->buf_phys_addr, 0,
++				      len, dma_dir);
 +
-+	err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq, MEM_TYPE_PAGE_POOL,
-+					 rxq->page_pool);
-+	if (err)
-+		goto err_unregister_rxq;
++	rxq->skb = build_skb(data, PAGE_SIZE);
++	if (unlikely(!rxq->skb)) {
++		netdev_err(dev,
++			   "Can't allocate skb on queue %d\n",
++			   rxq->id);
++		dev->stats.rx_dropped++;
++		rxq->skb_alloc_err++;
++		return -ENOMEM;
++	}
++	page_pool_release_page(rxq->page_pool, page);
++
++	skb_reserve(rxq->skb, MVNETA_MH_SIZE + NET_SKB_PAD);
++	skb_put(rxq->skb, data_len);
++	mvneta_rx_csum(pp, rx_desc->status, rxq->skb);
++
++	rxq->left_size = rx_desc->data_size - len;
++	rx_desc->buf_phys_addr = 0;
 +
 +	return 0;
-+
-+err_unregister_rxq:
-+	xdp_rxq_info_unreg(&rxq->xdp_rxq);
-+err_free_pp:
-+	page_pool_destroy(rxq->page_pool);
-+	return err;
 +}
 +
- /* Handle rxq fill: allocates rxq skbs; called when initializing a port */
- static int mvneta_rxq_fill(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 			   int num)
- {
--	int i;
-+	int i, err;
++static void
++mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
++			    struct mvneta_rx_desc *rx_desc,
++			    struct mvneta_rx_queue *rxq,
++			    struct page *page)
++{
++	struct net_device *dev = pp->dev;
++	enum dma_data_direction dma_dir;
++	int data_len, len;
 +
-+	err = mvneta_create_page_pool(pp, rxq, num);
-+	if (err < 0)
-+		return err;
++	if (rxq->left_size > MVNETA_MAX_RX_BUF_SIZE) {
++		len = MVNETA_MAX_RX_BUF_SIZE;
++		data_len = len;
++	} else {
++		len = rxq->left_size;
++		data_len = len - ETH_FCS_LEN;
++	}
++	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
++	dma_sync_single_range_for_cpu(dev->dev.parent,
++				      rx_desc->buf_phys_addr, 0,
++				      len, dma_dir);
++	if (data_len > 0) {
++		/* refill descriptor with new buffer later */
++		skb_add_rx_frag(rxq->skb,
++				skb_shinfo(rxq->skb)->nr_frags,
++				page, NET_SKB_PAD, data_len,
++				PAGE_SIZE);
++
++		page_pool_release_page(rxq->page_pool, page);
++		rx_desc->buf_phys_addr = 0;
++	}
++	rxq->left_size -= len;
++}
++
+ /* Main rx processing when using software buffer management */
+ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 			  struct mvneta_port *pp, int budget,
+ 			  struct mvneta_rx_queue *rxq)
+ {
+-	struct net_device *dev = pp->dev;
+-	int rx_todo, rx_proc;
+-	int refill = 0;
+-	u32 rcvd_pkts = 0;
+-	u32 rcvd_bytes = 0;
++	int rcvd_pkts = 0, rcvd_bytes = 0;
++	int rx_pending, refill, done = 0;
  
- 	for (i = 0; i < num; i++) {
- 		memset(rxq->descs + i, 0, sizeof(struct mvneta_rx_desc));
+ 	/* Get number of received packets */
+-	rx_todo = mvneta_rxq_busy_desc_num_get(pp, rxq);
+-	rx_proc = 0;
++	rx_pending = mvneta_rxq_busy_desc_num_get(pp, rxq);
+ 
+ 	/* Fairness NAPI loop */
+-	while ((rcvd_pkts < budget) && (rx_proc < rx_todo)) {
++	while (done < budget && done < rx_pending) {
+ 		struct mvneta_rx_desc *rx_desc = mvneta_rxq_next_desc_get(rxq);
+ 		unsigned char *data;
+ 		struct page *page;
+-		dma_addr_t phys_addr;
+-		u32 rx_status, index;
+-		int rx_bytes, skb_size, copy_size;
+-		int frag_num, frag_size, frag_offset;
++		int index;
+ 
+ 		index = rx_desc - rxq->descs;
+ 		page = (struct page *)rxq->buf_virt_addr[index];
+@@ -1973,98 +2049,33 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 		/* Prefetch header */
+ 		prefetch(data);
+ 
+-		phys_addr = rx_desc->buf_phys_addr;
+-		rx_status = rx_desc->status;
+-		rx_proc++;
+ 		rxq->refill_num++;
++		done++;
++
++		if (rx_desc->status & MVNETA_RXD_FIRST_DESC) {
++			int err;
+ 
+-		if (rx_status & MVNETA_RXD_FIRST_DESC) {
+ 			/* Check errors only for FIRST descriptor */
+-			if (rx_status & MVNETA_RXD_ERR_SUMMARY) {
++			if (rx_desc->status & MVNETA_RXD_ERR_SUMMARY) {
+ 				mvneta_rx_error(pp, rx_desc);
+-				dev->stats.rx_errors++;
++				pp->dev->stats.rx_errors++;
+ 				/* leave the descriptor untouched */
+ 				continue;
+ 			}
+-			rx_bytes = rx_desc->data_size -
+-				   (ETH_FCS_LEN + MVNETA_MH_SIZE);
+ 
+-			/* Allocate small skb for each new packet */
+-			skb_size = max(rx_copybreak, rx_header_size);
+-			rxq->skb = netdev_alloc_skb_ip_align(dev, skb_size);
+-			if (unlikely(!rxq->skb)) {
+-				netdev_err(dev,
+-					   "Can't allocate skb on queue %d\n",
+-					   rxq->id);
+-				dev->stats.rx_dropped++;
+-				rxq->skb_alloc_err++;
++			err = mvneta_swbm_rx_frame(pp, rx_desc, rxq, page);
++			if (err)
+ 				continue;
+-			}
+-			copy_size = min(skb_size, rx_bytes);
+-
+-			/* Copy data from buffer to SKB, skip Marvell header */
+-			memcpy(rxq->skb->data, data + MVNETA_MH_SIZE,
+-			       copy_size);
+-			skb_put(rxq->skb, copy_size);
+-			rxq->left_size = rx_bytes - copy_size;
+-
+-			mvneta_rx_csum(pp, rx_status, rxq->skb);
+-			if (rxq->left_size == 0) {
+-				int size = copy_size + MVNETA_MH_SIZE;
+-
+-				dma_sync_single_range_for_cpu(dev->dev.parent,
+-							      phys_addr, 0,
+-							      size,
+-							      DMA_FROM_DEVICE);
+-
+-				/* leave the descriptor and buffer untouched */
+-			} else {
+-				/* refill descriptor with new buffer later */
+-				rx_desc->buf_phys_addr = 0;
+-
+-				frag_num = 0;
+-				frag_offset = copy_size + MVNETA_MH_SIZE;
+-				frag_size = min(rxq->left_size,
+-						(int)(PAGE_SIZE - frag_offset));
+-				skb_add_rx_frag(rxq->skb, frag_num, page,
+-						frag_offset, frag_size,
+-						PAGE_SIZE);
+-				page_pool_release_page(rxq->page_pool, page);
+-				rxq->left_size -= frag_size;
+-			}
+ 		} else {
+-			/* Middle or Last descriptor */
+ 			if (unlikely(!rxq->skb)) {
+ 				pr_debug("no skb for rx_status 0x%x\n",
+-					 rx_status);
++					 rx_desc->status);
+ 				continue;
+ 			}
+-			if (!rxq->left_size) {
+-				/* last descriptor has only FCS */
+-				/* and can be discarded */
+-				dma_sync_single_range_for_cpu(dev->dev.parent,
+-							      phys_addr, 0,
+-							      ETH_FCS_LEN,
+-							      DMA_FROM_DEVICE);
+-				/* leave the descriptor and buffer untouched */
+-			} else {
+-				/* refill descriptor with new buffer later */
+-				rx_desc->buf_phys_addr = 0;
+-
+-				frag_num = skb_shinfo(rxq->skb)->nr_frags;
+-				frag_offset = 0;
+-				frag_size = min(rxq->left_size,
+-						(int)(PAGE_SIZE - frag_offset));
+-				skb_add_rx_frag(rxq->skb, frag_num, page,
+-						frag_offset, frag_size,
+-						PAGE_SIZE);
+-
+-				page_pool_release_page(rxq->page_pool, page);
+-				rxq->left_size -= frag_size;
+-			}
++			mvneta_swbm_add_rx_fragment(pp, rx_desc, rxq, page);
+ 		} /* Middle or Last descriptor */
+ 
+-		if (!(rx_status & MVNETA_RXD_LAST_DESC))
++		if (!(rx_desc->status & MVNETA_RXD_LAST_DESC))
+ 			/* no last descriptor this time */
+ 			continue;
+ 
+@@ -2080,13 +2091,12 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 		rcvd_bytes += rxq->skb->len;
+ 
+ 		/* Linux processing */
+-		rxq->skb->protocol = eth_type_trans(rxq->skb, dev);
++		rxq->skb->protocol = eth_type_trans(rxq->skb, pp->dev);
+ 
+ 		napi_gro_receive(napi, rxq->skb);
+ 
+ 		/* clean uncomplete skb pointer in queue */
+ 		rxq->skb = NULL;
+-		rxq->left_size = 0;
+ 	}
+ 
+ 	mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes, false);
+@@ -2095,7 +2105,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 	refill = mvneta_rx_refill_queue(pp, rxq);
+ 
+ 	/* Update rxq management counters */
+-	mvneta_rxq_desc_num_update(pp, rxq, rx_proc, refill);
++	mvneta_rxq_desc_num_update(pp, rxq, done, refill);
+ 
+ 	return rcvd_pkts;
+ }
+@@ -2946,7 +2956,7 @@ static void mvneta_rxq_hw_init(struct mvneta_port *pp,
+ 		/* Set Offset */
+ 		mvneta_rxq_offset_set(pp, rxq, 0);
+ 		mvneta_rxq_buf_size_set(pp, rxq, PAGE_SIZE < SZ_64K ?
+-					PAGE_SIZE :
++					MVNETA_MAX_RX_BUF_SIZE :
+ 					MVNETA_RX_BUF_SIZE(pp->pkt_size));
+ 		mvneta_rxq_bm_disable(pp, rxq);
+ 		mvneta_rxq_fill(pp, rxq, rxq->size);
+@@ -4656,7 +4666,7 @@ static int mvneta_probe(struct platform_device *pdev)
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 
+ 	pp->id = global_port_id++;
+-	pp->rx_offset_correction = 0; /* not relevant for SW BM */
++	pp->rx_offset_correction = NET_SKB_PAD;
+ 
+ 	/* Obtain access to BM resources if enabled and already initialized */
+ 	bm_node = of_parse_phandle(dn, "buffer-manager", 0);
 -- 
 2.21.0
 
