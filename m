@@ -2,97 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 673ECD0EA8
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 14:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCDA5D0EBC
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 14:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731096AbfJIMZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 08:25:29 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:51015 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730861AbfJIMZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 08:25:28 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 5so2360281wmg.0;
-        Wed, 09 Oct 2019 05:25:26 -0700 (PDT)
+        id S1731047AbfJIMab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 08:30:31 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:36972 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727029AbfJIMab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 08:30:31 -0400
+Received: by mail-wm1-f65.google.com with SMTP id f22so2397133wmc.2;
+        Wed, 09 Oct 2019 05:30:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:subject:to:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Nua5OwsPnbNn30zwIcxj0beDs8kg/5lbLMEpadI7ppk=;
-        b=uP1ipqzGDpN1R6Nms0UCBk1psp927dNjLCNGdZSxCo+8XEWhWNKOBg2RDaDB96DfJf
-         4UcrqRQT1wSnZsimngeyACcA8nV1/CnBjndXcc4tYxxKeVv8luxk3yXgeJivxXsjHyRT
-         6S0xgVerM2OXSriKBG6ds8XFggKkZ40+NU22lk2cyO/7EKYS2JND/BHaH/4zOSfaR/Xe
-         Sf1UL9AAASTFnrPT9ivMJspyLF+L27cDatMKG9wUnfTnaCzmsoFqJWnaCF7DzEbMi1Fx
-         tujQZcAddlMeuvOamIWxHm4Ew+uJWu23j/EQDkTUPcJE/DIqfSQ64EU5Z5JC/pg94v/c
-         dq6A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JsBrinsiopQEUUm24bAkz9SVEpwLdFOJsrWFKLpRzJE=;
+        b=JrULy73DX15OeCgSMjqfyjx88hrCHXutwTGT1mJJ4gHrgwUt39rmhxwHqATLcszKYV
+         wWp944q4ELIXsilGK4RYnWsC1UWm1XFoWGRxwAGoRT0LCtdtcBkBDJ8nnSxjXs6Epb/U
+         VCUo7n1fByG1abHvZ5IKMUpBwIZjMlgol6dRR3YSr2+gs30CTqITmxMGVIs6NhKaLJe7
+         5Rr3FjYoAv/pLyPO6LhnwCyprprC5sZli1dlTE6i3ML5d0dK7Lecrnr3OfdmmKBUzuiE
+         PAhzfSG7J9rvittRVW0TqyzWHM8rzRMdWaaEINIHTJkRbYSjE5IbQK2+9ZnSwBjChFgb
+         fbcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Nua5OwsPnbNn30zwIcxj0beDs8kg/5lbLMEpadI7ppk=;
-        b=Rx59OopVrgZwKGy3RH0geJDQYRB7cPZhN/fwClAzAKxotaRgr64guOQERFdcbcomuE
-         PRT78GPGHfmi4Rv0JNLxVniE96u83HvGwtB0S6tXdeMEhmzzIAcEM4hhm/7MJd2aP7Ik
-         VmRIwEYmC+v7NRpo2sTyr0bMPSdPq/vjRzx9jOaJN9pjU+ECvAMZtrslIApuTJ8bCxM4
-         BcWpFRX+Jnk7dIApY7o4N+dhG1q9H6rNwdtObM76zvNndkdbrlA0v+lhvIw5F305iwAk
-         jIcI6h3074UEulRFZJa0gkmhbvB+a4tZrqr0FP6i2Uqt2pvoX2NkPAWBWT9EzRqoVDii
-         4+NQ==
-X-Gm-Message-State: APjAAAVbc05YkRp8Yh+g1uiKlVpTICm7PvrnQAAy+aI7pNo8z2LEC0EP
-        EYytKombXMvmmyH/vKsio1Og/6grfiU=
-X-Google-Smtp-Source: APXvYqz5OSnwj4duPROK4v5pcFuX2jdZ4kqAmKthfByNi0LQaLJaPXjjt0a4ls1yw/qM1y0+vza2EA==
-X-Received: by 2002:a1c:3908:: with SMTP id g8mr2311817wma.34.1570623925358;
-        Wed, 09 Oct 2019 05:25:25 -0700 (PDT)
-Received: from [192.168.1.35] (46.red-83-42-66.dynamicip.rima-tde.net. [83.42.66.46])
-        by smtp.gmail.com with ESMTPSA id c17sm2807618wrc.60.2019.10.09.05.25.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Oct 2019 05:25:24 -0700 (PDT)
-Subject: Re: [PATCH v8 2/5] MIPS: PCI: use information from 1-wire PROM for
- IOC3 detection
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JsBrinsiopQEUUm24bAkz9SVEpwLdFOJsrWFKLpRzJE=;
+        b=eHYVmC9qPcGlhIMz1O8lVVA6RHshQ+2OWMeXKjPEcjNj88Grk82Dlfy4WaFznVaMJ6
+         tJHSvC8lsuv/X5uPjUvLEaEsoGnzHkMQU61kE8WdSaCiX7nnGp4AUXx2Um+vWkTpmfna
+         L6llefeZ0oPzzFprL2GhACRdHdcYDCkVgvVY1m+iDybGybJoI4O+0KTV7m3BJQQsk4/3
+         pY1/BYoIZCp2cYM2nsXxnP6hfNKJEePQpuwLMHcL680aQ1NHVHYFmux9ufmwQIb6VpOh
+         0OBZpRY4DG82ulACkgyC198c44TeFYbgM8uMg+fqHjUOyNGwkFu2RiUPgCwhao17oMSY
+         +6JA==
+X-Gm-Message-State: APjAAAXWqh3EZsll++Yd4J4Fcv8h+giJr5grySoTYUNZ5Bn6nw6a1pHR
+        GpYUm/lhUPxujqeTcc0v0YdRzin2E6o=
+X-Google-Smtp-Source: APXvYqyQ4gOX9BIMzOCrasN3y1goWMZiXWlXJRypG8Y+tR9ot0Jnye3Rvg7XGvSHkh52aCJgOsP+VQ==
+X-Received: by 2002:a1c:2681:: with SMTP id m123mr2617367wmm.92.1570624228303;
+        Wed, 09 Oct 2019 05:30:28 -0700 (PDT)
+Received: from localhost ([51.15.41.238])
+        by smtp.gmail.com with ESMTPSA id r2sm4292179wma.1.2019.10.09.05.30.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2019 05:30:27 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 13:30:26 +0100
+From:   Stefan Hajnoczi <stefanha@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        linux-hyperv@vger.kernel.org,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20191009101713.12238-1-tbogendoerfer@suse.de>
- <20191009101713.12238-3-tbogendoerfer@suse.de>
-From:   =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <f4bug@amsat.org>
-Message-ID: <ea44d4a2-3011-fba8-4d6a-7b63c77ba00a@amsat.org>
-Date:   Wed, 9 Oct 2019 14:25:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        Jorgen Hansen <jhansen@vmware.com>
+Subject: Re: [RFC PATCH 07/13] vsock: handle buffer_size sockopts in the core
+Message-ID: <20191009123026.GH5747@stefanha-x1.localdomain>
+References: <20190927112703.17745-1-sgarzare@redhat.com>
+ <20190927112703.17745-8-sgarzare@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20191009101713.12238-3-tbogendoerfer@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="0XhtP95kHFp3KGBe"
+Content-Disposition: inline
+In-Reply-To: <20190927112703.17745-8-sgarzare@redhat.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/9/19 12:17 PM, Thomas Bogendoerfer wrote:
-> IOC3 chips in SGI system are conntected to a bridge ASIC, which has
 
-Typo: "connected".
+--0XhtP95kHFp3KGBe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> a 1-wire prom attached with part number information. This changeset
-> uses this information to create PCI subsystem information, which
-> the MFD driver uses for further platform device setup.
-> 
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> ---
->   arch/mips/include/asm/pci/bridge.h |   1 +
->   arch/mips/include/asm/sn/ioc3.h    |   9 +++
->   arch/mips/pci/pci-xtalk-bridge.c   | 135 ++++++++++++++++++++++++++++++++++++-
->   arch/mips/sgi-ip27/ip27-xtalk.c    |  38 +++++++++--
->   4 files changed, 175 insertions(+), 8 deletions(-)
+On Fri, Sep 27, 2019 at 01:26:57PM +0200, Stefano Garzarella wrote:
+> @@ -140,18 +145,11 @@ struct vsock_transport {
+>  		struct vsock_transport_send_notify_data *);
+>  	int (*notify_send_post_enqueue)(struct vsock_sock *, ssize_t,
+>  		struct vsock_transport_send_notify_data *);
+> +	int (*notify_buffer_size)(struct vsock_sock *, u64 *);
+
+Is ->notify_buffer_size() called under lock_sock(sk)?  If yes, please
+document it.
+
+> +static void vsock_update_buffer_size(struct vsock_sock *vsk,
+> +				     const struct vsock_transport *transport,
+> +				     u64 val)
+> +{
+> +	if (val > vsk->buffer_max_size)
+> +		val =3D vsk->buffer_max_size;
+> +
+> +	if (val < vsk->buffer_min_size)
+> +		val =3D vsk->buffer_min_size;
+> +
+> +	if (val !=3D vsk->buffer_size &&
+> +	    transport && transport->notify_buffer_size)
+> +		transport->notify_buffer_size(vsk, &val);
+
+Why does this function return an int if we don't check the return value?
+
+> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virt=
+io_transport_common.c
+> index fc046c071178..bac9e7430a2e 100644
+> --- a/net/vmw_vsock/virtio_transport_common.c
+> +++ b/net/vmw_vsock/virtio_transport_common.c
+> @@ -403,17 +403,13 @@ int virtio_transport_do_socket_init(struct vsock_so=
+ck *vsk,
+>  	if (psk) {
+>  		struct virtio_vsock_sock *ptrans =3D psk->trans;
+> =20
+> -		vvs->buf_size	=3D ptrans->buf_size;
+> -		vvs->buf_size_min =3D ptrans->buf_size_min;
+> -		vvs->buf_size_max =3D ptrans->buf_size_max;
+>  		vvs->peer_buf_alloc =3D ptrans->peer_buf_alloc;
+> -	} else {
+> -		vvs->buf_size =3D VIRTIO_VSOCK_DEFAULT_BUF_SIZE;
+> -		vvs->buf_size_min =3D VIRTIO_VSOCK_DEFAULT_MIN_BUF_SIZE;
+> -		vvs->buf_size_max =3D VIRTIO_VSOCK_DEFAULT_MAX_BUF_SIZE;
+>  	}
+> =20
+> -	vvs->buf_alloc =3D vvs->buf_size;
+> +	if (vsk->buffer_size > VIRTIO_VSOCK_MAX_BUF_SIZE)
+> +		vsk->buffer_size =3D VIRTIO_VSOCK_MAX_BUF_SIZE;
+
+Hmm...this could be outside the [min, max] range.  I'm not sure how much
+it matters.
+
+Another issue is that this patch drops the VIRTIO_VSOCK_MAX_BUF_SIZE
+limit that used to be enforced by virtio_transport_set_buffer_size().
+Now the limit is only applied at socket init time.  If the buffer size
+is changed later then VIRTIO_VSOCK_MAX_BUF_SIZE can be exceeded.  If
+that doesn't matter, why even bother with VIRTIO_VSOCK_MAX_BUF_SIZE
+here?
+
+
+--0XhtP95kHFp3KGBe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2d0uEACgkQnKSrs4Gr
+c8gO1gf/Vraalf45FT85Jz4M4KTdl8jmHbCz4Q+gxBtfD8s3Wzm9XCdztbebJ5lD
+OmU/wCuporLHCeVao4GUpQzpN25FoSogf5cH8jHIGU3pJOkLd7pF0KNMvpWjcETw
+KwF3Kl5HHrayPHagzXF5JGb/B31pXZOpLBhs4KasERFqwOeZDDvBgsgVhrt936Jj
+/w6KEb1J0i8dJ7KgM6VLynvT2gudUhmp4BFFChNacJnk1xduOIAK/rBPVL4FDKPg
+pTwuT0zC8zGmmMGnnTRCmAOupCnMo8KRfkrydiJ6v093blyJ7N8sRDbKPDdU/4AD
+K76VCRMrxnjuOnWPRlo2ERDIH/67qw==
+=DYWp
+-----END PGP SIGNATURE-----
+
+--0XhtP95kHFp3KGBe--
