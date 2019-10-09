@@ -2,94 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92E08D1365
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7049D138A
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:05:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731478AbfJIQAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 12:00:22 -0400
-Received: from mail-qt1-f176.google.com ([209.85.160.176]:46759 "EHLO
-        mail-qt1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729644AbfJIQAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 12:00:21 -0400
-Received: by mail-qt1-f176.google.com with SMTP id u22so4087213qtq.13
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 09:00:19 -0700 (PDT)
+        id S1731433AbfJIQFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 12:05:43 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36577 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730708AbfJIQFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 12:05:43 -0400
+Received: by mail-wm1-f66.google.com with SMTP id m18so3213160wmc.1
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 09:05:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mbuki-mvuki-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=szXbMfsBdR2LAogQ8vebdSF7PxK4Sa+S3XEKazagktE=;
-        b=am467+9AhbM4qy6HhUmH9pSVOg9QIb+TlVQZ2KAf90oHK5NlejRGxtMu0S8JHsUbrt
-         wOSTKJnFt5n3V8m34njyc0bY1oBENTPR2fpbSRZb7de0rhoYBHNP2Yp/xoKAdXWODF+V
-         U6THR6zvuDI4wacwKBY0uCmBGBXrdisAQ/mEbalMc7ph6LMTfB6xLyqAWgrXWLqR+vE6
-         tdz5YX+uwnc+rVBwn8UpkXYbX0/9cyqj2xqQOtIgABv5Hs+XtCJPul9zpuVNmXATb+Oq
-         XYHG/Fb2n8Ym1bpnAmyfkpXliH7HdMOw5UU0FH1cRxHDrKbTxeoWPEaH5vW9eElje6+s
-         gbUA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OcoDswvcpgORUe+MjF3j+myWKBr/y/JxVMKqWxIZdns=;
+        b=PlMwn9qd6erojZKwrGuwRQoT3mBFtPJPdxKkIoi+g/d953cHVVQVDyFhTmkAOHq9HS
+         VH6Kz+ynJOta/5jpwjQNaOKkCz8EqFOd8eFpwMkcdLBa/lGr9vFX4ZH9Odb0ZasRfZfg
+         hL4ixrbd5H9Gn9ce4slb2XkurFpkRA99mVhAJRq0EpElm5jcHAq+hLY5NEFSOcYi8T5c
+         XDGKEmdJaOWe6vEv1mdkMetvYaOe5w19Ke0Q6x3RRBcLXohUpsQ+H+tsU7xqCcKjV69C
+         oJPkEMkoDqtuEHAJMbrD0RUQcVb80wtCimLZE2tavU+7cfhJGR2bsMlGyBuIYnXcbGRM
+         T4sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=szXbMfsBdR2LAogQ8vebdSF7PxK4Sa+S3XEKazagktE=;
-        b=Q9VEnEx/4YkWmxd0kWfN/WQ3jZxdqC1QxfrCR8mVYGwd0lY+S0vMsHcPS9KI53+9nd
-         hbcaYE/RRTAfyuSjPMgiMEU7h6GWIM8lpCzDcZ4/Yokho3jRlTenRnlvSouYu29cSYsM
-         iv1NhUbzAx3OVc9QZHuoYHn0NQFAYsssFq0zxF5zsG+3gv32+oLTJJGWbVktZFnDiAd2
-         IQGX4W7e5IqlaX6R7NLWRQ9XyxE5B44N6g3/Ap1I8ivz2NOlsQCkfWs/ffGk6Kcny/II
-         2T7qy5KVW07+WRul8fsVWLIzlJWFrWdzOTQUYr7Lf/XYSZ3JBhvJ3ep3OMt2HglE1wWd
-         WWwg==
-X-Gm-Message-State: APjAAAULTtl04egtYdyDAIKubhXgOzJpri29aJMKoRAyLWMOPvKkGVUG
-        f6JmnvX2eUH0ZBuhusMnH0cIn2ELokNiJJbAXFBm+bo5+FSKlw==
-X-Google-Smtp-Source: APXvYqwI2vmqI9SbIiHLzs+EhBC+5A2+IEb+f/6P75hHytcWAuicMP0Lr2+MvHQmBBWMWb7RO6L1BJki8wGdayw13KA=
-X-Received: by 2002:aed:3e87:: with SMTP id n7mr4646575qtf.48.1570636818447;
- Wed, 09 Oct 2019 09:00:18 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OcoDswvcpgORUe+MjF3j+myWKBr/y/JxVMKqWxIZdns=;
+        b=Bhv8iMaYRXnZy0CwOWAIpeGsl+5DzzF5U476P5eQ5z9cYtkjbYTmPoO5YSOQ9Mo406
+         TsJYhlJTNU8xri64HM0TfRePqoQQm2TXC5rm3DqPhrfC6Wm0oLSIymLEbJ9H4pjbA+BH
+         ZVyh6spj4QfM3pikn0TxHJKCLg/voxBqr/itUE6Ze22p5fF+c05vimrJld913nUT9N5B
+         VHXqdTzME07QY0kOj9NAO4El2ySUXIszkyJKVnfLUARi3pWHGh6vg3TxkoCrqGcTSt1Z
+         e9zPrnug31zqb2bxRjMWfhoE/Y0gH3rwTjrdU750QEeB8NhuLuYooS0ukTaqc1KSh9wP
+         SCxQ==
+X-Gm-Message-State: APjAAAVUYoMhlAeJpExBXDUYOY41zjoL1P5clLQGrgA75BSr3oy927m5
+        NZN3W5nMBmqZeE/EIaAL2Jow7rymsttL/0u0lXUQmQ==
+X-Google-Smtp-Source: APXvYqwf2k+wes8U4KHH/Mq/y7m8PrdEQhLEFToIcu4WDfCk10VCZnURO4OVa/kXncgoav9k+nk3ezXxb9qFfCb0MU8=
+X-Received: by 2002:a1c:a8c9:: with SMTP id r192mr3238811wme.152.1570637140793;
+ Wed, 09 Oct 2019 09:05:40 -0700 (PDT)
 MIME-Version: 1.0
-From:   Jesse Hathaway <jesse@mbuki-mvuki.org>
-Date:   Wed, 9 Oct 2019 11:00:07 -0500
-Message-ID: <CANSNSoV1M9stB7CnUcEhsz3FHi4NV_yrBtpYsZ205+rqnvMbvA@mail.gmail.com>
-Subject: Race condition in route lookup
-To:     netdev@vger.kernel.org
+References: <20190918080716.64242-1-jianyong.wu@arm.com> <20190918080716.64242-5-jianyong.wu@arm.com>
+ <83ed7fac-277f-a31e-af37-8ec134f39d26@redhat.com> <HE1PR0801MB1676F57B317AE85E3B934B32F48E0@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <629538ea-13fb-e666-8df6-8ad23f114755@redhat.com> <HE1PR0801MB167639E2F025998058A77F86F4890@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <ef6ab8bd-41ad-88f8-9cfd-dc749ca65310@redhat.com> <a1b554b8-4417-5305-3419-fe71a8c50842@kernel.org>
+ <56a5b885-62c8-c4ef-e2f8-e945c0eb700e@redhat.com> <HE1PR0801MB1676115C248E6DF09F9DD5A6F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <1cc145ca-1af2-d46f-d530-0ae434005f0b@redhat.com> <HE1PR0801MB1676B1AD68544561403C3196F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <6b8b59b2-a07e-7e33-588c-1da7658e3f1e@redhat.com>
+In-Reply-To: <6b8b59b2-a07e-7e33-588c-1da7658e3f1e@redhat.com>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Wed, 9 Oct 2019 09:05:29 -0700
+Message-ID: <CALAqxLVa-BSY0i007GfzKEVU1uak4=eY=TJ3wj6JL_Y-EfY3ng@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 4/6] psci: Add hvc call service for ptp_kvm.
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     "Jianyong Wu (Arm Technology China)" <Jianyong.Wu@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        Will Deacon <Will.Deacon@arm.com>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        "Kaly Xin (Arm Technology China)" <Kaly.Xin@arm.com>,
+        "Justin He (Arm Technology China)" <Justin.He@arm.com>,
+        nd <nd@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have been experiencing a route lookup race condition on our internet facing
-Linux routers. I have been able to reproduce the issue, but would love more
-help in isolating the cause.
+On Wed, Oct 9, 2019 at 2:13 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+> On 09/10/19 10:18, Jianyong Wu (Arm Technology China) wrote:
+> >
+> > We must ensure both of the host and guest using the same clocksource.
+> > get_device_system_crosststamp will check the clocksource of guest and we also need check
+> > the clocksource in host, and struct type can't be transferred from host to guest using arm hypercall.
+> > now we lack of a mechanism to check the current clocksource. I think this will be useful if we add one.
+>
+> Got it---yes, I think adding a struct clocksource to struct
+> system_time_snapshot would make sense.  Then the hypercall can just use
+> ktime_get_snapshot and fail if the clocksource is not the ARM arch counter.
+>
+> John (Stultz), does that sound good to you?  The context is that
+> Jianyong would like to add a hypercall that returns a (cycles,
+> nanoseconds) pair to the guest.  On x86 we're relying on the vclock_mode
+> field that is already there for the vDSO, but being able to just use
+> ktime_get_snapshot would be much nicer.
 
-Looking up a route found in the main table returns `*` rather than the directly
-connected interface about once for every 10-20 million requests. From my
-reading of the iproute2 source code an asterisk is indicative of the kernel
-returning and interface index of 0 rather than the correct directly connected
-interface.
+I've not really looked at the code closely in awhile, so I'm not sure
+my suggestions will be too useful.
 
-This is reproducible with the following bash snippet on 5.4-rc2:
+My only instinct is maybe to not include the clocksource pointer in
+the system_time_snapshot, as I worry that structure will then be
+abused by the interface users.  If you're just wanting to make sure
+the clocksource is what you're expecting, would instead putting only
+the clocksource name in the structure suffice?
 
-  $ cat route-race
-  #!/bin/bash
-
-  # Generate 50 million individual route gets to feed as batch input to `ip`
-  function ip-cmds() {
-          route_get='route get 192.168.11.142 from 192.168.180.10 iif vlan180'
-          for ((i = 0; i < 50000000; i++)); do
-                  printf '%s\n' "${route_get}"
-          done
-
-  }
-
-  ip-cmds | ip -d -o -batch - | grep -E 'dev \*' | uniq -c
-
-Example output:
-
-  $ ./route-race
-        6 unicast 192.168.11.142 from 192.168.180.10 dev * table main
-\    cache iif vlan180
-
-These routers have multiple routing tables and are ingesting full BGP routing
-tables from multiple ISPs:
-
-  $ ip route show table all | wc -l
-  3105543
-
-  $ ip route show table main | wc -l
-  54
-
-Please let me know what other information I can provide, thanks in advance,
-Jesse Hathaway
+thanks
+-john
