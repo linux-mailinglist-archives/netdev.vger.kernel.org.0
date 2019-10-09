@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64C9AD04FF
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 03:05:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6EBD0504
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 03:07:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730006AbfJIBFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 21:05:52 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:37271 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729601AbfJIBFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 21:05:52 -0400
-Received: by mail-qt1-f193.google.com with SMTP id l51so754704qtc.4
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 18:05:50 -0700 (PDT)
+        id S1730080AbfJIBHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 21:07:33 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46920 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729601AbfJIBHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 21:07:32 -0400
+Received: by mail-qt1-f194.google.com with SMTP id u22so952745qtq.13
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 18:07:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=q1+GPiVXlnkIGxz842Wha8YrodBxjB64of3Q3DgqLsc=;
-        b=owaukz8IOr9xL0mkMCb7bObdbl+AURYpH0pTaz0koZYb8t5yRZMiLrbLyE0Azsggze
-         EmUAlEWVEzw5nrpbK9uEx16Fi75TT6EnfPdRuF0ioASsUuVFVgbvl/viSlzUixWHzU+v
-         4dtYnasZrmC0vRf93u5douEdUwpCIAzDFOyBrv/WdAYI9Ogw+rjrtE58svaDRZArU8vW
-         +0Idbqur2VoCESe49ZNnSuNtZ4rj4k4IWVe3Wxszv9zRmPp3kU3BBG5nbiekGFqBJhwf
-         Ng/AMHv3d5NdrB0J29qiTT+epTCJq9IgaVyLjhhucJ0WXZCsYBgOipbG11W9tAPSLcXT
-         r6sg==
+        bh=xi2d8YnbPtNoKTE5MU434pjnJ7aieZH7aFLuNWVyKe4=;
+        b=W1kqXHCu22QuOrcxpJGLDjJHqPpsK3drYlpZe3QyjjRTtOxBuZU5VH2Ou9CjN/1UwH
+         PqDLnmxlk4A3VTMDpHhUsKlH9S7NvaR1jUx5+AI7dmnWFbfWWCZGV0bzxodMsnrbOGh1
+         3QJ2ghwcbtqW1/Gy59MZtzRcc1pfSc8Vm3iqjZuoNBXc2R+katI7mf6LGWsWAul30FI3
+         Xryymh8NQVduawo12ynFEO24SrjpLzHSDd4ogF2tH+S9x65UMHSPWNGeVpXZwwO5Oi2t
+         RtB7ZJJMo5sw3oShGoEDKnqxCM2hP/tBKrsE81sU8Z8v4bpAD2YjNqdtGK4ExuhkZU08
+         nbEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=q1+GPiVXlnkIGxz842Wha8YrodBxjB64of3Q3DgqLsc=;
-        b=G+zmsWEjJNum3A3ql0sT9PT1WKRftbXdoxD0pqzM4HAhsO3ivPenHLGyAuIv0WXkRO
-         e8P+t1ToSEGzRozL3Xuu7yWwT1ZJRsrvTZPSQH5WvtOWJyW7v1GAXKqpmM9cq65HNFIF
-         ji6ZusIGQtVEyPldq+iLSFcYPkBaZ1Th0HrEYoC3/nyMSFa85xbuzcgmlezFEKOS5hPi
-         Ax+aFHl4JAZMiht/cvX8ExhtneK/3F8lVBXWtQ2r+cs3K4F6cLp02lhGUzWRQtfUA7P6
-         b3bjXLPwThSuN7INl1lhJi3zyb7QGWfnf9Q+BTk/01e6Mh+8hTqUWPq5PB6BnNQUvEEC
-         cY6g==
-X-Gm-Message-State: APjAAAUz+ssl9pSDSDL3UH8MtFsSh4BRJdh+rX+Epkl/IPnbhXml5+3p
-        7tAdEtM7fRC9TcrD43SV6kxhqg==
-X-Google-Smtp-Source: APXvYqwO4e8DcfvCwiQryXHFiXnlYE5Idxzgzite9cjCqLNXPpgP5+1WGnh0B4BMrIMFTzzHlKuxHw==
-X-Received: by 2002:aed:37c9:: with SMTP id j67mr930434qtb.291.1570583149991;
-        Tue, 08 Oct 2019 18:05:49 -0700 (PDT)
+        bh=xi2d8YnbPtNoKTE5MU434pjnJ7aieZH7aFLuNWVyKe4=;
+        b=knv18yeQnWMq2/MjDMi+L4uLnpXbl9vQf+PF94M1k39Mlch+81SEzvMwvt2wffOIaS
+         TAK174ZJEkdm7zjIEX2seLRPVJBTM0ZHWGkizWwjMBRKX0MEjGPVVCfGhCgyx/oibdm4
+         LobJF1sjThJKEHgS4UxhG8oRiqtFjMtcFAsx2j3a7XYjix8lSbK61z2xZ9gCXu57gBd+
+         JG3EhWWTY1bxwxzYBhcGEg5IDSNG3J/Zn1RHm2Ddp+UL7iV3Zgwcl/B9AAw2xdW8Yboq
+         ZC4YqlFBHv4UFWy9FKgP6y/0SGYXzerqulY+KtVHU1/NuwzuzQdVNfqhv7fBWynNRkJF
+         4MLw==
+X-Gm-Message-State: APjAAAVkxuxOqtVc+Mjsm+ESkMP4h9HH+ZNlr0J2/6mK6JEkkHmoCido
+        487PTfccXc1qKjuV1pUKHzh1tg==
+X-Google-Smtp-Source: APXvYqw+Jl9QTkYHgPejcZ71bkGLE+/o7ly/iDYvs7q9750j7UKiedQF32/x3n4bY13zKX+dcdBYWA==
+X-Received: by 2002:ac8:141a:: with SMTP id k26mr983395qtj.372.1570583251909;
+        Tue, 08 Oct 2019 18:07:31 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id u27sm342305qta.90.2019.10.08.18.05.48
+        by smtp.gmail.com with ESMTPSA id s23sm290842qte.72.2019.10.08.18.07.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 18:05:49 -0700 (PDT)
-Date:   Tue, 8 Oct 2019 18:05:36 -0700
+        Tue, 08 Oct 2019 18:07:31 -0700 (PDT)
+Date:   Tue, 8 Oct 2019 18:07:19 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, alex.aring@gmail.com,
-        stefan@datenfreihafen.org, jon.maloy@ericsson.com,
-        ying.xue@windriver.com, johannes.berg@intel.com, mkubecek@suse.cz,
-        yuehaibing@huawei.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next] net: genetlink: always allocate separate attrs
- for dumpit ops,
-Message-ID: <20191008180536.2bf358a7@cakuba.netronome.com>
-In-Reply-To: <20191008103143.29200-1-jiri@resnulli.us>
-References: <20191008103143.29200-1-jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jon.maloy@ericsson.com, ying.xue@windriver.com,
+        johannes.berg@intel.com, mkubecek@suse.cz, mlxsw@mellanox.com
+Subject: Re: [patch net-next] net: tipc: prepare attrs in
+ __tipc_nl_compat_dumpit()
+Message-ID: <20191008180719.2189ee8d@cakuba.netronome.com>
+In-Reply-To: <20191008110151.6999-1-jiri@resnulli.us>
+References: <20191008110151.6999-1-jiri@resnulli.us>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -65,23 +64,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Oct 2019 12:31:43 +0200, Jiri Pirko wrote:
+On Tue,  8 Oct 2019 13:01:51 +0200, Jiri Pirko wrote:
 > From: Jiri Pirko <jiri@mellanox.com>
 > 
-> Individual dumpit ops (start, dumpit, done) are locked by genl_lock
-> for if !family->parallel_ops. However, multiple
-> genl_family_rcv_msg_dumpit() calls may in in flight in parallel.
-> Each has a separate struct genl_dumpit_info allocated
-> but they share the same family->attrbuf. Fix this by allocating separate
-> memory for attrs for dumpit ops, for non-parallel_ops (for parallel_ops
-> it is done already).
+> __tipc_nl_compat_dumpit() calls tipc_nl_publ_dump() which expects
+> the attrs to be available by genl_dumpit_info(cb)->attrs. Add info
+> struct and attr parsing in compat dumpit function.
 > 
-> Reported-by: syzbot+495688b736534bb6c6ad@syzkaller.appspotmail.com
-> Reported-by: syzbot+ff59dc711f2cff879a05@syzkaller.appspotmail.com
-> Reported-by: syzbot+dbe02e13bcce52bcf182@syzkaller.appspotmail.com
-> Reported-by: syzbot+9cb7edb2906ea1e83006@syzkaller.appspotmail.com
-> Fixes: bf813b0afeae ("net: genetlink: parse attrs and store in contect info struct during dumpit")
+> Reported-by: syzbot+8d37c50ffb0f52941a5e@syzkaller.appspotmail.com
+> Fixes: 057af7071344 ("net: tipc: have genetlink code to parse the attrs during dumpit")
+> 
 > Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 
-Dropped the comma at the end of the subject and s/for if/if/, 
-and applied :) Thanks!
+Dropped the empty line between Fixes and the signoff and applied.
+
+Jon, please post a fully formed Acked-by: ... tag, if you could,
+otherwise automation doesn't pick it up.
