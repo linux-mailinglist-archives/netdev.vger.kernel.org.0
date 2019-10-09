@@ -2,94 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6371D193E
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 21:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0F9D1949
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 21:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731397AbfJITwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 15:52:47 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:33540 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728804AbfJITwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 15:52:46 -0400
-Received: by mail-io1-f65.google.com with SMTP id z19so7989209ior.0
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 12:52:46 -0700 (PDT)
+        id S1731590AbfJIT4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 15:56:04 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:36836 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730490AbfJIT4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 15:56:03 -0400
+Received: by mail-pg1-f201.google.com with SMTP id h36so2457275pgb.3
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 12:56:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=smOqlbangbl/j+F0cqdsikuLQkS2xT/NWT5gQd8sJls=;
-        b=h44/uA8+MYfx0PT7eITBjLJ+Pw087ws7yOxOeXHpzTlWVEDyD+KaDWa6M6qz4tRgDw
-         iS7KcfKPn8HA/Pv/pmH4wePzUh4M5YIUxugVXHtEMQrNA/mTcS0NI8bA8rqEkUACKLbf
-         fsMsSFpeRIDd0THdayKBi8dd8tRAhJbAEBB0nLVgCydkMXoenLCp/p+zjN/Nkr2xg3x/
-         PGHxgdvbbSq6nnnEN1I5+dzBUQbx0aR4W8ohFw5+7lxNnf5NGij2/r+LsBeVaD29MbVJ
-         DfzPjW0xLjl4cw6awGZ7S/rq23OW5vGSM0C6KGbOkxrUTbmo+l52CJeWH6nPJ9/nvwI0
-         iP3g==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=HY7z8JgUwCkZwIzYXPlScRPd3CyL4dT4HGyioRN4tBw=;
+        b=Bm9Z+TT+I3J2lu1mte4p3EhD5fAd9IumLBsQaecVML0XzT4kuMzD0nCJZwGADDhv2f
+         7PbvQPm+oSZw0PL0kgqKyvOOas6jcFrgEfKTxhdNobTQvsmZjrHaw0sWjcNGZVyk5oSA
+         ClWhff43GI7AHBVEixfc1k/NNqwUqLn2iVJiQx1GISuO9bwYbIkZLDfo1vUBhWg/YF36
+         QDjtmLyHh1NK7rtDCtGyFHqOCCUzXUe8yD61BzFVKRQnCIv/I7mQExt9+kwC3/dSmjAT
+         zbhXkGndOT+mU1zmjlogBg+cHrxQJxq313VJ/1jRftR3ee3alJ45HwnP1HMfo8VUqdN4
+         xFyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=smOqlbangbl/j+F0cqdsikuLQkS2xT/NWT5gQd8sJls=;
-        b=hCJfnZC1dbIQmQr9fDDeHlyAXV7JjAa/O7wZ91e1c8syxgUXORnbTZIx4W5LZmly31
-         +C5nGdWHmpugJ97dZ9hTql/cJfxrqYi5PRM6M9IRbHO3txDA9BdWsPpr5Fl6BkkYf0IN
-         6UhgY0Pl5Fz3w8iiICASQiQQgw9wvbf+aHGFqwsZARkHWEF0GTnV3Lg0ZStJu6jvDhB5
-         Lsl6JRrsrlRKwEIQn/yCwfQHcABQoqOis7/+FBkUzyWgbdJUhs2WcPYKFhNuxFXBeVCe
-         zKxExd7413c7rTItaLtPWfPOMtuZx/0/yGe+gZbm9jUZoN8pwt9UI6qDaglCQnaxIMs1
-         wxyw==
-X-Gm-Message-State: APjAAAUCFl+8EkzFDSJuV+QpcZEXWTOlDiQH+vyjmeBd1AqDylH5AcHQ
-        38rSOQL7Zdin2AgHvMy3kkSEOffAq84OlYWBovQ=
-X-Google-Smtp-Source: APXvYqzHTcajx4W0hnx+xDAZMAcnjOQ6NP6ImGlJujpSrprJoENz/8oT4oxoOuJwQ87CLguxKD8rXX/Ah1y7J+7krG8=
-X-Received: by 2002:a6b:5814:: with SMTP id m20mr5268461iob.242.1570650766035;
- Wed, 09 Oct 2019 12:52:46 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a4f:3919:0:0:0:0:0 with HTTP; Wed, 9 Oct 2019 12:52:45 -0700 (PDT)
-Reply-To: mrs.suzanmark12@yahoo.com
-From:   Mr David Nicholas <mrs.rosekelly123@gmail.com>
-Date:   Wed, 9 Oct 2019 12:52:45 -0700
-Message-ID: <CAMZL-QyzVSC6hxR01Nxu9W1pT4GCxChT4c4OVqeer5rqneqHpQ@mail.gmail.com>
-Subject: ATTN: My Dear
-To:     undisclosed-recipients:;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=HY7z8JgUwCkZwIzYXPlScRPd3CyL4dT4HGyioRN4tBw=;
+        b=H1lR4i5vD8qPOZQ3qBFOOpmjuKXqCAJ4Olh4UzC9Egm4s3F0MD49socaA0hAb2eR9X
+         0bw8n8/TPQ+oI7poEMQTkOsXFdTtx99nXJ2AeZ1KWKNndh3pfNOpNVYea6Zfu/O531xv
+         +SdmHodE0CqUnwZUSEPyrUOdiz6VMbpdyk1xtybOJXs0r+cFSSCkiCBg8KTp8tBpgwSX
+         pLtxvwdHGwRq2HZhoR9dmtaUGIFUcGyxhSYQPet2uIZRSKq7PB16MgggG78t/a1/T3BU
+         K6aCF03bJw4jkHwa98l69jzrEuNdmYo5cAUO7Ydv0n+7qka4sIf76RBAnRbNewO3QHHu
+         wM6Q==
+X-Gm-Message-State: APjAAAVpYAbVtbkmeGemJK7oH69KZdK05FLbYMq++tVsTunCkQF6s+gI
+        t2H7ukOMz9qRRuchwVFUshDvPjDxsovTHg==
+X-Google-Smtp-Source: APXvYqw1/YnMufdVOBBRjUtBPdSZ3cygDjwmd2ACe8tFteHzWc3ZIbbI125bvoa5pbEhr4nww5A2KlqlKPBtEQ==
+X-Received: by 2002:a63:4e09:: with SMTP id c9mr5934523pgb.98.1570650962330;
+ Wed, 09 Oct 2019 12:56:02 -0700 (PDT)
+Date:   Wed,  9 Oct 2019 12:55:53 -0700
+Message-Id: <20191009195553.154443-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+Subject: [PATCH net] net: avoid possible false sharing in sk_leave_memory_pressure()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ATTN: My Dear
+As mentioned in https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
+a C compiler can legally transform :
 
-Good news,The BRITISH HIGH COMMISSION has actually verified and discovered
-that your payment has been unnecessarily Delayed by corrupt officials of the
-Company who are Trying to divert your fund of $4,700.000.00 Million
-into their private
-accounts. Therefore we have obtained an irrevocable payment guarantee on your
-Payment with the Bank to make your payment through our new ATM VISA CARD
-system which you can use to withdraw your money in any ATM MACHINE around your
-area.
+if (memory_pressure && *memory_pressure)
+        *memory_pressure = 0;
 
-So we are here by inviting you to our office to pick up your ATM VISA CARD but
-if you cannot be able to come down here in our office in person be inform that
-you are going to pay for shipping fee of your ATM visa CARD, so if you are
-unable to come down here then you are required to update us so that we will
-proceed with the necessary arrangement for the delivery of your ATM VISA CARD.
+to :
 
-As of now be informed that all arrangement has been done and the ATM VISA CARD
-has be in your name, but to RE-ACTIVATE the ATM Card you have to forward your
-current information as requested below to the bank for the ATM Card re-
-activcation, then we will send you the ATM CARD for your immediate use.
+if (memory_pressure)
+        *memory_pressure = 0;
 
-Here are the information you have to forward to the bank:
-1. Your Full Names:______
-2. Postal Address:_______
-3. Direct Cell Numbers:_______
-4. E-mail Address:________
-5. Sex:_____
-6.Age:_____
-7. Occupation:________
-8.Nationality:________
-9.whatsapp Number______
+Fixes: 0604475119de ("tcp: add TCPMemoryPressuresChrono counter")
+Fixes: 180d8cd942ce ("foundations of per-cgroup memory pressure controlling.")
+Fixes: 3ab224be6d69 ("[NET] CORE: Introducing new memory accounting interface.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/sock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Therefore you are advised to contact Bank accountant Manager Mrs.Susan Mark
+diff --git a/net/core/sock.c b/net/core/sock.c
+index fac2b4d80de5e54c77628073d7930bddf8a10cb3..50647a10fdb7f050e963e2734f0d3555fa4bd7aa 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2334,8 +2334,8 @@ static void sk_leave_memory_pressure(struct sock *sk)
+ 	} else {
+ 		unsigned long *memory_pressure = sk->sk_prot->memory_pressure;
+ 
+-		if (memory_pressure && *memory_pressure)
+-			*memory_pressure = 0;
++		if (memory_pressure && READ_ONCE(*memory_pressure))
++			WRITE_ONCE(*memory_pressure, 0);
+ 	}
+ }
+ 
+-- 
+2.23.0.581.g78d2f28ef7-goog
 
-CONTACT PERSON: Mrs.Susan Mark
-Direct Hotline: +22990489892
-E-mail:( mrs.suzanmark12@yahoo.com )
-
-Mr David Nicholas
