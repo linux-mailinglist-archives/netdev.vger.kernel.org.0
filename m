@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F86D108A
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 15:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9003BD10FE
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 16:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731144AbfJINsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 09:48:54 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:57137 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729883AbfJINsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 09:48:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570628933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oL/XrZH1ikTD6P6rpWO457HTENd5c2wTrF29IM78NRw=;
-        b=bN4Op87PHheDjZa1xAqw+I4sejXdsSgB50yDiLZ0JIrQbuFUV8b/RLP+QK80C4DrIWH3Mh
-        lY6r/PtwK0gP5uPzzGkbkAdgbAogkMC57NLqVYHarUVJBFd4WHoeamoUXwh8qAr1gU2Mh4
-        c7O8qmACS4LJErx6j3Cw97uzTuZyRME=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-15-M5PY6-TQOJCkb1zyNG1D_w-1; Wed, 09 Oct 2019 09:48:51 -0400
-Received: by mail-wr1-f70.google.com with SMTP id j7so1144213wrx.14
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 06:48:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VyQvhDIjTJUCBS7FbKutKN0cSsEdB4JBk/+K0U8A8KQ=;
-        b=fLya9XsCb8lj73zkITQhktU8ipmc0XfH+CoZ3w6qcI3bTSgbunu7ohjmx8zV5GVj93
-         Qhb5xZplJzvDqDTaTYrrT8/OJOHAGSu7Zog7VEpcPvgX6T4GVnEa8i1yksMs6gJlIVzX
-         XDbtxfwAqLSDncnNpONhNhIP26hJ4QHRZC04eY4Jw1VMRqCSYByyowxD2lq2oDXmDp+3
-         r2f2LSzLkwjUmeczLsiLm+PFnD3BZc8UT8tjdx/ye649GKWBRPTNLe9bkH85WMyTG7dm
-         AJtk/ReqjTOTGz4dtQ6rtIMCo3TuHCW8Dzs59h4i9UH73KW2y8FTZpa1tVp7szPZ78Wn
-         n1DQ==
-X-Gm-Message-State: APjAAAV9Fxw/KGWmZkqpbNvknX4LrYP+CmPmDtqNGTUCm+/U4u/h8lio
-        98YUJIMfy7yZOGVnQc3UuTnaMnCtEuTnlRQFU27d3AlQMlSuWZrVXSQcxm7deSY9HD/L86XhqCX
-        e16ZRq3h6+lG+gkC7
-X-Received: by 2002:a5d:5589:: with SMTP id i9mr3128624wrv.129.1570628929977;
-        Wed, 09 Oct 2019 06:48:49 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxmDk+Y1hBWQEY46aDWNnpk9mmTO2JbHM2AqqdIa5tw405OdvhQrGar4chIdOBolCjlnd2dkA==
-X-Received: by 2002:a5d:5589:: with SMTP id i9mr3128613wrv.129.1570628929853;
-        Wed, 09 Oct 2019 06:48:49 -0700 (PDT)
-Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
-        by smtp.gmail.com with ESMTPSA id b144sm3537562wmb.3.2019.10.09.06.48.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 06:48:49 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 15:48:47 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] netns: fix NLM_F_ECHO mechanism for RTM_NEWNSID
-Message-ID: <20191009134847.GB17373@linux.home>
-References: <20191008231047.GB4779@linux.home>
- <20191009091910.4199-1-nicolas.dichtel@6wind.com>
-MIME-Version: 1.0
-In-Reply-To: <20191009091910.4199-1-nicolas.dichtel@6wind.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-MC-Unique: M5PY6-TQOJCkb1zyNG1D_w-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+        id S1730503AbfJIOQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 10:16:15 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.25]:27585 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729491AbfJIOQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 10:16:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1570630570;
+        s=strato-dkim-0002; d=pixelbox.red;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=XSSL21NdaClI94p1jn2W9ASCiLNEtcEZcSQFd9LgbO4=;
+        b=tpKjI8EzDBgjnHsnCMlh4+J3Faho3LhjZLW5D0A4mA+0+NNg2dVb0Y00kSR8L59j+Y
+        dZzYBhbGXHXW6o2xscgZTtT5nPTqzDpmBcIIUESF5wNw5C8NkLqVLSRE0oO6/v8yuXvm
+        r900DYdgZsZWqEarK9XP1k5zGFMJDkI0YIPqH8UkH8OdTuGKyhT+0d8cgXtWd2UNJrQi
+        awnd4N9vbID+VmyLV9mvpxWuGTRsjqcTfAqewZCwJye7jVeHB4sw26AhnfTVtrZowRDS
+        cVSjt8sAgcGDC5u9dpiVYybU89rtoiR+TVpJpX2za6EzcaSo0vsaBL8y86fTOKeg3CLk
+        WClA==
+X-RZG-AUTH: ":PGkAZ0+Ia/aHbZh+i/9QzqYeH5BDcTFH98iPmzDT881S1Jv9Y40I0vUpkEK3poY1KyL7e8vwUVd6rhLT+3nQPD/JTWrS4IlCVOSV0M8="
+X-RZG-CLASS-ID: mo00
+Received: from localhost.localdomain
+        by smtp.strato.de (RZmta 44.28.0 AUTH)
+        with ESMTPSA id d0520cv99EG5lyf
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Wed, 9 Oct 2019 16:16:05 +0200 (CEST)
+From:   Peter Fink <pedro@pixelbox.red>
+To:     netdev@vger.kernel.org
+Cc:     pfink@christ-es.de, davem@davemloft.net
+Subject: [PATCH net-next] net: usb: ax88179_178a: write mac to hardware in get_mac_addr
+Date:   Wed,  9 Oct 2019 16:15:49 +0200
+Message-Id: <1570630549-23976-1-git-send-email-pedro@pixelbox.red>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 11:19:10AM +0200, Nicolas Dichtel wrote:
-> The flag NLM_F_ECHO aims to reply to the user the message notified to all
-> listeners.
-> It was not the case with the command RTM_NEWNSID, let's fix this.
->=20
-Acked-by: Guillaume Nault <gnault@redhat.com>
-Tested-by: Guillaume Nault <gnault@redhat.com>
+From: Peter Fink <pfink@christ-es.de>
+
+When the MAC address is supplied via device tree or a random
+MAC is generated it has to be written to the asix chip in
+order to receive any data.
+
+In the previous commit (9fb137a) this line was omitted
+because it seemed to work perfectly fine without it.
+But it was simply not detected because the chip keeps the mac
+stored even beyond a reset and it was tested on a hardware
+with an integrated UPS where the asix chip was permanently
+powered on even throughout power cycles.
+
+Signed-off-by: Peter Fink <pfink@christ-es.de>
+---
+ drivers/net/usb/ax88179_178a.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index 5a58766..c5a6e75 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1235,6 +1235,9 @@ static void ax88179_get_mac_addr(struct usbnet *dev)
+ 		netdev_info(dev->net, "invalid MAC address, using random\n");
+ 		eth_hw_addr_random(dev->net);
+ 	}
++
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN, ETH_ALEN,
++			  dev->net->dev_addr);
+ }
+ 
+ static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
+-- 
+2.7.4
 
