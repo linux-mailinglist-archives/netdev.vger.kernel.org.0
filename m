@@ -2,71 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4967AD052F
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 03:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AF1CD0546
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 03:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730000AbfJIBYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 21:24:01 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:52288 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729700AbfJIBYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 21:24:01 -0400
-Received: by mail-io1-f71.google.com with SMTP id g8so1718446iop.19
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 18:24:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=sTtRhHB+FIjWWxBw0tW/N10Uhy+DblHPCwc6eoAtz5k=;
-        b=oiAWWqUylNr3KOETw/hKXjooTyE40LpNUb3gnh6GCEbRBD91yGcllcNX4o+Nvc7d5K
-         LZzk/FZl9Aw7cZaqU3o0yl7XB0O1G04Ron2Ztk3xH14Rspw2rcVnTGATUey7GEWkcdB6
-         Y9GX7KrsnAdhU2n61jw0s5aWQaYJh/ENkBk62gQfISZUYC5efTE9r4ys+AjQf/oQfigd
-         5gVVwnFRFYINppyv4Rd0RaGw+hSGyMcXOT05cYqidsNlu9fdgJKon8eDAUCIhpyVWXqu
-         QNCl2jW5/x+zmjsnTUu/JqlwLyvPnm5mwF7fmyVkZd6fxLoxNy6tqZHSjXBRyonZToSP
-         gW7Q==
-X-Gm-Message-State: APjAAAUZEPWHIGUA72NH/HQI1cG6syJWKUCMuwlRtOlAt0tWDP+JZFO7
-        JNPgnLePXqYSHCAzzuudK1oYIPAuyRdudRoYQTc1ITyMqHoO
-X-Google-Smtp-Source: APXvYqyml+7hac2zw8kA+I+beki59R3+vmtmhi38APoNrgs+TwehFpFdJXlSQvQdoHGpVepARpzBN69101g2pAxrteTrw07JUTF4
+        id S1730217AbfJIBf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 21:35:59 -0400
+Received: from mail.disavowed.jp ([45.32.17.113]:57180 "EHLO mail.disavowed.jp"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729700AbfJIBf7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Oct 2019 21:35:59 -0400
+X-Greylist: delayed 565 seconds by postgrey-1.27 at vger.kernel.org; Tue, 08 Oct 2019 21:35:57 EDT
+Received: from basementcat.disavowed.pw (localhost [IPv6:::1])
+        by mail.disavowed.jp (Postfix) with ESMTP id C9053129133;
+        Wed,  9 Oct 2019 10:26:26 +0900 (JST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=disavowed.jp;
+        s=disavowed_jp; t=1570584386;
+        bh=jDhbKlgzNR0C7L7LQxaLyDcNYD9G2tDQqT6uGp6uFAk=;
+        h=Date:From:To:Cc:Subject;
+        b=yH7oqB2RF/3WoQ6XY8Que7vXZl/Fi84AS9uoZq3cTGNojxCWEWGcG6obIMow2VPv4
+         A5cMR4QDahR1cn3G7BuSs3XlBKPdlPi9CAcdvYtPGvzwYoBq3XbZtFoshCFlbKkf66
+         Tu3XKkbOiC6MDliczQE1VmVLuKXGIuMryWeIASmU=
+Date:   Wed, 9 Oct 2019 10:26:30 +0900
+From:   Christopher KOBAYASHI <chris@disavowed.jp>
+To:     netdev@vger.kernel.org
+Cc:     trivial@kernel.org
+Subject: [PATCH] net/appletalk: restore success case for atalk_proc_init()
+Message-ID: <20191009012630.GA106292@basementcat>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:d917:: with SMTP id n23mr1244594iop.28.1570584240714;
- Tue, 08 Oct 2019 18:24:00 -0700 (PDT)
-Date:   Tue, 08 Oct 2019 18:24:00 -0700
-In-Reply-To: <000000000000ba89a9059456a51f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c1f845059470233a@google.com>
-Subject: Re: KASAN: use-after-free Read in nl8NUM_dump_wpan_phy
-From:   syzbot <syzbot+495688b736534bb6c6ad@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, jiri@mellanox.com,
-        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, stefan@datenfreihafen.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="GvXjxJ+pjyke8COw"
+Content-Disposition: inline
+User-Agent: =?utf-8?B?0JLQsNGBINGN0YLQviDQvdC1INC60LA=?=
+ =?utf-8?B?0YHQsNC10YLRgdGP?= 
+X-PGP-Key: https://www.disavowed.jp/keys/chris.disavowed.jp.asc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
 
-commit 75cdbdd089003cd53560ff87b690ae911fa7df8e
-Author: Jiri Pirko <jiri@mellanox.com>
-Date:   Sat Oct 5 18:04:37 2019 +0000
+--GvXjxJ+pjyke8COw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-     net: ieee802154: have genetlink code to parse the attrs during dumpit
+Commit e2bcd8b0ce6ee3410665765db0d44dd8b7e3b348 to
+net/appletalk/atalk_proc.c removed the success case, rendering
+appletalk.ko inoperable.  This one-liner restores correct operation.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14620210e00000
-start commit:   056ddc38 Merge branch 'stmmac-next'
-git tree:       net-next
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=16620210e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12620210e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9be300620399522
-dashboard link: https://syzkaller.appspot.com/bug?extid=495688b736534bb6c6ad
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e256c3600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=175ecdfb600000
+Signed-off-by: Christopher KOBAYASHI <chris@disavowed.jp>
+---
+diff --git a/net/appletalk/atalk_proc.c b/net/appletalk/atalk_proc.c
+index 550c6ca007cc..9c1241292d1d 100644
+--- a/net/appletalk/atalk_proc.c
++++ b/net/appletalk/atalk_proc.c
+@@ -229,6 +229,8 @@ int __init atalk_proc_init(void)
+ 				     sizeof(struct aarp_iter_state), NULL))
+ 		goto out;
+=20
++	return 0;
++
+ out:
+ 	remove_proc_subtree("atalk", init_net.proc_net);
+ 	return -ENOMEM;
 
-Reported-by: syzbot+495688b736534bb6c6ad@syzkaller.appspotmail.com
-Fixes: 75cdbdd08900 ("net: ieee802154: have genetlink code to parse the  
-attrs during dumpit")
+--GvXjxJ+pjyke8COw
+Content-Type: application/pgp-signature; name="signature.asc"
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEpYIbsm5ySb/UuiW05Aw3+RmcaWQFAl2dN0IACgkQ5Aw3+Rmc
+aWSXnA/+NTJ2LBAcxPV24Ts06zZr/IBtVbgweiPQKWFnvH9R41KVkdl8mIDvKE8N
+wmdhZO7LVs9fuWV5yy7fWQPhdT7xMUXP02tR81K+RzGHtgHlDvBAGWOldwucfpKZ
+OCVBakEkLiJwcHZDDG2hXlu45Ufl8zMrqbb0rYSA3fUMuYvucuOmsXWWJQn1lgsn
++NsltEsV7DF9swYOqMwtP28mp/W3Zbgay91/m9G8HeCvGec8X3Uw81ozKOE1AxSX
+r3q1MGu2hpM41GZ1NIYFO8vy5M67p07pjG6XR1i6x0RjrpBJj2l0Ar6lyae2xW8P
+DlfYjzp1hTjnjVdTescL07r3EBBWnQpz6nh/ilaIG6HratZ8dUDteyRLsYHY9jUg
+Kbzp+WW95AkszKGry3cNkqCSZgCfU1sDrpJIE5M3BQYVDzS0qUUczi6CNo0anBbJ
+EiwJnDl2M0iXl5gmrS+AnJsC7d4JktsSuhIWNEGHVgeGQkgARUTqdYoVSmEY8Fxt
+Y6aHvQFVNQx1jaNVh0QLfGeJXo2VN9z+b5OXW8DmwP9sKyQXXRYSnG2bGliEj+rE
+tITSYJiOCIdgBdgAyWMt2gEmHW4IfvgcsJrUjR5kraAsMfrEcYX2Wn+NQupZPGxw
+ZvOzFqu7TQizwu2McCET0CTaUZVdIq6bc7+GetADwi72GceL7tA=
+=ic5I
+-----END PGP SIGNATURE-----
+
+--GvXjxJ+pjyke8COw--
