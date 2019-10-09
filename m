@@ -2,74 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E8AD0F49
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 14:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16E48D0F47
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 14:58:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731138AbfJIM63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 08:58:29 -0400
-Received: from skyboo.net ([5.252.110.31]:38702 "EHLO skyboo.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730765AbfJIM63 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 08:58:29 -0400
-X-Greylist: delayed 2265 seconds by postgrey-1.27 at vger.kernel.org; Wed, 09 Oct 2019 08:58:28 EDT
-Received: from [10.1.0.1] (helo=nemesis.skyboo.net)
-        by skyboo.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.91)
-        (envelope-from <manio@skyboo.net>)
-        id 1iIAxN-0003Ad-GO; Wed, 09 Oct 2019 14:20:41 +0200
-Date:   Wed, 9 Oct 2019 14:20:41 +0200
-From:   Mariusz Bialonczyk <manio@skyboo.net>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Francois Romieu <romieu@fr.zoreil.com>
-Message-Id: <20191009142041.1e8d9cb0d79ed91a38d03b0a@skyboo.net>
-In-Reply-To: <c6cac9fa-36fe-dded-a0a7-082326c3cc36@gmail.com>
-References: <20190913114424.540c1d257c4083eace242bbf@skyboo.net>
-        <c55484e7-9dfb-0e5e-3887-278a334ac831@gmail.com>
-        <20191008102706.e3f57ffe3e779802898a99ee@skyboo.net>
-        <c6cac9fa-36fe-dded-a0a7-082326c3cc36@gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 10.1.0.1
-X-SA-Exim-Rcpt-To: hkallweit1@gmail.com, netdev@vger.kernel.org, romieu@fr.zoreil.com
-X-SA-Exim-Mail-From: manio@skyboo.net
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on nemesis.skyboo.net
+        id S1731147AbfJIM6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 08:58:08 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:57470 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730765AbfJIM6I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 08:58:08 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id E715160AA8; Wed,  9 Oct 2019 12:58:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570625886;
+        bh=Ey3JcADzZq0JNAquPvYQB5wL7Yp4FKioADNOOeAivCk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=N60HIJMEuGZWALQrRHiB1H5B4nw14VAadR00WEljjgHMmhw7qShXBWSzTKFB8jTDY
+         gyX2BV5nV3uwEjrTKAFYKCoPe2977qUK1LhOhrCyKI0sZgQ6wNT5d6vjwLsGcD28+N
+         ChrbB++alstlU/8G0lcjRMfQOlvfWoeVjm0Amyhs=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.1
-Subject: Re: RTL8169 question
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on skyboo.net)
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from x230.qca.qualcomm.com (85-76-42-199-nat.elisa-mobile.fi [85.76.42.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EF8CA601E7;
+        Wed,  9 Oct 2019 12:58:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570625886;
+        bh=Ey3JcADzZq0JNAquPvYQB5wL7Yp4FKioADNOOeAivCk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=N60HIJMEuGZWALQrRHiB1H5B4nw14VAadR00WEljjgHMmhw7qShXBWSzTKFB8jTDY
+         gyX2BV5nV3uwEjrTKAFYKCoPe2977qUK1LhOhrCyKI0sZgQ6wNT5d6vjwLsGcD28+N
+         ChrbB++alstlU/8G0lcjRMfQOlvfWoeVjm0Amyhs=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EF8CA601E7
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     zhengbin <zhengbin13@huawei.com>
+Cc:     <pkshih@realtek.com>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH RESEND] rtlwifi: rtl8192ee: Remove set but not used variable 'err'
+References: <1570612107-13286-1-git-send-email-zhengbin13@huawei.com>
+Date:   Wed, 09 Oct 2019 15:58:01 +0300
+In-Reply-To: <1570612107-13286-1-git-send-email-zhengbin13@huawei.com>
+        (zhengbin's message of "Wed, 9 Oct 2019 17:08:27 +0800")
+Message-ID: <8736g2rs86.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Oct 2019 22:04:45 +0200
-Heiner Kallweit <hkallweit1@gmail.com> wrote:
+zhengbin <zhengbin13@huawei.com> writes:
 
-> Thanks for the comprehensive analysis! Comparing the chip registers before
-> and after suspend your BIOS seems to change registers on resume from suspend,
-> and the driver doesn't configure jumbo when resuming. This may explain the
-> issue. The combination jumbo + suspend + BIOS bug seems to be quite rare,
-> else I think we should have seen such a report years ago already.
-I see.
+> Fixes gcc '-Wunused-but-set-variable' warning:
+>
+> drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c: In function rtl92ee_download_fw:
+> drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c:111:6: warning: variable err set but not used [-Wunused-but-set-variable]
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: zhengbin <zhengbin13@huawei.com>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 
-> Could you please check whether the following patch fixes the issue for you?
-I've tested your patch with minor change when applying on top of the current
-master tree.
+There's no changelog, why did you resend? Document clearly the changes
+so that maintainers don't need to guess what has changed:
 
-The result is: it is working great!
-No more problems, that I was observing before.
-Thank you very much, Heiner!
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#changelog_missing
 
-You can add:
-Reported-by: Mariusz Bialonczyk <manio@skyboo.net>
-Tested-by: Mariusz Bialonczyk <manio@skyboo.net>
-
-regards,
 -- 
-Mariusz Białończyk | xmpp/e-mail: manio@skyboo.net
-http://manio.skyboo.net | https://github.com/manio
+Kalle Valo
