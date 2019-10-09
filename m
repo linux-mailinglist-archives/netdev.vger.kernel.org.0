@@ -2,268 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2ECCD1702
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:45:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B978AD170B
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731943AbfJIRpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 13:45:45 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:33578 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731832AbfJIRpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 13:45:45 -0400
-Received: by mail-qt1-f193.google.com with SMTP id r5so4665026qtd.0;
-        Wed, 09 Oct 2019 10:45:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zwnNTaQIaUTddUko874FzJjuDJo3zgtFneSvZk5Fx5A=;
-        b=Fbtqe6B3QNe0PRAZEQ4Vbn/vRPPmtp9A3FwuhAqXcPkvvoI1qSLefw8gBxaJkrS8Cs
-         f8I519PGR6Sy5GcQXVx1+laTXVCdAMD0K+BjIZZSccTrbE77C6hRa/J8bTPLR/RuFm0a
-         8adCh32GXm7aV/vNWtF6+llGaP0KxKSHW1hhj4YOLFcQEJuEbS862ZDnzHORroPffRDQ
-         7JY/Sq3fdngcXEwiP1j3FN834/PTkj+MmubYBAAr6qi3w6VLr75B3oU2NzFqJC/NXwyR
-         ShNBv/zEYVaMmsL4l0Skp6aU9jWA4TxS/FaIhMz0V3Mk+dCWd3V1eYjPiDV5QtfL4yJD
-         NZ+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zwnNTaQIaUTddUko874FzJjuDJo3zgtFneSvZk5Fx5A=;
-        b=KsJs/StjAIz0CZ68nEnsArj5hN1uN2ULTYrZxHts+OOcClRN8yOwM9QcMf8kE61cwf
-         9mzJESDOZFmEQcGh2GrKKgpBAEn5Fl3X6SGcWXxfj8AbkBouAdrE2HiLcK3M6PJgfrnh
-         co+biN/EHrWwv9bfU4dwL/9/Z0XdjtG5Nkp/FeZH66KDFo0gL62iDOJSMcAa7z65DcFC
-         1lM/o8hG8XjPBS1s3KYm15ckXlmXWEfbXs5E/eoz9pZIgcVGjP0Xr6UjVgn6opqsKFgD
-         8fi4SBql1OF+Si/FeflueuYTgAVXCPdXErwj2O7otPzhpY9RCFWZaqW4Z4tRn/DBqYTJ
-         bZlQ==
-X-Gm-Message-State: APjAAAV9Ixyp5eTqsby022DhpZ0e5ZRhmdbGj3HEBuFojXmjOQW108Sf
-        wnSkg0kGrZ0beQS3VUMoxY0=
-X-Google-Smtp-Source: APXvYqzqZpGtqvkKPrFxQ3rXpMHb0EIby5ciwFpjy61yQqMdiGHpqB4KCCkmJFDkbGRk+wdloiYfpA==
-X-Received: by 2002:ac8:259a:: with SMTP id e26mr5081401qte.134.1570643143629;
-        Wed, 09 Oct 2019 10:45:43 -0700 (PDT)
-Received: from frodo.byteswizards.com ([190.162.109.190])
-        by smtp.gmail.com with ESMTPSA id n21sm1380882qka.83.2019.10.09.10.45.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 10:45:42 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 14:45:38 -0300
-From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        ebiederm@xmission.com, Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH v13 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
-Message-ID: <20191009174538.GB12351@frodo.byteswizards.com>
-References: <20191009152632.14218-1-cneirabustos@gmail.com>
- <20191009152632.14218-3-cneirabustos@gmail.com>
- <CAEf4BzYf77BxVy9bNBhW5SFA7nkMLyt_BfDEKC1Nis8Hcc2MqA@mail.gmail.com>
+        id S1731413AbfJIRqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 13:46:35 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46794 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730503AbfJIRqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 13:46:34 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x99HS0xt012059;
+        Wed, 9 Oct 2019 10:46:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=qrPEMbARNeDldiC1mzQOOffdMblVzIxsjzRzEDeqHpY=;
+ b=q7L/fe4GNxv/kThwJ8IXOM1Djtu7149OjryWosQ0ZMCyBr+WiHwYydbbyAYvcLP6UV9n
+ grHw96lwqU6mtMPdwDSLX1ju6vMuidlIQVIG79xGBqpot/vgTRo8mOy3Z5G7MnOGtYfu
+ pYgwcl175jNaSTIxgZRa4+m05i6PG6PqqEs= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vhfsdshau-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 09 Oct 2019 10:46:19 -0700
+Received: from prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 9 Oct 2019 10:46:18 -0700
+Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
+ prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 9 Oct 2019 10:46:18 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Wed, 9 Oct 2019 10:46:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MoVaDvmlDWkGES9ZttRmrnnhSRwDIoluYpxtK1cOmvtbteRyjqVQSSm9R33NIOOXf0YuN7au7h/3T2E8n61z3hNKZQl/5EiH25G2H7sV91DT7QFpSzecGp1h74f96qTYrk0OvVyiv/mBGINbgNqh1tmu4AWB4//Rj1cE2b9M4GPkbGVStuj7GDkbL1Tc8lNAKHahW5Iih40DzEHAFgteRFw3VALF+pF+uqWHDIQ/YJtA+lVrwjlW0Rxrf+AkNe7oKl1kxFDr0J2llKsiyAbaYdTAYQFIffW1j7tFLFdnQMd9OyLrGl9qEA0pYbPQbNYuMVtPKWIkU2au3LhBS03yVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qrPEMbARNeDldiC1mzQOOffdMblVzIxsjzRzEDeqHpY=;
+ b=WIJQePC+DviTCu8D+TXFI+u2h4opgoNrs5tyCOKQ3qsjAs2/Jc7UAZhpt99z3MvPzjglH4+luOIJCh4g7E9KTCbJ/FTFNj0ddT89E7VC7qQuIR2ZWsYZ1hzrQN8hkY8PALNR26cvv+IGgOXoy94wUmXozCjW+WZ3+8F48kj9bAx8JenPd4kS+QMVRe/NTHAdY7pNiM2rvJp4tStI22KpPDFQ5VWNXukZ4ZnG6P7W89UEuD+uaQwJ55OXKnwH3zCqAMY+Y8w2PtJ+7kERJt4pHm4xVPguY/VRElWBvcpXZqnafBu2jhmneOg3s7UtrABTl3ANqzJLfFE6HtKdKftG7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qrPEMbARNeDldiC1mzQOOffdMblVzIxsjzRzEDeqHpY=;
+ b=ef20qnEe2tMbx77BuaBp+ZTTanNXuZp/2J3Cj+ghM2K0K7Mn1JKfeREUvR45JZo2Zrnrn9KLyIA4Xuq3Lpelx+398WCbi2Eu4OfKCiJKDOr1yymW9sfmDbDxCh6Fnc4apa/1a8iR2J3K1VMMm0EiooY5CyT+dLxTyEaXUWxQwA4=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB3126.namprd15.prod.outlook.com (20.178.239.157) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Wed, 9 Oct 2019 17:46:16 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0%5]) with mapi id 15.20.2327.026; Wed, 9 Oct 2019
+ 17:46:16 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 07/10] bpf: add support for BTF pointers to x86
+ JIT
+Thread-Topic: [PATCH bpf-next 07/10] bpf: add support for BTF pointers to x86
+ JIT
+Thread-Index: AQHVezpOv0LD+gVjOkeZwjfCf+3isadSmkUAgAACKIA=
+Date:   Wed, 9 Oct 2019 17:46:16 +0000
+Message-ID: <c08a5ce5-cc82-97ae-40cd-8f8bdd8a5668@fb.com>
+References: <20191005050314.1114330-1-ast@kernel.org>
+ <20191005050314.1114330-8-ast@kernel.org>
+ <CAEf4Bza0FP9EgXVuHsQFy4-bedn3uypuwznpu2fPDTYLaMAQpA@mail.gmail.com>
+In-Reply-To: <CAEf4Bza0FP9EgXVuHsQFy4-bedn3uypuwznpu2fPDTYLaMAQpA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR07CA0069.namprd07.prod.outlook.com (2603:10b6:100::37)
+ To BYAPR15MB2501.namprd15.prod.outlook.com (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::cfd7]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7f3308a4-8e37-494a-e12a-08d74ce095b5
+x-ms-traffictypediagnostic: BYAPR15MB3126:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB3126CCD98617FCD041E488E3D7950@BYAPR15MB3126.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-forefront-prvs: 018577E36E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(136003)(376002)(396003)(366004)(199004)(189003)(7736002)(31696002)(6116002)(86362001)(4326008)(36756003)(66946007)(66476007)(110136005)(64756008)(8936002)(66446008)(316002)(66556008)(186003)(102836004)(6506007)(99286004)(53546011)(81166006)(386003)(31686004)(81156014)(476003)(2616005)(11346002)(446003)(305945005)(486006)(46003)(52116002)(76176011)(8676002)(229853002)(6512007)(14454004)(6246003)(54906003)(2906002)(6486002)(478600001)(5660300002)(14444005)(6436002)(25786009)(71200400001)(71190400001)(256004);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3126;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2lbY8S5V5O7QOAuhCfVMBqdpET9yTwKJaCGpjOqgEn4Gv29pDmc/TjN5VX1GkochEd3srr60MATbqKDizpmvj0TQMuqA9JZra7Jn4ni/VAL+Amb1BALMUgP92M9lEzirH0TZPeQ3ke7xDhCVZC1/rqAUeLmW94fP8CWmVKcFT0W+OTv2QrogzDoWH0pasX/JRFTL835r9UYBt9mXS5SjQnicGfej6aWl9JA8zK/y79jN3cf0glAd+e/S0zh4WEE7Ypi8PROMeycIPTsG9k+pro9lDfmgo3DIkZZvCUJP33iEin5VeJuTI9ccksiSBpMDHxnBO+WG7s1MkZ/MT/cab/KvxdKuIv1Xpv94OX1aM/ZY2nfxEeA2BF/OW9qP1yMsCfuFPtdC9mtN6TebANb1Z3Ar9A8YobSaZVz6UZITKnc=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2445D815B501C14C9F461A3D8DE9E1D8@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYf77BxVy9bNBhW5SFA7nkMLyt_BfDEKC1Nis8Hcc2MqA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f3308a4-8e37-494a-e12a-08d74ce095b5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2019 17:46:16.6633
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: odbfZv13YhUwcHPCMTONGD1dQ+EIIDhoW2d3YIpE1GK7907960KjSbjGQ+PU1ZUf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3126
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-09_08:2019-10-08,2019-10-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 suspectscore=0
+ clxscore=1015 mlxlogscore=699 spamscore=0 mlxscore=0 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910090149
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 09:14:42AM -0700, Andrii Nakryiko wrote:
-> On Wed, Oct 9, 2019 at 8:27 AM Carlos Neira <cneirabustos@gmail.com> wrote:
-> >
-> > New bpf helper bpf_get_ns_current_pid_tgid,
-> > This helper will return pid and tgid from current task
-> > which namespace matches dev_t and inode number provided,
-> > this will allows us to instrument a process inside a container.
-> >
-> > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> > ---
-> >  include/linux/bpf.h      |  1 +
-> >  include/uapi/linux/bpf.h | 22 +++++++++++++++++++-
-> >  kernel/bpf/core.c        |  1 +
-> >  kernel/bpf/helpers.c     | 43 ++++++++++++++++++++++++++++++++++++++++
-> >  kernel/trace/bpf_trace.c |  2 ++
-> >  5 files changed, 68 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 5b9d22338606..231001475504 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
-> >  extern const struct bpf_func_proto bpf_strtol_proto;
-> >  extern const struct bpf_func_proto bpf_strtoul_proto;
-> >  extern const struct bpf_func_proto bpf_tcp_sock_proto;
-> > +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
-> >
-> >  /* Shared helpers among cBPF and eBPF. */
-> >  void bpf_user_rnd_init_once(void);
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 77c6be96d676..6ad3f2abf00d 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -2750,6 +2750,19 @@ union bpf_attr {
-> >   *             **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
-> >   *
-> >   *             **-EPROTONOSUPPORT** IP packet version is not 4 or 6
-> > + *
-> > + * u64 bpf_get_ns_current_pid_tgid(struct *bpf_pidns_info, u32 size)
-> 
-> Should be:
-> 
-> struct bpf_pidns_info *nsdata
-> 
-> > + *     Return
-> > + *             0 on success, values for pid and tgid from nsinfo will be as seen
-> > + *             from the namespace that matches dev and inum from nsinfo.
-> 
-> I think its cleaner to have a Description section, explaining that it
-> will return pid/tgid in bpf_pidns_info, and then describe exit codes
-> in Return section.
-> 
-> > + *
-> > + *             On failure, the returned value is one of the following:
-> > + *
-> > + *             **-EINVAL** if dev and inum supplied don't match dev_t and inode number
-> > + *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
-> > + *
-> > + *             **-ENOENT** if /proc/self/ns does not exists.
-> > + *
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -2862,7 +2875,8 @@ union bpf_attr {
-> >         FN(sk_storage_get),             \
-> >         FN(sk_storage_delete),          \
-> >         FN(send_signal),                \
-> > -       FN(tcp_gen_syncookie),
-> > +       FN(tcp_gen_syncookie),          \
-> > +       FN(get_ns_current_pid_tgid),
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> >   * function eBPF program intends to call
-> > @@ -3613,4 +3627,10 @@ struct bpf_sockopt {
-> >         __s32   retval;
-> >  };
-> >
-> > +struct bpf_pidns_info {
-> > +       __u64 dev;
-> > +       __u64 inum;
-> 
-> seems like conventionally this should be named "ino", this is what
-> ns_match calls it, so let's stay consistent.
-> 
-> > +       __u32 pid;
-> > +       __u32 tgid;
-> > +};
-> 
-> So it seems like dev and inum are treated as input parameters, while
-> pid/tgid is output parameter, right? Wouldn't it be cleaner to have
-> dev and inum as explicit arguments into bpf_get_ns_current_pid_tgid()?
-> What's also not great, is that on failure you'll memset this entire
-> struct to zero, and user will lose its dev/inum. So in practice you'll
-> be keeping dev/inum somewhere else, then constructing and filling in
-> this bpf_pidns_info struct every time you need to invoke
-> bpf_get_ns_current_pid_tgid.
-> 
-> Maybe it was discussed already, but IMO feels cleaner to have only
-> pid/tgid in bpf_pidns_info and pass dev/inum as direct arguments.
-> 
-> >  #endif /* _UAPI__LINUX_BPF_H__ */
-> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> > index 66088a9e9b9e..b2fd5358f472 100644
-> > --- a/kernel/bpf/core.c
-> > +++ b/kernel/bpf/core.c
-> > @@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
-> >  const struct bpf_func_proto bpf_get_current_comm_proto __weak;
-> >  const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
-> >  const struct bpf_func_proto bpf_get_local_storage_proto __weak;
-> > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
-> >
-> >  const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
-> >  {
-> > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-> > index 5e28718928ca..78a1ce7726aa 100644
-> > --- a/kernel/bpf/helpers.c
-> > +++ b/kernel/bpf/helpers.c
-> > @@ -11,6 +11,8 @@
-> >  #include <linux/uidgid.h>
-> >  #include <linux/filter.h>
-> >  #include <linux/ctype.h>
-> > +#include <linux/pid_namespace.h>
-> > +#include <linux/proc_ns.h>
-> >
-> >  #include "../../lib/kstrtox.h"
-> >
-> > @@ -487,3 +489,44 @@ const struct bpf_func_proto bpf_strtoul_proto = {
-> >         .arg4_type      = ARG_PTR_TO_LONG,
-> >  };
-> >  #endif
-> > +
-> > +BPF_CALL_2(bpf_get_ns_current_pid_tgid, struct bpf_pidns_info *, nsdata, u32,
-> > +       size)
-> > +{
-> > +       struct task_struct *task = current;
-> > +       struct pid_namespace *pidns;
-> > +       int err = -EINVAL;
-> > +
-> > +       if (unlikely(size != sizeof(struct bpf_pidns_info)))
-> > +               goto clear;
-> > +
-> > +       if ((u64)(dev_t)nsdata->dev != nsdata->dev)
-> 
-> this seems unlikely() as well :)
-> 
-> > +               goto clear;
-> > +
-> > +       if (unlikely(!task))
-> > +               goto clear;
-> > +
-> > +       pidns = task_active_pid_ns(task);
-> > +       if (unlikely(!pidns)) {
-> > +               err = -ENOENT;
-> > +               goto clear;
-> > +       }
-> > +
-> > +       if (!ns_match(&pidns->ns, (dev_t)nsdata->dev, nsdata->inum))
-> > +               goto clear;
-> > +
-> > +       nsdata->pid = task_pid_nr_ns(task, pidns);
-> > +       nsdata->tgid = task_tgid_nr_ns(task, pidns);
-> > +       return 0;
-> > +clear:
-> > +       memset((void *)nsdata, 0, (size_t) size);
-> > +       return err;
-> > +}
-> > +
-> > +const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
-> > +       .func           = bpf_get_ns_current_pid_tgid,
-> > +       .gpl_only       = false,
-> > +       .ret_type       = RET_INTEGER,
-> > +       .arg1_type      = ARG_PTR_TO_UNINIT_MEM,
-> 
-> So this is a lie, you do expect part of that struct to be initialized.
-> One more reason to just split off dev/inum(ino?).
-> 
-> 
-> > +       .arg2_type      = ARG_CONST_SIZE,
-> > +};
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index 44bd08f2443b..32331a1dcb6d 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> >  #endif
-> >         case BPF_FUNC_send_signal:
-> >                 return &bpf_send_signal_proto;
-> > +       case BPF_FUNC_get_ns_current_pid_tgid:
-> > +               return &bpf_get_ns_current_pid_tgid_proto;
-> >         default:
-> >                 return NULL;
-> >         }
-> > --
-> > 2.20.1
-> >
-Thanks for reviewing this, I'll make the changes you suggest.
-I'm not sure about removing dev and ino from struct bpf_pidns_info, I
-think is useful to know to which ns pid/tgid belong to using dev and ino
-to figure it out. Maybe in the future we could filter bpf_pidns_info
-structs by dev/ino, just an idea.  
-
-Bests
+T24gMTAvOS8xOSAxMDozOCBBTSwgQW5kcmlpIE5ha3J5aWtvIHdyb3RlOg0KPiBPbiBGcmksIE9j
+dCA0LCAyMDE5IGF0IDEwOjA0IFBNIEFsZXhlaSBTdGFyb3ZvaXRvdiA8YXN0QGtlcm5lbC5vcmc+
+IHdyb3RlOg0KPj4NCj4+IFBvaW50ZXIgdG8gQlRGIG9iamVjdCBpcyBhIHBvaW50ZXIgdG8ga2Vy
+bmVsIG9iamVjdCBvciBOVUxMLg0KPj4gU3VjaCBwb2ludGVycyBjYW4gb25seSBiZSB1c2VkIGJ5
+IEJQRl9MRFggaW5zdHJ1Y3Rpb25zLg0KPj4gVGhlIHZlcmlmaWVyIGNoYW5nZWQgdGhlaXIgb3Bj
+b2RlIGZyb20gTERYfE1FTXxzaXplDQo+PiB0byBMRFh8UFJPQkVfTUVNfHNpemUgdG8gbWFrZSBK
+SVRpbmcgZWFzaWVyLg0KPj4gVGhlIG51bWJlciBvZiBlbnRyaWVzIGluIGV4dGFibGUgaXMgdGhl
+IG51bWJlciBvZiBCUEZfTERYIGluc25zDQo+PiB0aGF0IGFjY2VzcyBrZXJuZWwgbWVtb3J5IHZp
+YSAicG9pbnRlciB0byBCVEYgdHlwZSIuDQo+PiBPbmx5IHRoZXNlIGxvYWQgaW5zdHJ1Y3Rpb25z
+IGNhbiBmYXVsdC4NCj4+IFNpbmNlIHg4NiBleHRhYmxlIGlzIHJlbGF0aXZlIGl0IGhhcyB0byBi
+ZSBhbGxvY2F0ZWQgaW4gdGhlIHNhbWUNCj4+IG1lbW9yeSByZWdpb24gYXMgSklUZWQgY29kZS4N
+Cj4+IEFsbG9jYXRlIGl0IHByaW9yIHRvIGxhc3QgcGFzcyBvZiBKSVRpbmcgYW5kIGxldCB0aGUg
+bGFzdCBwYXNzIHBvcHVsYXRlIGl0Lg0KPj4gUG9pbnRlciB0byBleHRhYmxlIGluIGJwZl9wcm9n
+X2F1eCBpcyBuZWNlc3NhcnkgdG8gbWFrZSBwYWdlIGZhdWx0DQo+PiBoYW5kbGluZyBmYXN0Lg0K
+Pj4gUGFnZSBmYXVsdCBoYW5kbGluZyBpcyBkb25lIGluIHR3byBzdGVwczoNCj4+IDEuIGJwZl9w
+cm9nX2thbGxzeW1zX2ZpbmQoKSBmaW5kcyBCUEYgcHJvZ3JhbSB0aGF0IHBhZ2UgZmF1bHRlZC4N
+Cj4+ICAgICBJdCdzIGRvbmUgYnkgd2Fsa2luZyByYiB0cmVlLg0KPj4gMi4gdGhlbiBleHRhYmxl
+IGZvciBnaXZlbiBicGYgcHJvZ3JhbSBpcyBiaW5hcnkgc2VhcmNoZWQuDQo+PiBUaGlzIHByb2Nl
+c3MgaXMgc2ltaWxhciB0byBob3cgcGFnZSBmYXVsdGluZyBpcyBkb25lIGZvciBrZXJuZWwgbW9k
+dWxlcy4NCj4+IFRoZSBleGNlcHRpb24gaGFuZGxlciBza2lwcyBvdmVyIGZhdWx0aW5nIHg4NiBp
+bnN0cnVjdGlvbiBhbmQNCj4+IGluaXRpYWxpemVzIGRlc3RpbmF0aW9uIHJlZ2lzdGVyIHdpdGgg
+emVyby4gVGhpcyBtaW1pY3MgZXhhY3QNCj4+IGJlaGF2aW9yIG9mIGJwZl9wcm9iZV9yZWFkICh3
+aGVuIHByb2JlX2tlcm5lbF9yZWFkIGZhdWx0cyBkZXN0IGlzIHplcm9lZCkuDQo+Pg0KPj4gSklU
+cyBmb3Igb3RoZXIgYXJjaGl0ZWN0dXJlcyBjYW4gYWRkIHN1cHBvcnQgaW4gc2ltaWxhciB3YXku
+DQo+PiBVbnRpbCB0aGVuIHRoZXkgd2lsbCByZWplY3QgdW5rbm93biBvcGNvZGUgYW5kIGZhbGxi
+YWNrIHRvIGludGVycHJldGVyLg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IEFsZXhlaSBTdGFyb3Zv
+aXRvdiA8YXN0QGtlcm5lbC5vcmc+DQo+PiAtLS0NCj4+ICAgYXJjaC94ODYvbmV0L2JwZl9qaXRf
+Y29tcC5jIHwgOTYgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLQ0KPj4gICBp
+bmNsdWRlL2xpbnV4L2JwZi5oICAgICAgICAgfCAgMyArKw0KPj4gICBpbmNsdWRlL2xpbnV4L2V4
+dGFibGUuaCAgICAgfCAxMCArKysrDQo+PiAgIGtlcm5lbC9icGYvY29yZS5jICAgICAgICAgICB8
+IDIwICsrKysrKystDQo+PiAgIGtlcm5lbC9icGYvdmVyaWZpZXIuYyAgICAgICB8ICAxICsNCj4+
+ICAga2VybmVsL2V4dGFibGUuYyAgICAgICAgICAgIHwgIDIgKw0KPj4gICA2IGZpbGVzIGNoYW5n
+ZWQsIDEyNyBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KPj4NCj4gDQo+IFRoaXMgaXMg
+c3VycHJpc2luZ2x5IGVhc3kgdG8gZm9sbG93IDopIExvb2tzIGdvb2Qgb3ZlcmFsbCwganVzdCBv
+bmUNCj4gY29uY2VybiBhYm91dCAzMi1iaXQgZGlzdGFuY2UgYmV0d2VlbiBleF9oYW5kbGVyX2Jw
+ZiBhbmQgQlBGIGppdHRlZA0KPiBwcm9ncmFtIGJlbG93LiBBbmQgSSBhZ3JlZSB3aXRoIEVyaWMs
+IHByb2JhYmx5IG5lZWQgdG8gZW5zdXJlIHByb3Blcg0KPiBhbGlnbm1lbnQgZm9yIGV4Y2VwdGlv
+bl90YWJsZV9lbnRyeSBhcnJheS4NCg0KYWxyZWFkeSBmaXhlZC4NCg0KDQo+IFsuLi5dDQo+IA0K
+Pj4gQEAgLTgwNSw2ICs4MzUsNDggQEAgc3R4OiAgICAgICAgICAgICAgICAgICAgICAgaWYgKGlz
+X2ltbTgoaW5zbi0+b2ZmKSkNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICBlbHNlDQo+PiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBFTUlUMV9vZmYzMihhZGRfMnJlZygweDgw
+LCBzcmNfcmVnLCBkc3RfcmVnKSwNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIGluc24tPm9mZik7DQo+PiArICAgICAgICAgICAgICAgICAgICAgICBpZiAo
+QlBGX01PREUoaW5zbi0+Y29kZSkgPT0gQlBGX1BST0JFX01FTSkgew0KPj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgZXhjZXB0aW9uX3RhYmxlX2VudHJ5ICpleDsNCj4+
+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdTggKl9pbnNuID0gaW1hZ2UgKyBwcm9n
+bGVuOw0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzNjQgZGVsdGE7DQo+PiAr
+DQo+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmICghYnBmX3Byb2ctPmF1eC0+
+ZXh0YWJsZSkNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBicmVh
+azsNCj4+ICsNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKGV4Y250ID49
+IGJwZl9wcm9nLT5hdXgtPm51bV9leGVudHJpZXMpIHsNCj4+ICsgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBwcl9lcnIoImV4IGdlbiBidWdcbiIpOw0KPiANCj4gVGhpcyBz
+aG91bGQgbmV2ZXIgaGFwcGVuLCByaWdodD8gQlVHKCk/DQoNCmFic29sdXRlbHkgbm90LiBObyBC
+VUdzIGluIGtlcm5lbCBmb3IgdGhpbmdzIGxpa2UgdGhpcy4NCklmIGtlcm5lbCBjYW4gY29udGlu
+dWUgaXQgc2hvdWxkLg0KDQo+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgcmV0dXJuIC1FRkFVTFQ7DQo+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIH0N
+Cj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZXggPSAmYnBmX3Byb2ctPmF1eC0+
+ZXh0YWJsZVtleGNudCsrXTsNCj4+ICsNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgZGVsdGEgPSBfaW5zbiAtICh1OCAqKSZleC0+aW5zbjsNCj4+ICsgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgaWYgKCFpc19zaW1tMzIoZGVsdGEpKSB7DQo+PiArICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJfZXJyKCJleHRhYmxlLT5pbnNuIGRvZXNuJ3Qg
+Zml0IGludG8gMzItYml0XG4iKTsNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICByZXR1cm4gLUVGQVVMVDsNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgfQ0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBleC0+aW5zbiA9IGRlbHRh
+Ow0KPj4gKw0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkZWx0YSA9ICh1OCAq
+KWV4X2hhbmRsZXJfYnBmIC0gKHU4ICopJmV4LT5oYW5kbGVyOw0KPiANCj4gaG93IGxpa2VseSBp
+dCBpcyB0aGF0IGdsb2JhbCBleF9oYW5kbGVfYnBmIHdpbGwgYmUgY2xvc2UgZW5vdWdoIHRvDQo+
+IGR5bmFtaWNhbGx5IGFsbG9jYXRlZCBwaWVjZSBvZiBleGNlcHRpb25fdGFibGVfZW50cnk/DQoN
+Cjk5LjklIFNpbmNlIHdlIHJlbHkgb24gdGhhdCBpbiBvdGhlciBwbGFjZXMgaW4gdGhlIEpJVC4N
+ClNlZSBCUEZfQ0FMTCwgZm9yIGV4YW1wbGUuDQpCdXQgSSdkIGxpa2UgdG8ga2VlcCB0aGUgY2hl
+Y2sgYmVsb3cuIEp1c3QgaW4gY2FzZS4NClNhbWUgYXMgaW4gQlBGX0NBTEwuDQo=
