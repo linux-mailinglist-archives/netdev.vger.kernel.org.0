@@ -2,81 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C01ABD1250
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 17:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 266D1D1267
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 17:26:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731592AbfJIPWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 11:22:22 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:39616 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728019AbfJIPWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 11:22:21 -0400
-Received: by mail-yb1-f196.google.com with SMTP id v37so857412ybi.6
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 08:22:20 -0700 (PDT)
+        id S1731636AbfJIP0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 11:26:46 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36103 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729471AbfJIP0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 11:26:45 -0400
+Received: by mail-qt1-f196.google.com with SMTP id o12so4011427qtf.3;
+        Wed, 09 Oct 2019 08:26:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CWOz1QdEXP+wpK9Ockn2qmCFEU7lhRlGRIngMhuNF5I=;
-        b=KFmh28fL6uaxo5c3BTfc9tBAQTg7OlbZxBSJ5yXZtFdKk25fAhY0tUw7/49ajAUiTz
-         Xk8ZtarH0fWKVXJuL6wuLK7ukwovsJzXmvocqjrs7Eg7Yrae2TFxOB+/EBmvjXxWSPRe
-         zdcyxP1VomE6zRjaRWmmXdB0kn5kZivXET9I4h9KMem6enIvXn0KmOV21fEotrDeTo5D
-         EQhWZDCHap0MJmC0cIXVRSpdPOrOLrzMqU+qMggPwuP7jlhKSZSE/KMydFGMVFJ3a5Vb
-         SRLj320eseJ0x/phD3J4HL0TesuFrBSuF2EDWeAKOkRhnLDLWjF1HY1PArryMpZN5CsH
-         l9ng==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kDwcl4Lkv9JkHR9gMfp83O8Dx8hy5uoIlzYh+nEtcG8=;
+        b=IqbeX11uxCsObiw72IgyRkpU6Qf0HLRpPVzCKjZ09Af8sEJDWiYKuuBHp01KN4OmAJ
+         h+JubKXcnRM2BtqBoCIGyrXHwzLeMrhJ0nv2SDsuifUtmLmt5S7n3r+1ZBsKUdcjt659
+         HKezz4Qt1607eulUmkk1Sbe+NJXMOxh25DS6d2LvDlbV0+MgI1zBcx0jOpsYsSAPLZCP
+         wIi+jJVFLaJLAkS6X9M68S2Q6cCbQ7rNY/Q4Ni7Pz1x/uhXxXfQ4ZLXdrNHWFm/u7SJZ
+         3zzM5N9fliCul6uUgpNe8RUCq1RwxAIScNrjpUi40DGfC/c80lNRglysoQOgPclByPju
+         cTOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CWOz1QdEXP+wpK9Ockn2qmCFEU7lhRlGRIngMhuNF5I=;
-        b=Gzv4/oZJLHPI3uToLFLCfZU0d1XRWlW7akExLl1C73bo5+qqFbnWTOBoIAEBy06KbC
-         f4bPG/qHNWjbQEOZvLGXEhjr80AQdgOJZA+drdpXHsChM7jefhoRw71c/r9ZtCoDQFU5
-         IDtYI0FC9w3caiqwY+obs503p3SGc8N0VGDOd0wqRO4iVWwmKdYTN+dHsnuVQK/cw4oR
-         zVve2Wp9ZXeQqtqdgsjMtCVaZB9FbUdclF5xTv+4OSeSMGtZtybGLiE8/Ddd3rABeryJ
-         gG0fBbNcNHmN/9TYXblrGYu8ULiOXykRIsEUSvDGFAydgWmWMwX8A1V8AZ2GEPSIy6Ee
-         nY9w==
-X-Gm-Message-State: APjAAAUFncErlHZe8a4zbe0oavzU6h88o0CBiP1w2yMVj8FXVxunVVoN
-        LFSxVNLAWtFEgMy4hHi6rBMO4Tm8
-X-Google-Smtp-Source: APXvYqx30svXPPJnbykZjgvmvbSmrSrly9ZkcXSPnen4EYSQMgdBr/ZklfpnfZa9QUp4R7GIFQxulg==
-X-Received: by 2002:a25:be88:: with SMTP id i8mr2601822ybk.118.1570634538794;
-        Wed, 09 Oct 2019 08:22:18 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id 12sm683263ywu.59.2019.10.09.08.22.17
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Oct 2019 08:22:17 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id y204so849429yby.10
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 08:22:17 -0700 (PDT)
-X-Received: by 2002:a25:84ce:: with SMTP id x14mr2480392ybm.443.1570634537210;
- Wed, 09 Oct 2019 08:22:17 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kDwcl4Lkv9JkHR9gMfp83O8Dx8hy5uoIlzYh+nEtcG8=;
+        b=WcnL/2/Ax02sZccPuL7KSwimsFL07BXXbX4eSdBwAsIYivxvkbAugl6VqsKc4qkPUG
+         ZR2fpjPtT1UCwOaX+zURHhUI7abEkxVsVhFIEybvhXsjhirLJvX6Ceh9k2l4DDO6Q3gk
+         Bggu+Pd7jdqTfsOxqytiVUIRU9j/ojhoqPsWynt/ZmKft3n/xT29DGuok3zvKkXRTWBW
+         hiCznrofFV305GFWmYTcxNTZCaJoj9eC7TGfuOs2okLa+RV/ZUaEnJOPNX0xjjlu1QVl
+         +wcvCxPKOTJJSvuu58txg5knECHo/GBzIL9x3gBbVQGyYzt0ylCtDaXMNFYfW60Nnx6W
+         GEdQ==
+X-Gm-Message-State: APjAAAWUJsJe2SU+T/451oUYq38cefGKqOgr14Po+Lt3bvene/O3m/M3
+        wpzhZp+jeS3FLp/nSYb1i4JzDsippjs=
+X-Google-Smtp-Source: APXvYqwo3pFNJ7u9MOXB+SmDTHcMGtGcHfp10ZN6mv+GKul2UZYzQ9h1DRt4h7P5zwmHme7CrsOCOw==
+X-Received: by 2002:ac8:71d7:: with SMTP id i23mr4177379qtp.195.1570634802913;
+        Wed, 09 Oct 2019 08:26:42 -0700 (PDT)
+Received: from ebpf00.byteswizards.com ([190.162.109.190])
+        by smtp.googlemail.com with ESMTPSA id l189sm1049895qke.69.2019.10.09.08.26.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2019 08:26:42 -0700 (PDT)
+From:   Carlos Neira <cneirabustos@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
+        bpf@vger.kernel.org, cneirabustos@gmail.com
+Subject: [PATCH v13 0/4] BPF: New helper to obtain namespace data from current task
+Date:   Wed,  9 Oct 2019 12:26:28 -0300
+Message-Id: <20191009152632.14218-1-cneirabustos@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <cover.1570455278.git.martinvarghesenokia@gmail.com>
- <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
- <CA+FuTSc=uTot72dxn7VRfCv59GcfWb32ZM5XU1_GHt3Ci3PL_A@mail.gmail.com>
- <20191009124814.GB17712@martin-VirtualBox> <CA+FuTSdGR2G8Wp0khT9nCD49oi2U_GZiyS5vJTBikPRm+0fGPg@mail.gmail.com>
-In-Reply-To: <CA+FuTSdGR2G8Wp0khT9nCD49oi2U_GZiyS5vJTBikPRm+0fGPg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 9 Oct 2019 11:21:40 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe2x+fAcMLNaT-pfB_m=6tK6AQQ+K3AcNNXyCORaH7rdA@mail.gmail.com>
-Message-ID: <CA+FuTSe2x+fAcMLNaT-pfB_m=6tK6AQQ+K3AcNNXyCORaH7rdA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] UDP tunnel encapsulation module for
- tunnelling different protocols like MPLS,IP,NSH etc.
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Martin Varghese <martinvarghesenokia@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, corbet@lwn.net,
-        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
-        martin.varghese@nokia.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Yes  we could. We can move these to a common place. include/net/ip_tunnels.h ?
->
-> I think it will be preferable to work the other way around and extend
-> existing ip tunnel infra to add MPLS.
+Currently bpf_get_current_pid_tgid(), is used to do pid filtering in bcc's
+scripts but this helper returns the pid as seen by the root namespace which is
+fine when a bcc script is not executed inside a container.
+When the process of interest is inside a container, pid filtering will not work
+if bpf_get_current_pid_tgid() is used.
+This helper addresses this limitation returning the pid as it's seen by the current
+namespace where the script is executing.
 
-But that may not be entirely feasible, not sure yet. Else, indeed
-moving such helpers to a common location sounds good.
+In the future different pid_ns files may belong to different devices, according to the
+discussion between Eric Biederman and Yonghong in 2017 Linux plumbers conference.
+To address that situation the helper requires inum and dev_t from /proc/self/ns/pid.
+This helper has the same use cases as bpf_get_current_pid_tgid() as it can be
+used to do pid filtering even inside a container.
+
+Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+
+Carlos Neira (4):
+  fs/nsfs.c: added ns_match
+  bpf: added new helper bpf_get_ns_current_pid_tgid
+  tools: Added bpf_get_ns_current_pid_tgid helper
+  tools/testing/selftests/bpf: Add self-tests for new helper.
+
+ fs/nsfs.c                                     |  8 ++
+ include/linux/bpf.h                           |  1 +
+ include/linux/proc_ns.h                       |  2 +
+ include/uapi/linux/bpf.h                      | 22 ++++-
+ kernel/bpf/core.c                             |  1 +
+ kernel/bpf/helpers.c                          | 43 ++++++++++
+ kernel/trace/bpf_trace.c                      |  2 +
+ tools/include/uapi/linux/bpf.h                | 22 ++++-
+ tools/testing/selftests/bpf/bpf_helpers.h     |  4 +
+ .../bpf/prog_tests/get_ns_current_pid_tgid.c  | 85 +++++++++++++++++++
+ .../bpf/progs/get_ns_current_pid_tgid_kern.c  | 53 ++++++++++++
+ 11 files changed, 241 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
+ create mode 100644 tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
+
+-- 
+2.20.1
+
