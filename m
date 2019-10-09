@@ -2,96 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DAECD04D2
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 02:38:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 670EAD04E2
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 02:49:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729942AbfJIAiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Oct 2019 20:38:10 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:42664 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727051AbfJIAiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 20:38:10 -0400
-Received: by mail-io1-f66.google.com with SMTP id n197so1048608iod.9;
-        Tue, 08 Oct 2019 17:38:09 -0700 (PDT)
+        id S1729998AbfJIAte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Oct 2019 20:49:34 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41560 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729601AbfJIAte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Oct 2019 20:49:34 -0400
+Received: by mail-qt1-f196.google.com with SMTP id v52so945265qtb.8
+        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 17:49:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3Xf/GFIKYoOdVh68AnbPaEIIVn/hMGh9iJb/+ai1QK8=;
-        b=jtgB8a9RWkm5zmaO9y/tbFwrFnudl5vEGLeA3UiVbRJ8Rr5LGjZyu/6+Yie0ONXUHm
-         Iu/FnR/vVPrcLITJiB9f2kvKmZ3+3wXmp2zY+uLdqZ3eDOKAQmX567UaM9ap+nZAkkSk
-         tdj/FVoQDFQe8oiTJFBy6F40OkqUAnCqDwe0VijzFdzBOJzFgMC9TpEodDT7FiNBMIXQ
-         Yn6LFR7gEvvhgn9um4IWhDxNffuyHQdZz2gbq+aTUoTrKGA4Ux271Ql50QaPdDQF8dFl
-         SROrMt8cv1ZnD9Ng3CgHyKdXR3zK9up5O7DOEsppjXPZ5RJ8o4IewAD+Ngll1EB1uJzS
-         LLdQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=WepzXzTte12+Zryhvz2uw0bMesLDlFuZ+ZK8LrsbFP8=;
+        b=WLi5KXz05pP7Sw00jeg4x93ZWXH/C6pfztk/5QvWfSZksh9esr+ycyHrT7rawNs9/8
+         n35C1eYJgi7afekoIsrjbjNBM/4kMK9tAITBX+j/MuUzbmog8fuqzRma4RIh9kGdYzvD
+         rbvoaV+km+gVgQh47VZKtwugXG4yybAfxtaNmXErr8rOI8CTZODNBZrkw67SFmxZbfAs
+         xVgm2jcP41pZ/P1dXLBd7MxAjGOLgh27CS70kNccuu8XIlRB8edEln8LN3a1/ptBvMAa
+         2imGOUyf0heWM7Yfq/ufaoZGXF8jICJfrRRo4pFIzYplcejR7607jJrj2hCSW5a2laCE
+         oKpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3Xf/GFIKYoOdVh68AnbPaEIIVn/hMGh9iJb/+ai1QK8=;
-        b=HolluDwZYZ4kFcVpBuWTvDghEzwO8OTiEdmbrza8KQfPIW9xsVbOnVgJE7jYvN40EP
-         PgI2Ey4sre1aLCZRynS8lT6XcPir6tqrtASz+9g7wudnIzNdP0yuX2GgpwSX1pswhpgg
-         b3bEHrcnU/87BM9e84lHaMMoSfv/jpL0xgv9vL05LArwr1LbiDCPorEwPJe3EHgc8HOw
-         qhgkZzG3YgBtDvQ2YD8jXf+YFPmEOOy1zUF85cjnbeHryfFioLZoy+znjBtAxQiQFnXb
-         ZOfsY8exB5l0orAUlc/PeC6cP3THU5ePjbJ7F2fh5WCqmn+Fb8/5g5kPyq/TN9SRAP8S
-         VzXw==
-X-Gm-Message-State: APjAAAWDJGTCSMzkAPIP7gKvtn+263wBb1kEWIFx4vcQp0Q2UPxiid6f
-        1XoT1wvKeeYkdBJL4bO60v2O/S2e
-X-Google-Smtp-Source: APXvYqxmypy4pEKgt/DUa4XJDz0ybkdFALxv3Xsd7qwVBXMyeM7mUctV2Vhhia+OSnAtqNlhMLpk+Q==
-X-Received: by 2002:a05:6638:68b:: with SMTP id i11mr843994jab.63.1570581488905;
-        Tue, 08 Oct 2019 17:38:08 -0700 (PDT)
-Received: from [10.230.24.186] ([192.19.224.250])
-        by smtp.gmail.com with ESMTPSA id q17sm322619ile.5.2019.10.08.17.38.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Oct 2019 17:38:08 -0700 (PDT)
-Subject: Re: [PATCH 0/3] net: ftgmac100: Ungate RCLK for RMII on ASPEED MACs
-To:     Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        joel@jms.id.au, benh@kernel.crashing.org
-References: <20191008115143.14149-1-andrew@aj.id.au>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <938706da-d329-c4aa-fcce-2d390a4e98f7@gmail.com>
-Date:   Tue, 8 Oct 2019 17:38:05 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=WepzXzTte12+Zryhvz2uw0bMesLDlFuZ+ZK8LrsbFP8=;
+        b=pHQnsyir/K4Q3BUD6hihtWwL+KZOtw6+Izv04dx+xep1UB61AxXufyMk5lhwB1/9KW
+         zYPIvrhDS9da6DWUHD+0zLgzpoYF2WSTiPXGsE2rJF+zwXiukZACz/rMMEHapQ7Ix5AY
+         cr8aOQ5CsrryfQ8l4dZJyf6PLzHOvKWir/9fEKgXcKdKqrW4K7OylSvcvWzq5YZkLArN
+         i7VOlvz+l8biiTNejUlttjmX0kBg9oXUSQhLLerSQtQzOz9s3BviVtvu/Bic9QuWzkew
+         t15Cryh7yUG0Jf9tbVRr4mD2kRtB6QxUvLat3j6Yim6SJV3vOIBirRD+qvhkjYLmA4cS
+         +B2A==
+X-Gm-Message-State: APjAAAV2XZnjpwiF02FyM6w+Oa400AEbS3BlZJPW83qi9Mw6bQgGsOgL
+        K+8izEM6jUsqubgMjz9RU+M9mw==
+X-Google-Smtp-Source: APXvYqzYhnSh3SLldsjxkUvyH1tg1oDkQ38sFtBZHRZ9gtflcgiSDdeGd+lNzYFjWKyCOI4rtfDmhw==
+X-Received: by 2002:a0c:b59b:: with SMTP id g27mr1135087qve.184.1570582171452;
+        Tue, 08 Oct 2019 17:49:31 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x19sm212674qkf.26.2019.10.08.17.49.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2019 17:49:31 -0700 (PDT)
+Date:   Tue, 8 Oct 2019 17:49:19 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Sridhar Samudrala <sridhar.samudrala@intel.com>
+Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
+        tom.herbert@intel.com
+Subject: Re: [PATCH bpf-next 0/4] Enable direct receive on AF_XDP sockets
+Message-ID: <20191008174919.2160737a@cakuba.netronome.com>
+In-Reply-To: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
+References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191008115143.14149-1-andrew@aj.id.au>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon,  7 Oct 2019 23:16:51 -0700, Sridhar Samudrala wrote:
+> This is a rework of the following patch series 
+> https://lore.kernel.org/netdev/1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com/#r
+> that tried to enable direct receive by bypassing XDP program attached
+> to the device.
+> 
+> Based on the community feedback and some suggestions from Bjorn, changed
+> the semantics of the implementation to enable direct receive on AF_XDP
+> sockets that are bound to a queue only when there is no normal XDP program
+> attached to the device.
+> 
+> This is accomplished by introducing a special BPF prog pointer (DIRECT_XSK)
+> that is attached at the time of binding an AF_XDP socket to a queue of a
+> device. This is done only if there is no other XDP program attached to
+> the device. The normal XDP program has precedence and will replace the
+> DIRECT_XSK prog if it is attached later. The main reason to introduce a
+> special BPF prog pointer is to minimize the driver changes. The only change
+> is to use the bpf_get_prog_id() helper when QUERYING the prog id.
+> 
+> Any attach of a normal XDP program will take precedence and the direct xsk
+> program will be removed. The direct XSK program will be attached
+> automatically when the normal XDP program is removed when there are any
+> AF_XDP direct sockets associated with that device.
+> 
+> A static key is used to control this feature in order to avoid any overhead
+> for normal XDP datapath when there are no AF_XDP sockets in direct-xsk mode.
 
+Don't say that static branches have no overhead. That's dishonest.
 
-On 10/8/2019 4:51 AM, Andrew Jeffery wrote:
-> Hello,
+> Here is some performance data i collected on my Intel Ivybridge based
+> development system (Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz)
+> NIC: Intel 40Gb ethernet (i40e)
 > 
-> This series slightly extends the devicetree binding and driver for the
-> FTGMAC100 to describe an optional RMII RCLK gate in the clocks property.
-> Currently it's necessary for the kernel to ungate RCLK on the AST2600 in NCSI
-> configurations as u-boot does not yet support NCSI (which uses the RMII).
+> xdpsock rxdrop 1 core (both app and queue's irq pinned to the same core)
+>    default : taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1
+>    direct-xsk :taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1
+> 6.1x improvement in drop rate
+> 
+> xdpsock rxdrop 2 core (app and queue's irq pinned to different cores)
+>    default : taskset -c 3 ./xdpsock -i enp66s0f0 -r -q 1
+>    direct-xsk :taskset -c 3 ./xdpsock -i enp66s0f0 -r -d -q 1
+> 6x improvement in drop rate
+> 
+> xdpsock l2fwd 1 core (both app and queue's irq pinned to the same core)
+>    default : taskset -c 1 ./xdpsock -i enp66s0f0 -l -q 1
+>    direct-xsk :taskset -c 1 ./xdpsock -i enp66s0f0 -l -d -q 1
+> 3.5x improvement in l2fwd rate
+> 
+> xdpsock rxdrop 2 core (app and queue'sirq pinned to different cores)
+>    default : taskset -c 3 ./xdpsock -i enp66s0f0 -l -q 1
+>    direct-xsk :taskset -c 3 ./xdpsock -i enp66s0f0 -l -d -q 1
+> 4.5x improvement in l2fwd rate
 
-RMII as in Reduced MII or Reverse MII in that context?
+I asked you to add numbers for handling those use cases in the kernel
+directly.
 
-> 
-> Please review!
-> 
-> Andrew
-> 
-> Andrew Jeffery (3):
->   dt-bindings: net: ftgmac100: Document AST2600 compatible
->   dt-bindings: net: ftgmac100: Describe clock properties
->   net: ftgmac100: Ungate RCLK for RMII on ASPEED MACs
-> 
->  .../devicetree/bindings/net/ftgmac100.txt     |  7 ++++
->  drivers/net/ethernet/faraday/ftgmac100.c      | 35 +++++++++++++++----
->  2 files changed, 35 insertions(+), 7 deletions(-)
-> 
+> dpdk-pktgen is used to send 64byte UDP packets from a link partner and 
+> ethtool ntuple flow rule is used to redirect packets to queue 1 on the 
+> system under test.
 
--- 
-Florian
+Obviously still nack from me.
