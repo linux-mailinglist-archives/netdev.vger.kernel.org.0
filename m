@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A30D0956
+	by mail.lfdr.de (Postfix) with ESMTP id F2D7AD0958
 	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 10:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729206AbfJIINJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 04:13:09 -0400
+        id S1729592AbfJIINL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 04:13:11 -0400
 Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:33604
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725903AbfJIINJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 04:13:09 -0400
+        id S1725962AbfJIINL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 04:13:11 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ie+gXpu59pc5RI1PZTCcRpIgSEEQdcRV5PBh+pQSPInqhDnJ4gQBN+9stEtnzHucLed0Jeb5rvXCzr2RvF4cxmzzGxS4OXzgNSzYVHPoQtlceCfptNlcgvhBeRSiAduqLVfWx0llvrqjaLDoazlxnkuW+1yQlxmg1MafSLzF8MpWyDZWddteEXHHEtxFSSeSOf5blTWF0Z9qAaey4D3jy11/GISEyBp6nbvVsLWFHwomM/v9TNh1J0iTmzmCcx9bbn13LZpkGZAr2TLu6MjQVrxSaYXqGhl2hvD2GawOXl7QKOOjq4mcdmUKWiQZD4yLcGmW1fPGXbk7AQD+CCcNZQ==
+ b=mOaXS6Jwb9D7sTAL1w+FmD8zngAjJov05p/SgzVJIs52CJ47f8bJSpsNXuipwLLEHRfBQVrnMGbbzYDIn3XmItlNvHL3ewNAJKFcG9EvJ6w3gVEHYuQWMc7fxnUXkNGZMl48YPWcbf4q1Qovcv/A+LLmcWtwyhv1Y15y1GjgTY42PIFfSvw6ZCbmrEU7Enx5EA4VMtf2aIfK/rnEU3mf+ux5Uzjf8Qg2w5wZRaCJije0Zaoz0FIinqd9YNMOgod1QIc8mxEl8ieeKluWxZgfN3ifaRIIL2lLHFPH0XkyLuAD7HbDfjgVGD/xtBRX+QBhisbAz920qq0o+nJ7oTPoDw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6dE81pV3R3Gu9X4sjJO2GPXoUbqXxePTPB+Mttz3jfk=;
- b=V1asElSHcln0ck2t6rmfXLa1nfa9XmMutFVYqxEeSq7P1rYoZYLSmaBiUu7geX4N/Nk67jZR2yzDrqxGXcGBboj+mhxfrmG2Jr8+ZY4L03cZvysNNLKDfeJR3446k+Gz6w8QBeDio48iQzKGseJ1kfRP3e4l6WmJvhI6D1ctm7KA1hWi4B7Llta8iEwHBrJtUnyYXQWBMeb9ADWsZ4X38tg0ZHbot61yqL7+y9MWZvuGu+uKr2/fdbxkA0LQJ8J9jF5g7M6xlZsBsg7rFMzTorAhSneo6g23L14pomHB40Sh8jTZbL1tAJzJUuTtsiYSIUokYFM4sEwabLG/4V/pKA==
+ bh=Vlyiha8cKiVunuLhL74uKPRSpxMhOhGgaWs+ZckFb2o=;
+ b=QnTEhQ9cWLsl9j0ltUPpY6lMlWXkx+BnquMUpdx/PDoZDkeMIP+p0eXH886X0QGQBAPOppMgTTFoioN3b2ZuWeiSuvuilnfW+qaODoWzsfbp6y/QSZ6wQsK5BDmxFbVpyabxxoxqJH0wra2HR9xz5NR0N3LN8OuJ+FWkjIJqueCFUg2WesDDAEwOWI0mdC/Juk2RL3Va3wljUD3YRicWmFke0xchp0KmF0TeIt9iANvpWWUeNcHKq94h/OEVIF84IHZLg6BVrCMFqjmQkZdvx+EC43T9HT0JspNgrOVr7aWq9GJqJH+OM9x5yr6zytgwESFVzt5GIjULULri8cMf2g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6dE81pV3R3Gu9X4sjJO2GPXoUbqXxePTPB+Mttz3jfk=;
- b=WtkfkF17INAId/dgsfBttGo0kWhk8FIpjFPvNVpxTAoXCL0YHyMY0NhmAnkNDI512/Bf99Ah3ZZIpYNEEvgddg4//SpLdgrBOj2/zO5+qq1WXC8oVxa5XX1ApTCekTZtJ9QF6Cp1p7K6ERiEe3qOikMep8KQW8Qst/NYJZMnunE=
+ bh=Vlyiha8cKiVunuLhL74uKPRSpxMhOhGgaWs+ZckFb2o=;
+ b=eiHgGSOeT9Jdn72TQ4bremFE28H2CtKKbU/pZh7ApR0NlK5wrbMbElpYYXJ3+kRN8Oc3Te8UIBTQEmcVWBJ0beOKae8TEZKLrlxmBLJ9QgnrN2weniJBHsm8L47S6KGML+JmPotznJZa9wdSCaUqXVeQ+rX8aYQgYKLP4y9n9ZM=
 Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
  DB7PR04MB5081.eurprd04.prod.outlook.com (20.176.236.212) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Wed, 9 Oct 2019 08:13:04 +0000
+ 15.20.2347.16; Wed, 9 Oct 2019 08:13:07 +0000
 Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
  ([fe80::79f1:61a7:4076:8679]) by DB7PR04MB4618.eurprd04.prod.outlook.com
  ([fe80::79f1:61a7:4076:8679%3]) with mapi id 15.20.2327.026; Wed, 9 Oct 2019
- 08:13:04 +0000
+ 08:13:07 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
@@ -42,11 +42,13 @@ CC:     "wg@grandegger.com" <wg@grandegger.com>,
         "sean@geanix.com" <sean@geanix.com>,
         dl-linux-imx <linux-imx@nxp.com>,
         Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH V4 1/2] can: flexcan: fix deadlock when using self wakeup
-Thread-Topic: [PATCH V4 1/2] can: flexcan: fix deadlock when using self wakeup
-Thread-Index: AQHVfnlfcicpFKT7vkKHRAXdf1SEkw==
-Date:   Wed, 9 Oct 2019 08:13:04 +0000
-Message-ID: <20191009080956.29128-1-qiangqing.zhang@nxp.com>
+Subject: [PATCH V4 2/2] can: flexcan: add LPSR mode support for i.MX7D
+Thread-Topic: [PATCH V4 2/2] can: flexcan: add LPSR mode support for i.MX7D
+Thread-Index: AQHVfnliD0Y3+X9f0kS5lPg5k0t1nw==
+Date:   Wed, 9 Oct 2019 08:13:07 +0000
+Message-ID: <20191009080956.29128-2-qiangqing.zhang@nxp.com>
+References: <20191009080956.29128-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20191009080956.29128-1-qiangqing.zhang@nxp.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -60,153 +62,138 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [119.31.174.71]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c24905fd-8835-4d40-0668-08d74c908230
+x-ms-office365-filtering-correlation-id: f1ee0919-e00b-4c84-b284-08d74c90845f
 x-ms-office365-filtering-ht: Tenant
 x-ms-traffictypediagnostic: DB7PR04MB5081:|DB7PR04MB5081:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB50814EA4645954CB9DF02F02E6950@DB7PR04MB5081.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-microsoft-antispam-prvs: <DB7PR04MB508145CB0B24CE6779514756E6950@DB7PR04MB5081.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
 x-forefront-prvs: 018577E36E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(376002)(136003)(366004)(39860400002)(199004)(189003)(54534003)(54906003)(36756003)(6512007)(6116002)(66476007)(6486002)(26005)(7736002)(2906002)(66556008)(64756008)(66446008)(3846002)(186003)(81156014)(81166006)(99286004)(14444005)(50226002)(5024004)(2501003)(256004)(110136005)(2616005)(476003)(478600001)(486006)(8676002)(66946007)(6436002)(25786009)(305945005)(71200400001)(71190400001)(1076003)(316002)(102836004)(386003)(66066001)(5660300002)(6506007)(4326008)(14454004)(8936002)(86362001)(52116002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5081;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(376002)(136003)(366004)(39860400002)(199004)(189003)(54534003)(54906003)(36756003)(6512007)(6116002)(66476007)(6486002)(26005)(7736002)(2906002)(66556008)(64756008)(66446008)(3846002)(186003)(81156014)(81166006)(99286004)(14444005)(50226002)(2501003)(256004)(110136005)(11346002)(2616005)(476003)(478600001)(446003)(486006)(8676002)(66946007)(6436002)(25786009)(305945005)(71200400001)(71190400001)(1076003)(316002)(102836004)(386003)(66066001)(5660300002)(6506007)(4326008)(14454004)(8936002)(76176011)(86362001)(52116002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5081;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: R/gXN3bJo8+9fvRUMZYnz6aKpB32ouyb1NS2xBxjWaw+SnmyVtPOeS4CbgmwF3gQVm+5bVYaBfkaV/2mkbdnoT/pPqybU3snezdYCY6IXFO1N2v/KbqPiXOtZsdUmoJmj6cLkh0YJkOzn8E8pavqWRTVeRoPwBU0b66LElSX1EZlyL2BjpvdGGmb3z2YhcxilPgtgxu8ryauFo6aRLbmyLHEMz4QAQpv3185S10uRXazxg9J1XYg3XSxcu5hTcp4nxUsQoSN7ma+vSvTnxNDS47iTSOBz3gE6l3o3+Xr27jmjtUcsIAUo5128Wf9JN39e82C/tn/LJWze+GCIFz5Iy7QBGy2QoTnsce12AaWJbw0BofFGpAzj5lQt+zIG5h6iLSxC919M5pLyyqyry57SfLfXwzxO584z6z7i7q33lA=
+x-microsoft-antispam-message-info: 7ENrYHFUzRc52xR0vAnojNaywZVMcNJqWwe5+yUODuO+7GWT2r88xrzcFwHEA7dqtf/Sc6l5MD3vHYrUvOJfF06NStNkBG7OFFFdSuVV2pWuEJpb46970BhsKsiXaQaPqoZf0+D+sieRSyDOoENyXZqjGTjyd+a2x8ZZKkm/UR646D0tSxGwXZKd85UguXcvKHlPHVhSOdPxNStAjYA+sjZ1myGDnYvdcPqH2mK02ZCxAFKzLPPY14U1gztZRowRmZJ8g4T7dKSmypMV6mAUtyUH+1j2fSFXTPBjq4IS4VpF/WwjqsZ+vdPKkjCzhmLr7efPGDYSsfcN68gFdKOqcWFonDizpa/aFFZh2bFC4w4tK+XoeEF+z5Mb0+581wqXojy5WgNjnMmLns9D784BtOrKrR460rBRLHLFxsGUU3U=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c24905fd-8835-4d40-0668-08d74c908230
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2019 08:13:04.5178
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1ee0919-e00b-4c84-b284-08d74c90845f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2019 08:13:07.8718
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SI3HyCBemQp2Cpy0fTwPXvab7OJYAS2LEZS3hc6zwStSDD6KDSTB8oN9CGlP1s6r0LM0cTejrJLL820v9uOnkg==
+X-MS-Exchange-CrossTenant-userprincipalname: Oaq30QcpT4IEkD4fBPh+fcohZ8aagbFoyuucVx35z7JtiiqkMVka6PoktFhNGzv2h57SmHV9WC9zKMapA+DZNQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5081
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As reproted by Sean Nyekjaer below:
-When suspending, when there is still can traffic on the interfaces the
-flexcan immediately wakes the platform again. As it should :-). But it
-throws this error msg:
-[ 3169.378661] PM: noirq suspend of devices failed
+For i.MX7D LPSR mode, the controller will lost power and got the
+configuration state lost after system resume back. (coming i.MX8QM/QXP
+will also completely power off the domain, the controller state will be
+lost and needs restore).
+So we need to set pinctrl state again and re-start chip to do
+re-configuration after resume.
 
-On the way down to suspend the interface that throws the error message does
-call flexcan_suspend but fails to call flexcan_noirq_suspend. That means th=
-e
-flexcan_enter_stop_mode is called, but on the way out of suspend the driver
-only calls flexcan_resume and skips flexcan_noirq_resume, thus it doesn't c=
-all
-flexcan_exit_stop_mode. This leaves the flexcan in stop mode, and with the
-current driver it can't recover from this even with a soft reboot, it requi=
-res
-a hard reboot.
+For wakeup case, it should not set pinctrl to sleep state by
+pinctrl_pm_select_sleep_state.
+For interface is not up before suspend case, we don't need
+re-configure as it will be configured by user later by interface up.
 
-The best way to exit stop mode is in Wake Up interrupt context, and then
-suspend() and resume() functions can be symmetric. However, stop mode
-request and ack will be controlled by SCU(System Control Unit) firmware(man=
-age
-clock,power,stop mode, etc. by Cortex-M4 core) in coming i.MX8(QM/QXP). And=
- SCU
-firmware interface can't be available in interrupt context.
-
-For compatibillity, the wake up mechanism can't be symmetric, so we need
-in_stop_mode hack.
-
-Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
-Reported-by: Sean Nyekjaer <sean@geanix.com>
-Tested-by: Sean Nyekjaer <sean@geanix.com>
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-Changelog:
-V1->V2:
-	* add Reported-by tag.
-	* rebase on patch: can:flexcan:fix stop mode acknowledgment.
+ChangeLog:
 V2->V3:
 	* rebase on linux-can/testing.
 	* change into patch set.
 V3->V4:
-	* add Tested-by tag.
+	* rebase on linux-can/testing.
 ---
- drivers/net/can/flexcan.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/net/can/flexcan.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 1cd5179cb876..24cc386c4bce 100644
+index 24cc386c4bce..e2bc5078615f 100644
 --- a/drivers/net/can/flexcan.c
 +++ b/drivers/net/can/flexcan.c
-@@ -286,6 +286,7 @@ struct flexcan_priv {
- 	const struct flexcan_devtype_data *devtype_data;
- 	struct regulator *reg_xceiver;
- 	struct flexcan_stop_mode stm;
-+	bool in_stop_mode;
+@@ -26,6 +26,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/regmap.h>
 =20
- 	/* Read and Write APIs */
- 	u32 (*read)(void __iomem *addr);
-@@ -1670,6 +1671,8 @@ static int __maybe_unused flexcan_suspend(struct devi=
+ #define DRV_NAME			"flexcan"
+@@ -1660,7 +1661,7 @@ static int __maybe_unused flexcan_suspend(struct devi=
 ce *device)
- 			err =3D flexcan_enter_stop_mode(priv);
- 			if (err)
- 				return err;
-+
-+			priv->in_stop_mode =3D true;
- 		} else {
- 			err =3D flexcan_chip_disable(priv);
- 			if (err)
-@@ -1696,6 +1699,15 @@ static int __maybe_unused flexcan_resume(struct devi=
-ce *device)
- 		netif_device_attach(dev);
- 		netif_start_queue(dev);
- 		if (device_may_wakeup(device)) {
-+			if (priv->in_stop_mode) {
-+				flexcan_enable_wakeup_irq(priv, false);
-+				err =3D flexcan_exit_stop_mode(priv);
-+				if (err)
-+					return err;
-+
-+				priv->in_stop_mode =3D false;
-+			}
-+
- 			disable_irq_wake(dev->irq);
- 		} else {
- 			err =3D pm_runtime_force_resume(device);
-@@ -1732,6 +1744,11 @@ static int __maybe_unused flexcan_noirq_suspend(stru=
-ct device *device)
+ {
  	struct net_device *dev =3D dev_get_drvdata(device);
  	struct flexcan_priv *priv =3D netdev_priv(dev);
+-	int err =3D 0;
++	int err;
 =20
-+	/* Need to enable wakeup interrupt in noirq suspend stage. Otherwise,
-+	 * it will trigger continuously wakeup interrupt if the wakeup event
-+	 * comes before noirq suspend stage, and simultaneously it has enter
-+	 * the stop mode.
-+	 */
- 	if (netif_running(dev) && device_may_wakeup(device))
- 		flexcan_enable_wakeup_irq(priv, true);
+ 	if (netif_running(dev)) {
+ 		/* if wakeup is enabled, enter stop mode
+@@ -1674,25 +1675,27 @@ static int __maybe_unused flexcan_suspend(struct de=
+vice *device)
 =20
-@@ -1744,11 +1761,17 @@ static int __maybe_unused flexcan_noirq_resume(stru=
-ct device *device)
- 	struct flexcan_priv *priv =3D netdev_priv(dev);
- 	int err;
-=20
-+	/* Need to exit stop mode in noirq resume stage. Otherwise, it will
-+	 * trigger continuously wakeup interrupt if the wakeup event comes,
-+	 * and simultaneously it has still in stop mode.
-+	 */
- 	if (netif_running(dev) && device_may_wakeup(device)) {
- 		flexcan_enable_wakeup_irq(priv, false);
- 		err =3D flexcan_exit_stop_mode(priv);
- 		if (err)
- 			return err;
+ 			priv->in_stop_mode =3D true;
+ 		} else {
+-			err =3D flexcan_chip_disable(priv);
++			flexcan_chip_stop(dev);
 +
-+		priv->in_stop_mode =3D false;
++			err =3D pm_runtime_force_suspend(device);
+ 			if (err)
+ 				return err;
+=20
+-			err =3D pm_runtime_force_suspend(device);
++			pinctrl_pm_select_sleep_state(device);
+ 		}
+ 		netif_stop_queue(dev);
+ 		netif_device_detach(dev);
+ 	}
+ 	priv->can.state =3D CAN_STATE_SLEEPING;
+=20
+-	return err;
++	return 0;
+ }
+=20
+ static int __maybe_unused flexcan_resume(struct device *device)
+ {
+ 	struct net_device *dev =3D dev_get_drvdata(device);
+ 	struct flexcan_priv *priv =3D netdev_priv(dev);
+-	int err =3D 0;
++	int err;
+=20
+ 	priv->can.state =3D CAN_STATE_ERROR_ACTIVE;
+ 	if (netif_running(dev)) {
+@@ -1710,15 +1713,19 @@ static int __maybe_unused flexcan_resume(struct dev=
+ice *device)
+=20
+ 			disable_irq_wake(dev->irq);
+ 		} else {
++			pinctrl_pm_select_default_state(device);
++
+ 			err =3D pm_runtime_force_resume(device);
+ 			if (err)
+ 				return err;
+=20
+-			err =3D flexcan_chip_enable(priv);
++			err =3D flexcan_chip_start(dev);
++			if (err)
++				return err;
+ 		}
  	}
 =20
- 	return 0;
+-	return err;
++	return 0;
+ }
+=20
+ static int __maybe_unused flexcan_runtime_suspend(struct device *device)
 --=20
 2.17.1
 
