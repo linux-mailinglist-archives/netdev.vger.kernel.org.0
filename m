@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1FB2D1655
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 495AAD164D
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 19:29:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732865AbfJIR3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 13:29:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48792 "EHLO mail.kernel.org"
+        id S1732702AbfJIR3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 13:29:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48848 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732211AbfJIRYO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 13:24:14 -0400
+        id S1732221AbfJIRYQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 13:24:16 -0400
 Received: from sasha-vm.mshome.net (unknown [167.220.2.234])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C20FD21924;
-        Wed,  9 Oct 2019 17:24:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1FC812196E;
+        Wed,  9 Oct 2019 17:24:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570641853;
-        bh=iUn0+AXJbd2oK9c2oxMcnZEUu2QM6vGDtG0r2+b2KF4=;
+        s=default; t=1570641856;
+        bh=a+jnrrLUjZCnLTg1MYH2H3uUUeyvZnRqF6KjRTHV+GY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TCfrPSureOAEnLxKYrmXCsJQViA+gRTExvKDVl7nPmU0ROm2PkIYJoYHpSO13XaK1
-         fYURwBTHvQm/1n+IaKabS5t8AaHOpSb2Osw0UauoY2h8w/KO5073w6wCMa6sQukG+Y
-         gvIZERXVc5wHxwDJkjAqutVBPekpPBXAqnrwmK9I=
+        b=a80hqOndue49JhE9aBAcvhgUtSd+2kXohLai90K5PFJxng0Ak0Mm4skb1uOwn+AzV
+         d+pLBc7w8Xbqv24cwCgUtdKIoZGZHDwg/7X4nTN2tALigSnlpHc1NJG0ecjNGc45a7
+         /VhK+Q46uz5VZUzSi8d9hc8lXyWTyvkVcZgc17yM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 22/26] lib: textsearch: fix escapes in example code
-Date:   Wed,  9 Oct 2019 13:05:54 -0400
-Message-Id: <20191009170558.32517-22-sashal@kernel.org>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 24/26] r8152: Set macpassthru in reset_resume callback
+Date:   Wed,  9 Oct 2019 13:05:56 -0400
+Message-Id: <20191009170558.32517-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191009170558.32517-1-sashal@kernel.org>
 References: <20191009170558.32517-1-sashal@kernel.org>
@@ -43,40 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 2105b52e30debe7f19f3218598d8ae777dcc6776 ]
+[ Upstream commit a54cdeeb04fc719e4c7f19d6e28dba7ea86cee5b ]
 
-This textsearch code example does not need the '\' escapes and they can
-be misleading to someone reading the example. Also, gcc and sparse warn
-that the "\%d" is an unknown escape sequence.
+r8152 may fail to establish network connection after resume from system
+suspend.
 
-Fixes: 5968a70d7af5 ("textsearch: fix kernel-doc warnings and add kernel-api section")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
+If the USB port connects to r8152 lost its power during system suspend,
+the MAC address was written before is lost. The reason is that The MAC
+address doesn't get written again in its reset_resume callback.
+
+So let's set MAC address again in reset_resume callback. Also remove
+unnecessary lock as no other locking attempt will happen during
+reset_resume.
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/textsearch.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/r8152.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/lib/textsearch.c b/lib/textsearch.c
-index 5939549c0e7bc..9135c29add624 100644
---- a/lib/textsearch.c
-+++ b/lib/textsearch.c
-@@ -93,9 +93,9 @@
-  *       goto errout;
-  *   }
-  *
-- *   pos = textsearch_find_continuous(conf, \&state, example, strlen(example));
-+ *   pos = textsearch_find_continuous(conf, &state, example, strlen(example));
-  *   if (pos != UINT_MAX)
-- *       panic("Oh my god, dancing chickens at \%d\n", pos);
-+ *       panic("Oh my god, dancing chickens at %d\n", pos);
-  *
-  *   textsearch_destroy(conf);
-  */
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index a065a6184f7e4..a291e5f2daef6 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -4474,10 +4474,9 @@ static int rtl8152_reset_resume(struct usb_interface *intf)
+ 	struct r8152 *tp = usb_get_intfdata(intf);
+ 
+ 	clear_bit(SELECTIVE_SUSPEND, &tp->flags);
+-	mutex_lock(&tp->control);
+ 	tp->rtl_ops.init(tp);
+ 	queue_delayed_work(system_long_wq, &tp->hw_phy_work, 0);
+-	mutex_unlock(&tp->control);
++	set_ethernet_addr(tp);
+ 	return rtl8152_resume(intf);
+ }
+ 
 -- 
 2.20.1
 
