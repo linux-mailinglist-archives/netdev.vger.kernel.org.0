@@ -2,144 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E4FD14A1
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F827D14A7
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 18:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731385AbfJIQxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 12:53:24 -0400
-Received: from mga12.intel.com ([192.55.52.136]:59505 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730490AbfJIQxY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Oct 2019 12:53:24 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Oct 2019 09:53:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,276,1566889200"; 
-   d="scan'208";a="198063106"
-Received: from unknown (HELO [10.241.228.165]) ([10.241.228.165])
-  by orsmga006.jf.intel.com with ESMTP; 09 Oct 2019 09:53:22 -0700
-Subject: Re: FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP sockets to receive
- packets directly from a queue
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Herbert, Tom" <tom.herbert@intel.com>
+        id S1731452AbfJIQyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 12:54:14 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:41565 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731432AbfJIQyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 12:54:14 -0400
+Received: by mail-pg1-f194.google.com with SMTP id t3so1774480pga.8
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 09:54:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=FWquouYqKBd7amD18urRls6Y6gtLx6j4gbRFX8vfpcA=;
+        b=tyktbH9E1xZYVxbf2IRLPSbtOnJAiG0rW/0c5WCWbuy8c4r8FPIL0X55nHn53qkQpd
+         N/0S+JB9m39QziSsYYKCAt0JSnU9ZCny5eS0E0tEEUUs5p8ASxnapxafcxo3iwTuogAO
+         lewh/W1lUFpKc43PnicB0nJs4hSDJF/47m+ONJ6pGRydxBwaILK1HUmGWqgLQiHKgsBN
+         Sgmga5tkGNm+JYjXzDP+5PJotOy0P/8CgN/GOFbUsnDIGrUh0gZwDhpwaL3n7/OoLspN
+         TPJD813EHaDL77sT6jHyKq86NZHc+V0V+lIM86k95Rpb9eCTfmAlm3U2rC/cuQYVmwV3
+         kUcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=FWquouYqKBd7amD18urRls6Y6gtLx6j4gbRFX8vfpcA=;
+        b=klYOgCQxyrIjWR7WfhM5pKPP5KXWX6kwO3oyYhDzfg1wELA/s0fwnrypDXWE6zW9MT
+         3/okxEhGXv6M2SZSC8U7R4nmNlf7BdX5GliUDS58NBKdSrxPxokHsl2IMMoGy2syz3MJ
+         15ZmseOhCm3mBM+52nmziRYW0HCm4WNvyzJ2TVMKzoAs8D4f//VPzVeskaIZv0BUHD99
+         41unbtuK2l1rPKaoCPbQ6gnJtevV0fvWjtE+UGSSXbcxCbcmzucQhz5csk4jao8ro+DF
+         3bmvqxpmy3MJ5NjBJf0N0RVDyC3VUTZGvrXYaheQxAPMuzXKa2SZljNAJX0I1jV4cDfX
+         nuwQ==
+X-Gm-Message-State: APjAAAX1lqoC2n8v27pqvB9ygIS3dq+xUN09uUYVLqefRKpw0FxrjJsp
+        MsBFmjeB3BlaKNgLXkNWHUzCDQ==
+X-Google-Smtp-Source: APXvYqz33xg6mGHwZzY2rBVPIF3+9OEjT1Iym8OqIXZgdg5lCtvXcB+wk3KGe6fY9b73P2JfvTAQ4g==
+X-Received: by 2002:a17:90a:9e2:: with SMTP id 89mr5312445pjo.67.1570640051867;
+        Wed, 09 Oct 2019 09:54:11 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id r18sm4172935pfc.3.2019.10.09.09.54.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2019 09:54:11 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 09:53:58 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
+        tom.herbert@intel.com
+Subject: Re: [PATCH bpf-next 0/4] Enable direct receive on AF_XDP sockets
+Message-ID: <20191009095358.34cddd95@cakuba.netronome.com>
+In-Reply-To: <ce255470-6bf7-0ba4-c24f-0808e3331977@intel.com>
 References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
- <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
- <CAADnVQ+XxmvY0cs8MYriMMd7=2TSEm4zCtB+fs2vkwdUY6UgAQ@mail.gmail.com>
- <3ED8E928C4210A4289A677D2FEB48235140134CE@fmsmsx111.amr.corp.intel.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <2bc26acd-170d-634e-c066-71557b2b3e4f@intel.com>
-Date:   Wed, 9 Oct 2019 09:53:21 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        <20191008174919.2160737a@cakuba.netronome.com>
+        <ce255470-6bf7-0ba4-c24f-0808e3331977@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <3ED8E928C4210A4289A677D2FEB48235140134CE@fmsmsx111.amr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
->> +
->> +u32 bpf_direct_xsk(const struct bpf_prog *prog, struct xdp_buff *xdp)
->> +{
->> +       struct xdp_sock *xsk;
->> +
->> +       xsk = xdp_get_xsk_from_qid(xdp->rxq->dev, xdp->rxq->queue_index);
->> +       if (xsk) {
->> +               struct bpf_redirect_info *ri =
->> + this_cpu_ptr(&bpf_redirect_info);
->> +
->> +               ri->xsk = xsk;
->> +               return XDP_REDIRECT;
->> +       }
->> +
->> +       return XDP_PASS;
->> +}
->> +EXPORT_SYMBOL(bpf_direct_xsk);
+On Tue, 8 Oct 2019 23:29:59 -0700, Samudrala, Sridhar wrote:
+> On 10/8/2019 5:49 PM, Jakub Kicinski wrote:
+> > I asked you to add numbers for handling those use cases in the kernel
+> > directly.  
 > 
-> So you're saying there is a:
-> """
-> xdpsock rxdrop 1 core (both app and queue's irq pinned to the same core)
->     default : taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1
->     direct-xsk :taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1 6.1x improvement in drop rate """
-> 
-> 6.1x gain running above C code vs exactly equivalent BPF code?
-> How is that possible?
+> Forgot to explicitly mention that I didn't see any regressions with 
+> xdp1, xdp2 or xdpsock in default mode with these patches. Performance 
+> remained the same.
 
-It seems to be due to the overhead of __bpf_prog_run on older processors 
-(Ivybridge). The overhead is smaller on newer processors, but even on 
-skylake i see around 1.5x improvement.
-
-perf report with default xdpsock
-================================
-Samples: 2K of event 'cycles:ppp', Event count (approx.): 8437658090
-Overhead  Command          Shared Object     Symbol
-   34.57%  xdpsock          xdpsock           [.] main
-   17.19%  ksoftirqd/1      [kernel.vmlinux]  [k] ___bpf_prog_run
-   13.12%  xdpsock          [kernel.vmlinux]  [k] ___bpf_prog_run
-    4.09%  ksoftirqd/1      [kernel.vmlinux]  [k] __x86_indirect_thunk_rax
-    3.08%  xdpsock          [kernel.vmlinux]  [k] nmi
-    2.76%  ksoftirqd/1      [kernel.vmlinux]  [k] xsk_map_lookup_elem
-    2.33%  xdpsock          [kernel.vmlinux]  [k] __x86_indirect_thunk_rax
-    2.33%  ksoftirqd/1      [i40e]            [k] i40e_clean_rx_irq_zc
-    2.16%  xdpsock          [kernel.vmlinux]  [k] bpf_map_lookup_elem
-    1.82%  ksoftirqd/1      [kernel.vmlinux]  [k] xdp_do_redirect
-    1.41%  ksoftirqd/1      [kernel.vmlinux]  [k] xsk_rcv
-    1.39%  ksoftirqd/1      [kernel.vmlinux]  [k] update_curr
-    1.09%  ksoftirqd/1      [kernel.vmlinux]  [k] bpf_xdp_redirect_map
-    1.09%  xdpsock          [i40e]            [k] i40e_clean_rx_irq_zc
-    1.08%  ksoftirqd/1      [kernel.vmlinux]  [k] __xsk_map_redirect
-    1.07%  swapper          [kernel.vmlinux]  [k] xsk_umem_peek_addr
-    1.05%  ksoftirqd/1      [kernel.vmlinux]  [k] xsk_umem_peek_addr
-    0.89%  swapper          [kernel.vmlinux]  [k] __xsk_map_redirect
-    0.87%  ksoftirqd/1      [kernel.vmlinux]  [k] __bpf_prog_run32
-    0.87%  swapper          [kernel.vmlinux]  [k] intel_idle
-    0.67%  xdpsock          [kernel.vmlinux]  [k] bpf_xdp_redirect_map
-    0.57%  xdpsock          [kernel.vmlinux]  [k] xdp_do_redirect
-
-perf report with direct xdpsock
-===============================
-Samples: 2K of event 'cycles:ppp', Event count (approx.): 17996091975
-Overhead  Command          Shared Object     Symbol
-   18.44%  xdpsock          [i40e]            [k] i40e_clean_rx_irq_zc
-   15.14%  ksoftirqd/1      [i40e]            [k] i40e_clean_rx_irq_zc
-    6.87%  xdpsock          [kernel.vmlinux]  [k] xsk_umem_peek_addr
-    5.03%  ksoftirqd/1      [kernel.vmlinux]  [k] xdp_do_redirect
-    4.21%  xdpsock          xdpsock           [.] main
-    4.13%  ksoftirqd/1      [i40e]            [k] 
-i40e_clean_programming_status
-    3.71%  xdpsock          [kernel.vmlinux]  [k] xsk_rcv
-    3.44%  ksoftirqd/1      [kernel.vmlinux]  [k] nmi
-    3.41%  xdpsock          [kernel.vmlinux]  [k] nmi
-    3.20%  ksoftirqd/1      [kernel.vmlinux]  [k] xsk_rcv
-    2.45%  xdpsock          [kernel.vmlinux]  [k] xdp_get_xsk_from_qid
-    2.35%  ksoftirqd/1      [kernel.vmlinux]  [k] xsk_umem_peek_addr
-    2.33%  ksoftirqd/1      [kernel.vmlinux]  [k] net_rx_action
-    2.16%  ksoftirqd/1      [kernel.vmlinux]  [k] xsk_umem_consume_tx
-    2.10%  swapper          [kernel.vmlinux]  [k] __softirqentry_text_start
-    2.06%  xdpsock          [kernel.vmlinux]  [k] native_irq_return_iret
-    1.43%  xdpsock          [kernel.vmlinux]  [k] check_preempt_wakeup
-    1.42%  xdpsock          [kernel.vmlinux]  [k] xsk_umem_consume_tx
-    1.22%  xdpsock          [kernel.vmlinux]  [k] xdp_do_redirect
-    1.21%  xdpsock          [kernel.vmlinux]  [k] 
-dma_direct_sync_single_for_device
-    1.16%  ksoftirqd/1      [kernel.vmlinux]  [k] irqtime_account_irq
-    1.09%  xdpsock          [kernel.vmlinux]  [k] sock_def_readable
-    0.99%  swapper          [kernel.vmlinux]  [k] intel_idle
-    0.88%  xdpsock          [i40e]            [k] 
-i40e_clean_programming_status
-    0.74%  ksoftirqd/1      [kernel.vmlinux]  [k] xsk_umem_discard_addr
-    0.71%  ksoftirqd/1      [kernel.vmlinux]  [k] __switch_to
-    0.50%  ksoftirqd/1      [kernel.vmlinux]  [k] 
-dma_direct_sync_single_for_device
+I'm not looking for regressions. The in-kernel path is faster, and
+should be used for speeding things up rather than a "direct path to
+user space". Your comparison should have 3 numbers - current AF_XDP,
+patched AF_XDP, in-kernel handling.
