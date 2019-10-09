@@ -2,63 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD472D070B
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 08:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE6B6D0735
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 08:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbfJIGKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 02:10:06 -0400
-Received: from mail-ed1-f46.google.com ([209.85.208.46]:34834 "EHLO
-        mail-ed1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726698AbfJIGKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 02:10:05 -0400
-Received: by mail-ed1-f46.google.com with SMTP id v8so920354eds.2
-        for <netdev@vger.kernel.org>; Tue, 08 Oct 2019 23:10:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=DOoAZZE9tlycIErrqq3oPhxVzEhsQBPCKBj2TA5b5J0=;
-        b=ZFbaWcon2kWzxrLDD6A5WCs7k1qPToHkyGkWEsoCqJipnc8sWo0HzXUn9oTVIzqGAE
-         hBd9EncJBrH4Cgv2rdEHyg153TKKOwIjAuHoR4wQNwYpRmRh6jc6IzhyhrFkEnYfAPl2
-         BDBzg87R5tvbzXjCI1ISxv+N75Kzah8ffneXQhibUFKFpIUIIKFsfL170ldCVPrIcM8z
-         xOiIjTgTeCMUrTkEmWT1qkp6wwJyLixPvFL868POC/2wgQGUnVcyp5BjfkKImXWvGqLQ
-         tQ3YeZ4GNEtfOnHm6h+tEAtkc4rQGmHu0YrHDMoRxD1Gdpfc6wfQKWRaaIpa48S+/G+b
-         FHRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=DOoAZZE9tlycIErrqq3oPhxVzEhsQBPCKBj2TA5b5J0=;
-        b=nT+qqEMNbW/1oWFZU0VmFJiPmt5/rs9xc5dhSL+BrNgdB3MgOhKck4DEV6FdRqOclm
-         FFgLySsQtMHOeOaUICOglUM1gPfSRiTK2Tr93VgnWzVlhj+svuAU1gsL/w4Uw5qnwVO7
-         zDnkPHMrbBalWlZvqpL+d/Tn2NJcqsHstNXEoyhyiVVBGYRe3oJ/nP4e2j5Mf88KorBx
-         INOu03A2JgmWI+qbP0ETu19Byic7OeClU5PYRhsPNkg5kBA3bt6CoC1n+/ncV35fX+lz
-         XVZl8REtCd8u0F8yPP+jMQo6Opz5jdF8lX1kRdAXTi8fqWlYWSCLJkEcSIu7eBy+Wlqq
-         QJjg==
-X-Gm-Message-State: APjAAAX2FD9IBv7eVQO44Cpn4gG3vjEeP7eOZ+SFU3Xk/KSuzLFumz8h
-        Ahbsuxf/Z0gF+J+XMh01cMAAlypN3qu1u5SvK6gySnM=
-X-Google-Smtp-Source: APXvYqy2Vfn/0UqFf7KQAHBHNwtMoSCpd+rzRLQvU4yVWs78AY2zIJj/6wcDNWXAHNlBdc4ygIY1Zh5RVNeUP7eYnqc=
-X-Received: by 2002:a05:6402:1612:: with SMTP id f18mr1494460edv.66.1570601404261;
- Tue, 08 Oct 2019 23:10:04 -0700 (PDT)
+        id S1729268AbfJIGaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 02:30:02 -0400
+Received: from mga12.intel.com ([192.55.52.136]:30241 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726765AbfJIGaB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Oct 2019 02:30:01 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Oct 2019 23:30:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,273,1566889200"; 
+   d="scan'208";a="200037603"
+Received: from samudral-mobl1.amr.corp.intel.com (HELO [10.254.13.114]) ([10.254.13.114])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Oct 2019 23:30:00 -0700
+Subject: Re: [PATCH bpf-next 0/4] Enable direct receive on AF_XDP sockets
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
+        tom.herbert@intel.com
+References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
+ <20191008174919.2160737a@cakuba.netronome.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <ce255470-6bf7-0ba4-c24f-0808e3331977@intel.com>
+Date:   Tue, 8 Oct 2019 23:29:59 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-From:   =?UTF-8?B?Q2hlbum5jw==?= <mobemhit@gmail.com>
-Date:   Wed, 9 Oct 2019 14:09:53 +0800
-Message-ID: <CANuct4v1GjHrkw8uwTdjzDWoq0ZVy6NY49TXT1QSO+d7eh9iCg@mail.gmail.com>
-Subject: Question about concurrent accesses to an eBPF map
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191008174919.2160737a@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-Now I have an eBPF program which adds or updates elements in an eBPF
-map. Meanwhile, I have a user space application which reads and
-deletes elements in the aforementioned eBPF map. For a specific
-element in the eBPF map, if an update happens between the read and
-delete, I will lose some data. I'm using 4.9.30 upstream kernel, and
-I'm wondering if there is any mechanism in eBPF which can make the
-"read and delete" an atomic operation.
 
-Thanks in advance,
-Paul
+On 10/8/2019 5:49 PM, Jakub Kicinski wrote:
+> On Mon,  7 Oct 2019 23:16:51 -0700, Sridhar Samudrala wrote:
+>> This is a rework of the following patch series
+>> https://lore.kernel.org/netdev/1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com/#r
+>> that tried to enable direct receive by bypassing XDP program attached
+>> to the device.
+>>
+>> Based on the community feedback and some suggestions from Bjorn, changed
+>> the semantics of the implementation to enable direct receive on AF_XDP
+>> sockets that are bound to a queue only when there is no normal XDP program
+>> attached to the device.
+>>
+>> This is accomplished by introducing a special BPF prog pointer (DIRECT_XSK)
+>> that is attached at the time of binding an AF_XDP socket to a queue of a
+>> device. This is done only if there is no other XDP program attached to
+>> the device. The normal XDP program has precedence and will replace the
+>> DIRECT_XSK prog if it is attached later. The main reason to introduce a
+>> special BPF prog pointer is to minimize the driver changes. The only change
+>> is to use the bpf_get_prog_id() helper when QUERYING the prog id.
+>>
+>> Any attach of a normal XDP program will take precedence and the direct xsk
+>> program will be removed. The direct XSK program will be attached
+>> automatically when the normal XDP program is removed when there are any
+>> AF_XDP direct sockets associated with that device.
+>>
+>> A static key is used to control this feature in order to avoid any overhead
+>> for normal XDP datapath when there are no AF_XDP sockets in direct-xsk mode.
+> 
+> Don't say that static branches have no overhead. That's dishonest.
+
+I didn't mean to say no overhead, but the overhead is minimized using 
+static_branch_unlikely()
+
+> 
+>> Here is some performance data i collected on my Intel Ivybridge based
+>> development system (Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz)
+>> NIC: Intel 40Gb ethernet (i40e)
+>>
+>> xdpsock rxdrop 1 core (both app and queue's irq pinned to the same core)
+>>     default : taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1
+>>     direct-xsk :taskset -c 1 ./xdpsock -i enp66s0f0 -r -q 1
+>> 6.1x improvement in drop rate
+>>
+>> xdpsock rxdrop 2 core (app and queue's irq pinned to different cores)
+>>     default : taskset -c 3 ./xdpsock -i enp66s0f0 -r -q 1
+>>     direct-xsk :taskset -c 3 ./xdpsock -i enp66s0f0 -r -d -q 1
+>> 6x improvement in drop rate
+>>
+>> xdpsock l2fwd 1 core (both app and queue's irq pinned to the same core)
+>>     default : taskset -c 1 ./xdpsock -i enp66s0f0 -l -q 1
+>>     direct-xsk :taskset -c 1 ./xdpsock -i enp66s0f0 -l -d -q 1
+>> 3.5x improvement in l2fwd rate
+>>
+>> xdpsock rxdrop 2 core (app and queue'sirq pinned to different cores)
+>>     default : taskset -c 3 ./xdpsock -i enp66s0f0 -l -q 1
+>>     direct-xsk :taskset -c 3 ./xdpsock -i enp66s0f0 -l -d -q 1
+>> 4.5x improvement in l2fwd rate
+> 
+> I asked you to add numbers for handling those use cases in the kernel
+> directly.
+
+Forgot to explicitly mention that I didn't see any regressions with 
+xdp1, xdp2 or xdpsock in default mode with these patches. Performance 
+remained the same.
+
+> 
+>> dpdk-pktgen is used to send 64byte UDP packets from a link partner and
+>> ethtool ntuple flow rule is used to redirect packets to queue 1 on the
+>> system under test.
+> 
+> Obviously still nack from me.
+> 
