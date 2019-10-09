@@ -2,285 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EEFFD1827
-	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 21:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9B2D187D
+	for <lists+netdev@lfdr.de>; Wed,  9 Oct 2019 21:14:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732268AbfJITML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 15:12:11 -0400
-Received: from mout.kundenserver.de ([217.72.192.74]:59681 "EHLO
+        id S1731851AbfJITLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 15:11:16 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:45889 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732061AbfJITLf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 15:11:35 -0400
+        with ESMTP id S1731144AbfJITLO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 15:11:14 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1M9Frd-1iCUhU1UAx-006S0r; Wed, 09 Oct 2019 21:09:11 +0200
+ (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1Mzyi6-1hupE6357e-00wzdx; Wed, 09 Oct 2019 21:11:12 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     Al Viro <viro@zeniv.linux.org.uk>
 Cc:     linux-kernel@vger.kernel.org, y2038@lists.linaro.org,
-        linux-fsdevel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH v6 00/43] compat_ioctl: remove most of fs/compat_ioctl.c
-Date:   Wed,  9 Oct 2019 21:08:52 +0200
-Message-Id: <20191009190853.245077-1-arnd@arndb.de>
+        linux-fsdevel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Karsten Keil <isdn@linux-pingi.de>, netdev@vger.kernel.org,
+        isdn4linux@listserv.isdn4linux.de
+Subject: [PATCH v6 16/43] compat_ioctl: move isdn/capi ioctl translation into driver
+Date:   Wed,  9 Oct 2019 21:10:16 +0200
+Message-Id: <20191009191044.308087-16-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
+In-Reply-To: <20191009190853.245077-1-arnd@arndb.de>
+References: <20191009190853.245077-1-arnd@arndb.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:soRfA8GEsLyL6KJg7pQMmF7Bo5SXBVsSv+VAvypPv38g8t9aDtn
- 3y0GeYyEh9Ep2hbXg3Lgcef44HAU8BgCX5p0M8kyvLrlCTJan4SAkA/P7hpL88VyJP8xOqx
- WDz/UwhCf549lXsxlbiA1d0aA+bUwFqCIzBu3kWkC4G9ZxtTrn47udvoEX8UQyIcUxYqKra
- 4x1+N9IJOh6o18fVm/DYg==
+X-Provags-ID: V03:K1:3PgdTLn3Isb1E8QdaS6ssQ4smTcDkiVZALshacjmZB+AtPbu7Xq
+ +7o5fh40aOG53PwqC68L1xQv4R2rrEcItv3d09B+15mWfs5dq4Tnu4b8BuUmfRm6UOVmtZd
+ zpvGOs+siVVcUrX1Q5s/nr5A9T4WhMwaKm/3W3e/li5neiNanzGsyRWZwZ9MgEx1znyplrR
+ z2rwUeFAJ5Ft6735YtEjg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:q9EmiQP5Hoc=:HeLrSdtqCXfrAstU0aO7OD
- 884C2iPGS1h17y6cvncKVzY7Rh+WZvsveod21s3AMUX6zEPTX4OV2KmfDwGPPQf0hejWYCJbV
- OGiqdwt8W1012ByoFy9WMhEg1qB6V+/F6DVYrtAfM0b9pn7P8VTjMa3K0n5oKQA/RluYkP+Tv
- CTD4vr9OPALoSZkA9MXJ26tR5j4KoT6rdtZcb6D74ib/xLy+WdW6Uh96552Zb32nOXYPfQm/P
- urDGniIgVPa3PSjVOYcV4BzO8qqVeM8oeDPiSSFEbirsBH+/CPjGgIsR2UCmceeSQlqTRelnf
- Oci0xFbSJpZ7apksCk0/Fps4gl6B8+kL+c8kI9/8fDrmCUHEs7/gkchidTf4aL9t8fWVPnoKz
- NoabhvGvwUwR+LlmizruvBi0IXG1wQvMH5we7gOBbO6aqrrlFwl/XTDGYf1TN12JPvQZitMtz
- Jb3bhe6iE5io+NuBey6HpUCVQ7kKJn2kdIj9cvH57maGC5StNvBPRC/BNVgvMyci0CZaQJMUx
- iXcp7gh10qMZNlnOMhHMEO0wxiE0xib8XC5PRcPCTrZr8Gk8AzkgfiihJG0BE9LNTez9e4jWm
- Lyd8sFOPqqIYpMkMhcQpaTGpwgg05yjqT8TYD3rnCI8QBkDG5aCPiCw2hti6e7g76O7v2GIZv
- Lrh5y8x5j32XSdtk26K5V4B5y6+3xcrol+uyeYIY45s/bP6oRsgVHzeMtMhtWjQhn70QRH6VJ
- Mny9K9XEHt3dm7f3uu3k6U2Ip/kW3x5+7o5HK9+7HQFXccoMg8buR/iQh5PZMzcrBlYC30x4v
- d36CIWAEEHEUamoKgqnAzBSpP5dLcEPavVuKaJuEe7jT4VPam9B63/cWl12SAckf9GzCTYOgu
- Zxrg5El2sPCxv4k9iMhA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hRo8ARl3Sq8=:RxMdqFFZ5hfQWKhBpuqbgd
+ VS0ufeKpg2n65gq107Tujsiiq+j0BdkpZ1R4QKawR0mc5fAuY4/lBYRLNImDpCjMevgpRCMhS
+ G+IWYfPMqCzyHXrQgLga8GTWM4/Po7Y7g0TRBTXe2vAC75g2YRgEGafbq7pPLnVrwpBHuDnKE
+ hYqyjFb6eMjZstGJaHM+tbsu/QZHUp+gzLmvB3hbOb4Gt3tLwKWyaxJUxJfwl0jPz1Eq2svQr
+ 5ylyHlpXJhYZjR4dGwBSOa/MP/aORnAVTAvkgegWEnGuDWCmzpiw9kKM3laiA1Z14aKmbe2pI
+ DEc6POaYmrmL6VvCpSxUne1lQPdReizm5P3e52Vw2DNbQAkoG6dsj5x5cNWqmVyFas5TbQ8ay
+ zvflQxV28Zo3vv5oom91yCx6kBhGNmsLeI/4GWRM+V7Vq+6Hkh7ZR/IMaR71BoH9Mv4yule5F
+ OWym6mvP3Rn1qvAONZ3687WR8lb5vtbRq/M/zGS87JoV3dzUACYtw1VnLsmi/wmJW0cGhds6K
+ qHzVxrBqquqPb6hpqU1+y0XUTkYjiL7QGeYnRwSTXYEuNF2c73ytZSBEK3xTnkBimnzI0QS34
+ twk72LmazvX8sXsXA+PVkFaXABTgjMzMQuiR37IiPVYC1RkysRc1Tj6uatBg436LsDo61CWTP
+ BHTQDUsSH76HOsy2WpWeuMpABGuc8yAWabElkrVTAbGFXyZijT6cXb/i69ProMiSWhwKi1m2v
+ cVBieHv8EWbJhV0V//EUVyF02xmhqzHOVJ3Ou6Z3eGtBeYHIvxN8PaQODJPhzzftQh+buHYpf
+ KNhSm/38Ro+OTlOUHCLCk38lUx+vQSgTFhrUake83fButfk9TTsrL2/tYHCFmJ3/18ZBN7oe6
+ FvDmcjfQbzxT2tWV1cgg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As part of the cleanup of some remaining y2038 issues, I came to
-fs/compat_ioctl.c, which still has a couple of commands that need support
-for time64_t.
+Neither the old isdn4linux interface nor the newer mISDN stack
+ever had working 32-bit compat mode as far as I can tell.
 
-In completely unrelated work, I spent time on cleaning up parts of this
-file in the past, moving things out into drivers instead.
+However, the CAPI stack has some ioctl commands that are
+correctly listed in fs/compat_ioctl.c.
 
-After Al Viro reviewed an earlier version of this series and did a lot
-more of that cleanup, I decided to try to completely eliminate the rest
-of it and move it all into drivers.
+We can trivially move all of those into the corresponding
+file that implement the native handlers by adding a compat_ioctl
+redirect to that.
 
-This series incorporates some of Al's work and many patches of my own,
-but in the end stops short of actually removing the last part, which is
-the scsi ioctl handlers. I have patches for those as well, but they need
-more testing or possibly a rewrite.
+I did notice that treating CAPI_MANUFACTURER_CMD() as compatible
+is broken, so I'm also adding a handler for that, realizing that
+in all likelyhood, nobody is ever going to call it.
 
+Cc: Karsten Keil <isdn@linux-pingi.de>
+Cc: netdev@vger.kernel.org
+Cc: isdn4linux@listserv.isdn4linux.de
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
+ drivers/isdn/capi/capi.c | 31 +++++++++++++++++++++++++++++++
+ fs/compat_ioctl.c        | 17 -----------------
+ 2 files changed, 31 insertions(+), 17 deletions(-)
 
-Everything in here was posted one or more times already, sending
-the whole series again for review, I hope to get some input on those
-patches that have not already been reviewed.
-
-The entire series is also part of linux-next through
-https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/commit/?h=y2038
-
-
-Al Viro (8):
-  fix compat handling of FICLONERANGE, FIDEDUPERANGE and FS_IOC_FIEMAP
-  FIGETBSZ: fix compat
-  compat: itanic doesn't have one
-  do_vfs_ioctl(): use saner types
-  compat: move FS_IOC_RESVSP_32 handling to fs/ioctl.c
-  compat_sys_ioctl(): make parallel to do_vfs_ioctl()
-  compat_ioctl: unify copy-in of ppp filters
-  compat_ioctl: move PPPIOCSCOMPRESS to ppp_generic
-
-Arnd Bergmann (35):
-  ceph: fix compat_ioctl for ceph_dir_operations
-  compat_ioctl: drop FIOQSIZE table entry
-  compat_ioctl: add compat_ptr_ioctl()
-  compat_ioctl: move rtc handling into rtc-dev.c
-  compat_ioctl: move drivers to compat_ptr_ioctl
-  compat_ioctl: move more drivers to compat_ptr_ioctl
-  compat_ioctl: use correct compat_ptr() translation in drivers
-  compat_ioctl: move tape handling into drivers
-  compat_ioctl: move ATYFB_CLK handling to atyfb driver
-  compat_ioctl: move isdn/capi ioctl translation into driver
-  compat_ioctl: move rfcomm handlers into driver
-  compat_ioctl: move hci_sock handlers into driver
-  compat_ioctl: remove HCIUART handling
-  compat_ioctl: remove HIDIO translation
-  compat_ioctl: remove translation for sound ioctls
-  compat_ioctl: remove IGNORE_IOCTL()
-  compat_ioctl: remove /dev/random commands
-  compat_ioctl: remove joystick ioctl translation
-  compat_ioctl: remove PCI ioctl translation
-  compat_ioctl: remove /dev/raw ioctl translation
-  compat_ioctl: remove last RAID handling code
-  compat_ioctl: remove unused convert_in_user macro
-  gfs2: add compat_ioctl support
-  fs: compat_ioctl: move FITRIM emulation into file systems
-  compat_ioctl: move WDIOC handling into wdt drivers
-  compat_ioctl: reimplement SG_IO handling
-  af_unix: add compat_ioctl support
-  compat_ioctl: handle SIOCOUTQNSD
-  compat_ioctl: move SIOCOUTQ out of compat_ioctl.c
-  tty: handle compat PPP ioctls
-  compat_ioctl: handle PPPIOCGIDLE for 64-bit time_t
-  compat_ioctl: ppp: move simple commands into ppp_generic.c
-  compat_ioctl: move SG_GET_REQUEST_TABLE handling
-  pktcdvd: add compat_ioctl handler
-  scsi: sd: enable compat ioctls for sed-opal
-
- Documentation/networking/ppp_generic.txt    |   2 +
- arch/powerpc/platforms/52xx/mpc52xx_gpt.c   |   1 +
- arch/um/drivers/harddog_kern.c              |   1 +
- arch/um/drivers/hostaudio_kern.c            |   1 +
- block/scsi_ioctl.c                          | 132 ++-
- drivers/android/binder.c                    |   2 +-
- drivers/block/pktcdvd.c                     |  25 +
- drivers/char/ipmi/ipmi_watchdog.c           |   1 +
- drivers/char/ppdev.c                        |  12 +-
- drivers/char/random.c                       |   1 +
- drivers/char/tpm/tpm_vtpm_proxy.c           |  12 +-
- drivers/crypto/qat/qat_common/adf_ctl_drv.c |   2 +-
- drivers/dma-buf/dma-buf.c                   |   4 +-
- drivers/dma-buf/sw_sync.c                   |   2 +-
- drivers/dma-buf/sync_file.c                 |   2 +-
- drivers/firewire/core-cdev.c                |  12 +-
- drivers/gpu/drm/amd/amdkfd/kfd_chardev.c    |   2 +-
- drivers/hid/hidraw.c                        |   4 +-
- drivers/hid/usbhid/hiddev.c                 |  11 +-
- drivers/hwmon/fschmd.c                      |   1 +
- drivers/hwtracing/stm/core.c                |  12 +-
- drivers/ide/ide-tape.c                      |  27 +-
- drivers/iio/industrialio-core.c             |   2 +-
- drivers/infiniband/core/uverbs_main.c       |   4 +-
- drivers/isdn/capi/capi.c                    |  31 +
- drivers/media/rc/lirc_dev.c                 |   4 +-
- drivers/misc/cxl/flash.c                    |   8 +-
- drivers/misc/genwqe/card_dev.c              |  23 +-
- drivers/misc/mei/main.c                     |  22 +-
- drivers/misc/vmw_vmci/vmci_host.c           |   2 +-
- drivers/mtd/ubi/cdev.c                      |  36 +-
- drivers/net/ppp/ppp_generic.c               | 245 ++++--
- drivers/net/tap.c                           |  12 +-
- drivers/nvdimm/bus.c                        |   4 +-
- drivers/nvme/host/core.c                    |   2 +-
- drivers/pci/switch/switchtec.c              |   2 +-
- drivers/platform/x86/wmi.c                  |   2 +-
- drivers/rpmsg/rpmsg_char.c                  |   4 +-
- drivers/rtc/dev.c                           |  13 +-
- drivers/rtc/rtc-ds1374.c                    |   1 +
- drivers/rtc/rtc-vr41xx.c                    |  10 +
- drivers/s390/char/tape_char.c               |  41 +-
- drivers/sbus/char/display7seg.c             |   2 +-
- drivers/sbus/char/envctrl.c                 |   4 +-
- drivers/scsi/3w-xxxx.c                      |   4 +-
- drivers/scsi/cxlflash/main.c                |   2 +-
- drivers/scsi/esas2r/esas2r_main.c           |   2 +-
- drivers/scsi/megaraid/megaraid_mm.c         |  28 +-
- drivers/scsi/pmcraid.c                      |   4 +-
- drivers/scsi/sd.c                           |  14 +-
- drivers/scsi/sg.c                           |  59 +-
- drivers/scsi/st.c                           |  28 +-
- drivers/staging/android/ion/ion.c           |   4 +-
- drivers/staging/pi433/pi433_if.c            |  12 +-
- drivers/staging/vme/devices/vme_user.c      |   2 +-
- drivers/tee/tee_core.c                      |   2 +-
- drivers/tty/tty_io.c                        |   5 +
- drivers/usb/class/cdc-wdm.c                 |   2 +-
- drivers/usb/class/usbtmc.c                  |   4 +-
- drivers/usb/core/devio.c                    |  16 +-
- drivers/usb/gadget/function/f_fs.c          |  12 +-
- drivers/vfio/vfio.c                         |  39 +-
- drivers/vhost/net.c                         |  12 +-
- drivers/vhost/scsi.c                        |  12 +-
- drivers/vhost/test.c                        |  12 +-
- drivers/vhost/vsock.c                       |  12 +-
- drivers/video/fbdev/aty/atyfb_base.c        |  12 +-
- drivers/virt/fsl_hypervisor.c               |   2 +-
- drivers/watchdog/acquirewdt.c               |   1 +
- drivers/watchdog/advantechwdt.c             |   1 +
- drivers/watchdog/alim1535_wdt.c             |   1 +
- drivers/watchdog/alim7101_wdt.c             |   1 +
- drivers/watchdog/ar7_wdt.c                  |   1 +
- drivers/watchdog/at91rm9200_wdt.c           |   1 +
- drivers/watchdog/ath79_wdt.c                |   1 +
- drivers/watchdog/bcm63xx_wdt.c              |   1 +
- drivers/watchdog/cpu5wdt.c                  |   1 +
- drivers/watchdog/eurotechwdt.c              |   1 +
- drivers/watchdog/f71808e_wdt.c              |   1 +
- drivers/watchdog/gef_wdt.c                  |   1 +
- drivers/watchdog/geodewdt.c                 |   1 +
- drivers/watchdog/ib700wdt.c                 |   1 +
- drivers/watchdog/ibmasr.c                   |   1 +
- drivers/watchdog/indydog.c                  |   1 +
- drivers/watchdog/intel_scu_watchdog.c       |   1 +
- drivers/watchdog/iop_wdt.c                  |   1 +
- drivers/watchdog/it8712f_wdt.c              |   1 +
- drivers/watchdog/ixp4xx_wdt.c               |   1 +
- drivers/watchdog/m54xx_wdt.c                |   1 +
- drivers/watchdog/machzwd.c                  |   1 +
- drivers/watchdog/mixcomwd.c                 |   1 +
- drivers/watchdog/mtx-1_wdt.c                |   1 +
- drivers/watchdog/mv64x60_wdt.c              |   1 +
- drivers/watchdog/nv_tco.c                   |   1 +
- drivers/watchdog/pc87413_wdt.c              |   1 +
- drivers/watchdog/pcwd.c                     |   1 +
- drivers/watchdog/pcwd_pci.c                 |   1 +
- drivers/watchdog/pcwd_usb.c                 |   1 +
- drivers/watchdog/pika_wdt.c                 |   1 +
- drivers/watchdog/pnx833x_wdt.c              |   1 +
- drivers/watchdog/rc32434_wdt.c              |   1 +
- drivers/watchdog/rdc321x_wdt.c              |   1 +
- drivers/watchdog/riowd.c                    |   1 +
- drivers/watchdog/sa1100_wdt.c               |   1 +
- drivers/watchdog/sb_wdog.c                  |   1 +
- drivers/watchdog/sbc60xxwdt.c               |   1 +
- drivers/watchdog/sbc7240_wdt.c              |   1 +
- drivers/watchdog/sbc_epx_c3.c               |   1 +
- drivers/watchdog/sbc_fitpc2_wdt.c           |   1 +
- drivers/watchdog/sc1200wdt.c                |   1 +
- drivers/watchdog/sc520_wdt.c                |   1 +
- drivers/watchdog/sch311x_wdt.c              |   1 +
- drivers/watchdog/scx200_wdt.c               |   1 +
- drivers/watchdog/smsc37b787_wdt.c           |   1 +
- drivers/watchdog/w83877f_wdt.c              |   1 +
- drivers/watchdog/w83977f_wdt.c              |   1 +
- drivers/watchdog/wafer5823wdt.c             |   1 +
- drivers/watchdog/watchdog_dev.c             |   1 +
- drivers/watchdog/wdrtas.c                   |   1 +
- drivers/watchdog/wdt.c                      |   1 +
- drivers/watchdog/wdt285.c                   |   1 +
- drivers/watchdog/wdt977.c                   |   1 +
- drivers/watchdog/wdt_pci.c                  |   1 +
- fs/btrfs/super.c                            |   2 +-
- fs/ceph/dir.c                               |   1 +
- fs/ceph/file.c                              |   2 +-
- fs/ceph/super.h                             |   1 +
- fs/compat_ioctl.c                           | 917 +-------------------
- fs/ecryptfs/file.c                          |   1 +
- fs/ext4/ioctl.c                             |   1 +
- fs/f2fs/file.c                              |   1 +
- fs/fat/file.c                               |  13 +-
- fs/fuse/dev.c                               |   2 +-
- fs/gfs2/file.c                              |  30 +
- fs/hpfs/dir.c                               |   1 +
- fs/hpfs/file.c                              |   1 +
- fs/ioctl.c                                  |  80 +-
- fs/nilfs2/ioctl.c                           |   1 +
- fs/notify/fanotify/fanotify_user.c          |   2 +-
- fs/ocfs2/ioctl.c                            |   1 +
- fs/userfaultfd.c                            |   2 +-
- include/linux/blkdev.h                      |   2 +
- include/linux/falloc.h                      |  20 +
- include/linux/fs.h                          |   7 +
- include/linux/mtio.h                        |  60 ++
- include/uapi/linux/ppp-ioctl.h              |   2 +
- include/uapi/linux/ppp_defs.h               |  14 +
- lib/iov_iter.c                              |   1 +
- net/bluetooth/hci_sock.c                    |  21 +-
- net/bluetooth/rfcomm/sock.c                 |  14 +-
- net/rfkill/core.c                           |   2 +-
- net/socket.c                                |   3 +
- net/unix/af_unix.c                          |  19 +
- sound/core/oss/pcm_oss.c                    |   4 +
- sound/oss/dmasound/dmasound_core.c          |   2 +
- 155 files changed, 935 insertions(+), 1394 deletions(-)
- create mode 100644 include/linux/mtio.h
-
+diff --git a/drivers/isdn/capi/capi.c b/drivers/isdn/capi/capi.c
+index c92b405b7646..efce7532513c 100644
+--- a/drivers/isdn/capi/capi.c
++++ b/drivers/isdn/capi/capi.c
+@@ -950,6 +950,34 @@ capi_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_COMPAT
++static long
++capi_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
++{
++	int ret;
++
++	if (cmd == CAPI_MANUFACTURER_CMD) {
++		struct {
++			unsigned long cmd;
++			compat_uptr_t data;
++		} mcmd32;
++
++		if (!capable(CAP_SYS_ADMIN))
++			return -EPERM;
++		if (copy_from_user(&mcmd32, compat_ptr(arg), sizeof(mcmd32)))
++			return -EFAULT;
++
++		mutex_lock(&capi_mutex);
++		ret = capi20_manufacturer(mcmd32.cmd, compat_ptr(mcmd32.data));
++		mutex_unlock(&capi_mutex);
++
++		return ret;
++	}
++
++	return capi_unlocked_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
++}
++#endif
++
+ static int capi_open(struct inode *inode, struct file *file)
+ {
+ 	struct capidev *cdev;
+@@ -996,6 +1024,9 @@ static const struct file_operations capi_fops =
+ 	.write		= capi_write,
+ 	.poll		= capi_poll,
+ 	.unlocked_ioctl	= capi_unlocked_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= capi_compat_ioctl,
++#endif
+ 	.open		= capi_open,
+ 	.release	= capi_release,
+ };
+diff --git a/fs/compat_ioctl.c b/fs/compat_ioctl.c
+index a4e8fb7da968..f3b4179d6dff 100644
+--- a/fs/compat_ioctl.c
++++ b/fs/compat_ioctl.c
+@@ -44,9 +44,6 @@
+ #include <net/bluetooth/hci_sock.h>
+ #include <net/bluetooth/rfcomm.h>
+ 
+-#include <linux/capi.h>
+-#include <linux/gigaset_dev.h>
+-
+ #ifdef CONFIG_BLOCK
+ #include <linux/cdrom.h>
+ #include <linux/fd.h>
+@@ -681,20 +678,6 @@ COMPATIBLE_IOCTL(RFCOMMRELEASEDEV)
+ COMPATIBLE_IOCTL(RFCOMMGETDEVLIST)
+ COMPATIBLE_IOCTL(RFCOMMGETDEVINFO)
+ COMPATIBLE_IOCTL(RFCOMMSTEALDLC)
+-/* CAPI */
+-COMPATIBLE_IOCTL(CAPI_REGISTER)
+-COMPATIBLE_IOCTL(CAPI_GET_MANUFACTURER)
+-COMPATIBLE_IOCTL(CAPI_GET_VERSION)
+-COMPATIBLE_IOCTL(CAPI_GET_SERIAL)
+-COMPATIBLE_IOCTL(CAPI_GET_PROFILE)
+-COMPATIBLE_IOCTL(CAPI_MANUFACTURER_CMD)
+-COMPATIBLE_IOCTL(CAPI_GET_ERRCODE)
+-COMPATIBLE_IOCTL(CAPI_INSTALLED)
+-COMPATIBLE_IOCTL(CAPI_GET_FLAGS)
+-COMPATIBLE_IOCTL(CAPI_SET_FLAGS)
+-COMPATIBLE_IOCTL(CAPI_CLR_FLAGS)
+-COMPATIBLE_IOCTL(CAPI_NCCI_OPENCOUNT)
+-COMPATIBLE_IOCTL(CAPI_NCCI_GETUNIT)
+ /* Misc. */
+ COMPATIBLE_IOCTL(PCIIOC_CONTROLLER)
+ COMPATIBLE_IOCTL(PCIIOC_MMAP_IS_IO)
 -- 
 2.20.0
 
