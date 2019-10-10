@@ -2,32 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4FC3D2924
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DBE5D2928
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387465AbfJJMSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 08:18:04 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:33491 "EHLO
+        id S2387483AbfJJMSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 08:18:07 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:48711 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387405AbfJJMSD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:03 -0400
+        with ESMTP id S2387444AbfJJMSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:04 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iIXOM-0006Lw-8P; Thu, 10 Oct 2019 14:18:02 +0200
+        id 1iIXOM-0006Lw-PU; Thu, 10 Oct 2019 14:18:02 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
 Cc:     davem@davemloft.net, kernel@pengutronix.de,
         jhofstee@victronenergy.com,
         =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
         Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Joe Burmeister <joe.burmeister@devtank.co.uk>,
-        linux-stable <stable@vger.kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 08/29] can: c_can: c_can_poll(): only read status register after status IRQ
-Date:   Thu, 10 Oct 2019 14:17:29 +0200
-Message-Id: <20191010121750.27237-9-mkl@pengutronix.de>
+Subject: [PATCH 09/29] can: c_can: D_CAN: c_can_chip_config(): perform a sofware reset on open
+Date:   Thu, 10 Oct 2019 14:17:30 +0200
+Message-Id: <20191010121750.27237-10-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191010121750.27237-1-mkl@pengutronix.de>
 References: <20191010121750.27237-1-mkl@pengutronix.de>
@@ -42,94 +39,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+From: Jeroen Hofstee <jhofstee@victronenergy.com>
 
-When the status register is read without the status IRQ pending, the
-chip may not raise the interrupt line for an upcoming status interrupt
-and the driver may miss a status interrupt.
+When the CAN interface is closed it the hardwre is put in power down
+mode, but does not reset the error counters / state. Reset the D_CAN on
+open, so the reported state and the actual state match.
 
-It is critical that the BUSOFF status interrupt is forwarded to the
-higher layers, since no more interrupts will follow without
-intervention.
+According to [1], the C_CAN module doesn't have the software reset.
 
-Thanks to Wolfgang and Joe for bringing up the first idea.
+[1] http://www.bosch-semiconductors.com/media/ip_modules/pdf_2/c_can_fd8/users_manual_c_can_fd8_r210_1.pdf
 
-Signed-off-by: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-Cc: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Joe Burmeister <joe.burmeister@devtank.co.uk>
-Fixes: fa39b54ccf28 ("can: c_can: Get rid of pointless interrupts")
-Cc: linux-stable <stable@vger.kernel.org>
+Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/c_can/c_can.c | 25 ++++++++++++++++++++-----
- drivers/net/can/c_can/c_can.h |  1 +
- 2 files changed, 21 insertions(+), 5 deletions(-)
+ drivers/net/can/c_can/c_can.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
 diff --git a/drivers/net/can/c_can/c_can.c b/drivers/net/can/c_can/c_can.c
-index 606b7d8ffe13..9b61bfbea6cd 100644
+index 9b61bfbea6cd..24c6015f6c92 100644
 --- a/drivers/net/can/c_can/c_can.c
 +++ b/drivers/net/can/c_can/c_can.c
-@@ -97,6 +97,9 @@
- #define BTR_TSEG2_SHIFT		12
- #define BTR_TSEG2_MASK		(0x7 << BTR_TSEG2_SHIFT)
+@@ -52,6 +52,7 @@
+ #define CONTROL_EX_PDR		BIT(8)
  
-+/* interrupt register */
-+#define INT_STS_PENDING		0x8000
+ /* control register */
++#define CONTROL_SWR		BIT(15)
+ #define CONTROL_TEST		BIT(7)
+ #define CONTROL_CCE		BIT(6)
+ #define CONTROL_DISABLE_AR	BIT(5)
+@@ -572,6 +573,26 @@ static void c_can_configure_msg_objects(struct net_device *dev)
+ 				   IF_MCONT_RCV_EOB);
+ }
+ 
++static int c_can_software_reset(struct net_device *dev)
++{
++	struct c_can_priv *priv = netdev_priv(dev);
++	int retry = 0;
 +
- /* brp extension register */
- #define BRP_EXT_BRPE_MASK	0x0f
- #define BRP_EXT_BRPE_SHIFT	0
-@@ -1029,10 +1032,16 @@ static int c_can_poll(struct napi_struct *napi, int quota)
- 	u16 curr, last = priv->last_status;
- 	int work_done = 0;
- 
--	priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
--	/* Ack status on C_CAN. D_CAN is self clearing */
--	if (priv->type != BOSCH_D_CAN)
--		priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
-+	/* Only read the status register if a status interrupt was pending */
-+	if (atomic_xchg(&priv->sie_pending, 0)) {
-+		priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
-+		/* Ack status on C_CAN. D_CAN is self clearing */
-+		if (priv->type != BOSCH_D_CAN)
-+			priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
-+	} else {
-+		/* no change detected ... */
-+		curr = last;
++	if (priv->type != BOSCH_D_CAN)
++		return 0;
++
++	priv->write_reg(priv, C_CAN_CTRL_REG, CONTROL_SWR | CONTROL_INIT);
++	while (priv->read_reg(priv, C_CAN_CTRL_REG) & CONTROL_SWR) {
++		msleep(20);
++		if (retry++ > 100) {
++			netdev_err(dev, "CCTRL: software reset failed\n");
++			return -EIO;
++		}
 +	}
- 
- 	/* handle state changes */
- 	if ((curr & STATUS_EWARN) && (!(last & STATUS_EWARN))) {
-@@ -1083,10 +1092,16 @@ static irqreturn_t c_can_isr(int irq, void *dev_id)
- {
- 	struct net_device *dev = (struct net_device *)dev_id;
- 	struct c_can_priv *priv = netdev_priv(dev);
-+	int reg_int;
- 
--	if (!priv->read_reg(priv, C_CAN_INT_REG))
-+	reg_int = priv->read_reg(priv, C_CAN_INT_REG);
-+	if (!reg_int)
- 		return IRQ_NONE;
- 
-+	/* save for later use */
-+	if (reg_int & INT_STS_PENDING)
-+		atomic_set(&priv->sie_pending, 1);
 +
- 	/* disable all interrupts and schedule the NAPI */
- 	c_can_irq_control(priv, false);
- 	napi_schedule(&priv->napi);
-diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
-index 8acdc7fa4792..d5567a7c1c6d 100644
---- a/drivers/net/can/c_can/c_can.h
-+++ b/drivers/net/can/c_can/c_can.h
-@@ -198,6 +198,7 @@ struct c_can_priv {
- 	struct net_device *dev;
- 	struct device *device;
- 	atomic_t tx_active;
-+	atomic_t sie_pending;
- 	unsigned long tx_dir;
- 	int last_status;
- 	u16 (*read_reg) (const struct c_can_priv *priv, enum reg index);
++	return 0;
++}
++
+ /*
+  * Configure C_CAN chip:
+  * - enable/disable auto-retransmission
+@@ -581,6 +602,11 @@ static void c_can_configure_msg_objects(struct net_device *dev)
+ static int c_can_chip_config(struct net_device *dev)
+ {
+ 	struct c_can_priv *priv = netdev_priv(dev);
++	int err;
++
++	err = c_can_software_reset(dev);
++	if (err)
++		return err;
+ 
+ 	/* enable automatic retransmission */
+ 	priv->write_reg(priv, C_CAN_CTRL_REG, CONTROL_ENABLE_AR);
 -- 
 2.23.0
 
