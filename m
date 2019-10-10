@@ -2,92 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71EAFD346A
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD220D346D
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727401AbfJJXgh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Oct 2019 19:36:37 -0400
-Received: from mga06.intel.com ([134.134.136.31]:23008 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725845AbfJJXgg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 19:36:36 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 16:36:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,281,1566889200"; 
-   d="scan'208";a="394223072"
-Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Oct 2019 16:36:36 -0700
-Received: from orsmsx121.amr.corp.intel.com ([169.254.10.88]) by
- ORSMSX109.amr.corp.intel.com ([169.254.11.122]) with mapi id 14.03.0439.000;
- Thu, 10 Oct 2019 16:36:36 -0700
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next v1] documentation: correct include file
- reference
-Thread-Topic: [PATCH net-next v1] documentation: correct include file
- reference
-Thread-Index: AQHVf6F0fEVqTcz5PEKs5qbvb8OBDadUh6Sw
-Date:   Thu, 10 Oct 2019 23:36:35 +0000
-Message-ID: <02874ECE860811409154E81DA85FBB5896921C4C@ORSMSX121.amr.corp.intel.com>
-References: <20191010193112.15215-1-jesse.brandeburg@intel.com>
-In-Reply-To: <20191010193112.15215-1-jesse.brandeburg@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNTkwMTYxN2EtMmExZi00NmVlLWIzYzMtYzZiMGZlYTNhZmJjIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQkhwZWlCUTZCVmlzcHd6RHY2cWVpSVlxcGRRRERhMG5EUnByZjNQMHo2Ylg1N2lxNWxOSXVSQzBkVHRGV2YrTiJ9
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726830AbfJJXio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 19:38:44 -0400
+Received: from www62.your-server.de ([213.133.104.62]:36404 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbfJJXin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 19:38:43 -0400
+Received: from 55.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.55] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iIi13-00017X-FK; Fri, 11 Oct 2019 01:38:41 +0200
+Date:   Fri, 11 Oct 2019 01:38:40 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Stanislav Fomichev <sdf@fomichev.me>
+Subject: Re: [PATCH bpf-next v2 0/2] Atomic flow dissector updates
+Message-ID: <20191010233840.GA20202@pc-63.home>
+References: <20191010181750.5964-1-jakub@cloudflare.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191010181750.5964-1-jakub@cloudflare.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25598/Thu Oct 10 10:50:35 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Jesse Brandeburg
-> Sent: Thursday, October 10, 2019 12:31 PM
-> To: netdev@vger.kernel.org
-> Subject: [PATCH net-next v1] documentation: correct include file reference
+On Thu, Oct 10, 2019 at 08:17:48PM +0200, Jakub Sitnicki wrote:
+> This patch set changes how bpf(BPF_PROG_ATTACH) operates on flow dissector
+> hook when there is already a program attached. After this change the user
+> is allowed to update the program in a single syscall. Please see the first
+> patch for rationale.
 > 
-> The documentation had a reference to a filename before
-> a rename had been completed.  Fix the name so the documentation
-> is correct.
+> v1 -> v2:
 > 
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
->  Documentation/networking/net_dim.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> - Don't use CHECK macro which expects BPF program run duration, which we
+>   don't track in attach/detach tests. Suggested by Stanislav Fomichev.
 > 
-> diff --git a/Documentation/networking/net_dim.txt
-> b/Documentation/networking/net_dim.txt
-> index 9cb31c5e2dcd..eef3956f91db 100644
-> --- a/Documentation/networking/net_dim.txt
-> +++ b/Documentation/networking/net_dim.txt
-> @@ -132,7 +132,7 @@ usage is not complete but it should make the outline of
-> the usage clear.
+> - Test re-attaching flow dissector in both root and non-root network
+>   namespace. Suggested by Stanislav Fomichev.
 > 
->  my_driver.c:
 > 
-> -#include <linux/net_dim.h>
-> +#include <linux/dim.h>
+> Jakub Sitnicki (2):
+>   flow_dissector: Allow updating the flow dissector program atomically
+>   selftests/bpf: Check that flow dissector can be re-attached
 > 
->  /* Callback for net DIM to schedule on a decision to change moderation */
->  void my_driver_do_dim_work(struct work_struct *work)
-> --
-> 2.20.1
+>  net/core/flow_dissector.c                     |  10 +-
+>  .../bpf/prog_tests/flow_dissector_reattach.c  | 127 ++++++++++++++++++
+>  2 files changed, 134 insertions(+), 3 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
 
-I think my patch at https://lore.kernel.org/netdev/20191009191831.29180-1-jacob.e.keller@intel.com/ fixed this.
-
-Thanks,
-Jake
+This needs a new rebase, doesn't apply cleanly. Please carry on Martin
+and Stanislav's tags. Thanks!
