@@ -2,126 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D31EAD2E20
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41069D2E2A
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:51:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbfJJPqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 11:46:31 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35311 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbfJJPqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 11:46:30 -0400
-Received: by mail-wm1-f65.google.com with SMTP id y21so7317912wmi.0;
-        Thu, 10 Oct 2019 08:46:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IgNkDcJv0Dsat8rX7/2Xt+TqC2z88O73Ns5IrlBP/xE=;
-        b=ICZMR/kXK4ALkcUdh0QSQSOcz8hympO2L0DXdxYG6WiZRQPIzt56IyYT1bbtChGft6
-         dAA2Hwc9NWTwEc547la4Bm1t9zBeNY8B6I87cY4IFx+tvm6fHm8ThRn3Kyqux9uH7IaX
-         ME04BtFS5DlcH1gRda+qPqDkYpFIEAfm2UT7m6sjMJY2NbXruBXARNNzcEe5Yj7iIiOy
-         3kmTk17xeKP6zVeBSK94fFSNq+luFF+1RSApsYCYdufh4gvHsYEljjEpUg0c2TYKPMqS
-         fiJzSLNXndJy+EKXTqlhjCP70qiIebkd2XBgyZ9drZ5nDsSjL4Oa8zD6KQ4yx7ezuV0Z
-         Adrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IgNkDcJv0Dsat8rX7/2Xt+TqC2z88O73Ns5IrlBP/xE=;
-        b=I5lGDkcJSvtsIfxFLGwoZ7XxSXTOXKInUDsrTt1vk/9tz3r9GV5kfCGiubi1lLoqxE
-         fFn/IhJJSuxNtAOHuDWeQOGuZlWvMK5qfsjhr057Gb56PHHIwexZWwdYE4KO5gDBfGtE
-         KmOy46lovj1W8ZuJuU8oH1oELQpjSKsbROREnu7RB5zzv3/1UPuLGN+227WmeGtfaY2F
-         MPNI2uhvxMuvT7wpR7A3fRRBtIf4LfmnVwAv9VhguPUlP/6L/X1MUwY0hgMgQ1mNA06n
-         lBO/NC9bXoxww6FWhQ4BR9NDD+E90oSs9sNYJWz8/43OU2YwE5ynI75S7vstiPTesOLh
-         4lrg==
-X-Gm-Message-State: APjAAAVtUhMjYfZ0CLR06wX/TZ6U3sA1rI5/pvTUsiFMAHajul+pV8zZ
-        LI0XYXrajsATnuwGGlm9ux8gkkXO8Zr1ow==
-X-Google-Smtp-Source: APXvYqzHJcOBxuNlsbdIdjGkvOSD9xg1agAV0t9veDiKZfz6DjAcyhslXuWWzb/o5il3Bn07r61zdg==
-X-Received: by 2002:a05:600c:2185:: with SMTP id e5mr8441624wme.78.1570722386439;
-        Thu, 10 Oct 2019 08:46:26 -0700 (PDT)
-Received: from andrea.corp.microsoft.com ([2a01:110:8012:1010:e9a3:da77:7120:dee0])
-        by smtp.gmail.com with ESMTPSA id u25sm6719807wml.4.2019.10.10.08.46.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 08:46:25 -0700 (PDT)
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Andrea Parri <parri.andrea@gmail.com>
-Subject: [PATCH v2 3/3] Drivers: hv: vmbus: Add module parameter to cap the VMBus version
-Date:   Thu, 10 Oct 2019 17:46:00 +0200
-Message-Id: <20191010154600.23875-4-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191010154600.23875-1-parri.andrea@gmail.com>
-References: <20191010154600.23875-1-parri.andrea@gmail.com>
+        id S1726055AbfJJPv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 11:51:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54284 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725901AbfJJPv4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 11:51:56 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AE36D3164683;
+        Thu, 10 Oct 2019 15:51:55 +0000 (UTC)
+Received: from epycfail.redhat.com (ovpn-112-41.ams2.redhat.com [10.36.112.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CA3265DE5B;
+        Thu, 10 Oct 2019 15:51:53 +0000 (UTC)
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     Stefan Walter <walteste@inf.ethz.ch>,
+        Benjamin Coddington <bcodding@redhat.com>,
+        Gonzalo Siero <gsierohu@redhat.com>,
+        =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next] ipv4: Return -ENETUNREACH if we can't create route but saddr is valid
+Date:   Thu, 10 Oct 2019 17:51:50 +0200
+Message-Id: <7bcfeaac2f78657db35ccf0e624745de41162129.1570722417.git.sbrivio@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 10 Oct 2019 15:51:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, Linux guests negotiate the VMBus version with Hyper-V
-and use the highest available VMBus version they can connect to.
-This has some drawbacks: by using the highest available version,
-certain code paths are never executed and can not be tested when
-the guest runs on the newest host.
+...instead of -EINVAL. An issue was found with older kernel versions
+while unplugging a NFS client with pending RPCs, and the wrong error
+code here prevented it from recovering once link is back up with a
+configured address.
 
-Add the module parameter "max_version", to upper-bound the VMBus
-versions guests can negotiate.
+Incidentally, this is not an issue anymore since commit 4f8943f80883
+("SUNRPC: Replace direct task wakeups from softirq context"), included
+in 5.2-rc7, had the effect of decoupling the forwarding of this error
+by using SO_ERROR in xs_wake_error(), as pointed out by Benjamin
+Coddington.
 
-Suggested-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Andrea Parri <parri.andrea@gmail.com>
+To the best of my knowledge, this isn't currently causing any further
+issue, but the error code doesn't look appropriate anyway, and we
+might hit this in other paths as well. So I'm addressing this for
+net-next, but it might be worth to queue this for stable < 5.2.
+
+In detail, as analysed by Gonzalo Siero, once the route is deleted
+because the interface is down, and can't be resolved and we return
+-EINVAL here, this ends up, courtesy of inet_sk_rebuild_header(),
+as the socket error seen by tcp_write_err(), called by
+tcp_retransmit_timer().
+
+In turn, tcp_write_err() indirectly calls xs_error_report(), which
+wakes up the RPC pending tasks with a status of -EINVAL. This is then
+seen by call_status() in the SUN RPC implementation, which aborts the
+RPC call calling rpc_exit(), instead of handling this as a
+potentially temporary condition, i.e. as a timeout.
+
+Return -EINVAL only if the input parameters passed to
+ip_route_output_key_hash_rcu() are actually invalid (this is the case
+if the specified source address is multicast, limited broadcast or
+all zeroes), but return -ENETUNREACH in all cases where, at the given
+moment, the given source address doesn't allow resolving the route.
+
+While at it, drop the initialisation of err to -ENETUNREACH, which
+was added to __ip_route_output_key() back then by commit
+0315e3827048 ("net: Fix behaviour of unreachable, blackhole and
+prohibit routes"), but actually had no effect, as it was, and is,
+overwritten by the fib_lookup() return code assignment, and anyway
+ignored in all other branches, including the if (fl4->saddr) one:
+I find this rather confusing, as it would look like -ENETUNREACH is
+the "default" error, while that statement has no effect.
+
+Also note that after commit fc75fc8339e7 ("ipv4: dont create routes
+on down devices"), we would get -ENETUNREACH if the device is down,
+but -EINVAL if the source address is specified and we can't resolve
+the route, and this appears to be rather inconsistent.
+
+Reported-by: Stefan Walter <walteste@inf.ethz.ch>
+Analysed-by: Benjamin Coddington <bcodding@redhat.com>
+Analysed-by: Gonzalo Siero <gsierohu@redhat.com>
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 ---
- drivers/hv/connection.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+I think this should be considered for -stable, < 5.2
 
-diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-index 2f6961ac8c996..f60d7330ff3fd 100644
---- a/drivers/hv/connection.c
-+++ b/drivers/hv/connection.c
-@@ -14,6 +14,7 @@
- #include <linux/wait.h>
- #include <linux/delay.h>
- #include <linux/mm.h>
-+#include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- #include <linux/hyperv.h>
-@@ -55,6 +56,16 @@ static __u32 vmbus_versions[] = {
- 	VERSION_WS2008
- };
+ net/ipv4/route.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 14654876127e..5bc172abd143 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -2470,14 +2470,17 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
+ 	int orig_oif = fl4->flowi4_oif;
+ 	unsigned int flags = 0;
+ 	struct rtable *rth;
+-	int err = -ENETUNREACH;
++	int err;
  
-+/*
-+ * Maximal VMBus protocol version guests can negotiate.  Useful to cap the
-+ * VMBus version for testing and debugging purpose.
-+ */
-+static uint max_version = VERSION_WIN10_V5_2;
+ 	if (fl4->saddr) {
+-		rth = ERR_PTR(-EINVAL);
+ 		if (ipv4_is_multicast(fl4->saddr) ||
+ 		    ipv4_is_lbcast(fl4->saddr) ||
+-		    ipv4_is_zeronet(fl4->saddr))
++		    ipv4_is_zeronet(fl4->saddr)) {
++			rth = ERR_PTR(-EINVAL);
+ 			goto out;
++		}
 +
-+module_param(max_version, uint, S_IRUGO);
-+MODULE_PARM_DESC(max_version,
-+		 "Maximal VMBus protocol version which can be negotiated");
-+
- int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
- {
- 	int ret = 0;
-@@ -237,6 +248,8 @@ int vmbus_connect(void)
++		rth = ERR_PTR(-ENETUNREACH);
  
- 	for (i = 0; i < ARRAY_SIZE(vmbus_versions); i++) {
- 		version = vmbus_versions[i];
-+		if (version > max_version)
-+			continue;
- 
- 		ret = vmbus_negotiate_version(msginfo, version);
- 		if (ret == -ETIMEDOUT)
+ 		/* I removed check for oif == dev_out->oif here.
+ 		   It was wrong for two reasons:
 -- 
-2.23.0
+2.20.1
 
