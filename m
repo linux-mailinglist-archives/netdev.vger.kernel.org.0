@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEBE1D2D23
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3054D2D9E
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfJJPAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 11:00:07 -0400
-Received: from mx2.suse.de ([195.135.220.15]:46918 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726413AbfJJPAF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 11:00:05 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id A4F17AF43;
-        Thu, 10 Oct 2019 15:00:01 +0000 (UTC)
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v9 5/5] MIPS: SGI-IP27: Enable ethernet phy on second Origin 200 module
-Date:   Thu, 10 Oct 2019 16:59:51 +0200
-Message-Id: <20191010145953.21327-6-tbogendoerfer@suse.de>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20191010145953.21327-1-tbogendoerfer@suse.de>
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
+        id S1726594AbfJJPXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 11:23:11 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:50794 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbfJJPXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 11:23:10 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 5so7418175wmg.0
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 08:23:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qDz+r4rM94VL3+Pl5xzdTOjfOO1RdD3vAbbm0BQ2hHI=;
+        b=AvvoG/BsjH8RyUfVf8qxu9E8+6nBME5ejysBka+LWWdHaophcj951/cLzlbdzoGi7m
+         gncEsje2qdJsbuQDMyUKEsHahQF45XYIBaw/JxHTfMEu7RnUNGZHjp11WFF+ABFIyULU
+         47f1KrwwzO2d27shcf6fYNMlzt3ATuNEAyRNkBfXmzoth6dN6Kl8MuQJi516+Hwpzq29
+         7QpTfWmNKyUuVDHQM7fYIg9NQGqLhdIT987WN61jimmIrPHdPndhd669qkd1EdgJQaL6
+         LpIkZQahdfVwCXWu+TH40v1xgFtVFmdPPgY0EnQvUamqDrwFnkN8xExmOSk4EmoInsme
+         jeuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qDz+r4rM94VL3+Pl5xzdTOjfOO1RdD3vAbbm0BQ2hHI=;
+        b=puNYsJVmTevvvNyS3oFdPQHLHi7wPHxY/SDJL+XEHHLpspUoYnFn7rLg4SoN803mz5
+         IBSafGdY3rr+hGQzdq7eXaq/L2pRqwiQMy1OWO7QfKVLBnxDISe8pAKWROYmpLbPymTZ
+         Uj+JIPq3eYcokiPbpPzp/CFLJTbyT77KKrd+3POW5wVQF9eKYGrkoYzK/O1pvIshfiDQ
+         R0Ata1U/fWMK2yKke3L3gjLPbqDzGM3ZdxQicLPy/XYX1D9pTNAM3ZOvrE+3qtAzOm5d
+         DV+r37apkVmfI9KUyK0rHJqgBx3HZAnacXizV1u8I6NCFc0dusdTMp+gfx7lKoCaoou7
+         5zhg==
+X-Gm-Message-State: APjAAAU9u8ZxyBir9erfUZHA7cudJ3g5QbXCRCOZf26XPeTREf0GA89v
+        WxbFCh5rBGM2hQnN6jHiLe98vw==
+X-Google-Smtp-Source: APXvYqw3Ud+Ro98c+TTzCOdXnjL0w7AL/IQDWdsh2/DyNRPzCEiNBX/grfAVzOVYXuihjhT9E88tjQ==
+X-Received: by 2002:a1c:2d85:: with SMTP id t127mr7765333wmt.109.1570720988703;
+        Thu, 10 Oct 2019 08:23:08 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id e3sm6028321wme.39.2019.10.10.08.23.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 08:23:08 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 17:23:07 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7 09/17] ethtool: generic handlers for GET
+ requests
+Message-ID: <20191010152307.GA4429@nanopsycho>
+References: <cover.1570654310.git.mkubecek@suse.cz>
+ <b000e461e348ba1a0af30f2e8493618bce11ec12.1570654310.git.mkubecek@suse.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b000e461e348ba1a0af30f2e8493618bce11ec12.1570654310.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PROM only enables ethernet PHY on first Origin 200 module, so we must
-do it ourselves for the second module.
+Wed, Oct 09, 2019 at 10:59:27PM CEST, mkubecek@suse.cz wrote:
 
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
----
- arch/mips/pci/pci-ip27.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+[...]
 
-diff --git a/arch/mips/pci/pci-ip27.c b/arch/mips/pci/pci-ip27.c
-index 441eb9383b20..7cc784cb299b 100644
---- a/arch/mips/pci/pci-ip27.c
-+++ b/arch/mips/pci/pci-ip27.c
-@@ -7,6 +7,11 @@
-  * Copyright (C) 1999, 2000, 04 Ralf Baechle (ralf@linux-mips.org)
-  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
-  */
-+#include <asm/sn/addrs.h>
-+#include <asm/sn/types.h>
-+#include <asm/sn/klconfig.h>
-+#include <asm/sn/hub.h>
-+#include <asm/sn/ioc3.h>
- #include <asm/pci/bridge.h>
- 
- dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-@@ -31,3 +36,20 @@ int pcibus_to_node(struct pci_bus *bus)
- }
- EXPORT_SYMBOL(pcibus_to_node);
- #endif /* CONFIG_NUMA */
-+
-+static void ip29_fixup_phy(struct pci_dev *dev)
-+{
-+	int nasid = pcibus_to_node(dev->bus);
-+	u32 sid;
-+
-+	if (nasid != 1)
-+		return; /* only needed on second module */
-+
-+	/* enable ethernet PHY on IP29 systemboard */
-+	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-+	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
-+		REMOTE_HUB_S(nasid, MD_LED0, 0x09);
-+}
-+
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_SGI, PCI_DEVICE_ID_SGI_IOC3,
-+			ip29_fixup_phy);
--- 
-2.16.4
 
+>+static const struct get_request_ops *get_requests[__ETHTOOL_MSG_USER_CNT] = {
+
+I think that prefix would be good here as well:
+
++static const struct ethnl_get_request_ops *
+ethnl_get_requests[__ETHTOOL_MSG_USER_CNT] = {
+
+[...]
