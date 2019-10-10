@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 462B5D1F5C
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD27D1F5F
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732815AbfJJEP1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Oct 2019 00:15:27 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48932 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732759AbfJJEPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:15:24 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9A4E8Yn014743
-        for <netdev@vger.kernel.org>; Wed, 9 Oct 2019 21:15:23 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vhfsduu04-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 21:15:23 -0700
-Received: from 2401:db00:30:6012:face:0:17:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 9 Oct 2019 21:15:22 -0700
+        id S1732826AbfJJEP3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Oct 2019 00:15:29 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:55342 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732816AbfJJEP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:15:28 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9A4EoUG025412
+        for <netdev@vger.kernel.org>; Wed, 9 Oct 2019 21:15:26 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vhm0ua7rd-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 21:15:26 -0700
+Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 9 Oct 2019 21:15:25 -0700
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 90AC1760CF9; Wed,  9 Oct 2019 21:15:21 -0700 (PDT)
+        id 9BA4B760CF9; Wed,  9 Oct 2019 21:15:23 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -31,9 +31,9 @@ To:     <davem@davemloft.net>
 CC:     <daniel@iogearbox.net>, <x86@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 09/12] bpf: add support for BTF pointers to x86 JIT
-Date:   Wed, 9 Oct 2019 21:15:00 -0700
-Message-ID: <20191010041503.2526303-10-ast@kernel.org>
+Subject: [PATCH v2 bpf-next 10/12] bpf: check types of arguments passed into helpers
+Date:   Wed, 9 Oct 2019 21:15:01 -0700
+Message-ID: <20191010041503.2526303-11-ast@kernel.org>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191010041503.2526303-1-ast@kernel.org>
 References: <20191010041503.2526303-1-ast@kernel.org>
@@ -43,10 +43,10 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
  definitions=2019-10-10_02:2019-10-08,2019-10-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 suspectscore=1
- clxscore=1034 mlxlogscore=999 spamscore=0 mlxscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 clxscore=1015 bulkscore=0 impostorscore=0 mlxscore=0
+ suspectscore=1 mlxlogscore=999 lowpriorityscore=0 adultscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1908290000 definitions=main-1910100037
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -54,327 +54,385 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pointer to BTF object is a pointer to kernel object or NULL.
-Such pointers can only be used by BPF_LDX instructions.
-The verifier changed their opcode from LDX|MEM|size
-to LDX|PROBE_MEM|size to make JITing easier.
-The number of entries in extable is the number of BPF_LDX insns
-that access kernel memory via "pointer to BTF type".
-Only these load instructions can fault.
-Since x86 extable is relative it has to be allocated in the same
-memory region as JITed code.
-Allocate it prior to last pass of JITing and let the last pass populate it.
-Pointer to extable in bpf_prog_aux is necessary to make page fault
-handling fast.
-Page fault handling is done in two steps:
-1. bpf_prog_kallsyms_find() finds BPF program that page faulted.
-   It's done by walking rb tree.
-2. then extable for given bpf program is binary searched.
-This process is similar to how page faulting is done for kernel modules.
-The exception handler skips over faulting x86 instruction and
-initializes destination register with zero. This mimics exact
-behavior of bpf_probe_read (when probe_kernel_read faults dest is zeroed).
+Introduce new helper that reuses existing skb perf_event output
+implementation, but can be called from raw_tracepoint programs
+that receive 'struct sk_buff *' as tracepoint argument or
+can walk other kernel data structures to skb pointer.
 
-JITs for other architectures can add support in similar way.
-Until then they will reject unknown opcode and fallback to interpreter.
-
-Since extable should be aligned and placed near JITed code
-make bpf_jit_binary_alloc() return 4 byte aligned image offset,
-so that extable aligning formula in bpf_int_jit_compile() doesn't need
-to rely on internal implementation of bpf_jit_binary_alloc().
-On x86 gcc defaults to 16-byte alignment for regular kernel functions
-due to better performance. JITed code may be aligned to 16 in the future,
-but it will use 4 in the meantime.
+In order to do that teach verifier to resolve true C types
+of bpf helpers into in-kernel BTF ids.
+The type of kernel pointer passed by raw tracepoint into bpf
+program will be tracked by the verifier all the way until
+it's passed into helper function.
+For example:
+kfree_skb() kernel function calls trace_kfree_skb(skb, loc);
+bpf programs receives that skb pointer and may eventually
+pass it into bpf_skb_output() bpf helper which in-kernel is
+implemented via bpf_skb_event_output() kernel function.
+Its first argument in the kernel is 'struct sk_buff *'.
+The verifier makes sure that types match all the way.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c | 97 +++++++++++++++++++++++++++++++++++--
- include/linux/bpf.h         |  3 ++
- include/linux/extable.h     | 10 ++++
- kernel/bpf/core.c           | 20 +++++++-
- kernel/bpf/verifier.c       |  1 +
- kernel/extable.c            |  2 +
- 6 files changed, 128 insertions(+), 5 deletions(-)
+ include/linux/bpf.h            | 18 ++++++---
+ include/uapi/linux/bpf.h       | 27 +++++++++++++-
+ kernel/bpf/btf.c               | 68 ++++++++++++++++++++++++++++++++++
+ kernel/bpf/verifier.c          | 44 ++++++++++++++--------
+ kernel/trace/bpf_trace.c       |  4 ++
+ net/core/filter.c              | 15 +++++++-
+ tools/include/uapi/linux/bpf.h | 27 +++++++++++++-
+ 7 files changed, 180 insertions(+), 23 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 3ad2ba1ad855..8cd23d8309bf 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -9,7 +9,7 @@
- #include <linux/filter.h>
- #include <linux/if_vlan.h>
- #include <linux/bpf.h>
--
-+#include <asm/extable.h>
- #include <asm/set_memory.h>
- #include <asm/nospec-branch.h>
- 
-@@ -123,6 +123,19 @@ static const int reg2hex[] = {
- 	[AUX_REG] = 3,    /* R11 temp register */
- };
- 
-+static const int reg2pt_regs[] = {
-+	[BPF_REG_0] = offsetof(struct pt_regs, ax),
-+	[BPF_REG_1] = offsetof(struct pt_regs, di),
-+	[BPF_REG_2] = offsetof(struct pt_regs, si),
-+	[BPF_REG_3] = offsetof(struct pt_regs, dx),
-+	[BPF_REG_4] = offsetof(struct pt_regs, cx),
-+	[BPF_REG_5] = offsetof(struct pt_regs, r8),
-+	[BPF_REG_6] = offsetof(struct pt_regs, bx),
-+	[BPF_REG_7] = offsetof(struct pt_regs, r13),
-+	[BPF_REG_8] = offsetof(struct pt_regs, r14),
-+	[BPF_REG_9] = offsetof(struct pt_regs, r15),
-+};
-+
- /*
-  * is_ereg() == true if BPF register 'reg' maps to x86-64 r8..r15
-  * which need extra byte of encoding.
-@@ -377,6 +390,19 @@ static void emit_mov_reg(u8 **pprog, bool is64, u32 dst_reg, u32 src_reg)
- 	*pprog = prog;
- }
- 
-+
-+static bool ex_handler_bpf(const struct exception_table_entry *x,
-+			   struct pt_regs *regs, int trapnr,
-+			   unsigned long error_code, unsigned long fault_addr)
-+{
-+	u32 reg = x->fixup >> 8;
-+
-+	/* jump over faulting load and clear dest register */
-+	*(unsigned long *)((void *)regs + reg) = 0;
-+	regs->ip += x->fixup & 0xff;
-+	return true;
-+}
-+
- static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 		  int oldproglen, struct jit_context *ctx)
- {
-@@ -384,7 +410,7 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 	int insn_cnt = bpf_prog->len;
- 	bool seen_exit = false;
- 	u8 temp[BPF_MAX_INSN_SIZE + BPF_INSN_SAFETY];
--	int i, cnt = 0;
-+	int i, cnt = 0, excnt = 0;
- 	int proglen = 0;
- 	u8 *prog = temp;
- 
-@@ -778,14 +804,17 @@ stx:			if (is_imm8(insn->off))
- 
- 			/* LDX: dst_reg = *(u8*)(src_reg + off) */
- 		case BPF_LDX | BPF_MEM | BPF_B:
-+		case BPF_LDX | BPF_PROBE_MEM | BPF_B:
- 			/* Emit 'movzx rax, byte ptr [rax + off]' */
- 			EMIT3(add_2mod(0x48, src_reg, dst_reg), 0x0F, 0xB6);
- 			goto ldx;
- 		case BPF_LDX | BPF_MEM | BPF_H:
-+		case BPF_LDX | BPF_PROBE_MEM | BPF_H:
- 			/* Emit 'movzx rax, word ptr [rax + off]' */
- 			EMIT3(add_2mod(0x48, src_reg, dst_reg), 0x0F, 0xB7);
- 			goto ldx;
- 		case BPF_LDX | BPF_MEM | BPF_W:
-+		case BPF_LDX | BPF_PROBE_MEM | BPF_W:
- 			/* Emit 'mov eax, dword ptr [rax+0x14]' */
- 			if (is_ereg(dst_reg) || is_ereg(src_reg))
- 				EMIT2(add_2mod(0x40, src_reg, dst_reg), 0x8B);
-@@ -793,6 +822,7 @@ stx:			if (is_imm8(insn->off))
- 				EMIT1(0x8B);
- 			goto ldx;
- 		case BPF_LDX | BPF_MEM | BPF_DW:
-+		case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
- 			/* Emit 'mov rax, qword ptr [rax+0x14]' */
- 			EMIT2(add_2mod(0x48, src_reg, dst_reg), 0x8B);
- ldx:			/*
-@@ -805,6 +835,48 @@ stx:			if (is_imm8(insn->off))
- 			else
- 				EMIT1_off32(add_2reg(0x80, src_reg, dst_reg),
- 					    insn->off);
-+			if (BPF_MODE(insn->code) == BPF_PROBE_MEM) {
-+				struct exception_table_entry *ex;
-+				u8 *_insn = image + proglen;
-+				s64 delta;
-+
-+				if (!bpf_prog->aux->extable)
-+					break;
-+
-+				if (excnt >= bpf_prog->aux->num_exentries) {
-+					pr_err("ex gen bug\n");
-+					return -EFAULT;
-+				}
-+				ex = &bpf_prog->aux->extable[excnt++];
-+
-+				delta = _insn - (u8 *)&ex->insn;
-+				if (!is_simm32(delta)) {
-+					pr_err("extable->insn doesn't fit into 32-bit\n");
-+					return -EFAULT;
-+				}
-+				ex->insn = delta;
-+
-+				delta = (u8 *)ex_handler_bpf - (u8 *)&ex->handler;
-+				if (!is_simm32(delta)) {
-+					pr_err("extable->handler doesn't fit into 32-bit\n");
-+					return -EFAULT;
-+				}
-+				ex->handler = delta;
-+
-+				if (dst_reg > BPF_REG_9) {
-+					pr_err("verifier error\n");
-+					return -EFAULT;
-+				}
-+				/*
-+				 * Compute size of x86 insn and its target dest x86 register.
-+				 * ex_handler_bpf() will use lower 8 bits to adjust
-+				 * pt_regs->ip to jump over this x86 instruction
-+				 * and upper bits to figure out which pt_regs to zero out.
-+				 * End result: x86 insn "mov rbx, qword ptr [rax+0x14]"
-+				 * of 4 bytes will be ignored and rbx will be zero inited.
-+				 */
-+				ex->fixup = (prog - temp) | (reg2pt_regs[dst_reg] << 8);
-+			}
- 			break;
- 
- 			/* STX XADD: lock *(u32*)(dst_reg + off) += src_reg */
-@@ -1058,6 +1130,11 @@ xadd:			if (is_imm8(insn->off))
- 		addrs[i] = proglen;
- 		prog = temp;
- 	}
-+
-+	if (image && excnt != bpf_prog->aux->num_exentries) {
-+		pr_err("extable is not populated\n");
-+		return -EFAULT;
-+	}
- 	return proglen;
- }
- 
-@@ -1158,12 +1235,24 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 			break;
- 		}
- 		if (proglen == oldproglen) {
--			header = bpf_jit_binary_alloc(proglen, &image,
--						      1, jit_fill_hole);
-+			/*
-+			 * The number of entries in extable is the number of BPF_LDX
-+			 * insns that access kernel memory via "pointer to BTF type".
-+			 * The verifier changed their opcode from LDX|MEM|size
-+			 * to LDX|PROBE_MEM|size to make JITing easier.
-+			 */
-+			u32 align = __alignof__(struct exception_table_entry);
-+			u32 extable_size = prog->aux->num_exentries *
-+				sizeof(struct exception_table_entry);
-+
-+			/* allocate module memory for x86 insns and extable */
-+			header = bpf_jit_binary_alloc(roundup(proglen, align) + extable_size,
-+						      &image, align, jit_fill_hole);
- 			if (!header) {
- 				prog = orig_prog;
- 				goto out_addrs;
- 			}
-+			prog->aux->extable = (void *) image + roundup(proglen, align);
- 		}
- 		oldproglen = proglen;
- 		cond_resched();
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 4218e269be59..6edfe50f1c2c 100644
+index 6edfe50f1c2c..d3df073f374a 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -24,6 +24,7 @@ struct sock;
- struct seq_file;
- struct btf;
- struct btf_type;
-+struct exception_table_entry;
+@@ -213,6 +213,7 @@ enum bpf_arg_type {
+ 	ARG_PTR_TO_INT,		/* pointer to int */
+ 	ARG_PTR_TO_LONG,	/* pointer to long */
+ 	ARG_PTR_TO_SOCKET,	/* pointer to bpf_sock (fullsock) */
++	ARG_PTR_TO_BTF_ID,	/* pointer to in-kernel struct */
+ };
  
- extern struct idr btf_idr;
- extern spinlock_t btf_idr_lock;
-@@ -423,6 +424,8 @@ struct bpf_prog_aux {
- 	 * main prog always has linfo_idx == 0
- 	 */
- 	u32 linfo_idx;
-+	u32 num_exentries;
-+	struct exception_table_entry *extable;
- 	struct bpf_prog_stats __percpu *stats;
- 	union {
- 		struct work_struct work;
-diff --git a/include/linux/extable.h b/include/linux/extable.h
-index 81ecfaa83ad3..4ab9e78f313b 100644
---- a/include/linux/extable.h
-+++ b/include/linux/extable.h
-@@ -33,4 +33,14 @@ search_module_extables(unsigned long addr)
+ /* type of values returned from helper functions */
+@@ -235,11 +236,17 @@ struct bpf_func_proto {
+ 	bool gpl_only;
+ 	bool pkt_access;
+ 	enum bpf_return_type ret_type;
+-	enum bpf_arg_type arg1_type;
+-	enum bpf_arg_type arg2_type;
+-	enum bpf_arg_type arg3_type;
+-	enum bpf_arg_type arg4_type;
+-	enum bpf_arg_type arg5_type;
++	union {
++		struct {
++			enum bpf_arg_type arg1_type;
++			enum bpf_arg_type arg2_type;
++			enum bpf_arg_type arg3_type;
++			enum bpf_arg_type arg4_type;
++			enum bpf_arg_type arg5_type;
++		};
++		enum bpf_arg_type arg_type[5];
++	};
++	u32 *btf_id; /* BTF ids of arguments */
+ };
+ 
+ /* bpf_context is intentionally undefined structure. Pointer to bpf_context is
+@@ -765,6 +772,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 		      const struct btf_type *t, int off, int size,
+ 		      enum bpf_access_type atype,
+ 		      u32 *next_btf_id);
++u32 btf_resolve_helper_id(struct bpf_verifier_log *log, void *, int);
+ 
+ #else /* !CONFIG_BPF_SYSCALL */
+ static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 3bb2cd1de341..b0454440186f 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2751,6 +2751,30 @@ union bpf_attr {
+  *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+  *
+  *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
++ *
++ * int bpf_skb_output(void *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
++ * 	Description
++ * 		Write raw *data* blob into a special BPF perf event held by
++ * 		*map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This perf
++ * 		event must have the following attributes: **PERF_SAMPLE_RAW**
++ * 		as **sample_type**, **PERF_TYPE_SOFTWARE** as **type**, and
++ * 		**PERF_COUNT_SW_BPF_OUTPUT** as **config**.
++ *
++ * 		The *flags* are used to indicate the index in *map* for which
++ * 		the value must be put, masked with **BPF_F_INDEX_MASK**.
++ * 		Alternatively, *flags* can be set to **BPF_F_CURRENT_CPU**
++ * 		to indicate that the index of the current CPU core should be
++ * 		used.
++ *
++ * 		The value to write, of *size*, is passed through eBPF stack and
++ * 		pointed by *data*.
++ *
++ * 		*ctx* is a pointer to in-kernel sutrct sk_buff.
++ *
++ * 		This helper is similar to **bpf_perf_event_output**\ () but
++ * 		restricted to raw_tracepoint bpf programs.
++ * 	Return
++ * 		0 on success, or a negative error in case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2863,7 +2887,8 @@ union bpf_attr {
+ 	FN(sk_storage_get),		\
+ 	FN(sk_storage_delete),		\
+ 	FN(send_signal),		\
+-	FN(tcp_gen_syncookie),
++	FN(tcp_gen_syncookie),		\
++	FN(skb_output),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 01f929566e8d..45b71a73356d 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3622,6 +3622,74 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 	return -EINVAL;
  }
- #endif /*CONFIG_MODULES*/
  
-+#ifdef CONFIG_BPF_JIT
-+const struct exception_table_entry *search_bpf_extables(unsigned long addr);
-+#else
-+static inline const struct exception_table_entry *
-+search_bpf_extables(unsigned long addr)
++u32 btf_resolve_helper_id(struct bpf_verifier_log *log, void *fn, int arg)
 +{
-+	return NULL;
++	char fnname[KSYM_SYMBOL_LEN + 4] = "btf_";
++	const struct btf_param *args;
++	const struct btf_type *t;
++	const char *tname, *sym;
++	u32 btf_id, i;
++
++	if (IS_ERR(btf_vmlinux)) {
++		bpf_log(log, "btf_vmlinux is malformed\n");
++		return -EINVAL;
++	}
++
++	sym = kallsyms_lookup((long)fn, NULL, NULL, NULL, fnname + 4);
++	if (!sym) {
++		bpf_log(log, "kernel doesn't have kallsyms\n");
++		return -EFAULT;
++	}
++
++	for (i = 1; i <= btf_vmlinux->nr_types; i++) {
++		t = btf_type_by_id(btf_vmlinux, i);
++		if (BTF_INFO_KIND(t->info) != BTF_KIND_TYPEDEF)
++			continue;
++		tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
++		if (!strcmp(tname, fnname))
++			break;
++	}
++	if (i > btf_vmlinux->nr_types) {
++		bpf_log(log, "helper %s type is not found\n", fnname);
++		return -ENOENT;
++	}
++
++	t = btf_type_by_id(btf_vmlinux, t->type);
++	if (!btf_type_is_ptr(t))
++		return -EFAULT;
++	t = btf_type_by_id(btf_vmlinux, t->type);
++	if (!btf_type_is_func_proto(t))
++		return -EFAULT;
++
++	args = (const struct btf_param *)(t + 1);
++	if (arg >= btf_type_vlen(t)) {
++		bpf_log(log, "bpf helper %s doesn't have %d-th argument\n",
++			fnname, arg);
++		return -EINVAL;
++	}
++
++	t = btf_type_by_id(btf_vmlinux, args[arg].type);
++	if (!btf_type_is_ptr(t) || !t->type) {
++		/* anything but the pointer to struct is a helper config bug */
++		bpf_log(log, "ARG_PTR_TO_BTF is misconfigured\n");
++		return -EFAULT;
++	}
++	btf_id = t->type;
++	t = btf_type_by_id(btf_vmlinux, t->type);
++	/* skip modifiers */
++	while (btf_type_is_modifier(t)) {
++		btf_id = t->type;
++		t = btf_type_by_id(btf_vmlinux, t->type);
++	}
++	if (!btf_type_is_struct(t)) {
++		bpf_log(log, "ARG_PTR_TO_BTF is not a struct\n");
++		return -EFAULT;
++	}
++	bpf_log(log, "helper %s arg%d has btf_id %d struct %s\n", fnname + 4,
++		arg, btf_id, __btf_name_by_offset(btf_vmlinux, t->name_off));
++	return btf_id;
 +}
-+#endif
 +
- #endif /* _LINUX_EXTABLE_H */
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 8a765bbd33f0..673f5d40a93e 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -30,7 +30,7 @@
- #include <linux/kallsyms.h>
- #include <linux/rcupdate.h>
- #include <linux/perf_event.h>
--
-+#include <linux/extable.h>
- #include <asm/unaligned.h>
- 
- /* Registers */
-@@ -712,6 +712,24 @@ bool is_bpf_text_address(unsigned long addr)
- 	return ret;
- }
- 
-+const struct exception_table_entry *search_bpf_extables(unsigned long addr)
-+{
-+	const struct exception_table_entry *e = NULL;
-+	struct bpf_prog *prog;
-+
-+	rcu_read_lock();
-+	prog = bpf_prog_kallsyms_find(addr);
-+	if (!prog)
-+		goto out;
-+	if (!prog->aux->num_exentries)
-+		goto out;
-+
-+	e = search_extable(prog->aux->extable, prog->aux->num_exentries, addr);
-+out:
-+	rcu_read_unlock();
-+	return e;
-+}
-+
- int bpf_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
- 		    char *sym)
+ void btf_type_seq_show(const struct btf *btf, u32 type_id, void *obj,
+ 		       struct seq_file *m)
  {
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 2ade5193b76c..3404caa2f196 100644
+index 3404caa2f196..d04eb66b815a 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -8674,6 +8674,7 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
- 				return -EINVAL;
- 			}
- 			insn->code = BPF_LDX | BPF_PROBE_MEM | BPF_SIZE((insn)->code);
-+			env->prog->aux->num_exentries++;
- 			continue;
- 		default:
- 			continue;
-diff --git a/kernel/extable.c b/kernel/extable.c
-index f6c9406eec7d..f6920a11e28a 100644
---- a/kernel/extable.c
-+++ b/kernel/extable.c
-@@ -56,6 +56,8 @@ const struct exception_table_entry *search_exception_tables(unsigned long addr)
- 	e = search_kernel_exception_table(addr);
- 	if (!e)
- 		e = search_module_extables(addr);
-+	if (!e)
-+		e = search_bpf_extables(addr);
- 	return e;
- }
+@@ -205,6 +205,7 @@ struct bpf_call_arg_meta {
+ 	u64 msize_umax_value;
+ 	int ref_obj_id;
+ 	int func_id;
++	u32 btf_id;
+ };
  
+ struct btf *btf_vmlinux;
+@@ -3384,6 +3385,22 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
+ 		expected_type = PTR_TO_SOCKET;
+ 		if (type != expected_type)
+ 			goto err_type;
++	} else if (arg_type == ARG_PTR_TO_BTF_ID) {
++		expected_type = PTR_TO_BTF_ID;
++		if (type != expected_type)
++			goto err_type;
++		if (reg->btf_id != meta->btf_id) {
++			verbose(env, "Helper has type %s got %s in R%d\n",
++				kernel_type_name(meta->btf_id),
++				kernel_type_name(reg->btf_id), regno);
++
++			return -EACCES;
++		}
++		if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
++			verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
++				regno);
++			return -EACCES;
++		}
+ 	} else if (arg_type == ARG_PTR_TO_SPIN_LOCK) {
+ 		if (meta->func_id == BPF_FUNC_spin_lock) {
+ 			if (process_spin_lock(env, regno, true))
+@@ -3531,6 +3548,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 	case BPF_MAP_TYPE_PERF_EVENT_ARRAY:
+ 		if (func_id != BPF_FUNC_perf_event_read &&
+ 		    func_id != BPF_FUNC_perf_event_output &&
++		    func_id != BPF_FUNC_skb_output &&
+ 		    func_id != BPF_FUNC_perf_event_read_value)
+ 			goto error;
+ 		break;
+@@ -3618,6 +3636,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 	case BPF_FUNC_perf_event_read:
+ 	case BPF_FUNC_perf_event_output:
+ 	case BPF_FUNC_perf_event_read_value:
++	case BPF_FUNC_skb_output:
+ 		if (map->map_type != BPF_MAP_TYPE_PERF_EVENT_ARRAY)
+ 			goto error;
+ 		break;
+@@ -4072,21 +4091,16 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+ 
+ 	meta.func_id = func_id;
+ 	/* check args */
+-	err = check_func_arg(env, BPF_REG_1, fn->arg1_type, &meta);
+-	if (err)
+-		return err;
+-	err = check_func_arg(env, BPF_REG_2, fn->arg2_type, &meta);
+-	if (err)
+-		return err;
+-	err = check_func_arg(env, BPF_REG_3, fn->arg3_type, &meta);
+-	if (err)
+-		return err;
+-	err = check_func_arg(env, BPF_REG_4, fn->arg4_type, &meta);
+-	if (err)
+-		return err;
+-	err = check_func_arg(env, BPF_REG_5, fn->arg5_type, &meta);
+-	if (err)
+-		return err;
++	for (i = 0; i < 5; i++) {
++		if (fn->arg_type[i] == ARG_PTR_TO_BTF_ID) {
++			if (!fn->btf_id[i])
++				fn->btf_id[i] = btf_resolve_helper_id(&env->log, fn->func, 0);
++			meta.btf_id = fn->btf_id[i];
++		}
++		err = check_func_arg(env, BPF_REG_1 + i, fn->arg_type[i], &meta);
++		if (err)
++			return err;
++	}
+ 
+ 	err = record_func_map(env, &meta, func_id, insn_idx);
+ 	if (err)
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 6221e8c6ecc3..52f7e9d8c29b 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -995,6 +995,8 @@ static const struct bpf_func_proto bpf_perf_event_output_proto_raw_tp = {
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
++extern const struct bpf_func_proto bpf_skb_output_proto;
++
+ BPF_CALL_3(bpf_get_stackid_raw_tp, struct bpf_raw_tracepoint_args *, args,
+ 	   struct bpf_map *, map, u64, flags)
+ {
+@@ -1053,6 +1055,8 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	switch (func_id) {
+ 	case BPF_FUNC_perf_event_output:
+ 		return &bpf_perf_event_output_proto_raw_tp;
++	case BPF_FUNC_skb_output:
++		return &bpf_skb_output_proto;
+ 	case BPF_FUNC_get_stackid:
+ 		return &bpf_get_stackid_proto_raw_tp;
+ 	case BPF_FUNC_get_stack:
+diff --git a/net/core/filter.c b/net/core/filter.c
+index ed6563622ce3..c48fe0971b25 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3798,7 +3798,7 @@ BPF_CALL_5(bpf_skb_event_output, struct sk_buff *, skb, struct bpf_map *, map,
+ 
+ 	if (unlikely(flags & ~(BPF_F_CTXLEN_MASK | BPF_F_INDEX_MASK)))
+ 		return -EINVAL;
+-	if (unlikely(skb_size > skb->len))
++	if (unlikely(!skb || skb_size > skb->len))
+ 		return -EFAULT;
+ 
+ 	return bpf_event_output(map, flags, meta, meta_size, skb, skb_size,
+@@ -3816,6 +3816,19 @@ static const struct bpf_func_proto bpf_skb_event_output_proto = {
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
++static u32 bpf_skb_output_btf_ids[5];
++const struct bpf_func_proto bpf_skb_output_proto = {
++	.func		= bpf_skb_event_output,
++	.gpl_only	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_BTF_ID,
++	.arg2_type	= ARG_CONST_MAP_PTR,
++	.arg3_type	= ARG_ANYTHING,
++	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
++	.btf_id		= bpf_skb_output_btf_ids,
++};
++
+ static unsigned short bpf_tunnel_key_af(u64 flags)
+ {
+ 	return flags & BPF_F_TUNINFO_IPV6 ? AF_INET6 : AF_INET;
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 3bb2cd1de341..b0454440186f 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -2751,6 +2751,30 @@ union bpf_attr {
+  *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+  *
+  *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
++ *
++ * int bpf_skb_output(void *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
++ * 	Description
++ * 		Write raw *data* blob into a special BPF perf event held by
++ * 		*map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This perf
++ * 		event must have the following attributes: **PERF_SAMPLE_RAW**
++ * 		as **sample_type**, **PERF_TYPE_SOFTWARE** as **type**, and
++ * 		**PERF_COUNT_SW_BPF_OUTPUT** as **config**.
++ *
++ * 		The *flags* are used to indicate the index in *map* for which
++ * 		the value must be put, masked with **BPF_F_INDEX_MASK**.
++ * 		Alternatively, *flags* can be set to **BPF_F_CURRENT_CPU**
++ * 		to indicate that the index of the current CPU core should be
++ * 		used.
++ *
++ * 		The value to write, of *size*, is passed through eBPF stack and
++ * 		pointed by *data*.
++ *
++ * 		*ctx* is a pointer to in-kernel sutrct sk_buff.
++ *
++ * 		This helper is similar to **bpf_perf_event_output**\ () but
++ * 		restricted to raw_tracepoint bpf programs.
++ * 	Return
++ * 		0 on success, or a negative error in case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2863,7 +2887,8 @@ union bpf_attr {
+ 	FN(sk_storage_get),		\
+ 	FN(sk_storage_delete),		\
+ 	FN(send_signal),		\
+-	FN(tcp_gen_syncookie),
++	FN(tcp_gen_syncookie),		\
++	FN(skb_output),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
 -- 
 2.23.0
 
