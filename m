@@ -2,125 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41069D2E2A
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D225AD2E2E
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:52:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726055AbfJJPv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 11:51:56 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54284 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725901AbfJJPv4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 11:51:56 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id AE36D3164683;
-        Thu, 10 Oct 2019 15:51:55 +0000 (UTC)
-Received: from epycfail.redhat.com (ovpn-112-41.ams2.redhat.com [10.36.112.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CA3265DE5B;
-        Thu, 10 Oct 2019 15:51:53 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Stefan Walter <walteste@inf.ethz.ch>,
-        Benjamin Coddington <bcodding@redhat.com>,
-        Gonzalo Siero <gsierohu@redhat.com>,
-        =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Subject: [PATCH net-next] ipv4: Return -ENETUNREACH if we can't create route but saddr is valid
-Date:   Thu, 10 Oct 2019 17:51:50 +0200
-Message-Id: <7bcfeaac2f78657db35ccf0e624745de41162129.1570722417.git.sbrivio@redhat.com>
+        id S1726111AbfJJPw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 11:52:28 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:36721 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725978AbfJJPw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 11:52:28 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iIajo-0004kc-29; Thu, 10 Oct 2019 17:52:24 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:d889:c8b8:5209:79fb] (unknown [IPv6:2a03:f580:87bc:d400:d889:c8b8:5209:79fb])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 150ED464740;
+        Thu, 10 Oct 2019 15:52:20 +0000 (UTC)
+To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
+Cc:     Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>,
+        jhofstee@victronenergy.com, kernel@pengutronix.de,
+        davem@davemloft.net
+References: <20191010121750.27237-1-mkl@pengutronix.de>
+ <20191010121750.27237-25-mkl@pengutronix.de>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH 24/29] can: ti_hecc: add fifo underflow error reporting
+Message-ID: <dfdbefb3-48c4-0830-9627-146da062a01a@pengutronix.de>
+Date:   Thu, 10 Oct 2019 17:52:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 10 Oct 2019 15:51:55 +0000 (UTC)
+In-Reply-To: <20191010121750.27237-25-mkl@pengutronix.de>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-...instead of -EINVAL. An issue was found with older kernel versions
-while unplugging a NFS client with pending RPCs, and the wrong error
-code here prevented it from recovering once link is back up with a
-configured address.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt
+Content-Type: multipart/mixed; boundary="xhk6VFvhkEkazo2IJ4w3oJBiKfHLH2mX7";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
+Cc: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+ =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>,
+ jhofstee@victronenergy.com, kernel@pengutronix.de, davem@davemloft.net
+Message-ID: <dfdbefb3-48c4-0830-9627-146da062a01a@pengutronix.de>
+Subject: Re: [PATCH 24/29] can: ti_hecc: add fifo underflow error reporting
+References: <20191010121750.27237-1-mkl@pengutronix.de>
+ <20191010121750.27237-25-mkl@pengutronix.de>
+In-Reply-To: <20191010121750.27237-25-mkl@pengutronix.de>
 
-Incidentally, this is not an issue anymore since commit 4f8943f80883
-("SUNRPC: Replace direct task wakeups from softirq context"), included
-in 5.2-rc7, had the effect of decoupling the forwarding of this error
-by using SO_ERROR in xs_wake_error(), as pointed out by Benjamin
-Coddington.
+--xhk6VFvhkEkazo2IJ4w3oJBiKfHLH2mX7
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
 
-To the best of my knowledge, this isn't currently causing any further
-issue, but the error code doesn't look appropriate anyway, and we
-might hit this in other paths as well. So I'm addressing this for
-net-next, but it might be worth to queue this for stable < 5.2.
+On 10/10/19 2:17 PM, Marc Kleine-Budde wrote:
+> From: Jeroen Hofstee <jhofstee@victronenergy.com>
+>=20
+> When the rx fifo overflows the ti_hecc would silently drop them since
+> the overwrite protection is enabled for all mailboxes. So disable it
+> for the lowest priority mailbox and increment the rx_fifo_errors when
+> receive message lost is set. Drop the message itself in that case,
+> since it might be partially updated.
 
-In detail, as analysed by Gonzalo Siero, once the route is deleted
-because the interface is down, and can't be resolved and we return
--EINVAL here, this ends up, courtesy of inet_sk_rebuild_header(),
-as the socket error seen by tcp_write_err(), called by
-tcp_retransmit_timer().
+Is that your observation or does the data sheet say anything to this
+situation?
 
-In turn, tcp_write_err() indirectly calls xs_error_report(), which
-wakes up the RPC pending tasks with a status of -EINVAL. This is then
-seen by call_status() in the SUN RPC implementation, which aborts the
-RPC call calling rpc_exit(), instead of handling this as a
-potentially temporary condition, i.e. as a timeout.
+>=20
+> Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> ---
+>  drivers/net/can/ti_hecc.c | 21 +++++++++++++++++----
+>  1 file changed, 17 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
+> index 6ea29126c60b..c2d83ada203a 100644
+> --- a/drivers/net/can/ti_hecc.c
+> +++ b/drivers/net/can/ti_hecc.c
+> @@ -82,7 +82,7 @@ MODULE_VERSION(HECC_MODULE_VERSION);
+>  #define HECC_CANTA		0x10	/* Transmission acknowledge */
+>  #define HECC_CANAA		0x14	/* Abort acknowledge */
+>  #define HECC_CANRMP		0x18	/* Receive message pending */
+> -#define HECC_CANRML		0x1C	/* Remote message lost */
+> +#define HECC_CANRML		0x1C	/* Receive message lost */
+>  #define HECC_CANRFP		0x20	/* Remote frame pending */
+>  #define HECC_CANGAM		0x24	/* SECC only:Global acceptance mask */
+>  #define HECC_CANMC		0x28	/* Master control */
+> @@ -385,8 +385,17 @@ static void ti_hecc_start(struct net_device *ndev)=
 
-Return -EINVAL only if the input parameters passed to
-ip_route_output_key_hash_rcu() are actually invalid (this is the case
-if the specified source address is multicast, limited broadcast or
-all zeroes), but return -ENETUNREACH in all cases where, at the given
-moment, the given source address doesn't allow resolving the route.
+>  	/* Enable tx interrupts */
+>  	hecc_set_bit(priv, HECC_CANMIM, BIT(HECC_MAX_TX_MBOX) - 1);
+> =20
+> -	/* Prevent message over-write & Enable interrupts */
+> -	hecc_write(priv, HECC_CANOPC, HECC_SET_REG);
+> +	/* Prevent message over-write to create a rx fifo, but not for
+> +	 * the lowest priority mailbox, since that allows detecting
+> +	 * overflows instead of the hardware silently dropping the
+> +	 * messages. The lowest rx mailbox is one above the tx ones,
+> +	 * hence its mbxno is the number of tx mailboxes.
+> +	 */
+> +	mbxno =3D HECC_MAX_TX_MBOX;
+> +	mbx_mask =3D ~BIT(mbxno);
+> +	hecc_write(priv, HECC_CANOPC, mbx_mask);
+> +
+> +	/* Enable interrupts */
+>  	if (priv->use_hecc1int) {
+>  		hecc_write(priv, HECC_CANMIL, HECC_SET_REG);
+>  		hecc_write(priv, HECC_CANGIM, HECC_CANGIM_DEF_MASK |
+> @@ -531,6 +540,7 @@ static unsigned int ti_hecc_mailbox_read(struct can=
+_rx_offload *offload,
+>  {
+>  	struct ti_hecc_priv *priv =3D rx_offload_to_priv(offload);
+>  	u32 data, mbx_mask;
+> +	int lost;
+> =20
+>  	mbx_mask =3D BIT(mbxno);
+>  	data =3D hecc_read_mbx(priv, mbxno, HECC_CANMID);
+> @@ -552,9 +562,12 @@ static unsigned int ti_hecc_mailbox_read(struct ca=
+n_rx_offload *offload,
+>  	}
+> =20
+>  	*timestamp =3D hecc_read_stamp(priv, mbxno);
+> +	lost =3D hecc_read(priv, HECC_CANRML) & mbx_mask;
+> +	if (unlikely(lost))
+> +		priv->offload.dev->stats.rx_fifo_errors++;
 
-While at it, drop the initialisation of err to -ENETUNREACH, which
-was added to __ip_route_output_key() back then by commit
-0315e3827048 ("net: Fix behaviour of unreachable, blackhole and
-prohibit routes"), but actually had no effect, as it was, and is,
-overwritten by the fib_lookup() return code assignment, and anyway
-ignored in all other branches, including the if (fl4->saddr) one:
-I find this rather confusing, as it would look like -ENETUNREACH is
-the "default" error, while that statement has no effect.
+In the flexcan and at91_can driver we're incrementing the following error=
+s:
+			dev->stats.rx_over_errors++;
+			dev->stats.rx_errors++;
 
-Also note that after commit fc75fc8339e7 ("ipv4: dont create routes
-on down devices"), we would get -ENETUNREACH if the device is down,
-but -EINVAL if the source address is specified and we can't resolve
-the route, and this appears to be rather inconsistent.
+You can save the register access if you only check for overflows if
+reading from the lowest prio mailbox.
 
-Reported-by: Stefan Walter <walteste@inf.ethz.ch>
-Analysed-by: Benjamin Coddington <bcodding@redhat.com>
-Analysed-by: Gonzalo Siero <gsierohu@redhat.com>
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
-I think this should be considered for -stable, < 5.2
+If you're discarding the data if the mailbox is marked as overflow
+there's no need to read the data in the first place.
 
- net/ipv4/route.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+>  	hecc_write(priv, HECC_CANRMP, mbx_mask);
+> =20
+> -	return 1;
+> +	return !lost;
+>  }
+> =20
+>  static int ti_hecc_error(struct net_device *ndev, int int_status,
+>=20
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 14654876127e..5bc172abd143 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2470,14 +2470,17 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
- 	int orig_oif = fl4->flowi4_oif;
- 	unsigned int flags = 0;
- 	struct rtable *rth;
--	int err = -ENETUNREACH;
-+	int err;
- 
- 	if (fl4->saddr) {
--		rth = ERR_PTR(-EINVAL);
- 		if (ipv4_is_multicast(fl4->saddr) ||
- 		    ipv4_is_lbcast(fl4->saddr) ||
--		    ipv4_is_zeronet(fl4->saddr))
-+		    ipv4_is_zeronet(fl4->saddr)) {
-+			rth = ERR_PTR(-EINVAL);
- 			goto out;
-+		}
-+
-+		rth = ERR_PTR(-ENETUNREACH);
- 
- 		/* I removed check for oif == dev_out->oif here.
- 		   It was wrong for two reasons:
--- 
-2.20.1
+I'll send a v2 that addresses these findings.
 
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--xhk6VFvhkEkazo2IJ4w3oJBiKfHLH2mX7--
+
+--PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2fU68ACgkQWsYho5Hk
+nSA5SQf9HlJfbDEIUFCh1DSdIQi1gpHDT06ox9newEDnSmivCgtNuiLB7Z2WEWmd
+gNqR6EgU8uW2wccchEJvjELgoFq5uJdquT0zCtRwu3jCxPGZhpAhi0vj7ClM9K/f
+9Cx0rgstnY59iePQMAIe8A2I5Yur8u3ZDIGGS3NWp4iJop78qpbx80/YIfii7JCl
+WR2LmzcD1Jx3pwQMVN6FhdHyf3RjHw+Vfza8pX8VS25ubrUnynVQTh/HbGNlGlK1
+BzTP2YlaElDzXFGI+8Tnsw91b+F8j2OmbTel2yKT45o8cTd4k5g8obc1Oh77OBC8
+85ZRYf8vwVERCnE59VuyRAym62+h9g==
+=bgHo
+-----END PGP SIGNATURE-----
+
+--PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt--
