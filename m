@@ -2,125 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB3CD2E7A
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2CF0D2E92
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726396AbfJJQUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 12:20:09 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:48328 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726184AbfJJQUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 12:20:09 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 8D51E2007B8;
-        Thu, 10 Oct 2019 18:20:07 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 814CA2007B6;
-        Thu, 10 Oct 2019 18:20:07 +0200 (CEST)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5202E2060B;
-        Thu, 10 Oct 2019 18:20:07 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net 2/2] dpaa2-eth: Fix TX FQID values
-Date:   Thu, 10 Oct 2019 19:19:47 +0300
-Message-Id: <1570724387-5370-3-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1570724387-5370-1-git-send-email-ioana.ciornei@nxp.com>
-References: <1570724387-5370-1-git-send-email-ioana.ciornei@nxp.com>
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726346AbfJJQ1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 12:27:00 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:45545 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbfJJQ07 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 12:26:59 -0400
+Received: by mail-pl1-f195.google.com with SMTP id u12so3018993pls.12
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 09:26:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/3L9d8Hq5e07DU4XHZuzPz1Kd0iVbIQrEZ53Rw3PFwc=;
+        b=oMNG8OFlEGU3PWXGkW4uWbQiN1c4TgfEUV4U5ZaRnieGiVh9zJFF289MPunGMy0uQa
+         seUQM8U2tTTWjYTuqnWM1hjDfz4EQSu6HMMR+BLW3eWSh4BlEZczW9TkQZKEJ/hk3f8b
+         1JFjuInD9NbbsOx1TTAGItzyuIrtHBAw+AvyLljpiKbRSLyrTzWMOLnm4O599EaVohmY
+         qyXHpkXA478RmdObxZO9bhYjjODG2+x1geIWOUjM1C4N9VKcwAJdm2FwBoPqZPyewoBt
+         HCAcvkfg29toUTW1/GIlRSFNFLn9cq68xGT5V8C627JjNT5+CYI49sBWZkhztGviM0xZ
+         RQqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/3L9d8Hq5e07DU4XHZuzPz1Kd0iVbIQrEZ53Rw3PFwc=;
+        b=B+EN4v9P4KhS+UTWXP3ewOEGuYij8dAGGxuO7q9LPGM3kUwoQ7zawZS0LpmBUMW2mj
+         BQpom0wktcApB+E8CkRSE9pR8cBjYQNTFB0aMPwqEAycUCSWkYvX8I/N5iY3Y/EMAMsN
+         G7IGoNQQNo6SNTmn0jl5PjX9colHNGLNuAjyzs6yDzUse9jpemSjNGoI0auqU0b307Gc
+         3BpHYm1FTDf5nOpSC9d5Ni41BvC2ZF3rZ9YHGWN/iXzKIlZVPhrUDs6wOM9rDEZLQSnT
+         15cDNgRFUZBAWV7WM5DkjdmSp3aSQNJq+ov53WSsSvzTvOlJKmg8L+HgAOVlIfHg0lR8
+         aygw==
+X-Gm-Message-State: APjAAAUIlKZqPXfdlnuzMXr+DDIP3wFIaVT4o/sv5uTaL5ZygR9EBsEt
+        g+KrQGsdZ99/02gM677YkKtY0Q==
+X-Google-Smtp-Source: APXvYqzUtSx9TXYj7cPELtcJoIFrQb9QmW162prSdvzhCjMi66kmK7ihqlK1y9torULncYYjxLcW0w==
+X-Received: by 2002:a17:902:904b:: with SMTP id w11mr8623273plz.182.1570724816801;
+        Thu, 10 Oct 2019 09:26:56 -0700 (PDT)
+Received: from localhost.localdomain (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id o15sm6148342pjs.14.2019.10.10.09.26.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 09:26:56 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Niklas Cassel <niklas.cassel@linaro.org>,
+        stable@vger.kernel.org
+Subject: [PATCH] ath10k: Correct error check of dma_map_single()
+Date:   Thu, 10 Oct 2019 09:26:53 -0700
+Message-Id: <20191010162653.141303-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+The return value of dma_map_single() should be checked for errors using
+dma_mapping_error(), rather than testing for NULL. Correct this.
 
-Depending on when MC connects the DPNI to a MAC, Tx FQIDs may
-not be available during probe time.
-
-Read the FQIDs each time the link goes up to avoid using invalid
-values. In case an error occurs or an invalid value is retrieved,
-fall back to QDID-based enqueueing.
-
-Fixes: 1fa0f68c9255 ("dpaa2-eth: Use FQ-based DPIO enqueue API")
-Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Fixes: 1807da49733e ("ath10k: wmi: add management tx by reference support over wmi")
+Cc: stable@vger.kernel.org
+Reported-by: Niklas Cassel <niklas.cassel@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 42 ++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ drivers/net/wireless/ath/ath10k/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 5acd734a216b..5bd24c160256 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1235,6 +1235,8 @@ static void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv, bool enable)
- 	priv->rx_td_enabled = enable;
- }
- 
-+static void update_tx_fqids(struct dpaa2_eth_priv *priv);
-+
- static int link_state_update(struct dpaa2_eth_priv *priv)
- {
- 	struct dpni_link_state state = {0};
-@@ -1261,6 +1263,7 @@ static int link_state_update(struct dpaa2_eth_priv *priv)
- 		goto out;
- 
- 	if (state.up) {
-+		update_tx_fqids(priv);
- 		netif_carrier_on(priv->net_dev);
- 		netif_tx_start_all_queues(priv->net_dev);
- 	} else {
-@@ -2533,6 +2536,45 @@ static int set_pause(struct dpaa2_eth_priv *priv)
- 	return 0;
- }
- 
-+static void update_tx_fqids(struct dpaa2_eth_priv *priv)
-+{
-+	struct dpaa2_eth_fq *fq;
-+	struct dpni_queue queue;
-+	struct dpni_queue_id qid = {0};
-+	int i, j, err;
-+
-+	/* We only use Tx FQIDs for FQID-based enqueue, so check
-+	 * if DPNI version supports it before updating FQIDs
-+	 */
-+	if (dpaa2_eth_cmp_dpni_ver(priv, DPNI_ENQUEUE_FQID_VER_MAJOR,
-+				   DPNI_ENQUEUE_FQID_VER_MINOR) < 0)
-+		return;
-+
-+	for (i = 0; i < priv->num_fqs; i++) {
-+		fq = &priv->fq[i];
-+		if (fq->type != DPAA2_TX_CONF_FQ)
-+			continue;
-+		for (j = 0; j < dpaa2_eth_tc_count(priv); j++) {
-+			err = dpni_get_queue(priv->mc_io, 0, priv->mc_token,
-+					     DPNI_QUEUE_TX, j, fq->flowid,
-+					     &queue, &qid);
-+			if (err)
-+				goto out_err;
-+
-+			fq->tx_fqid[j] = qid.fqid;
-+			if (fq->tx_fqid[j] == 0)
-+				goto out_err;
-+		}
-+	}
-+
-+	return;
-+
-+out_err:
-+	netdev_info(priv->net_dev,
-+		    "Error reading Tx FQID, fallback to QDID-based enqueue");
-+	priv->enqueue = dpaa2_eth_enqueue_qd;
-+}
-+
- /* Configure the DPNI object this interface is associated with */
- static int setup_dpni(struct fsl_mc_device *ls_dev)
- {
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 3d2c8fcba952..a01868938692 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -3904,7 +3904,7 @@ void ath10k_mgmt_over_wmi_tx_work(struct work_struct *work)
+ 			     ar->running_fw->fw_file.fw_features)) {
+ 			paddr = dma_map_single(ar->dev, skb->data,
+ 					       skb->len, DMA_TO_DEVICE);
+-			if (!paddr)
++			if (dma_mapping_error(ar->dev, paddr))
+ 				continue;
+ 			ret = ath10k_wmi_mgmt_tx_send(ar, skb, paddr);
+ 			if (ret) {
 -- 
-1.9.1
+2.23.0
 
