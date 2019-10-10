@@ -2,108 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF577D3079
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 20:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22537D309C
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 20:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbfJJSgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 14:36:44 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:44057 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbfJJSgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 14:36:44 -0400
-Received: by mail-pg1-f196.google.com with SMTP id e10so213413pgd.11
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 11:36:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=tOmO4TKHm16DClzfcXRVekZnE4Pzae9554ZSqpGnQas=;
-        b=BtpcT8QFG7edZBSS1TEqho8k+vBnuo4VQDPFZGWgcN4vuj/ol7Gp/8FdJ3chxCd9qZ
-         HpiGsLAIn0g8hNm4vLiUYtLeb3FTtox8k7UQCBCf5hobq2XGPn94NiyshMWAYNQlplw0
-         4AR0txN5QokKV3ubtTFiqHLeaFJA+GCZVsFQmzTl3J6qpSChpD5W83GrxEePCqXgotfA
-         /fCEXO/dejrky37jKe3rpGRAKFRB6cikH0GzwD7DxgLgA0uLjmPVGu3QYg5VBCarVFAm
-         yrnp82ZarmVHkLNOcXhBpv/tv60bqScQPC8Nn7mckJ1G5QzGwgcfuw4nYHQddxcPDkr6
-         Ljvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=tOmO4TKHm16DClzfcXRVekZnE4Pzae9554ZSqpGnQas=;
-        b=eWVQQ+wNirA2g4XA+Er1v1sZdAqrJavtDS2Vz6Z9BCfvTi4AtoYXUHC3hEC7BPoI2D
-         QsGoJh8Mo31FHgKX2XUXtFzO1GmO6mPA/Vzu8Bkyzb19/oCTxH4iEdlAohYwqdT4WaMN
-         SzOIRTtPFmFopjbA8NG/gQ1KwxBPIDvElMTUeaNuEFxz88m6OBqpQkA8nkxk/WCjQxbx
-         TJuMbz26OlWUjIbyV2T/9kxggqJzlo6zmEbJHSRG+SeLOBy9qg3wQTqE/MZW0RDSXwDX
-         RVDLsoLFK6AOJmz3F09Gtzsb8RsTW7cA8b4y6VMfDXf9DTNNWszvs48rylGcwvL0OwNU
-         /zdw==
-X-Gm-Message-State: APjAAAVkVLEskuSdQDA7MLyXK/I+o+TAC6X6Vqf9Lebd2OmyusFjF1aD
-        eCtazf6J+CTpg/Oo9IOmQhZKHFHslgUAKuptxwc=
-X-Google-Smtp-Source: APXvYqycXXRjEIa7e2H98e2EQdP1WTKogNoYfo0eroBKMQfyLACFYUysZP6LoblIIshNQ3bZqfrqHVpkiWrP50GlkSA=
-X-Received: by 2002:a62:28b:: with SMTP id 133mr11802787pfc.242.1570732601725;
- Thu, 10 Oct 2019 11:36:41 -0700 (PDT)
+        id S1726698AbfJJSoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 14:44:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34068 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726336AbfJJSoE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 14:44:04 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 272DE2DD98;
+        Thu, 10 Oct 2019 18:44:04 +0000 (UTC)
+Received: from new-host.redhat.com (ovpn-204-138.brq.redhat.com [10.40.204.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A7F885D713;
+        Thu, 10 Oct 2019 18:44:02 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        John Hurley <john.hurley@netronome.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net 0/2] net/sched: fix wrong behavior of MPLS push/pop action
+Date:   Thu, 10 Oct 2019 20:43:51 +0200
+Message-Id: <cover.1570732834.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-References: <20191008053507.252202-1-zenczykowski@gmail.com>
- <20191008053507.252202-2-zenczykowski@gmail.com> <20191008060414.GB25052@breakpoint.cc>
- <CAHo-OowyjPdV-WbnDVqE4dJrHQUcT2q7JYfayVDZ9hhBoxY4DQ@mail.gmail.com> <CAHo-Ooy=UC9pEQ8xGuJO+8-c0ZaBYind3mo7UHEz1Oo387hyww@mail.gmail.com>
-In-Reply-To: <CAHo-Ooy=UC9pEQ8xGuJO+8-c0ZaBYind3mo7UHEz1Oo387hyww@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 10 Oct 2019 11:36:30 -0700
-Message-ID: <CAM_iQpV7D73p7k=806u+2vxiDDK-ecFuW5Rbk6j_BDO0K-FEGg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] netfilter: revert "conntrack: silent a memory leak warning"
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 10 Oct 2019 18:44:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 8, 2019 at 12:10 AM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> Here's my reasoning:
->
->         old =3D ct->ext;
->
->         //... stuff that doesn't change old.
->
->         alloc =3D max(newlen, NF_CT_EXT_PREALLOC);  <-- will be >=3D 128,
-> so not zero
->         kmemleak_not_leak(old);
->         new =3D __krealloc(old, alloc, gfp);
->         if (!new)
->                 return NULL;  <--- if we return here, ct->ext still
-> holds old, so no leak.
->
->         if (!old) {
->                 memset(new->offset, 0, sizeof(new->offset));
->                 ct->ext =3D new;  <--- old is NULL so can't leak
->         } else if (new !=3D old) {
->                 kfree_rcu(old, rcu);  <-- we free old, so doesn't leak
->                 rcu_assign_pointer(ct->ext, new);
->         } <--- else new =3D=3D old && it's still in ct->ext, so it doesn'=
-t leak
->
+this series contains two fixes for TC 'act_mpls', that try to address
+two problems that can be observed configuring simple 'push' / 'pop'
+operations:
+- patch 1/2 avoids dropping non-MPLS packets that pass through the MPLS
+  'pop' action.
+- patch 2/2 fixes corruption of the L2 header that occurs when 'push'
+  or 'pop' actions are configured in TC egress path.
 
-So you conclude as it is not leak too? Then what are you trying to
-fix?
+Davide Caratti (2):
+  net: avoid errors when trying to pop MLPS header on non-MPLS packets
+  net/sched: fix corrupted L2 header with MPLS 'push' and 'pop' actions
 
-I am becoming more confused after this. :-/
+ include/linux/skbuff.h    |  5 +++--
+ net/core/skbuff.c         | 20 +++++++++++---------
+ net/openvswitch/actions.c |  5 +++--
+ net/sched/act_mpls.c      | 12 ++++++++----
+ 4 files changed, 25 insertions(+), 17 deletions(-)
 
-> Basically AFAICT our use of __krealloc() is exactly like krealloc()
-> except instead of kfree() we do kfree_rcu().
->
-> And thus I don't understand the need for kmemleak_not_leak(old).
+-- 
+2.21.0
 
-kfree_rcu() is a callback deferred after a grace period, so if we
-allocate the memory again before that callback, it is reported to
-kmemleak as a memory leak unless we mark it as not, right?
-
-Or kfree_rcu() works nicely with kmemleak which I am not aware
-of?
-
-Thanks.
