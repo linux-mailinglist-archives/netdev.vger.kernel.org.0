@@ -2,282 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1151CD27BF
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 13:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1B4D27EF
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 13:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727291AbfJJLHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 07:07:34 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:59649 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726237AbfJJLHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 07:07:34 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id CFD427C1;
-        Thu, 10 Oct 2019 07:07:32 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 10 Oct 2019 07:07:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=crpa8c
-        gkn0UvvoPVIPRiEhbN37zPdlJU00CF3RkXTbw=; b=D0wus0eD7V7QRMH+/Uc18k
-        KEEgrG499TEM2I9uSIIy354khmkJ4inBcxTUwaqxyoY2T2aQferMS5Kex0rnx+OS
-        S+KqGumYWTBdxHPLs72X0HxI6cGrP/4p9rSCdSfX8VyMkkNA0FdUGCQE2CJUFaaV
-        8DP1AwNbWf0d2ejGN0CzZ63gOPanrvBpI/c6EXY9Xf2oA7ABaBcjYS41rg2DZ0cJ
-        86MMOYTq31xyXP0Yn1E6+U4DohiEMbqhx8oy7ip5dqjNHbyJTU3dmc01Vs8rdvSy
-        q27cPVxVhaaXMpRWy4XqwOKH44ujyLFDYHR98bV03zqKHykxxbYQwc3GuPv8pzbQ
-        ==
-X-ME-Sender: <xms:8xCfXWm5BIYEZVWKrdo0yUrYrMvAsa92itxXH9z8jA6oMhIWitjS7A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrieefgdefkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
-    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:8xCfXS3liI9vUVcOFPfif9j8Po4HIl9_Kt1sG7DIS_joFXoj27lCwA>
-    <xmx:8xCfXVjJGIIs3yCa2_5t2ILlPQ_NBxtbOfpMcDjw51uDLrKxn9qVAQ>
-    <xmx:8xCfXQUOUWuPwMbNnnBxTPV3F099rXozRS9_cEkOaIQoE7c0I-oxKA>
-    <xmx:9BCfXbIQLpp1AYhbwz2wyNZ9pvdgseqCz6mVEgBU_hikRRm-Ayc-1g>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E2B62D60057;
-        Thu, 10 Oct 2019 07:07:30 -0400 (EDT)
-Date:   Thu, 10 Oct 2019 14:07:29 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, x86@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v2 bpf-next 12/12] selftests/bpf: add kfree_skb raw_tp
- test
-Message-ID: <20191010110729.GA21703@splinter>
-References: <20191010041503.2526303-1-ast@kernel.org>
- <20191010041503.2526303-13-ast@kernel.org>
+        id S1732863AbfJJL06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 07:26:58 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:38646 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726659AbfJJL05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 07:26:57 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 3so6382855wmi.3
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 04:26:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OYpDDuL7BYuuwlHxQgZR0G54AZSewtaA2OCEr7V/XNs=;
+        b=oWfC2NQLiLTJO+/rnLDDJMp6qooPWYRbjPraT9E4RsPT47AsjFw5x3BODvrlkI0vnZ
+         A3DcOU77YQQWKUBFLgiA8TpaFXjS3Fm8gTdi7zEiwTvxg87lKBYjc/hC7A60NJiqFQ/Q
+         I6NX5JbRH2wGosPdJ6N3cGWLLWncK27mnBWwjVkCpJQSbZ0iBoittiahoFEuP189FTMp
+         4GSYkK6xcOaYoD0jnlI9VldVsCsy1SOf6ALk5iX2OLoLgj3D/fI1qwauFkOn27WV92jl
+         tyZ+GqqBBWWTxwIcxgXfA5JM025CskvH5lO7rNrytqLRR59IBm8EeC2WkqMxtHZdwHfJ
+         9ELA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OYpDDuL7BYuuwlHxQgZR0G54AZSewtaA2OCEr7V/XNs=;
+        b=rfjJd7yi0agkDpa0cdadsP7T/8GaXWKWOyYHuJyIAbnVEA8PcVancRsl6SoaNh+l4O
+         PyAbcFnZvZy7lSm3Tbw+J8qZmDd9o8JB6RgWBmn1uCdatmnXbbgqeMHKxZIdw96pNVYQ
+         5byFmk53WK8IBbtS6PziJCvmwkQPTumvVlHCFY9/P41MBQoH+jyU2ypPppNpzWmulGfH
+         Ed14Jc+Dgvk1eq9zjyCtamyLs4f40LO/6BYA3NpJUuQ+BKwhLbu64qjg9Vj/rHOMnn5F
+         KOV/+9pCHl5SL6C1LiRCOMJpbmDXijGTvO6ihzLivC00xs+75Tg0yYTbjoMIVH63NPrg
+         QULA==
+X-Gm-Message-State: APjAAAUrIQ1Zi1V9PzBBBapruzuX3CkgkWag5YS08RHBuQQkPAa98zGM
+        halIlJVvd2tkaA6uvBcOzUsl6/ACXrU=
+X-Google-Smtp-Source: APXvYqw0MVhZgnXQnTrF4od9h9VNlpyRH+v8Sy9tE0gTrLQ70fnldWEAwPs7Z8s8EXq66Byni0wJhw==
+X-Received: by 2002:a7b:ce12:: with SMTP id m18mr510289wmc.108.1570706815333;
+        Thu, 10 Oct 2019 04:26:55 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id v7sm5343827wrr.4.2019.10.10.04.26.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 04:26:54 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 13:26:54 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] genetlink: do not parse attributes for
+ families with zero maxattr
+Message-ID: <20191010112654.GH2223@nanopsycho>
+References: <20191010103402.36408E378C@unicorn.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191010041503.2526303-13-ast@kernel.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191010103402.36408E378C@unicorn.suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 09:15:03PM -0700, Alexei Starovoitov wrote:
-> Load basic cls_bpf program.
-> Load raw_tracepoint program and attach to kfree_skb raw tracepoint.
-> Trigger cls_bpf via prog_test_run.
-> At the end of test_run kernel will call kfree_skb
-> which will trigger trace_kfree_skb tracepoint.
-> Which will call our raw_tracepoint program.
-> Which will take that skb and will dump it into perf ring buffer.
-> Check that user space received correct packet.
-> 
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  .../selftests/bpf/prog_tests/kfree_skb.c      | 90 +++++++++++++++++++
->  tools/testing/selftests/bpf/progs/kfree_skb.c | 74 +++++++++++++++
->  2 files changed, 164 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/kfree_skb.c
->  create mode 100644 tools/testing/selftests/bpf/progs/kfree_skb.c
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-> new file mode 100644
-> index 000000000000..0cf91b6bf276
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-> @@ -0,0 +1,90 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <test_progs.h>
-> +
-> +static void on_sample(void *ctx, int cpu, void *data, __u32 size)
-> +{
-> +	int ifindex = *(int *)data, duration = 0;
-> +	struct ipv6_packet *pkt_v6 = data + 4;
-> +
-> +	if (ifindex != 1)
-> +		/* spurious kfree_skb not on loopback device */
-> +		return;
-> +	if (CHECK(size != 76, "check_size", "size %u != 76\n", size))
-> +		return;
-> +	if (CHECK(pkt_v6->eth.h_proto != 0xdd86, "check_eth",
-> +		  "h_proto %x\n", pkt_v6->eth.h_proto))
-> +		return;
-> +	if (CHECK(pkt_v6->iph.nexthdr != 6, "check_ip",
-> +		  "iph.nexthdr %x\n", pkt_v6->iph.nexthdr))
-> +		return;
-> +	if (CHECK(pkt_v6->tcp.doff != 5, "check_tcp",
-> +		  "tcp.doff %x\n", pkt_v6->tcp.doff))
-> +		return;
-> +
-> +	*(bool *)ctx = true;
-> +}
-> +
-> +void test_kfree_skb(void)
-> +{
-> +	struct bpf_prog_load_attr attr = {
-> +		.file = "./kfree_skb.o",
-> +		.log_level = 2,
-> +	};
-> +
-> +	struct bpf_object *obj, *obj2 = NULL;
-> +	struct perf_buffer_opts pb_opts = {};
-> +	struct perf_buffer *pb = NULL;
-> +	struct bpf_link *link = NULL;
-> +	struct bpf_map *perf_buf_map;
-> +	struct bpf_program *prog;
-> +	__u32 duration, retval;
-> +	int err, pkt_fd, kfree_skb_fd;
-> +	bool passed = false;
-> +
-> +	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS, &obj, &pkt_fd);
-> +	if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
-> +		return;
-> +
-> +	err = bpf_prog_load_xattr(&attr, &obj2, &kfree_skb_fd);
-> +	if (CHECK(err, "prog_load raw tp", "err %d errno %d\n", err, errno))
-> +		goto close_prog;
-> +
-> +	prog = bpf_object__find_program_by_title(obj2, "raw_tracepoint/kfree_skb");
-> +	if (CHECK(!prog, "find_prog", "prog kfree_skb not found\n"))
-> +		goto close_prog;
-> +	link = bpf_program__attach_raw_tracepoint(prog, NULL);
-> +	if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n", PTR_ERR(link)))
-> +		goto close_prog;
-> +
-> +	perf_buf_map = bpf_object__find_map_by_name(obj2, "perf_buf_map");
-> +	if (CHECK(!perf_buf_map, "find_perf_buf_map", "not found\n"))
-> +		goto close_prog;
-> +
-> +	/* set up perf buffer */
-> +	pb_opts.sample_cb = on_sample;
-> +	pb_opts.ctx = &passed;
-> +	pb = perf_buffer__new(bpf_map__fd(perf_buf_map), 1, &pb_opts);
-> +	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
-> +		goto close_prog;
-> +
-> +	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
-> +				NULL, NULL, &retval, &duration);
-> +	CHECK(err || retval, "ipv6",
-> +	      "err %d errno %d retval %d duration %d\n",
-> +	      err, errno, retval, duration);
-> +
-> +	/* read perf buffer */
-> +	err = perf_buffer__poll(pb, 100);
-> +	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
-> +		goto close_prog;
-> +	/* make sure kfree_skb program was triggered
-> +	 * and it sent expected skb into ring buffer
-> +	 */
-> +	CHECK_FAIL(!passed);
-> +close_prog:
-> +	perf_buffer__free(pb);
-> +	if (!IS_ERR_OR_NULL(link))
-> +		bpf_link__destroy(link);
-> +	bpf_object__close(obj);
-> +	bpf_object__close(obj2);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
-> new file mode 100644
-> index 000000000000..fc25797cc64d
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
-> @@ -0,0 +1,74 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2019 Facebook
-> +#include <linux/bpf.h>
-> +#include "bpf_helpers.h"
-> +
-> +char _license[] SEC("license") = "GPL";
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-> +	__uint(key_size, sizeof(int));
-> +	__uint(value_size, sizeof(int));
-> +} perf_buf_map SEC(".maps");
-> +
-> +#define _(P) (__builtin_preserve_access_index(P))
-> +
-> +/* define few struct-s that bpf program needs to access */
-> +struct callback_head {
-> +	struct callback_head *next;
-> +	void (*func)(struct callback_head *head);
-> +};
-> +struct dev_ifalias {
-> +	struct callback_head rcuhead;
-> +};
-> +
-> +struct net_device /* same as kernel's struct net_device */ {
-> +	int ifindex;
-> +	struct dev_ifalias *ifalias;
-> +};
-> +
-> +struct sk_buff {
-> +	/* field names and sizes should match to those in the kernel */
-> +	unsigned int len, data_len;
-> +	__u16 mac_len, hdr_len, queue_mapping;
-> +	struct net_device *dev;
-> +	/* order of the fields doesn't matter */
-> +};
-> +
-> +/* copy arguments from
-> + * include/trace/events/skb.h:
-> + * TRACE_EVENT(kfree_skb,
-> + *         TP_PROTO(struct sk_buff *skb, void *location),
-> + *
-> + * into struct below:
-> + */
-> +struct trace_kfree_skb {
-> +	struct sk_buff *skb;
-> +	void *location;
-> +};
-> +
-> +SEC("raw_tracepoint/kfree_skb")
-> +int trace_kfree_skb(struct trace_kfree_skb *ctx)
-> +{
-> +	struct sk_buff *skb = ctx->skb;
-> +	struct net_device *dev;
-> +	int ifindex;
-> +	struct callback_head *ptr;
-> +	void *func;
-> +
-> +	__builtin_preserve_access_index(({
-> +		dev = skb->dev;
-> +		ifindex = dev->ifindex;
+Thu, Oct 10, 2019 at 12:34:02PM CEST, mkubecek@suse.cz wrote:
+>Commit c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing
+>to a separate function") moved attribute buffer allocation and attribute
+>parsing from genl_family_rcv_msg_doit() into a separate function
+>genl_family_rcv_msg_attrs_parse() which, unlike the previous code, calls
+>__nlmsg_parse() even if family->maxattr is 0 (i.e. the family does its own
+>parsing). The parser error is ignored and does not propagate out of
+>genl_family_rcv_msg_attrs_parse() but an error message ("Unknown attribute
+>type") is set in extack and if further processing generates no error or
+>warning, it stays there and is interpreted as a warning by userspace.
+>
+>Dumpit requests are not affected as genl_family_rcv_msg_dumpit() bypasses
+>the call of genl_family_rcv_msg_doit() if family->maxattr is zero. Do the
+>same also in genl_family_rcv_msg_doit().
+>
+>Fixes: c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing to a separate function")
+>Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Hi Alexei,
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-The patchset looks very useful. One question: Is it always safe to
-access 'skb->dev->ifindex' here? I'm asking because 'dev' is inside a
-union with 'dev_scratch' which is 'unsigned long' and therefore might
-not always be a valid memory address. Consider for example the following
-code path:
-
-...
-__udp_queue_rcv_skb(sk, skb)
-	__udp_enqueue_schedule_skb(sk, skb)
-		udp_set_dev_scratch(skb)
-		// returns error
-	...
-	kfree_skb(skb) // ebpf program is invoked
-
-How is this handled by eBPF?
-
-Thanks
-
-> +		ptr = dev->ifalias->rcuhead.next;
-> +		func = ptr->func;
-> +	}));
-> +
-> +	bpf_printk("rcuhead.next %llx func %llx\n", ptr, func);
-> +	bpf_printk("skb->len %d\n", _(skb->len));
-> +	bpf_printk("skb->queue_mapping %d\n", _(skb->queue_mapping));
-> +	bpf_printk("dev->ifindex %d\n", ifindex);
-> +
-> +	/* send first 72 byte of the packet to user space */
-> +	bpf_skb_output(skb, &perf_buf_map, (72ull << 32) | BPF_F_CURRENT_CPU,
-> +		       &ifindex, sizeof(ifindex));
-> +	return 0;
-> +}
-> -- 
-> 2.23.0
-> 
+Thanks!
