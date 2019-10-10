@@ -2,143 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B5CD2933
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 352AED299B
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387660AbfJJMSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 08:18:18 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52613 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387537AbfJJMSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:16 -0400
-Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iIXOZ-0006Lw-47; Thu, 10 Oct 2019 14:18:15 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
-Cc:     davem@davemloft.net, kernel@pengutronix.de,
-        jhofstee@victronenergy.com,
-        =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Yegor Yefremov <yegorslists@googlemail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 29/29] can: don't use deprecated license identifiers
-Date:   Thu, 10 Oct 2019 14:17:50 +0200
-Message-Id: <20191010121750.27237-30-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191010121750.27237-1-mkl@pengutronix.de>
-References: <20191010121750.27237-1-mkl@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S2387463AbfJJMhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 08:37:42 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:7227 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726923AbfJJMhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:37:41 -0400
+X-IronPort-AV: E=Sophos;i="5.67,280,1566831600"; 
+   d="scan'208";a="28789735"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 10 Oct 2019 21:37:39 +0900
+Received: from fabrizio-dev.ree.adwin.renesas.com (unknown [10.226.36.196])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 9227B4000901;
+        Thu, 10 Oct 2019 21:37:35 +0900 (JST)
+From:   Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Simon Horman <horms@verge.net.au>,
+        Magnus Damm <magnus.damm@gmail.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>
+Subject: [PATCH 0/3] Add CAN and CAN-FD support to RZ/G2N SoC
+Date:   Thu, 10 Oct 2019 13:37:26 +0100
+Message-Id: <1570711049-5691-1-git-send-email-fabrizio.castro@bp.renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yegor Yefremov <yegorslists@googlemail.com>
+Dear All,
 
-The "GPL-2.0" license identifier changed to "GPL-2.0-only" in SPDX v3.0.
+this series adds CAN and CAN FD support to the RZ/G2N SoC specific dtsi.
 
-Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- include/uapi/linux/can.h         | 2 +-
- include/uapi/linux/can/bcm.h     | 2 +-
- include/uapi/linux/can/error.h   | 2 +-
- include/uapi/linux/can/gw.h      | 2 +-
- include/uapi/linux/can/j1939.h   | 2 +-
- include/uapi/linux/can/netlink.h | 2 +-
- include/uapi/linux/can/raw.h     | 2 +-
- include/uapi/linux/can/vxcan.h   | 2 +-
- 8 files changed, 8 insertions(+), 8 deletions(-)
+Thanks,
+Fab
 
-diff --git a/include/uapi/linux/can.h b/include/uapi/linux/can.h
-index 1e988fdeba34..6a6d2c7655ff 100644
---- a/include/uapi/linux/can.h
-+++ b/include/uapi/linux/can.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-+/* SPDX-License-Identifier: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) */
- /*
-  * linux/can.h
-  *
-diff --git a/include/uapi/linux/can/bcm.h b/include/uapi/linux/can/bcm.h
-index 0fb328d93148..dd2b925b09ac 100644
---- a/include/uapi/linux/can/bcm.h
-+++ b/include/uapi/linux/can/bcm.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-+/* SPDX-License-Identifier: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) */
- /*
-  * linux/can/bcm.h
-  *
-diff --git a/include/uapi/linux/can/error.h b/include/uapi/linux/can/error.h
-index bfc4b5d22a5e..34633283de64 100644
---- a/include/uapi/linux/can/error.h
-+++ b/include/uapi/linux/can/error.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-+/* SPDX-License-Identifier: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) */
- /*
-  * linux/can/error.h
-  *
-diff --git a/include/uapi/linux/can/gw.h b/include/uapi/linux/can/gw.h
-index 3aea5388c8e4..c2190bbe21d8 100644
---- a/include/uapi/linux/can/gw.h
-+++ b/include/uapi/linux/can/gw.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-+/* SPDX-License-Identifier: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) */
- /*
-  * linux/can/gw.h
-  *
-diff --git a/include/uapi/linux/can/j1939.h b/include/uapi/linux/can/j1939.h
-index c32325342d30..df6e821075c1 100644
---- a/include/uapi/linux/can/j1939.h
-+++ b/include/uapi/linux/can/j1939.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
- /*
-  * j1939.h
-  *
-diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
-index 1bc70d3a4d39..6f598b73839e 100644
---- a/include/uapi/linux/can/netlink.h
-+++ b/include/uapi/linux/can/netlink.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
- /*
-  * linux/can/netlink.h
-  *
-diff --git a/include/uapi/linux/can/raw.h b/include/uapi/linux/can/raw.h
-index be3b36e7ff61..6a11d308eb5c 100644
---- a/include/uapi/linux/can/raw.h
-+++ b/include/uapi/linux/can/raw.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-+/* SPDX-License-Identifier: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) */
- /*
-  * linux/can/raw.h
-  *
-diff --git a/include/uapi/linux/can/vxcan.h b/include/uapi/linux/can/vxcan.h
-index 066812d118a2..4fa9d8777a07 100644
---- a/include/uapi/linux/can/vxcan.h
-+++ b/include/uapi/linux/can/vxcan.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
- #ifndef _UAPI_CAN_VXCAN_H
- #define _UAPI_CAN_VXCAN_H
- 
+Fabrizio Castro (3):
+  dt-bindings: can: rcar_can: Add r8a774b1 support
+  dt-bindings: can: rcar_canfd: document r8a774b1 support
+  arm64: dts: renesas: r8a774b1: Add CAN and CAN FD support
+
+ .../devicetree/bindings/net/can/rcar_can.txt       |  5 ++-
+ .../devicetree/bindings/net/can/rcar_canfd.txt     |  1 +
+ arch/arm64/boot/dts/renesas/r8a774b1.dtsi          | 48 ++++++++++++++++++++--
+ 3 files changed, 49 insertions(+), 5 deletions(-)
+
 -- 
-2.23.0
+2.7.4
 
