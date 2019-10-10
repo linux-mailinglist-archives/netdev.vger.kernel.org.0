@@ -2,93 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36801D1FA6
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8A68D1FA9
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726513AbfJJE3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 00:29:50 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38430 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbfJJE3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:29:50 -0400
-Received: by mail-pl1-f196.google.com with SMTP id w8so2134542plq.5
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 21:29:50 -0700 (PDT)
+        id S1727494AbfJJEa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 00:30:26 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:34298 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbfJJEaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:30:25 -0400
+Received: by mail-pg1-f196.google.com with SMTP id y35so2833261pgl.1;
+        Wed, 09 Oct 2019 21:30:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=EgruT0pfyLqpy4bc3AX859mqf8RIbemrxdd7wh+jLJs=;
-        b=w9i6bavX8QN1fyG3pQYfrjbSbtLUZu77zt4qdUtQU7Aw88ZzXky+qRKThNA3soW+aU
-         YEo8+0tqCvpmMEaV+I6W+UwHE9cxrh3Pposjsf0wNYJFR+CYGfPOZpeG9IdhmJmd5IxR
-         IP9C6vF1Shnv98AmWZbAnOmASiatzI3Lrjdocl9qwYEk4y/mPpuUerarjtE4iote/L2l
-         s4RttDka5pzQrJanE4RSsupYwo5/cSsswS6YjEvqFISMHUWu8PpVlJnO+UdEcAc90Tax
-         VHAk5nGeEjhZvS8Q0tu/OddDlObpTiN8nLrZlDxjnLN9ns7s3mxdFdCGzD0ioZAycQyY
-         TnQw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AT1qXEvZ+lQA7q1Z71j11lVp8JI+71RILIKUCFl5DKI=;
+        b=bf70iZzyYJHlRpq3VlAxj/4S5gY1uZNsyF6fU1xHSUCByV+eMZBMvgaCY7OC0WGGI5
+         xy/2Lg09kPSUy2iEaUpTWfJk38pJTVfUp7n8OkH5axKB0NoWP/khROfd61VTuvF9XBn4
+         NXwgnGb8EVFJyku92dH2NlmnQgiIA1Ov7pHUVMWO64r258kPf3lAO9EwRRH4k1BIf5V6
+         Tq4OlS79M6v7lgBpYqNnBfgysdvyTxqFP9yrpwRtOFOSrHTW0bqGyiTSDN2SFKynU660
+         nhgtimefy+yoxqPiJfNaMFQFV+c73rJAeBnS9DM663vNuus7QCAdW7uQvFq7cxu3SbLa
+         h2MQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=EgruT0pfyLqpy4bc3AX859mqf8RIbemrxdd7wh+jLJs=;
-        b=SIGd7a+upsJ/lJImfcVOD0ynQfF7ZdnO4sW3/9lo5/sLCWsgnAZWMUbqwHs/0HM1Q/
-         jz4Qx3xc2B9vyZAq5+UQwwyrMwSggAeVMHXhKtvf2RHUG+1bvJFMkoCrtXE1GzOkau9F
-         117tXjGUJPMSL+6LcwbEO7rDnqNua/417J+DkoGvDlKH+HCPP4Z8RygpazAyGITZhoAb
-         UPepaA52UHFjqfoqmVC6Gx3WheSw4ZHzFRD+JAfG7neqdMGNidowNEyS0RpuUg4/HGap
-         Yx8769ginPVHG5w/Rq63K46sN6p3ajJs9fMAGUwsmYW+PopB0s8CQXX22FmFLusAOHso
-         jOBQ==
-X-Gm-Message-State: APjAAAU1cSUmgDqtw0HJ49g8anthqdFPayjVqXWQZFME1RrQdMJKcth9
-        Gu2wBiJD+02dRegFm/S3dW8+Xg==
-X-Google-Smtp-Source: APXvYqwCCvD7IuDky90CEeqB4y9QZZLyyEBjbUZh30881Psk8i0kIXnIRdanB0xR9FmMDPbL2isbTg==
-X-Received: by 2002:a17:902:bf45:: with SMTP id u5mr7260260pls.62.1570681789712;
-        Wed, 09 Oct 2019 21:29:49 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id 127sm5124046pfw.6.2019.10.09.21.29.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 21:29:49 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 21:29:36 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AT1qXEvZ+lQA7q1Z71j11lVp8JI+71RILIKUCFl5DKI=;
+        b=WyY9cL7gcPJiD1F9KsJAJP6WpLEp4VHQfdUwgD45DOnH06sVbwoSHQBAXnkXqe6xFW
+         NaoS+/XVcI8Tlo6nQX2K03iBXg7xFEkQ58jwjmizkGj8+uQAMGpjgdTSiGuLEc1Df+qh
+         fpq432SOpsZLdx6KRELQu+SX2qR9R9srVw8qPNa3I0BnpHbaoidjEALSMiXgZaapqv7M
+         +aKUB8LuAIFUZUyz9sbc88wVK9RKgP/X3Bg3kSZdgW5TSe+S5ClHE3X+hYpAUKhf1g0J
+         h+VjmyWk0+rr/BZGp2aHU/77DqYr9vmHcQWZpOEU5l+Kd2VGDwKSJw2PO4QUXIQVHR3d
+         iqYw==
+X-Gm-Message-State: APjAAAWEGW2zvzAvq8Vka0VvWhQRtPD9Am7RaaRzL0SiRrTvJ+Tc6Wzy
+        thah3a9TC+V+T8BXgw25/wA=
+X-Google-Smtp-Source: APXvYqxAGi9RKiZZfYMaYp3blstGL8vkWv2x/vmRLdHFU7Vu+wMMTuEUBcdFzSMOO4Ll9Tn6GCVuMA==
+X-Received: by 2002:a17:90a:f495:: with SMTP id bx21mr8347624pjb.84.1570681824990;
+        Wed, 09 Oct 2019 21:30:24 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
+        by smtp.gmail.com with ESMTPSA id i132sm3404043pgd.47.2019.10.09.21.30.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Oct 2019 21:30:24 -0700 (PDT)
+Subject: Re: [PATCH net] netfilter: conntrack: avoid possible false sharing
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
         Eric Dumazet <eric.dumazet@gmail.com>,
-        Zhang Yu <zhangyu31@baidu.com>, Wang Li <wangli39@baidu.com>,
-        Li RongQing <lirongqing@baidu.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH net] tun: remove possible false sharing in
- tun_flow_update()
-Message-ID: <20191009212936.29c2068e@cakuba.netronome.com>
-In-Reply-To: <20191009162002.19360-1-edumazet@google.com>
-References: <20191009162002.19360-1-edumazet@google.com>
-Organization: Netronome Systems, Ltd.
+        syzbot <syzkaller@googlegroups.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+References: <20191009161913.18600-1-edumazet@google.com>
+ <20191009212451.0522979f@cakuba.netronome.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7b7193d5-c93f-b81a-f4a0-ad63ed8196c3@gmail.com>
+Date:   Wed, 9 Oct 2019 21:30:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20191009212451.0522979f@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Oct 2019 09:20:02 -0700, Eric Dumazet wrote:
-> As mentioned in https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
-> a C compiler can legally transform
-> 
-> if (e->queue_index != queue_index)
-> 	e->queue_index = queue_index;
-> 
-> to :
-> 
-> 	e->queue_index = queue_index;
-> 
-> Note that the code using jiffies has no issue, since jiffies
-> has volatile attribute.
-> 
-> if (e->updated != jiffies)
->     e->updated = jiffies;
-> 
-> Fixes: 83b1bc122cab ("tun: align write-heavy flow entry members to a cache line")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Zhang Yu <zhangyu31@baidu.com>
-> Cc: Wang Li <wangli39@baidu.com>
-> Cc: Li RongQing <lirongqing@baidu.com>
-> Cc: Jason Wang <jasowang@redhat.com>
 
-Applied, same story with stable, thanks!
+
+On 10/9/19 9:24 PM, Jakub Kicinski wrote:
+> On Wed,  9 Oct 2019 09:19:13 -0700, Eric Dumazet wrote:
+>> As hinted by KCSAN, we need at least one READ_ONCE()
+>> to prevent a compiler optimization.
+>>
+>> More details on :
+>> https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
+>>
+>> [...]
+>>
+>> Fixes: cc16921351d8 ("netfilter: conntrack: avoid same-timeout update")
+>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>> Reported-by: syzbot <syzkaller@googlegroups.com>
+>> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+>> Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+>> Cc: Florian Westphal <fw@strlen.de>
+> 
+> Applied, thank you. 
+> 
+> Not queuing for stable, please let me know if I should.
+> 
+
+This is fine really, thanks.
