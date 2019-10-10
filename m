@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CDFD29B8
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:41:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C19B3D29E0
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:46:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733301AbfJJMlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 08:41:00 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:43686 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733191AbfJJMlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:41:00 -0400
-Received: from cpe-2606-a000-111b-43ee-0-0-0-115f.dyn6.twc.com ([2606:a000:111b:43ee::115f] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1iIXkP-0000xc-GX; Thu, 10 Oct 2019 08:40:55 -0400
-Date:   Thu, 10 Oct 2019 08:40:45 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCHv2 net-next 3/5] sctp: add
- SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
-Message-ID: <20191010124045.GA29895@hmswarspite.think-freely.org>
-References: <cover.1570533716.git.lucien.xin@gmail.com>
- <066605f2269d5d92bc3fefebf33c6943579d8764.1570533716.git.lucien.xin@gmail.com>
- <60a7f76bd5f743dd8d057b32a4456ebd@AcuMS.aculab.com>
- <CADvbK_cFCuHAwxGAdY0BevrrAd6pQRP2tW_ej9mM3G4Aog3qpg@mail.gmail.com>
- <20191009161508.GB25555@hmswarspite.think-freely.org>
- <CADvbK_eJh0ghjrrqcx7mygEY94QsxxbV=om8BqWPEcXxUHFmHw@mail.gmail.com>
+        id S2387892AbfJJMqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 08:46:45 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:41397 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387801AbfJJMqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:46:45 -0400
+Received: by mail-oi1-f196.google.com with SMTP id w65so4748960oiw.8;
+        Thu, 10 Oct 2019 05:46:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KBn66BbTwmZUU2I9k2ufbx3Ra36HrnXvwheScStJ0QE=;
+        b=JXtC0r3C4L9ICBChGPcuh2xdFbu+uO4rsckR5QWitNrkFsvVbMulR18p37ktMoprqi
+         xJ+sGdWiMqEmtkTljTKjR6I4lqX6gC2yJfvCByYeCiZ4NqS9X82122F8aCwMs0+ML6dQ
+         N5BtaS6/QHBTSnmI4mjnabqu/eq34wCMdfckFDyPVC9s7eCz4KSAHgg1KUSEUG9uHWe4
+         Xmnspv4FrHAxOoROWn/x6z3lb2bA8LXAMoFEmBMAjI0yUM4DkC9JApaMD3H/zIJUL9OC
+         HCHdC//HbETpBlb1GNpdixeoNfJUPQuGtsWH8Fyud4Hf3p6QGEUdH56l8EembqPsCXoq
+         jcpA==
+X-Gm-Message-State: APjAAAU5d8CLOMa48g4jKZSfEg23VvrEHWv/vcsWKvFgzV2ViMF8aELJ
+        4FPG/hFa2erD1v0cqV6tmB+NUwNtsWSc0agzSVc=
+X-Google-Smtp-Source: APXvYqw8mgz4KShDIMTVq66wDgob36QaVSEI9Z5S3L/3RMDk2QtBAHM49smvIMzPZ/LUfdYnBDR2vegq9wiIwn0La0w=
+X-Received: by 2002:aca:882:: with SMTP id 124mr7330818oii.54.1570711604017;
+ Thu, 10 Oct 2019 05:46:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADvbK_eJh0ghjrrqcx7mygEY94QsxxbV=om8BqWPEcXxUHFmHw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+References: <1570711049-5691-1-git-send-email-fabrizio.castro@bp.renesas.com> <1570711049-5691-3-git-send-email-fabrizio.castro@bp.renesas.com>
+In-Reply-To: <1570711049-5691-3-git-send-email-fabrizio.castro@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 10 Oct 2019 14:46:32 +0200
+Message-ID: <CAMuHMdV5XUPSrgoDm62p0f_B1TtvhMyOX3NVho=QVqdesq31jg@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] dt-bindings: can: rcar_canfd: document
+ r8a774b1 support
+To:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Simon Horman <horms@verge.net.au>,
+        Magnus Damm <magnus.damm@gmail.com>, linux-can@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 05:28:34PM +0800, Xin Long wrote:
-> On Thu, Oct 10, 2019 at 12:18 AM Neil Horman <nhorman@tuxdriver.com> wrote:
-> >
-> > On Tue, Oct 08, 2019 at 11:28:32PM +0800, Xin Long wrote:
-> > > On Tue, Oct 8, 2019 at 9:02 PM David Laight <David.Laight@aculab.com> wrote:
-> > > >
-> > > > From: Xin Long
-> > > > > Sent: 08 October 2019 12:25
-> > > > >
-> > > > > This is a sockopt defined in section 7.3 of rfc7829: "Exposing
-> > > > > the Potentially Failed Path State", by which users can change
-> > > > > pf_expose per sock and asoc.
-> > > >
-> > > > If I read these patches correctly the default for this sockopt in 'enabled'.
-> > > > Doesn't this mean that old application binaries will receive notifications
-> > > > that they aren't expecting?
-> > > >
-> > > > I'd have thought that applications would be required to enable it.
-> > > If we do that, sctp_getsockopt_peer_addr_info() in patch 2/5 breaks.
-> > >
-> > I don't think we can safely do either of these things.  Older
-> > applications still need to behave as they did prior to the introduction
-> > of this notification, and we shouldn't allow unexpected notifications to
-> > be sent.
-> >
-> > What if you added a check in get_peer_addr_info to only return -EACCESS
-> > if pf_expose is 0 and the application isn't subscribed to the PF event?
-> We can't subscribe to PF event only, but all the SCTP_PEER_ADDR_CHANGE
-> events.
-> 
-> Now I'm thinking both PF event and "return -EACCES" in get_peer_addr_info
-> are new, we should give 'expose' a default value that would disable both.
-> How do think if we set 'pf_expose = -1' by default. We send the pf event
-> only if (asoc->pf_expose > 0) in sctp_assoc_control_transport().
-> 
-And if pf_expose = 0, we send the event, and return -EACCESS if we call
-the socket option and find a PF assoc?  If so, yes, I think that makes
-sense.
+Hi Fabrizio,
 
-Neil
+On Thu, Oct 10, 2019 at 2:37 PM Fabrizio Castro
+<fabrizio.castro@bp.renesas.com> wrote:
+> Document the support for rcar_canfd on R8A774B1 SoC devices.
+>
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
 
-> >
-> > Neil
-> >
-> > > >
-> > > >         David
-> > > >
-> > > > -
-> > > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > > > Registration No: 1397386 (Wales)
-> > > >
-> > >
-> 
+Thanks for your patch!
+
+> --- a/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
+> +++ b/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
+> @@ -5,6 +5,7 @@ Required properties:
+>  - compatible: Must contain one or more of the following:
+>    - "renesas,rcar-gen3-canfd" for R-Car Gen3 and RZ/G2 compatible controllers.
+>    - "renesas,r8a774a1-canfd" for R8A774A1 (RZ/G2M) compatible controller.
+> +  - "renesas,r8a774b1-canfd" for R8A774B1 (RZ/G2N) compatible controller.
+>    - "renesas,r8a774c0-canfd" for R8A774C0 (RZ/G2E) compatible controller.
+>    - "renesas,r8a7795-canfd" for R8A7795 (R-Car H3) compatible controller.
+>    - "renesas,r8a7796-canfd" for R8A7796 (R-Car M3-W) compatible controller.
+
+The above looks good, but I think you forgot to add R8A774B1 to the
+paragraph talking about the CAN FD clock below.
+With that fixed:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+While at it, the example in the bindings says the CANFD clock should be
+configured to 40 MHz, which matches what is used in the various DTS files.
+However, the Hardware User's Manual states it should be 80 MHz, except
+for R-Car D3.
+Is that correct?
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
