@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAF1D2930
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44CA7D2932
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387635AbfJJMSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 08:18:15 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:59071 "EHLO
+        id S2387642AbfJJMSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 08:18:16 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:55881 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387554AbfJJMSL (ORCPT
+        with ESMTP id S2387537AbfJJMSL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:11 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iIXOT-0006Lw-8M; Thu, 10 Oct 2019 14:18:09 +0200
+        id 1iIXOT-0006Lw-Qn; Thu, 10 Oct 2019 14:18:09 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
 Cc:     davem@davemloft.net, kernel@pengutronix.de,
@@ -22,9 +22,9 @@ Cc:     davem@davemloft.net, kernel@pengutronix.de,
         =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
         Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 20/29] can: ti_hecc: ti_hecc_error(): increase error counters if skb enqueueing via can_rx_offload_queue_sorted() fails
-Date:   Thu, 10 Oct 2019 14:17:41 +0200
-Message-Id: <20191010121750.27237-21-mkl@pengutronix.de>
+Subject: [PATCH 21/29] can: ti_hecc: ti_hecc_stop(): stop the CPK on down
+Date:   Thu, 10 Oct 2019 14:17:42 +0200
+Message-Id: <20191010121750.27237-22-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191010121750.27237-1-mkl@pengutronix.de>
 References: <20191010121750.27237-1-mkl@pengutronix.de>
@@ -39,41 +39,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The call to can_rx_offload_queue_sorted() may fail and return an error
-(in the current implementation due to resource shortage). The passed skb
-is consumed.
+From: Jeroen Hofstee <jhofstee@victronenergy.com>
 
-This patch adds incrementing of the appropriate error counters to let
-the device statistics reflect that there's a problem.
+When the interface goes down, the CPK should no longer take an active
+part in the CAN-bus communication, like sending acks and error frames.
+So enable configuration mode in ti_hecc_stop, so the CPK is no longer
+active.
 
+When a transceiver switch is present the acks and errors don't make it
+to the bus, but disabling the CPK then does prevent oddities, like
+ti_hecc_reset() failing, since the CPK can become bus-off and starts
+counting the 11 bit recessive bits, which seems to block the reset. It
+can also cause invalid interrupts and disrupt the CAN-bus, since
+transmission can be stopped in the middle of a message, by disabling the
+tranceiver while the CPK is sending.
+
+Since the CPK is disabled after normal power on, it is typically only
+seen when the interface is restarted.
+
+Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/ti_hecc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/can/ti_hecc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
-index f8b19eef5d26..91188e6d4f78 100644
+index 91188e6d4f78..eb8151154083 100644
 --- a/drivers/net/can/ti_hecc.c
 +++ b/drivers/net/can/ti_hecc.c
-@@ -558,6 +558,7 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
- 	u32 timestamp;
-+	int err;
+@@ -400,6 +400,9 @@ static void ti_hecc_stop(struct net_device *ndev)
+ {
+ 	struct ti_hecc_priv *priv = netdev_priv(ndev);
  
- 	/* propagate the error condition to the can stack */
- 	skb = alloc_can_err_skb(ndev, &cf);
-@@ -639,7 +640,9 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
- 	}
- 
- 	timestamp = hecc_read(priv, HECC_CANLNT);
--	can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
-+	err = can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
-+	if (err)
-+		ndev->stats.rx_fifo_errors++;
- 
- 	return 0;
- }
++	/* Disable the CPK; stop sending, erroring and acking */
++	hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
++
+ 	/* Disable interrupts and disable mailboxes */
+ 	hecc_write(priv, HECC_CANGIM, 0);
+ 	hecc_write(priv, HECC_CANMIM, 0);
 -- 
 2.23.0
 
