@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A358D2D13
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E06F0D2D16
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726467AbfJJPAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 11:00:04 -0400
-Received: from mx2.suse.de ([195.135.220.15]:46870 "EHLO mx1.suse.de"
+        id S1726407AbfJJPAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 11:00:03 -0400
+Received: from mx2.suse.de ([195.135.220.15]:46754 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726131AbfJJPAD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726088AbfJJPAD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 10 Oct 2019 11:00:03 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 86583AF23;
-        Thu, 10 Oct 2019 15:00:01 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id 55639AEB3;
+        Thu, 10 Oct 2019 15:00:00 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -31,177 +31,112 @@ To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
         netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH v9 4/5] MIPS: SGI-IP27: fix readb/writeb addressing
-Date:   Thu, 10 Oct 2019 16:59:50 +0200
-Message-Id: <20191010145953.21327-5-tbogendoerfer@suse.de>
+Subject: [PATCH v9 0/5] Use MFD framework for SGI IOC3 drivers
+Date:   Thu, 10 Oct 2019 16:59:46 +0200
+Message-Id: <20191010145953.21327-1-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20191010145953.21327-1-tbogendoerfer@suse.de>
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Our chosen byte swapping, which is what firmware already uses, is to
-do readl/writel by normal lw/sw intructions (data invariance). This
-also means we need to mangle addresses for u8 and u16 accesses. The
-mangling for 16bit has been done aready, but 8bit one was missing.
-Correcting this causes different addresses for accesses to the
-SuperIO and local bus of the IOC3 chip. This is fixed by changing
-byte order in ioc3 and m48rtc_rtc structs.
+SGI IOC3 ASIC includes support for ethernet, PS2 keyboard/mouse,
+NIC (number in a can), GPIO and a byte  bus. By attaching a
+SuperIO chip to it, it also supports serial lines and a parallel
+port. The chip is used on a variety of SGI systems with different
+configurations. This patchset moves code out of the network driver,
+which doesn't belong there, into its new place a MFD driver and
+specific platform drivers for the different subfunctions.
 
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
----
- arch/mips/include/asm/mach-ip27/mangle-port.h |  4 +--
- arch/mips/include/asm/sn/ioc3.h               | 38 +++++++++++++--------------
- drivers/rtc/rtc-m48t35.c                      | 11 ++++++++
- drivers/tty/serial/8250/8250_ioc3.c           |  4 +--
- 4 files changed, 34 insertions(+), 23 deletions(-)
+Changes in v9:
+ - remove generated MFD devices, when driver is removed or in case
+   of a mfd device setup error
+ - remove irq domain, if setup of mfd devices failed
+ - pci_iounmap on exit/error cases
+ - added irq domain unmap function
 
-diff --git a/arch/mips/include/asm/mach-ip27/mangle-port.h b/arch/mips/include/asm/mach-ip27/mangle-port.h
-index f6e4912ea062..27c56efa519f 100644
---- a/arch/mips/include/asm/mach-ip27/mangle-port.h
-+++ b/arch/mips/include/asm/mach-ip27/mangle-port.h
-@@ -8,7 +8,7 @@
- #ifndef __ASM_MACH_IP27_MANGLE_PORT_H
- #define __ASM_MACH_IP27_MANGLE_PORT_H
- 
--#define __swizzle_addr_b(port)	(port)
-+#define __swizzle_addr_b(port)	((port) ^ 3)
- #define __swizzle_addr_w(port)	((port) ^ 2)
- #define __swizzle_addr_l(port)	(port)
- #define __swizzle_addr_q(port)	(port)
-@@ -20,6 +20,6 @@
- # define ioswabl(a, x)		(x)
- # define __mem_ioswabl(a, x)	cpu_to_le32(x)
- # define ioswabq(a, x)		(x)
--# define __mem_ioswabq(a, x)	cpu_to_le32(x)
-+# define __mem_ioswabq(a, x)	cpu_to_le64(x)
- 
- #endif /* __ASM_MACH_IP27_MANGLE_PORT_H */
-diff --git a/arch/mips/include/asm/sn/ioc3.h b/arch/mips/include/asm/sn/ioc3.h
-index 78ef760ddde4..3865d3225780 100644
---- a/arch/mips/include/asm/sn/ioc3.h
-+++ b/arch/mips/include/asm/sn/ioc3.h
-@@ -21,50 +21,50 @@ struct ioc3_serialregs {
- 
- /* SUPERIO uart register map */
- struct ioc3_uartregs {
-+	u8	iu_lcr;
- 	union {
--		u8	iu_rbr;	/* read only, DLAB == 0 */
--		u8	iu_thr;	/* write only, DLAB == 0 */
--		u8	iu_dll;	/* DLAB == 1 */
-+		u8	iu_iir;	/* read only */
-+		u8	iu_fcr;	/* write only */
- 	};
- 	union {
- 		u8	iu_ier;	/* DLAB == 0 */
- 		u8	iu_dlm;	/* DLAB == 1 */
- 	};
- 	union {
--		u8	iu_iir;	/* read only */
--		u8	iu_fcr;	/* write only */
-+		u8	iu_rbr;	/* read only, DLAB == 0 */
-+		u8	iu_thr;	/* write only, DLAB == 0 */
-+		u8	iu_dll;	/* DLAB == 1 */
- 	};
--	u8	iu_lcr;
--	u8	iu_mcr;
--	u8	iu_lsr;
--	u8	iu_msr;
- 	u8	iu_scr;
-+	u8	iu_msr;
-+	u8	iu_lsr;
-+	u8	iu_mcr;
- };
- 
- struct ioc3_sioregs {
- 	u8	fill[0x141];	/* starts at 0x141 */
- 
--	u8	uartc;
- 	u8	kbdcg;
-+	u8	uartc;
- 
--	u8	fill0[0x150 - 0x142 - 1];
-+	u8	fill0[0x151 - 0x142 - 1];
- 
--	u8	pp_data;
--	u8	pp_dsr;
- 	u8	pp_dcr;
-+	u8	pp_dsr;
-+	u8	pp_data;
- 
--	u8	fill1[0x158 - 0x152 - 1];
-+	u8	fill1[0x159 - 0x153 - 1];
- 
--	u8	pp_fifa;
--	u8	pp_cfgb;
- 	u8	pp_ecr;
-+	u8	pp_cfgb;
-+	u8	pp_fifa;
- 
--	u8	fill2[0x168 - 0x15a - 1];
-+	u8	fill2[0x16a - 0x15b - 1];
- 
--	u8	rtcad;
- 	u8	rtcdat;
-+	u8	rtcad;
- 
--	u8	fill3[0x170 - 0x169 - 1];
-+	u8	fill3[0x170 - 0x16b - 1];
- 
- 	struct ioc3_uartregs	uartb;	/* 0x20170  */
- 	struct ioc3_uartregs	uarta;	/* 0x20178  */
-diff --git a/drivers/rtc/rtc-m48t35.c b/drivers/rtc/rtc-m48t35.c
-index d3a75d447fce..e8194f1f01a8 100644
---- a/drivers/rtc/rtc-m48t35.c
-+++ b/drivers/rtc/rtc-m48t35.c
-@@ -20,6 +20,16 @@
- 
- struct m48t35_rtc {
- 	u8	pad[0x7ff8];    /* starts at 0x7ff8 */
-+#ifdef CONFIG_SGI_IP27
-+	u8	hour;
-+	u8	min;
-+	u8	sec;
-+	u8	control;
-+	u8	year;
-+	u8	month;
-+	u8	date;
-+	u8	day;
-+#else
- 	u8	control;
- 	u8	sec;
- 	u8	min;
-@@ -28,6 +38,7 @@ struct m48t35_rtc {
- 	u8	date;
- 	u8	month;
- 	u8	year;
-+#endif
- };
- 
- #define M48T35_RTC_SET		0x80
-diff --git a/drivers/tty/serial/8250/8250_ioc3.c b/drivers/tty/serial/8250/8250_ioc3.c
-index 2be6ed2967e0..4c405f1b9c67 100644
---- a/drivers/tty/serial/8250/8250_ioc3.c
-+++ b/drivers/tty/serial/8250/8250_ioc3.c
-@@ -23,12 +23,12 @@ struct ioc3_8250_data {
- 
- static unsigned int ioc3_serial_in(struct uart_port *p, int offset)
- {
--	return readb(p->membase + offset);
-+	return readb(p->membase + (offset ^ 3));
- }
- 
- static void ioc3_serial_out(struct uart_port *p, int offset, int value)
- {
--	writeb(value, p->membase + offset);
-+	writeb(value, p->membase + (offset ^ 3));
- }
- 
- static int serial8250_ioc3_probe(struct platform_device *pdev)
+Changes in v8:
+ - Re-worked comments in drivers/mfd/ioc3.c
+ - Added select CRC16 to ioc3-eth.c
+ - Patches 1 and 2 are already taken to mips-next, but
+   for completeness of the series they are still included.
+   What's missing to get the remaining 3 patches via the MIPS
+   tree is an ack from a network maintainer
+
+Changes in v7:
+ - added patch to enable ethernet phy for Origin 200 systems
+ - depend on 64bit for ioc3 mfd driver
+
+Changes in v6:
+ - dropped patches accepted for v5.4-rc1
+ - moved serio patch to ip30 patch series
+ - adapted nvmem patch
+
+Changes in v5:
+ - requested by Jakub I've splited ioc3 ethernet driver changes into
+   more steps to make the transition more visible; on the way there 
+   I've "checkpatched" the driver and reduced code reorderings
+ - dropped all uint16_t and uint32_t
+ - added nvmem API extension to the documenation file
+ - changed to use request_irq/free_irq in serio driver
+ - removed wrong kfree() in serio error path
+
+Changes in v4:
+ - added w1 drivers to the series after merge in 5.3 failed because
+   of no response from maintainer and other parts of this series
+   won't work without that drivers
+ - moved ip30 systemboard support to the ip30 series, which will
+   deal with rtc oddity Lee found
+ - converted to use devm_platform_ioremap_resource
+ - use PLATFORM_DEVID_AUTO for serial, ethernet and serio in mfd driver
+ - fixed reverse christmas order in ioc3-eth.c
+ - formating issue found by Lee
+ - re-worked irq request/free in serio driver to avoid crashes during
+   probe/remove
+
+Changes in v3:
+ - use 1-wire subsystem for handling proms
+ - pci-xtalk driver uses prom information to create PCI subsystem
+   ids for use in MFD driver
+ - changed MFD driver to only use static declared mfd_cells
+ - added IP30 system board setup to MFD driver
+ - mac address is now read from ioc3-eth driver with nvmem framework
+
+Changes in v2:
+ - fixed issue in ioc3kbd.c reported by Dmitry Torokhov
+ - merged IP27 RTC removal and 8250 serial driver addition into
+   main MFD patch to keep patches bisectable
+
+Thomas Bogendoerfer (5):
+  nvmem: core: add nvmem_device_find
+  MIPS: PCI: use information from 1-wire PROM for IOC3 detection
+  mfd: ioc3: Add driver for SGI IOC3 chip
+  MIPS: SGI-IP27: fix readb/writeb addressing
+  MIPS: SGI-IP27: Enable ethernet phy on second Origin 200 module
+
+ Documentation/driver-api/nvmem.rst            |   2 +
+ arch/mips/include/asm/mach-ip27/mangle-port.h |   4 +-
+ arch/mips/include/asm/pci/bridge.h            |   1 +
+ arch/mips/include/asm/sn/ioc3.h               |  47 +-
+ arch/mips/pci/pci-ip27.c                      |  22 +
+ arch/mips/pci/pci-xtalk-bridge.c              | 135 +++++-
+ arch/mips/sgi-ip27/ip27-timer.c               |  20 -
+ arch/mips/sgi-ip27/ip27-xtalk.c               |  38 +-
+ drivers/mfd/Kconfig                           |  13 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/ioc3.c                            | 605 ++++++++++++++++++++++++++
+ drivers/net/ethernet/sgi/Kconfig              |   5 +-
+ drivers/net/ethernet/sgi/ioc3-eth.c           | 561 +++++-------------------
+ drivers/nvmem/core.c                          |  61 ++-
+ drivers/rtc/rtc-m48t35.c                      |  11 +
+ drivers/tty/serial/8250/8250_ioc3.c           |  98 +++++
+ drivers/tty/serial/8250/Kconfig               |  11 +
+ drivers/tty/serial/8250/Makefile              |   1 +
+ include/linux/nvmem-consumer.h                |   9 +
+ 19 files changed, 1097 insertions(+), 548 deletions(-)
+ create mode 100644 drivers/mfd/ioc3.c
+ create mode 100644 drivers/tty/serial/8250/8250_ioc3.c
+
 -- 
 2.16.4
 
