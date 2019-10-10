@@ -2,218 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB368D3054
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 20:26:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8B43D3063
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 20:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727187AbfJJSZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 14:25:47 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:48124 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727185AbfJJSZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 14:25:47 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 46pzzX1Yj1z1rXPx;
-        Thu, 10 Oct 2019 20:25:41 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 46pzzT07sHz1qqkH;
-        Thu, 10 Oct 2019 20:25:41 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id 5Lb-wIY63Pkk; Thu, 10 Oct 2019 20:25:39 +0200 (CEST)
-X-Auth-Info: 2BgNV7kl4tFfDc1UqPO/6cvbkvSXbs/rGny1Np+2Dko=
-Received: from chi.lan (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 10 Oct 2019 20:25:39 +0200 (CEST)
-From:   Marek Vasut <marex@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [PATCH 2/2] net: dsa: microchip: Add shared regmap mutex
-Date:   Thu, 10 Oct 2019 20:25:08 +0200
-Message-Id: <20191010182508.22833-2-marex@denx.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191010182508.22833-1-marex@denx.de>
-References: <20191010182508.22833-1-marex@denx.de>
+        id S1726634AbfJJSad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 14:30:33 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39990 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbfJJSad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 14:30:33 -0400
+Received: by mail-pg1-f193.google.com with SMTP id d26so4194696pgl.7
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 11:30:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=message-id:mime-version:content-transfer-encoding:in-reply-to
+         :references:from:to:cc:subject:user-agent:date;
+        bh=ORiOn2ijg214/FB0BTVae4aav3Hv7+fGWBkzNRGr70c=;
+        b=ir3wSEP1pelrXWLac9D+DzZayrfPLrb8c1CMg6RIukhApw0o7JAtf0Br+2iuN2IkwF
+         CsKFz3HnUdx+BUYkHUzMl3CGqBSvUI4MJYF1kzTXWBdzAJQVKDb2RptEcVDIWj/FW4Wj
+         yXmOXv23FsXmfc12xavUzSiL6WctEb9Iyo27E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:mime-version
+         :content-transfer-encoding:in-reply-to:references:from:to:cc:subject
+         :user-agent:date;
+        bh=ORiOn2ijg214/FB0BTVae4aav3Hv7+fGWBkzNRGr70c=;
+        b=nh2TpIjruCIRf5wnftCTKjp8iq2A2FupWI7OZkpIz0MPou/KNefSYv4ERr5vBEP9eR
+         vsIpShg8uyy1RPLt31WzIQfU5wJMxumeBTJU3xa5p5szXem6tJ48BKGoPB5m6wUicddd
+         +/EwyxD7tcs3l6fnuLjNYXLAV3b6gFvkkwlriptk2nPhWqXyIO30xko/OMqyZxhJoICC
+         MmzYSuIPKmuik2ozZa6Rbbx/Xn2poh4uws8mi3yFa7ZDGaXLpeq4IyT1WnVnZ4gk9pus
+         A/2gWHHe8rTTcEkn/SDlsoEELI9dDfm2CH6TV/KxlKG9nginsJMXm7FgQwOkcUmlz5vm
+         4jsA==
+X-Gm-Message-State: APjAAAUI4VGNWdEfFCgw3d1vfN9fhHGj8ZGffgu5LuMy6oWyGGyCxQhW
+        5ZqVRgaNkM+aGu5jSOrp8BKNpw==
+X-Google-Smtp-Source: APXvYqwq/5gCZohNEE4qPNVBMfmMnDuLbHKuu0mov6MOWy4yAGKsDYjltE6oLtKz8XFFiN4Nbye22Q==
+X-Received: by 2002:a63:d452:: with SMTP id i18mr12718002pgj.76.1570732230838;
+        Thu, 10 Oct 2019 11:30:30 -0700 (PDT)
+Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
+        by smtp.gmail.com with ESMTPSA id j17sm6238178pfr.70.2019.10.10.11.30.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 11:30:30 -0700 (PDT)
+Message-ID: <5d9f78c6.1c69fb81.e8d13.6c8b@mx.google.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1570616148-11571-1-git-send-email-Anson.Huang@nxp.com>
+References: <1570616148-11571-1-git-send-email-Anson.Huang@nxp.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Anson Huang <Anson.Huang@nxp.com>, andy.shevchenko@gmail.com,
+        davem@davemloft.net, fugang.duan@nxp.com,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, rafael.j.wysocki@intel.com
+Cc:     Linux-imx@nxp.com
+Subject: Re: [PATCH 1/2] net: fec_main: Use platform_get_irq_byname_optional() to avoid error message
+User-Agent: alot/0.8.1
+Date:   Thu, 10 Oct 2019 11:30:29 -0700
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The KSZ driver uses one regmap per register width (8/16/32), each with
-it's own lock, but accessing the same set of registers. In theory, it
-is possible to create a race condition between these regmaps, although
-the underlying bus (SPI or I2C) locking should assure nothing bad will
-really happen and the accesses would be correct.
+Quoting Anson Huang (2019-10-09 03:15:47)
+> Failed to get irq using name is NOT fatal as driver will use index
+> to get irq instead, use platform_get_irq_byname_optional() instead
+> of platform_get_irq_byname() to avoid below error message during
+> probe:
+>=20
+> [    0.819312] fec 30be0000.ethernet: IRQ int0 not found
+> [    0.824433] fec 30be0000.ethernet: IRQ int1 not found
+> [    0.829539] fec 30be0000.ethernet: IRQ int2 not found
+>=20
+> Fixes: 7723f4c5ecdb ("driver core: platform: Add an error message to plat=
+form_get_irq*()")
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> ---
 
-To make the driver do the right thing, add one single shared mutex for
-all the regmaps used by the driver instead. This assures that even if
-some future hardware is on a bus which does not serialize the accesses
-the same way SPI or I2C does, nothing bad will happen.
-
-Note that the status_mutex was unused and only initied, hence it was
-renamed and repurposed as the regmap mutex.
-
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: George McCollister <george.mccollister@gmail.com>
-Cc: Tristram Ha <Tristram.Ha@microchip.com>
-Cc: Woojung Huh <woojung.huh@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795_spi.c |  7 ++++---
- drivers/net/dsa/microchip/ksz9477_i2c.c |  6 ++++--
- drivers/net/dsa/microchip/ksz9477_spi.c |  6 ++++--
- drivers/net/dsa/microchip/ksz_common.c  | 14 +++++++++++++-
- drivers/net/dsa/microchip/ksz_common.h  |  7 ++++++-
- 5 files changed, 31 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
-index d0f8153e86b7..614404c40cba 100644
---- a/drivers/net/dsa/microchip/ksz8795_spi.c
-+++ b/drivers/net/dsa/microchip/ksz8795_spi.c
-@@ -26,6 +26,7 @@ KSZ_REGMAP_TABLE(ksz8795, 16, SPI_ADDR_SHIFT,
- static int ksz8795_spi_probe(struct spi_device *spi)
- {
- 	struct ksz_device *dev;
-+	struct regmap_config rc;
- 	int i, ret;
- 
- 	dev = ksz_switch_alloc(&spi->dev, spi);
-@@ -33,9 +34,9 @@ static int ksz8795_spi_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < ARRAY_SIZE(ksz8795_regmap_config); i++) {
--		dev->regmap[i] = devm_regmap_init_spi(spi,
--						      &ksz8795_regmap_config
--						      [i]);
-+		rc = ksz8795_regmap_config[i];
-+		rc.lock_arg = &dev->regmap_mutex;
-+		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
- 		if (IS_ERR(dev->regmap[i])) {
- 			ret = PTR_ERR(dev->regmap[i]);
- 			dev_err(&spi->dev,
-diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
-index b0a1595d780d..2cb178675b83 100644
---- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-+++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-@@ -18,6 +18,7 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c,
- 			     const struct i2c_device_id *i2c_id)
- {
- 	struct ksz_device *dev;
-+	struct regmap_config rc;
- 	int i, ret;
- 
- 	dev = ksz_switch_alloc(&i2c->dev, i2c);
-@@ -25,8 +26,9 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c,
- 		return -ENOMEM;
- 
- 	for (i = 0; i < ARRAY_SIZE(ksz9477_regmap_config); i++) {
--		dev->regmap[i] = devm_regmap_init_i2c(i2c,
--					&ksz9477_regmap_config[i]);
-+		rc = ksz9477_regmap_config[i];
-+		rc.lock_arg = &dev->regmap_mutex;
-+		dev->regmap[i] = devm_regmap_init_i2c(i2c, &rc);
- 		if (IS_ERR(dev->regmap[i])) {
- 			ret = PTR_ERR(dev->regmap[i]);
- 			dev_err(&i2c->dev,
-diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
-index f4198d6f72be..a39d2373eb3a 100644
---- a/drivers/net/dsa/microchip/ksz9477_spi.c
-+++ b/drivers/net/dsa/microchip/ksz9477_spi.c
-@@ -25,6 +25,7 @@ KSZ_REGMAP_TABLE(ksz9477, 32, SPI_ADDR_SHIFT,
- static int ksz9477_spi_probe(struct spi_device *spi)
- {
- 	struct ksz_device *dev;
-+	struct regmap_config rc;
- 	int i, ret;
- 
- 	dev = ksz_switch_alloc(&spi->dev, spi);
-@@ -32,8 +33,9 @@ static int ksz9477_spi_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < ARRAY_SIZE(ksz9477_regmap_config); i++) {
--		dev->regmap[i] = devm_regmap_init_spi(spi,
--					&ksz9477_regmap_config[i]);
-+		rc = ksz9477_regmap_config[i];
-+		rc.lock_arg = &dev->regmap_mutex;
-+		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
- 		if (IS_ERR(dev->regmap[i])) {
- 			ret = PTR_ERR(dev->regmap[i]);
- 			dev_err(&spi->dev,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index b0b870f0c252..21e483f6e786 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -416,6 +416,18 @@ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
- }
- EXPORT_SYMBOL(ksz_switch_alloc);
- 
-+void ksz_regmap_lock(void *__mtx)
-+{
-+	struct mutex *mtx = __mtx;
-+	mutex_lock(mtx);
-+}
-+
-+void ksz_regmap_unlock(void *__mtx)
-+{
-+	struct mutex *mtx = __mtx;
-+	mutex_unlock(mtx);
-+}
-+
- int ksz_switch_register(struct ksz_device *dev,
- 			const struct ksz_dev_ops *ops)
- {
-@@ -436,7 +448,7 @@ int ksz_switch_register(struct ksz_device *dev,
- 	}
- 
- 	mutex_init(&dev->dev_mutex);
--	mutex_init(&dev->stats_mutex);
-+	mutex_init(&dev->regmap_mutex);
- 	mutex_init(&dev->alu_mutex);
- 	mutex_init(&dev->vlan_mutex);
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index dd60d0837fc6..c21410353ea8 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -47,7 +47,7 @@ struct ksz_device {
- 	const char *name;
- 
- 	struct mutex dev_mutex;		/* device access */
--	struct mutex stats_mutex;	/* status access */
-+	struct mutex regmap_mutex;	/* regmap access */
- 	struct mutex alu_mutex;		/* ALU access */
- 	struct mutex vlan_mutex;	/* vlan access */
- 	const struct ksz_dev_ops *dev_ops;
-@@ -145,6 +145,9 @@ struct ksz_dev_ops {
- 	void (*exit)(struct ksz_device *dev);
- };
- 
-+void ksz_regmap_lock(void *__mtx);
-+void ksz_regmap_unlock(void *__mtx);
-+
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv);
- int ksz_switch_register(struct ksz_device *dev,
- 			const struct ksz_dev_ops *ops);
-@@ -314,6 +317,8 @@ static inline void ksz_pwrite32(struct ksz_device *dev, int port, int offset,
- 		.write_flag_mask =					\
- 			KSZ_SPI_OP_FLAG_MASK(KSZ_SPI_OP_WR, swp,	\
- 					     regbits, regpad),		\
-+		.lock = ksz_regmap_lock,				\
-+		.unlock = ksz_regmap_unlock,				\
- 		.reg_format_endian = REGMAP_ENDIAN_BIG,			\
- 		.val_format_endian = REGMAP_ENDIAN_BIG			\
- 	}
--- 
-2.23.0
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 
