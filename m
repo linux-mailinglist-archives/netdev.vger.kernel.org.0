@@ -2,128 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 020EDD2C71
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 16:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BDCAD2CF8
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 16:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbfJJO0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 10:26:21 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:43208 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726359AbfJJO0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 10:26:21 -0400
-X-IronPort-AV: E=Sophos;i="5.67,280,1566831600"; 
-   d="scan'208";a="28794139"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 10 Oct 2019 23:26:19 +0900
-Received: from fabrizio-dev.ree.adwin.renesas.com (unknown [10.226.36.196])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 80BF94288734;
-        Thu, 10 Oct 2019 23:26:15 +0900 (JST)
-From:   Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Simon Horman <horms@verge.net.au>,
-        Magnus Damm <magnus.damm@gmail.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>
-Subject: [PATCH v2 3/3] arm64: dts: renesas: r8a774b1: Add CAN and CAN FD support
-Date:   Thu, 10 Oct 2019 15:26:00 +0100
-Message-Id: <1570717560-7431-4-git-send-email-fabrizio.castro@bp.renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1570717560-7431-1-git-send-email-fabrizio.castro@bp.renesas.com>
-References: <1570717560-7431-1-git-send-email-fabrizio.castro@bp.renesas.com>
+        id S1726539AbfJJOxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 10:53:15 -0400
+Received: from mail.dlink.ru ([178.170.168.18]:52196 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725862AbfJJOxP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 10:53:15 -0400
+X-Greylist: delayed 568 seconds by postgrey-1.27 at vger.kernel.org; Thu, 10 Oct 2019 10:53:13 EDT
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id E492E1B219BE; Thu, 10 Oct 2019 17:43:42 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru E492E1B219BE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1570718622; bh=FHtBS7Jcy3ew21+qN/bqcaXjjtB/iGpxjWtHVQNCEX4=;
+        h=From:To:Cc:Subject:Date;
+        b=Gpw6agS0xR8MiOYQfIXLjNRyme0C+TDGSzgicBwsS8JnC3x5oUkxmVFCIWYbiV+yc
+         BfqIW6VWEefCFMDBMZ8Bg2M/lSe3A/UbsAxGAloEiKLL2XBL3jjSDl9RJmSdhcu0CU
+         y6aypR59NclPV7mYEM8eew/XCzHWiN38D0w/wMYw=
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id 066C21B20B0D;
+        Thu, 10 Oct 2019 17:43:34 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 066C21B20B0D
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 0CD121B2023E;
+        Thu, 10 Oct 2019 17:43:33 +0300 (MSK)
+Received: from localhost.localdomain (unknown [196.196.203.126])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Thu, 10 Oct 2019 17:43:32 +0300 (MSK)
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alobakin@dlink.ru>
+Subject: [PATCH net-next 0/2] net: core: use listified Rx for GRO_NORMAL in napi_gro_receive()
+Date:   Thu, 10 Oct 2019 17:42:24 +0300
+Message-Id: <20191010144226.4115-1-alobakin@dlink.ru>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add CAN and CAN FD support to the RZ/G2N SoC specific dtsi.
+Hi Dave,
 
-Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
----
-v1->v2:
-* No change
+This series was written as a continuation to commit 323ebb61e32b
+("net: use listified RX for handling GRO_NORMAL skbs"), and also takes
+an advantage of listified Rx for GRO. This time, however, we're
+targeting at a way more common and used function, napi_gro_receive().
 
- arch/arm64/boot/dts/renesas/r8a774b1.dtsi | 48 +++++++++++++++++++++++++++++--
- 1 file changed, 45 insertions(+), 3 deletions(-)
+There are about ~100 call sites of this function, including gro_cells
+and mac80211, so even wireless systems will benefit from it.
+The only driver that cares about the return value is
+ethernet/socionext/netsec, and only for updating statistics. I don't
+believe that this change can break its functionality, but anyway,
+we have plenty of time till next merge window to pay this change
+a proper attention.
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-index 80b8b2e..bfea6df 100644
---- a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-@@ -994,18 +994,60 @@
- 		};
- 
- 		can0: can@e6c30000 {
-+			compatible = "renesas,can-r8a774b1",
-+				     "renesas,rcar-gen3-can";
- 			reg = <0 0xe6c30000 0 0x1000>;
--			/* placeholder */
-+			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 916>,
-+				 <&cpg CPG_CORE R8A774B1_CLK_CANFD>,
-+				 <&can_clk>;
-+			clock-names = "clkp1", "clkp2", "can_clk";
-+			assigned-clocks = <&cpg CPG_CORE R8A774B1_CLK_CANFD>;
-+			assigned-clock-rates = <40000000>;
-+			power-domains = <&sysc R8A774B1_PD_ALWAYS_ON>;
-+			resets = <&cpg 916>;
-+			status = "disabled";
- 		};
- 
- 		can1: can@e6c38000 {
-+			compatible = "renesas,can-r8a774b1",
-+				     "renesas,rcar-gen3-can";
- 			reg = <0 0xe6c38000 0 0x1000>;
--			/* placeholder */
-+			interrupts = <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 915>,
-+				 <&cpg CPG_CORE R8A774B1_CLK_CANFD>,
-+				 <&can_clk>;
-+			clock-names = "clkp1", "clkp2", "can_clk";
-+			assigned-clocks = <&cpg CPG_CORE R8A774B1_CLK_CANFD>;
-+			assigned-clock-rates = <40000000>;
-+			power-domains = <&sysc R8A774B1_PD_ALWAYS_ON>;
-+			resets = <&cpg 915>;
-+			status = "disabled";
- 		};
- 
- 		canfd: can@e66c0000 {
-+			compatible = "renesas,r8a774b1-canfd",
-+				     "renesas,rcar-gen3-canfd";
- 			reg = <0 0xe66c0000 0 0x8000>;
--			/* placeholder */
-+			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
-+				   <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 914>,
-+				 <&cpg CPG_CORE R8A774B1_CLK_CANFD>,
-+				 <&can_clk>;
-+			clock-names = "fck", "canfd", "can_clk";
-+			assigned-clocks = <&cpg CPG_CORE R8A774B1_CLK_CANFD>;
-+			assigned-clock-rates = <40000000>;
-+			power-domains = <&sysc R8A774B1_PD_ALWAYS_ON>;
-+			resets = <&cpg 914>;
-+			status = "disabled";
-+
-+			channel0 {
-+				status = "disabled";
-+			};
-+
-+			channel1 {
-+				status = "disabled";
-+			};
- 		};
- 
- 		pwm0: pwm@e6e30000 {
+Besides having this functionality implemented for napi_gro_frags()
+users, the main reason is the solid performance boost that has been
+shown during tests on 1-core MIPS board (with not yet mainlined
+driver):
+
+* no batching (5.4-rc2): ~450/450 Mbit/s
+* with gro_normal_batch == 8: ~480/480 Mbit/s
+* with gro_normal_batch == 16: ~500/500 Mbit/s
+
+Applies on top of net-next.
+Thanks.
+
+Alexander Lobakin (2):
+  net: core: use listified Rx for GRO_NORMAL in napi_gro_receive()
+  net: core: increase the default size of GRO_NORMAL skb lists to flush
+
+ net/core/dev.c | 51 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 26 insertions(+), 25 deletions(-)
+
 -- 
-2.7.4
+2.23.0
 
