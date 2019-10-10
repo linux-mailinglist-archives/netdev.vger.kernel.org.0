@@ -2,30 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C05BD2923
+	by mail.lfdr.de (Postfix) with ESMTP id B4FC3D2924
 	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387461AbfJJMSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2387465AbfJJMSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 10 Oct 2019 08:18:04 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:40399 "EHLO
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:33491 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387428AbfJJMSD (ORCPT
+        with ESMTP id S2387405AbfJJMSD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:03 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iIXOL-0006Lw-9M; Thu, 10 Oct 2019 14:18:01 +0200
+        id 1iIXOM-0006Lw-8P; Thu, 10 Oct 2019 14:18:02 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
 Cc:     davem@davemloft.net, kernel@pengutronix.de,
         jhofstee@victronenergy.com,
         =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
         Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Joe Burmeister <joe.burmeister@devtank.co.uk>,
+        linux-stable <stable@vger.kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 07/29] can: peak_usb: report bus recovery as well
-Date:   Thu, 10 Oct 2019 14:17:28 +0200
-Message-Id: <20191010121750.27237-8-mkl@pengutronix.de>
+Subject: [PATCH 08/29] can: c_can: c_can_poll(): only read status register after status IRQ
+Date:   Thu, 10 Oct 2019 14:17:29 +0200
+Message-Id: <20191010121750.27237-9-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191010121750.27237-1-mkl@pengutronix.de>
 References: <20191010121750.27237-1-mkl@pengutronix.de>
@@ -40,62 +42,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeroen Hofstee <jhofstee@victronenergy.com>
+From: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
 
-While the state changes are reported when the error counters increase
-and decrease, there is no event when the bus recovers and the error
-counters decrease again. So add those as well.
+When the status register is read without the status IRQ pending, the
+chip may not raise the interrupt line for an upcoming status interrupt
+and the driver may miss a status interrupt.
 
-Change the state going downward to be ERROR_PASSIVE -> ERROR_WARNING ->
-ERROR_ACTIVE instead of directly to ERROR_ACTIVE again.
+It is critical that the BUSOFF status interrupt is forwarded to the
+higher layers, since no more interrupts will follow without
+intervention.
 
-Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
-Cc: Stephane Grosjean <s.grosjean@peak-system.com>
+Thanks to Wolfgang and Joe for bringing up the first idea.
+
+Signed-off-by: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Joe Burmeister <joe.burmeister@devtank.co.uk>
+Fixes: fa39b54ccf28 ("can: c_can: Get rid of pointless interrupts")
+Cc: linux-stable <stable@vger.kernel.org>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/peak_usb/pcan_usb.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/can/c_can/c_can.c | 25 ++++++++++++++++++++-----
+ drivers/net/can/c_can/c_can.h |  1 +
+ 2 files changed, 21 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
-index 5a66c9f53aae..d2539c95adb6 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
-@@ -436,8 +436,8 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
- 		}
- 		if ((n & PCAN_USB_ERROR_BUS_LIGHT) == 0) {
- 			/* no error (back to active state) */
--			mc->pdev->dev.can.state = CAN_STATE_ERROR_ACTIVE;
--			return 0;
-+			new_state = CAN_STATE_ERROR_ACTIVE;
-+			break;
- 		}
- 		break;
+diff --git a/drivers/net/can/c_can/c_can.c b/drivers/net/can/c_can/c_can.c
+index 606b7d8ffe13..9b61bfbea6cd 100644
+--- a/drivers/net/can/c_can/c_can.c
++++ b/drivers/net/can/c_can/c_can.c
+@@ -97,6 +97,9 @@
+ #define BTR_TSEG2_SHIFT		12
+ #define BTR_TSEG2_MASK		(0x7 << BTR_TSEG2_SHIFT)
  
-@@ -460,9 +460,9 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
- 		}
- 
- 		if ((n & PCAN_USB_ERROR_BUS_HEAVY) == 0) {
--			/* no error (back to active state) */
--			mc->pdev->dev.can.state = CAN_STATE_ERROR_ACTIVE;
--			return 0;
-+			/* no error (back to warning state) */
-+			new_state = CAN_STATE_ERROR_WARNING;
-+			break;
- 		}
- 		break;
- 
-@@ -501,6 +501,11 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
- 		mc->pdev->dev.can.can_stats.error_warning++;
- 		break;
- 
-+	case CAN_STATE_ERROR_ACTIVE:
-+		cf->can_id |= CAN_ERR_CRTL;
-+		cf->data[1] = CAN_ERR_CRTL_ACTIVE;
-+		break;
++/* interrupt register */
++#define INT_STS_PENDING		0x8000
 +
- 	default:
- 		/* CAN_STATE_MAX (trick to handle other errors) */
- 		cf->can_id |= CAN_ERR_CRTL;
+ /* brp extension register */
+ #define BRP_EXT_BRPE_MASK	0x0f
+ #define BRP_EXT_BRPE_SHIFT	0
+@@ -1029,10 +1032,16 @@ static int c_can_poll(struct napi_struct *napi, int quota)
+ 	u16 curr, last = priv->last_status;
+ 	int work_done = 0;
+ 
+-	priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
+-	/* Ack status on C_CAN. D_CAN is self clearing */
+-	if (priv->type != BOSCH_D_CAN)
+-		priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
++	/* Only read the status register if a status interrupt was pending */
++	if (atomic_xchg(&priv->sie_pending, 0)) {
++		priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
++		/* Ack status on C_CAN. D_CAN is self clearing */
++		if (priv->type != BOSCH_D_CAN)
++			priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
++	} else {
++		/* no change detected ... */
++		curr = last;
++	}
+ 
+ 	/* handle state changes */
+ 	if ((curr & STATUS_EWARN) && (!(last & STATUS_EWARN))) {
+@@ -1083,10 +1092,16 @@ static irqreturn_t c_can_isr(int irq, void *dev_id)
+ {
+ 	struct net_device *dev = (struct net_device *)dev_id;
+ 	struct c_can_priv *priv = netdev_priv(dev);
++	int reg_int;
+ 
+-	if (!priv->read_reg(priv, C_CAN_INT_REG))
++	reg_int = priv->read_reg(priv, C_CAN_INT_REG);
++	if (!reg_int)
+ 		return IRQ_NONE;
+ 
++	/* save for later use */
++	if (reg_int & INT_STS_PENDING)
++		atomic_set(&priv->sie_pending, 1);
++
+ 	/* disable all interrupts and schedule the NAPI */
+ 	c_can_irq_control(priv, false);
+ 	napi_schedule(&priv->napi);
+diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
+index 8acdc7fa4792..d5567a7c1c6d 100644
+--- a/drivers/net/can/c_can/c_can.h
++++ b/drivers/net/can/c_can/c_can.h
+@@ -198,6 +198,7 @@ struct c_can_priv {
+ 	struct net_device *dev;
+ 	struct device *device;
+ 	atomic_t tx_active;
++	atomic_t sie_pending;
+ 	unsigned long tx_dir;
+ 	int last_status;
+ 	u16 (*read_reg) (const struct c_can_priv *priv, enum reg index);
 -- 
 2.23.0
 
