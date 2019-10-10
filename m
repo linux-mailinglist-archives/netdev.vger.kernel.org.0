@@ -2,157 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41714D2010
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 07:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7180FD20B3
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 08:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732857AbfJJFhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 01:37:07 -0400
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:10089
-        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726612AbfJJFhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 01:37:07 -0400
-X-IronPort-AV: E=Sophos;i="5.67,279,1566856800"; 
-   d="scan'208";a="322222603"
-Received: from 81-65-53-202.rev.numericable.fr (HELO hadrien) ([81.65.53.202])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 07:37:03 +0200
-Date:   Thu, 10 Oct 2019 07:37:03 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: jll@hadrien
-To:     Joe Perches <joe@perches.com>
-cc:     Jules Irenge <jbi.octave@gmail.com>,
-        outreachy-kernel@googlegroups.com, gregkh@linuxfoundation.org,
-        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [Outreachy kernel] [PATCH] staging: qlge: Fix multiple assignments
- warning by splitting the assignement into two each
-In-Reply-To: <f9bdcaeccc9dd131f28a64f4b19136d1c92a27e2.camel@perches.com>
-Message-ID: <alpine.DEB.2.21.1910100734330.3287@hadrien>
-References: <20191009204311.7988-1-jbi.octave@gmail.com>  <alpine.DEB.2.21.1910092248170.2570@hadrien> <f9bdcaeccc9dd131f28a64f4b19136d1c92a27e2.camel@perches.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1732908AbfJJGT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 02:19:28 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47680 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727199AbfJJGT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 02:19:28 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9A6Cbag018650
+        for <netdev@vger.kernel.org>; Wed, 9 Oct 2019 23:19:27 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=fQdwDnCPngz+0vM6jXWTh2YHwn4lEhUtF8/NVMQtnMY=;
+ b=N+An6FkB8vi+UKXE4fPt0yehTc97qXxWrw4grcNh7LvlQ87QJoQvqF9iq0jcHfAxKYZw
+ PDtHNzxGVpzomzBNe2JQkMxejdHdd1+BWgRfOgdgqJGGXKEfpe+mMgRrtQamYnsBslMi
+ oh3znn5Mh7BFciLL89RujEpM0kY16rwe9ew= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0001303.ppops.net with ESMTP id 2vgr0gtmgk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 23:19:27 -0700
+Received: from 2401:db00:2050:5076:face:0:1f:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 9 Oct 2019 23:19:25 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id E4AD262E3559; Wed,  9 Oct 2019 23:19:22 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Song Liu <songliubraving@fb.com>
+Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
+To:     <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+CC:     <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/2] bpf/stackmap: fix A-A deadlock in bpf_get_stack()
+Date:   Wed, 9 Oct 2019 23:19:14 -0700
+Message-ID: <20191010061916.198761-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-10_03:2019-10-08,2019-10-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ clxscore=1015 bulkscore=0 priorityscore=1501 impostorscore=0 mlxscore=0
+ spamscore=0 malwarescore=0 suspectscore=0 adultscore=0 lowpriorityscore=0
+ mlxlogscore=956 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910100058
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+bpf stackmap with build-id lookup (BPF_F_STACK_BUILD_ID) can trigger A-A
+deadlock on rq_lock():
 
+rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
+[...]
+Call Trace:
+ try_to_wake_up+0x1ad/0x590
+ wake_up_q+0x54/0x80
+ rwsem_wake+0x8a/0xb0
+ bpf_get_stack+0x13c/0x150
+ bpf_prog_fbdaf42eded9fe46_on_event+0x5e3/0x1000
+ bpf_overflow_handler+0x60/0x100
+ __perf_event_overflow+0x4f/0xf0
+ perf_swevent_overflow+0x99/0xc0
+ ___perf_sw_event+0xe7/0x120
+ __schedule+0x47d/0x620
+ schedule+0x29/0x90
+ futex_wait_queue_me+0xb9/0x110
+ futex_wait+0x139/0x230
+ do_futex+0x2ac/0xa50
+ __x64_sys_futex+0x13c/0x180
+ do_syscall_64+0x42/0x100
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-On Wed, 9 Oct 2019, Joe Perches wrote:
+For more details on how to reproduce this is error, please refer to 2/2.
 
-> On Wed, 2019-10-09 at 22:48 +0200, Julia Lawall wrote:
-> > On Wed, 9 Oct 2019, Jules Irenge wrote:
-> > > Fix multiple assignments warning " check
-> > >  issued by checkpatch.pl tool:
-> > > "CHECK: multiple assignments should be avoided".
-> []
-> > > diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-> []
-> > > @@ -141,8 +141,10 @@ static int ql_get_serdes_regs(struct ql_adapter *qdev,
-> > >  	u32 *direct_ptr, temp;
-> > >  	u32 *indirect_ptr;
-> > >
-> > > -	xfi_direct_valid = xfi_indirect_valid = 0;
-> > > -	xaui_direct_valid = xaui_indirect_valid = 1;
-> > > +	xfi_indirect_valid = 0;
-> > > +	xfi_direct_valid = xfi_indirect_valid;
-> > > +	xaui_indirect_valid = 1;
-> > > +	xaui_direct_valid = xaui_indirect_valid
-> >
-> > Despite checkpatch, I think that the original code was easier to
-> > understand.
->
-> It'd likely be easier to understand if all the
-> <foo>_valid uses were bool and the ql_get_both_serdes
-> <foo>_valid arguments were change to bool from
-> unsigned int as well.
+Fix this issue by checking a new helper this_rq_is_locked(). If the
+rq_lock is already locked, postpone up_read() in irq_work, just like the
+in_nmi() case.
 
-Indeed, given the names and the values, bool would be much better.
+Song Liu (2):
+  sched: introduce this_rq_is_locked()
+  bpf/stackmap: fix A-A deadlock in bpf_get_stack()
 
-> btw: qlge likely is going to be deleted and not updated.
+ include/linux/sched.h | 1 +
+ kernel/bpf/stackmap.c | 2 +-
+ kernel/sched/core.c   | 8 ++++++++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
 
-OK.  Jules, if you want to make this change, you can, but it could be
-better to move on to some other driver.
-
-thanks,
-julia
-
->
-> ---
->  drivers/staging/qlge/qlge_dbg.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-> index 7e16066a3527..90ab37d4c49d 100644
-> --- a/drivers/staging/qlge/qlge_dbg.c
-> +++ b/drivers/staging/qlge/qlge_dbg.c
-> @@ -112,7 +112,7 @@ static int ql_read_serdes_reg(struct ql_adapter *qdev, u32 reg, u32 *data)
->
->  static void ql_get_both_serdes(struct ql_adapter *qdev, u32 addr,
->  			u32 *direct_ptr, u32 *indirect_ptr,
-> -			unsigned int direct_valid, unsigned int indirect_valid)
-> +			bool direct_valid, bool indirect_valid)
->  {
->  	unsigned int status;
->
-> @@ -136,14 +136,12 @@ static int ql_get_serdes_regs(struct ql_adapter *qdev,
->  				struct ql_mpi_coredump *mpi_coredump)
->  {
->  	int status;
-> -	unsigned int xfi_direct_valid, xfi_indirect_valid, xaui_direct_valid;
-> -	unsigned int xaui_indirect_valid, i;
-> +	bool xfi_direct_valid = false, xfi_indirect_valid = false;
-> +	bool xaui_direct_valid = true, xaui_indirect_valid = true;
-> +	unsigned int i;
->  	u32 *direct_ptr, temp;
->  	u32 *indirect_ptr;
->
-> -	xfi_direct_valid = xfi_indirect_valid = 0;
-> -	xaui_direct_valid = xaui_indirect_valid = 1;
-> -
->  	/* The XAUI needs to be read out per port */
->  	status = ql_read_other_func_serdes_reg(qdev,
->  			XG_SERDES_XAUI_HSS_PCS_START, &temp);
-> @@ -152,7 +150,7 @@ static int ql_get_serdes_regs(struct ql_adapter *qdev,
->
->  	if ((temp & XG_SERDES_ADDR_XAUI_PWR_DOWN) ==
->  				XG_SERDES_ADDR_XAUI_PWR_DOWN)
-> -		xaui_indirect_valid = 0;
-> +		xaui_indirect_valid = false;
->
->  	status = ql_read_serdes_reg(qdev, XG_SERDES_XAUI_HSS_PCS_START, &temp);
->
-> @@ -161,7 +159,7 @@ static int ql_get_serdes_regs(struct ql_adapter *qdev,
->
->  	if ((temp & XG_SERDES_ADDR_XAUI_PWR_DOWN) ==
->  				XG_SERDES_ADDR_XAUI_PWR_DOWN)
-> -		xaui_direct_valid = 0;
-> +		xaui_direct_valid = false;
->
->  	/*
->  	 * XFI register is shared so only need to read one
-> @@ -176,18 +174,18 @@ static int ql_get_serdes_regs(struct ql_adapter *qdev,
->  		/* now see if i'm NIC 1 or NIC 2 */
->  		if (qdev->func & 1)
->  			/* I'm NIC 2, so the indirect (NIC1) xfi is up. */
-> -			xfi_indirect_valid = 1;
-> +			xfi_indirect_valid = true;
->  		else
-> -			xfi_direct_valid = 1;
-> +			xfi_direct_valid = true;
->  	}
->  	if ((temp & XG_SERDES_ADDR_XFI2_PWR_UP) ==
->  					XG_SERDES_ADDR_XFI2_PWR_UP) {
->  		/* now see if i'm NIC 1 or NIC 2 */
->  		if (qdev->func & 1)
->  			/* I'm NIC 2, so the indirect (NIC1) xfi is up. */
-> -			xfi_direct_valid = 1;
-> +			xfi_direct_valid = true;
->  		else
-> -			xfi_indirect_valid = 1;
-> +			xfi_indirect_valid = true;
->  	}
->
->  	/* Get XAUI_AN register block. */
->
->
+--
+2.17.1
