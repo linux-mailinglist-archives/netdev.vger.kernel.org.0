@@ -2,73 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B95D2522
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A715D25F3
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:10:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390085AbfJJIyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 04:54:19 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37591 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389549AbfJJIyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 04:54:17 -0400
-Received: by mail-wm1-f67.google.com with SMTP id f22so5847730wmc.2
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 01:54:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wHYikf0fF/apSGlr8gHGbX/of/oo0NlzWMca/OOzrzo=;
-        b=vF0B1wWRPKzxgGNg6RbYUEZObWKkMG83e+UcvJfWAal/+sjtAanrqW5+UzHCeKmGCw
-         hVvZ0mUSjN9KDiyMA9gqa2O9zhkL+lt2TBBUhz5zaYZNyHO+G76heidW2gj1K0Ss88/g
-         9yXF1SSSsDLn2LxvaETJHruER4jjP8wpo/Kfwy3G6/OCiBSG1TEfn397fPZLwkWK2Fth
-         M1x010smVrzQ95YYzV1SfvBTfwo1TUSKqaYJBSp0OjWyr7ufw35WwEadotZxUbrFwSHA
-         4pvBpdySrtBujn8pIk8iA70B2oyfqaVuREcybVif5iWa/TjxRHS3j35Bntf6P6jXe4Ct
-         /DKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wHYikf0fF/apSGlr8gHGbX/of/oo0NlzWMca/OOzrzo=;
-        b=NNxrFgeYn8nUkZ12W3RCCn3hjfQ/vWm4+hxb+8Q9bT7wbv7Dh21AaomyZg9FO3q+9V
-         qNrg7Ppg2buFK5+VEB4THgnhzy2LgHAMWFUjqB9sYMq44ue5isflLLvPglj/PP2WtOfP
-         PgI3q0mv5Rp3jnX+BcJOco6HXuKA9CfAaUpVht+TO/gHZxhdAoyJzmZEHj5E2BYVKQT+
-         XE4BOBFMnKzb4SDreOuuvplZV+VJNlT0Tu07sAcG2zuhLbAsRWJJrak+7nNTTpT+mX9l
-         udR0NByQAqGwpzkjS+WEQT4mtjIJqV5ejepzKXqwt5KHx2hRqUEt38LOBLugIYH4jhHY
-         bohg==
-X-Gm-Message-State: APjAAAXn2NZfRBk34a26KX3GWwy9N5AWziakgTeFWBvrB7dYNzw6nOx3
-        qFKaRfnP+ALj4wlIIXnZAJuwNr0T3OY=
-X-Google-Smtp-Source: APXvYqxqp0mHDJbn8N/yVfcTmcl9ySOGieoc/jzI8/zmm39GEpEazrQmaX8wUxwsZtu9P0H+S6PMZA==
-X-Received: by 2002:a1c:c90f:: with SMTP id f15mr6924163wmb.125.1570697654779;
-        Thu, 10 Oct 2019 01:54:14 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id q66sm7434557wme.39.2019.10.10.01.54.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 01:54:14 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 10:54:12 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, ayal@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch iproute2c] devlink: fix json binary printout of arrays
-Message-ID: <20191010085412.GE2223@nanopsycho>
-References: <20191009083232.21147-1-jiri@resnulli.us>
+        id S2387561AbfJJJJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 05:09:34 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:34684 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387527AbfJJJJe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 05:09:34 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9A99McG157524;
+        Thu, 10 Oct 2019 09:09:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=Vx8uYnGXTh91J18N/6j4HjOFlm/NiKRQjZRhmX7eqBk=;
+ b=XtWytnr1cBD8tC4+0Vk6zmyPiXy4cfUj9iUfPR+dv8WTt4Ozhmd7b4m4HyA6FpvzFGNZ
+ 4ZCeb8bsPdcOpt+ROqKYdmwnCbbyJZZRIGE4balJUESUV85nVZD1ZpEsNzLT2mC5IuQN
+ vN+WFajihlVxMEzXNxLwK9JyVLiZrLWKnYMHMjM8WrNf9bkHPSpszSYRbpb2nq+XWKMp
+ 6A6HG5zJlxp78Bt1WtDmQ0GPeIsdpVxut8vs0PStxnfBRv7wTC31gSsHNZGgYwHRMs8X
+ 7pP14Tu73h32OBDYpomU954HvJ7upMSeS/4oAjET38eMCX+Aq0jYctT6cT8FSe34jTES 7w== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2vek4qsu4q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 10 Oct 2019 09:09:22 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9A98CoQ051485;
+        Thu, 10 Oct 2019 09:09:19 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 2vh8k2fwx6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 10 Oct 2019 09:09:19 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9A99HRU014129;
+        Thu, 10 Oct 2019 09:09:17 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 10 Oct 2019 02:09:16 -0700
+Date:   Thu, 10 Oct 2019 12:09:06 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Julia Lawall <julia.lawall@lip6.fr>,
+        Jules Irenge <jbi.octave@gmail.com>,
+        devel@driverdev.osuosl.org, GR-Linux-NIC-Dev@marvell.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        outreachy-kernel@googlegroups.com, gregkh@linuxfoundation.org
+Subject: Re: [Outreachy kernel] [PATCH] staging: qlge: Fix multiple
+ assignments warning by splitting the assignement into two each
+Message-ID: <20191010090906.GF20470@kadam>
+References: <20191009204311.7988-1-jbi.octave@gmail.com>
+ <alpine.DEB.2.21.1910092248170.2570@hadrien>
+ <f9bdcaeccc9dd131f28a64f4b19136d1c92a27e2.camel@perches.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191009083232.21147-1-jiri@resnulli.us>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <f9bdcaeccc9dd131f28a64f4b19136d1c92a27e2.camel@perches.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9405 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910100083
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9405 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1031
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910100083
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Oct 09, 2019 at 10:32:32AM CEST, jiri@resnulli.us wrote:
->From: Jiri Pirko <jiri@mellanox.com>
->
->The binary is printed out into json as an array of byte values.
->Add missing (removed) start and end array json calls.
->
->Fixes: f359942a25d3 ("devlink: Remove enclosing array brackets binary print with json format")
->Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+I was just about to give a newbie a Reviewed-by cookie until I saw it
+was a Joe Perches patch without a commit message or a sign off.  And
+then I was annoyed that I had invested any time in it at all.  I even
+dropped out of my email client for this!
 
-Please scratch this patch.
+:P
+
+If you want to resend as a proper commit then you can still have my
+Reviewed-by I guess.
+
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+regards,
+dan carpenter
+
