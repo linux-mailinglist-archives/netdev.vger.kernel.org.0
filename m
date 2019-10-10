@@ -2,31 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 303B3D2935
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED426D293B
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387683AbfJJMST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 08:18:19 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:60413 "EHLO
+        id S2387664AbfJJMSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 08:18:21 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:36293 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387622AbfJJMSP (ORCPT
+        with ESMTP id S2387624AbfJJMSP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:15 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iIXOX-0006Lw-8X; Thu, 10 Oct 2019 14:18:13 +0200
+        id 1iIXOY-0006Lw-3a; Thu, 10 Oct 2019 14:18:14 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
 Cc:     davem@davemloft.net, kernel@pengutronix.de,
         jhofstee@victronenergy.com,
         =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
         Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Colin Ian King <colin.king@canonical.com>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 27/29] can: j1939: fix resource leak of skb on error return paths
-Date:   Thu, 10 Oct 2019 14:17:48 +0200
-Message-Id: <20191010121750.27237-28-mkl@pengutronix.de>
+Subject: [PATCH 28/29] can: j1939: fix memory leak if filters was set
+Date:   Thu, 10 Oct 2019 14:17:49 +0200
+Message-Id: <20191010121750.27237-29-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191010121750.27237-1-mkl@pengutronix.de>
 References: <20191010121750.27237-1-mkl@pengutronix.de>
@@ -41,48 +40,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Currently the error return paths do not free skb and this results in a
-memory leak. Fix this by freeing them before the return.
+Filters array is coped from user space and linked to the j1939 socket.
+On socket release this memory was not freed.
 
-Addresses-Coverity: ("Resource leak")
 Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/j1939/socket.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/can/j1939/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-index 37c1040bcb9c..5c6eabcb5df1 100644
+index 5c6eabcb5df1..4d8ba701e15d 100644
 --- a/net/can/j1939/socket.c
 +++ b/net/can/j1939/socket.c
-@@ -909,8 +909,10 @@ void j1939_sk_errqueue(struct j1939_session *session,
- 	memset(serr, 0, sizeof(*serr));
- 	switch (type) {
- 	case J1939_ERRQUEUE_ACK:
--		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_ACK))
-+		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_ACK)) {
-+			kfree_skb(skb);
- 			return;
-+		}
+@@ -580,6 +580,7 @@ static int j1939_sk_release(struct socket *sock)
+ 		j1939_netdev_stop(priv);
+ 	}
  
- 		serr->ee.ee_errno = ENOMSG;
- 		serr->ee.ee_origin = SO_EE_ORIGIN_TIMESTAMPING;
-@@ -918,8 +920,10 @@ void j1939_sk_errqueue(struct j1939_session *session,
- 		state = "ACK";
- 		break;
- 	case J1939_ERRQUEUE_SCHED:
--		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_SCHED))
-+		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_SCHED)) {
-+			kfree_skb(skb);
- 			return;
-+		}
++	kfree(jsk->filters);
+ 	sock_orphan(sk);
+ 	sock->sk = NULL;
  
- 		serr->ee.ee_errno = ENOMSG;
- 		serr->ee.ee_origin = SO_EE_ORIGIN_TIMESTAMPING;
 -- 
 2.23.0
 
