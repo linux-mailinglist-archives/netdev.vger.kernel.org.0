@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A473DD2F9A
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 19:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B3DD2FA3
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 19:33:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbfJJRay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 13:30:54 -0400
-Received: from ms.lwn.net ([45.79.88.28]:60790 "EHLO ms.lwn.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725862AbfJJRay (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 13:30:54 -0400
-Received: from lwn.net (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id C49AB2BD;
-        Thu, 10 Oct 2019 17:30:53 +0000 (UTC)
-Date:   Thu, 10 Oct 2019 11:30:52 -0600
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?= <j.neuschaefer@gmx.net>
-Cc:     linux-doc@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] docs: networking: phy: Improve phrasing
-Message-ID: <20191010113052.6e073449@lwn.net>
-In-Reply-To: <20191003204322.32349-1-j.neuschaefer@gmx.net>
-References: <20191003204322.32349-1-j.neuschaefer@gmx.net>
-Organization: LWN.net
+        id S1726643AbfJJRc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 13:32:57 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:43998 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725862AbfJJRc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 13:32:57 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1iIcJ3-0001jt-VX; Thu, 10 Oct 2019 19:32:54 +0200
+Message-ID: <47343b6d5ccf292bbce8772db5deba674b53a5f8.camel@sipsolutions.net>
+Subject: Re: [PATCH] mac80211_hwsim: add support for OCB and more 5Ghz
+ Channels Signed-off-by: Ramon Fontes <ramonreisfontes@gmail.com>
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Ramon Fontes <ramonreisfontes@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Cc:     kvalo@codeaurora.org, davem@davemloft.net
+Date:   Thu, 10 Oct 2019 19:32:53 +0200
+In-Reply-To: <20191010173029.8435-1-ramonreisfontes@gmail.com> (sfid-20191010_193114_148958_F3E0A182)
+References: <20191010173029.8435-1-ramonreisfontes@gmail.com>
+         (sfid-20191010_193114_148958_F3E0A182)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  3 Oct 2019 22:43:22 +0200
-Jonathan Neuschäfer <j.neuschaefer@gmx.net> wrote:
+Hi,
 
-> It's not about times (multiple occurences of an event) but about the
-> duration of a time interval.
-> 
-> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Something went wrong here - your S-o-b landed in the subject?
 
-Applied, thanks.
+Also, I think you should really split this into two or three patches
+even if it's this simple - theoretically the 5/10 MHz could be
+independent of OCB even. To make it perfect, add a few words to each
+commit log :)
 
-jon
+Thanks,
+johannes
+
