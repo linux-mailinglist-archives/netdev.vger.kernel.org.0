@@ -2,84 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E7BD2675
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B794DD2659
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388133AbfJJJdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 05:33:41 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:52516 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387527AbfJJJdl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 05:33:41 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id CA7B4F59873951E77D02;
-        Thu, 10 Oct 2019 17:33:37 +0800 (CST)
-Received: from localhost.localdomain (10.67.165.24) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 10 Oct 2019 17:33:30 +0800
-From:   Yonglong Liu <liuyonglong@huawei.com>
-To:     <davem@davemloft.net>, <hkallweit1@gmail.com>, <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
-Subject: [RFC PATCH net] net: phy: Fix "link partner" information disappear issue
-Date:   Thu, 10 Oct 2019 17:30:08 +0800
-Message-ID: <1570699808-55313-1-git-send-email-liuyonglong@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        id S2387877AbfJJJaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 05:30:20 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:35631 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387727AbfJJJaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 05:30:19 -0400
+Received: by mail-wm1-f68.google.com with SMTP id y21so5995082wmi.0
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 02:30:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Xw2OqBpr6JQo/dUUNepFw8saT6FZ2X+9TC5O/M6JiCc=;
+        b=tsPN87qrb7SnXMfk9DsBmdwnImlZtp14YDyx9V4GNwQKfsd9RH3dVINK16uvjNJ3Mv
+         sKHxsnIGvftheCQvCEixkQkt/nkSmenArp8+At1aENlH/OzLZB4yPcaG7XgGkw0As9QV
+         ode/fKW1AJ0jYEEo5+6dek9GIAqTxV3Y4LI2PaMdK3NALKJcQ/82jWEd16K3YMCh7v5L
+         d/MPAXgbVhIFFZrj6NQhRpABv/5XI9wVyQZlSssH3m+P15AO0k2f5B1tODqSFh+o8q+5
+         ijQiAb4N9fXk5X6uM828NCHG3JK3mwOnAiDqWdnsHTxaIKQMkHNb5FZlVzYxuFRwDiGe
+         d+xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Xw2OqBpr6JQo/dUUNepFw8saT6FZ2X+9TC5O/M6JiCc=;
+        b=RmR+GYQT1TCDm02PYZpkMc3z4hRHDlyC6shTpnhU5QMtee4HK7hEifgEGzX7AS0Q6T
+         R4HYjWXCSM9kKMYXRZ2c5dsZ8kxnijJ2uCy2NHkDSTp07XO0U5UGtG9Rhr9DBvdgqVGZ
+         AxBrR5RvojMc14di7JLIJnx6haGeG1sJCiubIlnG8m5++ZENkb6SnPKmy0txTMF9DCZb
+         IJK6wgelKkGE6za6+jb+5yoEgK+KGe0J3Rt8jtTMln5i6azn/NptygIN6DRhUIAeQ24i
+         CQQ+hd2P0kAkW0zV8CtrRUWJBBgXWvM83EVgirNAfjdpLfh3gwolBZzllJ954EOhIyrN
+         1owg==
+X-Gm-Message-State: APjAAAWwt7+cKcQlAUwCxWhXzl8GSPk4drxYcsmFHvwMRx5MIsmaXRPy
+        qrJtuWkzy+o2vlk/5N4iPZIWiw==
+X-Google-Smtp-Source: APXvYqyM9PJg/Lp9na6scqs+npJ0qkkvg/faH56AjphsvyY492RXm4JJdP9hmlnb0uaKX+yaHyZTcA==
+X-Received: by 2002:a7b:c849:: with SMTP id c9mr6921856wml.58.1570699816416;
+        Thu, 10 Oct 2019 02:30:16 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id e18sm6975329wrv.63.2019.10.10.02.30.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 02:30:16 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 11:30:15 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] genetlink: do not parse attributes for families
+ with zero maxattr
+Message-ID: <20191010093015.GF2223@nanopsycho>
+References: <20191009164432.AD5D1E3785@unicorn.suse.cz>
+ <20191010083958.GD2223@nanopsycho>
+ <20191010091347.GA22163@unicorn.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191010091347.GA22163@unicorn.suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some drivers just call phy_ethtool_ksettings_set() to set the
-links, for those phy drivers that use genphy_read_status(), if
-autoneg is on, and the link is up, than execute "ethtool -s
-ethx autoneg on" will cause "link partner" information disappear.
+Thu, Oct 10, 2019 at 11:13:47AM CEST, mkubecek@suse.cz wrote:
+>On Thu, Oct 10, 2019 at 10:39:58AM +0200, Jiri Pirko wrote:
+>> Wed, Oct 09, 2019 at 06:44:32PM CEST, mkubecek@suse.cz wrote:
+>> >Commit c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing
+>> >to a separate function") moved attribute buffer allocation and attribute
+>> >parsing from genl_family_rcv_msg_doit() into a separate function
+>> >genl_family_rcv_msg_attrs_parse() which, unlike the previous code, calls
+>> >__nlmsg_parse() even if family->maxattr is 0 (i.e. the family does its own
+>> >parsing). The parser error is ignored and does not propagate out of
+>> >genl_family_rcv_msg_attrs_parse() but an error message ("Unknown attribute
+>> >type") is set in extack and if further processing generates no error or
+>> >warning, it stays there and is interpreted as a warning by userspace.
+>> >
+>> >Dumpit requests are not affected as genl_family_rcv_msg_dumpit() bypasses
+>> >the call of genl_family_rcv_msg_doit() if family->maxattr is zero. Do the
+>> >same also in genl_family_rcv_msg_doit().
+>> 
+>> This is the original code before the changes:
+>> 
+>>         if (ops->doit == NULL)
+>>                 return -EOPNOTSUPP;
+>> 
+>>         if (family->maxattr && family->parallel_ops) {
+>>                 attrbuf = kmalloc_array(family->maxattr + 1,
+>>                                         sizeof(struct nlattr *),
+>>                                         GFP_KERNEL);
+>>                 if (attrbuf == NULL)
+>>                         return -ENOMEM;
+>>         } else
+>>                 attrbuf = family->attrbuf;
+>> 
+>>         if (attrbuf) {
+>>                 enum netlink_validation validate = NL_VALIDATE_STRICT;
+>> 
+>>                 if (ops->validate & GENL_DONT_VALIDATE_STRICT)
+>>                         validate = NL_VALIDATE_LIBERAL;
+>> 
+>>                 err = __nlmsg_parse(nlh, hdrlen, attrbuf, family->maxattr,
+>>                                     family->policy, validate, extack);
+>>                 if (err < 0)
+>>                         goto out;
+>>         }
+>> 
+>> Looks like the __nlmsg_parse() is called no matter if maxattr if 0 or
+>> not. It is only considered for allocation of attrbuf. This is in-sync
+>> with the current code.
+>
+>If family->maxattr is 0, genl_register_family() sets family->attrbuf to
+>NULL so that attrbuf is also NULL and the whole "if (attrbuf) { ... }"
+>block is not executed.
 
-The call trace is phy_ethtool_ksettings_set()->phy_start_aneg()
-->linkmode_zero(phydev->lp_advertising)->genphy_read_status(),
-the link didn't change, so genphy_read_status() just return, and
-phydev->lp_advertising is zero now.
+Ah, I missed that. Thanks!
 
-This patch call genphy_read_lpa() before the link state judgement
-to fix this problem.
-
-Fixes: 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in genphy_read_status")
-Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
----
- drivers/net/phy/phy_device.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 9d2bbb1..ef3073c 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1839,6 +1839,10 @@ int genphy_read_status(struct phy_device *phydev)
- 	if (err)
- 		return err;
- 
-+	err = genphy_read_lpa(phydev);
-+	if (err < 0)
-+		return err;
-+
- 	/* why bother the PHY if nothing can have changed */
- 	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
- 		return 0;
-@@ -1848,10 +1852,6 @@ int genphy_read_status(struct phy_device *phydev)
- 	phydev->pause = 0;
- 	phydev->asym_pause = 0;
- 
--	err = genphy_read_lpa(phydev);
--	if (err < 0)
--		return err;
--
- 	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
- 		phy_resolve_aneg_linkmode(phydev);
- 	} else if (phydev->autoneg == AUTONEG_DISABLE) {
--- 
-2.8.1
-
+>
+>Michal
