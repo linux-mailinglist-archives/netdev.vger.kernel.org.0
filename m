@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7919DD2954
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A29D294B
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 14:18:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387746AbfJJMSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 08:18:39 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:36435 "EHLO
+        id S2387573AbfJJMSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 08:18:11 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:49295 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387482AbfJJMSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:08 -0400
+        with ESMTP id S2387492AbfJJMSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 08:18:09 -0400
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iIXOQ-0006Lw-4B; Thu, 10 Oct 2019 14:18:06 +0200
+        id 1iIXOQ-0006Lw-Ju; Thu, 10 Oct 2019 14:18:06 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
 Cc:     davem@davemloft.net, kernel@pengutronix.de,
@@ -22,9 +22,9 @@ Cc:     davem@davemloft.net, kernel@pengutronix.de,
         =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
         Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 14/29] can: rx-offload: can_rx_offload_offload_one(): do not increase the skb_queue beyond skb_queue_len_max
-Date:   Thu, 10 Oct 2019 14:17:35 +0200
-Message-Id: <20191010121750.27237-15-mkl@pengutronix.de>
+Subject: [PATCH 15/29] can: rx-offload: can_rx_offload_offload_one(): increment rx_fifo_errors on queue overflow or OOM
+Date:   Thu, 10 Oct 2019 14:17:36 +0200
+Message-Id: <20191010121750.27237-16-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191010121750.27237-1-mkl@pengutronix.de>
 References: <20191010121750.27237-1-mkl@pengutronix.de>
@@ -39,35 +39,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skb_queue is a linked list, holding the skb to be processed in the
-next NAPI call.
+If the rx-offload skb_queue is full or the skb allocation fails (due to OOM),
+the mailbox contents is discarded.
 
-Without this patch, the queue length in can_rx_offload_offload_one() is
-limited to skb_queue_len_max + 1. As the skb_queue is a linked list, no
-array or other resources are accessed out-of-bound, however this
-behaviour is counterintuitive.
+This patch adds the incrementing of the rx_fifo_errors statistics counter.
 
-This patch limits the rx-offload skb_queue length to skb_queue_len_max.
-
-Fixes: d254586c3453 ("can: rx-offload: Add support for HW fifo based irq offloading")
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/rx-offload.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/rx-offload.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/rx-offload.c b/drivers/net/can/rx-offload.c
-index d1c863409945..bdc27481b57f 100644
+index bdc27481b57f..e224530a0630 100644
 --- a/drivers/net/can/rx-offload.c
 +++ b/drivers/net/can/rx-offload.c
-@@ -115,7 +115,7 @@ static struct sk_buff *can_rx_offload_offload_one(struct can_rx_offload *offload
- 	int ret;
+@@ -125,8 +125,10 @@ static struct sk_buff *can_rx_offload_offload_one(struct can_rx_offload *offload
  
- 	/* If queue is full or skb not available, read to discard mailbox */
--	if (likely(skb_queue_len(&offload->skb_queue) <=
-+	if (likely(skb_queue_len(&offload->skb_queue) <
- 		   offload->skb_queue_len_max))
- 		skb = alloc_can_skb(offload->dev, &cf);
+ 		ret = offload->mailbox_read(offload, &cf_overflow,
+ 					    &timestamp, n);
+-		if (ret)
++		if (ret) {
+ 			offload->dev->stats.rx_dropped++;
++			offload->dev->stats.rx_fifo_errors++;
++		}
  
+ 		return NULL;
+ 	}
 -- 
 2.23.0
 
