@@ -2,104 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 235C8D3466
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:35:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B84C6D346B
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727188AbfJJXfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 19:35:01 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:57564 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726521AbfJJXfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 19:35:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=DlXH4R1S1cfQrztVA5sQ9h7XdZJZOKDB2yAQ1wGqpSk=; b=Jc4YagVmqbUh99KDHoBhPLO03
-        5E6mFta3c6b/ZFB6sFsaxHNlpUXd4tJK/nROTWRwHym1gbG04Om8i70JsBD/xN5rLtE0c+KOTtFpT
-        uSgMtpi332nMheNsLo0QDXL0kmm/Tz56tgqSIB2nIgLFUpjJnKtWtlOLHHCKKa46WM5ErdVUo+bxW
-        hKLBl4awMS4nphMojG8cHSyR2VG4AIIDE1SREcQ1ywy8nLPniQDVF2bZW+RTQxTZu1QcdwGlxYs9Q
-        KkPKEHvznFzDQnay2wVQyyPwK26Dvmczo9LqqvXRiZrl6AeUw+Kf/Ds6JFZewdQir/zv14eplCnS6
-        gN5LYt6tQ==;
-Received: from [2601:1c0:6280:3f0::9ef4]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iIhxU-0003rA-JV; Thu, 10 Oct 2019 23:35:00 +0000
-Subject: Re: [PATCH] Documentation: networking: add a chapter for the DIM
- library
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Tal Gilboa <talgi@mellanox.com>,
-        David Miller <davem@davemloft.net>, linux-doc@vger.kernel.org,
-        Jacob Keller <jacob.e.keller@intel.com>
-References: <e9345b39-352e-cfc6-7359-9b681cb760e8@infradead.org>
- <20191010162003.4f36a820@cakuba.netronome.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <4c7f5563-2ca1-d37b-7639-f3df99a0219b@infradead.org>
-Date:   Thu, 10 Oct 2019 16:34:59 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1727422AbfJJXgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 19:36:47 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43577 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbfJJXgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 19:36:47 -0400
+Received: by mail-qt1-f195.google.com with SMTP id t20so5935034qtr.10
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 16:36:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=av3QhjSP9dPC6K/3Tu2KgLquj3FbUZo3yUCAykIMn5k=;
+        b=sblCQ47ky0yb+G8CncWygruasZGCKMX+qc2XaNHtbd8cV4kEIxpaYkSlAYbG5uB1VQ
+         LYTOaGca57EVH/+XZjyRFO9xZ4hafeRBbls6XBQOjx5Y6/SHAtkKLBNNaEGupEflD5l6
+         TgTV23V4S3rBoDojtt0NMa7bZNOP3ZkDORqYdJKYOBNMl/LuaZr2+CwWJfcA9setqNGn
+         u0iyVohaI2PSOiWyeYkIC3YSaFv6cPM4pLJFFqYxoxwSdY57gOiPKRX0UkWJC0Pq9/im
+         r2fRVbAIMjQ1Bd02kjdITglYam35edyL7WFVrXbJpvYGa8H0Pj8viER5eBG0oL7GXlx3
+         /wXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=av3QhjSP9dPC6K/3Tu2KgLquj3FbUZo3yUCAykIMn5k=;
+        b=WFX5C82utQESyOsV/Z/eb8mPiR8MI9nP7+ufjwBjOGg+xbJWf+0DzWZwl3QbkIAQPC
+         TAnxlomoap0A7tK47DVAguDxh2MAgEAJgGnCSGM7UBKogi/AgOlTncbrg5KUBVLK5vbP
+         duNvpHKtNOrL0HPVTpNwQRMiuLyXnW1TbpLg/8oEwBar+wN1IJCr1SuzJIr9j9O7MzRA
+         XjOciHIGpZMLaaCaqJhOI0250P5Z+TrDXE7rPYHGIvMFCbR2UT4+nuJlyVUVjG0O4tU8
+         UK+4jSPwiPmRpA3DXrkzhUWMtiQ4UupdHSPkmJekUBV1Up01Q2KVsH69RtnTg+47G1m8
+         kDQQ==
+X-Gm-Message-State: APjAAAX/kH3MSmeQv+tUEO7/yzKnwhBkWOnVgsPvmJlPdDx7xDGAK8Jw
+        Jr9mW7dE+40RAx8632SHw2o0iD9isFc=
+X-Google-Smtp-Source: APXvYqyV0WE0/RyJRDQjpbpvsozMlVs1g0rn+cG75p63ykwLI5ueFllcQRtgdhJ60FhKi+XwtzAeWg==
+X-Received: by 2002:a0c:f98f:: with SMTP id t15mr1716004qvn.119.1570750606108;
+        Thu, 10 Oct 2019 16:36:46 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id u23sm3540908qkm.49.2019.10.10.16.36.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 16:36:46 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 16:36:30 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mariusz Bialonczyk <manio@skyboo.net>
+Subject: Re: [PATCH net] r8169: fix jumbo packet handling on resume from
+ suspend
+Message-ID: <20191010163630.0afb5dd8@cakuba.netronome.com>
+In-Reply-To: <05ef825e-6ab2-cc25-be4e-54d52acd752f@gmail.com>
+References: <05ef825e-6ab2-cc25-be4e-54d52acd752f@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191010162003.4f36a820@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/10/19 4:20 PM, Jakub Kicinski wrote:
-> On Thu, 10 Oct 2019 15:55:15 -0700, Randy Dunlap wrote:
->> From: Randy Dunlap <rdunlap@infradead.org>
->>
->> Add a Documentation networking chapter for the DIM library.
->>
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Cc: Tal Gilboa <talgi@mellanox.com>
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
->> Cc: netdev@vger.kernel.org
->> Cc: linux-rdma@vger.kernel.org
->> ---
->>  Documentation/networking/index.rst   |    1 +
->>  Documentation/networking/lib-dim.rst |    6 ++++++
->>  2 files changed, 7 insertions(+)
->>
->> --- linux-next-20191010.orig/Documentation/networking/index.rst
->> +++ linux-next-20191010/Documentation/networking/index.rst
->> @@ -33,6 +33,7 @@ Contents:
->>     scaling
->>     tls
->>     tls-offload
->> +   lib-dim
->>  
->>  .. only::  subproject and html
->>  
->> --- /dev/null
->> +++ linux-next-20191010/Documentation/networking/lib-dim.rst
->> @@ -0,0 +1,6 @@
->> +=====================================================
->> +Dynamic Interrupt Moderation (DIM) library interfaces
->> +=====================================================
->> +
->> +.. kernel-doc:: include/linux/dim.h
->> +    :internal:
->>
->>
+On Wed, 9 Oct 2019 20:55:48 +0200, Heiner Kallweit wrote:
+> Mariusz reported that invalid packets are sent after resume from
+> suspend if jumbo packets are active. It turned out that his BIOS
+> resets chip settings to non-jumbo on resume. Most chip settings are
+> re-initialized on resume from suspend by calling rtl_hw_start(),
+> so let's add configuring jumbo to this function.
+> There's nothing wrong with the commit marked as fixed, it's just
+> the first one where the patch applies cleanly.
 > 
-> CC: linux-doc, Jake
-> 
-> How does this relate to Documentation/networking/net_dim.txt ?
-> (note in case you want to edit that one there is a patch with 
-> updates for that file from Jake I'll be applying shortly)
-> 
+> Fixes: 7366016d2d4c ("r8169: read common register for PCI commit")
+> Reported-by: Mariusz Bialonczyk <manio@skyboo.net>
+> Tested-by: Mariusz Bialonczyk <manio@skyboo.net>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-There is also a small patch from Jesse:
-https://lore.kernel.org/netdev/20191010193112.15215-1-jesse.brandeburg@intel.com/
+Applied, somewhat begrudgingly - this really isn't the way the Fixes
+tag should be used, but I appreciate it may be hard at this point to
+pin down a commit to blame given how many generations of HW this driver
+supports and how old it is.. perhaps I should have removed the tag in
+this case, hm.
 
-
--- 
-~Randy
+Since the selected commit came in 5.4 I'm not queuing for stable.
