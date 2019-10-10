@@ -2,98 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8FE5D21EC
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 09:39:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2181D223E
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 10:05:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387450AbfJJHjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 03:39:44 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:59156 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733088AbfJJHgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 03:36:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=WpK+tHhD79sRpUxX2TvDfN4NB5JxjZXZLIF/L+pB+ho=; b=B/+yaJLtn2cVn4Y0JCaEnkp8z
-        GCO9Pgjkv1e7IN5X5omdjhKjp0h3cXym7YDQFNfspg0x6rFAZEKgMD469ZTUiT3LZZoOrmuch6kCk
-        r9bUwJEZEjsGkrez/t8rbuuygdXtEpKAt5LaIEgtPcmqbAFStqCgVMqHnyPNj7tK5krrMJOKjgkja
-        5DwsM6zPJ/qSvjzgn/fbscBbwt5w3l03sEwpOpD/0++5ca1IBMSBuQcE8Bj3RgPXcRhBjKRZRVKOz
-        NjpStHdkwSLIs2KTsfXKVZZZ4vvJTNLXJ5haAS6C+mT6/ofAzN+ilh9bGzwmr22Hbpj2uPPf+KtwZ
-        hLPatH60Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
-        id 1iISza-0004Yw-5a; Thu, 10 Oct 2019 07:36:10 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5D6B3301A79;
-        Thu, 10 Oct 2019 09:35:16 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 86BE4202F4F4F; Thu, 10 Oct 2019 09:36:08 +0200 (CEST)
-Date:   Thu, 10 Oct 2019 09:36:08 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@fb.com, stable@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next 2/2] bpf/stackmap: fix A-A deadlock in
- bpf_get_stack()
-Message-ID: <20191010073608.GO2311@hirez.programming.kicks-ass.net>
-References: <20191010061916.198761-1-songliubraving@fb.com>
- <20191010061916.198761-3-songliubraving@fb.com>
+        id S1733101AbfJJIFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 04:05:44 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:39471 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727123AbfJJIFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 04:05:44 -0400
+Received: by mail-wr1-f65.google.com with SMTP id r3so6609476wrj.6
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 01:05:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xn2iKqLgJUw/Xm61ZRbUytQMf8RVmPJ9t1QtzjRDjBc=;
+        b=MIQRvWWpWWITmKy5Z1kPrvVbyRc9HOWb1czyomOWj8vFYknGquxuErOqtmNBVU0YjY
+         zuT9dLmaiGOjeIvRumdN0Nd81d39CoSGtFFI5OX9sxsdEwAPDMMFn/xDKYV9OphRZhQh
+         VL7n2Y+t60VFMvBtag/WBKU2QWlzwSCQNHtJGw3+11FEAMrObnn84Xx08XuOaRkXVE2a
+         v2/bkXefe+gq/C8oDYqZVKDzkNOUX8GU9/hA6goXSQmMaeoro2YNFg2wuPzkmushBKdP
+         dbtLl0OVKmDVcNVSXcEoLtlO6TNt4lrKKraM4vLshNpjKiAmH/3a42oJD+TJOAFGKGxl
+         RqEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xn2iKqLgJUw/Xm61ZRbUytQMf8RVmPJ9t1QtzjRDjBc=;
+        b=ahBo+ms+rm7RcalVMCcEW7+3gxcAVB+1z+9cqi3twhHugHN6jyTh6TtKH8IHZkh8N2
+         4mBki9AwI/SWx6moFmyezvp4wjqnLP9AzrpjZxmq0sv7uDkPTZD2SxaQVnzOAq9HE9L0
+         Ag0hukFvV2ckTLipogJ/Xy3MaOTeMQIERisZoB5Asijwd2pK6OQNz0YdaJyjKqEvSQLA
+         6/NEGwYi3eOr0c5GVE0haxojBNp7uizTQHujbmSzI4pM3XsESaqoSEPLyPEP6zD1sHw6
+         jMum3Y4JL3tGCWfmhClNiGBYUEJSANVrJeGlnF6Yt3kRLxTMf5OvwWwdHBpVlpTtCe7S
+         voxA==
+X-Gm-Message-State: APjAAAX3WIKq9mahY2ganX/bS2JL0N5m68jnBot8VRKcc8WI1Msg/0ev
+        4zj5G2+ALx7iG9BGROltiUZbxA==
+X-Google-Smtp-Source: APXvYqwf3LcxYnLG8duUpkoNfcUcJUdj5LMqjEzYEP+pQmLQ0iMME1ikOmcSv9iYDHqOdjJVTMVrtA==
+X-Received: by 2002:adf:facc:: with SMTP id a12mr7486529wrs.109.1570694741529;
+        Thu, 10 Oct 2019 01:05:41 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id w4sm4650165wrv.66.2019.10.10.01.05.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 01:05:40 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 10:05:40 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     jiri@mellanox.com, yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, netdev@vger.kernel.org, linuxarm@huawei.com
+Subject: Re: [RFC PATCH] net: hns3: add devlink health dump support for hw
+ mac tbl
+Message-ID: <20191010080540.GA2223@nanopsycho>
+References: <1569759223-200101-1-git-send-email-linyunsheng@huawei.com>
+ <20190930092724.GB2211@nanopsycho>
+ <f82df09f-fe13-5583-2cac-5ceaf3aeff2a@huawei.com>
+ <a5b5c5c5-8e48-260d-8631-62d94f779ca7@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191010061916.198761-3-songliubraving@fb.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <a5b5c5c5-8e48-260d-8631-62d94f779ca7@huawei.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 11:19:16PM -0700, Song Liu wrote:
-> bpf stackmap with build-id lookup (BPF_F_STACK_BUILD_ID) can trigger A-A
-> deadlock on rq_lock():
-> 
-> rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
-> [...]
-> Call Trace:
->  try_to_wake_up+0x1ad/0x590
->  wake_up_q+0x54/0x80
->  rwsem_wake+0x8a/0xb0
->  bpf_get_stack+0x13c/0x150
->  bpf_prog_fbdaf42eded9fe46_on_event+0x5e3/0x1000
->  bpf_overflow_handler+0x60/0x100
->  __perf_event_overflow+0x4f/0xf0
->  perf_swevent_overflow+0x99/0xc0
->  ___perf_sw_event+0xe7/0x120
->  __schedule+0x47d/0x620
->  schedule+0x29/0x90
->  futex_wait_queue_me+0xb9/0x110
->  futex_wait+0x139/0x230
->  do_futex+0x2ac/0xa50
->  __x64_sys_futex+0x13c/0x180
->  do_syscall_64+0x42/0x100
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
+Thu, Oct 10, 2019 at 03:32:54AM CEST, linyunsheng@huawei.com wrote:
+>On 2019/10/5 10:06, Yunsheng Lin wrote:
+>> On 2019/9/30 17:27, Jiri Pirko wrote:
+>>> Sun, Sep 29, 2019 at 02:13:43PM CEST, linyunsheng@huawei.com wrote:
+>>>> This patch adds the devlink health dump support for hw mac tbl,
+>>>> which helps to debug some hardware packet switching problem or
+>>>> misconfiguation of the hardware mac table.
+>>>
+>>> So you basically make internal hw table available to the user to see if
+>>> I understand that correctly. There is a "devlink dpipe" api that
+>>> basically serves the purpose of describing the hw pipeline and also
+>>> allows user to see content of individual tables in the pipeline. Perhaps
+>>> that would be more suitable for you?
+>>>
+>> 
+>> Thanks.
+>> I will look into the "devlink dpipe" api.
+>> It seems the dpipe api is a little complicated than health api, and
+>> there seems to be no mention of it in man page in below:
+>> http://man7.org/linux/man-pages/man8/devlink.8.html
+>> 
+>> Any more detail info about "devlink dpipe" api would be very helpful.
+>
+>After looking into "devlink dpipe" api, it seems dpipe is used to debug
+>match and action operation of a hardware table.
+>
+>We might be able to use "devlink dpipe" api for dumping the mac tbl in
+>our hardware if we extend the action type.
+>But I am not sure a few field in our hw table below to match or action
+>operation, like the type(0 for unicast and 2 for multicast) field, it is
+>used to tell hardware the specfic entry is about unicast or multicast,
+>so that the hardware does a different processing when a packet is matched,
+>it is more like the property of the specfic entry.
 
-> diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-> index 052580c33d26..3b278f6b0c3e 100644
-> --- a/kernel/bpf/stackmap.c
-> +++ b/kernel/bpf/stackmap.c
-> @@ -287,7 +287,7 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
->  	bool irq_work_busy = false;
->  	struct stack_map_irq_work *work = NULL;
-> 
-> -	if (in_nmi()) {
-> +	if (in_nmi() || this_rq_is_locked()) {
->  		work = this_cpu_ptr(&up_read_work);
->  		if (work->irq_work.flags & IRQ_WORK_BUSY)
->  			/* cannot queue more up_read, fallback */
+I don't see problem having this in dpipe.
 
-This is horrific crap. Just say no to that get_build_id_offset()
-trainwreck.
+
+>
+>So the health dump is flexible enough for us to dump the hw table in
+>our hardware, we plan to use health dump api instead of dpipe api.
+
+Please don't. I know that "health dump" can carry everything. That does
+not mean it should. Tables belong to dpipe.
+
+
+>
+>If we implement the recover ops, we can reuse the dump ops to dump the
+>hw table the moment the erorr happens too.
+
+Which error? How the error is related to "hw table"?
+
+
+>
+>> 
+>>>
+>>>>
+>>>> And diagnose and recover support has not been added because
+>>>> RAS and misc error handling has done the recover process, we
+>>>> may also support the recover process through the devlink health
+>>>> api in the future.
+>>>
+>>> What would be the point for the reporter and what would you recover
+>>> from? It that related to the mac table? How?
+>> 
+>> There is some error that can be detected by hw when it is accessing some
+>> internal memory, such as below error types defined in
+>> ethernet/hisilicon/hns3/hns3pf/hclge_err.c:
+>> 
+>> static const struct hclge_hw_error hclge_ppp_mpf_abnormal_int_st1[] = {
+>> 	{ .int_msk = BIT(0), .msg = "vf_vlan_ad_mem_ecc_mbit_err",
+>> 	  .reset_level = HNAE3_GLOBAL_RESET },
+>> 	{ .int_msk = BIT(1), .msg = "umv_mcast_group_mem_ecc_mbit_err",
+>> 	  .reset_level = HNAE3_GLOBAL_RESET },
+>> 	{ .int_msk = BIT(2), .msg = "umv_key_mem0_ecc_mbit_err",
+>> 	  .reset_level = HNAE3_GLOBAL_RESET },
+>> 	{ .int_msk = BIT(3), .msg = "umv_key_mem1_ecc_mbit_err",
+>> 	  .reset_level = HNAE3_GLOBAL_RESET },
+>> .....
+>> 
+>> The above errors can be reported to the driver through struct pci_error_handlers
+>> api, and the driver can record the error and recover the error by asserting a PF
+>> or global reset according to the error type.
+>> 
+>> As for the relation to the mac table, we may need to dump everything including
+>> the internal memory content to further analyze the root cause of the problem.
+>> 
+>> Does above make sense?
+>> 
+>> Thanks for taking a look at this.
+>> 
+>>>
+>>>
+>>>>
+>>>> Command example and output:
+>>>>
+>>>> root@(none):~# devlink health dump show pci/0000:7d:00.2 reporter hw_mac_tbl
+>>>> index: 556 mac: 33:33:00:00:00:01 vlan: 0 port: 0 type: 2 mc_mac_en: 1 egress_port: 255 egress_queue: 0 vsi: 0 mc bitmap:
+>>>>   1 0 0 0 0 0 0 0
+>>>> index: 648 mac: 00:18:2d:02:00:10 vlan: 0 port: 1 type: 0 mc_mac_en: 0 egress_port: 2 egress_queue: 0 vsi: 0
+>>>> index: 728 mac: 00:18:2d:00:00:10 vlan: 0 port: 0 type: 0 mc_mac_en: 0 egress_port: 0 egress_queue: 0 vsi: 0
+>>>> index: 1028 mac: 00:18:2d:01:00:10 vlan: 0 port: 2 type: 0 mc_mac_en: 0 egress_port: 1 egress_queue: 0 vsi: 0
+>>>> index: 1108 mac: 00:18:2d:03:00:10 vlan: 0 port: 3 type: 0 mc_mac_en: 0 egress_port: 3 egress_queue: 0 vsi: 0
+>>>> index: 1204 mac: 33:33:00:00:00:01 vlan: 0 port: 1 type: 2 mc_mac_en: 1 egress_port: 253 egress_queue: 0 vsi: 0 mc bitmap:
+>>>>   4 0 0 0 0 0 0 0
+>>>> index: 2844 mac: 01:00:5e:00:00:01 vlan: 0 port: 0 type: 2 mc_mac_en: 1 egress_port: 254 egress_queue: 0 vsi: 0 mc bitmap:
+>>>>   1 0 0 0 0 0 0 0
+>>>> index: 3460 mac: 01:00:5e:00:00:01 vlan: 0 port: 1 type: 2 mc_mac_en: 1 egress_port: 252 egress_queue: 0 vsi: 0 mc bitmap:
+>>>>   4 0 0 0 0 0 0 0
+>>>>
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>>>> ---
+>
+>
