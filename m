@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B509FD1FC2
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 932F8D1FC9
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728366AbfJJEof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 00:44:35 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39659 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbfJJEoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:44:34 -0400
-Received: by mail-lj1-f196.google.com with SMTP id y3so4738335ljj.6;
-        Wed, 09 Oct 2019 21:44:33 -0700 (PDT)
+        id S1727553AbfJJEuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 00:50:09 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40059 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbfJJEuI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:50:08 -0400
+Received: by mail-pf1-f195.google.com with SMTP id x127so3068656pfb.7
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 21:50:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uYL/vhjaettocWfI6FgrAIp8NvvIMnfMgf12bL9nDCs=;
-        b=ubEuBbUiIh6dvphiX1VfSCpeHxN5EjJ2fWKEbuGUkfnWNMPD7MBEYnGMccqq6R8CcO
-         PcqWWllR3D5Y8RFXV3X2nShhIsN88v1Yult5/7GHvKR24EqUYlSM5btMaccwi7sp8QGj
-         W6Rxu1ZF8aY6Qgb4mwW7TtTL/Os4AwizQ/ivP54hhvaA1bCq6Kh3vv+3GLI4fN/RVGB5
-         asIn5BQ5WDjdS+j3m94EksbFTElkaftLge+B3NlGLU8w90OkUhglmD1gAYDbDQqHVH4Q
-         3mhobPzSbfaU9TcCDZ08/aPbZHCkSOJ0FQr3+CLfnMs10DgQRu2jzcBi+Dlvp04Or0+n
-         aGHQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=/mMDQ2lLgWo/y3UcKXP6zSndhMvDtLkfESaBpKV7kH4=;
+        b=G47WyY0Ewr6HKq6sRlmVN07P0MIOanzK8G4fwQ5fFpgu13+hu6N2Ydh0BWJaFAM4Ga
+         RGkK6FMub9jTIBQB9FnULqFmw9RmoAi/l+1iCYKCwIQ8OI2PvkLipaUY0qGOlIMmjnnU
+         f0A8ZGyFL+kZHvTeGQJrmyUK84E4VTPAeCOtunGhjYdx2No7gqo5J2lTmjEy3xt3p6o9
+         SYQp2eVY2k4vpJtlOR99UYzzey3M214U+1UYHP+KCqUxH5okPsk2bqSkQh7+cqkUiuyA
+         ur/ozfDol8cdzXZYsvI1Y3WOVxmp1Q7183Odt3Fr2vOM4h8pxLl40Zt05QE1WyuCqT3H
+         1a1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uYL/vhjaettocWfI6FgrAIp8NvvIMnfMgf12bL9nDCs=;
-        b=Z2CTNRxyrO+brLI6GJL0/HcT2w6X0uRQTYxYimzk9RCPNQfy37hDZolnr8NhbD2Bq7
-         6HiIcEk1mA2G/jKE07rEdq5j5d3RgkKOwIiMKV7bDzbkQs+7kot4M3OfqtXb/F0NBokY
-         lVLLkueQylEtF7T8D/3x5J4HLvsMmWKTjxmFIDRcSMMTRe2AsFB/yHFv4wjCN+7bmDbZ
-         vdYeD8BnrauZ46vfDaCLlha76cPKjJqZ3JHoUbwAra+LzsN08PnnvI1T7kwl0ZEboHI/
-         8RhU3JxzCpkpe1ldSko/f9FiYra4HCmJq+hdNpZrI50uArXuoRAmXEYnJyJ8/L/z0IBh
-         WC6g==
-X-Gm-Message-State: APjAAAVLexI7pZ6YLJO+bgZdbSoZPKL7iwK7eqqPEN8huaDlgGnjMkOq
-        w6mi0pibsGcLwUcsT0HkqGItVqyun/ftSYES5SA=
-X-Google-Smtp-Source: APXvYqxeeLuDlOXPRc9Lqcn0TRRuTodxgOi8ejKTQmsDImpnKJXCUZhA15SGnwH7G6WA9LuYvJK4yQwy0I5Gx92g8xA=
-X-Received: by 2002:a2e:6c15:: with SMTP id h21mr4722720ljc.10.1570682672295;
- Wed, 09 Oct 2019 21:44:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=/mMDQ2lLgWo/y3UcKXP6zSndhMvDtLkfESaBpKV7kH4=;
+        b=Mvl4iUxyYBiapzzTQxiwhE5q3UrXV7X8tiSAt1PT9tHAc0seW6FdMwU/pCFNBr7XUc
+         WuJcbjDXj8Ewhw6kUvcWE+NhSEd86feNduJ0dfwbVq+7h6rVip/Jzm2R2wWAdpEqpsBl
+         TrBsWAnd2Vi6H6UlwXtBrQUf0CuutiOwxrNRaMtBtXZrQZNYq6SZPkAZRmbKCk9OUnVW
+         Zn4juwKe/BM23/hKW9D50KIXmjUV4ZLG2/aDWuhb50Jd7t8UTn002OUlJMeyFi6cXtzw
+         TdusQyvyHGTfPkjCB6NiqW/KihVItfWLBeg49MNPg2cmsBMY66FLVZ9iDcDunTtOC7SO
+         4nQg==
+X-Gm-Message-State: APjAAAUGz7FJGMAP2C293EsCjud9goxvqG+vlYjuKY2pdazRhwk0wMxx
+        GzkFH68kEMqTp7J7wZz/l1+YD8euiPs=
+X-Google-Smtp-Source: APXvYqzoLC0fdqtMPs0MqTpUbXMHZvRzDmUNo/Ji8coC8Ngc4HGSYP4PI2mfdJelrAQnoPJIuz63pw==
+X-Received: by 2002:a17:90a:730a:: with SMTP id m10mr8671472pjk.80.1570683006740;
+        Wed, 09 Oct 2019 21:50:06 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id n3sm4177621pff.102.2019.10.09.21.50.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2019 21:50:06 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 21:49:52 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: [PATCH net] net: add {READ|WRITE}_ONCE() annotations on
+ ->rskq_accept_head
+Message-ID: <20191009214952.756b1caf@cakuba.netronome.com>
+In-Reply-To: <20191009215120.31264-1-edumazet@google.com>
+References: <20191009215120.31264-1-edumazet@google.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20191010042534.290562-1-andriin@fb.com>
-In-Reply-To: <20191010042534.290562-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 9 Oct 2019 21:44:20 -0700
-Message-ID: <CAADnVQL3NLU1ba0jfwpT-Eshak0vKsnbYWA8EEnB-OToukbeCQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] scripts/bpf: fix xdp_md forward declaration typo
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 9, 2019 at 9:25 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Fix typo in struct xpd_md, generated from bpf_helpers_doc.py, which is
-> causing compilation warnings for programs using bpf_helpers.h
->
-> Fixes: 7a387bed47f7 ("scripts/bpf: teach bpf_helpers_doc.py to dump BPF helper definitions")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Wed,  9 Oct 2019 14:51:20 -0700, Eric Dumazet wrote:
+> reqsk_queue_empty() is called from inet_csk_listen_poll() while
+> other cpus might write ->rskq_accept_head value.
+> 
+> Use {READ|WRITE}_ONCE() to avoid compiler tricks
+> and potential KCSAN splats.
+> 
+> Fixes: fff1f3001cc5 ("tcp: add a spinlock to protect struct request_sock_queue")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Applied. Thanks
+Applied, thanks!
