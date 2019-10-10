@@ -2,83 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA55D1FAD
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:32:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77148D1FBE
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:42:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726506AbfJJEcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 00:32:24 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35691 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfJJEcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:32:24 -0400
-Received: by mail-pl1-f193.google.com with SMTP id c3so2149032plo.2
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 21:32:23 -0700 (PDT)
+        id S1726659AbfJJEmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 00:42:03 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:43323 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbfJJEmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:42:02 -0400
+Received: by mail-pf1-f194.google.com with SMTP id a2so3048797pfo.10;
+        Wed, 09 Oct 2019 21:42:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=FfyfyhhrxNQpmlLeDJUqAmuGWBMXq0FoF/j7heYS/FY=;
-        b=mXFhCCP6e88CNASIwkycE6kEZA74uk68zunh1DoeHi6uIpE4QPzq41wSomiEWMVC9J
-         36mqh9eSjoYDWDtOMs3H2MYjRqh61rs9yX5WBZm6Og5kt0DgaRpFKXtjdqKJ5Rn2t0Vm
-         2kgZE+XW4rUm/pJm/MctscAJ8xmf5JOvroXqZKbbyZm+NgIkJskHaJEN03x1QmtAbcA+
-         GcA5CLjRIk237JcVBphc9ItTHWj8k1wL5h0QlH5WsSVAbig3mG1pIZfkDk1O0UVgdX+D
-         pP/Le78wcvdkzxuoXPTezCo8f77XihXQOSlv0yWEB0OnS4BeKyiBFsGmKuMAtJqy0jNU
-         x6Tw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=ul6B5sTr9KQC1ANUb+xAoNDJu9lKzfbcshAB5jlCr1k=;
+        b=fux9292pnE9lQyfdrhgQn83sAoxZaqhZDojnHT4bBZDxRIwfzoLFBv714cBUO3gP01
+         TVRsQQpYG/X7ZgiyDI1iU/rECEiPQw7up+5/7eA3NsypHbQjt2HPRZArWsQ47f9QgMAN
+         KJmVrI6CGjJriEVAo+3KNXtCZvmPKaQ5LPT52EAujUDEM4L357mtQm2BS33y0RFWAAEh
+         EJqnVW4fBr6dffw5YbfvzRjECXYPRvYYO3s92mOjn1wkbNAjMg9FGCB7DyLfnmXk4UNc
+         1AdOlwhxWzeSr7kBLMp0cVbZeFvIkrhQGWD+LBmTHTPL3UVWCXyxREIW5M7QMS91vD/Q
+         GU/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=FfyfyhhrxNQpmlLeDJUqAmuGWBMXq0FoF/j7heYS/FY=;
-        b=VCXKOBNxbyN9MoocAbITNH6qZaNcAJ/rc8JtPj9CKXyrbJrHUr4XaZhJDdQWBbS5y6
-         li4dOmj8sfnUMceqHf2M6DAbf+e0qmsyz+9LIKYy9tnH6YWrvGsEpg9vkPvsKDG0qDDG
-         2SdQv7ZsyHHe/f2vZq7J8tkc8+rr+zE5CCFQj5RwXr5vusBgpc/WUh6f1ss5WWV7u/oJ
-         pMwRqRHvLUMhEQRX+W24UE1oQPjTtt6gzJWJd8w3cmyQ2O2a60EA4IER5+UtAWVfHuL3
-         3GTTZy0SL8rkzlgPAYneKtb2mARJIbcxcSuFoDli5Loc5T0Zhx0hIextHtYqJ5kSLhN0
-         f4jg==
-X-Gm-Message-State: APjAAAUvU11zejbsTcoeFKCWoX0VT9zdByg+vYbJbkXK+4NY+9ndqIE2
-        vj+ZUjF+b9udSRuCgjeigpNOlA==
-X-Google-Smtp-Source: APXvYqyehcd9rpgwEMXh1xexse6xkjADgbM+7IxBoZWU66P3aiksY5532Ydq+/bAZUyC0EOPmz9eKQ==
-X-Received: by 2002:a17:902:a987:: with SMTP id bh7mr6911757plb.181.1570681943217;
-        Wed, 09 Oct 2019 21:32:23 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id k15sm4016542pfa.65.2019.10.09.21.32.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 21:32:22 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 21:32:09 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net] net: avoid possible false sharing in
- sk_leave_memory_pressure()
-Message-ID: <20191009213209.6c07bf0c@cakuba.netronome.com>
-In-Reply-To: <20191009195553.154443-1-edumazet@google.com>
-References: <20191009195553.154443-1-edumazet@google.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=ul6B5sTr9KQC1ANUb+xAoNDJu9lKzfbcshAB5jlCr1k=;
+        b=MULzrUrXLqXk6uhRAiQjR4SBUjvZfenJbG9sCItjTFuOjYVdI4mQSUuvRnBfMxiaPk
+         pDdGsKK5/rgQsE+3mc/aUyJLr6l5sePbvCBfzvsTKUjLpc2Mma6JQFBrKjvsUEhN2VL6
+         If0pvmomzUGq+pmspApwxVTG59SkmbZeK5RPOk4+n3TPmdM92u7A0N96se+7cHfmx+ux
+         chsTBW6LnR0mhxB1HLIrUj5dsjUX9lBadJsbW+t7SHmeEG7kauph/Ikn7zrdu5gZHNmm
+         P54PZ6+n/j8Ny1pJXpEaKysh1V3WUVrUHoZ6YXnGsGCNcE2t5/y2fvL6eFnVb+w4Vz0C
+         IfaQ==
+X-Gm-Message-State: APjAAAWrwjb0PMzse87pf262osvZXkKSdyFlykYUJF8WYfusBx6md4bR
+        DXUmnjqbsxVehI25mOW1cil9FjG9
+X-Google-Smtp-Source: APXvYqyDqIVTZ2PBykOpjwTgErPEEj8r7vjfaGyIZMRLmqdSeL7Xvu1Pd22rAv7RH+0c/GMMS/yEhg==
+X-Received: by 2002:a63:1b44:: with SMTP id b4mr8838120pgm.421.1570682521719;
+        Wed, 09 Oct 2019 21:42:01 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::7c62])
+        by smtp.gmail.com with ESMTPSA id 184sm3621350pgf.33.2019.10.09.21.41.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 09 Oct 2019 21:42:00 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 21:41:58 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF
+ programs after each other
+Message-ID: <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
+ <157046883614.2092443.9861796174814370924.stgit@alrua-x1>
+ <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com>
+ <87sgo3lkx9.fsf@toke.dk>
+ <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com>
+ <87o8yqjqg0.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87o8yqjqg0.fsf@toke.dk>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Oct 2019 12:55:53 -0700, Eric Dumazet wrote:
-> As mentioned in https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
-> a C compiler can legally transform :
+On Wed, Oct 09, 2019 at 10:03:43AM +0200, Toke Høiland-Jørgensen wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 > 
-> if (memory_pressure && *memory_pressure)
->         *memory_pressure = 0;
+> > Please implement proper indirect calls and jumps.
 > 
-> to :
-> 
-> if (memory_pressure)
->         *memory_pressure = 0;
-> 
-> Fixes: 0604475119de ("tcp: add TCPMemoryPressuresChrono counter")
-> Fixes: 180d8cd942ce ("foundations of per-cgroup memory pressure controlling.")
-> Fixes: 3ab224be6d69 ("[NET] CORE: Introducing new memory accounting interface.")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> I am still not convinced this will actually solve our problem; but OK, I
+> can give it a shot.
 
-Applied, thanks!
+If you're not convinced let's talk about it first.
+
+Indirect calls is a building block for debugpoints.
+Let's not call them tracepoints, because Linus banned any discusion
+that includes that name.
+The debugpoints is a way for BPF program to insert points in its
+code to let external facility to do tracing and debugging.
+
+void (*debugpoint1)(struct xdp_buff *, int code);
+void (*debugpoint2)(struct xdp_buff *);
+void (*debugpoint3)(int len);
+
+int bpf_prog(struct xdp_buff *ctx)
+{
+    // let's parse the packet
+    if (debugpoint3)
+        debugpoint3(ctx->data_end - ctx->data);
+
+    if (condition) {
+        // deciding to drop this packet
+        if (debugpoint1)
+            debugpoint1(ctx, XDP_DROP);
+        return XDP_DROP;
+    }
+    if (some other condition) {
+        // lets pass it to the stack
+        if (debugpoint2)
+            debugpoint2(ctx);
+        return XDP_PASS;
+    }
+}
+
+In normal operation nothing is being called.
+The execution cost to the program is load plus branch.
+But since program is annotated with BTF the external tool,
+like bpftool, can load another program and populate
+debugpointN pointer in the original program to trace its
+execution.
+Essentially it's live debugging (tracing) of cooperative
+bpf programs that added debugpoints to their code.
+
+Obviously indirect calls can be used for a ton of other things
+including proper chaing of progs, but I'm convinced that
+you don't need chaining to solve your problem.
+You need debugging.
+If you disagree please explain _your_ problem again.
+Saying that fb katran is a use case for chaining is, hrm, not correct.
+
