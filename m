@@ -2,186 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3115CD20B7
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 08:19:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B31D20C4
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 08:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732945AbfJJGTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 02:19:34 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:65486 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732918AbfJJGTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 02:19:30 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9A6Cbaj018650
-        for <netdev@vger.kernel.org>; Wed, 9 Oct 2019 23:19:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=H5WTiUKRu1qDnKEKpnXoZ0t4lsxmbyz/pzW2AERatVE=;
- b=VpkPzN+N6TbLnGIfa7Olee2m9RdSMucn9U+I2oiVTekSQbCyQ5wis9JddYAkR1fPojUb
- cy7qygFYDBAjDzV4Di6+f0vKBhllNkDo7MLAtwhqnEAC7xEoedOz7A/R5uiaeIGMpZ1j
- +QqPwR5xladfgZJRAZ2ac1IldxAZOhxgqQk= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2vgr0gtmgk-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 23:19:28 -0700
-Received: from 2401:db00:2050:5076:face:0:9:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 9 Oct 2019 23:19:26 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id F369962E3559; Wed,  9 Oct 2019 23:19:24 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>,
-        <stable@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 2/2] bpf/stackmap: fix A-A deadlock in bpf_get_stack()
-Date:   Wed, 9 Oct 2019 23:19:16 -0700
-Message-ID: <20191010061916.198761-3-songliubraving@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191010061916.198761-1-songliubraving@fb.com>
-References: <20191010061916.198761-1-songliubraving@fb.com>
-X-FB-Internal: Safe
+        id S1732902AbfJJG2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 02:28:01 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:45389 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727041AbfJJG2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 02:28:01 -0400
+Received: by mail-lj1-f193.google.com with SMTP id q64so4917035ljb.12
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 23:27:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netrounds-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=FiE63Jf0+YKrajX+a/6ereKGsQ9R9ph2lTRjBJOT88A=;
+        b=CgY1dBiEMb98NQ/At9u26khShIHa54HFYd24qpfRhl58R7WD6fhM90irNgl/CX5d4d
+         HP2cnwy5/XeyG/qAANZXTH0NDr4UO08Jm2FWN1Kn6aQYsp0qVzQAwM/I7J0a6LNwMHdo
+         NmZdWlv4ymo8P7jElxCNRnKkDcyYtDHSf75MeYqHamlsEf1P83lTOhgnWIbBb9sczx5B
+         iiKVlYHogkMOlNbl6PnmQvW90SsUlLFsqRd2Zd1PBxXbwBSZqP6Dg3+7q3LFTAl6Cgvj
+         WdoA1i8sTSHe+0D+INEx6wnJCxVMkL0HUBl3JW0pgn+Optq8dYqM6pQmjApVthj8sJLz
+         mArg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FiE63Jf0+YKrajX+a/6ereKGsQ9R9ph2lTRjBJOT88A=;
+        b=h13KpuDdkDpbI3Ty0BnBOpxH43Wkt2nzuE1ZqHNyeqHI+GaXuvXrx1dExWQdQxR5yM
+         VBsRFTD/JaphwYQNiPAZFkeahHM0SauLd4Mk9rx81ml1B+2vgxIzVYyIVCu3l7EJqro5
+         bPxnNEJI+Q8wLz4L+KXBsg7mUuJQWmA+DZNRgsMVFUMGNdS/s7IOEVwrd6c66N6+wnlI
+         5QmV6dLfbkTa2V0mdKsYAcWsBnZVe3NcjhpaDnvAq1FS3FCS7vIZQaqj0Z2q2582gc7T
+         ZTujXci3L32lGx1m+dAawTDznpmDiKbGf2TaMKgCvetEesI18vWpw3uI1tVMvYij/kAN
+         yeFA==
+X-Gm-Message-State: APjAAAU16K/Rj9rouMed3qjFnFshiA1Fz8VRQqgPHMFnn+pk/XfqfBHU
+        5rQNu+U53UOSSv9Z7uvkxFEaPA==
+X-Google-Smtp-Source: APXvYqxotN273Jma0cjDfGOmGpDy+7PPz1s8PTIBAU1+t1GdknJwYANdAEzTA16fCFrmVjrN4k/xmA==
+X-Received: by 2002:a2e:a415:: with SMTP id p21mr5009509ljn.59.1570688877789;
+        Wed, 09 Oct 2019 23:27:57 -0700 (PDT)
+Received: from [10.0.156.104] ([195.22.87.57])
+        by smtp.gmail.com with ESMTPSA id v1sm988319lfe.34.2019.10.09.23.27.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 09 Oct 2019 23:27:56 -0700 (PDT)
+Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
+To:     Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>
+References: <d102074f-7489-e35a-98cf-e2cad7efd8a2@netrounds.com>
+ <95c5a697932e19ebd6577b5dac4d7052fe8c4255.camel@redhat.com>
+From:   Jonas Bonn <jonas.bonn@netrounds.com>
+Message-ID: <18f58ddc-f16e-600f-02de-29c79332d945@netrounds.com>
+Date:   Thu, 10 Oct 2019 08:27:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-10_03:2019-10-08,2019-10-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- clxscore=1015 bulkscore=0 priorityscore=1501 impostorscore=0 mlxscore=0
- spamscore=0 malwarescore=0 suspectscore=2 adultscore=0 lowpriorityscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910100058
-X-FB-Internal: deliver
+In-Reply-To: <95c5a697932e19ebd6577b5dac4d7052fe8c4255.camel@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf stackmap with build-id lookup (BPF_F_STACK_BUILD_ID) can trigger A-A
-deadlock on rq_lock():
+Hi Paolo,
 
-rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
-[...]
-Call Trace:
- try_to_wake_up+0x1ad/0x590
- wake_up_q+0x54/0x80
- rwsem_wake+0x8a/0xb0
- bpf_get_stack+0x13c/0x150
- bpf_prog_fbdaf42eded9fe46_on_event+0x5e3/0x1000
- bpf_overflow_handler+0x60/0x100
- __perf_event_overflow+0x4f/0xf0
- perf_swevent_overflow+0x99/0xc0
- ___perf_sw_event+0xe7/0x120
- __schedule+0x47d/0x620
- schedule+0x29/0x90
- futex_wait_queue_me+0xb9/0x110
- futex_wait+0x139/0x230
- do_futex+0x2ac/0xa50
- __x64_sys_futex+0x13c/0x180
- do_syscall_64+0x42/0x100
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+On 09/10/2019 21:14, Paolo Abeni wrote:
+> On Wed, 2019-10-09 at 08:46 +0200, Jonas Bonn wrote:
+>> Hi,
+>>
+>> The lockless pfifo_fast qdisc has an issue with packets getting stuck in
+>> the queue.  What appears to happen is:
+>>
+>> i)  Thread 1 holds the 'seqlock' on the qdisc and dequeues packets.
+>> ii)  Thread 1 dequeues the last packet in the queue.
+>> iii)  Thread 1 iterates through the qdisc->dequeue function again and
+>> determines that the queue is empty.
+>>
+>> iv)  Thread 2 queues up a packet.  Since 'seqlock' is busy, it just
+>> assumes the packet will be dequeued by whoever is holding the lock.
+>>
+>> v)  Thread 1 releases 'seqlock'.
+>>
+>> After v), nobody will check if there are packets in the queue until a
+>> new packet is enqueued.  Thereby, the packet enqueued by Thread 2 may be
+>> delayed indefinitely.
+> 
+> I think you are right.
+> 
+> It looks like this possible race is present since the initial lockless
+> implementation - commit 6b3ba9146fe6 ("net: sched: allow qdiscs to
+> handle locking")
+> 
+> Anyhow the racing windows looks quite tiny - I never observed that
+> issue in my tests. Do you have a working reproducer?
 
-This can be reproduced by:
-1. Start a multi-thread program that does parallel mmap() and malloc();
-2. taskset the program to 2 CPUs;
-3. Attach bpf program to trace_sched_switch and gather stackmap with
-   build-id, e.g. with trace.py from bcc tools:
-   trace.py -U -p <pid> -s <some-bin,some-lib> t:sched:sched_switch
+Yes, it's reliably reproducible.  We do network latency measurements and 
+latency spikes for these packets that get stuck in the queue.
 
-A sample reproducer is attached at the end.
+> 
+> Something alike the following code - completely untested - can possibly
+> address the issue, but it's a bit rough and I would prefer not adding
+> additonal complexity to the lockless qdiscs, can you please have a spin
+> a it?
 
-Fix this by checking whether rq_lock is already locked. If so, postpone
-the up_read() to irq_work, just like the in_nmi() case.
+Your change looks reasonable.  I'll give it a try.
 
-Fixes: commit 615755a77b24 ("bpf: extend stackmap to save binary_build_id+offset instead of address")
-Cc: stable@vger.kernel.org # v4.17+
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Reported-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Song Liu <songliubraving@fb.com>
 
-Reproducer:
-============================ 8< ============================
+> 
+> Thanks,
+> 
+> Paolo
+> ---
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index 6a70845bd9ab..65a1c03330d6 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -113,18 +113,23 @@ bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
+>   		     struct net_device *dev, struct netdev_queue *txq,
+>   		     spinlock_t *root_lock, bool validate);
+>   
+> -void __qdisc_run(struct Qdisc *q);
+> +int __qdisc_run(struct Qdisc *q);
+>   
+>   static inline void qdisc_run(struct Qdisc *q)
+>   {
+> +	int quota = 0;
+> +
+>   	if (qdisc_run_begin(q)) {
+>   		/* NOLOCK qdisc must check 'state' under the qdisc seqlock
+>   		 * to avoid racing with dev_qdisc_reset()
+>   		 */
+>   		if (!(q->flags & TCQ_F_NOLOCK) ||
+>   		    likely(!test_bit(__QDISC_STATE_DEACTIVATED, &q->state)))
+> -			__qdisc_run(q);
+> +			quota = __qdisc_run(q);
+>   		qdisc_run_end(q);
+> +
+> +		if (quota > 0 && q->flags & TCQ_F_NOLOCK && q->ops->peek(q))
+> +			__netif_schedule(q);
 
-char *filename;
+Not sure this is relevant, but there's a subtle difference in the way 
+that the underlying ptr_ring peeks at the queue head and checks whether 
+the queue is empty.
 
-void *worker(void *p)
-{
-        void *ptr;
-        int fd;
-        char *pptr;
+For peek it's:
 
-        fd = open(filename, O_RDONLY);
-        if (fd < 0)
-                return NULL;
-        while (1) {
-                struct timespec ts = {0, 1000 + rand() % 2000};
+READ_ONCE(r->queue[r->consumer_head]);
 
-                ptr = mmap(NULL, 4096 * 64, PROT_READ, MAP_PRIVATE, fd, 0);
-                usleep(1);
-                if (ptr == MAP_FAILED) {
-                        printf("failed to mmap\n");
-                        break;
-                }
-                munmap(ptr, 4096 * 64);
-                usleep(1);
-                pptr = malloc(1);
-                usleep(1);
-                pptr[0] = 1;
-                usleep(1);
-                free(pptr);
-                usleep(1);
-                nanosleep(&ts, NULL);
-        }
-        close(fd);
-        return NULL;
-}
+For is_empty it's:
 
-int main(int argc, char *argv[])
-{
-        void *ptr;
-        int i;
-        pthread_t threads[THREAD_COUNT];
+!r->queue[READ_ONCE(r->consumer_head)];
 
-        if (argc < 2)
-                return 0;
+The placement of the READ_ONCE changes here.  I can't get my head around 
+whether this difference is significant or not.  If it is, then perhaps 
+an is_empty() method is needed on the qdisc_ops...???
 
-        filename = argv[1];
-
-        for (i = 0; i < THREAD_COUNT; i++) {
-                if (pthread_create(threads + i, NULL, worker, NULL)) {
-                        fprintf(stderr, "Error creating thread\n");
-                        return 0;
-                }
-        }
-
-        for (i = 0; i < THREAD_COUNT; i++)
-                pthread_join(threads[i], NULL);
-        return 0;
-}
-============================ 8< ============================
----
- kernel/bpf/stackmap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-index 052580c33d26..3b278f6b0c3e 100644
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -287,7 +287,7 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
- 	bool irq_work_busy = false;
- 	struct stack_map_irq_work *work = NULL;
-
--	if (in_nmi()) {
-+	if (in_nmi() || this_rq_is_locked()) {
- 		work = this_cpu_ptr(&up_read_work);
- 		if (work->irq_work.flags & IRQ_WORK_BUSY)
- 			/* cannot queue more up_read, fallback */
---
-2.17.1
+/Jonas
