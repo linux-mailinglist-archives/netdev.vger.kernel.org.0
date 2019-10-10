@@ -2,246 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E23CCD2ED3
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C72D2EDE
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:49:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfJJQsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 12:48:02 -0400
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:40985 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726065AbfJJQsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 12:48:01 -0400
-Received: by mail-pf1-f202.google.com with SMTP id 22so5185566pfx.8
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 09:47:59 -0700 (PDT)
+        id S1726345AbfJJQto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 12:49:44 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:43936 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbfJJQto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 12:49:44 -0400
+Received: by mail-lf1-f67.google.com with SMTP id u3so4906401lfl.10
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 09:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=4UGEkmXJygCBn0hD2aXh+1IoiS3E9H2QXEcjcMusJXI=;
-        b=uRhZXkJdrUy8X9Bf0R1Ki7oz42S2s2IlFY2clWrbewahnehZvpN09TDtudg4f3YVXA
-         /4PUxi+x+RqQk1nwxjc7ymIrbrRhdmca78qm2N4ZRxERywZGKdhYCpkdGHMLBAyZasgj
-         4fq/Ba7T+3hWMMmTJUovIdWnfkxPstTVGMNzHRr+P9ZxBgfOCdSzcHuBjCamiCB1phfC
-         KhSSSrXFdUDTiKpZu3z5jfqNQpXRYypp0JBS69DcCjnWWR/yePkR8+zr63XrzmcTbyN2
-         K6Q4hS966zzQtPoJ/9CUBKaGv96s1hYnH8yZfLqVMaoB19IauoQ0WjVaO+P2l1RrKxc8
-         xfpA==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=s0fYI4mrc7j9HOvfGUo/mEhI2QMF8qgXCSTkC3vv1W4=;
+        b=cj++K3DwJS8fcrZcTt0BOlhgyngwDB4xaFbpeFA9xn4Z0hh8EMuyDZnVUDkSMt6ghC
+         DVmUO56eFtG02ZJVt5mXVqF3KR5xqzPKY4yn5526RPczQ6rZnAVv74MFDPVns9lcXzfM
+         VxDLxG5218CFZiCpi/GJ/VpAS7XG8ukbTcY5M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=4UGEkmXJygCBn0hD2aXh+1IoiS3E9H2QXEcjcMusJXI=;
-        b=bha9zENyl+u/v9wF+o4bjhUBDXRU5QyRfyqAvS8mIB2X8qj2hGPZF6SLNxKQNHl18L
-         RtVV584Fyc7woarcJ7+RHm+stg3r7gK4Kd1h2xiXAqImO0kIH8T1kiKGfv9v208AFZZD
-         buOzkjwsrzyFPeODzPkOzaGJbTgf4MTpOXA1L0NS+Cied7PmGQPvD3CV/fGM7WDVUSjR
-         wvl/WkeiZubfpi97yEwm3RDHCus8ZsaBORS78LymisW4MiVXWKDp8ZVxR7KVpZ1oSLGN
-         qFQ5byAuOGyEvjNggwDoNFDrs+zHd6L9Y8gJbmyEAiA/y4cfotUf7+EbuT5c6Yv2Lq2p
-         fwOA==
-X-Gm-Message-State: APjAAAWlEUMcbr4ETEe0WAPYznDkQSpPw+yxhcUgdAOET2JfvgHt14ou
-        nhD+GzSNLzCqcRSyxUx3vrzuMZK7wV0SS+mm0csNhch4uhfZJp4lmZeCqHoAp7ZKpE7TiRTwrP0
-        vEegD0A97tCj1OKICG5R5NY7bi8OVC7ogeu0bJOBzVY3r95CUAtYi70vz452QtcU9
-X-Google-Smtp-Source: APXvYqypXf0CR72veBGZ5JhIbUstVr9H45LopjhWsQ7GrN5a4XxO/agtGDJFKgnhPvslt0jjob7SyHo1tL1R
-X-Received: by 2002:a63:6f02:: with SMTP id k2mr12344841pgc.163.1570726078996;
- Thu, 10 Oct 2019 09:47:58 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 09:47:52 -0700
-Message-Id: <20191010164752.16769-1-maheshb@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
-Subject: [PATCHv2 next] blackhole_netdev: fix syzkaller reported issue
-From:   Mahesh Bandewar <maheshb@google.com>
-To:     Netdev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
-        David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Mahesh Bandewar <maheshb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=s0fYI4mrc7j9HOvfGUo/mEhI2QMF8qgXCSTkC3vv1W4=;
+        b=cwXxZEgxFBb7SXYRApbis7uFOPtq1onUyxYIqC/CDpWc9PFVmsfDUNxzkQcHGrJgxk
+         54liw4Fs9E2HgbMnhIZrogiCgTw79YKvhSBEz/6qTI+nG1rUGQY29Zu8bU1+B8fqzxlf
+         40i9ip2GZhjzq3TEQ9md2ot6eMvim9Ck9pSD7SnvNZRxx/mDRiso4Fn7ceTd8AxFc434
+         i03L0xN//iKf3j5IiForji0QPOncDTU1a2Kq31+hrP4YaQq1qdsC12iIHdqAo6Mk+HzL
+         UdLeecnkpQhmcP3HmavseT0atgzW4Upt6Kd/0CqXy63GlAVvFDgzDNlz7wVl0jUUPWUM
+         nXxw==
+X-Gm-Message-State: APjAAAUJZI95K0McRD+rYx7KiJM1+tETXzZpfn9x5sfknjCtlJgDrmx9
+        t7nsByk966zKybg/l+ZTcgfsPg==
+X-Google-Smtp-Source: APXvYqx4PIqk55FHaTswOL2puRmYL/n1MyDS9lqS8ihrHBXKit+TNqDk/nJ5JkiurmcC0w8AEvBwvw==
+X-Received: by 2002:ac2:4466:: with SMTP id y6mr6568076lfl.8.1570726180697;
+        Thu, 10 Oct 2019 09:49:40 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id c69sm1433030ljf.32.2019.10.10.09.49.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 09:49:40 -0700 (PDT)
+References: <20191009094312.15284-1-jakub@cloudflare.com> <20191009094312.15284-2-jakub@cloudflare.com> <20191009163341.GE2096@mini-arch> <87lfts25mq.fsf@cloudflare.com> <20191010163157.GF2096@mini-arch>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATH bpf-next 2/2] selftests/bpf: Check that flow dissector can be re-attached
+In-reply-to: <20191010163157.GF2096@mini-arch>
+Date:   Thu, 10 Oct 2019 18:49:38 +0200
+Message-ID: <87k19c1r6l.fsf@cloudflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While invalidating the dst, we assign backhole_netdev instead of
-loopback device. However, this device does not have idev pointer
-and hence no ip6_ptr even if IPv6 is enabled. Possibly this has
-triggered the syzbot reported crash.
+On Thu, Oct 10, 2019 at 06:31 PM CEST, Stanislav Fomichev wrote:
+> On 10/10, Jakub Sitnicki wrote:
+>> On Wed, Oct 09, 2019 at 06:33 PM CEST, Stanislav Fomichev wrote:
+>> > On 10/09, Jakub Sitnicki wrote:
 
-The syzbot report does not have reproducer, however, this is the
-only device that doesn't have matching idev created.
+[...]
 
-Crash instruction is :
+>> >> +/* Not used here. For CHECK macro sake only. */
+>> >> +static int duration;
+>> > nit: you can use CHECK_FAIL macro instead which doesn't require this.
+>> >
+>> > if (CHECK_FAIL(expr)) {
+>> > 	printf("something bad has happened\n");
+>> > 	return/goto;
+>> > }
+>> >
+>> > It may be more verbose than doing CHECK() with its embedded error
+>> > message, so I leave it up to you to decide on whether you want to switch
+>> > to CHECK_FAIL or stick to CHECK.
+>> >
+>>
+>> I wouldn't mind switching to CHECK_FAIL. It reads better than CHECK with
+>> error message stuck in the if expression. (There is a side-issue with
+>> printf(). Will explain at the end [*].)
+>>
+>> Another thing to consider is that with CHECK the message indicating a
+>> failure ("<test>:FAIL:<lineno>") and the actual explanation message are
+>> on the same line. This makes the error log easier to reason.
+>>
+>> I'm torn here, and considering another alternative to address at least
+>> the readability issue:
+>>
+>> if (fail_expr) {
+>>         CHECK(1, "action", "explanation");
+>>         return;
+>> }
+> Can we use perror for the error reporting?
+>
+> if (CHECK(fail_expr)) {
+> 	perror("failed to do something"); // will print errno as well
+> }
+>
+> This should give all the info needed to grep for this message and debug
+> the problem.
+>
+> Alternatively, we can copy/move log_err() from the cgroup_helpers.h,
+> and use it in test_progs; it prints file:line:errno <msg>.
 
-static inline bool ip6_ignore_linkdown(const struct net_device *dev)
-{
-        const struct inet6_dev *idev = __in6_dev_get(dev);
+CHECK_FAIL + perror() works for me. I've been experimenting with
+extracting a new macro-helper (patch below) but perhaps it's an
+overkill.
 
-        return !!idev->cnf.ignore_routes_with_linkdown; <= crash
-}
+[...]
 
-Also ipv6 always assumes presence of idev and never checks for it
-being NULL (as does the above referenced code). So adding a idev
-for the blackhole_netdev to avoid this class of crashes in the future.
+>> [*] The printf() issue.
+>>
+>> I've noticed that stdio hijacking that test_progs runner applies doesn't
+>> quite work. printf() seems to skip the FILE stream buffer and write
+>> whole lines directly to stdout. This results in reordered messages on
+>> output.
+>>
+>> Here's a distilled reproducer for what test_progs does:
+>>
+>> int main(void)
+>> {
+>> 	FILE *stream;
+>> 	char *buf;
+>> 	size_t cnt;
+>>
+>> 	stream = stdout;
+>> 	stdout = open_memstream(&buf, &cnt);
+>> 	if (!stdout)
+>> 		error(1, errno, "open_memstream");
+>>
+>> 	printf("foo");
+>> 	printf("bar\n");
+>> 	printf("baz");
+>> 	printf("qux\n");
+>>
+>> 	fflush(stdout);
+>> 	fclose(stdout);
+>>
+>> 	buf[cnt] = '\0';
+>> 	fprintf(stream, "<<%s>>", buf);
+>> 	if (buf[cnt-1] != '\n')
+>> 		fprintf(stream, "\n");
+>>
+>> 	free(buf);
+>> 	return 0;
+>> }
+>>
+>> On output we get:
+>>
+>> $ ./hijack_stdout
+>> bar
+>> qux
+>> <<foobaz>>
+>> $
+> What glibc do you have? I don't see any issues with your reproducer
+> on my setup:
+>
+> $ ./a.out
+> <<foobar
+> bazqux
+>>>$
+>
+> $ ldd --version
+> ldd (Debian GLIBC 2.28-10) 2.28
+>
 
+Interesting. I'm on the same version, different distro:
+
+$ rpm -q glibc
+glibc-2.28-33.fc29.x86_64
+glibc-2.28-33.fc29.i686
+
+I'll need to dig deeper. Thanks for keeping me honest here.
+
+-Jakub
+
+---8<---
+
+From 66fd85cd3bbb36cf99c8b6cbbb161d3c0533263b Mon Sep 17 00:00:00 2001
+From: Jakub Sitnicki <jakub@cloudflare.com>
+Date: Thu, 10 Oct 2019 15:29:28 +0200
+Subject: [PATCH net-next] selftests/bpf: test_progs: Extract a macro for
+ logging failures
+
+When selecting a macro-helper to use for logging a test failure we are
+faced with a choice between the shortcomings of CHECK and CHECK_FAIL.
+
+CHECK is intended to be used in conjunction with bpf_prog_test_run(). It
+expects a program run duration to be passed to it as an implicit argument.
+
+While CHECK_FAIL is more generic but compared to CHECK doesn't allow
+logging a custom error message to explain the failure.
+
+Introduce a new macro-helper - FAIL, that is lower-level than the above it
+and it intended to be used just log the failure with an explanation for it.
+
+Because FAIL does in part what CHECK and CHECK_FAIL do, we can reuse it in
+these macros. One side-effect is a slight the change in the log format. We
+always display the line number where a check has passed/failed.
+
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
+ tools/testing/selftests/bpf/test_progs.h | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-syzbot has found the following crash on:
-
-HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-console output: https://syzkaller-buganizer.googleplex.com/text?tag=CrashLog&id=96236769ac48d9c2eb3a0db5385370ea6940be83
-kernel config:  https://syzkaller-buganizer.googleplex.com/text?tag=Config&id=1ed331b637302a68174fdbe34315b781b7c7ab1e
-dashboard link: https://syzkaller.appspot.com/bug?extid=86298614df433d7f3824
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-See http://go/syzbot for details on how to handle this bug.
-
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 16525 Comm: syz-executor.2 Not tainted 5.3.0-rc3+ #159
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-__find_rr_leaf+0x14e/0x750 net/ipv6/route.c:831
-find_rr_leaf net/ipv6/route.c:852 [inline]
-rt6_select net/ipv6/route.c:896 [inline]
-fib6_table_lookup+0x697/0xdb0 net/ipv6/route.c:2164
-ip6_pol_route+0x1f6/0xaf0 net/ipv6/route.c:2200
-ip6_pol_route_output+0x54/0x70 net/ipv6/route.c:2452
-fib6_rule_lookup+0x133/0x7a0 net/ipv6/fib6_rules.c:113
-ip6_route_output_flags_noref+0x2d6/0x360 net/ipv6/route.c:2484
-ip6_route_output_flags+0x106/0x4d0 net/ipv6/route.c:2497
-ip6_route_output include/net/ip6_route.h:98 [inline]
-ip6_dst_lookup_tail+0x1042/0x1ef0 net/ipv6/ip6_output.c:1022
-ip6_dst_lookup_flow+0xa8/0x220 net/ipv6/ip6_output.c:1150
-ip6_sk_dst_lookup_flow net/ipv6/ip6_output.c:1188 [inline]
-ip6_sk_dst_lookup_flow+0x62a/0xb90 net/ipv6/ip6_output.c:1178
-udpv6_sendmsg+0x17ba/0x2990 net/ipv6/udp.c:1439
-inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
-sock_sendmsg_nosec net/socket.c:637 [inline]
-sock_sendmsg+0xd7/0x130 net/socket.c:657
-__sys_sendto+0x262/0x380 net/socket.c:1952
-__do_sys_sendto net/socket.c:1964 [inline]
-__se_sys_sendto net/socket.c:1960 [inline]
-__x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
-do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459829
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fa15e7ddc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000459829
-RDX: 0000000000000001 RSI: 0000000020000000 RDI: 0000000000000007
-RBP: 000000000075c1c0 R08: 0000000020001000 R09: 000000000000001c
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa15e7de6d4
-R13: 00000000004c77e7 R14: 00000000004dd048 R15: 00000000ffffffff
-Modules linked in:
----[ end trace 4b3ce5eddd15c8f6 ]---
-RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Fixes: 8d7017fd621d ("blackhole_netdev: use blackhole_netdev to invalidate dst entries")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-CC: Eric Dumazet <edumazet@google.com>
----
-v1->v2:
-   fixed missing update in ip6_dst_ifdown()
-
- net/ipv6/addrconf.c |  6 +++++-
- net/ipv6/route.c    | 15 ++++++---------
- 2 files changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 98d82305d6de..0f216f7cbe3e 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -6995,7 +6995,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
+diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
+index 0c48f64f732b..9e203ff71b78 100644
+--- a/tools/testing/selftests/bpf/test_progs.h
++++ b/tools/testing/selftests/bpf/test_progs.h
+@@ -92,15 +92,19 @@ struct ipv6_packet {
+ } __packed;
+ extern struct ipv6_packet pkt_v6;
  
- int __init addrconf_init(void)
- {
--	struct inet6_dev *idev;
-+	struct inet6_dev *idev, *bdev;
- 	int i, err;
- 
- 	err = ipv6_addr_label_init();
-@@ -7035,10 +7035,14 @@ int __init addrconf_init(void)
- 	 */
- 	rtnl_lock();
- 	idev = ipv6_add_dev(init_net.loopback_dev);
-+	bdev = ipv6_add_dev(blackhole_netdev);
- 	rtnl_unlock();
- 	if (IS_ERR(idev)) {
- 		err = PTR_ERR(idev);
- 		goto errlo;
-+	} else if (IS_ERR(bdev)) {
-+		err = PTR_ERR(bdev);
-+		goto errlo;
- 	}
- 
- 	ip6_route_init_special_entries();
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index a63ff85fe141..742120728869 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -155,10 +155,9 @@ void rt6_uncached_list_del(struct rt6_info *rt)
- 
- static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- {
--	struct net_device *loopback_dev = net->loopback_dev;
- 	int cpu;
- 
--	if (dev == loopback_dev)
-+	if (dev == net->loopback_dev)
- 		return;
- 
- 	for_each_possible_cpu(cpu) {
-@@ -171,7 +170,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- 			struct net_device *rt_dev = rt->dst.dev;
- 
- 			if (rt_idev->dev == dev) {
--				rt->rt6i_idev = in6_dev_get(loopback_dev);
-+				rt->rt6i_idev = in6_dev_get(blackhole_netdev);
- 				in6_dev_put(rt_idev);
- 			}
- 
-@@ -386,13 +385,11 @@ static void ip6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
- {
- 	struct rt6_info *rt = (struct rt6_info *)dst;
- 	struct inet6_dev *idev = rt->rt6i_idev;
--	struct net_device *loopback_dev =
--		dev_net(dev)->loopback_dev;
- 
--	if (idev && idev->dev != loopback_dev) {
--		struct inet6_dev *loopback_idev = in6_dev_get(loopback_dev);
--		if (loopback_idev) {
--			rt->rt6i_idev = loopback_idev;
-+	if (idev && idev->dev != dev_net(dev)->loopback_dev) {
-+		struct inet6_dev *ibdev = in6_dev_get(blackhole_netdev);
-+		if (ibdev) {
-+			rt->rt6i_idev = ibdev;
- 			in6_dev_put(idev);
- 		}
- 	}
++#define FAIL(tag, format...) ({						\
++	test__fail();							\
++	printf("%s:%d:FAIL:%s ", __func__, __LINE__, tag);		\
++	printf(format);							\
++})
++
+ #define _CHECK(condition, tag, duration, format...) ({			\
+ 	int __ret = !!(condition);					\
+ 	if (__ret) {							\
+-		test__fail();						\
+-		printf("%s:FAIL:%s ", __func__, tag);			\
+-		printf(format);						\
++		FAIL(tag, format);					\
+ 	} else {							\
+-		printf("%s:PASS:%s %d nsec\n",				\
+-		       __func__, tag, duration);			\
++		printf("%s:%d:PASS:%s %d nsec\n",			\
++		       __func__, __LINE__, tag, duration);		\
+ 	}								\
+ 	__ret;								\
+ })
+@@ -108,8 +112,7 @@ extern struct ipv6_packet pkt_v6;
+ #define CHECK_FAIL(condition) ({					\
+ 	int __ret = !!(condition);					\
+ 	if (__ret) {							\
+-		test__fail();						\
+-		printf("%s:FAIL:%d\n", __func__, __LINE__);		\
++		FAIL("", #condition "\n");				\
+ 	}								\
+ 	__ret;								\
+ })
 -- 
-2.23.0.581.g78d2f28ef7-goog
+2.20.1
 
