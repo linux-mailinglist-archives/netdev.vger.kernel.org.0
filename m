@@ -2,62 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3090D1E86
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 04:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF307D1E9E
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 04:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732657AbfJJChk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 22:37:40 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46954 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfJJChk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 22:37:40 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q5so2869952pfg.13
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 19:37:40 -0700 (PDT)
+        id S1732720AbfJJCn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 22:43:26 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43229 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbfJJCnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 22:43:25 -0400
+Received: by mail-pf1-f195.google.com with SMTP id a2so2887289pfo.10
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 19:43:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=jDj5V52U5xTiReCaQxdwl1Wy4Pgu3XL85Wr1xg/FK3o=;
-        b=oS50rc6iHGi/Vwb3FeZHHicVb/Rnb1tGHLAO3ThEFqLc6xm/Ya8Xk9MJkkKaNXAo/d
-         XcAbXLI4lTYVu1k5aSkI3bOyn/pE8gT9WRrIbb0E/oZW1J5ljZCa/hBZUIp+vcxpfjXc
-         ovnKLZP4Dh7WRqfKRPzWiB5Yq6a/XCrYV60AW4Si1DEdv+CBNaYlNsuR6yOfXNaU59Pq
-         haceGEbLu4afSSKQua8Q8AIYW1+Wx1BIwJA0VhIR0FEHsHHMlM67ye9Ir73kjHopjCJ+
-         74w/ZuY+9rcWjZv1Qz3b9LJHILZUw+RCJlMOciqrcEtr632uPqTw8uA7JIYeLfYlIsrG
-         Wj7A==
+        bh=QWteHAhBVt9oVGOsOtKHsCiYKtX8kIzt6852sk1FamE=;
+        b=iei9S1oj45k0ZQgMqH7H0heioINFqEVoK5QQNnLJC6ig340LF/7lvfzuHdeKQlFK9x
+         6Hkzh1+TJ0ShL8YMEXjqTIzqQykuK+7tNtk94vJ4PDCbixkpd/CwsT+tJo73VoTzALs/
+         3YWHZQoNIZeLzmRb9W51aeEcULryqpcGxo8kCATCoMkcLHktP/FKv3Ju9PHc7WdcrGqO
+         qhS24uqCCsyYuoV3mYvlcqYnea4e3PZbAMiwtrKuLXasFUvy0aiVsLwKeg0yUmpUQano
+         OxYzAZwBbkwSmqpihYxzEX7I6XbxUNWZtxCAn7mGV3WyXxBTngz3tgAri5pGzUmpS68u
+         GvEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=jDj5V52U5xTiReCaQxdwl1Wy4Pgu3XL85Wr1xg/FK3o=;
-        b=PngkdxvhNJabnpufzKyzK4Rx1pNWWuRKHMt9MWtMyg6ANt3zfjF6faFIFsc6lteETZ
-         KgP3dBmSG35gDKWBHFGPjLfwq+hIL+hMRGLMkSw+2eOnkZtsppwcpuUjSmydq0IvVBrZ
-         Ao9+pKC42pE48fTzhG2bm7QNk6D/G/f2nY0awSZyZCknxq+gI3/Q1o7PFfiKhZj8GyEO
-         mGRX5znw/NkUZKzE5rf9S9WPxFtAFBN1+PGe2ycS7pOvdHrHLQ+q9IfF757buNDPZTLb
-         3UBrbtNvrLIJKNItxLZtEZowc79h40k4B84X7osrtLKtLOhxfMaiC3nff2Zsj2dU7bXQ
-         TYtg==
-X-Gm-Message-State: APjAAAXkBmydXCgBd8cIIWtXBsbS4z9NdOu0Vg2PqqSKsrj8gd3bVTOn
-        RZfCyeuP4HFFL2uwmSkhn0te8RiS8Rs=
-X-Google-Smtp-Source: APXvYqyveXVAz9bIuwZtUAHK52ARF4ljhWlYEKMPMJprXOxzfsJrBKzLyspm+V+JLqlKkdhkIJnEYg==
-X-Received: by 2002:a63:f810:: with SMTP id n16mr7909486pgh.176.1570675059958;
-        Wed, 09 Oct 2019 19:37:39 -0700 (PDT)
+        bh=QWteHAhBVt9oVGOsOtKHsCiYKtX8kIzt6852sk1FamE=;
+        b=TTho+nnGKK0cCKAohPt8GsmDCyGJ0KWHvmr5NVseOW9PiJlNDEZioLTwAUzKPuFHUy
+         Ag45jErO1AYdeAW/y+u7sm/MCcIckTM2Th98rHbl2d8lOr7Wlz3APUwxdKfHoVPH3r57
+         N2APeNAZNSKGIKknnzQ531TRRaQvQmUaxHCK6t6/evBAZecmSVrbZIwVRNOqOpDqkPDQ
+         DfUGHWjmD1pII8aH9i645if2w61ko2JuhBNWlALPP6CqwWLc7BrzRqhkBaNkel1Xv+VJ
+         CJPxmHN2W2JJRPbAtt5K5oKGi9MCFpLbdjWDhWd+P9wyszEgVUPPIH4wlIr9DMK91Y9U
+         UXkA==
+X-Gm-Message-State: APjAAAUnm8cON+OAdD91Knu2fHI1jdpv3Dyl28WQ6SpIeNMA/Qr53rMr
+        Oroc1ur4eQeEQZtcCv70ZVwaAQ==
+X-Google-Smtp-Source: APXvYqwanEd1qtiJMg/JVqFKEiqK+wQJaWOvm1tyP8JvAOqtrzd2OgCokg0CQcOtJoVJeVXoP6I4vw==
+X-Received: by 2002:aa7:9e8d:: with SMTP id p13mr7146028pfq.171.1570675405027;
+        Wed, 09 Oct 2019 19:43:25 -0700 (PDT)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id h26sm3266773pgh.7.2019.10.09.19.37.39
+        by smtp.gmail.com with ESMTPSA id a16sm4961578pfa.53.2019.10.09.19.43.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 19:37:39 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 19:37:26 -0700
+        Wed, 09 Oct 2019 19:43:24 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 19:43:11 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Tal Gilboa <talgi@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [PATCH] DIM: fix dim.h kernel-doc and headers
-Message-ID: <20191009193726.098eb771@cakuba.netronome.com>
-In-Reply-To: <6f8dd95f-dc58-88b9-1d20-1a620b964d86@infradead.org>
-References: <6f8dd95f-dc58-88b9-1d20-1a620b964d86@infradead.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     <davem@davemloft.net>, Jose Abreu <joabreu@synopsys.com>,
+        <andrew@lunn.ch>, Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
+        <jianguo.zhang@mediatek.com>, <boon.leong.ong@intel.com>
+Subject: Re: [RESEND,PATCH] net: stmmac: dwmac-mediatek: fix wrong delay
+ value issue when resume back
+Message-ID: <20191009194311.55c8cf6e@cakuba.netronome.com>
+In-Reply-To: <20191009073348.5503-1-biao.huang@mediatek.com>
+References: <20191009073348.5503-1-biao.huang@mediatek.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -67,21 +72,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Oct 2019 21:03:14 -0700, Randy Dunlap wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
+On Wed, 9 Oct 2019 15:33:48 +0800, Biao Huang wrote:
+> mac_delay value will be divided by 550/170 in mt2712_delay_ps2stage(),
+> which is invoked at the beginning of mt2712_set_delay(), and the value
+> should be restored at the end of mt2712_set_delay().
+> Or, mac_delay will be divided again when invoking mt2712_set_delay()
+> when resume back.
+> So, add mt2712_delay_stage2ps() to mt2712_set_delay() to recovery the
+> original mac_delay value.
 > 
-> Lots of fixes to kernel-doc in structs, enums, and functions.
-> Also add header files that are being used but not yet #included.
-> 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Yamin Friedman <yaminf@mellanox.com>
-> Cc: Tal Gilboa <talgi@mellanox.com>
-> Cc: Saeed Mahameed <saeedm@mellanox.com>
-> Cc: Doug Ledford <dledford@redhat.com>
-> Cc: Jason Gunthorpe <jgg@mellanox.com>
-> Cc: linux-rdma@vger.kernel.org
-> Cc: netdev@vger.kernel.org
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 
-I capitalized some of the descriptions looks like this file prefers that.
-
-Otherwise seems reasonable, applied to net-next, thank you!
+Applied, thanks.
