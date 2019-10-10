@@ -2,93 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF54DD31BF
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 21:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A583FD31C7
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 22:08:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726178AbfJJT57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 15:57:59 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33563 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725867AbfJJT57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 15:57:59 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q10so4589426pfl.0
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 12:57:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=D11jdimFUgtFsEzOrX+OLo6cwiUtcVEfQ2z/j7ikNl4=;
-        b=IOkwotS1hA/OO7TsIwuEmb9v3X8qWOdPDtLOAnEl9y2d8KaQQY9lyKiDxPjXmH9abf
-         dpVQc8Z1hWV12jsuFVdKP1trELyhe4FdqB8oSxUvqT0uGXOouqNtzMS1qWiTQ8zoYLBg
-         v2295+tNG8EtFHul6yX0bcCYpO4GEKJEdbxOXW3GCqWhnxdVo85XxbFUOHsCSX78KYDi
-         NUAilW44G1VNQuzdflgad/Ku+fJ/2zrUjkyYXFq9XbvKgGhK5o+blEz9p5rDjn7WdWlT
-         PQHQZ5WnusSad6jyMlu+bTtWfqe2O5rdvtbwAuTFt/jf0Q4cXvuOaf+KD5zyRnToDA7N
-         wQZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=D11jdimFUgtFsEzOrX+OLo6cwiUtcVEfQ2z/j7ikNl4=;
-        b=kc8BMMinJ2Iw7T3VuGwKujIdJD8aD4tb/HLSKfvAFKkwqmVxatAtqNUkVaqP5T5Cou
-         8sQmAZsWevY8agOechd/25K1R/5xtpGHXL0H4PxxHLf+TyxELbe4aUIcv20fYXf5PTz/
-         /zvgd1ohjLhLNA6xH1PiP2jOHs7prK0y6FRx9f6XnG4nWW4J0MNCjJ7MTNbh889s8Ll8
-         O6veeOKgvFSlJzedXX++HHnY56Suj45C2qtd7j3ouSYKw8lHqfr/zsXEt8JNOEIbIMfR
-         kv3Go/AhdFFBbdil/jCUBqNxSWBa3iKYJKjEi4JiiPWZv7Zv3P3QlkoDh1/DrVqzSUxs
-         K91w==
-X-Gm-Message-State: APjAAAUHk3FIHhHD1nkuA/sUF/SHECiK+UONREuuqPshC8MmSKJwq2z3
-        +HaFQjzyzqAmrlb2DNffLHWJrQ==
-X-Google-Smtp-Source: APXvYqwg7MksWsefjLmMrpG8r82nqovOAs90OqyvyY26Bq56HZrtlhI+1ezZPV/KBf7vtGSuouDeiA==
-X-Received: by 2002:a17:90a:9f8a:: with SMTP id o10mr13206506pjp.91.1570737478841;
-        Thu, 10 Oct 2019 12:57:58 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id h8sm7384109pfo.64.2019.10.10.12.57.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 12:57:58 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 12:57:57 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next v2 0/2] Atomic flow dissector updates
-Message-ID: <20191010195757.GH2096@mini-arch>
-References: <20191010181750.5964-1-jakub@cloudflare.com>
+        id S1726424AbfJJUAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 16:00:35 -0400
+Received: from mx2.suse.de ([195.135.220.15]:52856 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725867AbfJJUAf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 16:00:35 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 682D2AF05;
+        Thu, 10 Oct 2019 20:00:33 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 94D07E378C; Thu, 10 Oct 2019 22:00:32 +0200 (CEST)
+Date:   Thu, 10 Oct 2019 22:00:32 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7 09/17] ethtool: generic handlers for GET
+ requests
+Message-ID: <20191010200032.GH22163@unicorn.suse.cz>
+References: <cover.1570654310.git.mkubecek@suse.cz>
+ <b000e461e348ba1a0af30f2e8493618bce11ec12.1570654310.git.mkubecek@suse.cz>
+ <20191010135639.GJ2223@nanopsycho>
+ <20191010180401.GD22163@unicorn.suse.cz>
+ <eb6cb68ff77eb4f2c680809e11142150f0d83007.camel@sipsolutions.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191010181750.5964-1-jakub@cloudflare.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <eb6cb68ff77eb4f2c680809e11142150f0d83007.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/10, Jakub Sitnicki wrote:
-> This patch set changes how bpf(BPF_PROG_ATTACH) operates on flow dissector
-> hook when there is already a program attached. After this change the user
-> is allowed to update the program in a single syscall. Please see the first
-> patch for rationale.
+On Thu, Oct 10, 2019 at 08:18:05PM +0200, Johannes Berg wrote:
+> On Thu, 2019-10-10 at 20:04 +0200, Michal Kubecek wrote:
+> > 
+> > The only thing I don't like about the genetlink infrastructure is the
+> > design decision that policy and corresponding maxattr is an attribute of
+> > the family rather than a command. This forces anyone who wants to use it
+> > to essentially have one common message format for all commands and if
+> > that is not possible, to do what you suggest above, hide the actual
+> > request into a nest.
+> > 
+> > Whether you use one common attribute type for "command specific nest" or
+> > different attribute for each request type, you do not actually make
+> > things simpler, you just move the complexity one level lower. You will
+> > still have to do your own (per request) parsing of the actual request,
+> > the only difference is that you will do it in a different place and use
+> > nla_parse_nested() rather than nlmsg_parse().
+> > 
+> > Rather than bending the message layout to fit into the limitations of
+> > unified genetlink parsing, I prefer to keep the logical message
+> > structure and do the parsing on my own.
 > 
-> v1 -> v2:
+> I can't really agree with this.
 > 
-> - Don't use CHECK macro which expects BPF program run duration, which we
->   don't track in attach/detach tests. Suggested by Stanislav Fomichev.
-> 
-> - Test re-attaching flow dissector in both root and non-root network
->   namespace. Suggested by Stanislav Fomichev.
-For the series:
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
+> Having a common format is way more accessible. Generic netlink (now)
+> even exposes the policy (if set) and all of its nested sub-policies to
+> userspace (if you use NLA_POLICY_NESTED), so it's very easy to discover
+> what's in the policy and how it'll be interpreted.
 
-Thanks!
+This, however, would require a different design that Jiri proposed. What
+he proposed was one attribute type for "request specific attributes".
+But to be able to perform nested validation of the whole message and
+export all policies would, with current genetlink design, require having
+one such attribute type for each request type (command).
 
-> Jakub Sitnicki (2):
->   flow_dissector: Allow updating the flow dissector program atomically
->   selftests/bpf: Check that flow dissector can be re-attached
+But that would also require an extra check that the request message
+contains only the attribute matching its command (request type) so that
+the validation performed by genetlink would still be incomplete (it will
+always be incomplete as there are lots of strange constraints which
+cannot be described by a policy).
+
+Unless you suggest to effectively have just one command and determine
+the request type based on which of these request specific attributes is
+present (and define what to do if there is more than one).
+
+> This makes it really easy to have tools for introspection, or have
+> common debugging tools that just understand the message format based on
+> the kernel's policy.
 > 
->  net/core/flow_dissector.c                     |  10 +-
->  .../bpf/prog_tests/flow_dissector_reattach.c  | 127 ++++++++++++++++++
->  2 files changed, 134 insertions(+), 3 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+> It's also much easier this way to not mess up things like "attribute # 7
+> always means a netdev index". You solved that by nesting the common
+> bits, though the part about ETHTOOL_A_HEADER_RFLAGS actually seems ...
+> wrong? Shouldn't that have been somewhere else? Or does that mean each
+> and every request_policy has to have this at the same index? That sounds
+> error prone ...
+
+ETHTOOL_A_HEADER_RFLAGS is a constant, it's always the same. Yes,
+logically it would rather belong outside header and maybe should be
+replaced by a (possibly empty) set of NLA_FLAG attributes. If having it
+in the common header is such a big problem, I'll move it out.
+
+> But you even have *two* policies for each kind of message, one for the
+> content and one for the header...?
+
+As I said in reply to another patch, it turns out that the only reason
+for having a per request header policy was rejecting
+ETHTOOL_A_HEADER_RFLAGS for requests which do not define any request
+flags but that's probably an overkill so that one universal header
+policy would be sufficient.
+
+> It almost seems though that your argument isn't so much on the actual
+> hierarchy/nesting structure of the message itself, but the easy of
+> parsing it?
+
+It's both. I still feel that from logical point of view it makes much
+more sense to use top level attributes for what the message is actually
+about. Nothing you said convinced me otherwise, rather the opposite: it
+only confirmed that the only reason for hiding the actual request
+contents one level below is to work around the consequences of the
+decision to make policy in genetlink per family rather than per command.
+
+> I have thought previous that it might make sense to create a
+> hierarchical representation of the message, with the nested TBs pre-
+> parsed too in generic netlink, so you wouldn't just have a common
+> attrbuf but (optionally) allocate nested attrbufs for those nested
+> attributes that are present, and give a way of accessing those.
 > 
-> -- 
-> 2.20.1
-> 
+> I really do think that a single policy that's exposed for introspection
+> and links its nested sub-policies for the different sub-commands (which
+> are then also exposed to introspection) is much superior to having it
+> all just driven by the code like this.
+
+I still don't see any reason why all this could not work with per
+command policies and would be principially dependent on having one
+universal policy for the whole family.
+
+Michal Kubecek
