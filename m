@@ -2,99 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE38D2615
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:18:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3ECD2618
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:18:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387557AbfJJJSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 05:18:32 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41720 "EHLO mx1.redhat.com"
+        id S2387783AbfJJJSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 05:18:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733144AbfJJJSc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 05:18:32 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1733144AbfJJJSd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 05:18:33 -0400
+Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 50693308C1E6;
-        Thu, 10 Oct 2019 09:18:31 +0000 (UTC)
-Received: from [10.72.12.162] (ovpn-12-162.pek2.redhat.com [10.72.12.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D585B1001B09;
-        Thu, 10 Oct 2019 09:18:03 +0000 (UTC)
-Subject: Re: [PATCH V2 6/8] mdev: introduce virtio device and its device ops
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
-References: <20190924135332.14160-1-jasowang@redhat.com>
- <20190924135332.14160-7-jasowang@redhat.com>
- <20190924170640.1da03bae@x1.home>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <42b17911-7e40-3762-8f70-709c5ce7e0d0@redhat.com>
-Date:   Thu, 10 Oct 2019 17:18:03 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 15F502067B;
+        Thu, 10 Oct 2019 09:18:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570699112;
+        bh=A47oZj/pbuZ6MgCP4PraUx/9AD8nkqqyaVmA3XFn5So=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Im8uU19dOu4DDS0/DEVzU/INb+gdkoeR+CC4dBKbf+vUjk+Jy4Pn+lQ6H7KveWTN0
+         NOylkde3VbJsB9ffAn/OkpuWLLbYfWZQRMC5XRyd/zx+jR0hs7yBpozqlrMj0tqQ2F
+         uHoJaTN0A+vH4CbyflJIZjG09web9Yye4fmSBgRA=
+Date:   Thu, 10 Oct 2019 11:18:15 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        thomas.petazzoni@bootlin.com, matteo.croce@redhat.com,
+        mw@semihalf.com
+Subject: Re: [PATCH v2 net-next 4/8] net: mvneta: sync dma buffers before
+ refilling hw queues
+Message-ID: <20191010091815.GA3784@localhost.localdomain>
+References: <cover.1570662004.git.lorenzo@kernel.org>
+ <744e01ea2c93200765ba8a77f0e6b0ca6baca513.1570662004.git.lorenzo@kernel.org>
+ <20191010090831.5d6c41f2@carbon>
+ <20191010072157.GA31883@apalos.home>
 MIME-Version: 1.0
-In-Reply-To: <20190924170640.1da03bae@x1.home>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Thu, 10 Oct 2019 09:18:31 +0000 (UTC)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="+HP7ph2BbKc20aGI"
+Content-Disposition: inline
+In-Reply-To: <20191010072157.GA31883@apalos.home>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/9/25 上午7:06, Alex Williamson wrote:
-> On Tue, 24 Sep 2019 21:53:30 +0800
-> Jason Wang<jasowang@redhat.com>  wrote:
->
->> This patch implements basic support for mdev driver that supports
->> virtio transport for kernel virtio driver.
->>
->> Signed-off-by: Jason Wang<jasowang@redhat.com>
->> ---
->>   include/linux/mdev.h        |   2 +
->>   include/linux/virtio_mdev.h | 145 ++++++++++++++++++++++++++++++++++++
->>   2 files changed, 147 insertions(+)
->>   create mode 100644 include/linux/virtio_mdev.h
->>
->> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
->> index 3414307311f1..73ac27b3b868 100644
->> --- a/include/linux/mdev.h
->> +++ b/include/linux/mdev.h
->> @@ -126,6 +126,8 @@ struct mdev_device *mdev_from_dev(struct device *dev);
->>   
->>   enum {
->>   	MDEV_ID_VFIO = 1,
->> +	MDEV_ID_VIRTIO = 2,
->> +	MDEV_ID_VHOST = 3,
-> MDEV_ID_VHOST isn't used yet here.  Also, given the strong
-> interdependence between the class_id and the ops structure, we might
-> wand to define them in the same place.  Thanks,
->
-> Alex
->
+--+HP7ph2BbKc20aGI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Rethink about this, consider we may have more types of devices supported 
-in the future, moving all device_ops to mdev.h seems unnecessary. I 
-prefer to keep the device_ops into their own headers.
+> Hi Lorenzo, Jesper,
+>=20
+> On Thu, Oct 10, 2019 at 09:08:31AM +0200, Jesper Dangaard Brouer wrote:
+> > On Thu, 10 Oct 2019 01:18:34 +0200
+> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >=20
+> > > mvneta driver can run on not cache coherent devices so it is
+> > > necessary to sync dma buffers before sending them to the device
+> > > in order to avoid memory corruption. This patch introduce a performan=
+ce
+> > > penalty and it is necessary to introduce a more sophisticated logic
+> > > in order to avoid dma sync as much as we can
+> >=20
+> > Report with benchmarks here:
+> >  https://github.com/xdp-project/xdp-project/blob/master/areas/arm64/boa=
+rd_espressobin08_bench_xdp.org
+> >=20
+> > We are testing this on an Espressobin board, and do see a huge
+> > performance cost associated with this DMA-sync.   Regardless we still
+> > want to get this patch merged, to move forward with XDP support for
+> > this driver.=20
+> >=20
+> > We promised each-other (on IRC freenode #xdp) that we will follow-up
+> > with a solution/mitigation, after this patchset is merged.  There are
+> > several ideas, that likely should get separate upstream review.
+>=20
+> I think mentioning that the patch *introduces* a performance penalty is a=
+ bit
+> misleading.=20
+> The dma sync does have a performance penalty but it was always there.=20
+> The initial driver was mapping the DMA with DMA_FROM_DEVICE, which implies
+> syncing as well. In page_pool we do not explicitly sync buffers on alloca=
+tion
+> and leave it up the driver writer (and allow him some tricks to avoid tha=
+t),
+> thus this patch is needed.
 
-Thanks
+Reviewing the commit log I definitely agree, I will rewrite it in v3. Thx
 
+Regards,
+Lorenzo
+
+>=20
+> In any case what Jesper mentions is correct, we do have a plan :)
+>=20
+> >=20
+> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> >=20
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> >=20
+> > > ---
+> > >  drivers/net/ethernet/marvell/mvneta.c | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > >=20
+> > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethe=
+rnet/marvell/mvneta.c
+> > > index 79a6bac0192b..ba4aa9bbc798 100644
+> > > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > > +++ b/drivers/net/ethernet/marvell/mvneta.c
+> > > @@ -1821,6 +1821,7 @@ static int mvneta_rx_refill(struct mvneta_port =
+*pp,
+> > >  			    struct mvneta_rx_queue *rxq,
+> > >  			    gfp_t gfp_mask)
+> > >  {
+> > > +	enum dma_data_direction dma_dir;
+> > >  	dma_addr_t phys_addr;
+> > >  	struct page *page;
+> > > =20
+> > > @@ -1830,6 +1831,9 @@ static int mvneta_rx_refill(struct mvneta_port =
+*pp,
+> > >  		return -ENOMEM;
+> > > =20
+> > >  	phys_addr =3D page_pool_get_dma_addr(page) + pp->rx_offset_correcti=
+on;
+> > > +	dma_dir =3D page_pool_get_dma_dir(rxq->page_pool);
+> > > +	dma_sync_single_for_device(pp->dev->dev.parent, phys_addr,
+> > > +				   MVNETA_MAX_RX_BUF_SIZE, dma_dir);
+> > >  	mvneta_rx_desc_fill(rx_desc, phys_addr, page, rxq);
+> > > =20
+> > >  	return 0;
+> >=20
+> >=20
+> >=20
+> > --=20
+> > Best regards,
+> >   Jesper Dangaard Brouer
+> >   MSc.CS, Principal Kernel Engineer at Red Hat
+> >   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
+> Thanks!
+> /Ilias
+
+--+HP7ph2BbKc20aGI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXZ73VAAKCRA6cBh0uS2t
+rJ3nAPwPkIk7MO9quTfVjCmiPl1yLTAIlPgzGvsQaNLUfKyy3wD+KRgKVAEJma87
+9+T327m4z9oYwt5LnMuo/tXlwd++/AM=
+=ULjS
+-----END PGP SIGNATURE-----
+
+--+HP7ph2BbKc20aGI--
