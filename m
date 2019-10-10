@@ -2,255 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D225AD2E2E
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 17:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 594ECD2E3B
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:00:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbfJJPw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 11:52:28 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:36721 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725978AbfJJPw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 11:52:28 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iIajo-0004kc-29; Thu, 10 Oct 2019 17:52:24 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:d889:c8b8:5209:79fb] (unknown [IPv6:2a03:f580:87bc:d400:d889:c8b8:5209:79fb])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 150ED464740;
-        Thu, 10 Oct 2019 15:52:20 +0000 (UTC)
-To:     netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
-Cc:     Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>,
-        jhofstee@victronenergy.com, kernel@pengutronix.de,
-        davem@davemloft.net
-References: <20191010121750.27237-1-mkl@pengutronix.de>
- <20191010121750.27237-25-mkl@pengutronix.de>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH 24/29] can: ti_hecc: add fifo underflow error reporting
-Message-ID: <dfdbefb3-48c4-0830-9627-146da062a01a@pengutronix.de>
-Date:   Thu, 10 Oct 2019 17:52:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726157AbfJJQAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 12:00:00 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:39348 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726007AbfJJP77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 11:59:59 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r3so8571443wrj.6
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 08:59:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Adc/sOVJH420jCtNWHunWz9Zz5Bs27+Re6hl25uBUac=;
+        b=FrhugCb6PxgrlFvoTyqdF5uU85qAQvkZ21Q1uoHf7rTogkJLrl/87lUct1q9kFdszG
+         6nl2Imk+ENDNnOVle8j84pgpeSQw0a7WYgp2uJijQKx+ylW3yUwLDwZB7kTtWvR92pRh
+         3rxiUEdvVaS8RRXuWxmtkv+/EcQOcmKhgt0YvT8wlttQ7vJ9R9ZRebq9fXNRZ75lgX+C
+         j3E+h1CdhRXJexTzHOEeG+mQCRvGx/6NL8vGBjWIa3H63HnOUbAbe18DRB5owU6P3SDD
+         ZmNIhDnWzxarbykp1O/73oRgGmF36CYKTlSTfA1RnXaYpMMrvsHnzOa7wBId/XmJiqUx
+         WHTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Adc/sOVJH420jCtNWHunWz9Zz5Bs27+Re6hl25uBUac=;
+        b=sILYb9PdBeZ6CMdzzV0LYS2Jmc/sJPO6Fd1Zw6g+Dc4TXi08flpQiXA/XerXBBJLlB
+         6lytchlggcl050FoB+q/ZsNNFi6Cm+ESp+YfPCNZj4/fA3LIFHoTdQrqq84R88oVVswq
+         Tv+9mqGi68fCsi+wgkxGM4UbniY2Oel/qFXP9NgTXVTU1pQ1ct8VbvxEVgWecaQ2znzz
+         SADEwjH5q6+t4pC9jLNXSorO7pdkve3kI3D9iGXdDDZb30QG9w4GApIR4F1SH6gDkjBe
+         Xi6MGfiL02rgnQll/fcjUZb5m/0P4ufXkhQV1qwXkhkKg5wMiUmIcTBUj2CaErjD4zmp
+         2AXA==
+X-Gm-Message-State: APjAAAUaz1p0Aiw33mFPBHvEy7EsBv72iUqtLpkjmLyTfFWuuZdO5tQd
+        A7Mu6dy/yokzV+8pi/zBj8GyPA==
+X-Google-Smtp-Source: APXvYqxulKgl1eYSjDtsgm6XD1L8iWCXTboIJrqEk/6dSmAPptkMZ0/lnzQhqANwiRSA7IWD8BWswQ==
+X-Received: by 2002:adf:f90d:: with SMTP id b13mr9033535wrr.316.1570723196609;
+        Thu, 10 Oct 2019 08:59:56 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id x16sm3967515wrl.32.2019.10.10.08.59.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 08:59:56 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 17:59:55 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7 12/17] ethtool: provide link settings with
+ LINKINFO_GET request
+Message-ID: <20191010155955.GB2901@nanopsycho>
+References: <cover.1570654310.git.mkubecek@suse.cz>
+ <1568f00bf7275f1a872c177e29d5800cd73e50c8.1570654310.git.mkubecek@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20191010121750.27237-25-mkl@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1568f00bf7275f1a872c177e29d5800cd73e50c8.1570654310.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt
-Content-Type: multipart/mixed; boundary="xhk6VFvhkEkazo2IJ4w3oJBiKfHLH2mX7";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: netdev@vger.kernel.org, linux-can <linux-can@vger.kernel.org>
-Cc: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
- =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>,
- jhofstee@victronenergy.com, kernel@pengutronix.de, davem@davemloft.net
-Message-ID: <dfdbefb3-48c4-0830-9627-146da062a01a@pengutronix.de>
-Subject: Re: [PATCH 24/29] can: ti_hecc: add fifo underflow error reporting
-References: <20191010121750.27237-1-mkl@pengutronix.de>
- <20191010121750.27237-25-mkl@pengutronix.de>
-In-Reply-To: <20191010121750.27237-25-mkl@pengutronix.de>
+Wed, Oct 09, 2019 at 10:59:37PM CEST, mkubecek@suse.cz wrote:
 
---xhk6VFvhkEkazo2IJ4w3oJBiKfHLH2mX7
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+[...]
 
-On 10/10/19 2:17 PM, Marc Kleine-Budde wrote:
-> From: Jeroen Hofstee <jhofstee@victronenergy.com>
->=20
-> When the rx fifo overflows the ti_hecc would silently drop them since
-> the overwrite protection is enabled for all mailboxes. So disable it
-> for the lowest priority mailbox and increment the rx_fifo_errors when
-> receive message lost is set. Drop the message itself in that case,
-> since it might be partially updated.
+>+/* prepare_data() handler */
 
-Is that your observation or does the data sheet say anything to this
-situation?
-
->=20
-> Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> ---
->  drivers/net/can/ti_hecc.c | 21 +++++++++++++++++----
->  1 file changed, 17 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
-> index 6ea29126c60b..c2d83ada203a 100644
-> --- a/drivers/net/can/ti_hecc.c
-> +++ b/drivers/net/can/ti_hecc.c
-> @@ -82,7 +82,7 @@ MODULE_VERSION(HECC_MODULE_VERSION);
->  #define HECC_CANTA		0x10	/* Transmission acknowledge */
->  #define HECC_CANAA		0x14	/* Abort acknowledge */
->  #define HECC_CANRMP		0x18	/* Receive message pending */
-> -#define HECC_CANRML		0x1C	/* Remote message lost */
-> +#define HECC_CANRML		0x1C	/* Receive message lost */
->  #define HECC_CANRFP		0x20	/* Remote frame pending */
->  #define HECC_CANGAM		0x24	/* SECC only:Global acceptance mask */
->  #define HECC_CANMC		0x28	/* Master control */
-> @@ -385,8 +385,17 @@ static void ti_hecc_start(struct net_device *ndev)=
-
->  	/* Enable tx interrupts */
->  	hecc_set_bit(priv, HECC_CANMIM, BIT(HECC_MAX_TX_MBOX) - 1);
-> =20
-> -	/* Prevent message over-write & Enable interrupts */
-> -	hecc_write(priv, HECC_CANOPC, HECC_SET_REG);
-> +	/* Prevent message over-write to create a rx fifo, but not for
-> +	 * the lowest priority mailbox, since that allows detecting
-> +	 * overflows instead of the hardware silently dropping the
-> +	 * messages. The lowest rx mailbox is one above the tx ones,
-> +	 * hence its mbxno is the number of tx mailboxes.
-> +	 */
-> +	mbxno =3D HECC_MAX_TX_MBOX;
-> +	mbx_mask =3D ~BIT(mbxno);
-> +	hecc_write(priv, HECC_CANOPC, mbx_mask);
-> +
-> +	/* Enable interrupts */
->  	if (priv->use_hecc1int) {
->  		hecc_write(priv, HECC_CANMIL, HECC_SET_REG);
->  		hecc_write(priv, HECC_CANGIM, HECC_CANGIM_DEF_MASK |
-> @@ -531,6 +540,7 @@ static unsigned int ti_hecc_mailbox_read(struct can=
-_rx_offload *offload,
->  {
->  	struct ti_hecc_priv *priv =3D rx_offload_to_priv(offload);
->  	u32 data, mbx_mask;
-> +	int lost;
-> =20
->  	mbx_mask =3D BIT(mbxno);
->  	data =3D hecc_read_mbx(priv, mbxno, HECC_CANMID);
-> @@ -552,9 +562,12 @@ static unsigned int ti_hecc_mailbox_read(struct ca=
-n_rx_offload *offload,
->  	}
-> =20
->  	*timestamp =3D hecc_read_stamp(priv, mbxno);
-> +	lost =3D hecc_read(priv, HECC_CANRML) & mbx_mask;
-> +	if (unlikely(lost))
-> +		priv->offload.dev->stats.rx_fifo_errors++;
-
-In the flexcan and at91_can driver we're incrementing the following error=
-s:
-			dev->stats.rx_over_errors++;
-			dev->stats.rx_errors++;
-
-You can save the register access if you only check for overflows if
-reading from the lowest prio mailbox.
-
-If you're discarding the data if the mailbox is marked as overflow
-there's no need to read the data in the first place.
-
->  	hecc_write(priv, HECC_CANRMP, mbx_mask);
-> =20
-> -	return 1;
-> +	return !lost;
->  }
-> =20
->  static int ti_hecc_error(struct net_device *ndev, int int_status,
->=20
-
-I'll send a v2 that addresses these findings.
-
-Marc
-
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+Not sure how valuable are comments like this...
 
 
---xhk6VFvhkEkazo2IJ4w3oJBiKfHLH2mX7--
+>+static int linkinfo_prepare(const struct ethnl_req_info *req_base,
+>+			    struct ethnl_reply_data *reply_base,
+>+			    struct genl_info *info)
+>+{
+>+	struct linkinfo_reply_data *data =
+>+		container_of(reply_base, struct linkinfo_reply_data, base);
 
---PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+A helper would be nice for this. For req_info too.
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2fU68ACgkQWsYho5Hk
-nSA5SQf9HlJfbDEIUFCh1DSdIQi1gpHDT06ox9newEDnSmivCgtNuiLB7Z2WEWmd
-gNqR6EgU8uW2wccchEJvjELgoFq5uJdquT0zCtRwu3jCxPGZhpAhi0vj7ClM9K/f
-9Cx0rgstnY59iePQMAIe8A2I5Yur8u3ZDIGGS3NWp4iJop78qpbx80/YIfii7JCl
-WR2LmzcD1Jx3pwQMVN6FhdHyf3RjHw+Vfza8pX8VS25ubrUnynVQTh/HbGNlGlK1
-BzTP2YlaElDzXFGI+8Tnsw91b+F8j2OmbTel2yKT45o8cTd4k5g8obc1Oh77OBC8
-85ZRYf8vwVERCnE59VuyRAym62+h9g==
-=bgHo
------END PGP SIGNATURE-----
+>+	struct net_device *dev = reply_base->dev;
+>+	int ret;
+>+
+>+	data->lsettings = &data->ksettings.base;
+>+
+>+	ret = ethnl_before_ops(dev);
 
---PuZm4VCQiooSzQjeQd9ZclikGRIXl4Xzt--
+"before_ops"/"after_ops" sounds odd. Maybe:
+ethnl_ops_begin
+ethnl_ops_complete
+
+To me in-line with ethtool_ops names?
+
+I guess you don't want the caller (ethnl_get_doit/ethnl_get_dumpit)
+to call this because it might not be needed down in prepare_data()
+callback, right?
+
+
+>+	if (ret < 0)
+>+		return ret;
+>+	ret = __ethtool_get_link_ksettings(dev, &data->ksettings);
+>+	if (ret < 0 && info)
+>+		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
+>+	ethnl_after_ops(dev);
+>+
+>+	return ret;
+>+}
+
+[...]
+
+
+>+const struct get_request_ops linkinfo_request_ops = {
+>+	.request_cmd		= ETHTOOL_MSG_LINKINFO_GET,
+>+	.reply_cmd		= ETHTOOL_MSG_LINKINFO_GET_REPLY,
+>+	.hdr_attr		= ETHTOOL_A_LINKINFO_HEADER,
+>+	.max_attr		= ETHTOOL_A_LINKINFO_MAX,
+>+	.req_info_size		= sizeof(struct linkinfo_req_info),
+>+	.reply_data_size	= sizeof(struct linkinfo_reply_data),
+>+	.request_policy		= linkinfo_get_policy,
+>+	.all_reqflags		= ETHTOOL_RFLAG_LINKINFO_ALL,
+>+
+>+	.prepare_data		= linkinfo_prepare,
+
+Please have the ops with the same name/suffix:
+	.request_policy		= linkinfo_reques_policy,
+	.prepare_data		= linkinfo_prepare_data,
+	.reply_size		= linkinfo_reply_size,
+	.fill_reply		= linkinfo_fill_reply,
+
+Same applies of course to the other patches.
+
+
+>+	.reply_size		= linkinfo_size,
+>+	.fill_reply		= linkinfo_fill,
+>+};
+
+[...]
