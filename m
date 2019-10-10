@@ -2,147 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 594ECD2E3B
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:00:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38590D2E5B
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:09:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726157AbfJJQAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 12:00:00 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39348 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbfJJP77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 11:59:59 -0400
-Received: by mail-wr1-f67.google.com with SMTP id r3so8571443wrj.6
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 08:59:57 -0700 (PDT)
+        id S1726088AbfJJQJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 12:09:53 -0400
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:46405 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbfJJQJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 12:09:53 -0400
+Received: by mail-pg1-f170.google.com with SMTP id b8so3953031pgm.13
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 09:09:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Adc/sOVJH420jCtNWHunWz9Zz5Bs27+Re6hl25uBUac=;
-        b=FrhugCb6PxgrlFvoTyqdF5uU85qAQvkZ21Q1uoHf7rTogkJLrl/87lUct1q9kFdszG
-         6nl2Imk+ENDNnOVle8j84pgpeSQw0a7WYgp2uJijQKx+ylW3yUwLDwZB7kTtWvR92pRh
-         3rxiUEdvVaS8RRXuWxmtkv+/EcQOcmKhgt0YvT8wlttQ7vJ9R9ZRebq9fXNRZ75lgX+C
-         j3E+h1CdhRXJexTzHOEeG+mQCRvGx/6NL8vGBjWIa3H63HnOUbAbe18DRB5owU6P3SDD
-         ZmNIhDnWzxarbykp1O/73oRgGmF36CYKTlSTfA1RnXaYpMMrvsHnzOa7wBId/XmJiqUx
-         WHTg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=wjUtvmCvo6VYYgZT2v5u95hguSn59IwTnB2wH040nJo=;
+        b=iWEfxrka27vrUmPD6BpuuFz8uC7/FCxQh6KvQ2g08MxqdMhDgPc5bDcCGDXaNgrLar
+         BNUJhck8Xp36Vm8bduSDttRVqCaHZAArKfJBJGmx+bah/BgfyDOr5u6J+JKk1iEymqwi
+         Qak4ls0ENUQWNAb9+FucRIl41wkIhyPvDLq/Eccp0Kptm7StQPjGNW4o2lxHhyVXISqK
+         CMdIKYD/+0a6QYMiVzxL2k9ut6RHlLgnTuIW8zhcEhuqgWs2Aa9xmNgIy6rsU2G5LMqo
+         UKA1L06krRKqqq4/vloC3f3xk/7GbqoM4BDADpWzjqvUhN22mpQgiUHdrqHanpHX7S9u
+         AW8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Adc/sOVJH420jCtNWHunWz9Zz5Bs27+Re6hl25uBUac=;
-        b=sILYb9PdBeZ6CMdzzV0LYS2Jmc/sJPO6Fd1Zw6g+Dc4TXi08flpQiXA/XerXBBJLlB
-         6lytchlggcl050FoB+q/ZsNNFi6Cm+ESp+YfPCNZj4/fA3LIFHoTdQrqq84R88oVVswq
-         Tv+9mqGi68fCsi+wgkxGM4UbniY2Oel/qFXP9NgTXVTU1pQ1ct8VbvxEVgWecaQ2znzz
-         SADEwjH5q6+t4pC9jLNXSorO7pdkve3kI3D9iGXdDDZb30QG9w4GApIR4F1SH6gDkjBe
-         Xi6MGfiL02rgnQll/fcjUZb5m/0P4ufXkhQV1qwXkhkKg5wMiUmIcTBUj2CaErjD4zmp
-         2AXA==
-X-Gm-Message-State: APjAAAUaz1p0Aiw33mFPBHvEy7EsBv72iUqtLpkjmLyTfFWuuZdO5tQd
-        A7Mu6dy/yokzV+8pi/zBj8GyPA==
-X-Google-Smtp-Source: APXvYqxulKgl1eYSjDtsgm6XD1L8iWCXTboIJrqEk/6dSmAPptkMZ0/lnzQhqANwiRSA7IWD8BWswQ==
-X-Received: by 2002:adf:f90d:: with SMTP id b13mr9033535wrr.316.1570723196609;
-        Thu, 10 Oct 2019 08:59:56 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id x16sm3967515wrl.32.2019.10.10.08.59.55
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=wjUtvmCvo6VYYgZT2v5u95hguSn59IwTnB2wH040nJo=;
+        b=GRIDvAQo0NzJD09rFaqEwZioKbzAjxcrgRliQNc24J8HK3mMbB6lmrmqmEfI2Qp/ZP
+         LUP7aaXyfvpwK1Bi1WzhHA8WFv1wcqxOuWQ7VbmN4oD0NucDMIUFUX4XYxPJV3sxPA2c
+         0+kE3c7S2MZ3F822ZrcNg008NbjStlTYRq3HidsaTYoIlmEahc+7+mQ/M4PkfwQqS0XB
+         aZsiB9a1Y1V99SDkZjbejgCs4Z50q/3Lqwjewy+Nz1cIDwCWIrXdkW/hnWEQX6pfYGcZ
+         1UfD5/ciTmN2UQElm45djKxl+VIijEZ+BRtBjnZShH3/FuRChvJ4hW+llPohBv7jngm9
+         notw==
+X-Gm-Message-State: APjAAAUaFIuc8qEhvwmaxUzDvsyWkf880BYAnvVANyjc4OkWx49efQpg
+        r6tLMFFmA0vBG6jg1sqtxrCfJQ==
+X-Google-Smtp-Source: APXvYqyYOgzEy0p2PMFXuxOb2LUFozsIMxutL1ql14QpVj1R/s39oIOOqHcdDYMHtJrOeNyCJqmhcw==
+X-Received: by 2002:a17:90a:654b:: with SMTP id f11mr12235276pjs.49.1570723791193;
+        Thu, 10 Oct 2019 09:09:51 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id m68sm7036770pfb.122.2019.10.10.09.09.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 08:59:56 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 17:59:55 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7 12/17] ethtool: provide link settings with
- LINKINFO_GET request
-Message-ID: <20191010155955.GB2901@nanopsycho>
-References: <cover.1570654310.git.mkubecek@suse.cz>
- <1568f00bf7275f1a872c177e29d5800cd73e50c8.1570654310.git.mkubecek@suse.cz>
+        Thu, 10 Oct 2019 09:09:50 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 09:09:34 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, ayal@mellanox.com,
+        moshe@mellanox.com, eranbe@mellanox.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next 2/4] devlink: propagate extack down to health
+ reporter ops
+Message-ID: <20191010090934.4e869113@cakuba.netronome.com>
+In-Reply-To: <20191010080704.GB2223@nanopsycho>
+References: <20191009110445.23237-1-jiri@resnulli.us>
+        <20191009110445.23237-3-jiri@resnulli.us>
+        <20191009203818.39424b5d@cakuba.netronome.com>
+        <20191010080704.GB2223@nanopsycho>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1568f00bf7275f1a872c177e29d5800cd73e50c8.1570654310.git.mkubecek@suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Oct 09, 2019 at 10:59:37PM CEST, mkubecek@suse.cz wrote:
+On Thu, 10 Oct 2019 10:07:04 +0200, Jiri Pirko wrote:
+> Thu, Oct 10, 2019 at 05:38:18AM CEST, jakub.kicinski@netronome.com wrote:
+> >On Wed,  9 Oct 2019 13:04:43 +0200, Jiri Pirko wrote:  
+> >> From: Jiri Pirko <jiri@mellanox.com>
+> >> 
+> >> During health reporter operations, driver might want to fill-up
+> >> the extack message, so propagate extack down to the health reporter ops.
+> >> 
+> >> Signed-off-by: Jiri Pirko <jiri@mellanox.com>  
+> >
+> >I wonder how useful this is for non-testing :( We'd probably expect most
+> >health reporters to have auto-recovery on and therefore they won't be
+> >able to depend on that extack..  
+> 
+> That is probably true. But still, what is harm of carrying potential
+> error message to the user?
 
-[...]
-
->+/* prepare_data() handler */
-
-Not sure how valuable are comments like this...
-
-
->+static int linkinfo_prepare(const struct ethnl_req_info *req_base,
->+			    struct ethnl_reply_data *reply_base,
->+			    struct genl_info *info)
->+{
->+	struct linkinfo_reply_data *data =
->+		container_of(reply_base, struct linkinfo_reply_data, base);
-
-A helper would be nice for this. For req_info too.
-
-
->+	struct net_device *dev = reply_base->dev;
->+	int ret;
->+
->+	data->lsettings = &data->ksettings.base;
->+
->+	ret = ethnl_before_ops(dev);
-
-"before_ops"/"after_ops" sounds odd. Maybe:
-ethnl_ops_begin
-ethnl_ops_complete
-
-To me in-line with ethtool_ops names?
-
-I guess you don't want the caller (ethnl_get_doit/ethnl_get_dumpit)
-to call this because it might not be needed down in prepare_data()
-callback, right?
-
-
->+	if (ret < 0)
->+		return ret;
->+	ret = __ethtool_get_link_ksettings(dev, &data->ksettings);
->+	if (ret < 0 && info)
->+		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
->+	ethnl_after_ops(dev);
->+
->+	return ret;
->+}
-
-[...]
-
-
->+const struct get_request_ops linkinfo_request_ops = {
->+	.request_cmd		= ETHTOOL_MSG_LINKINFO_GET,
->+	.reply_cmd		= ETHTOOL_MSG_LINKINFO_GET_REPLY,
->+	.hdr_attr		= ETHTOOL_A_LINKINFO_HEADER,
->+	.max_attr		= ETHTOOL_A_LINKINFO_MAX,
->+	.req_info_size		= sizeof(struct linkinfo_req_info),
->+	.reply_data_size	= sizeof(struct linkinfo_reply_data),
->+	.request_policy		= linkinfo_get_policy,
->+	.all_reqflags		= ETHTOOL_RFLAG_LINKINFO_ALL,
->+
->+	.prepare_data		= linkinfo_prepare,
-
-Please have the ops with the same name/suffix:
-	.request_policy		= linkinfo_reques_policy,
-	.prepare_data		= linkinfo_prepare_data,
-	.reply_size		= linkinfo_reply_size,
-	.fill_reply		= linkinfo_fill_reply,
-
-Same applies of course to the other patches.
-
-
->+	.reply_size		= linkinfo_size,
->+	.fill_reply		= linkinfo_fill,
->+};
-
-[...]
+Not sure, it just makes the right thing to do non-obvious to someone
+implementing the API (below level 7 on Rusty's API Design Manifesto).
+But I don't feel too strongly about it.
