@@ -2,70 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA6C7D3491
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F153D349E
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbfJJXrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 19:47:17 -0400
-Received: from mail-qt1-f179.google.com ([209.85.160.179]:36638 "EHLO
-        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbfJJXrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 19:47:17 -0400
-Received: by mail-qt1-f179.google.com with SMTP id o12so11346612qtf.3
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 16:47:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=MHlMgR1RJEreA1J7PlSKMeNqW8+Ucx7jaAWDqbiO9Hc=;
-        b=qsVv8P0Rv7c6i2uFgKlMcWDORKnw14YUXQtRVD0V3OcuHgl9LxBvrFFhfsa/voWXJI
-         D2aoDap+yLB7EgsGNE7W9XmEFuv1JgkVjZHPfOdXljOugRw6wFFAKK/qC9NlTfL10rnH
-         F7s5t/d+Jke36KMMhray2eDULoUOq3ZepuUH2xShrre7GMNgAnY3FvsKqDYN9KPrS9GK
-         5M0s/0O/JbR9UwEuFurS+roJInjSrocrUlxmhfmSDA8I7fXB9gGV12cZVoCIlHDJR81U
-         jLgtl66hCpJo6ts1Wmuk0qFCtXWUHThsmHHOs8rSqOYb4Licd8Wadma/kC/XGg72T7d4
-         LY8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=MHlMgR1RJEreA1J7PlSKMeNqW8+Ucx7jaAWDqbiO9Hc=;
-        b=YHUAWSfdb2Rn88HaJTaMp5v+N1p2otCPW5k9EMynvXAQBrkD2vpJ32wG2ogXvWVO/W
-         aWtjVf45K/+IdH7zAY1HCv/DltgkGZlpMLCh8t/Qz15Qxw7Imgq43xGA2J6fp4ere6Ng
-         bUqqCPHbaFXqzp4AVX+zHhTUDPDolf5PGpNMDN2fPO734nntJLf1NszRQu1XhRJp3MdT
-         HgEykntZj7JLeBt3jN++prXmy/39tiQZ6opRbXKxiiHi3oAuAChckPgavLHh+RqwTQYB
-         Hn9FppgYa67+uhNwau+S+iZhorWfpEuAjeMRqWlgIzKxv24tS3V5DaRDt64ErGdeUbzC
-         am2w==
-X-Gm-Message-State: APjAAAUTB2WtUlpvNK5+oMzhJZPo+h+LpLuWWIdhHjoO2LYslNmd4Ulv
-        X4k9K/l0u4iW1TAQ0LGDXrGEUA==
-X-Google-Smtp-Source: APXvYqxWibKyx7xQKyCfGMmlKIyFxMNSwFrsC/XimTMAbvYtdqwCGaxsPm2H7C7rRrB1wjyy/AUGMQ==
-X-Received: by 2002:a05:6214:134d:: with SMTP id b13mr12687113qvw.228.1570751236144;
-        Thu, 10 Oct 2019 16:47:16 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id u27sm4956410qta.90.2019.10.10.16.47.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 16:47:16 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 16:47:00 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Roman Mashak <mrv@mojatatu.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel@mojatatu.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us
-Subject: Re: [PATCH net-next 1/1] tc-testing: updated pedit test cases
-Message-ID: <20191010164700.6f34b81b@cakuba.netronome.com>
-In-Reply-To: <1570654431-8270-1-git-send-email-mrv@mojatatu.com>
-References: <1570654431-8270-1-git-send-email-mrv@mojatatu.com>
-Organization: Netronome Systems, Ltd.
+        id S1726698AbfJJXuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 19:50:32 -0400
+Received: from smtprelay0091.hostedemail.com ([216.40.44.91]:48063 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725845AbfJJXub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 19:50:31 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 4DA0E181D3377;
+        Thu, 10 Oct 2019 23:50:30 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 30,2,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2693:2828:2898:3138:3139:3140:3141:3142:3353:3622:3653:3865:3866:3868:3871:4321:4605:5007:6117:7576:7875:9391:10004:10400:11026:11232:11233:11473:11658:11914:12043:12296:12297:12438:12555:12740:12760:12895:13439:14096:14097:14181:14659:14721:21080:21451:21505:21627:21740:21972:30054:30064:30070:30091,0,RBL:47.151.152.152:@perches.com:.lbl8.mailshell.net-62.8.0.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:27,LUA_SUMMARY:none
+X-HE-Tag: dock63_3e5b57d448e10
+X-Filterd-Recvd-Size: 3509
+Received: from XPS-9350.home (unknown [47.151.152.152])
+        (Authenticated sender: joe@perches.com)
+        by omf09.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 10 Oct 2019 23:50:28 +0000 (UTC)
+Message-ID: <2231d5f0a82f880e6706e2d0f070328a029c9b21.camel@perches.com>
+Subject: Re: [PATCH v2 3/4] treewide: Use sizeof_member() macro
+From:   Joe Perches <joe@perches.com>
+To:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+Cc:     Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Date:   Thu, 10 Oct 2019 16:50:27 -0700
+In-Reply-To: <20191010232345.26594-4-keescook@chromium.org>
+References: <20191010232345.26594-1-keescook@chromium.org>
+         <20191010232345.26594-4-keescook@chromium.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.32.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Oct 2019 16:53:51 -0400, Roman Mashak wrote:
-> Added test case for layered IP operation for a single source IP4/IP6
-> address and a single destination IP4/IP6 address.
+On Thu, 2019-10-10 at 16:23 -0700, Kees Cook wrote:
+> From: Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>
 > 
-> Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+> Replace all the occurrences of FIELD_SIZEOF() and sizeof_field() with
+> sizeof_member() except at places where these are defined. Later patches
+> will remove the unused definitions.
+> 
+> This patch is generated using following script:
+> 
+> EXCLUDE_FILES="include/linux/stddef.h|include/linux/kernel.h"
+> 
+> git grep -l -e "\bFIELD_SIZEOF\b" -e "\bsizeof_field\b" | while read file;
+> do
+> 
+> 	if [[ "$file" =~ $EXCLUDE_FILES ]]; then
+> 		continue
+> 	fi
+> 	sed -i  -e 's/\bFIELD_SIZEOF\b/sizeof_member/g' \
+> 		-e 's/\bsizeof_field\b/sizeof_member/g' \
+> 		$file;
+> done
 
-Applied, thanks
+While the sed works, a cocci script would perhaps
+be better as multi line argument realignment would
+also occur.
+
+$ cat sizeof_member.cocci
+@@
+@@
+
+-	FIELD_SIZEOF
++	sizeof_member
+
+@@
+@@
+
+-	sizeof_field
++	sizeof_member
+$
+
+For instance, this sed produces:
+
+diff --git a/crypto/adiantum.c b/crypto/adiantum.c
+@@ -435,10 +435,10 @@ static int adiantum_init_tfm(struct crypto_skcipher *tfm)
+ 
+ 	BUILD_BUG_ON(offsetofend(struct adiantum_request_ctx, u) !=
+ 		     sizeof(struct adiantum_request_ctx));
+-	subreq_size = max(FIELD_SIZEOF(struct adiantum_request_ctx,
++	subreq_size = max(sizeof_member(struct adiantum_request_ctx,
+ 				       u.hash_desc) +
+ 			  crypto_shash_descsize(hash),
+-			  FIELD_SIZEOF(struct adiantum_request_ctx,
++			  sizeof_member(struct adiantum_request_ctx,
+ 				       u.streamcipher_req) +
+ 			  crypto_skcipher_reqsize(streamcipher));
+ 
+
+where the cocci script produces:
+
+--- crypto/adiantum.c
++++ /tmp/cocci-output-22881-d8186c-adiantum.c
+@@ -435,11 +435,11 @@ static int adiantum_init_tfm(struct cryp
+ 
+ 	BUILD_BUG_ON(offsetofend(struct adiantum_request_ctx, u) !=
+ 		     sizeof(struct adiantum_request_ctx));
+-	subreq_size = max(FIELD_SIZEOF(struct adiantum_request_ctx,
+-				       u.hash_desc) +
++	subreq_size = max(sizeof_member(struct adiantum_request_ctx,
++					u.hash_desc) +
+ 			  crypto_shash_descsize(hash),
+-			  FIELD_SIZEOF(struct adiantum_request_ctx,
+-				       u.streamcipher_req) +
++			  sizeof_member(struct adiantum_request_ctx,
++					u.streamcipher_req) +
+ 			  crypto_skcipher_reqsize(streamcipher));
+ 
+ 	crypto_skcipher_set_reqsize(tfm,
+
+
