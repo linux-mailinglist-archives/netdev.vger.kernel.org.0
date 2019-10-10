@@ -2,178 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56EC6D318C
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 21:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59DE5D317E
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 21:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbfJJToC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 15:44:02 -0400
-Received: from mx2.suse.de ([195.135.220.15]:43698 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725867AbfJJToC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 15:44:02 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 36BD2AD54;
-        Thu, 10 Oct 2019 19:30:47 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id C62E6E378C; Thu, 10 Oct 2019 21:30:44 +0200 (CEST)
-Date:   Thu, 10 Oct 2019 21:30:44 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7 14/17] ethtool: set link settings with
- LINKINFO_SET request
-Message-ID: <20191010193044.GG22163@unicorn.suse.cz>
-References: <cover.1570654310.git.mkubecek@suse.cz>
- <aef31ba798d1cfa2ae92d333ad1547f4b528ffa8.1570654310.git.mkubecek@suse.cz>
- <20191010153754.GA2901@nanopsycho>
+        id S1726037AbfJJTlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 15:41:35 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:19006 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725867AbfJJTlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 15:41:35 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9AJN94J018950;
+        Thu, 10 Oct 2019 12:41:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=gfb9DcpaUgRvCEEx3YN/u2yAyUy6y7YkLaFNtQMsWIk=;
+ b=h79+FdXh4nOgLusRGJyN2o/S51V+1HcTNS4wTg6LpDOyB20YjLv6H7AlCHdqlNLFQlq3
+ JpS6Op0c21Ac1lUMycaIYYp+Mqyqn2iRcp53DzyZ1FnSNeKWX50FIJESTaCLNmbKNwPG
+ 5P4wl3wODonJafMMLpkuuSp2EMESIcYIX0M= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vj7wy9ht8-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 10 Oct 2019 12:41:32 -0700
+Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Thu, 10 Oct 2019 12:41:32 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Thu, 10 Oct 2019 12:41:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FW+zfkoC+DQSDX5rWiLYzjuCpJoki0v46xoY2TC6XNyUfU64V4FngHrquFZ+ayCZKSwYPsz7PvBi7LkXwL04lUI241oxU0s97OwFtteWfX1IzSJfg6vhs3Ya9M42cMM+MjP3FK+CNnFTwNqGzBRsGsjJJOUFjbijt2tvRQihqLSVgyQE++hWUKwJ/aOBKs8H357WPJWuKStz3SGwfdJtSntIg32x6Zv+xAMSwZw9X6Z+OntE0qGSJOJnmXSsd0R3FJY81+QPIyv3xoyHkKyyNWRQ7zgPhYFVH/prGWobRhZkvUhcIhGhNqxab/X6u4WibS29pv8L182zFAY5rGWwEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gfb9DcpaUgRvCEEx3YN/u2yAyUy6y7YkLaFNtQMsWIk=;
+ b=Eq7qCu0TCZjAc8boXLYPUGKAcm0SfixnNOwBp84ORxlO6XxmhCfTbwYClnCIxUae0/vpT+TsUV8qvUfLTYk0R+igyX4WPMV1E0uF6+oFKS2VmKcAKrSECqheJ+ZIH1HvEBvUAokk/BxklfyD8idEjBVXZye7UwkfjgMBIPi+vmcqhCziF8IIT0caTsad4PPB2fqfkIeiQIw98BfnSQfmdtKBsP2QHJYieZ3qpb7/McV/PKvvBqVdEEHnEXRskMaZkfiDdwygJbdBpWIzo+nDa+YZkE38qbZ+L2ahvuOKYbCTKylKcodPtMzSC1whaKg+kTgxiUP+8JFbMdWMne5Z5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gfb9DcpaUgRvCEEx3YN/u2yAyUy6y7YkLaFNtQMsWIk=;
+ b=a1/00C+3Lw4DbSCapc1QJTNb9rBXXMoHK3zz2cpSq0zDQRnkeWGUds1PbmGVl5P8jMv0sRQqP7+S0DAljN+zdeicCEKdR0R6WuM+ARIjpu/20B/eIYPuEz5y+zykE5MGxbOBgvUXmzec3ku2z4svOgBGX+r+53nYHsJ+FWKkU/M=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB3389.namprd15.prod.outlook.com (20.179.21.78) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Thu, 10 Oct 2019 19:41:31 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::d5a4:a2a6:a805:6647]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::d5a4:a2a6:a805:6647%7]) with mapi id 15.20.2347.016; Thu, 10 Oct 2019
+ 19:41:31 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>,
+        Stanislav Fomichev <sdf@fomichev.me>
+Subject: Re: [PATCH bpf-next v2 1/2] flow_dissector: Allow updating the flow
+ dissector program atomically
+Thread-Topic: [PATCH bpf-next v2 1/2] flow_dissector: Allow updating the flow
+ dissector program atomically
+Thread-Index: AQHVf5cVR/+HF2RrME+60egdLlLNFadURjuA
+Date:   Thu, 10 Oct 2019 19:41:30 +0000
+Message-ID: <20191010194127.h3j5jmqbspj4ewgt@kafai-mbp.dhcp.thefacebook.com>
+References: <20191010181750.5964-1-jakub@cloudflare.com>
+ <20191010181750.5964-2-jakub@cloudflare.com>
+In-Reply-To: <20191010181750.5964-2-jakub@cloudflare.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR05CA0100.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0::41) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::f49f]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e1b8f315-a794-40a4-507f-08d74db9d963
+x-ms-traffictypediagnostic: MN2PR15MB3389:
+x-microsoft-antispam-prvs: <MN2PR15MB33893922264B4903176D88E9D5940@MN2PR15MB3389.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 018632C080
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(346002)(396003)(136003)(39860400002)(189003)(199004)(14454004)(66946007)(478600001)(64756008)(66446008)(5024004)(14444005)(256004)(66476007)(66556008)(6116002)(186003)(446003)(46003)(11346002)(229853002)(81166006)(8936002)(8676002)(71190400001)(86362001)(71200400001)(81156014)(486006)(476003)(7736002)(6916009)(1076003)(4326008)(52116002)(25786009)(6506007)(386003)(102836004)(6486002)(99286004)(6436002)(2906002)(5660300002)(4744005)(6246003)(76176011)(9686003)(316002)(305945005)(54906003)(6512007);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3389;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 8AdMUSXvHizG+pPBMzzeWelj2sPIMbOaHcBmJi6U54x2lK8JYhaytzwu6L42HmLMDZn1uy22BTTcakUqJ1p0RewsvL4ipyv7E93OWCfXNYWUdu/GQEdTea9Kd9UIYOecdjaZw3x3BQhsbYJlm8DLRHFANhhD1Mtj+IgMzdojq2R0KQlGZR0FIkDa6WrTW8ojRRXuQFM9JX+kbg3qDO9tkVKdU2FUGI94cbvEDr3kpL+tdsKYRQ4C1c0AlzIXmySo0t101zhPQ6dAsBIk8D/htkuxRXgIHSPNbXi1y7NjPOK1CGVCYXGCygpR0rgGZJGV3ejnU3ac14AoskiTnHke1EYfVOUnX1pY1rolYMckk2xFf58JIv1N5DvFLqGfnML4xSpxboJAxhRdTRyBM5jQhGNPIh+zSXD6JO+lW7rxo8M=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <925B8F3E9672B547882629D7D799A821@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191010153754.GA2901@nanopsycho>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1b8f315-a794-40a4-507f-08d74db9d963
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Oct 2019 19:41:30.9876
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5x3vNwH8eSEzh3WC+OZFBdf4iaGj8LzsrffTpyco+Kb3oVFwaCKxERIaYOYaYssB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3389
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-10_06:2019-10-10,2019-10-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=672
+ mlxscore=0 priorityscore=1501 impostorscore=0 adultscore=0 suspectscore=0
+ phishscore=0 spamscore=0 clxscore=1011 malwarescore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910100163
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 05:37:54PM +0200, Jiri Pirko wrote:
-> Wed, Oct 09, 2019 at 10:59:43PM CEST, mkubecek@suse.cz wrote:
-> >Implement LINKINFO_SET netlink request to set link settings queried by
-> >LINKINFO_GET message.
-> >
-> >Only physical port, phy MDIO address and MDI(-X) control can be set,
-> >attempt to modify MDI(-X) status and transceiver is rejected.
-> >
-> >When any data is modified, ETHTOOL_MSG_LINKINFO_NTF message in the same
-> >format as reply to LINKINFO_GET request is sent to notify userspace about
-> >the changes. The same notification is also sent when these settings are
-> >modified using the ioctl interface.
-> >
-> 
-> It is a bit confusing and harder to follow when you have set and notify
-> code in the same patch. Could you please split?
-
-As the notification is composed and sent by ethnl_std_notify() with help
-of the callback functions used to generate the reply to GET request, the
-only notification related changes in this patch are the three calls to
-ethtool_notify() (one in netlink code, two in ioctl code) and the entry
-added to ethnl_notify_handlers[].
-
-But I have no objection to splitting these out into a separate patch,
-except for having sacrifice some of the patches actually implementing
-something so that the series doesn't get too long.
-
-> 
-> [...]
-> 
-> 
-> >+/* LINKINFO_SET */
-> >+
-> >+static const struct nla_policy linkinfo_hdr_policy[ETHTOOL_A_HEADER_MAX + 1] = {
-> >+	[ETHTOOL_A_HEADER_UNSPEC]		= { .type = NLA_REJECT },
-> >+	[ETHTOOL_A_HEADER_DEV_INDEX]		= { .type = NLA_U32 },
-> >+	[ETHTOOL_A_HEADER_DEV_NAME]		= { .type = NLA_NUL_STRING,
-> >+						    .len = IFNAMSIZ - 1 },
-> >+	[ETHTOOL_A_HEADER_GFLAGS]		= { .type = NLA_U32 },
-> >+	[ETHTOOL_A_HEADER_RFLAGS]		= { .type = NLA_REJECT },
-> >+};
-> 
-> This is what I was talking about in the other email. These common attrs
-> should have common policy and should be parsed by generic netlink code
-> by default and be available for ethnl_set_linkinfo() in info->attrs.
-
-NLA_REJECT for ETHTOOL_A_HEADER_RFLAGS is probably an overkill here. If
-I just check that client does not set flags we do not know, I can have
-one universal header policy as well. I'll probably do that.
-
-> >+int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
-> >+{
-> >+	struct nlattr *tb[ETHTOOL_A_LINKINFO_MAX + 1];
-> >+	struct ethtool_link_ksettings ksettings = {};
-> >+	struct ethtool_link_settings *lsettings;
-> >+	struct ethnl_req_info req_info = {};
-> >+	struct net_device *dev;
-> >+	bool mod = false;
-> >+	int ret;
-> >+
-> >+	ret = nlmsg_parse(info->nlhdr, GENL_HDRLEN, tb,
-> >+			  ETHTOOL_A_LINKINFO_MAX, linkinfo_set_policy,
-> >+			  info->extack);
-> 
-> Yeah, genl code should do this parse..
-
-Not really. It would only parse the top level - which, in your design,
-would only be the common header. In other words, it would do what is now
-done by the call to nla_parse_nested() inside ethnl_parse_header(). For
-equivalent of this parse, you would still have to call your own
-nla_parse_nested() on the "request specific data" nested attribute.
-
-> >+	if (ret < 0)
-> >+		return ret;
-> >+	ret = ethnl_parse_header(&req_info, tb[ETHTOOL_A_LINKINFO_HEADER],
-> >+				 genl_info_net(info), info->extack,
-> >+				 linkinfo_hdr_policy, true);
-> 
-> and pre_doit should do this one.
-
-...and also (each) start(). Which means you would either duplicate the
-code or introduce the same helper. All you would save would be that one
-call of nla_parse_nested() in ethnl_parse_header().
-
-> >+
-> >+	ret = 0;
-> >+	if (mod) {
-> 
-> 	if (!mod)
-> 		goto out_ops;
-> 
-> ?
-
-OK
-
-> >+		ret = dev->ethtool_ops->set_link_ksettings(dev, &ksettings);
-> >+		if (ret < 0)
-> >+			GENL_SET_ERR_MSG(info, "link settings update failed");
-> >+		else
-> >+			ethtool_notify(dev, ETHTOOL_MSG_LINKINFO_NTF, NULL);
-> >+	}
-> >+
-> >+out_ops:
-> >+	ethnl_after_ops(dev);
-> >+out_rtnl:
-> >+	rtnl_unlock();
-> >+	dev_put(dev);
-> >+	return ret;
-> >+}
-...
-> >@@ -683,6 +688,7 @@ typedef void (*ethnl_notify_handler_t)(struct net_device *dev, unsigned int cmd,
-> > 				       const void *data);
-> > 
-> > static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
-> >+	[ETHTOOL_MSG_LINKINFO_NTF]	= ethnl_std_notify,
-> 
-> Correct me if I'm wrong, but this is the only notification I found in
-> this patchset. Do you expect other then ethnl_std_notify() handler?
-> Bacause otherwise this can ba simplified down to just a single table
-> similar you have for GET.
-
-Yes, there will be other handlers; ethnl_std_notify() can only handle
-the simplest (even if most common) type of notification where caller
-does not pass any information except the device, the notification
-message is exactly the same as reply to corresponding GET request would
-be and that GET request does not have any attributes (so that it can be
-handled with ethnl_get_doit()).
-
-There will be notifications which will need their own handlers, e.g. all
-notifications triggered by an action request (e.g. renegotiation or
-device reset) or notifications triggered by "ethtool -X".
-
-Michal
+On Thu, Oct 10, 2019 at 08:17:49PM +0200, Jakub Sitnicki wrote:
+> It is currently not possible to detach the flow dissector program and
+> attach a new one in an atomic fashion, that is with a single syscall.
+> Attempts to do so will be met with EEXIST error.
+>=20
+> This makes updates to flow dissector program hard. Traffic steering that
+> relies on BPF-powered flow dissection gets disrupted while old program ha=
+s
+> been already detached but the new one has not been attached yet.
+>=20
+> There is also a window of opportunity to attach a flow dissector to a
+> non-root namespace while updating the root flow dissector, thus blocking
+> the update.
+>=20
+> Lastly, the behavior is inconsistent with cgroup BPF programs, which can =
+be
+> replaced with a single bpf(BPF_PROG_ATTACH, ...) syscall without any
+> restrictions.
+>=20
+> Allow attaching a new flow dissector program when another one is already
+> present with a restriction that it can't be the same program.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
