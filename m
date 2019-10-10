@@ -2,94 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7ABDD2529
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4429D24CB
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390039AbfJJIyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 04:54:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49456 "EHLO mx1.redhat.com"
+        id S2390036AbfJJIux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 04:50:53 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:55140 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388945AbfJJIuZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 04:50:25 -0400
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2388623AbfJJIuw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 04:50:52 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C72B07FDCA
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 08:50:24 +0000 (UTC)
-Received: by mail-wr1-f72.google.com with SMTP id v18so2392733wro.16
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 01:50:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kbUGk/zH7Jd7BlhB+4/oDRz4mPdioNN/Nf5e+ZFx1KA=;
-        b=g195XDEvYjCFZcr0CuQJIbOE2OcVU+mFCQ0F7K8Q0B8sCbStH4KSH0KOfN896H9rin
-         fLKqkw620/ugylUktfJZeS/Y/NXKJoqChQ0rcU6XIPkkqdgv5DTuES1FUnnCzCuv/4MU
-         /KnIgMP5JPQiGcQ+DR+BedWvaPuAoxr6gnj6eyjA2HnvMkTV143VtzO2ctwBcB6aZjHq
-         O54A1YyKIysLAywoiuHknoz6T1NYVjuwKtAEjuRymeyHVAlNr2V4yESxrFISjlP2CgSM
-         GM+NyCBfU4R0RP3pFJL/PSP0bMs8GYpT1/H3m0/fy/1AZRuQV1nEzFiq5B/CR7jLafYU
-         Hj2g==
-X-Gm-Message-State: APjAAAViiIP+NBQvxBpsnqVsBHN3I2WqDYPLKnT1zQcHDnRvyF6egYFW
-        TXPRIo8I7CTGXW7xaWt0Qm6DUv6tJ19xUCj8x7kOrgcuqUCYou8cZQ6eRHvKWfI+RODjSipUeaO
-        rIned0GKuIm3Gb9K0
-X-Received: by 2002:a5d:6a4e:: with SMTP id t14mr7690225wrw.286.1570697423408;
-        Thu, 10 Oct 2019 01:50:23 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwoCA81jZEGW66oRDsEIESbM+AgkqiF20vI6cPaP0YoBTkJocF4+GdZwig79Aeir6Qomx30bw==
-X-Received: by 2002:a5d:6a4e:: with SMTP id t14mr7690208wrw.286.1570697423217;
-        Thu, 10 Oct 2019 01:50:23 -0700 (PDT)
-Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
-        by smtp.gmail.com with ESMTPSA id y8sm6284711wrm.64.2019.10.10.01.50.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 01:50:22 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 10:50:20 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@gmail.com>
-Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        linux-hyperv@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [RFC PATCH 06/13] vsock: add 'struct vsock_sock *' param to
- vsock_core_get_transport()
-Message-ID: <20191010085020.w5mbse7mnpzalhyr@steredhat>
-References: <20190927112703.17745-1-sgarzare@redhat.com>
- <20190927112703.17745-7-sgarzare@redhat.com>
- <20191009115433.GG5747@stefanha-x1.localdomain>
+        by mx1.redhat.com (Postfix) with ESMTPS id DF80810CC1E3;
+        Thu, 10 Oct 2019 08:50:51 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E92C560BF4;
+        Thu, 10 Oct 2019 08:50:41 +0000 (UTC)
+Date:   Thu, 10 Oct 2019 10:50:40 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
+        mw@semihalf.com, brouer@redhat.com,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Subject: Re: [PATCH v2 net-next 5/8] net: mvneta: add basic XDP support
+Message-ID: <20191010105040.23e5e86f@carbon>
+In-Reply-To: <0f471851967abb980d34104b64fea013b0dced7c.1570662004.git.lorenzo@kernel.org>
+References: <cover.1570662004.git.lorenzo@kernel.org>
+        <0f471851967abb980d34104b64fea013b0dced7c.1570662004.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191009115433.GG5747@stefanha-x1.localdomain>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.65]); Thu, 10 Oct 2019 08:50:52 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 12:54:33PM +0100, Stefan Hajnoczi wrote:
-> On Fri, Sep 27, 2019 at 01:26:56PM +0200, Stefano Garzarella wrote:
-> > -const struct vsock_transport *vsock_core_get_transport(void)
-> > +const struct vsock_transport *vsock_core_get_transport(struct vsock_sock *vsk)
-> >  {
-> >  	/* vsock_register_mutex not taken since only the transport uses this
-> >  	 * function and only while registered.
-> >  	 */
-> > -	return transport_single;
-> 
-> This comment is about protecting transport_single.  It no longer applies
-> when using vsk->transport.  Please drop it.
+On Thu, 10 Oct 2019 01:18:35 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Right, dropped.
-
+> Add basic XDP support to mvneta driver for devices that rely on software
+> buffer management. Currently supported verdicts are:
+> - XDP_DROP
+> - XDP_PASS
+> - XDP_REDIRECT
+> - XDP_ABORTED
 > 
-> Otherwise:
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 144 ++++++++++++++++++++++++--
+>  1 file changed, 135 insertions(+), 9 deletions(-)
 > 
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index ba4aa9bbc798..e2795dddbcaf 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+[...]
 
-Thanks,
-Stefano
+> @@ -1950,16 +1960,60 @@ int mvneta_rx_refill_queue(struct mvneta_port *pp, struct mvneta_rx_queue *rxq)
+>  	return i;
+>  }
+>  
+> +static int
+> +mvneta_run_xdp(struct mvneta_port *pp, struct bpf_prog *prog,
+> +	       struct xdp_buff *xdp)
+> +{
+> +	u32 ret, act = bpf_prog_run_xdp(prog, xdp);
+> +
+> +	switch (act) {
+> +	case XDP_PASS:
+> +		ret = MVNETA_XDP_PASS;
+> +		break;
+> +	case XDP_REDIRECT: {
+> +		int err;
+> +
+> +		err = xdp_do_redirect(pp->dev, xdp, prog);
+> +		if (err) {
+> +			ret = MVNETA_XDP_CONSUMED;
+> +			xdp_return_buff(xdp);
+
+> +		} else {
+> +			ret = MVNETA_XDP_REDIR;
+> +		}
+> +		break;
+> +	}
+> +	default:
+> +		bpf_warn_invalid_xdp_action(act);
+> +		/* fall through */
+> +	case XDP_ABORTED:
+> +		trace_xdp_exception(pp->dev, prog, act);
+> +		/* fall through */
+> +	case XDP_DROP:
+> +		ret = MVNETA_XDP_CONSUMED;
+> +		xdp_return_buff(xdp);
+
+Using xdp_return_buff() here is actually not optimal for performance.
+I can see that others socionext/netsec.c and AF_XDP also use this
+xdp_return_buff().
+
+I do think code wise it looks a lot nice to use xdp_return_buff(), so
+maybe we should optimize xdp_return_buff(), instead of using
+page_pool_recycle_direct() here?  (That would also help AF_XDP ?)
+
+The problem with xdp_return_buff() is that it does a "full" lookup from
+the mem.id (xdp_buff->xdp_rxq_info->mem.id) to find the "allocator"
+pointer in this case the page_pool pointer.  Here in the driver we
+already have access to the stable allocator page_pool pointer via
+struct mvneta_rx_queue *rxq->page_pool.
+
+
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>  static int
+>  mvneta_swbm_rx_frame(struct mvneta_port *pp,
+>  		     struct mvneta_rx_desc *rx_desc,
+>  		     struct mvneta_rx_queue *rxq,
+> -		     struct page *page)
+> +		     struct bpf_prog *xdp_prog,
+> +		     struct page *page, u32 *xdp_ret)
+>  {
+>  	unsigned char *data = page_address(page);
+>  	int data_len = -MVNETA_MH_SIZE, len;
+>  	struct net_device *dev = pp->dev;
+>  	enum dma_data_direction dma_dir;
+> +	struct xdp_buff xdp = {
+> +		.data_hard_start = data,
+> +		.data = data + MVNETA_SKB_HEADROOM + MVNETA_MH_SIZE,
+> +		.rxq = &rxq->xdp_rxq,
+> +	};
+
+Creating the struct xdp_buff (on call-stack) this way is not optimal
+for performance (IHMO it looks nicer code-wise, but too bad).
+
+This kind of initialization of only some of the members, cause GCC to
+zero out other members (I observed this on Intel, which use an
+expensive rep-sto operation).  Thus, this cause extra unnecessary memory
+writes.
+
+A further optimization, is that you can avoid re-assigning:
+ rxq = &rxq->xdp_rxq
+for each frame, as this actually stays the same for all the frames in
+this NAPI cycle.  By instead allocating the xdp_buff on the callers
+stack, and parsing in xdp_buff as a pointer.
+
+
+> +	xdp_set_data_meta_invalid(&xdp);
+>  
+>  	if (MVNETA_SKB_SIZE(rx_desc->data_size) > PAGE_SIZE) {
+>  		len = MVNETA_MAX_RX_BUF_SIZE;
+> @@ -1968,13 +2022,27 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+>  		len = rx_desc->data_size;
+>  		data_len += len - ETH_FCS_LEN;
+>  	}
+> +	xdp.data_end = xdp.data + data_len;
+>  
+>  	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
+>  	dma_sync_single_range_for_cpu(dev->dev.parent,
+>  				      rx_desc->buf_phys_addr, 0,
+>  				      len, dma_dir);
+>  
+> -	rxq->skb = build_skb(data, PAGE_SIZE);
+> +	if (xdp_prog) {
+> +		u32 ret;
+> +
+> +		ret = mvneta_run_xdp(pp, xdp_prog, &xdp);
+> +		if (ret != MVNETA_XDP_PASS) {
+> +			mvneta_update_stats(pp, 1, xdp.data_end - xdp.data,
+> +					    false);
+> +			rx_desc->buf_phys_addr = 0;
+> +			*xdp_ret |= ret;
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	rxq->skb = build_skb(xdp.data_hard_start, PAGE_SIZE);
+>  	if (unlikely(!rxq->skb)) {
+>  		netdev_err(dev,
+>  			   "Can't allocate skb on queue %d\n",
+[...]
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
