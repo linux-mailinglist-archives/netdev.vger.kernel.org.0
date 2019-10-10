@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76B6BD1DD5
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 03:06:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6777CD1DD9
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 03:07:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732228AbfJJBGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 21:06:53 -0400
-Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:47024 "EHLO
-        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731155AbfJJBGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 21:06:53 -0400
-Received: from pps.filterd (m0050095.ppops.net [127.0.0.1])
-        by m0050095.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id x9A16cSO028962;
-        Thu, 10 Oct 2019 02:06:47 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=jan2016.eng;
- bh=KMTjYIaI2AwIG7Czpwdsb0nAWot+utHPdTrA+4IOSCc=;
- b=L8ghfgcHq8kgUj75E7xLosN2INEw/el7v5hW1RH+lXbJ8QdK/qYIaD/xg0dbu+8HkFam
- n/FEp7LddMEgsxrVP2Vrp+K7MSN9JnylPa6jDIMic6r9BVJ5aZWsi/YOLbNzZNRBsP8s
- Gs6skWlPyGIj5AVy4FMdNEV5UOP3Idp6eiyi3iu0FTW+YQTX7UXdKzuRozeinQQ85n5L
- c10Sz1cgSoDAmUskQd4B9uwpiDWGekFIkTdT1fY/Ym8ITLDtzGOGGMgUA3/49Jh6r0u+
- /kQlBm6OuaBbn2ab5MVShpIYFIEFiBjDg8tgEtvzAvVuy7DivUqKLXCE97stdfuNfs1r eA== 
-Received: from prod-mail-ppoint3 (prod-mail-ppoint3.akamai.com [96.6.114.86] (may be forged))
-        by m0050095.ppops.net-00190b01. with ESMTP id 2vejq51rrc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Oct 2019 02:06:47 +0100
-Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
-        by prod-mail-ppoint3.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x9A124X1023618;
-        Wed, 9 Oct 2019 21:06:46 -0400
-Received: from prod-mail-relay14.akamai.com ([172.27.17.39])
-        by prod-mail-ppoint3.akamai.com with ESMTP id 2veph09tq3-1;
-        Wed, 09 Oct 2019 21:06:45 -0400
-Received: from [0.0.0.0] (prod-ssh-gw02.sanmateo.corp.akamai.com [172.22.187.166])
-        by prod-mail-relay14.akamai.com (Postfix) with ESMTP id 8008A80D1A;
-        Thu, 10 Oct 2019 01:06:45 +0000 (GMT)
-Subject: Re: [PATCH 2/3] ixgbe: Add UDP segmentation offload support
-To:     netdev@vger.kernel.org, willemb@google.com,
-        intel-wired-lan@lists.osuosl.org
-Cc:     Alexander Duyck <alexander.h.duyck@intel.com>
-References: <1570658777-13459-1-git-send-email-johunt@akamai.com>
- <1570658777-13459-3-git-send-email-johunt@akamai.com>
-From:   Josh Hunt <johunt@akamai.com>
-Message-ID: <22506786-c429-df87-54cb-c1c83b1b445b@akamai.com>
-Date:   Wed, 9 Oct 2019 18:06:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1732421AbfJJBHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 21:07:07 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:33223 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731155AbfJJBHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 21:07:07 -0400
+Received: by mail-lj1-f195.google.com with SMTP id a22so4420735ljd.0;
+        Wed, 09 Oct 2019 18:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mCmvnwfoIAUn0GbTA6M/IKFbFb+1cvSeHZw/IRcu1DA=;
+        b=cbBkYk8v/ij5zX0qYP3zpTa3XjiVHNsOPMcvKp+UxIaabqI+Jfd2auAuxESqgfmC7P
+         MvCi7UBKMVkGh1hCM7T+v4ysbpL2C/ZgAfAsG6A3aO0tOkPvT09TTuosX4EwlU1VQSnD
+         3iQV9eTqsrtm38wQVGNfo0kaYiKRLnsJ6Km3s9AZp4kX+XAjMvLppcAMHR6pODGNADny
+         M0Y684hgEbp8ecVnazFdbVcDKUX6RVfG2Hjp7oUHrpf/0SotiYd/KLwYjpRl5DBqzgLS
+         NE3v/N7BOOeUV/dWWKeH2ZL6WK2ld9wD57vLSVLzqo/9FWYlTiuAFRolqzmUserM4f8f
+         X2cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mCmvnwfoIAUn0GbTA6M/IKFbFb+1cvSeHZw/IRcu1DA=;
+        b=cOB0eTtkVpBfhHyoP/XZd/dJpxqwejt6X6POD3z//MsRJhXuouPubdwXh3zZqV0gqy
+         qACk++WQuTRoAhTkYQ1Kw56u5kQBvNTX4lvgBDPZaPNhrNLrrmMW7wV7LA5ZuFVEp9T5
+         ap6UV+wfJdeByYtyuplURN80KCcWCXzP61n1vGPPUxUmTguA1bEDpAsbceS2G0Ty5EdS
+         8MHVtYaJNCjpudHMxD7r2d8PUduLKNeUpSe3/4QfBuU8U7CctaggJvBRMPEk3WnwMkdX
+         0zQTNhBxqzjzKFfr3+jEe8iuyfAYSCibYyetjVfbqT643mQ6D8kz5fpdAvH5CPzdmndx
+         6PUQ==
+X-Gm-Message-State: APjAAAWheTZbDLhplb0ftQD51SeyJZ582gBWtVfaexO9rtus6PmD2ras
+        oV892dgRL8Kty1xuAb0GHHst0IsVKtVAXlSaIVQWZA==
+X-Google-Smtp-Source: APXvYqxBerzT1ZqBOzBOAyNF3ApqIrdxasLtb/hADKeZCYK1xdi/dh8E32QNM/GxYXreQo6XUWYDsEzBBGld52ZpMsM=
+X-Received: by 2002:a2e:6c15:: with SMTP id h21mr4030206ljc.10.1570669624673;
+ Wed, 09 Oct 2019 18:07:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1570658777-13459-3-git-send-email-johunt@akamai.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-09_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910100007
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-09_11:2019-10-08,2019-10-09 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 phishscore=0
- suspectscore=0 priorityscore=1501 bulkscore=0 adultscore=0 mlxlogscore=999
- spamscore=0 clxscore=1015 impostorscore=0 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1908290000
- definitions=main-1910100008
+References: <1570515415-45593-1-git-send-email-sridhar.samudrala@intel.com>
+ <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
+ <CAADnVQ+XxmvY0cs8MYriMMd7=2TSEm4zCtB+fs2vkwdUY6UgAQ@mail.gmail.com>
+ <3ED8E928C4210A4289A677D2FEB48235140134CE@fmsmsx111.amr.corp.intel.com>
+ <2bc26acd-170d-634e-c066-71557b2b3e4f@intel.com> <CAADnVQ+qq6RLMjh5bB1ugXP5p7vYM2F1fLGFQ2pL=2vhCLiBdA@mail.gmail.com>
+ <2032d58c-916f-d26a-db14-bd5ba6ad92b9@intel.com>
+In-Reply-To: <2032d58c-916f-d26a-db14-bd5ba6ad92b9@intel.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 9 Oct 2019 18:06:53 -0700
+Message-ID: <CAADnVQ+CH1YM52+LfybLS+NK16414Exrvk1QpYOF=HaT4KRaxg@mail.gmail.com>
+Subject: Re: FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP sockets to receive
+ packets directly from a queue
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Herbert, Tom" <tom.herbert@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/9/19 3:06 PM, Josh Hunt wrote:
-> Repost from a series by Alexander Duyck to add UDP segmentation offload
-> support to the igb driver:
-> https://lore.kernel.org/netdev/20180504003916.4769.66271.stgit@localhost.localdomain/
-> 
-> CC: Alexander Duyck <alexander.h.duyck@intel.com>
-> CC: Willem de Bruijn <willemb@google.com>
-> Signed-off-by: Josh Hunt <johunt@akamai.com>
-> ---
->   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 24 +++++++++++++++++++-----
->   1 file changed, 19 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index 1ce2397306b9..2b01d264e5ce 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -7946,6 +7946,7 @@ static int ixgbe_tso(struct ixgbe_ring *tx_ring,
->   	} ip;
->   	union {
->   		struct tcphdr *tcp;
-> +		struct udphdr *udp;
->   		unsigned char *hdr;
->   	} l4;
->   	u32 paylen, l4_offset;
-> @@ -7969,6 +7970,9 @@ static int ixgbe_tso(struct ixgbe_ring *tx_ring,
->   	l4.hdr = skb_checksum_start(skb);
->   
->   	/* ADV DTYP TUCMD MKRLOC/ISCSIHEDLEN */
-> +	type_tucmd = (skb->csum_offset == offsetof(struct tcphdr, check)) ?
-> +		      IXGBE_ADVTXD_TUCMD_L4T_TCP : IXGBE_ADVTXD_TUCMD_L4T_UDP;
-> +
->   	type_tucmd = IXGBE_ADVTXD_TUCMD_L4T_TCP;
+On Wed, Oct 9, 2019 at 12:12 PM Samudrala, Sridhar
+<sridhar.samudrala@intel.com> wrote:
+> >>     34.57%  xdpsock          xdpsock           [.] main
+> >>     17.19%  ksoftirqd/1      [kernel.vmlinux]  [k] ___bpf_prog_run
+> >>     13.12%  xdpsock          [kernel.vmlinux]  [k] ___bpf_prog_run
+> >
+> > That must be a bad joke.
+> > The whole patch set is based on comparing native code to interpreter?!
+> > It's pretty awesome that interpreter is only 1.5x slower than native x86.
+> > Just turn the JIT on.
+>
+> Thanks Alexei for pointing out that i didn't have JIT on.
+> When i turn it on, the performance improvement is a more modest 1.5x
+> with rxdrop and 1.2x with l2fwd.
 
-Copy/paste bug ^^. Will fix in v2.
+I want to see perf reports back to back with proper performance analysis.
 
-Josh
+> >
+> > Obvious Nack to the patch set.
+> >
+>
+> Will update the patchset with the right performance data and address
+> feedback from Bjorn.
+> Hope you are not totally against direct XDP approach as it does provide
+> value when an AF_XDP socket is bound to a queue and a HW filter can
+> direct packets targeted for that queue.
+
+I used to be in favor of providing "prog bypass" for af_xdp,
+because of anecdotal evidence that it will make af_xdp faster.
+Now seeing the numbers and the way they were collected
+I'm against such bypass.
+I want to see hard proof that trivial bpf prog is actually slowing things down
+before reviewing any new patch sets.
