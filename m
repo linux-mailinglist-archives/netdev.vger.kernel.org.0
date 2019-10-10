@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD04AD1EAD
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 04:51:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2985BD1EBB
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 05:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732447AbfJJCvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Oct 2019 22:51:22 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35223 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726689AbfJJCvW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 22:51:22 -0400
-Received: by mail-pf1-f196.google.com with SMTP id 205so2922866pfw.2
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 19:51:20 -0700 (PDT)
+        id S1731134AbfJJDB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Oct 2019 23:01:27 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:38292 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726621AbfJJDB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Oct 2019 23:01:26 -0400
+Received: by mail-pg1-f196.google.com with SMTP id x10so2697838pgi.5
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 20:01:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=0sMKEV5b0pk9ztiAmXIaYlOQm0iymGEDt+OeeonaAuk=;
-        b=XW9XaeruM1KBX2wkpvociay3WFnfSvsGUazRb9bhX7W5IdXrs8bhLLhDQzXrM3p5Ym
-         qDRVBe8IqfIlBvm5rEcMaiEqXZ//KxNyMkTGFDTJYs/3AxuShPmd/78jYO2i+XqCYskm
-         e2O+z2OwQvOD5Xg/CSXlf5siu/s9yovdL0BpGd1Ij3TXxRcxcgWrPnJU+7t3gH1nOprY
-         a3kfW4zv1MEVjsebSozBTZGhtnXMXIItiedxZimMfj2RgnW9nkDYhlfiayW8x9KaFyQ+
-         rUVKgoHBR+R3n13jHkhKS//mE6WUcEGiYbZu8xRHLyldShoZB2LZI2DAVpjZUrtSg77t
-         VljQ==
+        bh=v6u1nm7ngSdTRUQiclEkIH6dgRDZsgNswCXmJQZSsgM=;
+        b=QAF/Os5xoueQ8rdoO6FNDTWRqktCXRM40BzdZNlRoF7TF82l202ByA5b3vOwt2Yaz8
+         dR12DG6ohybXtbC6IOCBXL86T0HvWO+Md4YgAEuI4RP8gitSPotMX33jFpkr3dDs0fC/
+         HUXIILxFzwvx8GGYHFLMCZM+qIrFU4FVLvA/BfSNHi3docXbFDr8MV6G5Q8gUzJUW50y
+         v+rawkfXqsIeAiGAKSF5TDK1oSQ3LZzlQE9s6cAr7DMMKCJATWrlIuC5CLtwSkdzr38R
+         dgQcH/pz2xdVL117h82Jb9DUjNbQEXd+8Kt/lB1wMvcbd/Ldwx8FP/mD+25xA0V6sfaK
+         92hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=0sMKEV5b0pk9ztiAmXIaYlOQm0iymGEDt+OeeonaAuk=;
-        b=KLDHPAXoaa/Kd1vAOXRlm+sIwl1IstJMtb7s0sstVkaHDng9/rlB1w/qPXFeeQlPej
-         g4h0jrNJKAUUXEuJW2XZs0q9hFD/oz9+3I7nI0JU2yr1JseIeX2lkORvJ22DC+Cgkjqk
-         OTjOCmKIT5iFSDcy5uASkQtoCdupX0ThL/QQhdvJFfXyInTwYipF4kvMH7K9vFdIxkCO
-         rhpIZxPvyhxNU7gMixr1AkC7NyJRDyXs9e1v2QFfrdVLqABT1/jRYV3eoYS6WsWAIhMn
-         8e1ITu2m4J+q9aSfB2VLbM9oY9a6BOUBwVexoNbLulyInKogZLKs+gEaFaDh/0gzkaYU
-         2suw==
-X-Gm-Message-State: APjAAAU6nu/4v3pWURB54gmKfgGn2suu+DXfj1v0Q8spPB42PNU1TvZk
-        kFe0bFWx9cYvPgzTkZBithEYzA==
-X-Google-Smtp-Source: APXvYqy3hCziVPJ57JZI/NWxnxZ0VmC/ukaKVlA1T8bIBfGXEB+clb7sdJWgteRienn7beddmHvXVg==
-X-Received: by 2002:a63:df42:: with SMTP id h2mr7508588pgj.405.1570675880020;
-        Wed, 09 Oct 2019 19:51:20 -0700 (PDT)
+        bh=v6u1nm7ngSdTRUQiclEkIH6dgRDZsgNswCXmJQZSsgM=;
+        b=D0RZWLlvWZeQs1BaMvyNXvBXmUaXSbGPmgir01ehMoxy8VEVSb2O2W63jdGfzNeBfK
+         wyXkWtCo+CdYfeEcNULPk+T735J+7qjRkZNtvld/UaonrtLJ9JKNnuhrUx7FNkGdG6lF
+         Tk6raiUlZsIKC6uM3DIPVndQTthw+gov5UuEtOt7klWyMbEtyNQ5YuPQJENiv9lWE1JX
+         ogxK3kcskX0TSnMFjdWyXwW9Ik0uJ792ZXO5CoPdPhFyG84ZT6gDJABlZuTIoStRiR+w
+         v2xnXzwmiSdW2B1Z+AO7sbS4yexbYCzsDI/PQAfz9W/ApVNi1Fo/ZP4uxQsi2vnYSscc
+         nttA==
+X-Gm-Message-State: APjAAAUB2VWE4TzVAYXf2O03IQR2cGYnSCOT9MzVTpfgnHN7RQ2xNApZ
+        twG4QhGQyAIKeROvg+ac3y9n9A==
+X-Google-Smtp-Source: APXvYqztCepxhPI8wVLqUFSvMSUJ3Xg7tfFGNsf3EDq2abdkO61i+0q0CH1onsG3+oafcaYMDI+q9A==
+X-Received: by 2002:aa7:821a:: with SMTP id k26mr7682485pfi.184.1570676486256;
+        Wed, 09 Oct 2019 20:01:26 -0700 (PDT)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id z189sm3467366pgz.53.2019.10.09.19.51.19
+        by smtp.gmail.com with ESMTPSA id v3sm3574007pfn.18.2019.10.09.20.01.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 19:51:19 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 19:51:06 -0700
+        Wed, 09 Oct 2019 20:01:26 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 20:01:12 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, gor@linux.ibm.com,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: Re: [PATCH net-next 0/5] net/smc: improve termination handling
-Message-ID: <20191009195106.081db8d8@cakuba.netronome.com>
-In-Reply-To: <20191009080747.95516-1-kgraul@linux.ibm.com>
-References: <20191009080747.95516-1-kgraul@linux.ibm.com>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: add Telit 0x1050 composition
+Message-ID: <20191009200112.78ba1ba7@cakuba.netronome.com>
+In-Reply-To: <20191009090718.12879-1-dnlplm@gmail.com>
+References: <20191009090718.12879-1-dnlplm@gmail.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Oct 2019 10:07:42 +0200, Karsten Graul wrote:
-> First set of patches to improve termination handling.
+On Wed,  9 Oct 2019 11:07:18 +0200, Daniele Palmas wrote:
+> This patch adds support for Telit FN980 0x1050 composition
+> 
+> 0x1050: tty, adb, rmnet, tty, tty, tty, tty
+> 
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 
-Applied, thanks.
-
-Out of curiosity why does net/sock.h have to include net/smc.h?
-This SMC-specific series causes half of the kernel to rebuild =F0=9F=A4=A8
+Applied, thanks!
