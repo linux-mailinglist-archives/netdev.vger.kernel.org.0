@@ -2,131 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F09AD2EB0
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:37:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E23CCD2ED3
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726436AbfJJQhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 12:37:22 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:38398 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbfJJQhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 12:37:22 -0400
-Received: by mail-lj1-f195.google.com with SMTP id b20so6891666ljj.5
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 09:37:18 -0700 (PDT)
+        id S1726546AbfJJQsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 12:48:02 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:40985 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726065AbfJJQsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 12:48:01 -0400
+Received: by mail-pf1-f202.google.com with SMTP id 22so5185566pfx.8
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 09:47:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:organization:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yfyOriptMBDiaNAXMAHeFqoD+N162h27NUaqIbiMn8g=;
-        b=MStOefh8juSpz0SHnnQad09QT4Fa6DBUzzsFT+0kynCLK95vCaQjDcLVS5v/xzigeU
-         qCpyG75sS7RxMUxZmmOhdOl/epXfJeRXXOfrA4nvR6kFbjPVCgFF5evbfVSP37qQYDxS
-         fUfhRHIyYZrsNsXMHDHxL4hZCXSQD0rD3FYGQzoGBdIjSAdGPgN/CndJNspJ5TzDDt/V
-         8+qfJjBselXWOwch9wHOBIMAbn0EM7xsyXfWJ/thT94GFR5K4sF+VRWYQS6DzF1vJIP6
-         xnmDEvdwh7CsQgLndLAdyoT8cjr1XKTH1qVG3y9nHq3AYOlQ6yv2IxOHCjUIx8V4D+Gg
-         6lxQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=4UGEkmXJygCBn0hD2aXh+1IoiS3E9H2QXEcjcMusJXI=;
+        b=uRhZXkJdrUy8X9Bf0R1Ki7oz42S2s2IlFY2clWrbewahnehZvpN09TDtudg4f3YVXA
+         /4PUxi+x+RqQk1nwxjc7ymIrbrRhdmca78qm2N4ZRxERywZGKdhYCpkdGHMLBAyZasgj
+         4fq/Ba7T+3hWMMmTJUovIdWnfkxPstTVGMNzHRr+P9ZxBgfOCdSzcHuBjCamiCB1phfC
+         KhSSSrXFdUDTiKpZu3z5jfqNQpXRYypp0JBS69DcCjnWWR/yePkR8+zr63XrzmcTbyN2
+         K6Q4hS966zzQtPoJ/9CUBKaGv96s1hYnH8yZfLqVMaoB19IauoQ0WjVaO+P2l1RrKxc8
+         xfpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=yfyOriptMBDiaNAXMAHeFqoD+N162h27NUaqIbiMn8g=;
-        b=gTSTk6cOxvGmhEMLaT6U7wXmf/ZGCSWHZOtzVziyrHvGUvbrPaK31f56wVtvCfmAeC
-         0GGfpKZvDM6FJUKlBuzqJ19wkGRJJFIkLw+Dg6pUr3qDK9fSqk8k26bPZ9pngcKcpYPL
-         YbPBkVOfCIMycPImzNin1RXP7J+pgceBow78kjM+oyS+VWWV0QcFrEXhAKw7nfGqaqTM
-         Qs1sUJT+7L13ZVw6zT/ggcIEYUHV3ym++g2OoNUByne2DQo2CZ7+JK2EoYHVoHik6Bdb
-         x3PIhSeOezp1u/Zh3SVXzG936AGZxAjCmVwJMiYho71QOTskPLHKlVE+W0062+EsJ5SZ
-         kqFA==
-X-Gm-Message-State: APjAAAUuExh+/7OxdEqUTbcxSOLjiknbfg121znEXP9rj3G/0MczQito
-        3xhQE3LqGG0rHzPlHpaXF7eMpw==
-X-Google-Smtp-Source: APXvYqxQzg7PeYXEqZES/u8aJpwejbzcaBWpM2ZrtmNSR43Do+7YWdlXHee3xVamjDLKq3Nb1NVijA==
-X-Received: by 2002:a2e:9119:: with SMTP id m25mr6930040ljg.106.1570725438077;
-        Thu, 10 Oct 2019 09:37:18 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:46de:289:1600:123:1371:e3f7])
-        by smtp.gmail.com with ESMTPSA id b20sm1328867ljo.106.2019.10.10.09.37.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Oct 2019 09:37:17 -0700 (PDT)
-Subject: Re: [PATCH v9 5/5] MIPS: SGI-IP27: Enable ethernet phy on second
- Origin 200 module
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
- <20191010145953.21327-6-tbogendoerfer@suse.de>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
-Date:   Thu, 10 Oct 2019 19:37:15 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
-MIME-Version: 1.0
-In-Reply-To: <20191010145953.21327-6-tbogendoerfer@suse.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=4UGEkmXJygCBn0hD2aXh+1IoiS3E9H2QXEcjcMusJXI=;
+        b=bha9zENyl+u/v9wF+o4bjhUBDXRU5QyRfyqAvS8mIB2X8qj2hGPZF6SLNxKQNHl18L
+         RtVV584Fyc7woarcJ7+RHm+stg3r7gK4Kd1h2xiXAqImO0kIH8T1kiKGfv9v208AFZZD
+         buOzkjwsrzyFPeODzPkOzaGJbTgf4MTpOXA1L0NS+Cied7PmGQPvD3CV/fGM7WDVUSjR
+         wvl/WkeiZubfpi97yEwm3RDHCus8ZsaBORS78LymisW4MiVXWKDp8ZVxR7KVpZ1oSLGN
+         qFQ5byAuOGyEvjNggwDoNFDrs+zHd6L9Y8gJbmyEAiA/y4cfotUf7+EbuT5c6Yv2Lq2p
+         fwOA==
+X-Gm-Message-State: APjAAAWlEUMcbr4ETEe0WAPYznDkQSpPw+yxhcUgdAOET2JfvgHt14ou
+        nhD+GzSNLzCqcRSyxUx3vrzuMZK7wV0SS+mm0csNhch4uhfZJp4lmZeCqHoAp7ZKpE7TiRTwrP0
+        vEegD0A97tCj1OKICG5R5NY7bi8OVC7ogeu0bJOBzVY3r95CUAtYi70vz452QtcU9
+X-Google-Smtp-Source: APXvYqypXf0CR72veBGZ5JhIbUstVr9H45LopjhWsQ7GrN5a4XxO/agtGDJFKgnhPvslt0jjob7SyHo1tL1R
+X-Received: by 2002:a63:6f02:: with SMTP id k2mr12344841pgc.163.1570726078996;
+ Thu, 10 Oct 2019 09:47:58 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 09:47:52 -0700
+Message-Id: <20191010164752.16769-1-maheshb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+Subject: [PATCHv2 next] blackhole_netdev: fix syzkaller reported issue
+From:   Mahesh Bandewar <maheshb@google.com>
+To:     Netdev <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        Mahesh Bandewar <maheshb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/10/2019 05:59 PM, Thomas Bogendoerfer wrote:
+While invalidating the dst, we assign backhole_netdev instead of
+loopback device. However, this device does not have idev pointer
+and hence no ip6_ptr even if IPv6 is enabled. Possibly this has
+triggered the syzbot reported crash.
 
-> PROM only enables ethernet PHY on first Origin 200 module, so we must
-> do it ourselves for the second module.
-> 
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> ---
->  arch/mips/pci/pci-ip27.c | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
-> 
-> diff --git a/arch/mips/pci/pci-ip27.c b/arch/mips/pci/pci-ip27.c
-> index 441eb9383b20..7cc784cb299b 100644
-> --- a/arch/mips/pci/pci-ip27.c
-> +++ b/arch/mips/pci/pci-ip27.c
-> @@ -7,6 +7,11 @@
->   * Copyright (C) 1999, 2000, 04 Ralf Baechle (ralf@linux-mips.org)
->   * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
->   */
-> +#include <asm/sn/addrs.h>
-> +#include <asm/sn/types.h>
-> +#include <asm/sn/klconfig.h>
-> +#include <asm/sn/hub.h>
-> +#include <asm/sn/ioc3.h>
->  #include <asm/pci/bridge.h>
->  
->  dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> @@ -31,3 +36,20 @@ int pcibus_to_node(struct pci_bus *bus)
->  }
->  EXPORT_SYMBOL(pcibus_to_node);
->  #endif /* CONFIG_NUMA */
-> +
-> +static void ip29_fixup_phy(struct pci_dev *dev)
-> +{
-> +	int nasid = pcibus_to_node(dev->bus);
-> +	u32 sid;
-> +
-> +	if (nasid != 1)
-> +		return; /* only needed on second module */
-> +
-> +	/* enable ethernet PHY on IP29 systemboard */
-> +	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-> +	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
+The syzbot report does not have reproducer, however, this is the
+only device that doesn't have matching idev created.
 
-   I thought PCI was little endian, thuis vendor ID at offset 0 and device ID
-at offset 2?
+Crash instruction is :
 
-[...]
+static inline bool ip6_ignore_linkdown(const struct net_device *dev)
+{
+        const struct inet6_dev *idev = __in6_dev_get(dev);
 
-MBR, Sergei
+        return !!idev->cnf.ignore_routes_with_linkdown; <= crash
+}
+
+Also ipv6 always assumes presence of idev and never checks for it
+being NULL (as does the above referenced code). So adding a idev
+for the blackhole_netdev to avoid this class of crashes in the future.
+
+---
+
+syzbot has found the following crash on:
+
+HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
+console output: https://syzkaller-buganizer.googleplex.com/text?tag=CrashLog&id=96236769ac48d9c2eb3a0db5385370ea6940be83
+kernel config:  https://syzkaller-buganizer.googleplex.com/text?tag=Config&id=1ed331b637302a68174fdbe34315b781b7c7ab1e
+dashboard link: https://syzkaller.appspot.com/bug?extid=86298614df433d7f3824
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+See http://go/syzbot for details on how to handle this bug.
+
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 16525 Comm: syz-executor.2 Not tainted 5.3.0-rc3+ #159
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
+RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
+Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
+RSP: 0018:ffff88806c037038 EFLAGS: 00010207
+RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
+RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
+RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
+R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
+R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
+FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+__find_rr_leaf+0x14e/0x750 net/ipv6/route.c:831
+find_rr_leaf net/ipv6/route.c:852 [inline]
+rt6_select net/ipv6/route.c:896 [inline]
+fib6_table_lookup+0x697/0xdb0 net/ipv6/route.c:2164
+ip6_pol_route+0x1f6/0xaf0 net/ipv6/route.c:2200
+ip6_pol_route_output+0x54/0x70 net/ipv6/route.c:2452
+fib6_rule_lookup+0x133/0x7a0 net/ipv6/fib6_rules.c:113
+ip6_route_output_flags_noref+0x2d6/0x360 net/ipv6/route.c:2484
+ip6_route_output_flags+0x106/0x4d0 net/ipv6/route.c:2497
+ip6_route_output include/net/ip6_route.h:98 [inline]
+ip6_dst_lookup_tail+0x1042/0x1ef0 net/ipv6/ip6_output.c:1022
+ip6_dst_lookup_flow+0xa8/0x220 net/ipv6/ip6_output.c:1150
+ip6_sk_dst_lookup_flow net/ipv6/ip6_output.c:1188 [inline]
+ip6_sk_dst_lookup_flow+0x62a/0xb90 net/ipv6/ip6_output.c:1178
+udpv6_sendmsg+0x17ba/0x2990 net/ipv6/udp.c:1439
+inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
+sock_sendmsg_nosec net/socket.c:637 [inline]
+sock_sendmsg+0xd7/0x130 net/socket.c:657
+__sys_sendto+0x262/0x380 net/socket.c:1952
+__do_sys_sendto net/socket.c:1964 [inline]
+__se_sys_sendto net/socket.c:1960 [inline]
+__x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
+do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459829
+Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fa15e7ddc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000459829
+RDX: 0000000000000001 RSI: 0000000020000000 RDI: 0000000000000007
+RBP: 000000000075c1c0 R08: 0000000020001000 R09: 000000000000001c
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa15e7de6d4
+R13: 00000000004c77e7 R14: 00000000004dd048 R15: 00000000ffffffff
+Modules linked in:
+---[ end trace 4b3ce5eddd15c8f6 ]---
+RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
+RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
+Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
+RSP: 0018:ffff88806c037038 EFLAGS: 00010207
+RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
+RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
+RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
+R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
+R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
+FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+Fixes: 8d7017fd621d ("blackhole_netdev: use blackhole_netdev to invalidate dst entries")
+Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+CC: Eric Dumazet <edumazet@google.com>
+---
+v1->v2:
+   fixed missing update in ip6_dst_ifdown()
+
+ net/ipv6/addrconf.c |  6 +++++-
+ net/ipv6/route.c    | 15 ++++++---------
+ 2 files changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 98d82305d6de..0f216f7cbe3e 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -6995,7 +6995,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
+ 
+ int __init addrconf_init(void)
+ {
+-	struct inet6_dev *idev;
++	struct inet6_dev *idev, *bdev;
+ 	int i, err;
+ 
+ 	err = ipv6_addr_label_init();
+@@ -7035,10 +7035,14 @@ int __init addrconf_init(void)
+ 	 */
+ 	rtnl_lock();
+ 	idev = ipv6_add_dev(init_net.loopback_dev);
++	bdev = ipv6_add_dev(blackhole_netdev);
+ 	rtnl_unlock();
+ 	if (IS_ERR(idev)) {
+ 		err = PTR_ERR(idev);
+ 		goto errlo;
++	} else if (IS_ERR(bdev)) {
++		err = PTR_ERR(bdev);
++		goto errlo;
+ 	}
+ 
+ 	ip6_route_init_special_entries();
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index a63ff85fe141..742120728869 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -155,10 +155,9 @@ void rt6_uncached_list_del(struct rt6_info *rt)
+ 
+ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
+ {
+-	struct net_device *loopback_dev = net->loopback_dev;
+ 	int cpu;
+ 
+-	if (dev == loopback_dev)
++	if (dev == net->loopback_dev)
+ 		return;
+ 
+ 	for_each_possible_cpu(cpu) {
+@@ -171,7 +170,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
+ 			struct net_device *rt_dev = rt->dst.dev;
+ 
+ 			if (rt_idev->dev == dev) {
+-				rt->rt6i_idev = in6_dev_get(loopback_dev);
++				rt->rt6i_idev = in6_dev_get(blackhole_netdev);
+ 				in6_dev_put(rt_idev);
+ 			}
+ 
+@@ -386,13 +385,11 @@ static void ip6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
+ {
+ 	struct rt6_info *rt = (struct rt6_info *)dst;
+ 	struct inet6_dev *idev = rt->rt6i_idev;
+-	struct net_device *loopback_dev =
+-		dev_net(dev)->loopback_dev;
+ 
+-	if (idev && idev->dev != loopback_dev) {
+-		struct inet6_dev *loopback_idev = in6_dev_get(loopback_dev);
+-		if (loopback_idev) {
+-			rt->rt6i_idev = loopback_idev;
++	if (idev && idev->dev != dev_net(dev)->loopback_dev) {
++		struct inet6_dev *ibdev = in6_dev_get(blackhole_netdev);
++		if (ibdev) {
++			rt->rt6i_idev = ibdev;
+ 			in6_dev_put(idev);
+ 		}
+ 	}
+-- 
+2.23.0.581.g78d2f28ef7-goog
+
