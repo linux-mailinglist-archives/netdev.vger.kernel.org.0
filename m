@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEED2D1FD3
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:51:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2269DD1FD6
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 06:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732812AbfJJEvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 00:51:53 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:46081 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbfJJEvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:51:52 -0400
-Received: by mail-pg1-f194.google.com with SMTP id b8so2830095pgm.13
-        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 21:51:52 -0700 (PDT)
+        id S1727417AbfJJEwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 00:52:38 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44239 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbfJJEwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 00:52:38 -0400
+Received: by mail-pg1-f196.google.com with SMTP id u12so2832415pgb.11
+        for <netdev@vger.kernel.org>; Wed, 09 Oct 2019 21:52:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=7SAEt83MVuHB2RYl8EVswDTFl2nsqnZqWSL/7jMoTHE=;
-        b=scvBLN3nqHptKuJ1LuItcT3kbN73lQQ+4Rd3j3JI2jdRYN/pOMBy5vNLweI7S+5vfz
-         ilxnBX2hDOfZuAwCRIDUg2wvKqpvqXh+NJMsBNzS0aD7dCNLnWEltnRPERhV6Yqnji7p
-         dGuB0UjBJJHI/p1ape6zmOaH+6XVGwMcabMS8f/6q29IOKb2wIHfiZuBqr73ZDg3NfJu
-         zLpelb9cwDMvs/fDzInNx/Tu/f0wy//L5zFrDm1gVqGlvz4PizMkDAMhXU20HzoJA//m
-         9a0ekL4vMBBdHhKNu7mzy0HKtuHzMFllk9/rqooPgWCg6VF0kf1jG5ODGbtxFSH5vvx8
-         uj8Q==
+        bh=0og379aL1imrLdDvGHjk0uSPqwVOP8c01WJ3dXC3PIE=;
+        b=mXgGtLEu9XIeMISa5guPSIUFdpSvhF+iRjMh7DvEtlKyrZ60eJoMIGXNvLXi2dc88h
+         MQa3MfsGyqSEb0jmGc+Yg80xRrZDg7OvqE99qNuXeY0Wx7ZfKpNgAmr0729RdJ1S3+3c
+         Q2Zi3la8ArRgqfyEDcKyHJkuAdngij0e4hNSeYCKWy8TN1Yc+LRS7wSOhlo1eDVAHxBi
+         T4M/YS5Bm3+QhL1uspQBkEmxwtVDvcieVCIgULCheVu/vNyKjBXkjCcUkEo0SQvhWkFs
+         3wOtPwVw+dMaUO4jICgP2xwFphbStOl8aQxTqrwtWkHcv5s6wXAgGcJY+K6AaF4sOV7n
+         od1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=7SAEt83MVuHB2RYl8EVswDTFl2nsqnZqWSL/7jMoTHE=;
-        b=JdcYUX2BcTtvAM9JftzTOR9ki2Aoxn0amENK2k6eStXiVGoHmUw1376LnYRD11E3zZ
-         ahnnbAfQj/vZZHJlmy7Dm1z/47UgV7qIXFMCrWY1VLTGQo6e+fkLK0Uu+VuAcd+d/jHx
-         cbiK+E/154x0MYuThFJIU1KU5hC6r1PHnwEtK3BHNC7anJB0BUpDwojbXnPNLSd2vAUE
-         utZWif+fl/A+bk/6RKOfKB86Yjz5wRQhVY2g9goCuLt7JdivxS/dywFxa8kJO1ZMFfO8
-         lWPoyGxUs4IOTbH7Th3doF0exkTT7Pjp3BZPVHKIOMLyRJdrGwXWiJZy6D5JF+TebAkR
-         T6uA==
-X-Gm-Message-State: APjAAAUFh4mfZHSi1q88COri/qYp+NheXhUr8+0hpf5pxwcf2vHaHw+z
-        LPThu2fVA2OWUdEAc25HFzo+eeoZLP0=
-X-Google-Smtp-Source: APXvYqxZiNzs7te1GtQVrv98saq1DWP9Xwi8Wkv3PEntWaVFq+gkMQ9voFd1fh8TrbGIHa+C2VHXZA==
-X-Received: by 2002:a63:eb08:: with SMTP id t8mr8916105pgh.49.1570683112020;
-        Wed, 09 Oct 2019 21:51:52 -0700 (PDT)
+        bh=0og379aL1imrLdDvGHjk0uSPqwVOP8c01WJ3dXC3PIE=;
+        b=lrKlJOUI11zCiOzxGtztzr6E80uoyu09DslkXUsIdRNwIi/D/GxP2Ed+DdZEbXRmBP
+         HD0RSsBNxIbtpQcdwsILNH15N4Hdt5C1SsxYIDXuYYu7rEKUkOc6mJlpz2qE+oZm8gi5
+         p21bH54vVi2LA9GYSaMWMXN8/MMykBX+I28w+w/ils95qs5Ve8JVG5i9Bcz67c+9Ez+I
+         VDKl7GvheuNyvaPTRfKA3kufcAzpMhbb70p8Ex5wD2TkR+EvxCGiRyN0/cIW9nX4hlAj
+         L8zGyX23rs7vlS057IGXH3lecKsIx3rjl7Szx1ohJzmgKL0CeDJZ8/qwnvIs2co2omFZ
+         6+Pg==
+X-Gm-Message-State: APjAAAUUDmO6l+H0NL11AJsq+C64NWrhBzwzE9yyISZb6WXlS2tu1A83
+        7Uk6x1H5PiHeOIMTCt1GV1Q8pQ==
+X-Google-Smtp-Source: APXvYqyCHhe8Bd/5NWiwKgfMBwHEWWSZ+dGzYq3B2pflRjZZ+mY+GRF8jFL6tJlnyCQ3sJjc7xlKEA==
+X-Received: by 2002:aa7:8046:: with SMTP id y6mr7917863pfm.222.1570683157592;
+        Wed, 09 Oct 2019 21:52:37 -0700 (PDT)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id o185sm4545933pfg.136.2019.10.09.21.51.51
+        by smtp.gmail.com with ESMTPSA id b22sm4336637pfo.85.2019.10.09.21.52.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 21:51:51 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 21:51:39 -0700
+        Wed, 09 Oct 2019 21:52:37 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 21:52:23 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Eric Dumazet <edumazet@google.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net] net: annotate sk->sk_rcvlowat lockless reads
-Message-ID: <20191009215139.314608b6@cakuba.netronome.com>
-In-Reply-To: <20191009223235.92999-1-edumazet@google.com>
-References: <20191009223235.92999-1-edumazet@google.com>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: Re: [PATCH net] net: silence KCSAN warnings about
+ sk->sk_backlog.len reads
+Message-ID: <20191009215223.24f1b4bb@cakuba.netronome.com>
+In-Reply-To: <20191009224103.96473-1-edumazet@google.com>
+References: <20191009224103.96473-1-edumazet@google.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,15 +65,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Oct 2019 15:32:35 -0700, Eric Dumazet wrote:
-> sock_rcvlowat() or int_sk_rcvlowat() might be called without the socket
-> lock for example from tcp_poll().
+On Wed,  9 Oct 2019 15:41:03 -0700, Eric Dumazet wrote:
+> sk->sk_backlog.len can be written by BH handlers, and read
+> from process contexts in a lockless way.
 > 
-> Use READ_ONCE() to document the fact that other cpus might change
-> sk->sk_rcvlowat under us and avoid KCSAN splats.
+> Note the write side should also use WRITE_ONCE() or a variant.
+> We need some agreement about the best way to do this.
 > 
-> Use WRITE_ONCE() on write sides too.
+> syzbot reported :
+> 
+> [...]
 > 
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
 
-Applied, thanks!
+..and applied, thank you!
