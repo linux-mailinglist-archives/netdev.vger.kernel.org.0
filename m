@@ -2,102 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A87C3D24FB
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B95D2522
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 11:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389453AbfJJIwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 04:52:11 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:48904 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390209AbfJJIwI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 04:52:08 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9A8hf1M171675;
-        Thu, 10 Oct 2019 08:52:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=G0KsV1YxbVFGrkZatR+VCZvWIuzuocCgwD5kF42g0f0=;
- b=M4BS0+tPoSTzkf49boQcsxdnt4/vqXWQQn7l13mMQwFAmohAyMoS/uLFd6f9CGW/4HQF
- cd3TtsyZqi784lsMp3UEVhMiWjC8IP7sEu6N/5DItKA6nH/BlUvqdoJaPzEb7Dl661Hz
- 6LDeOGftOpW833nzoBhpGfbh5toOyh77Q/UAgnYXroHuq6I7N+wZ+M8aVdoHs11lK5v5
- 9f6Ve86+heFVaXc+iUogC8adP1QkLtzPxu4f5cc7j0jy4aq6MNBcPkIHuXdL6I9DUsR6
- 2xIAq+3ob2yvMs7SdDsrnufU7zv90O5GnoYu6bEazghtIIzFFVBR3yH0T+0TMRW47AGQ bA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 2vejkustce-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Oct 2019 08:52:01 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9A8m98r066979;
-        Thu, 10 Oct 2019 08:52:00 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 2vhrxd8f02-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Oct 2019 08:52:00 +0000
-Received: from abhmp0022.oracle.com (abhmp0022.oracle.com [141.146.116.28])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9A8pxjN002980;
-        Thu, 10 Oct 2019 08:51:59 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 10 Oct 2019 01:51:57 -0700
-Date:   Thu, 10 Oct 2019 11:51:49 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jules Irenge <jbi.octave@gmail.com>
-Cc:     outreachy-kernel@googlegroups.com, devel@driverdev.osuosl.org,
-        grekh@linuxfoundation.org, GR-Linux-NIC-Dev@marvell.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: qlge: Fix multiple assignments warning by
- splitting the assignement into two each
-Message-ID: <20191010085048.GC20470@kadam>
-References: <20191009201029.7051-1-jbi.octave@gmail.com>
+        id S2390085AbfJJIyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 04:54:19 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37591 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389549AbfJJIyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 04:54:17 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f22so5847730wmc.2
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 01:54:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wHYikf0fF/apSGlr8gHGbX/of/oo0NlzWMca/OOzrzo=;
+        b=vF0B1wWRPKzxgGNg6RbYUEZObWKkMG83e+UcvJfWAal/+sjtAanrqW5+UzHCeKmGCw
+         hVvZ0mUSjN9KDiyMA9gqa2O9zhkL+lt2TBBUhz5zaYZNyHO+G76heidW2gj1K0Ss88/g
+         9yXF1SSSsDLn2LxvaETJHruER4jjP8wpo/Kfwy3G6/OCiBSG1TEfn397fPZLwkWK2Fth
+         M1x010smVrzQ95YYzV1SfvBTfwo1TUSKqaYJBSp0OjWyr7ufw35WwEadotZxUbrFwSHA
+         4pvBpdySrtBujn8pIk8iA70B2oyfqaVuREcybVif5iWa/TjxRHS3j35Bntf6P6jXe4Ct
+         /DKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wHYikf0fF/apSGlr8gHGbX/of/oo0NlzWMca/OOzrzo=;
+        b=NNxrFgeYn8nUkZ12W3RCCn3hjfQ/vWm4+hxb+8Q9bT7wbv7Dh21AaomyZg9FO3q+9V
+         qNrg7Ppg2buFK5+VEB4THgnhzy2LgHAMWFUjqB9sYMq44ue5isflLLvPglj/PP2WtOfP
+         PgI3q0mv5Rp3jnX+BcJOco6HXuKA9CfAaUpVht+TO/gHZxhdAoyJzmZEHj5E2BYVKQT+
+         XE4BOBFMnKzb4SDreOuuvplZV+VJNlT0Tu07sAcG2zuhLbAsRWJJrak+7nNTTpT+mX9l
+         udR0NByQAqGwpzkjS+WEQT4mtjIJqV5ejepzKXqwt5KHx2hRqUEt38LOBLugIYH4jhHY
+         bohg==
+X-Gm-Message-State: APjAAAXn2NZfRBk34a26KX3GWwy9N5AWziakgTeFWBvrB7dYNzw6nOx3
+        qFKaRfnP+ALj4wlIIXnZAJuwNr0T3OY=
+X-Google-Smtp-Source: APXvYqxqp0mHDJbn8N/yVfcTmcl9ySOGieoc/jzI8/zmm39GEpEazrQmaX8wUxwsZtu9P0H+S6PMZA==
+X-Received: by 2002:a1c:c90f:: with SMTP id f15mr6924163wmb.125.1570697654779;
+        Thu, 10 Oct 2019 01:54:14 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id q66sm7434557wme.39.2019.10.10.01.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 01:54:14 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 10:54:12 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, ayal@mellanox.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch iproute2c] devlink: fix json binary printout of arrays
+Message-ID: <20191010085412.GE2223@nanopsycho>
+References: <20191009083232.21147-1-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191009201029.7051-1-jbi.octave@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9405 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=965
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910100081
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9405 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910100081
+In-Reply-To: <20191009083232.21147-1-jiri@resnulli.us>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 09:10:29PM +0100, Jules Irenge wrote:
-> Fix multiple assignments warning " check
->  issued by checkpatch.pl tool:
-> "CHECK: multiple assignments should be avoided".
-> 
-> Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
-> ---
->  drivers/staging/qlge/qlge_dbg.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-> index 086f067fd899..69bd4710c5ec 100644
-> --- a/drivers/staging/qlge/qlge_dbg.c
-> +++ b/drivers/staging/qlge/qlge_dbg.c
-> @@ -141,8 +141,10 @@ static int ql_get_serdes_regs(struct ql_adapter *qdev,
->  	u32 *direct_ptr, temp;
->  	u32 *indirect_ptr;
->  
-> -	xfi_direct_valid = xfi_indirect_valid = 0;
-> -	xaui_direct_valid = xaui_indirect_valid = 1;
-> +	xfi_indirect_valid = 0;
-> +	xfi_direct_valid = xfi_indirect_valid;
-> +	xaui_indirect_valid = 1;
-> +	xaui_direct_valid = xaui_indirect_valid
+Wed, Oct 09, 2019 at 10:32:32AM CEST, jiri@resnulli.us wrote:
+>From: Jiri Pirko <jiri@mellanox.com>
+>
+>The binary is printed out into json as an array of byte values.
+>Add missing (removed) start and end array json calls.
+>
+>Fixes: f359942a25d3 ("devlink: Remove enclosing array brackets binary print with json format")
+>Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 
-The original code is fine here.  Just ignore checkpatch on this.
-
-regards,
-dan carpenter
-
+Please scratch this patch.
