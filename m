@@ -2,117 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B2AD3420
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E95AD3428
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 01:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726800AbfJJXBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 19:01:23 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:36307 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbfJJXBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 19:01:22 -0400
-Received: by mail-qt1-f195.google.com with SMTP id o12so11208714qtf.3
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 16:01:20 -0700 (PDT)
+        id S1726671AbfJJXI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 19:08:28 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:40904 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726135AbfJJXI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 19:08:28 -0400
+Received: by mail-qk1-f196.google.com with SMTP id y144so7201157qkb.7
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 16:08:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=hKb1hJiJoZr7sDzi9awmt+z6YG7rgK/yyFTSM1pIHvc=;
-        b=rBl0cx6+eIElwhvMYT30TfWDTrbVzMZqR9vc1u08+8UkgRFWwsWJItiHPlbIz75bbO
-         yjErSPaO+d+mOXOukCkpOiBJnqGmHKu50/Uyz9FW/epJCtKe8478nPgRPB6CcvAY1a1I
-         Ceuu7vL7cH8gJEFTgdiOM8xNWMPqzJ4hpm14bppd6CQU3FROOOIgnoJhKh5GJ4rvJ7G7
-         trLU5f3s1a3fEC2JtQtzqks393lZwdH9IdblrWwCQZ01vQ7JRdlrHsiigbRxkJSzRSvm
-         +LnPGfJbwjrZh5kS1fHLpLjgKlFwoFNpuGaKfGkNdVIg8LEUr2UFHovhiakkDrFMacbh
-         yd9A==
+        bh=dYnCAzmD3179JkW0E6N8o5l09Fg+PCFocJZQOrrariI=;
+        b=XPQ801EzPkG17GtmU1S/+KK8zhmpjyB/xBW0Sd4RJf7vwIJ0liylR5xxzgUrkN/0h2
+         uJW87DASagG5yucss5IrAV9YQQtALoM4cIMNoEZRZ7w2KBG9h7Hs9saBiMarbioO0QRq
+         Vq3mb1n0ru5sD65vh5SpkmMJnpgylTemb7Agl3N9cG+hxckq7RNt9B92uNS6QHP4Kh5N
+         rpQPLfnAfc2o8c2TXqIfdD3yYaO43G9A4A3Ip2Nz5QU4keuiWDiUcrn7Ko/IavpjzswR
+         nB1YnXUEmcjwdELpAVxgPoqqz+xSu90qzzFOksFXZ1xzbPjljVxuY3xbEeKKrCLHJCbF
+         OQ5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=hKb1hJiJoZr7sDzi9awmt+z6YG7rgK/yyFTSM1pIHvc=;
-        b=WRynJ+lzyg1tWUnwg2nRXqiFLhKK5rUKyThs5qfJ3pcNXy5KMNIV88cO6Nv8X8kwjj
-         VFyToXxb+pjC1bYD3RO8wBlhLXXq/hpi8mIkzzpUVOLlRZr4Ds9deDQ0wtlVm7SAri3u
-         5WWXiyDbS9KkMLCn535Js8uZ5w0p2pb5OZVix+QDYIZkr8jBWI3aPC6CLHo3pN/9u/v7
-         3vdufyaQHgjveKJk0dqVe3BEW7QX25bxI0C3Zph0EH8nQz/PRGSdKOPdBMZHMORnVSRk
-         J6BkQlp0Vu91FaPqdA7NpygxChyvCWcJK7PKAj0oyKxZLNmRWl1f1zu5F1pYYielIwCh
-         MECQ==
-X-Gm-Message-State: APjAAAVXDyLpr5TtpIXCQMszUF2VFIM9PEBxRiHzaRh6ufbYF5Itvj6N
-        wJcU/6RqkySQaQuGR3AH/tNRgg==
-X-Google-Smtp-Source: APXvYqzlvVcUTrNNKzaif/kXN8GZwkAMecaGfYJIaGrr9Y2IjFLnQDpHQHTA/hY/Sd8K4BincCEN3w==
-X-Received: by 2002:a0c:f8cd:: with SMTP id h13mr12808457qvo.53.1570748480202;
-        Thu, 10 Oct 2019 16:01:20 -0700 (PDT)
+        bh=dYnCAzmD3179JkW0E6N8o5l09Fg+PCFocJZQOrrariI=;
+        b=AVI52XfiKFUqFl08QgmtDkk/ir5DB4XmGd74kqcWsGkhq11j84EvS2/7XqoK8hr5BF
+         cPi+7GTp/8f6rt+bCSZ1x1Zlb1b2GpkejW5X2n3Lulz3oMTl64ws5WJpP+mCDqworxKD
+         e7k450VufI2YwL/PvxpoIwAD/Lajnbuy8YP8iqeRVW28V9P3rj/36cJdS41aPIxtL0wu
+         PWm26hism2jWfKL4TaBtoid07tVjRRseQYPcCkMkyVNLw9Pj07P7BpWE171iofk6/zu3
+         7rmJRRN0K+8ZVDyDyc9tg1TWk+k9FIWUORg9tdc0fIhHf8ZXlOdAW1FXzyUyBOe1UQkC
+         Xuaw==
+X-Gm-Message-State: APjAAAVxN0578Pw7j/vdiMQjzpskW/81Tecuyxi0R6aMm39XMDFRPDtX
+        fTeR9O3FmH1ySuIVCtHmNgJBxQ==
+X-Google-Smtp-Source: APXvYqztP1NwgbTUNMTAexqMx7k7mNZOl8NRi9r+CxEBp0bOefbFFYfYnsoJG+J8zntnZLr9pg5fhA==
+X-Received: by 2002:a37:bd03:: with SMTP id n3mr12653858qkf.47.1570748907378;
+        Thu, 10 Oct 2019 16:08:27 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 64sm3058098qkk.63.2019.10.10.16.01.18
+        by smtp.gmail.com with ESMTPSA id x76sm3228371qkb.29.2019.10.10.16.08.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 16:01:20 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 16:01:03 -0700
+        Thu, 10 Oct 2019 16:08:27 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 16:08:11 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     <davem@davemloft.net>, Jose Abreu <joabreu@synopsys.com>,
-        <andrew@lunn.ch>, Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
-        <jianguo.zhang@mediatek.com>, <boon.leong.ong@intel.com>
-Subject: Re: [PATCH] net: stmmac: disable/enable ptp_ref_clk in
- suspend/resume flow
-Message-ID: <20191010160103.63c3c0ed@cakuba.netronome.com>
-In-Reply-To: <20191009085649.6736-1-biao.huang@mediatek.com>
-References: <20191009085649.6736-1-biao.huang@mediatek.com>
+To:     Anson Huang <Anson.Huang@nxp.com>
+Cc:     fugang.duan@nxp.com, davem@davemloft.net,
+        gregkh@linuxfoundation.org, andy.shevchenko@gmail.com,
+        rafael.j.wysocki@intel.com, swboyd@chromium.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linux-imx@nxp.com
+Subject: Re: [PATCH 1/2] net: fec_main: Use
+ platform_get_irq_byname_optional() to avoid error message
+Message-ID: <20191010160811.7775c819@cakuba.netronome.com>
+In-Reply-To: <1570616148-11571-1-git-send-email-Anson.Huang@nxp.com>
+References: <1570616148-11571-1-git-send-email-Anson.Huang@nxp.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Oct 2019 16:56:49 +0800, Biao Huang wrote:
-> disable ptp_ref_clk in suspend flow, and enable it in resume flow.
-> 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index c7c9e5f162e6..b592aeecc3dd 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -4469,6 +4469,8 @@ int stmmac_suspend(struct device *dev)
->  		stmmac_mac_set(priv, priv->ioaddr, false);
->  		pinctrl_pm_select_sleep_state(priv->device);
->  		/* Disable clock in case of PWM is off */
-> +		if (priv->plat->clk_ptp_ref)
-> +			clk_disable_unprepare(priv->plat->clk_ptp_ref);
+On Wed,  9 Oct 2019 18:15:47 +0800, Anson Huang wrote:
+> Failed to get irq using name is NOT fatal as driver will use index
+> to get irq instead, use platform_get_irq_byname_optional() instead
+> of platform_get_irq_byname() to avoid below error message during
+> probe:
+>=20
+> [    0.819312] fec 30be0000.ethernet: IRQ int0 not found
+> [    0.824433] fec 30be0000.ethernet: IRQ int1 not found
+> [    0.829539] fec 30be0000.ethernet: IRQ int2 not found
+>=20
+> Fixes: 7723f4c5ecdb ("driver core: platform: Add an error message to plat=
+form_get_irq*()")
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 
-I don't know much embedded, but it seems like this should perhaps just
-be clk_disable() without the unprepare? stmmac_hw_teardown() is called
-when driver is removed so it needs to unprepare as well.
+Hi Anson,
 
-Please feel free to explain to me why this needs to be
-clk_disable_unprepare(), as I said - not an expert.
+looks like there may be some dependency which haven't landed in the
+networking tree yet?  Because this doesn't build:
 
-Also - if this is a bug fix and you'd like to have it backported to
-older releases you need to add a Fixes tag.
+drivers/net/ethernet/freescale/fec_main.c: In function =E2=80=98fec_probe=
+=E2=80=99:
+drivers/net/ethernet/freescale/fec_main.c:3561:9: error: implicit declarati=
+on of function =E2=80=98platform_get_irq_byname_optional=E2=80=99; did you =
+mean =E2=80=98platform_get_irq_optional=E2=80=99? [-Werror=3Dimplicit-funct=
+ion-declaration]
+ 3561 |   irq =3D platform_get_irq_byname_optional(pdev, irq_name);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |         platform_get_irq_optional
+cc1: some warnings being treated as errors
 
-Thanks!
+Could you please repost once that's resolved?  Please add Andy's and
+Stephen's acks when reposting.
 
->  		clk_disable(priv->plat->pclk);
->  		clk_disable(priv->plat->stmmac_clk);
->  	}
-> @@ -4535,6 +4537,8 @@ int stmmac_resume(struct device *dev)
->  		/* enable the clk previously disabled */
->  		clk_enable(priv->plat->stmmac_clk);
->  		clk_enable(priv->plat->pclk);
-> +		if (priv->plat->clk_ptp_ref)
-> +			clk_prepare_enable(priv->plat->clk_ptp_ref);
->  		/* reset the phy so that it's ready */
->  		if (priv->mii)
->  			stmmac_mdio_reset(priv->mii);
-
+Thank you!
