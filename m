@@ -2,93 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A344DD2771
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 12:46:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D13E8D277E
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 12:50:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732821AbfJJKpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 06:45:47 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37042 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726230AbfJJKpr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 06:45:47 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 84D03AFB1;
-        Thu, 10 Oct 2019 10:45:45 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 32858E378C; Thu, 10 Oct 2019 12:45:45 +0200 (CEST)
-Date:   Thu, 10 Oct 2019 12:45:45 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] genetlink: do not parse attributes for families
- with zero maxattr
-Message-ID: <20191010104545.GB22163@unicorn.suse.cz>
-References: <20191009164432.AD5D1E3785@unicorn.suse.cz>
- <20191010093153.GG2223@nanopsycho>
+        id S1732838AbfJJKuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 06:50:40 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:58789 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732317AbfJJKuk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 06:50:40 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iIW1i-0005dm-GW; Thu, 10 Oct 2019 12:50:34 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iIW1g-0000y4-Iy; Thu, 10 Oct 2019 12:50:32 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
+        wg@grandegger.com
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] can: j1939: fix memory leak if filters was set
+Date:   Thu, 10 Oct 2019 12:50:31 +0200
+Message-Id: <20191010105031.3507-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191010093153.GG2223@nanopsycho>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 11:31:53AM +0200, Jiri Pirko wrote:
-> Wed, Oct 09, 2019 at 06:44:32PM CEST, mkubecek@suse.cz wrote:
-> >Commit c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing
-> >to a separate function") moved attribute buffer allocation and attribute
-> >parsing from genl_family_rcv_msg_doit() into a separate function
-> >genl_family_rcv_msg_attrs_parse() which, unlike the previous code, calls
-> >__nlmsg_parse() even if family->maxattr is 0 (i.e. the family does its own
-> >parsing). The parser error is ignored and does not propagate out of
-> >genl_family_rcv_msg_attrs_parse() but an error message ("Unknown attribute
-> >type") is set in extack and if further processing generates no error or
-> >warning, it stays there and is interpreted as a warning by userspace.
-> >
-> >Dumpit requests are not affected as genl_family_rcv_msg_dumpit() bypasses
-> >the call of genl_family_rcv_msg_doit() if family->maxattr is zero. Do the
-> >same also in genl_family_rcv_msg_doit().
-> >
-> >Fixes: c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing to a separate function")
-> >Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> >---
-> > net/netlink/genetlink.c | 6 ++++--
-> > 1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> >diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-> >index ecc2bd3e73e4..c4bf8830eedf 100644
-> >--- a/net/netlink/genetlink.c
-> >+++ b/net/netlink/genetlink.c
-> >@@ -639,21 +639,23 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
-> > 				    const struct genl_ops *ops,
-> > 				    int hdrlen, struct net *net)
-> > {
-> >-	struct nlattr **attrbuf;
-> >+	struct nlattr **attrbuf = NULL;
-> > 	struct genl_info info;
-> > 	int err;
-> > 
-> > 	if (!ops->doit)
-> > 		return -EOPNOTSUPP;
-> > 
-> >+	if (!family->maxattr)
-> >+		goto no_attrs;
-> > 	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
-> > 						  ops, hdrlen,
-> > 						  GENL_DONT_VALIDATE_STRICT,
-> >-						  family->maxattr &&
-> > 						  family->parallel_ops);
-> 
-> Please also adjust genl_family_rcv_msg_attrs_free() call arg
-> below in this function in the similar way.
+Filters array is coped from user space and linked to the j1939 socket.
+On socket release this memory was not freed.
 
-Sent v2.
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ net/can/j1939/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Michal
+diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+index 5c6eabcb5df1..4d8ba701e15d 100644
+--- a/net/can/j1939/socket.c
++++ b/net/can/j1939/socket.c
+@@ -580,6 +580,7 @@ static int j1939_sk_release(struct socket *sock)
+ 		j1939_netdev_stop(priv);
+ 	}
+ 
++	kfree(jsk->filters);
+ 	sock_orphan(sk);
+ 	sock->sk = NULL;
+ 
+-- 
+2.23.0
+
