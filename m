@@ -2,107 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6D7D319F
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 21:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF54DD31BF
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 21:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726055AbfJJTqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 15:46:40 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:43851 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725867AbfJJTqk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 15:46:40 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 46q1ms6h9Lz1rQC6;
-        Thu, 10 Oct 2019 21:46:37 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 46q1ms60Zqz1qqkR;
-        Thu, 10 Oct 2019 21:46:37 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id gOZobksbyZAp; Thu, 10 Oct 2019 21:46:36 +0200 (CEST)
-X-Auth-Info: DmH7zHR1dg7lLdXZpXozBVEbgYDYuAO4XfUSpoEP5qg=
-Received: from chi.lan (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 10 Oct 2019 21:46:36 +0200 (CEST)
-From:   Marek Vasut <marex@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [PATCH V2 2/2] net: phy: micrel: Update KSZ87xx PHY name
-Date:   Thu, 10 Oct 2019 21:46:22 +0200
-Message-Id: <20191010194622.28742-2-marex@denx.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191010194622.28742-1-marex@denx.de>
-References: <20191010194622.28742-1-marex@denx.de>
+        id S1726178AbfJJT57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 15:57:59 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33563 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbfJJT57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 15:57:59 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q10so4589426pfl.0
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 12:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=D11jdimFUgtFsEzOrX+OLo6cwiUtcVEfQ2z/j7ikNl4=;
+        b=IOkwotS1hA/OO7TsIwuEmb9v3X8qWOdPDtLOAnEl9y2d8KaQQY9lyKiDxPjXmH9abf
+         dpVQc8Z1hWV12jsuFVdKP1trELyhe4FdqB8oSxUvqT0uGXOouqNtzMS1qWiTQ8zoYLBg
+         v2295+tNG8EtFHul6yX0bcCYpO4GEKJEdbxOXW3GCqWhnxdVo85XxbFUOHsCSX78KYDi
+         NUAilW44G1VNQuzdflgad/Ku+fJ/2zrUjkyYXFq9XbvKgGhK5o+blEz9p5rDjn7WdWlT
+         PQHQZ5WnusSad6jyMlu+bTtWfqe2O5rdvtbwAuTFt/jf0Q4cXvuOaf+KD5zyRnToDA7N
+         wQZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=D11jdimFUgtFsEzOrX+OLo6cwiUtcVEfQ2z/j7ikNl4=;
+        b=kc8BMMinJ2Iw7T3VuGwKujIdJD8aD4tb/HLSKfvAFKkwqmVxatAtqNUkVaqP5T5Cou
+         8sQmAZsWevY8agOechd/25K1R/5xtpGHXL0H4PxxHLf+TyxELbe4aUIcv20fYXf5PTz/
+         /zvgd1ohjLhLNA6xH1PiP2jOHs7prK0y6FRx9f6XnG4nWW4J0MNCjJ7MTNbh889s8Ll8
+         O6veeOKgvFSlJzedXX++HHnY56Suj45C2qtd7j3ouSYKw8lHqfr/zsXEt8JNOEIbIMfR
+         kv3Go/AhdFFBbdil/jCUBqNxSWBa3iKYJKjEi4JiiPWZv7Zv3P3QlkoDh1/DrVqzSUxs
+         K91w==
+X-Gm-Message-State: APjAAAUHk3FIHhHD1nkuA/sUF/SHECiK+UONREuuqPshC8MmSKJwq2z3
+        +HaFQjzyzqAmrlb2DNffLHWJrQ==
+X-Google-Smtp-Source: APXvYqwg7MksWsefjLmMrpG8r82nqovOAs90OqyvyY26Bq56HZrtlhI+1ezZPV/KBf7vtGSuouDeiA==
+X-Received: by 2002:a17:90a:9f8a:: with SMTP id o10mr13206506pjp.91.1570737478841;
+        Thu, 10 Oct 2019 12:57:58 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id h8sm7384109pfo.64.2019.10.10.12.57.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 12:57:58 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 12:57:57 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com
+Subject: Re: [PATCH bpf-next v2 0/2] Atomic flow dissector updates
+Message-ID: <20191010195757.GH2096@mini-arch>
+References: <20191010181750.5964-1-jakub@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191010181750.5964-1-jakub@cloudflare.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The KSZ8795 PHY ID is in fact used by KSZ8794/KSZ8795/KSZ8765 switches.
-Update the PHY ID and name to reflect that, as this family of switches
-is commonly refered to as KSZ87xx
+On 10/10, Jakub Sitnicki wrote:
+> This patch set changes how bpf(BPF_PROG_ATTACH) operates on flow dissector
+> hook when there is already a program attached. After this change the user
+> is allowed to update the program in a single syscall. Please see the first
+> patch for rationale.
+> 
+> v1 -> v2:
+> 
+> - Don't use CHECK macro which expects BPF program run duration, which we
+>   don't track in attach/detach tests. Suggested by Stanislav Fomichev.
+> 
+> - Test re-attaching flow dissector in both root and non-root network
+>   namespace. Suggested by Stanislav Fomichev.
+For the series:
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: George McCollister <george.mccollister@gmail.com>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Tristram Ha <Tristram.Ha@microchip.com>
-Cc: Woojung Huh <woojung.huh@microchip.com>
----
-V2: Rebase on top of 1/2, no functional change
----
- drivers/net/phy/micrel.c   | 4 ++--
- include/linux/micrel_phy.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+Thanks!
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 028a4a177790..2c5b0f81d4f3 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -387,7 +387,7 @@ static int ksz8795_match_phy_device(struct phy_device *phydev)
- {
- 	int ret;
- 
--	if ((phydev->phy_id & MICREL_PHY_ID_MASK) != PHY_ID_KSZ8795)
-+	if ((phydev->phy_id & MICREL_PHY_ID_MASK) != PHY_ID_KSZ87XX)
- 		return 0;
- 
- 	ret = phy_read(phydev, MII_BMSR);
-@@ -1174,7 +1174,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- }, {
--	.name		= "Micrel KSZ8795",
-+	.name		= "Micrel KSZ87XX Switch",
- 	/* PHY_BASIC_FEATURES */
- 	.config_init	= kszphy_config_init,
- 	.config_aneg	= ksz8873mll_config_aneg,
-diff --git a/include/linux/micrel_phy.h b/include/linux/micrel_phy.h
-index ad24554f11f9..75f880c25bb8 100644
---- a/include/linux/micrel_phy.h
-+++ b/include/linux/micrel_phy.h
-@@ -31,7 +31,7 @@
- #define PHY_ID_KSZ886X		0x00221430
- #define PHY_ID_KSZ8863		0x00221435
- 
--#define PHY_ID_KSZ8795		0x00221550
-+#define PHY_ID_KSZ87XX		0x00221550
- 
- #define	PHY_ID_KSZ9477		0x00221631
- 
--- 
-2.23.0
-
+> Jakub Sitnicki (2):
+>   flow_dissector: Allow updating the flow dissector program atomically
+>   selftests/bpf: Check that flow dissector can be re-attached
+> 
+>  net/core/flow_dissector.c                     |  10 +-
+>  .../bpf/prog_tests/flow_dissector_reattach.c  | 127 ++++++++++++++++++
+>  2 files changed, 134 insertions(+), 3 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+> 
+> -- 
+> 2.20.1
+> 
