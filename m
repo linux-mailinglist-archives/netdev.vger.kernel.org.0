@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E4A5D2CFD
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 16:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B459CD2CF9
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 16:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726568AbfJJOxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 10:53:21 -0400
-Received: from fd.dlink.ru ([178.170.168.18]:52198 "EHLO fd.dlink.ru"
+        id S1726519AbfJJOxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 10:53:15 -0400
+Received: from fd.dlink.ru ([178.170.168.18]:52200 "EHLO fd.dlink.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726089AbfJJOxP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725959AbfJJOxP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 10 Oct 2019 10:53:15 -0400
 Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 43AC01B219C1; Thu, 10 Oct 2019 17:43:48 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 43AC01B219C1
+        id A62161B210B7; Thu, 10 Oct 2019 17:43:51 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru A62161B210B7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1570718628; bh=BwFjAr9Do1PuZb3BnXBfx9W0lE2HBViBAZqTVeaycXs=;
+        t=1570718631; bh=GvqeVN9ysGFiOtylE0GYxEuqYzgBWNb6Nz0VozKTHgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=mvt8inkKWYwYyy/U1AZtgzRuhvYlCOfkyNsPJBSKSY45lzMa9iCGGcKxG6ADX/sTw
-         PlV3nslEDFecfHfrBVpvmBUoiZSrBAxIL43VND+4BMDJ/KiloeA7uhetrtSNSr1uYu
-         eouNYx81i51icjbOdBrW7FgolOyOrhKffWCiD6S4=
+        b=jS4ZsgceNBUX5CdBQ9Ye5azBcsI4jUHZj8rrmNwF5MOXUmE56olo30Xy5/bcaSA0t
+         xjwbOwfMGOkdHuxP0N6abQSZvagh27e8gtSaHUulxq+2UiKx9Oeg6xv9IXGqPKBDsd
+         FJT+pcK9I58cNyHFK1jTWJV4XwNo8a7i9A0Sr0hU=
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail.dlink.ru
 X-Spam-Level: 
 X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
         USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 3BDBE1B210B7;
-        Thu, 10 Oct 2019 17:43:38 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 3BDBE1B210B7
+        by fd.dlink.ru (Postfix) with ESMTP id 216C01B219DF;
+        Thu, 10 Oct 2019 17:43:40 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 216C01B219DF
 Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 4FA701B218D8;
-        Thu, 10 Oct 2019 17:43:37 +0300 (MSK)
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 2EE0D1B202D0;
+        Thu, 10 Oct 2019 17:43:39 +0300 (MSK)
 Received: from localhost.localdomain (unknown [196.196.203.126])
         by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Thu, 10 Oct 2019 17:43:37 +0300 (MSK)
+        Thu, 10 Oct 2019 17:43:39 +0300 (MSK)
 From:   Alexander Lobakin <alobakin@dlink.ru>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
@@ -47,9 +47,9 @@ Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Alexander Lobakin <alobakin@dlink.ru>
-Subject: [PATCH net-next1/2] net: core: use listified Rx for GRO_NORMAL in napi_gro_receive()
-Date:   Thu, 10 Oct 2019 17:42:25 +0300
-Message-Id: <20191010144226.4115-2-alobakin@dlink.ru>
+Subject: [PATCH net-next 2/2] net: core: increase the default size of GRO_NORMAL skb lists to flush
+Date:   Thu, 10 Oct 2019 17:42:26 +0300
+Message-Id: <20191010144226.4115-3-alobakin@dlink.ru>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191010144226.4115-1-alobakin@dlink.ru>
 References: <20191010144226.4115-1-alobakin@dlink.ru>
@@ -60,102 +60,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 323ebb61e32b4 ("net: use listified RX for handling GRO_NORMAL
-skbs") made use of listified skb processing for the users of
-napi_gro_frags().
-The same technique can be used in a way more common napi_gro_receive()
-to speed up non-merged (GRO_NORMAL) skbs for a wide range of drivers,
-including gro_cells and mac80211 users.
+Commit 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL
+skbs") have introduced a sysctl variable gro_normal_batch for defining
+a limit for listified Rx of GRO_NORMAL skbs. The initial value of 8 is
+purely arbitrary and has been chosen, I believe, as a minimal safe
+default.
+However, several tests show that it's rather suboptimal and doesn't
+allow to take a full advantage of listified processing. The best and
+the most balanced results have been achieved with a batches of 16 skbs
+per flush.
+So double the default value to give a yet another boost for Rx path.
+It remains configurable via sysctl anyway, so may be fine-tuned for
+each hardware.
 
 Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 ---
- net/core/dev.c | 49 +++++++++++++++++++++++++------------------------
- 1 file changed, 25 insertions(+), 24 deletions(-)
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 8bc3dce71fc0..a33f56b439ce 100644
+index a33f56b439ce..4f60444bb766 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -5884,6 +5884,26 @@ struct packet_offload *gro_find_complete_by_type(__be16 type)
- }
- EXPORT_SYMBOL(gro_find_complete_by_type);
+@@ -4189,7 +4189,7 @@ int dev_weight_tx_bias __read_mostly = 1;  /* bias for output_queue quota */
+ int dev_rx_weight __read_mostly = 64;
+ int dev_tx_weight __read_mostly = 64;
+ /* Maximum number of GRO_NORMAL skbs to batch up for list-RX */
+-int gro_normal_batch __read_mostly = 8;
++int gro_normal_batch __read_mostly = 16;
  
-+/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
-+static void gro_normal_list(struct napi_struct *napi)
-+{
-+	if (!napi->rx_count)
-+		return;
-+	netif_receive_skb_list_internal(&napi->rx_list);
-+	INIT_LIST_HEAD(&napi->rx_list);
-+	napi->rx_count = 0;
-+}
-+
-+/* Queue one GRO_NORMAL SKB up for list processing.  If batch size exceeded,
-+ * pass the whole batch up to the stack.
-+ */
-+static void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb)
-+{
-+	list_add_tail(&skb->list, &napi->rx_list);
-+	if (++napi->rx_count >= gro_normal_batch)
-+		gro_normal_list(napi);
-+}
-+
- static void napi_skb_free_stolen_head(struct sk_buff *skb)
- {
- 	skb_dst_drop(skb);
-@@ -5891,12 +5911,13 @@ static void napi_skb_free_stolen_head(struct sk_buff *skb)
- 	kmem_cache_free(skbuff_head_cache, skb);
- }
- 
--static gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
-+static gro_result_t napi_skb_finish(struct napi_struct *napi,
-+				    struct sk_buff *skb,
-+				    gro_result_t ret)
- {
- 	switch (ret) {
- 	case GRO_NORMAL:
--		if (netif_receive_skb_internal(skb))
--			ret = GRO_DROP;
-+		gro_normal_one(napi, skb);
- 		break;
- 
- 	case GRO_DROP:
-@@ -5928,7 +5949,7 @@ gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
- 
- 	skb_gro_reset_offset(skb);
- 
--	ret = napi_skb_finish(dev_gro_receive(napi, skb), skb);
-+	ret = napi_skb_finish(napi, skb, dev_gro_receive(napi, skb));
- 	trace_napi_gro_receive_exit(ret);
- 
- 	return ret;
-@@ -5974,26 +5995,6 @@ struct sk_buff *napi_get_frags(struct napi_struct *napi)
- }
- EXPORT_SYMBOL(napi_get_frags);
- 
--/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
--static void gro_normal_list(struct napi_struct *napi)
--{
--	if (!napi->rx_count)
--		return;
--	netif_receive_skb_list_internal(&napi->rx_list);
--	INIT_LIST_HEAD(&napi->rx_list);
--	napi->rx_count = 0;
--}
--
--/* Queue one GRO_NORMAL SKB up for list processing.  If batch size exceeded,
-- * pass the whole batch up to the stack.
-- */
--static void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb)
--{
--	list_add_tail(&skb->list, &napi->rx_list);
--	if (++napi->rx_count >= gro_normal_batch)
--		gro_normal_list(napi);
--}
--
- static gro_result_t napi_frags_finish(struct napi_struct *napi,
- 				      struct sk_buff *skb,
- 				      gro_result_t ret)
+ /* Called with irq disabled */
+ static inline void ____napi_schedule(struct softnet_data *sd,
 -- 
 2.23.0
 
