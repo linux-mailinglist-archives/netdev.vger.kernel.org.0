@@ -2,92 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DECA8D3011
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 20:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9DCDD3013
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 20:17:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbfJJSRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 14:17:50 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40692 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726691AbfJJSRu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 14:17:50 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 56503AC16;
-        Thu, 10 Oct 2019 18:17:48 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 96806E378C; Thu, 10 Oct 2019 20:17:43 +0200 (CEST)
-Date:   Thu, 10 Oct 2019 20:17:43 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7 13/17] ethtool: add standard notification
- handler
-Message-ID: <20191010181743.GF22163@unicorn.suse.cz>
-References: <cover.1570654310.git.mkubecek@suse.cz>
- <ac2fef494116db9d4679f4501f1be6a7898ef724.1570654310.git.mkubecek@suse.cz>
- <20191010152559.GA2994@nanopsycho>
+        id S1726866AbfJJSR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 14:17:57 -0400
+Received: from mail-lj1-f178.google.com ([209.85.208.178]:43364 "EHLO
+        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726816AbfJJSR5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 14:17:57 -0400
+Received: by mail-lj1-f178.google.com with SMTP id n14so7166908ljj.10
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 11:17:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5tkv7J2E4M+jPkGxyjFNBxMyy+SZ1PuNIvOUG2qBR0I=;
+        b=fEySpYW9c/B3ki5Ej182OSxCs2hWv28c06E0d893hiaGWEQg7Mnyy7orJO1AwPRaYV
+         Q6i0sWtRqJ5shFiXBZtNgAwHA1spUdkFgoJqcCnIgG8oqR6NuuVj5gq0VIl+yTOsjAG/
+         zWQqNP0yUqlof7MDI7RsJHY6vKFZ5iPteoSFk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5tkv7J2E4M+jPkGxyjFNBxMyy+SZ1PuNIvOUG2qBR0I=;
+        b=SaDRD6vO0rldcvKL4WiJixs6PPgfWHJ0h2eeM2+gtscf682tP3dJhtuaosBNxRsepr
+         u2iC8Rs5ocMHcJVL2KhkTpV9sTT9e8vn0BK0OcmPd8g/+kJoxZKyZP+E9O/O4HZmgaZP
+         yoisrGfMC1cgR3fpY+YLwT9rPEQ2UA6+fPQ1+QBTORZpBSY+AtFOR2Ns4wXe6js8mQmJ
+         O6Qs8GQQnAMD7RlunrlSv0kmAUSOtHMb64/6Era68ioOOjHN3AuZ6qmK89VqV2QgPJez
+         pQ0Szk4pM5f+Cnz6MC7bb7U5YKM5h2OCUhdecTr8kQlTs9m7WGhNoQ4aHQb9XLiFgQXs
+         uBzg==
+X-Gm-Message-State: APjAAAU1WQZmmAyf6yLaMkSTzc0ekuyaIGlFtGU9rKwVxt54JcKzD9q3
+        nsWoEFEJZKQ5QX8AunhjDfLvbRGmKfAhrw==
+X-Google-Smtp-Source: APXvYqyYCLJbJZ+iWszeoF4t8dUj66NGan7cEpj3Ut4Q3tmwqx+YSPrCEJOBU5OXjNYy2fjO4WzCMg==
+X-Received: by 2002:a05:651c:20b:: with SMTP id y11mr6914222ljn.211.1570731473424;
+        Thu, 10 Oct 2019 11:17:53 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id h5sm1533883ljf.83.2019.10.10.11.17.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 11:17:52 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Stanislav Fomichev <sdf@fomichev.me>
+Subject: [PATCH bpf-next v2 0/2] Atomic flow dissector updates
+Date:   Thu, 10 Oct 2019 20:17:48 +0200
+Message-Id: <20191010181750.5964-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191010152559.GA2994@nanopsycho>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 05:25:59PM +0200, Jiri Pirko wrote:
-> Wed, Oct 09, 2019 at 10:59:40PM CEST, mkubecek@suse.cz wrote:
-> >+static void *ethnl_bcastmsg_put(struct sk_buff *skb, u8 cmd)
-> >+{
-> >+	return genlmsg_put(skb, 0, ++ethnl_bcast_seq, &ethtool_genl_family, 0,
-> >+			   cmd);
-> >+}
-> >+
-> >+static int ethnl_multicast(struct sk_buff *skb, struct net_device *dev)
-> >+{
-> >+	return genlmsg_multicast_netns(&ethtool_genl_family, dev_net(dev), skb,
-> >+				       0, ETHNL_MCGRP_MONITOR, GFP_KERNEL);
-> >+}
-> 
-> No need for these 2 helpers. Just put the code directly into
-> ethnl_std_notify() and make the code easier to read.
+This patch set changes how bpf(BPF_PROG_ATTACH) operates on flow dissector
+hook when there is already a program attached. After this change the user
+is allowed to update the program in a single syscall. Please see the first
+patch for rationale.
 
-In later patches (not submitted yet), these two will be also called by
-other notification handlers.
+v1 -> v2:
 
-> >+static const struct get_request_ops *ethnl_std_notify_to_ops(unsigned int cmd)
-> >+{
-> >+	WARN_ONCE(1, "unexpected notification type %u\n", cmd);
-> >+	return NULL;
-> >+}
-> 
-> Why this isn't a table similar to get_requests ?
+- Don't use CHECK macro which expects BPF program run duration, which we
+  don't track in attach/detach tests. Suggested by Stanislav Fomichev.
 
-It's a relic of earlier version before splitting the complex message
-types when the table was rather sparse. I'll change it to a lookup table
-to make it consistent with the rest of the code.
+- Test re-attaching flow dissector in both root and non-root network
+  namespace. Suggested by Stanislav Fomichev.
 
-> >+
-> >+/* generic notification handler */
-> >+static void ethnl_std_notify(struct net_device *dev, unsigned int cmd,
-> 
-> Better "common" comparing to "standard", I believe.
 
-That's similar to ethnl_std_parse(), the idea is that this is the
-standard handler for notifications which are triggered without
-additional data and the message is the same as reply to corresponding
-"GET" request (which is generated by the standard ethnl_get_doit()
-handler). Notifications for actions and notifications for SET commands
-which cannot be generated this standard way will have to use their own
-(nonstandard) handler.
+Jakub Sitnicki (2):
+  flow_dissector: Allow updating the flow dissector program atomically
+  selftests/bpf: Check that flow dissector can be re-attached
 
-Michal
+ net/core/flow_dissector.c                     |  10 +-
+ .../bpf/prog_tests/flow_dissector_reattach.c  | 127 ++++++++++++++++++
+ 2 files changed, 134 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+
+-- 
+2.20.1
+
