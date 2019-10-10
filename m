@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B459CD2CF9
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 16:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19163D2CF1
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 16:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726519AbfJJOxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 10:53:15 -0400
-Received: from fd.dlink.ru ([178.170.168.18]:52200 "EHLO fd.dlink.ru"
+        id S1726455AbfJJOwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 10:52:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39744 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725959AbfJJOxP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 10:53:15 -0400
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id A62161B210B7; Thu, 10 Oct 2019 17:43:51 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru A62161B210B7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1570718631; bh=GvqeVN9ysGFiOtylE0GYxEuqYzgBWNb6Nz0VozKTHgc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=jS4ZsgceNBUX5CdBQ9Ye5azBcsI4jUHZj8rrmNwF5MOXUmE56olo30Xy5/bcaSA0t
-         xjwbOwfMGOkdHuxP0N6abQSZvagh27e8gtSaHUulxq+2UiKx9Oeg6xv9IXGqPKBDsd
-         FJT+pcK9I58cNyHFK1jTWJV4XwNo8a7i9A0Sr0hU=
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 216C01B219DF;
-        Thu, 10 Oct 2019 17:43:40 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 216C01B219DF
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 2EE0D1B202D0;
-        Thu, 10 Oct 2019 17:43:39 +0300 (MSK)
-Received: from localhost.localdomain (unknown [196.196.203.126])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Thu, 10 Oct 2019 17:43:39 +0300 (MSK)
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alobakin@dlink.ru>
-Subject: [PATCH net-next 2/2] net: core: increase the default size of GRO_NORMAL skb lists to flush
-Date:   Thu, 10 Oct 2019 17:42:26 +0300
-Message-Id: <20191010144226.4115-3-alobakin@dlink.ru>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191010144226.4115-1-alobakin@dlink.ru>
-References: <20191010144226.4115-1-alobakin@dlink.ru>
+        id S1725901AbfJJOwg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 10:52:36 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0458A64467;
+        Thu, 10 Oct 2019 14:52:36 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-121-84.rdu2.redhat.com [10.10.121.84])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2BB4A196B2;
+        Thu, 10 Oct 2019 14:52:35 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+ Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+ Kingdom.
+ Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix possible NULL pointer access in ICMP handling
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 10 Oct 2019 15:52:34 +0100
+Message-ID: <157071915431.29197.5055122258964729288.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/unknown-version
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Thu, 10 Oct 2019 14:52:36 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL
-skbs") have introduced a sysctl variable gro_normal_batch for defining
-a limit for listified Rx of GRO_NORMAL skbs. The initial value of 8 is
-purely arbitrary and has been chosen, I believe, as a minimal safe
-default.
-However, several tests show that it's rather suboptimal and doesn't
-allow to take a full advantage of listified processing. The best and
-the most balanced results have been achieved with a batches of 16 skbs
-per flush.
-So double the default value to give a yet another boost for Rx path.
-It remains configurable via sysctl anyway, so may be fine-tuned for
-each hardware.
+If an ICMP packet comes in on the UDP socket backing an AF_RXRPC socket as
+the UDP socket is being shut down, rxrpc_error_report() may get called to
+deal with it after sk_user_data on the UDP socket has been cleared, leading
+to a NULL pointer access when this local endpoint record gets accessed.
 
-Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+Fix this by just returning immediately if sk_user_data was NULL.
+
+The oops looks like the following:
+
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+...
+RIP: 0010:rxrpc_error_report+0x1bd/0x6a9
+...
+Call Trace:
+ ? sock_queue_err_skb+0xbd/0xde
+ ? __udp4_lib_err+0x313/0x34d
+ __udp4_lib_err+0x313/0x34d
+ icmp_unreach+0x1ee/0x207
+ icmp_rcv+0x25b/0x28f
+ ip_protocol_deliver_rcu+0x95/0x10e
+ ip_local_deliver+0xe9/0x148
+ __netif_receive_skb_one_core+0x52/0x6e
+ process_backlog+0xdc/0x177
+ net_rx_action+0xf9/0x270
+ __do_softirq+0x1b6/0x39a
+ ? smpboot_register_percpu_thread+0xce/0xce
+ run_ksoftirqd+0x1d/0x42
+ smpboot_thread_fn+0x19e/0x1b3
+ kthread+0xf1/0xf6
+ ? kthread_delayed_work_timer_fn+0x83/0x83
+ ret_from_fork+0x24/0x30
+
+Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
+Reported-by: syzbot+611164843bd48cc2190c@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a33f56b439ce..4f60444bb766 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4189,7 +4189,7 @@ int dev_weight_tx_bias __read_mostly = 1;  /* bias for output_queue quota */
- int dev_rx_weight __read_mostly = 64;
- int dev_tx_weight __read_mostly = 64;
- /* Maximum number of GRO_NORMAL skbs to batch up for list-RX */
--int gro_normal_batch __read_mostly = 8;
-+int gro_normal_batch __read_mostly = 16;
+ net/rxrpc/peer_event.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/rxrpc/peer_event.c b/net/rxrpc/peer_event.c
+index c97ebdc043e4..61451281d74a 100644
+--- a/net/rxrpc/peer_event.c
++++ b/net/rxrpc/peer_event.c
+@@ -151,6 +151,9 @@ void rxrpc_error_report(struct sock *sk)
+ 	struct rxrpc_peer *peer;
+ 	struct sk_buff *skb;
  
- /* Called with irq disabled */
- static inline void ____napi_schedule(struct softnet_data *sd,
--- 
-2.23.0
++	if (unlikely(!local))
++		return;
++
+ 	_enter("%p{%d}", sk, local->debug_id);
+ 
+ 	/* Clear the outstanding error value on the socket so that it doesn't
 
