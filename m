@@ -2,261 +2,438 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C90D6D2249
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 10:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32C6BD2250
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 10:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733102AbfJJIJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 04:09:21 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36080 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732947AbfJJIJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 04:09:21 -0400
-Received: by mail-wr1-f66.google.com with SMTP id y19so6632273wrd.3
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 01:09:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=SjMRbyYa9rj9p4UNxBNyHnO+PKKPdWRw8jfjsKYVM3Q=;
-        b=141NdkG1rBRgLuNeiPsnZiZM/yGNDROb7mUKoDq+5TyCQ8/f5gSMGs8lgoWNpAky8z
-         sWL3sFZnjKLrClPBpQBbJfg/DN9DTnY8QU5cm/7Y8rqp8TYvBDHJjIyoINlGVShScT9o
-         WbOdlL8IPb7fqyFMSyGSN6qPXjoJLO4yXSEdQgx/Vw6Bzg859lp96AUIowfOT/jkWjOM
-         R7b2JO/eQoGlF0U7EBd8Ce2LAsjxiBSTUyD7mDfcPdc6+4NMsZRRvwZJMEGwW1YKY62P
-         jbQsS16HmeJljhh5ugR8NzQzRSQ8VzM8thx+gE1l2ikqlm385ffe6tJO6YQ2w8MFr7Pg
-         IVmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SjMRbyYa9rj9p4UNxBNyHnO+PKKPdWRw8jfjsKYVM3Q=;
-        b=sReBal4hpQl5YTdPN/5Qe8Ri9Cy7YYLMmw4q+4AnSU9hu9kMdwYEycsJxu/hO8P+NO
-         VDzRDUbUC1sfCZ6pOmM9k5iyubNNi/XjkOUYa8Nmql1xwj0s1QtMU/fZe5cHW9Y8kqFe
-         oQNeRhMqGgHnnMmnbuP4fjCgI5QDzXN+EvSu0hBzMNQ8v/7JlCMLiO4GTxdmcH4SM+wV
-         E0FgkPaTDaB2QAqfa573iKuZdaj5AaQ0VfM7zkANNXteBTKwgHrCUn9Tc/SVXu/QViPa
-         VR+q6BXvVW5f3uprpwT6ReGd+y6LXjxNB5sPtxysYQl5sk3ssnvoelka3jUaa2pcVPx/
-         6LbQ==
-X-Gm-Message-State: APjAAAWom5Xfi9KKrh7ATN5MQN/ZmtFdgUtz49hAH+ETxsnZgdDTt5iT
-        expJ/qCudOlW8Dw/W+C21f2izXgJBvA=
-X-Google-Smtp-Source: APXvYqypvpLiNwNkFXga4GfyWDv+MIaT7ZlDnx7jracD9/qWDfbhCsp6YQOsOkHdg0YlsikfuYWMxQ==
-X-Received: by 2002:adf:dbce:: with SMTP id e14mr7509054wrj.49.1570694958485;
-        Thu, 10 Oct 2019 01:09:18 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id s1sm7080479wrg.80.2019.10.10.01.09.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 01:09:18 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 10:09:17 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, ayal@mellanox.com,
-        moshe@mellanox.com, eranbe@mellanox.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next 3/4] netdevsim: implement couple of testing
- devlink health reporters
-Message-ID: <20191010080917.GC2223@nanopsycho>
-References: <20191009110445.23237-1-jiri@resnulli.us>
- <20191009110445.23237-4-jiri@resnulli.us>
- <20191009205351.5ae47731@cakuba.netronome.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191009205351.5ae47731@cakuba.netronome.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        id S1733125AbfJJIMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 04:12:19 -0400
+Received: from mga14.intel.com ([192.55.52.115]:45882 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727196AbfJJIMT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 04:12:19 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 01:12:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,279,1566889200"; 
+   d="scan'208";a="345626296"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO VM.isw.intel.com) ([10.103.211.41])
+  by orsmga004.jf.intel.com with ESMTP; 10 Oct 2019 01:12:16 -0700
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, linux-doc@vger.kernel.org
+Cc:     bpf@vger.kernel.org
+Subject: [PATCH bpf] xsk: improve documentation for AF_XDP
+Date:   Thu, 10 Oct 2019 10:12:13 +0200
+Message-Id: <1570695134-660-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Oct 10, 2019 at 05:53:51AM CEST, jakub.kicinski@netronome.com wrote:
->On Wed,  9 Oct 2019 13:04:44 +0200, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Implement "empty" and "dummy" reporters. The first one is really simple
->> and does nothing. The other one has debugfs files to trigger breakage
->> and it is able to do recovery. The ops also implement dummy fmsg
->> content.
->> 
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->
->> diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
->> new file mode 100644
->> index 000000000000..088ae8fd89fc
->> --- /dev/null
->> +++ b/drivers/net/netdevsim/health.c
->
->> +static int
->> +nsim_dev_dummy_reporter_recover(struct devlink_health_reporter *reporter,
->> +				void *priv_ctx,
->> +				struct netlink_ext_ack *extack)
->> +{
->> +	struct nsim_dev_health *health = devlink_health_reporter_priv(reporter);
->> +	struct nsim_dev_dummy_reporter_ctx *ctx = priv_ctx;
->> +
->> +	if (health->fail_recover) {
->> +		/* For testing purposes, user set debugfs fail_recover
->> +		 * value to true. Fail right away.
->> +		 */
->> +		NL_SET_ERR_MSG_MOD(extack, "User setup the recover to fail for testing purposes");
->> +		return -EINVAL;
->> +	}
->> +	if (ctx) {
->> +		health->recovered_break_msg = kstrdup(ctx->break_msg,
->
->Can't there already be a message there? wouldn't this leak it?
+Added sections on all the bind flags, libbpf, all the setsockopts and
+all the getsockopts. Also updated the document to reflect the latest
+features and to correct some spelling errors.
 
-It would. Will fix.
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ Documentation/networking/af_xdp.rst | 262 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 234 insertions(+), 28 deletions(-)
 
->
->> +						      GFP_KERNEL);
->> +		if (!health->recovered_break_msg)
->> +			return -ENOMEM;
->> +	}
->> +	return 0;
->> +}
->
->> +static ssize_t nsim_dev_health_break_write(struct file *file,
->> +					   const char __user *data,
->> +					   size_t count, loff_t *ppos)
->> +{
->> +	struct nsim_dev_health *health = file->private_data;
->> +	struct nsim_dev_dummy_reporter_ctx ctx;
->> +	char *break_msg;
->> +	int err;
->> +
->> +	break_msg = kmalloc(count + 1, GFP_KERNEL);
->> +	if (!break_msg)
->> +		return -ENOMEM;
->> +
->> +	if (copy_from_user(break_msg, data, count)) {
->> +		err = -EFAULT;
->> +		goto out;
->> +	}
->> +	break_msg[count] = '\0';
->> +	if (break_msg[count - 1] == '\n')
->> +		break_msg[count - 1] = '\0';
->> +
->> +	ctx.break_msg = break_msg;
->> +	err = devlink_health_report(health->dummy_reporter, break_msg, &ctx);
->> +	if (err)
->> +		goto out;
->> +
->> +out:
->> +	kfree(break_msg);
->> +	return err ? err : count;
->
->nit: ?: works here, like you used below
+diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
+index 83f7ae5..52e40d72 100644
+--- a/Documentation/networking/af_xdp.rst
++++ b/Documentation/networking/af_xdp.rst
+@@ -40,13 +40,13 @@ allocates memory for this UMEM using whatever means it feels is most
+ appropriate (malloc, mmap, huge pages, etc). This memory area is then
+ registered with the kernel using the new setsockopt XDP_UMEM_REG. The
+ UMEM also has two rings: the FILL ring and the COMPLETION ring. The
+-fill ring is used by the application to send down addr for the kernel
++FILL ring is used by the application to send down addr for the kernel
+ to fill in with RX packet data. References to these frames will then
+ appear in the RX ring once each packet has been received. The
+-completion ring, on the other hand, contains frame addr that the
++COMPLETION ring, on the other hand, contains frame addr that the
+ kernel has transmitted completely and can now be used again by user
+ space, for either TX or RX. Thus, the frame addrs appearing in the
+-completion ring are addrs that were previously transmitted using the
++COMPLETION ring are addrs that were previously transmitted using the
+ TX ring. In summary, the RX and FILL rings are used for the RX path
+ and the TX and COMPLETION rings are used for the TX path.
+ 
+@@ -91,11 +91,16 @@ Concepts
+ ========
+ 
+ In order to use an AF_XDP socket, a number of associated objects need
+-to be setup.
++to be setup. These objects and their options are explained in the
++following sections.
+ 
+-Jonathan Corbet has also written an excellent article on LWN,
+-"Accelerating networking with AF_XDP". It can be found at
+-https://lwn.net/Articles/750845/.
++For an overview on how AF_XDP works, you can also take a look at the
++Linux Plumbers paper from 2018 on the subject:
++http://vger.kernel.org/lpc_net2018_talks/lpc18_paper_af_xdp_perf-v2.pdf. Do
++NOT consult the paper from 2017 on "AF_PACKET v4", the first attempt
++at AF_XDP. Nearly everything changed since then. Jonathan Corbet has
++also written an excellent article on LWN, "Accelerating networking
++with AF_XDP". It can be found at https://lwn.net/Articles/750845/.
+ 
+ UMEM
+ ----
+@@ -113,22 +118,22 @@ the next socket B can do this by setting the XDP_SHARED_UMEM flag in
+ struct sockaddr_xdp member sxdp_flags, and passing the file descriptor
+ of A to struct sockaddr_xdp member sxdp_shared_umem_fd.
+ 
+-The UMEM has two single-producer/single-consumer rings, that are used
++The UMEM has two single-producer/single-consumer rings that are used
+ to transfer ownership of UMEM frames between the kernel and the
+ user-space application.
+ 
+ Rings
+ -----
+ 
+-There are a four different kind of rings: Fill, Completion, RX and
++There are a four different kind of rings: FILL, COMPLETION, RX and
+ TX. All rings are single-producer/single-consumer, so the user-space
+ application need explicit synchronization of multiple
+ processes/threads are reading/writing to them.
+ 
+-The UMEM uses two rings: Fill and Completion. Each socket associated
++The UMEM uses two rings: FILL and COMPLETION. Each socket associated
+ with the UMEM must have an RX queue, TX queue or both. Say, that there
+ is a setup with four sockets (all doing TX and RX). Then there will be
+-one Fill ring, one Completion ring, four TX rings and four RX rings.
++one FILL ring, one COMPLETION ring, four TX rings and four RX rings.
+ 
+ The rings are head(producer)/tail(consumer) based rings. A producer
+ writes the data ring at the index pointed out by struct xdp_ring
+@@ -146,7 +151,7 @@ The size of the rings need to be of size power of two.
+ UMEM Fill Ring
+ ~~~~~~~~~~~~~~
+ 
+-The Fill ring is used to transfer ownership of UMEM frames from
++The FILL ring is used to transfer ownership of UMEM frames from
+ user-space to kernel-space. The UMEM addrs are passed in the ring. As
+ an example, if the UMEM is 64k and each chunk is 4k, then the UMEM has
+ 16 chunks and can pass addrs between 0 and 64k.
+@@ -164,8 +169,8 @@ chunks mode, then the incoming addr will be left untouched.
+ UMEM Completion Ring
+ ~~~~~~~~~~~~~~~~~~~~
+ 
+-The Completion Ring is used transfer ownership of UMEM frames from
+-kernel-space to user-space. Just like the Fill ring, UMEM indicies are
++The COMPLETION Ring is used transfer ownership of UMEM frames from
++kernel-space to user-space. Just like the FILL ring, UMEM indices are
+ used.
+ 
+ Frames passed from the kernel to user-space are frames that has been
+@@ -181,7 +186,7 @@ The RX ring is the receiving side of a socket. Each entry in the ring
+ is a struct xdp_desc descriptor. The descriptor contains UMEM offset
+ (addr) and the length of the data (len).
+ 
+-If no frames have been passed to kernel via the Fill ring, no
++If no frames have been passed to kernel via the FILL ring, no
+ descriptors will (or can) appear on the RX ring.
+ 
+ The user application consumes struct xdp_desc descriptors from this
+@@ -199,8 +204,24 @@ be relaxed in the future.
+ The user application produces struct xdp_desc descriptors to this
+ ring.
+ 
++Libbpf
++======
++
++Libbpf is a helper library for eBPF and XDP that makes using these
++technologies a lot simpler. It also contains specific helper functions
++in tools/lib/bpf/xsk.h for facilitating the use of AF_XDP. It
++contains two types of functions: those that can be used to make the
++setup of AF_XDP socket easier and ones that can be used in the data
++plane to access the rings safely and quickly. To see an example on how
++to use this API, please take a look at the sample application in
++samples/bpf/xdpsock_usr.c which uses libbpf for both setup and data
++plane operations.
++
++We recommend that you use this library unless you have become a power
++user. It will make your program a lot simpler.
++
+ XSKMAP / BPF_MAP_TYPE_XSKMAP
+-----------------------------
++============================
+ 
+ On XDP side there is a BPF map type BPF_MAP_TYPE_XSKMAP (XSKMAP) that
+ is used in conjunction with bpf_redirect_map() to pass the ingress
+@@ -216,21 +237,200 @@ queue 17. Only the XDP program executing for eth0 and queue 17 will
+ successfully pass data to the socket. Please refer to the sample
+ application (samples/bpf/) in for an example.
+ 
++Configuration Flags and Socket Options
++======================================
++
++These are the various configuration flags that can be used to control
++and monitor the behavior of AF_XDP sockets.
++
++XDP_COPY and XDP_ZERO_COPY bind flags
++-------------------------------------
++
++When you bind to a socket, the kernel will first try to use zero-copy
++copy. If zero-copy is not supported, it will fall back on using copy
++mode, i.e. copying all packets out to user space. But if you would
++like to force a certain mode, you can use the following flags. If you
++pass the XDP_COPY flag to the bind call, the kernel will force the
++socket into copy mode. If it cannot use copy mode, the bind call will
++fail with an error. Conversely, the XDP_ZERO_COPY flag will force the
++socket into zero-copy mode or fail.
++
++XDP_SHARED_UMEM bind flag
++-------------------------
++
++This flag enables you to bind multiple sockets to the same UMEM, but
++only if they share the same queue id. In this mode, each socket has
++their own RX and TX rings, but the UMEM (tied to the fist socket
++created) only has a single FILL ring and a single COMPLETION
++ring. To use this mode, create the first socket and bind it in the normal
++way. Create a second socket and create an RX and a TX ring, or at
++least one of them, but no FILL or COMPLETION rings as the ones from
++the first socket will be used. In the bind call, set he
++XDP_SHARED_UMEM option and provide the initial socket's fd in the
++sxdp_shared_umem_fd field. You can attach an arbitrary number of extra
++sockets this way.
++
++What socket will then a packet arrive on? This is decided by the XDP
++program. Put all the sockets in the XSK_MAP and just indicate which
++index in the array you would like to send each packet to. A simple
++round-robin example of distributing packets is shown below:
++
++.. code-block:: c
++
++   #define KBUILD_MODNAME "af_xdp_example"
++   #include <uapi/linux/bpf.h>
++   #include "bpf_helpers.h"
++
++   #define MAX_SOCKS 16
++
++   struct bpf_map_def SEC("maps") xsks_map = {
++   	  .type = BPF_MAP_TYPE_XSKMAP,
++	  .key_size = sizeof(int),
++	  .value_size = sizeof(int),
++	  .max_entries = MAX_SOCKS,
++   };
++
++   struct bpf_map_def SEC("maps") rr_map = {
++   	  .type = BPF_MAP_TYPE_PERCPU_ARRAY,
++	  .key_size = sizeof(int),
++	  .value_size = sizeof(unsigned int),
++	  .max_entries = 1,
++   };
++
++   SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
++   {
++	int key = 0, idx;
++	unsigned int *rr;
++
++	rr = bpf_map_lookup_elem(&rr_map, &key);
++	if (!rr)
++	   return XDP_ABORTED;
++
++	*rr = (*rr + 1) & (MAX_SOCKS - 1);
++	idx = *rr;
++
++	return bpf_redirect_map(&xsks_map, idx, 0);
++   }
++
++   char _license[] SEC("license") = "GPL";
++
++Note, that since there is only a single set of FILL and COMPLETION
++rings, and they are single producer, single consumer rings, you need
++to make sure that multiple processes or threads do not use these rings
++concurrently. There are no synchronization primitives in the
++libbpf code that protects multiple users at this point in time.
++
++XDP_USE_NEED_WAKEUP bind flag
++-----------------------------
++
++This option adds support for a new flag called need_wakeup that is
++present in the FILL ring and the TX ring, the rings for which user
++space is a producer. When this option is set in the bind call, the
++need_wakeup flag will be set if the kernel needs to be explicitly
++woken up by a syscall to continue processing packets. If the flag is
++zero, no syscall is needed.
++
++If the flag is set on the FILL ring, the application needs to call
++poll() to be able to continue to receive packets on the RX ring. This
++can happen, for example, when the kernel has detected that there are no
++more buffers on the FILL ring and no buffers left on the RX HW ring of
++the NIC. In this case, interrupts are turned off as the NIC cannot
++receive any packets (as there are no buffers to put them in), and the
++need_wakeup flag is set so that user space can put buffers on the
++FILL ring and then call poll() so that the kernel driver can put these
++buffers on the HW ring and start to receive packets.
++
++If the flag is set for the TX ring, it means that the application
++needs to explicitly notify the kernel to send any packets put on the
++TX ring. This can be accomplished either by a poll() call, as in the
++RX path, or by calling sendto().
++
++An example of how to use this flag can be found in
++samples/bpf/xdpsock_user.c. An example with the use of libbpf helpers
++would look like this for the TX path:
++
++.. code-block:: c
++
++   if (xsk_ring_prod__needs_wakeup(&my_tx_ring))
++      sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
++
++I.e., only use the syscall if the flag is set.
++
++We recommend that you always enable this mode as it can lead to
++magnitudes better performance if you run the application and the
++driver on the same core and somewhat better performance even if you
++use different cores for the application and the kernel driver, as it
++reduces the number of syscalls needed for the TX path.
++
++XDP_{RX|TX|UMEM_FILL|UMEM_COMPLETION}_RING setsockopts
++------------------------------------------------------
++
++These setsockopts sets the number of descriptors that the RX, TX,
++FILL, and COMPLETION rings respectively should have. It is mandatory
++to set the size of at least one of the RX and TX rings. If you set
++both, you will be able to both receive and send traffic from your
++application, but if you only want to do one of them, you can save
++resources by only setting up one of them. Both the FILL ring and the
++COMPLETION ring are mandatory if you have a UMEM tied to your socket,
++which is the normal case. But if the XDP_SHARED_UMEM flag is used, any
++socket after the first one does not have a UMEM and should in that
++case not have any FILL or COMPLETION rings created.
++
++XDP_UMEM_REG setsockopt
++-----------------------
++
++This setsockopt registers a UMEM to a socket. This is the area that
++contain all the buffers that packet can recide in. The call takes a
++pointer to the beginning of this area and the size of it. Moreover, it
++also has parameter called chunk_size that is the size that the UMEM is
++divided into. It can only be 2K or 4K at the moment. If you have an
++UMEM area that is 128K and a chunk size of 2K, this means that you
++will be able to hold a maximum of 128K / 2K = 64 packets in your UMEM
++area and that your largest packet size can be 2K.
++
++There is also an option to set the headroom of each single buffer in
++the UMEM. If you set this to N bytes, it means that the packet will
++start N bytes into the buffer leaving the first N bytes for the
++application to use. The final option is the flags field, but it will
++be dealt with in separate sections for each UMEM flag.
++
++XDP_STATISTICS getsockopt
++-------------------------
++
++Gets drop statistics of a socket that can be useful for debug
++purposes. The supported statistics are shown below:
++
++.. code-block:: c
++
++   struct xdp_statistics {
++   	  __u64 rx_dropped; /* Dropped for reasons other than invalid desc */
++	  __u64 rx_invalid_descs; /* Dropped due to invalid descriptor */
++	  __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
++   };
++
++XDP_OPTIONS getsockopt
++----------------------
++
++Gets options from an XDP socket. The only one supported so far is
++XDP_OPTIONS_ZEROCOPY which tells you if zero-copy is on or not.
++
+ Usage
+ =====
+ 
+-In order to use AF_XDP sockets there are two parts needed. The
++In order to use AF_XDP sockets two parts are needed. The
+ user-space application and the XDP program. For a complete setup and
+ usage example, please refer to the sample application. The user-space
+ side is xdpsock_user.c and the XDP side is part of libbpf.
+ 
+-The XDP code sample included in tools/lib/bpf/xsk.c is the following::
++The XDP code sample included in tools/lib/bpf/xsk.c is the following:
++
++.. code-block:: c
+ 
+    SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+    {
+        int index = ctx->rx_queue_index;
+ 
+-       // A set entry here means that the correspnding queue_id
++       // A set entry here means that the corresponding queue_id
+        // has an active AF_XDP socket bound to it.
+        if (bpf_map_lookup_elem(&xsks_map, &index))
+            return bpf_redirect_map(&xsks_map, index, 0);
+@@ -238,7 +438,9 @@ The XDP code sample included in tools/lib/bpf/xsk.c is the following::
+        return XDP_PASS;
+    }
+ 
+-Naive ring dequeue and enqueue could look like this::
++Naive ring dequeue and enqueue could look like this:
++
++.. code-block:: c
+ 
+     // struct xdp_rxtx_ring {
+     // 	__u32 *producer;
+@@ -287,17 +489,16 @@ Naive ring dequeue and enqueue could look like this::
+         return 0;
+     }
+ 
+-
+-For a more optimized version, please refer to the sample application.
++But please use the libbpf functions as they are optimized and ready to
++use. Will make your life easier.
+ 
+ Sample application
+ ==================
+ 
+ There is a xdpsock benchmarking/test application included that
+-demonstrates how to use AF_XDP sockets with both private and shared
+-UMEMs. Say that you would like your UDP traffic from port 4242 to end
+-up in queue 16, that we will enable AF_XDP on. Here, we use ethtool
+-for this::
++demonstrates how to use AF_XDP sockets with private UMEMs. Say that
++you would like your UDP traffic from port 4242 to end up in queue 16,
++that we will enable AF_XDP on. Here, we use ethtool for this::
+ 
+       ethtool -N p3p2 rx-flow-hash udp4 fn
+       ethtool -N p3p2 flow-type udp4 src-port 4242 dst-port 4242 \
+@@ -311,13 +512,18 @@ using::
+ For XDP_SKB mode, use the switch "-S" instead of "-N" and all options
+ can be displayed with "-h", as usual.
+ 
++This sample application uses libbpf to make the setup and usage of
++AF_XDP simpler. If you want to know how the raw uapi of AF_XDP is
++really used to make something more advanced, take a look at the libbpf
++code in tools/lib/bpf/xsk.[ch].
++
+ FAQ
+ =======
+ 
+ Q: I am not seeing any traffic on the socket. What am I doing wrong?
+ 
+ A: When a netdev of a physical NIC is initialized, Linux usually
+-   allocates one Rx and Tx queue pair per core. So on a 8 core system,
++   allocates one RX and TX queue pair per core. So on a 8 core system,
+    queue ids 0 to 7 will be allocated, one per core. In the AF_XDP
+    bind call or the xsk_socket__create libbpf function call, you
+    specify a specific queue id to bind to and it is only the traffic
+@@ -343,7 +549,7 @@ A: When a netdev of a physical NIC is initialized, Linux usually
+      sudo ethtool -N <interface> flow-type udp4 src-port 4242 dst-port \
+      4242 action 2
+ 
+-   A number of other ways are possible all up to the capabilitites of
++   A number of other ways are possible all up to the capabilities of
+    the NIC you have.
+ 
+ Credits
+-- 
+2.7.4
 
-Ok.
-
-
->
->> +}
->> +
->> +static const struct file_operations nsim_dev_health_break_fops = {
->> +	.open = simple_open,
->> +	.write = nsim_dev_health_break_write,
->> +	.llseek = generic_file_llseek,
->> +};
->> +
->> +int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
->> +{
->> +	struct nsim_dev_health *health = &nsim_dev->health;
->> +	int err;
->> +
->> +	health->empty_reporter =
->> +		devlink_health_reporter_create(devlink,
->> +					       &nsim_dev_empty_reporter_ops,
->> +					       0, false, health);
->> +	if (IS_ERR(health->empty_reporter))
->> +		return PTR_ERR(health->empty_reporter);
->> +
->> +	health->dummy_reporter =
->> +		devlink_health_reporter_create(devlink,
->> +					       &nsim_dev_dummy_reporter_ops,
->> +					       0, false, health);
->> +	if (IS_ERR(health->dummy_reporter)) {
->> +		err = PTR_ERR(health->dummy_reporter);
->> +		goto err_empty_reporter_destroy;
->> +	}
->> +
->> +	health->ddir = debugfs_create_dir("health", nsim_dev->ddir);
->> +	if (IS_ERR_OR_NULL(health->ddir))
->> +		return PTR_ERR_OR_ZERO(health->ddir) ?: -EINVAL;
->
->goto err_dummy_reporter_destroy?
-
-Right.
-
-
->
->> +	health->recovered_break_msg = NULL;
->> +	debugfs_create_file("break_health", 0200, health->ddir, health,
->> +			    &nsim_dev_health_break_fops);
->> +	health->binary_len = 16;
->> +	debugfs_create_u32("binary_len", 0600, health->ddir,
->> +			   &health->binary_len);
->> +	health->fail_recover = false;
->> +	debugfs_create_bool("fail_recover", 0600, health->ddir,
->> +			    &health->fail_recover);
->> +	return 0;
->> +
->> +err_empty_reporter_destroy:
->> +	devlink_health_reporter_destroy(health->empty_reporter);
->> +	return err;
->> +}
->> +
->> +void nsim_dev_health_exit(struct nsim_dev *nsim_dev)
->> +{
->> +	struct nsim_dev_health *health = &nsim_dev->health;
->> +
->> +	debugfs_remove_recursive(health->ddir);
->> +	kfree(health->recovered_break_msg);
->> +	devlink_health_reporter_destroy(health->dummy_reporter);
->> +	devlink_health_reporter_destroy(health->empty_reporter);
->> +}
->> diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
->> index 24358385d869..657cbae50293 100644
->> --- a/drivers/net/netdevsim/netdevsim.h
->> +++ b/drivers/net/netdevsim/netdevsim.h
->> @@ -18,6 +18,7 @@
->>  #include <linux/list.h>
->>  #include <linux/netdevice.h>
->>  #include <linux/u64_stats_sync.h>
->> +#include <linux/debugfs.h>
->
->I don't think this include is needed? Forward declaration of 
->struct dentry, should be sufficient, if needed, no?
-
-Right.
-
-
->
->>  #include <net/devlink.h>
->>  #include <net/xdp.h>
->>  
->> @@ -134,6 +135,18 @@ enum nsim_resource_id {
->>  	NSIM_RESOURCE_IPV6_FIB_RULES,
->>  };
->>  
->> +struct nsim_dev_health {
->> +	struct devlink_health_reporter *empty_reporter;
->> +	struct devlink_health_reporter *dummy_reporter;
->> +	struct dentry *ddir;
->> +	char *recovered_break_msg;
->> +	u32 binary_len;
->> +	bool fail_recover;
->> +};
->> +
->> +int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink);
->> +void nsim_dev_health_exit(struct nsim_dev *nsim_dev);
->> +
->>  struct nsim_dev_port {
->>  	struct list_head list;
->>  	struct devlink_port devlink_port;
->> @@ -164,6 +177,7 @@ struct nsim_dev {
->>  	bool dont_allow_reload;
->>  	bool fail_reload;
->>  	struct devlink_region *dummy_region;
->> +	struct nsim_dev_health health;
->>  };
->>  
->>  static inline struct net *nsim_dev_net(struct nsim_dev *nsim_dev)
->
