@@ -2,87 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38590D2E5B
-	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:09:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18BB7D2E75
+	for <lists+netdev@lfdr.de>; Thu, 10 Oct 2019 18:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726088AbfJJQJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 12:09:53 -0400
-Received: from mail-pg1-f170.google.com ([209.85.215.170]:46405 "EHLO
-        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbfJJQJx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 12:09:53 -0400
-Received: by mail-pg1-f170.google.com with SMTP id b8so3953031pgm.13
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 09:09:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=wjUtvmCvo6VYYgZT2v5u95hguSn59IwTnB2wH040nJo=;
-        b=iWEfxrka27vrUmPD6BpuuFz8uC7/FCxQh6KvQ2g08MxqdMhDgPc5bDcCGDXaNgrLar
-         BNUJhck8Xp36Vm8bduSDttRVqCaHZAArKfJBJGmx+bah/BgfyDOr5u6J+JKk1iEymqwi
-         Qak4ls0ENUQWNAb9+FucRIl41wkIhyPvDLq/Eccp0Kptm7StQPjGNW4o2lxHhyVXISqK
-         CMdIKYD/+0a6QYMiVzxL2k9ut6RHlLgnTuIW8zhcEhuqgWs2Aa9xmNgIy6rsU2G5LMqo
-         UKA1L06krRKqqq4/vloC3f3xk/7GbqoM4BDADpWzjqvUhN22mpQgiUHdrqHanpHX7S9u
-         AW8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=wjUtvmCvo6VYYgZT2v5u95hguSn59IwTnB2wH040nJo=;
-        b=GRIDvAQo0NzJD09rFaqEwZioKbzAjxcrgRliQNc24J8HK3mMbB6lmrmqmEfI2Qp/ZP
-         LUP7aaXyfvpwK1Bi1WzhHA8WFv1wcqxOuWQ7VbmN4oD0NucDMIUFUX4XYxPJV3sxPA2c
-         0+kE3c7S2MZ3F822ZrcNg008NbjStlTYRq3HidsaTYoIlmEahc+7+mQ/M4PkfwQqS0XB
-         aZsiB9a1Y1V99SDkZjbejgCs4Z50q/3Lqwjewy+Nz1cIDwCWIrXdkW/hnWEQX6pfYGcZ
-         1UfD5/ciTmN2UQElm45djKxl+VIijEZ+BRtBjnZShH3/FuRChvJ4hW+llPohBv7jngm9
-         notw==
-X-Gm-Message-State: APjAAAUaFIuc8qEhvwmaxUzDvsyWkf880BYAnvVANyjc4OkWx49efQpg
-        r6tLMFFmA0vBG6jg1sqtxrCfJQ==
-X-Google-Smtp-Source: APXvYqyYOgzEy0p2PMFXuxOb2LUFozsIMxutL1ql14QpVj1R/s39oIOOqHcdDYMHtJrOeNyCJqmhcw==
-X-Received: by 2002:a17:90a:654b:: with SMTP id f11mr12235276pjs.49.1570723791193;
-        Thu, 10 Oct 2019 09:09:51 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id m68sm7036770pfb.122.2019.10.10.09.09.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 09:09:50 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 09:09:34 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, ayal@mellanox.com,
-        moshe@mellanox.com, eranbe@mellanox.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next 2/4] devlink: propagate extack down to health
- reporter ops
-Message-ID: <20191010090934.4e869113@cakuba.netronome.com>
-In-Reply-To: <20191010080704.GB2223@nanopsycho>
-References: <20191009110445.23237-1-jiri@resnulli.us>
-        <20191009110445.23237-3-jiri@resnulli.us>
-        <20191009203818.39424b5d@cakuba.netronome.com>
-        <20191010080704.GB2223@nanopsycho>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726135AbfJJQT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 12:19:57 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:47888 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725909AbfJJQT5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 12:19:57 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DAE1E2004A8;
+        Thu, 10 Oct 2019 18:19:55 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CE89E2004A6;
+        Thu, 10 Oct 2019 18:19:55 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 91EF32060B;
+        Thu, 10 Oct 2019 18:19:55 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net 0/2] dpaa2-eth: misc fixes
+Date:   Thu, 10 Oct 2019 19:19:45 +0300
+Message-Id: <1570724387-5370-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Oct 2019 10:07:04 +0200, Jiri Pirko wrote:
-> Thu, Oct 10, 2019 at 05:38:18AM CEST, jakub.kicinski@netronome.com wrote:
-> >On Wed,  9 Oct 2019 13:04:43 +0200, Jiri Pirko wrote:  
-> >> From: Jiri Pirko <jiri@mellanox.com>
-> >> 
-> >> During health reporter operations, driver might want to fill-up
-> >> the extack message, so propagate extack down to the health reporter ops.
-> >> 
-> >> Signed-off-by: Jiri Pirko <jiri@mellanox.com>  
-> >
-> >I wonder how useful this is for non-testing :( We'd probably expect most
-> >health reporters to have auto-recovery on and therefore they won't be
-> >able to depend on that extack..  
-> 
-> That is probably true. But still, what is harm of carrying potential
-> error message to the user?
+This patch set adds a couple of fixes around updating configuration on MAC
+change.  Depending on when MC connects the DPNI to a MAC, both the MAC
+address and TX FQIDs should be updated everytime there is a change in
+configuration.
 
-Not sure, it just makes the right thing to do non-obvious to someone
-implementing the API (below level 7 on Rusty's API Design Manifesto).
-But I don't feel too strongly about it.
+Florin Chiculita (1):
+  dpaa2-eth: add irq for the dpmac connect/disconnect event
+
+Ioana Radulescu (1):
+  dpaa2-eth: Fix TX FQID values
+
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 48 +++++++++++++++++++++++-
+ drivers/net/ethernet/freescale/dpaa2/dpni.h      |  5 ++-
+ 2 files changed, 51 insertions(+), 2 deletions(-)
+
+-- 
+1.9.1
+
