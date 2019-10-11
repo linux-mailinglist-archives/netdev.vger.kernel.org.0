@@ -2,131 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF28D4549
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 18:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A600ED4544
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 18:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbfJKQVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 12:21:38 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15472 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728213AbfJKQVh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 12:21:37 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9BGJRF0003301;
-        Fri, 11 Oct 2019 09:21:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=dFPbNoIOYzKP9XmL4zg4IcelN2CwkwZQ6qrGRhAbYjU=;
- b=jh+4YATYHEgtzcKS2ZipaxjO2LX4NiXXJFxYTnzG4tzwCP+k0DGNc3qY7WDi921j4lk3
- FB3w0gPd7cOU2xJxX0e+DjhGQcLLZ568SAAnndM4OxhWrpWCoqFYGW3unHPmPw3IdcUH
- zlVhqESJZULOuyWgrm5MbVnNFXBCkZAzwus= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vhy7hg1re-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 11 Oct 2019 09:21:23 -0700
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 11 Oct 2019 09:21:22 -0700
-Received: from NAM03-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 11 Oct 2019 09:21:22 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ewagOrTSsUGdxqX8Os9pZ+Fig4kK9/XEQNNF7Tty+AfRHVHt8feWTja6PT68JLMiDT2zXhA7tpzUQq322fG21tb0YglBdEAyx5hTgOwTYlCxVIedg8IUXcYQK0m8SdGNr1uhgQi2QV8gQQzOZtJeTFkuP2qLblT6BnahAgXoS5NV/AXBh9PNDFRckpnPOMV+BK4FQYXUsx5aAZjvIYwWmXCVTl2nlQFEIKiwJwnDhf6Qh8nOQ3DPdAlLAPaeqXRCcZbSucf/MUd5kEPwkyoqfXdZPiYFzRDtWibdBcJHcVuBFjN3PPbFwKvF1GnExAoGHxtHXY7LAAOZM7Vl7zoCcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dFPbNoIOYzKP9XmL4zg4IcelN2CwkwZQ6qrGRhAbYjU=;
- b=ODeXxfRTijY/RG7Y1QqxRJDshHudjNThAAsKhhZv8sSl9QQk9dYUCReGEveNupjrp7eVv0bxmnI5lVc6CL98J3fuSTeR06ZAIVBypjx664mflESghbdZYR3DCgYXdc3cec7yqp1YVBHyu5ATN4fvq37Rv4A1B+R+2CugOiAaa1km4WAHBDshd+dlh13JJvX2fPhOaCApAC0gEQsLqkoETd3ifR2c27vaw9I/Me9KIvg0sI/JCGcU6RAcudmAGvLeWuUxzMFP+5O0qa32HiXXkQRrSdG0Idyah4ym9I1nrSEAVZe8phsflFghMVJsA9wwHeU3MOqeMcbTPRC7hBrS5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dFPbNoIOYzKP9XmL4zg4IcelN2CwkwZQ6qrGRhAbYjU=;
- b=TEq027IvHzfTXuPPIc8teuNvV+7yFYGD8mUITIlMfdBbtMH3BGQ/44SZRS0WGsDhJqq0bTw7bcMQYp4zBpIzKY1sKfVG7QnqilEm/j4lrCjBqhT8sWISasn9tRLX+3zvzdul3pjiJ+Vz6bExUFvq7cVT9AnFAXk3iWlJ3/D3Fys=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3677.namprd15.prod.outlook.com (52.132.175.152) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.23; Fri, 11 Oct 2019 16:21:21 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::d5a4:a2a6:a805:6647]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::d5a4:a2a6:a805:6647%7]) with mapi id 15.20.2347.021; Fri, 11 Oct 2019
- 16:21:21 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [Potential Spoof] [PATCH bpf-next 2/2] selftests/bpf: remove
- obsolete pahole/BTF support detection
-Thread-Topic: [Potential Spoof] [PATCH bpf-next 2/2] selftests/bpf: remove
- obsolete pahole/BTF support detection
-Thread-Index: AQHVf+HlxUkxFTkOd02RdnzvekPkjadVoA2A
-Date:   Fri, 11 Oct 2019 16:21:21 +0000
-Message-ID: <20191011162117.ckleov43b5piuzvb@kafai-mbp.dhcp.thefacebook.com>
-References: <20191011031318.388493-1-andriin@fb.com>
- <20191011031318.388493-3-andriin@fb.com>
-In-Reply-To: <20191011031318.388493-3-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR02CA0051.namprd02.prod.outlook.com
- (2603:10b6:301:60::40) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:e08f]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 77674fad-3e85-4d7a-118d-08d74e670d7f
-x-ms-traffictypediagnostic: MN2PR15MB3677:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB3677204D27E8B08FD00CCE51D5970@MN2PR15MB3677.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-forefront-prvs: 0187F3EA14
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(346002)(376002)(396003)(39860400002)(366004)(189003)(199004)(71200400001)(5660300002)(71190400001)(6862004)(6506007)(86362001)(229853002)(386003)(256004)(81156014)(1076003)(4326008)(81166006)(4744005)(8676002)(8936002)(6636002)(486006)(76176011)(54906003)(66476007)(66556008)(11346002)(6246003)(14454004)(25786009)(66946007)(446003)(476003)(316002)(66446008)(64756008)(2906002)(305945005)(6486002)(46003)(52116002)(99286004)(6436002)(6512007)(9686003)(6116002)(7736002)(102836004)(478600001)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3677;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ASYnuADFM3HBQNZ5gB9F3j9dASQ+RPAhLHggTTKtJFneZWo3vCcLxVPkLlJWMPnn1a0XuLh0sKlYZ6D3dcvJf82ikZUasgq95nCocfVYjrTvCaFVYreAu+CftsjZ+RMN8IVW493vliW2Qgfk0+Z9t0gsbTsoLXkOUYNmi+BKn7d5Drfqcl9VEs3WQkx8JDJ7s+w7mOlf/TROmLllF1obukbFCb7aeeg3BjowsPNOsDftZGpjp/AS8Z9iF0wL4z5wj20l6V89c1s2pbFObQky9EGPlvYI/LyMdQ+kGK/+SXPOHa1LCQq0/1/aI9em5PsioHIqTNIyDJhni+OPs4uRrT42i7hqW5tB2ZhNTACJj24jagcDd9ZZsQdiWftpwwY6O/353niAA7YqRPgtEaKRDIywOw1Byz+hqVtyYd3vGM8=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <33F9ADF43B39AD49B26CBD6F6BED1CB1@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77674fad-3e85-4d7a-118d-08d74e670d7f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Oct 2019 16:21:21.3362
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yD18B+YdIgSkD+ravaHTxAkCPtWXe1ymIVbC68lJ352XXV51bMvHD4LNMj3GjMci
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3677
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-11_09:2019-10-10,2019-10-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- adultscore=0 lowpriorityscore=0 mlxlogscore=906 spamscore=0
- priorityscore=1501 mlxscore=0 bulkscore=0 impostorscore=0 phishscore=0
- malwarescore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1910110147
-X-FB-Internal: deliver
+        id S1728204AbfJKQV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 12:21:29 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:41077 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726728AbfJKQV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 12:21:28 -0400
+Received: by mail-pl1-f201.google.com with SMTP id q3so6325721pll.8
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 09:21:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=xBvLpnklmO3BeW4F+cJ5FIZ6jEwlCbi0YlkXsejMb1w=;
+        b=DJDypAfZlllevArKYRXQ88RS2H5DrNm8EpfeLw0LXLL9H2QzEvYMOHgzPgfZLU1X/L
+         JJJT4X310I3RLuccgMEULteGhzajAR5lZlZDMZixeiB8cDBJ91DWJen2FfZQRl3nQqZV
+         qmbplDBAo2KOix/9DuGplFa612nYshXxViRktpY5GDcK/Ngy6OJur4k2oU2Gvu6REX+Q
+         bfQATZ4WAYcPUcavGantHH14ujG+WJzEbqRJbkNVZk0TEPpBboiCkEyiLXpsAJ0yxws0
+         d+qsfem0kGQQvHYPb0pTXc4HHjAr1oqKZyyarWsWqyEzw/eypGX5F/IUjgFoao0x50jn
+         TpIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=xBvLpnklmO3BeW4F+cJ5FIZ6jEwlCbi0YlkXsejMb1w=;
+        b=HuFt9+WzLEdNO8lD7efFoHHsMuZ8Qr0RHn36nPchHhuuBAGnP8WTCUHCkeMI8smf2X
+         tcHlomrEmZisxG5udz+c8T7hAZ8yll8NIan0EeFrfDnefCudT9W9Emt8oT/JFugJsymg
+         1GL0jF8LWzWSKrr0+JopI1FDtmLVz7Ce0Ytxa3KBxG0IZYhS019kn04baAy9FNf+1DJA
+         Zyfn3Fyc28rhuV/r6pcKG1hrObVQjYc24Vt3X1AkPX3hsounvArJGfrFu3bIJZKhOS6E
+         G1lTpAiwU2A8K/Gno1RN5XnBEJGdnO6qVW6+gmFUFatwYGwNXLNUNNW7Y13kOJGIN7hz
+         7nbA==
+X-Gm-Message-State: APjAAAXVLOI+j9ubLOM30dz8/vxBBo+YmlSx/HLnQMnhnBRqK5b/qiu1
+        D8cdbKaN/Z4oVephLyi6CaKPLM07xd79RcBCQn/CYBl9mUMk4Oo7dCGz5qdgjOZ2V53QuY8OwI5
+        Kq+cwBKfo9jFAqctqjbvB1vl0aIw9XZlv0Bm+9VKfihKbPjggt7QbAQ==
+X-Google-Smtp-Source: APXvYqygwahaAN17B+q4IqG8G6ZDeaeOcvOgLgoWO2UFUdciDoSvOipn4xcw0+z6LVegK7y3x/kSxg4=
+X-Received: by 2002:a63:5c49:: with SMTP id n9mr17568195pgm.289.1570810886256;
+ Fri, 11 Oct 2019 09:21:26 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 09:21:22 -0700
+Message-Id: <20191011162124.52982-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
+Subject: [PATCH bpf-next 1/3] bpf: preserve command of the process that loaded
+ the program
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 08:13:18PM -0700, Andrii Nakryiko wrote:
-> Given lots of selftests won't work without recent enough Clang/LLVM that
-> fully supports BTF, there is no point in maintaining outdated BTF
-> support detection and fall-back to pahole logic. Just assume we have
-> everything we need.
-May be an error message to tell which llvm is needed?
+Even though we have the pointer to user_struct and can recover
+uid of the user who has created the program, it usually contains
+0 (root) which is not very informative. Let's store the comm of the
+calling process and export it via bpf_prog_info. This should help
+answer the question "which process loaded this particular program".
 
-$(CPU) and $(PROBE) are no longer needed also?
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ include/linux/bpf.h      | 1 +
+ include/uapi/linux/bpf.h | 2 ++
+ kernel/bpf/syscall.c     | 4 ++++
+ 3 files changed, 7 insertions(+)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 5b9d22338606..b03ea396afe5 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -421,6 +421,7 @@ struct bpf_prog_aux {
+ 		struct work_struct work;
+ 		struct rcu_head	rcu;
+ 	};
++	char created_by_comm[BPF_CREATED_COMM_LEN];
+ };
+ 
+ struct bpf_array {
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index a65c3b0c6935..4e883ecbba1e 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -326,6 +326,7 @@ enum bpf_attach_type {
+ #define BPF_F_NUMA_NODE		(1U << 2)
+ 
+ #define BPF_OBJ_NAME_LEN 16U
++#define BPF_CREATED_COMM_LEN	16U
+ 
+ /* Flags for accessing BPF object from syscall side. */
+ #define BPF_F_RDONLY		(1U << 3)
+@@ -3252,6 +3253,7 @@ struct bpf_prog_info {
+ 	__aligned_u64 prog_tags;
+ 	__u64 run_time_ns;
+ 	__u64 run_cnt;
++	char created_by_comm[BPF_CREATED_COMM_LEN];
+ } __attribute__((aligned(8)));
+ 
+ struct bpf_map_info {
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 82eabd4e38ad..51c125292eaf 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1735,6 +1735,8 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
+ 	bpf_prog_kallsyms_add(prog);
+ 	perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_LOAD, 0);
+ 
++	get_task_comm(prog->aux->created_by_comm, current);
++
+ 	err = bpf_prog_new_fd(prog);
+ 	if (err < 0)
+ 		bpf_prog_put(prog);
+@@ -2337,6 +2339,8 @@ static int bpf_prog_get_info_by_fd(struct bpf_prog *prog,
+ 
+ 	memcpy(info.tag, prog->tag, sizeof(prog->tag));
+ 	memcpy(info.name, prog->aux->name, sizeof(prog->aux->name));
++	memcpy(info.created_by_comm, prog->aux->created_by_comm,
++	       sizeof(prog->aux->created_by_comm));
+ 
+ 	ulen = info.nr_map_ids;
+ 	info.nr_map_ids = prog->aux->used_map_cnt;
+-- 
+2.23.0.700.g56cf767bdb-goog
+
