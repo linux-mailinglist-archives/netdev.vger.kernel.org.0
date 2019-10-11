@@ -2,108 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD06AD4ADB
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 01:19:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A25D4AE4
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 01:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727587AbfJKXTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 19:19:20 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:33260 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726705AbfJKXTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 19:19:20 -0400
-Received: by mail-pl1-f195.google.com with SMTP id d22so5140724pls.0;
-        Fri, 11 Oct 2019 16:19:19 -0700 (PDT)
+        id S1727541AbfJKXWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 19:22:35 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:45257 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726345AbfJKXWe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 19:22:34 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y72so6920669pfb.12
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 16:22:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=/G9uKyk/90w+wc42UoUQODWgnKhQYlxOUwgCeA9A5ho=;
-        b=sSefBXmyQMjx8Ggd1c55GcBum9XQOvWbUnc/XYDBHl7EbqFBk/WcM0Bni7J4jzmcwq
-         OAQq8AbZuKJJr8N7zaBsrIN4noc2yDWiLBdrNwJ16UWfY9a+U+98WGwyZ+j/p/rvTUhT
-         pR2ft0rq1MY+7HZ7HE1jB1m7TLq9JOElmY6ORGH/N5+i1AiAuiNclWabJQgJF4ZyYr7j
-         2FXuro4buGSHDMlGR2SEgCGY+4HpqyQGViMt3awUuJoLbvT1xb0tspjJkSd3ttWkF5pz
-         QsPnQSSFwQMpnefSJlBc3BTMIJDPTX+Pvi2PWbkUDZ39ik/BBTAHZ6hOlq/+Aqkh4j/G
-         6u2w==
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=T5gcsIEKN7fGZ7H7m6feYOoRGQFlbeIl7NkVUQv4he4=;
+        b=Ksu7qQFHWBMhWinL77/TQbc+vSKoTq2TIhAH2e2tUs3ppJnmql4AfILW2RwbAubDOl
+         chO4usBGOBBH8HDljDNj7ouDLAsMHLaYcN5/ags2Q9i6Is4L5wltQxZNW2yKsGj9HTDB
+         EesFgnTZP8oj1M1CPdB/6+vfgQ8jka2FPcm6A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=/G9uKyk/90w+wc42UoUQODWgnKhQYlxOUwgCeA9A5ho=;
-        b=T0hwz1mnucB3Aqpgkn9zE+qOgyKl3A86mGIJjmV19v2Ue4MnYXacXQD1CHjxb2XGoB
-         8gMnCu80XkTdC71RkMRyhxYqdvUlfIX+ZZzWdWeKj3IHo59W3b9/WpMtyUuI6v/yaDnE
-         CqNXW9oRgLnoXMedTN5/dMYJsZyEUK2BlIQhgULSyXxpb9xkuPbMNu8SWycjkNHmjwr8
-         F2L1S0LBpT6lOr5uVEtRiwq8czl120B7JJjTnzk53BZyS+PBurqoEor9fz4yHm9fpY+d
-         6ByBxwsaK2Y0zANFRjbhKQCG9wecHXX0u/7O31hcN7H3F+hyBsaUwJZ1TB6wx08ItYFM
-         LStA==
-X-Gm-Message-State: APjAAAWu6djXGMC/W2MWjJOw1zi6PncQ5xsdPWnHlU32XiDtcsJ2sUtE
-        BpeqQHlcTUAe4OZz5JvG+znf+SJx
-X-Google-Smtp-Source: APXvYqwwVWuSHP/noxdWfl1rCLKl5ioAbmqbftaXp7u7n3bR6ooq9PcqpcLpUWdnxM5GuDmTjJtYQw==
-X-Received: by 2002:a17:902:9f94:: with SMTP id g20mr1733531plq.319.1570835958930;
-        Fri, 11 Oct 2019 16:19:18 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f185sm13311997pfb.183.2019.10.11.16.19.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 16:19:18 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=T5gcsIEKN7fGZ7H7m6feYOoRGQFlbeIl7NkVUQv4he4=;
+        b=ZLhh2qw0xI0iPlxJRNIKIGA6PMS07XqpFQ4j5KsAXwwy+qkdo6YO92IEAIWTPXUOAu
+         0d+9O/uo6edtlpHHEDxIskDPArWgM2hcZski6sRr2l56M4/gQND3yiGut2TdZCGoHqRz
+         p7VpQxLtQ40FRf1Sp9XfIpDNMk25AauS/okmyi3r1SyfYpQjDJGSI4ccRcrNrTNPeTaV
+         J/Lx3Z/8ljTflgY6RkMFzVZmUTzskTGuW/9VC5Plhgs92s5VPhwjvC4fvUVJVu1+0u14
+         5U2mjY0exjJ0G24jcrCyE6yhKLYKN54D3kPcI5eHzmebyLj7b42jq2xuvR87y1vOHW/m
+         LTbg==
+X-Gm-Message-State: APjAAAXyuOO7JZCR5rLrOwTU08KKdSQSUf1daHLl3xZ4uuoB+5GUx77E
+        fZVRssvaDFVP7z1FRY29Uw4ECg==
+X-Google-Smtp-Source: APXvYqxnc8uPXC8zde1FT2hLIcxRHARAplN03/RYBfrBgB8o6kDGDYjUcmJ2HdlhufOjzl4dUByUWw==
+X-Received: by 2002:a62:ac02:: with SMTP id v2mr18619372pfe.97.1570836151751;
+        Fri, 11 Oct 2019 16:22:31 -0700 (PDT)
+Received: from [10.136.13.65] ([192.19.228.250])
+        by smtp.gmail.com with ESMTPSA id z13sm12486111pfq.121.2019.10.11.16.22.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 11 Oct 2019 16:22:31 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: bcmgenet: Generate a random MAC if none is
+ valid
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
 Cc:     phil@raspberrypi.org, jonathan@raspberrypi.org,
         matthias.bgg@kernel.org, linux-rpi-kernel@lists.infradead.org,
         wahrenst@gmx.net, nsaenzjulienne@suse.de,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Doug Berger <opendmb@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM GENET
-        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: bcmgenet: Generate a random MAC if none is valid
-Date:   Fri, 11 Oct 2019 16:19:15 -0700
-Message-Id: <20191011231915.9347-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        "open list:BROADCOM GENET ETHERNET DRIVER" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20191011231915.9347-1-f.fainelli@gmail.com>
+From:   Scott Branden <scott.branden@broadcom.com>
+Message-ID: <7fe7796f-c98e-3c7c-3683-505a0e643eda@broadcom.com>
+Date:   Fri, 11 Oct 2019 16:22:28 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20191011231915.9347-1-f.fainelli@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of having a hard failure and stopping the driver's probe
-routine, generate a random Ethernet MAC address to keep going.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 12cb77ef1081..5c20829ffa0f 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -3461,16 +3461,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 		goto err;
- 	}
- 
--	if (dn) {
-+	if (dn)
- 		macaddr = of_get_mac_address(dn);
--		if (IS_ERR(macaddr)) {
--			dev_err(&pdev->dev, "can't find MAC address\n");
--			err = -EINVAL;
--			goto err;
--		}
--	} else {
-+	else
- 		macaddr = pd->mac_address;
--	}
- 
- 	priv->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(priv->base)) {
-@@ -3482,7 +3476,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	dev_set_drvdata(&pdev->dev, dev);
--	ether_addr_copy(dev->dev_addr, macaddr);
-+	if (IS_ERR_OR_NULL(macaddr) || !is_valid_ether_addr(macaddr))
-+		eth_hw_addr_random(dev);
-+	else
-+		ether_addr_copy(dev->dev_addr, macaddr);
- 	dev->watchdog_timeo = 2 * HZ;
- 	dev->ethtool_ops = &bcmgenet_ethtool_ops;
- 	dev->netdev_ops = &bcmgenet_netdev_ops;
--- 
-2.17.1
+On 2019-10-11 4:19 p.m., Florian Fainelli wrote:
+> Instead of having a hard failure and stopping the driver's probe
+> routine, generate a random Ethernet MAC address to keep going.
+>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>   drivers/net/ethernet/broadcom/genet/bcmgenet.c | 15 ++++++---------
+>   1 file changed, 6 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index 12cb77ef1081..5c20829ffa0f 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -3461,16 +3461,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
+>   		goto err;
+>   	}
+>   
+> -	if (dn) {
+> +	if (dn)
+>   		macaddr = of_get_mac_address(dn);
+> -		if (IS_ERR(macaddr)) {
+> -			dev_err(&pdev->dev, "can't find MAC address\n");
+We shouldn't hide the error that the MAC address wasn't found.
+We should continue to print some kind of error as generating a mac address
+is a stop-gap measure and a proper MAC address should be used
+for the board.
+> -			err = -EINVAL;
+> -			goto err;
+> -		}
+> -	} else {
+> +	else
+>   		macaddr = pd->mac_address;
+> -	}
+>   
+>   	priv->base = devm_platform_ioremap_resource(pdev, 0);
+>   	if (IS_ERR(priv->base)) {
+> @@ -3482,7 +3476,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
+>   
+>   	SET_NETDEV_DEV(dev, &pdev->dev);
+>   	dev_set_drvdata(&pdev->dev, dev);
+> -	ether_addr_copy(dev->dev_addr, macaddr);
+> +	if (IS_ERR_OR_NULL(macaddr) || !is_valid_ether_addr(macaddr))
+> +		eth_hw_addr_random(dev);
+> +	else
+> +		ether_addr_copy(dev->dev_addr, macaddr);
+>   	dev->watchdog_timeo = 2 * HZ;
+>   	dev->ethtool_ops = &bcmgenet_ethtool_ops;
+>   	dev->netdev_ops = &bcmgenet_netdev_ops;
 
