@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C2E0D37D1
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A92D37D2
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbfJKDSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 23:18:24 -0400
-Received: from mail-qk1-f201.google.com ([209.85.222.201]:53406 "EHLO
-        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbfJKDSY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 23:18:24 -0400
-Received: by mail-qk1-f201.google.com with SMTP id g62so7514176qkb.20
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:18:23 -0700 (PDT)
+        id S1727112AbfJKDS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 23:18:27 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:32878 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727097AbfJKDS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 23:18:26 -0400
+Received: by mail-pl1-f201.google.com with SMTP id d2so5177726pll.0
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:18:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=ZN/HN6UaL2cirdrSnF1wkRZ90mIgTPwOi8zns9KL1lc=;
-        b=uWcF+ddJl8jsASv1c0jNXmDxUjGeshRbNn12/iQfgUyvDelpPnNcqRMgskLTTny2d2
-         IAkLOL6GO2zADEey4fqMBcCNXZ3AY95Dy5ks1QJvrpRa5qOePu7GLOlxQ7f+VRvbe9Ng
-         0xtkXXkVTjsZob/hpdkq09elmKUzJm77KPakj6XbE8KVKkpGQTOKYTT8rGtyPBI7x81/
-         z1tAq66oheCpkrJ9Mj2yhYbA3c34JHQ4sZiKrYSfY2p5rCEDdC+047Y1jkwBzifoUEoj
-         0P/6OghOwZZrW6bXIknwJox1R+Abu9akS/Rlz+dObSxfWqjOwlDnAbyTTYmhwjGMcxOU
-         6/XQ==
+        bh=3eV3YWRRjRq6E1Ps6X/vhhPJX+AuA+BAZelhywhpWmU=;
+        b=hsophCyJDpMFvC4xVDbrVOl51SMSNL/FxQcBx2x2J+p7MDMpHC6eYdsBVMm0mZb4AH
+         zeoEC0M0VMvAIeVMncP1P48lbQ9poa7h8EEpVK01FtN+HU1fdPIlS4az4/F+W9Alw785
+         wK8xEiktqwhy2Ovbz3JM7CzDQbvve/yyjpt0hoRZmU7X7xWFRB4Uel4YF3qy5ewGjh5S
+         doAchZmQMhM8xiDPEla4iAn14/m6zrrNWDuwei3ILxwY6zT51kwRKTWvb9cLGI7Ek64q
+         5OrYhqnfaDOBqcY9JqVgpoybPUKEjWRISWJ/8YaOx0HPPVfrsP/Zcmxa1WVG6KDFVoKI
+         h6zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=ZN/HN6UaL2cirdrSnF1wkRZ90mIgTPwOi8zns9KL1lc=;
-        b=oHAdCvrfiEiEei4Aiu5usGPtPSiu3X5SzsGMLPow2Kgj3mYUcs2AXjcf8pkbWqyIJu
-         l8kxxGAsRo26BDKgo+JcdilFnOYkw87CZPiealakmaD2Ln+Buf+4ekQWCRmAH9ZpWavO
-         LLEDtZbNAqzRScSvuWDOtdfAQyUqXJSClf4I/3PGI0Em44JY0O7YhxlbMtPAMRDsSa2g
-         3NWuwnH7hNACYaR3kwYBcIbMeE5TqQco2t5sloOfOKhU17kr9ysG8kSKX2/ZSwevBxtt
-         lYD81Cx9Mya/MaZCd6V4BMuulhWrp1pzW02gu+G40OXWuWHjoa48HACVYEgAIfQOANw0
-         XmJA==
-X-Gm-Message-State: APjAAAWiUp42ozaLGdFLhAPHSSWUQwgZzAvT+OlDAIvexOo9hr0Q6IHr
-        497CrW5e1sKzIF+NLnEtbHrRvLQBL6jFiQ==
-X-Google-Smtp-Source: APXvYqzXHnFCXJKjn/X7IoPauLZ/9wb+wLWIT9P2DZEPp2jNF4pm4CTVPlFlprLP8Ow0fITv9KXOt2M08zTwZw==
-X-Received: by 2002:ad4:524c:: with SMTP id s12mr13536176qvq.244.1570763902833;
- Thu, 10 Oct 2019 20:18:22 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 20:17:44 -0700
+        bh=3eV3YWRRjRq6E1Ps6X/vhhPJX+AuA+BAZelhywhpWmU=;
+        b=godCCa6ybMr+jXfzsCz5DuGKYLiGzHdK6Z6mAxhHnAqwkYkQoaPstoYvApFelFpxjz
+         iXZH1BA4rui300dUAUmRQteER0C1zoM5S4WdrCQumfbRD4VxvmTMMPOFTkIcWYANt1VZ
+         aBqEpxFGLljRBJxq/sq/0B47/EnV7nDUplHTf1kVviT1s6c7u/q1tr6EhnxpuGtF/gN6
+         rCHA4eL3isr++VvYItt9BiaZbKUwczpq/EgPH75zqKKpwl/ppYRRgJp8JxjhP2SYOZaS
+         qTLh/tebY5MdfKzzJx6KyMWTDPVK8UBrzTdlxQTeYG3fXckEZm3Wb1yMLw2qwUNngEdW
+         xCxw==
+X-Gm-Message-State: APjAAAW//Gi5XatPRZkQ3hODuM/p3eDNqGGmZluopuVpN88vdirKpG9z
+        PsP9D3QtoeoG7XZDkTcND9q5BvATdXyvQA==
+X-Google-Smtp-Source: APXvYqyBJgaSTTgvZGJInJGwi7FWGx3c7Ny9d6/tIjz70rAyzoRkmbDKXvIHFV5DoFiLVcV5Ft3bImCcFxJjWg==
+X-Received: by 2002:a63:4f06:: with SMTP id d6mr14359976pgb.157.1570763905853;
+ Thu, 10 Oct 2019 20:18:25 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 20:17:45 -0700
 In-Reply-To: <20191011031746.16220-1-edumazet@google.com>
-Message-Id: <20191011031746.16220-8-edumazet@google.com>
+Message-Id: <20191011031746.16220-9-edumazet@google.com>
 Mime-Version: 1.0
 References: <20191011031746.16220-1-edumazet@google.com>
 X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
-Subject: [PATCH net 7/9] tcp: annotate sk->sk_rcvbuf lockless reads
+Subject: [PATCH net 8/9] tcp: annotate sk->sk_sndbuf lockless reads
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -60,7 +60,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 For the sake of tcp_poll(), there are few places where we fetch
-sk->sk_rcvbuf while this field can change from IRQ or other cpu.
+sk->sk_sndbuf while this field can change from IRQ or other cpu.
 
 We need to add READ_ONCE() annotations, and also make sure write
 sides use corresponding WRITE_ONCE() to avoid store-tearing.
@@ -69,146 +69,166 @@ Note that other transports probably need similar fixes.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/tcp.h           | 4 ++--
- include/trace/events/sock.h | 2 +-
- net/core/filter.c           | 3 ++-
- net/core/skbuff.c           | 2 +-
- net/core/sock.c             | 5 +++--
- net/ipv4/tcp.c              | 4 ++--
- net/ipv4/tcp_input.c        | 7 ++++---
- 7 files changed, 15 insertions(+), 12 deletions(-)
+ include/net/sock.h   | 18 +++++++++++-------
+ net/core/filter.c    |  3 ++-
+ net/core/sock.c      | 15 +++++++++------
+ net/ipv4/tcp.c       |  2 +-
+ net/ipv4/tcp_input.c |  3 ++-
+ 5 files changed, 25 insertions(+), 16 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index e1d08f69fd39f7c06c246a6f871400ad4cda6aed..ab4eb5eb5d0705b815e5eec3a772d4776be8653e 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1380,14 +1380,14 @@ static inline int tcp_win_from_space(const struct sock *sk, int space)
- /* Note: caller must be prepared to deal with negative returns */
- static inline int tcp_space(const struct sock *sk)
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 79f54e1f88277dc7cc64ca0f35fd5ba869a2f96d..3d1e7502333e7ea0ff866f8982048800193caf33 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -883,7 +883,7 @@ static inline int sk_stream_min_wspace(const struct sock *sk)
+ 
+ static inline int sk_stream_wspace(const struct sock *sk)
  {
--	return tcp_win_from_space(sk, sk->sk_rcvbuf -
-+	return tcp_win_from_space(sk, READ_ONCE(sk->sk_rcvbuf) -
- 				  READ_ONCE(sk->sk_backlog.len) -
- 				  atomic_read(&sk->sk_rmem_alloc));
+-	return sk->sk_sndbuf - sk->sk_wmem_queued;
++	return READ_ONCE(sk->sk_sndbuf) - sk->sk_wmem_queued;
  }
  
- static inline int tcp_full_space(const struct sock *sk)
+ void sk_stream_write_space(struct sock *sk);
+@@ -1207,7 +1207,7 @@ static inline void sk_refcnt_debug_release(const struct sock *sk)
+ 
+ static inline bool __sk_stream_memory_free(const struct sock *sk, int wake)
  {
--	return tcp_win_from_space(sk, sk->sk_rcvbuf);
-+	return tcp_win_from_space(sk, READ_ONCE(sk->sk_rcvbuf));
+-	if (sk->sk_wmem_queued >= sk->sk_sndbuf)
++	if (sk->sk_wmem_queued >= READ_ONCE(sk->sk_sndbuf))
+ 		return false;
+ 
+ 	return sk->sk_prot->stream_memory_free ?
+@@ -2220,10 +2220,14 @@ static inline void sk_wake_async(const struct sock *sk, int how, int band)
+ 
+ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
+ {
+-	if (!(sk->sk_userlocks & SOCK_SNDBUF_LOCK)) {
+-		sk->sk_sndbuf = min(sk->sk_sndbuf, sk->sk_wmem_queued >> 1);
+-		sk->sk_sndbuf = max_t(u32, sk->sk_sndbuf, SOCK_MIN_SNDBUF);
+-	}
++	u32 val;
++
++	if (sk->sk_userlocks & SOCK_SNDBUF_LOCK)
++		return;
++
++	val = min(sk->sk_sndbuf, sk->sk_wmem_queued >> 1);
++
++	WRITE_ONCE(sk->sk_sndbuf, max_t(u32, val, SOCK_MIN_SNDBUF));
  }
  
- extern void tcp_openreq_init_rwin(struct request_sock *req,
-diff --git a/include/trace/events/sock.h b/include/trace/events/sock.h
-index a0c4b8a3096604a9817a0f78f58409123a300352..f720c32e7dfd6f41c04194318d6c3f2e68b821cb 100644
---- a/include/trace/events/sock.h
-+++ b/include/trace/events/sock.h
-@@ -82,7 +82,7 @@ TRACE_EVENT(sock_rcvqueue_full,
- 	TP_fast_assign(
- 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
- 		__entry->truesize   = skb->truesize;
--		__entry->sk_rcvbuf  = sk->sk_rcvbuf;
-+		__entry->sk_rcvbuf  = READ_ONCE(sk->sk_rcvbuf);
- 	),
+ struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
+@@ -2251,7 +2255,7 @@ bool sk_page_frag_refill(struct sock *sk, struct page_frag *pfrag);
+  */
+ static inline bool sock_writeable(const struct sock *sk)
+ {
+-	return refcount_read(&sk->sk_wmem_alloc) < (sk->sk_sndbuf >> 1);
++	return refcount_read(&sk->sk_wmem_alloc) < (READ_ONCE(sk->sk_sndbuf) >> 1);
+ }
  
- 	TP_printk("rmem_alloc=%d truesize=%u sk_rcvbuf=%d",
+ static inline gfp_t gfp_any(void)
 diff --git a/net/core/filter.c b/net/core/filter.c
-index a50c0b6846f29006268b2fb18303d692533bc081..7deceaeeed7bace2bb805d110190b98819cfc7b1 100644
+index 7deceaeeed7bace2bb805d110190b98819cfc7b1..3fed5755494bd39cf55ca1806ead67609ae8b587 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -4252,7 +4252,8 @@ BPF_CALL_5(bpf_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
- 		case SO_RCVBUF:
- 			val = min_t(u32, val, sysctl_rmem_max);
- 			sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
--			sk->sk_rcvbuf = max_t(int, val * 2, SOCK_MIN_RCVBUF);
-+			WRITE_ONCE(sk->sk_rcvbuf,
-+				   max_t(int, val * 2, SOCK_MIN_RCVBUF));
- 			break;
+@@ -4258,7 +4258,8 @@ BPF_CALL_5(bpf_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
  		case SO_SNDBUF:
  			val = min_t(u32, val, sysctl_wmem_max);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 529133611ea2947b1b1af51394756b7797f8cde3..8c178703467bcfe193d4726cd82ae5dee4991bff 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4415,7 +4415,7 @@ static void skb_set_err_queue(struct sk_buff *skb)
- int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
- {
- 	if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
--	    (unsigned int)sk->sk_rcvbuf)
-+	    (unsigned int)READ_ONCE(sk->sk_rcvbuf))
- 		return -ENOMEM;
- 
- 	skb_orphan(skb);
+ 			sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+-			sk->sk_sndbuf = max_t(int, val * 2, SOCK_MIN_SNDBUF);
++			WRITE_ONCE(sk->sk_sndbuf,
++				   max_t(int, val * 2, SOCK_MIN_SNDBUF));
+ 			break;
+ 		case SO_MAX_PACING_RATE: /* 32bit version */
+ 			if (val != ~0U)
 diff --git a/net/core/sock.c b/net/core/sock.c
-index 2a053999df112665bbd8d0b5a8a59cd587e786c9..8c8f61e70141583afe52420b58fea4bcce3a74f0 100644
+index 8c8f61e70141583afe52420b58fea4bcce3a74f0..cd075bc86407a5816bd448521955525ebe941694 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -831,7 +831,8 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		 * returning the value we actually used in getsockopt
- 		 * is the most desirable behavior.
+@@ -785,7 +785,8 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
  		 */
--		sk->sk_rcvbuf = max_t(int, val * 2, SOCK_MIN_RCVBUF);
-+		WRITE_ONCE(sk->sk_rcvbuf,
-+			   max_t(int, val * 2, SOCK_MIN_RCVBUF));
+ 		val = min_t(int, val, INT_MAX / 2);
+ 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+-		sk->sk_sndbuf = max_t(int, val * 2, SOCK_MIN_SNDBUF);
++		WRITE_ONCE(sk->sk_sndbuf,
++			   max_t(int, val * 2, SOCK_MIN_SNDBUF));
+ 		/* Wake up sending tasks if we upped the value. */
+ 		sk->sk_write_space(sk);
  		break;
+@@ -2089,8 +2090,10 @@ EXPORT_SYMBOL(sock_i_ino);
+ struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
+ 			     gfp_t priority)
+ {
+-	if (force || refcount_read(&sk->sk_wmem_alloc) < sk->sk_sndbuf) {
++	if (force ||
++	    refcount_read(&sk->sk_wmem_alloc) < READ_ONCE(sk->sk_sndbuf)) {
+ 		struct sk_buff *skb = alloc_skb(size, priority);
++
+ 		if (skb) {
+ 			skb_set_owner_w(skb, sk);
+ 			return skb;
+@@ -2191,7 +2194,7 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
+ 			break;
+ 		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+ 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+-		if (refcount_read(&sk->sk_wmem_alloc) < sk->sk_sndbuf)
++		if (refcount_read(&sk->sk_wmem_alloc) < READ_ONCE(sk->sk_sndbuf))
+ 			break;
+ 		if (sk->sk_shutdown & SEND_SHUTDOWN)
+ 			break;
+@@ -2226,7 +2229,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ 		if (sk->sk_shutdown & SEND_SHUTDOWN)
+ 			goto failure;
  
- 	case SO_RCVBUFFORCE:
-@@ -3204,7 +3205,7 @@ void sk_get_meminfo(const struct sock *sk, u32 *mem)
- 	memset(mem, 0, sizeof(*mem) * SK_MEMINFO_VARS);
+-		if (sk_wmem_alloc_get(sk) < sk->sk_sndbuf)
++		if (sk_wmem_alloc_get(sk) < READ_ONCE(sk->sk_sndbuf))
+ 			break;
  
+ 		sk_set_bit(SOCKWQ_ASYNC_NOSPACE, sk);
+@@ -2807,7 +2810,7 @@ static void sock_def_write_space(struct sock *sk)
+ 	/* Do not wake up a writer until he can make "significant"
+ 	 * progress.  --DaveM
+ 	 */
+-	if ((refcount_read(&sk->sk_wmem_alloc) << 1) <= sk->sk_sndbuf) {
++	if ((refcount_read(&sk->sk_wmem_alloc) << 1) <= READ_ONCE(sk->sk_sndbuf)) {
+ 		wq = rcu_dereference(sk->sk_wq);
+ 		if (skwq_has_sleeper(wq))
+ 			wake_up_interruptible_sync_poll(&wq->wait, EPOLLOUT |
+@@ -3207,7 +3210,7 @@ void sk_get_meminfo(const struct sock *sk, u32 *mem)
  	mem[SK_MEMINFO_RMEM_ALLOC] = sk_rmem_alloc_get(sk);
--	mem[SK_MEMINFO_RCVBUF] = sk->sk_rcvbuf;
-+	mem[SK_MEMINFO_RCVBUF] = READ_ONCE(sk->sk_rcvbuf);
+ 	mem[SK_MEMINFO_RCVBUF] = READ_ONCE(sk->sk_rcvbuf);
  	mem[SK_MEMINFO_WMEM_ALLOC] = sk_wmem_alloc_get(sk);
- 	mem[SK_MEMINFO_SNDBUF] = sk->sk_sndbuf;
+-	mem[SK_MEMINFO_SNDBUF] = sk->sk_sndbuf;
++	mem[SK_MEMINFO_SNDBUF] = READ_ONCE(sk->sk_sndbuf);
  	mem[SK_MEMINFO_FWD_ALLOC] = sk->sk_forward_alloc;
+ 	mem[SK_MEMINFO_WMEM_QUEUED] = sk->sk_wmem_queued;
+ 	mem[SK_MEMINFO_OPTMEM] = atomic_read(&sk->sk_omem_alloc);
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 577a8c6eef9f520ba5d96485ab866af89aa0a046..bc0481aa6633c0c871c57a89d38ef57734b51f12 100644
+index bc0481aa6633c0c871c57a89d38ef57734b51f12..11185326297211bee3746edd725d106643b78720 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -451,7 +451,7 @@ void tcp_init_sock(struct sock *sk)
+@@ -450,7 +450,7 @@ void tcp_init_sock(struct sock *sk)
+ 
  	icsk->icsk_sync_mss = tcp_sync_mss;
  
- 	sk->sk_sndbuf = sock_net(sk)->ipv4.sysctl_tcp_wmem[1];
--	sk->sk_rcvbuf = sock_net(sk)->ipv4.sysctl_tcp_rmem[1];
-+	WRITE_ONCE(sk->sk_rcvbuf, sock_net(sk)->ipv4.sysctl_tcp_rmem[1]);
+-	sk->sk_sndbuf = sock_net(sk)->ipv4.sysctl_tcp_wmem[1];
++	WRITE_ONCE(sk->sk_sndbuf, sock_net(sk)->ipv4.sysctl_tcp_wmem[1]);
+ 	WRITE_ONCE(sk->sk_rcvbuf, sock_net(sk)->ipv4.sysctl_tcp_rmem[1]);
  
  	sk_sockets_allocated_inc(sk);
- 	sk->sk_route_forced_caps = NETIF_F_GSO;
-@@ -1711,7 +1711,7 @@ int tcp_set_rcvlowat(struct sock *sk, int val)
- 
- 	val <<= 1;
- 	if (val > sk->sk_rcvbuf) {
--		sk->sk_rcvbuf = val;
-+		WRITE_ONCE(sk->sk_rcvbuf, val);
- 		tcp_sk(sk)->window_clamp = tcp_win_from_space(sk, val);
- 	}
- 	return 0;
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 16342e043ab353bfe1b10d8099117395a396fbd4..6995df20710a7bf48d9aca88c14e5980f4fc9615 100644
+index 6995df20710a7bf48d9aca88c14e5980f4fc9615..a2e52ad7cdab3e66a469a8ca850848988b3888d7 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -483,8 +483,9 @@ static void tcp_clamp_window(struct sock *sk)
- 	    !(sk->sk_userlocks & SOCK_RCVBUF_LOCK) &&
- 	    !tcp_under_memory_pressure(sk) &&
- 	    sk_memory_allocated(sk) < sk_prot_mem_limits(sk, 0)) {
--		sk->sk_rcvbuf = min(atomic_read(&sk->sk_rmem_alloc),
--				    net->ipv4.sysctl_tcp_rmem[2]);
-+		WRITE_ONCE(sk->sk_rcvbuf,
-+			   min(atomic_read(&sk->sk_rmem_alloc),
-+			       net->ipv4.sysctl_tcp_rmem[2]));
- 	}
- 	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
- 		tp->rcv_ssthresh = min(tp->window_clamp, 2U * tp->advmss);
-@@ -648,7 +649,7 @@ void tcp_rcv_space_adjust(struct sock *sk)
- 		rcvbuf = min_t(u64, rcvwin * rcvmem,
- 			       sock_net(sk)->ipv4.sysctl_tcp_rmem[2]);
- 		if (rcvbuf > sk->sk_rcvbuf) {
--			sk->sk_rcvbuf = rcvbuf;
-+			WRITE_ONCE(sk->sk_rcvbuf, rcvbuf);
+@@ -359,7 +359,8 @@ static void tcp_sndbuf_expand(struct sock *sk)
+ 	sndmem *= nr_segs * per_mss;
  
- 			/* Make the window clamp follow along.  */
- 			tp->window_clamp = tcp_win_from_space(sk, rcvbuf);
+ 	if (sk->sk_sndbuf < sndmem)
+-		sk->sk_sndbuf = min(sndmem, sock_net(sk)->ipv4.sysctl_tcp_wmem[2]);
++		WRITE_ONCE(sk->sk_sndbuf,
++			   min(sndmem, sock_net(sk)->ipv4.sysctl_tcp_wmem[2]));
+ }
+ 
+ /* 2. Tuning advertised window (window_clamp, rcv_ssthresh)
 -- 
 2.23.0.700.g56cf767bdb-goog
 
