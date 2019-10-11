@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9E7D3651
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:40:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39ADFD3659
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727986AbfJKAkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:40:05 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:34451 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727637AbfJKAkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:40:04 -0400
-Received: by mail-lf1-f68.google.com with SMTP id r22so5746273lfm.1
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:40:02 -0700 (PDT)
+        id S1728033AbfJKAkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 20:40:19 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:41699 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728010AbfJKAkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:40:17 -0400
+Received: by mail-lf1-f65.google.com with SMTP id r2so5721113lfn.8
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:40:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QkzZR9OEPJLaUXXIdfh6gF0s61TBZnR/lxZWV3PihuE=;
-        b=UTddWIBiR1GAGxR+mVYGM2xyl/RvsIwM/NAHHgw54XYygmhj3i5UVV2I4PEAPeMN6C
-         gUnZcpxsnn/VIoSqeuT29NvcCnTBtQZZYIzezV5nhl7h4g7PLvfzBM9JLlGRzxCT3t2Z
-         V27bVV3SutbKjSG6fE1eHwplxGQDRN6z39JCyjIWMYGA/+VseS+1Fy34mOJ9AHdVA5AH
-         3C1Tm5Nh052pq5kI5hNpRdfIZf13CWV/RwRTcOz8sqXffvjbRwBESlTXGOtLlGBMADel
-         MFiIkKsyURq0OHNdEEPAgujRar/g74XGku51ImEHY3XnH6J7Re0MG9K7AQuvm1WQxIJG
-         lrQQ==
+        bh=WruOl9m8rjj6B/eISV7ZrAuuDk2P1Av0bY+CVqaL58Q=;
+        b=V4Xxbr0U3eWT6U16YQ3PdgJXfFSijS5xRPN5nuMN6zDdNiLlA8dHWQaXw0Yzr3J0GG
+         jRh9YIrZ+DWce+KF5cgww4hLWK47rxojTThwR/zgSvMLAFygAJZkWRqj2iX38L3KwI8a
+         8I1WdUsdx/j6CuBhFGYvw5LMxUP/iOf/nOVB405Wnz4NBTkrngUoYzEwv5G2EC8sUbzW
+         8umuXVw1jEwxdYwwQY1tM0o6fLNk5h+gKKD1b6UGgzKcpmc1HiwzfF7qiFKwl/7qqXWI
+         JgymE+NEGRdwv29QW/erS6VgnlAN5h0RSuumHCtPnB4wHvJox9JrE8jqfIDTC0rUqT73
+         QlDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QkzZR9OEPJLaUXXIdfh6gF0s61TBZnR/lxZWV3PihuE=;
-        b=s2JcGOzg2hjrDsupAYlTE62if/KeAjPBC+CF4uoiV4o5bfg1r3v4PQeXeiA3Ekz9/D
-         4oUZCFScbO6l8yr7C9yKvlsMFpJfnseVTK5DIs1yx4nP8dVI8bzwY25oQpjFb03xZ8k8
-         j2uZHhYTxEEFD0hWnL6uwFE5/KL7X7Jy7VKIxeA4dF4JXwIwuGKXhejiVDeHpiynUjUb
-         EjtxpbbZFPjINQqXkz0LrDLGJjpymCaKXEFy6F4458C3trbbdXHGVcvcY5arIJik6XSG
-         hb+vWpKQ9TnS1e8teQUmNHBGgtgSxqbWQ86i3aomFbU5NArplna116bT9kZA2wzaz3Ue
-         GIYg==
-X-Gm-Message-State: APjAAAUZE2WzkoeStURoTY8UE8J+jXdAzUDjLuwdeYEpIIKSJT+Z9TnI
-        4aKfyU2/WZwF1P4XmWqAFhGyP9FRNJJRIefutGgZ
-X-Google-Smtp-Source: APXvYqy/DOSZitDBR7TqyrESxgPgD+yFqEzNoecNTAToFNbWp+w16SQ8prdItu7++b4q9m+f88vJY4RLR7eP7fAj9Y0=
-X-Received: by 2002:a19:c7cf:: with SMTP id x198mr7323383lff.158.1570754401856;
- Thu, 10 Oct 2019 17:40:01 -0700 (PDT)
+        bh=WruOl9m8rjj6B/eISV7ZrAuuDk2P1Av0bY+CVqaL58Q=;
+        b=Og9LzJ67tEzypolLwNn6rN8SwvGXOVbkcYDUpp5Ei+qQHf6TxaczSfl0vDfzNCLXak
+         VT1vAV7FdCOLmyiSjkbW6iJQrujdCSLX1robf6EKaeJj2S/4HKRVczclXv5rmu16ONAk
+         j7swegcsu/MhFoDeWE9PXP0mqlo2pPPpBQKP/8UkBkzXvPZlZl967TrMJ7T8bDUO8AEf
+         HK7FBm0SrKBz7Stws4f9q11LrWS4m+fm/sLjHLNYp6FfQLN/iUUwlNFdEceNW9xs9bKL
+         tLxovm986LoE+z2sDUQ6aJLnNWZqSQiizUiEGX3RkM3p2NCWuEQRuYg0wiF0CsLlBN9r
+         rVQA==
+X-Gm-Message-State: APjAAAVHH7sWpqmpXsRPydgwOJ0fqMc51I+9uA1fd49E9uhHjjI1wIPZ
+        50LKFbG8M5Mj7H+IwysePPLVkHBhhOf4RH19qR1Q
+X-Google-Smtp-Source: APXvYqx4281+tmbi3ZlPDrW+JB0898oZIUJra8F7IZWiEF8jcqHh8UQR+dgmOr5eN7CEnXk9zl63wAZJvDvH7MBwJLo=
+X-Received: by 2002:ac2:51b6:: with SMTP id f22mr7273869lfk.175.1570754414142;
+ Thu, 10 Oct 2019 17:40:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1568834524.git.rgb@redhat.com> <18f14bfbffc30c53c2b1dd06694b69ef286f3b72.1568834524.git.rgb@redhat.com>
-In-Reply-To: <18f14bfbffc30c53c2b1dd06694b69ef286f3b72.1568834524.git.rgb@redhat.com>
+References: <cover.1568834524.git.rgb@redhat.com> <16abf1b2aafeb5f1b8dae20b9a4836e54f959ca5.1568834524.git.rgb@redhat.com>
+In-Reply-To: <16abf1b2aafeb5f1b8dae20b9a4836e54f959ca5.1568834524.git.rgb@redhat.com>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 10 Oct 2019 20:39:50 -0400
-Message-ID: <CAHC9VhQNWP-UhnXRoDWQDcWAOB6KkW3S0uhbJ_Z+9zGNteVwRw@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V7 13/21] audit: NETFILTER_PKT: record each
- container ID associated with a netNS
+Date:   Thu, 10 Oct 2019 20:40:03 -0400
+Message-ID: <CAHC9VhSRmn46DcazH4Q35vOSxVoEu8PsX79aurkHkFymRoMwag@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V7 14/21] audit: contid check descendancy and nesting
 To:     Richard Guy Briggs <rgb@redhat.com>
 Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -65,162 +64,127 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Sep 18, 2019 at 9:26 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> Add audit container identifier auxiliary record(s) to NETFILTER_PKT
-> event standalone records.  Iterate through all potential audit container
-> identifiers associated with a network namespace.
+> ?fixup! audit: convert to contid list to check for orch/engine ownership
+
+?
+
+> Require the target task to be a descendant of the container
+> orchestrator/engine.
 >
+> You would only change the audit container ID from one set or inherited
+> value to another if you were nesting containers.
+>
+> If changing the contid, the container orchestrator/engine must be a
+> descendant and not same orchestrator as the one that set it so it is not
+> possible to change the contid of another orchestrator's container.
+
+Did you mean to say that the container orchestrator must be an
+ancestor of the target, and the same orchestrator as the one that set
+the target process' audit container ID?
+
+Or maybe I'm missing something about what you are trying to do?
+
 > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
 > ---
->  include/linux/audit.h    |  5 +++++
->  kernel/audit.c           | 39 +++++++++++++++++++++++++++++++++++++++
->  net/netfilter/nft_log.c  | 11 +++++++++--
->  net/netfilter/xt_AUDIT.c | 11 +++++++++--
->  4 files changed, 62 insertions(+), 4 deletions(-)
-
-This should be squashed together with patch 12/21; neither patch makes
-sense by themselves.
-
-> diff --git a/include/linux/audit.h b/include/linux/audit.h
-> index 73e3ab38e3e0..dcd92f964120 100644
-> --- a/include/linux/audit.h
-> +++ b/include/linux/audit.h
-> @@ -241,6 +241,8 @@ static inline u64 audit_get_contid(struct task_struct *tsk)
->  extern void audit_netns_contid_del(struct net *net, u64 contid);
->  extern void audit_switch_task_namespaces(struct nsproxy *ns,
->                                          struct task_struct *p);
-> +extern void audit_log_netns_contid_list(struct net *net,
-> +                                       struct audit_context *context);
->
->  extern u32 audit_enabled;
->
-> @@ -328,6 +330,9 @@ static inline void audit_netns_contid_del(struct net *net, u64 contid)
->  static inline void audit_switch_task_namespaces(struct nsproxy *ns,
->                                                 struct task_struct *p)
->  { }
-> +static inline void audit_log_netns_contid_list(struct net *net,
-> +                                              struct audit_context *context)
-> +{ }
->
->  #define audit_enabled AUDIT_OFF
+>  kernel/audit.c | 70 +++++++++++++++++++++++++++++++++++++++++++++++++++-------
+>  1 file changed, 62 insertions(+), 8 deletions(-)
 >
 > diff --git a/kernel/audit.c b/kernel/audit.c
-> index e0c27bc39925..9ce7a1ec7a92 100644
+> index 9ce7a1ec7a92..69fe1e9af7cb 100644
 > --- a/kernel/audit.c
 > +++ b/kernel/audit.c
-> @@ -450,6 +450,45 @@ void audit_switch_task_namespaces(struct nsproxy *ns, struct task_struct *p)
->                 audit_netns_contid_add(new->net_ns, contid);
+> @@ -2560,6 +2560,39 @@ static struct task_struct *audit_cont_owner(struct task_struct *tsk)
 >  }
 >
-> +/**
-> + * audit_log_netns_contid_list - List contids for the given network namespace
-> + * @net: the network namespace of interest
-> + * @context: the audit context to use
+>  /*
+> + * task_is_descendant - walk up a process family tree looking for a match
+> + * @parent: the process to compare against while walking up from child
+> + * @child: the process to start from while looking upwards for parent
 > + *
-> + * Description:
-> + * Issues a CONTAINER_ID record with a CSV list of contids associated
-> + * with a network namespace to accompany a NETFILTER_PKT record.
+> + * Returns 1 if child is a descendant of parent, 0 if not.
 > + */
-> +void audit_log_netns_contid_list(struct net *net, struct audit_context *context)
+> +static int task_is_descendant(struct task_struct *parent,
+> +                             struct task_struct *child)
 > +{
-> +       struct audit_buffer *ab = NULL;
-> +       struct audit_contid *cont;
-> +       struct audit_net *aunet;
+> +       int rc = 0;
+> +       struct task_struct *walker = child;
 > +
-> +       /* Generate AUDIT_CONTAINER_ID record with container ID CSV list */
+> +       if (!parent || !child)
+> +               return 0;
+> +
 > +       rcu_read_lock();
-> +       aunet = net_generic(net, audit_net_id);
-> +       if (!aunet)
-> +               goto out;
-> +       list_for_each_entry_rcu(cont, &aunet->contid_list, list) {
-> +               if (!ab) {
-> +                       ab = audit_log_start(context, GFP_ATOMIC,
-> +                                            AUDIT_CONTAINER_ID);
-> +                       if (!ab) {
-> +                               audit_log_lost("out of memory in audit_log_netns_contid_list");
-> +                               goto out;
-> +                       }
-> +                       audit_log_format(ab, "contid=");
-> +               } else
-> +                       audit_log_format(ab, ",");
-> +               audit_log_format(ab, "%llu", cont->id);
+> +       if (!thread_group_leader(parent))
+> +               parent = rcu_dereference(parent->group_leader);
+> +       while (walker->pid > 0) {
+> +               if (!thread_group_leader(walker))
+> +                       walker = rcu_dereference(walker->group_leader);
+> +               if (walker == parent) {
+> +                       rc = 1;
+> +                       break;
+> +               }
+> +               walker = rcu_dereference(walker->real_parent);
 > +       }
-> +       audit_log_end(ab);
-> +out:
 > +       rcu_read_unlock();
-> +}
-> +EXPORT_SYMBOL(audit_log_netns_contid_list);
 > +
->  void audit_panic(const char *message)
->  {
->         switch (audit_failure) {
-> diff --git a/net/netfilter/nft_log.c b/net/netfilter/nft_log.c
-> index fe4831f2258f..98d1e7e1a83c 100644
-> --- a/net/netfilter/nft_log.c
-> +++ b/net/netfilter/nft_log.c
-> @@ -66,13 +66,16 @@ static void nft_log_eval_audit(const struct nft_pktinfo *pkt)
->         struct sk_buff *skb = pkt->skb;
->         struct audit_buffer *ab;
->         int fam = -1;
-> +       struct audit_context *context;
-> +       struct net *net;
->
->         if (!audit_enabled)
->                 return;
->
-> -       ab = audit_log_start(NULL, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
-> +       context = audit_alloc_local(GFP_ATOMIC);
-> +       ab = audit_log_start(context, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
->         if (!ab)
-> -               return;
-> +               goto errout;
->
->         audit_log_format(ab, "mark=%#x", skb->mark);
->
-> @@ -99,6 +102,10 @@ static void nft_log_eval_audit(const struct nft_pktinfo *pkt)
->                 audit_log_format(ab, " saddr=? daddr=? proto=-1");
->
->         audit_log_end(ab);
-> +       net = xt_net(&pkt->xt);
-> +       audit_log_netns_contid_list(net, context);
-> +errout:
-> +       audit_free_context(context);
->  }
->
->  static void nft_log_eval(const struct nft_expr *expr,
-> diff --git a/net/netfilter/xt_AUDIT.c b/net/netfilter/xt_AUDIT.c
-> index 9cdc16b0d0d8..ecf868a1abde 100644
-> --- a/net/netfilter/xt_AUDIT.c
-> +++ b/net/netfilter/xt_AUDIT.c
-> @@ -68,10 +68,13 @@ static bool audit_ip6(struct audit_buffer *ab, struct sk_buff *skb)
->  {
->         struct audit_buffer *ab;
->         int fam = -1;
-> +       struct audit_context *context;
-> +       struct net *net;
->
->         if (audit_enabled == AUDIT_OFF)
-> -               goto errout;
-> -       ab = audit_log_start(NULL, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
-> +               goto out;
-> +       context = audit_alloc_local(GFP_ATOMIC);
-> +       ab = audit_log_start(context, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
->         if (ab == NULL)
->                 goto errout;
->
-> @@ -101,7 +104,11 @@ static bool audit_ip6(struct audit_buffer *ab, struct sk_buff *skb)
->
->         audit_log_end(ab);
->
-> +       net = xt_net(par);
-> +       audit_log_netns_contid_list(net, context);
->  errout:
-> +       audit_free_context(context);
-> +out:
->         return XT_CONTINUE;
->  }
->
+> +       return rc;
+> +}
+> +
+> +/*
+>   * audit_set_contid - set current task's audit contid
+>   * @task: target task
+>   * @contid: contid value
+> @@ -2587,22 +2620,43 @@ int audit_set_contid(struct task_struct *task, u64 contid)
+>         oldcontid = audit_get_contid(task);
+>         read_lock(&tasklist_lock);
+>         /* Don't allow the contid to be unset */
+> -       if (!audit_contid_valid(contid))
+> +       if (!audit_contid_valid(contid)) {
+>                 rc = -EINVAL;
+> +               goto unlock;
+> +       }
+>         /* Don't allow the contid to be set to the same value again */
+> -       else if (contid == oldcontid) {
+> +       if (contid == oldcontid) {
+>                 rc = -EADDRINUSE;
+> +               goto unlock;
+> +       }
+>         /* if we don't have caps, reject */
+> -       else if (!capable(CAP_AUDIT_CONTROL))
+> +       if (!capable(CAP_AUDIT_CONTROL)) {
+>                 rc = -EPERM;
+> -       /* if task has children or is not single-threaded, deny */
+> -       else if (!list_empty(&task->children))
+> +               goto unlock;
+> +       }
+> +       /* if task has children, deny */
+> +       if (!list_empty(&task->children)) {
+>                 rc = -EBUSY;
+> -       else if (!(thread_group_leader(task) && thread_group_empty(task)))
+> +               goto unlock;
+> +       }
+> +       /* if task is not single-threaded, deny */
+> +       if (!(thread_group_leader(task) && thread_group_empty(task))) {
+>                 rc = -EALREADY;
+> -       /* if contid is already set, deny */
+> -       else if (audit_contid_set(task))
+> +               goto unlock;
+> +       }
+> +       /* if task is not descendant, block */
+> +       if (task == current) {
+> +               rc = -EBADSLT;
+> +               goto unlock;
+> +       }
+> +       if (!task_is_descendant(current, task)) {
+> +               rc = -EXDEV;
+> +               goto unlock;
+> +       }
+> +       /* only allow contid setting again if nesting */
+> +       if (audit_contid_set(task) && current == audit_cont_owner(task))
+>                 rc = -ECHILD;
+> +unlock:
+>         read_unlock(&tasklist_lock);
+>         if (!rc) {
+>                 struct audit_cont *oldcont = audit_cont(task);
 
 --
 paul moore
