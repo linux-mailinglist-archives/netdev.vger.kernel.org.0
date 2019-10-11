@@ -2,89 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BAC0D49D5
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 23:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DED5D49D8
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 23:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729117AbfJKV0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 17:26:00 -0400
-Received: from mga18.intel.com ([134.134.136.126]:42797 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726843AbfJKV0A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 17:26:00 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 14:25:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,285,1566889200"; 
-   d="scan'208";a="395873141"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 11 Oct 2019 14:25:59 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: taprio testing - Any help?
-In-Reply-To: <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
-References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com> <87v9sv3uuf.fsf@linux.intel.com> <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
-Date:   Fri, 11 Oct 2019 14:26:55 -0700
-Message-ID: <87r23j3rds.fsf@linux.intel.com>
+        id S1728753AbfJKV1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 17:27:46 -0400
+Received: from mail-pf1-f169.google.com ([209.85.210.169]:43128 "EHLO
+        mail-pf1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726843AbfJKV1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 17:27:45 -0400
+Received: by mail-pf1-f169.google.com with SMTP id a2so6797722pfo.10
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 14:27:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SLWgiKqzeJ9v3pOKLdQ2spvEJqaMV0EiXXYqcwaqP/8=;
+        b=uQy7d2WR68leb2R2vaaVa3OL9iCQqwBnT4VJ5uh1xJ24eXTJ5gJ/hQrNkQeOCXgF1G
+         gpLWi+xh3NyDajwroS198bA2bWFXLzCmLL3J0DJVMtZRTBToQwAMH6OSDXZ/fCf+clH/
+         qcGw5RKIVLYkbAg9SHcfkXlaVG4tXWtejykC6nN2MGKqROUF2D70oYWsTpLDM51OppTq
+         kVCTCi3sXiRmmgjIAiutlto519gJRuT9don9z0sS9pyvD3GCiXbI240gRKFxo/6nmnAY
+         DMkv684AfHDfXCz5lLUtqgQoqZ/uEt81qVawc6Xs6yFiL3MrHRFpAw9UbOdCQXmfgrxj
+         udag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SLWgiKqzeJ9v3pOKLdQ2spvEJqaMV0EiXXYqcwaqP/8=;
+        b=bfZNW7/Wh+9Qu9AvSFCvUB9MBLPIsSIvkILt6JjiHx8JP1f4bbpRtaKdwlZI6w34Vn
+         zeG69KLSZDc47NEGvzOlyFKcG5sx2QaEtG7mhv3BE2FpTtjGVqMawjPPHBx1UdPkxz9O
+         QpQA85QC1ogGD2qdY3rCbdeIhbMlkD+LZxBlSKiZ8pp2QOHmmARyierBebK7nbum+Efj
+         +CWlJY/WnyBLGpuBQuTAMzQeharmvyjzkk0fG/7fBN+xI520L1k3WJ3vxKAX5fCJeW8J
+         oHel0uUqSrwnucT3vgxDmOSfGrpgdelii27KxVeLy+WCmvX8l1SbXCrs56dSRrOhYzF+
+         UBYA==
+X-Gm-Message-State: APjAAAWOtGzemMCPajGdSIVklfEe/WRmFUW8Tuaqjl8QU8gcj1camkxo
+        GPoD01xyuGpjmdgsXj5duZH1yKZs
+X-Google-Smtp-Source: APXvYqw6rPRHb+g8Yr7HCCwEG9d6OkIevGK9vdQ3AYMMUp1Glq/6otimAFmAQy4xfFwx4dwKrjY/lw==
+X-Received: by 2002:a63:1351:: with SMTP id 17mr18750493pgt.249.1570829263298;
+        Fri, 11 Oct 2019 14:27:43 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:d0e9:88fb:a643:fda7])
+        by smtp.googlemail.com with ESMTPSA id f12sm8473622pgo.85.2019.10.11.14.27.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 11 Oct 2019 14:27:42 -0700 (PDT)
+Subject: Re: Race condition in route lookup
+To:     Ido Schimmel <idosch@idosch.org>, Wei Wang <weiwan@google.com>,
+        jesse@mbuki-mvuki.org
+Cc:     Martin KaFai Lau <kafai@fb.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <CANSNSoV1M9stB7CnUcEhsz3FHi4NV_yrBtpYsZ205+rqnvMbvA@mail.gmail.com>
+ <20191010083102.GA1336@splinter>
+ <CANSNSoVM1Uo106xfJtGpTyXNed8kOL4JiXqf3A1eZHBa7z3=yg@mail.gmail.com>
+ <20191011154224.GA23486@splinter>
+ <CAEA6p_AFKwx_oLqNOjMw=oXcAX4ftJvEQWLo0aWCh=4Hs=QjVw@mail.gmail.com>
+ <20191011181737.GA30138@splinter> <20191011182508.GA30970@splinter>
+ <CAEA6p_CXZyUQf_DKhs7nQ5D0C7j1kM7bzgcyS2=D_k_U7Czu8w@mail.gmail.com>
+ <20191011185250.GA31385@splinter>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <52b3de47-d7f9-8ea9-10b1-0f7c11a2b31f@gmail.com>
+Date:   Fri, 11 Oct 2019 15:27:41 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20191011185250.GA31385@splinter>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Murali Karicheri <m-karicheri2@ti.com> writes:
-
-> Hi Vinicius,
->
-> On 10/11/2019 04:12 PM, Vinicius Costa Gomes wrote:
->> Hi Murali,
->> 
->> Murali Karicheri <m-karicheri2@ti.com> writes:
->> 
->>> Hi,
+On 10/11/19 12:52 PM, Ido Schimmel wrote:
+> On Fri, Oct 11, 2019 at 11:47:12AM -0700, Wei Wang wrote:
+>> On Fri, Oct 11, 2019 at 11:25 AM Ido Schimmel <idosch@idosch.org> wrote:
 >>>
->>> I am testing the taprio (802.1Q Time Aware Shaper) as part of my
->>> pre-work to implement taprio hw offload and test.
->>>
->>> I was able to configure tap prio on my board and looking to do
->>> some traffic test and wondering how to play with the tc command
->>> to direct traffic to a specfic queue. For example I have setup
->>> taprio to create 5 traffic classes as shows below;-
->>>
->>> Now I plan to create iperf streams to pass through different
->>> gates. Now how do I use tc filters to mark the packets to
->>> go through these gates/queues? I heard about skbedit action
->>> in tc filter to change the priority field of SKB to allow
->>> the above mapping to happen. Any example that some one can
->>> point me to?
->> 
->> What I have been using for testing these kinds of use cases (like iperf)
->> is to use an iptables rule to set the priority for some kinds of traffic.
->> 
->> Something like this:
->> 
->> sudo iptables -t mangle -A POSTROUTING -p udp --dport 7788 -j CLASSIFY --set-class 0:3
-> Let me try this. Yes. This is what I was looking for. I was trying
-> something like this and I was getting an error
->
-> tc filter add  dev eth0 parent 100: protocol ip prio 10 u32 match ip 
-> dport 10000 0xffff flowid 100:3
-> RTNETLINK answers: Operation not supported
-> We have an error talking to the kernel, -1
+>>> On Fri, Oct 11, 2019 at 09:17:42PM +0300, Ido Schimmel wrote:
+>>>> On Fri, Oct 11, 2019 at 10:54:13AM -0700, Wei Wang wrote:
+>>>>> On Fri, Oct 11, 2019 at 8:42 AM Ido Schimmel <idosch@idosch.org> wrote:
+>>>>>>
+>>>>>> On Fri, Oct 11, 2019 at 09:36:51AM -0500, Jesse Hathaway wrote:
+>>>>>>> On Thu, Oct 10, 2019 at 3:31 AM Ido Schimmel <idosch@idosch.org> wrote:
+>>>>>>>> I think it's working as expected. Here is my theory:
+>>>>>>>>
+>>>>>>>> If CPU0 is executing both the route get request and forwarding packets
+>>>>>>>> through the directly connected interface, then the following can happen:
+>>>>>>>>
+>>>>>>>> <CPU0, t0> - In process context, per-CPU dst entry cached in the nexthop
+>>>>>>>> is found. Not yet dumped to user space
+>>>>>>>>
+>>>>>>>> <Any CPU, t1> - Routes are added / removed, therefore invalidating the
+>>>>>>>> cache by bumping 'net->ipv4.rt_genid'
 
-Hmm, taprio (or mqprio for that matter) doesn't support tc filter
-blocks, so this won't work for those qdiscs.
-
-I never thought about adding support for it, it looks very interesting.
-Thanks for pointing this out. I will add this to my todo list, but
-anyone should feel free to beat me to it :-)
-
-
-Cheers,
---
-Vinicius
+IPv4 needs a change similar to what was done for IPv6 - only invalidate
+dst's for the branches / table affected and not all dst's across the
+namespace.
