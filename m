@@ -2,238 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91EBBD418E
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 15:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22AAED41A1
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 15:45:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728592AbfJKNky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 09:40:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42264 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728575AbfJKNky (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 09:40:54 -0400
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 10F99C053B32
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 13:40:53 +0000 (UTC)
-Received: by mail-wm1-f72.google.com with SMTP id q9so4119002wmj.9
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 06:40:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ycjAUNtwkoO5CwuugdxxhPrwcqba9MD0MTVWww0Ry8o=;
-        b=h6JEbPd/seuVnv5kTBrwu/2n7Ug+t4ZhNlrwkqivQszE6YYBMgiUoU2rj4siPXUEqk
-         qALJIAcQzjikDSHLHEdjZdlXkTYnVSbTfbB+y1XOflXYnzXNyFcBj8AF48WdGkXDP2oB
-         Y16BmeMAC1dqp0zYgJMJ7WigD/CJT4na3hNXhYjb5fvKLcLK4+1BLjJBpqloqXkEwj5p
-         m/IFgTvGzaxXjLggcDNOnPldtI+K83x+5zFTnTeAkduY+vhYdqvuoKGrTYKA3dXjetqj
-         soD6zG2mkI+MBRR7PbtQYNaVqYpJTO/RxdhFo+E6YkxGt/HMi+Qt6+/Iku5cdqlrZnAz
-         EwUw==
-X-Gm-Message-State: APjAAAUhQSN4eF4n1WnmBq4kXjP8O9C7TV/1ucCmBqb8BJ+/o/WVDoR2
-        gwS6tqe5uhRN4RTRdUafOsAkLixj8IpJegaBXAUk4ZCbAPc/gA+NWUEOI2sSQE8jVxXpjAx3UkC
-        z1Dwm0gbtFzMMX+Z+
-X-Received: by 2002:a7b:c387:: with SMTP id s7mr3114896wmj.110.1570801251576;
-        Fri, 11 Oct 2019 06:40:51 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwa2JlipPtOJ7W7B7ExYLkyrReSYaA52mIUw0NmpzMFmVUy7kZcDXl/SyiLE9qQIYJ/Xwp3hg==
-X-Received: by 2002:a7b:c387:: with SMTP id s7mr3114877wmj.110.1570801251192;
-        Fri, 11 Oct 2019 06:40:51 -0700 (PDT)
-Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
-        by smtp.gmail.com with ESMTPSA id 59sm17597436wrc.23.2019.10.11.06.40.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 06:40:50 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 15:40:48 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>
-Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
-Message-ID: <CAGxU2F7fA5UtkuMQbOHHy0noOGZUtpepBNKFg5afD81bynMVUQ@mail.gmail.com>
-References: <20190717113030.163499-1-sgarzare@redhat.com>
- <20190717113030.163499-2-sgarzare@redhat.com>
- <20190729095956-mutt-send-email-mst@kernel.org>
- <20190830094059.c7qo5cxrp2nkrncd@steredhat>
- <20190901024525-mutt-send-email-mst@kernel.org>
+        id S1728391AbfJKNpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 09:45:23 -0400
+Received: from mail-eopbgr740048.outbound.protection.outlook.com ([40.107.74.48]:39328
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728123AbfJKNpX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 09:45:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PBxCA3yT7XbQS3g/b+2IOv4DnJo7nQ44WLY1rliQyrkEKTTEFMT0UyvrGPvLPpbzBSnU2Hl9MaLGPxPNHrjQCAtXB34AZtf1xJtGqqn4ColAfELTFfETTBzLsZTVQzTelPHSmEAeiiYIal+fdO+l7Oe+cd49XTOXfrcbJO8bxBuO7pugKfgy+wutuYoBMNrqOypLJeJKQ9seThydeLg7Zs4p3GSSovsv3HGWyl11OTAAxQz94UIvHZc1FUmP3qT+fWnXBKA9I7mL9xoQ240i8+XXnhpsTVnUCTo95PfFLyAJ6KjvjsbcXlb58AadzCCWarozPAm630puhb0girO6Pg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+71ROZcbTfZ+ihiFUjxsr86VPRrjzTSLxeDJsSKx4Mc=;
+ b=MPK9OqNI9UoL1KLQiCg+PrhQz6FkyLRfEe+YEy5yHN0pgJix9H/yLRo2zl3cXPr2hT4uNsgjWFFmPMGOplnA8e3H4pJDxHwNN2XnB27M54zXQanA8yx/2/n395raYqpmI9Oaiz6Md+/wTR3RlTyCbdELPYFLdHT4OHq37NhJt7Q1qHSd358YSVLems7WznemwB1nF1qTMG4h9aQIsI/olcLM1TbJ2+U7v9x++kiUPnNSA8Nq9K+Aa4Vy2KQn0emoTMrjDw/JuXxXL/lAua4cAecd1Nj8vo2TAdl9L7FLEYe1H6PcTmFNGtpulHxsrNgt76tHwHheTf9Hr0g46yrS0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
+ dkim=pass header.d=aquantia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+71ROZcbTfZ+ihiFUjxsr86VPRrjzTSLxeDJsSKx4Mc=;
+ b=W+XiyJ/DUHnlfpZRTHMypdMHiCFZbIOrXRr6i4s2BP/lC32SwPeoclr+NbgBPdGDeXtpOcBjzvJ6H4gnIvph6W23YkUuRiPXd3H1cEB43HoNpTPxz5li/VnwdxqOq3zaHcEATq/RYXhbY4ZSy4FnUFScPoYgaHoQ1p1orazqWkw=
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
+ BN8PR11MB3587.namprd11.prod.outlook.com (20.178.221.158) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2327.24; Fri, 11 Oct 2019 13:45:18 +0000
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.021; Fri, 11 Oct 2019
+ 13:45:18 +0000
+From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Igor Russkikh <Igor.Russkikh@aquantia.com>
+Subject: [PATCH v2 net 0/4] Aquantia/Marvell AQtion atlantic driver fixes
+ 10/2019
+Thread-Topic: [PATCH v2 net 0/4] Aquantia/Marvell AQtion atlantic driver fixes
+ 10/2019
+Thread-Index: AQHVgDoe1VFNtqKPdU+Efm73c5uEeA==
+Date:   Fri, 11 Oct 2019 13:45:18 +0000
+Message-ID: <cover.1570787323.git.igor.russkikh@aquantia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR2P264CA0005.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::17)
+ To BN8PR11MB3762.namprd11.prod.outlook.com (2603:10b6:408:8d::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Igor.Russkikh@aquantia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.17.1
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 295cb0c7-10a3-4595-0861-08d74e514088
+x-ms-traffictypediagnostic: BN8PR11MB3587:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR11MB35871A894916B8B6446BA4EC98970@BN8PR11MB3587.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0187F3EA14
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(39850400004)(136003)(346002)(396003)(189003)(199004)(6916009)(66446008)(14454004)(36756003)(64756008)(99286004)(66476007)(4744005)(486006)(2351001)(52116002)(476003)(66946007)(66556008)(2501003)(305945005)(6506007)(44832011)(7736002)(386003)(5660300002)(86362001)(2616005)(66066001)(102836004)(26005)(508600001)(8676002)(81156014)(107886003)(316002)(71190400001)(81166006)(54906003)(1730700003)(4326008)(3846002)(6116002)(71200400001)(2906002)(256004)(6486002)(5640700003)(50226002)(25786009)(6436002)(6512007)(186003)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3587;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: aquantia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tdnTfpVXVEmkyjB3OpeotmjC4dVuOoudAhrLBYYIyy03bvak/U9HW7w569zPjU4bA4C/alPwqColCKi/j431elV4VfEsvMkJaKbEMk1QgmfsG+3uWFJhsfRAlZL5hZoCxNnCujsT3wyII/h5Dut+ArgVRdKr/50IHSl9aUK2goX3Rv9/rHnCRvHDk9ua49DoljXSE+defVNyr2ljQyjyP/0XVP2F0WVfiufsiKo3DkzSWqVrQdgjQWzSw8F3NAobmedYQYlGHcVi226xmLQ3d5vEWcdZj36SF93+4rwDipFmnbhjbYuE7XW/qmEagOellq5mwTCNM83/ys1Wi+FavBSCrXN29tyMKej5JtSD5c8jFjKav8YXlgr8vKPmTtW8OowSa3Pvns55pSDYlkBsTol+vwKFW6kAqHi6JzC3MNM=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3D319AF36E532D4D8F2160BA32AAF91F@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190901024525-mutt-send-email-mst@kernel.org>
-User-Agent: NeoMutt/20180716
+X-OriginatorOrg: aquantia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 295cb0c7-10a3-4595-0861-08d74e514088
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Oct 2019 13:45:18.1816
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hWvoEZAtIR2vjBVVUviyBYLAaD0EPevOzlBfzop9kj4OcK6c73IWG6aPJ4hdUxvqDdqblWk2Pz0R8Y8/kvUeFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3587
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 1, 2019 at 8:56 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> On Fri, Aug 30, 2019 at 11:40:59AM +0200, Stefano Garzarella wrote:
-> > On Mon, Jul 29, 2019 at 10:04:29AM -0400, Michael S. Tsirkin wrote:
-> > > On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
-> > > > Since virtio-vsock was introduced, the buffers filled by the host
-> > > > and pushed to the guest using the vring, are directly queued in
-> > > > a per-socket list. These buffers are preallocated by the guest
-> > > > with a fixed size (4 KB).
-> > > >
-> > > > The maximum amount of memory used by each socket should be
-> > > > controlled by the credit mechanism.
-> > > > The default credit available per-socket is 256 KB, but if we use
-> > > > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
-> > > > buffers, using up to 1 GB of memory per-socket. In addition, the
-> > > > guest will continue to fill the vring with new 4 KB free buffers
-> > > > to avoid starvation of other sockets.
-> > > >
-> > > > This patch mitigates this issue copying the payload of small
-> > > > packets (< 128 bytes) into the buffer of last packet queued, in
-> > > > order to avoid wasting memory.
-> > > >
-> > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > >
-> > > This is good enough for net-next, but for net I think we
-> > > should figure out how to address the issue completely.
-> > > Can we make the accounting precise? What happens to
-> > > performance if we do?
-> > >
-> >
-> > Since I'm back from holidays, I'm restarting this thread to figure out
-> > how to address the issue completely.
-> >
-> > I did a better analysis of the credit mechanism that we implemented in
-> > virtio-vsock to get a clearer view and I'd share it with you:
-> >
-> >     This issue affect only the "host->guest" path. In this case, when the
-> >     host wants to send a packet to the guest, it uses a "free" buffer
-> >     allocated by the guest (4KB).
-> >     The "free" buffers available for the host are shared between all
-> >     sockets, instead, the credit mechanism is per-socket, I think to
-> >     avoid the starvation of others sockets.
-> >     The guests re-fill the "free" queue when the available buffers are
-> >     less than half.
-> >
-> >     Each peer have these variables in the per-socket state:
-> >        /* local vars */
-> >        buf_alloc        /* max bytes usable by this socket
-> >                            [exposed to the other peer] */
-> >        fwd_cnt          /* increased when RX packet is consumed by the
-> >                            user space [exposed to the other peer] */
-> >        tx_cnt                 /* increased when TX packet is sent to the other peer */
-> >
-> >        /* remote vars  */
-> >        peer_buf_alloc   /* peer's buf_alloc */
-> >        peer_fwd_cnt     /* peer's fwd_cnt */
-> >
-> >     When a peer sends a packet, it increases the 'tx_cnt'; when the
-> >     receiver consumes the packet (copy it to the user-space buffer), it
-> >     increases the 'fwd_cnt'.
-> >     Note: increments are made considering the payload length and not the
-> >     buffer length.
-> >
-> >     The value of 'buf_alloc' and 'fwd_cnt' are sent to the other peer in
-> >     all packet headers or with an explicit CREDIT_UPDATE packet.
-> >
-> >     The local 'buf_alloc' value can be modified by the user space using
-> >     setsockopt() with optname=SO_VM_SOCKETS_BUFFER_SIZE.
-> >
-> >     Before to send a packet, the peer checks the space available:
-> >       credit_available = peer_buf_alloc - (tx_cnt - peer_fwd_cnt)
-> >     and it will send up to credit_available bytes to the other peer.
-> >
-> > Possible solutions considering Michael's advice:
-> > 1. Use the buffer length instead of the payload length when we increment
-> >    the counters:
-> >   - This approach will account precisely the memory used per socket.
-> >   - This requires changes in both guest and host.
-> >   - It is not compatible with old drivers, so a feature should be negotiated.
-> > 2. Decrease the advertised 'buf_alloc' taking count of bytes queued in
-> >    the socket queue but not used. (e.g. 256 byte used on 4K available in
-> >    the buffer)
-> >   - pkt->hdr.buf_alloc = buf_alloc - bytes_not_used.
-> >   - This should be compatible also with old drivers.
-> >
-> > Maybe the second is less invasive, but will it be too tricky?
-> > Any other advice or suggestions?
-> >
-> > Thanks in advance,
-> > Stefano
->
-> OK let me try to clarify.  The idea is this:
->
-> Let's say we queue a buffer of 4K, and we copy if len < 128 bytes.  This
-> means that in the worst case (128 byte packets), each byte of credit in
-> the socket uses up 4K/128 = 16 bytes of kernel memory. In fact we need
-> to also account for the virtio_vsock_pkt since I think it's kept around
-> until userspace consumes it.
->
-> Thus given X buf alloc allowed in the socket, we should publish X/16
-> credits to the other side. This will ensure the other side does not send
-> more than X/16 bytes for a given socket and thus we won't need to
-> allocate more than X bytes to hold the data.
->
-> We can play with the copy break value to tweak this.
->
-
-Hi Michael,
-sorry for the long silence, but I focused on multi-transport.
-
-Before to implement your idea, I tried to do some calculations and
-looking better to our credit mechanism:
-
-  buf_alloc = 256 KB (default, tunable through setsockopt)
-  sizeof(struct virtio_vsock_pkt) = 128
-
-  - guest (we use preallocated 4 KB buffers to receive packets, copying
-    small packet - < 128 -)
-    worst_case = 129
-    buf_size = 4 KB
-    credit2mem = (buf_size + sizeof(struct virtio_vsock_pkt)) / worst_case = 32
-
-    credit_published = buf_alloc / credit2mem = ~8 KB
-    Space for just 2 full packet (4 KB)
-
-  - host (we copy packets from the vring, allocating the space for the payload)
-    worst_case = 1
-    buf_size = 1
-    credit2mem = (buf_size + sizeof(struct virtio_vsock_pkt)) / worst_case = 129
-
-    credit_published = buf_alloc / credit2mem = ~2 KB
-    Less than a full packet (guest now can send up to 64 KB with a single
-    packet, so it will be limited to 2 KB)
-
-Current memory consumption in the worst case if the RX queue is full:
-  - guest
-    mem = (buf_alloc / worst_case) *
-          (buf_size + sizeof(struct virtio_vsock_pkt) = ~8MB
-
-  - host
-    mem = (buf_alloc / worst_case) *
-          (buf_size + sizeof(struct virtio_vsock_pkt) = ~32MB
-
-I think that the performance with big packets will be affected,
-but I still have to try.
-
-Another approach that I want to explore is to play with buf_alloc
-published to the peer.
-
-One thing that's not clear to me yet is the meaning of
-SO_VM_SOCKETS_BUFFER_SIZE:
-- max amount of memory used in the RX queue
-- max amount of payload bytes in the RX queue (without overhead of
-  struct virtio_vsock_pkt + preallocated buffer)
-
-From the 'include/uapi/linux/vm_sockets.h':
-    /* Option name for STREAM socket buffer size.  Use as the option name in
-     * setsockopt(3) or getsockopt(3) to set or get an unsigned long long that
-     * specifies the size of the buffer underlying a vSockets STREAM socket.
-     * Value is clamped to the MIN and MAX.
-     */
-
-    #define SO_VM_SOCKETS_BUFFER_SIZE 0
-
-Regardless, I think we need to limit memory consumption in some way.
-I'll check the implementation of other transports, to understand better.
-
-I'll keep you updated!
-
-Thanks,
-Stefano
+SGVsbG8gRGF2aWQhDQoNCkhlcmUgaXMgYSBzZXQgb2YgdmFyaW91cyBidWdmaXhlcywgdG8gYmUg
+Y29uc2lkZXJlZCBmb3Igc3RhYmxlIGFzIHdlbGwuDQoNClRoYW5rcyENCg0KVjI6IGRvdWJsZSBz
+cGFjZSByZW1vdmVkDQoNCkRtaXRyeSBCb2dkYW5vdiAoMik6DQogIG5ldDogYXF1YW50aWE6IGRv
+IG5vdCBwYXNzIGxybyBzZXNzaW9uIHdpdGggaW52YWxpZCB0Y3AgY2hlY2tzdW0NCiAgbmV0OiBh
+cXVhbnRpYTogY29ycmVjdGx5IGhhbmRsZSBtYWN2bGFuIGFuZCBtdWx0aWNhc3QgY29leGlzdGVu
+Y2UNCg0KSWdvciBSdXNza2lraCAoMik6DQogIG5ldDogYXF1YW50aWE6IHRlbXBlcmF0dXJlIHJl
+dHJpZXZhbCBmaXgNCiAgbmV0OiBhcXVhbnRpYTogd2hlbiBjbGVhbmluZyBodyBjYWNoZSBpdCBz
+aG91bGQgYmUgdG9nZ2xlZA0KDQogLi4uL25ldC9ldGhlcm5ldC9hcXVhbnRpYS9hdGxhbnRpYy9h
+cV9tYWluLmMgIHwgIDQgKy0tDQogLi4uL25ldC9ldGhlcm5ldC9hcXVhbnRpYS9hdGxhbnRpYy9h
+cV9uaWMuYyAgIHwgMzIgKysrKysrKysrLS0tLS0tLS0tLQ0KIC4uLi9uZXQvZXRoZXJuZXQvYXF1
+YW50aWEvYXRsYW50aWMvYXFfcmluZy5jICB8ICAzICstDQogLi4uL2FxdWFudGlhL2F0bGFudGlj
+L2h3X2F0bC9od19hdGxfYjAuYyAgICAgIHwgMjMgKysrKysrKysrKy0tLQ0KIC4uLi9hcXVhbnRp
+YS9hdGxhbnRpYy9od19hdGwvaHdfYXRsX2xsaC5jICAgICB8IDE3ICsrKysrKysrLS0NCiAuLi4v
+YXF1YW50aWEvYXRsYW50aWMvaHdfYXRsL2h3X2F0bF9sbGguaCAgICAgfCAgNyArKy0tDQogLi4u
+L2F0bGFudGljL2h3X2F0bC9od19hdGxfbGxoX2ludGVybmFsLmggICAgIHwgMTkgKysrKysrKysr
+KysNCiAuLi4vYXRsYW50aWMvaHdfYXRsL2h3X2F0bF91dGlsc19mdzJ4LmMgICAgICAgfCAgMiAr
+LQ0KIDggZmlsZXMgY2hhbmdlZCwgNzcgaW5zZXJ0aW9ucygrKSwgMzAgZGVsZXRpb25zKC0pDQoN
+Ci0tIA0KMi4xNy4xDQoNCg==
