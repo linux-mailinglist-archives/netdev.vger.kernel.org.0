@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0608ED35EE
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1065D35EB
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727732AbfJKA3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:29:04 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:33576 "EHLO
+        id S1727891AbfJKA3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 20:29:02 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:44929 "EHLO
         mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727727AbfJKA2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:28:38 -0400
-Received: by mail-lj1-f196.google.com with SMTP id a22so8065787ljd.0
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:28:35 -0700 (PDT)
+        with ESMTP id S1727746AbfJKA2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:28:39 -0400
+Received: by mail-lj1-f196.google.com with SMTP id m13so7990203ljj.11
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:28:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wbL2nu6acnton90gIbsX5qxq9tLlNkmN4RUryN8fm7M=;
-        b=KZ4g7bs4fOSGzk9FRyjF0hoqEh7hKsbUdY26yluEIfz8HrbcVogNxnuyoe/hxPcvfY
-         TkU3hAUOhkLrtq5AzSARGyoZtpIAwa6YiJutpgj2IfhDFd7rccQbQb6TXAJO3UHkSoTS
-         KVLv4z+Y+wn1/bGde0X3XLQCzqxwzgrKWEYXuOOv5w100VI2wuVg8Z1pJWKOOw2QGMIu
-         xAD92jGqtR5FbkoIFvEdmTYUmuUV51K4APESpxgabNPn1RethPshg4jMreKr/ZBPFC6Z
-         mKPdfQ4ukG2GmYFcT5pC+tXxG/DwLE1KaehHzD/wBCkNIFKCnOdDqIYiyjJkoVevysU6
-         FEtw==
+        bh=oHm0qgs35bdRmF9F1S/p3tYJstCeeDVx8Vw6XCI5qDc=;
+        b=oZoFP4EBvirEOvHM9IfrnbIXJxjTZbSW136oc9UH1jI/wbPjjRATuu7MjU2Rqqkd/z
+         Q12GzulFKtOI+LJ0qj+5jNMmCVsXsm6Du5YO8D0p+tYMDdRNKcMbUISq9/l6pXtBklWP
+         janUJ6/iEWpc64Iuj0bEjCQprSWEhsxeyDw24v0xm1+sb7yVT1l1O4BSA94dZdZnN8fq
+         0Rdo69y1azsmEHPwIxAdFVnnYGhRyV/skW/4qKuKKE+kQCbdICf5xLj3qVQDQgwjUp4z
+         Em25qhXc2WFbbf826EgIg8xT5txDZCz845v5RT3V5P6kDssmNHcAoUYNkrA4/cxF2U5r
+         wUhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=wbL2nu6acnton90gIbsX5qxq9tLlNkmN4RUryN8fm7M=;
-        b=jJNGv/HVa0sHDOgtPmvZcNegg8zb4q3JRdEiYHx/PAx8lyQWY0/BAdhXulhl7zUbCM
-         EKnz2oDqRcbE3bymFB8O0cCXs6yA5HPS14GndJvCJDB0m1Y9dVsHwB40tllv7MSYLcPR
-         Z2oKag8QlouIClKpP+wtilfenzaHkbw3kAiK7VOvUjxuwJLEY9DwtZX7Xo/5VyTC+x8J
-         PAJWeYr1hZ4MVynnjjgjrBPQQpxvLfQppkoY7n0p+HhRaxLE3n5HPyCiNUMxOusE/Dsg
-         tvDXE+SY4AQpYCw9sAh91ygYZ29dslAxxnZqVrcqTixRoY3Po8Rm8pFXtEePyS8FQSTc
-         d/eQ==
-X-Gm-Message-State: APjAAAXxdunPr0l8khkb+6oIzCHXtffz9yLg6YR8sDYkGbuGON5OFk9k
-        shxNFmVNczLVrR09A7mblIBTIw==
-X-Google-Smtp-Source: APXvYqy9hnP8VV2RBY2j/1IOquHYPBvEdhG4CzJDaEV75yWkYlbvEM/9W8Q+EDRq2LWuZlNNlkmCxg==
-X-Received: by 2002:a2e:89c4:: with SMTP id c4mr7438097ljk.65.1570753714541;
-        Thu, 10 Oct 2019 17:28:34 -0700 (PDT)
+        bh=oHm0qgs35bdRmF9F1S/p3tYJstCeeDVx8Vw6XCI5qDc=;
+        b=k4p6bawbq0E75GwPnvEjhonHQ8UEpQXjn0yxrNftg0ZRFAr5ET0eQDgzqb5j42mbwa
+         mvZpMA1eMhnjTL4FnT/lN8yrVwgij0ZBEmeYLsyARZv4UvLO7rdTSoIzHKt9Vs/sWfAZ
+         LJ8A8G2D7JAuI/t/TbVfrV/N8CcJ8yx4tuC/BDQyBpqQn+p20AudTFz16c469bXH5zo9
+         d3euupYapMbOTlql8mhOKN7GyvKBFoWdjuDB8XZ1MC7t3BtO3fo/7oaspPqYghw5YGXj
+         CEqBbAo89tmiNdTIhb2nOZg0LvDFJm8lKGGVczmQr7EpAl7/mxneKhruLVeUtLTP5Fqi
+         TSEA==
+X-Gm-Message-State: APjAAAWVlX/FaimN0oLlGDyf+HwfaRYOA+TMZdRExpCL7+duP7JSDE2s
+        Y1E7rQfLesdsPnzG3Zq3ynGCCA==
+X-Google-Smtp-Source: APXvYqwTPy70ROgoZDQ55cPuYWUZQKFCSMSQwfrSkuApAs28Wn8XuDBpgk6VAGN8GXArn8LtVqlcmA==
+X-Received: by 2002:a2e:658f:: with SMTP id e15mr7832403ljf.254.1570753715857;
+        Thu, 10 Oct 2019 17:28:35 -0700 (PDT)
 Received: from localhost.localdomain (88-201-94-178.pool.ukrtel.net. [178.94.201.88])
-        by smtp.gmail.com with ESMTPSA id 126sm2367010lfh.45.2019.10.10.17.28.33
+        by smtp.gmail.com with ESMTPSA id 126sm2367010lfh.45.2019.10.10.17.28.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 17:28:33 -0700 (PDT)
+        Thu, 10 Oct 2019 17:28:35 -0700 (PDT)
 From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
         davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
@@ -51,9 +51,9 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
         ilias.apalodimas@linaro.org, sergei.shtylyov@cogentembedded.com,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH v5 bpf-next 10/15] samples/bpf: use target CC environment for HDR_PROBE
-Date:   Fri, 11 Oct 2019 03:28:03 +0300
-Message-Id: <20191011002808.28206-11-ivan.khoronzhuk@linaro.org>
+Subject: [PATCH v5 bpf-next 11/15] libbpf: don't use cxx to test_libpf target
+Date:   Fri, 11 Oct 2019 03:28:04 +0300
+Message-Id: <20191011002808.28206-12-ivan.khoronzhuk@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
 References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
@@ -62,37 +62,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No need in hacking HOSTCC to be cross-compiler any more, so drop
-this trick and use target CC for HDR_PROBE.
+No need to use C++ for test_libbpf target when libbpf is on C and it
+can be tested with C, after this change the CXXFLAGS in makefiles can
+be avoided, at least in bpf samples, when sysroot is used, passing
+same C/LDFLAGS as for lib.
+
+Add "return 0" in test_libbpf to avoid warn, but also remove spaces at
+start of the lines to keep same style and avoid warns while apply.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 ---
- samples/bpf/Makefile | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ tools/lib/bpf/Makefile                         | 18 +++++-------------
+ .../lib/bpf/{test_libbpf.cpp => test_libbpf.c} | 14 ++++++++------
+ 2 files changed, 13 insertions(+), 19 deletions(-)
+ rename tools/lib/bpf/{test_libbpf.cpp => test_libbpf.c} (61%)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 57a15ff938a6..a6c33496e8ca 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -205,15 +205,14 @@ BTF_PAHOLE ?= pahole
- 
- # Detect that we're cross compiling and use the cross compiler
- ifdef CROSS_COMPILE
--HOSTCC = $(CROSS_COMPILE)gcc
- CLANG_ARCH_ARGS = --target=$(notdir $(CROSS_COMPILE:%-=%))
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index 1270955e4845..46280b5ad48d 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -52,7 +52,7 @@ ifndef VERBOSE
  endif
  
- # Don't evaluate probes and warnings if we need to run make recursively
- ifneq ($(src),)
- HDR_PROBE := $(shell printf "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
--	$(HOSTCC) $(KBUILD_HOSTCFLAGS) -x c - -o /dev/null 2>/dev/null && \
--	echo okay)
-+	$(CC) $(TPROGS_CFLAGS) $(TPROGS_LDFLAGS) -x c - \
-+	-o /dev/null 2>/dev/null && echo okay)
+ FEATURE_USER = .libbpf
+-FEATURE_TESTS = libelf libelf-mmap bpf reallocarray cxx
++FEATURE_TESTS = libelf libelf-mmap bpf reallocarray
+ FEATURE_DISPLAY = libelf bpf
  
- ifeq ($(HDR_PROBE),)
- $(warning WARNING: Detected possible issues with include path.)
+ INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/arch/$(ARCH)/include/uapi -I$(srctree)/tools/include/uapi
+@@ -142,15 +142,7 @@ GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN) | \
+ VERSIONED_SYM_COUNT = $(shell readelf -s --wide $(OUTPUT)libbpf.so | \
+ 			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
+ 
+-CMD_TARGETS = $(LIB_TARGET) $(PC_FILE)
+-
+-CXX_TEST_TARGET = $(OUTPUT)test_libbpf
+-
+-ifeq ($(feature-cxx), 1)
+-	CMD_TARGETS += $(CXX_TEST_TARGET)
+-endif
+-
+-TARGETS = $(CMD_TARGETS)
++CMD_TARGETS = $(LIB_TARGET) $(PC_FILE) $(OUTPUT)test_libbpf
+ 
+ all: fixdep
+ 	$(Q)$(MAKE) all_cmd
+@@ -190,8 +182,8 @@ $(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN)
+ $(OUTPUT)libbpf.a: $(BPF_IN)
+ 	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
+ 
+-$(OUTPUT)test_libbpf: test_libbpf.cpp $(OUTPUT)libbpf.a
+-	$(QUIET_LINK)$(CXX) $(INCLUDES) $^ -lelf -o $@
++$(OUTPUT)test_libbpf: test_libbpf.c $(OUTPUT)libbpf.a
++	$(QUIET_LINK)$(CC) $(INCLUDES) $^ -lelf -o $@
+ 
+ $(OUTPUT)libbpf.pc:
+ 	$(QUIET_GEN)sed -e "s|@PREFIX@|$(prefix)|" \
+@@ -266,7 +258,7 @@ config-clean:
+ 	$(Q)$(MAKE) -C $(srctree)/tools/build/feature/ clean >/dev/null
+ 
+ clean:
+-	$(call QUIET_CLEAN, libbpf) $(RM) $(TARGETS) $(CXX_TEST_TARGET) \
++	$(call QUIET_CLEAN, libbpf) $(RM) $(CMD_TARGETS) \
+ 		*.o *~ *.a *.so *.so.$(LIBBPF_MAJOR_VERSION) .*.d .*.cmd \
+ 		*.pc LIBBPF-CFLAGS bpf_helper_defs.h
+ 	$(call QUIET_CLEAN, core-gen) $(RM) $(OUTPUT)FEATURE-DUMP.libbpf
+diff --git a/tools/lib/bpf/test_libbpf.cpp b/tools/lib/bpf/test_libbpf.c
+similarity index 61%
+rename from tools/lib/bpf/test_libbpf.cpp
+rename to tools/lib/bpf/test_libbpf.c
+index fc134873bb6d..f0eb2727b766 100644
+--- a/tools/lib/bpf/test_libbpf.cpp
++++ b/tools/lib/bpf/test_libbpf.c
+@@ -7,12 +7,14 @@
+ 
+ int main(int argc, char *argv[])
+ {
+-    /* libbpf.h */
+-    libbpf_set_print(NULL);
++	/* libbpf.h */
++	libbpf_set_print(NULL);
+ 
+-    /* bpf.h */
+-    bpf_prog_get_fd_by_id(0);
++	/* bpf.h */
++	bpf_prog_get_fd_by_id(0);
+ 
+-    /* btf.h */
+-    btf__new(NULL, 0);
++	/* btf.h */
++	btf__new(NULL, 0);
++
++	return 0;
+ }
 -- 
 2.17.1
 
