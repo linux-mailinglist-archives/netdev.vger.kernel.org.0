@@ -2,102 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 175F3D3B7E
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBFE7D3B72
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbfJKIpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 04:45:47 -0400
-Received: from mx2.suse.de ([195.135.220.15]:56238 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726508AbfJKIpr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 04:45:47 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 9D9F1ABE3;
-        Fri, 11 Oct 2019 08:45:45 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 91E73E378C; Fri, 11 Oct 2019 10:45:44 +0200 (CEST)
-From:   Michal Kubecek <mkubecek@suse.cz>
-Date:   Fri, 11 Oct 2019 09:40:09 +0200
-Subject: [PATCH net-next v3] genetlink: do not parse attributes for families
- with zero maxattr
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <20191011084544.91E73E378C@unicorn.suse.cz>
+        id S1727057AbfJKInR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 04:43:17 -0400
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:42928 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726397AbfJKInR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 04:43:17 -0400
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1iIqVw-000807-VH; Fri, 11 Oct 2019 08:43:09 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1iIqVu-0007Pk-AL; Fri, 11 Oct 2019 09:43:08 +0100
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+To:     bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com, yhs@fb.com,
+        netdev@vger.kernel.org,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Subject: [PATCH] xdp: Trivial, fix spelling in function description
+Date:   Fri, 11 Oct 2019 09:43:03 +0100
+Message-Id: <20191011084303.28418-1-anton.ivanov@cambridgegreys.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing
-to a separate function") moved attribute buffer allocation and attribute
-parsing from genl_family_rcv_msg_doit() into a separate function
-genl_family_rcv_msg_attrs_parse() which, unlike the previous code, calls
-__nlmsg_parse() even if family->maxattr is 0 (i.e. the family does its own
-parsing). The parser error is ignored and does not propagate out of
-genl_family_rcv_msg_attrs_parse() but an error message ("Unknown attribute
-type") is set in extack and if further processing generates no error or
-warning, it stays there and is interpreted as a warning by userspace.
-
-Dumpit requests are not affected as genl_family_rcv_msg_dumpit() bypasses
-the call of genl_family_rcv_msg_attrs_parse() if family->maxattr is zero.
-Move this logic inside genl_family_rcv_msg_attrs_parse() so that we don't
-have to handle it in each caller.
-
-v3: put the check inside genl_family_rcv_msg_attrs_parse()
-v2: adjust also argument of genl_family_rcv_msg_attrs_free()
-
-Fixes: c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing to a separate function")
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 ---
- net/netlink/genetlink.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ net/core/xdp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index ecc2bd3e73e4..0522b2b1fd95 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -483,6 +483,9 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- 	struct nlattr **attrbuf;
- 	int err;
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index d7bf62ffbb5e..20781ad5f9c3 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -386,7 +386,7 @@ EXPORT_SYMBOL_GPL(xdp_rxq_info_reg_mem_model);
  
-+	if (!family->maxattr)
-+		return NULL;
-+
- 	if (parallel) {
- 		attrbuf = kmalloc_array(family->maxattr + 1,
- 					sizeof(struct nlattr *), GFP_KERNEL);
-@@ -582,9 +585,6 @@ static int genl_family_rcv_msg_dumpit(const struct genl_family *family,
- 	if (nlh->nlmsg_len < nlmsg_msg_size(hdrlen))
- 		return -EINVAL;
- 
--	if (!family->maxattr)
--		goto no_attrs;
--
- 	attrs = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
- 						ops, hdrlen,
- 						GENL_DONT_VALIDATE_DUMP_STRICT,
-@@ -649,7 +649,6 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
- 	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
- 						  ops, hdrlen,
- 						  GENL_DONT_VALIDATE_STRICT,
--						  family->maxattr &&
- 						  family->parallel_ops);
- 	if (IS_ERR(attrbuf))
- 		return PTR_ERR(attrbuf);
-@@ -676,8 +675,7 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
- 		family->post_doit(ops, skb, &info);
- 
- out:
--	genl_family_rcv_msg_attrs_free(family, attrbuf,
--				       family->maxattr && family->parallel_ops);
-+	genl_family_rcv_msg_attrs_free(family, attrbuf, family->parallel_ops);
- 
- 	return err;
- }
+ /* XDP RX runs under NAPI protection, and in different delivery error
+  * scenarios (e.g. queue full), it is possible to return the xdp_frame
+- * while still leveraging this protection.  The @napi_direct boolian
++ * while still leveraging this protection.  The @napi_direct boolean
+  * is used for those calls sites.  Thus, allowing for faster recycling
+  * of xdp_frames/pages in those cases.
+  */
 -- 
-2.23.0
+2.20.1
 
