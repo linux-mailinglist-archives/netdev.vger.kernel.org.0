@@ -2,103 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1848D48F0
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:23:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99EAAD492E
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729143AbfJKUGk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Oct 2019 16:06:40 -0400
-Received: from mga14.intel.com ([192.55.52.115]:50453 "EHLO mga14.intel.com"
+        id S1729780AbfJKULR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 16:11:17 -0400
+Received: from mga07.intel.com ([134.134.136.100]:14883 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729129AbfJKUGj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 16:06:39 -0400
+        id S1729768AbfJKULO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 16:11:14 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 13:06:38 -0700
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 13:11:13 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,285,1566889200"; 
-   d="scan'208";a="194433064"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Oct 2019 13:06:38 -0700
-Received: from orsmsx116.amr.corp.intel.com (10.22.240.14) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 11 Oct 2019 13:06:38 -0700
-Received: from orsmsx121.amr.corp.intel.com ([169.254.10.88]) by
- ORSMSX116.amr.corp.intel.com ([169.254.7.232]) with mapi id 14.03.0439.000;
- Fri, 11 Oct 2019 13:06:38 -0700
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-CC:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: RE: linux-next: Fixes tag needs some work in the net tree
-Thread-Topic: linux-next: Fixes tag needs some work in the net tree
-Thread-Index: AQHVf+n3tASYqcvLsUKPslnmzJJ6DKdV3oNQ
-Date:   Fri, 11 Oct 2019 20:06:38 +0000
-Message-ID: <02874ECE860811409154E81DA85FBB5896925B2B@ORSMSX121.amr.corp.intel.com>
-References: <20191011151117.46bc6981@canb.auug.org.au>
-In-Reply-To: <20191011151117.46bc6981@canb.auug.org.au>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNWY3NWE2YTEtZDgwNS00YWUzLTgxMTItZmVlZGYyNWZlOTJkIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiRERKXC9aOHVQYWt2a0lcL0JRM29ZRjZ5b3M1YmdKQXVBQ0M3XC9KcG91V1B4eUo1aDhvdm9HM0RvWDNSXC9ReTFMRWgifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.140]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+   d="scan'208";a="395857361"
+Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
+  by fmsmga006.fm.intel.com with ESMTP; 11 Oct 2019 13:11:12 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: taprio testing - Any help?
+In-Reply-To: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com>
+References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com>
+Date:   Fri, 11 Oct 2019 13:12:08 -0700
+Message-ID: <87v9sv3uuf.fsf@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Stephen Rothwell
-> Sent: Thursday, October 10, 2019 9:11 PM
-> To: David Miller <davem@davemloft.net>; Networking
-> <netdev@vger.kernel.org>
-> Cc: Linux Next Mailing List <linux-next@vger.kernel.org>; Linux Kernel Mailing List
-> <linux-kernel@vger.kernel.org>; Keller, Jacob E <jacob.e.keller@intel.com>;
-> Jakub Kicinski <jakub.kicinski@netronome.com>
-> Subject: linux-next: Fixes tag needs some work in the net tree
-> 
-> Hi all,
-> 
-> In commit
-> 
->   2168da459404 ("net: update net_dim documentation after rename")
-> 
-> Fixes tag
-> 
->   Fixes: 8960b38932be ("linux/dim: Rename externally used net_dim members",
-> 2019-06-25)
-> 
-> has these problem(s):
-> 
->   - Subject does not match target commit subject
->     Just use
-> 	git log -1 --format='Fixes: %h ("%s")'
-> 
-> Fixes tag
-> 
->   Fixes: c002bd529d71 ("linux/dim: Rename externally exposed macros", 2019-06-
-> 25)
-> 
-> has these problem(s):
-> 
->   - Subject does not match target commit subject
->     Just use
-> 	git log -1 --format='Fixes: %h ("%s")'
+Hi Murali,
 
-Right, that was my mistake. I have an alias for this that is what was used by other projects (which prefer adding the date), and it's supposed to be set to only this in my local tree for the kernel, but not sure what happened there.
+Murali Karicheri <m-karicheri2@ti.com> writes:
 
-> --
-> Cheers,
-> Stephen Rothwell
+> Hi,
+>
+> I am testing the taprio (802.1Q Time Aware Shaper) as part of my
+> pre-work to implement taprio hw offload and test.
+>
+> I was able to configure tap prio on my board and looking to do
+> some traffic test and wondering how to play with the tc command
+> to direct traffic to a specfic queue. For example I have setup
+> taprio to create 5 traffic classes as shows below;-
+>
+> Now I plan to create iperf streams to pass through different
+> gates. Now how do I use tc filters to mark the packets to
+> go through these gates/queues? I heard about skbedit action
+> in tc filter to change the priority field of SKB to allow
+> the above mapping to happen. Any example that some one can
+> point me to?
+
+What I have been using for testing these kinds of use cases (like iperf)
+is to use an iptables rule to set the priority for some kinds of traffic.
+
+Something like this:
+
+sudo iptables -t mangle -A POSTROUTING -p udp --dport 7788 -j CLASSIFY --set-class 0:3
+
+This will set the skb->priority of UDP packets matching that rule to 3.
+
+Another alternative is to create a net_prio cgroup, and the sockets
+created under that hierarchy would have have that priority. I don't have
+an example handy for this right now, sorry.
+
+Is this what you were looking for?
+
+
+Cheers,
+--
+Vinicius
