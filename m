@@ -2,1114 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA457D4160
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 15:34:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91EBBD418E
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 15:40:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728436AbfJKNeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 09:34:37 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37987 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728231AbfJKNeg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 09:34:36 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y18so2506070wrn.5
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 06:34:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8GDzeyDx7lHaxA8YP8ygv20c48t58ZZ1n1DBbljGJkU=;
-        b=zAskxPjevfioGiTfIMS6lnfJBKGYQ30zG9luDA8vKor7N5Rb0XcqhnqjdKraEuAKa3
-         secLE6kujCDq9jV+knPWrM4eXIsqHJMatrXHjDSqp4xSjRUTh5HIM68atAi9D31Mztvx
-         dd5331DlOb1pncuIan+M4qJN7OS+I8EtgHD1hwhqXdipUL/sbjE4IghkRFwJ/cMrPX9x
-         EoyJSr22EUc61RuKqNOiFRlu28zbi4rkw/R8kQ0rvLtDM+JdnR5v025oCcy0kdOGaK49
-         bmB6bbh/SfUnMxfQsna01TiTJg/VhlBp2TqREFRGxzlhN2OO/MQtNNS4uT2U5DjBXLD7
-         et8w==
+        id S1728592AbfJKNky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 09:40:54 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42264 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728575AbfJKNky (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 09:40:54 -0400
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 10F99C053B32
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 13:40:53 +0000 (UTC)
+Received: by mail-wm1-f72.google.com with SMTP id q9so4119002wmj.9
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 06:40:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8GDzeyDx7lHaxA8YP8ygv20c48t58ZZ1n1DBbljGJkU=;
-        b=MGFSqnOwadxOU+Kn4bb3UylzT11/FyixBnztVaPQDclBQvaxG1CRTFOWKWFzFirUpa
-         w+7qyq4qQtUNfteO3QAYJRoMu1qbHkQ+8b048ypnFLFCve9HQ9d/5exh1oocuE6aFmC2
-         fAnnAv0L/3cL4msXezDpyD/8hghD461VJadQWVEWkuIlAk1c7a7cc4+H8RQh1spDyamf
-         Jn11BucvvIo8/WEhlZF/zWwPg7nPwiMRSQvuSbDfDSf/GZF8Pv7AKSCnIYwYpXpymnIg
-         z/79e3z1OW35zPmQzCOddpKxK+0lL3OkuG0peNpHl34iuEObQW7LFzVWTzmneUujqCzE
-         MwRA==
-X-Gm-Message-State: APjAAAU7MkSwakq5786Wq5yDX5dKg1ruh6/wkf5+7iWR8jvDXwIavNaj
-        LPdLevZ12e597bJojktTxyUXGA==
-X-Google-Smtp-Source: APXvYqwmL1RqsQt+9UZmSKuOA1E+GsbE2rMfSeUgruR1CEQWGd1ng49mcv5YtckneSBl0qzWOv787w==
-X-Received: by 2002:adf:ec84:: with SMTP id z4mr13275862wrn.254.1570800870930;
-        Fri, 11 Oct 2019 06:34:30 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id q124sm16133313wma.5.2019.10.11.06.34.30
+        bh=ycjAUNtwkoO5CwuugdxxhPrwcqba9MD0MTVWww0Ry8o=;
+        b=h6JEbPd/seuVnv5kTBrwu/2n7Ug+t4ZhNlrwkqivQszE6YYBMgiUoU2rj4siPXUEqk
+         qALJIAcQzjikDSHLHEdjZdlXkTYnVSbTfbB+y1XOflXYnzXNyFcBj8AF48WdGkXDP2oB
+         Y16BmeMAC1dqp0zYgJMJ7WigD/CJT4na3hNXhYjb5fvKLcLK4+1BLjJBpqloqXkEwj5p
+         m/IFgTvGzaxXjLggcDNOnPldtI+K83x+5zFTnTeAkduY+vhYdqvuoKGrTYKA3dXjetqj
+         soD6zG2mkI+MBRR7PbtQYNaVqYpJTO/RxdhFo+E6YkxGt/HMi+Qt6+/Iku5cdqlrZnAz
+         EwUw==
+X-Gm-Message-State: APjAAAUhQSN4eF4n1WnmBq4kXjP8O9C7TV/1ucCmBqb8BJ+/o/WVDoR2
+        gwS6tqe5uhRN4RTRdUafOsAkLixj8IpJegaBXAUk4ZCbAPc/gA+NWUEOI2sSQE8jVxXpjAx3UkC
+        z1Dwm0gbtFzMMX+Z+
+X-Received: by 2002:a7b:c387:: with SMTP id s7mr3114896wmj.110.1570801251576;
+        Fri, 11 Oct 2019 06:40:51 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwa2JlipPtOJ7W7B7ExYLkyrReSYaA52mIUw0NmpzMFmVUy7kZcDXl/SyiLE9qQIYJ/Xwp3hg==
+X-Received: by 2002:a7b:c387:: with SMTP id s7mr3114877wmj.110.1570801251192;
+        Fri, 11 Oct 2019 06:40:51 -0700 (PDT)
+Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
+        by smtp.gmail.com with ESMTPSA id 59sm17597436wrc.23.2019.10.11.06.40.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 06:34:30 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 15:34:29 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7 06/17] ethtool: netlink bitset handling
-Message-ID: <20191011133429.GA3056@nanopsycho>
-References: <cover.1570654310.git.mkubecek@suse.cz>
- <af208e79258e7e3c3af3860e6a8908a50dec095f.1570654310.git.mkubecek@suse.cz>
+        Fri, 11 Oct 2019 06:40:50 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 15:40:48 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>
+Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
+Message-ID: <CAGxU2F7fA5UtkuMQbOHHy0noOGZUtpepBNKFg5afD81bynMVUQ@mail.gmail.com>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190717113030.163499-2-sgarzare@redhat.com>
+ <20190729095956-mutt-send-email-mst@kernel.org>
+ <20190830094059.c7qo5cxrp2nkrncd@steredhat>
+ <20190901024525-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <af208e79258e7e3c3af3860e6a8908a50dec095f.1570654310.git.mkubecek@suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190901024525-mutt-send-email-mst@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Oct 09, 2019 at 10:59:18PM CEST, mkubecek@suse.cz wrote:
->The ethtool netlink code uses common framework for passing arbitrary
->length bit sets to allow future extensions. A bitset can be a list (only
->one bitmap) or can consist of value and mask pair (used e.g. when client
->want to modify only some bits). A bitset can use one of two formats:
->verbose (bit by bit) or compact.
+On Sun, Sep 1, 2019 at 8:56 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+> On Fri, Aug 30, 2019 at 11:40:59AM +0200, Stefano Garzarella wrote:
+> > On Mon, Jul 29, 2019 at 10:04:29AM -0400, Michael S. Tsirkin wrote:
+> > > On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
+> > > > Since virtio-vsock was introduced, the buffers filled by the host
+> > > > and pushed to the guest using the vring, are directly queued in
+> > > > a per-socket list. These buffers are preallocated by the guest
+> > > > with a fixed size (4 KB).
+> > > >
+> > > > The maximum amount of memory used by each socket should be
+> > > > controlled by the credit mechanism.
+> > > > The default credit available per-socket is 256 KB, but if we use
+> > > > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
+> > > > buffers, using up to 1 GB of memory per-socket. In addition, the
+> > > > guest will continue to fill the vring with new 4 KB free buffers
+> > > > to avoid starvation of other sockets.
+> > > >
+> > > > This patch mitigates this issue copying the payload of small
+> > > > packets (< 128 bytes) into the buffer of last packet queued, in
+> > > > order to avoid wasting memory.
+> > > >
+> > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > >
+> > > This is good enough for net-next, but for net I think we
+> > > should figure out how to address the issue completely.
+> > > Can we make the accounting precise? What happens to
+> > > performance if we do?
+> > >
+> >
+> > Since I'm back from holidays, I'm restarting this thread to figure out
+> > how to address the issue completely.
+> >
+> > I did a better analysis of the credit mechanism that we implemented in
+> > virtio-vsock to get a clearer view and I'd share it with you:
+> >
+> >     This issue affect only the "host->guest" path. In this case, when the
+> >     host wants to send a packet to the guest, it uses a "free" buffer
+> >     allocated by the guest (4KB).
+> >     The "free" buffers available for the host are shared between all
+> >     sockets, instead, the credit mechanism is per-socket, I think to
+> >     avoid the starvation of others sockets.
+> >     The guests re-fill the "free" queue when the available buffers are
+> >     less than half.
+> >
+> >     Each peer have these variables in the per-socket state:
+> >        /* local vars */
+> >        buf_alloc        /* max bytes usable by this socket
+> >                            [exposed to the other peer] */
+> >        fwd_cnt          /* increased when RX packet is consumed by the
+> >                            user space [exposed to the other peer] */
+> >        tx_cnt                 /* increased when TX packet is sent to the other peer */
+> >
+> >        /* remote vars  */
+> >        peer_buf_alloc   /* peer's buf_alloc */
+> >        peer_fwd_cnt     /* peer's fwd_cnt */
+> >
+> >     When a peer sends a packet, it increases the 'tx_cnt'; when the
+> >     receiver consumes the packet (copy it to the user-space buffer), it
+> >     increases the 'fwd_cnt'.
+> >     Note: increments are made considering the payload length and not the
+> >     buffer length.
+> >
+> >     The value of 'buf_alloc' and 'fwd_cnt' are sent to the other peer in
+> >     all packet headers or with an explicit CREDIT_UPDATE packet.
+> >
+> >     The local 'buf_alloc' value can be modified by the user space using
+> >     setsockopt() with optname=SO_VM_SOCKETS_BUFFER_SIZE.
+> >
+> >     Before to send a packet, the peer checks the space available:
+> >       credit_available = peer_buf_alloc - (tx_cnt - peer_fwd_cnt)
+> >     and it will send up to credit_available bytes to the other peer.
+> >
+> > Possible solutions considering Michael's advice:
+> > 1. Use the buffer length instead of the payload length when we increment
+> >    the counters:
+> >   - This approach will account precisely the memory used per socket.
+> >   - This requires changes in both guest and host.
+> >   - It is not compatible with old drivers, so a feature should be negotiated.
+> > 2. Decrease the advertised 'buf_alloc' taking count of bytes queued in
+> >    the socket queue but not used. (e.g. 256 byte used on 4K available in
+> >    the buffer)
+> >   - pkt->hdr.buf_alloc = buf_alloc - bytes_not_used.
+> >   - This should be compatible also with old drivers.
+> >
+> > Maybe the second is less invasive, but will it be too tricky?
+> > Any other advice or suggestions?
+> >
+> > Thanks in advance,
+> > Stefano
 >
->Verbose format consists of bitset size (number of bits), list flag and
->an array of bit nests, telling which bits are part of the list or which
->bits are in the mask and which of them are to be set. In requests, bits
->can be identified by index (position) or by name. In replies, kernel
->provides both index and name. Verbose format is suitable for "one shot"
->applications like standard ethtool command as it avoids the need to
->either keep bit names (e.g. link modes) in sync with kernel or having to
->add an extra roundtrip for string set request (e.g. for private flags).
+> OK let me try to clarify.  The idea is this:
 >
->Compact format uses one (list) or two (value/mask) arrays of 32-bit
->words to store the bitmap(s). It is more suitable for long running
->applications (ethtool in monitor mode or network management daemons)
->which can retrieve the names once and then pass only compact bitmaps to
->save space.
+> Let's say we queue a buffer of 4K, and we copy if len < 128 bytes.  This
+> means that in the worst case (128 byte packets), each byte of credit in
+> the socket uses up 4K/128 = 16 bytes of kernel memory. In fact we need
+> to also account for the virtio_vsock_pkt since I think it's kept around
+> until userspace consumes it.
 >
->Userspace requests can use either format; ETHTOOL_GFLAG_COMPACT_BITSETS
->flag in request header tells kernel which format to use in reply.
->Notifications always use compact format.
+> Thus given X buf alloc allowed in the socket, we should publish X/16
+> credits to the other side. This will ensure the other side does not send
+> more than X/16 bytes for a given socket and thus we won't need to
+> allocate more than X bytes to hold the data.
 >
->Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
->---
-> Documentation/networking/ethtool-netlink.rst |  68 ++
-> include/uapi/linux/ethtool_netlink.h         |  35 +
-> net/ethtool/Makefile                         |   2 +-
-> net/ethtool/bitset.c                         | 714 +++++++++++++++++++
-> net/ethtool/bitset.h                         |  28 +
-> net/ethtool/netlink.h                        |   9 +
-> 6 files changed, 855 insertions(+), 1 deletion(-)
-> create mode 100644 net/ethtool/bitset.c
-> create mode 100644 net/ethtool/bitset.h
+> We can play with the copy break value to tweak this.
 >
->diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
->index 3e9680b63afa..8dda6efee060 100644
->--- a/Documentation/networking/ethtool-netlink.rst
->+++ b/Documentation/networking/ethtool-netlink.rst
->@@ -79,6 +79,74 @@ clients not aware of the flag should be interpreted the way the client
-> expects. A client must not set flags it does not understand.
-> 
-> 
->+Bit sets
->+========
->+
->+For short bitmaps of (reasonably) fixed length, standard ``NLA_BITFIELD32``
->+type is used. For arbitrary length bitmaps, ethtool netlink uses a nested
->+attribute with contents of one of two forms: compact (two binary bitmaps
->+representing bit values and mask of affected bits) and bit-by-bit (list of
->+bits identified by either index or name).
->+
->+Compact form: nested (bitset) atrribute contents:
->+
->+  ============================  ======  ============================
->+  ``ETHTOOL_A_BITSET_LIST``     flag    no mask, only a list
 
-I find "list" a bit confusing name of a flag. Perhaps better to stick
-with the "compact" terminology and make this "ETHTOOL_A_BITSET_COMPACT"?
-Then in the code you can have var "is_compact", which makes the code a
-bit easier to read I believe.
+Hi Michael,
+sorry for the long silence, but I focused on multi-transport.
 
+Before to implement your idea, I tried to do some calculations and
+looking better to our credit mechanism:
 
->+  ``ETHTOOL_A_BITSET_SIZE``     u32     number of significant bits
->+  ``ETHTOOL_A_BITSET_VALUE``    binary  bitmap of bit values
->+  ``ETHTOOL_A_BITSET_MASK``     binary  bitmap of valid bits
+  buf_alloc = 256 KB (default, tunable through setsockopt)
+  sizeof(struct virtio_vsock_pkt) = 128
 
-Couple of times the NLA_BITFIELD32 limitation was discussed, so isn't
-this the time to introduce generic NLA_BITFIELD with variable len and
-use it here? This is exactly job for it. As this is UAPI, I believe it
-should be done now cause later won't work.
+  - guest (we use preallocated 4 KB buffers to receive packets, copying
+    small packet - < 128 -)
+    worst_case = 129
+    buf_size = 4 KB
+    credit2mem = (buf_size + sizeof(struct virtio_vsock_pkt)) / worst_case = 32
 
+    credit_published = buf_alloc / credit2mem = ~8 KB
+    Space for just 2 full packet (4 KB)
 
+  - host (we copy packets from the vring, allocating the space for the payload)
+    worst_case = 1
+    buf_size = 1
+    credit2mem = (buf_size + sizeof(struct virtio_vsock_pkt)) / worst_case = 129
 
->+  ============================  ======  ============================
->+
->+Value and mask must have length at least ``ETHTOOL_A_BITSET_SIZE`` bits
->+rounded up to a multiple of 32 bits. They consist of 32-bit words in host byte
->+order, words ordered from least significant to most significant (i.e. the same
->+way as bitmaps are passed with ioctl interface).
->+
->+For compact form, ``ETHTOOL_A_BITSET_SIZE`` and ``ETHTOOL_A_BITSET_VALUE`` are
->+mandatory.  Similar to ``NLA_BITFIELD32``, a compact form bit set requests to
->+set bits in the mask to 1 (if the bit is set in value) or 0 (if not) and
->+preserve the rest. If ``ETHTOOL_A_BITSET_LIST`` is present, there is no mask
->+and bitset represents a simple list of bits.
->+
->+Kernel bit set length may differ from userspace length if older application is
->+used on newer kernel or vice versa. If userspace bitmap is longer, an error is
->+issued only if the request actually tries to set values of some bits not
->+recognized by kernel.
->+
->+Bit-by-bit form: nested (bitset) attribute contents:
->+
->+ +---------------------------------+--------+-----------------------------+
->+ | ``ETHTOOL_A_BITSET_LIST``       | flag   | no mask, only a list        |
->+ +---------------------------------+--------+-----------------------------+
->+ | ``ETHTOOL_A_BITSET_SIZE``       | u32    | number of significant bits  |
->+ +---------------------------------+--------+-----------------------------+
->+ | ``ETHTOOL_A_BITSET_BIT``        | nested | array of bits               |
+    credit_published = buf_alloc / credit2mem = ~2 KB
+    Less than a full packet (guest now can send up to 64 KB with a single
+    packet, so it will be limited to 2 KB)
 
-"ETHTOOL_A_BITSET_BIT" does not exist in the code. I believe you ment
-"ETHTOOL_A_BITSET_BITS"
+Current memory consumption in the worst case if the RX queue is full:
+  - guest
+    mem = (buf_alloc / worst_case) *
+          (buf_size + sizeof(struct virtio_vsock_pkt) = ~8MB
 
+  - host
+    mem = (buf_alloc / worst_case) *
+          (buf_size + sizeof(struct virtio_vsock_pkt) = ~32MB
 
->+ +-+-------------------------------+--------+-----------------------------+
->+ |   ``ETHTOOL_A_BITSET_BIT+``     | nested | one bit                     |
+I think that the performance with big packets will be affected,
+but I still have to try.
 
-You seem to be missing "|" here.
-Also "ETHTOOL_A_BITSET_BIT" does not exist. I believe you ment
-"ETHTOOL_A_BITS_BIT"
+Another approach that I want to explore is to play with buf_alloc
+published to the peer.
 
+One thing that's not clear to me yet is the meaning of
+SO_VM_SOCKETS_BUFFER_SIZE:
+- max amount of memory used in the RX queue
+- max amount of payload bytes in the RX queue (without overhead of
+  struct virtio_vsock_pkt + preallocated buffer)
 
->+ +-+-+-----------------------------+--------+-----------------------------+
->+ | | | ``ETHTOOL_A_BIT_INDEX``     | u32    | bit index (0 for LSB)       |
->+ +-+-+-----------------------------+--------+-----------------------------+
->+ | | | ``ETHTOOL_A_BIT_NAME``      | string | bit name                    |
->+ +-+-+-----------------------------+--------+-----------------------------+
->+ | | | ``ETHTOOL_A_BIT_VALUE``     | flag   | present if bit is set       |
->+ +-+-+-----------------------------+--------+-----------------------------+
->+
->+Bit size is optional for bit-by-bit form. ``ETHTOOL_A_BITSET_BITS`` nest can
->+only contain ``ETHTOOL_A_BITS_BIT`` attributes but there can be an arbitrary
->+number of them.  A bit may be identified by its index or by its name. When
->+used in requests, listed bits are set to 0 or 1 according to
->+``ETHTOOL_A_BIT_VALUE``, the rest is preserved. A request fails if index
->+exceeds kernel bit length or if name is not recognized.
->+
->+When ``ETHTOOL_A_BITSET_LIST`` flag is present, bitset is interpreted as a
->+simple bit list. ``ETHTOOL_A_BIT_VALUE`` attributes are not used in such case.
->+Bit list represents a bitmap with listed bits set and the rest zero.
->+
->+In requests, application can use either form. Form used by kernel in reply is
->+determined by a flag in flags field of request header. Semantics of value and
->+mask depends on the attribute.
->+
->+
-> List of message types
-> =====================
-> 
->diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
->index c58d9fd52ffc..418f28965a04 100644
->--- a/include/uapi/linux/ethtool_netlink.h
->+++ b/include/uapi/linux/ethtool_netlink.h
->@@ -51,6 +51,41 @@ enum {
-> 	ETHTOOL_A_HEADER_MAX = __ETHTOOL_A_HEADER_CNT - 1
-> };
-> 
->+/* bit sets */
->+
->+enum {
->+	ETHTOOL_A_BIT_UNSPEC,
->+	ETHTOOL_A_BIT_INDEX,			/* u32 */
->+	ETHTOOL_A_BIT_NAME,			/* string */
->+	ETHTOOL_A_BIT_VALUE,			/* flag */
->+
->+	/* add new constants above here */
->+	__ETHTOOL_A_BIT_CNT,
->+	ETHTOOL_A_BIT_MAX = __ETHTOOL_A_BIT_CNT - 1
->+};
->+
->+enum {
->+	ETHTOOL_A_BITS_UNSPEC,
->+	ETHTOOL_A_BITS_BIT,
->+
->+	/* add new constants above here */
->+	__ETHTOOL_A_BITS_CNT,
->+	ETHTOOL_A_BITS_MAX = __ETHTOOL_A_BITS_CNT - 1
->+};
+From the 'include/uapi/linux/vm_sockets.h':
+    /* Option name for STREAM socket buffer size.  Use as the option name in
+     * setsockopt(3) or getsockopt(3) to set or get an unsigned long long that
+     * specifies the size of the buffer underlying a vSockets STREAM socket.
+     * Value is clamped to the MIN and MAX.
+     */
 
-I think it would be good to have this named with "_BITSET_" in it so it
-is crystal clear this is part of the bitset UAPI.
+    #define SO_VM_SOCKETS_BUFFER_SIZE 0
 
+Regardless, I think we need to limit memory consumption in some way.
+I'll check the implementation of other transports, to understand better.
 
->+
->+enum {
->+	ETHTOOL_A_BITSET_UNSPEC,
->+	ETHTOOL_A_BITSET_LIST,			/* flag */
->+	ETHTOOL_A_BITSET_SIZE,			/* u32 */
->+	ETHTOOL_A_BITSET_BITS,			/* nest - _A_BITS_* */
->+	ETHTOOL_A_BITSET_VALUE,			/* binary */
->+	ETHTOOL_A_BITSET_MASK,			/* binary */
->+
->+	/* add new constants above here */
->+	__ETHTOOL_A_BITSET_CNT,
->+	ETHTOOL_A_BITSET_MAX = __ETHTOOL_A_BITSET_CNT - 1
->+};
->+
-> /* generic netlink info */
-> #define ETHTOOL_GENL_NAME "ethtool"
-> #define ETHTOOL_GENL_VERSION 1
->diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
->index f30e0da88be5..482fdb9380fa 100644
->--- a/net/ethtool/Makefile
->+++ b/net/ethtool/Makefile
->@@ -4,4 +4,4 @@ obj-y				+= ioctl.o
-> 
-> obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
-> 
->-ethtool_nl-y	:= netlink.o
->+ethtool_nl-y	:= netlink.o bitset.o
->diff --git a/net/ethtool/bitset.c b/net/ethtool/bitset.c
->new file mode 100644
->index 000000000000..aff6413d6bcc
->--- /dev/null
->+++ b/net/ethtool/bitset.c
->@@ -0,0 +1,714 @@
->+// SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
->+
->+#include <linux/ethtool_netlink.h>
->+#include <linux/bitmap.h>
->+#include "netlink.h"
->+#include "bitset.h"
->+
->+/* To reduce the number of slab allocations, the wrappers use fixed size local
->+ * variables for bitmaps up to __SMALL_BITMAP_BITS bits which is the majority
->+ * of bitmaps used by ethtool.
->+ */
->+#define __SMALL_BITMAP_BITS 128
->+#define __SMALL_BITMAP_WORDS DIV_ROUND_UP(__SMALL_BITMAP_BITS, 32)
->+
->+static u32 __lower_bits(unsigned int n)
->+{
->+	return ~(u32)0 >> (32 - n % 32);
->+}
->+
->+static u32 __upper_bits(unsigned int n)
->+{
->+	return ~(u32)0 << (n % 32);
->+}
->+
->+/**
->+ * __bitmap32_clear() - Clear u32 based bitmap
->+ * @dst:   bitmap to clear
->+ * @start: beginning of the interval
->+ * @end:   end of the interval
->+ * @mod:   set if bitmap was modified
->+ *
->+ * Clear @nbits bits of a bitmap with indices @start <= i < @end
->+ */
->+static void __bitmap32_clear(u32 *dst, unsigned int start, unsigned int end,
->+			     bool *mod)
->+{
->+	unsigned int start_word = start / 32;
->+	unsigned int end_word = end / 32;
->+	unsigned int i;
->+	u32 mask;
->+
->+	if (end <= start)
->+		return;
->+
->+	if (start % 32) {
->+		mask = __upper_bits(start);
->+		if (end_word == start_word) {
->+			mask &= __lower_bits(end);
->+			if (dst[start_word] & mask) {
->+				dst[start_word] &= ~mask;
->+				*mod = true;
->+			}
->+			return;
->+		}
->+		if (dst[start_word] & mask) {
->+			dst[start_word] &= ~mask;
->+			*mod = true;
->+		}
->+		start_word++;
->+	}
->+
->+	for (i = start_word; i < end_word; i++) {
->+		if (dst[i]) {
->+			dst[i] = 0;
->+			*mod = true;
->+		}
->+	}
->+	if (end % 32) {
->+		mask = __lower_bits(end);
->+		if (dst[end_word] & mask) {
->+			dst[end_word] &= ~mask;
->+			*mod = true;
->+		}
->+	}
->+}
->+
->+/**
->+ * __bitmap32_no_zero() - Check if any bit is set in an interval
->+ * @map:   bitmap to test
->+ * @start: beginning of the interval
->+ * @end:   end of the interval
->+ *
->+ * Return: true if there is non-zero bit with  index @start <= i < @end,
->+ *         false if the whole interval is zero
->+ */
->+static bool __bitmap32_not_zero(const u32 *map, unsigned int start,
->+				unsigned int end)
->+{
->+	unsigned int start_word = start / 32;
->+	unsigned int end_word = end / 32;
->+	u32 mask;
->+
->+	if (end <= start)
->+		return true;
->+
->+	if (start % 32) {
->+		mask = __upper_bits(start);
->+		if (end_word == start_word) {
->+			mask &= __lower_bits(end);
->+			return map[start_word] & mask;
->+		}
->+		if (map[start_word] & mask)
->+			return true;
->+		start_word++;
->+	}
->+
->+	if (!memchr_inv(map + start_word, '\0',
->+			(end_word - start_word) * sizeof(u32)))
->+		return true;
->+	if (end % 32 == 0)
->+		return true;
->+	return map[end_word] & __lower_bits(end);
->+}
->+
->+/**
->+ * __bitmap32_update() - Modify u32 based bitmap according to value/mask pair
->+ * @dst:   bitmap to update
->+ * @nbits: bit size of the bitmap
->+ * @value: values to set
->+ * @mask:  mask of bits to set
->+ * @mod:   set to true if bitmap is modified, preserve if not
->+ *
->+ * Set bits in @dst bitmap which are set in @mask to values from @value, leave
->+ * the rest untouched. If destination bitmap was modified, set @mod to true,
->+ * leave as it is if not.
->+ */
->+static void __bitmap32_update(u32 *dst, unsigned int nbits, const u32 *value,
->+			      const u32 *mask, bool *mod)
->+{
->+	while (nbits > 0) {
->+		u32 real_mask = mask ? *mask : ~(u32)0;
->+		u32 new_value;
->+
->+		if (nbits < 32)
->+			real_mask &= __lower_bits(nbits);
->+		new_value = (*dst & ~real_mask) | (*value & real_mask);
->+		if (new_value != *dst) {
->+			*dst = new_value;
->+			*mod = true;
->+		}
->+
->+		if (nbits <= 32)
->+			break;
->+		dst++;
->+		nbits -= 32;
->+		value++;
->+		if (mask)
->+			mask++;
->+	}
->+}
->+
->+static bool __bitmap32_test_bit(const u32 *map, unsigned int index)
->+{
->+	return map[index / 32] & (1U << (index % 32));
->+}
->+
->+/**
->+ * ethnl_bitset32_size() - Calculate size of bitset nested attribute
->+ * @val:     value bitmap (u32 based)
->+ * @mask:    mask bitmap (u32 based, optional)
->+ * @nbits:   bit length of the bitset
->+ * @names:   array of bit names (optional)
->+ * @compact: assume compact format for output
->+ *
->+ * Estimate length of netlink attribute composed by a later call to
->+ * ethnl_put_bitset32() call with the same arguments.
->+ *
->+ * Return: negative error code or attribute length estimate
->+ */
->+int ethnl_bitset32_size(const u32 *val, const u32 *mask, unsigned int nbits,
->+			ethnl_string_array_t names, bool compact)
->+{
->+	unsigned int len = 0;
->+
->+	/* list flag */
->+	if (!mask)
->+		len += nla_total_size(sizeof(u32));
->+	/* size */
->+	len += nla_total_size(sizeof(u32));
->+
->+	if (compact) {
->+		unsigned int nwords = DIV_ROUND_UP(nbits, 32);
->+
->+		/* value, mask */
->+		len += (mask ? 2 : 1) * nla_total_size(nwords * sizeof(u32));
->+	} else {
->+		unsigned int bits_len = 0;
->+		unsigned int bit_len, i;
->+
->+		for (i = 0; i < nbits; i++) {
->+			const char *name = names ? names[i] : NULL;
->+
->+			if (!__bitmap32_test_bit(mask ?: val, i))
->+				continue;
->+			/* index */
->+			bit_len = nla_total_size(sizeof(u32));
->+			/* name */
->+			if (name)
->+				bit_len += ethnl_strz_size(name);
->+			/* value */
->+			if (mask && __bitmap32_test_bit(val, i))
->+				bit_len += nla_total_size(0);
->+
->+			/* bit nest */
->+			bits_len += nla_total_size(bit_len);
->+		}
->+		/* bits nest */
->+		len += nla_total_size(bits_len);
->+	}
->+
->+	/* outermost nest */
->+	return nla_total_size(len);
->+}
->+
->+/**
->+ * ethnl_put_bitset32() - Put a bitset nest into a message
->+ * @skb:      skb with the message
->+ * @attrtype: attribute type for the bitset nest
->+ * @val:      value bitmap (u32 based)
->+ * @mask:     mask bitmap (u32 based, optional)
->+ * @nbits:    bit length of the bitset
->+ * @names:    array of bit names (optional)
->+ * @compact:  use compact format for the output
->+ *
->+ * Compose a nested attribute representing a bitset. If @mask is null, simple
->+ * bitmap (bit list) is created, if @mask is provided, represent a value/mask
->+ * pair. Bit names are only used in verbose mode and when provided by calller.
->+ *
->+ * Return:    0 on success, negative error value on error
+I'll keep you updated!
 
-Remove the spaces.
-
-
->+ */
->+int ethnl_put_bitset32(struct sk_buff *skb, int attrtype, const u32 *val,
->+		       const u32 *mask, unsigned int nbits,
->+		       ethnl_string_array_t names, bool compact)
->+{
->+	struct nlattr *nest;
->+	struct nlattr *attr;
->+
->+	nest = nla_nest_start(skb, attrtype);
->+	if (!nest)
->+		return -EMSGSIZE;
->+
->+	if (!mask && nla_put_flag(skb, ETHTOOL_A_BITSET_LIST))
-
-Wait, shouldn't you rather check "!compact" ?
-
-and WARN_ON in case compact == true && mask == NULL?
-
-
->+		goto nla_put_failure;
->+	if (nla_put_u32(skb, ETHTOOL_A_BITSET_SIZE, nbits))
->+		goto nla_put_failure;
->+	if (compact) {
->+		unsigned int nwords = DIV_ROUND_UP(nbits, 32);
->+		unsigned int nbytes = nwords * sizeof(u32);
->+		u32 *dst;
->+
->+		attr = nla_reserve(skb, ETHTOOL_A_BITSET_VALUE, nbytes);
->+		if (!attr)
->+			goto nla_put_failure;
->+		dst = nla_data(attr);
->+		memcpy(dst, val, nbytes);
->+		if (nbits % 32)
->+			dst[nwords - 1] &= __lower_bits(nbits);
->+
->+		if (mask) {
->+			attr = nla_reserve(skb, ETHTOOL_A_BITSET_MASK, nbytes);
->+			if (!attr)
->+				goto nla_put_failure;
->+			dst = nla_data(attr);
->+			memcpy(dst, mask, nbytes);
->+			if (nbits % 32)
->+				dst[nwords - 1] &= __lower_bits(nbits);
->+		}
->+	} else {
->+		struct nlattr *bits;
->+		unsigned int i;
->+
->+		bits = nla_nest_start(skb, ETHTOOL_A_BITSET_BITS);
->+		if (!bits)
->+			goto nla_put_failure;
->+		for (i = 0; i < nbits; i++) {
->+			const char *name = names ? names[i] : NULL;
->+
->+			if (!__bitmap32_test_bit(mask ?: val, i))
-
-A) this __bitmap32_test_bit() looks like something generic, yet it is
-   not. Perhaps you would want to add this helper to
-   include/linux/bitmap.h?
-B) Why don't you do bitmap_to_arr32 conversion in this function just
-   before val/mask put. Then you can use normal test_bit() here.
-
-
->+				continue;
->+			attr = nla_nest_start(skb, ETHTOOL_A_BITS_BIT);
->+			if (!attr ||
->+			    nla_put_u32(skb, ETHTOOL_A_BIT_INDEX, i))
-
-You mix these 2 in 1 if which are not related. Better keep them separate
-in two ifs.
-Or you can put the rest of the puts in the same if too.
-
-
->+				goto nla_put_failure;
->+			if (name &&
->+			    ethnl_put_strz(skb, ETHTOOL_A_BIT_NAME, name))
->+				goto nla_put_failure;
->+			if (mask && __bitmap32_test_bit(val, i) &&
->+			    nla_put_flag(skb, ETHTOOL_A_BIT_VALUE))
->+				goto nla_put_failure;
->+			nla_nest_end(skb, attr);
->+		}
->+		nla_nest_end(skb, bits);
->+	}
->+
->+	nla_nest_end(skb, nest);
->+	return 0;
->+
->+nla_put_failure:
->+	nla_nest_cancel(skb, nest);
->+	return -EMSGSIZE;
->+}
->+
->+static const struct nla_policy bitset_policy[ETHTOOL_A_BITSET_MAX + 1] = {
->+	[ETHTOOL_A_BITSET_UNSPEC]	= { .type = NLA_REJECT },
->+	[ETHTOOL_A_BITSET_LIST]		= { .type = NLA_FLAG },
->+	[ETHTOOL_A_BITSET_SIZE]		= { .type = NLA_U32 },
->+	[ETHTOOL_A_BITSET_BITS]		= { .type = NLA_NESTED },
->+	[ETHTOOL_A_BITSET_VALUE]	= { .type = NLA_BINARY },
->+	[ETHTOOL_A_BITSET_MASK]		= { .type = NLA_BINARY },
->+};
->+
->+static const struct nla_policy bit_policy[ETHTOOL_A_BIT_MAX + 1] = {
->+	[ETHTOOL_A_BIT_UNSPEC]		= { .type = NLA_REJECT },
->+	[ETHTOOL_A_BIT_INDEX]		= { .type = NLA_U32 },
->+	[ETHTOOL_A_BIT_NAME]		= { .type = NLA_NUL_STRING },
->+	[ETHTOOL_A_BIT_VALUE]		= { .type = NLA_FLAG },
->+};
->+
->+/**
->+ * ethnl_bitset_is_compact() - check if bitset attribute represents a compact
->+ *			       bitset
->+ * @bitset  - nested attribute representing a bitset
->+ * @compact - pointer for return value
-
-In the rest of the code, you use
-@name: description
-
-
->+ *
->+ * Return: 0 on success, negative error code on failure
->+ */
->+int ethnl_bitset_is_compact(const struct nlattr *bitset, bool *compact)
->+{
->+	struct nlattr *tb[ETHTOOL_A_BITSET_MAX + 1];
->+	int ret;
->+
->+	ret = nla_parse_nested(tb, ETHTOOL_A_BITSET_MAX, bitset,
->+			       bitset_policy, NULL);
->+	if (ret < 0)
->+		return ret;
->+
->+	if (tb[ETHTOOL_A_BITSET_BITS]) {
->+		if (tb[ETHTOOL_A_BITSET_VALUE] || tb[ETHTOOL_A_BITSET_MASK])
->+			return -EINVAL;
->+		*compact = false;
->+		return 0;
->+	}
->+	if (!tb[ETHTOOL_A_BITSET_SIZE] || !tb[ETHTOOL_A_BITSET_VALUE])
->+		return -EINVAL;
->+
->+	*compact = true;
->+	return 0;
->+}
->+
->+static int ethnl_name_to_idx(ethnl_string_array_t names, unsigned int n_names,
->+			     const char *name, unsigned int name_len)
->+{
->+	unsigned int i;
->+
->+	if (!names)
->+		return n_names;
->+
->+	for (i = 0; i < n_names; i++) {
->+		const char *bname = names[i];
->+
->+		if (!strncmp(bname, name, name_len) &&
->+		    strlen(bname) <= name_len)
->+			return i;
->+	}
->+
->+	return n_names;
-
-Maybe bettet to stick with -ERRNO?
-
-
->+}
->+
->+static int ethnl_parse_bit(unsigned int *index, bool *val, unsigned int nbits,
->+			   const struct nlattr *bit_attr, bool is_list,
->+			   ethnl_string_array_t names,
->+			   struct netlink_ext_ack *extack)
->+{
->+	struct nlattr *tb[ETHTOOL_A_BIT_MAX + 1];
->+	int ret, idx;
->+
->+	if (nla_type(bit_attr) != ETHTOOL_A_BITS_BIT) {
->+		NL_SET_ERR_MSG_ATTR(extack, bit_attr,
->+				    "only ETHTOOL_A_BITS_BIT allowed in ETHTOOL_A_BITSET_BITS");
->+		return -EINVAL;
->+	}
-
-Probably it makes sense the caller does this check. Later on, if there
-is another possible value, the check would have to go there anyway.
-
-
->+	ret = nla_parse_nested(tb, ETHTOOL_A_BIT_MAX, bit_attr, bit_policy,
->+			       extack);
->+	if (ret < 0)
->+		return ret;
->+
->+	if (tb[ETHTOOL_A_BIT_INDEX]) {
->+		const char *name;
->+
->+		idx = nla_get_u32(tb[ETHTOOL_A_BIT_INDEX]);
->+		if (idx >= nbits) {
->+			NL_SET_ERR_MSG_ATTR(extack,
->+					    tb[ETHTOOL_A_BIT_INDEX],
->+					    "bit index too high");
->+			return -EOPNOTSUPP;
->+		}
->+		name = names ? names[idx] : NULL;
->+		if (tb[ETHTOOL_A_BIT_NAME] && name &&
->+		    strncmp(nla_data(tb[ETHTOOL_A_BIT_NAME]), name,
->+			    nla_len(tb[ETHTOOL_A_BIT_NAME]))) {
->+			NL_SET_ERR_MSG_ATTR(extack, bit_attr,
->+					    "bit index and name mismatch");
->+			return -EINVAL;
->+		}
->+	} else if (tb[ETHTOOL_A_BIT_NAME]) {
->+		idx = ethnl_name_to_idx(names, nbits,
->+					nla_data(tb[ETHTOOL_A_BIT_NAME]),
->+					nla_len(tb[ETHTOOL_A_BIT_NAME]));
-
-It's a string? Policy validation should take care if it is correctly
-terminated by '\0'. Then you don't need to pass len down. Anyone who is
-interested in length can use strlen().
-
-
->+		if (idx >= nbits) {
->+			NL_SET_ERR_MSG_ATTR(extack,
->+					    tb[ETHTOOL_A_BIT_NAME],
->+					    "bit name not found");
->+			return -EOPNOTSUPP;
->+		}
->+	} else {
->+		NL_SET_ERR_MSG_ATTR(extack, bit_attr,
->+				    "neither bit index nor name specified");
->+		return -EINVAL;
->+	}
->+
->+	*index = idx;
->+	*val = is_list || tb[ETHTOOL_A_BIT_VALUE];
->+	return 0;
->+}
->+
->+static int
->+ethnl_update_bitset32_verbose(u32 *bitmap, unsigned int nbits,
->+			      const struct nlattr *attr, struct nlattr **tb,
->+			      ethnl_string_array_t names,
->+			      struct netlink_ext_ack *extack, bool *mod)
->+{
->+	struct nlattr *bit_attr;
->+	bool is_list;
->+	int rem;
->+	int ret;
->+
->+	if (tb[ETHTOOL_A_BITSET_VALUE]) {
->+		NL_SET_ERR_MSG_ATTR(extack, tb[ETHTOOL_A_BITSET_VALUE],
->+				    "value only allowed in compact bitset");
->+		return -EINVAL;
->+	}
->+	if (tb[ETHTOOL_A_BITSET_MASK]) {
->+		NL_SET_ERR_MSG_ATTR(extack, tb[ETHTOOL_A_BITSET_MASK],
->+				    "mask only allowed in compact bitset");
->+		return -EINVAL;
->+	}
->+	is_list = (tb[ETHTOOL_A_BITSET_LIST] != NULL);
-
-just:
-	is_list = tb[ETHTOOL_A_BITSET_LIST]
-is enough.
-
-
-
->+
->+	nla_for_each_nested(bit_attr, tb[ETHTOOL_A_BITSET_BITS], rem) {
->+		bool old_val, new_val;
->+		unsigned int idx;
->+
->+		ret = ethnl_parse_bit(&idx, &new_val, nbits, bit_attr, is_list,
->+				      names, extack);
->+		if (ret < 0)
->+			return ret;
->+		old_val = bitmap[idx / 32] & ((u32)1 << (idx % 32));
->+		if (new_val != old_val) {
->+			if (new_val)
->+				bitmap[idx / 32] |= ((u32)1 << (idx % 32));
->+			else
->+				bitmap[idx / 32] &= ~((u32)1 << (idx % 32));
->+			*mod = true;
->+		}
->+	}
->+
->+	return 0;
->+}
->+
->+static int ethnl_compact_sanity_checks(unsigned int nbits,
->+				       const struct nlattr *nest,
->+				       struct nlattr **tb,
->+				       struct netlink_ext_ack *extack)
->+{
->+	bool is_list = (tb[ETHTOOL_A_BITSET_LIST] != NULL);
-
-Same here.
-
-
->+	unsigned int attr_nbits, attr_nwords;
->+	const struct nlattr *test_attr;
->+
->+	if (is_list && tb[ETHTOOL_A_BITSET_MASK]) {
->+		NL_SET_ERR_MSG_ATTR(extack, tb[ETHTOOL_A_BITSET_MASK],
->+				    "mask not allowed in list bitset");
->+		return -EINVAL;
->+	}
->+	if (!tb[ETHTOOL_A_BITSET_SIZE]) {
->+		NL_SET_ERR_MSG_ATTR(extack, nest,
->+				    "missing size in compact bitset");
->+		return -EINVAL;
->+	}
->+	if (!tb[ETHTOOL_A_BITSET_VALUE]) {
->+		NL_SET_ERR_MSG_ATTR(extack, nest,
->+				    "missing value in compact bitset");
->+		return -EINVAL;
->+	}
->+	if (!is_list && !tb[ETHTOOL_A_BITSET_MASK]) {
->+		NL_SET_ERR_MSG_ATTR(extack, nest,
->+				    "missing mask in compact nonlist bitset");
->+		return -EINVAL;
->+	}
->+
->+	attr_nbits = nla_get_u32(tb[ETHTOOL_A_BITSET_SIZE]);
->+	attr_nwords = DIV_ROUND_UP(attr_nbits, 32);
->+	if (nla_len(tb[ETHTOOL_A_BITSET_VALUE]) != attr_nwords * sizeof(u32)) {
->+		NL_SET_ERR_MSG_ATTR(extack, tb[ETHTOOL_A_BITSET_VALUE],
->+				    "bitset value length does not match size");
->+		return -EINVAL;
->+	}
->+	if (tb[ETHTOOL_A_BITSET_MASK] &&
->+	    nla_len(tb[ETHTOOL_A_BITSET_MASK]) != attr_nwords * sizeof(u32)) {
->+		NL_SET_ERR_MSG_ATTR(extack, tb[ETHTOOL_A_BITSET_MASK],
->+				    "bitset mask length does not match size");
->+		return -EINVAL;
->+	}
->+	if (attr_nbits <= nbits)
->+		return 0;
->+
->+	test_attr = is_list ? tb[ETHTOOL_A_BITSET_VALUE] :
->+			      tb[ETHTOOL_A_BITSET_MASK];
->+	if (__bitmap32_not_zero(nla_data(test_attr), nbits, attr_nbits)) {
->+		NL_SET_ERR_MSG_ATTR(extack, test_attr,
->+				    "cannot modify bits past kernel bitset size");
->+		return -EINVAL;
->+	}
->+	return 0;
->+}
->+
->+/**
->+ * ethnl_update_bitset32() - Apply a bitset nest to a u32 based bitmap
->+ * @bitmap:  bitmap to update
->+ * @nbits:   size of the updated bitmap in bits
->+ * @attr:    nest attribute to parse and apply
->+ * @names:   array of bit names; may be null for compact format
->+ * @extack:  extack for error reporting
->+ * @mod:     set this to true if bitmap is modified, leave as it is if not
->+ *
->+ * Apply bitset netsted attribute to a bitmap. If the attribute represents
->+ * a bit list, @bitmap is set to its contents; otherwise, bits in mask are
->+ * set to values from value. Bitmaps in the attribute may be longer than
->+ * @nbits but the message must not request modifying any bits past @nbits.
->+ *
->+ * Return:   negative error code on failure, 0 on success
->+ */
->+int ethnl_update_bitset32(u32 *bitmap, unsigned int nbits,
->+			  const struct nlattr *attr, ethnl_string_array_t names,
->+			  struct netlink_ext_ack *extack, bool *mod)
->+{
->+	struct nlattr *tb[ETHTOOL_A_BITSET_MAX + 1];
->+	unsigned int change_bits;
->+	bool is_list;
->+	int ret;
->+
->+	if (!attr)
->+		return 0;
->+	ret = nla_parse_nested(tb, ETHTOOL_A_BITSET_MAX, attr, bitset_policy,
->+			       extack);
->+	if (ret < 0)
->+		return ret;
->+
->+	if (tb[ETHTOOL_A_BITSET_BITS])
->+		return ethnl_update_bitset32_verbose(bitmap, nbits, attr, tb,
->+						     names, extack, mod);
->+	ret = ethnl_compact_sanity_checks(nbits, attr, tb, extack);
->+	if (ret < 0)
->+		return ret;
->+
->+	is_list = (tb[ETHTOOL_A_BITSET_LIST] != NULL);
-
-And here.
-
-
->+	change_bits = min_t(unsigned int,
->+			    nla_get_u32(tb[ETHTOOL_A_BITSET_SIZE]), nbits);
->+	__bitmap32_update(bitmap, change_bits,
->+			  nla_data(tb[ETHTOOL_A_BITSET_VALUE]),
->+			  is_list ? NULL : nla_data(tb[ETHTOOL_A_BITSET_MASK]),
->+			  mod);
->+	if (is_list && change_bits < nbits)
->+		__bitmap32_clear(bitmap, change_bits, nbits, mod);
->+
->+	return 0;
->+}
->+
->+/* 64-bit long endian architecture is the only case when u32 based bitmaps
->+ * and unsigned long based bitmaps have different memory layout so that we
->+ * cannot simply cast the latter to the former.
->+ */
->+#if BITS_PER_LONG == 64 && defined(__BIG_ENDIAN)
->+
->+int ethnl_bitset_size(const unsigned long *val, const unsigned long *mask,
->+		      unsigned int nbits, ethnl_string_array_t names,
->+		      bool compact)
->+{
->+	u32 small_mask32[__SMALL_BITMAP_WORDS];
->+	u32 small_val32[__SMALL_BITMAP_WORDS];
->+	u32 *mask32;
->+	u32 *val32;
->+	int ret;
->+
->+	if (nbits > __SMALL_BITMAP_BITS) {
->+		unsigned int nwords = DIV_ROUND_UP(nbits, 32);
->+
->+		val32 = kmalloc_array(2 * nwords, sizeof(u32), GFP_KERNEL);
->+		if (!val32)
->+			return -ENOMEM;
->+		mask32 = val32 + nwords;
->+	} else {
->+		val32 = small_val32;
->+		mask32 = small_mask32;
->+	}
->+
->+	bitmap_to_arr32(val32, val, nbits);
->+	if (mask)
->+		bitmap_to_arr32(mask32, mask, nbits);
->+	else
->+		mask32 = NULL;
->+	ret = ethnl_bitset32_size(val32, mask32, nbits, names, compact);
->+
->+	if (nbits > __SMALL_BITMAP_BITS)
->+		kfree(val32);
->+
->+	return ret;
->+}
->+
->+int ethnl_put_bitset(struct sk_buff *skb, int attrtype,
->+		     const unsigned long *val, const unsigned long *mask,
->+		     unsigned int nbits, ethnl_string_array_t names,
->+		     bool compact)
->+{
->+	u32 small_mask32[__SMALL_BITMAP_WORDS];
->+	u32 small_val32[__SMALL_BITMAP_WORDS];
->+	u32 *mask32;
->+	u32 *val32;
->+	int ret;
->+
->+	if (nbits > __SMALL_BITMAP_BITS) {
->+		unsigned int nwords = DIV_ROUND_UP(nbits, 32);
->+
->+		val32 = kmalloc_array(2 * nwords, sizeof(u32), GFP_KERNEL);
->+		if (!val32)
->+			return -ENOMEM;
->+		mask32 = val32 + nwords;
->+	} else {
->+		val32 = small_val32;
->+		mask32 = small_mask32;
->+	}
->+
->+	bitmap_to_arr32(val32, val, nbits);
->+	if (mask)
->+		bitmap_to_arr32(mask32, mask, nbits);
->+	else
->+		mask32 = NULL;
->+	ret = ethnl_put_bitset32(skb, attrtype, val32, mask32, nbits, names,
->+				 compact);
->+
->+	if (nbits > __SMALL_BITMAP_BITS)
->+		kfree(val32);
->+
->+	return ret;
->+}
->+
->+int ethnl_update_bitset(unsigned long *bitmap, unsigned int nbits,
->+			const struct nlattr *attr, ethnl_string_array_t names,
->+			struct netlink_ext_ack *extack, bool *mod)
->+{
->+	u32 small_bitmap32[__SMALL_BITMAP_WORDS];
->+	u32 *bitmap32 = small_bitmap32;
->+	bool u32_mod = false;
->+	int ret;
->+
->+	if (nbits > __SMALL_BITMAP_BITS) {
->+		unsigned int dst_words = DIV_ROUND_UP(nbits, 32);
->+
->+		bitmap32 = kmalloc_array(dst_words, sizeof(u32), GFP_KERNEL);
->+		if (!bitmap32)
->+			return -ENOMEM;
->+	}
->+
->+	bitmap_to_arr32(bitmap32, bitmap, nbits);
->+	ret = ethnl_update_bitset32(bitmap32, nbits, attr, names, extack,
->+				    &u32_mod);
->+	if (ulong_mod) {
->+		bitmap_from_arr32(bitmap, bitmap32, nbits);
->+		*mod = true;
->+	}
->+
->+	if (size > __SMALL_BITMAP_BITS)
->+		kfree(bitmask32);
->+
->+	return ret;
->+}
->+
->+#else
->+
->+int ethnl_bitset_size(const unsigned long *val, const unsigned long *mask,
->+		      unsigned int nbits, ethnl_string_array_t names,
->+		      bool compact)
->+{
->+	return ethnl_bitset32_size((const u32 *)val, (const u32 *)mask, nbits,
->+				   names, compact);
->+}
->+
->+int ethnl_put_bitset(struct sk_buff *skb, int attrtype,
->+		     const unsigned long *val, const unsigned long *mask,
->+		     unsigned int nbits, ethnl_string_array_t names,
->+		     bool compact)
->+{
->+	return ethnl_put_bitset32(skb, attrtype, (const u32 *)val,
->+				  (const u32 *)mask, nbits, names, compact);
->+}
->+
->+int ethnl_update_bitset(unsigned long *bitmap, unsigned int nbits,
->+			const struct nlattr *attr, ethnl_string_array_t names,
->+			struct netlink_ext_ack *extack, bool *mod)
->+{
->+	return ethnl_update_bitset32((u32 *)bitmap, nbits, attr, names, extack,
->+				     mod);
->+}
->+
->+#endif /* BITS_PER_LONG == 64 && defined(__BIG_ENDIAN) */
->diff --git a/net/ethtool/bitset.h b/net/ethtool/bitset.h
->new file mode 100644
->index 000000000000..cd3d681b4524
->--- /dev/null
->+++ b/net/ethtool/bitset.h
->@@ -0,0 +1,28 @@
->+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
->+
->+#ifndef _NET_ETHTOOL_BITSET_H
->+#define _NET_ETHTOOL_BITSET_H
->+
->+typedef const char (*const ethnl_string_array_t)[ETH_GSTRING_LEN];
->+
->+int ethnl_bitset_is_compact(const struct nlattr *bitset, bool *compact);
->+int ethnl_bitset_size(const unsigned long *val, const unsigned long *mask,
->+		      unsigned int nbits, ethnl_string_array_t names,
->+		      bool compact);
->+int ethnl_bitset32_size(const u32 *val, const u32 *mask, unsigned int nbits,
->+			ethnl_string_array_t names, bool compact);
->+int ethnl_put_bitset(struct sk_buff *skb, int attrtype,
->+		     const unsigned long *val, const unsigned long *mask,
->+		     unsigned int nbits, ethnl_string_array_t names,
->+		     bool compact);
->+int ethnl_put_bitset32(struct sk_buff *skb, int attrtype, const u32 *val,
->+		       const u32 *mask, unsigned int nbits,
->+		       ethnl_string_array_t names, bool compact);
->+int ethnl_update_bitset(unsigned long *bitmap, unsigned int nbits,
->+			const struct nlattr *attr, ethnl_string_array_t names,
->+			struct netlink_ext_ack *extack, bool *mod);
->+int ethnl_update_bitset32(u32 *bitmap, unsigned int nbits,
->+			  const struct nlattr *attr, ethnl_string_array_t names,
->+			  struct netlink_ext_ack *extack, bool *mod);
-
-Hmm, I wonder why user needs to work with the 32 variants..
-
-
->+
->+#endif /* _NET_ETHTOOL_BITSET_H */
->diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
->index f7c0368a9fa0..4c0b5ca439f8 100644
->--- a/net/ethtool/netlink.h
->+++ b/net/ethtool/netlink.h
->@@ -20,6 +20,15 @@ struct sk_buff *ethnl_reply_init(size_t payload, struct net_device *dev, u8 cmd,
-> 				 u16 hdr_attrtype, struct genl_info *info,
-> 				 void **ehdrp);
-> 
->+#if BITS_PER_LONG == 64 && defined(__BIG_ENDIAN)
->+void ethnl_bitmap_to_u32(unsigned long *bitmap, unsigned int nwords);
->+#else
->+static inline void ethnl_bitmap_to_u32(unsigned long *bitmap,
->+				       unsigned int nwords)
->+{
->+}
->+#endif
->+
-> /**
->  * ethnl_strz_size() - calculate attribute length for fixed size string
->  * @s: ETH_GSTRING_LEN sized string (may not be null terminated)
->-- 
->2.23.0
->
+Thanks,
+Stefano
