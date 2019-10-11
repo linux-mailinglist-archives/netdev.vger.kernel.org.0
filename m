@@ -2,1000 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2229AD438D
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 16:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87B32D43E6
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 17:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727799AbfJKO5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 10:57:06 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36198 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726869AbfJKO5F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 10:57:05 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6D95F30860C3;
-        Fri, 11 Oct 2019 14:57:04 +0000 (UTC)
-Received: from hog.localdomain, (unknown [10.40.206.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 29EC65C21A;
-        Fri, 11 Oct 2019 14:57:02 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH net-next v4 6/6] xfrm: add espintcp (RFC 8229)
-Date:   Fri, 11 Oct 2019 16:57:29 +0200
-Message-Id: <44f2b7cdf386ecd37d2a173256a3e313018c5345.1570787286.git.sd@queasysnail.net>
-In-Reply-To: <cover.1570787286.git.sd@queasysnail.net>
-References: <cover.1570787286.git.sd@queasysnail.net>
+        id S1727231AbfJKPMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 11:12:22 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:34790 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726331AbfJKPMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 11:12:22 -0400
+Received: by mail-lj1-f194.google.com with SMTP id j19so10220788lja.1;
+        Fri, 11 Oct 2019 08:12:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+1ypOR9fZA4lK0XmIF+p9uuR9SMEDVTW7L0xDQwfOfI=;
+        b=jm+bx9/q/ioKZOdw2XGXOjjcH1GmMTp4LFxIbat9a+vh/MpLrqoGJTv/CI2EngbYxK
+         sj/uEd3k5DSLnd3Km2fK9oICh410C29fiaBA4W4/zXRIWr1KpBKD9Ic7YYVta7yp3YBA
+         86xIid8ulN3JjBBjRwT4ICWXCYlrVUmHFjI5is9YTasblknqR/IO+7tDgDmQztlNiEzi
+         02pLHhZDzPpOCl2lg/KSt5hdV6DWpoqkDtdj4Ouz3aG+MN6CqH2f7EMU2/viDp1zu9iU
+         LCan+qndJN4GxU72ZnCFDn+kocUAU1sG+NH59SEvgYEjCA/xDtrzUgNaTweVrVVHbim7
+         j9FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+1ypOR9fZA4lK0XmIF+p9uuR9SMEDVTW7L0xDQwfOfI=;
+        b=iv/9TKnkg6uGE/+1Vhe8gc0aMiD7UcGAlq3AAp5Y7iQWg7ARDQFz5HIW1oydGUnrF2
+         BO/0YgtPcOD3nCobkRc0yW8i3MJW5LPa4aMq5T1jgp+PebMMeBOTWOa1xxYrVFUMwRX0
+         dqcCIXmoPdNuo+WMJH//LJ+plQ52UjqenxwChHvODAdiaBn4zGOHjsekYy4yltZAXEmi
+         iPYNL5l1zhVcLw+st32YKnixaYnTDuyBrXXUopS2F5Fhq41R515mK2emhEGOduka16dd
+         4XCdYfG6jZG+2tqrVqpGnye1D4UTdrWjlb9nNVCaFjh7IFb4FrnEUNe0KniDhNlHPc1m
+         XoQA==
+X-Gm-Message-State: APjAAAXDlyUbHu9xiFw1B1xaG2b6DQsxsr5ulOQxEE3iRF6ZD70Byh6Q
+        3BG9GUKKWaYMjd5+v3veNUMBjP3eIKX3sPZuMfs=
+X-Google-Smtp-Source: APXvYqz0LPu+wPH8jBZSVzpaolRLdSgVVQw+WRtDn3tslIV/n+p9hir0bkcXgYqEC/6nIFdtHBrAjQYmc+zg7TXtF9g=
+X-Received: by 2002:a2e:9bc1:: with SMTP id w1mr4215737ljj.136.1570806738540;
+ Fri, 11 Oct 2019 08:12:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 11 Oct 2019 14:57:04 +0000 (UTC)
+References: <00000000000056268e05737dcb95@google.com> <0000000000007d22100573d66078@google.com>
+ <063a57ba-7723-6513-043e-ee99c5797271@I-love.SAKURA.ne.jp>
+In-Reply-To: <063a57ba-7723-6513-043e-ee99c5797271@I-love.SAKURA.ne.jp>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 11 Oct 2019 08:12:06 -0700
+Message-ID: <CAADnVQJ7BZMVSt9on4updWrWsFWq6b5J1qEGwTdGYV+BLqH7tg@mail.gmail.com>
+Subject: Re: unregister_netdevice: waiting for DEV to become free (2)
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>,
+        ddstreet@ieee.org, Dmitry Vyukov <dvyukov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP encapsulation of IKE and IPsec messages (RFC 8229) is implemented
-as a TCP ULP, overriding in particular the sendmsg and recvmsg
-operations. A Stream Parser is used to extract messages out of the TCP
-stream using the first 2 bytes as length marker. Received IKE messages
-are put on "ike_queue", waiting to be dequeued by the custom recvmsg
-implementation. Received ESP messages are sent to XFRM, like with UDP
-encapsulation.
+On Fri, Oct 11, 2019 at 3:15 AM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
+>
+> Hello.
+>
+> I noticed that syzbot is reporting that refcount incremented by bpf(BPF_MAP_UPDATE_ELEM)
+> syscall is not decremented when unregister_netdevice() is called. Is this a BPF bug?
 
-Some of this code is taken from the original submission by Herbert
-Xu. Currently, only IPv4 is supported, like for UDP encapsulation.
+Jesper, Toke,
+please take a look.
 
-Co-developed-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
-
-v4: fix sparse warnings related to RCU with icsk_ulp_data
-  - use rcu_assign_pointer in espintcp_init_sk
-  - use __force cast in espintcp_getctx
-v3: rename config option to INET_ESPINTCP and move it to net/ipv4/Kconfig
-v2:
-  - remove unneeded goto and improve error handling in
-    esp_output_tcp_finish
-  - clean up the ifdefs by providing dummy implementations of those
-    functions
-  - fix Kconfig select, missing NET_SOCK_MSG
-
- include/net/espintcp.h   |  39 +++
- include/net/xfrm.h       |   1 +
- include/uapi/linux/udp.h |   1 +
- net/ipv4/Kconfig         |  11 +
- net/ipv4/esp4.c          | 191 ++++++++++++++-
- net/xfrm/Makefile        |   1 +
- net/xfrm/espintcp.c      | 505 +++++++++++++++++++++++++++++++++++++++
- net/xfrm/xfrm_policy.c   |   7 +
- net/xfrm/xfrm_state.c    |   3 +
- 9 files changed, 756 insertions(+), 3 deletions(-)
- create mode 100644 include/net/espintcp.h
- create mode 100644 net/xfrm/espintcp.c
-
-diff --git a/include/net/espintcp.h b/include/net/espintcp.h
-new file mode 100644
-index 000000000000..dd7026a00066
---- /dev/null
-+++ b/include/net/espintcp.h
-@@ -0,0 +1,39 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _NET_ESPINTCP_H
-+#define _NET_ESPINTCP_H
-+
-+#include <net/strparser.h>
-+#include <linux/skmsg.h>
-+
-+void __init espintcp_init(void);
-+
-+int espintcp_push_skb(struct sock *sk, struct sk_buff *skb);
-+int espintcp_queue_out(struct sock *sk, struct sk_buff *skb);
-+bool tcp_is_ulp_esp(struct sock *sk);
-+
-+struct espintcp_msg {
-+	struct sk_buff *skb;
-+	struct sk_msg skmsg;
-+	int offset;
-+	int len;
-+};
-+
-+struct espintcp_ctx {
-+	struct strparser strp;
-+	struct sk_buff_head ike_queue;
-+	struct sk_buff_head out_queue;
-+	struct espintcp_msg partial;
-+	void (*saved_data_ready)(struct sock *sk);
-+	void (*saved_write_space)(struct sock *sk);
-+	struct work_struct work;
-+	bool tx_running;
-+};
-+
-+static inline struct espintcp_ctx *espintcp_getctx(const struct sock *sk)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
-+	/* RCU is only needed for diag */
-+	return (__force void *)icsk->icsk_ulp_data;
-+}
-+#endif
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 56ff86621bb4..8f71c111e65a 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -193,6 +193,7 @@ struct xfrm_state {
- 
- 	/* Data for encapsulator */
- 	struct xfrm_encap_tmpl	*encap;
-+	struct sock __rcu	*encap_sk;
- 
- 	/* Data for care-of address */
- 	xfrm_address_t	*coaddr;
-diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
-index 30baccb6c9c4..4828794efcf8 100644
---- a/include/uapi/linux/udp.h
-+++ b/include/uapi/linux/udp.h
-@@ -42,5 +42,6 @@ struct udphdr {
- #define UDP_ENCAP_GTP0		4 /* GSM TS 09.60 */
- #define UDP_ENCAP_GTP1U		5 /* 3GPP TS 29.060 */
- #define UDP_ENCAP_RXRPC		6
-+#define TCP_ENCAP_ESPINTCP	7 /* Yikes, this is really xfrm encap types. */
- 
- #endif /* _UAPI_LINUX_UDP_H */
-diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-index 03381f3e12ba..93bf717de8fa 100644
---- a/net/ipv4/Kconfig
-+++ b/net/ipv4/Kconfig
-@@ -378,6 +378,17 @@ config INET_ESP_OFFLOAD
- 
- 	  If unsure, say N.
- 
-+config INET_ESPINTCP
-+	bool "IP: ESP in TCP encapsulation (RFC 8229)"
-+	depends on XFRM && INET_ESP
-+	select STREAM_PARSER
-+	select NET_SOCK_MSG
-+	help
-+	  Support for RFC 8229 encapsulation of ESP and IKE over
-+	  TCP/IPv4 sockets.
-+
-+	  If unsure, say N.
-+
- config INET_IPCOMP
- 	tristate "IP: IPComp transformation"
- 	select INET_XFRM_TUNNEL
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 033c61d27148..103c7d599a3c 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -18,6 +18,8 @@
- #include <net/icmp.h>
- #include <net/protocol.h>
- #include <net/udp.h>
-+#include <net/tcp.h>
-+#include <net/espintcp.h>
- 
- #include <linux/highmem.h>
- 
-@@ -117,6 +119,132 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
- 			put_page(sg_page(sg));
- }
- 
-+#ifdef CONFIG_INET_ESPINTCP
-+struct esp_tcp_sk {
-+	struct sock *sk;
-+	struct rcu_head rcu;
-+};
-+
-+static void esp_free_tcp_sk(struct rcu_head *head)
-+{
-+	struct esp_tcp_sk *esk = container_of(head, struct esp_tcp_sk, rcu);
-+
-+	sock_put(esk->sk);
-+	kfree(esk);
-+}
-+
-+static struct sock *esp_find_tcp_sk(struct xfrm_state *x)
-+{
-+	struct xfrm_encap_tmpl *encap = x->encap;
-+	struct esp_tcp_sk *esk;
-+	__be16 sport, dport;
-+	struct sock *nsk;
-+	struct sock *sk;
-+
-+	sk = rcu_dereference(x->encap_sk);
-+	if (sk && sk->sk_state == TCP_ESTABLISHED)
-+		return sk;
-+
-+	spin_lock_bh(&x->lock);
-+	sport = encap->encap_sport;
-+	dport = encap->encap_dport;
-+	nsk = rcu_dereference_protected(x->encap_sk,
-+					lockdep_is_held(&x->lock));
-+	if (sk && sk == nsk) {
-+		esk = kmalloc(sizeof(*esk), GFP_ATOMIC);
-+		if (!esk) {
-+			spin_unlock_bh(&x->lock);
-+			return ERR_PTR(-ENOMEM);
-+		}
-+		RCU_INIT_POINTER(x->encap_sk, NULL);
-+		esk->sk = sk;
-+		call_rcu(&esk->rcu, esp_free_tcp_sk);
-+	}
-+	spin_unlock_bh(&x->lock);
-+
-+	sk = inet_lookup_established(xs_net(x), &tcp_hashinfo, x->id.daddr.a4,
-+				     dport, x->props.saddr.a4, sport, 0);
-+	if (!sk)
-+		return ERR_PTR(-ENOENT);
-+
-+	if (!tcp_is_ulp_esp(sk)) {
-+		sock_put(sk);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	spin_lock_bh(&x->lock);
-+	nsk = rcu_dereference_protected(x->encap_sk,
-+					lockdep_is_held(&x->lock));
-+	if (encap->encap_sport != sport ||
-+	    encap->encap_dport != dport) {
-+		sock_put(sk);
-+		sk = nsk ?: ERR_PTR(-EREMCHG);
-+	} else if (sk == nsk) {
-+		sock_put(sk);
-+	} else {
-+		rcu_assign_pointer(x->encap_sk, sk);
-+	}
-+	spin_unlock_bh(&x->lock);
-+
-+	return sk;
-+}
-+
-+static int esp_output_tcp_finish(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	struct sock *sk;
-+	int err;
-+
-+	rcu_read_lock();
-+
-+	sk = esp_find_tcp_sk(x);
-+	err = PTR_ERR_OR_ZERO(sk);
-+	if (err)
-+		goto out;
-+
-+	bh_lock_sock(sk);
-+	if (sock_owned_by_user(sk))
-+		err = espintcp_queue_out(sk, skb);
-+	else
-+		err = espintcp_push_skb(sk, skb);
-+	bh_unlock_sock(sk);
-+
-+out:
-+	rcu_read_unlock();
-+	return err;
-+}
-+
-+static int esp_output_tcp_encap_cb(struct net *net, struct sock *sk,
-+				   struct sk_buff *skb)
-+{
-+	struct dst_entry *dst = skb_dst(skb);
-+	struct xfrm_state *x = dst->xfrm;
-+
-+	return esp_output_tcp_finish(x, skb);
-+}
-+
-+static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	int err;
-+
-+	local_bh_disable();
-+	err = xfrm_trans_queue_net(xs_net(x), skb, esp_output_tcp_encap_cb);
-+	local_bh_enable();
-+
-+	/* EINPROGRESS just happens to do the right thing.  It
-+	 * actually means that the skb has been consumed and
-+	 * isn't coming back.
-+	 */
-+	return err ?: -EINPROGRESS;
-+}
-+#else
-+static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	kfree_skb(skb);
-+
-+	return -EOPNOTSUPP;
-+}
-+#endif
-+
- static void esp_output_done(struct crypto_async_request *base, int err)
- {
- 	struct sk_buff *skb = base->data;
-@@ -147,7 +275,11 @@ static void esp_output_done(struct crypto_async_request *base, int err)
- 		secpath_reset(skb);
- 		xfrm_dev_resume(skb);
- 	} else {
--		xfrm_output_resume(skb, err);
-+		if (!err &&
-+		    x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-+			esp_output_tail_tcp(x, skb);
-+		else
-+			xfrm_output_resume(skb, err);
- 	}
- }
- 
-@@ -236,7 +368,7 @@ static struct ip_esp_hdr *esp_output_udp_encap(struct sk_buff *skb,
- 	unsigned int len;
- 
- 	len = skb->len + esp->tailen - skb_transport_offset(skb);
--	if (len + sizeof(struct iphdr) >= IP_MAX_MTU)
-+	if (len + sizeof(struct iphdr) > IP_MAX_MTU)
- 		return ERR_PTR(-EMSGSIZE);
- 
- 	uh = (struct udphdr *)esp->esph;
-@@ -256,6 +388,41 @@ static struct ip_esp_hdr *esp_output_udp_encap(struct sk_buff *skb,
- 	return (struct ip_esp_hdr *)(uh + 1);
- }
- 
-+#ifdef CONFIG_INET_ESPINTCP
-+static struct ip_esp_hdr *esp_output_tcp_encap(struct xfrm_state *x,
-+						    struct sk_buff *skb,
-+						    struct esp_info *esp)
-+{
-+	__be16 *lenp = (void *)esp->esph;
-+	struct ip_esp_hdr *esph;
-+	unsigned int len;
-+	struct sock *sk;
-+
-+	len = skb->len + esp->tailen - skb_transport_offset(skb);
-+	if (len > IP_MAX_MTU)
-+		return ERR_PTR(-EMSGSIZE);
-+
-+	rcu_read_lock();
-+	sk = esp_find_tcp_sk(x);
-+	rcu_read_unlock();
-+
-+	if (IS_ERR(sk))
-+		return ERR_CAST(sk);
-+
-+	*lenp = htons(len);
-+	esph = (struct ip_esp_hdr *)(lenp + 1);
-+
-+	return esph;
-+}
-+#else
-+static struct ip_esp_hdr *esp_output_tcp_encap(struct xfrm_state *x,
-+						    struct sk_buff *skb,
-+						    struct esp_info *esp)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+#endif
-+
- static int esp_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- 			    struct esp_info *esp)
- {
-@@ -276,6 +443,9 @@ static int esp_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- 	case UDP_ENCAP_ESPINUDP_NON_IKE:
- 		esph = esp_output_udp_encap(skb, encap_type, esp, sport, dport);
- 		break;
-+	case TCP_ENCAP_ESPINTCP:
-+		esph = esp_output_tcp_encap(x, skb, esp);
-+		break;
- 	}
- 
- 	if (IS_ERR(esph))
-@@ -296,7 +466,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 	struct sk_buff *trailer;
- 	int tailen = esp->tailen;
- 
--	/* this is non-NULL only with UDP Encapsulation */
-+	/* this is non-NULL only with TCP/UDP Encapsulation */
- 	if (x->encap) {
- 		int err = esp_output_encap(x, skb, esp);
- 
-@@ -491,6 +661,9 @@ int esp_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 	if (sg != dsg)
- 		esp_ssg_unref(x, tmp);
- 
-+	if (!err && x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-+		err = esp_output_tail_tcp(x, skb);
-+
- error_free:
- 	kfree(tmp);
- error:
-@@ -617,10 +790,14 @@ int esp_input_done2(struct sk_buff *skb, int err)
- 
- 	if (x->encap) {
- 		struct xfrm_encap_tmpl *encap = x->encap;
-+		struct tcphdr *th = (void *)(skb_network_header(skb) + ihl);
- 		struct udphdr *uh = (void *)(skb_network_header(skb) + ihl);
- 		__be16 source;
- 
- 		switch (x->encap->encap_type) {
-+		case TCP_ENCAP_ESPINTCP:
-+			source = th->source;
-+			break;
- 		case UDP_ENCAP_ESPINUDP:
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			source = uh->source;
-@@ -1017,6 +1194,14 @@ static int esp_init_state(struct xfrm_state *x)
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			x->props.header_len += sizeof(struct udphdr) + 2 * sizeof(u32);
- 			break;
-+#ifdef CONFIG_INET_ESPINTCP
-+		case TCP_ENCAP_ESPINTCP:
-+			/* only the length field, TCP encap is done by
-+			 * the socket
-+			 */
-+			x->props.header_len += 2;
-+			break;
-+#endif
- 		}
- 	}
- 
-diff --git a/net/xfrm/Makefile b/net/xfrm/Makefile
-index fbc4552d17b8..212a4fcb4a88 100644
---- a/net/xfrm/Makefile
-+++ b/net/xfrm/Makefile
-@@ -11,3 +11,4 @@ obj-$(CONFIG_XFRM_ALGO) += xfrm_algo.o
- obj-$(CONFIG_XFRM_USER) += xfrm_user.o
- obj-$(CONFIG_XFRM_IPCOMP) += xfrm_ipcomp.o
- obj-$(CONFIG_XFRM_INTERFACE) += xfrm_interface.o
-+obj-$(CONFIG_INET_ESPINTCP) += espintcp.o
-diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
-new file mode 100644
-index 000000000000..ef75532938d7
---- /dev/null
-+++ b/net/xfrm/espintcp.c
-@@ -0,0 +1,505 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <net/tcp.h>
-+#include <net/strparser.h>
-+#include <net/xfrm.h>
-+#include <net/esp.h>
-+#include <net/espintcp.h>
-+#include <linux/skmsg.h>
-+#include <net/inet_common.h>
-+
-+static void handle_nonesp(struct espintcp_ctx *ctx, struct sk_buff *skb,
-+			  struct sock *sk)
-+{
-+	if (atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf ||
-+	    !sk_rmem_schedule(sk, skb, skb->truesize)) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	skb_set_owner_r(skb, sk);
-+
-+	memset(skb->cb, 0, sizeof(skb->cb));
-+	skb_queue_tail(&ctx->ike_queue, skb);
-+	ctx->saved_data_ready(sk);
-+}
-+
-+static void handle_esp(struct sk_buff *skb, struct sock *sk)
-+{
-+	skb_reset_transport_header(skb);
-+	memset(skb->cb, 0, sizeof(skb->cb));
-+
-+	rcu_read_lock();
-+	skb->dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
-+	local_bh_disable();
-+	xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
-+	local_bh_enable();
-+	rcu_read_unlock();
-+}
-+
-+static void espintcp_rcv(struct strparser *strp, struct sk_buff *skb)
-+{
-+	struct espintcp_ctx *ctx = container_of(strp, struct espintcp_ctx,
-+						strp);
-+	struct strp_msg *rxm = strp_msg(skb);
-+	u32 nonesp_marker;
-+	int err;
-+
-+	err = skb_copy_bits(skb, rxm->offset + 2, &nonesp_marker,
-+			    sizeof(nonesp_marker));
-+	if (err < 0) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	/* remove header, leave non-ESP marker/SPI */
-+	if (!__pskb_pull(skb, rxm->offset + 2)) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	if (pskb_trim(skb, rxm->full_len - 2) != 0) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	if (nonesp_marker == 0)
-+		handle_nonesp(ctx, skb, strp->sk);
-+	else
-+		handle_esp(skb, strp->sk);
-+}
-+
-+static int espintcp_parse(struct strparser *strp, struct sk_buff *skb)
-+{
-+	struct strp_msg *rxm = strp_msg(skb);
-+	__be16 blen;
-+	u16 len;
-+	int err;
-+
-+	if (skb->len < rxm->offset + 2)
-+		return 0;
-+
-+	err = skb_copy_bits(skb, rxm->offset, &blen, sizeof(blen));
-+	if (err < 0)
-+		return err;
-+
-+	len = be16_to_cpu(blen);
-+	if (len < 6)
-+		return -EINVAL;
-+
-+	return len;
-+}
-+
-+static int espintcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
-+			    int nonblock, int flags, int *addr_len)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct sk_buff *skb;
-+	int err = 0;
-+	int copied;
-+	int off = 0;
-+
-+	flags |= nonblock ? MSG_DONTWAIT : 0;
-+
-+	skb = __skb_recv_datagram(sk, &ctx->ike_queue, flags, NULL, &off, &err);
-+	if (!skb)
-+		return err;
-+
-+	copied = len;
-+	if (copied > skb->len)
-+		copied = skb->len;
-+	else if (copied < skb->len)
-+		msg->msg_flags |= MSG_TRUNC;
-+
-+	err = skb_copy_datagram_msg(skb, 0, msg, copied);
-+	if (unlikely(err)) {
-+		kfree_skb(skb);
-+		return err;
-+	}
-+
-+	if (flags & MSG_TRUNC)
-+		copied = skb->len;
-+	kfree_skb(skb);
-+	return copied;
-+}
-+
-+int espintcp_queue_out(struct sock *sk, struct sk_buff *skb)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	if (skb_queue_len(&ctx->out_queue) >= netdev_max_backlog)
-+		return -ENOBUFS;
-+
-+	__skb_queue_tail(&ctx->out_queue, skb);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(espintcp_queue_out);
-+
-+/* espintcp length field is 2B and length includes the length field's size */
-+#define MAX_ESPINTCP_MSG (((1 << 16) - 1) - 2)
-+
-+static int espintcp_sendskb_locked(struct sock *sk, struct espintcp_msg *emsg,
-+				   int flags)
-+{
-+	do {
-+		int ret;
-+
-+		ret = skb_send_sock_locked(sk, emsg->skb,
-+					   emsg->offset, emsg->len);
-+		if (ret < 0)
-+			return ret;
-+
-+		emsg->len -= ret;
-+		emsg->offset += ret;
-+	} while (emsg->len > 0);
-+
-+	kfree_skb(emsg->skb);
-+	memset(emsg, 0, sizeof(*emsg));
-+
-+	return 0;
-+}
-+
-+static int espintcp_sendskmsg_locked(struct sock *sk,
-+				     struct espintcp_msg *emsg, int flags)
-+{
-+	struct sk_msg *skmsg = &emsg->skmsg;
-+	struct scatterlist *sg;
-+	int done = 0;
-+	int ret;
-+
-+	flags |= MSG_SENDPAGE_NOTLAST;
-+	sg = &skmsg->sg.data[skmsg->sg.start];
-+	do {
-+		size_t size = sg->length - emsg->offset;
-+		int offset = sg->offset + emsg->offset;
-+		struct page *p;
-+
-+		emsg->offset = 0;
-+
-+		if (sg_is_last(sg))
-+			flags &= ~MSG_SENDPAGE_NOTLAST;
-+
-+		p = sg_page(sg);
-+retry:
-+		ret = do_tcp_sendpages(sk, p, offset, size, flags);
-+		if (ret < 0) {
-+			emsg->offset = offset - sg->offset;
-+			skmsg->sg.start += done;
-+			return ret;
-+		}
-+
-+		if (ret != size) {
-+			offset += ret;
-+			size -= ret;
-+			goto retry;
-+		}
-+
-+		done++;
-+		put_page(p);
-+		sk_mem_uncharge(sk, sg->length);
-+		sg = sg_next(sg);
-+	} while (sg);
-+
-+	memset(emsg, 0, sizeof(*emsg));
-+
-+	return 0;
-+}
-+
-+static int espintcp_push_msgs(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+	int err;
-+
-+	if (!emsg->len)
-+		return 0;
-+
-+	if (ctx->tx_running)
-+		return -EAGAIN;
-+	ctx->tx_running = 1;
-+
-+	if (emsg->skb)
-+		err = espintcp_sendskb_locked(sk, emsg, 0);
-+	else
-+		err = espintcp_sendskmsg_locked(sk, emsg, 0);
-+	if (err == -EAGAIN) {
-+		ctx->tx_running = 0;
-+		return 0;
-+	}
-+	if (!err)
-+		memset(emsg, 0, sizeof(*emsg));
-+
-+	ctx->tx_running = 0;
-+
-+	return err;
-+}
-+
-+int espintcp_push_skb(struct sock *sk, struct sk_buff *skb)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+	unsigned int len;
-+	int offset;
-+
-+	if (sk->sk_state != TCP_ESTABLISHED) {
-+		kfree_skb(skb);
-+		return -ECONNRESET;
-+	}
-+
-+	offset = skb_transport_offset(skb);
-+	len = skb->len - offset;
-+
-+	espintcp_push_msgs(sk);
-+
-+	if (emsg->len) {
-+		kfree_skb(skb);
-+		return -ENOBUFS;
-+	}
-+
-+	skb_set_owner_w(skb, sk);
-+
-+	emsg->offset = offset;
-+	emsg->len = len;
-+	emsg->skb = skb;
-+
-+	espintcp_push_msgs(sk);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(espintcp_push_skb);
-+
-+static int espintcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
-+{
-+	long timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+	struct iov_iter pfx_iter;
-+	struct kvec pfx_iov = {};
-+	size_t msglen = size + 2;
-+	char buf[2] = {0};
-+	int err, end;
-+
-+	if (msg->msg_flags)
-+		return -EOPNOTSUPP;
-+
-+	if (size > MAX_ESPINTCP_MSG)
-+		return -EMSGSIZE;
-+
-+	if (msg->msg_controllen)
-+		return -EOPNOTSUPP;
-+
-+	lock_sock(sk);
-+
-+	err = espintcp_push_msgs(sk);
-+	if (err < 0) {
-+		err = -ENOBUFS;
-+		goto unlock;
-+	}
-+
-+	sk_msg_init(&emsg->skmsg);
-+	while (1) {
-+		/* only -ENOMEM is possible since we don't coalesce */
-+		err = sk_msg_alloc(sk, &emsg->skmsg, msglen, 0);
-+		if (!err)
-+			break;
-+
-+		err = sk_stream_wait_memory(sk, &timeo);
-+		if (err)
-+			goto fail;
-+	}
-+
-+	*((__be16 *)buf) = cpu_to_be16(msglen);
-+	pfx_iov.iov_base = buf;
-+	pfx_iov.iov_len = sizeof(buf);
-+	iov_iter_kvec(&pfx_iter, WRITE, &pfx_iov, 1, pfx_iov.iov_len);
-+
-+	err = sk_msg_memcopy_from_iter(sk, &pfx_iter, &emsg->skmsg,
-+				       pfx_iov.iov_len);
-+	if (err < 0)
-+		goto fail;
-+
-+	err = sk_msg_memcopy_from_iter(sk, &msg->msg_iter, &emsg->skmsg, size);
-+	if (err < 0)
-+		goto fail;
-+
-+	end = emsg->skmsg.sg.end;
-+	emsg->len = size;
-+	sk_msg_iter_var_prev(end);
-+	sg_mark_end(sk_msg_elem(&emsg->skmsg, end));
-+
-+	tcp_rate_check_app_limited(sk);
-+
-+	err = espintcp_push_msgs(sk);
-+	/* this message could be partially sent, keep it */
-+	if (err < 0)
-+		goto unlock;
-+	release_sock(sk);
-+
-+	return size;
-+
-+fail:
-+	sk_msg_free(sk, &emsg->skmsg);
-+	memset(emsg, 0, sizeof(*emsg));
-+unlock:
-+	release_sock(sk);
-+	return err;
-+}
-+
-+static struct proto espintcp_prot __ro_after_init;
-+static struct proto_ops espintcp_ops __ro_after_init;
-+
-+static void espintcp_data_ready(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	strp_data_ready(&ctx->strp);
-+}
-+
-+static void espintcp_tx_work(struct work_struct *work)
-+{
-+	struct espintcp_ctx *ctx = container_of(work,
-+						struct espintcp_ctx, work);
-+	struct sock *sk = ctx->strp.sk;
-+
-+	lock_sock(sk);
-+	if (!ctx->tx_running)
-+		espintcp_push_msgs(sk);
-+	release_sock(sk);
-+}
-+
-+static void espintcp_write_space(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	schedule_work(&ctx->work);
-+	ctx->saved_write_space(sk);
-+}
-+
-+static void espintcp_destruct(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	kfree(ctx);
-+}
-+
-+bool tcp_is_ulp_esp(struct sock *sk)
-+{
-+	return sk->sk_prot == &espintcp_prot;
-+}
-+EXPORT_SYMBOL_GPL(tcp_is_ulp_esp);
-+
-+static int espintcp_init_sk(struct sock *sk)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct strp_callbacks cb = {
-+		.rcv_msg = espintcp_rcv,
-+		.parse_msg = espintcp_parse,
-+	};
-+	struct espintcp_ctx *ctx;
-+	int err;
-+
-+	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
-+
-+	err = strp_init(&ctx->strp, sk, &cb);
-+	if (err)
-+		goto free;
-+
-+	__sk_dst_reset(sk);
-+
-+	strp_check_rcv(&ctx->strp);
-+	skb_queue_head_init(&ctx->ike_queue);
-+	skb_queue_head_init(&ctx->out_queue);
-+	sk->sk_prot = &espintcp_prot;
-+	sk->sk_socket->ops = &espintcp_ops;
-+	ctx->saved_data_ready = sk->sk_data_ready;
-+	ctx->saved_write_space = sk->sk_write_space;
-+	sk->sk_data_ready = espintcp_data_ready;
-+	sk->sk_write_space = espintcp_write_space;
-+	sk->sk_destruct = espintcp_destruct;
-+	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
-+	INIT_WORK(&ctx->work, espintcp_tx_work);
-+
-+	/* avoid using task_frag */
-+	sk->sk_allocation = GFP_ATOMIC;
-+
-+	return 0;
-+
-+free:
-+	kfree(ctx);
-+	return err;
-+}
-+
-+static void espintcp_release(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct sk_buff_head queue;
-+	struct sk_buff *skb;
-+
-+	__skb_queue_head_init(&queue);
-+	skb_queue_splice_init(&ctx->out_queue, &queue);
-+
-+	while ((skb = __skb_dequeue(&queue)))
-+		espintcp_push_skb(sk, skb);
-+
-+	tcp_release_cb(sk);
-+}
-+
-+static void espintcp_close(struct sock *sk, long timeout)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+
-+	strp_stop(&ctx->strp);
-+
-+	sk->sk_prot = &tcp_prot;
-+	barrier();
-+
-+	cancel_work_sync(&ctx->work);
-+	strp_done(&ctx->strp);
-+
-+	skb_queue_purge(&ctx->out_queue);
-+	skb_queue_purge(&ctx->ike_queue);
-+
-+	if (emsg->len) {
-+		if (emsg->skb)
-+			kfree_skb(emsg->skb);
-+		else
-+			sk_msg_free(sk, &emsg->skmsg);
-+	}
-+
-+	tcp_close(sk, timeout);
-+}
-+
-+static __poll_t espintcp_poll(struct file *file, struct socket *sock,
-+			      poll_table *wait)
-+{
-+	__poll_t mask = datagram_poll(file, sock, wait);
-+	struct sock *sk = sock->sk;
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	if (!skb_queue_empty(&ctx->ike_queue))
-+		mask |= EPOLLIN | EPOLLRDNORM;
-+
-+	return mask;
-+}
-+
-+static struct tcp_ulp_ops espintcp_ulp __read_mostly = {
-+	.name = "espintcp",
-+	.owner = THIS_MODULE,
-+	.init = espintcp_init_sk,
-+};
-+
-+void __init espintcp_init(void)
-+{
-+	memcpy(&espintcp_prot, &tcp_prot, sizeof(tcp_prot));
-+	memcpy(&espintcp_ops, &inet_stream_ops, sizeof(inet_stream_ops));
-+	espintcp_prot.sendmsg = espintcp_sendmsg;
-+	espintcp_prot.recvmsg = espintcp_recvmsg;
-+	espintcp_prot.close = espintcp_close;
-+	espintcp_prot.release_cb = espintcp_release;
-+	espintcp_ops.poll = espintcp_poll;
-+
-+	tcp_register_ulp(&espintcp_ulp);
-+}
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 21e939235b39..4af04f74bf30 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -39,6 +39,9 @@
- #ifdef CONFIG_XFRM_STATISTICS
- #include <net/snmp.h>
- #endif
-+#ifdef CONFIG_INET_ESPINTCP
-+#include <net/espintcp.h>
-+#endif
- 
- #include "xfrm_hash.h"
- 
-@@ -4157,6 +4160,10 @@ void __init xfrm_init(void)
- 	seqcount_init(&xfrm_policy_hash_generation);
- 	xfrm_input_init();
- 
-+#ifdef CONFIG_INET_ESPINTCP
-+	espintcp_init();
-+#endif
-+
- 	RCU_INIT_POINTER(xfrm_if_cb, NULL);
- 	synchronize_rcu();
- }
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index c6f3c4a1bd99..acef2d54f869 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -668,6 +668,9 @@ int __xfrm_state_delete(struct xfrm_state *x)
- 		net->xfrm.state_num--;
- 		spin_unlock(&net->xfrm.xfrm_state_lock);
- 
-+		if (x->encap_sk)
-+			sock_put(rcu_dereference_raw(x->encap_sk));
-+
- 		xfrm_dev_state_delete(x);
- 
- 		/* All xfrm_state objects are created by xfrm_state_alloc.
--- 
-2.23.0
-
+> Kernel: 9e208aa06c2109b45eec6be049a8e47034748c20 on linux.git
+> Config: https://syzkaller.appspot.com/text?tag=KernelConfig&x=73c2aace7604ab7
+> Reproducer: https://syzkaller.appspot.com/text?tag=ReproC&x=1215afaf600000
+> Debug printk patch:
+> ----------------------------------------
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 9eda1c31d1f7..542a47fe6998 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -3732,10 +3732,7 @@ void netdev_run_todo(void);
+>   *
+>   * Release reference to device to allow it to be freed.
+>   */
+> -static inline void dev_put(struct net_device *dev)
+> -{
+> -       this_cpu_dec(*dev->pcpu_refcnt);
+> -}
+> +extern void dev_put(struct net_device *dev);
+>
+>  /**
+>   *     dev_hold - get reference to device
+> @@ -3743,10 +3740,7 @@ static inline void dev_put(struct net_device *dev)
+>   *
+>   * Hold reference to device to keep it from being freed.
+>   */
+> -static inline void dev_hold(struct net_device *dev)
+> -{
+> -       this_cpu_inc(*dev->pcpu_refcnt);
+> -}
+> +extern void dev_hold(struct net_device *dev);
+>
+>  /* Carrier loss detection, dial on demand. The functions netif_carrier_on
+>   * and _off may be called from IRQ context, but it is caller
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index bf3ed413abaf..21f82aa92fad 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -8968,8 +8968,8 @@ static void netdev_wait_allrefs(struct net_device *dev)
+>                 refcnt = netdev_refcnt_read(dev);
+>
+>                 if (refcnt && time_after(jiffies, warning_time + 10 * HZ)) {
+> -                       pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+> -                                dev->name, refcnt);
+> +                       pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d %px\n",
+> +                                dev->name, refcnt, dev);
+>                         warning_time = jiffies;
+>                 }
+>         }
+> @@ -9930,3 +9930,24 @@ static int __init net_dev_init(void)
+>  }
+>
+>  subsys_initcall(net_dev_init);
+> +
+> +
+> +void dev_put(struct net_device *dev)
+> +{
+> +       this_cpu_dec(*dev->pcpu_refcnt);
+> +       if (!strcmp(dev->name, "bridge_slave_0")) {
+> +               printk("dev_put: %px %d", dev, netdev_refcnt_read(dev));
+> +               dump_stack();
+> +       }
+> +}
+> +EXPORT_SYMBOL(dev_put);
+> +
+> +void dev_hold(struct net_device *dev)
+> +{
+> +       if (!strcmp(dev->name, "bridge_slave_0")) {
+> +               printk("dev_hold: %px %d", dev, netdev_refcnt_read(dev));
+> +               dump_stack();
+> +       }
+> +       this_cpu_inc(*dev->pcpu_refcnt);
+> +}
+> +EXPORT_SYMBOL(dev_hold);
+> ----------------------------------------
+>
+> ----------------------------------------
+> Oct 11 14:33:06 ubuntu kernel: [  114.251175][ T8866] dev_hold: ffff888091fd2000 100
+> Oct 11 14:33:06 ubuntu kernel: [  114.251185][ T8866] CPU: 3 PID: 8866 Comm: a.out Not tainted 5.4.0-rc2+ #217
+> Oct 11 14:33:06 ubuntu kernel: [  114.251199][ T8866] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 04/13/2018
+> Oct 11 14:33:06 ubuntu kernel: [  114.251208][ T8866] Call Trace:
+> Oct 11 14:33:06 ubuntu kernel: [  114.251232][ T8866]  dump_stack+0x154/0x1c5
+> Oct 11 14:33:06 ubuntu kernel: [  114.251253][ T8866]  dev_hold+0x73/0x80
+> Oct 11 14:33:06 ubuntu kernel: [  114.251267][ T8866]  dev_get_by_index+0x1b3/0x2d0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251280][ T8866]  __dev_map_alloc_node+0x1c7/0x360
+> Oct 11 14:33:06 ubuntu kernel: [  114.251299][ T8866]  dev_map_hash_update_elem+0x485/0x670
+> Oct 11 14:33:06 ubuntu kernel: [  114.251320][ T8866]  __do_sys_bpf+0x35d6/0x38c0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251337][ T8866]  ? bpf_prog_load+0x1470/0x1470
+> Oct 11 14:33:06 ubuntu kernel: [  114.251351][ T8866]  ? do_wp_page+0x3c8/0x1310
+> Oct 11 14:33:06 ubuntu kernel: [  114.251364][ T8866]  ? finish_mkwrite_fault+0x300/0x300
+> Oct 11 14:33:06 ubuntu kernel: [  114.251381][ T8866]  ? find_held_lock+0x35/0x1e0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251397][ T8866]  ? __do_page_fault+0x504/0xb60
+> Oct 11 14:33:06 ubuntu kernel: [  114.251413][ T8866]  ? lock_downgrade+0x900/0x900
+> Oct 11 14:33:06 ubuntu kernel: [  114.251426][ T8866]  ? __pmd_alloc+0x410/0x410
+> Oct 11 14:33:06 ubuntu kernel: [  114.251446][ T8866]  ? __kasan_check_write+0x14/0x20
+> Oct 11 14:33:06 ubuntu kernel: [  114.251457][ T8866]  ? up_read+0x1b6/0x7a0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251471][ T8866]  ? down_read_nested+0x480/0x480
+> Oct 11 14:33:06 ubuntu kernel: [  114.251494][ T8866]  ? do_syscall_64+0x26/0x6a0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251507][ T8866]  ? entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> Oct 11 14:33:06 ubuntu kernel: [  114.251515][ T8866]  ? do_syscall_64+0x26/0x6a0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251528][ T8866]  __x64_sys_bpf+0x73/0xb0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251541][ T8866]  do_syscall_64+0xde/0x6a0
+> Oct 11 14:33:06 ubuntu kernel: [  114.251559][ T8866]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> (...snipped...)
+> Oct 11 14:33:10 ubuntu kernel: [  117.459637][ T9584] dev_hold: ffff888091fd2000 200
+> Oct 11 14:33:10 ubuntu kernel: [  117.459644][ T9584] CPU: 4 PID: 9584 Comm: a.out Not tainted 5.4.0-rc2+ #217
+> Oct 11 14:33:10 ubuntu kernel: [  117.459652][ T9584] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 04/13/2018
+> Oct 11 14:33:10 ubuntu kernel: [  117.459656][ T9584] Call Trace:
+> Oct 11 14:33:10 ubuntu kernel: [  117.459669][ T9584]  dump_stack+0x154/0x1c5
+> Oct 11 14:33:10 ubuntu kernel: [  117.459682][ T9584]  dev_hold+0x73/0x80
+> Oct 11 14:33:10 ubuntu kernel: [  117.459695][ T9584]  dev_get_by_index+0x1b3/0x2d0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459706][ T9584]  __dev_map_alloc_node+0x1c7/0x360
+> Oct 11 14:33:10 ubuntu kernel: [  117.459720][ T9584]  dev_map_hash_update_elem+0x485/0x670
+> Oct 11 14:33:10 ubuntu kernel: [  117.459749][ T9584]  __do_sys_bpf+0x35d6/0x38c0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459762][ T9584]  ? bpf_prog_load+0x1470/0x1470
+> Oct 11 14:33:10 ubuntu kernel: [  117.459769][ T9584]  ? do_wp_page+0x3c8/0x1310
+> Oct 11 14:33:10 ubuntu kernel: [  117.459778][ T9584]  ? finish_mkwrite_fault+0x300/0x300
+> Oct 11 14:33:10 ubuntu kernel: [  117.459787][ T9584]  ? find_held_lock+0x35/0x1e0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459797][ T9584]  ? __do_page_fault+0x504/0xb60
+> Oct 11 14:33:10 ubuntu kernel: [  117.459807][ T9584]  ? lock_downgrade+0x900/0x900
+> Oct 11 14:33:10 ubuntu kernel: [  117.459814][ T9584]  ? __pmd_alloc+0x410/0x410
+> Oct 11 14:33:10 ubuntu kernel: [  117.459828][ T9584]  ? __kasan_check_write+0x14/0x20
+> Oct 11 14:33:10 ubuntu kernel: [  117.459835][ T9584]  ? up_read+0x1b6/0x7a0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459846][ T9584]  ? down_read_nested+0x480/0x480
+> Oct 11 14:33:10 ubuntu kernel: [  117.459862][ T9584]  ? do_syscall_64+0x26/0x6a0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459871][ T9584]  ? entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> Oct 11 14:33:10 ubuntu kernel: [  117.459878][ T9584]  ? do_syscall_64+0x26/0x6a0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459891][ T9584]  __x64_sys_bpf+0x73/0xb0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459901][ T9584]  do_syscall_64+0xde/0x6a0
+> Oct 11 14:33:10 ubuntu kernel: [  117.459911][ T9584]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> (...snipped...)
+> Oct 11 14:33:26 ubuntu kernel: [  134.146838][T13860] dev_hold: ffff888091fd2000 850
+> Oct 11 14:33:26 ubuntu kernel: [  134.146847][T13860] CPU: 4 PID: 13860 Comm: a.out Not tainted 5.4.0-rc2+ #217
+> Oct 11 14:33:26 ubuntu kernel: [  134.146853][T13860] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 04/13/2018
+> Oct 11 14:33:26 ubuntu kernel: [  134.146859][T13860] Call Trace:
+> Oct 11 14:33:26 ubuntu kernel: [  134.146872][T13860]  dump_stack+0x154/0x1c5
+> Oct 11 14:33:26 ubuntu kernel: [  134.146885][T13860]  dev_hold+0x73/0x80
+> Oct 11 14:33:26 ubuntu kernel: [  134.146893][T13860]  dev_get_by_index+0x1b3/0x2d0
+> Oct 11 14:33:26 ubuntu kernel: [  134.146903][T13860]  __dev_map_alloc_node+0x1c7/0x360
+> Oct 11 14:33:26 ubuntu kernel: [  134.146918][T13860]  dev_map_hash_update_elem+0x485/0x670
+> Oct 11 14:33:26 ubuntu kernel: [  134.146932][T13860]  __do_sys_bpf+0x35d6/0x38c0
+> Oct 11 14:33:26 ubuntu kernel: [  134.146944][T13860]  ? bpf_prog_load+0x1470/0x1470
+> Oct 11 14:33:26 ubuntu kernel: [  134.146953][T13860]  ? do_wp_page+0x3c8/0x1310
+> Oct 11 14:33:26 ubuntu kernel: [  134.146964][T13860]  ? finish_mkwrite_fault+0x300/0x300
+> Oct 11 14:33:26 ubuntu kernel: [  134.146975][T13860]  ? find_held_lock+0x35/0x1e0
+> Oct 11 14:33:26 ubuntu kernel: [  134.146985][T13860]  ? __do_page_fault+0x504/0xb60
+> Oct 11 14:33:26 ubuntu kernel: [  134.146994][T13860]  ? lock_downgrade+0x900/0x900
+> Oct 11 14:33:26 ubuntu kernel: [  134.147002][T13860]  ? __pmd_alloc+0x410/0x410
+> Oct 11 14:33:26 ubuntu kernel: [  134.147017][T13860]  ? __kasan_check_write+0x14/0x20
+> Oct 11 14:33:26 ubuntu kernel: [  134.147024][T13860]  ? up_read+0x1b6/0x7a0
+> Oct 11 14:33:26 ubuntu kernel: [  134.147033][T13860]  ? down_read_nested+0x480/0x480
+> Oct 11 14:33:26 ubuntu kernel: [  134.147048][T13860]  ? do_syscall_64+0x26/0x6a0
+> Oct 11 14:33:26 ubuntu kernel: [  134.147056][T13860]  ? entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> Oct 11 14:33:26 ubuntu kernel: [  134.147063][T13860]  ? do_syscall_64+0x26/0x6a0
+> Oct 11 14:33:26 ubuntu kernel: [  134.147074][T13860]  __x64_sys_bpf+0x73/0xb0
+> Oct 11 14:33:26 ubuntu kernel: [  134.147084][T13860]  do_syscall_64+0xde/0x6a0
+> Oct 11 14:33:26 ubuntu kernel: [  134.147095][T13860]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> (...snipped...)
+> Oct 11 14:33:41 ubuntu kernel: [  148.384539][ T4514] unregister_netdevice: waiting for bridge_slave_0 to become free. Usage count = 850 ffff888091fd2000
+> ----------------------------------------
+>
