@@ -2,83 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54766D4AD4
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 01:18:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B58ED4AD5
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 01:18:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726671AbfJKXS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 19:18:27 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38029 "EHLO
+        id S1726982AbfJKXS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 19:18:29 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:35755 "EHLO
         mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726243AbfJKXS0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 19:18:26 -0400
-Received: by mail-wm1-f67.google.com with SMTP id 3so11596960wmi.3
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 16:18:25 -0700 (PDT)
+        with ESMTP id S1726521AbfJKXS1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 19:18:27 -0400
+Received: by mail-wm1-f67.google.com with SMTP id y21so11590664wmi.0
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 16:18:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=7YgpW27cZuoYFdV3RY1bHXljdad9EzV+YkSqX2ofDFY=;
-        b=QB+3ZAt+8WQ6HJmIrRs5x8smw8IagOz2YQVvLGDakbth7G4u/eXoZ/p10qj1Cjl1ef
-         IkCCvqQ6CJ0raQoBiJNwOmnejZnRCbvob1PhMzuC7zWIVf9p/j72dyMYLgEN6ux6c0uR
-         M96cgJm30ARnKz1lgYL8K3b2J7ES09p6XvuAiSD6HmcsjhPWqEsdy8KC/5wxwykT0tLL
-         UcZO4q+WNegg6ryZSMsQJkpszkIupRuDXWB7rGd//05togK7REF8ho5ie5jTCRQUrnhB
-         PLaLRQRI0zQ8Q6LCFtjw917L/D7RSafpq99vjK4FASbhiXfdq1rL461UBrgbXlOkaHfT
-         RNYA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=S8xmFq96SEfIYB1XdHQdxTajt9IjxgWY/sWpaAxGljI=;
+        b=sE1IGK2xqhffVcnrzogPhX4nlPAed4Fo8cwKjrO3VTB5cK8ed68V31Jlf8MSNOYOXj
+         D2etA9cSRNVUDC1ljKUc/kDik1fyFygKqc5HNsATQu0WVok44R59E/Zcblwqlsxd33c0
+         aLroz/b88/ggIjEmrctdMDeH8wsj0s+kTqU8TJvoM25NDGPvWpNhuJjB3OJssQiLrxQc
+         MP+J6l/beu2pimedz2Euq0Tn/vf0HgndMOxJeycv+pJhfhaJt8miE0RUBsi0H7rS+/pk
+         HINlaADLVQPHXQ8ezG6G0+koM3EBQfVvPcppRZXOWMwGvlNDc4Zle2KTrKSd+Of3Ce/b
+         pnPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=7YgpW27cZuoYFdV3RY1bHXljdad9EzV+YkSqX2ofDFY=;
-        b=qVX3/63j+BbFTBxrcc0BcXGmMze9LzbXzf+oVYDb2ERmH2ss9iDPHzgU42dnExxhRe
-         KE1H9dEEOV26E23AliuGnEjFkFhEv/0VeK3VL5unnsy7rKKaSFTQqyX22IebO9FPEmh5
-         YzwdXF2O0IKGTgRYQJtgHo1ow9UW2aFEne32hEOT/C2Vk0mquuq0gJ6YHYpTcpxgrVzQ
-         L8sRgErBppz3POzMJf3BqZ8HQZnz2OPkEKIB2TDnZzBeO9hI55YrrZfVA85x7Q9q9tB1
-         cFBCH7lyZZ26RpDNOr91reJEjV2LNzBUTioTPFyOxIUYiJTsLl3P+Rlw2dyQDKXjm1mC
-         y68w==
-X-Gm-Message-State: APjAAAVZxZHvlzf6sMG91degEFFlJSyhvkaFh+y/u2Yvl9pLAbKwPw5w
-        5yFQI16CAdt6fOGXAL/QFAE=
-X-Google-Smtp-Source: APXvYqwHzBwEXFBgOE22D7z5JyEhdLyngs4VxvuO5U0K22vh5eHInFjRk/vJIo6aAoaEUrBSGt4ClQ==
-X-Received: by 2002:a1c:55c4:: with SMTP id j187mr5065004wmb.155.1570835904507;
-        Fri, 11 Oct 2019 16:18:24 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=S8xmFq96SEfIYB1XdHQdxTajt9IjxgWY/sWpaAxGljI=;
+        b=ArYGINxAY+2wlqdCMQEnvQ03ksW8lzxYg/bRzK/wkg+/ilsAapDD9u47IU5kdtQM9j
+         nM0ZR9ANn1ufFfNLrzIL2f+s/3WwnryXu6Z6PRgGuqliGseMt0cuZyiwgFkTibDRkMFU
+         u+phsM+1LLnRzZyCnwx0Z+k/+/9UXOIsP1jD0eDT0ShfFQ21ywugeWP1lbdb94K4Bdm0
+         R430a8mBoNSObHZPmi3gao3Of/Q+jIg3l1tTwu+d14BhuzVpfByekqPUOYWQbDYvpeF2
+         JJyKoeRaWUUgD1RFNKfqam5CBq9g966g6hgVb+WVZBLeBugD0xmIMIk+AY3mBKoe6SCV
+         GpaA==
+X-Gm-Message-State: APjAAAWq7jVHqAqAJd1KoyJd3MiA3F+pYJwJlyA9wpOuxgWlCP0QCxdS
+        9pOThKktmmzLvGXlytmUlYc=
+X-Google-Smtp-Source: APXvYqyoJQh9IbUz4dbA1hdcFEo547Qch3JskNkS4si3TI4LjyBZx6htX0WbWsQSscIpxLErJ7I+lA==
+X-Received: by 2002:a7b:cf12:: with SMTP id l18mr5127684wmg.105.1570835905505;
+        Fri, 11 Oct 2019 16:18:25 -0700 (PDT)
 Received: from localhost.localdomain ([86.124.196.40])
-        by smtp.gmail.com with ESMTPSA id 207sm17425853wme.17.2019.10.11.16.18.23
+        by smtp.gmail.com with ESMTPSA id 207sm17425853wme.17.2019.10.11.16.18.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 16:18:24 -0700 (PDT)
+        Fri, 11 Oct 2019 16:18:25 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     richardcochran@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
         vivien.didelot@gmail.com, jakub.kicinski@netronome.com,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 0/4] PTP driver refactoring for SJA1105 DSA
-Date:   Sat, 12 Oct 2019 02:18:12 +0300
-Message-Id: <20191011231816.7888-1-olteanv@gmail.com>
+Subject: [PATCH net-next 1/4] net: dsa: sja1105: Get rid of global declaration of struct ptp_clock_info
+Date:   Sat, 12 Oct 2019 02:18:13 +0300
+Message-Id: <20191011231816.7888-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191011231816.7888-1-olteanv@gmail.com>
+References: <20191011231816.7888-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series creates a better separation between the driver core and the
-PTP portion. Therefore, users who are not interested in PTP can get a
-simpler and smaller driver by compiling it out.
+We need priv->ptp_caps to hold a structure and not just a pointer,
+because we use container_of in the various PTP callbacks.
 
-This is in preparation for further patches: SPI transfer timestamping,
-synchronizing the hardware clock (as opposed to keeping it
-free-running), PPS input/output, etc.
+Therefore, the sja1105_ptp_caps structure declared in the global memory
+of the driver serves no further purpose after copying it into
+priv->ptp_caps.
 
-Vladimir Oltean (4):
-  net: dsa: sja1105: Get rid of global declaration of struct
-    ptp_clock_info
-  net: dsa: sja1105: Make all public PTP functions take dsa_switch as
-    argument
-  net: dsa: sja1105: Move PTP data to its own private structure
-  net: dsa: sja1105: Change the PTP command access pattern
+So just populate priv->ptp_caps with the needed operations and remove
+sja1105_ptp_caps.
 
- drivers/net/dsa/sja1105/sja1105.h      |  16 +-
- drivers/net/dsa/sja1105/sja1105_main.c | 234 +--------------
- drivers/net/dsa/sja1105/sja1105_ptp.c  | 391 ++++++++++++++++++++-----
- drivers/net/dsa/sja1105/sja1105_ptp.h  |  84 ++++--
- drivers/net/dsa/sja1105/sja1105_spi.c  |   2 +-
- 5 files changed, 386 insertions(+), 341 deletions(-)
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/sja1105/sja1105_ptp.c | 29 +++++++++++++--------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
+diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
+index 0df1bbec475a..6b0bfa0444a2 100644
+--- a/drivers/net/dsa/sja1105/sja1105_ptp.c
++++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
+@@ -344,29 +344,28 @@ static void sja1105_ptp_overflow_check(struct work_struct *work)
+ 	schedule_delayed_work(&priv->refresh_work, SJA1105_REFRESH_INTERVAL);
+ }
+ 
+-static const struct ptp_clock_info sja1105_ptp_caps = {
+-	.owner		= THIS_MODULE,
+-	.name		= "SJA1105 PHC",
+-	.adjfine	= sja1105_ptp_adjfine,
+-	.adjtime	= sja1105_ptp_adjtime,
+-	.gettime64	= sja1105_ptp_gettime,
+-	.settime64	= sja1105_ptp_settime,
+-	.max_adj	= SJA1105_MAX_ADJ_PPB,
+-};
+-
+ int sja1105_ptp_clock_register(struct sja1105_private *priv)
+ {
+ 	struct dsa_switch *ds = priv->ds;
+ 
+ 	/* Set up the cycle counter */
+ 	priv->tstamp_cc = (struct cyclecounter) {
+-		.read = sja1105_ptptsclk_read,
+-		.mask = CYCLECOUNTER_MASK(64),
+-		.shift = SJA1105_CC_SHIFT,
+-		.mult = SJA1105_CC_MULT,
++		.read		= sja1105_ptptsclk_read,
++		.mask		= CYCLECOUNTER_MASK(64),
++		.shift		= SJA1105_CC_SHIFT,
++		.mult		= SJA1105_CC_MULT,
+ 	};
++	priv->ptp_caps = (struct ptp_clock_info) {
++		.owner		= THIS_MODULE,
++		.name		= "SJA1105 PHC",
++		.adjfine	= sja1105_ptp_adjfine,
++		.adjtime	= sja1105_ptp_adjtime,
++		.gettime64	= sja1105_ptp_gettime,
++		.settime64	= sja1105_ptp_settime,
++		.max_adj	= SJA1105_MAX_ADJ_PPB,
++	};
++
+ 	mutex_init(&priv->ptp_lock);
+-	priv->ptp_caps = sja1105_ptp_caps;
+ 
+ 	priv->clock = ptp_clock_register(&priv->ptp_caps, ds->dev);
+ 	if (IS_ERR_OR_NULL(priv->clock))
 -- 
 2.17.1
 
