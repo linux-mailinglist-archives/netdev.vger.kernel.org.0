@@ -2,81 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61A6ED3CAB
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 11:46:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A296D3CAE
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 11:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727858AbfJKJqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 05:46:23 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:34731 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726585AbfJKJqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 05:46:23 -0400
-Received: from v22018046084765073.goodsrv.de ([185.183.158.195] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1iIrV2-0004ZL-2S; Fri, 11 Oct 2019 09:46:16 +0000
-Date:   Fri, 11 Oct 2019 11:46:14 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     luto@amacapital.net, jannh@google.com, wad@chromium.org,
-        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Tycho Andersen <tycho@tycho.ws>,
-        Tyler Hicks <tyhicks@canonical.com>
-Subject: Re: [PATCH v2 1/3] seccomp: add SECCOMP_USER_NOTIF_FLAG_CONTINUE
-Message-ID: <20191011094613.rs45knchjbe7edv4@wittgenstein>
-References: <20190920083007.11475-1-christian.brauner@ubuntu.com>
- <20190920083007.11475-2-christian.brauner@ubuntu.com>
- <201910101440.17A13952@keescook>
+        id S1727777AbfJKJr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 05:47:26 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3733 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726585AbfJKJr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 05:47:26 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id BDF7E12E9765CB34E081;
+        Fri, 11 Oct 2019 17:47:21 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Fri, 11 Oct 2019
+ 17:47:14 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <jakub.kicinski@netronome.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] netdevsim: Fix error handling in nsim_fib_init and nsim_fib_exit
+Date:   Fri, 11 Oct 2019 17:46:53 +0800
+Message-ID: <20191011094653.18796-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <201910101440.17A13952@keescook>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 02:45:38PM -0700, Kees Cook wrote:
-> On Fri, Sep 20, 2019 at 10:30:05AM +0200, Christian Brauner wrote:
-> > + * Similar precautions should be applied when stacking SECCOMP_RET_USER_NOTIF.
-> > + * For SECCOMP_RET_USER_NOTIF filters acting on the same syscall the uppermost
-> > + * filter takes precedence. This means that the uppermost
-> > + * SECCOMP_RET_USER_NOTIF filter can override any SECCOMP_IOCTL_NOTIF_SEND from
-> > + * lower filters essentially allowing all syscalls to pass by using
-> > + * SECCOMP_USER_NOTIF_FLAG_CONTINUE. Note that SECCOMP_RET_USER_NOTIF can
->                                                           ^^^^^^^^^^^^^^
-> This is meant to read RET_TRACE, yes?
+In nsim_fib_init(), if register_fib_notifier failed, nsim_fib_net_ops
+should be unregistered before return.
 
-Yes. :)
+In nsim_fib_exit(), unregister_fib_notifier should be called before
+nsim_fib_net_ops be unregistered, otherwise may cause use-after-free:
 
-> 
-> > + * equally be overriden by SECCOMP_USER_NOTIF_FLAG_CONTINUE.
-> 
-> I rewrote this paragraph with that corrected and swapping some
-> "upper/lower" to "most recently added" etc:
-> 
-> + * Similar precautions should be applied when stacking SECCOMP_RET_USER_NOTIF
-> + * or SECCOMP_RET_TRACE. For SECCOMP_RET_USER_NOTIF filters acting on the
-> + * same syscall, the most recently added filter takes precedence. This means
-> + * that the new SECCOMP_RET_USER_NOTIF filter can override any
-> + * SECCOMP_IOCTL_NOTIF_SEND from earlier filters, essentially allowing all
-> + * such filtered syscalls to be executed by sending the response
-> + * SECCOMP_USER_NOTIF_FLAG_CONTINUE. Note that SECCOMP_RET_TRACE can equally
-> + * be overriden by SECCOMP_USER_NOTIF_FLAG_CONTINUE.
-> 
-> 
-> Ultimately, I think this caveat is fine. RET_USER_NOTIF and RET_TRACE are
-> both used from the "process manager" use-case. The benefits of "continue"
-> semantics here outweighs the RET_USER_NOTIF and RET_TRACE "bypass". If
-> we end up in a situation where we need to deal with some kind of
-> nesting where this is a problem in practice, we can revisit this.
-> 
-> Applied to my for-next/seccomp. Thanks!
+BUG: KASAN: use-after-free in nsim_fib_event_nb+0x342/0x570 [netdevsim]
+Read of size 8 at addr ffff8881daaf4388 by task kworker/0:3/3499
 
-Thanks!
-Christian
+CPU: 0 PID: 3499 Comm: kworker/0:3 Not tainted 5.3.0-rc7+ #30
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+Workqueue: ipv6_addrconf addrconf_dad_work [ipv6]
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0xa9/0x10e lib/dump_stack.c:113
+ print_address_description+0x65/0x380 mm/kasan/report.c:351
+ __kasan_report+0x149/0x18d mm/kasan/report.c:482
+ kasan_report+0xe/0x20 mm/kasan/common.c:618
+ nsim_fib_event_nb+0x342/0x570 [netdevsim]
+ notifier_call_chain+0x52/0xf0 kernel/notifier.c:95
+ __atomic_notifier_call_chain+0x78/0x140 kernel/notifier.c:185
+ call_fib_notifiers+0x30/0x60 net/core/fib_notifier.c:30
+ call_fib6_entry_notifiers+0xc1/0x100 [ipv6]
+ fib6_add+0x92e/0x1b10 [ipv6]
+ __ip6_ins_rt+0x40/0x60 [ipv6]
+ ip6_ins_rt+0x84/0xb0 [ipv6]
+ __ipv6_ifa_notify+0x4b6/0x550 [ipv6]
+ ipv6_ifa_notify+0xa5/0x180 [ipv6]
+ addrconf_dad_completed+0xca/0x640 [ipv6]
+ addrconf_dad_work+0x296/0x960 [ipv6]
+ process_one_work+0x5c0/0xc00 kernel/workqueue.c:2269
+ worker_thread+0x5c/0x670 kernel/workqueue.c:2415
+ kthread+0x1d7/0x200 kernel/kthread.c:255
+ ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+
+Allocated by task 3388:
+ save_stack+0x19/0x80 mm/kasan/common.c:69
+ set_track mm/kasan/common.c:77 [inline]
+ __kasan_kmalloc.constprop.3+0xa0/0xd0 mm/kasan/common.c:493
+ kmalloc include/linux/slab.h:557 [inline]
+ kzalloc include/linux/slab.h:748 [inline]
+ ops_init+0xa9/0x220 net/core/net_namespace.c:127
+ __register_pernet_operations net/core/net_namespace.c:1135 [inline]
+ register_pernet_operations+0x1d4/0x420 net/core/net_namespace.c:1212
+ register_pernet_subsys+0x24/0x40 net/core/net_namespace.c:1253
+ nsim_fib_init+0x12/0x70 [netdevsim]
+ veth_get_link_ksettings+0x2b/0x50 [veth]
+ do_one_initcall+0xd4/0x454 init/main.c:939
+ do_init_module+0xe0/0x330 kernel/module.c:3490
+ load_module+0x3c2f/0x4620 kernel/module.c:3841
+ __do_sys_finit_module+0x163/0x190 kernel/module.c:3931
+ do_syscall_64+0x72/0x2e0 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 3534:
+ save_stack+0x19/0x80 mm/kasan/common.c:69
+ set_track mm/kasan/common.c:77 [inline]
+ __kasan_slab_free+0x130/0x180 mm/kasan/common.c:455
+ slab_free_hook mm/slub.c:1423 [inline]
+ slab_free_freelist_hook mm/slub.c:1474 [inline]
+ slab_free mm/slub.c:3016 [inline]
+ kfree+0xe9/0x2d0 mm/slub.c:3957
+ ops_free net/core/net_namespace.c:151 [inline]
+ ops_free_list.part.7+0x156/0x220 net/core/net_namespace.c:184
+ ops_free_list net/core/net_namespace.c:182 [inline]
+ __unregister_pernet_operations net/core/net_namespace.c:1165 [inline]
+ unregister_pernet_operations+0x221/0x2a0 net/core/net_namespace.c:1224
+ unregister_pernet_subsys+0x1d/0x30 net/core/net_namespace.c:1271
+ nsim_fib_exit+0x11/0x20 [netdevsim]
+ nsim_module_exit+0x16/0x21 [netdevsim]
+ __do_sys_delete_module kernel/module.c:1015 [inline]
+ __se_sys_delete_module kernel/module.c:958 [inline]
+ __x64_sys_delete_module+0x244/0x330 kernel/module.c:958
+ do_syscall_64+0x72/0x2e0 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 59c84b9fcf42 ("netdevsim: Restore per-network namespace accounting for fib entries")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/netdevsim/fib.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
+index f61d094..1a251f7 100644
+--- a/drivers/net/netdevsim/fib.c
++++ b/drivers/net/netdevsim/fib.c
+@@ -241,8 +241,8 @@ static struct pernet_operations nsim_fib_net_ops = {
+ 
+ void nsim_fib_exit(void)
+ {
+-	unregister_pernet_subsys(&nsim_fib_net_ops);
+ 	unregister_fib_notifier(&nsim_fib_nb);
++	unregister_pernet_subsys(&nsim_fib_net_ops);
+ }
+ 
+ int nsim_fib_init(void)
+@@ -258,6 +258,7 @@ int nsim_fib_init(void)
+ 	err = register_fib_notifier(&nsim_fib_nb, nsim_fib_dump_inconsistent);
+ 	if (err < 0) {
+ 		pr_err("Failed to register fib notifier\n");
++		unregister_pernet_subsys(&nsim_fib_net_ops);
+ 		goto err_out;
+ 	}
+ 
+-- 
+2.7.4
+
+
