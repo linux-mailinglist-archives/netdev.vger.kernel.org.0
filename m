@@ -2,72 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B92D49D7
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 23:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BAC0D49D5
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 23:26:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729136AbfJKV0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 17:26:36 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49500 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbfJKV0g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 17:26:36 -0400
-Received: from 55.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.55] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iJ2Qh-00078r-Oh; Fri, 11 Oct 2019 23:26:31 +0200
-Date:   Fri, 11 Oct 2019 23:26:31 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] libbpf: generate more efficient BPF_CORE_READ
- code
-Message-ID: <20191011212631.GE21131@pc-63.home>
-References: <20191011023847.275936-1-andriin@fb.com>
+        id S1729117AbfJKV0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 17:26:00 -0400
+Received: from mga18.intel.com ([134.134.136.126]:42797 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726843AbfJKV0A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 17:26:00 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 14:25:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,285,1566889200"; 
+   d="scan'208";a="395873141"
+Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
+  by fmsmga006.fm.intel.com with ESMTP; 11 Oct 2019 14:25:59 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: taprio testing - Any help?
+In-Reply-To: <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
+References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com> <87v9sv3uuf.fsf@linux.intel.com> <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
+Date:   Fri, 11 Oct 2019 14:26:55 -0700
+Message-ID: <87r23j3rds.fsf@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191011023847.275936-1-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25599/Fri Oct 11 10:48:23 2019)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 07:38:47PM -0700, Andrii Nakryiko wrote:
-> Existing BPF_CORE_READ() macro generates slightly suboptimal code. If
-> there are intermediate pointers to be read, initial source pointer is
-> going to be assigned into a temporary variable and then temporary
-> variable is going to be uniformly used as a "source" pointer for all
-> intermediate pointer reads. Schematically (ignoring all the type casts),
-> BPF_CORE_READ(s, a, b, c) is expanded into:
-> ({
-> 	const void *__t = src;
-> 	bpf_probe_read(&__t, sizeof(*__t), &__t->a);
-> 	bpf_probe_read(&__t, sizeof(*__t), &__t->b);
-> 
-> 	typeof(s->a->b->c) __r;
-> 	bpf_probe_read(&__r, sizeof(*__r), &__t->c);
-> })
-> 
-> This initial `__t = src` makes calls more uniform, but causes slightly
-> less optimal register usage sometimes when compiled with Clang. This can
-> cascase into, e.g., more register spills.
-> 
-> This patch fixes this issue by generating more optimal sequence:
-> ({
-> 	const void *__t;
-> 	bpf_probe_read(&__t, sizeof(*__t), &src->a); /* <-- src here */
-> 	bpf_probe_read(&__t, sizeof(*__t), &__t->b);
-> 
-> 	typeof(s->a->b->c) __r;
-> 	bpf_probe_read(&__r, sizeof(*__r), &__t->c);
-> })
-> 
-> Fixes: 7db3822ab991 ("libbpf: Add BPF_CORE_READ/BPF_CORE_READ_INTO helpers")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Hi,
 
-Applied, thanks!
+Murali Karicheri <m-karicheri2@ti.com> writes:
+
+> Hi Vinicius,
+>
+> On 10/11/2019 04:12 PM, Vinicius Costa Gomes wrote:
+>> Hi Murali,
+>> 
+>> Murali Karicheri <m-karicheri2@ti.com> writes:
+>> 
+>>> Hi,
+>>>
+>>> I am testing the taprio (802.1Q Time Aware Shaper) as part of my
+>>> pre-work to implement taprio hw offload and test.
+>>>
+>>> I was able to configure tap prio on my board and looking to do
+>>> some traffic test and wondering how to play with the tc command
+>>> to direct traffic to a specfic queue. For example I have setup
+>>> taprio to create 5 traffic classes as shows below;-
+>>>
+>>> Now I plan to create iperf streams to pass through different
+>>> gates. Now how do I use tc filters to mark the packets to
+>>> go through these gates/queues? I heard about skbedit action
+>>> in tc filter to change the priority field of SKB to allow
+>>> the above mapping to happen. Any example that some one can
+>>> point me to?
+>> 
+>> What I have been using for testing these kinds of use cases (like iperf)
+>> is to use an iptables rule to set the priority for some kinds of traffic.
+>> 
+>> Something like this:
+>> 
+>> sudo iptables -t mangle -A POSTROUTING -p udp --dport 7788 -j CLASSIFY --set-class 0:3
+> Let me try this. Yes. This is what I was looking for. I was trying
+> something like this and I was getting an error
+>
+> tc filter add  dev eth0 parent 100: protocol ip prio 10 u32 match ip 
+> dport 10000 0xffff flowid 100:3
+> RTNETLINK answers: Operation not supported
+> We have an error talking to the kernel, -1
+
+Hmm, taprio (or mqprio for that matter) doesn't support tc filter
+blocks, so this won't work for those qdiscs.
+
+I never thought about adding support for it, it looks very interesting.
+Thanks for pointing this out. I will add this to my todo list, but
+anyone should feel free to beat me to it :-)
+
+
+Cheers,
+--
+Vinicius
