@@ -2,168 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05550D3921
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 08:08:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9017AD3935
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 08:11:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbfJKGHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 02:07:00 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39897 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbfJKGG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 02:06:59 -0400
-Received: by mail-wr1-f65.google.com with SMTP id r3so10433672wrj.6
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 23:06:57 -0700 (PDT)
+        id S1726910AbfJKGLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 02:11:08 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40166 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726174AbfJKGLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 02:11:08 -0400
+Received: by mail-wm1-f67.google.com with SMTP id b24so8913739wmj.5
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 23:11:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=3c0Nh1nl7bfCKYDWMo6YBu1F2vfCDmy0MmjZnscBG0g=;
-        b=WyVKVt5QOLSPRbgNDDvSj2Y0YxDMaLTkTz+Ox7Wk4QgNlzEfXEiSD7kaqsOOZzb1Lo
-         LF2tdc8Sl8WLRUepsFc2TV35mao25gY/hIu9GOWfm1E4Rcz1N+2ehwygWpXiQ0GS4QAN
-         T33qT5Ck8xXBAUaRTJ5XeKCiuIeHdEvbdPFCNGRKM2Tm2B66Oe7D80FAl8wKU2bIzVDB
-         go8bRROgToWLqKOMGHfdaBDbgsGvt3h7Q+AekzwbxlqQkmthRiueUKxAmdyuxDMZpj52
-         8JnPxY4/SUR4zYesI5gV8uXomBt/dgHG60goR7m0tUiITI/YobwxUTTH7aERvRSg7lvO
-         Sn/Q==
+        bh=8nnHdbTQ16topfNyNvCbsM6+K1YLerkiNwgQ4142ujw=;
+        b=Mc2YpNHQOWFIW4IjHMeujvyMfto0miF/ys2ftnO5wl6IlW4k1M5P/hgrU6QF+S+zne
+         c6Q0jb1kdLTV8/wjXqKQ7ThP7kePqzQCf5emF+o3ZPpbnOGoXwOOIQ4X5m4VHjRhEsqR
+         TuIY0oElP34DrB86M37i9Iu7BMeH2Y8hcGotJp5gSQ0eGKFkxqOAfoCWCi2nepDbZA7j
+         VHMRVQu8ez9H3dpvpN8KzlJX3McvczI1g5xUKtLj9TZJShDHUenKhRE3KfmvxzV6rq0r
+         ujqbClIcRYWHW0TqYcGvnErylMA5Q9MFf0Y1Z9NG+NRsROq4GA+TbCD5FTpWUBbncFeQ
+         ByAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3c0Nh1nl7bfCKYDWMo6YBu1F2vfCDmy0MmjZnscBG0g=;
-        b=kFji/BCpfjtcUC6EBO+TKVhCV4lBlU2Whulq3Fg2fuLMsrvpi9VLVUcFPh+0m1TvAz
-         SjZRmplycIDdOKjdL/uJy7uZE3PLtIptELdE4rmrAwovfr8q+NwkJe7iWBMZIIq98uF7
-         kZubYAzqLt0Z4paQrSLqR6B9ZPvPxIY4yXVffEt1YZ0uSESBNJW8TlNG7cAdp7+5lYhJ
-         te3JIbmPIRrs8/Kd9OeaH4oCNZDn3mv3IzsgWgDPv0+p2ckSlvtCmUwGjC1O5LX8xrg+
-         AEVlBnpMDJUfkAPfiKK7oTfHhUPe/XjlUAW1I70bTN1Ohj7RhCY9mhyNj2TR5/LYNKQV
-         WVOw==
-X-Gm-Message-State: APjAAAXx/OOEoTEbk0NYA4UQqZiZR1FZXRrkGUr2p12iRjn6H7mFaYIT
-        caOoZwxlaOZccxuSSlZGxPBTGQ==
-X-Google-Smtp-Source: APXvYqyB7/z06H6vETxUm8/rkhpQb8b4m12tfU6RIXrGBDuo0eiAZgmNXMQX1rjx2aN/nQgrT/ztMQ==
-X-Received: by 2002:a5d:4ecc:: with SMTP id s12mr8554196wrv.73.1570774016719;
-        Thu, 10 Oct 2019 23:06:56 -0700 (PDT)
+        bh=8nnHdbTQ16topfNyNvCbsM6+K1YLerkiNwgQ4142ujw=;
+        b=O2SvDDFmh/WftLK6UvfTYTeKGudnLvFLCS/rLkviW0tgeJgPJT5prgn+V07vYRYupH
+         Z8SJp/NOOSpMd5zRe0rKjG/VhBjWOUjrM/7pWV8CjC6BthTr4W5ZhXCO0H6ImN9Vq5Al
+         NNYu2NEna2UzmPTiEYRDI1qrTAWHw9i22dSWYrpYBWCx5l4bnDcmO79atayBy0IEKlxO
+         HkNWlM7XN5e5mqsO6Ez60HWwUnqFTGfM5sDIdOobPx0tHpFuTEk9cvzvc9RjPVXWYd9H
+         D6+AKKahZzhKMQoTUow6Pb/sl/QhkwNy2Ir/WdseMJvHAxElIRdze+AzGMf8APLGMAye
+         kHJw==
+X-Gm-Message-State: APjAAAXpusNMgUQC+aBC8IJflBYi+f5a+eZ8g8bD9Ordv+u6DsCyIPUo
+        Aeg2veTg98P74xY4Q8c5wEoqcA==
+X-Google-Smtp-Source: APXvYqzJmfJGGAPKwvnppyTzbfzLxh8vOPMMhMObO6CIiiO7HVL4AbgLA3hiYEFwpH+Q9aMHW9SiOQ==
+X-Received: by 2002:a7b:c44f:: with SMTP id l15mr1703059wmi.121.1570774266123;
+        Thu, 10 Oct 2019 23:11:06 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id z22sm7618060wmf.2.2019.10.10.23.06.56
+        by smtp.gmail.com with ESMTPSA id m7sm9545306wrv.40.2019.10.10.23.11.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 23:06:56 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 08:06:55 +0200
+        Thu, 10 Oct 2019 23:11:05 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 08:11:05 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
         Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7 09/17] ethtool: generic handlers for GET
- requests
-Message-ID: <20191011060655.GE2901@nanopsycho>
-References: <cover.1570654310.git.mkubecek@suse.cz>
- <b000e461e348ba1a0af30f2e8493618bce11ec12.1570654310.git.mkubecek@suse.cz>
- <20191010135639.GJ2223@nanopsycho>
- <20191010180401.GD22163@unicorn.suse.cz>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] genetlink: do not parse attributes for
+ families with zero maxattr
+Message-ID: <20191011061105.GF2901@nanopsycho>
+References: <20191010103402.36408E378C@unicorn.suse.cz>
+ <20191010102102.3bc8515d@cakuba.netronome.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191010180401.GD22163@unicorn.suse.cz>
+In-Reply-To: <20191010102102.3bc8515d@cakuba.netronome.com>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Oct 10, 2019 at 08:04:01PM CEST, mkubecek@suse.cz wrote:
->On Thu, Oct 10, 2019 at 03:56:39PM +0200, Jiri Pirko wrote:
->> Wed, Oct 09, 2019 at 10:59:27PM CEST, mkubecek@suse.cz wrote:
-
-[...]
-
-
->> >+			   const struct nlmsghdr *nlhdr, struct net *net,
->> >+			   const struct get_request_ops *request_ops,
->> >+			   struct netlink_ext_ack *extack, bool require_dev)
->> >+{
->> >+	struct nlattr **tb;
->> >+	int ret;
->> >+
->> >+	tb = kmalloc_array(request_ops->max_attr + 1, sizeof(tb[0]),
->> >+			   GFP_KERNEL);
->> >+	if (!tb)
->> >+		return -ENOMEM;
->> >+
->> >+	ret = nlmsg_parse(nlhdr, GENL_HDRLEN, tb, request_ops->max_attr,
->> >+			  request_ops->request_policy, extack);
->> >+	if (ret < 0)
->> >+		goto out;
->> >+	ret = ethnl_parse_header(req_info, tb[request_ops->hdr_attr], net,
->> >+				 extack, request_ops->header_policy,
->> >+				 require_dev);
+Thu, Oct 10, 2019 at 07:21:02PM CEST, jakub.kicinski@netronome.com wrote:
+>On Thu, 10 Oct 2019 12:34:02 +0200 (CEST), Michal Kubecek wrote:
+>> Commit c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing
+>> to a separate function") moved attribute buffer allocation and attribute
+>> parsing from genl_family_rcv_msg_doit() into a separate function
+>> genl_family_rcv_msg_attrs_parse() which, unlike the previous code, calls
+>> __nlmsg_parse() even if family->maxattr is 0 (i.e. the family does its own
+>> parsing). The parser error is ignored and does not propagate out of
+>> genl_family_rcv_msg_attrs_parse() but an error message ("Unknown attribute
+>> type") is set in extack and if further processing generates no error or
+>> warning, it stays there and is interpreted as a warning by userspace.
 >> 
->> This is odd. It's the other way around in compare what I would expect.
->> There is a request-specific header attr that contains common header
->> attributes parsed in ethnl_parse_header.
+>> Dumpit requests are not affected as genl_family_rcv_msg_dumpit() bypasses
+>> the call of genl_family_rcv_msg_doit() if family->maxattr is zero. Do the
+>> same also in genl_family_rcv_msg_doit().
 >> 
->> Why don't you have the common header as a root then then have one nested
->> attr that would carry the request-specific attrs?
+>> Fixes: c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing to a separate function")
+>> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+>> ---
+>>  net/netlink/genetlink.c | 9 +++++----
+>>  1 file changed, 5 insertions(+), 4 deletions(-)
 >> 
->> Similar to how it is done in rtnl IFLA_INFO_KIND.
+>> diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+>> index ecc2bd3e73e4..1f14e55ad3ad 100644
+>> --- a/net/netlink/genetlink.c
+>> +++ b/net/netlink/genetlink.c
+>> @@ -639,21 +639,23 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
+>>  				    const struct genl_ops *ops,
+>>  				    int hdrlen, struct net *net)
+>>  {
+>> -	struct nlattr **attrbuf;
+>> +	struct nlattr **attrbuf = NULL;
+>>  	struct genl_info info;
+>>  	int err;
+>>  
+>>  	if (!ops->doit)
+>>  		return -EOPNOTSUPP;
+>>  
+>> +	if (!family->maxattr)
+>> +		goto no_attrs;
+>>  	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
+>>  						  ops, hdrlen,
+>>  						  GENL_DONT_VALIDATE_STRICT,
+>> -						  family->maxattr &&
+>>  						  family->parallel_ops);
+>>  	if (IS_ERR(attrbuf))
+>>  		return PTR_ERR(attrbuf);
+>>  
+>> +no_attrs:
 >
->To me, what you suggest feels much more odd. I thought about it last
->time, I thought about it now and the only reason for such layout I could
->come with would be to work around the unfortunate design flaw of the way
->validation and parsing is done in genetlink (see below).
+>The use of a goto statement as a replacement for an if is making me
+>uncomfortable. 
 >
->The situation with IFLA_INFO_KIND is a bit different, what you suggest
->would rather correspond to having only attributes common for all RTNL on
->top level and hiding all IFLA_* attributes into a nest (and the same
->with attributes specific to "ip addr", "ip route", "ip rule" etc.)
+>Looks like both callers of genl_family_rcv_msg_attrs_parse() jump
+>around it if !family->maxattr and then check the result with IS_ERR().
 >
->> You can parse the common stuff in pre_doit/start genl ops and you
->> don't have to explicitly call ethnl_parse_header.
->> Also, that would allow you to benefit from the genl doit/dumpit initial
->> attr parsing and save basically this whole function (alloc,parse).
->> 
->> Code would be much more simple to follow then.
->> 
->> Still seems to me that you use the generic netlink but you don't like
->> the infra too much so you make it up yourself again in parallel - that is
->> my feeling reading the code. I get the argument about the similarities
->> of the individual requests and why you have this request_ops (alhough I
->> don't like it too much).
->
->The only thing I don't like about the genetlink infrastructure is the
->design decision that policy and corresponding maxattr is an attribute of
->the family rather than a command. This forces anyone who wants to use it
->to essentially have one common message format for all commands and if
->that is not possible, to do what you suggest above, hide the actual
->request into a nest.
+>Would it not make more sense to have genl_family_rcv_msg_attrs_parse()
+>return NULL if !family->maxattr?
 
-But that is fine, the genetlink code would parse the common attributes
-for you according to the family, then you inside ethnl_get_doit prepare
-(alloc, parse) data for ops->prepare_data and other callbacks, according
-to per-request ops->policy and ops->maxattr.
-
-Then the request callbacks would get parsed attrs according to their
-type. And you can use similar technique for set dumpit/ops. Would be
-neat.
-
+Okay. Sounds fine to me.
 
 >
->Whether you use one common attribute type for "command specific nest" or
->different attribute for each request type, you do not actually make
->things simpler, you just move the complexity one level lower. You will
->still have to do your own (per request) parsing of the actual request,
->the only difference is that you will do it in a different place and use
->nla_parse_nested() rather than nlmsg_parse().
+>Just wondering, if you guys prefer this version I can apply..
 >
->Rather than bending the message layout to fit into the limitations of
->unified genetlink parsing, I prefer to keep the logical message
->structure and do the parsing on my own.
-
-You are going to still have it but the person looking at the traffic by
-nlmon would know what is happening and also you are going to use
-genetlink in non-abusive way :)
-
->
-
-[...]
+>>  	info.snd_seq = nlh->nlmsg_seq;
+>>  	info.snd_portid = NETLINK_CB(skb).portid;
+>>  	info.nlhdr = nlh;
+>> @@ -676,8 +678,7 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
+>>  		family->post_doit(ops, skb, &info);
+>>  
+>>  out:
+>> -	genl_family_rcv_msg_attrs_free(family, attrbuf,
+>> -				       family->maxattr && family->parallel_ops);
+>> +	genl_family_rcv_msg_attrs_free(family, attrbuf, family->parallel_ops);
+>>  
+>>  	return err;
+>>  }
