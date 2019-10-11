@@ -2,76 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2C2D3DDC
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 13:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7151CD3E12
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 13:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727856AbfJKLAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 07:00:42 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:33738 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726885AbfJKLAm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 07:00:42 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9BAwqRu041513;
-        Fri, 11 Oct 2019 11:00:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=RU6H+u3W39wz6yAaxIiIbW2yjZ/yh1LsvlPU+bZjROg=;
- b=MuWL7oGHEXrLsuUyyIEUiZNUPGnntbBNgjYDTnj+opzbl0ww0EbjHrQFZ7N47eJ140UB
- k4kWd7wZxq/9oU5RlavY/dSNVB+REVwZ1sA4+jc2MViCFEBdRU8aOYlk5PIg8Zd8yuY9
- UvrlvUuNmXgkyZyYcgCAQNGXRcVvli0dBrvZZhaAY60r3pNhINV4siUy1EACmSRwxFRt
- FibTfKtoIrRf6pZpC2O7M9OQKUu6PyVJaX30S18uVBpFGTk5ZldsL2ZeSHln4ovh7viT
- L7n+/qhxdMurKJocp48sgz9+juQnx4lLUA7ULMxDM06i4a78le22hOCBhBvykLl5iuK2 mg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 2vekts0m1y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Oct 2019 11:00:35 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9BAxSAo171121;
-        Fri, 11 Oct 2019 11:00:34 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3030.oracle.com with ESMTP id 2vjdykryvq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Oct 2019 11:00:34 +0000
-Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x9BB0RDr004965;
-        Fri, 11 Oct 2019 11:00:27 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 11 Oct 2019 11:00:26 +0000
-Date:   Fri, 11 Oct 2019 14:00:20 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Wambui Karuga <wambui.karugax@gmail.com>
-Cc:     outreachy-kernel@googlegroups.com, devel@driverdev.osuosl.org,
-        isdn@linux-pingi.de, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] staging: isdn: remove assignment in if conditionals
-Message-ID: <20191011110019.GC4774@kadam>
-References: <20191011072044.7022-1-wambui.karugax@gmail.com>
+        id S1727762AbfJKLQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 07:16:10 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:37702 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726935AbfJKLQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 07:16:10 -0400
+Received: by mail-lj1-f194.google.com with SMTP id l21so9442016lje.4
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 04:16:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:organization:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ooy01geSvoqL+GgWiguG5Arr/pkbSR9LEwm6vQ6trlA=;
+        b=FJGDUtGWD6dezMdpfiI3yfqw/RLXa3Cf5Y5p0xGMYaiScNsHdq6GDzLNWh5p1En1q0
+         eRQtdLRr1/D6U7+Q85XT3rS2ISqQiuliJAmkF/J0fC9tO1mut3EkSl4ckQrODTRDbJdU
+         SE36sc3svSCPDdHSMN0uQY3JTiTL9xr8ZTzeE4IQ0z4WYKvesc1H+lJWGNS1B3UvJgJx
+         arlORLWtfcvJ3hdtQRMkK1TK2MtcjnIxaexR8VaF/1B+qtq7HkJxYQivLhERG8DBNbBl
+         hQfb0LW2/xY1uof3a5oa/f9swp/JrzNMd0ITcgQudf+WS9jFD7yBHeENt5IvXwF77pU0
+         to2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=Ooy01geSvoqL+GgWiguG5Arr/pkbSR9LEwm6vQ6trlA=;
+        b=MYTOWw8zKb2mcjIa2RVoXLrleg0YEg8BPezoUJAp2byzLfKGiRpwGS5oMXpfQ9aZyO
+         B7ZH4sDbN6fbRtQcrsA5EoT4xDJMzuKPl76pkLFoulSjKKPd66ygzkpz11IcG3HTQdmi
+         v2xCaSGbjQdlzsrAr2EXIlo3xCAEb5sLwJ1eOxNEn4sm8H9o0y53NmyJEivQ+XfIqTuj
+         DD0X3vP66LeiZ1fuUfQu8G9El1CbjJRvrA0P0ejPDYKKvmMAuQXJ85cFgW90nZqY8ZHP
+         sCqwf0NwJ5mTsDM5YvtEncx3cK9ZDe5i4xix8O1fGO1W9LP23ctmvNjOoYgEVQaUNBNB
+         AWww==
+X-Gm-Message-State: APjAAAX9o0R/xxGCcsLqWhNsBpkLAhGN1W3TzsS/HjcqqQhqN92BT5hk
+        l7M9J6OMXYQe4G2ceel73386SQ==
+X-Google-Smtp-Source: APXvYqz+u6eneONfnjvqqaE8Uh0If4lrYaqqjy+4UFFpkLHI7cc3rLwOyRGvWtm0ePCkEkvTKscC4w==
+X-Received: by 2002:a2e:569a:: with SMTP id k26mr9075699lje.256.1570792567730;
+        Fri, 11 Oct 2019 04:16:07 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:4430:5cc6:e6ed:2da1:4d7:1d29])
+        by smtp.gmail.com with ESMTPSA id q26sm1857253lfd.53.2019.10.11.04.16.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 11 Oct 2019 04:16:06 -0700 (PDT)
+Subject: Re: [PATCH v5 bpf-next 09/15] samples/bpf: use own flags but not
+ HOSTCFLAGS
+To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
+        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org
+References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
+ <20191011002808.28206-10-ivan.khoronzhuk@linaro.org>
+ <99f76e2f-ed76-77e0-a470-36ae07567111@cogentembedded.com>
+ <20191011095715.GB3689@khorivan>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <3fb88a06-5253-1e48-9bea-2d31a443250b@cogentembedded.com>
+Date:   Fri, 11 Oct 2019 14:16:05 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191011072044.7022-1-wambui.karugax@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9406 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=750
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910110105
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9406 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=832 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910110105
+In-Reply-To: <20191011095715.GB3689@khorivan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This ISDN stuff is going to be deleted soon.  Just leave it as is.
+On 10/11/2019 12:57 PM, Ivan Khoronzhuk wrote:
 
-regards,
-dan carpenter
+>>> While compiling natively, the host's cflags and ldflags are equal to
+>>> ones used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it
+>>> should have own, used for target arch. While verification, for arm,
+>>
+>>   While verifying.
+> While verification stage.
 
+   While *in* verification stage, "while" doesn't combine with nouns w/o
+a preposition.
+
+>>> arm64 and x86_64 the following flags were used always:
+>>>
+>>> -Wall -O2
+>>> -fomit-frame-pointer
+>>> -Wmissing-prototypes
+>>> -Wstrict-prototypes
+>>>
+>>> So, add them as they were verified and used before adding
+>>> Makefile.target and lets omit "-fomit-frame-pointer" as were proposed
+>>> while review, as no sense in such optimization for samples.
+>>>
+>>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> [...]
+
+MBR, Sergei
