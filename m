@@ -2,87 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E13BD4901
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1848D48F0
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:23:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729332AbfJKUH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 16:07:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43942 "EHLO mail.kernel.org"
+        id S1729143AbfJKUGk convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Oct 2019 16:06:40 -0400
+Received: from mga14.intel.com ([192.55.52.115]:50453 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729032AbfJKUHz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 16:07:55 -0400
-Received: from quaco.ghostprotocols.net (189-94-137-67.3g.claro.net.br [189.94.137.67])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E95EC21D71;
-        Fri, 11 Oct 2019 20:07:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570824475;
-        bh=kTELg0aSgGbz3y/jOVlMLxq+KiT21lhseVqAnTvDyXg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KlOVfJeTODfrg+j0xN01NfI5LnlNLJ8PEwmrjxxknyWwzjJl8hy1+QhJyUKuoHKkC
-         uv6YM/42c1IkOqOtdBJO22VoyftJLa09POR7pZg1H2vg4XmSt7uoWJYyscLwG+u9yW
-         m0MGSUPP3r/w9N7FzOGte9RVXo1HYL/9MBPua3PU=
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        KP Singh <kpsingh@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 16/69] samples/bpf: fix build by setting HAVE_ATTR_TEST to zero
-Date:   Fri, 11 Oct 2019 17:05:06 -0300
-Message-Id: <20191011200559.7156-17-acme@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191011200559.7156-1-acme@kernel.org>
-References: <20191011200559.7156-1-acme@kernel.org>
+        id S1729129AbfJKUGj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 16:06:39 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 13:06:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,285,1566889200"; 
+   d="scan'208";a="194433064"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by fmsmga007.fm.intel.com with ESMTP; 11 Oct 2019 13:06:38 -0700
+Received: from orsmsx116.amr.corp.intel.com (10.22.240.14) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 11 Oct 2019 13:06:38 -0700
+Received: from orsmsx121.amr.corp.intel.com ([169.254.10.88]) by
+ ORSMSX116.amr.corp.intel.com ([169.254.7.232]) with mapi id 14.03.0439.000;
+ Fri, 11 Oct 2019 13:06:38 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+CC:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: RE: linux-next: Fixes tag needs some work in the net tree
+Thread-Topic: linux-next: Fixes tag needs some work in the net tree
+Thread-Index: AQHVf+n3tASYqcvLsUKPslnmzJJ6DKdV3oNQ
+Date:   Fri, 11 Oct 2019 20:06:38 +0000
+Message-ID: <02874ECE860811409154E81DA85FBB5896925B2B@ORSMSX121.amr.corp.intel.com>
+References: <20191011151117.46bc6981@canb.auug.org.au>
+In-Reply-To: <20191011151117.46bc6981@canb.auug.org.au>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNWY3NWE2YTEtZDgwNS00YWUzLTgxMTItZmVlZGYyNWZlOTJkIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiRERKXC9aOHVQYWt2a0lcL0JRM29ZRjZ5b3M1YmdKQXVBQ0M3XC9KcG91V1B4eUo1aDhvdm9HM0RvWDNSXC9ReTFMRWgifQ==
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.140]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of Stephen Rothwell
+> Sent: Thursday, October 10, 2019 9:11 PM
+> To: David Miller <davem@davemloft.net>; Networking
+> <netdev@vger.kernel.org>
+> Cc: Linux Next Mailing List <linux-next@vger.kernel.org>; Linux Kernel Mailing List
+> <linux-kernel@vger.kernel.org>; Keller, Jacob E <jacob.e.keller@intel.com>;
+> Jakub Kicinski <jakub.kicinski@netronome.com>
+> Subject: linux-next: Fixes tag needs some work in the net tree
+> 
+> Hi all,
+> 
+> In commit
+> 
+>   2168da459404 ("net: update net_dim documentation after rename")
+> 
+> Fixes tag
+> 
+>   Fixes: 8960b38932be ("linux/dim: Rename externally used net_dim members",
+> 2019-06-25)
+> 
+> has these problem(s):
+> 
+>   - Subject does not match target commit subject
+>     Just use
+> 	git log -1 --format='Fixes: %h ("%s")'
+> 
+> Fixes tag
+> 
+>   Fixes: c002bd529d71 ("linux/dim: Rename externally exposed macros", 2019-06-
+> 25)
+> 
+> has these problem(s):
+> 
+>   - Subject does not match target commit subject
+>     Just use
+> 	git log -1 --format='Fixes: %h ("%s")'
 
-To remove that test_attr__{enabled/open} are used by perf-sys.h, we
-set HAVE_ATTR_TEST to zero.
+Right, that was my mistake. I have an alias for this that is what was used by other projects (which prefer adding the date), and it's supposed to be set to only this in my local tree for the kernel, but not sure what happened there.
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-Tested-by: KP Singh <kpsingh@google.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191001113307.27796-3-bjorn.topel@gmail.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- samples/bpf/Makefile | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 1d9be26b4edd..42b571cde177 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -176,6 +176,7 @@ KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/bpf/
- KBUILD_HOSTCFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
- KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/ -I$(srctree)/tools/include
- KBUILD_HOSTCFLAGS += -I$(srctree)/tools/perf
-+KBUILD_HOSTCFLAGS += -DHAVE_ATTR_TEST=0
- 
- HOSTCFLAGS_bpf_load.o += -I$(objtree)/usr/include -Wno-unused-variable
- 
--- 
-2.21.0
-
+> --
+> Cheers,
+> Stephen Rothwell
