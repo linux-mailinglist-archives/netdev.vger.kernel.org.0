@@ -2,144 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84A7FD443A
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 17:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDFCBD4475
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 17:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728043AbfJKP34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 11:29:56 -0400
-Received: from mga02.intel.com ([134.134.136.20]:22180 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726328AbfJKP34 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 11:29:56 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 08:29:55 -0700
-X-IronPort-AV: E=Sophos;i="5.67,284,1566889200"; 
-   d="scan'208";a="206479218"
-Received: from ahduyck-desk1.jf.intel.com ([10.7.198.76])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 08:29:55 -0700
-Message-ID: <aa9462d4a48a47250d150e0f743bf08635ee9b72.camel@linux.intel.com>
-Subject: Re: [PATCH v2 1/3] igb: Add UDP segmentation offload support
-From:   Alexander Duyck <alexander.h.duyck@linux.intel.com>
-To:     Josh Hunt <johunt@akamai.com>, netdev@vger.kernel.org,
+        id S1727956AbfJKPes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 11:34:48 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:45699 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726692AbfJKPes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 11:34:48 -0400
+Received: by mail-qt1-f194.google.com with SMTP id c21so14406617qtj.12
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 08:34:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=ku8mWhse7myNTSgXVtERvtlltFxzJS4viFwKBsP2Kto=;
+        b=Cf3OVwn2GB9W+6JglhZoy9ftTzFsDTWIdhXgdup7BnPpRIyhP3OrWMkPzuoTjNJXAz
+         F1cwiqlbmuEEUmjfbVK4Mtiappiy5JXta5lo5rO7STGevmKQEFGFKu3tCM4bs+KE+22A
+         3rEBtX/jn0KTJ2H+NAb3qREQkEA9Ifpz61tvxufBcThzKg/O/W3T1YmVwqPoFeppd7f+
+         V6FcqdlbKQzk/a2cNPTZwCll1EjRRvgHgpz+JnBMuZ/Mhl18Gvx4UNlAgZs2vC5Xy+Ud
+         dC55fC+nJRpXpO3s7MBr+3rHb+DAivTtepUa8k7ML0YXdSpUdvonmMfjQ6hJEfiDjM+E
+         erdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=ku8mWhse7myNTSgXVtERvtlltFxzJS4viFwKBsP2Kto=;
+        b=CZGarVe31JfIWmRwEi9qhNZ+3WMJcg+tx79ZihuXObXEHgrhVuU6yLEs3VKDYWccGj
+         40QbrQ+b6dVD46WHEesJqOl5Q/8olMyigoOg90wYjjD8NFiYOJC14H08br12Zd42BrqY
+         NhDWrHT8gElCdH7z2GN6MILqTXjm6uJvuuNs0g+A8kdNPGwhPEWAJfoCvX8S/yQlnlPr
+         t4gNP9wJqtNnG3l2Ai8XJ5Gzsxg6seLcTmHK+U1f1EiH7vPRCWYrN1KJJKQBV0hIAZ6V
+         8nM5AqmADdv88PcsZwv4CteyJqCdqTvBWDopqGwkvjrH47LGO5xVdh32Caeh0Oz6Fucl
+         Um1w==
+X-Gm-Message-State: APjAAAVlMgxr/KroIC2lyqtvqx6YBNrHqY6sSz/TWhiikeit8Tx2NjZb
+        MoBffxqbWHKwvnLKL6axwHc=
+X-Google-Smtp-Source: APXvYqzEzjydg6QBuYj8zOq8a8Ah58ATsyNuijjtyXfebaBjZuavmVFZ5peOiGgYTxQurgIDAPuwiw==
+X-Received: by 2002:ac8:4915:: with SMTP id e21mr17846920qtq.69.1570808087106;
+        Fri, 11 Oct 2019 08:34:47 -0700 (PDT)
+Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
+        by smtp.gmail.com with ESMTPSA id z72sm4964437qka.115.2019.10.11.08.34.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 11 Oct 2019 08:34:46 -0700 (PDT)
+Subject: [next-queue PATCH v2 0/2] Address IRQ related crash seen due to
+ io_perm_failure
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+To:     alexander.h.duyck@linux.intel.com,
         intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com
-Cc:     willemb@google.com, sridhar.samudrala@intel.com,
-        aaron.f.brown@intel.com
-Date:   Fri, 11 Oct 2019 08:29:54 -0700
-In-Reply-To: <1570753502-6014-2-git-send-email-johunt@akamai.com>
-References: <1570753502-6014-1-git-send-email-johunt@akamai.com>
-         <1570753502-6014-2-git-send-email-johunt@akamai.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+Cc:     netdev@vger.kernel.org, zdai@us.ibm.com, zdai@linux.vnet.ibm.com
+Date:   Fri, 11 Oct 2019 08:34:44 -0700
+Message-ID: <20191011153219.22313.60179.stgit@localhost.localdomain>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-10-10 at 20:25 -0400, Josh Hunt wrote:
-> Based on a series from Alexander Duyck this change adds UDP segmentation
-> offload support to the igb driver.
-> 
-> CC: Alexander Duyck <alexander.h.duyck@intel.com>
-> CC: Willem de Bruijn <willemb@google.com>
-> Signed-off-by: Josh Hunt <johunt@akamai.com>
-> ---
->  drivers/net/ethernet/intel/igb/e1000_82575.h |  1 +
->  drivers/net/ethernet/intel/igb/igb_main.c    | 23 +++++++++++++++++------
->  2 files changed, 18 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.h b/drivers/net/ethernet/intel/igb/e1000_82575.h
-> index 6ad775b1a4c5..63ec253ac788 100644
-> --- a/drivers/net/ethernet/intel/igb/e1000_82575.h
-> +++ b/drivers/net/ethernet/intel/igb/e1000_82575.h
-> @@ -127,6 +127,7 @@ struct e1000_adv_tx_context_desc {
->  };
->  
->  #define E1000_ADVTXD_MACLEN_SHIFT    9  /* Adv ctxt desc mac len shift */
-> +#define E1000_ADVTXD_TUCMD_L4T_UDP 0x00000000  /* L4 Packet TYPE of UDP */
->  #define E1000_ADVTXD_TUCMD_IPV4    0x00000400  /* IP Packet Type: 1=IPv4 */
->  #define E1000_ADVTXD_TUCMD_L4T_TCP 0x00000800  /* L4 Packet TYPE of TCP */
->  #define E1000_ADVTXD_TUCMD_L4T_SCTP 0x00001000 /* L4 packet TYPE of SCTP */
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 105b0624081a..4131bc8b079e 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -2516,6 +2516,7 @@ igb_features_check(struct sk_buff *skb, struct net_device *dev,
->  	if (unlikely(mac_hdr_len > IGB_MAX_MAC_HDR_LEN))
->  		return features & ~(NETIF_F_HW_CSUM |
->  				    NETIF_F_SCTP_CRC |
-> +				    NETIF_F_GSO_UDP_L4 |
->  				    NETIF_F_HW_VLAN_CTAG_TX |
->  				    NETIF_F_TSO |
->  				    NETIF_F_TSO6);
-> @@ -2524,6 +2525,7 @@ igb_features_check(struct sk_buff *skb, struct net_device *dev,
->  	if (unlikely(network_hdr_len >  IGB_MAX_NETWORK_HDR_LEN))
->  		return features & ~(NETIF_F_HW_CSUM |
->  				    NETIF_F_SCTP_CRC |
-> +				    NETIF_F_GSO_UDP_L4 |
->  				    NETIF_F_TSO |
->  				    NETIF_F_TSO6);
->  
-> @@ -3120,7 +3122,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  			    NETIF_F_HW_CSUM;
->  
->  	if (hw->mac.type >= e1000_82576)
-> -		netdev->features |= NETIF_F_SCTP_CRC;
-> +		netdev->features |= NETIF_F_SCTP_CRC | NETIF_F_GSO_UDP_L4;
->  
->  	if (hw->mac.type >= e1000_i350)
->  		netdev->features |= NETIF_F_HW_TC;
-> @@ -5694,6 +5696,7 @@ static int igb_tso(struct igb_ring *tx_ring,
->  	} ip;
->  	union {
->  		struct tcphdr *tcp;
-> +		struct udphdr *udp;
->  		unsigned char *hdr;
->  	} l4;
->  	u32 paylen, l4_offset;
-> @@ -5713,7 +5716,8 @@ static int igb_tso(struct igb_ring *tx_ring,
->  	l4.hdr = skb_checksum_start(skb);
->  
->  	/* ADV DTYP TUCMD MKRLOC/ISCSIHEDLEN */
-> -	type_tucmd = E1000_ADVTXD_TUCMD_L4T_TCP;
-> +	type_tucmd = (!(skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)) ?
-> +		      E1000_ADVTXD_TUCMD_L4T_TCP : E1000_ADVTXD_TUCMD_L4T_UDP;
+David Dai had submitted a patch[1] to address a reported issue with e1000e
+calling pci_disable_msi without first freeing the interrupts. Looking over
+the issue it seems the problem was the fact that e1000e_down was being
+called in e1000_io_error_detected without calling e1000_free_irq, and this
+was resulting in e1000e_close skipping over the call to e1000e_down and
+e1000_free_irq.
 
-The logic here seems a bit convoluted. Instead of testing for
-'!SKB_GSO_UDP_L4' why not just make L4T_UDP the first option and drop the
-'!'? That will make the TCP offload the default case rather than the UDP
-offload.
+The use of the __E1000_DOWN flag for the close test seems to have come from
+the runtime power management changes that were made some time ago. From
+what I can tell in the close path we should be disabling runtime power
+management via a call to pm_runtime_get_sync. As such we can remove the
+test for the __E1000_DOWN bit. However in comparing this with other drivers
+we do need to avoid freeing the IRQs more than once. So in order to address
+that I have copied the approach taken in igb and taken it a bit further so
+that we will always detach the interface and if the interface is up we will
+bring it down and free the IRQs. In addition we are able to reuse some of
+the power management code so I have taken the opportunity to merge those
+bits.
 
-The same applies to the other 2 patches.
+[1]: https://lore.kernel.org/lkml/1570121672-12172-1-git-send-email-zdai@linux.vnet.ibm.com/
 
->  	/* initialize outer IP header fields */
->  	if (ip.v4->version == 4) {
-> @@ -5741,12 +5745,19 @@ static int igb_tso(struct igb_ring *tx_ring,
->  	/* determine offset of inner transport header */
->  	l4_offset = l4.hdr - skb->data;
->  
-> -	/* compute length of segmentation header */
-> -	*hdr_len = (l4.tcp->doff * 4) + l4_offset;
-> -
->  	/* remove payload length from inner checksum */
->  	paylen = skb->len - l4_offset;
-> -	csum_replace_by_diff(&l4.tcp->check, htonl(paylen));
-> +	if (type_tucmd & E1000_ADVTXD_TUCMD_L4T_TCP) {
-> +		/* compute length of segmentation header */
-> +		*hdr_len = (l4.tcp->doff * 4) + l4_offset;
-> +		csum_replace_by_diff(&l4.tcp->check,
-> +			(__force __wsum)htonl(paylen));
-> +	} else {
-> +		/* compute length of segmentation header */
-> +		*hdr_len = sizeof(*l4.udp) + l4_offset;
-> +		csum_replace_by_diff(&l4.udp->check,
-> +				     (__force __wsum)htonl(paylen));
-> +	}
->  
->  	/* update gso size and bytecount with header size */
->  	first->gso_segs = skb_shinfo(skb)->gso_segs;
+v2: Move e1000e_pm_thaw out of CONFIG_PM region to fix build issue on Sparc64
+
+---
+
+Alexander Duyck (2):
+      e1000e: Use rtnl_lock to prevent race conditions between net and pci/pm
+      e1000e: Drop unnecessary __E1000_DOWN bit twiddling
 
 
+ drivers/net/ethernet/intel/e1000e/netdev.c |   75 +++++++++++++---------------
+ 1 file changed, 36 insertions(+), 39 deletions(-)
+
+--
