@@ -2,157 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F5AD364E
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9E7D3651
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727947AbfJKAjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:39:55 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:34009 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727917AbfJKAjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:39:54 -0400
-Received: by mail-lj1-f196.google.com with SMTP id j19so8087499lja.1
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:39:52 -0700 (PDT)
+        id S1727986AbfJKAkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 20:40:05 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:34451 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727637AbfJKAkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:40:04 -0400
+Received: by mail-lf1-f68.google.com with SMTP id r22so5746273lfm.1
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:40:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netrounds-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=MDZWWB/Ud+l+MVtuAcfOL6WEx1UA5LiZUDvJuyzpvkg=;
-        b=hc3nIVQED6Uz8RMHE512mAme6wFesU8CViEQvM4PrDjUqlfQ6K2P2by391xa0v+8BD
-         b+i8xdFvIO11WDdZsnkvmC1Tv0EaTCs7bpJiwWW0yhUI6JQDT0mIwKmOhXAV3oZFvi7l
-         BM4l8uliYM+EBQl0GsE4CQr31jvf7BEdw+J4+N0TfyXGoffJ8osMuzmhtBwvVSxhD2h+
-         lP/sPZvblagaDj082R5f1ae61/HJLa0k3W7zwVR2qGNY+eIDsV4SvMyGBrd6Sv1hWh6M
-         Z8JDx+DD9EkVCV4Hg2UtGJnHBmcgrR4sel9eNncDjiCExkdH9wFUdG3yD4M0HhFONhXW
-         I8Vg==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QkzZR9OEPJLaUXXIdfh6gF0s61TBZnR/lxZWV3PihuE=;
+        b=UTddWIBiR1GAGxR+mVYGM2xyl/RvsIwM/NAHHgw54XYygmhj3i5UVV2I4PEAPeMN6C
+         gUnZcpxsnn/VIoSqeuT29NvcCnTBtQZZYIzezV5nhl7h4g7PLvfzBM9JLlGRzxCT3t2Z
+         V27bVV3SutbKjSG6fE1eHwplxGQDRN6z39JCyjIWMYGA/+VseS+1Fy34mOJ9AHdVA5AH
+         3C1Tm5Nh052pq5kI5hNpRdfIZf13CWV/RwRTcOz8sqXffvjbRwBESlTXGOtLlGBMADel
+         MFiIkKsyURq0OHNdEEPAgujRar/g74XGku51ImEHY3XnH6J7Re0MG9K7AQuvm1WQxIJG
+         lrQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MDZWWB/Ud+l+MVtuAcfOL6WEx1UA5LiZUDvJuyzpvkg=;
-        b=XRMafdfnWM/SzFgftlUCuig/WKzumQB4XcB89WhQEeQtTZAF11qAoNTOaK7tOZG7W+
-         Y9HEcPHVyrOf0G7soNbYBthulKiIAHPzzu8kz9FRdlYr7+ssNxekFtU5IybLzwalolJT
-         YtsgiHOTQ1ZAl/BopLXKFVeYjDBd5vHL9gHduaH7iay3sPXHYaJ2Wk5BnA3s0+AlvFRH
-         18N714Xmrcsnep3LWJM/GrVXXUgBDuGN/VXzDOxnQ5f7qdboslJJNghzR0dExL4ET1xn
-         kdO0PjMj1nUafDf1wt6fA53vOJnm/wPDGFAcBRNkFKJB5tluF53RIBAa6eOjD9NB73uo
-         qzew==
-X-Gm-Message-State: APjAAAWhaIMU4zJO7IhJ6Bd6/Kxkrhf0JWai7z2Ki+8IoYcxqpbPgJ9z
-        5FyHsgieRsg/06oPAF2KdXhnVG7auKM=
-X-Google-Smtp-Source: APXvYqwLtDb+QvkzAQUPXoIIcToYZ5I2J6+xh8y/t0HHV0IYXkrCo1M9n2dTnICXxEpHQ6XXx/vfkA==
-X-Received: by 2002:a2e:9890:: with SMTP id b16mr7091204ljj.153.1570754392048;
-        Thu, 10 Oct 2019 17:39:52 -0700 (PDT)
-Received: from [192.168.1.169] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id c26sm1789740ljj.45.2019.10.10.17.39.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Oct 2019 17:39:51 -0700 (PDT)
-Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
-To:     Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <d102074f-7489-e35a-98cf-e2cad7efd8a2@netrounds.com>
- <95c5a697932e19ebd6577b5dac4d7052fe8c4255.camel@redhat.com>
-From:   Jonas Bonn <jonas.bonn@netrounds.com>
-Message-ID: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
-Date:   Fri, 11 Oct 2019 02:39:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QkzZR9OEPJLaUXXIdfh6gF0s61TBZnR/lxZWV3PihuE=;
+        b=s2JcGOzg2hjrDsupAYlTE62if/KeAjPBC+CF4uoiV4o5bfg1r3v4PQeXeiA3Ekz9/D
+         4oUZCFScbO6l8yr7C9yKvlsMFpJfnseVTK5DIs1yx4nP8dVI8bzwY25oQpjFb03xZ8k8
+         j2uZHhYTxEEFD0hWnL6uwFE5/KL7X7Jy7VKIxeA4dF4JXwIwuGKXhejiVDeHpiynUjUb
+         EjtxpbbZFPjINQqXkz0LrDLGJjpymCaKXEFy6F4458C3trbbdXHGVcvcY5arIJik6XSG
+         hb+vWpKQ9TnS1e8teQUmNHBGgtgSxqbWQ86i3aomFbU5NArplna116bT9kZA2wzaz3Ue
+         GIYg==
+X-Gm-Message-State: APjAAAUZE2WzkoeStURoTY8UE8J+jXdAzUDjLuwdeYEpIIKSJT+Z9TnI
+        4aKfyU2/WZwF1P4XmWqAFhGyP9FRNJJRIefutGgZ
+X-Google-Smtp-Source: APXvYqy/DOSZitDBR7TqyrESxgPgD+yFqEzNoecNTAToFNbWp+w16SQ8prdItu7++b4q9m+f88vJY4RLR7eP7fAj9Y0=
+X-Received: by 2002:a19:c7cf:: with SMTP id x198mr7323383lff.158.1570754401856;
+ Thu, 10 Oct 2019 17:40:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <95c5a697932e19ebd6577b5dac4d7052fe8c4255.camel@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1568834524.git.rgb@redhat.com> <18f14bfbffc30c53c2b1dd06694b69ef286f3b72.1568834524.git.rgb@redhat.com>
+In-Reply-To: <18f14bfbffc30c53c2b1dd06694b69ef286f3b72.1568834524.git.rgb@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 10 Oct 2019 20:39:50 -0400
+Message-ID: <CAHC9VhQNWP-UhnXRoDWQDcWAOB6KkW3S0uhbJ_Z+9zGNteVwRw@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V7 13/21] audit: NETFILTER_PKT: record each
+ container ID associated with a netNS
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
+        mpatel@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
-
-On 09/10/2019 21:14, Paolo Abeni wrote:
-> Something alike the following code - completely untested - can possibly
-> address the issue, but it's a bit rough and I would prefer not adding
-> additonal complexity to the lockless qdiscs, can you please have a spin
-> a it?
-
-We've tested a couple of variants of this patch today, but unfortunately 
-it doesn't fix the problem of packets getting stuck in the queue.
-
-A couple of comments:
-
-i) On 5.4, there is the BYPASS path that also needs the same treatment 
-as it's essentially replicating the behavour of qdisc_run, just without 
-the queue/dequeue steps
-
-ii)  We are working a lot with the 4.19 kernel so I backported to the 
-patch to this version and tested there.  Here the solution would seem to 
-be more robust as the BYPASS path does not exist.
-
-Unfortunately, in both cases we continue to see the issue of the "last 
-packet" getting stuck in the queue.
-
-/Jonas
-
-
-> 
-> Thanks,
-> 
-> Paolo
+On Wed, Sep 18, 2019 at 9:26 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> Add audit container identifier auxiliary record(s) to NETFILTER_PKT
+> event standalone records.  Iterate through all potential audit container
+> identifiers associated with a network namespace.
+>
+> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
 > ---
-> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> index 6a70845bd9ab..65a1c03330d6 100644
-> --- a/include/net/pkt_sched.h
-> +++ b/include/net/pkt_sched.h
-> @@ -113,18 +113,23 @@ bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
->   		     struct net_device *dev, struct netdev_queue *txq,
->   		     spinlock_t *root_lock, bool validate);
->   
-> -void __qdisc_run(struct Qdisc *q);
-> +int __qdisc_run(struct Qdisc *q);
->   
->   static inline void qdisc_run(struct Qdisc *q)
->   {
-> +	int quota = 0;
+>  include/linux/audit.h    |  5 +++++
+>  kernel/audit.c           | 39 +++++++++++++++++++++++++++++++++++++++
+>  net/netfilter/nft_log.c  | 11 +++++++++--
+>  net/netfilter/xt_AUDIT.c | 11 +++++++++--
+>  4 files changed, 62 insertions(+), 4 deletions(-)
+
+This should be squashed together with patch 12/21; neither patch makes
+sense by themselves.
+
+> diff --git a/include/linux/audit.h b/include/linux/audit.h
+> index 73e3ab38e3e0..dcd92f964120 100644
+> --- a/include/linux/audit.h
+> +++ b/include/linux/audit.h
+> @@ -241,6 +241,8 @@ static inline u64 audit_get_contid(struct task_struct *tsk)
+>  extern void audit_netns_contid_del(struct net *net, u64 contid);
+>  extern void audit_switch_task_namespaces(struct nsproxy *ns,
+>                                          struct task_struct *p);
+> +extern void audit_log_netns_contid_list(struct net *net,
+> +                                       struct audit_context *context);
+>
+>  extern u32 audit_enabled;
+>
+> @@ -328,6 +330,9 @@ static inline void audit_netns_contid_del(struct net *net, u64 contid)
+>  static inline void audit_switch_task_namespaces(struct nsproxy *ns,
+>                                                 struct task_struct *p)
+>  { }
+> +static inline void audit_log_netns_contid_list(struct net *net,
+> +                                              struct audit_context *context)
+> +{ }
+>
+>  #define audit_enabled AUDIT_OFF
+>
+> diff --git a/kernel/audit.c b/kernel/audit.c
+> index e0c27bc39925..9ce7a1ec7a92 100644
+> --- a/kernel/audit.c
+> +++ b/kernel/audit.c
+> @@ -450,6 +450,45 @@ void audit_switch_task_namespaces(struct nsproxy *ns, struct task_struct *p)
+>                 audit_netns_contid_add(new->net_ns, contid);
+>  }
+>
+> +/**
+> + * audit_log_netns_contid_list - List contids for the given network namespace
+> + * @net: the network namespace of interest
+> + * @context: the audit context to use
+> + *
+> + * Description:
+> + * Issues a CONTAINER_ID record with a CSV list of contids associated
+> + * with a network namespace to accompany a NETFILTER_PKT record.
+> + */
+> +void audit_log_netns_contid_list(struct net *net, struct audit_context *context)
+> +{
+> +       struct audit_buffer *ab = NULL;
+> +       struct audit_contid *cont;
+> +       struct audit_net *aunet;
 > +
->   	if (qdisc_run_begin(q)) {
->   		/* NOLOCK qdisc must check 'state' under the qdisc seqlock
->   		 * to avoid racing with dev_qdisc_reset()
->   		 */
->   		if (!(q->flags & TCQ_F_NOLOCK) ||
->   		    likely(!test_bit(__QDISC_STATE_DEACTIVATED, &q->state)))
-> -			__qdisc_run(q);
-> +			quota = __qdisc_run(q);
->   		qdisc_run_end(q);
+> +       /* Generate AUDIT_CONTAINER_ID record with container ID CSV list */
+> +       rcu_read_lock();
+> +       aunet = net_generic(net, audit_net_id);
+> +       if (!aunet)
+> +               goto out;
+> +       list_for_each_entry_rcu(cont, &aunet->contid_list, list) {
+> +               if (!ab) {
+> +                       ab = audit_log_start(context, GFP_ATOMIC,
+> +                                            AUDIT_CONTAINER_ID);
+> +                       if (!ab) {
+> +                               audit_log_lost("out of memory in audit_log_netns_contid_list");
+> +                               goto out;
+> +                       }
+> +                       audit_log_format(ab, "contid=");
+> +               } else
+> +                       audit_log_format(ab, ",");
+> +               audit_log_format(ab, "%llu", cont->id);
+> +       }
+> +       audit_log_end(ab);
+> +out:
+> +       rcu_read_unlock();
+> +}
+> +EXPORT_SYMBOL(audit_log_netns_contid_list);
 > +
-> +		if (quota > 0 && q->flags & TCQ_F_NOLOCK && q->ops->peek(q))
-> +			__netif_schedule(q);
->   	}
->   }
->   
-> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> index 17bd8f539bc7..013480f6a794 100644
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -376,7 +376,7 @@ static inline bool qdisc_restart(struct Qdisc *q, int *packets)
->   	return sch_direct_xmit(skb, q, dev, txq, root_lock, validate);
->   }
->   
-> -void __qdisc_run(struct Qdisc *q)
-> +int __qdisc_run(struct Qdisc *q)
->   {
->   	int quota = dev_tx_weight;
->   	int packets;
-> @@ -390,9 +390,10 @@ void __qdisc_run(struct Qdisc *q)
->   		quota -= packets;
->   		if (quota <= 0 || need_resched()) {
->   			__netif_schedule(q);
-> -			break;
-> +			return 0;
->   		}
->   	}
-> +	return quota;
->   }
->   
->   unsigned long dev_trans_start(struct net_device *dev)
-> 
+>  void audit_panic(const char *message)
+>  {
+>         switch (audit_failure) {
+> diff --git a/net/netfilter/nft_log.c b/net/netfilter/nft_log.c
+> index fe4831f2258f..98d1e7e1a83c 100644
+> --- a/net/netfilter/nft_log.c
+> +++ b/net/netfilter/nft_log.c
+> @@ -66,13 +66,16 @@ static void nft_log_eval_audit(const struct nft_pktinfo *pkt)
+>         struct sk_buff *skb = pkt->skb;
+>         struct audit_buffer *ab;
+>         int fam = -1;
+> +       struct audit_context *context;
+> +       struct net *net;
+>
+>         if (!audit_enabled)
+>                 return;
+>
+> -       ab = audit_log_start(NULL, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
+> +       context = audit_alloc_local(GFP_ATOMIC);
+> +       ab = audit_log_start(context, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
+>         if (!ab)
+> -               return;
+> +               goto errout;
+>
+>         audit_log_format(ab, "mark=%#x", skb->mark);
+>
+> @@ -99,6 +102,10 @@ static void nft_log_eval_audit(const struct nft_pktinfo *pkt)
+>                 audit_log_format(ab, " saddr=? daddr=? proto=-1");
+>
+>         audit_log_end(ab);
+> +       net = xt_net(&pkt->xt);
+> +       audit_log_netns_contid_list(net, context);
+> +errout:
+> +       audit_free_context(context);
+>  }
+>
+>  static void nft_log_eval(const struct nft_expr *expr,
+> diff --git a/net/netfilter/xt_AUDIT.c b/net/netfilter/xt_AUDIT.c
+> index 9cdc16b0d0d8..ecf868a1abde 100644
+> --- a/net/netfilter/xt_AUDIT.c
+> +++ b/net/netfilter/xt_AUDIT.c
+> @@ -68,10 +68,13 @@ static bool audit_ip6(struct audit_buffer *ab, struct sk_buff *skb)
+>  {
+>         struct audit_buffer *ab;
+>         int fam = -1;
+> +       struct audit_context *context;
+> +       struct net *net;
+>
+>         if (audit_enabled == AUDIT_OFF)
+> -               goto errout;
+> -       ab = audit_log_start(NULL, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
+> +               goto out;
+> +       context = audit_alloc_local(GFP_ATOMIC);
+> +       ab = audit_log_start(context, GFP_ATOMIC, AUDIT_NETFILTER_PKT);
+>         if (ab == NULL)
+>                 goto errout;
+>
+> @@ -101,7 +104,11 @@ static bool audit_ip6(struct audit_buffer *ab, struct sk_buff *skb)
+>
+>         audit_log_end(ab);
+>
+> +       net = xt_net(par);
+> +       audit_log_netns_contid_list(net, context);
+>  errout:
+> +       audit_free_context(context);
+> +out:
+>         return XT_CONTINUE;
+>  }
+>
+
+--
+paul moore
+www.paul-moore.com
