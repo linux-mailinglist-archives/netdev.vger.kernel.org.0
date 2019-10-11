@@ -2,102 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B78D3600
+	by mail.lfdr.de (Postfix) with ESMTP id F2DEED3601
 	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:32:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727960AbfJKA31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:29:27 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:42477 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727674AbfJKA2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:28:35 -0400
-Received: by mail-lf1-f65.google.com with SMTP id c195so5709977lfg.9
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:28:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=03GhUEVVPKzA4TMKrHg2hN3Csg5CX1o2irsu+gSocso=;
-        b=lgPdUOsdWvm3NrU+k0qDkNxtB02GwhSc5KwzTrCweHYaxGN3NwSL194iDLlMKbHnkv
-         HQsLrmFRtK/MtY3s/t6lnF+dn79c9z+krOQUQchJEDuQ1x5wj40QtHKQGOOzwMr6pRkZ
-         m5Vkk9C5vFXa/NWObQzlISQO4YdbJs44MBjE2Xjous5QWHXDZlr5DcIOTBFHkyeEGG61
-         WF5Q7LTNZe3DrJVHzyS/VSxTW8rou+w2JR/RdhCDReKxj3Ac/8BRWjvZzNJle1gTsy0r
-         gvhuogyNpORJ/IMHS8eJ+Y6UViz1GyjAt2gUp2tjQrsb1BfdiOFJaLYy7NLhBHyRChj0
-         y2Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=03GhUEVVPKzA4TMKrHg2hN3Csg5CX1o2irsu+gSocso=;
-        b=k+w7Di3MUz7RrmWwyDxEzSf2EUiIJckE1+nFefEDeQP5i5OB/rAJYoBZrrcIah4cyo
-         RZYMulr4sc5npBQCXgskyZWR3FMvT8qQXFT4kxzBeVXInC138hQyL7d0X7HOIV4tk53O
-         V5SEepFygqRneNTQ4UFeZ0hKYYIjoCBK6TnZy5c5Kgi+JyDhLSPYmItBrfcJ9AWNciGf
-         4T+iHbB5T7hyv6BGXGOKgKiINA3bUdyObjp0cO8gQj+03XUIZfl0qo0tZcJeXXFlx1nK
-         Z48vjJxN8sg4bhePzSFMfE4rHFdzpqcgD0A6rBZYG886Ntvur8moPpyF4e41tim10lEr
-         egQQ==
-X-Gm-Message-State: APjAAAXTWWZ+nOMUgPdlWBwM/FjcKM6h2w6GhV4LsRyGicXJFEbLWz7D
-        qGS1VQQxwovngn8jRMniwT7SyQ==
-X-Google-Smtp-Source: APXvYqy0DvtjgGiKI7+n5Ix8WqhnukzK5KufDqlv4+eYNhjK3Y4l+UKA9J1K50qMit1NFTou4C7DEA==
-X-Received: by 2002:ac2:43d9:: with SMTP id u25mr7678515lfl.142.1570753713044;
-        Thu, 10 Oct 2019 17:28:33 -0700 (PDT)
-Received: from localhost.localdomain (88-201-94-178.pool.ukrtel.net. [178.94.201.88])
-        by smtp.gmail.com with ESMTPSA id 126sm2367010lfh.45.2019.10.10.17.28.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 17:28:32 -0700 (PDT)
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
-        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        ilias.apalodimas@linaro.org, sergei.shtylyov@cogentembedded.com,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH v5 bpf-next 09/15] samples/bpf: use own flags but not HOSTCFLAGS
-Date:   Fri, 11 Oct 2019 03:28:02 +0300
-Message-Id: <20191011002808.28206-10-ivan.khoronzhuk@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
-References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
+        id S1727966AbfJKA33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 20:29:29 -0400
+Received: from mga11.intel.com ([192.55.52.93]:45665 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727674AbfJKA32 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 20:29:28 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 17:29:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,281,1566889200"; 
+   d="scan'208";a="277958063"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by orsmga001.jf.intel.com with ESMTP; 10 Oct 2019 17:29:27 -0700
+Received: from orsmsx125.amr.corp.intel.com (10.22.240.125) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 10 Oct 2019 17:29:27 -0700
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.9]) by
+ ORSMSX125.amr.corp.intel.com ([169.254.3.216]) with mapi id 14.03.0439.000;
+ Thu, 10 Oct 2019 17:29:26 -0700
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Josh Hunt <johunt@akamai.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>
+CC:     Netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [PATCH 0/3] igb, ixgbe, i40e UDP segmentation offload support
+Thread-Topic: [PATCH 0/3] igb, ixgbe, i40e UDP segmentation offload support
+Thread-Index: AQHVf7AvEuwAIS+ExU2JBy/0UpLthKdU2m0AgAArTAD//428AIAAd+iA//+K9NA=
+Date:   Fri, 11 Oct 2019 00:29:26 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B9714C792@ORSMSX103.amr.corp.intel.com>
+References: <1570658777-13459-1-git-send-email-johunt@akamai.com>
+ <CAKgT0UdBPYRnwAuOGhCBAJSRhdHcnw28Tznr0GPAtqe-JWFjTQ@mail.gmail.com>
+ <cd8ac880-61fe-b064-6271-993e8c6eee65@akamai.com>
+ <CAKgT0UfXgzur2TGv1dNw0PQXAP0C=bNoJY6gnthASeQrHr66AA@mail.gmail.com>
+ <0e0e706c-4ce9-c27a-af55-339b4eb6d524@akamai.com>
+ <309B89C4C689E141A5FF6A0C5FB2118B9714C727@ORSMSX103.amr.corp.intel.com>
+ <71a74c86-18b6-5c6a-8663-e558c43af682@akamai.com>
+In-Reply-To: <71a74c86-18b6-5c6a-8663-e558c43af682@akamai.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMjEzY2JiODEtYjllOC00ZDY3LWFlN2YtODFlNjQzYWRmMDk4IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiS3l0SDJKS2RwNzhWcVdnYXF3VXJKbzVCdzVNRVNqbjV5WjVHV1BXbnRSYUpVSzg5OUlHaklta0RWc3JWM1VjeSJ9
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While compiling natively, the host's cflags and ldflags are equal to
-ones used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it
-should have own, used for target arch. While verification, for arm,
-arm64 and x86_64 the following flags were used always:
-
--Wall -O2
--fomit-frame-pointer
--Wmissing-prototypes
--Wstrict-prototypes
-
-So, add them as they were verified and used before adding
-Makefile.target and lets omit "-fomit-frame-pointer" as were proposed
-while review, as no sense in such optimization for samples.
-
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
- samples/bpf/Makefile | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 91bfb421c278..57a15ff938a6 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -176,8 +176,10 @@ BPF_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
- TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
- endif
- 
--TPROGS_LDLIBS := $(KBUILD_HOSTLDLIBS)
--TPROGS_CFLAGS += $(KBUILD_HOSTCFLAGS) $(HOST_EXTRACFLAGS)
-+TPROGS_CFLAGS += -Wall -O2
-+TPROGS_CFLAGS += -Wmissing-prototypes
-+TPROGS_CFLAGS += -Wstrict-prototypes
-+
- TPROGS_CFLAGS += -I$(objtree)/usr/include
- TPROGS_CFLAGS += -I$(srctree)/tools/lib/bpf/
- TPROGS_CFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
--- 
-2.17.1
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9zaCBIdW50IFttYWls
+dG86am9odW50QGFrYW1haS5jb21dDQo+IFNlbnQ6IFRodXJzZGF5LCBPY3RvYmVyIDEwLCAyMDE5
+IDU6MjggUE0NCj4gVG86IEJyb3duLCBBYXJvbiBGIDxhYXJvbi5mLmJyb3duQGludGVsLmNvbT47
+IEFsZXhhbmRlciBEdXljaw0KPiA8YWxleGFuZGVyLmR1eWNrQGdtYWlsLmNvbT47IEJvd2Vycywg
+QW5kcmV3WA0KPiA8YW5kcmV3eC5ib3dlcnNAaW50ZWwuY29tPg0KPiBDYzogTmV0ZGV2IDxuZXRk
+ZXZAdmdlci5rZXJuZWwub3JnPjsgV2lsbGVtIGRlIEJydWlqbg0KPiA8d2lsbGVtYkBnb29nbGUu
+Y29tPjsgaW50ZWwtd2lyZWQtbGFuIDxpbnRlbC13aXJlZC1sYW5AbGlzdHMub3N1b3NsLm9yZz4N
+Cj4gU3ViamVjdDogUmU6IFtQQVRDSCAwLzNdIGlnYiwgaXhnYmUsIGk0MGUgVURQIHNlZ21lbnRh
+dGlvbiBvZmZsb2FkIHN1cHBvcnQNCj4gDQo+IE9uIDEwLzEwLzE5IDU6MjEgUE0sIEJyb3duLCBB
+YXJvbiBGIHdyb3RlOg0KPiA+IEFkZGluZyBBbmRyZXcgYXMgaGUgaXMgbW9zdCBsaWtlbHkgZ29p
+bmcgdG8gYmUgdGVzdGluZyB0aGlzIHBhdGNoLg0KPiA+DQo+ID4gVW5mb3J0dW5hdGVseSBteSBt
+YWlsIHNlcnZlciBmbGFncyBhdHRhY2hlZCBzY3JpcHRzIGFzIHBvdGVudGlhbCB0aHJlYXRzIGFu
+ZA0KPiBzdHJpcHMgdGhlbSBvdXQuICBDYW4geW91IHJlc2VudCBpdCBhcyBhbiB0YXIgZmlsZT8g
+IEkgZG9uJ3QgYmVsaWV2ZSBpdCdzIHNtYXJ0DQo+IGVub3VnaCB0byBvcGVuIHVwIHRhciBhbmQg
+ZmxhZyBpdCBhcyBhIHNjcmlwdC4NCj4gPg0KPiANCj4gSGkgQWFyb24NCj4gDQo+IEl0IGxvb2tz
+IGxpa2UgdGhlIG5ldGRldiBhcmNoaXZlIGhhcyB0aGUgZmlsZS4gQ2FuIHlvdSB0cnkgZ3JhYmJp
+bmcgaXQNCj4gZnJvbSBoZXJlPw0KDQpZZXMsIEkgY2FuLiAgVGhhbmtzLg0KDQo+IA0KPiBodHRw
+czovL2xvcmUua2VybmVsLm9yZy9uZXRkZXYvMGUwZTcwNmMtNGNlOS1jMjdhLWFmNTUtDQo+IDMz
+OWI0ZWI2ZDUyNEBha2FtYWkuY29tLzItdWRwZ3NvX2JlbmNoLnNoDQo+IA0KPiBJZiB0aGF0IGRv
+ZXNuJ3Qgd29yayBJIGNhbiB0cnkgeW91ciB0YXIgd29ya2Fyb3VuZC4NCj4gDQo+IFRoYW5rcw0K
+PiBKb3NoDQo=
