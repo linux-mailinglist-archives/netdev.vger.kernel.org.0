@@ -2,99 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE5DD38B8
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 07:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A708D38EF
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 07:53:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726407AbfJKFia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 01:38:30 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:46134 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726116AbfJKFia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 01:38:30 -0400
-Received: by mail-ed1-f67.google.com with SMTP id t3so7523887edw.13
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 22:38:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=sx1bj19NEv6IpbiCrguHwoL1VpsxdRk7Yar5uIZ1It0=;
-        b=EbDJhGqOVfLcrFf+Rxoy2ermIfzKpcAluw5m+tv5XrYZuIpGyEtxvq6LH9ZPVJsg7L
-         Wqt4TwF0s4YE9X0UuidVNoREy/AgLVTpkhxq94j4f3kWHnO2kTHKbn/eI0v5a9BF+iB6
-         uwk6VkMr/P4BI+S4QVBoSCsKN4guBbaPBzTme9kSjIAVt8tgFUME9HOHJCBhNaKI2S7J
-         s7kq1cSLtbX5rCDwOSGX6AE6LtxwBULsphfJ3tDilABFcn2poBxJjadw0avC/rp8ct0t
-         pie8Yy4B1oi8G3C+yeP3wxqvgMhXCgD6Hv/OahCcoW3u4ugDpweVhvT0zOlTzgYMrhcL
-         cZPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=sx1bj19NEv6IpbiCrguHwoL1VpsxdRk7Yar5uIZ1It0=;
-        b=fZEjmtvDX+JZrVdVVu1n+FCkurnpajoO0Hbf1ZJBCHTBA6mtcIYCmn4EgdYOW5SEn2
-         LovI8tqwcTiXQWjca8+cqiNyq8ySjMZ5GscYpDIxPiJATeqmInokOZ0iXz0x1SNbA5kt
-         Nw5eT41vvRtfNryHWx+RuVgOxmxmCcM+gFdUm8q7aPCWRaHLcG0XoZp5fbIvTHb3NT5e
-         +eGIDsY8CjWVRW73IYR93Dx8s5CcyOKK/VH0U/p39AD2wbZOtups2hqu7fX9gN+bZPa5
-         li3r9WFK6sVyyKTpzE568VuNa7BvFnW+sfr8Yz7OmNuVGmE+kIq7NOsSfBOaRR7yjT/x
-         i2Pw==
-X-Gm-Message-State: APjAAAWmC74B5itb3pWHO11yh7OmI53/EeV1ziobz4rYWyO2fNSiYCDq
-        GeDCYhm+cu8OaWoQ+C58OGTp3ehg94Q=
-X-Google-Smtp-Source: APXvYqypf66TDQVfrWstIHps9hn3m3sIxSwDhPjNw9FephK9kWBEj+5EAlrLoVW0rKsJPD8C7CfBDA==
-X-Received: by 2002:a17:906:8308:: with SMTP id j8mr12229166ejx.29.1570772308913;
-        Thu, 10 Oct 2019 22:38:28 -0700 (PDT)
-Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
-        by smtp.gmail.com with ESMTPSA id m1sm1281966edq.83.2019.10.10.22.38.28
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 10 Oct 2019 22:38:28 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 07:38:27 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net 1/4] net: aquantia: temperature retrieval fix
-Message-ID: <20191011053826.d3mppta6xzw7wx6j@netronome.com>
-References: <cover.1570708006.git.igor.russkikh@aquantia.com>
- <8167dd20577261b78fbbd8bcad6c9605f510508b.1570708006.git.igor.russkikh@aquantia.com>
+        id S1726755AbfJKFxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 01:53:18 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:2448 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726174AbfJKFxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 01:53:18 -0400
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9B5psw6008514
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 01:53:17 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vjbndv829-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 01:53:15 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <clg@kaod.org>;
+        Fri, 11 Oct 2019 06:53:08 +0100
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 11 Oct 2019 06:53:07 +0100
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9B5r4P245875388
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Oct 2019 05:53:04 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6FAC24C04E;
+        Fri, 11 Oct 2019 05:53:04 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 594AC4C044;
+        Fri, 11 Oct 2019 05:53:04 +0000 (GMT)
+Received: from smtp.tls.ibm.com (unknown [9.101.4.1])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 11 Oct 2019 05:53:04 +0000 (GMT)
+Received: from yukon.kaod.org.com (sig-9-145-63-191.uk.ibm.com [9.145.63.191])
+        by smtp.tls.ibm.com (Postfix) with ESMTP id 844492200D8;
+        Fri, 11 Oct 2019 07:53:03 +0200 (CEST)
+From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+To:     Juliet Kim <julietk@linux.vnet.ibm.com>,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Cc:     John Allen <jallen@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+Subject: [PATCH] net/ibmvnic: Fix EOI when running in XIVE mode.
+Date:   Fri, 11 Oct 2019 07:52:54 +0200
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <8167dd20577261b78fbbd8bcad6c9605f510508b.1570708006.git.igor.russkikh@aquantia.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+X-TM-AS-GCONF: 00
+x-cbid: 19101105-4275-0000-0000-0000037112B8
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19101105-4276-0000-0000-000038841C94
+Message-Id: <20191011055254.8347-1-clg@kaod.org>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-11_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=624 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910110055
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 02:01:22PM +0000, Igor Russkikh wrote:
-> Chip temperature is a two byte word, colocated internally with cable
-> length data. We do all readouts from HW memory by dwords, thus
-> we should clear extra high bytes, otherwise temperature output
-> gets weird as soon as we attach a cable to the NIC.
-> 
-> Fixes: 8f8940118654 ("net: aquantia: add infrastructure to readout chip temperature")
-> Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-> Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-> ---
->  .../net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c   | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-> index da726489e3c8..08b026b41571 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-> @@ -337,7 +337,7 @@ static int aq_fw2x_get_phy_temp(struct aq_hw_s *self, int *temp)
->  	/* Convert PHY temperature from 1/256 degree Celsius
->  	 * to 1/1000 degree Celsius.
->  	 */
-> -	*temp = temp_res  * 1000 / 256;
-> +	*temp = (temp_res & 0xFFFF)  * 1000 / 256;
+pSeries machines on POWER9 processors can run with the XICS (legacy)
+interrupt mode or with the XIVE exploitation interrupt mode. These
+interrupt contollers have different interfaces for interrupt
+management : XICS uses hcalls and XIVE loads and stores on a page.
+H_EOI being a XICS interface the enable_scrq_irq() routine can fail
+when the machine runs in XIVE mode.
 
-Perhaps while the extra space before '*' could be dropped at the same time.
+Fix that by calling the EOI handler of the interrupt chip.
 
->  
->  	return 0;
->  }
-> -- 
-> 2.17.1
-> 
+Fixes: f23e0643cd0b ("ibmvnic: Clear pending interrupt after device reset")
+Signed-off-by: Cédric Le Goater <clg@kaod.org>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 2b073a3c0b84..f59d9a8e35e2 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2878,12 +2878,10 @@ static int enable_scrq_irq(struct ibmvnic_adapter *adapter,
+ 
+ 	if (test_bit(0, &adapter->resetting) &&
+ 	    adapter->reset_reason == VNIC_RESET_MOBILITY) {
+-		u64 val = (0xff000000) | scrq->hw_irq;
++		struct irq_desc *desc = irq_to_desc(scrq->irq);
++		struct irq_chip *chip = irq_desc_get_chip(desc);
+ 
+-		rc = plpar_hcall_norets(H_EOI, val);
+-		if (rc)
+-			dev_err(dev, "H_EOI FAILED irq 0x%llx. rc=%ld\n",
+-				val, rc);
++		chip->irq_eoi(&desc->irq_data);
+ 	}
+ 
+ 	rc = plpar_hcall_norets(H_VIOCTL, adapter->vdev->unit_address,
+-- 
+2.21.0
+
