@@ -2,108 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7C6D3BA3
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 914F9D3BA9
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727527AbfJKIwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 04:52:03 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:22197 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727352AbfJKIwD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 04:52:03 -0400
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727253AbfJKIxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 04:53:37 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:42808 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726743AbfJKIxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 04:53:37 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 7675C60791; Fri, 11 Oct 2019 08:53:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570784016;
+        bh=B1nJDhxTQ/e2NJsYTGupIirDTTmjjX1VIfseAaQfZ/I=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=gXsxcfYGoaC2vxdcadFn1AS6GsxbwHnsidqLrl5N2jFfcWBICI+Mg1ivqKl+oV0Da
+         xyLl9nogWzDOIqjqYu55hgzsBE3QWE7ToLgWoVMtn6saRSBDUzDPPiBI3baFkkXYkP
+         RREqUioClukQ6op3PX3N+LglvqdO0oyQKmlp/lwk=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 061C0C05AA57
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 08:52:03 +0000 (UTC)
-Received: by mail-wm1-f71.google.com with SMTP id m6so2508028wmf.2
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 01:52:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bm3aGONhK4qHoU5UjTbFZHuFrC1vqMKeEY0f1MpcuKs=;
-        b=P34u45Y45vlHTauWXfALtF05AQyQc1vm0Y+wf0Al5tLnFUY7/vU81DDRU2hDZ1KkmQ
-         76jnZlpjfUsii/u9YxxcDj5eWK014sasCXvqwuoyZTapRd1WAQUGtXaa1Nm0ffF//dpS
-         E3WDwkKSoKwzn0gBAXdMKNuUqCpeeB3DPa0EQxR26mwtbCsZgBT5bgTVrwzGCS3OhLRv
-         qWifPB8y9hSbKKOkAFwz6G49wT5EUfK+aEF47nWu43UXNDmTJ7MdVa4JiMsFB87I1Pi/
-         Ra1uZIW9HNkZBS+GiQjyYxDmj6L/U08KVW8Fb7JJxgvj5SCnATgdtuzTEpz7WqaIirfq
-         /Nbg==
-X-Gm-Message-State: APjAAAUNh5pecX9qVyxvEG1SKDPKdID8xhamjLaYfz4Z2yJbKFfoLrhA
-        gBpk+yVi1vFqJiTAkskjLO88pMkfUey9/TwTFT9EhNswcT4FF9M3Di5EzbI1aLEtQXv4S38JQtt
-        UVqvnmZoZhhkxDat1
-X-Received: by 2002:adf:f50b:: with SMTP id q11mr8542913wro.310.1570783921675;
-        Fri, 11 Oct 2019 01:52:01 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqy1tPYaVEApdDIIQuAyje0VVr9AdUGsps1WDvoQMdr3X8xYr+LiIbxou3tR8pwnY/h86mPFNQ==
-X-Received: by 2002:adf:f50b:: with SMTP id q11mr8542895wro.310.1570783921424;
-        Fri, 11 Oct 2019 01:52:01 -0700 (PDT)
-Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
-        by smtp.gmail.com with ESMTPSA id z189sm13295813wmc.25.2019.10.11.01.51.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 01:52:00 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 10:51:58 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@gmail.com>, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>, linux-hyperv@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [RFC PATCH 07/13] vsock: handle buffer_size sockopts in the core
-Message-ID: <20191011085158.wiiv4av5fgipm4k7@steredhat>
-References: <20190927112703.17745-1-sgarzare@redhat.com>
- <20190927112703.17745-8-sgarzare@redhat.com>
- <20191009123026.GH5747@stefanha-x1.localdomain>
- <20191010093254.aluys4hpsfcepb42@steredhat>
- <20191011082714.GF12360@stefanha-x1.localdomain>
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BFFD3602DC;
+        Fri, 11 Oct 2019 08:53:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570784016;
+        bh=B1nJDhxTQ/e2NJsYTGupIirDTTmjjX1VIfseAaQfZ/I=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=c+cCrfoGz+vfkBX6an+T6ug2h3NSlEXITVrRMjvijVkmYV8vw/TDire3tlSehftnm
+         DTPqearSyxR7YzXWNaEpeP6sKT8u4a4NupUngiv0k0gniJn6BL6fNA1yLALqMX3pIf
+         pExhEBbW2a2o+ldD+qP7l01pG2a8Yld6c5Y4Dh+k=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BFFD3602DC
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191011082714.GF12360@stefanha-x1.localdomain>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH RESEND] rtlwifi: rtl8192ee: Remove set but not used
+ variable 'err'
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1570612107-13286-1-git-send-email-zhengbin13@huawei.com>
+References: <1570612107-13286-1-git-send-email-zhengbin13@huawei.com>
+To:     zhengbin <zhengbin13@huawei.com>
+Cc:     <pkshih@realtek.com>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <zhengbin13@huawei.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191011085336.7675C60791@smtp.codeaurora.org>
+Date:   Fri, 11 Oct 2019 08:53:36 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 09:27:14AM +0100, Stefan Hajnoczi wrote:
-> On Thu, Oct 10, 2019 at 11:32:54AM +0200, Stefano Garzarella wrote:
-> > On Wed, Oct 09, 2019 at 01:30:26PM +0100, Stefan Hajnoczi wrote:
-> > > On Fri, Sep 27, 2019 at 01:26:57PM +0200, Stefano Garzarella wrote:
-> > > Another issue is that this patch drops the VIRTIO_VSOCK_MAX_BUF_SIZE
-> > > limit that used to be enforced by virtio_transport_set_buffer_size().
-> > > Now the limit is only applied at socket init time.  If the buffer size
-> > > is changed later then VIRTIO_VSOCK_MAX_BUF_SIZE can be exceeded.  If
-> > > that doesn't matter, why even bother with VIRTIO_VSOCK_MAX_BUF_SIZE
-> > > here?
-> > > 
-> > 
-> > The .notify_buffer_size() should avoid this issue, since it allows the
-> > transport to limit the buffer size requested after the initialization.
-> > 
-> > But again the min set by the user can not be respected and in the
-> > previous implementation we forced it to VIRTIO_VSOCK_MAX_BUF_SIZE.
-> > 
-> > Now we don't limit the min, but we guarantee only that vsk->buffer_size
-> > is lower than VIRTIO_VSOCK_MAX_BUF_SIZE.
-> > 
-> > Can that be an acceptable compromise?
+zhengbin <zhengbin13@huawei.com> wrote:
+
+> Fixes gcc '-Wunused-but-set-variable' warning:
 > 
-> I think so.
+> drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c: In function rtl92ee_download_fw:
+> drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c:111:6: warning: variable err set but not used [-Wunused-but-set-variable]
 > 
-> Setting buffer sizes was never tested or used much by userspace
-> applications that I'm aware of.  We should probably include tests for
-> changing buffer sizes in the test suite.
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: zhengbin <zhengbin13@huawei.com>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 
-Good idea! We should add a test to check if min/max are respected,
-playing a bit with these sockopt.
+Patch applied to wireless-drivers-next.git, thanks.
 
-I'll do it in the test series!
+59f4567d228f rtlwifi: rtl8192ee: Remove set but not used variable 'err'
 
-Thanks,
-Stefano
+-- 
+https://patchwork.kernel.org/patch/11180853/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
