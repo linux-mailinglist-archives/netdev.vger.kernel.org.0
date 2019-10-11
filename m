@@ -2,105 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C363D486E
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 21:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54844D48C3
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 21:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728885AbfJKT3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 15:29:22 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:32866 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728666AbfJKT3W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 15:29:22 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x9BJTLh6047140
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 14:29:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1570822161;
-        bh=5fhmCwZiHftan+NIjCnL6WxijnVapmo69AcIaLOMjQQ=;
-        h=To:From:Subject:Date;
-        b=HUDnm3w0fNsR9NLy0HTZIJDB75WUDsMdYHF7xWMzsYiU7EVA6poHAWSlBbHelt/T/
-         Q/og5etd7aSYhzBIAV53UhccMIZj5AW5Ej41swJftkbwge0+Pj1gLeA3Fb/gmQgl8I
-         lW35MvDdYL+lXDC0KkX5afonatpMNIRnSwyqZzP8=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x9BJTLqU013264
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL)
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 14:29:21 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 11
- Oct 2019 14:29:16 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Fri, 11 Oct 2019 14:29:16 -0500
-Received: from [158.218.117.39] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9BJTKqM015759
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 14:29:20 -0500
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Subject: taprio testing - Any help?
-Message-ID: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com>
-Date:   Fri, 11 Oct 2019 15:35:13 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
+        id S1728985AbfJKTyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 15:54:20 -0400
+Received: from padbanking.net ([31.220.0.186]:53389 "EHLO
+        slot0.jntechglass.com" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S1728783AbfJKTyU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 15:54:20 -0400
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=jntechglass.com;
+ h=Content-Type:MIME-Version:Content-Transfer-Encoding:Content-Description:Subject:To:From:Date:Reply-To:Message-ID; i=admin@jntechglass.com;
+ bh=hQv2xyHgiip2TLUF6aUMYcSIgrQ=;
+ b=H7vqGb2+BNjaAKlIcU0Dp/zaCwE5NmuGdkUOiW+k540xzxLAORwTXPlgkmNLrKBQsFWCaPFXAVYU
+   tsE2N681qIfEEOFOechVCd78frT7Ihpgca1gHPKv+41kUPWPIUk9Fx9DQZP63ImqbIpk29wt2bbV
+   O4Db9QoDtHx24RWylRXLpxb9CsnOIoQnvgZvPJimBft9+s+YDsQNfMoE6/ukZiVAA0OhxuWmjpH8
+   wkBB9yl1+wIC3eAdyfW1al0QxGnMLDz5C0RCFNBaTWLOdkuQFTY2IUGb+3Vvd5yHk4fcSS1j/Io0
+   E8OjWXCRJm9f2BUpqfMrCi5o3ZzSwkTTsdPzpw==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=jntechglass.com;
+ b=G9XdMTrLtEb1Q5IqZfD60ESqOO4kErNOFgE9EnaP6+McGeJG+AVmSF7M4kNiK3LOczpBRZAFP9D+
+   RQrsNOUfB53DA8IwfHv+SVyHSdEHFoFRiQcSJ/1BKYDx/joU6arP61oXDCHgUAAoN7EBFx+HHTR8
+   N25/AhldOf1jn9woPDGdz/zEPBc1skZ4MaGDAiMZpaF131toyOdSwhVmjVrXkt1GXMIOqwtFxhOr
+   mU2NFcmtjUymDbBMH3Ohpu6U5bArCgBXNekA+tJCdp72juG63RTZpxPWF9tk/NgP+j/Fm8H+BfIq
+   48/+6BNN0wAcM5s1qRKbJCy5IjVBmAzcxjkmiw==;
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: =?utf-8?q?Wohlt=C3=A4tige_Spende=3A_=E2=82=AC_2=2C000=2C000-00_EUR?=
+To:     Recipients <admin@jntechglass.com>
+From:   "Herr Richard Wahl" <admin@jntechglass.com>
+Date:   Fri, 11 Oct 2019 05:00:59 -0700
+Reply-To: myburghhugohendrik@gmail.com
+Message-ID: <0.0.FC.86D.1D5802B8BB4E0A2.0@slot0.jntechglass.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Lieber Freund,
 
-I am testing the taprio (802.1Q Time Aware Shaper) as part of my
-pre-work to implement taprio hw offload and test.
+Ich bin Herr Richard Wahl der Mega-Gewinner von $ 533M In Mega Millions Jac=
+kpot spende ich an 5 zuf=C3=A4llige Personen, wenn Sie diese E-Mail erhalte=
+n, dann wurde Ihre E-Mail nach einem Spinball ausgew=C3=A4hlt. Ich habe den=
+ gr=C3=B6=C3=9Ften Teil meines Verm=C3=B6gens auf eine Reihe von Wohlt=C3=
+=A4tigkeitsorganisationen und Organisationen verteilt. Ich habe mich freiwi=
+llig dazu entschieden, Ihnen den Betrag von =E2=82=AC 2.000.000,00 zu spend=
+en eine der ausgew=C3=A4hlten 5, um meine Gewinne zu =C3=BCberpr=C3=BCfen, =
+finden Sie auf meiner You Tube Seite unten.
 
-I was able to configure tap prio on my board and looking to do
-some traffic test and wondering how to play with the tc command
-to direct traffic to a specfic queue. For example I have setup
-taprio to create 5 traffic classes as shows below;-
+UHR MICH HIER: https://www.youtube.com/watch?v=3Dtne02ExNDrw
 
-Now I plan to create iperf streams to pass through different
-gates. Now how do I use tc filters to mark the packets to
-go through these gates/queues? I heard about skbedit action
-in tc filter to change the priority field of SKB to allow
-the above mapping to happen. Any example that some one can
-point me to?
+Das ist dein Spendencode: [DF00430342018]
 
-Here is what I have tried so far.
+Antworten Sie mit dem Spendencode auf diese E-Mail: info@wahlfoundation.org
 
-tc qdisc replace dev eth0 parent root handle 100 taprio \
-     num_tc 5 \
-     map 0 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 \
-     queues 1@0 1@1 1@2 1@3 1@4 \
-     base-time 1564628923967325838 \
-     sched-entry S 01 4000000 \
-     sched-entry S 02 4000000 \
-     sched-entry S 04 4000000 \
-     sched-entry S 08 4000000 \
-     sched-entry S 10 4000000 \
-     clockid CLOCK_TAI
+Ich hoffe, Sie und Ihre Familie gl=C3=BCcklich zu machen.
 
-root@am57xx-evm:~# tc qdisc show  dev eth0 
+Gr=C3=BC=C3=9Fe
 
-qdisc taprio 100: root refcnt 9 tc 5 map 0 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-queues offset 0 count 1 offset 1 count 1 offset 2 count 1 offset 3 count 
-1 offset 4 count 1
-clockid TAI offload 0   base-time 1564628923967325838 cycle-time 
-20000000 cycle-time-extension 0
-         index 0 cmd S gatemask 0x1 interval 4000000
-         index 1 cmd S gatemask 0x2 interval 4000000
-         index 2 cmd S gatemask 0x4 interval 4000000
-         index 3 cmd S gatemask 0x8 interval 4000000
-         index 4 cmd S gatemask 0x10 interval 4000000
-
-qdisc pfifo 0: parent 100:5 limit 1000p
-qdisc pfifo 0: parent 100:4 limit 1000p
-qdisc pfifo 0: parent 100:3 limit 1000p
-qdisc pfifo 0: parent 100:2 limit 1000p
-qdisc pfifo 0: parent 100:1 limit 1000p
-
-Murali
+Herr Richard Wahl
