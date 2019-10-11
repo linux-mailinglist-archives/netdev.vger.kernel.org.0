@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21A31D41A3
+	by mail.lfdr.de (Postfix) with ESMTP id F25B4D41A5
 	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 15:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728546AbfJKNpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 09:45:25 -0400
+        id S1728585AbfJKNp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 09:45:27 -0400
 Received: from mail-eopbgr740048.outbound.protection.outlook.com ([40.107.74.48]:39328
         "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728232AbfJKNpZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 09:45:25 -0400
+        id S1728198AbfJKNp0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 09:45:26 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ps/diwjnsafwr7J7oV5yn54JmkWhyu4Jt1kaAUEPeL/d9bRh3IYH8vsA5yLuuPuI/ZEVO3KmGNlCasUzwLAlm8B3fwv7+js7b41DAeBnQ2QMioCxNTQFVAej5I0CFR07UHlZaFqXl08ZlwlsPDiaThCpd9fNatGkYGE7ivWSRBIrR9x+cqXnri8xZAPsm2V/1Od+N6oZ8FDX0yul2oKeHGHC16IA0wJWPS9rtbFqJSheYxbsa1QkW/DmhhlS6Z2mb+iq+AVqyXli5uT1dNChTpVd9rBGRmgZaKN3CbSGSix0yIxCsGPR30BPV4wphMhB3HCqz+DdpluNP/C/1pOjUA==
+ b=GeEYuzBOD398aMhGQsmTmuQ7vZYp5AEzOE/5/UvlYi0pFOKyIZ/FXRpGLFRaR3abbzfGEIA6iTHSrjxzWIj15I6jWX+8DT5RyJTlVhosmWdff5ceBrcQ+doW6y+rHfBcGL1x9CIHOUzEKLeB5iquM08+TRImBtcX9224+oJpYgo/B1gRa78NF1XV0xAJF5FamHOcJwJqsLhF+5nFvR7a2ibeKLB/F1A82poi3Cdah+dMGIci5qtWpAvEgeU2uRwRdOWfQVT7rYXk88apLwdPSpPtaXSmA8P+qBcc5veZokafk4zGKksfWUNyIa5KLHTd/B6cbkh9/y6cNdEFoNSHhw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LL9KZ4iwo4wqxi9uA0qslf/7N1J6UZdNb6DIi49UsgY=;
- b=Z2BhWtgXvEXO+VHAMe3MuiBeL5OUysXlVr4ZQG7F6s/nd0Jxq3Qykvu5NaxrYMVasZwcKBSxEwY7EM7wUiQ6bOqB4LxB4/ZtNO32LicAatmCkOVjm5ibxsEh1bNNaYuDQW8r+FOXA0KbWpDPXnFOEs1QmHjZkOIy9fLVdM/YfQCMTJYQjGp3ZmbIf/qNy3/ns/PAcc4Ty3x0neAIBJmCzi3EQ5OBom9ypkIHwZ7NfgfOUXesLOL9hv8VFx7D05j5v9acFt2mXyt4qgx19hLzll7fKNaU0MsL3BUtNp45kO2MIDOK3o/oYxDcqxCANtw/aTVJdRzTp0gOSJltmhD/Vg==
+ bh=WN+4ua9wVV7rVolW/Ua5tc/901+RVksG7RYMzx6/Kcc=;
+ b=GyGVx1y65DU/WOgQn8jezGd5n/+C29GESLcX8/pePV9qdyFLrXhypIPL3X3FOjeqBq+olfDR6PTkrFvv0tFLaeV4GmFXmT9OHwnuUQyKOOsm/eN2pqbeq0In8By4vh3F31iOVUBsqJ16PToB2ppFXV4hNdaljV1NnUeVwcR1WpHc8Fwz2bj4kgkbdtR3C610qpBXBPFel5Q3BScscgLqhYO2cHI8JqehmnWzsr2Cy9WpmFheq9PDTx/x/nK3P1/xsWEXOqN5x0yZMvNGUFHD1QDFCEHgQ/8EKzg0XwyzyQ8gkJrU7C4APmq4+RICS/fcRRMYOh+h+JYynGxZY68vDA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
  dkim=pass header.d=aquantia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LL9KZ4iwo4wqxi9uA0qslf/7N1J6UZdNb6DIi49UsgY=;
- b=ndKhCXDF9NyKS52ivibACdiA3PsjbLw27yTHEG4APZm9BlKPvQY41KVG1z/AJbEdrwgPUbIRFa6pU/MJ/EtLIn0YpHirvv9vEQU39eQvkGzKQT+0+O4Y/DgkbD1YYOOcW7kFq6aTgFFwfx0YxLsgE8+6J2XwusWJvCswnqWGm74=
+ bh=WN+4ua9wVV7rVolW/Ua5tc/901+RVksG7RYMzx6/Kcc=;
+ b=OjXK4VJNZt2DATLmhYBpkdHmWwHik2bqOEGCII1WACb/CzKnJisUChJFfeMuA3dI/GOK3PFVg9HCDb9Zh6PRU0LBdQ6RDBWm8QoaZRUVBRS7DjOrdEXdpvYEdcUVAxpWwIn+DCyDuPIGD2GplmOh1KBaumHAucqp2mOYmHowpZc=
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
  BN8PR11MB3587.namprd11.prod.outlook.com (20.178.221.158) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.24; Fri, 11 Oct 2019 13:45:21 +0000
+ 15.20.2327.24; Fri, 11 Oct 2019 13:45:22 +0000
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.021; Fri, 11 Oct 2019
- 13:45:21 +0000
+ 13:45:22 +0000
 From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>
-Subject: [PATCH v2 net 2/4] net: aquantia: when cleaning hw cache it should be
- toggled
-Thread-Topic: [PATCH v2 net 2/4] net: aquantia: when cleaning hw cache it
- should be toggled
-Thread-Index: AQHVgDof48Tbq5/7JkCldRfrcGfLJA==
-Date:   Fri, 11 Oct 2019 13:45:20 +0000
-Message-ID: <d89180cd7ddf6981310179108b37a8d15c44c02f.1570787323.git.igor.russkikh@aquantia.com>
+        Igor Russkikh <Igor.Russkikh@aquantia.com>,
+        Dmitry Bogdanov <Dmitry.Bogdanov@aquantia.com>
+Subject: [PATCH v2 net 3/4] net: aquantia: do not pass lro session with
+ invalid tcp checksum
+Thread-Topic: [PATCH v2 net 3/4] net: aquantia: do not pass lro session with
+ invalid tcp checksum
+Thread-Index: AQHVgDogXvvquZLG/0GH/rN2j9Ukyw==
+Date:   Fri, 11 Oct 2019 13:45:22 +0000
+Message-ID: <3c9524eb0c683bade0261ac5f0e95069c42febc7.1570787323.git.igor.russkikh@aquantia.com>
 References: <cover.1570787323.git.igor.russkikh@aquantia.com>
 In-Reply-To: <cover.1570787323.git.igor.russkikh@aquantia.com>
 Accept-Language: en-US
@@ -60,175 +61,76 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-mailer: git-send-email 2.17.1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4e640aa7-d986-4f31-e589-08d74e514230
+x-ms-office365-filtering-correlation-id: 6fb2c714-f0c2-49de-9421-08d74e514314
 x-ms-traffictypediagnostic: BN8PR11MB3587:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR11MB3587671AE81AE3A27BD6FF1098970@BN8PR11MB3587.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1169;
+x-microsoft-antispam-prvs: <BN8PR11MB3587488EB373BF5FD606541498970@BN8PR11MB3587.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:765;
 x-forefront-prvs: 0187F3EA14
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(39850400004)(136003)(346002)(396003)(189003)(199004)(6916009)(66446008)(14454004)(76176011)(36756003)(64756008)(99286004)(118296001)(66476007)(446003)(11346002)(486006)(2351001)(52116002)(476003)(66946007)(66556008)(2501003)(305945005)(6506007)(44832011)(7736002)(386003)(5660300002)(86362001)(2616005)(66066001)(102836004)(26005)(508600001)(8676002)(81156014)(107886003)(316002)(71190400001)(81166006)(54906003)(1730700003)(4326008)(3846002)(6116002)(71200400001)(2906002)(256004)(6486002)(5640700003)(50226002)(25786009)(6436002)(6512007)(186003)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3587;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(39850400004)(136003)(346002)(396003)(189003)(199004)(6916009)(66446008)(14454004)(76176011)(36756003)(64756008)(99286004)(118296001)(66476007)(446003)(11346002)(486006)(2351001)(52116002)(476003)(66946007)(66556008)(2501003)(305945005)(6506007)(44832011)(7736002)(386003)(5660300002)(86362001)(2616005)(66066001)(102836004)(26005)(508600001)(8676002)(81156014)(107886003)(316002)(71190400001)(81166006)(54906003)(1730700003)(4326008)(3846002)(6116002)(71200400001)(2906002)(14444005)(256004)(6486002)(5640700003)(50226002)(25786009)(6436002)(6512007)(186003)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3587;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: aquantia.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: J/QaOSLTSIaXgx2hcsZFf3rnGDg594JFMpKDyBSFH+E9/e+NrWtTsXfd3vz5vI/UWRluzdyjiGAyUyRVuyTKA1jC3WtQTbJ5j65SblLjnwyymO4Cn+cpJu4FrEelEhVylLrd6GzYjvbQsEFpGjky2GVXMAdx/Y6FpstXjDdCDxhaSi2FfCzVnJcfjtO0UAmEWhu2kH4NQj7zNVTTYenuSYPUcgVMAbf0LVKfNS9Nunf5CEeJZbTS0D5nmItH7YJjX/SITQf0598Af39eSjtNkm07Rp66AvgnX7jrc3dXW1segUQmli3iB0LK5HQql1PXDu+6frCazulk3rfeKksp5+8O6Ebx0wOjLiQFYZ2dDRbp3Co9nEhleuSz2/Z0e1F2Wne+F7LRG0AkMSQIFT2GU3lffjyauts6l+eXyBQupxE=
+x-microsoft-antispam-message-info: pTStudDmp/pWgJR8iy4LHM5IsqS1hY7Xf5jZDYhUMuve63x2RFv4+4bkNSxsaGboIMdOMd8q7a4iyfefvQM83UImu33/mPx3LUs8cfNuhZDE/R3QMD7w5cx6pEUwaklYcf5OeYyXhqnhiQE0Sv+WQYqGhTylF1b1ELs+YLP7I7aSJobSls/uBTrFUuGFiX7t6My2ah1lhx/IsEzM5Iq+/3lqbgEQLlWV+2zq3a4/zINhWjwN6d6OejMywGTaeYAoDEnpYibUoyQLcoOgFfeAVF67O44PB/KihJzeEa98ghn+pQvhWrXtazrxERekpZgWX/WV9jvhCCzLkjd7Bv4z9L5JaS/aM+nijexy1PcCqLPhqHxPJ+Y45ZqIHNZnhjBbR/NQMc68wcSg2TosD5L08PuxuzsCkuioxLhr+cQSa2I=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e640aa7-d986-4f31-e589-08d74e514230
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Oct 2019 13:45:20.8651
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6fb2c714-f0c2-49de-9421-08d74e514314
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Oct 2019 13:45:22.3332
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XrUo9TuoAjdhnXY3GP7mxHUPtRzJGPOwQiBTo+Cff3AYQweXCPzSRK6nlJVargXNPrXYRHu8TZDoqZWAih3Yvw==
+X-MS-Exchange-CrossTenant-userprincipalname: cC285dX/gXjBdCy6PPgRWFLTtWNQXnzQZwVYqVpDmhoO3483nJSYrvBp9PUI3+CReOm1s6m+EuvK1HjqluJfCg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3587
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From HW specification to correctly reset HW caches (this is a required
-workaround when stopping the device), register bit should actually
-be toggled.
+From: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
 
-It was previosly always just set. Due to the way driver stops HW this
-never actually caused any issues, but it still may, so cleaning this up.
+Individual descriptors on LRO TCP session should be checked
+for CRC errors. It was discovered that HW recalculates
+L4 checksums on LRO session and does not break it up on bad L4
+csum.
 
-Fixes: 7a1bb49461b1 ("net: aquantia: fix potential IOMMU fault after driver=
- unbind")
+Thus, driver should aggregate HW LRO L4 statuses from all individual
+buffers of LRO session and drop packet if one of the buffers has bad
+L4 checksum.
+
+Fixes: f38f1ee8aeb2 ("net: aquantia: check rx csum for all packets in LRO s=
+ession")
+Signed-off-by: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
 Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
 ---
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 16 ++++++++++++++--
- .../aquantia/atlantic/hw_atl/hw_atl_llh.c     | 17 +++++++++++++++--
- .../aquantia/atlantic/hw_atl/hw_atl_llh.h     |  7 +++++--
- .../atlantic/hw_atl/hw_atl_llh_internal.h     | 19 +++++++++++++++++++
- 4 files changed, 53 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/dr=
-ivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 30f7fc4c97ff..3459fadb7ddd 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -968,14 +968,26 @@ static int hw_atl_b0_hw_interrupt_moderation_set(stru=
-ct aq_hw_s *self)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net=
+/ethernet/aquantia/atlantic/aq_ring.c
+index 3901d7994ca1..76bdbe1596d6 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -313,6 +313,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 					break;
 =20
- static int hw_atl_b0_hw_stop(struct aq_hw_s *self)
- {
-+	int err;
-+	u32 val;
-+
- 	hw_atl_b0_hw_irq_disable(self, HW_ATL_B0_INT_MASK);
+ 				buff->is_error |=3D buff_->is_error;
++				buff->is_cso_err |=3D buff_->is_cso_err;
 =20
- 	/* Invalidate Descriptor Cache to prevent writing to the cached
- 	 * descriptors and to the data pointer of those descriptors
- 	 */
--	hw_atl_rdm_rx_dma_desc_cache_init_set(self, 1);
-+	hw_atl_rdm_rx_dma_desc_cache_init_tgl(self);
+ 			} while (!buff_->is_eop);
 =20
--	return aq_hw_err_from_flags(self);
-+	err =3D aq_hw_err_from_flags(self);
-+
-+	if (err)
-+		goto err_exit;
-+
-+	readx_poll_timeout_atomic(hw_atl_rdm_rx_dma_desc_cache_init_done_get,
-+				  self, val, val =3D=3D 1, 1000U, 10000U);
-+
-+err_exit:
-+	return err;
- }
-=20
- static int hw_atl_b0_hw_ring_tx_stop(struct aq_hw_s *self,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/d=
-rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-index 1149812ae463..6f340695e6bd 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-@@ -606,12 +606,25 @@ void hw_atl_rpb_rx_flow_ctl_mode_set(struct aq_hw_s *=
-aq_hw, u32 rx_flow_ctl_mode
- 			    HW_ATL_RPB_RX_FC_MODE_SHIFT, rx_flow_ctl_mode);
- }
-=20
--void hw_atl_rdm_rx_dma_desc_cache_init_set(struct aq_hw_s *aq_hw, u32 init=
-)
-+void hw_atl_rdm_rx_dma_desc_cache_init_tgl(struct aq_hw_s *aq_hw)
- {
-+	u32 val;
-+
-+	val =3D aq_hw_read_reg_bit(aq_hw, HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_ADR,
-+				 HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_MSK,
-+				 HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_SHIFT);
-+
- 	aq_hw_write_reg_bit(aq_hw, HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_ADR,
- 			    HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_MSK,
- 			    HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_SHIFT,
--			    init);
-+			    val ^ 1);
-+}
-+
-+u32 hw_atl_rdm_rx_dma_desc_cache_init_done_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg_bit(aq_hw, RDM_RX_DMA_DESC_CACHE_INIT_DONE_ADR,
-+				  RDM_RX_DMA_DESC_CACHE_INIT_DONE_MSK,
-+				  RDM_RX_DMA_DESC_CACHE_INIT_DONE_SHIFT);
- }
-=20
- void hw_atl_rpb_rx_pkt_buff_size_per_tc_set(struct aq_hw_s *aq_hw,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h b/d=
-rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-index 0c37abbabca5..c3ee278c3747 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-@@ -313,8 +313,11 @@ void hw_atl_rpb_rx_pkt_buff_size_per_tc_set(struct aq_=
-hw_s *aq_hw,
- 					    u32 rx_pkt_buff_size_per_tc,
- 					    u32 buffer);
-=20
--/* set rdm rx dma descriptor cache init */
--void hw_atl_rdm_rx_dma_desc_cache_init_set(struct aq_hw_s *aq_hw, u32 init=
-);
-+/* toggle rdm rx dma descriptor cache init */
-+void hw_atl_rdm_rx_dma_desc_cache_init_tgl(struct aq_hw_s *aq_hw);
-+
-+/* get rdm rx dma descriptor cache init done */
-+u32 hw_atl_rdm_rx_dma_desc_cache_init_done_get(struct aq_hw_s *aq_hw);
-=20
- /* set rx xoff enable (per tc) */
- void hw_atl_rpb_rx_xoff_en_per_tc_set(struct aq_hw_s *aq_hw, u32 rx_xoff_e=
-n_per_tc,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_inter=
-nal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-index c3febcdfa92e..35887ad89025 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-@@ -318,6 +318,25 @@
- /* default value of bitfield rdm_desc_init_i */
- #define HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_DEFAULT 0x0
-=20
-+/* rdm_desc_init_done_i bitfield definitions
-+ * preprocessor definitions for the bitfield rdm_desc_init_done_i.
-+ * port=3D"pif_rdm_desc_init_done_i"
-+ */
-+
-+/* register address for bitfield rdm_desc_init_done_i */
-+#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_ADR 0x00005a10
-+/* bitmask for bitfield rdm_desc_init_done_i */
-+#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_MSK 0x00000001U
-+/* inverted bitmask for bitfield rdm_desc_init_done_i */
-+#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_MSKN 0xfffffffe
-+/* lower bit position of bitfield  rdm_desc_init_done_i */
-+#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_SHIFT 0U
-+/* width of bitfield rdm_desc_init_done_i */
-+#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_WIDTH 1
-+/* default value of bitfield rdm_desc_init_done_i */
-+#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_DEFAULT 0x0
-+
-+
- /* rx int_desc_wrb_en bitfield definitions
-  * preprocessor definitions for the bitfield "int_desc_wrb_en".
-  * port=3D"pif_rdm_int_desc_wrb_en_i"
+@@ -320,7 +321,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 				err =3D 0;
+ 				goto err_exit;
+ 			}
+-			if (buff->is_error) {
++			if (buff->is_error || buff->is_cso_err) {
+ 				buff_ =3D buff;
+ 				do {
+ 					next_ =3D buff_->next,
 --=20
 2.17.1
 
