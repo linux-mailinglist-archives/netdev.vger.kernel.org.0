@@ -2,94 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D716DD41EC
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 15:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56CBAD4226
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 16:05:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728349AbfJKN5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 09:57:11 -0400
-Received: from mail2.candelatech.com ([208.74.158.173]:49584 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728068AbfJKN5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 09:57:10 -0400
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 07F5E13C340;
-        Fri, 11 Oct 2019 06:57:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 07F5E13C340
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1570802230;
-        bh=D53uYXs3aE0juT/zjbU0lTYElCrHfrRmv3cuayLXR8Q=;
-        h=Subject:To:References:From:Date:In-Reply-To:From;
-        b=o/BOx6iosvfqrw/3LMJYQJmH9RC3kJCqu8EhN7u6RFjfjz34kQO7ej/reGpPSu41D
-         WrQENnBcCJtC0ckgWk7aoT1VEcs+0zyG/WyLu5vb8l606oP/CS2vFVMhaSglbBJZ6C
-         shTBmP4I1F7O7/caBAZcLNBRyJe5G6aRMQSAVWrg=
-Subject: Re: IPv6 addr and route is gone after adding port to vrf (5.2.0+)
-To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
-References: <c55619f8-c565-d611-0261-c64fa7590274@candelatech.com>
- <2a53ff58-9d5d-ac22-dd23-b4225682c944@gmail.com>
- <ca625841-6de8-addb-9b85-8da90715868c@candelatech.com>
- <e3f2990e-d3d0-e615-8230-dcfe76451c15@gmail.com>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <3cd9b1a7-bf87-8bd2-84f4-503f300e847b@candelatech.com>
-Date:   Fri, 11 Oct 2019 06:57:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <e3f2990e-d3d0-e615-8230-dcfe76451c15@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1728445AbfJKOFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 10:05:36 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:39598 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728111AbfJKOFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 10:05:36 -0400
+Received: by mail-pl1-f193.google.com with SMTP id s17so4522014plp.6
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 07:05:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=OTrRKP+pfR00lNFe6P3aYnafLB/pj3jI6/k8pHbXUEY=;
+        b=IYszo9sySQJrEKxz4w8OHcl4Qt0HigNENTRBq6pX/1vLLnZAYjZyHpyn+uCsHSqs6f
+         S3XJv/BqYCzIR5pRIj2EokbVweCoTyszYzhLOcBEKUcETvT0S+rzelCxBY5HqoCsBh7K
+         If2ZHZD8McnkYn1o2F8xgVxiaomio18QyhM/OIlCnFFw+r69CnfZcfuDd6VRA2E1Ujp2
+         I2T89UeERpST1Uwa8hvqcAPzrByy1KfteczEWDowYEG6dHtRjUSUmWn+WZGDuJSuMKwI
+         93ybe7jHoOp4sdeF3dnYpJWJx/K5l+D+tzYp3avxuRINfHBTdlNp5P0g/SZnFNMLHXqu
+         zUiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=OTrRKP+pfR00lNFe6P3aYnafLB/pj3jI6/k8pHbXUEY=;
+        b=U8LTCNbKaDfrNAh5O2MamO1O7tlkacu4q8kH3pQj6ydgz4Z1U2HIsgd+PLW/3quoGN
+         o0fBnoZ383LBEjUoq0R2U1O3YadtOdKuEEUT6HIBmEX/JaFdh847ys5M6y3X0G5c1HtV
+         L9rZZSvVASI4BglE0f9h0dsZup30vSaAMCSlM6xrIqhWc+RGC72I6s4cywVDIUw27ICf
+         0bt+suB31pnxCITp2drgmDB+x3oGqrOSCLy2LAQUdZyglLIi9a6DzJn28mG6pO88NdDa
+         CyYNaKXhX/38KKJgwoTbs+4Vgv0mjyBBbtA4zGX3TTNCC0WPudZ7U7FlXLqMwKrbdG8P
+         AFVA==
+X-Gm-Message-State: APjAAAX9JgPWN4ioyiKa4+BgLVyYk3KrVSVtStAKHOLoGzoVJg55FZM9
+        lz0NcsapAObcXP8qQ/KfHl8=
+X-Google-Smtp-Source: APXvYqwpFtofTnQRxh3Ib/LjVpcq6u59xrkUs71xHbEKN6QtmZlhNjyRpx3XyEdyoeSdO89cgwF82g==
+X-Received: by 2002:a17:902:126:: with SMTP id 35mr10516225plb.327.1570802735727;
+        Fri, 11 Oct 2019 07:05:35 -0700 (PDT)
+Received: from local.opencloud.tech.localdomain ([219.143.130.165])
+        by smtp.gmail.com with ESMTPSA id p190sm11499392pfb.160.2019.10.11.07.05.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 11 Oct 2019 07:05:35 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     gvrose8192@gmail.com, pshelar@ovn.org
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v3 00/10] optimize openvswitch flow looking up
+Date:   Fri, 11 Oct 2019 22:00:37 +0800
+Message-Id: <1570802447-8019-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/19 2:48 PM, David Ahern wrote:
-> On 8/16/19 3:28 PM, Ben Greear wrote:
->> On 8/16/19 12:15 PM, David Ahern wrote:
->>> On 8/16/19 1:13 PM, Ben Greear wrote:
->>>> I have a problem with a VETH port when setting up a somewhat complicated
->>>> VRF setup. I am loosing the global IPv6 addr, and also the route,
->>>> apparently
->>>> when I add the veth device to a vrf.  From my script's output:
->>>
->>> Either enslave the device before adding the address or enable the
->>> retention of addresses:
->>>
->>> sysctl -q -w net.ipv6.conf.all.keep_addr_on_down=1
->>>
->>
->> Thanks, I added it to the vrf first just in case some other logic was
->> expecting the routes to go away on network down.
->>
->> That part now seems to be working.
->>
-> 
-> The down-up cycling is done on purpose - to clear out neigh entries and
-> routes associated with the device under the old VRF. All entries must be
-> created with the device in the new VRF.
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-I believe I found another thing to be aware of relating to this.
+This series patch optimize openvswitch for performance or simplify
+codes.
 
-My logic has been to do supplicant, then do DHCP, and only when DHCP
-responds do I set up the networking for the wifi station.
+Patch 1, 2, 4: Port Pravin B Shelar patches to
+linux upstream with little changes.
 
-It is at this time that I would be creating a VRF (or using routing rules
-if not using VRF).
+Patch 5, 6, 7: Optimize the flow looking up and
+simplify the flow hash.
 
-But, when I add the station to the newly created vrf, then it bounces it,
-and that causes supplicant to have to re-associate  (I think, lots of moving
-pieces, so I could be missing something).
+Patch 8, 9: are bugfix.
 
-Any chance you could just clear the neighbor entries and routes w/out bouncing
-the interface?
+The performance test is on Intel Xeon E5-2630 v4.
+The test topology is show as below:
 
-Thanks,
-Ben
++-----------------------------------+
+|   +---------------------------+   |
+|   | eth0   ovs-switch    eth1 |   | Host0
+|   +---------------------------+   |
++-----------------------------------+
+      ^                       |
+      |                       |
+      |                       |
+      |                       |
+      |                       v
++-----+----+             +----+-----+
+| netperf  | Host1       | netserver| Host2
++----------+             +----------+
+
+We use netperf send the 64B packets, and insert 255+ flow-mask:
+$ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)" 2
+...
+$ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)" 2
+$
+$ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
+
+* Without series patch, throughput 8.28Mbps
+* With series patch, throughput 46.05Mbps
+
+v2: simplify codes. e.g. use kfree_rcu instead of call_rcu, use
+ma->count in the fastpath.
+v3: update ma point when realloc mask_array in patch 5.
+
+Tonghao Zhang (10):
+  net: openvswitch: add flow-mask cache for performance
+  net: openvswitch: convert mask list in mask array
+  net: openvswitch: shrink the mask array if necessary
+  net: openvswitch: optimize flow mask cache hash collision
+  net: openvswitch: optimize flow-mask looking up
+  net: openvswitch: simplify the flow_hash
+  net: openvswitch: add likely in flow_lookup
+  net: openvswitch: fix possible memleak on destroy flow-table
+  net: openvswitch: don't unlock mutex when changing the user_features
+    fails
+  net: openvswitch: simplify the ovs_dp_cmd_new
+
+ net/openvswitch/datapath.c   |  65 +++++----
+ net/openvswitch/flow.h       |   1 -
+ net/openvswitch/flow_table.c | 315 +++++++++++++++++++++++++++++++++++++------
+ net/openvswitch/flow_table.h |  19 ++-
+ 4 files changed, 328 insertions(+), 72 deletions(-)
 
 -- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+1.8.3.1
 
