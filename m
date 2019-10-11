@@ -2,125 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4093CD3CD2
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 11:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 098AED3CD6
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 11:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727717AbfJKJzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 05:55:33 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:46431 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727560AbfJKJzd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 05:55:33 -0400
-Received: by mail-ed1-f67.google.com with SMTP id t3so8109329edw.13;
-        Fri, 11 Oct 2019 02:55:32 -0700 (PDT)
+        id S1727723AbfJKJ41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 05:56:27 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:41312 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727003AbfJKJ41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 05:56:27 -0400
+Received: by mail-lf1-f68.google.com with SMTP id r2so6581255lfn.8
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 02:56:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8hoPXDC+s9C+BBsraF6QCIxAJppoYPYRK/IA+JbIMow=;
-        b=SY0fhP6aBRiFpoLKFx/gUF4Tck2U3lKERej0/p3zoUbK+LpHRCPo3Lcdqx/zLNSN+y
-         0gOmh+K7sQgJVzTQhk+FjRaLHQUZvIBnRq+nrgwVYMhX7p0GKzoCJ0OK1MmQmJGdo7xB
-         H/bScAGmI22ClYwB+1YVfh7Ttc5v+j16GHfrtU3YXJd4hh3czmt7vXGM3S+p66n9OLoz
-         rZLx9m1vuRhRpkZS3ltuM7v1jND3RbS1CQiXKcgdn8ndeyxeTwQdSjLT9Tct2VuYiKeF
-         XFuqdpdyfs1/OaB6xAvKN6f3jhhgg618BTYU00PNUbbpTGyryAqHgnVBWkC9wD5ySPe+
-         g+lg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=pWOkKXMMhlTx5AzJ2yss3zoDHNMcN+4G3JZ21wCHuz0=;
+        b=KLkB1k+sZZvbTV8NTZTJ53VPzlRq+/OYW6/swdyx+bm1KkP5JJCwJt4FSMYP7nZTcN
+         5cuHjBHfgws2ptAiAj5APks1aFl5032jhnf+0j7jRRRsBJAIQ9FIkdbpTNFpwoXYmEVC
+         4pRgACHxmK2hiMYC2tchxAfBT1Rc3U99tB7e0V4pyvzq7G4IBD1XDloEOSrRO6Fsfmjk
+         c8FPcrwk9T1bxc4+3ogtxdIDmPXdJs8mfciD53Cxypy8ifd6n+yQ+R67H8ClX14B0MBW
+         0bwcfrDwPs5eZRE8ym7bT9RYZYsLmp+o3SicveJCfsFZDvdvg5Uw/qClPLwYZA+8SCUW
+         TtWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8hoPXDC+s9C+BBsraF6QCIxAJppoYPYRK/IA+JbIMow=;
-        b=SPU0NCmcS5nZofyafKVtdBXfs8oQl68qhyzsKIhQHtpZOLfkA9oheVNvNdjCPwpDAP
-         R4O6weEzgmQ6wNt/2CLbt9LV5NJytpsDDf+d7rnobUzj31ldoctMI0jPHNBSGgX5kvPw
-         gud9Tnd306aX3GcR5i7Q97PAZ63cq9ykv8cf10pSZV8hgaSRGrJFLhpVyajnf2liCnxh
-         MzdxyCMijV2Jpg6tNiCOFG3wauUAQRqkImDwgNiiYVhOka6Uiv5m0rMMPk5NFQwj5eqn
-         6Ah8U8pflnt4eqSGy34cmh44Ra76qD/cPNa43zJTC8grFqCi7zyVkoA+KnRg2GsJqOVB
-         jcyQ==
-X-Gm-Message-State: APjAAAWmf0kwnx8bFtmKStOOwpNmfA07Sb67VkSEWlvA0BaMx/4s+g8O
-        6OGgZHDdHJ/o9LYjYwR+UbccYgUOPW+UXm+wTwE=
-X-Google-Smtp-Source: APXvYqx9eON2U3EP3MRvIxzMFOg/hA6mAs3RgdQ+yAt6YG37GmMUG4D2m4YlnAODHDYa7P9oEFvBHyq2DCCTanHMXrk=
-X-Received: by 2002:a05:6402:13d6:: with SMTP id a22mr12629963edx.165.1570787731657;
- Fri, 11 Oct 2019 02:55:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=pWOkKXMMhlTx5AzJ2yss3zoDHNMcN+4G3JZ21wCHuz0=;
+        b=DvgLimtxWFvlLKjW7/i2emABSWiBSSgCU1iiwoF2bO5T5lT/mSOrQ4hJyRaK1XIeRC
+         SaJiGJM3tkjtyGYbVgV6FgkvojV+mFp4mE4SXUTrNGklJJZ0HE5VEKVtHLnDOl1Ptl95
+         GhpGUUac8N+A4Cdp5Fk5KIYBnPBQ04vOf036iWtX3ZOA6qiJ0IEbSOmSyzeygf0uz8RD
+         fp72UJmOiLiYY8BTU3qhRpJLEyOsmU8jPUO8o9WYIvpTL7v15EG0qGVwV39t4HgyxFmW
+         6jK183rVaSb0IXLbbXp3BdGpCeJ8zrVvrjNNuEGW8gUpc/7LhSztEcP0ekcqMkcyfZmY
+         s+Cg==
+X-Gm-Message-State: APjAAAXgUtdK7wUEsNcGpagY7ku+9lsgnNI7HYXkYMaHW7aglt75a1yq
+        Pa3TGUbgx6NqZ0k6MTO+F21c3w==
+X-Google-Smtp-Source: APXvYqxoUkQ1diZUv2vTQTPwqixqbfFJac3hH+dUfd7mp6Vs56IdYApGFTMbwT8nD3apWn/BWRjj4Q==
+X-Received: by 2002:a19:2287:: with SMTP id i129mr8197729lfi.43.1570787783666;
+        Fri, 11 Oct 2019 02:56:23 -0700 (PDT)
+Received: from khorivan (88-201-94-178.pool.ukrtel.net. [178.94.201.88])
+        by smtp.gmail.com with ESMTPSA id v1sm1836900lji.89.2019.10.11.02.56.22
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 11 Oct 2019 02:56:23 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 12:56:20 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
+        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v5 bpf-next 05/15] samples/bpf: use __LINUX_ARM_ARCH__
+ selector for arm
+Message-ID: <20191011095619.GA3689@khorivan>
+Mail-Followup-To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
+        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org
+References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
+ <20191011002808.28206-6-ivan.khoronzhuk@linaro.org>
+ <fa252372-b518-213c-b6f1-60520831e677@cogentembedded.com>
 MIME-Version: 1.0
-References: <1570616148-11571-1-git-send-email-Anson.Huang@nxp.com>
- <20191010160811.7775c819@cakuba.netronome.com> <DB3PR0402MB3916FF4583577B182D9BF60CF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <20191010173246.2cd02164@cakuba.netronome.com> <DB3PR0402MB3916284A326512CE2FDF597EF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <20191010175320.1fe5f6b3@cakuba.netronome.com> <DB3PR0402MB3916F0AC3E3AEC2AC1900BCCF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-In-Reply-To: <DB3PR0402MB3916F0AC3E3AEC2AC1900BCCF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 11 Oct 2019 12:55:20 +0300
-Message-ID: <CA+h21hpp5L-tcJNxXWaJaCKZyFzm-qPzUZ32LU+vKOv99PJ9ng@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net: fec_main: Use platform_get_irq_byname_optional()
- to avoid error message
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andy Duan <fugang.duan@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "rafael.j.wysocki@intel.com" <rafael.j.wysocki@intel.com>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <fa252372-b518-213c-b6f1-60520831e677@cogentembedded.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Anson,
-
-On Fri, 11 Oct 2019 at 04:11, Anson Huang <anson.huang@nxp.com> wrote:
+On Fri, Oct 11, 2019 at 11:46:54AM +0300, Sergei Shtylyov wrote:
+>Hello!
 >
-> Hi, Jakub
+>   Sorry, didn't comment on v4...
 >
-> > On Fri, 11 Oct 2019 00:38:50 +0000, Anson Huang wrote:
-> > > > Hm. Looks like the commit you need is commit f1da567f1dc1 ("driver core:
-> > > > platform: Add platform_get_irq_byname_optional()") and it's
-> > > > currently in Greg's tree. You have to wait for that commit to make
-> > > > its way into Linus'es main tree and then for Dave Miller to pull from Linus.
-> > > >
-> > > > I'd suggest you check if your patches builds on the net tree:
-> > > >
-> > > >   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
-> > > >
-> > > > once a week. My guess is it'll probably take two weeks or so for
-> > > > Greg's patches to propagate to Dave.
-> > >
-> > > Thanks for explanation of how these trees work, so could you please
-> > > wait the necessary patch landing on network tree then apply this patch
-> > > series, thanks for help.
-> >
-> > Unfortunately the networking subsystem sees around a 100 patches
-> > submitted each day, it'd be very hard to keep track of patches which have
-> > external dependencies and when to merge them. That's why we need the
-> > submitters to do this work for us and resubmit when the patch can be
-> > applied cleanly.
+>On 11.10.2019 3:27, Ivan Khoronzhuk wrote:
 >
-> OK, I will resend this patch series once the necessary patch lands on the network
-> tree.
-
-What has not been mentioned is that you can't create future
-dependencies for patches which have a Fixes: tag.
-
-git describe --tags 7723f4c5ecdb # driver core: platform: Add an error
-message to platform_get_irq*()
-v5.3-rc1-13-g7723f4c5ecdb
-
-git describe --tags f1da567f1dc # driver core: platform: Add
-platform_get_irq_byname_optional()
-v5.4-rc1-46-gf1da567f1dc1
-
-So you have to consider whether the patch is really fixing anything
-(it is only getting rid of a non-fatal error message).
-And it's not reasonable anyway to say that you're fixing the patch
-that added the error message in the generic framework.
-The fallback logic has always been there in the driver. So you might
-want to drop the Fixes: tag when you resend.
+>>For arm, -D__LINUX_ARM_ARCH__=X is min version used as instruction
+>>set selector and is absolutely required while parsing some parts of
+>>headers. It's present in KBUILD_CFLAGS but not in autoconf.h, so let's
+>>retrieve it from and add to programs cflags. In another case errors
+>
+>   From where? And it's program's, no?
+from KBUIL_CFLAGS. it's programs.
 
 >
-> Thanks,
-> Anson
+>>like "SMP is not supported" for armv7 and bunch of other errors are
+>>issued resulting to incorrect final object.
+>>
+>>Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>[...]
+>
+>MBR, Sergei
 
+-- 
 Regards,
--Vladimir
+Ivan Khoronzhuk
