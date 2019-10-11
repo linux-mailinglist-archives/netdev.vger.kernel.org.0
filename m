@@ -2,184 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98FE6D39FE
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 09:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7180D3A14
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 09:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727471AbfJKH0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 03:26:38 -0400
-Received: from fd.dlink.ru ([178.170.168.18]:45558 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726679AbfJKH0i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 03:26:38 -0400
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 078D31B219E5; Fri, 11 Oct 2019 10:26:36 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 078D31B219E5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1570778796; bh=dOAAmZ8hjSoImka9riHogX7F0mjdr4LsS8gu4vN8Q+E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=eC1VKdI0CIfK20AIvg3zUMydFtaRLCQ9SiSDSYK30/YYpdbbrFxzHEpdqjrpAQXEX
-         ewvEBaClc23mzWj+q3pXjvadx5ne/6XlHPAon0OBErf2lidTmzJKVBNBxAPIcKd5IA
-         NmsXvXEAK0jdF1C333CI79lJ8oryNuHz3fuBv6SY=
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id D5F141B219E0;
-        Fri, 11 Oct 2019 10:26:32 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru D5F141B219E0
-Received: by mail.rzn.dlink.ru (Postfix, from userid 5000)
-        id C2B1B1B2192D; Fri, 11 Oct 2019 10:26:32 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA id 156C41B2023E;
-        Fri, 11 Oct 2019 10:26:25 +0300 (MSK)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Fri, 11 Oct 2019 10:26:25 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     Edward Cree <ecree@solarflare.com>
+        id S1727637AbfJKHeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 03:34:11 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:34639 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726679AbfJKHeL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 03:34:11 -0400
+Received: by mail-ed1-f66.google.com with SMTP id p10so7813681edq.1
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 00:34:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Dk051UqLtBCCbnzRc3H5TjevjehWWSOh4IGeyPB78po=;
+        b=oZYwTv1UOj4CvNFkYeTSxiuH/FMHYBaxmVjqUtwxrgahYEBZ9LSPPHJNN6EzEj/HPv
+         v/uobxNGPGByEqraIfnnubGwmzGvS70OvoeiDoEctVWRSYgSkht/vf1/xAWDkdLc2HER
+         xaBhchdpNQjNoAj35GTGDSI/YXgPukHrmcixzwXAvtppbvWdv3cAya9VssZ+QwNNfNsi
+         6Vhet5r6/FpH2Ol3VglTl7FErafmetZkTaX2R7CJ4pCc9t6jDtyoMheCo+XG6i5AEC1Q
+         Rfmgh/BugB51j1/AT6KxfpXEk6r8hzzN9Iwdxm99REa0nc7YqLNDInaqblpZxeGwqTZe
+         bjeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Dk051UqLtBCCbnzRc3H5TjevjehWWSOh4IGeyPB78po=;
+        b=KoqM2DulSkMURYd1ayHZzSo9Dpv0Ktdvtk8GotH6a49tXdiGu/oNyG8BUYRLadDvHI
+         s3x67ypMN5Vl1ViPm9SNISf2ZVo/qqhIVSDKPpOlSK8MHmG95fcQv+u9NuZrZe/mBVfx
+         pjeBrT9298OsskrYZqB1I/TlAdvo6YO9Ck8Cqul+vq49ZnuNdXx2veLYqXoBhEtT/myw
+         FXOPcE+GtBGQ51jOc44SiXf0hnzUEWrMkX4YjnVv732ClNw8U1ZaTrjmLf4XKLNb4M+M
+         xMWAuUgODp6VZmoQstFsxAWkw3lBvJhVoqvmX/qYvfxvUS5CAx8LgieRSMa0zTq59rAl
+         WTRA==
+X-Gm-Message-State: APjAAAUCuHXYDYfL+8F57mdMODScfDGfQcK+SJ8SWp811vD2ytgAjiMQ
+        sW8cKLjSj7IT9pumTDprIi59Qg==
+X-Google-Smtp-Source: APXvYqz5Ett99HAGwzFZiUK9FVDk4aQpIMSaaUubOlGUepMTGbO41ooJ4pcQdBbkt+O/YTsUIbojGw==
+X-Received: by 2002:a50:cb85:: with SMTP id k5mr12010355edi.131.1570779249123;
+        Fri, 11 Oct 2019 00:34:09 -0700 (PDT)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id jp14sm1018501ejb.60.2019.10.11.00.34.08
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 11 Oct 2019 00:34:08 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 09:34:08 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Davide Caratti <dcaratti@redhat.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next1/2] net: core: use listified Rx for GRO_NORMAL in
- napi_gro_receive()
-In-Reply-To: <bb454c3c-1d86-f81e-a03e-86f8de3e9822@solarflare.com>
-References: <20191010144226.4115-1-alobakin@dlink.ru>
- <20191010144226.4115-2-alobakin@dlink.ru>
- <bb454c3c-1d86-f81e-a03e-86f8de3e9822@solarflare.com>
-Message-ID: <e7eaf0a1d236dda43f5cd73887ecfb9d@dlink.ru>
-X-Sender: alobakin@dlink.ru
-User-Agent: Roundcube Webmail/1.3.6
+        John Hurley <john.hurley@netronome.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net 1/2] net: avoid errors when trying to pop MLPS header
+ on non-MPLS packets
+Message-ID: <20191011073407.vvogkh53hm6hvb6h@netronome.com>
+References: <cover.1570732834.git.dcaratti@redhat.com>
+ <9343e3ce8aed5d0e109ab0805fb452e8f55f0130.1570732834.git.dcaratti@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9343e3ce8aed5d0e109ab0805fb452e8f55f0130.1570732834.git.dcaratti@redhat.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Edward Cree wrote 10.10.2019 21:23:
-> On 10/10/2019 15:42, Alexander Lobakin wrote:
->> Commit 323ebb61e32b4 ("net: use listified RX for handling GRO_NORMAL
->> skbs") made use of listified skb processing for the users of
->> napi_gro_frags().
->> The same technique can be used in a way more common napi_gro_receive()
->> to speed up non-merged (GRO_NORMAL) skbs for a wide range of drivers,
->> including gro_cells and mac80211 users.
->> 
->> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
->> ---
->>  net/core/dev.c | 49 +++++++++++++++++++++++++------------------------
->>  1 file changed, 25 insertions(+), 24 deletions(-)
->> 
->> diff --git a/net/core/dev.c b/net/core/dev.c
->> index 8bc3dce71fc0..a33f56b439ce 100644
->> --- a/net/core/dev.c
->> +++ b/net/core/dev.c
->> @@ -5884,6 +5884,26 @@ struct packet_offload 
->> *gro_find_complete_by_type(__be16 type)
->>  }
->>  EXPORT_SYMBOL(gro_find_complete_by_type);
->> 
->> +/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
->> +static void gro_normal_list(struct napi_struct *napi)
->> +{
->> +	if (!napi->rx_count)
->> +		return;
->> +	netif_receive_skb_list_internal(&napi->rx_list);
->> +	INIT_LIST_HEAD(&napi->rx_list);
->> +	napi->rx_count = 0;
->> +}
->> +
->> +/* Queue one GRO_NORMAL SKB up for list processing.  If batch size 
->> exceeded,
->> + * pass the whole batch up to the stack.
->> + */
->> +static void gro_normal_one(struct napi_struct *napi, struct sk_buff 
->> *skb)
->> +{
->> +	list_add_tail(&skb->list, &napi->rx_list);
->> +	if (++napi->rx_count >= gro_normal_batch)
->> +		gro_normal_list(napi);
->> +}
->> +
->>  static void napi_skb_free_stolen_head(struct sk_buff *skb)
->>  {
->>  	skb_dst_drop(skb);
->> @@ -5891,12 +5911,13 @@ static void napi_skb_free_stolen_head(struct 
->> sk_buff *skb)
->>  	kmem_cache_free(skbuff_head_cache, skb);
->>  }
->> 
->> -static gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff 
->> *skb)
->> +static gro_result_t napi_skb_finish(struct napi_struct *napi,
->> +				    struct sk_buff *skb,
->> +				    gro_result_t ret)
-> Any reason why the argument order here is changed around?
-
-Actually yes: to match napi_skb_finish() and napi_frags_finish()
-prototypes, as gro_normal one() required an addition of napi
-argument anyway.
-
+On Thu, Oct 10, 2019 at 08:43:52PM +0200, Davide Caratti wrote:
+> the following script:
 > 
-> -Ed
->>  {
->>  	switch (ret) {
->>  	case GRO_NORMAL:
->> -		if (netif_receive_skb_internal(skb))
->> -			ret = GRO_DROP;
->> +		gro_normal_one(napi, skb);
->>  		break;
->> 
->>  	case GRO_DROP:
->> @@ -5928,7 +5949,7 @@ gro_result_t napi_gro_receive(struct napi_struct 
->> *napi, struct sk_buff *skb)
->> 
->>  	skb_gro_reset_offset(skb);
->> 
->> -	ret = napi_skb_finish(dev_gro_receive(napi, skb), skb);
->> +	ret = napi_skb_finish(napi, skb, dev_gro_receive(napi, skb));
->>  	trace_napi_gro_receive_exit(ret);
->> 
->>  	return ret;
->> @@ -5974,26 +5995,6 @@ struct sk_buff *napi_get_frags(struct 
->> napi_struct *napi)
->>  }
->>  EXPORT_SYMBOL(napi_get_frags);
->> 
->> -/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
->> -static void gro_normal_list(struct napi_struct *napi)
->> -{
->> -	if (!napi->rx_count)
->> -		return;
->> -	netif_receive_skb_list_internal(&napi->rx_list);
->> -	INIT_LIST_HEAD(&napi->rx_list);
->> -	napi->rx_count = 0;
->> -}
->> -
->> -/* Queue one GRO_NORMAL SKB up for list processing.  If batch size 
->> exceeded,
->> - * pass the whole batch up to the stack.
->> - */
->> -static void gro_normal_one(struct napi_struct *napi, struct sk_buff 
->> *skb)
->> -{
->> -	list_add_tail(&skb->list, &napi->rx_list);
->> -	if (++napi->rx_count >= gro_normal_batch)
->> -		gro_normal_list(napi);
->> -}
->> -
->>  static gro_result_t napi_frags_finish(struct napi_struct *napi,
->>  				      struct sk_buff *skb,
->>  				      gro_result_t ret)
+>  # tc qdisc add dev eth0 clsact
+>  # tc filter add dev eth0 egress matchall action mpls pop
+> 
+> implicitly makes the kernel drop all packets transmitted by eth0, if they
+> don't have a MPLS header. This behavior is uncommon: other encapsulations
+> (like VLAN) just let the packet pass unmodified. Since the result of MPLS
+> 'pop' operation would be the same regardless of the presence / absence of
+> MPLS header(s) in the original packet, we can let skb_mpls_pop() return 0
+> when dealing with non-MPLS packets.
+> 
+> Fixes: 2a2ea50870ba ("net: sched: add mpls manipulation actions to TC")
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+Hi Davide,
+
+For the TC use-case I think this is correct for the reasons you explain
+above.
+
+For the OVS use-case I also think it is fine because
+__ovs_nla_copy_actions() will ensure that MPLS POP only occurs
+for packets with an MPLS Ethernet protocol. That is, this condition
+should never occur in that use-case.
+
+And it appears that there are no other users of this function.
+
+I think it might be worth adding something about use-cases other than TC
+to the changelog, but that aside:
+
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+
+> ---
+>  net/core/skbuff.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 529133611ea2..cd59ccd6da57 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -5536,7 +5536,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto)
+>  	int err;
+>  
+>  	if (unlikely(!eth_p_mpls(skb->protocol)))
+> -		return -EINVAL;
+> +		return 0;
+>  
+>  	err = skb_ensure_writable(skb, skb->mac_len + MPLS_HLEN);
+>  	if (unlikely(err))
+> -- 
+> 2.21.0
+> 
