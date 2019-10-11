@@ -2,124 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B332AD3BBE
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 412BAD3BFA
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 11:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727500AbfJKI5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 04:57:53 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:34772 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726310AbfJKI5w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 04:57:52 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1iIqk9-0005yz-TB; Fri, 11 Oct 2019 10:57:50 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211-next next-2019-10-11
-Date:   Fri, 11 Oct 2019 10:57:35 +0200
-Message-Id: <20191011085736.15772-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.20.1
+        id S1727535AbfJKJLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 05:11:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60408 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726585AbfJKJLv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 05:11:51 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 463892084C;
+        Fri, 11 Oct 2019 09:11:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570785110;
+        bh=drscdF8WjY/Kmi+jyxmoVaWt127a15am0W2ZZzsR4do=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h7Re/GW+CtZsvnmM3bm7h2jiAzZsk+TqLrNBAQfy8AkWWO7orLMkxcY6IhYazEkOJ
+         0Bd1DDwi723m6RiIgiJ+rNoiaoMU8C2hARBFbkfwXrLUFBlLfusEvlr9Cd+4sH4Kc+
+         ydN5MnhqKyFTorWIqEXQ3FfDUEBoMNB6yT7pxLMA=
+Date:   Fri, 11 Oct 2019 11:11:48 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Lei Chen <chenl.lei@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: ipv6 UNH-IOL Intact test cases failure on kernel 4.4.178
+Message-ID: <20191011091148.GB1124173@kroah.com>
+References: <CAB5AJuUgQaoWPqjw5dSkZR-dQOx+KKatNR0vz28Kqzq1QYJDzA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAB5AJuUgQaoWPqjw5dSkZR-dQOx+KKatNR0vz28Kqzq1QYJDzA@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Fri, Oct 11, 2019 at 05:00:32PM +0800, Lei Chen wrote:
+> Hi David,
+> Thanks in advance for reading my message.
+> 
+> We are running UNH-IOL test on our product which is based on kernel
+> 4.4.178. The INTACT test cases failed on ipv6 verification. The same test
+> cases just got pass on 4.4.153. (Sorry, the INTACT suite does not look to
+> be open sourced. Hence I don't really know what the cases were indeed
+> doing.)
+> 
+> Our verification engineer also mentioned: "The pattern of failures look
+> eerily similar to a regression we recently discovered in SLES 12. I.e.,
+> Failures related to “Parameter Problems”, as well as “Fragmentation“." We
+> have tried to back out the defragment related patch:
+> 
+> commit 5f2d68b6b5a439c3223d8fa6ba20736f91fc58d8
+> Author: Florian Westphal
+> Date:   Wed Oct 10 12:30:10 2018 -0700
+> 
+>     ipv6: defrag: drop non-last frags smaller than min mtu
+> 
+>     commit 0ed4229b08c13c84a3c301a08defdc9e7f4467e6 upstream.
+> 
+>     don't bother with pathological cases, they only waste cycles.
+>     IPv6 requires a minimum MTU of 1280 so we should never see fragments
+>     smaller than this (except last frag).
+> 
+> 
+> But it doesn't help. Could you please shed a light on which patch between
+> 4.4.153 and 4.4.178 could have caused such a regression? Thanks again.
 
-Let me try to be a bit "maintainer-of-the-day agnostic" ;-)
+As you can run the test, why can't you run 'git bisect' to find the
+offending patch?
 
-I'll be going on vacation, but figured I'd at least get this
-stuff out. As usual, I ran the hwsim tests from wpa_s/hostapd
-and all looks fine, compilation also was OK.
+thanks,
 
-Kalle has agreed to help cover when I'm on vacation (though
-I'm home next week, so if there's any fallout I'll deal with
-it then), so if there's something urgent he may include some
-stack changes in his trees or ask you to or apply a patch.
-
-Please pull and let me know if there's any problem.
-
-Thanks,
-johannes
-
-
-
-The following changes since commit 9077f052abd5391a866dd99e27212213648becef:
-
-  net: propagate errors correctly in register_netdevice() (2019-10-03 12:31:06 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2019-10-11
-
-for you to fetch changes up to 7dfd8ac327301f302b03072066c66eb32578e940:
-
-  mac80211_hwsim: add support for OCB (2019-10-11 10:33:34 +0200)
-
-----------------------------------------------------------------
-A few more small things, nothing really stands out:
- * minstrel improvements from Felix
- * a TX aggregation simplification
- * some additional capabilities for hwsim
- * minor cleanups & docs updates
-
-----------------------------------------------------------------
-Denis Kenzior (1):
-      nl80211: trivial: Remove redundant loop
-
-Felix Fietkau (3):
-      mac80211: minstrel: remove divisions in tx status path
-      mac80211: minstrel_ht: replace rate stats ewma with a better moving average
-      mac80211: minstrel_ht: rename prob_ewma to prob_avg, use it for the new average
-
-Johannes Berg (2):
-      mac80211: pass internal sta to ieee80211_tx_frags()
-      mac80211: simplify TX aggregation start
-
-Koen Vandeputte (1):
-      mac80211: IBSS: avoid unneeded return value processing
-
-Ramon Fontes (2):
-      mac80211_hwsim: add more 5GHz channels, 5/10 MHz support
-      mac80211_hwsim: add support for OCB
-
-Sunil Dutt (1):
-      nl80211: Document the expectation for NL80211_ATTR_IE in NL80211_CMD_CONNECT
-
- drivers/net/wireless/ath/ath9k/htc_drv_main.c      |  2 +-
- drivers/net/wireless/ath/ath9k/main.c              |  2 +-
- drivers/net/wireless/ath/carl9170/main.c           |  3 +-
- drivers/net/wireless/ath/wcn36xx/main.c            |  5 +-
- .../broadcom/brcm80211/brcmsmac/mac80211_if.c      |  3 +-
- drivers/net/wireless/intel/iwlegacy/4965-mac.c     |  2 +-
- drivers/net/wireless/intel/iwlwifi/dvm/tx.c        |  2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |  5 +-
- drivers/net/wireless/mac80211_hwsim.c              | 37 +++++++++--
- drivers/net/wireless/marvell/mwl8k.c               |  2 +-
- drivers/net/wireless/mediatek/mt76/mt7603/main.c   |  3 +-
- drivers/net/wireless/mediatek/mt76/mt7615/main.c   |  3 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_util.c  |  3 +-
- drivers/net/wireless/mediatek/mt7601u/main.c       |  3 +-
- drivers/net/wireless/ralink/rt2x00/rt2800lib.c     |  4 +-
- drivers/net/wireless/realtek/rtlwifi/base.c        |  3 +-
- drivers/net/wireless/realtek/rtw88/mac80211.c      |  3 +-
- drivers/net/wireless/rsi/rsi_91x_mac80211.c        |  3 +-
- include/net/mac80211.h                             | 11 +++-
- include/uapi/linux/nl80211.h                       |  8 +++
- net/mac80211/agg-tx.c                              |  9 ++-
- net/mac80211/ibss.c                                |  9 +--
- net/mac80211/rc80211_minstrel.c                    | 48 +++++++-------
- net/mac80211/rc80211_minstrel.h                    | 57 +++++++++++++++--
- net/mac80211/rc80211_minstrel_debugfs.c            |  8 +--
- net/mac80211/rc80211_minstrel_ht.c                 | 73 ++++++++++++----------
- net/mac80211/rc80211_minstrel_ht.h                 |  2 +-
- net/mac80211/rc80211_minstrel_ht_debugfs.c         |  8 +--
- net/mac80211/tx.c                                  | 15 ++---
- net/wireless/nl80211.c                             |  6 +-
- 30 files changed, 212 insertions(+), 130 deletions(-)
-
+greg k-h
