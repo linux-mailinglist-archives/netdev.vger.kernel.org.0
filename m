@@ -2,256 +2,391 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37D9CD3625
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56EE6D362E
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:39:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727532AbfJKAhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:37:17 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:37577 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbfJKAhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:37:17 -0400
-Received: by mail-io1-f65.google.com with SMTP id b19so17875687iob.4
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:37:16 -0700 (PDT)
+        id S1727685AbfJKAiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 20:38:51 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:33725 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727559AbfJKAiu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:38:50 -0400
+Received: by mail-lf1-f65.google.com with SMTP id y127so5748922lfc.0
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:38:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=GVKSuJOpfQtOd7y1u8My+QnQtmV8UJAQBY/bKk9i1Zc=;
-        b=nbrGaZ7Yjuwu4ELCr/rQGG1qxeqD/sMDIFZQSrb9toGj4sOgB3VnIM4B3jhDevrNlJ
-         q8xWmoLv98JVdLoyJ+PVBy0VyUJvyjad6NcFY5inD9yoeujoOT4By8aM8cEaS40YQk4u
-         1o54ahVPOqnzab0opq7IBpDe6jA2sN1W8Q0RZ/ptV9hh4fm6KpdYxQdMaSeju2sYe0O/
-         y1aF5K2cm1L8EGVAxErA6ZYmzGIFmmi4tD+XdafvvOG1oenBxsma5RSO1s0duZfVBZ65
-         Y9YhI7EkQyK8H3jFDbwbq7uF+xXb7/4QEc7o14ddioaSSt9NxTK2eZ5Eiup830LVrKiO
-         AtXg==
+        bh=8R/eBx6NvZFxWNxVIYlfJkIW02oJ5zpbsmf6mm7nZ9s=;
+        b=PVIaSCVsKoCSioNO1daQB3ogqBQmVD3fhqQo4gIUtxKKoYuLTwFMbHK9RhP3eWO8EI
+         Sr27B+bTJnYiu57nb0HzGL8v5YSu8KyEgsQePndcV6s1X1xKoEpg2sEy65gP3Dzwrkmf
+         8lMEoOvvlOjP0p1jwOektA10DSHG+MEbsWZHevWEGU3+YsaFOxOmztILHH7KtAMVF137
+         7d0i2/TQUYZ4JzR8GQ3eYX3C/MfCuJm/SqpW2Mw2wFvfj9OtlsoHTvv49hgTnDyQZRwq
+         2KmtuIKbReoDsybnK+ymQGg8Zv7msFnsJkQRrurtEeLYeftHey/w7tDkvx3OBHDTLubQ
+         lgFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=GVKSuJOpfQtOd7y1u8My+QnQtmV8UJAQBY/bKk9i1Zc=;
-        b=e6QQpidY/pu5/IevmugC0EmxpccFf6l8+MOni1IoMkGuUPzJZvaubBjjlMW1Dba7WZ
-         30fJ2HrcsFC+M2qfD0S6845ChrQ5sjr4L4wWgO9YsbUxADKHEQcVJjZ/Waa7v5UcQHrD
-         QqmnHlD+MdWZqxjcarLT4PVGSbnNMaNg8UpV/ZdUL1s+K8A44hhb2iqVM8evueZ/PZpP
-         QlOWoqSPAaIH4x4SjzTW0uL6SnyH69cI1LrFdfsLh0RnJl/AAOqCOPZh1wOdZeiCkCKL
-         FToXBh7creZtkI6vo6sygLhwhuh0X1ez28ZgEl8mHSSMPwns1gzku9DRWlwXs231QTg0
-         qMGA==
-X-Gm-Message-State: APjAAAWlrnmSxrkHgmuP17TnjOLaYdv1OLogFE8VDhwZOGvsZJg2Qp0d
-        gvEZi8hdHGjb49UVg+KlxMOU1EvVRDbkuaJWljQgzA==
-X-Google-Smtp-Source: APXvYqy4CAZ1e7iu6pWTe7VAhD0Eqxlbwf3Xde2jMeF3qUdJLkPxTKqlpKHlDIcEy/Sy8zRU2uB+8r2PN5BtMhsZjMs=
-X-Received: by 2002:a5d:9359:: with SMTP id i25mr13491265ioo.184.1570754235715;
- Thu, 10 Oct 2019 17:37:15 -0700 (PDT)
+        bh=8R/eBx6NvZFxWNxVIYlfJkIW02oJ5zpbsmf6mm7nZ9s=;
+        b=rPQPXZqhgOJac1NgJjz1VXv463eqf8ZnHkvy1A/54rh+xs1CIVuLQ/FpazLAea6jsW
+         XI+AeO9KaGCLsQrUnJDZ+tyQvCZDYPsgFrO4dglw5WARYvni7/DHEaslMpT62O6gJG61
+         60vq/uIEXYCHJ0aYx70WfCWJaZjN8RqG/+hvGOKBdlHwzeFGpEF6hqyla3qRkumNZXpE
+         O2K3cO7+jTodnRFpKZbUfw1htqJuRpG17IBP9bY5qPrVofgZzCersLBCUNyuUzCrLpH8
+         1Q7VDDQ8ZxuLPKq+KzctNaED9EwMaVH3J0IXJsAs39HC8WvMeFxthp6v1AfE+DEjFHIG
+         dG6A==
+X-Gm-Message-State: APjAAAVxH1B0hb0sayZoW8jT/MzssnP4nnx6emmoN8X8yymch/1fqZ7z
+        YTR2+b3dJkXyDw6Kufxv8ehJLbwZy5vaP3RvRe1a
+X-Google-Smtp-Source: APXvYqw0Yt32wE7spq2vSD4AfWdE6Sx9fE0xUf8vD/PbZQdv7a66StbcusgQqkSXaDuSAxoGBdQc3ElK5F9N13YICOc=
+X-Received: by 2002:ac2:51b6:: with SMTP id f22mr7271786lfk.175.1570754325948;
+ Thu, 10 Oct 2019 17:38:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191010164752.16769-1-maheshb@google.com>
-In-Reply-To: <20191010164752.16769-1-maheshb@google.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Thu, 10 Oct 2019 17:37:04 -0700
-Message-ID: <CAEA6p_Ap2biuVytcNyF7nt2_PUkMN1BW_e79ST_6jZENUo3CrA@mail.gmail.com>
-Subject: Re: [PATCHv2 next] blackhole_netdev: fix syzkaller reported issue
-To:     Mahesh Bandewar <maheshb@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>
+References: <cover.1568834524.git.rgb@redhat.com> <6fb4e270bfafef3d0477a06b0365fdcc5a5305b5.1568834524.git.rgb@redhat.com>
+In-Reply-To: <6fb4e270bfafef3d0477a06b0365fdcc5a5305b5.1568834524.git.rgb@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 10 Oct 2019 20:38:34 -0400
+Message-ID: <CAHC9VhS2111YTQ_rbHKe6+n9coPNbcTJqf5wnBx9LYHSf69THA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V7 04/21] audit: convert to contid list to check
+ for orch/engine ownership
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
+        mpatel@redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 9:48 AM Mahesh Bandewar <maheshb@google.com> wrote:
+On Wed, Sep 18, 2019 at 9:24 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> Store the audit container identifier in a refcounted kernel object that
+> is added to the master list of audit container identifiers.  This will
+> allow multiple container orchestrators/engines to work on the same
+> machine without danger of inadvertantly re-using an existing identifier.
+> It will also allow an orchestrator to inject a process into an existing
+> container by checking if the original container owner is the one
+> injecting the task.  A hash table list is used to optimize searches.
 >
-> While invalidating the dst, we assign backhole_netdev instead of
-> loopback device. However, this device does not have idev pointer
-> and hence no ip6_ptr even if IPv6 is enabled. Possibly this has
-> triggered the syzbot reported crash.
->
-> The syzbot report does not have reproducer, however, this is the
-> only device that doesn't have matching idev created.
->
-> Crash instruction is :
->
-> static inline bool ip6_ignore_linkdown(const struct net_device *dev)
-> {
->         const struct inet6_dev *idev = __in6_dev_get(dev);
->
->         return !!idev->cnf.ignore_routes_with_linkdown; <= crash
-> }
->
-> Also ipv6 always assumes presence of idev and never checks for it
-> being NULL (as does the above referenced code). So adding a idev
-> for the blackhole_netdev to avoid this class of crashes in the future.
->
+> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
 > ---
+>  include/linux/audit.h | 26 ++++++++++++++--
+>  kernel/audit.c        | 86 ++++++++++++++++++++++++++++++++++++++++++++++++---
+>  kernel/audit.h        |  8 +++++
+>  3 files changed, 112 insertions(+), 8 deletions(-)
+
+One general comment before we go off into the weeds on this ... I can
+understand why you wanted to keep this patch separate from the earlier
+patches, but as we get closer to having mergeable code this should get
+folded into the previous patches.  For example, there shouldn't be a
+change in audit_task_info where you change the contid field from a u64
+to struct pointer, it should be a struct pointer from the start.
+
+It's also disappointing that idr appears to only be for 32-bit ID
+values, if we had a 64-bit idr I think we could simplify this greatly.
+
+> diff --git a/include/linux/audit.h b/include/linux/audit.h
+> index f2e3b81f2942..e317807cdd3e 100644
+> --- a/include/linux/audit.h
+> +++ b/include/linux/audit.h
+> @@ -95,10 +95,18 @@ struct audit_ntp_data {
+>  struct audit_ntp_data {};
+>  #endif
 >
-> syzbot has found the following crash on:
+> +struct audit_cont {
+> +       struct list_head        list;
+> +       u64                     id;
+> +       struct task_struct      *owner;
+> +       refcount_t              refcount;
+> +       struct rcu_head         rcu;
+> +};
+
+It seems as though in most of the code you are using "contid", any
+reason why didn't stick with that naming scheme here, e.g. "struct
+audit_contid"?
+
+>  struct audit_task_info {
+>         kuid_t                  loginuid;
+>         unsigned int            sessionid;
+> -       u64                     contid;
+> +       struct audit_cont       *cont;
+
+Same, why not stick with "contid"?
+
+>  #ifdef CONFIG_AUDITSYSCALL
+>         struct audit_context    *ctx;
+>  #endif
+> @@ -203,11 +211,15 @@ static inline unsigned int audit_get_sessionid(struct task_struct *tsk)
 >
-> HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-> console output: https://syzkaller-buganizer.googleplex.com/text?tag=CrashLog&id=96236769ac48d9c2eb3a0db5385370ea6940be83
-> kernel config:  https://syzkaller-buganizer.googleplex.com/text?tag=Config&id=1ed331b637302a68174fdbe34315b781b7c7ab1e
-> dashboard link: https://syzkaller.appspot.com/bug?extid=86298614df433d7f3824
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->
-> Unfortunately, I don't have any reproducer for this crash yet.
->
-> See http://go/syzbot for details on how to handle this bug.
->
-> kasan: GPF could be caused by NULL-ptr deref or user memory access
-> general protection fault: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 16525 Comm: syz-executor.2 Not tainted 5.3.0-rc3+ #159
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-> RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-> Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-> RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-> RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-> RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-> RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-> R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-> R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-> FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
-> __find_rr_leaf+0x14e/0x750 net/ipv6/route.c:831
-> find_rr_leaf net/ipv6/route.c:852 [inline]
-> rt6_select net/ipv6/route.c:896 [inline]
-> fib6_table_lookup+0x697/0xdb0 net/ipv6/route.c:2164
-> ip6_pol_route+0x1f6/0xaf0 net/ipv6/route.c:2200
-> ip6_pol_route_output+0x54/0x70 net/ipv6/route.c:2452
-> fib6_rule_lookup+0x133/0x7a0 net/ipv6/fib6_rules.c:113
-> ip6_route_output_flags_noref+0x2d6/0x360 net/ipv6/route.c:2484
-> ip6_route_output_flags+0x106/0x4d0 net/ipv6/route.c:2497
-> ip6_route_output include/net/ip6_route.h:98 [inline]
-> ip6_dst_lookup_tail+0x1042/0x1ef0 net/ipv6/ip6_output.c:1022
-> ip6_dst_lookup_flow+0xa8/0x220 net/ipv6/ip6_output.c:1150
-> ip6_sk_dst_lookup_flow net/ipv6/ip6_output.c:1188 [inline]
-> ip6_sk_dst_lookup_flow+0x62a/0xb90 net/ipv6/ip6_output.c:1178
-> udpv6_sendmsg+0x17ba/0x2990 net/ipv6/udp.c:1439
-> inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
-> sock_sendmsg_nosec net/socket.c:637 [inline]
-> sock_sendmsg+0xd7/0x130 net/socket.c:657
-> __sys_sendto+0x262/0x380 net/socket.c:1952
-> __do_sys_sendto net/socket.c:1964 [inline]
-> __se_sys_sendto net/socket.c:1960 [inline]
-> __x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
-> do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-> entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x459829
-> Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007fa15e7ddc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-> RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000459829
-> RDX: 0000000000000001 RSI: 0000000020000000 RDI: 0000000000000007
-> RBP: 000000000075c1c0 R08: 0000000020001000 R09: 000000000000001c
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa15e7de6d4
-> R13: 00000000004c77e7 R14: 00000000004dd048 R15: 00000000ffffffff
-> Modules linked in:
-> ---[ end trace 4b3ce5eddd15c8f6 ]---
-> RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-> RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-> Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-> RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-> RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-> RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-> RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-> R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-> R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-> FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->
-> Fixes: 8d7017fd621d ("blackhole_netdev: use blackhole_netdev to invalidate dst entries")
-> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> CC: Eric Dumazet <edumazet@google.com>
-> ---
-> v1->v2:
->    fixed missing update in ip6_dst_ifdown()
->
->  net/ipv6/addrconf.c |  6 +++++-
->  net/ipv6/route.c    | 15 ++++++---------
->  2 files changed, 11 insertions(+), 10 deletions(-)
->
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index 98d82305d6de..0f216f7cbe3e 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -6995,7 +6995,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
->
->  int __init addrconf_init(void)
+>  static inline u64 audit_get_contid(struct task_struct *tsk)
 >  {
-> -       struct inet6_dev *idev;
-> +       struct inet6_dev *idev, *bdev;
->         int i, err;
+> -       if (!tsk->audit)
+> +       if (!tsk->audit || !tsk->audit->cont)
+>                 return AUDIT_CID_UNSET;
+> -       return tsk->audit->contid;
+> +       return tsk->audit->cont->id;
+>  }
+
+Assuming for a moment that we implement an audit_contid_get() (see
+Neil's comment as well as mine below), we probably need to name this
+something different so we don't all lose our minds when we read this
+code.  On the plus side we can probably preface it with an underscore
+since it is a static, in which case _audit_contid_get() might be okay,
+but I'm open to suggestions.
+
+> +extern struct audit_cont *audit_cont(struct task_struct *tsk);
+> +
+> +extern void audit_cont_put(struct audit_cont *cont);
+
+More of the "contid" vs "cont".
+
+>  extern u32 audit_enabled;
 >
->         err = ipv6_addr_label_init();
-> @@ -7035,10 +7035,14 @@ int __init addrconf_init(void)
+>  extern int audit_signal_info(int sig, struct task_struct *t);
+> @@ -277,6 +289,14 @@ static inline u64 audit_get_contid(struct task_struct *tsk)
+>         return AUDIT_CID_UNSET;
+>  }
+>
+> +static inline struct audit_cont *audit_cont(struct task_struct *tsk)
+> +{
+> +       return NULL;
+> +}
+> +
+> +static inline void audit_cont_put(struct audit_cont *cont)
+> +{ }
+> +
+>  #define audit_enabled AUDIT_OFF
+>
+>  static inline int audit_signal_info(int sig, struct task_struct *t)
+> diff --git a/kernel/audit.c b/kernel/audit.c
+> index a36ea57cbb61..ea0899130cc1 100644
+> --- a/kernel/audit.c
+> +++ b/kernel/audit.c
+> @@ -137,6 +137,8 @@ struct audit_net {
+>
+>  /* Hash for inode-based rules */
+>  struct list_head audit_inode_hash[AUDIT_INODE_BUCKETS];
+> +/* Hash for contid-based rules */
+> +struct list_head audit_contid_hash[AUDIT_CONTID_BUCKETS];
+>
+>  static struct kmem_cache *audit_buffer_cache;
+>
+> @@ -204,6 +206,8 @@ struct audit_reply {
+>
+>  static struct kmem_cache *audit_task_cache;
+>
+> +static DEFINE_SPINLOCK(audit_contid_list_lock);
+
+Since it looks like this protectects audit_contid_hash, I think it
+would be better to move it up underneath audit_contid_hash.
+
+>  void __init audit_task_init(void)
+>  {
+>         audit_task_cache = kmem_cache_create("audit_task",
+> @@ -231,7 +235,9 @@ int audit_alloc(struct task_struct *tsk)
+>         }
+>         info->loginuid = audit_get_loginuid(current);
+>         info->sessionid = audit_get_sessionid(current);
+> -       info->contid = audit_get_contid(current);
+> +       info->cont = audit_cont(current);
+> +       if (info->cont)
+> +               refcount_inc(&info->cont->refcount);
+
+See the other comments about a "get" function, but I think we need a
+RCU read lock around the above, no?
+
+>         tsk->audit = info;
+>
+>         ret = audit_alloc_syscall(tsk);
+> @@ -246,7 +252,7 @@ int audit_alloc(struct task_struct *tsk)
+>  struct audit_task_info init_struct_audit = {
+>         .loginuid = INVALID_UID,
+>         .sessionid = AUDIT_SID_UNSET,
+> -       .contid = AUDIT_CID_UNSET,
+> +       .cont = NULL,
+
+More "cont" vs "contid".
+
+>  #ifdef CONFIG_AUDITSYSCALL
+>         .ctx = NULL,
+>  #endif
+> @@ -266,6 +272,9 @@ void audit_free(struct task_struct *tsk)
+>         /* Freeing the audit_task_info struct must be performed after
+>          * audit_log_exit() due to need for loginuid and sessionid.
 >          */
->         rtnl_lock();
->         idev = ipv6_add_dev(init_net.loopback_dev);
-> +       bdev = ipv6_add_dev(blackhole_netdev);
+> +       spin_lock(&audit_contid_list_lock);
+> +       audit_cont_put(tsk->audit->cont);
+> +       spin_unlock(&audit_contid_list_lock);
 
-I am not very sure here, but we call
-addrconf_down(init_net.loopback_dev) to eventually dealloc idev from
-addrconf_cleanup().
-Do we need to do the same for bdev?
+Perhaps this will make sense as I get further into the patchset, but
+why not move the spin lock operations into audit_[cont/contid]_put()?
 
->         rtnl_unlock();
->         if (IS_ERR(idev)) {
->                 err = PTR_ERR(idev);
->                 goto errlo;
-> +       } else if (IS_ERR(bdev)) {
-> +               err = PTR_ERR(bdev);
-> +               goto errlo;
+>         info = tsk->audit;
+>         tsk->audit = NULL;
+>         kmem_cache_free(audit_task_cache, info);
+> @@ -1657,6 +1666,9 @@ static int __init audit_init(void)
+>         for (i = 0; i < AUDIT_INODE_BUCKETS; i++)
+>                 INIT_LIST_HEAD(&audit_inode_hash[i]);
+>
+> +       for (i = 0; i < AUDIT_CONTID_BUCKETS; i++)
+> +               INIT_LIST_HEAD(&audit_contid_hash[i]);
+> +
+>         mutex_init(&audit_cmd_mutex.lock);
+>         audit_cmd_mutex.owner = NULL;
+>
+> @@ -2356,6 +2368,32 @@ int audit_signal_info(int sig, struct task_struct *t)
+>         return audit_signal_info_syscall(t);
+>  }
+>
+> +struct audit_cont *audit_cont(struct task_struct *tsk)
+> +{
+> +       if (!tsk->audit || !tsk->audit->cont)
+> +               return NULL;
+> +       return tsk->audit->cont;
+> +}
+> +
+> +/* audit_contid_list_lock must be held by caller */
+> +void audit_cont_put(struct audit_cont *cont)
+> +{
+> +       if (!cont)
+> +               return;
+> +       if (refcount_dec_and_test(&cont->refcount)) {
+> +               put_task_struct(cont->owner);
+> +               list_del_rcu(&cont->list);
+> +               kfree_rcu(cont, rcu);
+> +       }
+> +}
+
+I tend to agree with Neil's previous comment; if we've got a
+audit_[cont/contid]_put(), why not an audit_[cont/contid]_get()?
+
+> +static struct task_struct *audit_cont_owner(struct task_struct *tsk)
+> +{
+> +       if (tsk->audit && tsk->audit->cont)
+> +               return tsk->audit->cont->owner;
+> +       return NULL;
+> +}
+
+I'm not sure if this is possible (I haven't make my way through the
+entire patchset) and the function above isn't used in this patch (why
+is it here?), but it seems like it would be safer to convert this into
+an audit_contid_isowner() function that simply returns 1/0 depending
+on if the passed task_struct is the owner or not of a passed audit
+container ID value?
+
+>  /*
+>   * audit_set_contid - set current task's audit contid
+>   * @task: target task
+> @@ -2382,9 +2420,12 @@ int audit_set_contid(struct task_struct *task, u64 contid)
 >         }
+>         oldcontid = audit_get_contid(task);
+>         read_lock(&tasklist_lock);
+> -       /* Don't allow the audit containerid to be unset */
+> +       /* Don't allow the contid to be unset */
+>         if (!audit_contid_valid(contid))
+>                 rc = -EINVAL;
+> +       /* Don't allow the contid to be set to the same value again */
+> +       else if (contid == oldcontid) {
+> +               rc = -EADDRINUSE;
+>         /* if we don't have caps, reject */
+>         else if (!capable(CAP_AUDIT_CONTROL))
+>                 rc = -EPERM;
+
+RCU read lock?  It's a bit dicey since I believe the tasklist_lock is
+going to provide us the safety we need, but if we are going to claim
+that the audit container ID list is protected by RCU we should
+probably use it.
+
+> @@ -2397,8 +2438,43 @@ int audit_set_contid(struct task_struct *task, u64 contid)
+>         else if (audit_contid_set(task))
+>                 rc = -ECHILD;
+>         read_unlock(&tasklist_lock);
+> -       if (!rc)
+> -               task->audit->contid = contid;
+> +       if (!rc) {
+> +               struct audit_cont *oldcont = audit_cont(task);
+
+Previously we held the tasklist_lock to protect the audit container ID
+associated with the struct, should we still be holding it here?
+
+Regardless, I worry that the lock dependencies between the
+tasklist_lock and the audit_contid_list_lock are going to be tricky.
+It might be nice to document the relationship in a comment up near
+where you declare audit_contid_list_lock.
+
+> +               struct audit_cont *cont = NULL;
+> +               struct audit_cont *newcont = NULL;
+> +               int h = audit_hash_contid(contid);
+> +
+> +               spin_lock(&audit_contid_list_lock);
+> +               list_for_each_entry_rcu(cont, &audit_contid_hash[h], list)
+> +                       if (cont->id == contid) {
+> +                               /* task injection to existing container */
+> +                               if (current == cont->owner) {
+
+I understand the desire to limit a given audit container ID to the
+orchestrator that created it, but are we certain that we can track
+audit container ID "ownership" via a single instance of a task_struct?
+ What happens when the orchestrator stops/restarts/crashes?  Do we
+even care?
+
+> +                                       refcount_inc(&cont->refcount);
+> +                                       newcont = cont;
+
+We can bail out of the loop here, yes?
+
+> +                               } else {
+> +                                       rc = -ENOTUNIQ;
+> +                                       goto conterror;
+> +                               }
+> +                       }
+> +               if (!newcont) {
+> +                       newcont = kmalloc(sizeof(struct audit_cont), GFP_ATOMIC);
+> +                       if (newcont) {
+> +                               INIT_LIST_HEAD(&newcont->list);
+> +                               newcont->id = contid;
+> +                               get_task_struct(current);
+> +                               newcont->owner = current;
+> +                               refcount_set(&newcont->refcount, 1);
+> +                               list_add_rcu(&newcont->list, &audit_contid_hash[h]);
+> +                       } else {
+> +                               rc = -ENOMEM;
+> +                               goto conterror;
+> +                       }
+> +               }
+> +               task->audit->cont = newcont;
+> +               audit_cont_put(oldcont);
+> +conterror:
+> +               spin_unlock(&audit_contid_list_lock);
+> +       }
+>         task_unlock(task);
 >
->         ip6_route_init_special_entries();
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index a63ff85fe141..742120728869 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -155,10 +155,9 @@ void rt6_uncached_list_del(struct rt6_info *rt)
+>         if (!audit_enabled)
+> diff --git a/kernel/audit.h b/kernel/audit.h
+> index 16bd03b88e0d..e4a31aa92dfe 100644
+> --- a/kernel/audit.h
+> +++ b/kernel/audit.h
+> @@ -211,6 +211,14 @@ static inline int audit_hash_ino(u32 ino)
+>         return (ino & (AUDIT_INODE_BUCKETS-1));
+>  }
 >
->  static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
->  {
-> -       struct net_device *loopback_dev = net->loopback_dev;
->         int cpu;
+> +#define AUDIT_CONTID_BUCKETS   32
+> +extern struct list_head audit_contid_hash[AUDIT_CONTID_BUCKETS];
+> +
+> +static inline int audit_hash_contid(u64 contid)
+> +{
+> +       return (contid & (AUDIT_CONTID_BUCKETS-1));
+> +}
+> +
+>  /* Indicates that audit should log the full pathname. */
+>  #define AUDIT_NAME_FULL -1
 >
-> -       if (dev == loopback_dev)
-> +       if (dev == net->loopback_dev)
->                 return;
->
->         for_each_possible_cpu(cpu) {
-> @@ -171,7 +170,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
->                         struct net_device *rt_dev = rt->dst.dev;
->
->                         if (rt_idev->dev == dev) {
-> -                               rt->rt6i_idev = in6_dev_get(loopback_dev);
-> +                               rt->rt6i_idev = in6_dev_get(blackhole_netdev);
->                                 in6_dev_put(rt_idev);
->                         }
->
-> @@ -386,13 +385,11 @@ static void ip6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
->  {
->         struct rt6_info *rt = (struct rt6_info *)dst;
->         struct inet6_dev *idev = rt->rt6i_idev;
-> -       struct net_device *loopback_dev =
-> -               dev_net(dev)->loopback_dev;
->
-> -       if (idev && idev->dev != loopback_dev) {
-> -               struct inet6_dev *loopback_idev = in6_dev_get(loopback_dev);
-> -               if (loopback_idev) {
-> -                       rt->rt6i_idev = loopback_idev;
-> +       if (idev && idev->dev != dev_net(dev)->loopback_dev) {
-> +               struct inet6_dev *ibdev = in6_dev_get(blackhole_netdev);
-> +               if (ibdev) {
-> +                       rt->rt6i_idev = ibdev;
->                         in6_dev_put(idev);
->                 }
->         }
-> --
-> 2.23.0.581.g78d2f28ef7-goog
->
+
+--
+paul moore
+www.paul-moore.com
