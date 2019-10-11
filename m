@@ -2,163 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B0FD37C6
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF48D37CA
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726891AbfJKDNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 23:13:34 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:27840 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726877AbfJKDNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 23:13:32 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9B3944a017796
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:13:31 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=DxctI/0Q2o5+fHOxePTwhBmGqAEpYoTdWSsh0qjKcwM=;
- b=GYg8Kt7odPG6/bmeVhZAEOqOScI0+P+Dbiy1hpYEf/QrGCSJVfofal+yPUjCDIga/2d8
- yB2ZNwIS/vYEooM7cKUrDxj/uTt+IN+pyUCPhjN7TTNZ6msOGKaIUnIyEV0HuJbJ5Ewx
- EP+nKRSILbBd+ehJpGeiwQ1EXLE3/Rnw6Io= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2vjekprr5t-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:13:31 -0700
-Received: from 2401:db00:30:600c:face:0:39:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 10 Oct 2019 20:13:29 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id B2287861907; Thu, 10 Oct 2019 20:13:28 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 2/2] selftests/bpf: remove obsolete pahole/BTF support detection
-Date:   Thu, 10 Oct 2019 20:13:18 -0700
-Message-ID: <20191011031318.388493-3-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191011031318.388493-1-andriin@fb.com>
-References: <20191011031318.388493-1-andriin@fb.com>
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-11_01:2019-10-10,2019-10-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
- spamscore=0 adultscore=0 mlxscore=0 mlxlogscore=999 clxscore=1015
- bulkscore=0 impostorscore=0 malwarescore=0 phishscore=0 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910110028
-X-FB-Internal: deliver
+        id S1726702AbfJKDRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 23:17:52 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:48854 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726096AbfJKDRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 23:17:52 -0400
+Received: by mail-pf1-f202.google.com with SMTP id z13so6371190pfr.15
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=9Ee20uMlC97XHP5axcrgByT+xwiONc4SgEW5z2mFe2s=;
+        b=pgaYpT47qPtCo8WzX8P/M9TZEjEp9Zw2qMnlP03nQ7gaYw/yBr9ZAo+EofLjQ0MUJo
+         TdhdICJF5iaANSEbvAk5pVISF9cKLDGD2WNhhR23HcmzkKwEJMTy6MQhKPA12Nbx/jU+
+         EEsTJIxq0Pdi8sD2AwEK8lvCt1DnpOIP+/tf0pIOMys/N+KcLnwcZiPPAf+ZI1+6f+pM
+         rfYm68eo02steBRhHztsGzZgPhjdaLxsH38UDPGvq/aPu0iP3RRS4kChfapVYNBE4dAy
+         SJjPliR56TYm7ZMkVW6wNABOYdckzsI4ObM5L+ns7EHLnydWIRYlVT6X8pGma0Y4YIfh
+         R7mQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=9Ee20uMlC97XHP5axcrgByT+xwiONc4SgEW5z2mFe2s=;
+        b=cQKVLIAMJzkntUi9WYRvOJNs1jNaAnrBb4DbNWNlBALoQKVwGs3GgWcBk+sOpIr/GM
+         8X8Wz6DRWdEMaLiwslpA41MTFqET/LZ/Lhh64lo7YvRiJ1tYJ8hbbje+gbdQy1wFlspZ
+         U+TkoafEByP865ke66uxE37W/s+0D6YfVG1Tl9af01tBDtOhOcr5czj0nIrYgLWlgANA
+         DoTnPRSzSxjIfjbVUVUTkkftBHqDEUizYn+BwA7DvJm9mFcYgF+gsDj5GNkiuQb8D5j4
+         7XpCN2GlrQ4nyKIeW8rSSpPiPxRDG9x7wSWLIhRVjgqpIvlYDouZ0IL07rUK7AxHV8TI
+         j3lQ==
+X-Gm-Message-State: APjAAAVh5Udky6egsLjybUwHeaz79IOqsldBQkxIBM4bQUgo4WNImYQo
+        bfQ9ruYJGYFMCsTIGHHkFDy2myLyxkD82Q==
+X-Google-Smtp-Source: APXvYqz4+5JhfI0qGj4DzRUtWVL1VVboKOM2s6UupKIq76Ka4b51ziGDCMy1p+TmnqVsNnWIuDMTK0SDJdK2mQ==
+X-Received: by 2002:a65:638a:: with SMTP id h10mr14326295pgv.388.1570763869626;
+ Thu, 10 Oct 2019 20:17:49 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 20:17:37 -0700
+Message-Id: <20191011031746.16220-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
+Subject: [PATCH net 0/9] tcp: address KCSAN reports in tcp_poll() (part I)
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given lots of selftests won't work without recent enough Clang/LLVM that
-fully supports BTF, there is no point in maintaining outdated BTF
-support detection and fall-back to pahole logic. Just assume we have
-everything we need.
+This all started with a KCSAN report (included
+in "tcp: annotate tp->rcv_nxt lockless reads" changelog)
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile | 44 ++++------------------------
- 1 file changed, 6 insertions(+), 38 deletions(-)
+tcp_poll() runs in a lockless way. This means that about
+all accesses of tcp socket fields done in tcp_poll() context
+need annotations otherwise KCSAN will complain about data-races.
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index f958643d36da..d1770da2da70 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -15,8 +15,6 @@ endif
- CLANG		?= clang
- LLC		?= llc
- LLVM_OBJCOPY	?= llvm-objcopy
--LLVM_READELF	?= llvm-readelf
--BTF_PAHOLE	?= pahole
- BPF_GCC		?= $(shell command -v bpf-gcc;)
- CFLAGS += -g -Wall -O2 -I$(APIDIR) -I$(LIBDIR) -I$(BPFDIR) -I$(GENDIR) $(GENFLAGS) -I../../../include \
- 	  -Dbpf_prog_load=bpf_prog_test_load \
-@@ -147,8 +145,9 @@ $(shell $(1) -v -E - </dev/null 2>&1 \
- 	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }')
- endef
- CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
--BPF_CFLAGS = -I. -I./include/uapi -I../../../include/uapi \
--	     -I$(BPFDIR) -I$(OUTPUT)/../usr/include -D__TARGET_ARCH_$(SRCARCH)
-+BPF_CFLAGS = -g -D__TARGET_ARCH_$(SRCARCH) 				\
-+	     -I. -I./include/uapi -I../../../include/uapi 		\
-+	     -I$(BPFDIR) -I$(OUTPUT)/../usr/include
- 
- CLANG_CFLAGS = $(CLANG_SYS_INCLUDES) \
- 	       -Wno-compare-distinct-pointer-types
-@@ -162,28 +161,6 @@ $(OUTPUT)/test_stack_map.o: test_queue_stack_map.h
- $(OUTPUT)/flow_dissector_load.o: flow_dissector_load.h
- $(OUTPUT)/test_progs.o: flow_dissector_load.h
- 
--BTF_LLC_PROBE := $(shell $(LLC) -march=bpf -mattr=help 2>&1 | grep dwarfris)
--BTF_PAHOLE_PROBE := $(shell $(BTF_PAHOLE) --help 2>&1 | grep BTF)
--BTF_OBJCOPY_PROBE := $(shell $(LLVM_OBJCOPY) --help 2>&1 | grep -i 'usage.*llvm')
--BTF_LLVM_PROBE := $(shell echo "int main() { return 0; }" | \
--			  $(CLANG) -target bpf -O2 -g -c -x c - -o ./llvm_btf_verify.o; \
--			  $(LLVM_READELF) -S ./llvm_btf_verify.o | grep BTF; \
--			  /bin/rm -f ./llvm_btf_verify.o)
--
--ifneq ($(BTF_LLVM_PROBE),)
--	BPF_CFLAGS += -g
--else
--ifneq ($(BTF_LLC_PROBE),)
--ifneq ($(BTF_PAHOLE_PROBE),)
--ifneq ($(BTF_OBJCOPY_PROBE),)
--	BPF_CFLAGS += -g
--	LLC_FLAGS += -mattr=dwarfris
--	DWARF2BTF = y
--endif
--endif
--endif
--endif
--
- TEST_PROGS_CFLAGS := -I. -I$(OUTPUT)
- TEST_MAPS_CFLAGS := -I. -I$(OUTPUT)
- TEST_VERIFIER_CFLAGS := -I. -I$(OUTPUT) -Iverifier
-@@ -212,11 +189,8 @@ $(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR)/test_progs_32 \
- 					| $(ALU32_BUILD_DIR)
- 	($(CLANG) $(BPF_CFLAGS) $(CLANG_CFLAGS) -O2 -target bpf -emit-llvm \
- 		-c $< -o - || echo "clang failed") | \
--	$(LLC) -march=bpf -mattr=+alu32 -mcpu=$(CPU) $(LLC_FLAGS) \
-+	$(LLC) -march=bpf -mcpu=probe -mattr=+alu32 $(LLC_FLAGS) \
- 		-filetype=obj -o $@
--ifeq ($(DWARF2BTF),y)
--	$(BTF_PAHOLE) -J $@
--endif
- endif
- 
- ifneq ($(BPF_GCC),)
-@@ -251,19 +225,13 @@ endif
- $(OUTPUT)/test_xdp.o: progs/test_xdp.c
- 	($(CLANG) $(BPF_CFLAGS) $(CLANG_CFLAGS) -O2 -emit-llvm -c $< -o - || \
- 		echo "clang failed") | \
--	$(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
--ifeq ($(DWARF2BTF),y)
--	$(BTF_PAHOLE) -J $@
--endif
-+	$(LLC) -march=bpf -mcpu=probe $(LLC_FLAGS) -filetype=obj -o $@
- 
- # libbpf has to be built before BPF programs due to bpf_helper_defs.h
- $(OUTPUT)/%.o: progs/%.c | $(BPFOBJ)
- 	($(CLANG) $(BPF_CFLAGS) $(CLANG_CFLAGS) -O2 -target bpf -emit-llvm \
- 		-c $< -o - || echo "clang failed") | \
--	$(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@
--ifeq ($(DWARF2BTF),y)
--	$(BTF_PAHOLE) -J $@
--endif
-+	$(LLC) -march=bpf -mcpu=probe $(LLC_FLAGS) -filetype=obj -o $@
- 
- PROG_TESTS_DIR = $(OUTPUT)/prog_tests
- $(PROG_TESTS_DIR):
+While doing this detective work, I found a more serious bug,
+addressed by the first patch ("tcp: add rcu protection around
+tp->fastopen_rsk").
+
+Eric Dumazet (9):
+  tcp: add rcu protection around tp->fastopen_rsk
+  tcp: annotate tp->rcv_nxt lockless reads
+  tcp: annotate tp->copied_seq lockless reads
+  tcp: annotate tp->write_seq lockless reads
+  tcp: annotate tp->snd_nxt lockless reads
+  tcp: annotate tp->urg_seq lockless reads
+  tcp: annotate sk->sk_rcvbuf lockless reads
+  tcp: annotate sk->sk_sndbuf lockless reads
+  tcp: annotate sk->sk_wmem_queued lockless reads
+
+ include/linux/tcp.h             |  6 +--
+ include/net/sock.h              | 29 ++++++++++-----
+ include/net/tcp.h               |  7 ++--
+ include/trace/events/sock.h     |  4 +-
+ net/core/datagram.c             |  2 +-
+ net/core/filter.c               |  6 ++-
+ net/core/request_sock.c         |  2 +-
+ net/core/skbuff.c               |  2 +-
+ net/core/sock.c                 | 22 ++++++-----
+ net/ipv4/inet_connection_sock.c |  4 +-
+ net/ipv4/inet_diag.c            |  2 +-
+ net/ipv4/tcp.c                  | 65 +++++++++++++++++++--------------
+ net/ipv4/tcp_diag.c             |  5 ++-
+ net/ipv4/tcp_fastopen.c         |  2 +-
+ net/ipv4/tcp_input.c            | 37 +++++++++++--------
+ net/ipv4/tcp_ipv4.c             | 28 ++++++++------
+ net/ipv4/tcp_minisocks.c        | 17 ++++++---
+ net/ipv4/tcp_output.c           | 32 ++++++++--------
+ net/ipv4/tcp_timer.c            | 11 +++---
+ net/ipv6/tcp_ipv6.c             | 18 +++++----
+ net/sched/em_meta.c             |  2 +-
+ 21 files changed, 175 insertions(+), 128 deletions(-)
+
 -- 
-2.17.1
+2.23.0.700.g56cf767bdb-goog
 
