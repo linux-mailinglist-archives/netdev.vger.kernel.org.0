@@ -2,115 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2D4BD37D9
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C3AD37E2
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726509AbfJKD1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 23:27:05 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:36034 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbfJKD1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 23:27:05 -0400
-Received: by mail-qk1-f196.google.com with SMTP id y189so7659277qkc.3
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:27:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=skGBENV0wXv3Qt+Vq+q+fUaArJk6GyjBCA/U6VwwEeU=;
-        b=bL3x0owZTOMqITjal+81td0uXZMkYveqAnwEgKmWV1rBTENe9+on9iooRYtY0r50dH
-         PVQN/3Wv8WEzGvm/5W/WSQ7k52Mv3Ap3rv7N/QhAbR1cBoI+VC53D+4ho6/dFPdT3ecb
-         uAU+eqOMroI9stllrSI0voZAqmWiYf/cJpFNL4VUdGGGDa3qXUQxCc9R6+uGHxhnjdgW
-         hoEfit9w8FU8gGbptROK3Kmug/vHtp6fzGzbX9aZ6BaQ5WTdsDNWk++5inLCct7FIt/7
-         dfoHgQL2H4GiKdHZAM591GdukJEoGQpo6nhtub/ChTwcnNafi2MW8uxhVe5EooP/dWjX
-         VV6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=skGBENV0wXv3Qt+Vq+q+fUaArJk6GyjBCA/U6VwwEeU=;
-        b=bD0IFCFlAovs1U8Vka1Su1f4GxXrRFoUpoOdNiYjHw3gJwGO2BQasMV5NDCPL1VIcC
-         bf5zPA6h9cl2g9F6ECpa3npp7UukNh4vWuk7Gv5VHAcGKgmddBoCdSAW5bLIxwNOnhhz
-         J7jadYUdwQMHcKleodR9mxXhjLKcuzyrr7sabzX9ugE/KLAn7diuVmXnqBqw8DtSvJz3
-         u4HvHp1VBl25QDX9GCI5tiIamfeQuh5JRhFDB/kPeVmpuy3B+CjOgc85IPQaZrogSfUa
-         2jmBmflMXAQDQ/eG4qSIO8p+JpdRs0sK6zy9C56jD4X/ODfMlFfoFZALaTYo3YdtViMU
-         SoWg==
-X-Gm-Message-State: APjAAAW+XU/ogkqyNsTQdaPi0LUaAdypecGk/BX2IrLguA7fqLeEvm+F
-        ht8g/enFi0n2FxCURMTQf1bE7xYp
-X-Google-Smtp-Source: APXvYqyPjuZMPCf2L/tFsu6R9lsv+R+st02Z6vl+XKLdMlZz4CwvWg9IR2OSZBcBAH6UUVm9bSNK8A==
-X-Received: by 2002:a05:620a:12c4:: with SMTP id e4mr13194632qkl.336.1570764424661;
-        Thu, 10 Oct 2019 20:27:04 -0700 (PDT)
-Received: from soheil24.nyc.corp.google.com ([2620:0:1003:312:3dee:cd13:c779:e9e9])
-        by smtp.gmail.com with ESMTPSA id c12sm3054555qkc.81.2019.10.10.20.27.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 20:27:04 -0700 (PDT)
-From:   Soheil Hassas Yeganeh <soheil.kdev@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     edumazet@google.com, Soheil Hassas Yeganeh <soheil@google.com>
-Subject: [PATCH net-next] tcp: improve recv_skip_hint for tcp_zerocopy_receive
-Date:   Thu, 10 Oct 2019 23:27:02 -0400
-Message-Id: <20191011032702.59998-1-soheil.kdev@gmail.com>
-X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
+        id S1726489AbfJKD3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 23:29:35 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52888 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726116AbfJKD3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 23:29:35 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9B3SeiI031886
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:29:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=gkbIrNStcKgEaYvgzp6e0NnKcH1TOA45zbp1gaP5ksE=;
+ b=kCtFHR4iNk3wK72t4EksrTgdZgVj4DOuEjCQpXu7F8Z8qNibBBFH+6pQ6UA/WvBpDnQd
+ 7uesm/9Hj/vomR0DEGIPJ99X93FJsumxNjGT1YfK59YCzrOwUFfpS//c/C5AMar4Mai5
+ SLfx/5Znmn5TgF6+vHTmDQNasXWFM/0skDM= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vj7wyb8cg-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:29:34 -0700
+Received: from 2401:db00:30:600c:face:0:1f:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 10 Oct 2019 20:29:07 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 8DB96861909; Thu, 10 Oct 2019 20:29:06 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <john.fastabend@gmail.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next] libbpf: handle invalid typedef emitted by old GCC
+Date:   Thu, 10 Oct 2019 20:29:01 -0700
+Message-ID: <20191011032901.452042-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-11_01:2019-10-10,2019-10-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ mlxscore=0 priorityscore=1501 impostorscore=0 adultscore=0 suspectscore=8
+ phishscore=0 spamscore=0 clxscore=1015 malwarescore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910110029
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Soheil Hassas Yeganeh <soheil@google.com>
+Old GCC versions are producing invalid typedef for __gnuc_va_list
+pointing to void. Special-case this and emit valid:
 
-tcp_zerocopy_receive() rounds down the zc->length a multiple of
-PAGE_SIZE. This results in two issues:
-- tcp_zerocopy_receive sets recv_skip_hint to the length of the
-  receive queue if the zc->length input is smaller than the
-  PAGE_SIZE, even though the data in receive queue could be
-  zerocopied.
-- tcp_zerocopy_receive would set recv_skip_hint of 0, in cases
-  where we have a little bit of data after the perfectly-sized
-  packets.
+typedef __builtin_va_list __gnuc_va_list;
 
-To fix these issues, do not store the rounded down value in
-zc->length. Round down the length passed to zap_page_range(),
-and return min(inq, zc->length) when the zap_range is 0.
-
-Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- net/ipv4/tcp.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ tools/lib/bpf/btf_dump.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index f98a1882e537..9f41a76c1c54 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1739,8 +1739,8 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 				struct tcp_zerocopy_receive *zc)
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index 87f27e2664c5..139812b46c7b 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -975,6 +975,17 @@ static void btf_dump_emit_typedef_def(struct btf_dump *d, __u32 id,
  {
- 	unsigned long address = (unsigned long)zc->address;
-+	u32 length = 0, seq, offset, zap_len;
- 	const skb_frag_t *frags = NULL;
--	u32 length = 0, seq, offset;
- 	struct vm_area_struct *vma;
- 	struct sk_buff *skb = NULL;
- 	struct tcp_sock *tp;
-@@ -1767,12 +1767,12 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 	seq = tp->copied_seq;
- 	inq = tcp_inq(sk);
- 	zc->length = min_t(u32, zc->length, inq);
--	zc->length &= ~(PAGE_SIZE - 1);
--	if (zc->length) {
--		zap_page_range(vma, address, zc->length);
-+	zap_len = zc->length & ~(PAGE_SIZE - 1);
-+	if (zap_len) {
-+		zap_page_range(vma, address, zap_len);
- 		zc->recv_skip_hint = 0;
- 	} else {
--		zc->recv_skip_hint = inq;
-+		zc->recv_skip_hint = zc->length;
- 	}
- 	ret = 0;
- 	while (length + PAGE_SIZE <= zc->length) {
+ 	const char *name = btf_dump_ident_name(d, id);
+ 
++	/*
++	 * Old GCC versions are emitting invalid typedef for __gnuc_va_list
++	 * pointing to VOID. This generates warnings from btf_dump() and
++	 * results in uncompilable header file, so we are fixing it up here
++	 * with valid typedef into __builtin_va_list.
++	 */
++	if (t->type == 0 && strcmp(name, "__gnuc_va_list") == 0) {
++		btf_dump_printf(d, "typedef __builtin_va_list __gnuc_va_list");
++		return;
++	}
++
+ 	btf_dump_printf(d, "typedef ");
+ 	btf_dump_emit_type_decl(d, t->type, name, lvl);
+ }
 -- 
-2.23.0.700.g56cf767bdb-goog
+2.17.1
 
