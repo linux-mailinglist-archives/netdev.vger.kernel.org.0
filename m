@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FFDBD3C44
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 11:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A6ED3CAB
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 11:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727775AbfJKJ2H convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Oct 2019 05:28:07 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55754 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727314AbfJKJ2H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 05:28:07 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id DC74DB175;
-        Fri, 11 Oct 2019 09:28:04 +0000 (UTC)
-Date:   Fri, 11 Oct 2019 11:28:04 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 5/5] MIPS: SGI-IP27: Enable ethernet phy on second
- Origin 200 module
-Message-Id: <20191011112804.ef8079aa9bad5c81ce473fbd@suse.de>
-In-Reply-To: <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
-        <20191010145953.21327-6-tbogendoerfer@suse.de>
-        <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        id S1727858AbfJKJqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 05:46:23 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34731 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726585AbfJKJqX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 05:46:23 -0400
+Received: from v22018046084765073.goodsrv.de ([185.183.158.195] helo=wittgenstein)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1iIrV2-0004ZL-2S; Fri, 11 Oct 2019 09:46:16 +0000
+Date:   Fri, 11 Oct 2019 11:46:14 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     luto@amacapital.net, jannh@google.com, wad@chromium.org,
+        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Tycho Andersen <tycho@tycho.ws>,
+        Tyler Hicks <tyhicks@canonical.com>
+Subject: Re: [PATCH v2 1/3] seccomp: add SECCOMP_USER_NOTIF_FLAG_CONTINUE
+Message-ID: <20191011094613.rs45knchjbe7edv4@wittgenstein>
+References: <20190920083007.11475-1-christian.brauner@ubuntu.com>
+ <20190920083007.11475-2-christian.brauner@ubuntu.com>
+ <201910101440.17A13952@keescook>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <201910101440.17A13952@keescook>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Oct 2019 19:37:15 +0300
-Sergei Shtylyov <sergei.shtylyov@cogentembedded.com> wrote:
+On Thu, Oct 10, 2019 at 02:45:38PM -0700, Kees Cook wrote:
+> On Fri, Sep 20, 2019 at 10:30:05AM +0200, Christian Brauner wrote:
+> > + * Similar precautions should be applied when stacking SECCOMP_RET_USER_NOTIF.
+> > + * For SECCOMP_RET_USER_NOTIF filters acting on the same syscall the uppermost
+> > + * filter takes precedence. This means that the uppermost
+> > + * SECCOMP_RET_USER_NOTIF filter can override any SECCOMP_IOCTL_NOTIF_SEND from
+> > + * lower filters essentially allowing all syscalls to pass by using
+> > + * SECCOMP_USER_NOTIF_FLAG_CONTINUE. Note that SECCOMP_RET_USER_NOTIF can
+>                                                           ^^^^^^^^^^^^^^
+> This is meant to read RET_TRACE, yes?
 
-> On 10/10/2019 05:59 PM, Thomas Bogendoerfer wrote:
-> > +	/* enable ethernet PHY on IP29 systemboard */
-> > +	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-> > +	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
+Yes. :)
+
 > 
->    I thought PCI was little endian, thuis vendor ID at offset 0 and device ID
-> at offset 2?
+> > + * equally be overriden by SECCOMP_USER_NOTIF_FLAG_CONTINUE.
+> 
+> I rewrote this paragraph with that corrected and swapping some
+> "upper/lower" to "most recently added" etc:
+> 
+> + * Similar precautions should be applied when stacking SECCOMP_RET_USER_NOTIF
+> + * or SECCOMP_RET_TRACE. For SECCOMP_RET_USER_NOTIF filters acting on the
+> + * same syscall, the most recently added filter takes precedence. This means
+> + * that the new SECCOMP_RET_USER_NOTIF filter can override any
+> + * SECCOMP_IOCTL_NOTIF_SEND from earlier filters, essentially allowing all
+> + * such filtered syscalls to be executed by sending the response
+> + * SECCOMP_USER_NOTIF_FLAG_CONTINUE. Note that SECCOMP_RET_TRACE can equally
+> + * be overriden by SECCOMP_USER_NOTIF_FLAG_CONTINUE.
+> 
+> 
+> Ultimately, I think this caveat is fine. RET_USER_NOTIF and RET_TRACE are
+> both used from the "process manager" use-case. The benefits of "continue"
+> semantics here outweighs the RET_USER_NOTIF and RET_TRACE "bypass". If
+> we end up in a situation where we need to deal with some kind of
+> nesting where this is a problem in practice, we can revisit this.
+> 
+> Applied to my for-next/seccomp. Thanks!
 
-you are right. I already messed it up in pci-xtalk-bridge.c. As this is just a
-fake sub device id, there is no harm, but I'll fix it.
-
-Thomas.
-
--- 
-SUSE Software Solutions Germany GmbH
-HRB 247165 (AG München)
-Geschäftsführer: Felix Imendörffer
+Thanks!
+Christian
