@@ -2,109 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1657BD36AE
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 03:05:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA2BD36B0
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 03:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727637AbfJKBFi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Oct 2019 21:05:38 -0400
-Received: from mga14.intel.com ([192.55.52.115]:54650 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727584AbfJKBFi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 21:05:38 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 18:05:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,282,1566889200"; 
-   d="scan'208";a="277965188"
-Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
-  by orsmga001.jf.intel.com with ESMTP; 10 Oct 2019 18:05:37 -0700
-Received: from orsmsx153.amr.corp.intel.com (10.22.226.247) by
- ORSMSX109.amr.corp.intel.com (10.22.240.7) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 10 Oct 2019 18:05:37 -0700
-Received: from orsmsx103.amr.corp.intel.com ([169.254.5.9]) by
- ORSMSX153.amr.corp.intel.com ([169.254.12.244]) with mapi id 14.03.0439.000;
- Thu, 10 Oct 2019 18:05:37 -0700
-From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Hall, Christopher S" <christopher.s.hall@intel.com>
-Subject: RE: [net-next v3 2/7] net: reject PTP periodic output requests with
- unsupported flags
-Thread-Topic: [net-next v3 2/7] net: reject PTP periodic output requests
- with unsupported flags
-Thread-Index: AQHVdJXdch2ZIrEq/0WYWnhPkQaHZqdUtobw
-Date:   Fri, 11 Oct 2019 01:05:36 +0000
-Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B9714C866@ORSMSX103.amr.corp.intel.com>
-References: <20190926181109.4871-1-jacob.e.keller@intel.com>
- <20190926181109.4871-3-jacob.e.keller@intel.com>
-In-Reply-To: <20190926181109.4871-3-jacob.e.keller@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYWUxZDE1ZjktYTI0Ni00NmZiLThhZDctNDM1NWUzNDM1ZmQ1IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiV013eHdrTjZOenowTXR0K0NrQjV5VHM5RGprcExuSUFVMEJzMnZJWmY0aUIzSjdCSG55WFFNQ1lPKzJ1eDB3USJ9
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727702AbfJKBGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 21:06:14 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:39497 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727584AbfJKBGO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 21:06:14 -0400
+Received: by mail-qk1-f196.google.com with SMTP id 4so7413422qki.6
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 18:06:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=DeTiHZ4g25Y7EeJsfpuYikSF554R26MDT8EMfYqzayo=;
+        b=lezI6apK9RMQTMMqvv0foePL3EKCMS42wnMDoYH12O/ZLkNz4MVdJ2/nKMI8R9nkAC
+         UaRK4Vepx+c8KwUvZK0qDRBa1KjrpMP4LZ93ClxNfYiSQ8nrBdNYXAd82T2I3HK8Ni/3
+         s845xXCsQR5dAzisdV8ikOSxLiB3fp+Pswo1NBOZ3FYa5Ub434b4Tsa2UYV+OKv8YGQz
+         DtoIuWF01XECVVxGOW/90m0CudrMoT/vnZXAqr92tPXD1EKDLCUBfPI1EZHXiE+nMXl4
+         43D3KPY3B0EvQF+U6oMBC+Pd8ge3Ssrs1akgdmKouW1Xho+HTaVR4LI5UgMd86MEnolY
+         9Blg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=DeTiHZ4g25Y7EeJsfpuYikSF554R26MDT8EMfYqzayo=;
+        b=B4ZqJ/kXSZjZvIGOtLepwOFK0OJXbG8TZ0IrY/NoZnr18KxYIN33qi4AJOA/tgnPaG
+         GVC7SD38FcKYKZI0OcjgjSHAQzWfUoyxyWCQHAMIRrBl8BKv20meuDDPYCphHG02oQkh
+         3ngi3Rdp/O3vz3W0Y3fm5CwBxQIoV05Z/cRR/SfIGuWChP/DkXjvxk3KS8SRFujL4eXI
+         Ln/dip6yneb5/DSwI1BZgNhc9HCCEBvXohcPqR+vJvFiRMlWX6tWpC9kQiwZ1c0vp8mO
+         3LvoI4OTpxHaEIXbqd+zoEfZJXOvgTAHTWzu9meFR9EgMEHKiZTKEXP8KwV/kkX2Z/EZ
+         usmQ==
+X-Gm-Message-State: APjAAAUMQptNvomirbJ3bi+ZzuSeb7gN+Syr0dMLxiEIOWw8j0Icrm5m
+        t2JApytG5yfLBlPoCMHH0U85uA==
+X-Google-Smtp-Source: APXvYqwfsMzYkP7WLJ3n1tPJ+uZGxCDDWj/fAGT0V/Ea3yKnR7OVgrqVbv5WC1ISSAzgfPbKVLx4+A==
+X-Received: by 2002:a37:4253:: with SMTP id p80mr10937252qka.194.1570755973159;
+        Thu, 10 Oct 2019 18:06:13 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id w6sm3276414qkj.136.2019.10.10.18.06.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 18:06:13 -0700 (PDT)
+Date:   Thu, 10 Oct 2019 18:05:57 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Mahesh Bandewar <maheshb@google.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Subject: Re: [PATCH next] ipvlan: consolidate TSO flags using
+ NETIF_F_ALL_TSO
+Message-ID: <20191010180557.707f4bdf@cakuba.netronome.com>
+In-Reply-To: <20191009232011.240381-1-maheshb@google.com>
+References: <20191009232011.240381-1-maheshb@google.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: netdev-owner@vger.kernel.org [mailto:netdev-owner@vger.kernel.org]
-> On Behalf Of Jacob Keller
-> Sent: Thursday, September 26, 2019 11:11 AM
-> To: netdev@vger.kernel.org
-> Cc: Intel Wired LAN <intel-wired-lan@lists.osuosl.org>; Kirsher, Jeffrey T
-> <jeffrey.t.kirsher@intel.com>; Keller, Jacob E <jacob.e.keller@intel.com>;
-> Richard Cochran <richardcochran@gmail.com>; Felipe Balbi
-> <felipe.balbi@linux.intel.com>; David S . Miller <davem@davemloft.net>; Hall,
-> Christopher S <christopher.s.hall@intel.com>
-> Subject: [net-next v3 2/7] net: reject PTP periodic output requests with
-> unsupported flags
+On Wed,  9 Oct 2019 16:20:11 -0700, Mahesh Bandewar wrote:
+> This will ensure that any new TSO related flags added (which
+> would be part of ALL_TSO mask and IPvlan driver doesn't need
+> to update every time new flag gets added.
 > 
-> Commit 823eb2a3c4c7 ("PTP: add support for one-shot output") introduced
-> a new flag for the PTP periodic output request ioctl. This flag is not
-> currently supported by any driver.
-> 
-> Fix all drivers which implement the periodic output request ioctl to
-> explicitly reject any request with flags they do not understand. This
-> ensures that the driver does not accidentally misinterpret the
-> PTP_PEROUT_ONE_SHOT flag, or any new flag introduced in the future.
-> 
-> This is important for forward compatibility: if a new flag is
-> introduced, the driver should reject requests to enable the flag until
-> the driver has actually been modified to support the flag in question.
-> 
-> Cc: Richard Cochran <richardcochran@gmail.com>
-> Cc: Felipe Balbi <felipe.balbi@linux.intel.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Christopher Hall <christopher.s.hall@intel.com>
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> ---
->  drivers/net/ethernet/broadcom/tg3.c                 | 4 ++++
->  drivers/net/ethernet/intel/igb/igb_ptp.c            | 4 ++++
->  drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c | 4 ++++
->  drivers/net/ethernet/microchip/lan743x_ptp.c        | 4 ++++
->  drivers/net/ethernet/renesas/ravb_ptp.c             | 4 ++++
->  drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c    | 4 ++++
->  drivers/net/phy/dp83640.c                           | 3 +++
->  7 files changed, 27 insertions(+)
-> 
+> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+> Suggested-by: Eric Dumazet <edumazet@google.com>
 
-For the igb sections...
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-
+Applied, thanks!
