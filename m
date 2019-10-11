@@ -2,104 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 665DBD3B10
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E40D3B1C
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbfJKI1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 04:27:19 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40800 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726290AbfJKI1T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 04:27:19 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 25DF7302C09B;
-        Fri, 11 Oct 2019 08:27:19 +0000 (UTC)
-Received: from localhost (unknown [10.36.118.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 91C105D9DC;
-        Fri, 11 Oct 2019 08:27:15 +0000 (UTC)
-Date:   Fri, 11 Oct 2019 09:27:14 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@gmail.com>, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>, linux-hyperv@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [RFC PATCH 07/13] vsock: handle buffer_size sockopts in the core
-Message-ID: <20191011082714.GF12360@stefanha-x1.localdomain>
-References: <20190927112703.17745-1-sgarzare@redhat.com>
- <20190927112703.17745-8-sgarzare@redhat.com>
- <20191009123026.GH5747@stefanha-x1.localdomain>
- <20191010093254.aluys4hpsfcepb42@steredhat>
+        id S1726808AbfJKI3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 04:29:50 -0400
+Received: from mail-lj1-f174.google.com ([209.85.208.174]:39857 "EHLO
+        mail-lj1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726174AbfJKI3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 04:29:50 -0400
+Received: by mail-lj1-f174.google.com with SMTP id y3so8955767ljj.6
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 01:29:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nmdN7JMNTYscQBNR+E6gnmp9TFuIjTpURDuQtDu+M4=;
+        b=n7u2TRWNa8qxxSFP1TwtwI0Su6xhZ9xX4XDfCGGz4usGI1NpGKzsW/FtgucGHfwI1y
+         3yGfl/HTCTBxHRyrvDJ5P0Wi9gTlNvzFotCMy4wtAmZqSYSNPqZSu61DCYzgkKXwjToO
+         Db8LZXHEosk7MaGKGE6M0FPVPNlNKLiH/0yzg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nmdN7JMNTYscQBNR+E6gnmp9TFuIjTpURDuQtDu+M4=;
+        b=L98hxRSuoRYxd43lSVx0LK6HEksGum+5n+jyeFCcVxmfU4SWuXITWXrBgLFATzZH1N
+         w9CgHawuAOTlCoOpX839RuHO99+P9AxXEAVz3dSnbooQvRJXwpvhIntgerIJrQE4B/y+
+         6PHSjb/iMiZ2drKVNd8C7N0OLjDcIb6vFbt35WmR/eQ2yGG4CzkuTyq/OumTuZKBktHt
+         OdbRINxSNCwZOP1dGOGEgeaSo1wVTkZV3ziJqN8JwPWGMriioM5VAg60F40fOp/+Xmse
+         2S+WY1mvWxA5jojkKoYWgkfYrvPdexQcVeO/i4l0BtO16G1pdcGy5K807ZsjFZKxmT/k
+         tD5g==
+X-Gm-Message-State: APjAAAUiH9pvp47cAxu2Ib2pftTAXLiMIklGVBFirCn/RV1oIg6tzKcH
+        fOcnvgYqDXpdkK/8Ir2lJA1arbnYJgy1Mg==
+X-Google-Smtp-Source: APXvYqyCnKNdd5sWBsH5XbyhBusHqKTGyY1Y7HhI2kSe5CnqmCRvFgD/hycIF5bzYsMHzU17/phdow==
+X-Received: by 2002:a2e:8ec2:: with SMTP id e2mr7906155ljl.126.1570782587831;
+        Fri, 11 Oct 2019 01:29:47 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id h25sm2240656lfj.81.2019.10.11.01.29.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Oct 2019 01:29:47 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
+Subject: [PATCH bpf-next v3 0/2] Atomic flow dissector updates
+Date:   Fri, 11 Oct 2019 10:29:44 +0200
+Message-Id: <20191011082946.22695-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Y/WcH0a6A93yCHGr"
-Content-Disposition: inline
-In-Reply-To: <20191010093254.aluys4hpsfcepb42@steredhat>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Fri, 11 Oct 2019 08:27:19 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set changes how bpf(BPF_PROG_ATTACH) operates on flow dissector
+hook when there is already a program attached. After this change the user
+is allowed to update the program in a single syscall. Please see the first
+patch for rationale.
 
---Y/WcH0a6A93yCHGr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+v1 -> v2:
 
-On Thu, Oct 10, 2019 at 11:32:54AM +0200, Stefano Garzarella wrote:
-> On Wed, Oct 09, 2019 at 01:30:26PM +0100, Stefan Hajnoczi wrote:
-> > On Fri, Sep 27, 2019 at 01:26:57PM +0200, Stefano Garzarella wrote:
-> > Another issue is that this patch drops the VIRTIO_VSOCK_MAX_BUF_SIZE
-> > limit that used to be enforced by virtio_transport_set_buffer_size().
-> > Now the limit is only applied at socket init time.  If the buffer size
-> > is changed later then VIRTIO_VSOCK_MAX_BUF_SIZE can be exceeded.  If
-> > that doesn't matter, why even bother with VIRTIO_VSOCK_MAX_BUF_SIZE
-> > here?
-> >=20
->=20
-> The .notify_buffer_size() should avoid this issue, since it allows the
-> transport to limit the buffer size requested after the initialization.
->=20
-> But again the min set by the user can not be respected and in the
-> previous implementation we forced it to VIRTIO_VSOCK_MAX_BUF_SIZE.
->=20
-> Now we don't limit the min, but we guarantee only that vsk->buffer_size
-> is lower than VIRTIO_VSOCK_MAX_BUF_SIZE.
->=20
-> Can that be an acceptable compromise?
+- Don't use CHECK macro which expects BPF program run duration, which we
+  don't track in attach/detach tests. Suggested by Stanislav Fomichev.
 
-I think so.
+- Test re-attaching flow dissector in both root and non-root network
+  namespace. Suggested by Stanislav Fomichev.
 
-Setting buffer sizes was never tested or used much by userspace
-applications that I'm aware of.  We should probably include tests for
-changing buffer sizes in the test suite.
+v2 -> v3:
 
-Stefan
+- Rebased onto recent bpf-next 63098555cfe0 ("Merge branch
+  'bpf-romap-known-scalars'").
 
---Y/WcH0a6A93yCHGr
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+Jakub Sitnicki (2):
+  flow_dissector: Allow updating the flow dissector program atomically
+  selftests/bpf: Check that flow dissector can be re-attached
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2gPOIACgkQnKSrs4Gr
-c8hnpAf/bZLlTd0r+EaHBLvVtn6u74O2zVoTaaQWQnOazMVH14CZaHHOu1c41TX7
-Q0re/sK84wgqeIYkL3oZytOaV0XcGl6gisahwdaj2B0vFbihvsFYpvh7RDO3HQ68
-w1qOfDkUS9sTi3UYClbO7gHJfF/29ekUBFgoscFN8DwmqhMZ0BmjlQbI5G7Bx/vb
-BsykLfJ1+i+pjEwaf7OnJWjg/D/XEcMgWuwt3TDu4weM4m7URnromXRaunFLetC5
-rq7dPRsobckPtCGqpZlg9p9YRqCfyVJKOd/by5XeJVT/0aC5fi0t/gHLBSwCpL3R
-6nAoSm1TARBDHhE/TRKT7m4aV/5H3Q==
-=76ga
------END PGP SIGNATURE-----
+ net/core/flow_dissector.c                     |  10 +-
+ .../bpf/prog_tests/flow_dissector_reattach.c  | 127 ++++++++++++++++++
+ 2 files changed, 134 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
 
---Y/WcH0a6A93yCHGr--
+-- 
+2.20.1
+
