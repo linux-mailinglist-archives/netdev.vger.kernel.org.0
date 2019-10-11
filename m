@@ -2,97 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0C72D3692
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:53:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CEF5D36A1
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727865AbfJKAxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:53:38 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42490 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727100AbfJKAxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:53:38 -0400
-Received: by mail-qk1-f196.google.com with SMTP id f16so7377493qkl.9
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=LJeFEyGVXk/mGwXcaQPTIO+s6MfjnGYEbGXqRN7NpR0=;
-        b=l3p2fC4wycAgJV23evkAk7sh7SIx2wyVEit5jJwYEsY3yLl88VyoMOBFHGzdF8A13O
-         ISzxvd2hEuVA1cm71KOSRDvS1s5x+mhvvqI4H2RvDI6OK4k7MazFk6rA3aCTmBbveHi0
-         S/Gikj41ZYC1UmbXagVBt/UsUvodZhR9pQ4xhd41TPQvzodmeEsHR+vwBQqLAWNHDa44
-         ChYwxC6LU2oo6jG85kJsCNuxu++Rarm3uk/yf12HHTn22QrInbImks5tHFpAVS5KVF+b
-         Q+Ifk2EaA4keuOeOfJpbPeyu/VX5OYMiUL3DtipePm0Syutdjlj0Q2DNGh+94tKQd7gF
-         sfuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=LJeFEyGVXk/mGwXcaQPTIO+s6MfjnGYEbGXqRN7NpR0=;
-        b=nEPPZaf0siBJxADjAW1bd/aS9luLEmB9gJdk1KZC5YNifFcEeNofmz7f4Ku5I0gaEi
-         D7/0d+kv5s1PVi3pHEckttUlBOlCmhP/GJ1BozqM8X6FULPh4Nh7LZtkhtXY7cVDR34G
-         kMq02roSuB9NSzI/IfQTHXvarQtZ7wR67cnhl6zunTDOa4ufLX0w61FQpbjNLhkR3Z3D
-         rygCLir1Subq0I9Ve48N9pLGn8EXwPbsgP1OhFdGpLwBLZcqDNMHE5qDsdf7RBqtmYuP
-         C4EnRmpDcySt4WNTI2JHha9wUcV4C8N7yTGYhTJEbd5coOyGUupcL6IbnZi/8+BlknEp
-         jRbg==
-X-Gm-Message-State: APjAAAU7rIBy1Bm1qkDsXh+gH5XA7H1q+BN4CLlXXAKMCqHkNhLyJzkQ
-        9hjCjpaNQC4gnLEBB+eFnAZfwQ==
-X-Google-Smtp-Source: APXvYqx2VFaFaQefkqKDZOvzMLezQN76wMczVjiGgJyKni3IcbQ2vW7SpeaY1XTx4ctFxNRtQlsxdA==
-X-Received: by 2002:a05:620a:20da:: with SMTP id f26mr12569659qka.255.1570755217074;
-        Thu, 10 Oct 2019 17:53:37 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q6sm3034090qkj.108.2019.10.10.17.53.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 17:53:36 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 17:53:20 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     Andy Duan <fugang.duan@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "rafael.j.wysocki@intel.com" <rafael.j.wysocki@intel.com>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH 1/2] net: fec_main: Use
- platform_get_irq_byname_optional() to avoid error message
-Message-ID: <20191010175320.1fe5f6b3@cakuba.netronome.com>
-In-Reply-To: <DB3PR0402MB3916284A326512CE2FDF597EF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <1570616148-11571-1-git-send-email-Anson.Huang@nxp.com>
-        <20191010160811.7775c819@cakuba.netronome.com>
-        <DB3PR0402MB3916FF4583577B182D9BF60CF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-        <20191010173246.2cd02164@cakuba.netronome.com>
-        <DB3PR0402MB3916284A326512CE2FDF597EF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        id S1727927AbfJKA5z convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Oct 2019 20:57:55 -0400
+Received: from mga07.intel.com ([134.134.136.100]:40771 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727584AbfJKA5y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 20:57:54 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 17:57:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,282,1566889200"; 
+   d="scan'208";a="394240903"
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+  by fmsmga005.fm.intel.com with ESMTP; 10 Oct 2019 17:57:54 -0700
+Received: from orsmsx156.amr.corp.intel.com (10.22.240.22) by
+ ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 10 Oct 2019 17:57:53 -0700
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.9]) by
+ ORSMSX156.amr.corp.intel.com ([169.254.8.60]) with mapi id 14.03.0439.000;
+ Thu, 10 Oct 2019 17:57:53 -0700
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [Intel-wired-lan] [net-next v3 5/7] igb: reject unsupported
+ external timestamp flags
+Thread-Topic: [Intel-wired-lan] [net-next v3 5/7] igb: reject unsupported
+ external timestamp flags
+Thread-Index: AQHVdJXc8aJ9UqMiT0GZBjsf6sJ1iKdUtIIw
+Date:   Fri, 11 Oct 2019 00:57:52 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B9714C829@ORSMSX103.amr.corp.intel.com>
+References: <20190926181109.4871-1-jacob.e.keller@intel.com>
+ <20190926181109.4871-6-jacob.e.keller@intel.com>
+In-Reply-To: <20190926181109.4871-6-jacob.e.keller@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMGViZGRjOGMtMGMwZS00YjFkLWJkMDQtNTU4Mzc5MDkyNzIyIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQUlDdERiZlVkSnU1aHdoSGMwWTB3bmpFRmFXQ3c1eTZIWW85ZVI1UGRiZTVVZ2pxR3hEZlFXSmxDdDdXQ0ZzQiJ9
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Oct 2019 00:38:50 +0000, Anson Huang wrote:
-> > Hm. Looks like the commit you need is commit f1da567f1dc1 ("driver core:
-> > platform: Add platform_get_irq_byname_optional()") and it's currently in
-> > Greg's tree. You have to wait for that commit to make its way into Linus'es
-> > main tree and then for Dave Miller to pull from Linus.
-> > 
-> > I'd suggest you check if your patches builds on the net tree:
-> > 
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
-> > 
-> > once a week. My guess is it'll probably take two weeks or so for Greg's
-> > patches to propagate to Dave.  
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On Behalf Of
+> Jacob Keller
+> Sent: Thursday, September 26, 2019 11:11 AM
+> To: netdev@vger.kernel.org
+> Cc: Intel Wired LAN <intel-wired-lan@lists.osuosl.org>
+> Subject: [Intel-wired-lan] [net-next v3 5/7] igb: reject unsupported external
+> timestamp flags
 > 
-> Thanks for explanation of how these trees work, so could you please
-> wait the necessary patch landing on network tree then apply this
-> patch series, thanks for help.
+> Fix the igb PTP support to explicitly reject any future flags that
+> get added to the external timestamp request ioctl.
+> 
+> In order to maintain currently functioning code, this patch accepts all
+> three current flags. This is because the PTP_RISING_EDGE and
+> PTP_FALLING_EDGE flags have unclear semantics and each driver seems to
+> have interpreted them slightly differently.
+> 
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+> ---
+>  drivers/net/ethernet/intel/igb/igb_ptp.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
-Unfortunately the networking subsystem sees around a 100 patches
-submitted each day, it'd be very hard to keep track of patches which
-have external dependencies and when to merge them. That's why we need
-the submitters to do this work for us and resubmit when the patch can
-be applied cleanly.
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
