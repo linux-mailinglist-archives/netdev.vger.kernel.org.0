@@ -2,154 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D43D3A8D
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 830ECD3AA1
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 10:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727163AbfJKIJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 04:09:56 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:33940 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726853AbfJKIJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 04:09:55 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1iIpyn-0004vc-O9; Fri, 11 Oct 2019 10:08:54 +0200
-Message-ID: <94b8bb500cc3d6d4d740e472e5c083489740ec32.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v7 09/17] ethtool: generic handlers for GET
- requests
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 11 Oct 2019 10:08:52 +0200
-In-Reply-To: <20191010200032.GH22163@unicorn.suse.cz>
-References: <cover.1570654310.git.mkubecek@suse.cz>
-         <b000e461e348ba1a0af30f2e8493618bce11ec12.1570654310.git.mkubecek@suse.cz>
-         <20191010135639.GJ2223@nanopsycho> <20191010180401.GD22163@unicorn.suse.cz>
-         <eb6cb68ff77eb4f2c680809e11142150f0d83007.camel@sipsolutions.net>
-         <20191010200032.GH22163@unicorn.suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1726631AbfJKIRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 04:17:07 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58740 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726174AbfJKIRH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 04:17:07 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E63FC10DCCA2;
+        Fri, 11 Oct 2019 08:17:05 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-241.pek2.redhat.com [10.72.12.241])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C32321001B08;
+        Fri, 11 Oct 2019 08:15:57 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH V3 0/7] mdev based hardware virtio offloading support
+Date:   Fri, 11 Oct 2019 16:15:50 +0800
+Message-Id: <20191011081557.28302-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Fri, 11 Oct 2019 08:17:06 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-10-10 at 22:00 +0200, Michal Kubecek wrote:
-> 
-> > Having a common format is way more accessible. Generic netlink (now)
-> > even exposes the policy (if set) and all of its nested sub-policies to
-> > userspace (if you use NLA_POLICY_NESTED), so it's very easy to discover
-> > what's in the policy and how it'll be interpreted.
-> 
-> This, however, would require a different design that Jiri proposed. What
-> he proposed was one attribute type for "request specific attributes".
-> But to be able to perform nested validation of the whole message and
-> export all policies would, with current genetlink design, require having
-> one such attribute type for each request type (command).
+Hi all:
 
-Yes, indeed, that's true.
+There are hardware that can do virtio datapath offloading while having
+its own control path. This path tries to implement a mdev based
+unified API to support using kernel virtio driver to drive those
+devices. This is done by introducing a new mdev transport for virtio
+(virtio_mdev) and register itself as a new kind of mdev driver. Then
+it provides a unified way for kernel virtio driver to talk with mdev
+device implementation.
 
-We actually used to have per-command policy in genetlink, but I removed
-it as there was only one user, and it would've made the introspection
-stuff a lot more complicated and it wasted quite a bit of memory in the
-ops tables for everyone else.
+Though the series only contains kernel driver support, the goal is to
+make the transport generic enough to support userspace drivers. This
+means vhost-mdev[1] could be built on top as well by resuing the
+transport.
 
-Maybe we *do* want this back, with a nested policy pointing to the
-common like you have. Then you'd have the option to do exactly what you
-do here, but have introspection & common validation.
+A sample driver is also implemented which simulate a virito-net
+loopback ethernet device on top of vringh + workqueue. This could be
+used as a reference implementation for real hardware driver.
 
-Actually, it's only half true that we had this - it was that the
-*policy* was in the op, but the *maxattr* was in the family. This never
-really makes any sense.
+Consider mdev framework only support VFIO device and driver right now,
+this series also extend it to support other types. This is done
+through introducing class id to the device and pairing it with
+id_talbe claimed by the driver. On top, this seris also decouple
+device specific parents ops out of the common ones.
 
-(IMHO we really should try to find a way to embed the maxattr into the
-family, passing both always is very tiring. Perhaps just having a
-terminator entry would be sufficient, or using a trick similar to what I
-did with strict_start_type, and putting it into the 0th entry that's
-usually unused? Even where the 0th entry *is* used, as long as the type
-isn't something that relies on the validation data, we could do that.
-But this is totally an aside...)
+Pktgen test was done with virito-net + mvnet loop back device.
 
-> But that would also require an extra check that the request message
-> contains only the attribute matching its command (request type) so that
-> the validation performed by genetlink would still be incomplete (it will
-> always be incomplete as there are lots of strange constraints which
-> cannot be described by a policy).
+Please review.
 
-Also true, yes.
+[1] https://lkml.org/lkml/2019/9/26/15
 
-> Unless you suggest to effectively have just one command and determine
-> the request type based on which of these request specific attributes is
-> present (and define what to do if there is more than one).
+Changes from V2:
 
-Also possible, I guess, I can't say that's much better.
+- fail when class_id is not specified
+- drop the vringh patch
+- match the doc to the code
+- tweak the commit log
+- move device_ops from parent to mdev device
+- remove the unused MDEV_ID_VHOST
 
-> ETHTOOL_A_HEADER_RFLAGS is a constant, it's always the same. Yes,
-> logically it would rather belong outside header and maybe should be
-> replaced by a (possibly empty) set of NLA_FLAG attributes. If having it
-> in the common header is such a big problem, I'll move it out.
+Changes from V1:
 
-NLA_FLAG tends to be large - I think having a bitmap is fine.
+- move virtio_mdev.c to drivers/virtio
+- store class_id in mdev_device instead of mdev_parent
+- store device_ops in mdev_device instead of mdev_parent
+- reorder the patch, vringh fix comes first
+- really silent compiling warnings
+- really switch to use u16 for class_id
+- uevent and modpost support for mdev class_id
+- vraious tweaks per comments from Parav
 
-Btw, you can also have a common *fixed* header in the genetlink family.
-I don't think anyone does that, but it's possible.
+Changes from RFC-V2:
 
-> > But you even have *two* policies for each kind of message, one for the
-> > content and one for the header...?
-> 
-> As I said in reply to another patch, it turns out that the only reason
-> for having a per request header policy was rejecting
-> ETHTOOL_A_HEADER_RFLAGS for requests which do not define any request
-> flags but that's probably an overkill so that one universal header
-> policy would be sufficient.
+- silent compile warnings on some specific configuration
+- use u16 instead u8 for class id
+- reseve MDEV_ID_VHOST for future vhost-mdev work
+- introduce "virtio" type for mvnet and make "vhost" type for future
+  work
+- add entries in MAINTAINER
+- tweak and typos fixes in commit log
 
-Missed that, OK.
+Changes from RFC-V1:
 
-> > It almost seems though that your argument isn't so much on the actual
-> > hierarchy/nesting structure of the message itself, but the easy of
-> > parsing it?
-> 
-> It's both. I still feel that from logical point of view it makes much
-> more sense to use top level attributes for what the message is actually
-> about. Nothing you said convinced me otherwise, rather the opposite: it
-> only confirmed that the only reason for hiding the actual request
-> contents one level below is to work around the consequences of the
-> decision to make policy in genetlink per family rather than per command.
+- rename device id to class id
+- add docs for class id and device specific ops (device_ops)
+- split device_ops into seperate headers
+- drop the mdev_set_dma_ops()
+- use device_ops to implement the transport API, then it's not a part
+  of UAPI any more
+- use GFP_ATOMIC in mvnet sample device and other tweaks
+- set_vring_base/get_vring_base support for mvnet device
 
-As I said above, it was actually the other way around and I changed it
-relatively recently.
+Jason Wang (7):
+  mdev: class id support
+  mdev: bus uevent support
+  modpost: add support for mdev class id
+  mdev: introduce device specific ops
+  mdev: introduce virtio device and its device ops
+  virtio: introduce a mdev based transport
+  docs: sample driver to demonstrate how to implement virtio-mdev
+    framework
 
-I don't have any strong objections to changing that really, it just
-wasn't really used by anyone.
+ .../driver-api/vfio-mediated-device.rst       |  25 +-
+ MAINTAINERS                                   |   2 +
+ drivers/gpu/drm/i915/gvt/kvmgt.c              |  17 +-
+ drivers/s390/cio/vfio_ccw_ops.c               |  17 +-
+ drivers/s390/crypto/vfio_ap_ops.c             |  13 +-
+ drivers/vfio/mdev/mdev_core.c                 |  18 +
+ drivers/vfio/mdev/mdev_driver.c               |  22 +
+ drivers/vfio/mdev/mdev_private.h              |   2 +
+ drivers/vfio/mdev/vfio_mdev.c                 |  45 +-
+ drivers/virtio/Kconfig                        |   7 +
+ drivers/virtio/Makefile                       |   1 +
+ drivers/virtio/virtio_mdev.c                  | 416 +++++++++++
+ include/linux/mdev.h                          |  49 +-
+ include/linux/mod_devicetable.h               |   8 +
+ include/linux/vfio_mdev.h                     |  52 ++
+ include/linux/virtio_mdev.h                   | 148 ++++
+ samples/Kconfig                               |   7 +
+ samples/vfio-mdev/Makefile                    |   1 +
+ samples/vfio-mdev/mbochs.c                    |  19 +-
+ samples/vfio-mdev/mdpy.c                      |  20 +-
+ samples/vfio-mdev/mtty.c                      |  17 +-
+ samples/vfio-mdev/mvnet.c                     | 691 ++++++++++++++++++
+ scripts/mod/devicetable-offsets.c             |   3 +
+ scripts/mod/file2alias.c                      |  10 +
+ 24 files changed, 1523 insertions(+), 87 deletions(-)
+ create mode 100644 drivers/virtio/virtio_mdev.c
+ create mode 100644 include/linux/vfio_mdev.h
+ create mode 100644 include/linux/virtio_mdev.h
+ create mode 100644 samples/vfio-mdev/mvnet.c
 
-> I still don't see any reason why all this could not work with per
-> command policies and would be principially dependent on having one
-> universal policy for the whole family.
-
-True, it just makes the code to expose it more complex (and uses more
-space in the ops tables.)
-
-If we do bring that back then IMHO it should be done properly and not
-have a maxattr in the family, but with each policy. There could still
-be a single maxattr (that must be >= max of all maxattrs) for the whole
-family to ease allocation, but that could also just be derived as the
-max(maxattr of all possible policies) at family registration time.
-
-I'm almost thinking if we do that we should have a "struct
-genl_ops_with_policy" and a second ops pointer in the family, so that
-families not using this don't have to have a policy pointer & maxattr
-for each op, the op struct now is 5 pointers long, so adding
-policy/maxattr would cost us an increase of 20% on 64-bit and 40% on 32-
-bit ... For families that don't need it, that's pretty large.
-
-johannes
+-- 
+2.19.1
 
