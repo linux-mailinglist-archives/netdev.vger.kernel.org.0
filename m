@@ -2,75 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59DFAD46B5
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 19:35:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C85B8D46C8
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 19:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728666AbfJKRff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 13:35:35 -0400
-Received: from mail-wr1-f44.google.com ([209.85.221.44]:33239 "EHLO
-        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728461AbfJKRff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 13:35:35 -0400
-Received: by mail-wr1-f44.google.com with SMTP id b9so12854614wrs.0;
-        Fri, 11 Oct 2019 10:35:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ldn1+y4i+TM+l/Cu4HtEy/jFbE45xXljUNQey12ghIg=;
-        b=Zs2H82o4DqF63IDhzoBFLmddb31FxW0PjesX4lLX87MmDlERw56C4+lJxly+SyMPAz
-         PGUsRU6sE6/aU4CzGCBRoSNFQajdav8CSNoZTVGx5AYrigEUBYkmOvyFmZZ3dZYWTuIi
-         m7sBJuLLlGhQ8krkYeGvATfvi96AbbAWdYtG0H6rMWVcnYlmCwCxYl3JsgOjtUB/7U9i
-         QM0LQzc5Mzc325Muz9LJpZU3uzc4gQj6MjF+aEOPpjRb2VNk4usKnLUHfXvv6KszKc/C
-         oWJffYE2VnWLeMrolSwwRUxqFPyTshE+RyhbjmishCoQOlSHVLYGstv2PA+cRy2oY9NF
-         mbOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ldn1+y4i+TM+l/Cu4HtEy/jFbE45xXljUNQey12ghIg=;
-        b=Wo/iiFSYN88PIYRF9nowa/5N2Sx5EJzXYs0P5NFh4nDrx9aVUf3QFxKWIj5/4EdEnP
-         sEXx+Rkn9pW35pzp+TKJBbVGB4uykIeYU2OscIrVqFtS3dltl/UHwC7/Xun3FhHBLfYQ
-         wsy4rfTUArpVwtNrhTuiv/r6VwNwMqH1PPP3lOvQQ+l4ZJ74B5hK6ySE3eGsRmXW6eqZ
-         Xb5PnTynWrcop4pTu1tyR6QUZbG1aYTypCKUuUMQxbRfWZl3WIrTTRJfHR+TjPfO4sX6
-         qqNUC9rSEA39pqRk+xbuRg8rwqgSK4roAqNsirl0IV4GUgdcHydc0ssssFQgR9pQyOf4
-         TZ3Q==
-X-Gm-Message-State: APjAAAXUG6xh3wlyoTxeV5yYEUACCm1JE4NZ2MC3t+DlTw3+dfkMOnEs
-        7kUH426SExce2npH5xXA36c=
-X-Google-Smtp-Source: APXvYqxL1v1bOAqXNayHLgr3O+yDOlR9ISOlJHTaBPGqrem9ZzTj7AtxPsmXFyS+6Pqw62fzU6mQNA==
-X-Received: by 2002:a5d:43c2:: with SMTP id v2mr8911335wrr.153.1570815333323;
-        Fri, 11 Oct 2019 10:35:33 -0700 (PDT)
-Received: from wambui ([197.237.61.225])
-        by smtp.gmail.com with ESMTPSA id a18sm14506877wrs.27.2019.10.11.10.35.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 10:35:32 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 20:35:27 +0300
-From:   Wambui Karuga <wambui.karugax@gmail.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     outreachy-kernel@googlegroups.com, devel@driverdev.osuosl.org,
-        isdn@linux-pingi.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] staging: isdn: remove assignment in if conditionals
-Message-ID: <20191011173527.GA22796@wambui>
-Reply-To: 20191011110019.GC4774@kadam
-References: <20191011072044.7022-1-wambui.karugax@gmail.com>
- <20191011110019.GC4774@kadam>
+        id S1728612AbfJKRjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 13:39:47 -0400
+Received: from mga09.intel.com ([134.134.136.24]:44869 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728416AbfJKRjr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 13:39:47 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 10:39:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,284,1566889200"; 
+   d="scan'208";a="219465702"
+Received: from unknown (HELO [10.241.228.123]) ([10.241.228.123])
+  by fmsmga004.fm.intel.com with ESMTP; 11 Oct 2019 10:39:45 -0700
+Subject: Re: [PATCH v3 3/3] i40e: Add UDP segmentation offload support
+To:     Josh Hunt <johunt@akamai.com>, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com
+Cc:     willemb@google.com, aaron.f.brown@intel.com,
+        alexander.h.duyck@linux.intel.com,
+        Alexander Duyck <alexander.h.duyck@intel.com>
+References: <1570812820-20052-1-git-send-email-johunt@akamai.com>
+ <1570812820-20052-4-git-send-email-johunt@akamai.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <db84a310-950a-f7e9-0d92-f7c81e27eb61@intel.com>
+Date:   Fri, 11 Oct 2019 10:39:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191011110019.GC4774@kadam>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <1570812820-20052-4-git-send-email-johunt@akamai.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 02:00:20PM +0300, Dan Carpenter wrote:
-> This ISDN stuff is going to be deleted soon.  Just leave it as is.
-> 
-> regards,
-> dan carpenter
-> 
-Noted, thanks
 
-wambui karuga
+
+On 10/11/2019 9:53 AM, Josh Hunt wrote:
+> Based on a series from Alexander Duyck this change adds UDP segmentation
+> offload support to the i40e driver.
+> 
+> CC: Alexander Duyck <alexander.h.duyck@intel.com>
+> CC: Willem de Bruijn <willemb@google.com>
+> Signed-off-by: Josh Hunt <johunt@akamai.com>
+> ---
+>   drivers/net/ethernet/intel/i40e/i40e_main.c |  1 +
+>   drivers/net/ethernet/intel/i40e/i40e_txrx.c | 12 +++++++++---
+>   2 files changed, 10 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> index 6031223eafab..56f8c52cbba1 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> @@ -12911,6 +12911,7 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+>   			  NETIF_F_GSO_IPXIP6		|
+>   			  NETIF_F_GSO_UDP_TUNNEL	|
+>   			  NETIF_F_GSO_UDP_TUNNEL_CSUM	|
+> +			  NETIF_F_GSO_UDP_L4		|
+>   			  NETIF_F_SCTP_CRC		|
+>   			  NETIF_F_RXHASH		|
+>   			  NETIF_F_RXCSUM		|
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> index e3f29dc8b290..b8496037ef7f 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> @@ -2960,10 +2960,16 @@ static int i40e_tso(struct i40e_tx_buffer *first, u8 *hdr_len,
+>   
+>   	/* remove payload length from inner checksum */
+>   	paylen = skb->len - l4_offset;
+> -	csum_replace_by_diff(&l4.tcp->check, (__force __wsum)htonl(paylen));
+>   
+> -	/* compute length of segmentation header */
+> -	*hdr_len = (l4.tcp->doff * 4) + l4_offset;
+> +	if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
+> +		csum_replace_by_diff(&l4.udp->check, (__force __wsum)htonl(paylen));
+> +		/* compute length of segmentation header */
+> +		*hdr_len = sizeof(*l4.udp) + l4_offset;
+> +	} else {
+> +		csum_replace_by_diff(&l4.tcp->check, (__force __wsum)htonl(paylen));
+> +		/* compute length of segmentation header */
+> +		*hdr_len = (l4.tcp->doff * 4) + l4_offset;
+> +	}
+
+Is it guaranteed that gso_type can be either UDP or TCP only if we reach 
+here? Don't we need to handle the case where it is neither and return 
+from this function?
+
+>   
+>   	/* pull values out of skb_shinfo */
+>   	gso_size = skb_shinfo(skb)->gso_size;
+> 
