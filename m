@@ -2,111 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4150D495C
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DC5AD4964
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:43:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729049AbfJKUhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 16:37:19 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:42002 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728978AbfJKUhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 16:37:18 -0400
-Received: by mail-pl1-f194.google.com with SMTP id e5so4964771pls.9
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 13:37:18 -0700 (PDT)
+        id S1727188AbfJKUmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 16:42:47 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:46194 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726354AbfJKUmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 16:42:46 -0400
+Received: by mail-pg1-f194.google.com with SMTP id b8so6414913pgm.13;
+        Fri, 11 Oct 2019 13:42:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=J4MqgFNM5y+7nBh+ffpE144qKI33NcNHQj2XoGXLwVM=;
-        b=tkK3UIajRfQmCFNhdVJ2Y7jc3R2zJ147vvzfIyTfW92R5JBwvJUBEnXiqEVW+xr356
-         jBY4KUMhOPWg2fjUi24Rw7Nbf6PqSPY4xb0Quk99xZQmKggiV382kwWuIZ4vJMUr67+n
-         dnXUrWWhzPzGUlI/NtnsKU7FWMwYgEL4Z8Fc7KKZ1TQw3v4mQuBGZNWJmQd8jNUbuQlc
-         ypxAhjBW8m1zfGUqcpsC+8bUl/mSu7nDX5Z9rsjrzMRQaXkOWnFrQpmPStWU+mgC7Ykl
-         Rkf1JbUq+Z/5yvgG1Qf4SBjkVdi2PcWICGSKYax0BOgRpj4geZgVzE7xyxDmn3hRJvid
-         l4Bw==
+        bh=4XoXOX0uA8zEeRRweFDHTezpZIHOl+c1NBlkyciPQFQ=;
+        b=kjOkPa+qJNIj54kgt1Tu4c2y/jQTQWnHNv6uAQvSn/P8dU/oM5lZgHuq9LM8Qvt1mD
+         B836hKn2o1emu0wom0YN4mJ7blqqLeq94TU16FWdODUGpY8gL40Q3OeMdCc70AlteXKE
+         X6nj5THN8VqJvA8AQAmdhzQ/j0voXn4FRe1UzTtxQA53a5NnJfDYtwple7KInrVd0JjH
+         vqTIALzwwhMMMcC2OWTFdTCz37TVC0iykWK8iPMn/nhj3tb6LLjjhV9a6TdU8U6Xmfwh
+         ZWCV9GVr6z+tvC8+8tLuX13eYOAZLoB6xxPqb/6Z20U7apbEd5OXwwe0JlnE/lMWigzZ
+         dEqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=J4MqgFNM5y+7nBh+ffpE144qKI33NcNHQj2XoGXLwVM=;
-        b=i+xQ2m1VLm8sLrK2Jno1+YNpBSUvEctpn0n8jNcdl6hyyMur4tz4LkPsbsDf9GUOqa
-         IphKsJ5pUmP7KEBjtwA/lnOS5RJbesfGKxgbwOiX1Y03mBvASmORwnjdU/dOaogyV4Wg
-         qG3ePdUVWrAaWlY4ejkoyzLqOBJBY7K8Mr49nGtmOPAdIYalN142lx6ht9eWpd3rinw+
-         uWnEjUdr7dELHejRVraY4Hg08ZWDsxGBf7Zd8unaomsvxscC4QFeweQ9tIPThr5zpDYQ
-         IZS4VTJRfukVZmTyfZfAQWk+jYZs5L7fdqCDi198vZNt5XA0SAHcUiPPZ/dW9owy316w
-         /L6w==
-X-Gm-Message-State: APjAAAUXhLXjI64hGu2UI17EpehPtd4jOVILfvkOedD07DlQmpFsu2OO
-        yyzPBoH/7Tvv4PQPa+vLXUrELA==
-X-Google-Smtp-Source: APXvYqwI1j1tsdYbea9fjPC8PcuvKIVKm/2V+sqqaHHRkAnLYqX2Q/Mi6eYdh9hGAB26X8iaCfUGsA==
-X-Received: by 2002:a17:902:a70f:: with SMTP id w15mr16988463plq.146.1570826238066;
-        Fri, 11 Oct 2019 13:37:18 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id f13sm4104924pgr.6.2019.10.11.13.37.16
+        bh=4XoXOX0uA8zEeRRweFDHTezpZIHOl+c1NBlkyciPQFQ=;
+        b=Mf2vIsmgyMfmjSmQruyPY8/Ih6iLtqX6GE4w7OM1VKc73i6fGzzdasD22Ayneb9I1l
+         HTydWw6AAsZYWwYRZHgkXV0MQhtpceW4pq17i1WytbhEgdd8ODz6TOOMQR4HhMblfOtX
+         ky55+38C/1Q3D9N3UuvCXsn2ondks+Ayo/RDsic1GIel+Z9XazVZZkRdRZqqQZe7YDtL
+         mhj1tUUJ+BHIlVYAYKAVEeClnBJcrHbALueqIumwW9LTwVMsQVoxCHYz3nMr7fYj60lA
+         ALjDCZMRW5iXHnmoUg+2KIoPexourXLSpailtFlWz8G7hwqq+QQOuODfQv9Tv39CDU21
+         D6Sg==
+X-Gm-Message-State: APjAAAVqE1IZdrIrTaHRkVaPqmcuGX6esOcovMRN4BORabV4D3/6kXhJ
+        WiBhRjDoyMfdi8lYs9CgvHU=
+X-Google-Smtp-Source: APXvYqxgMYTRiReIny38MzeJBeHWIF7zFVtugRBRVOxiaqSCzPV++EW3iFHGUcMAK+iv3c7huzSHuQ==
+X-Received: by 2002:a65:66c4:: with SMTP id c4mr3754487pgw.42.1570826565852;
+        Fri, 11 Oct 2019 13:42:45 -0700 (PDT)
+Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
+        by smtp.gmail.com with ESMTPSA id v1sm10714891pfg.26.2019.10.11.13.42.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 13:37:16 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 13:37:16 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Martin Lau <kafai@fb.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next 3/3] bpftool: print the comm of the process that
- loaded the program
-Message-ID: <20191011203716.GI2096@mini-arch>
-References: <20191011162124.52982-1-sdf@google.com>
- <20191011162124.52982-3-sdf@google.com>
- <20191011201910.ynztujumh7dlluez@kafai-mbp.dhcp.thefacebook.com>
+        Fri, 11 Oct 2019 13:42:44 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 13:42:42 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH 0/3] net: phy: switch to using fwnode_gpiod_get_index
+Message-ID: <20191011204242.GH229325@dtor-ws>
+References: <20191004231356.135996-1-dmitry.torokhov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191011201910.ynztujumh7dlluez@kafai-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191004231356.135996-1-dmitry.torokhov@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/11, Martin Lau wrote:
-> On Fri, Oct 11, 2019 at 09:21:24AM -0700, Stanislav Fomichev wrote:
-> > Print recently added created_by_comm along the existing created_by_uid.
-> > 
-> > Example with loop1.o (loaded via bpftool):
-> > 4: raw_tracepoint  name nested_loops  tag b9472b3ff5753ef2  gpl
-> >         loaded_at 2019-10-10T13:38:18-0700  uid 0  comm bpftool
-> >         xlated 264B  jited 152B  memlock 4096B
-> >         btf_id 3
-> Hopefully CAP_BPF may avoid uid 0 in the future.
-Yeah, but this also requires creating a user with CAP_BPF and running
-a daemon under this user.
+Hi David,
 
-> What will be in "comm" for the python bcc script?
-I guess it will be "python". But at least you get a signal that it's
-not some other system daemon :-)
+On Fri, Oct 04, 2019 at 04:13:53PM -0700, Dmitry Torokhov wrote:
+> This series switches phy drivers form using fwnode_get_named_gpiod() and
+> gpiod_get_from_of_node() that are scheduled to be removed in favor
+> of fwnode_gpiod_get_index() that behaves more like standard
+> gpiod_get_index() and will potentially handle secondary software
+> nodes in cases we need to augment platform firmware.
+> 
+> This depends on the new code that can be bound in
+> ib-fwnode-gpiod-get-index immutable branch of Linus' Walleij tree:
+> 
+>         git pull git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git ib-fwnode-gpiod-get-index
+> 
+> I hope that it would be possible to pull in this immutable branch and
+> not wait until after 5.5 merge window.
 
-> > 
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  tools/bpf/bpftool/prog.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-> > index 27da96a797ab..400771a942d7 100644
-> > --- a/tools/bpf/bpftool/prog.c
-> > +++ b/tools/bpf/bpftool/prog.c
-> > @@ -296,7 +296,9 @@ static void print_prog_plain(struct bpf_prog_info *info, int fd)
-> >  		print_boot_time(info->load_time, buf, sizeof(buf));
-> >  
-> >  		/* Piggy back on load_time, since 0 uid is a valid one */
-> > -		printf("\tloaded_at %s  uid %u\n", buf, info->created_by_uid);
-> > +		printf("\tloaded_at %s  uid %u  comm %s\n", buf,
-> > +		       info->created_by_uid,
-> > +		       info->created_by_comm);
-> >  	}
-> >  
-> >  	printf("\txlated %uB", info->xlated_prog_len);
-> > -- 
-> > 2.23.0.700.g56cf767bdb-goog
-> > 
+I see that the patches are marked as "Not applicable" in the netdev
+patchwork. Does this mean that you decided against pulling this
+immutable branch, or you dropped them because of kbuild complaints (that
+happened because it could not figure out how to apply the patches)?
+
+Thanks.
+
+-- 
+Dmitry
