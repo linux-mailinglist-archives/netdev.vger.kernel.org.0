@@ -2,137 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27B3BD4974
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E39C0D498F
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 22:58:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728219AbfJKUvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 16:51:02 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:37798 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbfJKUvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 16:51:01 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id x9BKoxLQ019910;
-        Fri, 11 Oct 2019 15:50:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1570827059;
-        bh=InSWyRvMxBPidvHCH82wkLcGaUc0yQCiCghdUTxUkgE=;
-        h=Subject:To:References:From:Date:In-Reply-To;
-        b=nJuH+z3feujTccP2sWZW6lspnda3jLClQqYSQaXTENucfhEbdiZXD7B4kyTVLvw4U
-         jAVV8DdtRToYiVi/Omu+x5MkH5FxlQYESdJrlyZo4ONRQmNVMOyjx2qEI6pyLFgGVx
-         2kAtlZHK2w9yCYapUphMCrKFYiR2u3gp5Or+7oLo=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x9BKoxU7128762
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 11 Oct 2019 15:50:59 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 11
- Oct 2019 15:50:54 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Fri, 11 Oct 2019 15:50:54 -0500
-Received: from [158.218.117.39] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9BKow8k038428;
-        Fri, 11 Oct 2019 15:50:58 -0500
-Subject: Re: taprio testing - Any help?
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com>
- <87v9sv3uuf.fsf@linux.intel.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
-Date:   Fri, 11 Oct 2019 16:56:51 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
-MIME-Version: 1.0
-In-Reply-To: <87v9sv3uuf.fsf@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+        id S1729121AbfJKU6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 16:58:53 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40865 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbfJKU6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 16:58:53 -0400
+Received: by mail-pl1-f193.google.com with SMTP id d22so4990823pll.7;
+        Fri, 11 Oct 2019 13:58:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=rPzNi0bFJ9lr3/YdikETU74TEKXXfUYJ6X4Lm1ruCb4=;
+        b=pwZ+qLiSyGg46Q+sK+idN3AR3hxfltSZMS/IryiNrpA9No2vHD2Nhg1LEY9fQ/2nj2
+         /PFRXUklKkifU5wIeqMffLhu+H2X5CJewTmSdI/e59+uob8SmOtVgSW+CVxSp2/IBMvG
+         EG7bdWWr5/s2zmwi5gfClFY1lR+bHFAxBV4hfUmKVTVdWxs0C+HpoxPSAvrMA8kTZxql
+         CA1LCCkljSCabuoSOjWLwvV1WdymQmNHyJeeR9YwhV5NQ7WfvZlRXv3twfj1OS+jGpu5
+         FQTVzHz1XZLdU0RzAz+5z+26QboITO/8EhSezd/HDGFj/u5cGjMVmE2Byjz57AjmLTQA
+         XLTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=rPzNi0bFJ9lr3/YdikETU74TEKXXfUYJ6X4Lm1ruCb4=;
+        b=GZ1Q2h7sOK/6YgD0hwmF/MRAmKGI1UwPL16Eu7ntqFxy0nVYdSDoRGE2bNxrSvk1BW
+         /gtyhewjwZvLeNBP6AempNY7IqYqdXuAGioXqoKy98sHBoxvsNzi+MSsH5U1lTvuFb4C
+         OazG1hWrQOwqZS/3d0UCNY9XNPCJNwRCBkGCgjAyV8FVpJR4tiZ7Oo1lwK51f4i9Lkld
+         j767b7kEA16/bDSYq6NHn2YZHDeiFn0vBmztpdAagKcKewZHZzDpuwK+nKolaqVbXiq6
+         H7Iy1g4sis0SPVPp8Res2JDRKW3yOy/FJh6YeV4mQjzN1rbhV/k2WRLhtW7KueLV0XcP
+         nCxw==
+X-Gm-Message-State: APjAAAUdjlIOoUcKogpz4QZBMipiNwq1IODG09FOPb0cUckb/LpMPJxd
+        rk+MtiQrrBoiwZbDQYPKJCY=
+X-Google-Smtp-Source: APXvYqwnSNS4SW8N1cWOAWcAAe2xrEXI+5VrTO+XHnJT2oHnhBgw5K1RMZIrdGSJMNQFWHlUh0SLVg==
+X-Received: by 2002:a17:902:a985:: with SMTP id bh5mr16709373plb.184.1570827532454;
+        Fri, 11 Oct 2019 13:58:52 -0700 (PDT)
+Received: from localhost ([131.252.143.44])
+        by smtp.gmail.com with ESMTPSA id b5sm8283960pgb.68.2019.10.11.13.58.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Oct 2019 13:58:51 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 13:58:51 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
+Message-ID: <5da0ed0b2a26d_70f72aad5dc6a5b8db@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAJ8uoz3t2jVuwYKaFtt7huJo8HuW9aKLaFpJ4WcWxjm=-wQgrQ@mail.gmail.com>
+References: <1570530208-17720-1-git-send-email-magnus.karlsson@intel.com>
+ <5d9ce369d6e5_17cc2aba94c845b415@john-XPS-13-9370.notmuch>
+ <CAJ8uoz3t2jVuwYKaFtt7huJo8HuW9aKLaFpJ4WcWxjm=-wQgrQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: fix compatibility for kernels without
+ need_wakeup
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
+Magnus Karlsson wrote:
+> On Tue, Oct 8, 2019 at 9:29 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> >
+> > Magnus Karlsson wrote:
+> > > When the need_wakeup flag was added to AF_XDP, the format of the
+> > > XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the kernel
+> > > to take care of compatibility issues arrising from running
+> > > applications using any of the two formats. However, libbpf was not
+> > > extended to take care of the case when the application/libbpf uses the
+> > > new format but the kernel only supports the old format. This patch
+> > > adds support in libbpf for parsing the old format, before the
+> > > need_wakeup flag was added, and emulating a set of static need_wakeup
+> > > flags that will always work for the application.
+> > >
+> > > Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in AF_XDP part")
+> > > Reported-by: Eloy Degen <degeneloy@gmail.com>
+> > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > ---
+> > >  tools/lib/bpf/xsk.c | 109 +++++++++++++++++++++++++++++++++++++---------------
+> > >  1 file changed, 78 insertions(+), 31 deletions(-)
+> > >
+> > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > > index a902838..46f9687 100644
+> > > --- a/tools/lib/bpf/xsk.c
+> > > +++ b/tools/lib/bpf/xsk.c
+> > > @@ -44,6 +44,25 @@
+> > >   #define PF_XDP AF_XDP
+> > >  #endif
+> > >
+> > > +#define is_mmap_offsets_v1(optlen) \
+> > > +     ((optlen) == sizeof(struct xdp_mmap_offsets_v1))
+> > > +
+> > > +#define get_prod_off(ring) \
+> > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.producer : \
+> > > +      off.ring.producer)
+> > > +#define get_cons_off(ring) \
+> > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer : \
+> > > +      off.ring.consumer)
+> > > +#define get_desc_off(ring) \
+> > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.desc : off.ring.desc)
+> > > +#define get_flags_off(ring) \
+> > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer + sizeof(u32) : \
+> > > +      off.ring.flags)
+> > > +
+> >
+> > It seems the only thing added was flags right? If so seems we
+> > only need the last one there, get_flags_off(). I think it would
+> > be a bit cleaner to just use the macros where its actually
+> > needed IMO.
+> 
+> The flag is indeed added to the end of struct xdp_ring_offsets, but
+> this struct is replicated four times in the struct xdp_mmap_offsets,
+> so the added flags are present four time there at different offsets.
+> This means that 3 out of the 4 prod, cons and desc variables are
+> located at different offsets from the original. Do not know how I can
+> get rid of these macros in this case. But it might just be me not
+> seeing it, of course :-).
 
-On 10/11/2019 04:12 PM, Vinicius Costa Gomes wrote:
-> Hi Murali,
-> 
-> Murali Karicheri <m-karicheri2@ti.com> writes:
-> 
->> Hi,
->>
->> I am testing the taprio (802.1Q Time Aware Shaper) as part of my
->> pre-work to implement taprio hw offload and test.
->>
->> I was able to configure tap prio on my board and looking to do
->> some traffic test and wondering how to play with the tc command
->> to direct traffic to a specfic queue. For example I have setup
->> taprio to create 5 traffic classes as shows below;-
->>
->> Now I plan to create iperf streams to pass through different
->> gates. Now how do I use tc filters to mark the packets to
->> go through these gates/queues? I heard about skbedit action
->> in tc filter to change the priority field of SKB to allow
->> the above mapping to happen. Any example that some one can
->> point me to?
-> 
-> What I have been using for testing these kinds of use cases (like iperf)
-> is to use an iptables rule to set the priority for some kinds of traffic.
-> 
-> Something like this:
-> 
-> sudo iptables -t mangle -A POSTROUTING -p udp --dport 7788 -j CLASSIFY --set-class 0:3
-Let me try this. Yes. This is what I was looking for. I was trying
-something like this and I was getting an error
+Not sure I like it but not seeing a cleaner solution that doesn't cause
+larger changes so...
 
-tc filter add  dev eth0 parent 100: protocol ip prio 10 u32 match ip 
-dport 10000 0xffff flowid 100:3
-RTNETLINK answers: Operation not supported
-We have an error talking to the kernel, -1
-
-Not sure why the above throws an error for me. If I understand it
-right, match rule will add a filter to the parent to send packet to
-100:3 which is for TC3 or Q3.
-
-My taprio configuration is as follows:-
-
-root@am57xx-evm:~# tc qdisc show  dev eth0
-qdisc taprio 100: root refcnt 9 tc 5 map 0 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-queues offset 0 count 1 offset 1 count 1 offset 2 count 1 offset 3 count 
-1 offset 4 count 1
-clockid TAI offload 0   base-time 0 cycle-time 0 cycle-time-extension 0 
-base-time 1564536613194451433 cycle-time 20000000 cycle-
-time-extension 0
-         index 0 cmd S gatemask 0x1 interval 4000000
-         index 1 cmd S gatemask 0x2 interval 4000000
-         index 2 cmd S gatemask 0x4 interval 4000000
-         index 3 cmd S gatemask 0x8 interval 4000000
-         index 4 cmd S gatemask 0x10 interval 4000000
-
-qdisc pfifo 0: parent 100:5 limit 1000p
-qdisc pfifo 0: parent 100:4 limit 1000p
-qdisc pfifo 0: parent 100:3 limit 1000p
-qdisc pfifo 0: parent 100:2 limit 1000p
-qdisc pfifo 0: parent 100:1 limit 1000p
-
-Thanks for your response!
->  
-> This will set the skb->priority of UDP packets matching that rule to 3.
-> 
-> Another alternative is to create a net_prio cgroup, and the sockets
-> created under that hierarchy would have have that priority. I don't have
-> an example handy for this right now, sorry.
-> 
-> Is this what you were looking for?
-> 
-> 
-> Cheers,
-> --
-> Vinicius
-> 
-
+Acked-by: John Fastabend <john.fastabend.gmail.com>
