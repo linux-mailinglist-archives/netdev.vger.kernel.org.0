@@ -2,220 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA99DD35B9
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:24:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58FC9D35BA
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:24:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727500AbfJKAV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:21:59 -0400
-Received: from mga06.intel.com ([134.134.136.31]:25838 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726310AbfJKAV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 20:21:59 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 17:21:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,281,1566889200"; 
-   d="scan'208";a="369258055"
-Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
-  by orsmga005.jf.intel.com with ESMTP; 10 Oct 2019 17:21:56 -0700
-Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
- ORSMSX107.amr.corp.intel.com (10.22.240.5) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 10 Oct 2019 17:21:56 -0700
-Received: from orsmsx103.amr.corp.intel.com ([169.254.5.9]) by
- ORSMSX157.amr.corp.intel.com ([169.254.9.232]) with mapi id 14.03.0439.000;
- Thu, 10 Oct 2019 17:21:55 -0700
-From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
-To:     Josh Hunt <johunt@akamai.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-CC:     Netdev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [PATCH 0/3] igb, ixgbe, i40e UDP segmentation offload support
-Thread-Topic: [PATCH 0/3] igb, ixgbe, i40e UDP segmentation offload support
-Thread-Index: AQHVf7AvEuwAIS+ExU2JBy/0UpLthKdU2m0AgAArTAD//428AA==
-Date:   Fri, 11 Oct 2019 00:21:55 +0000
-Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B9714C727@ORSMSX103.amr.corp.intel.com>
-References: <1570658777-13459-1-git-send-email-johunt@akamai.com>
- <CAKgT0UdBPYRnwAuOGhCBAJSRhdHcnw28Tznr0GPAtqe-JWFjTQ@mail.gmail.com>
- <cd8ac880-61fe-b064-6271-993e8c6eee65@akamai.com>
- <CAKgT0UfXgzur2TGv1dNw0PQXAP0C=bNoJY6gnthASeQrHr66AA@mail.gmail.com>
- <0e0e706c-4ce9-c27a-af55-339b4eb6d524@akamai.com>
-In-Reply-To: <0e0e706c-4ce9-c27a-af55-339b4eb6d524@akamai.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOTUyNGFkNjktNmE3ZS00ODUwLWE2NjgtNjQ4ZTAzZDRkMTk5IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiNGFZWHlGWk91OE9rXC9cLzZ4ajRkNVNhYmRiMUgxcDM3RmVLMUZKelFJaXdtdktwXC9tck54cUN4ZFYra1JSVVlxcyJ9
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1727163AbfJKAYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 20:24:43 -0400
+Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:19872 "EHLO
+        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725951AbfJKAYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:24:42 -0400
+Received: from pps.filterd (m0050095.ppops.net [127.0.0.1])
+        by m0050095.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id x9B0CD6v008015;
+        Fri, 11 Oct 2019 01:24:36 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id; s=jan2016.eng;
+ bh=wFdYZRiamaVjqjpws51rnT1kMjLwL5HhvsPA+tJ3ddY=;
+ b=eygHA4J9F18Wo0IoIaOyoT7p7MrIQQLIyMjxO+p+q92zz87wnfqzsKPgu1atgD8BN90W
+ MuPLJwXLg7p5MzEOgjPHZJCzm6dlmyT1VGEBlsmLRRahfJhUHv0gPZ25m1nPwVqAdTfO
+ A0b7Le7n4JcfVILHozKtIvRJpfObzIz2fzUmZ0/+9whz4Z1MEnopksUfGaJMEYHrK8P6
+ AfWzA1ogqa7Jap0hANvkD3fczdRAqnH+8K61VWwuQ7li/Z+Zt8j+1kc9cIY6sy34W8b+
+ tKBhlwG/E98ThZkWX9ZUpq/wEAmb17P0o9OSon/FxdOA3RIXta0IE2fCuU3/yIdYB3uC VA== 
+Received: from prod-mail-ppoint3 (prod-mail-ppoint3.akamai.com [96.6.114.86] (may be forged))
+        by m0050095.ppops.net-00190b01. with ESMTP id 2vejq578ag-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Oct 2019 01:24:36 +0100
+Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
+        by prod-mail-ppoint3.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x9B0Gbkc012098;
+        Thu, 10 Oct 2019 20:24:35 -0400
+Received: from prod-mail-relay14.akamai.com ([172.27.17.39])
+        by prod-mail-ppoint3.akamai.com with ESMTP id 2veph0x33a-1;
+        Thu, 10 Oct 2019 20:24:35 -0400
+Received: from bos-lpwg1 (bos-lpwg1.kendall.corp.akamai.com [172.29.171.203])
+        by prod-mail-relay14.akamai.com (Postfix) with ESMTP id 519CA80D1A;
+        Fri, 11 Oct 2019 00:24:35 +0000 (GMT)
+Received: from johunt by bos-lpwg1 with local (Exim 4.86_2)
+        (envelope-from <johunt@akamai.com>)
+        id 1iIijw-0001an-GY; Thu, 10 Oct 2019 20:25:04 -0400
+From:   Josh Hunt <johunt@akamai.com>
+To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        jeffrey.t.kirsher@intel.com
+Cc:     willemb@google.com, sridhar.samudrala@intel.com,
+        aaron.f.brown@intel.com, alexander.h.duyck@linux.intel.com,
+        Josh Hunt <johunt@akamai.com>
+Subject: [PATCH v2 0/3] igb, ixgbe, i40e UDP segmentation offload support
+Date:   Thu, 10 Oct 2019 20:24:59 -0400
+Message-Id: <1570753502-6014-1-git-send-email-johunt@akamai.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-10_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910110000
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-10_09:2019-10-10,2019-10-10 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 phishscore=0
+ suspectscore=0 priorityscore=1501 bulkscore=0 adultscore=0 mlxlogscore=999
+ spamscore=0 clxscore=1015 impostorscore=0 mlxscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1908290000
+ definitions=main-1910110000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QWRkaW5nIEFuZHJldyBhcyBoZSBpcyBtb3N0IGxpa2VseSBnb2luZyB0byBiZSB0ZXN0aW5nIHRo
-aXMgcGF0Y2guDQoNClVuZm9ydHVuYXRlbHkgbXkgbWFpbCBzZXJ2ZXIgZmxhZ3MgYXR0YWNoZWQg
-c2NyaXB0cyBhcyBwb3RlbnRpYWwgdGhyZWF0cyBhbmQgc3RyaXBzIHRoZW0gb3V0LiAgQ2FuIHlv
-dSByZXNlbnQgaXQgYXMgYW4gdGFyIGZpbGU/ICBJIGRvbid0IGJlbGlldmUgaXQncyBzbWFydCBl
-bm91Z2ggdG8gb3BlbiB1cCB0YXIgYW5kIGZsYWcgaXQgYXMgYSBzY3JpcHQuDQoNCj4gLS0tLS1P
-cmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9zaCBIdW50IFttYWlsdG86am9odW50QGFr
-YW1haS5jb21dDQo+IFNlbnQ6IFRodXJzZGF5LCBPY3RvYmVyIDEwLCAyMDE5IDU6MDggUE0NCj4g
-VG86IEFsZXhhbmRlciBEdXljayA8YWxleGFuZGVyLmR1eWNrQGdtYWlsLmNvbT4NCj4gQ2M6IE5l
-dGRldiA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IFdpbGxlbSBkZSBCcnVpam4NCj4gPHdpbGxl
-bWJAZ29vZ2xlLmNvbT47IGludGVsLXdpcmVkLWxhbiA8aW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9z
-dW9zbC5vcmc+Ow0KPiBCcm93biwgQWFyb24gRiA8YWFyb24uZi5icm93bkBpbnRlbC5jb20+DQo+
-IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMC8zXSBpZ2IsIGl4Z2JlLCBpNDBlIFVEUCBzZWdtZW50YXRp
-b24gb2ZmbG9hZCBzdXBwb3J0DQo+IA0KPiBPbiAxMC8xMC8xOSAyOjMyIFBNLCBBbGV4YW5kZXIg
-RHV5Y2sgd3JvdGU6DQo+ID4gT24gVGh1LCBPY3QgMTAsIDIwMTkgYXQgMjoxNyBQTSBKb3NoIEh1
-bnQgPGpvaHVudEBha2FtYWkuY29tPiB3cm90ZToNCj4gPj4NCj4gPj4gT24gMTAvOS8xOSAzOjQ0
-IFBNLCBBbGV4YW5kZXIgRHV5Y2sgd3JvdGU6DQo+ID4+PiBPbiBXZWQsIE9jdCA5LCAyMDE5IGF0
-IDM6MDggUE0gSm9zaCBIdW50IDxqb2h1bnRAYWthbWFpLmNvbT4gd3JvdGU6DQo+ID4+Pj4NCj4g
-Pj4+PiBBbGV4YW5kZXIgRHV5Y2sgcG9zdGVkIGEgc2VyaWVzIGluIDIwMTggcHJvcG9zaW5nIGFk
-ZGluZyBVRFANCj4gc2VnbWVudGF0aW9uDQo+ID4+Pj4gb2ZmbG9hZCBzdXBwb3J0IHRvIGl4Z2Jl
-IGFuZCBpeGdiZXZmLCBidXQgdGhvc2UgcGF0Y2hlcyB3ZXJlIG5ldmVyDQo+ID4+Pj4gYWNjZXB0
-ZWQ6DQo+ID4+Pj4NCj4gPj4+Pg0KPiBodHRwczovL2xvcmUua2VybmVsLm9yZy9uZXRkZXYvMjAx
-ODA1MDQwMDM1NTYuNDc2OS4xMTQwNy5zdGdpdEBsb2NhbGhvc3QubG8NCj4gY2FsZG9tYWluLw0K
-PiA+Pj4+DQo+ID4+Pj4gVGhpcyBzZXJpZXMgaXMgYSByZXBvc3Qgb2YgaGlzIGl4Z2JlIHBhdGNo
-IGFsb25nIHdpdGggYSBzaW1pbGFyDQo+ID4+Pj4gY2hhbmdlIHRvIHRoZSBpZ2IgYW5kIGk0MGUg
-ZHJpdmVycy4gVGVzdGluZyB1c2luZyB0aGUgdWRwZ3NvX2JlbmNoX3R4DQo+ID4+Pj4gYmVuY2ht
-YXJrIHNob3dzIGEgbm90aWNlYWJsZSBwZXJmb3JtYW5jZSBpbXByb3ZlbWVudCB3aXRoIHRoZXNl
-DQo+IGNoYW5nZXMNCj4gPj4+PiBhcHBsaWVkLg0KPiA+Pj4+DQo+ID4+Pj4gQWxsICNzIGJlbG93
-IHdlcmUgcnVuIHdpdGg6DQo+ID4+Pj4gdWRwZ3NvX2JlbmNoX3R4IC1DIDEgLTQgLUQgMTcyLjI1
-LjQzLjEzMyAteiAtbCAzMCAtdSAtUyAwIC1zICRwa3Rfc2l6ZQ0KPiA+Pj4+DQo+ID4+Pj4gaWdi
-OjoNCj4gPj4+Pg0KPiA+Pj4+IFNXIEdTTyAoZXRodG9vbCAtSyBldGgwIHR4LXVkcC1zZWdtZW50
-YXRpb24gb2ZmKToNCj4gPj4+PiAkcGt0X3NpemUgICAgICAga0IvcyhzYXIpICAgICAgIE1CL3Mg
-ICAgQ2FsbHMvcyBNc2cvcyAgIENQVSAgICAgTUIyQ1BVDQo+ID4+Pj4NCj4gPT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4g
-PT09PT09PQ0KPiA+Pj4+IDE0NzIgICAgICAgICAgICAxMjAxNDMuNjQgICAgICAgMTEzICAgICA4
-MTI2MyAgIDgxMjYzICAgODMuNTUgICAxLjM1DQo+ID4+Pj4gMjk0NCAgICAgICAgICAgIDEyMDE2
-MC4wOSAgICAgICAxMTQgICAgIDQwNjM4ICAgNDA2MzggICA2Mi44OCAgIDEuODENCj4gPj4+PiA1
-ODg4ICAgICAgICAgICAgMTIwMTYwLjY0ICAgICAgIDExNCAgICAgMjAzMTkgICAyMDMxOSAgIDQz
-LjU5ICAgMi42MQ0KPiA+Pj4+IDExNzc2ICAgICAgICAgICAxMjAxNjAuNzYgICAgICAgMTE0ICAg
-ICAxMDE2MCAgIDEwMTYwICAgMzcuNTIgICAzLjAzDQo+ID4+Pj4gMjM1NTIgICAgICAgICAgIDEy
-MDE1OS4yNSAgICAgICAxMTQgICAgIDUwODAgICAgNTA4MCAgICAzNC43NSAgIDMuMjgNCj4gPj4+
-PiA0NzEwNCAgICAgICAgICAgMTIwMTYwLjU1ICAgICAgIDExNCAgICAgMjU0MCAgICAyNTQwICAg
-IDMyLjgzICAgMy40Nw0KPiA+Pj4+IDYxODI0ICAgICAgICAgICAxMjAxNjAuNTYgICAgICAgMTE0
-ICAgICAxOTM1ICAgIDE5MzUgICAgMzIuMDkgICAzLjU1DQo+ID4+Pj4NCj4gPj4+PiBIVyBHU08g
-b2ZmbG9hZCAoZXRodG9vbCAtSyBldGgwIHR4LXVkcC1zZWdtZW50YXRpb24gb24pOg0KPiA+Pj4+
-ICRwa3Rfc2l6ZSAgICAgICBrQi9zKHNhcikgICAgICAgTUIvcyAgICBDYWxscy9zIE1zZy9zICAg
-Q1BVICAgICBNQjJDUFUNCj4gPj4+Pg0KPiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KPiA9PT09PT09DQo+ID4+Pj4gMTQ3
-MiAgICAgICAgICAgIDEyMDE0NC42NSAgICAgICAxMTMgICAgIDgxMjY0ICAgODEyNjQgICA4My4w
-MyAgIDEuMzYNCj4gPj4+PiAyOTQ0ICAgICAgICAgICAgMTIwMTYxLjU2ICAgICAgIDExNCAgICAg
-NDA2MzggICA0MDYzOCAgIDQxICAgICAgMi43OA0KPiA+Pj4+IDU4ODggICAgICAgICAgICAxMjAx
-NjAuMjMgICAgICAgMTE0ICAgICAyMDMxOSAgIDIwMzE5ICAgMjMuNzYgICA0Ljc5DQo+ID4+Pj4g
-MTE3NzYgICAgICAgICAgIDEyMDE2MS4xNiAgICAgICAxMTQgICAgIDEwMTYwICAgMTAxNjAgICAx
-NS44MiAgIDcuMjANCj4gPj4+PiAyMzU1MiAgICAgICAgICAgMTIwMTU2LjQ1ICAgICAgIDExNCAg
-ICAgNTA3OSAgICA1MDc5ICAgIDEyLjggICAgOC45MA0KPiA+Pj4+IDQ3MTA0ICAgICAgICAgICAx
-MjAxNTkuMzMgICAgICAgMTE0ICAgICAyNTQwICAgIDI1NDAgICAgOC44MiAgICAxMi45Mg0KPiA+
-Pj4+IDYxODI0ICAgICAgICAgICAxMjAxNTguNDMgICAgICAgMTE0ICAgICAxOTM1ICAgIDE5MzUg
-ICAgOC4yNCAgICAxMy44Mw0KPiA+Pj4+DQo+ID4+Pj4gaXhnYmU6Og0KPiA+Pj4+IFNXIEdTTzoN
-Cj4gPj4+PiAkcGt0X3NpemUgICAgICAga0IvcyhzYXIpICAgICAgIE1CL3MgICAgQ2FsbHMvcyBN
-c2cvcyAgIENQVSAgICAgTUIyQ1BVDQo+ID4+Pj4NCj4gPT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4gPT09PT09PQ0KPiA+
-Pj4+IDE0NzIgICAgICAgICAgICAxMDcwNTY1LjkwICAgICAgMTAxNSAgICA3MjQxMTIgIDcyNDEx
-MiAgMTAwICAgICAxMC4xNQ0KPiA+Pj4+IDI5NDQgICAgICAgICAgICAxMjAxNTc5LjE5ICAgICAg
-MTE0MCAgICA0MDYzNDIgIDQwNjM0MiAgOTUuNjkgICAxMS45MQ0KPiA+Pj4+IDU4ODggICAgICAg
-ICAgICAxMjAxMjE3LjU1ICAgICAgMTE0MCAgICAyMDMxODUgIDIwMzE4NSAgNTUuMzggICAyMC41
-OA0KPiA+Pj4+IDExNzc2ICAgICAgICAgICAxMjAxNjEzLjQ5ICAgICAgMTE0MCAgICAxMDE1ODgg
-IDEwMTU4OCAgNDIuMTUgICAyNy4wNA0KPiA+Pj4+IDIzNTUyICAgICAgICAgICAxMjAxNjMxLjMy
-ICAgICAgMTE0MCAgICA1MDc5NSAgIDUwNzk1ICAgMzUuOTcgICAzMS42OQ0KPiA+Pj4+IDQ3MTA0
-ICAgICAgICAgICAxMjAxNjI2LjM4ICAgICAgMTE0MCAgICAyNTM5NyAgIDI1Mzk3ICAgMzMuNTEg
-ICAzNC4wMQ0KPiA+Pj4+IDYxODI0ICAgICAgICAgICAxMjAxNjI1LjUyICAgICAgMTE0MCAgICAx
-OTM1MCAgIDE5MzUwICAgMzIuODMgICAzNC43Mg0KPiA+Pj4+DQo+ID4+Pj4gSFcgR1NPIE9mZmxv
-YWQ6DQo+ID4+Pj4gJHBrdF9zaXplICAgICAgIGtCL3Moc2FyKSAgICAgICBNQi9zICAgIENhbGxz
-L3MgTXNnL3MgICBDUFUgICAgIE1CMkNQVQ0KPiA+Pj4+DQo+ID09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo+ID09PT09PT0N
-Cj4gPj4+PiAxNDcyICAgICAgICAgICAgMTA1ODY4MS4yNSAgICAgIDEwMDQgICAgNzE1OTU0ICA3
-MTU5NTQgIDEwMCAgICAgMTAuMDQNCj4gPj4+PiAyOTQ0ICAgICAgICAgICAgMTIwMTczMC44NiAg
-ICAgIDExMzQgICAgNDA0MjU0ICA0MDQyNTQgIDYxLjI4ICAgMTguNTANCj4gPj4+PiA1ODg4ICAg
-ICAgICAgICAgMTIwMTc3Ni42MSAgICAgIDExMzEgICAgMjAxNjA4ICAyMDE2MDggIDMwLjI1ICAg
-MzcuMzgNCj4gPj4+PiAxMTc3NiAgICAgICAgICAgMTIwMTc5NS45MCAgICAgIDExMzAgICAgMTAw
-Njc2ICAxMDA2NzYgIDE2LjYzICAgNjcuOTQNCj4gPj4+PiAyMzU1MiAgICAgICAgICAgMTIwMTgw
-Ny45MCAgICAgIDExMjkgICAgNTAzMDQgICA1MDMwNCAgIDEwLjA3ICAgMTEyLjExDQo+ID4+Pj4g
-NDcxMDQgICAgICAgICAgIDEyMDE3NDguMzUgICAgICAxMTI4ICAgIDI1MTQzICAgMjUxNDMgICA2
-LjggICAgIDE2NS44OA0KPiA+Pj4+IDYxODI0ICAgICAgICAgICAxMjAwNzcwLjQ1ICAgICAgMTEy
-OCAgICAxOTE0MCAgIDE5MTQwICAgNS4zOCAgICAyMDkuNjYNCj4gPj4+Pg0KPiA+Pj4+IGk0MGU6
-Og0KPiA+Pj4+IFNXIEdTTzoNCj4gPj4+PiAkcGt0X3NpemUgICAgICAga0IvcyhzYXIpICAgICAg
-IE1CL3MgICAgQ2FsbHMvcyBNc2cvcyAgIENQVSAgICAgTUIyQ1BVDQo+ID4+Pj4NCj4gPT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT0NCj4gPT09PT09PQ0KPiA+Pj4+IDE0NzIgICAgICAgICAgICA2NTAxMjIuODMgICAgICAgNjE2
-ICAgICA0MzkzNjIgIDQzOTM2MiAgMTAwICAgICA2LjE2DQo+ID4+Pj4gMjk0NCAgICAgICAgICAg
-IDk0Mzk5My41MyAgICAgICA4OTUgICAgIDMxOTA0MiAgMzE5MDQyICAxMDAgICAgIDguOTUNCj4g
-Pj4+PiA1ODg4ICAgICAgICAgICAgMTE5OTc1MS45MCAgICAgIDExMzggICAgMjAyODU3ICAyMDI4
-NTcgIDgyLjUxICAgMTMuNzkNCj4gPj4+PiAxMTc3NiAgICAgICAgICAgMTIwMDI4OC4wOCAgICAg
-IDExMzkgICAgMTAxNDc3ICAxMDE0NzcgIDY0LjM0ICAgMTcuNzANCj4gPj4+PiAyMzU1MiAgICAg
-ICAgICAgMTIwMTU5Ni41NiAgICAgIDExNDAgICAgNTA3OTMgICA1MDc5MyAgIDU5Ljc0ICAgMTku
-MDgNCj4gPj4+PiA0NzEwNCAgICAgICAgICAgMTIwMTU5Ny45OCAgICAgIDExNDAgICAgMjUzOTYg
-ICAyNTM5NiAgIDU2LjMxICAgMjAuMjQNCj4gPj4+PiA2MTgyNCAgICAgICAgICAgMTIwMTYxMC40
-MyAgICAgIDExNDAgICAgMTkzNTAgICAxOTM1MCAgIDU1LjQ4ICAgMjAuNTQNCj4gPj4+Pg0KPiA+
-Pj4+IEhXIEdTTyBvZmZsb2FkOg0KPiA+Pj4+ICRwa3Rfc2l6ZSAgICAgICBrQi9zKHNhcikgICAg
-ICAgTUIvcyAgICBDYWxscy9zIE1zZy9zICAgQ1BVICAgICBNQjJDUFUNCj4gPj4+Pg0KPiA9PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PQ0KPiA9PT09PT09DQo+ID4+Pj4gMTQ3MiAgICAgICAgICAgIDY1NzQyNC44MyAgICAgICA2
-MjMgICAgIDQ0NDY1MyAgNDQ0NjUzICAxMDAgICAgIDYuMjMNCj4gPj4+PiAyOTQ0ICAgICAgICAg
-ICAgMTIwMTI0Mi44NyAgICAgIDExMzkgICAgNDA2MjI2ICA0MDYyMjYgIDkxLjQ1ICAgMTIuNDUN
-Cj4gPj4+PiA1ODg4ICAgICAgICAgICAgMTIwMTczOS45NSAgICAgIDExNDAgICAgMjAzMTk5ICAy
-MDMxOTkgIDU3LjQ2ICAgMTkuODMNCj4gPj4+PiAxMTc3NiAgICAgICAgICAgMTIwMTU1Ny4zNiAg
-ICAgIDExNDAgICAgMTAxNTg0ICAxMDE1ODQgIDM2LjgzICAgMzAuOTUNCj4gPj4+PiAyMzU1MiAg
-ICAgICAgICAgMTIwMTUyNS4xNyAgICAgIDExNDAgICAgNTA3OTAgICA1MDc5MCAgIDIzLjg2ICAg
-NDcuNzcNCj4gPj4+PiA0NzEwNCAgICAgICAgICAgMTIwMTUxNC41NCAgICAgIDExNDAgICAgMjUz
-OTQgICAyNTM5NCAgIDE3LjQ1ICAgNjUuMzINCj4gPj4+PiA2MTgyNCAgICAgICAgICAgMTIwMTQ3
-OC45MSAgICAgIDExNDAgICAgMTkzNDggICAxOTM0OCAgIDE0Ljc5ICAgNzcuMDcNCj4gPj4+Pg0K
-PiA+Pj4+IEkgd2FzIG5vdCBzdXJlIGhvdyB0byBwcm9wZXIgYXR0cmlidXRlIEFsZXhhbmRlciBv
-biB0aGUgaXhnYmUgcGF0Y2ggc28NCj4gPj4+PiBwbGVhc2UgYWRqdXN0IHRoaXMgYXMgbmVjZXNz
-YXJ5Lg0KPiA+Pj4NCj4gPj4+IEZvciB0aGUgaXhnYmUgcGF0Y2ggSSB3b3VsZCBiZSBnb29kIHdp
-dGg6DQo+ID4+PiBTdWdnZXN0ZWQtYnk6IEFsZXhhbmRlciBEdXljayA8YWxleGFuZGVyLmguZHV5
-Y2tAbGludXguaW50ZWwuY29tPg0KPiA+Pj4NCj4gPj4+IFRoZSBiaWcgaHVyZGxlIGZvciB0aGlz
-IHdpbGwgYmUgdmFsaWRhdGlvbi4gSSBrbm93IHRoYXQgdGhlcmUgYXJlIHNvbWUNCj4gPj4+IHBh
-cnRzIHN1Y2ggYXMgdGhlIDgyNTk4IGluIHRoZSBjYXNlIG9mIHRoZSBpeGdiZSBkcml2ZXIgb3Ig
-ODI1NzUgaW4NCj4gPj4+IHRoZSBjYXNlIG9mIGlnYiB0aGF0IGRpZG4ndCBzdXBwb3J0IHRoZSBm
-ZWF0dXJlLCBhbmQgSSB3YXNuJ3Qgc3VyZQ0KPiA+Pj4gYWJvdXQgdGhlIHBhcnRzIHN1cHBvcnRl
-ZCBieSBpNDBlIGVpdGhlci4gIEZyb20gd2hhdCBJIGNhbiB0ZWxsIHRoZQ0KPiA+Pj4geDcxMCBk
-YXRhc2hlZXQgc2VlbXMgdG8gaW5kaWNhdGUgdGhhdCBpdCBpcyBzdXBwb3J0ZWQsIGFuZCB5b3Ug
-d2VyZQ0KPiA+Pj4gYWJsZSB0byBnZXQgaXQgd29ya2luZyB3aXRoIHlvdXIgcGF0Y2ggYmFzZWQg
-b24gdGhlIG51bWJlcnMgYWJvdmUuIFNvDQo+ID4+PiB0aGF0IGp1c3QgbGVhdmVzIHZhbGlkYXRp
-b24gb2YgdGhlIHg3MjIgYW5kIG1ha2luZyBzdXJlIHRoZXJlIGlzbid0DQo+ID4+PiBhbnl0aGlu
-ZyBmaXJtd2FyZS13aXNlIG9uIHRoZSBpNDBlIHBhcnRzIHRoYXQgbWF5IGNhdXNlIGFueSBpc3N1
-ZXMuDQo+ID4+DQo+ID4+IFRoYW5rcyBmb3IgZmVlZGJhY2sgQWxleC4NCj4gPj4NCj4gPj4gRm9y
-IHZhbGlkYXRpb24sIEkgd2lsbCBsb29rIGFyb3VuZCBhbmQgc2VlIGlmIHdlIGhhdmUgYW55IG9m
-IHRoZSBhYm92ZQ0KPiA+PiBjaGlwcyBpbiBvdXIgdGVzdGJlZHMuIFRoZSBhYm92ZSAjcyBhcmUg
-ZnJvbSBpMjEwLCA4MjU5OUVTLCBhbmQgeDcxMA0KPiA+PiByZXNwZWN0aXZlbHkuIEknbSBoYXBw
-eSB0byBzaGFyZSBteSB3cmFwcGVyIHNjcmlwdCBmb3IgdGhlIGdzbyBzZWxmdGVzdA0KPiA+PiBp
-ZiBvdGhlcnMgaGF2ZSB0aGUgbWlzc2luZyBjaGlwc2V0cyBhbmQgY2FuIHZlcmlmeS4NCj4gPj4N
-Cj4gPj4gVGhhbmtzIQ0KPiA+PiBKb3NoDQo+ID4NCj4gPiBJZiB5b3UgY291bGQgc2hhcmUgeW91
-ciB0ZXN0IHNjcmlwdHMgdGhhdCB3b3VsZCBiZSBncmVhdC4gSSBiZWxpZXZlDQo+ID4gdGhlIG5l
-dHdvcmtpbmcgZGl2aXNpb24gd2lsbCBoYXZlIGFjY2VzcyB0byBtb3JlIGhhcmR3YXJlIHNvIGlm
-IHlvdQ0KPiA+IGNvdWxkIGluY2x1ZGUgQWFyb24sIHdobyBJIGFkZGVkIHRvIHRoZSBDYywgaW4g
-eW91ciByZXBseSB3aXRoIHRoZQ0KPiA+IHNjcmlwdCB0aGF0IHdvdWxkIGJlIGdyZWF0IGFzIEkg
-YW0gc3VyZSBoZSBjYW4gZm9yd2FyZCBpdCBvbiB0bw0KPiA+IHdob2V2ZXIgZW5kcyB1cCBoYXZp
-bmcgdG8gdWx0aW1hdGVseSB0ZXN0IHRoaXMgcGF0Y2ggc2V0Lg0KPiA+DQo+ID4gSSdsbCBrZWVw
-IGFuIGV5ZSBvdXQgZm9yIHYyIG9mIHlvdXIgcGF0Y2ggc2V0IGFuZCByZXZpZXcgaXQgd2hlbiBp
-dCBpcw0KPiA+IGF2YWlsYWJsZS4NCj4gPg0KPiA+IFRoYW5rcy4NCj4gPg0KPiA+IC0gQWxleA0K
-PiA+DQo+IA0KPiBJJ3ZlIGF0dGFjaGVkIG15IGJlbmNobWFyayB3cmFwcGVyIHNjcmlwdCB1ZHBn
-c29fYmVuY2guc2guIFRvIHJ1biBpdA0KPiB5b3UnbGwgbmVlZCB0byBjb3B5IGl0LCB1ZHBnc29f
-YmVuY2hfcngsIGFuZCB1ZHBnc29fYmVuY2hfdHggKGJ1aWx0IGZyb20NCj4ga2VybmVsJ3Mgc2Vs
-ZnRlc3RzIGRpcikgdG8geW91ciBEVVQuIEl0IGFsc28gcmVxdWlyZXMgYSByZW1vdGUgc2luaw0K
-PiBtYWNoaW5lIGFibGUgdG8gcmVjZWl2ZSB0cmFmZmljIG9uIFVEUCA4MDAwIChvciBzb21lIGNv
-bmZpZ3VyZWQgcG9ydC4pDQo+IFRoZSBzY3JpcHQgd2lsbCBjb3B5IG92ZXIgYW5kIHN0YXJ0IHRo
-ZSBzaW5rIHByb2Nlc3MgKHVkcGdzb19iZW5jaF9yeCkNCj4gb24gdGhlIHJlbW90ZSBib3guDQo+
-IA0KPiBIZXJlJ3Mgc29tZSBpbmZvIG9uIGhvdyB0byBydW4gaXQ6DQo+IA0KPiBVc2FnZTogLi91
-ZHBnc29fYmVuY2guc2ggPGludGVyZmFjZSBuYW1lPiA8cmVtb3RlIHY0IElQPiBbZXh0cmENCj4g
-YmVuY2htYXJrIG9wdGlvbnNdDQo+IA0KPiBFeGFtcGxlIHVzYWdlOg0KPiAjIC4vdWRwZ3NvX2Jl
-bmNoLnNoIGV0aDAgMTcyLjI1LjQzLjEzMyAtdQ0KPiANCj4gQmV3YXJlIGl0IHdpbGwgbWFrZSBz
-b21lIGNvbmZpZ3VyYXRpb24gY2hhbmdlcyB0byB5b3VyIGxvY2FsIG1hY2hpbmUuIEl0DQo+IHdp
-bGwgb3ZlcndyaXRlOg0KPiAgICogL3Byb2Mvc3lzL25ldC9jb3JlL3tvcHRtZW1fbWF4LHdtZW1f
-bWF4LHdtZW1fZGVmYXVsdH0NCj4gICAqIHFkaXNjIHNldHVwIGZvciA8aW50Pg0KPiAgICogSVJR
-IGFmZmluaXR5IGFuZCBYUFMgY29uZmlndXJhdGlvbiBmb3IgPGludD4NCj4gDQo+IFBsZWFzZSBs
-ZXQgbWUga25vdyBpZiB5b3UgaGl0IGFueSBwcm9ibGVtcyB3aXRoIHRoZSBzY3JpcHQuIEl0DQo+
-IG9yaWdpbmFsbHkgaGFkIHNvbWUgYWthbWFpLXNwZWNpZmljIGl0ZW1zIGluIGl0LCBidXQgSSAo
-aG9wZWZ1bGx5KSBoYXZlDQo+IHJlbW92ZWQgdGhlbSBhbGwuDQo+IA0KPiBKb3NoDQo=
+Alexander Duyck posted a series in 2018 proposing adding UDP segmentation
+offload support to ixgbe and ixgbevf, but those patches were never
+accepted:
+
+https://lore.kernel.org/netdev/20180504003556.4769.11407.stgit@localhost.localdomain/
+
+This series is a repost of his ixgbe patch along with a similar
+change to the igb and i40e drivers. Testing using the udpgso_bench_tx
+benchmark shows a noticeable performance improvement with these changes
+applied.
+
+I've shared the benchmark script I've used to generate the #s in this mail:
+https://lore.kernel.org/netdev/0e0e706c-4ce9-c27a-af55-339b4eb6d524@akamai.com/T/#mfe4c35c57a3860cda5306b63f61068f837242ee5
+
+v2 changes:
+ * Added Alex's suggested-by tag to ixgbe patch
+ * Checking for gso_type, suggested by Sridhar
+ * Fixed bug in ixgbe patch where I accidentally left the old type_tucmd
+   set to TCP
+ * Updated perf #s below
+   * includes changes above
+   * fixed bad config on my igb machine
+   * added chip used for testing next to driver name
+
+All #s below were run with:
+udpgso_bench_tx -C 1 -4 -D 172.25.43.133 -z -l 30 -S 0 -u -s $pkt_size
+
+igb (i210)::
+SW GSO (ethtool -K eth0 tx-udp-segmentation off):
+$pkt_size	kB/s(sar)	MB/s	Calls/s	Msg/s	CPU	MB2CPU
+========================================================================
+1472		120167.13	114	81278	81278	16.24	7.01
+2944		120166.83	114	40641	40641	12.82	8.89
+5888		120166.42	114	20320	20320	10.14	11.24
+11776		120166.43	114	10160	10160	8.55	13.33
+23552		120167.24	114	5080	5080	7.76	14.69
+47104		120166.83	114	2540	2540	7.07	16.12
+61824		120167.08	114	1935	1935	7.07	16.12
+
+HW GSO offload (ethtool -K eth0 tx-udp-segmentation on):
+$pkt_size	kB/s(sar)	MB/s	Calls/s	Msg/s	CPU	MB2CPU
+========================================================================
+1472		120167.05	114	81276	81276	16.13	7.06
+2944		120166.94	114	40640	40640	8.66	13.16
+5888		120166.84	114	20320	20320	5.34	21.34
+11776		120166.84	114	10160	10160	3.34	34.13
+23552		120167.25	114	5080	5080	2.55	44.70
+47104		120149.30	113	2539	2539	2.14	52.80
+61824		120165.41	114	1935	1935	2.04	55.88
+
+ixgbe (82599ES)::
+SW GSO:
+$pkt_size	kB/s(sar)	MB/s	Calls/s	Msg/s	CPU	MB2CPU
+========================================================================
+1472		1043972.83	990	706122	706122	100	9.90
+2944		1201623.17	1140	406367	406367	95.97	11.87
+5888		1201629.46	1140	203184	203184	56	20.35
+11776		1201631.38	1140	101590	101590	42.72	26.68
+23552		1201633.94	1140	50796	50796	36.31	31.39
+47104		1201631.05	1140	25397	25397	33.91	33.61
+61824		1201629.96	1140	19350	19350	33.38	34.15
+
+HW GSO Offload:
+$pkt_size	kB/s(sar)	MB/s	Calls/s	Msg/s	CPU	MB2CPU
+========================================================================
+1472		1053393.41	999	712679	712679	100	9.99
+2944		1201631.19	1140	406357	406357	57.92	19.68
+5888		1201622.51	1140	203178	203178	30.66	37.18
+11776		1201626.60	1140	101590	101590	16.89	67.49
+23552		1201617.19	1140	50795	50795	10.11	112.75
+47104		1200218.72	1138	25368	25368	6.86	165.88
+61824		1201619.66	1140	19350	19350	5.38	211.89
+
+i40e (x710)::
+SW GSO:
+$pkt_size	kB/s(sar)	MB/s	Calls/s	Msg/s	CPU	MB2CPU
+========================================================================
+1472		642718.15	609	434585	434585	100	6.09
+2944		957988.80	909	324029	324029	100	9.09
+5888		1199207.69	1138	202845	202845	81.51	13.96
+11776		1200767.60	1139	101517	101517	63.93	17.81
+23552		1201197.22	1140	50794	50794	59.14	19.27
+47104		1201410.91	1139	25393	25393	57.15	19.93
+61824		1201609.48	1140	19350	19350	55.12	20.68
+
+HW GSO offload:
+$pkt_size	kB/s(sar)	MB/s	Calls/s	Msg/s	CPU	MB2CPU
+========================================================================
+1472		666626.15	632	450920	450920	100	6.32
+2944		1200831.63	1139	406093	406093	89.68	12.70
+5888		1201603.35	1140	203178	203178	56.38	20.21
+11776		1201597.29	1140	101588	101588	36.9	30.89
+23552		1201596.98	1140	50794	50794	24.23	47.04
+47104		1201491.67	1139	25394	25394	17.14	66.45
+61824		1201598.88	1140	19350	19350	15.11	75.44
+
+Josh Hunt (3):
+  igb: Add UDP segmentation offload support
+  ixgbe: Add UDP segmentation offload support
+  i40e: Add UDP segmentation offload support
+
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 12 +++++++++---
+ drivers/net/ethernet/intel/igb/e1000_82575.h  |  1 +
+ drivers/net/ethernet/intel/igb/igb_main.c     | 23 +++++++++++++++++------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 24 ++++++++++++++++++------
+ 5 files changed, 46 insertions(+), 15 deletions(-)
+
+-- 
+2.7.4
+
