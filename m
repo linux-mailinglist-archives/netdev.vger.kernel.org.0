@@ -2,100 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7151CD3E12
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 13:16:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E83E0D3F17
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 13:57:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727762AbfJKLQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 07:16:10 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:37702 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726935AbfJKLQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 07:16:10 -0400
-Received: by mail-lj1-f194.google.com with SMTP id l21so9442016lje.4
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 04:16:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:organization:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ooy01geSvoqL+GgWiguG5Arr/pkbSR9LEwm6vQ6trlA=;
-        b=FJGDUtGWD6dezMdpfiI3yfqw/RLXa3Cf5Y5p0xGMYaiScNsHdq6GDzLNWh5p1En1q0
-         eRQtdLRr1/D6U7+Q85XT3rS2ISqQiuliJAmkF/J0fC9tO1mut3EkSl4ckQrODTRDbJdU
-         SE36sc3svSCPDdHSMN0uQY3JTiTL9xr8ZTzeE4IQ0z4WYKvesc1H+lJWGNS1B3UvJgJx
-         arlORLWtfcvJ3hdtQRMkK1TK2MtcjnIxaexR8VaF/1B+qtq7HkJxYQivLhERG8DBNbBl
-         hQfb0LW2/xY1uof3a5oa/f9swp/JrzNMd0ITcgQudf+WS9jFD7yBHeENt5IvXwF77pU0
-         to2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Ooy01geSvoqL+GgWiguG5Arr/pkbSR9LEwm6vQ6trlA=;
-        b=MYTOWw8zKb2mcjIa2RVoXLrleg0YEg8BPezoUJAp2byzLfKGiRpwGS5oMXpfQ9aZyO
-         B7ZH4sDbN6fbRtQcrsA5EoT4xDJMzuKPl76pkLFoulSjKKPd66ygzkpz11IcG3HTQdmi
-         v2xCaSGbjQdlzsrAr2EXIlo3xCAEb5sLwJ1eOxNEn4sm8H9o0y53NmyJEivQ+XfIqTuj
-         DD0X3vP66LeiZ1fuUfQu8G9El1CbjJRvrA0P0ejPDYKKvmMAuQXJ85cFgW90nZqY8ZHP
-         sCqwf0NwJ5mTsDM5YvtEncx3cK9ZDe5i4xix8O1fGO1W9LP23ctmvNjOoYgEVQaUNBNB
-         AWww==
-X-Gm-Message-State: APjAAAX9o0R/xxGCcsLqWhNsBpkLAhGN1W3TzsS/HjcqqQhqN92BT5hk
-        l7M9J6OMXYQe4G2ceel73386SQ==
-X-Google-Smtp-Source: APXvYqz+u6eneONfnjvqqaE8Uh0If4lrYaqqjy+4UFFpkLHI7cc3rLwOyRGvWtm0ePCkEkvTKscC4w==
-X-Received: by 2002:a2e:569a:: with SMTP id k26mr9075699lje.256.1570792567730;
-        Fri, 11 Oct 2019 04:16:07 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:4430:5cc6:e6ed:2da1:4d7:1d29])
-        by smtp.gmail.com with ESMTPSA id q26sm1857253lfd.53.2019.10.11.04.16.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 11 Oct 2019 04:16:06 -0700 (PDT)
-Subject: Re: [PATCH v5 bpf-next 09/15] samples/bpf: use own flags but not
- HOSTCFLAGS
-To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
-        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org
-References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
- <20191011002808.28206-10-ivan.khoronzhuk@linaro.org>
- <99f76e2f-ed76-77e0-a470-36ae07567111@cogentembedded.com>
- <20191011095715.GB3689@khorivan>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <3fb88a06-5253-1e48-9bea-2d31a443250b@cogentembedded.com>
-Date:   Fri, 11 Oct 2019 14:16:05 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        id S1727896AbfJKL5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 07:57:33 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:37928 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727198AbfJKL5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 07:57:33 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 173FC60ADE; Fri, 11 Oct 2019 11:57:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570795052;
+        bh=EPYe5kTBBGci2tg48EPs5GLHdxzLBPQNaqpnWCbvN0A=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=dcyAOLXlc63HacOqTCRkTOezC44jm2EsyeUorxd4Y2Czh0nylMKLnukFv2yIPyDC6
+         gSEkVyhOQ9ZCuAADkDBMe2oepgpoWIS6GeGE5xrcy8lb2+J7dP2OL3jy6rJbjCP01C
+         +IHbZyPOYgUzaj0GS9Nt+pRHzcpRXpJGfgV2qm1w=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B19BB602EE;
+        Fri, 11 Oct 2019 11:57:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570795051;
+        bh=EPYe5kTBBGci2tg48EPs5GLHdxzLBPQNaqpnWCbvN0A=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=eCT6yiCW4z23JIr4WE8iA1QhYZu/HoLLv/OdH8G5QEa5TVLcY4VigfBIS5uGhmp5d
+         ds0tQP+w3Vc91Niy04tYYt51RBcWIsQeY182WQVCX9JPWZIQEo5T4etyqE2VxVguwl
+         07Ii9gVVw/vvgqEa50iIDZK8TnIqgB7yHP0PYHaI=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B19BB602EE
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20191011095715.GB3689@khorivan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: Correct error check of dma_map_single()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20191010162653.141303-1-bjorn.andersson@linaro.org>
+References: <20191010162653.141303-1-bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Niklas Cassel <niklas.cassel@linaro.org>,
+        stable@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191011115732.173FC60ADE@smtp.codeaurora.org>
+Date:   Fri, 11 Oct 2019 11:57:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/11/2019 12:57 PM, Ivan Khoronzhuk wrote:
+Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
 
->>> While compiling natively, the host's cflags and ldflags are equal to
->>> ones used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it
->>> should have own, used for target arch. While verification, for arm,
->>
->>   While verifying.
-> While verification stage.
+> The return value of dma_map_single() should be checked for errors using
+> dma_mapping_error(), rather than testing for NULL. Correct this.
+> 
+> Fixes: 1807da49733e ("ath10k: wmi: add management tx by reference support over wmi")
+> Cc: stable@vger.kernel.org
+> Reported-by: Niklas Cassel <niklas.cassel@linaro.org>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-   While *in* verification stage, "while" doesn't combine with nouns w/o
-a preposition.
+Did this fix any real bug? Or is this just something found during code review?
 
->>> arm64 and x86_64 the following flags were used always:
->>>
->>> -Wall -O2
->>> -fomit-frame-pointer
->>> -Wmissing-prototypes
->>> -Wstrict-prototypes
->>>
->>> So, add them as they were verified and used before adding
->>> Makefile.target and lets omit "-fomit-frame-pointer" as were proposed
->>> while review, as no sense in such optimization for samples.
->>>
->>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->> [...]
+-- 
+https://patchwork.kernel.org/patch/11183923/
 
-MBR, Sergei
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
