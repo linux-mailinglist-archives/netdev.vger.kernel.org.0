@@ -2,130 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AB0BD38F4
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 07:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC111D38F5
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 07:56:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbfJKFzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 01:55:36 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:54992 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726116AbfJKFzf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 01:55:35 -0400
-Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 4F38FF226CE0EBD03314;
-        Fri, 11 Oct 2019 13:55:32 +0800 (CST)
-Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
- DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 11 Oct 2019 13:55:31 +0800
-Received: from [127.0.0.1] (10.57.37.248) by dggeme760-chm.china.huawei.com
- (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 11
- Oct 2019 13:55:31 +0800
-Subject: Re: [RFC PATCH net] net: phy: Fix "link partner" information
- disappear issue
-To:     Heiner Kallweit <hkallweit1@gmail.com>, <davem@davemloft.net>,
-        <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
-References: <1570699808-55313-1-git-send-email-liuyonglong@huawei.com>
- <ee969d27-debe-9bc4-92f2-fe5b04c36a39@gmail.com>
-From:   Yonglong Liu <liuyonglong@huawei.com>
-Message-ID: <670bd6ac-54ee-ecfa-c108-fcf48a3a7dc8@huawei.com>
-Date:   Fri, 11 Oct 2019 13:55:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
+        id S1727021AbfJKF4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 01:56:22 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37542 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726116AbfJKF4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 01:56:22 -0400
+Received: by mail-wr1-f68.google.com with SMTP id p14so10395189wro.4
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 22:56:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mddOv/kniAW1h65FFS1ER017AgO05a4Gs6LK6egWamM=;
+        b=QS6pxmtWmP720XjrWTu2qiOFWZhrlSSkOb8XhEaBgUhLtEYaOTvlE/fp6e27AB1EdI
+         DxQeRjF5QZGWhtC/XZkT3KcSGqy/xtRXAqMZkoFMDODXGf2+v805m3/mOlb+ikO63vMH
+         nTdvYSQUApRvx57FjtmfPMe4OcGg2bOmicea/EDH0l/Odlwp2dTlPxcFuNM720SsH/jd
+         QnaRGzba3cyYfeT1PoYclhU+CjZYDCmTLsYt845kaxK4I2SC+iTKElnFp6Gcqr6lp2Zc
+         +NAQBjWNB5XOU2WRBuOroVci76wqRvtvikXni03vxe2AmTJkTyY9KcpQMxrw7x2lw0Ad
+         tfbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mddOv/kniAW1h65FFS1ER017AgO05a4Gs6LK6egWamM=;
+        b=ccQv+KKyaN72lOjdqw/wclW/BtDMEd2/vmm8l17WFRA+npP+R77rHUnIynSk///qXq
+         dMY+fKLRrOaQ2TZq48YTQBv+rgNkwvjiyLx44qllcaPrdMgG4DqWUO5fymHOGC/FBYYV
+         bj9mUkExTQBJvIQVP0cdnOEcDmywi4ecDwhfKUaueukLEl40MY++7OklFQ1FAqUf0YNb
+         mF9a1OliUFto4k9fYjv9ygS1eHZ8g/XAPfXTQs9t5oSEFF6wz6MlCShgmEgU9zHldZat
+         GhhHDrRif3eMpM5Qy4kDTJ3u5BEjRaYSG9ApMu7mswAWGaoy4pkMYpTjhWTjzmTBRx+D
+         ZxAw==
+X-Gm-Message-State: APjAAAU07sVXVeiIZIkHCNyo1QYdlw0IVOBD/YNRfkP30Cs09L+Z+u26
+        xv1V5LP2ZQy32lGfAKek4daJ5/Y76UA=
+X-Google-Smtp-Source: APXvYqyw8JXPeToMHbhUF/ZzWijmw1b+DbRa9QJcpT00z2ZZ/fTT8SZCawKp6bX+U/8ROQ7THIHGcw==
+X-Received: by 2002:a5d:55ca:: with SMTP id i10mr2880932wrw.12.1570773380351;
+        Thu, 10 Oct 2019 22:56:20 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id n26sm5815692wmd.42.2019.10.10.22.56.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2019 22:56:19 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 07:56:19 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7 13/17] ethtool: add standard notification
+ handler
+Message-ID: <20191011055619.GC2901@nanopsycho>
+References: <cover.1570654310.git.mkubecek@suse.cz>
+ <ac2fef494116db9d4679f4501f1be6a7898ef724.1570654310.git.mkubecek@suse.cz>
+ <20191010152559.GA2994@nanopsycho>
+ <20191010181743.GF22163@unicorn.suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <ee969d27-debe-9bc4-92f2-fe5b04c36a39@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.57.37.248]
-X-ClientProxiedBy: dggeme715-chm.china.huawei.com (10.1.199.111) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191010181743.GF22163@unicorn.suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Oct 10, 2019 at 08:17:43PM CEST, mkubecek@suse.cz wrote:
+>On Thu, Oct 10, 2019 at 05:25:59PM +0200, Jiri Pirko wrote:
+>> Wed, Oct 09, 2019 at 10:59:40PM CEST, mkubecek@suse.cz wrote:
+
+[...]
 
 
-On 2019/10/11 3:17, Heiner Kallweit wrote:
-> On 10.10.2019 11:30, Yonglong Liu wrote:
->> Some drivers just call phy_ethtool_ksettings_set() to set the
->> links, for those phy drivers that use genphy_read_status(), if
->> autoneg is on, and the link is up, than execute "ethtool -s
->> ethx autoneg on" will cause "link partner" information disappear.
->>
->> The call trace is phy_ethtool_ksettings_set()->phy_start_aneg()
->> ->linkmode_zero(phydev->lp_advertising)->genphy_read_status(),
->> the link didn't change, so genphy_read_status() just return, and
->> phydev->lp_advertising is zero now.
->>
-> I think that clearing link partner advertising info in
-> phy_start_aneg() is questionable. If advertising doesn't change
-> then phy_config_aneg() basically is a no-op. Instead we may have
-> to clear the link partner advertising info in genphy_read_lpa()
-> if aneg is disabled or aneg isn't completed (basically the same
-> as in genphy_c45_read_lpa()). Something like:
-> 
-> if (!phydev->autoneg_complete) { /* also covers case that aneg is disabled */
-> 	linkmode_zero(phydev->lp_advertising);
-> } else if (phydev->autoneg == AUTONEG_ENABLE) {
-> 	...
-> }
-> 
+>> >+
+>> >+/* generic notification handler */
+>> >+static void ethnl_std_notify(struct net_device *dev, unsigned int cmd,
+>> 
+>> Better "common" comparing to "standard", I believe.
+>
+>That's similar to ethnl_std_parse(), the idea is that this is the
+>standard handler for notifications which are triggered without
+>additional data and the message is the same as reply to corresponding
+>"GET" request (which is generated by the standard ethnl_get_doit()
+>handler). Notifications for actions and notifications for SET commands
+>which cannot be generated this standard way will have to use their own
+>(nonstandard) handler.
 
-If clear the link partner advertising info in genphy_read_lpa() and
-genphy_c45_read_lpa(), for the drivers that use genphy_read_status()
-is ok, but for those drivers that use there own read_status() may
-have problem, like aqr_read_status(), it will update lp_advertising
-first, and than call genphy_c45_read_status(), so will cause
-lp_advertising lost.
-
-Another question, please see genphy_c45_read_status(), if clear the
-link partner advertising info in genphy_c45_read_lpa(), if autoneg is
-off, phydev->lp_advertising will not clear.
-
->> This patch call genphy_read_lpa() before the link state judgement
->> to fix this problem.
->>
->> Fixes: 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in genphy_read_status")
->> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
->> ---
->>  drivers/net/phy/phy_device.c | 8 ++++----
->>  1 file changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->> index 9d2bbb1..ef3073c 100644
->> --- a/drivers/net/phy/phy_device.c
->> +++ b/drivers/net/phy/phy_device.c
->> @@ -1839,6 +1839,10 @@ int genphy_read_status(struct phy_device *phydev)
->>  	if (err)
->>  		return err;
->>  
->> +	err = genphy_read_lpa(phydev);
->> +	if (err < 0)
->> +		return err;
->> +
->>  	/* why bother the PHY if nothing can have changed */
->>  	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
->>  		return 0;
->> @@ -1848,10 +1852,6 @@ int genphy_read_status(struct phy_device *phydev)
->>  	phydev->pause = 0;
->>  	phydev->asym_pause = 0;
->>  
->> -	err = genphy_read_lpa(phydev);
->> -	if (err < 0)
->> -		return err;
->> -
->>  	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
->>  		phy_resolve_aneg_linkmode(phydev);
->>  	} else if (phydev->autoneg == AUTONEG_DISABLE) {
->>
-> 
-> 
-> .
-> 
-
+So "default"? The "standard" sounds rather weird to me. It isn't any
+"standard" :)
