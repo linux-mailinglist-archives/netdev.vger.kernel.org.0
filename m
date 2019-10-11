@@ -2,94 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C670D36C9
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 03:17:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9B0D36E0
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 03:24:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727845AbfJKBRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 21:17:11 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33914 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727518AbfJKBRK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 21:17:10 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 3so11624795qta.1
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 18:17:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=FRAhjU6zbOujsKrU9OXTc20iXWxJB1PbXELLM5EnWz4=;
-        b=P1TDOu+hLEOcYZdp+RsC60/WrDZp/0xsV3XEPvMb+X1f2sb8KVh050ChS/DzqZuxu8
-         LfIixQWkK/AwqxVuEVLOrPZjVGRc6zmnjWRM9aUwlWSTj5xkRz8xU7p99/Qvaynfepcf
-         uvsihaoCaRpQWHf2MCAo0RG7xtTRnRD4nq3OsDCv6m3Xy6UY6F/0Q2e3xamg9fFlx88B
-         dTEcIY4+AwFNN/rzgizAzI9XEoUwBaH7h3NhapVmfuzZWvdafnrP4nD9jdNIC6FczlsH
-         zed2XaA9tN0P9Q3eDjBeau2NNwysV8CtKdbCM2i44OAO7zFoclfCovDLWkJ6fTixQURX
-         5EjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=FRAhjU6zbOujsKrU9OXTc20iXWxJB1PbXELLM5EnWz4=;
-        b=fevUx/9KKi8vdq3ORbKhijHkbQKjvcJOxUT2Yg75/N4pAaqtmpkM5IJOcL74zUt/EF
-         51+jZuX8EI6ELeS7QMp7nFFSIlmRkVeQ4KPBX7azuWoHqEVec4fZue3Ui9NE/Qb7ENpR
-         QVlnKF49DmMA52L9Y0wSteHn7q44co6ErPAEjoqZ1naEin8/yXfi3buK/ddLy0dQBv9U
-         /Qt0FZikG9x4XRC7NwgbK1jMEl9/qxBtLJ6xVCbpuk+UTXFpvq6qdY9dXIz/i7DBxNI8
-         csYsI4TYeofk3wRocIXCYRgry8WjTLn6+JMFL49+WKC5y4puiFZ8AyL54JbMsdiNhlFU
-         3yfQ==
-X-Gm-Message-State: APjAAAUq8v3dja9dwpK8mmRqmRgyZfSrzrGRb5XKnxMvOuhnFUz7TV7i
-        WVVwPEoC4ILLasi6kfjHmb4CtQ==
-X-Google-Smtp-Source: APXvYqzOjSHMUU98eUi/w1xmBfaHzCT2guSL+N5oE5fPyX4+S+M5Qlk63IT5XbmdeS8oaoRfnXpgbA==
-X-Received: by 2002:ac8:7557:: with SMTP id b23mr14086447qtr.384.1570756628331;
-        Thu, 10 Oct 2019 18:17:08 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id a190sm3908987qkf.118.2019.10.10.18.17.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 18:17:08 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 18:16:51 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vijay Khemka <vijaykhemka@fb.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        id S1727600AbfJKBX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 21:23:28 -0400
+Received: from mga06.intel.com ([134.134.136.31]:29463 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726096AbfJKBX2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Oct 2019 21:23:28 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Oct 2019 18:23:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,282,1566889200"; 
+   d="scan'208";a="219232766"
+Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
+  by fmsmga004.fm.intel.com with ESMTP; 10 Oct 2019 18:23:26 -0700
+Received: from orsmsx114.amr.corp.intel.com (10.22.240.10) by
+ ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 10 Oct 2019 18:23:26 -0700
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.9]) by
+ ORSMSX114.amr.corp.intel.com ([169.254.8.55]) with mapi id 14.03.0439.000;
+ Thu, 10 Oct 2019 18:23:25 -0700
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     =?utf-8?B?Sm9uYXRoYW4gTmV1c2Now6RmZXI=?= <j.neuschaefer@gmx.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
-Message-ID: <20191010181651.5abd4c21@cakuba.netronome.com>
-In-Reply-To: <4B7340B5-C35C-4B18-8D8C-B5B8D16BA551@fb.com>
-References: <20190911194453.2595021-1-vijaykhemka@fb.com>
-        <4B7340B5-C35C-4B18-8D8C-B5B8D16BA551@fb.com>
-Organization: Netronome Systems, Ltd.
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] Documentation: networking: device drivers: Remove stray
+ asterisks
+Thread-Topic: [PATCH] Documentation: networking: device drivers: Remove
+ stray asterisks
+Thread-Index: AQHVeTOVj6HxC0KSAUmxu0Nx3AY1c6dUsk4A
+Date:   Fri, 11 Oct 2019 01:23:25 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B9714C898@ORSMSX103.amr.corp.intel.com>
+References: <20191002150956.16234-1-j.neuschaefer@gmx.net>
+In-Reply-To: <20191002150956.16234-1-j.neuschaefer@gmx.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOGM4OTUyYzQtODQzOC00NGZiLWE2ZjQtN2RkNDc2Y2VjMmZiIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoieXVBU1gzaUlDRGFnWHZHQnE2RDA1SkdmYkxFdW96MGVqYUdoMGY2dFhoQlE1V3RPT2hPbFZkd0FLYjN1Y3F0NyJ9
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Oct 2019 19:20:47 +0000, Vijay Khemka wrote:
-> Resending this patch again.=20
-
-Perhaps I'm missing context but what's the intention here?
-
-In case this is resubmitting the patch for inclusion in the upstream
-kernel you need to send it out properly with git send-email or such..
-
-> =EF=BB=BFOn 9/11/19, 1:05 PM, "Vijay Khemka" <vijaykhemka@fb.com> wrote:
->=20
->     HW checksum generation is not working for AST2500, specially with IPV6
->     over NCSI. All TCP packets with IPv6 get dropped. By disabling this
->     it works perfectly fine with IPV6. As it works for IPV4 so enabled
->     hw checksum back for IPV4.
->    =20
->     Verified with IPV6 enabled and can do ssh.
->    =20
->     Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
+PiBGcm9tOiBuZXRkZXYtb3duZXJAdmdlci5rZXJuZWwub3JnIFttYWlsdG86bmV0ZGV2LW93bmVy
+QHZnZXIua2VybmVsLm9yZ10NCj4gT24gQmVoYWxmIE9mIEpvbmF0aGFuIE5ldXNjaMOkZmVyDQo+
+IFNlbnQ6IFdlZG5lc2RheSwgT2N0b2JlciAyLCAyMDE5IDg6MTAgQU0NCj4gVG86IGxpbnV4LWRv
+Y0B2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IEpvbmF0aGFuIE5ldXNjaMOkZmVyIDxqLm5ldXNjaGFl
+ZmVyQGdteC5uZXQ+OyBLaXJzaGVyLCBKZWZmcmV5IFQNCj4gPGplZmZyZXkudC5raXJzaGVyQGlu
+dGVsLmNvbT47IERhdmlkIFMuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47DQo+IEpvbmF0
+aGFuIENvcmJldCA8Y29yYmV0QGx3bi5uZXQ+OyBTaGFubm9uIE5lbHNvbiA8c25lbHNvbkBwZW5z
+YW5kby5pbz47DQo+IFBlbnNhbmRvIERyaXZlcnMgPGRyaXZlcnNAcGVuc2FuZG8uaW8+OyBpbnRl
+bC13aXJlZC1sYW5AbGlzdHMub3N1b3NsLm9yZzsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsg
+bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBbUEFUQ0hdIERvY3VtZW50
+YXRpb246IG5ldHdvcmtpbmc6IGRldmljZSBkcml2ZXJzOiBSZW1vdmUgc3RyYXkNCj4gYXN0ZXJp
+c2tzDQo+IA0KPiBUaGVzZSBhc3Rlcmlza3Mgd2VyZSBvbmNlIHJlZmVyZW5jZXMgdG8gYSBsaW5l
+IHRoYXQgc2FpZDoNCj4gICAiKiBPdGhlciBuYW1lcyBhbmQgYnJhbmRzIG1heSBiZSBjbGFpbWVk
+IGFzIHRoZSBwcm9wZXJ0eSBvZiBvdGhlcnMuIg0KPiBCdXQgbm93LCB0aGV5IHNlcnZlIG5vIHB1
+cnBvc2U7IHRoZXkgY2FuIG9ubHkgaXJyaXRhdGUgdGhlIHJlYWRlci4NCj4gDQo+IEZpeGVzOiBk
+ZTNlZGFiNDI3NmMgKCJlMTAwMDogdXBkYXRlIFJFQURNRSBmb3IgZTEwMDAiKQ0KPiBGaXhlczog
+YTNmYjY1NjgwZjY1ICgiZTEwMC50eHQ6IENsZWFudXAgbGljZW5zZSBpbmZvIGluIGtlcm5lbCBk
+b2MiKQ0KPiBGaXhlczogZGE4YzAxYzQ1MDJhICgiZTEwMDBlLnR4dDogQWRkIGUxMDAwZSBkb2N1
+bWVudGF0aW9uIikNCj4gRml4ZXM6IGYxMmE4NGE5ZjY1MCAoIkRvY3VtZW50YXRpb246IGZtMTBr
+OiBBZGQga2VybmVsIGRvY3VtZW50YXRpb24iKQ0KPiBGaXhlczogYjU1YzUyYjE5MzhjICgiaWdi
+LnR4dDogQWRkIGlnYiBkb2N1bWVudGF0aW9uIikNCj4gRml4ZXM6IGM0ZTliNTZlMjQ0MiAoImln
+YnZmLnR4dDogQWRkIGlnYnZmIERvY3VtZW50YXRpb24iKQ0KPiBGaXhlczogZDcwNjRmNGMxOTJj
+ICgiRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nLzogVXBkYXRlIEludGVsIHdpcmVkIExBTg0KPiBk
+cml2ZXIgZG9jdW1lbnRhdGlvbiIpDQo+IEZpeGVzOiBjNGI4YzAxMTEyYTEgKCJpeGdiZXZmLnR4
+dDogVXBkYXRlIGl4Z2JldmYgZG9jdW1lbnRhdGlvbiIpDQo+IEZpeGVzOiAxZTA2ZWRjYzJmMjIg
+KCJEb2N1bWVudGF0aW9uOiBpNDBlOiBQcmVwYXJlIGRvY3VtZW50YXRpb24gZm9yIFJTVA0KPiBj
+b252ZXJzaW9uIikNCj4gRml4ZXM6IDEwNWJmMmZlNmIzMiAoImk0MGV2ZjogYWRkIGRyaXZlciB0
+byBrZXJuZWwgYnVpbGQgc3lzdGVtIikNCj4gRml4ZXM6IDFmYWU4NjliY2YzZCAoIkRvY3VtZW50
+YXRpb246IGljZTogUHJlcGFyZSBkb2N1bWVudGF0aW9uIGZvciBSU1QNCj4gY29udmVyc2lvbiIp
+DQo+IEZpeGVzOiBkZjY5YmE0MzIxN2QgKCJpb25pYzogQWRkIGJhc2ljIGZyYW1ld29yayBmb3Ig
+SU9OSUMgTmV0d29yayBkZXZpY2UNCj4gZHJpdmVyIikNCj4gU2lnbmVkLW9mZi1ieTogSm9uYXRo
+YW4gTmV1c2Now6RmZXIgPGoubmV1c2NoYWVmZXJAZ214Lm5ldD4NCj4gLS0tDQo+ICAuLi4vbmV0
+d29ya2luZy9kZXZpY2VfZHJpdmVycy9pbnRlbC9lMTAwLnJzdCAgICAgICB8IDE0ICsrKysrKyst
+LS0tLS0tDQo+ICAuLi4vbmV0d29ya2luZy9kZXZpY2VfZHJpdmVycy9pbnRlbC9lMTAwMC5yc3Qg
+ICAgICB8IDEyICsrKysrKy0tLS0tLQ0KPiAgLi4uL25ldHdvcmtpbmcvZGV2aWNlX2RyaXZlcnMv
+aW50ZWwvZTEwMDBlLnJzdCAgICAgfCAxNCArKysrKysrLS0tLS0tLQ0KPiAgLi4uL25ldHdvcmtp
+bmcvZGV2aWNlX2RyaXZlcnMvaW50ZWwvZm0xMGsucnN0ICAgICAgfCAxMCArKysrKy0tLS0tDQo+
+ICAuLi4vbmV0d29ya2luZy9kZXZpY2VfZHJpdmVycy9pbnRlbC9pNDBlLnJzdCAgICAgICB8ICA4
+ICsrKystLS0tDQo+ICAuLi4vbmV0d29ya2luZy9kZXZpY2VfZHJpdmVycy9pbnRlbC9pYXZmLnJz
+dCAgICAgICB8ICA4ICsrKystLS0tDQo+ICAuLi4vbmV0d29ya2luZy9kZXZpY2VfZHJpdmVycy9p
+bnRlbC9pY2UucnN0ICAgICAgICB8ICA2ICsrKy0tLQ0KPiAgLi4uL25ldHdvcmtpbmcvZGV2aWNl
+X2RyaXZlcnMvaW50ZWwvaWdiLnJzdCAgICAgICAgfCAxMiArKysrKystLS0tLS0NCj4gIC4uLi9u
+ZXR3b3JraW5nL2RldmljZV9kcml2ZXJzL2ludGVsL2lnYnZmLnJzdCAgICAgIHwgIDYgKysrLS0t
+DQo+ICAuLi4vbmV0d29ya2luZy9kZXZpY2VfZHJpdmVycy9pbnRlbC9peGdiZS5yc3QgICAgICB8
+IDEwICsrKysrLS0tLS0NCj4gIC4uLi9uZXR3b3JraW5nL2RldmljZV9kcml2ZXJzL2ludGVsL2l4
+Z2JldmYucnN0ICAgIHwgIDYgKysrLS0tDQo+ICAuLi4vbmV0d29ya2luZy9kZXZpY2VfZHJpdmVy
+cy9wZW5zYW5kby9pb25pYy5yc3QgICB8ICA2ICsrKy0tLQ0KPiAgMTIgZmlsZXMgY2hhbmdlZCwg
+NTYgaW5zZXJ0aW9ucygrKSwgNTYgZGVsZXRpb25zKC0pDQo+IA0KDQpUZXN0ZWQtYnk6IEFhcm9u
+IEJyb3duIDxhYXJvbi5mLmJyb3duQGludGVsLmNvbT4NCg0K
