@@ -2,61 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B63D37BE
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:13:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D703D37C1
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 05:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbfJKDLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 23:11:33 -0400
-Received: from gate.crashing.org ([63.228.1.57]:55148 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726096AbfJKDLc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Oct 2019 23:11:32 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id x9B3AiNi016659;
-        Thu, 10 Oct 2019 22:10:45 -0500
-Message-ID: <158fa0872643089750b3797fd2f78ba18eaf488c.camel@kernel.crashing.org>
-Subject: Re: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
-From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
-To:     Vijay Khemka <vijaykhemka@fb.com>, Joel Stanley <joel@jms.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Date:   Fri, 11 Oct 2019 14:10:44 +1100
-In-Reply-To: <AF7B985F-6E42-4CD4-B3D0-4B9EA42253C9@fb.com>
-References: <20190910213734.3112330-1-vijaykhemka@fb.com>
-         <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
-         <CACPK8XcS4iKfKigPbPg0BFbmjbT-kdyjiPDXjk1k5XaS5bCdAA@mail.gmail.com>
-         <95e215664612c0487808c02232852ef2188c95a5.camel@kernel.crashing.org>
-         <AF7B985F-6E42-4CD4-B3D0-4B9EA42253C9@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726535AbfJKDN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 23:13:28 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21388 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726096AbfJKDN2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 23:13:28 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9B394Wd017777
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:13:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=o5jXrns6VTJWaBcu1yecNeLa9l0YnAePg04L5mFjbRU=;
+ b=QNbZCUG8sFs3vygW/gw/CNyUfpfdpLd/iR57uORTVwcfQqNeUQBRAOjCOr5CLzZMaCKD
+ Pe3Yf0VWwFgVminnjTyA0wzLjzI9RnYckFpnOaGmbzFDwXLKWbXVkPzU+UbfG70dzuif
+ E6oEAnMX15oXXqbLz/+ymTKfWiyz0yANLgI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2vjekprr5s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 20:13:26 -0700
+Received: from 2401:db00:30:6007:face:0:1:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 10 Oct 2019 20:13:26 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 97AD7861907; Thu, 10 Oct 2019 20:13:24 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next 0/2] selftests/bpf Makefile cleanup and fixes
+Date:   Thu, 10 Oct 2019 20:13:16 -0700
+Message-ID: <20191011031318.388493-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-11_01:2019-10-10,2019-10-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ spamscore=0 adultscore=0 mlxscore=0 mlxlogscore=511 clxscore=1015
+ bulkscore=0 impostorscore=0 malwarescore=0 phishscore=0 lowpriorityscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910110028
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-10-10 at 19:15 +0000, Vijay Khemka wrote:
->     Any news on this ? AST2400 has no HW checksum logic in HW, AST2500
->     should work for IPV4 fine, we should only selectively disable it for
->     IPV6.
-> 
-> Ben, I have already sent v2 for this with requested change which only disable 
-> for IPV6 in AST2500. I can send it again.
+Patch #1 enforces libbpf build to have bpf_helper_defs.h ready before test BPF
+programs are built.
+Patch #2 drops obsolete BTF/pahole detection logic from Makefile.
 
-I didn't see it, did you CC me ? I maintain that driver...
+Andrii Nakryiko (2):
+  selftests/bpf: enforce libbpf build before BPF programs are built
+  selftests/bpf: remove obsolete pahole/BTF support detection
 
-Cheers,
-Ben.
+ tools/testing/selftests/bpf/Makefile | 47 +++++-----------------------
+ 1 file changed, 8 insertions(+), 39 deletions(-)
 
+-- 
+2.17.1
 
