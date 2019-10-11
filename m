@@ -2,120 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7180D3A14
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 09:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53378D3A15
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 09:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727637AbfJKHeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 03:34:11 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:34639 "EHLO
+        id S1727527AbfJKHel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 03:34:41 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45485 "EHLO
         mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726679AbfJKHeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 03:34:11 -0400
-Received: by mail-ed1-f66.google.com with SMTP id p10so7813681edq.1
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 00:34:09 -0700 (PDT)
+        with ESMTP id S1726679AbfJKHel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 03:34:41 -0400
+Received: by mail-ed1-f66.google.com with SMTP id h33so7754437edh.12
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 00:34:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=Dk051UqLtBCCbnzRc3H5TjevjehWWSOh4IGeyPB78po=;
-        b=oZYwTv1UOj4CvNFkYeTSxiuH/FMHYBaxmVjqUtwxrgahYEBZ9LSPPHJNN6EzEj/HPv
-         v/uobxNGPGByEqraIfnnubGwmzGvS70OvoeiDoEctVWRSYgSkht/vf1/xAWDkdLc2HER
-         xaBhchdpNQjNoAj35GTGDSI/YXgPukHrmcixzwXAvtppbvWdv3cAya9VssZ+QwNNfNsi
-         6Vhet5r6/FpH2Ol3VglTl7FErafmetZkTaX2R7CJ4pCc9t6jDtyoMheCo+XG6i5AEC1Q
-         Rfmgh/BugB51j1/AT6KxfpXEk6r8hzzN9Iwdxm99REa0nc7YqLNDInaqblpZxeGwqTZe
-         bjeg==
+        bh=z8JWsCX1sov+NV4Hx0exNWypI70nyJieNo4YAIlxaMs=;
+        b=x2GK7EXM6nzXeT7W5Op16Z5LpbJlBTjpDg3m2btD16kbG04onc6QuvBnxpl5Zls0ZU
+         spK2nmHy9bmO7QMFUUydUj0TTdIzD5Gz7O8pFi3lqIRdiqXkcgJMNRnlSrWXkTf6Bumh
+         Ro25+2PpBtNVuvIi08qj7MClRIezqos0WxrdCUafeTPWy9Xciv8GePqrr4PVqLWDKji2
+         5pHaDSwD/uckNpq59l6LY90z6K0rCYUf/bFBs+k6XbSfSp6wjlxGRFVM0+H84AiiCNxl
+         xEyzIKIcmSmVTT89hs86/lLxA4bdazIYt2PRjSEH/nFyORGlrj5/hi2TxKak2fH9qkpU
+         +rkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Dk051UqLtBCCbnzRc3H5TjevjehWWSOh4IGeyPB78po=;
-        b=KoqM2DulSkMURYd1ayHZzSo9Dpv0Ktdvtk8GotH6a49tXdiGu/oNyG8BUYRLadDvHI
-         s3x67ypMN5Vl1ViPm9SNISf2ZVo/qqhIVSDKPpOlSK8MHmG95fcQv+u9NuZrZe/mBVfx
-         pjeBrT9298OsskrYZqB1I/TlAdvo6YO9Ck8Cqul+vq49ZnuNdXx2veLYqXoBhEtT/myw
-         FXOPcE+GtBGQ51jOc44SiXf0hnzUEWrMkX4YjnVv732ClNw8U1ZaTrjmLf4XKLNb4M+M
-         xMWAuUgODp6VZmoQstFsxAWkw3lBvJhVoqvmX/qYvfxvUS5CAx8LgieRSMa0zTq59rAl
-         WTRA==
-X-Gm-Message-State: APjAAAUCuHXYDYfL+8F57mdMODScfDGfQcK+SJ8SWp811vD2ytgAjiMQ
-        sW8cKLjSj7IT9pumTDprIi59Qg==
-X-Google-Smtp-Source: APXvYqz5Ett99HAGwzFZiUK9FVDk4aQpIMSaaUubOlGUepMTGbO41ooJ4pcQdBbkt+O/YTsUIbojGw==
-X-Received: by 2002:a50:cb85:: with SMTP id k5mr12010355edi.131.1570779249123;
-        Fri, 11 Oct 2019 00:34:09 -0700 (PDT)
+        bh=z8JWsCX1sov+NV4Hx0exNWypI70nyJieNo4YAIlxaMs=;
+        b=g4vRhLN4NT61Spf82mWjhU5An62Sa/WurslzblcxDCeNIXMpOUZ0kL+qb/Dj+7Z6yV
+         P7YyimQoC5spvD0ruD2wNi/xoJI7PT1K628RnkVgBvfx1QPfrKLqPev7B6aYb89DIV7K
+         3PmW3fq0G74HTvAvvMsXMtUwlOFuy1PX4ziFTBLoaq7/8wRiSLF2zK1kkefT7ZKIZGX4
+         12H4wqY/AhoHSBhxHoTXoM/qnZsdyqQLGZKUJk8jJt0DqDUZ5bXij5NLRVx7qimSsTex
+         58+F8A4rgUrgDF3v0NSwwX2LWzoYvrAi2cyziW4V2GKB4unUPoWJmzZaaxsoEz+jsjaJ
+         DEqg==
+X-Gm-Message-State: APjAAAX7vWHVE/CPrhuu1eJCcMd0L9VkA3il18No7KUV591DtDcREn3S
+        4kvB9VBsisyOpja+YEcoFdvx1kk0erE=
+X-Google-Smtp-Source: APXvYqy6lwEP5A3cpmmeFT/4O9WmHT+A56j5IW6YsTxmCh+zhQ2AmeoeeNLY9/xvWTYbhxiGp1wnPQ==
+X-Received: by 2002:a50:c949:: with SMTP id p9mr11880621edh.25.1570779279413;
+        Fri, 11 Oct 2019 00:34:39 -0700 (PDT)
 Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id jp14sm1018501ejb.60.2019.10.11.00.34.08
+        by smtp.gmail.com with ESMTPSA id k40sm1328292ede.22.2019.10.11.00.34.38
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 11 Oct 2019 00:34:08 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 09:34:08 +0200
+        Fri, 11 Oct 2019 00:34:38 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 09:34:38 +0200
 From:   Simon Horman <simon.horman@netronome.com>
 To:     Davide Caratti <dcaratti@redhat.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         John Hurley <john.hurley@netronome.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: avoid errors when trying to pop MLPS header
- on non-MPLS packets
-Message-ID: <20191011073407.vvogkh53hm6hvb6h@netronome.com>
+Subject: Re: [PATCH net 2/2] net/sched: fix corrupted L2 header with MPLS
+ 'push' and 'pop' actions
+Message-ID: <20191011073437.uwtftvhofrrm5r5v@netronome.com>
 References: <cover.1570732834.git.dcaratti@redhat.com>
- <9343e3ce8aed5d0e109ab0805fb452e8f55f0130.1570732834.git.dcaratti@redhat.com>
+ <d53ddea1cab35c3bd7775203aa8ce8f9a3b1ae6e.1570732834.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9343e3ce8aed5d0e109ab0805fb452e8f55f0130.1570732834.git.dcaratti@redhat.com>
+In-Reply-To: <d53ddea1cab35c3bd7775203aa8ce8f9a3b1ae6e.1570732834.git.dcaratti@redhat.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 08:43:52PM +0200, Davide Caratti wrote:
+On Thu, Oct 10, 2019 at 08:43:53PM +0200, Davide Caratti wrote:
 > the following script:
 > 
 >  # tc qdisc add dev eth0 clsact
->  # tc filter add dev eth0 egress matchall action mpls pop
+>  # tc filter add dev eth0 egress protocol ip matchall \
+>  > action mpls push protocol mpls_uc label 0x355aa bos 1
 > 
-> implicitly makes the kernel drop all packets transmitted by eth0, if they
-> don't have a MPLS header. This behavior is uncommon: other encapsulations
-> (like VLAN) just let the packet pass unmodified. Since the result of MPLS
-> 'pop' operation would be the same regardless of the presence / absence of
-> MPLS header(s) in the original packet, we can let skb_mpls_pop() return 0
-> when dealing with non-MPLS packets.
+> causes corruption of all IP packets transmitted by eth0. On TC egress, we
+> can't rely on the value of skb->mac_len, because it's 0 and a MPLS 'push'
+> operation will result in an overwrite of the first 4 octets in the packet
+> L2 header (e.g. the Destination Address if eth0 is an Ethernet); the same
+> error pattern is present also in the MPLS 'pop' operation. Fix this error
+> in act_mpls data plane, computing 'mac_len' as the difference between the
+> network header and the mac header (when not at TC ingress), and use it in
+> MPLS 'push'/'pop' core functions.
 > 
+> CC: Lorenzo Bianconi <lorenzo@kernel.org>
 > Fixes: 2a2ea50870ba ("net: sched: add mpls manipulation actions to TC")
 > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-Hi Davide,
-
-For the TC use-case I think this is correct for the reasons you explain
-above.
-
-For the OVS use-case I also think it is fine because
-__ovs_nla_copy_actions() will ensure that MPLS POP only occurs
-for packets with an MPLS Ethernet protocol. That is, this condition
-should never occur in that use-case.
-
-And it appears that there are no other users of this function.
-
-I think it might be worth adding something about use-cases other than TC
-to the changelog, but that aside:
-
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 
-> ---
->  net/core/skbuff.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 529133611ea2..cd59ccd6da57 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -5536,7 +5536,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto)
->  	int err;
->  
->  	if (unlikely(!eth_p_mpls(skb->protocol)))
-> -		return -EINVAL;
-> +		return 0;
->  
->  	err = skb_ensure_writable(skb, skb->mac_len + MPLS_HLEN);
->  	if (unlikely(err))
-> -- 
-> 2.21.0
-> 
