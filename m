@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89460D35D7
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:29:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1B34D35DA
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 02:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727575AbfJKA21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Oct 2019 20:28:27 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34280 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727528AbfJKA20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:28:26 -0400
-Received: by mail-lj1-f194.google.com with SMTP id j19so8070245lja.1
-        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:28:24 -0700 (PDT)
+        id S1727633AbfJKA2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Oct 2019 20:28:31 -0400
+Received: from mail-lj1-f176.google.com ([209.85.208.176]:33672 "EHLO
+        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727577AbfJKA23 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Oct 2019 20:28:29 -0400
+Received: by mail-lj1-f176.google.com with SMTP id a22so8065615ljd.0
+        for <netdev@vger.kernel.org>; Thu, 10 Oct 2019 17:28:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=y12OqUDXt0uUd8S/w/N9B4j5fJB9b6dEGe48WxLpJQ0=;
-        b=deZb/gvn8tRBWJ8EkwM4ZsgQbv8cKKMpAA2vf6G4xRFrYVAvufEMhW8txzk+WL8jog
-         mRr7UCSlsEoukk0CBSI3WVyQH2ebrmaFhmUpX304VfwuEzwcBbYogWTqta96NzGab23d
-         K4u1cCqe2+htE/tMhpH0wwPbB+TmlaC0g94WcpLpPrLjELHj2jJyPZ6ogY2MzYAw8D6P
-         xiaMOcdpUxjpfkClJCQrCd/Z9r5gWMRFGbTxrsrxqzuBe9eeDepyP96MWN2DtWB+gp76
-         Dh5lfo5p3ACqIH0MOgfKt9xTZNOPlHqr4iAdNt7BnklttINOkT2odQBy2BjW8oPe/YK7
-         n0ZA==
+        bh=dRRusRl3mddScRkdUTvMTuf5U4XldYcoWbxA4ajO70k=;
+        b=JiDnktEVbjGXgr5jDkjz+nyzDLWoFzL++RSonmBJ1+BCVuJHjKwvQRzKF2N/0yd6X3
+         rRShXLxxe8luonjB3if8Jju9/CgVbuDGlKy/tg8MSeZioRHeKgP5R4sAwJ5pVtugVZwQ
+         JLSmYuNW4Tkf/qJPHii/E3gkbv2vFALS202fCqRZBL05OL+6ne+UYEpmQga9PbjCPqSN
+         0nWRvKpvNQVVfZbRUm6eOPYne/3Ur1hzKNikB6xuy0ht798+2g9CoCrzv5U9X0ClflYt
+         bD2ySMU/NdPjLvXb8qgPsw5CokeevbTK2D02ulcZeGt2HKfrL+qGbxbpXdo/hefjqt84
+         jA9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=y12OqUDXt0uUd8S/w/N9B4j5fJB9b6dEGe48WxLpJQ0=;
-        b=oRfx1TWnKdsRbWgrDJrlaP7lihrz+3bWxg1LWZM0RuA9g/4c7imSTBepPwfFLjpdG/
-         PNDo191W0ONRzkJuP9CiVxtqx13Gu9Bh8Kap9vRg2GJsc4CPq9KYmSZ41CPvzZn22lcV
-         ZIiVTKuKBdykHgdZzYs82ZbMAHfGYNF1b8sd2UYrT+KMZFOZo1HgxoaB9+gVl7GZkOyW
-         qkpuli+iNEXPwgGJ/Y9kvFUAe5ggyxa7Y4ouD28xzMq7s5ojxwEnIVJPXOJUBQqcN+3D
-         7Zh2RS8H/Y96NtP+s7T+zf+O2Lvfm52vdib3l9SxHv4df+zxFOy6DwGFErbU5Pql5zxC
-         ahDA==
-X-Gm-Message-State: APjAAAVKCjzRCQSVDhMgikoI0aQqLj7yfrAX+YyjpL/6m7srIll4sdku
-        FcxXNMwROo17XdGbPzgKC0HfLg==
-X-Google-Smtp-Source: APXvYqwWFJ/4w/zxqlpX/lyhfjX06c8HYdKUcp1cZYhrWQvMou4/PGZf9SVP2Yk3dHJtL69Dvrhq1w==
-X-Received: by 2002:a2e:82cd:: with SMTP id n13mr7735053ljh.116.1570753703648;
-        Thu, 10 Oct 2019 17:28:23 -0700 (PDT)
+        bh=dRRusRl3mddScRkdUTvMTuf5U4XldYcoWbxA4ajO70k=;
+        b=V5AfoDaOkcwTxHObFWtzQl/iCaFxCuuw8tDcJf51PMD/rlQKOcfYttXBT/EVg6E3Wr
+         iQcnWvW39IJMSmR/scluOZfpjVGeJYBgUIB6mvVsG6y0FsFWLwb/6bRXkd6aEQIjcrdQ
+         H6rpppI4Z0+ynyJQEI6Em3oXAfBzc2bbSg9xsaMgFJLOclZCwRRYJFON3LBeWZZjTVtP
+         wcIHVnewFDjQmftdQVJNmVM6tG7m8TMo3NDmfzLUt0ecB+T9F+vGSFet2+wBEmnpaxdE
+         1pA8OvPqWaoxvSCwlXDpdRxxnTeNZ+DHBwz/r1xh6xTkgQOBB6lZBBVEFdMWTTmWGjR3
+         Kxhg==
+X-Gm-Message-State: APjAAAWWNexHShDShc6HOTF5prhn57sMK0pCVDchdUa4r4zdL9E1pph/
+        Tx0+GxDPRGUpKSg6yMzGecZWH7uOrCM=
+X-Google-Smtp-Source: APXvYqzUQuIDYXVqvleZeaiTHjhwry2+VSzhEq2mtNCyA7UuGrBLAmUOj5lnWPr/cyPl23bZHeF5gA==
+X-Received: by 2002:a2e:a211:: with SMTP id h17mr7749678ljm.251.1570753707769;
+        Thu, 10 Oct 2019 17:28:27 -0700 (PDT)
 Received: from localhost.localdomain (88-201-94-178.pool.ukrtel.net. [178.94.201.88])
-        by smtp.gmail.com with ESMTPSA id 126sm2367010lfh.45.2019.10.10.17.28.22
+        by smtp.gmail.com with ESMTPSA id 126sm2367010lfh.45.2019.10.10.17.28.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 17:28:23 -0700 (PDT)
+        Thu, 10 Oct 2019 17:28:27 -0700 (PDT)
 From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
         davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
@@ -51,9 +51,9 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
         ilias.apalodimas@linaro.org, sergei.shtylyov@cogentembedded.com,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH v5 bpf-next 02/15] samples/bpf: fix cookie_uid_helper_example obj build
-Date:   Fri, 11 Oct 2019 03:27:55 +0300
-Message-Id: <20191011002808.28206-3-ivan.khoronzhuk@linaro.org>
+Subject: [PATCH v5 bpf-next 05/15] samples/bpf: use __LINUX_ARM_ARCH__ selector for arm
+Date:   Fri, 11 Oct 2019 03:27:58 +0300
+Message-Id: <20191011002808.28206-6-ivan.khoronzhuk@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
 References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
@@ -62,33 +62,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't list userspace "cookie_uid_helper_example" object in list for
-bpf objects.
+For arm, -D__LINUX_ARM_ARCH__=X is min version used as instruction
+set selector and is absolutely required while parsing some parts of
+headers. It's present in KBUILD_CFLAGS but not in autoconf.h, so let's
+retrieve it from and add to programs cflags. In another case errors
+like "SMP is not supported" for armv7 and bunch of other errors are
+issued resulting to incorrect final object.
 
-'always' target is used for listing bpf programs, but
-'cookie_uid_helper_example.o' is a user space ELF file, and covered
-by rule `per_socket_stats_example`, so shouldn't be in 'always'.
-Let us remove `always += cookie_uid_helper_example.o`, which avoids
-breaking cross compilation due to mismatched includes.
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 ---
- samples/bpf/Makefile | 1 -
- 1 file changed, 1 deletion(-)
+ samples/bpf/Makefile | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 4f61725b1d86..045fa43842e6 100644
+index cf882e43648a..9b33e7395eac 100644
 --- a/samples/bpf/Makefile
 +++ b/samples/bpf/Makefile
-@@ -145,7 +145,6 @@ always += sampleip_kern.o
- always += lwt_len_hist_kern.o
- always += xdp_tx_iptunnel_kern.o
- always += test_map_in_map_kern.o
--always += cookie_uid_helper_example.o
- always += tcp_synrto_kern.o
- always += tcp_rwnd_kern.o
- always += tcp_bufs_kern.o
+@@ -185,6 +185,14 @@ HOSTLDLIBS_map_perf_test	+= -lrt
+ HOSTLDLIBS_test_overhead	+= -lrt
+ HOSTLDLIBS_xdpsock		+= -pthread
+ 
++ifeq ($(ARCH), arm)
++# Strip all except -D__LINUX_ARM_ARCH__ option needed to handle linux
++# headers when arm instruction set identification is requested.
++ARM_ARCH_SELECTOR := $(filter -D__LINUX_ARM_ARCH__%, $(KBUILD_CFLAGS))
++BPF_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
++KBUILD_HOSTCFLAGS += $(ARM_ARCH_SELECTOR)
++endif
++
+ # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
+ #  make samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
+ LLC ?= llc
 -- 
 2.17.1
 
