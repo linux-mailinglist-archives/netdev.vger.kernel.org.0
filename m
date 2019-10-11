@@ -2,112 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A708D38EF
-	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 07:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AB0BD38F4
+	for <lists+netdev@lfdr.de>; Fri, 11 Oct 2019 07:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726755AbfJKFxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 01:53:18 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:2448 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726174AbfJKFxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 01:53:18 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9B5psw6008514
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 01:53:17 -0400
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2vjbndv829-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 01:53:15 -0400
-Received: from localhost
-        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <clg@kaod.org>;
-        Fri, 11 Oct 2019 06:53:08 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 11 Oct 2019 06:53:07 +0100
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9B5r4P245875388
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Oct 2019 05:53:04 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6FAC24C04E;
-        Fri, 11 Oct 2019 05:53:04 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 594AC4C044;
-        Fri, 11 Oct 2019 05:53:04 +0000 (GMT)
-Received: from smtp.tls.ibm.com (unknown [9.101.4.1])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 11 Oct 2019 05:53:04 +0000 (GMT)
-Received: from yukon.kaod.org.com (sig-9-145-63-191.uk.ibm.com [9.145.63.191])
-        by smtp.tls.ibm.com (Postfix) with ESMTP id 844492200D8;
-        Fri, 11 Oct 2019 07:53:03 +0200 (CEST)
-From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-To:     Juliet Kim <julietk@linux.vnet.ibm.com>,
-        Thomas Falcon <tlfalcon@linux.ibm.com>
-Cc:     John Allen <jallen@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-Subject: [PATCH] net/ibmvnic: Fix EOI when running in XIVE mode.
-Date:   Fri, 11 Oct 2019 07:52:54 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1726707AbfJKFzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 01:55:36 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:54992 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726116AbfJKFzf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Oct 2019 01:55:35 -0400
+Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id 4F38FF226CE0EBD03314;
+        Fri, 11 Oct 2019 13:55:32 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 11 Oct 2019 13:55:31 +0800
+Received: from [127.0.0.1] (10.57.37.248) by dggeme760-chm.china.huawei.com
+ (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 11
+ Oct 2019 13:55:31 +0800
+Subject: Re: [RFC PATCH net] net: phy: Fix "link partner" information
+ disappear issue
+To:     Heiner Kallweit <hkallweit1@gmail.com>, <davem@davemloft.net>,
+        <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
+References: <1570699808-55313-1-git-send-email-liuyonglong@huawei.com>
+ <ee969d27-debe-9bc4-92f2-fe5b04c36a39@gmail.com>
+From:   Yonglong Liu <liuyonglong@huawei.com>
+Message-ID: <670bd6ac-54ee-ecfa-c108-fcf48a3a7dc8@huawei.com>
+Date:   Fri, 11 Oct 2019 13:55:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19101105-4275-0000-0000-0000037112B8
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19101105-4276-0000-0000-000038841C94
-Message-Id: <20191011055254.8347-1-clg@kaod.org>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-11_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=624 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910110055
+In-Reply-To: <ee969d27-debe-9bc4-92f2-fe5b04c36a39@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.57.37.248]
+X-ClientProxiedBy: dggeme715-chm.china.huawei.com (10.1.199.111) To
+ dggeme760-chm.china.huawei.com (10.3.19.106)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pSeries machines on POWER9 processors can run with the XICS (legacy)
-interrupt mode or with the XIVE exploitation interrupt mode. These
-interrupt contollers have different interfaces for interrupt
-management : XICS uses hcalls and XIVE loads and stores on a page.
-H_EOI being a XICS interface the enable_scrq_irq() routine can fail
-when the machine runs in XIVE mode.
 
-Fix that by calling the EOI handler of the interrupt chip.
 
-Fixes: f23e0643cd0b ("ibmvnic: Clear pending interrupt after device reset")
-Signed-off-by: Cédric Le Goater <clg@kaod.org>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+On 2019/10/11 3:17, Heiner Kallweit wrote:
+> On 10.10.2019 11:30, Yonglong Liu wrote:
+>> Some drivers just call phy_ethtool_ksettings_set() to set the
+>> links, for those phy drivers that use genphy_read_status(), if
+>> autoneg is on, and the link is up, than execute "ethtool -s
+>> ethx autoneg on" will cause "link partner" information disappear.
+>>
+>> The call trace is phy_ethtool_ksettings_set()->phy_start_aneg()
+>> ->linkmode_zero(phydev->lp_advertising)->genphy_read_status(),
+>> the link didn't change, so genphy_read_status() just return, and
+>> phydev->lp_advertising is zero now.
+>>
+> I think that clearing link partner advertising info in
+> phy_start_aneg() is questionable. If advertising doesn't change
+> then phy_config_aneg() basically is a no-op. Instead we may have
+> to clear the link partner advertising info in genphy_read_lpa()
+> if aneg is disabled or aneg isn't completed (basically the same
+> as in genphy_c45_read_lpa()). Something like:
+> 
+> if (!phydev->autoneg_complete) { /* also covers case that aneg is disabled */
+> 	linkmode_zero(phydev->lp_advertising);
+> } else if (phydev->autoneg == AUTONEG_ENABLE) {
+> 	...
+> }
+> 
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 2b073a3c0b84..f59d9a8e35e2 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2878,12 +2878,10 @@ static int enable_scrq_irq(struct ibmvnic_adapter *adapter,
- 
- 	if (test_bit(0, &adapter->resetting) &&
- 	    adapter->reset_reason == VNIC_RESET_MOBILITY) {
--		u64 val = (0xff000000) | scrq->hw_irq;
-+		struct irq_desc *desc = irq_to_desc(scrq->irq);
-+		struct irq_chip *chip = irq_desc_get_chip(desc);
- 
--		rc = plpar_hcall_norets(H_EOI, val);
--		if (rc)
--			dev_err(dev, "H_EOI FAILED irq 0x%llx. rc=%ld\n",
--				val, rc);
-+		chip->irq_eoi(&desc->irq_data);
- 	}
- 
- 	rc = plpar_hcall_norets(H_VIOCTL, adapter->vdev->unit_address,
--- 
-2.21.0
+If clear the link partner advertising info in genphy_read_lpa() and
+genphy_c45_read_lpa(), for the drivers that use genphy_read_status()
+is ok, but for those drivers that use there own read_status() may
+have problem, like aqr_read_status(), it will update lp_advertising
+first, and than call genphy_c45_read_status(), so will cause
+lp_advertising lost.
+
+Another question, please see genphy_c45_read_status(), if clear the
+link partner advertising info in genphy_c45_read_lpa(), if autoneg is
+off, phydev->lp_advertising will not clear.
+
+>> This patch call genphy_read_lpa() before the link state judgement
+>> to fix this problem.
+>>
+>> Fixes: 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in genphy_read_status")
+>> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+>> ---
+>>  drivers/net/phy/phy_device.c | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+>> index 9d2bbb1..ef3073c 100644
+>> --- a/drivers/net/phy/phy_device.c
+>> +++ b/drivers/net/phy/phy_device.c
+>> @@ -1839,6 +1839,10 @@ int genphy_read_status(struct phy_device *phydev)
+>>  	if (err)
+>>  		return err;
+>>  
+>> +	err = genphy_read_lpa(phydev);
+>> +	if (err < 0)
+>> +		return err;
+>> +
+>>  	/* why bother the PHY if nothing can have changed */
+>>  	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
+>>  		return 0;
+>> @@ -1848,10 +1852,6 @@ int genphy_read_status(struct phy_device *phydev)
+>>  	phydev->pause = 0;
+>>  	phydev->asym_pause = 0;
+>>  
+>> -	err = genphy_read_lpa(phydev);
+>> -	if (err < 0)
+>> -		return err;
+>> -
+>>  	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
+>>  		phy_resolve_aneg_linkmode(phydev);
+>>  	} else if (phydev->autoneg == AUTONEG_DISABLE) {
+>>
+> 
+> 
+> .
+> 
 
