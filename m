@@ -2,72 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E1CD5348
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 01:23:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 711B6D534A
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 01:24:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbfJLXXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 19:23:03 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:38729 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727262AbfJLXXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 19:23:03 -0400
-Received: by mail-lj1-f194.google.com with SMTP id b20so13163180ljj.5;
-        Sat, 12 Oct 2019 16:23:02 -0700 (PDT)
+        id S1728112AbfJLXYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 19:24:43 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39982 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727184AbfJLXYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 19:24:43 -0400
+Received: by mail-pg1-f195.google.com with SMTP id d26so7887229pgl.7;
+        Sat, 12 Oct 2019 16:24:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gWm05V3+5OCUE1Jul6ruiUK3DxJYF/Ublixv6I9dc0w=;
-        b=imy/VD+kfCiFAjojUZ9u4fs5Vz7R99RTm98cwix6r2fYCImv6f+htTTPDsjyMWLPHa
-         2bjZt642F9cUBAxF0N7utgvILspyGqLgZJwQAsvcW39cIQyquaUi1uBqzRbuJ48TJHqF
-         Wt2cbYH4iZJyt44S7LzCI2ZNiVQDtkz71QfMk1D7se2tKFj20zPF9KNHbrjjLoHTmnQ5
-         OCPLcJlGlZTC7sb7f374HtCXghi5iHku8FWuiZ4Q41fPifNyCijN+P3LnaSekDFEpgwb
-         TG+1HOm4WYmxQGR054xC+v7MxUEATx2VWoI/fvW6hj/wT3iJBwAwyWNj6NLANprqdIKD
-         EQFA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yUu4uX/YGXLWPr9O636FpYe8iD69UkUp54Dx79SWpig=;
+        b=SaWqjjZL/bXZB8w6cTvUNnTMefN1s/RaCw+lhmkrvUbQtL63Fu7XzMxZKEF6Bm/F0L
+         tfHFb0nQzNKsBQsAZMmIPO6DicqmWQXhwQGRNLU5HBfCo3qCDIyn5dkJ9hj/+aB9MQgi
+         qkLcS3apTo1lKC99qkJgsTtalWsO4J53+78CzoMVnKUNKe6RdtUKwirUmc8eG+2370yf
+         ql6yDT7VeJu1+gYu8c+AP1pdbCIPqaQsmVaqB5PwyLwXWkbx8ta30Tn2ftWd2MHlvYrE
+         +QJs/NFWExRZB1cqv4S+867HexZlIua/vo7So8/315UkGugTKF0kBKXgfZ5iJJrkUzgv
+         AZ+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gWm05V3+5OCUE1Jul6ruiUK3DxJYF/Ublixv6I9dc0w=;
-        b=KclH9qcGWIxnfJQIChYe3K199kXNjXcBpp+l8cQj6sFL8da7jyMHHJ5i7A2V/mcpMb
-         VEnLXnR+htM1ieUpNqzatWOpXMxRObf7MEyM2/oHSnUtFHSxZnFZW+KpR3nYcQzdM7VF
-         LXLBY0DLkB+rWzzQVv+jURtGJ4yfuHs8G4asPYgxhGWdhNgUhXy+eV2Dg6xEJM11XGXG
-         MC160cLIfJnmtRqQV6T5ND2lDqf+iiFlQn5W9q9gL+ozkJWE4YJa00nLsvzD5QpNloct
-         INbv2mJU938ft9AKBBrW23SnAItxkWYkcn+34NN5mYk7+xSTRpPGUq18s4GzvvMy32x3
-         cP7A==
-X-Gm-Message-State: APjAAAWgI7D9WBAnK/bFa8n1c15lspMpZ4BAW9vYGrukmAzHL0zzGhKB
-        Bhu/6xhQheiayvnABx4bDzmqgpX04o7bUCSOGIo=
-X-Google-Smtp-Source: APXvYqzqEyzvA8foxjjpRs8hRVSVwht+Ck5ccPYv0wK4Yi5CETHwR43M8KLk0n42K/hApQe/NZurGehMlkTqLPxQlHo=
-X-Received: by 2002:a2e:8197:: with SMTP id e23mr13684678ljg.228.1570922581191;
- Sat, 12 Oct 2019 16:23:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191011220146.3798961-1-andriin@fb.com> <20191012071526.lgrzyvyhnyvzh7ao@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20191012071526.lgrzyvyhnyvzh7ao@kafai-mbp.dhcp.thefacebook.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yUu4uX/YGXLWPr9O636FpYe8iD69UkUp54Dx79SWpig=;
+        b=XMZ9RV/HxPqzAtB9Bkq0xudJPPvV2vWsi1X7bIf9YNeBVPWkc7qXpwgKDdj+kMNLgd
+         iFOPke1FNzXlA5UYwSZBtdWyvid52mWtl6deHzMTl2MxqKAQI1R1ig4eT4lnlAkGRdyQ
+         u1XD1XNfenyMpr3eyURxRzux++qiY/LTvkuztjEZsFOHQ7d3lO05tan0yh2zVOq2q3Fr
+         iF0/HxNnVgGGiPDIgM3f5h2H59h/UR0VZEnsjBiBS+62edDyCT1Hc2tavTTVgqPGgbbs
+         MDZ8l3n3Bn/nKSoUu5LOlECvphbGkE6gtEo6rF7cVfY+HHUBleFk2AfNq1DFt0nylrAz
+         P6PQ==
+X-Gm-Message-State: APjAAAXG+VU+D53645Ka479JFDjS76pW9KIqfrMmyy8MNvfbqx9HrUfQ
+        fwmKTZgcMooF/4qyjv41wYw=
+X-Google-Smtp-Source: APXvYqw3b0MPezsl/abUZC4G2lePpAZNsResq/IOE7r+aE9896QxDbgmmTwZn56M+V+dSPsLD9LEWQ==
+X-Received: by 2002:a63:f908:: with SMTP id h8mr24050277pgi.244.1570922681812;
+        Sat, 12 Oct 2019 16:24:41 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::8e83])
+        by smtp.gmail.com with ESMTPSA id o15sm12005203pjs.14.2019.10.12.16.24.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 12 Oct 2019 16:24:41 -0700 (PDT)
+Date:   Sat, 12 Oct 2019 16:24:39 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 12 Oct 2019 16:22:49 -0700
-Message-ID: <CAADnVQJ-__rn88Z1wgPsRdGdtyznG_rO3=kCx+7rSSENUE-dyw@mail.gmail.com>
-Subject: Re: [Potential Spoof] [PATCH v2 bpf-next 0/2] selftests/bpf Makefile
- cleanup and fixes
-To:     Martin Lau <kafai@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: Re: [PATCH bpf v2] libbpf: fix passing uninitialized bytes to
+ setsockopt
+Message-ID: <20191012232437.2xpi5mmmv7mxz3yy@ast-mbp.dhcp.thefacebook.com>
+References: <5da24d48.1c69fb81.a3069.c817SMTPIN_ADDED_BROKEN@mx.google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5da24d48.1c69fb81.a3069.c817SMTPIN_ADDED_BROKEN@mx.google.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 12:25 AM Martin Lau <kafai@fb.com> wrote:
->
-> On Fri, Oct 11, 2019 at 03:01:44PM -0700, Andrii Nakryiko wrote:
-> > Patch #1 enforces libbpf build to have bpf_helper_defs.h ready before test BPF
-> > programs are built.
-> > Patch #2 drops obsolete BTF/pahole detection logic from Makefile.
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
+On Wed, Oct 09, 2019 at 06:49:29PM +0200, Ilya Maximets wrote:
+> 'struct xdp_umem_reg' has 4 bytes of padding at the end that makes
+> valgrind complain about passing uninitialized stack memory to the
+> syscall:
+> 
+>   Syscall param socketcall.setsockopt() points to uninitialised byte(s)
+>     at 0x4E7AB7E: setsockopt (in /usr/lib64/libc-2.29.so)
+>     by 0x4BDE035: xsk_umem__create@@LIBBPF_0.0.4 (xsk.c:172)
+>   Uninitialised value was created by a stack allocation
+>     at 0x4BDDEBA: xsk_umem__create@@LIBBPF_0.0.4 (xsk.c:140)
+> 
+> Padding bytes appeared after introducing of a new 'flags' field.
+> memset() is required to clear them.
+> 
+> Fixes: 10d30e301732 ("libbpf: add flags to umem config")
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
+> 
+> Version 2:
+>   * Struct initializer replaced with explicit memset(). [Andrii]
+> 
+>  tools/lib/bpf/xsk.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index a902838f9fcc..9d5348086203 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -163,6 +163,7 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+>  	umem->umem_area = umem_area;
+>  	xsk_set_umem_config(&umem->config, usr_config);
+>  
+> +	memset(&mr, 0, sizeof(mr));
+>  	mr.addr = (uintptr_t)umem_area;
+>  	mr.len = size;
+>  	mr.chunk_size = umem->config.frame_size;
 
-Applied. Thanks
+This was already applied. Why did you resend?
+
