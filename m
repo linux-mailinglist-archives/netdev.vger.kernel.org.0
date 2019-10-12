@@ -2,96 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87CC0D4E3F
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 10:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14807D4E90
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 11:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728732AbfJLIPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 04:15:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49238 "EHLO mx1.redhat.com"
+        id S1729087AbfJLJYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 05:24:37 -0400
+Received: from mail.dlink.ru ([178.170.168.18]:35580 "EHLO fd.dlink.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726821AbfJLIPs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Oct 2019 04:15:48 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 51D5D368DA;
-        Sat, 12 Oct 2019 08:15:48 +0000 (UTC)
-Received: from [10.72.12.150] (ovpn-12-150.pek2.redhat.com [10.72.12.150])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2CB301C93D;
-        Sat, 12 Oct 2019 08:15:43 +0000 (UTC)
-Subject: Re: [PATCH RFC v1 0/2] vhost: ring format independence
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20191011134358.16912-1-mst@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f650ac1a-6e2a-9215-6e4f-a1095f4a89cd@redhat.com>
-Date:   Sat, 12 Oct 2019 16:15:42 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728882AbfJLJWh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 05:22:37 -0400
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id 0F48C1B219EC; Sat, 12 Oct 2019 12:22:33 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 0F48C1B219EC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1570872153; bh=iz4isrGMNy+Zh++q05GgOWAhVnORimqaqiBMYJJA23U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=ivUyIbhesze5o1wD3jzYFlxtjVYvzkDVd4U1+a9LTj+Fr+gP6uEY4yCeAyRvdimp6
+         4weqrXnketwoBCtBTtJW3Vvob4qsotF1ow1xzhjP6XtVp+T1L7cRmA6yk109iPGQv7
+         dmWA+AqKAcccPdZ8tIbZ+YASYsjE7kH4GibWOzlA=
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
+        USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id AE7FA1B20B0D;
+        Sat, 12 Oct 2019 12:22:29 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru AE7FA1B20B0D
+Received: by mail.rzn.dlink.ru (Postfix, from userid 5000)
+        id 91B0F1B21890; Sat, 12 Oct 2019 12:22:29 +0300 (MSK)
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA id 4DE361B2023E;
+        Sat, 12 Oct 2019 12:22:20 +0300 (MSK)
 MIME-Version: 1.0
-In-Reply-To: <20191011134358.16912-1-mst@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Sat, 12 Oct 2019 08:15:48 +0000 (UTC)
+Date:   Sat, 12 Oct 2019 12:22:20 +0300
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: core: increase the default size of
+ GRO_NORMAL skb lists to flush
+In-Reply-To: <1eaac2e1f1d65194a4a39232d7e45870@dlink.ru>
+References: <20191010144226.4115-1-alobakin@dlink.ru>
+ <20191010144226.4115-3-alobakin@dlink.ru>
+ <c2450dc3-8ee0-f7cd-4f8a-61a061989eb7@solarflare.com>
+ <1eaac2e1f1d65194a4a39232d7e45870@dlink.ru>
+Message-ID: <3c459c84df86f79b593632d3f08d5f4c@dlink.ru>
+X-Sender: alobakin@dlink.ru
+User-Agent: Roundcube Webmail/1.3.6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alexander Lobakin wrote 11.10.2019 10:23:
+> Hi Edward,
+> 
+> Edward Cree wrote 10.10.2019 21:16:
+>> On 10/10/2019 15:42, Alexander Lobakin wrote:
+>>> Commit 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL
+>>> skbs") have introduced a sysctl variable gro_normal_batch for 
+>>> defining
+>>> a limit for listified Rx of GRO_NORMAL skbs. The initial value of 8 
+>>> is
+>>> purely arbitrary and has been chosen, I believe, as a minimal safe
+>>> default.
+>> 8 was chosen by performance tests on my setup with v1 of that patch;
+>>  see https://www.spinics.net/lists/netdev/msg585001.html .
+>> Sorry for not including that info in the final version of the patch.
+>> While I didn't re-do tests on varying gro_normal_batch on the final
+>>  version, I think changing it needs more evidence than just "we tested
+>>  it; it's better".  In particular, increasing the batch size should be
+>>  accompanied by demonstration that latency isn't increased in e.g. a
+>>  multi-stream ping-pong test.
+>> 
+>>> However, several tests show that it's rather suboptimal and doesn't
+>>> allow to take a full advantage of listified processing. The best and
+>>> the most balanced results have been achieved with a batches of 16 
+>>> skbs
+>>> per flush.
+>>> So double the default value to give a yet another boost for Rx path.
+>> 
+>>> It remains configurable via sysctl anyway, so may be fine-tuned for
+>>> each hardware.
+>> I see this as a reason to leave the default as it is; the combination
+>>  of your tests and mine have established that the optimal size does
+>>  vary (I found 16 to be 2% slower than 8 with my setup), so any
+>>  tweaking of the default is likely only worthwhile if we have data
+>>  over lots of different hardware combinations.
+> 
+> Agree, if you've got slower results on 16, we must leave the default
+> value, as it seems to be VERY hardware- and driver- dependent.
+> So, patch 2/2 is not actual any more (I supposed that it would likely
+> go away before sending this series).
 
-On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
-> So the idea is as follows: we convert descriptors to an
-> independent format first, and process that converting to
-> iov later.
->
-> The point is that we have a tight loop that fetches
-> descriptors, which is good for cache utilization.
-> This will also allow all kind of batching tricks -
-> e.g. it seems possible to keep SMAP disabled while
-> we are fetching multiple descriptors.
+I've generated an another solution. Considering that gro_normal_batch
+is very individual for every single case, maybe it would be better to
+make it per-NAPI (or per-netdevice) variable rather than a global
+across the kernel?
+I think most of all network-capable configurations and systems has more
+than one network device nowadays, and they might need different values
+for achieving their bests.
 
+One possible variant is:
 
-I wonder this may help for performance:
+#define THIS_DRIVER_GRO_NORMAL_BATCH	16
 
-- another indirection layer, increased footprint
+/* ... */
 
-- won't help or even degrade when there's no batch
+netif_napi_add(dev, napi, this_driver_rx_poll, NAPI_POLL_WEIGHT); /*
+napi->gro_normal_batch will be set to the systcl value during NAPI
+context initialization */
+napi_set_gro_normal_batch(napi, THIS_DRIVER_GRO_NORMAL_BATCH); /* new
+static inline helper, napi->gro_normal_batch will be set to the
+driver-speficic value of 16 */
 
-- an extra overhead in the case of in order where we should already had 
-tight loop
+The second possible variant is to make gro_normal_batch sysctl
+per-netdevice to tune it from userspace.
+Or we can combine them into one to make it available for tweaking from
+both driver and userspace, just like it's now with XPS CPUs setting.
 
-- need carefully deal with indirect and chain or make it only work for 
-packet sit just in a single descriptor
+If you'll find any of this reasonable and worth implementing, I'll come
+with it in v2 after a proper testing.
 
-Thanks
+> 
+>>> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+>>> ---
+>>>  net/core/dev.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>> 
+>>> diff --git a/net/core/dev.c b/net/core/dev.c
+>>> index a33f56b439ce..4f60444bb766 100644
+>>> --- a/net/core/dev.c
+>>> +++ b/net/core/dev.c
+>>> @@ -4189,7 +4189,7 @@ int dev_weight_tx_bias __read_mostly = 1;  /* 
+>>> bias for output_queue quota */
+>>>  int dev_rx_weight __read_mostly = 64;
+>>>  int dev_tx_weight __read_mostly = 64;
+>>>  /* Maximum number of GRO_NORMAL skbs to batch up for list-RX */
+>>> -int gro_normal_batch __read_mostly = 8;
+>>> +int gro_normal_batch __read_mostly = 16;
+>>> 
+>>>  /* Called with irq disabled */
+>>>  static inline void ____napi_schedule(struct softnet_data *sd,
+> 
+> Regards,
+> ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
 
-
->
-> And perhaps more importantly, this is a very good fit for the packed
-> ring layout, where we get and put descriptors in order.
->
-> This patchset seems to already perform exactly the same as the original
-> code already based on a microbenchmark.  More testing would be very much
-> appreciated.
->
-> Biggest TODO before this first step is ready to go in is to
-> batch indirect descriptors as well.
->
-> Integrating into vhost-net is basically
-> s/vhost_get_vq_desc/vhost_get_vq_desc_batch/ -
-> or add a module parameter like I did in the test module.
->
->
->
-> Michael S. Tsirkin (2):
->    vhost: option to fetch descriptors through an independent struct
->    vhost: batching fetches
->
->   drivers/vhost/test.c  |  19 ++-
->   drivers/vhost/vhost.c | 333 +++++++++++++++++++++++++++++++++++++++++-
->   drivers/vhost/vhost.h |  20 ++-
->   3 files changed, 365 insertions(+), 7 deletions(-)
->
+Regards,
+ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
