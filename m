@@ -2,106 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F8FD51F2
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 21:07:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90908D51F6
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 21:16:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729556AbfJLTHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 15:07:21 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:45648 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729324AbfJLTHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 15:07:20 -0400
-Received: by mail-pf1-f193.google.com with SMTP id y72so8011733pfb.12
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 12:07:20 -0700 (PDT)
+        id S1729582AbfJLTOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 15:14:22 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:42590 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729280AbfJLTOW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 15:14:22 -0400
+Received: by mail-lf1-f66.google.com with SMTP id c195so9201427lfg.9
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 12:14:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GMcV5YtacOqMMPdQd6o2VXTl1LftD6HlJMBKU/qhzeY=;
-        b=NFi+nK492SWC69oRMzB1lgJLcJv7ieZSfpPXuQ4C99xOqpN1OG5I9g+Qr6zX7VynVX
-         yEbX23CLP/+S7nfVQ+zTQ4JzIEhlfWAuVpAAZGnO3EPSB2KWYSWq4ZaeuBGNE2itWrR5
-         ds+LrLQwLbk0DQg899VroSEwyN9oVQQiVfXmhhJE9XScoM+aZROHsdwtrLegUJeSjrmL
-         WxPkym2wkepaZTYtcYrIxHm+4WQz/Bi8yVmq2Wsbrp6BFsHDRYgcYGeG+Qla4fLp4BYU
-         ZlY/lW3LEAZI1wMvqESO04c8DFWIEdXOpfo2uNs4mM0sE/RAaMgbDyRZMTt8nwUIIq4H
-         4USA==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KUGTurWlShM/Pg1VeuI9jhdTqsInLXd4qSQf6ODKVnw=;
+        b=mp43YZqkwt7hlye6iMOy9MUbkW1cOVi58mwFTOgGi1dbH42yxnHB7b4eYKsQFzDoxd
+         tMKa/1ar1offKcAPfuO+ZjTCU0NJsClEN9RylnUUE+9bk9M2rd73j8+0v8yGB8/Gki1+
+         kOxQgmn2YyBCoP0hrBWQLoByHwWxdwyncEpTMbonzbLd0xgoZ7zfT8A1uRYPhxSlALWZ
+         2MT2+1xJPBuA9OufcgTi5lVDE95Wrg0rSPQgiOHEucqfkoKr2lVno3CQUAYaXwGaYIUM
+         N7gsU8DvcMEnwrV5nICAHWb0U/fEKzO3S1GVdQk8+454FuICrs9ycLE02UdwNkHTfYBE
+         q+2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GMcV5YtacOqMMPdQd6o2VXTl1LftD6HlJMBKU/qhzeY=;
-        b=n91sQoUdJK5aybKaiB6bUXtuOxG3JbuJlStzsAwfonRldCTC5xoXo4w6nOh40gbXDe
-         Iu0d5Srt3VdYuue9QGdLfgQWcW6Y2+pEMi+dIkFWg3l69nPjBrc7Sio8ZpJ6V6FpRE3q
-         G/fw6JLQX6DA6VOBo2PskN/zw1r+V4UGO0nE64zjrfppHdKWg908NpXddSDvf2TrHJNX
-         tJe1kzpjHB9i9NDT9uUW4E9gaglE11LSes8EVWpO6kRshd7LYYplLpM2eR9vQ1dOOvK0
-         VKdTi6OiyTvg6TEqTQunetdOhUdf+pm1fg/E1d5TIIpm2FgIZdCV7KTzW/w3/+Hcx5BN
-         vhuA==
-X-Gm-Message-State: APjAAAWk9du/LWhlBuMFkW/il4AW6QJOwGIBdmGZhseqgsc5hx/6eWHc
-        bUAEFXwOI1Ny/F6dGdiJpW0=
-X-Google-Smtp-Source: APXvYqwQMSdxjB380iwE5pYmaO4mG1mYFaERJEgTPkmF6D9M10RDZLywu2io+uvGOKq0yLmTlWOtNg==
-X-Received: by 2002:a63:734a:: with SMTP id d10mr4086971pgn.334.1570907240215;
-        Sat, 12 Oct 2019 12:07:20 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id a21sm14970237pfi.0.2019.10.12.12.07.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Oct 2019 12:07:19 -0700 (PDT)
-Date:   Sat, 12 Oct 2019 12:07:17 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Egor Pomozov <Egor.Pomozov@aquantia.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
-Subject: Re: [PATCH v2 net-next 09/12] net: aquantia: implement get_ts_info
- ethtool
-Message-ID: <20191012190717.GL3165@localhost>
-References: <cover.1570531332.git.igor.russkikh@aquantia.com>
- <58f42998778f9fa152174f4bbc175b1b09ed54b8.1570531332.git.igor.russkikh@aquantia.com>
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=KUGTurWlShM/Pg1VeuI9jhdTqsInLXd4qSQf6ODKVnw=;
+        b=JPea4OAkc3qmHk/Rcj4Dm4PMejNWI/4VSqQNezpkZYD3VYBhzNUtBp0y2zpEKJny0M
+         OInJukUoBeoQ3HVyViO+QZgk7DuaTL5RnKzj/Cr9uS9OU44qBXLfNe3A1dzD1dAI/+eN
+         Z1trhemYY5jJKj0epiUXJrltrc+MTQIBIlStIu0LVCaASwpZl0TDgiMa/2VNYR+EaxEs
+         cdimRhb9y78rd4ay1Qrdph/GRQRfWhy2N/gDBkrv5GUtb4GLvdJbLIaCrXRJ5ceyTi6V
+         2t9gJip4DlX8i5lI5YCiQ8eJUQ/Gv4HVeVQ/KIRaQA5sz+iCIXzxE9VMaesACmKMmoIk
+         shyg==
+X-Gm-Message-State: APjAAAWb5jmyt7KLxBylXpI4TMU3snUJoKR647Q8UeSINcHfgeY/5Jcq
+        HEpUimtJinMDWkBT1e95dz+RQg==
+X-Google-Smtp-Source: APXvYqzz/RCVgIEpRFWXgpM9uWYP5GRcFJdXio/dX7ET+g6mVk4gkHgqktjlqK7nIqA7VNbdhqvNkw==
+X-Received: by 2002:ac2:4c83:: with SMTP id d3mr12176485lfl.102.1570907660260;
+        Sat, 12 Oct 2019 12:14:20 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:42ce:cb54:d810:b267:5380:ba01])
+        by smtp.gmail.com with ESMTPSA id j5sm2930146lfj.77.2019.10.12.12.14.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 12 Oct 2019 12:14:19 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: sched: Avoid using yield() in a busy
+ waiting loop
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Eric Dumazet <edumazet@google.com>, tglx@linutronix.de,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com>
+Date:   Sat, 12 Oct 2019 22:14:17 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <58f42998778f9fa152174f4bbc175b1b09ed54b8.1570531332.git.igor.russkikh@aquantia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 08, 2019 at 10:56:54AM +0000, Igor Russkikh wrote:
-> +static int aq_ethtool_get_ts_info(struct net_device *ndev,
-> +				  struct ethtool_ts_info *info)
-> +{
-> +	struct aq_nic_s *aq_nic = netdev_priv(ndev);
-> +
-> +	ethtool_op_get_ts_info(ndev, info);
-> +
-> +	info->so_timestamping |=
-> +		SOF_TIMESTAMPING_TX_HARDWARE |
-> +		SOF_TIMESTAMPING_RX_HARDWARE |
-> +		SOF_TIMESTAMPING_RAW_HARDWARE;
-> +
-> +	info->tx_types =
-> +		BIT(HWTSTAMP_TX_OFF) |
-> +		BIT(HWTSTAMP_TX_ON);
-> +
-> +	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE);
-> +
-> +	if (aq_nic->aq_ptp)
+Hello!
 
-Shouldn't the test for (aq_nic->aq_ptp) also effect
-info->so_timestamping and info->tx_types ?
+On 10/11/2019 08:15 PM, Sebastian Andrzej Siewior wrote:
 
-> +		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
-> +				    BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
-> +				    BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
-> +
-> +	info->phc_index = (aq_nic->aq_ptp) ?
-> +		ptp_clock_index(aq_ptp_get_ptp_clock(aq_nic->aq_ptp)) : -1;
-> +
-> +	return 0;
-> +}
+> From: Marc Kleine-Budde <mkl@pengutronix.de>
+> 
+> With threaded interrupts enabled, the interrupt thread runs as SCHED_RR
+> with priority 50. If a user application with a higher priority preempts
+> the interrupt thread and tries to shutdown the network interface then it
+> will loop forever. The kernel will spin in the loop waiting for the
+> device to become idle and the scheduler will never consider the
+> interrupt thread because its priority is lower.
+> 
+> Avoid the problem by using by sleeping for a jiffy giving other tasks,
 
-Thanks,
-Richard
+   So "using" or "sleeping"? :-)
+
+> including the interrupt thread, a chance to run and make progress.
+> 
+> In the original thread it has been suggested to use wait_event() and
+> properly waiting for the state to occur. DaveM explained that this would
+> require to add expensive checks in the fast paths of packet processing.
+> 
+> Link: https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> [bigeasy: Rewrite commit message, add comment, use
+>           schedule_timeout_uninterruptible()]
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> 
+> The old thread also pointed anoth yield() loop which was resolved by
+> commit
+>    845704a535e9b ("tcp: avoid looping in tcp_send_fin()")
+> 
+>  net/sched/sch_generic.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 17bd8f539bc7f..b27574f2c6b47 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -1217,8 +1217,13 @@ void dev_deactivate_many(struct list_head *head)
+>  
+>  	/* Wait for outstanding qdisc_run calls. */
+>  	list_for_each_entry(dev, head, close_list) {
+> -		while (some_qdisc_is_busy(dev))
+> -			yield();
+> +		while (some_qdisc_is_busy(dev)) {
+> +			/* wait_event() would avoid this sleep-loop but would
+> +			 * require expesive checks in the fast paths of packet
+
+   Expensive?
+
+> +			 * processing which isn't worth it.
+> +			 */
+> +			schedule_timeout_uninterruptible(1);
+> +		}
+>  		/* The new qdisc is assigned at this point so we can safely
+>  		 * unwind stale skb lists and qdisc statistics
+>  		 */
+
+MBR, Sergei
