@@ -2,89 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E18D4E27
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 09:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87CC0D4E3F
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 10:15:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729008AbfJLH52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 03:57:28 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37110 "EHLO mx1.redhat.com"
+        id S1728732AbfJLIPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 04:15:49 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49238 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728812AbfJLH52 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Oct 2019 03:57:28 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        id S1726821AbfJLIPs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 04:15:48 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DF6853066FA7;
-        Sat, 12 Oct 2019 07:57:27 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 51D5D368DA;
+        Sat, 12 Oct 2019 08:15:48 +0000 (UTC)
 Received: from [10.72.12.150] (ovpn-12-150.pek2.redhat.com [10.72.12.150])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5F050600D1;
-        Sat, 12 Oct 2019 07:57:23 +0000 (UTC)
-Subject: Re: [PATCH net-next 0/3] vhost_net: access ptr ring using tap recvmsg
-To:     prashantbhole.linux@gmail.com,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     David Ahern <dsahern@gmail.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2CB301C93D;
+        Sat, 12 Oct 2019 08:15:43 +0000 (UTC)
+Subject: Re: [PATCH RFC v1 0/2] vhost: ring format independence
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20191011134358.16912-1-mst@redhat.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <8f319697-34e1-fde5-65f3-7db8dc723982@redhat.com>
-Date:   Sat, 12 Oct 2019 15:57:21 +0800
+Message-ID: <f650ac1a-6e2a-9215-6e4f-a1095f4a89cd@redhat.com>
+Date:   Sat, 12 Oct 2019 16:15:42 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
+In-Reply-To: <20191011134358.16912-1-mst@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Sat, 12 Oct 2019 07:57:27 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Sat, 12 Oct 2019 08:15:48 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/10/12 上午9:53, prashantbhole.linux@gmail.com wrote:
-> From: Prashant Bhole <prashantbhole.linux@gmail.com>
+On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
+> So the idea is as follows: we convert descriptors to an
+> independent format first, and process that converting to
+> iov later.
 >
-> vhost_net needs to peek tun packet sizes to allocate virtio buffers.
-> Currently it directly accesses tap ptr ring to do it. Jason Wang
-> suggested to achieve this using msghdr->msg_control and modifying the
-> behavior of tap recvmsg.
+> The point is that we have a tight loop that fetches
+> descriptors, which is good for cache utilization.
+> This will also allow all kind of batching tricks -
+> e.g. it seems possible to keep SMAP disabled while
+> we are fetching multiple descriptors.
 
 
-Note this may use more indirect calls, this could be optimized in the 
-future by doing XDP/skb receiving by vhost_net its own.
+I wonder this may help for performance:
 
+- another indirection layer, increased footprint
 
->
-> This change will be useful in future in case of virtio-net XDP
-> offload. Where packets will be XDP processed in tap recvmsg and vhost
-> will see only non XDP_DROP'ed packets.
->
-> Patch 1: reorganizes the tun_msg_ctl so that it can be extended by
->   the means of different commands. tap sendmsg recvmsg will behave
->   according to commands.
->
-> Patch 2: modifies recvmsg implementation to produce packet pointers.
->   vhost_net uses recvmsg API instead of ptr_ring_consume().
->
-> Patch 3: removes ptr ring usage in vhost and functions those export
->   ptr ring from tun/tap.
->
-> Prashant Bhole (3):
->    tuntap: reorganize tun_msg_ctl usage
->    vhost_net: user tap recvmsg api to access ptr ring
->    tuntap: remove usage of ptr ring in vhost_net
->
->   drivers/net/tap.c      | 44 ++++++++++++++---------
->   drivers/net/tun.c      | 45 +++++++++++++++---------
->   drivers/vhost/net.c    | 79 ++++++++++++++++++++++--------------------
->   include/linux/if_tun.h |  9 +++--
->   4 files changed, 103 insertions(+), 74 deletions(-)
+- won't help or even degrade when there's no batch
 
+- an extra overhead in the case of in order where we should already had 
+tight loop
 
-It would be helpful that if you can share some performance numbers here.
+- need carefully deal with indirect and chain or make it only work for 
+packet sit just in a single descriptor
 
 Thanks
 
+
+>
+> And perhaps more importantly, this is a very good fit for the packed
+> ring layout, where we get and put descriptors in order.
+>
+> This patchset seems to already perform exactly the same as the original
+> code already based on a microbenchmark.  More testing would be very much
+> appreciated.
+>
+> Biggest TODO before this first step is ready to go in is to
+> batch indirect descriptors as well.
+>
+> Integrating into vhost-net is basically
+> s/vhost_get_vq_desc/vhost_get_vq_desc_batch/ -
+> or add a module parameter like I did in the test module.
+>
+>
+>
+> Michael S. Tsirkin (2):
+>    vhost: option to fetch descriptors through an independent struct
+>    vhost: batching fetches
+>
+>   drivers/vhost/test.c  |  19 ++-
+>   drivers/vhost/vhost.c | 333 +++++++++++++++++++++++++++++++++++++++++-
+>   drivers/vhost/vhost.h |  20 ++-
+>   3 files changed, 365 insertions(+), 7 deletions(-)
+>
