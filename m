@@ -2,171 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54795D502A
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 15:47:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D678D5085
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 16:52:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729274AbfJLNru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 09:47:50 -0400
-Received: from mail-eopbgr690134.outbound.protection.outlook.com ([40.107.69.134]:51360
-        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727115AbfJLNrt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Oct 2019 09:47:49 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bcaVPgZid9f49/jJJ0vri7FJuH1H2XPkh2BDLOrjZur8c2BNoCbA9a+OAqa8qvE2XN1I0zHoftSUgQ3Jj+bXyWCz4K2JQhHzcLG4TpjWJei+puzDFv1yr1iPjV6SlxPuPJ2CO4UHnnQfPMPLDfP4xixXYpPrGtkQp/zlVYT9a3Q3NWUeZ5hXNzBPHt/w5xUd8MT1Ui9xxTfTz5OvqHBWdXnX3z6GhE1mjwtKDrPfyku43hGXQoSPdlHaW9KFP7DNBRIVe5J30hGXUBbtbvRdWROgUKZW40XI1FMsSYBxyMTWW0hYgOFtE7sHPCaF0MxOqZBRCfqoD0loqbXD68fbpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=klEGAeZOuCgnZ26joLgkBsAeo/3i/DL8hZ8sl5DK58w=;
- b=TakQuJtZBp+3XOi6CD/wOWYvNgeDPZCPQppyURmTjxpBBitcp7m4qQoXHFNTgdcdxLuuzlinHXfD08WHZN8uuyKomfUf3w7DpQ0eCdZvJKUEw/Mx1THuBXYAW6L0+AWVdBJoeze604XNXteh9EwwSPra4eh1ZnJ5IIBv8LcqOi1XKtov1eWPKsdA+hpBWogL4oVC2bd/xhXUNAxZOLuxc0vEBC3SGG4r6FV0MR88QxhlL9SeC7Twkv1x6a2k0Tre84vOPlu6mE4vs4oSfTs6IZ6MLjg/UI5Ur6B0MF81VTZVPN/BzpqDn4V3J1HJr+AsYb747sAYri0rEGCwdvSuig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=klEGAeZOuCgnZ26joLgkBsAeo/3i/DL8hZ8sl5DK58w=;
- b=b+gv+pVNCX6WigCKI4E/BqiJd1pnSlGl6pzIl9rO+sjc1hIFH98KwHMcEXtCTZcm291s4n+qiENHlDPj18d3ILqTM0q71FNJJTYJuezlre8vf4bbCW8YBnCtQLfXm3/cPQlC+IQrOw7WWrnihtksSeH/C70/KHstawa8t3OC9x8=
-Received: from DM5PR21MB0137.namprd21.prod.outlook.com (10.173.173.12) by
- DM5PR21MB0170.namprd21.prod.outlook.com (10.173.173.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.2; Sat, 12 Oct 2019 13:47:45 +0000
-Received: from DM5PR21MB0137.namprd21.prod.outlook.com
- ([fe80::a50f:aa3c:c7d6:f05e]) by DM5PR21MB0137.namprd21.prod.outlook.com
- ([fe80::a50f:aa3c:c7d6:f05e%11]) with mapi id 15.20.2347.021; Sat, 12 Oct
- 2019 13:47:45 +0000
-From:   Michael Kelley <mikelley@microsoft.com>
-To:     Andrea Parri <parri.andrea@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        vkuznets <vkuznets@redhat.com>, Dexuan Cui <decui@microsoft.com>
-Subject: RE: [PATCH v2 1/3] Drivers: hv: vmbus: Introduce table of VMBus
- protocol versions
-Thread-Topic: [PATCH v2 1/3] Drivers: hv: vmbus: Introduce table of VMBus
- protocol versions
-Thread-Index: AQHVf4Hg40bNBUJlOE6Y2bup7gaANadXBJtA
-Date:   Sat, 12 Oct 2019 13:47:45 +0000
-Message-ID: <DM5PR21MB013798776480FFA5DCD22442D7960@DM5PR21MB0137.namprd21.prod.outlook.com>
-References: <20191010154600.23875-1-parri.andrea@gmail.com>
- <20191010154600.23875-2-parri.andrea@gmail.com>
-In-Reply-To: <20191010154600.23875-2-parri.andrea@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=mikelley@ntdev.microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-10-12T13:47:42.9929354Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=7b229e38-2479-4489-aa72-6716b77a7d61;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=mikelley@microsoft.com; 
-x-originating-ip: [24.22.167.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cf855a0b-116d-4271-33db-08d74f1ac2df
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: DM5PR21MB0170:|DM5PR21MB0170:|DM5PR21MB0170:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <DM5PR21MB017025AF787F82D8F40F26E3D7960@DM5PR21MB0170.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 0188D66E61
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(366004)(136003)(396003)(346002)(39860400002)(189003)(199004)(26005)(99286004)(8936002)(256004)(2501003)(4326008)(9686003)(52536014)(14444005)(22452003)(14454004)(33656002)(55016002)(316002)(10290500003)(486006)(71200400001)(71190400001)(478600001)(186003)(446003)(11346002)(76116006)(66446008)(64756008)(66556008)(66476007)(66946007)(476003)(81166006)(81156014)(7696005)(6246003)(76176011)(6506007)(8676002)(107886003)(5660300002)(2906002)(305945005)(102836004)(66066001)(2201001)(3846002)(10090500001)(8990500004)(229853002)(6116002)(74316002)(6436002)(54906003)(7736002)(110136005)(25786009)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR21MB0170;H:DM5PR21MB0137.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: aXqj7ad1qJ/KFlb8pSHvbbX7CKhD/NVq2lrM4Y4hhWaUjOOsbTFn2ug/Wq+7cBdXB2XlIWoXGpce++YUFx5DrNb+UsH+Y+olFG1C/zZT+J7o1Id3gG3SSS/g5mlpFSCxcysdhmvaht/vHFYlVG/P0X9jwWDeyls3xjmLCjvy9KJCY72eXOdpo+evhEFMxPwAj3URcQhH6bAoNQenBYtodiqK+aNfpvpex9HvBmq9fYGJy3a2KidXRvrVKZ23MOeboIJmPgkFxU04cutckz0SAgMaEmKBw5OW8KPyY9tehfRb63Np9b4ugLk6gnArKPn/GcO6U7p6vSaMKy+aryv/0U1Fbc1GpcyUZpfqtdbxsnHROVNI/VXgLy3aCvqLEpE6Oha1J7R9GekMC8aynNGHtmCPy4EAMp7fMzr2trjM08k=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729387AbfJLOwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 10:52:24 -0400
+Received: from mout.web.de ([212.227.15.4]:50113 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727423AbfJLOwX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 10:52:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1570891913;
+        bh=ESlHQBV8JuvnEeo7mqgxoWQxfM0SeeqJrmAt3/L4DFY=;
+        h=X-UI-Sender-Class:To:From:Subject:Cc:Date;
+        b=plA/EKeGWeFpCjBNw13WNY44JScTeBHR6e6vzr2h8Gxo+b80mJH1CSqlNw0ffUMg5
+         qyqhuMRcU9nWqM3PanpRwXDDuyw2gd8K51IvBPv0yvfXWtLZWvZpe5Tk8Wz7lojTrJ
+         ulwSWNOGaYxjFWqhO104y5fWQ0VbpFS5J0ITqAVE=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.132.155.250]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LmLK6-1hkW9y3RTe-00Ztbs; Sat, 12
+ Oct 2019 16:51:52 +0200
+To:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki Yoshifuji <yoshfuji@linux-ipv6.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Subject: tcp: Checking a kmemdup() call in tcp_time_wait()
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org, Aditya Pakki <pakki001@umn.edu>,
+        Kangjie Lu <kjlu@umn.edu>, Navid Emamdoost <emamd001@umn.edu>,
+        Stephen McCamant <smccaman@umn.edu>
+Message-ID: <a219235e-bad5-8a9d-0f3e-c05d5cb11df1@web.de>
+Date:   Sat, 12 Oct 2019 16:51:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf855a0b-116d-4271-33db-08d74f1ac2df
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Oct 2019 13:47:45.2526
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9D1jlBvfV3zqXufaum9Rocd15HQJGotiOqsWxdWlxo0rVD0wZUg3OmuAnelAyYiJf2gkAhhaBl0FFHinWsyukMR05J/6Jq3fWr8E+7n97dY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR21MB0170
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:BmmvAVDI3sGZeOF3bm14iYNrRN0F0p4S3GVTbMcqz1SXRWNdLnd
+ VHLpnwBcWWVIa6BAK36FHMi9UdAA1kIHJXtHmoWdvbtQXU2OgKLCLVDu1ysxATTNfAdIkCI
+ SoVFOs8Q1ZH0HjZjA0dWE2RnczANck7jip+Jj8mupsGqS4MV2EJiYh++MTxD5pkoHTNnByc
+ cmt/Yi6989WCs1I8H+ffQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Yx2tKkQjepE=:A4Cs7gjrQOHUYyZxEV7+r+
+ cUakL1Vka95EryFqlDQAaAWbBkD2GEFxobNMLFy7qOL2FzhEYKs7gx7JX12CgAROcJbMcwBVv
+ 3PluW0Cr7kju0s953NULQtlMZyChVMUqJ5NPeBZgjk+odNrxwWF1ZC+BdxLbXG8sueYyq4wAg
+ kM1ekW06ty7gipJsRn9Qyaxi4cMy5pRggy4E6cB0rrvyl8yFxh1U+VGnu5EZZtCY7vHPFsogt
+ psSixRgOGom/MDf5r6bkfysmj5/4+PAyl66MB+9/trnCjxljQCEvvGon/Ip6xsX3n8u58828D
+ DQFOt9czJ0zIeyc5Llo77ukTuhdzE38kc6+XX3chrizdonnpcK/NcHr9M+x35CrQJK07XpyBM
+ Rb0ux6fl7PLp4ePXDMk5iSSUR1Mk/4jb6YBZCpVc+nme2zDbpuLno0sjfqK8+v+XMgRI14D9h
+ j5FZT72QC9IQT+9O6F+9IIN73X4ekL7vaP8/S4xknhDc3eu3tXcUHhZB0kx1mqo45ecLj2yFX
+ hGdzdWwaUTV93ABWylrMDYllmryrobAvYtpyt1fDaz42NgizIb52FaXQTYifZLSlgPI4tNTlh
+ I1v9pozEzI07ykCSYpFAhbdh3F3kMLjzdLwcgx1MllDndP77pbzEdIV//R0LIPUFQKCSWB8k0
+ kkLnZdEnl19oPxwkSawuBHtl/Cor69LvA8ncBDi2DvnFhv2rmFSnCYRxbOsRNGYKuVWM1ceRC
+ /H+Ig3NJyL/O5+gBjTFN5oIBn67G5+1klzZ0pGqldFddnofN/JUvWAFQ3z2ZHWwyJKC9Qdv7p
+ xAAMJqriRRfCbDjgBadTHqH/F2DDGXs0Ww6psfcHQtEZWUW7jSBmOL2zTHcck8Py38/T/nMQD
+ XzzBm16V7oMxL0UcgmytAIgYOFrfZ1mbJrWs0GesGoSZ4vM1elwjkTTmqGeb8nqLm/ylIDmRx
+ gRnTDOVI30/pcd2h/y5FZ+R3N0YAFtZtVN3xaSTy4qTxfMRIEE13Q+PukbGsG5GQgRIVaJFQu
+ oav3eymhq1QlGgICJa04hE4Rc7/AI6Wbus/o7oK3gFJhPm1EF5QXf23/sXQOg85/GmJRhQ7lh
+ pCPBuYJ1iByOrzrm2oClQSwRGrqbugzUTQCmgazTMF0iRxQ0qAAlvY+FNY9ELmasiZtuT8Oru
+ NFMbSxXZmYYoaehqjw52gRQbdrxVLbY0OhtAdbDO/VJjkEAGywVtU/H1izvnMxLFw/ig0LSL1
+ uqnwr5mwT4g534w4FL+690VlQH1t2jbLKyaWPVhFoURsCL87i6epQAD1RYI8=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrea Parri <parri.andrea@gmail.com> Sent: Thursday, October 10, 201=
-9 8:46 AM
->=20
-> The technique used to get the next VMBus version seems increasisly
-> clumsy as the number of VMBus versions increases.  Performance is
-> not a concern since this is only done once during system boot; it's
-> just that we'll end up with more lines of code than is really needed.
->=20
-> As an alternative, introduce a table with the version numbers listed
-> in order (from the most recent to the oldest).  vmbus_connect() loops
-> through the versions listed in the table until it gets an accepted
-> connection or gets to the end of the table (invalid version).
->=20
-> Suggested-by: Michael Kelley <mikelley@microsoft.com>
-> Signed-off-by: Andrea Parri <parri.andrea@gmail.com>
-> ---
->  drivers/hv/connection.c | 46 ++++++++++++++---------------------------
->  drivers/hv/vmbus_drv.c  |  3 +--
->  include/linux/hyperv.h  |  4 ----
->  3 files changed, 17 insertions(+), 36 deletions(-)
->=20
-> @@ -244,20 +232,18 @@ int vmbus_connect(void)
->  	 * version.
->  	 */
->=20
-> -	version =3D VERSION_CURRENT;
-> +	for (i =3D 0; i < ARRAY_SIZE(vmbus_versions); i++) {
-> +		version =3D vmbus_versions[i];
->=20
-> -	do {
->  		ret =3D vmbus_negotiate_version(msginfo, version);
->  		if (ret =3D=3D -ETIMEDOUT)
->  			goto cleanup;
->=20
->  		if (vmbus_connection.conn_state =3D=3D CONNECTED)
->  			break;
-> +	}
->=20
-> -		version =3D vmbus_get_next_version(version);
-> -	} while (version !=3D VERSION_INVAL);
-> -
-> -	if (version =3D=3D VERSION_INVAL)
-> +	if (vmbus_connection.conn_state !=3D CONNECTED)
->  		goto cleanup;
->=20
+Hello,
 
-This is a nit, but the loop exit path bugs me.  When a connection
-is established, the loop is exited by the "break", and then
-conn_state has to be tested again to decide whether the loop
-exited due to getting a connection vs. hitting the end of the list.
-Slightly cleaner in my mind would be:
+I tried another script for the semantic patch language out.
+This source code analysis approach points out that the implementation
+of the function =E2=80=9Ctcp_time_wait=E2=80=9D contains also a call of th=
+e function =E2=80=9Ckmemdup=E2=80=9D.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/ne=
+t/ipv4/tcp_minisocks.c?id=3D1c0cc5f1ae5ee5a6913704c0d75a6e99604ee30a#n306
+https://elixir.bootlin.com/linux/v5.4-rc2/source/net/ipv4/tcp_minisocks.c#=
+L306
 
-	for (i=3D0; ; i++) {
-		if (i =3D=3D ARRAY_SIZE(vmbus_versions))
-			goto cleanup;
+* Do you find the usage of the macro call =E2=80=9CBUG_ON=E2=80=9D still a=
+ppropriate at this place?
+  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/=
+scripts/checkpatch.pl?id=3D1c0cc5f1ae5ee5a6913704c0d75a6e99604ee30a#n4080
 
-		version  =3D vmbus_versions[i];
-		ret =3D vmbus_negotiate_version(msginfo, version);
-		if (ret =3D=3D -ETIMEDOUT)
-			goto cleanup;
+* Is there a need to adjust the error handling here?
 
-		if (vmbus_connection.conn_state =3D=3D CONNECTED)
-			break;
-	}
-
-Michael
+Regards,
+Markus
