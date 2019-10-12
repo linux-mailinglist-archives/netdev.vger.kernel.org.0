@@ -2,107 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B275D530D
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 00:30:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E2DD530F
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 00:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727340AbfJLW2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 18:28:51 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45271 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbfJLW2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 18:28:50 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y72so8165842pfb.12
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 15:28:50 -0700 (PDT)
+        id S1727605AbfJLWcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 18:32:00 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46796 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727188AbfJLWcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 18:32:00 -0400
+Received: by mail-pg1-f196.google.com with SMTP id b8so7825867pgm.13
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 15:32:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=VUz1ok8zlsDkN/e0yUa6daO7kk73qbRZHIQaMPMh0hE=;
-        b=AQfsKzX8geJNl0V3ZkcnS+mCYrX046vbVPp5c/4JMWzngZzjPlE/E/2X3QKfNAnSXk
-         Fuoc5/xF4NrL74uRzOlZGdwWb9UyxhC59QTI2L8Zf95OQ2Ir+xU3FswM6h9+ujqm833K
-         654zPKRCmlej1yad8T2aUILu4uXNSLl/+wN2DpPtHcwCbaEqwNJckphA/x4zRWtPmd10
-         wPu4hUpYyWGEupt3Fie/Vv/cBfWe9guYiCXuSHd9MYlrpcYeEsMQmm54uxclgY9YcEWW
-         eSzKYYFVm0K33SnlSH6tKosm7BvgdJEszz6I3RFpDyFXeSXZf6oRKE8rDeQQJQInk+2n
-         We1g==
+        bh=EUytYsgismnGdLjrYT1f0D/ivlcB+VQ8GRyrP/oYfX8=;
+        b=VBs+QBoVHJCnP5YQqA8mNk1nKouTo1snowQoHzOd1ZorebOzDaje0mcjZNemM9Oy9W
+         avsbJPGLxOIZIJq7gtHlkv/c1E9VUV7XXZPQZ/76Nt3ATijiguEpuIERlb2yw4a+6AuE
+         C5E9PYji+e67bpXWCgnFAifbEemiShfNMLyv0Hugcp8tRNh2Ih7x4Fa4uChKgaSbReoT
+         4E0z17sWgGQPlh6RERptdtr9FHZgEolPD6nNkFJt0xcwc8tym6J0GpQMKR/ZssX7ipKq
+         npB9e/vnZ9VxEzoBKpr2P23jKUvXU4ldADZJgJ4Uh7xfH+No7pn/1ED0hCgd4Mom0hVk
+         jKTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=VUz1ok8zlsDkN/e0yUa6daO7kk73qbRZHIQaMPMh0hE=;
-        b=kpPBBxWz2QUszm+aiNBIHA7jWbznQDJD9/HOJU436bjPIIlI8nSFW+maowI9V1fxbo
-         AZAjb7CsTZpIjtYUhNlAAT5CYYM3l9rgIrwxV2K6Ny78oQsg41mtgwP2nrGUZiDCr0Aj
-         U2j6II2itqLpn5YOcjtO+jnJzwf4/a8TWDFLF9ig3hdpxwclA9OTiv4pWVqnRLGBenMv
-         2nJl5G97V4qL1KE6JBuvHDi0KqhRoriqn8xEwKNBpKYs+7+0J2Z4pYz9DZMyiHQOynjS
-         p7RXEpzuEoi+p5cckRHyU6+1jaACfi1BfW7G8G83n6R40+74L+x3d8zrhFRMG3JmGMwa
-         Tayg==
-X-Gm-Message-State: APjAAAVPAeGCntRHM1qlB9jB81X4di0W7pjpstBfuO+/bPu+MMJwvIhg
-        qm43+v0S6OnbLSo8LOn1iiPf2y9qSXc=
-X-Google-Smtp-Source: APXvYqzKx+XsKrTmeylXJ5g9lfyCuIEbJb/hZJmUWpL72bhHFDogMj6eaYFbbssnqSKW6mnUKiMOew==
-X-Received: by 2002:a65:685a:: with SMTP id q26mr6608450pgt.32.1570919329917;
-        Sat, 12 Oct 2019 15:28:49 -0700 (PDT)
+        bh=EUytYsgismnGdLjrYT1f0D/ivlcB+VQ8GRyrP/oYfX8=;
+        b=lYi7YojkSJPLurSTWGbkdhCXRQIjsX4nGqd34dSL6bp7lJQ5e4u6PcwQDjoDmoVo8R
+         IZ1CdP/8PouaEDkJ9wx2GJsJx6qVj8IGhCjkLmkZkjdrDwk05vyDXHhQTMoK3RheUyeY
+         epSZYepkcOIhIdiQ5BPBlH/RuCXjGqB/yjz7hmddwmiMKAfMcA5zqR+3nJ4H/LcgIzR8
+         NwZ/PpZKz0fEggJ4K/UeS9kquEeFX4QK40+/PQDGq43w4wYg4DgwVUTW50UYDLeS5ePj
+         RXjIiTGOPrD9nXcwDVnv1vPQxJsg7MO7Fz48jyWLfBiR3U0Kh5fkH+jVmm7vGFP0hWlK
+         T+eQ==
+X-Gm-Message-State: APjAAAWv/fD69O3nAIf085JYXdz2meAU+QJ/eBUOH/wjMzGyJm/KsBKc
+        c/0hy2DWt9+HVobIycKIvHTMPA==
+X-Google-Smtp-Source: APXvYqzwerfAMCLkzfc6iw/hQmNINLGN5bzPoTAZm4z5/mB1dyyOaS8uYz7N4ku1A1iKIynFmulEig==
+X-Received: by 2002:a17:90a:1617:: with SMTP id n23mr26521029pja.75.1570919519713;
+        Sat, 12 Oct 2019 15:31:59 -0700 (PDT)
 Received: from cakuba.netronome.com ([2601:646:8e00:e18::2])
-        by smtp.gmail.com with ESMTPSA id f6sm12756846pfq.169.2019.10.12.15.28.48
+        by smtp.gmail.com with ESMTPSA id v28sm17346964pgn.17.2019.10.12.15.31.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Oct 2019 15:28:49 -0700 (PDT)
-Date:   Sat, 12 Oct 2019 15:28:45 -0700
+        Sat, 12 Oct 2019 15:31:59 -0700 (PDT)
+Date:   Sat, 12 Oct 2019 15:31:56 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Mariusz Bialonczyk <manio@skyboo.net>
-Subject: Re: [PATCH net] r8169: fix jumbo packet handling on resume from
- suspend
-Message-ID: <20191012152845.6ff9430d@cakuba.netronome.com>
-In-Reply-To: <03561754-aec2-7015-4b4d-32707bf3bd2d@gmail.com>
-References: <05ef825e-6ab2-cc25-be4e-54d52acd752f@gmail.com>
-        <20191010163630.0afb5dd8@cakuba.netronome.com>
-        <03561754-aec2-7015-4b4d-32707bf3bd2d@gmail.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH] netdevsim: Fix error handling in nsim_fib_init and
+ nsim_fib_exit
+Message-ID: <20191012153156.01d962f1@cakuba.netronome.com>
+In-Reply-To: <20191011094653.18796-1-yuehaibing@huawei.com>
+References: <20191011094653.18796-1-yuehaibing@huawei.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Oct 2019 08:03:24 +0200, Heiner Kallweit wrote:
-> On 11.10.2019 01:36, Jakub Kicinski wrote:
-> > On Wed, 9 Oct 2019 20:55:48 +0200, Heiner Kallweit wrote: =20
-> >> Mariusz reported that invalid packets are sent after resume from
-> >> suspend if jumbo packets are active. It turned out that his BIOS
-> >> resets chip settings to non-jumbo on resume. Most chip settings are
-> >> re-initialized on resume from suspend by calling rtl_hw_start(),
-> >> so let's add configuring jumbo to this function.
-> >> There's nothing wrong with the commit marked as fixed, it's just
-> >> the first one where the patch applies cleanly.
-> >>
-> >> Fixes: 7366016d2d4c ("r8169: read common register for PCI commit")
-> >> Reported-by: Mariusz Bialonczyk <manio@skyboo.net>
-> >> Tested-by: Mariusz Bialonczyk <manio@skyboo.net>
-> >> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com> =20
-> >=20
-> > Applied, somewhat begrudgingly - this really isn't the way the Fixes
-> > tag should be used, but I appreciate it may be hard at this point to
-> > pin down a commit to blame given how many generations of HW this driver
-> > supports and how old it is.. perhaps I should have removed the tag in
-> > this case, hm.
-> >=20
-> > Since the selected commit came in 5.4 I'm not queuing for stable.
-> >  =20
-> The issue seems to have been there forever, but patch applies from a
-> certain kernel version only. I agree that using the Fixes tag to provide
-> this information is kind of a misuse. How would you prefer to get that
-> information, add a comment below the commit message similar to the list
-> of changes in a new version of a patch series?
+On Fri, 11 Oct 2019 17:46:53 +0800, YueHaibing wrote:
+> In nsim_fib_init(), if register_fib_notifier failed, nsim_fib_net_ops
+> should be unregistered before return.
+> 
+> In nsim_fib_exit(), unregister_fib_notifier should be called before
+> nsim_fib_net_ops be unregistered, otherwise may cause use-after-free:
+> 
+> BUG: KASAN: use-after-free in nsim_fib_event_nb+0x342/0x570 [netdevsim]
+> Read of size 8 at addr ffff8881daaf4388 by task kworker/0:3/3499
+> 
 
-I'd put the backport help under the --- lines, maybe additionally
-mentioning its presence in the commit message (lore link would
-complete the picture). Like we do for merges.=20
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: 59c84b9fcf42 ("netdevsim: Restore per-network namespace accounting for fib entries")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Although I think Dave queues for stable immediately when patch is=20
-merged to net, so if the backport is to last release or two I think=20
-the info under --- could be as useful as in the commit message.
-
-Another way would be posting the backported patch (say for the most
-recent LTS) if the backport is hard and fix important =F0=9F=A4=94
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
