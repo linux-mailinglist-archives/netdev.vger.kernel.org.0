@@ -2,257 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5C6D4BB7
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 03:15:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18F1FD4BD6
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 03:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728203AbfJLBPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 21:15:02 -0400
-Received: from mail-yw1-f74.google.com ([209.85.161.74]:57076 "EHLO
-        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726863AbfJLBPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 21:15:01 -0400
-Received: by mail-yw1-f74.google.com with SMTP id l123so8935188ywd.23
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 18:15:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=bkqaf8QDePmCHAEXudigYf2ToqggNg+42rSSa8Gdgvo=;
-        b=Z6FfYJfWu7gsRIrle+DJix6/BOTmcfR/l9Cg5Wj30D3QJGgoBSJmTs0f9KW7nTm0yn
-         2btNElonc5eiQIoJ+Edv/8wWXMUZR3zMovyi3c+P7kPOtRTIdwGmQETngvFUwwab+BG8
-         e/xaXZD9UzTyH4/uvNu9kVplHY9jYiQWZ3oqPyDGBLmFpmikjYbU/acRWGLWAdMRHizK
-         jEvNmk9fdIVmhwvORxYaW71u/foPKmLRzo/jZ7PHN6LMXPfV+bfNGYUTpYAeYTGEDcDJ
-         9W7tZiRf/89xuqAhHkn7aq+sVVXquh5/sJLQ+a0opVlhbwMCipvdr5vS+2XFo/9vubve
-         Wkvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=bkqaf8QDePmCHAEXudigYf2ToqggNg+42rSSa8Gdgvo=;
-        b=d+yU69/0XPesIa733ui9toGEe597XP4SOAoSCZjrBrGAMWEcAjjJYqR+3us2QEkFl0
-         n7sr2shGUD1Z31h5s+rx7phGTpsOKc1/1eqBQT94S9Hj3tuphwm4bsp7bS9xBOO5wpSF
-         XPCL/orDr1WPtRTJWuaMDT/bhAlqCN4dDoFk4+AKx8sSCqiXNK6sgxZfJqonOx6sJUQ0
-         LBnn0kn5XHyGyy8zevnpLTkAPdxEinl1M8JUWH731OnqWQWR2siVdPhyvay4qcLSJP6H
-         C65XVUHeLpcVEIxYVOfmIJOIYGg/hMz7LHt1DWXJIkTD4E5Nl3PT/QPKR1zEVbZBz9xV
-         mjeg==
-X-Gm-Message-State: APjAAAVXeUsIDcdDeNInzCuAwjSBKT/jBzwFLgMl7aHLEjcb+/ibH3KT
-        WiNgjipr9MpRasJ8fn2V57eekGCTxnvJp6W3uTBLwOVMJVr3mOkvm2FkKHneh6yKXrsfdVjSZyS
-        g1i+l7kcOh3DEN7vibTpynvAQT7ZKeqV0tgLPuIKJeUTSXmaKKio6KzSKRAW5ADcx
-X-Google-Smtp-Source: APXvYqwFySBwhDmWubik66Za/HSoTPrCfL6J22ybS6R7MgM9msxcoYeM1D8y80TRQ5uHI8Z/yAHKFDhdBVDd
-X-Received: by 2002:a81:7887:: with SMTP id t129mr4793143ywc.214.1570842900373;
- Fri, 11 Oct 2019 18:15:00 -0700 (PDT)
-Date:   Fri, 11 Oct 2019 18:14:55 -0700
-Message-Id: <20191012011455.211242-1-maheshb@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
-Subject: [PATCHv3 next] blackhole_netdev: fix syzkaller reported issue
-From:   Mahesh Bandewar <maheshb@google.com>
-To:     Netdev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
-        David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Mahesh Bandewar <maheshb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728545AbfJLB37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 21:29:59 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21090 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726829AbfJLB37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 21:29:59 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9C1Th5Z026101;
+        Fri, 11 Oct 2019 18:29:43 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=wk1l1XFJbCP+Isf26DXhkMLC5pdYSaiTBOC1Dv8Udk8=;
+ b=nKHTksTHVoIZx8tJSUyXNeuCER8OclMBRTjsI8H5hBGH9LRc4DtDnBVn4Lgt5tOVJ7uQ
+ G1EjkwfciW1hoTTf7C6OnGYkj9M7rrSAcubNQdomkVzX0FvSYCIScQhOdWrjngUw+rEI
+ vH22s/pgqA2P44R6WolgeX5FZE+5jo25nIw= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vk0vegw63-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 11 Oct 2019 18:29:43 -0700
+Received: from prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) by
+ prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Fri, 11 Oct 2019 18:29:42 -0700
+Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
+ prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Fri, 11 Oct 2019 18:29:41 -0700
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Fri, 11 Oct 2019 18:29:41 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nHX36yj9PzEpm5xuablnWC/PVSyXFMFO9iaEyvTLB3F+QjaI1iUgiMxko8J2lWe8pvx93KFXpiwKKzSMj+m18nxmrf71yYYM1+pu3GAqrLtywg+7OA7FXkHis/dkZVZslGzBts7SXeehHlaiSWSCYXQ9iwy6wFQRrVybou5dBNLqEWxYHhYkt9sy8JM8skOarc1D5wtNmZVw5S1icyLVdjSoixkEGFXdTGLFBHznXwi4pSNCAaGTLYyKRpT9TtSWusGpkCopb3rHTcRKtsz3XOswnMeWb3G6N48fmGhUlbi1W3h2v/sqoVQKJ3lONwYM/sMAf2nP567pPOcjG0uNIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wk1l1XFJbCP+Isf26DXhkMLC5pdYSaiTBOC1Dv8Udk8=;
+ b=W5vv4/EiyTBLtF8FOmpNerAPO4A15xpSAZdFgRnjfwexMjKCP1fOmPXWsBUIGMGKntwmTTMq2irEOM2oKRFY1I3P0XUIL6so0N0fH7AdWa/Iia+ECRKFUyvSc++ztwrvWIgmNdEFBbEKUI1klr6WX6d+jX/zn0o9KUSuRbqC1rIhMyHnamoBAM/7Qu6w9G5pLP33BAlv5uzv0mOb9E8H7l8AxrisbdZIbUr47aCZxk8drDFQ1pED8z5wc6PEvjiax5+/6ugaqm4ZXo7iMPujfTLvfxcJsZcVTxbsmrZ7rVrUnivybbqwXWkMaEIwtnGj8KyaEqfHPTvEtXRjFnCDlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wk1l1XFJbCP+Isf26DXhkMLC5pdYSaiTBOC1Dv8Udk8=;
+ b=Uzl2jGIxS6ERCb48LjxFja0Wq6HlGhiErh8z2aC7vXch0RbQbVGLZPq1CA00Q9Im9PiVaX/I84xj+b4WIXyShIIarplkLhnoMXMN+/0Am/2uTZ2+F177h4eFtKRxUxnzGV8mxjdmZrBBzYGrdEpdYsyloiw+oZQW2Z/dapw5eMI=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB2470.namprd15.prod.outlook.com (52.135.192.153) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Sat, 12 Oct 2019 01:29:40 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0%5]) with mapi id 15.20.2347.021; Sat, 12 Oct 2019
+ 01:29:40 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 05/12] libbpf: auto-detect btf_id of
+ raw_tracepoint
+Thread-Topic: [PATCH v2 bpf-next 05/12] libbpf: auto-detect btf_id of
+ raw_tracepoint
+Thread-Index: AQHVfyFTTiLEwIVqQE6co+EkPTXoLKdVvxuAgABt1ACAAA3QgA==
+Date:   Sat, 12 Oct 2019 01:29:39 +0000
+Message-ID: <ec2ca725-6228-b9e9-e9fc-34e4b34d8a1a@fb.com>
+References: <20191010041503.2526303-1-ast@kernel.org>
+ <20191010041503.2526303-6-ast@kernel.org>
+ <CAEf4BzZxQDUzYYjF091135d+O_fwZVdK9Dqw5H4_z=5QBqueYg@mail.gmail.com>
+ <0dbf83e8-10ec-cc17-c575-949639a7f018@fb.com>
+In-Reply-To: <0dbf83e8-10ec-cc17-c575-949639a7f018@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR02CA0025.namprd02.prod.outlook.com
+ (2603:10b6:301:60::14) To BYAPR15MB2501.namprd15.prod.outlook.com
+ (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::3d03]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2e794c5c-6371-4dca-0d93-08d74eb3a69b
+x-ms-traffictypediagnostic: BYAPR15MB2470:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2470F69B990D2A49833A866FD7960@BYAPR15MB2470.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0188D66E61
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(396003)(39860400002)(366004)(346002)(199004)(189003)(86362001)(6116002)(6506007)(46003)(5024004)(14444005)(71190400001)(71200400001)(31686004)(478600001)(102836004)(229853002)(2906002)(6486002)(386003)(31696002)(99286004)(186003)(6436002)(8936002)(53546011)(81156014)(81166006)(8676002)(36756003)(7736002)(64756008)(66556008)(66446008)(6512007)(256004)(66946007)(66476007)(52116002)(6246003)(5660300002)(76176011)(446003)(110136005)(14454004)(316002)(54906003)(4326008)(25786009)(2616005)(11346002)(476003)(486006)(305945005);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2470;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VSg1KPx4iOXSlg72Zoh50dnp0WYPS+0osgnlbE7VZjxc+lchVNuk8d4GuPx7XQqUYUxVCg0jU1VFWru6vcfcSHB6LyPwx7YlefXebt+G+P0W7gk2CszasHB+jI4lwAXh4PWVvYJHjkgeRsyjFiRL/CxuyM9wiXl1foehp2sRuDl/iSgrWoh/p8N/iYcsLmX4HCQxSQRcIPhEcxSUohVdAY65zbCpjyG3gpxNZTSC2VPD7CqMqn+RKFXcpwDOuLiVYaPMB4QrSmjBxjlGZEOQnCJfil/tuARWvQAb94ny4s6ZP+0IZxrjgooSZzvmasxvOa8HChtPC24i2gVCivHoyE9g3Rnsqt9CJYbA+90DjgyIFJOvpYNJ+Lfhd0yNRLuuvcaVLnRwDRYvPPM7LE6M8EG+Y2tscAi1EIFppkopAbk=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C9FCBB8A15E666428D4636489AC23721@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e794c5c-6371-4dca-0d93-08d74eb3a69b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Oct 2019 01:29:39.9775
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LjE/Zj5Gb6Qhn02A+Xy7qifJMHuWwe6iqWKARWndF/pArawuqi8LbDuD6bUPV9SX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2470
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-11_12:2019-10-10,2019-10-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ impostorscore=0 adultscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0
+ mlxscore=0 malwarescore=0 spamscore=0 mlxlogscore=913 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910120006
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While invalidating the dst, we assign backhole_netdev instead of
-loopback device. However, this device does not have idev pointer
-and hence no ip6_ptr even if IPv6 is enabled. Possibly this has
-triggered the syzbot reported crash.
-
-The syzbot report does not have reproducer, however, this is the
-only device that doesn't have matching idev created.
-
-Crash instruction is :
-
-static inline bool ip6_ignore_linkdown(const struct net_device *dev)
-{
-        const struct inet6_dev *idev = __in6_dev_get(dev);
-
-        return !!idev->cnf.ignore_routes_with_linkdown; <= crash
-}
-
-Also ipv6 always assumes presence of idev and never checks for it
-being NULL (as does the above referenced code). So adding a idev
-for the blackhole_netdev to avoid this class of crashes in the future.
-
----
-
-syzbot has found the following crash on:
-
-HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-console output: https://syzkaller-buganizer.googleplex.com/text?tag=CrashLog&id=96236769ac48d9c2eb3a0db5385370ea6940be83
-kernel config:  https://syzkaller-buganizer.googleplex.com/text?tag=Config&id=1ed331b637302a68174fdbe34315b781b7c7ab1e
-dashboard link: https://syzkaller.appspot.com/bug?extid=86298614df433d7f3824
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-See http://go/syzbot for details on how to handle this bug.
-
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 16525 Comm: syz-executor.2 Not tainted 5.3.0-rc3+ #159
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-__find_rr_leaf+0x14e/0x750 net/ipv6/route.c:831
-find_rr_leaf net/ipv6/route.c:852 [inline]
-rt6_select net/ipv6/route.c:896 [inline]
-fib6_table_lookup+0x697/0xdb0 net/ipv6/route.c:2164
-ip6_pol_route+0x1f6/0xaf0 net/ipv6/route.c:2200
-ip6_pol_route_output+0x54/0x70 net/ipv6/route.c:2452
-fib6_rule_lookup+0x133/0x7a0 net/ipv6/fib6_rules.c:113
-ip6_route_output_flags_noref+0x2d6/0x360 net/ipv6/route.c:2484
-ip6_route_output_flags+0x106/0x4d0 net/ipv6/route.c:2497
-ip6_route_output include/net/ip6_route.h:98 [inline]
-ip6_dst_lookup_tail+0x1042/0x1ef0 net/ipv6/ip6_output.c:1022
-ip6_dst_lookup_flow+0xa8/0x220 net/ipv6/ip6_output.c:1150
-ip6_sk_dst_lookup_flow net/ipv6/ip6_output.c:1188 [inline]
-ip6_sk_dst_lookup_flow+0x62a/0xb90 net/ipv6/ip6_output.c:1178
-udpv6_sendmsg+0x17ba/0x2990 net/ipv6/udp.c:1439
-inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
-sock_sendmsg_nosec net/socket.c:637 [inline]
-sock_sendmsg+0xd7/0x130 net/socket.c:657
-__sys_sendto+0x262/0x380 net/socket.c:1952
-__do_sys_sendto net/socket.c:1964 [inline]
-__se_sys_sendto net/socket.c:1960 [inline]
-__x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
-do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459829
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fa15e7ddc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000459829
-RDX: 0000000000000001 RSI: 0000000020000000 RDI: 0000000000000007
-RBP: 000000000075c1c0 R08: 0000000020001000 R09: 000000000000001c
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa15e7de6d4
-R13: 00000000004c77e7 R14: 00000000004dd048 R15: 00000000ffffffff
-Modules linked in:
----[ end trace 4b3ce5eddd15c8f6 ]---
-RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
-RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
-Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
-RSP: 0018:ffff88806c037038 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
-RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
-RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
-R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
-R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
-FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Fixes: 8d7017fd621d ("blackhole_netdev: use blackhole_netdev to invalidate dst entries")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-CC: Eric Dumazet <edumazet@google.com>
-CC: Wei Wang <weiwan@google.com>
----
-v1->v2:
-   fixed missing update in ip6_dst_ifdown()
-v2->v3:
-   added idev cleanup step in addrconf_cleanup()
-
- net/ipv6/addrconf.c |  7 ++++++-
- net/ipv6/route.c    | 15 ++++++---------
- 2 files changed, 12 insertions(+), 10 deletions(-)
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 98d82305d6de..2a01404aba78 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -6995,7 +6995,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
- 
- int __init addrconf_init(void)
- {
--	struct inet6_dev *idev;
-+	struct inet6_dev *idev, *bdev;
- 	int i, err;
- 
- 	err = ipv6_addr_label_init();
-@@ -7035,10 +7035,14 @@ int __init addrconf_init(void)
- 	 */
- 	rtnl_lock();
- 	idev = ipv6_add_dev(init_net.loopback_dev);
-+	bdev = ipv6_add_dev(blackhole_netdev);
- 	rtnl_unlock();
- 	if (IS_ERR(idev)) {
- 		err = PTR_ERR(idev);
- 		goto errlo;
-+	} else if (IS_ERR(bdev)) {
-+		err = PTR_ERR(bdev);
-+		goto errlo;
- 	}
- 
- 	ip6_route_init_special_entries();
-@@ -7123,6 +7127,7 @@ void addrconf_cleanup(void)
- 		addrconf_ifdown(dev, 1);
- 	}
- 	addrconf_ifdown(init_net.loopback_dev, 2);
-+	addrconf_ifdown(blackhole_netdev, 2);
- 
- 	/*
- 	 *	Check hash table.
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index a63ff85fe141..742120728869 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -155,10 +155,9 @@ void rt6_uncached_list_del(struct rt6_info *rt)
- 
- static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- {
--	struct net_device *loopback_dev = net->loopback_dev;
- 	int cpu;
- 
--	if (dev == loopback_dev)
-+	if (dev == net->loopback_dev)
- 		return;
- 
- 	for_each_possible_cpu(cpu) {
-@@ -171,7 +170,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- 			struct net_device *rt_dev = rt->dst.dev;
- 
- 			if (rt_idev->dev == dev) {
--				rt->rt6i_idev = in6_dev_get(loopback_dev);
-+				rt->rt6i_idev = in6_dev_get(blackhole_netdev);
- 				in6_dev_put(rt_idev);
- 			}
- 
-@@ -386,13 +385,11 @@ static void ip6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
- {
- 	struct rt6_info *rt = (struct rt6_info *)dst;
- 	struct inet6_dev *idev = rt->rt6i_idev;
--	struct net_device *loopback_dev =
--		dev_net(dev)->loopback_dev;
- 
--	if (idev && idev->dev != loopback_dev) {
--		struct inet6_dev *loopback_idev = in6_dev_get(loopback_dev);
--		if (loopback_idev) {
--			rt->rt6i_idev = loopback_idev;
-+	if (idev && idev->dev != dev_net(dev)->loopback_dev) {
-+		struct inet6_dev *ibdev = in6_dev_get(blackhole_netdev);
-+		if (ibdev) {
-+			rt->rt6i_idev = ibdev;
- 			in6_dev_put(idev);
- 		}
- 	}
--- 
-2.23.0.700.g56cf767bdb-goog
-
+T24gMTAvMTEvMTkgNTo0MCBQTSwgQWxleGVpIFN0YXJvdm9pdG92IHdyb3RlOg0KPj4gQnV0IGV2
+ZW4gaWYga2VybmVsIHN1cHBvcnRzIGF0dGFjaF9idGZfaWQsIEkgdGhpbmsgdXNlcnMgc3RpbGwg
+bmVlZCB0bw0KPj4gb3B0IGluIGludG8gc3BlY2lmeWluZyBhdHRhY2hfYnRmX2lkIGJ5IGxpYmJw
+Zi4gVGhpbmsgYWJvdXQgZXhpc3RpbmcNCj4+IHJhd190cCBwcm9ncmFtcyB0aGF0IGFyZSB1c2lu
+ZyBicGZfcHJvYmVfcmVhZCgpIGJlY2F1c2UgdGhleSB3ZXJlIG5vdA0KPj4gY3JlYXRlZCB3aXRo
+IHRoaXMga2VybmVsIGZlYXR1cmUgaW4gbWluZC4gVGhleSB3aWxsIHN1ZGRlbmx5IHN0b3ANCj4+
+IHdvcmtpbmcgd2l0aG91dCBhbnkgb2YgdXNlcidzIGZhdWx0Lg0KPiANCj4gVGhpcyBvbmUgaXMg
+ZXhjZWxsZW50IGNhdGNoLg0KPiBsb29wMS5jIHNob3VsZCBoYXZlIGNhdWdodCBpdCwgc2luY2Ug
+aXQgaGFzDQo+IFNFQygicmF3X3RyYWNlcG9pbnQva2ZyZWVfc2tiIikNCj4gew0KPiAgwqAgaW50
+IG5lc3RlZF9sb29wcyh2b2xhdGlsZSBzdHJ1Y3QgcHRfcmVncyogY3R4KQ0KPiAgwqDCoCAuLiA9
+IFBUX1JFR1NfUkMoY3R4KTsNCj4gDQo+IGFuZCB2ZXJpZmllciB3b3VsZCBoYXZlIHJlamVjdGVk
+IGl0Lg0KPiBCdXQgdGhlIHdheSB0aGUgdGVzdCBpcyB3cml0dGVuIGl0J3Mgbm90IHVzaW5nIGxp
+YmJwZidzIGF1dG9kZXRlY3QNCj4gb2YgcHJvZ3JhbSB0eXBlLCBzbyBldmVyeXRoaW5nIGlzIHBh
+c3NpbmcuDQoNCldpdGg6DQpkaWZmIC0tZ2l0IGEvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBm
+L3Byb2dfdGVzdHMvYnBmX3ZlcmlmX3NjYWxlLmMgDQpiL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3Rz
+L2JwZi9wcm9nX3Rlc3RzL2JwZl92ZXJpZl9zY2FsZS5jDQppbmRleCAxYzAxZWUyNjAwYTkuLmUy
+NzE1NmRjZTEwZCAxMDA2NDQNCi0tLSBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9n
+X3Rlc3RzL2JwZl92ZXJpZl9zY2FsZS5jDQorKysgYi90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9i
+cGYvcHJvZ190ZXN0cy9icGZfdmVyaWZfc2NhbGUuYw0KQEAgLTY3LDcgKzY3LDcgQEAgdm9pZCB0
+ZXN0X2JwZl92ZXJpZl9zY2FsZSh2b2lkKQ0KICAgICAgICAgICAgICAgICAgKi8NCiAgICAgICAg
+ICAgICAgICAgeyAicHlwZXJmNjAwX25vdW5yb2xsLm8iLCBCUEZfUFJPR19UWVBFX1JBV19UUkFD
+RVBPSU5UIH0sDQoNCi0gICAgICAgICAgICAgICB7ICJsb29wMS5vIiwgQlBGX1BST0dfVFlQRV9S
+QVdfVFJBQ0VQT0lOVCB9LA0KKyAgICAgICAgICAgICAgIHsgImxvb3AxLm8iLCBCUEZfUFJPR19U
+WVBFX1VOU1BFQ30sDQogICAgICAgICAgICAgICAgIHsgImxvb3AyLm8iLCBCUEZfUFJPR19UWVBF
+X1JBV19UUkFDRVBPSU5UIH0sDQoNCmxpYmJwZiBwcm9nIGF1dG8tZGV0ZWN0aW9uIGtpY2tzIGlu
+IGFuZCAuLi4NCiMgLi90ZXN0X3Byb2dzIC1uIDMvMTANCmxpYmJwZjogbG9hZCBicGYgcHJvZ3Jh
+bSBmYWlsZWQ6IFBlcm1pc3Npb24gZGVuaWVkDQpsaWJicGY6IC0tIEJFR0lOIERVTVAgTE9HIC0t
+LQ0KbGliYnBmOg0KcmF3X3RwICdrZnJlZV9za2InIGRvZXNuJ3QgaGF2ZSAxMC10aCBhcmd1bWVu
+dA0KaW52YWxpZCBicGZfY29udGV4dCBhY2Nlc3Mgb2ZmPTgwIHNpemU9OA0KDQpHb29kIDopIFRo
+ZSB2ZXJpZmllciBpcyBkb2luZyBpdHMgam9iLg0K
