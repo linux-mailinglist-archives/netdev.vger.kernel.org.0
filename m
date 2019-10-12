@@ -2,75 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08386D4DDF
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 09:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD3C1D4DF0
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 09:29:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728787AbfJLHQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 03:16:23 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:60060 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726728AbfJLHQX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 03:16:23 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01419;MF=zhiyuan2048@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0TenwfOo_1570864580;
-Received: from localhost(mailfrom:zhiyuan2048@linux.alibaba.com fp:SMTPD_---0TenwfOo_1570864580)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 12 Oct 2019 15:16:20 +0800
-From:   Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: sched: act_mirred: drop skb's dst_entry in ingress redirection
-Date:   Sat, 12 Oct 2019 15:16:20 +0800
-Message-Id: <20191012071620.8595-1-zhiyuan2048@linux.alibaba.com>
-X-Mailer: git-send-email 2.21.0
+        id S1728856AbfJLH24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 03:28:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:33154 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727014AbfJLH24 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 03:28:56 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CC66F307D853;
+        Sat, 12 Oct 2019 07:28:55 +0000 (UTC)
+Received: from [10.72.12.150] (ovpn-12-150.pek2.redhat.com [10.72.12.150])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B516E10013D9;
+        Sat, 12 Oct 2019 07:28:51 +0000 (UTC)
+Subject: Re: [PATCH RFC v1 1/2] vhost: option to fetch descriptors through an
+ independent struct
+To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+References: <20191011134358.16912-1-mst@redhat.com>
+ <20191011134358.16912-2-mst@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <3b2a6309-9d21-7172-a581-9f0f1d5c1427@redhat.com>
+Date:   Sat, 12 Oct 2019 15:28:49 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20191011134358.16912-2-mst@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Sat, 12 Oct 2019 07:28:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In act_mirred's ingress redirection, if the skb's dst_entry is valid
-when call function netif_receive_skb, the fllowing l3 stack process
-(ip_rcv_finish_core) will check dst_entry and skip the routing
-decision. Using the old dst_entry is unexpected and may discard the
-skb in some case. For example dst->dst_input points to dst_discard.
 
-This patch drops the skb's dst_entry before calling netif_receive_skb
-so that the skb can be made routing decision like a normal ingress
-skb.
+On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
+> The idea is to support multiple ring formats by converting
+> to a format-independent array of descriptors.
+>
+> This costs extra cycles, but we gain in ability
+> to fetch a batch of descriptors in one go, which
+> is good for code cache locality.
+>
+> To simplify benchmarking, I kept the old code
+> around so one can switch back and forth by
+> writing into a module parameter.
+> This will go away in the final submission.
+>
+> This patch causes a minor performance degradation,
+> it's been kept as simple as possible for ease of review.
+> Next patch gets us back the performance by adding batching.
+>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>   drivers/vhost/test.c  |  17 ++-
+>   drivers/vhost/vhost.c | 299 +++++++++++++++++++++++++++++++++++++++++-
+>   drivers/vhost/vhost.h |  16 +++
+>   3 files changed, 327 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> index 056308008288..39a018a7af2d 100644
+> --- a/drivers/vhost/test.c
+> +++ b/drivers/vhost/test.c
+> @@ -18,6 +18,9 @@
+>   #include "test.h"
+>   #include "vhost.h"
+>   
+> +static int newcode = 0;
+> +module_param(newcode, int, 0644);
+> +
+>   /* Max number of bytes transferred before requeueing the job.
+>    * Using this limit prevents one virtqueue from starving others. */
+>   #define VHOST_TEST_WEIGHT 0x80000
+> @@ -58,10 +61,16 @@ static void handle_vq(struct vhost_test *n)
+>   	vhost_disable_notify(&n->dev, vq);
+>   
+>   	for (;;) {
+> -		head = vhost_get_vq_desc(vq, vq->iov,
+> -					 ARRAY_SIZE(vq->iov),
+> -					 &out, &in,
+> -					 NULL, NULL);
+> +		if (newcode)
+> +			head = vhost_get_vq_desc_batch(vq, vq->iov,
+> +						       ARRAY_SIZE(vq->iov),
+> +						       &out, &in,
+> +						       NULL, NULL);
+> +		else
+> +			head = vhost_get_vq_desc(vq, vq->iov,
+> +						 ARRAY_SIZE(vq->iov),
+> +						 &out, &in,
+> +						 NULL, NULL);
+>   		/* On error, stop handling until the next kick. */
+>   		if (unlikely(head < 0))
+>   			break;
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 36ca2cf419bf..36661d6cb51f 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -301,6 +301,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>   			   struct vhost_virtqueue *vq)
+>   {
+>   	vq->num = 1;
+> +	vq->ndescs = 0;
+>   	vq->desc = NULL;
+>   	vq->avail = NULL;
+>   	vq->used = NULL;
+> @@ -369,6 +370,9 @@ static int vhost_worker(void *data)
+>   
+>   static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
+>   {
+> +	kfree(vq->descs);
+> +	vq->descs = NULL;
+> +	vq->max_descs = 0;
+>   	kfree(vq->indirect);
+>   	vq->indirect = NULL;
+>   	kfree(vq->log);
+> @@ -385,6 +389,10 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+>   
+>   	for (i = 0; i < dev->nvqs; ++i) {
+>   		vq = dev->vqs[i];
+> +		vq->max_descs = dev->iov_limit;
+> +		vq->descs = kmalloc_array(vq->max_descs,
+> +					  sizeof(*vq->descs),
+> +					  GFP_KERNEL);
 
-Signed-off-by: Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
----
- net/sched/act_mirred.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 9ce073a05414..6108a64c0cd5 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -18,6 +18,7 @@
- #include <linux/gfp.h>
- #include <linux/if_arp.h>
- #include <net/net_namespace.h>
-+#include <net/dst.h>
- #include <net/netlink.h>
- #include <net/pkt_sched.h>
- #include <net/pkt_cls.h>
-@@ -298,8 +299,10 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 
- 	if (!want_ingress)
- 		err = dev_queue_xmit(skb2);
--	else
-+	else {
-+		skb_dst_drop(skb2);
- 		err = netif_receive_skb(skb2);
-+	}
- 
- 	if (err) {
- out:
--- 
-2.21.0
+Is iov_limit too much here? It can obviously increase the footprint. I 
+guess the batching can only be done for descriptor without indirect or 
+next set. Then we may batch 16 or 64.
 
+Thanks
