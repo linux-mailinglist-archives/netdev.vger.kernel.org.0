@@ -2,119 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87FC1D5295
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 23:26:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B275D530D
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 00:30:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729762AbfJLV0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 17:26:50 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38665 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729671AbfJLV0u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 17:26:50 -0400
-Received: by mail-lj1-f193.google.com with SMTP id b20so13048062ljj.5
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 14:26:49 -0700 (PDT)
+        id S1727340AbfJLW2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 18:28:51 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45271 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727115AbfJLW2u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 18:28:50 -0400
+Received: by mail-pf1-f196.google.com with SMTP id y72so8165842pfb.12
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 15:28:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=l+nirvmkHLEBqBl6bw7lxrZbBMmPpPDkXnfegt2ERs0=;
-        b=bOOQ6fpaQHN/FWWatME7AFTtNCrf5dgO1ZU8WA/fBDgO7AEY8yXMZklcpRl4XNkq5T
-         eecBMUbKu/rM+OyMkdQIzmQ2S5VYs8FlfeeBmgWWu0eDBy43EWsj8uX0iYJKIb8MOC5z
-         msROfXVDW89+AcnvuStR3HUCuGucUvwGwo6zA3n9Q6fROANyForjuXNIn/t/f/GpG/o+
-         mOYoJ9C/2Zm01ycIU62BeDDkv5FRvUkOPXYtrApoCWqeg6wcwF3N+TK1QRjHkegswSBv
-         VvvKqBTKJJ5n2JLYN+WoeHgk7qOBooUw05QbaV05lYRP/+8ZCRDs9y+4Bw7uJGCGl7Z/
-         yGmw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=VUz1ok8zlsDkN/e0yUa6daO7kk73qbRZHIQaMPMh0hE=;
+        b=AQfsKzX8geJNl0V3ZkcnS+mCYrX046vbVPp5c/4JMWzngZzjPlE/E/2X3QKfNAnSXk
+         Fuoc5/xF4NrL74uRzOlZGdwWb9UyxhC59QTI2L8Zf95OQ2Ir+xU3FswM6h9+ujqm833K
+         654zPKRCmlej1yad8T2aUILu4uXNSLl/+wN2DpPtHcwCbaEqwNJckphA/x4zRWtPmd10
+         wPu4hUpYyWGEupt3Fie/Vv/cBfWe9guYiCXuSHd9MYlrpcYeEsMQmm54uxclgY9YcEWW
+         eSzKYYFVm0K33SnlSH6tKosm7BvgdJEszz6I3RFpDyFXeSXZf6oRKE8rDeQQJQInk+2n
+         We1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=l+nirvmkHLEBqBl6bw7lxrZbBMmPpPDkXnfegt2ERs0=;
-        b=pnD5bTv/cULsWa88JloG2IOYkMZLsDOSEnL01rq6my4hhyvWz1SScI4RD0qeezZCJo
-         zcdDm90s+htEik8gR/Wx9EtBzpl0OHkA3PGCFBAQZ2wtRAI8yYFipzUsXNNS0XHVY35Y
-         0/h5LaBPkm8woA+1LCNQheMdeI6EqAuTzq/s4lgXW2g7IN4cakq/lbYjIw+K94SUKNfj
-         N+sOruxufE6lwyfg2Y5l0dCtXDFhwBGw1T0D1HxlP1Njv8k/Dh2O1dXsv5qKIpyTHGmZ
-         OFYsIYisPYZxLuwG7Pg0fHLi0OLxVQ1RudyAxO5QQs1Q6Ec9v07i89cXGQQqnDEpPNge
-         Bqwg==
-X-Gm-Message-State: APjAAAVM7Knztk4Uqu47BB3fiIK+unOXqywPSemMpuw2rJPY17XCk31T
-        drdCIDXwXb4ErOUudbvaQ7MMkQ==
-X-Google-Smtp-Source: APXvYqx/zpvokyTYRRQY1lgFNCEeQnhx9hVn6IE+ZWV4Trp0oLV6Oz0w6zjygCjzS9E+uhEs2zkbfA==
-X-Received: by 2002:a2e:8315:: with SMTP id a21mr13301291ljh.73.1570915608214;
-        Sat, 12 Oct 2019 14:26:48 -0700 (PDT)
-Received: from khorivan (88-201-94-178.pool.ukrtel.net. [178.94.201.88])
-        by smtp.gmail.com with ESMTPSA id x30sm2931384ljd.39.2019.10.12.14.26.46
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 12 Oct 2019 14:26:47 -0700 (PDT)
-Date:   Sun, 13 Oct 2019 00:26:45 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
-        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v5 bpf-next 09/15] samples/bpf: use own flags but not
- HOSTCFLAGS
-Message-ID: <20191012212643.GC3689@khorivan>
-Mail-Followup-To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
-        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org
-References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
- <20191011002808.28206-10-ivan.khoronzhuk@linaro.org>
- <99f76e2f-ed76-77e0-a470-36ae07567111@cogentembedded.com>
- <20191011095715.GB3689@khorivan>
- <3fb88a06-5253-1e48-9bea-2d31a443250b@cogentembedded.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=VUz1ok8zlsDkN/e0yUa6daO7kk73qbRZHIQaMPMh0hE=;
+        b=kpPBBxWz2QUszm+aiNBIHA7jWbznQDJD9/HOJU436bjPIIlI8nSFW+maowI9V1fxbo
+         AZAjb7CsTZpIjtYUhNlAAT5CYYM3l9rgIrwxV2K6Ny78oQsg41mtgwP2nrGUZiDCr0Aj
+         U2j6II2itqLpn5YOcjtO+jnJzwf4/a8TWDFLF9ig3hdpxwclA9OTiv4pWVqnRLGBenMv
+         2nJl5G97V4qL1KE6JBuvHDi0KqhRoriqn8xEwKNBpKYs+7+0J2Z4pYz9DZMyiHQOynjS
+         p7RXEpzuEoi+p5cckRHyU6+1jaACfi1BfW7G8G83n6R40+74L+x3d8zrhFRMG3JmGMwa
+         Tayg==
+X-Gm-Message-State: APjAAAVPAeGCntRHM1qlB9jB81X4di0W7pjpstBfuO+/bPu+MMJwvIhg
+        qm43+v0S6OnbLSo8LOn1iiPf2y9qSXc=
+X-Google-Smtp-Source: APXvYqzKx+XsKrTmeylXJ5g9lfyCuIEbJb/hZJmUWpL72bhHFDogMj6eaYFbbssnqSKW6mnUKiMOew==
+X-Received: by 2002:a65:685a:: with SMTP id q26mr6608450pgt.32.1570919329917;
+        Sat, 12 Oct 2019 15:28:49 -0700 (PDT)
+Received: from cakuba.netronome.com ([2601:646:8e00:e18::2])
+        by smtp.gmail.com with ESMTPSA id f6sm12756846pfq.169.2019.10.12.15.28.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Oct 2019 15:28:49 -0700 (PDT)
+Date:   Sat, 12 Oct 2019 15:28:45 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mariusz Bialonczyk <manio@skyboo.net>
+Subject: Re: [PATCH net] r8169: fix jumbo packet handling on resume from
+ suspend
+Message-ID: <20191012152845.6ff9430d@cakuba.netronome.com>
+In-Reply-To: <03561754-aec2-7015-4b4d-32707bf3bd2d@gmail.com>
+References: <05ef825e-6ab2-cc25-be4e-54d52acd752f@gmail.com>
+        <20191010163630.0afb5dd8@cakuba.netronome.com>
+        <03561754-aec2-7015-4b4d-32707bf3bd2d@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <3fb88a06-5253-1e48-9bea-2d31a443250b@cogentembedded.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 02:16:05PM +0300, Sergei Shtylyov wrote:
->On 10/11/2019 12:57 PM, Ivan Khoronzhuk wrote:
->
->>>> While compiling natively, the host's cflags and ldflags are equal to
->>>> ones used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it
->>>> should have own, used for target arch. While verification, for arm,
->>>
->>>   While verifying.
->> While verification stage.
->
->   While *in* verification stage, "while" doesn't combine with nouns w/o
->a preposition.
+On Fri, 11 Oct 2019 08:03:24 +0200, Heiner Kallweit wrote:
+> On 11.10.2019 01:36, Jakub Kicinski wrote:
+> > On Wed, 9 Oct 2019 20:55:48 +0200, Heiner Kallweit wrote: =20
+> >> Mariusz reported that invalid packets are sent after resume from
+> >> suspend if jumbo packets are active. It turned out that his BIOS
+> >> resets chip settings to non-jumbo on resume. Most chip settings are
+> >> re-initialized on resume from suspend by calling rtl_hw_start(),
+> >> so let's add configuring jumbo to this function.
+> >> There's nothing wrong with the commit marked as fixed, it's just
+> >> the first one where the patch applies cleanly.
+> >>
+> >> Fixes: 7366016d2d4c ("r8169: read common register for PCI commit")
+> >> Reported-by: Mariusz Bialonczyk <manio@skyboo.net>
+> >> Tested-by: Mariusz Bialonczyk <manio@skyboo.net>
+> >> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com> =20
+> >=20
+> > Applied, somewhat begrudgingly - this really isn't the way the Fixes
+> > tag should be used, but I appreciate it may be hard at this point to
+> > pin down a commit to blame given how many generations of HW this driver
+> > supports and how old it is.. perhaps I should have removed the tag in
+> > this case, hm.
+> >=20
+> > Since the selected commit came in 5.4 I'm not queuing for stable.
+> >  =20
+> The issue seems to have been there forever, but patch applies from a
+> certain kernel version only. I agree that using the Fixes tag to provide
+> this information is kind of a misuse. How would you prefer to get that
+> information, add a comment below the commit message similar to the list
+> of changes in a new version of a patch series?
 
+I'd put the backport help under the --- lines, maybe additionally
+mentioning its presence in the commit message (lore link would
+complete the picture). Like we do for merges.=20
 
-Sergei, better add me in cc list when msg is to me I can miss it.
+Although I think Dave queues for stable immediately when patch is=20
+merged to net, so if the backport is to last release or two I think=20
+the info under --- could be as useful as in the commit message.
 
-Regarding the language lesson, thanks, I will keep it in mind next
-time, but the issue is not rude, if it's an issue at all, so I better
-leave it as is, as not reasons to correct it w/o code changes and
-everyone is able to understand it.
-
->
->>>> arm64 and x86_64 the following flags were used always:
->>>>
->>>> -Wall -O2
->>>> -fomit-frame-pointer
->>>> -Wmissing-prototypes
->>>> -Wstrict-prototypes
->>>>
->>>> So, add them as they were verified and used before adding
->>>> Makefile.target and lets omit "-fomit-frame-pointer" as were proposed
->>>> while review, as no sense in such optimization for samples.
->>>>
->>>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->>> [...]
->
->MBR, Sergei
-
--- 
-Regards,
-Ivan Khoronzhuk
+Another way would be posting the backported patch (say for the most
+recent LTS) if the backport is hard and fix important =F0=9F=A4=94
