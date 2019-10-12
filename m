@@ -2,110 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72C4FD5271
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 22:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E1AD5276
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 22:39:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729720AbfJLUhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 16:37:02 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52344 "EHLO mx1.redhat.com"
+        id S1729766AbfJLUig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 16:38:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52552 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729730AbfJLUhB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Oct 2019 16:37:01 -0400
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
+        id S1729463AbfJLUif (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 16:38:35 -0400
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5712D81F0E
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 20:37:01 +0000 (UTC)
-Received: by mail-wm1-f71.google.com with SMTP id r187so5202726wme.0
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 13:37:01 -0700 (PDT)
+        by mx1.redhat.com (Postfix) with ESMTPS id 759BE81F0E
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 20:38:35 +0000 (UTC)
+Received: by mail-wr1-f70.google.com with SMTP id i10so6296596wrb.20
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 13:38:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=nsuG9DynP4h5A9hJiRAHv7ZghRiHq0bUTGCGrIQlgl4=;
-        b=KwpBPOLsmNXjCgpmWXOz4LDbh0tyqpgnZ7V1hPLZoc2wJyxo5mf74eKxPdbQj2HtA2
-         oKmNlFyMxrd+VmDn/hV90y7II9oIu9ktUWjAon/zS0s5De8rSFozYlyCov6WCWTOL0U5
-         NOeLq4JHDlouwWFjslNzY2thRdLm/kPXDjFQ124pKW7t3qgWeSfDp7NXvhA/XKmVkevw
-         sqUV57f3oolvn6eyYSpWmWaYyr9hk8YBHw3EAKUjfmECf912TXtjLFgrs7ph46Xbt+MA
-         cTg/VAkkBlYvtizedejKPnalULJzVCr7oARfX6HLzeOO8lhmFMpN+6qHVTUM1+FB3EvX
-         SGrg==
-X-Gm-Message-State: APjAAAVRyZTWEGk87uUUun7/vIH6kbOsxf2uy5BR1mrIn8NZM4qwiXyY
-        hjJ6Dj7kjjh4qL+xp29aCbjkV4YmKmXE9vlest3AinL8WdhX1678ZnNoqMT766jX+BkEZUgd3vP
-        ENxlNAQfQkHR18cEP
-X-Received: by 2002:a5d:6709:: with SMTP id o9mr18541565wru.116.1570912620067;
-        Sat, 12 Oct 2019 13:37:00 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqy8AwCsOKbqErxze+dj/LkUtWRGrZpyJTxNw8vodxFVLNH1FPTXAO2PjutYGomFF101n5ZJLw==
-X-Received: by 2002:a5d:6709:: with SMTP id o9mr18541555wru.116.1570912619857;
-        Sat, 12 Oct 2019 13:36:59 -0700 (PDT)
+        bh=zmPj2OxDNyXZOWfS3El2cDjqPuAIR1jv4Mzr0dbrQms=;
+        b=sg0sfIVboxMETIZ6n3GYv58kZdeyKlxBzqC77DTB1Hys+mJAw78Vre8/+MSM7oTbNU
+         rj9QVlnIexsiKXsJ0+sh4HObJVWCcMH/3u4lnvPQBHbeqd1ISqoOU5P3naG33hjvsyv4
+         gVfAydqOqJu+QfOYVqk6vWMyi3Enb0Ic4vy45WbISyCXCwXxOYh0WFmZAzKey3PwDzXE
+         /wxBkGOyDGor9+aXrbMQJO7uH5/lx3CdkQrIcBXDlW9oil/Z2uvHKLMXNddl/ddbFeGz
+         CYB3Js9TRptvmJpgQRvNPx6by86UG/E6HSwfm/mnDUmA93gphVTus4DGm0rY4E6QmHQR
+         QXQg==
+X-Gm-Message-State: APjAAAUo6UEHFsexWY8aqnUx7iO3RRh471/b0vQGgQE3Bal6aeenJbvC
+        N9xZt3bM3ncWkvA2agXIODaPy0Cjd5HiVLmDjt4lNnRz3AMk/eahIyqtlMPmGwxAN/w4K05wKFv
+        5tSaHXXwJ7vaaaZ+5
+X-Received: by 2002:a7b:c049:: with SMTP id u9mr8213033wmc.12.1570912714183;
+        Sat, 12 Oct 2019 13:38:34 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxLj0k8Cpx24uQX9iVZhXvEuBPVthfbnxlWlPHo0thYY39YAYdauQAejs0EHhOHdoLpHMtkEQ==
+X-Received: by 2002:a7b:c049:: with SMTP id u9mr8213024wmc.12.1570912713950;
+        Sat, 12 Oct 2019 13:38:33 -0700 (PDT)
 Received: from redhat.com (bzq-79-176-10-77.red.bezeqint.net. [79.176.10.77])
-        by smtp.gmail.com with ESMTPSA id d78sm17957635wmd.47.2019.10.12.13.36.58
+        by smtp.gmail.com with ESMTPSA id b62sm17312605wmc.13.2019.10.12.13.38.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Oct 2019 13:36:59 -0700 (PDT)
-Date:   Sat, 12 Oct 2019 16:36:56 -0400
+        Sat, 12 Oct 2019 13:38:33 -0700 (PDT)
+Date:   Sat, 12 Oct 2019 16:38:30 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Jason Wang <jasowang@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC v1 0/2] vhost: ring format independence
-Message-ID: <20191012163635-mutt-send-email-mst@kernel.org>
-References: <20191011134358.16912-1-mst@redhat.com>
- <b24b3c9e-3a5d-fa5e-8218-ea7def0e5a39@redhat.com>
+Cc:     prashantbhole.linux@gmail.com,
+        "David S . Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] vhost_net: access ptr ring using tap recvmsg
+Message-ID: <20191012163722-mutt-send-email-mst@kernel.org>
+References: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
+ <8f319697-34e1-fde5-65f3-7db8dc723982@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b24b3c9e-3a5d-fa5e-8218-ea7def0e5a39@redhat.com>
+In-Reply-To: <8f319697-34e1-fde5-65f3-7db8dc723982@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 03:31:50PM +0800, Jason Wang wrote:
+On Sat, Oct 12, 2019 at 03:57:21PM +0800, Jason Wang wrote:
 > 
-> On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
-> > So the idea is as follows: we convert descriptors to an
-> > independent format first, and process that converting to
-> > iov later.
+> On 2019/10/12 上午9:53, prashantbhole.linux@gmail.com wrote:
+> > From: Prashant Bhole <prashantbhole.linux@gmail.com>
 > > 
-> > The point is that we have a tight loop that fetches
-> > descriptors, which is good for cache utilization.
-> > This will also allow all kind of batching tricks -
-> > e.g. it seems possible to keep SMAP disabled while
-> > we are fetching multiple descriptors.
-> > 
-> > And perhaps more importantly, this is a very good fit for the packed
-> > ring layout, where we get and put descriptors in order.
-> > 
-> > This patchset seems to already perform exactly the same as the original
-> > code already based on a microbenchmark.  More testing would be very much
-> > appreciated.
-> > 
-> > Biggest TODO before this first step is ready to go in is to
-> > batch indirect descriptors as well.
-> > 
-> > Integrating into vhost-net is basically
-> > s/vhost_get_vq_desc/vhost_get_vq_desc_batch/ -
-> > or add a module parameter like I did in the test module.
+> > vhost_net needs to peek tun packet sizes to allocate virtio buffers.
+> > Currently it directly accesses tap ptr ring to do it. Jason Wang
+> > suggested to achieve this using msghdr->msg_control and modifying the
+> > behavior of tap recvmsg.
 > 
 > 
-> It would be better to convert vhost_net then I can do some benchmark on
-> that.
+> Note this may use more indirect calls, this could be optimized in the future
+> by doing XDP/skb receiving by vhost_net its own.
+
+So it looks like this is going in the reverse direction,
+moving more data path code from vhost to tun.
+What's the point of the patchset then?
+
+
+> 
+> > 
+> > This change will be useful in future in case of virtio-net XDP
+> > offload. Where packets will be XDP processed in tap recvmsg and vhost
+> > will see only non XDP_DROP'ed packets.
+> > 
+> > Patch 1: reorganizes the tun_msg_ctl so that it can be extended by
+> >   the means of different commands. tap sendmsg recvmsg will behave
+> >   according to commands.
+> > 
+> > Patch 2: modifies recvmsg implementation to produce packet pointers.
+> >   vhost_net uses recvmsg API instead of ptr_ring_consume().
+> > 
+> > Patch 3: removes ptr ring usage in vhost and functions those export
+> >   ptr ring from tun/tap.
+> > 
+> > Prashant Bhole (3):
+> >    tuntap: reorganize tun_msg_ctl usage
+> >    vhost_net: user tap recvmsg api to access ptr ring
+> >    tuntap: remove usage of ptr ring in vhost_net
+> > 
+> >   drivers/net/tap.c      | 44 ++++++++++++++---------
+> >   drivers/net/tun.c      | 45 +++++++++++++++---------
+> >   drivers/vhost/net.c    | 79 ++++++++++++++++++++++--------------------
+> >   include/linux/if_tun.h |  9 +++--
+> >   4 files changed, 103 insertions(+), 74 deletions(-)
+> 
+> 
+> It would be helpful that if you can share some performance numbers here.
 > 
 > Thanks
-
-Sure, I post a small patch that does this.
-
-> 
-> > 
-> > 
-> > 
-> > Michael S. Tsirkin (2):
-> >    vhost: option to fetch descriptors through an independent struct
-> >    vhost: batching fetches
-> > 
-> >   drivers/vhost/test.c  |  19 ++-
-> >   drivers/vhost/vhost.c | 333 +++++++++++++++++++++++++++++++++++++++++-
-> >   drivers/vhost/vhost.h |  20 ++-
-> >   3 files changed, 365 insertions(+), 7 deletions(-)
-> > 
