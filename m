@@ -2,82 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D13EDD5341
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 01:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E1CD5348
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 01:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728114AbfJLXOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 19:14:40 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:38695 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727262AbfJLXOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 19:14:40 -0400
-Received: by mail-lf1-f66.google.com with SMTP id u28so9379646lfc.5;
-        Sat, 12 Oct 2019 16:14:37 -0700 (PDT)
+        id S1728053AbfJLXXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 19:23:03 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:38729 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727262AbfJLXXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 19:23:03 -0400
+Received: by mail-lj1-f194.google.com with SMTP id b20so13163180ljj.5;
+        Sat, 12 Oct 2019 16:23:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ia0hSBa10knYKGOnZiDVQmpAvNOJ+DPL78NAZDUpJtE=;
-        b=GYQvrGg9HhSMYphkXFdQhqgM0mquEQEJ69Ut03YgUNLIBLFb6/MHfUshd/BLWbO/uw
-         50PJm8HpjgPOJ0b9NRmxpPFm9uePxbePlKRoLhvpoGo18lzfQAklQ4f/YhVwa/UCWek0
-         qvk+4WBbGTZkce1rEof9NEi/az/yiiB1ODRpE9YVGZ8maBw+P9mfj3H0n6yegVPhDTtr
-         UaWnYxmUc9Ry3wkVN74BZiU0hVdsqEUCVAZ9/5GF/q4FGnWn+bkh5iQinTNiMdOlKS68
-         PQgzF5agqSG1fpfNFtaiMkQmxuKCNv5RfMThVvHLS8RWKVBL/v4RPXdcv6mI85cUssn7
-         rnuQ==
+        bh=gWm05V3+5OCUE1Jul6ruiUK3DxJYF/Ublixv6I9dc0w=;
+        b=imy/VD+kfCiFAjojUZ9u4fs5Vz7R99RTm98cwix6r2fYCImv6f+htTTPDsjyMWLPHa
+         2bjZt642F9cUBAxF0N7utgvILspyGqLgZJwQAsvcW39cIQyquaUi1uBqzRbuJ48TJHqF
+         Wt2cbYH4iZJyt44S7LzCI2ZNiVQDtkz71QfMk1D7se2tKFj20zPF9KNHbrjjLoHTmnQ5
+         OCPLcJlGlZTC7sb7f374HtCXghi5iHku8FWuiZ4Q41fPifNyCijN+P3LnaSekDFEpgwb
+         TG+1HOm4WYmxQGR054xC+v7MxUEATx2VWoI/fvW6hj/wT3iJBwAwyWNj6NLANprqdIKD
+         EQFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ia0hSBa10knYKGOnZiDVQmpAvNOJ+DPL78NAZDUpJtE=;
-        b=aKRJgmKyvWHAfMYR4lN3ElmLRB4IaCwcWOagBINo15BS2ceqNR4U8ADuAXxsufw+Vw
-         BuaxoUaRY2dqJVWq+6Le0EKC5+SO9QJLXEM0LGjDsKTw2AmbuP3jlWTslJewgt1dNXHf
-         O+8ok+odFhMYFvxpRvf7BpIXA/S3cAfEhUhp9noQa/meZIFpeiugaC1fVCqnsS5KJUS/
-         dcH6ReRmEoqkc/+Ock5uWtCcUAKaHqA5r4i6RibWPnKxVAH5qpZlx7/WtdH8hoVAiJRO
-         T72WZRsuDpsjZvvAYf/InagLYsCnrEg5Rq2aCfVtVunKcZdGOoIn0e7GeMpI1JRFy4kv
-         8PIw==
-X-Gm-Message-State: APjAAAU4ETXVFyaaoPWnJ1GoV7OSQIUqPPgSp9ZHnVq/loO2PGj9WiTw
-        cqOmCGTTkhMcaMiCnLs4oo4XyAFj539RRHYWb80=
-X-Google-Smtp-Source: APXvYqyVfVqJ1AZWYOKfESjSkoEXUw13Idwn8M5D5bsFsu+4wES8sUW3KdZ7NfeuZraYgCs5UxP5xPtAAFsAFWNo+PA=
-X-Received: by 2002:a19:f707:: with SMTP id z7mr11974821lfe.162.1570922076534;
- Sat, 12 Oct 2019 16:14:36 -0700 (PDT)
+        bh=gWm05V3+5OCUE1Jul6ruiUK3DxJYF/Ublixv6I9dc0w=;
+        b=KclH9qcGWIxnfJQIChYe3K199kXNjXcBpp+l8cQj6sFL8da7jyMHHJ5i7A2V/mcpMb
+         VEnLXnR+htM1ieUpNqzatWOpXMxRObf7MEyM2/oHSnUtFHSxZnFZW+KpR3nYcQzdM7VF
+         LXLBY0DLkB+rWzzQVv+jURtGJ4yfuHs8G4asPYgxhGWdhNgUhXy+eV2Dg6xEJM11XGXG
+         MC160cLIfJnmtRqQV6T5ND2lDqf+iiFlQn5W9q9gL+ozkJWE4YJa00nLsvzD5QpNloct
+         INbv2mJU938ft9AKBBrW23SnAItxkWYkcn+34NN5mYk7+xSTRpPGUq18s4GzvvMy32x3
+         cP7A==
+X-Gm-Message-State: APjAAAWgI7D9WBAnK/bFa8n1c15lspMpZ4BAW9vYGrukmAzHL0zzGhKB
+        Bhu/6xhQheiayvnABx4bDzmqgpX04o7bUCSOGIo=
+X-Google-Smtp-Source: APXvYqzqEyzvA8foxjjpRs8hRVSVwht+Ck5ccPYv0wK4Yi5CETHwR43M8KLk0n42K/hApQe/NZurGehMlkTqLPxQlHo=
+X-Received: by 2002:a2e:8197:: with SMTP id e23mr13684678ljg.228.1570922581191;
+ Sat, 12 Oct 2019 16:23:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org> <20191011120715.GA7944@apalos.home>
-In-Reply-To: <20191011120715.GA7944@apalos.home>
+References: <20191011220146.3798961-1-andriin@fb.com> <20191012071526.lgrzyvyhnyvzh7ao@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191012071526.lgrzyvyhnyvzh7ao@kafai-mbp.dhcp.thefacebook.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 12 Oct 2019 16:14:24 -0700
-Message-ID: <CAADnVQKhYohS_5KUHeFiiyXZWTNeDz3xBf5qBQgjvFiStO+TOQ@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 00/15] samples: bpf: improve/fix cross-compilation
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Date:   Sat, 12 Oct 2019 16:22:49 -0700
+Message-ID: <CAADnVQJ-__rn88Z1wgPsRdGdtyznG_rO3=kCx+7rSSENUE-dyw@mail.gmail.com>
+Subject: Re: [Potential Spoof] [PATCH v2 bpf-next 0/2] selftests/bpf Makefile
+ cleanup and fixes
+To:     Martin Lau <kafai@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 5:07 AM Ilias Apalodimas
-<ilias.apalodimas@linaro.org> wrote:
+On Sat, Oct 12, 2019 at 12:25 AM Martin Lau <kafai@fb.com> wrote:
 >
-> On Fri, Oct 11, 2019 at 03:27:53AM +0300, Ivan Khoronzhuk wrote:
-> > This series contains mainly fixes/improvements for cross-compilation
-> > but not only, tested for arm, arm64, and intended for any arch.
-> > Also verified on native build (not cross compilation) for x86_64
-> > and arm, arm64.
-...
-> For native compilation on x86_64 and aarch64
->
-> Tested-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> On Fri, Oct 11, 2019 at 03:01:44PM -0700, Andrii Nakryiko wrote:
+> > Patch #1 enforces libbpf build to have bpf_helper_defs.h ready before test BPF
+> > programs are built.
+> > Patch #2 drops obsolete BTF/pahole detection logic from Makefile.
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
 Applied. Thanks
