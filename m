@@ -2,182 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E156D4BB3
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 03:11:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C5C6D4BB7
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 03:15:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728209AbfJLBLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 21:11:32 -0400
-Received: from mail-eopbgr20051.outbound.protection.outlook.com ([40.107.2.51]:25486
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726863AbfJLBLc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Oct 2019 21:11:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h6gLmHNQN0TgERQtDPaGVdhvybR9Aj9wCTrYSHQ3gWyarSib0RIkl1yOEkR5s/mVKh2rWQk8OGfW/hDDSa9TzxzTt0ciSVk89sgm2Oxunn053ED814ORorgUAOVTwLSdR67z8cjqPK9LfkPzQVl6qpN20ie1Hy86PLk5knRPCdKfTZ1XHjJRqHUcOPmmB/JdClYkg9wuELDAKnZQwqdXfPTvqnL8I6Y0bDxd8/9PV0//V6NriSeTbNCvplFmGh1MtqmiwFikykI3PCi8IXuvcC351wl7SReqs+LfluLAlcgN597PV+Tdbba+004tnp05RAstEOyBEIDPnJp8EfXL+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2BOCmVzlnJQEjQD49mJVpm1PeXKsPO10s/+sSNsXBMg=;
- b=Dj10gJ7OfZuv7nIH0ta27xde2Q3G14QPd06BpdHUo68dsBahUX04IZHm8lkfj3YWmVE0GdApOcvRNdMD8VHgVY4jp96BFqOHBWchqwtVypoJa6hJERZ2oTdNJtx4FP6ZwLGk8EqgNY2yShraezV91kVI6h6vkwWlQCGgnQNEOI9Ple5D9sgg7ZaLchMLXM82CgqfahknWo0ATrgdXDn5n0bqW9f5DTZkzKCiXr/4xTBFyXEf2j5S1f1s3Q7oIrD2HaEhsUbgDWVuBgwr7P9UHoXQ6SD0AKpAKE5V9TQpBFw408hlemlV8PagplveVwUC46r39IQ7t1NHYc93zjShtg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2BOCmVzlnJQEjQD49mJVpm1PeXKsPO10s/+sSNsXBMg=;
- b=hTy/oLwwjzg9J+s3uClSMG70hMeelZDlMZg9i1oh7XB7kvIJBU489xxe0lgjzxK3bNyIr5vS89uTbcgliCgpps2Wf4CjdFal16luxt6Xi9qyxt6Z7Zvtv4+udkJvDtOCXREWmzUfpS1Wh040kDVW+ICUTrz4mCRW5nPSJdZt6Jk=
-Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com (52.134.72.18) by
- DB3PR0402MB3738.eurprd04.prod.outlook.com (52.134.70.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2327.25; Sat, 12 Oct 2019 01:09:47 +0000
-Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com
- ([fe80::d469:ad51:2bec:19f0]) by DB3PR0402MB3916.eurprd04.prod.outlook.com
- ([fe80::d469:ad51:2bec:19f0%6]) with mapi id 15.20.2347.021; Sat, 12 Oct 2019
- 01:09:47 +0000
-From:   Anson Huang <anson.huang@nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andy Duan <fugang.duan@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "rafael.j.wysocki@intel.com" <rafael.j.wysocki@intel.com>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH 1/2] net: fec_main: Use platform_get_irq_byname_optional()
- to avoid error message
-Thread-Topic: [PATCH 1/2] net: fec_main: Use
- platform_get_irq_byname_optional() to avoid error message
-Thread-Index: AQHVforZimETp53I4UOLcQPYAMVf3qdUghaAgAAN4TCAAAnBAIAAAP3QgAAEwgCAAARvAIAAkwAAgAD+TWA=
-Date:   Sat, 12 Oct 2019 01:09:47 +0000
-Message-ID: <DB3PR0402MB391602D0860E8ADC2DB36475F5960@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <1570616148-11571-1-git-send-email-Anson.Huang@nxp.com>
- <20191010160811.7775c819@cakuba.netronome.com>
- <DB3PR0402MB3916FF4583577B182D9BF60CF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <20191010173246.2cd02164@cakuba.netronome.com>
- <DB3PR0402MB3916284A326512CE2FDF597EF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <20191010175320.1fe5f6b3@cakuba.netronome.com>
- <DB3PR0402MB3916F0AC3E3AEC2AC1900BCCF5970@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <CA+h21hpp5L-tcJNxXWaJaCKZyFzm-qPzUZ32LU+vKOv99PJ9ng@mail.gmail.com>
-In-Reply-To: <CA+h21hpp5L-tcJNxXWaJaCKZyFzm-qPzUZ32LU+vKOv99PJ9ng@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=anson.huang@nxp.com; 
-x-originating-ip: [119.31.174.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2f94e319-87a0-47b0-4800-08d74eb0dfe6
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: DB3PR0402MB3738:|DB3PR0402MB3738:
-x-ms-exchange-purlcount: 1
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB3PR0402MB3738674C4A24D6F146E66894F5960@DB3PR0402MB3738.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0188D66E61
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(376002)(346002)(396003)(39860400002)(199004)(189003)(229853002)(6916009)(186003)(6506007)(25786009)(33656002)(26005)(476003)(1411001)(52536014)(11346002)(102836004)(81156014)(54906003)(81166006)(5660300002)(7696005)(446003)(76176011)(55016002)(6436002)(478600001)(256004)(6246003)(44832011)(74316002)(8936002)(9686003)(99286004)(66446008)(8676002)(14454004)(76116006)(64756008)(3846002)(486006)(71190400001)(66556008)(71200400001)(966005)(66946007)(6116002)(7736002)(6306002)(66066001)(86362001)(305945005)(4326008)(2906002)(66476007)(316002)(15650500001)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:DB3PR0402MB3738;H:DB3PR0402MB3916.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: No3VPif3FB1CQu7nEcCGpbJgYK584/2pv+VgGeDcdkgphtJ55i4t+UgJ0RH+NCSwLQc+0kwvtCk01AmbBV91gcQpQ4xgc3YuUboXYqOO4BlxA+e03eDXLjKwV2PCEDJEeZjihaMY+fsaDUyI3JFVPCabjwz15oOsV7PIjvuQrFn7JaW8l9IEcMsTc8nTcGprZFfuSBeE8lyH2+pCmqJno2+7F4Hbi/bukKPAYsKTK0NK8/QocN39coomUrk5B22iXMNRVYMQAKthpUZT3dbAbQrbezXS8hkyUPBNaudJcA91ZubIt8YRjf/0fbWkrS9LblEf6o2wJvQ+xWOTjO5XsD3ADMPuOFuy/Fkewz2WToG8WTo/x494gM348Oi9cX0wASFQwdC0hahDkhw0y0H0Ow8miT0ORAP4VnYlRd1ANLW+mt7weuG1LxwnN0oq74AG0d3qiEEstkEt1qz3kxznxg==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f94e319-87a0-47b0-4800-08d74eb0dfe6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Oct 2019 01:09:47.1827
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: D1sxqc+qy04rrM5b0NV5/PsfgTYGN2vyxjAGsqmd7lKcD4IsAka3Xnjawf4nOWkpya3IrFYs7wISF3d8aCPT7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3738
+        id S1728203AbfJLBPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 21:15:02 -0400
+Received: from mail-yw1-f74.google.com ([209.85.161.74]:57076 "EHLO
+        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726863AbfJLBPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 21:15:01 -0400
+Received: by mail-yw1-f74.google.com with SMTP id l123so8935188ywd.23
+        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 18:15:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=bkqaf8QDePmCHAEXudigYf2ToqggNg+42rSSa8Gdgvo=;
+        b=Z6FfYJfWu7gsRIrle+DJix6/BOTmcfR/l9Cg5Wj30D3QJGgoBSJmTs0f9KW7nTm0yn
+         2btNElonc5eiQIoJ+Edv/8wWXMUZR3zMovyi3c+P7kPOtRTIdwGmQETngvFUwwab+BG8
+         e/xaXZD9UzTyH4/uvNu9kVplHY9jYiQWZ3oqPyDGBLmFpmikjYbU/acRWGLWAdMRHizK
+         jEvNmk9fdIVmhwvORxYaW71u/foPKmLRzo/jZ7PHN6LMXPfV+bfNGYUTpYAeYTGEDcDJ
+         9W7tZiRf/89xuqAhHkn7aq+sVVXquh5/sJLQ+a0opVlhbwMCipvdr5vS+2XFo/9vubve
+         Wkvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=bkqaf8QDePmCHAEXudigYf2ToqggNg+42rSSa8Gdgvo=;
+        b=d+yU69/0XPesIa733ui9toGEe597XP4SOAoSCZjrBrGAMWEcAjjJYqR+3us2QEkFl0
+         n7sr2shGUD1Z31h5s+rx7phGTpsOKc1/1eqBQT94S9Hj3tuphwm4bsp7bS9xBOO5wpSF
+         XPCL/orDr1WPtRTJWuaMDT/bhAlqCN4dDoFk4+AKx8sSCqiXNK6sgxZfJqonOx6sJUQ0
+         LBnn0kn5XHyGyy8zevnpLTkAPdxEinl1M8JUWH731OnqWQWR2siVdPhyvay4qcLSJP6H
+         C65XVUHeLpcVEIxYVOfmIJOIYGg/hMz7LHt1DWXJIkTD4E5Nl3PT/QPKR1zEVbZBz9xV
+         mjeg==
+X-Gm-Message-State: APjAAAVXeUsIDcdDeNInzCuAwjSBKT/jBzwFLgMl7aHLEjcb+/ibH3KT
+        WiNgjipr9MpRasJ8fn2V57eekGCTxnvJp6W3uTBLwOVMJVr3mOkvm2FkKHneh6yKXrsfdVjSZyS
+        g1i+l7kcOh3DEN7vibTpynvAQT7ZKeqV0tgLPuIKJeUTSXmaKKio6KzSKRAW5ADcx
+X-Google-Smtp-Source: APXvYqwFySBwhDmWubik66Za/HSoTPrCfL6J22ybS6R7MgM9msxcoYeM1D8y80TRQ5uHI8Z/yAHKFDhdBVDd
+X-Received: by 2002:a81:7887:: with SMTP id t129mr4793143ywc.214.1570842900373;
+ Fri, 11 Oct 2019 18:15:00 -0700 (PDT)
+Date:   Fri, 11 Oct 2019 18:14:55 -0700
+Message-Id: <20191012011455.211242-1-maheshb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
+Subject: [PATCHv3 next] blackhole_netdev: fix syzkaller reported issue
+From:   Mahesh Bandewar <maheshb@google.com>
+To:     Netdev <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        Mahesh Bandewar <maheshb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksIFZsYWRpbWlyDQoNCj4gT24gRnJpLCAxMSBPY3QgMjAxOSBhdCAwNDoxMSwgQW5zb24gSHVh
-bmcgPGFuc29uLmh1YW5nQG54cC5jb20+IHdyb3RlOg0KPiA+DQo+ID4gSGksIEpha3ViDQo+ID4N
-Cj4gPiA+IE9uIEZyaSwgMTEgT2N0IDIwMTkgMDA6Mzg6NTAgKzAwMDAsIEFuc29uIEh1YW5nIHdy
-b3RlOg0KPiA+ID4gPiA+IEhtLiBMb29rcyBsaWtlIHRoZSBjb21taXQgeW91IG5lZWQgaXMgY29t
-bWl0IGYxZGE1NjdmMWRjMSAoImRyaXZlcg0KPiBjb3JlOg0KPiA+ID4gPiA+IHBsYXRmb3JtOiBB
-ZGQgcGxhdGZvcm1fZ2V0X2lycV9ieW5hbWVfb3B0aW9uYWwoKSIpIGFuZCBpdCdzDQo+ID4gPiA+
-ID4gY3VycmVudGx5IGluIEdyZWcncyB0cmVlLiBZb3UgaGF2ZSB0byB3YWl0IGZvciB0aGF0IGNv
-bW1pdCB0bw0KPiA+ID4gPiA+IG1ha2UgaXRzIHdheSBpbnRvIExpbnVzJ2VzIG1haW4gdHJlZSBh
-bmQgdGhlbiBmb3IgRGF2ZSBNaWxsZXIgdG8gcHVsbA0KPiBmcm9tIExpbnVzLg0KPiA+ID4gPiA+
-DQo+ID4gPiA+ID4gSSdkIHN1Z2dlc3QgeW91IGNoZWNrIGlmIHlvdXIgcGF0Y2hlcyBidWlsZHMg
-b24gdGhlIG5ldCB0cmVlOg0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gICBnaXQ6Ly9naXQua2VybmVs
-Lm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbmV0ZGV2L25ldC5naXQNCj4gPiA+ID4gPg0K
-PiA+ID4gPiA+IG9uY2UgYSB3ZWVrLiBNeSBndWVzcyBpcyBpdCdsbCBwcm9iYWJseSB0YWtlIHR3
-byB3ZWVrcyBvciBzbyBmb3INCj4gPiA+ID4gPiBHcmVnJ3MgcGF0Y2hlcyB0byBwcm9wYWdhdGUg
-dG8gRGF2ZS4NCj4gPiA+ID4NCj4gPiA+ID4gVGhhbmtzIGZvciBleHBsYW5hdGlvbiBvZiBob3cg
-dGhlc2UgdHJlZXMgd29yaywgc28gY291bGQgeW91DQo+ID4gPiA+IHBsZWFzZSB3YWl0IHRoZSBu
-ZWNlc3NhcnkgcGF0Y2ggbGFuZGluZyBvbiBuZXR3b3JrIHRyZWUgdGhlbiBhcHBseQ0KPiA+ID4g
-PiB0aGlzIHBhdGNoIHNlcmllcywgdGhhbmtzIGZvciBoZWxwLg0KPiA+ID4NCj4gPiA+IFVuZm9y
-dHVuYXRlbHkgdGhlIG5ldHdvcmtpbmcgc3Vic3lzdGVtIHNlZXMgYXJvdW5kIGEgMTAwIHBhdGNo
-ZXMNCj4gPiA+IHN1Ym1pdHRlZCBlYWNoIGRheSwgaXQnZCBiZSB2ZXJ5IGhhcmQgdG8ga2VlcCB0
-cmFjayBvZiBwYXRjaGVzIHdoaWNoDQo+ID4gPiBoYXZlIGV4dGVybmFsIGRlcGVuZGVuY2llcyBh
-bmQgd2hlbiB0byBtZXJnZSB0aGVtLiBUaGF0J3Mgd2h5IHdlDQo+ID4gPiBuZWVkIHRoZSBzdWJt
-aXR0ZXJzIHRvIGRvIHRoaXMgd29yayBmb3IgdXMgYW5kIHJlc3VibWl0IHdoZW4gdGhlDQo+ID4g
-PiBwYXRjaCBjYW4gYmUgYXBwbGllZCBjbGVhbmx5Lg0KPiA+DQo+ID4gT0ssIEkgd2lsbCByZXNl
-bmQgdGhpcyBwYXRjaCBzZXJpZXMgb25jZSB0aGUgbmVjZXNzYXJ5IHBhdGNoIGxhbmRzIG9uDQo+
-ID4gdGhlIG5ldHdvcmsgdHJlZS4NCj4gDQo+IFdoYXQgaGFzIG5vdCBiZWVuIG1lbnRpb25lZCBp
-cyB0aGF0IHlvdSBjYW4ndCBjcmVhdGUgZnV0dXJlIGRlcGVuZGVuY2llcw0KPiBmb3IgcGF0Y2hl
-cyB3aGljaCBoYXZlIGEgRml4ZXM6IHRhZy4NCj4gDQo+IGdpdCBkZXNjcmliZSAtLXRhZ3MgNzcy
-M2Y0YzVlY2RiICMgZHJpdmVyIGNvcmU6IHBsYXRmb3JtOiBBZGQgYW4gZXJyb3INCj4gbWVzc2Fn
-ZSB0byBwbGF0Zm9ybV9nZXRfaXJxKigpIHY1LjMtcmMxLTEzLWc3NzIzZjRjNWVjZGINCj4gDQo+
-IGdpdCBkZXNjcmliZSAtLXRhZ3MgZjFkYTU2N2YxZGMgIyBkcml2ZXIgY29yZTogcGxhdGZvcm06
-IEFkZA0KPiBwbGF0Zm9ybV9nZXRfaXJxX2J5bmFtZV9vcHRpb25hbCgpDQo+IHY1LjQtcmMxLTQ2
-LWdmMWRhNTY3ZjFkYzENCj4gDQo+IFNvIHlvdSBoYXZlIHRvIGNvbnNpZGVyIHdoZXRoZXIgdGhl
-IHBhdGNoIGlzIHJlYWxseSBmaXhpbmcgYW55dGhpbmcgKGl0IGlzIG9ubHkNCj4gZ2V0dGluZyBy
-aWQgb2YgYSBub24tZmF0YWwgZXJyb3IgbWVzc2FnZSkuDQo+IEFuZCBpdCdzIG5vdCByZWFzb25h
-YmxlIGFueXdheSB0byBzYXkgdGhhdCB5b3UncmUgZml4aW5nIHRoZSBwYXRjaCB0aGF0IGFkZGVk
-DQo+IHRoZSBlcnJvciBtZXNzYWdlIGluIHRoZSBnZW5lcmljIGZyYW1ld29yay4NCj4gVGhlIGZh
-bGxiYWNrIGxvZ2ljIGhhcyBhbHdheXMgYmVlbiB0aGVyZSBpbiB0aGUgZHJpdmVyLiBTbyB5b3Ug
-bWlnaHQgd2FudCB0bw0KPiBkcm9wIHRoZSBGaXhlczogdGFnIHdoZW4geW91IHJlc2VuZC4NCg0K
-T0ssIEkgYWdyZWUgdGhhdCBzdWNoIGtpbmQgb2YgcGF0Y2ggc2hvdWxkIE5PVCBhZGQgZml4IHRh
-ZywgYnV0IEkgd2FzIGNvbmZ1c2VkIHdoZW4NCkkgY3JlYXRlZCB0aGlzIHBhdGNoLCBhcyBJIHNh
-dyBtYW55IHNpbWlsYXIgcGF0Y2hlcyBhbHNvIGhhcyBmaXggdGFnLCBzdWNoIGFzIGJlbG93IDIN
-CmV4YW1wbGVzLg0KDQpJIHdpbGwgZHJvcCB0aGUgZml4IHRhZyB3aGVuIHJlc2VuZCB0aGUgcGF0
-Y2ggc2VyaWVzLg0KDQpjb21taXQgNzFlZWE3MDcxNTgzYjA0ZTliNzk2ZWUxZDZmN2EwNzMzNDQy
-NjQ5NQ0KQXV0aG9yOiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4Lmlu
-dGVsLmNvbT4NCkRhdGU6ICAgVGh1IE9jdCAxMCAxMToxNToyMCAyMDE5ICswMzAwDQoNCiAgICBw
-bGF0Zm9ybS94ODY6IGludGVsX3B1bml0X2lwYzogQXZvaWQgZXJyb3IgbWVzc2FnZSB3aGVuIHJl
-dHJpZXZpbmcgSVJRDQoNCiAgICBTaW5jZSB0aGUgY29tbWl0DQoNCiAgICAgIDc3MjNmNGM1ZWNk
-YiAoImRyaXZlciBjb3JlOiBwbGF0Zm9ybTogQWRkIGFuIGVycm9yIG1lc3NhZ2UgdG8gcGxhdGZv
-cm1fZ2V0X2lycSooKSIpDQoNCiAgICB0aGUgcGxhdGZvcm1fZ2V0X2lycSgpIHN0YXJ0ZWQgaXNz
-dWluZyBhbiBlcnJvciBtZXNzYWdlIHdoaWNoIGlzIG5vdA0KICAgIHdoYXQgd2Ugd2FudCBoZXJl
-Lg0KDQogICAgU3dpdGNoIHRvIHBsYXRmb3JtX2dldF9pcnFfb3B0aW9uYWwoKSB0byBoYXZlIG9u
-bHkgd2FybmluZyBtZXNzYWdlDQogICAgcHJvdmlkZWQgYnkgdGhlIGRyaXZlci4NCg0KICAgIEZp
-eGVzOiA3NzIzZjRjNWVjZGIgKCJkcml2ZXIgY29yZTogcGxhdGZvcm06IEFkZCBhbiBlcnJvciBt
-ZXNzYWdlIHRvIHBsYXRmb3JtX2dldF9pcnEqKCkiKQ0KICAgIFNpZ25lZC1vZmYtYnk6IEFuZHkg
-U2hldmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPg0KDQpkcml2ZXJz
-L3BsYXRmb3JtL3g4Ni9pbnRlbF9wdW5pdF9pcGMuYw0KDQpjb21taXQgMzkyZmI4ZGY1MjhiOTdh
-MDZlMTkzMTI3NzJhZmQzOGFlYzU0MmI5Ng0KQXV0aG9yOiBHZWVydCBVeXR0ZXJob2V2ZW4gPGdl
-ZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPg0KRGF0ZTogICBUdWUgT2N0IDEgMjA6MDc6NDMgMjAxOSAr
-MDIwMA0KDQogICAgc2VyaWFsOiBzaC1zY2k6IFVzZSBwbGF0Zm9ybV9nZXRfaXJxX29wdGlvbmFs
-KCkgZm9yIG9wdGlvbmFsIGludGVycnVwdHMNCg0KICAgIEFzIHBsYXRmb3JtX2dldF9pcnEoKSBu
-b3cgcHJpbnRzIGFuIGVycm9yIHdoZW4gdGhlIGludGVycnVwdCBkb2VzIG5vdA0KICAgIGV4aXN0
-LCBzY2FyeSB3YXJuaW5ncyBtYXkgYmUgcHJpbnRlZCBmb3Igb3B0aW9uYWwgaW50ZXJydXB0czoN
-Cg0KICAgICAgICBzaC1zY2kgZTY1NTAwMDAuc2VyaWFsOiBJUlEgaW5kZXggMSBub3QgZm91bmQN
-CiAgICAgICAgc2gtc2NpIGU2NTUwMDAwLnNlcmlhbDogSVJRIGluZGV4IDIgbm90IGZvdW5kDQog
-ICAgICAgIHNoLXNjaSBlNjU1MDAwMC5zZXJpYWw6IElSUSBpbmRleCAzIG5vdCBmb3VuZA0KICAg
-ICAgICBzaC1zY2kgZTY1NTAwMDAuc2VyaWFsOiBJUlEgaW5kZXggNCBub3QgZm91bmQNCiAgICAg
-ICAgc2gtc2NpIGU2NTUwMDAwLnNlcmlhbDogSVJRIGluZGV4IDUgbm90IGZvdW5kDQoNCiAgICBG
-aXggdGhpcyBieSBjYWxsaW5nIHBsYXRmb3JtX2dldF9pcnFfb3B0aW9uYWwoKSBpbnN0ZWFkIGZv
-ciBhbGwgYnV0IHRoZQ0KICAgIGZpcnN0IGludGVycnVwdHMsIHdoaWNoIGFyZSBvcHRpb25hbC4N
-Cg0KICAgIEZpeGVzOiA3NzIzZjRjNWVjZGI4ZDgzICgiZHJpdmVyIGNvcmU6IHBsYXRmb3JtOiBB
-ZGQgYW4gZXJyb3IgbWVzc2FnZSB0byBwbGF0Zm9ybV9nZXRfaXJxKigpIikNCiAgICBTaWduZWQt
-b2ZmLWJ5OiBHZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPg0KICAg
-IFJldmlld2VkLWJ5OiBTdGVwaGVuIEJveWQgPHN3Ym95ZEBjaHJvbWl1bS5vcmc+DQogICAgUmV2
-aWV3ZWQtYnk6IFlvc2hpaGlybyBTaGltb2RhIDx5b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2Fz
-LmNvbT4NCiAgICBUZXN0ZWQtYnk6IFlvc2hpaGlybyBTaGltb2RhIDx5b3NoaWhpcm8uc2hpbW9k
-YS51aEByZW5lc2FzLmNvbT4NCiAgICBMaW5rOiBodHRwczovL2xvcmUua2VybmVsLm9yZy9yLzIw
-MTkxMDAxMTgwNzQzLjEwNDEtMS1nZWVydCtyZW5lc2FzQGdsaWRlci5iZQ0KICAgIFNpZ25lZC1v
-ZmYtYnk6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQoN
-CmRyaXZlcnMvdHR5L3NlcmlhbC9zaC1zY2kuYw0KDQp0aGFua3MsDQpBbnNvbg0K
+While invalidating the dst, we assign backhole_netdev instead of
+loopback device. However, this device does not have idev pointer
+and hence no ip6_ptr even if IPv6 is enabled. Possibly this has
+triggered the syzbot reported crash.
+
+The syzbot report does not have reproducer, however, this is the
+only device that doesn't have matching idev created.
+
+Crash instruction is :
+
+static inline bool ip6_ignore_linkdown(const struct net_device *dev)
+{
+        const struct inet6_dev *idev = __in6_dev_get(dev);
+
+        return !!idev->cnf.ignore_routes_with_linkdown; <= crash
+}
+
+Also ipv6 always assumes presence of idev and never checks for it
+being NULL (as does the above referenced code). So adding a idev
+for the blackhole_netdev to avoid this class of crashes in the future.
+
+---
+
+syzbot has found the following crash on:
+
+HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
+console output: https://syzkaller-buganizer.googleplex.com/text?tag=CrashLog&id=96236769ac48d9c2eb3a0db5385370ea6940be83
+kernel config:  https://syzkaller-buganizer.googleplex.com/text?tag=Config&id=1ed331b637302a68174fdbe34315b781b7c7ab1e
+dashboard link: https://syzkaller.appspot.com/bug?extid=86298614df433d7f3824
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+See http://go/syzbot for details on how to handle this bug.
+
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 16525 Comm: syz-executor.2 Not tainted 5.3.0-rc3+ #159
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
+RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
+Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
+RSP: 0018:ffff88806c037038 EFLAGS: 00010207
+RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
+RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
+RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
+R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
+R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
+FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+__find_rr_leaf+0x14e/0x750 net/ipv6/route.c:831
+find_rr_leaf net/ipv6/route.c:852 [inline]
+rt6_select net/ipv6/route.c:896 [inline]
+fib6_table_lookup+0x697/0xdb0 net/ipv6/route.c:2164
+ip6_pol_route+0x1f6/0xaf0 net/ipv6/route.c:2200
+ip6_pol_route_output+0x54/0x70 net/ipv6/route.c:2452
+fib6_rule_lookup+0x133/0x7a0 net/ipv6/fib6_rules.c:113
+ip6_route_output_flags_noref+0x2d6/0x360 net/ipv6/route.c:2484
+ip6_route_output_flags+0x106/0x4d0 net/ipv6/route.c:2497
+ip6_route_output include/net/ip6_route.h:98 [inline]
+ip6_dst_lookup_tail+0x1042/0x1ef0 net/ipv6/ip6_output.c:1022
+ip6_dst_lookup_flow+0xa8/0x220 net/ipv6/ip6_output.c:1150
+ip6_sk_dst_lookup_flow net/ipv6/ip6_output.c:1188 [inline]
+ip6_sk_dst_lookup_flow+0x62a/0xb90 net/ipv6/ip6_output.c:1178
+udpv6_sendmsg+0x17ba/0x2990 net/ipv6/udp.c:1439
+inet6_sendmsg+0x9e/0xe0 net/ipv6/af_inet6.c:576
+sock_sendmsg_nosec net/socket.c:637 [inline]
+sock_sendmsg+0xd7/0x130 net/socket.c:657
+__sys_sendto+0x262/0x380 net/socket.c:1952
+__do_sys_sendto net/socket.c:1964 [inline]
+__se_sys_sendto net/socket.c:1960 [inline]
+__x64_sys_sendto+0xe1/0x1a0 net/socket.c:1960
+do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459829
+Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fa15e7ddc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000459829
+RDX: 0000000000000001 RSI: 0000000020000000 RDI: 0000000000000007
+RBP: 000000000075c1c0 R08: 0000000020001000 R09: 000000000000001c
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa15e7de6d4
+R13: 00000000004c77e7 R14: 00000000004dd048 R15: 00000000ffffffff
+Modules linked in:
+---[ end trace 4b3ce5eddd15c8f6 ]---
+RIP: 0010:ip6_ignore_linkdown include/net/addrconf.h:402 [inline]
+RIP: 0010:find_match+0x132/0xd70 net/ipv6/route.c:743
+Code: 0f b6 75 b0 40 84 f6 0f 84 ad 01 00 00 e8 c6 4c 34 fb 49 8d bf 3c 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 15
+RSP: 0018:ffff88806c037038 EFLAGS: 00010207
+RAX: dffffc0000000000 RBX: ffff888094c5cd60 RCX: ffffc9000b791000
+RDX: 0000000000000047 RSI: ffffffff863e3caa RDI: 000000000000023c
+RBP: ffff88806c037098 R08: ffff888063de0600 R09: ffff88806c037288
+R10: fffffbfff134af07 R11: ffffffff89a5783f R12: 0000000000000003
+R13: ffff88806c037298 R14: ffff888094c5cd6f R15: 0000000000000000
+FS:  00007fa15e7de700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000625208 CR3: 000000005e348000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+Fixes: 8d7017fd621d ("blackhole_netdev: use blackhole_netdev to invalidate dst entries")
+Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+CC: Eric Dumazet <edumazet@google.com>
+CC: Wei Wang <weiwan@google.com>
+---
+v1->v2:
+   fixed missing update in ip6_dst_ifdown()
+v2->v3:
+   added idev cleanup step in addrconf_cleanup()
+
+ net/ipv6/addrconf.c |  7 ++++++-
+ net/ipv6/route.c    | 15 ++++++---------
+ 2 files changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 98d82305d6de..2a01404aba78 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -6995,7 +6995,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
+ 
+ int __init addrconf_init(void)
+ {
+-	struct inet6_dev *idev;
++	struct inet6_dev *idev, *bdev;
+ 	int i, err;
+ 
+ 	err = ipv6_addr_label_init();
+@@ -7035,10 +7035,14 @@ int __init addrconf_init(void)
+ 	 */
+ 	rtnl_lock();
+ 	idev = ipv6_add_dev(init_net.loopback_dev);
++	bdev = ipv6_add_dev(blackhole_netdev);
+ 	rtnl_unlock();
+ 	if (IS_ERR(idev)) {
+ 		err = PTR_ERR(idev);
+ 		goto errlo;
++	} else if (IS_ERR(bdev)) {
++		err = PTR_ERR(bdev);
++		goto errlo;
+ 	}
+ 
+ 	ip6_route_init_special_entries();
+@@ -7123,6 +7127,7 @@ void addrconf_cleanup(void)
+ 		addrconf_ifdown(dev, 1);
+ 	}
+ 	addrconf_ifdown(init_net.loopback_dev, 2);
++	addrconf_ifdown(blackhole_netdev, 2);
+ 
+ 	/*
+ 	 *	Check hash table.
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index a63ff85fe141..742120728869 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -155,10 +155,9 @@ void rt6_uncached_list_del(struct rt6_info *rt)
+ 
+ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
+ {
+-	struct net_device *loopback_dev = net->loopback_dev;
+ 	int cpu;
+ 
+-	if (dev == loopback_dev)
++	if (dev == net->loopback_dev)
+ 		return;
+ 
+ 	for_each_possible_cpu(cpu) {
+@@ -171,7 +170,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
+ 			struct net_device *rt_dev = rt->dst.dev;
+ 
+ 			if (rt_idev->dev == dev) {
+-				rt->rt6i_idev = in6_dev_get(loopback_dev);
++				rt->rt6i_idev = in6_dev_get(blackhole_netdev);
+ 				in6_dev_put(rt_idev);
+ 			}
+ 
+@@ -386,13 +385,11 @@ static void ip6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
+ {
+ 	struct rt6_info *rt = (struct rt6_info *)dst;
+ 	struct inet6_dev *idev = rt->rt6i_idev;
+-	struct net_device *loopback_dev =
+-		dev_net(dev)->loopback_dev;
+ 
+-	if (idev && idev->dev != loopback_dev) {
+-		struct inet6_dev *loopback_idev = in6_dev_get(loopback_dev);
+-		if (loopback_idev) {
+-			rt->rt6i_idev = loopback_idev;
++	if (idev && idev->dev != dev_net(dev)->loopback_dev) {
++		struct inet6_dev *ibdev = in6_dev_get(blackhole_netdev);
++		if (ibdev) {
++			rt->rt6i_idev = ibdev;
+ 			in6_dev_put(idev);
+ 		}
+ 	}
+-- 
+2.23.0.700.g56cf767bdb-goog
+
