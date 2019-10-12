@@ -2,141 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E618D5130
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E5CD5135
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729496AbfJLQ5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 12:57:04 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:40488 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727884AbfJLQzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 12:55:04 -0400
-Received: by mail-lf1-f67.google.com with SMTP id d17so9100574lfa.7;
-        Sat, 12 Oct 2019 09:55:02 -0700 (PDT)
+        id S1729504AbfJLQ7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 12:59:09 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:41142 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727884AbfJLQ5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 12:57:08 -0400
+Received: by mail-lj1-f196.google.com with SMTP id f5so12718238ljg.8;
+        Sat, 12 Oct 2019 09:57:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=vDizdu9ZTbUiBuM21uWD34hEvaAlCgMSnuRFZcYt/XY=;
-        b=pO9lZhHTzapFnKp1A1SeeDMdu5u74rTS1jKEzLWhdZWIBvCqZ5VkC7bfHAjqO4p9IL
-         /Q/jJQ4URnIkx4i2dJix7O9EwR65uLxLwBI2S+LgQ5vzoCq2UqyHbidijxOFXtUq90fo
-         svPrgAsWMbFjhjm5FCVnqMViC72WjMFhnO2RyfjWe194+gSBPNclNX5eah/OnwzooGRi
-         HlqxYi7VTuWk90ABAxjmppgitjviM3ZGDU1XFEpCplO0+mZ9p3pCOQjNJSXt9T1SVEqK
-         +yoVM6fxjw7VDkf0DhF8/bdW5JH28R13veKHZOWY7O1o8A9vLbaG+ATYUVaAlBoI5JV1
-         P61Q==
+        bh=3hhyLxqkjn0n6SNfrqqq1R/avlplX4Y2rtgBXvZcRbc=;
+        b=Lg3F8xUUlWjlKPC4uNuZmdVV6lqg9waQUHCvE1vZ5J8XDFMupAFnRWqSjVlpT8/v78
+         TRnM3WgS0YK0vjDgg8yJHRxoBAhpj+7nOzF423d3QwGoxh00Pme52M+moKuEGjSInC4b
+         HASXp5hfQKHaEcTLeYV87jwkhAbyFEeVpcb8C2gQS15pIOsxh5JqGqwnbc8VJej9FgLr
+         YmC3oPTCfAmKPBQfo+ArTRw3NO2SSZTxOlh+nsA5Rl10nJX68RSqgGhhnI8rLgNmH0+x
+         lz1NAfHMx4jMpYkYNahxUFYT/KH7uLg/ZM+HtI5nhfJjh4AxnFlSt5KYdbepWaoAkCnO
+         XS+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=vDizdu9ZTbUiBuM21uWD34hEvaAlCgMSnuRFZcYt/XY=;
-        b=Y8oIlf5zykbLhmKJVfkA6pwJVwYp6vgJ9CwwsDvpaJibfZfIo97m+WthXdoVnt4Eyc
-         Ez/ZUahb6lyxJQh4R2CLNrZlmlnJvE+JL3zkebI3hsmGQTkPnEDP5WTbHSG6ZEn/gl9r
-         zu2wR9QEic/7yuOwerLwybWqRU5Lyw3RHavy/aLPNPmWwmsCQljJ9qwLbPsbDRoeRta5
-         +W4+SWlVXbtmzjiOQanOrjJCJ2QvHIN9qL7eJZ8zlG6R9jjWBZZX64ZO6s7xxm9OHhni
-         36AKDexX2hVQG0zKUjd1mBAS9qhtGCTHLgn6PTB0YUXOyqXg+oClJmVBk0hw1cu+cc+Y
-         HdGg==
-X-Gm-Message-State: APjAAAWx5pNDJ+2GW25YJhLCliP2s65CxpsTjqufW128tajmeEhTiNTo
-        DLZNgkFB2KIAIZ2Pa9JHGSS+lhn4MToa5SVZc54=
-X-Google-Smtp-Source: APXvYqz1YrbXUhmqbBUp2gf/ItCVN5nB4DPteK5Mfohp/t0wE7TqKOkPrdGGItfBLszOa+G9Z37EtaAM0p5+5/0eyLk=
-X-Received: by 2002:ac2:597b:: with SMTP id h27mr11986416lfp.100.1570899301833;
- Sat, 12 Oct 2019 09:55:01 -0700 (PDT)
+        bh=3hhyLxqkjn0n6SNfrqqq1R/avlplX4Y2rtgBXvZcRbc=;
+        b=aFFvGNZCr8fLcF8Q9tiZjIuXrBXZ3eCb0UuZdgESkfxgVfkBaV02GOzh+Sw52ToDWh
+         HFGXX5iETRV6K4N3rl3jm+MlBTNFOrtouSQS/HlL5qlzhHdM6Ey6lukhCvDU9bliJnBc
+         FgguqKELnilj33iZi/+XSmq9cPC60VyJbAdJn4XLvn9KOi3k2Gs+AJdd7tbEPrfn3Wah
+         yghv6ed2u68nimDX3/Dhc3fm/SsqNj2qrvhKIhfs5GABdc20gqRmxAdAtXrhuqvi+EOj
+         gbIB/RwpH9UTkU55HqXUj6qnrc7ZGz0CcADCGOE4PZqx/nc3GDiW5IT/UeSmBWeNBKRb
+         miRQ==
+X-Gm-Message-State: APjAAAU0IBuYzoNYTEj6KKbBFr6amhOXHXx4MamDvmqTGWteLpaTm6ca
+        7j97KK/2xyu9jFFIHHLjOof3t1YlAuieAHkM8is=
+X-Google-Smtp-Source: APXvYqyXDmK4QIBaFFIu6/W9zAHTTeymG5uwyuvP0mBeQbhc6i9W4XEu7+p21w3RH4eg1bLADc60lirZ3tv++suW/LQ=
+X-Received: by 2002:a2e:9cc9:: with SMTP id g9mr12207183ljj.188.1570899425130;
+ Sat, 12 Oct 2019 09:57:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <1570530208-17720-1-git-send-email-magnus.karlsson@intel.com>
- <5d9ce369d6e5_17cc2aba94c845b415@john-XPS-13-9370.notmuch>
- <CAJ8uoz3t2jVuwYKaFtt7huJo8HuW9aKLaFpJ4WcWxjm=-wQgrQ@mail.gmail.com> <5da0ed0b2a26d_70f72aad5dc6a5b8db@john-XPS-13-9370.notmuch>
-In-Reply-To: <5da0ed0b2a26d_70f72aad5dc6a5b8db@john-XPS-13-9370.notmuch>
+References: <111664d58fe4e9dd9c8014bb3d0b2dab93086a9e.1570609794.git.jbenc@redhat.com>
+In-Reply-To: <111664d58fe4e9dd9c8014bb3d0b2dab93086a9e.1570609794.git.jbenc@redhat.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 12 Oct 2019 09:54:50 -0700
-Message-ID: <CAADnVQKDr0u_YfB_eMYZEPKO1O=4hdzLye9FDMqjy4J3GL8Szg@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix compatibility for kernels without need_wakeup
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+Date:   Sat, 12 Oct 2019 09:56:53 -0700
+Message-ID: <CAADnVQKgXnmbEhBd1FvM16RP_i8s7+risvgM9yftwuP2DejFmA@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: lwtunnel: fix reroute supplying invalid dst
+To:     Jiri Benc <jbenc@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>
+        Peter Oskolkov <posk@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 1:58 PM John Fastabend <john.fastabend@gmail.com> wrote:
+On Wed, Oct 9, 2019 at 1:31 AM Jiri Benc <jbenc@redhat.com> wrote:
 >
-> Magnus Karlsson wrote:
-> > On Tue, Oct 8, 2019 at 9:29 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > >
-> > > Magnus Karlsson wrote:
-> > > > When the need_wakeup flag was added to AF_XDP, the format of the
-> > > > XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the kernel
-> > > > to take care of compatibility issues arrising from running
-> > > > applications using any of the two formats. However, libbpf was not
-> > > > extended to take care of the case when the application/libbpf uses the
-> > > > new format but the kernel only supports the old format. This patch
-> > > > adds support in libbpf for parsing the old format, before the
-> > > > need_wakeup flag was added, and emulating a set of static need_wakeup
-> > > > flags that will always work for the application.
-> > > >
-> > > > Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in AF_XDP part")
-> > > > Reported-by: Eloy Degen <degeneloy@gmail.com>
-> > > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > > > ---
-> > > >  tools/lib/bpf/xsk.c | 109 +++++++++++++++++++++++++++++++++++++---------------
-> > > >  1 file changed, 78 insertions(+), 31 deletions(-)
-> > > >
-> > > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> > > > index a902838..46f9687 100644
-> > > > --- a/tools/lib/bpf/xsk.c
-> > > > +++ b/tools/lib/bpf/xsk.c
-> > > > @@ -44,6 +44,25 @@
-> > > >   #define PF_XDP AF_XDP
-> > > >  #endif
-> > > >
-> > > > +#define is_mmap_offsets_v1(optlen) \
-> > > > +     ((optlen) == sizeof(struct xdp_mmap_offsets_v1))
-> > > > +
-> > > > +#define get_prod_off(ring) \
-> > > > +     (is_mmap_offsets_v1(optlen) ? \
-> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.producer : \
-> > > > +      off.ring.producer)
-> > > > +#define get_cons_off(ring) \
-> > > > +     (is_mmap_offsets_v1(optlen) ? \
-> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer : \
-> > > > +      off.ring.consumer)
-> > > > +#define get_desc_off(ring) \
-> > > > +     (is_mmap_offsets_v1(optlen) ? \
-> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.desc : off.ring.desc)
-> > > > +#define get_flags_off(ring) \
-> > > > +     (is_mmap_offsets_v1(optlen) ? \
-> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer + sizeof(u32) : \
-> > > > +      off.ring.flags)
-> > > > +
-> > >
-> > > It seems the only thing added was flags right? If so seems we
-> > > only need the last one there, get_flags_off(). I think it would
-> > > be a bit cleaner to just use the macros where its actually
-> > > needed IMO.
-> >
-> > The flag is indeed added to the end of struct xdp_ring_offsets, but
-> > this struct is replicated four times in the struct xdp_mmap_offsets,
-> > so the added flags are present four time there at different offsets.
-> > This means that 3 out of the 4 prod, cons and desc variables are
-> > located at different offsets from the original. Do not know how I can
-> > get rid of these macros in this case. But it might just be me not
-> > seeing it, of course :-).
+> The dst in bpf_input() has lwtstate field set. As it is of the
+> LWTUNNEL_ENCAP_BPF type, lwtstate->data is struct bpf_lwt. When the bpf
+> program returns BPF_LWT_REROUTE, ip_route_input_noref is directly called on
+> this skb. This causes invalid memory access, as ip_route_input_slow calls
+> skb_tunnel_info(skb) that expects the dst->lwstate->data to be
+> struct ip_tunnel_info. This results to struct bpf_lwt being accessed as
+> struct ip_tunnel_info.
 >
-> Not sure I like it but not seeing a cleaner solution that doesn't cause
-> larger changes so...
+> Drop the dst before calling the IP route input functions (both for IPv4 and
+> IPv6).
 >
-> Acked-by: John Fastabend <john.fastabend.gmail.com>
+> Reported by KASAN.
+>
+> Fixes: 3bd0b15281af ("bpf: add handling of BPF_LWT_REROUTE to lwt_bpf.c")
+> Cc: Peter Oskolkov <posk@google.com>
+> Signed-off-by: Jiri Benc <jbenc@redhat.com>
 
-Frankly above hack looks awful.
-What is _v1 ?! Is it going to be _v2?
-What was _v0?
-I also don't see how this is a fix. imo bpf-next is more appropriate
-and if "large changes" are necessary then go ahead and do them.
-We're not doing fixes-branches in libbpf.
-The library always moves forward and compatible with all older kernels.
+Peter and other google folks,
+please review.
