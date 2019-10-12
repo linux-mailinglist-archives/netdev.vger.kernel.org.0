@@ -2,126 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 185F3D4FDE
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 15:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8041D4FE3
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 15:02:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729034AbfJLNBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 09:01:36 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55226 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726793AbfJLNBg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Oct 2019 09:01:36 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0B34AC05AA65;
-        Sat, 12 Oct 2019 13:01:36 +0000 (UTC)
-Received: from [10.72.12.16] (ovpn-12-16.pek2.redhat.com [10.72.12.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CD7911C945;
-        Sat, 12 Oct 2019 13:01:30 +0000 (UTC)
-Subject: Re: [PATCH RFC net-next 2/2] drivers: net: virtio_net: Add tx_timeout
- function
-To:     jcfaracco@gmail.com, netdev@vger.kernel.org
-Cc:     mst@redhat.com, davem@davemloft.net,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, dnmendes76@gmail.com
-References: <20191006184515.23048-1-jcfaracco@gmail.com>
- <20191006184515.23048-3-jcfaracco@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <6c7a48ee-b900-c77d-8d12-35fd242f2e6f@redhat.com>
-Date:   Sat, 12 Oct 2019 21:01:28 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1729247AbfJLNCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 09:02:35 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:43947 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726751AbfJLNCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 09:02:35 -0400
+Received: by mail-lj1-f194.google.com with SMTP id n14so12344338ljj.10
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 06:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=3wuj2kJlmLKztyPN4wdQ2rcdsEbKrXDqcX9i55ozIPU=;
+        b=IhmXYmo1XImhanL96zDnwb562aQJZfEZWo3qlKpMN71BvFPF54wMM0E9UidXM3Zhdm
+         mC8cM3WesbVhgFb3+tXVUBO0h5tgm0UCNqsQnCA7imU/CNKU9UDOMt13i58U1xZD8H/a
+         73vgC0en/8fn87JqBfIYKjKt2jk1DS+Hpl8BXuYsPunlISo9SUufLf0of5hIRtyEasaP
+         VLbZWpcgPD9Bc1Xs1URebW/3kSKrQuVO1hp3S1LXH3EKrPvCWt7B3pjfTCHY+0z9dD3O
+         sCgB41MjPHVWhF0OQtU7L57OM6AmdKesWrAHe83aRNv/wsHQS7eUrfHPczdO8CjZpF2Q
+         xR7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=3wuj2kJlmLKztyPN4wdQ2rcdsEbKrXDqcX9i55ozIPU=;
+        b=p4jpp8m9oyIsrthG722GYv31kV1eHcf0InOxULvdjziqqNXKsENjuXpvRmdUolkvbG
+         AIoomzJ7gxVAabGw8WdWm3yEdlWNxUYrb+KlN9sX5X5+40lYkm9oDyQ8R0+9wPJgoaBI
+         L5FkzSeefb323VKADK7BWH7v85z4+S1LZV4eFi2JIw9m3DTmKERvfY6qL/dXffJYwYoN
+         9u+/yO4yQDQxHwYzvHB8gjK1TkDsUjy6FGrPYKW1zG1DicSbixDxY+yRRsaYSXz2bwLx
+         Em9F/GpepB6Bm37FR+yit0y42aKAf0g5Xtm2iUySZSvrUNmYVDzHaOyt0BlJPC13rBR+
+         B4bA==
+X-Gm-Message-State: APjAAAXPBP7aHazkXlJ4xV8QWlXWntQSmvX9W+tPArqEbo55oHygoUpI
+        wgn41gJdi4RXm4ZI0stFN5bzpse02O/j1lwxUKk=
+X-Google-Smtp-Source: APXvYqw/1N2yQ9plxGws6O1dpVz6jPI/7IgAXedTRQAZgVHq7JTp8633Zjh4kM36AxV+WaXD3V5aMLlAgId1D14mJJI=
+X-Received: by 2002:a2e:8417:: with SMTP id z23mr12162266ljg.46.1570885351555;
+ Sat, 12 Oct 2019 06:02:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191006184515.23048-3-jcfaracco@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Sat, 12 Oct 2019 13:01:36 +0000 (UTC)
+Received: by 2002:ab3:1687:0:0:0:0:0 with HTTP; Sat, 12 Oct 2019 06:02:31
+ -0700 (PDT)
+Reply-To: mrschantdav@gmail.com
+From:   "Dr. Abu Ahmed" <princepatrick54@gmail.com>
+Date:   Sat, 12 Oct 2019 06:02:31 -0700
+Message-ID: <CAOQDm3uuB+p-HAk548JtxO7vfwcAv3jjfVvvq2hDcosyiSa2eA@mail.gmail.com>
+Subject: Hello Beloved.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear Friend,
 
-On 2019/10/7 上午2:45, jcfaracco@gmail.com wrote:
-> From: Julio Faracco <jcfaracco@gmail.com>
->
-> To enable dev_watchdog, virtio_net should have a tx_timeout defined
-> (.ndo_tx_timeout). This is only a skeleton to throw a warn message. It
-> notifies the event in some specific queue of device. This function
-> still counts tx_timeout statistic and consider this event as an error
-> (one error per queue), reporting it.
->
-> Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
-> Signed-off-by: Daiane Mendes <dnmendes76@gmail.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> ---
->   drivers/net/virtio_net.c | 27 +++++++++++++++++++++++++++
->   1 file changed, 27 insertions(+)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 27f9b212c9f5..4b703b4b9441 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -2585,6 +2585,29 @@ static int virtnet_set_features(struct net_device *dev,
->   	return 0;
->   }
->   
-> +static void virtnet_tx_timeout(struct net_device *dev)
-> +{
-> +	struct virtnet_info *vi = netdev_priv(dev);
-> +	u32 i;
-> +
-> +	/* find the stopped queue the same way dev_watchdog() does */
-> +	for (i = 0; i < vi->curr_queue_pairs; i++) {
-> +		struct send_queue *sq = &vi->sq[i];
-> +
-> +		if (!netif_xmit_stopped(netdev_get_tx_queue(dev, i)))
-> +			continue;
-> +
-> +		u64_stats_update_begin(&sq->stats.syncp);
-> +		sq->stats.tx_timeouts++;
-> +		u64_stats_update_end(&sq->stats.syncp);
-> +
-> +		netdev_warn(dev, "TX timeout on send queue: %d, sq: %s, vq: %d, name: %s\n",
-> +			    i, sq->name, sq->vq->index, sq->vq->name);
+I'm sorry but happy to inform you about my success in getting those
+funds transferred under the cooperation of a new partner from Vietnam,
+though I tried my best to involve you in the business but God decided
+the whole situations. Presently I=E2=80=99m in Vietnam for investment proje=
+cts
+with my own share of the total sum. Meanwhile, I didn't forget your
+past efforts and attempts to assist me in transferring those funds
+despite that it failed us some how.
 
+Now contact my secretary in Burkina Faso her name is Mrs. Chantal
+Davids on her e-mail address below (mrschantdav@gmail.com) ask her to
+send you the total of $1.450,000.00 (One million four hundred and
+fifty thousand united state of America dollars) which I kept for your
+compensation for all the past efforts and attempts to assist me in
+this matter. I appreciated your efforts at that time very much. So
+feel free and get in touched with my secretary Mrs. Chantal Davids and
+instruct her where to send the amount to you. Please do let me know
+immediately you receive it so that we can share joy after all the
+sufferness at that time.
 
-If this is just a warn for a specific queue, maybe it's better to do it 
-in the dev_watchdog()?
+In the moment, I=E2=80=99m very busy here because of the investment project=
+s
+which I and the new partner are having at hand, finally, remember that
+I had forwarded instruction to the secretary on your behalf to receive
+that money, so feel free to get in touch with Mrs. Chantal Davids she
+will send the amount to you without any delay OK. Extend my greetings
+to your family.
 
-Or we may want more information like avail,used idx etc.
-
-And usually there will be a reset, any reason for not doing this?
-
-Thanks
-
-
-> +
-> +		dev->stats.tx_errors++;
-> +	}
-> +}
-> +
->   static const struct net_device_ops virtnet_netdev = {
->   	.ndo_open            = virtnet_open,
->   	.ndo_stop   	     = virtnet_close,
-> @@ -2600,6 +2623,7 @@ static const struct net_device_ops virtnet_netdev = {
->   	.ndo_features_check	= passthru_features_check,
->   	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
->   	.ndo_set_features	= virtnet_set_features,
-> +	.ndo_tx_timeout		= virtnet_tx_timeout,
->   };
->   
->   static void virtnet_config_changed_work(struct work_struct *work)
-> @@ -3018,6 +3042,9 @@ static int virtnet_probe(struct virtio_device *vdev)
->   	dev->netdev_ops = &virtnet_netdev;
->   	dev->features = NETIF_F_HIGHDMA;
->   
-> +	/* Set up dev_watchdog cycle. */
-> +	dev->watchdog_timeo = 5 * HZ;
-> +
->   	dev->ethtool_ops = &virtnet_ethtool_ops;
->   	SET_NETDEV_DEV(dev, &vdev->dev);
->   
+My Best regards
+Yours brother
+Dr. Abu Ahmed
+Greetings from Vietnam
