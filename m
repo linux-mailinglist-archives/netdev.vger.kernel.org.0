@@ -2,89 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E72BBD510C
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:33:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C4AD5115
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729236AbfJLQdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 12:33:13 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43919 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727423AbfJLQdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 12:33:13 -0400
-Received: by mail-wr1-f65.google.com with SMTP id j18so15019308wrq.10
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 09:33:11 -0700 (PDT)
+        id S1729257AbfJLQiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 12:38:23 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:38912 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727939AbfJLQiW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 12:38:22 -0400
+Received: by mail-qk1-f194.google.com with SMTP id 4so11834012qki.6;
+        Sat, 12 Oct 2019 09:38:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WK0aZtBfkjzF2vB8/5+pzziZzjABmbX2uXNAi/6qqVY=;
-        b=lU/QjJsd0iMUxgEz3IhsP8HaMvgoGdR4I/B6oB9obychkcm1NXhuKGhvEAUnEXPXQK
-         KVisFsqiRvr6/mNpVqZxlMkZJxxNPijRUFARXQlQIztCL7oEgpVVOPwW2GqsWaLRyLv7
-         Yq1wBpnSSsmQ5JVxw7sE0Ya5BbVBxmNT+f70ZVTq5kHPEb8ky+dwAPutUHbRNiKaleXu
-         2YpYP2Z7SfF9VABD19W/sDZQcSEceF7OPiZxAHrTkZbFc5DyzBzKIB8VNmv8d3DaSZIz
-         wmii5ceGd719vgr7vM3DawcdFYCbeLLkcNAieHPrxO6U1+8CSW+79ioVlh5QXEgVbm8k
-         Qpeg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Asvf+7RAspz/dNRNRh3zzivlzI76nj7xUdvXm0KQbhk=;
+        b=XBNFCriiZVsRqpp1Rz9jpimqWq2KJ8MPRKnu/0kp2MgT3pjUOoS6wqyhHq/azfu9tw
+         mkdvUtG6oNGjVDwDK6Shi8tdBEzU8u95kOjtDWA1T20pbcycPm7xdxd5erP/u3udI1/D
+         wDvQXLBE1udoElPfF+hc3pJoPvM4brcadJuX8dMtYiQBFfMwQXoAVKWyGYLzFpAZRuFv
+         d2sn5QWLQvi/VB/WnWth7HYFH+6LIJxrqqNAzzFshamgeFdZMlQp6sAtlywJRpZ8AKTH
+         ITdKz+N6XMyzSq76j9Qs3rG1kh/KXwHlKsqUUwHFVJvUwf0OdcPg0QgGqtgDfkI8A4jg
+         szDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WK0aZtBfkjzF2vB8/5+pzziZzjABmbX2uXNAi/6qqVY=;
-        b=PysiqIBmDI4tP7UGWYdzhIzObH1gly6T+fBGUDQ8ATT4dNF4VpE9lz+Ln6JffMSAhr
-         FNjFQQliZKpMHQNWoUUuft1Bu2naQKt1UvL6Hlg2ccd2WE0G3Z9/CTV3v0W/UO8Z5RIu
-         xw5iVGIuMaRMzYR2Ln/PLK8TkFL7H3oXih8hqL80VO+v2JQfjpQ8Clqd2m5HFFDVNaLG
-         AB4R8yYsrkiwvx32fX168GxR/US1u+zIbygOuK6re8W4C7xF6Z42pRprVAae3FL4TPOM
-         bJ0kazrXz+Z0LM/6zyRZ44V+Oc8j8xZyy/IeQCxmpbxuKsd+0XQq3dHdSjnwgPtRxGt9
-         aFvQ==
-X-Gm-Message-State: APjAAAWb9p2u5/Ee5yMuosNIItTq1bNAErSMIRaV64GlbczC4M5EGr9l
-        ql7DN8IGPg9XMq6BuzwWIxfikw==
-X-Google-Smtp-Source: APXvYqx0gE9jjfI4wMYpx2TWxq6U428URJZdGf7D1iK2MfrVuLbFKwv4kZ5uQ3X6jHg3QLv4d4rKag==
-X-Received: by 2002:adf:f18a:: with SMTP id h10mr17622633wro.145.1570897990815;
-        Sat, 12 Oct 2019 09:33:10 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id l18sm14362413wrc.18.2019.10.12.09.33.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Oct 2019 09:33:10 -0700 (PDT)
-Date:   Sat, 12 Oct 2019 18:33:09 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7 14/17] ethtool: set link settings with
- LINKINFO_SET request
-Message-ID: <20191012163309.GA2219@nanopsycho>
-References: <cover.1570654310.git.mkubecek@suse.cz>
- <aef31ba798d1cfa2ae92d333ad1547f4b528ffa8.1570654310.git.mkubecek@suse.cz>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Asvf+7RAspz/dNRNRh3zzivlzI76nj7xUdvXm0KQbhk=;
+        b=qjeWN1frlYjXEYJ17OmBvpo2vkXrEesAQDWU7P8ZsUJyIJQb4eqxb1iqScMIH48ULe
+         RSMWCsotaNiqnSu2gdFtiqUHg4JA8T4+qjF00EONvXpUbbgrOhMKbUTyGrQpkF48jfE+
+         +mp14joQMTx33KH8YPE4HcAeqpVwx+XoKm2WYH1MMYBesKhORZtxOxRc9inWmwE5nVSn
+         BzhKACNrK+VQvlCIJUYHwDZL8+4d8EvHz50E2lH8BTdR3F9N3pLCxl5U32s1Aj1JHv7z
+         1/5BCB8o/rgiGs4GR/K/kyErdFDRkO8xVqM/X9oCsdThc6PfSfzO7qVFwio2RUVj1prA
+         Rj8A==
+X-Gm-Message-State: APjAAAU1DbJhvw5ZkfwXSISFNLysSoHHsFSxe9s3sWQOXQKYg2vWNzYM
+        5gl8SQhAkhcIzMX0Eir8Mrlpsnc6EtwwF4bS9nI=
+X-Google-Smtp-Source: APXvYqz4UgPL57sKOTRBp1i4XHjeD9kz9YalrIgSn3zKwCGtiBrNst2Y70SVRh0PrbrRZNB9seFJ9+Xa1v7eTJl6B+g=
+X-Received: by 2002:a37:6d04:: with SMTP id i4mr22438253qkc.36.1570898301394;
+ Sat, 12 Oct 2019 09:38:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aef31ba798d1cfa2ae92d333ad1547f4b528ffa8.1570654310.git.mkubecek@suse.cz>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org> <20191011002808.28206-13-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20191011002808.28206-13-ivan.khoronzhuk@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 12 Oct 2019 09:38:10 -0700
+Message-ID: <CAEf4BzZCLoYxvkUsPgZMuKHUSJhmTxGHGsyybBJNoGeoUVCUww@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 12/15] libbpf: add C/LDFLAGS to libbpf.so and
+ test_libpf targets
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org,
+        sergei.shtylyov@cogentembedded.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Oct 09, 2019 at 10:59:43PM CEST, mkubecek@suse.cz wrote:
+On Thu, Oct 10, 2019 at 5:29 PM Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
+>
+> In case of C/LDFLAGS there is no way to pass them correctly to build
+> command, for instance when --sysroot is used or external libraries
+> are used, like -lelf, wich can be absent in toolchain. This can be
+> used for samples/bpf cross-compiling allowing to get elf lib from
+> sysroot.
+>
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
 
-[...]
-
->+static const struct nla_policy linkinfo_hdr_policy[ETHTOOL_A_HEADER_MAX + 1] = {
->+	[ETHTOOL_A_HEADER_UNSPEC]		= { .type = NLA_REJECT },
->+	[ETHTOOL_A_HEADER_DEV_INDEX]		= { .type = NLA_U32 },
->+	[ETHTOOL_A_HEADER_DEV_NAME]		= { .type = NLA_NUL_STRING,
->+						    .len = IFNAMSIZ - 1 },
-
-Please make ETHTOOL_A_HEADER_DEV_NAME accept alternative names as well.
-Just s/IFNAMSIZ/ALTIFNAMSIZ should be enough.
-
->+	[ETHTOOL_A_HEADER_GFLAGS]		= { .type = NLA_U32 },
->+	[ETHTOOL_A_HEADER_RFLAGS]		= { .type = NLA_REJECT },
->+};
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
 [...]
