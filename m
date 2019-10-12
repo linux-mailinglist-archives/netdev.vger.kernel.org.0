@@ -2,220 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C401D5126
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:51:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E618D5130
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729483AbfJLQvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 12:51:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48560 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727115AbfJLQug (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Oct 2019 12:50:36 -0400
-Received: from lore-desk-wlan.lan (unknown [151.66.37.226])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7737520679;
-        Sat, 12 Oct 2019 16:50:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570899035;
-        bh=qSEg9PvZkbVxQM23WcD3L4Jru73ZuIoTRpmb7PBGQxQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EHZFF54gumdqsWmUGFRJmszZTjIyCFrRlaBz+iSS8rE9i13x1qazGZ9vd4+UjHBy+
-         6FdI6HxhQ8g89WZ+j7ScrPRymDIdb8P5WOav5J4NCx/OIglmp1YvCY8Tw7gjVSCBVs
-         bhqM+bkilAPq0SRMq6hiiTZ3KAc7Cn/9w5DzHHDk=
-Date:   Sat, 12 Oct 2019 18:50:28 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Oleksandr Natalenko <oleksandr@natalenko.name>
-Cc:     linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: mt76x2e hardware restart
-Message-ID: <20191012165028.GA8739@lore-desk-wlan.lan>
-References: <deaafa7a3e9ea2111ebb5106430849c6@natalenko.name>
- <c6d621759c190f7810d898765115f3b4@natalenko.name>
- <9d581001e2e6cece418329842b2b0959@natalenko.name>
+        id S1729496AbfJLQ5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 12:57:04 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:40488 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727884AbfJLQzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 12:55:04 -0400
+Received: by mail-lf1-f67.google.com with SMTP id d17so9100574lfa.7;
+        Sat, 12 Oct 2019 09:55:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vDizdu9ZTbUiBuM21uWD34hEvaAlCgMSnuRFZcYt/XY=;
+        b=pO9lZhHTzapFnKp1A1SeeDMdu5u74rTS1jKEzLWhdZWIBvCqZ5VkC7bfHAjqO4p9IL
+         /Q/jJQ4URnIkx4i2dJix7O9EwR65uLxLwBI2S+LgQ5vzoCq2UqyHbidijxOFXtUq90fo
+         svPrgAsWMbFjhjm5FCVnqMViC72WjMFhnO2RyfjWe194+gSBPNclNX5eah/OnwzooGRi
+         HlqxYi7VTuWk90ABAxjmppgitjviM3ZGDU1XFEpCplO0+mZ9p3pCOQjNJSXt9T1SVEqK
+         +yoVM6fxjw7VDkf0DhF8/bdW5JH28R13veKHZOWY7O1o8A9vLbaG+ATYUVaAlBoI5JV1
+         P61Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vDizdu9ZTbUiBuM21uWD34hEvaAlCgMSnuRFZcYt/XY=;
+        b=Y8oIlf5zykbLhmKJVfkA6pwJVwYp6vgJ9CwwsDvpaJibfZfIo97m+WthXdoVnt4Eyc
+         Ez/ZUahb6lyxJQh4R2CLNrZlmlnJvE+JL3zkebI3hsmGQTkPnEDP5WTbHSG6ZEn/gl9r
+         zu2wR9QEic/7yuOwerLwybWqRU5Lyw3RHavy/aLPNPmWwmsCQljJ9qwLbPsbDRoeRta5
+         +W4+SWlVXbtmzjiOQanOrjJCJ2QvHIN9qL7eJZ8zlG6R9jjWBZZX64ZO6s7xxm9OHhni
+         36AKDexX2hVQG0zKUjd1mBAS9qhtGCTHLgn6PTB0YUXOyqXg+oClJmVBk0hw1cu+cc+Y
+         HdGg==
+X-Gm-Message-State: APjAAAWx5pNDJ+2GW25YJhLCliP2s65CxpsTjqufW128tajmeEhTiNTo
+        DLZNgkFB2KIAIZ2Pa9JHGSS+lhn4MToa5SVZc54=
+X-Google-Smtp-Source: APXvYqz1YrbXUhmqbBUp2gf/ItCVN5nB4DPteK5Mfohp/t0wE7TqKOkPrdGGItfBLszOa+G9Z37EtaAM0p5+5/0eyLk=
+X-Received: by 2002:ac2:597b:: with SMTP id h27mr11986416lfp.100.1570899301833;
+ Sat, 12 Oct 2019 09:55:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ReaqsoxgOBHFXBhH"
-Content-Disposition: inline
-In-Reply-To: <9d581001e2e6cece418329842b2b0959@natalenko.name>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <1570530208-17720-1-git-send-email-magnus.karlsson@intel.com>
+ <5d9ce369d6e5_17cc2aba94c845b415@john-XPS-13-9370.notmuch>
+ <CAJ8uoz3t2jVuwYKaFtt7huJo8HuW9aKLaFpJ4WcWxjm=-wQgrQ@mail.gmail.com> <5da0ed0b2a26d_70f72aad5dc6a5b8db@john-XPS-13-9370.notmuch>
+In-Reply-To: <5da0ed0b2a26d_70f72aad5dc6a5b8db@john-XPS-13-9370.notmuch>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 12 Oct 2019 09:54:50 -0700
+Message-ID: <CAADnVQKDr0u_YfB_eMYZEPKO1O=4hdzLye9FDMqjy4J3GL8Szg@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: fix compatibility for kernels without need_wakeup
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 11, 2019 at 1:58 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Magnus Karlsson wrote:
+> > On Tue, Oct 8, 2019 at 9:29 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > >
+> > > Magnus Karlsson wrote:
+> > > > When the need_wakeup flag was added to AF_XDP, the format of the
+> > > > XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the kernel
+> > > > to take care of compatibility issues arrising from running
+> > > > applications using any of the two formats. However, libbpf was not
+> > > > extended to take care of the case when the application/libbpf uses the
+> > > > new format but the kernel only supports the old format. This patch
+> > > > adds support in libbpf for parsing the old format, before the
+> > > > need_wakeup flag was added, and emulating a set of static need_wakeup
+> > > > flags that will always work for the application.
+> > > >
+> > > > Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in AF_XDP part")
+> > > > Reported-by: Eloy Degen <degeneloy@gmail.com>
+> > > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > > ---
+> > > >  tools/lib/bpf/xsk.c | 109 +++++++++++++++++++++++++++++++++++++---------------
+> > > >  1 file changed, 78 insertions(+), 31 deletions(-)
+> > > >
+> > > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > > > index a902838..46f9687 100644
+> > > > --- a/tools/lib/bpf/xsk.c
+> > > > +++ b/tools/lib/bpf/xsk.c
+> > > > @@ -44,6 +44,25 @@
+> > > >   #define PF_XDP AF_XDP
+> > > >  #endif
+> > > >
+> > > > +#define is_mmap_offsets_v1(optlen) \
+> > > > +     ((optlen) == sizeof(struct xdp_mmap_offsets_v1))
+> > > > +
+> > > > +#define get_prod_off(ring) \
+> > > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.producer : \
+> > > > +      off.ring.producer)
+> > > > +#define get_cons_off(ring) \
+> > > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer : \
+> > > > +      off.ring.consumer)
+> > > > +#define get_desc_off(ring) \
+> > > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.desc : off.ring.desc)
+> > > > +#define get_flags_off(ring) \
+> > > > +     (is_mmap_offsets_v1(optlen) ? \
+> > > > +      ((struct xdp_mmap_offsets_v1 *)&off)->ring.consumer + sizeof(u32) : \
+> > > > +      off.ring.flags)
+> > > > +
+> > >
+> > > It seems the only thing added was flags right? If so seems we
+> > > only need the last one there, get_flags_off(). I think it would
+> > > be a bit cleaner to just use the macros where its actually
+> > > needed IMO.
+> >
+> > The flag is indeed added to the end of struct xdp_ring_offsets, but
+> > this struct is replicated four times in the struct xdp_mmap_offsets,
+> > so the added flags are present four time there at different offsets.
+> > This means that 3 out of the 4 prod, cons and desc variables are
+> > located at different offsets from the original. Do not know how I can
+> > get rid of these macros in this case. But it might just be me not
+> > seeing it, of course :-).
+>
+> Not sure I like it but not seeing a cleaner solution that doesn't cause
+> larger changes so...
+>
+> Acked-by: John Fastabend <john.fastabend.gmail.com>
 
---ReaqsoxgOBHFXBhH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On 19.09.2019 23:22, Oleksandr Natalenko wrote:
-> > It checks for TX hang here:
-> >=20
-> > =3D=3D=3D mt76x02_mmio.c
-> > 557 void mt76x02_wdt_work(struct work_struct *work)
-> > 558 {
-> > ...
-> > 562     mt76x02_check_tx_hang(dev);
-> > =3D=3D=3D
->=20
-> I've commented out the watchdog here ^^, and the card is not resetted any
-> more, but similarly it stops working shortly after the first client
-> connects. So, indeed, it must be some hang in the HW, and wdt seems to do=
- a
-> correct job.
->=20
-> Is it even debuggable/fixable from the driver?
-
-Hi Oleksandr,
-
-sorry for the delay. Felix and me worked on this issue today. Could you ple=
-ase
-try if the following patch fixes your issue?
-
-Regards,
-Lorenzo
-
-=46rom cf3436c42a297967235a9c9778620c585100529e Mon Sep 17 00:00:00 2001
-Message-Id: <cf3436c42a297967235a9c9778620c585100529e.1570897574.git.lorenz=
-o@kernel.org>
-=46rom: Lorenzo Bianconi <lorenzo@kernel.org>
-Date: Sat, 12 Oct 2019 17:32:57 +0200
-Subject: [PATCH] mt76: mt76x2: disable pcie_aspm by default
-
-On same device (e.g. U7612E-H1) PCIE_ASPM causes continues mcu hangs and
-instability. This patch disable PCIE_ASPM by default. This patch has
-been successfully tested on U7612E-H1 mini-pice card
-
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/wireless/mediatek/mt76/mmio.c     | 48 +++++++++++++++++++
- drivers/net/wireless/mediatek/mt76/mt76.h     |  1 +
- .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
- 3 files changed, 51 insertions(+)
-
-diff --git a/drivers/net/wireless/mediatek/mt76/mmio.c b/drivers/net/wirele=
-ss/mediatek/mt76/mmio.c
-index 1c974df1fe25..8e1dbc1903f3 100644
---- a/drivers/net/wireless/mediatek/mt76/mmio.c
-+++ b/drivers/net/wireless/mediatek/mt76/mmio.c
-@@ -3,6 +3,9 @@
-  * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
-  */
-=20
-+#include <linux/pci.h>
-+#include <linux/pci-aspm.h>
-+
- #include "mt76.h"
- #include "trace.h"
-=20
-@@ -78,6 +81,51 @@ void mt76_set_irq_mask(struct mt76_dev *dev, u32 addr,
- }
- EXPORT_SYMBOL_GPL(mt76_set_irq_mask);
-=20
-+void mt76_mmio_disable_aspm(struct pci_dev *pdev)
-+{
-+	struct pci_dev *parent =3D pdev->bus->self;
-+	u16 aspm_conf, parent_aspm_conf =3D 0;
-+
-+	pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &aspm_conf);
-+	aspm_conf &=3D PCI_EXP_LNKCTL_ASPMC;
-+	if (parent) {
-+		pcie_capability_read_word(parent, PCI_EXP_LNKCTL,
-+					  &parent_aspm_conf);
-+		parent_aspm_conf &=3D PCI_EXP_LNKCTL_ASPMC;
-+	}
-+
-+	if (!aspm_conf && (!parent || !parent_aspm_conf)) {
-+		/* aspm already disabled */
-+		return;
-+	}
-+
-+	dev_info(&pdev->dev, "disabling ASPM %s %s\n",
-+		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L0S) ? "L0s" : "",
-+		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L1) ? "L1" : "");
-+
-+#ifdef CONFIG_PCIEASPM
-+	pci_disable_link_state(pdev, aspm_conf);
-+
-+	/* Double-check ASPM control.  If not disabled by the above, the
-+	 * BIOS is preventing that from happening (or CONFIG_PCIEASPM is
-+	 * not enabled); override by writing PCI config space directly.
-+	 */
-+	pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &aspm_conf);
-+	if (!(aspm_conf & PCI_EXP_LNKCTL_ASPMC))
-+		return;
-+#endif /* CONFIG_PCIEASPM */
-+
-+	/* Both device and parent should have the same ASPM setting.
-+	 * Disable ASPM in downstream component first and then upstream.
-+	 */
-+	pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL, aspm_conf);
-+
-+	if (parent)
-+		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,
-+					   aspm_conf);
-+}
-+EXPORT_SYMBOL_GPL(mt76_mmio_disable_aspm);
-+
- void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs)
- {
- 	static const struct mt76_bus_ops mt76_mmio_ops =3D {
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wirele=
-ss/mediatek/mt76/mt76.h
-index 8bcc7f21e83c..e95a5893f93b 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-@@ -596,6 +596,7 @@ bool __mt76_poll_msec(struct mt76_dev *dev, u32 offset,=
- u32 mask, u32 val,
- #define mt76_poll_msec(dev, ...) __mt76_poll_msec(&((dev)->mt76), __VA_ARG=
-S__)
-=20
- void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs);
-+void mt76_mmio_disable_aspm(struct pci_dev *pdev);
-=20
- static inline u16 mt76_chip(struct mt76_dev *dev)
- {
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/=
-wireless/mediatek/mt76/mt76x2/pci.c
-index 6253ec5fbd72..06fb80163c8e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-@@ -83,6 +83,8 @@ mt76pci_probe(struct pci_dev *pdev, const struct pci_devi=
-ce_id *id)
- 	/* RG_SSUSB_CDR_BR_PE1D =3D 0x3 */
- 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
-=20
-+	mt76_mmio_disable_aspm(pdev);
-+
- 	return 0;
-=20
- error:
---=20
-2.21.0
-
->=20
-> --=20
->   Oleksandr Natalenko (post-factum)
-
---ReaqsoxgOBHFXBhH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXaIEUQAKCRA6cBh0uS2t
-rMgMAP4gYBsBVaqrrJGeL59RvPIDCtDh9B4Cal6r0cZiF8/eawD9E3a71sAvXQRq
-77lBM018hpb2RI8zaAU2j9ddT2e6HwU=
-=jGHZ
------END PGP SIGNATURE-----
-
---ReaqsoxgOBHFXBhH--
+Frankly above hack looks awful.
+What is _v1 ?! Is it going to be _v2?
+What was _v0?
+I also don't see how this is a fix. imo bpf-next is more appropriate
+and if "large changes" are necessary then go ahead and do them.
+We're not doing fixes-branches in libbpf.
+The library always moves forward and compatible with all older kernels.
