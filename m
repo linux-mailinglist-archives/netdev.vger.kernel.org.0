@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C10C4D4BF1
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 03:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDADAD4BF3
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 03:54:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728692AbfJLByi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 21:54:38 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44887 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726903AbfJLByh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 21:54:37 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q21so7069980pfn.11;
-        Fri, 11 Oct 2019 18:54:37 -0700 (PDT)
+        id S1728787AbfJLByk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 21:54:40 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:33914 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726903AbfJLByk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 21:54:40 -0400
+Received: by mail-pl1-f193.google.com with SMTP id k7so5274338pll.1;
+        Fri, 11 Oct 2019 18:54:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=h6RM8n/hu+J01s3SNVKgH78hp/SMvdzMYgpkm9Vlc0E=;
-        b=Psj7J/Xdrx87uLc77BzjrgDpkUPccWetrIkFZW93JzYvCYb1wY3EQIuXyEGQf2XoZ5
-         VWbbD3m4zz7iY7EXZ0V7FR6VWXX0N7/EAYwPjdEigFRR52DAc5TWAyxV9lwGBVbRytKQ
-         3V+FUTg4NJnpqK0gUR6ti3cklY8zuV+zUnG7Pu7VFmGVMGMpFF6suFUlFpXeUX0c4TC/
-         854p0MP4bC1ODOJKqcv5mzDgr/teGKMUJYh39+uA+ui6qebIgvuQBfkCt/3tdo71IW9s
-         yAO9mXCT8fx+ZnNeWm0QkFx2cJdB0XzMf2gc3pPSZprP+XCXiT6NKn5t85hoJEuhMi81
-         eK5Q==
+        bh=dPo81eWB3SH6wvvgmzlALNsFkjGRiym0izSWC/MTDYo=;
+        b=c6CLaCLT46gM6CwtW+TxMhE5P2iCIewgvTbbwDViw21SaJz02FVl1aWZZ18sxAwA10
+         gbUWsspYsP9kS+jB8ClEYwnQsectw1OdHpuJ6PKvcsq9J+0E0rrwY+V7kU1IOxkLBYWp
+         52L2XOQr4C/05VEJODnInJsAVgWLVyDQBA2O2OglRav2ZcC36aVK7nQGAQN3tbSRi/RA
+         9hMm90cRQm3MxjHqimCHIs54+yEvjhbHXGZfhBTipnkKXHmca0sUGeTWBCwnRGz44r5z
+         y3J0cFpnKfAK4DMyV5hazc7zaxugaqlHYtcUeW/dEsXR4DwzziT0p8Ix1YEsnZZhJyu6
+         3Vtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h6RM8n/hu+J01s3SNVKgH78hp/SMvdzMYgpkm9Vlc0E=;
-        b=RX7kDauASOESQjJH83QVH6GxtUK1Kwp7BYLviN20ka7btnpRRo1zhnuHIpHjSmCM7c
-         LMQzX1Ol/vo4zbdSWf2B/dVzhf9eGdEOWZpbEShLt0aSI/ocZ3PwA0PyH8ykW0NQWTTu
-         X7oQWMBwzejviuG19XaknnxWNbsUrhhORIitiALz+o3uVpV248PecCx14sEy1W8wvcCK
-         lnVrdu5425a3U1cJsSUTsfelxYw1beqUHpD4vG+Hwjgm0HCY6eAS0fbQoHBsNSthxn+u
-         ttMLM8q0711kAZ6Jdf8ilOVDJdDhyPQB8r/a0L56m7iP+BY+xrtYmtcBB9wT4DXXSZTO
-         xQCQ==
-X-Gm-Message-State: APjAAAVn7OOyO2NvcAdh1MBZTJIxgTvilCF/lvh9DQM7EuMPYw37Sqal
-        pcbVKahBfZg1iDgk5Vf17j1L6IgE
-X-Google-Smtp-Source: APXvYqwzr4g9BpxV8IvNgAMPr4eoJ3NUv72g45jMas1+qQDBwpTTEv6qQRhPd7yL5zVM1vx636sy9w==
-X-Received: by 2002:aa7:956a:: with SMTP id x10mr19835260pfq.114.1570845276837;
-        Fri, 11 Oct 2019 18:54:36 -0700 (PDT)
+        bh=dPo81eWB3SH6wvvgmzlALNsFkjGRiym0izSWC/MTDYo=;
+        b=JIHqCW6YkgPs+jly4chM7TyXLTcVywrGpjvTDKCIRu/8aoX5g0zh2bfqsMPWqSsyGu
+         lT5w4VsPL/ZjdYfZ/OXkRzCI9n07iPU1Y0ZF1VykQyFR0Vrw46BSvh+t29cKK4Pg/1es
+         UXk1CstZJO4/bCNsa0bY659zUZwZu1XsKvZkTejYSwjvflcLXT1EtVLPpyZ03sregbl6
+         MZnuENFp5a0wyWB5ooMGYJad5qaNGzOgxsu5QzPv2RYv7qLOETE3Pl/7Tm4+anrzSdV4
+         /QWRz90OPRbmmW2FimDkdl8WovdZrssGeFiiUFdedcHHulgJ3sJDxgjgQVvbmvQA1Yb0
+         Yqtw==
+X-Gm-Message-State: APjAAAWsuVY5+22VLoPyQ3hMbPOc2ehAfmL2yznb6BknQqUmL4SqdSEH
+        UjIydNLqI4Ac2DF7H0fNgs8=
+X-Google-Smtp-Source: APXvYqww6jTojlyIyGmb9SUDcOgGFzhAqy2k87gYOMUYH6FfRioiuv2og4D3Z4zcY5eDDZN8ImI4ng==
+X-Received: by 2002:a17:902:6e17:: with SMTP id u23mr16558566plk.209.1570845279515;
+        Fri, 11 Oct 2019 18:54:39 -0700 (PDT)
 Received: from localhost.localdomain (KD124211219252.ppp-bb.dion.ne.jp. [124.211.219.252])
-        by smtp.gmail.com with ESMTPSA id e127sm10992187pfe.37.2019.10.11.18.54.34
+        by smtp.gmail.com with ESMTPSA id e127sm10992187pfe.37.2019.10.11.18.54.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2019 18:54:36 -0700 (PDT)
+        Fri, 11 Oct 2019 18:54:39 -0700 (PDT)
 From:   prashantbhole.linux@gmail.com
 To:     "Michael S . Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
@@ -51,9 +51,9 @@ To:     "Michael S . Tsirkin" <mst@redhat.com>,
 Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
         David Ahern <dsahern@gmail.com>, kvm@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH net-next 1/3] tuntap: reorganize tun_msg_ctl usage
-Date:   Sat, 12 Oct 2019 10:53:55 +0900
-Message-Id: <20191012015357.1775-2-prashantbhole.linux@gmail.com>
+Subject: [PATCH net-next 2/3] vhost_net: user tap recvmsg api to access ptr ring
+Date:   Sat, 12 Oct 2019 10:53:56 +0900
+Message-Id: <20191012015357.1775-3-prashantbhole.linux@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
 References: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
@@ -66,119 +66,203 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Prashant Bhole <prashantbhole.linux@gmail.com>
 
-In order to extend the usage of tun_msg_ctl structure, this patch
-changes the member name from type to cmd. Also following definitions
-are changed:
-TUN_MSG_PTR : TUN_CMD_BATCH
-TUN_MSG_UBUF: TUN_CMD_PACKET
+Currently vhost_net directly accesses ptr ring of tap driver to
+fetch Rx packet pointers. In order to avoid it this patch modifies
+tap driver's recvmsg api to do additional task of fetching Rx packet
+pointers.
+
+A special struct tun_msg_ctl is already being usedd via msg_control
+for tun Rx XDP batching. This patch extends tun_msg_ctl usage to
+send sub commands to recvmsg api. recvmsg can now produce/unproduce
+pointers from ptr ring as an additional task.
+
+This will be useful in future in implementation of virtio-net XDP
+offload feature. Where packets will be XDP batch processed in
+tun_recvmsg.
 
 Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 ---
- drivers/net/tap.c      | 9 ++++++---
- drivers/net/tun.c      | 8 ++++++--
- drivers/vhost/net.c    | 4 ++--
- include/linux/if_tun.h | 6 +++---
- 4 files changed, 17 insertions(+), 10 deletions(-)
+ drivers/net/tap.c      | 22 +++++++++++++++++++-
+ drivers/net/tun.c      | 24 +++++++++++++++++++++-
+ drivers/vhost/net.c    | 46 +++++++++++++++++++++++++++++++++---------
+ include/linux/if_tun.h |  3 +++
+ 4 files changed, 83 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index 3ae70c7e6860..01bd260ce60c 100644
+index 01bd260ce60c..3d0bf382dbbc 100644
 --- a/drivers/net/tap.c
 +++ b/drivers/net/tap.c
-@@ -1213,9 +1213,10 @@ static int tap_sendmsg(struct socket *sock, struct msghdr *m,
+@@ -1234,8 +1234,28 @@ static int tap_recvmsg(struct socket *sock, struct msghdr *m,
+ 		       size_t total_len, int flags)
+ {
  	struct tap_queue *q = container_of(sock, struct tap_queue, sock);
- 	struct tun_msg_ctl *ctl = m->msg_control;
- 	struct xdp_buff *xdp;
-+	void *ptr = NULL;
- 	int i;
- 
--	if (ctl && (ctl->type == TUN_MSG_PTR)) {
-+	if (ctl && ctl->cmd == TUN_CMD_BATCH) {
- 		for (i = 0; i < ctl->num; i++) {
- 			xdp = &((struct xdp_buff *)ctl->ptr)[i];
- 			tap_get_user_xdp(q, xdp);
-@@ -1223,8 +1224,10 @@ static int tap_sendmsg(struct socket *sock, struct msghdr *m,
- 		return 0;
- 	}
- 
--	return tap_get_user(q, ctl ? ctl->ptr : NULL, &m->msg_iter,
--			    m->msg_flags & MSG_DONTWAIT);
-+	if (ctl && ctl->cmd == TUN_CMD_PACKET)
-+		ptr = ctl->ptr;
+-	struct sk_buff *skb = m->msg_control;
++	struct tun_msg_ctl *ctl = m->msg_control;
++	struct sk_buff *skb = NULL;
+ 	int ret;
 +
-+	return tap_get_user(q, ptr, &m->msg_iter, m->msg_flags & MSG_DONTWAIT);
- }
- 
- static int tap_recvmsg(struct socket *sock, struct msghdr *m,
++	if (ctl) {
++		switch (ctl->cmd) {
++		case TUN_CMD_PACKET:
++			skb = ctl->ptr;
++			break;
++		case TUN_CMD_PRODUCE_PTRS:
++			return ptr_ring_consume_batched(&q->ring,
++							ctl->ptr_array,
++							ctl->num);
++		case TUN_CMD_UNPRODUCE_PTRS:
++			ptr_ring_unconsume(&q->ring, ctl->ptr_array, ctl->num,
++					   tun_ptr_free);
++			return 0;
++		default:
++			return -EINVAL;
++		}
++	}
++
+ 	if (flags & ~(MSG_DONTWAIT|MSG_TRUNC)) {
+ 		kfree_skb(skb);
+ 		return -EINVAL;
 diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 0413d182d782..29711671959b 100644
+index 29711671959b..7d4886f53389 100644
 --- a/drivers/net/tun.c
 +++ b/drivers/net/tun.c
-@@ -2529,11 +2529,12 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+@@ -2577,7 +2577,8 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
+ {
+ 	struct tun_file *tfile = container_of(sock, struct tun_file, socket);
  	struct tun_struct *tun = tun_get(tfile);
- 	struct tun_msg_ctl *ctl = m->msg_control;
- 	struct xdp_buff *xdp;
+-	void *ptr = m->msg_control;
++	struct tun_msg_ctl *ctl = m->msg_control;
 +	void *ptr = NULL;
+ 	int ret;
  
- 	if (!tun)
- 		return -EBADFD;
- 
--	if (ctl && (ctl->type == TUN_MSG_PTR)) {
-+	if (ctl && ctl->cmd == TUN_CMD_BATCH) {
- 		struct tun_page tpage;
- 		int n = ctl->num;
- 		int flush = 0;
-@@ -2560,7 +2561,10 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- 		goto out;
+ 	if (!tun) {
+@@ -2585,6 +2586,27 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
+ 		goto out_free;
  	}
  
--	ret = tun_get_user(tun, tfile, ctl ? ctl->ptr : NULL, &m->msg_iter,
-+	if (ctl && ctl->cmd == TUN_CMD_PACKET)
-+		ptr = ctl->ptr;
++	if (ctl) {
++		switch (ctl->cmd) {
++		case TUN_CMD_PACKET:
++			ptr = ctl->ptr;
++			break;
++		case TUN_CMD_PRODUCE_PTRS:
++			ret = ptr_ring_consume_batched(&tfile->tx_ring,
++						       ctl->ptr_array,
++						       ctl->num);
++			goto out;
++		case TUN_CMD_UNPRODUCE_PTRS:
++			ptr_ring_unconsume(&tfile->tx_ring, ctl->ptr_array,
++					   ctl->num, tun_ptr_free);
++			ret = 0;
++			goto out;
++		default:
++			ret = -EINVAL;
++			goto out_put_tun;
++		}
++	}
 +
-+	ret = tun_get_user(tun, tfile, ptr, &m->msg_iter,
- 			   m->msg_flags & MSG_DONTWAIT,
- 			   m->msg_flags & MSG_MORE);
- out:
+ 	if (flags & ~(MSG_DONTWAIT|MSG_TRUNC|MSG_ERRQUEUE)) {
+ 		ret = -EINVAL;
+ 		goto out_put_tun;
 diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 1a2dd53caade..5946d2775bd0 100644
+index 5946d2775bd0..5e5c1063606c 100644
 --- a/drivers/vhost/net.c
 +++ b/drivers/vhost/net.c
-@@ -462,7 +462,7 @@ static void vhost_tx_batch(struct vhost_net *net,
- 			   struct msghdr *msghdr)
+@@ -175,24 +175,44 @@ static void *vhost_net_buf_consume(struct vhost_net_buf *rxq)
+ 
+ static int vhost_net_buf_produce(struct vhost_net_virtqueue *nvq)
  {
- 	struct tun_msg_ctl ctl = {
--		.type = TUN_MSG_PTR,
-+		.cmd = TUN_CMD_BATCH,
- 		.num = nvq->batched_xdp,
- 		.ptr = nvq->xdp,
++	struct vhost_virtqueue *vq = &nvq->vq;
++	struct socket *sock = vq->private_data;
+ 	struct vhost_net_buf *rxq = &nvq->rxq;
++	struct tun_msg_ctl ctl = {
++		.cmd = TUN_CMD_PRODUCE_PTRS,
++		.ptr_array = rxq->queue,
++		.num = VHOST_NET_BATCH,
++	};
++	struct msghdr msg = {
++		.msg_control = &ctl,
++	};
+ 
+ 	rxq->head = 0;
+-	rxq->tail = ptr_ring_consume_batched(nvq->rx_ring, rxq->queue,
+-					      VHOST_NET_BATCH);
++	rxq->tail = sock->ops->recvmsg(sock, &msg, 0, 0);
++	if (rxq->tail < 0)
++		rxq->tail = 0;
++
+ 	return rxq->tail;
+ }
+ 
+ static void vhost_net_buf_unproduce(struct vhost_net_virtqueue *nvq)
+ {
++	struct vhost_virtqueue *vq = &nvq->vq;
++	struct socket *sock = vq->private_data;
+ 	struct vhost_net_buf *rxq = &nvq->rxq;
++	struct tun_msg_ctl ctl = {
++		.cmd = TUN_CMD_UNPRODUCE_PTRS,
++		.ptr_array = rxq->queue + rxq->head,
++		.num = vhost_net_buf_get_size(rxq),
++	};
++	struct msghdr msg = {
++		.msg_control = &ctl,
++	};
+ 
+-	if (nvq->rx_ring && !vhost_net_buf_is_empty(rxq)) {
+-		ptr_ring_unconsume(nvq->rx_ring, rxq->queue + rxq->head,
+-				   vhost_net_buf_get_size(rxq),
+-				   tun_ptr_free);
+-		rxq->head = rxq->tail = 0;
+-	}
++	if (!vhost_net_buf_is_empty(rxq))
++		sock->ops->recvmsg(sock, &msg, 0, 0);
++
++	rxq->head = rxq->tail = 0;
+ }
+ 
+ static int vhost_net_buf_peek_len(void *ptr)
+@@ -1109,6 +1129,9 @@ static void handle_rx(struct vhost_net *net)
+ 		.flags = 0,
+ 		.gso_type = VIRTIO_NET_HDR_GSO_NONE
  	};
-@@ -902,7 +902,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
- 			ubuf->desc = nvq->upend_idx;
- 			refcount_set(&ubuf->refcnt, 1);
- 			msg.msg_control = &ctl;
--			ctl.type = TUN_MSG_UBUF;
++	struct tun_msg_ctl ctl = {
++		.cmd = TUN_CMD_PACKET,
++	};
+ 	size_t total_len = 0;
+ 	int err, mergeable;
+ 	s16 headcount;
+@@ -1166,8 +1189,11 @@ static void handle_rx(struct vhost_net *net)
+ 			goto out;
+ 		}
+ 		busyloop_intr = false;
+-		if (nvq->rx_ring)
+-			msg.msg_control = vhost_net_buf_consume(&nvq->rxq);
++		if (nvq->rx_ring) {
 +			ctl.cmd = TUN_CMD_PACKET;
- 			ctl.ptr = ubuf;
- 			msg.msg_controllen = sizeof(ctl);
- 			ubufs = nvq->ubufs;
++			ctl.ptr = vhost_net_buf_consume(&nvq->rxq);
++			msg.msg_control = &ctl;
++		}
+ 		/* On overrun, truncate and discard */
+ 		if (unlikely(headcount > UIO_MAXIOV)) {
+ 			iov_iter_init(&msg.msg_iter, READ, vq->iov, 1, 1);
 diff --git a/include/linux/if_tun.h b/include/linux/if_tun.h
-index 5bda8cf457b6..bdfa671612db 100644
+index bdfa671612db..8608d4095143 100644
 --- a/include/linux/if_tun.h
 +++ b/include/linux/if_tun.h
-@@ -11,10 +11,10 @@
+@@ -13,10 +13,13 @@
  
- #define TUN_XDP_FLAG 0x1UL
- 
--#define TUN_MSG_UBUF 1
--#define TUN_MSG_PTR  2
-+#define TUN_CMD_PACKET 1
-+#define TUN_CMD_BATCH  2
+ #define TUN_CMD_PACKET 1
+ #define TUN_CMD_BATCH  2
++#define TUN_CMD_PRODUCE_PTRS	3
++#define TUN_CMD_UNPRODUCE_PTRS	4
  struct tun_msg_ctl {
--	unsigned short type;
-+	unsigned short cmd;
+ 	unsigned short cmd;
  	unsigned short num;
  	void *ptr;
++	void **ptr_array;
  };
+ 
+ struct tun_xdp_hdr {
 -- 
 2.21.0
 
