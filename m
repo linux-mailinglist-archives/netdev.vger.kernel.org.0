@@ -2,90 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66919D5229
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 21:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E667D522A
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 21:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729469AbfJLTZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 15:25:26 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41394 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729384AbfJLTZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 15:25:26 -0400
-Received: by mail-pg1-f193.google.com with SMTP id t3so7698487pga.8
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 12:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bTRD5qPw9WifRQmYZW6iKqCth6nognNUuVkzjQ/7l4U=;
-        b=ejUxOjt0KQ06GoQ/FHtmI5F7z46hVcBTApDcUfP/b7A3FLPFXOuSxYvMfgytio47Ag
-         6GEEBIE20qRVZoW/o/GmzeFatY+CVQ9reY5Zn0Xoyl1iFFAYG2O7RB0k828VqXVlUXD7
-         T3VKsfF6Ri9QJSl5jKFbXeN9ZyvHa8Qc1Vr6PboY2ZjGXOinTGDhE4nvWY4Deh9p4j48
-         hlC/rZhQTiaPg8Ys3pkR5TX9X9nd2lyw/gDK9dmhfRd426RhMNASiB1ZswfL+E9u3ic8
-         JkQcEFdA4WsfaT0p/ZoXfQjbkwX1Fw2lk3B15s+ywl8c8CkWiehk5pq7xeTalfWOMm2p
-         /Kmw==
+        id S1729634AbfJLT0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 15:26:16 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39910 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729280AbfJLT0Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 15:26:16 -0400
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0BE41C054C58
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 19:26:16 +0000 (UTC)
+Received: by mail-wr1-f69.google.com with SMTP id h4so455972wrx.15
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 12:26:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bTRD5qPw9WifRQmYZW6iKqCth6nognNUuVkzjQ/7l4U=;
-        b=G1a5jt/NH3MERzWxaDGPPgP0TIEojScDNV0n3iyKVHpPwr4wCACedqJ1cBzwBckdc8
-         IAE6Gq4mY71r8loYEdq1QdIS7FOvn1W+tklLR9tImlPryXboZima8mSFBekvINuxhqrC
-         J15GPguHg5YbnC9g1y6Osy9ChMqRUPKVWo8IxgcQuDbBgbbJcr712xxdqv743RL3Eupv
-         gU2o3eNj66K2tZ2Wv3ilKH/aoPZbJksa68NjouoTZEeZPfdbFPeYUs2cni/H7Fbrihhw
-         KNsNHxvyao4bT1HNAzYOB6nuIrt536wc9xB0rYgahZkYBDIVQQX0HLnBjm+9gxcUPai+
-         xjUw==
-X-Gm-Message-State: APjAAAWvHlmdCnwuTq7yklNhj3S3An8apSSeMugbWWP+REj23I4DqrqB
-        rxy88t7vH7TroLNp8LwzG2U=
-X-Google-Smtp-Source: APXvYqwGPu+0LwGqDWinhEhtF1e63H66T7naZQVp2AjV1Yp1mPPImEQrOnN97BYUqU4IwuW7Pxzahw==
-X-Received: by 2002:aa7:9a0c:: with SMTP id w12mr6975990pfj.81.1570908325818;
-        Sat, 12 Oct 2019 12:25:25 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id i6sm15697364pfq.20.2019.10.12.12.25.24
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=NER+WYNjIiTuYyELfX6XGxRMHyIeb8bjpkbmjz8T8Lw=;
+        b=tbMlfZ8v8v5XPy7qLfWl3OyPOJjYSyVqH5juRUE2VmX/dxBsRDrpB3TyLP+K3nBIRX
+         5o8woO5mOYFVTFt5Gr5e0ZM9GgubXctpOIHz3d1pCUZ5K6rlkrY7NOJ0HHreJoQQFNpV
+         wbypPtMcIyhPA82OtiLpIU/ZLBDUsfVbMxtPBmhEzvr4EgiacnepCMZDN7W9ip43q1Kx
+         jeoTSIpcAtHgekjr5/koIeP65rE8ASj4Nl/l5N/pl5rL1kM3DrCV8Tyg0xXK/wsKC7c9
+         ynz3nmo9iHDHTXb5zOqIrJmqxlIyxQSUS4vCHgieHjJzpdUEdJRvwjcGF8bN84va3OXi
+         c7gA==
+X-Gm-Message-State: APjAAAVhxZAjq6frdvSrA3dTiUcsQwwbC2Th1qmoVQi4bFjECRjuQM10
+        9h+SoSIPMoLOdcZUI4b7ww6SRx9CSy+xmJsKQlGOKWBSaEBcd2U8Ddhs+YwmDdU+CzohzkRwgTB
+        4VPhgIFmZpHQMMG3t
+X-Received: by 2002:adf:e90d:: with SMTP id f13mr18704544wrm.104.1570908374717;
+        Sat, 12 Oct 2019 12:26:14 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwzVc4L36wZsuw/yIheWC3DcZ/4dWluqHH2rLuU6KbnjXtc/R53950cBJ1bTedee2IPkXIj5Q==
+X-Received: by 2002:adf:e90d:: with SMTP id f13mr18704533wrm.104.1570908374478;
+        Sat, 12 Oct 2019 12:26:14 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-10-77.red.bezeqint.net. [79.176.10.77])
+        by smtp.gmail.com with ESMTPSA id r6sm14770346wmh.38.2019.10.12.12.26.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Oct 2019 12:25:25 -0700 (PDT)
-Date:   Sat, 12 Oct 2019 12:25:22 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Egor Pomozov <Egor.Pomozov@aquantia.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Pavel Belous <Pavel.Belous@aquantia.com>
-Subject: Re: [PATCH v2 net-next 11/12] net: aquantia: add support for PIN
- funcs
-Message-ID: <20191012192522.GA5113@localhost>
-References: <cover.1570531332.git.igor.russkikh@aquantia.com>
- <0142dcd43c84ab7bc26076c3eb48d43e67d195cc.1570531332.git.igor.russkikh@aquantia.com>
+        Sat, 12 Oct 2019 12:26:13 -0700 (PDT)
+Date:   Sat, 12 Oct 2019 15:26:11 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC v1 0/2] vhost: ring format independence
+Message-ID: <20191012152332-mutt-send-email-mst@kernel.org>
+References: <20191011134358.16912-1-mst@redhat.com>
+ <f650ac1a-6e2a-9215-6e4f-a1095f4a89cd@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <0142dcd43c84ab7bc26076c3eb48d43e67d195cc.1570531332.git.igor.russkikh@aquantia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f650ac1a-6e2a-9215-6e4f-a1095f4a89cd@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 08, 2019 at 10:56:59AM +0000, Igor Russkikh wrote:
-> From: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
+On Sat, Oct 12, 2019 at 04:15:42PM +0800, Jason Wang wrote:
 > 
-> Depending on FW configuration we can manage from 0 to 3 PINs for periodic output
-> and from 0 to 1 ext ts PIN for getting TS for external event.
+> On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
+> > So the idea is as follows: we convert descriptors to an
+> > independent format first, and process that converting to
+> > iov later.
+> > 
+> > The point is that we have a tight loop that fetches
+> > descriptors, which is good for cache utilization.
+> > This will also allow all kind of batching tricks -
+> > e.g. it seems possible to keep SMAP disabled while
+> > we are fetching multiple descriptors.
 > 
-> Ext TS PIN functionality is implemented via periodic timestamps polling
-> directly from PHY, because right now there is now way to received
-
-there is no way to receive the
-
-> PIN trigger interrupt from phy.
 > 
-> Poller delay is 15ms.
+> I wonder this may help for performance:
 
-The polling interval is 15 milliseconds.
+Could you try it out and report please?
+Would be very much appreciated.
 
-Thanks,
+> - another indirection layer, increased footprint
 
-Richard
+Seems to be offset off by improved batching.
+For sure will be even better if we can move stac/clac out,
+or replace some get/put user with bigger copy to/from.
+
+> - won't help or even degrade when there's no batch
+
+I couldn't measure a difference. I'm guessing
+
+> - an extra overhead in the case of in order where we should already had
+> tight loop
+
+it's not so tight with translation in there.
+this exactly makes the loop tight.
+
+> - need carefully deal with indirect and chain or make it only work for
+> packet sit just in a single descriptor
+> 
+> Thanks
+
+I don't understand this last comment.
+
+> 
+> > 
+> > And perhaps more importantly, this is a very good fit for the packed
+> > ring layout, where we get and put descriptors in order.
+> > 
+> > This patchset seems to already perform exactly the same as the original
+> > code already based on a microbenchmark.  More testing would be very much
+> > appreciated.
+> > 
+> > Biggest TODO before this first step is ready to go in is to
+> > batch indirect descriptors as well.
+> > 
+> > Integrating into vhost-net is basically
+> > s/vhost_get_vq_desc/vhost_get_vq_desc_batch/ -
+> > or add a module parameter like I did in the test module.
+> > 
+> > 
+> > 
+> > Michael S. Tsirkin (2):
+> >    vhost: option to fetch descriptors through an independent struct
+> >    vhost: batching fetches
+> > 
+> >   drivers/vhost/test.c  |  19 ++-
+> >   drivers/vhost/vhost.c | 333 +++++++++++++++++++++++++++++++++++++++++-
+> >   drivers/vhost/vhost.h |  20 ++-
+> >   3 files changed, 365 insertions(+), 7 deletions(-)
+> > 
