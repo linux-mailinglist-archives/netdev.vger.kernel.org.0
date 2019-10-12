@@ -2,224 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DCFD4F66
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 13:44:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDFA6D4F70
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 13:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbfJLLo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 07:44:26 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39580 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727083AbfJLLmZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 07:42:25 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y3so12261395ljj.6;
-        Sat, 12 Oct 2019 04:42:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y11pBCe1CKAjsPMn1sqz/oYdoQIUENwcNyPETlfS7fU=;
-        b=ITLTft8A4VLVxPboRseeDV2uqnjEVCF9cadQ+LcoeaUZcDpo3zF2O9AINuaIkyND6L
-         /1/lA/sScUZblZRjpvdoky/Bc0HYMr8YCUQGgpgqnrRY65N1GZVfSSQ78f+qAElw2Dcw
-         DpuohN20RNKfrIsPyxBYk7hT79xOqI9tvYT1+X+BNOTbTfNkBjP6b6G0kdC0ssvHjX6B
-         IA5f5o8aDKnxfsB3SI8fQrvnwyu1xEhuhtjWrELnT7hja3YhnG82AkmLuU8p6RHYDhBV
-         Qi+I8f0icJ5AmGNR2cMB66fu4D6Xg1X3oTfLzFSpI28qfPjZjYhC5vwmGxKPO0mpL+Y5
-         kp/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y11pBCe1CKAjsPMn1sqz/oYdoQIUENwcNyPETlfS7fU=;
-        b=tyLUG+bF+c4MBlPxkP0ILpiTFZiualTP+VmkX7Fb/pxzusKjZLt7wZTHx9OROHK5Os
-         Sdg9jZ+yZDIXjx32FEWBtIU6rz+vDexVs0/QxYgS7HChRYb2OfnZYtB4tvC/2s51ZRLC
-         PgPQSeIP+yBsGihs669dUCPFWqSb5cytKKPlqxFi3Vdb8NYywT20o1e2luQ6o9fcVNUf
-         uL6OqAFNlUgqT0qmDpPJEzUEYXHDYikpnoiRSLdvFIqqAY89F2N/GSpzNF91bfDLyYI7
-         zoOOgLS7ctxTpGVo9MvGscyWu7lsS611G7XUfpCHrZ7fqi+kYkcFKypKdH6zbFrvMaTu
-         5LlA==
-X-Gm-Message-State: APjAAAWIgTpXjpZ/KU/uTan6J+ILQX7J24jzwWAp/NEENV0rTXOpeQ/p
-        ld57swf8RVrRXSIRzaWw6Yr3rrEIq279Jumq8wE=
-X-Google-Smtp-Source: APXvYqy/gnffCmgt2jJTKy6Gr8N+EK2KyGkJCilmqHqxTdAB2DDpDC2Yx3nJC/JcHfFIUJw68YBSZGH85FgG/jF7Qw4=
-X-Received: by 2002:a2e:9695:: with SMTP id q21mr12014562lji.105.1570880540837;
- Sat, 12 Oct 2019 04:42:20 -0700 (PDT)
+        id S1729041AbfJLLx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 07:53:56 -0400
+Received: from fd.dlink.ru ([178.170.168.18]:46642 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727231AbfJLLv4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 07:51:56 -0400
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id 944891B20983; Sat, 12 Oct 2019 14:51:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 944891B20983
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1570881112; bh=GVdyMAkJoaCzEF7enJYVSyxNIEivWNJHyH4jL2SwDe8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=R1cXAHL0FigCYkYf211zc5POTUXLGBUKygLqCdjJb0OCLYxcHzAAIjkjk1ywkK+g1
+         T3iDsNnAVd8/6r/UT04PVGfoXRm/p9P6NslcMsy3mZ9VzalPDyZPU4h6uopD78ewsk
+         N70f9jDbkBTYjPlnG1fjMPkUNIv+qF8Bg/d9hWSI=
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
+        USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id 388411B202D2;
+        Sat, 12 Oct 2019 14:51:49 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 388411B202D2
+Received: by mail.rzn.dlink.ru (Postfix, from userid 5000)
+        id 232351B21890; Sat, 12 Oct 2019 14:51:49 +0300 (MSK)
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA id 7A6C71B2120F;
+        Sat, 12 Oct 2019 14:51:41 +0300 (MSK)
 MIME-Version: 1.0
-References: <20190928164843.31800-1-ap420073@gmail.com> <20190928164843.31800-2-ap420073@gmail.com>
- <20191010101925.GA93190@bistromath.localdomain>
-In-Reply-To: <20191010101925.GA93190@bistromath.localdomain>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sat, 12 Oct 2019 20:42:09 +0900
-Message-ID: <CAMArcTWEbH5=UKRSrw0-QR+dyT2GCJf3sjUA=eKVOEUJ3Wj8gQ@mail.gmail.com>
-Subject: Re: [PATCH net v4 01/12] net: core: limit nested device depth
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        j.vosburgh@gmail.com, vfalico@gmail.com,
-        Andy Gospodarek <andy@greyhouse.net>,
-        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>, saeedm@mellanox.com,
-        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
-        haiyangz@microsoft.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
-        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Cody Schuffelen <schuffelen@google.com>, bjorn@mork.no
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Sat, 12 Oct 2019 14:51:41 +0300
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Edward Cree <ecree@solarflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/2] net: core: increase the default size of
+ GRO_NORMAL skb lists to flush
+In-Reply-To: <CANn89iLrVU2OVTj1yk4Sjd=SVxHYN-WpXeGhMEWx0DsVLz7giQ@mail.gmail.com>
+References: <20191010144226.4115-1-alobakin@dlink.ru>
+ <20191010144226.4115-3-alobakin@dlink.ru>
+ <c2450dc3-8ee0-f7cd-4f8a-61a061989eb7@solarflare.com>
+ <1eaac2e1f1d65194a4a39232d7e45870@dlink.ru>
+ <3c459c84df86f79b593632d3f08d5f4c@dlink.ru>
+ <CANn89iLrVU2OVTj1yk4Sjd=SVxHYN-WpXeGhMEWx0DsVLz7giQ@mail.gmail.com>
+Message-ID: <c0e2778ed47c5934bb83a77c77de8dfa@dlink.ru>
+X-Sender: alobakin@dlink.ru
+User-Agent: Roundcube Webmail/1.3.6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Oct 2019 at 19:19, Sabrina Dubroca <sd@queasysnail.net> wrote:
->
+Hi Eric,
 
-Hi Sabrina,
+Eric Dumazet wrote 12.10.2019 14:18:
+> On Sat, Oct 12, 2019 at 2:22 AM Alexander Lobakin <alobakin@dlink.ru> 
+> wrote:
+> 
+>> 
+>> I've generated an another solution. Considering that gro_normal_batch
+>> is very individual for every single case, maybe it would be better to
+>> make it per-NAPI (or per-netdevice) variable rather than a global
+>> across the kernel?
+>> I think most of all network-capable configurations and systems has 
+>> more
+>> than one network device nowadays, and they might need different values
+>> for achieving their bests.
+>> 
+>> One possible variant is:
+>> 
+>> #define THIS_DRIVER_GRO_NORMAL_BATCH    16
+>> 
+>> /* ... */
+>> 
+>> netif_napi_add(dev, napi, this_driver_rx_poll, NAPI_POLL_WEIGHT); /*
+>> napi->gro_normal_batch will be set to the systcl value during NAPI
+>> context initialization */
+>> napi_set_gro_normal_batch(napi, THIS_DRIVER_GRO_NORMAL_BATCH); /* new
+>> static inline helper, napi->gro_normal_batch will be set to the
+>> driver-speficic value of 16 */
+>> 
+>> The second possible variant is to make gro_normal_batch sysctl
+>> per-netdevice to tune it from userspace.
+>> Or we can combine them into one to make it available for tweaking from
+>> both driver and userspace, just like it's now with XPS CPUs setting.
+>> 
+>> If you'll find any of this reasonable and worth implementing, I'll 
+>> come
+>> with it in v2 after a proper testing.
+> 
+> Most likely the optimal tuning is also a function of the host cpu 
+> caches.
+> 
+> Building a too big list can also lead to premature cache evictions.
+> 
+> Tuning the value on your test machines does not mean the value will be 
+> good
+> for other systems.
 
-Thank you for review and testing!
+Oh, I missed that it might be a lot more machine-dependent than
+netdevice-dependent. Thank you for explanation. The best I can do in
+that case is to leave batch control in its current.
+I'll publish v2 containing only the acked first part of the series on
+Monday if nothing serious will happen. Addition of listified Rx to
+napi_gro_receive() was the main goal anyway.
 
-> 2019-09-28, 16:48:32 +0000, Taehee Yoo wrote:
-> > @@ -6790,23 +6878,45 @@ int netdev_walk_all_lower_dev(struct net_device *dev,
-> >                                       void *data),
-> >                             void *data)
-> >  {
-> > -     struct net_device *ldev;
-> > -     struct list_head *iter;
-> > -     int ret;
-> > +     struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
-> > +     struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-> > +     int ret, cur = 0;
-> >
-> > -     for (iter = &dev->adj_list.lower,
-> > -          ldev = netdev_next_lower_dev(dev, &iter);
-> > -          ldev;
-> > -          ldev = netdev_next_lower_dev(dev, &iter)) {
-> > -             /* first is the lower device itself */
-> > -             ret = fn(ldev, data);
-> > -             if (ret)
-> > -                     return ret;
-> > +     now = dev;
-> > +     iter = &dev->adj_list.lower;
-> >
-> > -             /* then look at all of its lower devices */
-> > -             ret = netdev_walk_all_lower_dev(ldev, fn, data);
-> > -             if (ret)
-> > -                     return ret;
-> > +     while (1) {
-> > +             if (now != dev) {
-> > +                     ret = fn(now, data);
-> > +                     if (ret)
-> > +                             return ret;
-> > +             }
-> > +
-> > +             next = NULL;
-> > +             while (1) {
-> > +                     ldev = netdev_next_lower_dev(now, &iter);
-> > +                     if (!ldev)
-> > +                             break;
-> > +
-> > +                     if (!next) {
-> > +                             next = ldev;
-> > +                             niter = &ldev->adj_list.lower;
-> > +                     } else {
-> > +                             dev_stack[cur] = ldev;
-> > +                             iter_stack[cur++] = &ldev->adj_list.lower;
-> > +                             break;
-> > +                     }
-> > +             }
-> > +
-> > +             if (!next) {
-> > +                     if (!cur)
-> > +                             return 0;
->
-> Hmm, I don't think this condition is correct.
->
-> If we have this topology:
->
->
->                 bridge0
->                 /  |  \
->                /   |   \
->               /    |    \
->         dummy0   vlan1   vlan2
->                    |       \
->                  dummy1    dummy2
->
-> We end up with the expected lower/upper levels for all devices:
->
->     | device  | upper | lower |
->     |---------+-------+-------|
->     | dummy0  |     2 |     1 |
->     | dummy1  |     3 |     1 |
->     | dummy2  |     3 |     1 |
->     | vlan1   |     2 |     2 |
->     | vlan2   |     2 |     2 |
->     | bridge0 |     1 |     3 |
->
->
-> If we then add macvlan0 on top of bridge0:
->
->
->                 macvlan0
->                    |
->                    |
->                 bridge0
->                 /  |  \
->                /   |   \
->               /    |    \
->         dummy0   vlan1   vlan2
->                    |       \
->                  dummy1    dummy2
->
->
-> we can observe that __netdev_update_upper_level is only called for
-> some of the devices under bridge0. I added a perf probe:
->
->  # perf probe -a '__netdev_update_upper_level dev->name:string'
->
-> which gets hit for bridge0 (called directly by
-> __netdev_upper_dev_link) and then dummy0, vlan1, dummy1. It is never
-> called for vlan2 and dummy2.
->
-> After this, we have the following levels (*):
->
->     | device   | upper | lower |
->     |----------+-------+-------|
->     | dummy0   |     3 |     1 |
->     | dummy1   |     4 |     1 |
->     | dummy2   |     3 |     1 |
->     | vlan1    |     3 |     2 |
->     | vlan2    |     2 |     2 |
->     | bridge0  |     2 |     3 |
->     | macvlan0 |     1 |     4 |
->
-> For dummy0, dummy1, vlan1, the upper level has increased by 1, as
-> expected. For dummy2 and vlan2, it's still the same, which is wrong.
->
->
-> (*) observed easily by adding another probe:
->
->  # perf probe -a 'dev_get_stats dev->name:string dev->upper_level dev->lower_level'
->
-> and running "ip link"
->
-> Or you can just add prints and recompile, of course :)
->
+> 
+> Adding yet another per device value should only be done if you 
+> demonstrate
+> a significant performance increase compared to the conservative value
+> Edward chose.
+> 
+> Also the behavior can be quite different depending on the protocols,
+> make sure you test handling of TCP pure ACK packets.
+> 
+> Accumulating 64 (in case the device uses standard NAPI_POLL_WEIGHT)
+> of them before entering upper stacks seems not a good choice, since 64 
+> skbs
+> will need to be kept in the GRO system, compared to only 8 with Edward 
+> value.
 
-Thank you so much, I found a bug very easily with your test config.
-I will fix this bug in a v5 patch.
-
-> > +                     next = dev_stack[--cur];
-> > +                     niter = iter_stack[cur];
-> > +             }
-> > +
-> > +             now = next;
-> > +             iter = niter;
-> >       }
-> >
-> >       return 0;
->
-> --
-> Sabrina
-
-Thank you,
-Taehee Yoo
+Regards,
+ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
