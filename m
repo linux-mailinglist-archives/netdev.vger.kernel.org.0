@@ -2,151 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8FE0D5122
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:49:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C401D5126
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 18:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729428AbfJLQt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 12:49:27 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:37850 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727939AbfJLQr1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 12:47:27 -0400
-Received: by mail-lj1-f194.google.com with SMTP id l21so12721503lje.4;
-        Sat, 12 Oct 2019 09:47:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kTdwaQRFbVDfnq6Vp7P5rNxyn+Gdc8czzlvvQmZ0VSI=;
-        b=DJXe9U+AGX38FLHtt6vYKdx7ASWCzQtyiU6n+qy+eeO6ja8n9vNSRfVXDzvJHI+URJ
-         I1mvYPkx3nqQ1SwJ6v7JvK5fHg+sLGyPsU+EaZrH5Wf6PeSuy0XKMTis+7jno5azoyzx
-         dQ8R8LOMxZ1BOWdgLCknISPJ+peJ8Z1pliG+o4AfE0DUUa3I2LZE8nWVJLsp/Rnfw6zY
-         BqD5JIqV1q1fRPPT4yoaIiXiHF5tD7b5pucZf7ZsrE6naBDPJ4qsHlIHsTXoFLSlgYJ5
-         Pg1SAUDz3pIObEkY9bZ+vA9fPxk4WM3jZCkI3k+izF5GtpTkqUQNb5iQiKHXMonUy7cT
-         llyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kTdwaQRFbVDfnq6Vp7P5rNxyn+Gdc8czzlvvQmZ0VSI=;
-        b=dl+yj2kRjqmXK7OhD9TL63vVE4HY8pwuyQhWIkA2PhYd4b6+rPBbM+2YMN3IMpNunE
-         luI6MgRU1TpgT/mD5XUnwG0ZomndEWUcR+2cWf0tmXfqZQwZqAHgj70NpC1E+/OYEShJ
-         klaqPqdeUevHzqboTKDgL1NmzyREO61UIVaZC3m2sKTPLIlz4F284d3qsGuTE57qUaip
-         LU55RQyvjC+NhMkSwdZ/c1XRO7SDQ56zIhvQaTCSUevOQNF8ZLb99OgB2dU4G0E889dS
-         dgpJ+kznhfoOdqnwJ4QKakUO6B1x9ngCiCayZQXNvl7NDTT9abDmbfajlJJnDfQ3li6u
-         GTEQ==
-X-Gm-Message-State: APjAAAWuXdTbaagipIRLcdefwi8cSu1vjzQDvgbiDGvbXxRBuq24V7R3
-        c2oaHestCwaCV64D5lLFsK/z3w04t4e69PTrG0o=
-X-Google-Smtp-Source: APXvYqytWqgymdiivUJ/+B+1mAYTxE7q3PWRAwhgIxF95zAF6rIFK+7ARiU54oWtrOMIA/CM4BpCPDsftWyf+ZabdXY=
-X-Received: by 2002:a2e:b17b:: with SMTP id a27mr12563632ljm.243.1570898844575;
- Sat, 12 Oct 2019 09:47:24 -0700 (PDT)
+        id S1729483AbfJLQvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 12:51:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48560 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727115AbfJLQug (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Oct 2019 12:50:36 -0400
+Received: from lore-desk-wlan.lan (unknown [151.66.37.226])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7737520679;
+        Sat, 12 Oct 2019 16:50:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570899035;
+        bh=qSEg9PvZkbVxQM23WcD3L4Jru73ZuIoTRpmb7PBGQxQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EHZFF54gumdqsWmUGFRJmszZTjIyCFrRlaBz+iSS8rE9i13x1qazGZ9vd4+UjHBy+
+         6FdI6HxhQ8g89WZ+j7ScrPRymDIdb8P5WOav5J4NCx/OIglmp1YvCY8Tw7gjVSCBVs
+         bhqM+bkilAPq0SRMq6hiiTZ3KAc7Cn/9w5DzHHDk=
+Date:   Sat, 12 Oct 2019 18:50:28 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: mt76x2e hardware restart
+Message-ID: <20191012165028.GA8739@lore-desk-wlan.lan>
+References: <deaafa7a3e9ea2111ebb5106430849c6@natalenko.name>
+ <c6d621759c190f7810d898765115f3b4@natalenko.name>
+ <9d581001e2e6cece418329842b2b0959@natalenko.name>
 MIME-Version: 1.0
-References: <1570695134-660-1-git-send-email-magnus.karlsson@intel.com>
-In-Reply-To: <1570695134-660-1-git-send-email-magnus.karlsson@intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 12 Oct 2019 09:47:12 -0700
-Message-ID: <CAADnVQ+R3S1OpRahy78hR2hDfxaWX=peSwturK9hCeP_+9yBbQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: improve documentation for AF_XDP
-To:     Magnus Karlsson <magnus.karlsson@intel.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ReaqsoxgOBHFXBhH"
+Content-Disposition: inline
+In-Reply-To: <9d581001e2e6cece418329842b2b0959@natalenko.name>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 1:12 AM Magnus Karlsson
-<magnus.karlsson@intel.com> wrote:
->
-> Added sections on all the bind flags, libbpf, all the setsockopts and
-> all the getsockopts. Also updated the document to reflect the latest
-> features and to correct some spelling errors.
->
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-thanks for the update. Overall looks good.
-Few nits below:
+--ReaqsoxgOBHFXBhH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +What socket will then a packet arrive on? This is decided by the XDP
-> +program. Put all the sockets in the XSK_MAP and just indicate which
-> +index in the array you would like to send each packet to. A simple
-> +round-robin example of distributing packets is shown below:
-> +
-> +.. code-block:: c
-> +
-> +   #define KBUILD_MODNAME "af_xdp_example"
+> On 19.09.2019 23:22, Oleksandr Natalenko wrote:
+> > It checks for TX hang here:
+> >=20
+> > =3D=3D=3D mt76x02_mmio.c
+> > 557 void mt76x02_wdt_work(struct work_struct *work)
+> > 558 {
+> > ...
+> > 562     mt76x02_check_tx_hang(dev);
+> > =3D=3D=3D
+>=20
+> I've commented out the watchdog here ^^, and the card is not resetted any
+> more, but similarly it stops working shortly after the first client
+> connects. So, indeed, it must be some hang in the HW, and wdt seems to do=
+ a
+> correct job.
+>=20
+> Is it even debuggable/fixable from the driver?
 
-what is this for?
-It's not a kernel module.
+Hi Oleksandr,
 
-> +   #include <uapi/linux/bpf.h>
+sorry for the delay. Felix and me worked on this issue today. Could you ple=
+ase
+try if the following patch fixes your issue?
 
-why 'uapi' ? It should use only user space headers.
+Regards,
+Lorenzo
 
-> +   #include "bpf_helpers.h"
-> +
-> +   #define MAX_SOCKS 16
-> +
-> +   struct bpf_map_def SEC("maps") xsks_map = {
-> +         .type = BPF_MAP_TYPE_XSKMAP,
-> +         .key_size = sizeof(int),
-> +         .value_size = sizeof(int),
-> +         .max_entries = MAX_SOCKS,
-> +   };
+=46rom cf3436c42a297967235a9c9778620c585100529e Mon Sep 17 00:00:00 2001
+Message-Id: <cf3436c42a297967235a9c9778620c585100529e.1570897574.git.lorenz=
+o@kernel.org>
+=46rom: Lorenzo Bianconi <lorenzo@kernel.org>
+Date: Sat, 12 Oct 2019 17:32:57 +0200
+Subject: [PATCH] mt76: mt76x2: disable pcie_aspm by default
 
-Could you switch to BTF defined maps?
-libbpf will forever support old style as well,
-but documentation should point to the latest.
+On same device (e.g. U7612E-H1) PCIE_ASPM causes continues mcu hangs and
+instability. This patch disable PCIE_ASPM by default. This patch has
+been successfully tested on U7612E-H1 mini-pice card
 
-> +
-> +   struct bpf_map_def SEC("maps") rr_map = {
-> +         .type = BPF_MAP_TYPE_PERCPU_ARRAY,
-> +         .key_size = sizeof(int),
-> +         .value_size = sizeof(unsigned int),
-> +         .max_entries = 1,
-> +   };
-> +
-> +   SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-> +   {
-> +       int key = 0, idx;
-> +       unsigned int *rr;
-> +
-> +       rr = bpf_map_lookup_elem(&rr_map, &key);
-> +       if (!rr)
-> +          return XDP_ABORTED;
-> +
-> +       *rr = (*rr + 1) & (MAX_SOCKS - 1);
-> +       idx = *rr;
-> +
-> +       return bpf_redirect_map(&xsks_map, idx, 0);
-> +   }
-> +
-> +   char _license[] SEC("license") = "GPL";
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/wireless/mediatek/mt76/mmio.c     | 48 +++++++++++++++++++
+ drivers/net/wireless/mediatek/mt76/mt76.h     |  1 +
+ .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
+ 3 files changed, 51 insertions(+)
 
-Above sample doesn't use gpl-only helpers. Why add above line?
+diff --git a/drivers/net/wireless/mediatek/mt76/mmio.c b/drivers/net/wirele=
+ss/mediatek/mt76/mmio.c
+index 1c974df1fe25..8e1dbc1903f3 100644
+--- a/drivers/net/wireless/mediatek/mt76/mmio.c
++++ b/drivers/net/wireless/mediatek/mt76/mmio.c
+@@ -3,6 +3,9 @@
+  * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
+  */
+=20
++#include <linux/pci.h>
++#include <linux/pci-aspm.h>
++
+ #include "mt76.h"
+ #include "trace.h"
+=20
+@@ -78,6 +81,51 @@ void mt76_set_irq_mask(struct mt76_dev *dev, u32 addr,
+ }
+ EXPORT_SYMBOL_GPL(mt76_set_irq_mask);
+=20
++void mt76_mmio_disable_aspm(struct pci_dev *pdev)
++{
++	struct pci_dev *parent =3D pdev->bus->self;
++	u16 aspm_conf, parent_aspm_conf =3D 0;
++
++	pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &aspm_conf);
++	aspm_conf &=3D PCI_EXP_LNKCTL_ASPMC;
++	if (parent) {
++		pcie_capability_read_word(parent, PCI_EXP_LNKCTL,
++					  &parent_aspm_conf);
++		parent_aspm_conf &=3D PCI_EXP_LNKCTL_ASPMC;
++	}
++
++	if (!aspm_conf && (!parent || !parent_aspm_conf)) {
++		/* aspm already disabled */
++		return;
++	}
++
++	dev_info(&pdev->dev, "disabling ASPM %s %s\n",
++		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L0S) ? "L0s" : "",
++		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L1) ? "L1" : "");
++
++#ifdef CONFIG_PCIEASPM
++	pci_disable_link_state(pdev, aspm_conf);
++
++	/* Double-check ASPM control.  If not disabled by the above, the
++	 * BIOS is preventing that from happening (or CONFIG_PCIEASPM is
++	 * not enabled); override by writing PCI config space directly.
++	 */
++	pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &aspm_conf);
++	if (!(aspm_conf & PCI_EXP_LNKCTL_ASPMC))
++		return;
++#endif /* CONFIG_PCIEASPM */
++
++	/* Both device and parent should have the same ASPM setting.
++	 * Disable ASPM in downstream component first and then upstream.
++	 */
++	pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL, aspm_conf);
++
++	if (parent)
++		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,
++					   aspm_conf);
++}
++EXPORT_SYMBOL_GPL(mt76_mmio_disable_aspm);
++
+ void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs)
+ {
+ 	static const struct mt76_bus_ops mt76_mmio_ops =3D {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wirele=
+ss/mediatek/mt76/mt76.h
+index 8bcc7f21e83c..e95a5893f93b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -596,6 +596,7 @@ bool __mt76_poll_msec(struct mt76_dev *dev, u32 offset,=
+ u32 mask, u32 val,
+ #define mt76_poll_msec(dev, ...) __mt76_poll_msec(&((dev)->mt76), __VA_ARG=
+S__)
+=20
+ void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs);
++void mt76_mmio_disable_aspm(struct pci_dev *pdev);
+=20
+ static inline u16 mt76_chip(struct mt76_dev *dev)
+ {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/=
+wireless/mediatek/mt76/mt76x2/pci.c
+index 6253ec5fbd72..06fb80163c8e 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+@@ -83,6 +83,8 @@ mt76pci_probe(struct pci_dev *pdev, const struct pci_devi=
+ce_id *id)
+ 	/* RG_SSUSB_CDR_BR_PE1D =3D 0x3 */
+ 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
+=20
++	mt76_mmio_disable_aspm(pdev);
++
+ 	return 0;
+=20
+ error:
+--=20
+2.21.0
 
-> +.. code-block:: c
-> +
-> +   if (xsk_ring_prod__needs_wakeup(&my_tx_ring))
-> +      sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
-> +
-> +I.e., only use the syscall if the flag is set.
-> +
-> +We recommend that you always enable this mode as it can lead to
-> +magnitudes better performance if you run the application and the
-> +driver on the same core and somewhat better performance even if you
-> +use different cores for the application and the kernel driver, as it
-> +reduces the number of syscalls needed for the TX path.
+>=20
+> --=20
+>   Oleksandr Natalenko (post-factum)
 
-"magnitudes better performance"? Is it really at least 20 times better?
+--ReaqsoxgOBHFXBhH
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> -Naive ring dequeue and enqueue could look like this::
-> +Naive ring dequeue and enqueue could look like this:
+-----BEGIN PGP SIGNATURE-----
 
-lol. That's a good typo.
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXaIEUQAKCRA6cBh0uS2t
+rMgMAP4gYBsBVaqrrJGeL59RvPIDCtDh9B4Cal6r0cZiF8/eawD9E3a71sAvXQRq
+77lBM018hpb2RI8zaAU2j9ddT2e6HwU=
+=jGHZ
+-----END PGP SIGNATURE-----
+
+--ReaqsoxgOBHFXBhH--
