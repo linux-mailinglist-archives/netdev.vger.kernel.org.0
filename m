@@ -2,121 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23A25D4AE4
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 01:22:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A39ED4B4E
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 02:11:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727541AbfJKXWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Oct 2019 19:22:35 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:45257 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbfJKXWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 19:22:34 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y72so6920669pfb.12
-        for <netdev@vger.kernel.org>; Fri, 11 Oct 2019 16:22:32 -0700 (PDT)
+        id S1726829AbfJLALN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Oct 2019 20:11:13 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:43680 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbfJLALN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Oct 2019 20:11:13 -0400
+Received: by mail-lj1-f194.google.com with SMTP id n14so11382382ljj.10;
+        Fri, 11 Oct 2019 17:11:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=T5gcsIEKN7fGZ7H7m6feYOoRGQFlbeIl7NkVUQv4he4=;
-        b=Ksu7qQFHWBMhWinL77/TQbc+vSKoTq2TIhAH2e2tUs3ppJnmql4AfILW2RwbAubDOl
-         chO4usBGOBBH8HDljDNj7ouDLAsMHLaYcN5/ags2Q9i6Is4L5wltQxZNW2yKsGj9HTDB
-         EesFgnTZP8oj1M1CPdB/6+vfgQ8jka2FPcm6A=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UmqtRAbUHR0Wk9FzarhOPn9Pl/ebzWZj21JJy76ULQ4=;
+        b=IVsjSMXhdcPGermy5FcJ+oGVwALObfe/BBcIRmJPTpHK/zSqguV8YhePONAIDUGJrA
+         I8bU8sc55b2QKsrwRA9g4b6GWOcjYLhYuro4UqLv6kQp/9MCAxJjTCPc4WR4q5AAo8Gy
+         FoDUIcfXWMC+qJMOus5CFbNI9oz1g9JVVEs8BNAEBwIppHgxESjfC6Q0EizH3rxpdkiq
+         OyYJRww8oVgyvu7LbI+ZT2yPVPuhjgeuRryVvKmWC7WOJiEIMETbeU8Z5OimLnQBDDi6
+         ZobGwrjGp0Rkj1bEcfm4ngiWWRdI2BOK1JyLNVWojHu0f/tqnkk48gDf7PoRb36pfKbc
+         bTNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=T5gcsIEKN7fGZ7H7m6feYOoRGQFlbeIl7NkVUQv4he4=;
-        b=ZLhh2qw0xI0iPlxJRNIKIGA6PMS07XqpFQ4j5KsAXwwy+qkdo6YO92IEAIWTPXUOAu
-         0d+9O/uo6edtlpHHEDxIskDPArWgM2hcZski6sRr2l56M4/gQND3yiGut2TdZCGoHqRz
-         p7VpQxLtQ40FRf1Sp9XfIpDNMk25AauS/okmyi3r1SyfYpQjDJGSI4ccRcrNrTNPeTaV
-         J/Lx3Z/8ljTflgY6RkMFzVZmUTzskTGuW/9VC5Plhgs92s5VPhwjvC4fvUVJVu1+0u14
-         5U2mjY0exjJ0G24jcrCyE6yhKLYKN54D3kPcI5eHzmebyLj7b42jq2xuvR87y1vOHW/m
-         LTbg==
-X-Gm-Message-State: APjAAAXyuOO7JZCR5rLrOwTU08KKdSQSUf1daHLl3xZ4uuoB+5GUx77E
-        fZVRssvaDFVP7z1FRY29Uw4ECg==
-X-Google-Smtp-Source: APXvYqxnc8uPXC8zde1FT2hLIcxRHARAplN03/RYBfrBgB8o6kDGDYjUcmJ2HdlhufOjzl4dUByUWw==
-X-Received: by 2002:a62:ac02:: with SMTP id v2mr18619372pfe.97.1570836151751;
-        Fri, 11 Oct 2019 16:22:31 -0700 (PDT)
-Received: from [10.136.13.65] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id z13sm12486111pfq.121.2019.10.11.16.22.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 11 Oct 2019 16:22:31 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: bcmgenet: Generate a random MAC if none is
- valid
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     phil@raspberrypi.org, jonathan@raspberrypi.org,
-        matthias.bgg@kernel.org, linux-rpi-kernel@lists.infradead.org,
-        wahrenst@gmx.net, nsaenzjulienne@suse.de,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:BROADCOM GENET ETHERNET DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20191011231915.9347-1-f.fainelli@gmail.com>
-From:   Scott Branden <scott.branden@broadcom.com>
-Message-ID: <7fe7796f-c98e-3c7c-3683-505a0e643eda@broadcom.com>
-Date:   Fri, 11 Oct 2019 16:22:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UmqtRAbUHR0Wk9FzarhOPn9Pl/ebzWZj21JJy76ULQ4=;
+        b=oEYaYgoipRPLi6XRZ626qIuBPL10AfqePO7A6bMvBbxcy1W2qAar2ac7S1OpGrITty
+         KNxyDw/F7Ym8EwOcpscsXIS5I1gXYeq6NJXw05G5YcIIHD52qfHMIgOyROLNhBswFtyP
+         p+cybwHCrxtyxqkKhCvD9dQVNvxF6famSCkgd8hu3RNgWKbUbG6cY+AkB0YVVozye+AB
+         nKYDQLdr5y/WjYp9fxcpQqnuOxmpVZ9eppOfTGfaMoinXEpdR7c+7ANh8+aO1CmpVw74
+         kzRr8Go+55ce/+EWCgFbD3c2MobxoBQv6Jzlc/X0fvP5kj3tVOjfZR9QegYf1Ur6GKD7
+         cpGA==
+X-Gm-Message-State: APjAAAVlKmGJ3hMaO92rPi95cHNS5+smYV4Z7ILeiaNRtNfQ3dL241kN
+        WwwajYUvKdnXkvjMzLwz6MrJCIDDYI2hB7D1Mes=
+X-Google-Smtp-Source: APXvYqz6IogaOtQbdYXCK/XDaULoLI7vfXdqXeaiYV3aEf/a23CU3l1fcQCSRaAwDpqLx5mugJnmBZiziildECgvsx0=
+X-Received: by 2002:a2e:6c15:: with SMTP id h21mr10634389ljc.10.1570839069328;
+ Fri, 11 Oct 2019 17:11:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191011231915.9347-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20191011162124.52982-1-sdf@google.com>
+In-Reply-To: <20191011162124.52982-1-sdf@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 11 Oct 2019 17:10:58 -0700
+Message-ID: <CAADnVQLKPLXej_v7ymv3yJakoFLGeQwdZOJ5cZmp7xqOxfebqg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: preserve command of the process that
+ loaded the program
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2019-10-11 4:19 p.m., Florian Fainelli wrote:
-> Instead of having a hard failure and stopping the driver's probe
-> routine, generate a random Ethernet MAC address to keep going.
+On Fri, Oct 11, 2019 at 9:21 AM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Even though we have the pointer to user_struct and can recover
+> uid of the user who has created the program, it usually contains
+> 0 (root) which is not very informative. Let's store the comm of the
+> calling process and export it via bpf_prog_info. This should help
+> answer the question "which process loaded this particular program".
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 > ---
->   drivers/net/ethernet/broadcom/genet/bcmgenet.c | 15 ++++++---------
->   1 file changed, 6 insertions(+), 9 deletions(-)
+>  include/linux/bpf.h      | 1 +
+>  include/uapi/linux/bpf.h | 2 ++
+>  kernel/bpf/syscall.c     | 4 ++++
+>  3 files changed, 7 insertions(+)
 >
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index 12cb77ef1081..5c20829ffa0f 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -3461,16 +3461,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
->   		goto err;
->   	}
->   
-> -	if (dn) {
-> +	if (dn)
->   		macaddr = of_get_mac_address(dn);
-> -		if (IS_ERR(macaddr)) {
-> -			dev_err(&pdev->dev, "can't find MAC address\n");
-We shouldn't hide the error that the MAC address wasn't found.
-We should continue to print some kind of error as generating a mac address
-is a stop-gap measure and a proper MAC address should be used
-for the board.
-> -			err = -EINVAL;
-> -			goto err;
-> -		}
-> -	} else {
-> +	else
->   		macaddr = pd->mac_address;
-> -	}
->   
->   	priv->base = devm_platform_ioremap_resource(pdev, 0);
->   	if (IS_ERR(priv->base)) {
-> @@ -3482,7 +3476,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
->   
->   	SET_NETDEV_DEV(dev, &pdev->dev);
->   	dev_set_drvdata(&pdev->dev, dev);
-> -	ether_addr_copy(dev->dev_addr, macaddr);
-> +	if (IS_ERR_OR_NULL(macaddr) || !is_valid_ether_addr(macaddr))
-> +		eth_hw_addr_random(dev);
-> +	else
-> +		ether_addr_copy(dev->dev_addr, macaddr);
->   	dev->watchdog_timeo = 2 * HZ;
->   	dev->ethtool_ops = &bcmgenet_ethtool_ops;
->   	dev->netdev_ops = &bcmgenet_netdev_ops;
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 5b9d22338606..b03ea396afe5 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -421,6 +421,7 @@ struct bpf_prog_aux {
+>                 struct work_struct work;
+>                 struct rcu_head rcu;
+>         };
+> +       char created_by_comm[BPF_CREATED_COMM_LEN];
+>  };
+>
+>  struct bpf_array {
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index a65c3b0c6935..4e883ecbba1e 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -326,6 +326,7 @@ enum bpf_attach_type {
+>  #define BPF_F_NUMA_NODE                (1U << 2)
+>
+>  #define BPF_OBJ_NAME_LEN 16U
+> +#define BPF_CREATED_COMM_LEN   16U
 
+Nack.
+16 bytes is going to be useless.
+We found it the hard way with prog_name.
+If you want to embed additional debug information
+please use BTF for that.
