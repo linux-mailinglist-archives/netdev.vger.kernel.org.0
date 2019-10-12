@@ -2,119 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3A7BD4F43
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 13:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62DCFD4F66
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 13:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728970AbfJLLTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 07:19:08 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:33364 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726839AbfJLLTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 07:19:08 -0400
-Received: by mail-yw1-f67.google.com with SMTP id w140so4449564ywd.0
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 04:19:07 -0700 (PDT)
+        id S1727834AbfJLLo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 07:44:26 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:39580 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727083AbfJLLmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 07:42:25 -0400
+Received: by mail-lj1-f193.google.com with SMTP id y3so12261395ljj.6;
+        Sat, 12 Oct 2019 04:42:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hABoQwLdO0uMm4YXkBCFk8W+eev136YlKUX9aXvX8MQ=;
-        b=D7mHgPzHHTjdRL5OoclG/V+NKJIlPgeUibKjAWXcA7kIdPCd1XFPkfIyBuFuGwE2P+
-         MrEzs8F+PLYTxDH7ouh8EEEy/e6BEoGBjYbDgQTWpvl1t6uv5b1purG/AhX+7F5S/XHr
-         MNSbgSGnJaoqe4a9mxi+0NmcCJmKRSvg6o6KyHN4EoY2PckPjdpYR87r82qzkJm4Z96/
-         ZAipfmQiNMA0Cnt9YBnNvNO7quDOmC2t+0DHM2qaYIasyDERsY8dzwGmDvE10fGVmuxs
-         bkjJbp4M1R1rManGnfz7uhb+pds7C8qEl7FJqoQ8kyOTrRWsTxMjvoM0WbNsQuMp18D1
-         IAEQ==
+        bh=y11pBCe1CKAjsPMn1sqz/oYdoQIUENwcNyPETlfS7fU=;
+        b=ITLTft8A4VLVxPboRseeDV2uqnjEVCF9cadQ+LcoeaUZcDpo3zF2O9AINuaIkyND6L
+         /1/lA/sScUZblZRjpvdoky/Bc0HYMr8YCUQGgpgqnrRY65N1GZVfSSQ78f+qAElw2Dcw
+         DpuohN20RNKfrIsPyxBYk7hT79xOqI9tvYT1+X+BNOTbTfNkBjP6b6G0kdC0ssvHjX6B
+         IA5f5o8aDKnxfsB3SI8fQrvnwyu1xEhuhtjWrELnT7hja3YhnG82AkmLuU8p6RHYDhBV
+         Qi+I8f0icJ5AmGNR2cMB66fu4D6Xg1X3oTfLzFSpI28qfPjZjYhC5vwmGxKPO0mpL+Y5
+         kp/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hABoQwLdO0uMm4YXkBCFk8W+eev136YlKUX9aXvX8MQ=;
-        b=YWXA67a1fOjXITTJOvKWciRcao1V5e/5tMz1eOIc78RI4dlNo6y8CmkdXD8sN116qq
-         5rKVc3xiMkBoTkcc2PKP1YJIF9vNImNSv3NF89TXR46Ug0XZDREYK45PhrN8unZ0AVI6
-         5ElWgejhOyCEPP8JkGOEAsJLho07ha4Y3r5IaNNV6mtaWdazkG/TAA1SsnW/YXjIm2GP
-         THeNQMOahuAtdo77w3uxl4r4RJatKj6FL2CNAHxjXmYL7oBo0IYp12mhF6OSqP970c5k
-         UrVfwlKZZb6KMEWiVT1MLS5iF5BR0v/P2yQXw/Ycc/Am0ECWGQ4E7nfKI3qd5Mae8TpJ
-         jqAw==
-X-Gm-Message-State: APjAAAXiTcP50IBf0iny91QgFkZ7N/eNxbqvGuVDPg6AOX9nItM04FY+
-        kFb8jdWvrngw4tKPZawg/W8s6FIG5dx0o3Gi+Tb+qA==
-X-Google-Smtp-Source: APXvYqwZOaCkSDRcIvwoJHVK/AzkGRNEIC28N93f863MsT7N1isrICFjEYjK81ioPs6sBTYpIDJGcldt+P9QBxA23xg=
-X-Received: by 2002:a0d:fd03:: with SMTP id n3mr5796321ywf.170.1570879146864;
- Sat, 12 Oct 2019 04:19:06 -0700 (PDT)
+        bh=y11pBCe1CKAjsPMn1sqz/oYdoQIUENwcNyPETlfS7fU=;
+        b=tyLUG+bF+c4MBlPxkP0ILpiTFZiualTP+VmkX7Fb/pxzusKjZLt7wZTHx9OROHK5Os
+         Sdg9jZ+yZDIXjx32FEWBtIU6rz+vDexVs0/QxYgS7HChRYb2OfnZYtB4tvC/2s51ZRLC
+         PgPQSeIP+yBsGihs669dUCPFWqSb5cytKKPlqxFi3Vdb8NYywT20o1e2luQ6o9fcVNUf
+         uL6OqAFNlUgqT0qmDpPJEzUEYXHDYikpnoiRSLdvFIqqAY89F2N/GSpzNF91bfDLyYI7
+         zoOOgLS7ctxTpGVo9MvGscyWu7lsS611G7XUfpCHrZ7fqi+kYkcFKypKdH6zbFrvMaTu
+         5LlA==
+X-Gm-Message-State: APjAAAWIgTpXjpZ/KU/uTan6J+ILQX7J24jzwWAp/NEENV0rTXOpeQ/p
+        ld57swf8RVrRXSIRzaWw6Yr3rrEIq279Jumq8wE=
+X-Google-Smtp-Source: APXvYqy/gnffCmgt2jJTKy6Gr8N+EK2KyGkJCilmqHqxTdAB2DDpDC2Yx3nJC/JcHfFIUJw68YBSZGH85FgG/jF7Qw4=
+X-Received: by 2002:a2e:9695:: with SMTP id q21mr12014562lji.105.1570880540837;
+ Sat, 12 Oct 2019 04:42:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191010144226.4115-1-alobakin@dlink.ru> <20191010144226.4115-3-alobakin@dlink.ru>
- <c2450dc3-8ee0-f7cd-4f8a-61a061989eb7@solarflare.com> <1eaac2e1f1d65194a4a39232d7e45870@dlink.ru>
- <3c459c84df86f79b593632d3f08d5f4c@dlink.ru>
-In-Reply-To: <3c459c84df86f79b593632d3f08d5f4c@dlink.ru>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 12 Oct 2019 04:18:55 -0700
-Message-ID: <CANn89iLrVU2OVTj1yk4Sjd=SVxHYN-WpXeGhMEWx0DsVLz7giQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: core: increase the default size of
- GRO_NORMAL skb lists to flush
-To:     Alexander Lobakin <alobakin@dlink.ru>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20190928164843.31800-1-ap420073@gmail.com> <20190928164843.31800-2-ap420073@gmail.com>
+ <20191010101925.GA93190@bistromath.localdomain>
+In-Reply-To: <20191010101925.GA93190@bistromath.localdomain>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Sat, 12 Oct 2019 20:42:09 +0900
+Message-ID: <CAMArcTWEbH5=UKRSrw0-QR+dyT2GCJf3sjUA=eKVOEUJ3Wj8gQ@mail.gmail.com>
+Subject: Re: [PATCH net v4 01/12] net: core: limit nested device depth
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        j.vosburgh@gmail.com, vfalico@gmail.com,
+        Andy Gospodarek <andy@greyhouse.net>,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>, saeedm@mellanox.com,
+        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
+        haiyangz@microsoft.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
+        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Cody Schuffelen <schuffelen@google.com>, bjorn@mork.no
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 2:22 AM Alexander Lobakin <alobakin@dlink.ru> wrote:
-
+On Thu, 10 Oct 2019 at 19:19, Sabrina Dubroca <sd@queasysnail.net> wrote:
 >
-> I've generated an another solution. Considering that gro_normal_batch
-> is very individual for every single case, maybe it would be better to
-> make it per-NAPI (or per-netdevice) variable rather than a global
-> across the kernel?
-> I think most of all network-capable configurations and systems has more
-> than one network device nowadays, and they might need different values
-> for achieving their bests.
->
-> One possible variant is:
->
-> #define THIS_DRIVER_GRO_NORMAL_BATCH    16
->
-> /* ... */
->
-> netif_napi_add(dev, napi, this_driver_rx_poll, NAPI_POLL_WEIGHT); /*
-> napi->gro_normal_batch will be set to the systcl value during NAPI
-> context initialization */
-> napi_set_gro_normal_batch(napi, THIS_DRIVER_GRO_NORMAL_BATCH); /* new
-> static inline helper, napi->gro_normal_batch will be set to the
-> driver-speficic value of 16 */
->
-> The second possible variant is to make gro_normal_batch sysctl
-> per-netdevice to tune it from userspace.
-> Or we can combine them into one to make it available for tweaking from
-> both driver and userspace, just like it's now with XPS CPUs setting.
->
-> If you'll find any of this reasonable and worth implementing, I'll come
-> with it in v2 after a proper testing.
 
-Most likely the optimal tuning is also a function of the host cpu caches.
+Hi Sabrina,
 
-Building a too big list can also lead to premature cache evictions.
+Thank you for review and testing!
 
-Tuning the value on your test machines does not mean the value will be good
-for other systems.
+> 2019-09-28, 16:48:32 +0000, Taehee Yoo wrote:
+> > @@ -6790,23 +6878,45 @@ int netdev_walk_all_lower_dev(struct net_device *dev,
+> >                                       void *data),
+> >                             void *data)
+> >  {
+> > -     struct net_device *ldev;
+> > -     struct list_head *iter;
+> > -     int ret;
+> > +     struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
+> > +     struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
+> > +     int ret, cur = 0;
+> >
+> > -     for (iter = &dev->adj_list.lower,
+> > -          ldev = netdev_next_lower_dev(dev, &iter);
+> > -          ldev;
+> > -          ldev = netdev_next_lower_dev(dev, &iter)) {
+> > -             /* first is the lower device itself */
+> > -             ret = fn(ldev, data);
+> > -             if (ret)
+> > -                     return ret;
+> > +     now = dev;
+> > +     iter = &dev->adj_list.lower;
+> >
+> > -             /* then look at all of its lower devices */
+> > -             ret = netdev_walk_all_lower_dev(ldev, fn, data);
+> > -             if (ret)
+> > -                     return ret;
+> > +     while (1) {
+> > +             if (now != dev) {
+> > +                     ret = fn(now, data);
+> > +                     if (ret)
+> > +                             return ret;
+> > +             }
+> > +
+> > +             next = NULL;
+> > +             while (1) {
+> > +                     ldev = netdev_next_lower_dev(now, &iter);
+> > +                     if (!ldev)
+> > +                             break;
+> > +
+> > +                     if (!next) {
+> > +                             next = ldev;
+> > +                             niter = &ldev->adj_list.lower;
+> > +                     } else {
+> > +                             dev_stack[cur] = ldev;
+> > +                             iter_stack[cur++] = &ldev->adj_list.lower;
+> > +                             break;
+> > +                     }
+> > +             }
+> > +
+> > +             if (!next) {
+> > +                     if (!cur)
+> > +                             return 0;
+>
+> Hmm, I don't think this condition is correct.
+>
+> If we have this topology:
+>
+>
+>                 bridge0
+>                 /  |  \
+>                /   |   \
+>               /    |    \
+>         dummy0   vlan1   vlan2
+>                    |       \
+>                  dummy1    dummy2
+>
+> We end up with the expected lower/upper levels for all devices:
+>
+>     | device  | upper | lower |
+>     |---------+-------+-------|
+>     | dummy0  |     2 |     1 |
+>     | dummy1  |     3 |     1 |
+>     | dummy2  |     3 |     1 |
+>     | vlan1   |     2 |     2 |
+>     | vlan2   |     2 |     2 |
+>     | bridge0 |     1 |     3 |
+>
+>
+> If we then add macvlan0 on top of bridge0:
+>
+>
+>                 macvlan0
+>                    |
+>                    |
+>                 bridge0
+>                 /  |  \
+>                /   |   \
+>               /    |    \
+>         dummy0   vlan1   vlan2
+>                    |       \
+>                  dummy1    dummy2
+>
+>
+> we can observe that __netdev_update_upper_level is only called for
+> some of the devices under bridge0. I added a perf probe:
+>
+>  # perf probe -a '__netdev_update_upper_level dev->name:string'
+>
+> which gets hit for bridge0 (called directly by
+> __netdev_upper_dev_link) and then dummy0, vlan1, dummy1. It is never
+> called for vlan2 and dummy2.
+>
+> After this, we have the following levels (*):
+>
+>     | device   | upper | lower |
+>     |----------+-------+-------|
+>     | dummy0   |     3 |     1 |
+>     | dummy1   |     4 |     1 |
+>     | dummy2   |     3 |     1 |
+>     | vlan1    |     3 |     2 |
+>     | vlan2    |     2 |     2 |
+>     | bridge0  |     2 |     3 |
+>     | macvlan0 |     1 |     4 |
+>
+> For dummy0, dummy1, vlan1, the upper level has increased by 1, as
+> expected. For dummy2 and vlan2, it's still the same, which is wrong.
+>
+>
+> (*) observed easily by adding another probe:
+>
+>  # perf probe -a 'dev_get_stats dev->name:string dev->upper_level dev->lower_level'
+>
+> and running "ip link"
+>
+> Or you can just add prints and recompile, of course :)
+>
 
-Adding yet another per device value should only be done if you demonstrate
-a significant performance increase compared to the conservative value
-Edward chose.
+Thank you so much, I found a bug very easily with your test config.
+I will fix this bug in a v5 patch.
 
-Also the behavior can be quite different depending on the protocols,
-make sure you test handling of TCP pure ACK packets.
+> > +                     next = dev_stack[--cur];
+> > +                     niter = iter_stack[cur];
+> > +             }
+> > +
+> > +             now = next;
+> > +             iter = niter;
+> >       }
+> >
+> >       return 0;
+>
+> --
+> Sabrina
 
-Accumulating 64 (in case the device uses standard NAPI_POLL_WEIGHT)
-of them before entering upper stacks seems not a good choice, since 64 skbs
-will need to be kept in the GRO system, compared to only 8 with Edward value.
+Thank you,
+Taehee Yoo
