@@ -2,91 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8041D4FE3
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 15:02:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF9CAD4FF1
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 15:13:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729247AbfJLNCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 09:02:35 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:43947 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726751AbfJLNCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 09:02:35 -0400
-Received: by mail-lj1-f194.google.com with SMTP id n14so12344338ljj.10
-        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 06:02:32 -0700 (PDT)
+        id S1729002AbfJLNMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 09:12:39 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:40959 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726821AbfJLNMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 09:12:39 -0400
+Received: by mail-pl1-f196.google.com with SMTP id d22so5779636pll.7;
+        Sat, 12 Oct 2019 06:12:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=3wuj2kJlmLKztyPN4wdQ2rcdsEbKrXDqcX9i55ozIPU=;
-        b=IhmXYmo1XImhanL96zDnwb562aQJZfEZWo3qlKpMN71BvFPF54wMM0E9UidXM3Zhdm
-         mC8cM3WesbVhgFb3+tXVUBO0h5tgm0UCNqsQnCA7imU/CNKU9UDOMt13i58U1xZD8H/a
-         73vgC0en/8fn87JqBfIYKjKt2jk1DS+Hpl8BXuYsPunlISo9SUufLf0of5hIRtyEasaP
-         VLbZWpcgPD9Bc1Xs1URebW/3kSKrQuVO1hp3S1LXH3EKrPvCWt7B3pjfTCHY+0z9dD3O
-         sCgB41MjPHVWhF0OQtU7L57OM6AmdKesWrAHe83aRNv/wsHQS7eUrfHPczdO8CjZpF2Q
-         xR7g==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=fJ+PFaaP+B+Q/EtiVfrsJVrXqtyueeEIeoYLfvXIfuY=;
+        b=OIPN8/ETepz5A/lxGcqrB4I/RGEAp4A+21kyrIIoFaN8eS/Z+j8+37qf5lCTk6326X
+         IYLSgfctqTaj7XQM44Oe70qlZqIzP4Uh0OjeAMlT8iy99ucG34Mi7vDDatIJYGtplRhC
+         XxnLSFijbd9M+eW31uf47oPMWqVznWAU5yqVgMg/Q+liShHh5ZS7pJH3BB2nuDP9uz8M
+         63+M28ylynnvs+JsOaYghZ85MAupg9wcCuYXec1jvzIpRfsjFZDaBszCy4g8eizppAFm
+         +CQa0WHkQ3vJR2i7rAkUqS17clwPBtbngVVkvheTYeyLE1eiq77AbJfaXeeZpW7TAPRP
+         6kZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=3wuj2kJlmLKztyPN4wdQ2rcdsEbKrXDqcX9i55ozIPU=;
-        b=p4jpp8m9oyIsrthG722GYv31kV1eHcf0InOxULvdjziqqNXKsENjuXpvRmdUolkvbG
-         AIoomzJ7gxVAabGw8WdWm3yEdlWNxUYrb+KlN9sX5X5+40lYkm9oDyQ8R0+9wPJgoaBI
-         L5FkzSeefb323VKADK7BWH7v85z4+S1LZV4eFi2JIw9m3DTmKERvfY6qL/dXffJYwYoN
-         9u+/yO4yQDQxHwYzvHB8gjK1TkDsUjy6FGrPYKW1zG1DicSbixDxY+yRRsaYSXz2bwLx
-         Em9F/GpepB6Bm37FR+yit0y42aKAf0g5Xtm2iUySZSvrUNmYVDzHaOyt0BlJPC13rBR+
-         B4bA==
-X-Gm-Message-State: APjAAAXPBP7aHazkXlJ4xV8QWlXWntQSmvX9W+tPArqEbo55oHygoUpI
-        wgn41gJdi4RXm4ZI0stFN5bzpse02O/j1lwxUKk=
-X-Google-Smtp-Source: APXvYqw/1N2yQ9plxGws6O1dpVz6jPI/7IgAXedTRQAZgVHq7JTp8633Zjh4kM36AxV+WaXD3V5aMLlAgId1D14mJJI=
-X-Received: by 2002:a2e:8417:: with SMTP id z23mr12162266ljg.46.1570885351555;
- Sat, 12 Oct 2019 06:02:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=fJ+PFaaP+B+Q/EtiVfrsJVrXqtyueeEIeoYLfvXIfuY=;
+        b=dC6l/c/HsqIfB0vGVSyABCnH/yf2k8gABWvKc6mWCo5S36OD3AIRzcymaUxGXMQtss
+         XhDxcyj6Q8Jz6ORtrweyvo04vdIejiZ1ESSHq4vhpeAlGzmiOmWbdvGrp2MavVaMqfSn
+         dK1NYOzHMxD/xYNSFA0LAyC7XrMrZXC7/KAyo0UEul3p1B+nA8VyeGKuKH40CL6dQ2mC
+         7KwlfO7BUtqOTML7KdMzgpI0y1JW/664kmb/IDGiq9SPP+eIm8ZvhXGJNzGKYslE2Q+n
+         YFl18TgppbZuqb/KqWG8LITDgUR+7qV9RYbaT8wjdQqBBG6eRpFEqikXPI9HA53OFX04
+         13aA==
+X-Gm-Message-State: APjAAAVjIBCIwqGYTApUDOu63LA0CKkrHjKuS9PPZEeA7xhBoglGNhzO
+        FY5az2MlXwmVdvrC5aQiuW4=
+X-Google-Smtp-Source: APXvYqwrIZfVGA0FwNgVrrMR2T9kxwqpnNUK9zJtuDZwG5bUI79nqD8Wfm+dhQ8V1uW09U5Lq+ehXQ==
+X-Received: by 2002:a17:902:a712:: with SMTP id w18mr20484206plq.304.1570885958151;
+        Sat, 12 Oct 2019 06:12:38 -0700 (PDT)
+Received: from nishad ([2406:7400:54:9230:b578:2290:e0c4:6e96])
+        by smtp.gmail.com with ESMTPSA id n66sm19392874pfn.90.2019.10.12.06.12.34
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 12 Oct 2019 06:12:37 -0700 (PDT)
+Date:   Sat, 12 Oct 2019 18:42:28 +0530
+From:   Nishad Kamdar <nishadkamdar@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: cavium: Use the correct style for SPDX License
+ Identifier
+Message-ID: <20191012131224.GA8087@nishad>
 MIME-Version: 1.0
-Received: by 2002:ab3:1687:0:0:0:0:0 with HTTP; Sat, 12 Oct 2019 06:02:31
- -0700 (PDT)
-Reply-To: mrschantdav@gmail.com
-From:   "Dr. Abu Ahmed" <princepatrick54@gmail.com>
-Date:   Sat, 12 Oct 2019 06:02:31 -0700
-Message-ID: <CAOQDm3uuB+p-HAk548JtxO7vfwcAv3jjfVvvq2hDcosyiSa2eA@mail.gmail.com>
-Subject: Hello Beloved.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+This patch corrects the SPDX License Identifier style
+in header files related to Cavium Ethernet drivers.
+For C header files Documentation/process/license-rules.rst
+mandates C-like comments (opposed to C source files where
+C++ style should be used)
 
-I'm sorry but happy to inform you about my success in getting those
-funds transferred under the cooperation of a new partner from Vietnam,
-though I tried my best to involve you in the business but God decided
-the whole situations. Presently I=E2=80=99m in Vietnam for investment proje=
-cts
-with my own share of the total sum. Meanwhile, I didn't forget your
-past efforts and attempts to assist me in transferring those funds
-despite that it failed us some how.
+Changes made by using a script provided by Joe Perches here:
+https://lkml.org/lkml/2019/2/7/46.
 
-Now contact my secretary in Burkina Faso her name is Mrs. Chantal
-Davids on her e-mail address below (mrschantdav@gmail.com) ask her to
-send you the total of $1.450,000.00 (One million four hundred and
-fifty thousand united state of America dollars) which I kept for your
-compensation for all the past efforts and attempts to assist me in
-this matter. I appreciated your efforts at that time very much. So
-feel free and get in touched with my secretary Mrs. Chantal Davids and
-instruct her where to send the amount to you. Please do let me know
-immediately you receive it so that we can share joy after all the
-sufferness at that time.
+Suggested-by: Joe Perches <joe@perches.com>
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+---
+ drivers/net/ethernet/cavium/common/cavium_ptp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-In the moment, I=E2=80=99m very busy here because of the investment project=
-s
-which I and the new partner are having at hand, finally, remember that
-I had forwarded instruction to the secretary on your behalf to receive
-that money, so feel free to get in touch with Mrs. Chantal Davids she
-will send the amount to you without any delay OK. Extend my greetings
-to your family.
+diff --git a/drivers/net/ethernet/cavium/common/cavium_ptp.h b/drivers/net/ethernet/cavium/common/cavium_ptp.h
+index be2bafc7beeb..a04eccbc78e8 100644
+--- a/drivers/net/ethernet/cavium/common/cavium_ptp.h
++++ b/drivers/net/ethernet/cavium/common/cavium_ptp.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /* cavium_ptp.h - PTP 1588 clock on Cavium hardware
+  * Copyright (c) 2003-2015, 2017 Cavium, Inc.
+  */
+-- 
+2.17.1
 
-My Best regards
-Yours brother
-Dr. Abu Ahmed
-Greetings from Vietnam
