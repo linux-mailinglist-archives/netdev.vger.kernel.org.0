@@ -2,93 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9CAD4FF1
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 15:13:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB63FD5019
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 15:33:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729002AbfJLNMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 09:12:39 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:40959 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbfJLNMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 09:12:39 -0400
-Received: by mail-pl1-f196.google.com with SMTP id d22so5779636pll.7;
-        Sat, 12 Oct 2019 06:12:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=fJ+PFaaP+B+Q/EtiVfrsJVrXqtyueeEIeoYLfvXIfuY=;
-        b=OIPN8/ETepz5A/lxGcqrB4I/RGEAp4A+21kyrIIoFaN8eS/Z+j8+37qf5lCTk6326X
-         IYLSgfctqTaj7XQM44Oe70qlZqIzP4Uh0OjeAMlT8iy99ucG34Mi7vDDatIJYGtplRhC
-         XxnLSFijbd9M+eW31uf47oPMWqVznWAU5yqVgMg/Q+liShHh5ZS7pJH3BB2nuDP9uz8M
-         63+M28ylynnvs+JsOaYghZ85MAupg9wcCuYXec1jvzIpRfsjFZDaBszCy4g8eizppAFm
-         +CQa0WHkQ3vJR2i7rAkUqS17clwPBtbngVVkvheTYeyLE1eiq77AbJfaXeeZpW7TAPRP
-         6kZg==
+        id S1729347AbfJLNda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 09:33:30 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:24444 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726839AbfJLNda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 09:33:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1570887208;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iCSy+aCBbHUZEz2kmtv98kcDJGiLoQ54sxRaUCmb0Dw=;
+        b=GN9oqg4VLlNYnXVJI0MrTR230VmjRYd31XyPLQl4vIhet3O89chZuICpOcxzRpKoyCnP+2
+        HeMBPJUg2ZTX7kO6ZzEMlVKtn0Kqjt04OqMZDf9LHS3L1JsGr+LqwXJWmAtBtB4UOl3SFx
+        LNm6FKlN8d9AP4uK0Kw27VHasU/VXqQ=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-183-vqz3kLrLOaiYCTBjrJ7huA-1; Sat, 12 Oct 2019 09:33:27 -0400
+Received: by mail-lj1-f198.google.com with SMTP id h19so2431830ljc.5
+        for <netdev@vger.kernel.org>; Sat, 12 Oct 2019 06:33:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=fJ+PFaaP+B+Q/EtiVfrsJVrXqtyueeEIeoYLfvXIfuY=;
-        b=dC6l/c/HsqIfB0vGVSyABCnH/yf2k8gABWvKc6mWCo5S36OD3AIRzcymaUxGXMQtss
-         XhDxcyj6Q8Jz6ORtrweyvo04vdIejiZ1ESSHq4vhpeAlGzmiOmWbdvGrp2MavVaMqfSn
-         dK1NYOzHMxD/xYNSFA0LAyC7XrMrZXC7/KAyo0UEul3p1B+nA8VyeGKuKH40CL6dQ2mC
-         7KwlfO7BUtqOTML7KdMzgpI0y1JW/664kmb/IDGiq9SPP+eIm8ZvhXGJNzGKYslE2Q+n
-         YFl18TgppbZuqb/KqWG8LITDgUR+7qV9RYbaT8wjdQqBBG6eRpFEqikXPI9HA53OFX04
-         13aA==
-X-Gm-Message-State: APjAAAVjIBCIwqGYTApUDOu63LA0CKkrHjKuS9PPZEeA7xhBoglGNhzO
-        FY5az2MlXwmVdvrC5aQiuW4=
-X-Google-Smtp-Source: APXvYqwrIZfVGA0FwNgVrrMR2T9kxwqpnNUK9zJtuDZwG5bUI79nqD8Wfm+dhQ8V1uW09U5Lq+ehXQ==
-X-Received: by 2002:a17:902:a712:: with SMTP id w18mr20484206plq.304.1570885958151;
-        Sat, 12 Oct 2019 06:12:38 -0700 (PDT)
-Received: from nishad ([2406:7400:54:9230:b578:2290:e0c4:6e96])
-        by smtp.gmail.com with ESMTPSA id n66sm19392874pfn.90.2019.10.12.06.12.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 12 Oct 2019 06:12:37 -0700 (PDT)
-Date:   Sat, 12 Oct 2019 18:42:28 +0530
-From:   Nishad Kamdar <nishadkamdar@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: cavium: Use the correct style for SPDX License
- Identifier
-Message-ID: <20191012131224.GA8087@nishad>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kW8VphatoqQbE9TRzxp5dmt6xR//Unc87hdke8XJ/zg=;
+        b=HhOp7g+VLk1cAq3NY+iNJMr1b7yIChAb0cPsi/fvOB+q+BrZo5TBh594Wk6H1fs8Mf
+         Y/vHqqMDtkYxoue3Y0V6WlW9u+NNkXifyOLsvPEc1oD5SSyyeeaXiclmkKssWkFzLNNG
+         KicUbafJKPdZg9iQaBaThpBtlEaxT/v9HNzLiVrlNsPMX/zSJ5UUMbv84twilQFnFIqV
+         BWez1Su0PHNc9/9mraIy8HMJ2qYIuUurRG0CGxpnrW9CfC0qNq39gXNs/DrV1MTsr4m0
+         2L6dmtBKv1odQo0o5/72Rpkbecyxth2yzYlqsPpT2jjW/aCMPoPQU3S6A3en3Af45Q+W
+         z8jg==
+X-Gm-Message-State: APjAAAX/OgPmoG3JQYL6LjaN4uT2QzSDpOBtOmdmbkpdzK6BfZJsFMsA
+        LSqoOwqOhjQaeNCPfFbndwztF3uhSP5SbYME8xM3MKP7HneJq7HpgkSSyULgCqoEp8DfLKFYWgF
+        9z/Wv96gyOUbLEFKRKIEeXtfWDV3rC11M
+X-Received: by 2002:a2e:9604:: with SMTP id v4mr12491716ljh.101.1570887205200;
+        Sat, 12 Oct 2019 06:33:25 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzxWryGn0gHOlV6aMMdLOBsLOT54ExODkfNT71aM75WBuSnsXu0/d9Tnjv9lusXBgs0AA7svEjanEGx0iVAFsA=
+X-Received: by 2002:a2e:9604:: with SMTP id v4mr12491705ljh.101.1570887205008;
+ Sat, 12 Oct 2019 06:33:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20190611180326.30597-1-mcroce@redhat.com> <20190612085307.35e42bf4@hermes.lan>
+ <CAGnkfhyT0W=CYU8FJYrDtzqxtcHakO5CWx2qzLuWOXVj6dyKMA@mail.gmail.com>
+ <CAGnkfhz-W64f-j+Sgbi47BO6VKfyaYQ1W865sihXhCjChh_kFQ@mail.gmail.com>
+ <20190612111938.1c9da723@hermes.lan> <CAGnkfhyS64WA+947iQFwA9+=yS6Zk856SWBR9Zy7w90xhBmC=Q@mail.gmail.com>
+ <CAGnkfhzjT1he+77vRC7p_Y7U5L7AksDpkss2TwZcR_xxxGhgSA@mail.gmail.com>
+In-Reply-To: <CAGnkfhzjT1he+77vRC7p_Y7U5L7AksDpkss2TwZcR_xxxGhgSA@mail.gmail.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Sat, 12 Oct 2019 15:32:48 +0200
+Message-ID: <CAGnkfhwoq14__Ccen33rjorVk3rDTHfNYVnCiTpo7DwNZsakuw@mail.gmail.com>
+Subject: Re: [PATCH iproute2] testsuite: don't clobber /tmp
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
+X-MC-Unique: vqz3kLrLOaiYCTBjrJ7huA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch corrects the SPDX License Identifier style
-in header files related to Cavium Ethernet drivers.
-For C header files Documentation/process/license-rules.rst
-mandates C-like comments (opposed to C source files where
-C++ style should be used)
+On Tue, Jun 25, 2019 at 4:39 PM Matteo Croce <mcroce@redhat.com> wrote:
+>
+> On Thu, Jun 13, 2019 at 7:15 PM Matteo Croce <mcroce@redhat.com> wrote:
+> >
+> > On Wed, Jun 12, 2019 at 8:20 PM Stephen Hemminger
+> > <stephen@networkplumber.org> wrote:
+> >
+> > To me any path could work, both /tmp or in the current dir, I have no
+> > preference.
+> > The important thing is to remove them wherever they are, as clobbering
+> > the build dir is bad as messing /tmp.
+> >
+> > Anyway, I double checked, and the only target which uses that
+> > temporary file is 'alltests' so, if the path is ok, I think that the
+> > condition "ifeq ($(MAKECMDGOALS),alltests)" is the only one which
+> > fixes the issue and keeps the behaviour unaltered.
+> > I did some quick tests and it works for me.
+> >
+> > Bye,
+> > --
+> > Matteo Croce
+> > per aspera ad upstream
+>
+> Hi,
+>
+> any more thoughts about this patch?
+>
+> --
+> Matteo Croce
+> per aspera ad upstream
 
-Changes made by using a script provided by Joe Perches here:
-https://lkml.org/lkml/2019/2/7/46.
+Hi,
 
-Suggested-by: Joe Perches <joe@perches.com>
-Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
----
- drivers/net/ethernet/cavium/common/cavium_ptp.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+almost forgot about this one. Should I resend it, or it was nacked?
 
-diff --git a/drivers/net/ethernet/cavium/common/cavium_ptp.h b/drivers/net/ethernet/cavium/common/cavium_ptp.h
-index be2bafc7beeb..a04eccbc78e8 100644
---- a/drivers/net/ethernet/cavium/common/cavium_ptp.h
-+++ b/drivers/net/ethernet/cavium/common/cavium_ptp.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0
-+/* SPDX-License-Identifier: GPL-2.0 */
- /* cavium_ptp.h - PTP 1588 clock on Cavium hardware
-  * Copyright (c) 2003-2015, 2017 Cavium, Inc.
-  */
--- 
-2.17.1
+Regards,
+--=20
+Matteo Croce
+per aspera ad upstream
 
