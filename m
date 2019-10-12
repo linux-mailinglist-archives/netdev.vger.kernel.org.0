@@ -2,169 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4CC0D4D0E
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 06:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE4A8D4DD0
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 08:56:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726787AbfJLExi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 00:53:38 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:24890 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725308AbfJLExi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 00:53:38 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9C4qDgR031964;
-        Fri, 11 Oct 2019 21:53:19 -0700
+        id S1727279AbfJLG4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 02:56:21 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62222 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727016AbfJLG4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 02:56:20 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9C6sGmi027276;
+        Fri, 11 Oct 2019 23:56:15 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : references : in-reply-to : content-type : content-id
  : content-transfer-encoding : mime-version; s=facebook;
- bh=DjS4Tl+QEStjbspV1k+CGx2qI1HiAMYRQ4POG1pHhQ0=;
- b=kNQQoxhmxnRuUy/dvQyz2C8yUFjvTnTqQNTGzDqSf9kfMl6sE88JCIQYHvJhjOpWfGRn
- no3kqIeljeSTaB/GW1bojvXexTZAQam8/u6EGnNTid8UUTrypuqjEaze8ptTGpfoh6ni
- 5Pma65kBbey3a+2cSVlCtr8ZYzQ8Q2cHcMM= 
+ bh=M8kmfz+fec7N7FI9zmz6E0Bi2uI/QLjqaDvh1AODNEI=;
+ b=DCPNsbX5jMaqQISkHkY2XEolQMr8uOCGMtu0gR+Nuy6Kc0dgKJuOYYUoqUtBEUo+AtRz
+ kLECaVy408xNABWsS564ktqwHypWUqmv2SQHh18YsUMSoMvt5Mj76CJksxy8N7yLo9ox
+ SMR4Bb9h8vCHn5ZnmmY7MdtmeQisp/91dZo= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2vjwxvjaqk-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2vjtsm3jg7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 11 Oct 2019 21:53:19 -0700
-Received: from prn-mbx02.TheFacebook.com (2620:10d:c081:6::16) by
- prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+        Fri, 11 Oct 2019 23:56:15 -0700
+Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 11 Oct 2019 21:53:18 -0700
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-mbx02.TheFacebook.com (2620:10d:c081:6::16) with Microsoft SMTP Server
+ 15.1.1713.5; Fri, 11 Oct 2019 23:56:14 -0700
+Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
+ prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 11 Oct 2019 21:53:18 -0700
-Received: from NAM01-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ 15.1.1713.5; Fri, 11 Oct 2019 23:56:13 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 11 Oct 2019 21:53:18 -0700
+ via Frontend Transport; Fri, 11 Oct 2019 23:56:13 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XDcxmdBZJTXxen5tIHTsTRh0txH60KmyWbwfiHXRLQGe+Jh5h/Q4LhpA+zhjN3TLnRmipeXA8fAOUQUDSyZeDJJajGDvPVjeNLj0HPLrP3/aIgCLR1oT4gw5VvFX99Nq2tmcPVBzP5Q4Pz6Kd5e4tL6G54cRlFRIV8egdauMtueeRcZMwemw6AovLsQwoN+szbvOfXvZtbOqSmKOuwIlkpBJgiSe5/xCGF0N5eqiRCDwoGwyjy5+eJCG7eg215SV5AlMAd1Hj+Ree+tmcqTAq/g+0dLESjVvQXpxYAd/n4JFRbwwlLYBbWfzby0V0aT75tIXltrQ0AWvFQqO+fc2iA==
+ b=TxWUWh4OoUkJDaJ5lC3Y1Hns/+VbMibhrDdnH+VFk/asqm+twJ2qZAUtg2K6lrVWW7n7QenDJiKJtcozURD/Zs9vL2JfOaYN00Iq+MrOKqE/sUmJMcdCp3KQ/4y/y4Yie2jbwbTc5p0X/nGmijxzBRwahjziT+4TsQ7oYih+p3M/xSuNfIAEEw8Y4vW47aHfxsyotLrB4uVN309GeiZBoIfV5P6EmdLE7JCBHGBw3YwKeuQf6s0cxX1oKkPbrmFrYN8bynhgBes6eZPuriB43a4vVZmBomVFCCvWebyPZQQ2ylzyzLFNyLekpw6St65fl2uXPgLnfyyTWdALpXn/Kw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DjS4Tl+QEStjbspV1k+CGx2qI1HiAMYRQ4POG1pHhQ0=;
- b=KrIR2TKNrQZKkfPGageesx3o8uNiqh3O3G3kp+Wbpn38AjLatiajO2e1VXplZVPFoBPID/og9m0C3rJNpEfmn1OERxXDCddkUMqB4V5Ukk9zRK9GqA/sjEywN+PjKHc6hryDACDi3Y5f3AfVgh5phpiyBsF2EYOVNq7EBBrMS1mJM2+x7ccmRTUgu3wfyFszYSfrZoRyiC1CST4zb21jGED88OA2sZaSzyp1irp3DwHZB1TA3AK4nAgitLFbRzz6+WTqjxilo+wpOVftdWwihle4gwZcOfI2ggsNS3kAEg0HNVkNASGlyx5q4OqtsUYmxu0Y1YckgyhZorwQDQfcBQ==
+ bh=M8kmfz+fec7N7FI9zmz6E0Bi2uI/QLjqaDvh1AODNEI=;
+ b=P1VLfXpRg9AgptUjuSIzvxZPXXxnzE0U/PYSWrOskvmpebrQDisxCFLVr9NpUmSYp1MPZneU8zaMZsyzpBErG4hjsoc1EuWybDikGSBFWq/dcy8Nf5hl2+p8WZ7vrTKb2ORaKiWsaOhk/KjBfDB2w4wLMM/YEeD+yMLhmWZd3e2U9aWRql8/MIWsrq/vIrR9qdyUD2t4rNO/k/TEo9cLQ7W+RbvC72e+WB+gLp5wnU2ZuiAYt1NlyMOW48H6cJomUspdQhatcIV/hsiFA7digEzA8fVoKwo0xRdC1EYiAERFzZ7FKUKsNQ+0wAZozCk4Qz7tZI+uqLTKoxpmDBMM+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DjS4Tl+QEStjbspV1k+CGx2qI1HiAMYRQ4POG1pHhQ0=;
- b=cez8cgzr+dAx/e525fLMZpFlPVidUyRX7kgwk8XcD9/IqA+VKoJcBljHn33wo+TEOWW12HtnocpgUWu8DMkvjmUawkz/G7sj4imniduFFYMm/6Yjq+iU81KtwEiIfTjFUnD/YQ1//fGKkFmILouCdGZk3Yfwvab0l/T7CGNud84=
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
- BYAPR15MB3000.namprd15.prod.outlook.com (20.178.238.13) with Microsoft SMTP
+ bh=M8kmfz+fec7N7FI9zmz6E0Bi2uI/QLjqaDvh1AODNEI=;
+ b=Vmr1b/xHBV5PucKYX8xM//1MKDrqaUS/r5mr94e4BY7yik/sY4xLERGwAx4eiZqMQVjCYBfX5r/r8Hf0mbwXieuOIdKAZl+xVr0IdCFxLBXOR1a/dzHmskVj3rL+CWyJHsMt+zyJadKxnOSqB78KquXjjQpYOIWkqPGqL3k83fo=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB3359.namprd15.prod.outlook.com (20.179.22.30) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Sat, 12 Oct 2019 04:53:17 +0000
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::c13d:be57:b216:bfa0]) by BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::c13d:be57:b216:bfa0%5]) with mapi id 15.20.2347.021; Sat, 12 Oct 2019
- 04:53:17 +0000
-From:   Alexei Starovoitov <ast@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 05/12] libbpf: auto-detect btf_id of
- raw_tracepoint
-Thread-Topic: [PATCH v2 bpf-next 05/12] libbpf: auto-detect btf_id of
- raw_tracepoint
-Thread-Index: AQHVfyFTTiLEwIVqQE6co+EkPTXoLKdVvxuAgABt1ACAAA3QgIAANKwAgAAEOYA=
-Date:   Sat, 12 Oct 2019 04:53:16 +0000
-Message-ID: <b16deef3-c736-1979-2ce8-6b03b426be67@fb.com>
-References: <20191010041503.2526303-1-ast@kernel.org>
- <20191010041503.2526303-6-ast@kernel.org>
- <CAEf4BzZxQDUzYYjF091135d+O_fwZVdK9Dqw5H4_z=5QBqueYg@mail.gmail.com>
- <0dbf83e8-10ec-cc17-c575-949639a7f018@fb.com>
- <ec2ca725-6228-b9e9-e9fc-34e4b34d8a1a@fb.com>
- <CAEf4BzZsz-6ftv628bk9LtEFr1qUoARL32x-kGagi7esOBURyA@mail.gmail.com>
-In-Reply-To: <CAEf4BzZsz-6ftv628bk9LtEFr1qUoARL32x-kGagi7esOBURyA@mail.gmail.com>
+ 15.20.2347.17; Sat, 12 Oct 2019 06:56:12 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::d5a4:a2a6:a805:6647]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::d5a4:a2a6:a805:6647%7]) with mapi id 15.20.2347.021; Sat, 12 Oct 2019
+ 06:56:12 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Wei Wang <weiwan@google.com>
+CC:     Ido Schimmel <idosch@idosch.org>,
+        Jesse Hathaway <jesse@mbuki-mvuki.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: Race condition in route lookup
+Thread-Topic: Race condition in route lookup
+Thread-Index: AQHVfrqzp034SiLNvUyIFpgTa/vMKqdTjKQAgAH4ioCAABJQAIAAJNSAgADadwA=
+Date:   Sat, 12 Oct 2019 06:56:12 +0000
+Message-ID: <20191012065608.igcba7tcjr4wkfsf@kafai-mbp.dhcp.thefacebook.com>
+References: <CANSNSoV1M9stB7CnUcEhsz3FHi4NV_yrBtpYsZ205+rqnvMbvA@mail.gmail.com>
+ <20191010083102.GA1336@splinter>
+ <CANSNSoVM1Uo106xfJtGpTyXNed8kOL4JiXqf3A1eZHBa7z3=yg@mail.gmail.com>
+ <20191011154224.GA23486@splinter>
+ <CAEA6p_AFKwx_oLqNOjMw=oXcAX4ftJvEQWLo0aWCh=4Hs=QjVw@mail.gmail.com>
+In-Reply-To: <CAEA6p_AFKwx_oLqNOjMw=oXcAX4ftJvEQWLo0aWCh=4Hs=QjVw@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR1001CA0023.namprd10.prod.outlook.com
- (2603:10b6:301:2a::36) To BYAPR15MB2501.namprd15.prod.outlook.com
- (2603:10b6:a02:88::11)
+x-clientproxiedby: MWHPR12CA0031.namprd12.prod.outlook.com
+ (2603:10b6:301:2::17) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
 x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::fa7a]
+x-originating-ip: [2620:10d:c090:180::3588]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3f9a7d08-5dff-411e-41a3-08d74ed0186f
-x-ms-traffictypediagnostic: BYAPR15MB3000:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3000B17E3E831E731DE5A933D7960@BYAPR15MB3000.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-office365-filtering-correlation-id: 8e9f70ce-35b8-4c7f-af07-08d74ee14482
+x-ms-traffictypediagnostic: MN2PR15MB3359:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <MN2PR15MB33591E0B1F628422D63B5B1DD5960@MN2PR15MB3359.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 0188D66E61
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(346002)(366004)(396003)(376002)(39860400002)(189003)(199004)(186003)(6506007)(316002)(2906002)(53546011)(386003)(71190400001)(71200400001)(4326008)(6246003)(102836004)(66476007)(66946007)(66556008)(36756003)(5660300002)(7736002)(64756008)(86362001)(66446008)(305945005)(478600001)(14444005)(5024004)(256004)(14454004)(6512007)(31686004)(8936002)(99286004)(8676002)(25786009)(31696002)(52116002)(6486002)(229853002)(11346002)(446003)(46003)(486006)(76176011)(2616005)(476003)(54906003)(6116002)(81166006)(81156014)(6916009)(6436002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3000;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(136003)(366004)(376002)(396003)(51914003)(199004)(189003)(51444003)(4326008)(2906002)(81166006)(54906003)(8676002)(25786009)(256004)(14444005)(6916009)(8936002)(5660300002)(316002)(6246003)(6116002)(6306002)(9686003)(6512007)(478600001)(486006)(446003)(11346002)(476003)(81156014)(46003)(186003)(229853002)(86362001)(66574012)(305945005)(66476007)(66556008)(64756008)(14454004)(53546011)(71200400001)(1076003)(66946007)(66446008)(6436002)(102836004)(71190400001)(6506007)(386003)(966005)(6486002)(7736002)(76176011)(99286004)(52116002)(21314003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3359;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: F0Rw3kedPUnNfQvF0/oOokg4C66ansGwohuyUTGqDwKxKtF6rLiUMb+Bor5sk8lpeptgVCyvHa7I9a5Du726pYWg8j/Qh12I1dyiMrvPnShUvi0KUX27TcAe95FtfO9m4wxYAoebq4vnDSccO7OukUwiyTi6HC/ZHDn4sO8V6BKElBaKTeSW8ihMd7zTl7S049ozXEEtWmhADf0QCtP/FWW3RwDUlAhgpcr31eMmXxGPmR14NiQy58muggEXis9wJVbPl9xUXydqRUvZULfD1ouwrTSBXa9/OTi+pNexsUxbVO3XvpPo1T/q6CPSCrorgVqHqJqqordhcOjovXj8pulOYDy/mPoIJyeV05hchQ2xoJEjNYO2HC6bO8fzyfaTeoJS9KrS/ZSci3FYUF0IPmoSB24N4h8tIHBOQrn5i1w=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7E7D9EF8F24F2A41886C5F9BFF8374F4@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: iqZPZF7QrL3tMkY1F7ozrOriwS7VnFMuDA+9oS0t3bANtZSSsFjm8oxgGf5mK6F1PparZLeXwo5zT84C9mBqFKPRPuHpmYwTYa9neomTYwlpJEp4LlfAcAciA+VObyDFKrCE1xm8sd8KSo3OBKk1EKMKGng6UfBNuHt0S5zBsZGCBOCUNw/v1NqTI4LBA6KEpRdAJbspF11Q6sbQ+4XiSWEF27DhpfGarnTR4O2Y/n3Uv/WirH/OhG/aJywURxnKEyneMsu8EsnRtk5cTSUE2Ry/nwr4iYfvMy55DCIhoWmlOAFputl/vSywklykwd1xic9bGm72EcqIyqnXEyIRIyR/A3u8OhbXXA9PzGSqN9N3QCNLjHOQStz/COjokNf+7Kt37LI33C9d7sIXJIB3T45lzznTJ+zJ2l49lay2WNXh5FXzMxTMNNEj/Qo05k12TFwukz71nObjo4UNpiXTUA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B7EB87CC58DF2E438D101FC6A0C80B31@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f9a7d08-5dff-411e-41a3-08d74ed0186f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Oct 2019 04:53:16.9211
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e9f70ce-35b8-4c7f-af07-08d74ee14482
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Oct 2019 06:56:12.7493
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: An5krBt66ZDWthFSXG5lOFtUjSvR+zvxXC2Pjcd0qkAmcptSfyHlh5Y3BO3/5Jdn
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3000
+X-MS-Exchange-CrossTenant-userprincipalname: Zw9Qal6bdwJhB31jWXqIFSg64AWdBjcW3EMr3yC2WxfMuf2MeROy3ouRISSeZDZY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3359
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-12_02:2019-10-10,2019-10-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- malwarescore=0 bulkscore=0 impostorscore=0 priorityscore=1501 mlxscore=0
- suspectscore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=830
- clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910120042
+ definitions=2019-10-12_03:2019-10-10,2019-10-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxlogscore=999 impostorscore=0
+ adultscore=0 bulkscore=0 spamscore=0 malwarescore=0 phishscore=0
+ suspectscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1908290000 definitions=main-1910120062
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTAvMTEvMTkgOTozOCBQTSwgQW5kcmlpIE5ha3J5aWtvIHdyb3RlOg0KPiBPbiBGcmksIE9j
-dCAxMSwgMjAxOSBhdCA2OjI5IFBNIEFsZXhlaSBTdGFyb3ZvaXRvdiA8YXN0QGZiLmNvbT4gd3Jv
-dGU6DQo+Pg0KPj4gT24gMTAvMTEvMTkgNTo0MCBQTSwgQWxleGVpIFN0YXJvdm9pdG92IHdyb3Rl
-Og0KPj4+PiBCdXQgZXZlbiBpZiBrZXJuZWwgc3VwcG9ydHMgYXR0YWNoX2J0Zl9pZCwgSSB0aGlu
-ayB1c2VycyBzdGlsbCBuZWVkIHRvDQo+Pj4+IG9wdCBpbiBpbnRvIHNwZWNpZnlpbmcgYXR0YWNo
-X2J0Zl9pZCBieSBsaWJicGYuIFRoaW5rIGFib3V0IGV4aXN0aW5nDQo+Pj4+IHJhd190cCBwcm9n
-cmFtcyB0aGF0IGFyZSB1c2luZyBicGZfcHJvYmVfcmVhZCgpIGJlY2F1c2UgdGhleSB3ZXJlIG5v
-dA0KPj4+PiBjcmVhdGVkIHdpdGggdGhpcyBrZXJuZWwgZmVhdHVyZSBpbiBtaW5kLiBUaGV5IHdp
-bGwgc3VkZGVubHkgc3RvcA0KPj4+PiB3b3JraW5nIHdpdGhvdXQgYW55IG9mIHVzZXIncyBmYXVs
-dC4NCj4+Pg0KPj4+IFRoaXMgb25lIGlzIGV4Y2VsbGVudCBjYXRjaC4NCj4+PiBsb29wMS5jIHNo
-b3VsZCBoYXZlIGNhdWdodCBpdCwgc2luY2UgaXQgaGFzDQo+Pj4gU0VDKCJyYXdfdHJhY2Vwb2lu
-dC9rZnJlZV9za2IiKQ0KPj4+IHsNCj4+PiAgICAgaW50IG5lc3RlZF9sb29wcyh2b2xhdGlsZSBz
-dHJ1Y3QgcHRfcmVncyogY3R4KQ0KPj4+ICAgICAgLi4gPSBQVF9SRUdTX1JDKGN0eCk7DQo+Pj4N
-Cj4+PiBhbmQgdmVyaWZpZXIgd291bGQgaGF2ZSByZWplY3RlZCBpdC4NCj4+PiBCdXQgdGhlIHdh
-eSB0aGUgdGVzdCBpcyB3cml0dGVuIGl0J3Mgbm90IHVzaW5nIGxpYmJwZidzIGF1dG9kZXRlY3QN
-Cj4+PiBvZiBwcm9ncmFtIHR5cGUsIHNvIGV2ZXJ5dGhpbmcgaXMgcGFzc2luZy4NCj4+DQo+PiBX
-aXRoOg0KPj4gZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9nX3Rl
-c3RzL2JwZl92ZXJpZl9zY2FsZS5jDQo+PiBiL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9w
-cm9nX3Rlc3RzL2JwZl92ZXJpZl9zY2FsZS5jDQo+PiBpbmRleCAxYzAxZWUyNjAwYTkuLmUyNzE1
-NmRjZTEwZCAxMDA2NDQNCj4+IC0tLSBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9n
-X3Rlc3RzL2JwZl92ZXJpZl9zY2FsZS5jDQo+PiArKysgYi90b29scy90ZXN0aW5nL3NlbGZ0ZXN0
-cy9icGYvcHJvZ190ZXN0cy9icGZfdmVyaWZfc2NhbGUuYw0KPj4gQEAgLTY3LDcgKzY3LDcgQEAg
-dm9pZCB0ZXN0X2JwZl92ZXJpZl9zY2FsZSh2b2lkKQ0KPj4gICAgICAgICAgICAgICAgICAgICov
-DQo+PiAgICAgICAgICAgICAgICAgICB7ICJweXBlcmY2MDBfbm91bnJvbGwubyIsIEJQRl9QUk9H
-X1RZUEVfUkFXX1RSQUNFUE9JTlQgfSwNCj4+DQo+PiAtICAgICAgICAgICAgICAgeyAibG9vcDEu
-byIsIEJQRl9QUk9HX1RZUEVfUkFXX1RSQUNFUE9JTlQgfSwNCj4+ICsgICAgICAgICAgICAgICB7
-ICJsb29wMS5vIiwgQlBGX1BST0dfVFlQRV9VTlNQRUN9LA0KPj4gICAgICAgICAgICAgICAgICAg
-eyAibG9vcDIubyIsIEJQRl9QUk9HX1RZUEVfUkFXX1RSQUNFUE9JTlQgfSwNCj4+DQo+PiBsaWJi
-cGYgcHJvZyBhdXRvLWRldGVjdGlvbiBraWNrcyBpbiBhbmQgLi4uDQo+PiAjIC4vdGVzdF9wcm9n
-cyAtbiAzLzEwDQo+PiBsaWJicGY6IGxvYWQgYnBmIHByb2dyYW0gZmFpbGVkOiBQZXJtaXNzaW9u
-IGRlbmllZA0KPj4gbGliYnBmOiAtLSBCRUdJTiBEVU1QIExPRyAtLS0NCj4+IGxpYmJwZjoNCj4+
-IHJhd190cCAna2ZyZWVfc2tiJyBkb2Vzbid0IGhhdmUgMTAtdGggYXJndW1lbnQNCj4+IGludmFs
-aWQgYnBmX2NvbnRleHQgYWNjZXNzIG9mZj04MCBzaXplPTgNCj4+DQo+PiBHb29kIDopIFRoZSB2
-ZXJpZmllciBpcyBkb2luZyBpdHMgam9iLg0KPiANCj4gb2gsIGFub3RoZXIgc3VwZXIgaW50dWl0
-aXZlIGVycm9yIGZyb20gdmVyaWZpZXIgOykgMTB0aCBhcmd1bWVudCwgd2hhdD8uLg0KDQpJIGtu
-b3csIGJ1dCB0aGVyZSBpcyBubyBlbnYtPmxpbmZvIGFuZCBubyBpbnNuX2lkeCB0byBjYWxsDQp2
-ZXJib3NlX2xpbmZvKCkgZnJvbSB0aGVyZS4gVGhhdCdzIGV2ZW4gYmlnZ2VyIHJlZmFjdG9yaW5n
-DQp0aGF0IEknZCByYXRoZXIgdG8gbGF0ZXIuDQo=
+On Fri, Oct 11, 2019 at 10:54:13AM -0700, Wei Wang wrote:
+> On Fri, Oct 11, 2019 at 8:42 AM Ido Schimmel <idosch@idosch.org> wrote:
+> >
+> > On Fri, Oct 11, 2019 at 09:36:51AM -0500, Jesse Hathaway wrote:
+> > > On Thu, Oct 10, 2019 at 3:31 AM Ido Schimmel <idosch@idosch.org> wrot=
+e:
+> > > > I think it's working as expected. Here is my theory:
+> > > >
+> > > > If CPU0 is executing both the route get request and forwarding pack=
+ets
+> > > > through the directly connected interface, then the following can ha=
+ppen:
+> > > >
+> > > > <CPU0, t0> - In process context, per-CPU dst entry cached in the ne=
+xthop
+> > > > is found. Not yet dumped to user space
+> > > >
+> > > > <Any CPU, t1> - Routes are added / removed, therefore invalidating =
+the
+> > > > cache by bumping 'net->ipv4.rt_genid'
+> > > >
+> > > > <CPU0, t2> - In softirq, packet is forwarded through the nexthop. T=
+he
+> > > > cached dst entry is found to be invalid. Therefore, it is replaced =
+by a
+> > > > newer dst entry. dst_dev_put() is called on old entry which assigns=
+ the
+> > > > blackhole netdev to 'dst->dev'. This netdev has an ifindex of 0 bec=
+ause
+> > > > it is not registered.
+> > > >
+> > > > <CPU0, t3> - After softirq finished executing, your route get reque=
+st
+> > > > from t0 is resumed and the old dst entry is dumped to user space wi=
+th
+> > > > ifindex of 0.
+> > > >
+> > > > I tested this on my system using your script to generate the route =
+get
+> > > > requests. I pinned it to the same CPU forwarding packets through th=
+e
+> > > > nexthop. To constantly invalidate the cache I created another scrip=
+t
+> > > > that simply adds and removes IP addresses from an interface.
+> > > >
+> > > > If I stop the packet forwarding or the script that invalidates the
+> > > > cache, then I don't see any '*' answers to my route get requests.
+> > >
+> > > Thanks for the reply and analysis Ido, I tested with an additional sc=
+ript which
+> > > adds and deletes a route in a loop, as you also saw this increased th=
+e
+> > > frequency of blackhole route replies from the first script.
+> > >
+> > > Questions:
+> > >
+> > > 1. We saw this behavior occurring with TCP connections traversing our=
+ routers,
+> > > though I was able to reproduce it with only local route requests on o=
+ur router.
+> > > Would you expect this same behavior for TCP traffic only in the kerne=
+l which
+> > > does not go to userspace?
+> >
+> > Yes, the problem is in the input path where received packets need to be
+> > forwarded.
+> >
+> > >
+> > > 2. These blackhole routes occur even though our main routing table is=
+ not
+> > > changing, however a separate route table managed by bird on the Linux=
+ router is
+> > > changing. Is this still expected behavior given that the ip-rules and=
+ main
+> > > route table used by these route requests are not changing?
+> >
+> > Yes, there is a per-netns counter that is incremented whenever cached
+> > dst entries need to be invalidated. Since it is per-netns it is
+> > incremented regardless of the routing table to which your insert the
+> > route.
+> >
+> > >
+> > > 3. We were previously rejecting these packets with an iptables rule w=
+hich sent
+> > > an ICMP prohibited message to the sender, this caused TCP connections=
+ to break
+> > > with a EHOSTUNREACH, should we be silently dropping these packets ins=
+tead?
+> > >
+> > > 4. If we should just be dropping these packets, why does the kernel n=
+ot drop
+> > > them instead of letting them traverse the iptables rules?
+> >
+> > I actually believe the current behavior is a bug that needs to be fixed=
+.
+> > See below.
+> >
+> > >
+> > > > BTW, the blackhole netdev was added in 5.3. I assume (didn't test) =
+that
+> > > > with older kernel versions you'll see 'lo' instead of '*'.
+> > >
+> > > Yes indeed! Thanks for solving that mystery as well, our routers are =
+running
+> > > 5.1, but we upgraded to 5.4-rc2 to determine whether the issue was st=
+ill
+> > > present in the latest kernel.
+> >
+> > Do you remember when you started seeing this behavior? I think it
+> > started in 4.13 with commit ffe95ecf3a2e ("Merge branch
+> > 'net-remove-dst-garbage-collector-logic'").
+> >
+> > Let me add Wei to see if/how this can be fixed.
+> >
+> > Wei, in case you don't have the original mail with the description of
+> > the problem, it can be found here [1].
+> >
+> > I believe that the issue Jesse is experiencing is the following:
+> >
+> > <CPU A, t0> - Received packet A is forwarded and cached dst entry is
+> > taken from the nexthop ('nhc->nhc_rth_input'). Calls skb_dst_set()
+> >
+> > <t1> - Given Jesse has busy routers ("ingesting full BGP routing tables
+> > from multiple ISPs"), route is added / deleted and rt_cache_flush() is
+> > called
+> >
+> > <CPU B, t2> - Received packet B tries to use the same cached dst entry
+> > from t0, but rt_cache_valid() is no longer true and it is replaced in
+> > rt_cache_route() by the newer one. This calls dst_dev_put() on the
+> > original dst entry which assigns the blackhole netdev to 'dst->dev'
+> >
+> > <CPU A, t3> - dst_input(skb) is called on packet A and it is dropped du=
+e
+> > to 'dst->dev' being the blackhole netdev
+> >
+> > The following patch "fixes" the problem for me:
+> >
+> > diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> > index 42221a12bdda..1c67bdb80fd5 100644
+> > --- a/net/ipv4/route.c
+> > +++ b/net/ipv4/route.c
+> > @@ -1482,7 +1482,6 @@ static bool rt_cache_route(struct fib_nh_common *=
+nhc, struct rtable *rt)
+> >         prev =3D cmpxchg(p, orig, rt);
+> >         if (prev =3D=3D orig) {
+> >                 if (orig) {
+> > -                       dst_dev_put(&orig->dst);
+> >                         dst_release(&orig->dst);
+> >                 }
+> >         } else {
+> >
+> > But if this dst entry is cached in some inactive socket and the netdev
+> > on which it took a reference needs to be unregistered, then we can
+> > potentially wait forever. No?
+> >
+> Yes. That's exactly the reason we need to free the dev here.
+> Otherwise as you described, we will see "unregister_netdevice: waiting
+> for xxx to become free. Usage count =3D x" flushing the screen... Not
+> fun...
+>=20
+>=20
+> > I'm thinking that it can be fixed by making 'nhc_rth_input' per-CPU, in
+> > a similar fashion to what Eric did in commit d26b3a7c4b3b ("ipv4: percp=
+u
+> > nh_rth_output cache").
+> >
+> Hmm... Yes... I would think a per-CPU input cache should work for the
+> case above.
+> Another idea is: instead of calling dst_dev_put() in rt_cache_route()
+> to switch out the dev, we call, rt_add_uncached_list() to add this
+> obsolete dst cache to the uncached list. And if the device gets
+> unregistered, rt_flush_dev() takes care of all dst entries in the
+> uncached list. I think that would work too.
+>=20
+> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> index dc1f510a7c81..ee618d4234ce 100644
+> --- a/net/ipv4/route.c
+> +++ b/net/ipv4/route.c
+> @@ -1482,7 +1482,7 @@ static bool rt_cache_route(struct fib_nh_common
+> *nhc, struct rtable *rt)
+>         prev =3D cmpxchg(p, orig, rt);
+>         if (prev =3D=3D orig) {
+>                 if (orig) {
+> -                       dst_dev_put(&orig->dst);
+> +                       rt_add_uncached_list(orig);
+>                         dst_release(&orig->dst);
+>                 }
+>         } else {
+>=20
+> + Martin for his idea and input.
+The above fix should work and a simple one liner for net.
+percpu may be a too big hammer for bug fix.
+It is only needed for input route?  A comment would be nice.
+
+While reading around, I am puzzling why a rt has to be recreated
+for the same route.  I could be missing something.
+
+I don't recall that is happening to ipv6 route even that tree-branch's
+fn_sernum has changed. =20
+
+It seems v4 sk has not stored the last lookup rt_genid.
+e.g. __sk_dst_check(sk, 0).  Everyone is sharing the rt->rt_genid
+to check for changes, so the rt must be re-created?
+
+>=20
+> > Two questions:
+> >
+> > 1. Do you agree with the above analysis?
+> > 2. Do you have a simpler/better solution in mind?
+> >
+> > Thanks
+> >
+> > [1] https://lore.kernel.org/netdev/CANSNSoVM1Uo106xfJtGpTyXNed8kOL4JiXq=
+f3A1eZHBa7z3=3Dyg@mail.gmail.com/T/#medece9445d617372b4842d44525ef0d3ba1ea0=
+83
