@@ -2,228 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3028D4F7A
-	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 13:57:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1905BD4F76
+	for <lists+netdev@lfdr.de>; Sat, 12 Oct 2019 13:57:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729306AbfJLL5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Oct 2019 07:57:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:59038 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727231AbfJLLzd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Oct 2019 07:55:33 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 4D0EC10C0935;
-        Sat, 12 Oct 2019 11:55:32 +0000 (UTC)
-Received: from new-host.redhat.com (ovpn-204-41.brq.redhat.com [10.40.204.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 090686017E;
-        Sat, 12 Oct 2019 11:55:29 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     lkp@intel.com
-Cc:     davem@davemloft.net, dcaratti@redhat.com,
-        john.hurley@netronome.com, kbuild-all@01.org, lorenzo@kernel.org,
-        netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net v2 2/2] net/sched: fix corrupted L2 header with MPLS 'push' and 'pop' actions
-Date:   Sat, 12 Oct 2019 13:55:07 +0200
-Message-Id: <e70f78e70bc071984aa17081878eae525c7bc64e.1570878412.git.dcaratti@redhat.com>
-In-Reply-To: <cover.1570878412.git.dcaratti@redhat.com>
-References: <cover.1570878412.git.dcaratti@redhat.com>
+        id S1729274AbfJLL5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Oct 2019 07:57:10 -0400
+Received: from shells.gnugeneration.com ([66.240.222.126]:35814 "EHLO
+        shells.gnugeneration.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728979AbfJLLzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Oct 2019 07:55:09 -0400
+Received: by shells.gnugeneration.com (Postfix, from userid 1000)
+        id 85B511A40556; Sat, 12 Oct 2019 04:55:09 -0700 (PDT)
+Date:   Sat, 12 Oct 2019 04:55:09 -0700
+From:   Vito Caputo <vcaputo@pengaru.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: core: datagram: tidy up copy functions a bit
+Message-ID: <20191012115509.jrqe43yozs7kknv5@shells.gnugeneration.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Sat, 12 Oct 2019 11:55:32 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the following script:
+Eliminate some verbosity by using min() macro and consolidating some
+things, also fix inconsistent zero tests (! vs. == 0).
 
- # tc qdisc add dev eth0 clsact
- # tc filter add dev eth0 egress protocol ip matchall \
- > action mpls push protocol mpls_uc label 0x355aa bos 1
-
-causes corruption of all IP packets transmitted by eth0. On TC egress, we
-can't rely on the value of skb->mac_len, because it's 0 and a MPLS 'push'
-operation will result in an overwrite of the first 4 octets in the packet
-L2 header (e.g. the Destination Address if eth0 is an Ethernet); the same
-error pattern is present also in the MPLS 'pop' operation. Fix this error
-in act_mpls data plane, computing 'mac_len' as the difference between the
-network header and the mac header (when not at TC ingress), and use it in
-MPLS 'push'/'pop' core functions.
-
-v2: unbreak 'make htmldocs' because of missing documentation of 'mac_len'
-    in skb_mpls_pop(), reported by kbuild test robot
-
-CC: Lorenzo Bianconi <lorenzo@kernel.org>
-Fixes: 2a2ea50870ba ("net: sched: add mpls manipulation actions to TC")
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
-Acked-by: John Hurley <john.hurley@netronome.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+Signed-off-by: Vito Caputo <vcaputo@pengaru.com>
 ---
- include/linux/skbuff.h    |  5 +++--
- net/core/skbuff.c         | 19 +++++++++++--------
- net/openvswitch/actions.c |  5 +++--
- net/sched/act_mpls.c      | 12 ++++++++----
- 4 files changed, 25 insertions(+), 16 deletions(-)
+ net/core/datagram.c | 44 ++++++++++++++------------------------------
+ 1 file changed, 14 insertions(+), 30 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4351577b14d7..7914fdaf4226 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3510,8 +3510,9 @@ int skb_ensure_writable(struct sk_buff *skb, int write_len);
- int __skb_vlan_pop(struct sk_buff *skb, u16 *vlan_tci);
- int skb_vlan_pop(struct sk_buff *skb);
- int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
--int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto);
--int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto);
-+int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-+		  int mac_len);
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len);
- int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse);
- int skb_mpls_dec_ttl(struct sk_buff *skb);
- struct sk_buff *pskb_extract(struct sk_buff *skb, int off, int to_copy,
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index cd59ccd6da57..c81b59177859 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5477,12 +5477,14 @@ static void skb_mod_eth_type(struct sk_buff *skb, struct ethhdr *hdr,
-  * @skb: buffer
-  * @mpls_lse: MPLS label stack entry to push
-  * @mpls_proto: ethertype of the new MPLS header (expects 0x8847 or 0x8848)
-+ * @mac_len: length of the MAC header
-  *
-  * Expects skb->data at mac header.
-  *
-  * Returns 0 on success, -errno otherwise.
-  */
--int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto)
-+int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-+		  int mac_len)
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 4cc8dc5db2b7..08d403f93952 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -413,13 +413,11 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
+ 					    struct iov_iter *), void *data)
  {
- 	struct mpls_shim_hdr *lse;
- 	int err;
-@@ -5499,15 +5501,15 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto)
- 		return err;
+ 	int start = skb_headlen(skb);
+-	int i, copy = start - offset, start_off = offset, n;
++	int i, copy, start_off = offset, n;
+ 	struct sk_buff *frag_iter;
  
- 	if (!skb->inner_protocol) {
--		skb_set_inner_network_header(skb, skb->mac_len);
-+		skb_set_inner_network_header(skb, mac_len);
- 		skb_set_inner_protocol(skb, skb->protocol);
+ 	/* Copy header. */
+-	if (copy > 0) {
+-		if (copy > len)
+-			copy = len;
++	if ((copy = min(start - offset, len)) > 0) {
+ 		n = cb(skb->data + offset, copy, data, to);
+ 		offset += n;
+ 		if (n != copy)
+@@ -430,39 +428,33 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
+ 
+ 	/* Copy paged appendix. Hmm... why does this look so complicated? */
+ 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+-		int end;
+ 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
++		int end = start + skb_frag_size(frag);
+ 
+ 		WARN_ON(start > offset + len);
+ 
+-		end = start + skb_frag_size(frag);
+-		if ((copy = end - offset) > 0) {
++		if ((copy = min(end - offset, len)) > 0) {
+ 			struct page *page = skb_frag_page(frag);
+ 			u8 *vaddr = kmap(page);
+ 
+-			if (copy > len)
+-				copy = len;
+ 			n = cb(vaddr + skb_frag_off(frag) + offset - start,
+ 			       copy, data, to);
+ 			kunmap(page);
+ 			offset += n;
+ 			if (n != copy)
+ 				goto short_copy;
+-			if (!(len -= copy))
++			if ((len -= copy) == 0)
+ 				return 0;
+ 		}
+ 		start = end;
  	}
  
- 	skb_push(skb, MPLS_HLEN);
- 	memmove(skb_mac_header(skb) - MPLS_HLEN, skb_mac_header(skb),
--		skb->mac_len);
-+		mac_len);
- 	skb_reset_mac_header(skb);
--	skb_set_network_header(skb, skb->mac_len);
-+	skb_set_network_header(skb, mac_len);
+ 	skb_walk_frags(skb, frag_iter) {
+-		int end;
++		int end = start + frag_iter->len;
  
- 	lse = mpls_hdr(skb);
- 	lse->label_stack_entry = mpls_lse;
-@@ -5526,29 +5528,30 @@ EXPORT_SYMBOL_GPL(skb_mpls_push);
-  *
-  * @skb: buffer
-  * @next_proto: ethertype of header after popped MPLS header
-+ * @mac_len: length of the MAC header
-  *
-  * Expects skb->data at mac header.
-  *
-  * Returns 0 on success, -errno otherwise.
-  */
--int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto)
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
+ 		WARN_ON(start > offset + len);
+ 
+-		end = start + frag_iter->len;
+-		if ((copy = end - offset) > 0) {
+-			if (copy > len)
+-				copy = len;
++		if ((copy = min(end - offset, len)) > 0) {
+ 			if (__skb_datagram_iter(frag_iter, offset - start,
+ 						to, copy, fault_short, cb, data))
+ 				goto fault;
+@@ -545,13 +537,11 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+ 				 int len)
  {
- 	int err;
+ 	int start = skb_headlen(skb);
+-	int i, copy = start - offset;
+ 	struct sk_buff *frag_iter;
++	int i, copy;
  
- 	if (unlikely(!eth_p_mpls(skb->protocol)))
- 		return 0;
+ 	/* Copy header. */
+-	if (copy > 0) {
+-		if (copy > len)
+-			copy = len;
++	if ((copy = min(start - offset, len)) > 0) {
+ 		if (copy_from_iter(skb->data + offset, copy, from) != copy)
+ 			goto fault;
+ 		if ((len -= copy) == 0)
+@@ -561,24 +551,21 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
  
--	err = skb_ensure_writable(skb, skb->mac_len + MPLS_HLEN);
-+	err = skb_ensure_writable(skb, mac_len + MPLS_HLEN);
- 	if (unlikely(err))
- 		return err;
+ 	/* Copy paged appendix. Hmm... why does this look so complicated? */
+ 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+-		int end;
+ 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
++		int end = start + skb_frag_size(frag);
  
- 	skb_postpull_rcsum(skb, mpls_hdr(skb), MPLS_HLEN);
- 	memmove(skb_mac_header(skb) + MPLS_HLEN, skb_mac_header(skb),
--		skb->mac_len);
-+		mac_len);
+ 		WARN_ON(start > offset + len);
  
- 	__skb_pull(skb, MPLS_HLEN);
- 	skb_reset_mac_header(skb);
--	skb_set_network_header(skb, skb->mac_len);
-+	skb_set_network_header(skb, mac_len);
+-		end = start + skb_frag_size(frag);
+-		if ((copy = end - offset) > 0) {
++		if ((copy = min(end - offset, len)) > 0) {
+ 			size_t copied;
  
- 	if (skb->dev && skb->dev->type == ARPHRD_ETHER) {
- 		struct ethhdr *hdr;
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 3572e11b6f21..1c77f520f474 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -165,7 +165,8 @@ static int push_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- {
- 	int err;
+-			if (copy > len)
+-				copy = len;
+ 			copied = copy_page_from_iter(skb_frag_page(frag),
+ 					  skb_frag_off(frag) + offset - start,
+ 					  copy, from);
+ 			if (copied != copy)
+ 				goto fault;
  
--	err = skb_mpls_push(skb, mpls->mpls_lse, mpls->mpls_ethertype);
-+	err = skb_mpls_push(skb, mpls->mpls_lse, mpls->mpls_ethertype,
-+			    skb->mac_len);
- 	if (err)
- 		return err;
+-			if (!(len -= copy))
++			if ((len -= copy) == 0)
+ 				return 0;
+ 			offset += copy;
+ 		}
+@@ -586,14 +573,11 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+ 	}
  
-@@ -178,7 +179,7 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- {
- 	int err;
+ 	skb_walk_frags(skb, frag_iter) {
+-		int end;
++		int end = start + frag_iter->len;
  
--	err = skb_mpls_pop(skb, ethertype);
-+	err = skb_mpls_pop(skb, ethertype, skb->mac_len);
- 	if (err)
- 		return err;
+ 		WARN_ON(start > offset + len);
  
-diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
-index e168df0e008a..4cf6c553bb0b 100644
---- a/net/sched/act_mpls.c
-+++ b/net/sched/act_mpls.c
-@@ -55,7 +55,7 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 	struct tcf_mpls *m = to_mpls(a);
- 	struct tcf_mpls_params *p;
- 	__be32 new_lse;
--	int ret;
-+	int ret, mac_len;
- 
- 	tcf_lastuse_update(&m->tcf_tm);
- 	bstats_cpu_update(this_cpu_ptr(m->common.cpu_bstats), skb);
-@@ -63,8 +63,12 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 	/* Ensure 'data' points at mac_header prior calling mpls manipulating
- 	 * functions.
- 	 */
--	if (skb_at_tc_ingress(skb))
-+	if (skb_at_tc_ingress(skb)) {
- 		skb_push_rcsum(skb, skb->mac_len);
-+		mac_len = skb->mac_len;
-+	} else {
-+		mac_len = skb_network_header(skb) - skb_mac_header(skb);
-+	}
- 
- 	ret = READ_ONCE(m->tcf_action);
- 
-@@ -72,12 +76,12 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 
- 	switch (p->tcfm_action) {
- 	case TCA_MPLS_ACT_POP:
--		if (skb_mpls_pop(skb, p->tcfm_proto))
-+		if (skb_mpls_pop(skb, p->tcfm_proto, mac_len))
- 			goto drop;
- 		break;
- 	case TCA_MPLS_ACT_PUSH:
- 		new_lse = tcf_mpls_get_lse(NULL, p, !eth_p_mpls(skb->protocol));
--		if (skb_mpls_push(skb, new_lse, p->tcfm_proto))
-+		if (skb_mpls_push(skb, new_lse, p->tcfm_proto, mac_len))
- 			goto drop;
- 		break;
- 	case TCA_MPLS_ACT_MODIFY:
+-		end = start + frag_iter->len;
+-		if ((copy = end - offset) > 0) {
+-			if (copy > len)
+-				copy = len;
++		if ((copy = min(end - offset, len)) > 0) {
+ 			if (skb_copy_datagram_from_iter(frag_iter,
+ 							offset - start,
+ 							from, copy))
 -- 
-2.21.0
+2.11.0
 
