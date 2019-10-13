@@ -2,86 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7EACD55FB
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 13:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE29D56CD
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 18:29:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729370AbfJMLm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 07:42:28 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34148 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729367AbfJMLm1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Oct 2019 07:42:27 -0400
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6E1D989AC4
-        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 11:42:27 +0000 (UTC)
-Received: by mail-qt1-f200.google.com with SMTP id r19so14845218qtk.15
-        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 04:42:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LyPdJiu+Pv3Ms2s+9K7y5cFNFk6/oEkuyO+dRyVq8dg=;
-        b=ceKpKOCNqAfgx0Wb6WxFU9aWA1DwYMSbZ9D7CVnYojDN9XlgOB0u0F7ZvqZakffDi7
-         P8THGmtZV3hAJZliVQbStA/si/UuSOiqw5mMpt8LiE7W7Gz0QtghsDxAE0TP5FtTTHSu
-         C8NNXzZpppbJvPGAhOSwgKbXWGRxvGpXa9ZqjfrjbP6tIQIyupDYtvHAyxfcSjFTMHHA
-         p7dFmHWXwLQ4vyqcPatozkQ06uQMWteoO4j2u+QMaS7d1ya249GUBYl95fd5a2HzOnWI
-         fHFVIvd/PXWviQiDvm6pDdugYNPLrvphUYMowM7LEoNRltzt8E0XtQgyU1xggR6Sni7n
-         vjrA==
-X-Gm-Message-State: APjAAAXyvTY/zJwTIJiGK8Lb3RIVveQfAyDuUhmtaanpbay9IBdjq6pW
-        adM+hynrt/gz/5jfi7dNvqSH1B/gSjFcbeo+79Z+MoVFoe6AjZH0kBYn5c8S+WR1kHwO5sxDSmb
-        Ou34/pAt+RPAsnt+o
-X-Received: by 2002:a0c:c792:: with SMTP id k18mr25297613qvj.154.1570966946778;
-        Sun, 13 Oct 2019 04:42:26 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyhx3XLFozvF0Fexkmjc2uJBOUXPVXIPjvAKX3RiiVhxNpPC56P8T4wN2MQG4g59b9OLo3Gdg==
-X-Received: by 2002:a0c:c792:: with SMTP id k18mr25297597qvj.154.1570966946584;
-        Sun, 13 Oct 2019 04:42:26 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-10-77.red.bezeqint.net. [79.176.10.77])
-        by smtp.gmail.com with ESMTPSA id z5sm7213125qtb.49.2019.10.13.04.42.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Oct 2019 04:42:25 -0700 (PDT)
-Date:   Sun, 13 Oct 2019 07:42:22 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>
-Subject: [PATCH RFC v4 5/5] vhost: last descriptor must have NEXT clear
-Message-ID: <20191013113940.2863-6-mst@redhat.com>
-References: <20191013113940.2863-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191013113940.2863-1-mst@redhat.com>
-X-Mailer: git-send-email 2.22.0.678.g13338e74b8
-X-Mutt-Fcc: =sent
+        id S1728839AbfJMQ0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 12:26:31 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:41980 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726085AbfJMQ0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 12:26:31 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AE9121426D0F4;
+        Sun, 13 Oct 2019 09:26:30 -0700 (PDT)
+Date:   Sun, 13 Oct 2019 09:26:28 -0700 (PDT)
+Message-Id: <20191013.092628.1408615115437209574.davem@davemloft.net>
+To:     marex@denx.de
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        george.mccollister@gmail.com, Tristram.Ha@microchip.com,
+        woojung.huh@microchip.com
+Subject: Re: [PATCH 2/2] net: dsa: microchip: Add shared regmap mutex
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <018dad90-f6a4-328c-765e-8e5b66df27d6@denx.de>
+References: <20191012.172055.1647651676286562151.davem@davemloft.net>
+        <20191012.172140.1744793229621810305.davem@davemloft.net>
+        <018dad90-f6a4-328c-765e-8e5b66df27d6@denx.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 13 Oct 2019 09:26:31 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fetch_buf already guarantees we exit on a descriptor without a NEXT
-flag.  Add a BUG_ON statement to make sure we don't overflow the buffer
-in case of a bug.
+From: Marek Vasut <marex@denx.de>
+Date: Sun, 13 Oct 2019 12:50:15 +0200
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/vhost/vhost.c | 2 ++
- 1 file changed, 2 insertions(+)
+> On 10/13/19 2:21 AM, David Miller wrote:
+>> From: David Miller <davem@davemloft.net>
+>> Date: Sat, 12 Oct 2019 17:20:55 -0700 (PDT)
+>> 
+>>> From: Marek Vasut <marex@denx.de>
+>>> Date: Thu, 10 Oct 2019 20:25:08 +0200
+>>>
+>>>> The KSZ driver uses one regmap per register width (8/16/32), each with
+>>>> it's own lock, but accessing the same set of registers. In theory, it
+>>>> is possible to create a race condition between these regmaps, although
+>>>> the underlying bus (SPI or I2C) locking should assure nothing bad will
+>>>> really happen and the accesses would be correct.
+>>>>
+>>>> To make the driver do the right thing, add one single shared mutex for
+>>>> all the regmaps used by the driver instead. This assures that even if
+>>>> some future hardware is on a bus which does not serialize the accesses
+>>>> the same way SPI or I2C does, nothing bad will happen.
+>>>>
+>>>> Note that the status_mutex was unused and only initied, hence it was
+>>>> renamed and repurposed as the regmap mutex.
+>>>>
+>>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>>
+>>> Applied.
+>> 
+>> Actually, both patches reverted.  Please test your changes properly:
+>> 
+>> ERROR: "ksz_regmap_unlock" [drivers/net/dsa/microchip/ksz8795_spi.ko] undefined!
+>> ERROR: "ksz_regmap_lock" [drivers/net/dsa/microchip/ksz8795_spi.ko] undefined!
+>> ERROR: "ksz_regmap_unlock" [drivers/net/dsa/microchip/ksz9477_spi.ko] undefined!
+>> ERROR: "ksz_regmap_lock" [drivers/net/dsa/microchip/ksz9477_spi.ko] undefined!
+>> ERROR: "ksz_regmap_unlock" [drivers/net/dsa/microchip/ksz9477_i2c.ko] undefined!
+>> ERROR: "ksz_regmap_lock" [drivers/net/dsa/microchip/ksz9477_i2c.ko] undefined!
+> 
+> So the test is to compile it as a module ?
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index d46c28149f6f..09f594bb069a 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -2656,6 +2656,8 @@ int vhost_get_vq_desc_batch(struct vhost_virtqueue *vq,
- 			break;
- 	}
- 
-+	BUG_ON(i >= vq->ndescs);
-+
- 	vq->first_desc = i + 1;
- 
- 	return ret;
--- 
-MST
+The test is to compile it in all relevant possible configurations.
 
+As a module, statically, and with dependent modules both static and
+modular as is relevant.
