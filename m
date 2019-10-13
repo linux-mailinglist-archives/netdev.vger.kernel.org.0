@@ -2,108 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E63ECD5899
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 00:22:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2813BD58B6
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 00:42:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729478AbfJMWWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 18:22:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42234 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728762AbfJMWWh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Oct 2019 18:22:37 -0400
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9D4E2C04B940
-        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 22:22:36 +0000 (UTC)
-Received: by mail-wm1-f69.google.com with SMTP id r21so3803629wme.5
-        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 15:22:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wczdf/4fSdwa4OFkIAn/TtpvT6XHwOtJAf+SdUmyze0=;
-        b=cHShk2IHqDX3WG6gWd37Gcs97mwmqsJSnzUATzR+LpMu+tb7aEmo1q7QYTi18IfDe1
-         GoG68Hvl0PUAPQ31LwCTNfaW7phdw6mGOd6hM3AIPGOf8jCaFMnyGT/lwnNvgJd/1wyS
-         9hlktnC3ioj+lPb9dNioLg/AB2x/dPJARekaUdab0umjHT8JM8THkuNgerp8gvAP/ZR3
-         6E9/hn+LvI4Lo7R8sb34CNa9n4r3DgmKVFjDKr6BtPcYK1haZRDuuSfsO1nTBgqnhdel
-         0mANFdf9rE2CuIZKjS1P7B+ig7wI8WZh/0hDLAIVeJg6K04dJBCgtvVr+PaO208C1CNW
-         tYlA==
-X-Gm-Message-State: APjAAAVJvhQN0+FhsXSCLMvOwSOz6AmpJemPxZRCyMn1o3FLP9qQjLm1
-        buR4TfUr2ieSD2NeaisPkg5eYENh9YmZRXWDWTu/mrFQXV8lyq4a5n9kZXwrPc02UIGnheZY/zs
-        EgGpAP9QlQe94l3Og
-X-Received: by 2002:a5d:46c6:: with SMTP id g6mr6892679wrs.331.1571005355379;
-        Sun, 13 Oct 2019 15:22:35 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyHssWTLLT5HHTAk+NA640iffTQFPwDghRDACIlvOaUwvz4v51xvU7z8fPvLmb1lO7GiDxa3g==
-X-Received: by 2002:a5d:46c6:: with SMTP id g6mr6892668wrs.331.1571005355180;
-        Sun, 13 Oct 2019 15:22:35 -0700 (PDT)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id p85sm22358008wme.23.2019.10.13.15.22.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Oct 2019 15:22:34 -0700 (PDT)
-Date:   Mon, 14 Oct 2019 00:22:31 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Alexei Starovoitov <ast@plumgrid.com>,
-        Jesse Gross <jesse@nicira.com>,
-        Pravin B Shelar <pshelar@nicira.com>,
-        Jiri Benc <jbenc@redhat.com>
-Subject: Re: [RFC PATCH net] netns: fix GFP flags in rtnl_net_notifyid()
-Message-ID: <20191013222231.GA4647@linux.home>
-References: <41b3fbfe3aac5ca03f4af0f1c4e146ae67c20570.1570734410.git.gnault@redhat.com>
- <CAOrHB_Dfoy3hiVVWu7+4fgm_U+rcB_CPuRV58XqB7kKOBcGb1w@mail.gmail.com>
+        id S1729599AbfJMWls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 18:41:48 -0400
+Received: from shells.gnugeneration.com ([66.240.222.126]:45326 "EHLO
+        shells.gnugeneration.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728198AbfJMWls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 18:41:48 -0400
+Received: by shells.gnugeneration.com (Postfix, from userid 1000)
+        id 75C951A40559; Sun, 13 Oct 2019 15:41:48 -0700 (PDT)
+Date:   Sun, 13 Oct 2019 15:41:48 -0700
+From:   Vito Caputo <vcaputo@pengaru.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: core: datagram: tidy up copy functions a bit
+Message-ID: <20191013224148.omivenr6fwmq66fe@shells.gnugeneration.com>
+References: <20191012115509.jrqe43yozs7kknv5@shells.gnugeneration.com>
+ <8fab6f9c-70a6-02fd-5b2d-66a013c10a4f@gmail.com>
+ <20191013200158.mhvwkdnsjk7ecuqu@shells.gnugeneration.com>
+ <6864f888-1b62-36c5-6ac5-d5db01c5fcfb@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOrHB_Dfoy3hiVVWu7+4fgm_U+rcB_CPuRV58XqB7kKOBcGb1w@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <6864f888-1b62-36c5-6ac5-d5db01c5fcfb@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 13, 2019 at 12:09:43PM -0700, Pravin Shelar wrote:
-> On Thu, Oct 10, 2019 at 12:07 PM Guillaume Nault <gnault@redhat.com> wrote:
-> >
-> > In rtnl_net_notifyid(), we certainly can't pass a null GFP flag to
-> > rtnl_notify(). A GFP_KERNEL flag would be fine in most circumstances,
-> > but there are a few paths calling rtnl_net_notifyid() from atomic
-> > context or from RCU critical section. The later also precludes the use
-> > of gfp_any() as it wouldn't detect the RCU case. Also, the nlmsg_new()
-> > call is wrong too, as it uses GFP_KERNEL unconditionally.
-> >
-> > Therefore, we need to pass the GFP flags as parameter. The problem then
-> > propagates recursively to the callers until the proper flags can be
-> > determined. The problematic call chains are:
-> >
-> >  * ovs_vport_cmd_fill_info -> peernet2id_alloc -> rtnl_net_notifyid
-> >
-> >  * rtnl_fill_ifinfo -> rtnl_fill_link_netnsid -> peernet2id_alloc
-> >  -> rtnl_net_notifyid
-> >
-> > For openvswitch, ovs_vport_cmd_get() and ovs_vport_cmd_dump() prevent
-> > ovs_vport_cmd_fill_info() from using GFP_KERNEL. It'd be nice to move
-> > the call out of the RCU critical sections, but struct vport doesn't
-> > have a reference counter, so that'd probably require taking the ovs
-> > lock. Also, I don't get why ovs_vport_cmd_build_info() used GFP_ATOMIC
-> > in nlmsg_new(). I've changed it to GFP_KERNEL for consistency, as this
-> > functions seems to be allowed to sleep (as stated in the comment, it's
-> > called from a workqueue, under the protection of a mutex).
-> >
-> It is safe to change GFP flags to GFP_KERNEL in ovs_vport_cmd_build_info().
-> The patch looks good to me.
+On Sun, Oct 13, 2019 at 01:17:18PM -0700, Eric Dumazet wrote:
 > 
-Thanks for your feedback.
+> 
+> On 10/13/19 1:01 PM, Vito Caputo wrote:
+> > On Sun, Oct 13, 2019 at 12:30:41PM -0700, Eric Dumazet wrote:
+> >>
+> >>
+> >> On 10/12/19 4:55 AM, Vito Caputo wrote:
+> >>> Eliminate some verbosity by using min() macro and consolidating some
+> >>> things, also fix inconsistent zero tests (! vs. == 0).
+> >>>
+> >>> Signed-off-by: Vito Caputo <vcaputo@pengaru.com>
+> >>> ---
+> >>>  net/core/datagram.c | 44 ++++++++++++++------------------------------
+> >>>  1 file changed, 14 insertions(+), 30 deletions(-)
+> >>>
+> >>> diff --git a/net/core/datagram.c b/net/core/datagram.c
+> >>> index 4cc8dc5db2b7..08d403f93952 100644
+> >>> --- a/net/core/datagram.c
+> >>> +++ b/net/core/datagram.c
+> >>> @@ -413,13 +413,11 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
+> >>>  					    struct iov_iter *), void *data)
+> >>>  {
+> >>>  	int start = skb_headlen(skb);
+> >>> -	int i, copy = start - offset, start_off = offset, n;
+> >>> +	int i, copy, start_off = offset, n;
+> >>>  	struct sk_buff *frag_iter;
+> >>>  
+> >>>  	/* Copy header. */
+> >>> -	if (copy > 0) {
+> >>> -		if (copy > len)
+> >>> -			copy = len;
+> >>> +	if ((copy = min(start - offset, len)) > 0) {
+> >>
+> >> No, we prefer not having this kind of construct anymore.
+> >>
+> >> This refactoring looks unnecessary code churn, making our future backports not
+> >> clean cherry-picks.
+> >>
+> >> Simply making sure this patch does not bring a regression is very time consuming.
+> > 
+> > Should I not bother submitting patches for such cleanups?
+> > 
+> > I submitted another, more trivial patch, is it also considered unnecessary churn:
+> > 
+> > ---
+> > 
+> > Author: Vito Caputo <vcaputo@pengaru.com>
+> > Date:   Sat Oct 12 17:10:41 2019 -0700
+> > 
+> >     net: core: skbuff: skb_checksum_setup() drop err
+> >     
+> >     Return directly from all switch cases, no point in storing in err.
+> >     
+> >     Signed-off-by: Vito Caputo <vcaputo@pengaru.com>
+> > 
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index f5f904f46893..c59b68a413b5 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -4888,23 +4888,14 @@ static int skb_checksum_setup_ipv6(struct sk_buff *skb, bool recalculate)
+> >   */
+> >  int skb_checksum_setup(struct sk_buff *skb, bool recalculate)
+> >  {
+> > -       int err;
+> > -
+> >         switch (skb->protocol) {
+> >         case htons(ETH_P_IP):
+> > -               err = skb_checksum_setup_ipv4(skb, recalculate);
+> > -               break;
+> > -
+> > +               return skb_checksum_setup_ipv4(skb, recalculate);
+> >         case htons(ETH_P_IPV6):
+> > -               err = skb_checksum_setup_ipv6(skb, recalculate);
+> > -               break;
+> > -
+> > +               return skb_checksum_setup_ipv6(skb, recalculate);
+> >         default:
+> > -               err = -EPROTO;
+> > -               break;
+> > +               return -EPROTO;
+> >         }
+> > -
+> > -       return err;
+> >  }
+> >  EXPORT_SYMBOL(skb_checksum_setup);
+> > 
+> > ---
+> > 
+> > Asking to calibrate my thresholds to yours, since I was planning to volunteer
+> > some time each evening to reading kernel code and submitting any obvious
+> > cleanups.
+> > 
+> 
+> This is not a cleanup.
+> 
+> You prefer seeing the code written the way you did, but that is really a matter of taste.
+> 
 
-The point of my RFC is to know if it's possible to avoid all these
-gfp_t flags, by allowing ovs_vport_cmd_fill_info() to sleep (at least
-I'd like to figure out if it's worth spending time investigating this
-path).
+I respectfully disagree with your assertion.  When the diff --stat shows
+more lines removed than added without harming readability, preferably
+improving readability, it's both a cleanup and not a debatable matter of
+taste.  Having the quantifiable metric of fewer lines of code matters.
 
-To do so, we'd requires moving the ovs_vport_cmd_fill_info() call of
-ovs_vport_cmd_{get,dump}() out of RCU critical section. Since we have
-no reference counter, I believe we'd have to protect these calls with
-ovs_lock() instead of RCU. Is that acceptable? If not, is there any
-other way?
+> Think about backports of real bug fixes to stable kernels.
+> 
+
+That's fair, but when the change is an isolated mechanical one in a
+single small function, as the one quoted above - is that really of any
+significant burden on backports?
+
+> Having these re-writes of code make things less easy for us really.
+> So in general we tend to leave the existing code style.
+> 
+> I already replied to the other patch submission, please read
+> 
+> https://marc.info/?l=linux-netdev&m=157099669227635&w=2
+> 
+
+I read it, thank you for your responses.
+
+Do you have any guidance to offer someone wanting to contribute with 1-2
+hours available per day?  I don't want to cause a nuisance, but would
+like to help where I can.  My flawed assumption was that small, isolated
+hygienic contributions without functionally changing anything would be
+appropriate.
+
+Thanks,
+Vito Caputo
