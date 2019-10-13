@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CC8BD55B9
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 12:58:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26AF1D55C2
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 13:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728861AbfJMK6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 06:58:53 -0400
-Received: from mga01.intel.com ([192.55.52.88]:6431 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728620AbfJMK6x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Oct 2019 06:58:53 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Oct 2019 03:58:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,291,1566889200"; 
-   d="scan'208";a="206934591"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 13 Oct 2019 03:58:50 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iJbaM-000DQb-22; Sun, 13 Oct 2019 18:58:50 +0800
-Date:   Sun, 13 Oct 2019 18:58:44 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     xiangxia.m.yue@gmail.com
-Cc:     kbuild-all@lists.01.org, gvrose8192@gmail.com, pshelar@ovn.org,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: Re: [PATCH net-next v3 02/10] net: openvswitch: convert mask list in
- mask array
-Message-ID: <201910131851.36Sn9nnj%lkp@intel.com>
-References: <1570802447-8019-3-git-send-email-xiangxia.m.yue@gmail.com>
+        id S1728884AbfJMLZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 07:25:25 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:37070 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728620AbfJMLZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 07:25:24 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 46rfW56mTzz1rGRb;
+        Sun, 13 Oct 2019 13:25:21 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 46rfW54srRz1qqkB;
+        Sun, 13 Oct 2019 13:25:21 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id VaIw_UY2e7b7; Sun, 13 Oct 2019 13:25:19 +0200 (CEST)
+X-Auth-Info: kqYQkCQdlsUpReVqK5xeQpQ9TZ0ArohXdkL4cpalQRU=
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sun, 13 Oct 2019 13:25:19 +0200 (CEST)
+Subject: Re: [PATCH 2/2] net: dsa: microchip: Add shared regmap mutex
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        george.mccollister@gmail.com, Tristram.Ha@microchip.com,
+        woojung.huh@microchip.com
+References: <20191010182508.22833-1-marex@denx.de>
+ <20191010182508.22833-2-marex@denx.de>
+ <20191012.172055.1647651676286562151.davem@davemloft.net>
+ <20191012.172140.1744793229621810305.davem@davemloft.net>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <018dad90-f6a4-328c-765e-8e5b66df27d6@denx.de>
+Date:   Sun, 13 Oct 2019 12:50:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1570802447-8019-3-git-send-email-xiangxia.m.yue@gmail.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20191012.172140.1744793229621810305.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 10/13/19 2:21 AM, David Miller wrote:
+> From: David Miller <davem@davemloft.net>
+> Date: Sat, 12 Oct 2019 17:20:55 -0700 (PDT)
+> 
+>> From: Marek Vasut <marex@denx.de>
+>> Date: Thu, 10 Oct 2019 20:25:08 +0200
+>>
+>>> The KSZ driver uses one regmap per register width (8/16/32), each with
+>>> it's own lock, but accessing the same set of registers. In theory, it
+>>> is possible to create a race condition between these regmaps, although
+>>> the underlying bus (SPI or I2C) locking should assure nothing bad will
+>>> really happen and the accesses would be correct.
+>>>
+>>> To make the driver do the right thing, add one single shared mutex for
+>>> all the regmaps used by the driver instead. This assures that even if
+>>> some future hardware is on a bus which does not serialize the accesses
+>>> the same way SPI or I2C does, nothing bad will happen.
+>>>
+>>> Note that the status_mutex was unused and only initied, hence it was
+>>> renamed and repurposed as the regmap mutex.
+>>>
+>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>
+>> Applied.
+> 
+> Actually, both patches reverted.  Please test your changes properly:
+> 
+> ERROR: "ksz_regmap_unlock" [drivers/net/dsa/microchip/ksz8795_spi.ko] undefined!
+> ERROR: "ksz_regmap_lock" [drivers/net/dsa/microchip/ksz8795_spi.ko] undefined!
+> ERROR: "ksz_regmap_unlock" [drivers/net/dsa/microchip/ksz9477_spi.ko] undefined!
+> ERROR: "ksz_regmap_lock" [drivers/net/dsa/microchip/ksz9477_spi.ko] undefined!
+> ERROR: "ksz_regmap_unlock" [drivers/net/dsa/microchip/ksz9477_i2c.ko] undefined!
+> ERROR: "ksz_regmap_lock" [drivers/net/dsa/microchip/ksz9477_i2c.ko] undefined!
 
-Thank you for the patch! Perhaps something to improve:
+So the test is to compile it as a module ?
 
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/xiangxia-m-yue-gmail-com/optimize-openvswitch-flow-looking-up/20191013-161404
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-rc1-43-g0ccb3b4-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
->> net/openvswitch/flow_table.c:307:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected struct callback_head *head @@    got struct callback_hestruct callback_head *head @@
->> net/openvswitch/flow_table.c:307:9: sparse:    expected struct callback_head *head
->> net/openvswitch/flow_table.c:307:9: sparse:    got struct callback_head [noderef] <asn:4> *
-
-vim +307 net/openvswitch/flow_table.c
-
-   297	
-   298	/* No need for locking this function is called from RCU callback or
-   299	 * error path.
-   300	 */
-   301	void ovs_flow_tbl_destroy(struct flow_table *table)
-   302	{
-   303		struct table_instance *ti = rcu_dereference_raw(table->ti);
-   304		struct table_instance *ufid_ti = rcu_dereference_raw(table->ufid_ti);
-   305	
-   306		free_percpu(table->mask_cache);
- > 307		kfree_rcu(table->mask_array, rcu);
-   308		table_instance_destroy(ti, ufid_ti, false);
-   309	}
-   310	
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+-- 
+Best regards,
+Marek Vasut
