@@ -2,54 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27F84D5748
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 20:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF1CD574B
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 20:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729012AbfJMSTX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 13 Oct 2019 14:19:23 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42686 "EHLO
+        id S1729099AbfJMSU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 14:20:58 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42710 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727141AbfJMSTX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 14:19:23 -0400
+        with ESMTP id S1727141AbfJMSU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 14:20:58 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5475E146D832C;
-        Sun, 13 Oct 2019 11:19:22 -0700 (PDT)
-Date:   Sun, 13 Oct 2019 11:19:21 -0700 (PDT)
-Message-Id: <20191013.111921.357704258801923369.davem@davemloft.net>
-To:     clg@kaod.org
-Cc:     julietk@linux.vnet.ibm.com, tlfalcon@linux.ibm.com,
-        jallen@linux.ibm.com, mpe@ellerman.id.au,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] net/ibmvnic: Fix EOI when running in XIVE mode.
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0906F146D8339;
+        Sun, 13 Oct 2019 11:20:58 -0700 (PDT)
+Date:   Sun, 13 Oct 2019 11:20:57 -0700 (PDT)
+Message-Id: <20191013.112057.237383467723026890.davem@davemloft.net>
+To:     mkubecek@suse.cz
+Cc:     jiri@mellanox.com, johannes@sipsolutions.net,
+        jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3] genetlink: do not parse attributes for
+ families with zero maxattr
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191011055254.8347-1-clg@kaod.org>
-References: <20191011055254.8347-1-clg@kaod.org>
+In-Reply-To: <20191011084544.91E73E378C@unicorn.suse.cz>
+References: <20191011084544.91E73E378C@unicorn.suse.cz>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 13 Oct 2019 11:19:22 -0700 (PDT)
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 13 Oct 2019 11:20:58 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cédric Le Goater <clg@kaod.org>
-Date: Fri, 11 Oct 2019 07:52:54 +0200
+From: Michal Kubecek <mkubecek@suse.cz>
+Date: Fri, 11 Oct 2019 09:40:09 +0200
 
-> pSeries machines on POWER9 processors can run with the XICS (legacy)
-> interrupt mode or with the XIVE exploitation interrupt mode. These
-> interrupt contollers have different interfaces for interrupt
-> management : XICS uses hcalls and XIVE loads and stores on a page.
-> H_EOI being a XICS interface the enable_scrq_irq() routine can fail
-> when the machine runs in XIVE mode.
+> Commit c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing
+> to a separate function") moved attribute buffer allocation and attribute
+> parsing from genl_family_rcv_msg_doit() into a separate function
+> genl_family_rcv_msg_attrs_parse() which, unlike the previous code, calls
+> __nlmsg_parse() even if family->maxattr is 0 (i.e. the family does its own
+> parsing). The parser error is ignored and does not propagate out of
+> genl_family_rcv_msg_attrs_parse() but an error message ("Unknown attribute
+> type") is set in extack and if further processing generates no error or
+> warning, it stays there and is interpreted as a warning by userspace.
 > 
-> Fix that by calling the EOI handler of the interrupt chip.
+> Dumpit requests are not affected as genl_family_rcv_msg_dumpit() bypasses
+> the call of genl_family_rcv_msg_attrs_parse() if family->maxattr is zero.
+> Move this logic inside genl_family_rcv_msg_attrs_parse() so that we don't
+> have to handle it in each caller.
 > 
-> Fixes: f23e0643cd0b ("ibmvnic: Clear pending interrupt after device reset")
-> Signed-off-by: Cédric Le Goater <clg@kaod.org>
+> v3: put the check inside genl_family_rcv_msg_attrs_parse()
+> v2: adjust also argument of genl_family_rcv_msg_attrs_free()
+> 
+> Fixes: c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing to a separate function")
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Applied and queued up for -stable, thanks.
+Applied, thanks.
