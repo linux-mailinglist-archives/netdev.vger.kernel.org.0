@@ -2,82 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7B8D54A4
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 07:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE317D54DC
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 09:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728112AbfJME7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 00:59:41 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:33789 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727354AbfJME7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 00:59:41 -0400
-Received: by mail-lf1-f65.google.com with SMTP id y127so9622790lfc.0;
-        Sat, 12 Oct 2019 21:59:39 -0700 (PDT)
+        id S1728209AbfJMHRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 03:17:45 -0400
+Received: from mail-lj1-f179.google.com ([209.85.208.179]:40901 "EHLO
+        mail-lj1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727738AbfJMHRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 03:17:44 -0400
+Received: by mail-lj1-f179.google.com with SMTP id 7so13590188ljw.7
+        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 00:17:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q6UM81QVu0g8B790B9HS33FwVmQAj8ztbARaQxYqUMg=;
-        b=qoybofSOmnKeQDR+5nHiLTGyULrVm194uVIlttyiLvZwXxGksFpZnbvGsxS5cjGsGZ
-         mhrrfjyHsMioENy5pUql0BN9/tYNil09990SNvJs1RFeqrs1jSSNv+jtJEmsrhEiwxDp
-         bGZQap8fD5+OREbsF2pIWL9xBk2lrACUuoP3zzgQkvzE0sRByLMWtbApMnJ2PI7Ad9Wg
-         wsVA7ZmuzxrGtcLSKy2eY195ovwxN9qj0xqkn/n/GtYhkmDs37i/eKOmDkU4YndK8Iiu
-         k3U5mtbb5Rf16rsKm9+rYDWbjgU/8l0UR/iLbypVbjR73K/w0HHXcfAWbbuRINwjSzeh
-         /B5g==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=uswqv9VQXg0uwLwRSluBNJaJk9pll+kaGWwH3edyJLo=;
+        b=ZlZRQix/b0rYndsXz0jZ/NPvyL6kSet26Py1w5G+WwV05tWHSpVqJE8KE+OgEGejE9
+         csP6993RVmzHylZeNnrQprH0qldaEi0LHVC0irBwgAhoVmrCj//EXB2rQZjOS24EvbaV
+         HmIej14uEcGk61Lau19viMhWYQ+fCAp6PcA8tGQPmm5Ma2CR+8j5NSVuC1ulAgncQ21n
+         rpj4UyKCgwjHBVIwaYmFUD55qHpeVDWsVPl1PBgAZn1EgsZTa5W5DgZHw4WwcFGaERuE
+         4FBntGe8GVaa1V+XGQPcv3Jyyf0+i4+wTu787I1/rmeQZ9MRaNL4QFW3xnt/W0N5yZw0
+         vtVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q6UM81QVu0g8B790B9HS33FwVmQAj8ztbARaQxYqUMg=;
-        b=UBIUQ0cSo3SIPxTjMw+KWh2nu6EKX1Wf1igAMXsccU/3YAf1EUM9mbUQzk4RJsBCYu
-         a51AgXbhbfgo3QRWdCvkjKYhFVjS61Hd5VBniK0lIpglFmlqmk2NZIu7e5Bv4fQzF+W2
-         K9Ethm/zu3+Xzde8nHV8aIiXcgLXljNLktPfsJPVfSO5MfpfOxScfZ5rMoCnBXlY1iGQ
-         ErabzeAGtUG6ZEjMfbKobk7O7EjoHOEtS7tcaY2SgkZNomYqnNSGEZpqn6bEprwJL5dO
-         Su8LYyAF+7cM6zGN699B4Na5yARRUmOjazXpzofbIvOT7l0T+/NCwhcieyUeFvZruC8A
-         CDTg==
-X-Gm-Message-State: APjAAAXcU52rO6oMEwJL2mxlEYZ9HMC/5cBNwbQXSD34byO8CH2ZT6eh
-        lG2Q9VnU9yfuV5YoL758whVmG7eugOWcbLkhPq4=
-X-Google-Smtp-Source: APXvYqy1wi9v13QqBiW8S7d3gqZHecXqoR5sYStLbxjbsSYRGtJKipwZT669sLcw5kjSpb2Try4PW9H/wejLhGAB3B4=
-X-Received: by 2002:a19:5050:: with SMTP id z16mr14394005lfj.181.1570942778928;
- Sat, 12 Oct 2019 21:59:38 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=uswqv9VQXg0uwLwRSluBNJaJk9pll+kaGWwH3edyJLo=;
+        b=uiBzobIc39V8j4c8S5WZDbicvAtFrdjrpKDQQcK1r7QdH8B2NjFe1dS+TD/3DIkn4+
+         75XsSJVNqRuE3+BMxmCqTaeSl8UblwWdoIrK462lUXVuYGdUR1v4ele+pDYMYAaI48UM
+         Q+onDXAiV3xo0I/zsl0b9G+O2nofHMWGuZH4wOHn8ZNaTZfUdOB2p3aNPvNmmq09N+HI
+         Gt9HPFJAgsvZdmz82RyX5qONTSPLv0mDgbdg8672elMBEIxhk1GrcML81F4ujMcUIzU4
+         US80n0jBqr44P9tnYhyMY0W+KC+wMB7lRthSirQtrykKZii7TFRM4FkSdtskVDR+Ndpg
+         HRXA==
+X-Gm-Message-State: APjAAAXgZsr+B1YCK6n7Q8D+FzuiN627lX+rFu/O17r1fJ3cuvAxNhUV
+        H0hjS7q1V+E3XHP00EuC04TS0es/v5XH2PDd9uteg8o8
+X-Google-Smtp-Source: APXvYqzxBt+GhGpzVBN0tWuSRRZ8Dq1R4lj6CELaFKBuGa3jci/lrKTIa5/QgMuJMyVWMN5EW+iw7618SBk9ZQrJ5J4=
+X-Received: by 2002:a2e:7003:: with SMTP id l3mr13820593ljc.176.1570951062630;
+ Sun, 13 Oct 2019 00:17:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <5da2ad7f.1c69fb81.2ed87.f547SMTPIN_ADDED_BROKEN@mx.google.com>
-In-Reply-To: <5da2ad7f.1c69fb81.2ed87.f547SMTPIN_ADDED_BROKEN@mx.google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 12 Oct 2019 21:59:26 -0700
-Message-ID: <CAADnVQLczRWyWa44+ogr1UkcOObA40zurwxMY=0hO9_1Y1yeDA@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix passing uninitialized bytes to setsockopt
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
+From:   yue longguang <yuelongguang@gmail.com>
+Date:   Sun, 13 Oct 2019 15:17:31 +0800
+Message-ID: <CAPaK2r9hYN7ok09nPLaF9z2=aVATRWvDtYhM0-W1ozaykMwssw@mail.gmail.com>
+Subject: ingress bandwidth limitation for ipv6 is inaccurate
+To:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 9:52 PM Ilya Maximets <i.maximets@ovn.org> wrote:
->
-> 'struct xdp_umem_reg' has 4 bytes of padding at the end that makes
-> valgrind complain about passing uninitialized stack memory to the
-> syscall:
->
->   Syscall param socketcall.setsockopt() points to uninitialised byte(s)
->     at 0x4E7AB7E: setsockopt (in /usr/lib64/libc-2.29.so)
->     by 0x4BDE035: xsk_umem__create@@LIBBPF_0.0.4 (xsk.c:172)
->   Uninitialised value was created by a stack allocation
->     at 0x4BDDEBA: xsk_umem__create@@LIBBPF_0.0.4 (xsk.c:140)
->
-> Padding bytes appeared after introducing of a new 'flags' field.
->
-> Fixes: 10d30e301732 ("libbpf: add flags to umem config")
-> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Hi,all
 
-Something is not right with (e|g)mail.
-This is 3rd email I got with the same patch.
-First one (the one that was applied) was 3 days ago.
+1.  according to my test,  bandwidth limitation is inaccurate for
+ingress ipv6 .  The accuracy is affected by burst.   if rate is less
+than 100mbit , set burst to 1MB or 2MB, the result is almost
+acceptable.  but when rate is bigger , the result is approximately 1/3
+of rate.
+command:  tc filter add dev qr-869fbdc2-1e parent ffff: protocol ipv6
+u32 match ip6 src any police rate 500mbit burst 1M drop
+so except for using ifb, what should be done to get a accurate result.
+
+2. can flowid option of  ingess's filter belong to egress's class.
+for example    tc filter add dev qr-869fbdc2-1e parent ffff: protocol
+ipv6 u32 match ip6 src any police rate 500mbit burst 1M flowid 1:10
+ (1:10 classid  is egress's qdisc's class )
+
+thank you for replying my two questions
