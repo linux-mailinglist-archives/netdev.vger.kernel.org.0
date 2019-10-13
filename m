@@ -2,164 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2813BD58B6
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 00:42:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B10A5D58C1
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 01:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729599AbfJMWls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 18:41:48 -0400
-Received: from shells.gnugeneration.com ([66.240.222.126]:45326 "EHLO
-        shells.gnugeneration.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728198AbfJMWls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 18:41:48 -0400
-Received: by shells.gnugeneration.com (Postfix, from userid 1000)
-        id 75C951A40559; Sun, 13 Oct 2019 15:41:48 -0700 (PDT)
-Date:   Sun, 13 Oct 2019 15:41:48 -0700
-From:   Vito Caputo <vcaputo@pengaru.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: core: datagram: tidy up copy functions a bit
-Message-ID: <20191013224148.omivenr6fwmq66fe@shells.gnugeneration.com>
-References: <20191012115509.jrqe43yozs7kknv5@shells.gnugeneration.com>
- <8fab6f9c-70a6-02fd-5b2d-66a013c10a4f@gmail.com>
- <20191013200158.mhvwkdnsjk7ecuqu@shells.gnugeneration.com>
- <6864f888-1b62-36c5-6ac5-d5db01c5fcfb@gmail.com>
+        id S1729659AbfJMXCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 19:02:13 -0400
+Received: from ozlabs.org ([203.11.71.1]:56439 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728198AbfJMXCN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Oct 2019 19:02:13 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 46rxz55T1Wz9s4Y;
+        Mon, 14 Oct 2019 10:02:08 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1571007730;
+        bh=Nar0rqA/SnlefoWCoPNV28bJ3Ki7AIfaueJ7m7lPbOk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=qKJquFfEKQfEF8ntTZTevdsnB6TbYxvDOHC7vtp67r29So0nhFvkVYN+P4PxOjcoW
+         cbR5asxrGYC8BPKq6FxntPofx/zyINQ5np/rQrmGJW6yYDFDT2W40136OrRMMjWckt
+         8IZk/quAj1XXT2bY5if74qqDNCTG5C1GwnBuwt5DiNUpDnRfKGM/66KG8bvvGYbPFh
+         YJS06wbXVKbtqG7Taf3Cz1vdKLCjoqthKJXK5DG7GJ+GZidbaBtD7dsPE/cfnrIzhz
+         cLpRNl2x3JcF3vUyzvgwnj+JSA3qriMQ031bH8F5tZsyN19SV7Boaqaugd+vOFhZD+
+         PI+OoBQYXZdNw==
+Date:   Mon, 14 Oct 2019 10:02:07 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20191014100207.5489ccf1@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6864f888-1b62-36c5-6ac5-d5db01c5fcfb@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: multipart/signed; boundary="Sig_/pYMaUZ1FGCkauOlqq68IywU";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 13, 2019 at 01:17:18PM -0700, Eric Dumazet wrote:
-> 
-> 
-> On 10/13/19 1:01 PM, Vito Caputo wrote:
-> > On Sun, Oct 13, 2019 at 12:30:41PM -0700, Eric Dumazet wrote:
-> >>
-> >>
-> >> On 10/12/19 4:55 AM, Vito Caputo wrote:
-> >>> Eliminate some verbosity by using min() macro and consolidating some
-> >>> things, also fix inconsistent zero tests (! vs. == 0).
-> >>>
-> >>> Signed-off-by: Vito Caputo <vcaputo@pengaru.com>
-> >>> ---
-> >>>  net/core/datagram.c | 44 ++++++++++++++------------------------------
-> >>>  1 file changed, 14 insertions(+), 30 deletions(-)
-> >>>
-> >>> diff --git a/net/core/datagram.c b/net/core/datagram.c
-> >>> index 4cc8dc5db2b7..08d403f93952 100644
-> >>> --- a/net/core/datagram.c
-> >>> +++ b/net/core/datagram.c
-> >>> @@ -413,13 +413,11 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
-> >>>  					    struct iov_iter *), void *data)
-> >>>  {
-> >>>  	int start = skb_headlen(skb);
-> >>> -	int i, copy = start - offset, start_off = offset, n;
-> >>> +	int i, copy, start_off = offset, n;
-> >>>  	struct sk_buff *frag_iter;
-> >>>  
-> >>>  	/* Copy header. */
-> >>> -	if (copy > 0) {
-> >>> -		if (copy > len)
-> >>> -			copy = len;
-> >>> +	if ((copy = min(start - offset, len)) > 0) {
-> >>
-> >> No, we prefer not having this kind of construct anymore.
-> >>
-> >> This refactoring looks unnecessary code churn, making our future backports not
-> >> clean cherry-picks.
-> >>
-> >> Simply making sure this patch does not bring a regression is very time consuming.
-> > 
-> > Should I not bother submitting patches for such cleanups?
-> > 
-> > I submitted another, more trivial patch, is it also considered unnecessary churn:
-> > 
-> > ---
-> > 
-> > Author: Vito Caputo <vcaputo@pengaru.com>
-> > Date:   Sat Oct 12 17:10:41 2019 -0700
-> > 
-> >     net: core: skbuff: skb_checksum_setup() drop err
-> >     
-> >     Return directly from all switch cases, no point in storing in err.
-> >     
-> >     Signed-off-by: Vito Caputo <vcaputo@pengaru.com>
-> > 
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index f5f904f46893..c59b68a413b5 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -4888,23 +4888,14 @@ static int skb_checksum_setup_ipv6(struct sk_buff *skb, bool recalculate)
-> >   */
-> >  int skb_checksum_setup(struct sk_buff *skb, bool recalculate)
-> >  {
-> > -       int err;
-> > -
-> >         switch (skb->protocol) {
-> >         case htons(ETH_P_IP):
-> > -               err = skb_checksum_setup_ipv4(skb, recalculate);
-> > -               break;
-> > -
-> > +               return skb_checksum_setup_ipv4(skb, recalculate);
-> >         case htons(ETH_P_IPV6):
-> > -               err = skb_checksum_setup_ipv6(skb, recalculate);
-> > -               break;
-> > -
-> > +               return skb_checksum_setup_ipv6(skb, recalculate);
-> >         default:
-> > -               err = -EPROTO;
-> > -               break;
-> > +               return -EPROTO;
-> >         }
-> > -
-> > -       return err;
-> >  }
-> >  EXPORT_SYMBOL(skb_checksum_setup);
-> > 
-> > ---
-> > 
-> > Asking to calibrate my thresholds to yours, since I was planning to volunteer
-> > some time each evening to reading kernel code and submitting any obvious
-> > cleanups.
-> > 
-> 
-> This is not a cleanup.
-> 
-> You prefer seeing the code written the way you did, but that is really a matter of taste.
-> 
+--Sig_/pYMaUZ1FGCkauOlqq68IywU
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I respectfully disagree with your assertion.  When the diff --stat shows
-more lines removed than added without harming readability, preferably
-improving readability, it's both a cleanup and not a debatable matter of
-taste.  Having the quantifiable metric of fewer lines of code matters.
+Hi all,
 
-> Think about backports of real bug fixes to stable kernels.
-> 
+Today's linux-next merge of the net-next tree got a conflict in:
 
-That's fair, but when the change is an isolated mechanical one in a
-single small function, as the one quoted above - is that really of any
-significant burden on backports?
+  drivers/net/netdevsim/fib.c
 
-> Having these re-writes of code make things less easy for us really.
-> So in general we tend to leave the existing code style.
-> 
-> I already replied to the other patch submission, please read
-> 
-> https://marc.info/?l=linux-netdev&m=157099669227635&w=2
-> 
+between commit:
 
-I read it, thank you for your responses.
+  33902b4a4227 ("netdevsim: Fix error handling in nsim_fib_init and nsim_fi=
+b_exit")
 
-Do you have any guidance to offer someone wanting to contribute with 1-2
-hours available per day?  I don't want to cause a nuisance, but would
-like to help where I can.  My flawed assumption was that small, isolated
-hygienic contributions without functionally changing anything would be
-appropriate.
+from the net tree and commit:
 
-Thanks,
-Vito Caputo
+  a5facc4cac4d ("netdevsim: change fib accounting and limitations to be per=
+-device")
+
+from the net-next tree.
+
+I fixed it up (I just used the latter version) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/pYMaUZ1FGCkauOlqq68IywU
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl2jrO8ACgkQAVBC80lX
+0Gybnwf/U8BazCCcLu89kc+FVjWTivk0Nk9ILJeMUw2oxVqLSFEx3PzMkqjI+HgN
+0+9Y/SwgqbPUe3wedtSKRIRRkZDFeVO+FnHv/yKmUk6McCCnDdl+yUSaLH5qRV3Y
+O+bIr3TCi9SfgR7CSHwfapOqmGOD5svaJBGfOvuc076RBy/UGWplZ9M7YFsZ+Nt/
+kUgBF8IL7d86/Scx+rn0Fu2X89IFrn97g2VAk6pXiSFKRE7Ub9Pr5Xs06nI9GpFM
+iJWtmH5UZrciVkXSnj4tSmy0n2SqRegVBDC+RR4Z1KrKtxqzDWnhUI2v7/++4O2P
+xy9Pjz5sXwNLnq3AjuAaMARzaWbx8g==
+=FiuP
+-----END PGP SIGNATURE-----
+
+--Sig_/pYMaUZ1FGCkauOlqq68IywU--
