@@ -2,49 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8922CD5708
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 19:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FEFD5709
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 19:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729326AbfJMR37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 13:29:59 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42376 "EHLO
+        id S1729335AbfJMRbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 13:31:33 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42400 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726264AbfJMR37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 13:29:59 -0400
+        with ESMTP id S1726264AbfJMRbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 13:31:33 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0A724144A0671;
-        Sun, 13 Oct 2019 10:29:58 -0700 (PDT)
-Date:   Sun, 13 Oct 2019 10:29:57 -0700 (PDT)
-Message-Id: <20191013.102957.1417827829100829400.davem@davemloft.net>
-To:     gnault@redhat.com
-Cc:     netdev@vger.kernel.org, nicolas.dichtel@6wind.com,
-        ast@plumgrid.com, jesse@nicira.com, pshelar@nicira.com,
-        jbenc@redhat.com
-Subject: Re: [RFC PATCH net] netns: fix GFP flags in rtnl_net_notifyid()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EB7BE144B304D;
+        Sun, 13 Oct 2019 10:31:32 -0700 (PDT)
+Date:   Sun, 13 Oct 2019 10:31:32 -0700 (PDT)
+Message-Id: <20191013.103132.921221152987204278.davem@davemloft.net>
+To:     marex@denx.de
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        george.mccollister@gmail.com, hkallweit1@gmail.com,
+        Tristram.Ha@microchip.com, woojung.huh@microchip.com
+Subject: Re: [PATCH 1/2] net: phy: micrel: Discern KSZ8051 and KSZ8795 PHYs
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <41b3fbfe3aac5ca03f4af0f1c4e146ae67c20570.1570734410.git.gnault@redhat.com>
-References: <41b3fbfe3aac5ca03f4af0f1c4e146ae67c20570.1570734410.git.gnault@redhat.com>
+In-Reply-To: <20191010191249.2112-1-marex@denx.de>
+References: <20191010191249.2112-1-marex@denx.de>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 13 Oct 2019 10:29:58 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 13 Oct 2019 10:31:33 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
-Date: Thu, 10 Oct 2019 21:07:29 +0200
 
-> Before I spend more time on this, do we have a chance to make
-> ovs_vport_cmd_fill_info() and __dev_notify_flags() sleepable?
-> I'd like to avoid passing GFP flags along these call chains, if at all
-> possible.
+Please respin with a proper cover letter and appropriate Fixes:
+tag(s).
 
-OVS folks, please weigh in.
-
-Thanks.
+Thank you.
