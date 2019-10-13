@@ -2,87 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 946B7D55C3
-	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 13:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB026D55EC
+	for <lists+netdev@lfdr.de>; Sun, 13 Oct 2019 13:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728907AbfJMLZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 07:25:29 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:48210 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728620AbfJMLZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 07:25:29 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 46rfWB55wDz1rGRl;
-        Sun, 13 Oct 2019 13:25:26 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 46rfWB4N79z1qqkB;
-        Sun, 13 Oct 2019 13:25:26 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id MGkQ8KYYmwXm; Sun, 13 Oct 2019 13:25:23 +0200 (CEST)
-X-Auth-Info: n/9suSe9kItaE2RE1TTGUIC9QSEBoyjGV9PzaTGFjt4=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729130AbfJMLmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 07:42:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47242 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728960AbfJMLmD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Oct 2019 07:42:03 -0400
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sun, 13 Oct 2019 13:25:23 +0200 (CEST)
-From:   Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH V2 1/2] net: phy: micrel: Discern KSZ8051 and KSZ8795 PHYs
-To:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-References: <20191010194622.28742-1-marex@denx.de>
- <84cb8eca-2eea-6f54-16c7-fa7b95655e2e@gmail.com>
- <42abfa5c-1e84-63c7-1f3d-4816d232dc98@gmail.com>
-Message-ID: <6618b999-07ba-5c1b-60cf-6f7d7c1b3526@denx.de>
-Date:   Sun, 13 Oct 2019 12:53:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        by mx1.redhat.com (Postfix) with ESMTPS id A025985363
+        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 11:42:03 +0000 (UTC)
+Received: by mail-qt1-f200.google.com with SMTP id m19so14873514qtm.13
+        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 04:42:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=WhM42HnkXorw8ZktlIqV/yS0IRHKb5HISbW//fiFIIA=;
+        b=ND0HRSKOr25OGGxA0mHaZgXZD+OXghnZ23EiAk8ZJ6bQ9l1SDlWBQQxKjKpPcn22zM
+         Ejdd+jG3K7Nzik91WSXC1yDm0YOESCt6cjcnmQyBsADRM2ZUjMH3f8QnIgcF6PorcJ5Q
+         nTxyGaLVpbQNMNMpZtz1eLRLiipiaqpzE5SnWQ7HcCeHmM5WsPvnzDH8dUGPm5bi755o
+         t8a7o1mobO2KbAPvf+PM4xXX9Fb9XDG83BlshMQTWCaECBKst23LO0XnQH/IiWlcVcL0
+         HUZLubW0jCUvJ1p++mCFwmd5ZGT5r/6clo8GofankHvKILvI/g4PHbhJt7PMc7HIiYgI
+         6zBQ==
+X-Gm-Message-State: APjAAAUudoxCNb37lb74JiOoDTCqjre10WqFP/fhZ94rGqbz5S6jPLHo
+        ZkleftIj2GhNVoU9XRu/L6+3S6MTe7LL9H6cGDY95WvZNxOxDB7gHL7viPalKI/gabVe5T8UChh
+        F4p14fQclTdsC0ZrQ
+X-Received: by 2002:a37:a14d:: with SMTP id k74mr25294020qke.308.1570966922927;
+        Sun, 13 Oct 2019 04:42:02 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxJbPZHmjjRtZPdn0OIP4+7Md8xReA9OfG4qhSoToCuN8Mn6p7CW5fNAnas5HTHE7lcLL2Caw==
+X-Received: by 2002:a37:a14d:: with SMTP id k74mr25293998qke.308.1570966922588;
+        Sun, 13 Oct 2019 04:42:02 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-10-77.red.bezeqint.net. [79.176.10.77])
+        by smtp.gmail.com with ESMTPSA id d25sm1763837qtj.84.2019.10.13.04.41.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Oct 2019 04:42:01 -0700 (PDT)
+Date:   Sun, 13 Oct 2019 07:41:55 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>
+Subject: [PATCH RFC v4 0/5] vhost: ring format independence
+Message-ID: <20191013113940.2863-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <42abfa5c-1e84-63c7-1f3d-4816d232dc98@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.22.0.678.g13338e74b8
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/19 11:22 PM, Heiner Kallweit wrote:
+This adds infrastructure required for supporting
+multiple ring formats.
 
-[...]
+The idea is as follows: we convert descriptors to an
+independent format first, and process that converting to
+iov later.
 
->>> @@ -1141,13 +1174,12 @@ static struct phy_driver ksphy_driver[] = {
->>>  	.suspend	= genphy_suspend,
->>>  	.resume		= genphy_resume,
->>>  }, {
->>> -	.phy_id		= PHY_ID_KSZ8795,
->>> -	.phy_id_mask	= MICREL_PHY_ID_MASK,
->>>  	.name		= "Micrel KSZ8795",
->>>  	/* PHY_BASIC_FEATURES */
->>>  	.config_init	= kszphy_config_init,
->>>  	.config_aneg	= ksz8873mll_config_aneg,
->>>  	.read_status	= ksz8873mll_read_status,
->>> +	.match_phy_device = ksz8795_match_phy_device,
->>>  	.suspend	= genphy_suspend,
->>>  	.resume		= genphy_resume,
->>>  }, {
->>>
->>
->> Patch needs to be annotated as "net-next".
->> See https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
->>
-> Except you consider this a fix, then it would require a Fixes tag and
-> should be annotated "net". The question is:
-> Do KSZ87xx switches misbehave currently?
+The point is that we have a tight loop that fetches
+descriptors, which is good for cache utilization.
+This will also allow all kind of batching tricks -
+e.g. it seems possible to keep SMAP disabled while
+we are fetching multiple descriptors.
 
-Well yes they do, otherwise I won't be sending this fix.
+This seems to perform exactly the same as the original
+code already based on a microbenchmark.
+Lightly tested.
+More testing would be very much appreciated.
+
+To use new code:
+	echo 1 > /sys/module/vhost_test/parameters/newcode
+or
+	echo 1 > /sys/module/vhost_net/parameters/newcode
+
+changes from v3:
+        - fixed error handling in case of indirect descriptors
+        - add BUG_ON to detect buffer overflow in case of bugs
+                in response to comment by Jason Wang
+        - minor code tweaks
+
+Changes from v2:
+	- fixed indirect descriptor batching
+                reported by Jason Wang
+
+Changes from v1:
+	- typo fixes
+
+
+Michael S. Tsirkin (5):
+  vhost: option to fetch descriptors through an independent struct
+  vhost/test: add an option to test new code
+  vhost: batching fetches
+  vhost/net: add an option to test new code
+  vhost: last descriptor must have NEXT clear
+
+ drivers/vhost/net.c   |  32 ++++-
+ drivers/vhost/test.c  |  19 ++-
+ drivers/vhost/vhost.c | 328 +++++++++++++++++++++++++++++++++++++++++-
+ drivers/vhost/vhost.h |  20 ++-
+ 4 files changed, 385 insertions(+), 14 deletions(-)
 
 -- 
-Best regards,
-Marek Vasut
+MST
+
