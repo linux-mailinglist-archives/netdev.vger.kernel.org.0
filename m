@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B28D6258
+	by mail.lfdr.de (Postfix) with ESMTP id 29CA5D6257
 	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731922AbfJNMVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 08:21:31 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:43990 "EHLO huawei.com"
+        id S1731880AbfJNMVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 08:21:30 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:59566 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730305AbfJNMVb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 08:21:31 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 4F49752E844D1AFB089A;
+        id S1726169AbfJNMVa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 08:21:30 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 24CA7D7B711912EB37B1;
         Mon, 14 Oct 2019 20:21:28 +0800 (CST)
 Received: from huawei.com (10.90.53.225) by DGGEMS401-HUB.china.huawei.com
  (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Mon, 14 Oct 2019
@@ -24,9 +24,9 @@ CC:     <hare@suse.com>, <osandov@fb.com>, <ming.lei@redhat.com>,
         <damien.lemoal@wdc.com>, <bvanassche@acm.org>,
         <daniel@iogearbox.net>, <kafai@fb.com>, <songliubraving@fb.com>,
         <yhs@fb.com>
-Subject: [RFC PATCH 1/2] block: add support for redirecting IO completion through eBPF
-Date:   Mon, 14 Oct 2019 20:28:32 +0800
-Message-ID: <20191014122833.64908-2-houtao1@huawei.com>
+Subject: [RFC PATCH 2/2] selftests/bpf: add test program for redirecting IO completion CPU
+Date:   Mon, 14 Oct 2019 20:28:33 +0800
+Message-ID: <20191014122833.64908-3-houtao1@huawei.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20191014122833.64908-1-houtao1@huawei.com>
 References: <20191014122833.64908-1-houtao1@huawei.com>
@@ -40,339 +40,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For network stack, RPS, namely Receive Packet Steering, is used to
-distribute network protocol processing from hardware-interrupted CPU
-to specific CPUs and alleviating soft-irq load of the interrupted CPU.
+A simple round-robin strategy is implemented to redirect the IO
+completion handling to all online CPUs or specific CPU set cyclically.
 
-For block layer, soft-irq (for single queue device) or hard-irq
-(for multiple queue device) is used to handle IO completion, so
-RPS will be useful when the soft-irq load or the hard-irq load
-of a specific CPU is too high, or a specific CPU set is required
-to handle IO completion.
+Using the following command to distribute the IO completion of vda
+to all online CPUs:
 
-Instead of setting the CPU set used for handling IO completion
-through sysfs or procfs, we can attach an eBPF program to the
-request-queue, provide some useful info (e.g., the CPU
-which submits the request) to the program, and let the program
-decides the proper CPU for IO completion handling.
+	./test_blkdev_ccpu -d /dev/vda
+
+And the following command to distribute the IO completion of nvme0n1
+to a specific CPU set:
+	./test_blkdev_ccpu -d /dev/nvme0n1 -s 4,8,10-13
 
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 ---
- block/Makefile             |   2 +-
- block/blk-bpf.c            | 127 +++++++++++++++++++++++++++++++++++++
- block/blk-mq.c             |  22 +++++--
- block/blk-softirq.c        |  27 ++++++--
- include/linux/blkdev.h     |   3 +
- include/linux/bpf_blkdev.h |   9 +++
- include/linux/bpf_types.h  |   1 +
- include/uapi/linux/bpf.h   |   2 +
- kernel/bpf/syscall.c       |   9 +++
- 9 files changed, 190 insertions(+), 12 deletions(-)
- create mode 100644 block/blk-bpf.c
- create mode 100644 include/linux/bpf_blkdev.h
+ tools/include/uapi/linux/bpf.h                |   2 +
+ tools/lib/bpf/libbpf.c                        |   1 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ tools/testing/selftests/bpf/Makefile          |   1 +
+ .../selftests/bpf/progs/blkdev_ccpu_rr.c      |  66 +++++
+ .../testing/selftests/bpf/test_blkdev_ccpu.c  | 246 ++++++++++++++++++
+ 6 files changed, 317 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c
+ create mode 100644 tools/testing/selftests/bpf/test_blkdev_ccpu.c
 
-diff --git a/block/Makefile b/block/Makefile
-index 9ef57ace90d4..0adb0f655e8c 100644
---- a/block/Makefile
-+++ b/block/Makefile
-@@ -9,7 +9,7 @@ obj-$(CONFIG_BLOCK) := bio.o elevator.o blk-core.o blk-sysfs.o \
- 			blk-lib.o blk-mq.o blk-mq-tag.o blk-stat.o \
- 			blk-mq-sysfs.o blk-mq-cpumap.o blk-mq-sched.o ioctl.o \
- 			genhd.o partition-generic.o ioprio.o \
--			badblocks.o partitions/ blk-rq-qos.o
-+			badblocks.o partitions/ blk-rq-qos.o blk-bpf.o
- 
- obj-$(CONFIG_BOUNCE)		+= bounce.o
- obj-$(CONFIG_BLK_SCSI_REQUEST)	+= scsi_ioctl.o
-diff --git a/block/blk-bpf.c b/block/blk-bpf.c
-new file mode 100644
-index 000000000000..d9e3b1caead4
---- /dev/null
-+++ b/block/blk-bpf.c
-@@ -0,0 +1,127 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2019 Hou Tao <houtao1@huawei.com>
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/bpf.h>
-+#include <linux/filter.h>
-+#include <linux/fs.h>
-+#include <linux/bpf_blkdev.h>
-+#include <linux/blkdev.h>
-+
-+extern const struct file_operations def_blk_fops;
-+
-+static DEFINE_SPINLOCK(blkdev_bpf_lock);
-+
-+const struct bpf_prog_ops blkdev_prog_ops = {
-+};
-+
-+static const struct bpf_func_proto *
-+blkdev_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-+{
-+	switch (func_id) {
-+	case BPF_FUNC_map_lookup_elem:
-+		return &bpf_map_lookup_elem_proto;
-+	case BPF_FUNC_map_update_elem:
-+		return &bpf_map_update_elem_proto;
-+	case BPF_FUNC_map_delete_elem:
-+		return &bpf_map_delete_elem_proto;
-+	case BPF_FUNC_get_smp_processor_id:
-+		return &bpf_get_smp_processor_id_proto;
-+	case BPF_FUNC_get_numa_node_id:
-+		return &bpf_get_numa_node_id_proto;
-+	default:
-+		return NULL;
-+	}
-+}
-+
-+const struct bpf_verifier_ops blkdev_verifier_ops = {
-+	.get_func_proto = blkdev_prog_func_proto,
-+};
-+
-+static struct request_queue *blkdev_rq_by_file(struct file *filp)
-+{
-+	struct block_device *bdev;
-+
-+	if (filp->f_op != &def_blk_fops)
-+		return ERR_PTR(-EINVAL);
-+
-+	bdev = I_BDEV(filp->f_mapping->host);
-+
-+	return bdev->bd_queue;
-+}
-+
-+int blkdev_bpf_prog_attach(const union bpf_attr *attr,
-+		enum bpf_prog_type ptype, struct bpf_prog *prog)
-+{
-+	int ret = 0;
-+	struct file *filp;
-+	struct request_queue *rq;
-+
-+	filp = fget(attr->target_fd);
-+	if (!filp) {
-+		ret = -EINVAL;
-+		goto fget_err;
-+	}
-+
-+	rq = blkdev_rq_by_file(filp);
-+	if (IS_ERR(rq)) {
-+		ret = PTR_ERR(rq);
-+		goto to_rq_err;
-+	}
-+
-+	spin_lock(&blkdev_bpf_lock);
-+	if (rq->prog) {
-+		ret = -EBUSY;
-+		goto set_prog_err;
-+	}
-+
-+	rcu_assign_pointer(rq->prog, prog);
-+
-+set_prog_err:
-+	spin_unlock(&blkdev_bpf_lock);
-+to_rq_err:
-+	fput(filp);
-+fget_err:
-+	return ret;
-+}
-+
-+int blkdev_bpf_prog_detach(const union bpf_attr *attr)
-+{
-+	int ret = 0;
-+	struct file *filp;
-+	struct request_queue *rq;
-+	struct bpf_prog *old_prog;
-+
-+	filp = fget(attr->target_fd);
-+	if (!filp) {
-+		ret = -EINVAL;
-+		goto fget_err;
-+	}
-+
-+	rq = blkdev_rq_by_file(filp);
-+	if (IS_ERR(rq)) {
-+		ret = PTR_ERR(rq);
-+		goto to_rq_err;
-+	}
-+
-+	old_prog = NULL;
-+	spin_lock(&blkdev_bpf_lock);
-+	if (!rq->prog) {
-+		ret = -ENODATA;
-+		goto clr_prog_err;
-+	}
-+	rcu_swap_protected(rq->prog, old_prog, 1);
-+
-+clr_prog_err:
-+	spin_unlock(&blkdev_bpf_lock);
-+	if (old_prog)
-+		bpf_prog_put(old_prog);
-+to_rq_err:
-+	fput(filp);
-+fget_err:
-+	return ret;
-+}
-+
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 20a49be536b5..5ac6fe6dbcd0 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -26,6 +26,7 @@
- #include <linux/delay.h>
- #include <linux/crash_dump.h>
- #include <linux/prefetch.h>
-+#include <linux/filter.h>
- 
- #include <trace/events/block.h>
- 
-@@ -584,6 +585,9 @@ static void __blk_mq_complete_request(struct request *rq)
- 	struct request_queue *q = rq->q;
- 	bool shared = false;
- 	int cpu;
-+	int ccpu;
-+	int bpf_ccpu = -1;
-+	struct bpf_prog *prog;
- 
- 	WRITE_ONCE(rq->state, MQ_RQ_COMPLETE);
- 	/*
-@@ -610,15 +614,25 @@ static void __blk_mq_complete_request(struct request *rq)
- 		return;
- 	}
- 
-+	rcu_read_lock();
-+	prog = rcu_dereference_protected(q->prog, 1);
-+	if (prog)
-+		bpf_ccpu = BPF_PROG_RUN(q->prog, NULL);
-+	rcu_read_unlock();
-+
- 	cpu = get_cpu();
--	if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
--		shared = cpus_share_cache(cpu, ctx->cpu);
-+	if (bpf_ccpu < 0 || !cpu_online(bpf_ccpu)) {
-+		ccpu = ctx->cpu;
-+		if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
-+			shared = cpus_share_cache(cpu, ctx->cpu);
-+	} else
-+		ccpu = bpf_ccpu;
- 
--	if (cpu != ctx->cpu && !shared && cpu_online(ctx->cpu)) {
-+	if (cpu != ccpu && !shared && cpu_online(ccpu)) {
- 		rq->csd.func = __blk_mq_complete_request_remote;
- 		rq->csd.info = rq;
- 		rq->csd.flags = 0;
--		smp_call_function_single_async(ctx->cpu, &rq->csd);
-+		smp_call_function_single_async(ccpu, &rq->csd);
- 	} else {
- 		q->mq_ops->complete(rq);
- 	}
-diff --git a/block/blk-softirq.c b/block/blk-softirq.c
-index 457d9ba3eb20..1139a5352a59 100644
---- a/block/blk-softirq.c
-+++ b/block/blk-softirq.c
-@@ -11,6 +11,7 @@
- #include <linux/cpu.h>
- #include <linux/sched.h>
- #include <linux/sched/topology.h>
-+#include <linux/filter.h>
- 
- #include "blk.h"
- 
-@@ -101,20 +102,32 @@ void __blk_complete_request(struct request *req)
- 	int cpu, ccpu = req->mq_ctx->cpu;
- 	unsigned long flags;
- 	bool shared = false;
-+	int bpf_ccpu = -1;
-+	struct bpf_prog *prog;
- 
- 	BUG_ON(!q->mq_ops->complete);
- 
--	local_irq_save(flags);
--	cpu = smp_processor_id();
-+	rcu_read_lock();
-+	prog = rcu_dereference_protected(q->prog, 1);
-+	if (prog)
-+		bpf_ccpu = BPF_PROG_RUN(q->prog, NULL);
-+	rcu_read_unlock();
- 
- 	/*
--	 * Select completion CPU
-+	 * Select completion CPU.
-+	 * If a valid CPU number is returned by eBPF program, use it directly.
- 	 */
--	if (test_bit(QUEUE_FLAG_SAME_COMP, &q->queue_flags) && ccpu != -1) {
--		if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
--			shared = cpus_share_cache(cpu, ccpu);
-+	local_irq_save(flags);
-+	cpu = smp_processor_id();
-+	if (bpf_ccpu < 0 || !cpu_online(bpf_ccpu)) {
-+		if (test_bit(QUEUE_FLAG_SAME_COMP, &q->queue_flags) &&
-+			ccpu != -1) {
-+			if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
-+				shared = cpus_share_cache(cpu, ccpu);
-+		} else
-+			ccpu = cpu;
- 	} else
--		ccpu = cpu;
-+		ccpu = bpf_ccpu;
- 
- 	/*
- 	 * If current CPU and requested CPU share a cache, run the softirq on
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index d9db32fb75ee..849589c3c51c 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -397,6 +397,8 @@ static inline int blkdev_reset_zones_ioctl(struct block_device *bdev,
- 
- #endif /* CONFIG_BLK_DEV_ZONED */
- 
-+struct bpf_prog;
-+
- struct request_queue {
- 	struct request		*last_merge;
- 	struct elevator_queue	*elevator;
-@@ -590,6 +592,7 @@ struct request_queue {
- 
- #define BLK_MAX_WRITE_HINTS	5
- 	u64			write_hints[BLK_MAX_WRITE_HINTS];
-+	struct bpf_prog __rcu *prog;
- };
- 
- #define QUEUE_FLAG_STOPPED	0	/* queue is stopped */
-diff --git a/include/linux/bpf_blkdev.h b/include/linux/bpf_blkdev.h
-new file mode 100644
-index 000000000000..0777428bc6e2
---- /dev/null
-+++ b/include/linux/bpf_blkdev.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __BPF_BLKDEV_H__
-+#define __BPF_BLKDEV_H__
-+
-+extern int blkdev_bpf_prog_attach(const union bpf_attr *attr,
-+		enum bpf_prog_type ptype, struct bpf_prog *prog);
-+extern int blkdev_bpf_prog_detach(const union bpf_attr *attr);
-+
-+#endif /* !__BPF_BLKDEV_H__ */
-diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-index 36a9c2325176..008facd336e5 100644
---- a/include/linux/bpf_types.h
-+++ b/include/linux/bpf_types.h
-@@ -38,6 +38,7 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2)
- #ifdef CONFIG_INET
- BPF_PROG_TYPE(BPF_PROG_TYPE_SK_REUSEPORT, sk_reuseport)
- #endif
-+BPF_PROG_TYPE(BPF_PROG_TYPE_BLKDEV, blkdev)
- 
- BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops)
- BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_ARRAY, percpu_array_map_ops)
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
 index 77c6be96d676..36aa35e29be2 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
 @@ -173,6 +173,7 @@ enum bpf_prog_type {
  	BPF_PROG_TYPE_CGROUP_SYSCTL,
  	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
@@ -389,47 +84,366 @@ index 77c6be96d676..36aa35e29be2 100644
  	__MAX_BPF_ATTACH_TYPE
  };
  
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 82eabd4e38ad..9724c0809f21 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -4,6 +4,7 @@
- #include <linux/bpf.h>
- #include <linux/bpf_trace.h>
- #include <linux/bpf_lirc.h>
-+#include <linux/bpf_blkdev.h>
- #include <linux/btf.h>
- #include <linux/syscalls.h>
- #include <linux/slab.h>
-@@ -1942,6 +1943,9 @@ static int bpf_prog_attach(const union bpf_attr *attr)
- 	case BPF_CGROUP_SETSOCKOPT:
- 		ptype = BPF_PROG_TYPE_CGROUP_SOCKOPT;
- 		break;
-+	case BPF_BLKDEV_IOC_CPU:
-+		ptype = BPF_PROG_TYPE_BLKDEV;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -1966,6 +1970,9 @@ static int bpf_prog_attach(const union bpf_attr *attr)
- 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
- 		ret = skb_flow_dissector_bpf_prog_attach(attr, prog);
- 		break;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index e0276520171b..5a849d6d30be 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -3579,6 +3579,7 @@ static bool bpf_prog_type__needs_kver(enum bpf_prog_type type)
+ 	case BPF_PROG_TYPE_PERF_EVENT:
+ 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
+ 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
 +	case BPF_PROG_TYPE_BLKDEV:
-+		ret = blkdev_bpf_prog_attach(attr, ptype, prog);
-+		break;
+ 		return false;
+ 	case BPF_PROG_TYPE_KPROBE:
  	default:
- 		ret = cgroup_bpf_prog_attach(attr, ptype, prog);
- 	}
-@@ -2029,6 +2036,8 @@ static int bpf_prog_detach(const union bpf_attr *attr)
- 	case BPF_CGROUP_SETSOCKOPT:
- 		ptype = BPF_PROG_TYPE_CGROUP_SOCKOPT;
+diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+index 4b0b0364f5fc..311e13e778a3 100644
+--- a/tools/lib/bpf/libbpf_probes.c
++++ b/tools/lib/bpf/libbpf_probes.c
+@@ -102,6 +102,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
+ 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
+ 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
+ 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
++	case BPF_PROG_TYPE_BLKDEV:
+ 	default:
  		break;
-+	case BPF_BLKDEV_IOC_CPU:
-+		return blkdev_bpf_prog_detach(attr);
- 	default:
- 		return -EINVAL;
  	}
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 6889c19a628c..6a36234adfea 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -30,6 +30,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+ 	test_cgroup_storage test_select_reuseport test_section_names \
+ 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
+ 	test_btf_dump test_cgroup_attach xdping
++TEST_GEN_PROGS += test_blkdev_ccpu
+ 
+ BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+ TEST_GEN_FILES = $(BPF_OBJ_FILES)
+diff --git a/tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c b/tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c
+new file mode 100644
+index 000000000000..6f66d51fe6af
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c
+@@ -0,0 +1,66 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2019 Hou Tao <houtao1@huawei.com>
++ */
++#include <linux/bpf.h>
++#include "bpf_helpers.h"
++
++/* Index to CPU set */
++struct bpf_map_def SEC("maps") idx_map = {
++	.type = BPF_MAP_TYPE_ARRAY,
++	.key_size = sizeof(__u32),
++	.value_size = sizeof(__u32),
++	.max_entries = 1,
++};
++BPF_ANNOTATE_KV_PAIR(idx_map, __u32, __u32);
++
++/* Size of CPU set */
++struct bpf_map_def SEC("maps") cnt_map = {
++	.type = BPF_MAP_TYPE_ARRAY,
++	.key_size = sizeof(__u32),
++	.value_size = sizeof(__u32),
++	.max_entries = 1,
++};
++BPF_ANNOTATE_KV_PAIR(cnt_map, __u32, __u32);
++
++/* CPU set */
++struct bpf_map_def SEC("maps") cpu_map = {
++	.type = BPF_MAP_TYPE_ARRAY,
++	.key_size = sizeof(__u32),
++	.value_size = sizeof(__u32),
++	.max_entries = 256,
++};
++BPF_ANNOTATE_KV_PAIR(cpu_map, __u32, __u32);
++
++SEC("ccpu_demo")
++int customized_round_robin_ccpu(void *ctx)
++{
++	__u32 key = 0;
++	__u32 *idx_ptr;
++	__u32 *cnt_ptr;
++	__u32 *cpu_ptr;
++	__u32 idx;
++	__u32 cnt;
++
++	idx_ptr = bpf_map_lookup_elem(&idx_map, &key);
++	if (!idx_ptr)
++		return -1;
++	idx = (*idx_ptr)++;
++
++	cnt_ptr = bpf_map_lookup_elem(&cnt_map, &key);
++	if (!cnt_ptr)
++		return -1;
++	cnt = *cnt_ptr;
++	if (!cnt)
++		return -1;
++
++	idx %= cnt;
++	cpu_ptr = bpf_map_lookup_elem(&cpu_map, &idx);
++	if (!cpu_ptr)
++		return -1;
++
++	return *cpu_ptr;
++}
++
++char _license[] SEC("license") = "GPL";
++__u32 _version SEC("version") = 1;
+diff --git a/tools/testing/selftests/bpf/test_blkdev_ccpu.c b/tools/testing/selftests/bpf/test_blkdev_ccpu.c
+new file mode 100644
+index 000000000000..ec5981e7e2ed
+--- /dev/null
++++ b/tools/testing/selftests/bpf/test_blkdev_ccpu.c
+@@ -0,0 +1,246 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2019 Hou Tao <houtao1@huawei.com>
++ */
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++#include <errno.h>
++#include <assert.h>
++#include <sys/time.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <fcntl.h>
++#include <signal.h>
++#include <linux/bpf.h>
++#include <bpf/bpf.h>
++#include <bpf/libbpf.h>
++
++#include "bpf_util.h"
++#include "bpf_rlimit.h"
++
++static int
++print_all_levels(enum libbpf_print_level level,
++		 const char *format, va_list args)
++{
++	return vfprintf(stderr, format, args);
++}
++
++static void sig_handler(int num)
++{
++}
++
++static int parse_cpu_set(const char *str, const unsigned int **cpus,
++	int *cpu_nr)
++{
++	int total;
++	unsigned int *set;
++	int err;
++	int idx;
++	const char *from;
++
++	total = libbpf_num_possible_cpus();
++	if (total <= 0)
++		return -1;
++
++	set = calloc(total, sizeof(*set));
++	if (!set) {
++		printf("Failed to alloc cpuset (cpu nr: %d)\n", total);
++		return -1;
++	}
++
++	if (!str) {
++		for (idx = 0; idx < total; idx++)
++			set[idx] = idx;
++		*cpus = set;
++		*cpu_nr = total;
++
++		return 0;
++	}
++
++	err = 0;
++	idx = 0;
++	from = str;
++	while (1) {
++		char *endptr;
++		int start;
++		int end;
++
++		start = strtol(from, &endptr, 10);
++		if (*endptr != '-' && *endptr != ',' &&
++			(*endptr != '\0' || endptr == from)) {
++			err = -1;
++			break;
++		}
++		if (*endptr == '\0' || *endptr == ',') {
++			printf("add cpu %d\n", start);
++			set[idx++] = start;
++			if (*endptr == '\0')
++				break;
++		}
++		from = endptr + 1;
++		if (*endptr == ',')
++			continue;
++
++		end = strtol(from, &endptr, 10);
++		if (*endptr != ',' && (*endptr != '\0' || endptr == from)) {
++			err = -1;
++			break;
++		}
++		for (; start <= end; start++) {
++			printf("add cpu %d\n", start);
++			set[idx++] = start;
++		}
++		if (*endptr == '\0')
++			break;
++		from = endptr + 1;
++	}
++
++	if (err) {
++		printf("invalid cpu set spec '%s'\n", from);
++		free(set);
++		return -1;
++	}
++
++	*cpus = set;
++	*cpu_nr = idx;
++
++	return 0;
++}
++
++static int load_cpu_set(struct bpf_object *obj, const unsigned int *cpus,
++	int cnt)
++{
++	const char *name;
++	struct bpf_map *map;
++	int fd;
++	int idx;
++
++	name = "cpu_map";
++	map = bpf_object__find_map_by_name(obj, name);
++	if (!map) {
++		printf("no map %s\n", name);
++		return -1;
++	}
++
++	fd = bpf_map__fd(map);
++	if (fd < 0) {
++		printf("invalid fd for map %s\n", name);
++		return -1;
++	}
++
++	for (idx = 0; idx < cnt; idx++) {
++		if (bpf_map_update_elem(fd, &idx, &cpus[idx], 0)) {
++			printf("%s[%u] = %u error %s\n",
++					name, idx, cpus[idx], strerror(errno));
++			return -1;
++		}
++		printf("%s[%u] = %u\n", name, idx, cpus[idx]);
++	}
++
++	name = "cnt_map";
++	map = bpf_object__find_map_by_name(obj, name);
++	if (!map) {
++		printf("no map %s\n", name);
++		return -1;
++	}
++
++	fd = bpf_map__fd(map);
++	if (fd < 0) {
++		printf("invalid fd for map %s\n", name);
++		return -1;
++	}
++
++	idx = 0;
++	if (bpf_map_update_elem(fd, &idx, &cnt, 0)) {
++		printf("%s[%u] = %u error %s\n",
++				name, idx, cnt, strerror(errno));
++		return -1;
++	}
++	printf("%s[%u] = %u\n", name, idx, cnt);
++
++	return 0;
++}
++
++static void usage(const char *cmd)
++{
++	printf("Usage: %s -d blk_device [-s cpu_set]\n"
++			"  round-robin all CPUs: %s -d /dev/sda\n"
++			"  round-robin specific CPUs: %s -d /dev/sda -s 4-7,12-15\n",
++			cmd, cmd, cmd);
++	exit(1);
++}
++
++int main(int argc, char **argv)
++{
++	int opt;
++	const char *prog = "./blkdev_ccpu_rr.o";
++	const char *bdev;
++	const char *cpu_set_str = NULL;
++	const unsigned int *cpus;
++	int cpu_nr;
++	struct bpf_object *obj;
++	int prog_fd;
++	int bdev_fd;
++
++	while ((opt = getopt(argc, argv, "d:s:h")) != -1) {
++		switch (opt) {
++		case 'd':
++			bdev = optarg;
++			break;
++		case 's':
++			cpu_set_str = optarg;
++			break;
++		case 'h':
++			usage(argv[0]);
++			break;
++		}
++	}
++
++	if (!bdev)
++		usage(argv[0]);
++
++	printf("blk device %s, cpu set %s\n", bdev, cpu_set_str);
++
++	signal(SIGINT, sig_handler);
++	signal(SIGQUIT, sig_handler);
++
++	libbpf_set_print(print_all_levels);
++
++	if (parse_cpu_set(cpu_set_str, &cpus, &cpu_nr))
++		goto out;
++
++	if (bpf_prog_load(prog, BPF_PROG_TYPE_BLKDEV, &obj, &prog_fd)) {
++		printf("Failed to load %s\n", prog);
++		goto out;
++	}
++
++	if (load_cpu_set(obj, cpus, cpu_nr))
++		goto out;
++
++	bdev_fd = open(bdev, O_RDWR);
++	if (bdev_fd < 0) {
++		printf("Failed to open %s %s\n", bdev, strerror(errno));
++		goto out;
++	}
++
++	/* Attach bpf program */
++	if (bpf_prog_attach(prog_fd, bdev_fd, BPF_BLKDEV_IOC_CPU, 0)) {
++		printf("Failed to attach %s %s\n", prog, strerror(errno));
++		goto out;
++	}
++
++	printf("Attached, use Ctrl-C to detach\n\n");
++
++	pause();
++
++	if (bpf_prog_detach(bdev_fd, BPF_BLKDEV_IOC_CPU)) {
++		printf("Failed to detach %s %s\n", prog, strerror(errno));
++		goto out;
++	}
++
++	return 0;
++out:
++	return 1;
++}
 -- 
 2.22.0
 
