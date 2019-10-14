@@ -2,171 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECFB2D6167
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 13:34:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7A0D6193
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 13:44:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730524AbfJNLek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 07:34:40 -0400
-Received: from mailout1.samsung.com ([203.254.224.24]:12358 "EHLO
-        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730454AbfJNLej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 07:34:39 -0400
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20191014113438epoutp01e6b1845c15ab7b2a75e0ae25a35fdf98~NgETOHExx3102131021epoutp01B
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 11:34:38 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20191014113438epoutp01e6b1845c15ab7b2a75e0ae25a35fdf98~NgETOHExx3102131021epoutp01B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1571052878;
-        bh=gf2qJABaMWfMWjFiR+zwX+nr8GwXpv4GRejuLznSm/Q=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=Ti7hzs2nTkWgRguCHG0OH4FOPhxEuFo2hFDvTnHId8RuO2d0qM4XCSzligIAWlOaE
-         Nu0q5psN2Yu4W9KiCcY+0caLkLODaJqKVAJ0/Af2fBSXih8kk05TsJcFt1AvF6g0YQ
-         tRyyTqcn6VzsJlnOdQjsP64lhiMsSkhUTO/asmyE=
-Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20191014113437epcas5p475242e84737ef3c428d395ffff7fb96f~NgESvndv10522205222epcas5p4h;
-        Mon, 14 Oct 2019 11:34:37 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E4.A7.04480.D4D54AD5; Mon, 14 Oct 2019 20:34:37 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4~NgESVwHHK2579225792epcas5p2F;
-        Mon, 14 Oct 2019 11:34:37 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20191014113437epsmtrp18bc220f6f4e9bdffd288cb47f25bc757~NgESVDIto0909409094epsmtrp1b;
-        Mon, 14 Oct 2019 11:34:37 +0000 (GMT)
-X-AuditID: b6c32a4b-cbbff70000001180-ee-5da45d4d5640
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        27.DF.03889.C4D54AD5; Mon, 14 Oct 2019 20:34:37 +0900 (KST)
-Received: from ubuntu.sa.corp.samsungelectronics.net (unknown
-        [107.108.83.125]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20191014113435epsmtip27fa5e187947b3d40dc0af4124130e886~NgEQn_itW2251522515epsmtip2X;
-        Mon, 14 Oct 2019 11:34:35 +0000 (GMT)
-From:   Pankaj Sharma <pankj.sharma@samsung.com>
-To:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        eugen.hristev@microchip.com, ludovic.desroches@microchip.com,
-        pankaj.dubey@samsung.com, rcsekar@samsung.com,
-        Pankaj Sharma <pankj.sharma@samsung.com>,
-        Sriram Dash <sriram.dash@samsung.com>
-Subject: [PATCH] can: m_can: add support for handling arbitration error
-Date:   Mon, 14 Oct 2019 17:04:04 +0530
-Message-Id: <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
-X-Mailer: git-send-email 2.7.4
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrCIsWRmVeSWpSXmKPExsWy7bCmuq5v7JJYg2WN0hZzzrewWBz4cZzF
-        YtX3qcwWl3fNYbN4sfY6q8X6RVNYLI4tELNYtPULu8XyrvvMFrMu7GC1uLGe3WLpvZ2sDjwe
-        W1beZPL4eOk2o8edH0sZPfr/Gnj0bVnF6PF5k1wAWxSXTUpqTmZZapG+XQJXRtvGHUwFq4Ur
-        pj58xdjA2CrQxcjJISFgIrFvejd7FyMXh5DAbkaJBXNnsEA4nxglTs0+AOV8Y5S42LaNDaZl
-        w/NGqJa9jBLHV9xkgnBamCRWzGhiBaliE9CTuPR+MliHiECoxLLeCawgRcwCTUwSXZt7mUES
-        wgLuEl/ON4IVsQioSvS3/mYEsXkFPCR+t05gglgnJ3HzXCczSLOEwBo2idcNi6DucJE4OmE6
-        C4QtLPHq+BZ2CFtK4mV/G5SdLbFwdz9QDQeQXSHRNkMYImwvceDKHLAws4CmxPpd+iBhZgE+
-        id7fT5ggqnklOtqEIKrVJKY+fccIYctI3Hm0GeoAD4kJPf1gtpBArMSFFZ1sExhlZiEMXcDI
-        uIpRMrWgODc9tdi0wDgvtVyvODG3uDQvXS85P3cTIzgtaHnvYNx0zucQowAHoxIPr0La4lgh
-        1sSy4srcQ4wSHMxKIrwMExbECvGmJFZWpRblxxeV5qQWH2KU5mBREuedxHo1RkggPbEkNTs1
-        tSC1CCbLxMEp1cCYpX7wuuGiN1aHNArb2V3W+Bpf5Mzk5vpePfOU08xvhy9vYHq9SuXORI/Q
-        IyceNra8MpMM2anGOflfUeLi6RemzKuJvT9dObqceWnfkxj1g/+lX37xPOYtdj9P3XiT9tov
-        5vHKHu+VVGy8zeqEV6UZ/H8aG33y/seaz/cdhU5/vVkhtPiD4c+ZSizFGYmGWsxFxYkAHyzH
-        +gcDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrCLMWRmVeSWpSXmKPExsWy7bCSvK5v7JJYgxY1iznnW1gsDvw4zmKx
-        6vtUZovLu+awWbxYe53VYv2iKSwWxxaIWSza+oXdYnnXfWaLWRd2sFrcWM9usfTeTlYHHo8t
-        K28yeXy8dJvR486PpYwe/X8NPPq2rGL0+LxJLoAtissmJTUnsyy1SN8ugSujbeMOpoLVwhVT
-        H75ibGBsFehi5OSQEDCR2PC8kR3EFhLYzSgxqTmki5EDKC4jsfhzNUSJsMTKf8+BSriASpqY
-        JPqau9hAEmwCehKX3k8Gs0UEwiV2TuhiArGZBXqYJFrvJoDYwgLuEl/ON4LVsAioSvS3/mYE
-        sXkFPCR+t05gglggJ3HzXCfzBEaeBYwMqxglUwuKc9Nziw0LjPJSy/WKE3OLS/PS9ZLzczcx
-        gsNOS2sH44kT8YcYBTgYlXh4TyQvjhViTSwrrsw9xCjBwawkwsswYUGsEG9KYmVValF+fFFp
-        TmrxIUZpDhYlcV75/GORQgLpiSWp2ampBalFMFkmDk6pBsaOmYujXH7UOSWz2W99c2I3j5er
-        9eqCy1nrCmr9vcwT70r4pi8vCV68f/YHTW6n74udvi/hvLx8u3HMonfa3AqPN+3j2jYp7uwx
-        7fX7N8RPXvlqz8aefy6J+dJX/m7iec+8+StrEs+NqOOzGv65xIQZ79yzqqrOfSGrhO/dF6Yz
-        r6v9XSP3y0FeiaU4I9FQi7moOBEAx16cSzcCAAA=
-X-CMS-MailID: 20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4
-X-Msg-Generator: CA
+        id S1730989AbfJNLoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 07:44:00 -0400
+Received: from mail-eopbgr710061.outbound.protection.outlook.com ([40.107.71.61]:38750
+        "EHLO NAM05-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730178AbfJNLoA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 07:44:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W1TM7tnkwgrvPyQF9esN1EyTBnewBBPOvF5JOLXLsWsPxJJRxT8c4uM31EhQSFZd95kBuvCxJ5pS9orbve6oCEVgMb1bSJ40PgeRUzxQl/4pfaI3qWoa9EoKmk1wzxz4RkWZpQcOnghSpXhCFBuJMr/z2pTfB0sLzl2hfpcN1rYIV2CpcGuyGm50R1nPXUuk0eAYYJmMZxl39EVDq35bQkcErckPV6toGa5F5ZD5Pq6H2xvmPAg5lDh3t7IPuq9ryC04YjxewZZaY5islhfOiCmRGsREvKrip4oqRlVgBCZSiRzhT4xUHGxVHNKYYUI6ZNFrmoPFj9ChgvDZaYoDJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wLu2NMFwl8aKHj4m+GxB3SDz3+HUmanvCjby54VrZQw=;
+ b=iSBleUX7cfSUMu9XYL1R9o7aYVjLLXziRRSDi8SfZiKRVF+zbQzOy8/Ybfzo/rhN3Ljea3KI6f4xI5FiY/oGboy7B8TjcJKyXBomGOAodvOmkzfBM747hxWTBovfjcBru/glr4TRQx7d5rzh0SmtUiI6slqoPCUb/5dMHLPFhPHUAAd3LD0MU9jk7Q3rj3YAJkPgAlKprE6+nibf7xWqHzQPRMUShlBS4lXNUew5hZGBrf9IjbsiUIFo+j2QOuJQLS1sGNc8Y7fFcwTC3t5CqmqhRggijhUT7M3AmFGt7WQr6H1NYLAbmcGXt56Lis2+25suVxnJMC1go37fABzqjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
+ dkim=pass header.d=aquantia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wLu2NMFwl8aKHj4m+GxB3SDz3+HUmanvCjby54VrZQw=;
+ b=wk5bwquaUyA/G2NUZ//C/MZeNQiOy3k4+zqQ+Y1lD5LOQ+zolD17AdguUqD/5vCOzNf5krrpRB08VDkNMF++G5eZcs9yFNTXs5or5qzN/D6Y6fTUiIQD+tSSYTvZAoHXd4qlW7rh5AlZaj3t9ZQMbC2JXFTc/83FHEfGsSzXb+M=
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
+ BN8PR11MB3828.namprd11.prod.outlook.com (20.178.220.87) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.21; Mon, 14 Oct 2019 11:43:56 +0000
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.023; Mon, 14 Oct 2019
+ 11:43:56 +0000
+From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Egor Pomozov <Egor.Pomozov@aquantia.com>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Simon Edelhaus <sedelhaus@marvell.com>,
+        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
+Subject: Re: [PATCH v2 net-next 03/12] net: aquantia: add basic ptp_clock
+ callbacks
+Thread-Topic: [PATCH v2 net-next 03/12] net: aquantia: add basic ptp_clock
+ callbacks
+Thread-Index: AQHVfccQHd4mih+JiEeyq5u+CEXVpw==
+Date:   Mon, 14 Oct 2019 11:43:56 +0000
+Message-ID: <3afdfb86-7b81-a435-5853-8b238d922977@aquantia.com>
+References: <cover.1570531332.git.igor.russkikh@aquantia.com>
+ <df637c9a87f6fd0107ad536d0c87be45e69feaa0.1570531332.git.igor.russkikh@aquantia.com>
+ <20191012190242.GK3165@localhost>
+In-Reply-To: <20191012190242.GK3165@localhost>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BY5PR16CA0004.namprd16.prod.outlook.com
+ (2603:10b6:a03:1a0::17) To BN8PR11MB3762.namprd11.prod.outlook.com
+ (2603:10b6:408:8d::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Igor.Russkikh@aquantia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d44bf251-7b46-4ccc-ec91-08d7509bcb9d
+x-ms-traffictypediagnostic: BN8PR11MB3828:
+x-ld-processed: 83e2e134-991c-4ede-8ced-34d47e38e6b1,ExtFwd
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR11MB38287385A47F02415BB41D8C98900@BN8PR11MB3828.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2582;
+x-forefront-prvs: 01901B3451
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39850400004)(376002)(346002)(366004)(396003)(136003)(199004)(189003)(99286004)(31696002)(52116002)(25786009)(5660300002)(1411001)(6506007)(8936002)(81166006)(81156014)(8676002)(31686004)(76176011)(186003)(66066001)(102836004)(14454004)(71190400001)(71200400001)(54906003)(386003)(26005)(86362001)(4744005)(316002)(508600001)(7736002)(6116002)(305945005)(3846002)(476003)(2906002)(44832011)(2616005)(6916009)(11346002)(486006)(446003)(256004)(36756003)(4326008)(66446008)(64756008)(66556008)(66476007)(66946007)(14444005)(6436002)(6486002)(6246003)(107886003)(6512007)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3828;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: aquantia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: z+0Mx/pPA1LW4NvpmNLLAMgdhXVb9aPXRQSJ6IibE1BxVn1htSG/05IQK/H8o1nZPvwvWuRQptRJMhZWpMwqXvA2G45KihwG2fmux7OO3oSAjuVPHQsBqI4seehELwBPoKrSR/RRvUCkJDjQUejBoHoOKvKCzDmY8WZaVhGTJ/li+S6IALGHjQBf1kZao6fe55yJkFW1vp/ghXFdDljQLbpIYwFNEJ5xpLwTVkMArjnR6j6B3V1FiVoxkeTUsFuJfZ1eozONfrDYtwuyAddWZiqERILzWJFfUOu5bkbhUMqaUfAdYsTVtfIwHtH5NBG4CoexSqVwXrJGwt0WFcAM6fmOh6SnJ1ZKvNAGK5pzj1XMElrFQXT8kphSPmMU8wT0nfyyvDTiCdVobV+SKjbt6JDibRkEGNVdgCcVh1vDhnE=
 Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4
-References: <CGME20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4@epcas5p2.samsung.com>
+Content-ID: <5C07CB7E02159249B28EDB3F609F51C0@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: aquantia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d44bf251-7b46-4ccc-ec91-08d7509bcb9d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Oct 2019 11:43:56.5280
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ItgMEyFdB4WcvVNgncR9pwQyDO+Sh7MgPoyJ8SfxTkX7cXniv9Bm8RzS3lHgHTvQgohWSia13IaL/KNrov7anQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3828
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Bosch MCAN hardware (3.1.0 and above) supports interrupt flag to
-detect Protocol error in arbitration phase.
-
-Transmit error statistics is currently not updated from the MCAN driver.
-Protocol error in arbitration phase is a TX error and the network
-statistics should be updated accordingly.
-
-The member "tx_error" of "struct net_device_stats" should be incremented
-as arbitration is a transmit protocol error. Also "arbitration_lost" of
-"struct can_device_stats" should be incremented to report arbitration
-lost.
-
-Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
-Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
----
- drivers/net/can/m_can/m_can.c | 38 +++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
-
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index b95b382eb308..7efafee0eec8 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -778,6 +778,39 @@ static inline bool is_lec_err(u32 psr)
- 	return psr && (psr != LEC_UNUSED);
- }
- 
-+static inline bool is_protocol_err(u32 irqstatus)
-+{
-+	if (irqstatus & IR_ERR_LEC_31X)
-+		return 1;
-+	else
-+		return 0;
-+}
-+
-+static int m_can_handle_protocol_error(struct net_device *dev, u32 irqstatus)
-+{
-+	struct net_device_stats *stats = &dev->stats;
-+	struct m_can_priv *priv = netdev_priv(dev);
-+	struct can_frame *cf;
-+	struct sk_buff *skb;
-+
-+	/* propagate the error condition to the CAN stack */
-+	skb = alloc_can_err_skb(dev, &cf);
-+	if (unlikely(!skb))
-+		return 0;
-+
-+	if (priv->version >= 31 && (irqstatus & IR_PEA)) {
-+		netdev_dbg(dev, "Protocol error in Arbitration fail\n");
-+		stats->tx_errors++;
-+		priv->can.can_stats.arbitration_lost++;
-+		cf->can_id |= CAN_ERR_LOSTARB;
-+		cf->data[0] |= CAN_ERR_LOSTARB_UNSPEC;
-+	}
-+
-+	netif_receive_skb(skb);
-+
-+	return 1;
-+}
-+
- static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
- 				   u32 psr)
- {
-@@ -792,6 +825,11 @@ static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
- 	    is_lec_err(psr))
- 		work_done += m_can_handle_lec_err(dev, psr & LEC_UNUSED);
- 
-+	/* handle protocol errors in arbitration phase */
-+	if ((priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
-+	    is_protocol_err(irqstatus))
-+		work_done += m_can_handle_protocol_error(dev, irqstatus);
-+
- 	/* other unproccessed error interrupts */
- 	m_can_handle_other_err(dev, irqstatus);
- 
--- 
-2.17.1
-
+SGkgUmljaGFyZCwNCg0KVGhhbmtzIGZvciB5b3VyIHJldmlldywgd2lsbCB1cGRhdGUgdGhlIHBh
+dGNoc2V0IGFmdGVyIHRoZSBjb21tZW50cy4NCg0KDQo+PiArew0KPj4gKwlzdHJ1Y3QgYXFfcHRw
+X3MgKmFxX3B0cCA9IGNvbnRhaW5lcl9vZihwdHAsIHN0cnVjdCBhcV9wdHBfcywgcHRwX2luZm8p
+Ow0KPj4gKwlzdHJ1Y3QgYXFfbmljX3MgKmFxX25pYyA9IGFxX3B0cC0+YXFfbmljOw0KPj4gKw0K
+Pj4gKwltdXRleF9sb2NrKCZhcV9uaWMtPmZ3cmVxX211dGV4KTsNCj4gDQo+IEhlcmUgeW91IHVz
+ZSBhIGRpZmZlcmVudCBsb2NrIHRoYW4uLi4NCj4gDQoNCj4+ICsNCj4+ICsJc3Bpbl9sb2NrX2ly
+cXNhdmUoJmFxX3B0cC0+cHRwX2xvY2ssIGZsYWdzKTsNCj4gDQo+IC4uLiBoZXJlLiAgSXMgaXQg
+c2FmZSB0byBjb25jdXJyZW50bHkgc2V0IHRoZSB0aW1lIGFuZCB0aGUgZnJlcXVlbmN5Pw0KDQoN
+ClllcywgaXRzIHNhZmUuIFRoZSBwdXJwb3NlIG9mIHRoZSBsb2NrcyBpcyBkaWZmZXJlbnQsIG11
+dGV4IHNlY3VyZXMgRlcgYWNjZXNzZXMuDQpUaGV5IGNvdWxkIHRha2UgdGltZSBhbmQgc2hvdWxk
+IGJlIHNlcmlhbGl6ZWQuDQoNCldvcmtpbmcgd2l0aCBwdHAgY2xvY2sgaG93ZXZlciBkb2VzIG5v
+dCB1c2UgRlcsIGJ1dCBzcGlubG9jayBpcyB1c2VkIHRvIHNlY3VyZQ0KcG9zc2libGUgY29uY3Vy
+cmVudCBhY2Nlc3MgYW5kIG1hdGggb3ZlciA2NGJpdCB2YXJpYWJsZSBhcV9wdHAtPnB0cF9jbG9j
+a19vZmZzZXQNCg0KUmVnYXJkcywNCiAgSWdvcg0K
