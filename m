@@ -2,121 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3487D6AA5
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 22:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24ACDD6AB3
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 22:20:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731502AbfJNUPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 16:15:09 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37022 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729864AbfJNUPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 16:15:08 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y5so10999721pfo.4
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 13:15:08 -0700 (PDT)
+        id S1732518AbfJNUU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 16:20:27 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44019 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730516AbfJNUU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 16:20:27 -0400
+Received: by mail-wr1-f68.google.com with SMTP id j18so21123441wrq.10
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 13:20:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rNLplWPzCFWlmBH0YsnpdjS526HhYFOEgUd29EPDURg=;
-        b=2L37Oana/SBHUxavko8qwllSxv1fjK5o1T0Rp9D+Qz1tbjxGeVMHwnsWY51ht5CthN
-         GORU7ezb1/jDwAKWMomGBH2FiPjiRtsZyfKCzqIr0eboZpOMZVPnx0KhhD82IX3hb5Bc
-         NERLNoX6rlbEiRXrLSYIJaei7D1Fpilyk7fKxRc5veZe3YrR55PzHtRbYpA6REH4Y3Bl
-         MkabbiT1ahWZx33XDQHoq8gqIfSRGQrXBiOiyn2o1R/ib4DDcMuuy5qX0jzfstTiTHV5
-         u4woIp10Z3kPPWYZwJV48lEC2F6M6uuVfznhLyRj85XWwJzojwHn9XCgPUXwF+yWEdeu
-         7XOg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4pJ8h1KvG9GMPqRJCIBO4L84mDfYWc2RR4B52wfi9C0=;
+        b=FpwwRgGjAc3xrZCrVPSRcgQlYoFdjvNTwhpUQlBalQ99gJJj4xzpTr6JxyglWveRx2
+         a/vgpxi6EmvRuX8FYJRy9ICXJZbBO7+caNgbl8O7n5erU1jnIZM8ngttSsX6MV+WQP7R
+         hiXH/Id8TdJsWgzsziV9jeSPB1020ICpXoLrPMohPH6T1nCUGLqhVYs9K7CcGNojMWb8
+         t9oytQSRE3NUh5kooxGM+7nnb3itY7FkMv9hjXcGAwBo2kqrIR8ySIlAOkGoMMeY9jtN
+         ry8PN1TVGWznE6pt7ALBdiWPXiyNlP9KMiMnmp7h21uKJSBrHv5GClsDmUYBdNMIe71a
+         YdkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rNLplWPzCFWlmBH0YsnpdjS526HhYFOEgUd29EPDURg=;
-        b=kdbkWNxUZdtdhMv3O/qxOBOYrskxpNSiTe6mqgU+xfWWKSvMyWjZs6yOrL+TZ0ilhR
-         ErdLkiJ9LuOShfsy+nctuJ87S0XyB+vrKgaAIFOv2TwKbkgmgOhCbyGtU1oZFiguFKJH
-         POClpVeDF7oo/HM26T9jms4+KfU8YZksdEMmXgz85X4RlPNxFKx2Cl+ha8S/aPEA5jbd
-         77Jv1Fv+eoUGK/t6XNV9/aVCZWks6zQ+5YzQGVzSIgoqaW/vdXrqZbOe4OAPcbnpbn83
-         3PgG0sez6vgmOR8zfedaRuIGFQ1Ez+jr9v5mQPIslCE8TIABw0G20pGQUndep1ZnAOWu
-         nh0g==
-X-Gm-Message-State: APjAAAWca+zB+3rm2pr2ws4bn2JyNVGBOG2N3cxsXqdIMpbVoGbFTbJG
-        5yu2TIrDDB5GeD+guW+wFd8eEgtIoqqytA==
-X-Google-Smtp-Source: APXvYqzsc0CHOFHsx4KSnRNR5nZ3i2IbdP1j6QBvQqsMcI3ZR17YHqeAOYppvKBUA0HrqwLQWffnEA==
-X-Received: by 2002:a65:5cca:: with SMTP id b10mr17912355pgt.258.1571084107864;
-        Mon, 14 Oct 2019 13:15:07 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 19sm18637993pjd.23.2019.10.14.13.15.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Oct 2019 13:15:07 -0700 (PDT)
-Date:   Mon, 14 Oct 2019 13:15:00 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        Petr Oros <poros@redhat.com>
-Subject: Re: [PATCH iproute2] ipnetns: enable to dump nsid conversion table
-Message-ID: <20191014131500.7dd2b1a8@hermes.lan>
-In-Reply-To: <20191007134447.20077-1-nicolas.dichtel@6wind.com>
-References: <20191007134447.20077-1-nicolas.dichtel@6wind.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4pJ8h1KvG9GMPqRJCIBO4L84mDfYWc2RR4B52wfi9C0=;
+        b=OteIq1d545nn7ET9budwRhiMcbK/0qvPu7zIHtVshdcG1QIlLzSCeqqdy5UPPT0JWH
+         MQDafMVQebcp79RKbkEk+28FAsDFBRyg2KCyzRCddDx0ocR+gq8mawMUbXDPBYqYz5oQ
+         YWC7ydlWX2HGTmKG9hLygiR18HIDDbSS8iaUyEnbENuxck7b7G8b+r03R8/Y/JSgez3A
+         wufJqhGkr+76UzlSfiSO1I+7lZdphrmqcxLtS9w9Oa8a6F0dXfRqwCoFDfwxY6Y2a4nN
+         bCHnwM2f7W79COMf0Z/VwYMflEJbGAPF3jmGNEplyly/tKdwWZk5wiLFmC+KTiyQDHei
+         JmVg==
+X-Gm-Message-State: APjAAAXZsp5QtR2GjCEnpay7qFJhXOr+ladV/NXAE/tqwNWlIZxUsDAK
+        6REfGQZWYX499gZFm+kTYxau2lVL
+X-Google-Smtp-Source: APXvYqzSbq14INxUN4bj8YseI10o6NiB5w+YmbHKi06Q5p4i2P5FLL7Q6YMhWCWY6l9aZuAcACL+Vw==
+X-Received: by 2002:adf:dc82:: with SMTP id r2mr5984223wrj.74.1571084424355;
+        Mon, 14 Oct 2019 13:20:24 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:ed5d:7e31:897c:be08? (p200300EA8F266400ED5D7E31897CBE08.dip0.t-ipconnect.de. [2003:ea:8f26:6400:ed5d:7e31:897c:be08])
+        by smtp.googlemail.com with ESMTPSA id r2sm42492616wma.1.2019.10.14.13.20.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 14 Oct 2019 13:20:23 -0700 (PDT)
+Subject: Re: lan78xx and phy_state_machine
+To:     Stefan Wahren <wahrenst@gmx.net>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Daniel Wagner <dwagner@suse.de>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191014163004.GP25745@shell.armlinux.org.uk>
+ <20191014192529.z7c5x6hzixxeplvw@beryllium.lan>
+ <25cfc92d-f72b-d195-71b1-f5f238c7988d@gmx.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
+Date:   Mon, 14 Oct 2019 22:20:15 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <25cfc92d-f72b-d195-71b1-f5f238c7988d@gmx.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Oct 2019 15:44:47 +0200
-Nicolas Dichtel <nicolas.dichtel@6wind.com> wrote:
-
-> This patch enables to dump/get nsid from a netns into another netns.
+On 14.10.2019 21:51, Stefan Wahren wrote:
+> [add more recipients]
 > 
-> Example:
-> $ ./test.sh
-> + ip netns add foo
-> + ip netns add bar
-> + touch /var/run/netns/init_net
-> + mount --bind /proc/1/ns/net /var/run/netns/init_net
-> + ip netns set init_net 11
-> + ip netns set foo 12
-> + ip netns set bar 13
-> + ip netns
-> init_net (id: 11)
-> bar (id: 13)
-> foo (id: 12)
-> + ip -n foo netns set init_net 21
-> + ip -n foo netns set foo 22
-> + ip -n foo netns set bar 23
-> + ip -n foo netns
-> init_net (id: 21)
-> bar (id: 23)
-> foo (id: 22)
-> + ip -n bar netns set init_net 31
-> + ip -n bar netns set foo 32
-> + ip -n bar netns set bar 33
-> + ip -n bar netns
-> init_net (id: 31)
-> bar (id: 33)
-> foo (id: 32)
-> + ip netns list-id target-nsid 12
-> nsid 21 current-nsid 11 (iproute2 netns name: init_net)
-> nsid 22 current-nsid 12 (iproute2 netns name: foo)
-> nsid 23 current-nsid 13 (iproute2 netns name: bar)
-> + ip -n foo netns list-id target-nsid 21
-> nsid 11 current-nsid 21 (iproute2 netns name: init_net)
-> nsid 12 current-nsid 22 (iproute2 netns name: foo)
-> nsid 13 current-nsid 23 (iproute2 netns name: bar)
-> + ip -n bar netns list-id target-nsid 33 nsid 32
-> nsid 32 current-nsid 32 (iproute2 netns name: foo)
-> + ip -n bar netns list-id target-nsid 31 nsid 32
-> nsid 12 current-nsid 32 (iproute2 netns name: foo)
-> + ip netns list-id nsid 13
-> nsid 13 (iproute2 netns name: bar)
-> 
-> CC: Petr Oros <poros@redhat.com>
-> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> ---
->  include/libnetlink.h |   5 +-
->  ip/ip_common.h       |   1 +
->  ip/ipnetns.c         | 115 +++++++++++++++++++++++++++++++++++++++++--
->  lib/libnetlink.c     |  15 ++++--
->  4 files changed, 126 insertions(+), 10 deletions(-)
+> Am 14.10.19 um 21:25 schrieb Daniel Wagner:
+>> On Mon, Oct 14, 2019 at 05:30:04PM +0100, Russell King - ARM Linux admin wrote:
+>>> On Mon, Oct 14, 2019 at 04:06:04PM +0200, Daniel Wagner wrote:
+>>>> Hi,
+>>>>
+>>>> I've trying to boot a RPi 3 Model B+ in 64 bit mode. While I can get
+>>>> my configuratin booting with v5.2.20, the current kernel v5.3.6 hangs
+>>>> when initializing the eth interface.
+>>>>
+>>>> Is this a know issue? Some configuration issues?
+>>> I don't see any successfully probed ethernet devices in the boot log, so
+>>> I've no idea which of the multitude of ethernet drivers to look at.  I
+>>> thought maybe I could look at the DT, but I've no idea where
+>>> "arm/bcm2837-rpi-3-b-plus.dts" is located, included by
+>>> arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dts.
+>> Sorry about being so terse. I thought, the RPi devices are well known. My bad.
+>> Anyway, the kernel reports that is the lan78xx driver.
+>>
+>> ls -1 /sys/class/net/ | grep -v lo | xargs -n1 -I{} bash -c 'echo -n {} :" " ; basename `readlink -f /sys/class/net/{}/device/driver`'
+>> eth0 : lan78xx
+>>
+>>> The oops is because the PHY state machine has been started, but there
+>>> is no phydev->adjust_link set.  Can't say much more than that without
+>>> knowing what the driver is doing.
+>> This was a good tip! After a few printks I figured out what is happening.
+>>
+>> phy_connect_direct()
+>>    phy_attach_direct()
+>>      workqueue
+>>        phy_check_link_status()
+>>          phy_link_change
+>>
+
+Interesting is just what is special with your config that this issue
+didn't occur yet on other systems.
+
+>>
+>> Moving the phy_prepare_link() up in phy_connect_direct() ensures that
+>> phydev->adjust_link is set when the phy_check_link_status() is called.
+>>
+>> diff --git a/drivers/net/phy/phy_device.c
+>> b/drivers/net/phy/phy_device.c index 9d2bbb13293e..2a61812bcb0d 100644
+>> --- a/drivers/net/phy/phy_device.c +++ b/drivers/net/phy/phy_device.c
+>> @@ -951,11 +951,12 @@ int phy_connect_direct(struct net_device *dev,
+>> struct phy_device *phydev, if (!dev) return -EINVAL;
+>>
+>> +       phy_prepare_link(phydev, handler);
+>> +
+>>         rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
+>>         if (rc)
+
+If phy_attach_direct() fails we may have to reset phydev->adjust_link to NULL,
+as we do in phy_disconnect(). Apart from that change looks good to me.
+
+>>                 return rc;
+>>
+>> -       phy_prepare_link(phydev, handler);
+>>         if (phy_interrupt_is_valid(phydev))
+>>                 phy_request_interrupt(phydev);
+>>
+>> _______________________________________________
+>> linux-rpi-kernel mailing list
+>> linux-rpi-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel
 > 
 
-Applied. Please send another patch to update man page.
-
+Heiner
