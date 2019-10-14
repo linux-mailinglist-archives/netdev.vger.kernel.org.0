@@ -2,383 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D11D66D4
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 18:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4228D66FE
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 18:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387897AbfJNQF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 12:05:59 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:46910 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731121AbfJNQF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 12:05:59 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q5so10623582pfg.13
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 09:05:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bAMJEUsxqfI49qMm21dB1QkyffANsVYGGQZfC4GPc3g=;
-        b=Wq5GT08/DOzrxt4lWo4hXAlDr6k7LEdRozXEYVnasXmN5C0cEGNL3kRsW6ukMNCRae
-         M5rzbHhXWqxb6QlwY6Px/wnssgk2Zv7LHfzyICeeor8IaGOJ6AR4C7rVJwUV+4EzGXdP
-         SRMFjrSdmGheCDwixGIXnOJYOpIRs0yrOtYTXNIAsO95btxgrbeQVoqlr0YDtQc0CfF0
-         ckE50OoE18+4Hm94fhg70xtQGg7EsrNYhBoqRE5VN4JUsqKPSGK9KzHXKl0g+FeQ5S0s
-         S+M+cZWBmr9gPeC6vFToYS1g9kRAo66fLm3PWSpIbut2MwFhyOgij4ziBBbA47IO7fzX
-         Ow6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bAMJEUsxqfI49qMm21dB1QkyffANsVYGGQZfC4GPc3g=;
-        b=b4KupSU+/j9a8qgI3kMc7nN7mKxLdFQwHWRxLcv/WJHMxom7CNh5WNJBTrVLXqjcjl
-         OzprWlYn7uHwR6Vu0cVKrISglPOreYhcDFM9pl9PkX/M2B+47WEYB3j5/AYUHB/E0Wdh
-         LyxD9ofB9jFSRU0Dw3j2f4lz4YL8+yCTZK3CNPunuACiMlF8iL2vngM0scRO/t0KwXh6
-         I7UAXU1Oo0t2Wegif0UR+Y+fFpChv/a0/GTvTUd0cPKxlWyXVvuTQcPHsfqQb+mFSMbL
-         GoODJbdNNFSrv/6iKRAn6TLsdveI7nLgm0ONX1GGSPpZehLSiDiTOQrG0KVdH//xkXsV
-         nU7w==
-X-Gm-Message-State: APjAAAUIrGHRuIPFrsnB8QJfY4g2asaKhUjmRjufQBp+Ki7B42/oiP4b
-        zFIXg8sRuLgKzc17a5a7Lr8=
-X-Google-Smtp-Source: APXvYqyc8irFPU4EX1M/BT1mQchBI/cfBOZ2jV6ixuDDcr5tXQ+WcZZ6yLPT5zbIJ2ZWjD7PC9JGEQ==
-X-Received: by 2002:a63:6506:: with SMTP id z6mr33200971pgb.65.1571069158322;
-        Mon, 14 Oct 2019 09:05:58 -0700 (PDT)
-Received: from martin-VirtualBox ([223.226.47.180])
-        by smtp.gmail.com with ESMTPSA id a13sm28199786pfg.10.2019.10.14.09.05.57
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 14 Oct 2019 09:05:57 -0700 (PDT)
-Date:   Mon, 14 Oct 2019 21:34:44 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Benc <jbenc@redhat.com>, scott.drennan@nokia.com,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH net-next] Change in Openvswitch to support MPLS label
- depth of 3 in ingress direction
-Message-ID: <20191014160444.GA29007@martin-VirtualBox>
-References: <1570509631-13008-1-git-send-email-martinvarghesenokia@gmail.com>
- <CAOrHB_A6diWm08Swp3_2Eo+VCvugRsh60Vc8_t2pC3QLEAR9xQ@mail.gmail.com>
- <20191010043101.GA19339@martin-VirtualBox>
- <CAOrHB_CSwAPW7XwyaFV_hxQADmh25a8JMJa0tRXZbnu-2R60Kw@mail.gmail.com>
+        id S1732195AbfJNQO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 12:14:56 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44954 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730028AbfJNQO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 12:14:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UsqVXyHPAU7v8hHrPgEMdyC0T4BF6GqsFSSuUvMOd5c=; b=s0LzeoJPUuZbq5mb15AuS2oqYc
+        nyiyEeFg0Al31FJq0BMQC17ex55ulpDvfLWfvaXUzauzXkrevyiwhqdde6szLoZrqYhh1NzosYn5D
+        665QJRRMdnWx9IlicDNlhbgizTGWuxSlLp4ltxmtMhrb24QSxZO3HUSQjL2gS5UGrymI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iK2zj-0006D5-Rq; Mon, 14 Oct 2019 18:14:51 +0200
+Date:   Mon, 14 Oct 2019 18:14:51 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Egor Pomozov <Egor.Pomozov@aquantia.com>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        Simon Edelhaus <sedelhaus@marvell.com>,
+        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
+Subject: Re: [PATCH v2 net-next 04/12] net: aquantia: add PTP rings
+ infrastructure
+Message-ID: <20191014161451.GM21165@lunn.ch>
+References: <cover.1570531332.git.igor.russkikh@aquantia.com>
+ <eea16e6e4fe987819dca72304b92b8b921c65286.1570531332.git.igor.russkikh@aquantia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOrHB_CSwAPW7XwyaFV_hxQADmh25a8JMJa0tRXZbnu-2R60Kw@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <eea16e6e4fe987819dca72304b92b8b921c65286.1570531332.git.igor.russkikh@aquantia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 01:08:26PM -0700, Pravin Shelar wrote:
-> On Wed, Oct 9, 2019 at 9:31 PM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > On Wed, Oct 09, 2019 at 08:29:51AM -0700, Pravin Shelar wrote:
-> > > On Mon, Oct 7, 2019 at 9:41 PM Martin Varghese
-> > > <martinvarghesenokia@gmail.com> wrote:
-> > > >
-> > > > From: Martin Varghese <martin.varghese@nokia.com>
-> > > >
-> > > > The openvswitch was supporting a MPLS label depth of 1 in the ingress
-> > > > direction though the userspace OVS supports a max depth of 3 labels.
-> > > > This change enables openvswitch module to support a max depth of
-> > > > 3 labels in the ingress.
-> > > >
-> > > > Signed-off-by: Martin Varghese <martinvarghesenokia@gmail.com>
-> > > > ---
-> > > >  net/openvswitch/actions.c      | 10 +++++++-
-> > > >  net/openvswitch/flow.c         | 20 ++++++++++-----
-> > > >  net/openvswitch/flow.h         |  9 ++++---
-> > > >  net/openvswitch/flow_netlink.c | 55 +++++++++++++++++++++++++++++++++---------
-> > > >  4 files changed, 72 insertions(+), 22 deletions(-)
-> > > >
-> > > > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> > > > index 3572e11..eb5bed5 100644
-> > > > --- a/net/openvswitch/actions.c
-> > > > +++ b/net/openvswitch/actions.c
-> > > > @@ -178,10 +178,14 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
-> > > >  {
-> > > >         int err;
-> > > >
-> > > > +       if (!key->mpls.num_labels_mask)
-> > > > +               return -EINVAL;
-> > > > +
-> > > >         err = skb_mpls_pop(skb, ethertype);
-> > > >         if (err)
-> > > >                 return err;
-> > > >
-> > > > +       key->mpls.num_labels_mask >>= 1;
-> > > >         invalidate_flow_key(key);
-> > > Since this key is immediately invalidated, what is point of updating
-> > > the label count?
-> > >
-> >
-> > The num_labels_mask is being checked in the pop_mpls action to see if anymore
-> > label present to pop.
-> >
-> > if (!key->mpls.num_labels_mask)
-> >         return -EINVAL:
-> >
-> > > >         return 0;
-> > > >  }
-> > > What about checks in OVS_ACTION_ATTR_PUSH_MPLS?
-> > >
-> > The change does not have any impact to the PUSH_MPLS actions.
-> > It should work as before.
-> >
-> Since the MPLS label count is checked in POP, the PUSH action needs to
-> update the count.
->
-Ok, that would be to support a rule like this
-eth_type(0x0800),actions: push_mpls(label=7,tc=0,ttl=64,bos=1,eth_type=0x8847), pop_mpls(eth_type=0x800)
+> @@ -978,7 +992,9 @@ void aq_nic_deinit(struct aq_nic_s *self)
+>  		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i])
+>  		aq_vec_deinit(aq_vec);
+>  
+> +	aq_ptp_ring_deinit(self);
+>  	aq_ptp_unregister(self);
+> +	aq_ptp_ring_free(self);
+>  	aq_ptp_free(self);
 
-Though this rule has no effect we can support it for the completeness.
-It would entail a code like this
+Is this order safe? Seems like you should first unregister, and then
+deinit?
 
- if (eth_p_mpls(proto))
-	key->mpls.num_labels_mask = (key->mpls.num_labels_mask << 1 &
-				     GENMASK(MPLS_LABEL_DEPTH -1, 0))| 0x1;  else
-        key->mpls.num_labels_mask = (key->mpls.num_labels_mask & 0x0)|0x01; 
-> > > > @@ -192,6 +196,7 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
-> > > >         struct mpls_shim_hdr *stack;
-> > > >         __be32 lse;
-> > > >         int err;
-> > > > +       u32 i = 0;
-> > > >
-> > > >         stack = mpls_hdr(skb);
-> > > >         lse = OVS_MASKED(stack->label_stack_entry, *mpls_lse, *mask);
-> > > > @@ -199,7 +204,10 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
-> > > >         if (err)
-> > > >                 return err;
-> > > >
-> > > > -       flow_key->mpls.top_lse = lse;
-> > > > +       for (i = MPLS_LABEL_DEPTH - 1; i > 0; i--)
-> > > > +               flow_key->mpls.lse[i] = flow_key->mpls.lse[i - 1];
-> > > > +
-> > > > +       flow_key->mpls.lse[i] = *mpls_lse;
-> > > This is changing semantic of mpls-set action. It is looking like
-> > > mpls-push. Lets keep the MPLS set that sets one or more MPLS lebels.
-> > >
-> > > >         return 0;
-> > > >  }
-> >
-> > Not sure if I got your comment correct.
-> > Just as before, the new code updates the top most label in the flow_key.
-> I am referring to the for loop which shifts labels to make room new
-> label been set. I think the set action should over-write labels
-> specified in set action.
-> 
-Correct. Then this would suffice " flow_key->mpls.lse[0] = lse"
+> +int aq_ptp_ring_init(struct aq_nic_s *aq_nic)
+> +{
+> +	struct aq_ptp_s *aq_ptp = aq_nic->aq_ptp;
+> +	int err = 0;
+> +
+> +	if (!aq_ptp)
+> +		return 0;
+> +
+> +	err = aq_ring_init(&aq_ptp->ptp_tx);
+> +	if (err < 0)
+> +		goto err_exit;
+> +	err = aq_nic->aq_hw_ops->hw_ring_tx_init(aq_nic->aq_hw,
+> +						 &aq_ptp->ptp_tx,
+> +						 &aq_ptp->ptp_ring_param);
+> +	if (err < 0)
+> +		goto err_exit;
+> +
+> +	err = aq_ring_init(&aq_ptp->ptp_rx);
+> +	if (err < 0)
+> +		goto err_exit;
+> +	err = aq_nic->aq_hw_ops->hw_ring_rx_init(aq_nic->aq_hw,
+> +						 &aq_ptp->ptp_rx,
+> +						 &aq_ptp->ptp_ring_param);
+> +	if (err < 0)
+> +		goto err_exit;
+> +
+> +	err = aq_ring_rx_fill(&aq_ptp->ptp_rx);
+> +	if (err < 0)
+> +		goto err_exit;
+> +	err = aq_nic->aq_hw_ops->hw_ring_rx_fill(aq_nic->aq_hw,
+> +						 &aq_ptp->ptp_rx,
+> +						 0U);
+> +	if (err < 0)
+> +		goto err_exit;
+> +
+> +	err = aq_ring_init(&aq_ptp->hwts_rx);
+> +	if (err < 0)
+> +		goto err_exit;
+> +	err = aq_nic->aq_hw_ops->hw_ring_rx_init(aq_nic->aq_hw,
+> +						 &aq_ptp->hwts_rx,
+> +						 &aq_ptp->ptp_ring_param);
+> +
+> +err_exit:
+> +	return err;
 
-> > > >
-> > > > diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-> > > > index dca3b1e..c101355 100644
-> > > > --- a/net/openvswitch/flow.c
-> > > > +++ b/net/openvswitch/flow.c
-> > > > @@ -699,27 +699,35 @@ static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
-> > > >                         memset(&key->ipv4, 0, sizeof(key->ipv4));
-> > > >                 }
-> > > >         } else if (eth_p_mpls(key->eth.type)) {
-> > > > -               size_t stack_len = MPLS_HLEN;
-> > > > +               u8 label_count = 1;
-> > > >
-> > > > +               memset(&key->mpls, 0, sizeof(key->mpls));
-> > > >                 skb_set_inner_network_header(skb, skb->mac_len);
-> > > >                 while (1) {
-> > > >                         __be32 lse;
-> > > >
-> > > > -                       error = check_header(skb, skb->mac_len + stack_len);
-> > > > +                       error = check_header(skb, skb->mac_len +
-> > > > +                                            label_count * MPLS_HLEN);
-> > > I do not think this is right. This way OVS can copy into MPLS labels
-> > > from next header beyond MPLS. You need parse MPLS header and determine
-> > > end of MPLS labels.
-> > >
-> > The MPLS labels are parsed and then the label count is updated.
-> > Did i miss anything ?
-> ok, That is not issue, but I see other difference compared to current
-> MPLS flow parsing. Currently OVS is keeping top most label in flow.
-> with this change it will keep bottom three MPLS labels in flows. I
-> think we need to keep the parsing same as before.
+Maybe there should be some undoing going on here. If you filled the rx
+ring, do you need to empty it on error?
 
-It is keeping the top 3 labels.The loop parses the MPLS labels till it finds the BOS bit or when the label count reaches MPLS_LABEL_DEPTH.
-> 
-> 
-> > > >                         if (unlikely(error))
-> > > >                                 return 0;
-> > > >
-> > > >                         memcpy(&lse, skb_inner_network_header(skb), MPLS_HLEN);
-> > > >
-> > > > -                       if (stack_len == MPLS_HLEN)
-> > > > -                               memcpy(&key->mpls.top_lse, &lse, MPLS_HLEN);
-> > > > +                       if (label_count <= MPLS_LABEL_DEPTH)
-> > > > +                               memcpy(&key->mpls.lse[label_count - 1], &lse,
-> > > > +                                      MPLS_HLEN);
-> > > >
-> > > > -                       skb_set_inner_network_header(skb, skb->mac_len + stack_len);
-> > > > +                       skb_set_inner_network_header(skb, skb->mac_len +
-> > > > +                                                    label_count * MPLS_HLEN);
-> > > >                         if (lse & htonl(MPLS_LS_S_MASK))
-> > > >                                 break;
-> > > >
-> > > > -                       stack_len += MPLS_HLEN;
-> > > > +                       label_count++;
-> > > >                 }
-> > > > +               if (label_count > MPLS_LABEL_DEPTH)
-> > > > +                       label_count = MPLS_LABEL_DEPTH;
-> > > > +
-> > > > +               key->mpls.num_labels_mask = GENMASK(label_count - 1, 0);
-> > > >         } else if (key->eth.type == htons(ETH_P_IPV6)) {
-> > > >                 int nh_len;             /* IPv6 Header + Extensions */
-> > > >
-> > > ...
-> > > ...
-> > > > diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-> > > > index d7559c6..4eb04e9 100644
-> > > > --- a/net/openvswitch/flow_netlink.c
-> > > > +++ b/net/openvswitch/flow_netlink.c
-> > > > @@ -424,7 +424,7 @@ size_t ovs_key_attr_size(void)
-> > > >         [OVS_KEY_ATTR_DP_HASH]   = { .len = sizeof(u32) },
-> > > >         [OVS_KEY_ATTR_TUNNEL]    = { .len = OVS_ATTR_NESTED,
-> > > >                                      .next = ovs_tunnel_key_lens, },
-> > > > -       [OVS_KEY_ATTR_MPLS]      = { .len = sizeof(struct ovs_key_mpls) },
-> > > > +       [OVS_KEY_ATTR_MPLS]      = { .len = OVS_ATTR_VARIABLE },
-> > > >         [OVS_KEY_ATTR_CT_STATE]  = { .len = sizeof(u32) },
-> > > >         [OVS_KEY_ATTR_CT_ZONE]   = { .len = sizeof(u16) },
-> > > >         [OVS_KEY_ATTR_CT_MARK]   = { .len = sizeof(u32) },
-> > > > @@ -1628,10 +1628,26 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
-> > > >
-> > > >         if (attrs & (1 << OVS_KEY_ATTR_MPLS)) {
-> > > >                 const struct ovs_key_mpls *mpls_key;
-> > > > +               u32 hdr_len = 0;
-> > > > +               u32 label_count = 0, i = 0;
-> > > > +               u32 label_count_mask = 0;
-> > > No need to initialize these values.
-> >
-> > > >
-> > > >                 mpls_key = nla_data(a[OVS_KEY_ATTR_MPLS]);
-> > > > -               SW_FLOW_KEY_PUT(match, mpls.top_lse,
-> > > > -                               mpls_key->mpls_lse, is_mask);
-> > > > +               hdr_len = nla_len(a[OVS_KEY_ATTR_MPLS]);
-> > > > +               label_count = hdr_len / sizeof(struct ovs_key_mpls);
-> > > > +
-> > > > +               if (label_count == 0 || label_count > MPLS_LABEL_DEPTH ||
-> > > > +                   hdr_len % sizeof(struct ovs_key_mpls))
-> > > > +                       return -EINVAL;
-> > > > +
-> > > > +               label_count_mask =  GENMASK(label_count - 1, 0);
-> > > > +
-> > > > +               for (i = 0 ; i < label_count; i++)
-> > > > +                       SW_FLOW_KEY_PUT(match, mpls.lse[i],
-> > > > +                                       mpls_key[i].mpls_lse, is_mask);
-> > > > +
-> > > > +               SW_FLOW_KEY_PUT(match, mpls.num_labels_mask,
-> > > > +                               label_count_mask, is_mask);
-> > > >
-> > > >                 attrs &= ~(1 << OVS_KEY_ATTR_MPLS);
-> > > >          }
-> > > > @@ -2114,13 +2130,22 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
-> > > >                 ether_addr_copy(arp_key->arp_sha, output->ipv4.arp.sha);
-> > > >                 ether_addr_copy(arp_key->arp_tha, output->ipv4.arp.tha);
-> > > >         } else if (eth_p_mpls(swkey->eth.type)) {
-> > > > +               u8 i = 0;
-> > > > +               u8 num_labels;
-> > > >                 struct ovs_key_mpls *mpls_key;
-> > > >
-> > > > -               nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS, sizeof(*mpls_key));
-> > > > +               num_labels = hweight_long(output->mpls.num_labels_mask);
-> > > > +               if (num_labels >= MPLS_LABEL_DEPTH)
-> > > > +                       num_labels = MPLS_LABEL_DEPTH;
-> > > I do not see need for this check. We can copy the value directly from key.
-> > >
-> >
-> > > > +
-> > > > +               nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS,
-> > > > +                                 num_labels * sizeof(*mpls_key));
-> > > >                 if (!nla)
-> > > >                         goto nla_put_failure;
-> > > > +
-> > > >                 mpls_key = nla_data(nla);
-> > > > -               mpls_key->mpls_lse = output->mpls.top_lse;
-> > > > +               for (i = 0; i < num_labels; i++)
-> > > > +                       mpls_key[i].mpls_lse = output->mpls.lse[i];
-> > > >         }
-> > > >
-> > > >         if ((swkey->eth.type == htons(ETH_P_IP) ||
-> > > > @@ -3068,22 +3093,28 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
-> > > >                         break;
-> > > >                 }
-> > > >
-> > > > -               case OVS_ACTION_ATTR_POP_MPLS:
-> > > > +               case OVS_ACTION_ATTR_POP_MPLS: {
-> > > > +                       __be16  proto;
-> > > >                         if (vlan_tci & htons(VLAN_CFI_MASK) ||
-> > > >                             !eth_p_mpls(eth_type))
-> > > >                                 return -EINVAL;
-> > > >
-> > > Since this patch is adding support for multiple labels, we need to
-> > > track depth of the MPLS label stack in MPLS push and pop actions
-> > > validation to avoid checks in fastpath.
-> > >
-> > As mentioned before this change has no impact to the push.
-> > As before, there is no restriction on the number of pushes we can make.
-> >
-> > For the pop_mpls, we coud add a local variable to count the number of pops
-> > and validate that against MPLS_LABEL_DEPTH ?
-> 
-> Right. lets keep local variable here in flow validation that way we
-> can avoid the checks in fastpath.
-> 
+> +}
+> +
+> +int aq_ptp_ring_start(struct aq_nic_s *aq_nic)
+> +{
+> +	struct aq_ptp_s *aq_ptp = aq_nic->aq_ptp;
+> +	int err = 0;
+> +
+> +	if (!aq_ptp)
+> +		return 0;
+> +
+> +	err = aq_nic->aq_hw_ops->hw_ring_tx_start(aq_nic->aq_hw, &aq_ptp->ptp_tx);
+> +	if (err < 0)
+> +		goto err_exit;
+> +
+> +	err = aq_nic->aq_hw_ops->hw_ring_rx_start(aq_nic->aq_hw, &aq_ptp->ptp_rx);
+> +	if (err < 0)
+> +		goto err_exit;
+> +
+> +	err = aq_nic->aq_hw_ops->hw_ring_rx_start(aq_nic->aq_hw,
+> +						  &aq_ptp->hwts_rx);
+> +	if (err < 0)
+> +		goto err_exit;
+> +
+> +err_exit:
 
-We still needs the check in fast path as we need to validate the number of labels actually present in the packet.
-We could have a wrong rule where the number of pop_mpls actions is 3 and the number of MPLS labels in the incoming packet is just 2.
+Do you need to stop the rings which started, before the error
+happened?
 
-For that matter having a validation in the pop_mpls action configuration against MPLS_LABEL_DEPTH is redundant.
-We may not need it.
+> +	return err;
+> +}
+> +
+> +int aq_ptp_ring_alloc(struct aq_nic_s *aq_nic)
+> +{
+> +	struct aq_ptp_s *aq_ptp = aq_nic->aq_ptp;
+> +	unsigned int tx_ring_idx, rx_ring_idx;
+> +	struct aq_ring_s *hwts = 0;
+> +	u32 tx_tc_mode, rx_tc_mode;
+> +	struct aq_ring_s *ring;
+> +	int err;
+> +
+> +	if (!aq_ptp)
+> +		return 0;
+> +
+> +	/* Index must to be 8 (8 TCs) or 16 (4 TCs).
+> +	 * It depends from Traffic Class mode.
+> +	 */
+> +	aq_nic->aq_hw_ops->hw_tx_tc_mode_get(aq_nic->aq_hw, &tx_tc_mode);
+> +	if (tx_tc_mode == 0)
+> +		tx_ring_idx = PTP_8TC_RING_IDX;
+> +	else
+> +		tx_ring_idx = PTP_4TC_RING_IDX;
+> +
+> +	ring = aq_ring_tx_alloc(&aq_ptp->ptp_tx, aq_nic,
+> +				tx_ring_idx, &aq_nic->aq_nic_cfg);
+> +	if (!ring) {
+> +		err = -ENOMEM;
+> +		goto err_exit_1;
+> +	}
+> +
+> +	aq_nic->aq_hw_ops->hw_rx_tc_mode_get(aq_nic->aq_hw, &rx_tc_mode);
+> +	if (rx_tc_mode == 0)
+> +		rx_ring_idx = PTP_8TC_RING_IDX;
+> +	else
+> +		rx_ring_idx = PTP_4TC_RING_IDX;
+> +
+> +	ring = aq_ring_rx_alloc(&aq_ptp->ptp_rx, aq_nic,
+> +				rx_ring_idx, &aq_nic->aq_nic_cfg);
+> +	if (!ring) {
+> +		err = -ENOMEM;
+> +		goto err_exit_2;
+> +	}
+> +
+> +	hwts = aq_ring_hwts_rx_alloc(&aq_ptp->hwts_rx, aq_nic, PTP_HWST_RING_IDX,
+> +				     aq_nic->aq_nic_cfg.rxds,
+> +				     aq_nic->aq_nic_cfg.aq_hw_caps->rxd_size);
+> +	if (!hwts) {
+> +		err = -ENOMEM;
+> +		goto err_exit_3;
+> +	}
+> +
+> +	err = aq_ptp_skb_ring_init(&aq_ptp->skb_ring, aq_nic->aq_nic_cfg.rxds);
+> +	if (err != 0) {
+> +		err = -ENOMEM;
+> +		goto err_exit_4;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_exit_4:
+> +	aq_ring_free(&aq_ptp->hwts_rx);
+> +err_exit_3:
+> +	aq_ring_free(&aq_ptp->ptp_rx);
+> +err_exit_2:
+> +	aq_ring_free(&aq_ptp->ptp_tx);
+> +err_exit_1:
+> +	return err;
 
-> > > > -                       /* Disallow subsequent L2.5+ set and mpls_pop actions
-> > > > -                        * as there is no check here to ensure that the new
-> > > > -                        * eth_type is valid and thus set actions could
-> > > > -                        * write off the end of the packet or otherwise
-> > > > -                        * corrupt it.
-> > > > +                       /* Disallow subsequent L2.5+ set actions as there is
-> > > > +                        * no check here to ensure that the new eth type is
-> > > > +                        * valid and thus set actions could write off the
-> > > > +                        * end of the packet or otherwise corrupt it.
-> > > >                          *
-> > > >                          * Support for these actions is planned using packet
-> > > >                          * recirculation.
-> > > >                          */
-> > > > -                       eth_type = htons(0);
-> > > > +
-> > > > +                       proto = nla_get_be16(a);
-> > > > +                       if (!eth_p_mpls(proto))
-> > > > +                               eth_type = htons(0);
-> > > > +                       else
-> > > > +                               eth_type =  proto;
-> > >
-> > > I do not see any point of changing this validation logic. OVS can not
-> > > parse beyond MPLS, so lets keep this as it it.
-> > >
-> > >
-> > unlike before, we can have multiple pop actions now.so we need to update
-> > the eth_type properly if the proto is MPLS.
-> 
-> ok, so as mentioned above we need to keep MPLS label stack depth and
-> keep track of labels added by PUSH actions and removed by POP. That
-> was we can validate it better and set eth_type to zero when MPLS label
-> count reaches to zero.
-> 
+Not very descriptive names. err_exit_hwts_rx, err_exit_ptp_rx, etc?
 
-In the configuration flow, how do we keep track of the MPLS labels present in the packet?
-We cannot find that out from the PUSH & POP MPLS actions as the incoming packet might be already a MPLS packet
+> +struct aq_ring_s *
+> +aq_ring_hwts_rx_alloc(struct aq_ring_s *self, struct aq_nic_s *aq_nic,
+> +		      unsigned int idx, unsigned int size, unsigned int dx_size)
+> +{
+> +	struct device *dev = aq_nic_get_dev(aq_nic);
+> +	int err = 0;
+> +	size_t sz = size * dx_size + AQ_CFG_RXDS_DEF;
+> +
+> +	memset(self, 0, sizeof(*self));
+> +
+> +	self->aq_nic = aq_nic;
+> +	self->idx = idx;
+> +	self->size = size;
+> +	self->dx_size = dx_size;
 
-We could add a count variable for pop_mpls actions for a flow and check that against MPLS_LABEL_DEPTH to make sure we don't configure more than "MPLS_LABEL_DEPTH" pop actions.
-But as I mentioned above ,that would be redundant as we are anyways doing a check for this in datapath.
-> > > >                         break;
-> > > > +               }
-> > > >
-> > > >                 case OVS_ACTION_ATTR_SET:
-> > > >                         err = validate_set(a, key, sfa,
-> > >
-> > > I would also like to see patch that adds multi label MPLS unit test in
-> > > system-traffic.at along with this patch.
+More self. Why not ring? I suppose because the rest of this file is
+using the unhelpful self?
+
+> +
+> +	self->dx_ring = dma_alloc_coherent(dev, sz, &self->dx_ring_pa,
+> +					   GFP_KERNEL);
+> +	if (!self->dx_ring) {
+> +		err = -ENOMEM;
+> +		goto err_exit;
+> +	}
+> +
+> +err_exit:
+> +	if (err < 0) {
+> +		aq_ring_free(self);
+> +		return NULL;
+
+return ERR_PTR(err)?
+
+> +	}
+> +
+> +	return self;
+
+And this code structure seem odd. Why not.
+
++	self->dx_ring = dma_alloc_coherent(dev, sz, &self->dx_ring_pa,
++					   GFP_KERNEL);
++	if (!self->dx_ring) {
++		err = -ENOMEM;
++		goto err_exit;
++	}
++
++	return self;
++
++err_exit:
++	aq_ring_free(self);
++ 	return ERR_PTR(err)?
+> +}
+
+  Andrew
