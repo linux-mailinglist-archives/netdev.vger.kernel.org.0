@@ -2,98 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 774D8D6B8F
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 00:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68488D6B9E
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 00:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730961AbfJNWMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 18:12:25 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:58152 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730369AbfJNWMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 18:12:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=bdiOmpZ5RXcC/f/ihPKAhcTaPuRDCg1OJyatxTXbycA=; b=M7x+OyYci8CeJM4I9gxZ/lDOZ
-        7JCz/6Qn66QpeEL89nFUfLj/GDC+A4/4zdT0YgwHy2GCKXl7GbT7Qa44ILvPEzFZstTfROg0ff0Pw
-        qxUxovho9gxZIB3aK4eE3evWWHHMJUWio2XGDWhWY9pYJZxtw96kDnDRGsEdK1ci7oewwITn+zhpK
-        ERGqqNqeZKGF150G62cTrd6grs92JGlQvEJkUXced9mlaaTMUI9Q1QlUwDNdNpKYE5S5FsC3FMCHo
-        HmPef99Ty6+75vJ3RTTbL7i/iGMV3pEcdVJ7b2uYehudwPOx+yVSUHyTnDqpM1tppmEC+jA+5IQm+
-        nNczPBotA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43726)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iK8Zb-0000Ht-Hz; Mon, 14 Oct 2019 23:12:16 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iK8ZX-0004mu-Rt; Mon, 14 Oct 2019 23:12:11 +0100
-Date:   Mon, 14 Oct 2019 23:12:11 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Stefan Wahren <wahrenst@gmx.net>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Daniel Wagner <dwagner@suse.de>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: lan78xx and phy_state_machine
-Message-ID: <20191014221211.GR25745@shell.armlinux.org.uk>
-References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
- <20191014163004.GP25745@shell.armlinux.org.uk>
- <20191014192529.z7c5x6hzixxeplvw@beryllium.lan>
- <25cfc92d-f72b-d195-71b1-f5f238c7988d@gmx.net>
- <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1731744AbfJNWSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 18:18:53 -0400
+Received: from mail-io1-f41.google.com ([209.85.166.41]:34767 "EHLO
+        mail-io1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730369AbfJNWSw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 18:18:52 -0400
+Received: by mail-io1-f41.google.com with SMTP id q1so41461166ion.1
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 15:18:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=vvkshSUSs4BzcxyHbR+YodLDNPDq7HtQHOkGUThgnuo=;
+        b=D08GWDKMJVANNcjRUbuqlHo50jhuae5splNkuwvhciuglROQj+4NbgKDFuazNdhlUR
+         QKHk0PqFR+YH0PWNVlGhZibBsRhMOK6iXl/0R44ItO7s0WzNwXozdtKBhuqivHEXJYkL
+         qqYihP5XPyd0gcU5wQA2j5HouJ9Ya4xVekq/o8hVWPi2qABz7Lq3HZXnXzhfUtfmngnx
+         hVXr3lBZ7cnXi9vbZXRv3JQe324SlcKsgJAavxiv2Gk1NKyZi8CGDp20dSGwtLacs6If
+         QItRRqRarI29v/EHk6LBIAGNKPYSTbE/F4cpBSmKzV5ciEOwsrbkPRq8K6QkpMafppA/
+         lSNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=vvkshSUSs4BzcxyHbR+YodLDNPDq7HtQHOkGUThgnuo=;
+        b=ALeXUY4okshNSjBYeZOHZoxC0EC4InhL4kYHT8Y7BmiqpwSOy/roDl3sduvhaMi0fA
+         JFZxh9YvEcLvPS5SpfDwxiItU3JyT+dUci2z/SeQK7GS9VuRNZDg7K07K5BYpVrqf/n5
+         N71tgwOg6T6IAcBWq8dO1bNIRf3IY3rxXLHKe4+SXYIclV9XTxMKv7YVrjfsKdFoQ9EY
+         FrlJQGYow2YwyIq0VlAs8Z+9m+yM3vh+9iYfDMntLkQKq5H6mN39oBRuOvEoV4KVumGr
+         MiGT5yZ2oOJ79sIuVePgmgIDmVkfy8nJsVYTfjm8QBAXNvlwqY6k2iNdUmhyKlpeHT4q
+         PPpw==
+X-Gm-Message-State: APjAAAWqXgfA7RkbhHsmOGi4pjbfsqG/ORyoEZyn4fEguysZAfTlKIXO
+        xjIoAFBSE86hD/u0prKNsJZJZtxStJY=
+X-Google-Smtp-Source: APXvYqxvIepcl3AsH9CQMIqIEunVhft+tyJ5Fjh0xkSz6CH38psbjzBi/FV9IPkmajnfhJSYZMEMvQ==
+X-Received: by 2002:a92:c522:: with SMTP id m2mr2855499ili.127.1571091531668;
+        Mon, 14 Oct 2019 15:18:51 -0700 (PDT)
+Received: from mojatatu.com ([74.127.203.196])
+        by smtp.gmail.com with ESMTPSA id e21sm19777589ioh.55.2019.10.14.15.18.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 14 Oct 2019 15:18:50 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net-next 1/1] tc-testing: updated pedit test cases
+Date:   Mon, 14 Oct 2019 18:18:29 -0400
+Message-Id: <1571091509-9585-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 14, 2019 at 10:20:15PM +0200, Heiner Kallweit wrote:
-> On 14.10.2019 21:51, Stefan Wahren wrote:
-> > [add more recipients]
-> > 
-> > Am 14.10.19 um 21:25 schrieb Daniel Wagner:
-> >> Moving the phy_prepare_link() up in phy_connect_direct() ensures that
-> >> phydev->adjust_link is set when the phy_check_link_status() is called.
-> >>
-> >> diff --git a/drivers/net/phy/phy_device.c
-> >> b/drivers/net/phy/phy_device.c index 9d2bbb13293e..2a61812bcb0d 100644
-> >> --- a/drivers/net/phy/phy_device.c +++ b/drivers/net/phy/phy_device.c
-> >> @@ -951,11 +951,12 @@ int phy_connect_direct(struct net_device *dev,
-> >> struct phy_device *phydev, if (!dev) return -EINVAL;
-> >>
-> >> +       phy_prepare_link(phydev, handler);
-> >> +
-> >>         rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
-> >>         if (rc)
-> 
-> If phy_attach_direct() fails we may have to reset phydev->adjust_link to NULL,
-> as we do in phy_disconnect(). Apart from that change looks good to me.
+Added TDC test cases for Ethernet LAYERED_OP operations:
+- set single source Ethernet MAC
+- set single destination Ethernet MAC
+- set single invalid destination Ethernet MAC
+- set Ethernet type
+- invert source/destination/type fields
+- add operation on Ethernet type field
 
-Sorry, but it doesn't look good to me.
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+---
+ .../tc-testing/tc-tests/actions/pedit.json         | 198 +++++++++++++++++++++
+ 1 file changed, 198 insertions(+)
 
-I think there's a deeper question here - why is the phy state machine
-trying to call the link change function during attach?
-
-At this point, the PHY hasn't been "started" so it shouldn't be
-doing that.
-
-Note the documentation, specifically phy.rst's "Keeping Close Tabs on
-the PAL" section.  Drivers are at liberty to use phy_prepare_link()
-_after_ phy_attach(), which means there is a window for
-phydev->adjust_link to be NULL.  It should _not_ be called at this
-point.
-
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/pedit.json b/tools/testing/selftests/tc-testing/tc-tests/actions/pedit.json
+index c30d37a0b9bc..54934203274c 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/pedit.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/pedit.json
+@@ -349,6 +349,31 @@
+         ]
+     },
+     {
++        "id": "a5a7",
++        "name": "Add pedit action with LAYERED_OP eth set src",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth src set 11:22:33:44:55:66",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action pedit",
++        "matchPattern": "action order [0-9]+:  pedit action pass keys 2.*key #0  at eth\\+4: val 00001122 mask ffff0000.*key #1  at eth\\+8: val 33445566 mask 00000000",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action pedit"
++        ]
++    },
++    {
+         "id": "86d4",
+         "name": "Add pedit action with LAYERED_OP eth set src & dst",
+         "category": [
+@@ -374,6 +399,31 @@
+         ]
+     },
+     {
++        "id": "f8a9",
++        "name": "Add pedit action with LAYERED_OP eth set dst",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth dst set 11:22:33:44:55:66",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action pedit",
++        "matchPattern": "action order [0-9]+:  pedit action pass keys 2.*key #0  at eth\\+0: val 11223344 mask 00000000.*key #1  at eth\\+4: val 55660000 mask 0000ffff",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action pedit"
++        ]
++    },
++    {
+         "id": "c715",
+         "name": "Add pedit action with LAYERED_OP eth set src (INVALID)",
+         "category": [
+@@ -399,6 +449,31 @@
+         ]
+     },
+     {
++        "id": "8131",
++        "name": "Add pedit action with LAYERED_OP eth set dst (INVALID)",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth dst set %e:11:m2:33:x4:-5",
++        "expExitCode": "255",
++        "verifyCmd": "/bin/true",
++        "matchPattern": " ",
++        "matchCount": "0",
++        "teardown": [
++            "$TC actions flush action pedit"
++        ]
++    },
++    {
+         "id": "ba22",
+         "name": "Add pedit action with LAYERED_OP eth type set/clear sequence",
+         "category": [
+@@ -424,6 +499,129 @@
+         ]
+     },
+     {
++        "id": "dec4",
++        "name": "Add pedit action with LAYERED_OP eth set type (INVALID)",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth type set 0xabcdef",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action pedit",
++        "matchPattern": "action order [0-9]+:  pedit action pass keys 1.*key #0  at eth+12: val ",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "ab06",
++        "name": "Add pedit action with LAYERED_OP eth add type",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth type add 0x1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action pedit",
++        "matchPattern": "action order [0-9]+:  pedit action pass keys 1.*key #0  at eth\\+12: add 00010000 mask 0000ffff",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action pedit"
++        ]
++    },
++    {
++        "id": "918d",
++        "name": "Add pedit action with LAYERED_OP eth invert src",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth src invert",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action pedit",
++        "matchPattern": "action order [0-9]+:  pedit action pass keys 2.*key #0  at eth\\+4: val 0000ff00 mask ffff0000.*key #1  at eth\\+8: val 00000000 mask 00000000",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action pedit"
++        ]
++    },
++    {
++        "id": "a8d4",
++        "name": "Add pedit action with LAYERED_OP eth invert dst",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth dst invert",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action pedit",
++        "matchPattern": "action order [0-9]+:  pedit action pass keys 2.*key #0  at eth\\+0: val ff000000 mask 00000000.*key #1  at eth\\+4: val 00000000 mask 0000ffff",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action pedit"
++        ]
++    },
++    {
++        "id": "ee13",
++        "name": "Add pedit action with LAYERED_OP eth invert type",
++        "category": [
++            "actions",
++            "pedit",
++            "layered_op"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action pedit",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action pedit ex munge eth type invert",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action pedit",
++        "matchPattern": "action order [0-9]+:  pedit action pass keys 1.*key #0  at eth\\+12: val ffff0000 mask ffffffff",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action pedit"
++        ]
++    },
++    {
+         "id": "7588",
+         "name": "Add pedit action with LAYERED_OP ip set src",
+         "category": [
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.7.4
+
