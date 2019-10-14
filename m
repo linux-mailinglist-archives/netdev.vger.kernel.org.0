@@ -2,138 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E59D68CF
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11BF3D68E6
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730586AbfJNRtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 13:49:53 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41115 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729776AbfJNRtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:49:53 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p4so4849866wrm.8;
-        Mon, 14 Oct 2019 10:49:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XXUMrGZIb6oF2ZXlkY6NvVGKtm0a8dgxsmrS0PyzrVM=;
-        b=I/j8jtNurZb03wO5OtpFMwdIEKSI/vQc1BpvLpGl7ryBO321tGoGGD/dOPskkClYgw
-         od4t5zjq2+ndwxdNXh+zb0qgGfEDiYNC8CJI5nF9z0sOJtW/AfXcRs9u9iWNzfztTASm
-         zRmpLe4p98ADBn7rdM7pjSDzk7VKVIejQmclv2xjvGruv1pY+/Z3iKi3Ri2jzo/vZXKZ
-         U1CtlK0iIYAuWGsQk/PJUF6nLEzNapqKj/Nhjmq1INYWCFMOd1+W22by2mHCL9aIRP7o
-         dRogtOEYzA8TV/asYmxRHwEpPsFleBrtG5/5o48RbATHAQ6SxNYlqC7Ip8//tVEgp69R
-         zJfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XXUMrGZIb6oF2ZXlkY6NvVGKtm0a8dgxsmrS0PyzrVM=;
-        b=iDRSjREZaDKP5Nl1ZIDtb+r//1i4tkubJ4zWmetRoiPdlb8lgy2+BIK5rPvHL6sZtp
-         ImF4NY/a/hyHRrQCeexUiB2lTsvFxRMfaRwgwKofZvmYepbRMEwrFZPjqUdiZLJKF+YL
-         ouA58MaQRhrUpY9YS5DOXKjTDQFuO52TGDk35JYJhpuE2IUum3VjzM4XvTn5CgDGqpeQ
-         0HDMou1ApeI0JN3tPHNTzRGmFbBhmyHLnw/ENj/A1/qXaH66CgG/KgWtly5PdsUFwo7t
-         3acTWr4gUUf3fcgcRz3NMKWwNj7dySP19sfPBzperEXZJYgDNSLStL072CSAwlKhSqZk
-         1iOA==
-X-Gm-Message-State: APjAAAXuo8DuEGJjVZXJtylxFGpO5+TpNp9+f95232UhWL7TqAUawFyo
-        vnceqEb2zSAIh/SV3lWC9MM=
-X-Google-Smtp-Source: APXvYqy78vv8xomOjJzk/rQmkBz13qhvU+ercRByH/EBEIZm2MrjAU0AN+KF4wDSX2QXx60c7i4efw==
-X-Received: by 2002:adf:fa92:: with SMTP id h18mr26866005wrr.220.1571075388812;
-        Mon, 14 Oct 2019 10:49:48 -0700 (PDT)
-Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id o70sm26093856wme.29.2019.10.14.10.49.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Oct 2019 10:49:48 -0700 (PDT)
-Date:   Mon, 14 Oct 2019 18:49:46 +0100
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
-Subject: Re: [PATCH V3 0/7] mdev based hardware virtio offloading support
-Message-ID: <20191014174946.GC5359@stefanha-x1.localdomain>
-References: <20191011081557.28302-1-jasowang@redhat.com>
+        id S1731186AbfJNRzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 13:55:42 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:55266 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728941AbfJNRzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:55:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=SDASWy6gE+FtXOyKEZYjL/u1mgOB67GFmhHwMTEMUhE=; b=f+QvfP7DeSpkBAi4we9sgfzGt
+        yDnG3HOFTjtVx13lE5W6fSUqPr5u6fQ1hRqMgbEGERAYGupImDdvK/Bzm30oJ5NSsuiqTBQH520fJ
+        cecOa9mFXsT091CXvBZq4tJCSxt55R8CXLqcPjz++ZNj0SABz4VHp67VoI139i1yIR6CtfGbMDMpE
+        fiYUg3lI3b+ZGloew9xv6bUdQ6IamB1iby7PZ2OnOc5L0PlR05hULLpDLxO6n7VeMQoOBdwQ4jXSL
+        jb11p7mfRuyduuYyMkLtA7o2gdWYD1ZfH/i9i9Wp0+SDK46+qpWRxRAMqYQRvMa2QqBvvE/ryMOIl
+        EQIKzga5A==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:51238)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iK4ZA-0007dD-Pz; Mon, 14 Oct 2019 18:55:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iK4Z6-0004eU-0t; Mon, 14 Oct 2019 18:55:28 +0100
+Date:   Mon, 14 Oct 2019 18:55:27 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2 1/3] net: phylink: switch to using
+ fwnode_gpiod_get_index()
+Message-ID: <20191014175527.GQ25745@shell.armlinux.org.uk>
+References: <20191014174022.94605-1-dmitry.torokhov@gmail.com>
+ <20191014174022.94605-2-dmitry.torokhov@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="XMCwj5IQnwKtuyBG"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191011081557.28302-1-jasowang@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191014174022.94605-2-dmitry.torokhov@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 14, 2019 at 10:40:20AM -0700, Dmitry Torokhov wrote:
+> Instead of fwnode_get_named_gpiod() that I plan to hide away, let's use
+> the new fwnode_gpiod_get_index() that mimics gpiod_get_index(), but
+> works with arbitrary firmware node.
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Acked-by: David S. Miller <davem@davemloft.net>
 
---XMCwj5IQnwKtuyBG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-On Fri, Oct 11, 2019 at 04:15:50PM +0800, Jason Wang wrote:
-> There are hardware that can do virtio datapath offloading while having
-> its own control path. This path tries to implement a mdev based
-> unified API to support using kernel virtio driver to drive those
-> devices. This is done by introducing a new mdev transport for virtio
-> (virtio_mdev) and register itself as a new kind of mdev driver. Then
-> it provides a unified way for kernel virtio driver to talk with mdev
-> device implementation.
->=20
-> Though the series only contains kernel driver support, the goal is to
-> make the transport generic enough to support userspace drivers. This
-> means vhost-mdev[1] could be built on top as well by resuing the
-> transport.
->=20
-> A sample driver is also implemented which simulate a virito-net
-> loopback ethernet device on top of vringh + workqueue. This could be
-> used as a reference implementation for real hardware driver.
->=20
-> Consider mdev framework only support VFIO device and driver right now,
-> this series also extend it to support other types. This is done
-> through introducing class id to the device and pairing it with
-> id_talbe claimed by the driver. On top, this seris also decouple
-> device specific parents ops out of the common ones.
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
+> 
+>  drivers/net/phy/phylink.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index a5a57ca94c1a..c34ca644d47e 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -168,8 +168,8 @@ static int phylink_parse_fixedlink(struct phylink *pl,
+>  			pl->link_config.pause |= MLO_PAUSE_ASYM;
+>  
+>  		if (ret == 0) {
+> -			desc = fwnode_get_named_gpiod(fixed_node, "link-gpios",
+> -						      0, GPIOD_IN, "?");
+> +			desc = fwnode_gpiod_get_index(fixed_node, "link", 0,
+> +						      GPIOD_IN, "?");
+>  
+>  			if (!IS_ERR(desc))
+>  				pl->link_gpio = desc;
+> -- 
+> 2.23.0.700.g56cf767bdb-goog
+> 
+> 
 
-I was curious so I took a quick look and posted comments.
-
-I guess this driver runs inside the guest since it registers virtio
-devices?
-
-If this is used with physical PCI devices that support datapath
-offloading then how are physical devices presented to the guest without
-SR-IOV?
-
-Stefan
-
---XMCwj5IQnwKtuyBG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2ktToACgkQnKSrs4Gr
-c8jgRgf/WWO5uJxyZLwosUbr+PGHcqci4COe1VGy3Aveab34yl0NQekiPT6CEG5k
-PLqiRN9UlPXnMq5H6tsIptfG1mBTxJpF0H7FVRGvwKnV+NizCllURp1Eb1y6ucTd
-j3Rg8JZAwDCdJsZ8d2o4JXQKv9CIavomjp0ZQNIdRiKJ8gOueiWydBgCOSO/l0dh
-t/YI7ENprVpSg56pZba9Y3eueA6Gt4oSfHZbgtQWXBueHkyN90em9JoDAktAOu1m
-PZAQykFnCUGV7RwfK2jUW+WIgh8mSrhu36zoyl9OAASnmHeiMBCTqpvHTKzRH180
-fEnf2WwIaOxFvEnbfxu/3ljKyhjEaA==
-=X6sM
------END PGP SIGNATURE-----
-
---XMCwj5IQnwKtuyBG--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
