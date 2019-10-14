@@ -2,93 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6789D6456
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 15:48:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACB16D645D
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 15:49:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732066AbfJNNsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 09:48:02 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:47214 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727789AbfJNNsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 09:48:02 -0400
-Received: by mail-pg1-f201.google.com with SMTP id 186so12659598pgd.14
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 06:48:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=6A48pLX4ovlxuq4rUz7T7G7wHkAxPBaLEXFYIzJJLTs=;
-        b=WufVIaMkjAY/r9Mp2V1ZpDv7dI2T6wGfexJHaFWgye+ePJtTzjo5fQM4U+cqEKx1f4
-         4Vumu32VVWncpejVDxpm0f/pq5P7fwbeiu1Z+MsNaKq7kIacc8QbLkv13VuZxZQMxWA+
-         yqEHQNSPAzRaJ+/w4o6MVZoQ1J+ghwK01lWy6XDRpNNGUMNJ0TcpGGgYMu4S9r7KJpv/
-         c0dIuROIK1Q/70SkB7sCZZ/81kcAtJ62ZYRlbDPk+4pPLTp3wuJZ2MpB5xDK/CJnZm8u
-         /k5PZXgryxyHxdBd935IY51i2Pvi/RDsEDPoGUOd1aKNJjJkupUgHwziKB+fmqmMWKi0
-         5HiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=6A48pLX4ovlxuq4rUz7T7G7wHkAxPBaLEXFYIzJJLTs=;
-        b=n32k3SbjCXR/h4FI6tJxe7cljDKJCHQkDwC6djU6oN/WPLMDeZkmjHypwBkrWbWiwD
-         MxEWwfa+htOSHoeZqeuW74/earP1KWmqFDZHKYqusW/zw7VSJ6BO5e1d1tdiaF6D89qE
-         dna/zUnHWtLHm3paTb12tjIOppJEDTSOImxU96UD2D9rtUXAq2obj+yE0hyu3ScuR35x
-         XUxo7zwmNRq2gEValnurAbq7UQ7bSMvV+fpAzojyvTNmoqk81kOOpfIgJ0F25mofRDiV
-         NTuOm6QIU9uWyD9hE6WZK8U+qEW+EvhCxHedUt0BvSrY1oq0cebO1wh0a5iBy5r763oE
-         zrow==
-X-Gm-Message-State: APjAAAU76/JBOmlGkV5sfEAs5Byean4Qjmb0C7mOz7IygBQHVRqtBW6m
-        jaykdQzvEypmVbQytpBWH6B+JgUcujKkyw==
-X-Google-Smtp-Source: APXvYqwfy+ei2lNAbVG22SmSjE0biqZ0OAZtjErY2foqD+sDsfITFHWKB0xwjbjPATpX7HuoieTOYuhFuCINYg==
-X-Received: by 2002:a63:4046:: with SMTP id n67mr30745525pga.200.1571060881065;
- Mon, 14 Oct 2019 06:48:01 -0700 (PDT)
-Date:   Mon, 14 Oct 2019 06:47:57 -0700
-Message-Id: <20191014134757.185995-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
-Subject: [PATCH net] tcp: fix a possible lockdep splat in tcp_done()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1732288AbfJNNtD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Oct 2019 09:49:03 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55879 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732275AbfJNNtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 09:49:02 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-18-spBsG0rnPI-Sf4cdjsBoZQ-1; Mon, 14 Oct 2019 14:48:59 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 14 Oct 2019 14:48:59 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 14 Oct 2019 14:48:59 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Neil Horman' <nhorman@tuxdriver.com>,
+        Xin Long <lucien.xin@gmail.com>
+CC:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCHv2 net-next 3/5] sctp: add
+ SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
+Thread-Topic: [PATCHv2 net-next 3/5] sctp: add
+ SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
+Thread-Index: AQHVfcsgrQL6OT4GuU648eHSKFH716dQtSlAgAlozbiAAAvUMA==
+Date:   Mon, 14 Oct 2019 13:48:59 +0000
+Message-ID: <0cfd3050e4bf41f1920837767ed5c23e@AcuMS.aculab.com>
+References: <cover.1570533716.git.lucien.xin@gmail.com>
+ <066605f2269d5d92bc3fefebf33c6943579d8764.1570533716.git.lucien.xin@gmail.com>
+ <60a7f76bd5f743dd8d057b32a4456ebd@AcuMS.aculab.com>
+ <CADvbK_cFCuHAwxGAdY0BevrrAd6pQRP2tW_ej9mM3G4Aog3qpg@mail.gmail.com>
+ <20191009161508.GB25555@hmswarspite.think-freely.org>
+ <CADvbK_fb9jjm-h-XyVci971Uu=YuwMsUjWEcv9ehUv9Q6W_VxQ@mail.gmail.com>
+ <20191014124143.GA11844@hmswarspite.think-freely.org>
+In-Reply-To: <20191014124143.GA11844@hmswarspite.think-freely.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: spBsG0rnPI-Sf4cdjsBoZQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found that if __inet_inherit_port() returns an error,
-we call tcp_done() after inet_csk_prepare_forced_close(),
-meaning the socket lock is no longer held.
+From: Neil Horman <nhorman@tuxdriver.com>
+> Sent: 14 October 2019 13:42
+> To: Xin Long <lucien.xin@gmail.com>
+> Cc: David Laight <David.Laight@ACULAB.COM>; network dev <netdev@vger.kernel.org>; linux-sctp@vger.kernel.org; Marcelo
+> Ricardo Leitner <marcelo.leitner@gmail.com>; davem@davemloft.net
+> Subject: Re: [PATCHv2 net-next 3/5] sctp: add SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
+> 
+> On Mon, Oct 14, 2019 at 04:36:34PM +0800, Xin Long wrote:
+> > On Thu, Oct 10, 2019 at 12:18 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > >
+> > > On Tue, Oct 08, 2019 at 11:28:32PM +0800, Xin Long wrote:
+> > > > On Tue, Oct 8, 2019 at 9:02 PM David Laight <David.Laight@aculab.com> wrote:
+> > > > >
+> > > > > From: Xin Long
+> > > > > > Sent: 08 October 2019 12:25
+> > > > > >
+> > > > > > This is a sockopt defined in section 7.3 of rfc7829: "Exposing
+> > > > > > the Potentially Failed Path State", by which users can change
+> > > > > > pf_expose per sock and asoc.
+> > > > >
+> > > > > If I read these patches correctly the default for this sockopt in 'enabled'.
+> > > > > Doesn't this mean that old application binaries will receive notifications
+> > > > > that they aren't expecting?
+> > > > >
+> > > > > I'd have thought that applications would be required to enable it.
+> > > > If we do that, sctp_getsockopt_peer_addr_info() in patch 2/5 breaks.
+> > > >
+> > > I don't think we can safely do either of these things.  Older
+> > > applications still need to behave as they did prior to the introduction
+> > > of this notification, and we shouldn't allow unexpected notifications to
+> > > be sent.
+> > Hi, Neil
+> >
+> > I think about again, and also talked with QE, we think to get unexpected
+> > notifications shouldn't be a problem for user's applications.
+> >
+> On principle, I disagree.  Regardless of what the RFC does, we shouldn't
+> send notifications that an application aren't subscribed to.  Just
+> because QE doesn't think it should be a problem (and for their uses it
+> may well not be an issue), we can't make that general assumption.
+> 
+> > RFC actually keeps adding new notifications, and a user shouldn't expect
+> > the specific notifications coming in some exact orders. They should just
+> > ignore it and wait until the ones they expect. I don't think some users
+> > would abort its application when getting an unexpected notification.
+> >
+> To make that assertion is to discount the purpose of the SCTP_EVENTS
+> sockopt entirely.  the SCTP_EVENTS option is a whitelist operation, so
+> they expect to get what they subscribe to, and no more.
+> 
+> > We should NACK patchset v3 and go with v2. What do you think?
+> >
+> No, we need to go with an option that maintains backwards compatibility
+> without relying on the assumption that applications will just ignore
+> events they didn't subscribe to.  Davids example is a case in point.
 
-We might fix this in a different way in net-next, but
-for 5.4 it seems safer to relax the lockdep check.
+Although I don't enable the SCTP_PEER_ADDR_CHANGE indications.
+But rfc 6458 doesn't say that the list might be extended.
 
-Fixes: d983ea6f16b8 ("tcp: add rcu protection around tp->fastopen_rsk")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv4/tcp.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Aren't there 3 separate items here:
+1) The SCTP protocol changes (to better handle primary path failure).
+2) The SCTP_GET_PEER_ADDR_INFO sockopt.
+3) The MSG_NOTIFICATION indication for SCTP_ADDR_POTENTIALLY_FAILED.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index b2ac4f074e2da21db57923fda722b6d23f170de9..42187a3b82f4f6280d831c34d9ca6b7bcffc191f 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3842,8 +3842,12 @@ void tcp_done(struct sock *sk)
- {
- 	struct request_sock *req;
- 
--	req = rcu_dereference_protected(tcp_sk(sk)->fastopen_rsk,
--					lockdep_sock_is_held(sk));
-+	/* We might be called with a new socket, after
-+	 * inet_csk_prepare_forced_close() has been called
-+	 * so we can not use lockdep_sock_is_held(sk)
-+	 */
-+	req = rcu_dereference_protected(tcp_sk(sk)->fastopen_rsk, 1);
-+
- 	if (sk->sk_state == TCP_SYN_SENT || sk->sk_state == TCP_SYN_RECV)
- 		TCP_INC_STATS(sock_net(sk), TCP_MIB_ATTEMPTFAILS);
- 
--- 
-2.23.0.700.g56cf767bdb-goog
+Looking at RFC 7829 section 7.3.
+7.3 defines SCTP_EXPOSE_POTENTIALLY_FAILED_STATE.
+For compatibility this must default to 'disabled'.
+This is even true if the application has set the SCTP_PEER_ADDR_THLDS.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
