@@ -2,84 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A734D5BF1
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 09:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B14D5C11
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 09:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730331AbfJNHI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 03:08:58 -0400
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:47143 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729966AbfJNHI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 03:08:58 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01f04391;MF=zhiyuan2048@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Teyix93_1571036934;
-Received: from houzhiyuandeMacBook-Pro.local(mailfrom:zhiyuan2048@linux.alibaba.com fp:SMTPD_---0Teyix93_1571036934)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 14 Oct 2019 15:08:54 +0800
-From:   Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
-Subject: Re: [PATCH net] net: sched: act_mirred: drop skb's dst_entry in
- ingress redirection
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20191012071620.8595-1-zhiyuan2048@linux.alibaba.com>
- <2ad15b96-156d-7b71-0e37-74ceeacade35@cogentembedded.com>
-Message-ID: <20b0aafe-4c1c-1c7a-5563-56eb43ebb409@linux.alibaba.com>
-Date:   Mon, 14 Oct 2019 15:08:54 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.1.2
+        id S1730268AbfJNHPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 03:15:25 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:61513 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730226AbfJNHPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 03:15:24 -0400
+X-UUID: f548acda1bcc44399b57afa078ee64aa-20191014
+X-UUID: f548acda1bcc44399b57afa078ee64aa-20191014
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <mark-mc.lee@mediatek.com>)
+        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+        with ESMTP id 1620613341; Mon, 14 Oct 2019 15:15:20 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs05n1.mediatek.inc (172.21.101.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Mon, 14 Oct 2019 15:15:17 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Mon, 14 Oct 2019 15:15:18 +0800
+From:   MarkLee <Mark-MC.Lee@mediatek.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Sean Wang <sean.wang@mediatek.com>,
+        John Crispin <john@phrozen.org>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rene van Dorst <opensource@vdorst.com>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        MarkLee <Mark-MC.Lee@mediatek.com>
+Subject: [PATCH net,v3 0/2] Update MT7629 to support PHYLINK API
+Date:   Mon, 14 Oct 2019 15:15:16 +0800
+Message-ID: <20191014071518.11923-1-Mark-MC.Lee@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-In-Reply-To: <2ad15b96-156d-7b71-0e37-74ceeacade35@cogentembedded.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set has two goals :
+	1. Fix mt7629 GMII mode issue after apply mediatek
+	   PHYLINK support patch.
+	2. Update mt7629 dts to reflect the latest dt-binding
+	   with PHYLINK support.
 
-On 2019/10/13 3:34 上午, Sergei Shtylyov wrote:
-> Hello!
->
-> On 10/12/2019 10:16 AM, Zhiyuan Hou wrote:
->
->> In act_mirred's ingress redirection, if the skb's dst_entry is valid
->> when call function netif_receive_skb, the fllowing l3 stack process
->    Following or flowing?
-Sorry, it should be following. I will change it in next version.
->> (ip_rcv_finish_core) will check dst_entry and skip the routing
->> decision. Using the old dst_entry is unexpected and may discard the
->> skb in some case. For example dst->dst_input points to dst_discard.
->>
->> This patch drops the skb's dst_entry before calling netif_receive_skb
->> so that the skb can be made routing decision like a normal ingress
->> skb.
->>
->> Signed-off-by: Zhiyuan Hou<zhiyuan2048@linux.alibaba.com>
->> ---
->>   net/sched/act_mirred.c | 5 ++++-
->>   1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
->> index 9ce073a05414..6108a64c0cd5 100644
->> --- a/net/sched/act_mirred.c
->> +++ b/net/sched/act_mirred.c
-> [...]
->> @@ -298,8 +299,10 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
->>   
->>   	if (!want_ingress)
->>   		err = dev_queue_xmit(skb2);
->> -	else
->> +	else {
->> +		skb_dst_drop(skb2);
->>   		err = netif_receive_skb(skb2);
->> +	}
->     If you introduce {} in one *if* branch, {} should be added to the other branches as well,
-> says CodingStyle.
-I will change it in next version . Thanks.
-> [...]
->
-> MBR, Sergei
+MarkLee (2):
+  net: ethernet: mediatek: Fix MT7629 missing GMII mode support
+  arm: dts: mediatek: Update mt7629 dts to reflect the latest dt-binding
+
+ arch/arm/boot/dts/mt7629-rfb.dts            | 13 ++++++++++++-
+ arch/arm/boot/dts/mt7629.dtsi               |  2 --
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c |  1 +
+ 3 files changed, 13 insertions(+), 3 deletions(-)
+
+-- 
+2.17.1
+
