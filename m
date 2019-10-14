@@ -2,78 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0322D6BF6
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 01:13:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31014D6C1E
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 01:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726450AbfJNXNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 19:13:50 -0400
-Received: from mga06.intel.com ([134.134.136.31]:31406 "EHLO mga06.intel.com"
+        id S1726628AbfJNXhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 19:37:52 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45390 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726438AbfJNXNu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 19:13:50 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Oct 2019 16:13:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,296,1566889200"; 
-   d="scan'208";a="396624945"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 14 Oct 2019 16:13:48 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Murali Karicheri <m-karicheri2@ti.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: taprio testing - Any help?
-In-Reply-To: <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com>
-References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com> <87v9sv3uuf.fsf@linux.intel.com> <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com> <87r23j3rds.fsf@linux.intel.com> <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com>
-Date:   Mon, 14 Oct 2019 16:14:48 -0700
-Message-ID: <87a7a25387.fsf@linux.intel.com>
+        id S1726438AbfJNXhw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 19:37:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=d4mCYtvEPTzglZNeImUyIfxvfWzkPyFU8qYa2EzIa0Y=; b=W9rKbQjXFiJposmErGr1ODlbf1
+        64rmRlwgvDXuCA+xwTWf/CDRYEV4SbPKok/jQU+5Ssbks859RZQlFIUEKMWqeWs4EMLEfs1Sdm0J1
+        P9J3FRfpzFFZ1wrd1Rl9I4So5PdTh76P9UM1kkmaSmjN5kf4nTUCR9Y2M2sdYlMCX1HU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iK9uK-00077B-8O; Tue, 15 Oct 2019 01:37:44 +0200
+Date:   Tue, 15 Oct 2019 01:37:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Nishad Kamdar <nishadkamdar@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: dsa: sja1105: Use the correct style for SPDX
+ License Identifier
+Message-ID: <20191014233744.GE19861@lunn.ch>
+References: <20191014162116.GA5024@nishad>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191014162116.GA5024@nishad>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+On Mon, Oct 14, 2019 at 09:51:20PM +0530, Nishad Kamdar wrote:
+> This patch corrects the SPDX License Identifier style
+> in header files related to Distributed Switch Architecture
+> drivers for NXP SJA1105 series Ethernet switch support.
+> It uses an expilict block comment for the SPDX License
+> Identifier.
+> 
+> Changes made by using a script provided by Joe Perches here:
+> https://lkml.org/lkml/2019/2/7/46.
+> 
+> Suggested-by: Joe Perches <joe@perches.com>
+> Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
 
->
-> What do you mean taprio doesn't support tc filter blocks? What do you
-> think there is to do in taprio to support that?
-> I don't think Murali is asking for filter offloading, but merely for a
-> way to direct frames to a certain traffic class on xmit from Linux.
-> Something like this works perfectly fine:
->
-> sudo tc qdisc add dev swp2 root handle 1: taprio num_tc 2 map 0 1
-> queues 1@0 1@1 base-time 1000 sched-entry S 03 300000 flags 2
-> # Add the qdisc holding the classifiers
-> sudo tc qdisc add dev swp2 clsact
-> # Steer L2 PTP to TC 1 (see with "tc filter show dev swp2 egress")
-> sudo tc filter add dev swp2 egress prio 1 u32 match u16 0x88f7 0xffff
-> at -2 action skbedit priority 1
->
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-That's cool. Everyday I'm learning something new :-)
-
-> However, the clsact qdisc and tc u32 egress filter can be replaced
-> with proper use of the SO_PRIORITY API, which is preferable for new
-> applications IMO.
->
-> I'm trying to send a demo application to tools/testing/selftests/
-> which sends cyclic traffic through a raw L2 socket at a configurable
-> base-time and cycle-time, along with the accompanying scripts to set
-> up the receiver and bandwidth reservation on an in-between switch. But
-> I have some trouble getting the sender application to work reliably at
-> 100 us cycle-time, so it may take a while until I figure out with
-> kernelshark what's going on.
-
-Yeah, 100us cycle-time for software mode is kind of hard to make it work
-reliably. i.e. without any offloading, I can only get something close to
-that to work with a PREEMPT_RT kernel and disabling all kinds of power
-saving features.
-
-
-Cheers,
---
-Vinicius
+    Andrew
