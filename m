@@ -2,127 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C04D6335
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 15:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6277D6337
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 15:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731861AbfJNNAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 09:00:12 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:53618 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730126AbfJNNAL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 09:00:11 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 40342F1A9E89E082ED4E;
-        Mon, 14 Oct 2019 21:00:08 +0800 (CST)
-Received: from localhost.localdomain (10.67.165.24) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.439.0; Mon, 14 Oct 2019 21:00:02 +0800
-From:   Yonglong Liu <liuyonglong@huawei.com>
-To:     <davem@davemloft.net>, <hkallweit1@gmail.com>, <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
-Subject: [RFC PATCH V2 net] net: phy: Fix "link partner" information disappear issue
-Date:   Mon, 14 Oct 2019 20:56:37 +0800
-Message-ID: <1571057797-37602-1-git-send-email-liuyonglong@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        id S1731631AbfJNNA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 09:00:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44674 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730087AbfJNNA2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 09:00:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=XGkEijKN8/OOyckGnnk5bIOpQGRjn9DO52eDP6zmWJU=; b=tlEaobscxjg3RnSmShWjaY5E5m
+        01PkwYpOpUS7j+G5/lWUEug4IOWcAX9GfwcFk9+4bCz2faJjjFZ6A0hZ5qInVBDZ+bPmudovemDty
+        nKb0T3lVy9ZgjSOMJpFlFX+EFc01ier2/whiiDkGXxv573rH4USe0UTJoWcNeliMsvwU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iJzxQ-0005Ln-O4; Mon, 14 Oct 2019 15:00:16 +0200
+Date:   Mon, 14 Oct 2019 15:00:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Nishad Kamdar <nishadkamdar@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: dsa: sja1105: Use the correct style for SPDX
+ License Identifier
+Message-ID: <20191014130016.GD19861@lunn.ch>
+References: <20191012123938.GA6865@nishad>
+ <CA+h21hr=Wg7ydqcTLk85rrRGhx_LCxu2Ch3dWCt1-d1XtPaAcA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hr=Wg7ydqcTLk85rrRGhx_LCxu2Ch3dWCt1-d1XtPaAcA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some drivers just call phy_ethtool_ksettings_set() to set the
-links, for those phy drivers that use genphy_read_status(), if
-autoneg is on, and the link is up, than execute "ethtool -s
-ethx autoneg on" will cause "link partner" information disappear.
+On Mon, Oct 14, 2019 at 01:46:26PM +0300, Vladimir Oltean wrote:
+> Hi Nishad,
+> 
+> On Sat, 12 Oct 2019 at 15:39, Nishad Kamdar <nishadkamdar@gmail.com> wrote:
+> >
+> > This patch corrects the SPDX License Identifier style
+> > in header files related to Distributed Switch Architecture
+> > drivers for NXP SJA1105 series Ethernet switch support.
+> > For C header files Documentation/process/license-rules.rst
+> > mandates C-like comments (opposed to C source files where
+> > C++ style should be used)
+> >
+> > Changes made by using a script provided by Joe Perches here:
+> > https://lkml.org/lkml/2019/2/7/46.
+> >
+> > Suggested-by: Joe Perches <joe@perches.com>
+> > Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+> > ---
+> 
+> Your commit message has nothing to do with what you're fixing, but
+> whatever. The SPDX identifiers _are_ using C-like comments.
 
-The call trace is phy_ethtool_ksettings_set()->phy_start_aneg()
-->linkmode_zero(phydev->lp_advertising)->genphy_read_status(),
-the link didn't change, so genphy_read_status() just return, and
-phydev->lp_advertising is zero now.
+Agreed. Please fix the commit message, and maybe make the script
+generating the commit message, so future uses of it will get the
+message correct.
 
-This patch moves the clear operation of lp_advertising from
-phy_start_aneg() to genphy_read_lpa()/genphy_c45_read_lpa(), and
-if autoneg on and autoneg not complete, just clear what the
-generic functions care about.
-
-Fixes: 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in genphy_read_status")
-Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
-
----
-change log:
-V2: moves the clear operation of lp_advertising from
-phy_start_aneg() to genphy_read_lpa()/genphy_c45_read_lpa(), and
-if autoneg on and autoneg not complete, just clear what the
-generic functions care about. Suggested by Heiner Kallweit.
----
----
- drivers/net/phy/phy-c45.c    |  2 ++
- drivers/net/phy/phy.c        |  3 ---
- drivers/net/phy/phy_device.c | 12 +++++++++++-
- 3 files changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index 7935593..a1caeee 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -323,6 +323,8 @@ int genphy_c45_read_pma(struct phy_device *phydev)
- {
- 	int val;
- 
-+	linkmode_zero(phydev->lp_advertising);
-+
- 	val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
- 	if (val < 0)
- 		return val;
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 119e6f4..105d389b 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -572,9 +572,6 @@ int phy_start_aneg(struct phy_device *phydev)
- 	if (AUTONEG_DISABLE == phydev->autoneg)
- 		phy_sanitize_settings(phydev);
- 
--	/* Invalidate LP advertising flags */
--	linkmode_zero(phydev->lp_advertising);
--
- 	err = phy_config_aneg(phydev);
- 	if (err < 0)
- 		goto out_unlock;
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 9d2bbb1..4b43466 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1787,7 +1787,14 @@ int genphy_read_lpa(struct phy_device *phydev)
- {
- 	int lpa, lpagb;
- 
--	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
-+	if (phydev->autoneg == AUTONEG_ENABLE) {
-+		if (!phydev->autoneg_complete) {
-+			mii_stat1000_mod_linkmode_lpa_t(phydev->lp_advertising,
-+							0);
-+			mii_lpa_mod_linkmode_lpa_t(phydev->lp_advertising, 0);
-+			return 0;
-+		}
-+
- 		if (phydev->is_gigabit_capable) {
- 			lpagb = phy_read(phydev, MII_STAT1000);
- 			if (lpagb < 0)
-@@ -1816,6 +1823,9 @@ int genphy_read_lpa(struct phy_device *phydev)
- 
- 		mii_lpa_mod_linkmode_lpa_t(phydev->lp_advertising, lpa);
- 	}
-+	else {
-+		linkmode_zero(phydev->lp_advertising);
-+	}
- 
- 	return 0;
- }
--- 
-2.8.1
-
+Thanks
+	Andrew
