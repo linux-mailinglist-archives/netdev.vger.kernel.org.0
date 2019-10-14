@@ -2,90 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13DA6D5936
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 03:04:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75CC7D5956
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 03:43:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729706AbfJNBEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 21:04:43 -0400
-Received: from mail-pf1-f171.google.com ([209.85.210.171]:46020 "EHLO
-        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729626AbfJNBEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Oct 2019 21:04:43 -0400
-Received: by mail-pf1-f171.google.com with SMTP id y72so9385167pfb.12;
-        Sun, 13 Oct 2019 18:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YzG3KM3RT2WWNMNWSIDxDogfU5yp9qDqHwkm5rPExKs=;
-        b=Xhkqgi1Pg/bppNNm0DoT+I/QPfD+8v7ZAeEmVw+dVIt79iCpgLXod8EG0HnFiGjokO
-         CuaHrtaqxJcY9198X7ib/qFW9RUQDUfd/Pvr/dqt6tNJ1uOZtFG+yUbT0LzCvr/Le6m6
-         cjDnTgH0Zrgz5IDgR5mGuRg0D3ar+f4zvoUR8Kx6WqycUiZG293+xoAYbxEjxmCS7rQt
-         zmsnKgxxTIpKbKdjF1gWqTMcM9Qte3CmYTg67Fq77wnWXWHXTxqyJ0eqLYRR5J3MM7G8
-         xF7HFUCXY4UHIkl+6vQl9AhGVEjxm8Tctb545B51jSoUiq18aWQgkh3zJCASWYFG9ewT
-         WKHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YzG3KM3RT2WWNMNWSIDxDogfU5yp9qDqHwkm5rPExKs=;
-        b=ECvVPsa8WnEU3vsXuS7hlNVZAfzsAEjD6f2aYOqTHpi1myOe3IsAgd813Gg//HzUjR
-         PXyAGxFToPzg2DDpo13Cg+FkKFNUILA3FN6DmRL1KJdMOgl2+5MNSQCQZejTZKSEcWV/
-         MuVQ4BIW+z+qMBAMvm3oE+XZLxOer0GUDgwjwR4y8GCX5A0Uyci0IhSCn6kRHHCIcHut
-         3inucNpxbldmqpqJUqCz+oQeEs7n2EF+kqTZIphR2OVm6hq+dVpHDBFp6z3BiIcehFGi
-         0zBZ3D4N3NToOOoen8rX1b3mC/AxqAHPKXV94iryI2w6vYC76yV0qIqmU1yCbJje7PAQ
-         UNMQ==
-X-Gm-Message-State: APjAAAU03XbJimW2TQhynCDCwpbFg82ZAuCU4s/AW1y/RafpJWqp3iQT
-        sMyOZvtprkR+tyKj2LQDocq8WWOT
-X-Google-Smtp-Source: APXvYqxh6x4IIGtg0eAAor/Q+e0C8x7y9NUoVPUDkBYKRvhscp/49KtncVxz64zOYRV4aVztRUEHmQ==
-X-Received: by 2002:aa7:90da:: with SMTP id k26mr29685604pfk.145.1571015082344;
-        Sun, 13 Oct 2019 18:04:42 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id b3sm14592521pfd.125.2019.10.13.18.04.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Oct 2019 18:04:41 -0700 (PDT)
-Subject: Re: [PATCH] net: core: datagram: tidy up copy functions a bit
-To:     Vito Caputo <vcaputo@pengaru.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191012115509.jrqe43yozs7kknv5@shells.gnugeneration.com>
- <8fab6f9c-70a6-02fd-5b2d-66a013c10a4f@gmail.com>
- <20191013200158.mhvwkdnsjk7ecuqu@shells.gnugeneration.com>
- <6864f888-1b62-36c5-6ac5-d5db01c5fcfb@gmail.com>
- <20191013224148.omivenr6fwmq66fe@shells.gnugeneration.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <1a031958-97e7-a16e-7dd7-034262e68d66@gmail.com>
-Date:   Sun, 13 Oct 2019 18:04:39 -0700
+        id S1729691AbfJNBnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 21:43:32 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39980 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729444AbfJNBnc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Oct 2019 21:43:32 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E17F7883837;
+        Mon, 14 Oct 2019 01:43:31 +0000 (UTC)
+Received: from [10.72.12.117] (ovpn-12-117.pek2.redhat.com [10.72.12.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 44BCC5D6A3;
+        Mon, 14 Oct 2019 01:43:26 +0000 (UTC)
+Subject: Re: [PATCH RFC v1 1/2] vhost: option to fetch descriptors through an
+ independent struct
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20191011134358.16912-1-mst@redhat.com>
+ <20191011134358.16912-2-mst@redhat.com>
+ <3b2a6309-9d21-7172-a581-9f0f1d5c1427@redhat.com>
+ <20191012162445-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <fea337ec-7c09-508b-3efa-b75afd6fe33b@redhat.com>
+Date:   Mon, 14 Oct 2019 09:43:25 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191013224148.omivenr6fwmq66fe@shells.gnugeneration.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20191012162445-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.69]); Mon, 14 Oct 2019 01:43:31 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 2019/10/13 上午4:27, Michael S. Tsirkin wrote:
+> On Sat, Oct 12, 2019 at 03:28:49PM +0800, Jason Wang wrote:
+>> On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
+>>> The idea is to support multiple ring formats by converting
+>>> to a format-independent array of descriptors.
+>>>
+>>> This costs extra cycles, but we gain in ability
+>>> to fetch a batch of descriptors in one go, which
+>>> is good for code cache locality.
+>>>
+>>> To simplify benchmarking, I kept the old code
+>>> around so one can switch back and forth by
+>>> writing into a module parameter.
+>>> This will go away in the final submission.
+>>>
+>>> This patch causes a minor performance degradation,
+>>> it's been kept as simple as possible for ease of review.
+>>> Next patch gets us back the performance by adding batching.
+>>>
+>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>>> ---
+>>>    drivers/vhost/test.c  |  17 ++-
+>>>    drivers/vhost/vhost.c | 299 +++++++++++++++++++++++++++++++++++++++++-
+>>>    drivers/vhost/vhost.h |  16 +++
+>>>    3 files changed, 327 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+>>> index 056308008288..39a018a7af2d 100644
+>>> --- a/drivers/vhost/test.c
+>>> +++ b/drivers/vhost/test.c
+>>> @@ -18,6 +18,9 @@
+>>>    #include "test.h"
+>>>    #include "vhost.h"
+>>> +static int newcode = 0;
+>>> +module_param(newcode, int, 0644);
+>>> +
+>>>    /* Max number of bytes transferred before requeueing the job.
+>>>     * Using this limit prevents one virtqueue from starving others. */
+>>>    #define VHOST_TEST_WEIGHT 0x80000
+>>> @@ -58,10 +61,16 @@ static void handle_vq(struct vhost_test *n)
+>>>    	vhost_disable_notify(&n->dev, vq);
+>>>    	for (;;) {
+>>> -		head = vhost_get_vq_desc(vq, vq->iov,
+>>> -					 ARRAY_SIZE(vq->iov),
+>>> -					 &out, &in,
+>>> -					 NULL, NULL);
+>>> +		if (newcode)
+>>> +			head = vhost_get_vq_desc_batch(vq, vq->iov,
+>>> +						       ARRAY_SIZE(vq->iov),
+>>> +						       &out, &in,
+>>> +						       NULL, NULL);
+>>> +		else
+>>> +			head = vhost_get_vq_desc(vq, vq->iov,
+>>> +						 ARRAY_SIZE(vq->iov),
+>>> +						 &out, &in,
+>>> +						 NULL, NULL);
+>>>    		/* On error, stop handling until the next kick. */
+>>>    		if (unlikely(head < 0))
+>>>    			break;
+>>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>>> index 36ca2cf419bf..36661d6cb51f 100644
+>>> --- a/drivers/vhost/vhost.c
+>>> +++ b/drivers/vhost/vhost.c
+>>> @@ -301,6 +301,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>>>    			   struct vhost_virtqueue *vq)
+>>>    {
+>>>    	vq->num = 1;
+>>> +	vq->ndescs = 0;
+>>>    	vq->desc = NULL;
+>>>    	vq->avail = NULL;
+>>>    	vq->used = NULL;
+>>> @@ -369,6 +370,9 @@ static int vhost_worker(void *data)
+>>>    static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
+>>>    {
+>>> +	kfree(vq->descs);
+>>> +	vq->descs = NULL;
+>>> +	vq->max_descs = 0;
+>>>    	kfree(vq->indirect);
+>>>    	vq->indirect = NULL;
+>>>    	kfree(vq->log);
+>>> @@ -385,6 +389,10 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+>>>    	for (i = 0; i < dev->nvqs; ++i) {
+>>>    		vq = dev->vqs[i];
+>>> +		vq->max_descs = dev->iov_limit;
+>>> +		vq->descs = kmalloc_array(vq->max_descs,
+>>> +					  sizeof(*vq->descs),
+>>> +					  GFP_KERNEL);
+>>
+>> Is iov_limit too much here? It can obviously increase the footprint. I guess
+>> the batching can only be done for descriptor without indirect or next set.
+>> Then we may batch 16 or 64.
+>>
+>> Thanks
+> Yes, next patch only batches up to 64.  But we do need iov_limit because
+> guest can pass a long chain of scatter/gather.
+> We already have iovecs in a huge array so this does not look like
+> a big deal. If we ever teach the code to avoid the huge
+> iov arrays by handling huge s/g lists piece by piece,
+> we can make the desc array smaller at the same point.
+>
 
-On 10/13/19 3:41 PM, Vito Caputo wrote:
+Another possible issue, if we try to batch descriptor chain when we've 
+already batched some descriptors, we may reach the limit then some of 
+the descriptors might need re-read.
 
-> I read it, thank you for your responses.
-> 
-> Do you have any guidance to offer someone wanting to contribute with 1-2
-> hours available per day?  I don't want to cause a nuisance, but would
-> like to help where I can.  My flawed assumption was that small, isolated
-> hygienic contributions without functionally changing anything would be
-> appropriate.
+Or we may need circular index (head, tail) in this case?
 
-I suggest you look at the syzkaller huge queue of bugs.
-
-You will learn more interesting stuff, and you will help the community
-in a more quantifiable way.
-
-https://syzkaller.appspot.com/upstream
+Thanks
 
 
