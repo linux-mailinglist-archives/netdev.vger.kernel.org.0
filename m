@@ -2,112 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89F7CD5D98
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57608D5DA4
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730502AbfJNIgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 04:36:31 -0400
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:38675 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730281AbfJNIga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 04:36:30 -0400
-Received: by mail-wr1-f45.google.com with SMTP id y18so9151925wrn.5;
-        Mon, 14 Oct 2019 01:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3gmRUmFQrzOfBkzy6ru5FDEj5eSol2+yWvH8vsuXVmk=;
-        b=TKoXaAztojGymarvUnBK/B1aJmlEgDUx676yige1BTS81+VJQjPCkPxnRLGV2ewMG2
-         yIYL5yZwGLoP2FU6bcFyimZGqCHpXn8EWtwYCvdH1scPYieQRWHzxDO24HCmAzZAAtme
-         eP/mfKSb6tEyK/nfadcVSEkSZ80GOja8bHXjSMz+k3flTnACDNzGZhvVKqo/p+CIL03p
-         MIdlKHLN74CkWgeg+dvtDOMEjtfiL24fexKDCZrVpZpHMShPK1tzz50H4upki0Z4Q/15
-         QdePTGjZn8qjoHUfwstVjW7hWQes7vXxbYW+dyuWNSaSdYrw2TLZv9zidY2tVvvFVFpv
-         qXtg==
+        id S1730514AbfJNIim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 04:38:42 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:61551 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730281AbfJNIil (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 04:38:41 -0400
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8FAC4C056808
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 08:38:41 +0000 (UTC)
+Received: by mail-wr1-f69.google.com with SMTP id w2so8228440wrn.4
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 01:38:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3gmRUmFQrzOfBkzy6ru5FDEj5eSol2+yWvH8vsuXVmk=;
-        b=f2NSPuvOPlAUL2+mK0N4wJHNDTZVNF+gs1kl9/0Xx8CYUlBS8J0s2DyqQWHXgPDnP6
-         FT9nkKgwSSewdtYVkaFD0/dBExrtcY7twPVwZOio2qKwzlKTmjFzzYVoEMKwl0UTsuIQ
-         mniFG1nMjqQL3ylBHLt+J4V10czHKTNTRFJdbw/RrZP+FUJcI5e2GRUVSulgjiJCT3Jt
-         RN/+b5lh+wuTum1fsSoEDRsP5O2+qVWRFX/2ZyFMzN24b1cPC9UcvKBd4ealAhoEhgj8
-         xbPMpSvyIEwp8edKMSiwNmmHiTEx6XAkHVMKZ0kWNkQxDCDS6dbZK/Kj3JsCN1e0PepE
-         pAIA==
-X-Gm-Message-State: APjAAAVd+XCIBxKxiXMD9op0VugExRTGWQG2579qlGnd5em8HrjtSAFw
-        6HUheOfACQPxgXeNH0FvAcRKPlNj7ji6yK058Bw=
-X-Google-Smtp-Source: APXvYqwNGn1xWbNMJrDiXZM/brqGYLBAM1gWyar8Kxd8cg7jz/vSU3x5aAPl0qPDINIZ28Zut7RRd+2Xnl6xsKeDFQM=
-X-Received: by 2002:a05:6000:11c5:: with SMTP id i5mr24564196wrx.303.1571042188922;
- Mon, 14 Oct 2019 01:36:28 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=zgV9pC+zt0gI/V422zTkhHPL1PoCXjjbpPu+KeAB0w0=;
+        b=PCBnZxFjifPwX464D1wH2EXVKQSTVqWpEKSSQUTC4+hP+hGS7S0dpV6pfOr+5q/xH0
+         cMHE3DkS3FknPlIH3W9QKgAw0AjnJAz2ZJwUQG0KiJHWnVMtOGCfi773CFXdmzbYydwp
+         JovZYjb2pK2dgLDv5CbjtWAOrd0+xpDSiJ4yEtspgboKTsyu2eKftUK5pb7fP0STRG0I
+         UTXRhf2ymBYS3P+tPMfIzl+6STCN9tJalNc8ddDKbN29+kuRRBOQszwSn6rJ6wyXAX9t
+         iTNjORwmAF/8XIeEOURgXbgc02Wq3PHUuuCicJ5ruqduNdpfWzQ0feBokIvfYuv0pVtm
+         qADw==
+X-Gm-Message-State: APjAAAXz3AAa1KMReZe0tnTdjpa5NYq29GjMk4vZPka8a6Z8vbkxC2A6
+        mvBqn+ueinAJm4yulOnRD2xEqZWQ5iQI7IxBYSlbqM6vFbSxWPlhdkRQHGN8BkPYozLJv2xUiJA
+        RzyE4P10MpdWIT2MF
+X-Received: by 2002:a1c:3284:: with SMTP id y126mr14533752wmy.164.1571042320313;
+        Mon, 14 Oct 2019 01:38:40 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqx7BekhhYUaPdPVvYSoK18HhJqtlF38AkAYk8aK0SjlT68meT4y2oI/uOqPx7iwjAspulu58A==
+X-Received: by 2002:a1c:3284:: with SMTP id y126mr14533736wmy.164.1571042320048;
+        Mon, 14 Oct 2019 01:38:40 -0700 (PDT)
+Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
+        by smtp.gmail.com with ESMTPSA id x5sm22881456wrt.75.2019.10.14.01.38.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Oct 2019 01:38:39 -0700 (PDT)
+Date:   Mon, 14 Oct 2019 10:38:36 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        kvm <kvm@vger.kernel.org>
+Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
+Message-ID: <20191014083836.fumqbp4sfn5usys6@steredhat>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190717113030.163499-2-sgarzare@redhat.com>
+ <20190729095956-mutt-send-email-mst@kernel.org>
+ <20190830094059.c7qo5cxrp2nkrncd@steredhat>
+ <20190901024525-mutt-send-email-mst@kernel.org>
+ <CAGxU2F7fA5UtkuMQbOHHy0noOGZUtpepBNKFg5afD81bynMVUQ@mail.gmail.com>
+ <20191014081724.GD22963@stefanha-x1.localdomain>
+ <2398c960-b6d7-8af3-fa25-d75344335db7@redhat.com>
 MIME-Version: 1.0
-References: <cover.1570533716.git.lucien.xin@gmail.com> <066605f2269d5d92bc3fefebf33c6943579d8764.1570533716.git.lucien.xin@gmail.com>
- <60a7f76bd5f743dd8d057b32a4456ebd@AcuMS.aculab.com> <CADvbK_cFCuHAwxGAdY0BevrrAd6pQRP2tW_ej9mM3G4Aog3qpg@mail.gmail.com>
- <20191009161508.GB25555@hmswarspite.think-freely.org>
-In-Reply-To: <20191009161508.GB25555@hmswarspite.think-freely.org>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Mon, 14 Oct 2019 16:36:34 +0800
-Message-ID: <CADvbK_fb9jjm-h-XyVci971Uu=YuwMsUjWEcv9ehUv9Q6W_VxQ@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next 3/5] sctp: add SCTP_EXPOSE_POTENTIALLY_FAILED_STATE
- sockopt
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2398c960-b6d7-8af3-fa25-d75344335db7@redhat.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 12:18 AM Neil Horman <nhorman@tuxdriver.com> wrote:
->
-> On Tue, Oct 08, 2019 at 11:28:32PM +0800, Xin Long wrote:
-> > On Tue, Oct 8, 2019 at 9:02 PM David Laight <David.Laight@aculab.com> wrote:
-> > >
-> > > From: Xin Long
-> > > > Sent: 08 October 2019 12:25
-> > > >
-> > > > This is a sockopt defined in section 7.3 of rfc7829: "Exposing
-> > > > the Potentially Failed Path State", by which users can change
-> > > > pf_expose per sock and asoc.
-> > >
-> > > If I read these patches correctly the default for this sockopt in 'enabled'.
-> > > Doesn't this mean that old application binaries will receive notifications
-> > > that they aren't expecting?
-> > >
-> > > I'd have thought that applications would be required to enable it.
-> > If we do that, sctp_getsockopt_peer_addr_info() in patch 2/5 breaks.
-> >
-> I don't think we can safely do either of these things.  Older
-> applications still need to behave as they did prior to the introduction
-> of this notification, and we shouldn't allow unexpected notifications to
-> be sent.
-Hi, Neil
+On Mon, Oct 14, 2019 at 04:21:35PM +0800, Jason Wang wrote:
+> On 2019/10/14 下午4:17, Stefan Hajnoczi wrote:
+> > SO_VM_SOCKETS_BUFFER_SIZE might have been useful for VMCI-specific
+> > applications, but we should use SO_RCVBUF and SO_SNDBUF for portable
+> > applications in the future.  Those socket options also work with other
+> > address families.
+> > 
 
-I think about again, and also talked with QE, we think to get unexpected
-notifications shouldn't be a problem for user's applications.
+I think hyperv_transport started to use it in this patch:
+ac383f58f3c9  hv_sock: perf: Allow the socket buffer size options to influence
+              the actual socket buffers
 
-RFC actually keeps adding new notifications, and a user shouldn't expect
-the specific notifications coming in some exact orders. They should just
-ignore it and wait until the ones they expect. I don't think some users
-would abort its application when getting an unexpected notification.
 
-We should NACK patchset v3 and go with v2. What do you think?
+> > I guess these sockopts are bypassed by AF_VSOCK because it doesn't use
+> > the common skb queuing code in net/core/sock.c:(.  But one day we might
+> > migrate to it...
+> > 
+> > Stefan
+> 
+> 
+> +1, we should really consider to reuse the exist socket mechanism instead of
+> re-inventing wheels.
 
->
-> What if you added a check in get_peer_addr_info to only return -EACCESS
-> if pf_expose is 0 and the application isn't subscribed to the PF event?
->
-> Neil
->
-> > >
-> > >         David
-> > >
-> > > -
-> > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > > Registration No: 1397386 (Wales)
-> > >
-> >
++1, I totally agree. I'll go this way.
+
+Guys, thank you all for your suggestions!
