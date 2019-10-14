@@ -2,45 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2604D5E46
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 11:09:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C477D5E47
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 11:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730729AbfJNJJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 05:09:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35988 "EHLO mx1.suse.de"
+        id S1730761AbfJNJJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 05:09:22 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35990 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730641AbfJNJJP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730718AbfJNJJP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 14 Oct 2019 05:09:15 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id C447DB64B;
+        by mx1.suse.de (Postfix) with ESMTP id C4700B65E;
         Mon, 14 Oct 2019 09:09:13 +0000 (UTC)
 From:   Juergen Gross <jgross@suse.com>
 To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "# 3 . 12" <stable@vger.kernel.org>
-Subject: [PATCH 0/2] xen/netback: bug fix and cleanup
-Date:   Mon, 14 Oct 2019 11:09:08 +0200
-Message-Id: <20191014090910.9701-1-jgross@suse.com>
+        "David S. Miller" <davem@davemloft.net>, stable@vger.kernel.org
+Subject: [PATCH 1/2] xen/netback: fix error path of xenvif_connect_data()
+Date:   Mon, 14 Oct 2019 11:09:09 +0200
+Message-Id: <20191014090910.9701-2-jgross@suse.com>
 X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20191014090910.9701-1-jgross@suse.com>
+References: <20191014090910.9701-1-jgross@suse.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-One bugfix (patch 1) I stumbled over while doing a cleanup (patch 2)
-of the xen-netback init/deinit code.
+xenvif_connect_data() calls module_put() in case of error. This is
+wrong as there is no related module_get().
 
-Juergen Gross (2):
-  xen/netback: fix error path of xenvif_connect_data()
-  xen/netback: cleanup init and deinit code
+Remove the superfluous module_put().
 
- drivers/net/xen-netback/interface.c | 115 +++++++++++++++++-------------------
- 1 file changed, 54 insertions(+), 61 deletions(-)
+Fixes: 279f438e36c0a7 ("xen-netback: Don't destroy the netdev until the vif is shut down")
+Cc: <stable@vger.kernel.org> # 3.12
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+ drivers/net/xen-netback/interface.c | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
+index 240f762b3749..103ed00775eb 100644
+--- a/drivers/net/xen-netback/interface.c
++++ b/drivers/net/xen-netback/interface.c
+@@ -719,7 +719,6 @@ int xenvif_connect_data(struct xenvif_queue *queue,
+ 	xenvif_unmap_frontend_data_rings(queue);
+ 	netif_napi_del(&queue->napi);
+ err:
+-	module_put(THIS_MODULE);
+ 	return err;
+ }
+ 
 -- 
 2.16.4
 
