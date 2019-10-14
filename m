@@ -2,86 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C26CD6908
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 20:03:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16965D6928
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 20:10:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388692AbfJNSCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 14:02:44 -0400
-Received: from mail-pg1-f173.google.com ([209.85.215.173]:43363 "EHLO
-        mail-pg1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388677AbfJNSCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 14:02:44 -0400
-Received: by mail-pg1-f173.google.com with SMTP id i32so10520372pgl.10;
-        Mon, 14 Oct 2019 11:02:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZkhwpizpfA2VexKlQ2oEQcLnbCJP2Qs7hnm+bKZkprs=;
-        b=iqV1EbgfIrrK/aEn7NY5hcsODJgKghSw3zb0g8qpNu/bxk467ktNsNq30MoFBVM8uJ
-         X9f9RvUeREb/UaN2RNdUpjgVbwJ/nWJVfCHTu4lzIk1qnzPb2onKunKl42JESCjMODG/
-         VGMR2oyaPLm/ancVzJ7VQmoka9YQTnDOj61YUsJ+BVk+t8yVvTg6b8NuVQMQ21RvKZqL
-         EpjfJh1D/Ve0ebvy2ixjspdRP2AZQXLd1LQKePb7NBiGyhybK77eCpJwcaYovkTWJuHZ
-         jCzNhhC0sxgsomND5b2+0V/EWZu4vDM3+fYx4msdr/5MawxBxYHeYqLLLwpRVumP177m
-         +2IA==
+        id S2388724AbfJNSKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 14:10:20 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:42446 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732457AbfJNSKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 14:10:20 -0400
+Received: by mail-oi1-f193.google.com with SMTP id i185so14479225oif.9;
+        Mon, 14 Oct 2019 11:10:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZkhwpizpfA2VexKlQ2oEQcLnbCJP2Qs7hnm+bKZkprs=;
-        b=CDHqkT6iV6Z6q5H3KNg67494VHIop/M47EhxmCs3SUprvUWi5GKorQdoD8133W4eIX
-         Zt4KPmyfPew4QHnym6CcINeyVL+l4CnGCSREqlX2bhawXNp3scZGYZE0/KX/gJltlcHn
-         4hzsLFjQzrCYz65TZHfHk8uvlxAqNj4W3hQLB3GparIWxiVjslwyE3TJadu12UQdbAET
-         AZIx3XQJZtonmtvJaSKrFBxLyu/wqhyLWVWNNXGHnAy0Dpscuam7H1J29OfcP3H8YiFt
-         FIrj8HP4EH7d6aCOPkAFMFKD6/RktydP+1KhM+cBuFIRFf6TO/mDeT7DpO0lTe+KDovu
-         brEQ==
-X-Gm-Message-State: APjAAAVzm5sNNb/uhnpRSlcErom9GWmjYjZEcZoV8JLScI1gmWgGLVaN
-        wWsSTXi4S/TwPhaSlYICD0qVuOLZOSHetLpcyQA=
-X-Google-Smtp-Source: APXvYqxQWcD3OZMgZ13RjzFx9gulMAp7gBH5qy/phpsNrfeg4mjyuhODypsbiToUIfMbUrmcL7a7VzAvGwM09e8wTLs=
-X-Received: by 2002:a63:6b06:: with SMTP id g6mr34436310pgc.104.1571076163157;
- Mon, 14 Oct 2019 11:02:43 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/QGWbxMgyMyTdIAESXcdM36ks75xNEHCQzWTM00H660=;
+        b=NyrhzbxE21xepZcRfpfp2HWJZrUfYK/4+nTb4Ihd26T8I9fkGwfFiUUBt9mz2/QZd6
+         oQhzdCTCV3ErPNpfqwjiyAeFpEa9NHbomOdhPYbzHpwH0vSB9dzpXgHp0Qp2ZLU/sT9z
+         DdB2G00I3UbDaYOebULtwJ/VQJSDAqFC512fE0SJF+DhVhAnpXeycekwJknyktlYqDCN
+         MQc0Ans/gFFhqGW7qWCdcf//8ltl30iSqxrpkSZNCvvigJ9GyBxC7LpQp1a6mdPt1r6c
+         yeR0T3LLq0FTe//Q8HGViwG21phlcf+oekcY1bsVoIZVwbTtsGM/Ci+PIMlPuH0aUNp9
+         DSVA==
+X-Gm-Message-State: APjAAAXsZaqsYwACxS+yEgcFegVRh4ui7xy2XnOlQHbbf5IXHi8SFGzo
+        vuSOiX3Z3pkayAIfGRjd/w==
+X-Google-Smtp-Source: APXvYqw22ZyOSAvp+Y75buzau5AuW+mFqDrz6vb6hKzzOzFK9zoEYkfe/z2qUzWP8ZyjEaKTbvF80A==
+X-Received: by 2002:a05:6808:a83:: with SMTP id q3mr25395976oij.12.1571076617934;
+        Mon, 14 Oct 2019 11:10:17 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id i13sm5938339otj.58.2019.10.14.11.10.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Oct 2019 11:10:17 -0700 (PDT)
+Date:   Mon, 14 Oct 2019 13:10:16 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Simon Horman <horms@verge.net.au>,
+        Magnus Damm <magnus.damm@gmail.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>
+Subject: Re: [PATCH net-next v2 1/3] dt-bindings: can: rcar_can: Add r8a774b1
+ support
+Message-ID: <20191014181016.GA1927@bogus>
+References: <1570717560-7431-1-git-send-email-fabrizio.castro@bp.renesas.com>
+ <1570717560-7431-2-git-send-email-fabrizio.castro@bp.renesas.com>
 MIME-Version: 1.0
-References: <00000000000079edde0594d77dd6@google.com> <8a375be8-5a08-4cb5-cd7a-a847a1ec9b31@gmail.com>
-In-Reply-To: <8a375be8-5a08-4cb5-cd7a-a847a1ec9b31@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 14 Oct 2019 11:02:31 -0700
-Message-ID: <CAM_iQpUG4_xABqCdjwm77QRhYYh=5B5dV69_ac5SjEuwJa4qNw@mail.gmail.com>
-Subject: Re: INFO: task hung in addrconf_verify_work (2)
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     syzbot <syzbot+cf0adbb9c28c8866c788@syzkaller.appspotmail.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>, hawk@kernel.org,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Petr Machata <petrm@mellanox.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1570717560-7431-2-git-send-email-fabrizio.castro@bp.renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 13, 2019 at 10:37 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> Infinite loop because tcf_add_notify() returns -EAGAIN as the message can not be delivered to the socket,
-> since its SO_RCVBUF has been set to 0.
+On Thu, 10 Oct 2019 15:25:58 +0100, Fabrizio Castro wrote:
+> Document RZ/G2N (r8a774b1) SoC specific bindings.
+> 
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v1->v2:
+> * No change
+> 
+>  Documentation/devicetree/bindings/net/can/rcar_can.txt | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
 
-Interesting corner case...
-
->
-> Perhaps we need this patch ?
-
-This patch looks reasonable to me, as the -EAGAIN here is mainly (if not
-totally) for the locking retry logic.
-
-Thanks.
+Acked-by: Rob Herring <robh@kernel.org>
