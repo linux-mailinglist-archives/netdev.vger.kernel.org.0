@@ -2,448 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29CA5D6257
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33341D6291
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731880AbfJNMVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 08:21:30 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:59566 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726169AbfJNMVa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 08:21:30 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 24CA7D7B711912EB37B1;
-        Mon, 14 Oct 2019 20:21:28 +0800 (CST)
-Received: from huawei.com (10.90.53.225) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Mon, 14 Oct 2019
- 20:21:23 +0800
-From:   Hou Tao <houtao1@huawei.com>
-To:     <linux-block@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <axboe@kernel.dk>, <ast@kernel.org>
-CC:     <hare@suse.com>, <osandov@fb.com>, <ming.lei@redhat.com>,
-        <damien.lemoal@wdc.com>, <bvanassche@acm.org>,
-        <daniel@iogearbox.net>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>
-Subject: [RFC PATCH 2/2] selftests/bpf: add test program for redirecting IO completion CPU
-Date:   Mon, 14 Oct 2019 20:28:33 +0800
-Message-ID: <20191014122833.64908-3-houtao1@huawei.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20191014122833.64908-1-houtao1@huawei.com>
-References: <20191014122833.64908-1-houtao1@huawei.com>
+        id S1730615AbfJNMbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 08:31:31 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:51061 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730570AbfJNMba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 08:31:30 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iJzVL-0007Kz-Qd; Mon, 14 Oct 2019 14:31:15 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:6095:cfef:e53f:67dc] (unknown [IPv6:2a03:f580:87bc:d400:6095:cfef:e53f:67dc])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F349D467493;
+        Mon, 14 Oct 2019 12:31:11 +0000 (UTC)
+To:     Pankaj Sharma <pankj.sharma@samsung.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     wg@grandegger.com, davem@davemloft.net,
+        eugen.hristev@microchip.com, ludovic.desroches@microchip.com,
+        pankaj.dubey@samsung.com, rcsekar@samsung.com,
+        Sriram Dash <sriram.dash@samsung.com>
+References: <CGME20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4@epcas5p2.samsung.com>
+ <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH] can: m_can: add support for handling arbitration error
+Message-ID: <00c5c5b7-cc90-ff6c-0c49-77fe0481dac1@pengutronix.de>
+Date:   Mon, 14 Oct 2019 14:31:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.90.53.225]
-X-CFilter-Loop: Reflected
+In-Reply-To: <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="AZDapMu3XUZs18i7kWADys9tvYVFwtV1H"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A simple round-robin strategy is implemented to redirect the IO
-completion handling to all online CPUs or specific CPU set cyclically.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--AZDapMu3XUZs18i7kWADys9tvYVFwtV1H
+Content-Type: multipart/mixed; boundary="AXrGQ0y8FFCDvOvAN9gfJyQRz57GcXh13";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Pankaj Sharma <pankj.sharma@samsung.com>, linux-can@vger.kernel.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: wg@grandegger.com, davem@davemloft.net, eugen.hristev@microchip.com,
+ ludovic.desroches@microchip.com, pankaj.dubey@samsung.com,
+ rcsekar@samsung.com, Sriram Dash <sriram.dash@samsung.com>
+Message-ID: <00c5c5b7-cc90-ff6c-0c49-77fe0481dac1@pengutronix.de>
+Subject: Re: [PATCH] can: m_can: add support for handling arbitration error
+References: <CGME20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4@epcas5p2.samsung.com>
+ <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
+In-Reply-To: <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
 
-Using the following command to distribute the IO completion of vda
-to all online CPUs:
+--AXrGQ0y8FFCDvOvAN9gfJyQRz57GcXh13
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-	./test_blkdev_ccpu -d /dev/vda
+On 10/14/19 1:34 PM, Pankaj Sharma wrote:
+> The Bosch MCAN hardware (3.1.0 and above) supports interrupt flag to
+> detect Protocol error in arbitration phase.
+>=20
+> Transmit error statistics is currently not updated from the MCAN driver=
+=2E
+> Protocol error in arbitration phase is a TX error and the network
+> statistics should be updated accordingly.
+>=20
+> The member "tx_error" of "struct net_device_stats" should be incremente=
+d
+> as arbitration is a transmit protocol error. Also "arbitration_lost" of=
 
-And the following command to distribute the IO completion of nvme0n1
-to a specific CPU set:
-	./test_blkdev_ccpu -d /dev/nvme0n1 -s 4,8,10-13
+> "struct can_device_stats" should be incremented to report arbitration
+> lost.
+>=20
+> Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
+> Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
+> ---
+>  drivers/net/can/m_can/m_can.c | 38 +++++++++++++++++++++++++++++++++++=
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
----
- tools/include/uapi/linux/bpf.h                |   2 +
- tools/lib/bpf/libbpf.c                        |   1 +
- tools/lib/bpf/libbpf_probes.c                 |   1 +
- tools/testing/selftests/bpf/Makefile          |   1 +
- .../selftests/bpf/progs/blkdev_ccpu_rr.c      |  66 +++++
- .../testing/selftests/bpf/test_blkdev_ccpu.c  | 246 ++++++++++++++++++
- 6 files changed, 317 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c
- create mode 100644 tools/testing/selftests/bpf/test_blkdev_ccpu.c
+>  1 file changed, 38 insertions(+)
+>=20
+> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_ca=
+n.c
+> index b95b382eb308..7efafee0eec8 100644
+> --- a/drivers/net/can/m_can/m_can.c
+> +++ b/drivers/net/can/m_can/m_can.c
+> @@ -778,6 +778,39 @@ static inline bool is_lec_err(u32 psr)
+>  	return psr && (psr !=3D LEC_UNUSED);
+>  }
+> =20
+> +static inline bool is_protocol_err(u32 irqstatus)
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 77c6be96d676..36aa35e29be2 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -173,6 +173,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_CGROUP_SYSCTL,
- 	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
- 	BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+	BPF_PROG_TYPE_BLKDEV,
- };
- 
- enum bpf_attach_type {
-@@ -199,6 +200,7 @@ enum bpf_attach_type {
- 	BPF_CGROUP_UDP6_RECVMSG,
- 	BPF_CGROUP_GETSOCKOPT,
- 	BPF_CGROUP_SETSOCKOPT,
-+	BPF_BLKDEV_IOC_CPU,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index e0276520171b..5a849d6d30be 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3579,6 +3579,7 @@ static bool bpf_prog_type__needs_kver(enum bpf_prog_type type)
- 	case BPF_PROG_TYPE_PERF_EVENT:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-+	case BPF_PROG_TYPE_BLKDEV:
- 		return false;
- 	case BPF_PROG_TYPE_KPROBE:
- 	default:
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 4b0b0364f5fc..311e13e778a3 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -102,6 +102,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
- 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-+	case BPF_PROG_TYPE_BLKDEV:
- 	default:
- 		break;
- 	}
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 6889c19a628c..6a36234adfea 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -30,6 +30,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
- 	test_cgroup_storage test_select_reuseport test_section_names \
- 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
- 	test_btf_dump test_cgroup_attach xdping
-+TEST_GEN_PROGS += test_blkdev_ccpu
- 
- BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
- TEST_GEN_FILES = $(BPF_OBJ_FILES)
-diff --git a/tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c b/tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c
-new file mode 100644
-index 000000000000..6f66d51fe6af
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2019 Hou Tao <houtao1@huawei.com>
-+ */
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+/* Index to CPU set */
-+struct bpf_map_def SEC("maps") idx_map = {
-+	.type = BPF_MAP_TYPE_ARRAY,
-+	.key_size = sizeof(__u32),
-+	.value_size = sizeof(__u32),
-+	.max_entries = 1,
-+};
-+BPF_ANNOTATE_KV_PAIR(idx_map, __u32, __u32);
-+
-+/* Size of CPU set */
-+struct bpf_map_def SEC("maps") cnt_map = {
-+	.type = BPF_MAP_TYPE_ARRAY,
-+	.key_size = sizeof(__u32),
-+	.value_size = sizeof(__u32),
-+	.max_entries = 1,
-+};
-+BPF_ANNOTATE_KV_PAIR(cnt_map, __u32, __u32);
-+
-+/* CPU set */
-+struct bpf_map_def SEC("maps") cpu_map = {
-+	.type = BPF_MAP_TYPE_ARRAY,
-+	.key_size = sizeof(__u32),
-+	.value_size = sizeof(__u32),
-+	.max_entries = 256,
-+};
-+BPF_ANNOTATE_KV_PAIR(cpu_map, __u32, __u32);
-+
-+SEC("ccpu_demo")
-+int customized_round_robin_ccpu(void *ctx)
-+{
-+	__u32 key = 0;
-+	__u32 *idx_ptr;
-+	__u32 *cnt_ptr;
-+	__u32 *cpu_ptr;
-+	__u32 idx;
-+	__u32 cnt;
-+
-+	idx_ptr = bpf_map_lookup_elem(&idx_map, &key);
-+	if (!idx_ptr)
-+		return -1;
-+	idx = (*idx_ptr)++;
-+
-+	cnt_ptr = bpf_map_lookup_elem(&cnt_map, &key);
-+	if (!cnt_ptr)
-+		return -1;
-+	cnt = *cnt_ptr;
-+	if (!cnt)
-+		return -1;
-+
-+	idx %= cnt;
-+	cpu_ptr = bpf_map_lookup_elem(&cpu_map, &idx);
-+	if (!cpu_ptr)
-+		return -1;
-+
-+	return *cpu_ptr;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-+__u32 _version SEC("version") = 1;
-diff --git a/tools/testing/selftests/bpf/test_blkdev_ccpu.c b/tools/testing/selftests/bpf/test_blkdev_ccpu.c
-new file mode 100644
-index 000000000000..ec5981e7e2ed
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_blkdev_ccpu.c
-@@ -0,0 +1,246 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2019 Hou Tao <houtao1@huawei.com>
-+ */
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <errno.h>
-+#include <assert.h>
-+#include <sys/time.h>
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+#include <fcntl.h>
-+#include <signal.h>
-+#include <linux/bpf.h>
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include "bpf_util.h"
-+#include "bpf_rlimit.h"
-+
-+static int
-+print_all_levels(enum libbpf_print_level level,
-+		 const char *format, va_list args)
-+{
-+	return vfprintf(stderr, format, args);
-+}
-+
-+static void sig_handler(int num)
-+{
-+}
-+
-+static int parse_cpu_set(const char *str, const unsigned int **cpus,
-+	int *cpu_nr)
-+{
-+	int total;
-+	unsigned int *set;
-+	int err;
-+	int idx;
-+	const char *from;
-+
-+	total = libbpf_num_possible_cpus();
-+	if (total <= 0)
-+		return -1;
-+
-+	set = calloc(total, sizeof(*set));
-+	if (!set) {
-+		printf("Failed to alloc cpuset (cpu nr: %d)\n", total);
-+		return -1;
-+	}
-+
-+	if (!str) {
-+		for (idx = 0; idx < total; idx++)
-+			set[idx] = idx;
-+		*cpus = set;
-+		*cpu_nr = total;
-+
-+		return 0;
-+	}
-+
-+	err = 0;
-+	idx = 0;
-+	from = str;
-+	while (1) {
-+		char *endptr;
-+		int start;
-+		int end;
-+
-+		start = strtol(from, &endptr, 10);
-+		if (*endptr != '-' && *endptr != ',' &&
-+			(*endptr != '\0' || endptr == from)) {
-+			err = -1;
-+			break;
-+		}
-+		if (*endptr == '\0' || *endptr == ',') {
-+			printf("add cpu %d\n", start);
-+			set[idx++] = start;
-+			if (*endptr == '\0')
-+				break;
-+		}
-+		from = endptr + 1;
-+		if (*endptr == ',')
-+			continue;
-+
-+		end = strtol(from, &endptr, 10);
-+		if (*endptr != ',' && (*endptr != '\0' || endptr == from)) {
-+			err = -1;
-+			break;
-+		}
-+		for (; start <= end; start++) {
-+			printf("add cpu %d\n", start);
-+			set[idx++] = start;
-+		}
-+		if (*endptr == '\0')
-+			break;
-+		from = endptr + 1;
-+	}
-+
-+	if (err) {
-+		printf("invalid cpu set spec '%s'\n", from);
-+		free(set);
-+		return -1;
-+	}
-+
-+	*cpus = set;
-+	*cpu_nr = idx;
-+
-+	return 0;
-+}
-+
-+static int load_cpu_set(struct bpf_object *obj, const unsigned int *cpus,
-+	int cnt)
-+{
-+	const char *name;
-+	struct bpf_map *map;
-+	int fd;
-+	int idx;
-+
-+	name = "cpu_map";
-+	map = bpf_object__find_map_by_name(obj, name);
-+	if (!map) {
-+		printf("no map %s\n", name);
-+		return -1;
-+	}
-+
-+	fd = bpf_map__fd(map);
-+	if (fd < 0) {
-+		printf("invalid fd for map %s\n", name);
-+		return -1;
-+	}
-+
-+	for (idx = 0; idx < cnt; idx++) {
-+		if (bpf_map_update_elem(fd, &idx, &cpus[idx], 0)) {
-+			printf("%s[%u] = %u error %s\n",
-+					name, idx, cpus[idx], strerror(errno));
-+			return -1;
-+		}
-+		printf("%s[%u] = %u\n", name, idx, cpus[idx]);
-+	}
-+
-+	name = "cnt_map";
-+	map = bpf_object__find_map_by_name(obj, name);
-+	if (!map) {
-+		printf("no map %s\n", name);
-+		return -1;
-+	}
-+
-+	fd = bpf_map__fd(map);
-+	if (fd < 0) {
-+		printf("invalid fd for map %s\n", name);
-+		return -1;
-+	}
-+
-+	idx = 0;
-+	if (bpf_map_update_elem(fd, &idx, &cnt, 0)) {
-+		printf("%s[%u] = %u error %s\n",
-+				name, idx, cnt, strerror(errno));
-+		return -1;
-+	}
-+	printf("%s[%u] = %u\n", name, idx, cnt);
-+
-+	return 0;
-+}
-+
-+static void usage(const char *cmd)
-+{
-+	printf("Usage: %s -d blk_device [-s cpu_set]\n"
-+			"  round-robin all CPUs: %s -d /dev/sda\n"
-+			"  round-robin specific CPUs: %s -d /dev/sda -s 4-7,12-15\n",
-+			cmd, cmd, cmd);
-+	exit(1);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int opt;
-+	const char *prog = "./blkdev_ccpu_rr.o";
-+	const char *bdev;
-+	const char *cpu_set_str = NULL;
-+	const unsigned int *cpus;
-+	int cpu_nr;
-+	struct bpf_object *obj;
-+	int prog_fd;
-+	int bdev_fd;
-+
-+	while ((opt = getopt(argc, argv, "d:s:h")) != -1) {
-+		switch (opt) {
-+		case 'd':
-+			bdev = optarg;
-+			break;
-+		case 's':
-+			cpu_set_str = optarg;
-+			break;
-+		case 'h':
-+			usage(argv[0]);
-+			break;
-+		}
-+	}
-+
-+	if (!bdev)
-+		usage(argv[0]);
-+
-+	printf("blk device %s, cpu set %s\n", bdev, cpu_set_str);
-+
-+	signal(SIGINT, sig_handler);
-+	signal(SIGQUIT, sig_handler);
-+
-+	libbpf_set_print(print_all_levels);
-+
-+	if (parse_cpu_set(cpu_set_str, &cpus, &cpu_nr))
-+		goto out;
-+
-+	if (bpf_prog_load(prog, BPF_PROG_TYPE_BLKDEV, &obj, &prog_fd)) {
-+		printf("Failed to load %s\n", prog);
-+		goto out;
-+	}
-+
-+	if (load_cpu_set(obj, cpus, cpu_nr))
-+		goto out;
-+
-+	bdev_fd = open(bdev, O_RDWR);
-+	if (bdev_fd < 0) {
-+		printf("Failed to open %s %s\n", bdev, strerror(errno));
-+		goto out;
-+	}
-+
-+	/* Attach bpf program */
-+	if (bpf_prog_attach(prog_fd, bdev_fd, BPF_BLKDEV_IOC_CPU, 0)) {
-+		printf("Failed to attach %s %s\n", prog, strerror(errno));
-+		goto out;
-+	}
-+
-+	printf("Attached, use Ctrl-C to detach\n\n");
-+
-+	pause();
-+
-+	if (bpf_prog_detach(bdev_fd, BPF_BLKDEV_IOC_CPU)) {
-+		printf("Failed to detach %s %s\n", prog, strerror(errno));
-+		goto out;
-+	}
-+
-+	return 0;
-+out:
-+	return 1;
-+}
--- 
-2.22.0
+please add the comon m_can_ prefix
 
+> +{
+> +	if (irqstatus & IR_ERR_LEC_31X)
+> +		return 1;
+> +	else
+> +		return 0;
+> +}
+> +
+> +static int m_can_handle_protocol_error(struct net_device *dev, u32 irq=
+status)
+> +{
+> +	struct net_device_stats *stats =3D &dev->stats;
+> +	struct m_can_priv *priv =3D netdev_priv(dev);
+> +	struct can_frame *cf;
+> +	struct sk_buff *skb;
+> +
+> +	/* propagate the error condition to the CAN stack */
+> +	skb =3D alloc_can_err_skb(dev, &cf);
+> +	if (unlikely(!skb))
+> +		return 0;
+
+please handle the stats, even if the allocation of the skb fails.
+
+> +
+> +	if (priv->version >=3D 31 && (irqstatus & IR_PEA)) {
+> +		netdev_dbg(dev, "Protocol error in Arbitration fail\n");
+> +		stats->tx_errors++;
+> +		priv->can.can_stats.arbitration_lost++;
+> +		cf->can_id |=3D CAN_ERR_LOSTARB;
+> +		cf->data[0] |=3D CAN_ERR_LOSTARB_UNSPEC;
+> +	}
+> +
+> +	netif_receive_skb(skb);
+> +
+> +	return 1;
+> +}
+> +
+>  static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstat=
+us,
+>  				   u32 psr)
+>  {
+> @@ -792,6 +825,11 @@ static int m_can_handle_bus_errors(struct net_devi=
+ce *dev, u32 irqstatus,
+>  	    is_lec_err(psr))
+>  		work_done +=3D m_can_handle_lec_err(dev, psr & LEC_UNUSED);
+> =20
+> +	/* handle protocol errors in arbitration phase */
+> +	if ((priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
+> +	    is_protocol_err(irqstatus))
+> +		work_done +=3D m_can_handle_protocol_error(dev, irqstatus);
+> +
+>  	/* other unproccessed error interrupts */
+>  	m_can_handle_other_err(dev, irqstatus);
+> =20
+>=20
+
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--AXrGQ0y8FFCDvOvAN9gfJyQRz57GcXh13--
+
+--AZDapMu3XUZs18i7kWADys9tvYVFwtV1H
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2kaooACgkQWsYho5Hk
+nSBkdgf/YlCE6WuqAGgdMPE2FKZ3v/Imnkp1ZqqB6lB8rBcBf+5VW1lihEAArwTD
+3XgmOp4AgjCtD2n0/yyDSIAoGcrP9c9rwjLCGhgG/auSjmRq1BZXOKEMybTNlAyt
+iVo+/KLU7oRFyu61IMW9d+M8U7P7r9tEynm+je8t+cUJ25msu3c+SVTCPb6EgV0M
++nYXODX8R9ZVNImLGhhkNg9VQfrqzSlE0J8yCtv8UGPGHp1cjL+BXRpFiBHyrVC3
+KF03IRhIwBBErZzoMus9/cCHfh6CPrD8FCGgAsCY2eGzgCn/FWkhjK0km9z2IFCs
+dK/y4PeRR3jM5Pzv5sMzajuyOdCQ0Q==
+=4ND9
+-----END PGP SIGNATURE-----
+
+--AZDapMu3XUZs18i7kWADys9tvYVFwtV1H--
