@@ -2,157 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C68ADD6B85
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 00:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 774D8D6B8F
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 00:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731589AbfJNWLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 18:11:06 -0400
-Received: from correo.us.es ([193.147.175.20]:35660 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730989AbfJNWLG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 18:11:06 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 827F21694A3
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 00:11:01 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 752D4A7E11
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 00:11:01 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 74B75A7E0F; Tue, 15 Oct 2019 00:11:01 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8B94CA7E1D;
-        Tue, 15 Oct 2019 00:10:58 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 15 Oct 2019 00:10:58 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 28D01426CCBA;
-        Tue, 15 Oct 2019 00:10:58 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        jakub.kicinski@netronome.com, jiri@resnulli.us,
-        saeedm@mellanox.com, vishal@chelsio.com, vladbu@mellanox.com,
-        ecree@solarflare.com
-Subject: [PATCH net-next,v5 4/4] netfilter: nft_payload: packet mangling offload support
-Date:   Tue, 15 Oct 2019 00:10:51 +0200
-Message-Id: <20191014221051.8084-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20191014221051.8084-1-pablo@netfilter.org>
-References: <20191014221051.8084-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1730961AbfJNWMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 18:12:25 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:58152 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730369AbfJNWMZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 18:12:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=bdiOmpZ5RXcC/f/ihPKAhcTaPuRDCg1OJyatxTXbycA=; b=M7x+OyYci8CeJM4I9gxZ/lDOZ
+        7JCz/6Qn66QpeEL89nFUfLj/GDC+A4/4zdT0YgwHy2GCKXl7GbT7Qa44ILvPEzFZstTfROg0ff0Pw
+        qxUxovho9gxZIB3aK4eE3evWWHHMJUWio2XGDWhWY9pYJZxtw96kDnDRGsEdK1ci7oewwITn+zhpK
+        ERGqqNqeZKGF150G62cTrd6grs92JGlQvEJkUXced9mlaaTMUI9Q1QlUwDNdNpKYE5S5FsC3FMCHo
+        HmPef99Ty6+75vJ3RTTbL7i/iGMV3pEcdVJ7b2uYehudwPOx+yVSUHyTnDqpM1tppmEC+jA+5IQm+
+        nNczPBotA==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43726)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iK8Zb-0000Ht-Hz; Mon, 14 Oct 2019 23:12:16 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iK8ZX-0004mu-Rt; Mon, 14 Oct 2019 23:12:11 +0100
+Date:   Mon, 14 Oct 2019 23:12:11 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Stefan Wahren <wahrenst@gmx.net>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Daniel Wagner <dwagner@suse.de>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
+Subject: Re: lan78xx and phy_state_machine
+Message-ID: <20191014221211.GR25745@shell.armlinux.org.uk>
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191014163004.GP25745@shell.armlinux.org.uk>
+ <20191014192529.z7c5x6hzixxeplvw@beryllium.lan>
+ <25cfc92d-f72b-d195-71b1-f5f238c7988d@gmx.net>
+ <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows for mangling packet fields using hardware offload
-infrastructure.
+On Mon, Oct 14, 2019 at 10:20:15PM +0200, Heiner Kallweit wrote:
+> On 14.10.2019 21:51, Stefan Wahren wrote:
+> > [add more recipients]
+> > 
+> > Am 14.10.19 um 21:25 schrieb Daniel Wagner:
+> >> Moving the phy_prepare_link() up in phy_connect_direct() ensures that
+> >> phydev->adjust_link is set when the phy_check_link_status() is called.
+> >>
+> >> diff --git a/drivers/net/phy/phy_device.c
+> >> b/drivers/net/phy/phy_device.c index 9d2bbb13293e..2a61812bcb0d 100644
+> >> --- a/drivers/net/phy/phy_device.c +++ b/drivers/net/phy/phy_device.c
+> >> @@ -951,11 +951,12 @@ int phy_connect_direct(struct net_device *dev,
+> >> struct phy_device *phydev, if (!dev) return -EINVAL;
+> >>
+> >> +       phy_prepare_link(phydev, handler);
+> >> +
+> >>         rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
+> >>         if (rc)
+> 
+> If phy_attach_direct() fails we may have to reset phydev->adjust_link to NULL,
+> as we do in phy_disconnect(). Apart from that change looks good to me.
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-v5: no changes.
+Sorry, but it doesn't look good to me.
 
- net/netfilter/nft_payload.c | 73 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 73 insertions(+)
+I think there's a deeper question here - why is the phy state machine
+trying to call the link change function during attach?
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 22a80eb60222..0efa8bfd2b51 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -562,12 +562,85 @@ static int nft_payload_set_dump(struct sk_buff *skb, const struct nft_expr *expr
- 	return -1;
- }
- 
-+static int nft_payload_offload_set_nh(struct nft_offload_ctx *ctx,
-+				      struct nft_flow_rule *flow,
-+				      const struct nft_payload_set *priv)
-+{
-+	int type = FLOW_ACT_MANGLE_UNSPEC;
-+
-+	switch (ctx->dep.l3num) {
-+	case htons(ETH_P_IP):
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_IP4;
-+		break;
-+	case htons(ETH_P_IPV6):
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_IP6;
-+		break;
-+	}
-+
-+	return type;
-+}
-+
-+static int nft_payload_offload_set_th(struct nft_offload_ctx *ctx,
-+				      struct nft_flow_rule *flow,
-+				      const struct nft_payload_set *priv)
-+{
-+	int type = FLOW_ACT_MANGLE_UNSPEC;
-+
-+	switch (ctx->dep.protonum) {
-+	case IPPROTO_TCP:
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_TCP;
-+		break;
-+	case IPPROTO_UDP:
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_UDP;
-+		break;
-+	}
-+
-+	return type;
-+}
-+
-+static int nft_payload_set_offload(struct nft_offload_ctx *ctx,
-+				   struct nft_flow_rule *flow,
-+				   const struct nft_expr *expr)
-+{
-+	const struct nft_payload_set *priv = nft_expr_priv(expr);
-+	struct nft_offload_reg *sreg = &ctx->regs[priv->sreg];
-+	int type = FLOW_ACT_MANGLE_UNSPEC;
-+	struct flow_action_entry *entry;
-+
-+	switch (priv->base) {
-+	case NFT_PAYLOAD_LL_HEADER:
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_ETH;
-+		break;
-+	case NFT_PAYLOAD_NETWORK_HEADER:
-+		type = nft_payload_offload_set_nh(ctx, flow, priv);
-+		break;
-+	case NFT_PAYLOAD_TRANSPORT_HEADER:
-+		type = nft_payload_offload_set_th(ctx, flow, priv);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		break;
-+	}
-+
-+	entry = &flow->rule->action.entries[ctx->num_actions++];
-+	entry->id		= FLOW_ACTION_MANGLE;
-+	entry->mangle.htype	= type;
-+	entry->mangle.offset	= priv->offset;
-+	entry->mangle.len	= priv->len;
-+
-+	memcpy(entry->mangle.val, sreg->data.data, priv->len);
-+	memset(entry->mangle.mask, 0xff, priv->len);
-+
-+	return type != FLOW_ACT_MANGLE_UNSPEC ? 0 : -EOPNOTSUPP;
-+}
-+
- static const struct nft_expr_ops nft_payload_set_ops = {
- 	.type		= &nft_payload_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_payload_set)),
- 	.eval		= nft_payload_set_eval,
- 	.init		= nft_payload_set_init,
- 	.dump		= nft_payload_set_dump,
-+	.offload	= nft_payload_set_offload,
- };
- 
- static const struct nft_expr_ops *
+At this point, the PHY hasn't been "started" so it shouldn't be
+doing that.
+
+Note the documentation, specifically phy.rst's "Keeping Close Tabs on
+the PAL" section.  Drivers are at liberty to use phy_prepare_link()
+_after_ phy_attach(), which means there is a window for
+phydev->adjust_link to be NULL.  It should _not_ be called at this
+point.
+
 -- 
-2.11.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
