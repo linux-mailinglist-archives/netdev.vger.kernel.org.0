@@ -2,135 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67027D62A4
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:35:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AFB0D62D3
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:42:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730732AbfJNMfv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Oct 2019 08:35:51 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39912 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730717AbfJNMfv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 08:35:51 -0400
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com [209.85.167.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 4A3EEC0568FD
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 12:35:50 +0000 (UTC)
-Received: by mail-lf1-f71.google.com with SMTP id m24so2870123lfh.22
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 05:35:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=PvVm8u9ObL3aYBOygBx9VWFhpRttK7ssE/n72+9xa/0=;
-        b=MrVlMo68FdIfTccFfBrJ22zZpYm346N7YcTpXygyMgeRZZXkeAiJa9XX5JlvLlgfoX
-         RDdyKX+5nmLkQsdKJYr4k3Qz6m0bbzkr4/sviGc3jNB/WtIkNnF1eBSfDcSgAZ1FbPSk
-         pS6Lvpq9oLKJXl+k9OMwZGouwlTNHvFjOSLC6+IQYqy+8/7Nlt+Ro2/kowrULM7vrQjd
-         FSNXgFt1QJdMAj9NXYxMRgmmc2qiiHex869BFFf/kRLjKTC4T5l4iPEsSnlAcoDquCG+
-         /RVgkQh545DAR3RXCyOXm6CnbMQRa9k6yNnz6GS6osAhCUB51V8d5dLtrgEYLCuyazeO
-         ZlxA==
-X-Gm-Message-State: APjAAAURRkmn47fxFWzjVQXuDnQmRx54SekOkKHmvpolXTRCTtVGhKxe
-        VCiUVqBQ12FXnoCVzx5dikSPM0EtYVrAdGGmoBv+OybEthj3U0Id/QKWHMEDFfaulsHJE7+nJWa
-        BGvtDZP3Y7l9ShuSf
-X-Received: by 2002:a2e:97ca:: with SMTP id m10mr16948672ljj.168.1571056548722;
-        Mon, 14 Oct 2019 05:35:48 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxuPCWjO7iKsWtjLdhGHxGgh+y+o7yVh8iwinIdgS/da0MWM6yCi6ZPx6BIVIe5jtwmZvf8FA==
-X-Received: by 2002:a2e:97ca:: with SMTP id m10mr16948656ljj.168.1571056548487;
-        Mon, 14 Oct 2019 05:35:48 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id n5sm4971168ljh.54.2019.10.14.05.35.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Oct 2019 05:35:47 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id ADBD818063D; Mon, 14 Oct 2019 14:35:45 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF programs after each other
-In-Reply-To: <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
-References: <157046883502.2092443.146052429591277809.stgit@alrua-x1> <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com> <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com> <87o8yqjqg0.fsf@toke.dk> <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 14 Oct 2019 14:35:45 +0200
-Message-ID: <87v9srijxa.fsf@toke.dk>
+        id S1730931AbfJNMl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 08:41:59 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:42133 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730908AbfJNMl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 08:41:59 -0400
+Received: from cpe-2606-a000-111b-43ee-0-0-0-115f.dyn6.twc.com ([2606:a000:111b:43ee::115f] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1iJzfY-0004xT-1o; Mon, 14 Oct 2019 08:41:55 -0400
+Date:   Mon, 14 Oct 2019 08:41:43 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCHv2 net-next 3/5] sctp: add
+ SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
+Message-ID: <20191014124143.GA11844@hmswarspite.think-freely.org>
+References: <cover.1570533716.git.lucien.xin@gmail.com>
+ <066605f2269d5d92bc3fefebf33c6943579d8764.1570533716.git.lucien.xin@gmail.com>
+ <60a7f76bd5f743dd8d057b32a4456ebd@AcuMS.aculab.com>
+ <CADvbK_cFCuHAwxGAdY0BevrrAd6pQRP2tW_ej9mM3G4Aog3qpg@mail.gmail.com>
+ <20191009161508.GB25555@hmswarspite.think-freely.org>
+ <CADvbK_fb9jjm-h-XyVci971Uu=YuwMsUjWEcv9ehUv9Q6W_VxQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvbK_fb9jjm-h-XyVci971Uu=YuwMsUjWEcv9ehUv9Q6W_VxQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+On Mon, Oct 14, 2019 at 04:36:34PM +0800, Xin Long wrote:
+> On Thu, Oct 10, 2019 at 12:18 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+> >
+> > On Tue, Oct 08, 2019 at 11:28:32PM +0800, Xin Long wrote:
+> > > On Tue, Oct 8, 2019 at 9:02 PM David Laight <David.Laight@aculab.com> wrote:
+> > > >
+> > > > From: Xin Long
+> > > > > Sent: 08 October 2019 12:25
+> > > > >
+> > > > > This is a sockopt defined in section 7.3 of rfc7829: "Exposing
+> > > > > the Potentially Failed Path State", by which users can change
+> > > > > pf_expose per sock and asoc.
+> > > >
+> > > > If I read these patches correctly the default for this sockopt in 'enabled'.
+> > > > Doesn't this mean that old application binaries will receive notifications
+> > > > that they aren't expecting?
+> > > >
+> > > > I'd have thought that applications would be required to enable it.
+> > > If we do that, sctp_getsockopt_peer_addr_info() in patch 2/5 breaks.
+> > >
+> > I don't think we can safely do either of these things.  Older
+> > applications still need to behave as they did prior to the introduction
+> > of this notification, and we shouldn't allow unexpected notifications to
+> > be sent.
+> Hi, Neil
+> 
+> I think about again, and also talked with QE, we think to get unexpected
+> notifications shouldn't be a problem for user's applications.
+> 
+On principle, I disagree.  Regardless of what the RFC does, we shouldn't
+send notifications that an application aren't subscribed to.  Just
+because QE doesn't think it should be a problem (and for their uses it
+may well not be an issue), we can't make that general assumption.
 
-> On Wed, Oct 09, 2019 at 10:03:43AM +0200, Toke Høiland-Jørgensen wrote:
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->> 
->> > Please implement proper indirect calls and jumps.
->> 
->> I am still not convinced this will actually solve our problem; but OK, I
->> can give it a shot.
->
-> If you're not convinced let's talk about it first.
->
-> Indirect calls is a building block for debugpoints.
-> Let's not call them tracepoints, because Linus banned any discusion
-> that includes that name.
-> The debugpoints is a way for BPF program to insert points in its
-> code to let external facility to do tracing and debugging.
->
-> void (*debugpoint1)(struct xdp_buff *, int code);
-> void (*debugpoint2)(struct xdp_buff *);
-> void (*debugpoint3)(int len);
+> RFC actually keeps adding new notifications, and a user shouldn't expect
+> the specific notifications coming in some exact orders. They should just
+> ignore it and wait until the ones they expect. I don't think some users
+> would abort its application when getting an unexpected notification.
+> 
+To make that assertion is to discount the purpose of the SCTP_EVENTS
+sockopt entirely.  the SCTP_EVENTS option is a whitelist operation, so
+they expect to get what they subscribe to, and no more.
 
-So how would these work? Similar to global variables (i.e., the loader
-creates a single-entry PROG_ARRAY map for each one)? Presumably with
-some BTF to validate the argument types?
+> We should NACK patchset v3 and go with v2. What do you think?
+> 
+No, we need to go with an option that maintains backwards compatibility
+without relying on the assumption that applications will just ignore
+events they didn't subscribe to.  Davids example is a case in point.
 
-So what would it take to actually support this? It doesn't quite sound
-trivial to add?
+Neil
 
-> Essentially it's live debugging (tracing) of cooperative bpf programs
-> that added debugpoints to their code.
-
-Yup, certainly not disputing that this would be useful for debugging;
-although it'll probably be a while before its use becomes widespread
-enough that it'll be a reliable tool for people deploying XDP programs...
-
-> Obviously indirect calls can be used for a ton of other things
-> including proper chaing of progs, but I'm convinced that
-> you don't need chaining to solve your problem.
-> You need debugging.
-
-Debugging is certainly also an area that I want to improve. However, I
-think that focusing on debugging as the driver for chaining programs was
-a mistake on my part; rudimentary debugging (using a tool such as
-xdpdump) is something that falls out of program chaining, but it's not
-the main driver for it.
-
-> If you disagree please explain _your_ problem again.
-> Saying that fb katran is a use case for chaining is, hrm, not correct.
-
-I never said Katran was the driver for this. I just used Katran as one
-of the "prior art" examples for my "how are people solving running
-multiple programs on the same interface" survey.
-
-What I want to achieve is simply the ability to run multiple independent
-XDP programs on the same interface, without having to put any
-constraints on the programs themselves. I'm not disputing that this is
-*possible* to do completely in userspace, I just don't believe the
-resulting solution will be very good. Proper kernel support for indirect
-calls (or just "tail calls that return") may change that; but in any
-case I think I need to go write some userspace code to have some more
-concrete examples to discuss from. So we can come back to the
-particulars once I've done that :)
-
--Toke
+> >
+> > What if you added a check in get_peer_addr_info to only return -EACCESS
+> > if pf_expose is 0 and the application isn't subscribed to the PF event?
+> >
+> > Neil
+> >
+> > > >
+> > > >         David
+> > > >
+> > > > -
+> > > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> > > > Registration No: 1397386 (Wales)
+> > > >
+> > >
+> 
