@@ -2,134 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF315D6C23
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 01:39:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 846BED6C28
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 01:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726669AbfJNXjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 19:39:00 -0400
-Received: from mga18.intel.com ([134.134.136.126]:30077 "EHLO mga18.intel.com"
+        id S1726684AbfJNXpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 19:45:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45396 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726422AbfJNXjA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 19:39:00 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Oct 2019 16:38:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,296,1566889200"; 
-   d="scan'208";a="396629805"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 14 Oct 2019 16:38:59 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: taprio testing - Any help?
-In-Reply-To: <45d3e5ed-7ddf-3d1d-9e4e-f555437b06f9@ti.com>
-References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com> <87v9sv3uuf.fsf@linux.intel.com> <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com> <87r23j3rds.fsf@linux.intel.com> <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com> <45d3e5ed-7ddf-3d1d-9e4e-f555437b06f9@ti.com>
-Date:   Mon, 14 Oct 2019 16:39:58 -0700
-Message-ID: <871rve5229.fsf@linux.intel.com>
+        id S1726169AbfJNXpI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 19:45:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Cc1o6O0GLcNmuIJAd1oHLMPB851qrt/yI8fCRGWgBCo=; b=Fh0dTqlc8R4ICOnWmHzdgesJtH
+        NtyKe2TmNpUZ4B+dLAsXM78IGvzhTh4/psRIvHMWoSzR43MUd0tiZ9iBC0tuMn+K3gBhWycJ+osdJ
+        OS85mC/uGOZCiWbN/e/sBfEnxmrlc5GdcbH2XvWbb4209XLKV1U4EkluWzKRy6vevIaQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iKA1O-00078m-TP; Tue, 15 Oct 2019 01:45:02 +0200
+Date:   Tue, 15 Oct 2019 01:45:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/2] net: lpc_eth: parse phy nodes from device tree
+Message-ID: <20191014234502.GG19861@lunn.ch>
+References: <20191010204530.15150-1-alexandre.belloni@bootlin.com>
+ <20191010204530.15150-2-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191010204530.15150-2-alexandre.belloni@bootlin.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Murali Karicheri <m-karicheri2@ti.com> writes:
->
-> My expectation is as follows
->
-> AAAAAABBBBBCCCCCDDDDDEEEEE
->
-> Where AAAAA is traffic from TC0, BBBBB is udp stream for port 10000
-> CCCCC is stream for port 20000, DDDDD for 30000 and EEEEE for 40000.
-> Each can be max of 4 msec. Is the expection correct? At least that
-> is my understanding.
+On Thu, Oct 10, 2019 at 10:45:30PM +0200, Alexandre Belloni wrote:
+> When connected to a micrel phy, phy_find_first doesn't work properly
+> because the first phy found is on address 0, the broadcast address but, the
+> first thing the phy driver is doing is disabling this broadcast address.
+> The phy is then available only on address 1 but the mdio driver doesn't
+> know about it.
+> 
+> Instead, register the mdio bus using of_mdiobus_register and try to find
+> the phy description in device tree before falling back to phy_find_first.
+> 
+> This ultimately also allows to describe the interrupt the phy is connected
+> to.
+> 
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-Your expectation is correct.
+Hi Alexandre
 
->
-> But what I see is alternating packets with port 10000/20000/30000/40000
-> at the wireshark capture and it doesn't make sense to me. If you
-> look at the timestamp, there is nothing showing the Gate is honored
-> for Tx. Am I missing something?
+>  
+> -	if (mdiobus_register(pldat->mii_bus))
+> +	if (of_mdiobus_register(pldat->mii_bus, pldat->pdev->dev.of_node))
+>  		goto err_out_unregister_bus;
 
-Remember that taprio (in software mode) has no control after the packet
-is delivered to the driver. So, even if taprio obeys your traffic
-schedule perfectly, the driver/controller may decide to send packets
-according to some other logic.
+It is normal to use a container node 'mdio' in the ethernet node to
+contain the PHY nodes. If you don't do this, you run into issues when
+you have Ethernet switches on the MDIO bus.
 
->
-> The tc stats shows packets are going through specific TC/Gate
->
-> root@am57xx-evm:~# tc -d -p -s qdisc show dev eth0
-> qdisc taprio 100: root refcnt 9 tc 5 map 0 1 2 3 4 4 4 4 4 4 4 4 4 4 4 4
-> queues offset 0 count 1 offset 1 count 1 offset 2 count 1 offset 3 count 
-> 1 offset 4 count 1
-> clockid TAI offload 0   base-time 0 cycle-time 0 cycle-time-extension 0 
-> base-time 1564768921123459533 cycle-time 20000000 cycle-
-> time-extension 0
->          index 0 cmd S gatemask 0x1 interval 4000000
->          index 1 cmd S gatemask 0x2 interval 4000000
->          index 2 cmd S gatemask 0x4 interval 4000000
->          index 3 cmd S gatemask 0x8 interval 4000000
->          index 4 cmd S gatemask 0x10 interval 4000000
->
->   Sent 80948029 bytes 53630 pkt (dropped 0, overlimits 0 requeues 0)
->   backlog 0b 0p requeues 0
-> qdisc pfifo 0: parent 100:5 limit 1000p
->   Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
->   backlog 0b 0p requeues 0
-> qdisc pfifo 0: parent 100:4 limit 1000p
->   Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
->   backlog 0b 0p requeues 0
-> qdisc pfifo 0: parent 100:3 limit 1000p
->   Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
->   backlog 0b 0p requeues 0
-> qdisc pfifo 0: parent 100:2 limit 1000p
->   Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
->   backlog 0b 0p requeues 0
-> qdisc pfifo 0: parent 100:1 limit 1000p
->   Sent 16210237 bytes 10814 pkt (dropped 0, overlimits 0 requeues 0)
->   backlog 0b 0p requeues 0
->
-> Also my hardware queue stats shows frames going through correct queues.
-> Am I missing something?
->
-
-What I usually see in these cases, are that the borders (from A to B,
-for example) are usually messy, the middle of each entry are more well
-behaved.
-
-But there are things that could improve the behavior: reducing TX DMA
-coalescing, reducing the number of packet buffers in use in the
-controller, disabling power saving features, that kind of thing.
-
-If you are already doing something like this, then I would like to know
-more, that could indicate a problem.
-
-[...]
-
-> I am on a 4.19.y kernel with patches specific to taprio
-> backported. Am I missing anything related to taprio. I will
-> try on the latest master branch as well. But if you can point out
-> anything that will be helpful.
->
-
-[...]
-
-> lcpd/ti-linux-4.19.y) Merged TI feature connectivity into
-> ti-linux-4.19.y
-
-I can't think of anything else.
-
->
->> 
->> Regards,
->> -Vladimir
->> 
-
-Cheers,
---
-Vinicius
+    Andrew
