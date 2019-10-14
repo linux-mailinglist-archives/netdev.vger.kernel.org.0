@@ -2,83 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF123D62DA
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 786EBD62E0
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:46:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730943AbfJNMnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 08:43:03 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:42149 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730733AbfJNMnD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 08:43:03 -0400
-Received: from cpe-2606-a000-111b-43ee-0-0-0-115f.dyn6.twc.com ([2606:a000:111b:43ee::115f] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1iJzga-0004y4-EO; Mon, 14 Oct 2019 08:42:58 -0400
-Date:   Mon, 14 Oct 2019 08:42:49 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        davem@davemloft.net, David Laight <david.laight@aculab.com>
-Subject: Re: [PATCHv3 net-next 0/5] sctp: update from rfc7829
-Message-ID: <20191014124249.GB11844@hmswarspite.think-freely.org>
-References: <cover.1571033544.git.lucien.xin@gmail.com>
+        id S1731029AbfJNMqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 08:46:06 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42019 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730733AbfJNMqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 08:46:06 -0400
+Received: by mail-pg1-f196.google.com with SMTP id f14so4951324pgi.9;
+        Mon, 14 Oct 2019 05:46:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PJizmR8nNVLQP4oKIsqXFCLsPLDAyIx80sr6Y5F0cg8=;
+        b=RTLgL8MzCC1QFCGRsPfgjcqJhhlex207NBFvHed47ujMLweqqOv7j/7fUHPPDVBlgs
+         yOzN/gpj0sSiwjegsSB2pruxV/GLaUb7k2g/qnwOOM3Hu3WZIDJkY6w9SeU2cn5g4ZZo
+         VK35hUTD2j6knmXFa/42vprGhCpugakk8fRdLq8M/0ozg7Qip2HwRqFB3Ppd/HM5RIea
+         yERDeKlDqf+mECPoEOrHJi98+lQpeArKLVXZzkBrQRlNnLONpXCvyh8DRiFDNnBpW3Ng
+         kkf9PD8cy/QG3MfOOZoIfYBUgrEC0o+pOP7LLbHnmhCdOJA/hNsleo/uxvDv22NetAs2
+         C1Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PJizmR8nNVLQP4oKIsqXFCLsPLDAyIx80sr6Y5F0cg8=;
+        b=iBg7kdAbikbtbtoatDKBr+iV8bDXjILUiPwlHvsnuEvhneEnGIlQ57tf646PT9LV2g
+         O12e7fqsaHzN94LBUJZPgz9ZSdizVWxfmm7JNzVJ9DByvQ0JToctpR0X9nwhB0r98DjP
+         hol+/8zmZ+4G28e6oAxolS/0yD8Z2AsIWuYftyDSo9lrAeuiR+ONQgrMe31RjL3FPJId
+         YRRQmuyBdGs9ZAORdqfNkGGJOc+5U7VCc6wXE+yH+VmnmIGXnDnXS/LvKziGhZ9HHebe
+         TgPtovYV8MYQzjuzfvQXkqefVmiXsYHNba7H4quwYXNGZKegHsRf7PGJdulLQK6ZfpEl
+         amDA==
+X-Gm-Message-State: APjAAAXOa8NFzsXzXt8qAT4xY5uG7dhXq6tpnrsFFWUsz1/PWWCHtp7z
+        mJ+OM39oxSizbrvSD3sT96KSDP8R
+X-Google-Smtp-Source: APXvYqx9F3kcOHEBh6NJCYB1/bQEY5V/jmACOWYkDR0dai6rklXEwbvDdUzUTwLlDwSZz+fJexZwvg==
+X-Received: by 2002:a17:90a:8d13:: with SMTP id c19mr35979764pjo.63.1571057165086;
+        Mon, 14 Oct 2019 05:46:05 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
+        by smtp.gmail.com with ESMTPSA id 192sm20582422pfb.110.2019.10.14.05.46.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Oct 2019 05:46:04 -0700 (PDT)
+Subject: Re: [PATCH net] net: sched: act_mirred: drop skb's dst_entry in
+ ingress redirection
+To:     Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20191012071620.8595-1-zhiyuan2048@linux.alibaba.com>
+ <2d816fb6-befb-aaeb-328b-539507022a22@gmail.com>
+ <31b4e85e-bdf8-6462-dc79-06ff8d98b6cf@linux.alibaba.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <4d23d69d-f716-afb4-8db6-c21b5ccd7c44@gmail.com>
+Date:   Mon, 14 Oct 2019 05:46:02 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1571033544.git.lucien.xin@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+In-Reply-To: <31b4e85e-bdf8-6462-dc79-06ff8d98b6cf@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 14, 2019 at 02:14:43PM +0800, Xin Long wrote:
-> SCTP-PF was implemented based on a Internet-Draft in 2012:
+
+
+On 10/14/19 12:07 AM, Zhiyuan Hou wrote:
 > 
->   https://tools.ietf.org/html/draft-nishida-tsvwg-sctp-failover-05
+> On 2019/10/12 6:59 下午, Eric Dumazet wrote:
+>>
+>> On 10/12/19 12:16 AM, Zhiyuan Hou wrote:
+>>> In act_mirred's ingress redirection, if the skb's dst_entry is valid
+>>> when call function netif_receive_skb, the fllowing l3 stack process
+>>> (ip_rcv_finish_core) will check dst_entry and skip the routing
+>>> decision. Using the old dst_entry is unexpected and may discard the
+>>> skb in some case. For example dst->dst_input points to dst_discard.
+>>>
+>>> This patch drops the skb's dst_entry before calling netif_receive_skb
+>>> so that the skb can be made routing decision like a normal ingress
+>>> skb.
+>>>
+>>> Signed-off-by: Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
+>>> ---
+>>>   net/sched/act_mirred.c | 5 ++++-
+>>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+>>> index 9ce073a05414..6108a64c0cd5 100644
+>>> --- a/net/sched/act_mirred.c
+>>> +++ b/net/sched/act_mirred.c
+>>> @@ -18,6 +18,7 @@
+>>>   #include <linux/gfp.h>
+>>>   #include <linux/if_arp.h>
+>>>   #include <net/net_namespace.h>
+>>> +#include <net/dst.h>
+>>>   #include <net/netlink.h>
+>>>   #include <net/pkt_sched.h>
+>>>   #include <net/pkt_cls.h>
+>>> @@ -298,8 +299,10 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+>>>         if (!want_ingress)
+>>>           err = dev_queue_xmit(skb2);
+>>> -    else
+>>> +    else {
+>>> +        skb_dst_drop(skb2);
+>>>           err = netif_receive_skb(skb2);
+>>> +    }
+>>>         if (err) {
+>>>   out:
+>>>
+>> Why is dst_discard used ?
+> When send a skb from local to external, the dst->dst_input will be
+> assigned dst_discard after routing decision. So if we redirect these
+> skbs to ingress stack, it will be dropped.
 > 
-> It's been updated quite a few by rfc7829 in 2016.
-> 
-> This patchset adds the following features:
-> 
->   1. add SCTP_ADDR_POTENTIALLY_FAILED notification
->   2. add pf_expose per netns/sock/asoc
->   3. add SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
->   4. add ps_retrans per netns/sock/asoc/transport
->      (Primary Path Switchover)
->   5. add spt_pathcpthld for SCTP_PEER_ADDR_THLDS sockopt
-> 
-> v1->v2:
->   - See Patch 2/5 and Patch 5/5.
-> v2->v3:
->   - See Patch 1/5, 2/5 and 3/5.
-> 
-> Xin Long (5):
->   sctp: add SCTP_ADDR_POTENTIALLY_FAILED notification
->   sctp: add pf_expose per netns and sock and asoc
->   sctp: add SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
->   sctp: add support for Primary Path Switchover
->   sctp: add SCTP_PEER_ADDR_THLDS_V2 sockopt
-> 
->  include/net/netns/sctp.h     |  14 +++++
->  include/net/sctp/constants.h |  10 +++
->  include/net/sctp/structs.h   |  13 +++-
->  include/uapi/linux/sctp.h    |  15 +++++
->  net/sctp/associola.c         |  31 ++++-----
->  net/sctp/protocol.c          |   6 ++
->  net/sctp/sm_sideeffect.c     |   5 ++
->  net/sctp/socket.c            | 147 ++++++++++++++++++++++++++++++++++++++-----
->  net/sctp/sysctl.c            |  19 ++++++
->  9 files changed, 226 insertions(+), 34 deletions(-)
-> 
-> -- 
-> 2.1.0
-> 
-> 
-Series
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> For ipvlan l2 mode or macvlan, clsact egress filters on master deivce
+> may also meet these skbs even if they came from slave device. Ingress
+> redirection on these skbs may drop them on l3 stack.
+
+Can you please add a test, so that we can see what you are trying to do exactly ?
+
+
+
+
+>> This could actually drop packets, for loopback.
+>>
+>> A Fixes: tag would tremendously help, I wonder if you are not working around
+>> the other issue Wei was tracking yesterday ( https://www.spinics.net/lists/netdev/msg604397.html )
+> No, this is a different issue ^_^.
+
+Please add a Fixes: tag then.
+
+Thanks.
