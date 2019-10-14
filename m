@@ -2,125 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFDFED5C13
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 09:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9621ED5D05
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730334AbfJNHP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 03:15:29 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:61513 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730265AbfJNHP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 03:15:29 -0400
-X-UUID: a34fba46a10641c8b6329ad044c76f52-20191014
-X-UUID: a34fba46a10641c8b6329ad044c76f52-20191014
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <mark-mc.lee@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 1988080015; Mon, 14 Oct 2019 15:15:20 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs05n1.mediatek.inc (172.21.101.15) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Mon, 14 Oct 2019 15:15:17 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Mon, 14 Oct 2019 15:15:18 +0800
-From:   MarkLee <Mark-MC.Lee@mediatek.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Nelson Chang <nelson.chang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rene van Dorst <opensource@vdorst.com>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        MarkLee <Mark-MC.Lee@mediatek.com>
-Subject: [PATCH net,v3 2/2] arm: dts: mediatek: Update mt7629 dts to reflect the latest dt-binding
-Date:   Mon, 14 Oct 2019 15:15:18 +0800
-Message-ID: <20191014071518.11923-3-Mark-MC.Lee@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20191014071518.11923-1-Mark-MC.Lee@mediatek.com>
-References: <20191014071518.11923-1-Mark-MC.Lee@mediatek.com>
+        id S1729961AbfJNICD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 04:02:03 -0400
+Received: from fd.dlink.ru ([178.170.168.18]:60580 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726637AbfJNICD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 04:02:03 -0400
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id 3D6051B20A35; Mon, 14 Oct 2019 11:01:59 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 3D6051B20A35
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1571040119; bh=gdm2EEbYYtK0LBeSCJG8+CJkJpdqV/u9GSpbaHJHXVk=;
+        h=From:To:Cc:Subject:Date;
+        b=CrCPART2dsE7/fDiOhL8iGBGyfp1e8msUlVn45j7mWrcDNzdgVTSPlO25RKFpwdtB
+         YQ22QeZoaLctDSwmRJjdG1ng730uqlN9gseD3/9mysbHTt4ISUXAe/Cha+yDqYJYW7
+         CcMTdndFm60ZkVXL1RmCEPgprtc/UOTdcJK/Fc74=
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
+        USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id 0A4B91B202B0;
+        Mon, 14 Oct 2019 11:01:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 0A4B91B202B0
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 492221B217C5;
+        Mon, 14 Oct 2019 11:01:50 +0300 (MSK)
+Received: from localhost.localdomain (unknown [196.196.203.126])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Mon, 14 Oct 2019 11:01:50 +0300 (MSK)
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexander Lobakin <alobakin@dlink.ru>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next] net: core: use listified Rx for GRO_NORMAL in napi_gro_receive()
+Date:   Mon, 14 Oct 2019 11:00:33 +0300
+Message-Id: <20191014080033.12407-1-alobakin@dlink.ru>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Removes mediatek,physpeed property from dtsi that is useless in PHYLINK
-* Use the fixed-link property speed = <2500> to set the phy in 2.5Gbit.
-* Set gmac1 to gmii mode that connect to a internal gphy
+Commit 323ebb61e32b4 ("net: use listified RX for handling GRO_NORMAL
+skbs") made use of listified skb processing for the users of
+napi_gro_frags().
+The same technique can be used in a way more common napi_gro_receive()
+to speed up non-merged (GRO_NORMAL) skbs for a wide range of drivers
+including gro_cells and mac80211 users.
+This slightly changes the return value in cases where skb is being
+dropped by the core stack, but it seems to have no impact on related
+drivers' functionality.
+gro_normal_batch is left untouched as it's very individual for every
+single system configuration and might be tuned in manual order to
+achieve an optimal performance.
 
-Signed-off-by: MarkLee <Mark-MC.Lee@mediatek.com>
---
-v2->v3:
-* no change
-v1->v2:
-* SGMII port only support BASE-X at 2.5Gbit.
+Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+Acked-by: Edward Cree <ecree@solarflare.com>
 ---
- arch/arm/boot/dts/mt7629-rfb.dts | 13 ++++++++++++-
- arch/arm/boot/dts/mt7629.dtsi    |  2 --
- 2 files changed, 12 insertions(+), 3 deletions(-)
+ net/core/dev.c | 49 +++++++++++++++++++++++++------------------------
+ 1 file changed, 25 insertions(+), 24 deletions(-)
 
-diff --git a/arch/arm/boot/dts/mt7629-rfb.dts b/arch/arm/boot/dts/mt7629-rfb.dts
-index 3621b7d2b22a..9980c10c6e29 100644
---- a/arch/arm/boot/dts/mt7629-rfb.dts
-+++ b/arch/arm/boot/dts/mt7629-rfb.dts
-@@ -66,9 +66,21 @@
- 	pinctrl-1 = <&ephy_leds_pins>;
- 	status = "okay";
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8bc3dce71fc0..74f593986524 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5884,6 +5884,26 @@ struct packet_offload *gro_find_complete_by_type(__be16 type)
+ }
+ EXPORT_SYMBOL(gro_find_complete_by_type);
  
-+	gmac0: mac@0 {
-+		compatible = "mediatek,eth-mac";
-+		reg = <0>;
-+		phy-mode = "2500base-x";
-+		fixed-link {
-+			speed = <2500>;
-+			full-duplex;
-+			pause;
-+		};
-+	};
++/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
++static void gro_normal_list(struct napi_struct *napi)
++{
++	if (!napi->rx_count)
++		return;
++	netif_receive_skb_list_internal(&napi->rx_list);
++	INIT_LIST_HEAD(&napi->rx_list);
++	napi->rx_count = 0;
++}
 +
- 	gmac1: mac@1 {
- 		compatible = "mediatek,eth-mac";
- 		reg = <1>;
-+		phy-mode = "gmii";
- 		phy-handle = <&phy0>;
- 	};
++/* Queue one GRO_NORMAL SKB up for list processing. If batch size exceeded,
++ * pass the whole batch up to the stack.
++ */
++static void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb)
++{
++	list_add_tail(&skb->list, &napi->rx_list);
++	if (++napi->rx_count >= gro_normal_batch)
++		gro_normal_list(napi);
++}
++
+ static void napi_skb_free_stolen_head(struct sk_buff *skb)
+ {
+ 	skb_dst_drop(skb);
+@@ -5891,12 +5911,13 @@ static void napi_skb_free_stolen_head(struct sk_buff *skb)
+ 	kmem_cache_free(skbuff_head_cache, skb);
+ }
  
-@@ -78,7 +90,6 @@
+-static gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
++static gro_result_t napi_skb_finish(struct napi_struct *napi,
++				    struct sk_buff *skb,
++				    gro_result_t ret)
+ {
+ 	switch (ret) {
+ 	case GRO_NORMAL:
+-		if (netif_receive_skb_internal(skb))
+-			ret = GRO_DROP;
++		gro_normal_one(napi, skb);
+ 		break;
  
- 		phy0: ethernet-phy@0 {
- 			reg = <0>;
--			phy-mode = "gmii";
- 		};
- 	};
- };
-diff --git a/arch/arm/boot/dts/mt7629.dtsi b/arch/arm/boot/dts/mt7629.dtsi
-index 9608bc2ccb3f..867b88103b9d 100644
---- a/arch/arm/boot/dts/mt7629.dtsi
-+++ b/arch/arm/boot/dts/mt7629.dtsi
-@@ -468,14 +468,12 @@
- 			compatible = "mediatek,mt7629-sgmiisys", "syscon";
- 			reg = <0x1b128000 0x3000>;
- 			#clock-cells = <1>;
--			mediatek,physpeed = "2500";
- 		};
+ 	case GRO_DROP:
+@@ -5928,7 +5949,7 @@ gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
  
- 		sgmiisys1: syscon@1b130000 {
- 			compatible = "mediatek,mt7629-sgmiisys", "syscon";
- 			reg = <0x1b130000 0x3000>;
- 			#clock-cells = <1>;
--			mediatek,physpeed = "2500";
- 		};
- 	};
- };
+ 	skb_gro_reset_offset(skb);
+ 
+-	ret = napi_skb_finish(dev_gro_receive(napi, skb), skb);
++	ret = napi_skb_finish(napi, skb, dev_gro_receive(napi, skb));
+ 	trace_napi_gro_receive_exit(ret);
+ 
+ 	return ret;
+@@ -5974,26 +5995,6 @@ struct sk_buff *napi_get_frags(struct napi_struct *napi)
+ }
+ EXPORT_SYMBOL(napi_get_frags);
+ 
+-/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
+-static void gro_normal_list(struct napi_struct *napi)
+-{
+-	if (!napi->rx_count)
+-		return;
+-	netif_receive_skb_list_internal(&napi->rx_list);
+-	INIT_LIST_HEAD(&napi->rx_list);
+-	napi->rx_count = 0;
+-}
+-
+-/* Queue one GRO_NORMAL SKB up for list processing.  If batch size exceeded,
+- * pass the whole batch up to the stack.
+- */
+-static void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb)
+-{
+-	list_add_tail(&skb->list, &napi->rx_list);
+-	if (++napi->rx_count >= gro_normal_batch)
+-		gro_normal_list(napi);
+-}
+-
+ static gro_result_t napi_frags_finish(struct napi_struct *napi,
+ 				      struct sk_buff *skb,
+ 				      gro_result_t ret)
 -- 
-2.17.1
+2.23.0
 
