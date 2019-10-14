@@ -2,138 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CADE9D68AA
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5901DD68B6
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388592AbfJNRjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 13:39:48 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:52779 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730046AbfJNRjr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:39:47 -0400
-Received: by mail-wm1-f65.google.com with SMTP id r19so18138534wmh.2;
-        Mon, 14 Oct 2019 10:39:45 -0700 (PDT)
+        id S2388603AbfJNRk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 13:40:27 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41729 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730046AbfJNRk1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:40:27 -0400
+Received: by mail-pg1-f193.google.com with SMTP id t3so10492818pga.8;
+        Mon, 14 Oct 2019 10:40:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lNZVpaEdmaJY1w+xpL+K9ZqQ92uD6Jfe5E6lniBjnvM=;
-        b=oY+W6FwfNZXtwQq+WhORdLOdfo+f4fhwM0p+Ers5h6CPfgtbEn9ww93kXBSsw2v60b
-         SMIu2UNR6PLQJQdTuB5CZKPD7tjM5zgAWc2F3LP1dYBp/mIWLyzvE+gzbroEFBRI7Dst
-         6kA8qKfdBDN33wxGZAOv+JGy3RovTItDZE4cjypr4TRa0AKUIYcxwviSXAuFpdNyQ3Ic
-         P5h5NDYnWvzIBkjBiYMxqf/jo1ONlCR+e27uF8WQwLTB2ZtajymWafYs1NlkszKw2+og
-         TjPkHU05jpgk0QnsRcXQ7aScuZgRRwSgOc6g7Xs1OdMStDrlfb3Y5KlSoZ09BW/JEGMk
-         I4Vw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qcbvr0gc2NuqSES9wh8FIsoaBFNjSsQ88EI5O4USk5E=;
+        b=Ft42jQI9Iyk9a4wn1mA3+91FTLsH2+OzbibTCMdg6HAwmiZOqoeBLK1gMPhppdw5FT
+         8EZi+TRRTJF3O2T3yyUas1T/Lv8v+TsyveORxmQu+PAdCqp7nJdwZLp1ssgHvt75JOQh
+         DUBU+i0AfaLlboL3gdmDuTPQLrXpdu0+JmjDghprHn3hgcS0z0wbJTBKc9C2VSWI7J3z
+         F9HTZCLOVDeSdHMHb4E6XnV4EecTxJDET/Z+ez+wuFG1H7v1XAdhB8t8172PbsXNKK7b
+         ok2BhCbKIQqKHkE4hB68QZiSwfXmzjL2WbfvNnAziNsTf/AmUZqWlZ7hKmEG4e7JEPxZ
+         S9jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lNZVpaEdmaJY1w+xpL+K9ZqQ92uD6Jfe5E6lniBjnvM=;
-        b=D9UR3CoXewCGhtbjhNp34fGFEoYQeY1C08Ur0JPIb9bI9tC0tg0LxwIKVvB4xLKB6e
-         0aq4/IBm8QDfn+qcaHpt60v5AtjusUAU2lj0nOK5ZOxOJSKv10+neSU1TZGa8O/O/bqp
-         32eWqvoMfQyQUxWBmVxREsemXCJCdtfC/KgQJCJyeJV0HaPjfeOKvRkj1lL9oDkyIVXu
-         k97sJogKI5l/K39xei8qd7osC0kPI+Bcn4FL9scjcU0ark+p6iTChbpA8pXCdr35hzxB
-         kssXscgxJ5FrqLZ1v2kdpDnlYtvKVy9he1VBJNajjIm+DxtcYd9BGGlf6yHPHTo99VsJ
-         TdAA==
-X-Gm-Message-State: APjAAAXbTx4aqa4NX5v1jZvpPcd8EV5kecf0r6cREKI2vsnWVybpzwoU
-        c7+Yr5nynSeN/Hy+nNA46p4=
-X-Google-Smtp-Source: APXvYqxufY2enniRnRIxytq9WOwNI0dKAeSWrxef8cqdYzIseEmMuayKHSwg/1yhpjk+WboQkw4UeQ==
-X-Received: by 2002:a1c:bc07:: with SMTP id m7mr16018252wmf.117.1571074784999;
-        Mon, 14 Oct 2019 10:39:44 -0700 (PDT)
-Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id p5sm25687450wmi.4.2019.10.14.10.39.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qcbvr0gc2NuqSES9wh8FIsoaBFNjSsQ88EI5O4USk5E=;
+        b=Yox7dwwsdqFyxnT972mHbx6wZ7krgmVvzjiYwbATUrFqdTI1/TdSy2F21FcxzvIMqr
+         ZsFI639zmdKmt7Q7Pe0e0FFjKsnDkWQE6/ZpRokyT8xR4LhpsCydWtakdfjFsaZMTmAW
+         DKjtIbX7zKwXku5F2JRC7zC8fzieWbWL1/DDT0V9CR/txNyWkIHiVJsS36boFdBGQ/TJ
+         9jP52pXi7OlfI3FGmlAvwZPbpZ8K4j8NSYYkI5uRR79EX42QK8wl8eZCEgqGYAUpnE+T
+         UrIqAqwndYBRUdXpwK/GsbnU4WjgZB8hPmvmSJ1UQf8ZmTOUTO0L6bQdwr/xyCdrSlpu
+         Br+A==
+X-Gm-Message-State: APjAAAX2v6271sO1I2FSODKZQL7a4fgZGxRKAVvc1GKayjHrG4iI+SDK
+        2f1VahfJuXT6slcFanYlDfU/znVz
+X-Google-Smtp-Source: APXvYqwy3aNJ/+XgfAIlcNSQrUIZNlIR4utB8bAQRqPTTqGkTuqj5WZTo+9m9HZEYiyfa2SCttvWYw==
+X-Received: by 2002:a63:131b:: with SMTP id i27mr18157179pgl.209.1571074826258;
+        Mon, 14 Oct 2019 10:40:26 -0700 (PDT)
+Received: from dtor-ws.mtv.corp.google.com ([2620:15c:202:201:3adc:b08c:7acc:b325])
+        by smtp.gmail.com with ESMTPSA id k66sm18784535pjb.11.2019.10.14.10.40.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Oct 2019 10:39:44 -0700 (PDT)
-Date:   Mon, 14 Oct 2019 18:39:42 +0100
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
-Subject: Re: [PATCH V3 6/7] virtio: introduce a mdev based transport
-Message-ID: <20191014173942.GB5359@stefanha-x1.localdomain>
-References: <20191011081557.28302-1-jasowang@redhat.com>
- <20191011081557.28302-7-jasowang@redhat.com>
+        Mon, 14 Oct 2019 10:40:25 -0700 (PDT)
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH v2 0/3] net: phy: switch to using fwnode_gpiod_get_index
+Date:   Mon, 14 Oct 2019 10:40:19 -0700
+Message-Id: <20191014174022.94605-1-dmitry.torokhov@gmail.com>
+X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ftEhullJWpWg/VHq"
-Content-Disposition: inline
-In-Reply-To: <20191011081557.28302-7-jasowang@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series switches phy drivers form using fwnode_get_named_gpiod() and
+gpiod_get_from_of_node() that are scheduled to be removed in favor
+of fwnode_gpiod_get_index() that behaves more like standard
+gpiod_get_index() and will potentially handle secondary software
+nodes in cases we need to augment platform firmware.
 
---ftEhullJWpWg/VHq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Linus, as David would prefer not to pull in the immutable branch but
+rather route the patches through the tree that has the new API, could
+you please take them with his ACKs?
 
-On Fri, Oct 11, 2019 at 04:15:56PM +0800, Jason Wang wrote:
-> +struct virtio_mdev_device {
-> +	struct virtio_device vdev;
-> +	struct mdev_device *mdev;
-> +	unsigned long version;
-> +
-> +	struct virtqueue **vqs;
-> +	/* The lock to protect virtqueue list */
-> +	spinlock_t lock;
-> +	struct list_head virtqueues;
+Thanks!
 
-Is this a list of struct virtio_mdev_vq_info?  Please document the
-actual type in a comment.
+v2:
+        - rebased on top of Linus' W devel branch
+        - added David's ACKs
 
-> +static int virtio_mdev_find_vqs(struct virtio_device *vdev, unsigned nvqs,
-> +				struct virtqueue *vqs[],
-> +				vq_callback_t *callbacks[],
-> +				const char * const names[],
-> +				const bool *ctx,
-> +				struct irq_affinity *desc)
-> +{
-> +	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
-> +	struct mdev_device *mdev = vm_get_mdev(vdev);
-> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-> +	struct virtio_mdev_callback cb;
-> +	int i, err, queue_idx = 0;
-> +
-> +	vm_dev->vqs = kmalloc_array(queue_idx, sizeof(*vm_dev->vqs),
-> +				    GFP_KERNEL);
+Dmitry Torokhov (3):
+  net: phylink: switch to using fwnode_gpiod_get_index()
+  net: phy: fixed_phy: fix use-after-free when checking link GPIO
+  net: phy: fixed_phy: switch to using fwnode_gpiod_get_index
 
-kmalloc_array(0, ...)?  I would have expected nvqs instead of queue_idx
-(0).
+ drivers/net/phy/fixed_phy.c | 11 ++++-------
+ drivers/net/phy/phylink.c   |  4 ++--
+ 2 files changed, 6 insertions(+), 9 deletions(-)
 
-What is this the purpose of vm_dev->vqs and does anything ever access it?
+-- 
+2.23.0.700.g56cf767bdb-goog
 
---ftEhullJWpWg/VHq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2kst4ACgkQnKSrs4Gr
-c8hQqggAsLqAScuEZRHgMYUxIlc4Hpdh283rOQFgRgPfZqq3hQ/nzKTqbn1k7DnZ
-MaXQk/GXc1/mFzEwjGVoMOJ+NiZKpj5xuVN9HqKEuDuBooykO5wKnbwkm6kAs/gG
-/10A4I5fkyOUHB+xRkaM/3g9UJgo/yB/oI7yQonKFI3VNQc/Q0vcAWUkUbyoZyZA
-WO5IJoOR9nF7g6kkYLT0ik26WZFVsBruKTsifLsCJTCQMWo8dJpvgJpGvo/k07YZ
-kWYC8J+K/SRA9gpvDBCfkPRQGMgq7CiE0C+VfoGVo11TuFd6FlkjjYmBIPXYek98
-rK1ONn6f4qY+67eRJ77oiNeFsj4eYw==
-=7Qm5
------END PGP SIGNATURE-----
-
---ftEhullJWpWg/VHq--
