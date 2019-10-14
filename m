@@ -2,86 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB4BD5DBB
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12447D5DD1
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730554AbfJNInU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 04:43:20 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:38982 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730281AbfJNInU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 04:43:20 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 3FB846063F; Mon, 14 Oct 2019 08:43:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571042599;
-        bh=b+v/Z3xKQCNgI8FA2qhwpItPU/4+EoZa5vdBKXJu7Fc=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=DIOh1YqZL42SO4XPqRufgwtC9kT/TNHxpdzF/SGiTotnFhjp4CtyaiU2zSON5wZsc
-         P1Pi3CwZ3DmAe/xUxdWJ/gwPFOkwMTjitWic0pMN/h+/8k20LP9FyVukmUrOUvk6v6
-         LLd7u3h4r5W7DgOsNnzRz8HaaiRj4MDzOoC34HB0=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EEC2E605FE;
-        Mon, 14 Oct 2019 08:43:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571042598;
-        bh=b+v/Z3xKQCNgI8FA2qhwpItPU/4+EoZa5vdBKXJu7Fc=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=QF0UpIBB3/JJsFHOi/EQclyKEcz2xc996vNvl8g0AF/kONPZd0/3Ww37oiG/V3BWw
-         4V6YCPR5Vwc5tZekm0fk1nHb89itprdowO7kmf7hbfOXuhTjlTvarIjHWpfoxt3Oxa
-         9x+dXl1ViK44AOPbAuFsChC9Ue5FOya6leZMMtO8=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EEC2E605FE
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1730579AbfJNIsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 04:48:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45024 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730565AbfJNIsQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 04:48:16 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id C6D49ACFA;
+        Mon, 14 Oct 2019 08:48:13 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id D0998E3935; Mon, 14 Oct 2019 10:48:09 +0200 (CEST)
+Date:   Mon, 14 Oct 2019 10:48:09 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7 14/17] ethtool: set link settings with
+ LINKINFO_SET request
+Message-ID: <20191014084809.GA8493@unicorn.suse.cz>
+References: <cover.1570654310.git.mkubecek@suse.cz>
+ <aef31ba798d1cfa2ae92d333ad1547f4b528ffa8.1570654310.git.mkubecek@suse.cz>
+ <20191012163309.GA2219@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] ath10k: Correct error handling of dma_map_single()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191011182817.194565-1-bjorn.andersson@linaro.org>
-References: <20191011182817.194565-1-bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Niklas Cassel <niklas.cassel@linaro.org>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191014084319.3FB846063F@smtp.codeaurora.org>
-Date:   Mon, 14 Oct 2019 08:43:19 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191012163309.GA2219@nanopsycho>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
-
-> The return value of dma_map_single() should be checked for errors using
-> dma_mapping_error() and the skb has been dequeued so it needs to be
-> freed.
+On Sat, Oct 12, 2019 at 06:33:09PM +0200, Jiri Pirko wrote:
+> Wed, Oct 09, 2019 at 10:59:43PM CEST, mkubecek@suse.cz wrote:
 > 
-> This was found when enabling CONFIG_DMA_API_DEBUG and it warned about the
-> missing dma_mapping_error() call.
+> [...]
 > 
-> Fixes: 1807da49733e ("ath10k: wmi: add management tx by reference support over wmi")
-> Reported-by: Niklas Cassel <niklas.cassel@linaro.org>
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> >+static const struct nla_policy linkinfo_hdr_policy[ETHTOOL_A_HEADER_MAX + 1] = {
+> >+	[ETHTOOL_A_HEADER_UNSPEC]		= { .type = NLA_REJECT },
+> >+	[ETHTOOL_A_HEADER_DEV_INDEX]		= { .type = NLA_U32 },
+> >+	[ETHTOOL_A_HEADER_DEV_NAME]		= { .type = NLA_NUL_STRING,
+> >+						    .len = IFNAMSIZ - 1 },
+> 
+> Please make ETHTOOL_A_HEADER_DEV_NAME accept alternative names as well.
+> Just s/IFNAMSIZ/ALTIFNAMSIZ should be enough.
 
-Patch applied to ath-next branch of ath.git, thanks.
+Yes, definitely. I focused on (finally) submitting v7 so I didn't left
+testing how it plays with altnames for later.
 
-d43810b2c180 ath10k: Correct error handling of dma_map_single()
+Michal 
 
--- 
-https://patchwork.kernel.org/patch/11186173/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+> >+	[ETHTOOL_A_HEADER_GFLAGS]		= { .type = NLA_U32 },
+> >+	[ETHTOOL_A_HEADER_RFLAGS]		= { .type = NLA_REJECT },
+> >+};
+> 
+> [...]
