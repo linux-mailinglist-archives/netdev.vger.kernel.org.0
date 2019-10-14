@@ -2,84 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E40F4D6AD3
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 22:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60976D6AD7
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 22:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733233AbfJNUdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 16:33:36 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:36216 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729667AbfJNUdg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 16:33:36 -0400
-Received: by mail-wm1-f65.google.com with SMTP id m18so18020253wmc.1
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 13:33:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=RL+qRYT6Goj58mWMl95r8FGMxjYOCcO4sf1iNuaKh9U=;
-        b=dMpX4osW+Gizh9wuXThIULR+SMojXNXSVsVvoWi5OvVzxXiLGj195gyZ0EdA3ugmnf
-         pNJa9ZRwkxgN96umOkiqmG22sEeEnHfHxbwOCABF932ETOIQozeKKpwV4kOYVqDZdYpg
-         HCazf1SLvF8mNO3JApRICKFlRopM9A0+MQ9KKpJvlyBDThEZ2i3z8fb3COic55OAQtJM
-         8uPRQDu4QUAbItWuMpA1YNQofcuzZx5hpVW/0/UlNHEzP8FGK2ePDh9KDJ/pasgRXdbd
-         qmhX6qiIJmhColRpPsyAtExuKOWc9pX84aDJFFd9WvWi3x/EZikS4XryeAB1saHR+0vu
-         jghQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=RL+qRYT6Goj58mWMl95r8FGMxjYOCcO4sf1iNuaKh9U=;
-        b=b0gjrAyROKTZKLbVEzRAFjHr7SYn3GXqhmAp0Yp+I1MQ1R/TsfOyDWa/td9wBDSO4z
-         Xqij9vb9uzkR0W8aMpoCvcZ9BMObEhGDIL3vcyxhzVzBjvFk+G4FgEQu6z+vpD2+6c+q
-         29ydIO0nmlr+6iE1eybqjtK4yIpexZGILT9rCCTYx3HggB1qBFy9CalJoCZsCqleiznz
-         LF9cIo9xMnRZZ3wjiLqXyD9DR39HrtA3d/QZJRrh0VrMI29PkXxmHqWNfpGF4OU0f2TJ
-         MLW+Mw2E2CVodkKSCisKWflC4fDlDCJCBjsOa+ARjkabF1KyhKpM7yrOI6DY6XEhHttX
-         gL9g==
-X-Gm-Message-State: APjAAAV9D5hvVde07bNB/Z03H66jqn6cMjEBVHPX82umMiqHDE6HrzHE
-        ymhzCWWhATFd6tajEXvyqed++2SwUTat+CHHJydyyGLGyPQ=
-X-Google-Smtp-Source: APXvYqzXLid+PDcZKtgZAJnd+DnjNjmGs2LNAqZ3GOO2Khpo/muwpEqr2khANBlfQMDwxJ+eHJscGM6cBUWo4kOCBzY=
-X-Received: by 2002:a1c:2d85:: with SMTP id t127mr15762182wmt.109.1571085213841;
- Mon, 14 Oct 2019 13:33:33 -0700 (PDT)
-MIME-Version: 1.0
-From:   Richard Weinberger <richard.weinberger@gmail.com>
-Date:   Mon, 14 Oct 2019 22:33:22 +0200
-Message-ID: <CAFLxGvwnOi6dSq5yLM78XskweQOY6aPbRt==G9wv5qS+dfj8bw@mail.gmail.com>
-Subject: Bridge port userspace events broken?
+        id S1731044AbfJNUhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 16:37:50 -0400
+Received: from mga07.intel.com ([134.134.136.100]:15986 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730700AbfJNUhu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 16:37:50 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Oct 2019 13:37:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,296,1566889200"; 
+   d="scan'208";a="396587614"
+Received: from vcostago-desk1.jf.intel.com ([10.54.70.82])
+  by fmsmga006.fm.intel.com with ESMTP; 14 Oct 2019 13:37:49 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        nikolay@cumulusnetworks.com, bridge@lists.linux-foundation.org,
-        Greg KH <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        Ederson de Souza <ederson.desouza@intel.com>
+Subject: [PATCH net v1] sched: etf: Fix ordering of packets with same txtime
+Date:   Mon, 14 Oct 2019 13:38:22 -0700
+Message-Id: <20191014203822.31741-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+When a application sends many packets with the same txtime, they may
+be transmitted out of order (different from the order in which they
+were enqueued).
 
-My userspace needs /sys/class/net/eth0/brport/group_fwd_mask, so I set
-up udev rules
-to wait for the sysfs file.
-Without luck.
-Also "udevadm monitor" does not show any event related to
-/sys/class/net/eth0/brport when I assign eth0 to a bridge.
+This happens because when inserting elements into the tree, when the
+txtime of two packets are the same, the new packet is inserted at the
+left side of the tree, causing the reordering. The only effect of this
+change should be that packets with the same txtime will be transmitted
+in the order they are enqueued.
 
-First I thought that the bridge code just misses to emit some events but
-br_add_if() calls kobject_uevent() which is good.
+The application in question (the AVTP GStreamer plugin, still in
+development) is sending video traffic, in which each video frame have
+a single presentation time, the problem is that when packetizing,
+multiple packets end up with the same txtime.
 
-Greg gave me the hint that the bridge code might not use the kobject model
-correctly.
+The receiving side was rejecting packets because they were being
+received out of order.
 
-Enabling kobjekt debugging shows that all events are dropped:
-[   36.904602] device eth0 entered promiscuous mode
-[   36.904786] kobject: 'brport' (0000000028a47e33): kobject_uevent_env
-[   36.904789] kobject: 'brport' (0000000028a47e33):
-kobject_uevent_env: filter function caused the event to drop!
+Fixes: 25db26a91364 ("net/sched: Introduce the ETF Qdisc")
+Reported-by: Ederson de Souza <ederson.desouza@intel.com>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+---
+ net/sched/sch_etf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If I understood Greg correctly this is because the bridge code uses
-plain kobjects which
-have a parent object. Therefore all events are dropped.
-
-Shouldn't brport be a kset just like net_device->queues_kset?
-
+diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
+index cebfb65d8556..b1da5589a0c6 100644
+--- a/net/sched/sch_etf.c
++++ b/net/sched/sch_etf.c
+@@ -177,7 +177,7 @@ static int etf_enqueue_timesortedlist(struct sk_buff *nskb, struct Qdisc *sch,
+ 
+ 		parent = *p;
+ 		skb = rb_to_skb(parent);
+-		if (ktime_after(txtime, skb->tstamp)) {
++		if (ktime_compare(txtime, skb->tstamp) >= 0) {
+ 			p = &parent->rb_right;
+ 			leftmost = false;
+ 		} else {
 -- 
-Thanks,
-//richard
+2.23.0
+
