@@ -2,119 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B075D5BC3
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 08:59:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D6DD5BCD
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 09:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730128AbfJNG67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 02:58:59 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:23446 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726618AbfJNG67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 02:58:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571036337;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:openpgp:openpgp;
-        bh=fTMccw4yJmRrZCZ9gNo4nMTzO7ADWuT1mX49M7Icnho=;
-        b=Z6E2eVOOLBl/hs/JLfDLsLdK2UTxZo5xJu5dr0VqVRCo+Qy/5lXMoSc7PzEOl0hUtXHMyw
-        Bg0Qsd5GB1K8i53sJTnGMcAi0jz/Mk40jIuFI0ybxOH+jZy1+L670mddDoptQq1KZhRmjx
-        EN74q1IlkLuSzHVm8t0WvcHkHfMONp8=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-23-0Tj78bB8MZ-JjCCyEopS9A-1; Mon, 14 Oct 2019 02:58:54 -0400
-Received: by mail-wm1-f71.google.com with SMTP id m6so3919528wmf.2
-        for <netdev@vger.kernel.org>; Sun, 13 Oct 2019 23:58:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qg9GPSpE2649WBDEVbobtu+jtSwl5swPTKuvxOPA1Ww=;
-        b=DJG2SYYKqEmTJSNbkwrvojiartcR3qIXDLEd2dWn4UM67ZYUaq2dn8++CKR9qFrJ3T
-         FZ5i07ETE+oaPK1pQ2NuyccZNKzqHKx29UDhDp+insRQh5KR5wtCvLclkdyifK7VQBrT
-         tR/4KtFJPaeReVqhCOPHa3ibFAYUpsp2bEpyS1xuefo1dV7C7xL53Jc3Wlu7SS+xjFI9
-         do5HI65m0HQVDkptyuBWiC2Eg4nefxvoycKyQ3Xux/NltaqkFdkxZKR4J0AZsC9TiObj
-         nS1A5VIE/R5IdkCChxciSOf4KdKJL8wBB60GaRtcXQyWWY0tl2lMCkFb9DPSOkC7ppuK
-         p9PQ==
-X-Gm-Message-State: APjAAAWy7MhKAz9b/g1mjH+VLaLhxPdJLpcI7gc4wk3C4nOC0X9BuCVJ
-        FGj53OvEhyjx/ZGT1EOhbfByuhv8XDJDUwr0PWVmpBa9rVPEuCrWL4hCFo991sqCVYcb3eTe7yD
-        H6cPb/Cwn080Ckvee
-X-Received: by 2002:a1c:106:: with SMTP id 6mr12661930wmb.134.1571036333212;
-        Sun, 13 Oct 2019 23:58:53 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqx2OUyyPpyXE9W0ygYy2lBrXHn8KLvNfyvMNxm3vCpYPWzXJRiYFSSA6PpWL9tHhL0NCFDn6Q==
-X-Received: by 2002:a1c:106:: with SMTP id 6mr12661909wmb.134.1571036332956;
-        Sun, 13 Oct 2019 23:58:52 -0700 (PDT)
-Received: from ?IPv6:2001:b07:6468:f312:ddc7:c53c:581a:7f3e? ([2001:b07:6468:f312:ddc7:c53c:581a:7f3e])
-        by smtp.gmail.com with ESMTPSA id q19sm35151293wra.89.2019.10.13.23.58.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Oct 2019 23:58:52 -0700 (PDT)
-Subject: Re: [RFC PATCH v3 4/6] psci: Add hvc call service for ptp_kvm.
-To:     "Jianyong Wu (Arm Technology China)" <Jianyong.Wu@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Will Deacon <Will.Deacon@arm.com>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        "Kaly Xin (Arm Technology China)" <Kaly.Xin@arm.com>,
-        "Justin He (Arm Technology China)" <Justin.He@arm.com>,
-        nd <nd@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20190918080716.64242-1-jianyong.wu@arm.com>
- <20190918080716.64242-5-jianyong.wu@arm.com>
- <83ed7fac-277f-a31e-af37-8ec134f39d26@redhat.com>
- <HE1PR0801MB1676F57B317AE85E3B934B32F48E0@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <629538ea-13fb-e666-8df6-8ad23f114755@redhat.com>
- <HE1PR0801MB167639E2F025998058A77F86F4890@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <ef6ab8bd-41ad-88f8-9cfd-dc749ca65310@redhat.com>
- <a1b554b8-4417-5305-3419-fe71a8c50842@kernel.org>
- <56a5b885-62c8-c4ef-e2f8-e945c0eb700e@redhat.com>
- <HE1PR0801MB1676115C248E6DF09F9DD5A6F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <1cc145ca-1af2-d46f-d530-0ae434005f0b@redhat.com>
- <HE1PR0801MB1676B1AD68544561403C3196F4950@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <6b8b59b2-a07e-7e33-588c-1da7658e3f1e@redhat.com>
- <HE1PR0801MB167635A4AA59FD93C45872E4F4900@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Openpgp: preference=signencrypt
-Message-ID: <fc847a82-49cb-c931-617c-82ef5531963e@redhat.com>
-Date:   Mon, 14 Oct 2019 08:58:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1730102AbfJNHCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 03:02:37 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:40061 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726646AbfJNHCh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 03:02:37 -0400
+X-Originating-IP: 209.85.221.172
+Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id B1C55FF803
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 07:02:34 +0000 (UTC)
+Received: by mail-vk1-f172.google.com with SMTP id v78so3315156vke.4
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 00:02:34 -0700 (PDT)
+X-Gm-Message-State: APjAAAXgAs9eMTpAokuz+mtPryGzlC3jbUDAUUD7lkc3oYyrzghZjsab
+        ic9k4f0vMlOpBHD6NHHbe8bkGLMYiIRZ0F3szFY=
+X-Google-Smtp-Source: APXvYqxO3mdfmyYHfvWqIjaNltaYu5hdc0xqFapyhDDdr9EVc2mLwKFVQHNpcC0FBXMROfnGUOP20IsKCKgM0KpIl+0=
+X-Received: by 2002:a1f:5e0e:: with SMTP id s14mr14760903vkb.27.1571036553007;
+ Mon, 14 Oct 2019 00:02:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <HE1PR0801MB167635A4AA59FD93C45872E4F4900@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-Content-Language: en-US
-X-MC-Unique: 0Tj78bB8MZ-JjCCyEopS9A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <1570802447-8019-1-git-send-email-xiangxia.m.yue@gmail.com> <1570802447-8019-6-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1570802447-8019-6-git-send-email-xiangxia.m.yue@gmail.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Mon, 14 Oct 2019 00:02:22 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_CujxO4syd=OFcZE4pMSNfxi9NtEqQB=2xxjP_i4yXSnA@mail.gmail.com>
+Message-ID: <CAOrHB_CujxO4syd=OFcZE4pMSNfxi9NtEqQB=2xxjP_i4yXSnA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 05/10] net: openvswitch: optimize flow-mask
+ looking up
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Greg Rose <gvrose8192@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/10/19 07:50, Jianyong Wu (Arm Technology China) wrote:
->>
->> John (Stultz), does that sound good to you?  The context is that Jianyon=
-g
->> would like to add a hypercall that returns a (cycles,
->> nanoseconds) pair to the guest.  On x86 we're relying on the vclock_mode
->> field that is already there for the vDSO, but being able to just use
->> ktime_get_snapshot would be much nicer.
->>
-> Could I add struct clocksource to system_time_snapshot struct in next ver=
-sion of my patch set?
+On Fri, Oct 11, 2019 at 7:05 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> The full looking up on flow table traverses all mask array.
+> If mask-array is too large, the number of invalid flow-mask
+> increase, performance will be drop.
+>
+> This patch optimizes mask-array operation:
+>
+> * Inserting, insert it [ma->count- 1] directly.
+> * Removing, only change last and current mask point, and free current mask.
+> * Looking up, full looking up will break if mask is NULL.
+>
+> The function which changes or gets *count* of struct mask_array,
+> is protected by ovs_lock, but flow_lookup (not protected) should use *max* of
+> struct mask_array.
+>
+> Functions protected by ovs_lock:
+> * tbl_mask_array_del_mask
+> * tbl_mask_array_add_mask
+> * flow_mask_find
+> * ovs_flow_tbl_lookup_exact
+> * ovs_flow_tbl_num_masks
+>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+>  net/openvswitch/flow_table.c | 114 ++++++++++++++++++++++---------------------
+>  1 file changed, 58 insertions(+), 56 deletions(-)
+>
+> diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+> index 4c82960..1b99f8e 100644
+> --- a/net/openvswitch/flow_table.c
+> +++ b/net/openvswitch/flow_table.c
+> @@ -198,10 +198,8 @@ static int tbl_mask_array_realloc(struct flow_table *tbl, int size)
+>         if (old) {
+>                 int i;
+>
+> -               for (i = 0; i < old->max; i++) {
+> -                       if (ovsl_dereference(old->masks[i]))
+> -                               new->masks[new->count++] = old->masks[i];
+> -               }
+> +               for (i = 0; i < old->count; i++)
+> +                       new->masks[new->count++] = old->masks[i];
+>         }
+>
+>         rcu_assign_pointer(tbl->mask_array, new);
+> @@ -538,7 +536,7 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+>
+>                 mask = rcu_dereference_ovsl(ma->masks[i]);
+>                 if (!mask)
+> -                       continue;
+> +                       break;
+>
+>                 flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
+>                 if (flow) { /* Found */
+> @@ -632,15 +630,13 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+>         int i;
+>
+>         /* Always called under ovs-mutex. */
+> -       for (i = 0; i < ma->max; i++) {
+> +       for (i = 0; i < ma->count; i++) {
+>                 struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+>                 u32 __always_unused n_mask_hit;
+>                 struct sw_flow_mask *mask;
+>                 struct sw_flow *flow;
+>
+>                 mask = ovsl_dereference(ma->masks[i]);
+> -               if (!mask)
+> -                       continue;
+>
+>                 flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
+>                 if (flow && ovs_identifier_is_key(&flow->id) &&
+> @@ -704,21 +700,34 @@ static struct table_instance *table_instance_expand(struct table_instance *ti,
+>         return table_instance_rehash(ti, ti->n_buckets * 2, ufid);
+>  }
+>
+> -static void tbl_mask_array_delete_mask(struct mask_array *ma,
+> -                                      struct sw_flow_mask *mask)
+> +static void tbl_mask_array_del_mask(struct flow_table *tbl,
+> +                                   struct sw_flow_mask *mask)
+>  {
+> +       struct mask_array *ma = ovsl_dereference(tbl->mask_array);
+>         int i;
+>
+>         /* Remove the deleted mask pointers from the array */
+> -       for (i = 0; i < ma->max; i++) {
+> -               if (mask == ovsl_dereference(ma->masks[i])) {
+> -                       RCU_INIT_POINTER(ma->masks[i], NULL);
+> -                       ma->count--;
+> -                       kfree_rcu(mask, rcu);
+> -                       return;
+> -               }
+> +       for (i = 0; i < ma->count; i++) {
+> +               if (mask == ovsl_dereference(ma->masks[i]))
+> +                       goto found;
+>         }
+> +
+>         BUG();
+> +       return;
+> +
+> +found:
+> +       ma->count--;
+> +       smp_wmb();
+> +
+You need corresponding barriers when you read this value. I think it
+would be better if you use WRITE_ONCE() and READ_ONCE() APIs to manage
+this variable access.
 
-Yes, I say go ahead.  At least it will get closer to a final design.
 
-Paolo
 
+> +       rcu_assign_pointer(ma->masks[i], ma->masks[ma->count]);
+> +       RCU_INIT_POINTER(ma->masks[ma->count], NULL);
+> +
+> +       kfree_rcu(mask, rcu);
+> +
+> +       /* Shrink the mask array if necessary. */
+> +       if (ma->max >= (MASK_ARRAY_SIZE_MIN * 2) &&
+> +           ma->count <= (ma->max / 3))
+> +               tbl_mask_array_realloc(tbl, ma->max / 2);
+>  }
+>
+>  /* Remove 'mask' from the mask list, if it is not needed any more. */
+> @@ -732,17 +741,8 @@ static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
+>                 BUG_ON(!mask->ref_count);
+>                 mask->ref_count--;
+>
+> -               if (!mask->ref_count) {
+> -                       struct mask_array *ma;
+> -
+> -                       ma = ovsl_dereference(tbl->mask_array);
+> -                       tbl_mask_array_delete_mask(ma, mask);
+> -
+> -                       /* Shrink the mask array if necessary. */
+> -                       if (ma->max >= (MASK_ARRAY_SIZE_MIN * 2) &&
+> -                           ma->count <= (ma->max / 3))
+> -                               tbl_mask_array_realloc(tbl, ma->max / 2);
+> -               }
+> +               if (!mask->ref_count)
+> +                       tbl_mask_array_del_mask(tbl, mask);
+>         }
+>  }
+>
+> @@ -795,17 +795,42 @@ static struct sw_flow_mask *flow_mask_find(const struct flow_table *tbl,
+>         int i;
+>
+>         ma = ovsl_dereference(tbl->mask_array);
+> -       for (i = 0; i < ma->max; i++) {
+> +       for (i = 0; i < ma->count; i++) {
+>                 struct sw_flow_mask *t;
+>                 t = ovsl_dereference(ma->masks[i]);
+>
+> -               if (t && mask_equal(mask, t))
+> +               if (mask_equal(mask, t))
+>                         return t;
+>         }
+>
+>         return NULL;
+>  }
+>
+> +static int tbl_mask_array_add_mask(struct flow_table *tbl,
+> +                                  struct sw_flow_mask *new)
+> +{
+> +       struct mask_array *ma = ovsl_dereference(tbl->mask_array);
+> +       int err;
+> +
+> +       if (ma->count >= ma->max) {
+> +               err = tbl_mask_array_realloc(tbl, ma->max +
+> +                                             MASK_ARRAY_SIZE_MIN);
+> +               if (err)
+> +                       return err;
+> +
+> +               ma = ovsl_dereference(tbl->mask_array);
+> +       }
+> +
+> +       BUG_ON(ovsl_dereference(ma->masks[ma->count]));
+> +
+> +       rcu_assign_pointer(ma->masks[ma->count], new);
+> +
+> +       smp_wmb();
+> +       ma->count++;
+> +
+> +       return 0;
+> +}
+> +
+>  /* Add 'mask' into the mask list, if it is not already there. */
+>  static int flow_mask_insert(struct flow_table *tbl, struct sw_flow *flow,
+>                             const struct sw_flow_mask *new)
+> @@ -814,9 +839,6 @@ static int flow_mask_insert(struct flow_table *tbl, struct sw_flow *flow,
+>
+>         mask = flow_mask_find(tbl, new);
+>         if (!mask) {
+> -               struct mask_array *ma;
+> -               int i;
+> -
+>                 /* Allocate a new mask if none exsits. */
+>                 mask = mask_alloc();
+>                 if (!mask)
+> @@ -825,29 +847,9 @@ static int flow_mask_insert(struct flow_table *tbl, struct sw_flow *flow,
+>                 mask->range = new->range;
+>
+>                 /* Add mask to mask-list. */
+> -               ma = ovsl_dereference(tbl->mask_array);
+> -               if (ma->count >= ma->max) {
+> -                       int err;
+> -
+> -                       err = tbl_mask_array_realloc(tbl, ma->max +
+> -                                                    MASK_ARRAY_SIZE_MIN);
+> -                       if (err) {
+> -                               kfree(mask);
+> -                               return err;
+> -                       }
+> -
+> -                       ma = ovsl_dereference(tbl->mask_array);
+> -               }
+> -
+> -               for (i = 0; i < ma->max; i++) {
+> -                       const struct sw_flow_mask *t;
+> -
+> -                       t = ovsl_dereference(ma->masks[i]);
+> -                       if (!t) {
+> -                               rcu_assign_pointer(ma->masks[i], mask);
+> -                               ma->count++;
+> -                               break;
+> -                       }
+> +               if (tbl_mask_array_add_mask(tbl, mask)) {
+> +                       kfree(mask);
+> +                       return -ENOMEM;
+>                 }
+>         } else {
+>                 BUG_ON(!mask->ref_count);
+> --
+> 1.8.3.1
+>
