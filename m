@@ -2,91 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 265B6D5DE8
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC72D5E40
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 11:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730579AbfJNIwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 04:52:38 -0400
-Received: from mail-pg1-f170.google.com ([209.85.215.170]:39984 "EHLO
-        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729928AbfJNIwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 04:52:38 -0400
-Received: by mail-pg1-f170.google.com with SMTP id e13so1494838pga.7;
-        Mon, 14 Oct 2019 01:52:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=LQjLxs+ChwVtzwmuuW/knNpY/RZXS8FrKGj5FuN7jvQ=;
-        b=f51tTPWe/gQpQC4M06glrU7S91Sgx+qYj3BUDMrQ+iENCwbLrsAutns5S4vdnrHFDO
-         BaPFNBkQdeohjqlTWGXnbzeiwvzFix++RWz6x1/WKlB2+8mDzucAXaQUTW1u4L36HUdW
-         JbgsthyI59pHu9eMB2tCw2xx8ggFxGzs6QgR7MMHQozO5L4t5yjXDXkgYlO3uS95RMP9
-         1zbWh/iO8/Gy4f4OohgHBAk/Tupyz2YxsKmnFgip35GMiT8p473c+aJ3BAmPRn8tJTSI
-         wWuqFmNf4ziIoYqaau5OBGw59Mq6yUE6vQwYxl2WkL/ZgpSmNYVMujcpnVk8lj1uyVCH
-         dTqg==
-X-Gm-Message-State: APjAAAXBc7+Ipq3xildBLAJCOZi54vhgHF7VcXxXLTKwNt/v4+LLX3ki
-        H5QlJ2PYVu/sZA1jPoIDqzg=
-X-Google-Smtp-Source: APXvYqwa12q0CPE+GNpbNjoSjz62Jb4XZaoMR0EnEbW6Gk820+iPtrynDZWJKS8Z4qZNmg5y5YkrCQ==
-X-Received: by 2002:a63:5c57:: with SMTP id n23mr9662639pgm.132.1571043157520;
-        Mon, 14 Oct 2019 01:52:37 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id x19sm20106793pgc.59.2019.10.14.01.52.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Oct 2019 01:52:36 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id C032F4021A; Mon, 14 Oct 2019 08:52:35 +0000 (UTC)
-Date:   Mon, 14 Oct 2019 08:52:35 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Matthias Maennich <maennich@google.com>,
-        Jessica Yu <jeyu@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: Module loading problem since 5.3
-Message-ID: <20191014085235.GW16384@42.do-not-panic.com>
-References: <8132cf72-0ae1-48ae-51fb-1a01cf00c693@gmail.com>
- <CAB=NE6XdVXMnq7pgmXxv4Qicu7=xrtQC-b2sXAfVxiAq68NMKg@mail.gmail.com>
- <875eecfb-618a-4989-3b9f-f8272b8d3746@gmail.com>
+        id S1730706AbfJNJJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 05:09:09 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:51496 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730641AbfJNJJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 05:09:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=jTDg8IH5LozhrHxBzB1ClkZ0/ElvKEYcyD0vSMTfAMM=; b=K3XJqY2A6oBGRw6kRpPiaOQjd
+        R5BN5Dq6pF/0JhnsPRxtpWWk3SRhuBf4OaTYksweoovT8STtsBNklhSms9feMWz1FVkQj/pAMXWju
+        BFBxigEgsrPcV3AbOol/mBX82m4TUFI0Cdq2J4muN2/ITFjS9BBxo6I+F2gWJvQSr4wXLAUQz6+IK
+        DAu0BA0WxJAamB5i8RVz93Q0htTdlOHNuXfjGndhVuojIdkL8Yuults5HeC/5tPgnxbg3wg+f82PE
+        MBna5j9S75u/caXq+uN16gL3Nc+akwh7V3O9ln9BmPj9CUiVoLWNqahtpFqIzC6klChW0OGJx/m/Y
+        bcECZYdfg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iJwLh-0004AL-PF; Mon, 14 Oct 2019 09:09:05 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 23284305E42;
+        Mon, 14 Oct 2019 11:08:09 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 17665202BC5A3; Mon, 14 Oct 2019 11:09:03 +0200 (CEST)
+Date:   Mon, 14 Oct 2019 11:09:03 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Song Liu <songliubraving@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next 2/2] bpf/stackmap: fix A-A deadlock in
+ bpf_get_stack()
+Message-ID: <20191014090903.GA2328@hirez.programming.kicks-ass.net>
+References: <20191010061916.198761-1-songliubraving@fb.com>
+ <20191010061916.198761-3-songliubraving@fb.com>
+ <20191010073608.GO2311@hirez.programming.kicks-ass.net>
+ <a1d30b11-2759-0293-5612-48150db92775@fb.com>
+ <20191010174618.GT2328@hirez.programming.kicks-ass.net>
+ <4865df4d-7d13-0655-f3b4-5d025aaa1edb@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <875eecfb-618a-4989-3b9f-f8272b8d3746@gmail.com>
+In-Reply-To: <4865df4d-7d13-0655-f3b4-5d025aaa1edb@fb.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 09:26:05PM +0200, Heiner Kallweit wrote:
-> On 10.10.2019 19:15, Luis Chamberlain wrote:
-> > 
-> > 
-> > On Thu, Oct 10, 2019, 6:50 PM Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> wrote:
-> > 
-> >        MODULE_SOFTDEP("pre: realtek")
-> > 
-> >     Are you aware of any current issues with module loading
-> >     that could cause this problem?
-> > 
-> > 
-> > Nope. But then again I was not aware of MODULE_SOFTDEP(). I'd encourage an extension to lib/kmod.c or something similar which stress tests this. One way that comes to mind to test this is to allow a new tests case which loads two drives which co depend on each other using this macro. That'll surely blow things up fast. That is, the current kmod tests uses request_module() or get_fs_type(), you'd want a new test case with this added using then two new dummy test drivers with the macro dependency.
-> > 
-> > If you want to resolve this using a more tested path, you could have request_module() be used as that is currently tested. Perhaps a test patch for that can rule out if it's the macro magic which is the issue.
-> > 
-> >   Luis
->
-> Maybe issue is related to a bug in introduction of symbol namespaces, see here:
-> https://lkml.org/lkml/2019/10/11/659
+On Thu, Oct 10, 2019 at 06:06:14PM +0000, Alexei Starovoitov wrote:
+> On 10/10/19 10:46 AM, Peter Zijlstra wrote:
 
-Can you have your user with issues either revert 8651ec01daed or apply the fixes
-mentioned by Matthias to see if that was the issue?
+> > All of stack_map_get_build_id_offset() is just disguisting games; I did
+> > tell you guys how to do lockless vma lookups a few years ago -- and yes,
+> > that is invasive core mm surgery. But this is just disguisting hacks for
+> > not wanting to do it right.
+> 
+> you mean speculative page fault stuff?
+> That was my hope as well and I offered Laurent all the help to land it.
+> Yet after a year since we've talked the patches are not any closer
+> to landing.
+> Any other 'invasive mm surgery' you have in mind?
 
-Matthias what module did you run into which let you run into the issue
-with depmod? I ask as I think it would be wise for us to add a test case
-using lib/test_kmod.c and tools/testing/selftests/kmod/kmod.sh for the
-regression you detected.
+Indeed that series. It had RCU managed VMAs and lockless VMA lookups,
+which is exactly what you need here.
 
-  Luis
+> > Basically the only semi-sane thing to do with that trainwreck is
+> > s/in_nmi()/true/ and pray.
+> > 
+> > On top of that I just hate buildids in general.
+> 
+> Emotions aside... build_id is useful and used in production.
+> It's used widely because it solves real problems.
+
+AFAIU it solves the problem of you not knowing what version of the
+binary runs where; which I was hoping your cloud infrastructure thing
+would actually know already.
+
+Anyway, I know what it does, I just don't nessecarily agree it is the
+right way around that particular problem (also, the way I'm personally
+affected is that perf-record is dead slow by default due to built-id
+post processing).
+
+And it obviously leads to horrible hacks like the code currently under
+discussion :/
+
+> This dead lock is from real servers and not from some sanitizer wannabe.
+
+If you enable CFS bandwidth control and run this function on the
+trace_hrtimer_start() tracepoint, you should be able to trigger a real
+AB-BA lockup.
+
+> Hence we need to fix it as cleanly as possible and quickly.
+> s/in_nmi/true/ is certainly an option.
+
+That is the best option; because tracepoints / perf-overflow handlers
+really should not be taking any locks.
+
+> I'm worried about overhead of doing irq_work_queue() all the time.
+> But I'm not familiar with mechanism enough to justify the concerns.
+> Would it make sense to do s/in_nmi/irgs_disabled/ instead?
+
+irqs_disabled() should work in this particular case because rq->lock
+(and therefore all it's nested locks) are IRQ-safe.
+
