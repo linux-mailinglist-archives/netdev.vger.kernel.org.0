@@ -2,112 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95323D6773
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 18:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D524D6798
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 18:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388126AbfJNQgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 12:36:20 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45028 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731506AbfJNQgU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 12:36:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=4C4AHoecHaRVs6owdq4L/8qk8V8sJuk7zI1TUgCxcq4=; b=ig97LvZXfW21DgDM43kUkVOIrz
-        4ZH+JgQkPgpKXgRnRGI9Sv7HEOA3XQ93BnCcCuDoDojsXmKcn0YefmcluxRPRgaopfE+GANShEsMr
-        z3obX+c0pn5hzj+9ze92NY1NvmeO65ZcuczeKUqurVKVOs9+LjUKx3NIyWir+iwr615U=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iK3KO-0006KZ-G4; Mon, 14 Oct 2019 18:36:12 +0200
-Date:   Mon, 14 Oct 2019 18:36:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Egor Pomozov <Egor.Pomozov@aquantia.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
-Subject: Re: [PATCH v2 net-next 06/12] net: aquantia: implement data PTP
- datapath
-Message-ID: <20191014163612.GP21165@lunn.ch>
-References: <cover.1570531332.git.igor.russkikh@aquantia.com>
- <093d91dcc66abeb4d3ef83eef829badd7389d792.1570531332.git.igor.russkikh@aquantia.com>
+        id S2388205AbfJNQoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 12:44:39 -0400
+Received: from mail2.candelatech.com ([208.74.158.173]:59674 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727038AbfJNQoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 12:44:39 -0400
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 56577137532;
+        Mon, 14 Oct 2019 09:44:30 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 56577137532
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1571071470;
+        bh=mI8UfAcc7WMDcyJ67/lSgJIl6uccJ/9yZfF+RyqVkWU=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=cM8fqyXXNrLtPKiXXOlcU3/Ur5Ihq1c/MRBUc72MqriTxMjkiU0d+zoIXWzvaJDYR
+         iqwv85gAgZ7HkDpj7QxhjP8Jm2/pEcza0HK/WstnNFGUv7aurbiIkJeBcFU6HIJADy
+         6NeToJ6VmZaDlzb3VlKmrDvfD7HP7EFEgKEYwsuE=
+Subject: Re: IPv6 addr and route is gone after adding port to vrf (5.2.0+)
+To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
+References: <c55619f8-c565-d611-0261-c64fa7590274@candelatech.com>
+ <2a53ff58-9d5d-ac22-dd23-b4225682c944@gmail.com>
+ <ca625841-6de8-addb-9b85-8da90715868c@candelatech.com>
+ <e3f2990e-d3d0-e615-8230-dcfe76451c15@gmail.com>
+ <3cd9b1a7-bf87-8bd2-84f4-503f300e847b@candelatech.com>
+ <b236a2b6-a959-34cf-4d15-142a7b594ab0@gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <ac69c921-66d1-b381-d79b-e723567c9228@candelatech.com>
+Date:   Mon, 14 Oct 2019 09:44:30 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <093d91dcc66abeb4d3ef83eef829badd7389d792.1570531332.git.igor.russkikh@aquantia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <b236a2b6-a959-34cf-4d15-142a7b594ab0@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> --- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-> @@ -8,12 +8,24 @@
->   */
->  
-> +static inline int aq_ptp_tm_offset_egress_get(struct aq_ptp_s *aq_ptp)
-> +{
-> +	return atomic_read(&aq_ptp->offset_egress);
-> +}
-> +
-> +static inline int aq_ptp_tm_offset_ingress_get(struct aq_ptp_s *aq_ptp)
-> +{
-> +	return atomic_read(&aq_ptp->offset_ingress);
-> +}
+On 10/11/19 1:35 PM, David Ahern wrote:
+> On 10/11/19 7:57 AM, Ben Greear wrote:
+>>> The down-up cycling is done on purpose - to clear out neigh entries and
+>>> routes associated with the device under the old VRF. All entries must be
+>>> created with the device in the new VRF.
+>>
+>> I believe I found another thing to be aware of relating to this.
+>>
+>> My logic has been to do supplicant, then do DHCP, and only when DHCP
+>> responds do I set up the networking for the wifi station.
+>>
+>> It is at this time that I would be creating a VRF (or using routing rules
+>> if not using VRF).
+>>
+>> But, when I add the station to the newly created vrf, then it bounces it,
+>> and that causes supplicant to have to re-associate  (I think, lots of
+>> moving
+>> pieces, so I could be missing something).
+>>
+>> Any chance you could just clear the neighbor entries and routes w/out
+>> bouncing
+>> the interface?
+> 
+> yes, it is annoying. I have been meaning to fix that, but never found
+> the motivation to do it. If you have the time, it would be worth
+> avoiding the overhead.
 
-inline should not be used in C files. Let the compiler decide.
+I changed my code so that it adds to the vrf first, so I too am lacking
+motivation and time to dig into the kernel at the moment.  I'll let you know
+if I find time to work on it.
 
-> +
-> +void aq_ptp_tm_offset_set(struct aq_nic_s *aq_nic, unsigned int mbps)
-> +{
-> +	struct aq_ptp_s *aq_ptp = aq_nic->aq_ptp;
-> +	int i, egress, ingress;
-> +
-> +	if (!aq_ptp)
-> +		return;
-> +
-> +	egress = 0;
-> +	ingress = 0;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(ptp_offset); i++) {
-> +		if (mbps == ptp_offset[i].mbps) {
-> +			egress = ptp_offset[i].egress;
-> +			ingress = ptp_offset[i].ingress;
-> +			break;
-> +		}
-> +	}
-> +
-> +	atomic_set(&aq_ptp->offset_egress, egress);
-> +	atomic_set(&aq_ptp->offset_ingress, ingress);
+Thanks,
+Ben
 
-It seems odd you have wrappers for atomic_read, but not atomic_set. Do
-the wrappers actually add anything?
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
 
-> +}
-> +
-> +static int __aq_ptp_skb_put(struct ptp_skb_ring *ring, struct sk_buff *skb)
-> +{
-> +	unsigned int next_head = (ring->head + 1) % ring->size;
-> +
-> +	if (next_head == ring->tail)
-> +		return -1;
-
-ENOMEM?
-
-> +
-> +	ring->buff[ring->head] = skb_get(skb);
-> +	ring->head = next_head;
-> +
-> +	return 0;
-> +}
-> +
-
-  Andrew
