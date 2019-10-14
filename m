@@ -2,121 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24387D5F65
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 11:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EAFED5FA0
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 12:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731183AbfJNJwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 05:52:09 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35475 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730740AbfJNJwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 05:52:09 -0400
-Received: by mail-wr1-f67.google.com with SMTP id v8so18924527wrt.2;
-        Mon, 14 Oct 2019 02:52:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=TgbHwKMY+OVVpJwkvai2RZenJKOMFPjpVaxMPbCBN5c=;
-        b=elRGhDdYM5z0fh+u2IZyo1JzQV3H7y+UrHsWM7o/96lM7+Ebs6p8gPbSvJ3AVhwJBj
-         0NaTzI4MZEPEaXP6FqpGKddIbjjUo/h3yv+u1gRnlgcU8DFQDR0lPjDD1lxDWyHvLKqK
-         3/O6c+NKmB9mGLM3ikw52QIHKw9zDHJjlz8o2NVxkvnT8MyK0RVkOfE41JxQgyBHuZS+
-         sK0H63CzgAsyROvFwi1LQbLicVptacN6HMiQtFR/kYFrXLewZJEeKfjSGdD0taVpV33/
-         +/SoMOlx52DP38EiUcth+pT1z/j4ZsVeUg8nXnPW8OG8OCvUVZICpLt6TxV0bJCsTH/i
-         NRDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TgbHwKMY+OVVpJwkvai2RZenJKOMFPjpVaxMPbCBN5c=;
-        b=Ji+Zgwo1BSJnYe32mb3kSSurSzRHMQEQpvOt20XDBJjrg5ELwcN8+t6ddmmoe+O62e
-         QoJOA3pLIuQ46KU+xg66XEvgI8KPKN07vwK56HNQuI7QTYBLcvUDA7T0oP7368HdVfza
-         XWy7wGyTRK798KpsAQzxfpNV7P/4sN5aPxJ3f3b/rFK/X9UwAdUN9Yy7P1nR5AIi0K9l
-         zRe0W+u2xZCKiC8yVq8yqbjM19/frpCWZRVv2fcqL7gj+MAqbCqtNeCTJg/3Y87UtK6+
-         2Vt03JKSLWn/jrl+dE8vs7JlK6TBG2Df+I5o6ric4liH9EuDM+pMe0YIYQtUEz+akWuS
-         RcVA==
-X-Gm-Message-State: APjAAAVyuDdAjx9yOC6R3hs+0IRpee1YNhYd9aOvB5udUJiJh4qKUs9I
-        8KdtlJkKB7oAccoTOhLWZi2P/B3RJu8=
-X-Google-Smtp-Source: APXvYqz1DO5pTofEXIw0VuTnZxvGGS4XOx24scLh6dbp7EmJkpptvcoPoDUeJr/fbSXfHIkghsFIMw==
-X-Received: by 2002:adf:e90d:: with SMTP id f13mr25249204wrm.104.1571046726846;
-        Mon, 14 Oct 2019 02:52:06 -0700 (PDT)
-Received: from andrea.guest.corp.microsoft.com ([2a01:110:8012:1012:484d:bbc3:12dc:348b])
-        by smtp.gmail.com with ESMTPSA id r6sm19715339wmh.38.2019.10.14.02.52.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Oct 2019 02:52:06 -0700 (PDT)
-Date:   Mon, 14 Oct 2019 11:52:00 +0200
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        vkuznets <vkuznets@redhat.com>, Dexuan Cui <decui@microsoft.com>
-Subject: Re: [PATCH v2 1/3] Drivers: hv: vmbus: Introduce table of VMBus
- protocol versions
-Message-ID: <20191014095200.GA11206@andrea.guest.corp.microsoft.com>
-References: <20191010154600.23875-1-parri.andrea@gmail.com>
- <20191010154600.23875-2-parri.andrea@gmail.com>
- <DM5PR21MB013798776480FFA5DCD22442D7960@DM5PR21MB0137.namprd21.prod.outlook.com>
+        id S1731338AbfJNKBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 06:01:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731119AbfJNKBt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 06:01:49 -0400
+Received: from linux-8ccs (charybdis-ext.suse.de [195.135.221.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5694B207FF;
+        Mon, 14 Oct 2019 10:01:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571047308;
+        bh=5/ai+ZkvHjPIjd1PVgKpi0YTLpokodIIj+K2mhHp4YA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NVz7Y6tapstbkQM25HzES+ADj09TP/Wp4jPgVg7IZZYXW2LhEsDj9+r3eKt3paaCV
+         Ih9eCLs7Gq+SGaX4h/UQwdm06+AALQ1VJW++lAnAIEkJnPc12mxWxAuuPXa8UtC5xN
+         nL2EnUEkQYAhSRYJ5yOYlWlr8V9FdXSIE3lFfVy8=
+Date:   Mon, 14 Oct 2019 12:01:44 +0200
+From:   Jessica Yu <jeyu@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: Module loading problem since 5.3
+Message-ID: <20191014100143.GA6525@linux-8ccs>
+References: <8132cf72-0ae1-48ae-51fb-1a01cf00c693@gmail.com>
+ <CAB=NE6XdVXMnq7pgmXxv4Qicu7=xrtQC-b2sXAfVxiAq68NMKg@mail.gmail.com>
+ <875eecfb-618a-4989-3b9f-f8272b8d3746@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
-In-Reply-To: <DM5PR21MB013798776480FFA5DCD22442D7960@DM5PR21MB0137.namprd21.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <875eecfb-618a-4989-3b9f-f8272b8d3746@gmail.com>
+X-OS:   Linux linux-8ccs 4.12.14-lp150.12.28-default x86_64
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > @@ -244,20 +232,18 @@ int vmbus_connect(void)
-> >  	 * version.
-> >  	 */
-> > 
-> > -	version = VERSION_CURRENT;
-> > +	for (i = 0; i < ARRAY_SIZE(vmbus_versions); i++) {
-> > +		version = vmbus_versions[i];
-> > 
-> > -	do {
-> >  		ret = vmbus_negotiate_version(msginfo, version);
-> >  		if (ret == -ETIMEDOUT)
-> >  			goto cleanup;
-> > 
-> >  		if (vmbus_connection.conn_state == CONNECTED)
-> >  			break;
-> > +	}
-> > 
-> > -		version = vmbus_get_next_version(version);
-> > -	} while (version != VERSION_INVAL);
-> > -
-> > -	if (version == VERSION_INVAL)
-> > +	if (vmbus_connection.conn_state != CONNECTED)
-> >  		goto cleanup;
-> > 
-> 
-> This is a nit, but the loop exit path bugs me.  When a connection
-> is established, the loop is exited by the "break", and then
-> conn_state has to be tested again to decide whether the loop
-> exited due to getting a connection vs. hitting the end of the list.
-> Slightly cleaner in my mind would be:
-> 
-> 	for (i=0; ; i++) {
-> 		if (i == ARRAY_SIZE(vmbus_versions))
-> 			goto cleanup;
-> 
-> 		version  = vmbus_versions[i];
-> 		ret = vmbus_negotiate_version(msginfo, version);
-> 		if (ret == -ETIMEDOUT)
-> 			goto cleanup;
-> 
-> 		if (vmbus_connection.conn_state == CONNECTED)
-> 			break;
-> 	}
++++ Heiner Kallweit [11/10/19 21:26 +0200]:
+>On 10.10.2019 19:15, Luis Chamberlain wrote:
+>>
+>>
+>> On Thu, Oct 10, 2019, 6:50 PM Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> wrote:
+>>
+>>        MODULE_SOFTDEP("pre: realtek")
+>>
+>>     Are you aware of any current issues with module loading
+>>     that could cause this problem?
+>>
+>>
+>> Nope. But then again I was not aware of MODULE_SOFTDEP(). I'd encourage an extension to lib/kmod.c or something similar which stress tests this. One way that comes to mind to test this is to allow a new tests case which loads two drives which co depend on each other using this macro. That'll surely blow things up fast. That is, the current kmod tests uses request_module() or get_fs_type(), you'd want a new test case with this added using then two new dummy test drivers with the macro dependency.
+>>
+>> If you want to resolve this using a more tested path, you could have request_module() be used as that is currently tested. Perhaps a test patch for that can rule out if it's the macro magic which is the issue.
+>>
+>>   Luis
+>>
+>Maybe issue is related to a bug in introduction of symbol namespaces, see here:
+>https://lkml.org/lkml/2019/10/11/659
 
-Indeed.  I applied this locally, for the next iteration.  Thank you for
-the review, Michael.
+If you're running into depmod and module loading issues with kernels >=5.3-rc1,
+it's likely due to the namespaces patchset and we're working on
+getting all the kinks fixed. Could you please ask the bug reporter to
+try the latest -rc kernel with these set of fixes applied on top?
 
-  Andrea
+   https://lore.kernel.org/linux-modules/20191010151443.7399-1-maennich@google.com/
+
+They fix a known depmod issue caused by our __ksymtab naming scheme,
+which is being reverted in favor of extracting the namespace from
+__kstrtabns and __ksymtab_strings. These fixes will be in by -rc4.
+
+Thanks,
+
+Jessica
+
+
