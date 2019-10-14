@@ -2,159 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E77ED5D0E
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:03:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BDC0D5D40
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 10:17:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730209AbfJNIDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 04:03:41 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:33778 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725936AbfJNIDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 04:03:41 -0400
-Received: by mail-ot1-f67.google.com with SMTP id 60so13055621otu.0;
-        Mon, 14 Oct 2019 01:03:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CqA9RAEVuVLsdEpceBeXbSUIMHQCBuVjHd5ibwK3CzM=;
-        b=qFbdfxfy0p1Uj5xKvEbwtoM8Rd33WV66/Iv+kOa0Ttj1wkXfT7IPrBBZz7GgMFags2
-         gSN5cpYXZ/0hUeG722VXfqdcqSlvTSM4yTorti0UPYDoXMGFmcfvXsbGjTF55+c+osUn
-         RCkiNRbkPm2J/tF9KNRBLeoE0mQTTHwkhX88lfNPbRuVS+2QFr8ebsWcZ3Ylz2v4kHGQ
-         viTkoMbrU/M3M4OqhSR9gBve/iITqguloNEwmn5GJB4GRFeAVbo4GdDSz56yfSXnzjh+
-         iCqzmH42W88tTNeGcLDIUaSszr4btz1jv6E/GVWgR7RVJB2I6jG8Y28BBnOpsQbZtWqO
-         kLNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CqA9RAEVuVLsdEpceBeXbSUIMHQCBuVjHd5ibwK3CzM=;
-        b=VrtYpT9cq4zjn0OTa3sUJErq1lo1L/oy4TQLajSFgN18xptRp6NmNO5Ym4JNadhv8x
-         JHxRrDgcGStNS7gyMTLN29vg5aSiVp9b9XYgxP27856/GTF9U26zSY5M/YX4BrpiMhWY
-         VZ5ctr9/VGd8Cx8EF9S1WrQ9Jc9vd/DgdVglK0M5Ki+WnnQN9RIkToO4iC5PNQRkOvAg
-         M29oOH4LF5K3izOC96WrWeVKOJm3UJe/3poUSqbje18PADkDDnX072qavqwQOouz4q4C
-         ZIXficwM9qTAF8Ce9XHujX186yCpZmnX/S/TfPjeF+Tm32o0REs/xj9/Ij4b6dWkOdVL
-         u3Iw==
-X-Gm-Message-State: APjAAAWal7iP64uGpUN1EnnoRy/t+/lZjHnQQVexiQEFCLRKxSh7kRRx
-        SEFgto4+xIEWgQNIymOgo9VpxAqdqp0g5pp4lMU=
-X-Google-Smtp-Source: APXvYqypMsxN6WghIfZlyczYMDjh8ptI+MFPHgBxm31fPpsW+fNxLk8mCsXHQ72kBvnj4uuYu1c6D7/LqMeM2lEOtS0=
-X-Received: by 2002:a9d:286:: with SMTP id 6mr9438950otl.192.1571040220554;
- Mon, 14 Oct 2019 01:03:40 -0700 (PDT)
+        id S1730349AbfJNIR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 04:17:29 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47202 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725936AbfJNIR3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 04:17:29 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 79C4810C092A;
+        Mon, 14 Oct 2019 08:17:28 +0000 (UTC)
+Received: from localhost (unknown [10.36.118.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 877E15D6A3;
+        Mon, 14 Oct 2019 08:17:25 +0000 (UTC)
+Date:   Mon, 14 Oct 2019 09:17:24 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>
+Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
+Message-ID: <20191014081724.GD22963@stefanha-x1.localdomain>
+References: <20190717113030.163499-1-sgarzare@redhat.com>
+ <20190717113030.163499-2-sgarzare@redhat.com>
+ <20190729095956-mutt-send-email-mst@kernel.org>
+ <20190830094059.c7qo5cxrp2nkrncd@steredhat>
+ <20190901024525-mutt-send-email-mst@kernel.org>
+ <CAGxU2F7fA5UtkuMQbOHHy0noOGZUtpepBNKFg5afD81bynMVUQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <1570695134-660-1-git-send-email-magnus.karlsson@intel.com> <CAADnVQ+R3S1OpRahy78hR2hDfxaWX=peSwturK9hCeP_+9yBbQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+R3S1OpRahy78hR2hDfxaWX=peSwturK9hCeP_+9yBbQ@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 14 Oct 2019 10:03:29 +0200
-Message-ID: <CAJ8uoz0CWRavNXTrEhbS3tv1mkQD+VF7t=b-0VppO4c6Am_x8Q@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: improve documentation for AF_XDP
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="k4f25fnPtRuIRUb3"
+Content-Disposition: inline
+In-Reply-To: <CAGxU2F7fA5UtkuMQbOHHy0noOGZUtpepBNKFg5afD81bynMVUQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Mon, 14 Oct 2019 08:17:28 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 6:52 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Oct 10, 2019 at 1:12 AM Magnus Karlsson
-> <magnus.karlsson@intel.com> wrote:
+
+--k4f25fnPtRuIRUb3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Oct 11, 2019 at 03:40:48PM +0200, Stefano Garzarella wrote:
+> On Sun, Sep 1, 2019 at 8:56 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > On Fri, Aug 30, 2019 at 11:40:59AM +0200, Stefano Garzarella wrote:
+> > > On Mon, Jul 29, 2019 at 10:04:29AM -0400, Michael S. Tsirkin wrote:
+> > > > On Wed, Jul 17, 2019 at 01:30:26PM +0200, Stefano Garzarella wrote:
+> > > > > Since virtio-vsock was introduced, the buffers filled by the host
+> > > > > and pushed to the guest using the vring, are directly queued in
+> > > > > a per-socket list. These buffers are preallocated by the guest
+> > > > > with a fixed size (4 KB).
+> > > > >
+> > > > > The maximum amount of memory used by each socket should be
+> > > > > controlled by the credit mechanism.
+> > > > > The default credit available per-socket is 256 KB, but if we use
+> > > > > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
+> > > > > buffers, using up to 1 GB of memory per-socket. In addition, the
+> > > > > guest will continue to fill the vring with new 4 KB free buffers
+> > > > > to avoid starvation of other sockets.
+> > > > >
+> > > > > This patch mitigates this issue copying the payload of small
+> > > > > packets (< 128 bytes) into the buffer of last packet queued, in
+> > > > > order to avoid wasting memory.
+> > > > >
+> > > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > > >
+> > > > This is good enough for net-next, but for net I think we
+> > > > should figure out how to address the issue completely.
+> > > > Can we make the accounting precise? What happens to
+> > > > performance if we do?
+> > > >
+> > >
+> > > Since I'm back from holidays, I'm restarting this thread to figure out
+> > > how to address the issue completely.
+> > >
+> > > I did a better analysis of the credit mechanism that we implemented in
+> > > virtio-vsock to get a clearer view and I'd share it with you:
+> > >
+> > >     This issue affect only the "host->guest" path. In this case, when=
+ the
+> > >     host wants to send a packet to the guest, it uses a "free" buffer
+> > >     allocated by the guest (4KB).
+> > >     The "free" buffers available for the host are shared between all
+> > >     sockets, instead, the credit mechanism is per-socket, I think to
+> > >     avoid the starvation of others sockets.
+> > >     The guests re-fill the "free" queue when the available buffers are
+> > >     less than half.
+> > >
+> > >     Each peer have these variables in the per-socket state:
+> > >        /* local vars */
+> > >        buf_alloc        /* max bytes usable by this socket
+> > >                            [exposed to the other peer] */
+> > >        fwd_cnt          /* increased when RX packet is consumed by the
+> > >                            user space [exposed to the other peer] */
+> > >        tx_cnt                 /* increased when TX packet is sent to =
+the other peer */
+> > >
+> > >        /* remote vars  */
+> > >        peer_buf_alloc   /* peer's buf_alloc */
+> > >        peer_fwd_cnt     /* peer's fwd_cnt */
+> > >
+> > >     When a peer sends a packet, it increases the 'tx_cnt'; when the
+> > >     receiver consumes the packet (copy it to the user-space buffer), =
+it
+> > >     increases the 'fwd_cnt'.
+> > >     Note: increments are made considering the payload length and not =
+the
+> > >     buffer length.
+> > >
+> > >     The value of 'buf_alloc' and 'fwd_cnt' are sent to the other peer=
+ in
+> > >     all packet headers or with an explicit CREDIT_UPDATE packet.
+> > >
+> > >     The local 'buf_alloc' value can be modified by the user space usi=
+ng
+> > >     setsockopt() with optname=3DSO_VM_SOCKETS_BUFFER_SIZE.
+> > >
+> > >     Before to send a packet, the peer checks the space available:
+> > >       credit_available =3D peer_buf_alloc - (tx_cnt - peer_fwd_cnt)
+> > >     and it will send up to credit_available bytes to the other peer.
+> > >
+> > > Possible solutions considering Michael's advice:
+> > > 1. Use the buffer length instead of the payload length when we increm=
+ent
+> > >    the counters:
+> > >   - This approach will account precisely the memory used per socket.
+> > >   - This requires changes in both guest and host.
+> > >   - It is not compatible with old drivers, so a feature should be neg=
+otiated.
+> > > 2. Decrease the advertised 'buf_alloc' taking count of bytes queued in
+> > >    the socket queue but not used. (e.g. 256 byte used on 4K available=
+ in
+> > >    the buffer)
+> > >   - pkt->hdr.buf_alloc =3D buf_alloc - bytes_not_used.
+> > >   - This should be compatible also with old drivers.
+> > >
+> > > Maybe the second is less invasive, but will it be too tricky?
+> > > Any other advice or suggestions?
+> > >
+> > > Thanks in advance,
+> > > Stefano
 > >
-> > Added sections on all the bind flags, libbpf, all the setsockopts and
-> > all the getsockopts. Also updated the document to reflect the latest
-> > features and to correct some spelling errors.
+> > OK let me try to clarify.  The idea is this:
 > >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> thanks for the update. Overall looks good.
-> Few nits below:
+> > Let's say we queue a buffer of 4K, and we copy if len < 128 bytes.  This
+> > means that in the worst case (128 byte packets), each byte of credit in
+> > the socket uses up 4K/128 =3D 16 bytes of kernel memory. In fact we need
+> > to also account for the virtio_vsock_pkt since I think it's kept around
+> > until userspace consumes it.
+> >
+> > Thus given X buf alloc allowed in the socket, we should publish X/16
+> > credits to the other side. This will ensure the other side does not send
+> > more than X/16 bytes for a given socket and thus we won't need to
+> > allocate more than X bytes to hold the data.
+> >
+> > We can play with the copy break value to tweak this.
+> >
+>=20
+> Hi Michael,
+> sorry for the long silence, but I focused on multi-transport.
+>=20
+> Before to implement your idea, I tried to do some calculations and
+> looking better to our credit mechanism:
+>=20
+>   buf_alloc =3D 256 KB (default, tunable through setsockopt)
+>   sizeof(struct virtio_vsock_pkt) =3D 128
+>=20
+>   - guest (we use preallocated 4 KB buffers to receive packets, copying
+>     small packet - < 128 -)
+>     worst_case =3D 129
+>     buf_size =3D 4 KB
+>     credit2mem =3D (buf_size + sizeof(struct virtio_vsock_pkt)) / worst_c=
+ase =3D 32
+>=20
+>     credit_published =3D buf_alloc / credit2mem =3D ~8 KB
+>     Space for just 2 full packet (4 KB)
+>=20
+>   - host (we copy packets from the vring, allocating the space for the pa=
+yload)
+>     worst_case =3D 1
+>     buf_size =3D 1
+>     credit2mem =3D (buf_size + sizeof(struct virtio_vsock_pkt)) / worst_c=
+ase =3D 129
+>=20
+>     credit_published =3D buf_alloc / credit2mem =3D ~2 KB
+>     Less than a full packet (guest now can send up to 64 KB with a single
+>     packet, so it will be limited to 2 KB)
+>=20
+> Current memory consumption in the worst case if the RX queue is full:
+>   - guest
+>     mem =3D (buf_alloc / worst_case) *
+>           (buf_size + sizeof(struct virtio_vsock_pkt) =3D ~8MB
+>=20
+>   - host
+>     mem =3D (buf_alloc / worst_case) *
+>           (buf_size + sizeof(struct virtio_vsock_pkt) =3D ~32MB
+>=20
+> I think that the performance with big packets will be affected,
+> but I still have to try.
+>=20
+> Another approach that I want to explore is to play with buf_alloc
+> published to the peer.
+>=20
+> One thing that's not clear to me yet is the meaning of
+> SO_VM_SOCKETS_BUFFER_SIZE:
+> - max amount of memory used in the RX queue
+> - max amount of payload bytes in the RX queue (without overhead of
+>   struct virtio_vsock_pkt + preallocated buffer)
+>=20
+> From the 'include/uapi/linux/vm_sockets.h':
+>     /* Option name for STREAM socket buffer size.  Use as the option name=
+ in
+>      * setsockopt(3) or getsockopt(3) to set or get an unsigned long long=
+ that
+>      * specifies the size of the buffer underlying a vSockets STREAM sock=
+et.
+>      * Value is clamped to the MIN and MAX.
+>      */
+>=20
+>     #define SO_VM_SOCKETS_BUFFER_SIZE 0
+>=20
+> Regardless, I think we need to limit memory consumption in some way.
+> I'll check the implementation of other transports, to understand better.
 
-Will fix all your comments and send out a v2.
+SO_VM_SOCKETS_BUFFER_SIZE might have been useful for VMCI-specific
+applications, but we should use SO_RCVBUF and SO_SNDBUF for portable
+applications in the future.  Those socket options also work with other
+address families.
 
-Thanks: Magnus
+I guess these sockopts are bypassed by AF_VSOCK because it doesn't use
+the common skb queuing code in net/core/sock.c :(.  But one day we might
+migrate to it...
 
-> > +What socket will then a packet arrive on? This is decided by the XDP
-> > +program. Put all the sockets in the XSK_MAP and just indicate which
-> > +index in the array you would like to send each packet to. A simple
-> > +round-robin example of distributing packets is shown below:
-> > +
-> > +.. code-block:: c
-> > +
-> > +   #define KBUILD_MODNAME "af_xdp_example"
->
-> what is this for?
-> It's not a kernel module.
->
-> > +   #include <uapi/linux/bpf.h>
->
-> why 'uapi' ? It should use only user space headers.
->
-> > +   #include "bpf_helpers.h"
-> > +
-> > +   #define MAX_SOCKS 16
-> > +
-> > +   struct bpf_map_def SEC("maps") xsks_map = {
-> > +         .type = BPF_MAP_TYPE_XSKMAP,
-> > +         .key_size = sizeof(int),
-> > +         .value_size = sizeof(int),
-> > +         .max_entries = MAX_SOCKS,
-> > +   };
->
-> Could you switch to BTF defined maps?
-> libbpf will forever support old style as well,
-> but documentation should point to the latest.
->
-> > +
-> > +   struct bpf_map_def SEC("maps") rr_map = {
-> > +         .type = BPF_MAP_TYPE_PERCPU_ARRAY,
-> > +         .key_size = sizeof(int),
-> > +         .value_size = sizeof(unsigned int),
-> > +         .max_entries = 1,
-> > +   };
-> > +
-> > +   SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-> > +   {
-> > +       int key = 0, idx;
-> > +       unsigned int *rr;
-> > +
-> > +       rr = bpf_map_lookup_elem(&rr_map, &key);
-> > +       if (!rr)
-> > +          return XDP_ABORTED;
-> > +
-> > +       *rr = (*rr + 1) & (MAX_SOCKS - 1);
-> > +       idx = *rr;
-> > +
-> > +       return bpf_redirect_map(&xsks_map, idx, 0);
-> > +   }
-> > +
-> > +   char _license[] SEC("license") = "GPL";
->
-> Above sample doesn't use gpl-only helpers. Why add above line?
->
-> > +.. code-block:: c
-> > +
-> > +   if (xsk_ring_prod__needs_wakeup(&my_tx_ring))
-> > +      sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
-> > +
-> > +I.e., only use the syscall if the flag is set.
-> > +
-> > +We recommend that you always enable this mode as it can lead to
-> > +magnitudes better performance if you run the application and the
-> > +driver on the same core and somewhat better performance even if you
-> > +use different cores for the application and the kernel driver, as it
-> > +reduces the number of syscalls needed for the TX path.
->
-> "magnitudes better performance"? Is it really at least 20 times better?
->
-> > -Naive ring dequeue and enqueue could look like this::
-> > +Naive ring dequeue and enqueue could look like this:
->
-> lol. That's a good typo.
+Stefan
+
+--k4f25fnPtRuIRUb3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2kLxQACgkQnKSrs4Gr
+c8icQwf/ZRNeyaIkiIZwHbov8HDI2J5Ex0Q1vP56zK7G7A3gNTuGnBkrbzv7R0tR
+9Mt2gMYQg1GKhl9yUChS8RYqj3t95DdoYJoBqOF11aX/HL2DOYMjUkSwgnutlIU9
+GWYoUP8Dand1CoustleyCaVzAYqr/FetwRbaXIClCsgg8UOQEohkioMOdeRTAQ2x
+2+I3aYjBlaC80yO+yUrrYPbePjqDtph2Q/J2r6cr1G+VMn0e0lqY4e8hskd+eoFc
+tN/VpnfOhGII3H74W20DJK1U2srU38+VBL0SByrUiAgZwXCIRMnHs3nkBB312OaD
+3T9UCvgKBOR3CS1sRTLybhEMo05JCQ==
+=Qy/H
+-----END PGP SIGNATURE-----
+
+--k4f25fnPtRuIRUb3--
