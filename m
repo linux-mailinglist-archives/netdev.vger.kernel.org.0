@@ -2,89 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD7AD68A4
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CADE9D68AA
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:39:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388576AbfJNRjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 13:39:20 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:36295 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388572AbfJNRjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:39:20 -0400
-Received: by mail-vs1-f67.google.com with SMTP id v19so11353172vsv.3
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 10:39:18 -0700 (PDT)
+        id S2388592AbfJNRjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 13:39:48 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52779 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730046AbfJNRjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:39:47 -0400
+Received: by mail-wm1-f65.google.com with SMTP id r19so18138534wmh.2;
+        Mon, 14 Oct 2019 10:39:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=posk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VoI9PYiBRc2yFBeGZP+9iAWIgLPpQStt5BRdIAs4Iwc=;
-        b=LOGjB5VXo3K65wKJyF8xGk0utXSe6PctPDTy1imQpoNczyzCVwIUKJIdfQ5ummqL/N
-         d24+K5y1+TJbQ5oPH5lAqfB3xSw7+8G/M/nlZm6Y5psvQ5YiIJIoozwjN7zZ8HTkUZE3
-         IJL4+BCk4PcV/zracg933bx8evkNh9A72R193ZZ1g6/tjlaevqyDxf1KzYMceulE0e6q
-         jHZIfkK/H+iG9KPKFltQBk5m0BH4lUAlq4LolrqAMVA7jL5UDaNuRl9+E3fjJ/8Vqh/i
-         Fb3BlKMHr4ZJCrFRDk9knAd1DH4sjC4gUJNY7RcJ0YvgaCKtV02lqrz37MiHBo1BG9GV
-         3bLg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lNZVpaEdmaJY1w+xpL+K9ZqQ92uD6Jfe5E6lniBjnvM=;
+        b=oY+W6FwfNZXtwQq+WhORdLOdfo+f4fhwM0p+Ers5h6CPfgtbEn9ww93kXBSsw2v60b
+         SMIu2UNR6PLQJQdTuB5CZKPD7tjM5zgAWc2F3LP1dYBp/mIWLyzvE+gzbroEFBRI7Dst
+         6kA8qKfdBDN33wxGZAOv+JGy3RovTItDZE4cjypr4TRa0AKUIYcxwviSXAuFpdNyQ3Ic
+         P5h5NDYnWvzIBkjBiYMxqf/jo1ONlCR+e27uF8WQwLTB2ZtajymWafYs1NlkszKw2+og
+         TjPkHU05jpgk0QnsRcXQ7aScuZgRRwSgOc6g7Xs1OdMStDrlfb3Y5KlSoZ09BW/JEGMk
+         I4Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VoI9PYiBRc2yFBeGZP+9iAWIgLPpQStt5BRdIAs4Iwc=;
-        b=TcWOh6zkrJLMELSzDUllCGq7WQiPKOnGN49DzQMEj6IYBlrC7JOjWlVt/tL56OD5SB
-         B339k/IR160kNANgJB8AACHdyiBtY75JBw7JjP3Drw+vjs9b0iIYOMBYhKOiO4t1rmyX
-         vRV9wj8XWFGL0gFVNVQdR3J4Lxf1Ns8Y86xiCf5b3HPHBHD3pGQqZ43/shE1NkGY5qt7
-         w6gL4TPmo6KRu2veoouBWKTKaZeZcXMpQSCC8r8JwtpTKUZD27C/JYKcQENvmy9jNZl3
-         WZFAXeY+dxzZC4YflOpQS4v0gnunLpIXNVXtU5hAUpxspk57X3HryjIFJAq7vJp92tLP
-         vMJg==
-X-Gm-Message-State: APjAAAXJs4AMlwp0T9RiBrB3XG8NOjoRXUgz9xdk74rw+kxl/Uyw8xD6
-        7Wp7ojBR45vkHtsPIYphOzRlwaRE6AoYezFvWYuZng==
-X-Google-Smtp-Source: APXvYqxR4c2e6CtVileO9JfPm9wtZCUMOfQPW71Qva6YMgX83vcteA/M78BLQ0lpjvUSz1wMDHe82YIdxfMVs5dmE5I=
-X-Received: by 2002:a05:6102:1252:: with SMTP id p18mr6056039vsg.32.1571074757566;
- Mon, 14 Oct 2019 10:39:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lNZVpaEdmaJY1w+xpL+K9ZqQ92uD6Jfe5E6lniBjnvM=;
+        b=D9UR3CoXewCGhtbjhNp34fGFEoYQeY1C08Ur0JPIb9bI9tC0tg0LxwIKVvB4xLKB6e
+         0aq4/IBm8QDfn+qcaHpt60v5AtjusUAU2lj0nOK5ZOxOJSKv10+neSU1TZGa8O/O/bqp
+         32eWqvoMfQyQUxWBmVxREsemXCJCdtfC/KgQJCJyeJV0HaPjfeOKvRkj1lL9oDkyIVXu
+         k97sJogKI5l/K39xei8qd7osC0kPI+Bcn4FL9scjcU0ark+p6iTChbpA8pXCdr35hzxB
+         kssXscgxJ5FrqLZ1v2kdpDnlYtvKVy9he1VBJNajjIm+DxtcYd9BGGlf6yHPHTo99VsJ
+         TdAA==
+X-Gm-Message-State: APjAAAXbTx4aqa4NX5v1jZvpPcd8EV5kecf0r6cREKI2vsnWVybpzwoU
+        c7+Yr5nynSeN/Hy+nNA46p4=
+X-Google-Smtp-Source: APXvYqxufY2enniRnRIxytq9WOwNI0dKAeSWrxef8cqdYzIseEmMuayKHSwg/1yhpjk+WboQkw4UeQ==
+X-Received: by 2002:a1c:bc07:: with SMTP id m7mr16018252wmf.117.1571074784999;
+        Mon, 14 Oct 2019 10:39:44 -0700 (PDT)
+Received: from localhost ([51.15.41.238])
+        by smtp.gmail.com with ESMTPSA id p5sm25687450wmi.4.2019.10.14.10.39.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Oct 2019 10:39:44 -0700 (PDT)
+Date:   Mon, 14 Oct 2019 18:39:42 +0100
+From:   Stefan Hajnoczi <stefanha@gmail.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
+Subject: Re: [PATCH V3 6/7] virtio: introduce a mdev based transport
+Message-ID: <20191014173942.GB5359@stefanha-x1.localdomain>
+References: <20191011081557.28302-1-jasowang@redhat.com>
+ <20191011081557.28302-7-jasowang@redhat.com>
 MIME-Version: 1.0
-References: <111664d58fe4e9dd9c8014bb3d0b2dab93086a9e.1570609794.git.jbenc@redhat.com>
- <CAADnVQKgXnmbEhBd1FvM16RP_i8s7+risvgM9yftwuP2DejFmA@mail.gmail.com>
-In-Reply-To: <CAADnVQKgXnmbEhBd1FvM16RP_i8s7+risvgM9yftwuP2DejFmA@mail.gmail.com>
-From:   Peter Oskolkov <posk@posk.io>
-Date:   Mon, 14 Oct 2019 10:39:06 -0700
-Message-ID: <CAFTs51WM7yC3Z2HDGy9APSgqy1LCczQtFVG_y+X0WdxY9WSd9Q@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: lwtunnel: fix reroute supplying invalid dst
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Benc <jbenc@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Peter Oskolkov <posk@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ftEhullJWpWg/VHq"
+Content-Disposition: inline
+In-Reply-To: <20191011081557.28302-7-jasowang@redhat.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 9:59 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Oct 9, 2019 at 1:31 AM Jiri Benc <jbenc@redhat.com> wrote:
-> >
-> > The dst in bpf_input() has lwtstate field set. As it is of the
-> > LWTUNNEL_ENCAP_BPF type, lwtstate->data is struct bpf_lwt. When the bpf
-> > program returns BPF_LWT_REROUTE, ip_route_input_noref is directly called on
-> > this skb. This causes invalid memory access, as ip_route_input_slow calls
-> > skb_tunnel_info(skb) that expects the dst->lwstate->data to be
-> > struct ip_tunnel_info. This results to struct bpf_lwt being accessed as
-> > struct ip_tunnel_info.
-> >
-> > Drop the dst before calling the IP route input functions (both for IPv4 and
-> > IPv6).
-> >
-> > Reported by KASAN.
-> >
-> > Fixes: 3bd0b15281af ("bpf: add handling of BPF_LWT_REROUTE to lwt_bpf.c")
-> > Cc: Peter Oskolkov <posk@google.com>
-> > Signed-off-by: Jiri Benc <jbenc@redhat.com>
->
-> Peter and other google folks,
-> please review.
 
-selftests/bpf/test_lwt_ip_encap.sh passes. Seems OK.
+--ftEhullJWpWg/VHq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Acked-by: Peter Oskolkov <posk@google.com>
+On Fri, Oct 11, 2019 at 04:15:56PM +0800, Jason Wang wrote:
+> +struct virtio_mdev_device {
+> +	struct virtio_device vdev;
+> +	struct mdev_device *mdev;
+> +	unsigned long version;
+> +
+> +	struct virtqueue **vqs;
+> +	/* The lock to protect virtqueue list */
+> +	spinlock_t lock;
+> +	struct list_head virtqueues;
+
+Is this a list of struct virtio_mdev_vq_info?  Please document the
+actual type in a comment.
+
+> +static int virtio_mdev_find_vqs(struct virtio_device *vdev, unsigned nvqs,
+> +				struct virtqueue *vqs[],
+> +				vq_callback_t *callbacks[],
+> +				const char * const names[],
+> +				const bool *ctx,
+> +				struct irq_affinity *desc)
+> +{
+> +	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
+> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
+> +	struct virtio_mdev_callback cb;
+> +	int i, err, queue_idx = 0;
+> +
+> +	vm_dev->vqs = kmalloc_array(queue_idx, sizeof(*vm_dev->vqs),
+> +				    GFP_KERNEL);
+
+kmalloc_array(0, ...)?  I would have expected nvqs instead of queue_idx
+(0).
+
+What is this the purpose of vm_dev->vqs and does anything ever access it?
+
+--ftEhullJWpWg/VHq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2kst4ACgkQnKSrs4Gr
+c8hQqggAsLqAScuEZRHgMYUxIlc4Hpdh283rOQFgRgPfZqq3hQ/nzKTqbn1k7DnZ
+MaXQk/GXc1/mFzEwjGVoMOJ+NiZKpj5xuVN9HqKEuDuBooykO5wKnbwkm6kAs/gG
+/10A4I5fkyOUHB+xRkaM/3g9UJgo/yB/oI7yQonKFI3VNQc/Q0vcAWUkUbyoZyZA
+WO5IJoOR9nF7g6kkYLT0ik26WZFVsBruKTsifLsCJTCQMWo8dJpvgJpGvo/k07YZ
+kWYC8J+K/SRA9gpvDBCfkPRQGMgq7CiE0C+VfoGVo11TuFd6FlkjjYmBIPXYek98
+rK1ONn6f4qY+67eRJ77oiNeFsj4eYw==
+=7Qm5
+-----END PGP SIGNATURE-----
+
+--ftEhullJWpWg/VHq--
