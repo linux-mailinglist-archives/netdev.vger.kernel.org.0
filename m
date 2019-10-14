@@ -2,134 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACB16D645D
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 15:49:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97582D648C
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 16:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732288AbfJNNtD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Oct 2019 09:49:03 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55879 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732275AbfJNNtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 09:49:02 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-18-spBsG0rnPI-Sf4cdjsBoZQ-1; Mon, 14 Oct 2019 14:48:59 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 14 Oct 2019 14:48:59 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 14 Oct 2019 14:48:59 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Neil Horman' <nhorman@tuxdriver.com>,
-        Xin Long <lucien.xin@gmail.com>
-CC:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: RE: [PATCHv2 net-next 3/5] sctp: add
- SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
-Thread-Topic: [PATCHv2 net-next 3/5] sctp: add
- SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
-Thread-Index: AQHVfcsgrQL6OT4GuU648eHSKFH716dQtSlAgAlozbiAAAvUMA==
-Date:   Mon, 14 Oct 2019 13:48:59 +0000
-Message-ID: <0cfd3050e4bf41f1920837767ed5c23e@AcuMS.aculab.com>
-References: <cover.1570533716.git.lucien.xin@gmail.com>
- <066605f2269d5d92bc3fefebf33c6943579d8764.1570533716.git.lucien.xin@gmail.com>
- <60a7f76bd5f743dd8d057b32a4456ebd@AcuMS.aculab.com>
- <CADvbK_cFCuHAwxGAdY0BevrrAd6pQRP2tW_ej9mM3G4Aog3qpg@mail.gmail.com>
- <20191009161508.GB25555@hmswarspite.think-freely.org>
- <CADvbK_fb9jjm-h-XyVci971Uu=YuwMsUjWEcv9ehUv9Q6W_VxQ@mail.gmail.com>
- <20191014124143.GA11844@hmswarspite.think-freely.org>
-In-Reply-To: <20191014124143.GA11844@hmswarspite.think-freely.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
+        id S1732315AbfJNOCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 10:02:24 -0400
+Received: from cvk-fw1.cvk.de ([194.39.189.11]:64446 "EHLO cvk-fw1.cvk.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730477AbfJNOCY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 10:02:24 -0400
+Received: from localhost (cvk-fw1 [127.0.0.1])
+        by cvk-fw1.cvk.de (Postfix) with ESMTP id 46sKxn2Jlkz4w53;
+        Mon, 14 Oct 2019 16:02:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cvk.de; h=
+        mime-version:content-transfer-encoding:content-type:content-type
+        :content-language:accept-language:in-reply-to:references
+        :message-id:date:date:subject:subject:from:from; s=
+        mailcvk20190509; t=1571061741; x=1572876142; bh=fSJXj1CNj/4Y0trf
+        5+0uzfr3fy058KXOV7S/2ljiwps=; b=RMQaYkrIsDRYu6/T8JtCuy3Ag8DX1Gxi
+        sL9SDynflwE4ozs/stNKWMCvWrrKwARvDiL457obmguAxBpX2r8P825pqrMsaLK3
+        HXnfxzsix1EASy2/1ktB/yIyZowScyvL4U/K26jS5orS0W1ImkQ0K3ojgMBuytRJ
+        JH3oHCZY2RV0427WEPTxLSlRzlmirRfxMdWwnz5oV0kax/U1Di6L7KG1w3K7n96Q
+        5C3VmJcFOzD9oqUz7VWay6atFwze4HPNubZSim+xRrlNBTLAg23Rl9A++EKjAKII
+        j0TKDfmH1jDOIW4Y3347D024k28twHk5HL/sR38Hy8oMP1Wa13Lgww==
+X-Virus-Scanned: by amavisd-new at cvk.de
+Received: from cvk-fw1.cvk.de ([127.0.0.1])
+        by localhost (cvk-fw1.cvk.de [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id x19UqwgudkCN; Mon, 14 Oct 2019 16:02:21 +0200 (CEST)
+Received: from cvk017.cvk.de (cvk017 [10.1.0.17])
+        by cvk-fw1.cvk.de (Postfix) with ESMTP;
+        Mon, 14 Oct 2019 16:02:21 +0200 (CEST)
+Received: from cvk038.intra.cvk.de (cvk038.intra.cvk.de [10.1.0.38])
+        by cvk017.cvk.de (Postfix) with ESMTP id 465A4860CFF;
+        Mon, 14 Oct 2019 16:02:21 +0200 (CEST)
+Received: from CVK038.intra.cvk.de ([::1]) by cvk038.intra.cvk.de ([::1]) with
+ mapi id 14.03.0468.000; Mon, 14 Oct 2019 16:02:20 +0200
+From:   "Bartschies, Thomas" <Thomas.Bartschies@cvk.de>
+To:     'David Ahern' <dsahern@gmail.com>,
+        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: AW: big ICMP requests get disrupted on IPSec tunnel activation
+Thread-Topic: big ICMP requests get disrupted on IPSec tunnel activation
+Thread-Index: AdVqDuxpNdDfEB5ERA+Q1nyhyK5bhAANt6yAALhjMUAFW8txsA==
+Date:   Mon, 14 Oct 2019 14:02:19 +0000
+Message-ID: <EB8510AA7A943D43916A72C9B8F4181F62A0774F@cvk038.intra.cvk.de>
+References: <EB8510AA7A943D43916A72C9B8F4181F629D9741@cvk038.intra.cvk.de>
+ <d0c8ebbb-3ed3-296f-d84a-6f88e641b404@gmail.com>
+ <EB8510AA7A943D43916A72C9B8F4181F629DD75A@cvk038.intra.cvk.de>
+In-Reply-To: <EB8510AA7A943D43916A72C9B8F4181F629DD75A@cvk038.intra.cvk.de>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+x-originating-ip: [10.11.10.4]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MC-Unique: spBsG0rnPI-Sf4cdjsBoZQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+X-GBS-PROC: mBCtcOCtwCOp5vL6i/FxNRPAGCrsfikAUlaObh49mH4=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neil Horman <nhorman@tuxdriver.com>
-> Sent: 14 October 2019 13:42
-> To: Xin Long <lucien.xin@gmail.com>
-> Cc: David Laight <David.Laight@ACULAB.COM>; network dev <netdev@vger.kernel.org>; linux-sctp@vger.kernel.org; Marcelo
-> Ricardo Leitner <marcelo.leitner@gmail.com>; davem@davemloft.net
-> Subject: Re: [PATCHv2 net-next 3/5] sctp: add SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
-> 
-> On Mon, Oct 14, 2019 at 04:36:34PM +0800, Xin Long wrote:
-> > On Thu, Oct 10, 2019 at 12:18 AM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > >
-> > > On Tue, Oct 08, 2019 at 11:28:32PM +0800, Xin Long wrote:
-> > > > On Tue, Oct 8, 2019 at 9:02 PM David Laight <David.Laight@aculab.com> wrote:
-> > > > >
-> > > > > From: Xin Long
-> > > > > > Sent: 08 October 2019 12:25
-> > > > > >
-> > > > > > This is a sockopt defined in section 7.3 of rfc7829: "Exposing
-> > > > > > the Potentially Failed Path State", by which users can change
-> > > > > > pf_expose per sock and asoc.
-> > > > >
-> > > > > If I read these patches correctly the default for this sockopt in 'enabled'.
-> > > > > Doesn't this mean that old application binaries will receive notifications
-> > > > > that they aren't expecting?
-> > > > >
-> > > > > I'd have thought that applications would be required to enable it.
-> > > > If we do that, sctp_getsockopt_peer_addr_info() in patch 2/5 breaks.
-> > > >
-> > > I don't think we can safely do either of these things.  Older
-> > > applications still need to behave as they did prior to the introduction
-> > > of this notification, and we shouldn't allow unexpected notifications to
-> > > be sent.
-> > Hi, Neil
-> >
-> > I think about again, and also talked with QE, we think to get unexpected
-> > notifications shouldn't be a problem for user's applications.
-> >
-> On principle, I disagree.  Regardless of what the RFC does, we shouldn't
-> send notifications that an application aren't subscribed to.  Just
-> because QE doesn't think it should be a problem (and for their uses it
-> may well not be an issue), we can't make that general assumption.
-> 
-> > RFC actually keeps adding new notifications, and a user shouldn't expect
-> > the specific notifications coming in some exact orders. They should just
-> > ignore it and wait until the ones they expect. I don't think some users
-> > would abort its application when getting an unexpected notification.
-> >
-> To make that assertion is to discount the purpose of the SCTP_EVENTS
-> sockopt entirely.  the SCTP_EVENTS option is a whitelist operation, so
-> they expect to get what they subscribe to, and no more.
-> 
-> > We should NACK patchset v3 and go with v2. What do you think?
-> >
-> No, we need to go with an option that maintains backwards compatibility
-> without relying on the assumption that applications will just ignore
-> events they didn't subscribe to.  Davids example is a case in point.
-
-Although I don't enable the SCTP_PEER_ADDR_CHANGE indications.
-But rfc 6458 doesn't say that the list might be extended.
-
-Aren't there 3 separate items here:
-1) The SCTP protocol changes (to better handle primary path failure).
-2) The SCTP_GET_PEER_ADDR_INFO sockopt.
-3) The MSG_NOTIFICATION indication for SCTP_ADDR_POTENTIALLY_FAILED.
-
-Looking at RFC 7829 section 7.3.
-7.3 defines SCTP_EXPOSE_POTENTIALLY_FAILED_STATE.
-For compatibility this must default to 'disabled'.
-This is even true if the application has set the SCTP_PEER_ADDR_THLDS.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+SGVsbG8sDQoNCml0IHRvb2sgYSB3aGlsZSB0byBidWlsZCBhIHRlc3RzeXN0ZW0gZm9yIGJpc2Vj
+dGluZyB0aGUgaXNzdWUuIEZpbmFsbHkgSSd2ZSBpZGVudGlmaWVkIHRoZSBwYXRjaCB0aGF0IGNh
+dXNlcyBteSBwcm9ibGVtcy4NCkJUVy4gVGhlIGZxIHBhY2tldCBuZXR3b3JrIHNjaGVkdWxlciBp
+cyBpbiB1c2UuDQoNCkl0J3MgDQpbUEFUQ0ggbmV0LW5leHRdIHRjcC9mcTogbW92ZSBiYWNrIHRv
+IENMT0NLX01PTk9UT05JQw0KDQpJbiB0aGUgcmVjZW50IFRDUC9FRFQgcGF0Y2ggc2VyaWVzLCBJ
+IHN3aXRjaGVkIFRDUCBhbmQgc2NoX2ZxIGNsb2NrcyBmcm9tIE1PTk9UT05JQyB0byBUQUksIGlu
+IG9yZGVyIHRvIG1lZXQgdGhlIGNob2ljZSBkb25lDQplYXJsaWVyIGZvciBzY2hfZXRmIHBhY2tl
+dCBzY2hlZHVsZXIuDQoNCkJ1dCBzdXJlIGVub3VnaCwgdGhpcyBicm9rZSBzb21lIHNldHVwcyB3
+ZXJlIHRoZSBUQUkgY2xvY2sganVtcHMgZm9yd2FyZCAoYnkgYWxtb3N0IDUwIHllYXIuLi4pLCBh
+cyByZXBvcnRlZCBieSBMZW9uYXJkIENyZXN0ZXouDQoNCklmIHdlIHdhbnQgdG8gY29udmVyZ2Ug
+bGF0ZXIsIHdlJ2xsIHByb2JhYmx5IG5lZWQgdG8gYWRkIGFuIHNrYiBmaWVsZCB0byBkaWZmZXJl
+bnRpYXRlIHRoZSBjbG9jayBiYXNlcywgb3IgYSBzb2NrZXQgb3B0aW9uLg0KDQpJbiB0aGUgbWVh
+bnRpbWUsIGFuIFVEUCBhcHBsaWNhdGlvbiB3aWxsIG5lZWQgdG8gdXNlIENMT0NLX01PTk9UT05J
+QyBiYXNlIGZvciBpdHMgU0NNX1RYVElNRSB0aW1lc3RhbXBzIGlmIHVzaW5nIGZxIA0KcGFja2V0
+IHNjaGVkdWxlci4NCg0KRml4ZXM6IDcyYjAwOTRmOTE4MiAoInRjcDogc3dpdGNoIHRjcF9jbG9j
+a19ucygpIHRvIENMT0NLX1RBSSBiYXNlIikNCkZpeGVzOiAxNDI1MzdlNDE5MjMgKCJuZXRfc2No
+ZWQ6IHNjaF9mcTogc3dpdGNoIHRvIENMT0NLX1RBSSIpDQpGaXhlczogZmQyYmNhMmFhNzg5ICgi
+dGNwOiBzd2l0Y2ggaW50ZXJuYWwgcGFjaW5nIHRpbWVyIHRvIENMT0NLX1RBSSIpDQpTaWduZWQt
+b2ZmLWJ5OiBFcmljIER1bWF6ZXQgPGVkdW1hemV0QHh4eHh4eHh4eHg+DQpSZXBvcnRlZC1ieTog
+TGVvbmFyZCBDcmVzdGV6IDxsZW9uYXJkLmNyZXN0ZXpAeHh4eHh4eD4NCg0KLS0tLQ0KDQpBZnRl
+ciByZXZlcnRpbmcgaXQgaW4gYSBjdXJyZW50IDUuMi4xOCBrZXJuZWwsIHRoZSBwcm9ibGVtIGRp
+c2FwcGVhcnMuIFRoZXJlIHdlcmUgc29tZSBwb3N0IGZpeGVzIGZvciBvdGhlciBpc3N1ZXMgY2F1
+c2VkIGJ5IHRoaXMNCnBhdGNoLiBUaGVzZSBmaXhlZCBvdGhlciBzaW1pbGFyIGlzc3VlcywgYnV0
+IG5vdCBtaW5lLiBJJ3ZlIGFscmVhZHkgdHJpZWQgdG8gc2V0IHRoZSB0c3RhbXAgdG8gemVybyBp
+biB4ZnJtNF9vdXRwdXQuYywgYnV0IHdpdGggbm8NCmx1Y2sgc28gZmFyLiBJJ20gcHJldHR5IHN1
+cmUsIHRoYXQgcmV2ZXJ0aW5nIHRoZSBjbG9jayBwYXRjaCBpc24ndCB0aGUgcHJvcGVyIHNvbHV0
+aW9uIGZvciB1cHN0cmVhbS4gU28gSSB3aGF0IG90aGVyIHdheSB0aGlzIGNhbg0KYmUgZml4ZWQ/
+DQoNCi0tLQ0KW1BBVENIIG5ldF0gbmV0OiBjbGVhciBza2ItPnRzdGFtcCBpbiBicmlkZ2UgZm9y
+d2FyZGluZyBwYXRoDQpNYXR0ZW8gcmVwb3J0ZWQgZm9yd2FyZGluZyBpc3N1ZXMgaW5zaWRlIHRo
+ZSBsaW51eCBicmlkZ2UsIGlmIHRoZSBlbnNsYXZlZCBpbnRlcmZhY2VzIHVzZSB0aGUgZnEgcWRp
+c2MuDQoNClNpbWlsYXIgdG8gY29tbWl0IDgyMDNlMmQ4NDRkMyAoIm5ldDogY2xlYXIgc2tiLT50
+c3RhbXAgaW4gZm9yd2FyZGluZyBwYXRocyIpLCB3ZSBuZWVkIHRvIGNsZWFyIHRoZSB0c3RhbXAg
+ZmllbGQgaW4NCnRoZSBicmlkZ2UgZm9yd2FyZGluZyBwYXRoLg0KDQpGaXhlczogODBiMTRkZWUy
+YmVhICgibmV0OiBBZGQgYSBuZXcgc29ja2V0IG9wdGlvbiBmb3IgYSBmdXR1cmUgdHJhbnNtaXQg
+dGltZS4iKQ0KRml4ZXM6IGZiNDIwZDVkOTFjMSAoInRjcC9mcTogbW92ZSBiYWNrIHRvIENMT0NL
+X01PTk9UT05JQyIpDQpSZXBvcnRlZC1hbmQtdGVzdGVkLWJ5OiBNYXR0ZW8gQ3JvY2UgPG1jcm9j
+ZUByZWRoYXQuY29tPg0KU2lnbmVkLW9mZi1ieTogUGFvbG8gQWJlbmkgPHBhYmVuaUByZWRoYXQu
+Y29tPg0KDQphbmQNCg0KbmV0OiBjbGVhciBza2ItPnRzdGFtcCBpbiBmb3J3YXJkaW5nIHBhdGhz
+DQoNClNlcmdleSByZXBvcnRlZCB0aGF0IGZvcndhcmRpbmcgd2FzIG5vIGxvbmdlciB3b3JraW5n
+IGlmIGZxIHBhY2tldCBzY2hlZHVsZXIgd2FzIHVzZWQuDQoNClRoaXMgaXMgY2F1c2VkIGJ5IHRo
+ZSByZWNlbnQgc3dpdGNoIHRvIEVEVCBtb2RlbCwgc2luY2UgaW5jb21pbmcgcGFja2V0cyBtaWdo
+dCBoYXZlIGJlZW4gdGltZXN0YW1wZWQgYnkgX19uZXRfdGltZXN0YW1wKCkNCg0KX19uZXRfdGlt
+ZXN0YW1wKCkgdXNlcyBrdGltZV9nZXRfcmVhbCgpLCB3aGlsZSBmcSBleHBlY3RzIHBhY2tldHMg
+dXNpbmcgQ0xPQ0tfTU9OT1RPTklDIGJhc2UuDQoNClRoZSBmaXggaXMgdG8gY2xlYXIgc2tiLT50
+c3RhbXAgaW4gZm9yd2FyZGluZyBwYXRocy4NCg0KRml4ZXM6IDgwYjE0ZGVlICgibmV0OiBBZGQg
+YSBuZXcgc29ja2V0IG9wdGlvbiBmb3IgYSBmdXR1cmUgdHJhbnNtaXQgdGltZS4iKQ0KRml4ZXM6
+IGZiNDIwZDVkICgidGNwL2ZxOiBtb3ZlIGJhY2sgdG8gQ0xPQ0tfTU9OT1RPTklDIikNClNpZ25l
+ZC1vZmYtYnk6IGRlZmF1bHQgYXZhdGFyRXJpYyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUuY29t
+Pg0KUmVwb3J0ZWQtYnk6IGRlZmF1bHQgYXZhdGFyU2VyZ2V5IE1hdHl1a2V2aWNoIDxnZW9tYXRz
+aUBnbWFpbC5jb20+DQpUZXN0ZWQtYnk6IGRlZmF1bHQgYXZhdGFyU2VyZ2V5IE1hdHl1a2V2aWNo
+IDxnZW9tYXRzaUBnbWFpbC5jb20+DQpTaWduZWQtb2ZmLWJ5OiBkZWZhdWx0IGF2YXRhckRhdmlk
+IFMuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD4NCg0KQmVzdCByZWdhcmRzLA0KLS0NClRo
+b21hcyBCYXJ0c2NoaWVzDQpDVksgSVQgU3lzdGVtZQ0KDQoNCi0tLS0tVXJzcHLDvG5nbGljaGUg
+TmFjaHJpY2h0LS0tLS0NClZvbjogQmFydHNjaGllcywgVGhvbWFzIA0KR2VzZW5kZXQ6IERpZW5z
+dGFnLCAxNy4gU2VwdGVtYmVyIDIwMTkgMDk6MjgNCkFuOiAnRGF2aWQgQWhlcm4nIDxkc2FoZXJu
+QGdtYWlsLmNvbT47ICduZXRkZXZAdmdlci5rZXJuZWwub3JnJyA8bmV0ZGV2QHZnZXIua2VybmVs
+Lm9yZz4NCkJldHJlZmY6IEFXOiBiaWcgSUNNUCByZXF1ZXN0cyBnZXQgZGlzcnVwdGVkIG9uIElQ
+U2VjIHR1bm5lbCBhY3RpdmF0aW9uDQoNCkhlbGxvLA0KDQp0aGFua3MgZm9yIHRoZSBzdWdnZXN0
+aW9uLiBSdW5uaW5nIHBtdHUuc2ggd2l0aCBrZXJuZWwgdmVyc2lvbnMgNC4xOSwgNC4yMCBhbmQg
+ZXZlbiA1LjIuMTMgbWFkZSBubyBkaWZmZXJlbmNlLiBBbGwgdGVzdHMgd2VyZSBzdWNjZXNzZnVs
+IGV2ZXJ5IHRpbWUuDQoNCkFsdGhvdWdoIG15IGV4dGVybmFsIHBpbmcgdGVzdHMgc3RpbGwgZmFp
+bGluZyB3aXRoIHRoZSBuZXdlciBrZXJuZWxzLiBJJ3ZlIHJhbiB0aGUgc2NyaXB0IGFmdGVyIHRy
+aWdnZXJpbmcgbXkgcHJvYmxlbSwgdG8gbWFrZSBzdXJlIGFsbCBwb3NzaWJsZSBzaWRlIGVmZmVj
+dHMgaGFwcGVuaW5nLiANCg0KUGxlYXNlIGtlZXAgaW4gbWluZCwgdGhhdCBldmVuIHdoZW4gdGhl
+IElDTVAgcmVxdWVzdHMgc3RhbGxpbmcsIG90aGVyIGNvbm5lY3Rpb25zIHN0aWxsIGdvaW5nIHRo
+cm91Z2guIExpa2UgZS5nLiBzc2ggb3IgdHJhY2VwYXRoLiBJIHdvdWxkIGV4cGVjdCB0aGF0IGFs
+bCBjb25uZWN0aW9uIHR5cGVzIHdvdWxkIGJlIGFmZmVjdGVkIGlmIHRoaXMgaXMgYSBNVFUgcHJv
+YmxlbS4gQW0gSSB3cm9uZz8NCg0KQW55IHN1Z2dlc3Rpb25zIGZvciBtb3JlIHRlc3RzIHRvIGlz
+b2xhdGUgdGhlIGNhdXNlPyANCg0KQmVzdCByZWdhcmRzLA0KLS0NClRob21hcyBCYXJ0c2NoaWVz
+DQpDVksgSVQgU3lzdGVtZQ0KDQotLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQpW
+b246IERhdmlkIEFoZXJuIFttYWlsdG86ZHNhaGVybkBnbWFpbC5jb21dDQpHZXNlbmRldDogRnJl
+aXRhZywgMTMuIFNlcHRlbWJlciAyMDE5IDE5OjEzDQpBbjogQmFydHNjaGllcywgVGhvbWFzIDxU
+aG9tYXMuQmFydHNjaGllc0BjdmsuZGU+OyAnbmV0ZGV2QHZnZXIua2VybmVsLm9yZycgPG5ldGRl
+dkB2Z2VyLmtlcm5lbC5vcmc+DQpCZXRyZWZmOiBSZTogYmlnIElDTVAgcmVxdWVzdHMgZ2V0IGRp
+c3J1cHRlZCBvbiBJUFNlYyB0dW5uZWwgYWN0aXZhdGlvbg0KDQpPbiA5LzEzLzE5IDk6NTkgQU0s
+IEJhcnRzY2hpZXMsIFRob21hcyB3cm90ZToNCj4gSGVsbG8gdG9nZXRoZXIsDQo+IA0KPiBzaW5j
+ZSBrZW5lbCA0LjIwIHdlJ3JlIG9ic2VydmluZyBhIHN0cmFuZ2UgYmVoYXZpb3VyIHdoZW4gc2Vu
+ZGluZyBiaWcgSUNNUCBwYWNrZXRzLiBBbiBleGFtcGxlIGlzIGEgcGFja2V0IHNpemUgb2YgMzAw
+MCBieXRlcy4NCj4gVGhlIHBhY2tldHMgc2hvdWxkIGJlIGZvcndhcmRlZCBieSBhIGxpbnV4IGdh
+dGV3YXkgKGZpcmV3YWxsKSBoYXZpbmcgbXVsdGlwbGUgaW50ZXJmYWNlcyBhbHNvIGFjdGluZyBh
+cyBhIHZwbiBnYXRld2F5Lg0KPiANCj4gVGVzdCBzdGVwczoNCj4gMS4gRGlzYWJsZWQgYWxsIGlw
+dGFibGVzIHJ1bGVzDQo+IDIuIEVuYWJsZWQgdGhlIFZQTiBJUFNlYyBQb2xpY2llcy4NCj4gMy4g
+U3RhcnQgYSBwaW5nIHdpdGggcGFja2V0IHNpemUgKGUuZy4gMzAwMCBieXRlcykgZnJvbSBhIGNs
+aWVudCBpbiANCj4gdGhlIERNWiBwYXNzaW5nIHRoZSBtYWNoaW5lIHRhcmdldGluZyBhbm90aGVy
+IExBTiBtYWNoaW5lIDQuIFBpbmcgDQo+IHdvcmtzIDUuIEVuYWJsZSBhIFZQTiBwb2xpY3kgYnkg
+c2VuZGluZyBwaW5ncyBmcm9tIHRoZSBnYXRld2F5IHRvIGEgDQo+IHR1bm5lbCB0YXJnZXQuIFN5
+c3RlbSB0cmllcyB0byBjcmVhdGUgdGhlIHR1bm5lbCA2LiBQaW5nIGZyb20gMy4gaW1tZWRpYXRl
+bHkgc3RhbGxzLiBObyBlcnJvciBtZXNzYWdlcy4gSnVzdCBzdG9wcy4NCj4gNy4gU3RvcCBQaW5n
+IGZyb20gMy4gU3RhcnQgYW5vdGhlciB3aXRob3V0IHBhY2tldCBzaXplIHBhcmFtZXRlci4gU3Rh
+bGxzIGFsc28uDQo+IA0KPiBSZXN1bHQ6DQo+IENvbm5lY3Rpb25zIGZyb20gdGhlIGNsaWVudCB0
+byBvdGhlciBzZXJ2aWNlcyBvbiB0aGUgTEFOIG1hY2hpbmUgc3RpbGwgDQo+IHdvcmsuIFRyYWNl
+cGF0aCB3b3Jrcy4gT25seSBJQ01QIHJlcXVlc3RzIGRvIG5vdCBwYXNzIHRoZSBnYXRld2F5IA0K
+PiBhbnltb3JlLiB0Y3BkdW1wIHNlZXMgdGhlbSBvbiBpbmNvbWluZyBpbnRlcmZhY2UsIGJ1dCBu
+b3Qgb24gdGhlIG91dGdvaW5nIExBTiBpbnRlcmZhY2UuIElNQ1AgcmVxdWVzdHMgdG8gYW55IG90
+aGVyIHRhcmdldCBJUCBhZGRyZXNzIGluIExBTiBzdGlsbCB3b3JrLiBVbnRpbCBvbmUgdXNlcyBh
+IGJpZ2dlciBwYWNrZXQgc2l6ZS4gVGhlbiB0aGVzZSBhbHRlcm5hdGl2ZSBjb25uZWN0aW9ucyBz
+dGFsbCBhbHNvLg0KPiANCj4gRmx1c2hpbmcgdGhlIHBvbGljeSB0YWJsZSBoYXMgbm8gZWZmZWN0
+LiBGbHVzaGluZyB0aGUgY29ubnRyYWNrIHRhYmxlIGhhcyBubyBlZmZlY3QuIFNldHRpbmcgcnBf
+ZmlsdGVyIHRvIGxvb3NlICgyKSBoYXMgbm8gZWZmZWN0Lg0KPiBGbHVzaCB0aGUgcm91dGUgY2Fj
+aGUgaGFzIG5vIGVmZmVjdC4NCj4gDQo+IE9ubHkgYSByZWJvb3Qgb2YgdGhlIGdhdGV3YXkgcmVz
+dG9yZXMgbm9ybWFsIGJlaGF2aW9yLg0KPiANCj4gV2hhdCBjYW4gYmUgdGhlIGNhdXNlPyBJcyB0
+aGlzIGEgbmV0d29ya2luZyBidWc/DQo+IA0KDQpzb21lIG9mIHRoZXNlIG1vc3QgbGlrZWx5IHdp
+bGwgZmFpbCBkdWUgdG8gb3RoZXIgcmVhc29ucywgYnV0IGNhbiB5b3UgcnVuICd0b29scy90ZXN0
+aW5nL3NlbGZ0ZXN0cy9uZXQvcG10dS5zaCdbMV0gb24gNC4xOSBhbmQgdGhlbiA0LjIwIGFuZCBj
+b21wYXJlIHJlc3VsdHMuIEhvcGVmdWxseSBpdCB3aWxsIHNoZWQgc29tZSBsaWdodCBvbiB0aGUg
+cHJvYmxlbSBhbmQgY2FuIGJlIHVzZWQgdG8gYmlzZWN0IHRvIGEgY29tbWl0IHRoYXQgY2F1c2Vk
+IHRoZSByZWdyZXNzaW9uLg0KDQoNClsxXQ0KaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2Nt
+L2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0L3RyZWUvdG9vbHMvdGVzdGluZy9z
+ZWxmdGVzdHMvbmV0L3BtdHUuc2gNCg0K
