@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69A08D608D
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 12:50:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C9FED608E
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 12:50:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731520AbfJNKuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 06:50:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58032 "EHLO mail.kernel.org"
+        id S1731645AbfJNKuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 06:50:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731305AbfJNKuP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 06:50:15 -0400
+        id S1731305AbfJNKuc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 06:50:32 -0400
 Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com [149.6.153.186])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4C35220854;
-        Mon, 14 Oct 2019 10:50:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4A3BC20854;
+        Mon, 14 Oct 2019 10:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571050215;
-        bh=fsE5wHSrCebivqhQQxTtoL+hlJowNSQUCSqRiSY+5fU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PAEh2ogYw2QUyzd7ZKu5/c80rQ7tKABSz1B6AI8Trx5DXJcKi81Cqp83dyHWatfsK
-         m9+II9YiUvIkswdcszq14cnwHrMJM126ShF8B54PGSa0hCohQqTWmTylMuIfX7jvng
-         uGdcEvHOj5MFG3oolLj6VNMIQwX74Zsg55CCs7uw=
+        s=default; t=1571050232;
+        bh=5t5NbLHYbgt7ocud47HlHf34FyBScgxcF8+l5cpMctk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WboVxizx4Ne07WWh091JDkJvZnBTJ1sXb29HIIY5w2WRytbaJ5rFqR+7yYYJWxCY3
+         taIIZAOqo/mcaI7Ha+54JYq5SIuYx2gXIMDMl7V/DNiozpjBMaNTpIWrFg5tNUdQ9l
+         18MI1WVa4HZY7oLXq6sG0uvizXOuAjakTP2CbcPs=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
         thomas.petazzoni@bootlin.com, brouer@redhat.com,
         ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
         mw@semihalf.com
-Subject: [PATCH v3 net-next 0/8] add XDP support to mvneta driver
-Date:   Mon, 14 Oct 2019 12:49:47 +0200
-Message-Id: <cover.1571049326.git.lorenzo@kernel.org>
+Subject: [PATCH v3 net-next 1/8] net: mvneta: introduce mvneta_update_stats routine
+Date:   Mon, 14 Oct 2019 12:49:48 +0200
+Message-Id: <59c7c29df4dcb6df74ad3147b9651a397eacfbe7.1571049326.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <cover.1571049326.git.lorenzo@kernel.org>
+References: <cover.1571049326.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -40,49 +42,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add XDP support to mvneta driver for devices that rely on software
-buffer management. Supported verdicts are:
-- XDP_DROP
-- XDP_PASS
-- XDP_REDIRECT
-- XDP_TX
-Moreover set ndo_xdp_xmit net_device_ops function pointer in order to support
-redirecting from other device (e.g. virtio-net).
-Convert mvneta driver to page_pool API.
-This series is based on previous work done by Jesper and Ilias.
-We will send follow-up patches to reduce DMA-sync operations.
+Introduce mvneta_update_stats routine to collect {rx/tx} statistics
+(packets and bytes). This is a preliminary patch to add XDP support to
+mvneta driver
 
-Changes since v2:
-- rely on page_pool_recycle_direct instead of xdp_return_buff for XDP_DROP
-- define xdp buffer in mvneta_rx_swbm and avoid default initializations
-- use dma_sync_single_for_cpu instead of dma_sync_single_range_for_cpu
-- run page_pool_release_page in mvneta_swbm_add_rx_fragment even if the buffer
-  contains just ETH_FCS
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/marvell/mvneta.c | 41 +++++++++++++--------------
+ 1 file changed, 20 insertions(+), 21 deletions(-)
 
-Changes since v1:
-- sync dma buffers before refilling hw queues
-- fix stats accounting
-
-Changes since RFC:
-- implement XDP_TX
-- make tx pending buffer list agnostic
-- code refactoring
-- check if device is running in mvneta_xdp_setup
-
-Lorenzo Bianconi (8):
-  net: mvneta: introduce mvneta_update_stats routine
-  net: mvneta: introduce page pool API for sw buffer manager
-  net: mvneta: rely on build_skb in mvneta_rx_swbm poll routine
-  net: mvneta: sync dma buffers before refilling hw queues
-  net: mvneta: add basic XDP support
-  net: mvneta: move header prefetch in mvneta_swbm_rx_frame
-  net: mvneta: make tx buffer array agnostic
-  net: mvneta: add XDP_TX support
-
- drivers/net/ethernet/marvell/Kconfig  |   1 +
- drivers/net/ethernet/marvell/mvneta.c | 631 +++++++++++++++++++-------
- 2 files changed, 472 insertions(+), 160 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index e49820675c8c..128b9fded959 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -1900,6 +1900,23 @@ static void mvneta_rxq_drop_pkts(struct mvneta_port *pp,
+ 	}
+ }
+ 
++static void
++mvneta_update_stats(struct mvneta_port *pp, u32 pkts,
++		    u32 len, bool tx)
++{
++	struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
++
++	u64_stats_update_begin(&stats->syncp);
++	if (tx) {
++		stats->tx_packets += pkts;
++		stats->tx_bytes += len;
++	} else {
++		stats->rx_packets += pkts;
++		stats->rx_bytes += len;
++	}
++	u64_stats_update_end(&stats->syncp);
++}
++
+ static inline
+ int mvneta_rx_refill_queue(struct mvneta_port *pp, struct mvneta_rx_queue *rxq)
+ {
+@@ -2075,14 +2092,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 		rxq->left_size = 0;
+ 	}
+ 
+-	if (rcvd_pkts) {
+-		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+-
+-		u64_stats_update_begin(&stats->syncp);
+-		stats->rx_packets += rcvd_pkts;
+-		stats->rx_bytes   += rcvd_bytes;
+-		u64_stats_update_end(&stats->syncp);
+-	}
++	mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes, false);
+ 
+ 	/* return some buffers to hardware queue, one at a time is too slow */
+ 	refill = mvneta_rx_refill_queue(pp, rxq);
+@@ -2206,14 +2216,7 @@ static int mvneta_rx_hwbm(struct napi_struct *napi,
+ 		napi_gro_receive(napi, skb);
+ 	}
+ 
+-	if (rcvd_pkts) {
+-		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+-
+-		u64_stats_update_begin(&stats->syncp);
+-		stats->rx_packets += rcvd_pkts;
+-		stats->rx_bytes   += rcvd_bytes;
+-		u64_stats_update_end(&stats->syncp);
+-	}
++	mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes, false);
+ 
+ 	/* Update rxq management counters */
+ 	mvneta_rxq_desc_num_update(pp, rxq, rx_done, rx_done);
+@@ -2459,7 +2462,6 @@ static netdev_tx_t mvneta_tx(struct sk_buff *skb, struct net_device *dev)
+ 
+ out:
+ 	if (frags > 0) {
+-		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+ 		struct netdev_queue *nq = netdev_get_tx_queue(dev, txq_id);
+ 
+ 		netdev_tx_sent_queue(nq, len);
+@@ -2474,10 +2476,7 @@ static netdev_tx_t mvneta_tx(struct sk_buff *skb, struct net_device *dev)
+ 		else
+ 			txq->pending += frags;
+ 
+-		u64_stats_update_begin(&stats->syncp);
+-		stats->tx_packets++;
+-		stats->tx_bytes  += len;
+-		u64_stats_update_end(&stats->syncp);
++		mvneta_update_stats(pp, 1, len, true);
+ 	} else {
+ 		dev->stats.tx_dropped++;
+ 		dev_kfree_skb_any(skb);
 -- 
 2.21.0
 
