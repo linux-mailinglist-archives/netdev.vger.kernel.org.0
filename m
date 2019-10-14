@@ -2,97 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77B43D68B2
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5370D68B5
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 19:40:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388661AbfJNRkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 13:40:33 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46202 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388646AbfJNRkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:40:32 -0400
-Received: by mail-pg1-f195.google.com with SMTP id e15so2489919pgu.13;
-        Mon, 14 Oct 2019 10:40:31 -0700 (PDT)
+        id S2388676AbfJNRkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 13:40:37 -0400
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:51301 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388671AbfJNRkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 13:40:36 -0400
+Received: by mail-pg1-f202.google.com with SMTP id e23so4634188pgt.18
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 10:40:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3raRjkh411jqmJuSd7tR/NOj57+SAWqZk6Zr5JKxLGc=;
-        b=M9lDjrMJjbBDodTzmoFm5niWXhLC4ZLf1L2eBPYPVBZfQMDdupuwl7Kv3Tdxid15Kh
-         P0vSblrBDXOET3c1Sv5Gzk5USK6ITosJaFXMY7Nt/bpQs+63Y1p5SHyMpvfikGTEHFO/
-         wCN1liPBoaSVwFT33Oa52zjCYDkUERbsj1XAmRUcW0PKo5+xjpzA1uFG0fBSl9oC77lV
-         CSO9MkD69ZghjRHZzl8UnJNLjLWc76tgJoeiHOZ3SKzf5jVJgRcjrZiagUq5taHHgmSr
-         e8oZG9eaz7zcseCnbTvllZHwdZlo2jXQNG+1zJ+LJa3XgBy9zyOl2LviMpSksuSgc4GL
-         p9EA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=k44RFWgW2NGqYxyf6e71UsNxM7R6xoVZuq+kWkqcLAs=;
+        b=EIf2XyY82eZpxI4+IvzwOxffmgp/ZdV63DHCbacvwBZ0Fflbm8JhEcHOiER4xGvfcL
+         Ua1mxNljfdSw8duyPG2rSqJZZKanNIzK8MyMRivhHZt9gwZ/2KxfCuY1Mbh5iHNV748x
+         njTy5MrVEAzkTrD3CUxn50A31lAipvH2fzi4GYZXrDFIOFOJ6iqF3ZVzWWbhjdDwao3F
+         aJXseM87czt4KMDL6mtmRmxBroP0n2m2ZRdTmp+FgDYfHiIWgexR240Bnm+H8SNh/LLM
+         U4Da1fLLDO1kmKiam/ChkgI1O2VNfuTLtsVOQBafQtnyH0n/GF5CVZoexypJfCd9+/l4
+         Aw/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3raRjkh411jqmJuSd7tR/NOj57+SAWqZk6Zr5JKxLGc=;
-        b=Q/Gsy89tqJFPoGTsR8FJVMTsBYSA2efnSshYOc+u/hUX6RUoWLp0uH5rSbVaZa70lh
-         /NzS9prZKkKS5RzojouVcfk93GdGKk/i/m4vXqUL+Ga2vVWEn53kQ0ntLJRt512jlX+j
-         LDB9OU2TVkztPZj3QW04OD+OF8LAiJ4OfHkDMDYErcNI2ylXlREgvCvHw6Ijkzde1BP6
-         2oGtgb64vT8qgSGQj1ueqEhDofInxDdYr+shNaXHODgJZvrxXOlTNreH3sAQkuK9Vd46
-         bFc5UqbBsqRgtrF/+0OAXM0293Jba6yDZMHVFdqs047defoYLr+5jralq+7GbBEIXM0r
-         +Uvg==
-X-Gm-Message-State: APjAAAXW/VF3gWhoPnrL5pFW20YtnrCIOND/v2CVPt3x+Obqs6FxWq9v
-        Tbj/V6WZW+2ylwKd5sUY7VY=
-X-Google-Smtp-Source: APXvYqyt6H4tar6sW6SeNzx59TyuW49NybHYbW3BHLGUt3TOtKmZZ0JCqYd1VaFEjjncfgVVopMMoA==
-X-Received: by 2002:a17:90a:b003:: with SMTP id x3mr37943388pjq.101.1571074830826;
-        Mon, 14 Oct 2019 10:40:30 -0700 (PDT)
-Received: from dtor-ws.mtv.corp.google.com ([2620:15c:202:201:3adc:b08c:7acc:b325])
-        by smtp.gmail.com with ESMTPSA id k66sm18784535pjb.11.2019.10.14.10.40.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Oct 2019 10:40:30 -0700 (PDT)
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 3/3] net: phy: fixed_phy: switch to using fwnode_gpiod_get_index
-Date:   Mon, 14 Oct 2019 10:40:22 -0700
-Message-Id: <20191014174022.94605-4-dmitry.torokhov@gmail.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=k44RFWgW2NGqYxyf6e71UsNxM7R6xoVZuq+kWkqcLAs=;
+        b=lINQouVY5eDFmlbYKw3I8FYBNFku60tAWUsu5yTj/NbSQvqT8tpxIvaC+/SYrezHBA
+         5wvqoGJr6haN0Z07iRiy914LqbLFiSBhAeBpwHQntQS+HvRAol0+yLbJfkgG+roN5dYu
+         XHORanTCHsL6xGBF/oJ+xKa0W+tapMO5zgpr56ptkY6vny8Zp3Xi4eglf5GiUFP7Q9l3
+         IfrugF6Em19LMYZDT7P91y3UWO1XYuzCbOBZnwVkKJbr9ntRv90xXWcurAOTome4kEgO
+         aasCg0BbZmZUuUHUnmJEeIvKmHE0jiZFdTr75Qq6ZvH8GP41JdVXVUkerLi56hfW9m7i
+         vTmA==
+X-Gm-Message-State: APjAAAXqTEj+7qtwBQQYwZt5yak1vv3lxU0kqW1BaP6vNhVGmYPzZJzR
+        OuDHjN/4RmDN0/xDy/ATlZ0xLEy+xcmYaA==
+X-Google-Smtp-Source: APXvYqzDz9vuybzV+qi86/V9XihnxINTRE/Ynh4lgj1vrAAFKUiItzcXsv6HRocUFTMNDEbjfvS6SzbY2ZF7pA==
+X-Received: by 2002:a63:1053:: with SMTP id 19mr33152972pgq.229.1571074835645;
+ Mon, 14 Oct 2019 10:40:35 -0700 (PDT)
+Date:   Mon, 14 Oct 2019 10:40:32 -0700
+Message-Id: <20191014174032.138670-1-edumazet@google.com>
+Mime-Version: 1.0
 X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
-In-Reply-To: <20191014174022.94605-1-dmitry.torokhov@gmail.com>
-References: <20191014174022.94605-1-dmitry.torokhov@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH net-next] net_sched: sch_fq: remove one obsolete check in fq_dequeue()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gpiod_get_from_of_node() is being retired in favor of
-[devm_]fwnode_gpiod_get_index(), that behaves similar to
-[devm_]gpiod_get_index(), but can work with arbitrary firmware node. It
-will also be able to support secondary software nodes.
+After commit eeb84aa0d0aff ("net_sched: sch_fq: do not assume EDT
+packets are ordered"), all skbs get a non zero time_to_send
+in flow_queue_add()
 
-Let's switch this driver over.
+This means @time_next_packet variable in fq_dequeue()
+can no longer be zero.
 
-Acked-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
+ net/sched/sch_fq.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
- drivers/net/phy/fixed_phy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
-index 4190f9ed5313..73a72ff0fb16 100644
---- a/drivers/net/phy/fixed_phy.c
-+++ b/drivers/net/phy/fixed_phy.c
-@@ -210,8 +210,8 @@ static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
- 	 * Linux device associated with it, we simply have obtain
- 	 * the GPIO descriptor from the device tree like this.
- 	 */
--	gpiod = gpiod_get_from_of_node(fixed_link_node, "link-gpios", 0,
--				       GPIOD_IN, "mdio");
-+	gpiod = fwnode_gpiod_get_index(of_fwnode_handle(fixed_link_node),
-+				       "link-gpios", 0, GPIOD_IN, "mdio");
- 	if (IS_ERR(gpiod) && PTR_ERR(gpiod) != -EPROBE_DEFER) {
- 		if (PTR_ERR(gpiod) != -ENOENT)
- 			pr_err("error getting GPIO for fixed link %pOF, proceed without\n",
+diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
+index 98dd87ce15108cfe1c011da44ba32f97763776c8..b1c7e726ce5d1ae139f765c5b92dfdaea9bee258 100644
+--- a/net/sched/sch_fq.c
++++ b/net/sched/sch_fq.c
+@@ -530,8 +530,7 @@ static struct sk_buff *fq_dequeue(struct Qdisc *sch)
+ 			fq_flow_set_throttled(q, f);
+ 			goto begin;
+ 		}
+-		if (time_next_packet &&
+-		    (s64)(now - time_next_packet - q->ce_threshold) > 0) {
++		if ((s64)(now - time_next_packet - q->ce_threshold) > 0) {
+ 			INET_ECN_set_ce(skb);
+ 			q->stat_ce_mark++;
+ 		}
 -- 
 2.23.0.700.g56cf767bdb-goog
 
