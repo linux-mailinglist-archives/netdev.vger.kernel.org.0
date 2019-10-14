@@ -2,157 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CC7D5956
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 03:43:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33E9CD595D
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 03:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729691AbfJNBnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Oct 2019 21:43:32 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39980 "EHLO mx1.redhat.com"
+        id S1729725AbfJNBr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Oct 2019 21:47:26 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54132 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729444AbfJNBnc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Oct 2019 21:43:32 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        id S1729652AbfJNBrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Oct 2019 21:47:25 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E17F7883837;
-        Mon, 14 Oct 2019 01:43:31 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 16D675945E;
+        Mon, 14 Oct 2019 01:47:25 +0000 (UTC)
 Received: from [10.72.12.117] (ovpn-12-117.pek2.redhat.com [10.72.12.117])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 44BCC5D6A3;
-        Mon, 14 Oct 2019 01:43:26 +0000 (UTC)
-Subject: Re: [PATCH RFC v1 1/2] vhost: option to fetch descriptors through an
- independent struct
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D0B1219C58;
+        Mon, 14 Oct 2019 01:47:19 +0000 (UTC)
+Subject: Re: [PATCH RFC v1 2/2] vhost: batching fetches
 To:     "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 References: <20191011134358.16912-1-mst@redhat.com>
- <20191011134358.16912-2-mst@redhat.com>
- <3b2a6309-9d21-7172-a581-9f0f1d5c1427@redhat.com>
- <20191012162445-mutt-send-email-mst@kernel.org>
+ <20191011134358.16912-3-mst@redhat.com>
+ <3be186d8-cde6-aa08-0446-1ec7fec0efe0@redhat.com>
+ <20191012162759-mutt-send-email-mst@kernel.org>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <fea337ec-7c09-508b-3efa-b75afd6fe33b@redhat.com>
-Date:   Mon, 14 Oct 2019 09:43:25 +0800
+Message-ID: <b6f24555-aaf8-b470-ab16-099055364cfc@redhat.com>
+Date:   Mon, 14 Oct 2019 09:47:18 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191012162445-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20191012162759-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.69]); Mon, 14 Oct 2019 01:43:31 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Mon, 14 Oct 2019 01:47:25 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/10/13 上午4:27, Michael S. Tsirkin wrote:
-> On Sat, Oct 12, 2019 at 03:28:49PM +0800, Jason Wang wrote:
->> On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
->>> The idea is to support multiple ring formats by converting
->>> to a format-independent array of descriptors.
+On 2019/10/13 上午4:36, Michael S. Tsirkin wrote:
+> On Sat, Oct 12, 2019 at 03:30:52PM +0800, Jason Wang wrote:
+>> On 2019/10/11 下午9:46, Michael S. Tsirkin wrote:
+>>> With this patch applied, new and old code perform identically.
 >>>
->>> This costs extra cycles, but we gain in ability
->>> to fetch a batch of descriptors in one go, which
->>> is good for code cache locality.
->>>
->>> To simplify benchmarking, I kept the old code
->>> around so one can switch back and forth by
->>> writing into a module parameter.
->>> This will go away in the final submission.
->>>
->>> This patch causes a minor performance degradation,
->>> it's been kept as simple as possible for ease of review.
->>> Next patch gets us back the performance by adding batching.
+>>> Lots of extra optimizations are now possible, e.g.
+>>> we can fetch multiple heads with copy_from/to_user now.
+>>> We can get rid of maintaining the log array.  Etc etc.
 >>>
 >>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 >>> ---
->>>    drivers/vhost/test.c  |  17 ++-
->>>    drivers/vhost/vhost.c | 299 +++++++++++++++++++++++++++++++++++++++++-
->>>    drivers/vhost/vhost.h |  16 +++
->>>    3 files changed, 327 insertions(+), 5 deletions(-)
+>>>    drivers/vhost/test.c  |  2 +-
+>>>    drivers/vhost/vhost.c | 50 ++++++++++++++++++++++++++++++++++++-------
+>>>    drivers/vhost/vhost.h |  4 +++-
+>>>    3 files changed, 46 insertions(+), 10 deletions(-)
 >>>
 >>> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
->>> index 056308008288..39a018a7af2d 100644
+>>> index 39a018a7af2d..e3a8e9db22cd 100644
 >>> --- a/drivers/vhost/test.c
 >>> +++ b/drivers/vhost/test.c
->>> @@ -18,6 +18,9 @@
->>>    #include "test.h"
->>>    #include "vhost.h"
->>> +static int newcode = 0;
->>> +module_param(newcode, int, 0644);
->>> +
->>>    /* Max number of bytes transferred before requeueing the job.
->>>     * Using this limit prevents one virtqueue from starving others. */
->>>    #define VHOST_TEST_WEIGHT 0x80000
->>> @@ -58,10 +61,16 @@ static void handle_vq(struct vhost_test *n)
->>>    	vhost_disable_notify(&n->dev, vq);
->>>    	for (;;) {
->>> -		head = vhost_get_vq_desc(vq, vq->iov,
->>> -					 ARRAY_SIZE(vq->iov),
->>> -					 &out, &in,
->>> -					 NULL, NULL);
->>> +		if (newcode)
->>> +			head = vhost_get_vq_desc_batch(vq, vq->iov,
->>> +						       ARRAY_SIZE(vq->iov),
->>> +						       &out, &in,
->>> +						       NULL, NULL);
->>> +		else
->>> +			head = vhost_get_vq_desc(vq, vq->iov,
->>> +						 ARRAY_SIZE(vq->iov),
->>> +						 &out, &in,
->>> +						 NULL, NULL);
->>>    		/* On error, stop handling until the next kick. */
->>>    		if (unlikely(head < 0))
->>>    			break;
+>>> @@ -128,7 +128,7 @@ static int vhost_test_open(struct inode *inode, struct file *f)
+>>>    	dev = &n->dev;
+>>>    	vqs[VHOST_TEST_VQ] = &n->vqs[VHOST_TEST_VQ];
+>>>    	n->vqs[VHOST_TEST_VQ].handle_kick = handle_vq_kick;
+>>> -	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV,
+>>> +	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
+>>>    		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT);
+>>>    	f->private_data = n;
 >>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
->>> index 36ca2cf419bf..36661d6cb51f 100644
+>>> index 36661d6cb51f..aa383e847865 100644
 >>> --- a/drivers/vhost/vhost.c
 >>> +++ b/drivers/vhost/vhost.c
->>> @@ -301,6 +301,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
->>>    			   struct vhost_virtqueue *vq)
+>>> @@ -302,6 +302,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
 >>>    {
 >>>    	vq->num = 1;
->>> +	vq->ndescs = 0;
+>>>    	vq->ndescs = 0;
+>>> +	vq->first_desc = 0;
 >>>    	vq->desc = NULL;
 >>>    	vq->avail = NULL;
 >>>    	vq->used = NULL;
->>> @@ -369,6 +370,9 @@ static int vhost_worker(void *data)
->>>    static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
->>>    {
->>> +	kfree(vq->descs);
->>> +	vq->descs = NULL;
->>> +	vq->max_descs = 0;
->>>    	kfree(vq->indirect);
->>>    	vq->indirect = NULL;
->>>    	kfree(vq->log);
->>> @@ -385,6 +389,10 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+>>> @@ -390,6 +391,7 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
 >>>    	for (i = 0; i < dev->nvqs; ++i) {
 >>>    		vq = dev->vqs[i];
->>> +		vq->max_descs = dev->iov_limit;
->>> +		vq->descs = kmalloc_array(vq->max_descs,
->>> +					  sizeof(*vq->descs),
->>> +					  GFP_KERNEL);
+>>>    		vq->max_descs = dev->iov_limit;
+>>> +		vq->batch_descs = dev->iov_limit - UIO_MAXIOV;
+>>>    		vq->descs = kmalloc_array(vq->max_descs,
+>>>    					  sizeof(*vq->descs),
+>>>    					  GFP_KERNEL);
+>>> @@ -2366,6 +2368,8 @@ static void pop_split_desc(struct vhost_virtqueue *vq)
+>>>    	--vq->ndescs;
+>>>    }
+>>> +#define VHOST_DESC_FLAGS (VRING_DESC_F_INDIRECT | VRING_DESC_F_WRITE | \
+>>> +			  VRING_DESC_F_NEXT)
+>>>    static int push_split_desc(struct vhost_virtqueue *vq, struct vring_desc *desc, u16 id)
+>>>    {
+>>>    	struct vhost_desc *h;
+>>> @@ -2375,7 +2379,7 @@ static int push_split_desc(struct vhost_virtqueue *vq, struct vring_desc *desc,
+>>>    	h = &vq->descs[vq->ndescs++];
+>>>    	h->addr = vhost64_to_cpu(vq, desc->addr);
+>>>    	h->len = vhost32_to_cpu(vq, desc->len);
+>>> -	h->flags = vhost16_to_cpu(vq, desc->flags);
+>>> +	h->flags = vhost16_to_cpu(vq, desc->flags) & VHOST_DESC_FLAGS;
+>>>    	h->id = id;
+>>>    	return 0;
+>>> @@ -2450,7 +2454,7 @@ static int fetch_indirect_descs(struct vhost_virtqueue *vq,
+>>>    	return 0;
+>>>    }
+>>> -static int fetch_descs(struct vhost_virtqueue *vq)
+>>> +static int fetch_buf(struct vhost_virtqueue *vq)
+>>>    {
+>>>    	struct vring_desc desc;
+>>>    	unsigned int i, head, found = 0;
+>>> @@ -2462,7 +2466,11 @@ static int fetch_descs(struct vhost_virtqueue *vq)
+>>>    	/* Check it isn't doing very strange things with descriptor numbers. */
+>>>    	last_avail_idx = vq->last_avail_idx;
+>>> -	if (vq->avail_idx == vq->last_avail_idx) {
+>>> +	if (unlikely(vq->avail_idx == vq->last_avail_idx)) {
+>>> +		/* If we already have work to do, don't bother re-checking. */
+>>> +		if (likely(vq->ndescs))
+>>> +			return vq->num;
+>>> +
+>>>    		if (unlikely(vhost_get_avail_idx(vq, &avail_idx))) {
+>>>    			vq_err(vq, "Failed to access avail idx at %p\n",
+>>>    				&vq->avail->idx);
+>>> @@ -2541,6 +2549,24 @@ static int fetch_descs(struct vhost_virtqueue *vq)
+>>>    	return 0;
+>>>    }
+>>> +static int fetch_descs(struct vhost_virtqueue *vq)
+>>> +{
+>>> +	int ret = 0;
+>>> +
+>>> +	if (unlikely(vq->first_desc >= vq->ndescs)) {
+>>> +		vq->first_desc = 0;
+>>> +		vq->ndescs = 0;
+>>> +	}
+>>> +
+>>> +	if (vq->ndescs)
+>>> +		return 0;
+>>> +
+>>> +	while (!ret && vq->ndescs <= vq->batch_descs)
+>>> +		ret = fetch_buf(vq);
 >>
->> Is iov_limit too much here? It can obviously increase the footprint. I guess
->> the batching can only be done for descriptor without indirect or next set.
->> Then we may batch 16 or 64.
->>
->> Thanks
-> Yes, next patch only batches up to 64.  But we do need iov_limit because
-> guest can pass a long chain of scatter/gather.
-> We already have iovecs in a huge array so this does not look like
-> a big deal. If we ever teach the code to avoid the huge
-> iov arrays by handling huge s/g lists piece by piece,
-> we can make the desc array smaller at the same point.
->
+>> It looks to me descriptor chaining might be broken here.
+> It should work because fetch_buf fetches a whole buf, following
+> the chain. Seems to work in a small test ... what issues do you see?
 
-Another possible issue, if we try to batch descriptor chain when we've 
-already batched some descriptors, we may reach the limit then some of 
-the descriptors might need re-read.
 
-Or we may need circular index (head, tail) in this case?
+Consider the case when fetch_buf return -EINVAL when push_split_desc() 
+fail. This means we only have partial descriptors.
+
+Do we need decreasing last_avail_idx and vq->ndescs here? Or having a 
+head,tail instead of first_desc?
 
 Thanks
 
 
+>
+>>> +
+>>> +	return vq->ndescs ? 0 : ret;
+>>> +}
+>>> +
+>>>    /* This looks in the virtqueue and for the first available buffer, and converts
+>>>     * it to an iovec for convenient access.  Since descriptors consist of some
+>>>     * number of output then some number of input descriptors, it's actually two
+>>> @@ -2562,6 +2588,8 @@ int vhost_get_vq_desc_batch(struct vhost_virtqueue *vq,
+>>>    	if (ret)
+>>>    		return ret;
+>>> +	/* Note: indirect descriptors are not batched */
+>>> +	/* TODO: batch up to a limit */
+>>>    	last = peek_split_desc(vq);
+>>>    	id = last->id;
+>>> @@ -2584,12 +2612,12 @@ int vhost_get_vq_desc_batch(struct vhost_virtqueue *vq,
+>>>    	if (unlikely(log))
+>>>    		*log_num = 0;
+>>> -	for (i = 0; i < vq->ndescs; ++i) {
+>>> +	for (i = vq->first_desc; i < vq->ndescs; ++i) {
+>>>    		unsigned iov_count = *in_num + *out_num;
+>>>    		struct vhost_desc *desc = &vq->descs[i];
+>>>    		int access;
+>>> -		if (desc->flags & ~(VRING_DESC_F_INDIRECT | VRING_DESC_F_WRITE)) {
+>>> +		if (desc->flags & ~VHOST_DESC_FLAGS) {
+>>>    			vq_err(vq, "Unexpected flags: 0x%x at descriptor id 0x%x\n",
+>>>    			       desc->flags, desc->id);
+>>>    			ret = -EINVAL;
+>>> @@ -2628,15 +2656,21 @@ int vhost_get_vq_desc_batch(struct vhost_virtqueue *vq,
+>>>    			}
+>>>    			*out_num += ret;
+>>>    		}
+>>> +
+>>> +		ret = desc->id;
+>>> +
+>>> +		if (!(desc->flags & VRING_DESC_F_NEXT))
+>>> +			break;
+>>>    	}
+>>
+>> What happens if we reach vq->ndescs but VRING_DESC_F_NEXT is still set?
+>>
+>> Thanks
+> This can't happen: descriptors are pushed by push_split_desc each time
+> we go through a loop in fetch_buf. The only way to exit the loop
+> with return code 0 is if next_desc return -1 that is when VRING_DESC_F_NEXT
+> is clear.
+>
+> But it's a good idea to add a BUG_ON here, I'll do it in the next version.
+>
+>
+>>> -	ret = id;
+>>> -	vq->ndescs = 0;
+>>> +	vq->first_desc = i + 1;
+>>>    	return ret;
+>>>    err:
+>>> -	vhost_discard_vq_desc(vq, 1);
+>>> +	for (i = vq->first_desc; i < vq->ndescs; ++i)
+>>> +		if (!(desc->flags & VRING_DESC_F_NEXT))
+>>> +			vhost_discard_vq_desc(vq, 1);
+>>>    	vq->ndescs = 0;
+>>>    	return ret;
+>>> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+>>> index 1724f61b6c2d..8b88e0c903da 100644
+>>> --- a/drivers/vhost/vhost.h
+>>> +++ b/drivers/vhost/vhost.h
+>>> @@ -100,7 +100,9 @@ struct vhost_virtqueue {
+>>>    	struct vhost_desc *descs;
+>>>    	int ndescs;
+>>> +	int first_desc;
+>>>    	int max_descs;
+>>> +	int batch_descs;
+>>>    	const struct vhost_umem_node *meta_iotlb[VHOST_NUM_ADDRS];
+>>>    	struct file *kick;
+>>> @@ -245,7 +247,7 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
+>>>    int vhost_init_device_iotlb(struct vhost_dev *d, bool enabled);
+>>>    #define vq_err(vq, fmt, ...) do {                                  \
+>>> -		pr_debug(pr_fmt(fmt), ##__VA_ARGS__);       \
+>>> +		pr_err(pr_fmt(fmt), ##__VA_ARGS__);       \
+>>>    		if ((vq)->error_ctx)                               \
+>>>    				eventfd_signal((vq)->error_ctx, 1);\
+>>>    	} while (0)
