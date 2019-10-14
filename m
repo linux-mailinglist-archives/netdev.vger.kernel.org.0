@@ -2,103 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BAF6D6298
-	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:33:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67027D62A4
+	for <lists+netdev@lfdr.de>; Mon, 14 Oct 2019 14:35:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730642AbfJNMdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 08:33:19 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34905 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730394AbfJNMdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 08:33:18 -0400
-Received: by mail-pl1-f194.google.com with SMTP id c3so7981731plo.2;
-        Mon, 14 Oct 2019 05:33:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=299WARGSZgoZwCiaRSp9MfhaJD92jcm3ybh9xwS/7l4=;
-        b=GG4wBPKh4WWdXWO7eT20LMXhp9cSJvxqbfEVrPtEWg+cCsguD4J7kV24sXQj2gdVhP
-         YeR5JrcakPxGza6af07ubK7OYWCC+DMN2air7u49a6u/FyOtH3rpcQjuFT6FkKt1ViOR
-         HMYOanXyje3n8O3gV8DduH6/jBlr/amLx0cASO/O6H3Sl5QP7vaHGqSNnjtte/GFDOBB
-         HlbWYA7by9uht2FNFiZyEKyCAAWNgFKKZCIoWv51q6hQXauOrykQYDr+FbUovyHzIbw+
-         ofx/YhfGjNvFv6/7UiNKz3LzIvrapI6tm4PvRj/lkJrlqE5cGaruXh816YzxqsorMSc0
-         Ewfg==
+        id S1730732AbfJNMfv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Oct 2019 08:35:51 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39912 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730717AbfJNMfv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Oct 2019 08:35:51 -0400
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com [209.85.167.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 4A3EEC0568FD
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 12:35:50 +0000 (UTC)
+Received: by mail-lf1-f71.google.com with SMTP id m24so2870123lfh.22
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 05:35:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=299WARGSZgoZwCiaRSp9MfhaJD92jcm3ybh9xwS/7l4=;
-        b=MSKTtyKeXOK5aWmo0sEw0ce/ejnPEgTGq1kzyKuK2Gc6U0/uj73hA+vhWHCdsQk9o8
-         z5NaftJsG9zhNvXws2z56jNC7+FB/obPbQXw7GD4CuWlWMNTvgaN4zVgp/JLJJo14QZm
-         OhPBu6egUudZTXdA3cziWZsbsd6KqYSsF+zwI/L7JSmJvkY5sk2NIZZi0ia/AVuha5yJ
-         nNfZ52bHjDyiuI6tBscGBoX58+2nDleMVPCDOQXOkQruA509+IN3/Uj1+oykzUsn+p7G
-         /Lc+4XKgCCjifMruHAQrwBmnfewQcXCn8/9fLd7AbHh4y3S1rhWB2z4PgtYzrmi2mdu+
-         IibQ==
-X-Gm-Message-State: APjAAAW3dCmnuKWUQzcy0wp0KVR8/uxz/9y5mRk50bsrVWD5wxh6cVRw
-        r8iVZQ0ujw31lrlJg5erg1U=
-X-Google-Smtp-Source: APXvYqyfZ5PCQZdAe1Noq2MUDZ373072WR8R6nw48Nl00ECz995ylpix0x5UKAVWOrQ9+kAo7KLUew==
-X-Received: by 2002:a17:902:b20a:: with SMTP id t10mr29891517plr.277.1571056397925;
-        Mon, 14 Oct 2019 05:33:17 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id w2sm20155282pfn.57.2019.10.14.05.33.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Oct 2019 05:33:17 -0700 (PDT)
-Subject: Re: tcp: Checking a kmemdup() call in tcp_time_wait()
-To:     Markus Elfring <Markus.Elfring@web.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=PvVm8u9ObL3aYBOygBx9VWFhpRttK7ssE/n72+9xa/0=;
+        b=MrVlMo68FdIfTccFfBrJ22zZpYm346N7YcTpXygyMgeRZZXkeAiJa9XX5JlvLlgfoX
+         RDdyKX+5nmLkQsdKJYr4k3Qz6m0bbzkr4/sviGc3jNB/WtIkNnF1eBSfDcSgAZ1FbPSk
+         pS6Lvpq9oLKJXl+k9OMwZGouwlTNHvFjOSLC6+IQYqy+8/7Nlt+Ro2/kowrULM7vrQjd
+         FSNXgFt1QJdMAj9NXYxMRgmmc2qiiHex869BFFf/kRLjKTC4T5l4iPEsSnlAcoDquCG+
+         /RVgkQh545DAR3RXCyOXm6CnbMQRa9k6yNnz6GS6osAhCUB51V8d5dLtrgEYLCuyazeO
+         ZlxA==
+X-Gm-Message-State: APjAAAURRkmn47fxFWzjVQXuDnQmRx54SekOkKHmvpolXTRCTtVGhKxe
+        VCiUVqBQ12FXnoCVzx5dikSPM0EtYVrAdGGmoBv+OybEthj3U0Id/QKWHMEDFfaulsHJE7+nJWa
+        BGvtDZP3Y7l9ShuSf
+X-Received: by 2002:a2e:97ca:: with SMTP id m10mr16948672ljj.168.1571056548722;
+        Mon, 14 Oct 2019 05:35:48 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxuPCWjO7iKsWtjLdhGHxGgh+y+o7yVh8iwinIdgS/da0MWM6yCi6ZPx6BIVIe5jtwmZvf8FA==
+X-Received: by 2002:a2e:97ca:: with SMTP id m10mr16948656ljj.168.1571056548487;
+        Mon, 14 Oct 2019 05:35:48 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id n5sm4971168ljh.54.2019.10.14.05.35.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Oct 2019 05:35:47 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id ADBD818063D; Mon, 14 Oct 2019 14:35:45 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki Yoshifuji <yoshfuji@linux-ipv6.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org, Aditya Pakki <pakki001@umn.edu>,
-        Kangjie Lu <kjlu@umn.edu>, Navid Emamdoost <emamd001@umn.edu>,
-        Stephen McCamant <smccaman@umn.edu>
-References: <a219235e-bad5-8a9d-0f3e-c05d5cb11df1@web.de>
- <124b41aa-7ba5-f00c-ab73-cb8e6a2ae75f@gmail.com>
- <fc39488c-f874-5d85-3200-60001e6bda52@web.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <0984a481-f5eb-4346-fb98-718174c55e36@gmail.com>
-Date:   Mon, 14 Oct 2019 05:33:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF programs after each other
+In-Reply-To: <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1> <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com> <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com> <87o8yqjqg0.fsf@toke.dk> <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 14 Oct 2019 14:35:45 +0200
+Message-ID: <87v9srijxa.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <fc39488c-f874-5d85-3200-60001e6bda52@web.de>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
+> On Wed, Oct 09, 2019 at 10:03:43AM +0200, Toke Høiland-Jørgensen wrote:
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>> 
+>> > Please implement proper indirect calls and jumps.
+>> 
+>> I am still not convinced this will actually solve our problem; but OK, I
+>> can give it a shot.
+>
+> If you're not convinced let's talk about it first.
+>
+> Indirect calls is a building block for debugpoints.
+> Let's not call them tracepoints, because Linus banned any discusion
+> that includes that name.
+> The debugpoints is a way for BPF program to insert points in its
+> code to let external facility to do tracing and debugging.
+>
+> void (*debugpoint1)(struct xdp_buff *, int code);
+> void (*debugpoint2)(struct xdp_buff *);
+> void (*debugpoint3)(int len);
 
-On 10/13/19 11:51 PM, Markus Elfring wrote:
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/ipv4/tcp_minisocks.c?id=1c0cc5f1ae5ee5a6913704c0d75a6e99604ee30a#n306
->>> https://elixir.bootlin.com/linux/v5.4-rc2/source/net/ipv4/tcp_minisocks.c#L306
-> …
->> Presumably the BUG would trigger if a really disturbing bug happened.
-> 
-> How “buggy” is this place if the function call “kmemdup” failed?
+So how would these work? Similar to global variables (i.e., the loader
+creates a single-entry PROG_ARRAY map for each one)? Presumably with
+some BTF to validate the argument types?
 
-It is not buggy. The BUG will not trigger.
+So what would it take to actually support this? It doesn't quite sound
+trivial to add?
 
-BUG_ON(tcptw->tw_md5_key && !tcp_alloc_md5sig_pool());
+> Essentially it's live debugging (tracing) of cooperative bpf programs
+> that added debugpoints to their code.
 
-This would be different if we had instead :
+Yup, certainly not disputing that this would be useful for debugging;
+although it'll probably be a while before its use becomes widespread
+enough that it'll be a reliable tool for people deploying XDP programs...
 
-BUG_ON(!tcptw->tw_md5_key && !tcp_alloc_md5sig_pool());
+> Obviously indirect calls can be used for a ton of other things
+> including proper chaing of progs, but I'm convinced that
+> you don't need chaining to solve your problem.
+> You need debugging.
 
-> 
-> Can an other error reporting approach be nicer here?
+Debugging is certainly also an area that I want to improve. However, I
+think that focusing on debugging as the driver for chaining programs was
+a mistake on my part; rudimentary debugging (using a tool such as
+xdpdump) is something that falls out of program chaining, but it's not
+the main driver for it.
 
-There is no error reported if kmemdup() has failed.
+> If you disagree please explain _your_ problem again.
+> Saying that fb katran is a use case for chaining is, hrm, not correct.
 
-timewait is best effort.
+I never said Katran was the driver for this. I just used Katran as one
+of the "prior art" examples for my "how are people solving running
+multiple programs on the same interface" survey.
+
+What I want to achieve is simply the ability to run multiple independent
+XDP programs on the same interface, without having to put any
+constraints on the programs themselves. I'm not disputing that this is
+*possible* to do completely in userspace, I just don't believe the
+resulting solution will be very good. Proper kernel support for indirect
+calls (or just "tail calls that return") may change that; but in any
+case I think I need to go write some userspace code to have some more
+concrete examples to discuss from. So we can come back to the
+particulars once I've done that :)
+
+-Toke
