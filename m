@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D40B4D71CA
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 11:06:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A983D71D6
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 11:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728723AbfJOJGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 05:06:44 -0400
-Received: from mail-eopbgr700066.outbound.protection.outlook.com ([40.107.70.66]:35424
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        id S1727338AbfJOJJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 05:09:24 -0400
+Received: from mail-eopbgr820050.outbound.protection.outlook.com ([40.107.82.50]:34112
+        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726564AbfJOJGo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 05:06:44 -0400
+        id S1726373AbfJOJJX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Oct 2019 05:09:23 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j+JepE2T80nQk40RSX9C5ruDDq79AYonPbTqt6m51iy4slq7STasWGrJPgakLNk2ZjdlKThUBWfZC6LBSIjcbTAqYe72Ww4smkoNuWhFEUlH+KM92IHoycLQxawP1HKSDFulVLgAHDJQpDgeRfxkCKuIn0+QRm5xWBw66KK74qVRdXGUhgudQFHSOVI6xni7WOaCG+vAhfy2+bh4VZbkVAd1eORxZlBRAQr92o02AcH1/bJz03xVronP3J5DiAMQsniYGkiZrLkKW2h3SEM0TQo7837RNLjw0fcOr1KixMcVXWTGJLSDvi8+uiN1JEEMYKy/6D1cMEBNacuDyxNruQ==
+ b=AYGiorZFhlZTpaBGnw+e1lPE3Sc6XRfI7N6WleNqYpOgtq3F0ZwWcgtpvaRrAaLzYAgC7SBAqcBa4gbBuADKoBoVZIKugSpGIWaoEHmmZ7Ovz6RFEDswCTbBjUWlEmvULjA0sJVITHzzRGGvB4nUh8GRL+qsvThAJJYHb1NieyLn1chS3xgDFqtFMqxHiKyOLLPbdYiqS7SpCOTOYdZjhN5dsN7DC4qFtLrTpTclj4sUzqBb3Yw+nNs7TOfQk2WSzlo4XjZbLnXjBklJZkOleLIR3EKQWwkE0cm6dMFNzKIaPtkbB4PmnKeLdX5eH+/Sz+8gWz6ItxG3NmbB2qx73g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g7dxp9N1qtJHq6WWqpuNOFh2zFwpgerPAicAjWzz+LE=;
- b=e0IzzKXOsZU8A3BhmDMPTks5OYSis3CJeCyEb31Q81W94wenVUN01uDRwRQLzYR59sA9UOeWYsA7Tj6up+ZbovJtMgqc8YAkcVpa64TgpxkOGP89pWxQ/zyZpejtbbud25/aa81Eg3x/tig8mGBbUByvOOqt1wd1kreUsibA8qxTCuukwJBi6P5HpVfYDuruwIFjUrzxY0uJZUHigSdDC5sPiUZ9WTlfDNL+tHTTHH9TbXb1pMM43y+8ZbkY54EqxBt0ZIdCoxQzTrrXYb7vvsn+PPHn+/dBG4VERpNuoDohqQuN579OHY3qsirXwjCNFRzCfLjavIsaIV5o2Bgw/g==
+ bh=k3Q0nB4GsQWcAzsqaVz1tGPWzv53/RrjNALA+/7I3EI=;
+ b=YF3CFNZut20nwe2RESMG9RaSn9PCJTQNxkQydVtEVmfKagmFfkYz6WNRAMPCwZuo6RaJ7oy6sadIPVem90HEyjsNMtEKr0m8rg8yU6Sw4mF4R/ecm3i3FvHm3FPI8tyVH1U+8+zABI6bGdyc9ANEC+Zw9852wcWOpYfAC6Ivp8MtPny2DiDiMuti7E1eI9jllMDnhEF+89lkHUCrBKz/ODJ3oCNNeIHTWk997RGm+IVqUEJPLEPZ0cbL5XZ9juG2mtXWRVXEaMjysAJV+YCnR0yxpBUFCGH01lk5bXA6v09MkfddXVtfjBNuTvIKvN94GlT5dfMyqx9mPqln8CUnaw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
  dkim=pass header.d=aquantia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g7dxp9N1qtJHq6WWqpuNOFh2zFwpgerPAicAjWzz+LE=;
- b=H5UDAu+8SJbcQskG4CjKx8Gj2g2MMqFAxaT25urDnnYxGYfbrkJXM3eEx5i/cjWkj3peJXdgdXMC9vDtpDkUVnM6YQxyythq0iHBeEJoR1OeRe+/0uT1agD667igm2tyho+2Ul2XT5Gto176vm1GbDBQsnogYRBn5k/vqAmqlqs=
+ bh=k3Q0nB4GsQWcAzsqaVz1tGPWzv53/RrjNALA+/7I3EI=;
+ b=F/CDLOkksDu4MV7O/2W1ZghgeBy2xdGSKk5ZfanwoqyEoT4RQLEtsPw0ctMQGwhhypIihHQ7r9BVuL3BeCxUgIF5/gxEKElyUfhWNgKf/iKXRYp+QRwLydjM/6C+O0NTp6xvFGu4gJbabh1J90L7BKPMj3+Xwbe98C2Ypv20pV4=
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
- BN8PR11MB3747.namprd11.prod.outlook.com (20.178.218.151) with Microsoft SMTP
+ BN8PR11MB3620.namprd11.prod.outlook.com (20.178.222.85) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Tue, 15 Oct 2019 09:06:41 +0000
+ 15.20.2347.21; Tue, 15 Oct 2019 09:09:19 +0000
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.023; Tue, 15 Oct 2019
- 09:06:41 +0000
+ 09:09:19 +0000
 From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -44,69 +44,72 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
         Simon Edelhaus <sedelhaus@marvell.com>,
         Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
-Subject: Re: [PATCH v2 net-next 08/12] net: aquantia: add support for ptp
- ioctls
-Thread-Topic: [PATCH v2 net-next 08/12] net: aquantia: add support for ptp
- ioctls
-Thread-Index: AQHVfccXCcYGqZ7qm0Cnpew/aZ65pqdaW9KAgAEYUIA=
-Date:   Tue, 15 Oct 2019 09:06:41 +0000
-Message-ID: <3c840d09-8ebc-1f6e-d46e-686056a253c0@aquantia.com>
+Subject: Re: [PATCH v2 net-next 06/12] net: aquantia: implement data PTP
+ datapath
+Thread-Topic: [PATCH v2 net-next 06/12] net: aquantia: implement data PTP
+ datapath
+Thread-Index: AQHVfccUKqidU8yu2kiaCh23VeKGlKdaX2wAgAEVcoA=
+Date:   Tue, 15 Oct 2019 09:09:19 +0000
+Message-ID: <af9b3109-c53e-1288-fd7d-8a67446c6923@aquantia.com>
 References: <cover.1570531332.git.igor.russkikh@aquantia.com>
- <e5810b73ee7a792d464284069b7dec7f775575b8.1570531332.git.igor.russkikh@aquantia.com>
- <20191014162319.GO21165@lunn.ch>
-In-Reply-To: <20191014162319.GO21165@lunn.ch>
+ <093d91dcc66abeb4d3ef83eef829badd7389d792.1570531332.git.igor.russkikh@aquantia.com>
+ <20191014163612.GP21165@lunn.ch>
+In-Reply-To: <20191014163612.GP21165@lunn.ch>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR2P264CA0019.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::31)
- To BN8PR11MB3762.namprd11.prod.outlook.com (2603:10b6:408:8d::19)
+x-clientproxiedby: PR2P264CA0044.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:101:1::32) To BN8PR11MB3762.namprd11.prod.outlook.com
+ (2603:10b6:408:8d::19)
 authentication-results: spf=none (sender IP is )
  smtp.mailfrom=Igor.Russkikh@aquantia.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c4a5940d-e184-4031-e2f1-08d7514efe89
-x-ms-traffictypediagnostic: BN8PR11MB3747:
+x-ms-office365-filtering-correlation-id: 83322ab3-f2e4-4d99-96bd-08d7514f5c94
+x-ms-traffictypediagnostic: BN8PR11MB3620:
 x-ld-processed: 83e2e134-991c-4ede-8ced-34d47e38e6b1,ExtFwd
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR11MB3747DDF3D4D268B97249190798930@BN8PR11MB3747.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-microsoft-antispam-prvs: <BN8PR11MB362027F45B3F458612AE65B398930@BN8PR11MB3620.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
 x-forefront-prvs: 01917B1794
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39850400004)(396003)(346002)(136003)(376002)(189003)(199004)(81156014)(64756008)(76176011)(6916009)(14454004)(2616005)(66476007)(6506007)(386003)(508600001)(52116002)(66556008)(26005)(486006)(66946007)(66066001)(6246003)(186003)(54906003)(25786009)(316002)(5660300002)(107886003)(476003)(99286004)(4744005)(81166006)(8676002)(31686004)(3846002)(4326008)(36756003)(6116002)(6486002)(6436002)(2906002)(8936002)(305945005)(256004)(44832011)(66446008)(71200400001)(71190400001)(446003)(6512007)(86362001)(7736002)(14444005)(229853002)(102836004)(31696002)(11346002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3747;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39850400004)(346002)(396003)(136003)(366004)(376002)(199004)(189003)(66446008)(66556008)(2906002)(6246003)(11346002)(6916009)(107886003)(305945005)(7736002)(486006)(6116002)(3846002)(476003)(6486002)(6436002)(2616005)(256004)(229853002)(446003)(4326008)(44832011)(6512007)(64756008)(66476007)(66946007)(8936002)(8676002)(81166006)(81156014)(36756003)(316002)(26005)(99286004)(186003)(508600001)(31686004)(14454004)(86362001)(6506007)(66066001)(25786009)(31696002)(386003)(52116002)(102836004)(76176011)(4744005)(71190400001)(71200400001)(54906003)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3620;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: aquantia.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0hiVLgPQKUFsfTnTf59FG1nNlrebU3a5h/tY80DlW7R0K683BYDfQJjef0wT2fcbjRL84Lew9FMe0RYWbH8oAIxCyY0ZODDYsF/3dOxig1+OjwspKQ4qFVyA6hR0tNEg0hJ0uDrOOP+v9U9o6TA8JYjTd4YFDcR5ow0ZMYG6wehfxQPQy0kchExIzJXNDeBCtC+rbXiE/3V0opAMvIfguBCLZm4bW66w1ceK/F8VT78aua4oREu5a5RCfjJp1rgIWYUfdXkRlic2qEkhpABZF+6WvhdsQmWYkDWST0dUQyqEgVv3960vpiNT3qnVV35qcIOgz3FQC/XyVsmMd8FxFSSFA0J+BJD5SufW8Ge/AfsRHb1i4pKCpHl2Bc9/PSrA/LiDMap237nRxPpKcaPHuBtFk5PBlmmgfn75ugi40i4=
+x-microsoft-antispam-message-info: oHVRf051Z614aY69buBg2NWkS34VDDTqRHgWTK7F3A/2SvY+tAELOvNLL/cROLYIjWowFer3ztEnl6wORmoJRTJydPBY47zQFr7kNrXkZM0Cyli+EYQJ2NWpY4RD743fGCqXmp/6IjbsQnu5Od7O5K5fjv8zNsnnWFl9mOV4xCCtnFCCauQcP+8bd6qvcvjNX8Kwf6nPA9nZT/qHL0cjSaiBT51vNnISIupzCQ5XNfQsoFZEQzjRi8HjjApHixVH+TfIGHVZ1Fxnay2rh0kIsKW8j3VCL5awRRi23Kh7CwGzMSIljZayWQhYIUVkLiWw1dkks0Ft6O0Ovv8ZXQB/+hBmZH4irGMxmykzr4UZbpbVBFrnf/KQQ2nfk7xKQatKSwu8Cyoa48OJEiQlGAL3GXgn7WVGCwL6PHjdqMZ+duA=
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <F0E03FD4B33EEE4F920F5C3A9FEAAFC1@namprd11.prod.outlook.com>
+Content-ID: <4C7921E8AF4CAD43898074FED5D1E43B@namprd11.prod.outlook.com>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4a5940d-e184-4031-e2f1-08d7514efe89
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2019 09:06:41.7891
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83322ab3-f2e4-4d99-96bd-08d7514f5c94
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2019 09:09:19.4771
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CIQ/SjVdFRMix03stEaeOOyY9TAWr97HgrhVuKU640xK6woopNVrDwPkFvHopabxp+O8VfowTJJNtlbBsMhPPg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3747
+X-MS-Exchange-CrossTenant-userprincipalname: +ZNp6Iq9lA54fgDf2aLk/wWk58lS+9M2ZjuZ1sN1VRPLJufKLGCg6XUQ90kbO+lW5fCf+dK8z9RS2FA9avpgvw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3620
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+PiArDQo+PiArCXN3aXRjaCAoY29uZmlnLT5yeF9maWx0ZXIpIHsNCj4+ICsJY2FzZSBIV1RT
-VEFNUF9GSUxURVJfUFRQX1YyX0w0X0VWRU5UOg0KPj4gKwljYXNlIEhXVFNUQU1QX0ZJTFRFUl9Q
-VFBfVjJfTDRfU1lOQzoNCj4+ICsJY2FzZSBIV1RTVEFNUF9GSUxURVJfUFRQX1YyX0w0X0RFTEFZ
-X1JFUToNCj4+ICsJY2FzZSBIV1RTVEFNUF9GSUxURVJfUFRQX1YyX0wyX0VWRU5UOg0KPj4gKwlj
-YXNlIEhXVFNUQU1QX0ZJTFRFUl9QVFBfVjJfTDJfU1lOQzoNCj4+ICsJY2FzZSBIV1RTVEFNUF9G
-SUxURVJfUFRQX1YyX0wyX0RFTEFZX1JFUToNCj4+ICsJY2FzZSBIV1RTVEFNUF9GSUxURVJfUFRQ
-X1YyX1NZTkM6DQo+PiArCWNhc2UgSFdUU1RBTVBfRklMVEVSX1BUUF9WMl9ERUxBWV9SRVE6DQo+
-IA0KPiBQcm9iYWJseSBhIHF1ZXN0aW9uIG9mIFJpY2hhcmQNCj4gDQo+IEkgdGhpbmsgdGhpcyBo
-YXJkd2FyZSBvbmx5IHN1cHBvcnRzIElQdjQuIElzIHRoZXJlIHNvbWUgd2F5IHRvDQo+IGluZGlj
-YXRlIElQdjYgaXMgbm90IHN1cHBvcnRlZD8NCg0KSSBkb24ndCB0aGluayBpdCBleGlzdHMsDQoN
-CmJ1dCB0aGUgaGFyZHdhcmUgZG9lcyBhY3R1YWxseSBzdXBwb3J0cyBJUHY2LiBXZSBub3cgZG9p
-bmcgc29tZSB2ZXJpZmljYXRpb24gb24NCml0IGFuZCB0aGVyZSB3aWxsIGJlIGEgZm9sbG93dXAg
-cGF0Y2ggZm9yIHRoaXMuDQoNClJlZ2FyZHMsDQogIElnb3INCg==
+DQo+PiArc3RhdGljIGlubGluZSBpbnQgYXFfcHRwX3RtX29mZnNldF9pbmdyZXNzX2dldChzdHJ1
+Y3QgYXFfcHRwX3MgKmFxX3B0cCkNCj4+ICt7DQo+PiArCXJldHVybiBhdG9taWNfcmVhZCgmYXFf
+cHRwLT5vZmZzZXRfaW5ncmVzcyk7DQo+PiArfQ0KPiANCj4gaW5saW5lIHNob3VsZCBub3QgYmUg
+dXNlZCBpbiBDIGZpbGVzLiBMZXQgdGhlIGNvbXBpbGVyIGRlY2lkZS4NCg0KT2sNCg0KPj4gKwlh
+dG9taWNfc2V0KCZhcV9wdHAtPm9mZnNldF9lZ3Jlc3MsIGVncmVzcyk7DQo+PiArCWF0b21pY19z
+ZXQoJmFxX3B0cC0+b2Zmc2V0X2luZ3Jlc3MsIGluZ3Jlc3MpOw0KPiANCj4gSXQgc2VlbXMgb2Rk
+IHlvdSBoYXZlIHdyYXBwZXJzIGZvciBhdG9taWNfcmVhZCwgYnV0IG5vdCBhdG9taWNfc2V0LiBE
+bw0KPiB0aGUgd3JhcHBlcnMgYWN0dWFsbHkgYWRkIGFueXRoaW5nPw0KDQpJIHRoaW5rIG5vLCB0
+aGV5IGFyZSBqdXN0IG5hbWluZyBzdWdhci4NCldpbGwgZGlzY3VzcyBpbnRlcm5hbGx5IGFuZCBw
+cm9iYWJseSBsZWF2ZSBkaXJlY3QgYXRvbWljX2dldHxzZXQNCg0KPj4gKwlpZiAobmV4dF9oZWFk
+ID09IHJpbmctPnRhaWwpDQo+PiArCQlyZXR1cm4gLTE7DQo+IA0KPiBFTk9NRU0/DQoNClJpZ2h0
+Lg0KDQo+PiArDQo+PiArCXJpbmctPmJ1ZmZbcmluZy0+aGVhZF0gPSBza2JfZ2V0KHNrYik7DQo+
+PiArCXJpbmctPmhlYWQgPSBuZXh0X2hlYWQ7DQo+PiArDQo+PiArCXJldHVybiAwOw0KPj4gK30N
+Cj4+ICsNCj4gDQo+ICAgQW5kcmV3DQoNClRoYW5rcyBmb3IgeW91ciByZXZpZXcsIEFuZHJldyEN
+Cg0KUmVnYXJkcywNCiAgSWdvcg0K
