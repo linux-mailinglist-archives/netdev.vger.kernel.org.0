@@ -2,129 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF18D834A
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E10D8363
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:14:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389104AbfJOWJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 18:09:42 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:46750 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726231AbfJOWJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:09:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=VQY7kyXQnV7HJfQmywx1SmCW7S/WPSYFdOWu76GYWnY=; b=Gs3ZYcFMXya+INRHGOSEM2hnZ
-        V4Lxsuo5n2EqcV+3JNqXnyg8k8J1cqtxpWUEFy7J/PBXX6e7F8/Xk1vAGU5CMpYzf35fePzKYAksB
-        YlhdDdWjaPeETOOpUcuLbxkJLJy13Sr2BM57hwJIPJvfQkUJIid2+WDgVWpuxbDolpuCkBesV6SnE
-        dn2fS+AFcM2jMlKxtFrHVg0jm2eupU2RNL94eNWUodfXZbA+HvsVBQG4awdesxQc5jjzrsIB0eb/a
-        lFYaaxlv3JIfIUFfUTFihRZZ5kJXRypiUPhykdUDWKqszGKq3XMOwpz14p3S4oOfAK9W/jL+qT57i
-        o4DTegDDw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:51296)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iKV0T-00076f-Jh; Tue, 15 Oct 2019 23:09:29 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iKV0P-0006YJ-W2; Tue, 15 Oct 2019 23:09:26 +0100
-Date:   Tue, 15 Oct 2019 23:09:25 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Daniel Wagner <dwagner@suse.de>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        Stefan Wahren <wahrenst@gmx.net>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org
-Subject: Re: lan78xx and phy_state_machine
-Message-ID: <20191015220925.GW25745@shell.armlinux.org.uk>
-References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
- <20191014163004.GP25745@shell.armlinux.org.uk>
- <20191014192529.z7c5x6hzixxeplvw@beryllium.lan>
- <25cfc92d-f72b-d195-71b1-f5f238c7988d@gmx.net>
- <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
- <20191014221211.GR25745@shell.armlinux.org.uk>
- <524267e6-df8e-d884-aeef-1ed8700e4e58@gmail.com>
+        id S2389259AbfJOWOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 18:14:55 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45525 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389222AbfJOWOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:14:55 -0400
+Received: by mail-qt1-f195.google.com with SMTP id c21so32991518qtj.12;
+        Tue, 15 Oct 2019 15:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z3L/E9vDDIepefnGEF8oIbDF8XRmh6+3ibrNClVVbHk=;
+        b=MGaySIx2CzJ8WO59mXVBFtxhR1TJWXPAGxSeWzqLgQGkiGxKVtwWZMQkeN89tmGyJ+
+         MJiVbz5Z1/z9UKRmxQsJBUq2L9AlWvWSPVjP+QlE8sb6jmFQexls8vVSK6m3vgJ1xwDK
+         A0KqOaVVszS7UMaZ1a0AVepgJZ/kciwsOMLGdHLsJnoc2oY/IBe/NOlOryIIA11W4dua
+         pOmdgaoIYsURtuUkZh5W/RfYYpfLh9wCJVFWlM0I63PWBJszEyWsSQJ0GwUz3LCT+cPt
+         32m2BqiWVABX/f+THzfA++gc1U279DI9W4SGqeCxtVChveSprXuEGpn2P9ISFEigBMit
+         5h8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z3L/E9vDDIepefnGEF8oIbDF8XRmh6+3ibrNClVVbHk=;
+        b=JXZ5fuNj1smsWNqnyjhyWDmYtj5ghFABy1OakR/XmXOQdXXlxboOH+SjGI+nayGhni
+         2n7rKHKeaemya1YKNhWI1TtyH4+rGV2Fmwp6imztytdqqOiEUUERCYpSFnidBJSKv7N5
+         eLtFYUQpLvKQRGNu7pJ2bD6D8Us04egBgBvOAfr1s3PMR5h2BCon1LCx/qRwblH9pxiK
+         Ro0mK6KiViduwhLCoxu6VGvmfCbm3ut9cdSWT22ssIucvIs2w+3WMat0c7HljSyByoWx
+         h/SQOMXi/ltMxVW+0GcG/9J0aMY4TVk1VDWIAIv8gxYpHY3ehHFpubK8IPUrpNcEj2Qr
+         KtQQ==
+X-Gm-Message-State: APjAAAW3p9Vu2pOn/6y8yI/6k/KDK/dge/n4ZCL2AbX4JbIcX/QTDzTB
+        FQ2h/Bx89gP3YshPGXDK/dviH8BGnhdv5gAD9hM=
+X-Google-Smtp-Source: APXvYqzYjXhARO8+fB2927jzQbsSJiuDS16v0MWr4dKUP3fIxW9KMLmz+kVoRpX2TwYSA00GV6hvKC1drFqAxvidEoA=
+X-Received: by 2002:a05:6214:5cf:: with SMTP id t15mr39432423qvz.196.1571177693281;
+ Tue, 15 Oct 2019 15:14:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <524267e6-df8e-d884-aeef-1ed8700e4e58@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191011162124.52982-1-sdf@google.com> <CAADnVQLKPLXej_v7ymv3yJakoFLGeQwdZOJ5cZmp7xqOxfebqg@mail.gmail.com>
+ <20191012003819.GK2096@mini-arch> <CAADnVQKuysEvFAX54+f0YPJ1+cgcRJbhrpVE7xmvLqu-ADrk+Q@mail.gmail.com>
+In-Reply-To: <CAADnVQKuysEvFAX54+f0YPJ1+cgcRJbhrpVE7xmvLqu-ADrk+Q@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 15 Oct 2019 15:14:42 -0700
+Message-ID: <CAEf4BzaKn0ztTCJq7VOsyMfCqqq1HkxXwD6xEYL_3cbYkiPEgg@mail.gmail.com>
+Subject: Re: debug annotations for bpf progs. Was: [PATCH bpf-next 1/3] bpf:
+ preserve command of the process that loaded the program
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Stanislav Fomichev <sdf@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 09:38:22PM +0200, Heiner Kallweit wrote:
-> On 15.10.2019 00:12, Russell King - ARM Linux admin wrote:
-> > On Mon, Oct 14, 2019 at 10:20:15PM +0200, Heiner Kallweit wrote:
-> >> On 14.10.2019 21:51, Stefan Wahren wrote:
-> >>> [add more recipients]
-> >>>
-> >>> Am 14.10.19 um 21:25 schrieb Daniel Wagner:
-> >>>> Moving the phy_prepare_link() up in phy_connect_direct() ensures that
-> >>>> phydev->adjust_link is set when the phy_check_link_status() is called.
-> >>>>
-> >>>> diff --git a/drivers/net/phy/phy_device.c
-> >>>> b/drivers/net/phy/phy_device.c index 9d2bbb13293e..2a61812bcb0d 100644
-> >>>> --- a/drivers/net/phy/phy_device.c +++ b/drivers/net/phy/phy_device.c
-> >>>> @@ -951,11 +951,12 @@ int phy_connect_direct(struct net_device *dev,
-> >>>> struct phy_device *phydev, if (!dev) return -EINVAL;
-> >>>>
-> >>>> +       phy_prepare_link(phydev, handler);
-> >>>> +
-> >>>>         rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
-> >>>>         if (rc)
-> >>
-> >> If phy_attach_direct() fails we may have to reset phydev->adjust_link to NULL,
-> >> as we do in phy_disconnect(). Apart from that change looks good to me.
-> > 
-> > Sorry, but it doesn't look good to me.
-> > 
-> > I think there's a deeper question here - why is the phy state machine
-> > trying to call the link change function during attach?
-> After your comment I had a closer look at the lm78xx driver and few things
-> look suspicious:
-> 
-> - lan78xx_phy_init() (incl. the call to phy_connect_direct()) is called
->   after register_netdev(). This may cause races.
+On Tue, Oct 15, 2019 at 2:22 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Oct 11, 2019 at 5:38 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 10/11, Alexei Starovoitov wrote:
+> > > On Fri, Oct 11, 2019 at 9:21 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > > >
+> > > > Even though we have the pointer to user_struct and can recover
+> > > > uid of the user who has created the program, it usually contains
+> > > > 0 (root) which is not very informative. Let's store the comm of the
+> > > > calling process and export it via bpf_prog_info. This should help
+> > > > answer the question "which process loaded this particular program".
+> > > >
+> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > ---
+> > > >  include/linux/bpf.h      | 1 +
+> > > >  include/uapi/linux/bpf.h | 2 ++
+> > > >  kernel/bpf/syscall.c     | 4 ++++
+> > > >  3 files changed, 7 insertions(+)
+> > > >
+> > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > > index 5b9d22338606..b03ea396afe5 100644
+> > > > --- a/include/linux/bpf.h
+> > > > +++ b/include/linux/bpf.h
+> > > > @@ -421,6 +421,7 @@ struct bpf_prog_aux {
+> > > >                 struct work_struct work;
+> > > >                 struct rcu_head rcu;
+> > > >         };
+> > > > +       char created_by_comm[BPF_CREATED_COMM_LEN];
+> > > >  };
+> > > >
+> > > >  struct bpf_array {
+> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > index a65c3b0c6935..4e883ecbba1e 100644
+> > > > --- a/include/uapi/linux/bpf.h
+> > > > +++ b/include/uapi/linux/bpf.h
+> > > > @@ -326,6 +326,7 @@ enum bpf_attach_type {
+> > > >  #define BPF_F_NUMA_NODE                (1U << 2)
+> > > >
+> > > >  #define BPF_OBJ_NAME_LEN 16U
+> > > > +#define BPF_CREATED_COMM_LEN   16U
+> > >
+> > > Nack.
+> > > 16 bytes is going to be useless.
+> > > We found it the hard way with prog_name.
+> > > If you want to embed additional debug information
+> > > please use BTF for that.
+> > BTF was my natural choice initially, but then I saw created_by_uid and
+> > thought created_by_comm might have a chance :-)
+> >
+> > To clarify, by BTF you mean creating some unused global variable
+> > and use its name as the debugging info? Or there is some better way?
+>
+> I was thinking about adding new section to .btf.ext with this extra data,
+> but global variable is a better idea indeed.
+> We'd need to standardize such variables names, so that
+> bpftool can parse and print it while doing 'bpftool prog show'.
+> We see more and more cases where services use more than
+> one program in single .c file to accomplish their goals.
+> Tying such debug info (like 'created_by_comm') to each program
+> individually isn't quite right.
+> In that sense global variables are better, since they cover the
+> whole .c file.
+> Beyond 'created_by_comm' there are others things that people
+> will likely want to know.
+> Like which version of llvm was used to compile this .o file.
+> Which unix user name compiled it.
+> The name of service/daemon that will be using this .o
+> and so on.
+> May be some standard prefix to such global variables will do?
+> Like "bpftool prog show" can scan global data for
+> "__annotate_#name" and print both name and string contents ?
+> For folks who regularly ssh into servers to debug bpf progs
+> that will help a lot.
+> May be some annotations llvm can automatically add to .o.
+> Thoughts?
 
-That isn't a problem.  We have lots of network device drivers that do
-this - in their open() function.
+We can dedicate separate ELF section for such variables, similar to
+license and version today, so that libbpf will know that those
+variables are not real variables and shouldn't be used from BPF
+program itself. But we can have many of them in single section, unlike
+version and license. :) With that, we'll have metadata and list of
+variables in BTF (DATASEC + VARs). The only downside - you'll need ELF
+itself to get the value of that variable, no? Is that acceptable? Do
+we always know where original ELF is?
 
-> - The following is wrong, irq = 0 doesn't mean polling.
->   PHY_POLL is defined as -1. Also in case of irq = 0 phy_interrupt_is_valid()
->   returns true.
-> 
-> 	/* if phyirq is not set, use polling mode in phylib */
-> 	if (dev->domain_data.phyirq > 0)
-> 		phydev->irq = dev->domain_data.phyirq;
-> 	else
-> 		phydev->irq = 0;
+Alternatively we can have extra .BTF.ext section and re-use BTF's
+string section for values.
 
-Also unlikely to be the cause of this problem.  phy_connect_direct() is
-called with an adjust link function, which is set via
-phy_prepare_link() in phy_connect_direct(), before interrupts are even
-considered.
-
-So, the window for the bug is somewhere before the call to
-phy_prepare_link() in phy_connect_direct(), but after
-lan78xx_mdio_init().
-
-> - Manually calling genphy_config_aneg() in lan78xx_phy_init() isn't
->   needed, however this should not cause our problem.
-
-Again, way after the point where phydev->adjust_link is non-NULL,
-so this can't be it.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Which one is more acceptable?
