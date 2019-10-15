@@ -2,109 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C79AD6F58
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 07:57:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ADA1D6F62
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 08:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbfJOF5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 01:57:50 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44517 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725810AbfJOF5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 01:57:50 -0400
-Received: by mail-ed1-f68.google.com with SMTP id r16so16774663edq.11
-        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 22:57:49 -0700 (PDT)
+        id S1727116AbfJOGFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 02:05:35 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:43926 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbfJOGFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 02:05:35 -0400
+Received: by mail-wr1-f65.google.com with SMTP id j18so22181553wrq.10
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 23:05:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=+dEWfTewt7R9RPkQAlrQgcj1STfoqf3Bg7CtuX6pXcc=;
-        b=XKoW+37/mB+Yqe8NNl4kODT5jbFVZMlxj0JzDJznPsAhffJWy3GpoXcr0hhJb5VVC3
-         hCa/wNHwk/W/RE+5rjPktivUUv3rwSY11L7hH60TziQ41mg7HrWBoU8NCebmu8rJFIVr
-         2atccDpovKo2liFFWRJRkexnOs/s2rRsf8MiAKMSMU+v86SO+1MvMyEQOd5ZFqVWbqn5
-         e9e2ZrQeL+fK8vu69FoUV9SFPGmepwzZGvCiHqfHCKY68Io8TDsfi4t94W00aYvur9pA
-         QvHiP4Whx0RfUW1ap5DrPGP/1WClPDAJpCb+OX2xHHjAISt0f6if3yBXdDsEBKM0qSgK
-         +vdQ==
+        bh=RX/0WlRnLie8nc00maGTLlElJyVLretH5t1EwCBi6yQ=;
+        b=GrUUroDHZcx5miQbAFag6xz92nI0cLIl5rk+R3g1wX/5W9D11BrGt175qRQMQz4sdU
+         Z/VSOsDk3shgI3UauWNw3dWtJYec3AJ1ORB4IxacWWokYGdhf3Zf1t7GmFQIyNTu/Fw8
+         ghFePxQ5WBts+vvQ+OZ0i4p4Oqk6Kav+q+xhp2Q7KngBDXRDYU7ylzZr7SScJe28t69X
+         88cN8YlgGEiHbRAxFtFXt9b9h/+2uuvr20gOJJEpzujyhL/Zt3gUu2ZN4/lQpm8tZsb3
+         ccg3BXUnWkwe+0gwbd3nLhGiQ2Y339kCN5w8cYQHww0TAOlWDASIGQrOYElnzmZ9B2bT
+         G96g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+dEWfTewt7R9RPkQAlrQgcj1STfoqf3Bg7CtuX6pXcc=;
-        b=YFNht2ZYQnCrItgecJI3VwRL/KS4HWDgkBK7gB4asxAYZGh9auoBWoTi5IEWgCDBWi
-         aIop/K4Q3N83koVxktny6S1ofF7d+s3h/cqClcYMUyhRn+f70ej28UV4vIaQaprgrGDL
-         4NjW0PZ7af/aBE6Y54DTca99TAS/IqNgi9TlolO7cunWnVf2vtX4WW1lW4Z6FGxHFXhz
-         r59dDjEX5CfcOxlJFiluXX7OFQjKYUirNGoty8APn91KqhKGVwOfeDlCl9M6dvTdmDPT
-         orwc+MVUxFN0W+3UK0s4WguKuVFcEpozxJowMeSoG/3MpszjZgvpC6BUc495bbJEIEtz
-         zJdw==
-X-Gm-Message-State: APjAAAW94+wt2ThqOxbdGyglOd4qq0ODCQJfho4EnjD31Z121+Jci9Vg
-        kRZl1ssYicX0yjsDDlEZISqwvQ==
-X-Google-Smtp-Source: APXvYqwPP2OQtbMJgFsKI1Fn0SmCDt4h7hlgMbPCaER/eZIM88e8JB3Qs4CXw2bL9m3OA/v94kIbXA==
-X-Received: by 2002:a50:f315:: with SMTP id p21mr31564386edm.83.1571119068326;
-        Mon, 14 Oct 2019 22:57:48 -0700 (PDT)
-Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
-        by smtp.gmail.com with ESMTPSA id c15sm3529833edl.16.2019.10.14.22.57.32
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 14 Oct 2019 22:57:47 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 07:57:22 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     kbuild test robot <lkp@intel.com>
-Cc:     Pankaj Sharma <pankj.sharma@samsung.com>, kbuild-all@lists.01.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net,
-        eugen.hristev@microchip.com, ludovic.desroches@microchip.com,
-        pankaj.dubey@samsung.com, rcsekar@samsung.com,
-        Sriram Dash <sriram.dash@samsung.com>
-Subject: Re: [PATCH] can: m_can: fix boolreturn.cocci warnings
-Message-ID: <20191015055718.mypn63s2ovgwipk3@netronome.com>
-References: <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
- <20191014150428.xhhc43ovkxm6oxf2@332d0cec05f4>
+        bh=RX/0WlRnLie8nc00maGTLlElJyVLretH5t1EwCBi6yQ=;
+        b=P44nyLSWZ/JNgLHaeVibVSGbHDCS+1qUwxLaYL6WIV1ioVsZ6NHLtiu23UrdCLDDKm
+         cQMapvDDcpNI2TgtehCJmE+9jO5AlX57Ug0LmaaGvSQHRNo7ozhdGh4sAgCHDaVQZXAE
+         RXsuFuSiwSRcexRHoASotuzIWBsmQoufsluY+sbB4sEvSbEhKeXZTADvwK6qZl78dRZL
+         iw7sfmjl3IZ5x1qt5JSCyTGeBBY1TR7WYFqDC93btGQfYeM0bgd02qG0PAMLUS69mxke
+         TAGdkpxA2UVnDh1tJq0YHGMthHzb1JX3ev2dVT0rj2HyiiqFaGRsm5v0xYt/YwzCD+nc
+         odRA==
+X-Gm-Message-State: APjAAAVHJc3ZGu3DFbj6b6i8CgmPwUAKPiIE7RMumXShaw/wqwzwQO7e
+        sSaFm2qk5OhhnSSz/NI5Z2Gd+w==
+X-Google-Smtp-Source: APXvYqz0PjvYI9x4nvoVkn96vBeaRX6h9jYu5qLUxzQNkmLB3kDrDb8R72hQMk3AYY0SKbUL0C+sdQ==
+X-Received: by 2002:adf:b69f:: with SMTP id j31mr28498627wre.277.1571119533683;
+        Mon, 14 Oct 2019 23:05:33 -0700 (PDT)
+Received: from localhost (ip-89-177-225-135.net.upcbroadband.cz. [89.177.225.135])
+        by smtp.gmail.com with ESMTPSA id e18sm28357956wrv.63.2019.10.14.23.05.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Oct 2019 23:05:33 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 08:05:32 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, jakub.kicinski@netronome.com,
+        saeedm@mellanox.com, vishal@chelsio.com, vladbu@mellanox.com,
+        ecree@solarflare.com
+Subject: Re: [PATCH net-next,v5 1/4] net: flow_offload: flip mangle action
+ mask
+Message-ID: <20191015060532.GD2314@nanopsycho>
+References: <20191014221051.8084-1-pablo@netfilter.org>
+ <20191014221051.8084-2-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191014150428.xhhc43ovkxm6oxf2@332d0cec05f4>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20191014221051.8084-2-pablo@netfilter.org>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 14, 2019 at 11:04:28PM +0800, kbuild test robot wrote:
-> From: kbuild test robot <lkp@intel.com>
-> 
-> drivers/net/can/m_can/m_can.c:783:9-10: WARNING: return of 0/1 in function 'is_protocol_err' with return type bool
-> 
->  Return statements in functions returning bool should use
->  true/false instead of 1/0.
-> Generated by: scripts/coccinelle/misc/boolreturn.cocci
-> 
-> Fixes: 46946163ac61 ("can: m_can: add support for handling arbitration error")
-> CC: Pankaj Sharma <pankj.sharma@samsung.com>
-> Signed-off-by: kbuild test robot <lkp@intel.com>
-> ---
-> 
-> url:    https://github.com/0day-ci/linux/commits/Pankaj-Sharma/can-m_can-add-support-for-handling-arbitration-error/20191014-193532
-> 
->  m_can.c |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> --- a/drivers/net/can/m_can/m_can.c
-> +++ b/drivers/net/can/m_can/m_can.c
-> @@ -780,9 +780,9 @@ static inline bool is_lec_err(u32 psr)
->  static inline bool is_protocol_err(u32 irqstatus)
->  {
->  	if (irqstatus & IR_ERR_LEC_31X)
-> -		return 1;
-> +		return true;
->  	else
-> -		return 0;
-> +		return false;
->  }
->  
->  static int m_can_handle_protocol_error(struct net_device *dev, u32 irqstatus)
-> 
+Tue, Oct 15, 2019 at 12:10:48AM CEST, pablo@netfilter.org wrote:
+>Userspace tc pedit action performs a bitwise NOT operation on the mask.
+>All of the existing drivers in the tree undo this operation. Prepare the
+>mangle mask in the way the drivers expect from the
+>tc_setup_flow_action() function.
+>
+>Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 
-<2c>
-Perhaps the following is a nicer way to express this (completely untested):
-
-	return !!(irqstatus & IR_ERR_LEC_31X);
-</2c>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
