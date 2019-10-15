@@ -2,101 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2141D6CA4
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 02:52:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11FCFD6CAE
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 02:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727249AbfJOAwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 20:52:47 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:40443 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726773AbfJOAwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 20:52:47 -0400
-Received: by mail-pg1-f195.google.com with SMTP id e13so2827383pga.7;
-        Mon, 14 Oct 2019 17:52:45 -0700 (PDT)
+        id S1727225AbfJOA5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 20:57:48 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40172 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726921AbfJOA5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 20:57:48 -0400
+Received: by mail-pf1-f194.google.com with SMTP id x127so11321926pfb.7;
+        Mon, 14 Oct 2019 17:57:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=W6Z+FAutC5s64cQmjM/Y9qv/zVoMxmkp3VC30cn4uPM=;
-        b=SSShTxsEoFJWwrnSxY8UQ08T7WZxn61LMDV6uiW/tXp2f8wvkckUdR/tNahjr0rw4u
-         Z9Ab46iN9GP6IH+CiFZQb8hXKSNfOF9s/PXtrl/MQ8gi+42Rw5EcAIWMdDPrTZZThyEs
-         QUvdNBbgO/O55/6aljFh76M31MuuCaa8nxHdzT1lJNSbEgGqtMA0XoNmQ5Z3erqXoi/O
-         H/InpkdEu+rR28OQjRYWLlHY60XoWxy+OsYUZjF/h6FR2qVp8/1jLLfDWSz81HF7aciy
-         YRy9EqoAP2AJJTylNIFJSbNuOXTff+cvYFCTOGR0HCSbbmZqwzkAsqojw5MDO1OcxGmP
-         L+UQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Wsv1eeRYK3FckN4mPKM6Tyd9SrCDq1K6jdUYJvegRgw=;
+        b=qcf6YCz2nrdYS9t+vyxPGwCWBe+pJkCYK9K2IoXAFvzqMvXj+YTcU5kd1SC2AD/VMK
+         2zQuNPSdDJadMcQABTNlSDNX7o41OSKRswbHRAEWqfXkGwFB8nyAwrA0wGYUh0t/Y671
+         1wAnWZIWk9rKP4PpEZ5+CWO6AMqRmv0Kyj3X0qyXYJVdjBu4wy4P2ySlt6gUO/GauRpw
+         +VVTlCqmUPWrRBuKsBVgHhiIF8PT6J2VICiJc34MxhTqmiZ8bxaMs0m+gFP/PC+4IHNQ
+         MXYxKN0LyF0Lfh4JWvgu+t+KPUVcRR9Ax3NM1UA6L4E4lxgU3+MukujzgT+cPRcNSYr8
+         y22g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=W6Z+FAutC5s64cQmjM/Y9qv/zVoMxmkp3VC30cn4uPM=;
-        b=d1fcNb9/KQzAmE6TTbVLT/E7pTqD1fabgX3vBZ5DVECKpw7az4AoDxstgC7+o0TuAR
-         HsFGl05hITPHGTs973s1QTeihoojomQp6wmcnasmnKS5GcWi1zTpxepSIi6G55v/4FLt
-         NFbWcNPtaB9AKU8IUQ9v+KMsPSPtuTR2UPV2Z8gmQ2ICxCDjJzbRO9DUSn3Q87LX918E
-         JdprWzdQNelUP6+sPUs95BQz5in0Rp/otXGMlQ/yQ9r1xbAQGlR/FbN8K08Miqo1gLk3
-         adT7+NA2yxBjMlRrWpALi5ja3FGz4wVsGnsuJmBLmbx1ke5R2Ew9iQhC5BGvQfxJ6Yxe
-         pDHQ==
-X-Gm-Message-State: APjAAAV9MBiLUHHAOKcGO0CeROc0760DMQML2ERaRbneNckiXJ7yH1JA
-        uKhvcLinECuj4WT6YGwRdLcIJS+Z
-X-Google-Smtp-Source: APXvYqxbaULdFb/xaZEgeY5p/IJ/+4D6iwSCAuH4hq8VmpKlGPbsQxSYQ4A5DQ/QzKTYzljimPkkrQ==
-X-Received: by 2002:a62:5c07:: with SMTP id q7mr35046439pfb.159.1571100764598;
-        Mon, 14 Oct 2019 17:52:44 -0700 (PDT)
-Received: from [10.67.51.137] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a13sm28960237pfg.10.2019.10.14.17.52.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 14 Oct 2019 17:52:44 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] net: bcmgenet: Generate a random MAC if none
- is valid
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     phil@raspberrypi.org, jonathan@raspberrypi.org,
-        matthias.bgg@kernel.org, linux-rpi-kernel@lists.infradead.org,
-        wahrenst@gmx.net, nsaenzjulienne@suse.de,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:BROADCOM GENET ETHERNET DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20191014212000.27712-1-f.fainelli@gmail.com>
-From:   Doug Berger <opendmb@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
- xsBNBFWUMnYBCADCqDWlxLrPaGxwJpK/JHR+3Lar1S3M3K98bCw5GjIKFmnrdW4pXlm1Hdk5
- vspF6aQKcjmgLt3oNtaJ8xTR/q9URQ1DrKX/7CgTwPe2dQdI7gNSAE2bbxo7/2umYBm/B7h2
- b0PMWgI0vGybu6UY1e8iGOBWs3haZK2M0eg2rPkdm2d6jkhYjD4w2tsbT08IBX/rA40uoo2B
- DHijLtRSYuNTY0pwfOrJ7BYeM0U82CRGBpqHFrj/o1ZFMPxLXkUT5V1GyDiY7I3vAuzo/prY
- m4sfbV6SHxJlreotbFufaWcYmRhY2e/bhIqsGjeHnALpNf1AE2r/KEhx390l2c+PrkrNABEB
- AAHNJkRvdWcgQmVyZ2VyIDxkb3VnLmJlcmdlckBicm9hZGNvbS5jb20+wsEHBBABAgCxBQJa
- sDPxFwoAAb9Iy/59LfFRBZrQ2vI+6hEaOwDdIBQAAAAAABYAAWtleS11c2FnZS1tYXNrQHBn
- cC5jb22OMBSAAAAAACAAB3ByZWZlcnJlZC1lbWFpbC1lbmNvZGluZ0BwZ3AuY29tcGdwbWlt
- ZQgLCQgHAwIBCgIZAQUXgAAAABkYbGRhcDovL2tleXMuYnJvYWRjb20uY29tBRsDAAAAAxYC
- AQUeAQAAAAQVCAkKAAoJEEv0cxXPMIiXDXMH/Aj4wrSvJTwDDz/pb4GQaiQrI1LSVG7vE+Yy
- IbLer+wB55nLQhLQbYVuCgH2XmccMxNm8jmDO4EJi60ji6x5GgBzHtHGsbM14l1mN52ONCjy
- 2QiADohikzPjbygTBvtE7y1YK/WgGyau4CSCWUqybE/vFvEf3yNATBh+P7fhQUqKvMZsqVhO
- x3YIHs7rz8t4mo2Ttm8dxzGsVaJdo/Z7e9prNHKkRhArH5fi8GMp8OO5XCWGYrEPkZcwC4DC
- dBY5J8zRpGZjLlBa0WSv7wKKBjNvOzkbKeincsypBF6SqYVLxFoegaBrLqxzIHPsG7YurZxE
- i7UH1vG/1zEt8UPgggTOwE0EVZQydwEIAM90iYKjEH8SniKcOWDCUC2jF5CopHPhwVGgTWhS
- vvJsm8ZK7HOdq/OmA6BcwpVZiLU4jQh9d7y9JR1eSehX0dadDHld3+ERRH1/rzH+0XCK4JgP
- FGzw54oUVmoA9zma9DfPLB/Erp//6LzmmUipKKJC1896gN6ygVO9VHgqEXZJWcuGEEqTixm7
- kgaCb+HkitO7uy1XZarzL3l63qvy6s5rNqzJsoXE/vG/LWK5xqxU/FxSPZqFeWbX5kQN5XeJ
- F+I13twBRA84G+3HqOwlZ7yhYpBoQD+QFjj4LdUS9pBpedJ2iv4t7fmw2AGXVK7BRPs92gyE
- eINAQp3QTMenqvcAEQEAAcLBgQQYAQIBKwUCVZQyeAUbDAAAAMBdIAQZAQgABgUCVZQydwAK
- CRCmyye0zhoEDXXVCACjD34z8fRasq398eCHzh1RCRI8vRW1hKY+Ur8ET7gDswto369A3PYS
- 38hK4Na3PQJ0kjB12p7EVA1rpYz/lpBCDMp6E2PyJ7ZyTgkYGHJvHfrj06pSPVP5EGDLIVOV
- F5RGUdA/rS1crcTmQ5r1RYye4wQu6z4pc4+IUNNF5K38iepMT/Z+F+oDTJiysWVrhpC2dila
- 6VvTKipK1k75dvVkyT2u5ijGIqrKs2iwUJqr8RPUUYpZlqKLP+kiR+p+YI16zqb1OfBf5I6H
- F20s6kKSk145XoDAV9+h05X0NuG0W2q/eBcta+TChiV3i8/44C8vn4YBJxbpj2IxyJmGyq2J
- AAoJEEv0cxXPMIiXTeYH/AiKCOPHtvuVfW+mJbzHjghjGo3L1KxyRoHRfkqR6HPeW0C1fnDC
- xTuf+FHT8T/DRZyVqHqA/+jMSmumeUo6lEvJN4ZPNZnN3RUId8lo++MTXvtUgp/+1GBrJz0D
- /a73q4vHrm62qEWTIC3tV3c8oxvE7FqnpgGu/5HDG7t1XR3uzf43aANgRhe/v2bo3TvPVAq6
- K5B9EzoJonGc2mcDfeBmJpuvZbG4llhAbwTi2yyBFgM0tMRv/z8bMWfAq9Lrc2OIL24Pu5aw
- XfVsGdR1PerwUgHlCgFeWDMbxZWQk0tjt8NGP5cTUee4hT0z8a0EGIzUg/PjUnTrCKRjQmfc YVs=
-Message-ID: <b1feb8b5-c52a-e50e-fb4d-8e4c0316b79d@gmail.com>
-Date:   Mon, 14 Oct 2019 17:52:38 -0700
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Wsv1eeRYK3FckN4mPKM6Tyd9SrCDq1K6jdUYJvegRgw=;
+        b=lfddC+EhEpg0qC0z4ngcaOcsnYpUlAkIaBXvgvl/Vx1+osXTvfa0yK44tNkLgBnuEa
+         VQKft82KgfvfUTkuLnbXmU55nq5SXJ3P3NxuUY0MZlUTL0GdQIqpVnp1eHIQALtbIlEQ
+         dQjgbF/FyD/8AWJWuo0XYChwdySnaFSo+ce+Z/+HYxWifNiYhM640kxm+Vtw2oT2DVRr
+         s1iLLOxSG2vd3Xd58nHCsKCXPHt2cubUmeLM7YmEONPQCsfheOaOMdy1DlyxtZHixpG2
+         f9vQ742FNsEYu6zwk7GU8tyvcdem8IO7aU1U8pVwpcmsnhsXRExjDWHSckr2m2naVW1P
+         f0IA==
+X-Gm-Message-State: APjAAAX+HV79YAkB3cwqDvXJT9Bn1ZoPbquzeTGexyG+n1cWcgitDUvW
+        Le5JItERRvOBhc9g2pCr2UgtGx6H
+X-Google-Smtp-Source: APXvYqxJBVBZFmeB7ozapEcpOz5kvEfy2Ogpgrpa/kA8ZCiYDBDztGekyX/rE9/CAELuXONhMbyL1A==
+X-Received: by 2002:a62:e40d:: with SMTP id r13mr35490542pfh.154.1571101065271;
+        Mon, 14 Oct 2019 17:57:45 -0700 (PDT)
+Received: from [172.20.20.156] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id s36sm20196820pgk.84.2019.10.14.17.57.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Oct 2019 17:57:44 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/3] vhost_net: user tap recvmsg api to access
+ ptr ring
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
+ <20191012015357.1775-3-prashantbhole.linux@gmail.com>
+ <20191012164059-mutt-send-email-mst@kernel.org>
+From:   Prashant Bhole <prashantbhole.linux@gmail.com>
+Message-ID: <a98a594c-f0ee-43f7-956b-159009dc6e0f@gmail.com>
+Date:   Tue, 15 Oct 2019 09:57:11 +0900
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191014212000.27712-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20191012164059-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -104,56 +70,218 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/14/19 2:20 PM, Florian Fainelli wrote:
-> Instead of having a hard failure and stopping the driver's probe
-> routine, generate a random Ethernet MAC address to keep going.
+Hi Michael,
+Thanks for reviewing.
+
+On 10/13/19 5:41 AM, Michael S. Tsirkin wrote:
+> On Sat, Oct 12, 2019 at 10:53:56AM +0900, prashantbhole.linux@gmail.com wrote:
+>> From: Prashant Bhole <prashantbhole.linux@gmail.com>
+>>
+>> Currently vhost_net directly accesses ptr ring of tap driver to
+>> fetch Rx packet pointers. In order to avoid it this patch modifies
+>> tap driver's recvmsg api to do additional task of fetching Rx packet
+>> pointers.
+>>
+>> A special struct tun_msg_ctl is already being usedd via msg_control
+>> for tun Rx XDP batching. This patch extends tun_msg_ctl usage to
+>> send sub commands to recvmsg api. recvmsg can now produce/unproduce
+>> pointers from ptr ring as an additional task.
+>>
+>> This will be useful in future in implementation of virtio-net XDP
+>> offload feature. Where packets will be XDP batch processed in
+>> tun_recvmsg.
 > 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> Changes in v2:
+> I'd like to see that future patch, by itself this patchset
+> seems to be of limited usefulness.
+
+Agree, this set is just a reorganization. Next time this will be a part
+of set which actually uses it.
+
+Thanks
+
 > 
-> - provide a message that a random MAC is used, the same message that
->   bcmsysport.c uses
-> 
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 17 ++++++++---------
->  1 file changed, 8 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index 12cb77ef1081..dd4e4f1dd384 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -3461,16 +3461,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  		goto err;
->  	}
->  
-> -	if (dn) {
-> +	if (dn)
->  		macaddr = of_get_mac_address(dn);
-> -		if (IS_ERR(macaddr)) {
-> -			dev_err(&pdev->dev, "can't find MAC address\n");
-> -			err = -EINVAL;
-> -			goto err;
-> -		}
-> -	} else {
-> +	else
->  		macaddr = pd->mac_address;
-> -	}
->  
->  	priv->base = devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(priv->base)) {
-> @@ -3482,7 +3476,12 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  
->  	SET_NETDEV_DEV(dev, &pdev->dev);
->  	dev_set_drvdata(&pdev->dev, dev);
-> -	ether_addr_copy(dev->dev_addr, macaddr);
-> +	if (IS_ERR_OR_NULL(macaddr) || !is_valid_ether_addr(macaddr)) {
-> +		dev_warn(&pdev->dev, "using random Ethernet MAC\n");
-> +		eth_hw_addr_random(dev);
-> +	} else {
-> +		ether_addr_copy(dev->dev_addr, macaddr);
-> +	}
->  	dev->watchdog_timeo = 2 * HZ;
->  	dev->ethtool_ops = &bcmgenet_ethtool_ops;
->  	dev->netdev_ops = &bcmgenet_netdev_ops;
-> 
-Acked-by: Doug Berger <opendmb@gmail.com>
+>> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+>> ---
+>>   drivers/net/tap.c      | 22 +++++++++++++++++++-
+>>   drivers/net/tun.c      | 24 +++++++++++++++++++++-
+>>   drivers/vhost/net.c    | 46 +++++++++++++++++++++++++++++++++---------
+>>   include/linux/if_tun.h |  3 +++
+>>   4 files changed, 83 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+>> index 01bd260ce60c..3d0bf382dbbc 100644
+>> --- a/drivers/net/tap.c
+>> +++ b/drivers/net/tap.c
+>> @@ -1234,8 +1234,28 @@ static int tap_recvmsg(struct socket *sock, struct msghdr *m,
+>>   		       size_t total_len, int flags)
+>>   {
+>>   	struct tap_queue *q = container_of(sock, struct tap_queue, sock);
+>> -	struct sk_buff *skb = m->msg_control;
+>> +	struct tun_msg_ctl *ctl = m->msg_control;
+>> +	struct sk_buff *skb = NULL;
+>>   	int ret;
+>> +
+>> +	if (ctl) {
+>> +		switch (ctl->cmd) {
+>> +		case TUN_CMD_PACKET:
+>> +			skb = ctl->ptr;
+>> +			break;
+>> +		case TUN_CMD_PRODUCE_PTRS:
+>> +			return ptr_ring_consume_batched(&q->ring,
+>> +							ctl->ptr_array,
+>> +							ctl->num);
+>> +		case TUN_CMD_UNPRODUCE_PTRS:
+>> +			ptr_ring_unconsume(&q->ring, ctl->ptr_array, ctl->num,
+>> +					   tun_ptr_free);
+>> +			return 0;
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	}
+>> +
+>>   	if (flags & ~(MSG_DONTWAIT|MSG_TRUNC)) {
+>>   		kfree_skb(skb);
+>>   		return -EINVAL;
+>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>> index 29711671959b..7d4886f53389 100644
+>> --- a/drivers/net/tun.c
+>> +++ b/drivers/net/tun.c
+>> @@ -2577,7 +2577,8 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
+>>   {
+>>   	struct tun_file *tfile = container_of(sock, struct tun_file, socket);
+>>   	struct tun_struct *tun = tun_get(tfile);
+>> -	void *ptr = m->msg_control;
+>> +	struct tun_msg_ctl *ctl = m->msg_control;
+>> +	void *ptr = NULL;
+>>   	int ret;
+>>   
+>>   	if (!tun) {
+>> @@ -2585,6 +2586,27 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
+>>   		goto out_free;
+>>   	}
+>>   
+>> +	if (ctl) {
+>> +		switch (ctl->cmd) {
+>> +		case TUN_CMD_PACKET:
+>> +			ptr = ctl->ptr;
+>> +			break;
+>> +		case TUN_CMD_PRODUCE_PTRS:
+>> +			ret = ptr_ring_consume_batched(&tfile->tx_ring,
+>> +						       ctl->ptr_array,
+>> +						       ctl->num);
+>> +			goto out;
+>> +		case TUN_CMD_UNPRODUCE_PTRS:
+>> +			ptr_ring_unconsume(&tfile->tx_ring, ctl->ptr_array,
+>> +					   ctl->num, tun_ptr_free);
+>> +			ret = 0;
+>> +			goto out;
+>> +		default:
+>> +			ret = -EINVAL;
+>> +			goto out_put_tun;
+>> +		}
+>> +	}
+>> +
+>>   	if (flags & ~(MSG_DONTWAIT|MSG_TRUNC|MSG_ERRQUEUE)) {
+>>   		ret = -EINVAL;
+>>   		goto out_put_tun;
+>> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+>> index 5946d2775bd0..5e5c1063606c 100644
+>> --- a/drivers/vhost/net.c
+>> +++ b/drivers/vhost/net.c
+>> @@ -175,24 +175,44 @@ static void *vhost_net_buf_consume(struct vhost_net_buf *rxq)
+>>   
+>>   static int vhost_net_buf_produce(struct vhost_net_virtqueue *nvq)
+>>   {
+>> +	struct vhost_virtqueue *vq = &nvq->vq;
+>> +	struct socket *sock = vq->private_data;
+>>   	struct vhost_net_buf *rxq = &nvq->rxq;
+>> +	struct tun_msg_ctl ctl = {
+>> +		.cmd = TUN_CMD_PRODUCE_PTRS,
+>> +		.ptr_array = rxq->queue,
+>> +		.num = VHOST_NET_BATCH,
+>> +	};
+>> +	struct msghdr msg = {
+>> +		.msg_control = &ctl,
+>> +	};
+>>   
+>>   	rxq->head = 0;
+>> -	rxq->tail = ptr_ring_consume_batched(nvq->rx_ring, rxq->queue,
+>> -					      VHOST_NET_BATCH);
+>> +	rxq->tail = sock->ops->recvmsg(sock, &msg, 0, 0);
+>> +	if (rxq->tail < 0)
+>> +		rxq->tail = 0;
+>> +
+>>   	return rxq->tail;
+>>   }
+>>   
+>>   static void vhost_net_buf_unproduce(struct vhost_net_virtqueue *nvq)
+>>   {
+>> +	struct vhost_virtqueue *vq = &nvq->vq;
+>> +	struct socket *sock = vq->private_data;
+>>   	struct vhost_net_buf *rxq = &nvq->rxq;
+>> +	struct tun_msg_ctl ctl = {
+>> +		.cmd = TUN_CMD_UNPRODUCE_PTRS,
+>> +		.ptr_array = rxq->queue + rxq->head,
+>> +		.num = vhost_net_buf_get_size(rxq),
+>> +	};
+>> +	struct msghdr msg = {
+>> +		.msg_control = &ctl,
+>> +	};
+>>   
+>> -	if (nvq->rx_ring && !vhost_net_buf_is_empty(rxq)) {
+>> -		ptr_ring_unconsume(nvq->rx_ring, rxq->queue + rxq->head,
+>> -				   vhost_net_buf_get_size(rxq),
+>> -				   tun_ptr_free);
+>> -		rxq->head = rxq->tail = 0;
+>> -	}
+>> +	if (!vhost_net_buf_is_empty(rxq))
+>> +		sock->ops->recvmsg(sock, &msg, 0, 0);
+>> +
+>> +	rxq->head = rxq->tail = 0;
+>>   }
+>>   
+>>   static int vhost_net_buf_peek_len(void *ptr)
+>> @@ -1109,6 +1129,9 @@ static void handle_rx(struct vhost_net *net)
+>>   		.flags = 0,
+>>   		.gso_type = VIRTIO_NET_HDR_GSO_NONE
+>>   	};
+>> +	struct tun_msg_ctl ctl = {
+>> +		.cmd = TUN_CMD_PACKET,
+>> +	};
+>>   	size_t total_len = 0;
+>>   	int err, mergeable;
+>>   	s16 headcount;
+>> @@ -1166,8 +1189,11 @@ static void handle_rx(struct vhost_net *net)
+>>   			goto out;
+>>   		}
+>>   		busyloop_intr = false;
+>> -		if (nvq->rx_ring)
+>> -			msg.msg_control = vhost_net_buf_consume(&nvq->rxq);
+>> +		if (nvq->rx_ring) {
+>> +			ctl.cmd = TUN_CMD_PACKET;
+>> +			ctl.ptr = vhost_net_buf_consume(&nvq->rxq);
+>> +			msg.msg_control = &ctl;
+>> +		}
+>>   		/* On overrun, truncate and discard */
+>>   		if (unlikely(headcount > UIO_MAXIOV)) {
+>>   			iov_iter_init(&msg.msg_iter, READ, vq->iov, 1, 1);
+>> diff --git a/include/linux/if_tun.h b/include/linux/if_tun.h
+>> index bdfa671612db..8608d4095143 100644
+>> --- a/include/linux/if_tun.h
+>> +++ b/include/linux/if_tun.h
+>> @@ -13,10 +13,13 @@
+>>   
+>>   #define TUN_CMD_PACKET 1
+>>   #define TUN_CMD_BATCH  2
+>> +#define TUN_CMD_PRODUCE_PTRS	3
+>> +#define TUN_CMD_UNPRODUCE_PTRS	4
+>>   struct tun_msg_ctl {
+>>   	unsigned short cmd;
+>>   	unsigned short num;
+>>   	void *ptr;
+>> +	void **ptr_array;
+>>   };
+>>   
+>>   struct tun_xdp_hdr {
+>> -- 
+>> 2.21.0
