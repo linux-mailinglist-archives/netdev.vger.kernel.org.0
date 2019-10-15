@@ -2,127 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C528D83B8
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF6C6D83C5
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389931AbfJOWck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 18:32:40 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:46461 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732040AbfJOWcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:32:39 -0400
-Received: by mail-pl1-f193.google.com with SMTP id q24so10246473plr.13
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 15:32:37 -0700 (PDT)
+        id S1732481AbfJOWeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 18:34:17 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:38645 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732040AbfJOWeQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:34:16 -0400
+Received: by mail-qk1-f196.google.com with SMTP id p4so305186qkf.5;
+        Tue, 15 Oct 2019 15:34:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=ZPGOSSx5giEEfL2NPx2gvww++Bfy7bq2OL0BsYfuuHg=;
-        b=HJg0uZssgcrUSgxu4Yt6cBbovBjr3Wy8sfTsLZaJ5il4NS8LlLl+YXlQufsmAOhrUe
-         EjPI+S9rdd9S0a0yFhE80R21vVioW+hNay9WseUk7tEudntZ+ZVUQW/eEvwAdWlj7R0J
-         eL6TvUgJ4Wbp8ruzE7ttH23JwlHVYaonygjyk=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4AyMktzsTkv7aY4ZRJQAUNTUY8eMY0KqI0FaLqiE3Fo=;
+        b=KCJY/TuKPwuRUnx6pza32kr3b4+favZGvpkv5SZACHhUlm3F5Hz6h5/zJBWbHKWw5F
+         xKlfKx2GGUeR1SRfUGGHucF1kA9lTiqbLdG1+9upXsVCS0dCFCijqZMQLcYY8Kf6VKm3
+         ZN2CiodXpEtCZzxYCy+qmwzg3kEZmGAUPzexZiIBHpCqd8H7d/WgF7bcwZC4mmi2tkgg
+         bMHBlG82Ea6b6X9EtmfMfGpmG6PLe//XzpDp4UP8PNbc7YCWuY7N7KprKDkEQRy52OsK
+         EQiGwDfib+0FVyLZa9gywLIut0degBF4xWpB5DDSfmYpcerFq5uGLA1TNJrNVaoX4rSC
+         T9Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=ZPGOSSx5giEEfL2NPx2gvww++Bfy7bq2OL0BsYfuuHg=;
-        b=CK0NzI+Fr+w7ZOQf9eVWBaJoCemIJ5+PTqpNw7S2zR3IpkCNCpgCXOGtOEWcvACz0x
-         ZSn9N1bJeCet1YxFZNbT/JHNYVe0fxDwNQkFHG5U7Zx8/gjIfzB6ZDxaRPeCwl/j6OVm
-         z1YM5JYQ9bzkjPmyFCmCGHSUuYlDb0DXEcRaHjqfCreiA42/KX/NzZ9FxcLeEfMvnXw9
-         BBLZlYplB1Y6JzxED4blucuw1xY2ajhciLUxd8ifMvlWKfsvD8m2+GknnXmiJDaAvzmd
-         qT+b/wS55/FFpkdYnDnh9UeBaD2h/tV+ByAAg4Brha97NGE2PXOX+HYQmq5xg8uapsKt
-         uI3Q==
-X-Gm-Message-State: APjAAAXgfesvyiDPPQIBeGzcW8i5l/xmdZjRCY40mtEsG9iIO+Sai0id
-        lx+Wuppr+atIXrQEkiJgOmZ3dA==
-X-Google-Smtp-Source: APXvYqynowQLJijtXfqi2elhpB72G1vEHERM1q9vmxBCIR/fDTcnRQIGAZzcOq4IwAR76Jx3qQgNgQ==
-X-Received: by 2002:a17:902:547:: with SMTP id 65mr26662481plf.239.1571178756804;
-        Tue, 15 Oct 2019 15:32:36 -0700 (PDT)
-Received: from [10.136.13.65] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id l62sm24419257pfl.167.2019.10.15.15.32.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 15 Oct 2019 15:32:35 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] net: bcmgenet: Generate a random MAC if none
- is valid
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     phil@raspberrypi.org, jonathan@raspberrypi.org,
-        matthias.bgg@kernel.org, linux-rpi-kernel@lists.infradead.org,
-        wahrenst@gmx.net, nsaenzjulienne@suse.de,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:BROADCOM GENET ETHERNET DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20191014212000.27712-1-f.fainelli@gmail.com>
-From:   Scott Branden <scott.branden@broadcom.com>
-Message-ID: <dda8587a-0734-d294-5b50-0f5f35c27918@broadcom.com>
-Date:   Tue, 15 Oct 2019 15:32:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4AyMktzsTkv7aY4ZRJQAUNTUY8eMY0KqI0FaLqiE3Fo=;
+        b=iqQnEWmtQnE5Q5p10L6CAp6GnzGWsQTPVFgpb3ZeFmyQfKD6LxXx5E9PQAb35j46e/
+         Kf7eVcphN16dye7Tpnq+53LnNwjI0k4wTHStm38RiiMIVO0kW6Iz/BqjEwehksrutuLl
+         1HaGPjZtu1xumNLQABbxoEbfi0cQIGdB7ucSsURT+du9Bq4u4t44HH7uz9MDmKAPTdsB
+         lo0IJA1y2wVw3JqO6QSXb7MO/eFM11tioSbSyB2EIV3c+fa5fkR3t0tSUwyzHs8GkNO2
+         ECpNv7ipdB7xWP4AGscxiPlitKvN1Gd1lwD1HuYOQL241w7peVm1kg1ypxk9Kme97Mqg
+         eYHQ==
+X-Gm-Message-State: APjAAAXmZgfFvdFPw2zXyAkhn9kPlAFOICZdH6i6tqWeDiMaBrWR9t5z
+        hea5UOx67dOqGfbzrvYn5Xtu3he0JuETs0dy65dOQ+wN
+X-Google-Smtp-Source: APXvYqzIzcgB3Huzz14rqnHe/p4tutlP/9m/kZbwrhw1m/RlBiVbkl5OwlXF+3FRybhVeKxvc3ojWcxVoIAVkNcRnK4=
+X-Received: by 2002:a37:4c13:: with SMTP id z19mr39679360qka.449.1571178853685;
+ Tue, 15 Oct 2019 15:34:13 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191014212000.27712-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20191011162124.52982-1-sdf@google.com> <CAADnVQLKPLXej_v7ymv3yJakoFLGeQwdZOJ5cZmp7xqOxfebqg@mail.gmail.com>
+ <20191012003819.GK2096@mini-arch> <CAADnVQKuysEvFAX54+f0YPJ1+cgcRJbhrpVE7xmvLqu-ADrk+Q@mail.gmail.com>
+ <CAEf4BzaKn0ztTCJq7VOsyMfCqqq1HkxXwD6xEYL_3cbYkiPEgg@mail.gmail.com> <CAADnVQ+1HRrMsv4NKvZ_=LWHrWTXWd8RYJS4ybXJXgdLuHugMA@mail.gmail.com>
+In-Reply-To: <CAADnVQ+1HRrMsv4NKvZ_=LWHrWTXWd8RYJS4ybXJXgdLuHugMA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 15 Oct 2019 15:33:58 -0700
+Message-ID: <CAEf4Bzby5ixEzrmXJOYP9WNORQ1HWCfXVN+EtcjBVz2J1XwEfQ@mail.gmail.com>
+Subject: Re: debug annotations for bpf progs. Was: [PATCH bpf-next 1/3] bpf:
+ preserve command of the process that loaded the program
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Stanislav Fomichev <sdf@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On Tue, Oct 15, 2019 at 3:24 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Oct 15, 2019 at 3:14 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, Oct 15, 2019 at 2:22 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Fri, Oct 11, 2019 at 5:38 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > > >
+> > > > On 10/11, Alexei Starovoitov wrote:
+> > > > > On Fri, Oct 11, 2019 at 9:21 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > > > > >
+> > > > > > Even though we have the pointer to user_struct and can recover
+> > > > > > uid of the user who has created the program, it usually contains
+> > > > > > 0 (root) which is not very informative. Let's store the comm of the
+> > > > > > calling process and export it via bpf_prog_info. This should help
+> > > > > > answer the question "which process loaded this particular program".
+> > > > > >
+> > > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > > > ---
+> > > > > >  include/linux/bpf.h      | 1 +
+> > > > > >  include/uapi/linux/bpf.h | 2 ++
+> > > > > >  kernel/bpf/syscall.c     | 4 ++++
+> > > > > >  3 files changed, 7 insertions(+)
+> > > > > >
+> > > > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > > > > index 5b9d22338606..b03ea396afe5 100644
+> > > > > > --- a/include/linux/bpf.h
+> > > > > > +++ b/include/linux/bpf.h
+> > > > > > @@ -421,6 +421,7 @@ struct bpf_prog_aux {
+> > > > > >                 struct work_struct work;
+> > > > > >                 struct rcu_head rcu;
+> > > > > >         };
+> > > > > > +       char created_by_comm[BPF_CREATED_COMM_LEN];
+> > > > > >  };
+> > > > > >
+> > > > > >  struct bpf_array {
+> > > > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > > > index a65c3b0c6935..4e883ecbba1e 100644
+> > > > > > --- a/include/uapi/linux/bpf.h
+> > > > > > +++ b/include/uapi/linux/bpf.h
+> > > > > > @@ -326,6 +326,7 @@ enum bpf_attach_type {
+> > > > > >  #define BPF_F_NUMA_NODE                (1U << 2)
+> > > > > >
+> > > > > >  #define BPF_OBJ_NAME_LEN 16U
+> > > > > > +#define BPF_CREATED_COMM_LEN   16U
+> > > > >
+> > > > > Nack.
+> > > > > 16 bytes is going to be useless.
+> > > > > We found it the hard way with prog_name.
+> > > > > If you want to embed additional debug information
+> > > > > please use BTF for that.
+> > > > BTF was my natural choice initially, but then I saw created_by_uid and
+> > > > thought created_by_comm might have a chance :-)
+> > > >
+> > > > To clarify, by BTF you mean creating some unused global variable
+> > > > and use its name as the debugging info? Or there is some better way?
+> > >
+> > > I was thinking about adding new section to .btf.ext with this extra data,
+> > > but global variable is a better idea indeed.
+> > > We'd need to standardize such variables names, so that
+> > > bpftool can parse and print it while doing 'bpftool prog show'.
+> > > We see more and more cases where services use more than
+> > > one program in single .c file to accomplish their goals.
+> > > Tying such debug info (like 'created_by_comm') to each program
+> > > individually isn't quite right.
+> > > In that sense global variables are better, since they cover the
+> > > whole .c file.
+> > > Beyond 'created_by_comm' there are others things that people
+> > > will likely want to know.
+> > > Like which version of llvm was used to compile this .o file.
+> > > Which unix user name compiled it.
+> > > The name of service/daemon that will be using this .o
+> > > and so on.
+> > > May be some standard prefix to such global variables will do?
+> > > Like "bpftool prog show" can scan global data for
+> > > "__annotate_#name" and print both name and string contents ?
+> > > For folks who regularly ssh into servers to debug bpf progs
+> > > that will help a lot.
+> > > May be some annotations llvm can automatically add to .o.
+> > > Thoughts?
+> >
+> > We can dedicate separate ELF section for such variables, similar to
+> > license and version today, so that libbpf will know that those
+> > variables are not real variables and shouldn't be used from BPF
+> > program itself. But we can have many of them in single section, unlike
+> > version and license. :) With that, we'll have metadata and list of
+> > variables in BTF (DATASEC + VARs). The only downside - you'll need ELF
+> > itself to get the value of that variable, no? Is that acceptable? Do
+> > we always know where original ELF is?
+>
+> Having .o around is not acceptable.
+> That was already tried and didn't work with bcc.
+> I was proposing to have these special vars to be loaded into the kernel
+> as part of normal btf loading.
 
-On 2019-10-14 2:20 p.m., Florian Fainelli wrote:
-> Instead of having a hard failure and stopping the driver's probe
-> routine, generate a random Ethernet MAC address to keep going.
->
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> Changes in v2:
->
-> - provide a message that a random MAC is used, the same message that
->    bcmsysport.c uses
->
->   drivers/net/ethernet/broadcom/genet/bcmgenet.c | 17 ++++++++---------
->   1 file changed, 8 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index 12cb77ef1081..dd4e4f1dd384 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -3461,16 +3461,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
->   		goto err;
->   	}
->   
-> -	if (dn) {
-> +	if (dn)
->   		macaddr = of_get_mac_address(dn);
-> -		if (IS_ERR(macaddr)) {
-> -			dev_err(&pdev->dev, "can't find MAC address\n");
-> -			err = -EINVAL;
-> -			goto err;
-> -		}
-> -	} else {
-> +	else
->   		macaddr = pd->mac_address;
-> -	}
->   
->   	priv->base = devm_platform_ioremap_resource(pdev, 0);
->   	if (IS_ERR(priv->base)) {
-> @@ -3482,7 +3476,12 @@ static int bcmgenet_probe(struct platform_device *pdev)
->   
->   	SET_NETDEV_DEV(dev, &pdev->dev);
->   	dev_set_drvdata(&pdev->dev, dev);
-> -	ether_addr_copy(dev->dev_addr, macaddr);
-> +	if (IS_ERR_OR_NULL(macaddr) || !is_valid_ether_addr(macaddr)) {
-> +		dev_warn(&pdev->dev, "using random Ethernet MAC\n");
-I would still consider this warrants a dev_err as you should not be 
-using the device with a random MAC address assigned to it.  But I'll 
-leave it to the "experts" to decide on the print level here.
-> +		eth_hw_addr_random(dev);
-> +	} else {
-> +		ether_addr_copy(dev->dev_addr, macaddr);
-> +	}
->   	dev->watchdog_timeo = 2 * HZ;
->   	dev->ethtool_ops = &bcmgenet_ethtool_ops;
->   	dev->netdev_ops = &bcmgenet_netdev_ops;
+BTF is just metadata for variables. We'll know name and type
+information about variable, but we need a string contents. That is
+stored in ELF, so without .o file we won't be able to extract it.
+Unless you have something else in mind?
 
+> Not sure what special section gives.
+
+It's a marker that libbpf doesn't have to allocate memory and create
+internal map for that section. We don't want those annotation
+variables to be backed by BPF map, do we?
