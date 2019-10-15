@@ -2,122 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 694E4D843C
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 01:08:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58708D8449
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 01:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390190AbfJOXIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 19:08:51 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:52043 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726689AbfJOXIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 19:08:51 -0400
-Received: from [213.220.153.21] (helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1iKVvr-0000Jx-9u; Tue, 15 Oct 2019 23:08:47 +0000
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-In-Reply-To: <CAADnVQ+PDTTBT5GEZQhnoF0Ni8JVbRD5A+zWRH6DO45Kc-Zn=Q@mail.gmail.com>
-Date:   Wed, 16 Oct 2019 01:08:46 +0200
-Subject: Re: [PATCH 0/3] bpf: switch to new usercopy helpers
-From:   "Christian Brauner" <christian.brauner@ubuntu.com>
-To:     "Alexei Starovoitov" <alexei.starovoitov@gmail.com>
-Cc:     "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "bpf" <bpf@vger.kernel.org>, "Martin KaFai Lau" <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        "Network Development" <netdev@vger.kernel.org>,
-        "LKML" <linux-kernel@vger.kernel.org>
-Message-Id: <BXQH5L9TPV45.1L8EW2MWSM2VM@wittgenstein>
+        id S2387745AbfJOXOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 19:14:35 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:34250 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbfJOXOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 19:14:35 -0400
+Received: by mail-lf1-f68.google.com with SMTP id r22so15832012lfm.1;
+        Tue, 15 Oct 2019 16:14:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iNbYu3/4YIpMssRL+g280kmE2CZxZyUO5nIOwnsjYWw=;
+        b=PwtnllJSJrx/VZH9bAPCGfjMbAcxTHxR47lAw0O25l6U+LoQq4fqAODJ+Exl+n/7h3
+         XYpRjlO78mvSkWzcRvtN32ADrmoCLkrNhQi5jYp8bmc6p0R5xW5+4Nllu9jpB9a5ZeM0
+         ktzldN0vFKFwp8p0OToiQhOqpf6CkDA051b0iFe8I+ndnLPfSi9u1sLtD4WS1xeHkfCS
+         eFgbgSO3ka/Z1laNOI/zJ54cy1mmuWp1QSc2UZQMO5UnZzZSaGpY8Ni5l6V6NH1TB+u/
+         kiCuPvN9Uc7iLxPgGZozSCRhiOUFfPNTEjv2y4f1/jRpyIvYH4daKpXJhCdG2N69qr52
+         otog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iNbYu3/4YIpMssRL+g280kmE2CZxZyUO5nIOwnsjYWw=;
+        b=WPxl1yttSxJ3FbJzybbbxCl/avfOJFaxQQEtVXBG2yKdkmiu4a3GpHOSkveutTNP7Q
+         7GtT1Ygl+JJUnrKrRiSTSQdxvidR3ja+p5R2h/jLMpRK0gMzDO8kBv3YxlTsGn+Zk6lZ
+         rYaz/pOsBFqpYUd/f3rTGVbGbLAY87hHVnof+3tgUv7ok+Z5UuGSpE8RHgdTZopquhXY
+         AFmrNGw+Fs5M9C0jcOEwOYbJBEksvWeYdJOsL1INireZXE+ZG2DHktmC8Z1pdNzsrCNU
+         SJPIO4ryEbNNbFasqc1LW9DCIl+zR4SlWIT+mFUTezQ5p5SE2LAMF5cqPwOyft+U2R2X
+         kPTg==
+X-Gm-Message-State: APjAAAUr0EaE1WM2NKSH+PldWCpXTPpt2ECtDhExwtkb22ybqg/zkIyd
+        8REStrX8hxOTblnOCopBFxxxDJtPGF1GrSt9l+E=
+X-Google-Smtp-Source: APXvYqy4blYbWbBQqGYRZzS2yCTW4Zfov22xeyFQ6W8TMnPTMFBkgtYsKUtEgABregV2/SaEjEfnRl/P5vRSp5ztMZQ=
+X-Received: by 2002:a19:4f06:: with SMTP id d6mr23497796lfb.15.1571181273128;
+ Tue, 15 Oct 2019 16:14:33 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191015182849.3922287-1-andriin@fb.com>
+In-Reply-To: <20191015182849.3922287-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 15 Oct 2019 16:14:21 -0700
+Message-ID: <CAADnVQ+m_TAbo27QSEk1MeUsprtUE9HLzF0QwSFGxVfNrjRd0w@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 0/5] Add CO-RE support for field existence relos
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue Oct 15, 2019 at 4:02 PM Alexei Starovoitov wrote:
-> On Tue, Oct 15, 2019 at 3:55 PM Christian Brauner
-> <christian.brauner@ubuntu.com> wrote:
-> >
-> > On Tue, Oct 15, 2019 at 03:45:54PM -0700, Alexei Starovoitov wrote:
-> > > On Thu, Oct 10, 2019 at 2:26 AM Christian Brauner
-> > > <christian.brauner@ubuntu.com> wrote:
-> > > >
-> > > > On Wed, Oct 09, 2019 at 04:06:18PM -0700, Alexei Starovoitov wrote:
-> > > > > On Wed, Oct 9, 2019 at 9:09 AM Christian Brauner
-> > > > > <christian.brauner@ubuntu.com> wrote:
-> > > > > >
-> > > > > > Hey everyone,
-> > > > > >
-> > > > > > In v5.4-rc2 we added two new helpers check_zeroed_user() and
-> > > > > > copy_struct_from_user() including selftests (cf. [1]). It is a =
-generic
-> > > > > > interface designed to copy a struct from userspace. The helpers=
- will be
-> > > > > > especially useful for structs versioned by size of which we hav=
-e quite a
-> > > > > > few.
-> > > > > >
-> > > > > > The most obvious benefit is that this helper lets us get rid of
-> > > > > > duplicate code. We've already switched over sched_setattr(), pe=
-rf_event_open(),
-> > > > > > and clone3(). More importantly it will also help to ensure that=
- users
-> > > > > > implementing versioning-by-size end up with the same core seman=
-tics.
-> > > > > >
-> > > > > > This point is especially crucial since we have at least one cas=
-e where
-> > > > > > versioning-by-size is used but with slighly different semantics=
-:
-> > > > > > sched_setattr(), perf_event_open(), and clone3() all do do simi=
-lar
-> > > > > > checks to copy_struct_from_user() while rt_sigprocmask(2) alway=
-s rejects
-> > > > > > differently-sized struct arguments.
-> > > > > >
-> > > > > > This little series switches over bpf codepaths that have hand-r=
-olled
-> > > > > > implementations of these helpers.
-> > > > >
-> > > > > check_zeroed_user() is not in bpf-next.
-> > > > > we will let this set sit in patchworks for some time until bpf-ne=
-xt
-> > > > > is merged back into net-next and we fast forward it.
-> > > > > Then we can apply it (assuming no conflicts).
-> > > >
-> > > > Sounds good to me. Just ping me when you need me to resend rebase o=
-nto
-> > > > bpf-next.
-> > >
-> > > -rc1 is now in bpf-next.
-> > > I took a look at patches and they look good overall.
-> > >
-> > > In patches 2 and 3 the zero init via "=3D {};"
-> > > should be unnecessary anymore due to
-> > > copy_struct_from_user() logic, right?
-> >
-> > Right, I can remove them.
-> >
-> > >
-> > > Could you also convert all other case in kernel/bpf/,
-> > > so bpf_check_uarg_tail_zero() can be removed ?
-> > > Otherwise the half-way conversion will look odd.
-> >
-> > Hm, I thought I did that and concluded that bpf_check_uarg_tail_zero()
-> > can't be removed because sometimes it is called to verify whether a
-> > given struct is zeroed but nothing is actually copied from userspace bu=
-t
-> > rather to userspace. See for example
-> > v5.4-rc3:kernel/bpf/syscall.c:bpf_map_get_info_by_fd()
-> > All call sites where something is actually copied from userspace I've
-> > switched to copy_struct_from_user().
->=20
-> I see. You're right.
-> Could you update the comment in bpf_check_uarg_tail_zero()
-> to clarify that copy_struct_from_user() should be used whenever
-> possible instead ?
+On Tue, Oct 15, 2019 at 2:26 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> This patch set generalizes libbpf's CO-RE relocation support. In addition to
+> existing field's byte offset relocation, libbpf now supports field existence
+> relocations, which are emitted by Clang when using
+> __builtin_preserve_field_info(<field>, BPF_FIELD_EXISTS). A convenience
+> bpf_core_field_exists() macro is added to bpf_core_read.h BPF-side header,
+> along the bpf_field_info_kind enum containing currently supported types of
+> field information libbpf supports. This list will grow as libbpf gains support
+> for other relo kinds.
+>
+> This patch set upgrades the format of .BTF.ext's relocation record to match
+> latest Clang's format (12 -> 16 bytes). This is not a breaking change, as the
+> previous format hasn't been released yet as part of official Clang version
+> release.
+>
+> v1->v2:
+> - unify bpf_field_info_kind enum and naming changes (Alexei);
+> - added bpf_core_field_exists() to bpf_core_read.h.
 
-Yup, can do.
-
-Christian
+I'm not excited about duplicated enum definition for libbpf internal
+and bpf prog purpose, but it's a lesser evil.
+If we do new .h now to be shared between bpf progs and libbpf
+it could be too early in release cycle. Both libbpf and llvm side
+may still change. So let's make a note to clean it up later when
+we're sure on numbers and whether numbers will indeed be
+the same in .btf.ext and in what bpf prog passes to llvm.
+Applied to bpf-next. Thanks
