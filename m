@@ -2,105 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D93A0D8139
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 22:44:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C20E4D8146
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 22:45:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388357AbfJOUoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 16:44:11 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55972 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727673AbfJOUoL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 16:44:11 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6B1FD10DCCA5;
-        Tue, 15 Oct 2019 20:44:10 +0000 (UTC)
-Received: from krava (ovpn-204-61.brq.redhat.com [10.40.204.61])
-        by smtp.corp.redhat.com (Postfix) with SMTP id D45D4101E68F;
-        Tue, 15 Oct 2019 20:44:07 +0000 (UTC)
-Date:   Tue, 15 Oct 2019 22:44:07 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>, Daniel Xu <dxu@dxuuu.xyz>
-Subject: Re: [RFC] libbpf: Allow to emit all dependent definitions
-Message-ID: <20191015204407.GA16674@krava>
-References: <20191015130117.32292-1-jolsa@kernel.org>
- <CAEf4BzYdJ-hPHVehZriS_synLWtgad9wx_eoN6-JDBUUHFjfgQ@mail.gmail.com>
+        id S2389333AbfJOUpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 16:45:33 -0400
+Received: from mail-lj1-f179.google.com ([209.85.208.179]:33521 "EHLO
+        mail-lj1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388069AbfJOUpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 16:45:33 -0400
+Received: by mail-lj1-f179.google.com with SMTP id a22so21696944ljd.0
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 13:45:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=3sTI7HF1pEOo9uiGgFvCLpEQtHEUcjkhgN7IuFOAUTo=;
+        b=Hd+7SGm8x8BT34f8apHzWlku6NkNxOFJM56duBhkQehJ3ePR/6RPNrnZu7wf49xT8q
+         cWuN0gzIodBfzLAls5CmJT/V2IDKGzq4mVX76lFsmIGkc0XtDDsI34JGiQTcAWJ8ZMkX
+         41fmchwWLmFF225RuZZklSP2cd1KFJWU8eG4VvWYOgXM69VNPLGI3jbIdb/3mp80JVJd
+         PuJmfjwl433FFqLFXtD3EqS4M5b3CLjsmKEGq0Dk73bQ8/GDVFZRp1uqvjJn1fG6Jb8N
+         rhaBunmIyJbc23bnVgMvjh7tWHNJeoJZQ32BJZsWDqmzGw1bLnzd+BJSxbJO/+evPwIK
+         yH2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=3sTI7HF1pEOo9uiGgFvCLpEQtHEUcjkhgN7IuFOAUTo=;
+        b=NDJwiwCypEDNfFRTzEQTOTEl3IMX7OrqnjWiu4pDO0QCoBmEz7Es70971pnpvhiPBr
+         27csxhsfKRh7J4/9+yWQbSExb701hfVemzIArbL+hJuhRlibMyjVBDsTfsfLww9N7Itf
+         T1AFeRnNs8lFS0ehgKZrmGuAzLXy3h6O8FM0EuNNWFb82/ki/WabR39AgQjSKI8oMGpd
+         p6V1ValHK9PebA1q6uZRr67sqVzxT5QLekS16EEu0JCgQtmYAD0M1EY9v7MKn5kSYA5P
+         oKicHWcPBnSgODOa8W9KjoxCoo8wzjn08roG6RUTZTCN4zFkxzilpjuaZtRVcMiWa3xl
+         VUfA==
+X-Gm-Message-State: APjAAAXhLq71MfLSF5TvyBBmYwm0aZSlJf9bKNaQyqyus54lRMWOE4dk
+        /GBsC1ig8LAGB8o7sq42Jh+bXQ==
+X-Google-Smtp-Source: APXvYqxYNHNpfzL6TjfXNghWlhSONFfYYxQgIwt0ch2NaL1I+PtJ1ikUxvUMpXqf7SxoWsnJETD17A==
+X-Received: by 2002:a2e:95d9:: with SMTP id y25mr23999735ljh.217.1571172331121;
+        Tue, 15 Oct 2019 13:45:31 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id a14sm5460997lfg.74.2019.10.15.13.45.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2019 13:45:30 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 13:45:22 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 0/2] mlxsw: Add support for 400Gbps (50Gbps
+ per lane) link modes
+Message-ID: <20191015134522.6002d501@cakuba.netronome.com>
+In-Reply-To: <20191015201416.GA2266@nanopsycho>
+References: <20191012162758.32473-1-jiri@resnulli.us>
+        <20191015120757.12c9c95b@cakuba.netronome.com>
+        <20191015201416.GA2266@nanopsycho>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYdJ-hPHVehZriS_synLWtgad9wx_eoN6-JDBUUHFjfgQ@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Tue, 15 Oct 2019 20:44:10 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 09:22:35AM -0700, Andrii Nakryiko wrote:
-> On Tue, Oct 15, 2019 at 6:03 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Tue, 15 Oct 2019 22:14:16 +0200, Jiri Pirko wrote:
+> Tue, Oct 15, 2019 at 09:07:57PM CEST, jakub.kicinski@netronome.com wrote:
+> >On Sat, 12 Oct 2019 18:27:56 +0200, Jiri Pirko wrote:  
+> >> From: Jiri Pirko <jiri@mellanox.com>
+> >> 
+> >> Add 400Gbps bits to ethtool and introduce support in mlxsw. These modes
+> >> are supported by the Spectrum-2 switch ASIC.  
 > >
-> > Currently the bpf dumper does not emit definitions
-> > of pointers to structs. It only emits forward type
-> > declarations.
+> >Thanks for the update, looks good to me!
 > >
-> > Having 2 structs like:
-> >
-> >    struct B {
-> >      int b;
-> >    };
-> >
-> >    struct A {
-> >      struct B *ptr;
-> >    };
-> >
-> > the call to btf_dump__dump_type(id = struct A) dumps:
-> >
-> >    struct B;
-> >    struct A {
-> >      struct B *ptr;
-> >    };
-> >
-> > It'd ease up bpftrace code if we could dump definitions
-> > of all dependent types, like:
-> >
-> >    struct B {
-> >      int b;
-> >    };
-> >    struct A {
-> >      struct B *ptr;
-> >    };
-> >
-> > So we could dereference all the pointers easily, instead
-> > of searching for each access member's type and dumping it
-> > separately.
-> >
-> > Adding struct btf_dump_opts::emit_all to do that.
-> >
+> >Out of curiosity - why did we start bunching up LR, ER and FR?  
 > 
-> Hey Jiri,
-> 
-> Yeah, Daniel Xu mentioned that this would be useful. I haven't thought
-> this through very well yet, but I suspect that this simple change
-> might not be enough to make this work. There are cases where you are
-> not yet allowed to emit definition and have to emit
-> forward-declaration first. I suggest trying to use this on vmlinux BTF
-> and see if resulting header files still compiles with both Clang and
-> GCC. Do you mind checking?
+> No clue. But it's been done like that for other speeds too.
 
-agh right, my test fails for vmlinux BTF
-
-> 
-> But also, as we learned over last few months, just adding extra field
-> to an opts struct is not backwards-compatible, so we'll need to add
-> new API and follow the pattern that we used for
-> bpf_object__open_{file,mem).
-
-will check, thanks
-jirka
+Looks like for 50G Serdeses and 4x25G we started grouping by Clause.
+Probably makes sense.
