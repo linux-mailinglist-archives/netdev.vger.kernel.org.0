@@ -2,61 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AA09D74D3
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 13:22:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76B0D7527
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 13:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbfJOLWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 07:22:11 -0400
-Received: from slot0.abiagod.ga ([45.86.68.97]:45419 "EHLO slot0.abiagod.ga"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726004AbfJOLWL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 07:22:11 -0400
-X-Greylist: delayed 601 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Oct 2019 07:22:10 EDT
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=abiagod.ga;
- h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=puirchase@abiagod.ga;
- bh=qIk0qBgooCf4T+iBr48zYqJL5N4=;
- b=Ju2IJ+mQpHgt1AScwyyoz7YVkt0f4Vy1xj9vFLLfamwHDWGhAuArXClLJRz0C1ub0ZewM4d5L/q4
-   Uh9lxsG8YEoEW2fzSyvGeE1R2ZgTK0v9NokhW/A8MhDYDGYBfx0cgIx59EbQL8EU0mZacb28XaG8
-   o7PyU0+5nlwWTGlXSLTpi3hjZl53D4Si9zwrNmkTaejrrmVdQsXuN5XFQkA62mnsfCIiOvWyl2mD
-   J1y6TS04tO+Nk/8Imc1N3ceM0Nks1nb/OlXpjU//dOcFFdHQymlrwMYsQsWX8BiDXotgvyac5bXa
-   IhZ95mACU0AUEUdgoBqP0FGRh1qObkE4/m8OMQ==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=abiagod.ga;
- b=MN5SRm6E3dM2alSmxHaOXAraXPi6EKsNCBwnKrtZq4WvS6aAQOU2E3MCTNRoBaHIqDN0rX30E6fm
-   X7lnPMb58lv5SqGi4nJwRD3ymSj+lN4+SHmaSwCPAofa9xVwQp/OSHmU5qT8FYEyWar9XWW5Xbku
-   OeAHzGhKfpdvkzHkCu0QGsRRIbYqCoH7ObsJ707nIzbPLX8r2zgeT2fCmdkD2TPEzsJOmKK57zrr
-   mZwxiJtlCJZZu6K2QNVzbIDKw0FAysrJ6aw31zm4rbnSZHXIQ54+BrQbvdm3aOsFbnxFRJRIXIaV
-   Ld/ExoX7r7Qb/s7Snp4EPcsmXjMjgg1OuqkuHQ==;
-Reply-To: import-davsar2@mail.ru
-From:   "Mrs Lubov Aleksandrov" <puirchase@abiagod.ga>
-To:     netdev@vger.kernel.org
-Subject: INQUIRY
-Date:   15 Oct 2019 04:02:08 -0700
-Message-ID: <20191015040208.1B4A3D4B249477E9@abiagod.ga>
+        id S1728676AbfJOLgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 07:36:49 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:55954 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727148AbfJOLgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 07:36:48 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id E956C60DA7; Tue, 15 Oct 2019 11:36:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571139408;
+        bh=ovkt4b2nKzMchB9ZgtQWzeYw6k1PJKUjpwtIZzO24Mc=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Us3gxveSa+uHoCXf77KwRimlDca9sam72HCL1c5NuUiD+9Nn/z1Ma5tVBqgA45tOe
+         pjpZwD9AVkVOOlsNzlazbkBlJq5dDG5NeZWA5UQd1EdXhWlzSXHSRAAqIN7qZIlg6A
+         Sz43FdW37JmUiBoKIbILCsqCuToy1ORroFawcuNU=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from x230.qca.qualcomm.com (176-93-78-119.bb.dnainternet.fi [176.93.78.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 19E6760D80;
+        Tue, 15 Oct 2019 11:36:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571139406;
+        bh=ovkt4b2nKzMchB9ZgtQWzeYw6k1PJKUjpwtIZzO24Mc=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Qeo9I8PLZsA311E0L8wsSnMmwlaCDk/23SZZipiccN6Usk65XBM4XNss+gMJBmRHv
+         umFfG+lEAOr2jOeOZUmiGA+KRe9YWex6yOojDRaB38k/2/dbGcxsL5AD1OSuAj8RwU
+         h6BSEKzfYJ4rgJqhpw3MbzQDQjE0OUMa3oMlxd+0=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 19E6760D80
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+Subject: Re: [PATCH] rtl8xxxu: fix RTL8723BU connection failure issue after warm reboot
+References: <20191015102109.4701-1-chiu@endlessm.com>
+Date:   Tue, 15 Oct 2019 14:36:41 +0300
+In-Reply-To: <20191015102109.4701-1-chiu@endlessm.com> (Chris Chiu's message
+        of "Tue, 15 Oct 2019 18:21:09 +0800")
+Message-ID: <874l0ansty.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+Chris Chiu <chiu@endlessm.com> writes:
 
-I am Mrs Lubov Aleksandrov from DAVSAR LLC Russia.I am in charge=20
-of sales .
+> The RTL8723BU has problems connecting to AP after each warm reboot.
+> Sometimes it returns no scan result, and in most cases, it fails
+> the authentication for unknown reason. However, it works totally
+> fine after cold reboot.
+>
+> Compare the value of register SYS_CR and SYS_CLK_MAC_CLK_ENABLE
+> for cold reboot and warm reboot, the registers imply that the MAC
+> is already powered and thus some procedures are skipped during
+> driver initialization. Double checked the vendor driver, it reads
+> the SYS_CR and SYS_CLK_MAC_CLK_ENABLE also but doesn't skip any
+> during initialization based on them. This commit only tells the
+> RTL8723BU to do full initialization without checking MAC status.
+>
+> https://phabricator.endlessm.com/T28000
+>
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
 
-We are interested in your product .We would greatly appreciate
+If you send a new version of patch mark it as v2 and include a
+changelog:
 
-receiving any information, brochures and price lists of your=20
-products.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#patch_version_missing
 
-Thanks.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#changelog_missing
 
-
-Mrs Lubov Aleksandrov
-Sales General Manager of DAVSAR LLC)
-14 Marksistskaya St.=20
-109147 Moscow
-RUSSIA
-Phone:+7(494)213-66-26
+-- 
+Kalle Valo
