@@ -2,220 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D0AD7F17
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 20:33:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD557D7F19
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 20:33:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389137AbfJOSdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 14:33:31 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:38168 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727200AbfJOSda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 14:33:30 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y18so15627919wrn.5
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 11:33:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=7G18Uo2lnUlgoJo0AZSZnxFhXXuayWUPUI1mRK69AXQ=;
-        b=KgpDUSawxKAZYZnryCd/829fGSLMqbzBfi8Lcrsh4OIXbtTHWsnxvzM9OY9tpdjZRF
-         Jmr4f91ot9pJoRbg5iqpH/d+DI2RkQV8epQJAkwKEKqckKdrvpPBhYbPXUrFmw89YP4D
-         Fg4jIw9aNxhb8DwRdLTsCdQk6PO0CNpxLlVLSNdQC46G146xPq2gUOPwLSt6edzPookE
-         W7NE+sxhN8ZTVmqFk4B5VXE+L3vGdfP79PEnm3DlaX5GHp6zQoFRFyO8xz4+1qaUttGy
-         lLskEa9UZ3YZsGbgpyaSHpLMdxHas8jJHvrUFN3H2jZpth5GIDzohb+0buftjkam/n1p
-         sJEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=7G18Uo2lnUlgoJo0AZSZnxFhXXuayWUPUI1mRK69AXQ=;
-        b=JHVetUMZCJtVxKCMs47AZ5CJi91I7X1sr6JCgE211C2DCKXWbptBHd2OAdQ9p4wZoF
-         I4rG3OVD/tz+qDz22bZAxjLxULhhGc6i7FdulkAL5JRrVLFZLHnnnedWmAngoLHfX1/W
-         YaTl3yKcju5GoaIUKNuIEQfwOdV4IC0cWZzUEv7I666wQUrZfBnOsleJFpIAVauHaTAB
-         OIuQzn7jhzpwD+it/lh8OQuTRyGh/nwoxYgySQKM+bsk9laNX3C0d0cfz43pcT41B0om
-         peL0gA9twKL/7H/Or6hefytDZHDugU++CiNpJG/o93QnB7LWbFjIm1qOaGE0kL0WkeTG
-         Mucg==
-X-Gm-Message-State: APjAAAXVMKk+fnu1XMdzd92M29yPAyF36nvbGNVOKaPZeS9bS1+n3szE
-        32o9SKQCHhyMOustEvS0SGlrFw2iK+0=
-X-Google-Smtp-Source: APXvYqwmeOxruMo0/gLbm2K5P3CC8zW/BCwA1qD6NMCkWukdIx/7aJ48p5J7tnRmPdDt4sg3qjt9aw==
-X-Received: by 2002:adf:f547:: with SMTP id j7mr33837456wrp.26.1571164406402;
-        Tue, 15 Oct 2019 11:33:26 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z15sm10728632wrr.19.2019.10.15.11.33.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2019 11:33:26 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 11:33:17 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 net 2/4] net: aquantia: when cleaning hw cache it
- should be toggled
-Message-ID: <20191015113317.6413f912@cakuba.netronome.com>
-In-Reply-To: <d89180cd7ddf6981310179108b37a8d15c44c02f.1570787323.git.igor.russkikh@aquantia.com>
-References: <cover.1570787323.git.igor.russkikh@aquantia.com>
-        <d89180cd7ddf6981310179108b37a8d15c44c02f.1570787323.git.igor.russkikh@aquantia.com>
-Organization: Netronome Systems, Ltd.
+        id S2389158AbfJOSdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 14:33:44 -0400
+Received: from dispatchb-us1.ppe-hosted.com ([148.163.129.53]:32930 "EHLO
+        dispatchb-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727200AbfJOSdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 14:33:43 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 27AB9680089;
+        Tue, 15 Oct 2019 18:33:42 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 15 Oct
+ 2019 11:33:36 -0700
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF
+ programs after each other
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
+ <157046883614.2092443.9861796174814370924.stgit@alrua-x1>
+ <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com>
+ <87sgo3lkx9.fsf@toke.dk>
+ <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com>
+ <87o8yqjqg0.fsf@toke.dk>
+ <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
+ <87v9srijxa.fsf@toke.dk>
+ <5da4ab712043c_25f42addb7c085b83b@john-XPS-13-9370.notmuch>
+ <87eezfi2og.fsf@toke.dk>
+ <f9d5f717-51fe-7d03-6348-dbaf0b9db434@solarflare.com>
+ <87r23egdua.fsf@toke.dk>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
+Date:   Tue, 15 Oct 2019 19:33:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <87r23egdua.fsf@toke.dk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24978.005
+X-TM-AS-Result: No-0.957600-4.000000-10
+X-TMASE-MatchedRID: eVEkOcJu0F7mLzc6AOD8DfHkpkyUphL93TijyM9Pm06NIyHZwe1QFtGV
+        QrnZJqIeasiy2Gq55dNu8Fu5ca3VaWiqvF73selK4qCB2ZT6yAz4h+uI7dxXxE+86maMM3aSxM4
+        LnHemWNicsoSgKGmgXwsomT4JOOOJhEHl6wFFv6eAO0kpgKezRAILzOoe9wba4ZmC0TPZtohibQ
+        Tt34yFor8sWxR09nTRivZDYfXQrkr/XoXWj+sk7m6HurDH4PpPUb4EdIZGxuBRD5heJnxuK5/DV
+        afvDf6BfsIfixHvnM+IvG1appPoNAhU4yeqg71ukJi1wdeHFtrCWn3gcatca8sh83hywc54nP9s
+        HBbfaKR06g90LjJRaOdzbjlZ7erCkfRhdidsajODGx/OQ1GV8t0H8LFZNFG7CKFCmhdu5cW14Ak
+        etjaBvVZYgdbj4xotNQC5FVraiU9hyIlyPZE5A+vY9CuBUVAhQ2JUiSK5OHeG+T/pjmHIzorTPv
+        /DTrrw+TiDwGH5+omigEHy7J4S6ylkreA5r24aYnCi5itk3iprD5+Qup1qU56oP1a0mRIj
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--0.957600-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24978.005
+X-MDID: 1571164423-RtGudYRNUMs8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Oct 2019 13:45:20 +0000, Igor Russkikh wrote:
-> From HW specification to correctly reset HW caches (this is a required
-> workaround when stopping the device), register bit should actually
-> be toggled.
+On 15/10/2019 17:42, Toke Høiland-Jørgensen wrote:
+> Edward Cree <ecree@solarflare.com> writes:
+>> On 14/10/2019 19:48, Toke Høiland-Jørgensen wrote:
+>>> So that will end up with a single monolithic BPF program being loaded
+>>> (from the kernel PoV), right? That won't do; we want to be able to go
+>>> back to the component programs, and manipulate them as separate kernel
+>>> objects.
+>> Why's that? (Since it also applies to the static-linking PoC I'm
+>> putting together.) What do you gain by having the components be
+>> kernel-visible?
+> Because then userspace will have to keep state to be able to answer
+> questions like "show me the list of programs that are currently loaded
+> (and their call chain)", or do operations like "insert this program into
+> the call chain at position X".
+Userspace keeps state for stuff all the time.  We call them "daemons" ;)
+Now you might have arguments for why putting a given piece of state in
+ userspace is a bad idea — there's a reason why not everything is a
+ microkernel — but those arguments need to be made.
 
-Does the bit get set by the driver or HW?
+> We already keep all this state in the kernel,
+The kernel keeps the state of "current (monolithic) BPF program loaded
+ (against each hook)".  Prior to this patch series, the kernel does
+ *not* keep any state on what that BPF program was made of (except in
+ the sense of BTF debuginfos, which a linker could combine appropriately).
 
-If it gets set by HW there is still a tiny race from reading to
-writing.. Perhaps doing two writes -> to 0 and to 1 would be a better
-option?  
+So if we _don't_ add your chained-programs functionality into the kernel,
+ and then _do_ implement userspace linking, then there isn't any
+ duplicated functionality or even duplicated state — the userland state
+ is "what are my components and what's the linker invocation that glues
+ them together", the kernel state is "here is one monolithic BPF blob,
+ along with a BTF blob to debug it".  The kernel knows nothing of the
+ former, and userspace doesn't store (but knows how to recreate) the
+ latter.
 
-Just wondering, obviously I don't know your HW :)
+(That said, proper dynamic linking is better than static linking OR chain
+ calls, because it gives us the full flexibility of linking while giving
+ you your 'subprogs as kernel objects & kernel state'.  But I think we'll
+ need to prototype things with static linking first so that we can be
+ sure of the linker semantics we want, before we try to put a new dynamic
+ linker in the kernel.)
 
-> It was previosly always just set. Due to the way driver stops HW this
-> never actually caused any issues, but it still may, so cleaning this up.
-
-Hm. So is it a cleanup of fix? Does the way code is written guarantee
-it will never cause issues?
-
-> Fixes: 7a1bb49461b1 ("net: aquantia: fix potential IOMMU fault after driver unbind")
-> Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-> ---
->  .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 16 ++++++++++++++--
->  .../aquantia/atlantic/hw_atl/hw_atl_llh.c     | 17 +++++++++++++++--
->  .../aquantia/atlantic/hw_atl/hw_atl_llh.h     |  7 +++++--
->  .../atlantic/hw_atl/hw_atl_llh_internal.h     | 19 +++++++++++++++++++
->  4 files changed, 53 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-> index 30f7fc4c97ff..3459fadb7ddd 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-> @@ -968,14 +968,26 @@ static int hw_atl_b0_hw_interrupt_moderation_set(struct aq_hw_s *self)
->  
->  static int hw_atl_b0_hw_stop(struct aq_hw_s *self)
->  {
-> +	int err;
-> +	u32 val;
-> +
->  	hw_atl_b0_hw_irq_disable(self, HW_ATL_B0_INT_MASK);
->  
->  	/* Invalidate Descriptor Cache to prevent writing to the cached
->  	 * descriptors and to the data pointer of those descriptors
->  	 */
-> -	hw_atl_rdm_rx_dma_desc_cache_init_set(self, 1);
-> +	hw_atl_rdm_rx_dma_desc_cache_init_tgl(self);
->  
-> -	return aq_hw_err_from_flags(self);
-> +	err = aq_hw_err_from_flags(self);
-> +
-> +	if (err)
-> +		goto err_exit;
-> +
-> +	readx_poll_timeout_atomic(hw_atl_rdm_rx_dma_desc_cache_init_done_get,
-> +				  self, val, val == 1, 1000U, 10000U);
-
-It's a little strange to toggle, yet wait for it to be of a specific
-value..
-
-> +
-> +err_exit:
-> +	return err;
-
-Just return err instead of doing this pointless goto. It make the code
-harder to follow.
-
->  }
->  
->  static int hw_atl_b0_hw_ring_tx_stop(struct aq_hw_s *self,
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-> index 1149812ae463..6f340695e6bd 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-> @@ -606,12 +606,25 @@ void hw_atl_rpb_rx_flow_ctl_mode_set(struct aq_hw_s *aq_hw, u32 rx_flow_ctl_mode
->  			    HW_ATL_RPB_RX_FC_MODE_SHIFT, rx_flow_ctl_mode);
->  }
->  
-> -void hw_atl_rdm_rx_dma_desc_cache_init_set(struct aq_hw_s *aq_hw, u32 init)
-> +void hw_atl_rdm_rx_dma_desc_cache_init_tgl(struct aq_hw_s *aq_hw)
->  {
-> +	u32 val;
-> +
-> +	val = aq_hw_read_reg_bit(aq_hw, HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_ADR,
-> +				 HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_MSK,
-> +				 HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_SHIFT);
-
-hw_atl_rdm_rx_dma_desc_cache_init_done_get() ?
-
->  	aq_hw_write_reg_bit(aq_hw, HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_ADR,
->  			    HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_MSK,
->  			    HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_SHIFT,
-> -			    init);
-> +			    val ^ 1);
-> +}
-> +
-> +u32 hw_atl_rdm_rx_dma_desc_cache_init_done_get(struct aq_hw_s *aq_hw)
-> +{
-> +	return aq_hw_read_reg_bit(aq_hw, RDM_RX_DMA_DESC_CACHE_INIT_DONE_ADR,
-> +				  RDM_RX_DMA_DESC_CACHE_INIT_DONE_MSK,
-> +				  RDM_RX_DMA_DESC_CACHE_INIT_DONE_SHIFT);
->  }
->  
->  void hw_atl_rpb_rx_pkt_buff_size_per_tc_set(struct aq_hw_s *aq_hw,
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-> index 0c37abbabca5..c3ee278c3747 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-> @@ -313,8 +313,11 @@ void hw_atl_rpb_rx_pkt_buff_size_per_tc_set(struct aq_hw_s *aq_hw,
->  					    u32 rx_pkt_buff_size_per_tc,
->  					    u32 buffer);
->  
-> -/* set rdm rx dma descriptor cache init */
-> -void hw_atl_rdm_rx_dma_desc_cache_init_set(struct aq_hw_s *aq_hw, u32 init);
-> +/* toggle rdm rx dma descriptor cache init */
-> +void hw_atl_rdm_rx_dma_desc_cache_init_tgl(struct aq_hw_s *aq_hw);
-> +
-> +/* get rdm rx dma descriptor cache init done */
-> +u32 hw_atl_rdm_rx_dma_desc_cache_init_done_get(struct aq_hw_s *aq_hw);
->  
->  /* set rx xoff enable (per tc) */
->  void hw_atl_rpb_rx_xoff_en_per_tc_set(struct aq_hw_s *aq_hw, u32 rx_xoff_en_per_tc,
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-> index c3febcdfa92e..35887ad89025 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-> @@ -318,6 +318,25 @@
->  /* default value of bitfield rdm_desc_init_i */
->  #define HW_ATL_RDM_RX_DMA_DESC_CACHE_INIT_DEFAULT 0x0
->  
-> +/* rdm_desc_init_done_i bitfield definitions
-> + * preprocessor definitions for the bitfield rdm_desc_init_done_i.
-> + * port="pif_rdm_desc_init_done_i"
-> + */
-> +
-> +/* register address for bitfield rdm_desc_init_done_i */
-> +#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_ADR 0x00005a10
-> +/* bitmask for bitfield rdm_desc_init_done_i */
-> +#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_MSK 0x00000001U
-> +/* inverted bitmask for bitfield rdm_desc_init_done_i */
-> +#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_MSKN 0xfffffffe
-> +/* lower bit position of bitfield  rdm_desc_init_done_i */
-> +#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_SHIFT 0U
-> +/* width of bitfield rdm_desc_init_done_i */
-> +#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_WIDTH 1
-> +/* default value of bitfield rdm_desc_init_done_i */
-> +#define RDM_RX_DMA_DESC_CACHE_INIT_DONE_DEFAULT 0x0
-> +
-> +
-
-two empty lines here?
-
->  /* rx int_desc_wrb_en bitfield definitions
->   * preprocessor definitions for the bitfield "int_desc_wrb_en".
->   * port="pif_rdm_int_desc_wrb_en_i"
-
+-Ed
