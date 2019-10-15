@@ -2,146 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ABCFD7DA5
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 19:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16EDED7DAE
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 19:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388709AbfJORZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 13:25:51 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:10272 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727242AbfJORZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 13:25:50 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9FHNp8s011838;
-        Tue, 15 Oct 2019 10:25:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=LKG6iNPY+gQ0bzHcnuka56MjystcRZbrHfaLuqpZDPc=;
- b=R6epf84EpJ1YV2RNqPsL6N+596olhSBQoom3o9VdkR6LmBYlNlHWp3ccJ1OkMd4XwDhv
- c7PpAf7inHdLXBv+gbq+VJCt6KANknKTLl+w4Qlpv2yzkGFyX35ZfHYr9k4Dqq890YkO
- AjnKncGlpFxAVijAw9Lv7LPqy1OY6jWXYy4= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vky52k2ba-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 15 Oct 2019 10:25:41 -0700
-Received: from prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 15 Oct 2019 10:25:41 -0700
-Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
- prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 15 Oct 2019 10:25:40 -0700
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 15 Oct 2019 10:25:40 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XgYzK2GL3EnbW86wyUSNXAk619WDaJBeKMEcsC1iMWZ/q+MAWpXTxipxMxx7BryrkInrio06/kWvcdj0678sqYBQMfUxcaMLAD4HDEaWLLqC0yjrSnncHLazC1lRYXfZnzdq3NatNrr2r+ftjTuq8NxanIAhlJWIoJJCE2tS7AS9q570y4kerETQd5CVSgsEO8s0i7H08EOMo368ft5y+MWLmaQZkISq/dFEDC1b8kfGDrbXIo/KesB2+FB1kW+FA2HIV8vZXwDSuSjhDtoumluqrSBt75iyqDsZDn7T2VKkX/8mdZ1ncvjQTznHAdYJI7jrwdsZeaFNPA/WB5sYoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LKG6iNPY+gQ0bzHcnuka56MjystcRZbrHfaLuqpZDPc=;
- b=gZ9PeHVEGq5Pk7C5zQND/+4jQeoBxqVYVzhYOVNQhFDzQ3L3OQZk3xnrJNiGW4qNE8zWvttY76/d9eawffy3KQyYdzTmTu98v1bAbCcwAW7j6L6hjCWKcOJ4H/ij1AT4axnN4HwyCd0QKLILPcYe3b2/RKSTRh1igXBENjzRNqNVicnk7Vr/iy5g1QmQKd+q8DUW9NyJbkHbgbsQfmLbZLv2yhlxUOVsBNI4DrrK+jGCwqb259GjR7hqQVRSesJil2uyGCmbwmWAcmeY9kz9A7Fkdc1eKDPyo4nHZOWbECiuOwOi9VM4aVgkDg6Y0etTDFue9BV1ozE8DLkDe99+vg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LKG6iNPY+gQ0bzHcnuka56MjystcRZbrHfaLuqpZDPc=;
- b=fcOlSbxhx6bhJ12ar9w6lvW5t/p6vtGWwI7QI1CPePUCZlbGk1BG6Mt6o8S9C7k8nIHeFtU2Aw9DJUl6pv39YE3yyKQOM+8kGDVSEr2yDtrJeqy4+5vgv6OYVw94oTxAmHzqxQdskyo1sz9BnRQh80gspBF50eZ7VdK4hQ2sLfA=
-Received: from MWHPR15MB1216.namprd15.prod.outlook.com (10.175.2.17) by
- MWHPR15MB1694.namprd15.prod.outlook.com (10.175.141.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Tue, 15 Oct 2019 17:25:40 +0000
-Received: from MWHPR15MB1216.namprd15.prod.outlook.com
- ([fe80::24c9:a1ce:eeeb:9246]) by MWHPR15MB1216.namprd15.prod.outlook.com
- ([fe80::24c9:a1ce:eeeb:9246%10]) with mapi id 15.20.2347.023; Tue, 15 Oct
- 2019 17:25:40 +0000
-From:   Tao Ren <taoren@fb.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "arun.parameswaran@broadcom.com" <arun.parameswaran@broadcom.com>,
-        "justinpopo6@gmail.com" <justinpopo6@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
-Subject: Re: [PATCH net-next v8 2/3] net: phy: add support for clause 37
- auto-negotiation
-Thread-Topic: [PATCH net-next v8 2/3] net: phy: add support for clause 37
- auto-negotiation
-Thread-Index: AQHVZ1Bi3JE3p3zeEkCydFApWQwsCKcrP8IAgDB0zoCAAHZqgIAAAMUAgAAAvoA=
-Date:   Tue, 15 Oct 2019 17:25:40 +0000
-Message-ID: <b6cc685b-cb20-1b6f-21b9-ae0a330a28a1@fb.com>
-References: <20190909204906.2191290-1-taoren@fb.com>
- <20190914141752.GC27922@lunn.ch>
- <61e33434-c315-b80a-68bc-f0fe8f5029e7@fb.com>
- <20191015.132013.246221433893437093.davem@davemloft.net>
- <a940d709-65ec-32c7-7181-83da0872acd1@gmail.com>
-In-Reply-To: <a940d709-65ec-32c7-7181-83da0872acd1@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0166.namprd04.prod.outlook.com
- (2603:10b6:104:4::20) To MWHPR15MB1216.namprd15.prod.outlook.com
- (2603:10b6:320:22::17)
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:5adb]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 87689452-40c1-4ed7-0a61-08d75194b32d
-x-ms-traffictypediagnostic: MWHPR15MB1694:
-x-microsoft-antispam-prvs: <MWHPR15MB169439F6C5F4CD08CC2D2FBBB2930@MWHPR15MB1694.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 01917B1794
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(136003)(376002)(346002)(39860400002)(189003)(199004)(65806001)(446003)(5660300002)(6486002)(65956001)(186003)(31696002)(2616005)(46003)(11346002)(486006)(76176011)(99286004)(229853002)(52116002)(102836004)(53546011)(6506007)(386003)(476003)(6116002)(478600001)(6246003)(86362001)(8936002)(14454004)(7416002)(4326008)(31686004)(2906002)(7736002)(305945005)(25786009)(6512007)(8676002)(54906003)(110136005)(58126008)(4744005)(6436002)(66556008)(316002)(71200400001)(36756003)(71190400001)(256004)(66946007)(81166006)(81156014)(64756008)(66476007)(66446008);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1694;H:MWHPR15MB1216.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zouiC3fXeHQXSQVMBgGyTff9/VFgssiaFAC5DHtgYJGnGhDT5HSx9G7qB29/oRioL2Qrwr53DI2pNshWpSUWQRsLZ2cODBCLI8GV6l5+bP+qgkr33bR5RLCgvAVabTSaa1Ay3prRvMc4KnXN4uk9DuIn4ylCVG9Yv0WAeAJw6n5uCbaagZqAx6ILt5Ub4U+FRmkKA9j26Nz1laIGaNoi4ZlVJUuoWTNCWxJ4OU3E8cKs9u9Ae66nLYLWAGrtsaKCFWmEvPolnNLN82w9wcitbPEw1c/CfUUZP7bBNiYH9nkBUfFDuAs+pZPNOinmEtJtxR4hHUR7MtabmyuStP1TmGVxFSIvwZ2ZFOF/6eCtDTBGyjFVxq5GKd/ewMq71J0hA2c3tqr9iBlkSEwzwklnl6ssptGF9JjbEe1ldRPyGi0=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <69BBC53629E78544986562A2266D69D9@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2388763AbfJOR0z convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Oct 2019 13:26:55 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38576 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388705AbfJOR0z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Oct 2019 13:26:55 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1F8CE811D8;
+        Tue, 15 Oct 2019 17:26:54 +0000 (UTC)
+Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 043BC19C58;
+        Tue, 15 Oct 2019 17:26:46 +0000 (UTC)
+Date:   Tue, 15 Oct 2019 11:26:46 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
+Subject: Re: [PATCH V3 4/7] mdev: introduce device specific ops
+Message-ID: <20191015112646.3776dc29@x1.home>
+In-Reply-To: <eb7ecd99-7465-6be4-7ecd-84c11f66e0ac@redhat.com>
+References: <20191011081557.28302-1-jasowang@redhat.com>
+        <20191011081557.28302-5-jasowang@redhat.com>
+        <20191015124137.4f948bd2.cohuck@redhat.com>
+        <eb7ecd99-7465-6be4-7ecd-84c11f66e0ac@redhat.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87689452-40c1-4ed7-0a61-08d75194b32d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2019 17:25:40.0906
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 46ZSihSKIkN1b6FCTCplO5IstII7o/gS/jrI3cQPWA6J70BTEec1B7tcTzMSCsSk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1694
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-15_06:2019-10-15,2019-10-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 priorityscore=1501 adultscore=0 mlxlogscore=999 spamscore=0
- mlxscore=0 suspectscore=0 clxscore=1015 phishscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910150149
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Tue, 15 Oct 2019 17:26:54 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTAvMTUvMTkgMTA6MjIgQU0sIEZsb3JpYW4gRmFpbmVsbGkgd3JvdGU6DQo+IE9uIDEwLzE1
-LzE5IDEwOjIwIEFNLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+PiBGcm9tOiBUYW8gUmVuIDx0YW9y
-ZW5AZmIuY29tPg0KPj4gRGF0ZTogVHVlLCAxNSBPY3QgMjAxOSAxNzoxNjoyNiArMDAwMA0KPj4N
-Cj4+PiBDYW4geW91IHBsZWFzZSBhcHBseSB0aGUgcGF0Y2ggc2VyaWVzIHRvIG5ldC1uZXh0IHRy
-ZWUgd2hlbiB5b3UgaGF2ZQ0KPj4+IGJhbmR3aWR0aD8gQWxsIHRoZSAzIHBhdGNoZXMgYXJlIHJl
-dmlld2VkLg0KPj4NCj4+IElmIGl0IGlzIG5vdCBhY3RpdmUgaW4gcGF0Y2h3b3JrIHlvdSBuZWVk
-IHRvIHJlcG9zdC4NCj4+DQo+IA0KPiBUYW8sIGNhbiB5b3UgcGljayB1cCB0aGlzIHNlcmllcyBh
-bmQgcHJvdmlkZSBhIHByb3BlciBjb3ZlciBsZXR0ZXIgZm9yDQo+IGl0IChnaXQgZm9ybWF0LXBh
-dGNoIC0tY292ZXItbGV0dGVyKSB0aGF0IHdheSBpdCBjYW4gYmUgcGlja2VkIHVwIGJ5IERhdmlk
-Pw0KDQpTdXJlLiBUaGFuayB5b3UgZm9yIHRoZSBzdWdnZXN0aW9uLiBXaWxsIGRvIGl0Lg0KDQoN
-ClRoYW5rcywNCg0KVGFvDQo=
+On Tue, 15 Oct 2019 20:17:01 +0800
+Jason Wang <jasowang@redhat.com> wrote:
+
+> On 2019/10/15 下午6:41, Cornelia Huck wrote:
+> > On Fri, 11 Oct 2019 16:15:54 +0800
+> > Jason Wang <jasowang@redhat.com> wrote:
+> >  
+> >> Currently, except for the create and remove, the rest of
+> >> mdev_parent_ops is designed for vfio-mdev driver only and may not help
+> >> for kernel mdev driver. With the help of class id, this patch
+> >> introduces device specific callbacks inside mdev_device
+> >> structure. This allows different set of callback to be used by
+> >> vfio-mdev and virtio-mdev.
+> >>
+> >> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> >> ---
+> >>   .../driver-api/vfio-mediated-device.rst       | 22 +++++---
+> >>   MAINTAINERS                                   |  1 +
+> >>   drivers/gpu/drm/i915/gvt/kvmgt.c              | 18 ++++---
+> >>   drivers/s390/cio/vfio_ccw_ops.c               | 18 ++++---
+> >>   drivers/s390/crypto/vfio_ap_ops.c             | 14 +++--
+> >>   drivers/vfio/mdev/mdev_core.c                 |  9 +++-
+> >>   drivers/vfio/mdev/mdev_private.h              |  1 +
+> >>   drivers/vfio/mdev/vfio_mdev.c                 | 37 ++++++-------
+> >>   include/linux/mdev.h                          | 42 +++------------
+> >>   include/linux/vfio_mdev.h                     | 52 +++++++++++++++++++
+> >>   samples/vfio-mdev/mbochs.c                    | 20 ++++---
+> >>   samples/vfio-mdev/mdpy.c                      | 21 +++++---
+> >>   samples/vfio-mdev/mtty.c                      | 18 ++++---
+> >>   13 files changed, 177 insertions(+), 96 deletions(-)
+> >>   create mode 100644 include/linux/vfio_mdev.h
+> >>
+> >> diff --git a/Documentation/driver-api/vfio-mediated-device.rst b/Documentation/driver-api/vfio-mediated-device.rst
+> >> index 2035e48da7b2..553574ebba73 100644
+> >> --- a/Documentation/driver-api/vfio-mediated-device.rst
+> >> +++ b/Documentation/driver-api/vfio-mediated-device.rst
+> >> @@ -152,11 +152,20 @@ callbacks per mdev parent device, per mdev type, or any other categorization.
+> >>   Vendor drivers are expected to be fully asynchronous in this respect or
+> >>   provide their own internal resource protection.)
+> >>   
+> >> -The callbacks in the mdev_parent_ops structure are as follows:
+> >> +In order to support multiple types of device/driver, device needs to
+> >> +provide both class_id and device_ops through:  
+> > "As multiple types of mediated devices may be supported, the device
+> > needs to set up the class id and the device specific callbacks via:"
+> >
+> > ?
+> >  
+> >>   
+> >> -* open: open callback of mediated device
+> >> -* close: close callback of mediated device
+> >> -* ioctl: ioctl callback of mediated device
+> >> +    void mdev_set_class(struct mdev_device *mdev, u16 id, const void *ops);
+> >> +
+> >> +The class_id is used to be paired with ids in id_table in mdev_driver
+> >> +structure for probing the correct driver.  
+> > "The class id  (specified in id) is used to match a device with an mdev
+> > driver via its id table."
+> >
+> > ?
+> >  
+> >> The device_ops is device
+> >> +specific callbacks which can be get through mdev_get_dev_ops()
+> >> +function by mdev bus driver.  
+> > "The device specific callbacks (specified in *ops) are obtainable via
+> > mdev_get_dev_ops() (for use by the mdev bus driver.)"
+> >
+> > ?
+> >  
+> >> For vfio-mdev device, its device specific
+> >> +ops are as follows:  
+> > "A vfio-mdev device (class id MDEV_ID_VFIO) uses the following
+> > device-specific ops:"
+> >
+> > ?  
+> 
+> 
+> All you propose is better than what I wrote, will change the docs.
+> 
+> 
+> >  
+> >> +
+> >> +* open: open callback of vfio mediated device
+> >> +* close: close callback of vfio mediated device
+> >> +* ioctl: ioctl callback of vfio mediated device
+> >>   * read : read emulation callback
+> >>   * write: write emulation callback
+> >>   * mmap: mmap emulation callback
+> >> @@ -167,9 +176,10 @@ register itself with the mdev core driver::
+> >>   	extern int  mdev_register_device(struct device *dev,
+> >>   	                                 const struct mdev_parent_ops *ops);
+> >>   
+> >> -It is also required to specify the class_id through::
+> >> +It is also required to specify the class_id and device specific ops through::
+> >>   
+> >> -	extern int mdev_set_class(struct device *dev, u16 id);
+> >> +	extern int mdev_set_class(struct device *dev, u16 id,
+> >> +	                          const void *ops);  
+> > Apologies if that has already been discussed, but do we want a 1:1
+> > relationship between id and ops, or can different devices with the same
+> > id register different ops?  
+> 
+> 
+> I think we have a N:1 mapping between id and ops, e.g we want both 
+> virtio-mdev and vhost-mdev use a single set of device ops.
+
+The contents of the ops structure is essentially defined by the id,
+which is why I was leaning towards them being defined together.  They
+are effectively interlocked, the id defines which mdev "endpoint"
+driver is loaded and that driver requires mdev_get_dev_ops() to return
+the structure required by the driver.  I wish there was a way we could
+incorporate type checking here.  We toyed with the idea of having the
+class in the same structure as the ops, but I think this approach was
+chosen for simplicity.  We could still do something like:
+
+int mdev_set_class_struct(struct device *dev, const struct mdev_class_struct *class);
+
+struct mdev_class_struct {
+	u16	id;
+	union {
+		struct vfio_mdev_ops vfio_ops;
+		struct virtio_mdev_ops virtio_ops;
+	};
+};
+
+Maybe even:
+
+struct vfio_mdev_ops *mdev_get_vfio_ops(struct mdev_device *mdev) {
+	BUG_ON(mdev->class.id != MDEV_ID_VFIO);
+	return &mdev->class.vfio_ops;
+}
+
+The match callback would of course just use the mdev->class.id value.
+Functionally equivalent, but maybe better type characteristics.  Thanks,
+
+Alex
