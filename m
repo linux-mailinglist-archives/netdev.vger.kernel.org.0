@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 142A5D7C35
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 18:44:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7DDD7C5A
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 18:52:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729503AbfJOQoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 12:44:24 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:38669 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727643AbfJOQoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 12:44:24 -0400
-Received: by mail-io1-f67.google.com with SMTP id u8so47410820iom.5
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 09:44:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6+eIcTGGXdASyt+L3cK4UQUkI2FqtMOlOe9yZ4FCpjg=;
-        b=b/LsQHXHO7iF6mi7t/bXnSZLubUE7/1lQFWhUvuoeDf7yjPYoaTpYdQu0eyC5gDxcE
-         4f1/l25RHWnod5QL5wr1U8gifwsaxcJvSRDkhPnP8SOdSy2EVHQmjOwMnjQ5QQTybhvz
-         rly3XONkfA3A41ncJvDAOjoz7DLOpIOJkuxJYXT/v6keboI60+CydnRkU/2z5cpccQa9
-         MmhYt5wj9WMa19bY+RfEkXfgKdC3Zqns5ChkNF50q4h21B6n7HKXdpI35KVtseXIBwSZ
-         f7HZJsTVw7Vfwr7W5tV5yZHnFYQU/L2rQauVNjBoMGkiPfpFIFESAyF8W1dluB0FyQN5
-         zQ0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6+eIcTGGXdASyt+L3cK4UQUkI2FqtMOlOe9yZ4FCpjg=;
-        b=o7sv02oxvvyE0MbOuDwCZaAf4DQo/UMn2MRCRTVY1hlU/i1PeND6u5aRVMIC4hQfKj
-         cPeyZdMX21kqvCiqYyIRKYZrTbO53a3nWO+uRNcLCDBdKfeNKTCepv8Te/V8WST3ZLI/
-         QbPWuzJtEY05ywiqHiXnZzvCEIHSbMWhKdu84Of+PLDOSJaaMwLojvPn9VDi4p3idBhV
-         4KETO6JqvrEcT4mVMRGwygCPcQgjWvPSh1IwClbCR5I97zS4Q/lr3zciaBd7zW7SSd3Z
-         VqAhl7LgK744FcMJlPpSeun8Llc2QEXqGxL5fYPWA9ZcLLI2pIiydSpNKe9GkL9wmaG1
-         QG0g==
-X-Gm-Message-State: APjAAAXI4EcWFgKgm2du30yEE04D/L0yynkB6BdHc15oy/nKsK8cYe1w
-        zmzctBLzRrZPfzZcqehqNLh1qbKdIC/uDIpN77aUDg==
-X-Google-Smtp-Source: APXvYqx0D8023RVIPFWWSbhp3ho2k3CeVtEIvTK/flUiodDEvZBHyV8Mudd6WJr3zzJ0Z8jsxnxyV44YZl7Ihsr+13E=
-X-Received: by 2002:a92:985d:: with SMTP id l90mr7704949ili.286.1571157863049;
- Tue, 15 Oct 2019 09:44:23 -0700 (PDT)
+        id S1728716AbfJOQwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 12:52:18 -0400
+Received: from vulcan.natalenko.name ([104.207.131.136]:45772 "EHLO
+        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726362AbfJOQwS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 12:52:18 -0400
+Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id 08E8B600D27;
+        Tue, 15 Oct 2019 18:52:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1571158333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gP7dY/174GGdD6usTpaalR67cnmsiaPwYD5OpFcQfyY=;
+        b=axlssqB+DUWqk4taqLCosVffDK8d64AuWwQ15V7uZqtx7iDctmvnRYOYKT+W9sQ0eHsN/C
+        6jIbhyD9Sm2mIWuhiqx2sZThjUyh0zi3Yu4hB2KMVydbuj2Tr1PQqK7Q9NC5gMNnk2RdV6
+        ZU1x93AcuTKJFTxW0B76PTLkE+3Rtj0=
 MIME-Version: 1.0
-References: <CANSNSoV1M9stB7CnUcEhsz3FHi4NV_yrBtpYsZ205+rqnvMbvA@mail.gmail.com>
- <20191010083102.GA1336@splinter> <CANSNSoVM1Uo106xfJtGpTyXNed8kOL4JiXqf3A1eZHBa7z3=yg@mail.gmail.com>
- <20191011154224.GA23486@splinter> <CAEA6p_AFKwx_oLqNOjMw=oXcAX4ftJvEQWLo0aWCh=4Hs=QjVw@mail.gmail.com>
- <CANSNSoVMXcPpnHBYvDJ9P4PVB2pLGEBHW2j-iD7QqQrFmGFt_Q@mail.gmail.com>
-In-Reply-To: <CANSNSoVMXcPpnHBYvDJ9P4PVB2pLGEBHW2j-iD7QqQrFmGFt_Q@mail.gmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Tue, 15 Oct 2019 09:44:11 -0700
-Message-ID: <CAEA6p_BQp1O6jGc+RY2YAHFVC3df7MEm9he7cajUnccVCzkMvw@mail.gmail.com>
-Subject: Re: Race condition in route lookup
-To:     Jesse Hathaway <jesse@mbuki-mvuki.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Martin KaFai Lau <kafai@fb.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 15 Oct 2019 18:52:12 +0200
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: mt76x2e hardware restart
+In-Reply-To: <20191012165028.GA8739@lore-desk-wlan.lan>
+References: <deaafa7a3e9ea2111ebb5106430849c6@natalenko.name>
+ <c6d621759c190f7810d898765115f3b4@natalenko.name>
+ <9d581001e2e6cece418329842b2b0959@natalenko.name>
+ <20191012165028.GA8739@lore-desk-wlan.lan>
+Message-ID: <f7695bc79d40bbc96744a639b1243027@natalenko.name>
+X-Sender: oleksandr@natalenko.name
+User-Agent: Roundcube Webmail/1.3.10
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=arc-20170712; t=1571158333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gP7dY/174GGdD6usTpaalR67cnmsiaPwYD5OpFcQfyY=;
+        b=DRapKaMH9Ss4+Y57MDmNYSjvx33aSfwXUw8own30SGyjDa5AMl64qaMDNsqvPX7/s1RUlT
+        /QkkeIHxPcKgKgp5SWsPB7WS+D/aWzg/vXK6aNsqs0cbcnq0AIxk4q1eaPz/BTo77lmKqr
+        7yVWwSxfpPnFqoATcwt0citzVM5lIws=
+ARC-Seal: i=1; s=arc-20170712; d=natalenko.name; t=1571158333; a=rsa-sha256;
+        cv=none;
+        b=PesOlooj33cKhM+/mIkE91p8YnsF/RM+XyufMQ7N+HwXFSwngv2bnoT5IKQRxPvK2kLS4e
+        7/Ja/w9ZpmQ8oiIZboZ0nmfG8W7ad/eC012N804Ng5944lJbgzAaNEkQWMq1YRUDsdWJZ9
+        ez1OhgcRkIU+TO6ThLjdLvcKF9Rbz7k=
+ARC-Authentication-Results: i=1;
+        vulcan.natalenko.name;
+        auth=pass smtp.auth=oleksandr@natalenko.name smtp.mailfrom=oleksandr@natalenko.name
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 7:29 AM Jesse Hathaway <jesse@mbuki-mvuki.org> wrote:
->
-> On Fri, Oct 11, 2019 at 12:54 PM Wei Wang <weiwan@google.com> wrote:
-> > Hmm... Yes... I would think a per-CPU input cache should work for the
-> > case above.
-> > Another idea is: instead of calling dst_dev_put() in rt_cache_route()
-> > to switch out the dev, we call, rt_add_uncached_list() to add this
-> > obsolete dst cache to the uncached list. And if the device gets
-> > unregistered, rt_flush_dev() takes care of all dst entries in the
-> > uncached list. I think that would work too.
-> >
-> > diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> > index dc1f510a7c81..ee618d4234ce 100644
-> > --- a/net/ipv4/route.c
-> > +++ b/net/ipv4/route.c
-> > @@ -1482,7 +1482,7 @@ static bool rt_cache_route(struct fib_nh_common
-> > *nhc, struct rtable *rt)
-> >         prev = cmpxchg(p, orig, rt);
-> >         if (prev == orig) {
-> >                 if (orig) {
-> > -                       dst_dev_put(&orig->dst);
-> > +                       rt_add_uncached_list(orig);
-> >                         dst_release(&orig->dst);
-> >                 }
-> >         } else {
-> >
->
-> Thanks Wei for your work on this issue,
->
-> Any chance this patch will make it into 5.4?
+Hey.
 
-I can submit the patch to NET branch if everyone agrees with this one liner fix.
-Then I believe it will be patched into the next 5.4 release automatically?
+On 12.10.2019 18:50, Lorenzo Bianconi wrote:
+> sorry for the delay. Felix and me worked on this issue today. Could you 
+> please
+> try if the following patch fixes your issue?
+
+Thanks for the answer and the IRC discussion. As agreed I've applied [1] 
+and [2], and have just swapped the card to try it again. So far, it 
+works fine in 5 GHz band in 802.11ac mode as an AP.
+
+I'll give it more load with my phone over evening, and we can discuss 
+what to do next (if needed) tomorrow again. Or feel free to drop me an 
+email today.
+
+Thanks for your efforts.
+
+[1] 
+https://github.com/LorenzoBianconi/wireless-drivers-next/commit/cf3436c42a297967235a9c9778620c585100529e.patch
+[2] 
+https://github.com/LorenzoBianconi/wireless-drivers-next/commit/aad256eb62620f9646d39c1aa69234f50c89eed8.patch
+
+-- 
+   Oleksandr Natalenko (post-factum)
