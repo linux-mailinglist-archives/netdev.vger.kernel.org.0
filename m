@@ -2,109 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 528B3D83EE
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6975ED8404
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390053AbfJOWqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 18:46:10 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37920 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390034AbfJOWqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:46:08 -0400
-Received: by mail-lj1-f193.google.com with SMTP id b20so21950974ljj.5;
-        Tue, 15 Oct 2019 15:46:06 -0700 (PDT)
+        id S2390107AbfJOWsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 18:48:16 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:42536 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725991AbfJOWsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:48:15 -0400
+Received: by mail-lf1-f66.google.com with SMTP id c195so15763658lfg.9;
+        Tue, 15 Oct 2019 15:48:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sX8jTMX1nSIXGcCRNZ453mld0cSsi8SG9vJtVFWmkgY=;
-        b=ES/OzHKnNaTbjDoZaXmFsqYm4h8O0iW4SYK/1ndLuLvY7RUpbwD2ej7ZWtshgaPazd
-         UUnQwewSFBIjRDF44nesd7JXsVX/k50opp+s5i5b2f19wxk/LbSzVk13LFGb+CmUXKlV
-         092qU3KAwKp92DLApsSN7InO1e5M6HAIoyijAJkq862bxOQ/FEc3MztS6PHQuENM75Yx
-         GjUKKm+9FNF4fghj+tPnOBSUSvEPMCmdTXXQaSyrDys0wQ9C/qOqkBoiS3sP28uQwYG3
-         KQKnDniiiVXYLDbejzoUpnDGXbTxZ8ulLBvxQz2fRcdjco3lJrfiSWsU+sgsT+1QQk8j
-         ZsVA==
+        bh=NNBlDPGjbqQkvsJpADXtnjF+WsXe2CuX9rl3QZTIJi0=;
+        b=HbLD3LtVu68wRfoV4Ztv8+rfFh6d8V4b8hYUzvZ9V4n6ObIWpAquoVo4MYJ+y0YIuY
+         aaDjPtDEZ+niwRVe/vpijHG7mrb9oNa04CiG/bUTNEMvO0wUQUZq65VGOFvM2rBPA2uJ
+         WNLF5qpR2Sy3M+lTtvmF5zB2v6a8GManUR/VkjHUFYl+z1RaLrng8WTvJUBZ/XjplUsQ
+         V4EI4XIZQphyrxVsED3Or2KPJbDToS7VQKVJysqfb9kogx7oapD/vGzjCjxyKteE7Cqa
+         qhPdxhaVOrOZQuEQOMFrrN82BFEZktpiTY5GgmT+EWBZFH8cUAcfU1hWE51hth2HSB8r
+         KLiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sX8jTMX1nSIXGcCRNZ453mld0cSsi8SG9vJtVFWmkgY=;
-        b=tUBfF9bMuSvxERqghdiiE3zDWsnvAP5Oo8ucMz1GvO8c8f/dmYOMhRTvkfAF+LCPmp
-         +aduvoAbEpD/BNijO3MwKodzF7ZlwnMlGbWE2czPNIzz+0wKT0bgM3+T+8sWYIXXzqOa
-         k5g1mvrMeZ+5e2EKHAxwQQdYHs8q4sDFwogs2qPmGpLeW20H6yChSdICDspAvXE9SeGd
-         2NzQJHxwLqB2lHfDoJGL7JFfyH00yMTYjeSAeG0xwgHv8h9LV1KsYhk3qksq9h61P4Hf
-         mpqU51b+tIeX6RF6+T2+tyIWt5gRG4HgRe8cnu/On+vC+xLKakKPiNnPp8z0n/6E4H1n
-         BaSg==
-X-Gm-Message-State: APjAAAU8iIR7/IUL7uaSbzDbD5ysGyC2SpI26r8/HFnCB6WBqkfE2+pK
-        pGHloyGcnIoG103gpPvpYKT92afj/YtCs/P1gpg=
-X-Google-Smtp-Source: APXvYqzlNJ02z8aHXTE2BBN+PZ4eg4j3tGXrnmLyvYl56/qH/Wq5j5U+oaAP2hF4sPK9AnCKWxQBVEiuc6J0CBfrUro=
-X-Received: by 2002:a2e:6c15:: with SMTP id h21mr23559078ljc.10.1571179565793;
- Tue, 15 Oct 2019 15:46:05 -0700 (PDT)
+        bh=NNBlDPGjbqQkvsJpADXtnjF+WsXe2CuX9rl3QZTIJi0=;
+        b=nVxPwEG33WhypWRGW16VJek2j91rUkjqPxyEKtAOCmToo/u5B+ckVb0afL7/O/B3km
+         lQwDxpj1e21zHOHI3hQgMHtBQLlWG/Dm/biPP1OaGWgbGGYs0GdEq/uo/9+nvU2CfXdX
+         T0eUHzm9H4sr79Ox8xhvd6UDZ7pJV8GdFL1sXP5JKptsx1z8bk4M2ePFkgbjiItuH5qA
+         D6uqm5zBeQ93cQVkqdV1/2qIuGfvdvSmOXwIE11hIx8FwisvwVjaRyvnzpWbSsoskVjg
+         k3pI4ADnUg+0i/WPBFHPKz+/g02aa8nVKincmST39KQBD8JIPod8QgKJJIABdCw520J/
+         +PMQ==
+X-Gm-Message-State: APjAAAXYoi5Ns1nRNcPrhNktAaNuREZKduzap6hIHIURJJjbv4AFxZ5o
+        AGv1JiPcW/tAEdQUsvu+VeodXX/sZrkmVGMFYUo=
+X-Google-Smtp-Source: APXvYqy3lqzsUj8abdixZDHM5DnlzAHD64iaYot5sxiSgXNbwsIk4l3scvGv6erMPRSJKLtJlLuiNXRS/RVSWV1FbUc=
+X-Received: by 2002:a19:4f06:: with SMTP id d6mr23441961lfb.15.1571179691489;
+ Tue, 15 Oct 2019 15:48:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191009160907.10981-1-christian.brauner@ubuntu.com>
- <CAADnVQJxUwD3u+tK1xsU2thpRWiAbERGx8mMoXKOCfNZrETMuw@mail.gmail.com> <20191010092647.cpxh7neqgabq36gt@wittgenstein>
-In-Reply-To: <20191010092647.cpxh7neqgabq36gt@wittgenstein>
+References: <20191011162124.52982-1-sdf@google.com> <CAADnVQLKPLXej_v7ymv3yJakoFLGeQwdZOJ5cZmp7xqOxfebqg@mail.gmail.com>
+ <20191012003819.GK2096@mini-arch> <CAADnVQKuysEvFAX54+f0YPJ1+cgcRJbhrpVE7xmvLqu-ADrk+Q@mail.gmail.com>
+ <CAEf4BzaKn0ztTCJq7VOsyMfCqqq1HkxXwD6xEYL_3cbYkiPEgg@mail.gmail.com>
+ <CAADnVQ+1HRrMsv4NKvZ_=LWHrWTXWd8RYJS4ybXJXgdLuHugMA@mail.gmail.com> <CAEf4Bzby5ixEzrmXJOYP9WNORQ1HWCfXVN+EtcjBVz2J1XwEfQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bzby5ixEzrmXJOYP9WNORQ1HWCfXVN+EtcjBVz2J1XwEfQ@mail.gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 15 Oct 2019 15:45:54 -0700
-Message-ID: <CAADnVQJ6t+HQBRhN3mZrz4qhzGybsY2g-26mc2kQARkbLxqzTA@mail.gmail.com>
-Subject: Re: [PATCH 0/3] bpf: switch to new usercopy helpers
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+Date:   Tue, 15 Oct 2019 15:48:00 -0700
+Message-ID: <CAADnVQL4TNBXh3xvA8=B+SrD4Cs45iX7LP2dR2C6wMR_uZiKaw@mail.gmail.com>
+Subject: Re: debug annotations for bpf progs. Was: [PATCH bpf-next 1/3] bpf:
+ preserve command of the process that loaded the program
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Stanislav Fomichev <sdf@google.com>,
         Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 2:26 AM Christian Brauner
-<christian.brauner@ubuntu.com> wrote:
+On Tue, Oct 15, 2019 at 3:34 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> On Wed, Oct 09, 2019 at 04:06:18PM -0700, Alexei Starovoitov wrote:
-> > On Wed, Oct 9, 2019 at 9:09 AM Christian Brauner
-> > <christian.brauner@ubuntu.com> wrote:
-> > >
-> > > Hey everyone,
-> > >
-> > > In v5.4-rc2 we added two new helpers check_zeroed_user() and
-> > > copy_struct_from_user() including selftests (cf. [1]). It is a generic
-> > > interface designed to copy a struct from userspace. The helpers will be
-> > > especially useful for structs versioned by size of which we have quite a
-> > > few.
-> > >
-> > > The most obvious benefit is that this helper lets us get rid of
-> > > duplicate code. We've already switched over sched_setattr(), perf_event_open(),
-> > > and clone3(). More importantly it will also help to ensure that users
-> > > implementing versioning-by-size end up with the same core semantics.
-> > >
-> > > This point is especially crucial since we have at least one case where
-> > > versioning-by-size is used but with slighly different semantics:
-> > > sched_setattr(), perf_event_open(), and clone3() all do do similar
-> > > checks to copy_struct_from_user() while rt_sigprocmask(2) always rejects
-> > > differently-sized struct arguments.
-> > >
-> > > This little series switches over bpf codepaths that have hand-rolled
-> > > implementations of these helpers.
+> On Tue, Oct 15, 2019 at 3:24 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
 > >
-> > check_zeroed_user() is not in bpf-next.
-> > we will let this set sit in patchworks for some time until bpf-next
-> > is merged back into net-next and we fast forward it.
-> > Then we can apply it (assuming no conflicts).
+> > On Tue, Oct 15, 2019 at 3:14 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Tue, Oct 15, 2019 at 2:22 PM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Fri, Oct 11, 2019 at 5:38 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > > > >
+> > > > > On 10/11, Alexei Starovoitov wrote:
+> > > > > > On Fri, Oct 11, 2019 at 9:21 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > > > > > >
+> > > > > > > Even though we have the pointer to user_struct and can recover
+> > > > > > > uid of the user who has created the program, it usually contains
+> > > > > > > 0 (root) which is not very informative. Let's store the comm of the
+> > > > > > > calling process and export it via bpf_prog_info. This should help
+> > > > > > > answer the question "which process loaded this particular program".
+> > > > > > >
+> > > > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > > > > ---
+> > > > > > >  include/linux/bpf.h      | 1 +
+> > > > > > >  include/uapi/linux/bpf.h | 2 ++
+> > > > > > >  kernel/bpf/syscall.c     | 4 ++++
+> > > > > > >  3 files changed, 7 insertions(+)
+> > > > > > >
+> > > > > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > > > > > index 5b9d22338606..b03ea396afe5 100644
+> > > > > > > --- a/include/linux/bpf.h
+> > > > > > > +++ b/include/linux/bpf.h
+> > > > > > > @@ -421,6 +421,7 @@ struct bpf_prog_aux {
+> > > > > > >                 struct work_struct work;
+> > > > > > >                 struct rcu_head rcu;
+> > > > > > >         };
+> > > > > > > +       char created_by_comm[BPF_CREATED_COMM_LEN];
+> > > > > > >  };
+> > > > > > >
+> > > > > > >  struct bpf_array {
+> > > > > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > > > > index a65c3b0c6935..4e883ecbba1e 100644
+> > > > > > > --- a/include/uapi/linux/bpf.h
+> > > > > > > +++ b/include/uapi/linux/bpf.h
+> > > > > > > @@ -326,6 +326,7 @@ enum bpf_attach_type {
+> > > > > > >  #define BPF_F_NUMA_NODE                (1U << 2)
+> > > > > > >
+> > > > > > >  #define BPF_OBJ_NAME_LEN 16U
+> > > > > > > +#define BPF_CREATED_COMM_LEN   16U
+> > > > > >
+> > > > > > Nack.
+> > > > > > 16 bytes is going to be useless.
+> > > > > > We found it the hard way with prog_name.
+> > > > > > If you want to embed additional debug information
+> > > > > > please use BTF for that.
+> > > > > BTF was my natural choice initially, but then I saw created_by_uid and
+> > > > > thought created_by_comm might have a chance :-)
+> > > > >
+> > > > > To clarify, by BTF you mean creating some unused global variable
+> > > > > and use its name as the debugging info? Or there is some better way?
+> > > >
+> > > > I was thinking about adding new section to .btf.ext with this extra data,
+> > > > but global variable is a better idea indeed.
+> > > > We'd need to standardize such variables names, so that
+> > > > bpftool can parse and print it while doing 'bpftool prog show'.
+> > > > We see more and more cases where services use more than
+> > > > one program in single .c file to accomplish their goals.
+> > > > Tying such debug info (like 'created_by_comm') to each program
+> > > > individually isn't quite right.
+> > > > In that sense global variables are better, since they cover the
+> > > > whole .c file.
+> > > > Beyond 'created_by_comm' there are others things that people
+> > > > will likely want to know.
+> > > > Like which version of llvm was used to compile this .o file.
+> > > > Which unix user name compiled it.
+> > > > The name of service/daemon that will be using this .o
+> > > > and so on.
+> > > > May be some standard prefix to such global variables will do?
+> > > > Like "bpftool prog show" can scan global data for
+> > > > "__annotate_#name" and print both name and string contents ?
+> > > > For folks who regularly ssh into servers to debug bpf progs
+> > > > that will help a lot.
+> > > > May be some annotations llvm can automatically add to .o.
+> > > > Thoughts?
+> > >
+> > > We can dedicate separate ELF section for such variables, similar to
+> > > license and version today, so that libbpf will know that those
+> > > variables are not real variables and shouldn't be used from BPF
+> > > program itself. But we can have many of them in single section, unlike
+> > > version and license. :) With that, we'll have metadata and list of
+> > > variables in BTF (DATASEC + VARs). The only downside - you'll need ELF
+> > > itself to get the value of that variable, no? Is that acceptable? Do
+> > > we always know where original ELF is?
+> >
+> > Having .o around is not acceptable.
+> > That was already tried and didn't work with bcc.
+> > I was proposing to have these special vars to be loaded into the kernel
+> > as part of normal btf loading.
 >
-> Sounds good to me. Just ping me when you need me to resend rebase onto
-> bpf-next.
+> BTF is just metadata for variables. We'll know name and type
+> information about variable, but we need a string contents. That is
+> stored in ELF, so without .o file we won't be able to extract it.
+> Unless you have something else in mind?
+>
+> > Not sure what special section gives.
+>
+> It's a marker that libbpf doesn't have to allocate memory and create
+> internal map for that section. We don't want those annotation
+> variables to be backed by BPF map, do we?
 
--rc1 is now in bpf-next.
-I took a look at patches and they look good overall.
-
-In patches 2 and 3 the zero init via "= {};"
-should be unnecessary anymore due to
-copy_struct_from_user() logic, right?
-
-Could you also convert all other case in kernel/bpf/,
-so bpf_check_uarg_tail_zero() can be removed ?
-Otherwise the half-way conversion will look odd.
+I'm proposing that these special variables to be part of normal global data.
+Which will be loaded into the kernel and .o is not necessary.
