@@ -2,159 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA6AD809D
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 22:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 666CDD809F
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 22:02:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732404AbfJOUBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 16:01:36 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:44467 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726805AbfJOUBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 16:01:36 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q21so13139748pfn.11
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 13:01:35 -0700 (PDT)
+        id S1732682AbfJOUCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 16:02:36 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38680 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726805AbfJOUCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 16:02:36 -0400
+Received: by mail-wr1-f66.google.com with SMTP id y18so15890573wrn.5;
+        Tue, 15 Oct 2019 13:02:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=HAWpeyEf4TgH2xMeDRMI9KLDaQnbmvcU1By9C9gf7p0=;
-        b=ed3SX12xIavzSbmhTl27EmLicks8/BosT+8KUqnlEjbx0un8hZ+pIGUwM302PWgTCl
-         LzT3P2q4gBT30SA3lJvbVTMo/6u8Ly7jSVf0uaKaL40s0YuttSFppxr93eebYsLNN/bT
-         JXxcKxnE1S/SpMzxZRl6+X1QRGCVekcAL/rjoeljN1+3lxjTV6OPyHOrNILVxVqZQwd5
-         3+pTExe1LWKsNNdnvZaNjOt0DUSWm1pyUhbSfxuGbFwNUNinEXVWE7AwkNsg5vSQityG
-         8v7Wshg6kzYg6ZOa2wW0uG8p6n+OirE7DNJl3wm0iHbdJsPfwsfmLZCVAHD66tvVSWXh
-         C46A==
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=05m1cn/KotINUoHlyo9YC+EDTkfB7CJrGG+iKU+PxSc=;
+        b=fL1TGIU6joMydk42hUtjYANbOXSnI5S1b2AMxCBdhcqjnGBKiDyJ1OKd85k/QpoPmo
+         6+lSiKEmjwjDT1rqySzjnmhY1c4cZm7s9+TYRQgXJ0ygJAsYNG8UZ54KUCye+jS8gE2N
+         WkUk0P1UcWNIetAzMxSaRPSd02iuC7TJTWdsp8KUq3AN9Hb28OXOnOncEkQASFQIdtKw
+         LjDx9CUOJ/ycd+3hXWZNdfSx53pxysUbpp3fPZYVBpUECY9XLuW/patGwQtC9RIAafoZ
+         zG5mcFp2CzMK3/Zq4j1yJ+1+5hDfCx7vBFZPlbigl+z0rHZ6QbyW/TKdcA6XBGqicybC
+         /JsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=HAWpeyEf4TgH2xMeDRMI9KLDaQnbmvcU1By9C9gf7p0=;
-        b=f8Id+Lp63/R7BqfB5theNVqtDwUEYPSGIqRGahcwf7kunrlE+J9kr19DMD1hCAl18j
-         Yq7Wm1J6Q1nqDp5ZcjMyONetdCy76AikAKtx14doCCwd9NeuIW8t+kXVdYAjMaLfkas+
-         y6ZOmwaWyKblHoIGGdUAhwej4ivejLGwF2OwXNTygAEVCnxXNlm9ErzcFU7t1f+mUbFt
-         LNTrvXcp5llges49qEg0Yl21N3APOGH7eUW/SlDB7hPj8UCTBLLahX2DLVO8aLMIncuP
-         eEzLHe/t1gDmSaDASqdVNrqT2Z26aOvuAtMvJNoo+iUKr/090hdUY41g0KSd9T8zvU1w
-         ucog==
-X-Gm-Message-State: APjAAAXawnEmi68OE7bem4mWy3Ic1LSbm2+FH5WB4NXHJqKyW26m9G0s
-        6p71QfX2Qv1roSiwSBsO4fA=
-X-Google-Smtp-Source: APXvYqyxdCIrNX59CR7GFaK57Yflwo6RWRN4zBW28JxVt51bx+DaWqJGuwgdDxeHms43hyer4pz7qA==
-X-Received: by 2002:a63:e20c:: with SMTP id q12mr22454564pgh.275.1571169694943;
-        Tue, 15 Oct 2019 13:01:34 -0700 (PDT)
-Received: from [192.168.0.16] (97-115-119-26.ptld.qwest.net. [97.115.119.26])
-        by smtp.gmail.com with ESMTPSA id x9sm149511pje.27.2019.10.15.13.01.33
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=05m1cn/KotINUoHlyo9YC+EDTkfB7CJrGG+iKU+PxSc=;
+        b=dzJgWiZiZXMZj3zxAP4r5KSnHsi/8Mlf4Ufak5H+gDfW7U1VLcdPpY6Hk+fMxOrZo4
+         B63nQKJFm1KRX12E6FztTh+EbBFbhytBwCa7uuObiwMGSlZTSbjIQ5/bCb9Emece2Rss
+         j7sucEwj+4llc7WO/S0PvEc62k5UTROARPtybC8ezCVQA7VHlumG4KbQcJOn5lToo3jN
+         PteUsMquSD6VDGA/4751L9hm/URGcm75WYD4jrZTMPHPZjq3ClIR1+oIlcv7OxjLzffD
+         YfvFA85G3ldSQDfwdKod57A8BWAMij56SV9NNiGMVOuYompXHDuKjHvC0/rGBJ8Odse2
+         OqNA==
+X-Gm-Message-State: APjAAAVFNZPF9+H3Kw7X9B2sRHCPLDrUKxadi2BgLgJqlr3NzrDtj1Yh
+        SI8/iavurjjLmzlcnOS03yQHQn7J
+X-Google-Smtp-Source: APXvYqwmHrOEr80wF1njd/2UOS1FNYtF43EfX03AWC5TQyycxWc8OqHXCoWjgcYEl1OgHiC4GQDwNA==
+X-Received: by 2002:a5d:40c6:: with SMTP id b6mr16985262wrq.90.1571169753799;
+        Tue, 15 Oct 2019 13:02:33 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:44d1:b396:5862:c59e? (p200300EA8F26640044D1B3965862C59E.dip0.t-ipconnect.de. [2003:ea:8f26:6400:44d1:b396:5862:c59e])
+        by smtp.googlemail.com with ESMTPSA id n8sm444969wma.7.2019.10.15.13.02.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 15 Oct 2019 13:01:34 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 00/10] optimize openvswitch flow looking up
-To:     xiangxia.m.yue@gmail.com, pshelar@ovn.org
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org
-References: <1570802447-8019-1-git-send-email-xiangxia.m.yue@gmail.com>
-From:   Gregory Rose <gvrose8192@gmail.com>
-Message-ID: <8c2d501a-f943-5ee1-e430-0c36d77a33b5@gmail.com>
-Date:   Tue, 15 Oct 2019 13:01:32 -0700
+        Tue, 15 Oct 2019 13:02:33 -0700 (PDT)
+Subject: Re: [RFC PATCH V2 net] net: phy: Fix "link partner" information
+ disappear issue
+To:     Yonglong Liu <liuyonglong@huawei.com>, davem@davemloft.net,
+        andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxarm@huawei.com, salil.mehta@huawei.com,
+        yisen.zhuang@huawei.com, shiju.jose@huawei.com
+References: <1571057797-37602-1-git-send-email-liuyonglong@huawei.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <4a281b6d-1531-eac6-dcc5-8306d342caa4@gmail.com>
+Date:   Tue, 15 Oct 2019 22:02:27 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <1570802447-8019-1-git-send-email-xiangxia.m.yue@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1571057797-37602-1-git-send-email-liuyonglong@huawei.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 14.10.2019 14:56, Yonglong Liu wrote:
+> Some drivers just call phy_ethtool_ksettings_set() to set the
+> links, for those phy drivers that use genphy_read_status(), if
+> autoneg is on, and the link is up, than execute "ethtool -s
+> ethx autoneg on" will cause "link partner" information disappear.
+> 
+> The call trace is phy_ethtool_ksettings_set()->phy_start_aneg()
+> ->linkmode_zero(phydev->lp_advertising)->genphy_read_status(),
+> the link didn't change, so genphy_read_status() just return, and
+> phydev->lp_advertising is zero now.
+> 
+> This patch moves the clear operation of lp_advertising from
+> phy_start_aneg() to genphy_read_lpa()/genphy_c45_read_lpa(), and
+> if autoneg on and autoneg not complete, just clear what the
+> generic functions care about.
+> 
+> Fixes: 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in genphy_read_status")
+> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+> 
+Looks good to me, two small nits below.
 
-On 10/11/2019 7:00 AM, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> This series patch optimize openvswitch for performance or simplify
-> codes.
->
-> Patch 1, 2, 4: Port Pravin B Shelar patches to
-> linux upstream with little changes.
->
-> Patch 5, 6, 7: Optimize the flow looking up and
-> simplify the flow hash.
->
-> Patch 8, 9: are bugfix.
->
-> The performance test is on Intel Xeon E5-2630 v4.
-> The test topology is show as below:
->
-> +-----------------------------------+
-> |   +---------------------------+   |
-> |   | eth0   ovs-switch    eth1 |   | Host0
-> |   +---------------------------+   |
-> +-----------------------------------+
->        ^                       |
->        |                       |
->        |                       |
->        |                       |
->        |                       v
-> +-----+----+             +----+-----+
-> | netperf  | Host1       | netserver| Host2
-> +----------+             +----------+
->
-> We use netperf send the 64B packets, and insert 255+ flow-mask:
-> $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)" 2
-> ...
-> $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)" 2
-> $
-> $ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
->
-> * Without series patch, throughput 8.28Mbps
-> * With series patch, throughput 46.05Mbps
->
-> v2: simplify codes. e.g. use kfree_rcu instead of call_rcu, use
-> ma->count in the fastpath.
-> v3: update ma point when realloc mask_array in patch 5.
->
-> Tonghao Zhang (10):
->    net: openvswitch: add flow-mask cache for performance
->    net: openvswitch: convert mask list in mask array
->    net: openvswitch: shrink the mask array if necessary
->    net: openvswitch: optimize flow mask cache hash collision
->    net: openvswitch: optimize flow-mask looking up
->    net: openvswitch: simplify the flow_hash
->    net: openvswitch: add likely in flow_lookup
->    net: openvswitch: fix possible memleak on destroy flow-table
->    net: openvswitch: don't unlock mutex when changing the user_features
->      fails
->    net: openvswitch: simplify the ovs_dp_cmd_new
->
->   net/openvswitch/datapath.c   |  65 +++++----
->   net/openvswitch/flow.h       |   1 -
->   net/openvswitch/flow_table.c | 315 +++++++++++++++++++++++++++++++++++++------
->   net/openvswitch/flow_table.h |  19 ++-
->   4 files changed, 328 insertions(+), 72 deletions(-)
->
 
-Hi Tonghao,
+> ---
+> change log:
+> V2: moves the clear operation of lp_advertising from
+> phy_start_aneg() to genphy_read_lpa()/genphy_c45_read_lpa(), and
+> if autoneg on and autoneg not complete, just clear what the
+> generic functions care about. Suggested by Heiner Kallweit.
+> ---
+> ---
+This line seems to be duplicated.
 
-I've tried this new patch series and it passes the kernel check test #63 
-now:
-## ------------------------------- ##
-## openvswitch 2.12.90 test suite. ##
-## ------------------------------- ##
-  63: conntrack - IPv6 fragmentation + vlan           ok
+>  drivers/net/phy/phy-c45.c    |  2 ++
+>  drivers/net/phy/phy.c        |  3 ---
+>  drivers/net/phy/phy_device.c | 12 +++++++++++-
+>  3 files changed, 13 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> index 7935593..a1caeee 100644
+> --- a/drivers/net/phy/phy-c45.c
+> +++ b/drivers/net/phy/phy-c45.c
+> @@ -323,6 +323,8 @@ int genphy_c45_read_pma(struct phy_device *phydev)
+>  {
+>  	int val;
+>  
+> +	linkmode_zero(phydev->lp_advertising);
+> +
+>  	val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
+>  	if (val < 0)
+>  		return val;
+> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> index 119e6f4..105d389b 100644
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -572,9 +572,6 @@ int phy_start_aneg(struct phy_device *phydev)
+>  	if (AUTONEG_DISABLE == phydev->autoneg)
+>  		phy_sanitize_settings(phydev);
+>  
+> -	/* Invalidate LP advertising flags */
+> -	linkmode_zero(phydev->lp_advertising);
+> -
+>  	err = phy_config_aneg(phydev);
+>  	if (err < 0)
+>  		goto out_unlock;
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 9d2bbb1..4b43466 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1787,7 +1787,14 @@ int genphy_read_lpa(struct phy_device *phydev)
+>  {
+>  	int lpa, lpagb;
+>  
+> -	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
+> +	if (phydev->autoneg == AUTONEG_ENABLE) {
+> +		if (!phydev->autoneg_complete) {
+> +			mii_stat1000_mod_linkmode_lpa_t(phydev->lp_advertising,
+> +							0);
+> +			mii_lpa_mod_linkmode_lpa_t(phydev->lp_advertising, 0);
+> +			return 0;
+> +		}
+> +
+>  		if (phydev->is_gigabit_capable) {
+>  			lpagb = phy_read(phydev, MII_STAT1000);
+>  			if (lpagb < 0)
+> @@ -1816,6 +1823,9 @@ int genphy_read_lpa(struct phy_device *phydev)
+>  
+>  		mii_lpa_mod_linkmode_lpa_t(phydev->lp_advertising, lpa);
+>  	}
+> +	else {
 
-## ------------- ##
-## Test results. ##
-## ------------- ##
+"} else {" should be on one line.
 
-1 test was successful.
-
-So I went ahead and ran the entire check-kernel testsuite and it ran 
-fine with no regressions or
-other problems.
-
-You can go ahead and add my tested by tag to your patches.
-Tested-by: Greg Rose <gvrose8192@gmail.com>
-
-Pravin's comments about the memory barrier are still valid I think.
-
-Thanks,
-
-- Greg
+> +		linkmode_zero(phydev->lp_advertising);
+> +	}
+>  
+>  	return 0;
+>  }
+> 
 
