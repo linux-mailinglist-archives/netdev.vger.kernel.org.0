@@ -2,106 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B3E7D7159
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 10:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD9FD7186
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 10:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729156AbfJOIo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 04:44:57 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:33504 "EHLO mx1.redhat.com"
+        id S1729574AbfJOIsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 04:48:53 -0400
+Received: from mga17.intel.com ([192.55.52.151]:61669 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726430AbfJOIo5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 04:44:57 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5625F10CC1F8;
-        Tue, 15 Oct 2019 08:44:56 +0000 (UTC)
-Received: from krava (unknown [10.43.17.61])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 65A125C1D4;
-        Tue, 15 Oct 2019 08:44:51 +0000 (UTC)
-Date:   Tue, 15 Oct 2019 10:44:51 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Yunfeng Ye <yeyunfeng@huawei.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        namhyung@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        ilubashe@akamai.com, ak@linux.intel.com, kan.liang@linux.intel.com,
-        alexey.budankov@linux.intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, hushiyuan@huawei.com,
-        linfeilong@huawei.com
-Subject: Re: [PATCH] perf tools: fix resource leak of closedir() on the error
- paths
-Message-ID: <20191015084451.GB10951@krava>
-References: <cd5f7cd2-b80d-6add-20a1-32f4f43e0744@huawei.com>
+        id S1727735AbfJOIsx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Oct 2019 04:48:53 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Oct 2019 01:48:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,298,1566889200"; 
+   d="scan'208";a="279124843"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 15 Oct 2019 01:48:50 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iKIVd-0005Wf-KZ; Tue, 15 Oct 2019 16:48:49 +0800
+Date:   Tue, 15 Oct 2019 16:48:47 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     kbuild-all@lists.01.org, netfilter-devel@vger.kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        jakub.kicinski@netronome.com, jiri@resnulli.us,
+        saeedm@mellanox.com, vishal@chelsio.com, vladbu@mellanox.com,
+        ecree@solarflare.com
+Subject: Re: [PATCH net-next,v5 3/4] net: flow_offload: mangle action at byte
+ level
+Message-ID: <201910151628.aXIOUKNY%lkp@intel.com>
+References: <20191014221051.8084-4-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cd5f7cd2-b80d-6add-20a1-32f4f43e0744@huawei.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.65]); Tue, 15 Oct 2019 08:44:57 +0000 (UTC)
+In-Reply-To: <20191014221051.8084-4-pablo@netfilter.org>
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 04:30:08PM +0800, Yunfeng Ye wrote:
-> Both build_mem_topology() and rm_rf_depth_pat() have resource leak of
-> closedir() on the error paths.
-> 
-> Fix this by calling closedir() before function returns.
-> 
-> Fixes: e2091cedd51b ("perf tools: Add MEM_TOPOLOGY feature to perf data file")
-> Fixes: cdb6b0235f17 ("perf tools: Add pattern name checking to rm_rf")
+Hi Pablo,
 
-guilty as charged ;-)
+I love your patch! Perhaps something to improve:
 
-Acked-by: Jiri Olsa <jolsa@kernel.org>
+[auto build test WARNING on net-next/master]
+[cannot apply to v5.4-rc3 next-20191014]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
 
-thanks,
-jirka
+url:    https://github.com/0day-ci/linux/commits/Pablo-Neira-Ayuso/flow_offload-update-mangle-action-representation/20191015-061232
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-43-g0ccb3b4-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
 
 
-> Signed-off-by: Yunfeng Ye <yeyunfeng@huawei.com>
-> ---
->  tools/perf/util/header.c | 4 +++-
->  tools/perf/util/util.c   | 6 ++++--
->  2 files changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
-> index 86d9396..becc2d1 100644
-> --- a/tools/perf/util/header.c
-> +++ b/tools/perf/util/header.c
-> @@ -1296,8 +1296,10 @@ static int build_mem_topology(struct memory_node *nodes, u64 size, u64 *cntp)
->  			continue;
-> 
->  		if (WARN_ONCE(cnt >= size,
-> -			      "failed to write MEM_TOPOLOGY, way too many nodes\n"))
-> +			"failed to write MEM_TOPOLOGY, way too many nodes\n")) {
-> +			closedir(dir);
->  			return -1;
-> +		}
-> 
->  		ret = memory_node__read(&nodes[cnt++], idx);
->  	}
-> diff --git a/tools/perf/util/util.c b/tools/perf/util/util.c
-> index 5eda6e1..ae56c76 100644
-> --- a/tools/perf/util/util.c
-> +++ b/tools/perf/util/util.c
-> @@ -154,8 +154,10 @@ static int rm_rf_depth_pat(const char *path, int depth, const char **pat)
->  		if (!strcmp(d->d_name, ".") || !strcmp(d->d_name, ".."))
->  			continue;
-> 
-> -		if (!match_pat(d->d_name, pat))
-> -			return -2;
-> +		if (!match_pat(d->d_name, pat)) {
-> +			ret =  -2;
-> +			break;
-> +		}
-> 
->  		scnprintf(namebuf, sizeof(namebuf), "%s/%s",
->  			  path, d->d_name);
-> -- 
-> 2.7.4.huawei.3
-> 
+sparse warnings: (new ones prefixed by >>)
+
+   net/sched/cls_api.c:200:22: sparse: sparse: incorrect type in assignment (different base types) @@    expected restricted __be16 [usertype] protocol @@    got icted __be16 [usertype] protocol @@
+   net/sched/cls_api.c:200:22: sparse:    expected restricted __be16 [usertype] protocol
+   net/sched/cls_api.c:200:22: sparse:    got unsigned int [usertype] protocol
+   net/sched/cls_api.c:1587:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   net/sched/cls_api.c:1587:16: sparse:    struct tcf_proto *
+   net/sched/cls_api.c:1587:16: sparse:    struct tcf_proto [noderef] <asn:4> *
+   net/sched/cls_api.c:1680:20: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   net/sched/cls_api.c:1680:20: sparse:    struct tcf_proto [noderef] <asn:4> *
+   net/sched/cls_api.c:1680:20: sparse:    struct tcf_proto *
+   net/sched/cls_api.c:1643:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   net/sched/cls_api.c:1643:25: sparse:    struct tcf_proto [noderef] <asn:4> *
+   net/sched/cls_api.c:1643:25: sparse:    struct tcf_proto *
+   net/sched/cls_api.c:1662:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   net/sched/cls_api.c:1662:16: sparse:    struct tcf_proto *
+   net/sched/cls_api.c:1662:16: sparse:    struct tcf_proto [noderef] <asn:4> *
+   net/sched/cls_api.c:1727:25: sparse: sparse: restricted __be16 degrades to integer
+   net/sched/cls_api.c:2372:50: sparse: sparse: restricted __be16 degrades to integer
+>> net/sched/cls_api.c:3396:27: sparse: sparse: symbol 'tc_proto_udp_hdr' was not declared. Should it be static?
+>> net/sched/cls_api.c:3499:27: sparse: sparse: cast to restricted __be32
+>> net/sched/cls_api.c:3499:27: sparse: sparse: cast to restricted __be32
+>> net/sched/cls_api.c:3499:27: sparse: sparse: cast to restricted __be32
+>> net/sched/cls_api.c:3499:27: sparse: sparse: cast to restricted __be32
+>> net/sched/cls_api.c:3499:27: sparse: sparse: cast to restricted __be32
+>> net/sched/cls_api.c:3499:27: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3533:33: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3533:33: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3533:33: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3533:33: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3533:33: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3533:33: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3543:25: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3543:25: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3543:25: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3543:25: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3543:25: sparse: sparse: cast to restricted __be32
+   net/sched/cls_api.c:3543:25: sparse: sparse: cast to restricted __be32
+
+Please review and possibly fold the followup patch.
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
