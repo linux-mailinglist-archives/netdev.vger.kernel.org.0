@@ -2,101 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13757D7E09
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 19:46:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80083D7E1B
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 19:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388854AbfJORp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 13:45:56 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43925 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727542AbfJORpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 13:45:55 -0400
-Received: by mail-pf1-f195.google.com with SMTP id a2so12926613pfo.10;
-        Tue, 15 Oct 2019 10:45:53 -0700 (PDT)
+        id S1731001AbfJORrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 13:47:35 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45761 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726527AbfJORrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 13:47:35 -0400
+Received: by mail-qk1-f193.google.com with SMTP id z67so19966201qkb.12;
+        Tue, 15 Oct 2019 10:47:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=leMhQGcv5MZdIce7ISt6zmraox7h2mUqGJ8B9d3Ptog=;
-        b=BEmuBSnAvDGSKs5TubWVa2+kpsLPz/Cy5OulLkefdDeH29IxYZeBHhRdvk79rQllWt
-         FuF4txnM4JGV4/geY3B2sjri8XDlnk5IH2FEWfg6QebBhjU81kTNELkQyfcKCLkxKfmT
-         wngOLzIeDDwCgZCvsLuE+mnQg32TrXdHi0wK55HNItoYPBVJpdLsqSTXKeIDlYATsPJI
-         s9d6zGZy83VzOWDnbAmKNuWCLdBq9xYp9iNxjPclbLGlFQDJjS1lY+FuezwPC4O03pVW
-         9ujCMYfQw8vhRDwmabJjfZvEZskso+gul0v79Hf5x/Kis2ZI4PfTFfY+H2TyaJzohByS
-         KD7g==
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jnflpavPjf+Ft2Pf7r24Ekpvxd/hEtSiZphraBwK8G4=;
+        b=hnGiE4qmcddwCKP25rnEIQGmKrSuCVKoZRxrhUxgLRKUrb5MVZcLlsr3L9/qKCzaGf
+         P+g5fb6ReBfuv4KKPj3X1mFmaBG1xwwz3FTUyzHRFOtF7z2rEbVAP4mwolzpFMDx83zd
+         1k4pIk8dmYpuXWJZEJBWc8y44gFFvgmtVVS7PuiCKqhB8kDcH1bTIUFR+nUeWFRt9eQr
+         oORXFN7mDDB55uMIeIPLhQvAfWlMsfY/Sz14ZGYUoCUV14hNI5GLO0BzzeoKiVi+bsBZ
+         b5dCx/S9CJingFjwUj42LyMwdGv5RvcPu3J8i/RZRFBElDG9q3iuXAKhb3EVbrFEGjuF
+         f5dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=leMhQGcv5MZdIce7ISt6zmraox7h2mUqGJ8B9d3Ptog=;
-        b=RtZn2ETuzVvjXLOw2jTZg2z7lceBpWmTR/2CASKjZHsP3nXG+OksPPfyn/8FTsc+uL
-         CesNkiwNncfaoLFSV1g198mWJPPuaTs+KFrmLzvPoPuEz1utO2CH9p7MwauXODGq8LsH
-         ALCWbfjh+RzLtPtG2rIXaUc38n48bgQqTypXSlP0UFmesG9Rd+V9Jr372FUenPUC9glz
-         XkLCZdnRBNbJ6chkQnSxGIctZj/20ZG4+qPf7hIYqAZnX936a0FHmHhcbzXArWPaazwt
-         RCauDhzRpj3bxzSCoT+SJRHt5LEC+rnIsC8KRejW2M5a8yUFnsUqkuBmgPzwZU8Hjm43
-         RKXg==
-X-Gm-Message-State: APjAAAXAaTu0Dbj5qv87To0ABHXWtl2JdyIy9NXkNbYPRZyB9SsNw3ng
-        QX8ZrrwgozkZc9g73Y4yoIwNyW4J
-X-Google-Smtp-Source: APXvYqzIaH2ca9nMIooDw02p+ApGGXY78qq5k+WJ/LUhvqwiAMZYpsatB9Stv7PrjVu7L4agwXWsBg==
-X-Received: by 2002:aa7:8046:: with SMTP id y6mr40011448pfm.206.1571161553302;
-        Tue, 15 Oct 2019 10:45:53 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r11sm20716856pgn.67.2019.10.15.10.45.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2019 10:45:52 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM GENET
-        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: bcmgenet: Fix RGMII_MODE_EN value for GENET v1/2/3
-Date:   Tue, 15 Oct 2019 10:45:47 -0700
-Message-Id: <20191015174547.9837-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jnflpavPjf+Ft2Pf7r24Ekpvxd/hEtSiZphraBwK8G4=;
+        b=l/rYtMT014KmEFPOudp9BMyHnToqUGCGCbAJ4KEOcGeSiEHOkg1f6VH47RfVcvQNvt
+         tEV/WZFCm7tSlj73RkKkN6e8WIt4KvMC70xcR43HVdWqnyaJ5DSB4sBTiU1Uh5JV0/ts
+         tRqeePUesh97BH+uxzylgERKciZCptE5med9SHHuqVzOeyTABuN6kCJgH+Hyl0u64u6e
+         6Rk/1gQfaxU/qBswOhJOtRJ8e3JkOl6WEcRyGqbP46COgGWU62DzNrbg1/zKtgbD6yz5
+         tduqj1TQkeVAM/w341drPLebJMAmSlyAxUedH2WQV+5TWQdFj0MQQV+u7nF6G3Pzgrdd
+         s9TA==
+X-Gm-Message-State: APjAAAVAk+h5xrlyfQOJb2wOmlDexUCTaHfoo63Yidjbnam/IFmvt2yK
+        3/E7C2iFC1tulznbAlEX9QY=
+X-Google-Smtp-Source: APXvYqzcNDloZ57H2ek7q2C8DW1bg1ahgqE5n9y84l475SysQqninUVaRAjLcEaDs8rZ49WaFsWl6Q==
+X-Received: by 2002:a37:6789:: with SMTP id b131mr37687223qkc.358.1571161653540;
+        Tue, 15 Oct 2019 10:47:33 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c0a3:10e0:57dd:4e1:54d8:dfbe? ([2620:10d:c091:500::2:5709])
+        by smtp.gmail.com with ESMTPSA id q44sm13884054qtk.16.2019.10.15.10.47.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Oct 2019 10:47:32 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+Subject: Re: [PATCH] rtl8xxxu: fix RTL8723BU connection failure issue after
+ warm reboot
+To:     Chris Chiu <chiu@endlessm.com>, kvalo@codeaurora.org,
+        davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+References: <20191015101909.4640-1-chiu@endlessm.com>
+Message-ID: <30809d50-a9ba-881b-1d3b-f3582c14cf79@gmail.com>
+Date:   Tue, 15 Oct 2019 13:47:32 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
+MIME-Version: 1.0
+In-Reply-To: <20191015101909.4640-1-chiu@endlessm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RGMII_MODE_EN bit value was 0 for GENET versions 1 through 3, and
-became 6 for GENET v4 and above, account for that difference.
+On 10/15/19 6:19 AM, Chris Chiu wrote:
+> The RTL8723BU has problems connecting to AP after each warm reboot.
+> Sometimes it returns no scan result, and in most cases, it fails
+> the authentication for unknown reason. However, it works totally
+> fine after cold reboot.
+> 
+> Compare the value of register SYS_CR and SYS_CLK_MAC_CLK_ENABLE
+> for cold reboot and warm reboot, the registers imply that the MAC
+> is already powered and thus some procedures are skipped during
+> driver initialization. Double checked the vendor driver, it reads
+> the SYS_CR and SYS_CLK_MAC_CLK_ENABLE also but doesn't skip any
+> during initialization based on them. This commit only tells the
+> RTL8723BU to do full initilization without checking MAC status.
+> 
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
+> ---
+>   drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h       | 1 +
+>   drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 1 +
+>   drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 3 +++
+>   3 files changed, 5 insertions(+)
 
-Fixes: aa09677cba42 ("net: bcmgenet: add MDIO routines")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/genet/bcmgenet.h | 1 +
- drivers/net/ethernet/broadcom/genet/bcmmii.c   | 6 +++++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+Looks good to me! If this takes care of the warm boot problem, that's 
+pretty awesome.
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-index 4a8fc03d82fd..dbc69d8fa05f 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-@@ -366,6 +366,7 @@ struct bcmgenet_mib_counters {
- #define  EXT_PWR_DOWN_PHY_EN		(1 << 20)
- 
- #define EXT_RGMII_OOB_CTRL		0x0C
-+#define  RGMII_MODE_EN_V123		(1 << 0)
- #define  RGMII_LINK			(1 << 4)
- #define  OOB_DISABLE			(1 << 5)
- #define  RGMII_MODE_EN			(1 << 6)
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-index 94d1dd5d56bf..e7c291bf4ed1 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-@@ -258,7 +258,11 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
- 	 */
- 	if (priv->ext_phy) {
- 		reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
--		reg |= RGMII_MODE_EN | id_mode_dis;
-+		reg |= id_mode_dis;
-+		if (GENET_IS_V1(priv) || GENET_IS_V2(priv) || GENET_IS_V3(priv))
-+			reg |= RGMII_MODE_EN_V123;
-+		else
-+			reg |= RGMII_MODE_EN;
- 		bcmgenet_ext_writel(priv, reg, EXT_RGMII_OOB_CTRL);
- 	}
- 
--- 
-2.17.1
+Signed-off-by: Jes Sorensen <Jes.Sorensen@gmail.com>
+
+Jes
 
