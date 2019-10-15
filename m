@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F64D73DB
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 12:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AFE5D73CB
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 12:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731340AbfJOKtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 06:49:05 -0400
-Received: from foss.arm.com ([217.140.110.172]:35124 "EHLO foss.arm.com"
+        id S1731390AbfJOKtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 06:49:10 -0400
+Received: from foss.arm.com ([217.140.110.172]:35152 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731131AbfJOKtE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 06:49:04 -0400
+        id S1731088AbfJOKtJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Oct 2019 06:49:09 -0400
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D6D6A28;
-        Tue, 15 Oct 2019 03:49:03 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 13C541000;
+        Tue, 15 Oct 2019 03:49:09 -0700 (PDT)
 Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2156B3F68E;
-        Tue, 15 Oct 2019 03:48:58 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4B0163F68E;
+        Tue, 15 Oct 2019 03:49:04 -0700 (PDT)
 From:   Jianyong Wu <jianyong.wu@arm.com>
 To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
         tglx@linutronix.de, pbonzini@redhat.com,
@@ -27,9 +27,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
         Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
         jianyong.wu@arm.com, nd@arm.com
-Subject: [PATCH v5 2/6] ptp: Reorganize ptp_kvm modules to make it arch-independent.
-Date:   Tue, 15 Oct 2019 18:48:18 +0800
-Message-Id: <20191015104822.13890-3-jianyong.wu@arm.com>
+Subject: [PATCH v5 3/6] timekeeping: Add clocksource to system_time_snapshot
+Date:   Tue, 15 Oct 2019 18:48:19 +0800
+Message-Id: <20191015104822.13890-4-jianyong.wu@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191015104822.13890-1-jianyong.wu@arm.com>
 References: <20191015104822.13890-1-jianyong.wu@arm.com>
@@ -38,279 +38,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, ptp_kvm modules implementation is only for x86 which includs
-large part of arch-specific code.  This patch move all of those code
-into new arch related file in the same directory.
+Sometimes, we need check current clocksource outside of
+timekeeping area. Add clocksource to system_time_snapshot then
+we can get clocksource as well as system time.
 
 Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- drivers/ptp/Makefile                        |  1 +
- drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} | 77 +++++-------------
- drivers/ptp/ptp_kvm_x86.c                   | 87 +++++++++++++++++++++
- include/asm-generic/ptp_kvm.h               | 12 +++
- 4 files changed, 118 insertions(+), 59 deletions(-)
- rename drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} (63%)
- create mode 100644 drivers/ptp/ptp_kvm_x86.c
- create mode 100644 include/asm-generic/ptp_kvm.h
+ include/linux/timekeeping.h | 35 ++++++++++++++++++-----------------
+ kernel/time/timekeeping.c   |  7 ++++---
+ 2 files changed, 22 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
-index 677d1d178a3e..8f27ba302e31 100644
---- a/drivers/ptp/Makefile
-+++ b/drivers/ptp/Makefile
-@@ -4,6 +4,7 @@
- #
+diff --git a/include/linux/timekeeping.h b/include/linux/timekeeping.h
+index a8ab0f143ac4..964c14fbbf69 100644
+--- a/include/linux/timekeeping.h
++++ b/include/linux/timekeeping.h
+@@ -194,23 +194,6 @@ extern bool timekeeping_rtc_skipresume(void);
  
- ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
-+ptp_kvm-y				:= ptp_kvm_$(ARCH).o kvm_ptp.o
- obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
- obj-$(CONFIG_PTP_1588_CLOCK_DTE)	+= ptp_dte.o
- obj-$(CONFIG_PTP_1588_CLOCK_IXP46X)	+= ptp_ixp46x.o
-diff --git a/drivers/ptp/ptp_kvm.c b/drivers/ptp/ptp_kvm_common.c
-similarity index 63%
-rename from drivers/ptp/ptp_kvm.c
-rename to drivers/ptp/ptp_kvm_common.c
-index fc7d0b77e118..d8f215186904 100644
---- a/drivers/ptp/ptp_kvm.c
-+++ b/drivers/ptp/ptp_kvm_common.c
-@@ -8,12 +8,12 @@
- #include <linux/err.h>
- #include <linux/init.h>
- #include <linux/kernel.h>
-+#include <linux/slab.h>
- #include <linux/module.h>
- #include <uapi/linux/kvm_para.h>
- #include <asm/kvm_para.h>
--#include <asm/pvclock.h>
--#include <asm/kvmclock.h>
- #include <uapi/asm/kvm_para.h>
-+#include <asm-generic/ptp_kvm.h>
+ extern void timekeeping_inject_sleeptime64(const struct timespec64 *delta);
  
- #include <linux/ptp_clock_kernel.h>
- 
-@@ -24,56 +24,29 @@ struct kvm_ptp_clock {
- 
- DEFINE_SPINLOCK(kvm_ptp_lock);
- 
--static struct pvclock_vsyscall_time_info *hv_clock;
+-/*
+- * struct system_time_snapshot - simultaneous raw/real time capture with
+- *	counter value
+- * @cycles:	Clocksource counter value to produce the system times
+- * @real:	Realtime system time
+- * @raw:	Monotonic raw system time
+- * @clock_was_set_seq:	The sequence number of clock was set events
+- * @cs_was_changed_seq:	The sequence number of clocksource change events
+- */
+-struct system_time_snapshot {
+-	u64		cycles;
+-	ktime_t		real;
+-	ktime_t		raw;
+-	unsigned int	clock_was_set_seq;
+-	u8		cs_was_changed_seq;
+-};
 -
--static struct kvm_clock_pairing clock_pair;
--static phys_addr_t clock_pair_gpa;
--
- static int ptp_kvm_get_time_fn(ktime_t *device_time,
- 			       struct system_counterval_t *system_counter,
- 			       void *ctx)
- {
--	unsigned long ret;
-+	unsigned long ret, cycle;
- 	struct timespec64 tspec;
--	unsigned version;
--	int cpu;
--	struct pvclock_vcpu_time_info *src;
-+	struct clocksource *cs;
+ /*
+  * struct system_device_crosststamp - system/device cross-timestamp
+  *	(syncronized capture)
+@@ -236,6 +219,24 @@ struct system_counterval_t {
+ 	struct clocksource	*cs;
+ };
  
- 	spin_lock(&kvm_ptp_lock);
- 
- 	preempt_disable_notrace();
--	cpu = smp_processor_id();
--	src = &hv_clock[cpu].pvti;
--
--	do {
--		/*
--		 * We are using a TSC value read in the hosts
--		 * kvm_hc_clock_pairing handling.
--		 * So any changes to tsc_to_system_mul
--		 * and tsc_shift or any other pvclock
--		 * data invalidate that measurement.
--		 */
--		version = pvclock_read_begin(src);
--
--		ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
--				     clock_pair_gpa,
--				     KVM_CLOCK_PAIRING_WALLCLOCK);
--		if (ret != 0) {
--			pr_err_ratelimited("clock pairing hypercall ret %lu\n", ret);
--			spin_unlock(&kvm_ptp_lock);
--			preempt_enable_notrace();
--			return -EOPNOTSUPP;
--		}
--
--		tspec.tv_sec = clock_pair.sec;
--		tspec.tv_nsec = clock_pair.nsec;
--		ret = __pvclock_read_cycles(src, clock_pair.tsc);
--	} while (pvclock_read_retry(src, version));
-+	ret = kvm_arch_ptp_get_clock_fn(&cycle, &tspec, &cs);
-+	if (ret != 0) {
-+		pr_err_ratelimited("clock pairing hypercall ret %lu\n", ret);
-+		spin_unlock(&kvm_ptp_lock);
-+		preempt_enable_notrace();
-+		return -EOPNOTSUPP;
-+	}
- 
- 	preempt_enable_notrace();
- 
--	system_counter->cycles = ret;
--	system_counter->cs = &kvm_clock;
-+	system_counter->cycles = cycle;
-+	system_counter->cs = cs;
- 
- 	*device_time = timespec64_to_ktime(tspec);
- 
-@@ -116,17 +89,13 @@ static int ptp_kvm_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- 
- 	spin_lock(&kvm_ptp_lock);
- 
--	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
--			     clock_pair_gpa,
--			     KVM_CLOCK_PAIRING_WALLCLOCK);
-+	ret = kvm_arch_ptp_get_clock(&tspec);
- 	if (ret != 0) {
- 		pr_err_ratelimited("clock offset hypercall ret %lu\n", ret);
- 		spin_unlock(&kvm_ptp_lock);
- 		return -EOPNOTSUPP;
- 	}
- 
--	tspec.tv_sec = clock_pair.sec;
--	tspec.tv_nsec = clock_pair.nsec;
- 	spin_unlock(&kvm_ptp_lock);
- 
- 	memcpy(ts, &tspec, sizeof(struct timespec64));
-@@ -166,21 +135,11 @@ static void __exit ptp_kvm_exit(void)
- 
- static int __init ptp_kvm_init(void)
- {
--	long ret;
--
--	if (!kvm_para_available())
--		return -ENODEV;
--
--	clock_pair_gpa = slow_virt_to_phys(&clock_pair);
--	hv_clock = pvclock_get_pvti_cpu0_va();
-+	int ret;
- 
--	if (!hv_clock)
--		return -ENODEV;
--
--	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING, clock_pair_gpa,
--			KVM_CLOCK_PAIRING_WALLCLOCK);
--	if (ret == -KVM_ENOSYS || ret == -KVM_EOPNOTSUPP)
--		return -ENODEV;
-+	ret = kvm_arch_ptp_init();
-+	if (!ret)
-+		return -EOPNOTSUPP;
- 
- 	kvm_ptp_clock.caps = ptp_kvm_caps;
- 
-diff --git a/drivers/ptp/ptp_kvm_x86.c b/drivers/ptp/ptp_kvm_x86.c
-new file mode 100644
-index 000000000000..a52cf1c2990c
---- /dev/null
-+++ b/drivers/ptp/ptp_kvm_x86.c
-@@ -0,0 +1,87 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * Virtual PTP 1588 clock for use with KVM guests
-+ *
-+ * Copyright (C) 2017 Red Hat Inc.
++ * struct system_time_snapshot - simultaneous raw/real time capture with
++ *	counter value
++ * @sc:		Contains clocksource and clocksource counter value to produce
++ * 	the system times
++ * @real:	Realtime system time
++ * @raw:	Monotonic raw system time
++ * @clock_was_set_seq:	The sequence number of clock was set events
++ * @cs_was_changed_seq:	The sequence number of clocksource change events
 + */
++struct system_time_snapshot {
++	struct system_counterval_t sc;
++	ktime_t		real;
++	ktime_t		raw;
++	unsigned int	clock_was_set_seq;
++	u8		cs_was_changed_seq;
++};
 +
-+#include <asm/pvclock.h>
-+#include <asm/kvmclock.h>
-+#include <linux/module.h>
-+#include <uapi/asm/kvm_para.h>
-+#include <uapi/linux/kvm_para.h>
-+#include <linux/ptp_clock_kernel.h>
-+
-+phys_addr_t clock_pair_gpa;
-+struct kvm_clock_pairing clock_pair;
-+struct pvclock_vsyscall_time_info *hv_clock;
-+
-+int kvm_arch_ptp_init(void)
-+{
-+	int ret;
-+
-+	if (!kvm_para_available())
-+		return -ENODEV;
-+
-+	clock_pair_gpa = slow_virt_to_phys(&clock_pair);
-+	hv_clock = pvclock_get_pvti_cpu0_va();
-+	if (!hv_clock)
-+		return -ENODEV;
-+
-+	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING, clock_pair_gpa,
-+			     KVM_CLOCK_PAIRING_WALLCLOCK);
-+	if (ret == -KVM_ENOSYS || ret == -KVM_EOPNOTSUPP)
-+		return -ENODEV;
-+
-+	return 0;
-+}
-+
-+int kvm_arch_ptp_get_clock(struct timespec64 *ts)
-+{
-+	long ret;
-+
-+	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
-+			     clock_pair_gpa,
-+			     KVM_CLOCK_PAIRING_WALLCLOCK);
-+	if (ret != 0)
-+		return -EOPNOTSUPP;
-+
-+	ts->tv_sec = clock_pair.sec;
-+	ts->tv_nsec = clock_pair.nsec;
-+
-+	return 0;
-+}
-+
-+int kvm_arch_ptp_get_clock_fn(unsigned long *cycle, struct timespec64 *tspec,
-+			      struct clocksource **cs)
-+{
-+	unsigned long ret;
-+	unsigned int version;
-+	int cpu;
-+	struct pvclock_vcpu_time_info *src;
-+
-+	cpu = smp_processor_id();
-+	src = &hv_clock[cpu].pvti;
-+
-+	do {
-+		/*
-+		 * We are using a TSC value read in the hosts
-+		 * kvm_hc_clock_pairing handling.
-+		 * So any changes to tsc_to_system_mul
-+		 * and tsc_shift or any other pvclock
-+		 * data invalidate that measurement.
-+		 */
-+		version = pvclock_read_begin(src);
-+
-+		ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
-+				     clock_pair_gpa,
-+				     KVM_CLOCK_PAIRING_WALLCLOCK);
-+		tspec->tv_sec = clock_pair.sec;
-+		tspec->tv_nsec = clock_pair.nsec;
-+		*cycle = __pvclock_read_cycles(src, clock_pair.tsc);
-+	} while (pvclock_read_retry(src, version));
-+
-+	*cs = &kvm_clock;
-+
-+	return 0;
-+}
-diff --git a/include/asm-generic/ptp_kvm.h b/include/asm-generic/ptp_kvm.h
-new file mode 100644
-index 000000000000..829d76bdb905
---- /dev/null
-+++ b/include/asm-generic/ptp_kvm.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ *  Virtual PTP 1588 clock for use with KVM guests
-+ *
-+ *  Copyright (C) 2019 ARM Ltd.
-+ *  All Rights Reserved
-+ */
-+
-+int kvm_arch_ptp_init(void);
-+int kvm_arch_ptp_get_clock(struct timespec64 *ts);
-+int kvm_arch_ptp_get_clock_fn(unsigned long *cycle,
-+		struct timespec64 *tspec, void *cs);
+ /*
+  * Get cross timestamp between system clock and device clock
+  */
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index 44b726bab4bd..66ff089605b3 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -983,7 +983,8 @@ void ktime_get_snapshot(struct system_time_snapshot *systime_snapshot)
+ 		nsec_raw  = timekeeping_cycles_to_ns(&tk->tkr_raw, now);
+ 	} while (read_seqcount_retry(&tk_core.seq, seq));
+ 
+-	systime_snapshot->cycles = now;
++	systime_snapshot->sc.cycles = now;
++	systime_snapshot->sc.cs = tk->tkr_mono.clock;
+ 	systime_snapshot->real = ktime_add_ns(base_real, nsec_real);
+ 	systime_snapshot->raw = ktime_add_ns(base_raw, nsec_raw);
+ }
+@@ -1189,12 +1190,12 @@ int get_device_system_crosststamp(int (*get_time_fn)
+ 		 * clocksource change
+ 		 */
+ 		if (!history_begin ||
+-		    !cycle_between(history_begin->cycles,
++		    !cycle_between(history_begin->sc.cycles,
+ 				   system_counterval.cycles, cycles) ||
+ 		    history_begin->cs_was_changed_seq != cs_was_changed_seq)
+ 			return -EINVAL;
+ 		partial_history_cycles = cycles - system_counterval.cycles;
+-		total_history_cycles = cycles - history_begin->cycles;
++		total_history_cycles = cycles - history_begin->sc.cycles;
+ 		discontinuity =
+ 			history_begin->clock_was_set_seq != clock_was_set_seq;
+ 
 -- 
 2.17.1
 
