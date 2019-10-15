@@ -2,68 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE1AFD800E
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 21:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D7ED8023
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 21:24:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731276AbfJOTVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 15:21:00 -0400
-Received: from lv141.webhost.pro ([104.223.9.141]:41410 "EHLO
-        lv141.webhost.pro" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731887AbfJOTSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 15:18:40 -0400
-X-Greylist: delayed 11641 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Oct 2019 15:18:40 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=downloa-100.gb.net; s=default; h=Message-ID:Reply-To:Subject:To:From:Date:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:Sender:Cc:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2rc7QP6yX7lusGpdX9TTWcgucqwvHVf5s/bTbX3WShM=; b=ZO+FjtUHrlhE6LbPbsNiCoewwG
-        HEjES5sverY+mdfWV9aI6gT8abb0XUqP3f86moysYsUW6ssj9jNZAo2TfiYI3ip/an2ozvjT2L1rn
-        i1DKQmZlyQN6dcNabrM2PC7geV7glEbd6Wi2RzjZM5UmBBCtuAT0xgg2vVWbrEf+5mW2V4l6SM72T
-        rqlZAmzds7KjaPEuWF+sPG1MYNyY1+w/gWtMAj5v7NBqwDwMdGxlYv5+YLlt0KvjQcSVetKdP9ToB
-        lX+bfZckBEwtlkMqenbFNJM8+l1sLbloGQDSZSmCp9k2LIxDtm7tCMUJRx+XZRMHlHGYLVjYhqLcI
-        8tc96d5g==;
-Received: from [::1] (port=38486 helo=lv141.webhost.pro)
-        by lv141.webhost.pro with esmtpa (Exim 4.92)
-        (envelope-from <info@downloa-100.gb.net>)
-        id 1iKPJ6-0001Oa-48; Tue, 15 Oct 2019 12:04:20 -0400
+        id S1731988AbfJOTX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 15:23:59 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54185 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730839AbfJOTX7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 15:23:59 -0400
+Received: by mail-wm1-f68.google.com with SMTP id i16so274328wmd.3
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 12:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=sGIf1A0kMtMnaW4pOlmzIuINChMCw+EoGElWJi8OM/Y=;
+        b=RYS+rUjs8n1SAm+EKr6ITzHclq8uS0tk2bNEF8hL7qChdRjtdm8bSyI+TOw7IL20Zz
+         +m3QwFIOz3vwxlIpqXtVvQofTHRAdkhZa08KA1dBKD+ySwqO9vLdcvTYkgfRKVvkfR5F
+         nu94op6DRtVwOihEgY25yO9AoEfNGCFpMsaOWOz5H0e86TSWYr0VK6Vp1cNdSCiLbQ3k
+         OoMTfL9liDolQytEm9fAAPWoViG/4QQpvQiQGlG4sJS2Rqzc8hNhuF2wfuzg9zdil3Os
+         R68rWhpgmDj3CXS1+mnpb1sw7CF8qQUvaBvxS7NBWp5UO4PbV0FQH3esl0ffiC3AJkvL
+         jEmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=sGIf1A0kMtMnaW4pOlmzIuINChMCw+EoGElWJi8OM/Y=;
+        b=YNEIehTL/iWz3uZ6QyjnFPawhToJK/tOH/DkxCZXY7RMGhi7cWa6KaWKyCuN+X7DSE
+         ELjHlmHsjvduWd7ThvxEUchRLqWs/8c9ppJJ7z4EUTq4QOqGnRms4kzZvxuTkYwGEQRz
+         VkaIXzFd7PpHeMLO7crV4xGzgGKx3d5NZNR+lCHiDJev7uTYfpmgS8msDe9JNadZnKAy
+         xQQWI4gDKCMWMiiHx+gFbrbUw56waVCJoQZxLKQhPv98pmKL+p32g6e4njOAuav/gRs3
+         e90JFTMaVq9P36+B40Y+Q/6c8S2ik8gFztMfSeVmJQx6oE+w0F/FgljSq2EAo8vVjwyw
+         YdfA==
+X-Gm-Message-State: APjAAAVlnsi+JtqxjyaSt7XHCZGLcgAPjH1HT8+s/y0HztyjLhKZ1r+c
+        BcGcUsRjCJklnsZ97/FCDRS7Ag==
+X-Google-Smtp-Source: APXvYqyuIZCpxcHjHSu2akPqvtD9M3f4BwzEOSMCJdAW/wBj5T4UUF7iJgW8CIdRFdevy/qFfKy9RQ==
+X-Received: by 2002:a7b:cf28:: with SMTP id m8mr96679wmg.161.1571167437483;
+        Tue, 15 Oct 2019 12:23:57 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id u10sm167418wmm.0.2019.10.15.12.23.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2019 12:23:57 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 12:23:49 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v10 4/6] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-ID: <20191015122349.612a230b@cakuba.netronome.com>
+In-Reply-To: <20191015120953.2597-5-tbogendoerfer@suse.de>
+References: <20191015120953.2597-1-tbogendoerfer@suse.de>
+        <20191015120953.2597-5-tbogendoerfer@suse.de>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Tue, 15 Oct 2019 12:04:20 -0400
-From:   Mr Liang Chung <info@downloa-100.gb.net>
-To:     undisclosed-recipients:;
-Subject: Partnership Request
-Reply-To: mrliangc99@gmail.com
-Mail-Reply-To: mrliangc99@gmail.com
-Message-ID: <2029d143888886d5f36fb0fb0cbfe84c@downloa-100.gb.net>
-X-Sender: info@downloa-100.gb.net
-User-Agent: Roundcube Webmail/1.3.8
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - lv141.webhost.pro
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - downloa-100.gb.net
-X-Get-Message-Sender-Via: lv141.webhost.pro: authenticated_id: info@downloa-100.gb.net
-X-Authenticated-Sender: lv141.webhost.pro: info@downloa-100.gb.net
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 15 Oct 2019 14:09:49 +0200, Thomas Bogendoerfer wrote:
+> SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
+> It also supports connecting a SuperIO chip for serial and parallel
+> interfaces. IOC3 is used inside various SGI systemboards and add-on
+> cards with different equipped external interfaces.
+> 
+> Support for ethernet and serial interfaces were implemented inside
+> the network driver. This patchset moves out the not network related
+> parts to a new MFD driver, which takes care of card detection,
+> setup of platform devices and interrupt distribution for the subdevices.
+> 
+> Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+> 
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 
-
--- 
-I am Mr Liang Chung, an Account Officer with the International bank of 
-Taipei,  I am requesting for your partnership in re-profiling 
-funds.Contact me for further details on private Email 
-(mrliangc99@gmail.com).
-I look forward to it.
-
-Regards,
-Liang Chung
+Looks good, I think.
