@@ -2,136 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F67AD7010
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 09:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76F36D7016
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 09:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbfJOHWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 03:22:05 -0400
-Received: from mail-eopbgr20079.outbound.protection.outlook.com ([40.107.2.79]:12039
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725802AbfJOHWF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 03:22:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IJjPQlkFXBPxFQc8DTBbTdvKcbc2386+dTL8MzJ+2FEaVSE9v5I1vzni/f1ApGe4u0QP9SK1aPz5oHaOx2DFglAyqXZO2rv3rw3fK5vpr9K5p0ssTitFy2vj97rwvqjM45o5na6fVd+xeR4ptmWTieDJvsGRmt2APV6UB9SQOOS++j40evSxLq5md++5LK6GLOa30dpG8MttHRUHzLU/DUHqUBz7R9jjjxAQB/sziANbmuVlpXXlojrt31wWjHxTSZ6WEBTD66tfYKHB19V8Fs2GXe/7c8hJNcsH1rF03xnN4rPFz6QgKHeG5iDVEoAyvQkvLs/ykyvlHLGaUHKf6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JCZxCUKIwWvByEoQa3R3l2sVwL6inDE1LXDBpd2DFfY=;
- b=Yf+sliSwckc8Azn+68plxbQIWkxs3l7qhT+0nhxoNHqLhkHauR9r7rCytSRwfhE6ltzDh7gcibG7jF3LbR0d+V7Zl4QnoJS75WL1990flJvx2THhaGqECSkejSA5oZpeQ1/7hOOo8OE73TDzMcMWjCXMIQdmkZPIrtN9Y6iLHiY0Tv1McIxaJWABujC2Nc7QKeHCYBZW874IXSmI0AiTfR0m3H5FU6ReJItKc4sQOvVrNhItzDiC0SLO7jT0f0MNYaxurrPp16L+4+KUNWZvw+yBGWmMBGF5IIuyd9eq/G7JtDvD6VqTjk9Ts5eDp3oZibK+p577GEB/xhedh4cpEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JCZxCUKIwWvByEoQa3R3l2sVwL6inDE1LXDBpd2DFfY=;
- b=qNDcOnkar6KeXJTNSULY0ez0BFtRiRQjnHIERYHZT1HczIKkXPsioi1D22FdXAduaoFyhzCG2sCZS2Umbq5MBdGvUz5b/Z6JBk3/oUVxC+s4+lx64571LAcNT9CKS5x05+SVQMY7EQ5FtSOAd9IesOJcCROOcqd/M4SZSqpIPfI=
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.188.155) by
- AM4PR05MB3460.eurprd05.prod.outlook.com (10.171.187.153) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Tue, 15 Oct 2019 07:22:01 +0000
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::dde1:60df:efba:b3df]) by AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::dde1:60df:efba:b3df%7]) with mapi id 15.20.2347.023; Tue, 15 Oct 2019
- 07:22:01 +0000
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
-        Tal Gilboa <talgi@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Sagi Grimberg <sagi@grimberg.me>
-Subject: Re: [PATCH] net: ethernet: broadcom: have drivers select DIMLIB as
- needed
-Thread-Topic: [PATCH] net: ethernet: broadcom: have drivers select DIMLIB as
- needed
-Thread-Index: AQHVgLILd9wXJZvpIUqDLTWD6nofXadbUREA
-Date:   Tue, 15 Oct 2019 07:22:00 +0000
-Message-ID: <20191015072158.GA6957@unreal>
-References: <610f9277-adff-2f4b-1f44-8f41b6c3ccb5@infradead.org>
-In-Reply-To: <610f9277-adff-2f4b-1f44-8f41b6c3ccb5@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM3PR04CA0149.eurprd04.prod.outlook.com (2603:10a6:207::33)
- To AM4PR05MB3137.eurprd05.prod.outlook.com (2603:10a6:205:8::27)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=leonro@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b8554822-0ca7-4576-2898-08d751405ee2
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: AM4PR05MB3460:|AM4PR05MB3460:
-x-ms-exchange-purlcount: 1
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB346050E67FDCA0B12D8DF8A3B0930@AM4PR05MB3460.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 01917B1794
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(7916004)(346002)(39860400002)(396003)(366004)(376002)(136003)(199004)(189003)(66476007)(66556008)(6306002)(6246003)(6506007)(386003)(229853002)(6512007)(9686003)(478600001)(81156014)(71200400001)(71190400001)(6436002)(81166006)(8676002)(33656002)(316002)(476003)(54906003)(486006)(64756008)(6116002)(102836004)(86362001)(186003)(52116002)(26005)(3846002)(6916009)(66946007)(66446008)(305945005)(446003)(11346002)(76176011)(7736002)(966005)(2906002)(14444005)(256004)(66066001)(14454004)(33716001)(4326008)(6486002)(25786009)(66574012)(1076003)(8936002)(5660300002)(99286004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3460;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6cypjeV+H8/7qbzlDtTOTpuqNixdt78p2CZ+Zd/FHQbmEgB29WyHetGBSOisjQdgaUzlfbILUgYwKGSnF8ikLT0yz3SGd/Lo11zPfzm+21r009LL5bdtxGsaXg/Er5P2aOHcZPt0jOsnpc+sk0NI0FeRGttpmW3+/TtlGOppR9bMK6iRyCI5Z5vZW6aIoEg2U76lVO3aK4jHHS9Cljt1L5ghXrbynLHvJSPfyF4nvGAqxuNdKqaymJ1aAN0h9CxCmVbPJsURIbFVIReDu09Vt2UgmWtPaOka8Ew3YXwEd9i/KpbZAsw1OXd2NvuIdG6DUQd/E8CwxvNY/SXr4lTntzwTJOMevWeRKx4ttfQQZifenvBb6yLdDqU0zV40zDnye0h2lehyVuRogLk9hMmjimNDQxvUqLSU1G7a6bCTRMPsJd7ByLNJIDbJS2CeNbIwrFZ/x9/Naxgl9VEt0Capmg==
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <F61E0C50DD538E49933BCCA745B1A918@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8554822-0ca7-4576-2898-08d751405ee2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2019 07:22:00.9210
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oVYcNKj8/bccVYHmhM1T2mb84nQu2yPE8zcko/nzEZ4leKxlllv7r3xkyuTgDDxyf32VjqZ7aqOCqLOSf+7hkQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3460
+        id S1727463AbfJOHYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 03:24:49 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40120 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725710AbfJOHYt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 03:24:49 -0400
+Received: by mail-pf1-f195.google.com with SMTP id x127so11876401pfb.7;
+        Tue, 15 Oct 2019 00:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=KJHJMWPt8LmPMLLI5wCldlqqiCjwCa9/7SUVMzKhjEQ=;
+        b=Pv2MgHMbxH5uV/C0Izeennt9dyw4UOlO7GrYaYJTX5+UgaAPwMMCkLCAvPIKCkTFN8
+         EqfeoJFrT3zUiZ4DM3RMf6EXhfOPyXOQoXwsLgOu7fug21siPRixIugDqh/TLlLDmCcW
+         oIcq5bkfQhppAipR98AsumNv4mK6d5AqGyFfP/lBRgayyF532AC9xmf15nv3Oe+uZtGm
+         RVW3wsU1WzoWmGFMSKipAaEcuFNhQE5q483FrjM1ieNbRfcD0w7U6IUqirvgpZTtJwVL
+         Eik+9ivWKo2q0MvnPH/uj10632RWiFwamheL05yBRGdN/2E1efA7Glcp73EAb4zzrXwR
+         vu7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KJHJMWPt8LmPMLLI5wCldlqqiCjwCa9/7SUVMzKhjEQ=;
+        b=aLI5VdsSTkUiQFPoywq/G3KRPiqB7H6lUwlKb45H445qbg/KfLl9RZFEl1sfW6s4Yy
+         sOf0z+nFV5Xf5psVkUMDtyXYnSqgSISiBCPlQ9Occ9fvph8z3Xhgbiy1U0EwftQws20M
+         LlmRvdC/Yws1aHW7/HEzv1HVrYDryuoO9ot7/qgw32/M5MDR+aEqEKuC5Ui/2sI+yB1d
+         7o06+hNIULfZElj4L4nTJzM7MZ87CZiGMG6KPjbGhEy1duie6DIffxPKbx4j6uktevt2
+         Xra0CriBqv5OEWc33HzBTF0Is0DQRg5DGgee+OffJ8voeISrkcEfZ0K4Einx/jaSMtrk
+         4q5A==
+X-Gm-Message-State: APjAAAVUaQ6c/iELl7SlH4KWGyEv6IUGoU4Y7fg7r6UZmZvqzHD3p6IB
+        5fAimsr3zciN2RIH3e0w6kU/TqV7
+X-Google-Smtp-Source: APXvYqwz2aQUjVHw8RIUbJu/D184X+eavo2U8T2pEHbvl4MDbsvELAu1AxobrAcsK1AmNn848WPAZA==
+X-Received: by 2002:aa7:970b:: with SMTP id a11mr35518485pfg.37.1571124286313;
+        Tue, 15 Oct 2019 00:24:46 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c26sm18472554pfo.173.2019.10.15.00.24.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 15 Oct 2019 00:24:45 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: [PATCH net] sctp: change sctp_prot .no_autobind with true
+Date:   Tue, 15 Oct 2019 15:24:38 +0800
+Message-Id: <06beb8a9ceaec9224a507b58d3477da106c5f0cd.1571124278.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 09:03:33PM -0700, Randy Dunlap wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
->
-> NET_VENDOR_BROADCOM is intended to control a kconfig menu only.
-> It should not have anything to do with code generation.
-> As such, it should not select DIMLIB for all drivers under
-> NET_VENDOR_BROADCOM.  Instead each driver that needs DIMLIB should
-> select it (being the symbols SYSTEMPORT, BNXT, and BCMGENET).
->
-> Link: https://lkml.kernel.org/r/alpine.DEB.2.21.1907021810220.13058@ramsa=
-n.of.borg/
->
-> Fixes: 4f75da3666c0 ("linux/dim: Move implementation to .c files")
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Uwe Kleine-K=F6nig <uwe@kleine-koenig.org>
-> Cc: Tal Gilboa <talgi@mellanox.com>
-> Cc: Saeed Mahameed <saeedm@mellanox.com>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-rdma@vger.kernel.org
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Cc: Doug Ledford <dledford@redhat.com>
-> Cc: Jason Gunthorpe <jgg@mellanox.com>
-> Cc: Leon Romanovsky <leonro@mellanox.com>
-> Cc: Or Gerlitz <ogerlitz@mellanox.com>
-> Cc: Sagi Grimberg <sagi@grimberg.me>
-> ---
->  drivers/net/ethernet/broadcom/Kconfig |    4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
+syzbot reported a memory leak:
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+  BUG: memory leak, unreferenced object 0xffff888120b3d380 (size 64):
+  backtrace:
+
+    [...] slab_alloc mm/slab.c:3319 [inline]
+    [...] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+    [...] sctp_bucket_create net/sctp/socket.c:8523 [inline]
+    [...] sctp_get_port_local+0x189/0x5a0 net/sctp/socket.c:8270
+    [...] sctp_do_bind+0xcc/0x200 net/sctp/socket.c:402
+    [...] sctp_bindx_add+0x4b/0xd0 net/sctp/socket.c:497
+    [...] sctp_setsockopt_bindx+0x156/0x1b0 net/sctp/socket.c:1022
+    [...] sctp_setsockopt net/sctp/socket.c:4641 [inline]
+    [...] sctp_setsockopt+0xaea/0x2dc0 net/sctp/socket.c:4611
+    [...] sock_common_setsockopt+0x38/0x50 net/core/sock.c:3147
+    [...] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
+    [...] __do_sys_setsockopt net/socket.c:2100 [inline]
+
+It was caused by when sending msgs without binding a port, in the path:
+inet_sendmsg() -> inet_send_prepare() -> inet_autobind() ->
+.get_port/sctp_get_port(), sp->bind_hash will be set while bp->port is
+not. Later when binding another port by sctp_setsockopt_bindx(), a new
+bucket will be created as bp->port is not set.
+
+sctp's autobind is supposed to call sctp_autobind() where it does all
+things including setting bp->port. Since sctp_autobind() is called in
+sctp_sendmsg() if the sk is not yet bound, it should have skipped the
+auto bind.
+
+THis patch is to avoid calling inet_autobind() in inet_send_prepare()
+by changing sctp_prot .no_autobind with true, also remove the unused
+.get_port.
+
+Reported-by: syzbot+d44f7bbebdea49dbc84a@syzkaller.appspotmail.com
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/socket.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 939b8d2..5ca0ec0 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -9500,7 +9500,7 @@ struct proto sctp_prot = {
+ 	.backlog_rcv =	sctp_backlog_rcv,
+ 	.hash        =	sctp_hash,
+ 	.unhash      =	sctp_unhash,
+-	.get_port    =	sctp_get_port,
++	.no_autobind =	true,
+ 	.obj_size    =  sizeof(struct sctp_sock),
+ 	.useroffset  =  offsetof(struct sctp_sock, subscribe),
+ 	.usersize    =  offsetof(struct sctp_sock, initmsg) -
+@@ -9542,7 +9542,7 @@ struct proto sctpv6_prot = {
+ 	.backlog_rcv	= sctp_backlog_rcv,
+ 	.hash		= sctp_hash,
+ 	.unhash		= sctp_unhash,
+-	.get_port	= sctp_get_port,
++	.no_autobind	= true,
+ 	.obj_size	= sizeof(struct sctp6_sock),
+ 	.useroffset	= offsetof(struct sctp6_sock, sctp.subscribe),
+ 	.usersize	= offsetof(struct sctp6_sock, sctp.initmsg) -
+-- 
+2.1.0
+
