@@ -2,113 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 677E2D7BE0
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 18:38:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 135ECD7C0A
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 18:39:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388200AbfJOQiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 12:38:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46636 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728238AbfJOQiR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 12:38:17 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D70D0308FBAC;
-        Tue, 15 Oct 2019 16:38:16 +0000 (UTC)
-Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 144475D6B7;
-        Tue, 15 Oct 2019 16:38:07 +0000 (UTC)
-Date:   Tue, 15 Oct 2019 10:38:06 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
-Subject: Re: [PATCH V3 1/7] mdev: class id support
-Message-ID: <20191015103806.0538ccb2@x1.home>
-In-Reply-To: <20191011081557.28302-2-jasowang@redhat.com>
-References: <20191011081557.28302-1-jasowang@redhat.com>
-        <20191011081557.28302-2-jasowang@redhat.com>
-Organization: Red Hat
+        id S1728034AbfJOQjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 12:39:36 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:52338 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726549AbfJOQjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 12:39:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571157574;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:openpgp:openpgp;
+        bh=ojp02z/yPeUqI0YPPrqnloEvXX8pMYJM8GdkxYvWth0=;
+        b=JiBoFcgU3vK36RnkawQvLKPgM2PiIW04nPfHByYuxUxuuAi1tfOyUpUifRWmr5k1kw9JbW
+        w2vRq2T0T792odlSf4FxlZLhbhfq9vDgzcRN9qcqHQhBu2HosdDlKPrkdtlCPh6UV9dZBz
+        crXst+PhbIdWyLzTLHFuccnIrpp4Lxs=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-210-AfGCHJTINaKaxmXH1iW7bA-1; Tue, 15 Oct 2019 12:39:29 -0400
+Received: by mail-wm1-f71.google.com with SMTP id o128so1292229wmo.1
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 09:39:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=o8Yzcui6UO5aokPFK9KbVMAamgpXNzxTPApyteJcIxI=;
+        b=RVWDNVl9XEQQv1M8bzdDl8sLewGo5dB//spRcvM9OkvhYHR/PhMw8EEZ9K+32RaGJl
+         4Z+55jnoe6oA7TEyhERpETGiGIrDJRL6Fhx3MT8naRCG7M9eKIvz1jxr4ZdBEFwMoCc5
+         0VD3QijUAn2Uge7TYpJoVYutT6KU3EY+PtKdq7EtkjuxAbpGX2ncEbD99xFbVPLvOTds
+         lcMnQ6Zy4KjTPFWGfD2eU7Mdnq7tXlBH3GqlWtJQBsrP/LbBO+b2jeGR0bNhtjGsmIWm
+         uiEU+If53aW39NMJRxc6NsEpeXR37wnqBw9cysavMLftlsIA1IvrP7fnW7kNC5WwHula
+         fnaA==
+X-Gm-Message-State: APjAAAUhkuOaLZY2Bmno8ovlSsADNiEAgrNELaIwqf+GMppwkEmR7nWK
+        Z33vOEh/lwyHYy93BtIgHkMGEbsyyZmMG92Gm/+mg3VpseT42g6MwzIRU3GJJoX70b/Cskk4TjH
+        wAmrrlAwrvxzzeSo0
+X-Received: by 2002:adf:e747:: with SMTP id c7mr935228wrn.384.1571157568340;
+        Tue, 15 Oct 2019 09:39:28 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyejSMH01cdqlKyvOUSnepj7nqszueGVbjXDXwAp7a2kqRNxQBtic0nSge519tsU28CGqWN0A==
+X-Received: by 2002:adf:e747:: with SMTP id c7mr935204wrn.384.1571157568078;
+        Tue, 15 Oct 2019 09:39:28 -0700 (PDT)
+Received: from ?IPv6:2001:b07:6468:f312:d001:591b:c73b:6c41? ([2001:b07:6468:f312:d001:591b:c73b:6c41])
+        by smtp.gmail.com with ESMTPSA id h7sm20388863wrs.15.2019.10.15.09.39.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Oct 2019 09:39:27 -0700 (PDT)
+Subject: Re: [PATCH v5 5/6] ptp: arm64: Enable ptp_kvm for arm64
+To:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
+        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
+        sean.j.christopherson@intel.com, maz@kernel.org,
+        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
+        suzuki.poulose@arm.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
+        nd@arm.com
+References: <20191015104822.13890-1-jianyong.wu@arm.com>
+ <20191015104822.13890-6-jianyong.wu@arm.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Openpgp: preference=signencrypt
+Message-ID: <da62c327-9402-9a5c-d694-c1a4378822e0@redhat.com>
+Date:   Tue, 15 Oct 2019 18:39:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Tue, 15 Oct 2019 16:38:17 +0000 (UTC)
+In-Reply-To: <20191015104822.13890-6-jianyong.wu@arm.com>
+Content-Language: en-US
+X-MC-Unique: AfGCHJTINaKaxmXH1iW7bA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Oct 2019 16:15:51 +0800
-Jason Wang <jasowang@redhat.com> wrote:
-  
-> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
-> index b558d4cfd082..724e9b9841d8 100644
-> --- a/drivers/vfio/mdev/mdev_core.c
-> +++ b/drivers/vfio/mdev/mdev_core.c
-> @@ -45,6 +45,12 @@ void mdev_set_drvdata(struct mdev_device *mdev, void *data)
->  }
->  EXPORT_SYMBOL(mdev_set_drvdata);
->  
-> +void mdev_set_class(struct mdev_device *mdev, u16 id)
+On 15/10/19 12:48, Jianyong Wu wrote:
+> +int kvm_arch_ptp_get_clock_generic(struct timespec64 *ts,
+> +=09=09=09=09   struct arm_smccc_res *hvc_res)
 > +{
-> +	mdev->class_id = id;
+> +=09u64 ns;
+> +=09ktime_t ktime_overall;
+> +
+> +=09arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+> +=09=09=09=09  hvc_res);
+> +=09if ((long)(hvc_res->a0) < 0)
+> +=09=09return -EOPNOTSUPP;
+> +
+> +=09ktime_overall =3D hvc_res->a0 << 32 | hvc_res->a1;
+> +=09*ts =3D ktime_to_timespec64(ktime_overall);
+> +
+> +=09return 0;
 > +}
-> +EXPORT_SYMBOL(mdev_set_class);
 > +
->  struct device *mdev_dev(struct mdev_device *mdev)
->  {
->  	return &mdev->dev;
-> @@ -135,6 +141,7 @@ static int mdev_device_remove_cb(struct device *dev, void *data)
->   * mdev_register_device : Register a device
->   * @dev: device structure representing parent device.
->   * @ops: Parent device operation structure to be registered.
-> + * @id: class id.
->   *
->   * Add device to list of registered parent devices.
->   * Returns a negative value on error, otherwise 0.
-> @@ -324,6 +331,9 @@ int mdev_device_create(struct kobject *kobj,
->  	if (ret)
->  		goto ops_create_fail;
->  
-> +	if (!mdev->class_id)
 
-This is a sanity test failure of the parent driver on a privileged
-path, I think it's fair to print a warning when this occurs rather than
-only return an errno to the user.  In fact, ret is not set to an error
-value here, so it looks like this fails to create the device but
-returns success.  Thanks,
+This seems wrong, who uses kvm_arch_ptp_get_clock_fn?
 
-Alex
+Paolo
 
-> +		goto class_id_fail;
-> +
->  	ret = device_add(&mdev->dev);
->  	if (ret)
->  		goto add_fail;
-> @@ -340,6 +350,7 @@ int mdev_device_create(struct kobject *kobj,
->  
->  sysfs_fail:
->  	device_del(&mdev->dev);
-> +class_id_fail:
->  add_fail:
->  	parent->ops->remove(mdev);
->  ops_create_fail:
