@@ -2,75 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF859D7B06
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 18:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB6FD7B29
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 18:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728232AbfJOQSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 12:18:00 -0400
-Received: from imap1.codethink.co.uk ([176.9.8.82]:54656 "EHLO
-        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727981AbfJOQSA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 12:18:00 -0400
-Received: from [167.98.27.226] (helo=rainbowdash.codethink.co.uk)
-        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
-        id 1iKPW9-00088n-5a; Tue, 15 Oct 2019 17:17:49 +0100
-Received: from ben by rainbowdash.codethink.co.uk with local (Exim 4.92.2)
-        (envelope-from <ben@rainbowdash.codethink.co.uk>)
-        id 1iKPW8-0008E4-NS; Tue, 15 Oct 2019 17:17:48 +0100
-From:   "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
-To:     linux-kernel@lists.codethink.co.uk
-Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: make tc_flow_parsers static
-Date:   Tue, 15 Oct 2019 17:17:48 +0100
-Message-Id: <20191015161748.31576-1-ben.dooks@codethink.co.uk>
-X-Mailer: git-send-email 2.23.0
+        id S1729300AbfJOQWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 12:22:49 -0400
+Received: from mail-qt1-f180.google.com ([209.85.160.180]:36655 "EHLO
+        mail-qt1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727961AbfJOQWt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 12:22:49 -0400
+Received: by mail-qt1-f180.google.com with SMTP id o12so31441678qtf.3;
+        Tue, 15 Oct 2019 09:22:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Iddr0FKoPOEPm9BynpBCTguodRMFh274qlurBhFXN5w=;
+        b=oQJEW2laLowiKpwk+IiKpsJJmdjaxGxmby4xDbZVS+KqENDZthmkLNZJfO0uYeh9Za
+         KA/mfqSfdOObDfR3THW09S+XYmB/wNgkXJFI0MblQ8KdQvC6Kq453GBW+41YOtMr1A8Q
+         3YhOlNRopmMP4B+1N2UQI4vIHIUbAGBrM/jD7Ic87pPoRxR6B0V9xIiFNgSRCVHRMc5+
+         psdBa3YSgY/rxezRHeo8xtgpqIbhWoa4bmDuX8LfDxKJA8vYrMBW7iVQKYCbn1HQ2CSW
+         3U4kuKu7t9RMMFXWGwWKuJEXEeQmuuSBZaJt5uHTaDXb319440L5DiQYGAK1GRljbsUG
+         KPVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Iddr0FKoPOEPm9BynpBCTguodRMFh274qlurBhFXN5w=;
+        b=oerRNc4p+oHDdEjgBHhcUZwfMI0xQgu+Ly4QXfBaYtL3ZsZxeeOoucI5Q0aSgmEaVI
+         SvELtq5RQPzP4ShITt9ZbIJqCtU2OkOkG5FoDZglQ7jTnD49OssbEX7w6c7VfeJy140z
+         zWa6H9AIGXjTzVSYr6lobm6RGyfs5cFsKhq0Yd//a1PX3tPzBNx208bi8qaI0a9vCiDC
+         S6zgmiYEqUnMVnkcMbMntDMNU3EDg/w3K6zb7KdDrCFWktBJZBU5DWjGVnzCBArKIllk
+         /NvxBQqgN0h7a69f9146AmKVxp2mJuySUPdWEPFMQwhIKEs7lN5al/hdA62IrvoBg3Iy
+         kvcA==
+X-Gm-Message-State: APjAAAWZkIlWHRZuNHT5mOrd6HBBp+Wu/ETfTNt26N4QSVp6SUdLdEe9
+        Q0/lw4lBXTnYFkVh3znvBECT/5w1DZgzacN9kuU=
+X-Google-Smtp-Source: APXvYqy2EoQUp3knE5L8RWfwGKnub3zMUUl1fazbwjPQI2ZQZthRNAOfP2kWdviDYp4kfwcBN4ihRo+ibwWLYjpf2Vk=
+X-Received: by 2002:ac8:379d:: with SMTP id d29mr37654157qtc.93.1571156566754;
+ Tue, 15 Oct 2019 09:22:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191015130117.32292-1-jolsa@kernel.org>
+In-Reply-To: <20191015130117.32292-1-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 15 Oct 2019 09:22:35 -0700
+Message-ID: <CAEf4BzYdJ-hPHVehZriS_synLWtgad9wx_eoN6-JDBUUHFjfgQ@mail.gmail.com>
+Subject: Re: [RFC] libbpf: Allow to emit all dependent definitions
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>, Daniel Xu <dxu@dxuuu.xyz>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tc_flow_parsers is not used outside of the driver, so
-make it static to avoid the following sparse warning:
+On Tue, Oct 15, 2019 at 6:03 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Currently the bpf dumper does not emit definitions
+> of pointers to structs. It only emits forward type
+> declarations.
+>
+> Having 2 structs like:
+>
+>    struct B {
+>      int b;
+>    };
+>
+>    struct A {
+>      struct B *ptr;
+>    };
+>
+> the call to btf_dump__dump_type(id = struct A) dumps:
+>
+>    struct B;
+>    struct A {
+>      struct B *ptr;
+>    };
+>
+> It'd ease up bpftrace code if we could dump definitions
+> of all dependent types, like:
+>
+>    struct B {
+>      int b;
+>    };
+>    struct A {
+>      struct B *ptr;
+>    };
+>
+> So we could dereference all the pointers easily, instead
+> of searching for each access member's type and dumping it
+> separately.
+>
+> Adding struct btf_dump_opts::emit_all to do that.
+>
 
-drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:516:3: warning: symbol 'tc_flow_parsers' was not declared. Should it be static?
+Hey Jiri,
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yeah, Daniel Xu mentioned that this would be useful. I haven't thought
+this through very well yet, but I suspect that this simple change
+might not be enough to make this work. There are cases where you are
+not yet allowed to emit definition and have to emit
+forward-declaration first. I suggest trying to use this on vmlinux BTF
+and see if resulting header files still compiles with both Clang and
+GCC. Do you mind checking?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index e231098061b6..f9a9a9d82233 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -510,7 +510,7 @@ static struct stmmac_flow_entry *tc_find_flow(struct stmmac_priv *priv,
- 	return NULL;
- }
- 
--struct {
-+static struct {
- 	int (*fn)(struct stmmac_priv *priv, struct flow_cls_offload *cls,
- 		  struct stmmac_flow_entry *entry);
- } tc_flow_parsers[] = {
--- 
-2.23.0
+But also, as we learned over last few months, just adding extra field
+to an opts struct is not backwards-compatible, so we'll need to add
+new API and follow the pattern that we used for
+bpf_object__open_{file,mem).
 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+
+[...]
