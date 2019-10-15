@@ -2,286 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11FCFD6CAE
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 02:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E94D8D6CCA
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 03:20:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727225AbfJOA5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 20:57:48 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:40172 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726921AbfJOA5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 20:57:48 -0400
-Received: by mail-pf1-f194.google.com with SMTP id x127so11321926pfb.7;
-        Mon, 14 Oct 2019 17:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Wsv1eeRYK3FckN4mPKM6Tyd9SrCDq1K6jdUYJvegRgw=;
-        b=qcf6YCz2nrdYS9t+vyxPGwCWBe+pJkCYK9K2IoXAFvzqMvXj+YTcU5kd1SC2AD/VMK
-         2zQuNPSdDJadMcQABTNlSDNX7o41OSKRswbHRAEWqfXkGwFB8nyAwrA0wGYUh0t/Y671
-         1wAnWZIWk9rKP4PpEZ5+CWO6AMqRmv0Kyj3X0qyXYJVdjBu4wy4P2ySlt6gUO/GauRpw
-         +VVTlCqmUPWrRBuKsBVgHhiIF8PT6J2VICiJc34MxhTqmiZ8bxaMs0m+gFP/PC+4IHNQ
-         MXYxKN0LyF0Lfh4JWvgu+t+KPUVcRR9Ax3NM1UA6L4E4lxgU3+MukujzgT+cPRcNSYr8
-         y22g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Wsv1eeRYK3FckN4mPKM6Tyd9SrCDq1K6jdUYJvegRgw=;
-        b=lfddC+EhEpg0qC0z4ngcaOcsnYpUlAkIaBXvgvl/Vx1+osXTvfa0yK44tNkLgBnuEa
-         VQKft82KgfvfUTkuLnbXmU55nq5SXJ3P3NxuUY0MZlUTL0GdQIqpVnp1eHIQALtbIlEQ
-         dQjgbF/FyD/8AWJWuo0XYChwdySnaFSo+ce+Z/+HYxWifNiYhM640kxm+Vtw2oT2DVRr
-         s1iLLOxSG2vd3Xd58nHCsKCXPHt2cubUmeLM7YmEONPQCsfheOaOMdy1DlyxtZHixpG2
-         f9vQ742FNsEYu6zwk7GU8tyvcdem8IO7aU1U8pVwpcmsnhsXRExjDWHSckr2m2naVW1P
-         f0IA==
-X-Gm-Message-State: APjAAAX+HV79YAkB3cwqDvXJT9Bn1ZoPbquzeTGexyG+n1cWcgitDUvW
-        Le5JItERRvOBhc9g2pCr2UgtGx6H
-X-Google-Smtp-Source: APXvYqxJBVBZFmeB7ozapEcpOz5kvEfy2Ogpgrpa/kA8ZCiYDBDztGekyX/rE9/CAELuXONhMbyL1A==
-X-Received: by 2002:a62:e40d:: with SMTP id r13mr35490542pfh.154.1571101065271;
-        Mon, 14 Oct 2019 17:57:45 -0700 (PDT)
-Received: from [172.20.20.156] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id s36sm20196820pgk.84.2019.10.14.17.57.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Oct 2019 17:57:44 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/3] vhost_net: user tap recvmsg api to access
- ptr ring
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
- <20191012015357.1775-3-prashantbhole.linux@gmail.com>
- <20191012164059-mutt-send-email-mst@kernel.org>
-From:   Prashant Bhole <prashantbhole.linux@gmail.com>
-Message-ID: <a98a594c-f0ee-43f7-956b-159009dc6e0f@gmail.com>
-Date:   Tue, 15 Oct 2019 09:57:11 +0900
+        id S1727332AbfJOBUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 21:20:50 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:55458 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727225AbfJOBUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 21:20:50 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9F1FWPh010787;
+        Tue, 15 Oct 2019 01:20:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=nym7061D2humZLEh2kG3wf0wlc8iedL8d/xD0a8SLCw=;
+ b=cyPZYuf+Y3/agJ7stYDWA0yGfNrfCGgYx3LBqHWkkYoZFhF5jOB5aksdvxLFR066Xp9+
+ R90SentljpqICpgsGxhWV2ZKN+74QSyAxyKdFS9f+Ty2nTqQhjCH1qIdFICmw9VtnufW
+ olIhZ8YgYNDP+DcnMC9oxGGY5K9NK1n+/ubvd/0Z9ou7p43HYhYgX7UFRKsXoYTa5TDf
+ 2xPGMuR0GnFF2hl5JmA1uUfO6jNaLHBtfgKmyqg+2tQunuC0MAvpzdjA4NRChMCK2NSM
+ Pg2iR9oUasadnCUsf73sZXof93Q1mjKhAcISwk0ISiyE/F/GgvlvYw1aERHOAxXiS68X Nw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2vk6sqccup-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Oct 2019 01:20:13 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9F1J5WK152858;
+        Tue, 15 Oct 2019 01:20:13 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 2vkrbkx48v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Oct 2019 01:20:13 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9F1K7er019180;
+        Tue, 15 Oct 2019 01:20:08 GMT
+Received: from [192.168.1.3] (/114.88.246.185)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 15 Oct 2019 01:20:07 +0000
+Subject: Re: [RFC PATCH 0/2] block: use eBPF to redirect IO completion
+To:     Hou Tao <houtao1@huawei.com>, linux-block@vger.kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, axboe@kernel.dk,
+        ast@kernel.org
+Cc:     hare@suse.com, osandov@fb.com, ming.lei@redhat.com,
+        damien.lemoal@wdc.com, bvanassche@acm.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com
+References: <20191014122833.64908-1-houtao1@huawei.com>
+From:   Bob Liu <bob.liu@oracle.com>
+Message-ID: <68fd4fe2-7008-4d7c-b8a6-dc7906dcd291@oracle.com>
+Date:   Tue, 15 Oct 2019 09:20:00 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-In-Reply-To: <20191012164059-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20191014122833.64908-1-houtao1@huawei.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9410 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910150010
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9410 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910150010
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
-Thanks for reviewing.
-
-On 10/13/19 5:41 AM, Michael S. Tsirkin wrote:
-> On Sat, Oct 12, 2019 at 10:53:56AM +0900, prashantbhole.linux@gmail.com wrote:
->> From: Prashant Bhole <prashantbhole.linux@gmail.com>
->>
->> Currently vhost_net directly accesses ptr ring of tap driver to
->> fetch Rx packet pointers. In order to avoid it this patch modifies
->> tap driver's recvmsg api to do additional task of fetching Rx packet
->> pointers.
->>
->> A special struct tun_msg_ctl is already being usedd via msg_control
->> for tun Rx XDP batching. This patch extends tun_msg_ctl usage to
->> send sub commands to recvmsg api. recvmsg can now produce/unproduce
->> pointers from ptr ring as an additional task.
->>
->> This will be useful in future in implementation of virtio-net XDP
->> offload feature. Where packets will be XDP batch processed in
->> tun_recvmsg.
+On 10/14/19 8:28 PM, Hou Tao wrote:
+> For network stack, RPS, namely Receive Packet Steering, is used to
+> distribute network protocol processing from hardware-interrupted CPU
+> to specific CPUs and alleviating soft-irq load of the interrupted CPU.
 > 
-> I'd like to see that future patch, by itself this patchset
-> seems to be of limited usefulness.
-
-Agree, this set is just a reorganization. Next time this will be a part
-of set which actually uses it.
-
-Thanks
-
+> For block layer, soft-irq (for single queue device) or hard-irq
+> (for multiple queue device) is used to handle IO completion, so
+> RPS will be useful when the soft-irq load or the hard-irq load
+> of a specific CPU is too high, or a specific CPU set is required
+> to handle IO completion.
 > 
->> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
->> ---
->>   drivers/net/tap.c      | 22 +++++++++++++++++++-
->>   drivers/net/tun.c      | 24 +++++++++++++++++++++-
->>   drivers/vhost/net.c    | 46 +++++++++++++++++++++++++++++++++---------
->>   include/linux/if_tun.h |  3 +++
->>   4 files changed, 83 insertions(+), 12 deletions(-)
->>
->> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
->> index 01bd260ce60c..3d0bf382dbbc 100644
->> --- a/drivers/net/tap.c
->> +++ b/drivers/net/tap.c
->> @@ -1234,8 +1234,28 @@ static int tap_recvmsg(struct socket *sock, struct msghdr *m,
->>   		       size_t total_len, int flags)
->>   {
->>   	struct tap_queue *q = container_of(sock, struct tap_queue, sock);
->> -	struct sk_buff *skb = m->msg_control;
->> +	struct tun_msg_ctl *ctl = m->msg_control;
->> +	struct sk_buff *skb = NULL;
->>   	int ret;
->> +
->> +	if (ctl) {
->> +		switch (ctl->cmd) {
->> +		case TUN_CMD_PACKET:
->> +			skb = ctl->ptr;
->> +			break;
->> +		case TUN_CMD_PRODUCE_PTRS:
->> +			return ptr_ring_consume_batched(&q->ring,
->> +							ctl->ptr_array,
->> +							ctl->num);
->> +		case TUN_CMD_UNPRODUCE_PTRS:
->> +			ptr_ring_unconsume(&q->ring, ctl->ptr_array, ctl->num,
->> +					   tun_ptr_free);
->> +			return 0;
->> +		default:
->> +			return -EINVAL;
->> +		}
->> +	}
->> +
->>   	if (flags & ~(MSG_DONTWAIT|MSG_TRUNC)) {
->>   		kfree_skb(skb);
->>   		return -EINVAL;
->> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->> index 29711671959b..7d4886f53389 100644
->> --- a/drivers/net/tun.c
->> +++ b/drivers/net/tun.c
->> @@ -2577,7 +2577,8 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
->>   {
->>   	struct tun_file *tfile = container_of(sock, struct tun_file, socket);
->>   	struct tun_struct *tun = tun_get(tfile);
->> -	void *ptr = m->msg_control;
->> +	struct tun_msg_ctl *ctl = m->msg_control;
->> +	void *ptr = NULL;
->>   	int ret;
->>   
->>   	if (!tun) {
->> @@ -2585,6 +2586,27 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
->>   		goto out_free;
->>   	}
->>   
->> +	if (ctl) {
->> +		switch (ctl->cmd) {
->> +		case TUN_CMD_PACKET:
->> +			ptr = ctl->ptr;
->> +			break;
->> +		case TUN_CMD_PRODUCE_PTRS:
->> +			ret = ptr_ring_consume_batched(&tfile->tx_ring,
->> +						       ctl->ptr_array,
->> +						       ctl->num);
->> +			goto out;
->> +		case TUN_CMD_UNPRODUCE_PTRS:
->> +			ptr_ring_unconsume(&tfile->tx_ring, ctl->ptr_array,
->> +					   ctl->num, tun_ptr_free);
->> +			ret = 0;
->> +			goto out;
->> +		default:
->> +			ret = -EINVAL;
->> +			goto out_put_tun;
->> +		}
->> +	}
->> +
->>   	if (flags & ~(MSG_DONTWAIT|MSG_TRUNC|MSG_ERRQUEUE)) {
->>   		ret = -EINVAL;
->>   		goto out_put_tun;
->> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
->> index 5946d2775bd0..5e5c1063606c 100644
->> --- a/drivers/vhost/net.c
->> +++ b/drivers/vhost/net.c
->> @@ -175,24 +175,44 @@ static void *vhost_net_buf_consume(struct vhost_net_buf *rxq)
->>   
->>   static int vhost_net_buf_produce(struct vhost_net_virtqueue *nvq)
->>   {
->> +	struct vhost_virtqueue *vq = &nvq->vq;
->> +	struct socket *sock = vq->private_data;
->>   	struct vhost_net_buf *rxq = &nvq->rxq;
->> +	struct tun_msg_ctl ctl = {
->> +		.cmd = TUN_CMD_PRODUCE_PTRS,
->> +		.ptr_array = rxq->queue,
->> +		.num = VHOST_NET_BATCH,
->> +	};
->> +	struct msghdr msg = {
->> +		.msg_control = &ctl,
->> +	};
->>   
->>   	rxq->head = 0;
->> -	rxq->tail = ptr_ring_consume_batched(nvq->rx_ring, rxq->queue,
->> -					      VHOST_NET_BATCH);
->> +	rxq->tail = sock->ops->recvmsg(sock, &msg, 0, 0);
->> +	if (rxq->tail < 0)
->> +		rxq->tail = 0;
->> +
->>   	return rxq->tail;
->>   }
->>   
->>   static void vhost_net_buf_unproduce(struct vhost_net_virtqueue *nvq)
->>   {
->> +	struct vhost_virtqueue *vq = &nvq->vq;
->> +	struct socket *sock = vq->private_data;
->>   	struct vhost_net_buf *rxq = &nvq->rxq;
->> +	struct tun_msg_ctl ctl = {
->> +		.cmd = TUN_CMD_UNPRODUCE_PTRS,
->> +		.ptr_array = rxq->queue + rxq->head,
->> +		.num = vhost_net_buf_get_size(rxq),
->> +	};
->> +	struct msghdr msg = {
->> +		.msg_control = &ctl,
->> +	};
->>   
->> -	if (nvq->rx_ring && !vhost_net_buf_is_empty(rxq)) {
->> -		ptr_ring_unconsume(nvq->rx_ring, rxq->queue + rxq->head,
->> -				   vhost_net_buf_get_size(rxq),
->> -				   tun_ptr_free);
->> -		rxq->head = rxq->tail = 0;
->> -	}
->> +	if (!vhost_net_buf_is_empty(rxq))
->> +		sock->ops->recvmsg(sock, &msg, 0, 0);
->> +
->> +	rxq->head = rxq->tail = 0;
->>   }
->>   
->>   static int vhost_net_buf_peek_len(void *ptr)
->> @@ -1109,6 +1129,9 @@ static void handle_rx(struct vhost_net *net)
->>   		.flags = 0,
->>   		.gso_type = VIRTIO_NET_HDR_GSO_NONE
->>   	};
->> +	struct tun_msg_ctl ctl = {
->> +		.cmd = TUN_CMD_PACKET,
->> +	};
->>   	size_t total_len = 0;
->>   	int err, mergeable;
->>   	s16 headcount;
->> @@ -1166,8 +1189,11 @@ static void handle_rx(struct vhost_net *net)
->>   			goto out;
->>   		}
->>   		busyloop_intr = false;
->> -		if (nvq->rx_ring)
->> -			msg.msg_control = vhost_net_buf_consume(&nvq->rxq);
->> +		if (nvq->rx_ring) {
->> +			ctl.cmd = TUN_CMD_PACKET;
->> +			ctl.ptr = vhost_net_buf_consume(&nvq->rxq);
->> +			msg.msg_control = &ctl;
->> +		}
->>   		/* On overrun, truncate and discard */
->>   		if (unlikely(headcount > UIO_MAXIOV)) {
->>   			iov_iter_init(&msg.msg_iter, READ, vq->iov, 1, 1);
->> diff --git a/include/linux/if_tun.h b/include/linux/if_tun.h
->> index bdfa671612db..8608d4095143 100644
->> --- a/include/linux/if_tun.h
->> +++ b/include/linux/if_tun.h
->> @@ -13,10 +13,13 @@
->>   
->>   #define TUN_CMD_PACKET 1
->>   #define TUN_CMD_BATCH  2
->> +#define TUN_CMD_PRODUCE_PTRS	3
->> +#define TUN_CMD_UNPRODUCE_PTRS	4
->>   struct tun_msg_ctl {
->>   	unsigned short cmd;
->>   	unsigned short num;
->>   	void *ptr;
->> +	void **ptr_array;
->>   };
->>   
->>   struct tun_xdp_hdr {
->> -- 
->> 2.21.0
+> Instead of setting the CPU set used for handling IO completion
+> through sysfs or procfs, we can attach an eBPF program to the
+> request-queue, provide some useful info (e.g., the CPU
+> which submits the request) to the program, and let the program
+> decides the proper CPU for IO completion handling.
+> 
+
+But it looks like there isn't any benefit than through sysfs/procfs?
+
+> In order to demonostrate the effect of IO completion redirection,
+> a test programm is built to redirect the IO completion handling
+> to all online CPUs or a specific CPU set:
+> 
+> 	./test_blkdev_ccpu -d /dev/vda
+> or
+> 	./test_blkdev_ccpu -d /dev/nvme0n1 -s 4,8,10-13
+> 
+> However I am still trying to find out a killer scenario for
+
+Speaking about scenario, perhaps attaching a filter could be useful? 
+So that the data can be processed the first place.
+
+-
+Bob
+
+> the eBPF redirection, so suggestions and comments are welcome.
+> 
+> Regards,
+> Tao
+> 
+> Hou Tao (2):
+>   block: add support for redirecting IO completion through eBPF
+>   selftests/bpf: add test program for redirecting IO completion CPU
+> 
+>  block/Makefile                                |   2 +-
+>  block/blk-bpf.c                               | 127 +++++++++
+>  block/blk-mq.c                                |  22 +-
+>  block/blk-softirq.c                           |  27 +-
+>  include/linux/blkdev.h                        |   3 +
+>  include/linux/bpf_blkdev.h                    |   9 +
+>  include/linux/bpf_types.h                     |   1 +
+>  include/uapi/linux/bpf.h                      |   2 +
+>  kernel/bpf/syscall.c                          |   9 +
+>  tools/include/uapi/linux/bpf.h                |   2 +
+>  tools/lib/bpf/libbpf.c                        |   1 +
+>  tools/lib/bpf/libbpf_probes.c                 |   1 +
+>  tools/testing/selftests/bpf/Makefile          |   1 +
+>  .../selftests/bpf/progs/blkdev_ccpu_rr.c      |  66 +++++
+>  .../testing/selftests/bpf/test_blkdev_ccpu.c  | 246 ++++++++++++++++++
+>  15 files changed, 507 insertions(+), 12 deletions(-)
+>  create mode 100644 block/blk-bpf.c
+>  create mode 100644 include/linux/bpf_blkdev.h
+>  create mode 100644 tools/testing/selftests/bpf/progs/blkdev_ccpu_rr.c
+>  create mode 100644 tools/testing/selftests/bpf/test_blkdev_ccpu.c
+> 
+
