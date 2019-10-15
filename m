@@ -2,156 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDFCD8060
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 21:36:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED2ED8066
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 21:38:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730806AbfJOTgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 15:36:14 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:43541 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbfJOTgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 15:36:13 -0400
-Received: by mail-lj1-f194.google.com with SMTP id n14so21456979ljj.10
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 12:36:12 -0700 (PDT)
+        id S1731958AbfJOTie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 15:38:34 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:39709 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727856AbfJOTid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 15:38:33 -0400
+Received: by mail-wm1-f67.google.com with SMTP id v17so281778wml.4
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 12:38:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=dY9dTqORsmcdIYURqmKO8ynoME5yJtIxXo238v92LWw=;
-        b=gC6OEG0u6XAww10PjR0blIHmsTp97uQavxaY7hExrc6u6Lb47wXtOWEenDGZ25k8Qf
-         tKfZW36wuHhc3d0Rs/ddb/A5JxiIgeSonUbDybIUVrQs5fyBDJWvvaYiXJwTQzE6eJvS
-         qbHmuIbRQNKjUdZL/2bPP7W9BavFaBQpgNWA979w0W6tmAPd5KhX+b6W4cidcoglqVqh
-         YVbKwOJI31ljMvHJLxy1wvPVmyX6LQIAy2TrXGLidfY5hXVr7hktdOomT7+3zTtBzZHN
-         PdusN5gM6mDYOku9R34QTxYzhwaAdwLILOLpnLEQQfenquTDkNVe9ZdaXYMrAyoWSPyk
-         TxpQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=E3B63BPD8WhwxK8F76UGDMYTwfefF6997Iwnobico4A=;
+        b=Xllzek0xvgC6jyu0c/eT0B5b5aeiV60nBgSZGPvRxpjAoFKIPpaVMpzpzUkMuwHAmw
+         /9XxR1AfJJy7ypuSC5x5YBD6yucZzrC8bTLEmJ9zZLxf67zI/wsARAkzC87m7QXamiyL
+         5CmBD6IAoEJIka4UWE8kxjnrDCTvNBq6pOXElaCBtaO4tHLrQxlGrU6uyxb7ggFHBT/R
+         o/bIdwVJEl9koupbRlYlRttmxeAdLwHs2HQ//RWJ2KkqdlqeYa0rQV3OyCt01UjXQmPg
+         oP+C8ofnMK5bSOykDzNEyUPCRinX/wFGvxYvNNuS/kwkzJZagqQbXmtJwjw9zoUb81+x
+         1OyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=dY9dTqORsmcdIYURqmKO8ynoME5yJtIxXo238v92LWw=;
-        b=nnzr5kHwR1IAdSp7utNC96r4wM6twSFKPy3m4yTOd/2G9Sh8rRz5l/uz2PdaPHQkU9
-         /1sAFQoa+/2QpTiTxKcG8qJyqHlpwtaErfejSi0unSC45VPX0EonNFJlluFaolxVVmJ2
-         DHi/kPOADJmbwWstVP7L/Nyuwc9+P1giG42T3Agg5Q0iP+uR5TnWvOIYIiHjLkh8Z0Vu
-         L5KZ8yJttUy7cBht8dxlH4L6IFYspF7lav1Ap2D1ZPBO0PtsSAAJXn0q/G7KOuDuPJjw
-         xEz1PZh9V+wClUASl1WJSXcyFeAunS+jzhLjGWnSg6vFv1fxMHBsTbg+EWdEzEO5W6aQ
-         RIyQ==
-X-Gm-Message-State: APjAAAVjMg8JLHnqJtq/IHcrH57/D2aqFY1uxmDQCEu7iczocHC432Q1
-        p43b7GT8kiyu53qC5EYEfILYwQ==
-X-Google-Smtp-Source: APXvYqxoddFQcCgGM/JK7yqlZUcVJFdzMcf+DbMTc0KmvvsOestnfjUnpwM/gdNohvH9IPf5CIOX6Q==
-X-Received: by 2002:a2e:970b:: with SMTP id r11mr22617492lji.56.1571168171488;
-        Tue, 15 Oct 2019 12:36:11 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id y3sm5577691lfh.97.2019.10.15.12.36.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2019 12:36:11 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 12:36:03 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Subject: Re: [PATCH v2 net 2/2] dpaa2-eth: Fix TX FQID values
-Message-ID: <20191015123603.153a5322@cakuba.netronome.com>
-In-Reply-To: <1571045117-26329-3-git-send-email-ioana.ciornei@nxp.com>
-References: <1571045117-26329-1-git-send-email-ioana.ciornei@nxp.com>
-        <1571045117-26329-3-git-send-email-ioana.ciornei@nxp.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=E3B63BPD8WhwxK8F76UGDMYTwfefF6997Iwnobico4A=;
+        b=pVQjRalAQMexMCr3Gw4vGtVndZv+JOg21/d8IWknbAlEw1asskKeJ20cJi9uc/A8J2
+         tKLHbbwR0JcuJrkrQ33PAPUfK05HsP4U8kTlFXu7rwr3PtYy/iju7/1kshSkXnPS4txK
+         WjDRBSsoQa0hh+jpUcIhDKjCtsVWSE0FNaVyx86pfLrwNOBWdWvQu774FfveJWkUDwIO
+         IXOgOAn/WTg1dTCLIMXhXvE3NopDUXuUijjFJLeD0G/BPrH63fz26BWWxHA7LdjYwqHn
+         efU8BUK3gDgifK/77rCG5DyH/z06gJycip6v6uRBZI+PktVtJmNEOJeyAEKsMbyacNom
+         TLIA==
+X-Gm-Message-State: APjAAAW3EwxLyfEWNT8kpRYzYVRQJmdWI3Ynp/LLF45LZCcop+iPlH2i
+        CJpz8PmJJWX3K+KeuuT7xeublJRX
+X-Google-Smtp-Source: APXvYqweDgbFaIKgQlfsCgzo3guTMj64bM+rRO3BOaL1eG4Xww1rEpLEQ4okEl1oQARRe7th47z9jA==
+X-Received: by 2002:a1c:f305:: with SMTP id q5mr137336wmq.137.1571168311140;
+        Tue, 15 Oct 2019 12:38:31 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:44d1:b396:5862:c59e? (p200300EA8F26640044D1B3965862C59E.dip0.t-ipconnect.de. [2003:ea:8f26:6400:44d1:b396:5862:c59e])
+        by smtp.googlemail.com with ESMTPSA id h125sm335917wmf.31.2019.10.15.12.38.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 15 Oct 2019 12:38:30 -0700 (PDT)
+Subject: Re: lan78xx and phy_state_machine
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Cc:     Stefan Wahren <wahrenst@gmx.net>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Daniel Wagner <dwagner@suse.de>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191014163004.GP25745@shell.armlinux.org.uk>
+ <20191014192529.z7c5x6hzixxeplvw@beryllium.lan>
+ <25cfc92d-f72b-d195-71b1-f5f238c7988d@gmx.net>
+ <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
+ <20191014221211.GR25745@shell.armlinux.org.uk>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <524267e6-df8e-d884-aeef-1ed8700e4e58@gmail.com>
+Date:   Tue, 15 Oct 2019 21:38:22 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20191014221211.GR25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Oct 2019 12:25:17 +0300, Ioana Ciornei wrote:
-> From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+On 15.10.2019 00:12, Russell King - ARM Linux admin wrote:
+> On Mon, Oct 14, 2019 at 10:20:15PM +0200, Heiner Kallweit wrote:
+>> On 14.10.2019 21:51, Stefan Wahren wrote:
+>>> [add more recipients]
+>>>
+>>> Am 14.10.19 um 21:25 schrieb Daniel Wagner:
+>>>> Moving the phy_prepare_link() up in phy_connect_direct() ensures that
+>>>> phydev->adjust_link is set when the phy_check_link_status() is called.
+>>>>
+>>>> diff --git a/drivers/net/phy/phy_device.c
+>>>> b/drivers/net/phy/phy_device.c index 9d2bbb13293e..2a61812bcb0d 100644
+>>>> --- a/drivers/net/phy/phy_device.c +++ b/drivers/net/phy/phy_device.c
+>>>> @@ -951,11 +951,12 @@ int phy_connect_direct(struct net_device *dev,
+>>>> struct phy_device *phydev, if (!dev) return -EINVAL;
+>>>>
+>>>> +       phy_prepare_link(phydev, handler);
+>>>> +
+>>>>         rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
+>>>>         if (rc)
+>>
+>> If phy_attach_direct() fails we may have to reset phydev->adjust_link to NULL,
+>> as we do in phy_disconnect(). Apart from that change looks good to me.
 > 
-> Depending on when MC connects the DPNI to a MAC, Tx FQIDs may
-> not be available during probe time.
+> Sorry, but it doesn't look good to me.
 > 
-> Read the FQIDs each time the link goes up to avoid using invalid
-> values. In case an error occurs or an invalid value is retrieved,
-> fall back to QDID-based enqueueing.
-> 
-> Fixes: 1fa0f68c9255 ("dpaa2-eth: Use FQ-based DPIO enqueue API")
-> Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
-> Changes in v2:
->  - used reverse christmas tree ordering in update_tx_fqids
-> 
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 42 ++++++++++++++++++++++++
->  1 file changed, 42 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> index 5acd734a216b..c3c2c06195ae 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> @@ -1235,6 +1235,8 @@ static void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv, bool enable)
->  	priv->rx_td_enabled = enable;
->  }
->  
-> +static void update_tx_fqids(struct dpaa2_eth_priv *priv);
-> 
->  static int link_state_update(struct dpaa2_eth_priv *priv)
->  {
->  	struct dpni_link_state state = {0};
-> @@ -1261,6 +1263,7 @@ static int link_state_update(struct dpaa2_eth_priv *priv)
->  		goto out;
->  
->  	if (state.up) {
-> +		update_tx_fqids(priv);
->  		netif_carrier_on(priv->net_dev);
->  		netif_tx_start_all_queues(priv->net_dev);
->  	} else {
-> @@ -2533,6 +2536,45 @@ static int set_pause(struct dpaa2_eth_priv *priv)
->  	return 0;
->  }
->  
-> +static void update_tx_fqids(struct dpaa2_eth_priv *priv)
-> +{
-> +	struct dpni_queue_id qid = {0};
-> +	struct dpaa2_eth_fq *fq;
-> +	struct dpni_queue queue;
-> +	int i, j, err;
-> +
-> +	/* We only use Tx FQIDs for FQID-based enqueue, so check
-> +	 * if DPNI version supports it before updating FQIDs
-> +	 */
-> +	if (dpaa2_eth_cmp_dpni_ver(priv, DPNI_ENQUEUE_FQID_VER_MAJOR,
-> +				   DPNI_ENQUEUE_FQID_VER_MINOR) < 0)
-> +		return;
-> +
-> +	for (i = 0; i < priv->num_fqs; i++) {
-> +		fq = &priv->fq[i];
-> +		if (fq->type != DPAA2_TX_CONF_FQ)
-> +			continue;
-> +		for (j = 0; j < dpaa2_eth_tc_count(priv); j++) {
-> +			err = dpni_get_queue(priv->mc_io, 0, priv->mc_token,
-> +					     DPNI_QUEUE_TX, j, fq->flowid,
-> +					     &queue, &qid);
-> +			if (err)
-> +				goto out_err;
-> +
-> +			fq->tx_fqid[j] = qid.fqid;
-> +			if (fq->tx_fqid[j] == 0)
-> +				goto out_err;
-> +		}
-> +	}
-> +
-> +	return;
-> +
-> +out_err:
-> +	netdev_info(priv->net_dev,
-> +		    "Error reading Tx FQID, fallback to QDID-based enqueue");
+> I think there's a deeper question here - why is the phy state machine
+> trying to call the link change function during attach?
+After your comment I had a closer look at the lm78xx driver and few things
+look suspicious:
 
-Missing new line at the end of this message, I think.
+- lan78xx_phy_init() (incl. the call to phy_connect_direct()) is called
+  after register_netdev(). This may cause races.
 
-> +	priv->enqueue = dpaa2_eth_enqueue_qd;
+- The following is wrong, irq = 0 doesn't mean polling.
+  PHY_POLL is defined as -1. Also in case of irq = 0 phy_interrupt_is_valid()
+  returns true.
 
-Should the enqueue be set to dpaa2_eth_enqueue_fq config was successful?
-IOW if there is a transient error we should go back to the preferred
-method?
+	/* if phyirq is not set, use polling mode in phylib */
+	if (dev->domain_data.phyirq > 0)
+		phydev->irq = dev->domain_data.phyirq;
+	else
+		phydev->irq = 0;
 
-> +}
+- Manually calling genphy_config_aneg() in lan78xx_phy_init() isn't
+  needed, however this should not cause our problem.
+
+Bugs in the network driver would also explain why the issue doesn't occur
+on other systems. Once we know more about the actual root cause
+maybe phylib can be extended to detect that situation and warn.
+
+> At this point, the PHY hasn't been "started" so it shouldn't be
+> doing that.
+> 
+> Note the documentation, specifically phy.rst's "Keeping Close Tabs on
+> the PAL" section.  Drivers are at liberty to use phy_prepare_link()
+> _after_ phy_attach(), which means there is a window for
+> phydev->adjust_link to be NULL.  It should _not_ be called at this
+> point.
+> 
 
