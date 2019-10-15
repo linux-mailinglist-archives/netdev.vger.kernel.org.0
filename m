@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35E9AD6E86
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 07:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 533BDD6ED6
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 07:33:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728254AbfJOFVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 01:21:24 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:49296 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728152AbfJOFVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 01:21:23 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 0040460A08; Tue, 15 Oct 2019 05:21:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571116883;
-        bh=I9WghGtYVeVXJlrf61PEkCMhAN/CWWt9s6E+2MBmULs=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=hVK+F4j87QFPu8H0DZGTPMxOIoi/Pgr5d+Mn0NCwieNYN1K7Uv72nxfTRqWS/uGn2
-         LadqbYPRTwrpLMSGeZHpT04abyU6lFTGDhlazzfSe6Ol1JWIqW7aODf374IQ5XjCT/
-         Qx2Y8/MVzaa0P8KkM0iNQwt7a4u13JaqaKf5JMBw=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5D5BE60A08;
-        Tue, 15 Oct 2019 05:21:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571116882;
-        bh=I9WghGtYVeVXJlrf61PEkCMhAN/CWWt9s6E+2MBmULs=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=NnBS+7x4cXUBpHYlGfS2P9pXG0hRUwGdykafpD6XvkHSi6ZHk6Q5HEgtpQlPoNISP
-         aNXuk0+bDPWjjMTMjqPcLketao2JjtarTtgLPEgooWF+xnYw2z4vdkhZL/2/QPRc2I
-         e2Uvtqr11xwD/Wz+ObDG7J7LqU0OdjuQLAAMsqF4=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5D5BE60A08
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728964AbfJOFdY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Oct 2019 01:33:24 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:42255 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728672AbfJOFcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 01:32:21 -0400
+Received: from [5.158.153.53] (helo=tip-bot2.lab.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tip-bot2@linutronix.de>)
+        id 1iKFRH-0000QF-N9; Tue, 15 Oct 2019 07:32:07 +0200
+Received: from [127.0.1.1] (localhost [IPv6:::1])
+        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id 0F7361C04D4;
+        Tue, 15 Oct 2019 07:31:49 +0200 (CEST)
+Date:   Tue, 15 Oct 2019 05:31:48 -0000
+From:   tip-bot2 for =?utf-8?q?Bj=C3=B6rn_T=C3=B6pel?= 
+        <tip-bot2@linutronix.de>
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] samples/bpf: fix build by setting HAVE_ATTR_TEST to zero
+Cc:     =?utf-8?q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn.topel@intel.com>,
+        KP Singh <kpsingh@google.com>,
+        Song Liu <songliubraving@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, Borislav Petkov <bp@alien8.de>,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20191001113307.27796-3-bjorn.topel@gmail.com>
+References: <20191001113307.27796-3-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3 20/24] wireless: Remove call to memset after
- dma_alloc_coherent
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190715031941.7120-1-huangfq.daxian@gmail.com>
-References: <20190715031941.7120-1-huangfq.daxian@gmail.com>
-To:     Fuqian Huang <huangfq.daxian@gmail.com>
-Cc:     unlisted-recipients:; (no To-header on input)
-        "David S . Miller" <davem@davemloft.net>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Avinash Patil <avinashp@quantenna.com>,
-        Sergey Matyukevich <smatyukevich@quantenna.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com,
-        Fuqian Huang <huangfq.daxian@gmail.com>
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)"David S . Miller" <davem@davemloft.net>
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191015052123.0040460A08@smtp.codeaurora.org>
-Date:   Tue, 15 Oct 2019 05:21:22 +0000 (UTC)
+Message-ID: <157111750893.12254.16541060201823244763.tip-bot2@tip-bot2>
+X-Mailer: tip-git-log-daemon
+Robot-ID: <tip-bot2.linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fuqian Huang <huangfq.daxian@gmail.com> wrote:
+The following commit has been merged into the perf/core branch of tip:
 
-> In commit 518a2f1925c3
-> ("dma-mapping: zero memory returned from dma_alloc_*"),
-> dma_alloc_coherent has already zeroed the memory.
-> So memset is not needed.
-> 
-> Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
+Commit-ID:     fce9501aec6bdda45ef3a5e365a5e0de7de7fe2d
+Gitweb:        https://git.kernel.org/tip/fce9501aec6bdda45ef3a5e365a5e0de7de7fe2d
+Author:        Björn Töpel <bjorn.topel@intel.com>
+AuthorDate:    Tue, 01 Oct 2019 13:33:07 +02:00
+Committer:     Arnaldo Carvalho de Melo <acme@redhat.com>
+CommitterDate: Mon, 07 Oct 2019 12:22:18 -03:00
 
-Patch applied to wireless-drivers-next.git, thanks.
+samples/bpf: fix build by setting HAVE_ATTR_TEST to zero
 
-52d4261862ec wireless: Remove call to memset after dma_alloc_coherent
+To remove that test_attr__{enabled/open} are used by perf-sys.h, we
+set HAVE_ATTR_TEST to zero.
 
--- 
-https://patchwork.kernel.org/patch/11043359/
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+Tested-by: KP Singh <kpsingh@google.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: bpf@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Link: http://lore.kernel.org/lkml/20191001113307.27796-3-bjorn.topel@gmail.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ samples/bpf/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 1d9be26..42b571c 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -176,6 +176,7 @@ KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/bpf/
+ KBUILD_HOSTCFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
+ KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/ -I$(srctree)/tools/include
+ KBUILD_HOSTCFLAGS += -I$(srctree)/tools/perf
++KBUILD_HOSTCFLAGS += -DHAVE_ATTR_TEST=0
+ 
+ HOSTCFLAGS_bpf_load.o += -I$(objtree)/usr/include -Wno-unused-variable
+ 
