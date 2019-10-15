@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52A19D83DF
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 528B3D83EE
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 00:46:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733045AbfJOWlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 18:41:16 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40486 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732840AbfJOWlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:41:16 -0400
-Received: by mail-wr1-f66.google.com with SMTP id o28so3072516wro.7
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 15:41:14 -0700 (PDT)
+        id S2390053AbfJOWqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 18:46:10 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:37920 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390034AbfJOWqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 18:46:08 -0400
+Received: by mail-lj1-f193.google.com with SMTP id b20so21950974ljj.5;
+        Tue, 15 Oct 2019 15:46:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=iNvwx32jlzvPxgpCeOzZGokMJtn+IRhkLNzs+blV5jc=;
-        b=d0UaLWnXtI4IX+KkbkvOhWkXwRfDZCJ/xgKH3c/HMCpFbFGq4gI+PLcNnWiguSemEU
-         iHzabRx7kufJfJviKPqzZFLzERj18NuNlm/H6/MgMCYccEDyRrSvvcTgrJ6gCBVpxc94
-         jX486CDPBPcASAhm+ygoqhOSUSCHlO8/daEv6uPvK5Lw6mrpfgBGtSItYqAuNDj2iLBo
-         cXntq4oBtIhu+QaNFDQMc+7YvuXR29yxfxyNqyvPUAriLeOMrQZaLaI3zNMOegMs4NUi
-         LgrRQaTTBug2EfNE+XrAV2MlIavXlVLHfMi/RUYyONIpWlRSWXkMq5yHKcUKQWeGndJM
-         h1KA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sX8jTMX1nSIXGcCRNZ453mld0cSsi8SG9vJtVFWmkgY=;
+        b=ES/OzHKnNaTbjDoZaXmFsqYm4h8O0iW4SYK/1ndLuLvY7RUpbwD2ej7ZWtshgaPazd
+         UUnQwewSFBIjRDF44nesd7JXsVX/k50opp+s5i5b2f19wxk/LbSzVk13LFGb+CmUXKlV
+         092qU3KAwKp92DLApsSN7InO1e5M6HAIoyijAJkq862bxOQ/FEc3MztS6PHQuENM75Yx
+         GjUKKm+9FNF4fghj+tPnOBSUSvEPMCmdTXXQaSyrDys0wQ9C/qOqkBoiS3sP28uQwYG3
+         KQKnDniiiVXYLDbejzoUpnDGXbTxZ8ulLBvxQz2fRcdjco3lJrfiSWsU+sgsT+1QQk8j
+         ZsVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=iNvwx32jlzvPxgpCeOzZGokMJtn+IRhkLNzs+blV5jc=;
-        b=gpKR7qhr+DArD5MrCC0wLXi6jxYFo7lXH3n0sSbVKhmbHrOuEAYGvWqrmrZxFw1U4b
-         DtWT/xCJ+TDnMRKTqBabTTZKJDVxijRjmqPlkPWo6POrrbCXrzMruaZtlGkp/2dshqL+
-         pkLg5CStioqdPibpAvnhJ+V8LfqU2naxVYS1PBD/Pj9JBz1+dNDoh+QGGbstt0QPZe9b
-         XH4QJRfKKw5l2UpM4mIf0tXGL9/Ob6nXUcPdTXEKxKFr8WWkzPMIxrdblJGry/F0O9Qi
-         jvmS4KMvfq1/wjeeh8zf8h2AYhEfd15/xCsyn+TDFiH3eHW61QoKNCjhQBfCUDMRStEG
-         MyXQ==
-X-Gm-Message-State: APjAAAULM/UuKP6alrTWHboOFCHuN9XgmCUHZr5oKD2PAD++HMPwwpR5
-        Om1lJXroyBGRVJ6p2K51LpANog==
-X-Google-Smtp-Source: APXvYqyVAe5sSfeDgQFoO1jlGzThHhNgOA8EcXSLRwTyvCdRyBgjKPfnQmTPqFb8XTyY119j1txd5A==
-X-Received: by 2002:a05:6000:1283:: with SMTP id f3mr30576845wrx.370.1571179273881;
-        Tue, 15 Oct 2019 15:41:13 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z6sm21769200wro.16.2019.10.15.15.41.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2019 15:41:13 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 15:41:07 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, thomas.petazzoni@bootlin.com,
-        brouer@redhat.com, ilias.apalodimas@linaro.org,
-        matteo.croce@redhat.com, mw@semihalf.com
-Subject: Re: [PATCH v3 net-next 2/8] net: mvneta: introduce page pool API
- for sw buffer manager
-Message-ID: <20191015154107.08c4e9e1@cakuba.netronome.com>
-In-Reply-To: <af6df39a06cba5b416520c6249c16d2cd2e3bb73.1571049326.git.lorenzo@kernel.org>
-References: <cover.1571049326.git.lorenzo@kernel.org>
-        <af6df39a06cba5b416520c6249c16d2cd2e3bb73.1571049326.git.lorenzo@kernel.org>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sX8jTMX1nSIXGcCRNZ453mld0cSsi8SG9vJtVFWmkgY=;
+        b=tUBfF9bMuSvxERqghdiiE3zDWsnvAP5Oo8ucMz1GvO8c8f/dmYOMhRTvkfAF+LCPmp
+         +aduvoAbEpD/BNijO3MwKodzF7ZlwnMlGbWE2czPNIzz+0wKT0bgM3+T+8sWYIXXzqOa
+         k5g1mvrMeZ+5e2EKHAxwQQdYHs8q4sDFwogs2qPmGpLeW20H6yChSdICDspAvXE9SeGd
+         2NzQJHxwLqB2lHfDoJGL7JFfyH00yMTYjeSAeG0xwgHv8h9LV1KsYhk3qksq9h61P4Hf
+         mpqU51b+tIeX6RF6+T2+tyIWt5gRG4HgRe8cnu/On+vC+xLKakKPiNnPp8z0n/6E4H1n
+         BaSg==
+X-Gm-Message-State: APjAAAU8iIR7/IUL7uaSbzDbD5ysGyC2SpI26r8/HFnCB6WBqkfE2+pK
+        pGHloyGcnIoG103gpPvpYKT92afj/YtCs/P1gpg=
+X-Google-Smtp-Source: APXvYqzlNJ02z8aHXTE2BBN+PZ4eg4j3tGXrnmLyvYl56/qH/Wq5j5U+oaAP2hF4sPK9AnCKWxQBVEiuc6J0CBfrUro=
+X-Received: by 2002:a2e:6c15:: with SMTP id h21mr23559078ljc.10.1571179565793;
+ Tue, 15 Oct 2019 15:46:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191009160907.10981-1-christian.brauner@ubuntu.com>
+ <CAADnVQJxUwD3u+tK1xsU2thpRWiAbERGx8mMoXKOCfNZrETMuw@mail.gmail.com> <20191010092647.cpxh7neqgabq36gt@wittgenstein>
+In-Reply-To: <20191010092647.cpxh7neqgabq36gt@wittgenstein>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 15 Oct 2019 15:45:54 -0700
+Message-ID: <CAADnVQJ6t+HQBRhN3mZrz4qhzGybsY2g-26mc2kQARkbLxqzTA@mail.gmail.com>
+Subject: Re: [PATCH 0/3] bpf: switch to new usercopy helpers
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Oct 2019 12:49:49 +0200, Lorenzo Bianconi wrote:
-> +static int mvneta_create_page_pool(struct mvneta_port *pp,
-> +				   struct mvneta_rx_queue *rxq, int size)
-> +{
-> +	struct page_pool_params pp_params = {
-> +		.order = 0,
-> +		.flags = PP_FLAG_DMA_MAP,
-> +		.pool_size = size,
-> +		.nid = cpu_to_node(0),
-> +		.dev = pp->dev->dev.parent,
-> +		.dma_dir = DMA_FROM_DEVICE,
-> +	};
-> +	int err;
-> +
-> +	rxq->page_pool = page_pool_create(&pp_params);
-> +	if (IS_ERR(rxq->page_pool)) {
-> +		err = PTR_ERR(rxq->page_pool);
-> +		rxq->page_pool = NULL;
-> +		return err;
-> +	}
-> +
-> +	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, 0);
+On Thu, Oct 10, 2019 at 2:26 AM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+>
+> On Wed, Oct 09, 2019 at 04:06:18PM -0700, Alexei Starovoitov wrote:
+> > On Wed, Oct 9, 2019 at 9:09 AM Christian Brauner
+> > <christian.brauner@ubuntu.com> wrote:
+> > >
+> > > Hey everyone,
+> > >
+> > > In v5.4-rc2 we added two new helpers check_zeroed_user() and
+> > > copy_struct_from_user() including selftests (cf. [1]). It is a generic
+> > > interface designed to copy a struct from userspace. The helpers will be
+> > > especially useful for structs versioned by size of which we have quite a
+> > > few.
+> > >
+> > > The most obvious benefit is that this helper lets us get rid of
+> > > duplicate code. We've already switched over sched_setattr(), perf_event_open(),
+> > > and clone3(). More importantly it will also help to ensure that users
+> > > implementing versioning-by-size end up with the same core semantics.
+> > >
+> > > This point is especially crucial since we have at least one case where
+> > > versioning-by-size is used but with slighly different semantics:
+> > > sched_setattr(), perf_event_open(), and clone3() all do do similar
+> > > checks to copy_struct_from_user() while rt_sigprocmask(2) always rejects
+> > > differently-sized struct arguments.
+> > >
+> > > This little series switches over bpf codepaths that have hand-rolled
+> > > implementations of these helpers.
+> >
+> > check_zeroed_user() is not in bpf-next.
+> > we will let this set sit in patchworks for some time until bpf-next
+> > is merged back into net-next and we fast forward it.
+> > Then we can apply it (assuming no conflicts).
+>
+> Sounds good to me. Just ping me when you need me to resend rebase onto
+> bpf-next.
 
-The queue_index is always passed as 0, is there only a single queue?
-XDP programs can read this field.
+-rc1 is now in bpf-next.
+I took a look at patches and they look good overall.
 
-> +	if (err < 0)
-> +		goto err_free_pp;
-> +
-> +	err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq, MEM_TYPE_PAGE_POOL,
-> +					 rxq->page_pool);
-> +	if (err)
-> +		goto err_unregister_rxq;
-> +
-> +	return 0;
-> +
-> +err_unregister_rxq:
-> +	xdp_rxq_info_unreg(&rxq->xdp_rxq);
-> +err_free_pp:
-> +	page_pool_destroy(rxq->page_pool);
-> +	return err;
-> +}
+In patches 2 and 3 the zero init via "= {};"
+should be unnecessary anymore due to
+copy_struct_from_user() logic, right?
+
+Could you also convert all other case in kernel/bpf/,
+so bpf_check_uarg_tail_zero() can be removed ?
+Otherwise the half-way conversion will look odd.
