@@ -2,91 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26820D729A
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 11:54:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A3BD72B1
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 12:01:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbfJOJy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 05:54:29 -0400
-Received: from smtp3.goneo.de ([85.220.129.37]:51302 "EHLO smtp3.goneo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725890AbfJOJy2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 05:54:28 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by smtp3.goneo.de (Postfix) with ESMTP id B639723F83E;
-        Tue, 15 Oct 2019 11:54:25 +0200 (CEST)
-X-Virus-Scanned: by goneo
-X-Spam-Flag: NO
-X-Spam-Score: -3.013
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.013 tagged_above=-999 tests=[ALL_TRUSTED=-1,
-        AWL=-0.113, BAYES_00=-1.9] autolearn=ham
-Received: from smtp3.goneo.de ([127.0.0.1])
-        by localhost (smtp3.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id tdP6agb7XihY; Tue, 15 Oct 2019 11:54:24 +0200 (CEST)
-Received: from lem-wkst-02.lemonage (hq.lemonage.de [87.138.178.34])
-        by smtp3.goneo.de (Postfix) with ESMTPSA id BCF4B23F80C;
-        Tue, 15 Oct 2019 11:54:22 +0200 (CEST)
-Date:   Tue, 15 Oct 2019 11:54:21 +0200
-From:   Lars Poeschel <poeschel@lemonage.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Kate Stewart <kstewart@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jilayne Lovejoy <opensource@jilayne.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, Steve Winslow <swinslow@gmail.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>,
-        Allison Randal <allison@lohutok.net>,
-        Johan Hovold <johan@kernel.org>,
-        Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v9 0/7] nfc: pn533: add uart phy driver
-Message-ID: <20191015095421.GB17778@lem-wkst-02.lemonage>
-References: <20191008140544.17112-1-poeschel@lemonage.de>
- <20191009172907.2f0877f4@cakuba.netronome.com>
+        id S1730100AbfJOKBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 06:01:01 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38010 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727682AbfJOKBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 06:01:00 -0400
+Received: by mail-wr1-f65.google.com with SMTP id y18so13609402wrn.5
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 03:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DiaupeIJrwROvIGxYvgmIUTrsEMw9ejA5J0MWI+y7Yw=;
+        b=dfHJBSasQVHb2X3Ev8SiMMWZVx5jF6306hqzzk9+MYSE5z0y5yYTL6ieZiIPXQN5Cv
+         wNEfUyIsilko4hRO5wsZNgBtDC2XlvDuIKeM5mnUCfy+imp8ocGSbN5eI/gDqOdvfCxc
+         frjG3XfJ1UfopGpdq7hMYsTMuPt64VeoxwINI+BymLzeKVyBiBgJFdYnZf71tzI42CXH
+         XwcwM/+fgLC2oy868Vqcdp4vxLe9tZHuNuU39z9TlpRPEsl6HuebZP7ShGvkfk7nMOIa
+         afwHvhSvUZC+siC57uGlJtLqht7wjDJEsCctR3AtQkx6JEcYselS4avlbeniRMVneBnU
+         8EiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DiaupeIJrwROvIGxYvgmIUTrsEMw9ejA5J0MWI+y7Yw=;
+        b=p4mJ+9uPc9VGlKUZ7tkqZ3wNsYWzvVtJMoUzyRnRTnVPxC9zjCmLEIBWV8pkioTnmH
+         PLKCQLnSVggorkrsU/EIu5ep9a5wWuw36y6HPjfCP/aYztTnTQ2wbbjqtPOfr9J9Uj+7
+         M1M4rSYF2g3w5QxhtkObMiankz5D0ewaNo864UdAvY/CF0bZB4K1iR/RBh1PUuGEJ996
+         W3vjnyime6rZOHfWpUjJo6a8MiFEQmGGWQlkJDjAZX6XeHnpqTpUP5NSa3sDPMVQNFXY
+         gZw8/z/F88oN30hamBSkuOF5L/URWyacDZ1Gqrxtfq84m2VLfS6gYf4s35ezkLiBd9R8
+         HInw==
+X-Gm-Message-State: APjAAAWA7fDMy7GUZDjRf8BSKKn3/OnyJ6+7ODUkLmzPJ0FHrgb+UsP9
+        2pNM4pM4GkPkjVxzs1EWXowABAsV9qs=
+X-Google-Smtp-Source: APXvYqyPIhZMgdkrN5oDahA1Gj6R6SzOXcOzLy1CsGGt6HfvJFuiJFON6M2piJ/yK5lA1XuuzIuw2Q==
+X-Received: by 2002:adf:f547:: with SMTP id j7mr31653765wrp.26.1571133658276;
+        Tue, 15 Oct 2019 03:00:58 -0700 (PDT)
+Received: from localhost (ip-89-177-225-135.net.upcbroadband.cz. [89.177.225.135])
+        by smtp.gmail.com with ESMTPSA id e9sm3513336wme.3.2019.10.15.03.00.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2019 03:00:57 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        rong.a.chen@intel.com, mlxsw@mellanox.com
+Subject: [patch net-next] selftests: bpf: don't try to read files without read permission
+Date:   Tue, 15 Oct 2019 12:00:56 +0200
+Message-Id: <20191015100057.19199-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191009172907.2f0877f4@cakuba.netronome.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 05:29:07PM -0700, Jakub Kicinski wrote:
-> On Tue,  8 Oct 2019 16:05:37 +0200, Lars Poeschel wrote:
-> > The purpose of this patch series is to add a uart phy driver to the
-> > pn533 nfc driver.
-> > It first changes the dt strings and docs. The dt compatible strings
-> > need to change, because I would add "pn532-uart" to the already
-> > existing "pn533-i2c" one. These two are now unified into just
-> > "pn532". Then the neccessary changes to the pn533 core driver are
-> > made. Then the uart phy is added.
-> > As the pn532 chip supports a autopoll, I wanted to use this instead
-> > of the software poll loop in the pn533 core driver. It is added and
-> > activated by the last to patches.
-> > The way to add the autopoll later in seperate patches is chosen, to
-> > show, that the uart phy driver can also work with the software poll
-> > loop, if someone needs that for some reason.
-> > This patchset is already rebased on Johans "NFC: pn533: fix
-> > use-after-free and memleaks" patch
-> > https://lore.kernel.org/netdev/20191007164059.5927-1-johan@kernel.org/
-> > as they would conflict.
-> > If for some reason Johans patch will not get merged, I can of course
-> > provide the patchset without depending on this patch.
-> 
-> The memleak patch was a fix and it's on its way to the current 5.4-rc
-> releases - therefore it was merged into the net tree. Your set adds
-> support for a new bus, and will go into the net-next tree.
-> 
-> It'd be best if you reposted once the net tree was merged into the
-> net-next tree (which usually happens every week or two). If you'd
-> rather not wait you need to rebase on top of the current net-next tree,
-> and maintainers will handle the conflicts.
+From: Jiri Pirko <jiri@mellanox.com>
 
-Thank you very much for this valueable information. I will repost the
-v10 of this patchset rebased on net-next, when the fix is appears there.
+Recently couple of files that are write only were added to netdevsim
+debugfs. Don't read these files and avoid error.
+
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+---
+ tools/testing/selftests/bpf/test_offload.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/test_offload.py b/tools/testing/selftests/bpf/test_offload.py
+index 15a666329a34..c44c650bde3a 100755
+--- a/tools/testing/selftests/bpf/test_offload.py
++++ b/tools/testing/selftests/bpf/test_offload.py
+@@ -312,7 +312,7 @@ class DebugfsDir:
+             if f == "ports":
+                 continue
+             p = os.path.join(path, f)
+-            if os.path.isfile(p):
++            if os.path.isfile(p) and os.access(p, os.R_OK):
+                 _, out = cmd('cat %s/%s' % (path, f))
+                 dfs[f] = out.strip()
+             elif os.path.isdir(p):
+-- 
+2.21.0
+
