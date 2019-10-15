@@ -2,115 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F17AD6ECC
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 07:33:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF109D6F56
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 07:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728710AbfJOFcX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Oct 2019 01:32:23 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:42254 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728651AbfJOFcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 01:32:22 -0400
-Received: from [5.158.153.53] (helo=tip-bot2.lab.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tip-bot2@linutronix.de>)
-        id 1iKFRL-0000Qr-OZ; Tue, 15 Oct 2019 07:32:11 +0200
-Received: from [127.0.1.1] (localhost [IPv6:::1])
-        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id 53CD81C06CD;
-        Tue, 15 Oct 2019 07:31:49 +0200 (CEST)
-Date:   Tue, 15 Oct 2019 05:31:49 -0000
-From:   tip-bot2 for =?utf-8?q?Bj=C3=B6rn_T=C3=B6pel?= 
-        <tip-bot2@linutronix.de>
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf tools: Make usage of test_attr__* optional for
- perf-sys.h
-Cc:     =?utf-8?q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, Borislav Petkov <bp@alien8.de>,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20191001113307.27796-2-bjorn.topel@gmail.com>
-References: <20191001113307.27796-2-bjorn.topel@gmail.com>
+        id S1726916AbfJOFwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 01:52:55 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:34312 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726892AbfJOFwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 01:52:54 -0400
+Received: by mail-ed1-f68.google.com with SMTP id j8so5132130eds.1
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 22:52:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=csqgidI2bOk/mXCkF4DsTI9lZ7KTpiRPbpvCvJu7wwo=;
+        b=HiTVLpgN14/FBY28x2qN+/8wwo/6YLgy0JNPtMN/Q3aJIGH7OH/D0xb36quI/scylf
+         B9MmJRmJJ3nz9h0+s6ptvL4Zo5JudTx5I558uy5haQvW4Dg5jKH9Inq6soe0vkfZcjPT
+         2YFx1X6gosBdpQuZ3fE3SgpJn5wPJQae8B6QdkVAin+7s/A/n2b/QziSwWOkcVFwkFjn
+         ds6p7YinLZ1NpKaNE+hjLQ5Yj8a+MLQseoyRnw03bzgrELsrdOXWHhnkTrCZ6VUkTGKz
+         v7RdR5WTQ5zWn+qr4xM88JgPeY48eEN2A+H3AQvQTv5sxgHtrYpjzALFyjNN7m2Y8o35
+         KxvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=csqgidI2bOk/mXCkF4DsTI9lZ7KTpiRPbpvCvJu7wwo=;
+        b=jVb0e/TVMFL3IlzZ1LI8EZIQrjxjgQTAKRGKl+QbhUnYHtSAcppLkFZqRzfBRK+gyy
+         Fr4Pr/BlSR8C76HCYZxEb1jEI6oDKbytyVTZm/HWhZAW3qy3gy9apL1n+lFcA2r7zIPw
+         haWhIp/zUV779tRJn8apnBCVJEJD2CUeV6DBq/iJ2uFuhaaFRlnGHZMZhGAb1h0/msrb
+         fOsbLx6FXo1fjs1H997Ji9dkxt/3GXg63YdJL6ji4DqIBtxe5QvAzWWILwu2zh/wh/zz
+         MaaZdx/ajApMp4WH4+rNeOJb2XzJ6kL6RuKQqFpKDfyyYP/0t/S4STURsPDrx3s6br84
+         dXZQ==
+X-Gm-Message-State: APjAAAUwspa4jfvGUDf+4YWwv4zeTr9UkQk2An5dPgzxRahBNQtVipO3
+        C1DKckqTCXp5ef/fhvCgHCDkivA1Log=
+X-Google-Smtp-Source: APXvYqwtvGzXvlrIpnPQhM6pba34dsMJA4AsrwsUVBjNDPsQZEmOJ/CwnUd2ZTM+pgLnysEmFkAXFg==
+X-Received: by 2002:a17:906:e090:: with SMTP id gh16mr32666281ejb.56.1571118772829;
+        Mon, 14 Oct 2019 22:52:52 -0700 (PDT)
+Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
+        by smtp.gmail.com with ESMTPSA id a20sm3556344edt.95.2019.10.14.22.52.51
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 14 Oct 2019 22:52:52 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 07:52:49 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Vishal Kulkarni <vishal@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
+        Shahjada Abul Husain <shahjada@chelsio.com>
+Subject: Re: [PATCH net] cxgb4: Fix panic when attaching to ULD fails
+Message-ID: <20191015055241.hvzyj7klt5gehwpu@netronome.com>
+References: <1571039435-22495-1-git-send-email-vishal@chelsio.com>
 MIME-Version: 1.0
-Message-ID: <157111750919.12254.12122425573168365300.tip-bot2@tip-bot2>
-X-Mailer: tip-git-log-daemon
-Robot-ID: <tip-bot2.linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571039435-22495-1-git-send-email-vishal@chelsio.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+On Mon, Oct 14, 2019 at 01:20:35PM +0530, Vishal Kulkarni wrote:
+> Release resources when attaching to ULD fail. Otherwise, data
+> mismatch is seen between LLD and ULD later on, which lead to
+> kernel panic when accessing resources that should not even
+> exist in the first place.
+> 
+> Fixes: 94cdb8bb993a ("cxgb4: Add support for dynamic allocation of resources for ULD")
+> Signed-off-by: Shahjada Abul Husain <shahjada@chelsio.com>
+> Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
+> ---
+>  drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+> index 5b60224..0482ef8 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+> @@ -692,10 +692,10 @@ static void uld_init(struct adapter *adap, struct cxgb4_lld_info *lld)
+>  	lld->write_cmpl_support = adap->params.write_cmpl_support;
+>  }
+>  
+> -static void uld_attach(struct adapter *adap, unsigned int uld)
+> +static int uld_attach(struct adapter *adap, unsigned int uld)
+>  {
+> -	void *handle;
+>  	struct cxgb4_lld_info lli;
+> +	void *handle;
+>  
+>  	uld_init(adap, &lli);
+>  	uld_queue_init(adap, uld, &lli);
+> @@ -705,7 +705,7 @@ static void uld_attach(struct adapter *adap, unsigned int uld)
+>  		dev_warn(adap->pdev_dev,
+>  			 "could not attach to the %s driver, error %ld\n",
+>  			 adap->uld[uld].name, PTR_ERR(handle));
+> -		return;
+> +		return PTR_ERR(handle);
+>  	}
+>  
+>  	adap->uld[uld].handle = handle;
+> @@ -713,6 +713,8 @@ static void uld_attach(struct adapter *adap, unsigned int uld)
+>  
+>  	if (adap->flags & CXGB4_FULL_INIT_DONE)
+>  		adap->uld[uld].state_change(handle, CXGB4_STATE_UP);
+> +
+> +	return 0;
+>  }
+>  
+>  /**
+> @@ -727,8 +729,8 @@ static void uld_attach(struct adapter *adap, unsigned int uld)
+>  void cxgb4_register_uld(enum cxgb4_uld type,
+>  			const struct cxgb4_uld_info *p)
 
-Commit-ID:     06f84d1989b7e58d56fa2e448664585749d41221
-Gitweb:        https://git.kernel.org/tip/06f84d1989b7e58d56fa2e448664585749d41221
-Author:        Björn Töpel <bjorn.topel@intel.com>
-AuthorDate:    Tue, 01 Oct 2019 13:33:06 +02:00
-Committer:     Arnaldo Carvalho de Melo <acme@redhat.com>
-CommitterDate: Mon, 07 Oct 2019 12:22:17 -03:00
+Not part of this patch, but the comment above this function describes
+it as returning -EBUSY and yet the return type is void. Also, the comment
+seems to be in semi-kdoc format, perhaps converting it would be worthwhile.
 
-perf tools: Make usage of test_attr__* optional for perf-sys.h
+>  {
+> -	int ret = 0;
+>  	struct adapter *adap;
+> +	int ret = 0;
+>  
+>  	if (type >= CXGB4_ULD_MAX)
+>  		return;
+> @@ -760,7 +762,9 @@ void cxgb4_register_uld(enum cxgb4_uld type,
+>  		if (ret)
+>  			goto free_irq;
+>  		adap->uld[type] = *p;
+> -		uld_attach(adap, type);
+> +		ret = uld_attach(adap, type);
+> +		if (ret)
+> +			goto free_irq;
 
-For users of perf-sys.h outside perf, e.g. samples/bpf/bpf_load.c, it's
-convenient not to depend on test_attr__*.
+Is it desired that the loop continues and that only the current iteration
+is cleaned up?
 
-After commit 91854f9a077e ("perf tools: Move everything related to
-sys_perf_event_open() to perf-sys.h"), all users of perf-sys.h will
-depend on test_attr__enabled and test_attr__open.
-
-This commit enables a user to define HAVE_ATTR_TEST to zero in order
-to omit the test dependency.
-
-Fixes: 91854f9a077e ("perf tools: Move everything related to sys_perf_event_open() to perf-sys.h")
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191001113307.27796-2-bjorn.topel@gmail.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/perf/perf-sys.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/tools/perf/perf-sys.h b/tools/perf/perf-sys.h
-index 63e4349..15e458e 100644
---- a/tools/perf/perf-sys.h
-+++ b/tools/perf/perf-sys.h
-@@ -15,7 +15,9 @@ void test_attr__init(void);
- void test_attr__open(struct perf_event_attr *attr, pid_t pid, int cpu,
- 		     int fd, int group_fd, unsigned long flags);
- 
--#define HAVE_ATTR_TEST
-+#ifndef HAVE_ATTR_TEST
-+#define HAVE_ATTR_TEST 1
-+#endif
- 
- static inline int
- sys_perf_event_open(struct perf_event_attr *attr,
-@@ -27,7 +29,7 @@ sys_perf_event_open(struct perf_event_attr *attr,
- 	fd = syscall(__NR_perf_event_open, attr, pid, cpu,
- 		     group_fd, flags);
- 
--#ifdef HAVE_ATTR_TEST
-+#if HAVE_ATTR_TEST
- 	if (unlikely(test_attr__enabled))
- 		test_attr__open(attr, pid, cpu, fd, group_fd, flags);
- #endif
+>  		continue;
+>  free_irq:
+>  		if (adap->flags & CXGB4_FULL_INIT_DONE)
+> -- 
+> 1.8.3.1
+> 
