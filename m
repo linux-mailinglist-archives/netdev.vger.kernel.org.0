@@ -2,59 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3B62D7E47
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 19:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D8ED7E63
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 20:05:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727693AbfJOR6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 13:58:54 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:37714 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbfJOR6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 13:58:53 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8B7851504B4B3;
-        Tue, 15 Oct 2019 10:58:52 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 10:58:52 -0700 (PDT)
-Message-Id: <20191015.105852.994786197393612301.davem@davemloft.net>
-To:     rdunlap@infradead.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        jakub.kicinski@netronome.com, geert@linux-m68k.org,
-        uwe@kleine-koenig.org, talgi@mellanox.com, saeedm@mellanox.com,
-        dledford@redhat.com, jgg@mellanox.com, leonro@mellanox.com,
-        ogerlitz@mellanox.com, sagi@grimberg.me
-Subject: Re: [PATCH] net: ethernet: broadcom: have drivers select DIMLIB as
- needed
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <610f9277-adff-2f4b-1f44-8f41b6c3ccb5@infradead.org>
-References: <610f9277-adff-2f4b-1f44-8f41b6c3ccb5@infradead.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 15 Oct 2019 10:58:53 -0700 (PDT)
+        id S2389015AbfJOSFp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Oct 2019 14:05:45 -0400
+Received: from mail.minitech.co.jp ([140.227.16.172]:60804 "EHLO
+        mail.minitech.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725820AbfJOSFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 14:05:44 -0400
+X-Greylist: delayed 2188 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Oct 2019 14:05:44 EDT
+Received: from mail.minitech.co.jp (unknown [127.0.0.1])
+        by minitech.co.jp (Postfix) with ESMTP id 8E38D3BA5D30;
+        Wed, 16 Oct 2019 02:29:15 +0900 (JST)
+Received: from [74.208.25.207] (unknown [74.208.25.207])
+        (Authenticated sender: minitech-saiyou@minitech.co.jp)
+        by minitech.co.jp (Postfix) with ESMTPA id 42D6E3BA4F7F;
+        Wed, 16 Oct 2019 02:29:12 +0900 (JST)
+Content-Type: text/plain; charset="iso-8859-1"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Waiting to chat with you 
+To:     Recipients <hkt@hkfl.online>
+From:   "Natcha Thitadat" <hkt@hkfl.online>
+Date:   Tue, 15 Oct 2019 17:29:07 +0000
+Reply-To: natchathitadat@nttd.biz
+X-Spam-WB: 128
+Message-Id: <20191015172912.42D6E3BA4F7F@minitech.co.jp>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
-Date: Fri, 11 Oct 2019 21:03:33 -0700
+Good day,
 
-> From: Randy Dunlap <rdunlap@infradead.org>
-> 
-> NET_VENDOR_BROADCOM is intended to control a kconfig menu only.
-> It should not have anything to do with code generation.
-> As such, it should not select DIMLIB for all drivers under
-> NET_VENDOR_BROADCOM.  Instead each driver that needs DIMLIB should
-> select it (being the symbols SYSTEMPORT, BNXT, and BCMGENET).
-> 
-> Link: https://lkml.kernel.org/r/alpine.DEB.2.21.1907021810220.13058@ramsan.of.borg/
-> 
-> Fixes: 4f75da3666c0 ("linux/dim: Move implementation to .c files")
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+How are you?I am Ms.Natcha and will like to have a little discussion with you if you don't mind.
 
-Applied and queued up for -stable, thanks.
+Thanks and have a lovely day,
+Ms.Natcha.
