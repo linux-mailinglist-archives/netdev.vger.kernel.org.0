@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9EB9D7F96
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 21:08:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E45CD7FC1
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 21:18:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389271AbfJOTIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 15:08:09 -0400
-Received: from mail-wm1-f47.google.com ([209.85.128.47]:37554 "EHLO
-        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbfJOTIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 15:08:09 -0400
-Received: by mail-wm1-f47.google.com with SMTP id f22so216770wmc.2
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 12:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=3wsColzhwzCA30mSrpJqLKN5DqcLh+3W4XIzaK4868A=;
-        b=MY4G5eOw1DGwFE9ENDvR5g6LKZpJ4TcV9Bf0GKN0cpjdeSlGCo1rMHj9YPmuh9bdbZ
-         MVlBhAVEq3SnZTNGlFkgxdpeVsGY0vWyqjHFVNTnqMSm5c592F77RFQql0xqdcqS+LtE
-         NK6MnningY94si+ukERvPJTww7N00qHOt0IkWoOpwn9EWur9sWAIhw37c+wcrSvP1BMT
-         hO09/BF3Af0UKlqLpc7Oh9OpW9MDY3fN2sxO3QtvRJ8kdlp1leJ1hdO6v4hQbdHi6qV0
-         ofI+uqARh1S9HzO77NXTGlKw3X8QFC19CrdofJtDFcX4/ORxNM7pxAZaZYGq8VPtDCZE
-         FOEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=3wsColzhwzCA30mSrpJqLKN5DqcLh+3W4XIzaK4868A=;
-        b=jcU1F7bXZ+fCaevznYkGSEsMSzFlbkZxMj2QxAV9h8UOfMiSpjIcgY7HHKKa2T1K48
-         +biyYLpwOqPN/FyYwyYGRWTuBUdfyNF/oizJlLI7brCNoSoYVtkxxEo1zdsQMY3HhekD
-         0XPs7lM9NdcZU3ZmQek/BHX7w2EkQA31Yj+MjVxOLWPN0YFIn7vAoWxA40j07dhCLOSn
-         qK5CtLs1j0ceidOnbjJ8zFlSV+j6P2UX+BuMM5Uy/WXQ3O9EFsy6hV8xeXz13ax7OXPS
-         MnARA5vN6oV8qwo+MMw6LX/pVNnkbnYWfmUqivXZ4vt1Yj2WrYfkuzt8YR2fCs1BermM
-         ka9w==
-X-Gm-Message-State: APjAAAUDdgWOlAk2Cmx3aaZxBay9b/BqKrOpYsxEeWp2W1n0nNHvpNIp
-        6TYjdaxp9n3rM7aA78M20LCa6w==
-X-Google-Smtp-Source: APXvYqz9hEvbJTXQtZky94Ejlh4sTJERL4UlWP2CJDKzQfwzeFtwYf/dliMDqLO7vVj/YmJZTm+rIQ==
-X-Received: by 2002:a1c:a8c7:: with SMTP id r190mr1381wme.162.1571166487694;
-        Tue, 15 Oct 2019 12:08:07 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id b5sm122861wmj.18.2019.10.15.12.08.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2019 12:08:07 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 12:07:57 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 0/2] mlxsw: Add support for 400Gbps (50Gbps
- per lane) link modes
-Message-ID: <20191015120757.12c9c95b@cakuba.netronome.com>
-In-Reply-To: <20191012162758.32473-1-jiri@resnulli.us>
-References: <20191012162758.32473-1-jiri@resnulli.us>
-Organization: Netronome Systems, Ltd.
+        id S2389459AbfJOTSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 15:18:48 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:45694 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389440AbfJOTSs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 15:18:48 -0400
+Received: from localhost ([127.0.0.1] helo=localhost.localdomain)
+        by Galois.linutronix.de with esmtp (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1iKSLA-00067i-1z; Tue, 15 Oct 2019 21:18:40 +0200
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     tglx@linutronix.de, "David S. Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 21/34] net: Use CONFIG_PREEMPTION
+Date:   Tue, 15 Oct 2019 21:18:08 +0200
+Message-Id: <20191015191821.11479-22-bigeasy@linutronix.de>
+In-Reply-To: <20191015191821.11479-1-bigeasy@linutronix.de>
+References: <20191015191821.11479-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Oct 2019 18:27:56 +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Add 400Gbps bits to ethtool and introduce support in mlxsw. These modes
-> are supported by the Spectrum-2 switch ASIC.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Thanks for the update, looks good to me!
+CONFIG_PREEMPTION is selected by CONFIG_PREEMPT and by CONFIG_PREEMPT_RT.
+Both PREEMPT and PREEMPT_RT require the same functionality which today
+depends on CONFIG_PREEMPT.
 
-Out of curiosity - why did we start bunching up LR, ER and FR?
+Update the comment to use CONFIG_PREEMPTION.
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index bf3ed413abafe..11a60d69434bc 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -901,7 +901,7 @@ EXPORT_SYMBOL(dev_get_by_napi_id);
+  *
+  *	The use of raw_seqcount_begin() and cond_resched() before
+  *	retrying is required as we want to give the writers a chance
+- *	to complete when CONFIG_PREEMPT is not set.
++ *	to complete when CONFIG_PREEMPTION is not set.
+  */
+ int netdev_get_name(struct net *net, char *name, int ifindex)
+ {
+--=20
+2.23.0
+
