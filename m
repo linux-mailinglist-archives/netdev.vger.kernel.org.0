@@ -2,198 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73993D809A
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 21:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA6AD809D
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 22:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbfJOT6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 15:58:50 -0400
-Received: from mail-eopbgr20062.outbound.protection.outlook.com ([40.107.2.62]:32398
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726421AbfJOT6u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Oct 2019 15:58:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pldp3srW3sOtiVRlh0ByNH8rec7V9RVVl+r5NWZoOcnkBm7434GxEVmjXdXxUo2uQzlJbrxxJmth5kpDX9y73Gbt6jHPNjZ0KoSBSQFrglvOAa5lbyJqvIQQtbr2WcmMsCGZmzUXwbzQTW5IYmRJCJSPMJGpQuDndq5h9xZEmAKbumaWtKahU3dw+SmO1G/wQqD1KE77lj6U/TmaYXIMKdoGzoeN9MR4t/OS0l/+bDcy7hc3DCSPKWpdwgVXJEV4ghirLKtvXnkASKS0j5VEvZQTL74LwTPToSOP9JaFNmuN4F7iqnq7N6H3Gy3WItcB5VnKUSC8E8bbB/XoG2C6iQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YU6ep5v5euZhuzRBi7IiEderRSPN+pfUq7jh7YKhU/0=;
- b=kzu3b6QppBMcA4fyFBWuvBzHBkAKPtUKxC9fd1gxF3G8+GGTBdENJlwQJeLUqeudxaqMoan8Y5EyzpRe5Z7hDMVQaaqUwRlsUeP+kPr3SkMg1pN8WPGxKfBPx6XD57m1kBZS3ppmW8wkL6m1fsK8IzTebo3BvwrBGrc0gqMLp/v/PMwshAw9PIPYB4+LCYW7pRUYkZRoWeba9gmGSLQb7RP8Lgg4I3sVgs1wtrZJ3HisomMWRC64okYlsz8R/zQmnKcDecmy9tvtcfSkzUioqdNVFJ0KPqmbTlFVHSfIM8LX4Y+xpy15tvx40BvwFVZBr3XwHSezTivEnYtshNC1ww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YU6ep5v5euZhuzRBi7IiEderRSPN+pfUq7jh7YKhU/0=;
- b=Iob62YfbEym+NElFAmzcrDltyBqEPt21Vul04vbCNQtBScn2o33Boz0P7T/bP/ST9YrFz/UeGPsoBP6Z4AEp2+a7pHB2EFBd3qvuYdkPDHF0VCaVTlKVKKLKHyaX5RMRIY9o6Q5TeP4ZQYZ70BON/qrNqF7Gr7tE/h/sXn1E7Wc=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB2864.eurprd04.prod.outlook.com (10.175.24.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.22; Tue, 15 Oct 2019 19:58:06 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::9136:9090:5b7c:433d]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::9136:9090:5b7c:433d%9]) with mapi id 15.20.2347.023; Tue, 15 Oct 2019
- 19:58:06 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-Subject: Re: [PATCH v2 net 2/2] dpaa2-eth: Fix TX FQID values
-Thread-Topic: [PATCH v2 net 2/2] dpaa2-eth: Fix TX FQID values
-Thread-Index: AQHVgnFTE+1p7xEGekmpP/G97EE3oA==
-Date:   Tue, 15 Oct 2019 19:58:06 +0000
-Message-ID: <VI1PR0402MB28004BBB62BF52B75AF1284CE0930@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1571045117-26329-1-git-send-email-ioana.ciornei@nxp.com>
- <1571045117-26329-3-git-send-email-ioana.ciornei@nxp.com>
- <20191015123603.153a5322@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [86.124.196.40]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c3d26693-a5d1-4d39-3fcd-08d751a9ff33
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: VI1PR0402MB2864:|VI1PR0402MB2864:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB28642A8A7D75185940DDCA97E0930@VI1PR0402MB2864.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 01917B1794
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(346002)(136003)(39860400002)(366004)(189003)(199004)(64756008)(44832011)(5660300002)(99286004)(6506007)(186003)(305945005)(7736002)(74316002)(26005)(71200400001)(86362001)(476003)(102836004)(6916009)(486006)(446003)(66066001)(66556008)(66946007)(66476007)(53546011)(76116006)(14454004)(76176011)(66446008)(14444005)(256004)(52536014)(71190400001)(478600001)(9686003)(33656002)(81166006)(25786009)(7696005)(6436002)(55016002)(316002)(8936002)(81156014)(8676002)(2906002)(4326008)(229853002)(3846002)(6116002)(54906003)(6246003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2864;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: c1u69/9gZOwuaDU/RiSwupXbbQaunz4mkM0iG47Pu4uyut4fKUkANrEhoGden0pZSqThz4ursKAaocratYsxKMgRYzrSTNhZzKjCQR1Txdb5i1Jsm6nsGymWzLzsxoDbqgqmWlITRszoKz9mGiRx+eFnU6OKB0flinjj14Fe2/CE9Eq9yKpD0cx937c9JEL3D79S9TPUft0B2xNyVRcuTplX9wDW5GFeMj1OKKM/7ZaOJFj52v/ITIjYduOiDQ+eBNzlUZjQrhKLXCBxXtJrzpmcWoxOSECkpe7DTIuhoZk1+8StRp747VLVWi+MLmwXSsgu8t9i5jYt9I0+/K6apve1z0z1Az+T9I9n3y34jQ3dxKDsi5kpbjSYk+bCaVN3hp+zcyjJAVqGHximOuRkc4Bv5bHe5XidWGzmqa/vzq0=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1732404AbfJOUBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 16:01:36 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:44467 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726805AbfJOUBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 16:01:36 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q21so13139748pfn.11
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 13:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=HAWpeyEf4TgH2xMeDRMI9KLDaQnbmvcU1By9C9gf7p0=;
+        b=ed3SX12xIavzSbmhTl27EmLicks8/BosT+8KUqnlEjbx0un8hZ+pIGUwM302PWgTCl
+         LzT3P2q4gBT30SA3lJvbVTMo/6u8Ly7jSVf0uaKaL40s0YuttSFppxr93eebYsLNN/bT
+         JXxcKxnE1S/SpMzxZRl6+X1QRGCVekcAL/rjoeljN1+3lxjTV6OPyHOrNILVxVqZQwd5
+         3+pTExe1LWKsNNdnvZaNjOt0DUSWm1pyUhbSfxuGbFwNUNinEXVWE7AwkNsg5vSQityG
+         8v7Wshg6kzYg6ZOa2wW0uG8p6n+OirE7DNJl3wm0iHbdJsPfwsfmLZCVAHD66tvVSWXh
+         C46A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HAWpeyEf4TgH2xMeDRMI9KLDaQnbmvcU1By9C9gf7p0=;
+        b=f8Id+Lp63/R7BqfB5theNVqtDwUEYPSGIqRGahcwf7kunrlE+J9kr19DMD1hCAl18j
+         Yq7Wm1J6Q1nqDp5ZcjMyONetdCy76AikAKtx14doCCwd9NeuIW8t+kXVdYAjMaLfkas+
+         y6ZOmwaWyKblHoIGGdUAhwej4ivejLGwF2OwXNTygAEVCnxXNlm9ErzcFU7t1f+mUbFt
+         LNTrvXcp5llges49qEg0Yl21N3APOGH7eUW/SlDB7hPj8UCTBLLahX2DLVO8aLMIncuP
+         eEzLHe/t1gDmSaDASqdVNrqT2Z26aOvuAtMvJNoo+iUKr/090hdUY41g0KSd9T8zvU1w
+         ucog==
+X-Gm-Message-State: APjAAAXawnEmi68OE7bem4mWy3Ic1LSbm2+FH5WB4NXHJqKyW26m9G0s
+        6p71QfX2Qv1roSiwSBsO4fA=
+X-Google-Smtp-Source: APXvYqyxdCIrNX59CR7GFaK57Yflwo6RWRN4zBW28JxVt51bx+DaWqJGuwgdDxeHms43hyer4pz7qA==
+X-Received: by 2002:a63:e20c:: with SMTP id q12mr22454564pgh.275.1571169694943;
+        Tue, 15 Oct 2019 13:01:34 -0700 (PDT)
+Received: from [192.168.0.16] (97-115-119-26.ptld.qwest.net. [97.115.119.26])
+        by smtp.gmail.com with ESMTPSA id x9sm149511pje.27.2019.10.15.13.01.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 15 Oct 2019 13:01:34 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 00/10] optimize openvswitch flow looking up
+To:     xiangxia.m.yue@gmail.com, pshelar@ovn.org
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org
+References: <1570802447-8019-1-git-send-email-xiangxia.m.yue@gmail.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <8c2d501a-f943-5ee1-e430-0c36d77a33b5@gmail.com>
+Date:   Tue, 15 Oct 2019 13:01:32 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3d26693-a5d1-4d39-3fcd-08d751a9ff33
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2019 19:58:06.7676
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ydk5mirbs3Uqen/ogLIgPFUGn7Kjl+6Sy420Ma61N2dvnQC8EfooI3LLRtztxSkZdd0N0ceoo6Mwhs8WIug34A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2864
+In-Reply-To: <1570802447-8019-1-git-send-email-xiangxia.m.yue@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/15/19 10:36 PM, Jakub Kicinski wrote:=0A=
-> On Mon, 14 Oct 2019 12:25:17 +0300, Ioana Ciornei wrote:=0A=
->> From: Ioana Radulescu <ruxandra.radulescu@nxp.com>=0A=
->>=0A=
->> Depending on when MC connects the DPNI to a MAC, Tx FQIDs may=0A=
->> not be available during probe time.=0A=
->>=0A=
->> Read the FQIDs each time the link goes up to avoid using invalid=0A=
->> values. In case an error occurs or an invalid value is retrieved,=0A=
->> fall back to QDID-based enqueueing.=0A=
->>=0A=
->> Fixes: 1fa0f68c9255 ("dpaa2-eth: Use FQ-based DPIO enqueue API")=0A=
->> Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>=0A=
->> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>=0A=
->> ---=0A=
->> Changes in v2:=0A=
->>   - used reverse christmas tree ordering in update_tx_fqids=0A=
->>=0A=
->>   drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 42 ++++++++++++++++=
-++++++++=0A=
->>   1 file changed, 42 insertions(+)=0A=
->>=0A=
->> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/=
-net/ethernet/freescale/dpaa2/dpaa2-eth.c=0A=
->> index 5acd734a216b..c3c2c06195ae 100644=0A=
->> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c=0A=
->> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c=0A=
->> @@ -1235,6 +1235,8 @@ static void dpaa2_eth_set_rx_taildrop(struct dpaa2=
-_eth_priv *priv, bool enable)=0A=
->>   	priv->rx_td_enabled =3D enable;=0A=
->>   }=0A=
->>   =0A=
->> +static void update_tx_fqids(struct dpaa2_eth_priv *priv);=0A=
->>=0A=
->>   static int link_state_update(struct dpaa2_eth_priv *priv)=0A=
->>   {=0A=
->>   	struct dpni_link_state state =3D {0};=0A=
->> @@ -1261,6 +1263,7 @@ static int link_state_update(struct dpaa2_eth_priv=
- *priv)=0A=
->>   		goto out;=0A=
->>   =0A=
->>   	if (state.up) {=0A=
->> +		update_tx_fqids(priv);=0A=
->>   		netif_carrier_on(priv->net_dev);=0A=
->>   		netif_tx_start_all_queues(priv->net_dev);=0A=
->>   	} else {=0A=
->> @@ -2533,6 +2536,45 @@ static int set_pause(struct dpaa2_eth_priv *priv)=
-=0A=
->>   	return 0;=0A=
->>   }=0A=
->>   =0A=
->> +static void update_tx_fqids(struct dpaa2_eth_priv *priv)=0A=
->> +{=0A=
->> +	struct dpni_queue_id qid =3D {0};=0A=
->> +	struct dpaa2_eth_fq *fq;=0A=
->> +	struct dpni_queue queue;=0A=
->> +	int i, j, err;=0A=
->> +=0A=
->> +	/* We only use Tx FQIDs for FQID-based enqueue, so check=0A=
->> +	 * if DPNI version supports it before updating FQIDs=0A=
->> +	 */=0A=
->> +	if (dpaa2_eth_cmp_dpni_ver(priv, DPNI_ENQUEUE_FQID_VER_MAJOR,=0A=
->> +				   DPNI_ENQUEUE_FQID_VER_MINOR) < 0)=0A=
->> +		return;=0A=
->> +=0A=
->> +	for (i =3D 0; i < priv->num_fqs; i++) {=0A=
->> +		fq =3D &priv->fq[i];=0A=
->> +		if (fq->type !=3D DPAA2_TX_CONF_FQ)=0A=
->> +			continue;=0A=
->> +		for (j =3D 0; j < dpaa2_eth_tc_count(priv); j++) {=0A=
->> +			err =3D dpni_get_queue(priv->mc_io, 0, priv->mc_token,=0A=
->> +					     DPNI_QUEUE_TX, j, fq->flowid,=0A=
->> +					     &queue, &qid);=0A=
->> +			if (err)=0A=
->> +				goto out_err;=0A=
->> +=0A=
->> +			fq->tx_fqid[j] =3D qid.fqid;=0A=
->> +			if (fq->tx_fqid[j] =3D=3D 0)=0A=
->> +				goto out_err;=0A=
->> +		}=0A=
->> +	}=0A=
->> +=0A=
->> +	return;=0A=
->> +=0A=
->> +out_err:=0A=
->> +	netdev_info(priv->net_dev,=0A=
->> +		    "Error reading Tx FQID, fallback to QDID-based enqueue");=0A=
-> =0A=
-> Missing new line at the end of this message, I think.=0A=
-=0A=
-Will add in v3.=0A=
-=0A=
-> =0A=
->> +	priv->enqueue =3D dpaa2_eth_enqueue_qd;=0A=
-> =0A=
-> Should the enqueue be set to dpaa2_eth_enqueue_fq config was successful?=
-=0A=
-> IOW if there is a transient error we should go back to the preferred=0A=
-> metho=0A=
-Good point. Without setting enqueue back to dpaa2_eth_enqueue_fq =0A=
-querying the fqids would be for nothing. Will send an update fixing both =
-=0A=
-of these things.=0A=
-=0A=
-Thanks,=0A=
-Ioana=0A=
-=0A=
-> =0A=
->> +}=0A=
-> =0A=
-> =0A=
-=0A=
+
+On 10/11/2019 7:00 AM, xiangxia.m.yue@gmail.com wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> This series patch optimize openvswitch for performance or simplify
+> codes.
+>
+> Patch 1, 2, 4: Port Pravin B Shelar patches to
+> linux upstream with little changes.
+>
+> Patch 5, 6, 7: Optimize the flow looking up and
+> simplify the flow hash.
+>
+> Patch 8, 9: are bugfix.
+>
+> The performance test is on Intel Xeon E5-2630 v4.
+> The test topology is show as below:
+>
+> +-----------------------------------+
+> |   +---------------------------+   |
+> |   | eth0   ovs-switch    eth1 |   | Host0
+> |   +---------------------------+   |
+> +-----------------------------------+
+>        ^                       |
+>        |                       |
+>        |                       |
+>        |                       |
+>        |                       v
+> +-----+----+             +----+-----+
+> | netperf  | Host1       | netserver| Host2
+> +----------+             +----------+
+>
+> We use netperf send the 64B packets, and insert 255+ flow-mask:
+> $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)" 2
+> ...
+> $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)" 2
+> $
+> $ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
+>
+> * Without series patch, throughput 8.28Mbps
+> * With series patch, throughput 46.05Mbps
+>
+> v2: simplify codes. e.g. use kfree_rcu instead of call_rcu, use
+> ma->count in the fastpath.
+> v3: update ma point when realloc mask_array in patch 5.
+>
+> Tonghao Zhang (10):
+>    net: openvswitch: add flow-mask cache for performance
+>    net: openvswitch: convert mask list in mask array
+>    net: openvswitch: shrink the mask array if necessary
+>    net: openvswitch: optimize flow mask cache hash collision
+>    net: openvswitch: optimize flow-mask looking up
+>    net: openvswitch: simplify the flow_hash
+>    net: openvswitch: add likely in flow_lookup
+>    net: openvswitch: fix possible memleak on destroy flow-table
+>    net: openvswitch: don't unlock mutex when changing the user_features
+>      fails
+>    net: openvswitch: simplify the ovs_dp_cmd_new
+>
+>   net/openvswitch/datapath.c   |  65 +++++----
+>   net/openvswitch/flow.h       |   1 -
+>   net/openvswitch/flow_table.c | 315 +++++++++++++++++++++++++++++++++++++------
+>   net/openvswitch/flow_table.h |  19 ++-
+>   4 files changed, 328 insertions(+), 72 deletions(-)
+>
+
+Hi Tonghao,
+
+I've tried this new patch series and it passes the kernel check test #63 
+now:
+## ------------------------------- ##
+## openvswitch 2.12.90 test suite. ##
+## ------------------------------- ##
+  63: conntrack - IPv6 fragmentation + vlan           ok
+
+## ------------- ##
+## Test results. ##
+## ------------- ##
+
+1 test was successful.
+
+So I went ahead and ran the entire check-kernel testsuite and it ran 
+fine with no regressions or
+other problems.
+
+You can go ahead and add my tested by tag to your patches.
+Tested-by: Greg Rose <gvrose8192@gmail.com>
+
+Pravin's comments about the memory barrier are still valid I think.
+
+Thanks,
+
+- Greg
+
