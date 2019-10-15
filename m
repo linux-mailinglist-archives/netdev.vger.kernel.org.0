@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3AE5D6C9F
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 02:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2141D6CA4
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 02:52:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727212AbfJOAtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 20:49:42 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:35104 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726756AbfJOAtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 20:49:41 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 205so11335967pfw.2;
-        Mon, 14 Oct 2019 17:49:41 -0700 (PDT)
+        id S1727249AbfJOAwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 20:52:47 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40443 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726773AbfJOAwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 20:52:47 -0400
+Received: by mail-pg1-f195.google.com with SMTP id e13so2827383pga.7;
+        Mon, 14 Oct 2019 17:52:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JXMngsyZurHd5XVLb+wxD7GSYr5w0E7EB4PGGw+FTU4=;
-        b=pqn2J+vsqlRUrE6M6v4sNot0wugbfaj42I9stgWuzkYKqtjVwhF5GwzkQepJhUober
-         lnivh3HBb4rky9B+SJ2C5m1kO8IL0jXDfpi103ZNXekUkrkyGPL4yrRpkWkacDEV0tLB
-         zSMIdVzuyKgzUJ1dkJexHTAfvMIkZUTIvxSk/bKfMIIIGh/v1vvO8SXSy+zABlUNj7dr
-         KkWGeV92ibqFQTWK4L1SSPzUMa2cQuIPVJWlLgVqWK1x1+/ZHA3+gysgurJp1lZJC7CU
-         lGTgL2NwWUsOK6leUl6/IoAaOfJPMMFgGkTJAnWi8T1nrtlp7bSueU8mc5c740m7z73d
-         9DuQ==
+        bh=W6Z+FAutC5s64cQmjM/Y9qv/zVoMxmkp3VC30cn4uPM=;
+        b=SSShTxsEoFJWwrnSxY8UQ08T7WZxn61LMDV6uiW/tXp2f8wvkckUdR/tNahjr0rw4u
+         Z9Ab46iN9GP6IH+CiFZQb8hXKSNfOF9s/PXtrl/MQ8gi+42Rw5EcAIWMdDPrTZZThyEs
+         QUvdNBbgO/O55/6aljFh76M31MuuCaa8nxHdzT1lJNSbEgGqtMA0XoNmQ5Z3erqXoi/O
+         H/InpkdEu+rR28OQjRYWLlHY60XoWxy+OsYUZjF/h6FR2qVp8/1jLLfDWSz81HF7aciy
+         YRy9EqoAP2AJJTylNIFJSbNuOXTff+cvYFCTOGR0HCSbbmZqwzkAsqojw5MDO1OcxGmP
+         L+UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=JXMngsyZurHd5XVLb+wxD7GSYr5w0E7EB4PGGw+FTU4=;
-        b=U1Zz0yUUlTCPcDivy0qXHu3CXWyyZ6GcbYs95GeUqdfbkrb9XF2oIfECXbnGSvHmec
-         YZXiHf9a9Kzl4enIEwnpN8xBFVNhmjjN8rt1P5efiePxN8kcRBnAtzoXvcqSgiKf/BFN
-         SHOBGPEzwFvBkpEl9jPJgIgf+vUHliGqTKpYseq1kdhUD7fP4C6R9Rt9gFYXprmvXx/r
-         Swfe5rsZDIe92tfrKXTNkfho8qPm6jWkhntEYeEdRzxP+C7q8o+0XIUAox5qAF1hJ4Ek
-         gQRUybsFdbQyG5+pSvxoe8mIBMk2lMAYsebm3Z1OH5rJ8SdopZB4oHOGPh0NOnOTO6d4
-         klqg==
-X-Gm-Message-State: APjAAAVw2aUWC/UmPWYwHg1bQ9lBRm7805uGQKepDvv6WMIBfEBYA+pV
-        caLGRDPkzkSBGNzCB3qyqpBWSJdD
-X-Google-Smtp-Source: APXvYqx+oVyXcfjA5j+HRs2N1Js3UY8BFXlubnGaHmD0RnBXxNJJt8KcaVNZllT0FTjjby4g7r05Xw==
-X-Received: by 2002:a17:90a:eac4:: with SMTP id ev4mr39502736pjb.97.1571100580455;
-        Mon, 14 Oct 2019 17:49:40 -0700 (PDT)
+        bh=W6Z+FAutC5s64cQmjM/Y9qv/zVoMxmkp3VC30cn4uPM=;
+        b=d1fcNb9/KQzAmE6TTbVLT/E7pTqD1fabgX3vBZ5DVECKpw7az4AoDxstgC7+o0TuAR
+         HsFGl05hITPHGTs973s1QTeihoojomQp6wmcnasmnKS5GcWi1zTpxepSIi6G55v/4FLt
+         NFbWcNPtaB9AKU8IUQ9v+KMsPSPtuTR2UPV2Z8gmQ2ICxCDjJzbRO9DUSn3Q87LX918E
+         JdprWzdQNelUP6+sPUs95BQz5in0Rp/otXGMlQ/yQ9r1xbAQGlR/FbN8K08Miqo1gLk3
+         adT7+NA2yxBjMlRrWpALi5ja3FGz4wVsGnsuJmBLmbx1ke5R2Ew9iQhC5BGvQfxJ6Yxe
+         pDHQ==
+X-Gm-Message-State: APjAAAV9MBiLUHHAOKcGO0CeROc0760DMQML2ERaRbneNckiXJ7yH1JA
+        uKhvcLinECuj4WT6YGwRdLcIJS+Z
+X-Google-Smtp-Source: APXvYqxbaULdFb/xaZEgeY5p/IJ/+4D6iwSCAuH4hq8VmpKlGPbsQxSYQ4A5DQ/QzKTYzljimPkkrQ==
+X-Received: by 2002:a62:5c07:: with SMTP id q7mr35046439pfb.159.1571100764598;
+        Mon, 14 Oct 2019 17:52:44 -0700 (PDT)
 Received: from [10.67.51.137] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v9sm17960956pfe.1.2019.10.14.17.49.39
+        by smtp.gmail.com with ESMTPSA id a13sm28960237pfg.10.2019.10.14.17.52.43
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 14 Oct 2019 17:49:39 -0700 (PDT)
-Subject: Re: [PATCH net] net: bcmgenet: Set phydev->dev_flags only for
- internal PHYs
+        Mon, 14 Oct 2019 17:52:44 -0700 (PDT)
+Subject: Re: [PATCH net-next v2] net: bcmgenet: Generate a random MAC if none
+ is valid
 To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
 Cc:     phil@raspberrypi.org, jonathan@raspberrypi.org,
         matthias.bgg@kernel.org, linux-rpi-kernel@lists.infradead.org,
@@ -56,8 +56,7 @@ Cc:     phil@raspberrypi.org, jonathan@raspberrypi.org,
         "open list:BROADCOM GENET ETHERNET DRIVER" 
         <bcm-kernel-feedback-list@broadcom.com>,
         open list <linux-kernel@vger.kernel.org>
-References: <20191011195349.9661-1-f.fainelli@gmail.com>
- <c3e47479-1f13-f35c-5153-a9974723ac5a@gmail.com>
+References: <20191014212000.27712-1-f.fainelli@gmail.com>
 From:   Doug Berger <opendmb@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
@@ -91,12 +90,12 @@ Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
  /a73q4vHrm62qEWTIC3tV3c8oxvE7FqnpgGu/5HDG7t1XR3uzf43aANgRhe/v2bo3TvPVAq6
  K5B9EzoJonGc2mcDfeBmJpuvZbG4llhAbwTi2yyBFgM0tMRv/z8bMWfAq9Lrc2OIL24Pu5aw
  XfVsGdR1PerwUgHlCgFeWDMbxZWQk0tjt8NGP5cTUee4hT0z8a0EGIzUg/PjUnTrCKRjQmfc YVs=
-Message-ID: <6c8757a1-4618-36ef-7967-5251e98da5ea@gmail.com>
-Date:   Mon, 14 Oct 2019 17:49:38 -0700
+Message-ID: <b1feb8b5-c52a-e50e-fb4d-8e4c0316b79d@gmail.com>
+Date:   Mon, 14 Oct 2019 17:52:38 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <c3e47479-1f13-f35c-5153-a9974723ac5a@gmail.com>
+In-Reply-To: <20191014212000.27712-1-f.fainelli@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -105,44 +104,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/11/19 12:57 PM, Florian Fainelli wrote:
-> On 10/11/19 12:53 PM, Florian Fainelli wrote:
->> phydev->dev_flags is entirely dependent on the PHY device driver which
->> is going to be used, setting the internal GENET PHY revision in those
->> bits only makes sense when drivers/net/phy/bcm7xxx.c is the PHY driver
->> being used.
->>
->> Fixes: 487320c54143 ("net: bcmgenet: communicate integrated PHY revision to PHY driver")
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+On 10/14/19 2:20 PM, Florian Fainelli wrote:
+> Instead of having a hard failure and stopping the driver's probe
+> routine, generate a random Ethernet MAC address to keep going.
 > 
-> FWIW, I am preparing net-next material which allows the phy_flags to be
-> scoped towards a specific PHY driver, and not broadly applied, but until
-> this happens, we should probably go with this change.
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+> Changes in v2:
 > 
->> ---
->>  drivers/net/ethernet/broadcom/genet/bcmmii.c | 5 +++--
->>  1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> index 970e478a9017..94d1dd5d56bf 100644
->> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> @@ -273,11 +273,12 @@ int bcmgenet_mii_probe(struct net_device *dev)
->>  	struct bcmgenet_priv *priv = netdev_priv(dev);
->>  	struct device_node *dn = priv->pdev->dev.of_node;
->>  	struct phy_device *phydev;
->> -	u32 phy_flags;
->> +	u32 phy_flags = 0;
->>  	int ret;
->>  
->>  	/* Communicate the integrated PHY revision */
->> -	phy_flags = priv->gphy_rev;
->> +	if (priv->internal_phy)
->> +		phy_flags = priv->gphy_rev;
->>  
->>  	/* Initialize link state variables that bcmgenet_mii_setup() uses */
->>  	priv->old_link = -1;
->>
+> - provide a message that a random MAC is used, the same message that
+>   bcmsysport.c uses
 > 
+>  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 17 ++++++++---------
+>  1 file changed, 8 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index 12cb77ef1081..dd4e4f1dd384 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -3461,16 +3461,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
+>  		goto err;
+>  	}
+>  
+> -	if (dn) {
+> +	if (dn)
+>  		macaddr = of_get_mac_address(dn);
+> -		if (IS_ERR(macaddr)) {
+> -			dev_err(&pdev->dev, "can't find MAC address\n");
+> -			err = -EINVAL;
+> -			goto err;
+> -		}
+> -	} else {
+> +	else
+>  		macaddr = pd->mac_address;
+> -	}
+>  
+>  	priv->base = devm_platform_ioremap_resource(pdev, 0);
+>  	if (IS_ERR(priv->base)) {
+> @@ -3482,7 +3476,12 @@ static int bcmgenet_probe(struct platform_device *pdev)
+>  
+>  	SET_NETDEV_DEV(dev, &pdev->dev);
+>  	dev_set_drvdata(&pdev->dev, dev);
+> -	ether_addr_copy(dev->dev_addr, macaddr);
+> +	if (IS_ERR_OR_NULL(macaddr) || !is_valid_ether_addr(macaddr)) {
+> +		dev_warn(&pdev->dev, "using random Ethernet MAC\n");
+> +		eth_hw_addr_random(dev);
+> +	} else {
+> +		ether_addr_copy(dev->dev_addr, macaddr);
+> +	}
+>  	dev->watchdog_timeo = 2 * HZ;
+>  	dev->ethtool_ops = &bcmgenet_ethtool_ops;
+>  	dev->netdev_ops = &bcmgenet_netdev_ops;
 > 
 Acked-by: Doug Berger <opendmb@gmail.com>
