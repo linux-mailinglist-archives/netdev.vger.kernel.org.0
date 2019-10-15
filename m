@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06700D6D64
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 04:58:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F04CCD6D70
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 05:01:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727571AbfJOC6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 22:58:20 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37338 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726248AbfJOC6T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Oct 2019 22:58:19 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6E5CB307D84D;
-        Tue, 15 Oct 2019 02:58:19 +0000 (UTC)
-Received: from [10.72.12.168] (ovpn-12-168.pek2.redhat.com [10.72.12.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 239CD60127;
-        Tue, 15 Oct 2019 02:58:14 +0000 (UTC)
-Subject: Re: [PATCH RFC v4 0/5] vhost: ring format independence
-To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        id S1727581AbfJODBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 23:01:55 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:41860 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726833AbfJODBz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 23:01:55 -0400
+Received: by mail-vs1-f65.google.com with SMTP id l2so12127021vsr.8
+        for <netdev@vger.kernel.org>; Mon, 14 Oct 2019 20:01:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=pkTiLWi806vFW+mAo2j2H2h/Fp/DfPd6WWAKMfdAAMw=;
+        b=AHRc6Tc+o61hFN7HkohKMGkG68CB2nDANyc0FC7LppGhPBDp/bhLhpFtpWsDumZY+q
+         nUyp7AZ700gagwUkblabr1ShKZwTEBeh0AyA1KcekdNTLAGuA1mnKQI4rHFh0IyD0ads
+         kOuP65diMwVo5GSRgxEH6AecXk3NRY7Mh4gx5hm+MTpu4hRKkHbyiAC19Ljhng8gmASE
+         B57e4Zkv7psrynvwbiRWm9tx+qy9WNhTl8r7BJiwVVoxaK94O+7xE3xSHVkdDQSQrzjP
+         uP9JqltUe+XUQSCZnD8XAZAPpYO9v3GVj0r8SeFwU47a1nBF+OiMhwo0hqdaZe8y5b9v
+         w1zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pkTiLWi806vFW+mAo2j2H2h/Fp/DfPd6WWAKMfdAAMw=;
+        b=Gq8pDHs/4QkLzmmlPJWgwa/Kim/dShFUkcwtWqfu4esHAJj/jfclHuNBDRFonQC7t6
+         oGB1m2+dLetsSBWtS1Qs5pXrjfkAyCiXmhmmpl+tBGvukIe7Y3Oz5PuYGcCZUjY62qlC
+         xUAeL8tJd4CpHsGOr9k17m6tKiLg6PhpbGUu6+dvdKBwcXN62BTGvw1XhOCfcC6/vKyQ
+         Ul0Kev5urhdk/0r8AGjW/X9NuXR8/detpJX4weEIHRDLOfNF/Id2KzoiomMolTr7BNUk
+         Syh0HBhwitJGe3oJYrwmMhHejM579V1I3gblgrwHfMiTibolyxhFO7lLMMoldfcdOhQ/
+         NX4A==
+X-Gm-Message-State: APjAAAVayv+yBJyhR8B2ID3KxAOcFkAa+Uhr98vK2o4SpRmeh7Am1z0Z
+        He/dxGZiUJ7eFsz8QVdOlWGh+nmv
+X-Google-Smtp-Source: APXvYqyFwmjHF0npSe3PXcMGXfxyQC7RoYl/d/SiaIRNFpOFnvQPLTJ8PL5GlPZOafbgIF+zArh56w==
+X-Received: by 2002:a67:fb44:: with SMTP id e4mr18801535vsr.112.1571108512758;
+        Mon, 14 Oct 2019 20:01:52 -0700 (PDT)
+Received: from dahern-DO-MB.local ([199.231.175.194])
+        by smtp.googlemail.com with ESMTPSA id d1sm6020343vsm.8.2019.10.14.20.01.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 14 Oct 2019 20:01:51 -0700 (PDT)
+Subject: Re: [PATCH] ss: allow dumping kTLS info
+To:     Davide Caratti <dcaratti@redhat.com>,
+        Andrea Claudi <aclaudi@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         netdev@vger.kernel.org
-References: <20191013113940.2863-1-mst@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <6c54460c-d958-78fb-cd6e-eac97cc2c00f@redhat.com>
-Date:   Tue, 15 Oct 2019 10:58:13 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+References: <2531403b243c1c60afc175c164a02096ffcf89a5.1570442363.git.dcaratti@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c65838d4-9ace-7881-1603-4660a338bd78@gmail.com>
+Date:   Mon, 14 Oct 2019 23:01:50 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191013113940.2863-1-mst@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <2531403b243c1c60afc175c164a02096ffcf89a5.1570442363.git.dcaratti@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Tue, 15 Oct 2019 02:58:19 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/7/19 4:16 AM, Davide Caratti wrote:
+> now that INET_DIAG_INFO requests can dump TCP ULP information, extend 'ss'
+> to allow diagnosing kTLS when it is attached to a TCP socket. While at it,
+> import kTLS uAPI definitions from the latest net-next tree.
+> 
+> CC: Andrea Claudi <aclaudi@redhat.com>
+> Co-developed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> ---
+>  include/uapi/linux/tls.h | 127 +++++++++++++++++++++++++++++++++++++++
+>  misc/ss.c                |  89 +++++++++++++++++++++++++++
+>  2 files changed, 216 insertions(+)
+>  create mode 100644 include/uapi/linux/tls.h
+> 
 
-On 2019/10/13 下午7:41, Michael S. Tsirkin wrote:
-> This adds infrastructure required for supporting
-> multiple ring formats.
->
-> The idea is as follows: we convert descriptors to an
-> independent format first, and process that converting to
-> iov later.
->
-> The point is that we have a tight loop that fetches
-> descriptors, which is good for cache utilization.
-> This will also allow all kind of batching tricks -
-> e.g. it seems possible to keep SMAP disabled while
-> we are fetching multiple descriptors.
->
-> This seems to perform exactly the same as the original
-> code already based on a microbenchmark.
-> Lightly tested.
-> More testing would be very much appreciated.
->
-> To use new code:
-> 	echo 1 > /sys/module/vhost_test/parameters/newcode
-> or
-> 	echo 1 > /sys/module/vhost_net/parameters/newcode
->
-> changes from v3:
->          - fixed error handling in case of indirect descriptors
->          - add BUG_ON to detect buffer overflow in case of bugs
->                  in response to comment by Jason Wang
->          - minor code tweaks
->
-> Changes from v2:
-> 	- fixed indirect descriptor batching
->                  reported by Jason Wang
->
-> Changes from v1:
-> 	- typo fixes
+applied to iproute2-next
 
-
-I've just done some quick benchmark with testpmd + vhost_net txonly.
-
-With 256 queue size, no difference but in 1024 queue size 1% regression 
-of PPS were found.
-
-Thanks
-
-
->
->
-> Michael S. Tsirkin (5):
->    vhost: option to fetch descriptors through an independent struct
->    vhost/test: add an option to test new code
->    vhost: batching fetches
->    vhost/net: add an option to test new code
->    vhost: last descriptor must have NEXT clear
->
->   drivers/vhost/net.c   |  32 ++++-
->   drivers/vhost/test.c  |  19 ++-
->   drivers/vhost/vhost.c | 328 +++++++++++++++++++++++++++++++++++++++++-
->   drivers/vhost/vhost.h |  20 ++-
->   4 files changed, 385 insertions(+), 14 deletions(-)
->
