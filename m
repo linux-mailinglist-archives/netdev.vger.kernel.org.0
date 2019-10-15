@@ -2,209 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CF5BD6C81
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 02:34:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AE5D6C9F
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 02:49:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727059AbfJOAeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Oct 2019 20:34:18 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42968 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726525AbfJOAeS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 20:34:18 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q12so11294248pff.9;
-        Mon, 14 Oct 2019 17:34:16 -0700 (PDT)
+        id S1727212AbfJOAtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Oct 2019 20:49:42 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:35104 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726756AbfJOAtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Oct 2019 20:49:41 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 205so11335967pfw.2;
+        Mon, 14 Oct 2019 17:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=p63sdX+Vdm+k9Q/K8b8bZcwryvDdi7+PCTGQ3bkMavU=;
-        b=imtzrVDYOhDb9/YBqDjfqrkETYkU9AyX8BQUP5CpRE6I71aSaE+YG1IImuLT79wZbZ
-         EZU6AVpnMlH+1H5maCD34DFb5lYcXTgkv35FmgWjd7TbCKdtvCJ35yti4mrSIZwGxqth
-         mHUy3chTY2JVnT2lB9EHj3aZl0UTN9S4x1ABpEperXS007ppUQ6uVQXfn7Oe2LQKhxUA
-         7DkDHcTT+VnmXTJGIV8NC+J5hCaDL3pvgg1lsmCt0x/cm3KgKBXhTseuzP7LT6LgSXGS
-         kB9xcdCCD70S+D0tVCFKnUJPy1IYtiLysJERFx0oq4ZvsKnF9gUUo0b8qqAGotP8tSDG
-         XMhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=p63sdX+Vdm+k9Q/K8b8bZcwryvDdi7+PCTGQ3bkMavU=;
-        b=A5CYvI2X/dK3rQbchZmqOP8tyoWfVM88uxTj23ZqrRt5UXsFm6c9nZCuP8BWcmJz7L
-         YbYCO0cRjcVuBhkNXxyELNH/zpkywd6D+AMCswvRKYKZaKn0TV9kGyK0W0AnxIIPArEN
-         QMt2uHHfRYHXkAnEL0Kd/fAj3EJ50pN92XBeDq01oVcUTV5BwxK5OSA2m24WbXlktfb0
-         RT24jPbSisuFK+lopAH5HxKTGIzao6PsfRkdJWeT4qNkBaIoeQnZFCDQajuvBO14cWfw
-         ByTtV5B6A+KpXC6dwrC0lrQg+BBuR8BZk3lAYxVmXAEFrj96fXPXoKxOPxCSp6w5nXzR
-         e9fg==
-X-Gm-Message-State: APjAAAWxL1yh12LoyEBRjQtLip/RoLQpevxIntVq26oPY2fQAkzFlPcp
-        ihJXE4ISa1Sx5dGnxM1LN/gub87V
-X-Google-Smtp-Source: APXvYqz+E34/dO6gMNpeSAMB6A0OsVDc28bUq28UDzqCg991LYJ0c2nmez5bgrso2AkovfLe9ZKTiQ==
-X-Received: by 2002:a65:51cd:: with SMTP id i13mr36383031pgq.142.1571099655427;
-        Mon, 14 Oct 2019 17:34:15 -0700 (PDT)
-Received: from [172.20.20.156] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id j24sm19366486pff.71.2019.10.14.17.34.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Oct 2019 17:34:14 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] tuntap: reorganize tun_msg_ctl usage
-To:     Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     David Ahern <dsahern@gmail.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20191012015357.1775-1-prashantbhole.linux@gmail.com>
- <20191012015357.1775-2-prashantbhole.linux@gmail.com>
- <739281a8-59fe-d898-0147-656d01fdfabc@redhat.com>
-From:   Prashant Bhole <prashantbhole.linux@gmail.com>
-Message-ID: <18ab09ed-55b9-babb-6d78-04a920918562@gmail.com>
-Date:   Tue, 15 Oct 2019 09:33:42 +0900
+        bh=JXMngsyZurHd5XVLb+wxD7GSYr5w0E7EB4PGGw+FTU4=;
+        b=pqn2J+vsqlRUrE6M6v4sNot0wugbfaj42I9stgWuzkYKqtjVwhF5GwzkQepJhUober
+         lnivh3HBb4rky9B+SJ2C5m1kO8IL0jXDfpi103ZNXekUkrkyGPL4yrRpkWkacDEV0tLB
+         zSMIdVzuyKgzUJ1dkJexHTAfvMIkZUTIvxSk/bKfMIIIGh/v1vvO8SXSy+zABlUNj7dr
+         KkWGeV92ibqFQTWK4L1SSPzUMa2cQuIPVJWlLgVqWK1x1+/ZHA3+gysgurJp1lZJC7CU
+         lGTgL2NwWUsOK6leUl6/IoAaOfJPMMFgGkTJAnWi8T1nrtlp7bSueU8mc5c740m7z73d
+         9DuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=JXMngsyZurHd5XVLb+wxD7GSYr5w0E7EB4PGGw+FTU4=;
+        b=U1Zz0yUUlTCPcDivy0qXHu3CXWyyZ6GcbYs95GeUqdfbkrb9XF2oIfECXbnGSvHmec
+         YZXiHf9a9Kzl4enIEwnpN8xBFVNhmjjN8rt1P5efiePxN8kcRBnAtzoXvcqSgiKf/BFN
+         SHOBGPEzwFvBkpEl9jPJgIgf+vUHliGqTKpYseq1kdhUD7fP4C6R9Rt9gFYXprmvXx/r
+         Swfe5rsZDIe92tfrKXTNkfho8qPm6jWkhntEYeEdRzxP+C7q8o+0XIUAox5qAF1hJ4Ek
+         gQRUybsFdbQyG5+pSvxoe8mIBMk2lMAYsebm3Z1OH5rJ8SdopZB4oHOGPh0NOnOTO6d4
+         klqg==
+X-Gm-Message-State: APjAAAVw2aUWC/UmPWYwHg1bQ9lBRm7805uGQKepDvv6WMIBfEBYA+pV
+        caLGRDPkzkSBGNzCB3qyqpBWSJdD
+X-Google-Smtp-Source: APXvYqx+oVyXcfjA5j+HRs2N1Js3UY8BFXlubnGaHmD0RnBXxNJJt8KcaVNZllT0FTjjby4g7r05Xw==
+X-Received: by 2002:a17:90a:eac4:: with SMTP id ev4mr39502736pjb.97.1571100580455;
+        Mon, 14 Oct 2019 17:49:40 -0700 (PDT)
+Received: from [10.67.51.137] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id v9sm17960956pfe.1.2019.10.14.17.49.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 14 Oct 2019 17:49:39 -0700 (PDT)
+Subject: Re: [PATCH net] net: bcmgenet: Set phydev->dev_flags only for
+ internal PHYs
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc:     phil@raspberrypi.org, jonathan@raspberrypi.org,
+        matthias.bgg@kernel.org, linux-rpi-kernel@lists.infradead.org,
+        wahrenst@gmx.net, nsaenzjulienne@suse.de,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:BROADCOM GENET ETHERNET DRIVER" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20191011195349.9661-1-f.fainelli@gmail.com>
+ <c3e47479-1f13-f35c-5153-a9974723ac5a@gmail.com>
+From:   Doug Berger <opendmb@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
+ 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 YVs=
+Message-ID: <6c8757a1-4618-36ef-7967-5251e98da5ea@gmail.com>
+Date:   Mon, 14 Oct 2019 17:49:38 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <739281a8-59fe-d898-0147-656d01fdfabc@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <c3e47479-1f13-f35c-5153-a9974723ac5a@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jason,
-Thanks for reviewing.
-
-On 10/12/19 4:44 PM, Jason Wang wrote:
-> 
-> On 2019/10/12 上午9:53, prashantbhole.linux@gmail.com wrote:
->> From: Prashant Bhole <prashantbhole.linux@gmail.com>
+On 10/11/19 12:57 PM, Florian Fainelli wrote:
+> On 10/11/19 12:53 PM, Florian Fainelli wrote:
+>> phydev->dev_flags is entirely dependent on the PHY device driver which
+>> is going to be used, setting the internal GENET PHY revision in those
+>> bits only makes sense when drivers/net/phy/bcm7xxx.c is the PHY driver
+>> being used.
 >>
->> In order to extend the usage of tun_msg_ctl structure, this patch
->> changes the member name from type to cmd. Also following definitions
->> are changed:
->> TUN_MSG_PTR : TUN_CMD_BATCH
->> TUN_MSG_UBUF: TUN_CMD_PACKET
+>> Fixes: 487320c54143 ("net: bcmgenet: communicate integrated PHY revision to PHY driver")
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > 
+> FWIW, I am preparing net-next material which allows the phy_flags to be
+> scoped towards a specific PHY driver, and not broadly applied, but until
+> this happens, we should probably go with this change.
 > 
-> Not a native English speaker, but the conversion here looks not as 
-> straightforward as it did.
-> 
-> For TUN_MSG_PTR, it means recvmsg() can do receiving from a pointer to 
-> either XDP or skb instead of ptr_ring. TUN_CMD_BATCH sounds not related.
-> 
-> For TUN_MSG_UBUF, it means the packet is a zercopy (buffer pointers to 
-> userspace). TUN_CMD_PACKET may bring confusion in this case.
-
-Understood. Next time I will come up with better command names,
-performance numbers and other changes suggested by you.
-
-Thanks.
-
-> 
-> Thanks
-> 
-> 
->>
->> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 >> ---
->>   drivers/net/tap.c      | 9 ++++++---
->>   drivers/net/tun.c      | 8 ++++++--
->>   drivers/vhost/net.c    | 4 ++--
->>   include/linux/if_tun.h | 6 +++---
->>   4 files changed, 17 insertions(+), 10 deletions(-)
+>>  drivers/net/ethernet/broadcom/genet/bcmmii.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
 >>
->> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
->> index 3ae70c7e6860..01bd260ce60c 100644
->> --- a/drivers/net/tap.c
->> +++ b/drivers/net/tap.c
->> @@ -1213,9 +1213,10 @@ static int tap_sendmsg(struct socket *sock, 
->> struct msghdr *m,
->>       struct tap_queue *q = container_of(sock, struct tap_queue, sock);
->>       struct tun_msg_ctl *ctl = m->msg_control;
->>       struct xdp_buff *xdp;
->> +    void *ptr = NULL;
->>       int i;
->> -    if (ctl && (ctl->type == TUN_MSG_PTR)) {
->> +    if (ctl && ctl->cmd == TUN_CMD_BATCH) {
->>           for (i = 0; i < ctl->num; i++) {
->>               xdp = &((struct xdp_buff *)ctl->ptr)[i];
->>               tap_get_user_xdp(q, xdp);
->> @@ -1223,8 +1224,10 @@ static int tap_sendmsg(struct socket *sock, 
->> struct msghdr *m,
->>           return 0;
->>       }
->> -    return tap_get_user(q, ctl ? ctl->ptr : NULL, &m->msg_iter,
->> -                m->msg_flags & MSG_DONTWAIT);
->> +    if (ctl && ctl->cmd == TUN_CMD_PACKET)
->> +        ptr = ctl->ptr;
->> +
->> +    return tap_get_user(q, ptr, &m->msg_iter, m->msg_flags & 
->> MSG_DONTWAIT);
->>   }
->>   static int tap_recvmsg(struct socket *sock, struct msghdr *m,
->> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->> index 0413d182d782..29711671959b 100644
->> --- a/drivers/net/tun.c
->> +++ b/drivers/net/tun.c
->> @@ -2529,11 +2529,12 @@ static int tun_sendmsg(struct socket *sock, 
->> struct msghdr *m, size_t total_len)
->>       struct tun_struct *tun = tun_get(tfile);
->>       struct tun_msg_ctl *ctl = m->msg_control;
->>       struct xdp_buff *xdp;
->> +    void *ptr = NULL;
->>       if (!tun)
->>           return -EBADFD;
->> -    if (ctl && (ctl->type == TUN_MSG_PTR)) {
->> +    if (ctl && ctl->cmd == TUN_CMD_BATCH) {
->>           struct tun_page tpage;
->>           int n = ctl->num;
->>           int flush = 0;
->> @@ -2560,7 +2561,10 @@ static int tun_sendmsg(struct socket *sock, 
->> struct msghdr *m, size_t total_len)
->>           goto out;
->>       }
->> -    ret = tun_get_user(tun, tfile, ctl ? ctl->ptr : NULL, &m->msg_iter,
->> +    if (ctl && ctl->cmd == TUN_CMD_PACKET)
->> +        ptr = ctl->ptr;
->> +
->> +    ret = tun_get_user(tun, tfile, ptr, &m->msg_iter,
->>                  m->msg_flags & MSG_DONTWAIT,
->>                  m->msg_flags & MSG_MORE);
->>   out:
->> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
->> index 1a2dd53caade..5946d2775bd0 100644
->> --- a/drivers/vhost/net.c
->> +++ b/drivers/vhost/net.c
->> @@ -462,7 +462,7 @@ static void vhost_tx_batch(struct vhost_net *net,
->>                  struct msghdr *msghdr)
->>   {
->>       struct tun_msg_ctl ctl = {
->> -        .type = TUN_MSG_PTR,
->> +        .cmd = TUN_CMD_BATCH,
->>           .num = nvq->batched_xdp,
->>           .ptr = nvq->xdp,
->>       };
->> @@ -902,7 +902,7 @@ static void handle_tx_zerocopy(struct vhost_net 
->> *net, struct socket *sock)
->>               ubuf->desc = nvq->upend_idx;
->>               refcount_set(&ubuf->refcnt, 1);
->>               msg.msg_control = &ctl;
->> -            ctl.type = TUN_MSG_UBUF;
->> +            ctl.cmd = TUN_CMD_PACKET;
->>               ctl.ptr = ubuf;
->>               msg.msg_controllen = sizeof(ctl);
->>               ubufs = nvq->ubufs;
->> diff --git a/include/linux/if_tun.h b/include/linux/if_tun.h
->> index 5bda8cf457b6..bdfa671612db 100644
->> --- a/include/linux/if_tun.h
->> +++ b/include/linux/if_tun.h
->> @@ -11,10 +11,10 @@
->>   #define TUN_XDP_FLAG 0x1UL
->> -#define TUN_MSG_UBUF 1
->> -#define TUN_MSG_PTR  2
->> +#define TUN_CMD_PACKET 1
->> +#define TUN_CMD_BATCH  2
->>   struct tun_msg_ctl {
->> -    unsigned short type;
->> +    unsigned short cmd;
->>       unsigned short num;
->>       void *ptr;
->>   };
+>> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+>> index 970e478a9017..94d1dd5d56bf 100644
+>> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
+>> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+>> @@ -273,11 +273,12 @@ int bcmgenet_mii_probe(struct net_device *dev)
+>>  	struct bcmgenet_priv *priv = netdev_priv(dev);
+>>  	struct device_node *dn = priv->pdev->dev.of_node;
+>>  	struct phy_device *phydev;
+>> -	u32 phy_flags;
+>> +	u32 phy_flags = 0;
+>>  	int ret;
+>>  
+>>  	/* Communicate the integrated PHY revision */
+>> -	phy_flags = priv->gphy_rev;
+>> +	if (priv->internal_phy)
+>> +		phy_flags = priv->gphy_rev;
+>>  
+>>  	/* Initialize link state variables that bcmgenet_mii_setup() uses */
+>>  	priv->old_link = -1;
+>>
+> 
+> 
+Acked-by: Doug Berger <opendmb@gmail.com>
