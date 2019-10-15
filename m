@@ -2,82 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EFEED7F1D
-	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 20:35:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD530D7F58
+	for <lists+netdev@lfdr.de>; Tue, 15 Oct 2019 20:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389170AbfJOSfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 14:35:00 -0400
-Received: from mail-qt1-f169.google.com ([209.85.160.169]:44408 "EHLO
-        mail-qt1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726144AbfJOSfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 14:35:00 -0400
-Received: by mail-qt1-f169.google.com with SMTP id u40so31984301qth.11
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 11:34:59 -0700 (PDT)
+        id S1727575AbfJOSrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 14:47:07 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:44316 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727083AbfJOSrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 14:47:07 -0400
+Received: by mail-lj1-f194.google.com with SMTP id m13so21302158ljj.11
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 11:47:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=STXoJpha5c0eU0zUp+Q7GhRDc2v/wNfJM9Q0lsQru9I=;
-        b=aDz7CFO7/eeyag+DWLYTXxSS73mm6K5E7SozNF95XjKVAj8Od28EBX/kbBzlHSR5N4
-         4iqMcXCnXdMzpqkPZh2z6/SXXCFI5UrhpdHThob7EQRiKAmwcc/OgOSJ7reTlwZWxsZ1
-         4YXZuQPvngoRbpZVPYLwSh5vx0fcol0RM6GUs4tC15WzioRfmnE3j8KLWmVN0LoyikyX
-         48bmrgWisCS+9iOijHV/tRFGiJ9XhUOQIB0GkUQbCpZ2EhJpiIXyCjUMqtrCBL6SexAE
-         ts0y4NdVTmwqjrG9hf2m632EB/rCzrKdMwlIvT5LGmG6iNAYVdal3/5DxXwyInyHgowG
-         +pFg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=dpHnScfJCNKkYcD6OPUhJS8Pdc4N6JJm1BZibg64fhU=;
+        b=ZHpJiGiljIadYG+VrSfPgyD37XrichTuiiRIlwIbVNjCly/Ljd1/9V0SU5lU3OPLHp
+         YaGpNldiqTYwX3xHV8kLr5o8h9ecdNypeGUh5/Ebya/iwczsgLNidYx1J3DdDl1tfSV5
+         Y4NaiiIGdE/XXyf9BY4aja3OrRbcW8OHRN+vIodIYPELLZ9eGPfV04tULr64JP/aHkIC
+         2TNV36asXt0OoQoNNtizazMj/uQowTEbd3ydq/2ldP8ezhKMh4klJLNGUleQjTx4LbTY
+         DPH5oQPlFa7UqkLZUxg4Rh0ef3wOsxEDBzQT0B8b+ljhiazyba3SZK4551mRCst+kI8v
+         W9zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=STXoJpha5c0eU0zUp+Q7GhRDc2v/wNfJM9Q0lsQru9I=;
-        b=mV7LNHAhA92SNhvbPpAgNNNEqDe3//HseJGodc7ukb7IVThxufOb7MplFR1+WONMq0
-         O/07RmTmNAOCy7oCcg0VNZdZtSnHwN/DVZqFHikTHBM+w+ayz3FObuhZfJk7ilxs70YQ
-         50M9O9GM+7FN+A5Nokmfi63iRImRf/zwjsp5CIemD/ReOtzVWvXvwctE/hPcwhjfF0Ti
-         phNSV9R/ffBU59/bW2RZmiCltCul3J2aqPZfjYH39yl0PLWeRdG7e8CjezWJF8u8xaUb
-         P+AAIme81jnQiuyZ6N8vRUAwr+ir76sFZGInFFkl7iJr+VthTEMzMNwGY/HY2Ap7UJGr
-         PMiw==
-X-Gm-Message-State: APjAAAW5hLpaxvN6tOlkEOQ5QYFreQp9ynYwe5EaEm6gepg+T09evTXB
-        CFKlqHS0SsDsSEIeQU7TWVk=
-X-Google-Smtp-Source: APXvYqznj8QlNJ6TJ4JgSis29qEtI41ZMjjJegT6R3eRa1NWe3fg8Op+RtRdSDoh/7EaJwN11o+ACQ==
-X-Received: by 2002:ac8:154:: with SMTP id f20mr40504004qtg.367.1571164499579;
-        Tue, 15 Oct 2019 11:34:59 -0700 (PDT)
-Received: from dahern-DO-MB.local (207.190.24.244.psav-cs.smartcity.net. [207.190.24.244])
-        by smtp.googlemail.com with ESMTPSA id y22sm11092596qka.59.2019.10.15.11.34.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 15 Oct 2019 11:34:58 -0700 (PDT)
-Subject: Re: [patch iproute2-next v3 2/2] ip: allow to use alternative names
- as handle
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        stephen@networkplumber.org, roopa@cumulusnetworks.com,
-        dcbw@redhat.com, nikolay@cumulusnetworks.com, mkubecek@suse.cz,
-        andrew@lunn.ch, parav@mellanox.com, saeedm@mellanox.com,
-        f.fainelli@gmail.com, sd@queasysnail.net, sbrivio@redhat.com,
-        pabeni@redhat.com, mlxsw@mellanox.com
-References: <20191009124947.27175-1-jiri@resnulli.us>
- <20191009124947.27175-3-jiri@resnulli.us>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f0693559-1ba2-ea6c-a36a-ef9146e1ba9b@gmail.com>
-Date:   Tue, 15 Oct 2019 14:34:56 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=dpHnScfJCNKkYcD6OPUhJS8Pdc4N6JJm1BZibg64fhU=;
+        b=BuvZIyVd6o1FqqzZFlkf6g64U/AY75uhWgJnf4QI97A9TrBDe0+rSz1kKBUUJXVdSz
+         5WIkMx7D9a560rwZyRDZz3KkkgkB6VYMJ5Tq8fvuuwYKMTRuQU1sw38YZD//swU8LPj+
+         3c5nimQNv5N7rl7VuS9pq/FI8xVlQURuYP/KwOc+YutC2RPd310Ad17AfYvZsNnsS9su
+         KJuc7ZTjSY45iwUnzD8LfjfF7pdGFwOPLcdgyD9M341PyZXUJb1FcLpx98BsspVnx9U3
+         vcR/HhxHIndJdVDguVM6NKKfselsybJDL6fg2D4RsHFVdLzczRa/h2DnFBIh+dopfoXi
+         VzbQ==
+X-Gm-Message-State: APjAAAWo/3x4+8lCX62jd1V7jFefqQfD2lTKLcPzgWEmy9KtAYIo/45F
+        4vydhQ9x8PKqJ8fhamvM/fNBsg==
+X-Google-Smtp-Source: APXvYqxrRgW/tDMgtL6XX/H61A1NBMf+9MttwnNzp7o2V7NJ8jp5xVeiCoMHFhRSQDO4HV0ZNKsF6w==
+X-Received: by 2002:a2e:9a43:: with SMTP id k3mr22149736ljj.70.1571165225094;
+        Tue, 15 Oct 2019 11:47:05 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v21sm430188lfi.22.2019.10.15.11.47.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2019 11:47:04 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 11:46:57 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        herbert@gondor.apana.org.au, steffen.klassert@secunet.com
+Subject: Re: [PATCH net-next v4 0/6] ipsec: add TCP encapsulation support
+ (RFC 8229)
+Message-ID: <20191015114657.45954831@cakuba.netronome.com>
+In-Reply-To: <20191015082424.GA435630@bistromath.localdomain>
+References: <cover.1570787286.git.sd@queasysnail.net>
+ <20191014.144327.888902765137276425.davem@davemloft.net>
+ <20191015082424.GA435630@bistromath.localdomain>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191009124947.27175-3-jiri@resnulli.us>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/9/19 8:49 AM, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
+On Tue, 15 Oct 2019 10:24:24 +0200, Sabrina Dubroca wrote:
+> 2019-10-14, 14:43:27 -0400, David Miller wrote:
+> > From: Sabrina Dubroca <sd@queasysnail.net>
+> > Date: Fri, 11 Oct 2019 16:57:23 +0200
+> >   
+> > > This patchset introduces support for TCP encapsulation of IKE and ESP
+> > > messages, as defined by RFC 8229 [0]. It is an evolution of what
+> > > Herbert Xu proposed in January 2018 [1] that addresses the main
+> > > criticism against it, by not interfering with the TCP implementation
+> > > at all. The networking stack now has infrastructure for this: TCP ULPs
+> > > and Stream Parsers.  
+> > 
+> > So this will bring up a re-occurring nightmare in that now we have another
+> > situation where stacking ULPs would be necessary (kTLS over TCP encap) and
+> > the ULP mechanism simply can't do this.
+> > 
+> > Last time this came up, it had to do with sock_map.  No way could be found
+> > to stack ULPs properly, so instead sock_map was implemented via something
+> > other than ULPs.
+> > 
+> > I fear we have the same situation here again and this issue must be
+> > addressed before these patches are included.
+> > 
+> > Thanks.  
 > 
-> Extend ll_name_to_index() to get the index of a netdevice using
-> alternative interface name. Allow alternative long names to pass checks
-> in couple of ip link/addr commands.
+> I don't think there's any problem here. We're not stacking ULPs on the
+> same socket. There's a TCP encap socket for IPsec, which belongs to
+> the IKE daemon. The traffic on that socket is composed of IKE messages
+> and ESP packets. Then there's whatever userspace sockets (doesn't have
+> to be TCP), and the whole IPsec and TCP encap is completely invisible
+> to them.
+> 
+> Where we would probably need ULP stacking is if we implement ESP over
+> TLS [1], but we're not there.
+> 
+> [1] https://tools.ietf.org/html/rfc8229#appendix-A
 
-you don't add altnames to the name_hash, so the lookup can not find a
-match based on altname.
+But can there be any potential issues if the TCP socket with esp ULP is
+also inserted into a sockmap? (well, I think sockmap socket gets a ULP,
+I think we prevent sockmap on top of ULP but not the other way around..)
 
+Is there any chance we could see some selftests here?
