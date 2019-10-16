@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36861D8947
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71C63D894A
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:20:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403880AbfJPHUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 03:20:48 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4169 "EHLO huawei.com"
+        id S2403830AbfJPHUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 03:20:47 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4176 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732820AbfJPHUM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 03:20:12 -0400
+        id S1730832AbfJPHUN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 03:20:13 -0400
 Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 93475A339C35B194E8B6;
+        by Forcepoint Email with ESMTP id B7F02AFAE9B54753A334;
         Wed, 16 Oct 2019 15:20:08 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 16 Oct 2019 15:19:58 +0800
+ 14.3.439.0; Wed, 16 Oct 2019 15:19:59 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Jian Shen <shenjian15@huawei.com>,
+        Guojia Liao <liaoguojia@huawei.com>,
         "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 05/12] net: hns3: fix VF VLAN table entries inconsistent issue
-Date:   Wed, 16 Oct 2019 15:17:04 +0800
-Message-ID: <1571210231-29154-6-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 06/12] net: hns3: optimized MAC address in management table.
+Date:   Wed, 16 Oct 2019 15:17:05 +0800
+Message-ID: <1571210231-29154-7-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1571210231-29154-1-git-send-email-tanhuazhong@huawei.com>
 References: <1571210231-29154-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,79 +39,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Guojia Liao <liaoguojia@huawei.com>
 
-Currently, if VF is loaded on the host side, the host doesn't
-clear the VF's VLAN table entries when VF removing. In this
-case, when doing reset and disabling sriov at the same time the
-VLAN device over VF will be removed, but the VLAN table entries
-in hardware are remained.
+mac_addr_hi32 and mac_addr_lo16 are used to store the MAC address
+for management table. But using array of mac_addr[ETH_ALEN] would
+be more general and not need to care about the big-endian mode of
+the CPU.
 
-This patch fixes it by asking PF to clear the VLAN table entries for
-VF when VF is removing. It also clear the VLAN table full bit
-after VF VLAN table entries being cleared.
-
-Fixes: c6075b193462 ("net: hns3: Record VF vlan tables")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h           | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c    | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 4 ++++
- 4 files changed, 7 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h  | 4 ++--
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 3 +--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-index 0059d44..05f3442 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-@@ -46,6 +46,7 @@ enum HCLGE_MBX_OPCODE {
- 	HCLGE_MBX_PUSH_VLAN_INFO,	/* (PF -> VF) push port base vlan */
- 	HCLGE_MBX_GET_MEDIA_TYPE,       /* (VF -> PF) get media type */
- 	HCLGE_MBX_PUSH_PROMISC_INFO,	/* (PF -> VF) push vf promisc info */
-+	HCLGE_MBX_VF_UNINIT,            /* (VF -> PF) vf is unintializing */
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 3578832..919911f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -5,6 +5,7 @@
+ #define __HCLGE_CMD_H
+ #include <linux/types.h>
+ #include <linux/io.h>
++#include <linux/etherdevice.h>
  
- 	HCLGE_MBX_GET_VF_FLR_STATUS = 200, /* (M7 -> PF) get vf reset status */
- 	HCLGE_MBX_PUSH_LINK_STATUS,	/* (M7 -> PF) get port link status */
+ #define HCLGE_CMDQ_TX_TIMEOUT		30000
+ 
+@@ -712,8 +713,7 @@ struct hclge_mac_mgr_tbl_entry_cmd {
+ 	u8      flags;
+ 	u8      resp_code;
+ 	__le16  vlan_tag;
+-	__le32  mac_addr_hi32;
+-	__le16  mac_addr_lo16;
++	u8      mac_addr[ETH_ALEN];
+ 	__le16  rsv1;
+ 	__le16  ethter_type;
+ 	__le16  egress_port;
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 2f0386d..962c4b4 100644
+index 962c4b4..72c19b3 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8218,6 +8218,7 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
- 			kfree(vlan);
- 		}
- 	}
-+	clear_bit(vport->vport_id, hdev->vf_vlan_full);
- }
- 
- void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 97463e11..d48b2f6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -797,6 +797,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 			hclge_get_link_mode(vport, req);
- 			break;
- 		case HCLGE_MBX_GET_VF_FLR_STATUS:
-+		case HCLGE_MBX_VF_UNINIT:
- 			mutex_lock(&hdev->vport_cfg_mutex);
- 			hclge_rm_vport_all_mac_table(vport, true,
- 						     HCLGE_MAC_ADDR_UC);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 408e386..f426f63 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2796,6 +2796,10 @@ static void hclgevf_uninit_hdev(struct hclgevf_dev *hdev)
- {
- 	hclgevf_state_uninit(hdev);
- 
-+	if (!test_bit(HCLGEVF_STATE_CMD_DISABLE, &hdev->state))
-+		hclgevf_send_mbx_msg(hdev, HCLGE_MBX_VF_UNINIT, 0, NULL, 0,
-+				     false, NULL, 0);
-+
- 	if (test_bit(HCLGEVF_STATE_IRQ_INITED, &hdev->state)) {
- 		hclgevf_misc_irq_uninit(hdev);
- 		hclgevf_uninit_msi(hdev);
+@@ -325,8 +325,7 @@ static const struct hclge_mac_mgr_tbl_entry_cmd hclge_mgr_table[] = {
+ 	{
+ 		.flags = HCLGE_MAC_MGR_MASK_VLAN_B,
+ 		.ethter_type = cpu_to_le16(ETH_P_LLDP),
+-		.mac_addr_hi32 = cpu_to_le32(htonl(0x0180C200)),
+-		.mac_addr_lo16 = cpu_to_le16(htons(0x000E)),
++		.mac_addr = {0x01, 0x80, 0xc2, 0x00, 0x00, 0x0e},
+ 		.i_port_bitmap = 0x1,
+ 	},
+ };
 -- 
 2.7.4
 
