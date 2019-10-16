@@ -2,129 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B51B0DA02B
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 00:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2888DDA1AD
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 00:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439098AbfJPWIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 18:08:37 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57562 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392701AbfJPWIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 18:08:36 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iKrSy-0005vo-JW; Thu, 17 Oct 2019 00:08:24 +0200
-Received: from [178.197.249.55] (helo=pc-63.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iKrSy-000J1V-B6; Thu, 17 Oct 2019 00:08:24 +0200
-Subject: Re: [PATCH v3 bpf-next 06/11] bpf: implement accurate raw_tp context
- access via BTF
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, X86 ML <x86@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-References: <20191016032505.2089704-1-ast@kernel.org>
- <20191016032505.2089704-7-ast@kernel.org>
- <04fab556-9eda-87ec-8f8c-defcab25a80e@iogearbox.net>
- <CAADnVQLry-vV_nNUFNaWtO_iFPfvq5-vpqiONHq6r0_6pVt26g@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <bb504159-48b1-93fc-8c38-5cef6b36e4d1@iogearbox.net>
-Date:   Thu, 17 Oct 2019 00:08:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2393080AbfJPWmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 18:42:40 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44363 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726743AbfJPWmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 18:42:40 -0400
+Received: by mail-pg1-f196.google.com with SMTP id e10so84156pgd.11
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 15:42:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3x6UXXXpwzToVvx7uQAGu3Aq2wq21ADOv7FnwHWj45o=;
+        b=M4l9nCxNYdhYEEt9KNEsJnp7ih/tQgB41w3c0a2XkUwrJhAIGBrs30/HemSt5U7lvF
+         IG29A+nR+YDCoTdAqBz6xT93vJwpGkjo77dCG5vm23x6KoO96XfwzeAE1eevOIxjEB/T
+         z3GpvuNFr6CHItG1mZ5StxUXVSN7NDhhe7lfLsTJDjngaO04EfmZAXm9vOZtc6rKE939
+         xxAbWAb+OrZ8pfssgwMV0mV81jMyeXPf5zmTNQLrhfsn8MiJKtsh1Q6bmNDFGPLKowD6
+         J3JTI9asZ9kmgJwrvu+sFCQne1RWtWBepinanvZaiPvH/3PdovSClAydgHX9k+1Qe1Bb
+         cGsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3x6UXXXpwzToVvx7uQAGu3Aq2wq21ADOv7FnwHWj45o=;
+        b=bK7fBRK3VGpbY/nCs1SrhKryge33Sp3rNpp+sMeqWjLfg2yrqL+vULMlKYuiGcc3XS
+         znTJXCsHSkCxHq97wAkoUq86yL1b+68Fg5ZvMt9lOm6uIGYjip9NAolBgZ5aNvvjF3OA
+         X4m11OALGQnWmI+exTbktePqBygKRRLxD8eSefgWnF8ukKxxkxnlLWCLc+IkoQVxwfJ+
+         mTl4338VLywYpDHsT8qzvTaIZdWGMbNzLIFtPmo9DIctaX7XSjs2GRpOGetJUAsbFTz0
+         WxvfhvVUtw5buQa5NIZt0okgGdiacvg1tbB+mK2haxpvtVl1NX6R2cf+/cfH9gPk8a/m
+         M0DA==
+X-Gm-Message-State: APjAAAWoMa7wtq4WoEZONhSpD72v31eF8YkfvRzFhD8OtdgsrVCDiE+n
+        H1canhNyhvkh093J6QrFaf2jl3BWjBTyWuZqsPQ=
+X-Google-Smtp-Source: APXvYqwCKLwGTlv9aqtdldD290j8m4TmlHZUd8ZvEk7uzb/mT3c/aOZhR9WPV9oeFrjk8gr25wHf142vEwPcEkR0IrM=
+X-Received: by 2002:a65:614e:: with SMTP id o14mr546074pgv.237.1571265759435;
+ Wed, 16 Oct 2019 15:42:39 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQLry-vV_nNUFNaWtO_iFPfvq5-vpqiONHq6r0_6pVt26g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25604/Wed Oct 16 10:53:05 2019)
+References: <20191016160050.27703-1-jakub.kicinski@netronome.com>
+In-Reply-To: <20191016160050.27703-1-jakub.kicinski@netronome.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 16 Oct 2019 15:42:28 -0700
+Message-ID: <CAM_iQpXw7xBTGctD2oLdWGZHc+mpeUAMq5Z4AYvKSiw68e=5EQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: netem: fix error path for corrupted GSO frames
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        kbuild test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Ben Hutchings <ben@decadent.org.uk>,
+        Simon Horman <simon.horman@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/16/19 11:28 PM, Alexei Starovoitov wrote:
-> On Wed, Oct 16, 2019 at 2:22 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 10/16/19 5:25 AM, Alexei Starovoitov wrote:
->>> libbpf analyzes bpf C program, searches in-kernel BTF for given type name
->>> and stores it into expected_attach_type.
->>> The kernel verifier expects this btf_id to point to something like:
->>> typedef void (*btf_trace_kfree_skb)(void *, struct sk_buff *skb, void *loc);
->>> which represents signature of raw_tracepoint "kfree_skb".
->>>
->>> Then btf_ctx_access() matches ctx+0 access in bpf program with 'skb'
->>> and 'ctx+8' access with 'loc' arguments of "kfree_skb" tracepoint.
->>> In first case it passes btf_id of 'struct sk_buff *' back to the verifier core
->>> and 'void *' in second case.
->>>
->>> Then the verifier tracks PTR_TO_BTF_ID as any other pointer type.
->>> Like PTR_TO_SOCKET points to 'struct bpf_sock',
->>> PTR_TO_TCP_SOCK points to 'struct bpf_tcp_sock', and so on.
->>> PTR_TO_BTF_ID points to in-kernel structs.
->>> If 1234 is btf_id of 'struct sk_buff' in vmlinux's BTF
->>> then PTR_TO_BTF_ID#1234 points to one of in kernel skbs.
->>>
->>> When PTR_TO_BTF_ID#1234 is dereferenced (like r2 = *(u64 *)r1 + 32)
->>> the btf_struct_access() checks which field of 'struct sk_buff' is
->>> at offset 32. Checks that size of access matches type definition
->>> of the field and continues to track the dereferenced type.
->>> If that field was a pointer to 'struct net_device' the r2's type
->>> will be PTR_TO_BTF_ID#456. Where 456 is btf_id of 'struct net_device'
->>> in vmlinux's BTF.
->>>
->>> Such verifier analysis prevents "cheating" in BPF C program.
->>> The program cannot cast arbitrary pointer to 'struct sk_buff *'
->>> and access it. C compiler would allow type cast, of course,
->>> but the verifier will notice type mismatch based on BPF assembly
->>> and in-kernel BTF.
->>>
->>> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->>
->> Overall set looks great!
->>
->> [...]
->>> +int btf_struct_access(struct bpf_verifier_log *log,
->>> +                   const struct btf_type *t, int off, int size,
->>> +                   enum bpf_access_type atype,
->>> +                   u32 *next_btf_id)
->>> +{
->>> +     const struct btf_member *member;
->>> +     const struct btf_type *mtype;
->>> +     const char *tname, *mname;
->>> +     int i, moff = 0, msize;
->>> +
->>> +again:
->>> +     tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
->>
->> More of a high-level question wrt btf_ctx_access(), is there a reason the ctx
->> access is only done for raw_tp? I presume kprobes is still on todo (?), what
->> about uprobes which also have pt_regs and could benefit from this work, but is
->> not fixed to btf_vmlinux to search its ctx type.
-> 
-> Optimized kprobes via ftrace entry point are on immediate todo list
-> to follow up. I'm still debating on the best way to handle it.
-> uprobes - I haven't though about. Likely necessary as well.
-> Not sure what types to give to pt_regs yet.
-> 
->> I presume BPF_LDX | BPF_PROBE_MEM | BPF_* would need no additional encoding,
->> but JIT emission would have to differ depending on the prog type.
-> 
-> you mean for kprobes/uprobes? Why would it need to be different?
-> The idea was to keep LDX|PROBE_MEM as normal LDX|MEM load as much as possible.
+On Wed, Oct 16, 2019 at 3:23 PM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> To corrupt a GSO frame we first perform segmentation.  We then
+> proceed using the first segment instead of the full GSO skb and
+> requeue the rest of the segments as separate packets.
+>
+> If there are any issues with processing the first segment we
+> still want to process the rest, therefore we jump to the
+> finish_segs label.
+>
+> Commit 177b8007463c ("net: netem: fix backlog accounting for
+> corrupted GSO frames") started using the pointer to the first
+> segment in the "rest of segments processing", but as mentioned
+> above the first segment may had already been freed at this point.
+>
+> Backlog corrections for parent qdiscs have to be adjusted.
+> Note that if segmentation ever produced a single-skb list
+> the backlog calculation will not take place (segs == NULL)
+> but that should hopefully never happen..
+>
+> Fixes: 177b8007463c ("net: netem: fix backlog accounting for corrupted GSO frames")
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Reported-by: Ben Hutchings <ben@decadent.org.uk>
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> ---
+>  net/sched/sch_netem.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+> index 0e44039e729c..31a6afd035b2 100644
+> --- a/net/sched/sch_netem.c
+> +++ b/net/sched/sch_netem.c
+> @@ -509,6 +509,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>                 if (skb->ip_summed == CHECKSUM_PARTIAL &&
+>                     skb_checksum_help(skb)) {
+>                         qdisc_drop(skb, sch, to_free);
+> +                       skb = NULL;
+>                         goto finish_segs;
+>                 }
+>
+> @@ -595,7 +596,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>                 unsigned int len, last_len;
+>                 int nb = 0;
+>
+> -               len = skb->len;
+> +               len = skb ? skb->len : 0;
+>
+>                 while (segs) {
+>                         skb2 = segs->next;
+> @@ -612,7 +613,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>                         }
+>                         segs = skb2;
+>                 }
+> -               qdisc_tree_reduce_backlog(sch, -nb, prev_len - len);
+> +               qdisc_tree_reduce_backlog(sch, !skb - nb, prev_len - len);
 
-Agree, makes sense.
-
-> The only difference vs normal load is to populate extable which is
-> arch dependent.
-
-Wouldn't you also need to switch to USER_DS similarly to what probe_kernel_read()
-vs probe_user_read() differentiates?
-
-Thanks,
-Daniel
+Am I the only one has trouble to understand the expression
+"!skb - nb"?
