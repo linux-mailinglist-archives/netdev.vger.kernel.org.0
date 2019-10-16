@@ -2,264 +2,726 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB3CD8CDF
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 11:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9071D8CF9
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 11:53:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392095AbfJPJtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 05:49:05 -0400
-Received: from mail-eopbgr80040.outbound.protection.outlook.com ([40.107.8.40]:56552
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2392065AbfJPJtE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 05:49:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=md1nR1RKcd65vE73GmnLziOpKuVHsxBM/wC6YDptQMQ=;
- b=rJzxmKhToi3XOP7o48OaaNb6pmwjkemOR8HNU9P4fqjBPg27dsAEiuvqAVGjfxdhekI3+WY+wmtwl8nFj/chL7f21kiL4ES/+1PioBdTERoKbtpRoqLWKiTUUMzUNmWV2VeJq8TPRKjYmp+hKq0kEu6mb/kWOjElEhSiRL1uohk=
-Received: from VI1PR0802CA0042.eurprd08.prod.outlook.com
- (2603:10a6:800:a9::28) by DB7PR08MB3322.eurprd08.prod.outlook.com
- (2603:10a6:5:26::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.21; Wed, 16 Oct
- 2019 09:48:56 +0000
-Received: from DB5EUR03FT007.eop-EUR03.prod.protection.outlook.com
- (2a01:111:f400:7e0a::209) by VI1PR0802CA0042.outlook.office365.com
- (2603:10a6:800:a9::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2347.17 via Frontend
- Transport; Wed, 16 Oct 2019 09:48:56 +0000
-Authentication-Results: spf=temperror (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=none action=none
- header.from=arm.com;
-Received-SPF: TempError (protection.outlook.com: error in processing during
- lookup of arm.com: DNS Timeout)
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- DB5EUR03FT007.mail.protection.outlook.com (10.152.20.148) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.2305.15 via Frontend Transport; Wed, 16 Oct 2019 09:48:54 +0000
-Received: ("Tessian outbound e4042aced47b:v33"); Wed, 16 Oct 2019 09:48:52 +0000
-X-CR-MTA-TID: 64aa7808
-Received: from a94b262de10b.2 (ip-172-16-0-2.eu-west-1.compute.internal [104.47.10.51])
-        by 64aa7808-outbound-1.mta.getcheckrecipient.com id EE9EE450-8095-41AA-A1E6-80ECD47E18E2.1;
-        Wed, 16 Oct 2019 09:48:47 +0000
-Received: from EUR03-DB5-obe.outbound.protection.outlook.com (mail-db5eur03lp2051.outbound.protection.outlook.com [104.47.10.51])
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id a94b262de10b.2
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384);
-    Wed, 16 Oct 2019 09:48:47 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C80+LbR2D9qOnBYC3+CHdrKI3OWh7f7ktLkeXRcVnm4mvRDArA+0f+LKsv2qxXWY5DlTtMK7/7/A3efA90bJSSLQVb49gvZfFwoCc4N44zHsKg48i2amwY7xsksu1c3C91BFzKTOgKZgTH9tttiutCc3HO9w3VUoBlJXSAzOLq2cYIcGZMJvXggHFaI66S30TKp/jG9S++2sMC3UXfpMLq87zYijY5AVcPP5v2vg6ZifqS67BxMne8PDXSp4ITkakfPT7FFzt5gyx4Ys5C+UCwiQUjHAZxmGm/rGZ8t4M6TWpWqy/JxhXmNjyVNTrlCry59zIdSNroLffF3HXOulUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=md1nR1RKcd65vE73GmnLziOpKuVHsxBM/wC6YDptQMQ=;
- b=VwomxDPEapQkiBfO5XAftvOwoen8mOgtu997BtA3tlVXudDsguS2H8pRx2vFG9xWH+rBxEYO6gPWVfeYGtMFsTA1h3HKvqImASgkcdUHMQ+liR2MxtRLCIQTfVnD6JLX1KPpx1jgs8qtL1uyTBTATaS22ihA5AgUPdwOIdTE6l12lVYHoC1KK0/UDo8jDcjaU+/V+Ci3c/efbAwIV63r7ZVOxwy/FQ09Rv3ZlGj8cW5uu1cEeVN3kgsztowvtG7vagM4o7TMjNI4eS+lp5eAjoU5ILRBPyaPVKP3dz2DdKE6yjpxio4dXXm0UFSRf1t/WObJKTJONWnbQIZfwgrmtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=md1nR1RKcd65vE73GmnLziOpKuVHsxBM/wC6YDptQMQ=;
- b=rJzxmKhToi3XOP7o48OaaNb6pmwjkemOR8HNU9P4fqjBPg27dsAEiuvqAVGjfxdhekI3+WY+wmtwl8nFj/chL7f21kiL4ES/+1PioBdTERoKbtpRoqLWKiTUUMzUNmWV2VeJq8TPRKjYmp+hKq0kEu6mb/kWOjElEhSiRL1uohk=
-Received: from HE1PR0801MB1676.eurprd08.prod.outlook.com (10.168.146.150) by
- HE1PR0801MB1996.eurprd08.prod.outlook.com (10.168.97.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Wed, 16 Oct 2019 09:48:43 +0000
-Received: from HE1PR0801MB1676.eurprd08.prod.outlook.com
- ([fe80::b056:4113:e0bd:110d]) by HE1PR0801MB1676.eurprd08.prod.outlook.com
- ([fe80::b056:4113:e0bd:110d%6]) with mapi id 15.20.2347.023; Wed, 16 Oct 2019
- 09:48:43 +0000
-From:   "Jianyong Wu (Arm Technology China)" <Jianyong.Wu@arm.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Paolo Bonzini <pbonzini@redhat.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        "Kaly Xin (Arm Technology China)" <Kaly.Xin@arm.com>,
-        "Justin He (Arm Technology China)" <Justin.He@arm.com>,
-        nd <nd@arm.com>
-Subject: RE: [PATCH v5 3/6] timekeeping: Add clocksource to
- system_time_snapshot
-Thread-Topic: [PATCH v5 3/6] timekeeping: Add clocksource to
- system_time_snapshot
-Thread-Index: AQHVg0Y1dymHk2OcFEiql6VhclDWladb5yqAgAA8TwCAACgCAIAAlJeAgAAfkWA=
-Date:   Wed, 16 Oct 2019 09:48:43 +0000
-Message-ID: <HE1PR0801MB1676EC775B7BFA5FC7E4F9D5F4920@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-References: <20191015104822.13890-1-jianyong.wu@arm.com>
- <20191015104822.13890-4-jianyong.wu@arm.com>
- <9274d21c-2c43-2e0d-f086-6aaba3863603@redhat.com>
- <alpine.DEB.2.21.1910152212580.2518@nanos.tec.linutronix.de>
- <aa1ec910-b7b6-2568-4583-5fa47aac367f@redhat.com>
- <alpine.DEB.2.21.1910160914230.2518@nanos.tec.linutronix.de>
-In-Reply-To: <alpine.DEB.2.21.1910160914230.2518@nanos.tec.linutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ts-tracking-id: ad2c70a2-bd34-4e39-aaa2-98de92e436d4.1
-x-checkrecipientchecked: true
-Authentication-Results-Original: spf=none (sender IP is )
- smtp.mailfrom=Jianyong.Wu@arm.com; 
-x-originating-ip: [113.29.88.7]
-x-ms-publictraffictype: Email
-X-MS-Office365-Filtering-Correlation-Id: f61a9ae5-054e-46b9-65a5-08d7521e0eda
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-TrafficTypeDiagnostic: HE1PR0801MB1996:|HE1PR0801MB1996:|DB7PR08MB3322:
-x-ms-exchange-transport-forked: True
-X-Microsoft-Antispam-PRVS: <DB7PR08MB33225C0A00930C1DB774FE52F4920@DB7PR08MB3322.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-x-ms-oob-tlc-oobclassifiers: OLM:9508;OLM:9508;
-x-forefront-prvs: 0192E812EC
-X-Forefront-Antispam-Report-Untrusted: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(136003)(396003)(39860400002)(366004)(54534003)(13464003)(199004)(189003)(7416002)(66446008)(66556008)(14454004)(64756008)(33656002)(2906002)(11346002)(9686003)(66476007)(66066001)(7696005)(6246003)(74316002)(99286004)(446003)(186003)(76116006)(66946007)(76176011)(26005)(14444005)(256004)(6436002)(55016002)(25786009)(71200400001)(229853002)(81166006)(8676002)(102836004)(81156014)(6506007)(5660300002)(6116002)(8936002)(478600001)(53546011)(86362001)(4326008)(71190400001)(316002)(110136005)(54906003)(55236004)(486006)(305945005)(476003)(7736002)(52536014)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR0801MB1996;H:HE1PR0801MB1676.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: arm.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: 9Snvoq8lL1JLJMP+38lHxCRE+PIej1tuIP3XSAk+w1B9yoRP10Mc3lTXjeM7kREmMYyJWLTOaWQxlgTc+2Cgex76TEnTUQugZ6SWKbnQUM8eiKnmspeoknnIR2n58axsJ8rgmVx23zlIZYY1eCXiX3tEnEjvllFjijiDThP6ecpVGAxeUP+waa7ZaHWLxtUx8inxkzbuGYN1xICYNOO/Drm1tAX1VmRNNEjjTwLV2BWo1WY9haRX0gcktRFELFylO1LEQejf0z8nmvGpbXyffc97mgRH5bravTWXdH0cpZ+pWUPWOnaCS3QVUtAuMZM7DbZDMyeU/3uM6u2EPa1ohIzXH3jay9YSpQ1LQmwfkLyKibraHW/tbUCyw3esRjUCRwLBMhz30r8wouFVBdJXUwTKhZoCkfeWwUMOI3G8vfM=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2392166AbfJPJx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 05:53:56 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:35029 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729546AbfJPJxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 05:53:55 -0400
+Received: by mail-wm1-f67.google.com with SMTP id y21so2054581wmi.0
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 02:53:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lbfuM2Ih0hjUAgjPhQJclKWktHpxuJOn+IYdNX6d0Xw=;
+        b=g6b1pRjvh/DhtBnkj0sMcyevbNPme2YMV0hf7VGEPBil9lWOT6A+dLktIWI4lJJA1v
+         lpzd+aydHcx81e0wKLK3ZcHnvf8o1C1VUKXXYsImRaw0qK1RYhLQHG6zSLzb4Ogc08nk
+         Wqhbl7u8tsiANTha5Wl7IlDmldQXITaF/Pu8ghmbj9+zO7ELbvP8N/J9H8wG08cfgrfL
+         N3d6cpQeAgHT94lMpzbVDTN0DH2VsRkEhyJwGegY5yOg+AiBbNOL7CezoURm+q8uurBm
+         brfK/iZIwVViQhLw9uMGGl+3PUPGW/QS+J4EnUiVP4JwYj00oOLDfmS9QNdTKG6ZEEoC
+         n8MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lbfuM2Ih0hjUAgjPhQJclKWktHpxuJOn+IYdNX6d0Xw=;
+        b=dV80vU+g0V3qE8Dc/D9KzQVlu1DAho/50OOL4hfxZcBAOqVwyxyhREPuZ3GjgH/zWz
+         BVgQ9S1d9aYcJEEDiw1egOVQ7UWFEzfW8WT3ssUGyMuf2uKrTrcIku+cYVdLtb3F/KE7
+         KwwgRdZOgnWDvFAo4aOqebMstIcoRwMdBMdDhBxyGAZMqOlvZm9cZ5UZAcOoPqEIDNeB
+         hTeMutvnOzKq6+LlXZpER3VijEsR/WKq6xOqh+HiG2Hn5n0QGL/PDb/bWcDXjfa6S6dg
+         RB/NwmLeZ2f0aCE7vC67Wk2Zb4EYe91VfJ9+iLY2gBLt254igdEKAmyYw2sEm/eoEToI
+         I+9Q==
+X-Gm-Message-State: APjAAAVIJ7i5IBemR8PTVpeG1wEHSILz9ZSwb6ReTb75dQKr5CzT4Wzp
+        7jytRNhsW760QxkgDYX71EnK6Q==
+X-Google-Smtp-Source: APXvYqyIUCkxzb8vhryJ7Sff3/BmNZtYzjWuhmttvFguJo0Er+we/Xq1yG5oQPoU9gaqOSK9tX0bmg==
+X-Received: by 2002:a7b:cb05:: with SMTP id u5mr2407036wmj.36.1571219632977;
+        Wed, 16 Oct 2019 02:53:52 -0700 (PDT)
+Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
+        by smtp.gmail.com with ESMTPSA id r65sm1805356wmr.9.2019.10.16.02.53.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 02:53:52 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 11:53:49 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernle.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        zhiyuan.lv@intel.com
+Subject: Re: [RFC 1/2] vhost: IFC VF hardware operation layer
+Message-ID: <20191016095347.5sb43knc7eq44ivo@netronome.com>
+References: <20191016011041.3441-1-lingshan.zhu@intel.com>
+ <20191016011041.3441-2-lingshan.zhu@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0801MB1996
-Original-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=Jianyong.Wu@arm.com; 
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT007.eop-EUR03.prod.protection.outlook.com
-X-Forefront-Antispam-Report: CIP:63.35.35.123;IPV:CAL;SCL:-1;CTRY:IE;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(396003)(136003)(346002)(189003)(199004)(54534003)(13464003)(55016002)(316002)(14454004)(99286004)(486006)(25786009)(186003)(11346002)(33656002)(7696005)(446003)(356004)(76176011)(47776003)(6116002)(23726003)(476003)(110136005)(81166006)(450100002)(81156014)(8936002)(8746002)(3846002)(6246003)(305945005)(46406003)(26005)(8676002)(4326008)(76130400001)(7736002)(336012)(478600001)(70206006)(50466002)(63350400001)(126002)(74316002)(66066001)(26826003)(54906003)(97756001)(2906002)(6506007)(102836004)(5660300002)(70586007)(53546011)(86362001)(52536014)(9686003)(229853002)(14444005)(22756006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR08MB3322;H:64aa7808-outbound-1.mta.getcheckrecipient.com;FPR:;SPF:TempError;LANG:en;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;MX:1;A:1;
-X-MS-Office365-Filtering-Correlation-Id-Prvs: f9a840f1-f54a-4c21-bd4a-08d7521e0821
-NoDisclaimer: True
-X-Forefront-PRVS: 0192E812EC
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QZ5f8dNZe2FoALDAwagt0BbeKYrnO4lRpbD+1bdPb82QWGPYVK+sRFDpoN++pNVgEyHWuDeOE1TIyN0MO5dX4F3yJQ7CFfSGgFrUUtv1aeNTUrZmpSBG2QVD/KDi45FetTXK209XD6K6yVTNQFCAoD/rtvq0RqYYtek7TB5HFJTAz7QgKI6OLm0eGieAGCB5rTn0Y8YTJUd9rw3+jkDOeGk5mbvXBEO2bDnaP1CZwuQ8gd8G762B7VfbjYMfwadohz9TdzM534C2sxkoYF8Jsu/Xxz+ISnYaOFuWbI+LLIQ9il2wA7VnVmML8FH0wnQLttgIn3M/d2JoZvnqcq9ZAVvdxT50v+3YxfJu6BPiDUDb5L+WPV1tD5ySOW2KLEXS3jP89uIReBCjHSrfGYE8LnABlEfH26gwP7EvczUz42U=
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2019 09:48:54.7074
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f61a9ae5-054e-46b9-65a5-08d7521e0eda
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR08MB3322
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191016011041.3441-2-lingshan.zhu@intel.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi tglx,
+Hi Zhu,
 
-> -----Original Message-----
-> From: Thomas Gleixner <tglx@linutronix.de>
-> Sent: Wednesday, October 16, 2019 3:29 PM
-> To: Paolo Bonzini <pbonzini@redhat.com>
-> Cc: Jianyong Wu (Arm Technology China) <Jianyong.Wu@arm.com>;
-> netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
-> sean.j.christopherson@intel.com; maz@kernel.org;
-> richardcochran@gmail.com; Mark Rutland <Mark.Rutland@arm.com>;
-> will@kernel.org; Suzuki Poulose <Suzuki.Poulose@arm.com>; linux-
-> kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> kvmarm@lists.cs.columbia.edu; kvm@vger.kernel.org; Steve Capper
-> <Steve.Capper@arm.com>; Kaly Xin (Arm Technology China)
-> <Kaly.Xin@arm.com>; Justin He (Arm Technology China)
-> <Justin.He@arm.com>; nd <nd@arm.com>
-> Subject: Re: [PATCH v5 3/6] timekeeping: Add clocksource to
-> system_time_snapshot
->=20
-> On Wed, 16 Oct 2019, Paolo Bonzini wrote:
-> > On 15/10/19 22:13, Thomas Gleixner wrote:
-> > > On Tue, 15 Oct 2019, Paolo Bonzini wrote:
-> > >> On 15/10/19 12:48, Jianyong Wu wrote:
-> > >>>
-> > >>>
-> > >>
-> > >> Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
-> > >
-> > > You're sure about having reviewed that in detail?
-> >
-> > I did review the patch; the void* ugliness is not in this one, and I
-> > do have some other qualms on that one.
-> >
-> > > This changelog is telling absolutely nothing WHY anything outside of
-> > > the timekeeping core code needs access to the current clocksource.
-> > > Neither does it tell why it is safe to provide the pointer to random =
-callers.
-> >
-> > Agreed on the changelog, but the pointer to a clocksource is already
-> > part of the timekeeping external API via struct system_counterval_t.
-> > get_device_system_crosststamp for example expects a clocksource
-> > pointer but provides no way to get such a pointer.
->=20
-> That's a completely different beast, really.
->=20
-> The clocksource pointer is handed in by the caller and the core code vali=
-dates
-> if the clocksource is the same as the current system clocksource and not =
-the
-> other way round.
->=20
-> So there is no need for getting that pointer from the core code because t=
-he
-> caller knows already which clocksource needs to be active to make.the who=
-le
-> cross device timestamp correlation work. And in that case it's the caller=
-s
-> responsibility to ensure that the pointer is valid which is the case for =
-the
-> current use cases.
->=20
-I thinks there is something misunderstanding of my patch. See patch 4/6, th=
-e reason why I add clocksource is that I want to check if the current clock=
-souce is
-arm_arch_counter in virt/kvm/arm/psci.c and nothing to do with get_device_s=
-ystem_crosststamp.
+thanks for your patch.
 
-So I really need a mechanism to do that check.
+On Wed, Oct 16, 2019 at 09:10:40AM +0800, Zhu Lingshan wrote:
+> This commit introduced ifcvf_base layer, which handles IFC VF NIC
+> hardware operations and configurations.
+> 
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>  drivers/vhost/ifcvf/ifcvf_base.c | 390 +++++++++++++++++++++++++++++++++++++++
+>  drivers/vhost/ifcvf/ifcvf_base.h | 137 ++++++++++++++
+>  2 files changed, 527 insertions(+)
+>  create mode 100644 drivers/vhost/ifcvf/ifcvf_base.c
+>  create mode 100644 drivers/vhost/ifcvf/ifcvf_base.h
+> 
+> diff --git a/drivers/vhost/ifcvf/ifcvf_base.c b/drivers/vhost/ifcvf/ifcvf_base.c
+> new file mode 100644
+> index 000000000000..b85e14c9bdcf
+> --- /dev/null
+> +++ b/drivers/vhost/ifcvf/ifcvf_base.c
+> @@ -0,0 +1,390 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2019 Intel Corporation.
+> + */
+> +
+> +#include "ifcvf_base.h"
+> +
+> +static void *get_cap_addr(struct ifcvf_hw *hw, struct virtio_pci_cap *cap)
+> +{
+> +	u8 bar = cap->bar;
+> +	u32 length = cap->length;
+> +	u32 offset = cap->offset;
 
-Thanks
-Jianyong
+The type of the length and offset fields of virtio_pci_cap is __le32.
+A conversion, such as le32_to_cpu(), is required in order to access
+these fields in host byte order.
 
-> From your other reply:
->=20
-> > Why add a global id?  ARM can add it to archdata similar to how x86
-> > has vclock_mode.  But I still think the right thing to do is to
-> > include the full system_counterval_t in the result of
-> > ktime_get_snapshot.  (More in a second, feel free to reply to the other
-> email only).
->=20
-> No, the clocksource pointer is not going to be exposed as there is no
-> guarantee that it will be still around after the call returns.
->=20
-> It's not even guaranteed to be correct when the store happens in Wu's pat=
-ch
-> simply because the store is done outside of the seqcount protected region=
-.
+> +	struct ifcvf_adapter *ifcvf =
+> +		container_of(hw, struct ifcvf_adapter, vf);
 
-Yeah, all of the elements in system_time_snapshot should be captured in con=
-sistency. So
-I think the consistency will be guaranteed if the store ops added in the se=
-qcount region.
+As mentioned elsewhere, please use reverse Christmas tree to order local
+variables throughout the patch.
 
->=20
-> Vs. arch data: arch data is an opaque struct, so you'd need to store a po=
-inter
-> which has the same issue as the clocksource pointer itself.
->=20
-> If we want to convey information then it has to be in the generic part of
-> struct clocksource.
->=20
-> In fact we could even simplify the existing get_device_system_crosststamp=
-()
-> use case by using the ID field.
->=20
-> Thanks,
->=20
-> 	tglx
+Please consider declaring and assigning ifcvf on separate lines
+if combining these stretches over more than one line.
+
+> +
+> +	if (bar >= IFCVF_PCI_MAX_RESOURCE) {
+> +		IFC_ERR(ifcvf->dev,
+> +			"Invalid bar number %u to get capabilities.\n", bar);
+> +		return NULL;
+> +	}
+> +
+> +	if (offset + length < offset) {
+> +		IFC_ERR(ifcvf->dev, "offset(%u) + length(%u) overflows\n",
+> +			offset, length);
+> +		return NULL;
+> +	}
+> +
+> +	if (offset + length > hw->mem_resource[cap->bar].len) {
+> +		IFC_ERR(ifcvf->dev,
+> +			"offset(%u) + len(%u) overflows bar%u to get capabilities.\n",
+> +			offset, length, bar);
+> +		return NULL;
+> +	}
+> +
+> +	return hw->mem_resource[bar].addr + offset;
+> +}
+> +
+> +int ifcvf_read_config_range(struct pci_dev *dev,
+> +			uint32_t *val, int size, int where)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < size; i += 4) {
+> +		if (pci_read_config_dword(dev, where + i, val + i / 4) < 0)
+> +			return -1;
+> +	}
+
+I don't think the {} is needed here.
+
+An error code, such as -EINVAL, should be returned rather than -1.
+Likewise elsewhere.
+
+> +	return 0;
+> +}
+> +
+> +int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *dev)
+> +{
+> +	int ret;
+> +	u8 pos;
+> +	struct virtio_pci_cap cap;
+> +	u32 i;
+> +	u16 notify_off;
+> +
+> +	ret = pci_read_config_byte(dev, PCI_CAPABILITY_LIST, &pos);
+> +
+> +	if (ret < 0) {
+> +		IFC_ERR(&dev->dev, "failed to read PCI capability list.\n");
+> +		return -EIO;
+> +	}
+> +
+> +	while (pos) {
+> +		ret = ifcvf_read_config_range(dev, (u32 *)&cap,
+> +				sizeof(cap), pos);
+
+sizeof should be white-space aligned vertically with dev.
+Likewise elsewhere.
+
+> +
+> +		if (ret < 0) {
+> +			IFC_ERR(&dev->dev, "failed to get PCI capability at %x",
+> +					pos);
+> +			break;
+> +		}
+> +
+> +		if (cap.cap_vndr != PCI_CAP_ID_VNDR)
+> +			goto next;
+> +
+> +		IFC_INFO(&dev->dev, "read PCI config:\n"
+> +					"config type: %u.\n"
+> +					"PCI bar: %u.\n"
+> +					"PCI bar offset: %u.\n"
+> +					"PCI config len: %u.\n",
+> +					cap.cfg_type, cap.bar,
+> +					cap.offset, cap.length);
+> +
+> +		switch (cap.cfg_type) {
+> +		case VIRTIO_PCI_CAP_COMMON_CFG:
+> +			hw->common_cfg = get_cap_addr(hw, &cap);
+> +			IFC_INFO(&dev->dev, "hw->common_cfg = %p.\n",
+> +					hw->common_cfg);
+> +			break;
+> +		case VIRTIO_PCI_CAP_NOTIFY_CFG:
+> +			pci_read_config_dword(dev, pos + sizeof(cap),
+> +				&hw->notify_off_multiplier);
+> +			hw->notify_bar = cap.bar;
+> +			hw->notify_base = get_cap_addr(hw, &cap);
+> +			IFC_INFO(&dev->dev, "hw->notify_base = %p.\n",
+> +					hw->notify_base);
+> +			break;
+> +		case VIRTIO_PCI_CAP_ISR_CFG:
+> +			hw->isr = get_cap_addr(hw, &cap);
+> +			IFC_INFO(&dev->dev, "hw->isr = %p.\n", hw->isr);
+> +			break;
+> +		case VIRTIO_PCI_CAP_DEVICE_CFG:
+> +			hw->dev_cfg = get_cap_addr(hw, &cap);
+> +			IFC_INFO(&dev->dev, "hw->dev_cfg = %p.\n", hw->dev_cfg);
+> +			break;
+> +		}
+> +next:
+> +		pos = cap.cap_next;
+> +	}
+> +
+> +	if (hw->common_cfg == NULL || hw->notify_base == NULL ||
+> +		hw->isr == NULL || hw->dev_cfg == NULL) {
+
+hw->isr should be vertically whitespace-alligned with hw->common_cfg.
+
+> +		IFC_ERR(&dev->dev, "Incomplete PCI capabilities.\n");
+> +		return -1;
+> +	}
+> +
+> +	for (i = 0; i < (IFCVF_MAX_QUEUE_PAIRS * 2); i++) {
+
+The inner () seem unnecessary here.
+
+> +		iowrite16(i, &hw->common_cfg->queue_select);
+
+Perhaps u16 would be a more appropriate type for i than u32.
+Likewise elsewhere.
+
+> +		notify_off = ioread16(&hw->common_cfg->queue_notify_off);
+> +		hw->notify_addr[i] = (void *)((u8 *)hw->notify_base +
+> +				notify_off * hw->notify_off_multiplier);
+> +	}
+> +
+> +	hw->lm_cfg = hw->mem_resource[4].addr;
+
+A #define rather than directly using 4 may improve readability here.
+
+> +
+> +	IFC_INFO(&dev->dev, "PCI capability mapping:\n"
+> +				"common cfg: %p\n"
+> +				"notify base: %p\n"
+> +				"isr cfg: %p\n"
+> +				"device cfg: %p\n"
+> +				"multiplier: %u\n",
+> +				hw->common_cfg,
+> +				hw->notify_base,
+> +				hw->isr,
+> +				hw->dev_cfg,
+> +				hw->notify_off_multiplier);
+> +
+> +	return 0;
+> +}
+> +
+> +static u8 ifcvf_get_status(struct ifcvf_hw *hw)
+> +{
+> +	return ioread8(&hw->common_cfg->device_status);
+> +}
+> +
+> +static void ifcvf_set_status(struct ifcvf_hw *hw, u8 status)
+> +{
+> +	iowrite8(status, &hw->common_cfg->device_status);
+> +}
+> +
+> +static void ifcvf_reset(struct ifcvf_hw *hw)
+> +{
+> +	ifcvf_set_status(hw, 0);
+> +
+> +	/* flush status write */
+> +	ifcvf_get_status(hw);
+> +	hw->generation++;
+> +}
+> +
+> +static void ifcvf_add_status(struct ifcvf_hw *hw, u8 status)
+> +{
+> +	if (status != 0)
+> +		status |= ifcvf_get_status(hw);
+> +
+> +	ifcvf_set_status(hw, status);
+> +	ifcvf_get_status(hw);
+> +}
+> +
+> +u64 ifcvf_get_features(struct ifcvf_hw *hw)
+
+ifcvf_get_features only appears to be used in this file in this patchset.
+Perhaps it could be made static.
+
+> +{
+> +	u32 features_lo, features_hi;
+> +	struct virtio_pci_common_cfg *cfg = hw->common_cfg;
+> +
+> +	iowrite32(0, &cfg->device_feature_select);
+> +	features_lo = ioread32(&cfg->device_feature);
+> +
+> +	iowrite32(1, &cfg->device_feature_select);
+> +	features_hi = ioread32(&cfg->device_feature);
+> +
+> +	return ((u64)features_hi << 32) | features_lo;
+> +}
+
+Blank line is needed here.
+
+> +static int ifcvf_with_feature(struct ifcvf_hw *hw, u64 bit)
+> +{
+> +	return (hw->req_features & (1ULL << bit)) != 0;
+
+I think it would be appropriate to use the BIT_ULL() macro here.
+Likewise elsewhere.
+
+> +}
+> +
+> +static void ifcvf_read_dev_config(struct ifcvf_hw *hw, u64 offset,
+> +		       void *dst, int length)
+> +{
+> +	int i;
+> +	u8 *p;
+> +	u8 old_gen, new_gen;
+> +
+> +	do {
+> +		old_gen = ioread8(&hw->common_cfg->config_generation);
+> +
+> +		p = dst;
+> +		for (i = 0; i < length; i++)
+> +			*p++ = ioread8((u8 *)hw->dev_cfg + offset + i);
+> +
+> +		new_gen = ioread8(&hw->common_cfg->config_generation);
+> +	} while (old_gen != new_gen);
+
+Would it be wise to limit the number of iterations of the loop above?
+
+> +}
+> +
+> +void ifcvf_get_linkstatus(struct ifcvf_hw *hw, u8 *is_linkup)
+
+This function does not appear to be used in this patchset.
+Perhaps it should be removed for now.
+
+Likewise for ifcvf_enable_logging_vf(), ifcvf_disable_logging(),
+ifcvf_get_notify_region() and ifcvf_get_queue_notify_off().
+
+> +{
+> +	u16 status;
+> +	u64 host_features;
+> +
+> +	host_features = ifcvf_get_features(hw);
+> +	if (ifcvf_with_feature(hw, VIRTIO_NET_F_STATUS)) {
+> +		ifcvf_read_dev_config(hw,
+> +				offsetof(struct ifcvf_net_config, status),
+> +				&status, sizeof(status));
+> +		if ((status & VIRTIO_NET_S_LINK_UP) == 0)
+> +			(*is_linkup) = 1;
+> +		else
+> +			(*is_linkup) = 0;
+
+The parentheses around *islinkup seem unnecessary.
+And perhaps this could be more simply written as:
+
+		*is_linkup = !(status & VIRTIO_NET_S_LINK_UP);
+> +	} else
+> +		(*is_linkup) = 0;
+
+If one arm of a conditional uses {} then all arms should use {}.
+You need to add {} to the else clause.
+
+> +}
+> +
+> +static void ifcvf_set_features(struct ifcvf_hw *hw, u64 features)
+> +{
+> +	struct virtio_pci_common_cfg *cfg = hw->common_cfg;
+> +
+> +	iowrite32(0, &cfg->guest_feature_select);
+> +	iowrite32(features & ((1ULL << 32) - 1), &cfg->guest_feature);
+
+Perhaps U32_MAX can be used here.
+Likewise elsewhere.
+
+> +
+> +	iowrite32(1, &cfg->guest_feature_select);
+> +	iowrite32(features >> 32, &cfg->guest_feature);
+> +}
+> +
+> +static int ifcvf_config_features(struct ifcvf_hw *hw)
+> +{
+> +	u64 host_features;
+> +	struct ifcvf_adapter *ifcvf =
+> +		container_of(hw, struct ifcvf_adapter, vf);
+> +
+> +	host_features = ifcvf_get_features(hw);
+> +	hw->req_features &= host_features;
+> +
+> +	ifcvf_set_features(hw, hw->req_features);
+> +	ifcvf_add_status(hw, VIRTIO_CONFIG_S_FEATURES_OK);
+> +
+> +	if (!(ifcvf_get_status(hw) & VIRTIO_CONFIG_S_FEATURES_OK)) {
+> +		IFC_ERR(ifcvf->dev, "Failed to set FEATURES_OK status\n");
+> +		return -EIO;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void io_write64_twopart(u64 val, u32 *lo, u32 *hi)
+> +{
+> +	iowrite32(val & ((1ULL << 32) - 1), lo);
+> +	iowrite32(val >> 32, hi);
+> +}
+
+I see this macro is also in virtio_pci_modern.c
+
+Assuming lo and hi aren't guaranteed to be sequential
+and thus iowrite64_hi_lo() cannot be used perhaps
+it would be good to add a common helper somewhere.
+
+> +
+> +static int ifcvf_hw_enable(struct ifcvf_hw *hw)
+> +{
+> +	struct virtio_pci_common_cfg *cfg;
+> +	u8 *lm_cfg;
+> +	u32 i;
+> +	struct ifcvf_adapter *ifcvf =
+> +		container_of(hw, struct ifcvf_adapter, vf);
+> +
+> +	cfg = hw->common_cfg;
+> +	lm_cfg = hw->lm_cfg;
+> +
+> +	iowrite16(IFCVF_MSI_CONFIG_OFF, &cfg->msix_config);
+> +	if (ioread16(&cfg->msix_config) == VIRTIO_MSI_NO_VECTOR) {
+> +		IFC_ERR(ifcvf->dev, "No msix vector for device config.\n");
+> +		return -1;
+> +	}
+> +
+> +	for (i = 0; i < hw->nr_vring; i++) {
+> +		iowrite16(i, &cfg->queue_select);
+> +		io_write64_twopart(hw->vring[i].desc, &cfg->queue_desc_lo,
+> +				&cfg->queue_desc_hi);
+> +		io_write64_twopart(hw->vring[i].avail, &cfg->queue_avail_lo,
+> +				&cfg->queue_avail_hi);
+> +		io_write64_twopart(hw->vring[i].used, &cfg->queue_used_lo,
+> +				&cfg->queue_used_hi);
+> +		iowrite16(hw->vring[i].size, &cfg->queue_size);
+> +
+> +		*(u32 *)(lm_cfg + IFCVF_LM_RING_STATE_OFFSET +
+> +				(i / 2) * IFCVF_LM_CFG_SIZE + (i % 2) * 4) =
+> +			(u32)hw->vring[i].last_avail_idx |
+> +			((u32)hw->vring[i].last_used_idx << 16);
+> +
+> +		iowrite16(i + IFCVF_MSI_QUEUE_OFF, &cfg->queue_msix_vector);
+> +		if (ioread16(&cfg->queue_msix_vector) ==
+> +				VIRTIO_MSI_NO_VECTOR) {
+> +			IFC_ERR(ifcvf->dev,
+> +				"No msix vector for queue %u.\n", i);
+> +			return -1;
+> +		}
+> +
+> +		iowrite16(1, &cfg->queue_enable);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void ifcvf_hw_disable(struct ifcvf_hw *hw)
+> +{
+> +	u32 i;
+> +	struct virtio_pci_common_cfg *cfg;
+> +
+> +	cfg = hw->common_cfg;
+> +
+> +	iowrite16(VIRTIO_MSI_NO_VECTOR, &cfg->msix_config);
+> +	for (i = 0; i < hw->nr_vring; i++) {
+> +		iowrite16(i, &cfg->queue_select);
+> +		iowrite16(0, &cfg->queue_enable);
+> +		iowrite16(VIRTIO_MSI_NO_VECTOR, &cfg->queue_msix_vector);
+> +	}
+> +}
+> +
+> +int ifcvf_start_hw(struct ifcvf_hw *hw)
+> +{
+> +	ifcvf_reset(hw);
+> +	ifcvf_add_status(hw, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> +	ifcvf_add_status(hw, VIRTIO_CONFIG_S_DRIVER);
+> +
+> +	if (ifcvf_config_features(hw) < 0)
+> +		return -1;
+> +
+> +	if (ifcvf_hw_enable(hw) < 0)
+> +		return -1;
+> +
+> +	ifcvf_add_status(hw, VIRTIO_CONFIG_S_DRIVER_OK);
+> +
+> +	return 0;
+> +}
+> +
+> +void ifcvf_stop_hw(struct ifcvf_hw *hw)
+> +{
+> +	ifcvf_hw_disable(hw);
+> +	ifcvf_reset(hw);
+> +}
+> +
+> +void ifcvf_enable_logging_vf(struct ifcvf_hw *hw, u64 log_base, u64 log_size)
+> +{
+> +	u8 *lm_cfg;
+> +
+> +	lm_cfg = hw->lm_cfg;
+> +
+> +	*(u32 *)(lm_cfg + IFCVF_LM_BASE_ADDR_LOW) =
+> +		log_base & IFCVF_32_BIT_MASK;
+> +
+> +	*(u32 *)(lm_cfg + IFCVF_LM_BASE_ADDR_HIGH) =
+> +		(log_base >> 32) & IFCVF_32_BIT_MASK;
+> +
+> +	*(u32 *)(lm_cfg + IFCVF_LM_END_ADDR_LOW) =
+> +		(log_base + log_size) & IFCVF_32_BIT_MASK;
+> +
+> +	*(u32 *)(lm_cfg + IFCVF_LM_END_ADDR_HIGH) =
+> +		((log_base + log_size) >> 32) & IFCVF_32_BIT_MASK;
+> +
+> +	*(u32 *)(lm_cfg + IFCVF_LM_LOGGING_CTRL) = IFCVF_LM_ENABLE_VF;
+> +}
+> +
+> +void ifcvf_disable_logging(struct ifcvf_hw *hw)
+> +{
+> +	u8 *lm_cfg;
+> +
+> +	lm_cfg = hw->lm_cfg;
+> +	*(u32 *)(lm_cfg + IFCVF_LM_LOGGING_CTRL) = IFCVF_LM_DISABLE;
+> +}
+> +
+> +void ifcvf_notify_queue(struct ifcvf_hw *hw, u16 qid)
+> +{
+> +
+
+There is an extra blank line above.
+
+> +	iowrite16(qid, hw->notify_addr[qid]);
+> +}
+> +
+> +u8 ifcvf_get_notify_region(struct ifcvf_hw *hw)
+> +{
+> +	return hw->notify_bar;
+> +}
+> +
+> +u64 ifcvf_get_queue_notify_off(struct ifcvf_hw *hw, int qid)
+> +{
+> +	return (u8 *)hw->notify_addr[qid] -
+> +		(u8 *)hw->mem_resource[hw->notify_bar].addr;
+> +}
+> diff --git a/drivers/vhost/ifcvf/ifcvf_base.h b/drivers/vhost/ifcvf/ifcvf_base.h
+> new file mode 100644
+> index 000000000000..1ab1a1c40f24
+> --- /dev/null
+> +++ b/drivers/vhost/ifcvf/ifcvf_base.h
+> @@ -0,0 +1,137 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +/*
+> + * Copyright (C) 2019 Intel Corporation.
+> + */
+> +
+> +#ifndef _IFCVF_H_
+> +#define _IFCVF_H_
+> +
+> +#include <linux/virtio_mdev.h>
+> +#include <linux/pci.h>
+> +#include <linux/pci_regs.h>
+> +#include <uapi/linux/virtio_net.h>
+> +#include <uapi/linux/virtio_config.h>
+> +#include <uapi/linux/virtio_pci.h>
+
+Are you sure you need all these includes in this header?
+It feels that a more minimal set could be found.
+
+> +
+> +#define IFCVF_VENDOR_ID         0x1AF4
+> +#define IFCVF_DEVICE_ID         0x1041
+> +#define IFCVF_SUBSYS_VENDOR_ID  0x8086
+> +#define IFCVF_SUBSYS_DEVICE_ID  0x001A
+> +
+> +/*
+> + * Some ifcvf feature bits (currently bits 28 through 31) are
+> + * reserved for the transport being used (eg. ifcvf_ring), the
+> + * rest are per-device feature bits.
+> + */
+> +#define IFCVF_TRANSPORT_F_START 28
+> +#define IFCVF_TRANSPORT_F_END   34
+> +
+> +#define IFC_SUPPORTED_FEATURES \
+> +		((1ULL << VIRTIO_NET_F_MAC)			| \
+> +		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
+> +		 (1ULL << VIRTIO_F_VERSION_1)			| \
+> +		 (1ULL << VHOST_F_LOG_ALL)			| \
+> +		 (1ULL << VIRTIO_NET_F_GUEST_ANNOUNCE)		| \
+> +		 (1ULL << VIRTIO_NET_F_CTRL_VQ)			| \
+> +		 (1ULL << VIRTIO_NET_F_STATUS)			| \
+> +		 (1ULL << VIRTIO_NET_F_MRG_RXBUF)) /* not fully supported */
+> +
+> +#define IFCVF_MAX_QUEUE_PAIRS		1
+> +#define IFCVF_MAX_QUEUES		2
+> +
+> +#define IFCVF_QUEUE_ALIGNMENT		PAGE_SIZE
+> +
+> +#define IFCVF_MSI_CONFIG_OFF	0
+> +#define IFCVF_MSI_QUEUE_OFF	1
+> +#define IFCVF_PCI_MAX_RESOURCE	6
+> +
+> +/* 46 bit CPU physical address, avoid overlap */
+> +#define LM_IOVA 0x400000000000
+> +
+> +#define IFCVF_LM_CFG_SIZE		0x40
+> +#define IFCVF_LM_RING_STATE_OFFSET	0x20
+> +
+> +#define IFCVF_LM_LOGGING_CTRL		0x0
+> +
+> +#define IFCVF_LM_BASE_ADDR_LOW		0x10
+> +#define IFCVF_LM_BASE_ADDR_HIGH		0x14
+> +#define IFCVF_LM_END_ADDR_LOW		0x18
+> +#define IFCVF_LM_END_ADDR_HIGH		0x1c
+> +
+> +#define IFCVF_LM_DISABLE		0x0
+> +#define IFCVF_LM_ENABLE_VF		0x1
+> +#define IFCVF_LM_ENABLE_PF		0x3
+> +
+> +#define IFCVF_32_BIT_MASK		0xffffffff
+> +
+> +#define IFC_ERR(dev, fmt, ...)	dev_err(dev, fmt, ##__VA_ARGS__)
+> +#define IFC_INFO(dev, fmt, ...)	dev_info(dev, fmt, ##__VA_ARGS__)
+
+Its not clear to me what the value is of the above two macros.
+Why not use dev_err() and dev_info() directly?
+
+> +
+> +struct ifcvf_net_config {
+> +	u8    mac[6];
+> +	u16   status;
+> +	u16   max_virtqueue_pairs;
+> +} __packed;
+> +
+> +struct ifcvf_pci_mem_resource {
+> +	u64      phys_addr; /**< Physical address, 0 if not resource. */
+> +	u64      len;       /**< Length of the resource. */
+> +	u8       *addr;     /**< Virtual address, NULL when not mapped. */
+> +};
+
+I think it would be best to use kernel doc format for the comments above.
+
+> +
+> +struct vring_info {
+> +	u64 desc;
+> +	u64 avail;
+> +	u64 used;
+> +	u16 size;
+> +	u16 last_avail_idx;
+> +	u16 last_used_idx;
+> +	bool ready;
+> +	char msix_name[256];
+> +	struct virtio_mdev_callback cb;
+> +};
+> +
+> +struct ifcvf_hw {
+> +	u8	*isr;
+> +	u8	notify_bar;
+> +	u8	*lm_cfg;
+> +	u8	status;
+> +	u8	nr_vring;
+
+The field arrangement above seems to leave quote a few holes.
+Is that intentional?
+
+> +	u16	*notify_base;
+> +	u16	*notify_addr[IFCVF_MAX_QUEUE_PAIRS * 2];
+> +	u32	generation;
+> +	u32	notify_off_multiplier;
+> +	u64	req_features;
+> +	struct	virtio_pci_common_cfg *common_cfg;
+> +	struct	ifcvf_net_config *dev_cfg;
+> +	struct	vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
+> +	struct	ifcvf_pci_mem_resource mem_resource[IFCVF_PCI_MAX_RESOURCE];
+> +};
+> +
+> +#define IFC_PRIVATE_TO_VF(adapter) \
+> +	(&((struct ifcvf_adapter *)adapter)->vf)
+> +
+> +#define IFCVF_MAX_INTR (IFCVF_MAX_QUEUE_PAIRS * 2 + 1)
+> +
+> +struct ifcvf_adapter {
+> +	struct	device *dev;
+> +	struct	mutex mdev_lock;
+> +	int	mdev_count;
+> +	struct	list_head dma_maps;
+> +	int	vectors;
+
+Are dma_maps and vectors field used in this patchset?
+
+> +	struct	ifcvf_hw vf;
+> +};
+> +
+> +int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *dev);
+> +u64 ifcvf_get_features(struct ifcvf_hw *hw);
+> +int ifcvf_start_hw(struct ifcvf_hw *hw);
+> +void ifcvf_stop_hw(struct ifcvf_hw *hw);
+> +void ifcvf_enable_logging(struct ifcvf_hw *hw, u64 log_base, u64 log_size);
+
+ifcvf_enable_logging_vf does not seem to be defined in this patch.
+
+> +void ifcvf_enable_logging_vf(struct ifcvf_hw *hw, u64 log_base, u64 log_size);
+> +void ifcvf_disable_logging(struct ifcvf_hw *hw);
+> +void ifcvf_notify_queue(struct ifcvf_hw *hw, u16 qid);
+> +void ifcvf_get_linkstatus(struct ifcvf_hw *hw, u8 *is_linkup);
+> +u8 ifcvf_get_notify_region(struct ifcvf_hw *hw);
+> +u64 ifcvf_get_queue_notify_off(struct ifcvf_hw *hw, int qid);
+> +
+> +#endif /* _IFCVF_H_ */
+> -- 
+> 2.16.4
+> 
