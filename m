@@ -2,91 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA667D9962
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26AD7D9984
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394334AbfJPSmv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 14:42:51 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:52361 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728768AbfJPSmu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 14:42:50 -0400
-Received: from surfer-172-29-2-69-hotspot.internet-for-guests.com (p2E5701B0.dip0.t-ipconnect.de [46.87.1.176])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 59577CECDF;
-        Wed, 16 Oct 2019 20:51:47 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3594.4.19\))
-Subject: Re: [PATCH] RFC: Bluetooth: missed cpu_to_le16 conversion in
- hci_init4_req
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20191016122022.kz4xzx4hzmtuoh5l@netronome.com>
-Date:   Wed, 16 Oct 2019 20:42:48 +0200
-Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
-        linux-kernel@lists.codethink.co.uk,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        id S2394415AbfJPSsv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 14:48:51 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:51324 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731889AbfJPSsv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 14:48:51 -0400
+Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1iKoLi-0002ek-GR; Wed, 16 Oct 2019 20:48:42 +0200
+Date:   Wed, 16 Oct 2019 20:48:42 +0200
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v2] net: sched: Avoid using yield() in a busy
+ waiting loop
+Message-ID: <20191016184842.v2f54epxautxbtig@linutronix.de>
+References: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
+ <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com>
+ <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
+ <CAM_iQpXS5Dm-pCAu+7t+9RRauW=q64i6VCQ-Gz6j9_qFMPcOjA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8BIT
-Message-Id: <BFA3CB11-5FD8-4BD8-9DDA-62707AB84626@holtmann.org>
-References: <20191016113943.19256-1-ben.dooks@codethink.co.uk>
- <20191016122022.kz4xzx4hzmtuoh5l@netronome.com>
-To:     Simon Horman <simon.horman@netronome.com>
-X-Mailer: Apple Mail (2.3594.4.19)
+In-Reply-To: <CAM_iQpXS5Dm-pCAu+7t+9RRauW=q64i6VCQ-Gz6j9_qFMPcOjA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Simon,
-
->> It looks like in hci_init4_req() the request is being
->> initialised from cpu-endian data but the packet is specified
->> to be little-endian. This causes an warning from sparse due
->> to __le16 to u16 conversion.
->> 
->> Fix this by using cpu_to_le16() on the two fields in the packet.
->> 
->> net/bluetooth/hci_core.c:845:27: warning: incorrect type in assignment (different base types)
->> net/bluetooth/hci_core.c:845:27:    expected restricted __le16 [usertype] tx_len
->> net/bluetooth/hci_core.c:845:27:    got unsigned short [usertype] le_max_tx_len
->> net/bluetooth/hci_core.c:846:28: warning: incorrect type in assignment (different base types)
->> net/bluetooth/hci_core.c:846:28:    expected restricted __le16 [usertype] tx_time
->> net/bluetooth/hci_core.c:846:28:    got unsigned short [usertype] le_max_tx_time
->> 
->> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
->> ---
->> Cc: Marcel Holtmann <marcel@holtmann.org>
->> Cc: Johan Hedberg <johan.hedberg@gmail.com>
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: linux-bluetooth@vger.kernel.org
->> Cc: netdev@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> ---
->> net/bluetooth/hci_core.c | 4 ++--
->> 1 file changed, 2 insertions(+), 2 deletions(-)
->> 
->> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
->> index 04bc79359a17..b2559d4bed81 100644
->> --- a/net/bluetooth/hci_core.c
->> +++ b/net/bluetooth/hci_core.c
->> @@ -842,8 +842,8 @@ static int hci_init4_req(struct hci_request *req, unsigned long opt)
->> 	if (hdev->le_features[0] & HCI_LE_DATA_LEN_EXT) {
->> 		struct hci_cp_le_write_def_data_len cp;
->> 
->> -		cp.tx_len = hdev->le_max_tx_len;
->> -		cp.tx_time = hdev->le_max_tx_time;
->> +		cp.tx_len = cpu_to_le16(hdev->le_max_tx_len);
->> +		cp.tx_time = cpu_to_le16(hdev->le_max_tx_time);
+On 2019-10-16 10:28:04 [-0700], Cong Wang wrote:
+> > Link: https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
 > 
-> I would suggest that the naming of the le_ fields of struct hci_dev
-> implies that the values stored in those fields should be little endian
-> (but those that are more than bone byte wide are not).
+> BTW, this link doesn't work, 404 is returned.
 
-the le_ stands for Low Energy and not for Little Endian.
+here it returns 200:
 
-Regards
+|$ wget https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
+|--2019-10-16 20:37:05--  https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
+|Resolving lkml.kernel.org (lkml.kernel.org)... 54.69.74.255, 54.71.250.162
+|Connecting to lkml.kernel.org (lkml.kernel.org)|54.69.74.255|:443... connected.
+|HTTP request sent, awaiting response... 302 Found
+|Location: https://lore.kernel.org/linux-rt-users/1393976987-23555-1-git-send-email-mkl@pengutronix.de/ [following]
+|--2019-10-16 20:37:06--  https://lore.kernel.org/linux-rt-users/1393976987-23555-1-git-send-email-mkl@pengutronix.de/
+|Resolving lore.kernel.org (lore.kernel.org)... 54.71.250.162, 54.69.74.255
+|Connecting to lore.kernel.org (lore.kernel.org)|54.71.250.162|:443... connected.
+|HTTP request sent, awaiting response... 200 OK
+|Length: 10044 (9,8K) [text/html]
+|Saving to: ‘1393976987-23555-1-git-send-email-mkl@pengutronix.de’
 
-Marcel
 
+> > --- a/net/sched/sch_generic.c
+> > +++ b/net/sched/sch_generic.c
+> > @@ -1217,8 +1217,13 @@ void dev_deactivate_many(struct list_head *head)
+> >
+> >         /* Wait for outstanding qdisc_run calls. */
+> >         list_for_each_entry(dev, head, close_list) {
+> > -               while (some_qdisc_is_busy(dev))
+> > -                       yield();
+> > +               while (some_qdisc_is_busy(dev)) {
+> > +                       /* wait_event() would avoid this sleep-loop but would
+> > +                        * require expensive checks in the fast paths of packet
+> > +                        * processing which isn't worth it.
+> > +                        */
+> > +                       schedule_timeout_uninterruptible(1);
+> 
+> I am curious why this is uninterruptible?
+
+You don't want a signal to wake it too early. It has to chill for a
+jiffy.
+
+> Thanks.
+
+Sebastian
