@@ -2,113 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0A3D895C
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE57D8966
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730327AbfJPHZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 03:25:09 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:35755 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726719AbfJPHZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 03:25:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571210708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S5d0V9S8ommJVGUrWAIephbxJ0dHyW1i5xgUqQkwiWw=;
-        b=IurGQPY/DDJckpPhhp/KyIOGe67lTXdS6RXwRUrm1yjL82w567CHs5fWFVbCiyHCKfU9Hu
-        HgvLsXktijDzZrIdhuTic1v5776pfxOB6WJBpimwWz1cwYsWrwS/IKjKfQSZ+ei2LaHAm2
-        zXUwIh+Mi9D4FD99kM7kfte3PdzVR7s=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-323-UfS-nfxxOKiUVeINHC_SPA-1; Wed, 16 Oct 2019 03:25:00 -0400
-Received: by mail-wr1-f71.google.com with SMTP id k2so11305346wrn.7
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 00:25:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7pVDKMRb0iY8vtAwjOLtISUgtFuBYzCTEpSdAuatOfE=;
-        b=VrDBN2Xdeku4VHMIvpu3wyIzSCeZQuiDFEJ41PoWaMtDIPXaV4CbpeDc6T0QLeyBc7
-         o7d2re+5ix66L3AbmBcUKR3Ab5//Zz9tKeGR58jGG0gMsYtcg3uem++NBFCZOYHXqcN6
-         NANNJDpOn61M4BN1eq+xYWhC+HUK/Yenb+ELNYn3u/4KU08KED2RK8Q6RjadUXCtAKQX
-         Uu3Tdo+7uEL/Wr6h9aK1/vLaYag0fsgpvZdalpiseSJQoG527W7gtP687V9zRbs8PfNe
-         kMm7yGBfuCo+ZjBfJ2Aig8teBNByMJuAp7WEnl6Cu4kQ6KbcWxIycW0bD3LMUdNgftuO
-         VHhw==
-X-Gm-Message-State: APjAAAX5d3dnTaPiOwSpsQ72Q68u6bK+oXgJYLBoUTKJG6M4a9o2oKKQ
-        Wch4WtmeHok8q2+K3C6BHozqiWORq8xT4lh4ZeBO+hN4MtYTXwh9OJsyrq5AR0d8f37/voFdWbP
-        3hJbqMRlQLu5T5xId
-X-Received: by 2002:a1c:2d4d:: with SMTP id t74mr1925354wmt.108.1571210699183;
-        Wed, 16 Oct 2019 00:24:59 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqw5Hnm/FlYZhsbogxc96HRPT50pfLfmeGENB2+vf8pJDNEMgxSNXlDgdpTAAP/g6kRKVCeDyw==
-X-Received: by 2002:a1c:2d4d:: with SMTP id t74mr1925322wmt.108.1571210698895;
-        Wed, 16 Oct 2019 00:24:58 -0700 (PDT)
-Received: from ?IPv6:2001:b07:6468:f312:ddc7:c53c:581a:7f3e? ([2001:b07:6468:f312:ddc7:c53c:581a:7f3e])
-        by smtp.gmail.com with ESMTPSA id f20sm1474636wmb.6.2019.10.16.00.24.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Oct 2019 00:24:58 -0700 (PDT)
-Subject: Re: [PATCH v5 4/6] psci: Add hvc call service for ptp_kvm.
-To:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
-        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
+        id S2387700AbfJPH2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 03:28:42 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:48458 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726747AbfJPH2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 03:28:42 -0400
+Received: from p5b06da22.dip0.t-ipconnect.de ([91.6.218.34] helo=nanos)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1iKdjU-0007KO-Cs; Wed, 16 Oct 2019 09:28:32 +0200
+Date:   Wed, 16 Oct 2019 09:28:31 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+cc:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
+        yangbo.lu@nxp.com, john.stultz@linaro.org,
         sean.j.christopherson@intel.com, maz@kernel.org,
         richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
-        suzuki.poulose@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
-        nd@arm.com
-References: <20191015104822.13890-1-jianyong.wu@arm.com>
- <20191015104822.13890-5-jianyong.wu@arm.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <9641fbff-cfcd-4854-e0c9-0b97d44193ee@redhat.com>
-Date:   Wed, 16 Oct 2019 09:24:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        suzuki.poulose@arm.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com,
+        justin.he@arm.com, nd@arm.com
+Subject: Re: [PATCH v5 3/6] timekeeping: Add clocksource to
+ system_time_snapshot
+In-Reply-To: <aa1ec910-b7b6-2568-4583-5fa47aac367f@redhat.com>
+Message-ID: <alpine.DEB.2.21.1910160914230.2518@nanos.tec.linutronix.de>
+References: <20191015104822.13890-1-jianyong.wu@arm.com> <20191015104822.13890-4-jianyong.wu@arm.com> <9274d21c-2c43-2e0d-f086-6aaba3863603@redhat.com> <alpine.DEB.2.21.1910152212580.2518@nanos.tec.linutronix.de>
+ <aa1ec910-b7b6-2568-4583-5fa47aac367f@redhat.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20191015104822.13890-5-jianyong.wu@arm.com>
-Content-Language: en-US
-X-MC-Unique: UfS-nfxxOKiUVeINHC_SPA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/10/19 12:48, Jianyong Wu wrote:
-> diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/a=
-rm_arch_timer.c
-> index 07e57a49d1e8..3597f1f27b10 100644
-> --- a/drivers/clocksource/arm_arch_timer.c
-> +++ b/drivers/clocksource/arm_arch_timer.c
-> @@ -1634,3 +1634,8 @@ static int __init arch_timer_acpi_init(struct acpi_=
-table_header *table)
->  }
->  TIMER_ACPI_DECLARE(arch_timer, ACPI_SIG_GTDT, arch_timer_acpi_init);
->  #endif
-> +
-> +bool is_arm_arch_counter(void *cs)
-> +{
-> +=09return (struct clocksource *)cs =3D=3D &clocksource_counter;
-> +}
+On Wed, 16 Oct 2019, Paolo Bonzini wrote:
+> On 15/10/19 22:13, Thomas Gleixner wrote:
+> > On Tue, 15 Oct 2019, Paolo Bonzini wrote:
+> >> On 15/10/19 12:48, Jianyong Wu wrote:
+> >>>  
+> >>>
+> >>
+> >> Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+> > 
+> > You're sure about having reviewed that in detail?
+> 
+> I did review the patch; the void* ugliness is not in this one, and I do
+> have some other qualms on that one.
+> 
+> > This changelog is telling absolutely nothing WHY anything outside of the
+> > timekeeping core code needs access to the current clocksource. Neither does
+> > it tell why it is safe to provide the pointer to random callers.
+> 
+> Agreed on the changelog, but the pointer to a clocksource is already
+> part of the timekeeping external API via struct system_counterval_t.
+> get_device_system_crosststamp for example expects a clocksource pointer
+> but provides no way to get such a pointer.
 
-As Thomas pointed out, any reason to have a void * here?
+That's a completely different beast, really.
 
-However, since he didn't like modifying the struct, here is an
-alternative idea:
+The clocksource pointer is handed in by the caller and the core code
+validates if the clocksource is the same as the current system clocksource
+and not the other way round.
 
-1) add a "struct clocksource*" argument to ktime_get_snapshot
+So there is no need for getting that pointer from the core code because the
+caller knows already which clocksource needs to be active to make.the whole
+cross device timestamp correlation work. And in that case it's the callers
+responsibility to ensure that the pointer is valid which is the case for
+the current use cases.
 
-2) return -ENODEV if the argument is not NULL and is not the current
-clocksource
+From your other reply:
 
-3) move the implementation of the hypercall to
-drivers/clocksource/arm_arch_timer.c, so that it can call
-ktime_get_snapshot(&systime_snapshot, &clocksource_counter);
+> Why add a global id?  ARM can add it to archdata similar to how x86 has
+> vclock_mode.  But I still think the right thing to do is to include the
+> full system_counterval_t in the result of ktime_get_snapshot.  (More in
+> a second, feel free to reply to the other email only).
 
-Paolo
+No, the clocksource pointer is not going to be exposed as there is no
+guarantee that it will be still around after the call returns.
 
+It's not even guaranteed to be correct when the store happens in Wu's patch
+simply because the store is done outside of the seqcount protected region.
+
+Vs. arch data: arch data is an opaque struct, so you'd need to store a
+pointer which has the same issue as the clocksource pointer itself.
+
+If we want to convey information then it has to be in the generic part
+of struct clocksource.
+
+In fact we could even simplify the existing get_device_system_crosststamp()
+use case by using the ID field.
+
+Thanks,
+
+	tglx
