@@ -2,65 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43443D8990
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ECCDD896D
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732037AbfJPHe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 03:34:28 -0400
-Received: from 20.243.95.85.datacenter-services.ixirtelekom.com.tr ([85.95.243.20]:40164
-        "EHLO vds.cimcimebebe.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731730AbfJPHe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 03:34:28 -0400
-X-Greylist: delayed 31826 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Oct 2019 03:34:27 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=bebeci.com;
-         s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:Subject:From:To:Sender:Reply-To:Cc:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=lZR0fSk9as5dQZVGKWeROaFZppbV36riMvXcQ4UVBfU=; b=Gts8KowET0VP3TuRwVFcoSoads
-        5FTeBIFoo8dnwFb4K4uBDoCTy8vYs03raqppQsDYAq8op3pz+mkRHB/dK2HQ0MVg3iJt1b0djeCsP
-        +VEtm1KdcprcpAmgEBQ5akWTT0ChpV7JrXmKEXSrTAf0SLpoeg1CfvVH8XZcDtFh5eN6xQAL/bZnv
-        miikCdlUmiMREJTGP3pkJmamcRnxXTHzsBejvZpO+mAI8gH6D7WjjsHUysurBmVL+CIiSaLb+3FMV
-        fYPZii2C4Tqx0xmmkXzz6YztdrFyQxSUu3AGVMlT+FRn4C7OKrC/RJ0u+lhLB3BGPNOXjiYnDDSiN
-        bT4NAYOg==;
-Received: from [212.160.230.67] (port=40696 helo=mail.bebeci.com)
-        by vds.cimcimebebe.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.92)
-        (envelope-from <r.mert@bebeci.com>)
-        id 1iKVXp-0003rQ-Iu; Wed, 16 Oct 2019 01:43:57 +0300
-To:     "Luis Alves" <ljalvs@gmail.com>, "netdev" <netdev@vger.kernel.org>,
-        "linuxppc dev" <linuxppc-dev@lists.ozlabs.org>
-From:   nik_bin_nek_alwi <r.mert@bebeci.com>
-Subject: =?UTF-8?Q?=F0=9F=94=8E_Sei_gegr=C3=BC=C3=9Ft._?= =?UTF-8?Q?wie_geht_es_dir=3F?=
-Message-ID: <b6430932-168e-4760-be89-7d1b50c1b5b8@bebeci.com>
-Date:   Tue, 15 Oct 2019 17:38:47 -0500
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2388667AbfJPHac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 03:30:32 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:35306 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387700AbfJPHac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 03:30:32 -0400
+Received: from [213.220.153.21] (helo=wittgenstein)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1iKdlN-0005JP-Gq; Wed, 16 Oct 2019 07:30:29 +0000
+Date:   Wed, 16 Oct 2019 09:30:28 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, yhs@fb.com, Aleksa Sarai <cyphar@cyphar.com>
+Subject: Re: [PATCH v3 2/3] bpf: use copy_struct_from_user() in
+ bpf_prog_get_info_by_fd()y
+Message-ID: <20191016073027.muvlebjy2zdg2yha@wittgenstein>
+References: <20191016004138.24845-1-christian.brauner@ubuntu.com>
+ <20191016034432.4418-1-christian.brauner@ubuntu.com>
+ <20191016034432.4418-3-christian.brauner@ubuntu.com>
+ <20191016052548.gktf2ctvee7mrwlr@ast-mbp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vds.cimcimebebe.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - bebeci.com
-X-Get-Message-Sender-Via: vds.cimcimebebe.com: authenticated_id: r.mert@bebeci.com
-X-Authenticated-Sender: vds.cimcimebebe.com: r.mert@bebeci.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20191016052548.gktf2ctvee7mrwlr@ast-mbp>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Diese Chance hat man nur selten. http://qjlz.aJojo6221.xyz/index
+On Tue, Oct 15, 2019 at 10:25:49PM -0700, Alexei Starovoitov wrote:
+> On Wed, Oct 16, 2019 at 05:44:31AM +0200, Christian Brauner wrote:
+> > In v5.4-rc2 we added a new helper (cf. [1]) copy_struct_from_user().
+> > This helper is intended for all codepaths that copy structs from
+> > userspace that are versioned by size. bpf_prog_get_info_by_fd() does
+> > exactly what copy_struct_from_user() is doing.
+> > Note that copy_struct_from_user() is calling min() already. So
+> > technically, the min_t() call could go. But the info_len is used further
+> > below so leave it.
+> > 
+> > [1]: f5a1a536fa14 ("lib: introduce copy_struct_from_user() helper")
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: bpf@vger.kernel.org
+> > Acked-by: Aleksa Sarai <cyphar@cyphar.com>
+> > Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+> > ---
+> > /* v1 */
+> > Link: https://lore.kernel.org/r/20191009160907.10981-3-christian.brauner@ubuntu.com
+> > 
+> > /* v2 */
+> > Link: https://lore.kernel.org/r/20191016004138.24845-3-christian.brauner@ubuntu.com
+> > - Alexei Starovoitov <ast@kernel.org>:
+> >   - remove unneeded initialization
+> > 
+> > /* v3 */
+> > unchanged
+> > ---
+> >  kernel/bpf/syscall.c | 9 +++------
+> >  1 file changed, 3 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index 40edcaeccd71..151447f314ca 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -2306,20 +2306,17 @@ static int bpf_prog_get_info_by_fd(struct bpf_prog *prog,
+> >  				   union bpf_attr __user *uattr)
+> >  {
+> >  	struct bpf_prog_info __user *uinfo = u64_to_user_ptr(attr->info.info);
+> > -	struct bpf_prog_info info = {};
+> > +	struct bpf_prog_info info;
+> >  	u32 info_len = attr->info.info_len;
+> >  	struct bpf_prog_stats stats;
+> >  	char __user *uinsns;
+> >  	u32 ulen;
+> >  	int err;
+> >  
+> > -	err = bpf_check_uarg_tail_zero(uinfo, sizeof(info), info_len);
+> > +	info_len = min_t(u32, sizeof(info), info_len);
+> > +	err = copy_struct_from_user(&info, sizeof(info), uinfo, info_len);
+> 
+> really?! min?!
+> Frankly I'm disappointed in quality of these patches.
+> Especially considering it's v3.
 
+Ok, then I'm sorry.
 
-
-
-___
-Leb wohl
-nik_bin_nek_alwi@yahoo.com
+Christian
