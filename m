@@ -2,88 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26AD7D9984
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A575DD9993
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:51:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394415AbfJPSsv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 14:48:51 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:51324 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731889AbfJPSsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 14:48:51 -0400
-Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1iKoLi-0002ek-GR; Wed, 16 Oct 2019 20:48:42 +0200
-Date:   Wed, 16 Oct 2019 20:48:42 +0200
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2] net: sched: Avoid using yield() in a busy
- waiting loop
-Message-ID: <20191016184842.v2f54epxautxbtig@linutronix.de>
-References: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
- <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com>
- <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
- <CAM_iQpXS5Dm-pCAu+7t+9RRauW=q64i6VCQ-Gz6j9_qFMPcOjA@mail.gmail.com>
+        id S2394420AbfJPSvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 14:51:52 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45620 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731889AbfJPSvw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 14:51:52 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D999089B000;
+        Wed, 16 Oct 2019 18:51:51 +0000 (UTC)
+Received: from localhost (ovpn-112-65.ams2.redhat.com [10.36.112.65])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6549212C53;
+        Wed, 16 Oct 2019 18:51:45 +0000 (UTC)
+Date:   Wed, 16 Oct 2019 20:51:38 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     walteste@inf.ethz.ch, bcodding@redhat.com, gsierohu@redhat.com,
+        nforro@redhat.com, edumazet@google.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] ipv4: Return -ENETUNREACH if we can't create
+ route but saddr is valid
+Message-ID: <20191016205138.0c5a0058@redhat.com>
+In-Reply-To: <20191016.142159.1388461310782297107.davem@davemloft.net>
+References: <7bcfeaac2f78657db35ccf0e624745de41162129.1570722417.git.sbrivio@redhat.com>
+        <20191016.142159.1388461310782297107.davem@davemloft.net>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <CAM_iQpXS5Dm-pCAu+7t+9RRauW=q64i6VCQ-Gz6j9_qFMPcOjA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.67]); Wed, 16 Oct 2019 18:51:52 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-10-16 10:28:04 [-0700], Cong Wang wrote:
-> > Link: https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
+On Wed, 16 Oct 2019 14:21:59 -0400 (EDT)
+David Miller <davem@davemloft.net> wrote:
+
+> From: Stefano Brivio <sbrivio@redhat.com>
+> Date: Thu, 10 Oct 2019 17:51:50 +0200
 > 
-> BTW, this link doesn't work, 404 is returned.
-
-here it returns 200:
-
-|$ wget https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
-|--2019-10-16 20:37:05--  https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
-|Resolving lkml.kernel.org (lkml.kernel.org)... 54.69.74.255, 54.71.250.162
-|Connecting to lkml.kernel.org (lkml.kernel.org)|54.69.74.255|:443... connected.
-|HTTP request sent, awaiting response... 302 Found
-|Location: https://lore.kernel.org/linux-rt-users/1393976987-23555-1-git-send-email-mkl@pengutronix.de/ [following]
-|--2019-10-16 20:37:06--  https://lore.kernel.org/linux-rt-users/1393976987-23555-1-git-send-email-mkl@pengutronix.de/
-|Resolving lore.kernel.org (lore.kernel.org)... 54.71.250.162, 54.69.74.255
-|Connecting to lore.kernel.org (lore.kernel.org)|54.71.250.162|:443... connected.
-|HTTP request sent, awaiting response... 200 OK
-|Length: 10044 (9,8K) [text/html]
-|Saving to: ‘1393976987-23555-1-git-send-email-mkl@pengutronix.de’
-
-
-> > --- a/net/sched/sch_generic.c
-> > +++ b/net/sched/sch_generic.c
-> > @@ -1217,8 +1217,13 @@ void dev_deactivate_many(struct list_head *head)
-> >
-> >         /* Wait for outstanding qdisc_run calls. */
-> >         list_for_each_entry(dev, head, close_list) {
-> > -               while (some_qdisc_is_busy(dev))
-> > -                       yield();
-> > +               while (some_qdisc_is_busy(dev)) {
-> > +                       /* wait_event() would avoid this sleep-loop but would
-> > +                        * require expensive checks in the fast paths of packet
-> > +                        * processing which isn't worth it.
-> > +                        */
-> > +                       schedule_timeout_uninterruptible(1);
+> > I think this should be considered for -stable, < 5.2  
 > 
-> I am curious why this is uninterruptible?
+> Changes meant for -stable should not target net-next, but rather net.
 
-You don't want a signal to wake it too early. It has to chill for a
-jiffy.
+Oh, sorry for that. I thought this would be the best way for patches
+that are not strictly (or proven) fixes for net, but still make sense
+for stable.
 
-> Thanks.
+I generalised David Ahern's hint from a different case, I thought you
+agreed (<20190618.092512.1610110055396742434.davem@davemloft.net>).
 
-Sebastian
+Resending for net now.
+
+-- 
+Stefano
