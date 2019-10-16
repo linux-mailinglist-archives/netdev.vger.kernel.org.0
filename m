@@ -2,54 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F112D98B5
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:46:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBFBCD98B9
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729191AbfJPRq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 13:46:28 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52258 "EHLO
+        id S1732050AbfJPRrt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 13:47:49 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52274 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727400AbfJPRq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:46:27 -0400
+        with ESMTP id S1727400AbfJPRrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:47:48 -0400
 Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BB485142395D5;
-        Wed, 16 Oct 2019 10:46:26 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 13:46:26 -0400 (EDT)
-Message-Id: <20191016.134626.2020955495176386867.davem@davemloft.net>
-To:     marex@denx.de
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        george.mccollister@gmail.com, hkallweit1@gmail.com,
-        sean.nyekjaer@prevas.dk, Tristram.Ha@microchip.com,
-        woojung.huh@microchip.com
-Subject: Re: [PATCH net V4 1/2] net: phy: micrel: Discern KSZ8051 and
- KSZ8795 PHYs
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 03C8314239BC4;
+        Wed, 16 Oct 2019 10:47:47 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 13:47:47 -0400 (EDT)
+Message-Id: <20191016.134747.1774326347358314168.davem@davemloft.net>
+To:     ecree@solarflare.com
+Cc:     lucien.xin@gmail.com, netdev@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        nhorman@tuxdriver.com, brouer@redhat.com, dvyukov@google.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: Stable request
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <c7ff59cb-0ee7-b746-c54b-6e718ab62c28@denx.de>
-References: <20191013212404.31708-1-marex@denx.de>
-        <20191015.174209.218969750454729705.davem@davemloft.net>
-        <c7ff59cb-0ee7-b746-c54b-6e718ab62c28@denx.de>
+In-Reply-To: <fa2e9f70-05bd-bcac-e502-8bdb375163ce@solarflare.com>
+References: <20190823.144250.2063544404229146484.davem@davemloft.net>
+        <3bda6dee-7b8b-1f50-b4ea-47857ca97279@solarflare.com>
+        <fa2e9f70-05bd-bcac-e502-8bdb375163ce@solarflare.com>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 10:46:27 -0700 (PDT)
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 10:47:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
-Date: Wed, 16 Oct 2019 15:39:18 +0200
+From: Edward Cree <ecree@solarflare.com>
+Date: Wed, 16 Oct 2019 16:26:50 +0100
 
-> Maybe next time we can do these exercises on patches which are not
-> bugfixes for real issues?
+> On 04/10/2019 16:17, Edward Cree wrote:
+>> On 23/08/2019 22:42, David Miller wrote:
+>>> From: Xin Long <lucien.xin@gmail.com>
+>>> Date: Fri, 23 Aug 2019 19:33:03 +0800
+>>>
+>>>> We need a similar fix for ipv6 as Commit 0761680d5215 ("net: ipv4: fix
+>>>> listify ip_rcv_finish in case of forwarding") does for ipv4.
+>>>>
+>>>> This issue can be reprocuded by syzbot since Commit 323ebb61e32b ("net:
+>>>> use listified RX for handling GRO_NORMAL skbs") on net-next. The call
+>>>> trace was:
+>>>  ...
+>>>> Fixes: d8269e2cbf90 ("net: ipv6: listify ipv6_rcv() and ip6_rcv_finish()")
+>>>> Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
+>>>> Reported-by: syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com
+>>>> Reported-by: syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com
+>>>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+>>> Applied, thanks.
+>> Just noticed that this only went to net-next (and 5.4-rc1), when actually
+>>  it's needed on all kernels back to 4.19 (per the first Fixes: tag).  The
+>>  second Fixes: reference, 323ebb61e32b, merely enables syzbot to hit it on
+>>  whatever hardware it has, but the bug was already there, and hittable on
+>>  sfc NICs.
+>> David, can this go to stable please?
+> Hi, did this get missed or was my request improper in some way?
 
-No, we should put changes into the tree which are correctly formed.
+Sorry, I'm just getting over a cold and very backlogged on this kind of stuff.
 
-If you're not interested in learning how to submit changes properly,
-we am not interested in accepting your work.
-
-It's as simple as that.
+I'll get to this while I can Ed.
