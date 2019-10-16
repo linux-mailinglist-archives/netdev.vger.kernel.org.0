@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A836FD9BB7
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:24:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E2B0D9BBC
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394692AbfJPUYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 16:24:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49306 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388251AbfJPUYM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 16:24:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=lp9sGSeBUfNCINz8D0KXuszYBQzAqsZQkv+K4LudJSs=; b=l+GxzaXFjS8l3ToLipq/WrGhgo
-        8vvhof4mQ7FXr+CAR85chuh6HDr9DMnMBjTDb1eTmX4fZ9vysDuZgTkA5SGMU7GoKLD5AhbLjPWYb
-        yV1LrfjlU0Zo0E10BjUkZs0FtGhiCZOT9eUBDaPhWb0PNQHYKhZ9PvGMLMhosMCtMYqs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iKpps-00017G-Bz; Wed, 16 Oct 2019 22:23:56 +0200
-Date:   Wed, 16 Oct 2019 22:23:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Chris Snook <chris.snook@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        James Hogan <jhogan@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v1 2/4] dt-bindings: net: dsa: qca,ar9331 switch
- documentation
-Message-ID: <20191016202356.GM17013@lunn.ch>
-References: <20191014061549.3669-1-o.rempel@pengutronix.de>
- <20191014061549.3669-3-o.rempel@pengutronix.de>
+        id S2437123AbfJPUZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 16:25:03 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42379 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388251AbfJPUZD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 16:25:03 -0400
+Received: by mail-pg1-f193.google.com with SMTP id f14so9837694pgi.9
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 13:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Apfk1pKEHxx3CG4JkPwppjLiXLQBFDiQwmfVhilG3pA=;
+        b=VWXgrS3bry1pjHqA4B7y4ZGqfG2pcO+w/Lb9EBM0bQypaisBl5RF0kWXWi9XBIpWta
+         hKTlNBOY3Ikteb/uZX1p2ezdYINvKpKUmYJb3r9V6xnUTdfTXAU3y2wt1rVliPyueJTq
+         1qflWctL3WvaZgOGd8PXEaRJ/hTeN5wD+H5zOSpe+nZzIXTvWZu9DOpLuS8HqVoASH7u
+         hLxeiAge0w1uLqCMe4k8XCVOaI1v838KiVDvvvpQvEhA6FNmni2FhghkMvhugxm39xYb
+         sA7/LWdbaFcAwMN+Fx90bzO9QwcWX1SVplwjDQTUW7JYR6AE3O5Pml6xzKnO+fMU60Bd
+         ITlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Apfk1pKEHxx3CG4JkPwppjLiXLQBFDiQwmfVhilG3pA=;
+        b=IdBkz+JyagIak83ZTWONt3x5V77o4DOby9AUC4GCxSv5d+KDjP21wz8YkkDxDILYwg
+         G0qPWHd/MGV3x84USDtaXqZ1bxJp2R4pG0We4/Yuvyyqq4NT+xx0kyaHduJzpHIoiLa3
+         ai9k1BIu/S1RZUaRk5sPzRNIrzn3Q4V2peeFaKtZouOCp2cMI+1I6DDX/iQ6Ya5wC7D2
+         o4vkkui9tWe2X+mctDHg3BGkGFS0SJnINdYabi00/UOxEJi/x4lHflbBTpsjTJiZKuRG
+         KrAp/l7Y+5vV5sMfqNy84X6laURS4gPf1g6IR+J6p2k9lHEOC4rmNAvaxWx4taOhv4RD
+         Bx2A==
+X-Gm-Message-State: APjAAAU9uEVSDZIF+74WTJwkULPfh/x/+Z0YRtgWWLtCjavXzW+fasZv
+        b0ufaMdVTmKTpwZ9tLiCdoxhRg==
+X-Google-Smtp-Source: APXvYqx6jOVgLo/avUgtWT76lKPBc35ucuSi5MnrltggB3NSqz1eS4ko6KTFBU7s2kNGcxiUNUX4Rg==
+X-Received: by 2002:a62:ed01:: with SMTP id u1mr32471248pfh.122.1571257501112;
+        Wed, 16 Oct 2019 13:25:01 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id f17sm23326497pgd.8.2019.10.16.13.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 13:25:01 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 13:24:50 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>
+Cc:     netdev@vger.kernel.org, Romain Bellan <romain.bellan@wifirst.fr>
+Subject: Re: [PATCH iproute2] man: remove "defaut group" sentence on ip link
+Message-ID: <20191016132450.268729d1@hermes.lan>
+In-Reply-To: <20191015153550.29010-1-florent.fourcot@wifirst.fr>
+References: <20191015153550.29010-1-florent.fourcot@wifirst.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191014061549.3669-3-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 14, 2019 at 08:15:47AM +0200, Oleksij Rempel wrote:
-> Atheros AR9331 has built-in 5 port switch. The switch can be configured
-> to use all 5 or 4 ports. One of built-in PHYs can be used by first built-in
-> ethernet controller or to be used directly by the switch over second ethernet
-> controller.
+On Tue, 15 Oct 2019 17:35:50 +0200
+Florent Fourcot <florent.fourcot@wifirst.fr> wrote:
 
-Hi Oleksij
+> By default, all devices are listed, not only the default group.
+> 
+> Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
+> Signed-off-by: Romain Bellan <romain.bellan@wifirst.fr>
 
-How exactly is this phy sharing controlled? I did not see anything in
-the driver. Is there a mux we need to set?
-
-    Andrew
+Thanks for catching this.
+Applied
