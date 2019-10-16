@@ -2,126 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F7FD882C
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 07:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E2FD8834
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 07:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387440AbfJPFsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 01:48:20 -0400
-Received: from mout.gmx.net ([212.227.15.19]:40497 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726733AbfJPFsT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 01:48:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1571204883;
-        bh=65lW9dAdvijQMWhG3ua+QYp0BwCCA6cteHad21u0XDo=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=HnwlK6zYSSYMRVKucvOP3Nf5CFzE3SYqAz3abmT3rtcB/6Die/o1elFy85+M3q/1m
-         d7flwGoo/dyeqbJMrOsdSXhO6uGiNALs5cFVhibZdFK3uNK0tQTabY7pLBoEKHotwj
-         XkR+s/27Q0t0Lu9BWSPZjCokOX2u5G6LblMvml9c=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.1.162] ([37.4.249.112]) by mail.gmx.com (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N0X8o-1i6GCk3v4G-00wUZQ; Wed, 16
- Oct 2019 07:48:03 +0200
-Subject: Re: lan78xx and phy_state_machine
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Daniel Wagner <dwagner@suse.de>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org
-References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
- <20191014163004.GP25745@shell.armlinux.org.uk>
- <20191014192529.z7c5x6hzixxeplvw@beryllium.lan>
- <25cfc92d-f72b-d195-71b1-f5f238c7988d@gmx.net>
- <b9afd836-613a-dc63-f77b-f9a77d33acc4@gmail.com>
- <20191014221211.GR25745@shell.armlinux.org.uk>
- <524267e6-df8e-d884-aeef-1ed8700e4e58@gmail.com>
-From:   Stefan Wahren <wahrenst@gmx.net>
-Message-ID: <4b160706-97a4-1fd8-9ddb-00a81d0cd6bb@gmx.net>
-Date:   Wed, 16 Oct 2019 07:48:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2387652AbfJPFuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 01:50:08 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28216 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387521AbfJPFuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 01:50:07 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9G5o4aW016633
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 22:50:06 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=hS4iJL06oeu1TUdZwSRUSIfQxECsHd9BwMVjK3BQ+EY=;
+ b=E5ogMLlcT75wEZMNKkiZxj57gRvU+29ktixmi/j70xEuXTxSZYEQ/wnMsIyfrYGyPpzi
+ CN5BDC/eq9DoK2/SbDx33+miHaaPNPGz5TF7nbRFKi8vQAMIE8pwCKmp8+C9vBAu2Bmt
+ Bb0+b/ucH29mL6ufyDSDANPp2y9TkxtJ8m8= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vnf1wm20t-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 22:50:06 -0700
+Received: from 2401:db00:30:600c:face:0:39:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 15 Oct 2019 22:49:48 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 2A58686193C; Tue, 15 Oct 2019 22:49:48 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v3 bpf-next 0/7] Fix, clean up, and revamp selftests/bpf Makefile
+Date:   Tue, 15 Oct 2019 22:49:38 -0700
+Message-ID: <20191016054945.1988387-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <524267e6-df8e-d884-aeef-1ed8700e4e58@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:Ew7FNDku7ITKf0fnF4Nvts7IZlNkydC8o0+5l8Ur87v+IVxOCRW
- M+zVQx/mCY6gFDDx04bBSPjOEHDK3L+pYbwv2db9HxHPksvZ6kWy8qDyy9+NmOhmapqMLAF
- exISiaWXKX285EiRT7KLlGkwfILDSWbL57N1/hGngKU4jbUtCRM/RChB7Mq3O1Zgv4tY4/i
- qPJbdhByOWjpgrjehF8Ow==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:m03NsduD8hg=:QTnRELOPLA8iyWNrENMKQl
- KLsEU7kRUXo5eWaGOGCGLHAOQiCLOPPAuyFgB5yfN3DA5MQpjYKqDc9aSWl1dEtGdQYHrgSh1
- +BeyIWC2QppDBJPVXjW14RcD0lz+krIUEr1DVqP2qFGMYfg+ukwtsO3zp77IzULkPxM4LHEo8
- OjJOirz/WYKAwGVKGEtaI74P8pWu87hcGjLRsgsFiy8/aI3ZMQRmaKQZs1uUPx/KXo2hZUDT2
- 8UbAWY63nqOH7sseO3mRMcYaAXR469pAOmGz1sjxAEoeBLCXcujdgfR8g8I0Ojf5VjmaBAoHa
- 9jcahKCKuAjNTJmDK18WDe56MdNlvq/mxM0yDgLxmCWHvKWzu1FQU5DOV3rrv2N6JSAwe8PuU
- UPdUfRyw5iLzKhCehxW3KPvoTzNblpjUJhW8ao1a2vmYtatCwbDyclF8iM3VvDg+o/oMGsRGz
- BnedLgs66Is26ZYFHXQB+0Nh9ckmgRLHzJPBbpjtsynSbiKayKGMKplBg+jTJ/TIb78YXuKPK
- eWrsX3ppW+MPXo09mHnbeDnsJw0HikzCu8w2FgtF1hrah9svVO6hZD/QfD7rZPnskDfrWQntl
- UY9aT3yUN592nq3DYe0imF6YdCj4wF99ti3Seo7MTEA8tNCJlJYlxzTC5gZ2kRYzTJnOs5jlD
- U5CRDH430kXlWnp3C2lrTHaMe2EDcAxxNHYvIr+PfLwPFDxOZBiHPnJVawkiiLbs+bSvo2I5W
- cxJUt3zcfBw+/WnqvQ6lkAfdF4D2SAayQmVz9EK9T974ksf59v2n5UGo7lzAB43vwB8+o5G4G
- oorUx/I7/TgtkaJCiZlGUa9uFdQ0KTj0JuRx4r0mcH15FS0yPs5OPPj8l1JbGuyDjtDn9h/tz
- a+aMDXzVYzlEWSXOWs4qd87cSpxE+eBQx/L+rbdcLtg9InD1yb76RfFiuN9DDcoILPmcyOLSV
- PVM2G6On1gmL8VQVo7ukBN1vBB9uyl5/yNYBWeeb10lTZDvzLjO03rHCkIrLNPpmm+QAZnOL5
- 0YnyKWklDhLLuKtphQiR4foucNKdI7iGEulzOB/3YImC0Y0FOLAUnU/DXODlNsecogl2DXn1c
- EAxvxjh1T8oJyCEo0hmH78d32aIQXTdpJnRnpQwR8Kofgn71trI6sZx9flJO/vUUTHq+AzukV
- 0dIMVRZDZ+Fnn5xExVwaRqb7w9iatO8ppgDmVf3T+1EttKRoxdadjMyyxxq7QqXwWS6Sgrxqe
- 7AktKoxj47X6d5bEq8Tqe1wm/Snd7PzA9n+qoesHfnVWEL1j67E+8uU8iVEo=
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-16_02:2019-10-15,2019-10-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ adultscore=0 bulkscore=0 spamscore=0 clxscore=1015 malwarescore=0
+ mlxlogscore=999 priorityscore=1501 suspectscore=9 phishscore=0 mlxscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910160054
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 15.10.19 um 21:38 schrieb Heiner Kallweit:
-> On 15.10.2019 00:12, Russell King - ARM Linux admin wrote:
->> On Mon, Oct 14, 2019 at 10:20:15PM +0200, Heiner Kallweit wrote:
->>> On 14.10.2019 21:51, Stefan Wahren wrote:
->>>> [add more recipients]
->>>>
->>>> Am 14.10.19 um 21:25 schrieb Daniel Wagner:
->>>>> Moving the phy_prepare_link() up in phy_connect_direct() ensures that
->>>>> phydev->adjust_link is set when the phy_check_link_status() is called.
->>>>>
->>>>> diff --git a/drivers/net/phy/phy_device.c
->>>>> b/drivers/net/phy/phy_device.c index 9d2bbb13293e..2a61812bcb0d 100644
->>>>> --- a/drivers/net/phy/phy_device.c +++ b/drivers/net/phy/phy_device.c
->>>>> @@ -951,11 +951,12 @@ int phy_connect_direct(struct net_device *dev,
->>>>> struct phy_device *phydev, if (!dev) return -EINVAL;
->>>>>
->>>>> +       phy_prepare_link(phydev, handler);
->>>>> +
->>>>>         rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
->>>>>         if (rc)
->>> If phy_attach_direct() fails we may have to reset phydev->adjust_link to NULL,
->>> as we do in phy_disconnect(). Apart from that change looks good to me.
->> Sorry, but it doesn't look good to me.
->>
->> I think there's a deeper question here - why is the phy state machine
->> trying to call the link change function during attach?
-> After your comment I had a closer look at the lm78xx driver and few things
-> look suspicious:
->
-> - lan78xx_phy_init() (incl. the call to phy_connect_direct()) is called
->   after register_netdev(). This may cause races.
->
-> - The following is wrong, irq = 0 doesn't mean polling.
->   PHY_POLL is defined as -1. Also in case of irq = 0 phy_interrupt_is_valid()
->   returns true.
->
-> 	/* if phyirq is not set, use polling mode in phylib */
-> 	if (dev->domain_data.phyirq > 0)
-> 		phydev->irq = dev->domain_data.phyirq;
-> 	else
-> 		phydev->irq = 0;
->
-> - Manually calling genphy_config_aneg() in lan78xx_phy_init() isn't
->   needed, however this should not cause our problem.
-Thanks for this review. This may help to fix at least a one of all the
-other issues with lan78xx.
+This patch set extensively revamps selftests/bpf's Makefile to generalize test
+runner concept and apply it uniformly to test_maps and test_progs test
+runners, along with test_progs' few build "flavors", exercising various ways
+to build BPF programs.
+
+As we do that, we fix dependencies between various phases of test runners, and
+simplify some one-off rules and dependencies currently present in Makefile.
+test_progs' flavors are now built into root $(OUTPUT) directory and can be run
+without any extra steps right from there. E.g., test_progs-alu32 is built and
+is supposed to be run from $(OUTPUT). It will cd into alu32/ subdirectory to
+load correct set of BPF object files (which are different from the ones built
+for test_progs).
+
+Outline:
+- patch #1 teaches test_progs about flavor sub-directories;
+- patch #2 fixes one of CO-RE tests to not depend strictly on process name;
+- patch #3 changes test_maps's usage of map_tests/tests.h to be the same as
+  test_progs' one;
+- patch #4 adds convenient short `make test_progs`-like targets to build only
+  individual tests, if necessary;
+- patch #5 is a main patch in the series; it uses a bunch of make magic
+  (mainly $(call) and $(eval)) to define test runner "skeleton" and apply it
+  to 4 different test runners, lots more details in corresponding commit
+  description;
+- patch #6 does a bit of post-clean up for test_queue_map and test_stack_map
+  BPF programs;
+- patch #7 cleans up test_libbpf.sh/test_libbpf_open superseded by test_progs.
+
+v2->v3:
+- drop test_xdp.o mixed compilation mode, remove test_libbpf.sh (Alexei);
+
+v1->v2:
+- drop test_progs-native causing compilation failures due to
+  __builtin_preserve_field_access, add back test_xdp.o override, which will
+  now emit rule re-definition warning.
+
+
+Andrii Nakryiko (7):
+  selftests/bpf: teach test_progs to cd into subdir
+  selftests/bpf: make CO-RE reloc test impartial to test_progs flavor
+  selftests/bpf: switch test_maps to test_progs' test.h format
+  selftests/bpf: add simple per-test targets to Makefile
+  selftests/bpf: replace test_progs and test_maps w/ general rule
+  selftests/bpf: move test_queue_stack_map.h into progs/ where it
+    belongs
+  selftest/bpf: remove test_libbpf.sh and test_libbpf_open
+
+ tools/testing/selftests/bpf/.gitignore        |   7 +-
+ tools/testing/selftests/bpf/Makefile          | 338 ++++++++++--------
+ .../selftests/bpf/prog_tests/core_reloc.c     |   4 +-
+ .../selftests/bpf/progs/core_reloc_types.h    |   2 +-
+ .../bpf/progs/test_core_reloc_kernel.c        |   3 +-
+ .../bpf/{ => progs}/test_queue_stack_map.h    |   0
+ tools/testing/selftests/bpf/test_libbpf       | Bin 0 -> 384568 bytes
+ tools/testing/selftests/bpf/test_libbpf.sh    |  43 ---
+ tools/testing/selftests/bpf/test_libbpf_open  | Bin 0 -> 396096 bytes
+ tools/testing/selftests/bpf/test_maps.c       |   8 +-
+ tools/testing/selftests/bpf/test_progs.c      |  33 +-
+ 11 files changed, 234 insertions(+), 204 deletions(-)
+ rename tools/testing/selftests/bpf/{ => progs}/test_queue_stack_map.h (100%)
+ create mode 100755 tools/testing/selftests/bpf/test_libbpf
+ delete mode 100755 tools/testing/selftests/bpf/test_libbpf.sh
+ create mode 100755 tools/testing/selftests/bpf/test_libbpf_open
+
+-- 
+2.17.1
+
