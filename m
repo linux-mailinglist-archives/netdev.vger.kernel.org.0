@@ -2,158 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF177D88E4
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:04:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A34CD88E7
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:05:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389248AbfJPHEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 03:04:52 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:46550 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388601AbfJPHEw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 03:04:52 -0400
-Received: by mail-pg1-f201.google.com with SMTP id 195so10985894pgc.13
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 00:04:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=UMWT9nWCcn5ICihsP++abKeexGAkJ2bVvRXUJSFuKhQ=;
-        b=CbN/iZFLTfK37GxxoO2FA+b0Y7RRMdritLVe+tLfi1qdiaYWGM9ti2nly3O+F3VElb
-         aBb2vjETwdO96GXUy0Ciwl0+LM7KGG6CvRsdYEejoz6jAB4H9qNdJSkG1bJuwOgTsMOX
-         hZ/UySVcHTfPe+YhLeeKIxaf9a5zczEUfPEYCDtNkE3t9Fx2FRMNQkeqG3x2NzxMSRmF
-         V6+KnDXoofbcM/1ssmVmVcJpfo0IuIYmwkEwdHt9HtRdhupbCHS2VNvJkAKPQKhtXAfr
-         ChcEiWFbQnI+SXJk4ypiBEawQH6Ivb3MM2xV+Rqihft9o7VWyqSPZSqMFT5rvbV/65k8
-         qf9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=UMWT9nWCcn5ICihsP++abKeexGAkJ2bVvRXUJSFuKhQ=;
-        b=uQmD6yorga2QwDsWtEb+l26ZwuUEuRqhRMZ0OG0JH141PRbhZkD+lWmmp95dyd848N
-         p70O7BVCdE3VKflBPrALqmIc2qub8KYSYEQ5xo3xZ6BfnojjX+TvsuKWXNwo+ngZdYlt
-         AKENS4ALoWtsscPfjn9yty5ZTfAsetw+0SMHez65n6tH0wJGKN/KWgBZj48O43R1KX2s
-         itwu8rHcm0q6umMm+T4E3I10uXv0FpifmaWdpbFG68oS5QzZlEHTJW/3v3g6+ffYm00+
-         Yme3bnhb6KCivFsmN8MyExGPxJQ+7HEZuo6cZ4Z0Z6sJOcRgxd0V9E/v5Kd4kJIlfXpb
-         RANA==
-X-Gm-Message-State: APjAAAWA8hccqHVv4MayN+nk0jZ934CJphDx5AFA6Te9kSI6rxMLIX0/
-        jI6ebUvrUWjSppnKGH5kJrhvmY9pAK/gW6xRXTmBItcb336ekviqDGP1LakVym7/jlQMbZRo+8g
-        K6nKW5UWgBuDychiczJx3HRU8NL82OcwBwOXdD7xOzCOIzo6hJ116D/3cdG30ydYv
-X-Google-Smtp-Source: APXvYqx7LfmDjcsJPOmLQ/SyHMe4jOblhjS60mdziqFvhVWdsLNW/C+qCDpz+YvM03OeI7J024Lte+cU04EZ
-X-Received: by 2002:a63:d916:: with SMTP id r22mr43278682pgg.46.1571209489299;
- Wed, 16 Oct 2019 00:04:49 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 00:04:38 -0700
-Message-Id: <20191016070438.156372-1-maheshb@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.700.g56cf767bdb-goog
-Subject: [PATCH net] Revert "blackhole_netdev: fix syzkaller reported issue"
-From:   Mahesh Bandewar <maheshb@google.com>
-To:     Netdev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
-        David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Mahesh Bandewar <maheshb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2389258AbfJPHFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 03:05:30 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44224 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387777AbfJPHFa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 03:05:30 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id DDE05B4E4;
+        Wed, 16 Oct 2019 07:05:26 +0000 (UTC)
+Subject: Re: [RFC PATCH 1/2] block: add support for redirecting IO completion
+ through eBPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hou Tao <houtao1@huawei.com>
+Cc:     linux-block@vger.kernel.org, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexei Starovoitov <ast@kernel.org>, hare@suse.com,
+        osandov@fb.com, ming.lei@redhat.com, damien.lemoal@wdc.com,
+        bvanassche <bvanassche@acm.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+References: <20191014122833.64908-1-houtao1@huawei.com>
+ <20191014122833.64908-2-houtao1@huawei.com>
+ <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
+From:   Hannes Reinecke <hare@suse.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=hare@suse.de; prefer-encrypt=mutual; keydata=
+ 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
+ azzYF4VRJsdl+d0MCaSy8mUh
+Message-ID: <113e46d4-2a90-a694-8a24-7a6a3c019e88@suse.de>
+Date:   Wed, 16 Oct 2019 09:05:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit b0818f80c8c1bc215bba276bd61c216014fab23b.
+On 10/15/19 11:04 PM, Alexei Starovoitov wrote:
+> On Mon, Oct 14, 2019 at 5:21 AM Hou Tao <houtao1@huawei.com> wrote:
+>>
+>> For network stack, RPS, namely Receive Packet Steering, is used to
+>> distribute network protocol processing from hardware-interrupted CPU
+>> to specific CPUs and alleviating soft-irq load of the interrupted CPU.
+>>
+>> For block layer, soft-irq (for single queue device) or hard-irq
+>> (for multiple queue device) is used to handle IO completion, so
+>> RPS will be useful when the soft-irq load or the hard-irq load
+>> of a specific CPU is too high, or a specific CPU set is required
+>> to handle IO completion.
+>>
+>> Instead of setting the CPU set used for handling IO completion
+>> through sysfs or procfs, we can attach an eBPF program to the
+>> request-queue, provide some useful info (e.g., the CPU
+>> which submits the request) to the program, and let the program
+>> decides the proper CPU for IO completion handling.
+>>
+>> Signed-off-by: Hou Tao <houtao1@huawei.com>
+> ...
+>>
+>> +       rcu_read_lock();
+>> +       prog = rcu_dereference_protected(q->prog, 1);
+>> +       if (prog)
+>> +               bpf_ccpu = BPF_PROG_RUN(q->prog, NULL);
+>> +       rcu_read_unlock();
+>> +
+>>         cpu = get_cpu();
+>> -       if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
+>> -               shared = cpus_share_cache(cpu, ctx->cpu);
+>> +       if (bpf_ccpu < 0 || !cpu_online(bpf_ccpu)) {
+>> +               ccpu = ctx->cpu;
+>> +               if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
+>> +                       shared = cpus_share_cache(cpu, ctx->cpu);
+>> +       } else
+>> +               ccpu = bpf_ccpu;
+>>
+>> -       if (cpu != ctx->cpu && !shared && cpu_online(ctx->cpu)) {
+>> +       if (cpu != ccpu && !shared && cpu_online(ccpu)) {
+>>                 rq->csd.func = __blk_mq_complete_request_remote;
+>>                 rq->csd.info = rq;
+>>                 rq->csd.flags = 0;
+>> -               smp_call_function_single_async(ctx->cpu, &rq->csd);
+>> +               smp_call_function_single_async(ccpu, &rq->csd);
+> 
+> Interesting idea.
+> Not sure whether such programability makes sense from
+> block layer point of view.
+> 
+> From bpf side having a program with NULL input context is
+> a bit odd. We never had such things in the past, so this patchset
+> won't work as-is.
+> Also no-input means that the program choices are quite limited.
+> Other than round robin and random I cannot come up with other
+> cpu selection ideas.
+> I suggest to do writable tracepoint here instead.
+> Take a look at trace_nbd_send_request.
+> BPF prog can write into 'request'.
+> For your use case it will be able to write into 'bpf_ccpu' local variable.
+> If you keep it as raw tracepoint and don't add the actual tracepoint
+> with TP_STRUCT__entry and TP_fast_assign then it won't be abi
+> and you can change it later or remove it altogether.
+> 
+That basically was my idea, too.
 
-Started seeing weird behavior after this patch especially in
-the IPv6 code path. Haven't root caused it, but since this was
-applied to net branch, taking a precautionary measure to revert
-it and look / analyze those failures
+Actually I was coming from a different angle, namely trying to figure
+out how we could do generic error injection in the block layer.
+eBPF would be one way of doing it, kprobes another.
 
-Revert this now and I'll send a better fix after analysing / fixing
-the weirdness observed.
+But writable trace events ... I'll have to check if we can leverage that
+here, too.
 
-CC: Eric Dumazet <edumazet@google.com>
-CC: Wei Wang <weiwan@google.com>
-CC: David S. Miller <davem@davemloft.net>
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
----
- net/ipv6/addrconf.c |  7 +------
- net/ipv6/route.c    | 15 +++++++++------
- 2 files changed, 10 insertions(+), 12 deletions(-)
+Cheers,
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 4c87594d1389..34ccef18b40e 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -6996,7 +6996,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
- 
- int __init addrconf_init(void)
- {
--	struct inet6_dev *idev, *bdev;
-+	struct inet6_dev *idev;
- 	int i, err;
- 
- 	err = ipv6_addr_label_init();
-@@ -7036,14 +7036,10 @@ int __init addrconf_init(void)
- 	 */
- 	rtnl_lock();
- 	idev = ipv6_add_dev(init_net.loopback_dev);
--	bdev = ipv6_add_dev(blackhole_netdev);
- 	rtnl_unlock();
- 	if (IS_ERR(idev)) {
- 		err = PTR_ERR(idev);
- 		goto errlo;
--	} else if (IS_ERR(bdev)) {
--		err = PTR_ERR(bdev);
--		goto errlo;
- 	}
- 
- 	ip6_route_init_special_entries();
-@@ -7128,7 +7124,6 @@ void addrconf_cleanup(void)
- 		addrconf_ifdown(dev, 1);
- 	}
- 	addrconf_ifdown(init_net.loopback_dev, 2);
--	addrconf_ifdown(blackhole_netdev, 2);
- 
- 	/*
- 	 *	Check hash table.
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 742120728869..a63ff85fe141 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -155,9 +155,10 @@ void rt6_uncached_list_del(struct rt6_info *rt)
- 
- static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- {
-+	struct net_device *loopback_dev = net->loopback_dev;
- 	int cpu;
- 
--	if (dev == net->loopback_dev)
-+	if (dev == loopback_dev)
- 		return;
- 
- 	for_each_possible_cpu(cpu) {
-@@ -170,7 +171,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
- 			struct net_device *rt_dev = rt->dst.dev;
- 
- 			if (rt_idev->dev == dev) {
--				rt->rt6i_idev = in6_dev_get(blackhole_netdev);
-+				rt->rt6i_idev = in6_dev_get(loopback_dev);
- 				in6_dev_put(rt_idev);
- 			}
- 
-@@ -385,11 +386,13 @@ static void ip6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
- {
- 	struct rt6_info *rt = (struct rt6_info *)dst;
- 	struct inet6_dev *idev = rt->rt6i_idev;
-+	struct net_device *loopback_dev =
-+		dev_net(dev)->loopback_dev;
- 
--	if (idev && idev->dev != dev_net(dev)->loopback_dev) {
--		struct inet6_dev *ibdev = in6_dev_get(blackhole_netdev);
--		if (ibdev) {
--			rt->rt6i_idev = ibdev;
-+	if (idev && idev->dev != loopback_dev) {
-+		struct inet6_dev *loopback_idev = in6_dev_get(loopback_dev);
-+		if (loopback_idev) {
-+			rt->rt6i_idev = loopback_idev;
- 			in6_dev_put(idev);
- 		}
- 	}
+Hannes
 -- 
-2.23.0.700.g56cf767bdb-goog
-
+Dr. Hannes Reinecke		      Teamlead Storage & Networking
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 247165 (AG München), GF: Felix Imendörffer
