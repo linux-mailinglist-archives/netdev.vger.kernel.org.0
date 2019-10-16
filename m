@@ -2,183 +2,673 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B9FD8D74
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 12:13:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 708A3D8DB8
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 12:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404517AbfJPKN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 06:13:27 -0400
-Received: from mail-eopbgr40075.outbound.protection.outlook.com ([40.107.4.75]:31143
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727167AbfJPKN1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 06:13:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W68CjDz+YFYlGQdlfn1ofOaDeRO0JBLPUa8xxDrqbhc=;
- b=PdpCEzvRh3l9YfJApovR3zzhp7+nA1B6p5cAVizaSQvBBjAs+dS8AcvhwviVzqgr1wOF2oIs3oMZOxUuZuMR46gohA0yRJoALJ2a568bOB7qFTaEO4Lw6jB7VtUZJn7UF0nRt5Sg1h1E7sdghXu3/YjPcNxpMgBHGPSZn8xkojo=
-Received: from AM6PR08CA0044.eurprd08.prod.outlook.com (2603:10a6:20b:c0::32)
- by VI1PR0801MB1760.eurprd08.prod.outlook.com (2603:10a6:800:51::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.18; Wed, 16 Oct
- 2019 10:11:40 +0000
-Received: from DB5EUR03FT064.eop-EUR03.prod.protection.outlook.com
- (2a01:111:f400:7e0a::209) by AM6PR08CA0044.outlook.office365.com
- (2603:10a6:20b:c0::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2347.17 via Frontend
- Transport; Wed, 16 Oct 2019 10:11:40 +0000
-Authentication-Results: spf=temperror (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=none action=none
- header.from=arm.com;
-Received-SPF: TempError (protection.outlook.com: error in processing during
- lookup of arm.com: DNS Timeout)
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- DB5EUR03FT064.mail.protection.outlook.com (10.152.21.199) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.2305.15 via Frontend Transport; Wed, 16 Oct 2019 10:11:38 +0000
-Received: ("Tessian outbound 927f2cdd66cc:v33"); Wed, 16 Oct 2019 10:11:33 +0000
-X-CR-MTA-TID: 64aa7808
-Received: from 584ede32fc7e.2 (ip-172-16-0-2.eu-west-1.compute.internal [104.47.5.50])
-        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 9F4E5496-4962-42B0-A7F2-540BA592F33F.1;
-        Wed, 16 Oct 2019 10:11:28 +0000
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-he1eur02lp2050.outbound.protection.outlook.com [104.47.5.50])
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 584ede32fc7e.2
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384);
-    Wed, 16 Oct 2019 10:11:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O8bxk818lSSIZcUAxsoB/o8tuuNWNckQxvJmuUkJ8PjVKAB/uYM6Ll/P8WtR0vk+XiF0XXDZe8rVMd+DEuFYWg52iEcD6Nl1mgBxK2p6es5yMrySl8HZrK8QUPSlHELvGq2DwpHDMhvaSMqqjSqFCXH1sG/d3ZtkRe05nSnHUPmaRc3/GcLuMUuPPSSQ1qMKiOsUoT54KiX4Xj52cqVaF8Sh4q/D5Cdbev1HXHq3a/urHbHH+/52t7vh56fCagbd7A489eVdOwtIXKCDGtiGWLdc97S447pb0bBOCPPettkKD9wvES7q8QCiihKsdbjjxQx2r8rIuywNk4pFe9HxHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W68CjDz+YFYlGQdlfn1ofOaDeRO0JBLPUa8xxDrqbhc=;
- b=K36CsZ+OH4mYWzuMxAlb0UCqlyPiDrGFuJfWAVebT8yOh9+CZM3Q51skQYEtPIywU5GkPiL1cT5YHF3ZT+9EjeAxfYm3pJERUr6i6DaBLMPvIztlRnSYEVliQNlVgWur6Z5vQwot7GgexzJezD4GABuzohAycUy+U+7iFCJ9QmT4lmIoA8/1d/CEQQGaFy8X3Wq0cShO/lyb/n9unimwJhhpRdx/CR5VTSMlYvQ6aeu2lQSwktTx9n2EmtUo8sgnCzPMUvIHWYZN03SS9+v3W0yLlljrAuVLDZ2C2+f/SmjdkqzzLN2eqS5BS1ThpeS1tkDUdBkSG0SYjYhOgb1vGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W68CjDz+YFYlGQdlfn1ofOaDeRO0JBLPUa8xxDrqbhc=;
- b=PdpCEzvRh3l9YfJApovR3zzhp7+nA1B6p5cAVizaSQvBBjAs+dS8AcvhwviVzqgr1wOF2oIs3oMZOxUuZuMR46gohA0yRJoALJ2a568bOB7qFTaEO4Lw6jB7VtUZJn7UF0nRt5Sg1h1E7sdghXu3/YjPcNxpMgBHGPSZn8xkojo=
-Received: from HE1PR0801MB1676.eurprd08.prod.outlook.com (10.168.146.150) by
- HE1SPR00MB244.eurprd08.prod.outlook.com (10.171.98.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Wed, 16 Oct 2019 10:11:25 +0000
-Received: from HE1PR0801MB1676.eurprd08.prod.outlook.com
- ([fe80::b056:4113:e0bd:110d]) by HE1PR0801MB1676.eurprd08.prod.outlook.com
- ([fe80::b056:4113:e0bd:110d%6]) with mapi id 15.20.2347.023; Wed, 16 Oct 2019
- 10:11:25 +0000
-From:   "Jianyong Wu (Arm Technology China)" <Jianyong.Wu@arm.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        "Kaly Xin (Arm Technology China)" <Kaly.Xin@arm.com>,
-        "Justin He (Arm Technology China)" <Justin.He@arm.com>,
-        nd <nd@arm.com>
-Subject: RE: [PATCH v5 5/6] ptp: arm64: Enable ptp_kvm for arm64
-Thread-Topic: [PATCH v5 5/6] ptp: arm64: Enable ptp_kvm for arm64
-Thread-Index: AQHVg0Y6A4wUAbusSUOkn5f/2HpSwadb56wAgAC7jVCAADfWgIAAAOYAgAAwG2A=
-Date:   Wed, 16 Oct 2019 10:11:25 +0000
-Message-ID: <HE1PR0801MB1676412E33493247F7C37C6CF4920@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-References: <20191015104822.13890-1-jianyong.wu@arm.com>
- <20191015104822.13890-6-jianyong.wu@arm.com>
- <da62c327-9402-9a5c-d694-c1a4378822e0@redhat.com>
- <HE1PR0801MB167654440A67AF072E28FFFDF4920@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <6e9bfd40-4715-74b3-b5d4-fc49329bed24@redhat.com>
- <140551c1-b56d-0942-58b3-61a1f5331e83@redhat.com>
-In-Reply-To: <140551c1-b56d-0942-58b3-61a1f5331e83@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ts-tracking-id: 14dea4f2-b891-4ba3-9452-a89be0130161.1
-x-checkrecipientchecked: true
-Authentication-Results-Original: spf=none (sender IP is )
- smtp.mailfrom=Jianyong.Wu@arm.com; 
-x-originating-ip: [113.29.88.7]
-x-ms-publictraffictype: Email
-X-MS-Office365-Filtering-Correlation-Id: 4709ad64-4d16-4ca2-f81b-08d752213bc0
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-TrafficTypeDiagnostic: HE1SPR00MB244:|HE1SPR00MB244:|VI1PR0801MB1760:
-x-ms-exchange-transport-forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0801MB17604B235E3209521C304216F4920@VI1PR0801MB1760.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-x-ms-oob-tlc-oobclassifiers: OLM:8882;OLM:8882;
-x-forefront-prvs: 0192E812EC
-X-Forefront-Antispam-Report-Untrusted: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(376002)(366004)(136003)(39860400002)(189003)(199004)(13464003)(53546011)(14454004)(7696005)(76176011)(55016002)(5660300002)(86362001)(316002)(476003)(6436002)(9686003)(3846002)(11346002)(6116002)(446003)(99286004)(7416002)(66066001)(110136005)(186003)(102836004)(6506007)(26005)(54906003)(256004)(71200400001)(2501003)(2201001)(33656002)(52536014)(71190400001)(55236004)(486006)(6636002)(74316002)(305945005)(478600001)(25786009)(7736002)(76116006)(8676002)(66476007)(8936002)(81156014)(64756008)(66446008)(66556008)(66946007)(4326008)(6246003)(229853002)(2906002)(81166006)(921003)(1121003);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1SPR00MB244;H:HE1PR0801MB1676.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: arm.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: X2rvBiNwCxruNT+7VAx6SGWdAs3F25IT5iNnDekCGw/xHwdKRks7GybByEneFEuYYXTQksaq64hKAj5lx5nWG4CC4d+ITk4nftyrU8/Rth6EDRNBNA3iFVvgKKpqgx3G4vwUy3wgL/A8b+/Oy9BAJaXWDvrOSzZYE6UZF3ZZkO8MQrMa25Q9Z+BIpPeI6pe7+agSKos0tOjO3rXCAorc6O0C7rCCEDoYGn57A7aWzgtDfoJzWMeuZmzbWlXs4k5Jr3uP9fSuZNzDcaPsApS0PWwpwYcqcRKfUh8mkcNVVhVyJJGGKtGPymoa9A1CFEXWvOTaLTTyfv10xlKKccUcQxUDn6DoK9kF5Ax/1+qWq0a2XNntkgrI5MCZY3UNuAyWaf2jp7pji9WIkUhSj/nzSCVTpsPcT7lIzwFUlNKhhSY=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S2392331AbfJPKUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 06:20:17 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40510 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729634AbfJPKUQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 06:20:16 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id EBE7510CC20C;
+        Wed, 16 Oct 2019 10:20:15 +0000 (UTC)
+Received: from [10.72.12.53] (ovpn-12-53.pek2.redhat.com [10.72.12.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 75DE15D6B2;
+        Wed, 16 Oct 2019 10:19:33 +0000 (UTC)
+Subject: Re: [RFC 2/2] vhost: IFC VF vdpa layer
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        alex.williamson@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        zhiyuan.lv@intel.com
+References: <20191016013050.3918-1-lingshan.zhu@intel.com>
+ <20191016013050.3918-3-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <9495331d-3c65-6f49-dcd9-bfdb17054cf0@redhat.com>
+Date:   Wed, 16 Oct 2019 18:19:26 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1SPR00MB244
-Original-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=Jianyong.Wu@arm.com; 
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT064.eop-EUR03.prod.protection.outlook.com
-X-Forefront-Antispam-Report: CIP:63.35.35.123;IPV:CAL;SCL:-1;CTRY:IE;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(346002)(396003)(13464003)(189003)(199004)(76130400001)(55016002)(5660300002)(436003)(63350400001)(70206006)(9686003)(186003)(53546011)(229853002)(26005)(70586007)(4326008)(110136005)(54906003)(102836004)(336012)(99286004)(356004)(6506007)(316002)(66066001)(22756006)(25786009)(2501003)(2486003)(8676002)(6116002)(52536014)(450100002)(76176011)(478600001)(2906002)(14454004)(3846002)(33656002)(305945005)(7696005)(86362001)(74316002)(6636002)(47776003)(23676004)(446003)(50466002)(11346002)(81166006)(81156014)(486006)(2201001)(476003)(126002)(7736002)(6246003)(26826003)(8936002)(921003)(1121003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0801MB1760;H:64aa7808-outbound-1.mta.getcheckrecipient.com;FPR:;SPF:TempError;LANG:en;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;MX:1;A:1;
-X-MS-Office365-Filtering-Correlation-Id-Prvs: e80cd277-4ded-4285-dc25-08d752213433
-NoDisclaimer: True
-X-Forefront-PRVS: 0192E812EC
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: thuzZOgD69Nk1oKa8ofYz3K58AVbqWq2an7BJW2+T/QeyeKmAjNvUIQ+s9A/o4/YG0AvcmdH6sckgz7FBusPN8jM1r9Nz2K7I+8Q1VDKEfuJa93fFjL/wdjhFT/YSn1FaSujmlGImHPtgjSgzUwy9/9AgUvGsfD5e2N4eiFNayX3pSDi4VNjg/EB1SQY6s8lLszxP/dqMfKpYogPNOrJzA8sTlEazHzDkOQlEnW4v+5xAu9PKE6P8y6DrJSBeOLLfQnfkLkae8EnR4r3/2gNtlohWNf2eRXniuxl6CcCkw1grU7ZdRQxuCFH/t0HKogYLtXRlxggj1YfhUx9lJXaap52MSe9/yFVl0ai+qE6IouHQGxfJe4e4fKmUefD0PJ7cOkrHqwuU304x8ovVKAexhR4MsZxSpBmqjORli/M9G8=
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2019 10:11:38.5294
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4709ad64-4d16-4ca2-f81b-08d752213bc0
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0801MB1760
+In-Reply-To: <20191016013050.3918-3-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.65]); Wed, 16 Oct 2019 10:20:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgUGFvbG8sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGFvbG8g
-Qm9uemluaSA8cGJvbnppbmlAcmVkaGF0LmNvbT4NCj4gU2VudDogV2VkbmVzZGF5LCBPY3RvYmVy
-IDE2LCAyMDE5IDM6MTQgUE0NCj4gVG86IEppYW55b25nIFd1IChBcm0gVGVjaG5vbG9neSBDaGlu
-YSkgPEppYW55b25nLld1QGFybS5jb20+Ow0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyB5YW5n
-Ym8ubHVAbnhwLmNvbTsgam9obi5zdHVsdHpAbGluYXJvLm9yZzsNCj4gdGdseEBsaW51dHJvbml4
-LmRlOyBzZWFuLmouY2hyaXN0b3BoZXJzb25AaW50ZWwuY29tOyBtYXpAa2VybmVsLm9yZzsNCj4g
-cmljaGFyZGNvY2hyYW5AZ21haWwuY29tOyBNYXJrIFJ1dGxhbmQgPE1hcmsuUnV0bGFuZEBhcm0u
-Y29tPjsNCj4gd2lsbEBrZXJuZWwub3JnOyBTdXp1a2kgUG91bG9zZSA8U3V6dWtpLlBvdWxvc2VA
-YXJtLmNvbT4NCj4gQ2M6IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFybS1r
-ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4ga3ZtYXJtQGxpc3RzLmNzLmNvbHVtYmlhLmVk
-dTsga3ZtQHZnZXIua2VybmVsLm9yZzsgU3RldmUgQ2FwcGVyDQo+IDxTdGV2ZS5DYXBwZXJAYXJt
-LmNvbT47IEthbHkgWGluIChBcm0gVGVjaG5vbG9neSBDaGluYSkNCj4gPEthbHkuWGluQGFybS5j
-b20+OyBKdXN0aW4gSGUgKEFybSBUZWNobm9sb2d5IENoaW5hKQ0KPiA8SnVzdGluLkhlQGFybS5j
-b20+OyBuZCA8bmRAYXJtLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2NSA1LzZdIHB0cDog
-YXJtNjQ6IEVuYWJsZSBwdHBfa3ZtIGZvciBhcm02NA0KPiANCj4gT24gMTYvMTAvMTkgMDk6MTAs
-IFBhb2xvIEJvbnppbmkgd3JvdGU6DQo+ID4gT24gMTYvMTAvMTkgMDU6NTIsIEppYW55b25nIFd1
-IChBcm0gVGVjaG5vbG9neSBDaGluYSkgd3JvdGU6DQo+ID4+IFRoaXMgZnVuYyB1c2VkIG9ubHkg
-Ynkga3ZtX2FyY2hfcHRwX2dldF9jbG9jayBhbmQgbm90aGluZyB0byBkbyB3aXRoDQo+ID4+IGt2
-bV9hcmNoX3B0cF9nZXRfY2xvY2tfZm4uIEFsc28gaXQgY2FuIGJlIG1lcmdlZCBpbnRvDQo+ID4+
-IGt2bV9hcmNoX3B0cF9nZXRfY2xvY2suDQo+ID4+DQo+ID4NCj4gPiBZb3VyIHBhdGNoZXMgYWxz
-byBoYXZlIG5vIHVzZXIgZm9yIGt2bV9hcmNoX3B0cF9nZXRfY2xvY2ssIHNvIHlvdSBjYW4NCj4g
-PiByZW1vdmUgaXQuDQo+IA0KPiBOZXZlcm1pbmQuICBJIG1pc3JlYWQgcGF0Y2ggMi4gIEhvd2V2
-ZXIsIHRvIHJlbW92ZSB0aGUgY29uZnVzaW9uLCBjYW4geW91DQo+IHJlbmFtZSBrdm1fYXJjaF9w
-dHBfZ2V0X2Nsb2NrX2ZuIHRvIGt2bV9hcmNoX3B0cF9nZXRfY3Jvc3N0c3RhbXA/DQo+IA0KDQp0
-aGUgc3VmZml4IG9mIHRoaXMgZnVuY3Rpb24gbmFtZSBpcyByZXNlcnZlZCBmcm9tIGl0cyBhcmNo
-LWluZGVwZW5kZW50IGNhbGxlciBwdHBfa3ZtX2dldF90aW1lX2ZuLCBzbyBpZiBJIGNoYW5nZSB0
-aGlzIGZ1bmN0aW9uIG5hbWUNCkl0IHdpbGwgYmUgYmV0dGVyIGNoYW5nZSB0aGVtIHdob2xlLiBJ
-IHRoaW5rICJwdHBfZ2V0X2Nyb3NzdHN0YW1wIiBpcyBhIGJldHRlciBzdWZmaXguDQoNClRoYW5r
-cw0KSmlhbnlvbmcgDQoNCj4gUGFvbG8NCg0K
+
+On 2019/10/16 上午9:30, Zhu Lingshan wrote:
+> This commit introduced IFC VF operations for vdpa, which complys to
+> vhost_mdev interfaces, handles IFC VF initialization,
+> configuration and removal.
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>   drivers/vhost/ifcvf/ifcvf_main.c | 541 +++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 541 insertions(+)
+>   create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
+>
+> diff --git a/drivers/vhost/ifcvf/ifcvf_main.c b/drivers/vhost/ifcvf/ifcvf_main.c
+> new file mode 100644
+> index 000000000000..c48a29969a85
+> --- /dev/null
+> +++ b/drivers/vhost/ifcvf/ifcvf_main.c
+> @@ -0,0 +1,541 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2019 Intel Corporation.
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/module.h>
+> +#include <linux/mdev.h>
+> +#include <linux/pci.h>
+> +#include <linux/sysfs.h>
+> +
+> +#include "ifcvf_base.h"
+> +
+> +#define VERSION_STRING	"0.1"
+> +#define DRIVER_AUTHOR	"Intel Corporation"
+> +#define IFCVF_DRIVER_NAME	"ifcvf"
+> +
+> +static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
+> +{
+> +	struct vring_info *vring = arg;
+> +
+> +	if (vring->cb.callback)
+> +		return vring->cb.callback(vring->cb.private);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static u64 ifcvf_mdev_get_features(struct mdev_device *mdev)
+> +{
+> +	return IFC_SUPPORTED_FEATURES;
+
+
+I would expect this should be done by querying the hw. Or IFC VF can't 
+get any update through its firmware?
+
+
+> +}
+> +
+> +static int ifcvf_mdev_set_features(struct mdev_device *mdev, u64 features)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	vf->req_features = features;
+> +
+> +	return 0;
+> +}
+> +
+> +static u64 ifcvf_mdev_get_vq_state(struct mdev_device *mdev, u16 qid)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	return vf->vring[qid].last_avail_idx;
+
+
+Does this really work? I'd expect it should be fetched from hw since 
+it's an internal state.
+
+
+> +}
+> +
+> +static int ifcvf_mdev_set_vq_state(struct mdev_device *mdev, u16 qid, u64 num)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	vf->vring[qid].last_used_idx = num;
+
+
+I fail to understand why last_used_idx is needed. It looks to me the 
+used idx in the used ring is sufficient.
+
+
+> +	vf->vring[qid].last_avail_idx = num;
+
+
+Do we need a synchronization with hw immediately here?
+
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int ifcvf_mdev_set_vq_address(struct mdev_device *mdev, u16 idx,
+> +				     u64 desc_area, u64 driver_area,
+> +				     u64 device_area)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	vf->vring[idx].desc = desc_area;
+> +	vf->vring[idx].avail = driver_area;
+> +	vf->vring[idx].used = device_area;
+> +
+> +	return 0;
+> +}
+> +
+> +static void ifcvf_mdev_set_vq_num(struct mdev_device *mdev, u16 qid, u32 num)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	vf->vring[qid].size = num;
+> +}
+> +
+> +static void ifcvf_mdev_set_vq_ready(struct mdev_device *mdev,
+> +				u16 qid, bool ready)
+> +{
+> +
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	vf->vring[qid].ready = ready;
+> +}
+> +
+> +static bool ifcvf_mdev_get_vq_ready(struct mdev_device *mdev, u16 qid)
+> +{
+> +
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	return vf->vring[qid].ready;
+> +}
+> +
+> +static void ifcvf_mdev_set_vq_cb(struct mdev_device *mdev, u16 idx,
+> +				 struct virtio_mdev_callback *cb)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	vf->vring[idx].cb = *cb;
+> +}
+> +
+> +static void ifcvf_mdev_kick_vq(struct mdev_device *mdev, u16 idx)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	ifcvf_notify_queue(vf, idx);
+> +}
+> +
+> +static u8 ifcvf_mdev_get_status(struct mdev_device *mdev)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	return vf->status;
+> +}
+> +
+> +static u32 ifcvf_mdev_get_generation(struct mdev_device *mdev)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	return vf->generation;
+> +}
+> +
+> +static int ifcvf_mdev_get_version(struct mdev_device *mdev)
+> +{
+> +	return VIRTIO_MDEV_VERSION;
+> +}
+> +
+> +static u32 ifcvf_mdev_get_device_id(struct mdev_device *mdev)
+> +{
+> +	return IFCVF_DEVICE_ID;
+> +}
+> +
+> +static u32 ifcvf_mdev_get_vendor_id(struct mdev_device *mdev)
+> +{
+> +	return IFCVF_VENDOR_ID;
+> +}
+> +
+> +static u16 ifcvf_mdev_get_vq_align(struct mdev_device *mdev)
+> +{
+> +	return IFCVF_QUEUE_ALIGNMENT;
+> +}
+> +
+> +static int ifcvf_start_datapath(void *private)
+> +{
+> +	int i, ret;
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(private);
+> +
+> +	for (i = 0; i < (IFCVF_MAX_QUEUE_PAIRS * 2); i++) {
+> +		if (!vf->vring[i].ready)
+> +			break;
+
+
+Looks like error should be returned here?
+
+
+> +
+> +		if (!vf->vring[i].size)
+> +			break;
+> +
+> +		if (!vf->vring[i].desc || !vf->vring[i].avail ||
+> +			!vf->vring[i].used)
+> +			break;
+> +	}
+> +	vf->nr_vring = i;
+> +
+> +	ret = ifcvf_start_hw(vf);
+> +	return ret;
+> +}
+> +
+> +static int ifcvf_stop_datapath(void *private)
+> +{
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(private);
+> +	int i;
+> +
+> +	for (i = 0; i < IFCVF_MAX_QUEUES; i++)
+> +		vf->vring[i].cb.callback = NULL;
+
+
+Any synchronization is needed for the vq irq handler?
+
+
+> +
+> +	ifcvf_stop_hw(vf);
+> +
+> +	return 0;
+> +}
+> +
+> +static void ifcvf_reset_vring(struct ifcvf_adapter *adapter)
+> +{
+> +	int i;
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+> +		vf->vring[i].last_used_idx = 0;
+> +		vf->vring[i].last_avail_idx = 0;
+> +		vf->vring[i].desc = 0;
+> +		vf->vring[i].avail = 0;
+> +		vf->vring[i].used = 0;
+> +		vf->vring[i].ready = 0;
+> +		vf->vring->cb.callback = NULL;
+> +		vf->vring->cb.private = NULL;
+> +	}
+> +}
+> +
+> +static void ifcvf_mdev_set_status(struct mdev_device *mdev, u8 status)
+> +{
+> +	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +
+> +	vf->status = status;
+> +
+> +	if (status == 0) {
+> +		ifcvf_stop_datapath(adapter);
+> +		ifcvf_reset_vring(adapter);
+> +		return;
+> +	}
+> +
+> +	if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
+> +		ifcvf_start_datapath(adapter);
+> +		return;
+> +	}
+> +}
+> +
+> +static u16 ifcvf_mdev_get_queue_max(struct mdev_device *mdev)
+> +{
+> +	return IFCVF_MAX_QUEUES;
+
+
+The name is confusing, it was used to return the maximum queue size. In 
+new version of virtio-mdev, the callback was renamed as get_vq_num_max().
+
+
+> +}
+> +
+> +static struct virtio_mdev_device_ops ifc_mdev_ops = {
+> +	.get_features  = ifcvf_mdev_get_features,
+> +	.set_features  = ifcvf_mdev_set_features,
+> +	.get_status    = ifcvf_mdev_get_status,
+> +	.set_status    = ifcvf_mdev_set_status,
+> +	.get_queue_max = ifcvf_mdev_get_queue_max,
+> +	.get_vq_state   = ifcvf_mdev_get_vq_state,
+> +	.set_vq_state   = ifcvf_mdev_set_vq_state,
+> +	.set_vq_cb      = ifcvf_mdev_set_vq_cb,
+> +	.set_vq_ready   = ifcvf_mdev_set_vq_ready,
+> +	.get_vq_ready	= ifcvf_mdev_get_vq_ready,
+> +	.set_vq_num     = ifcvf_mdev_set_vq_num,
+> +	.set_vq_address = ifcvf_mdev_set_vq_address,
+> +	.kick_vq        = ifcvf_mdev_kick_vq,
+> +	.get_generation	= ifcvf_mdev_get_generation,
+> +	.get_version	= ifcvf_mdev_get_version,
+> +	.get_device_id	= ifcvf_mdev_get_device_id,
+> +	.get_vendor_id	= ifcvf_mdev_get_vendor_id,
+> +	.get_vq_align	= ifcvf_mdev_get_vq_align,
+> +};
+
+
+set_config/get_config is missing. It looks to me they are not hard, just 
+implementing the access to dev_cfg. It's key to make kernel virtio 
+driver to work.
+
+And in the new version of virito-mdev, features like _F_LOG_ALL should 
+be advertised through get_mdev_features.
+
+
+> +
+> +static int ifcvf_init_msix(struct ifcvf_adapter *adapter)
+> +{
+> +	int vector, i, ret, irq;
+> +	struct pci_dev *pdev = to_pci_dev(adapter->dev);
+> +	struct ifcvf_hw *vf = &adapter->vf;
+> +
+> +	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
+> +			IFCVF_MAX_INTR, PCI_IRQ_MSIX);
+> +	if (ret < 0) {
+> +		IFC_ERR(adapter->dev, "Failed to alloc irq vectors.\n");
+> +		return ret;
+> +	}
+> +
+> +	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+> +		vector = i + IFCVF_MSI_QUEUE_OFF;
+> +		irq = pci_irq_vector(pdev, vector);
+> +		ret = request_irq(irq, ifcvf_intr_handler, 0,
+> +				pci_name(pdev), &vf->vring[i]);
+> +		if (ret) {
+> +			IFC_ERR(adapter->dev,
+> +				"Failed to request irq for vq %d.\n", i);
+> +			return ret;
+> +		}
+> +	}
+
+
+Do we need to provide fallback when we can't do per vq MSIX?
+
+
+> +
+> +	return 0;
+> +}
+> +
+> +static void ifcvf_destroy_adapter(struct ifcvf_adapter *adapter)
+> +{
+> +	int i, vector, irq;
+> +	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
+> +	struct pci_dev *pdev = to_pci_dev(adapter->dev);
+> +
+> +	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+> +		vector = i + IFCVF_MSI_QUEUE_OFF;
+> +		irq = pci_irq_vector(pdev, vector);
+> +		free_irq(irq, &vf->vring[i]);
+> +	}
+> +}
+> +
+> +static ssize_t name_show(struct kobject *kobj, struct device *dev, char *buf)
+> +{
+> +	const char *name = "vhost accelerator (virtio ring compatible)";
+> +
+> +	return sprintf(buf, "%s\n", name);
+> +}
+> +MDEV_TYPE_ATTR_RO(name);
+> +
+> +static ssize_t device_api_show(struct kobject *kobj, struct device *dev,
+> +			       char *buf)
+> +{
+> +	return sprintf(buf, "%s\n", VIRTIO_MDEV_DEVICE_API_STRING);
+> +}
+> +MDEV_TYPE_ATTR_RO(device_api);
+> +
+> +static ssize_t available_instances_show(struct kobject *kobj,
+> +					struct device *dev, char *buf)
+> +{
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
+> +
+> +	return sprintf(buf, "%d\n", adapter->mdev_count);
+> +}
+> +
+> +MDEV_TYPE_ATTR_RO(available_instances);
+> +
+> +static ssize_t type_show(struct kobject *kobj,
+> +			struct device *dev, char *buf)
+> +{
+> +	return sprintf(buf, "%s\n", "net");
+> +}
+> +
+> +MDEV_TYPE_ATTR_RO(type);
+> +
+> +
+> +static struct attribute *mdev_types_attrs[] = {
+> +	&mdev_type_attr_name.attr,
+> +	&mdev_type_attr_device_api.attr,
+> +	&mdev_type_attr_available_instances.attr,
+> +	&mdev_type_attr_type.attr,
+> +	NULL,
+> +};
+> +
+> +static struct attribute_group mdev_type_group = {
+> +	.name  = "vdpa_virtio",
+
+
+To be consistent, it should be "vhost" or "virtio".
+
+
+> +	.attrs = mdev_types_attrs,
+> +};
+> +
+> +static struct attribute_group *mdev_type_groups[] = {
+> +	&mdev_type_group,
+> +	NULL,
+> +};
+> +
+> +const struct attribute_group *mdev_dev_groups[] = {
+> +	NULL,
+> +};
+> +
+> +static int ifcvf_mdev_create(struct kobject *kobj, struct mdev_device *mdev)
+> +{
+> +	struct device *dev = mdev_parent_dev(mdev);
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
+> +	int ret = 0;
+> +
+> +	mutex_lock(&adapter->mdev_lock);
+> +
+> +	if (adapter->mdev_count < 1) {
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	mdev_set_class_id(mdev, MDEV_ID_VHOST);
+> +	mdev_set_dev_ops(mdev, &ifc_mdev_ops);
+> +
+> +	mdev_set_drvdata(mdev, adapter);
+> +	mdev_set_iommu_device(mdev_dev(mdev), dev);
+> +
+> +	INIT_LIST_HEAD(&adapter->dma_maps);
+> +	adapter->mdev_count--;
+> +
+> +out:
+> +	mutex_unlock(&adapter->mdev_lock);
+> +	return ret;
+> +}
+> +
+> +static int ifcvf_mdev_remove(struct mdev_device *mdev)
+> +{
+> +	struct device *dev = mdev_parent_dev(mdev);
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
+> +
+> +	mutex_lock(&adapter->mdev_lock);
+> +	adapter->mdev_count++;
+> +	mutex_unlock(&adapter->mdev_lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct mdev_parent_ops ifcvf_mdev_fops = {
+> +	.owner			= THIS_MODULE,
+> +	.supported_type_groups	= mdev_type_groups,
+> +	.mdev_attr_groups	= mdev_dev_groups,
+> +	.create			= ifcvf_mdev_create,
+> +	.remove			= ifcvf_mdev_remove,
+> +};
+> +
+> +static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct ifcvf_adapter *adapter;
+> +	struct ifcvf_hw *vf;
+> +	int ret, i;
+> +
+> +	adapter = kzalloc(sizeof(struct ifcvf_adapter), GFP_KERNEL);
+> +	if (adapter == NULL) {
+> +		ret = -ENOMEM;
+> +		goto fail;
+> +	}
+> +
+> +	mutex_init(&adapter->mdev_lock);
+> +	adapter->mdev_count = 1;
+
+
+So this is per VF based vDPA implementation, which seems not convenient 
+for management.  Anyhow we can control the creation in PF?
+
+Thanks
+
+
+> +	adapter->dev = dev;
+> +
+> +	pci_set_drvdata(pdev, adapter);
+> +
+> +	ret = pci_enable_device(pdev);
+> +	if (ret) {
+> +		IFC_ERR(adapter->dev, "Failed to enable device.\n");
+> +		goto free_adapter;
+> +	}
+> +
+> +	ret = pci_request_regions(pdev, IFCVF_DRIVER_NAME);
+> +	if (ret) {
+> +		IFC_ERR(adapter->dev, "Failed to request MMIO region.\n");
+> +		goto disable_device;
+> +	}
+> +
+> +	pci_set_master(pdev);
+> +
+> +	ret = ifcvf_init_msix(adapter);
+> +	if (ret) {
+> +		IFC_ERR(adapter->dev, "Failed to initialize MSIX.\n");
+> +		goto free_msix;
+> +	}
+> +
+> +	vf = &adapter->vf;
+> +	for (i = 0; i < IFCVF_PCI_MAX_RESOURCE; i++) {
+> +		vf->mem_resource[i].phys_addr = pci_resource_start(pdev, i);
+> +		vf->mem_resource[i].len = pci_resource_len(pdev, i);
+> +		if (!vf->mem_resource[i].len) {
+> +			vf->mem_resource[i].addr = NULL;
+> +			continue;
+> +		}
+> +
+> +		vf->mem_resource[i].addr = pci_iomap_range(pdev, i, 0,
+> +				vf->mem_resource[i].len);
+> +		if (!vf->mem_resource[i].addr) {
+> +			IFC_ERR(adapter->dev, "Failed to map IO resource %d\n",
+> +				i);
+> +			return -1;
+> +		}
+> +	}
+> +
+> +	if (ifcvf_init_hw(vf, pdev) < 0)
+> +		return -1;
+> +
+> +	ret = mdev_register_device(dev, &ifcvf_mdev_fops);
+> +	if (ret) {
+> +		IFC_ERR(adapter->dev,  "Failed to register mdev device\n");
+> +		goto destroy_adapter;
+> +	}
+> +
+> +	return 0;
+> +
+> +destroy_adapter:
+> +	ifcvf_destroy_adapter(adapter);
+> +free_msix:
+> +	pci_free_irq_vectors(pdev);
+> +	pci_release_regions(pdev);
+> +disable_device:
+> +	pci_disable_device(pdev);
+> +free_adapter:
+> +	kfree(adapter);
+> +fail:
+> +	return ret;
+> +}
+> +
+> +static void ifcvf_remove(struct pci_dev *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
+> +	struct ifcvf_hw *vf;
+> +	int i;
+> +
+> +	mdev_unregister_device(dev);
+> +
+> +	vf = &adapter->vf;
+> +	for (i = 0; i < IFCVF_PCI_MAX_RESOURCE; i++) {
+> +		if (vf->mem_resource[i].addr) {
+> +			pci_iounmap(pdev, vf->mem_resource[i].addr);
+> +			vf->mem_resource[i].addr = NULL;
+> +		}
+> +	}
+> +
+> +	ifcvf_destroy_adapter(adapter);
+> +	pci_free_irq_vectors(pdev);
+> +
+> +	pci_release_regions(pdev);
+> +	pci_disable_device(pdev);
+> +
+> +	kfree(adapter);
+> +}
+> +
+> +static struct pci_device_id ifcvf_pci_ids[] = {
+> +	{ PCI_DEVICE_SUB(IFCVF_VENDOR_ID,
+> +			IFCVF_DEVICE_ID,
+> +			IFCVF_SUBSYS_VENDOR_ID,
+> +			IFCVF_SUBSYS_DEVICE_ID) },
+> +	{ 0 },
+> +};
+> +MODULE_DEVICE_TABLE(pci, ifcvf_pci_ids);
+> +
+> +static struct pci_driver ifcvf_driver = {
+> +	.name     = IFCVF_DRIVER_NAME,
+> +	.id_table = ifcvf_pci_ids,
+> +	.probe    = ifcvf_probe,
+> +	.remove   = ifcvf_remove,
+> +};
+> +
+> +static int __init ifcvf_init_module(void)
+> +{
+> +	int ret;
+> +
+> +	ret = pci_register_driver(&ifcvf_driver);
+> +	return ret;
+> +}
+> +
+> +static void __exit ifcvf_exit_module(void)
+> +{
+> +	pci_unregister_driver(&ifcvf_driver);
+> +}
+> +
+> +module_init(ifcvf_init_module);
+> +module_exit(ifcvf_exit_module);
+> +
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_VERSION(VERSION_STRING);
+> +MODULE_AUTHOR(DRIVER_AUTHOR);
