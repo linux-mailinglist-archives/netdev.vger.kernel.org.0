@@ -2,104 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C315D8B88
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 10:42:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A217BD8B8C
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 10:43:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390062AbfJPImr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 04:42:47 -0400
-Received: from smtp2.goneo.de ([85.220.129.33]:59808 "EHLO smtp2.goneo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731936AbfJPImr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 04:42:47 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by smtp2.goneo.de (Postfix) with ESMTP id 8B717240A7C;
-        Wed, 16 Oct 2019 10:42:43 +0200 (CEST)
-X-Virus-Scanned: by goneo
-X-Spam-Flag: NO
-X-Spam-Score: -3.08
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.08 tagged_above=-999 tests=[ALL_TRUSTED=-1,
-        AWL=-0.180, BAYES_00=-1.9] autolearn=ham
-Received: from smtp2.goneo.de ([127.0.0.1])
-        by localhost (smtp2.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id h5fgb4HpxPzc; Wed, 16 Oct 2019 10:42:42 +0200 (CEST)
-Received: from lem-wkst-02.lemonage (hq.lemonage.de [87.138.178.34])
-        by smtp2.goneo.de (Postfix) with ESMTPSA id B4BA5240FB1;
-        Wed, 16 Oct 2019 10:42:41 +0200 (CEST)
-Date:   Wed, 16 Oct 2019 10:42:37 +0200
-From:   Lars Poeschel <poeschel@lemonage.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jilayne Lovejoy <opensource@jilayne.com>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Allison Randal <allison@lohutok.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steve Winslow <swinslow@gmail.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Johan Hovold <johan@kernel.org>,
-        "open list:NFC SUBSYSTEM" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v9 4/7] nfc: pn533: Split pn533 init & nfc_register
-Message-ID: <20191016084236.GA6610@lem-wkst-02.lemonage>
-References: <20191008140544.17112-1-poeschel@lemonage.de>
- <20191008140544.17112-5-poeschel@lemonage.de>
- <20191009174023.528c278b@cakuba.netronome.com>
- <20191015095124.GA17778@lem-wkst-02.lemonage>
- <20191015091642.6f49dd8f@cakuba.netronome.com>
+        id S1732080AbfJPInf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 04:43:35 -0400
+Received: from imap1.codethink.co.uk ([176.9.8.82]:41653 "EHLO
+        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727016AbfJPIne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 04:43:34 -0400
+Received: from [167.98.27.226] (helo=[10.35.5.173])
+        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
+        id 1iKeu2-0000B8-Ev; Wed, 16 Oct 2019 09:43:30 +0100
+Subject: Re: [PATCH] net: stmmac: fix argument to stmmac_pcs_ctrl_ane()
+To:     linux-kernel@lists.codethink.co.uk
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20191016082205.26899-1-ben.dooks@codethink.co.uk>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+Message-ID: <27111986-1fc4-534d-9cd8-65bcab94a840@codethink.co.uk>
+Date:   Wed, 16 Oct 2019 09:43:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191015091642.6f49dd8f@cakuba.netronome.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191016082205.26899-1-ben.dooks@codethink.co.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 09:16:42AM -0700, Jakub Kicinski wrote:
-> On Tue, 15 Oct 2019 11:51:24 +0200, Lars Poeschel wrote:
-> > > > -	priv->nfc_dev = nfc_allocate_device(&pn533_nfc_ops, protocols,
-> > > > -					   priv->ops->tx_header_len +
-> > > > -					   PN533_CMD_DATAEXCH_HEAD_LEN,
-> > > > -					   priv->ops->tx_tail_len);
-> > > > -	if (!priv->nfc_dev) {
-> > > > -		rc = -ENOMEM;
-> > > > -		goto destroy_wq;
-> > > > -	}
-> > > > -
-> > > > -	nfc_set_parent_dev(priv->nfc_dev, parent);
-> > > > -	nfc_set_drvdata(priv->nfc_dev, priv);
-> > > > -
-> > > > -	rc = nfc_register_device(priv->nfc_dev);
-> > > > -	if (rc)
-> > > > -		goto free_nfc_dev;  
-> > > 
-> > > Aren't you moving too much out of here? Looking at commit 32ecc75ded72
-> > > ("NFC: pn533: change order operations in dev registation") it seems like
-> > > IRQ handler may want to access the data structures, do this change not
-> > > reintroduce the problem?  
-> > 
-> > Yes, you are right, there could be a problem if an irq gets served
-> > before the driver is registered to the nfc subsystem.
-> > Well, but the purpose of this patch is exactly that: Prevent use of nfc
-> > subsystem before the chip is fully initialized.
-> > To address this, I would not change the part above, but move the
-> > request_threaded_irq to the very bottom in pn533_i2c_probe, after the
-> > call to pn53x_register_nfc. So it is not possible to use nfc before the
-> > chip is initialized and irqs don't get served before the driver is
-> > registered to nfc subsystem.
-> > Thank you for this!
-> > I will include this in v10 of the patchset.
+On 16/10/2019 09:22, Ben Dooks (Codethink) wrote:
+> The stmmac_pcs_ctrl_ane() expects a register address as
+> argument 1, but for some reason the mac_device_info is
+> being passed.
 > 
-> You can run nfc_allocate_device() etc. early, then allocate the IRQ,
-> and then run nfc_register_device(), would that work? Is that what you
-> have in mind?
+> Fix the warning (and possible bug) from sparse:
+> 
+> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17: warning: incorrect type in argument 1 (different address spaces)
+> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17:    expected void [noderef] <asn:2> *ioaddr
+> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17:    got struct mac_device_info *hw
 
-Well, I think my proposed solution above would technically do it, but I
-think I will do it like you proposed. I think for someone reading the
-code it is far more easier to understand, what the idea behind it is, if
-the irq is requested right between nfc_allocate_device and
-nfc_register_device.
-Thanks again!
+apologies, looks like I reposted this by accident.
 
+
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
+
+https://www.codethink.co.uk/privacy.html
