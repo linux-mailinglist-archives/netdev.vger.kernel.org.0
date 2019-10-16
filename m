@@ -2,50 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7003D856D
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 03:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5331D857B
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 03:31:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730931AbfJPBTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 21:19:38 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42900 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbfJPBTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 21:19:37 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1873511F5F798;
-        Tue, 15 Oct 2019 18:19:37 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 18:19:36 -0700 (PDT)
-Message-Id: <20191015.181936.1206475589133546355.davem@davemloft.net>
-To:     jgross@suse.com
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, wei.liu@kernel.org, paul@xen.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH 0/2] xen/netback: bug fix and cleanup
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191014090910.9701-1-jgross@suse.com>
-References: <20191014090910.9701-1-jgross@suse.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 15 Oct 2019 18:19:37 -0700 (PDT)
+        id S2389021AbfJPBbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 21:31:08 -0400
+Received: from mga17.intel.com ([192.55.52.151]:60917 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726786AbfJPBbI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Oct 2019 21:31:08 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Oct 2019 18:31:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,302,1566889200"; 
+   d="scan'208";a="279378776"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO localhost.localdomain) ([10.249.68.79])
+  by orsmga001.jf.intel.com with ESMTP; 15 Oct 2019 18:30:53 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        zhiyuan.lv@intel.com, Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [RFC 0/2] Intel IFC VF driver for vdpa
+Date:   Wed, 16 Oct 2019 09:30:48 +0800
+Message-Id: <20191016013050.3918-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
-Date: Mon, 14 Oct 2019 11:09:08 +0200
+Hi all:
+ 
+This series intends to introduce Intel IFC VF NIC driver for Vhost
+Data Plane Acceleration.
+ 
+Here comes two main parts, one is ifcvf_base layer, which handles
+hardware operations. The other is ifcvf_main layer handles VF
+initialization, configuration and removal, which depends on
+and complys to vhost_mdev https://lkml.org/lkml/2019/9/26/15 
+ 
+This is a first RFC try, please help review.
+ 
+Thanks!
+BR
+Zhu Lingshan
 
-> One bugfix (patch 1) I stumbled over while doing a cleanup (patch 2)
-> of the xen-netback init/deinit code.
 
-Please do not mix cleanups and genuine bug fixes.
+Zhu Lingshan (2):
+  vhost: IFC VF hardware operation layer
+  vhost: IFC VF vdpa layer
 
-Submit the bug fix targetting the 'net' GIT tree, and once that eventually
-gets merged into 'net-next' you can submit the cleanup against that.
+ drivers/vhost/ifcvf/ifcvf_base.c | 390 ++++++++++++++++++++++++++++
+ drivers/vhost/ifcvf/ifcvf_base.h | 137 ++++++++++
+ drivers/vhost/ifcvf/ifcvf_main.c | 541 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1068 insertions(+)
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.c
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.h
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
 
-Thanks.
+-- 
+2.16.4
+
