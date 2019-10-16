@@ -2,51 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1718D991D
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:25:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E20F2D9936
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390933AbfJPSZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 14:25:35 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52636 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730253AbfJPSZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 14:25:35 -0400
-Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BC55C1425BD91;
-        Wed, 16 Oct 2019 11:25:34 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 14:25:34 -0400 (EDT)
-Message-Id: <20191016.142534.1360443052637911866.davem@davemloft.net>
-To:     lucien.xin@gmail.com
-Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, nhorman@tuxdriver.com,
-        david.laight@aculab.com
-Subject: Re: [PATCHv3 net-next 0/5] sctp: update from rfc7829
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1571033544.git.lucien.xin@gmail.com>
-References: <cover.1571033544.git.lucien.xin@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 11:25:35 -0700 (PDT)
+        id S2394225AbfJPSad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 14:30:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60046 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390895AbfJPSac (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 14:30:32 -0400
+Received: from localhost (li1825-44.members.linode.com [172.104.248.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4EA51218DE;
+        Wed, 16 Oct 2019 18:30:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571250632;
+        bh=YUlJQf0q4MGsg0ffIebPtBuNdy0JVjUzZ2aGCptF0K4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xvc9zM+ubcObecxlfk5icYjHF6LLmgLlDLGVbaKMmFMMqOJ0Hw7/qpsiqFGtLuH57
+         fDKzJPozfQTkV+yFhjU5FpeH6wFe+DRmCi61olJom9W/tUTVmuWunfhxjC4PiAwW6q
+         WnRK6/uJNmIk3Z5TVZiBi6oznIzLHMTeaIGdcPdA=
+Date:   Wed, 16 Oct 2019 11:30:27 -0700
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Ajay Kaher <akaher@vmware.com>, Mao Wenan <maowenan@huawei.com>
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, jmorris@namei.org,
+        yoshfuji@linux-ipv6.org, kaber@trash.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        srivatsab@vmware.com, srivatsa@csail.mit.edu, amakhalov@vmware.com,
+        srinidhir@vmware.com, bvikas@vmware.com, anishs@vmware.com,
+        vsirnapalli@vmware.com, srostedt@vmware.com,
+        Mao Wenan <maowenan@huawei.com>
+Subject: Re: [PATCH 4.9.y] Revert "net: sit: fix memory leak in
+ sit_init_net()"
+Message-ID: <20191016183027.GC801860@kroah.com>
+References: <1571216634-44834-1-git-send-email-akaher@vmware.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571216634-44834-1-git-send-email-akaher@vmware.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
-Date: Mon, 14 Oct 2019 14:14:43 +0800
+On Wed, Oct 16, 2019 at 02:33:54PM +0530, Ajay Kaher wrote:
+> This reverts commit 375d6d454a95ebacb9c6eb0b715da05a4458ffef which is
+> commit 07f12b26e21ab359261bf75cfcb424fdc7daeb6d upstream.
+> 
+> Unnecessarily calling free_netdev() from sit_init_net().
+> ipip6_dev_free() of 4.9.y called free_netdev(), so no need
+> to call again after ipip6_dev_free().
+> 
+> Cc: Mao Wenan <maowenan@huawei.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Ajay Kaher <akaher@vmware.com>
+> ---
+>  net/ipv6/sit.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+> index 47ca2a2..16eba7b 100644
+> --- a/net/ipv6/sit.c
+> +++ b/net/ipv6/sit.c
+> @@ -1856,7 +1856,6 @@ static int __net_init sit_init_net(struct net *net)
+>  
+>  err_reg_dev:
+>  	ipip6_dev_free(sitn->fb_tunnel_dev);
+> -	free_netdev(sitn->fb_tunnel_dev);
+>  err_alloc_dev:
+>  	return err;
+>  }
+> -- 
+> 2.7.4
+> 
 
-> SCTP-PF was implemented based on a Internet-Draft in 2012:
-> 
->   https://tools.ietf.org/html/draft-nishida-tsvwg-sctp-failover-05
-> 
-> It's been updated quite a few by rfc7829 in 2016.
-> 
-> This patchset adds the following features:
+Mao, are you ok with this change?
 
-Sorry but I'm tossing these until an knowledgable SCTP person can
-look at them.
+thanks,
+
+greg k-h
