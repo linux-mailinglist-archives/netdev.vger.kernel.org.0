@@ -2,55 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75378D9C14
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7083DD9C25
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 23:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389397AbfJPU51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 16:57:27 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54616 "EHLO mx1.redhat.com"
+        id S2406497AbfJPVDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 17:03:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35456 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730412AbfJPU50 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 16:57:26 -0400
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726565AbfJPVDX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 17:03:23 -0400
+Received: from localhost.localdomain (unknown [151.66.3.111])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 036A2C04AC50
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 20:57:26 +0000 (UTC)
-Received: by mail-qt1-f200.google.com with SMTP id d6so65493qtn.2
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 13:57:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DBQ7gpZ68XC9yJUIRmvhGT9ykcxZ7LBo1PQ5kgI2O8M=;
-        b=MieQ3uXYm5VvK+R/0x5vupBFkbINUFftrh8JB9NfRWlqjMGcXm0tpWM2x8qxrrVnwe
-         2RHeidykTQlxyK1CKEQ83sOFpBYrQ/hxAiKNFxqteZWpfBm8V46EZHVQ+PnkV0V6AwzA
-         Klq9K/Uu7Yb403vQd+rLijKSASRParp+neLEmbpt/PtFIA02wDmKbJ9JT5MxIwI1QEme
-         PpfyEkdd2TKX5Wos/F81Qurae16mJPV4Lypj4/J39aqqUrMEyNUXTTINdMTd9JMeylR2
-         r9Lrd1ImZTvbqAONK92ibG0WEO1033W0tI8kIQ/8V2dDPNPAMnvJtw19flopOtKVwTSu
-         8+qg==
-X-Gm-Message-State: APjAAAWmvZ8tef44NtNVKeodOoRAOZ3e9CZHwpDj9Gm0p4ot2jwMKxnq
-        0l5Gvhy1TxjmtuFex0sBQxozMzXcLcd4cjsmqeNTm6U+HuIphzZGjOF1Ko8fmw1XdELJ1vPzWMA
-        DG3oTrTE6nWawtqV9
-X-Received: by 2002:a0c:eda9:: with SMTP id h9mr30851qvr.125.1571259444743;
-        Wed, 16 Oct 2019 13:57:24 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxtZQ1p9uv2sCQ5sckBZmJmAmvdBRNeFuMdkuR0mLRWv2XsHKm8h8LAyLgrLZlCxrCo9UBhpQ==
-X-Received: by 2002:a0c:eda9:: with SMTP id h9mr30831qvr.125.1571259444351;
-        Wed, 16 Oct 2019 13:57:24 -0700 (PDT)
-Received: from labbott-redhat.redhat.com (pool-96-235-39-235.pitbpa.fios.verizon.net. [96.235.39.235])
-        by smtp.gmail.com with ESMTPSA id 16sm26966qkj.59.2019.10.16.13.57.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 13:57:23 -0700 (PDT)
-From:   Laura Abbott <labbott@redhat.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Laura Abbott <labbott@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nicolas Waisman <nico@semmle.com>
-Subject: [PATCH] rtlwifi: Fix potential overflow on P2P code
-Date:   Wed, 16 Oct 2019 16:57:16 -0400
-Message-Id: <20191016205716.2843-1-labbott@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id C47D020872;
+        Wed, 16 Oct 2019 21:03:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571259802;
+        bh=hd5sTpCzaxiyxUfwpjomQM3HNySDB2BN3Xa2f7YKVSk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=O34+z4EoPPxWNOnwXXKFjZWnLWdznJdo7VvKod5Yw/jxkcRSRvGGjWN1WWQhXrOxe
+         R5NEoILZAOuulxT4jdnLtMIaMrruc96BW+ShnQZkF7Y7HBLXpP07oK3C9Vh2Srdame
+         kwzweShAi1o9Jepw6Sdb4Tc9VrJRPfGFn141E1yY=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        thomas.petazzoni@bootlin.com, brouer@redhat.com,
+        ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
+        mw@semihalf.com, jakub.kicinski@netronome.com
+Subject: [PATCH v4 net-next 0/7] add XDP support to mvneta driver
+Date:   Wed, 16 Oct 2019 23:03:05 +0200
+Message-Id: <cover.1571258792.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -59,51 +40,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nicolas Waisman noticed that even though noa_len is checked for
-a compatible length it's still possible to overrun the buffers
-of p2pinfo since there's no check on the upper bound of noa_num.
-Bounds check noa_num against P2P_MAX_NOA_NUM.
+Add XDP support to mvneta driver for devices that rely on software
+buffer management. Supported verdicts are:
+- XDP_DROP
+- XDP_PASS
+- XDP_REDIRECT
+- XDP_TX
+Moreover set ndo_xdp_xmit net_device_ops function pointer in order
+to support redirecting from other device (e.g. virtio-net).
+Convert mvneta driver to page_pool API.
+This series is based on previous work done by Jesper and Ilias.
+We will send follow-up patches to reduce DMA-sync operations.
 
-Reported-by: Nicolas Waisman <nico@semmle.com>
-Signed-off-by: Laura Abbott <labbott@redhat.com>
----
-Compile tested only as this was reported to the security list.
----
- drivers/net/wireless/realtek/rtlwifi/ps.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Changes since v3:
+- rename MVNETA_XDP_CONSUMED in MVNETA_XDP_DROPPED
+- squash patch 4/8 and patch 3/8
+- fix dma sync for XDP_TX verdict
+- fix queue_index in xdp_rxq_info_reg
+- cosmetics
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/ps.c b/drivers/net/wireless/realtek/rtlwifi/ps.c
-index 70f04c2f5b17..c5cff598383d 100644
---- a/drivers/net/wireless/realtek/rtlwifi/ps.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
-@@ -754,6 +754,13 @@ static void rtl_p2p_noa_ie(struct ieee80211_hw *hw, void *data,
- 				return;
- 			} else {
- 				noa_num = (noa_len - 2) / 13;
-+				if (noa_num > P2P_MAX_NOA_NUM) {
-+					RT_TRACE(rtlpriv, COMP_INIT, DBG_LOUD,
-+						 "P2P notice of absence: invalid noa_num.%d\n",
-+						 noa_num);
-+					return;
-+				}
-+
- 			}
- 			noa_index = ie[3];
- 			if (rtlpriv->psc.p2p_ps_info.p2p_ps_mode ==
-@@ -848,6 +855,13 @@ static void rtl_p2p_action_ie(struct ieee80211_hw *hw, void *data,
- 				return;
- 			} else {
- 				noa_num = (noa_len - 2) / 13;
-+				if (noa_num > P2P_MAX_NOA_NUM) {
-+					RT_TRACE(rtlpriv, COMP_FW, DBG_LOUD,
-+						 "P2P notice of absence: invalid noa_len.%d\n",
-+						 noa_len);
-+					return;
-+
-+				}
- 			}
- 			noa_index = ie[3];
- 			if (rtlpriv->psc.p2p_ps_info.p2p_ps_mode ==
+Changes since v2:
+- rely on page_pool_recycle_direct instead of xdp_return_buff for XDP_DROP
+- define xdp buffer in mvneta_rx_swbm and avoid default initializations
+- use dma_sync_single_for_cpu instead of dma_sync_single_range_for_cpu
+- run page_pool_release_page in mvneta_swbm_add_rx_fragment even if
+  the buffer contains just ETH_FCS
+
+Changes since v1:
+- sync dma buffers before refilling hw queues
+- fix stats accounting
+
+Changes since RFC:
+- implement XDP_TX
+- make tx pending buffer list agnostic
+- code refactoring
+- check if device is running in mvneta_xdp_setup
+
+Lorenzo Bianconi (7):
+  net: mvneta: introduce mvneta_update_stats routine
+  net: mvneta: introduce page pool API for sw buffer manager
+  net: mvneta: rely on build_skb in mvneta_rx_swbm poll routine
+  net: mvneta: add basic XDP support
+  net: mvneta: move header prefetch in mvneta_swbm_rx_frame
+  net: mvneta: make tx buffer array agnostic
+  net: mvneta: add XDP_TX support
+
+ drivers/net/ethernet/marvell/Kconfig  |   1 +
+ drivers/net/ethernet/marvell/mvneta.c | 632 +++++++++++++++++++-------
+ 2 files changed, 473 insertions(+), 160 deletions(-)
+
 -- 
 2.21.0
 
