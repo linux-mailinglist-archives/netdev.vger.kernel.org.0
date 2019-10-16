@@ -2,30 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22EF3D90B1
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:22:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12476D90BC
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:24:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392951AbfJPMWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 08:22:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48228 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387581AbfJPMWD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 08:22:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Dxyt+ZOiCiHKtL/UeQs81zIxekX5q0wpGSVddf2x5d8=; b=fosF19Oy801w1a4Ztm9zgHINtT
-        S281NvrHjvUVd/K6p+PV/3v12HcPstTEIZDXwqBifAivm5nvtVd34RAQeNPGfDPUlvANwSetLsOEW
-        DCo8UpWRW94TXRzURLaTvXuvxuBH1nv/B95XpGYsRVucfGHIaZXx7DWtGKqV9+cO3JOY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iKiJM-0007Hy-Ba; Wed, 16 Oct 2019 14:21:52 +0200
-Date:   Wed, 16 Oct 2019 14:21:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
+        id S2392983AbfJPMYR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 08:24:17 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:53099 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387581AbfJPMYQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 08:24:16 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iKiLU-0004AS-AG; Wed, 16 Oct 2019 14:24:04 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iKiLR-0005zs-CJ; Wed, 16 Oct 2019 14:24:01 +0200
+Date:   Wed, 16 Oct 2019 14:24:01 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Chris Snook <chris.snook@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         James Hogan <jhogan@kernel.org>,
@@ -40,111 +36,99 @@ Cc:     Chris Snook <chris.snook@gmail.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-mips@vger.kernel.org
-Subject: Re: [PATCH v1 2/4] dt-bindings: net: dsa: qca,ar9331 switch
- documentation
-Message-ID: <20191016122152.GE4780@lunn.ch>
+Subject: Re: [PATCH v1 1/4] net: ag71xx: port to phylink
+Message-ID: <20191016122401.jnldnlwruv7h5kgy@pengutronix.de>
 References: <20191014061549.3669-1-o.rempel@pengutronix.de>
- <20191014061549.3669-3-o.rempel@pengutronix.de>
+ <20191014061549.3669-2-o.rempel@pengutronix.de>
+ <20191016121216.GD4780@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191014061549.3669-3-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20191016121216.GD4780@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:20:56 up 151 days, 18:39, 100 users,  load average: 0.12, 0.11,
+ 0.04
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 14, 2019 at 08:15:47AM +0200, Oleksij Rempel wrote:
-> Atheros AR9331 has built-in 5 port switch. The switch can be configured
-> to use all 5 or 4 ports. One of built-in PHYs can be used by first built-in
-> ethernet controller or to be used directly by the switch over second ethernet
-> controller.
+On Wed, Oct 16, 2019 at 02:12:16PM +0200, Andrew Lunn wrote:
+> On Mon, Oct 14, 2019 at 08:15:46AM +0200, Oleksij Rempel wrote:
+> > The port to phylink was done as close as possible to initial
+> > functionality.
+> > Theoretically this HW can support flow control, practically seems to be not
+> > enough to just enable it. So, more work should be done.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  .../devicetree/bindings/net/dsa/ar9331.txt    | 155 ++++++++++++++++++
->  1 file changed, 155 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/ar9331.txt
+> Hi Oleksij
 > 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/ar9331.txt b/Documentation/devicetree/bindings/net/dsa/ar9331.txt
-> new file mode 100644
-> index 000000000000..b0f95fd19584
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/ar9331.txt
-> @@ -0,0 +1,155 @@
-> +Atheros AR9331 built-in switch
-> +=============================
-> +
-> +It is a switch built-in to Atheros AR9331 WiSoC and addressable over internal
-> +MDIO bus. All PHYs are build-in as well. 
-> +
-> +Required properties:
-> +
-> + - compatible: should be: "qca,ar9331-switch" 
-> + - reg: Address on the MII bus for the switch.
-> + - resets : Must contain an entry for each entry in reset-names.
-> + - reset-names : Must include the following entries: "switch"
-> + - interrupt-parent: Phandle to the parent interrupt controller
-> + - interrupts: IRQ line for the switch
-> + - interrupt-controller: Indicates the switch is itself an interrupt
-> +   controller. This is used for the PHY interrupts.
-> + - #interrupt-cells: must be 1
-> + - mdio: Container of PHY and devices on the switches MDIO bus.
-> +
-> +See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
-> +required and optional properties.
-> +Examples:
-> +
-> +eth0: ethernet@19000000 {
-> +	compatible = "qca,ar9330-eth";
-> +	reg = <0x19000000 0x200>;
-> +	interrupts = <4>;
-> +
-> +	resets = <&rst 9>, <&rst 22>;
-> +	reset-names = "mac", "mdio";
-> +	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_AHB>;
-> +	clock-names = "eth", "mdio";
-> +
-> +	phy-mode = "mii";
-> +	phy-handle = <&phy_port4>;
+> Please include Russell King in Cc: in future.
 
-This does not seem like a valid example. If phy_port4 is listed here,
-i would expect switch_port 5 to be totally missing?
+He was included in To:. Do you mean, I need to move him from To to Cc?
 
-> +};
-> +
-> +eth1: ethernet@1a000000 {
-> +	compatible = "qca,ar9330-eth";
-> +	reg = <0x1a000000 0x200>;
-> +	interrupts = <5>;
-> +	resets = <&rst 13>, <&rst 23>;
-> +	reset-names = "mac", "mdio";
-> +	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_AHB>;
-> +	clock-names = "eth", "mdio";
-> +
-> +	phy-mode = "gmii";
-> +	phy-handle = <&switch_port0>;
-> +
-> +	fixed-link {
-> +		speed = <1000>;
-> +		full-duplex;
-> +	};
+> > -static void ag71xx_phy_link_adjust(struct net_device *ndev)
+> > +static void ag71xx_mac_validate(struct phylink_config *config,
+> > +			    unsigned long *supported,
+> > +			    struct phylink_link_state *state)
+> >  {
+> > -	struct ag71xx *ag = netdev_priv(ndev);
+> > +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+> > +
+> > +	if (state->interface != PHY_INTERFACE_MODE_NA &&
+> > +	    state->interface != PHY_INTERFACE_MODE_GMII &&
+> > +	    state->interface != PHY_INTERFACE_MODE_MII) {
+> > +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> > +		return;
+> > +	}
+> > +
+> > +	phylink_set(mask, MII);
+> > +
+> > +	/* flow control is not supported */
+> >  
+> > -	ag71xx_link_adjust(ag, true);
+> > +	phylink_set(mask, 10baseT_Half);
+> > +	phylink_set(mask, 10baseT_Full);
+> > +	phylink_set(mask, 100baseT_Half);
+> > +	phylink_set(mask, 100baseT_Full);
+> > +
+> > +	phylink_set(mask, 1000baseT_Full);
+> > +	phylink_set(mask, 1000baseX_Full);
+> 
+> Can the MAC/PHY dynamically switch between MII and GMII? Maybe you
+> should only add 1G support when interface is GMII?
 
-You also cannot have both a fixed-link and a phy-handle.
+OK, good point.
 
-> +
-> +	mdio {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		switch10: switch@10 {
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +
-> +			compatible = "qca,ar9331-switch";
-> +			reg = <16>;
+> > @@ -1239,6 +1255,13 @@ static int ag71xx_open(struct net_device *ndev)
+> >  	unsigned int max_frame_len;
+> >  	int ret;
+> >  
+> > +	ret = phylink_of_phy_connect(ag->phylink, ag->pdev->dev.of_node, 0);
+> > +	if (ret) {
+> > +		netif_info(ag, link, ndev, "phylink_of_phy_connect filed with err: %i\n",
+> > +			   ret);
+> 
+> netif_info seems wrong. _err()?
 
-Maybe don't mix up hex and decimal? switch16: switch@16.
+Yes, will fix it.
 
-      Andrew
+Regards,
+Oleksij.
+
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
