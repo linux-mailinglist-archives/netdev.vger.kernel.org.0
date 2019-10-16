@@ -2,90 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 244E3D99C1
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 21:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC3EED99C5
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 21:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390834AbfJPTLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 15:11:24 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:55554 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728944AbfJPTLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 15:11:24 -0400
-Received: by mail-wm1-f68.google.com with SMTP id a6so4081627wma.5;
-        Wed, 16 Oct 2019 12:11:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CC/Oz8bKqaGFSofX6Ax5x3Ge+1uAz440v/0zTckEN3g=;
-        b=PjQk+up0muRoEZm4raHETsvdsjk4FbkAun42jKLH+uLOAJAw+Bh2BQ3SbsPrDeefmI
-         LTkSNcd/ZyX7K+q9vjMZoH251ChO6HT7+7XZirypTea2B1FSn1a9SV7MzNNyhRpTK8JT
-         MdmWMvlfk7hnWp0Wrly9wHDzQ5sWFb8LTiQYEAcF3JgyE2knomthyb1xoo0p4so+XGRC
-         thfaxRbLE+XQKXMtuz8gXlpoZuHt2Nb8VfHAJMNztIzGFHo6s8ggZpYPQ0RT2GVOaqX1
-         ukRzQEi5uOjoQaHBbZ89GgTNG6zFY/chlde5A9cDWOH4006/iMZqQueEz7xYPJB4s4Pq
-         kOHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CC/Oz8bKqaGFSofX6Ax5x3Ge+1uAz440v/0zTckEN3g=;
-        b=jKHCuCiOB/dbWi/3NvJMKWojWy9+F1/gISl3ZRLaxvrgRBrskXhBe1reIm8+Ktg2mO
-         UfG6wjCT3MhSkklnn8Fz+67xZJIyHCCMD1zjVEe1DJ1e8L67CzXMWN5bxbrhW6pBBb6L
-         aBe1kCsScjJ8lAlnUdW0dwBDZGzac1O4mM7zofzw+w+RZByfzZDnPQcbqR4M9KwAgxDt
-         xrT4dOwMz45wBWjd/FjgAGUCzE5HXjG/zMSu79ZgxHa/N2PtNApXl9yaMHo1hIu/dnCV
-         ZXVpV1gBqr5Mr/DQbwVL9yGkKd3cF14BOR9sq04qpZKLwyOVM3igYR0zVdMHmDO4Nh9v
-         PcpA==
-X-Gm-Message-State: APjAAAVQJR7LCXdlW2lxtUscDfh/2yn3ptuVbN/gezwWA3L8Z7QvUUle
-        RNqUWO2JrZGGwUhJ/8dRyxSKqj4d
-X-Google-Smtp-Source: APXvYqwaF/88nLS0U5WgEhPgecpK0qKCac/hZu7LHmhAbGjUxlhqT7dfA8sHHKd9H3fXqtnKA/KsJA==
-X-Received: by 2002:a1c:f00a:: with SMTP id a10mr4927172wmb.89.1571253081847;
-        Wed, 16 Oct 2019 12:11:21 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f26:6400:d1a1:ef77:d584:db28? (p200300EA8F266400D1A1EF77D584DB28.dip0.t-ipconnect.de. [2003:ea:8f26:6400:d1a1:ef77:d584:db28])
-        by smtp.googlemail.com with ESMTPSA id u11sm3155473wmd.32.2019.10.16.12.11.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 16 Oct 2019 12:11:20 -0700 (PDT)
-Subject: Re: [PATCH net] net: phy: Fix "link partner" information disappear
- issue
-To:     Yonglong Liu <liuyonglong@huawei.com>, davem@davemloft.net,
-        andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@huawei.com, salil.mehta@huawei.com,
-        yisen.zhuang@huawei.com, shiju.jose@huawei.com
-References: <1571193039-36228-1-git-send-email-liuyonglong@huawei.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <df0878a8-3961-072d-5812-4bb7d249eab8@gmail.com>
-Date:   Wed, 16 Oct 2019 21:11:15 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2394303AbfJPTOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 15:14:19 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:49027 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731321AbfJPTOT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 15:14:19 -0400
+X-Originating-IP: 86.202.229.42
+Received: from localhost (lfbn-lyo-1-146-42.w86-202.abo.wanadoo.fr [86.202.229.42])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 4C4AB40007;
+        Wed, 16 Oct 2019 19:14:16 +0000 (UTC)
+Date:   Wed, 16 Oct 2019 21:14:16 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     vz@mleia.com, slemieux.tyco@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/2] net: lpc_eth: parse phy nodes from device tree
+Message-ID: <20191016191416.GA3125@piout.net>
+References: <20191010204530.15150-1-alexandre.belloni@bootlin.com>
+ <20191010204530.15150-2-alexandre.belloni@bootlin.com>
+ <20191016.142359.416946718751400991.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <1571193039-36228-1-git-send-email-liuyonglong@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191016.142359.416946718751400991.davem@davemloft.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.10.2019 04:30, Yonglong Liu wrote:
-> Some drivers just call phy_ethtool_ksettings_set() to set the
-> links, for those phy drivers that use genphy_read_status(), if
-> autoneg is on, and the link is up, than execute "ethtool -s
-> ethx autoneg on" will cause "link partner" information disappear.
-> 
-> The call trace is phy_ethtool_ksettings_set()->phy_start_aneg()
-> ->linkmode_zero(phydev->lp_advertising)->genphy_read_status(),
-> the link didn't change, so genphy_read_status() just return, and
-> phydev->lp_advertising is zero now.
-> 
-> This patch moves the clear operation of lp_advertising from
-> phy_start_aneg() to genphy_read_lpa()/genphy_c45_read_lpa(), and
-> if autoneg on and autoneg not complete, just clear what the
-> generic functions care about.
-> 
-> Fixes: 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in genphy_read_status")
-> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
-> ---
+Hi,
 
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+On 16/10/2019 14:23:59-0400, David Miller wrote:
+> From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Date: Thu, 10 Oct 2019 22:45:30 +0200
+> 
+> > When connected to a micrel phy, phy_find_first doesn't work properly
+> > because the first phy found is on address 0, the broadcast address but, the
+> > first thing the phy driver is doing is disabling this broadcast address.
+> > The phy is then available only on address 1 but the mdio driver doesn't
+> > know about it.
+> > 
+> > Instead, register the mdio bus using of_mdiobus_register and try to find
+> > the phy description in device tree before falling back to phy_find_first.
+> > 
+> > This ultimately also allows to describe the interrupt the phy is connected
+> > to.
+> > 
+> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> 
+> I asked you to address Andrew's feedback.
+> 
+> You can't let this sit for days like that.
+> 
+> Therefore, I'm dropping your patches.
+
+I'm planning to send a v2 to address that but I didn't have time to test
+today.
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
