@@ -2,72 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D9D1D9C51
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 23:14:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6536D9C58
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 23:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437453AbfJPVOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 17:14:24 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:31198 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727542AbfJPVOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 17:14:24 -0400
-X-UUID: f9a2bdba61694a888cf6cf18331c88e7-20191017
-X-UUID: f9a2bdba61694a888cf6cf18331c88e7-20191017
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 1589608840; Thu, 17 Oct 2019 05:14:18 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 17 Oct 2019 05:14:08 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Thu, 17 Oct 2019 05:14:09 +0800
-From:   <sean.wang@mediatek.com>
-To:     <davem@davemloft.net>
-CC:     <john@phrozen.org>, <nbd@openwrt.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>
-Subject: [PATCH net-next] net: Update address for MediaTek ethernet driver in MAINTAINERS
-Date:   Thu, 17 Oct 2019 05:14:08 +0800
-Message-ID: <fc0692002216a32b045a69f910e95c83c1ff559c.1571260085.git.sean.wang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
+        id S2437478AbfJPVQ7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 17:16:59 -0400
+Received: from lithops.sigma-star.at ([195.201.40.130]:46434 "EHLO
+        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727542AbfJPVQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 17:16:58 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 6708060632EE;
+        Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id XoiCMRDj9y1F; Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 17F5E60632C1;
+        Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id X13sxO1rFzJx; Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id D843F6083266;
+        Wed, 16 Oct 2019 23:16:54 +0200 (CEST)
+Date:   Wed, 16 Oct 2019 23:16:54 +0200 (CEST)
+From:   Richard Weinberger <richard@nod.at>
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Richard Weinberger <richard.weinberger@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        bridge@lists.linux-foundation.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Message-ID: <910194713.25283.1571260614731.JavaMail.zimbra@nod.at>
+In-Reply-To: <CAJieiUi-b5vcOTGqXcDpn9fxVwA9jyoMWEDM2F_ZgVfzdgFgeA@mail.gmail.com>
+References: <CAFLxGvwnOi6dSq5yLM78XskweQOY6aPbRt==G9wv5qS+dfj8bw@mail.gmail.com> <3A7BDEE0-7C07-4F23-BA01-F32AD41451BB@cumulusnetworks.com> <5A4A5745-5ADC-4AAC-B060-1BC9907C153C@cumulusnetworks.com> <CAJieiUi-b5vcOTGqXcDpn9fxVwA9jyoMWEDM2F_ZgVfzdgFgeA@mail.gmail.com>
+Subject: Re: Bridge port userspace events broken?
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-SNTS-SMTP: 7C6ADE6E34B7E473A3934605950146B500CBE6C8027DA7036AD9E205285D4E242000:8
-X-MTK:  N
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF60 (Linux)/8.8.12_GA_3809)
+Thread-Topic: Bridge port userspace events broken?
+Thread-Index: X0H1a+cAJkAg3/lVNpzTKtoYJLogig==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+Roopa, Nikolay,
 
-Update maintainers for MediaTek ethernet driver with Mark Lee.
-He is familiar with MediaTek mt762x series ethernet devices and
-will keep following maintenance from the vendor side.
+----- Ursprüngliche Mail -----
+> +1,  this can be fixed....but in general all new bridge and link
+> attributes have better support with netlink.
+> In this case its IFLA_BRPORT_GROUP_FWD_MASK link attribute available
+> via ip monitor or bridge monitor.
+> you probably cannot use it with udev today.
+> 
+> For the future, I think having udev listen to netlink link and devlink
+> events would make sense (Not sure if anybody is working on it).
+> AFAIK the sysfs uevent mechanism for link attributes don't  receive
+> the required attention and testing like the equivalent netlink events.
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Mark Lee <Mark-MC.Lee@mediatek.com>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I understand that netlink works best for you but sysfs notifications are still
+useful.
+Please let me explain my use case a little bit more.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b431e6d5f43f..97027098899a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10258,7 +10258,7 @@ MEDIATEK ETHERNET DRIVER
- M:	Felix Fietkau <nbd@openwrt.org>
- M:	John Crispin <john@phrozen.org>
- M:	Sean Wang <sean.wang@mediatek.com>
--M:	Nelson Chang <nelson.chang@mediatek.com>
-+M:	Mark Lee <Mark-MC.Lee@mediatek.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/mediatek/
--- 
-2.18.0
+The application I work on operates on network interfaces, in this case the
+interface happens to be a bridge.
+systemd-networkd sets up the bridge as soon all slave interfaces emerge.
 
+Therefore the systemd service file of the application depends on the bridge.
+i.e.
+Requires=sys-subsystem-net-devices-br0.device
+
+In one specific setup the bridge needs to forward more than usual and 
+group_fwd_mask needs to be altered. Sadly this is nothing systemd-networkd
+can do right now, so I added the following line to the service file of
+the application:
+ExecStartPre=/bin/bash -c "echo 0xfffd > /sys/class/net/eth0/brport/group_fwd_mask"
+
+Here comes the problem, the unit is activated as soon br0 is created but
+at this time eth0 is sometimes not yet a slave or br0. It takes some time.
+
+So I need a way to model this dependency in a systemd environment.
+A common approach to do so is setting up an udev rule which set a systemd notify
+as soon a specific sysfs file arrives.
+
+Teaching the application to listen for bridge specific netlink messages is
+another possible approach but seems overkill to me.
+Or maybe there is some nice wrapper/helper?
+
+It would be nice to have sysfs notifications for bridge devices too.
+I can understand that not everyone likes this approach but this is the way
+how *many* systems out there work these day. Actually almost any (embedded)
+system with systemd.
+
+Thanks,
+//richard
