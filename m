@@ -2,44 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C90BD9915
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0808D9919
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 20:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390712AbfJPSWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 14:22:02 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52590 "EHLO
+        id S2390881AbfJPSYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 14:24:01 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52604 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbfJPSWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 14:22:02 -0400
+        with ESMTP id S2389512AbfJPSYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 14:24:01 -0400
 Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E6A431425BDB6;
-        Wed, 16 Oct 2019 11:22:01 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 14:21:59 -0400 (EDT)
-Message-Id: <20191016.142159.1388461310782297107.davem@davemloft.net>
-To:     sbrivio@redhat.com
-Cc:     walteste@inf.ethz.ch, bcodding@redhat.com, gsierohu@redhat.com,
-        nforro@redhat.com, edumazet@google.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] ipv4: Return -ENETUNREACH if we can't create
- route but saddr is valid
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 12B9C142612A7;
+        Wed, 16 Oct 2019 11:24:00 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 14:23:59 -0400 (EDT)
+Message-Id: <20191016.142359.416946718751400991.davem@davemloft.net>
+To:     alexandre.belloni@bootlin.com
+Cc:     vz@mleia.com, slemieux.tyco@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/2] net: lpc_eth: parse phy nodes from device tree
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <7bcfeaac2f78657db35ccf0e624745de41162129.1570722417.git.sbrivio@redhat.com>
-References: <7bcfeaac2f78657db35ccf0e624745de41162129.1570722417.git.sbrivio@redhat.com>
+In-Reply-To: <20191010204530.15150-2-alexandre.belloni@bootlin.com>
+References: <20191010204530.15150-1-alexandre.belloni@bootlin.com>
+        <20191010204530.15150-2-alexandre.belloni@bootlin.com>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 11:22:02 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 11:24:00 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
-Date: Thu, 10 Oct 2019 17:51:50 +0200
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Date: Thu, 10 Oct 2019 22:45:30 +0200
 
-> I think this should be considered for -stable, < 5.2
+> When connected to a micrel phy, phy_find_first doesn't work properly
+> because the first phy found is on address 0, the broadcast address but, the
+> first thing the phy driver is doing is disabling this broadcast address.
+> The phy is then available only on address 1 but the mdio driver doesn't
+> know about it.
+> 
+> Instead, register the mdio bus using of_mdiobus_register and try to find
+> the phy description in device tree before falling back to phy_find_first.
+> 
+> This ultimately also allows to describe the interrupt the phy is connected
+> to.
+> 
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-Changes meant for -stable should not target net-next, but rather net.
+I asked you to address Andrew's feedback.
+
+You can't let this sit for days like that.
+
+Therefore, I'm dropping your patches.
