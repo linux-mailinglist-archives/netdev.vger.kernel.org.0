@@ -2,59 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CF57D851D
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 02:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CE8D8527
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 03:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388574AbfJPA4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 20:56:40 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42588 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfJPA4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 20:56:40 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D88E01264EA26;
-        Tue, 15 Oct 2019 17:56:39 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 17:56:39 -0700 (PDT)
-Message-Id: <20191015.175639.347136446069377956.davem@davemloft.net>
-To:     lucien.xin@gmail.com
-Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, nhorman@tuxdriver.com,
-        david.laight@aculab.com
-Subject: Re: [PATCHv3 net-next 0/5] sctp: update from rfc7829
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1571033544.git.lucien.xin@gmail.com>
-References: <cover.1571033544.git.lucien.xin@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 15 Oct 2019 17:56:40 -0700 (PDT)
+        id S2390384AbfJPBDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 21:03:49 -0400
+Received: from mga12.intel.com ([192.55.52.136]:48293 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726315AbfJPBDs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Oct 2019 21:03:48 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Oct 2019 18:03:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,301,1566889200"; 
+   d="scan'208";a="347268928"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO localhost.localdomain) ([10.249.68.79])
+  by orsmga004.jf.intel.com with ESMTP; 15 Oct 2019 18:03:29 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dan.daly@intel.com, cunming.liang@intel.com, tiwei.bie@intel.com,
+        jason.zeng@intel.com, zhiyuan.lv@intel.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [RFC 0/2] Intel IFC VF driver for vdpa
+Date:   Wed, 16 Oct 2019 09:03:16 +0800
+Message-Id: <20191016010318.3199-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
-Date: Mon, 14 Oct 2019 14:14:43 +0800
+Hi all:
+ 
+This series intends to introduce Intel IFC VF NIC driver for Vhost
+Data Plane Acceleration.
+ 
+Here comes two main parts, one is ifcvf_base layer, which handles
+hardware operations. The other is ifcvf_main layer handles VF
+initialization, configuration and removal, which depends on
+and complys to vhost_mdev https://lkml.org/lkml/2019/9/26/15 
+ 
+This is a first RFC try, please help review.
+ 
+Thanks!
+BR
+Zhu Lingshan
 
-> SCTP-PF was implemented based on a Internet-Draft in 2012:
-> 
->   https://tools.ietf.org/html/draft-nishida-tsvwg-sctp-failover-05
-> 
-> It's been updated quite a few by rfc7829 in 2016.
-> 
-> This patchset adds the following features:
-> 
->   1. add SCTP_ADDR_POTENTIALLY_FAILED notification
->   2. add pf_expose per netns/sock/asoc
->   3. add SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
->   4. add ps_retrans per netns/sock/asoc/transport
->      (Primary Path Switchover)
->   5. add spt_pathcpthld for SCTP_PEER_ADDR_THLDS sockopt
 
-I would like to see some SCTP expert ACKs here.
+Zhu Lingshan (2):
+  vhost: IFC VF hardware operation layer
+  vhost: IFC VF vdpa layer
 
-Thank you.
+ drivers/vhost/ifcvf/ifcvf_base.c | 390 ++++++++++++++++++++++++++++
+ drivers/vhost/ifcvf/ifcvf_base.h | 137 ++++++++++
+ drivers/vhost/ifcvf/ifcvf_main.c | 541 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1068 insertions(+)
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.c
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.h
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
+
+-- 
+2.16.4
+
