@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F6A8D8669
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 05:25:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 920F2D866B
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 05:25:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390982AbfJPDZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 23:25:34 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63098 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390966AbfJPDZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 23:25:31 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9G3OR22007787
+        id S2403770AbfJPDZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 23:25:36 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23936 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2390973AbfJPDZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 23:25:32 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9G3OwBc003733
         for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 20:25:30 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vnfbbujus-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2vnccac5g0-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 20:25:30 -0700
-Received: from 2401:db00:2050:5076:face:0:9:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 15 Oct 2019 20:25:28 -0700
+Received: from 2401:db00:2050:5102:face:0:3b:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 15 Oct 2019 20:25:29 -0700
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 1D666760F32; Tue, 15 Oct 2019 20:25:27 -0700 (PDT)
+        id 2644B760F32; Tue, 15 Oct 2019 20:25:29 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -31,9 +31,9 @@ To:     <davem@davemloft.net>
 CC:     <daniel@iogearbox.net>, <x86@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 10/11] bpf: check types of arguments passed into helpers
-Date:   Tue, 15 Oct 2019 20:25:04 -0700
-Message-ID: <20191016032505.2089704-11-ast@kernel.org>
+Subject: [PATCH v3 bpf-next 11/11] selftests/bpf: add kfree_skb raw_tp test
+Date:   Tue, 15 Oct 2019 20:25:05 -0700
+Message-ID: <20191016032505.2089704-12-ast@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191016032505.2089704-1-ast@kernel.org>
 References: <20191016032505.2089704-1-ast@kernel.org>
@@ -42,397 +42,239 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
  definitions=2019-10-16_01:2019-10-15,2019-10-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- suspectscore=1 priorityscore=1501 adultscore=0 mlxlogscore=999
- clxscore=1034 bulkscore=0 mlxscore=0 phishscore=0 spamscore=0
- impostorscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1910160029
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 bulkscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 malwarescore=0 suspectscore=4 phishscore=0 impostorscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910160029
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce new helper that reuses existing skb perf_event output
-implementation, but can be called from raw_tracepoint programs
-that receive 'struct sk_buff *' as tracepoint argument or
-can walk other kernel data structures to skb pointer.
-
-In order to do that teach verifier to resolve true C types
-of bpf helpers into in-kernel BTF ids.
-The type of kernel pointer passed by raw tracepoint into bpf
-program will be tracked by the verifier all the way until
-it's passed into helper function.
-For example:
-kfree_skb() kernel function calls trace_kfree_skb(skb, loc);
-bpf programs receives that skb pointer and may eventually
-pass it into bpf_skb_output() bpf helper which in-kernel is
-implemented via bpf_skb_event_output() kernel function.
-Its first argument in the kernel is 'struct sk_buff *'.
-The verifier makes sure that types match all the way.
+Load basic cls_bpf program.
+Load raw_tracepoint program and attach to kfree_skb raw tracepoint.
+Trigger cls_bpf via prog_test_run.
+At the end of test_run kernel will call kfree_skb
+which will trigger trace_kfree_skb tracepoint.
+Which will call our raw_tracepoint program.
+Which will take that skb and will dump it into perf ring buffer.
+Check that user space received correct packet.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 ---
- include/linux/bpf.h            | 18 ++++++---
- include/uapi/linux/bpf.h       | 27 +++++++++++++-
- kernel/bpf/btf.c               | 68 ++++++++++++++++++++++++++++++++++
- kernel/bpf/verifier.c          | 44 ++++++++++++++--------
- kernel/trace/bpf_trace.c       |  4 ++
- net/core/filter.c              | 15 +++++++-
- tools/include/uapi/linux/bpf.h | 27 +++++++++++++-
- 7 files changed, 180 insertions(+), 23 deletions(-)
+ .../selftests/bpf/prog_tests/kfree_skb.c      |  89 +++++++++++++++
+ tools/testing/selftests/bpf/progs/kfree_skb.c | 103 ++++++++++++++++++
+ 2 files changed, 192 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/kfree_skb.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfree_skb.c
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index a7330d75bb94..2c2c29b49845 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -213,6 +213,7 @@ enum bpf_arg_type {
- 	ARG_PTR_TO_INT,		/* pointer to int */
- 	ARG_PTR_TO_LONG,	/* pointer to long */
- 	ARG_PTR_TO_SOCKET,	/* pointer to bpf_sock (fullsock) */
-+	ARG_PTR_TO_BTF_ID,	/* pointer to in-kernel struct */
- };
- 
- /* type of values returned from helper functions */
-@@ -235,11 +236,17 @@ struct bpf_func_proto {
- 	bool gpl_only;
- 	bool pkt_access;
- 	enum bpf_return_type ret_type;
--	enum bpf_arg_type arg1_type;
--	enum bpf_arg_type arg2_type;
--	enum bpf_arg_type arg3_type;
--	enum bpf_arg_type arg4_type;
--	enum bpf_arg_type arg5_type;
-+	union {
-+		struct {
-+			enum bpf_arg_type arg1_type;
-+			enum bpf_arg_type arg2_type;
-+			enum bpf_arg_type arg3_type;
-+			enum bpf_arg_type arg4_type;
-+			enum bpf_arg_type arg5_type;
-+		};
-+		enum bpf_arg_type arg_type[5];
-+	};
-+	u32 *btf_id; /* BTF ids of arguments */
- };
- 
- /* bpf_context is intentionally undefined structure. Pointer to bpf_context is
-@@ -765,6 +772,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 		      const struct btf_type *t, int off, int size,
- 		      enum bpf_access_type atype,
- 		      u32 *next_btf_id);
-+u32 btf_resolve_helper_id(struct bpf_verifier_log *log, void *, int);
- 
- #else /* !CONFIG_BPF_SYSCALL */
- static inline struct bpf_prog *bpf_prog_get(u32 ufd)
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 3bb2cd1de341..4af8b0819a32 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2751,6 +2751,30 @@ union bpf_attr {
-  *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
-  *
-  *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
-+ *
-+ * int bpf_skb_output(void *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
-+ * 	Description
-+ * 		Write raw *data* blob into a special BPF perf event held by
-+ * 		*map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This perf
-+ * 		event must have the following attributes: **PERF_SAMPLE_RAW**
-+ * 		as **sample_type**, **PERF_TYPE_SOFTWARE** as **type**, and
-+ * 		**PERF_COUNT_SW_BPF_OUTPUT** as **config**.
-+ *
-+ * 		The *flags* are used to indicate the index in *map* for which
-+ * 		the value must be put, masked with **BPF_F_INDEX_MASK**.
-+ * 		Alternatively, *flags* can be set to **BPF_F_CURRENT_CPU**
-+ * 		to indicate that the index of the current CPU core should be
-+ * 		used.
-+ *
-+ * 		The value to write, of *size*, is passed through eBPF stack and
-+ * 		pointed by *data*.
-+ *
-+ * 		*ctx* is a pointer to in-kernel struct sk_buff.
-+ *
-+ * 		This helper is similar to **bpf_perf_event_output**\ () but
-+ * 		restricted to raw_tracepoint bpf programs.
-+ * 	Return
-+ * 		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2863,7 +2887,8 @@ union bpf_attr {
- 	FN(sk_storage_get),		\
- 	FN(sk_storage_delete),		\
- 	FN(send_signal),		\
--	FN(tcp_gen_syncookie),
-+	FN(tcp_gen_syncookie),		\
-+	FN(skb_output),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 271d27cd427f..f7557af39756 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3626,6 +3626,74 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 	return -EINVAL;
- }
- 
-+u32 btf_resolve_helper_id(struct bpf_verifier_log *log, void *fn, int arg)
+diff --git a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
+new file mode 100644
+index 000000000000..430b50de1583
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
+@@ -0,0 +1,89 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++
++static void on_sample(void *ctx, int cpu, void *data, __u32 size)
 +{
-+	char fnname[KSYM_SYMBOL_LEN + 4] = "btf_";
-+	const struct btf_param *args;
-+	const struct btf_type *t;
-+	const char *tname, *sym;
-+	u32 btf_id, i;
++	int ifindex = *(int *)data, duration = 0;
++	struct ipv6_packet *pkt_v6 = data + 4;
 +
-+	if (IS_ERR(btf_vmlinux)) {
-+		bpf_log(log, "btf_vmlinux is malformed\n");
-+		return -EINVAL;
-+	}
++	if (ifindex != 1)
++		/* spurious kfree_skb not on loopback device */
++		return;
++	if (CHECK(size != 76, "check_size", "size %u != 76\n", size))
++		return;
++	if (CHECK(pkt_v6->eth.h_proto != 0xdd86, "check_eth",
++		  "h_proto %x\n", pkt_v6->eth.h_proto))
++		return;
++	if (CHECK(pkt_v6->iph.nexthdr != 6, "check_ip",
++		  "iph.nexthdr %x\n", pkt_v6->iph.nexthdr))
++		return;
++	if (CHECK(pkt_v6->tcp.doff != 5, "check_tcp",
++		  "tcp.doff %x\n", pkt_v6->tcp.doff))
++		return;
 +
-+	sym = kallsyms_lookup((long)fn, NULL, NULL, NULL, fnname + 4);
-+	if (!sym) {
-+		bpf_log(log, "kernel doesn't have kallsyms\n");
-+		return -EFAULT;
-+	}
-+
-+	for (i = 1; i <= btf_vmlinux->nr_types; i++) {
-+		t = btf_type_by_id(btf_vmlinux, i);
-+		if (BTF_INFO_KIND(t->info) != BTF_KIND_TYPEDEF)
-+			continue;
-+		tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
-+		if (!strcmp(tname, fnname))
-+			break;
-+	}
-+	if (i > btf_vmlinux->nr_types) {
-+		bpf_log(log, "helper %s type is not found\n", fnname);
-+		return -ENOENT;
-+	}
-+
-+	t = btf_type_by_id(btf_vmlinux, t->type);
-+	if (!btf_type_is_ptr(t))
-+		return -EFAULT;
-+	t = btf_type_by_id(btf_vmlinux, t->type);
-+	if (!btf_type_is_func_proto(t))
-+		return -EFAULT;
-+
-+	args = (const struct btf_param *)(t + 1);
-+	if (arg >= btf_type_vlen(t)) {
-+		bpf_log(log, "bpf helper %s doesn't have %d-th argument\n",
-+			fnname, arg);
-+		return -EINVAL;
-+	}
-+
-+	t = btf_type_by_id(btf_vmlinux, args[arg].type);
-+	if (!btf_type_is_ptr(t) || !t->type) {
-+		/* anything but the pointer to struct is a helper config bug */
-+		bpf_log(log, "ARG_PTR_TO_BTF is misconfigured\n");
-+		return -EFAULT;
-+	}
-+	btf_id = t->type;
-+	t = btf_type_by_id(btf_vmlinux, t->type);
-+	/* skip modifiers */
-+	while (btf_type_is_modifier(t)) {
-+		btf_id = t->type;
-+		t = btf_type_by_id(btf_vmlinux, t->type);
-+	}
-+	if (!btf_type_is_struct(t)) {
-+		bpf_log(log, "ARG_PTR_TO_BTF is not a struct\n");
-+		return -EFAULT;
-+	}
-+	bpf_log(log, "helper %s arg%d has btf_id %d struct %s\n", fnname + 4,
-+		arg, btf_id, __btf_name_by_offset(btf_vmlinux, t->name_off));
-+	return btf_id;
++	*(bool *)ctx = true;
 +}
 +
- void btf_type_seq_show(const struct btf *btf, u32 type_id, void *obj,
- 		       struct seq_file *m)
- {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index fba9ef6a831b..556e82f8869b 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -205,6 +205,7 @@ struct bpf_call_arg_meta {
- 	u64 msize_umax_value;
- 	int ref_obj_id;
- 	int func_id;
-+	u32 btf_id;
- };
- 
- struct btf *btf_vmlinux;
-@@ -3439,6 +3440,22 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
- 		expected_type = PTR_TO_SOCKET;
- 		if (type != expected_type)
- 			goto err_type;
-+	} else if (arg_type == ARG_PTR_TO_BTF_ID) {
-+		expected_type = PTR_TO_BTF_ID;
-+		if (type != expected_type)
-+			goto err_type;
-+		if (reg->btf_id != meta->btf_id) {
-+			verbose(env, "Helper has type %s got %s in R%d\n",
-+				kernel_type_name(meta->btf_id),
-+				kernel_type_name(reg->btf_id), regno);
++void test_kfree_skb(void)
++{
++	struct bpf_prog_load_attr attr = {
++		.file = "./kfree_skb.o",
++	};
 +
-+			return -EACCES;
-+		}
-+		if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
-+			verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
-+				regno);
-+			return -EACCES;
-+		}
- 	} else if (arg_type == ARG_PTR_TO_SPIN_LOCK) {
- 		if (meta->func_id == BPF_FUNC_spin_lock) {
- 			if (process_spin_lock(env, regno, true))
-@@ -3586,6 +3603,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
- 	case BPF_MAP_TYPE_PERF_EVENT_ARRAY:
- 		if (func_id != BPF_FUNC_perf_event_read &&
- 		    func_id != BPF_FUNC_perf_event_output &&
-+		    func_id != BPF_FUNC_skb_output &&
- 		    func_id != BPF_FUNC_perf_event_read_value)
- 			goto error;
- 		break;
-@@ -3673,6 +3691,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
- 	case BPF_FUNC_perf_event_read:
- 	case BPF_FUNC_perf_event_output:
- 	case BPF_FUNC_perf_event_read_value:
-+	case BPF_FUNC_skb_output:
- 		if (map->map_type != BPF_MAP_TYPE_PERF_EVENT_ARRAY)
- 			goto error;
- 		break;
-@@ -4127,21 +4146,16 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
- 
- 	meta.func_id = func_id;
- 	/* check args */
--	err = check_func_arg(env, BPF_REG_1, fn->arg1_type, &meta);
--	if (err)
--		return err;
--	err = check_func_arg(env, BPF_REG_2, fn->arg2_type, &meta);
--	if (err)
--		return err;
--	err = check_func_arg(env, BPF_REG_3, fn->arg3_type, &meta);
--	if (err)
--		return err;
--	err = check_func_arg(env, BPF_REG_4, fn->arg4_type, &meta);
--	if (err)
--		return err;
--	err = check_func_arg(env, BPF_REG_5, fn->arg5_type, &meta);
--	if (err)
--		return err;
-+	for (i = 0; i < 5; i++) {
-+		if (fn->arg_type[i] == ARG_PTR_TO_BTF_ID) {
-+			if (!fn->btf_id[i])
-+				fn->btf_id[i] = btf_resolve_helper_id(&env->log, fn->func, i);
-+			meta.btf_id = fn->btf_id[i];
-+		}
-+		err = check_func_arg(env, BPF_REG_1 + i, fn->arg_type[i], &meta);
-+		if (err)
-+			return err;
-+	}
- 
- 	err = record_func_map(env, &meta, func_id, insn_idx);
- 	if (err)
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 6221e8c6ecc3..52f7e9d8c29b 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -995,6 +995,8 @@ static const struct bpf_func_proto bpf_perf_event_output_proto_raw_tp = {
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-+extern const struct bpf_func_proto bpf_skb_output_proto;
++	struct bpf_object *obj, *obj2 = NULL;
++	struct perf_buffer_opts pb_opts = {};
++	struct perf_buffer *pb = NULL;
++	struct bpf_link *link = NULL;
++	struct bpf_map *perf_buf_map;
++	struct bpf_program *prog;
++	__u32 duration, retval;
++	int err, pkt_fd, kfree_skb_fd;
++	bool passed = false;
 +
- BPF_CALL_3(bpf_get_stackid_raw_tp, struct bpf_raw_tracepoint_args *, args,
- 	   struct bpf_map *, map, u64, flags)
- {
-@@ -1053,6 +1055,8 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	switch (func_id) {
- 	case BPF_FUNC_perf_event_output:
- 		return &bpf_perf_event_output_proto_raw_tp;
-+	case BPF_FUNC_skb_output:
-+		return &bpf_skb_output_proto;
- 	case BPF_FUNC_get_stackid:
- 		return &bpf_get_stackid_proto_raw_tp;
- 	case BPF_FUNC_get_stack:
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 46196e212413..728ba6203c1f 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3798,7 +3798,7 @@ BPF_CALL_5(bpf_skb_event_output, struct sk_buff *, skb, struct bpf_map *, map,
- 
- 	if (unlikely(flags & ~(BPF_F_CTXLEN_MASK | BPF_F_INDEX_MASK)))
- 		return -EINVAL;
--	if (unlikely(skb_size > skb->len))
-+	if (unlikely(!skb || skb_size > skb->len))
- 		return -EFAULT;
- 
- 	return bpf_event_output(map, flags, meta, meta_size, skb, skb_size,
-@@ -3816,6 +3816,19 @@ static const struct bpf_func_proto bpf_skb_event_output_proto = {
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-+static u32 bpf_skb_output_btf_ids[5];
-+const struct bpf_func_proto bpf_skb_output_proto = {
-+	.func		= bpf_skb_event_output,
-+	.gpl_only	= true,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_BTF_ID,
-+	.arg2_type	= ARG_CONST_MAP_PTR,
-+	.arg3_type	= ARG_ANYTHING,
-+	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
-+	.btf_id		= bpf_skb_output_btf_ids,
++	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS, &obj, &pkt_fd);
++	if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
++		return;
++
++	err = bpf_prog_load_xattr(&attr, &obj2, &kfree_skb_fd);
++	if (CHECK(err, "prog_load raw tp", "err %d errno %d\n", err, errno))
++		goto close_prog;
++
++	prog = bpf_object__find_program_by_title(obj2, "tp_btf/kfree_skb");
++	if (CHECK(!prog, "find_prog", "prog kfree_skb not found\n"))
++		goto close_prog;
++	link = bpf_program__attach_raw_tracepoint(prog, NULL);
++	if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n", PTR_ERR(link)))
++		goto close_prog;
++
++	perf_buf_map = bpf_object__find_map_by_name(obj2, "perf_buf_map");
++	if (CHECK(!perf_buf_map, "find_perf_buf_map", "not found\n"))
++		goto close_prog;
++
++	/* set up perf buffer */
++	pb_opts.sample_cb = on_sample;
++	pb_opts.ctx = &passed;
++	pb = perf_buffer__new(bpf_map__fd(perf_buf_map), 1, &pb_opts);
++	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
++		goto close_prog;
++
++	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
++				NULL, NULL, &retval, &duration);
++	CHECK(err || retval, "ipv6",
++	      "err %d errno %d retval %d duration %d\n",
++	      err, errno, retval, duration);
++
++	/* read perf buffer */
++	err = perf_buffer__poll(pb, 100);
++	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
++		goto close_prog;
++	/* make sure kfree_skb program was triggered
++	 * and it sent expected skb into ring buffer
++	 */
++	CHECK_FAIL(!passed);
++close_prog:
++	perf_buffer__free(pb);
++	if (!IS_ERR_OR_NULL(link))
++		bpf_link__destroy(link);
++	bpf_object__close(obj);
++	bpf_object__close(obj2);
++}
+diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
+new file mode 100644
+index 000000000000..89af8a921ee4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
+@@ -0,0 +1,103 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2019 Facebook
++#include <linux/bpf.h>
++#include "bpf_helpers.h"
++#include "bpf_endian.h"
++
++char _license[] SEC("license") = "GPL";
++struct {
++	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(int));
++} perf_buf_map SEC(".maps");
++
++#define _(P) (__builtin_preserve_access_index(P))
++
++/* define few struct-s that bpf program needs to access */
++struct callback_head {
++	struct callback_head *next;
++	void (*func)(struct callback_head *head);
++};
++struct dev_ifalias {
++	struct callback_head rcuhead;
 +};
 +
- static unsigned short bpf_tunnel_key_af(u64 flags)
- {
- 	return flags & BPF_F_TUNINFO_IPV6 ? AF_INET6 : AF_INET;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 3bb2cd1de341..4af8b0819a32 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2751,6 +2751,30 @@ union bpf_attr {
-  *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
-  *
-  *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
++struct net_device /* same as kernel's struct net_device */ {
++	int ifindex;
++	struct dev_ifalias *ifalias;
++};
++
++typedef struct {
++        int counter;
++} atomic_t;
++typedef struct refcount_struct {
++        atomic_t refs;
++} refcount_t;
++
++struct sk_buff {
++	/* field names and sizes should match to those in the kernel */
++	unsigned int len, data_len;
++	__u16 mac_len, hdr_len, queue_mapping;
++	struct net_device *dev;
++	/* order of the fields doesn't matter */
++	refcount_t users;
++	unsigned char *data;
++	char __pkt_type_offset[0];
++};
++
++/* copy arguments from
++ * include/trace/events/skb.h:
++ * TRACE_EVENT(kfree_skb,
++ *         TP_PROTO(struct sk_buff *skb, void *location),
 + *
-+ * int bpf_skb_output(void *ctx, struct bpf_map *map, u64 flags, void *data, u64 size)
-+ * 	Description
-+ * 		Write raw *data* blob into a special BPF perf event held by
-+ * 		*map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This perf
-+ * 		event must have the following attributes: **PERF_SAMPLE_RAW**
-+ * 		as **sample_type**, **PERF_TYPE_SOFTWARE** as **type**, and
-+ * 		**PERF_COUNT_SW_BPF_OUTPUT** as **config**.
-+ *
-+ * 		The *flags* are used to indicate the index in *map* for which
-+ * 		the value must be put, masked with **BPF_F_INDEX_MASK**.
-+ * 		Alternatively, *flags* can be set to **BPF_F_CURRENT_CPU**
-+ * 		to indicate that the index of the current CPU core should be
-+ * 		used.
-+ *
-+ * 		The value to write, of *size*, is passed through eBPF stack and
-+ * 		pointed by *data*.
-+ *
-+ * 		*ctx* is a pointer to in-kernel struct sk_buff.
-+ *
-+ * 		This helper is similar to **bpf_perf_event_output**\ () but
-+ * 		restricted to raw_tracepoint bpf programs.
-+ * 	Return
-+ * 		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2863,7 +2887,8 @@ union bpf_attr {
- 	FN(sk_storage_get),		\
- 	FN(sk_storage_delete),		\
- 	FN(send_signal),		\
--	FN(tcp_gen_syncookie),
-+	FN(tcp_gen_syncookie),		\
-+	FN(skb_output),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
++ * into struct below:
++ */
++struct trace_kfree_skb {
++	struct sk_buff *skb;
++	void *location;
++};
++
++SEC("tp_btf/kfree_skb")
++int trace_kfree_skb(struct trace_kfree_skb *ctx)
++{
++	struct sk_buff *skb = ctx->skb;
++	struct net_device *dev;
++	int ifindex;
++	struct callback_head *ptr;
++	void *func;
++	int users;
++	unsigned char *data;
++	unsigned short pkt_data;
++	char pkt_type;
++
++	__builtin_preserve_access_index(({
++		users = skb->users.refs.counter;
++		data = skb->data;
++		dev = skb->dev;
++		ifindex = dev->ifindex;
++		ptr = dev->ifalias->rcuhead.next;
++		func = ptr->func;
++	}));
++
++	bpf_probe_read(&pkt_type, sizeof(pkt_type), _(&skb->__pkt_type_offset));
++	pkt_type &= 7;
++
++	/* read eth proto */
++	bpf_probe_read(&pkt_data, sizeof(pkt_data), data + 12);
++
++	bpf_printk("rcuhead.next %llx func %llx\n", ptr, func);
++	bpf_printk("skb->len %d users %d pkt_type %x\n",
++		   _(skb->len), users, pkt_type);
++	bpf_printk("skb->queue_mapping %d\n", _(skb->queue_mapping));
++	bpf_printk("dev->ifindex %d data %llx pkt_data %x\n",
++		   ifindex, data, pkt_data);
++
++	if (users != 1 || pkt_data != bpf_htons(0x86dd) || ifindex != 1)
++		/* raw tp ignores return value */
++		return 0;
++
++	/* send first 72 byte of the packet to user space */
++	bpf_skb_output(skb, &perf_buf_map, (72ull << 32) | BPF_F_CURRENT_CPU,
++		       &ifindex, sizeof(ifindex));
++	return 0;
++}
 -- 
 2.17.1
 
