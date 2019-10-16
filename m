@@ -2,70 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC3EED99C5
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 21:14:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40032D99DF
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 21:19:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394303AbfJPTOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 15:14:19 -0400
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:49027 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731321AbfJPTOT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 15:14:19 -0400
-X-Originating-IP: 86.202.229.42
-Received: from localhost (lfbn-lyo-1-146-42.w86-202.abo.wanadoo.fr [86.202.229.42])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 4C4AB40007;
-        Wed, 16 Oct 2019 19:14:16 +0000 (UTC)
-Date:   Wed, 16 Oct 2019 21:14:16 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     vz@mleia.com, slemieux.tyco@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 2/2] net: lpc_eth: parse phy nodes from device tree
-Message-ID: <20191016191416.GA3125@piout.net>
-References: <20191010204530.15150-1-alexandre.belloni@bootlin.com>
- <20191010204530.15150-2-alexandre.belloni@bootlin.com>
- <20191016.142359.416946718751400991.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191016.142359.416946718751400991.davem@davemloft.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        id S2403772AbfJPTTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 15:19:52 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:53254 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390783AbfJPTTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 15:19:52 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4E657142D4201;
+        Wed, 16 Oct 2019 12:19:51 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 12:19:50 -0700 (PDT)
+Message-Id: <20191016.121950.1487403738523364817.davem@davemloft.net>
+To:     vishal@chelsio.com
+Cc:     netdev@vger.kernel.org, nirranjan@chelsio.com, shahjada@chelsio.com
+Subject: Re: [PATCH net] cxgb4: Fix panic when attaching to ULD fails
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1571039435-22495-1-git-send-email-vishal@chelsio.com>
+References: <1571039435-22495-1-git-send-email-vishal@chelsio.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 12:19:51 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Vishal Kulkarni <vishal@chelsio.com>
+Date: Mon, 14 Oct 2019 13:20:35 +0530
 
-On 16/10/2019 14:23:59-0400, David Miller wrote:
-> From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Date: Thu, 10 Oct 2019 22:45:30 +0200
-> 
-> > When connected to a micrel phy, phy_find_first doesn't work properly
-> > because the first phy found is on address 0, the broadcast address but, the
-> > first thing the phy driver is doing is disabling this broadcast address.
-> > The phy is then available only on address 1 but the mdio driver doesn't
-> > know about it.
-> > 
-> > Instead, register the mdio bus using of_mdiobus_register and try to find
-> > the phy description in device tree before falling back to phy_find_first.
-> > 
-> > This ultimately also allows to describe the interrupt the phy is connected
-> > to.
-> > 
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> 
-> I asked you to address Andrew's feedback.
-> 
-> You can't let this sit for days like that.
-> 
-> Therefore, I'm dropping your patches.
+> @@ -760,7 +762,9 @@ void cxgb4_register_uld(enum cxgb4_uld type,
+>  		if (ret)
+>  			goto free_irq;
+>  		adap->uld[type] = *p;
+> -		uld_attach(adap, type);
+> +		ret = uld_attach(adap, type);
+> +		if (ret)
+> +			goto free_irq;
 
-I'm planning to send a v2 to address that but I didn't have time to test
-today.
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+You're not freeing up all of the txq_info ULD stuff that setup_sge_txq_uld
+created.
