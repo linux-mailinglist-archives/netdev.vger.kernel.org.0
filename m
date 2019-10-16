@@ -2,135 +2,580 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2FACD9763
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 18:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E47BD9776
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 18:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406290AbfJPQbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 12:31:15 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:41274 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405807AbfJPQbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 12:31:13 -0400
-Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 6EDFE604743;
-        Wed, 16 Oct 2019 18:31:09 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1571243469;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5ClBeSGQZuxuvvXCwUIlZlu0fB+e4NrR7Ixq109qtA=;
-        b=iE77W2j8VjWmzkRi/PaQJs9KBZb+JRoq905SOA3jxnUN0ya9MuZ6FLFA4MZ2EOwPwOBqY1
-        vYRKZ3u/eXr+hC+h/9/VqBG42FtUILGopQs/N8dtrpLXv6xezUQNH3Al6HsUZ5NUfJm9Xs
-        d3qEHU6kHT30Nqw9HYLnPAGR4myTvh0=
+        id S2406333AbfJPQcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 12:32:53 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:45871 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393011AbfJPQcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 12:32:53 -0400
+Received: by mail-pf1-f194.google.com with SMTP id y72so15034715pfb.12
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 09:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=IPFF4YWfs3NpgFEBE1mlCS20BdWvcxoagkuCr06bScM=;
+        b=fqdz3ELoix1AXyqHRbdzcbX3vZG2gCPGUPpgItG5xxIfnxgLv5xf9NL66AEiLd2/Ot
+         U4EicMidYlvx4+79a/2IAV+3VmTzLTzLn1L8X2w/FLTkvFAEyP6a4PnPcc3D8JaeN6nN
+         G+ZdkcAivqqr7L2xm7xrKfUyMbevkDMx9Z8oDMohd7ijgVzUhRqIpXZfDD13QmUXA1WF
+         M+NPHXvZmtgiwBSnIwDG1qIKACb9kjevPR2mkoYoUUm2jlFXOJfuFxMCnqR1rI6GUBKU
+         TtMXexKYWeYRIz+VzI0jYQHOcGCcFD+h6J8r52Pjn4qnzGUjCZEsz3ZTXXvWLShNtgrK
+         moAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=IPFF4YWfs3NpgFEBE1mlCS20BdWvcxoagkuCr06bScM=;
+        b=Z6Cut8neXpaQETEh597+x6OXNEGkDTQmsRrNYV1SQqrxq4nmvXX20AnG7qwZTL/BLA
+         +OxaCa/vnFOXaNfgUHZg6SdZNN6pbDrQ9gSCZty5vlDI0IJuTUxNWaZmrRt6fmLA54pK
+         /j2oEqN6Z7yfQwPpNkDddLEEcuyXpQDxxHBf+dD6OFTYrAaGAePV0/Vj4Eq/uHPbkUlA
+         zfPyRkvePL25C0J1I06Oo1IdycvHE/sZt3pUhnvcK3P7Qi5U4av0zLjGS9zKpLk2A71D
+         6PkYliEXSaEdBiRO2sUXwAxa6AULpAC4vf0iXhYyeVmkxHLdNCvfPOF0w9DdNhWi0sz8
+         YsrA==
+X-Gm-Message-State: APjAAAVDqZkSiwX9+skB04rzMyqHNEe0pqWgCVZqmQe4s8xpu2glAdiV
+        vooraTEirPBLz0cxpnr6eVl5Jw==
+X-Google-Smtp-Source: APXvYqwUyo2F4Q9Mc8NbX77uCTWs4YiZFxAvsXs+wYw6WK7DLQCgDc/Lai6qI4jh3/S0a9rL7B+kHA==
+X-Received: by 2002:a17:90a:da04:: with SMTP id e4mr6176870pjv.33.1571243570640;
+        Wed, 16 Oct 2019 09:32:50 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id u13sm21918585pgk.88.2019.10.16.09.32.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 09:32:50 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 09:32:49 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH v4 bpf-next 5/7] selftests/bpf: replace test_progs and
+ test_maps w/ general rule
+Message-ID: <20191016163249.GD1897241@mini-arch>
+References: <20191016060051.2024182-1-andriin@fb.com>
+ <20191016060051.2024182-6-andriin@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 16 Oct 2019 18:31:09 +0200
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: mt76x2e hardware restart
-In-Reply-To: <f7695bc79d40bbc96744a639b1243027@natalenko.name>
-References: <deaafa7a3e9ea2111ebb5106430849c6@natalenko.name>
- <c6d621759c190f7810d898765115f3b4@natalenko.name>
- <9d581001e2e6cece418329842b2b0959@natalenko.name>
- <20191012165028.GA8739@lore-desk-wlan.lan>
- <f7695bc79d40bbc96744a639b1243027@natalenko.name>
-Message-ID: <96f43a2103a9f2be152c53f867f5805c@natalenko.name>
-X-Sender: oleksandr@natalenko.name
-User-Agent: Roundcube Webmail/1.3.10
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=arc-20170712; t=1571243469;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5ClBeSGQZuxuvvXCwUIlZlu0fB+e4NrR7Ixq109qtA=;
-        b=EJlYGk6WtfIdQNWtMr2cQy9J8J7w28KTQLCRDdRHUa6oxniLZklcRFvYgF2g6mTRl3kBNh
-        BKWTFueWGni/EjMP8AJQaXYrdeiOYsbjJk88ugWY98jLPwAQZDwktXhL5Stx8WhyrOWI5J
-        jtiAdepknOAnKo2f2TYUEwqzAsYBrP0=
-ARC-Seal: i=1; s=arc-20170712; d=natalenko.name; t=1571243469; a=rsa-sha256;
-        cv=none;
-        b=jJrQEg6/HMw06QL5mt4o5gVFnTj55BAufh0fnZYwOph+/Zla/u4ds82EcRRkFszIQdYDPV
-        Ghplm+tOxd3O/p9j55laqVbtbQy30GsDKV5Ol/rOG4saVke9YVU9wm/lHzsD24mqmZ5amP
-        DfKMcjCDf9SVTnJXreOUpcdtkGpS2ko=
-ARC-Authentication-Results: i=1;
-        vulcan.natalenko.name;
-        auth=pass smtp.auth=oleksandr@natalenko.name smtp.mailfrom=oleksandr@natalenko.name
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191016060051.2024182-6-andriin@fb.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+On 10/15, Andrii Nakryiko wrote:
+> Define test runner generation meta-rule that codifies dependencies
+> between test runner, its tests, and its dependent BPF programs. Use that
+> for defining test_progs and test_maps test-runners. Also additionally define
+> 2 flavors of test_progs:
+> - alu32, which builds BPF programs with 32-bit registers codegen;
+> - bpf_gcc, which build BPF programs using GCC, if it supports BPF target.
+Question:
 
-On 15.10.2019 18:52, Oleksandr Natalenko wrote:
-> Thanks for the answer and the IRC discussion. As agreed I've applied
-> [1] and [2], and have just swapped the card to try it again. So far,
-> it works fine in 5 GHz band in 802.11ac mode as an AP.
+Why not merge test_maps tests into test_progs framework and have a
+single binary instead of doing all this makefile-related work?
+We can independently address the story with alu32/gcc progs (presumably
+in the same manner, with make defines).
+
+I can hardly follow the existing makefile and now with the evals it's
+10x more complicated for no good reason.
+
+> Overall, this is accomplished through $(eval)'ing a set of generic
+> rules, which defines Makefile targets dynamically at runtime. See
+> comments explaining the need for 2 $(evals), though.
 > 
-> I'll give it more load with my phone over evening, and we can discuss
-> what to do next (if needed) tomorrow again. Or feel free to drop me an
-> email today.
+> For each test runner we have (test_maps and test_progs, currently), and,
+> optionally, their flavors, the logic of build process is modeled as
+> follows (using test_progs as an example):
+> - all BPF objects are in progs/:
+>   - BPF object's .o file is built into output directory from
+>     corresponding progs/.c file;
+>   - all BPF objects in progs/*.c depend on all progs/*.h headers;
+>   - all BPF objects depend on bpf_*.h helpers from libbpf (but not
+>     libbpf archive). There is an extra rule to trigger bpf_helper_defs.h
+>     (re-)build, if it's not present/outdated);
+>   - build recipe for BPF object can be re-defined per test runner/flavor;
+> - test files are built from prog_tests/*.c:
+>   - all such test file objects are built on individual file basis;
+>   - currently, every single test file depends on all BPF object files;
+>     this might be improved in follow up patches to do 1-to-1 dependency,
+>     but allowing to customize this per each individual test;
+>   - each test runner definition can specify a list of extra .c and .h
+>     files to be built along test files and test runner binary; all such
+>     headers are becoming automatic dependency of each test .c file;
+>   - due to test files sometimes embedding (using .incbin assembly
+>     directive) contents of some BPF objects at compilation time, which are
+>     expected to be in CWD of compiler, compilation for test file object does
+>     cd into test runner's output directory; to support this mode all the
+>     include paths are turned into absolute paths using $(abspath) make
+>     function;
+> - prog_tests/test.h is automatically (re-)generated with an entry for
+>   each .c file in prog_tests/;
+> - final test runner binary is linked together from test object files and
+>   extra object files, linking together libbpf's archive as well;
+> - it's possible to specify extra "resource" files/targets, which will be
+>   copied into test runner output directory, if it differes from
+>   Makefile-wide $(OUTPUT). This is used to ensure btf_dump test cases and
+>   urandom_read binary is put into a test runner's CWD for tests to find
+>   them in runtime.
 > 
-> Thanks for your efforts.
+> For flavored test runners, their output directory is a subdirectory of
+> common Makefile-wide $(OUTPUT) directory with flavor name used as
+> subdirectory name.
 > 
-> [1]
-> https://github.com/LorenzoBianconi/wireless-drivers-next/commit/cf3436c42a297967235a9c9778620c585100529e.patch
-> [2]
-> https://github.com/LorenzoBianconi/wireless-drivers-next/commit/aad256eb62620f9646d39c1aa69234f50c89eed8.patch
-
-As agreed, here are iperf3 results, AP to STA distance is 2 meters.
-
-Client sends, TCP:
-
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  70.4 MBytes  59.0 Mbits/sec  3800             
-sender
-[  5]   0.00-10.03  sec  70.0 MBytes  58.6 Mbits/sec                  
-receiver
-
-Client receives, TCP:
-
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.06  sec   196 MBytes   163 Mbits/sec  3081             
-sender
-[  5]   0.00-10.01  sec   191 MBytes   160 Mbits/sec                  
-receiver
-
-Client sends, UDP, 128 streams:
-
-[ ID] Interval           Transfer     Bitrate         Jitter    
-Lost/Total Datagrams
-[SUM]   0.00-10.00  sec   160 MBytes   134 Mbits/sec  0.000 ms  0/115894 
-(0%)  sender
-[SUM]   0.00-10.01  sec   160 MBytes   134 Mbits/sec  0.347 ms  0/115892 
-(0%)  receiver
-
-Client receives, UDP, 128 streams:
-
-[ ID] Interval           Transfer     Bitrate         Jitter    
-Lost/Total Datagrams
-[SUM]   0.00-10.01  sec   119 MBytes  99.4 Mbits/sec  0.000 ms  0/85888 
-(0%)  sender
-[SUM]   0.00-10.00  sec   119 MBytes  99.5 Mbits/sec  0.877 ms  0/85888 
-(0%)  receiver
-
-Given the HW is not the most powerful, the key point here is that 
-nothing crashed after doing these tests.
-
--- 
-   Oleksandr Natalenko (post-factum)
+> BPF objects targets might be reused between different test runners, so
+> extra checks are employed to not double-define them. Similarly, we have
+> redefinition guards for output directories and test headers.
+> 
+> test_verifier follows slightly different patterns and is simple enough
+> to not justify generalizing TEST_RUNNER_DEFINE/TEST_RUNNER_DEFINE_RULES
+> further to accomodate these differences. Instead, rules for
+> test_verifier are minimized and simplified, while preserving correctness
+> of dependencies.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/testing/selftests/bpf/.gitignore |   5 +-
+>  tools/testing/selftests/bpf/Makefile   | 313 ++++++++++++++-----------
+>  2 files changed, 180 insertions(+), 138 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
+> index 7470327edcfe..c51f356f84b5 100644
+> --- a/tools/testing/selftests/bpf/.gitignore
+> +++ b/tools/testing/selftests/bpf/.gitignore
+> @@ -7,7 +7,7 @@ FEATURE-DUMP.libbpf
+>  fixdep
+>  test_align
+>  test_dev_cgroup
+> -test_progs
+> +/test_progs*
+>  test_tcpbpf_user
+>  test_verifier_log
+>  feature
+> @@ -33,9 +33,10 @@ test_tcpnotify_user
+>  test_libbpf
+>  test_tcp_check_syncookie_user
+>  test_sysctl
+> -alu32
+>  libbpf.pc
+>  libbpf.so.*
+>  test_hashmap
+>  test_btf_dump
+>  xdping
+> +/alu32
+> +/bpf_gcc
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index fbced23935cc..c9f43d49eac9 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -2,10 +2,12 @@
+>  include ../../../../scripts/Kbuild.include
+>  include ../../../scripts/Makefile.arch
+>  
+> -LIBDIR := ../../../lib
+> +CURDIR := $(abspath .)
+> +LIBDIR := $(abspath ../../../lib)
+>  BPFDIR := $(LIBDIR)/bpf
+> -APIDIR := ../../../include/uapi
+> -GENDIR := ../../../../include/generated
+> +TOOLSDIR := $(abspath ../../../include)
+> +APIDIR := $(TOOLSDIR)/uapi
+> +GENDIR := $(abspath ../../../../include/generated)
+>  GENHDR := $(GENDIR)/autoconf.h
+>  
+>  ifneq ($(wildcard $(GENHDR)),)
+> @@ -16,8 +18,9 @@ CLANG		?= clang
+>  LLC		?= llc
+>  LLVM_OBJCOPY	?= llvm-objcopy
+>  BPF_GCC		?= $(shell command -v bpf-gcc;)
+> -CFLAGS += -g -Wall -O2 -I$(APIDIR) -I$(LIBDIR) -I$(BPFDIR) -I$(GENDIR) $(GENFLAGS) -I../../../include \
+> -	  -Dbpf_prog_load=bpf_prog_test_load \
+> +CFLAGS += -g -Wall -O2 $(GENFLAGS) -I$(APIDIR) -I$(LIBDIR) -I$(BPFDIR)	\
+> +	  -I$(GENDIR) -I$(TOOLSDIR) -I$(CURDIR)				\
+> +	  -Dbpf_prog_load=bpf_prog_test_load				\
+>  	  -Dbpf_load_program=bpf_test_load_program
+>  LDLIBS += -lcap -lelf -lrt -lpthread
+>  
+> @@ -29,12 +32,6 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+>  	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
+>  	test_cgroup_attach xdping
+>  
+> -BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+> -TEST_GEN_FILES = $(BPF_OBJ_FILES)
+> -
+> -BTF_C_FILES = $(wildcard progs/btf_dump_test_case_*.c)
+> -TEST_FILES = $(BTF_C_FILES)
+> -
+>  # Also test sub-register code-gen if LLVM has eBPF v3 processor support which
+>  # contains both ALU32 and JMP32 instructions.
+>  SUBREG_CODEGEN := $(shell echo "int cal(int a) { return a > 0; }" | \
+> @@ -42,13 +39,17 @@ SUBREG_CODEGEN := $(shell echo "int cal(int a) { return a > 0; }" | \
+>  			$(LLC) -mattr=+alu32 -mcpu=v3 2>&1 | \
+>  			grep 'if w')
+>  ifneq ($(SUBREG_CODEGEN),)
+> -TEST_GEN_FILES += $(patsubst %.o,alu32/%.o, $(BPF_OBJ_FILES))
+> +TEST_GEN_PROGS += test_progs-alu32
+>  endif
+>  
+> +# Also test bpf-gcc, if present
+>  ifneq ($(BPF_GCC),)
+> -TEST_GEN_FILES += $(patsubst %.o,bpf_gcc/%.o, $(BPF_OBJ_FILES))
+> +TEST_GEN_PROGS += test_progs-bpf_gcc
+>  endif
+>  
+> +TEST_GEN_FILES =
+> +TEST_FILES =
+> +
+>  # Order correspond to 'make run_tests' order
+>  TEST_PROGS := test_kmod.sh \
+>  	test_libbpf.sh \
+> @@ -82,6 +83,8 @@ TEST_GEN_PROGS_EXTENDED = test_libbpf_open test_sock_addr test_skb_cgroup_id_use
+>  	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
+>  	test_lirc_mode2_user
+>  
+> +TEST_CUSTOM_PROGS = urandom_read
+> +
+>  include ../lib.mk
+>  
+>  # Define simple and short `make test_progs`, `make test_sysctl`, etc targets
+> @@ -94,21 +97,12 @@ $(notdir $(TEST_GEN_PROGS)						\
+>  	 $(TEST_GEN_PROGS_EXTENDED)					\
+>  	 $(TEST_CUSTOM_PROGS)): %: $(OUTPUT)/% ;
+>  
+> -# NOTE: $(OUTPUT) won't get default value if used before lib.mk
+> -TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read
+> -all: $(TEST_CUSTOM_PROGS)
+> -
+> -$(OUTPUT)/urandom_read: $(OUTPUT)/%: %.c
+> +$(OUTPUT)/urandom_read: urandom_read.c
+>  	$(CC) -o $@ $< -Wl,--build-id
+>  
+> -$(OUTPUT)/test_stub.o: test_stub.c
+> -	$(CC) $(TEST_PROGS_CFLAGS) $(CFLAGS) -c -o $@ $<
+> -
+>  BPFOBJ := $(OUTPUT)/libbpf.a
+>  
+> -$(TEST_GEN_PROGS): $(OUTPUT)/test_stub.o $(BPFOBJ)
+> -
+> -$(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(OUTPUT)/libbpf.a
+> +$(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(BPFOBJ)
+>  
+>  $(OUTPUT)/test_dev_cgroup: cgroup_helpers.c
+>  $(OUTPUT)/test_skb_cgroup_id_user: cgroup_helpers.c
+> @@ -118,7 +112,6 @@ $(OUTPUT)/test_socket_cookie: cgroup_helpers.c
+>  $(OUTPUT)/test_sockmap: cgroup_helpers.c
+>  $(OUTPUT)/test_tcpbpf_user: cgroup_helpers.c
+>  $(OUTPUT)/test_tcpnotify_user: cgroup_helpers.c trace_helpers.c
+> -$(OUTPUT)/test_progs: cgroup_helpers.c trace_helpers.c
+>  $(OUTPUT)/get_cgroup_id_user: cgroup_helpers.c
+>  $(OUTPUT)/test_cgroup_storage: cgroup_helpers.c
+>  $(OUTPUT)/test_netcnt: cgroup_helpers.c
+> @@ -134,6 +127,10 @@ force:
+>  $(BPFOBJ): force
+>  	$(MAKE) -C $(BPFDIR) OUTPUT=$(OUTPUT)/
+>  
+> +BPF_HELPERS := $(BPFDIR)/bpf_helper_defs.h $(wildcard $(BPFDIR)/bpf_*.h)
+> +$(BPFDIR)/bpf_helper_defs.h:
+> +	$(MAKE) -C $(BPFDIR) OUTPUT=$(OUTPUT)/ bpf_helper_defs.h
+> +
+>  # Get Clang's default includes on this system, as opposed to those seen by
+>  # '-target bpf'. This fixes "missing" files on some architectures/distros,
+>  # such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
+> @@ -144,10 +141,11 @@ define get_sys_includes
+>  $(shell $(1) -v -E - </dev/null 2>&1 \
+>  	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }')
+>  endef
+> +
+>  CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
+>  BPF_CFLAGS = -g -D__TARGET_ARCH_$(SRCARCH) 				\
+> -	     -I. -I./include/uapi -I../../../include/uapi 		\
+> -	     -I$(BPFDIR) -I$(OUTPUT)/../usr/include
+> +	     -I. -I./include/uapi -I$(APIDIR)				\
+> +	     -I$(BPFDIR) -I$(abspath $(OUTPUT)/../usr/include)
+>  
+>  CLANG_CFLAGS = $(CLANG_SYS_INCLUDES) \
+>  	       -Wno-compare-distinct-pointer-types
+> @@ -159,127 +157,170 @@ $(OUTPUT)/test_queue_map.o: test_queue_stack_map.h
+>  $(OUTPUT)/test_stack_map.o: test_queue_stack_map.h
+>  
+>  $(OUTPUT)/flow_dissector_load.o: flow_dissector_load.h
+> -$(OUTPUT)/test_progs.o: flow_dissector_load.h
+>  
+> -TEST_PROGS_CFLAGS := -I. -I$(OUTPUT)
+> -TEST_MAPS_CFLAGS := -I. -I$(OUTPUT)
+> -TEST_VERIFIER_CFLAGS := -I. -I$(OUTPUT) -Iverifier
+> +# Build BPF object using Clang
+> +# $1 - input .c file
+> +# $2 - output .o file
+> +# $3 - CFLAGS
+> +# $4 - LDFLAGS
+> +define CLANG_BPF_BUILD_RULE
+> +	($(CLANG) $3 -O2 -target bpf -emit-llvm				\
+> +		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+> +	$(LLC) -march=bpf -mcpu=probe $4 -filetype=obj -o $2
+> +endef
+> +# Similar to CLANG_BPF_BUILD_RULE, but using native Clang and bpf LLC
+> +define CLANG_NATIVE_BPF_BUILD_RULE
+> +	($(CLANG) $3 -O2 -emit-llvm					\
+> +		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+> +	$(LLC) -march=bpf -mcpu=probe $4 -filetype=obj -o $2
+> +endef
+> +# Build BPF object using GCC
+> +define GCC_BPF_BUILD_RULE
+> +	$(BPF_GCC) $3 $4 -O2 -c $1 -o $2
+> +endef
+> +
+> +# Set up extra TRUNNER_XXX "temporary" variables in the environment (relies on
+> +# $eval()) and pass control to DEFINE_TEST_RUNNER_RULES.
+> +# Parameters:
+> +# $1 - test runner base binary name (e.g., test_progs)
+> +# $2 - test runner extra "flavor" (e.g., alu32, gcc-bpf, etc)
+> +define DEFINE_TEST_RUNNER
+> +
+> +TRUNNER_OUTPUT := $(OUTPUT)$(if $2,/)$2
+> +TRUNNER_BINARY := $1$(if $2,-)$2
+> +TRUNNER_TEST_OBJS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.test.o,	\
+> +				 $$(notdir $$(wildcard $(TRUNNER_TESTS_DIR)/*.c)))
+> +TRUNNER_EXTRA_OBJS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.o,		\
+> +				 $$(filter %.c,$(TRUNNER_EXTRA_SOURCES)))
+> +TRUNNER_EXTRA_HDRS := $$(filter %.h,$(TRUNNER_EXTRA_SOURCES))
+> +TRUNNER_TESTS_HDR := $(TRUNNER_TESTS_DIR)/tests.h
+> +TRUNNER_BPF_OBJS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.o,		\
+> +				$$(notdir $$(wildcard $(TRUNNER_BPF_PROGS_DIR)/*.c)))
+> +
+> +# Evaluate rules now with extra TRUNNER_XXX variables above already defined
+> +$$(eval $$(call DEFINE_TEST_RUNNER_RULES,$1,$2))
+> +
+> +endef
+> +
+> +# Using TRUNNER_XXX variables, provided by callers of DEFINE_TEST_RUNNER and
+> +# set up by DEFINE_TEST_RUNNER itself, create test runner build rules with:
+> +# $1 - test runner base binary name (e.g., test_progs)
+> +# $2 - test runner extra "flavor" (e.g., alu32, gcc-bpf, etc)
+> +define DEFINE_TEST_RUNNER_RULES
+>  
+> +ifeq ($($(TRUNNER_OUTPUT)-dir),)
+> +$(TRUNNER_OUTPUT)-dir := y
+> +$(TRUNNER_OUTPUT):
+> +	mkdir -p $$@
+> +endif
+> +
+> +# ensure we set up BPF objects generation rule just once for a given
+> +# input/output directory combination
+> +ifeq ($($(TRUNNER_BPF_PROGS_DIR)$(if $2,-)$2-bpfobjs),)
+> +$(TRUNNER_BPF_PROGS_DIR)$(if $2,-)$2-bpfobjs := y
+> +$(TRUNNER_BPF_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+> +		     $(TRUNNER_BPF_PROGS_DIR)/%.c			\
+> +		     $(TRUNNER_BPF_PROGS_DIR)/*.h			\
+> +		     $$(BPF_HELPERS) | $(TRUNNER_OUTPUT)
+> +	$$(call $(TRUNNER_BPF_BUILD_RULE),$$<,$$@,			\
+> +					  $(TRUNNER_BPF_CFLAGS),	\
+> +					  $(TRUNNER_BPF_LDFLAGS))
+> +endif
+> +
+> +# ensure we set up tests.h header generation rule just once
+> +ifeq ($($(TRUNNER_TESTS_DIR)-tests-hdr),)
+> +$(TRUNNER_TESTS_DIR)-tests-hdr := y
+> +$(TRUNNER_TESTS_HDR): $(TRUNNER_TESTS_DIR)/*.c
+> +	$$(shell ( cd $(TRUNNER_TESTS_DIR);				\
+> +		  echo '/* Generated header, do not edit */';		\
+> +		  ls *.c 2> /dev/null |					\
+> +			sed -e 's@\([^\.]*\)\.c@DEFINE_TEST(\1)@';	\
+> +		 ) > $$@)
+> +endif
+> +
+> +# compile individual test files
+> +# Note: we cd into output directory to ensure embedded BPF object is found
+> +$(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
+> +		      $(TRUNNER_TESTS_DIR)/%.c				\
+> +		      $(TRUNNER_EXTRA_HDRS)				\
+> +		      $(TRUNNER_BPF_OBJS)				\
+> +		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+> +	cd $$(@D) && $$(CC) $$(CFLAGS) $$(LDLIBS) -c $(CURDIR)/$$< -o $$(@F)
+> +
+> +$(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+> +		       %.c						\
+> +		       $(TRUNNER_EXTRA_HDRS)				\
+> +		       $(TRUNNER_TESTS_HDR)				\
+> +		       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+> +	$$(CC) $$(CFLAGS) $$(LDLIBS) -c $$< -o $$@
+> +
+> +$(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_FILES) | $(TRUNNER_OUTPUT)
+> +ifneq ($2,)
+> +	# only copy extra resources if in flavored build
+> +	cp -a $$^ $(TRUNNER_OUTPUT)/
+> +endif
+> +
+> +$(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
+> +			     $(TRUNNER_EXTRA_OBJS) $$(BPFOBJ)		\
+> +			     | $(TRUNNER_BINARY)-extras
+> +	$$(CC) $$(CFLAGS) $$(LDLIBS) $$(filter %.a %.o,$$^) -o $$@
+> +
+> +endef
+> +
+> +# Define test_progs test runner.
+> +TRUNNER_TESTS_DIR := prog_tests
+> +TRUNNER_BPF_PROGS_DIR := progs
+> +TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
+> +			 flow_dissector_load.h
+> +TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read				\
+> +		       $(wildcard progs/btf_dump_test_case_*.c)
+> +TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+> +TRUNNER_BPF_CFLAGS := -I. -I$(OUTPUT) $(BPF_CFLAGS) $(CLANG_CFLAGS)
+> +TRUNNER_BPF_LDFLAGS :=
+> +$(eval $(call DEFINE_TEST_RUNNER,test_progs))
+> +
+> +# Define test_progs-alu32 test runner.
+>  ifneq ($(SUBREG_CODEGEN),)
+> -ALU32_BUILD_DIR = $(OUTPUT)/alu32
+> -TEST_CUSTOM_PROGS += $(ALU32_BUILD_DIR)/test_progs_32
+> -$(ALU32_BUILD_DIR):
+> -	mkdir -p $@
+> -
+> -$(ALU32_BUILD_DIR)/urandom_read: $(OUTPUT)/urandom_read | $(ALU32_BUILD_DIR)
+> -	cp $< $@
+> -
+> -$(ALU32_BUILD_DIR)/test_progs_32: test_progs.c $(OUTPUT)/libbpf.a\
+> -						$(ALU32_BUILD_DIR)/urandom_read \
+> -						| $(ALU32_BUILD_DIR)
+> -	$(CC) $(TEST_PROGS_CFLAGS) $(CFLAGS) \
+> -		-o $(ALU32_BUILD_DIR)/test_progs_32 \
+> -		test_progs.c test_stub.c cgroup_helpers.c trace_helpers.c prog_tests/*.c \
+> -		$(OUTPUT)/libbpf.a $(LDLIBS)
+> -
+> -$(ALU32_BUILD_DIR)/test_progs_32: $(PROG_TESTS_H)
+> -$(ALU32_BUILD_DIR)/test_progs_32: prog_tests/*.c
+> -
+> -$(ALU32_BUILD_DIR)/%.o: progs/%.c $(ALU32_BUILD_DIR)/test_progs_32 \
+> -					| $(ALU32_BUILD_DIR)
+> -	($(CLANG) $(BPF_CFLAGS) $(CLANG_CFLAGS) -O2 -target bpf -emit-llvm \
+> -		-c $< -o - || echo "clang failed") | \
+> -	$(LLC) -march=bpf -mcpu=probe -mattr=+alu32 $(LLC_FLAGS) \
+> -		-filetype=obj -o $@
+> +TRUNNER_BPF_LDFLAGS += -mattr=+alu32
+> +$(eval $(call DEFINE_TEST_RUNNER,test_progs,alu32))
+>  endif
+>  
+> +# Define test_progs BPF-GCC-flavored test runner.
+>  ifneq ($(BPF_GCC),)
+> -GCC_SYS_INCLUDES = $(call get_sys_includes,gcc)
+>  IS_LITTLE_ENDIAN = $(shell $(CC) -dM -E - </dev/null | \
+>  			grep 'define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__')
+> -ifeq ($(IS_LITTLE_ENDIAN),)
+> -MENDIAN=-mbig-endian
+> -else
+> -MENDIAN=-mlittle-endian
+> -endif
+> -BPF_GCC_CFLAGS = $(GCC_SYS_INCLUDES) $(MENDIAN)
+> -BPF_GCC_BUILD_DIR = $(OUTPUT)/bpf_gcc
+> -TEST_CUSTOM_PROGS += $(BPF_GCC_BUILD_DIR)/test_progs_bpf_gcc
+> -$(BPF_GCC_BUILD_DIR):
+> -	mkdir -p $@
+> -
+> -$(BPF_GCC_BUILD_DIR)/urandom_read: $(OUTPUT)/urandom_read | $(BPF_GCC_BUILD_DIR)
+> -	cp $< $@
+> -
+> -$(BPF_GCC_BUILD_DIR)/test_progs_bpf_gcc: $(OUTPUT)/test_progs \
+> -					 | $(BPF_GCC_BUILD_DIR)
+> -	cp $< $@
+> -
+> -$(BPF_GCC_BUILD_DIR)/%.o: progs/%.c $(BPF_GCC_BUILD_DIR)/test_progs_bpf_gcc \
+> -			  | $(BPF_GCC_BUILD_DIR)
+> -	$(BPF_GCC) $(BPF_CFLAGS) $(BPF_GCC_CFLAGS) -O2 -c $< -o $@
+> +MENDIAN=$(if $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
+> +
+> +TRUNNER_BPF_BUILD_RULE := GCC_BPF_BUILD_RULE
+> +TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(call get_sys_includes,gcc) $(MENDIAN)
+> +TRUNNER_BPF_LDFLAGS :=
+> +$(eval $(call DEFINE_TEST_RUNNER,test_progs,bpf_gcc))
+>  endif
+>  
+> -# Have one program compiled without "-target bpf" to test whether libbpf loads
+> -# it successfully
+> -$(OUTPUT)/test_xdp.o: progs/test_xdp.c
+> -	($(CLANG) $(BPF_CFLAGS) $(CLANG_CFLAGS) -O2 -emit-llvm -c $< -o - || \
+> -		echo "clang failed") | \
+> -	$(LLC) -march=bpf -mcpu=probe $(LLC_FLAGS) -filetype=obj -o $@
+> -
+> -# libbpf has to be built before BPF programs due to bpf_helper_defs.h
+> -$(OUTPUT)/%.o: progs/%.c | $(BPFOBJ)
+> -	($(CLANG) $(BPF_CFLAGS) $(CLANG_CFLAGS) -O2 -target bpf -emit-llvm \
+> -		-c $< -o - || echo "clang failed") | \
+> -	$(LLC) -march=bpf -mcpu=probe $(LLC_FLAGS) -filetype=obj -o $@
+> -
+> -PROG_TESTS_DIR = $(OUTPUT)/prog_tests
+> -$(PROG_TESTS_DIR):
+> -	mkdir -p $@
+> -PROG_TESTS_H := $(PROG_TESTS_DIR)/tests.h
+> -PROG_TESTS_FILES := $(wildcard prog_tests/*.c)
+> -test_progs.c: $(PROG_TESTS_H)
+> -$(OUTPUT)/test_progs: CFLAGS += $(TEST_PROGS_CFLAGS)
+> -$(OUTPUT)/test_progs: test_progs.c $(PROG_TESTS_FILES) | $(OUTPUT)/test_attach_probe.o $(PROG_TESTS_H)
+> -$(PROG_TESTS_H): $(PROG_TESTS_FILES) | $(PROG_TESTS_DIR)
+> -	$(shell ( cd prog_tests/; \
+> -		  echo '/* Generated header, do not edit */'; \
+> -		  ls *.c 2> /dev/null | \
+> -			sed -e 's@\([^\.]*\)\.c@DEFINE_TEST(\1)@'; \
+> -		 ) > $(PROG_TESTS_H))
+> -
+> -MAP_TESTS_DIR = $(OUTPUT)/map_tests
+> -$(MAP_TESTS_DIR):
+> -	mkdir -p $@
+> -MAP_TESTS_H := $(MAP_TESTS_DIR)/tests.h
+> -MAP_TESTS_FILES := $(wildcard map_tests/*.c)
+> -test_maps.c: $(MAP_TESTS_H)
+> -$(OUTPUT)/test_maps: CFLAGS += $(TEST_MAPS_CFLAGS)
+> -$(OUTPUT)/test_maps: test_maps.c $(MAP_TESTS_FILES) | $(MAP_TESTS_H)
+> -$(MAP_TESTS_H): $(MAP_TESTS_FILES) | $(MAP_TESTS_DIR)
+> -	$(shell ( cd map_tests/; \
+> -		  echo '/* Generated header, do not edit */'; \
+> -		  ls *.c 2> /dev/null | \
+> -			sed -e 's@\([^\.]*\)\.c@DEFINE_TEST(\1)@'; \
+> -		 ) > $(MAP_TESTS_H))
+> -
+> -VERIFIER_TESTS_DIR = $(OUTPUT)/verifier
+> -$(VERIFIER_TESTS_DIR):
+> -	mkdir -p $@
+> -VERIFIER_TESTS_H := $(VERIFIER_TESTS_DIR)/tests.h
+> -VERIFIER_TEST_FILES := $(wildcard verifier/*.c)
+> -test_verifier.c: $(VERIFIER_TESTS_H)
+> -$(OUTPUT)/test_verifier: CFLAGS += $(TEST_VERIFIER_CFLAGS)
+> -$(OUTPUT)/test_verifier: test_verifier.c | $(VERIFIER_TEST_FILES) $(VERIFIER_TESTS_H)
+> -$(VERIFIER_TESTS_H): $(VERIFIER_TEST_FILES) | $(VERIFIER_TESTS_DIR)
+> +# Define test_maps test runner.
+> +TRUNNER_TESTS_DIR := map_tests
+> +TRUNNER_BPF_PROGS_DIR := progs
+> +TRUNNER_EXTRA_SOURCES := test_maps.c
+> +TRUNNER_EXTRA_FILES :=
+> +TRUNNER_BPF_BUILD_RULE := $$(error no BPF objects should be built)
+> +TRUNNER_BPF_CFLAGS :=
+> +TRUNNER_BPF_LDFLAGS :=
+> +$(eval $(call DEFINE_TEST_RUNNER,test_maps))
+> +
+> +# Define test_verifier test runner.
+> +# It is much simpler than test_maps/test_progs and sufficiently different from
+> +# them (e.g., test.h is using completely pattern), that it's worth just
+> +# explicitly defining all the rules explicitly.
+> +verifier/tests.h: verifier/*.c
+>  	$(shell ( cd verifier/; \
+>  		  echo '/* Generated header, do not edit */'; \
+>  		  echo '#ifdef FILL_ARRAY'; \
+> -		  ls *.c 2> /dev/null | \
+> -			sed -e 's@\(.*\)@#include \"\1\"@'; \
+> +		  ls *.c 2> /dev/null | sed -e 's@\(.*\)@#include \"\1\"@'; \
+>  		  echo '#endif' \
+> -		 ) > $(VERIFIER_TESTS_H))
+> +		) > verifier/tests.h)
+> +$(OUTPUT)/test_verifier: test_verifier.c verifier/tests.h $(BPFOBJ) | $(OUTPUT)
+> +	$(CC) $(CFLAGS) $(LDLIBS) $(filter %.a %.o %.c,$^) -o $@
+>  
+> -EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(ALU32_BUILD_DIR) $(BPF_GCC_BUILD_DIR) \
+> -	$(VERIFIER_TESTS_H) $(PROG_TESTS_H) $(MAP_TESTS_H) \
+> -	feature
+> +EXTRA_CLEAN := $(TEST_CUSTOM_PROGS)					\
+> +	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
+> +	feature $(OUTPUT)/*.o $(OUTPUT)/alu32 $(OUTPUT)/bpf_gcc
+> -- 
+> 2.17.1
+> 
