@@ -2,89 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24B55D8AEC
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 10:28:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEF7D8B06
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 10:33:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391521AbfJPI2l convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 04:28:41 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48958 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726168AbfJPI2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 04:28:41 -0400
-Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1iKefZ-0000Ib-PI; Wed, 16 Oct 2019 10:28:33 +0200
-Date:   Wed, 16 Oct 2019 10:28:33 +0200
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Eric Dumazet <edumazet@google.com>, tglx@linutronix.de,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next v2] net: sched: Avoid using yield() in a busy
- waiting loop
-Message-ID: <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
-References: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
- <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com>
+        id S2387395AbfJPIdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 04:33:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59064 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727859AbfJPIdA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 04:33:00 -0400
+Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AA6B721835;
+        Wed, 16 Oct 2019 08:32:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571214779;
+        bh=NdXZajyERs0QpLS+PGSREhn58yJ9/RafJOhvl3pfEgw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LZBdgEKeZyu+1YO30cwViqS5EItVwYXXDV2XZBWoQt+c4ZZcxBMbV1MXK+vB4MoJu
+         wW7MHeWgg+kBFB6ke+jsvvaaCnWczfIBqVLmVTL9xoc/cTLN5A0zJkW4CadgRe8SYc
+         wa8EAvXEYhcO9YBqG63nT6YZjgrbWNi/rRGQONao=
+Date:   Wed, 16 Oct 2019 10:32:54 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org,
+        matteo.croce@redhat.com, mw@semihalf.com
+Subject: Re: [PATCH v3 net-next 2/8] net: mvneta: introduce page pool API for
+ sw buffer manager
+Message-ID: <20191016083254.GA2638@localhost.localdomain>
+References: <cover.1571049326.git.lorenzo@kernel.org>
+ <af6df39a06cba5b416520c6249c16d2cd2e3bb73.1571049326.git.lorenzo@kernel.org>
+ <20191015154107.08c4e9e1@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="BOKacYhQ+x31HxR3"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com>
+In-Reply-To: <20191015154107.08c4e9e1@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-With threaded interrupts enabled, the interrupt thread runs as SCHED_RR
-with priority 50. If a user application with a higher priority preempts
-the interrupt thread and tries to shutdown the network interface then it
-will loop forever. The kernel will spin in the loop waiting for the
-device to become idle and the scheduler will never consider the
-interrupt thread because its priority is lower.
+--BOKacYhQ+x31HxR3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Avoid the problem by sleeping for a jiffy giving other tasks,
-including the interrupt thread, a chance to run and make progress.
+> On Mon, 14 Oct 2019 12:49:49 +0200, Lorenzo Bianconi wrote:
+> > +static int mvneta_create_page_pool(struct mvneta_port *pp,
+> > +				   struct mvneta_rx_queue *rxq, int size)
+> > +{
+> > +	struct page_pool_params pp_params =3D {
+> > +		.order =3D 0,
+> > +		.flags =3D PP_FLAG_DMA_MAP,
+> > +		.pool_size =3D size,
+> > +		.nid =3D cpu_to_node(0),
+> > +		.dev =3D pp->dev->dev.parent,
+> > +		.dma_dir =3D DMA_FROM_DEVICE,
+> > +	};
+> > +	int err;
+> > +
+> > +	rxq->page_pool =3D page_pool_create(&pp_params);
+> > +	if (IS_ERR(rxq->page_pool)) {
+> > +		err =3D PTR_ERR(rxq->page_pool);
+> > +		rxq->page_pool =3D NULL;
+> > +		return err;
+> > +	}
+> > +
+> > +	err =3D xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, 0);
+>=20
+> The queue_index is always passed as 0, is there only a single queue?
+> XDP programs can read this field.
 
-In the original thread it has been suggested to use wait_event() and
-properly waiting for the state to occur. DaveM explained that this would
-require to add expensive checks in the fast paths of packet processing.
+Hi Jakub,
 
-Link: https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-[bigeasy: Rewrite commit message, add comment, use
-          schedule_timeout_uninterruptible()]
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-v1…v2: Typo fixes, noticed by Sergei Shtylyov.
+thx for the review. You are right, I will fix it in v4.
 
- net/sched/sch_generic.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Regards,
+Lorenzo
 
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 17bd8f539bc7f..974731b86c20c 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1217,8 +1217,13 @@ void dev_deactivate_many(struct list_head *head)
- 
- 	/* Wait for outstanding qdisc_run calls. */
- 	list_for_each_entry(dev, head, close_list) {
--		while (some_qdisc_is_busy(dev))
--			yield();
-+		while (some_qdisc_is_busy(dev)) {
-+			/* wait_event() would avoid this sleep-loop but would
-+			 * require expensive checks in the fast paths of packet
-+			 * processing which isn't worth it.
-+			 */
-+			schedule_timeout_uninterruptible(1);
-+		}
- 		/* The new qdisc is assigned at this point so we can safely
- 		 * unwind stale skb lists and qdisc statistics
- 		 */
--- 
-2.23.0
+>=20
+> > +	if (err < 0)
+> > +		goto err_free_pp;
+> > +
+> > +	err =3D xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq, MEM_TYPE_PAGE_POOL,
+> > +					 rxq->page_pool);
+> > +	if (err)
+> > +		goto err_unregister_rxq;
+> > +
+> > +	return 0;
+> > +
+> > +err_unregister_rxq:
+> > +	xdp_rxq_info_unreg(&rxq->xdp_rxq);
+> > +err_free_pp:
+> > +	page_pool_destroy(rxq->page_pool);
+> > +	return err;
+> > +}
+
+--BOKacYhQ+x31HxR3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXabVswAKCRA6cBh0uS2t
+rNGnAQCU8/Uq+kxOxrNZY84IzX0ElaedEpNR3YeObXioA5kKbAD9EKYBeWvmkIzp
+DPXoH1UfAjy/gDlaT37dKKf/4iRt4gU=
+=lsfE
+-----END PGP SIGNATURE-----
+
+--BOKacYhQ+x31HxR3--
