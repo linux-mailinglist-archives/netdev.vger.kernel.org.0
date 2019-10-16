@@ -2,124 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6F42D9872
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 480AFD988E
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:38:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389657AbfJPR2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 13:28:16 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42381 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728998AbfJPR2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:28:16 -0400
-Received: by mail-pg1-f194.google.com with SMTP id f14so9569320pgi.9
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 10:28:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dSyiYDGxQ6l3IKcJPG7eJG7CyAEyKvpSWn4nv1Crkb8=;
-        b=C7+/LpcorTCnfDEDsUpz+jRxp2TjQyHhUyGcfbPZ/oJJzOTb/4w9jp/l9vxhQ0LRyZ
-         m2PIglyxq7Z1iwx6uZdIctt1dzWeLQ//IaHMxQB232WanSGszvozzpGaFxBlw7uA2kOH
-         03o2NLaCrzPVWMMZLCftgZ2uquBX0+n0nuh7N319K1SI56nxY+zEBa/PkwPC+VaN8Apa
-         1Mr8L7uir6KYHV67LQQpxVvghk9GG6LfS+7DGlKzzBGQzxY+eGtX3jJ4dEUnH3BvEDbh
-         w9Tf8kaS9hWdzGlCOKNw1vv8NWc8MnVmF4C0QeaIyGVpHcvGA7QemXuOCE3Vte1ODD6T
-         N1/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dSyiYDGxQ6l3IKcJPG7eJG7CyAEyKvpSWn4nv1Crkb8=;
-        b=QqDGzgyhw21v+sOBQ0YrX5xmz9WrYDDPAAyltpn1iCYucEvBtGwgbF0fZdHN6q5bMY
-         kLw0J/VXzaIfc4K7QxHYoss3tlxoFm7swlv2UvvAY6/IkCTadKG+7HDNEZevXRNo/sIA
-         jnx7npaRfB6hHgGitjlHhJ84UL8y47yCpF3XqJrIbK/sYXqer2qCaMpjhhOBFkw4Vxn9
-         BdWMmVwJjhYxpw3hcEQ+F1DaNwY0ej9wBZqtL1twWL220RCQPi5x1B2EBYZQPmhnCL8n
-         ecFybr1J/avonDMmcTkKtnBHlVT5mCDO7qMtxya6fpL5VywXOB+kkww+q2ajXz/6Fa6U
-         +kUg==
-X-Gm-Message-State: APjAAAUU2S6pqYcrfzgavBkeypcKZTBPvJg2C7g7NjSEgiGikLubBN1D
-        O96qwsU3nZDzU73JE931nwWeLBcbHFzmaZxLOaQ=
-X-Google-Smtp-Source: APXvYqy6zaPFJvMkboTlw8wYpmQKvuOrbZVGO/lId2PbN9i+V4xx2NuweD2ptZVFvGdZs8oKdTyEmC/X8B7MRmz1qUg=
-X-Received: by 2002:a65:614e:: with SMTP id o14mr45744889pgv.237.1571246895163;
- Wed, 16 Oct 2019 10:28:15 -0700 (PDT)
+        id S2390436AbfJPRiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 13:38:18 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:54144 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388899AbfJPRiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:38:17 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id x9GHGkwW047926;
+        Wed, 16 Oct 2019 12:16:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1571246207;
+        bh=CUdc+rcnc6msHfXepIk9RIj1IGL+6ehXxq4FBzYUYEQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=ZLHzqNv3EoHM69peQBqM4u2Y5FLenfyMScHhM0Bad1sfpSB28yMZ+wfx736NmZ9+v
+         hz5KoT624F4K2coHj57E+ykT/rx70Cx7BOyNRz8R9IeIPO3/jemNSnhpEVhD0qOTVg
+         NEonsFXjVtHpW2LkaP3hHeLU18Eqvb7ByUK63tUU=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9GHGkWY060079;
+        Wed, 16 Oct 2019 12:16:46 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 16
+ Oct 2019 12:16:46 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Wed, 16 Oct 2019 12:16:46 -0500
+Received: from [158.218.117.39] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9GHGks1116057;
+        Wed, 16 Oct 2019 12:16:46 -0500
+Subject: Re: taprio testing - Any help?
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com>
+ <87v9sv3uuf.fsf@linux.intel.com>
+ <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
+ <87r23j3rds.fsf@linux.intel.com>
+ <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com>
+ <45d3e5ed-7ddf-3d1d-9e4e-f555437b06f9@ti.com>
+ <871rve5229.fsf@linux.intel.com>
+ <f6fb6448-35f0-3071-bda1-7ca5f4e3e11e@ti.com>
+ <acaa8a5f-3862-6751-672c-dc02ab1c054f@ti.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <1ba4841a-0108-c1d6-f64e-94d81cc32d9e@ti.com>
+Date:   Wed, 16 Oct 2019 13:22:35 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
 MIME-Version: 1.0
-References: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
- <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com> <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
-In-Reply-To: <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 16 Oct 2019 10:28:04 -0700
-Message-ID: <CAM_iQpXS5Dm-pCAu+7t+9RRauW=q64i6VCQ-Gz6j9_qFMPcOjA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: sched: Avoid using yield() in a busy
- waiting loop
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <acaa8a5f-3862-6751-672c-dc02ab1c054f@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 1:28 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
->
-> From: Marc Kleine-Budde <mkl@pengutronix.de>
->
-> With threaded interrupts enabled, the interrupt thread runs as SCHED_RR
-> with priority 50. If a user application with a higher priority preempts
-> the interrupt thread and tries to shutdown the network interface then it
-> will loop forever. The kernel will spin in the loop waiting for the
-> device to become idle and the scheduler will never consider the
-> interrupt thread because its priority is lower.
->
-> Avoid the problem by sleeping for a jiffy giving other tasks,
-> including the interrupt thread, a chance to run and make progress.
->
-> In the original thread it has been suggested to use wait_event() and
-> properly waiting for the state to occur. DaveM explained that this would
-> require to add expensive checks in the fast paths of packet processing.
->
-> Link: https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pen=
-gutronix.de
+On 10/16/2019 01:14 PM, Murali Karicheri wrote:
+> On 10/16/2019 01:02 PM, Murali Karicheri wrote:
+>> Hi Vinicius,
+>>
+>> On 10/14/2019 07:39 PM, Vinicius Costa Gomes wrote:
+>>> Murali Karicheri <m-karicheri2@ti.com> writes:
+>>>>
+>>>> My expectation is as follows
+>>>>
+>>>> AAAAAABBBBBCCCCCDDDDDEEEEE
+>>>>
+>>>> Where AAAAA is traffic from TC0, BBBBB is udp stream for port 10000
+>>>> CCCCC is stream for port 20000, DDDDD for 30000 and EEEEE for 40000.
+>>>> Each can be max of 4 msec. Is the expection correct? At least that
+>>>> is my understanding.
+>>>
+>>> Your expectation is correct.
+>>>
+>>>>
+>>>> But what I see is alternating packets with port 10000/20000/30000/40000
+>>>> at the wireshark capture and it doesn't make sense to me. If you
+>>>> look at the timestamp, there is nothing showing the Gate is honored
+>>>> for Tx. Am I missing something?
+>>>
+>>> Remember that taprio (in software mode) has no control after the packet
+>>> is delivered to the driver. So, even if taprio obeys your traffic
+>>> schedule perfectly, the driver/controller may decide to send packets
+>>> according to some other logic.
+>>>
+>> That is true.
+>>
+>> I think I get why it can't work without ETF offload which is missing in
+>> our hardware. Here is what my understanding. Please correct it if wrong.
+>>
+>> Our hardware has priority queues implemented. So if there are no
+>> packets in the higher priority queue, it would send from the lower
+>> priority ones. Assuming packets gets dequeue-ed correctly by
+>> taprio and that packets are only in one of the lower priority TC.
+>> i.e in the above example, BBBBBB are present when TC1 Gate is open.
+>> Assuming there are more packets than actually sent out during TC1
+>> window, and assuming no packets in the TC0 queue (AAAAA is absent)
+>> then hardware will continue to send from TC1 queue. So that might
+>> be what is happening, right?
+>>
+>> So it is required to deliver frames to driver only when the Gate for
+>> the specific traffic class is open.
+> Plus, number of packets delivered should be based on available time
+> in the current window.
+> 
+Also I see in the taprio code
 
-BTW, this link doesn't work, 404 is returned.
+/* There are a few scenarios where we will have to modify the txtime from
+  * what is read from next_txtime in sched_entry. They are:
+  * 1. If txtime is in the past,
+  *    a. The gate for the traffic class is currently open and packet can be
+  *       transmitted before it closes, schedule the packet right away.
+  *    b. If the gate corresponding to the traffic class is going to 
+open later
+  *       in the cycle, set the txtime of packet to the interval start.
+  * 2. If txtime is in the future, there are packets corresponding to the
+  *    current traffic class waiting to be transmitted. So, the following
+  *    possibilities exist:
+  *    a. We can transmit the packet before the window containing the txtime
+  *       closes.
+  *    b. The window might close before the transmission can be completed
+  *       successfully. So, schedule the packet in the next open window.
+  */
+static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
+{
 
+So if I enable ETF, looks like packets get dequeue-ed based on txtime
+which match with the schedule entries. So packets would arrive at the
+driver at the correct time. Of course need to play with delta of the
+ETF configuration.
 
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> [bigeasy: Rewrite commit message, add comment, use
->           schedule_timeout_uninterruptible()]
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
-> v1=E2=80=A6v2: Typo fixes, noticed by Sergei Shtylyov.
->
->  net/sched/sch_generic.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> index 17bd8f539bc7f..974731b86c20c 100644
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -1217,8 +1217,13 @@ void dev_deactivate_many(struct list_head *head)
->
->         /* Wait for outstanding qdisc_run calls. */
->         list_for_each_entry(dev, head, close_list) {
-> -               while (some_qdisc_is_busy(dev))
-> -                       yield();
-> +               while (some_qdisc_is_busy(dev)) {
-> +                       /* wait_event() would avoid this sleep-loop but w=
-ould
-> +                        * require expensive checks in the fast paths of =
-packet
-> +                        * processing which isn't worth it.
-> +                        */
-> +                       schedule_timeout_uninterruptible(1);
+Thanks
 
-I am curious why this is uninterruptible?
+Murali
+>> Is that what is done by ETF qdisc?
+>>  From ETF description at
+>> http://man7.org/linux/man-pages/man8/tc-etf.8.html
+>> 'The ETF (Earliest TxTime First) qdisc allows applications to control
+>> the instant when a packet should be dequeued from the traffic control
+>> layer into the netdevice'. So I assume, when I use iperf (there is
+>> no txtime information in the packet), I still can use ETF and
+>> packet time will be modified to match with schedule and then get
+>> dequeue-ed at correct time to arrive at the driver during the Gate
+>> open of taprio. Is this correct?
+>>
+>> If ETF can schedule packet to arrive at the driver just during th
+>> Gate open and work in sync with taprio scheduler, that would do the
+>> work.I understand the border may be difficult to manage. However if we
+>> add a guard band by adding an extra entry with all Gates closed
+>> between schedules for guard band duration, it should allow hardware to
+>> flush out any remaining frames from the queue outside its Gate duration.
+>> If my understanding is correct, can I use software ETF qdisc in this
+>> case? If so how do I configure it? Any example?
+>>
+>>>>
+>>>> The tc stats shows packets are going through specific TC/Gate
+>>>>
+>>>> root@am57xx-evm:~# tc -d -p -s qdisc show dev eth0
+>>>> qdisc taprio 100: root refcnt 9 tc 5 map 0 1 2 3 4 4 4 4 4 4 4 4 4 4 
+>>>> 4 4
+>>>> queues offset 0 count 1 offset 1 count 1 offset 2 count 1 offset 3 
+>>>> count
+>>>> 1 offset 4 count 1
+>>>> clockid TAI offload 0   base-time 0 cycle-time 0 cycle-time-extension 0
+>>>> base-time 1564768921123459533 cycle-time 20000000 cycle-
+>>>> time-extension 0
+>>>>           index 0 cmd S gatemask 0x1 interval 4000000
+>>>>           index 1 cmd S gatemask 0x2 interval 4000000
+>>>>           index 2 cmd S gatemask 0x4 interval 4000000
+>>>>           index 3 cmd S gatemask 0x8 interval 4000000
+>>>>           index 4 cmd S gatemask 0x10 interval 4000000
+>>>>
+>>>>    Sent 80948029 bytes 53630 pkt (dropped 0, overlimits 0 requeues 0)
+>>>>    backlog 0b 0p requeues 0
+>>>> qdisc pfifo 0: parent 100:5 limit 1000p
+>>>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>>>    backlog 0b 0p requeues 0
+>>>> qdisc pfifo 0: parent 100:4 limit 1000p
+>>>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>>>    backlog 0b 0p requeues 0
+>>>> qdisc pfifo 0: parent 100:3 limit 1000p
+>>>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>>>    backlog 0b 0p requeues 0
+>>>> qdisc pfifo 0: parent 100:2 limit 1000p
+>>>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>>>    backlog 0b 0p requeues 0
+>>>> qdisc pfifo 0: parent 100:1 limit 1000p
+>>>>    Sent 16210237 bytes 10814 pkt (dropped 0, overlimits 0 requeues 0)
+>>>>    backlog 0b 0p requeues 0
+>>>>
+>>>> Also my hardware queue stats shows frames going through correct queues.
+>>>> Am I missing something?
+>>>>
+>>>
+>>> What I usually see in these cases, are that the borders (from A to B,
+>>> for example) are usually messy, the middle of each entry are more well
+>>> behaved.
+>>>
+>> OK
+>>
+>>> But there are things that could improve the behavior: reducing TX DMA
+>>> coalescing, reducing the number of packet buffers in use in the
+>>> controller, disabling power saving features, that kind of thing.
+>> I can try playing with the number if descriptors used. But from my above
+>> response, I might have to use software ETF qdisc along with taprio to
+>> have packets in the correct order on the wire. So will wait on this for
+>> now.
+>>>
+>>> If you are already doing something like this, then I would like to know
+>>> more, that could indicate a problem.
+>>>
+>> No. The hardware just implement a priority queue scheme. I can control
+>> the number of buffers or descriptors.
+>>
+>> Murali
+>>> [...]
+>>>
+>>>> I am on a 4.19.y kernel with patches specific to taprio
+>>>> backported. Am I missing anything related to taprio. I will
+>>>> try on the latest master branch as well. But if you can point out
+>>>> anything that will be helpful.
+>>>>
+>>>
+>>> [...]
+>>>
+>>>> lcpd/ti-linux-4.19.y) Merged TI feature connectivity into
+>>>> ti-linux-4.19.y
+>>>
+>>> I can't think of anything else.
+>>>
+>>>>
+>>>>>
+>>>>> Regards,
+>>>>> -Vladimir
+>>>>>
+>>>
+>>> Cheers,
+>>> -- 
+>>> Vinicius
+>>>
+>>
+>>
+> 
+> 
 
-Thanks.
