@@ -2,73 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 276F5D84E3
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 02:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1F7D84FD
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 02:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388229AbfJPAhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 20:37:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42368 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727579AbfJPAhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 20:37:36 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9186E12471F93;
-        Tue, 15 Oct 2019 17:37:35 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 17:37:35 -0700 (PDT)
-Message-Id: <20191015.173735.680126764547812788.davem@davemloft.net>
-To:     marex@denx.de
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        george.mccollister@gmail.com, Tristram.Ha@microchip.com,
-        woojung.huh@microchip.com
-Subject: Re: [PATCH V2 2/2] net: dsa: microchip: Add shared regmap mutex
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191013193238.1638-2-marex@denx.de>
-References: <20191013193238.1638-1-marex@denx.de>
-        <20191013193238.1638-2-marex@denx.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 15 Oct 2019 17:37:35 -0700 (PDT)
+        id S2390312AbfJPAls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 20:41:48 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53353 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388246AbfJPAls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 20:41:48 -0400
+Received: from [213.220.153.21] (helo=localhost.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1iKXNq-00065g-If; Wed, 16 Oct 2019 00:41:46 +0000
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     christian.brauner@ubuntu.com
+Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, yhs@fb.com
+Subject: [PATCH v2 0/3] bpf: switch to new usercopy helpers
+Date:   Wed, 16 Oct 2019 02:41:35 +0200
+Message-Id: <20191016004138.24845-1-christian.brauner@ubuntu.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191009160907.10981-1-christian.brauner@ubuntu.com>
+References: <20191009160907.10981-1-christian.brauner@ubuntu.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
-Date: Sun, 13 Oct 2019 21:32:38 +0200
+Hey everyone,
 
-> diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
-> index d0f8153e86b7..614404c40cba 100644
-> --- a/drivers/net/dsa/microchip/ksz8795_spi.c
-> +++ b/drivers/net/dsa/microchip/ksz8795_spi.c
-> @@ -26,6 +26,7 @@ KSZ_REGMAP_TABLE(ksz8795, 16, SPI_ADDR_SHIFT,
->  static int ksz8795_spi_probe(struct spi_device *spi)
->  {
->  	struct ksz_device *dev;
-> +	struct regmap_config rc;
->  	int i, ret;
+In v5.4-rc2 we added two new helpers check_zeroed_user() and
+copy_struct_from_user() including selftests (cf. [1]). It is a generic
+interface designed to copy a struct from userspace. The helpers will be
+especially useful for structs versioned by size of which we have quite a
+few.
 
-Please retain the reverse christmas tree ordering of local variables
-here.
+The most obvious benefit is that this helper lets us get rid of
+duplicate code. We've already switched over sched_setattr(), perf_event_open(),
+and clone3(). More importantly it will also help to ensure that users
+implementing versioning-by-size end up with the same core semantics.
 
-> @@ -18,6 +18,7 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c,
->  			     const struct i2c_device_id *i2c_id)
->  {
->  	struct ksz_device *dev;
-> +	struct regmap_config rc;
->  	int i, ret;
+This point is especially crucial since we have at least one case where
+versioning-by-size is used but with slighly different semantics:
+sched_setattr(), perf_event_open(), and clone3() all do do similar
+checks to copy_struct_from_user() while rt_sigprocmask(2) always rejects
+differently-sized struct arguments.
 
-Likewise.
+This little series switches over bpf codepaths that have hand-rolled
+implementations of these helpers.
 
-> @@ -25,6 +25,7 @@ KSZ_REGMAP_TABLE(ksz9477, 32, SPI_ADDR_SHIFT,
->  static int ksz9477_spi_probe(struct spi_device *spi)
->  {
->  	struct ksz_device *dev;
-> +	struct regmap_config rc;
->  	int i, ret;
+Thanks!
+Christian
 
-Likewise.
+/* v1 */
+Link: https://lore.kernel.org/r/20191009160907.10981-1-christian.brauner@ubuntu.com
+
+/* v2 */
+- rebase onto bpf-next
+
+/* Reference */
+[1]: f5a1a536fa14 ("lib: introduce copy_struct_from_user() helper")
+
+Christian Brauner (3):
+  bpf: use check_zeroed_user() in bpf_check_uarg_tail_zero()
+  bpf: use copy_struct_from_user() in bpf_prog_get_info_by_fd()
+  bpf: use copy_struct_from_user() in bpf() syscall
+
+ kernel/bpf/syscall.c | 46 +++++++++++++++++---------------------------
+ 1 file changed, 18 insertions(+), 28 deletions(-)
+
+-- 
+2.23.0
+
