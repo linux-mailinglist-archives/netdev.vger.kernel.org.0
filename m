@@ -2,170 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D1AD9A7C
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 21:54:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B182D9A8C
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 21:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436723AbfJPTyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 15:54:11 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33965 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436685AbfJPTyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 15:54:11 -0400
-Received: by mail-pg1-f194.google.com with SMTP id k20so7560821pgi.1
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 12:54:10 -0700 (PDT)
+        id S2394630AbfJPT7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 15:59:40 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:39257 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727148AbfJPT7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 15:59:40 -0400
+Received: by mail-lf1-f67.google.com with SMTP id 195so5536950lfj.6
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 12:59:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Xdoq2nThOqFLhikj0qU5Mih2TvMdL6CVco57qi6Xi7s=;
-        b=mMr6mO5xJ1PDyXFaBqXG86x2ag/v4sQQQik7mPswDOPv/MuD/ft4DFA3WWrKZTWByq
-         05Ba5f3bUG3IIVeqPZwi2FbA8JSV0o7ApvY20kvm6L63yddlYw+G0e52nq20u3oS4T32
-         9FkcYEHoUXIZkxH9FbB3UYAYKxdgBWvk5yaaswGyXrxLXg/pL5/WpBR0JiMedkvXWIrk
-         1R1Dq/NPM0vdv60ClcbF1Tk5Rt1v4LzWggJgCy/tW3fNtImWizvyTTI6j3OpuMs8hqh7
-         qTemlK7tWK6XRCSH+ef7V1YZERnral1PXpa4j6OCOXkoqYEQS03ocNtvLtRqNvoifRfv
-         O8NA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=S5rv6G5FHb2cQfGd13qHlLrf3736MZ536jKavl7v604=;
+        b=sK4lWhumqCTHdhxg2Eh5nbQxU3DwYaCydV3NfV/fF7R+67M45LhQr0IzYTp78uhG/7
+         uKkHm8JTxu+jkOruTDXsbdDVYgbKkrS8crE75O1CdVm/Ud+TkV/j4KW0nn9RWbwFYUmL
+         2I8VMV7hGQJ7xZHBBWUAIra4CdLlr/pUVm9wdEFm9IbKpR+iPUT71keuQUdszG2PAwdU
+         LY7EMS2cW1Rl8ceN9qIH2hjye+1iHnVpIrdptnVf2+jUkdiz+Rp97am04XFLVAWZ8IuN
+         fp0kzSQXrnKlX6oeAo/crmE8g6mOwV+EhG6M2VmhchGd32rxXLuwRsT7EFU/pmn40KpV
+         Q/7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Xdoq2nThOqFLhikj0qU5Mih2TvMdL6CVco57qi6Xi7s=;
-        b=OR3v6uQpADmYBApVQSrh9pItWJg1BgR60IDfZH8+hnCoVewBlZzP23tlCChq0xJVhv
-         3ulr1NZPs3WcDLTzaSrap/d98DxxZ/gOINQSiHUmo5KHT2boi8WdI0DSCuFi9uNAheiv
-         Ik1adpvcDvjG7fN3C0j4DFLm3G7Y2yWPkb778VONXb+gLEUqsnvQlncY+g96pvcrZEJc
-         Bq70YYto8g7CdSqVxulzMQrUdgJ4BxioFss6xD2IDvwH2sgw27cyOGNf+gYmCIvf7N2N
-         49KTCHwnZWex42/FTssr7BBe00xg2IJ4LABkcEd9xc+xCnLADEwndTPguqN5NrivASq/
-         Hqdg==
-X-Gm-Message-State: APjAAAXB0aPx9o7SW/+Cvn7tjqCliof4waUQLfmAnoiwjqFrj/TMgDDV
-        jZV2FO2+GPzAPnUsGnZLyTLDpUzj
-X-Google-Smtp-Source: APXvYqyebT3BeVXYoL6k69dAuoMqLqKTj+HTxCng+vrdgeXwN5ndThrmx0F6WtiNGwlsT+80QXAF4A==
-X-Received: by 2002:a63:5b63:: with SMTP id l35mr28181405pgm.307.1571255649846;
-        Wed, 16 Oct 2019 12:54:09 -0700 (PDT)
-Received: from ?IPv6:2620:0:1000:3510:9c1d:f62a:9434:e03f? ([2620:0:1000:3510:9c1d:f62a:9434:e03f])
-        by smtp.gmail.com with ESMTPSA id t125sm31294384pfc.80.2019.10.16.12.54.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Oct 2019 12:54:06 -0700 (PDT)
-Subject: Re: AW: big ICMP requests get disrupted on IPSec tunnel activation
-To:     "Bartschies, Thomas" <Thomas.Bartschies@cvk.de>,
-        'David Ahern' <dsahern@gmail.com>,
-        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
-References: <EB8510AA7A943D43916A72C9B8F4181F62A096BF@cvk038.intra.cvk.de>
- <24354e08-fa07-9383-e8ba-7350b40d3171@gmail.com>
- <df90f3cf-69d6-dae6-a394-b92a3fc379bb@gmail.com>
- <EB8510AA7A943D43916A72C9B8F4181F62A0981D@cvk038.intra.cvk.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <df6f5b96-0a5b-fdfb-100c-3dbd5581ccb0@gmail.com>
-Date:   Wed, 16 Oct 2019 12:54:03 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=S5rv6G5FHb2cQfGd13qHlLrf3736MZ536jKavl7v604=;
+        b=E/KyQzlgOlZTAThB1e3MfQqoPHAzGeCfNwtFC6QfN9tbw/bJcekZgkOmDCaOhWg8NN
+         HleCoU85qaBQNyvo9SBlU1kueTZROJbF69gPEbmTgsOyQGXUb9DC/fL+gNEEihAQbFSS
+         RAD3LnWwaFHmh4hvkGqHRDo0ZU/U+ygrGkmgZeiOr7ja+1+iR0m6GLD/T1MkiiyDsvbi
+         qIV22nO2vOgkWJJlaCDZkrqpbbratWv2XX1Hlxewvz1g7es6MXMbgRmtivkCnZU2dL2z
+         PxeRWGNNujDAiKnoz3FduTQlahcL7kt2UzGaVWj5Y6VLKc11BCjp1ngWLs0g4WjL8FcC
+         BkLg==
+X-Gm-Message-State: APjAAAXCd0pUnhQXIOY4WyVKXdmTga3+Ogv/koh4dDKwBQg7TXbRHKk7
+        2UyfKIrwRAcl8PWCD6G/abbmYclGRgU=
+X-Google-Smtp-Source: APXvYqyCw00j2ujOMVgMrtDAsF+ve3ar0zwdUCljZwYbBycdtNq7KvMLJeT/2FOWkBPzuhVX1x0i+w==
+X-Received: by 2002:ac2:4847:: with SMTP id 7mr4065093lfy.180.1571255977844;
+        Wed, 16 Oct 2019 12:59:37 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 4sm2081050lfa.95.2019.10.16.12.59.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 12:59:37 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 12:59:28 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 net 2/4] net: aquantia: when cleaning hw cache it
+ should be toggled
+Message-ID: <20191016125928.24d72dce@cakuba.netronome.com>
+In-Reply-To: <e39ae93c-60eb-7991-3b15-70a05aca3377@aquantia.com>
+References: <cover.1570787323.git.igor.russkikh@aquantia.com>
+        <d89180cd7ddf6981310179108b37a8d15c44c02f.1570787323.git.igor.russkikh@aquantia.com>
+        <20191015113317.6413f912@cakuba.netronome.com>
+        <e39ae93c-60eb-7991-3b15-70a05aca3377@aquantia.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <EB8510AA7A943D43916A72C9B8F4181F62A0981D@cvk038.intra.cvk.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/16/19 11:54 AM, Bartschies, Thomas wrote:
-> Hello,
+On Wed, 16 Oct 2019 13:19:30 +0000, Igor Russkikh wrote:
+> >> It was previosly always just set. Due to the way driver stops HW this
+> >> never actually caused any issues, but it still may, so cleaning this up.  
+> > 
+> > Hm. So is it a cleanup of fix? Does the way code is written guarantee
+> > it will never cause issues?  
 > 
-> I had to adapt the second half to my test kernel. Just had to make some guesses, tested. and it works.
-> Your conclusions are correct. I also suspected something like that, but with no knowledge of the inner
-> workings of the ip stack I had very little chances to find the right fix by myself.
-> 
-> Thank you very much. Will retest know for a secondary forwarding problem that's much harder to reproduce.
-> 
+> Yes, thats a cleanup. We just had other products where this cache reset had to
+> be done multiple times. Obviously doing that second time was just no-op for
+> hardware ;)
+> On linux this always gets called on deinit only once - thus it was safe.
+> We just aligning here the linux driver with actual HW specification.
 
-Sorry for the delay.
+I see, in light of that explanation I think it'd be appropriate to take
+the Fixes tag away and move this patch to the net-next series.
 
-The patch backported to 5.2.18 would be something like :
+> >> +	if (err)
+> >> +		goto err_exit;
+> >> +
+> >> +	readx_poll_timeout_atomic(hw_atl_rdm_rx_dma_desc_cache_init_done_get,
+> >> +				  self, val, val == 1, 1000U, 10000U);  
+> > 
+> > It's a little strange to toggle, yet wait for it to be of a specific
+> > value..  
+> 
+> Notice thats a different value - 'cache_init_done' bit.
+> This is used by HW to indicate completion of cache reset operation.
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 8c2ec35b6512f1486cf2ea01f4a19444c7422642..96c02146be0af1e66230627b401c35757f9dc702 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -626,6 +626,7 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
-        if (skb_has_frag_list(skb)) {
-                struct sk_buff *frag, *frag2;
-                unsigned int first_len = skb_pagelen(skb);
-+               ktime_t tstamp = skb->tstamp;
- 
-                if (first_len - hlen > mtu ||
-                    ((first_len - hlen) & 7) ||
-@@ -687,6 +688,7 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
-                                ip_send_check(iph);
-                        }
- 
-+                       skb->tstamp = tstamp;
-                        err = output(net, sk, skb);
- 
-                        if (!err)
-
-
-
-> Regards,
-> --
-> Thomas Bartschies
-> CVK IT-Systeme
-> 
-> -----Ursprüngliche Nachricht-----
-> Von: Eric Dumazet [mailto:eric.dumazet@gmail.com] 
-> Gesendet: Mittwoch, 16. Oktober 2019 17:41
-> An: Bartschies, Thomas <Thomas.Bartschies@cvk.de>; 'David Ahern' <dsahern@gmail.com>; 'netdev@vger.kernel.org' <netdev@vger.kernel.org>
-> Betreff: Re: big ICMP requests get disrupted on IPSec tunnel activation
-> 
-> On 10/16/19 8:31 AM, Eric Dumazet wrote:
->>
->>
->> On 10/16/19 5:57 AM, Bartschies, Thomas wrote:
->>> Hello,
->>>
->>> did another test. This time I've changed the order. First triggered the IPSec policy and then tried to ping in parallel with a big packet size.
->>> Could also reproduce the issue, but the trace was completely different. May be this time I've got the trace for the problematic connection?
->>>
->>
->> This one was probably a false positive.
->>
->> The other one, I finally understood what was going on.
->>
->> You told us you removed netfilter, but it seems you still have the ip defrag modules there.
->>
->> (For a pure fowarding node, no reassembly-defrag should be needed)
->>
->> When ip_forward() is used, it correctly clears skb->tstamp
->>
->> But later, ip_do_fragment() might re-use the skbs found attached to 
->> the master skb and we do not init properly their skb->tstamp
->>
->> The master skb->tstamp should be copied to the children.
->>
->> I will send a patch asap.
->>
->> Thanks.
->>
-> 
-> Can you try :
-> 
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c index 28fca408812c5576fc4ea957c1c4dec97ec8faf3..c880229a01712ba5a9ed413f8aab2b56dfe93c82 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -808,6 +808,7 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
->         if (skb_has_frag_list(skb)) {
->                 struct sk_buff *frag, *frag2;
->                 unsigned int first_len = skb_pagelen(skb);
-> +               ktime_t tstamp = skb->tstamp;
->  
->                 if (first_len - hlen > mtu ||
->                     ((first_len - hlen) & 7) || @@ -846,6 +847,7 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
->                                 ip_fraglist_prepare(skb, &iter);
->                         }
->  
-> +                       skb->tstamp = tstamp;
->                         err = output(net, sk, skb);
->  
->                         if (!err)
-> 
+Ah, ack, it's an "eyeful".. :)
