@@ -2,32 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 014E9D8FBE
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 13:41:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7845DD8FBC
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 13:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728232AbfJPLlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 07:41:39 -0400
-Received: from imap1.codethink.co.uk ([176.9.8.82]:49482 "EHLO
-        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbfJPLlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 07:41:39 -0400
-Received: from [167.98.27.226] (helo=rainbowdash.codethink.co.uk)
-        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
-        id 1iKhgI-0005vB-OZ; Wed, 16 Oct 2019 12:41:30 +0100
-Received: from ben by rainbowdash.codethink.co.uk with local (Exim 4.92.2)
-        (envelope-from <ben@rainbowdash.codethink.co.uk>)
-        id 1iKhgI-00052M-6i; Wed, 16 Oct 2019 12:41:30 +0100
-From:   "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
-To:     linux-kernel@lists.codethink.co.uk
-Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] RFC: Bluetooth: missed cpu_to_le16 conversion in hci_init4_req
-Date:   Wed, 16 Oct 2019 12:39:43 +0100
-Message-Id: <20191016113943.19256-1-ben.dooks@codethink.co.uk>
+        id S1727033AbfJPLkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 07:40:40 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40535 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725832AbfJPLkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 07:40:39 -0400
+Received: by mail-wm1-f66.google.com with SMTP id b24so2383573wmj.5
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 04:40:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5BmxpLDnpwLj/rKEuNcorTG+zgO8YvtimK56et3jBEE=;
+        b=HomfB66g+peuZMRNypTayjh4DsFkweI6KARmYnQT9H2F4gwdG4NxbHUTro8JV/wtPs
+         I8fbQfNQ00x+s408Ql3AsES3Vz9HD3q8mxlVepRKztDKQDXvLZ59Yp6vMEzlCaZ9upBM
+         iFDApUfQXUrtRC/fhoWk5XSvB4MdSrM1/GkpVAOiOGn/vSyJfFABKH29pN6C0VIl8NhO
+         Ruimz5QleCbow2jAbqFHsF+9FFctFx4K6cTevf8/ItHBy7dbIOtyWzKaJQdKqMSQNGQO
+         ook30efWLyvgLaKue1MCQLVHFiOLTNYSmk8dmd+F2w6s0puXoZgCb8TbPRE0hvS0dnY6
+         tg9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5BmxpLDnpwLj/rKEuNcorTG+zgO8YvtimK56et3jBEE=;
+        b=EGj3CmN4PfLO/Av4tcIlkc6JDe8VqBPmiu9ZDT0V9B4S5UtjHHU3nORxKsyjCXcac3
+         kLbu8LBd27fwAunwOxGrUmZM3UpRV2xGozLr0xEJRwwG7WzToVSvAyA76976Rju87lhe
+         /yatdAwzVKi4C65g4bHhAZdOFVX1VPkJ2tKL2hgJhfbPcjc2C3bN1wsTsRx0x57/LqAT
+         9ogm/lFpp7BrE+gnIC/VYI9g5A8S9wdE8voPz7ZafYryXNSQuIy8hnre7pjvywbApA7K
+         kvO56tT+iDGLjZxkDY8dXZlUmWqCZPASyM5JFO0M6O0GQO+QUpoikN4h+hzb0+/r9ucS
+         Jmaw==
+X-Gm-Message-State: APjAAAUAdgvbFNhE0uo40k/bEpc1y6068aNJ7KH4/5Vo16EBQK9xpMdh
+        +MP5RvUrKW25cwakzZS6RyJPsYSpHE4=
+X-Google-Smtp-Source: APXvYqw7fIpIsEet7luOieadAozl+vIKiPNjShOFV4JO64GtPPBeFHfMkAavBjCbX5splCH0A/7HYQ==
+X-Received: by 2002:a7b:c849:: with SMTP id c9mr3088494wml.58.1571226037275;
+        Wed, 16 Oct 2019 04:40:37 -0700 (PDT)
+Received: from apalos.home (ppp-94-65-92-5.home.otenet.gr. [94.65.92.5])
+        by smtp.gmail.com with ESMTPSA id y3sm8361628wmg.2.2019.10.16.04.40.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 04:40:36 -0700 (PDT)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
+        davem@davemloft.net, brouer@redhat.com, lorenzo@kernel.org
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: [PATCH] net: netsec: Correct dma sync for XDP_TX frames
+Date:   Wed, 16 Oct 2019 14:40:32 +0300
+Message-Id: <20191016114032.21617-1-ilias.apalodimas@linaro.org>
 X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -36,47 +59,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It looks like in hci_init4_req() the request is being
-initialised from cpu-endian data but the packet is specified
-to be little-endian. This causes an warning from sparse due
-to __le16 to u16 conversion.
+bpf_xdp_adjust_head() can change the frame boundaries. Account for the
+potential shift properly by calculating the new offset before
+syncing the buffer to the device for XDP_TX
 
-Fix this by using cpu_to_le16() on the two fields in the packet.
-
-net/bluetooth/hci_core.c:845:27: warning: incorrect type in assignment (different base types)
-net/bluetooth/hci_core.c:845:27:    expected restricted __le16 [usertype] tx_len
-net/bluetooth/hci_core.c:845:27:    got unsigned short [usertype] le_max_tx_len
-net/bluetooth/hci_core.c:846:28: warning: incorrect type in assignment (different base types)
-net/bluetooth/hci_core.c:846:28:    expected restricted __le16 [usertype] tx_time
-net/bluetooth/hci_core.c:846:28:    got unsigned short [usertype] le_max_tx_time
-
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+Fixes: ba2b232108d3 ("net: netsec: add XDP support")
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 ---
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: linux-bluetooth@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- net/bluetooth/hci_core.c | 4 ++--
+ drivers/net/ethernet/socionext/netsec.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 04bc79359a17..b2559d4bed81 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -842,8 +842,8 @@ static int hci_init4_req(struct hci_request *req, unsigned long opt)
- 	if (hdev->le_features[0] & HCI_LE_DATA_LEN_EXT) {
- 		struct hci_cp_le_write_def_data_len cp;
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index f9e6744d8fd6..41ddd8fff2a7 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -847,8 +847,8 @@ static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
+ 		enum dma_data_direction dma_dir =
+ 			page_pool_get_dma_dir(rx_ring->page_pool);
  
--		cp.tx_len = hdev->le_max_tx_len;
--		cp.tx_time = hdev->le_max_tx_time;
-+		cp.tx_len = cpu_to_le16(hdev->le_max_tx_len);
-+		cp.tx_time = cpu_to_le16(hdev->le_max_tx_time);
- 		hci_req_add(req, HCI_OP_LE_WRITE_DEF_DATA_LEN, sizeof(cp), &cp);
- 	}
- 
+-		dma_handle = page_pool_get_dma_addr(page) +
+-			NETSEC_RXBUF_HEADROOM;
++		dma_handle = page_pool_get_dma_addr(page) + xdpf->headroom +
++			sizeof(*xdpf);
+ 		dma_sync_single_for_device(priv->dev, dma_handle, xdpf->len,
+ 					   dma_dir);
+ 		tx_desc.buf_type = TYPE_NETSEC_XDP_TX;
 -- 
 2.23.0
 
