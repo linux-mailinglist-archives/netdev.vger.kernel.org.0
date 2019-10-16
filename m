@@ -2,96 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B182D9A8C
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 21:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C33ED9B16
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394630AbfJPT7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 15:59:40 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:39257 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727148AbfJPT7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 15:59:40 -0400
-Received: by mail-lf1-f67.google.com with SMTP id 195so5536950lfj.6
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 12:59:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=S5rv6G5FHb2cQfGd13qHlLrf3736MZ536jKavl7v604=;
-        b=sK4lWhumqCTHdhxg2Eh5nbQxU3DwYaCydV3NfV/fF7R+67M45LhQr0IzYTp78uhG/7
-         uKkHm8JTxu+jkOruTDXsbdDVYgbKkrS8crE75O1CdVm/Ud+TkV/j4KW0nn9RWbwFYUmL
-         2I8VMV7hGQJ7xZHBBWUAIra4CdLlr/pUVm9wdEFm9IbKpR+iPUT71keuQUdszG2PAwdU
-         LY7EMS2cW1Rl8ceN9qIH2hjye+1iHnVpIrdptnVf2+jUkdiz+Rp97am04XFLVAWZ8IuN
-         fp0kzSQXrnKlX6oeAo/crmE8g6mOwV+EhG6M2VmhchGd32rxXLuwRsT7EFU/pmn40KpV
-         Q/7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=S5rv6G5FHb2cQfGd13qHlLrf3736MZ536jKavl7v604=;
-        b=E/KyQzlgOlZTAThB1e3MfQqoPHAzGeCfNwtFC6QfN9tbw/bJcekZgkOmDCaOhWg8NN
-         HleCoU85qaBQNyvo9SBlU1kueTZROJbF69gPEbmTgsOyQGXUb9DC/fL+gNEEihAQbFSS
-         RAD3LnWwaFHmh4hvkGqHRDo0ZU/U+ygrGkmgZeiOr7ja+1+iR0m6GLD/T1MkiiyDsvbi
-         qIV22nO2vOgkWJJlaCDZkrqpbbratWv2XX1Hlxewvz1g7es6MXMbgRmtivkCnZU2dL2z
-         PxeRWGNNujDAiKnoz3FduTQlahcL7kt2UzGaVWj5Y6VLKc11BCjp1ngWLs0g4WjL8FcC
-         BkLg==
-X-Gm-Message-State: APjAAAXCd0pUnhQXIOY4WyVKXdmTga3+Ogv/koh4dDKwBQg7TXbRHKk7
-        2UyfKIrwRAcl8PWCD6G/abbmYclGRgU=
-X-Google-Smtp-Source: APXvYqyCw00j2ujOMVgMrtDAsF+ve3ar0zwdUCljZwYbBycdtNq7KvMLJeT/2FOWkBPzuhVX1x0i+w==
-X-Received: by 2002:ac2:4847:: with SMTP id 7mr4065093lfy.180.1571255977844;
-        Wed, 16 Oct 2019 12:59:37 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 4sm2081050lfa.95.2019.10.16.12.59.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 12:59:37 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 12:59:28 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 net 2/4] net: aquantia: when cleaning hw cache it
- should be toggled
-Message-ID: <20191016125928.24d72dce@cakuba.netronome.com>
-In-Reply-To: <e39ae93c-60eb-7991-3b15-70a05aca3377@aquantia.com>
-References: <cover.1570787323.git.igor.russkikh@aquantia.com>
-        <d89180cd7ddf6981310179108b37a8d15c44c02f.1570787323.git.igor.russkikh@aquantia.com>
-        <20191015113317.6413f912@cakuba.netronome.com>
-        <e39ae93c-60eb-7991-3b15-70a05aca3377@aquantia.com>
-Organization: Netronome Systems, Ltd.
+        id S2388648AbfJPUJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 16:09:44 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:59718 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729175AbfJPUJo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 16:09:44 -0400
+Received: from fsav305.sakura.ne.jp (fsav305.sakura.ne.jp [153.120.85.136])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id x9GK9FuP069596;
+        Thu, 17 Oct 2019 05:09:15 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav305.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav305.sakura.ne.jp);
+ Thu, 17 Oct 2019 05:09:15 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav305.sakura.ne.jp)
+Received: from [192.168.1.8] (softbank126227201116.bbtec.net [126.227.201.116])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id x9GK991E069577
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=NO);
+        Thu, 17 Oct 2019 05:09:15 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: [PATCH bpf] xdp: Handle device unregister for devmap_hash map
+ type
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20191016132802.2760149-1-toke@redhat.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <2d516208-8c46-707c-4484-4547e66fc128@i-love.sakura.ne.jp>
+Date:   Thu, 17 Oct 2019 05:09:07 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20191016132802.2760149-1-toke@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019 13:19:30 +0000, Igor Russkikh wrote:
-> >> It was previosly always just set. Due to the way driver stops HW this
-> >> never actually caused any issues, but it still may, so cleaning this up.  
-> > 
-> > Hm. So is it a cleanup of fix? Does the way code is written guarantee
-> > it will never cause issues?  
+On 2019/10/16 22:28, Toke Høiland-Jørgensen wrote:
+> It seems I forgot to add handling of devmap_hash type maps to the device
+> unregister hook for devmaps. This omission causes devices to not be
+> properly released, which causes hangs.
 > 
-> Yes, thats a cleanup. We just had other products where this cache reset had to
-> be done multiple times. Obviously doing that second time was just no-op for
-> hardware ;)
-> On linux this always gets called on deinit only once - thus it was safe.
-> We just aligning here the linux driver with actual HW specification.
-
-I see, in light of that explanation I think it'd be appropriate to take
-the Fixes tag away and move this patch to the net-next series.
-
-> >> +	if (err)
-> >> +		goto err_exit;
-> >> +
-> >> +	readx_poll_timeout_atomic(hw_atl_rdm_rx_dma_desc_cache_init_done_get,
-> >> +				  self, val, val == 1, 1000U, 10000U);  
-> > 
-> > It's a little strange to toggle, yet wait for it to be of a specific
-> > value..  
+> Fix this by adding the missing handler.
 > 
-> Notice thats a different value - 'cache_init_done' bit.
-> This is used by HW to indicate completion of cache reset operation.
+> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devices by hashed index")
+> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Ah, ack, it's an "eyeful".. :)
+Well, regarding 6f9d451ab1a3, I think that we want explicit "(u64)" cast
+
+@@ -97,6 +123,14 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+        cost = (u64) dtab->map.max_entries * sizeof(struct bpf_dtab_netdev *);
+        cost += sizeof(struct list_head) * num_possible_cpus();
+
++       if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
++               dtab->n_buckets = roundup_pow_of_two(dtab->map.max_entries);
++
++               if (!dtab->n_buckets) /* Overflow check */
++                       return -EINVAL;
++               cost += sizeof(struct hlist_head) * dtab->n_buckets;
+
+                                                    ^here
+
++       }
++
+        /* if map size is larger than memlock limit, reject it */
+        err = bpf_map_charge_init(&dtab->map.memory, cost);
+        if (err)
+
+like "(u64) dtab->map.max_entries * sizeof(struct bpf_dtab_netdev *)" does.
+Otherwise, on 32bits build, "sizeof(struct hlist_head) * dtab->n_buckets" can become 0.
+
+----------
+#include <stdio.h>
+#include <linux/types.h>
+
+int main(int argc, char *argv[])
+{
+        volatile __u32 i = 4294967296ULL / sizeof(unsigned long *);
+        volatile __u64 cost = sizeof(unsigned long *) * i;
+
+        printf("cost=%llu\n", (unsigned long long) cost);
+        return 0;
+}
+----------
