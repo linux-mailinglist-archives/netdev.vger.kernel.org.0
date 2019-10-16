@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA5FDA26E
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 01:47:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D92FFDA272
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 01:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406865AbfJPXrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 19:47:15 -0400
+        id S1726642AbfJPXr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 19:47:26 -0400
 Received: from mga05.intel.com ([192.55.52.43]:41139 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406840AbfJPXrO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2406842AbfJPXrO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 16 Oct 2019 19:47:14 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,7 +17,7 @@ Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Oct 2019 16:47:13 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,305,1566889200"; 
-   d="scan'208";a="202220689"
+   d="scan'208";a="202220692"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 16 Oct 2019 16:47:13 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -26,9 +26,9 @@ Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 5/7] igc: Add set_rx_mode support
-Date:   Wed, 16 Oct 2019 16:47:09 -0700
-Message-Id: <20191016234711.21823-6-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 6/7] igc: Add Rx checksum support
+Date:   Wed, 16 Oct 2019 16:47:10 -0700
+Message-Id: <20191016234711.21823-7-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191016234711.21823-1-jeffrey.t.kirsher@intel.com>
 References: <20191016234711.21823-1-jeffrey.t.kirsher@intel.com>
@@ -41,383 +41,101 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sasha Neftin <sasha.neftin@intel.com>
 
-Add multicast addresses list to the MTA table.
-Implement basic Rx mode support.
-Add option for IPv6 address settings.
+Extend the socket buffer field process and add Rx checksum functionality
+Minor: fix indentation with tab instead of spaces.
 
 Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_defines.h |   3 +
- drivers/net/ethernet/intel/igc/igc_hw.h      |   1 +
- drivers/net/ethernet/intel/igc/igc_mac.c     | 104 +++++++++++
- drivers/net/ethernet/intel/igc/igc_mac.h     |   2 +
- drivers/net/ethernet/intel/igc/igc_main.c    | 181 +++++++++++++++++++
- 5 files changed, 291 insertions(+)
+ drivers/net/ethernet/intel/igc/igc_defines.h |  5 ++-
+ drivers/net/ethernet/intel/igc/igc_main.c    | 43 ++++++++++++++++++++
+ 2 files changed, 47 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index f3f2325fe567..03f1aca3f57f 100644
+index 03f1aca3f57f..f3788f0b95b4 100644
 --- a/drivers/net/ethernet/intel/igc/igc_defines.h
 +++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -402,4 +402,7 @@
- #define IGC_ADVTXD_TUCMD_L4T_TCP	0x00000800  /* L4 Packet Type of TCP */
- #define IGC_ADVTXD_TUCMD_L4T_SCTP	0x00001000 /* L4 packet TYPE of SCTP */
+@@ -282,7 +282,10 @@
+ #define IGC_RCTL_BAM		0x00008000 /* broadcast enable */
  
-+/* Maximum size of the MTA register table in all supported adapters */
-+#define MAX_MTA_REG			128
-+
- #endif /* _IGC_DEFINES_H_ */
-diff --git a/drivers/net/ethernet/intel/igc/igc_hw.h b/drivers/net/ethernet/intel/igc/igc_hw.h
-index abb2d72911ff..20f710645746 100644
---- a/drivers/net/ethernet/intel/igc/igc_hw.h
-+++ b/drivers/net/ethernet/intel/igc/igc_hw.h
-@@ -91,6 +91,7 @@ struct igc_mac_info {
- 	u16 mta_reg_count;
- 	u16 uta_reg_count;
+ /* Receive Descriptor bit definitions */
+-#define IGC_RXD_STAT_EOP	0x02    /* End of Packet */
++#define IGC_RXD_STAT_EOP	0x02	/* End of Packet */
++#define IGC_RXD_STAT_IXSM	0x04	/* Ignore checksum */
++#define IGC_RXD_STAT_UDPCS	0x10	/* UDP xsum calculated */
++#define IGC_RXD_STAT_TCPCS	0x20	/* TCP xsum calculated */
  
-+	u32 mta_shadow[MAX_MTA_REG];
- 	u16 rar_entry_count;
- 
- 	u8 forced_speed_duplex;
-diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
-index 5eeb4c8caf4a..12aa6b5fcb5d 100644
---- a/drivers/net/ethernet/intel/igc/igc_mac.c
-+++ b/drivers/net/ethernet/intel/igc/igc_mac.c
-@@ -784,3 +784,107 @@ bool igc_enable_mng_pass_thru(struct igc_hw *hw)
- out:
- 	return ret_val;
- }
-+
-+/**
-+ *  igc_hash_mc_addr - Generate a multicast hash value
-+ *  @hw: pointer to the HW structure
-+ *  @mc_addr: pointer to a multicast address
-+ *
-+ *  Generates a multicast address hash value which is used to determine
-+ *  the multicast filter table array address and new table value.  See
-+ *  igc_mta_set()
-+ **/
-+static u32 igc_hash_mc_addr(struct igc_hw *hw, u8 *mc_addr)
-+{
-+	u32 hash_value, hash_mask;
-+	u8 bit_shift = 0;
-+
-+	/* Register count multiplied by bits per register */
-+	hash_mask = (hw->mac.mta_reg_count * 32) - 1;
-+
-+	/* For a mc_filter_type of 0, bit_shift is the number of left-shifts
-+	 * where 0xFF would still fall within the hash mask.
-+	 */
-+	while (hash_mask >> bit_shift != 0xFF)
-+		bit_shift++;
-+
-+	/* The portion of the address that is used for the hash table
-+	 * is determined by the mc_filter_type setting.
-+	 * The algorithm is such that there is a total of 8 bits of shifting.
-+	 * The bit_shift for a mc_filter_type of 0 represents the number of
-+	 * left-shifts where the MSB of mc_addr[5] would still fall within
-+	 * the hash_mask.  Case 0 does this exactly.  Since there are a total
-+	 * of 8 bits of shifting, then mc_addr[4] will shift right the
-+	 * remaining number of bits. Thus 8 - bit_shift.  The rest of the
-+	 * cases are a variation of this algorithm...essentially raising the
-+	 * number of bits to shift mc_addr[5] left, while still keeping the
-+	 * 8-bit shifting total.
-+	 *
-+	 * For example, given the following Destination MAC Address and an
-+	 * MTA register count of 128 (thus a 4096-bit vector and 0xFFF mask),
-+	 * we can see that the bit_shift for case 0 is 4.  These are the hash
-+	 * values resulting from each mc_filter_type...
-+	 * [0] [1] [2] [3] [4] [5]
-+	 * 01  AA  00  12  34  56
-+	 * LSB                 MSB
-+	 *
-+	 * case 0: hash_value = ((0x34 >> 4) | (0x56 << 4)) & 0xFFF = 0x563
-+	 * case 1: hash_value = ((0x34 >> 3) | (0x56 << 5)) & 0xFFF = 0xAC6
-+	 * case 2: hash_value = ((0x34 >> 2) | (0x56 << 6)) & 0xFFF = 0x163
-+	 * case 3: hash_value = ((0x34 >> 0) | (0x56 << 8)) & 0xFFF = 0x634
-+	 */
-+	switch (hw->mac.mc_filter_type) {
-+	default:
-+	case 0:
-+		break;
-+	case 1:
-+		bit_shift += 1;
-+		break;
-+	case 2:
-+		bit_shift += 2;
-+		break;
-+	case 3:
-+		bit_shift += 4;
-+		break;
-+	}
-+
-+	hash_value = hash_mask & (((mc_addr[4] >> (8 - bit_shift)) |
-+				  (((u16)mc_addr[5]) << bit_shift)));
-+
-+	return hash_value;
-+}
-+
-+/**
-+ *  igc_update_mc_addr_list - Update Multicast addresses
-+ *  @hw: pointer to the HW structure
-+ *  @mc_addr_list: array of multicast addresses to program
-+ *  @mc_addr_count: number of multicast addresses to program
-+ *
-+ *  Updates entire Multicast Table Array.
-+ *  The caller must have a packed mc_addr_list of multicast addresses.
-+ **/
-+void igc_update_mc_addr_list(struct igc_hw *hw,
-+			     u8 *mc_addr_list, u32 mc_addr_count)
-+{
-+	u32 hash_value, hash_bit, hash_reg;
-+	int i;
-+
-+	/* clear mta_shadow */
-+	memset(&hw->mac.mta_shadow, 0, sizeof(hw->mac.mta_shadow));
-+
-+	/* update mta_shadow from mc_addr_list */
-+	for (i = 0; (u32)i < mc_addr_count; i++) {
-+		hash_value = igc_hash_mc_addr(hw, mc_addr_list);
-+
-+		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
-+		hash_bit = hash_value & 0x1F;
-+
-+		hw->mac.mta_shadow[hash_reg] |= BIT(hash_bit);
-+		mc_addr_list += ETH_ALEN;
-+	}
-+
-+	/* replace the entire MTA table */
-+	for (i = hw->mac.mta_reg_count - 1; i >= 0; i--)
-+		array_wr32(IGC_MTA, i, hw->mac.mta_shadow[i]);
-+	wrfl();
-+}
-diff --git a/drivers/net/ethernet/intel/igc/igc_mac.h b/drivers/net/ethernet/intel/igc/igc_mac.h
-index 782bc995badc..832cccec87cd 100644
---- a/drivers/net/ethernet/intel/igc/igc_mac.h
-+++ b/drivers/net/ethernet/intel/igc/igc_mac.h
-@@ -29,6 +29,8 @@ s32 igc_get_speed_and_duplex_copper(struct igc_hw *hw, u16 *speed,
- 				    u16 *duplex);
- 
- bool igc_enable_mng_pass_thru(struct igc_hw *hw);
-+void igc_update_mc_addr_list(struct igc_hw *hw,
-+			     u8 *mc_addr_list, u32 mc_addr_count);
- 
- enum igc_mng_mode {
- 	igc_mng_mode_none = 0,
+ #define IGC_RXDEXT_STATERR_CE		0x01000000
+ #define IGC_RXDEXT_STATERR_SE		0x02000000
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 12a030343ed7..a861fc038721 100644
+index a861fc038721..52521a0bbf48 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -795,6 +795,44 @@ static int igc_set_mac(struct net_device *netdev, void *p)
- 	return 0;
+@@ -1201,6 +1201,46 @@ static netdev_tx_t igc_xmit_frame(struct sk_buff *skb,
+ 	return igc_xmit_frame_ring(skb, igc_tx_queue_mapping(adapter, skb));
  }
  
-+/**
-+ *  igc_write_mc_addr_list - write multicast addresses to MTA
-+ *  @netdev: network interface device structure
-+ *
-+ *  Writes multicast address list to the MTA hash table.
-+ *  Returns: -ENOMEM on failure
-+ *           0 on no addresses written
-+ *           X on writing X addresses to MTA
-+ **/
-+static int igc_write_mc_addr_list(struct net_device *netdev)
++static inline void igc_rx_checksum(struct igc_ring *ring,
++				   union igc_adv_rx_desc *rx_desc,
++				   struct sk_buff *skb)
 +{
-+	struct igc_adapter *adapter = netdev_priv(netdev);
-+	struct igc_hw *hw = &adapter->hw;
-+	struct netdev_hw_addr *ha;
-+	u8  *mta_list;
-+	int i;
++	skb_checksum_none_assert(skb);
 +
-+	if (netdev_mc_empty(netdev)) {
-+		/* nothing to program, so clear mc list */
-+		igc_update_mc_addr_list(hw, NULL, 0);
-+		return 0;
-+	}
++	/* Ignore Checksum bit is set */
++	if (igc_test_staterr(rx_desc, IGC_RXD_STAT_IXSM))
++		return;
 +
-+	mta_list = kcalloc(netdev_mc_count(netdev), 6, GFP_ATOMIC);
-+	if (!mta_list)
-+		return -ENOMEM;
++	/* Rx checksum disabled via ethtool */
++	if (!(ring->netdev->features & NETIF_F_RXCSUM))
++		return;
 +
-+	/* The shared function expects a packed array of only addresses. */
-+	i = 0;
-+	netdev_for_each_mc_addr(ha, netdev)
-+		memcpy(mta_list + (i++ * ETH_ALEN), ha->addr, ETH_ALEN);
-+
-+	igc_update_mc_addr_list(hw, mta_list, i);
-+	kfree(mta_list);
-+
-+	return netdev_mc_count(netdev);
-+}
-+
- static void igc_tx_ctxtdesc(struct igc_ring *tx_ring,
- 			    struct igc_tx_buffer *first,
- 			    u32 vlan_macip_lens, u32 type_tucmd,
-@@ -2518,6 +2556,110 @@ int igc_del_mac_steering_filter(struct igc_adapter *adapter,
- 					IGC_MAC_STATE_QUEUE_STEERING | flags);
- }
- 
-+/* Add a MAC filter for 'addr' directing matching traffic to 'queue',
-+ * 'flags' is used to indicate what kind of match is made, match is by
-+ * default for the destination address, if matching by source address
-+ * is desired the flag IGC_MAC_STATE_SRC_ADDR can be used.
-+ */
-+static int igc_add_mac_filter(struct igc_adapter *adapter,
-+			      const u8 *addr, const u8 queue)
-+{
-+	struct igc_hw *hw = &adapter->hw;
-+	int rar_entries = hw->mac.rar_entry_count;
-+	int i;
-+
-+	if (is_zero_ether_addr(addr))
-+		return -EINVAL;
-+
-+	/* Search for the first empty entry in the MAC table.
-+	 * Do not touch entries at the end of the table reserved for the VF MAC
-+	 * addresses.
-+	 */
-+	for (i = 0; i < rar_entries; i++) {
-+		if (!igc_mac_entry_can_be_used(&adapter->mac_table[i],
-+					       addr, 0))
-+			continue;
-+
-+		ether_addr_copy(adapter->mac_table[i].addr, addr);
-+		adapter->mac_table[i].queue = queue;
-+		adapter->mac_table[i].state |= IGC_MAC_STATE_IN_USE;
-+
-+		igc_rar_set_index(adapter, i);
-+		return i;
-+	}
-+
-+	return -ENOSPC;
-+}
-+
-+/* Remove a MAC filter for 'addr' directing matching traffic to
-+ * 'queue', 'flags' is used to indicate what kind of match need to be
-+ * removed, match is by default for the destination address, if
-+ * matching by source address is to be removed the flag
-+ * IGC_MAC_STATE_SRC_ADDR can be used.
-+ */
-+static int igc_del_mac_filter(struct igc_adapter *adapter,
-+			      const u8 *addr, const u8 queue)
-+{
-+	struct igc_hw *hw = &adapter->hw;
-+	int rar_entries = hw->mac.rar_entry_count;
-+	int i;
-+
-+	if (is_zero_ether_addr(addr))
-+		return -EINVAL;
-+
-+	/* Search for matching entry in the MAC table based on given address
-+	 * and queue. Do not touch entries at the end of the table reserved
-+	 * for the VF MAC addresses.
-+	 */
-+	for (i = 0; i < rar_entries; i++) {
-+		if (!(adapter->mac_table[i].state & IGC_MAC_STATE_IN_USE))
-+			continue;
-+		if (adapter->mac_table[i].state != 0)
-+			continue;
-+		if (adapter->mac_table[i].queue != queue)
-+			continue;
-+		if (!ether_addr_equal(adapter->mac_table[i].addr, addr))
-+			continue;
-+
-+		/* When a filter for the default address is "deleted",
-+		 * we return it to its initial configuration
++	/* TCP/UDP checksum error bit is set */
++	if (igc_test_staterr(rx_desc,
++			     IGC_RXDEXT_STATERR_TCPE |
++			     IGC_RXDEXT_STATERR_IPE)) {
++		/* work around errata with sctp packets where the TCPE aka
++		 * L4E bit is set incorrectly on 64 byte (60 byte w/o crc)
++		 * packets, (aka let the stack check the crc32c)
 +		 */
-+		if (adapter->mac_table[i].state & IGC_MAC_STATE_DEFAULT) {
-+			adapter->mac_table[i].state =
-+				IGC_MAC_STATE_DEFAULT | IGC_MAC_STATE_IN_USE;
-+			adapter->mac_table[i].queue = 0;
-+		} else {
-+			adapter->mac_table[i].state = 0;
-+			adapter->mac_table[i].queue = 0;
-+			memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
++		if (!(skb->len == 60 &&
++		      test_bit(IGC_RING_FLAG_RX_SCTP_CSUM, &ring->flags))) {
++			u64_stats_update_begin(&ring->rx_syncp);
++			ring->rx_stats.csum_err++;
++			u64_stats_update_end(&ring->rx_syncp);
 +		}
-+
-+		igc_rar_set_index(adapter, i);
-+		return 0;
++		/* let the stack verify checksum errors */
++		return;
 +	}
++	/* It must be a TCP or UDP packet with a valid checksum */
++	if (igc_test_staterr(rx_desc, IGC_RXD_STAT_TCPCS |
++				      IGC_RXD_STAT_UDPCS))
++		skb->ip_summed = CHECKSUM_UNNECESSARY;
 +
-+	return -ENOENT;
++	dev_dbg(ring->dev, "cksum success: bits %08X\n",
++		le32_to_cpu(rx_desc->wb.upper.status_error));
 +}
 +
-+static int igc_uc_sync(struct net_device *netdev, const unsigned char *addr)
-+{
-+	struct igc_adapter *adapter = netdev_priv(netdev);
-+	int ret;
-+
-+	ret = igc_add_mac_filter(adapter, addr, adapter->num_rx_queues);
-+
-+	return min_t(int, ret, 0);
-+}
-+
-+static int igc_uc_unsync(struct net_device *netdev, const unsigned char *addr)
-+{
-+	struct igc_adapter *adapter = netdev_priv(netdev);
-+
-+	igc_del_mac_filter(adapter, addr, adapter->num_rx_queues);
-+
-+	return 0;
-+}
-+
- /**
-  * igc_set_rx_mode - Secondary Unicast, Multicast and Promiscuous mode set
-  * @netdev: network interface device structure
-@@ -2529,6 +2671,44 @@ int igc_del_mac_steering_filter(struct igc_adapter *adapter,
-  */
- static void igc_set_rx_mode(struct net_device *netdev)
+ static inline void igc_rx_hash(struct igc_ring *ring,
+ 			       union igc_adv_rx_desc *rx_desc,
+ 			       struct sk_buff *skb)
+@@ -1227,6 +1267,8 @@ static void igc_process_skb_fields(struct igc_ring *rx_ring,
  {
-+	struct igc_adapter *adapter = netdev_priv(netdev);
-+	struct igc_hw *hw = &adapter->hw;
-+	u32 rctl = 0, rlpml = MAX_JUMBO_FRAME_SIZE;
-+	int count;
-+
-+	/* Check for Promiscuous and All Multicast modes */
-+	if (netdev->flags & IFF_PROMISC) {
-+		rctl |= IGC_RCTL_UPE | IGC_RCTL_MPE;
-+	} else {
-+		if (netdev->flags & IFF_ALLMULTI) {
-+			rctl |= IGC_RCTL_MPE;
-+		} else {
-+			/* Write addresses to the MTA, if the attempt fails
-+			 * then we should just turn on promiscuous mode so
-+			 * that we can at least receive multicast traffic
-+			 */
-+			count = igc_write_mc_addr_list(netdev);
-+			if (count < 0)
-+				rctl |= IGC_RCTL_MPE;
-+		}
-+	}
-+
-+	/* Write addresses to available RAR registers, if there is not
-+	 * sufficient space to store all the addresses then enable
-+	 * unicast promiscuous mode
-+	 */
-+	if (__dev_uc_sync(netdev, igc_uc_sync, igc_uc_unsync))
-+		rctl |= IGC_RCTL_UPE;
-+
-+	/* update state of unicast and multicast */
-+	rctl |= rd32(IGC_RCTL) & ~(IGC_RCTL_UPE | IGC_RCTL_MPE);
-+	wr32(IGC_RCTL, rctl);
-+
-+#if (PAGE_SIZE < 8192)
-+	if (adapter->max_frame_size <= IGC_MAX_FRAME_BUILD_SKB)
-+		rlpml = IGC_MAX_FRAME_BUILD_SKB;
-+#endif
-+	wr32(IGC_RLPML, rlpml);
- }
+ 	igc_rx_hash(rx_ring, rx_desc, skb);
  
- /**
-@@ -3982,6 +4162,7 @@ static const struct net_device_ops igc_netdev_ops = {
- 	.ndo_open		= igc_open,
- 	.ndo_stop		= igc_close,
- 	.ndo_start_xmit		= igc_xmit_frame,
-+	.ndo_set_rx_mode	= igc_set_rx_mode,
- 	.ndo_set_mac_address	= igc_set_mac,
- 	.ndo_change_mtu		= igc_change_mtu,
- 	.ndo_get_stats		= igc_get_stats,
++	igc_rx_checksum(rx_ring, rx_desc, skb);
++
+ 	skb_record_rx_queue(skb, rx_ring->queue_index);
+ 
+ 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
+@@ -4392,6 +4434,7 @@ static int igc_probe(struct pci_dev *pdev,
+ 		goto err_sw_init;
+ 
+ 	/* Add supported features to the features list*/
++	netdev->features |= NETIF_F_RXCSUM;
+ 	netdev->features |= NETIF_F_HW_CSUM;
+ 	netdev->features |= NETIF_F_SCTP_CRC;
+ 
 -- 
 2.21.0
 
