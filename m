@@ -2,129 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 473AAD8844
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 07:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35585D885C
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 08:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387897AbfJPFxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 01:53:15 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44491 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387661AbfJPFxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 01:53:15 -0400
-Received: by mail-qt1-f196.google.com with SMTP id u40so34335075qth.11;
-        Tue, 15 Oct 2019 22:53:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RiGbgLQGOqRcMfw6Pw7ihRQxY8j/bmQuL3YdxeJeF00=;
-        b=uoHrhHfekvYzxiFAAObCWtc6t6KNacE5Fh8CZ57faP9TfQ3qt/Q52ZvQvaDxrwlF0k
-         U2yKTkHzldve567/j7Gb036Sz64XAMRLjawWteWaq5WvW7lDY8DIyc2mz0I+0ww0/0m0
-         ZISjOhGwVvUAOpRRFs9zzwwUd+7nQ6ttufLfg+6wAsHKnleuvPQoX+jDXpVsb9mj1ldz
-         WZ39VTkyfYhxfRJ2XusqKTiu07Wq0LeOC3CpA6viRvvCgzJZgua0XzkfN6fVOP/3ZB0a
-         4WpYrkKeHzll64Kj22rjtwG7gUvkC91UkFlEuHgCZuYFqOjEI6m+R9j4TgZN7ICroKZI
-         ksJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RiGbgLQGOqRcMfw6Pw7ihRQxY8j/bmQuL3YdxeJeF00=;
-        b=PTof0G682I3wo0SevXzP+TnAOMZyEbh8FE50PdsrhIxmR4Q884M23cFvF+Xu2FE5QX
-         L5bX9npcMh3FZPlFW1Gh9KJ8MIvRgbq1wbnidAsIFtS937Bts2lui+Fj/JVhm0zaI5cg
-         d3wx6wXHCYLm2tlMEpm0jHRMHoRMmsgxVPG1VcQoedR9pbn/uKaMljMcmYeehu2ZtXVX
-         8s/8+11epAJZwbdcYU9RVJReBPlW5khQr0zzcQsE0+4UiFYKLvhex/i5FI98OFzHXNcM
-         xkmHLRRa7fygaTT+O721uY3TWtIOLWGvWBAzcd5fi1iYsdImlmODpywooIkQGwBg7GPn
-         951g==
-X-Gm-Message-State: APjAAAVHp2XYxYB7DlldFxTWFmqFgA2mTxWyH2LqWHF1SACR8lRAoDsH
-        VYpK3fvvRB6hv7yBD1HjC54E5iIXPZcF+82qysg=
-X-Google-Smtp-Source: APXvYqzpCRTJaR4sO8LDxV15wVTRL8gs4/GnUZ23hC586TTY2ZAaHkwS6XlQdjAtUpzHYmo0Rg74gzztf3GxoKxBMXU=
-X-Received: by 2002:ac8:5147:: with SMTP id h7mr8582962qtn.117.1571205193798;
- Tue, 15 Oct 2019 22:53:13 -0700 (PDT)
+        id S2388257AbfJPGBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 02:01:10 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:39258 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729774AbfJPGBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 02:01:10 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9G60sIY031127
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 23:01:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=3HNr4mKItCxHjMF7+Ixv/KTuMAXPyRa0j7i221u7Hlc=;
+ b=Xkh2BZ9PMpOy+hy9QPMzY/9stuRzx2K5Wx2pfgEDi8DlUot8Egsu2ANAdbis1CTjFv1N
+ L1yHGXk/9V9QSqyKeAh9G7kAQaUNsdmL+cMP06l5U9FxyxW8Q3rzlgd0mAecRoUmPJIN
+ SKgb0dnA7k5x1/5L9J6QYpH3E1i6wyshvy4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vnkjd2ewa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 23:01:09 -0700
+Received: from 2401:db00:30:6007:face:0:1:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 15 Oct 2019 23:01:07 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 921AD86195B; Tue, 15 Oct 2019 23:01:01 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v4 bpf-next 0/7] Fix, clean up, and revamp selftests/bpf Makefile
+Date:   Tue, 15 Oct 2019 23:00:44 -0700
+Message-ID: <20191016060051.2024182-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <20191016054945.1988387-1-andriin@fb.com> <20191016054945.1988387-8-andriin@fb.com>
-In-Reply-To: <20191016054945.1988387-8-andriin@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 15 Oct 2019 22:53:02 -0700
-Message-ID: <CAEf4BzZDm5ZWhrtp0R78rEhaNYHjBCKgXdK3QXFzKrEqHMxx8Q@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 7/7] selftest/bpf: remove test_libbpf.sh and test_libbpf_open
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-16_02:2019-10-15,2019-10-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ adultscore=0 spamscore=0 suspectscore=9 mlxlogscore=999 mlxscore=0
+ priorityscore=1501 malwarescore=0 bulkscore=0 clxscore=1015
+ impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1908290000 definitions=main-1910160056
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 10:50 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> test_progs is much more sophisticated superset of tests compared to
-> test_libbpf.sh and test_libbpf_open. Remove test_libbpf.sh and
-> test_libbpf_open.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/testing/selftests/bpf/.gitignore       |   2 -
->  tools/testing/selftests/bpf/Makefile         |   3 +-
->  tools/testing/selftests/bpf/test_libbpf      | Bin 0 -> 384568 bytes
->  tools/testing/selftests/bpf/test_libbpf.sh   |  43 -------------------
->  tools/testing/selftests/bpf/test_libbpf_open | Bin 0 -> 396096 bytes
+This patch set extensively revamps selftests/bpf's Makefile to generalize test
+runner concept and apply it uniformly to test_maps and test_progs test
+runners, along with test_progs' few build "flavors", exercising various ways
+to build BPF programs.
 
-well this was certainly not intended, sorry about that
+As we do that, we fix dependencies between various phases of test runners, and
+simplify some one-off rules and dependencies currently present in Makefile.
+test_progs' flavors are now built into root $(OUTPUT) directory and can be run
+without any extra steps right from there. E.g., test_progs-alu32 is built and
+is supposed to be run from $(OUTPUT). It will cd into alu32/ subdirectory to
+load correct set of BPF object files (which are different from the ones built
+for test_progs).
 
->  5 files changed, 1 insertion(+), 47 deletions(-)
->  create mode 100755 tools/testing/selftests/bpf/test_libbpf
->  delete mode 100755 tools/testing/selftests/bpf/test_libbpf.sh
->  create mode 100755 tools/testing/selftests/bpf/test_libbpf_open
->
-> diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-> index c51f356f84b5..55d2adf64832 100644
-> --- a/tools/testing/selftests/bpf/.gitignore
-> +++ b/tools/testing/selftests/bpf/.gitignore
-> @@ -11,7 +11,6 @@ test_dev_cgroup
->  test_tcpbpf_user
->  test_verifier_log
->  feature
-> -test_libbpf_open
->  test_sock
->  test_sock_addr
->  test_sock_fields
-> @@ -30,7 +29,6 @@ flow_dissector_load
->  test_netcnt
->  test_section_names
->  test_tcpnotify_user
-> -test_libbpf
->  test_tcp_check_syncookie_user
->  test_sysctl
->  libbpf.pc
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index db8c842ade73..9d7422a514c5 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -52,7 +52,6 @@ TEST_FILES =
->
->  # Order correspond to 'make run_tests' order
->  TEST_PROGS := test_kmod.sh \
-> -       test_libbpf.sh \
->         test_xdp_redirect.sh \
->         test_xdp_meta.sh \
->         test_xdp_veth.sh \
-> @@ -79,7 +78,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
->         test_xdp_vlan.sh
->
->  # Compile but not part of 'make run_tests'
-> -TEST_GEN_PROGS_EXTENDED = test_libbpf_open test_sock_addr test_skb_cgroup_id_user \
-> +TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
->         flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
->         test_lirc_mode2_user
->
-> diff --git a/tools/testing/selftests/bpf/test_libbpf b/tools/testing/selftests/bpf/test_libbpf
-> new file mode 100755
-> index 0000000000000000000000000000000000000000..af5e18b8353486db7156dc81ac25b9eab3720370
-> GIT binary patch
-> literal 384568
-> zcmd44e|%KM)jz%gB0<rOiW*z35w(I<8h>CxQ5R)(LDBdlidH3nASgd#ND!>iU`U(m
+Outline:
+- patch #1 teaches test_progs about flavor sub-directories;
+- patch #2 fixes one of CO-RE tests to not depend strictly on process name;
+- patch #3 changes test_maps's usage of map_tests/tests.h to be the same as
+  test_progs' one;
+- patch #4 adds convenient short `make test_progs`-like targets to build only
+  individual tests, if necessary;
+- patch #5 is a main patch in the series; it uses a bunch of make magic
+  (mainly $(call) and $(eval)) to define test runner "skeleton" and apply it
+  to 4 different test runners, lots more details in corresponding commit
+  description;
+- patch #6 does a bit of post-clean up for test_queue_map and test_stack_map
+  BPF programs;
+- patch #7 cleans up test_libbpf.sh/test_libbpf_open superseded by test_progs.
 
-oops
+v3->v4:
+- remove accidentally checked in binaries;
+
+v2->v3:
+- drop test_xdp.o mixed compilation mode, remove test_libbpf.sh (Alexei);
+
+v1->v2:
+- drop test_progs-native causing compilation failures due to
+  __builtin_preserve_field_access, add back test_xdp.o override, which will
+  now emit rule re-definition warning.
+
+Andrii Nakryiko (7):
+  selftests/bpf: teach test_progs to cd into subdir
+  selftests/bpf: make CO-RE reloc test impartial to test_progs flavor
+  selftests/bpf: switch test_maps to test_progs' test.h format
+  selftests/bpf: add simple per-test targets to Makefile
+  selftests/bpf: replace test_progs and test_maps w/ general rule
+  selftests/bpf: move test_queue_stack_map.h into progs/ where it
+    belongs
+  selftest/bpf: remove test_libbpf.sh and test_libbpf_open
+
+ tools/testing/selftests/bpf/.gitignore        |   6 +-
+ tools/testing/selftests/bpf/Makefile          | 335 ++++++++++--------
+ .../selftests/bpf/prog_tests/core_reloc.c     |   4 +-
+ .../selftests/bpf/progs/core_reloc_types.h    |   2 +-
+ .../bpf/progs/test_core_reloc_kernel.c        |   3 +-
+ .../bpf/{ => progs}/test_queue_stack_map.h    |   0
+ tools/testing/selftests/bpf/test_libbpf.sh    |  43 ---
+ .../testing/selftests/bpf/test_libbpf_open.c  | 144 --------
+ tools/testing/selftests/bpf/test_maps.c       |   8 +-
+ tools/testing/selftests/bpf/test_progs.c      |  33 +-
+ 10 files changed, 232 insertions(+), 346 deletions(-)
+ rename tools/testing/selftests/bpf/{ => progs}/test_queue_stack_map.h (100%)
+ delete mode 100755 tools/testing/selftests/bpf/test_libbpf.sh
+ delete mode 100644 tools/testing/selftests/bpf/test_libbpf_open.c
+
+-- 
+2.17.1
+
