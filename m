@@ -2,106 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10FBDD9614
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 17:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5010ED9631
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 18:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391462AbfJPP5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 11:57:08 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:46599 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389769AbfJPP5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 11:57:08 -0400
-Received: by mail-oi1-f194.google.com with SMTP id k25so20447504oiw.13
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 08:57:07 -0700 (PDT)
+        id S2406047AbfJPQBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 12:01:04 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38257 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405922AbfJPQBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 12:01:04 -0400
+Received: by mail-pg1-f193.google.com with SMTP id w3so7637861pgt.5
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 09:01:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sage.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=9sEGwNR+vs1wvXocKihgDcCfWg7F97MWXpiCKTda+Uo=;
-        b=bhBw5IpPG3f7MC1dp/X9TYLBmZE/AL8nW+PBx/BxtAPR6xKfsP2aEKY9GK8XZhV/dc
-         cH2ruNlDTzUUq/xMGzZDnu1Edx5oYu0sQXWhPeWYA37KQgj6fhMXdSuLPtT7VejbYfFI
-         oxM3bLUnOhIuyFfM5w3akIli/6MA4AedIENPOWe6KZGse1wtkaVWwTaAbypE/nqVEwbt
-         Ehsf6JIQXNqo1tqq31Mco6Aqw1gaoxIn4WEbq7ddktKN+vEPMqOAozB+AiKQKVGqPhL3
-         66dBefHjoowPqoufa8yUAbONsjWCbFQvjFGaBFvJyOysOd16Jo+w7lNxW+qwjmCEffkz
-         KZRA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wEBLDHxTnHQ/yX6EshaxklIy3lcb6EqE4ZMzaD3LweE=;
+        b=MXIZmDbn2JtlnlR5Cw9+ob1Ogzn6+7iN3f/+zk8/t2AnkvSwJDVnL0mDmj87tD5COV
+         1lJjdnPqBekCx/+5WsxliaJTOikbrNohauygw/+0IHsxsPOgLPtDTiiK+mz3VjnBm7hS
+         HjQpghri+L61QFr6aBTL9Y0OOhHRTTMFa/v6XQRhzLCeY8W4yhtobBf+eyWSWqqc7Nfz
+         J4D5FXw4w9MxdkZgeH+yV8SU/woaIJ+NwOTuvKk+kLE7Hyo3Sv3IXFHiWBFgGTOOJawa
+         KzyBha6cp4g7HJEeF2zY2eD+NumOOXO9f/VPLj7BIBi+8+9Li8olb6SU47xE+vzdsfMF
+         wn1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=9sEGwNR+vs1wvXocKihgDcCfWg7F97MWXpiCKTda+Uo=;
-        b=m3OHACZpV1kpGZNa2dgD60x8YaVN/r7anzT/hxCySrMOqkD0HgSOYWWEdiD2qA49XU
-         owLvur0G42vR6ncS/tP4o4AXuZ73WzxudNjqMo+jrzmXurqa4KUI9w5XO61MD8DpBXnt
-         irhAiAkfDqTvpGtRmsA07w+aYQ10xlLAqnsLi7hz0Oc5ybUV6TvoUxSY2MyI0hEOw3mt
-         6AE2uSBuSzL6Pf03AxEXXrGeifZW8tL0Xa/HXiUe4ickHJPCISnEhtS/TNVa9vv92UHr
-         EaiGNLbxivdfdNnKgfsXP8adF1CaSSuCeV6ujMZUvTZxaI6nYhJ/XNmEFUFxfNxfKJ5y
-         ApqQ==
-X-Gm-Message-State: APjAAAVxS2S8Cq+L2VqS6JzqCYy3T7kxv0r1ASk7Upqgg6pdHTOd6QC+
-        y4J3aOmN3I5lbQlVxq+60z2t+A==
-X-Google-Smtp-Source: APXvYqyF9/9fNqu2WQyi04V/AS2P19dOaZraXWn+HvL6HDyHYW+8OHCldpiO9zJQlqVQFJQTnly56A==
-X-Received: by 2002:a05:6808:355:: with SMTP id j21mr3938368oie.160.1571241427024;
-        Wed, 16 Oct 2019 08:57:07 -0700 (PDT)
-Received: from wizard.attlocal.net ([2600:1700:4a30:fd70::13])
-        by smtp.gmail.com with ESMTPSA id n65sm7540433oib.35.2019.10.16.08.57.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 08:57:06 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 08:57:01 -0700
-From:   Eric Sage <eric@sage.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        xdp-newbies@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>
-Subject: Re: [PATCH] samples/bpf: make xdp_monitor use raw_tracepoints
-Message-ID: <20191016155701.GA18708@wizard.attlocal.net>
-References: <20191007045726.21467-1-eric@sage.org>
- <20191007110020.6bf8dbc2@carbon>
- <CAEf4BzacEF0Ga921DCuYCVTxR4rFdOzmRt5o0T7HH-H38gEccg@mail.gmail.com>
- <20191016042104.GA27738@wizard.attlocal.net>
- <20191016153426.1d976f17@carbon>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wEBLDHxTnHQ/yX6EshaxklIy3lcb6EqE4ZMzaD3LweE=;
+        b=K/Q0y4ofz5RdAmj4h+Jyr7wCCe7YsJmfWA2m33o8dh220wVGIlR1GVh+EkZXKRPoaT
+         8/VvoMpyQFtJmy7CdyBwXVIWxtOb420g0fX3iyXrpI501GOXCS/qDOvU4ZCVwL3ECWrn
+         2ET14PXBv4jinrRCy8+6t4lZG+OL6NS2ZkgDP0ghgmmlT0YESb2yxVA4VqDI2SZnvihq
+         oE97OrtdRsfmj3BLjIgooBF0yNQ2iHBmYe1Rq5FzXJaJXt+zsMVy84Zeg+7Jx46Tlo7+
+         g718yOTInXm9rU0YO6ebi/BFX2EAQjnmdS0m0J300S8OBwvgin9VYzPlyJTArV+tCbmz
+         Vw9A==
+X-Gm-Message-State: APjAAAUGsQp9KeXkIwUUaeFB/VZT9rI+rdumF3IOdqIobpguV0O8fgTV
+        Fyk5/5WKnbWXgivbn3A70TlMyw==
+X-Google-Smtp-Source: APXvYqx2308pXawlvfXxlYpaQ8Aq88Plka7lHJc0BK1t4VRVm2r225tTCkiaW+l9l//WcGrQpMJlEw==
+X-Received: by 2002:a63:6246:: with SMTP id w67mr19826651pgb.27.1571241663211;
+        Wed, 16 Oct 2019 09:01:03 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id q76sm57042342pfc.86.2019.10.16.09.01.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 16 Oct 2019 09:01:02 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        stephen@networkplumber.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        kbuild test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Ben Hutchings <ben@decadent.org.uk>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net] net: netem: fix error path for corrupted GSO frames
+Date:   Wed, 16 Oct 2019 09:00:50 -0700
+Message-Id: <20191016160050.27703-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191016153426.1d976f17@carbon>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 03:34:26PM +0200, Jesper Dangaard Brouer wrote:
-> On Tue, 15 Oct 2019 21:21:04 -0700
-> Eric Sage <eric@sage.org> wrote:
-> 
-> > I'm no longer able to build the samples with 'make M=samples/bpf'.
-> > 
-> > I get errors in task_fd_query_user.c like:
-> > 
-> > samples/bpf/task_fd_query_user.c:153:29: error: ‘PERF_EVENT_IOC_ENABLE’
-> > undeclared.
-> > 
-> > Am I missing a dependancy?
-> 
-> Have you remembered to run:
-> 
->  make headers_install
-> 
-> (As described in samples/bpf/README)
+To corrupt a GSO frame we first perform segmentation.  We then
+proceed using the first segment instead of the full GSO skb and
+requeue the rest of the segments as separate packets.
 
-Yes, I've done that. I've tried:
+If there are any issues with processing the first segment we
+still want to process the rest, therefore we jump to the
+finish_segs label.
 
-  make mrproper
-  cp /boot/config-5.2.18-200.fc30.x86_64 .config
-  make olddefconfig
-  make headers_install
-  make M=samples/bpf
+Commit 177b8007463c ("net: netem: fix backlog accounting for
+corrupted GSO frames") started using the pointer to the first
+segment in the "rest of segments processing", but as mentioned
+above the first segment may had already been freed at this point.
 
-which ends with the errors I described.
-> -- 
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
+Backlog corrections for parent qdiscs have to be adjusted.
+Note that if segmentation ever produced a single-skb list
+the backlog calculation will not take place (segs == NULL)
+but that should hopefully never happen..
+
+Fixes: 177b8007463c ("net: netem: fix backlog accounting for corrupted GSO frames")
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+---
+ net/sched/sch_netem.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 0e44039e729c..31a6afd035b2 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -509,6 +509,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		if (skb->ip_summed == CHECKSUM_PARTIAL &&
+ 		    skb_checksum_help(skb)) {
+ 			qdisc_drop(skb, sch, to_free);
++			skb = NULL;
+ 			goto finish_segs;
+ 		}
+ 
+@@ -595,7 +596,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		unsigned int len, last_len;
+ 		int nb = 0;
+ 
+-		len = skb->len;
++		len = skb ? skb->len : 0;
+ 
+ 		while (segs) {
+ 			skb2 = segs->next;
+@@ -612,7 +613,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 			}
+ 			segs = skb2;
+ 		}
+-		qdisc_tree_reduce_backlog(sch, -nb, prev_len - len);
++		qdisc_tree_reduce_backlog(sch, !skb - nb, prev_len - len);
+ 	}
+ 	return NET_XMIT_SUCCESS;
+ }
+-- 
+2.23.0
+
