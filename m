@@ -2,105 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D7FAD9787
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 18:36:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF91D9792
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 18:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406340AbfJPQgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 12:36:05 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:35131 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404818AbfJPQgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 12:36:05 -0400
-Received: by mail-ot1-f67.google.com with SMTP id z6so20724701otb.2
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 09:36:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yTD9JZxhpP5pEWy+qQhp3wBhS3wfLfoHx+FdeK88i0w=;
-        b=fJUWiVKMO3zrXuKjtpgB9v7T3x+063YiRMujzbnaYrryx7W20wX9i5uaBH3UFeWto/
-         OOafMBfcH4grm+LFkawxSZeGBzB8+6VzGpJhRhBRyp6kIApXX31aiIMozQFxBVEbh5SO
-         B5U03CvYF+mWGfhl1CWxfQhn0U+RpNztxVSxssRnGgjsI5X+eRPRfR4S6Q6+QoLV72Av
-         jIlY8McvsPBssaiDB0ZBdrJidknrrCISY7mZ5gWJ9RS2USIGbVTyeG2JGrQfn6s7Ja9V
-         SzkIIYDAa5pPW8N8GLIdWNkJmJDXKzgCBhtpL+zW0mbrOQQMww6XThgTxgXl4K8We2Vq
-         jFdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yTD9JZxhpP5pEWy+qQhp3wBhS3wfLfoHx+FdeK88i0w=;
-        b=FW8YyETiGaR6pdHk2VQV+xrfngDyjXz5cJMg9zKMz4VLMS+vSSCWq2LJw/UXAOOyCx
-         0pzF5/3Cp4SxgwEKEPn/u+UnqaxOJUJalXhKw5AkhfGSag+IeIGYU3eEOXu20UiTsgMI
-         rJzZJPwHv5ER0P9Kdqb15pBAtB35x2c9EXSbNi/T0KqC/a3RkeNkAg+hgn3grvKZVt5b
-         wGFhpJKylQJSIYatQ88ln14IJaVhkKeK+xwljOVUHVPFsV9vQj+Jo6diAK9EtEYM2Yqt
-         5AUkczbA2bqwYD085JtLOhvKYQIOpTZzBe1skRSLxWefAnGtFfpGfVlDy6AMwt//mwy6
-         JZIw==
-X-Gm-Message-State: APjAAAXGOj9XxFU1rx7fiDB/p/IjUBV7xtCoFwoJTC1utopf517YEKq9
-        Ug9iJcLneiAGaDa6bMVuVbuAZtCH45cryIXcGsn50CXp
-X-Google-Smtp-Source: APXvYqwtnxn9WRIA65RDPDVj8DpxpaELfzTGqH69YKoY7i/L86GAT0gaq9VyJC2riSuZ7el2CUpK4nwC4i1HV7jCgzo=
-X-Received: by 2002:a05:6830:215a:: with SMTP id r26mr31314723otd.330.1571243763717;
- Wed, 16 Oct 2019 09:36:03 -0700 (PDT)
+        id S2406362AbfJPQiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 12:38:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38982 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404133AbfJPQiu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 12:38:50 -0400
+Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A93DA2168B;
+        Wed, 16 Oct 2019 16:38:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571243929;
+        bh=2EbE5nCvBEahpTJRgdzbU+ZqH1XFFPH0hQubllFojTw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oDkqPdDvSSDhHSvsl5C23d7W91uPZeZBaVZReevBDWbOtujC1uix3thzYza0xijWz
+         1tsGgY9xtWIMSDkx7gZx3+XmQ5nkQ9A4MJy9jgBY4rpjeA/Culjl+yoKiI06S8l56F
+         iLbFPusGl+0jbxjImLSBDPwuaQh1cmAubSPvgAoc=
+Date:   Wed, 16 Oct 2019 18:38:42 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: mt76x2e hardware restart
+Message-ID: <20191016163842.GA18799@localhost.localdomain>
+References: <deaafa7a3e9ea2111ebb5106430849c6@natalenko.name>
+ <c6d621759c190f7810d898765115f3b4@natalenko.name>
+ <9d581001e2e6cece418329842b2b0959@natalenko.name>
+ <20191012165028.GA8739@lore-desk-wlan.lan>
+ <f7695bc79d40bbc96744a639b1243027@natalenko.name>
+ <96f43a2103a9f2be152c53f867f5805c@natalenko.name>
 MIME-Version: 1.0
-References: <CANSNSoV1M9stB7CnUcEhsz3FHi4NV_yrBtpYsZ205+rqnvMbvA@mail.gmail.com>
- <20191010083102.GA1336@splinter> <CANSNSoVM1Uo106xfJtGpTyXNed8kOL4JiXqf3A1eZHBa7z3=yg@mail.gmail.com>
- <20191011154224.GA23486@splinter> <CAEA6p_AFKwx_oLqNOjMw=oXcAX4ftJvEQWLo0aWCh=4Hs=QjVw@mail.gmail.com>
- <CANSNSoVMXcPpnHBYvDJ9P4PVB2pLGEBHW2j-iD7QqQrFmGFt_Q@mail.gmail.com>
- <CAEA6p_BQp1O6jGc+RY2YAHFVC3df7MEm9he7cajUnccVCzkMvw@mail.gmail.com> <20191016063928.rwxe65paunw3jwel@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20191016063928.rwxe65paunw3jwel@kafai-mbp.dhcp.thefacebook.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Wed, 16 Oct 2019 09:35:50 -0700
-Message-ID: <CAEA6p_AUxd+y9rXQ2RkggTqwmvkxDdDdrmQ=XEj4XEtn1ZFRkg@mail.gmail.com>
-Subject: Re: Race condition in route lookup
-To:     Martin Lau <kafai@fb.com>
-Cc:     Jesse Hathaway <jesse@mbuki-mvuki.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="mP3DRpeJDSE+ciuQ"
+Content-Disposition: inline
+In-Reply-To: <96f43a2103a9f2be152c53f867f5805c@natalenko.name>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 11:39 PM Martin Lau <kafai@fb.com> wrote:
->
-> On Tue, Oct 15, 2019 at 09:44:11AM -0700, Wei Wang wrote:
-> > On Tue, Oct 15, 2019 at 7:29 AM Jesse Hathaway <jesse@mbuki-mvuki.org> wrote:
-> > >
-> > > On Fri, Oct 11, 2019 at 12:54 PM Wei Wang <weiwan@google.com> wrote:
-> > > > Hmm... Yes... I would think a per-CPU input cache should work for the
-> > > > case above.
-> > > > Another idea is: instead of calling dst_dev_put() in rt_cache_route()
-> > > > to switch out the dev, we call, rt_add_uncached_list() to add this
-> > > > obsolete dst cache to the uncached list. And if the device gets
-> > > > unregistered, rt_flush_dev() takes care of all dst entries in the
-> > > > uncached list. I think that would work too.
-> > > >
-> > > > diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> > > > index dc1f510a7c81..ee618d4234ce 100644
-> > > > --- a/net/ipv4/route.c
-> > > > +++ b/net/ipv4/route.c
-> > > > @@ -1482,7 +1482,7 @@ static bool rt_cache_route(struct fib_nh_common
-> > > > *nhc, struct rtable *rt)
-> > > >         prev = cmpxchg(p, orig, rt);
-> > > >         if (prev == orig) {
-> > > >                 if (orig) {
-> > > > -                       dst_dev_put(&orig->dst);
-> > > > +                       rt_add_uncached_list(orig);
-> > > >                         dst_release(&orig->dst);
-> > > >                 }
-> > > >         } else {
-> > > >
-> > >
-> > > Thanks Wei for your work on this issue,
-> > >
-> > > Any chance this patch will make it into 5.4?
-> >
-> > I can submit the patch to NET branch if everyone agrees with this one liner fix.
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
->
-> I don't think it is a very critical bug though.  Not sure
-> how far it should be ported.
->
-Thanks Martin. I am preparing the patch and will send it out soon.
 
-> > Then I believe it will be patched into the next 5.4 release automatically?
+--mP3DRpeJDSE+ciuQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> Hello.
+>=20
+> On 15.10.2019 18:52, Oleksandr Natalenko wrote:
+> > Thanks for the answer and the IRC discussion. As agreed I've applied
+> > [1] and [2], and have just swapped the card to try it again. So far,
+> > it works fine in 5 GHz band in 802.11ac mode as an AP.
+> >=20
+> > I'll give it more load with my phone over evening, and we can discuss
+> > what to do next (if needed) tomorrow again. Or feel free to drop me an
+> > email today.
+> >=20
+> > Thanks for your efforts.
+> >=20
+> > [1]
+> > https://github.com/LorenzoBianconi/wireless-drivers-next/commit/cf3436c=
+42a297967235a9c9778620c585100529e.patch
+> > [2]
+> > https://github.com/LorenzoBianconi/wireless-drivers-next/commit/aad256e=
+b62620f9646d39c1aa69234f50c89eed8.patch
+>=20
+> As agreed, here are iperf3 results, AP to STA distance is 2 meters.
+>=20
+> Client sends, TCP:
+>=20
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec  70.4 MBytes  59.0 Mbits/sec  3800
+> sender
+> [  5]   0.00-10.03  sec  70.0 MBytes  58.6 Mbits/sec
+> receiver
+>=20
+> Client receives, TCP:
+>=20
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.06  sec   196 MBytes   163 Mbits/sec  3081
+> sender
+> [  5]   0.00-10.01  sec   191 MBytes   160 Mbits/sec
+> receiver
+>=20
+> Client sends, UDP, 128 streams:
+>=20
+> [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total
+> Datagrams
+> [SUM]   0.00-10.00  sec   160 MBytes   134 Mbits/sec  0.000 ms  0/115894
+> (0%)  sender
+> [SUM]   0.00-10.01  sec   160 MBytes   134 Mbits/sec  0.347 ms  0/115892
+> (0%)  receiver
+>=20
+> Client receives, UDP, 128 streams:
+>=20
+> [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total
+> Datagrams
+> [SUM]   0.00-10.01  sec   119 MBytes  99.4 Mbits/sec  0.000 ms  0/85888 (=
+0%)
+> sender
+> [SUM]   0.00-10.00  sec   119 MBytes  99.5 Mbits/sec  0.877 ms  0/85888 (=
+0%)
+> receiver
+>=20
+> Given the HW is not the most powerful, the key point here is that nothing
+> crashed after doing these tests.
+
+Hi Oleksandr,
+
+thx a lot for testing these 2 patches. Now we need to understand why the ch=
+ip
+hangs if we enable scatter gather dma transfer on x86 while it is working f=
+ine
+on multiple mips/arm devices (patch 2/2 just disable it for debugging).
+
+Regards,
+Lorenzo
+
+>=20
+> --=20
+>   Oleksandr Natalenko (post-factum)
+
+--mP3DRpeJDSE+ciuQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXadHkAAKCRA6cBh0uS2t
+rJ1WAP9tpX4oSA7UhRs0gQT0nQOQJ1ONxMOdUZiEXY1VQ8+BngD+KS/CMITu8+px
+nJSFzOS5A5KbCSWMJoLBxp4D4TebrgQ=
+=JdPS
+-----END PGP SIGNATURE-----
+
+--mP3DRpeJDSE+ciuQ--
