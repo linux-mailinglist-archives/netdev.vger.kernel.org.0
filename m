@@ -2,84 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1C27D8BF4
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 10:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BDFDD8C3E
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 11:10:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390743AbfJPI6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 04:58:16 -0400
-Received: from mail-lf1-f46.google.com ([209.85.167.46]:41621 "EHLO
-        mail-lf1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388817AbfJPI6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 04:58:15 -0400
-Received: by mail-lf1-f46.google.com with SMTP id r2so16755715lfn.8
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 01:58:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/+4sUm7d4zOmxV/DS5enUnVCl8aumQR4W4v3g1GZPP0=;
-        b=KkR7GEHpT+Of8CpaVbhXHSe9RE21dpY6+aaR84aIojff9Bxmpe5s9fMQfIbGgLHVcJ
-         8ONYzYo4caQ1EvbJlmInyey0wAUZh1UNlvfFYKXA5sjKUU9JpzyexDnkNTqdxNUlfE78
-         QfDoiTvZBoQjmjDVRP20GUB+3dZVa9oss6mpc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/+4sUm7d4zOmxV/DS5enUnVCl8aumQR4W4v3g1GZPP0=;
-        b=Fr/lawV6l0yJhvtnwJ+m3T2IpKVZCDLYKWnrcpWJWkumRKh4TS2fG6rsH8xsPJXemD
-         h1cJbEQCCtNGbjxKgrAiBVfK+SsS8HoXqimEge62bOOIchEHs1hf7wk0Z/v7fJI1s3cR
-         XWE18ThCkC2XUcXidscMw6Cl3ZEo3KJWnkqFHZb+nqdDuSfy0R26PB0f69KgC6SUY9LX
-         rY9naCzMOPN4aCyVEZbkWT3j8ZQcirk6bTTgEWfFJ+M3s61ZIJn78EdFfNzQpPj3X4Hg
-         mpMBiYPaycqF49GTfidl8dOytbfU3Sp9PVplP/L3N2vl3LJTlcQ9XjHMDsnIcLYuILo3
-         PjTg==
-X-Gm-Message-State: APjAAAWFHOPG4fSQWWK11AnPlmF7CDlTxZEAhzOlbtuZMxGcrc4ZD9Fg
-        E2ibsLovUoW6JJtDJ4alg2Fcl5FXeH78zg==
-X-Google-Smtp-Source: APXvYqw5zxBWvIpopn/S5WyBrW/zOe3siFtoi028J+TB9HrUijW5o69Kf8RRT+aK0IjOG/qr5YV72A==
-X-Received: by 2002:a19:148:: with SMTP id 69mr12460027lfb.76.1571216293141;
-        Wed, 16 Oct 2019 01:58:13 -0700 (PDT)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id h5sm6542515ljf.83.2019.10.16.01.58.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 01:58:12 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
-Subject: [PATCH bpf-next] scripts/bpf: Emit an #error directive known types list needs updating
-Date:   Wed, 16 Oct 2019 10:58:11 +0200
-Message-Id: <20191016085811.11700-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.20.1
+        id S2391910AbfJPJJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 05:09:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42162 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390073AbfJPJJ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 05:09:58 -0400
+Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 76FA32168B;
+        Wed, 16 Oct 2019 09:09:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571216997;
+        bh=iDCksRpugAcXUUWARGRyi7bH2s+yUDmQkSVRGQNhsts=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X1A8KUa8Xc6MkhVXutDVAohb9UeLAj9QVRP7PupzueRt4Stv5mWm+xPEILcwTNhFg
+         A/yAwCixdgsMc0Ww5fEcYdUqw1g0thz0qRuEiADzHLGHP+gAH4/zXVbWV4TWQLHIc3
+         57gnp2LVcKEfWDqSnvNyY6urvNfMaCLNAIuJMBqk=
+Date:   Wed, 16 Oct 2019 11:09:51 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org,
+        matteo.croce@redhat.com, mw@semihalf.com
+Subject: Re: [PATCH v3 net-next 4/8] net: mvneta: sync dma buffers before
+ refilling hw queues
+Message-ID: <20191016090951.GD2638@localhost.localdomain>
+References: <cover.1571049326.git.lorenzo@kernel.org>
+ <e458e8e4e1d9aa936d64346ca02e432b3b0b7b34.1571049326.git.lorenzo@kernel.org>
+ <20191015160151.2d227995@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="OROCMA9jn6tkzFBc"
+Content-Disposition: inline
+In-Reply-To: <20191015160151.2d227995@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the compiler report a clear error when bpf_helpers_doc.py needs
-updating rather than rely on the fact that Clang fails to compile
-English:
 
-../../../lib/bpf/bpf_helper_defs.h:2707:1: error: unknown type name 'Unrecognized'
-Unrecognized type 'struct bpf_inet_lookup', please add it to known types!
+--OROCMA9jn6tkzFBc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- scripts/bpf_helpers_doc.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Oct 15, Jakub Kicinski wrote:
+> On Mon, 14 Oct 2019 12:49:51 +0200, Lorenzo Bianconi wrote:
+> > mvneta driver can run on not cache coherent devices so it is
+> > necessary to sync DMA buffers before sending them to the device
+> > in order to avoid memory corruptions. Running perf analysis we can
+> > see a performance cost associated with this DMA-sync (anyway it is
+> > already there in the original driver code). In follow up patches we
+> > will add more logic to reduce DMA-sync as much as possible.
+> >=20
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>=20
+> Should this not be squashed into patch 2? Isn't there a transient bug
+> otherwise?
 
-diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
-index 7df9ce598ff9..08300bc024da 100755
---- a/scripts/bpf_helpers_doc.py
-+++ b/scripts/bpf_helpers_doc.py
-@@ -489,7 +489,7 @@ class PrinterHelpers(Printer):
-         if t in self.mapped_types:
-             return self.mapped_types[t]
-         print("")
--        print("Unrecognized type '%s', please add it to known types!" % t)
-+        print("#error \"Unrecognized type '%s', please add it to known types!\"" % t)
-         sys.exit(1)
- 
-     seen_helpers = set()
--- 
-2.20.1
+We put it in a separate patch to track it in a explicit way. I will squash =
+it
+in the previous patch. Thx.
 
+Regards,
+Lorenzo
+
+--OROCMA9jn6tkzFBc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXabeXQAKCRA6cBh0uS2t
+rE+qAQD1jpNlvFH1OmmzXzavhopTCCNVb3M8RBW0EKQUj/QaawEAiE/RuXKAiauw
+UWUnR6+OLLVLQ/xnhc55I88H2/+e8QQ=
+=iprY
+-----END PGP SIGNATURE-----
+
+--OROCMA9jn6tkzFBc--
