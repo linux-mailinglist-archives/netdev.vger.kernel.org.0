@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38DF1D984E
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC15D986A
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406568AbfJPRK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 13:10:28 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36311 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404848AbfJPRK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:10:28 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 23so14673335pgk.3
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 10:10:28 -0700 (PDT)
+        id S1728999AbfJPRZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 13:25:59 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:36289 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbfJPRZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:25:38 -0400
+Received: by mail-io1-f67.google.com with SMTP id b136so54812014iof.3
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 10:25:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=0cNywFNADhUI1kRZtOJYpH0zXDmwDMxvQ8ELH46NO6Q=;
-        b=UkDzwlkBo8OxWsWkSSsM66G5Tk3Xp4HPoJ0xHC3/biSsKCEmqEmYg79o6SAGQn5jzx
-         CaG+uZzeEI5fkMpGY+A97dgs2n4KkNfXVbia3hkFrbv2fB74wdMJevcIQDqRgY8nqbTo
-         62QB/n/vspsIOi9R5YHoK5hn1LtOoXoEiOr19iGFUXip1kNS+v9gh9BsMRic9lDOt8Ik
-         ZRHgD6wnA2g2TV0XWgiQfJS2+R25imNWGL2PhGtBd3OXwPvGMNvq8KT9UJhLD/d0K0Ge
-         F6GdEUtB819mcEcYFknS9xnVXzPqmKPBoO2YUCKgPLgxqgP9b8Fr0A9eZyiv5N+hPcKb
-         2qyA==
+        bh=dXgxUS40mRQzkfwkmWDJ9VvItmm2CjNhFGKui6wbZwc=;
+        b=yR/9OFAjzSEVyD9iD6xejU+OodS52E8bKjMXFEzqsepNu0B4YuCg0USbKXUQxlkgP8
+         9Xv0Q/kWfetZAgM7L/nUnTiNTI+Y7U/Kjfx38cvOhcQ/ALIGcr9PAP29f2/JFAmcwM/n
+         g2Y/YjgaRvASXrVpa7MPJj0TXw3vtiCzMJdeDTXS+r61uFLTqiQ4zgVJ/F6UPJC314Vp
+         6j0jNAjZuVGRk+M7v3RgwIItdh4/KtlydvTbIx495DsQCxYB3CqKeAH8qzJD1Gf5Tlrq
+         WRK2MBGxbRptw46TZn61TfK4GxHdeQjb0pdFZHOYRKatUUxTOH3pLmTFlqoz1GEAiHMK
+         5ntg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=0cNywFNADhUI1kRZtOJYpH0zXDmwDMxvQ8ELH46NO6Q=;
-        b=qaAduLCurQb6AIuMWZIjmBD8u35e3Z1msNVvzsggiSMxLKFlOALGQPkhsiU/PtoQhm
-         yNrwn0GwQvowNQ8P+PfiJtHPqh0BuT/2EJqOrDorOCOa1W1z6CJZewVn1p7GJz8RVQFk
-         0uDibnJpigLKZTybV2AeP3/GiDUggaQ8Wn+0q5V4S8QBDsIEwtvpezAE+Lq2ABqkdypb
-         AMFyYrZVNN+MsfpaCTDVXfcO/pMbRtVWrkhe2kUPdyyqbJSp4UtbSkmB3WVH0zfy/YZQ
-         NIhS+KAtExrr0TpNBrvnL2WrkH4cJ6hgigpqzZhmepyN+YsVUOgKv+9ascHUtdBd4Clb
-         ohew==
-X-Gm-Message-State: APjAAAV0dsDwyWrRX7MhUbyOXU1FUoN7iim0xGNudgiJTMmnEVkjmIkE
-        Iz4d0gGdRbuRJZGl1gU22GDd9Q==
-X-Google-Smtp-Source: APXvYqwXqs75kRjkMDu/5UYr5Jh0qOBN1tP7nsttBOkJTt8DNE6wMwnjzWsX/ZtdJnAHzijyeYq9ng==
-X-Received: by 2002:a63:9d49:: with SMTP id i70mr28109095pgd.120.1571245827703;
-        Wed, 16 Oct 2019 10:10:27 -0700 (PDT)
+        bh=dXgxUS40mRQzkfwkmWDJ9VvItmm2CjNhFGKui6wbZwc=;
+        b=f0wkMMFz0wusWrrbRFp8eTDIgfDseiZQIKtbZucbToTKBLuYwZhf9RY0xamtF93xZK
+         8Lp4XMtO35axeJPNPftwwPuUiW07EPqQ445i0wUtEN3/yfSe6qgkeZU0H0p3+2bKRve6
+         9WnnUsbIwadCGQRyd/9zHrCBzdVNtFbs8yiQ+ZL0KCxrKambrqE0JUtfRC7rgBepFjjG
+         keyP3KQVtBxxxZeNhTq4l5IjYZJLSid3GLlcq1uGvSaKnEybdwQpWcmFwimmHLcbqxeU
+         IQm1LRYt4bCAlxlNWEOmb7pROW3sk5Wk207nHKlq6TXsbgt0YtypUN/PT3lawerMprA9
+         E6tQ==
+X-Gm-Message-State: APjAAAWSAS4dAm0b+iw4UO7xnMQ2nArsY11nJkZsWi9H3MkTM9uM23Xz
+        tlrd2yQ1QgDRjNkVSolTE2hrZYnuKKY=
+X-Google-Smtp-Source: APXvYqwtu2p6xdepTEYR/yLJYi8oc817I9ZxAW5E49BJsKqeONk+kP7CWET3zhMqaM0FrGHVSQD3og==
+X-Received: by 2002:a63:4e58:: with SMTP id o24mr6993330pgl.72.1571246301048;
+        Wed, 16 Oct 2019 10:18:21 -0700 (PDT)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id w6sm30670953pfj.17.2019.10.16.10.10.26
+        by smtp.gmail.com with ESMTPSA id f62sm29175811pfg.74.2019.10.16.10.18.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 10:10:27 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 10:10:23 -0700
+        Wed, 16 Oct 2019 10:18:20 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 10:18:17 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Huazhong Tan <tanhuazhong@huawei.com>
 Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>,
         Yunsheng Lin <linyunsheng@huawei.com>
-Subject: Re: [PATCH net-next 08/12] net: hns3: introduce ring_to_netdev() in
- enet module
-Message-ID: <20191016101023.21915feb@cakuba.netronome.com>
-In-Reply-To: <1571210231-29154-9-git-send-email-tanhuazhong@huawei.com>
+Subject: Re: [PATCH net-next 11/12] net: hns3: do not allocate linear data
+ for fraglist skb
+Message-ID: <20191016101817.725b6d28@cakuba.netronome.com>
+In-Reply-To: <1571210231-29154-12-git-send-email-tanhuazhong@huawei.com>
 References: <1571210231-29154-1-git-send-email-tanhuazhong@huawei.com>
-        <1571210231-29154-9-git-send-email-tanhuazhong@huawei.com>
+        <1571210231-29154-12-git-send-email-tanhuazhong@huawei.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -66,21 +66,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019 15:17:07 +0800, Huazhong Tan wrote:
+On Wed, 16 Oct 2019 15:17:10 +0800, Huazhong Tan wrote:
 > From: Yunsheng Lin <linyunsheng@huawei.com>
 > 
-> There are a few places that need to access the netdev of a ring
-> through ring->tqp->handle->kinfo.netdev, and ring->tqp is a struct
-> which both in enet and hclge modules, it is better to use the
-> struct that is only used in enet module.
+> Currently, napi_alloc_skb() is used to allocate skb for fraglist
+> when the head skb is not enough to hold the remaining data, and
+> the remaining data is added to the frags part of the fraglist skb,
+> leaving the linear part unused.
 > 
-> This patch adds the ring_to_netdev() to access the netdev of ring
-> through ring->tqp_vector->napi.dev.
+> So this patch passes length of 0 to allocate fraglist skb with
+> zero size of linear data.
 > 
-> Also, struct hns3_enet_ring is a frequently used in critical data
-> path, so make it cacheline aligned as struct hns3_enet_tqp_vector.
-
-That part seems logically separate, should it be a separate patch?
-
+> Fixes: 81ae0e0491f3 ("net: hns3: Add skb chain when num of RX buf exceeds MAX_SKB_FRAGS")
 > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 > Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+
+Is this really a fix? I just wastes memory, right?
+
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> index 6172eb2..14111af 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> @@ -2866,8 +2866,7 @@ static int hns3_add_frag(struct hns3_enet_ring *ring, struct hns3_desc *desc,
+>  			return -ENXIO;
+>  
+>  		if (unlikely(ring->frag_num >= MAX_SKB_FRAGS)) {
+> -			new_skb = napi_alloc_skb(&ring->tqp_vector->napi,
+> -						 HNS3_RX_HEAD_SIZE);
+> +			new_skb = napi_alloc_skb(&ring->tqp_vector->napi, 0);
+>  			if (unlikely(!new_skb)) {
+>  				hns3_rl_err(ring_to_netdev(ring),
+>  					    "alloc rx fraglist skb fail\n");
+
