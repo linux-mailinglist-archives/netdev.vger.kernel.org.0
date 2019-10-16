@@ -2,99 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAC15D986A
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6F42D9872
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728999AbfJPRZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 13:25:59 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:36289 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbfJPRZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:25:38 -0400
-Received: by mail-io1-f67.google.com with SMTP id b136so54812014iof.3
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 10:25:38 -0700 (PDT)
+        id S2389657AbfJPR2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 13:28:16 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42381 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728998AbfJPR2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:28:16 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f14so9569320pgi.9
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 10:28:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=dXgxUS40mRQzkfwkmWDJ9VvItmm2CjNhFGKui6wbZwc=;
-        b=yR/9OFAjzSEVyD9iD6xejU+OodS52E8bKjMXFEzqsepNu0B4YuCg0USbKXUQxlkgP8
-         9Xv0Q/kWfetZAgM7L/nUnTiNTI+Y7U/Kjfx38cvOhcQ/ALIGcr9PAP29f2/JFAmcwM/n
-         g2Y/YjgaRvASXrVpa7MPJj0TXw3vtiCzMJdeDTXS+r61uFLTqiQ4zgVJ/F6UPJC314Vp
-         6j0jNAjZuVGRk+M7v3RgwIItdh4/KtlydvTbIx495DsQCxYB3CqKeAH8qzJD1Gf5Tlrq
-         WRK2MBGxbRptw46TZn61TfK4GxHdeQjb0pdFZHOYRKatUUxTOH3pLmTFlqoz1GEAiHMK
-         5ntg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=dSyiYDGxQ6l3IKcJPG7eJG7CyAEyKvpSWn4nv1Crkb8=;
+        b=C7+/LpcorTCnfDEDsUpz+jRxp2TjQyHhUyGcfbPZ/oJJzOTb/4w9jp/l9vxhQ0LRyZ
+         m2PIglyxq7Z1iwx6uZdIctt1dzWeLQ//IaHMxQB232WanSGszvozzpGaFxBlw7uA2kOH
+         03o2NLaCrzPVWMMZLCftgZ2uquBX0+n0nuh7N319K1SI56nxY+zEBa/PkwPC+VaN8Apa
+         1Mr8L7uir6KYHV67LQQpxVvghk9GG6LfS+7DGlKzzBGQzxY+eGtX3jJ4dEUnH3BvEDbh
+         w9Tf8kaS9hWdzGlCOKNw1vv8NWc8MnVmF4C0QeaIyGVpHcvGA7QemXuOCE3Vte1ODD6T
+         N1/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=dXgxUS40mRQzkfwkmWDJ9VvItmm2CjNhFGKui6wbZwc=;
-        b=f0wkMMFz0wusWrrbRFp8eTDIgfDseiZQIKtbZucbToTKBLuYwZhf9RY0xamtF93xZK
-         8Lp4XMtO35axeJPNPftwwPuUiW07EPqQ445i0wUtEN3/yfSe6qgkeZU0H0p3+2bKRve6
-         9WnnUsbIwadCGQRyd/9zHrCBzdVNtFbs8yiQ+ZL0KCxrKambrqE0JUtfRC7rgBepFjjG
-         keyP3KQVtBxxxZeNhTq4l5IjYZJLSid3GLlcq1uGvSaKnEybdwQpWcmFwimmHLcbqxeU
-         IQm1LRYt4bCAlxlNWEOmb7pROW3sk5Wk207nHKlq6TXsbgt0YtypUN/PT3lawerMprA9
-         E6tQ==
-X-Gm-Message-State: APjAAAWSAS4dAm0b+iw4UO7xnMQ2nArsY11nJkZsWi9H3MkTM9uM23Xz
-        tlrd2yQ1QgDRjNkVSolTE2hrZYnuKKY=
-X-Google-Smtp-Source: APXvYqwtu2p6xdepTEYR/yLJYi8oc817I9ZxAW5E49BJsKqeONk+kP7CWET3zhMqaM0FrGHVSQD3og==
-X-Received: by 2002:a63:4e58:: with SMTP id o24mr6993330pgl.72.1571246301048;
-        Wed, 16 Oct 2019 10:18:21 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id f62sm29175811pfg.74.2019.10.16.10.18.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 10:18:20 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 10:18:17 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>
-Subject: Re: [PATCH net-next 11/12] net: hns3: do not allocate linear data
- for fraglist skb
-Message-ID: <20191016101817.725b6d28@cakuba.netronome.com>
-In-Reply-To: <1571210231-29154-12-git-send-email-tanhuazhong@huawei.com>
-References: <1571210231-29154-1-git-send-email-tanhuazhong@huawei.com>
-        <1571210231-29154-12-git-send-email-tanhuazhong@huawei.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dSyiYDGxQ6l3IKcJPG7eJG7CyAEyKvpSWn4nv1Crkb8=;
+        b=QqDGzgyhw21v+sOBQ0YrX5xmz9WrYDDPAAyltpn1iCYucEvBtGwgbF0fZdHN6q5bMY
+         kLw0J/VXzaIfc4K7QxHYoss3tlxoFm7swlv2UvvAY6/IkCTadKG+7HDNEZevXRNo/sIA
+         jnx7npaRfB6hHgGitjlHhJ84UL8y47yCpF3XqJrIbK/sYXqer2qCaMpjhhOBFkw4Vxn9
+         BdWMmVwJjhYxpw3hcEQ+F1DaNwY0ej9wBZqtL1twWL220RCQPi5x1B2EBYZQPmhnCL8n
+         ecFybr1J/avonDMmcTkKtnBHlVT5mCDO7qMtxya6fpL5VywXOB+kkww+q2ajXz/6Fa6U
+         +kUg==
+X-Gm-Message-State: APjAAAUU2S6pqYcrfzgavBkeypcKZTBPvJg2C7g7NjSEgiGikLubBN1D
+        O96qwsU3nZDzU73JE931nwWeLBcbHFzmaZxLOaQ=
+X-Google-Smtp-Source: APXvYqy6zaPFJvMkboTlw8wYpmQKvuOrbZVGO/lId2PbN9i+V4xx2NuweD2ptZVFvGdZs8oKdTyEmC/X8B7MRmz1qUg=
+X-Received: by 2002:a65:614e:: with SMTP id o14mr45744889pgv.237.1571246895163;
+ Wed, 16 Oct 2019 10:28:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
+ <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com> <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
+In-Reply-To: <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 16 Oct 2019 10:28:04 -0700
+Message-ID: <CAM_iQpXS5Dm-pCAu+7t+9RRauW=q64i6VCQ-Gz6j9_qFMPcOjA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: sched: Avoid using yield() in a busy
+ waiting loop
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019 15:17:10 +0800, Huazhong Tan wrote:
-> From: Yunsheng Lin <linyunsheng@huawei.com>
-> 
-> Currently, napi_alloc_skb() is used to allocate skb for fraglist
-> when the head skb is not enough to hold the remaining data, and
-> the remaining data is added to the frags part of the fraglist skb,
-> leaving the linear part unused.
-> 
-> So this patch passes length of 0 to allocate fraglist skb with
-> zero size of linear data.
-> 
-> Fixes: 81ae0e0491f3 ("net: hns3: Add skb chain when num of RX buf exceeds MAX_SKB_FRAGS")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+On Wed, Oct 16, 2019 at 1:28 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> From: Marc Kleine-Budde <mkl@pengutronix.de>
+>
+> With threaded interrupts enabled, the interrupt thread runs as SCHED_RR
+> with priority 50. If a user application with a higher priority preempts
+> the interrupt thread and tries to shutdown the network interface then it
+> will loop forever. The kernel will spin in the loop waiting for the
+> device to become idle and the scheduler will never consider the
+> interrupt thread because its priority is lower.
+>
+> Avoid the problem by sleeping for a jiffy giving other tasks,
+> including the interrupt thread, a chance to run and make progress.
+>
+> In the original thread it has been suggested to use wait_event() and
+> properly waiting for the state to occur. DaveM explained that this would
+> require to add expensive checks in the fast paths of packet processing.
+>
+> Link: https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pen=
+gutronix.de
 
-Is this really a fix? I just wastes memory, right?
+BTW, this link doesn't work, 404 is returned.
 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> index 6172eb2..14111af 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> @@ -2866,8 +2866,7 @@ static int hns3_add_frag(struct hns3_enet_ring *ring, struct hns3_desc *desc,
->  			return -ENXIO;
->  
->  		if (unlikely(ring->frag_num >= MAX_SKB_FRAGS)) {
-> -			new_skb = napi_alloc_skb(&ring->tqp_vector->napi,
-> -						 HNS3_RX_HEAD_SIZE);
-> +			new_skb = napi_alloc_skb(&ring->tqp_vector->napi, 0);
->  			if (unlikely(!new_skb)) {
->  				hns3_rl_err(ring_to_netdev(ring),
->  					    "alloc rx fraglist skb fail\n");
 
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> [bigeasy: Rewrite commit message, add comment, use
+>           schedule_timeout_uninterruptible()]
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> v1=E2=80=A6v2: Typo fixes, noticed by Sergei Shtylyov.
+>
+>  net/sched/sch_generic.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 17bd8f539bc7f..974731b86c20c 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -1217,8 +1217,13 @@ void dev_deactivate_many(struct list_head *head)
+>
+>         /* Wait for outstanding qdisc_run calls. */
+>         list_for_each_entry(dev, head, close_list) {
+> -               while (some_qdisc_is_busy(dev))
+> -                       yield();
+> +               while (some_qdisc_is_busy(dev)) {
+> +                       /* wait_event() would avoid this sleep-loop but w=
+ould
+> +                        * require expensive checks in the fast paths of =
+packet
+> +                        * processing which isn't worth it.
+> +                        */
+> +                       schedule_timeout_uninterruptible(1);
+
+I am curious why this is uninterruptible?
+
+Thanks.
