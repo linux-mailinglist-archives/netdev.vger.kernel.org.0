@@ -2,99 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD7F8D8492
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 01:51:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E44C6D84A2
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 02:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728323AbfJOXvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 19:51:11 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39937 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727439AbfJOXvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 19:51:11 -0400
-Received: by mail-qt1-f195.google.com with SMTP id m61so33353085qte.7;
-        Tue, 15 Oct 2019 16:51:10 -0700 (PDT)
+        id S2387897AbfJPAEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 20:04:06 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:34306 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbfJPAEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 20:04:06 -0400
+Received: by mail-wr1-f68.google.com with SMTP id j11so25852158wrp.1
+        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 17:04:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1MOJStCOUv8KHV3oQ5oTGIgvH48SjsRLCavXI4SQNqg=;
-        b=ArqtleoVBOrEfsARRB9ksodwi5tzbxe8pvf8vUhl6X4Jb0GYtE2fo4hfxdhGUR8HLF
-         S+spv6Xag85Re78/fakRBIsj7wdlvxPBpYwc7TkeLJhQRIrgMLjhXTnO4LR04U3mt5sA
-         X5YdV5xp+2hhwYbob3VPtx29IQ7asuw41oCcc9LPbDWPFc30xNZox/8pYiKSGk2RX+L2
-         0tixu3k6XUpp64ToVHO0ZAQ1/usx14rSKhtILQNQX3jetUhFSX1eX8Gzy5lZjSHeCReq
-         PKQTrYEDt7zMorBh56osoUlnTJwbrhMYODjr1yoBXkqrJ75MK/jHr/vnmU3A+KmHbbbz
-         OsHA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=u2sFG6u6ohRXSnAkcKzjorORqSIj1roXYbU4NUeLUDY=;
+        b=wR0pnrLNBkakwMEcsKcwFQRYhBsg2MrkwrvJxsRG9KTF9uXyMr9c8Nvxr9TItOuO9v
+         63MWawNGqDzPPA8a3eVRIfZfjba5wKiDNpUVC2XAzOgKil6jdxVS/O8X6FWLgiDWWnn4
+         rZEEjN/5zCPzP5uUiD38ZzEO9wKBYqgFW5DjiWXdS8dFpRS/GHIC0GUoEB5t4SFFea93
+         88Nv6590DdI2tLCpsh4W1OvssKlbwbsQ48bjxdD89F8xZeE3ROAkNHnXttONK9T6zlWb
+         ubxF/YFlr6uA6Rr1gAKSG79UGIlfMYTV62pTkjHU2y7knoeTCz21muWJSaijvZcDZs+v
+         PY1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1MOJStCOUv8KHV3oQ5oTGIgvH48SjsRLCavXI4SQNqg=;
-        b=H7njb4p8dy6fg5A5mW28ac0cTdFQ9eMnd6pBNsgjKMTzUq/3ZtDCjh28SEGTth3bPU
-         lKWl4UdxpVZJW8kWq07xaHuJzZp0mHuYTAZoY6G20wPKzBrdgvGdD5L4guCqxR8CBJmD
-         qEN4C39btOWMr4V7OhlMrdIwmHOXqN2Eg/stWidVrWJ0yPIoUKuhwgQubx8pgOnjkek5
-         T8yPkyGhFWEU1g4ej7v01WLnFVRjI5B65M1EUr5tJzFVsSlwqPHcnklEWB9vb6CQ38kZ
-         tMYE9J8WM2pjzEi1r0oqMDF0ze4U3IEqIt3l2a21XE75jxWxSU6jihKBffNFT8dgcokp
-         x5Xg==
-X-Gm-Message-State: APjAAAUXiWQfYs8nezX+MGJb2f8/dt4CHM0vu0wAyh/ivBtQS2EGu1Z8
-        Tl2Rx/eihoM9/oqAanvKdj2O+C4kdVOUfYCHkb0=
-X-Google-Smtp-Source: APXvYqw14fZ3VIjRO8VyfpjolDBiVT58/EFq37rDiv6ZUw9XP8/GPtOp6kch298fFXkOSlsHjsM58GZFcZe5wJhwTtM=
-X-Received: by 2002:ac8:379d:: with SMTP id d29mr39748902qtc.93.1571183470319;
- Tue, 15 Oct 2019 16:51:10 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=u2sFG6u6ohRXSnAkcKzjorORqSIj1roXYbU4NUeLUDY=;
+        b=C2fmLBoS4QGGzI8Yy5hto024tq4iwP4iplgTXBIIHj7mgTeWZj7VSqCbm5lU0T0dY/
+         iFu4UazfHEc4DDmllGHjDh+L6zQNeKLXShNXOycKSB9/UB0y9wplfJYYe5SGk19mNwst
+         ZkyssWeI0ZXwQTzwfMFYHPRH3kj4u/b9DE3KI5C2FzSy9HLbIyOI07KmHT3aiQGbsVuW
+         cWJ0r0Y6BASev9zBoD8+mUS9rQq1tPQm/Lo2ZWLid/krlyYsWbjljtLge+26galbIUEB
+         K/djxWboHWC20BpTj/xcLLuXdDYgwYEpA7sg8w6k7K9oFEnU7C3OD9eu/tD3yIHrP++O
+         34oA==
+X-Gm-Message-State: APjAAAVQlsUvNXb++jc2PJXJMeLReAOpB0UaEPKxSfghmc7108UWtYYq
+        Y/sbOQPXf3gZWH+JFo5tZAfetA==
+X-Google-Smtp-Source: APXvYqxk0Dr1nRrypaAExNMGKBtlKtuwGSf3iTZtJWHSV+nK/DbSD9IkAZfKxBQtbbWvNA5V5vghbA==
+X-Received: by 2002:adf:e40c:: with SMTP id g12mr52838wrm.216.1571184242601;
+        Tue, 15 Oct 2019 17:04:02 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 63sm34968818wri.25.2019.10.15.17.03.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2019 17:04:02 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 17:03:53 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org,
+        matteo.croce@redhat.com, mw@semihalf.com
+Subject: Re: [PATCH v3 net-next 7/8] net: mvneta: make tx buffer array
+ agnostic
+Message-ID: <20191015170353.1f4fbbbb@cakuba.netronome.com>
+In-Reply-To: <d233782c20a6d64f39c9d28fd321fc07fcc8b65e.1571049326.git.lorenzo@kernel.org>
+References: <cover.1571049326.git.lorenzo@kernel.org>
+        <d233782c20a6d64f39c9d28fd321fc07fcc8b65e.1571049326.git.lorenzo@kernel.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20191015220352.435884-1-andriin@fb.com> <20191015220352.435884-6-andriin@fb.com>
- <ca129d11-f243-8e46-38df-df0a52cb9c97@fb.com>
-In-Reply-To: <ca129d11-f243-8e46-38df-df0a52cb9c97@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 15 Oct 2019 16:50:58 -0700
-Message-ID: <CAEf4BzbahEkKfU_Eys1Tu6SJkZd=RDv=-H01m5KesNGfAuBK6g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/6] selftests/bpf: replace test_progs and
- test_maps w/ general rule
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 4:41 PM Alexei Starovoitov <ast@fb.com> wrote:
->
-> On 10/15/19 3:03 PM, Andrii Nakryiko wrote:
-> > Define test runner generation meta-rule that codifies dependencies
-> > between test runner, its tests, and its dependent BPF programs. Use that
-> > for defining test_progs and test_maps test-runners. Also additionally define
-> > 3 flavors of test_progs:
-> > - alu32, which builds BPF programs with 32-bit registers codegen;
-> > - bpf_gcc, which build BPF programs using GCC, if it supports BPF target;
-> > - native, which uses a mix of native Clang target and BPF target for LLC.
->
-> Great improvement, but it's taking it too far.
-> (clang  -I. -I/data/users/ast/net-next/tools/testing/selftests/bpf -g
-> -D__TARGET_ARCH_x86 -I. -I./include/uapi
-> -I/data/users/ast/net-next/tools/include/uapi
-> -I/data/users/ast/net-next/tools/lib/bpf
-> -I/data/users/ast/net-next/tools/testing/selftests/usr/include
-> -idirafter /usr/local/include -idirafter
-> /data/users/ast/llvm/bld/lib/clang/10.0.0/include -idirafter
-> /usr/include -Wno-compare-distinct-pointer-types -O2 -emit-llvm -c
-> progs/test_core_reloc_existence.c -o - || echo "BPF obj compilation
-> failed") | llc -march=bpf -mcpu=probe   -filetype=obj -o
-> /data/users/ast/net-next/tools/testing/selftests/bpf/native/test_core_reloc_existence.o
-> progs/test_core_reloc_existence.c:47:18: error: use of unknown builtin
-> '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
->          out->a_exists = bpf_core_field_exists(in->a);
+On Mon, 14 Oct 2019 12:49:54 +0200, Lorenzo Bianconi wrote:
+> Allow tx buffer array to contain both skb and xdp buffers in order to
+> enable xdp frame recycling adding XDP_TX verdict support
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 66 +++++++++++++++++----------
+>  1 file changed, 43 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index a79d81c9be7a..477ae6592fa3 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -561,6 +561,20 @@ struct mvneta_rx_desc {
+>  };
+>  #endif
+>  
+> +enum mvneta_tx_buf_type {
+> +	MVNETA_TYPE_SKB,
+> +	MVNETA_TYPE_XDP_TX,
+> +	MVNETA_TYPE_XDP_NDO,
+> +};
+> +
+> +struct mvneta_tx_buf {
+> +	enum mvneta_tx_buf_type type;
 
-Do you use latest clang that supports __builtin_preserve_field_info()?
-All the flavors are building just fine for me with latest clang.
+I'd be tempted to try to encode type on the low bits of the pointer,
+otherwise you're increasing the cache pressure here. I'm not 100% sure
+it's worth the hassle, perhaps could be a future optimization.
 
->
-> native clang + llc is useful for old school tracing only (before CO-RE).
+> +	union {
+> +		struct xdp_frame *xdpf;
+> +		struct sk_buff *skb;
+> +	};
+> +};
 
-Don't disagree (I actually have little context why we needed this
-special case at all), but I had no errors or warnings whatsoever. I
-think in this particular case it's not specific to test_progs-native
-build, can you please double-check on your side?
