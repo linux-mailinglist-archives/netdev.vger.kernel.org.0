@@ -2,82 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9301D8978
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37C2D89D5
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:36:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389093AbfJPHcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 03:32:12 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48478 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389039AbfJPHcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 03:32:12 -0400
-Received: from p5b06da22.dip0.t-ipconnect.de ([91.6.218.34] helo=nanos)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1iKdmp-0007Pm-FE; Wed, 16 Oct 2019 09:31:59 +0200
-Date:   Wed, 16 Oct 2019 09:31:58 +0200 (CEST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-cc:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
-        yangbo.lu@nxp.com, john.stultz@linaro.org,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
-        suzuki.poulose@arm.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com,
-        justin.he@arm.com, nd@arm.com
-Subject: Re: [PATCH v5 4/6] psci: Add hvc call service for ptp_kvm.
-In-Reply-To: <9641fbff-cfcd-4854-e0c9-0b97d44193ee@redhat.com>
-Message-ID: <alpine.DEB.2.21.1910160929500.2518@nanos.tec.linutronix.de>
-References: <20191015104822.13890-1-jianyong.wu@arm.com> <20191015104822.13890-5-jianyong.wu@arm.com> <9641fbff-cfcd-4854-e0c9-0b97d44193ee@redhat.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+        id S2391055AbfJPHgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 03:36:32 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:40810 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391032AbfJPHgb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 03:36:31 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F2DF11A0507;
+        Wed, 16 Oct 2019 09:36:29 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E6D051A04F8;
+        Wed, 16 Oct 2019 09:36:29 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 9F9D9205D2;
+        Wed, 16 Oct 2019 09:36:29 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, jakub.kicinski@netronome.com, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH v3 net 0/2] dpaa2-eth: misc fixes
+Date:   Wed, 16 Oct 2019 10:36:21 +0300
+Message-Id: <1571211383-5759-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019, Paolo Bonzini wrote:
-> On 15/10/19 12:48, Jianyong Wu wrote:
-> > diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
-> > index 07e57a49d1e8..3597f1f27b10 100644
-> > --- a/drivers/clocksource/arm_arch_timer.c
-> > +++ b/drivers/clocksource/arm_arch_timer.c
-> > @@ -1634,3 +1634,8 @@ static int __init arch_timer_acpi_init(struct acpi_table_header *table)
-> >  }
-> >  TIMER_ACPI_DECLARE(arch_timer, ACPI_SIG_GTDT, arch_timer_acpi_init);
-> >  #endif
-> > +
-> > +bool is_arm_arch_counter(void *cs)
-> > +{
-> > +	return (struct clocksource *)cs == &clocksource_counter;
-> > +}
-> 
-> As Thomas pointed out, any reason to have a void * here?
-> 
-> However, since he didn't like modifying the struct, here is an
-> alternative idea:
-> 
-> 1) add a "struct clocksource*" argument to ktime_get_snapshot
-> 
-> 2) return -ENODEV if the argument is not NULL and is not the current
-> clocksource
-> 
-> 3) move the implementation of the hypercall to
-> drivers/clocksource/arm_arch_timer.c, so that it can call
-> ktime_get_snapshot(&systime_snapshot, &clocksource_counter);
+This patch set adds a couple of fixes around updating configuration on MAC
+change.  Depending on when MC connects the DPNI to a MAC, both the MAC
+address and TX FQIDs should be updated everytime there is a change in
+configuration.
 
-And then you implement a gazillion of those functions for every
-arch/subarch which has a similar requirement. Pointless exercise.
+Changes in v2:
+ - used reverse christmas tree ordering in patch 2/2
+Changes in v3:
+ - add a missing new line
+ - go back to FQ based enqueueing after a transient error
 
-Having the ID is trivial enough and the storage space is not really a
-concern.
+Florin Chiculita (1):
+  dpaa2-eth: add irq for the dpmac connect/disconnect event
 
-Thanks,
+Ioana Radulescu (1):
+  dpaa2-eth: Fix TX FQID values
 
-	tglx
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 50 +++++++++++++++++++++++-
+ drivers/net/ethernet/freescale/dpaa2/dpni.h      |  5 ++-
+ 2 files changed, 53 insertions(+), 2 deletions(-)
+
+-- 
+1.9.1
+
