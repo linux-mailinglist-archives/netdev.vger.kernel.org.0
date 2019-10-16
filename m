@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D92FFDA272
+	by mail.lfdr.de (Postfix) with ESMTP id 61501DA271
 	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 01:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbfJPXr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 19:47:26 -0400
-Received: from mga05.intel.com ([192.55.52.43]:41139 "EHLO mga05.intel.com"
+        id S2406923AbfJPXrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 19:47:20 -0400
+Received: from mga05.intel.com ([192.55.52.43]:41141 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406842AbfJPXrO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 19:47:14 -0400
+        id S2406903AbfJPXrR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 19:47:17 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Oct 2019 16:47:13 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,305,1566889200"; 
-   d="scan'208";a="202220692"
+   d="scan'208";a="202220695"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 16 Oct 2019 16:47:13 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -26,9 +26,9 @@ Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 6/7] igc: Add Rx checksum support
-Date:   Wed, 16 Oct 2019 16:47:10 -0700
-Message-Id: <20191016234711.21823-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 7/7] igc: Clean up unused shadow_vfta pointer
+Date:   Wed, 16 Oct 2019 16:47:11 -0700
+Message-Id: <20191016234711.21823-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191016234711.21823-1-jeffrey.t.kirsher@intel.com>
 References: <20191016234711.21823-1-jeffrey.t.kirsher@intel.com>
@@ -41,101 +41,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sasha Neftin <sasha.neftin@intel.com>
 
-Extend the socket buffer field process and add Rx checksum functionality
-Minor: fix indentation with tab instead of spaces.
+VLAN filter table array not implemented yet and shadow_vfta pointer
+not used. Clean up the code and remove the unused shadow_vfta pointer.
 
 Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_defines.h |  5 ++-
- drivers/net/ethernet/intel/igc/igc_main.c    | 43 ++++++++++++++++++++
- 2 files changed, 47 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igc/igc.h      | 1 -
+ drivers/net/ethernet/intel/igc/igc_main.c | 1 -
+ 2 files changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index 03f1aca3f57f..f3788f0b95b4 100644
---- a/drivers/net/ethernet/intel/igc/igc_defines.h
-+++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -282,7 +282,10 @@
- #define IGC_RCTL_BAM		0x00008000 /* broadcast enable */
+diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+index 7e16345d836e..0868677d43ed 100644
+--- a/drivers/net/ethernet/intel/igc/igc.h
++++ b/drivers/net/ethernet/intel/igc/igc.h
+@@ -411,7 +411,6 @@ struct igc_adapter {
+ 	u32 tx_hwtstamp_timeouts;
+ 	u32 tx_hwtstamp_skipped;
+ 	u32 rx_hwtstamp_cleared;
+-	u32 *shadow_vfta;
  
- /* Receive Descriptor bit definitions */
--#define IGC_RXD_STAT_EOP	0x02    /* End of Packet */
-+#define IGC_RXD_STAT_EOP	0x02	/* End of Packet */
-+#define IGC_RXD_STAT_IXSM	0x04	/* Ignore checksum */
-+#define IGC_RXD_STAT_UDPCS	0x10	/* UDP xsum calculated */
-+#define IGC_RXD_STAT_TCPCS	0x20	/* TCP xsum calculated */
- 
- #define IGC_RXDEXT_STATERR_CE		0x01000000
- #define IGC_RXDEXT_STATERR_SE		0x02000000
+ 	u32 rss_queues;
+ 	u32 rss_indir_tbl_init;
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index a861fc038721..52521a0bbf48 100644
+index 52521a0bbf48..0a4bcd2d3b85 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -1201,6 +1201,46 @@ static netdev_tx_t igc_xmit_frame(struct sk_buff *skb,
- 	return igc_xmit_frame_ring(skb, igc_tx_queue_mapping(adapter, skb));
- }
+@@ -4574,7 +4574,6 @@ static void igc_remove(struct pci_dev *pdev)
+ 	pci_release_mem_regions(pdev);
  
-+static inline void igc_rx_checksum(struct igc_ring *ring,
-+				   union igc_adv_rx_desc *rx_desc,
-+				   struct sk_buff *skb)
-+{
-+	skb_checksum_none_assert(skb);
-+
-+	/* Ignore Checksum bit is set */
-+	if (igc_test_staterr(rx_desc, IGC_RXD_STAT_IXSM))
-+		return;
-+
-+	/* Rx checksum disabled via ethtool */
-+	if (!(ring->netdev->features & NETIF_F_RXCSUM))
-+		return;
-+
-+	/* TCP/UDP checksum error bit is set */
-+	if (igc_test_staterr(rx_desc,
-+			     IGC_RXDEXT_STATERR_TCPE |
-+			     IGC_RXDEXT_STATERR_IPE)) {
-+		/* work around errata with sctp packets where the TCPE aka
-+		 * L4E bit is set incorrectly on 64 byte (60 byte w/o crc)
-+		 * packets, (aka let the stack check the crc32c)
-+		 */
-+		if (!(skb->len == 60 &&
-+		      test_bit(IGC_RING_FLAG_RX_SCTP_CSUM, &ring->flags))) {
-+			u64_stats_update_begin(&ring->rx_syncp);
-+			ring->rx_stats.csum_err++;
-+			u64_stats_update_end(&ring->rx_syncp);
-+		}
-+		/* let the stack verify checksum errors */
-+		return;
-+	}
-+	/* It must be a TCP or UDP packet with a valid checksum */
-+	if (igc_test_staterr(rx_desc, IGC_RXD_STAT_TCPCS |
-+				      IGC_RXD_STAT_UDPCS))
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+
-+	dev_dbg(ring->dev, "cksum success: bits %08X\n",
-+		le32_to_cpu(rx_desc->wb.upper.status_error));
-+}
-+
- static inline void igc_rx_hash(struct igc_ring *ring,
- 			       union igc_adv_rx_desc *rx_desc,
- 			       struct sk_buff *skb)
-@@ -1227,6 +1267,8 @@ static void igc_process_skb_fields(struct igc_ring *rx_ring,
- {
- 	igc_rx_hash(rx_ring, rx_desc, skb);
+ 	kfree(adapter->mac_table);
+-	kfree(adapter->shadow_vfta);
+ 	free_netdev(netdev);
  
-+	igc_rx_checksum(rx_ring, rx_desc, skb);
-+
- 	skb_record_rx_queue(skb, rx_ring->queue_index);
- 
- 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
-@@ -4392,6 +4434,7 @@ static int igc_probe(struct pci_dev *pdev,
- 		goto err_sw_init;
- 
- 	/* Add supported features to the features list*/
-+	netdev->features |= NETIF_F_RXCSUM;
- 	netdev->features |= NETIF_F_HW_CSUM;
- 	netdev->features |= NETIF_F_SCTP_CRC;
- 
+ 	pci_disable_pcie_error_reporting(pdev);
 -- 
 2.21.0
 
