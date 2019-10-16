@@ -2,80 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6AEDD8737
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 06:21:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B1A0D878F
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 06:38:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389444AbfJPEVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 00:21:13 -0400
-Received: from mail-il1-f194.google.com ([209.85.166.194]:35152 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733032AbfJPEVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 00:21:12 -0400
-Received: by mail-il1-f194.google.com with SMTP id j9so1166565ilr.2
-        for <netdev@vger.kernel.org>; Tue, 15 Oct 2019 21:21:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sage.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=BS+e9nspz4f+pclOvBMrcga+no7MZ9imggzlFCjixoE=;
-        b=ZsfPmdi5mxUBNEVl1PJ0bvF2jOuXjfOYYFA5qZbN0wa4dmKN0fSisq5TPQNbWnLtul
-         vvZaooPcWN7CJUq8KEbdI1z5rIOI8vsz83uBev01KDFSW8hAYyOjl82U0VkSqYy+loaq
-         dat9VIPH9ueq/R186IRbZCzEJJShx5grlMEIM2dcUOiTbX4mnBkwWgfbS36cuPcXIZgm
-         L8eviH/l2cdNA1dI6OBRXLap5Qfye/Hex79v00wul9/QpCG4ik25oswPKLcsbnJbySel
-         QYRgxTYK3iNGnxcxlfqFPjvhJqZC8KEVBdL59J1iCRMe4Ley0ZB35soRE3wuNlsPbFD1
-         Knfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=BS+e9nspz4f+pclOvBMrcga+no7MZ9imggzlFCjixoE=;
-        b=D4BLUp9RxOuHcmg1dVjbm50VhKUf5L+cegyZ6z/p1G+QzpWbaf6CgmHPF0Oqo1ekgd
-         /bbbIdlND1nseN1WT87OKqxiDbxffHVa6bU1sgK8B8GUlis+DUQv70I6EMdXFJbGgHka
-         rct1AslfBQZzHB69qxNk+3kE0YlgvsJxYiwwcSy/Aw+S1Frdk3TxIzuNLrNpgoTqTkOI
-         8EyIeaGBA/3U7ozkVzqeE0/v2iUG69YqYy9XTbU2BW6z831i+IOq7KiQCkDoeZtmR4nn
-         jh/5abHadajpSSZqqU5mGCDJCY7gwLuxVGKNLByVY1Qpby5IHLG/wzAwS0kSUQmTBNn8
-         M6rg==
-X-Gm-Message-State: APjAAAUtO0V0PG1tP3PReg87VTKSKBFm86M64IU6L3kX26Tja3SHK4Cv
-        fAHXADWk009gMgholc2FG/XR7g==
-X-Google-Smtp-Source: APXvYqyJlIQHB/w9Yrey70BuZTussI2aVZEeUsMGdG1WP718FZvQABX+kAPni44WH3Ff4BUx514Uxg==
-X-Received: by 2002:a92:ab08:: with SMTP id v8mr9846281ilh.231.1571199670277;
-        Tue, 15 Oct 2019 21:21:10 -0700 (PDT)
-Received: from wizard.attlocal.net ([2600:1700:4a30:fd70::13])
-        by smtp.gmail.com with ESMTPSA id o16sm3701624ilf.80.2019.10.15.21.21.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2019 21:21:09 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 21:21:04 -0700
-From:   Eric Sage <eric@sage.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        xdp-newbies@vger.kernel.org, brouer@redhat.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>
-Subject: Re: [PATCH] samples/bpf: make xdp_monitor use raw_tracepoints
-Message-ID: <20191016042104.GA27738@wizard.attlocal.net>
-References: <20191007045726.21467-1-eric@sage.org>
- <20191007110020.6bf8dbc2@carbon>
- <CAEf4BzacEF0Ga921DCuYCVTxR4rFdOzmRt5o0T7HH-H38gEccg@mail.gmail.com>
+        id S2389647AbfJPEid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 00:38:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34654 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726502AbfJPEid (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 00:38:33 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id ABFD53082B40;
+        Wed, 16 Oct 2019 04:38:32 +0000 (UTC)
+Received: from [10.72.12.53] (ovpn-12-53.pek2.redhat.com [10.72.12.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2228819C5B;
+        Wed, 16 Oct 2019 04:38:19 +0000 (UTC)
+Subject: Re: [PATCH RFC v1 1/2] vhost: option to fetch descriptors through an
+ independent struct
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20191011134358.16912-1-mst@redhat.com>
+ <20191011134358.16912-2-mst@redhat.com>
+ <3b2a6309-9d21-7172-a581-9f0f1d5c1427@redhat.com>
+ <20191012162445-mutt-send-email-mst@kernel.org>
+ <fea337ec-7c09-508b-3efa-b75afd6fe33b@redhat.com>
+ <20191014085806-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <e0e9cf30-8db6-e83a-3a69-dc86efff919b@redhat.com>
+Date:   Wed, 16 Oct 2019 12:38:15 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <20191014085806-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEf4BzacEF0Ga921DCuYCVTxR4rFdOzmRt5o0T7HH-H38gEccg@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 16 Oct 2019 04:38:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm no longer able to build the samples with 'make M=samples/bpf'.
 
-I get errors in task_fd_query_user.c like:
+On 2019/10/16 上午4:20, Michael S. Tsirkin wrote:
+> On Mon, Oct 14, 2019 at 09:43:25AM +0800, Jason Wang wrote:
+>> On 2019/10/13 上午4:27, Michael S. Tsirkin wrote:
+>>> On Sat, Oct 12, 2019 at 03:28:49PM +0800, Jason Wang wrote:
+>>>> On 2019/10/11 下午9:45, Michael S. Tsirkin wrote:
+>>>>> The idea is to support multiple ring formats by converting
+>>>>> to a format-independent array of descriptors.
+>>>>>
+>>>>> This costs extra cycles, but we gain in ability
+>>>>> to fetch a batch of descriptors in one go, which
+>>>>> is good for code cache locality.
+>>>>>
+>>>>> To simplify benchmarking, I kept the old code
+>>>>> around so one can switch back and forth by
+>>>>> writing into a module parameter.
+>>>>> This will go away in the final submission.
+>>>>>
+>>>>> This patch causes a minor performance degradation,
+>>>>> it's been kept as simple as possible for ease of review.
+>>>>> Next patch gets us back the performance by adding batching.
+>>>>>
+>>>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>>>>> ---
+>>>>>     drivers/vhost/test.c  |  17 ++-
+>>>>>     drivers/vhost/vhost.c | 299 +++++++++++++++++++++++++++++++++++++++++-
+>>>>>     drivers/vhost/vhost.h |  16 +++
+>>>>>     3 files changed, 327 insertions(+), 5 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+>>>>> index 056308008288..39a018a7af2d 100644
+>>>>> --- a/drivers/vhost/test.c
+>>>>> +++ b/drivers/vhost/test.c
+>>>>> @@ -18,6 +18,9 @@
+>>>>>     #include "test.h"
+>>>>>     #include "vhost.h"
+>>>>> +static int newcode = 0;
+>>>>> +module_param(newcode, int, 0644);
+>>>>> +
+>>>>>     /* Max number of bytes transferred before requeueing the job.
+>>>>>      * Using this limit prevents one virtqueue from starving others. */
+>>>>>     #define VHOST_TEST_WEIGHT 0x80000
+>>>>> @@ -58,10 +61,16 @@ static void handle_vq(struct vhost_test *n)
+>>>>>     	vhost_disable_notify(&n->dev, vq);
+>>>>>     	for (;;) {
+>>>>> -		head = vhost_get_vq_desc(vq, vq->iov,
+>>>>> -					 ARRAY_SIZE(vq->iov),
+>>>>> -					 &out, &in,
+>>>>> -					 NULL, NULL);
+>>>>> +		if (newcode)
+>>>>> +			head = vhost_get_vq_desc_batch(vq, vq->iov,
+>>>>> +						       ARRAY_SIZE(vq->iov),
+>>>>> +						       &out, &in,
+>>>>> +						       NULL, NULL);
+>>>>> +		else
+>>>>> +			head = vhost_get_vq_desc(vq, vq->iov,
+>>>>> +						 ARRAY_SIZE(vq->iov),
+>>>>> +						 &out, &in,
+>>>>> +						 NULL, NULL);
+>>>>>     		/* On error, stop handling until the next kick. */
+>>>>>     		if (unlikely(head < 0))
+>>>>>     			break;
+>>>>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>>>>> index 36ca2cf419bf..36661d6cb51f 100644
+>>>>> --- a/drivers/vhost/vhost.c
+>>>>> +++ b/drivers/vhost/vhost.c
+>>>>> @@ -301,6 +301,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>>>>>     			   struct vhost_virtqueue *vq)
+>>>>>     {
+>>>>>     	vq->num = 1;
+>>>>> +	vq->ndescs = 0;
+>>>>>     	vq->desc = NULL;
+>>>>>     	vq->avail = NULL;
+>>>>>     	vq->used = NULL;
+>>>>> @@ -369,6 +370,9 @@ static int vhost_worker(void *data)
+>>>>>     static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
+>>>>>     {
+>>>>> +	kfree(vq->descs);
+>>>>> +	vq->descs = NULL;
+>>>>> +	vq->max_descs = 0;
+>>>>>     	kfree(vq->indirect);
+>>>>>     	vq->indirect = NULL;
+>>>>>     	kfree(vq->log);
+>>>>> @@ -385,6 +389,10 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+>>>>>     	for (i = 0; i < dev->nvqs; ++i) {
+>>>>>     		vq = dev->vqs[i];
+>>>>> +		vq->max_descs = dev->iov_limit;
+>>>>> +		vq->descs = kmalloc_array(vq->max_descs,
+>>>>> +					  sizeof(*vq->descs),
+>>>>> +					  GFP_KERNEL);
+>>>> Is iov_limit too much here? It can obviously increase the footprint. I guess
+>>>> the batching can only be done for descriptor without indirect or next set.
+>>>> Then we may batch 16 or 64.
+>>>>
+>>>> Thanks
+>>> Yes, next patch only batches up to 64.  But we do need iov_limit because
+>>> guest can pass a long chain of scatter/gather.
+>>> We already have iovecs in a huge array so this does not look like
+>>> a big deal. If we ever teach the code to avoid the huge
+>>> iov arrays by handling huge s/g lists piece by piece,
+>>> we can make the desc array smaller at the same point.
+>>>
+>> Another possible issue, if we try to batch descriptor chain when we've
+>> already batched some descriptors, we may reach the limit then some of the
+>> descriptors might need re-read.
+>>
+>> Or we may need circular index (head, tail) in this case?
+>>
+>> Thanks
+> We never supported more than IOV_MAX descriptors.
+> And we don't batch more than iov_limit - IOV_MAX.
 
-samples/bpf/task_fd_query_user.c:153:29: error: ‘PERF_EVENT_IOC_ENABLE’
-undeclared.
 
-Am I missing a dependancy?
+Ok, but what happens when we've already batched 63 descriptors then come 
+a 3 descriptor chain?
+
+And it looks to me we need forget the cached descriptor during 
+set_vring_base()
+
+Thanks
+
+
+>
+> so buffer never overflows.
+>
