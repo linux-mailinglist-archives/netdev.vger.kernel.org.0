@@ -2,69 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFCD9D97D6
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 18:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A81FDD9805
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 18:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406443AbfJPQsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 12:48:53 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:36190 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404582AbfJPQsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 12:48:53 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y22so15084136pfr.3
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 09:48:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=w6dM2VbPEtO+/3emEZ1UX1mMaJIyL16px2CSFIbD2Ts=;
-        b=HHPkb20G4mb07e5D2EooDHkr2/ShR1MgxQElGs8DZXAHqvJ9mW0eAH6vL2u4GmxI1n
-         75wrhZ0NdJJ4b80X46boRX0uYMK2idLD+FpFncOqdf5wdJyupml8z/K2tzBq2IMWo5f9
-         lYEya8Pm/UK5ReKaQGxle+qq5WIL2vMMKvy+V8aEb5Ubot8JpvQw3kDb1cbR5JXsA4Z3
-         gxTuaxhxyou7086VVMBMt+spgyj2iV/0OiA4gZk7+VjUSpaVXpt02/I5nYUBoEMX9uJi
-         WV/VWuomCh2+pDoleArjQsLc+pTmZIO2G3PhKz4AgfSBi45pQN8uDG5YNDYofd74Rx53
-         K44Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=w6dM2VbPEtO+/3emEZ1UX1mMaJIyL16px2CSFIbD2Ts=;
-        b=kTaPGw8RVTyWoxfNFfKmbj5uAbWezVZWNTHKUSPIZyH6+9QYKyzQs61vKW0SLMg6zY
-         4Q6il8KSaROSQfoZlfYaebdjvmHi6uhgEg7DLekswAK50DIQ5QYV5Ht1H5e+TTtsc4m9
-         K5dOYImbgYzVF3fYbQik3QBRe5frTDvHcwK4oXoNRSFUoG5cdG/Cf3r79IkLDzaMtMKJ
-         +EoR/0MQ5EopCtRAdmDEgZ4tBpDJy3JJsEpSoOVDoXcxoZ5axb7lE6fmrrIE7EYuh6s7
-         0LMaDZc4nmdSw3zGv7OWu2AGkdKGQFflcm/IjXEVTqijgNHZ11TllcLeksHXqrqEVzON
-         1rLw==
-X-Gm-Message-State: APjAAAWWfDk4f29NuonMbun8f/kTdNUb06oLTNFxM5J5Y67c9oUWPAoc
-        blSjJeUT2n3Noip6y1U92ag0jzMiXtk=
-X-Google-Smtp-Source: APXvYqzuEgNbV5kzX9Nue302CtLae4gDoKCYTSI9tfdj9J2fmhmr8bFe3c4/er2a7J7Spnk+owhQig==
-X-Received: by 2002:aa7:96ba:: with SMTP id g26mr9249552pfk.132.1571244531978;
-        Wed, 16 Oct 2019 09:48:51 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id q15sm23403875pgl.12.2019.10.16.09.48.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 09:48:51 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 09:48:48 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net 0/2] dpaa2-eth: misc fixes
-Message-ID: <20191016094848.19bfb411@cakuba.netronome.com>
-In-Reply-To: <1571211383-5759-1-git-send-email-ioana.ciornei@nxp.com>
-References: <1571211383-5759-1-git-send-email-ioana.ciornei@nxp.com>
-Organization: Netronome Systems, Ltd.
+        id S2406141AbfJPQ5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 12:57:12 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:54998 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730147AbfJPQ5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 12:57:11 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x9GGv8AN061310;
+        Wed, 16 Oct 2019 11:57:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1571245028;
+        bh=pXkzU54Qcc5VQRwJoIqmxMDheZnWsbp2QqP3qLWQko4=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=o3Dz6d5PkC1NADRic1ei2mLjgoAu4jiDYrsky4y6dv2dj45LA/wFx6wpgRVYGtuxl
+         cQswdkBLcpvQneLfBLLJBeDArHtthCOh2R2nxnD1p0THx6985XuR4SzsSJ1pNE12Yg
+         E3IjJUZiccUXRiMHSCQ2gaPCVC35NYAMQ1cSSG7U=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x9GGv88u006086
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 16 Oct 2019 11:57:08 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 16
+ Oct 2019 11:57:01 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Wed, 16 Oct 2019 11:57:01 -0500
+Received: from [158.218.117.39] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9GGv7Wg083027;
+        Wed, 16 Oct 2019 11:57:08 -0500
+Subject: Re: taprio testing - Any help?
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com>
+ <87v9sv3uuf.fsf@linux.intel.com>
+ <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
+ <87r23j3rds.fsf@linux.intel.com>
+ <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com>
+ <45d3e5ed-7ddf-3d1d-9e4e-f555437b06f9@ti.com>
+ <871rve5229.fsf@linux.intel.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <f6fb6448-35f0-3071-bda1-7ca5f4e3e11e@ti.com>
+Date:   Wed, 16 Oct 2019 13:02:57 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <871rve5229.fsf@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019 10:36:21 +0300, Ioana Ciornei wrote:
-> This patch set adds a couple of fixes around updating configuration on MAC
-> change.  Depending on when MC connects the DPNI to a MAC, both the MAC
-> address and TX FQIDs should be updated everytime there is a change in
-> configuration.
+Hi Vinicius,
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+On 10/14/2019 07:39 PM, Vinicius Costa Gomes wrote:
+> Murali Karicheri <m-karicheri2@ti.com> writes:
+>>
+>> My expectation is as follows
+>>
+>> AAAAAABBBBBCCCCCDDDDDEEEEE
+>>
+>> Where AAAAA is traffic from TC0, BBBBB is udp stream for port 10000
+>> CCCCC is stream for port 20000, DDDDD for 30000 and EEEEE for 40000.
+>> Each can be max of 4 msec. Is the expection correct? At least that
+>> is my understanding.
+> 
+> Your expectation is correct.
+> 
+>>
+>> But what I see is alternating packets with port 10000/20000/30000/40000
+>> at the wireshark capture and it doesn't make sense to me. If you
+>> look at the timestamp, there is nothing showing the Gate is honored
+>> for Tx. Am I missing something?
+> 
+> Remember that taprio (in software mode) has no control after the packet
+> is delivered to the driver. So, even if taprio obeys your traffic
+> schedule perfectly, the driver/controller may decide to send packets
+> according to some other logic.
+> 
+That is true.
+
+I think I get why it can't work without ETF offload which is missing in
+our hardware. Here is what my understanding. Please correct it if wrong.
+
+Our hardware has priority queues implemented. So if there are no
+packets in the higher priority queue, it would send from the lower
+priority ones. Assuming packets gets dequeue-ed correctly by
+taprio and that packets are only in one of the lower priority TC.
+i.e in the above example, BBBBBB are present when TC1 Gate is open.
+Assuming there are more packets than actually sent out during TC1
+window, and assuming no packets in the TC0 queue (AAAAA is absent)
+then hardware will continue to send from TC1 queue. So that might
+be what is happening, right?
+
+So it is required to deliver frames to driver only when the Gate for
+the specific traffic class is open. Is that what is done by ETF qdisc?
+ From ETF description at
+http://man7.org/linux/man-pages/man8/tc-etf.8.html
+'The ETF (Earliest TxTime First) qdisc allows applications to control
+the instant when a packet should be dequeued from the traffic control
+layer into the netdevice'. So I assume, when I use iperf (there is
+no txtime information in the packet), I still can use ETF and
+packet time will be modified to match with schedule and then get
+dequeue-ed at correct time to arrive at the driver during the Gate
+open of taprio. Is this correct?
+
+If ETF can schedule packet to arrive at the driver just during th
+Gate open and work in sync with taprio scheduler, that would do the
+work.I understand the border may be difficult to manage. However if we
+add a guard band by adding an extra entry with all Gates closed
+between schedules for guard band duration, it should allow hardware to
+flush out any remaining frames from the queue outside its Gate duration.
+If my understanding is correct, can I use software ETF qdisc in this
+case? If so how do I configure it? Any example?
+
+>>
+>> The tc stats shows packets are going through specific TC/Gate
+>>
+>> root@am57xx-evm:~# tc -d -p -s qdisc show dev eth0
+>> qdisc taprio 100: root refcnt 9 tc 5 map 0 1 2 3 4 4 4 4 4 4 4 4 4 4 4 4
+>> queues offset 0 count 1 offset 1 count 1 offset 2 count 1 offset 3 count
+>> 1 offset 4 count 1
+>> clockid TAI offload 0   base-time 0 cycle-time 0 cycle-time-extension 0
+>> base-time 1564768921123459533 cycle-time 20000000 cycle-
+>> time-extension 0
+>>           index 0 cmd S gatemask 0x1 interval 4000000
+>>           index 1 cmd S gatemask 0x2 interval 4000000
+>>           index 2 cmd S gatemask 0x4 interval 4000000
+>>           index 3 cmd S gatemask 0x8 interval 4000000
+>>           index 4 cmd S gatemask 0x10 interval 4000000
+>>
+>>    Sent 80948029 bytes 53630 pkt (dropped 0, overlimits 0 requeues 0)
+>>    backlog 0b 0p requeues 0
+>> qdisc pfifo 0: parent 100:5 limit 1000p
+>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>    backlog 0b 0p requeues 0
+>> qdisc pfifo 0: parent 100:4 limit 1000p
+>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>    backlog 0b 0p requeues 0
+>> qdisc pfifo 0: parent 100:3 limit 1000p
+>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>    backlog 0b 0p requeues 0
+>> qdisc pfifo 0: parent 100:2 limit 1000p
+>>    Sent 16184448 bytes 10704 pkt (dropped 0, overlimits 0 requeues 0)
+>>    backlog 0b 0p requeues 0
+>> qdisc pfifo 0: parent 100:1 limit 1000p
+>>    Sent 16210237 bytes 10814 pkt (dropped 0, overlimits 0 requeues 0)
+>>    backlog 0b 0p requeues 0
+>>
+>> Also my hardware queue stats shows frames going through correct queues.
+>> Am I missing something?
+>>
+> 
+> What I usually see in these cases, are that the borders (from A to B,
+> for example) are usually messy, the middle of each entry are more well
+> behaved.
+> 
+OK
+
+> But there are things that could improve the behavior: reducing TX DMA
+> coalescing, reducing the number of packet buffers in use in the
+> controller, disabling power saving features, that kind of thing.
+I can try playing with the number if descriptors used. But from my above
+response, I might have to use software ETF qdisc along with taprio to
+have packets in the correct order on the wire. So will wait on this for
+now.
+> 
+> If you are already doing something like this, then I would like to know
+> more, that could indicate a problem.
+> 
+No. The hardware just implement a priority queue scheme. I can control
+the number of buffers or descriptors.
+
+Murali
+> [...]
+> 
+>> I am on a 4.19.y kernel with patches specific to taprio
+>> backported. Am I missing anything related to taprio. I will
+>> try on the latest master branch as well. But if you can point out
+>> anything that will be helpful.
+>>
+> 
+> [...]
+> 
+>> lcpd/ti-linux-4.19.y) Merged TI feature connectivity into
+>> ti-linux-4.19.y
+> 
+> I can't think of anything else.
+> 
+>>
+>>>
+>>> Regards,
+>>> -Vladimir
+>>>
+> 
+> Cheers,
+> --
+> Vinicius
+> 
+
