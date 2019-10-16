@@ -2,124 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4F5D9082
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:13:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 009DCD90A4
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404985AbfJPMNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 08:13:17 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:54290 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392915AbfJPMNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 08:13:17 -0400
-Received: by mail-wm1-f65.google.com with SMTP id p7so2656800wmp.4;
-        Wed, 16 Oct 2019 05:13:15 -0700 (PDT)
+        id S2405203AbfJPMU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 08:20:28 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:37035 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405189AbfJPMU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 08:20:28 -0400
+Received: by mail-wr1-f66.google.com with SMTP id p14so27791007wro.4
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 05:20:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Z5f0yIHlY12I4Q0pn5WdnGvacnYGRlqyDdoVhSRxe6w=;
-        b=KXVD9nR2ME+vjiKCYNNlVGSIEL/PKns1EI1ssBfrfHxMZ717aw8ibU2cG4R4m6NSqN
-         p3OmoJyT2lcjfH44LwfVR/VmCVbdH3GYLFw+V32nkyf8EcGxcvnqQpSRj0LQ3r10ocjB
-         8y5GPTJalQIciPmxHp4zSqM5VCiZEYK6BEnUw90H5439Tjy6JrHed1S+Pms/1sS/iH52
-         YCShR+vFhVmyMDOor5kVy3Tirlhg61IVASfyCzxIunRQdNrff4w8wb16pDV2veZUaH19
-         6zb+Q6HaZjq0dcc+V+f+wTmgUTvAfV8xRNZu7TeFl8ElKDDGLLdLHb+gYvtA8b2MkZlg
-         1UqA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=dmrMhgpUSf60d5nh3MAEGQy/4z6O1wG97cbLuW1Vm/Q=;
+        b=Lryg5TbKNuFD1H9KnYSEFIXh7TPiZG5JT6QcacCuclZQ7ucsqtGD2RjLXMfRQNQn11
+         4H8eWrGeyw6gS2x8zrZV2LRijZHZHDiWAS/WnxWrN5PilX42PAZxtYhpJffHaZ93Q0Xb
+         5yV952iEPXu5/aHNYguUVK3s07QjWaKL860yK9MwH+R94+/TR/9tWxOOY1gav0+m4s/U
+         lvNZoW05LWMCbBwqgknxmY8ZP4NZTlosLfG3f18WVt4LJYwYzJNr0WPoF+YeGPyAH+RQ
+         aNAel85fvckPLTBuXDBW0+kffLA1BAfpPJuw4dw1Cg57p4zBtdSOr4WtIQnK3hTn9zNn
+         y1oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Z5f0yIHlY12I4Q0pn5WdnGvacnYGRlqyDdoVhSRxe6w=;
-        b=sxgLkyTOmXWL5jCRND3AAm1+LbjJWKtITXxbjgfQwArjECW7xLdbuYYWoIkRxo6vLZ
-         ulMJq7lKNYjqK9YaUQUw4ZzNp40L6mNZV0zjFQRbxqmaLYmvyjYxzH0M33SCPONpi0H/
-         DAtxXSTUx7nHmsjD5pZ+LOMTFKcms3JKGyc/V08b+QYFXDqmFGJBMWX2HJCPPWfheL5u
-         mJJKvECfqG32lgS4QfZFYaUwPiJbOfAlXYQVznfDuem6r/SjDiaWbOl4n05iMOw34KhZ
-         GM6DusNFunCP7EIT3dCp1RDXtW+8tS7dNWU15KjubJw4EKudcBJe8kuoTMLPh9r/eI7k
-         Fxfg==
-X-Gm-Message-State: APjAAAV/CBnDkP3jyhY4ZhKtPaBwUWgbnaCH2NHn0Tms6GSB+sOhfW59
-        1OBKvv43RSsnXgOktOx6NEs=
-X-Google-Smtp-Source: APXvYqyeVI+HFQYVT9eZ+9AlMthA0eXmjO4czOYpC+SavUTyCKX+/KdD9iVqXyFN9hlGr/yH4Fa32g==
-X-Received: by 2002:a1c:9a03:: with SMTP id c3mr3230806wme.109.1571227994744;
-        Wed, 16 Oct 2019 05:13:14 -0700 (PDT)
-Received: from jimi (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
-        by smtp.gmail.com with ESMTPSA id d193sm2995178wmd.0.2019.10.16.05.13.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=dmrMhgpUSf60d5nh3MAEGQy/4z6O1wG97cbLuW1Vm/Q=;
+        b=XXwNOLMacUlPTrSl9Qw66lGMAeoi+QNEwRHowskS0XKHoTy8uFIdHV/L86i12U2BCK
+         37+xIwnnE0kkMuqMrV9iamTjOM1OXx5DayIpNAPLwmB5jj0mntM1z/4hAohZL6G7NPse
+         BDIs5hUvZq5fIo9BlAVgTRcL5ZFKXHR8HhhBqNSViqvaa2M3v4tTZGrX35MaZRouarKS
+         WbMEA9Uh+qKG6tjOS8wqxGDyC5FlPQcoQgLrDE2wbKmwt5j3prNZVCFwB47ZnZgbyT+j
+         af7lz95X+DlVzyyJljTy+kejkGTGm+566X+9PpRlseT3xtRkfRAr2vWhof9uDwbIyGhZ
+         xjCw==
+X-Gm-Message-State: APjAAAUScH2+EJC98qbuRat75oYkZGoBrxAeMW8+3phP4ZhiXSJJLWks
+        cXnc6f7z34IN2/4w0MSprnLp4pinGoc=
+X-Google-Smtp-Source: APXvYqwfPRjX6bZCyWbED2wZKVclukgcm82IW4MA8rMSeU9WhVqp0vA8KEy24wGzUe87U8Bz3v5M6A==
+X-Received: by 2002:adf:e542:: with SMTP id z2mr2327859wrm.338.1571228426355;
+        Wed, 16 Oct 2019 05:20:26 -0700 (PDT)
+Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
+        by smtp.gmail.com with ESMTPSA id s12sm26946038wra.82.2019.10.16.05.20.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 05:13:14 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 15:13:07 +0300
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, shmulik.ladkani@gmail.com
-Subject: Re: [PATCH net] net: sched: act_mirred: drop skb's dst_entry in
- ingress redirection
-Message-ID: <20191016151307.40f63896@jimi>
-In-Reply-To: <e2bd3004-9f4b-f3ce-1214-2140f0b7cc61@linux.alibaba.com>
-References: <20191012071620.8595-1-zhiyuan2048@linux.alibaba.com>
-        <CAM_iQpVkTb6Qf9J-PuXJoQTZa5ojN_oun64SMv9Kji7tZkxSyA@mail.gmail.com>
-        <e2bd3004-9f4b-f3ce-1214-2140f0b7cc61@linux.alibaba.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 16 Oct 2019 05:20:25 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 14:20:23 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
+Cc:     linux-kernel@lists.codethink.co.uk,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] RFC: Bluetooth: missed cpu_to_le16 conversion in
+ hci_init4_req
+Message-ID: <20191016122022.kz4xzx4hzmtuoh5l@netronome.com>
+References: <20191016113943.19256-1-ben.dooks@codethink.co.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191016113943.19256-1-ben.dooks@codethink.co.uk>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, Oct 16, 2019 at 12:39:43PM +0100, Ben Dooks (Codethink) wrote:
+> It looks like in hci_init4_req() the request is being
+> initialised from cpu-endian data but the packet is specified
+> to be little-endian. This causes an warning from sparse due
+> to __le16 to u16 conversion.
+> 
+> Fix this by using cpu_to_le16() on the two fields in the packet.
+> 
+> net/bluetooth/hci_core.c:845:27: warning: incorrect type in assignment (different base types)
+> net/bluetooth/hci_core.c:845:27:    expected restricted __le16 [usertype] tx_len
+> net/bluetooth/hci_core.c:845:27:    got unsigned short [usertype] le_max_tx_len
+> net/bluetooth/hci_core.c:846:28: warning: incorrect type in assignment (different base types)
+> net/bluetooth/hci_core.c:846:28:    expected restricted __le16 [usertype] tx_time
+> net/bluetooth/hci_core.c:846:28:    got unsigned short [usertype] le_max_tx_time
+> 
+> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+> ---
+> Cc: Marcel Holtmann <marcel@holtmann.org>
+> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: linux-bluetooth@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  net/bluetooth/hci_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> index 04bc79359a17..b2559d4bed81 100644
+> --- a/net/bluetooth/hci_core.c
+> +++ b/net/bluetooth/hci_core.c
+> @@ -842,8 +842,8 @@ static int hci_init4_req(struct hci_request *req, unsigned long opt)
+>  	if (hdev->le_features[0] & HCI_LE_DATA_LEN_EXT) {
+>  		struct hci_cp_le_write_def_data_len cp;
+>  
+> -		cp.tx_len = hdev->le_max_tx_len;
+> -		cp.tx_time = hdev->le_max_tx_time;
+> +		cp.tx_len = cpu_to_le16(hdev->le_max_tx_len);
+> +		cp.tx_time = cpu_to_le16(hdev->le_max_tx_time);
 
-On Wed, 16 Oct 2019 01:22:01 +0800
-Zhiyuan Hou <zhiyuan2048@linux.alibaba.com> wrote:
+I would suggest that the naming of the le_ fields of struct hci_dev
+implies that the values stored in those fields should be little endian
+(but those that are more than bone byte wide are not).
 
-> On 2019/10/15 1:57 =E4=B8=8A=E5=8D=88, Cong Wang wrote:
-> > On Sat, Oct 12, 2019 at 12:16 AM Zhiyuan Hou
-> > <zhiyuan2048@linux.alibaba.com> wrote: =20
-> >> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-> >> index 9ce073a05414..6108a64c0cd5 100644
-> >> --- a/net/sched/act_mirred.c
-> >> +++ b/net/sched/act_mirred.c
-> >> @@ -18,6 +18,7 @@
-> >>   #include <linux/gfp.h>
-> >>   #include <linux/if_arp.h>
-> >>   #include <net/net_namespace.h>
-> >> +#include <net/dst.h>
-> >>   #include <net/netlink.h>
-> >>   #include <net/pkt_sched.h>
-> >>   #include <net/pkt_cls.h>
-> >> @@ -298,8 +299,10 @@ static int tcf_mirred_act(struct sk_buff
-> >> *skb, const struct tc_action *a,
-> >>
-> >>          if (!want_ingress)
-> >>                  err =3D dev_queue_xmit(skb2);
-> >> -       else
-> >> +       else {
-> >> +               skb_dst_drop(skb2);
-> >>                  err =3D netif_receive_skb(skb2);
-> >> +       } =20
+In any case, the question arises as to if this has ever worked on big
+endian machines.
 
-> > Good catch!
-
-Indeed! Thanks for fixing this!
-
-> >
-> > I don't want to be picky, but it seems this is only needed
-> > when redirecting from egress to ingress, right? That is,
-> > ingress to ingress, or ingress to egress is okay? If not,
-> > please fix all the cases while you are on it? =20
-> Sure. But I think this patch is also needed when redirecting from
-> ingress to ingress. Because we cannot assure that a skb has null dst
-> in ingress redirection path. For example, if redirecting a skb from
-> loopback's ingress to other device's ingress, the skb will take a
-> dst.
->=20
-> As commit logs point out, skb with valid dst cannot be made routing
-> decision in following process. original dst may cause skb loss or
-> other unexpected behavior.
-
-On the other hand, removing the dst on ingress-to-ingress redirection
-may remove LWT information on incoming packets, which may be undesired.
-
-Eyal.
+>  		hci_req_add(req, HCI_OP_LE_WRITE_DEF_DATA_LEN, sizeof(cp), &cp);
+>  	}
+>  
+> -- 
+> 2.23.0
+> 
