@@ -2,164 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E6BD9BD9
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 253E1D9BEA
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:48:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437193AbfJPUb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 16:31:56 -0400
-Received: from mga18.intel.com ([134.134.136.126]:23710 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728881AbfJPUb4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 16:31:56 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Oct 2019 13:31:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,304,1566889200"; 
-   d="scan'208";a="397290759"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 16 Oct 2019 13:31:55 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: taprio testing - Any help?
-In-Reply-To: <f6fb6448-35f0-3071-bda1-7ca5f4e3e11e@ti.com>
-References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com> <87v9sv3uuf.fsf@linux.intel.com> <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com> <87r23j3rds.fsf@linux.intel.com> <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com> <45d3e5ed-7ddf-3d1d-9e4e-f555437b06f9@ti.com> <871rve5229.fsf@linux.intel.com> <f6fb6448-35f0-3071-bda1-7ca5f4e3e11e@ti.com>
-Date:   Wed, 16 Oct 2019 13:32:57 -0700
-Message-ID: <87zhi01ldy.fsf@linux.intel.com>
+        id S2437225AbfJPUsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 16:48:04 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:46562 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727156AbfJPUsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 16:48:04 -0400
+Received: by mail-qk1-f196.google.com with SMTP id e66so3557192qkf.13;
+        Wed, 16 Oct 2019 13:48:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UbeoWoE2uZaczN47NwT0wD0UOD+v+MGySpZ07iHNajA=;
+        b=MmhdLiA1djl8h014HSkbfYyQsC8OUpz/vtFvEaCBBArvTELABiN18iEerBMHVgDyOt
+         Mh8F9YUylIAEEq+2CNLuEjC+PYWsuxQ3brn2l8fXUsUzp7yiBXXKZo9LAIkIX8eeDGG5
+         vhLddvQo39oi0iF06PbaRrD4hP39Dy6vZh2fRYBJxitTLrhQOCwKQUp8BSlNoYdgIb6a
+         q2//el4etkLHspZdZyCxFfRB/8z+C1RmnlxubBOM6moCWN9/sist+dh04J8ZJ0V7xBjL
+         pDwkWAlRxi2U0qA2xIJyoJ8sDRpEvBB0c4V+HaU7TspX+G2OcahxZwfrpGUGPIlgzfdp
+         Vryg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UbeoWoE2uZaczN47NwT0wD0UOD+v+MGySpZ07iHNajA=;
+        b=nkXTm5gRX5mjvnM9cCHR4rLyUmTu3dQNdmZ2LCrp5uYUjcDBkh6NAZf3yHOQht+Xze
+         C9Kow4qMl0Gk6MbwP00bUEaMTzR057V+AgKGrZS+Zttiutxcbzx482xHING/pr2x3eas
+         NI8vDW9eIMHOCTcKL8elH8j4uDKPCWhDWuSrUtdwr/323IN2DesNoPKHDj4ztUhi/g/2
+         9+9+aSOQmn8Zw1PxguUbUiqPDhoU2C9T2STMLo7Quctvxi5rUCmQv6R/5HtdnsE3Lvtf
+         7VGs4n53KIcV5blt1kceR0ihRAOs9xV2tGJvn8CYb8C+rg3iOSPdltcKi410swNMRO9n
+         7Wwg==
+X-Gm-Message-State: APjAAAVR55Iv9cMEeG+l5x3CyOtpJS+o/04nHSb4DFt9KGhq69tgYES4
+        6307EzZf/qF4fSusyXK3aqsE0h32o1nrMKAL8EAcHwdTDbo=
+X-Google-Smtp-Source: APXvYqwgbJXcMEGJg3C/4vBpbuqKCMcOL4xEUaMIXzeT0I5U3cjqTgg0WNq4zzYhI69f83ic0ea2msSVgVDu8ZKPpdQ=
+X-Received: by 2002:a37:b447:: with SMTP id d68mr3416545qkf.437.1571258883057;
+ Wed, 16 Oct 2019 13:48:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20191016060051.2024182-1-andriin@fb.com> <20191016060051.2024182-6-andriin@fb.com>
+ <20191016163249.GD1897241@mini-arch>
+In-Reply-To: <20191016163249.GD1897241@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Oct 2019 13:47:52 -0700
+Message-ID: <CAEf4BzYVWc8RWNSthN8whROYJUEijR1Uh3Lyt6bkuhM2tRsq2Q@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 5/7] selftests/bpf: replace test_progs and
+ test_maps w/ general rule
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Murali Karicheri <m-karicheri2@ti.com> writes:
-
-> Hi Vinicius,
+On Wed, Oct 16, 2019 at 9:32 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
 >
-> On 10/14/2019 07:39 PM, Vinicius Costa Gomes wrote:
->> Murali Karicheri <m-karicheri2@ti.com> writes:
->>>
->>> My expectation is as follows
->>>
->>> AAAAAABBBBBCCCCCDDDDDEEEEE
->>>
->>> Where AAAAA is traffic from TC0, BBBBB is udp stream for port 10000
->>> CCCCC is stream for port 20000, DDDDD for 30000 and EEEEE for 40000.
->>> Each can be max of 4 msec. Is the expection correct? At least that
->>> is my understanding.
->> 
->> Your expectation is correct.
->> 
->>>
->>> But what I see is alternating packets with port 10000/20000/30000/40000
->>> at the wireshark capture and it doesn't make sense to me. If you
->>> look at the timestamp, there is nothing showing the Gate is honored
->>> for Tx. Am I missing something?
->> 
->> Remember that taprio (in software mode) has no control after the packet
->> is delivered to the driver. So, even if taprio obeys your traffic
->> schedule perfectly, the driver/controller may decide to send packets
->> according to some other logic.
->> 
-> That is true.
+> On 10/15, Andrii Nakryiko wrote:
+> > Define test runner generation meta-rule that codifies dependencies
+> > between test runner, its tests, and its dependent BPF programs. Use that
+> > for defining test_progs and test_maps test-runners. Also additionally define
+> > 2 flavors of test_progs:
+> > - alu32, which builds BPF programs with 32-bit registers codegen;
+> > - bpf_gcc, which build BPF programs using GCC, if it supports BPF target.
+> Question:
 >
-> I think I get why it can't work without ETF offload which is missing in
-> our hardware. Here is what my understanding. Please correct it if
-> wrong.
+> Why not merge test_maps tests into test_progs framework and have a
+> single binary instead of doing all this makefile-related work?
+> We can independently address the story with alu32/gcc progs (presumably
+> in the same manner, with make defines).
 
-For taprio, to get good results, you have to have some kind of
-offloading, so right now, there are two alternatives for offloading: (1)
-full offloading, something similar to what Vladimir added for the
-SJA1105; (2) txtime-assisted mode, what Vedang added to support running
-Qbv-like schedules in controllers that only support controlling the
-transmission time of individual packets (the LaunchTime feature of the
-i210 controller, for example).
-
-If your hardware doesn't have any of those capabilities, then you are
-basically stuck with the software mode, or you can come up with some
-other "assisted mode" that might work for your hardware. 
+test_maps wasn't a reason for doing this, alue2/bpf_gcc was. test_maps
+is a simple sub-case that was just easy to convert to. I dare you to
+try solve alu32/bpf_gcc with make defines (whatever you mean by that)
+and in a simpler manner ;)
 
 >
-> Our hardware has priority queues implemented. So if there are no
-> packets in the higher priority queue, it would send from the lower
-> priority ones. Assuming packets gets dequeue-ed correctly by
-> taprio and that packets are only in one of the lower priority TC.
-> i.e in the above example, BBBBBB are present when TC1 Gate is open.
-> Assuming there are more packets than actually sent out during TC1
-> window, and assuming no packets in the TC0 queue (AAAAA is absent)
-> then hardware will continue to send from TC1 queue. So that might
-> be what is happening, right?
+> I can hardly follow the existing makefile and now with the evals it's
+> 10x more complicated for no good reason.
+
+I agree that existing Makefile logic is hard to follow, especially
+given it's broken. But I think 10x more complexity is gross
+exaggeration and just means you haven't tried to follow rules' logic.
+The rules inside DEFINE_TEST_RUNNER_RULES are exactly (minus one or
+two ifs to prevent re-definition of target) the rules that should have
+been written for test_progs, test_progs-alu32, test_progs-bpf_gcc.
+They define a chain of BPF .c -> BPF .o -> tests .c -> tests .o ->
+final binary + test.h generation. Previously we were getting away with
+this for, e.g., test_progs-alu32, because we always also built
+test_progs in parallel, which generated necessary stuff. Now with
+recent changes to test_attach_probe.c which now embeds BPF .o file,
+this doesn't work anymore. And it's going to be more and more
+prevalent form, so we need to fix it.
+
+Surely $(eval) and $(call) are not common for simple Makefiles, but
+just ignore it, we need that to only dynamically generate
+per-test-runner rules. DEFINE_TEST_RUNNER_RULES can be almost read
+like a normal Makefile definitions, module $$(VAR) which is turned
+into a normal $(VAR) upon $(call) evaluation.
+
+But really, I'd like to be wrong and if there is simpler way to
+achieve the same - go for it, I'll gladly review and ack.
+
 >
-> So it is required to deliver frames to driver only when the Gate for
-> the specific traffic class is open. Is that what is done by ETF qdisc?
->  From ETF description at
-> http://man7.org/linux/man-pages/man8/tc-etf.8.html
-> 'The ETF (Earliest TxTime First) qdisc allows applications to control
-> the instant when a packet should be dequeued from the traffic control
-> layer into the netdevice'. So I assume, when I use iperf (there is
-> no txtime information in the packet), I still can use ETF and
-> packet time will be modified to match with schedule and then get
-> dequeue-ed at correct time to arrive at the driver during the Gate
-> open of taprio. Is this correct?
->
+> > Overall, this is accomplished through $(eval)'ing a set of generic
+> > rules, which defines Makefile targets dynamically at runtime. See
+> > comments explaining the need for 2 $(evals), though.
+> >
+> > For each test runner we have (test_maps and test_progs, currently), and,
+> > optionally, their flavors, the logic of build process is modeled as
+> > follows (using test_progs as an example):
+> > - all BPF objects are in progs/:
+> >   - BPF object's .o file is built into output directory from
+> >     corresponding progs/.c file;
+> >   - all BPF objects in progs/*.c depend on all progs/*.h headers;
+> >   - all BPF objects depend on bpf_*.h helpers from libbpf (but not
+> >     libbpf archive). There is an extra rule to trigger bpf_helper_defs.h
+> >     (re-)build, if it's not present/outdated);
+> >   - build recipe for BPF object can be re-defined per test runner/flavor;
+> > - test files are built from prog_tests/*.c:
+> >   - all such test file objects are built on individual file basis;
+> >   - currently, every single test file depends on all BPF object files;
+> >     this might be improved in follow up patches to do 1-to-1 dependency,
+> >     but allowing to customize this per each individual test;
+> >   - each test runner definition can specify a list of extra .c and .h
+> >     files to be built along test files and test runner binary; all such
+> >     headers are becoming automatic dependency of each test .c file;
+> >   - due to test files sometimes embedding (using .incbin assembly
+> >     directive) contents of some BPF objects at compilation time, which are
+> >     expected to be in CWD of compiler, compilation for test file object does
+> >     cd into test runner's output directory; to support this mode all the
+> >     include paths are turned into absolute paths using $(abspath) make
+> >     function;
+> > - prog_tests/test.h is automatically (re-)generated with an entry for
+> >   each .c file in prog_tests/;
+> > - final test runner binary is linked together from test object files and
+> >   extra object files, linking together libbpf's archive as well;
+> > - it's possible to specify extra "resource" files/targets, which will be
+> >   copied into test runner output directory, if it differes from
+> >   Makefile-wide $(OUTPUT). This is used to ensure btf_dump test cases and
+> >   urandom_read binary is put into a test runner's CWD for tests to find
+> >   them in runtime.
+> >
+> > For flavored test runners, their output directory is a subdirectory of
+> > common Makefile-wide $(OUTPUT) directory with flavor name used as
+> > subdirectory name.
+> >
+> > BPF objects targets might be reused between different test runners, so
+> > extra checks are employed to not double-define them. Similarly, we have
+> > redefinition guards for output directories and test headers.
+> >
+> > test_verifier follows slightly different patterns and is simple enough
+> > to not justify generalizing TEST_RUNNER_DEFINE/TEST_RUNNER_DEFINE_RULES
+> > further to accomodate these differences. Instead, rules for
+> > test_verifier are minimized and simplified, while preserving correctness
+> > of dependencies.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/testing/selftests/bpf/.gitignore |   5 +-
+> >  tools/testing/selftests/bpf/Makefile   | 313 ++++++++++++++-----------
+> >  2 files changed, 180 insertions(+), 138 deletions(-)
+> >
 
-taprio in the txtime-assisted mode does exactly that: "packet time will
-be modified to match with schedule", but it needs ETF offloading to be
-supported to get good results, ETF has the same "problem" as taprio when
-running in the software mode (no offloading), it has no control after
-the packet is delivered to the driver.
 
-> If ETF can schedule packet to arrive at the driver just during th
-> Gate open and work in sync with taprio scheduler, that would do the
-> work.I understand the border may be difficult to manage. However if we
-> add a guard band by adding an extra entry with all Gates closed
-> between schedules for guard band duration, it should allow hardware to
-> flush out any remaining frames from the queue outside its Gate duration.
-> If my understanding is correct, can I use software ETF qdisc in this
-> case? If so how do I configure it? Any example?
+Please truncate irrelevant parts, easier to review.
 
-Without any offloading, I think you are better off running taprio
-standalone (i.e. without ETF, so you don't have yet another layer of
-packet scheduling based solely on hrtimers), and just adding the
-guard-bands, something like this:
-
-$ tc qdisc replace dev $IFACE parent root handle 100 taprio \\
-      num_tc 3 \
-      map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
-      queues 1@0 1@1 2@2 \
-      base-time $BASE_TIME \
-      sched-entry S 01 2000000 \
-      sched-entry S 02 3000000 \
-      sched-entry S 04 4000000 \
-      sched-entry S 00 1000000 \
-      clockid CLOCK_TAI
-
-Thinking a bit more, taprio in txtime-assisted mode and ETF with no
-offloading, *might* be better, if its limitation of only being able to
-use a single TX queue isn't a blocker.
-
-Something like this:
-
-$ tc qdisc replace dev $IFACE parent root handle 100 taprio \
-      num_tc 4 \
-      map 2 3 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
-      queues 1@0 1@0 1@0 1@0 \
-      base-time $BASE_TIME \
-      sched-entry S 0xC 250000 \
-      sched-entry S 0x1 250000 \
-      sched-entry S 0x2 250000 \
-      sched-entry S 0x4 250000 \
-      txtime-delay 300000 \
-      flags 0x1 \
-      clockid CLOCK_TAI
-
-$ tc qdisc replace dev $IFACE parent 100:1 etf \
-      delta 200000 clockid CLOCK_TAI skip_sock_check
-
-Cheers,
---
-Vinicius
+[...]
