@@ -2,68 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F1FD9050
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED151D907C
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:12:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388454AbfJPMDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 08:03:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48160 "EHLO vps0.lunn.ch"
+        id S2392906AbfJPMMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 08:12:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48196 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726845AbfJPMDs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 08:03:48 -0400
+        id S1727791AbfJPMMd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 08:12:33 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=NBc8vNMTMHQOQr0qJqJ1ykg36+K8LkXUK+za7gCE8KM=; b=r3/LAoaD96vbDU2j+fvPIFoD20
-        SGEOx5nSaf0Ts1XkiSI0c4QtBHAi5E2p/7fvmhYK18KKifoC6D6/42VS/1xilxmI/n9GD9KuFHOVq
-        eloXC0prcgrF1TWl49J3B7JCgz54XjEObpPRSiY6Z9bOiuiRtgyQWymKFJwjqQQXbnco=;
+        bh=LqCWfNLeIi/lU1VYcedAQODf4QQxGIAREfNdlGzSHew=; b=Ur7ReQofDILOMURmgfTUs0ScfS
+        z4vEDKGLC33wWTQgeHTIwMV3JdPbpSHhIH0o3kb6KDthCVjs/b1Gp9mxADwejzMpYhpDWmdVRqQF9
+        7vjb66LCaLqRunlt7At/tQ3MXtwIuzm87UwG9R8Mb6tbXW2N3MQ9jJrWySIo6eIYir14=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1iKi1p-0007DI-GX; Wed, 16 Oct 2019 14:03:45 +0200
-Date:   Wed, 16 Oct 2019 14:03:45 +0200
+        id 1iKiA4-0007FJ-Cm; Wed, 16 Oct 2019 14:12:16 +0200
+Date:   Wed, 16 Oct 2019 14:12:16 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Chris Snook <chris.snook@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH V2 2/2] net: dsa: microchip: Add shared regmap mutex
-Message-ID: <20191016120345.GC4780@lunn.ch>
-References: <20191013193238.1638-1-marex@denx.de>
- <20191013193238.1638-2-marex@denx.de>
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 1/4] net: ag71xx: port to phylink
+Message-ID: <20191016121216.GD4780@lunn.ch>
+References: <20191014061549.3669-1-o.rempel@pengutronix.de>
+ <20191014061549.3669-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191013193238.1638-2-marex@denx.de>
+In-Reply-To: <20191014061549.3669-2-o.rempel@pengutronix.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 13, 2019 at 09:32:38PM +0200, Marek Vasut wrote:
-> The KSZ driver uses one regmap per register width (8/16/32), each with
-> it's own lock, but accessing the same set of registers. In theory, it
-> is possible to create a race condition between these regmaps, although
-> the underlying bus (SPI or I2C) locking should assure nothing bad will
-> really happen and the accesses would be correct.
+On Mon, Oct 14, 2019 at 08:15:46AM +0200, Oleksij Rempel wrote:
+> The port to phylink was done as close as possible to initial
+> functionality.
+> Theoretically this HW can support flow control, practically seems to be not
+> enough to just enable it. So, more work should be done.
 > 
-> To make the driver do the right thing, add one single shared mutex for
-> all the regmaps used by the driver instead. This assures that even if
-> some future hardware is on a bus which does not serialize the accesses
-> the same way SPI or I2C does, nothing bad will happen.
-> 
-> Note that the status_mutex was unused and only initied, hence it was
-> renamed and repurposed as the regmap mutex.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Apart from the reverse Christmas tree:
+Hi Oleksij
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Please include Russell King in Cc: in future.
 
-    Andrew
+> -static void ag71xx_phy_link_adjust(struct net_device *ndev)
+> +static void ag71xx_mac_validate(struct phylink_config *config,
+> +			    unsigned long *supported,
+> +			    struct phylink_link_state *state)
+>  {
+> -	struct ag71xx *ag = netdev_priv(ndev);
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+> +
+> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
+> +	    state->interface != PHY_INTERFACE_MODE_GMII &&
+> +	    state->interface != PHY_INTERFACE_MODE_MII) {
+> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +		return;
+> +	}
+> +
+> +	phylink_set(mask, MII);
+> +
+> +	/* flow control is not supported */
+>  
+> -	ag71xx_link_adjust(ag, true);
+> +	phylink_set(mask, 10baseT_Half);
+> +	phylink_set(mask, 10baseT_Full);
+> +	phylink_set(mask, 100baseT_Half);
+> +	phylink_set(mask, 100baseT_Full);
+> +
+> +	phylink_set(mask, 1000baseT_Full);
+> +	phylink_set(mask, 1000baseX_Full);
+
+Can the MAC/PHY dynamically switch between MII and GMII? Maybe you
+should only add 1G support when interface is GMII?
+
+> @@ -1239,6 +1255,13 @@ static int ag71xx_open(struct net_device *ndev)
+>  	unsigned int max_frame_len;
+>  	int ret;
+>  
+> +	ret = phylink_of_phy_connect(ag->phylink, ag->pdev->dev.of_node, 0);
+> +	if (ret) {
+> +		netif_info(ag, link, ndev, "phylink_of_phy_connect filed with err: %i\n",
+> +			   ret);
+
+netif_info seems wrong. _err()?
+
+	   Andrew
+
