@@ -2,406 +2,889 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1DF1D91B7
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:57:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E9FD91D9
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 15:01:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393382AbfJPM5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 08:57:19 -0400
-Received: from cvk-fw2.cvk.de ([194.39.189.12]:59456 "EHLO cvk-fw2.cvk.de"
+        id S2391656AbfJPNBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 09:01:15 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48348 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393368AbfJPM5S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 08:57:18 -0400
-Received: from localhost (cvk-fw2 [127.0.0.1])
-        by cvk-fw2.cvk.de (Postfix) with ESMTP id 46tXPk7555z4wK8;
-        Wed, 16 Oct 2019 14:57:14 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cvk.de; h=
-        mime-version:content-transfer-encoding:content-type:content-type
-        :content-language:accept-language:message-id:date:date:subject
-        :subject:from:from; s=mailcvk20190509; t=1571230634; x=
-        1573045035; bh=deDF5BIYQaZtsfFBI4ti7LztgzjFPYufovylI1dI/FA=; b=f
-        ZuNdvQ/z8A1w3fNVQh2QmOorZgYJo/HPBxlXeVaRJtbe8BvPTObTajuBGwMpBUtp
-        /Wa4jXj36B2csZ+ZmnPJDImKkX7q/xUmov5ANlGcPBa3ZqOWOfna8shq0FPuXxfO
-        TNsLIQaCYOXejSLspvdn6QLbqoD2FQ6IQh4PWC3EhqbX3MQ9RQ4C4d//72ORYmGj
-        RYKBPR34zuBTQlsJYy5oOXN4Z3HUoCl+KlYfEgwuNkrHmlrck/IpMvkLECl2taU3
-        y7Fx3JivYBxCePCJLXjvweqCZmVTmjdEvXqxUCPmJibCJYVocSrlXWUKS2xcFwji
-        hvbkALZ8cODerLotHeQaA==
-X-Virus-Scanned: by amavisd-new at cvk.de
-Received: from cvk-fw2.cvk.de ([127.0.0.1])
-        by localhost (cvk-fw2.cvk.de [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id It1lJ4-NOQem; Wed, 16 Oct 2019 14:57:14 +0200 (CEST)
-Received: from cvk027.cvk.de (cvk027.cvk.de [10.1.0.22])
-        by cvk-fw2.cvk.de (Postfix) with ESMTP;
-        Wed, 16 Oct 2019 14:57:14 +0200 (CEST)
-Received: from cvk038.intra.cvk.de (cvk038.intra.cvk.de [10.1.0.38])
-        by cvk027.cvk.de (Postfix) with ESMTP id BC249848EC3;
-        Wed, 16 Oct 2019 14:57:14 +0200 (CEST)
-Received: from CVK038.intra.cvk.de ([::1]) by cvk038.intra.cvk.de ([::1]) with
- mapi id 14.03.0468.000; Wed, 16 Oct 2019 14:57:13 +0200
-From:   "Bartschies, Thomas" <Thomas.Bartschies@cvk.de>
-To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
-        'David Ahern' <dsahern@gmail.com>,
-        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
-Subject: Re: big ICMP requests get disrupted on IPSec tunnel activation
-Thread-Topic: big ICMP requests get disrupted on IPSec tunnel activation
-Thread-Index: AdWEITrKOt8CRlKURa6ZLEMgb4tszg==
-Date:   Wed, 16 Oct 2019 12:57:13 +0000
-Message-ID: <EB8510AA7A943D43916A72C9B8F4181F62A096BF@cvk038.intra.cvk.de>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.11.10.4]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728878AbfJPNBP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 09:01:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=BAfO031wkM2nBG9tuVmAEJLRsTorfk1k6nlx8Yt3qAQ=; b=JXRIjv2J8zjrcgPeaWIqx92ho8
+        Z+FyMW8BZ6tISPZqyhIfHG+ZjmCbTZ9Y7R/e/3vLAV5ss8dwIxoi/Hv21oyiTJ66aJEIfaP8gEvSj
+        zztwk2nzj17NjxVKTxPU7opLJORhZHC25Z1fG3dassVmdVDTzLkXZJItW6lWjMnM35/Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iKivB-0007UA-H6; Wed, 16 Oct 2019 15:00:57 +0200
+Date:   Wed, 16 Oct 2019 15:00:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 4/4] net: dsa: add support for Atheros AR9331 build-in
+ switch
+Message-ID: <20191016130057.GF4780@lunn.ch>
+References: <20191014061549.3669-1-o.rempel@pengutronix.de>
+ <20191014061549.3669-5-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-X-GBS-PROC: mBCtcOCtwCOp5vL6i/FxNXFTy2VpcZsaaUb7nztj5fM=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191014061549.3669-5-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNCmRpZCBhbm90aGVyIHRlc3QuIFRoaXMgdGltZSBJJ3ZlIGNoYW5nZWQgdGhlIG9y
-ZGVyLiBGaXJzdCB0cmlnZ2VyZWQgdGhlIElQU2VjIHBvbGljeSBhbmQgdGhlbiB0cmllZCB0byBw
-aW5nIGluIHBhcmFsbGVsIHdpdGggYSBiaWcgcGFja2V0IHNpemUuDQpDb3VsZCBhbHNvIHJlcHJv
-ZHVjZSB0aGUgaXNzdWUsIGJ1dCB0aGUgdHJhY2Ugd2FzIGNvbXBsZXRlbHkgZGlmZmVyZW50LiBN
-YXkgYmUgdGhpcyB0aW1lIEkndmUgZ290IHRoZSB0cmFjZSBmb3IgdGhlIHByb2JsZW1hdGljIGNv
-bm5lY3Rpb24/DQoNCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gQ1BVOiAzIFBJRDogMCBDb21t
-OiBzd2FwcGVyLzMgTm90IHRhaW50ZWQgNS4yLjE4LTIwMC5mYzMwLng4Nl82NCAjMQ0KW01pIE9r
-dCAxNiAxNDo0MzoxNSAyMDE5XSBIYXJkd2FyZSBuYW1lOiBWTXdhcmUsIEluYy4gVk13YXJlIFZp
-cnR1YWwgUGxhdGZvcm0vNDQwQlggRGVza3RvcCBSZWZlcmVuY2UgUGxhdGZvcm0sIEJJT1MgNi4w
-MCAxMi8xMi8yMDE4DQpbTWkgT2t0IDE2IDE0OjQzOjE1IDIwMTldIFJJUDogMDAxMDpmcV9lbnF1
-ZXVlKzB4NTMxLzB4NjEwIFtzY2hfZnFdDQpbTWkgT2t0IDE2IDE0OjQzOjE1IDIwMTldIENvZGU6
-IGMyIDQ4IDhiIDNkIDQ5IDI4IDAwIDAwIDQ4IDg5IGVlIGU4IDM5IDBhIGVjIGMxIDQ1IDg1IGVk
-IDc1IGQ0IDQ5IDhiIDJmIGU5IGYxIGZiIGZmIGZmIDQ4IDgzIDgzIDMwIDAyIDAwIDAwIDAxIGU5
-IGZkIGZjIGZmIGZmIDwwZj4gMGIgZTkgODMgZmMgZmYgZmYgNGMgODkgZWEgMzEgYzAgZTkgYmUg
-ZmMgZmYgZmYgNDEgOGIgNDYgMDggMzkNCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gUlNQOiAw
-MDE4OmZmZmY5NDg2NDA3NDhhZTggRUZMQUdTOiAwMDAxMDIwNg0KW01pIE9rdCAxNiAxNDo0Mzox
-NSAyMDE5XSBSQVg6IDAwMDAwMDBkZjg0NzU4MDAgUkJYOiBmZmZmODk1MDM2ZTI1YzAwIFJDWDog
-MDAwMDAwMDAwMDAwMDAxOA0KW01pIE9rdCAxNiAxNDo0MzoxNSAyMDE5XSBSRFg6IDAwMDAwZTdl
-YmNhODkzNTEgUlNJOiAwMDE0Y2E5NmYwNzg5ZWZkIFJESTogZmZmZmZmZmY4MzQyM2E2MA0KW01p
-IE9rdCAxNiAxNDo0MzoxNSAyMDE5XSBSQlA6IDE1Y2UyMTFjY2VjNmJjYTkgUjA4OiAwMDAwMDAw
-MDJhOTFlZDVhIFIwOTogMDAwMDAwMDAwMDAwMDAwMQ0KW01pIE9rdCAxNiAxNDo0MzoxNSAyMDE5
-XSBSMTA6IGZmZmY5NDg2NDA3NDhhODAgUjExOiAwMDAwMDAwMGJjM2VkODAwIFIxMjogZmZmZjg5
-NTAzNGUwMDkwMA0KW01pIE9rdCAxNiAxNDo0MzoxNSAyMDE5XSBSMTM6IGZmZmY4OTUwMzcyMGYy
-YTAgUjE0OiAwMDAwMDAwMDAwMDAwNGQzIFIxNTogZmZmZjg5NTAzODgwOTc0OA0KW01pIE9rdCAx
-NiAxNDo0MzoxNSAyMDE5XSBGUzogIDAwMDAwMDAwMDAwMDAwMDAoMDAwMCkgR1M6ZmZmZjg5NTAz
-YmI4MDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQpbTWkgT2t0IDE2IDE0OjQzOjE1
-IDIwMTldIENTOiAgMDAxMCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMN
-CltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gQ1IyOiAwMDAwN2YzMjM1ZDVkMDAwIENSMzogMDAw
-MDAwMDEzMzRhNjAwMyBDUjQ6IDAwMDAwMDAwMDAwNjA2ZTANCltNaSBPa3QgMTYgMTQ6NDM6MTUg
-MjAxOV0gQ2FsbCBUcmFjZToNCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gIDxJUlE+DQpbTWkg
-T2t0IDE2IDE0OjQzOjE1IDIwMTldICA/IF9fcWRpc2NfcnVuKzB4MTUxLzB4NTQwDQpbTWkgT2t0
-IDE2IDE0OjQzOjE1IDIwMTldICBfX2Rldl9xdWV1ZV94bWl0KzB4NDViLzB4OTYwDQpbTWkgT2t0
-IDE2IDE0OjQzOjE1IDIwMTldICA/IG1vZF90aW1lcisweDE1Yi8weDMwMA0KW01pIE9rdCAxNiAx
-NDo0MzoxNSAyMDE5XSAgX19uZWlnaF91cGRhdGUrMHg0MzIvMHg5ZjANCltNaSBPa3QgMTYgMTQ6
-NDM6MTUgMjAxOV0gIGFycF9wcm9jZXNzKzB4MjU1LzB4N2UwDQpbTWkgT2t0IDE2IDE0OjQzOjE1
-IDIwMTldICA/IGlwX2ZvcndhcmQrMHgzYzUvMHg0ODANCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAx
-OV0gIGFycF9yY3YrMHgxOGMvMHgxZDANCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gIF9fbmV0
-aWZfcmVjZWl2ZV9za2Jfb25lX2NvcmUrMHg4Ny8weDkwDQpbTWkgT2t0IDE2IDE0OjQzOjE1IDIw
-MTldICBuZXRpZl9yZWNlaXZlX3NrYl9pbnRlcm5hbCsweDQxLzB4YjANCltNaSBPa3QgMTYgMTQ6
-NDM6MTUgMjAxOV0gIG5hcGlfZ3JvX3JlY2VpdmUrMHhmNi8weDE2MA0KW01pIE9rdCAxNiAxNDo0
-MzoxNSAyMDE5XSAgZTEwMDBfY2xlYW5fcnhfaXJxKzB4MmFjLzB4NTcwIFtlMTAwMF0NCltNaSBP
-a3QgMTYgMTQ6NDM6MTUgMjAxOV0gIGUxMDAwX2NsZWFuKzB4Mjc4LzB4NWYwIFtlMTAwMF0NCltN
-aSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gIG5ldF9yeF9hY3Rpb24rMHgxNDgvMHgzYjANCltNaSBP
-a3QgMTYgMTQ6NDM6MTUgMjAxOV0gIF9fZG9fc29mdGlycSsweGVkLzB4MzBlDQpbTWkgT2t0IDE2
-IDE0OjQzOjE1IDIwMTldICBpcnFfZXhpdCsweGYxLzB4MTAwDQpbTWkgT2t0IDE2IDE0OjQzOjE1
-IDIwMTldICBkb19JUlErMHg4MS8weGUwDQpbTWkgT2t0IDE2IDE0OjQzOjE1IDIwMTldICBjb21t
-b25faW50ZXJydXB0KzB4Zi8weGYNCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gIDwvSVJRPg0K
-W01pIE9rdCAxNiAxNDo0MzoxNSAyMDE5XSBSSVA6IDAwMTA6bmF0aXZlX3NhZmVfaGFsdCsweGUv
-MHgxMA0KW01pIE9rdCAxNiAxNDo0MzoxNSAyMDE5XSBDb2RlOiA5MCA5MCA5MCA5MCA5MCA5MCA5
-MCA5MCA5MCA5MCA5MCA5MCBlOSAwNyAwMCAwMCAwMCAwZiAwMCAyZCAzNiAwNiA0NCAwMCBmNCBj
-MyA2NiA5MCBlOSAwNyAwMCAwMCAwMCAwZiAwMCAyZCAyNiAwNiA0NCAwMCBmYiBmNCA8YzM+IDkw
-IDY2IDY2IDY2IDY2IDkwIDQxIDU0IDU1IDUzIGU4IGUyIDAxIDc5IGZmIDY1IDhiIDJkIGNiIDdm
-IDY0DQpbTWkgT2t0IDE2IDE0OjQzOjE1IDIwMTldIFJTUDogMDAxODpmZmZmOTQ4NjQwNmJiZWIw
-IEVGTEFHUzogMDAwMDAyNDYgT1JJR19SQVg6IGZmZmZmZmZmZmZmZmZmZDUNCltNaSBPa3QgMTYg
-MTQ6NDM6MTUgMjAxOV0gUkFYOiBmZmZmZmZmZjgyOWM3ZDcwIFJCWDogMDAwMDAwMDAwMDAwMDAw
-MyBSQ1g6IDAwMDAwMDAwMDAwMDAwMDANCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gUkRYOiAw
-MDAwMDAwMDAwMDAwMDAzIFJTSTogMDAwMDAwMDAwMDAwMDAwMyBSREk6IGZmZmY4OTUwM2JiOWM1
-MDANCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gUkJQOiAwMDAwMDAwMDAwMDAwMDAzIFIwODog
-MDAwMDAwNjZhMTcyODQ3YiBSMDk6IDAwMDAwMDAwMDAwMDAwMDANCltNaSBPa3QgMTYgMTQ6NDM6
-MTUgMjAxOV0gUjEwOiBmZmZmODk1MDNiYjk3ODg4IFIxMTogMDAwMDAwMDAwMDAwMDAwMCBSMTI6
-IGZmZmY4OTUwM2E4NGJlODANCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gUjEzOiAwMDAwMDAw
-MDAwMDAwMDAwIFIxNDogMDAwMDAwMDAwMDAwMDAwMCBSMTU6IGZmZmY4OTUwM2E4NGJlODANCltN
-aSBPa3QgMTYgMTQ6NDM6MTUgMjAxOV0gID8gX19jcHVpZGxlX3RleHRfc3RhcnQrMHg4LzB4OA0K
-W01pIE9rdCAxNiAxNDo0MzoxNSAyMDE5XSAgZGVmYXVsdF9pZGxlKzB4MWEvMHgxNDANCltNaSBP
-a3QgMTYgMTQ6NDM6MTUgMjAxOV0gIGRvX2lkbGUrMHgxZmIvMHgyNjANCltNaSBPa3QgMTYgMTQ6
-NDM6MTUgMjAxOV0gID8gZG9faWRsZSsweDE3Yi8weDI2MA0KW01pIE9rdCAxNiAxNDo0MzoxNSAy
-MDE5XSAgY3B1X3N0YXJ0dXBfZW50cnkrMHgxOS8weDIwDQpbTWkgT2t0IDE2IDE0OjQzOjE1IDIw
-MTldICBzdGFydF9zZWNvbmRhcnkrMHgxN2QvMHgxZDANCltNaSBPa3QgMTYgMTQ6NDM6MTUgMjAx
-OV0gIHNlY29uZGFyeV9zdGFydHVwXzY0KzB4YTQvMHhiMA0KW01pIE9rdCAxNiAxNDo0MzoxNSAy
-MDE5XSAtLS1bIGVuZCB0cmFjZSA2MDFjNmZmNDM2MjQyN2JkIF0tLS0NCg0KUmVnYXJkcywNCi0t
-DQpUaG9tYXMgQmFydHNjaGllcw0KQ1ZLIElUIFN5c3RlbWUNCg0KLS0tLS1VcnNwcsO8bmdsaWNo
-ZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBCYXJ0c2NoaWVzLCBUaG9tYXMgDQpHZXNlbmRldDogRGll
-bnN0YWcsIDE1LiBPa3RvYmVyIDIwMTkgMTI6MTINCkFuOiAnRXJpYyBEdW1hemV0JyA8ZXJpYy5k
-dW1hemV0QGdtYWlsLmNvbT47ICdEYXZpZCBBaGVybicgPGRzYWhlcm5AZ21haWwuY29tPjsgJ25l
-dGRldkB2Z2VyLmtlcm5lbC5vcmcnIDxuZXRkZXZAdmdlci5rZXJuZWwub3JnPg0KQmV0cmVmZjog
-QVc6IEFXOiBiaWcgSUNNUCByZXF1ZXN0cyBnZXQgZGlzcnVwdGVkIG9uIElQU2VjIHR1bm5lbCBh
-Y3RpdmF0aW9uDQoNCkhlbGxvIEVyaWMsDQoNCm5vIHByb2JsZW0uIEp1c3QgZG9uZSB0aGF0LiBI
-ZXJlIGFyZSB0aGUgcmVzdWx0cy4gSG9wZSBpdCBoZWxwcy4gRGlkIGEgcGFyYWxsZWwgZGVidWcg
-ZnRyYWNlIGFsc28uIEJ1dCBubyBjb25jbHVzaXZlIGluZm9ybWF0aW9uIHdpdGhpbiB0aGF0LiBU
-cmllZCBpdCBiZWZvcmUuDQoNCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gV0FSTklORzogQ1BV
-OiAxIFBJRDogMCBhdCBuZXQvc2NoZWQvc2NoX2ZxLmM6Mzg5IGZxX2VucXVldWUrMHg1MzEvMHg2
-MTAgW3NjaF9mcV0NCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gTW9kdWxlcyBsaW5rZWQgaW46
-IHR3b2Zpc2hfZ2VuZXJpYyB0d29maXNoX2F2eF94ODZfNjQgdHdvZmlzaF94ODZfNjRfM3dheSB0
-d29maXNoX3g4Nl82NCB0d29maXNoX2NvbW1vbiBjYW1lbGxpYV9nZW5lcmljIGNhbWVsbGlhX2Fl
-c25pX2F2eF94ODZfNjQgY2FtZWxsaWFfeDg2XzY0IHNlcnBlbnRfYXZ4X3g4Nl82NCBzZXJwZW50
-X3NzZTJfeDg2XzY0IHNlcnBlbnRfZ2VuZXJpYyBibG93ZmlzaF9nZW5lcmljIGJsb3dmaXNoX3g4
-Nl82NCBibG93ZmlzaF9jb21tb24gY2FzdDVfYXZ4X3g4Nl82NCBjYXN0NV9nZW5lcmljIGNhc3Rf
-Y29tbW9uIGRlc19nZW5lcmljIGNtYWMgeGNiYyBybWQxNjAgc2hhNTEyX3Nzc2UzIHNoYTUxMl9n
-ZW5lcmljIGFmX2tleSB4dF9DSEVDS1NVTSBpcHRfcnBmaWx0ZXIgeHRfc3RhdGlzdGljIHh0X2Nv
-bm5saW1pdCBuZl9jb25uY291bnQgaXBfc2V0X2hhc2hfaXAgYnJfbmV0ZmlsdGVyIGJyaWRnZSBz
-dHAgbGxjIHh0X0hMIHh0X2hsIGlwdF9SRUpFQ1QgbmZfcmVqZWN0X2lwdjQgeHRfUkVESVJFQ1Qg
-eHRfcmVjZW50IHh0X3JlYWxtIHh0X0NUIHh0X05FVE1BUCB4dF9NQVNRVUVSQURFIHh0X2VzcCBp
-cHRfRUNOIHh0X2VjbiB4dF9jb21tZW50IGlwdF9DTFVTVEVSSVAgaXB0X2FoIHh0X2FkZHJ0eXBl
-IGFjdF9wb2xpY2UgY2xzX2Jhc2ljIGNsc19mbG93IGNsc19mdyBjbHNfdTMyIHNjaF90YmYgc2No
-X3ByaW8gc2NoX2h0YiBzY2hfaGZzYyBzY2hfaW5ncmVzcyBzY2hfc2ZxIHh0X3NldCBpcF9zZXQg
-eHRfTkZMT0cgbmZfbG9nX2lwdjQgbmZfbG9nX2NvbW1vbiB4dF9MT0cgbmZfY29ubnRyYWNrX3Nh
-bmUgbmZfY29ubnRyYWNrX25ldGxpbmsgbmZfbmF0X3RmdHAgbmZfbmF0X3NubXBfYmFzaWMgbmZf
-Y29ubnRyYWNrX3NubXAgbmZfbmF0X3NpcCBuZl9uYXRfcHB0cCBuZl9uYXRfaXJjIG5mX25hdF9o
-MzIzIG5mX25hdF9mdHAgbmZfbmF0X2FtYW5kYSBuZl9jb25udHJhY2tfdGZ0cA0KW0RpIE9rdCAx
-NSAxMTo1MTowNiAyMDE5XSAgbmZfY29ubnRyYWNrX3NpcCBuZl9jb25udHJhY2tfcHB0cCBuZl9j
-b25udHJhY2tfbmV0Ymlvc19ucyBuZl9jb25udHJhY2tfYnJvYWRjYXN0IG5mX2Nvbm50cmFja19p
-cmMgbmZfY29ubnRyYWNrX2gzMjMgbmZfY29ubnRyYWNrX2Z0cCB0c19rbXAgbmZfY29ubnRyYWNr
-X2FtYW5kYSB4dF9UUFJPWFkgbmZfdHByb3h5X2lwdjYgbmZfdHByb3h5X2lwdjQgeHRfdGltZSB4
-dF9UQ1BNU1MgeHRfdGNwbXNzIHh0X3NjdHAgeHRfcG9saWN5IHh0X3BrdHR5cGUgeHRfcGh5c2Rl
-diB4dF9vd25lciB4dF9ORlFVRVVFIHh0X25hdCB4dF9tdWx0aXBvcnQgeHRfbWFyayB4dF9tYWMg
-eHRfbGltaXQgeHRfbGVuZ3RoIHh0X2lwcmFuZ2UgeHRfaGVscGVyIHh0X2hhc2hsaW1pdCB4dF9E
-U0NQIHh0X2RzY3AgeHRfZGNjcCB4dF9jb25ubWFyayB4dF9DTEFTU0lGWSB4dF9BVURJVCBpcHRh
-YmxlX3JhdyBpcHRhYmxlX25hdCBuZl9uYXQgaXB0YWJsZV9tYW5nbGUgaXB0YWJsZV9maWx0ZXIg
-dm13X3Zzb2NrX3ZtY2lfdHJhbnNwb3J0IHZzb2NrIGlwNnRfUkVKRUNUIG5mX3JlamVjdF9pcHY2
-IHh0X3N0YXRlIHh0X2Nvbm50cmFjayBuZl9jb25udHJhY2sgbmZfZGVmcmFnX2lwdjYgbmZfZGVm
-cmFnX2lwdjQgbGliY3JjMzJjIG5mbmV0bGlua19sb2cgbmZuZXRsaW5rIGlwNnRhYmxlX2ZpbHRl
-ciBpcDZfdGFibGVzIHNiX2VkYWMgY3JjdDEwZGlmX3BjbG11bCBjcmMzMl9wY2xtdWwgZ2hhc2hf
-Y2xtdWxuaV9pbnRlbCBpbnRlbF9yYXBsX3BlcmYgam95ZGV2IHZtd19iYWxsb29uIHZtd192bWNp
-IGkyY19waWl4NCBzY2hfZnEgdGNwX2lsbGlub2lzIGJpbmZtdF9taXNjIGlwX3RhYmxlcyB2bXdn
-ZnggZHJtX2ttc19oZWxwZXIgdHRtIGRybSBjcmMzMmNfaW50ZWwgc2VyaW9fcmF3IG1wdHNwaSBl
-MTAwMCBzY3NpX3RyYW5zcG9ydF9zcGkgbXB0c2NzaWggbXB0YmFzZSBhdGFfZ2VuZXJpYyBwYXRh
-X2FjcGkNCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gQ1BVOiAxIFBJRDogMCBDb21tOiBzd2Fw
-cGVyLzEgTm90IHRhaW50ZWQgNS4yLjE4LTIwMC5mYzMwLng4Nl82NCAjMQ0KW0RpIE9rdCAxNSAx
-MTo1MTowNiAyMDE5XSBIYXJkd2FyZSBuYW1lOiBWTXdhcmUsIEluYy4gVk13YXJlIFZpcnR1YWwg
-UGxhdGZvcm0vNDQwQlggRGVza3RvcCBSZWZlcmVuY2UgUGxhdGZvcm0sIEJJT1MgNi4wMCAxMi8x
-Mi8yMDE4DQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldIFJJUDogMDAxMDpmcV9lbnF1ZXVlKzB4
-NTMxLzB4NjEwIFtzY2hfZnFdDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldIENvZGU6IGRiIDQ4
-IDhiIDNkIDQ5IDI4IDAwIDAwIDQ4IDg5IGVlIGU4IDM5IGJhIDAzIGRiIDQ1IDg1IGVkIDc1IGQ0
-IDQ5IDhiIDJmIGU5IGYxIGZiIGZmIGZmIDQ4IDgzIDgzIDMwIDAyIDAwIDAwIDAxIGU5IGZkIGZj
-IGZmIGZmIDwwZj4gMGIgZTkgODMgZmMgZmYgZmYgNGMgODkgZWEgMzEgYzAgZTkgYmUgZmMgZmYg
-ZmYgNDEgOGIgNDYgMDggMzkNCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gUlNQOiAwMDE4OmZm
-ZmZhMmZlODA2ZjBhNTggRUZMQUdTOiAwMDAxMDIwNg0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5
-XSBSQVg6IDAwMDAwMDBkZjg0NzU4MDAgUkJYOiBmZmZmOTczNjM4YTMyODAwIFJDWDogMDAwMDAw
-MDAwMDAwMDAwMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSBSRFg6IDAwMDAwM2RmMTkyNGQx
-NjIgUlNJOiAwMDAwMDAwMDAwMDAwMDA0IFJESTogZmZmZmZmZmZjMDI4NDViNQ0KW0RpIE9rdCAx
-NSAxMTo1MTowNiAyMDE5XSBSQlA6IDE1Y2RjODI5YmIyNmY4NjYgUjA4OiAwMDAwMDAwMDAwMDAw
-MDAwIFIwOTogZmZmZjk3MzYzYWZjNGUwMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSBSMTA6
-IDAwMDAwMDAwMDAwMDAwNzggUjExOiBmZmZmOTczNjM4MDhiMDg4IFIxMjogZmZmZjk3MzYzODIx
-Y2UwMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSBSMTM6IGZmZmY5NzM2MzQ2MjBjYjAgUjE0
-OiAwMDAwMDAwMDAwMDAwM2NiIFIxNTogZmZmZjk3MzYzNTk2NWM3MA0KW0RpIE9rdCAxNSAxMTo1
-MTowNiAyMDE5XSBGUzogIDAwMDAwMDAwMDAwMDAwMDAoMDAwMCkgR1M6ZmZmZjk3MzYzYmE4MDAw
-MCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTld
-IENTOiAgMDAxMCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCltEaSBP
-a3QgMTUgMTE6NTE6MDYgMjAxOV0gQ1IyOiAwMDAwNTYxNmZhOWY5MGI4IENSMzogMDAwMDAwMDEz
-NTA4NDAwNSBDUjQ6IDAwMDAwMDAwMDAwNjA2ZTANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0g
-Q2FsbCBUcmFjZToNCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gIDxJUlE+DQpbRGkgT2t0IDE1
-IDExOjUxOjA2IDIwMTldICA/IGZxX2Zsb3dfcHVyZ2UrMHg3MC8weDcwIFtzY2hfZnFdDQpbRGkg
-T2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9ncmFwaF9jYWxsZXIrMHhhMC8weGEwDQpb
-RGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBfX2Rldl9xdWV1ZV94bWl0KzB4NDViLzB4OTYwDQpb
-RGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9ncmFwaF9jYWxsZXIrMHhhMC8weGEw
-DQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBpcF9maW5pc2hfb3V0cHV0MisweDJjOC8weDU4
-MA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBmdHJhY2VfZ3JhcGhfY2FsbGVyKzB4YTAv
-MHhhMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgaXBfZG9fZnJhZ21lbnQrMHg2OWQvMHg3
-YTANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gID8gX19pcF9mbHVzaF9wZW5kaW5nX2ZyYW1l
-cy5pc3JhLjArMHg4MC8weDgwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9n
-cmFwaF9jYWxsZXIrMHhhMC8weGEwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBpcF9vdXRw
-dXQrMHg3MS8weGYwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGlwX2ZpbmlzaF9vdXRw
-dXQyKzB4NTgwLzB4NTgwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9ncmFw
-aF9jYWxsZXIrMHhhMC8weGEwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBpcF9mb3J3YXJk
-KzB4M2M1LzB4NDgwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGlwX2RlZnJhZy5jb2xk
-KzB4MzcvMHgzNw0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBmdHJhY2VfZ3JhcGhfY2Fs
-bGVyKzB4YTAvMHhhMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgaXBfcmN2KzB4YmMvMHhk
-MA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBpcF9yY3ZfZmluaXNoX2NvcmUuaXNyYS4w
-KzB4MzkwLzB4MzkwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9ncmFwaF9j
-YWxsZXIrMHhhMC8weGEwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBfX25ldGlmX3JlY2Vp
-dmVfc2tiX29uZV9jb3JlKzB4ODAvMHg5MA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBm
-dHJhY2VfZ3JhcGhfY2FsbGVyKzB4YTAvMHhhMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAg
-bmV0aWZfcmVjZWl2ZV9za2JfaW50ZXJuYWwrMHg0MS8weGIwDQpbRGkgT2t0IDE1IDExOjUxOjA2
-IDIwMTldICA/IHJldHVybl90b19oYW5kbGVyKzB4MTUvMHgzNg0KW0RpIE9rdCAxNSAxMTo1MTow
-NiAyMDE5XSAgPyBmdHJhY2VfZ3JhcGhfY2FsbGVyKzB4YTAvMHhhMA0KW0RpIE9rdCAxNSAxMTo1
-MTowNiAyMDE5XSAgbmFwaV9ncm9fcmVjZWl2ZSsweGY2LzB4MTYwDQpbRGkgT2t0IDE1IDExOjUx
-OjA2IDIwMTldICA/IGZ0cmFjZV9ncmFwaF9jYWxsZXIrMHhhMC8weGEwDQpbRGkgT2t0IDE1IDEx
-OjUxOjA2IDIwMTldICBlMTAwMF9jbGVhbl9yeF9pcnErMHgyYWMvMHg1NzAgW2UxMDAwXQ0KW0Rp
-IE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBmdHJhY2VfZ3JhcGhfY2FsbGVyKzB4YTAvMHhhMA0K
-W0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgZTEwMDBfY2xlYW4rMHgyNzgvMHg1ZjAgW2UxMDAw
-XQ0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBmdHJhY2VfZ3JhcGhfY2FsbGVyKzB4YTAv
-MHhhMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgbmV0X3J4X2FjdGlvbisweDE0OC8weDNi
-MA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBuYXBpX2NvbXBsZXRlX2RvbmUrMHgxMTAv
-MHgxMTANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gID8gZnRyYWNlX2dyYXBoX2NhbGxlcisw
-eGEwLzB4YTANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gIF9fZG9fc29mdGlycSsweGVkLzB4
-MzBlDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9ncmFwaF9jYWxsZXIrMHhh
-MC8weGEwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBpcnFfZXhpdCsweGYxLzB4MTAwDQpb
-RGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9ncmFwaF9jYWxsZXIrMHhhMC8weGEw
-DQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBkb19JUlErMHg4MS8weGUwDQpbRGkgT2t0IDE1
-IDExOjUxOjA2IDIwMTldICA/IGZ0cmFjZV9ncmFwaF9jYWxsZXIrMHhhMC8weGEwDQpbRGkgT2t0
-IDE1IDExOjUxOjA2IDIwMTldICBjb21tb25faW50ZXJydXB0KzB4Zi8weGYNCltEaSBPa3QgMTUg
-MTE6NTE6MDYgMjAxOV0gIDwvSVJRPg0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSBSSVA6IDAw
-MTA6bmF0aXZlX3NhZmVfaGFsdCsweGUvMHgxMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSBD
-b2RlOiA5MCA5MCA5MCA5MCA5MCA5MCA5MCA5MCA5MCA5MCA5MCA5MCBlOSAwNyAwMCAwMCAwMCAw
-ZiAwMCAyZCA0NiAwNiA0NCAwMCBmNCBjMyA2NiA5MCBlOSAwNyAwMCAwMCAwMCAwZiAwMCAyZCAz
-NiAwNiA0NCAwMCBmYiBmNCA8YzM+IDkwIGU4IGViIDk4IDAzIDAwIDQxIDU0IDU1IDUzIGU4IGYy
-IDAxIDc5IGZmIDY1IDhiIDJkIGRiIDdmIDY0DQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldIFJT
-UDogMDAxODpmZmZmYTJmZTgwNmFiZWIwIEVGTEFHUzogMDAwMDAyODIgT1JJR19SQVg6IGZmZmZm
-ZmZmZmZmZmZmZDMNCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gUkFYOiBmZmZmZmZmZjliOWM3
-ZDYwIFJCWDogMDAwMDAwMDAwMDAwMDAwMSBSQ1g6IDAwMDAwMDAwMDAwMDAwMDANCltEaSBPa3Qg
-MTUgMTE6NTE6MDYgMjAxOV0gUkRYOiAwMDAwMDAwMDAwMDAwMDAxIFJTSTogMDAwMDAwMDAwMDAw
-MDAwOCBSREk6IGZmZmZmZmZmOWIxMTQwZDYNCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gUkJQ
-OiAwMDAwMDAwMDAwMDAwMDAxIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IGZmZmY5NzM2M2Fm
-YzRlMDANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gUjEwOiAwMDAwMDAwMDAwMDAwYzc4IFIx
-MTogZmZmZjk3MzYzODA5MmM4OCBSMTI6IGZmZmY5NzM2M2E4NGRkYzANCltEaSBPa3QgMTUgMTE6
-NTE6MDYgMjAxOV0gUjEzOiAwMDAwMDAwMDAwMDAwMDAwIFIxNDogMDAwMDAwMDAwMDAwMDAwMCBS
-MTU6IGZmZmY5NzM2M2E4NGRkYzANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gID8gX19jcHVp
-ZGxlX3RleHRfc3RhcnQrMHg4LzB4OA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBkb19p
-ZGxlKzB4MWY2LzB4MjYwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBkZWZhdWx0X2lkbGUr
-MHgxYS8weDE0MA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBmdHJhY2VfZ3JhcGhfY2Fs
-bGVyKzB4YTAvMHhhMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgZG9faWRsZSsweDFmYi8w
-eDI2MA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgPyBjcHVfc3RhcnR1cF9lbnRyeSsweDE5
-LzB4MjANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gID8gZnRyYWNlX2dyYXBoX2NhbGxlcisw
-eGEwLzB4YTANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gIGNwdV9zdGFydHVwX2VudHJ5KzB4
-MTkvMHgyMA0KW0RpIE9rdCAxNSAxMTo1MTowNiAyMDE5XSAgc3RhcnRfc2Vjb25kYXJ5KzB4MTdk
-LzB4MWQwDQpbRGkgT2t0IDE1IDExOjUxOjA2IDIwMTldICBzZWNvbmRhcnlfc3RhcnR1cF82NCsw
-eGE0LzB4YjANCltEaSBPa3QgMTUgMTE6NTE6MDYgMjAxOV0gLS0tWyBlbmQgdHJhY2UgMzRmOTU0
-MjRhY2ZmNWRkYiBdLS0tDQoNClJlZ2FyZHMsDQotLQ0KVGhvbWFzIEJhcnRzY2hpZXMNCkNWSyBJ
-VCBTeXN0ZW1lDQoNCi0tLS0tVXJzcHLDvG5nbGljaGUgTmFjaHJpY2h0LS0tLS0NClZvbjogRXJp
-YyBEdW1hemV0IFttYWlsdG86ZXJpYy5kdW1hemV0QGdtYWlsLmNvbV0gDQpHZXNlbmRldDogTW9u
-dGFnLCAxNC4gT2t0b2JlciAyMDE5IDE3OjMyDQpBbjogQmFydHNjaGllcywgVGhvbWFzIDxUaG9t
-YXMuQmFydHNjaGllc0BjdmsuZGU+OyAnRGF2aWQgQWhlcm4nIDxkc2FoZXJuQGdtYWlsLmNvbT47
-ICduZXRkZXZAdmdlci5rZXJuZWwub3JnJyA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz4NCkJldHJl
-ZmY6IFJlOiBBVzogYmlnIElDTVAgcmVxdWVzdHMgZ2V0IGRpc3J1cHRlZCBvbiBJUFNlYyB0dW5u
-ZWwgYWN0aXZhdGlvbg0KDQoNCg0KT24gMTAvMTQvMTkgNzowMiBBTSwgQmFydHNjaGllcywgVGhv
-bWFzIHdyb3RlOg0KPiBIZWxsbywNCj4gDQo+IGl0IHRvb2sgYSB3aGlsZSB0byBidWlsZCBhIHRl
-c3RzeXN0ZW0gZm9yIGJpc2VjdGluZyB0aGUgaXNzdWUuIEZpbmFsbHkgSSd2ZSBpZGVudGlmaWVk
-IHRoZSBwYXRjaCB0aGF0IGNhdXNlcyBteSBwcm9ibGVtcy4NCj4gQlRXLiBUaGUgZnEgcGFja2V0
-IG5ldHdvcmsgc2NoZWR1bGVyIGlzIGluIHVzZS4NCj4gDQo+IEl0J3MNCj4gW1BBVENIIG5ldC1u
-ZXh0XSB0Y3AvZnE6IG1vdmUgYmFjayB0byBDTE9DS19NT05PVE9OSUMNCj4gDQo+IEluIHRoZSBy
-ZWNlbnQgVENQL0VEVCBwYXRjaCBzZXJpZXMsIEkgc3dpdGNoZWQgVENQIGFuZCBzY2hfZnEgY2xv
-Y2tzIA0KPiBmcm9tIE1PTk9UT05JQyB0byBUQUksIGluIG9yZGVyIHRvIG1lZXQgdGhlIGNob2lj
-ZSBkb25lIGVhcmxpZXIgZm9yIHNjaF9ldGYgcGFja2V0IHNjaGVkdWxlci4NCj4gDQo+IEJ1dCBz
-dXJlIGVub3VnaCwgdGhpcyBicm9rZSBzb21lIHNldHVwcyB3ZXJlIHRoZSBUQUkgY2xvY2sganVt
-cHMgZm9yd2FyZCAoYnkgYWxtb3N0IDUwIHllYXIuLi4pLCBhcyByZXBvcnRlZCBieSBMZW9uYXJk
-IENyZXN0ZXouDQo+IA0KPiBJZiB3ZSB3YW50IHRvIGNvbnZlcmdlIGxhdGVyLCB3ZSdsbCBwcm9i
-YWJseSBuZWVkIHRvIGFkZCBhbiBza2IgZmllbGQgdG8gZGlmZmVyZW50aWF0ZSB0aGUgY2xvY2sg
-YmFzZXMsIG9yIGEgc29ja2V0IG9wdGlvbi4NCj4gDQo+IEluIHRoZSBtZWFudGltZSwgYW4gVURQ
-IGFwcGxpY2F0aW9uIHdpbGwgbmVlZCB0byB1c2UgQ0xPQ0tfTU9OT1RPTklDIA0KPiBiYXNlIGZv
-ciBpdHMgU0NNX1RYVElNRSB0aW1lc3RhbXBzIGlmIHVzaW5nIGZxIHBhY2tldCBzY2hlZHVsZXIu
-DQo+IA0KPiBGaXhlczogNzJiMDA5NGY5MTgyICgidGNwOiBzd2l0Y2ggdGNwX2Nsb2NrX25zKCkg
-dG8gQ0xPQ0tfVEFJIGJhc2UiKQ0KPiBGaXhlczogMTQyNTM3ZTQxOTIzICgibmV0X3NjaGVkOiBz
-Y2hfZnE6IHN3aXRjaCB0byBDTE9DS19UQUkiKQ0KPiBGaXhlczogZmQyYmNhMmFhNzg5ICgidGNw
-OiBzd2l0Y2ggaW50ZXJuYWwgcGFjaW5nIHRpbWVyIHRvIENMT0NLX1RBSSIpDQo+IFNpZ25lZC1v
-ZmYtYnk6IEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRAeHh4eHh4eHh4eD4NCj4gUmVwb3J0ZWQtYnk6
-IExlb25hcmQgQ3Jlc3RleiA8bGVvbmFyZC5jcmVzdGV6QHh4eHh4eHg+DQo+IA0KPiAtLS0tDQo+
-IA0KPiBBZnRlciByZXZlcnRpbmcgaXQgaW4gYSBjdXJyZW50IDUuMi4xOCBrZXJuZWwsIHRoZSBw
-cm9ibGVtIGRpc2FwcGVhcnMuIA0KPiBUaGVyZSB3ZXJlIHNvbWUgcG9zdCBmaXhlcyBmb3Igb3Ro
-ZXIgaXNzdWVzIGNhdXNlZCBieSB0aGlzIHBhdGNoLiANCj4gVGhlc2UgZml4ZWQgb3RoZXIgc2lt
-aWxhciBpc3N1ZXMsIGJ1dCBub3QgbWluZS4gSSd2ZSBhbHJlYWR5IHRyaWVkIHRvIA0KPiBzZXQg
-dGhlIHRzdGFtcCB0byB6ZXJvIGluIHhmcm00X291dHB1dC5jLCBidXQgd2l0aCBubyBsdWNrIHNv
-IGZhci4gSSdtIHByZXR0eSBzdXJlLCB0aGF0IHJldmVydGluZyB0aGUgY2xvY2sgcGF0Y2ggaXNu
-J3QgdGhlIHByb3BlciBzb2x1dGlvbiBmb3IgdXBzdHJlYW0uIFNvIEkgd2hhdCBvdGhlciB3YXkg
-dGhpcyBjYW4gYmUgZml4ZWQ/DQoNCg0KVGhhbmtzIGEgbG90IFRob21hcyBmb3IgdGhpcyByZXBv
-cnQgIQ0KDQpJIGd1ZXNzIHlvdSBjb3VsZCBhZGQgYSBkZWJ1ZyBjaGVjayBpbiBmcSB0byBsZXQg
-dXMga25vdyB0aGUgY2FsbCBncmFwaC4NCg0KU29tZXRoaW5nIGxpa2UgdGhlIGZvbGxvd2luZyA6
-DQoNCmRpZmYgLS1naXQgYS9uZXQvc2NoZWQvc2NoX2ZxLmMgYi9uZXQvc2NoZWQvc2NoX2ZxLmMg
-aW5kZXggOThkZDg3Y2UxNTEwOGNmZTFjMDExZGE0NGJhMzJmOTc3NjM3NzZjOC4uMmFhNDFhMzll
-ODFiOTRmM2I3MDkyZGM1MWI5MTgyOWY1OTI5NjM0ZCAxMDA2NDQNCi0tLSBhL25ldC9zY2hlZC9z
-Y2hfZnEuYw0KKysrIGIvbmV0L3NjaGVkL3NjaF9mcS5jDQpAQCAtMzgwLDkgKzM4MCwxNCBAQCBz
-dGF0aWMgdm9pZCBmbG93X3F1ZXVlX2FkZChzdHJ1Y3QgZnFfZmxvdyAqZmxvdywgc3RydWN0IHNr
-X2J1ZmYgKnNrYikgIHsNCiAgICAgICAgc3RydWN0IHJiX25vZGUgKipwLCAqcGFyZW50Ow0KICAg
-ICAgICBzdHJ1Y3Qgc2tfYnVmZiAqaGVhZCwgKmF1eDsNCisgICAgICAgczY0IGRlbGF5Ow0KIA0K
-ICAgICAgICBmcV9za2JfY2Ioc2tiKS0+dGltZV90b19zZW5kID0gc2tiLT50c3RhbXAgPzoga3Rp
-bWVfZ2V0X25zKCk7DQogDQorICAgICAgIC8qIFdlIHNob3VsZCByZWFsbHkgYWRkIGEgVENBX0ZR
-X01BWF9IT1JJWk9OICBhdCBzb21lIHBvaW50IDooICovDQorICAgICAgIGRlbGF5ID0gZnFfc2ti
-X2NiKHNrYiktPnRpbWVfdG9fc2VuZCAtIGt0aW1lX2dldF9ucygpOw0KKyAgICAgICBXQVJOX09O
-X09OQ0UoZGVsYXkgPiA2MCAqIE5TRUNfUEVSX1NFQyk7DQorDQogICAgICAgIGhlYWQgPSBmbG93
-LT5oZWFkOw0KICAgICAgICBpZiAoIWhlYWQgfHwNCiAgICAgICAgICAgIGZxX3NrYl9jYihza2Ip
-LT50aW1lX3RvX3NlbmQgPj0gZnFfc2tiX2NiKGZsb3ctPnRhaWwpLT50aW1lX3RvX3NlbmQpIHsN
-Cg0KDQo+IA0KPiAtLS0NCj4gW1BBVENIIG5ldF0gbmV0OiBjbGVhciBza2ItPnRzdGFtcCBpbiBi
-cmlkZ2UgZm9yd2FyZGluZyBwYXRoIE1hdHRlbyANCj4gcmVwb3J0ZWQgZm9yd2FyZGluZyBpc3N1
-ZXMgaW5zaWRlIHRoZSBsaW51eCBicmlkZ2UsIGlmIHRoZSBlbnNsYXZlZCBpbnRlcmZhY2VzIHVz
-ZSB0aGUgZnEgcWRpc2MuDQo+IA0KPiBTaW1pbGFyIHRvIGNvbW1pdCA4MjAzZTJkODQ0ZDMgKCJu
-ZXQ6IGNsZWFyIHNrYi0+dHN0YW1wIGluIGZvcndhcmRpbmcgDQo+IHBhdGhzIiksIHdlIG5lZWQg
-dG8gY2xlYXIgdGhlIHRzdGFtcCBmaWVsZCBpbiB0aGUgYnJpZGdlIGZvcndhcmRpbmcgcGF0aC4N
-Cj4gDQo+IEZpeGVzOiA4MGIxNGRlZTJiZWEgKCJuZXQ6IEFkZCBhIG5ldyBzb2NrZXQgb3B0aW9u
-IGZvciBhIGZ1dHVyZSANCj4gdHJhbnNtaXQgdGltZS4iKQ0KPiBGaXhlczogZmI0MjBkNWQ5MWMx
-ICgidGNwL2ZxOiBtb3ZlIGJhY2sgdG8gQ0xPQ0tfTU9OT1RPTklDIikNCj4gUmVwb3J0ZWQtYW5k
-LXRlc3RlZC1ieTogTWF0dGVvIENyb2NlIDxtY3JvY2VAcmVkaGF0LmNvbT4NCj4gU2lnbmVkLW9m
-Zi1ieTogUGFvbG8gQWJlbmkgPHBhYmVuaUByZWRoYXQuY29tPg0KPiANCj4gYW5kDQo+IA0KPiBu
-ZXQ6IGNsZWFyIHNrYi0+dHN0YW1wIGluIGZvcndhcmRpbmcgcGF0aHMNCj4gDQo+IFNlcmdleSBy
-ZXBvcnRlZCB0aGF0IGZvcndhcmRpbmcgd2FzIG5vIGxvbmdlciB3b3JraW5nIGlmIGZxIHBhY2tl
-dCBzY2hlZHVsZXIgd2FzIHVzZWQuDQo+IA0KPiBUaGlzIGlzIGNhdXNlZCBieSB0aGUgcmVjZW50
-IHN3aXRjaCB0byBFRFQgbW9kZWwsIHNpbmNlIGluY29taW5nIA0KPiBwYWNrZXRzIG1pZ2h0IGhh
-dmUgYmVlbiB0aW1lc3RhbXBlZCBieSBfX25ldF90aW1lc3RhbXAoKQ0KPiANCj4gX19uZXRfdGlt
-ZXN0YW1wKCkgdXNlcyBrdGltZV9nZXRfcmVhbCgpLCB3aGlsZSBmcSBleHBlY3RzIHBhY2tldHMg
-dXNpbmcgQ0xPQ0tfTU9OT1RPTklDIGJhc2UuDQo+IA0KPiBUaGUgZml4IGlzIHRvIGNsZWFyIHNr
-Yi0+dHN0YW1wIGluIGZvcndhcmRpbmcgcGF0aHMuDQo+IA0KPiBGaXhlczogODBiMTRkZWUgKCJu
-ZXQ6IEFkZCBhIG5ldyBzb2NrZXQgb3B0aW9uIGZvciBhIGZ1dHVyZSB0cmFuc21pdCANCj4gdGlt
-ZS4iKQ0KPiBGaXhlczogZmI0MjBkNWQgKCJ0Y3AvZnE6IG1vdmUgYmFjayB0byBDTE9DS19NT05P
-VE9OSUMiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBkZWZhdWx0IGF2YXRhckVyaWMgRHVtYXpldCA8ZWR1
-bWF6ZXRAZ29vZ2xlLmNvbT4NCj4gUmVwb3J0ZWQtYnk6IGRlZmF1bHQgYXZhdGFyU2VyZ2V5IE1h
-dHl1a2V2aWNoIDxnZW9tYXRzaUBnbWFpbC5jb20+DQo+IFRlc3RlZC1ieTogZGVmYXVsdCBhdmF0
-YXJTZXJnZXkgTWF0eXVrZXZpY2ggPGdlb21hdHNpQGdtYWlsLmNvbT4NCj4gU2lnbmVkLW9mZi1i
-eTogZGVmYXVsdCBhdmF0YXJEYXZpZCBTLiBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+DQo+
-IA0KPiBCZXN0IHJlZ2FyZHMsDQo+IC0tDQo+IFRob21hcyBCYXJ0c2NoaWVzDQo+IENWSyBJVCBT
-eXN0ZW1lDQo+IA0KPiANCj4gLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KPiBW
-b246IEJhcnRzY2hpZXMsIFRob21hcw0KPiBHZXNlbmRldDogRGllbnN0YWcsIDE3LiBTZXB0ZW1i
-ZXIgMjAxOSAwOToyOA0KPiBBbjogJ0RhdmlkIEFoZXJuJyA8ZHNhaGVybkBnbWFpbC5jb20+OyAn
-bmV0ZGV2QHZnZXIua2VybmVsLm9yZycgDQo+IDxuZXRkZXZAdmdlci5rZXJuZWwub3JnPg0KPiBC
-ZXRyZWZmOiBBVzogYmlnIElDTVAgcmVxdWVzdHMgZ2V0IGRpc3J1cHRlZCBvbiBJUFNlYyB0dW5u
-ZWwgDQo+IGFjdGl2YXRpb24NCj4gDQo+IEhlbGxvLA0KPiANCj4gdGhhbmtzIGZvciB0aGUgc3Vn
-Z2VzdGlvbi4gUnVubmluZyBwbXR1LnNoIHdpdGgga2VybmVsIHZlcnNpb25zIDQuMTksIDQuMjAg
-YW5kIGV2ZW4gNS4yLjEzIG1hZGUgbm8gZGlmZmVyZW5jZS4gQWxsIHRlc3RzIHdlcmUgc3VjY2Vz
-c2Z1bCBldmVyeSB0aW1lLg0KPiANCj4gQWx0aG91Z2ggbXkgZXh0ZXJuYWwgcGluZyB0ZXN0cyBz
-dGlsbCBmYWlsaW5nIHdpdGggdGhlIG5ld2VyIGtlcm5lbHMuIEkndmUgcmFuIHRoZSBzY3JpcHQg
-YWZ0ZXIgdHJpZ2dlcmluZyBteSBwcm9ibGVtLCB0byBtYWtlIHN1cmUgYWxsIHBvc3NpYmxlIHNp
-ZGUgZWZmZWN0cyBoYXBwZW5pbmcuIA0KPiANCj4gUGxlYXNlIGtlZXAgaW4gbWluZCwgdGhhdCBl
-dmVuIHdoZW4gdGhlIElDTVAgcmVxdWVzdHMgc3RhbGxpbmcsIG90aGVyIGNvbm5lY3Rpb25zIHN0
-aWxsIGdvaW5nIHRocm91Z2guIExpa2UgZS5nLiBzc2ggb3IgdHJhY2VwYXRoLiBJIHdvdWxkIGV4
-cGVjdCB0aGF0IGFsbCBjb25uZWN0aW9uIHR5cGVzIHdvdWxkIGJlIGFmZmVjdGVkIGlmIHRoaXMg
-aXMgYSBNVFUgcHJvYmxlbS4gQW0gSSB3cm9uZz8NCj4gDQo+IEFueSBzdWdnZXN0aW9ucyBmb3Ig
-bW9yZSB0ZXN0cyB0byBpc29sYXRlIHRoZSBjYXVzZT8gDQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+
-IC0tDQo+IFRob21hcyBCYXJ0c2NoaWVzDQo+IENWSyBJVCBTeXN0ZW1lDQo+IA0KPiAtLS0tLVVy
-c3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQo+IFZvbjogRGF2aWQgQWhlcm4gW21haWx0bzpk
-c2FoZXJuQGdtYWlsLmNvbV0NCj4gR2VzZW5kZXQ6IEZyZWl0YWcsIDEzLiBTZXB0ZW1iZXIgMjAx
-OSAxOToxMw0KPiBBbjogQmFydHNjaGllcywgVGhvbWFzIDxUaG9tYXMuQmFydHNjaGllc0Bjdmsu
-ZGU+OyANCj4gJ25ldGRldkB2Z2VyLmtlcm5lbC5vcmcnIDxuZXRkZXZAdmdlci5rZXJuZWwub3Jn
-Pg0KPiBCZXRyZWZmOiBSZTogYmlnIElDTVAgcmVxdWVzdHMgZ2V0IGRpc3J1cHRlZCBvbiBJUFNl
-YyB0dW5uZWwgDQo+IGFjdGl2YXRpb24NCj4gDQo+IE9uIDkvMTMvMTkgOTo1OSBBTSwgQmFydHNj
-aGllcywgVGhvbWFzIHdyb3RlOg0KPj4gSGVsbG8gdG9nZXRoZXIsDQo+Pg0KPj4gc2luY2Uga2Vu
-ZWwgNC4yMCB3ZSdyZSBvYnNlcnZpbmcgYSBzdHJhbmdlIGJlaGF2aW91ciB3aGVuIHNlbmRpbmcg
-YmlnIElDTVAgcGFja2V0cy4gQW4gZXhhbXBsZSBpcyBhIHBhY2tldCBzaXplIG9mIDMwMDAgYnl0
-ZXMuDQo+PiBUaGUgcGFja2V0cyBzaG91bGQgYmUgZm9yd2FyZGVkIGJ5IGEgbGludXggZ2F0ZXdh
-eSAoZmlyZXdhbGwpIGhhdmluZyBtdWx0aXBsZSBpbnRlcmZhY2VzIGFsc28gYWN0aW5nIGFzIGEg
-dnBuIGdhdGV3YXkuDQo+Pg0KPj4gVGVzdCBzdGVwczoNCj4+IDEuIERpc2FibGVkIGFsbCBpcHRh
-YmxlcyBydWxlcw0KPj4gMi4gRW5hYmxlZCB0aGUgVlBOIElQU2VjIFBvbGljaWVzLg0KPj4gMy4g
-U3RhcnQgYSBwaW5nIHdpdGggcGFja2V0IHNpemUgKGUuZy4gMzAwMCBieXRlcykgZnJvbSBhIGNs
-aWVudCBpbiANCj4+IHRoZSBETVogcGFzc2luZyB0aGUgbWFjaGluZSB0YXJnZXRpbmcgYW5vdGhl
-ciBMQU4gbWFjaGluZSA0LiBQaW5nIA0KPj4gd29ya3MgNS4gRW5hYmxlIGEgVlBOIHBvbGljeSBi
-eSBzZW5kaW5nIHBpbmdzIGZyb20gdGhlIGdhdGV3YXkgdG8gYSANCj4+IHR1bm5lbCB0YXJnZXQu
-IFN5c3RlbSB0cmllcyB0byBjcmVhdGUgdGhlIHR1bm5lbCA2LiBQaW5nIGZyb20gMy4gaW1tZWRp
-YXRlbHkgc3RhbGxzLiBObyBlcnJvciBtZXNzYWdlcy4gSnVzdCBzdG9wcy4NCj4+IDcuIFN0b3Ag
-UGluZyBmcm9tIDMuIFN0YXJ0IGFub3RoZXIgd2l0aG91dCBwYWNrZXQgc2l6ZSBwYXJhbWV0ZXIu
-IFN0YWxscyBhbHNvLg0KPj4NCj4+IFJlc3VsdDoNCj4+IENvbm5lY3Rpb25zIGZyb20gdGhlIGNs
-aWVudCB0byBvdGhlciBzZXJ2aWNlcyBvbiB0aGUgTEFOIG1hY2hpbmUgDQo+PiBzdGlsbCB3b3Jr
-LiBUcmFjZXBhdGggd29ya3MuIE9ubHkgSUNNUCByZXF1ZXN0cyBkbyBub3QgcGFzcyB0aGUgDQo+
-PiBnYXRld2F5IGFueW1vcmUuIHRjcGR1bXAgc2VlcyB0aGVtIG9uIGluY29taW5nIGludGVyZmFj
-ZSwgYnV0IG5vdCBvbiB0aGUgb3V0Z29pbmcgTEFOIGludGVyZmFjZS4gSU1DUCByZXF1ZXN0cyB0
-byBhbnkgb3RoZXIgdGFyZ2V0IElQIGFkZHJlc3MgaW4gTEFOIHN0aWxsIHdvcmsuIFVudGlsIG9u
-ZSB1c2VzIGEgYmlnZ2VyIHBhY2tldCBzaXplLiBUaGVuIHRoZXNlIGFsdGVybmF0aXZlIGNvbm5l
-Y3Rpb25zIHN0YWxsIGFsc28uDQo+Pg0KPj4gRmx1c2hpbmcgdGhlIHBvbGljeSB0YWJsZSBoYXMg
-bm8gZWZmZWN0LiBGbHVzaGluZyB0aGUgY29ubnRyYWNrIHRhYmxlIGhhcyBubyBlZmZlY3QuIFNl
-dHRpbmcgcnBfZmlsdGVyIHRvIGxvb3NlICgyKSBoYXMgbm8gZWZmZWN0Lg0KPj4gRmx1c2ggdGhl
-IHJvdXRlIGNhY2hlIGhhcyBubyBlZmZlY3QuDQo+Pg0KPj4gT25seSBhIHJlYm9vdCBvZiB0aGUg
-Z2F0ZXdheSByZXN0b3JlcyBub3JtYWwgYmVoYXZpb3IuDQo+Pg0KPj4gV2hhdCBjYW4gYmUgdGhl
-IGNhdXNlPyBJcyB0aGlzIGEgbmV0d29ya2luZyBidWc/DQo+Pg0KPiANCj4gc29tZSBvZiB0aGVz
-ZSBtb3N0IGxpa2VseSB3aWxsIGZhaWwgZHVlIHRvIG90aGVyIHJlYXNvbnMsIGJ1dCBjYW4geW91
-IHJ1biAndG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvbmV0L3BtdHUuc2gnWzFdIG9uIDQuMTkgYW5k
-IHRoZW4gNC4yMCBhbmQgY29tcGFyZSByZXN1bHRzLiBIb3BlZnVsbHkgaXQgd2lsbCBzaGVkIHNv
-bWUgbGlnaHQgb24gdGhlIHByb2JsZW0gYW5kIGNhbiBiZSB1c2VkIHRvIGJpc2VjdCB0byBhIGNv
-bW1pdCB0aGF0IGNhdXNlZCB0aGUgcmVncmVzc2lvbi4NCj4gDQo+IA0KPiBbMV0NCj4gaHR0cHM6
-Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXgu
-Z2l0L3RyZQ0KPiBlL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL25ldC9wbXR1LnNoDQo+IA0K
+> +++ b/drivers/net/dsa/qca/ar9331.c
+> @@ -0,0 +1,822 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+
+I think C files should use /*  */, and header files //, for SPDX.
+
+> +// Copyright (c) 2019 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/module.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/of_mdio.h>
+> +#include <linux/regmap.h>
+> +#include <linux/reset.h>
+> +#include <net/dsa.h>
+> +
+> +#define AR9331_SW_NAME				"ar9331_switch"
+> +#define AR9331_SW_PORTS				6
+> +
+> +/* dummy reg to change page */
+> +#define AR9331_SW_REG_PAGE			BIT(18)
+> +
+> +/* Global Interrupt */
+> +#define AR9331_SW_REG_GINT			0x10
+> +#define AR9331_SW_REG_GINT_MASK			0x14
+> +#define AR9331_SW_GINT_PHY_INT			BIT(2)
+> +
+> +#define AR9331_SW_REG_FLOOD_MASK		0x2c
+> +#define AR9331_SW_FLOOD_MASK_BROAD_TO_CPU	BIT(26)
+> +
+> +#define AR9331_SW_REG_GLOBAL_CTRL		0x30
+> +#define AR9331_SW_GLOBAL_CTRL_MFS_M		GENMASK(13, 0)
+> +
+> +#define AR9331_SW_REG_MDIO_CTRL			0x98
+> +#define AR9331_SW_MDIO_CTRL_BUSY		BIT(31)
+> +#define AR9331_SW_MDIO_CTRL_MASTER_EN		BIT(30)
+> +#define AR9331_SW_MDIO_CTRL_CMD_READ		BIT(27)
+> +#define AR9331_SW_MDIO_CTRL_PHY_ADDR_M		GENMASK(25, 21)
+> +#define AR9331_SW_MDIO_CTRL_REG_ADDR_M		GENMASK(20, 16)
+> +#define AR9331_SW_MDIO_CTRL_DATA_M		GENMASK(16, 0)
+> +
+> +#define AR9331_SW_REG_PORT_STATUS(_port)	(0x100 + (_port) * 0x100)
+> +
+> +/* FLOW_LINK_EN - enable mac flow control config auto-neg with phy.
+> + * If not set, mac can be config by software.
+> + */
+> +#define AR9331_SW_PORT_STATUS_FLOW_LINK_EN	BIT(12)
+> +
+> +/* LINK_EN - If set, MAC is configured from PHY link status.
+> + * If not set, MAC should be configured by software.
+> + */
+> +#define AR9331_SW_PORT_STATUS_LINK_EN		BIT(9)
+> +#define AR9331_SW_PORT_STATUS_DUPLEX_MODE	BIT(6)
+> +#define AR9331_SW_PORT_STATUS_RX_FLOW_EN	BIT(5)
+> +#define AR9331_SW_PORT_STATUS_TX_FLOW_EN	BIT(4)
+> +#define AR9331_SW_PORT_STATUS_RXMAC		BIT(3)
+> +#define AR9331_SW_PORT_STATUS_TXMAC		BIT(2)
+> +#define AR9331_SW_PORT_STATUS_SPEED_M		GENMASK(1, 0)
+> +#define AR9331_SW_PORT_STATUS_SPEED_1000	2
+> +#define AR9331_SW_PORT_STATUS_SPEED_100		1
+> +#define AR9331_SW_PORT_STATUS_SPEED_10		0
+> +
+> +#define AR9331_SW_PORT_STATUS_MAC_MASK \
+> +	(AR9331_SW_PORT_STATUS_TXMAC | AR9331_SW_PORT_STATUS_RXMAC)
+> +
+> +#define AR9331_SW_PORT_STATUS_LINK_MASK \
+> +	(AR9331_SW_PORT_STATUS_LINK_EN | AR9331_SW_PORT_STATUS_FLOW_LINK_EN | \
+> +	 AR9331_SW_PORT_STATUS_DUPLEX_MODE | \
+> +	 AR9331_SW_PORT_STATUS_RX_FLOW_EN | AR9331_SW_PORT_STATUS_TX_FLOW_EN | \
+> +	 AR9331_SW_PORT_STATUS_SPEED_M)
+> +
+> +/* Phy bypass mode
+> + * ------------------------------------------------------------------------
+> + * Bit:   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11 |12 |13 |14 |15 |
+> + *
+> + * real   | start |   OP  | PhyAddr           |  Reg Addr         |  TA   |
+> + * atheros| start |   OP  | 2'b00 |PhyAdd[2:0]|  Reg Addr[4:0]    |  TA   |
+> + *
+> + *
+> + * Bit:   |16 |17 |18 |19 |20 |21 |22 |23 |24 |25 |26 |27 |28 |29 |30 |31 |
+> + * real   |  Data                                                         |
+> + * atheros|  Data                                                         |
+> + *
+> + * ------------------------------------------------------------------------
+> + * Page address mode
+> + * ------------------------------------------------------------------------
+> + * Bit:   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11 |12 |13 |14 |15 |
+> + * real   | start |   OP  | PhyAddr           |  Reg Addr         |  TA   |
+> + * atheros| start |   OP  | 2'b11 |                          8'b0 |  TA   |
+> + *
+> + * Bit:   |16 |17 |18 |19 |20 |21 |22 |23 |24 |25 |26 |27 |28 |29 |30 |31 |
+> + * real   |  Data                                                         |
+> + * atheros|                       | Page [9:0]                            |
+> + */
+> +/* In case of Page Address mode, Bit[18:9] of 32 bit register address should be
+> + * written to bits[9:0] of mdio data register.
+> + */
+> +#define AR9331_SW_ADDR_PAGE			GENMASK(18, 9)
+> +
+> +/* ------------------------------------------------------------------------
+> + * Normal register access mode
+> + * ------------------------------------------------------------------------
+> + * Bit:   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11 |12 |13 |14 |15 |
+> + * real   | start |   OP  | PhyAddr           |  Reg Addr         |  TA   |
+> + * atheros| start |   OP  | 2'b10 |  low_addr[7:0]                |  TA   |
+> + *
+> + * Bit:   |16 |17 |18 |19 |20 |21 |22 |23 |24 |25 |26 |27 |28 |29 |30 |31 |
+> + * real   |  Data                                                         |
+> + * atheros|  Data                                                         |
+> + * ------------------------------------------------------------------------
+> + */
+> +#define AR9331_SW_LOW_ADDR_PHY			GENMASK(8, 6)
+> +#define AR9331_SW_LOW_ADDR_REG			GENMASK(5, 1)
+> +
+> +#define AR9331_SW_MDIO_PHY_MODE_M		GENMASK(4, 3)
+> +#define AR9331_SW_MDIO_PHY_MODE_PAGE		3
+> +#define AR9331_SW_MDIO_PHY_MODE_REG		2
+> +#define AR9331_SW_MDIO_PHY_MODE_BYPASS		0
+> +#define AR9331_SW_MDIO_PHY_ADDR_M		GENMASK(2, 0)
+> +
+> +/* Empirical determined values */
+> +#define AR9331_SW_MDIO_POLL_SLEEP_US		1
+> +#define AR9331_SW_MDIO_POLL_TIMEOUT_US		20
+> +
+> +struct ar9331_sw_priv {
+> +	struct device *dev;
+> +	struct dsa_switch *ds;
+> +	struct dsa_switch_ops ops;
+> +	struct irq_domain *irqdomain;
+> +	struct mii_bus *mbus; /* mdio master */
+> +	struct mii_bus *sbus; /* mdio slave */
+> +	struct regmap *regmap;
+> +	struct reset_control *sw_reset;
+> +};
+> +
+> +/* Warning: switch reset will reset last AR9331_SW_MDIO_PHY_MODE_PAGE request
+> + * If some kind of optimization is used, the request should be repeated.
+> + */
+> +static int ar9331_sw_reset(struct ar9331_sw_priv *priv)
+> +{
+> +	int ret;
+> +
+> +	ret = reset_control_assert(priv->sw_reset);
+> +	if (ret)
+> +		goto error;
+> +
+> +	/* AR9331 doc do not provide any information about proper reset
+> +	 * sequence. The AR8136 (the closes switch to the AR9331) doc says:
+> +	 * reset duration should be greater than 10ms. So, let's use this value
+> +	 * for now.
+> +	 */
+> +	usleep_range(10000, 15000);
+> +	ret = reset_control_deassert(priv->sw_reset);
+> +	if (ret)
+> +		goto error;
+
+Any comments in the documentation about needing to wait for the reset
+to complete?
+
+
+> +
+> +	return 0;
+> +error:
+> +	dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> +	return ret;
+> +}
+> +
+> +static int ar9331_sw_mbus_write(struct mii_bus *mbus, int port, int regnum,
+> +				u16 data)
+> +{
+> +	struct ar9331_sw_priv *priv = mbus->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	u32 val;
+> +	int ret;
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_MDIO_CTRL,
+> +			   AR9331_SW_MDIO_CTRL_BUSY |
+> +			   AR9331_SW_MDIO_CTRL_MASTER_EN |
+> +			   FIELD_PREP(AR9331_SW_MDIO_CTRL_PHY_ADDR_M, port) |
+> +			   FIELD_PREP(AR9331_SW_MDIO_CTRL_REG_ADDR_M, regnum) |
+> +			   FIELD_PREP(AR9331_SW_MDIO_CTRL_DATA_M, data));
+> +	if (ret)
+> +		goto error;
+> +
+> +	ret = regmap_read_poll_timeout(regmap, AR9331_SW_REG_MDIO_CTRL, val,
+> +				       !(val & AR9331_SW_MDIO_CTRL_BUSY),
+> +				       AR9331_SW_MDIO_POLL_SLEEP_US,
+> +				       AR9331_SW_MDIO_POLL_TIMEOUT_US);
+> +	if (ret)
+> +		goto error;
+> +
+> +	return 0;
+> +error:
+> +	dev_err_ratelimited(priv->dev, "PHY write error: %i\n", ret);
+> +	return ret;
+> +}
+> +
+> +static int ar9331_sw_mbus_read(struct mii_bus *mbus, int port, int regnum)
+> +{
+> +	struct ar9331_sw_priv *priv = mbus->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	u32 val;
+> +	int ret;
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_MDIO_CTRL,
+> +			   AR9331_SW_MDIO_CTRL_BUSY |
+> +			   AR9331_SW_MDIO_CTRL_MASTER_EN |
+> +			   AR9331_SW_MDIO_CTRL_CMD_READ |
+> +			   FIELD_PREP(AR9331_SW_MDIO_CTRL_PHY_ADDR_M, port) |
+> +			   FIELD_PREP(AR9331_SW_MDIO_CTRL_REG_ADDR_M, regnum));
+> +	if (ret)
+> +		goto error;
+> +
+> +	ret = regmap_read_poll_timeout(regmap, AR9331_SW_REG_MDIO_CTRL, val,
+> +				       !(val & AR9331_SW_MDIO_CTRL_BUSY),
+> +				       AR9331_SW_MDIO_POLL_SLEEP_US,
+> +				       AR9331_SW_MDIO_POLL_TIMEOUT_US);
+> +	if (ret)
+> +		goto error;
+> +
+> +	ret = regmap_read(regmap, AR9331_SW_REG_MDIO_CTRL, &val);
+> +	if (ret)
+> +		goto error;
+> +
+> +	return FIELD_GET(AR9331_SW_MDIO_CTRL_DATA_M, val);
+> +
+> +error:
+> +	dev_err_ratelimited(priv->dev, "PHY read error: %i\n", ret);
+> +	return ret;
+> +}
+> +
+> +static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
+> +{
+> +	struct device *dev = priv->dev;
+> +	static struct mii_bus *mbus;
+> +	struct device_node *np, *mnp;
+> +	int ret;
+> +
+> +	np = dev->of_node;
+> +
+> +	mbus = devm_mdiobus_alloc(dev);
+> +	if (!mbus)
+> +		return -ENOMEM;
+> +
+> +	mbus->name = np->full_name;
+> +	snprintf(mbus->id, MII_BUS_ID_SIZE, "%pOF", np);
+> +
+> +	mbus->read = ar9331_sw_mbus_read;
+> +	mbus->write = ar9331_sw_mbus_write;
+> +	mbus->priv = priv;
+> +	mbus->parent = dev;
+> +
+> +	mnp = of_get_child_by_name(np, "mdio");
+
+You should check if mnp is NULL. You want it to mandatory. The current
+code will pass NULL to of_mdiobus_register(), which is legal, and it
+will look one level higher for the PHYs.
+
+
+> +	ret = of_mdiobus_register(mbus, mnp);
+> +	of_node_put(mnp);
+> +	if (ret)
+> +		return ret;
+> +
+> +	priv->mbus = mbus;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ar9331_sw_setup(struct dsa_switch *ds)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +
+> +	ret = ar9331_sw_reset(priv);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Reset will set proper defaults. CPU - Port0 will be enabled and
+> +	 * configured. All other ports (ports 1 - 5) are disabled
+> +	 */
+
+Nice, some hardware engineer thought about that.
+
+> +	ret = ar9331_sw_mbus_init(priv);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Do not drop broadcast frames */
+> +	ret = regmap_write_bits(regmap, AR9331_SW_REG_FLOOD_MASK,
+> +				AR9331_SW_FLOOD_MASK_BROAD_TO_CPU,
+> +				AR9331_SW_FLOOD_MASK_BROAD_TO_CPU);
+> +	if (ret)
+> +		goto error;
+> +
+> +	/* Sync max frame size with value used in
+> +	 * drivers/net/ethernet/atheros/ag71xx.c for ar9330 SoC.
+> +	 * TODO: In both drivers this value seems to be not real maximal size
+> +	 * The switch is able to configure 0x3fff and ethernet controller
+> +	 * 0xffff. Are there any better way to sync this values?
+> +	 */
+> +	ret = regmap_write_bits(regmap, AR9331_SW_REG_GLOBAL_CTRL,
+> +				AR9331_SW_GLOBAL_CTRL_MFS_M,
+> +				FIELD_PREP(AR9331_SW_GLOBAL_CTRL_MFS_M, 1540));
+> +	if (ret)
+> +		goto error;
+
+Jumbo is not so easy. I would avoid the plain number 1540. There
+should be a #define. Also, you might want to allow space for a VLAN
+header? Does enabbling jumbo have a performance impact? If not, you
+can configure the switch to its maximum size.
+
+> +
+> +	return 0;
+> +error:
+> +	dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> +	return ret;
+> +}
+> +
+> +static int ar9331_sw_port_enable(struct dsa_switch *ds, int port,
+> +				 struct phy_device *phy)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +
+> +	/* nothing to enable. Just set link to initial state */
+> +	ret = regmap_write(regmap, AR9331_SW_REG_PORT_STATUS(port), 0);
+> +	if (ret)
+> +		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static void ar9331_sw_port_disable(struct dsa_switch *ds, int port)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_PORT_STATUS(port), 0);
+> +	if (ret)
+> +		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> +}
+
+port_enable() and port_disable() look the same?
+
+> +
+> +static enum dsa_tag_protocol ar9331_sw_get_tag_protocol(struct dsa_switch *ds,
+> +							int port)
+> +{
+> +	return DSA_TAG_PROTO_AR9331;
+> +}
+> +
+> +static void ar9331_sw_phylink_validate(struct dsa_switch *ds, int port,
+> +				       unsigned long *supported,
+> +				       struct phylink_link_state *state)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+> +
+> +	switch (port) {
+> +	case 0:
+> +		if (state->interface != PHY_INTERFACE_MODE_GMII)
+> +			goto unsupported;
+> +
+> +		phylink_set(mask, 1000baseT_Full);
+> +		phylink_set(mask, 1000baseT_Half);
+> +		break;
+> +	case 1:
+> +	case 2:
+> +	case 3:
+> +	case 4:
+> +	case 5:
+> +		if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
+> +			goto unsupported;
+> +		break;
+> +	default:
+> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +		dev_err(ds->dev, "Unsupported port: %i\n", port);
+> +		return;
+> +	}
+> +
+> +	phylink_set_port_modes(mask);
+> +	phylink_set(mask, Pause);
+> +	phylink_set(mask, Asym_Pause);
+> +
+> +	phylink_set(mask, 10baseT_Half);
+> +	phylink_set(mask, 10baseT_Full);
+> +	phylink_set(mask, 100baseT_Half);
+> +	phylink_set(mask, 100baseT_Full);
+
+So the CPU port is 1G capable. All the other ports are only Fast Ethernet?
+
+> +
+> +	bitmap_and(supported, supported, mask,
+> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +	bitmap_and(state->advertising, state->advertising, mask,
+> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +
+> +	return;
+> +
+> +unsupported:
+> +	bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +	dev_err(ds->dev, "Unsupported interface: %d, port: %d\n",
+> +		state->interface, port);
+> +}
+> +
+> +static void ar9331_sw_phylink_mac_config(struct dsa_switch *ds, int port,
+> +					 unsigned int mode,
+> +					 const struct phylink_link_state *state)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +	u32 val;
+> +
+> +	switch (state->speed) {
+> +	case SPEED_1000:
+> +		val = AR9331_SW_PORT_STATUS_SPEED_1000;
+> +		break;
+> +	case SPEED_100:
+> +		val = AR9331_SW_PORT_STATUS_SPEED_100;
+> +		break;
+> +	case SPEED_10:
+> +		val = AR9331_SW_PORT_STATUS_SPEED_10;
+> +		break;
+> +	default:
+> +		return;
+> +	}
+> +
+> +	if (state->duplex)
+> +		val |= AR9331_SW_PORT_STATUS_DUPLEX_MODE;
+> +
+> +	if (state->pause & MLO_PAUSE_TX)
+> +		val |= AR9331_SW_PORT_STATUS_TX_FLOW_EN;
+> +
+> +	if (state->pause & MLO_PAUSE_RX)
+> +		val |= AR9331_SW_PORT_STATUS_RX_FLOW_EN;
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_STATUS(port),
+> +				 AR9331_SW_PORT_STATUS_LINK_MASK, val);
+> +	if (ret)
+> +		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> +}
+> +
+> +static void ar9331_sw_phylink_mac_link_down(struct dsa_switch *ds, int port,
+> +					    unsigned int mode,
+> +					    phy_interface_t interface)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_STATUS(port),
+> +				 AR9331_SW_PORT_STATUS_MAC_MASK, 0);
+> +	if (ret)
+> +		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> +}
+> +
+> +static void ar9331_sw_phylink_mac_link_up(struct dsa_switch *ds, int port,
+> +					  unsigned int mode,
+> +					  phy_interface_t interface,
+> +					  struct phy_device *phydev)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_STATUS(port),
+> +				 AR9331_SW_PORT_STATUS_MAC_MASK,
+> +				 AR9331_SW_PORT_STATUS_MAC_MASK);
+> +	if (ret)
+> +		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> +}
+> +
+> +static const struct dsa_switch_ops ar9331_sw_ops = {
+> +	.get_tag_protocol = ar9331_sw_get_tag_protocol,
+> +	.setup = ar9331_sw_setup,
+> +	.port_enable = ar9331_sw_port_enable,
+> +	.port_disable = ar9331_sw_port_disable,
+> +	.phylink_validate	= ar9331_sw_phylink_validate,
+> +	.phylink_mac_config	= ar9331_sw_phylink_mac_config,
+> +	.phylink_mac_link_down	= ar9331_sw_phylink_mac_link_down,
+> +	.phylink_mac_link_up	= ar9331_sw_phylink_mac_link_up,
+> +};
+> +
+> +static irqreturn_t ar9331_sw_irq(int irq, void *data)
+> +{
+> +	struct ar9331_sw_priv *priv = data;
+> +	struct regmap *regmap = priv->regmap;
+> +	u32 stat;
+> +	int ret;
+> +
+> +	ret = regmap_read(regmap, AR9331_SW_REG_GINT, &stat);
+> +	if (ret) {
+> +		dev_err(priv->dev, "can't read interrupt status\n");
+> +		return IRQ_NONE;
+> +	}
+> +
+> +	if (!stat)
+> +		return IRQ_NONE;
+> +
+> +	if (stat & AR9331_SW_GINT_PHY_INT) {
+> +		int child_irq;
+> +
+> +		child_irq = irq_find_mapping(priv->irqdomain, 0);
+> +		handle_nested_irq(child_irq);
+> +	}
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_GINT, stat);
+> +	if (ret) {
+> +		dev_err(priv->dev, "can't write interrupt status\n");
+> +		return IRQ_NONE;
+> +	}
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static void ar9331_sw_mask_irq(struct irq_data *d)
+> +{
+> +	struct ar9331_sw_priv *priv = irq_data_get_irq_chip_data(d);
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_GINT_MASK,
+> +				 AR9331_SW_GINT_PHY_INT, 0);
+> +	if (ret)
+> +		dev_err(priv->dev, "could not mask IRQ\n");
+> +}
+> +
+> +static void ar9331_sw_unmask_irq(struct irq_data *d)
+> +{
+> +	struct ar9331_sw_priv *priv = irq_data_get_irq_chip_data(d);
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_GINT_MASK,
+> +				 AR9331_SW_GINT_PHY_INT,
+> +				 AR9331_SW_GINT_PHY_INT);
+> +	if (ret)
+> +		dev_err(priv->dev, "could not unmask IRQ\n");
+> +}
+> +
+> +static struct irq_chip ar9331_sw_irq_chip = {
+> +	.name = AR9331_SW_NAME,
+> +	.irq_mask = ar9331_sw_mask_irq,
+> +	.irq_unmask = ar9331_sw_unmask_irq,
+> +};
+> +
+> +static int ar9331_sw_irq_map(struct irq_domain *domain, unsigned int irq,
+> +			     irq_hw_number_t hwirq)
+> +{
+> +	irq_set_chip_data(irq, domain->host_data);
+> +	irq_set_chip_and_handler(irq, &ar9331_sw_irq_chip, handle_simple_irq);
+> +	irq_set_nested_thread(irq, 1);
+> +	irq_set_noprobe(irq);
+> +
+> +	return 0;
+> +}
+> +
+> +static void ar9331_sw_irq_unmap(struct irq_domain *d, unsigned int irq)
+> +{
+> +	irq_set_nested_thread(irq, 0);
+> +	irq_set_chip_and_handler(irq, NULL, NULL);
+> +	irq_set_chip_data(irq, NULL);
+> +}
+> +
+> +static const struct irq_domain_ops ar9331_sw_irqdomain_ops = {
+> +	.map = ar9331_sw_irq_map,
+> +	.unmap = ar9331_sw_irq_unmap,
+> +	.xlate = irq_domain_xlate_onecell,
+> +};
+> +
+> +static int ar9331_sw_irq_init(struct ar9331_sw_priv *priv)
+> +{
+> +	struct device_node *np = priv->dev->of_node;
+> +	struct device *dev = priv->dev;
+> +	int ret, irq;
+> +
+> +	irq = of_irq_get(np, 0);
+> +	if (irq <= 0) {
+> +		dev_err(dev, "failed to get parent IRQ\n");
+> +		return irq ? irq : -EINVAL;
+> +	}
+> +
+> +	ret = devm_request_threaded_irq(dev, irq, NULL, ar9331_sw_irq,
+> +					IRQF_ONESHOT, AR9331_SW_NAME, priv);
+> +	if (ret) {
+> +		dev_err(dev, "unable to request irq: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	priv->irqdomain = irq_domain_add_linear(np, 1, &ar9331_sw_irqdomain_ops,
+> +						priv);
+> +	if (!priv->irqdomain) {
+> +		dev_err(dev, "failed to create IRQ domain\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	irq_set_parent(irq_create_mapping(priv->irqdomain, 0), irq);
+> +
+> +	return 0;
+> +}
+> +
+> +static int __ar9331_mdio_write(struct mii_bus *sbus, u8 mode, u16 reg, u16 val)
+> +{
+> +	u8 r, p;
+> +
+> +	p = FIELD_PREP(AR9331_SW_MDIO_PHY_MODE_M, mode) |
+> +		FIELD_GET(AR9331_SW_LOW_ADDR_PHY, reg);
+> +	r = FIELD_GET(AR9331_SW_LOW_ADDR_REG, reg);
+> +
+> +	return sbus->write(sbus, p, r, val);
+
+Why not use the mdiobus_write() and mdiobus_read()?
+
+> +static int ar9331_sw_probe(struct mdio_device *mdiodev)
+> +{
+> +	struct ar9331_sw_priv *priv;
+> +	int ret;
+> +
+> +	/* allocate the private data struct so that we can probe the switches
+> +	 * ID register
+> +	 */
+
+I don't see the code actually getting the ID register?
+
+
+> +	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	priv->regmap = devm_regmap_init(&mdiodev->dev, &ar9331_sw_bus, priv,
+> +					&ar9331_mdio_regmap_config);
+> +	if (IS_ERR(priv->regmap)) {
+> +		ret = PTR_ERR(priv->regmap);
+> +		dev_err(&mdiodev->dev, "regmap init failed: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	priv->sw_reset = devm_reset_control_get(&mdiodev->dev, "switch");
+> +	if (IS_ERR(priv->sw_reset)) {
+> +		dev_err(&mdiodev->dev, "missing switch reset\n");
+> +		return PTR_ERR(priv->sw_reset);
+> +	}
+> +
+> +	priv->sbus = mdiodev->bus;
+> +	priv->dev = &mdiodev->dev;
+> +
+> +	ret = ar9331_sw_irq_init(priv);
+> +	if (ret)
+> +		return ret;
+> +
+> +	priv->ds = dsa_switch_alloc(&mdiodev->dev, AR9331_SW_PORTS);
+> +	if (!priv->ds)
+> +		return -ENOMEM;
+> +
+> +	priv->ds->priv = priv;
+> +	priv->ops = ar9331_sw_ops;
+> +	priv->ds->ops = &priv->ops;
+> +	dev_set_drvdata(&mdiodev->dev, priv);
+> +
+> +	return dsa_register_switch(priv->ds);
+> +}
+> +
+> +static void ar9331_sw_remove(struct mdio_device *mdiodev)
+> +{
+> +	struct ar9331_sw_priv *priv = dev_get_drvdata(&mdiodev->dev);
+> +
+> +	mdiobus_unregister(priv->mbus);
+> +	dsa_unregister_switch(priv->ds);
+> +
+> +	reset_control_assert(priv->sw_reset);
+> +}
+> +
+> +static const struct of_device_id ar9331_sw_of_match[] = {
+> +	{ .compatible = "qca,ar9331-switch" },
+> +	{ },
+> +};
+> +
+> +static struct mdio_driver ar9331_sw_mdio_driver = {
+> +	.probe = ar9331_sw_probe,
+> +	.remove = ar9331_sw_remove,
+> +	.mdiodrv.driver = {
+> +		.name = AR9331_SW_NAME,
+> +		.of_match_table = ar9331_sw_of_match,
+> +	},
+> +};
+> +
+> +mdio_module_driver(ar9331_sw_mdio_driver);
+> +
+> +MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
+> +MODULE_DESCRIPTION("Driver for Atheros AR9331 switch");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 541fb514e31d..89a334e68d42 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -42,6 +42,7 @@ struct phylink_link_state;
+>  #define DSA_TAG_PROTO_8021Q_VALUE		12
+>  #define DSA_TAG_PROTO_SJA1105_VALUE		13
+>  #define DSA_TAG_PROTO_KSZ8795_VALUE		14
+> +#define DSA_TAG_PROTO_AR9331_VALUE		15
+>  
+>  enum dsa_tag_protocol {
+>  	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
+> @@ -59,6 +60,7 @@ enum dsa_tag_protocol {
+>  	DSA_TAG_PROTO_8021Q		= DSA_TAG_PROTO_8021Q_VALUE,
+>  	DSA_TAG_PROTO_SJA1105		= DSA_TAG_PROTO_SJA1105_VALUE,
+>  	DSA_TAG_PROTO_KSZ8795		= DSA_TAG_PROTO_KSZ8795_VALUE,
+> +	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
+>  };
+>  
+>  struct packet_type;
+> diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+> index 29e2bd5cc5af..6e015309a7fe 100644
+> --- a/net/dsa/Kconfig
+> +++ b/net/dsa/Kconfig
+> @@ -107,4 +107,10 @@ config NET_DSA_TAG_TRAILER
+>  	  Say Y or M if you want to enable support for tagging frames at
+>  	  with a trailed. e.g. Marvell 88E6060.
+>  
+> +config NET_DSA_TAG_AR9331
+> +	tristate "Tag driver for Atheros AR9331 SoC with build-in switch"
+> +	help
+> +	  Say Y or M if you want to enable support for tagging frames for
+> +	  the Atheros AR9331 SoC with build-in switch.
+> +
+
+These are somewhat sorted, based on the tristate string. So this
+should go before NET_DSA_TAG_BRCM_COMMON.
+
+
+>  endif
+> diff --git a/net/dsa/Makefile b/net/dsa/Makefile
+> index 2c6d286f0511..67caebf602be 100644
+> --- a/net/dsa/Makefile
+> +++ b/net/dsa/Makefile
+> @@ -15,3 +15,4 @@ obj-$(CONFIG_NET_DSA_TAG_MTK) += tag_mtk.o
+>  obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
+>  obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
+>  obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
+> +obj-$(CONFIG_NET_DSA_TAG_AR9331) += tag_ar9331.o
+
+Please keep with the sorting.
+
+> diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
+> new file mode 100644
+> index 000000000000..b32a8d3d48b9
+> --- /dev/null
+> +++ b/net/dsa/tag_ar9331.c
+> @@ -0,0 +1,97 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2019 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
+> + */
+> +
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/etherdevice.h>
+> +
+> +#include "dsa_priv.h"
+> +
+> +#define AR9331_HDR_LEN			2
+> +#define AR9331_HDR_VERSION		1
+> +
+> +#define AR9331_HDR_VERSION_MASK		GENMASK(15, 14)
+> +#define AR9331_HDR_PRIORITY_MASK	GENMASK(13, 12)
+> +#define AR9331_HDR_TYPE_MASK		GENMASK(10, 8)
+> +#define AR9331_HDR_BROADCAST		BIT(7)
+> +#define AR9331_HDR_FROM_CPU		BIT(6)
+> +/* AR9331_HDR_RESERVED - not used or may be version filed.
+
+field
+
+> + * According to the AR8216 doc it should 0b10. On AR9331 it is 0b11 on RX path
+> + * and should be set to 0b11 to make it work.
+> + */
+> +#define AR9331_HDR_RESERVED_MASK	GENMASK(5, 4)
+> +#define AR9331_HDR_PORT_NUM_MASK	GENMASK(3, 0)
+> +
+> +static struct sk_buff *ar9331_tag_xmit(struct sk_buff *skb,
+> +				       struct net_device *dev)
+> +{
+> +	struct dsa_port *dp = dsa_slave_to_port(dev);
+> +	__le16 *phdr;
+> +	u16 hdr;
+> +
+> +	if (skb_cow_head(skb, 0) < 0)
+> +		return NULL;
+> +
+> +	phdr = skb_push(skb, AR9331_HDR_LEN);
+> +
+> +	hdr = FIELD_PREP(AR9331_HDR_VERSION_MASK, AR9331_HDR_VERSION);
+> +	hdr |= AR9331_HDR_FROM_CPU | dp->index;
+> +	/* 0b10 for AR8216 and 0b11 for AR9331 */
+> +	hdr |= AR9331_HDR_RESERVED_MASK;
+> +
+> +	phdr[0] = cpu_to_le16(hdr);
+> +
+> +	return skb;
+> +}
+> +
+> +static struct sk_buff *ar9331_tag_rcv(struct sk_buff *skb,
+> +				      struct net_device *ndev,
+> +				      struct packet_type *pt)
+> +{
+> +	u8 ver, port;
+> +	u16 hdr;
+> +
+> +	if (unlikely(!pskb_may_pull(skb, AR9331_HDR_LEN)))
+> +		return NULL;
+> +
+> +	hdr = le16_to_cpu(*(__le16 *)skb_mac_header(skb));
+> +
+> +	ver = FIELD_GET(AR9331_HDR_VERSION_MASK, hdr);
+> +	if (unlikely(ver != AR9331_HDR_VERSION)) {
+> +		netdev_warn(ndev, "%s:%i wrong header version 0x%2x\n",
+> +			    __func__, __LINE__, hdr);
+
+This would should probably be rate limited.
+
+> +		return NULL;
+> +	}
+> +
+> +	if (unlikely(hdr & AR9331_HDR_FROM_CPU)) {
+> +		netdev_warn(ndev, "%s:%i packet should not be from cpu 0x%2x\n",
+> +			    __func__, __LINE__, hdr);
+
+This as well.
+
+     Andrew
