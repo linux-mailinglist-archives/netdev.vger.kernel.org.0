@@ -2,101 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6536D9C58
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 23:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B373CD9C69
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 23:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437478AbfJPVQ7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 17:16:59 -0400
-Received: from lithops.sigma-star.at ([195.201.40.130]:46434 "EHLO
-        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727542AbfJPVQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 17:16:58 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 6708060632EE;
-        Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id XoiCMRDj9y1F; Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 17F5E60632C1;
-        Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id X13sxO1rFzJx; Wed, 16 Oct 2019 23:16:55 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id D843F6083266;
-        Wed, 16 Oct 2019 23:16:54 +0200 (CEST)
-Date:   Wed, 16 Oct 2019 23:16:54 +0200 (CEST)
-From:   Richard Weinberger <richard@nod.at>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Richard Weinberger <richard.weinberger@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        bridge@lists.linux-foundation.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Message-ID: <910194713.25283.1571260614731.JavaMail.zimbra@nod.at>
-In-Reply-To: <CAJieiUi-b5vcOTGqXcDpn9fxVwA9jyoMWEDM2F_ZgVfzdgFgeA@mail.gmail.com>
-References: <CAFLxGvwnOi6dSq5yLM78XskweQOY6aPbRt==G9wv5qS+dfj8bw@mail.gmail.com> <3A7BDEE0-7C07-4F23-BA01-F32AD41451BB@cumulusnetworks.com> <5A4A5745-5ADC-4AAC-B060-1BC9907C153C@cumulusnetworks.com> <CAJieiUi-b5vcOTGqXcDpn9fxVwA9jyoMWEDM2F_ZgVfzdgFgeA@mail.gmail.com>
-Subject: Re: Bridge port userspace events broken?
+        id S2390160AbfJPVWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 17:22:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:47806 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729231AbfJPVWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 17:22:08 -0400
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iKqk2-0002cX-Hy; Wed, 16 Oct 2019 23:21:58 +0200
+Received: from [178.197.249.55] (helo=pc-63.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iKqk2-0001ke-8R; Wed, 16 Oct 2019 23:21:58 +0200
+Subject: Re: [PATCH v3 bpf-next 06/11] bpf: implement accurate raw_tp context
+ access via BTF
+To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
+Cc:     x86@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+References: <20191016032505.2089704-1-ast@kernel.org>
+ <20191016032505.2089704-7-ast@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <04fab556-9eda-87ec-8f8c-defcab25a80e@iogearbox.net>
+Date:   Wed, 16 Oct 2019 23:21:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF60 (Linux)/8.8.12_GA_3809)
-Thread-Topic: Bridge port userspace events broken?
-Thread-Index: X0H1a+cAJkAg3/lVNpzTKtoYJLogig==
+In-Reply-To: <20191016032505.2089704-7-ast@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25604/Wed Oct 16 10:53:05 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Roopa, Nikolay,
-
------ Ursprüngliche Mail -----
-> +1,  this can be fixed....but in general all new bridge and link
-> attributes have better support with netlink.
-> In this case its IFLA_BRPORT_GROUP_FWD_MASK link attribute available
-> via ip monitor or bridge monitor.
-> you probably cannot use it with udev today.
+On 10/16/19 5:25 AM, Alexei Starovoitov wrote:
+> libbpf analyzes bpf C program, searches in-kernel BTF for given type name
+> and stores it into expected_attach_type.
+> The kernel verifier expects this btf_id to point to something like:
+> typedef void (*btf_trace_kfree_skb)(void *, struct sk_buff *skb, void *loc);
+> which represents signature of raw_tracepoint "kfree_skb".
 > 
-> For the future, I think having udev listen to netlink link and devlink
-> events would make sense (Not sure if anybody is working on it).
-> AFAIK the sysfs uevent mechanism for link attributes don't  receive
-> the required attention and testing like the equivalent netlink events.
+> Then btf_ctx_access() matches ctx+0 access in bpf program with 'skb'
+> and 'ctx+8' access with 'loc' arguments of "kfree_skb" tracepoint.
+> In first case it passes btf_id of 'struct sk_buff *' back to the verifier core
+> and 'void *' in second case.
+> 
+> Then the verifier tracks PTR_TO_BTF_ID as any other pointer type.
+> Like PTR_TO_SOCKET points to 'struct bpf_sock',
+> PTR_TO_TCP_SOCK points to 'struct bpf_tcp_sock', and so on.
+> PTR_TO_BTF_ID points to in-kernel structs.
+> If 1234 is btf_id of 'struct sk_buff' in vmlinux's BTF
+> then PTR_TO_BTF_ID#1234 points to one of in kernel skbs.
+> 
+> When PTR_TO_BTF_ID#1234 is dereferenced (like r2 = *(u64 *)r1 + 32)
+> the btf_struct_access() checks which field of 'struct sk_buff' is
+> at offset 32. Checks that size of access matches type definition
+> of the field and continues to track the dereferenced type.
+> If that field was a pointer to 'struct net_device' the r2's type
+> will be PTR_TO_BTF_ID#456. Where 456 is btf_id of 'struct net_device'
+> in vmlinux's BTF.
+> 
+> Such verifier analysis prevents "cheating" in BPF C program.
+> The program cannot cast arbitrary pointer to 'struct sk_buff *'
+> and access it. C compiler would allow type cast, of course,
+> but the verifier will notice type mismatch based on BPF assembly
+> and in-kernel BTF.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-I understand that netlink works best for you but sysfs notifications are still
-useful.
-Please let me explain my use case a little bit more.
+Overall set looks great!
 
-The application I work on operates on network interfaces, in this case the
-interface happens to be a bridge.
-systemd-networkd sets up the bridge as soon all slave interfaces emerge.
+[...]
+> +int btf_struct_access(struct bpf_verifier_log *log,
+> +		      const struct btf_type *t, int off, int size,
+> +		      enum bpf_access_type atype,
+> +		      u32 *next_btf_id)
+> +{
+> +	const struct btf_member *member;
+> +	const struct btf_type *mtype;
+> +	const char *tname, *mname;
+> +	int i, moff = 0, msize;
+> +
+> +again:
+> +	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
 
-Therefore the systemd service file of the application depends on the bridge.
-i.e.
-Requires=sys-subsystem-net-devices-br0.device
+More of a high-level question wrt btf_ctx_access(), is there a reason the ctx
+access is only done for raw_tp? I presume kprobes is still on todo (?), what
+about uprobes which also have pt_regs and could benefit from this work, but is
+not fixed to btf_vmlinux to search its ctx type.
 
-In one specific setup the bridge needs to forward more than usual and 
-group_fwd_mask needs to be altered. Sadly this is nothing systemd-networkd
-can do right now, so I added the following line to the service file of
-the application:
-ExecStartPre=/bin/bash -c "echo 0xfffd > /sys/class/net/eth0/brport/group_fwd_mask"
+I presume BPF_LDX | BPF_PROBE_MEM | BPF_* would need no additional encoding,
+but JIT emission would have to differ depending on the prog type.
 
-Here comes the problem, the unit is activated as soon br0 is created but
-at this time eth0 is sometimes not yet a slave or br0. It takes some time.
-
-So I need a way to model this dependency in a systemd environment.
-A common approach to do so is setting up an udev rule which set a systemd notify
-as soon a specific sysfs file arrives.
-
-Teaching the application to listen for bridge specific netlink messages is
-another possible approach but seems overkill to me.
-Or maybe there is some nice wrapper/helper?
-
-It would be nice to have sysfs notifications for bridge devices too.
-I can understand that not everyone likes this approach but this is the way
-how *many* systems out there work these day. Actually almost any (embedded)
-system with systemd.
-
-Thanks,
-//richard
+> +	if (!btf_type_is_struct(t)) {
+> +		bpf_log(log, "Type '%s' is not a struct", tname);
+> +		return -EINVAL;
+> +	}
+> +
+> +	for_each_member(i, t, member) {
+> +		/* offset of the field in bits */
+> +		moff = btf_member_bit_offset(t, member);
+> +
+> +		if (btf_member_bitfield_size(t, member))
+> +			/* bitfields are not supported yet */
+> +			continue;
+> +
+> +		if (off + size <= moff / 8)
+> +			/* won't find anything, field is already too far */
+> +			break;
+> +
+> +		/* type of the field */
+> +		mtype = btf_type_by_id(btf_vmlinux, member->type);
+> +		mname = __btf_name_by_offset(btf_vmlinux, member->name_off);
+> +
+> +		/* skip modifiers */
+[...]
