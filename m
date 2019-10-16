@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02D07D98B2
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:45:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F112D98B5
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 19:46:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394103AbfJPRpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 13:45:05 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52220 "EHLO
+        id S1729191AbfJPRq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 13:46:28 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52258 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727400AbfJPRpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:45:05 -0400
+        with ESMTP id S1727400AbfJPRq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 13:46:27 -0400
 Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 382FB142395C2;
-        Wed, 16 Oct 2019 10:45:04 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 13:45:03 -0400 (EDT)
-Message-Id: <20191016.134503.2122228633763051149.davem@davemloft.net>
-To:     andrew@lunn.ch
-Cc:     o.rempel@pengutronix.de, chris.snook@gmail.com,
-        f.fainelli@gmail.com, jhogan@kernel.org, jcliburn@gmail.com,
-        mark.rutland@arm.com, paul.burton@mips.com, ralf@linux-mips.org,
-        robh+dt@kernel.org, linux@armlinux.org.uk,
-        vivien.didelot@gmail.com, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH v1 1/4] net: ag71xx: port to phylink
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BB485142395D5;
+        Wed, 16 Oct 2019 10:46:26 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 13:46:26 -0400 (EDT)
+Message-Id: <20191016.134626.2020955495176386867.davem@davemloft.net>
+To:     marex@denx.de
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        george.mccollister@gmail.com, hkallweit1@gmail.com,
+        sean.nyekjaer@prevas.dk, Tristram.Ha@microchip.com,
+        woojung.huh@microchip.com
+Subject: Re: [PATCH net V4 1/2] net: phy: micrel: Discern KSZ8051 and
+ KSZ8795 PHYs
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191016133215.GA17013@lunn.ch>
-References: <20191016121216.GD4780@lunn.ch>
-        <20191016122401.jnldnlwruv7h5kgy@pengutronix.de>
-        <20191016133215.GA17013@lunn.ch>
+In-Reply-To: <c7ff59cb-0ee7-b746-c54b-6e718ab62c28@denx.de>
+References: <20191013212404.31708-1-marex@denx.de>
+        <20191015.174209.218969750454729705.davem@davemloft.net>
+        <c7ff59cb-0ee7-b746-c54b-6e718ab62c28@denx.de>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 10:45:05 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 16 Oct 2019 10:46:27 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Wed, 16 Oct 2019 15:32:15 +0200
+From: Marek Vasut <marex@denx.de>
+Date: Wed, 16 Oct 2019 15:39:18 +0200
 
-> I don't know if there are any strict rules, but i tend to use To: for
-> the maintainer you expect to merge the patch, and Cc: for everybody
-> else, and the lists.
+> Maybe next time we can do these exercises on patches which are not
+> bugfixes for real issues?
 
-This is a good way to handle things.
+No, we should put changes into the tree which are correctly formed.
+
+If you're not interested in learning how to submit changes properly,
+we am not interested in accepting your work.
+
+It's as simple as that.
