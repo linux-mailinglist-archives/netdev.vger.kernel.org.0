@@ -2,122 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5DB6D9263
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 15:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EC5DD9284
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 15:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393567AbfJPNYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 09:24:46 -0400
-Received: from imap1.codethink.co.uk ([176.9.8.82]:53629 "EHLO
-        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729306AbfJPNYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 09:24:46 -0400
-Received: from [167.98.27.226] (helo=[10.35.5.173])
-        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
-        id 1iKjI8-0000go-EN; Wed, 16 Oct 2019 14:24:40 +0100
-Subject: Re: [Linux-kernel] [PATCH] net: bpf: add static in net/core/filter.c
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     linux-kernel@lists.codethink.co.uk,
-        Song Liu <songliubraving@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-References: <20191016110446.24622-1-ben.dooks@codethink.co.uk>
- <20191016122605.GC21367@pc-63.home>
- <e947b15d-1d70-39d9-3b28-0367a3f0f4c0@codethink.co.uk>
- <20191016131020.GE21367@pc-63.home>
- <e3e81678-6c58-191b-3514-629f5f94def2@codethink.co.uk>
-Organization: Codethink Limited.
-Message-ID: <16a0fe4a-f63a-7e33-62a2-d3dfbccd8f63@codethink.co.uk>
-Date:   Wed, 16 Oct 2019 14:24:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2405371AbfJPNcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 09:32:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48400 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405363AbfJPNcb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 09:32:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=bI3j/lNqd37v2UjsCOVjDYtbKavFToQzGAe5GTYyiDo=; b=CB6a2dFSBDFrSxogDUqW0XQkV4
+        hHU+dY+NSZ+cmUosWV13i2DVtvZfDilF3/4Uj3BHJxP182Rl6Evg77wG49m1LMzsbNMkQDLdGg8HV
+        vWP9jgzqcESxYmMq3VDDSign3wN24T7rzoGhxSHDLUTJXfkiZO/uNVXpEF4hGcA0FMRo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iKjPT-0007bb-8z; Wed, 16 Oct 2019 15:32:15 +0200
+Date:   Wed, 16 Oct 2019 15:32:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 1/4] net: ag71xx: port to phylink
+Message-ID: <20191016133215.GA17013@lunn.ch>
+References: <20191014061549.3669-1-o.rempel@pengutronix.de>
+ <20191014061549.3669-2-o.rempel@pengutronix.de>
+ <20191016121216.GD4780@lunn.ch>
+ <20191016122401.jnldnlwruv7h5kgy@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <e3e81678-6c58-191b-3514-629f5f94def2@codethink.co.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191016122401.jnldnlwruv7h5kgy@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/10/2019 14:11, Ben Dooks wrote:
-> On 16/10/2019 14:10, Daniel Borkmann wrote:
->> On Wed, Oct 16, 2019 at 02:02:31PM +0100, Ben Dooks wrote:
->>> On 16/10/2019 13:26, Daniel Borkmann wrote:
->>>> On Wed, Oct 16, 2019 at 12:04:46PM +0100, Ben Dooks (Codethink) wrote:
->>>>> There are a number of structs in net/core/filter.c
->>>>> that are not exported or declared outside of the
->>>>> file. Fix the following warnings by making these
->>>>> all static:
->>>>>
->>>>> net/core/filter.c:8465:31: warning: symbol 'sk_filter_verifier_ops' 
->>>>> was not declared. Should it be static?
->>>>> net/core/filter.c:8472:27: warning: symbol 'sk_filter_prog_ops' was 
->>>>> not declared. Should it be static?
->>>> [...]
->>>>> net/core/filter.c:8935:27: warning: symbol 'sk_reuseport_prog_ops' 
->>>>> was not declared. Should it be static?
->>>>>
->>>>> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
->>>>> ---
->>>>> Cc: Alexei Starovoitov <ast@kernel.org>
->>>>> Cc: Daniel Borkmann <daniel@iogearbox.net>
->>>>> Cc: Martin KaFai Lau <kafai@fb.com>
->>>>> Cc: Song Liu <songliubraving@fb.com>
->>>>> Cc: Yonghong Song <yhs@fb.com>
->>>>> Cc: "David S. Miller" <davem@davemloft.net>
->>>>> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
->>>>> Cc: Jesper Dangaard Brouer <hawk@kernel.org>
->>>>> Cc: John Fastabend <john.fastabend@gmail.com>
->>>>> Cc: netdev@vger.kernel.org
->>>>> Cc: bpf@vger.kernel.org
->>>>> Cc: linux-kernel@vger.kernel.org
->>>>> ---
->>>>>    net/core/filter.c | 60 
->>>>> +++++++++++++++++++++++------------------------
->>>>>    1 file changed, 30 insertions(+), 30 deletions(-)
->>>>>
->>>>> diff --git a/net/core/filter.c b/net/core/filter.c
->>>>> index ed6563622ce3..f7338fee41f8 100644
->>>>> --- a/net/core/filter.c
->>>>> +++ b/net/core/filter.c
->>>>> @@ -8462,18 +8462,18 @@ static u32 sk_msg_convert_ctx_access(enum 
->>>>> bpf_access_type type,
->>>>>        return insn - insn_buf;
->>>>>    }
->>>>> -const struct bpf_verifier_ops sk_filter_verifier_ops = {
->>>>> +static const struct bpf_verifier_ops sk_filter_verifier_ops = {
->>>>>        .get_func_proto        = sk_filter_func_proto,
->>>>>        .is_valid_access    = sk_filter_is_valid_access,
->>>>>        .convert_ctx_access    = bpf_convert_ctx_access,
->>>>>        .gen_ld_abs        = bpf_gen_ld_abs,
->>>>>    };
->>>>
->>>> Big obvious NAK. I'm puzzled that you try to fix a compile warning, 
->>>> but without
->>>> even bothering to compile the result after your patch ...
->>>
->>> builds fine. maybe some effort to stop this happening again should be 
->>> made.
->>
->> It doesn't build, because they are used/needed outside:
+On Wed, Oct 16, 2019 at 02:24:01PM +0200, Oleksij Rempel wrote:
+> On Wed, Oct 16, 2019 at 02:12:16PM +0200, Andrew Lunn wrote:
+> > On Mon, Oct 14, 2019 at 08:15:46AM +0200, Oleksij Rempel wrote:
+> > > The port to phylink was done as close as possible to initial
+> > > functionality.
+> > > Theoretically this HW can support flow control, practically seems to be not
+> > > enough to just enable it. So, more work should be done.
+> > > 
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > 
+> > Hi Oleksij
+> > 
+> > Please include Russell King in Cc: in future.
 > 
-> Hmm, your config it does, I get /none/ of these warnings.
-> 
-> I guess a lot of this is being built whether or not is then used.
+> He was included in To:. Do you mean, I need to move him from To to Cc?
 
-Without CONFIG_BPF_SYSCALL, a part of net/core/filter.c is being
-built but then not declared or used. Should this be split up or
-the areas not being built be removed?
+Ah, sorry. Missed him among all the other To:
 
--- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+I don't know if there are any strict rules, but i tend to use To: for
+the maintainer you expect to merge the patch, and Cc: for everybody
+else, and the lists.
 
-https://www.codethink.co.uk/privacy.html
+    Andrew
