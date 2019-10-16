@@ -2,121 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 009DCD90A4
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22EF3D90B1
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 14:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405203AbfJPMU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 08:20:28 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37035 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405189AbfJPMU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 08:20:28 -0400
-Received: by mail-wr1-f66.google.com with SMTP id p14so27791007wro.4
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 05:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=dmrMhgpUSf60d5nh3MAEGQy/4z6O1wG97cbLuW1Vm/Q=;
-        b=Lryg5TbKNuFD1H9KnYSEFIXh7TPiZG5JT6QcacCuclZQ7ucsqtGD2RjLXMfRQNQn11
-         4H8eWrGeyw6gS2x8zrZV2LRijZHZHDiWAS/WnxWrN5PilX42PAZxtYhpJffHaZ93Q0Xb
-         5yV952iEPXu5/aHNYguUVK3s07QjWaKL860yK9MwH+R94+/TR/9tWxOOY1gav0+m4s/U
-         lvNZoW05LWMCbBwqgknxmY8ZP4NZTlosLfG3f18WVt4LJYwYzJNr0WPoF+YeGPyAH+RQ
-         aNAel85fvckPLTBuXDBW0+kffLA1BAfpPJuw4dw1Cg57p4zBtdSOr4WtIQnK3hTn9zNn
-         y1oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dmrMhgpUSf60d5nh3MAEGQy/4z6O1wG97cbLuW1Vm/Q=;
-        b=XXwNOLMacUlPTrSl9Qw66lGMAeoi+QNEwRHowskS0XKHoTy8uFIdHV/L86i12U2BCK
-         37+xIwnnE0kkMuqMrV9iamTjOM1OXx5DayIpNAPLwmB5jj0mntM1z/4hAohZL6G7NPse
-         BDIs5hUvZq5fIo9BlAVgTRcL5ZFKXHR8HhhBqNSViqvaa2M3v4tTZGrX35MaZRouarKS
-         WbMEA9Uh+qKG6tjOS8wqxGDyC5FlPQcoQgLrDE2wbKmwt5j3prNZVCFwB47ZnZgbyT+j
-         af7lz95X+DlVzyyJljTy+kejkGTGm+566X+9PpRlseT3xtRkfRAr2vWhof9uDwbIyGhZ
-         xjCw==
-X-Gm-Message-State: APjAAAUScH2+EJC98qbuRat75oYkZGoBrxAeMW8+3phP4ZhiXSJJLWks
-        cXnc6f7z34IN2/4w0MSprnLp4pinGoc=
-X-Google-Smtp-Source: APXvYqwfPRjX6bZCyWbED2wZKVclukgcm82IW4MA8rMSeU9WhVqp0vA8KEy24wGzUe87U8Bz3v5M6A==
-X-Received: by 2002:adf:e542:: with SMTP id z2mr2327859wrm.338.1571228426355;
-        Wed, 16 Oct 2019 05:20:26 -0700 (PDT)
-Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
-        by smtp.gmail.com with ESMTPSA id s12sm26946038wra.82.2019.10.16.05.20.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 05:20:25 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 14:20:23 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
-Cc:     linux-kernel@lists.codethink.co.uk,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] RFC: Bluetooth: missed cpu_to_le16 conversion in
- hci_init4_req
-Message-ID: <20191016122022.kz4xzx4hzmtuoh5l@netronome.com>
-References: <20191016113943.19256-1-ben.dooks@codethink.co.uk>
+        id S2392951AbfJPMWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 08:22:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48228 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387581AbfJPMWD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 08:22:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Dxyt+ZOiCiHKtL/UeQs81zIxekX5q0wpGSVddf2x5d8=; b=fosF19Oy801w1a4Ztm9zgHINtT
+        S281NvrHjvUVd/K6p+PV/3v12HcPstTEIZDXwqBifAivm5nvtVd34RAQeNPGfDPUlvANwSetLsOEW
+        DCo8UpWRW94TXRzURLaTvXuvxuBH1nv/B95XpGYsRVucfGHIaZXx7DWtGKqV9+cO3JOY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iKiJM-0007Hy-Ba; Wed, 16 Oct 2019 14:21:52 +0200
+Date:   Wed, 16 Oct 2019 14:21:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 2/4] dt-bindings: net: dsa: qca,ar9331 switch
+ documentation
+Message-ID: <20191016122152.GE4780@lunn.ch>
+References: <20191014061549.3669-1-o.rempel@pengutronix.de>
+ <20191014061549.3669-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191016113943.19256-1-ben.dooks@codethink.co.uk>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20191014061549.3669-3-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 12:39:43PM +0100, Ben Dooks (Codethink) wrote:
-> It looks like in hci_init4_req() the request is being
-> initialised from cpu-endian data but the packet is specified
-> to be little-endian. This causes an warning from sparse due
-> to __le16 to u16 conversion.
+On Mon, Oct 14, 2019 at 08:15:47AM +0200, Oleksij Rempel wrote:
+> Atheros AR9331 has built-in 5 port switch. The switch can be configured
+> to use all 5 or 4 ports. One of built-in PHYs can be used by first built-in
+> ethernet controller or to be used directly by the switch over second ethernet
+> controller.
 > 
-> Fix this by using cpu_to_le16() on the two fields in the packet.
-> 
-> net/bluetooth/hci_core.c:845:27: warning: incorrect type in assignment (different base types)
-> net/bluetooth/hci_core.c:845:27:    expected restricted __le16 [usertype] tx_len
-> net/bluetooth/hci_core.c:845:27:    got unsigned short [usertype] le_max_tx_len
-> net/bluetooth/hci_core.c:846:28: warning: incorrect type in assignment (different base types)
-> net/bluetooth/hci_core.c:846:28:    expected restricted __le16 [usertype] tx_time
-> net/bluetooth/hci_core.c:846:28:    got unsigned short [usertype] le_max_tx_time
-> 
-> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > ---
-> Cc: Marcel Holtmann <marcel@holtmann.org>
-> Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: linux-bluetooth@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  net/bluetooth/hci_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  .../devicetree/bindings/net/dsa/ar9331.txt    | 155 ++++++++++++++++++
+>  1 file changed, 155 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/ar9331.txt
 > 
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 04bc79359a17..b2559d4bed81 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -842,8 +842,8 @@ static int hci_init4_req(struct hci_request *req, unsigned long opt)
->  	if (hdev->le_features[0] & HCI_LE_DATA_LEN_EXT) {
->  		struct hci_cp_le_write_def_data_len cp;
->  
-> -		cp.tx_len = hdev->le_max_tx_len;
-> -		cp.tx_time = hdev->le_max_tx_time;
-> +		cp.tx_len = cpu_to_le16(hdev->le_max_tx_len);
-> +		cp.tx_time = cpu_to_le16(hdev->le_max_tx_time);
+> diff --git a/Documentation/devicetree/bindings/net/dsa/ar9331.txt b/Documentation/devicetree/bindings/net/dsa/ar9331.txt
+> new file mode 100644
+> index 000000000000..b0f95fd19584
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/dsa/ar9331.txt
+> @@ -0,0 +1,155 @@
+> +Atheros AR9331 built-in switch
+> +=============================
+> +
+> +It is a switch built-in to Atheros AR9331 WiSoC and addressable over internal
+> +MDIO bus. All PHYs are build-in as well. 
+> +
+> +Required properties:
+> +
+> + - compatible: should be: "qca,ar9331-switch" 
+> + - reg: Address on the MII bus for the switch.
+> + - resets : Must contain an entry for each entry in reset-names.
+> + - reset-names : Must include the following entries: "switch"
+> + - interrupt-parent: Phandle to the parent interrupt controller
+> + - interrupts: IRQ line for the switch
+> + - interrupt-controller: Indicates the switch is itself an interrupt
+> +   controller. This is used for the PHY interrupts.
+> + - #interrupt-cells: must be 1
+> + - mdio: Container of PHY and devices on the switches MDIO bus.
+> +
+> +See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
+> +required and optional properties.
+> +Examples:
+> +
+> +eth0: ethernet@19000000 {
+> +	compatible = "qca,ar9330-eth";
+> +	reg = <0x19000000 0x200>;
+> +	interrupts = <4>;
+> +
+> +	resets = <&rst 9>, <&rst 22>;
+> +	reset-names = "mac", "mdio";
+> +	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_AHB>;
+> +	clock-names = "eth", "mdio";
+> +
+> +	phy-mode = "mii";
+> +	phy-handle = <&phy_port4>;
 
-I would suggest that the naming of the le_ fields of struct hci_dev
-implies that the values stored in those fields should be little endian
-(but those that are more than bone byte wide are not).
+This does not seem like a valid example. If phy_port4 is listed here,
+i would expect switch_port 5 to be totally missing?
 
-In any case, the question arises as to if this has ever worked on big
-endian machines.
+> +};
+> +
+> +eth1: ethernet@1a000000 {
+> +	compatible = "qca,ar9330-eth";
+> +	reg = <0x1a000000 0x200>;
+> +	interrupts = <5>;
+> +	resets = <&rst 13>, <&rst 23>;
+> +	reset-names = "mac", "mdio";
+> +	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_AHB>;
+> +	clock-names = "eth", "mdio";
+> +
+> +	phy-mode = "gmii";
+> +	phy-handle = <&switch_port0>;
+> +
+> +	fixed-link {
+> +		speed = <1000>;
+> +		full-duplex;
+> +	};
 
->  		hci_req_add(req, HCI_OP_LE_WRITE_DEF_DATA_LEN, sizeof(cp), &cp);
->  	}
->  
-> -- 
-> 2.23.0
-> 
+You also cannot have both a fixed-link and a phy-handle.
+
+> +
+> +	mdio {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		switch10: switch@10 {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			compatible = "qca,ar9331-switch";
+> +			reg = <16>;
+
+Maybe don't mix up hex and decimal? switch16: switch@16.
+
+      Andrew
