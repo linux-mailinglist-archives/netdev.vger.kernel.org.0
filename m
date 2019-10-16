@@ -2,174 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AF03D8F04
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 13:11:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C98CFD8F18
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 13:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392637AbfJPLLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 07:11:39 -0400
-Received: from mail-eopbgr80087.outbound.protection.outlook.com ([40.107.8.87]:24132
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730377AbfJPLLj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 07:11:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oYC5CD80HdStVwOOPnog9v0kWsSuw06fKnVRehkLZtZSBk3BGq/EdwV5zeYVr9vxzl6uI4iq9yT6GGn6UX02M1dw/HpkyjLcoMSDDnvuBJy4b+TfWEXupg+RYuo8DvZpIDa5dqf0rtOZyqVNVyYItlP9pwlcfugCf2oOZrD2XsfvN3oMFottmbU8nCQ7rY6lQZ0t2MlAXxSXNHaWSGJK0IoCkuM+VAJMU1FE8KMZ4dZGfnvEjSHmJD0/sOd6rke4iJpStVWlOxB1X+sRxL6Knenu59ktkIAFKrX94fZfbkKabVvoGpfYen/95QytXSj79fWU6uKSGkeolWSFMfcLvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ttjw1UQW2cf5KphJz9HGRSB+rZE7WTAChM7Z4IuNh20=;
- b=VlLhXuHW2Pw4Wwsj98IlGWBOOCXAt9yzOBFSakZg3eXoc0xp6jjZIWln2vwCq7awuNoWmusHb3dPXowYSFeh6iq6PNBBvHEypyxbjTR1jEUArVcSMnacBghCZo77zQCuBKTOl/RuzVs7aWcwphQVXOehQrgYtp8g/RnbB6LL7hUzPBSgMmJ0gTgrSfnyCwBIlyqxoJ3CVSGO0yk7589oeTi0RJMJIN4wtUNhD5V3yiqzy+xqbC8PJKYLQvRLLAsUKikv5OkVVE/eU0wG8JGgnzJAykvVHs8MLpJbRR/quyfU4xQZ8mDWoL5wpEOiKtToJgz/4IKauUmppG0+u8yHVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ttjw1UQW2cf5KphJz9HGRSB+rZE7WTAChM7Z4IuNh20=;
- b=TKgmj2rKl1z//42CHWUFpnZsaZswjgIu2GS0qmt7IDABO2bdaR1Gbal7BVGLrZgzmIs5FlYzdQPsjNbq1mcjlfS9rXeQj0TIEma57qs6UPKCze5vSxda31+ID9cUEDDxOjSLFb1fOriqRU73B0cy8XV7S/4gctrXp9kcMTeijDM=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB3472.eurprd04.prod.outlook.com (52.134.5.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.22; Wed, 16 Oct 2019 11:10:56 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::9136:9090:5b7c:433d]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::9136:9090:5b7c:433d%9]) with mapi id 15.20.2347.023; Wed, 16 Oct 2019
- 11:10:56 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Simon Horman <simon.horman@netronome.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>
-Subject: RE: [PATCH v3 net 1/2] dpaa2-eth: add irq for the dpmac
- connect/disconnect event
-Thread-Topic: [PATCH v3 net 1/2] dpaa2-eth: add irq for the dpmac
- connect/disconnect event
-Thread-Index: AQHVg/RvDNrinrS7/0y9I4F2Wh5e0qddG/8AgAAAQKA=
-Date:   Wed, 16 Oct 2019 11:10:56 +0000
-Message-ID: <VI1PR0402MB28006BF6356B03030C245E78E0920@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1571211383-5759-1-git-send-email-ioana.ciornei@nxp.com>
- <1571211383-5759-2-git-send-email-ioana.ciornei@nxp.com>
- <20191016110751.rkt3tgdlkxjf4ip3@netronome.com>
-In-Reply-To: <20191016110751.rkt3tgdlkxjf4ip3@netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5aca18fc-19b1-43a9-8048-08d75229845d
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: VI1PR0402MB3472:|VI1PR0402MB3472:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB34720B21872C5A2A3DF281B9E0920@VI1PR0402MB3472.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0192E812EC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(396003)(366004)(346002)(376002)(189003)(199004)(71200400001)(7696005)(26005)(76176011)(186003)(6916009)(5660300002)(476003)(2906002)(99286004)(71190400001)(11346002)(446003)(14444005)(256004)(6506007)(102836004)(33656002)(3846002)(6116002)(81166006)(66066001)(81156014)(25786009)(8676002)(52536014)(66446008)(66476007)(66946007)(86362001)(486006)(4326008)(7736002)(6436002)(6246003)(66556008)(64756008)(316002)(54906003)(229853002)(74316002)(14454004)(305945005)(44832011)(478600001)(76116006)(9686003)(8936002)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3472;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RfLkYWjxNtLsd1voGv7TOCBvPW9XsTaXEc47MtYQsDbXTlOAce8iKjA/x69tFPuK372gLUvfCTolLh7CRTNzx7yn4gyA35IlOhcM2+UXCFivAKrLHwGlVaq6K12Cf8Y+wEYY1fI34wa4SetU5Y+bh32bpZGvmx6RiW387OL6fRqAcQP0W3fqHQG4R6apEh1Le4xtX27pTw+Xv3ZljnOB+hqheMVxZLfouvTnKguyLmUFJkAYJzt00ukkP+DjGVjnk2cwIkr86LghH/gi0YvgfzIiIie7EKlCpwT+bdjO3r9tt923c/HpB0WSH+fS+fSdW7HaoTZ2GOUF/HkJmpuJfiEBuLw+3edNefNvzqpyM9GBwklVE7L7na19ArW/BQhRQIzTGmJ+64y/wLfo/E29EnmjacbWI4EXGzU/mottl8M=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2392658AbfJPLQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 07:16:18 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58346 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727653AbfJPLQS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 07:16:18 -0400
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5923F2A09CC
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 11:16:17 +0000 (UTC)
+Received: by mail-lf1-f69.google.com with SMTP id w4so4695851lfl.17
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 04:16:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=f1P4flUp3Wl1gdqrt+SyvOCyMYlMRDjagEP3QoJCKhw=;
+        b=JhA336AOkLUcxswRFkaFwoG/ai4JVHVaA6B0oxPWc6rNXQCnhD1uYzoqtKE6XoNPdd
+         6FdKrBFUQyGh8as5wPZ8vB0DP/K3BAYbKgxeAm/W+y0FWPXbEWadDRLx/k9sE8YZTZtb
+         eAbK+LIrEf+e6JISBMoWbzYbwyxJ6nWEmvQo6UtLhb+sfs6aGtZYihdNzVN+axYkfiyS
+         OLNoZWaKQBtAS9Ig4ZaIOjlzYHQ4Xl7RuajFnq55xLoKrvK52mcn3eQsceQhlQhZLHdw
+         YOU2st/FVJ/9CJz5h+MRmYfMp+HMYNrTh+sAJsSUYQhK23kb3e/STBB6ZCT5QW6TcWW+
+         araA==
+X-Gm-Message-State: APjAAAU4QxPd7e6LuCeFxBuT3dnWYJQygS2W+7qnbWfG2iyogm6TYV5C
+        FZf6AmwqCkF9I9ABR1mAXQgpyrHmJQ2ISbl5M9ErLVL4LzjIILVnn21wMeGorbpeNHBopwmxUzY
+        SZCiLLzh02nIL+tf/
+X-Received: by 2002:ac2:46d9:: with SMTP id p25mr12048003lfo.174.1571224575758;
+        Wed, 16 Oct 2019 04:16:15 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzsLl5A1LikwescJ0PxkpYMBAwSH3nW2xMVZ4odwYnPfJJRvCyNrXw2KSJLGfbHvfsTQgRgHg==
+X-Received: by 2002:ac2:46d9:: with SMTP id p25mr12047980lfo.174.1571224575552;
+        Wed, 16 Oct 2019 04:16:15 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id 4sm6274180ljv.87.2019.10.16.04.16.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 04:16:14 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B2B281800F4; Wed, 16 Oct 2019 13:16:13 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF programs after each other
+In-Reply-To: <20191016103501.GB21367@pc-63.home>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1> <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com> <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com> <87o8yqjqg0.fsf@toke.dk> <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com> <87v9srijxa.fsf@toke.dk> <20191016022849.weomgfdtep4aojpm@ast-mbp> <20191016102712.18f369e7@carbon> <20191016103501.GB21367@pc-63.home>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 16 Oct 2019 13:16:13 +0200
+Message-ID: <878splgcua.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5aca18fc-19b1-43a9-8048-08d75229845d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Oct 2019 11:10:56.3381
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9o3fsSxGTKafwiELik0auC9xkGyTy4szRYo/apj7EgGr8nwMAc65Iqg/4IJVg8auJsfeH2ShY+WEREYwk4s4+g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3472
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH v3 net 1/2] dpaa2-eth: add irq for the dpmac
-> connect/disconnect event
->=20
-> On Wed, Oct 16, 2019 at 10:36:22AM +0300, Ioana Ciornei wrote:
-> > From: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
-> >
-> > Add IRQ for the DPNI endpoint change event, resolving the issue when a
-> > dynamically created DPNI gets a randomly generated hw address when the
-> > endpoint is a DPMAC object.
-> >
-> > Signed-off-by: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
-> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > ---
-> > Changes in v2:
-> >  - none
-> > Changes in v3:
-> >  - none
-> >
-> >  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 6 +++++-
-> >  drivers/net/ethernet/freescale/dpaa2/dpni.h      | 5 ++++-
-> >  2 files changed, 9 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > index 162d7d8fb295..5acd734a216b 100644
-> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > @@ -3306,6 +3306,9 @@ static irqreturn_t dpni_irq0_handler_thread(int
-> irq_num, void *arg)
-> >  	if (status & DPNI_IRQ_EVENT_LINK_CHANGED)
-> >  		link_state_update(netdev_priv(net_dev));
-> >
-> > +	if (status & DPNI_IRQ_EVENT_ENDPOINT_CHANGED)
-> > +		set_mac_addr(netdev_priv(net_dev));
-> > +
-> >  	return IRQ_HANDLED;
-> >  }
-> >
-> > @@ -3331,7 +3334,8 @@ static int setup_irqs(struct fsl_mc_device *ls_de=
-v)
-> >  	}
-> >
-> >  	err =3D dpni_set_irq_mask(ls_dev->mc_io, 0, ls_dev->mc_handle,
-> > -				DPNI_IRQ_INDEX,
-> DPNI_IRQ_EVENT_LINK_CHANGED);
-> > +				DPNI_IRQ_INDEX,
-> DPNI_IRQ_EVENT_LINK_CHANGED |
-> > +				DPNI_IRQ_EVENT_ENDPOINT_CHANGED);
-> >  	if (err < 0) {
-> >  		dev_err(&ls_dev->dev, "dpni_set_irq_mask(): %d\n", err);
-> >  		goto free_irq;
-> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h
-> > b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-> > index fd583911b6c0..ee0711d06b3a 100644
-> > --- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
-> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-> > @@ -133,9 +133,12 @@ int dpni_reset(struct fsl_mc_io	*mc_io,
-> >   */
-> >  #define DPNI_IRQ_INDEX				0
-> >  /**
-> > - * IRQ event - indicates a change in link state
-> > + * IRQ events:
-> > + *       indicates a change in link state
-> > + *       indicates a change in endpoint
-> >   */
-> >  #define DPNI_IRQ_EVENT_LINK_CHANGED		0x00000001
-> > +#define DPNI_IRQ_EVENT_ENDPOINT_CHANGED		0x00000002
->=20
-> Perhaps (as a follow-up?) this is a candidate for using the BIT() macro.
->=20
+Daniel Borkmann <daniel@iogearbox.net> writes:
+> We do use cls_bpf heavily in Cilium, but I don't necessarily agree on
+> the notorious difficult to use aspect (at least for tc + BPF): i) this
+> is abstracted away from the /user/ entirely to the point that this is an
+> implementation detail he doesn't need to know about, ii) these days most
+> access to these hooks is done programmatically, if this is a worry, then
+> lets simply add a cls_bpf pendant for APIs like bpf_set_link_xdp_fd() we
+> have in libbpf where you only pass in ifindex, direction (ingress/egress)
+> and priority of the program so that underneath it sets up cls_act qdisc
+> with a cls_bpf instance that makes the whole thing foolproof, e.g.:
+>
+>   int bpf_set_link_tc_fd(int ifindex, int fd, enum bpf_tc_dir dir,
+>                          __u32 priority, __u32 flags);
 
-I wouldn't add another change to this patch set (targeting the net) but def=
-initely will change this in net-next.
+Basically, what I'm trying to achieve with XDP chain calls is to be able
+to do something similar to this, but for XDP programs. Just with the
+added ability to also select on return code...
 
-Thanks a lot,
-Ioana
+>> Second, the multiple "independent programs", are actually not
+>> independent, because the current running program must return
+>> TC_ACT_UNSPEC to allow next bpf-prog to run.  Thus, it is not really
+>> usable.
+>
+> I'd argue that unless the only thing you do in your debugging program is
+> to introspect (read-only) the packet at the current point, you'd run into
+> a similar coordination issue, meaning, the "independent programs" works
+> for simple cases where you only have ACCEPT and DROP policy, such that
+> you could run through all the programs and have precedence on DROP.
+>
+> But once you have conflicting policies with regards to how these programs
+> mangle and redirect packets, how would you handle these?
 
-> >
-> >  int dpni_set_irq_enable(struct fsl_mc_io	*mc_io,
-> >  			u32			cmd_flags,
-> > --
-> > 1.9.1
-> >
+I imagine that in most relevant cases this can be handled by convention;
+the most obvious convention being "chain call on XDP_PASS". But still
+allowing the admin to override this if they know what they are doing.
+
+> I'd argue it's a non-trivial task to outsource if /admins/ are
+> supposed to do manual order adjustments and more importantly to
+> troubleshoot issues due to them. Potentially debugging hooks would
+> make that easier to avoid recompilation, but it's more of a developer
+> task.
+
+Sure, in the general case this could become arbitrarily complex; but I
+think that the feature can still be useful.
+
+> Often times orchestration tools i) assume they just own the data path
+> to reduce complexity in an already complex system and ii) also keep
+> 'refreshing' their setup. One random example for the latter is k8s'
+> kube-proxy that reinstalls its iptables rules every x sec, in order to
+> make sure there was no manual messing around and to keep the data path
+> eventually consistent with the daemon view (if they got borked).
+
+This is actually the reason I want the kernel state to be the source of
+truth (instead of keeping state in a userspace daemon). If the kernel
+keeps the state it can enforce consistency, whereas a userspace daemon
+has to be able to deal with things in the kernel changing underneath
+it...
+
+> How would you make the loader aware of daemons automatically
+> refreshing/ reconfiguring their BPF progs in the situation where
+> admins changed the pipeline, adding similar handle as tc so whoever
+> does the 'chain' assembly know which one to update?
+
+My idea for this was to implement atomic updates in the form of a
+"cmpxchg" type of operation. I.e., we'd add a parameter to the syscall
+where userspace could say "I want to install this program in place of
+this one", and if that "old program" value doesn't match the current
+state of the kernel, it can be rejected, atomically.
+
+-Toke
