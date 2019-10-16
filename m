@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46F36D8943
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:20:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D84D8945
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 09:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389797AbfJPHUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 03:20:39 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4175 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732949AbfJPHUO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1733106AbfJPHUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 16 Oct 2019 03:20:14 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4172 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732849AbfJPHUN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Oct 2019 03:20:13 -0400
 Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id B30DB5067084C23336A1;
+        by Forcepoint Email with ESMTP id A416E9EEC4C24B7F4C5D;
         Wed, 16 Oct 2019 15:20:08 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 16 Oct 2019 15:19:59 +0800
+ 14.3.439.0; Wed, 16 Oct 2019 15:20:00 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 09/12] net: hns3: minor cleanup for hns3_handle_rx_bd()
-Date:   Wed, 16 Oct 2019 15:17:08 +0800
-Message-ID: <1571210231-29154-10-git-send-email-tanhuazhong@huawei.com>
+        Jian Shen <shenjian15@huawei.com>,
+        "Huazhong Tan" <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 10/12] net: hns3: fix VF id issue for setting VF VLAN
+Date:   Wed, 16 Oct 2019 15:17:09 +0800
+Message-ID: <1571210231-29154-11-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1571210231-29154-1-git-send-email-tanhuazhong@huawei.com>
 References: <1571210231-29154-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,126 +39,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-Since commit e55970950556 ("net: hns3: Add handling of GRO Pkts
-not fully RX'ed in NAPI poll"), ring->skb is used to record the
-current SKB when processing the RX BD in hns3_handle_rx_bd(),
-so the parameter out_skb is unnecessary.
+Previously, when set VF VLAN with command "ip link set <pf name>
+vf <vf id> vlan <vlan id>", the vf id 0 is handled as PF incorrectly,
+which should be the first VF. This patch fixes it.
 
-This patch also adjusts the err checking to reduce duplication
-in hns3_handle_rx_bd(), and "err == -ENXIO" is rare case, so put
-it in the unlikely annotation.
+This patch also adds VF VLAN information for command "ip link show".
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Fixes: 21e043cd8124 ("net: hns3: fix set port based VLAN for PF")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 38 +++++++++----------------
- 1 file changed, 13 insertions(+), 25 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 7ddeb9c..6172eb2 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2834,10 +2834,10 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 72c19b3..60aba81 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -2940,6 +2940,9 @@ static int hclge_get_vf_config(struct hnae3_handle *handle, int vf,
+ 	ivf->trusted = vport->vf_info.trusted;
+ 	ivf->min_tx_rate = 0;
+ 	ivf->max_tx_rate = vport->vf_info.max_tx_rate;
++	ivf->vlan = vport->port_base_vlan_cfg.vlan_info.vlan_tag;
++	ivf->vlan_proto = htons(vport->port_base_vlan_cfg.vlan_info.vlan_proto);
++	ivf->qos = vport->port_base_vlan_cfg.vlan_info.qos;
+ 	ether_addr_copy(ivf->mac, vport->vf_info.mac);
  
- static int hns3_add_frag(struct hns3_enet_ring *ring, struct hns3_desc *desc,
--			 struct sk_buff **out_skb, bool pending)
-+			 bool pending)
- {
--	struct sk_buff *skb = *out_skb;
--	struct sk_buff *head_skb = *out_skb;
-+	struct sk_buff *skb = ring->skb;
-+	struct sk_buff *head_skb = skb;
- 	struct sk_buff *new_skb;
- 	struct hns3_desc_cb *desc_cb;
- 	struct hns3_desc *pre_desc;
-@@ -3020,8 +3020,7 @@ static int hns3_handle_bdinfo(struct hns3_enet_ring *ring, struct sk_buff *skb)
  	return 0;
- }
+@@ -8407,13 +8410,16 @@ static int hclge_set_vf_vlan_filter(struct hnae3_handle *handle, int vfid,
+ 	if (hdev->pdev->revision == 0x20)
+ 		return -EOPNOTSUPP;
  
--static int hns3_handle_rx_bd(struct hns3_enet_ring *ring,
--			     struct sk_buff **out_skb)
-+static int hns3_handle_rx_bd(struct hns3_enet_ring *ring)
- {
- 	struct sk_buff *skb = ring->skb;
- 	struct hns3_desc_cb *desc_cb;
-@@ -3059,12 +3058,12 @@ static int hns3_handle_rx_bd(struct hns3_enet_ring *ring,
++	vport = hclge_get_vf_vport(hdev, vfid);
++	if (!vport)
++		return -EINVAL;
++
+ 	/* qos is a 3 bits value, so can not be bigger than 7 */
+-	if (vfid >= hdev->num_alloc_vfs || vlan > VLAN_N_VID - 1 || qos > 7)
++	if (vlan > VLAN_N_VID - 1 || qos > 7)
+ 		return -EINVAL;
+ 	if (proto != htons(ETH_P_8021Q))
+ 		return -EPROTONOSUPPORT;
  
- 	if (!skb) {
- 		ret = hns3_alloc_skb(ring, length, ring->va);
--		*out_skb = skb = ring->skb;
-+		skb = ring->skb;
+-	vport = &hdev->vport[vfid];
+ 	state = hclge_get_port_base_vlan_state(vport,
+ 					       vport->port_base_vlan_cfg.state,
+ 					       vlan);
+@@ -8424,21 +8430,12 @@ static int hclge_set_vf_vlan_filter(struct hnae3_handle *handle, int vfid,
+ 	vlan_info.qos = qos;
+ 	vlan_info.vlan_proto = ntohs(proto);
  
- 		if (ret < 0) /* alloc buffer fail */
- 			return ret;
- 		if (ret > 0) { /* need add frag */
--			ret = hns3_add_frag(ring, desc, &skb, false);
-+			ret = hns3_add_frag(ring, desc, false);
- 			if (ret)
- 				return ret;
- 
-@@ -3075,7 +3074,7 @@ static int hns3_handle_rx_bd(struct hns3_enet_ring *ring,
- 			       ALIGN(ring->pull_len, sizeof(long)));
- 		}
+-	/* update port based VLAN for PF */
+-	if (!vfid) {
+-		hclge_notify_client(hdev, HNAE3_DOWN_CLIENT);
+-		ret = hclge_update_port_base_vlan_cfg(vport, state, &vlan_info);
+-		hclge_notify_client(hdev, HNAE3_UP_CLIENT);
+-
+-		return ret;
+-	}
+-
+ 	if (!test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state)) {
+ 		return hclge_update_port_base_vlan_cfg(vport, state,
+ 						       &vlan_info);
  	} else {
--		ret = hns3_add_frag(ring, desc, &skb, true);
-+		ret = hns3_add_frag(ring, desc, true);
- 		if (ret)
- 			return ret;
- 
-@@ -3093,8 +3092,6 @@ static int hns3_handle_rx_bd(struct hns3_enet_ring *ring,
- 	}
- 
- 	skb_record_rx_queue(skb, ring->tqp->tqp_index);
--	*out_skb = skb;
--
- 	return 0;
- }
- 
-@@ -3103,7 +3100,6 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
- {
- #define RCB_NOF_ALLOC_RX_BUFF_ONCE 16
- 	int unused_count = hns3_desc_unused(ring);
--	struct sk_buff *skb = ring->skb;
- 	int recv_pkts = 0;
- 	int recv_bds = 0;
- 	int err, num;
-@@ -3126,27 +3122,19 @@ int hns3_clean_rx_ring(struct hns3_enet_ring *ring, int budget,
- 		}
- 
- 		/* Poll one pkt */
--		err = hns3_handle_rx_bd(ring, &skb);
--		if (unlikely(!skb)) /* This fault cannot be repaired */
-+		err = hns3_handle_rx_bd(ring);
-+		/* Do not get FE for the packet or failed to alloc skb */
-+		if (unlikely(!ring->skb || err == -ENXIO)) {
- 			goto out;
--
--		if (err == -ENXIO) { /* Do not get FE for the packet */
--			goto out;
--		} else if (unlikely(err)) {  /* Do jump the err */
--			recv_bds += ring->pending_buf;
--			unused_count += ring->pending_buf;
--			ring->skb = NULL;
--			ring->pending_buf = 0;
--			continue;
-+		} else if (likely(!err)) {
-+			rx_fn(ring, ring->skb);
-+			recv_pkts++;
- 		}
- 
--		rx_fn(ring, skb);
- 		recv_bds += ring->pending_buf;
- 		unused_count += ring->pending_buf;
- 		ring->skb = NULL;
- 		ring->pending_buf = 0;
--
--		recv_pkts++;
- 	}
- 
- out:
+ 		ret = hclge_push_vf_port_base_vlan_info(&hdev->vport[0],
+-							(u8)vfid, state,
++							vport->vport_id, state,
+ 							vlan, qos,
+ 							ntohs(proto));
+ 		return ret;
 -- 
 2.7.4
 
