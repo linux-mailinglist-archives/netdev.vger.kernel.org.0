@@ -2,114 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1060CD95F8
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 17:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10FBDD9614
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 17:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405851AbfJPPvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 11:51:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48704 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726985AbfJPPvM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 11:51:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=B2YdhfhEgWZqOqKtmmkSBnl7J2karsMTF9JaNWGz1es=; b=SWKnuxxTJ8loDpThNmUspjv0mz
-        IC3p36PrAKtL9tp1IZgO4lCUtA53uqlL4O4okRoMJVUc6BFIgmE72tsjC7t1me4tCZ9q1lmBCYNwD
-        XQfkQtXJMwo6GhiFZSmXTyMYxzgmGDvehHy+Lhq4vgIR41Hpcc0bO8n+syvCJDqy03LU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iKlZr-0008Je-TX; Wed, 16 Oct 2019 17:51:07 +0200
-Date:   Wed, 16 Oct 2019 17:51:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Wagner <dwagner@suse.de>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Subject: Re: lan78xx and phy_state_machine
-Message-ID: <20191016155107.GH17013@lunn.ch>
-References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
- <20191015005327.GJ19861@lunn.ch>
- <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
- <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
+        id S2391462AbfJPP5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 11:57:08 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:46599 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389769AbfJPP5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 11:57:08 -0400
+Received: by mail-oi1-f194.google.com with SMTP id k25so20447504oiw.13
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 08:57:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sage.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=9sEGwNR+vs1wvXocKihgDcCfWg7F97MWXpiCKTda+Uo=;
+        b=bhBw5IpPG3f7MC1dp/X9TYLBmZE/AL8nW+PBx/BxtAPR6xKfsP2aEKY9GK8XZhV/dc
+         cH2ruNlDTzUUq/xMGzZDnu1Edx5oYu0sQXWhPeWYA37KQgj6fhMXdSuLPtT7VejbYfFI
+         oxM3bLUnOhIuyFfM5w3akIli/6MA4AedIENPOWe6KZGse1wtkaVWwTaAbypE/nqVEwbt
+         Ehsf6JIQXNqo1tqq31Mco6Aqw1gaoxIn4WEbq7ddktKN+vEPMqOAozB+AiKQKVGqPhL3
+         66dBefHjoowPqoufa8yUAbONsjWCbFQvjFGaBFvJyOysOd16Jo+w7lNxW+qwjmCEffkz
+         KZRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=9sEGwNR+vs1wvXocKihgDcCfWg7F97MWXpiCKTda+Uo=;
+        b=m3OHACZpV1kpGZNa2dgD60x8YaVN/r7anzT/hxCySrMOqkD0HgSOYWWEdiD2qA49XU
+         owLvur0G42vR6ncS/tP4o4AXuZ73WzxudNjqMo+jrzmXurqa4KUI9w5XO61MD8DpBXnt
+         irhAiAkfDqTvpGtRmsA07w+aYQ10xlLAqnsLi7hz0Oc5ybUV6TvoUxSY2MyI0hEOw3mt
+         6AE2uSBuSzL6Pf03AxEXXrGeifZW8tL0Xa/HXiUe4ickHJPCISnEhtS/TNVa9vv92UHr
+         EaiGNLbxivdfdNnKgfsXP8adF1CaSSuCeV6ujMZUvTZxaI6nYhJ/XNmEFUFxfNxfKJ5y
+         ApqQ==
+X-Gm-Message-State: APjAAAVxS2S8Cq+L2VqS6JzqCYy3T7kxv0r1ASk7Upqgg6pdHTOd6QC+
+        y4J3aOmN3I5lbQlVxq+60z2t+A==
+X-Google-Smtp-Source: APXvYqyF9/9fNqu2WQyi04V/AS2P19dOaZraXWn+HvL6HDyHYW+8OHCldpiO9zJQlqVQFJQTnly56A==
+X-Received: by 2002:a05:6808:355:: with SMTP id j21mr3938368oie.160.1571241427024;
+        Wed, 16 Oct 2019 08:57:07 -0700 (PDT)
+Received: from wizard.attlocal.net ([2600:1700:4a30:fd70::13])
+        by smtp.gmail.com with ESMTPSA id n65sm7540433oib.35.2019.10.16.08.57.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 08:57:06 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 08:57:01 -0700
+From:   Eric Sage <eric@sage.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        xdp-newbies@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>
+Subject: Re: [PATCH] samples/bpf: make xdp_monitor use raw_tracepoints
+Message-ID: <20191016155701.GA18708@wizard.attlocal.net>
+References: <20191007045726.21467-1-eric@sage.org>
+ <20191007110020.6bf8dbc2@carbon>
+ <CAEf4BzacEF0Ga921DCuYCVTxR4rFdOzmRt5o0T7HH-H38gEccg@mail.gmail.com>
+ <20191016042104.GA27738@wizard.attlocal.net>
+ <20191016153426.1d976f17@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191016153426.1d976f17@carbon>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel
+On Wed, Oct 16, 2019 at 03:34:26PM +0200, Jesper Dangaard Brouer wrote:
+> On Tue, 15 Oct 2019 21:21:04 -0700
+> Eric Sage <eric@sage.org> wrote:
+> 
+> > I'm no longer able to build the samples with 'make M=samples/bpf'.
+> > 
+> > I get errors in task_fd_query_user.c like:
+> > 
+> > samples/bpf/task_fd_query_user.c:153:29: error: ‘PERF_EVENT_IOC_ENABLE’
+> > undeclared.
+> > 
+> > Am I missing a dependancy?
+> 
+> Have you remembered to run:
+> 
+>  make headers_install
+> 
+> (As described in samples/bpf/README)
 
-Please could you give this a go. It is totally untested, not even
-compile tested...
+Yes, I've done that. I've tried:
 
-Thanks
-	Andrew
+  make mrproper
+  cp /boot/config-5.2.18-200.fc30.x86_64 .config
+  make olddefconfig
+  make headers_install
+  make M=samples/bpf
 
-From 235549a687ad91c1500289fb32ee1c775d06d16d Mon Sep 17 00:00:00 2001
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Wed, 16 Oct 2019 10:42:07 -0500
-Subject: [PATCH] net: usb: lan78xx: Connect PHY before registering MAC
-
-As soon as the netdev is registers, the kernel can start using the
-interface. If the driver connects the MAC to the PHY after the netdev
-is registered, there is a race condition where the interface can be
-opened without having the PHY connected.
-
-Change the order to close this race condition.
-
-Fixes: 92571a1aae40 ("lan78xx: Connect phy early")
-Reported-by: Daniel Wagner <dwagner@suse.de>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/usb/lan78xx.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index 58f5a219fb65..62948098191f 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -3782,10 +3782,14 @@ static int lan78xx_probe(struct usb_interface *intf,
- 	/* driver requires remote-wakeup capability during autosuspend. */
- 	intf->needs_remote_wakeup = 1;
- 
-+	ret = lan78xx_phy_init(dev);
-+	if (ret < 0)
-+		goto out4;
-+
- 	ret = register_netdev(netdev);
- 	if (ret != 0) {
- 		netif_err(dev, probe, netdev, "couldn't register the device\n");
--		goto out4;
-+		goto out5;
- 	}
- 
- 	usb_set_intfdata(intf, dev);
-@@ -3798,14 +3802,10 @@ static int lan78xx_probe(struct usb_interface *intf,
- 	pm_runtime_set_autosuspend_delay(&udev->dev,
- 					 DEFAULT_AUTOSUSPEND_DELAY);
- 
--	ret = lan78xx_phy_init(dev);
--	if (ret < 0)
--		goto out5;
--
- 	return 0;
- 
- out5:
--	unregister_netdev(netdev);
-+	phy_disconnect(netdev->phydev);
- out4:
- 	usb_free_urb(dev->urb_intr);
- out3:
--- 
-2.23.0
-
+which ends with the errors I described.
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
