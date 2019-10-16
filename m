@@ -2,176 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41BF8D8EAE
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 12:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23AD8D8EE4
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 13:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389197AbfJPKzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 06:55:12 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37129 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726083AbfJPKzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 06:55:12 -0400
-Received: by mail-wm1-f66.google.com with SMTP id f22so2254078wmc.2
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 03:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nxTifvovj4bgnSy1+KajPtzFaUPdVrvm5mmk+xKsZcY=;
-        b=xkkJn0FOUkypDVTwmVmoT354H/AZVzm++pf85Dfb4XsoZ0LWEZv97VJUAD0itC7JYb
-         Pa/pAPD49FkCJy9Wn6XHfidcIhTdPs7cJ7lT3kekXy8T2pLK9iWNGAmFyBU0+pz03VvW
-         WDMGuasSZPTibn4XC+QWFdeDrBYeSdmlQRl5+HRE7cQ1Sf8aFtS6+NBa/AgRkm5fZX8D
-         39UHrp/CYgbVgkkx4HzeoyL4jBOnh9AVXt9wzteZbEv83bA1kh1DATawx3G0uOdhFP5a
-         nOYa3eZ8vdiLVcDs9qTdUubYiaaPagLuJF48YADW+hadDJS1eLN9RNSXFweT0uULcgCu
-         eNqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nxTifvovj4bgnSy1+KajPtzFaUPdVrvm5mmk+xKsZcY=;
-        b=jKQjsx5bB9fLPIJb1kCHNfXR6b6WDxBMvkcf2dJ/tWffKt1OMOGbdVVpQAgpHd7dUu
-         43dc5w5apdEywaQMGs3P51MPJwGYyJdKoD/2Y87chzCo/aQKrT97pXuCLvqpI+gk9EkW
-         Oqf8995beCx8RhdoMNn2agv9FPvLlr/HlHF3soDf7DSki6vjobCs/VXbUtqVxIWLSecz
-         727iS5J0hHqSAEYB5EtdEVde4p16mDmQHNtZWpeID1jyPWru5yoTSaMjkFhCHk4Z0j4U
-         KHrNuJT9cZJs5kZ7Gnd0/hl7hkyn4crWy6PEqdNH3fWIH1mcpyWPaflWTuC4qQJwpACy
-         MaCQ==
-X-Gm-Message-State: APjAAAWf0xKYPNWcmqyqvMmrtjfLlAOCXsquX4tP47fzhvIMBU7qThPn
-        WhMb9ppfAm6Nlb8shi/SezVNuQ==
-X-Google-Smtp-Source: APXvYqxLKScwTCgp548n9a7BP36NeI4t7PtZ7T1Kd1Uq7aOCseccbFOKr58OdBOr4weZhXdkw8DQsQ==
-X-Received: by 2002:a1c:7ed7:: with SMTP id z206mr2789459wmc.104.1571223309902;
-        Wed, 16 Oct 2019 03:55:09 -0700 (PDT)
-Received: from apalos.home (ppp-94-65-92-5.home.otenet.gr. [94.65.92.5])
-        by smtp.gmail.com with ESMTPSA id p23sm1934147wmg.42.2019.10.16.03.55.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 03:55:09 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 13:55:06 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, thomas.petazzoni@bootlin.com,
-        brouer@redhat.com, matteo.croce@redhat.com, mw@semihalf.com
-Subject: Re: [PATCH v3 net-next 8/8] net: mvneta: add XDP_TX support
-Message-ID: <20191016105506.GA19689@apalos.home>
-References: <cover.1571049326.git.lorenzo@kernel.org>
- <a964f1a704f194169e80f9693cf3150adffc1278.1571049326.git.lorenzo@kernel.org>
- <20191015171152.41d9a747@cakuba.netronome.com>
- <20191016100900.GE2638@localhost.localdomain>
+        id S2392589AbfJPLFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 07:05:11 -0400
+Received: from imap1.codethink.co.uk ([176.9.8.82]:48172 "EHLO
+        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726083AbfJPLFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 07:05:11 -0400
+Received: from [167.98.27.226] (helo=rainbowdash.codethink.co.uk)
+        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
+        id 1iKh6l-0004pY-QH; Wed, 16 Oct 2019 12:04:47 +0100
+Received: from ben by rainbowdash.codethink.co.uk with local (Exim 4.92.2)
+        (envelope-from <ben@rainbowdash.codethink.co.uk>)
+        id 1iKh6l-0006Pw-EC; Wed, 16 Oct 2019 12:04:47 +0100
+From:   "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
+To:     linux-kernel@lists.codethink.co.uk
+Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: bpf: add static in net/core/filter.c
+Date:   Wed, 16 Oct 2019 12:04:46 +0100
+Message-Id: <20191016110446.24622-1-ben.dooks@codethink.co.uk>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191016100900.GE2638@localhost.localdomain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 12:09:00PM +0200, Lorenzo Bianconi wrote:
-> > On Mon, 14 Oct 2019 12:49:55 +0200, Lorenzo Bianconi wrote:
-> > > Implement XDP_TX verdict and ndo_xdp_xmit net_device_ops function
-> > > pointer
-> > > 
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > 
-> > > @@ -1972,6 +1975,109 @@ int mvneta_rx_refill_queue(struct mvneta_port *pp, struct mvneta_rx_queue *rxq)
-> > >  	return i;
-> > >  }
-> > >  
-> > > +static int
-> > > +mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
-> > > +			struct xdp_frame *xdpf, bool dma_map)
-> > > +{
-> > > +	struct mvneta_tx_desc *tx_desc;
-> > > +	struct mvneta_tx_buf *buf;
-> > > +	dma_addr_t dma_addr;
-> > > +
-> > > +	if (txq->count >= txq->tx_stop_threshold)
-> > > +		return MVNETA_XDP_CONSUMED;
-> > > +
-> > > +	tx_desc = mvneta_txq_next_desc_get(txq);
-> > > +
-> > > +	buf = &txq->buf[txq->txq_put_index];
-> > > +	if (dma_map) {
-> > > +		/* ndo_xdp_xmit */
-> > > +		dma_addr = dma_map_single(pp->dev->dev.parent, xdpf->data,
-> > > +					  xdpf->len, DMA_TO_DEVICE);
-> > > +		if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
-> > > +			mvneta_txq_desc_put(txq);
-> > > +			return MVNETA_XDP_CONSUMED;
-> > > +		}
-> > > +		buf->type = MVNETA_TYPE_XDP_NDO;
-> > > +	} else {
-> > > +		struct page *page = virt_to_page(xdpf->data);
-> > > +
-> > > +		dma_addr = page_pool_get_dma_addr(page) +
-> > > +			   pp->rx_offset_correction + MVNETA_MH_SIZE;
-> > > +		dma_sync_single_for_device(pp->dev->dev.parent, dma_addr,
-> > > +					   xdpf->len, DMA_BIDIRECTIONAL);
-> > 
-> > This looks a little suspicious, XDP could have moved the start of frame
-> > with adjust_head, right? You should also use xdpf->data to find where
-> > the frame starts, no?
-> 
-> uhm, right..we need to update the dma_addr doing something like:
-> 
-> dma_addr = page_pool_get_dma_addr(page) + xdpf->data - xdpf;
+There are a number of structs in net/core/filter.c
+that are not exported or declared outside of the
+file. Fix the following warnings by making these
+all static:
 
-Can we do  page_pool_get_dma_addr(page) + xdpf->headroom as well right?
+net/core/filter.c:8465:31: warning: symbol 'sk_filter_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8472:27: warning: symbol 'sk_filter_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8476:31: warning: symbol 'tc_cls_act_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8484:27: warning: symbol 'tc_cls_act_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8488:31: warning: symbol 'xdp_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8495:27: warning: symbol 'xdp_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8499:31: warning: symbol 'cg_skb_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8505:27: warning: symbol 'cg_skb_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8509:31: warning: symbol 'lwt_in_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8515:27: warning: symbol 'lwt_in_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8519:31: warning: symbol 'lwt_out_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8525:27: warning: symbol 'lwt_out_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8529:31: warning: symbol 'lwt_xmit_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8536:27: warning: symbol 'lwt_xmit_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8540:31: warning: symbol 'lwt_seg6local_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8546:27: warning: symbol 'lwt_seg6local_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8550:31: warning: symbol 'cg_sock_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8556:27: warning: symbol 'cg_sock_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8559:31: warning: symbol 'cg_sock_addr_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8565:27: warning: symbol 'cg_sock_addr_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8568:31: warning: symbol 'sock_ops_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8574:27: warning: symbol 'sock_ops_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8577:31: warning: symbol 'sk_skb_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8584:27: warning: symbol 'sk_skb_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8587:31: warning: symbol 'sk_msg_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8594:27: warning: symbol 'sk_msg_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8597:31: warning: symbol 'flow_dissector_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8603:27: warning: symbol 'flow_dissector_prog_ops' was not declared. Should it be static?
+net/core/filter.c:8929:31: warning: symbol 'sk_reuseport_verifier_ops' was not declared. Should it be static?
+net/core/filter.c:8935:27: warning: symbol 'sk_reuseport_prog_ops' was not declared. Should it be static?
 
-> 
-> and then use xdpf->len for dma-sync
-> 
-> > 
-> > > +		buf->type = MVNETA_TYPE_XDP_TX;
-> > > +	}
-> > > +	buf->xdpf = xdpf;
-> > > +
-> > > +	tx_desc->command = MVNETA_TXD_FLZ_DESC;
-> > > +	tx_desc->buf_phys_addr = dma_addr;
-> > > +	tx_desc->data_size = xdpf->len;
-> > > +
-> > > +	mvneta_update_stats(pp, 1, xdpf->len, true);
-> > > +	mvneta_txq_inc_put(txq);
-> > > +	txq->pending++;
-> > > +	txq->count++;
-> > > +
-> > > +	return MVNETA_XDP_TX;
-> > > +}
-> > > +
-> > > +static int
-> > > +mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
-> > > +{
-> > > +	struct xdp_frame *xdpf = convert_to_xdp_frame(xdp);
-> > > +	int cpu = smp_processor_id();
-> > > +	struct mvneta_tx_queue *txq;
-> > > +	struct netdev_queue *nq;
-> > > +	u32 ret;
-> > > +
-> > > +	if (unlikely(!xdpf))
-> > > +		return MVNETA_XDP_CONSUMED;
-> > 
-> > Personally I'd prefer you haven't called a function which return code
-> > has to be error checked in local variable init.
-> 
-> do you mean moving cpu = smp_processor_id(); after the if condition?
-> 
-> Regards,
-> Lorenzo
-> 
-> > 
-> > > +
-> > > +	txq = &pp->txqs[cpu % txq_number];
-> > > +	nq = netdev_get_tx_queue(pp->dev, txq->id);
-> > > +
-> > > +	__netif_tx_lock(nq, cpu);
-> > > +	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, false);
-> > > +	if (ret == MVNETA_XDP_TX)
-> > > +		mvneta_txq_pend_desc_add(pp, txq, 0);
-> > > +	__netif_tx_unlock(nq);
-> > > +
-> > > +	return ret;
-> > > +}
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+---
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc: Jesper Dangaard Brouer <hawk@kernel.org>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: bpf@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ net/core/filter.c | 60 +++++++++++++++++++++++------------------------
+ 1 file changed, 30 insertions(+), 30 deletions(-)
 
-Thanks
-/Ilias
+diff --git a/net/core/filter.c b/net/core/filter.c
+index ed6563622ce3..f7338fee41f8 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -8462,18 +8462,18 @@ static u32 sk_msg_convert_ctx_access(enum bpf_access_type type,
+ 	return insn - insn_buf;
+ }
+ 
+-const struct bpf_verifier_ops sk_filter_verifier_ops = {
++static const struct bpf_verifier_ops sk_filter_verifier_ops = {
+ 	.get_func_proto		= sk_filter_func_proto,
+ 	.is_valid_access	= sk_filter_is_valid_access,
+ 	.convert_ctx_access	= bpf_convert_ctx_access,
+ 	.gen_ld_abs		= bpf_gen_ld_abs,
+ };
+ 
+-const struct bpf_prog_ops sk_filter_prog_ops = {
++static const struct bpf_prog_ops sk_filter_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
+-const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
++static const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
+ 	.get_func_proto		= tc_cls_act_func_proto,
+ 	.is_valid_access	= tc_cls_act_is_valid_access,
+ 	.convert_ctx_access	= tc_cls_act_convert_ctx_access,
+@@ -8481,126 +8481,126 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
+ 	.gen_ld_abs		= bpf_gen_ld_abs,
+ };
+ 
+-const struct bpf_prog_ops tc_cls_act_prog_ops = {
++static const struct bpf_prog_ops tc_cls_act_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
+-const struct bpf_verifier_ops xdp_verifier_ops = {
++static const struct bpf_verifier_ops xdp_verifier_ops = {
+ 	.get_func_proto		= xdp_func_proto,
+ 	.is_valid_access	= xdp_is_valid_access,
+ 	.convert_ctx_access	= xdp_convert_ctx_access,
+ 	.gen_prologue		= bpf_noop_prologue,
+ };
+ 
+-const struct bpf_prog_ops xdp_prog_ops = {
++static const struct bpf_prog_ops xdp_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_xdp,
+ };
+ 
+-const struct bpf_verifier_ops cg_skb_verifier_ops = {
++static const struct bpf_verifier_ops cg_skb_verifier_ops = {
+ 	.get_func_proto		= cg_skb_func_proto,
+ 	.is_valid_access	= cg_skb_is_valid_access,
+ 	.convert_ctx_access	= bpf_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops cg_skb_prog_ops = {
++static const struct bpf_prog_ops cg_skb_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
+-const struct bpf_verifier_ops lwt_in_verifier_ops = {
++static const struct bpf_verifier_ops lwt_in_verifier_ops = {
+ 	.get_func_proto		= lwt_in_func_proto,
+ 	.is_valid_access	= lwt_is_valid_access,
+ 	.convert_ctx_access	= bpf_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops lwt_in_prog_ops = {
++static const struct bpf_prog_ops lwt_in_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
+-const struct bpf_verifier_ops lwt_out_verifier_ops = {
++static const struct bpf_verifier_ops lwt_out_verifier_ops = {
+ 	.get_func_proto		= lwt_out_func_proto,
+ 	.is_valid_access	= lwt_is_valid_access,
+ 	.convert_ctx_access	= bpf_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops lwt_out_prog_ops = {
++static const struct bpf_prog_ops lwt_out_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
+-const struct bpf_verifier_ops lwt_xmit_verifier_ops = {
++static const struct bpf_verifier_ops lwt_xmit_verifier_ops = {
+ 	.get_func_proto		= lwt_xmit_func_proto,
+ 	.is_valid_access	= lwt_is_valid_access,
+ 	.convert_ctx_access	= bpf_convert_ctx_access,
+ 	.gen_prologue		= tc_cls_act_prologue,
+ };
+ 
+-const struct bpf_prog_ops lwt_xmit_prog_ops = {
++static const struct bpf_prog_ops lwt_xmit_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
+-const struct bpf_verifier_ops lwt_seg6local_verifier_ops = {
++static const struct bpf_verifier_ops lwt_seg6local_verifier_ops = {
+ 	.get_func_proto		= lwt_seg6local_func_proto,
+ 	.is_valid_access	= lwt_is_valid_access,
+ 	.convert_ctx_access	= bpf_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops lwt_seg6local_prog_ops = {
++static const struct bpf_prog_ops lwt_seg6local_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
+-const struct bpf_verifier_ops cg_sock_verifier_ops = {
++static const struct bpf_verifier_ops cg_sock_verifier_ops = {
+ 	.get_func_proto		= sock_filter_func_proto,
+ 	.is_valid_access	= sock_filter_is_valid_access,
+ 	.convert_ctx_access	= bpf_sock_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops cg_sock_prog_ops = {
++static const struct bpf_prog_ops cg_sock_prog_ops = {
+ };
+ 
+-const struct bpf_verifier_ops cg_sock_addr_verifier_ops = {
++static const struct bpf_verifier_ops cg_sock_addr_verifier_ops = {
+ 	.get_func_proto		= sock_addr_func_proto,
+ 	.is_valid_access	= sock_addr_is_valid_access,
+ 	.convert_ctx_access	= sock_addr_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops cg_sock_addr_prog_ops = {
++static const struct bpf_prog_ops cg_sock_addr_prog_ops = {
+ };
+ 
+-const struct bpf_verifier_ops sock_ops_verifier_ops = {
++static const struct bpf_verifier_ops sock_ops_verifier_ops = {
+ 	.get_func_proto		= sock_ops_func_proto,
+ 	.is_valid_access	= sock_ops_is_valid_access,
+ 	.convert_ctx_access	= sock_ops_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops sock_ops_prog_ops = {
++static const struct bpf_prog_ops sock_ops_prog_ops = {
+ };
+ 
+-const struct bpf_verifier_ops sk_skb_verifier_ops = {
++static const struct bpf_verifier_ops sk_skb_verifier_ops = {
+ 	.get_func_proto		= sk_skb_func_proto,
+ 	.is_valid_access	= sk_skb_is_valid_access,
+ 	.convert_ctx_access	= sk_skb_convert_ctx_access,
+ 	.gen_prologue		= sk_skb_prologue,
+ };
+ 
+-const struct bpf_prog_ops sk_skb_prog_ops = {
++static const struct bpf_prog_ops sk_skb_prog_ops = {
+ };
+ 
+-const struct bpf_verifier_ops sk_msg_verifier_ops = {
++static const struct bpf_verifier_ops sk_msg_verifier_ops = {
+ 	.get_func_proto		= sk_msg_func_proto,
+ 	.is_valid_access	= sk_msg_is_valid_access,
+ 	.convert_ctx_access	= sk_msg_convert_ctx_access,
+ 	.gen_prologue		= bpf_noop_prologue,
+ };
+ 
+-const struct bpf_prog_ops sk_msg_prog_ops = {
++static const struct bpf_prog_ops sk_msg_prog_ops = {
+ };
+ 
+-const struct bpf_verifier_ops flow_dissector_verifier_ops = {
++static const struct bpf_verifier_ops flow_dissector_verifier_ops = {
+ 	.get_func_proto		= flow_dissector_func_proto,
+ 	.is_valid_access	= flow_dissector_is_valid_access,
+ 	.convert_ctx_access	= flow_dissector_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops flow_dissector_prog_ops = {
++static const struct bpf_prog_ops flow_dissector_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_flow_dissector,
+ };
+ 
+@@ -8926,12 +8926,12 @@ static u32 sk_reuseport_convert_ctx_access(enum bpf_access_type type,
+ 	return insn - insn_buf;
+ }
+ 
+-const struct bpf_verifier_ops sk_reuseport_verifier_ops = {
++static const struct bpf_verifier_ops sk_reuseport_verifier_ops = {
+ 	.get_func_proto		= sk_reuseport_func_proto,
+ 	.is_valid_access	= sk_reuseport_is_valid_access,
+ 	.convert_ctx_access	= sk_reuseport_convert_ctx_access,
+ };
+ 
+-const struct bpf_prog_ops sk_reuseport_prog_ops = {
++static const struct bpf_prog_ops sk_reuseport_prog_ops = {
+ };
+ #endif /* CONFIG_INET */
+-- 
+2.23.0
+
