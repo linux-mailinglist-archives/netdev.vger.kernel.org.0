@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4734D9B13
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22EA5D9B33
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 22:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388563AbfJPUJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 16:09:24 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:32881 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729175AbfJPUJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 16:09:24 -0400
-Received: by mail-qt1-f194.google.com with SMTP id r5so38088666qtd.0;
-        Wed, 16 Oct 2019 13:09:23 -0700 (PDT)
+        id S1732857AbfJPUNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 16:13:37 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43972 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731781AbfJPUNh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 16:13:37 -0400
+Received: by mail-qt1-f195.google.com with SMTP id t20so32708091qtr.10;
+        Wed, 16 Oct 2019 13:13:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=axDyeMHNOs8n9VJ6qSHCJll3Dt2OKehRDqeUlqAO/MU=;
-        b=q0GsoJcU/89pTr0XopYbY2/IPlE+aV65lgIjW1JZ3Qgksrnf8V0+9IIQxDd6GXl4Fy
-         LDlywO9BIIN1Sq7KZEwteyJf0xrB3rfneH0f91m+PosDtHj4m/Kkr9wyQHWIzvn7hk1v
-         NmF3qlF6IgtpYTn7c0rzO5Zye9RE0/N918ZEnQdyoyb/TOtFbtXPa/6jWw41N8YWN9vB
-         YFHLR59/o817wAJH6BOL5hjis0/wcYVpzVPsgcOZvscWBIdQKPPWPpKncZarAUSSEOYc
-         XAXypiRGWuzmucLegePSQA+cba18uQVz3rNdX6uoQaPksGIP2z6ErUo5oYBL9+WFMMXa
-         vHbQ==
+        bh=LC0y7kLEaD0/+g/awxDip6/YjJkRa+fzM+ASYceAP1Y=;
+        b=RqLFqBrzQ12oXmM81YkFxmfKtmWGCkdtcYmefGIVT8RjpUCZWDbYFo7yem8vwUTcqo
+         ew/J382Rhg+wJCegUvsAoQokinHHbKfpNcTmzXYfaHtOfi6PZ3QdqGBgYc22NmaXWVZ7
+         Pd7S+ATUYUgNhon8MsfOkzKN/LUfvY8xjBXNkXglK5st/bR8gmN0XVf4olmC9Dyxn8NJ
+         VfyB9IMo2cuR+caTAKFRPUblGgltLxKEWp+YtynKmqQ/m2RCHkmw8baXiwG2avnXrZT/
+         qKjLiSdtXEps87KRudlVkwZl7hE3QUtvZzjlbIYWj/G2KJyfGb9IYE2CRe8W1VnZ2Lus
+         kLGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=axDyeMHNOs8n9VJ6qSHCJll3Dt2OKehRDqeUlqAO/MU=;
-        b=lvV4oaDlafKcCavFmQ/TQ20DA4lH3DFVsoAwl62yjHdfLml7AXN8P5a/ipiyjimU/P
-         qrt0RgV/QykmUPTpMgWquPoXPzIxiMfxGUUia88v6F2v0fd0sHtCAtpNxPTMMLQlTsF2
-         /cE9G8LgWKPYSoYIlwh8b3q2EkixPlH8Xca70iNgo3oH1XwlbYBQB24Q4pjlkzQEaMRn
-         96EhNCd3jfCDR5TydUHowKvCMQTHPH+Yr6Uio9J2fOk7sd3+z47ZRhf81gebn5LBBtoE
-         /M7ZXAjyFyrSurZuMADe/mQ6TP6jlSO6OipTFJ4HzkfunaSawOuqG/n8OJmGV+RKVmQv
-         NMRg==
-X-Gm-Message-State: APjAAAXB2TdgXCR8LCq4ogHjOV6Z4yQm2UNQ6EOM0xHlgNx3rhzheAX1
-        P3FrVKtAvGNtBdZ+RxsDHo+NhEHRGYT4dWhHVvv7NuWpiepJaA==
-X-Google-Smtp-Source: APXvYqz5I0vTewkfI3CWOgHddJZCqowz+FT0hezXQZ/mzpqMIz7wAX2Lt66B3Bof3tJnJCe1RA4RejBPixXa2hpfjbY=
-X-Received: by 2002:a05:6214:134d:: with SMTP id b13mr43000800qvw.228.1571256562381;
- Wed, 16 Oct 2019 13:09:22 -0700 (PDT)
+        bh=LC0y7kLEaD0/+g/awxDip6/YjJkRa+fzM+ASYceAP1Y=;
+        b=icm6IJa9kuPqE2VrDLDbHXrld+oqwyZrmtkkgiCboRJE+uM+/us9jWixJgRk8cEyp4
+         Vq0c+4jDo1ektlO/Hpfj144KqSOlR4miz/6mX7v/6YiU2vWX7doi919sDSNf+TgkCb2x
+         WZHCn4G0zADK7GmvKYMQM15fqXVD55bjhRsTHMTFL9wDdM118T5GvyDmLJnhXAYagrqT
+         McjBInj7BJsu4OhSP2/IksNOku0wgQjRazxOdMwEu2iaTnxww/DRr/dXK24GfVGYoGC2
+         WYGCVKxlhafle+EAixjk8f0annIqWXTg6W3+om4USmhFzgoGKPx6Ok+hlBThuUjRmQ01
+         AHoA==
+X-Gm-Message-State: APjAAAU7cZvg9ARX7/H9jt8V2fkXJAQLlK+fkOPStLtzLqkxNVpX7u9X
+        z0S8k5NlW9aeerberhnclFP1nHU6UVjiRaWNRVI=
+X-Google-Smtp-Source: APXvYqzSEDZP0klJ470HfWWZ1NPFKxXzpv3cGPwsGwpY6xF/zEcQcDE2MVN0jzq/9Giga/1c7MsEM1NiNur5Jrp7TDQ=
+X-Received: by 2002:ac8:108e:: with SMTP id a14mr45562406qtj.171.1571256816274;
+ Wed, 16 Oct 2019 13:13:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191016032505.2089704-1-ast@kernel.org> <20191016032505.2089704-7-ast@kernel.org>
-In-Reply-To: <20191016032505.2089704-7-ast@kernel.org>
+References: <20191016032505.2089704-1-ast@kernel.org> <20191016032505.2089704-8-ast@kernel.org>
+In-Reply-To: <20191016032505.2089704-8-ast@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Oct 2019 13:09:11 -0700
-Message-ID: <CAEf4BzaPgVjPueC8X52k8J6huAi1aL-XZ-KHnbv6VPSmc2TXnA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 06/11] bpf: implement accurate raw_tp context
- access via BTF
+Date:   Wed, 16 Oct 2019 13:13:25 -0700
+Message-ID: <CAEf4BzYeMSavRrab4yG539S_DzRfMfMcmR93JuxA0wLhEEb2yg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 07/11] bpf: attach raw_tp program with BTF via
+ type name
 To:     Alexei Starovoitov <ast@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>, x86@kernel.org,
@@ -61,77 +61,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Oct 16, 2019 at 4:16 AM Alexei Starovoitov <ast@kernel.org> wrote:
 >
-> libbpf analyzes bpf C program, searches in-kernel BTF for given type name
-> and stores it into expected_attach_type.
-> The kernel verifier expects this btf_id to point to something like:
-> typedef void (*btf_trace_kfree_skb)(void *, struct sk_buff *skb, void *loc);
-> which represents signature of raw_tracepoint "kfree_skb".
+> BTF type id specified at program load time has all
+> necessary information to attach that program to raw tracepoint.
+> Use kernel type name to find raw tracepoint.
 >
-> Then btf_ctx_access() matches ctx+0 access in bpf program with 'skb'
-> and 'ctx+8' access with 'loc' arguments of "kfree_skb" tracepoint.
-> In first case it passes btf_id of 'struct sk_buff *' back to the verifier core
-> and 'void *' in second case.
->
-> Then the verifier tracks PTR_TO_BTF_ID as any other pointer type.
-> Like PTR_TO_SOCKET points to 'struct bpf_sock',
-> PTR_TO_TCP_SOCK points to 'struct bpf_tcp_sock', and so on.
-> PTR_TO_BTF_ID points to in-kernel structs.
-> If 1234 is btf_id of 'struct sk_buff' in vmlinux's BTF
-> then PTR_TO_BTF_ID#1234 points to one of in kernel skbs.
->
-> When PTR_TO_BTF_ID#1234 is dereferenced (like r2 = *(u64 *)r1 + 32)
-> the btf_struct_access() checks which field of 'struct sk_buff' is
-> at offset 32. Checks that size of access matches type definition
-> of the field and continues to track the dereferenced type.
-> If that field was a pointer to 'struct net_device' the r2's type
-> will be PTR_TO_BTF_ID#456. Where 456 is btf_id of 'struct net_device'
-> in vmlinux's BTF.
->
-> Such verifier analysis prevents "cheating" in BPF C program.
-> The program cannot cast arbitrary pointer to 'struct sk_buff *'
-> and access it. C compiler would allow type cast, of course,
-> but the verifier will notice type mismatch based on BPF assembly
-> and in-kernel BTF.
+> Add missing CHECK_ATTR() condition.
 >
 > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 > ---
->  include/linux/bpf.h          |  17 +++-
->  include/linux/bpf_verifier.h |   4 +
->  kernel/bpf/btf.c             | 190 +++++++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c        |  88 +++++++++++++++-
->  kernel/trace/bpf_trace.c     |   2 +-
->  5 files changed, 296 insertions(+), 5 deletions(-)
->
+> There is a tiny chance that CHECK_ATTR() may break some user space.
+> In such case the CHECK_ATTR change will be reverted.
 
-Maybe it's just me reading this code for Nth time, but I find
-btf_struct_access() much easier to follow now. Thanks!
+Sounds good.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-[...]
-
->  static void print_verifier_state(struct bpf_verifier_env *env,
->                                  const struct bpf_func_state *state)
->  {
-> @@ -460,6 +480,8 @@ static void print_verifier_state(struct bpf_verifier_env *env,
->                         /* reg->off should be 0 for SCALAR_VALUE */
->                         verbose(env, "%lld", reg->var_off.value + reg->off);
->                 } else {
-> +                       if (t == PTR_TO_BTF_ID)
-> +                               verbose(env, "%s", kernel_type_name(reg->btf_id));
->                         verbose(env, "(id=%d", reg->id);
-
-not related to specific changes in this patch set, just to bring this
-up, but this extra id=%d part is quite confusing for register types
-that shouldn't really have id associated with it. We should probably
-add some filter here to print this only for ref-tracked register
-types.
-
->                         if (reg_type_may_be_refcounted_or_null(t))
->                                 verbose(env, ",ref_obj_id=%d", reg->ref_obj_id);
-> @@ -2337,10 +2359,12 @@ static int check_packet_access(struct bpf_verifier_env *env, u32 regno, int off,
+> ---
+>  kernel/bpf/syscall.c | 70 +++++++++++++++++++++++++++++---------------
+>  1 file changed, 47 insertions(+), 23 deletions(-)
 >
->  /* check access to 'struct bpf_context' fields.  Supports fixed offsets only */
->  static int check_ctx_access(struct bpf_verifier_env *env, int insn_idx, int off, int size,
-
-[...]
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index b56c482c9760..523e3ac15a08 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -1816,17 +1816,52 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+>         struct bpf_raw_tracepoint *raw_tp;
+>         struct bpf_raw_event_map *btp;
+>         struct bpf_prog *prog;
+> -       char tp_name[128];
+> +       const char *tp_name;
+> +       char buf[128];
+>         int tp_fd, err;
+>
+> -       if (strncpy_from_user(tp_name, u64_to_user_ptr(attr->raw_tracepoint.name),
+> -                             sizeof(tp_name) - 1) < 0)
+> -               return -EFAULT;
+> -       tp_name[sizeof(tp_name) - 1] = 0;
+> +       if (CHECK_ATTR(BPF_RAW_TRACEPOINT_OPEN))
+> +               return -EINVAL;
+> +
+> +       prog = bpf_prog_get(attr->raw_tracepoint.prog_fd);
+> +       if (IS_ERR(prog))
+> +               return PTR_ERR(prog);
+> +
+> +       if (prog->type != BPF_PROG_TYPE_RAW_TRACEPOINT &&
+> +           prog->type != BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE) {
+> +               err = -EINVAL;
+> +               goto out_put_prog;
+> +       }
+> +
+> +       if (prog->type == BPF_PROG_TYPE_RAW_TRACEPOINT &&
+> +           prog->aux->attach_btf_id) {
+> +               if (attr->raw_tracepoint.name) {
+> +                       /* raw_tp name should not be specified in raw_tp
+> +                        * programs that were verified via in-kernel BTF info
+> +                        */
+> +                       err = -EINVAL;
+> +                       goto out_put_prog;
+> +               }
+> +               /* raw_tp name is taken from type name instead */
+> +               tp_name = kernel_type_name(prog->aux->attach_btf_id);
+> +               /* skip the prefix */
+> +               tp_name += sizeof("btf_trace_") - 1;
+> +       } else {
+> +               if (strncpy_from_user(buf,
+> +                                     u64_to_user_ptr(attr->raw_tracepoint.name),
+> +                                     sizeof(buf) - 1) < 0) {
+> +                       err = -EFAULT;
+> +                       goto out_put_prog;
+> +               }
+> +               buf[sizeof(buf) - 1] = 0;
+> +               tp_name = buf;
+> +       }
+>
+>         btp = bpf_get_raw_tracepoint(tp_name);
+> -       if (!btp)
+> -               return -ENOENT;
+> +       if (!btp) {
+> +               err = -ENOENT;
+> +               goto out_put_prog;
+> +       }
+>
+>         raw_tp = kzalloc(sizeof(*raw_tp), GFP_USER);
+>         if (!raw_tp) {
+> @@ -1834,38 +1869,27 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+>                 goto out_put_btp;
+>         }
+>         raw_tp->btp = btp;
+> -
+> -       prog = bpf_prog_get(attr->raw_tracepoint.prog_fd);
+> -       if (IS_ERR(prog)) {
+> -               err = PTR_ERR(prog);
+> -               goto out_free_tp;
+> -       }
+> -       if (prog->type != BPF_PROG_TYPE_RAW_TRACEPOINT &&
+> -           prog->type != BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE) {
+> -               err = -EINVAL;
+> -               goto out_put_prog;
+> -       }
+> +       raw_tp->prog = prog;
+>
+>         err = bpf_probe_register(raw_tp->btp, prog);
+>         if (err)
+> -               goto out_put_prog;
+> +               goto out_free_tp;
+>
+> -       raw_tp->prog = prog;
+>         tp_fd = anon_inode_getfd("bpf-raw-tracepoint", &bpf_raw_tp_fops, raw_tp,
+>                                  O_CLOEXEC);
+>         if (tp_fd < 0) {
+>                 bpf_probe_unregister(raw_tp->btp, prog);
+>                 err = tp_fd;
+> -               goto out_put_prog;
+> +               goto out_free_tp;
+>         }
+>         return tp_fd;
+>
+> -out_put_prog:
+> -       bpf_prog_put(prog);
+>  out_free_tp:
+>         kfree(raw_tp);
+>  out_put_btp:
+>         bpf_put_raw_tracepoint(btp);
+> +out_put_prog:
+> +       bpf_prog_put(prog);
+>         return err;
+>  }
+>
+> --
+> 2.17.1
+>
