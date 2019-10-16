@@ -2,292 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23AD8D8EE4
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 13:05:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82B16D8EF5
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 13:07:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392589AbfJPLFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 07:05:11 -0400
-Received: from imap1.codethink.co.uk ([176.9.8.82]:48172 "EHLO
-        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726083AbfJPLFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 07:05:11 -0400
-Received: from [167.98.27.226] (helo=rainbowdash.codethink.co.uk)
-        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
-        id 1iKh6l-0004pY-QH; Wed, 16 Oct 2019 12:04:47 +0100
-Received: from ben by rainbowdash.codethink.co.uk with local (Exim 4.92.2)
-        (envelope-from <ben@rainbowdash.codethink.co.uk>)
-        id 1iKh6l-0006Pw-EC; Wed, 16 Oct 2019 12:04:47 +0100
-From:   "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
-To:     linux-kernel@lists.codethink.co.uk
-Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: bpf: add static in net/core/filter.c
-Date:   Wed, 16 Oct 2019 12:04:46 +0100
-Message-Id: <20191016110446.24622-1-ben.dooks@codethink.co.uk>
-X-Mailer: git-send-email 2.23.0
+        id S2404857AbfJPLH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 07:07:57 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40211 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728406AbfJPLH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 07:07:57 -0400
+Received: by mail-wm1-f68.google.com with SMTP id b24so2277463wmj.5
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 04:07:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Y4I2x7tWbjHIR6xTqmE1PmJ0AHLSUiZ9eMRjokfF2f0=;
+        b=nAyv7Qvv1dZv+r7nArBKVE2s5tuoW8GeBlFmiiCW9xJp8gffcVYwwgmec14C0cFbyF
+         2k4PdOGE69GZ4s3uy46kSagz42tsdqmH+CLCDSdedH0sXcGhndyXrV741iXe4yX8FRCx
+         XGqmVQEAcYVEHsziUBtsD+bXlVhUOEZ41rF2ug6qZ1eNRjR3VtmuvR+0BROaqA9il5vR
+         ToG08pbJj+JW/GjSNl7ue9hcWuJEro2L7Jcv9IjJhA1JspXicRo9ICYe0v1N9MY+bdgF
+         z26VvoEVxlUmLkIeGgj2CadhwSee0u6UTKQfxLYQ7kMAQ9/oInukvpWT2eThrJsGrgOy
+         4APQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Y4I2x7tWbjHIR6xTqmE1PmJ0AHLSUiZ9eMRjokfF2f0=;
+        b=JUTmAeRJqBQemzGMBU1v2ZQVb8ThrWEofTlhZzC3K8vOsiQrHRhN1oFcCq2B2zRC3v
+         wS+Zcl0+5tViSiIbukNCc57hmF4N+DgI+grmmLGWgnQ1U5ZfSGp2DnTojR2d00VaD8A5
+         IrnW3lBr4MR2ZwV4ptGkj8gYHiqAfidWruhiGbePYf1Y3W2ffzFiXHfgLGLzldych3ra
+         9g8ZAvvgqMYrD+EVKNPF9v9QY0Hz/0gLVCq/M1ytcli1s32+DfCjQ7FRlfEcitFj+1eH
+         AErQVqC6PeRaRDUT9kTlndM+XMQQnyCCY1JkKXFL2vF1QaIFVRTehI1L6v8yj8ssTKdN
+         KF6A==
+X-Gm-Message-State: APjAAAXiyi1lOgS6MCrQCUoRikY1m0WsY03bvJ+vt6KNJ1COGYkccuUV
+        7GoJBdv6DVcHMj93sxGNxb+Yow==
+X-Google-Smtp-Source: APXvYqzHrsCUSfOEd3jBzMVXytMECiSrtKiRxzvKrzB6clcSVqBaSh1yDxrE/wpb8ElLYbGXFQAQdw==
+X-Received: by 2002:a1c:48d6:: with SMTP id v205mr2717744wma.35.1571224074980;
+        Wed, 16 Oct 2019 04:07:54 -0700 (PDT)
+Received: from netronome.com (penelope-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:c685:8ff:fe7c:9971])
+        by smtp.gmail.com with ESMTPSA id e18sm34085839wrv.63.2019.10.16.04.07.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 04:07:54 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 13:07:52 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com, andrew@lunn.ch,
+        netdev@vger.kernel.org,
+        Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
+Subject: Re: [PATCH v3 net 1/2] dpaa2-eth: add irq for the dpmac
+ connect/disconnect event
+Message-ID: <20191016110751.rkt3tgdlkxjf4ip3@netronome.com>
+References: <1571211383-5759-1-git-send-email-ioana.ciornei@nxp.com>
+ <1571211383-5759-2-git-send-email-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571211383-5759-2-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are a number of structs in net/core/filter.c
-that are not exported or declared outside of the
-file. Fix the following warnings by making these
-all static:
+On Wed, Oct 16, 2019 at 10:36:22AM +0300, Ioana Ciornei wrote:
+> From: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
+> 
+> Add IRQ for the DPNI endpoint change event, resolving the issue
+> when a dynamically created DPNI gets a randomly generated hw address
+> when the endpoint is a DPMAC object.
+> 
+> Signed-off-by: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+> Changes in v2:
+>  - none
+> Changes in v3:
+>  - none
+> 
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 6 +++++-
+>  drivers/net/ethernet/freescale/dpaa2/dpni.h      | 5 ++++-
+>  2 files changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index 162d7d8fb295..5acd734a216b 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -3306,6 +3306,9 @@ static irqreturn_t dpni_irq0_handler_thread(int irq_num, void *arg)
+>  	if (status & DPNI_IRQ_EVENT_LINK_CHANGED)
+>  		link_state_update(netdev_priv(net_dev));
+>  
+> +	if (status & DPNI_IRQ_EVENT_ENDPOINT_CHANGED)
+> +		set_mac_addr(netdev_priv(net_dev));
+> +
+>  	return IRQ_HANDLED;
+>  }
+>  
+> @@ -3331,7 +3334,8 @@ static int setup_irqs(struct fsl_mc_device *ls_dev)
+>  	}
+>  
+>  	err = dpni_set_irq_mask(ls_dev->mc_io, 0, ls_dev->mc_handle,
+> -				DPNI_IRQ_INDEX, DPNI_IRQ_EVENT_LINK_CHANGED);
+> +				DPNI_IRQ_INDEX, DPNI_IRQ_EVENT_LINK_CHANGED |
+> +				DPNI_IRQ_EVENT_ENDPOINT_CHANGED);
+>  	if (err < 0) {
+>  		dev_err(&ls_dev->dev, "dpni_set_irq_mask(): %d\n", err);
+>  		goto free_irq;
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+> index fd583911b6c0..ee0711d06b3a 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+> @@ -133,9 +133,12 @@ int dpni_reset(struct fsl_mc_io	*mc_io,
+>   */
+>  #define DPNI_IRQ_INDEX				0
+>  /**
+> - * IRQ event - indicates a change in link state
+> + * IRQ events:
+> + *       indicates a change in link state
+> + *       indicates a change in endpoint
+>   */
+>  #define DPNI_IRQ_EVENT_LINK_CHANGED		0x00000001
+> +#define DPNI_IRQ_EVENT_ENDPOINT_CHANGED		0x00000002
 
-net/core/filter.c:8465:31: warning: symbol 'sk_filter_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8472:27: warning: symbol 'sk_filter_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8476:31: warning: symbol 'tc_cls_act_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8484:27: warning: symbol 'tc_cls_act_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8488:31: warning: symbol 'xdp_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8495:27: warning: symbol 'xdp_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8499:31: warning: symbol 'cg_skb_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8505:27: warning: symbol 'cg_skb_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8509:31: warning: symbol 'lwt_in_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8515:27: warning: symbol 'lwt_in_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8519:31: warning: symbol 'lwt_out_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8525:27: warning: symbol 'lwt_out_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8529:31: warning: symbol 'lwt_xmit_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8536:27: warning: symbol 'lwt_xmit_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8540:31: warning: symbol 'lwt_seg6local_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8546:27: warning: symbol 'lwt_seg6local_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8550:31: warning: symbol 'cg_sock_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8556:27: warning: symbol 'cg_sock_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8559:31: warning: symbol 'cg_sock_addr_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8565:27: warning: symbol 'cg_sock_addr_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8568:31: warning: symbol 'sock_ops_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8574:27: warning: symbol 'sock_ops_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8577:31: warning: symbol 'sk_skb_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8584:27: warning: symbol 'sk_skb_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8587:31: warning: symbol 'sk_msg_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8594:27: warning: symbol 'sk_msg_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8597:31: warning: symbol 'flow_dissector_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8603:27: warning: symbol 'flow_dissector_prog_ops' was not declared. Should it be static?
-net/core/filter.c:8929:31: warning: symbol 'sk_reuseport_verifier_ops' was not declared. Should it be static?
-net/core/filter.c:8935:27: warning: symbol 'sk_reuseport_prog_ops' was not declared. Should it be static?
+Perhaps (as a follow-up?) this is a candidate for using the BIT() macro.
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc: Jesper Dangaard Brouer <hawk@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- net/core/filter.c | 60 +++++++++++++++++++++++------------------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
-
-diff --git a/net/core/filter.c b/net/core/filter.c
-index ed6563622ce3..f7338fee41f8 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8462,18 +8462,18 @@ static u32 sk_msg_convert_ctx_access(enum bpf_access_type type,
- 	return insn - insn_buf;
- }
- 
--const struct bpf_verifier_ops sk_filter_verifier_ops = {
-+static const struct bpf_verifier_ops sk_filter_verifier_ops = {
- 	.get_func_proto		= sk_filter_func_proto,
- 	.is_valid_access	= sk_filter_is_valid_access,
- 	.convert_ctx_access	= bpf_convert_ctx_access,
- 	.gen_ld_abs		= bpf_gen_ld_abs,
- };
- 
--const struct bpf_prog_ops sk_filter_prog_ops = {
-+static const struct bpf_prog_ops sk_filter_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
--const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
-+static const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
- 	.get_func_proto		= tc_cls_act_func_proto,
- 	.is_valid_access	= tc_cls_act_is_valid_access,
- 	.convert_ctx_access	= tc_cls_act_convert_ctx_access,
-@@ -8481,126 +8481,126 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
- 	.gen_ld_abs		= bpf_gen_ld_abs,
- };
- 
--const struct bpf_prog_ops tc_cls_act_prog_ops = {
-+static const struct bpf_prog_ops tc_cls_act_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
--const struct bpf_verifier_ops xdp_verifier_ops = {
-+static const struct bpf_verifier_ops xdp_verifier_ops = {
- 	.get_func_proto		= xdp_func_proto,
- 	.is_valid_access	= xdp_is_valid_access,
- 	.convert_ctx_access	= xdp_convert_ctx_access,
- 	.gen_prologue		= bpf_noop_prologue,
- };
- 
--const struct bpf_prog_ops xdp_prog_ops = {
-+static const struct bpf_prog_ops xdp_prog_ops = {
- 	.test_run		= bpf_prog_test_run_xdp,
- };
- 
--const struct bpf_verifier_ops cg_skb_verifier_ops = {
-+static const struct bpf_verifier_ops cg_skb_verifier_ops = {
- 	.get_func_proto		= cg_skb_func_proto,
- 	.is_valid_access	= cg_skb_is_valid_access,
- 	.convert_ctx_access	= bpf_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops cg_skb_prog_ops = {
-+static const struct bpf_prog_ops cg_skb_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
--const struct bpf_verifier_ops lwt_in_verifier_ops = {
-+static const struct bpf_verifier_ops lwt_in_verifier_ops = {
- 	.get_func_proto		= lwt_in_func_proto,
- 	.is_valid_access	= lwt_is_valid_access,
- 	.convert_ctx_access	= bpf_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops lwt_in_prog_ops = {
-+static const struct bpf_prog_ops lwt_in_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
--const struct bpf_verifier_ops lwt_out_verifier_ops = {
-+static const struct bpf_verifier_ops lwt_out_verifier_ops = {
- 	.get_func_proto		= lwt_out_func_proto,
- 	.is_valid_access	= lwt_is_valid_access,
- 	.convert_ctx_access	= bpf_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops lwt_out_prog_ops = {
-+static const struct bpf_prog_ops lwt_out_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
--const struct bpf_verifier_ops lwt_xmit_verifier_ops = {
-+static const struct bpf_verifier_ops lwt_xmit_verifier_ops = {
- 	.get_func_proto		= lwt_xmit_func_proto,
- 	.is_valid_access	= lwt_is_valid_access,
- 	.convert_ctx_access	= bpf_convert_ctx_access,
- 	.gen_prologue		= tc_cls_act_prologue,
- };
- 
--const struct bpf_prog_ops lwt_xmit_prog_ops = {
-+static const struct bpf_prog_ops lwt_xmit_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
--const struct bpf_verifier_ops lwt_seg6local_verifier_ops = {
-+static const struct bpf_verifier_ops lwt_seg6local_verifier_ops = {
- 	.get_func_proto		= lwt_seg6local_func_proto,
- 	.is_valid_access	= lwt_is_valid_access,
- 	.convert_ctx_access	= bpf_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops lwt_seg6local_prog_ops = {
-+static const struct bpf_prog_ops lwt_seg6local_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
--const struct bpf_verifier_ops cg_sock_verifier_ops = {
-+static const struct bpf_verifier_ops cg_sock_verifier_ops = {
- 	.get_func_proto		= sock_filter_func_proto,
- 	.is_valid_access	= sock_filter_is_valid_access,
- 	.convert_ctx_access	= bpf_sock_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops cg_sock_prog_ops = {
-+static const struct bpf_prog_ops cg_sock_prog_ops = {
- };
- 
--const struct bpf_verifier_ops cg_sock_addr_verifier_ops = {
-+static const struct bpf_verifier_ops cg_sock_addr_verifier_ops = {
- 	.get_func_proto		= sock_addr_func_proto,
- 	.is_valid_access	= sock_addr_is_valid_access,
- 	.convert_ctx_access	= sock_addr_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops cg_sock_addr_prog_ops = {
-+static const struct bpf_prog_ops cg_sock_addr_prog_ops = {
- };
- 
--const struct bpf_verifier_ops sock_ops_verifier_ops = {
-+static const struct bpf_verifier_ops sock_ops_verifier_ops = {
- 	.get_func_proto		= sock_ops_func_proto,
- 	.is_valid_access	= sock_ops_is_valid_access,
- 	.convert_ctx_access	= sock_ops_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops sock_ops_prog_ops = {
-+static const struct bpf_prog_ops sock_ops_prog_ops = {
- };
- 
--const struct bpf_verifier_ops sk_skb_verifier_ops = {
-+static const struct bpf_verifier_ops sk_skb_verifier_ops = {
- 	.get_func_proto		= sk_skb_func_proto,
- 	.is_valid_access	= sk_skb_is_valid_access,
- 	.convert_ctx_access	= sk_skb_convert_ctx_access,
- 	.gen_prologue		= sk_skb_prologue,
- };
- 
--const struct bpf_prog_ops sk_skb_prog_ops = {
-+static const struct bpf_prog_ops sk_skb_prog_ops = {
- };
- 
--const struct bpf_verifier_ops sk_msg_verifier_ops = {
-+static const struct bpf_verifier_ops sk_msg_verifier_ops = {
- 	.get_func_proto		= sk_msg_func_proto,
- 	.is_valid_access	= sk_msg_is_valid_access,
- 	.convert_ctx_access	= sk_msg_convert_ctx_access,
- 	.gen_prologue		= bpf_noop_prologue,
- };
- 
--const struct bpf_prog_ops sk_msg_prog_ops = {
-+static const struct bpf_prog_ops sk_msg_prog_ops = {
- };
- 
--const struct bpf_verifier_ops flow_dissector_verifier_ops = {
-+static const struct bpf_verifier_ops flow_dissector_verifier_ops = {
- 	.get_func_proto		= flow_dissector_func_proto,
- 	.is_valid_access	= flow_dissector_is_valid_access,
- 	.convert_ctx_access	= flow_dissector_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops flow_dissector_prog_ops = {
-+static const struct bpf_prog_ops flow_dissector_prog_ops = {
- 	.test_run		= bpf_prog_test_run_flow_dissector,
- };
- 
-@@ -8926,12 +8926,12 @@ static u32 sk_reuseport_convert_ctx_access(enum bpf_access_type type,
- 	return insn - insn_buf;
- }
- 
--const struct bpf_verifier_ops sk_reuseport_verifier_ops = {
-+static const struct bpf_verifier_ops sk_reuseport_verifier_ops = {
- 	.get_func_proto		= sk_reuseport_func_proto,
- 	.is_valid_access	= sk_reuseport_is_valid_access,
- 	.convert_ctx_access	= sk_reuseport_convert_ctx_access,
- };
- 
--const struct bpf_prog_ops sk_reuseport_prog_ops = {
-+static const struct bpf_prog_ops sk_reuseport_prog_ops = {
- };
- #endif /* CONFIG_INET */
--- 
-2.23.0
-
+>  
+>  int dpni_set_irq_enable(struct fsl_mc_io	*mc_io,
+>  			u32			cmd_flags,
+> -- 
+> 1.9.1
+> 
