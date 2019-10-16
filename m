@@ -2,97 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47CC9D86E4
-	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 05:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F11BD86F6
+	for <lists+netdev@lfdr.de>; Wed, 16 Oct 2019 05:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733285AbfJPDov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Oct 2019 23:44:51 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:55620 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732850AbfJPDou (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 23:44:50 -0400
-Received: from [213.220.153.21] (helo=localhost.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1iKaEx-0000Wg-Om; Wed, 16 Oct 2019 03:44:47 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     christian.brauner@ubuntu.com
-Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, yhs@fb.com, Aleksa Sarai <cyphar@cyphar.com>
-Subject: [PATCH v3 3/3] bpf: use copy_struct_from_user() in bpf() syscall
-Date:   Wed, 16 Oct 2019 05:44:32 +0200
-Message-Id: <20191016034432.4418-4-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191016034432.4418-1-christian.brauner@ubuntu.com>
-References: <20191016004138.24845-1-christian.brauner@ubuntu.com>
- <20191016034432.4418-1-christian.brauner@ubuntu.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S2387601AbfJPDvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Oct 2019 23:51:05 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:44190 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726227AbfJPDvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Oct 2019 23:51:05 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4D4DB12ECDD7D;
+        Tue, 15 Oct 2019 20:51:04 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 20:51:03 -0700 (PDT)
+Message-Id: <20191015.205103.1828715161134282651.davem@davemloft.net>
+To:     tbogendoerfer@suse.de
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: i82596: fix dma_alloc_attr for sni_82596
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191015144245.11182-1-tbogendoerfer@suse.de>
+References: <20191015144245.11182-1-tbogendoerfer@suse.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 15 Oct 2019 20:51:04 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In v5.4-rc2 we added a new helper (cf. [1]) copy_struct_from_user().
-This helper is intended for all codepaths that copy structs from
-userspace that are versioned by size. The bpf() syscall does exactly
-what copy_struct_from_user() is doing.
-Note that copy_struct_from_user() is calling min() already. So
-technically, the min_t() call could go. But the size is used further
-below so leave it.
+From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Date: Tue, 15 Oct 2019 16:42:45 +0200
 
-[1]: f5a1a536fa14 ("lib: introduce copy_struct_from_user() helper")
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: bpf@vger.kernel.org
-Acked-by: Aleksa Sarai <cyphar@cyphar.com>
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
----
-/* v1 */
-Link: https://lore.kernel.org/r/20191009160907.10981-4-christian.brauner@ubuntu.com
+> Commit 7f683b920479 ("i825xx: switch to switch to dma_alloc_attrs")
+> switched dma allocation over to dma_alloc_attr, but didn't convert
+> the SNI part to request consistent DMA memory. This broke sni_82596
+> since driver doesn't do dma_cache_sync for performance reasons.
+> Fix this by using different DMA_ATTRs for lasi_82596 and sni_82596.
+> 
+> Fixes: 7f683b920479 ("i825xx: switch to switch to dma_alloc_attrs")
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 
-/* v2 */
-Link: https://lore.kernel.org/r/20191016004138.24845-4-christian.brauner@ubuntu.com
-- Alexei Starovoitov <ast@kernel.org>:
-  - remove unneeded initialization
-
-/* v3 */
-unchanged
----
- kernel/bpf/syscall.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 151447f314ca..0920593eacd0 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2814,20 +2814,17 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
- 
- SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
- {
--	union bpf_attr attr = {};
-+	union bpf_attr attr;
- 	int err;
- 
- 	if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
- 		return -EPERM;
- 
--	err = bpf_check_uarg_tail_zero(uattr, sizeof(attr), size);
--	if (err)
--		return err;
- 	size = min_t(u32, size, sizeof(attr));
--
- 	/* copy attributes from user space, may be less than sizeof(bpf_attr) */
--	if (copy_from_user(&attr, uattr, size) != 0)
--		return -EFAULT;
-+	err = copy_struct_from_user(&attr, sizeof(attr), uattr, size);
-+	if (err)
-+		return err;
- 
- 	err = security_bpf(cmd, &attr, size);
- 	if (err < 0)
--- 
-2.23.0
-
+Applied and queued up for -stable.
