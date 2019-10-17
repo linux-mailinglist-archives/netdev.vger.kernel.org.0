@@ -2,133 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA85DB4CC
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 19:51:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97AE0DB4DC
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 19:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394797AbfJQRvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 13:51:06 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:35495 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727018AbfJQRvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 13:51:06 -0400
-Received: by mail-qt1-f193.google.com with SMTP id m15so4888406qtq.2;
-        Thu, 17 Oct 2019 10:51:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1hl6OgV6noHwYetx1+iUn4b2S7F69/Ln6vk7zwwufhs=;
-        b=VCRcIQwG87S3TMpx9Mugsu1Qst+9IZpwoFxvM8sNVpPVncFFcM3PoyHsoHEvtFO034
-         9cCAmgNyeXLVPaIIPLMe5yzxUIz+iNEukHyO+RyWbGNVXhwdN2rLUd6W7AvGg9x0/wNO
-         tbOvmK1HtH27c9R/+ASUseyrRAwe2MYP/HKWwznEgTEX3xvP/uEzMM37eL0W+SZILGva
-         LKjHF3PkxHtDVjgsDXlc1MJAiMDF3qxgjKQSuxNC6TrDWJhodlRftrI0ZPTX7O5ijtqs
-         9P81bPnklfGyvSzGO4zsEKLjWnku5IKq0ae9aQcsfzyL8PEydvcMM5BNPLbS6wCZRPiL
-         0gfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1hl6OgV6noHwYetx1+iUn4b2S7F69/Ln6vk7zwwufhs=;
-        b=D3Vc+B/7W/oBE26Na/RVFYLuBrkYoJB1Iq8QcO5KzEmXGN4BQ8XhFUT3Mmo0cDvpXO
-         h/yLETrWVgSvLjFpq/2Ncb8ToIzaEmz3znPW1zvF7xHwjvDeo2zRdOEwD4iNPXwB9eI0
-         vBGh9xcj+5TGj1+FHUaEGmKQ4av4HSw6/1FB7cOY0cA95UopUW5E4gOPPv1yA2ddgQIu
-         HArOkaequheEyjCj3ozfk+zDkvQw0RNAgmSICaxToASx/Gw3AF0KjiUJMt53m5f7eS7i
-         rDyFlnxiPfUaCWBDKLsYAfLAkkUpA9gVuAIdb5+NCsiphkyR+0yI0renhzrMEdsJGL2o
-         uf8w==
-X-Gm-Message-State: APjAAAUZlcSk0T552Y24m+qDWcUIPUpF0J9Ibvfcglj+27I+NyPerlkv
-        iRg4HslvXEAwBzskof05CuWXQ3Nem6c5RWz+iqbUbwxt
-X-Google-Smtp-Source: APXvYqyon+04XeS+uljGzQacjsGJBfDlCaMPpgbh7bNkv5QWlDArLtZFYhdLZq374TszTR1GlD+DEUOBEBHGTnsZCag=
-X-Received: by 2002:ac8:5147:: with SMTP id h7mr5140604qtn.117.1571334665362;
- Thu, 17 Oct 2019 10:51:05 -0700 (PDT)
+        id S2436939AbfJQRwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 13:52:49 -0400
+Received: from mout.gmx.net ([212.227.15.15]:53191 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2436896AbfJQRwt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 13:52:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1571334755;
+        bh=JFTzIpl2vUzTaahVY6jDAfJ94neB1yDBl6CpIuujvEs=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=Ki9RNvFZHRiS7BNyYH+p5jdMtCDRjjuPiYgffoyx8LO0s2mzsw8cGKG1ms87Z8lAd
+         C4E5v2BMnIGuYFmLbN8ts6MRwQeuXrJNk+I1eeA8W53N7hWhQwxB8kbsQQCUuWQezd
+         1PMAd+BlaUqHlvxsJ4LCtI+azN4SjVb7NFqs4P/M=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.1.162] ([37.4.249.112]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MYeQr-1iZEYL3Dt5-00VeyV; Thu, 17
+ Oct 2019 19:52:34 +0200
+Subject: Re: lan78xx and phy_state_machine
+To:     Daniel Wagner <dwagner@suse.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191015005327.GJ19861@lunn.ch>
+ <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
+ <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
+ <20191016155107.GH17013@lunn.ch>
+ <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
+ <6f445327-a2bc-fa75-a70a-c117f2205ecd@gmx.net>
+ <20191017174133.e4uhsp77zod5vbef@beryllium.lan>
+From:   Stefan Wahren <wahrenst@gmx.net>
+Message-ID: <388beb72-c7e6-745a-ad39-cfbde201f373@gmx.net>
+Date:   Thu, 17 Oct 2019 19:52:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20191016060051.2024182-1-andriin@fb.com> <20191016060051.2024182-6-andriin@fb.com>
-In-Reply-To: <20191016060051.2024182-6-andriin@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 17 Oct 2019 10:50:54 -0700
-Message-ID: <CAEf4BzZvNQwcn3=sUHjnVfGzAMkfECpiJ7=YEDWSnLFZD7xeCA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 5/7] selftests/bpf: replace test_progs and
- test_maps w/ general rule
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191017174133.e4uhsp77zod5vbef@beryllium.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Provags-ID: V03:K1:5KbIL5XYuSEW5O/V1kBxP+XAM1gCYsnxDhYduIq3rA8Oy0uC7Ky
+ WrWhr1FY/JM0zHjBeePfPlWHTVR10MPMTmF9uFKUUdRVEseGcLSr2Oo3SAjfxpJhSN8WPK8
+ 4MJugThd1Byoa3/24fYA5U6g+IsbO3cVN3Yh+VuQzJ9l1i1jOTNp8i5pNe/EdOdOroCrrOC
+ 7vo62KvZ1da1yiVHWe4xg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:91lIPmGiGx8=:C0L48Aq/oiCC6QXlTJopFw
+ D3XKnrjHPd6US+fO1YEIVJMuoS1rwMbA9pieS5az4QHMkaM/thncsnNHESYIPgLq406E2r4L5
+ vVgpf+eBpR7LnxvVo3nNvRjZmnJmCSIkk0kRHdB2LclLeWQ4NxHE79+ZKdshAYBcpNEwMhy98
+ 3yA/6+xiKd8cQtC57ljLcWFfJOk/912XNUcDM76yJMFdemYf9jQVrH30UaQSIbPwXlBaEfWym
+ HYEqmfBJl6ceVQ1QrlJJYbixI8hR9bMw0vVpNJDFU9MfVsnqspVYIfpohC1T6txz83ylda2YM
+ Hso1XPRTekGFUkLyaiqRC623amzKB6z1pF3sMbgOGJodxaM8ti5jk6zMSgGQb2vqdBzxnx50f
+ swu7K7D/64xFynb0GurPsj+P1MZKIA9nltiUeAMhqtCs8616fgLUlJ/wpxhL2N3TYV62fQ8a8
+ vPwoZSnue4wyhmpOXOx9P1KOzpspyumYBAseoJJa0bZM/CzINH4rmKGN2QbrnbMvfrK9TkV4R
+ ODjmeytWRIU7JI12o+BLmu1MITDOe7QTT0IP9WQaOe73n3aE9V1DPsas8lo2Py1QpYpRoCSgK
+ EPT3kKARA9s1Q7onKSEYcUs6wvDdufopTM/OkpvVXOL8HlDXzWM2uuj50/YEeePixURv6MeMD
+ aBZBjZYSY8G1SV0kma+u1smAt3fE5Tgt+D8+RHgFDj50pT1aUq+o8k6Zq9z2+yWm9nq/syfft
+ itwxmOa/b8Fcq1FuXk1iaYc98RQ2VQl6OmbLZh1btnYzTO/Ba3E7FSvA6dBod0trH/AwhSuBR
+ nAYVkpoLoucQnmyctDSWzTGTHUHuUQHh6swkHsDlHl7jUsSuParVu4OMWDs2hak0YJYwjtzx4
+ mCEfSGmhBbXGM4/W5hQ03AnvakxIWuqFY3yxKdtQQAKixLd1ajFSLiXgvRnoR/Fa6dr9E1Qf2
+ 5vW9If6pBB/QF9J04nk5VklHeNd9xBYB10uyYYyEPQv5ofxFZv3Sojj5iPsxg0pdkPcADKoXA
+ nwrPsi+08P7QytakrjcLS+9d50lVQKdfUgOPS+AIJbg6r2IMX5+a9Sg6TkwRUseXQ8NCsrco9
+ hQ+bb3DAFwPGTvVUGt5xSt8ZZH1WufnC4d8QjA48xTtI0s4QIZvZgXvkTxo5a4VxacvS9jjI8
+ xT7ksTCoLuEGWw2rIth+sQQ+W7DsdYXKDq2YJs9XOhAznYRFdO5xVCehYvK/+0OfZlJHd98MH
+ EIDOLbVDO0u0Tnpi37RD1hY6+mGWYHFdykooqdJA17oFxEeptVIp0EIPMUPc=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 11:01 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Define test runner generation meta-rule that codifies dependencies
-> between test runner, its tests, and its dependent BPF programs. Use that
-> for defining test_progs and test_maps test-runners. Also additionally define
-> 2 flavors of test_progs:
-> - alu32, which builds BPF programs with 32-bit registers codegen;
-> - bpf_gcc, which build BPF programs using GCC, if it supports BPF target.
->
-> Overall, this is accomplished through $(eval)'ing a set of generic
-> rules, which defines Makefile targets dynamically at runtime. See
-> comments explaining the need for 2 $(evals), though.
->
-> For each test runner we have (test_maps and test_progs, currently), and,
-> optionally, their flavors, the logic of build process is modeled as
-> follows (using test_progs as an example):
-> - all BPF objects are in progs/:
->   - BPF object's .o file is built into output directory from
->     corresponding progs/.c file;
->   - all BPF objects in progs/*.c depend on all progs/*.h headers;
->   - all BPF objects depend on bpf_*.h helpers from libbpf (but not
->     libbpf archive). There is an extra rule to trigger bpf_helper_defs.h
->     (re-)build, if it's not present/outdated);
->   - build recipe for BPF object can be re-defined per test runner/flavor;
-> - test files are built from prog_tests/*.c:
->   - all such test file objects are built on individual file basis;
->   - currently, every single test file depends on all BPF object files;
->     this might be improved in follow up patches to do 1-to-1 dependency,
->     but allowing to customize this per each individual test;
->   - each test runner definition can specify a list of extra .c and .h
->     files to be built along test files and test runner binary; all such
->     headers are becoming automatic dependency of each test .c file;
->   - due to test files sometimes embedding (using .incbin assembly
->     directive) contents of some BPF objects at compilation time, which are
->     expected to be in CWD of compiler, compilation for test file object does
->     cd into test runner's output directory; to support this mode all the
->     include paths are turned into absolute paths using $(abspath) make
->     function;
-> - prog_tests/test.h is automatically (re-)generated with an entry for
->   each .c file in prog_tests/;
-> - final test runner binary is linked together from test object files and
->   extra object files, linking together libbpf's archive as well;
-> - it's possible to specify extra "resource" files/targets, which will be
->   copied into test runner output directory, if it differes from
->   Makefile-wide $(OUTPUT). This is used to ensure btf_dump test cases and
->   urandom_read binary is put into a test runner's CWD for tests to find
->   them in runtime.
->
-> For flavored test runners, their output directory is a subdirectory of
-> common Makefile-wide $(OUTPUT) directory with flavor name used as
-> subdirectory name.
->
-> BPF objects targets might be reused between different test runners, so
-> extra checks are employed to not double-define them. Similarly, we have
-> redefinition guards for output directories and test headers.
->
-> test_verifier follows slightly different patterns and is simple enough
-> to not justify generalizing TEST_RUNNER_DEFINE/TEST_RUNNER_DEFINE_RULES
-> further to accomodate these differences. Instead, rules for
-> test_verifier are minimized and simplified, while preserving correctness
-> of dependencies.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
+Hi Daniel,
 
-BTW, if correctness and DRY-ness argument is not strong enough, these
-changes makes clean rebuild from scratch about 2x faster for me:
+Am 17.10.19 um 19:41 schrieb Daniel Wagner:
+> Hi Stefan,
+>
+> On Thu, Oct 17, 2019 at 07:05:32PM +0200, Stefan Wahren wrote:
+>> Am 17.10.19 um 08:52 schrieb Daniel Wagner:
+>>> On Wed, Oct 16, 2019 at 05:51:07PM +0200, Andrew Lunn wrote:
+>>>> Please could you give this a go. It is totally untested, not even
+>>>> compile tested...
+>>> Sure. The system boots but ther is one splat:
+>>>
+>> this is a known issues since 4.20 [1], [2]. So not related to the crash.
+> Oh, I see.
+>
+>> Unfortunately, you didn't wrote which kernel version works for you
+>> (except of this splat). Only 5.3 or 5.4-rc3 too?
+> With v5.2.20 I was able to boot the system. But after this discussion
+> I would say that was just luck. The race seems to exist for longer and
+> only with my 'special' config I am able to reproduce it.
+okay, let me rephrase my question. You said that 5.4-rc3 didn't even
+boot in your setup. After applying Andrew's patch, does it boot or is it
+a different issue?
+>
+>> [1] - https://marc.info/?l=linux-netdev&m=154604180927252&w=2
+>> [2] - https://patchwork.kernel.org/patch/10888797/
+> Indeed, the irq domain code looks suspicious and Marc pointed out that
+> is dead wrong. Could we just go with [2] and fix this up?
 
-BEFORE: `make clean && time make -j50` is 14-15 seconds
-AFTER: `make clean && time make -j50` is 7-8 seconds
+Sorry, i cannot answer this question.
 
+Stefan
 
-[...]
+>
+> Thanks,
+> Daniel
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
