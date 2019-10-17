@@ -2,156 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE0DDABB0
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 14:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 607B5DABC4
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 14:11:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388686AbfJQMGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 08:06:23 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:40382 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727154AbfJQMGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 08:06:23 -0400
-Received: by mail-wm1-f66.google.com with SMTP id b24so2259261wmj.5
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 05:06:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=LZzJ3I4tLtzy2FRgQwW42N1IgvvYvkv/+5HSMh5tJEU=;
-        b=dbXRzSOkr+CnP0bAkyiJmt5n0ghKDURR6OUgO43dGLqINkfGGeN6t7p66AZlFgiaNP
-         LiHELxgXu4RXpEBJ7mKezBJA+jnIUrR4eVgcqze58rVlykRGRW8CWLelMuV3OGVGadYO
-         lo0S7yUZFryLWyQ9s3jo8UbXCg7CcGSC77mwVgjReE5+ArUbsUqeizAYNHC1QvyUYI/o
-         8JWQmBMts5RzPMqQG/2DF+IAp6Y4aEtCtSJSPgZJriYlJQ8YLEESBNr6BwfhQrUmLO8e
-         m3sY/HT9UK8mq6VpjyURRZKW0do3+UIiLOSOwiDFibVBmUpy7IR8wuClFrZRZhND1e7L
-         eYpA==
+        id S2393153AbfJQMLz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 17 Oct 2019 08:11:55 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45536 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393092AbfJQMLz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 08:11:55 -0400
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com [209.85.167.70])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 92BAE85540
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 12:11:54 +0000 (UTC)
+Received: by mail-lf1-f70.google.com with SMTP id q3so485305lfc.5
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 05:11:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=LZzJ3I4tLtzy2FRgQwW42N1IgvvYvkv/+5HSMh5tJEU=;
-        b=gaRJ7md88URD9UPpLMycoOZKD7nb3Du5EB9hSWr9jPNU952LjINUQsx4FL3dQcal+u
-         RQBJV1W4SpkJzW/I7MDNh2jV4Dmkp/jIvasDlnkRbIkfg2I+mgW0KVFCzmFFOJgqvy4X
-         1XAB4BjQZNNsZ0y8WuLi5ugWNfwutfsvi/39OrtTy5HViaJe4qvjSKTtcF7sh7FWVQWC
-         bHNTDWXv1KYdjZvc5UnpT96Sj9dsDZgmL43tsW3ZVkS/lDjRZI2xyu/51gjaslFMH/mU
-         hZak0+7Q3+abCwscStRBmLCWWI5Yl7fiaXwVEccusKrMmpzEBcfr63kt37lNgQqUkZO+
-         5d/w==
-X-Gm-Message-State: APjAAAXeoSR9okSm2ZQlvFGdFttMHbYswjSN4LZdvFYLI+dUDFOtKahx
-        jHJqaeu2sWtgFxCzeTL9UcwZTQ==
-X-Google-Smtp-Source: APXvYqxfkjwUUidP3f2qsZR5pT5FnPkFytKX8V4CfQIKvYK1jyhlwBxg8da1HjFexLHL0kfw0LKtTA==
-X-Received: by 2002:a7b:cf0d:: with SMTP id l13mr2488556wmg.47.1571313980718;
-        Thu, 17 Oct 2019 05:06:20 -0700 (PDT)
-Received: from apalos.home (ppp-94-65-92-5.home.otenet.gr. [94.65.92.5])
-        by smtp.gmail.com with ESMTPSA id i18sm1879217wrx.14.2019.10.17.05.06.19
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=qWVnxBx/NDjHiIsDcbEQ8I6F1E9yiXUAtix+dsYJ9vQ=;
+        b=GuRoAmZBPvEbmMRBAkhZuN+s5ArjPm4EFs+WywCrAPn+8QzIOA1qYO4yXnft+hqMf3
+         6/eafD2ffWDBQh2cUt5BQgQM8ST4RfcFXwRFCWMczPbXUtbnv3+ss8FMl5keOB9I9Hue
+         kpJLbK5dpnhwQjWCFq3FKYugNeS0dA70XNjS4Jc3+S9ajPnxMEv+SVpwNrQk9z7nhEWG
+         D6tlSfzAbu7eZotsBuaer6kI3QHu5oVbBDw+OlFmHsnWIqXg8kJoXqEg8Qh6RCaAO2jr
+         Fnl9ZxJMgvtKqNVV8z8MBOE6+T1FG+k3j8h8vYe+lSFymVoVfoYdXNwpCfP3yWXCydUz
+         QZ9g==
+X-Gm-Message-State: APjAAAX3O0zO4IiF8O8+/unxisILoZOL1SkWwkav/Q79cvAtdY+F4zFG
+        UXJiFY0Ae2MW0TkCwP0pNnFW3qxfvq7sMg598HSdD0JJ3gd7LB4R6Wjxt3GjZ5OBnT8bqTC0SOv
+        F4Op0lSQi2tQVAVnK
+X-Received: by 2002:a2e:1214:: with SMTP id t20mr2272096lje.191.1571314313102;
+        Thu, 17 Oct 2019 05:11:53 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqx+my3Nib/6oOK5vNW1IqBq0xlgk7DXDnyzuAVeVSbLbqgnHX3s0o2KHVTCT8CLZe1nCH+ivg==
+X-Received: by 2002:a2e:1214:: with SMTP id t20mr2272058lje.191.1571314312779;
+        Thu, 17 Oct 2019 05:11:52 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id x187sm2161797lfa.64.2019.10.17.05.11.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 05:06:20 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 15:06:17 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     brouer@redhat.com, saeedm@mellanox.com, tariqt@mellanox.com,
-        netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH 04/10 net-next] page_pool: Add API to update numa node
- and flush page caches
-Message-ID: <20191017120617.GA19322@apalos.home>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
- <20191016225028.2100206-5-jonathan.lemon@gmail.com>
+        Thu, 17 Oct 2019 05:11:51 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AE0C41804C9; Thu, 17 Oct 2019 14:11:50 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Edward Cree <ecree@solarflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF programs after each other
+In-Reply-To: <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1> <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com> <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com> <87o8yqjqg0.fsf@toke.dk> <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com> <87v9srijxa.fsf@toke.dk> <5da4ab712043c_25f42addb7c085b83b@john-XPS-13-9370.notmuch> <87eezfi2og.fsf@toke.dk> <f9d5f717-51fe-7d03-6348-dbaf0b9db434@solarflare.com> <87r23egdua.fsf@toke.dk> <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 17 Oct 2019 14:11:50 +0200
+Message-ID: <874l07fu61.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191016225028.2100206-5-jonathan.lemon@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed,
+Edward Cree <ecree@solarflare.com> writes:
 
-On Wed, Oct 16, 2019 at 03:50:22PM -0700, Jonathan Lemon wrote:
-> From: Saeed Mahameed <saeedm@mellanox.com>
-> 
-> Add page_pool_update_nid() to be called from drivers when they detect
-> numa node changes.
-> 
-> It will do:
-> 1) Flush the pool's page cache and ptr_ring.
-> 2) Update page pool nid value to start allocating from the new numa
-> node.
-> 
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  include/net/page_pool.h | 10 ++++++++++
->  net/core/page_pool.c    | 16 +++++++++++-----
->  2 files changed, 21 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 2cbcdbdec254..fb13cf6055ff 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -226,4 +226,14 @@ static inline bool page_pool_put(struct page_pool *pool)
->  	return refcount_dec_and_test(&pool->user_cnt);
->  }
->  
-> +/* Only safe from napi context or when user guarantees it is thread safe */
-> +void __page_pool_flush(struct page_pool *pool);
+> On 15/10/2019 17:42, Toke Høiland-Jørgensen wrote:
+>> Edward Cree <ecree@solarflare.com> writes:
+>>> On 14/10/2019 19:48, Toke Høiland-Jørgensen wrote:
+>>>> So that will end up with a single monolithic BPF program being loaded
+>>>> (from the kernel PoV), right? That won't do; we want to be able to go
+>>>> back to the component programs, and manipulate them as separate kernel
+>>>> objects.
+>>> Why's that? (Since it also applies to the static-linking PoC I'm
+>>> putting together.) What do you gain by having the components be
+>>> kernel-visible?
+>> Because then userspace will have to keep state to be able to answer
+>> questions like "show me the list of programs that are currently loaded
+>> (and their call chain)", or do operations like "insert this program into
+>> the call chain at position X".
+> Userspace keeps state for stuff all the time.  We call them "daemons" ;)
+> Now you might have arguments for why putting a given piece of state in
+>  userspace is a bad idea — there's a reason why not everything is a
+>  microkernel — but those arguments need to be made.
+>
+>> We already keep all this state in the kernel,
+> The kernel keeps the state of "current (monolithic) BPF program loaded
+>  (against each hook)".  Prior to this patch series, the kernel does
+>  *not* keep any state on what that BPF program was made of (except in
+>  the sense of BTF debuginfos, which a linker could combine appropriately).
+>
+> So if we _don't_ add your chained-programs functionality into the kernel,
+>  and then _do_ implement userspace linking, then there isn't any
+>  duplicated functionality or even duplicated state — the userland state
+>  is "what are my components and what's the linker invocation that glues
+>  them together", the kernel state is "here is one monolithic BPF blob,
+>  along with a BTF blob to debug it".  The kernel knows nothing of the
+>  former, and userspace doesn't store (but knows how to recreate) the
+>  latter.
 
-This should be called per packet right? Any noticeable impact on performance?
+I think there's a conceptual disconnect here in how we view what an XDP
+program is. In my mind, an XDP program is a stand-alone entity tied to a
+particular application; not a library function that can just be inserted
+into another program. Thus, what you're proposing sounds to me like the
+equivalent of saying "we don't want to do process management in the
+kernel; the init process should just link in all the programs userspace
+wants to run". Which is technically possible; but that doesn't make it a
+good idea.
 
-> +static inline void page_pool_update_nid(struct page_pool *pool, int new_nid)
-> +{
-> +	if (unlikely(pool->p.nid != new_nid)) {
-> +		/* TODO: Add statistics/trace */
-> +		__page_pool_flush(pool);
-> +		pool->p.nid = new_nid;
-> +	}
-> +}
->  #endif /* _NET_PAGE_POOL_H */
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 5bc65587f1c4..678cf85f273a 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -373,16 +373,13 @@ void __page_pool_free(struct page_pool *pool)
->  }
->  EXPORT_SYMBOL(__page_pool_free);
->  
-> -/* Request to shutdown: release pages cached by page_pool, and check
-> - * for in-flight pages
-> - */
-> -bool __page_pool_request_shutdown(struct page_pool *pool)
-> +void __page_pool_flush(struct page_pool *pool)
->  {
->  	struct page *page;
->  
->  	/* Empty alloc cache, assume caller made sure this is
->  	 * no-longer in use, and page_pool_alloc_pages() cannot be
-> -	 * call concurrently.
-> +	 * called concurrently.
->  	 */
->  	while (pool->alloc.count) {
->  		page = pool->alloc.cache[--pool->alloc.count];
-> @@ -393,6 +390,15 @@ bool __page_pool_request_shutdown(struct page_pool *pool)
->  	 * be in-flight.
->  	 */
->  	__page_pool_empty_ring(pool);
-> +}
-> +EXPORT_SYMBOL(__page_pool_flush);
+Setting aside that for a moment; the reason I don't think this belongs
+in userspace is that putting it there would carry a complexity cost that
+is higher than having it in the kernel. Specifically, if we do implement
+an 'xdpd' daemon to handle all this, that would mean that we:
 
-A later patch removes this, do we actually need it here?
+- Introduce a new, separate code base that we'll have to write, support
+  and manage updates to.
 
-> +
-> +/* Request to shutdown: release pages cached by page_pool, and check
-> + * for in-flight pages
-> + */
-> +bool __page_pool_request_shutdown(struct page_pool *pool)
-> +{
-> +	__page_pool_flush(pool);
->  
->  	return __page_pool_safe_to_destroy(pool);
->  }
-> -- 
-> 2.17.1
-> 
+- Add a new dependency to using XDP (now you not only need the kernel
+  and libraries, you'll also need the daemon).
+
+- Have to duplicate or wrap functionality currently found in the kernel;
+  at least:
+  
+    - Keeping track of which XDP programs are loaded and attached to
+      each interface (as well as the "new state" of their attachment
+      order).
+
+    - Some kind of interface with the verifier; if an app does
+      xdpd_rpc_load(prog), how is the verifier result going to get back
+      to the caller?
+
+- Have to deal with state synchronisation issues (how does xdpd handle
+  kernel state changing from underneath it?).
 
 
-Thanks
-/Ilias
+While these are issues that are (probably) all solvable, I think the
+cost of solving them is far higher than putting the support into the
+kernel. Which is why I think kernel support is the best solution :)
+
+-Toke
