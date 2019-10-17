@@ -2,72 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03876DB392
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 19:41:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2093DB3A1
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 19:44:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394330AbfJQRlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 13:41:39 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40684 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729302AbfJQRlj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 13:41:39 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8A3BBB175;
-        Thu, 17 Oct 2019 17:41:37 +0000 (UTC)
-Date:   Thu, 17 Oct 2019 19:41:33 +0200
-From:   Daniel Wagner <dwagner@suse.de>
-To:     Stefan Wahren <wahrenst@gmx.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: lan78xx and phy_state_machine
-Message-ID: <20191017174133.e4uhsp77zod5vbef@beryllium.lan>
-References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
- <20191015005327.GJ19861@lunn.ch>
- <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
- <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
- <20191016155107.GH17013@lunn.ch>
- <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
- <6f445327-a2bc-fa75-a70a-c117f2205ecd@gmx.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6f445327-a2bc-fa75-a70a-c117f2205ecd@gmx.net>
-User-Agent: NeoMutt/20180716
+        id S2394364AbfJQRoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 13:44:21 -0400
+Received: from mail-vs1-f74.google.com ([209.85.217.74]:42912 "EHLO
+        mail-vs1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727379AbfJQRoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 13:44:20 -0400
+Received: by mail-vs1-f74.google.com with SMTP id p6so709251vsq.9
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 10:44:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=AepTsz+A74jxm03gyi80tnEG5pdCAiVEmB2VKmmYbAA=;
+        b=txWXUG/bKJH+xYvRuY3lNWGbs0Fu/K7TeNieEqEzkwCbQ951DttsTLGCzkXdVPy3KY
+         Km2w/kOt807GP8B2mwZNT/1sE4XCnhEOgDKdD2r4LCXjfxdltkSQyRv4CGCTq1VoGRr2
+         91CJUZ7DeaO+yiJF+glAdddLlpQJvF72+eqedoBsFNo0bVaZHL++3E9pDK/04d2YWGe+
+         np7G/lXqW7cVF7AenbULxn1+Hg8fqiLGg2q6O/L99nPop1TMN0R0LzXBRRMq6hiBGMPQ
+         t+QwWnw5oWFay2e0WWPMTYmTGfrtu7hXElVim/VjermRHIFXL96frNDlAwKVbaRGZzxv
+         pUGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=AepTsz+A74jxm03gyi80tnEG5pdCAiVEmB2VKmmYbAA=;
+        b=YhWj2AWu6K50cSWtytVbMH+1QptKBHNS/Nf0Pv6ujD6yK1nNdBX5DocDtoHFQh2cYS
+         w5O4wVkMIxkqnADf4+smxu53yzEz2nEPsXukSz+T8NzzPQsGleaHfeS/Ra9UmdlSGhcQ
+         TrNKAwRiTtUxiCqLt6Uew+PM15sHzZPqW4hvq3OpVQz2EMHcol5ykmtr1MldQCC8g73s
+         YYzvQoqOl/koB9I1C0xuOAycVgVnIyPFNH6dNDZIk1qdMX3HZTSMQktuOxV7XnE2xm7Z
+         m+U1B2FFTP2fg3bTHy+e5lVZphJooofH/Z09xgiHFv29OajmUhXWmuUf/fF4qchcOCdG
+         ofDQ==
+X-Gm-Message-State: APjAAAXnjC5ffVfJX65Vjr+QVFreii+QuefegDtdpehDKKgRZzqOim7s
+        b4BcByxyo5gWeOjKGnHCQ1NY1U1UaswWcdxL
+X-Google-Smtp-Source: APXvYqw6C55wAy116NWvppt7eDZT+fCR1ORnXW7Efx/dADnmZz5XHGPkhTIDMeFVShexmVeAGLoCcWUsVfibJxkz
+X-Received: by 2002:a9f:200a:: with SMTP id 10mr2884411uam.42.1571334259331;
+ Thu, 17 Oct 2019 10:44:19 -0700 (PDT)
+Date:   Thu, 17 Oct 2019 19:44:12 +0200
+Message-Id: <cover.1571333592.git.andreyknvl@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
+Subject: [PATCH RFC 0/3] kcov: collect coverage from usb and vhost
+From:   Andrey Konovalov <andreyknvl@google.com>
+To:     linux-usb@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Windsor <dwindsor@gmail.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+This patchset extends kcov to allow collecting coverage from the USB
+subsystem and vhost workers. See the first patch description for details
+about the kcov extension. The other two patches apply this kcov extension
+to USB and vhost.
 
-On Thu, Oct 17, 2019 at 07:05:32PM +0200, Stefan Wahren wrote:
-> Am 17.10.19 um 08:52 schrieb Daniel Wagner:
-> > On Wed, Oct 16, 2019 at 05:51:07PM +0200, Andrew Lunn wrote:
-> >> Please could you give this a go. It is totally untested, not even
-> >> compile tested...
-> > Sure. The system boots but ther is one splat:
-> >
-> this is a known issues since 4.20 [1], [2]. So not related to the crash.
+These patches have been used to enable coverage-guided USB fuzzing with
+syzkaller for the last few years, see the details here:
 
-Oh, I see.
+https://github.com/google/syzkaller/blob/master/docs/linux/external_fuzzing_usb.md
 
-> Unfortunately, you didn't wrote which kernel version works for you
-> (except of this splat). Only 5.3 or 5.4-rc3 too?
+Andrey Konovalov (3):
+  kcov: remote coverage support
+  usb, kcov: collect coverage from hub_event
+  vhost, kcov: collect coverage from vhost_worker
 
-With v5.2.20 I was able to boot the system. But after this discussion
-I would say that was just luck. The race seems to exist for longer and
-only with my 'special' config I am able to reproduce it.
+ Documentation/dev-tools/kcov.rst |  99 +++++++
+ drivers/usb/core/hub.c           |   4 +
+ drivers/vhost/vhost.c            |  15 ++
+ drivers/vhost/vhost.h            |   3 +
+ include/linux/kcov.h             |  10 +
+ include/linux/sched.h            |   6 +
+ include/uapi/linux/kcov.h        |  18 ++
+ kernel/kcov.c                    | 434 ++++++++++++++++++++++++++++---
+ 8 files changed, 554 insertions(+), 35 deletions(-)
 
-> [1] - https://marc.info/?l=linux-netdev&m=154604180927252&w=2
-> [2] - https://patchwork.kernel.org/patch/10888797/
+-- 
+2.23.0.866.gb869b98d4c-goog
 
-Indeed, the irq domain code looks suspicious and Marc pointed out that
-is dead wrong. Could we just go with [2] and fix this up?
-
-Thanks,
-Daniel
