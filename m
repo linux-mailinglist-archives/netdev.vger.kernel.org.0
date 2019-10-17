@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09D1BDA28C
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 02:02:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0F4DA299
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 02:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437719AbfJQACm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 20:02:42 -0400
-Received: from mail-lj1-f169.google.com ([209.85.208.169]:34798 "EHLO
-        mail-lj1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727859AbfJQACm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 20:02:42 -0400
-Received: by mail-lj1-f169.google.com with SMTP id j19so572608lja.1
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 17:02:39 -0700 (PDT)
+        id S2387904AbfJQAOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 20:14:11 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:45743 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726820AbfJQAOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 20:14:11 -0400
+Received: by mail-lj1-f193.google.com with SMTP id q64so532800ljb.12
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 17:14:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=IG9YROqsuweQxU4gZqYe/1Sj06Dsztauwp1SkspMgRI=;
-        b=lTG1XGXANtCT1P8EMk2waxHM35+a2y3AZdswJDfk2P1hVUKMaYVcJ1R5Dwc5qWQaoz
-         Dpiun+FzbVUOW083c40SudZkV/0G4mFxU20tjtn+Tc9JXwAfLGgfdBMY8vm4Yxru2fY0
-         FqDaHcqYuTfuxABtSKBPpJqbLg65tFj7wMhBzZN/vb1gox4xCO7iN2wPxbZXQ+2iSnNa
-         69YUJACl/TvAHLVU72sD8vmPKGJhLRApXXGZId8fUKErVKGHFKV7SVPIJcrD4dNw1bSq
-         Yzn9mCrOan9Esdqzq80jujteDTO97aCmRnRLjJ+jJJGBvg6zqRE5Y/Iup9BqB4t5jjxs
-         906Q==
+        bh=mi8Xx7h4hNZDFEbhFfyXVFIDOXuTC8lk+7evlJKk5tw=;
+        b=uKgLe2hBwptOhYVEFcVbVtrbDw0XQA+CHtWw1QzllCHfq4tcEwUsZeClTnSjH5oN1o
+         R1SRuTZcUanj30DwZQ4RwoWj0rZz6xnxoYcjnlnnICLW2LETFKUXpIsS97nn5u7q1nTx
+         ELGN/L7FzurWS29DHIEdTOkNKhHIV0mHWxfMyB678eOSYvh0AmvtoLes6H9nT/LnANHW
+         JINTUKM/a02oUiHMB/GFEd7URDUyBLxglG29Qof3qTDDSdYMKu+99EwSXHpYZyz7K00J
+         JxQAZ/XP+kJ38Ff4G0Sv+EBmXEM8o9guRBj6yHxbu17JgbqSe3852a846f4CweRdT3xf
+         jfDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=IG9YROqsuweQxU4gZqYe/1Sj06Dsztauwp1SkspMgRI=;
-        b=kgq7OszcWe6qyGzLDL7O0+OFb3Hg0GKsBolUfPZdK1/dof4OWVO+1VhmNAAWgwk5lW
-         9ilxcnHK39yz2mT1D7hibVoyTeC3vkns0BX0o/1LMAb94b8uEb4OtsEwvmkGcnAO7X/n
-         GMWAwGUwuODBf0JPHb6XRhKIklYuO3DCWqvv7PO9J7sirad4KtbDmJuBPDb3vUQOcWQu
-         gznpX9aOSHPGaE7nr8upEsrfY6eSyD/dSOhffEiY7fs7egDqGWT9r8nEg02cmvnahPrj
-         xaTNPcXznMgeizqQtyLiVbhjKMgki/+H6jZl6w2PNhxVdquzp69XpTwNwW4NwKkIqYi2
-         o80A==
-X-Gm-Message-State: APjAAAUajPvZuTbweWcuhw9brHbmH4+uLfWV6eh7rErRk0s1XpdvNxQy
-        VlTs21Ho6vNH+P2sdKgpr//TQA==
-X-Google-Smtp-Source: APXvYqxf3VOcUBAlrJEfTxCkWLjWNIZKaCITM6e329UTnEgXmcJIl4sBHDDaBifYAPeGjXuzbpftcg==
-X-Received: by 2002:a2e:a0ca:: with SMTP id f10mr452962ljm.84.1571270558999;
-        Wed, 16 Oct 2019 17:02:38 -0700 (PDT)
+        bh=mi8Xx7h4hNZDFEbhFfyXVFIDOXuTC8lk+7evlJKk5tw=;
+        b=s9km29vo0W2dK0KzehncAZCMAF2B8kuklcv/Ll6qA4KlMXmhe5Zje7sq41q3eWaaSH
+         TC3nREIxxE5R17ss19LH461buNkVFayyyt6DV7fvFKUVaJvVL4zmn0JuyHX/cqJrv0K5
+         kfyCYJMKHN84qlnyrNZWKcj/uHFSTne6DaWaQnuUg7da6dn1XqDWkV5GRhEz+vW98FNY
+         N4ykiSArM5Tl3sYudZQSMxJmKMyRIqgGQjyu/4RNCga8oHhd11lXyOS3mbZXLpMVrYgV
+         49WmNh1FLTsMEg0tT866Dqet9EhD1rKfLf93HKPuCR+oYpD7QmpmuOOKECV+39tHCrpP
+         C2Xg==
+X-Gm-Message-State: APjAAAWlgbGXPURaAlTC9IXlKc2CX4LUwCCIul4ymcufwutgcsuJtQu3
+        QkrbqP0Gf0RS9/NP8nX9Na1RmA==
+X-Google-Smtp-Source: APXvYqwOxOSp2HgMbpm51Itb/X/TnnBh6K4Z5hd/2X6SNvNfKw2CS0f6BgJBEdAikv2jQe0B1VRHGw==
+X-Received: by 2002:a2e:8593:: with SMTP id b19mr498959lji.34.1571271248985;
+        Wed, 16 Oct 2019 17:14:08 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id i17sm166879lfj.35.2019.10.16.17.02.35
+        by smtp.gmail.com with ESMTPSA id z8sm155337lfg.18.2019.10.16.17.14.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 17:02:38 -0700 (PDT)
-Date:   Wed, 16 Oct 2019 17:02:31 -0700
+        Wed, 16 Oct 2019 17:14:08 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 17:14:01 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Sasha Neftin <sasha.neftin@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Vitaly Lifshits <vitaly.lifshits@intel.com>,
-        Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>
-Subject: Re: [net-next 4/7] e1000e: Add support for S0ix
-Message-ID: <20191016170231.4ac6a021@cakuba.netronome.com>
-In-Reply-To: <20191016234711.21823-5-jeffrey.t.kirsher@intel.com>
-References: <20191016234711.21823-1-jeffrey.t.kirsher@intel.com>
-        <20191016234711.21823-5-jeffrey.t.kirsher@intel.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
+        davem@davemloft.net, brouer@redhat.com, lorenzo@kernel.org
+Subject: Re: [PATCH] net: netsec: Correct dma sync for XDP_TX frames
+Message-ID: <20191016171401.16cb1bd5@cakuba.netronome.com>
+In-Reply-To: <20191016114032.21617-1-ilias.apalodimas@linaro.org>
+References: <20191016114032.21617-1-ilias.apalodimas@linaro.org>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -67,48 +62,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019 16:47:08 -0700, Jeff Kirsher wrote:
->  static int e1000e_pm_freeze(struct device *dev)
->  {
->  	struct net_device *netdev = dev_get_drvdata(dev);
-> @@ -6650,6 +6822,9 @@ static int e1000e_pm_thaw(struct device *dev)
->  static int e1000e_pm_suspend(struct device *dev)
->  {
->  	struct pci_dev *pdev = to_pci_dev(dev);
-> +	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
-> +	struct e1000_adapter *adapter = netdev_priv(netdev);
-> +	struct e1000_hw *hw = &adapter->hw;
->  	int rc;
+On Wed, 16 Oct 2019 14:40:32 +0300, Ilias Apalodimas wrote:
+> bpf_xdp_adjust_head() can change the frame boundaries. Account for the
+> potential shift properly by calculating the new offset before
+> syncing the buffer to the device for XDP_TX
+> 
+> Fixes: ba2b232108d3 ("net: netsec: add XDP support")
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
-reverse xmas tree?
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
->  
->  	e1000e_flush_lpic(pdev);
-> @@ -6660,14 +6835,25 @@ static int e1000e_pm_suspend(struct device *dev)
->  	if (rc)
->  		e1000e_pm_thaw(dev);
->  
-> +	/* Introduce S0ix implementation */
-> +	if (hw->mac.type >= e1000_pch_cnp)
-> +		e1000e_s0ix_entry_flow(adapter);
+You should target this to the bpf or net tree (appropriate [PATCH xyz]
+marking). Although I must admit it's unclear to me as well whether the
+driver changes should be picked up by bpf maintainers or Dave :S
 
-the entry/exit functions never fail, you can make them return void
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index f9e6744d8fd6..41ddd8fff2a7 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -847,8 +847,8 @@ static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
+>  		enum dma_data_direction dma_dir =
+>  			page_pool_get_dma_dir(rx_ring->page_pool);
+>  
+> -		dma_handle = page_pool_get_dma_addr(page) +
+> -			NETSEC_RXBUF_HEADROOM;
+> +		dma_handle = page_pool_get_dma_addr(page) + xdpf->headroom +
+> +			sizeof(*xdpf);
 
->  	return rc;
->  }
->  
->  static int e1000e_pm_resume(struct device *dev)
->  {
->  	struct pci_dev *pdev = to_pci_dev(dev);
-> +	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
-> +	struct e1000_adapter *adapter = netdev_priv(netdev);
-> +	struct e1000_hw *hw = &adapter->hw;
->  	int rc;
->  
-> +	/* Introduce S0ix implementation */
-> +	if (hw->mac.type >= e1000_pch_cnp)
-> +		e1000e_s0ix_exit_flow(adapter);
-> +
->  	rc = __e1000_resume(pdev);
->  	if (rc)
->  		return rc;
+very nitpick: I'd personally write addr + sizeof(*xdpf) + xdpf->headroom
+since that's the order in which they appear in memory
+
+But likely not worth reposting for just that :)
+
+>  		dma_sync_single_for_device(priv->dev, dma_handle, xdpf->len,
+>  					   dma_dir);
+>  		tx_desc.buf_type = TYPE_NETSEC_XDP_TX;
+
