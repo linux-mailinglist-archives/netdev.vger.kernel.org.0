@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58113DB5D7
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B989DB608
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503236AbfJQSVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 14:21:51 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39381 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503222AbfJQSVt (ORCPT
+        id S2441383AbfJQSW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 14:22:59 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43996 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503220AbfJQSVt (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 14:21:49 -0400
-Received: by mail-pf1-f193.google.com with SMTP id v4so2166480pff.6
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:21:48 -0700 (PDT)
+Received: by mail-pf1-f195.google.com with SMTP id a2so2158624pfo.10
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:21:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PmgNyGkoGEVdTCOZY2MyyHmw0BW2tuOUF02ixYBVnCA=;
-        b=S6Z6+BerrFU16sZoSfoOFchIm/zHQIZGpx1XPb60/3CEcgd1M7G8xSx0E0R2q+Q3+i
-         Q9Ph+c7kPVlhuf1/XOjYFvtGCxoYnGigE0IzNYGP24aM62zlkqp0m8X2mAxwW8wVFwko
-         GY07+0tATtCYt1veQdvZHEa1ouGh2S2/9kIlGmj7znW4d1hIYNa/mNOzMoIjsj0i8CPj
-         2XHU3bS3Ie1PWY8d6+4imD/L4vMgnS2roj0a7Ik8+dtrPezxhIpUaeZGdlSjCRRR9nFh
-         MxNh1hGGymVA9Yd9l65/qtuToEhgBl6jtvz+eUOG6E/IPg49QS+1DmHDoBuxaZxC9Rkv
-         YH1A==
+        bh=4mn951ojWG6H1WfltkvCD5uGwbE1/LT5rlc1glMoqkI=;
+        b=jh5ul5yKHL1LloRNnj+/N9HT22tFETnoRFG/yCx3lfJ5Rkk/bYrQ4Nk0P/UXkJuhD5
+         W1E9RUH2ULguGdeB9pEytv+pBDvtbtxXTGu5yPIubMw4ulh6Fh+pcKOKvcLOeWMMRmQW
+         DDCpwJgB8K+GLwV8Uy7MWKQ/XtC2PUnsTWI7W7RsKohrKQvGwgbPvM2fkMTqdxvu0eJK
+         d5+Bo1ZqXOQRuDvMbe0qSLL1KlwyCHyXr1GCBoCwEdxqyiDUQA67EK+gT3MzHVkQdLvo
+         czY2QgymUAmbd2wXOrBB5qF17ceXvDeX55EpvIEOUIXUs3fklRroxua0XRABufYJHRyi
+         bvjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PmgNyGkoGEVdTCOZY2MyyHmw0BW2tuOUF02ixYBVnCA=;
-        b=XFec2hZiQ1lCrgIs/7M7udVafy7I2DuhOuKwjrjaBAl4d+TkNGJ5Zdf/s634l/NUEA
-         61bKhexKWcgGfFDlHgAK/nBJJv9aKFEXiKgr2br2D+stOR0nhYLaYFwWPSxD0VmZaMN+
-         X5uw6AVW58nZIYxj0ZXn+fv/smIsIIl75P656Y5b36WfPknLke9ptd9+HwPj8f4asVli
-         sU+9lUPNguD2PApXmBbyWRs4069URh5I7nsP42SPHu6XLxhJkrpbPvxIQvLTX/Sgh0ym
-         9uVeNwfdVR6OVAIurKqYSwM9s1oFHMmigP01t5enu+4x0gld8dY7IkK7Z4LH7yTw2lU0
-         gVYA==
-X-Gm-Message-State: APjAAAXRiaRbE1EzwofiWN7yHL4BLe5BQywkByXE8sH5cd+fUUDt9l6W
-        iTVr179u6l0uwlYuR6I1/Jw=
-X-Google-Smtp-Source: APXvYqx7MiJcmz3Z//3YxXJICVwWluPC0lSvj+4Vn7pXWdlnHmnVggPjNto+PCu8CqoTt/JTBsZwBQ==
-X-Received: by 2002:a17:90a:db12:: with SMTP id g18mr6037329pjv.32.1571336507444;
-        Thu, 17 Oct 2019 11:21:47 -0700 (PDT)
+        bh=4mn951ojWG6H1WfltkvCD5uGwbE1/LT5rlc1glMoqkI=;
+        b=NvJM+ivUjP73fAyDT3YD3rTJGLAQutquoE8TqGCqF0ydbjUwGEI/nrtNXqbSkpA3E3
+         8psTckRLRHM34Yd7hyooMZ+NS0Zmul6ZdH/fs9wpt+Q2is/lTJ9QXNI/oe4mcvXmd0Su
+         oWixuhv3utoojTAIjsY7N6pRIXDttsI5EO4xlG7Gd2YH47GRyWQKHoAQERQCl440wMwK
+         QrhCLxFCr9iwVU6QNw94d1l8PB5Ef5k/mIB6QUXfSRUhsGh5YneHJkROu8fiQKcNgfnq
+         DKZiVkhdBVfwU1Brd5Wak6j03xqLvO2NAeogWoTfAeHX79hmMsMbnlUIvNkN9JXXa3eF
+         OaAg==
+X-Gm-Message-State: APjAAAU8mExV3I+z6T3yqWZWuv5mzvcyOpDkpD5Xkb4TlGUMNUTy55yy
+        M6SKjJytLhEJ5smq4F7PuEE=
+X-Google-Smtp-Source: APXvYqwnv8H43EMnkVaoZMvzmmKwiZtejmTb+xmiviwCW8L+hoc82z6QNN4M9HF0yE7iItj9vYw/3w==
+X-Received: by 2002:a63:8f41:: with SMTP id r1mr5241181pgn.83.1571336508559;
+        Thu, 17 Oct 2019 11:21:48 -0700 (PDT)
 Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id p24sm6174603pgc.72.2019.10.17.11.21.46
+        by smtp.gmail.com with ESMTPSA id p24sm6174603pgc.72.2019.10.17.11.21.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 11:21:46 -0700 (PDT)
+        Thu, 17 Oct 2019 11:21:47 -0700 (PDT)
 From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
 To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
         "John W . Linville" <linville@tuxdriver.com>
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH 08/33] fix unused parameter warning in natsemi_dump_regs()
-Date:   Thu, 17 Oct 2019 11:20:56 -0700
-Message-Id: <20191017182121.103569-8-zenczykowski@gmail.com>
+Subject: [PATCH 09/33] fix unused parameter warning in netsemi_dump_eeprom()
+Date:   Thu, 17 Oct 2019 11:20:57 -0700
+Message-Id: <20191017182121.103569-9-zenczykowski@gmail.com>
 X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
 In-Reply-To: <20191017182121.103569-1-zenczykowski@gmail.com>
 References: <CAHo-Ooze4yTO_yeimV-XSD=AXvvd0BmbKdvUK4bKWN=+LXirYQ@mail.gmail.com>
@@ -66,29 +66,29 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Maciej Żenczykowski <maze@google.com>
 
 This fixes:
-  external/ethtool/natsemi.c:326:43: error: unused parameter 'info' [-Werror,-Wunused-parameter]
-  natsemi_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
+  external/ethtool/natsemi.c:967:45: error: unused parameter 'info' [-Werror,-Wunused-parameter]
+  natsemi_dump_eeprom(struct ethtool_drvinfo *info, struct ethtool_eeprom *ee)
 
 Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Change-Id: Ib45adc15c39be9886fdc77ee488aba6b67726096
+Change-Id: I40d66f887d18ac6e69e1f365767a19f580a44f69
 ---
  natsemi.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/natsemi.c b/natsemi.c
-index ac29be5..e6e94b0 100644
+index e6e94b0..ce82c42 100644
 --- a/natsemi.c
 +++ b/natsemi.c
-@@ -323,7 +323,8 @@ static void __print_intr(int d, int intr, const char *name,
- } while (0)
+@@ -964,7 +964,8 @@ natsemi_dump_regs(struct ethtool_drvinfo *info maybe_unused,
+ }
  
  int
--natsemi_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
-+natsemi_dump_regs(struct ethtool_drvinfo *info maybe_unused,
-+		  struct ethtool_regs *regs)
+-natsemi_dump_eeprom(struct ethtool_drvinfo *info, struct ethtool_eeprom *ee)
++natsemi_dump_eeprom(struct ethtool_drvinfo *info maybe_unused,
++		    struct ethtool_eeprom *ee)
  {
- 	u32 *data = (u32 *)regs->data;
- 	u32 tmp;
+ 	int i;
+ 	u16 *eebuf = (u16 *)ee->data;
 -- 
 2.23.0.866.gb869b98d4c-goog
 
