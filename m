@@ -2,101 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF92DB8B4
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 22:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136C0DB8E5
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 23:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440826AbfJQU5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 16:57:03 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:54018 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2440037AbfJQU5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 16:57:03 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x9HKuunN096878;
-        Thu, 17 Oct 2019 15:56:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1571345816;
-        bh=NonDxu76QiMt6uzLm35txcbZHeB2YY7bYHqwXcVeC3Q=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=JHCuIFHcNjSY8DN/anrADrh4RKh56u2jGatKHJ1qqXrHOtLc5kUyYGOtCRcDdk9vm
-         UDuOc74kiKrnvVLd2j1+P07JJUn23XITA19GRyCEoTatKeqpUjM/Q3kDz5XdD5WNXM
-         L1ofO80xBM8C+Ix8Jwb/gsjPZtakncgd07XpV+9s=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x9HKuuxD124158
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 17 Oct 2019 15:56:56 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Thu, 17
- Oct 2019 15:56:55 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Thu, 17 Oct 2019 15:56:48 -0500
-Received: from [158.218.113.14] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9HKutSP010998;
-        Thu, 17 Oct 2019 15:56:55 -0500
-Subject: Re: taprio testing - Any help?
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com>
- <87v9sv3uuf.fsf@linux.intel.com>
- <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com>
- <87r23j3rds.fsf@linux.intel.com>
- <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com>
- <45d3e5ed-7ddf-3d1d-9e4e-f555437b06f9@ti.com>
- <871rve5229.fsf@linux.intel.com>
- <f6fb6448-35f0-3071-bda1-7ca5f4e3e11e@ti.com>
- <87zhi01ldy.fsf@linux.intel.com>
- <c4ff605f-d556-2c68-bcfd-65082ec8f73a@ti.com>
- <87bluf182w.fsf@linux.intel.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <945ee4cd-4628-4805-6429-21611bc6e08a@ti.com>
-Date:   Thu, 17 Oct 2019 17:02:44 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
+        id S2395031AbfJQVWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 17:22:10 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:41915 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732097AbfJQVWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 17:22:10 -0400
+Received: by mail-ot1-f67.google.com with SMTP id g13so3168048otp.8
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 14:22:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=7FxnfweTTGEUHt8GIdFyMw5UsrkV5NhBD+BfPnijRRE=;
+        b=sAxdOdOY5yEuIbTAZ7ius7BFrb1IQfI7v3NRd6UTOOtVqaGNuRRaHYmxNzX6xBxdeK
+         xaswXP4u2qFJ4WpE+kfA6UXiLXB1XmiRhntb9YYea2sUCAOXS/1NbxaDTq//3ZUvRkI/
+         GjlHIP2pBOqEmng8GWKxmLvmGSWn6eP+Mh5gCD3bL5bhdNl+ivSN0ArHimEkfk5CojU0
+         XSeBWTMa9oaH6ZqUy0QGr7o3e4bHveHUepL3bzddweGAaAp3Ew5vNB9xpVKiG2jXLkP+
+         pnJT+LKo1nsYZovgvDqz1W+HDiU1vtfNFjmTkce1ysOuRX4NBMTmqEbMKzFCzpyDTGbY
+         zhHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=7FxnfweTTGEUHt8GIdFyMw5UsrkV5NhBD+BfPnijRRE=;
+        b=juDrFlWzodli451go/918cS/HFq7EBBkV33upfweOG2ZPkKdCiC2O7hmhwxXh3ue3F
+         Xm+/s9nwDPWeSRbdDDl+qGNHjx8RpAVM/h8uyR6ZvhDIjcmUSaBVUdNfdcE246Ope1oG
+         i7TeCZLV0d9kXR8cd/Mj2RYJFCE0KWp/RAkf7UIWC8kxKVgRkNzPNmrktb4iuT/wtD+P
+         DJZFFfBcF57DdDB2pc2JqR6J+Ghxu5IEajkRjLGYG8oqxR5duSKoMh15q6FnyV+zkl2a
+         xheRErGhy9xdIjyI8u0wbSoSQ7u8HebAE2R2y9niTsjYhNt0eUIXV84cE/RQxtatsC5x
+         mXQw==
+X-Gm-Message-State: APjAAAVuVhL1RUf8mVz3In51y/iKJMwH9mAEfoybTLL7kfad/6QTvuAR
+        0saD3TYazpOlrBNIDbN6ixNFb4JBpwPIcSiFFI8=
+X-Google-Smtp-Source: APXvYqwc80S+4LynwafC57lxTMwYN3XFACe3k+B4ez/cPgDEcvtu8bx2T2jhacIg85B/PGI5/u9MsqFUef+XeNsnTPY=
+X-Received: by 2002:a9d:5f95:: with SMTP id g21mr4914300oti.86.1571347329087;
+ Thu, 17 Oct 2019 14:22:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <87bluf182w.fsf@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Received: by 2002:a9d:2049:0:0:0:0:0 with HTTP; Thu, 17 Oct 2019 14:22:08
+ -0700 (PDT)
+Reply-To: samuanu24@gmail.com
+From:   "Mr.Samuel Anu" <kafandoanu@gmail.com>
+Date:   Thu, 17 Oct 2019 21:22:08 +0000
+Message-ID: <CAEUsoMe9zVO1uotVnO-jKhFnt9xLx0e3Pt3TscRpnELPSDygvA@mail.gmail.com>
+Subject: From Mr.Samuel
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/17/2019 03:32 PM, Vinicius Costa Gomes wrote:
-> Murali Karicheri <m-karicheri2@ti.com> writes:
->>
->> root@am57xx-evm:~# tc qdisc replace dev eth0 parent root handle 100 taprio \
->>   >     num_tc 4 \
->>   >     map 2 3 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->>   >     queues 1@0 1@0 1@0 1@0 \
->>   >     base-time 1564535762845777831 \
->>   >     sched-entry S 0xC 15000000 \
->>   >     sched-entry S 0x2 15000000 \
->>   >     sched-entry S 0x4 15000000 \
->>   >     sched-entry S 0x8 15000000 \
->>   >     txtime-delay 300000 \
->>   >     flags 0x1 \
->>   >     clockid CLOCK_TAI
->> RTNETLINK answers: Invalid argument
->>
->> Anything wrong with the command syntax?
-> 
-> I tried this example here, and it got accepted ok. I am using the
-> current net-next master. The first thing that comes to mind is that
-> perhaps you backported some old version of some of the patches (so it's
-> different than what's upstream now).
-Was on master of kernel.org. Will try net-next master now.
+My Dear Friend
 
-Murali
-> 
-> 
-> Cheers,
-> --
-> Vinicius
-> 
+With due respect to your person and much sincerity of purpose, I make
+this contact with you as I believe that you can be of great assistance
+to me. My name, Mr.Samuel Anu, from Burkina Faso, West Africa. I work
+in Bank here  as telex manager, Please Can you use ATM Visa card to
+withdraw money at ATM cash machine in your country? I want to transfer
+money to you from my country; please see this as a confidential
+message and do not reveal it to another person, and let me know
+whether you can be of assistance regarding my proposal  below because
+it is top secret.
 
+I am about to retire from active Banking service to start a new life,
+but I am skeptical to reveal this particular secret to a stranger. You
+must assure me that everything will be handled confidentially because
+we are not going to suffer again in life. It has been 10 years now
+that most of the greedy African Politicians used our bank to laundry,
+money overseas through the help of their Political advisers.Most of
+the funds which they transferred out of the shores of Africa were gold
+and oil money that was supposed to have been used to develop the
+continent. Their Political advisers always inflated the amounts before
+transferring to foreign accounts, so I also used the opportunity to
+divert part of the funds hence I am aware that there is no official
+trace of how much was transferred as all the accounts used for such
+transfers were being closed after transfer.
+
+I acted as the Bank Officer to most of the politicians and when I
+discovered that they were using me to succeed in their greedy act;  I
+also cleaned some of their banking records from the Bank files and no
+one cared to ask me because the money was too much for them to
+control,  They laundered over $65 million Dollars during the process.
+Before I send this message to you, I have already diverted
+($5.3million Dollars) I will change the account details to yours, and
+apply for a visa card with your details in our bank, they will send
+the visa card to you and you will be withdrawing money with it and
+always send my own percentage of the money, Whatever amount you
+withdraw daily, you will send 50% to me and you will take 50%, the
+visa card and the bank account will be on your name, I will be waiting
+for your information as soon as possible.
+
+Your name.....,
+Age......,
+Sex......,
+Country......,
+Occupation......,
+Phone number.......,
+
+Please get back to me if you are interested and capable to handle this
+project, I shall intimate you on what to do when I hear from your
+confirmation and acceptance for further information. Please contact me
+through this email address:   samuanu24@gmail.com  ,
+
+Best Regards.
+Mr.Samuel Anu.
