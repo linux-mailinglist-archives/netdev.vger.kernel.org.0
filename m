@@ -2,144 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEE3DA5C7
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:52:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97C26DA5C9
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:52:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406077AbfJQGwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 02:52:38 -0400
-Received: from mx2.suse.de ([195.135.220.15]:53250 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389340AbfJQGwi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 02:52:38 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 7846BADAB;
-        Thu, 17 Oct 2019 06:52:35 +0000 (UTC)
-Date:   Thu, 17 Oct 2019 08:52:30 +0200
-From:   Daniel Wagner <dwagner@suse.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Subject: Re: lan78xx and phy_state_machine
-Message-ID: <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
-References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
- <20191015005327.GJ19861@lunn.ch>
- <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
- <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
- <20191016155107.GH17013@lunn.ch>
+        id S2407834AbfJQGwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 02:52:44 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:35582 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389340AbfJQGwo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:52:44 -0400
+Received: by mail-qt1-f196.google.com with SMTP id m15so2093917qtq.2;
+        Wed, 16 Oct 2019 23:52:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fm726N4OL0cMix5ocsI+MKixgvsQYeB4kCvOwJ5EfDU=;
+        b=KXAq5Su98E4VeX9e/Xl3D2ZBIgeXtqX/JvhK3XXv3o0ERhYck8qBLyuiHFq5kbPakm
+         SfKX5DlCXtrNwhq44hhF2a+sLvrW9AvH4Re9pNmYXDYQjqPIGrv0d28LYD7q8tWVT8Ey
+         8Se8bmQ3dG3CDMNezpQhtpS5PB4ynHJuzJnrULIy93iyb9+zw8ILx+nnG/fLZcerb6ra
+         p1QGEeHkv84CywldDSOdp8tyWoInNwJkowMmU5kMUm/mmVLCw+vQ7lobN9PJbvEliMjT
+         CTf1IaVyDM7hnnxjnlS3utj9LTVhoeAx8ZNuWae8/e/c2oiaSsU7LdgWqMY40JMBQdaF
+         zR1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fm726N4OL0cMix5ocsI+MKixgvsQYeB4kCvOwJ5EfDU=;
+        b=ExJRdmZBxXgzRvZzD3Vjg3zg9r5Ym5fxMorqHxafWVbMoKbK7aOjKoyTnUs+S3Tfhk
+         I5Ds8LHI9h/4FM0hiU3VV1tmV8sgZTjlQKqrsxteBGywHfpxKEnud2gi4ImHH5zz+Srl
+         VvbAI97wNT5nhwK3/OegtzjXI0TZoWS1Ya2cG8DcKrLPCQCBdqfnfupkR2yC+NANtpN1
+         +A5q9hFZD13k2g+N88UKRvG5H7xdFnXnQhBcDFVpvUnR8UTU99CtdOlrDWSTH2y81VdO
+         e6pmsQr3A21d+djpfa+PttJvBTmLYmVCQtq9inJJJ8/HPlLtVVkBYtttEc1farttND30
+         du2A==
+X-Gm-Message-State: APjAAAUKghSX30xyBvSLIisiEvwqYKyRV23OOhZVn5cPB2hoR6fcUuvP
+        vdRqk1SyMMr9iNxhqkqYE83+9p9CD3aCLDQ+rZU=
+X-Google-Smtp-Source: APXvYqzFT/yL9jIoRYtInLWDyNPCZ23KP0dwFFtr6WH61LtZ94iKncmlb/Y7Pk2pL6MAuYY4UeieBixpvfjl5svkOxI=
+X-Received: by 2002:a0c:fde4:: with SMTP id m4mr2302401qvu.163.1571295162709;
+ Wed, 16 Oct 2019 23:52:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191016155107.GH17013@lunn.ch>
-User-Agent: NeoMutt/20180716
+References: <20191016060051.2024182-1-andriin@fb.com> <CAADnVQJKESit7tDy0atn0-Q7Se=kLhkCWGAmRPJSVPdNAS8BVg@mail.gmail.com>
+In-Reply-To: <CAADnVQJKESit7tDy0atn0-Q7Se=kLhkCWGAmRPJSVPdNAS8BVg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Oct 2019 23:52:31 -0700
+Message-ID: <CAEf4BzZaSznrp0xLZ6Skpt3yuompUJU6XV863zSOPQfq4VL-UA@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 0/7] Fix, clean up, and revamp selftests/bpf Makefile
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 05:51:07PM +0200, Andrew Lunn wrote:
-> Hi Daniel
-> 
-> Please could you give this a go. It is totally untested, not even
-> compile tested...
+On Wed, Oct 16, 2019 at 9:28 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Oct 16, 2019 at 4:49 AM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > This patch set extensively revamps selftests/bpf's Makefile to generalize test
+> > runner concept and apply it uniformly to test_maps and test_progs test
+> > runners, along with test_progs' few build "flavors", exercising various ways
+> > to build BPF programs.
+> >
+> > As we do that, we fix dependencies between various phases of test runners, and
+> > simplify some one-off rules and dependencies currently present in Makefile.
+> > test_progs' flavors are now built into root $(OUTPUT) directory and can be run
+> > without any extra steps right from there. E.g., test_progs-alu32 is built and
+> > is supposed to be run from $(OUTPUT). It will cd into alu32/ subdirectory to
+> > load correct set of BPF object files (which are different from the ones built
+> > for test_progs).
+> >
+> > Outline:
+> > - patch #1 teaches test_progs about flavor sub-directories;
+> > - patch #2 fixes one of CO-RE tests to not depend strictly on process name;
+> > - patch #3 changes test_maps's usage of map_tests/tests.h to be the same as
+> >   test_progs' one;
+> > - patch #4 adds convenient short `make test_progs`-like targets to build only
+> >   individual tests, if necessary;
+> > - patch #5 is a main patch in the series; it uses a bunch of make magic
+> >   (mainly $(call) and $(eval)) to define test runner "skeleton" and apply it
+> >   to 4 different test runners, lots more details in corresponding commit
+> >   description;
+> > - patch #6 does a bit of post-clean up for test_queue_map and test_stack_map
+> >   BPF programs;
+> > - patch #7 cleans up test_libbpf.sh/test_libbpf_open superseded by test_progs.
+> >
+> > v3->v4:
+> > - remove accidentally checked in binaries;
+>
+> something really odd here.
+> Before the patchset ./test_progs -n 27 passes
+> after the patch it simply hangs.
+> Though strace -f ./test_progs -n 27 passes.
+> Any idea?
 
-Sure. The system boots but ther is one splat:
+Interesting. For me test_progs -n27 passes by itself, whether with or
+without Makefile changes. But when run together with #8
+flow_dissector_reattach, it fails with
+"(prog_tests/sockopt_inherit.c:28: errno: Network is unreachable) Fail
+to connect to server", even without Makefile changes. It doesn't hang,
+but the test has server and client threads being coordinated, so I
+wouldn't be surprised that under some specific timing and error
+conditions it can hang.
 
+I bisected this failure to f97eea1756f3 ("selftests/bpf: Check that
+flow dissector can be re-attached"), that's when
+flow_dissector_reattach test was added. So apparently there is some
+bad interaction there.
 
-[    2.213987] usb 1-1: new high-speed USB device number 2 using dwc2
-[    2.426789] hub 1-1:1.0: USB hub found
-[    2.430677] hub 1-1:1.0: 4 ports detected
-[    2.721982] usb 1-1.1: new high-speed USB device number 3 using dwc2
-[    2.826991] hub 1-1.1:1.0: USB hub found
-[    2.831093] hub 1-1.1:1.0: 3 ports detected
-[    3.489988] usb 1-1.1.1: new high-speed USB device number 4 using dwc2
-[    3.729045] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): deferred multicast write 0x00007ca0
-[    3.870518] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): No External EEPROM. Setting MAC Speed
-[    3.881900] libphy: lan78xx-mdiobus: probed
-[    3.893322] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): registered mdiobus bus usb-001:004
-[    3.902984] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): phydev->irq = 79
-[    4.283761] random: crng init done
-[    4.958866] lan78xx 1-1.1.1:1.0 eth0: receive multicast hash filter
-[    4.965311] lan78xx 1-1.1.1:1.0 eth0: deferred multicast write 0x00007ca2
-[    6.502358] lan78xx 1-1.1.1:1.0 eth0: PHY INTR: 0x00020000
-[    6.507935] ------------[ cut here ]------------
-[    6.512635] irq 79 handler irq_default_primary_handler+0x0/0x8 enabled interrupts
-[    6.520250] WARNING: CPU: 0 PID: 0 at kernel/irq/handle.c:152 __handle_irq_event_percpu+0x150/0x170
-[    6.529424] Modules linked in:
-[    6.532526] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.0-rc3-00018-g5bc52f64e884-dirty #36
-[    6.541172] Hardware name: Raspberry Pi 3 Model B+ (DT)
-[    6.546471] pstate: 60000005 (nZCv daif -PAN -UAO)
-[    6.551329] pc : __handle_irq_event_percpu+0x150/0x170
-[    6.556539] lr : __handle_irq_event_percpu+0x150/0x170
-[    6.561747] sp : ffff800010003cc0
-[    6.565104] x29: ffff800010003cc0 x28: 0000000000000060 
-[    6.570493] x27: ffff8000110fb9b0 x26: ffff800011a3daeb 
-[    6.575882] x25: ffff800011892d40 x24: ffff000037525800 
-[    6.581270] x23: 000000000000004f x22: ffff800010003d64 
-[    6.586659] x21: 0000000000000000 x20: 0000000000000002 
-[    6.592046] x19: ffff00003716fb00 x18: 0000000000000010 
-[    6.597434] x17: 0000000000000001 x16: 0000000000000007 
-[    6.602822] x15: ffff8000118931b0 x14: 747075727265746e 
-[    6.608210] x13: 692064656c62616e x12: 65203878302f3078 
-[    6.613598] x11: 302b72656c646e61 x10: 685f7972616d6972 
-[    6.618986] x9 : 705f746c75616665 x8 : ffff800011a9f000 
-[    6.624374] x7 : ffff800010681150 x6 : 00000000000000f9 
-[    6.629761] x5 : 0000000000000000 x4 : 0000000000000000 
-[    6.635148] x3 : 00000000ffffffff x2 : ffff8000118a2440 
-[    6.640535] x1 : ab82878caf7c9e00 x0 : 0000000000000000 
-[    6.645923] Call trace:
-[    6.648404]  __handle_irq_event_percpu+0x150/0x170
-[    6.653262]  handle_irq_event_percpu+0x30/0x88
-[    6.657767]  handle_irq_event+0x44/0xc8
-[    6.661659]  handle_simple_irq+0x90/0xc0
-[    6.665635]  generic_handle_irq+0x24/0x38
-[    6.669703]  intr_complete+0x104/0x178
-[    6.673508]  __usb_hcd_giveback_urb+0x58/0xf8
-[    6.677927]  usb_giveback_urb_bh+0xac/0x108
-[    6.682173]  tasklet_action_common.isra.0+0x154/0x1a0
-[    6.687298]  tasklet_hi_action+0x24/0x30
-[    6.691277]  __do_softirq+0x120/0x23c
-[    6.694990]  irq_exit+0xb8/0xd8
-[    6.698174]  __handle_domain_irq+0x64/0xb8
-[    6.702326]  bcm2836_arm_irqchip_handle_irq+0x60/0xc0
-[    6.707449]  el1_irq+0xb8/0x180
-[    6.710634]  arch_cpu_idle+0x10/0x18
-[    6.714260]  do_idle+0x200/0x280
-[    6.717532]  cpu_startup_entry+0x20/0x40
-[    6.721512]  rest_init+0xd4/0xe0
-[    6.724786]  arch_call_rest_init+0xc/0x14
-[    6.728851]  start_kernel+0x420/0x44c
-[    6.732562] ---[ end trace e770c2c68be5476f ]---
-[    6.742776] lan78xx 1-1.1.1:1.0 eth0: speed: 1000 duplex: 1 anadv: 0x05e1 anlpa: 0xc1e1
-[    6.750940] lan78xx 1-1.1.1:1.0 eth0: rx pause disabled, tx pause disabled
-[    6.769976] Sending DHCP requests ..., OK
-[   12.926088] IP-Config: Got DHCP answer from 192.168.19.2, my address is 192.168.19.53
-[   12.934059] IP-Config: Complete:
-[   12.937335]      device=eth0, hwaddr=b8:27:eb:85:c7:c9, ipaddr=192.168.19.53, mask=255.255.255.0, gw=192.168.19.1
-[   12.947758]      host=192.168.19.53, domain=, nis-domain=(none)
-[   12.953772]      bootserver=192.168.19.2, rootserver=192.168.19.2, rootpath=
-[   12.953776]      nameserver0=192.168.19.2
-[   12.965221] ALSA device list:
-[   12.968246]   No soundcards found.
-[   12.984397] VFS: Mounted root (nfs filesystem) on device 0:19.
-[   12.991059] devtmpfs: mounted
-[   13.000530] Freeing unused kernel memory: 5504K
-[   13.018077] Run /sbin/init as init process
-[   44.010022] nfs: server 192.168.19.2 not responding, still trying
-[   44.010027] nfs: server 192.168.19.2 not responding, still trying
-[   44.010033] nfs: server 192.168.19.2 not responding, still trying
-[   44.010056] nfs: server 192.168.19.2 not responding, still trying
-[   44.010070] nfs: server 192.168.19.2 not responding, still trying
-[   44.017003] nfs: server 192.168.19.2 OK
-[   44.028842] nfs: server 192.168.19.2 OK
-[   44.035171] nfs: server 192.168.19.2 OK
-[   44.035751] nfs: server 192.168.19.2 OK
-[   44.035796] nfs: server 192.168.19.2 OK
-[   46.056211] systemd[1]: System time before build time, advancing clock.
-[   46.114708] systemd[1]: systemd 232 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN)
-[   46.133593] systemd[1]: Detected architecture arm64.
+So I suspect my Makefile changes have nothing to do with this, it
+would be really bizarre...
 
-Welcome to Debian GNU/Linux 9 (stretch)!
+Jakub, do you mind checking as well?
