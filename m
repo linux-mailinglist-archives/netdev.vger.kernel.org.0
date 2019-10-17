@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00334DA5D2
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00750DA5D3
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:56:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407854AbfJQG4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 02:56:16 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:33897 "EHLO
+        id S2407861AbfJQG4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 02:56:18 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:58103 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2407840AbfJQG4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:56:14 -0400
+        by vger.kernel.org with ESMTP id S2392724AbfJQG4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:56:16 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1728721E29;
-        Thu, 17 Oct 2019 02:56:14 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 67EED21FB6;
+        Thu, 17 Oct 2019 02:56:15 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 17 Oct 2019 02:56:14 -0400
+  by compute3.internal (MEProxy); Thu, 17 Oct 2019 02:56:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=uDVl0436XZC/s20UySMrcqlEzp9F/jiNL5Ss+11krKA=; b=VlcB3dmD
-        GTmEqg11OnfhrexRffhCi1gjn9E9np3ohF1PcHhLHtxvRMJiPTnHusF71UnMxWu0
-        Ak2cDuJXxsOAl+RL69u1jaYuArgKKyhh3Sn4UsWSZvw9nF/TH4lDPubjrGLgWkZ3
-        x5klXgFdCWnwXnIuPUJGvjGe+bLpgwclDe4n/MY4MxIBVXJ4363SlGiaemZQTSw6
-        fcBRQRQwcjcWIdsPWhz7RSqf+cSjNYwQ8BijM1iXi0Fe8V0ItL80IeZbSONZkcOC
-        XgHcJ8kKi+m4GbzP9g4OFGygzbLLWrbWR4cTQKFrkAMU4W8dYN/pVJpXrrwD7Wr3
-        Tkd0CIVYrP6lEQ==
-X-ME-Sender: <xms:jRCoXS68YlwdS-jlX_CSbQNEyjPTuGGXLRXzfXsbb15cNDN0sMPO1A>
+        fm1; bh=gKVdfUaJbZKBLqWxPPWm6RpVFy8J1+7+5C3XzpGCLNs=; b=DYbAWLv3
+        gRFGBvZzflVsgMMFLAjyMfkUGTVN2nASu1fRnnqtgO8nJKaS2MPKxaN9yB8chnJ/
+        6c3AF0WHpWEZpyru0B30XeOFrhLkDH6qk+J57YwxI4kcTas5WPvkjIfNl+kqWu3f
+        oqErsnQiZJblOMLQd0LYeGRJV5Ss/T3zCrbjm+0mVBUm3WI4zcuD0SRNACth/yj8
+        lb/dEk0wucbCnJXl6Qql70F2qRlC8ZzaFw8VnM68HNoi3f1oj8V0ZSwnvvL6XQCf
+        srWG/kkLQNZcMlBBN8QGXgn9m2A0qlcSSBFBTN31IvBeg3cyKfflN2pMLoJ5oj0T
+        WVeWEQU3O84aMA==
+X-ME-Sender: <xms:jxCoXWYF2OU8Q_AKkmg-3kERd-V2LCvBqib2IXYUDCbebEXDm-f27w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrjeeigdduudefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrjeeigdduudefucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedt
-X-ME-Proxy: <xmx:jRCoXSWVTXPRFnvbAStbuYFv6wz4q2PIyiXjXmYPk_NTKACvCCPe4g>
-    <xmx:jRCoXe9yMipS19-tOCT1_f2XyEXQmHnygempdEt6yq0-coyaGdyRkg>
-    <xmx:jRCoXXi3y_-2LN8rP24Stw5LrpJANiIZzDFNfHHA0MH28kv9IAwwEw>
-    <xmx:jhCoXfwnEQDH1n-0kJihpNIm9XwfjCfCMsT6cD5feR3nT5e_xG2-Lg>
+X-ME-Proxy: <xmx:jxCoXWznW7ZrFTRHoGAfeqeN_rmcSjfuPjafxg1dXBmuToy2W7IRWA>
+    <xmx:jxCoXc-Ffgt9xIs1EWzRSr-y1R1aXpLUB_YB84XULLunnjmuIham-g>
+    <xmx:jxCoXcV1tQ-jeB0AwykzQAV5vIy_L3Hf7np_6F3CJDcKoJNCyczV6A>
+    <xmx:jxCoXeuMM6ro4w2qGsreUzmta86jY9oe4PY5PSjjKkVlizMuoUQAbw>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C537AD6005B;
-        Thu, 17 Oct 2019 02:56:12 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1C773D6005D;
+        Thu, 17 Oct 2019 02:56:13 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, danieller@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 3/5] selftests: mlxsw: Add Spectrum-2 mirror-to-gretap target scale test
-Date:   Thu, 17 Oct 2019 09:55:16 +0300
-Message-Id: <20191017065518.27008-4-idosch@idosch.org>
+Subject: [PATCH net-next 4/5] selftests: mlxsw: Add a resource scale test for Spectrum-2
+Date:   Thu, 17 Oct 2019 09:55:17 +0300
+Message-Id: <20191017065518.27008-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191017065518.27008-1-idosch@idosch.org>
 References: <20191017065518.27008-1-idosch@idosch.org>
@@ -61,39 +61,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@mellanox.com>
 
-Like in Spectrum, use the number of analyzers taken from the devlink
-command.
+Add resource_scale test suitable for Spectrum-2.
+
+Invoke the mirror_gre test and check that the advertised scale numbers
+are indeed supported.
 
 Signed-off-by: Danielle Ratson <danieller@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../net/mlxsw/spectrum-2/mirror_gre_scale.sh     | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
- create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/mirror_gre_scale.sh
+ .../net/mlxsw/spectrum-2/resource_scale.sh    | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/mirror_gre_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/mirror_gre_scale.sh
-new file mode 100644
-index 000000000000..f7c168decd1e
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+new file mode 100755
+index 000000000000..3bb9147890fa
 --- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/mirror_gre_scale.sh
-@@ -0,0 +1,16 @@
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+@@ -0,0 +1,46 @@
++#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
-+source ../mirror_gre_scale.sh
 +
-+mirror_gre_get_target()
++lib_dir=$(dirname $0)/../../../../net/forwarding
++
++NUM_NETIFS=6
++source $lib_dir/lib.sh
++source $lib_dir/tc_common.sh
++source $lib_dir/devlink_lib.sh
++
++current_test=""
++
++cleanup()
 +{
-+	local should_fail=$1; shift
-+	local target
-+
-+	target=$(devlink_resource_size_get span_agents)
-+
-+	if ((! should_fail)); then
-+		echo $target
-+	else
-+		echo $((target + 1))
++	pre_cleanup
++	if [ ! -z $current_test ]; then
++		${current_test}_cleanup
 +	fi
 +}
++
++trap cleanup EXIT
++
++ALL_TESTS="mirror_gre"
++for current_test in ${TESTS:-$ALL_TESTS}; do
++	source ${current_test}_scale.sh
++
++	num_netifs_var=${current_test^^}_NUM_NETIFS
++	num_netifs=${!num_netifs_var:-$NUM_NETIFS}
++
++	for should_fail in 0 1; do
++		RET=0
++		target=$(${current_test}_get_target "$should_fail")
++		${current_test}_setup_prepare
++		setup_wait $num_netifs
++		${current_test}_test "$target" "$should_fail"
++		${current_test}_cleanup
++		if [[ "$should_fail" -eq 0 ]]; then
++			log_test "'$current_test' $target"
++		else
++			log_test "'$current_test' overflow $target"
++		fi
++	done
++done
++current_test=""
++
++exit "$RET"
 -- 
 2.21.0
 
