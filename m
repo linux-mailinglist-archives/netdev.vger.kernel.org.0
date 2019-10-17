@@ -2,126 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD59ADAB05
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D8ADAB1F
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502091AbfJQLPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 07:15:25 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:52702 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406044AbfJQLPZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 07:15:25 -0400
-Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1iL3kR-0006th-Mr; Thu, 17 Oct 2019 13:15:15 +0200
-Date:   Thu, 17 Oct 2019 13:15:15 +0200 (CEST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>
-cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Christopher S . Hall" <christopher.s.hall@intel.com>
-Subject: Re: [RFC PATCH 1/5] x86: tsc: add tsc to art helpers
-In-Reply-To: <87y2y4vk4g.fsf@gmail.com>
-Message-ID: <alpine.DEB.2.21.1910171256580.1824@nanos.tec.linutronix.de>
-References: <20190716072038.8408-1-felipe.balbi@linux.intel.com> <20190716072038.8408-2-felipe.balbi@linux.intel.com> <alpine.DEB.2.21.1907160952040.1767@nanos.tec.linutronix.de> <87y2zvt1hk.fsf@gmail.com> <alpine.DEB.2.21.1908151458560.1923@nanos.tec.linutronix.de>
- <87y2y4vk4g.fsf@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S2408919AbfJQLYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 07:24:08 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:32780 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2408897AbfJQLYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 07:24:08 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id 7C138285294
+Message-ID: <a575469d3b2a12d24161d0c6b0a6bff538e066b6.camel@collabora.com>
+Subject: Re: [net-next 2/7] igb: add rx drop enable attribute
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Aaron Brown <aaron.f.brown@intel.com>
+Date:   Thu, 17 Oct 2019 12:24:03 +0100
+In-Reply-To: <20191016165531.26854b0e@cakuba.netronome.com>
+References: <20191016234711.21823-1-jeffrey.t.kirsher@intel.com>
+         <20191016234711.21823-3-jeffrey.t.kirsher@intel.com>
+         <20191016165531.26854b0e@cakuba.netronome.com>
+Organization: Collabora
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Tue, 1 Oct 2019, Felipe Balbi wrote:
-> (sorry for the long delay, got caught up in other tasks)
-
-Delayed by vacation :)
-
-> Thomas Gleixner <tglx@linutronix.de> writes:
-> > On Thu, 15 Aug 2019, Felipe Balbi wrote:
-> >> Thomas Gleixner <tglx@linutronix.de> writes:
-> >> > On Tue, 16 Jul 2019, Felipe Balbi wrote:
-> >> >
-> >> > So some information what those interfaces are used for and why they are
-> >> > needed would be really helpful.
-> >> 
-> >> Okay, I have some more details about this. The TGPIO device itself uses
-> >> ART since TSC is not directly available to anything other than the
-> >> CPU. The 'problem' here is that reading ART incurs extra latency which
-> >> we would like to avoid. Therefore, we use TSC and scale it to
-> >> nanoseconds which, would be the same as ART to ns.
-> >
-> > Fine. But that's not really correct:
-> >
-> >       TSC = art_to_tsc_offset + ART * scale;
+On Wed, 2019-10-16 at 16:55 -0700, Jakub Kicinski wrote:
+> On Wed, 16 Oct 2019 16:47:06 -0700, Jeff Kirsher wrote:
+> > From: Robert Beckett <bob.beckett@collabora.com>
+> > 
+> > To allow userland to enable or disable dropping packets when
+> > descriptor
+> > ring is exhausted, add RX_DROP_EN private flag.
+> > 
+> > This can be used in conjunction with flow control to mitigate
+> > packet storms
+> > (e.g. due to network loop or DoS) by forcing the network adapter to
+> > send
+> > pause frames whenever the ring is close to exhaustion.
+> > 
+> > By default this will maintain previous behaviour of enabling
+> > dropping of
+> > packets during ring buffer exhaustion.
+> > Some use cases prefer to not drop packets upon exhaustion, but
+> > instead
+> > use flow control to limit ingress rates and ensure no dropped
+> > packets.
+> > This is useful when the host CPU cannot keep up with packet
+> > delivery,
+> > but data delivery is more important than throughput via multiple
+> > queues.
+> > 
+> > Userland can set this flag to 0 via ethtool to disable packet
+> > dropping.
+> > 
+> > Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+> > Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 > 
-> From silicon folks I got the equation:
+> How is this different than enabling/disabling flow control..
 > 
-> ART = ECX * EBX / EAX;
+> ethtool -a/-A
 
-What is the content of ECX/EBX/EAX and where is it coming from?
- 
-> If I'm reading this correctly, that's basically what
-> native_calibrate_tsc() does (together with some error checking the safe
-> defaults). Couldn't we, instead, just have a single function like below?
-> 
-> u64 convert_tsc_to_art_ns()
-> {
-> 	return x86_platform.calibrate_tsc();
-> }
+Enabling flow control enables the advertisement of flow control
+capabilites and allows negotiation with link partner. It does not
+dictate under which circumstances those pause frames will be emitted.
 
-Huch? How is that supposed to work? calibrate_tsc() returns the TSC
-frequency.
+This patch enables an igb specific feature that can cause flow control
+to be used. The default behaviour is to drop packets if the rx ring
+buffer fills. This flag tells the driver instead to emit pause frames
+and not drop packets, which is useful when reliable data delivery is
+more important than throughput.
 
-> Another way would be extract the important parts from
-> native_calibrate_tsc() into a separate helper. This would safe another
-> call to cpuid(0x15,...);
 
-What for?
-
-The relation between TSC and ART is already established via detect_art()
-which reads all relevant data out of CPUID(ART_CPUID_LEAF).
-
-We use exactly that information for convert_art_to_tsc() so the obvious
-solution for calculating ART from TSC is to do the reverse operation.
-
-convert_art_to_tsc()
-{
-        rem = do_div(art, art_to_tsc_denominator);
-
-        res = art * art_to_tsc_numerator;
-        tmp = rem * art_to_tsc_numerator;
-
-        do_div(tmp, art_to_tsc_denominator);
-        res += tmp + art_to_tsc_offset;
-}
-
-which is translated into math:
-
-      TSC = ART * SCALE + OFFSET
-
-where
-
-      SCALE = N / D
-
-and
-
-      N = CPUID(ART_CPUID_LEAF).EAX
-      D = CPUID(ART_CPUID_LEAF).EBX
-
-So the obvious reverse operation is:
-
-     ART = (TSC - OFFSET) / SCALE;
-
-Translating that into code should not be rocket science.
-
-Thanks,
-
-	tglx
