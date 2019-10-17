@@ -2,69 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 756AADB06F
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 16:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E7BDB0A3
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 17:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406172AbfJQOtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 10:49:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59478 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405405AbfJQOtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 10:49:50 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iL765-0003Nx-83; Thu, 17 Oct 2019 16:49:49 +0200
-Received: from [178.197.249.55] (helo=pc-63.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iL765-000CzU-0G; Thu, 17 Oct 2019 16:49:49 +0200
-Subject: Re: [PATCH bpf-next] bpf: add new helper fd2path for mapping a file
- descriptor to a pathname
-To:     Zwb <ethercflow@gmail.com>, netdev@vger.kernel.org
-Cc:     yhs@fb.com
-References: <20191017092631.3739-1-ethercflow@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <365b18db-cf7f-1d1d-f048-7220eb702e8f@iogearbox.net>
-Date:   Thu, 17 Oct 2019 16:49:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2409417AbfJQPBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 11:01:14 -0400
+Received: from mta02.prd.rdg.aluminati.org ([94.76.243.215]:38790 "EHLO
+        mta02.prd.rdg.aluminati.org" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731768AbfJQPBO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 11:01:14 -0400
+X-Greylist: delayed 528 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Oct 2019 11:01:13 EDT
+Received: from mta02.prd.rdg.aluminati.org (localhost [127.0.0.1])
+        by mta02.prd.rdg.aluminati.org (Postfix) with ESMTP id B34921FF31;
+        Thu, 17 Oct 2019 15:52:24 +0100 (BST)
+Received: from localhost (localhost [127.0.0.1])
+        by mta02.prd.rdg.aluminati.org (Postfix) with ESMTP id 7D6E6245;
+        Thu, 17 Oct 2019 15:52:24 +0100 (BST)
+Authentication-Results: mta02.prd.rdg.aluminati.org (amavisd-new);
+        dkim=pass (2048-bit key) reason="pass (just generated, assumed good)"
+        header.d=cantab.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cantab.net; h=
+        mime-version:message-id:date:date:references:in-reply-to:subject
+        :subject:from:from:received:received; s=dkim; t=1571323836; bh=J
+        jMTI1mLIeg+pwWKnhkMc702J98xkf6BBs+6/SkWTsc=; b=fs/8l9xqRSdubarQO
+        bteOz8qDIXnVy/y9zsTDnMLpcMjzzSPwg2pm/DB6R1YsVs7MdrIA1/kRsAFYInv/
+        jDG70ObvLRNT6ysfoNAhnSeZCLwnK7gH+x/8SFMc+JZ1PulraJ36vxNUxHmD6AEz
+        0STfq2YFImCgkpeOijyFe050E1fVjSHhjprnkh9b8k0+rBKDE/uLbsYV3oayk06P
+        E76PgsT4DCtwYz4ES87x24bCOqclFyXinHtlHEGpsr5cyvb+o0Kp5whvdBYPtEWC
+        KWZalQgJf9NgA+1LEO/0sxSJRA/+aSoNZ/8W0RY5oEh+mtxmWcXaDvZvV9bCU4Az
+        BBapQ==
+X-Quarantine-ID: <TPhAEx1RnaC6>
+X-Virus-Scanned: Debian amavisd-new at mta02.prd.rdg.aluminati.org
+Received: from mta.aluminati.local ([127.0.0.1])
+        by localhost (mta02.prd.rdg.aluminati.org [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id TPhAEx1RnaC6; Thu, 17 Oct 2019 15:50:36 +0100 (BST)
+Received: from henry.ossau.homelinux.net (79-65-71-34.host.pobb.as13285.net [79.65.71.34])
+        by mta02.prd.rdg.aluminati.org (Postfix) with ESMTPSA id CEF10D0;
+        Thu, 17 Oct 2019 15:50:31 +0100 (BST)
+From:   Neil Jerram <neiljerram@cantab.net>
+To:     Oliver Neukum <oneukum@suse.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, johan@kernel.org
+Subject: Re: [PATCHv2] usb: hso: obey DMA rules in tiocmget
+In-Reply-To: <20191017132548.21888-1-oneukum@suse.com>
+References: <20191017132548.21888-1-oneukum@suse.com>
+Date:   Thu, 17 Oct 2019 15:50:31 +0100
+Message-ID: <87tv87qvd4.fsf@ossau.homelinux.net>
 MIME-Version: 1.0
-In-Reply-To: <20191017092631.3739-1-ethercflow@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25605/Thu Oct 17 10:52:31 2019)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/17/19 11:26 AM, Zwb wrote:
-> When people want to identify which file system files are being opened,
-> read, and written to, they can use this helper with file descriptor as
-> input to achieve this goal. Other pseudo filesystems are also supported.
-> 
-> Signed-off-by: Zwb <ethercflow@gmail.com>
+Oliver Neukum <oneukum@suse.com> writes:
 
-SOB requires that there is a proper name, see Documentation/process/submitting-patches.rst +431.
+> The serial state information must not be embedded into another
+> data structure, as this interferes with cache handling for DMA
+> on architectures without cache coherence..
+> That would result in data corruption on some architectures
 
-[...]
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index a65c3b0c6935..a4a5d432e572 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -2769,6 +2769,7 @@ union bpf_attr {
->   	FN(get_current_pid_tgid),	\
->   	FN(get_current_uid_gid),	\
->   	FN(get_current_comm),		\
-> +	FN(fd2path),			\
+Could you say more what you mean by "some architectures"?  I wonder if
+this is responsible for long-standing flakiness dealing with the HSO
+modem in the GTA04 phone?
 
-Adding into the middle will break existing BPF programs. Helper description is also missing.
-
->   	FN(get_cgroup_classid),		\
->   	FN(skb_vlan_push),		\
->   	FN(skb_vlan_pop),		\
+Best wishes,
+   Neil
