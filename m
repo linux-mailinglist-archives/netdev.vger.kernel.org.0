@@ -2,121 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C26DA5C9
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA320DA5CF
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407834AbfJQGwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 02:52:44 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:35582 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389340AbfJQGwo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:52:44 -0400
-Received: by mail-qt1-f196.google.com with SMTP id m15so2093917qtq.2;
-        Wed, 16 Oct 2019 23:52:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fm726N4OL0cMix5ocsI+MKixgvsQYeB4kCvOwJ5EfDU=;
-        b=KXAq5Su98E4VeX9e/Xl3D2ZBIgeXtqX/JvhK3XXv3o0ERhYck8qBLyuiHFq5kbPakm
-         SfKX5DlCXtrNwhq44hhF2a+sLvrW9AvH4Re9pNmYXDYQjqPIGrv0d28LYD7q8tWVT8Ey
-         8Se8bmQ3dG3CDMNezpQhtpS5PB4ynHJuzJnrULIy93iyb9+zw8ILx+nnG/fLZcerb6ra
-         p1QGEeHkv84CywldDSOdp8tyWoInNwJkowMmU5kMUm/mmVLCw+vQ7lobN9PJbvEliMjT
-         CTf1IaVyDM7hnnxjnlS3utj9LTVhoeAx8ZNuWae8/e/c2oiaSsU7LdgWqMY40JMBQdaF
-         zR1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fm726N4OL0cMix5ocsI+MKixgvsQYeB4kCvOwJ5EfDU=;
-        b=ExJRdmZBxXgzRvZzD3Vjg3zg9r5Ym5fxMorqHxafWVbMoKbK7aOjKoyTnUs+S3Tfhk
-         I5Ds8LHI9h/4FM0hiU3VV1tmV8sgZTjlQKqrsxteBGywHfpxKEnud2gi4ImHH5zz+Srl
-         VvbAI97wNT5nhwK3/OegtzjXI0TZoWS1Ya2cG8DcKrLPCQCBdqfnfupkR2yC+NANtpN1
-         +A5q9hFZD13k2g+N88UKRvG5H7xdFnXnQhBcDFVpvUnR8UTU99CtdOlrDWSTH2y81VdO
-         e6pmsQr3A21d+djpfa+PttJvBTmLYmVCQtq9inJJJ8/HPlLtVVkBYtttEc1farttND30
-         du2A==
-X-Gm-Message-State: APjAAAUKghSX30xyBvSLIisiEvwqYKyRV23OOhZVn5cPB2hoR6fcUuvP
-        vdRqk1SyMMr9iNxhqkqYE83+9p9CD3aCLDQ+rZU=
-X-Google-Smtp-Source: APXvYqzFT/yL9jIoRYtInLWDyNPCZ23KP0dwFFtr6WH61LtZ94iKncmlb/Y7Pk2pL6MAuYY4UeieBixpvfjl5svkOxI=
-X-Received: by 2002:a0c:fde4:: with SMTP id m4mr2302401qvu.163.1571295162709;
- Wed, 16 Oct 2019 23:52:42 -0700 (PDT)
+        id S2392643AbfJQG4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 02:56:12 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:53711 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389363AbfJQG4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:56:11 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9EB3520D12;
+        Thu, 17 Oct 2019 02:56:10 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 17 Oct 2019 02:56:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=//FuUEmNiq9wd5eek
+        x6chat7AKEHAXd3eiaIqMeusec=; b=nsroYq53ubVbY4in8sVkjMh0g9l0A1V+d
+        LJeXhXDHO0Q3mYBOATUF0xCkbutuRfPFPI6g3DFvUDt0JsbGrZ0XnmnQ/2E2h0md
+        eQuxHbNMutTWwUGGrg7W/2NETZ/m64qPjZLtMdbQNdwPQCKrs89N1qLOCv9A2Mr/
+        nxBfJNOkslLXbHR+n/91j2UAfNy0+hycH7PN1NolnSKQQBWaWbhCNLjDzKnAYLt4
+        /gKSXjm1kGYmKsV0KGsMibiFfn7jqxmy4+4mM+LrU+6xzHWjSeFty+itKtUcQUGv
+        Zmpx16x2D25OO/pFwQmNzk8uyN1AeDGw5jpXa5zf/WUogOg54nx8Q==
+X-ME-Sender: <xms:iRCoXU4NUDlatkMxB5kerR63aU7RQBCI2cyehL68mhPO1ymv_pL_Vw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrjeeigdduuddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:ihCoXe0X7j5hN2fmjc2y_KnBEI034vh2_QnPsQd91o5VfFqR8LCeSQ>
+    <xmx:ihCoXfBllJ-5PI-3aLZqCdn4U8F2JHLngQXh5K-NtVaA-Bn_ccE2Bg>
+    <xmx:ihCoXZNIdlYSNdxJvp4skGmBRH0z6heFMAcBqU1W3srOiuTUrW81Qw>
+    <xmx:ihCoXWCCgzH01sEWxV1VGVaZNwQVBolCbRnGOv-UqpXK0qRsBRkf_g>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id D3EAAD60057;
+        Thu, 17 Oct 2019 02:56:08 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, danieller@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/5] selftests: mlxsw: Add scale tests for Spectrum-2
+Date:   Thu, 17 Oct 2019 09:55:13 +0300
+Message-Id: <20191017065518.27008-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20191016060051.2024182-1-andriin@fb.com> <CAADnVQJKESit7tDy0atn0-Q7Se=kLhkCWGAmRPJSVPdNAS8BVg@mail.gmail.com>
-In-Reply-To: <CAADnVQJKESit7tDy0atn0-Q7Se=kLhkCWGAmRPJSVPdNAS8BVg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Oct 2019 23:52:31 -0700
-Message-ID: <CAEf4BzZaSznrp0xLZ6Skpt3yuompUJU6XV863zSOPQfq4VL-UA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 0/7] Fix, clean up, and revamp selftests/bpf Makefile
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 9:28 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Oct 16, 2019 at 4:49 AM Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > This patch set extensively revamps selftests/bpf's Makefile to generalize test
-> > runner concept and apply it uniformly to test_maps and test_progs test
-> > runners, along with test_progs' few build "flavors", exercising various ways
-> > to build BPF programs.
-> >
-> > As we do that, we fix dependencies between various phases of test runners, and
-> > simplify some one-off rules and dependencies currently present in Makefile.
-> > test_progs' flavors are now built into root $(OUTPUT) directory and can be run
-> > without any extra steps right from there. E.g., test_progs-alu32 is built and
-> > is supposed to be run from $(OUTPUT). It will cd into alu32/ subdirectory to
-> > load correct set of BPF object files (which are different from the ones built
-> > for test_progs).
-> >
-> > Outline:
-> > - patch #1 teaches test_progs about flavor sub-directories;
-> > - patch #2 fixes one of CO-RE tests to not depend strictly on process name;
-> > - patch #3 changes test_maps's usage of map_tests/tests.h to be the same as
-> >   test_progs' one;
-> > - patch #4 adds convenient short `make test_progs`-like targets to build only
-> >   individual tests, if necessary;
-> > - patch #5 is a main patch in the series; it uses a bunch of make magic
-> >   (mainly $(call) and $(eval)) to define test runner "skeleton" and apply it
-> >   to 4 different test runners, lots more details in corresponding commit
-> >   description;
-> > - patch #6 does a bit of post-clean up for test_queue_map and test_stack_map
-> >   BPF programs;
-> > - patch #7 cleans up test_libbpf.sh/test_libbpf_open superseded by test_progs.
-> >
-> > v3->v4:
-> > - remove accidentally checked in binaries;
->
-> something really odd here.
-> Before the patchset ./test_progs -n 27 passes
-> after the patch it simply hangs.
-> Though strace -f ./test_progs -n 27 passes.
-> Any idea?
+From: Ido Schimmel <idosch@mellanox.com>
 
-Interesting. For me test_progs -n27 passes by itself, whether with or
-without Makefile changes. But when run together with #8
-flow_dissector_reattach, it fails with
-"(prog_tests/sockopt_inherit.c:28: errno: Network is unreachable) Fail
-to connect to server", even without Makefile changes. It doesn't hang,
-but the test has server and client threads being coordinated, so I
-wouldn't be surprised that under some specific timing and error
-conditions it can hang.
+This series from Danielle adds two scale tests for the Spectrum-2 ASIC.
 
-I bisected this failure to f97eea1756f3 ("selftests/bpf: Check that
-flow dissector can be re-attached"), that's when
-flow_dissector_reattach test was added. So apparently there is some
-bad interaction there.
+The first scale test (patches #1-#4) validates the number of mirroring
+sessions (using tc-mirred) that can be supported by the device. As a
+preparatory step, patch #1 exposes the maximum number and current usage
+of mirroring agents via devlink-resource. This allows us to avoid
+hard-coding the limits later in the test.
 
-So I suspect my Makefile changes have nothing to do with this, it
-would be really bizarre...
+The second scale test (patch #5) validates the number of tc-flower
+filters that can be supported by the device.
 
-Jakub, do you mind checking as well?
+Danielle Ratson (5):
+  mlxsw: spectrum: Register switched port analyzers (SPAN) as resource
+  selftests: mlxsw: Generalize the parameters of mirror_gre test
+  selftests: mlxsw: Add Spectrum-2 mirror-to-gretap target scale test
+  selftests: mlxsw: Add a resource scale test for Spectrum-2
+  selftests: mlxsw: Add Spectrum-2 target scale for tc flower scale test
+
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 51 ++++++++++++++++++-
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  3 ++
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   | 21 ++++++++
+ .../net/mlxsw/spectrum-2/mirror_gre_scale.sh  | 16 ++++++
+ .../net/mlxsw/spectrum-2/resource_scale.sh    | 46 +++++++++++++++++
+ .../net/mlxsw/spectrum-2/tc_flower_scale.sh   | 20 ++++++++
+ .../net/mlxsw/spectrum/mirror_gre_scale.sh    |  7 ++-
+ 7 files changed, 160 insertions(+), 4 deletions(-)
+ create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/mirror_gre_scale.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+ create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_flower_scale.sh
+
+-- 
+2.21.0
+
