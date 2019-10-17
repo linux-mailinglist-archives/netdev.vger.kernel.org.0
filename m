@@ -2,146 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC7F5DB38F
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 19:40:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03876DB392
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 19:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394274AbfJQRki (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 13:40:38 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46319 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729302AbfJQRki (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 13:40:38 -0400
-Received: by mail-lj1-f196.google.com with SMTP id d1so3417980ljl.13
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 10:40:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=nCas3wIsezQ7Ota7kj7tPiR9E0F8WzvSl03swr1pjEU=;
-        b=lDmR4/Fw5aqwF9Ql2z3KMI+HaK4vdraB3fJinNginHBw6Awy9IAyRnRCLLmdHKIwVg
-         Knl5lzXAs6mlalgpwetOQEJGHAJwnSOATMk08RygHWRE34Lt8Pc2PXV8X7QHs6TSDitR
-         46RaXGej9hftIS47FcPVn2Q//S2OZ+x2Jh45PucghFXADRNuyHN92X+ohC8c9Fj0Mn9C
-         NH6IXfPfUS3KEJbw3fsuXV0q8UhLIzVzpubNILS84IHnM+Ykmw6FcLntr0+l5+5THkQ/
-         89UAi0keQ/aEzAcaqTvI+15/rpwyZlJIjSkQAYaWdxfG0kbIvugnVdgXSEPxbfba1b6q
-         nI+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=nCas3wIsezQ7Ota7kj7tPiR9E0F8WzvSl03swr1pjEU=;
-        b=qt9Ces/RGD73SfxLwRepPGhI/McUh3bC7ptXqU60aTqaWKXxuvPum3XjN4zoY+e7sD
-         owi01/Sl2OumPNsrg/Dz67svBxrTZBgBf36ZBYL7+6KN9shKmHrDxhW6dPwmyMGRh846
-         SWXcXd0HBGfdnjJ9ioS6K2qu6sqZWMxfzoMrMC1483SCLnyPneViUQ8iXKMHNHYMEd9Y
-         9wePhWZnoBbbyIOZaF/NB1mjuyYYwKU4grTKQRF5cUv5dwn7OJwaGERgh36uOznsiWnq
-         t6EVZJkbb9LkX7R71K7d14LQAlni1qK2F0YLl2ug40NE3MVJJ3k2VeoNp98KfozRBVxo
-         pGxA==
-X-Gm-Message-State: APjAAAUMLRzHihDNI+CC/emf6Et93wpeOXb3FqKcO1vcbL02nyBVwIUn
-        t829qjYMrjmsPN50hZETEwcgeA==
-X-Google-Smtp-Source: APXvYqy6XesNK4XA5ymeIkq9d11eUGmWi24uGU3UH6mYlTCT/IkzoWIJUpvCr/Mzqd4fHNhZMQlCLw==
-X-Received: by 2002:a2e:8183:: with SMTP id e3mr3354229ljg.14.1571334036024;
-        Thu, 17 Oct 2019 10:40:36 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t10sm1208239ljt.68.2019.10.17.10.40.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 10:40:35 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 10:40:25 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Robert Beckett <bob.beckett@collabora.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>
-Subject: Re: [net-next 2/7] igb: add rx drop enable attribute
-Message-ID: <20191017104025.31f00c97@cakuba.netronome.com>
-In-Reply-To: <c04a2fbd630e91435eab985abfaf3bcb6a8d60d5.camel@collabora.com>
-References: <20191016234711.21823-1-jeffrey.t.kirsher@intel.com>
-        <20191016234711.21823-3-jeffrey.t.kirsher@intel.com>
-        <20191016165531.26854b0e@cakuba.netronome.com>
-        <a575469d3b2a12d24161d0c6b0a6bff538e066b6.camel@collabora.com>
-        <20191017084433.18bce3d4@cakuba.netronome.com>
-        <c04a2fbd630e91435eab985abfaf3bcb6a8d60d5.camel@collabora.com>
-Organization: Netronome Systems, Ltd.
+        id S2394330AbfJQRlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 13:41:39 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40684 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729302AbfJQRlj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 13:41:39 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 8A3BBB175;
+        Thu, 17 Oct 2019 17:41:37 +0000 (UTC)
+Date:   Thu, 17 Oct 2019 19:41:33 +0200
+From:   Daniel Wagner <dwagner@suse.de>
+To:     Stefan Wahren <wahrenst@gmx.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: lan78xx and phy_state_machine
+Message-ID: <20191017174133.e4uhsp77zod5vbef@beryllium.lan>
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191015005327.GJ19861@lunn.ch>
+ <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
+ <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
+ <20191016155107.GH17013@lunn.ch>
+ <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
+ <6f445327-a2bc-fa75-a70a-c117f2205ecd@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6f445327-a2bc-fa75-a70a-c117f2205ecd@gmx.net>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Oct 2019 18:04:22 +0100, Robert Beckett wrote:
-> On Thu, 2019-10-17 at 08:44 -0700, Jakub Kicinski wrote:
-> > On Thu, 17 Oct 2019 12:24:03 +0100, Robert Beckett wrote:  
-> > > On Wed, 2019-10-16 at 16:55 -0700, Jakub Kicinski wrote:  
-> > > > On Wed, 16 Oct 2019 16:47:06 -0700, Jeff Kirsher wrote:    
-> > > > > From: Robert Beckett <bob.beckett@collabora.com>
-> > > > > 
-> > > > > To allow userland to enable or disable dropping packets when
-> > > > > descriptor
-> > > > > ring is exhausted, add RX_DROP_EN private flag.
-> > > > > 
-> > > > > This can be used in conjunction with flow control to mitigate
-> > > > > packet storms
-> > > > > (e.g. due to network loop or DoS) by forcing the network
-> > > > > adapter to
-> > > > > send
-> > > > > pause frames whenever the ring is close to exhaustion.
-> > > > > 
-> > > > > By default this will maintain previous behaviour of enabling
-> > > > > dropping of
-> > > > > packets during ring buffer exhaustion.
-> > > > > Some use cases prefer to not drop packets upon exhaustion, but
-> > > > > instead
-> > > > > use flow control to limit ingress rates and ensure no dropped
-> > > > > packets.
-> > > > > This is useful when the host CPU cannot keep up with packet
-> > > > > delivery,
-> > > > > but data delivery is more important than throughput via
-> > > > > multiple
-> > > > > queues.
-> > > > > 
-> > > > > Userland can set this flag to 0 via ethtool to disable packet
-> > > > > dropping.
-> > > > > 
-> > > > > Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-> > > > > Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-> > > > > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>    
-> > > > 
-> > > > How is this different than enabling/disabling flow control..
-> > > > 
-> > > > ethtool -a/-A    
-> > > 
-> > > Enabling flow control enables the advertisement of flow control
-> > > capabilites and allows negotiation with link partner.  
-> > 
-> > More or less. If autoneg is on it controls advertised bits,
-> > if autoneg is off it controls the enabled/disable directly.
-> >   
-> > > It does not dictate under which circumstances those pause frames
-> > > will
-> > > be emitted.  
-> > 
-> > So you're saying even with pause frames on igb by default will not
-> > backpressure all the way to the wire if host RX ring is full/fill
-> > ring
-> > is empty?  
-> 
-> Correct.
-> Honestly I personally considered it a bug when I first saw it.
-> 
-> see e6bdb6fefc590
-> 
-> Specifically it enables dropping of frames if multiple queues are in
-> use, ostensibly to prevent head of line blocking between the different
-> rx queues.
-> 
-> This patch says that that should be a user choice, defaulting to the
-> old behaviour.
+Hi Stefan,
 
-I'd say just always enable it then. Honestly if it's statically enabled
-with multi queue (which I presume is the default?) then there's no need
-for us to ponder the uAPI questions. I can't think of anyone flipping
-that flag to disabled...
+On Thu, Oct 17, 2019 at 07:05:32PM +0200, Stefan Wahren wrote:
+> Am 17.10.19 um 08:52 schrieb Daniel Wagner:
+> > On Wed, Oct 16, 2019 at 05:51:07PM +0200, Andrew Lunn wrote:
+> >> Please could you give this a go. It is totally untested, not even
+> >> compile tested...
+> > Sure. The system boots but ther is one splat:
+> >
+> this is a known issues since 4.20 [1], [2]. So not related to the crash.
 
-Flow control is supposed to prevent _all_ drops it can, AFAIU.
+Oh, I see.
 
-If we get an actual user request to change it we can revisit.
+> Unfortunately, you didn't wrote which kernel version works for you
+> (except of this splat). Only 5.3 or 5.4-rc3 too?
+
+With v5.2.20 I was able to boot the system. But after this discussion
+I would say that was just luck. The race seems to exist for longer and
+only with my 'special' config I am able to reproduce it.
+
+> [1] - https://marc.info/?l=linux-netdev&m=154604180927252&w=2
+> [2] - https://patchwork.kernel.org/patch/10888797/
+
+Indeed, the irq domain code looks suspicious and Marc pointed out that
+is dead wrong. Could we just go with [2] and fix this up?
+
+Thanks,
+Daniel
