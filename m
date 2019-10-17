@@ -2,157 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E405AE1256
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:42:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5498E130C
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 09:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388581AbfJWGmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 02:42:52 -0400
-Received: from mail-eopbgr50075.outbound.protection.outlook.com ([40.107.5.75]:47918
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727194AbfJWGmw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 02:42:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hr4uwMEusBTrlN7LuXfTL2jUSkJrRP6p0QTuoES7fIiQ/bpV6Qhj5D0bvxoHu792FE+1MCiyIVq/Ki9f24KB6XsfmHzARx44iHpTKjJCQ0iGKqDKOWbF1gs9eva8gO7cBkbXOi+jCoxbhkh1B6wbjOqtOmvNaVESa9qDc7rkcTzQP0v0/NppeUPludU0sf1p7XWNAFOThZduG5cU/90w/fbMpK6o8RmVd1C4JUV15vqgaYpudib29BOrzE9UH8xHyeV08/T4payhj6PkbsCh1yya4h+GfhzIAqeubj91/AdSrG9jF59jNvumUUCluEx05Yo683Qe49YH4QnAedCiEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cyzByeITDsNzNBEO5rf++ImhSl+gTVQRBKP/wOXyUkI=;
- b=WgpirVmOp99iJ7BFJMvkLNnt8dHvIjGkskWN4+DYZwwQYsVCYsgAXWnkBy1paMdrq4YNoFS/ic8CII4wnLWMUhk2LwcpAI4W4paYU3l3gBqfUY88esxIzPu4SXHfGbBY4rXCw6Vb3fOE3hX06cphp1RiIM7qDwsGY/qKvx48LInUzmrxXVeyiMqLBGTTMdEFDlcGxKvsGix78u/wscv/VNn+EoiI0XnXCK+k64sFNfTYsDMlyHIoM3e8Do6V8Xn9uNWjlkvRpRhZc0dRmdEjvYG5WhtQFxNCuvJpeZpPOYIq4tAbrKrOFLrcS1vV/pTJWFvgWLefDzWCbsZ10EOm3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cyzByeITDsNzNBEO5rf++ImhSl+gTVQRBKP/wOXyUkI=;
- b=jRvspjR4NZS5q3YvadVsFArJU1Xksc5cp2Gcvblyyoxy0TDdnqSOkTyHWrArUPVMWp0jYmhQiSysXZgysV58yR0hNZ8z5023qK7nxpoIwTDiEZ9qU9V4XbuteGidc8xS72mRKcVottHPViS91afSfOBScG9drib+XgLyk7yIpGk=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB4240.eurprd05.prod.outlook.com (52.133.14.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Wed, 23 Oct 2019 06:42:06 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2367.025; Wed, 23 Oct 2019
- 06:42:06 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6dmxUYAgAAKWoCAABWbgIAA4vKA
-Date:   Wed, 23 Oct 2019 06:42:06 +0000
-Message-ID: <vbfimogvu84.fsf@mellanox.com>
-References: <20191022141804.27639-1-vladbu@mellanox.com>
- <20191022151524.GZ4321@localhost.localdomain> <vbflftcwzes.fsf@mellanox.com>
- <20191022170947.GA4321@localhost.localdomain>
-In-Reply-To: <20191022170947.GA4321@localhost.localdomain>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0148.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9::16) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 11db9da6-cf06-4ca6-6131-08d757841f39
-x-ms-traffictypediagnostic: VI1PR05MB4240:|VI1PR05MB4240:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB42400B2B450989DCFEBA34A3AD6B0@VI1PR05MB4240.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 019919A9E4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(376002)(346002)(52314003)(189003)(199004)(8936002)(86362001)(4326008)(6246003)(8676002)(81156014)(71190400001)(71200400001)(54906003)(6512007)(81166006)(36756003)(229853002)(6486002)(386003)(26005)(76176011)(52116002)(25786009)(11346002)(99286004)(446003)(6436002)(102836004)(2616005)(316002)(486006)(476003)(6506007)(186003)(256004)(66066001)(2906002)(66946007)(7736002)(305945005)(6916009)(5660300002)(66476007)(14454004)(478600001)(14444005)(66446008)(6116002)(3846002)(64756008)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4240;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: V1hjQqBN5BeVvw3EfJpuyljBnfQs8P0nNsyy3ajjtVsvVW/dwzdLigCh/LY+6S6Is9yp8qUYCLpj6vPVdtxlURl9nOYY7twTyXB1Zawej50e7lpS1XTrPyHosP9jSskTnLmd1/S4jryXumoGrtc1OVGQUOtI1QGK6T90JEJc+OUy8KC4ZvenXSrW1aQGLzFd6+GOJBLLLwE5PWGceGzgR97k9tvzJv+RLs7oN1ilciPj6tEu7nrLjSO3pVhWApGBgX3qnQCS493PzRE85IYp1j37ttBwYgdgc1wWjg0nzTlZnZzmpbPAKEX5VvJ6rxjLBCv+6+xkXREYFUepE4nUfwHsMoi4Sj11TEPVSG9mD0MK7cLlbILRo2dG8cHdYhdSZwmNrLfqQ0fgaK35W8jAiUYauTG03MAIBuGZgAbXcUg/Ljtd5CWWjRijFycQ9G/N
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11db9da6-cf06-4ca6-6131-08d757841f39
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2019 06:42:06.8457
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fCj2wUpAa/5K8BSssfDz6lZD/mISfRICC1zTnTSjErbkrGy85x3OGZGfQ50GFaukYSn/GP2iPmz8klRzd1lf9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4240
+        id S2389849AbfJWHZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 03:25:21 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40910 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389835AbfJWHZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 03:25:20 -0400
+Received: by mail-pf1-f193.google.com with SMTP id x127so12348366pfb.7;
+        Wed, 23 Oct 2019 00:25:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=3ED0+h6gAQw+Yq1D40Ef4ktI1oPwDQrbBfgGUVBxZ24=;
+        b=ZgCVaCH5uO4HTNSVIkTIdba60a6aazGUV68Y0JUn288vDgHNX9noslSF8ezFCX7/de
+         9Nomh6dQSUFnGm+49tJGt9MRSe6oTw6bSjPgCTDApYr/B1NZhe9NC3WhlBelKLvPXTR9
+         u5VP5vRU7OwpkZxC1L6+mTVJzaAE6XBXV1fLjMsamZjnlYqNxK7lls6u46+txYYbP+sk
+         GmXQVIemRhxxTbhLByxIimmD1iJn/ln48nrGUKxPf2Q8ejxDvsCcHjMNoUqYf9z1LiNX
+         DhfklsNFzSrxyMZDxZiGNdmmEwwnFwBEY6PLiEn5NY/APPfUSChQWEyKnzZyozyz1Yuh
+         zh6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3ED0+h6gAQw+Yq1D40Ef4ktI1oPwDQrbBfgGUVBxZ24=;
+        b=RL5DyTstrWolrHmB9olqBFl6IP++cKcg26kfPvFBE7F4KmltThfsZjsWaI9E8k86Ny
+         yPbWviymf+5c7YKp/LZJKJeDpqPO79X95O5E8ss8gxX4AlhtWyWbx5ZPeKdzHZAiVMLc
+         oQ5stBO0Jw3Nc5vuHkpkDvHR7a4kmbc0YG6dt4ediZmHbhVeXM66HJaWm+5w2dHeL7/m
+         RH+BxfG3Z+d3jf/yrDM7F0twpJvNEntSvcyQZwz3ZdYIaYLcbJVTUbT+aQ8Gaz58F6iM
+         AjCCqkUf8sA/KQ6zBpWbe1Rq4jnZANoN7P9Scub6W2hNOacDCX3nqvILLRKVogWPzUuG
+         JdkQ==
+X-Gm-Message-State: APjAAAUyHDybPs9YlHnTF2C/bKMohkJOoXeB/ekJu8ta3K4IEOVSiK+B
+        i4UDrBOZWjINkASqBticuu4=
+X-Google-Smtp-Source: APXvYqyLDFrxZjdwFcBxl1ypqAtAPKvW3nZpMrI7hNcuiFBuXxPPa7JP9BcFtGVg2NfccC5PhMXMTw==
+X-Received: by 2002:a17:90a:1701:: with SMTP id z1mr9585733pjd.63.1571815520091;
+        Wed, 23 Oct 2019 00:25:20 -0700 (PDT)
+Received: from local.opencloud.tech.localdomain ([203.100.54.194])
+        by smtp.gmail.com with ESMTPSA id d20sm23123603pfq.88.2019.10.23.00.25.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 23 Oct 2019 00:25:19 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     pablo@netfilter.org
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next] netfilter: nf_conntrack: introduce conntrack limit per-zone
+Date:   Thu, 17 Oct 2019 13:03:04 +0800
+Message-Id: <1571288584-46449-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-On Tue 22 Oct 2019 at 20:09, Marcelo Ricardo Leitner <mleitner@redhat.com> =
-wrote:
-> On Tue, Oct 22, 2019 at 03:52:31PM +0000, Vlad Buslov wrote:
->>
->> On Tue 22 Oct 2019 at 18:15, Marcelo Ricardo Leitner <mleitner@redhat.co=
-m> wrote:
->> > On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
->> >> - Extend actions that are used for hardware offloads with optional
->> >>   netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action flag =
-and
->> >>   update affected actions to not allocate percpu counters when the fl=
-ag
->> >>   is set.
->> >
->> > I just went over all the patches and they mostly make sense to me. So
->> > far the only point I'm uncertain of is the naming of the flag,
->> > "fast_init".  That is not clear on what it does and can be overloaded
->> > with other stuff later and we probably don't want that.
->>
->> I intentionally named it like that because I do want to overload it with
->> other stuff in future, instead of adding new flag value for every single
->> small optimization we might come up with :)
->
-> Hah :-)
->
->>
->> Also, I didn't want to hardcode implementation details into UAPI that we
->> will have to maintain for long time after percpu allocator in kernel is
->> potentially replaced with something new and better (like idr is being
->> replaced with xarray now, for example)
->
-> I see. OTOH, this also means that the UAPI here would be unstable
-> (different meanings over time for the same call), and hopefully new
-> behaviors would always be backwards compatible.
+nf_conntrack_max is used to limit the maximum number of
+conntrack entries in the conntrack table for every network
+namespace. For the containers that reside in the same namespace,
+they share the same conntrack table, and the total # of conntrack
+entries for all containers are limited by nf_conntrack_max.
+In this case, if one of the container abuses the usage the
+conntrack entries, it blocks the others from committing valid
+conntrack entries into the conntrack table.
 
-This flag doesn't change any userland-visible behavior, just suggests
-different performance trade off (insertion rate for sw packet processing
-speed). Counters continue to work with or without the flag. Any
-optimization that actually modifies cls or act API behavior will have to
-use dedicated flag value.
+To address the issue, this patch adds conntrack counter for zones
+and max count which zone wanted, So that any zone can't consume
+all conntrack entries in the conntrack table.
 
->
->>
->> Anyway, lets see what other people think. I'm open to changing it.
->>
->> >
->> > Say, for example, we want percpu counters but to disable allocating
->> > the stats for hw, to make the counter in 28169abadb08 ("net/sched: Add
->> > hardware specific counters to TC actions") optional.
->> >
->> > So what about:
->> > TCA_ACT_FLAGS_NO_PERCPU_STATS
->> > TCA_ACT_FLAGS_NO_HW_STATS (this one to be done on a subsequent patchse=
-t, yes)
->> > ?
->> >
->> >   Marcelo
->>
+This feature can be used for openvswitch or iptables.
+
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+ .../linux/netfilter/nf_conntrack_zones_common.h    |  2 ++
+ include/net/netfilter/nf_conntrack_zones.h         | 36 ++++++++++++++++++++++
+ include/net/netns/conntrack.h                      |  5 +++
+ net/netfilter/nf_conntrack_core.c                  | 15 +++++++--
+ 4 files changed, 55 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/netfilter/nf_conntrack_zones_common.h b/include/linux/netfilter/nf_conntrack_zones_common.h
+index 8f3905e1..0d50880 100644
+--- a/include/linux/netfilter/nf_conntrack_zones_common.h
++++ b/include/linux/netfilter/nf_conntrack_zones_common.h
+@@ -12,11 +12,13 @@
+ #define NF_CT_DEFAULT_ZONE_DIR	(NF_CT_ZONE_DIR_ORIG | NF_CT_ZONE_DIR_REPL)
+ 
+ #define NF_CT_FLAG_MARK		1
++#define NF_CT_ZONE_CONN_MAX	65535
+ 
+ struct nf_conntrack_zone {
+ 	u16	id;
+ 	u8	flags;
+ 	u8	dir;
++	unsigned int max_wanted;
+ };
+ 
+ extern const struct nf_conntrack_zone nf_ct_zone_dflt;
+diff --git a/include/net/netfilter/nf_conntrack_zones.h b/include/net/netfilter/nf_conntrack_zones.h
+index 48dbadb..f072374 100644
+--- a/include/net/netfilter/nf_conntrack_zones.h
++++ b/include/net/netfilter/nf_conntrack_zones.h
+@@ -5,6 +5,42 @@
+ #include <linux/netfilter/nf_conntrack_zones_common.h>
+ #include <net/netfilter/nf_conntrack.h>
+ 
++static inline void nf_ct_zone_count_init(struct net *net)
++{
++#ifdef CONFIG_NF_CONNTRACK_ZONES
++	int i;
++	for (i = 0; i < NF_CT_ZONE_CONN_MAX; i ++)
++		atomic_set(&net->ct.zone_conn_max[i], 0);
++#endif
++}
++
++static inline void nf_ct_zone_count_inc(struct net *net,
++					const struct nf_conntrack_zone *zone)
++{
++#ifdef CONFIG_NF_CONNTRACK_ZONES
++	atomic_inc(&net->ct.zone_conn_max[zone->id]);
++#endif
++}
++
++static inline void nf_ct_zone_count_dec(struct net *net,
++					const struct nf_conntrack_zone *zone)
++{
++#ifdef CONFIG_NF_CONNTRACK_ZONES
++	atomic_dec(&net->ct.zone_conn_max[zone->id]);
++#endif
++}
++
++static inline unsigned int
++nf_ct_zone_count_read(struct net *net,
++		      const struct nf_conntrack_zone *zone)
++{
++#ifdef CONFIG_NF_CONNTRACK_ZONES
++	return atomic_read(&net->ct.zone_conn_max[zone->id]);
++#else
++	return 0;
++#endif
++}
++
+ static inline const struct nf_conntrack_zone *
+ nf_ct_zone(const struct nf_conn *ct)
+ {
+diff --git a/include/net/netns/conntrack.h b/include/net/netns/conntrack.h
+index 806454e..da50d1e 100644
+--- a/include/net/netns/conntrack.h
++++ b/include/net/netns/conntrack.h
+@@ -6,6 +6,7 @@
+ #include <linux/list_nulls.h>
+ #include <linux/atomic.h>
+ #include <linux/workqueue.h>
++#include <linux/netfilter/nf_conntrack_zones_common.h>
+ #include <linux/netfilter/nf_conntrack_tcp.h>
+ #ifdef CONFIG_NF_CT_PROTO_DCCP
+ #include <linux/netfilter/nf_conntrack_dccp.h>
+@@ -118,5 +119,9 @@ struct netns_ct {
+ #if defined(CONFIG_NF_CONNTRACK_LABELS)
+ 	unsigned int		labels_used;
+ #endif
++
++#ifdef CONFIG_NF_CONNTRACK_ZONES
++	atomic_t zone_conn_max[NF_CT_ZONE_CONN_MAX];
++#endif
+ };
+ #endif
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 0c63120..a2f7c27d 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -1352,14 +1352,20 @@ static void conntrack_gc_work_init(struct conntrack_gc_work *gc_work)
+ 
+ 	/* We don't want any race condition at early drop stage */
+ 	atomic_inc(&net->ct.count);
++	nf_ct_zone_count_inc(net, zone);
++
++	if ((nf_conntrack_max &&
++	     unlikely(atomic_read(&net->ct.count) > nf_conntrack_max)) ||
++	    (zone->max_wanted &&
++	     unlikely(nf_ct_zone_count_read(net, zone) > zone->max_wanted))) {
+ 
+-	if (nf_conntrack_max &&
+-	    unlikely(atomic_read(&net->ct.count) > nf_conntrack_max)) {
+ 		if (!early_drop(net, hash)) {
+ 			if (!conntrack_gc_work.early_drop)
+ 				conntrack_gc_work.early_drop = true;
++
+ 			atomic_dec(&net->ct.count);
+-			net_warn_ratelimited("nf_conntrack: table full, dropping packet\n");
++			nf_ct_zone_count_dec(net, zone);
++			net_warn_ratelimited("nf_conntrack: table or zone full, dropping packet\n");
+ 			return ERR_PTR(-ENOMEM);
+ 		}
+ 	}
+@@ -1394,6 +1400,7 @@ static void conntrack_gc_work_init(struct conntrack_gc_work *gc_work)
+ 	return ct;
+ out:
+ 	atomic_dec(&net->ct.count);
++	nf_ct_zone_count_dec(net, zone);
+ 	return ERR_PTR(-ENOMEM);
+ }
+ 
+@@ -1421,6 +1428,7 @@ void nf_conntrack_free(struct nf_conn *ct)
+ 	kmem_cache_free(nf_conntrack_cachep, ct);
+ 	smp_mb__before_atomic();
+ 	atomic_dec(&net->ct.count);
++	nf_ct_zone_count_dec(net, nf_ct_zone(ct));
+ }
+ EXPORT_SYMBOL_GPL(nf_conntrack_free);
+ 
+@@ -2510,6 +2518,7 @@ int nf_conntrack_init_net(struct net *net)
+ 	BUILD_BUG_ON(IP_CT_UNTRACKED == IP_CT_NUMBER);
+ 	BUILD_BUG_ON_NOT_POWER_OF_2(CONNTRACK_LOCKS);
+ 	atomic_set(&net->ct.count, 0);
++	nf_ct_zone_count_init(net);
+ 
+ 	net->ct.pcpu_lists = alloc_percpu(struct ct_pcpu);
+ 	if (!net->ct.pcpu_lists)
+-- 
+1.8.3.1
+
