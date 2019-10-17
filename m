@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31762DABA6
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 14:01:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BA3BDABAC
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 14:02:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502251AbfJQMBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 08:01:46 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54455 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2502237AbfJQMBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 08:01:41 -0400
-Received: by mail-wm1-f67.google.com with SMTP id p7so2267773wmp.4
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 05:01:39 -0700 (PDT)
+        id S2502286AbfJQMCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 08:02:03 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:33735 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2502255AbfJQMBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 08:01:51 -0400
+Received: by mail-wm1-f66.google.com with SMTP id r17so6873583wme.0
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 05:01:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rBnqrwfSTh2mbIWwZpd9b9hudXdXX3wV/WFEw1SJ2yw=;
-        b=YXPnsMjKQyf8JYK0M4k0KOdyEWa1AMAmiDYLNlKXmtX/pwgtbFV2kT3BgtWZXFaJWm
-         QboEGQHvToLotMwSll1BfBlLHNTm9atHIsl4LVjub+12SS8qdBgMfGSdLVTzDMc0U0OS
-         T0iDaKu9JVuF39SdlZMs4CvAzIS7P1m36IKps=
+        bh=tX0Ftqak4R2nBwIJhEYcSRn89ISdRNtAIBGqgcMm9qk=;
+        b=Tqlujk3TKIxQUIZQEQPDYzgjH8DnuJg3YtB6UepNiVhCWYfT2x3WcBMnc6H5n8TD2f
+         VyK+xUK6v3ztl59U8d0b2lFLI2UeeQRpkwyEXkNzdDm/mbIb0iazCm5nKausHG8SodMO
+         85pRPNh3gBWT5kJvYkXRV6U+iyQcO3R806HV4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=rBnqrwfSTh2mbIWwZpd9b9hudXdXX3wV/WFEw1SJ2yw=;
-        b=A/mhLeDZO/rkY8P+A1c1HKLSG9/iMzIQx0uh0eDY35LSIxXeJ9vLz6XJBm5ImTje82
-         G2QIkxwKoGF3bvToqPKizuCGDZgKg1+ySXyl0+H7Q6rcotKJzk26PmVa0MTPx+hiDIwN
-         V+nVJ7AcPw/tkS0evdnawgl/Cp5k5UBrIjsI5UFsM6coxAEeb7UoSEJVFqC0cbWTOcgv
-         UFx/sSW5QGp0R8vIeCxgO/j9XswyjskEfklf/kS7Uq2zu9eQuIS77rR/K1ud/hOa1Urz
-         +7i6cgCSJ6pupBBJTMEuKm/l6Xou78AI2Vw/ViidAPoXWNTzqHnPuM3pzMLww5MWYP2K
-         +MZA==
-X-Gm-Message-State: APjAAAWxAtoSLRhhVL9rIYg0FO9BbXQVflXxcyEJrfdB8EyCmHpVWczJ
-        ahCmwliCbJJL+oPPEtU6RvX+vw==
-X-Google-Smtp-Source: APXvYqx23GT/npHp/uYWt+AJRmhdQoQHvzH7clYBCIlLhux531SFUjxNmmlmWEatrMH9VYlmXtflMA==
-X-Received: by 2002:a7b:c849:: with SMTP id c9mr2481040wml.70.1571313698937;
-        Thu, 17 Oct 2019 05:01:38 -0700 (PDT)
+        bh=tX0Ftqak4R2nBwIJhEYcSRn89ISdRNtAIBGqgcMm9qk=;
+        b=YvTeoFHWZ4dWhr2Q076tB3Q+2r0RVDDA+wNOoMQBjOwgL7RESKEbN20YMJiPNdJHLA
+         /Xttb1GCd45KBjzCUa9nBGeBH0RkhUuDKJg5AXuOUeI2389QxNj1xspv814AEXwQJi8x
+         GoAGkM/nMaBtXpSzRdp/JqxhPKMTbIHG/CQcwUV83XtZxGm49kC+UTnCGO454aUwtodo
+         LmoygJ+t2VqqfOq8OysdbEJOGTpgPKPcg5ZhzWUoTSs49Y4taxdE+SjCR7Q/8gXG3j7p
+         SE3qNw/MMjqTC+y71tPXHGMc1zbVB5D6RKp3AAAd0ZQU7S/oi9mvzPJIqk2uMmq7BTRT
+         MANg==
+X-Gm-Message-State: APjAAAW71/27NcTeE/OPNq7K4uYNgIzX6YJG4LXCDytfG0iQMOqfj9NX
+        80cKWB8cMGGZ3y24K8aqeJoDYw==
+X-Google-Smtp-Source: APXvYqxHJGWsW5gK/1BlwQml0teEZNX2wvdoEc1ob5b9+4KfNI39J6WVOq52SMPMq0qJpm1Tl6uQNg==
+X-Received: by 2002:a05:600c:2481:: with SMTP id 1mr2454420wms.98.1571313707563;
+        Thu, 17 Oct 2019 05:01:47 -0700 (PDT)
 Received: from shitalt.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id y1sm2317949wrw.6.2019.10.17.05.01.33
+        by smtp.gmail.com with ESMTPSA id y1sm2317949wrw.6.2019.10.17.05.01.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 17 Oct 2019 05:01:38 -0700 (PDT)
+        Thu, 17 Oct 2019 05:01:45 -0700 (PDT)
 From:   Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
 To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -57,9 +57,9 @@ Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
         netdev@vger.kernel.org,
         Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Subject: [PATCH V2 2/3] bnxt_en: Add support to invoke OP-TEE API to reset firmware
-Date:   Thu, 17 Oct 2019 17:31:21 +0530
-Message-Id: <1571313682-28900-3-git-send-email-sheetal.tigadoli@broadcom.com>
+Subject: [PATCH V2 3/3] bnxt_en: Add support to collect crash dump via ethtool
+Date:   Thu, 17 Oct 2019 17:31:22 +0530
+Message-Id: <1571313682-28900-4-git-send-email-sheetal.tigadoli@broadcom.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1571313682-28900-1-git-send-email-sheetal.tigadoli@broadcom.com>
 References: <1571313682-28900-1-git-send-email-sheetal.tigadoli@broadcom.com>
@@ -70,61 +70,130 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-In error recovery process when firmware indicates that it is
-completely down, initiate a firmware reset by calling OP-TEE API.
+Driver supports 2 types of core dumps.
+
+1. Live dump - Firmware dump when system is up and running.
+2. Crash dump - Dump which is collected during firmware crash
+                that can be retrieved after recovery.
+Crash dump is currently supported only on specific 58800 chips
+which can be retrieved using OP-TEE API only, as firmware cannot
+access this region directly.
+
+User needs to set the dump flag using following command before
+initiating the dump collection:
+
+    $ ethtool -W|--set-dump eth0 N
+
+Where N is "0" for live dump and "1" for crash dump
+
+Command to collect the dump after setting the flag:
+
+    $ ethtool -w eth0 data Filename
 
 Cc: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 13 +++++++++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  3 +++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  3 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 36 +++++++++++++++++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  2 ++
+ 3 files changed, 39 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index b4a8cf6..b60b24e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10581,14 +10581,23 @@ static void bnxt_fw_reset_writel(struct bnxt *bp, int reg_idx)
- static void bnxt_reset_all(struct bnxt *bp)
- {
- 	struct bnxt_fw_health *fw_health = bp->fw_health;
--	int i;
-+	int i, rc;
-+
-+	if (bp->fw_cap & BNXT_FW_CAP_ERR_RECOVER_RELOAD) {
-+#ifdef CONFIG_TEE_BNXT_FW
-+		rc = tee_bnxt_fw_load();
-+		if (rc)
-+			netdev_err(bp->dev, "Unable to reset FW rc=%d\n", rc);
-+		bp->fw_reset_timestamp = jiffies;
-+#endif
-+		return;
-+	}
- 
- 	if (fw_health->flags & ERROR_RECOVERY_QCFG_RESP_FLAGS_HOST) {
- 		for (i = 0; i < fw_health->fw_reset_seq_cnt; i++)
- 			bnxt_fw_reset_writel(bp, i);
- 	} else if (fw_health->flags & ERROR_RECOVERY_QCFG_RESP_FLAGS_CO_CPU) {
- 		struct hwrm_fw_reset_input req = {0};
--		int rc;
- 
- 		bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FW_RESET, -1, -1);
- 		req.resp_addr = cpu_to_le64(bp->hwrm_cmd_kong_resp_dma_addr);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index d333589..0943715 100644
+index 0943715..3e7d1fb 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -25,6 +25,9 @@
- #include <net/dst_metadata.h>
- #include <net/xdp.h>
- #include <linux/dim.h>
-+#ifdef CONFIG_TEE_BNXT_FW
-+#include <linux/firmware/broadcom/tee_bnxt_fw.h>
+@@ -1807,6 +1807,9 @@ struct bnxt {
+ 
+ 	u8			num_leds;
+ 	struct bnxt_led_info	leds[BNXT_MAX_LED];
++	u16			dump_flag;
++#define BNXT_DUMP_LIVE		0
++#define BNXT_DUMP_CRASH		1
+ 
+ 	struct bpf_prog		*xdp_prog;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 51c1404..1596221 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3311,6 +3311,23 @@ static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
+ 	return rc;
+ }
+ 
++static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
++{
++	struct bnxt *bp = netdev_priv(dev);
++
++#ifndef CONFIG_TEE_BNXT_FW
++	return -EOPNOTSUPP;
 +#endif
++
++	if (dump->flag > BNXT_DUMP_CRASH) {
++		netdev_err(dev, "Supports only Live(0) and Crash(1) dumps.\n");
++		return -EINVAL;
++	}
++
++	bp->dump_flag = dump->flag;
++	return 0;
++}
++
+ static int bnxt_get_dump_flag(struct net_device *dev, struct ethtool_dump *dump)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+@@ -3323,7 +3340,12 @@ static int bnxt_get_dump_flag(struct net_device *dev, struct ethtool_dump *dump)
+ 			bp->ver_resp.hwrm_fw_bld_8b << 8 |
+ 			bp->ver_resp.hwrm_fw_rsvd_8b;
  
- struct page_pool;
+-	return bnxt_get_coredump(bp, NULL, &dump->len);
++	dump->flag = bp->dump_flag;
++	if (bp->dump_flag == BNXT_DUMP_CRASH)
++		dump->len = BNXT_CRASH_DUMP_LEN;
++	else
++		bnxt_get_coredump(bp, NULL, &dump->len);
++	return 0;
+ }
  
+ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
+@@ -3336,7 +3358,16 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
+ 
+ 	memset(buf, 0, dump->len);
+ 
+-	return bnxt_get_coredump(bp, buf, &dump->len);
++	dump->flag = bp->dump_flag;
++	if (dump->flag == BNXT_DUMP_CRASH) {
++#ifdef CONFIG_TEE_BNXT_FW
++		return tee_bnxt_copy_coredump(buf, 0, dump->len);
++#endif
++	} else {
++		return bnxt_get_coredump(bp, buf, &dump->len);
++	}
++
++	return 0;
+ }
+ 
+ void bnxt_ethtool_init(struct bnxt *bp)
+@@ -3446,6 +3477,7 @@ void bnxt_ethtool_free(struct bnxt *bp)
+ 	.set_phys_id		= bnxt_set_phys_id,
+ 	.self_test		= bnxt_self_test,
+ 	.reset			= bnxt_reset,
++	.set_dump		= bnxt_set_dump,
+ 	.get_dump_flag		= bnxt_get_dump_flag,
+ 	.get_dump_data		= bnxt_get_dump_data,
+ };
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+index b5b65b3..01de7e7 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+@@ -59,6 +59,8 @@ struct hwrm_dbg_cmn_output {
+ 	#define HWRM_DBG_CMN_FLAGS_MORE	1
+ };
+ 
++#define BNXT_CRASH_DUMP_LEN	(8 << 20)
++
+ #define BNXT_LED_DFLT_ENA				\
+ 	(PORT_LED_CFG_REQ_ENABLES_LED0_ID |		\
+ 	 PORT_LED_CFG_REQ_ENABLES_LED0_STATE |		\
 -- 
 1.9.1
 
