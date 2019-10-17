@@ -2,285 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0A2DA769
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 10:29:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EADDA77D
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 10:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393360AbfJQI3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 04:29:09 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40592 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389585AbfJQI3J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 04:29:09 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8AAB5757C6;
-        Thu, 17 Oct 2019 08:29:08 +0000 (UTC)
-Received: from carbon (ovpn-200-46.brq.redhat.com [10.40.200.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E169E5C1D6;
-        Thu, 17 Oct 2019 08:29:02 +0000 (UTC)
-Date:   Thu, 17 Oct 2019 10:29:01 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     <ilias.apalodimas@linaro.org>, <saeedm@mellanox.com>,
-        <tariqt@mellanox.com>, <netdev@vger.kernel.org>,
-        <kernel-team@fb.com>, brouer@redhat.com
-Subject: Re: [PATCH 08/10 net-next] page_pool: Add statistics
-Message-ID: <20191017102901.43a09b35@carbon>
-In-Reply-To: <20191016225028.2100206-9-jonathan.lemon@gmail.com>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
-        <20191016225028.2100206-9-jonathan.lemon@gmail.com>
+        id S2392968AbfJQIh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 04:37:56 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:44549 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388788AbfJQIhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 04:37:55 -0400
+Received: by mail-lf1-f65.google.com with SMTP id q12so1155955lfc.11
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 01:37:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iyXqf2Y5RVgz0dXJDcgvlyJCh/JIvnGuh8RzmE45oX0=;
+        b=r+BzTn0BajFC/ZI5g1K2t2f9T+3f2xuwJg8Eqd9aSRIRbvS9DXxRYnFMeSLd5TQoVC
+         nzRuRNEuk1bl7KahgGzNEHVBZxJ5w2XEo8Z2OTYgSMpojdFUWKLD4it1wYD/6NPAKKFp
+         MvTDiAc6M4Fk3REMyBDc3b/AeILoexp5m+4JM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iyXqf2Y5RVgz0dXJDcgvlyJCh/JIvnGuh8RzmE45oX0=;
+        b=r/kiWN2yx7Rt/OX16O1wWryqOuUCaTKl3eGoQRJLToMqxDn43oWC0PMncAbjxqjz3y
+         8D0qtfISmkJOpYpF0zkmND19ZdvHzb6OIgGUukSZdNHD6P6aISX1qzyEVuoqudLxXzrU
+         +vXp4SsBcpQeYdMi0LRI2LeUsktvpY5uG0fLA4XkpcKzxjFC4lUHpaqU57Svy/Z7KHFP
+         NmIDO1h1F+mPN6gCPZ1fKPvxK/z1Nroid+/EOVtPShJhQsBCRfvt1SWKSROsQkFMiNuL
+         oEMxCI7XC/Mugd4cHykkI+1K7wkkZT/sIe2cHR74QNXjMQjBAu4b85eQmQURaV1URleW
+         ExVQ==
+X-Gm-Message-State: APjAAAX8qEUPpLUcslXjOZcG2EFTytMWq7ClWtJDOImVT4jIaL+RWaHx
+        T7+yucNPpY+l/gu4Z6WPNk3h8g==
+X-Google-Smtp-Source: APXvYqwLL5rugmzKDMycdTY030AImuFDveTcvViXTY8X4oBD724KF5HLxwJ+k2O0HGl3y2NYBlhKwA==
+X-Received: by 2002:a19:dc14:: with SMTP id t20mr1518966lfg.21.1571301473596;
+        Thu, 17 Oct 2019 01:37:53 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id n11sm266072lfd.88.2019.10.17.01.37.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Oct 2019 01:37:52 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: [PATCH bpf-next] selftests/bpf: Restore the netns after flow dissector reattach test
+Date:   Thu, 17 Oct 2019 10:37:52 +0200
+Message-Id: <20191017083752.30999-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Thu, 17 Oct 2019 08:29:08 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019 15:50:26 -0700
-Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+flow_dissector_reattach test changes the netns we run in but does not
+restore it to the one we started in when finished. This interferes with
+tests that run after it. Fix it by restoring the netns when done.
 
-> Add statistics to the page pool, providing visibility into its operation.
-> 
-> Callers can provide a location where the stats are stored, otherwise
-> the page pool will allocate a statistic area.
-> 
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  include/net/page_pool.h | 21 +++++++++++++---
->  net/core/page_pool.c    | 55 +++++++++++++++++++++++++++++++++++------
->  2 files changed, 65 insertions(+), 11 deletions(-)
-> 
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index fc340db42f9a..4f383522b141 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -34,8 +34,11 @@
->  #include <linux/ptr_ring.h>
->  #include <linux/dma-direction.h>
->  
-> -#define PP_FLAG_DMA_MAP 1 /* Should page_pool do the DMA map/unmap */
-> -#define PP_FLAG_ALL	PP_FLAG_DMA_MAP
-> +#define PP_FLAG_DMA_MAP		BIT(0) /* page_pool does the DMA map/unmap */
-> +#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP)
-> +
-> +/* internal flags, not expoed to user */
-> +#define PP_FLAG_INTERNAL_STATS	BIT(8)
->  
->  /*
->   * Fast allocation side cache array/stack
-> @@ -57,6 +60,17 @@
->  #define PP_ALLOC_POOL_DEFAULT	1024
->  #define PP_ALLOC_POOL_LIMIT	32768
->  
-> +struct page_pool_stats {
-> +	u64 cache_hit;
-> +	u64 cache_full;
-> +	u64 cache_empty;
-> +	u64 ring_produce;
-> +	u64 ring_consume;
+Fixes: f97eea1756f3 ("selftests/bpf: Check that flow dissector can be re-attached")
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Reported-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ .../bpf/prog_tests/flow_dissector_reattach.c  | 21 +++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-You are placing producer and consumer counters on the same cache-line.
-This is not acceptable.
-
-The page pool and ptr_ring, are specifically designed to avoid
-cache-line contention between consumers and producers.  This patch
-kills that work.
-
-
-> +	u64 ring_return;
-> +	u64 flush;
-> +	u64 node_change;
-> +};
-
-Another example of carefully avoiding cache-line bouncing is the
-inflight tracking, e.g. the struct placement of pages_state_release_cnt
-and pages_state_hold_cnt for inflight accounting.
-
-
-> +
->  struct page_pool_params {
->  	unsigned int	flags;
->  	unsigned int	order;
-> @@ -65,6 +79,7 @@ struct page_pool_params {
->  	int		nid;  /* Numa node id to allocate from pages from */
->  	enum dma_data_direction dma_dir; /* DMA mapping direction */
->  	struct device	*dev; /* device, for DMA pre-mapping purposes */
-> +	struct page_pool_stats *stats; /* pool stats stored externally */
->  };
->  
->  struct page_pool {
-> @@ -230,8 +245,8 @@ static inline bool page_pool_put(struct page_pool *pool)
->  static inline void page_pool_update_nid(struct page_pool *pool, int new_nid)
->  {
->  	if (unlikely(pool->p.nid != new_nid)) {
-> -		/* TODO: Add statistics/trace */
->  		pool->p.nid = new_nid;
-> +		pool->p.stats->node_change++;
->  	}
->  }
->  #endif /* _NET_PAGE_POOL_H */
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index f8fedecddb6f..ea6202813584 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -20,9 +20,10 @@
->  
->  static int page_pool_init(struct page_pool *pool)
->  {
-> +	int size;
->  
->  	/* Validate only known flags were used */
-> -	if (pool->p.flags & ~(PP_FLAG_ALL))
-> +	if (pool->p.flags & ~PP_FLAG_ALL)
->  		return -EINVAL;
->  
->  	if (!pool->p.pool_size)
-> @@ -40,8 +41,16 @@ static int page_pool_init(struct page_pool *pool)
->  	    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
->  		return -EINVAL;
->  
-> +	if (!pool->p.stats) {
-> +		size  = sizeof(struct page_pool_stats);
-> +		pool->p.stats = kzalloc_node(size, GFP_KERNEL, pool->p.nid);
-> +		if (!pool->p.stats)
-> +			return -ENOMEM;
-> +		pool->p.flags |= PP_FLAG_INTERNAL_STATS;
-> +	}
-> +
->  	if (ptr_ring_init(&pool->ring, pool->p.pool_size, GFP_KERNEL) < 0)
-> -		return -ENOMEM;
-> +		goto fail;
->  
->  	atomic_set(&pool->pages_state_release_cnt, 0);
->  
-> @@ -52,6 +61,12 @@ static int page_pool_init(struct page_pool *pool)
->  		get_device(pool->p.dev);
->  
->  	return 0;
-> +
-> +fail:
-> +	if (pool->p.flags & PP_FLAG_INTERNAL_STATS)
-> +		kfree(pool->p.stats);
-> +
-> +	return -ENOMEM;
->  }
->  
->  struct page_pool *page_pool_create(const struct page_pool_params *params)
-> @@ -98,9 +113,11 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
->  	if (likely(in_serving_softirq())) {
->  		if (likely(pool->alloc_count)) {
->  			/* Fast-path */
-> +			pool->p.stats->cache_hit++;
->  			page = pool->alloc_cache[--pool->alloc_count];
->  			return page;
->  		}
-> +		pool->p.stats->cache_empty++;
->  		refill = true;
->  	}
->  
-> @@ -113,10 +130,13 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
->  	 */
->  	spin_lock(&r->consumer_lock);
->  	page = __ptr_ring_consume(r);
-> -	if (refill)
-> +	if (refill) {
->  		pool->alloc_count = __ptr_ring_consume_batched(r,
->  							pool->alloc_cache,
->  							PP_ALLOC_CACHE_REFILL);
-> +		pool->p.stats->ring_consume += pool->alloc_count;
-> +	}
-> +	pool->p.stats->ring_consume += !!page;
->  	spin_unlock(&r->consumer_lock);
->  	return page;
->  }
-> @@ -266,15 +286,23 @@ static void __page_pool_return_page(struct page_pool *pool, struct page *page)
->  static bool __page_pool_recycle_into_ring(struct page_pool *pool,
->  				   struct page *page)
->  {
-> +	struct ptr_ring *r = &pool->ring;
->  	int ret;
->  
-> -	/* BH protection not needed if current is serving softirq */
->  	if (in_serving_softirq())
-> -		ret = ptr_ring_produce(&pool->ring, page);
-> +		spin_lock(&r->producer_lock);
->  	else
-> -		ret = ptr_ring_produce_bh(&pool->ring, page);
-> +		spin_lock_bh(&r->producer_lock);
->  
-> -	return (ret == 0) ? true : false;
-> +	ret = __ptr_ring_produce(r, page);
-> +	pool->p.stats->ring_produce++;
-> +
-> +	if (in_serving_softirq())
-> +		spin_unlock(&r->producer_lock);
-> +	else
-> +		spin_unlock_bh(&r->producer_lock);
-> +
-> +	return ret == 0;
->  }
->  
->  /* Only allow direct recycling in special circumstances, into the
-> @@ -285,8 +313,10 @@ static bool __page_pool_recycle_into_ring(struct page_pool *pool,
->  static bool __page_pool_recycle_into_cache(struct page *page,
->  					   struct page_pool *pool)
->  {
-> -	if (unlikely(pool->alloc_count == pool->p.cache_size))
-> +	if (unlikely(pool->alloc_count == pool->p.cache_size)) {
-> +		pool->p.stats->cache_full++;
->  		return false;
-> +	}
->  
->  	/* Caller MUST have verified/know (page_ref_count(page) == 1) */
->  	pool->alloc_cache[pool->alloc_count++] = page;
-> @@ -343,6 +373,7 @@ EXPORT_SYMBOL(__page_pool_put_page);
->  static void __page_pool_empty_ring(struct page_pool *pool)
->  {
->  	struct page *page;
-> +	int count = 0;
->  
->  	/* Empty recycle ring */
->  	while ((page = ptr_ring_consume_bh(&pool->ring))) {
-> @@ -351,8 +382,11 @@ static void __page_pool_empty_ring(struct page_pool *pool)
->  			pr_crit("%s() page_pool refcnt %d violation\n",
->  				__func__, page_ref_count(page));
->  
-> +		count++;
->  		__page_pool_return_page(pool, page);
->  	}
-> +
-> +	pool->p.stats->ring_return += count;
->  }
->  
->  static void __warn_in_flight(struct page_pool *pool)
-> @@ -381,6 +415,9 @@ void __page_pool_free(struct page_pool *pool)
->  	if (!__page_pool_safe_to_destroy(pool))
->  		__warn_in_flight(pool);
->  
-> +	if (pool->p.flags & PP_FLAG_INTERNAL_STATS)
-> +		kfree(pool->p.stats);
-> +
->  	ptr_ring_cleanup(&pool->ring, NULL);
->  
->  	if (pool->p.flags & PP_FLAG_DMA_MAP)
-> @@ -394,6 +431,8 @@ static void page_pool_flush(struct page_pool *pool)
->  {
->  	struct page *page;
->  
-> +	pool->p.stats->flush++;
-> +
->  	/* Empty alloc cache, assume caller made sure this is
->  	 * no-longer in use, and page_pool_alloc_pages() cannot be
->  	 * called concurrently.
-
-Have you benchmarked the overhead of adding this accounting?
-
+diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+index 777faffc4639..1f51ba66b98b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
++++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+@@ -91,12 +91,18 @@ static void do_flow_dissector_reattach(void)
+ 
+ void test_flow_dissector_reattach(void)
+ {
+-	int init_net, err;
++	int init_net, self_net, err;
++
++	self_net = open("/proc/self/ns/net", O_RDONLY);
++	if (CHECK_FAIL(self_net < 0)) {
++		perror("open(/proc/self/ns/net");
++		return;
++	}
+ 
+ 	init_net = open("/proc/1/ns/net", O_RDONLY);
+ 	if (CHECK_FAIL(init_net < 0)) {
+ 		perror("open(/proc/1/ns/net)");
+-		return;
++		goto out_close;
+ 	}
+ 
+ 	err = setns(init_net, CLONE_NEWNET);
+@@ -108,7 +114,7 @@ void test_flow_dissector_reattach(void)
+ 	if (is_attached(init_net)) {
+ 		test__skip();
+ 		printf("Can't test with flow dissector attached to init_net\n");
+-		return;
++		goto out_setns;
+ 	}
+ 
+ 	/* First run tests in root network namespace */
+@@ -118,10 +124,17 @@ void test_flow_dissector_reattach(void)
+ 	err = unshare(CLONE_NEWNET);
+ 	if (CHECK_FAIL(err)) {
+ 		perror("unshare(CLONE_NEWNET)");
+-		goto out_close;
++		goto out_setns;
+ 	}
+ 	do_flow_dissector_reattach();
+ 
++out_setns:
++	/* Move back to netns we started in. */
++	err = setns(self_net, CLONE_NEWNET);
++	if (CHECK_FAIL(err))
++		perror("setns(/proc/self/ns/net)");
++
+ out_close:
+ 	close(init_net);
++	close(self_net);
+ }
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.20.1
+
