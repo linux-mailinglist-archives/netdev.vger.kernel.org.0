@@ -2,203 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E66DB899
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 22:44:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD66DDB8A5
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 22:49:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394731AbfJQUoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 16:44:34 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42312 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387460AbfJQUoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 16:44:34 -0400
-Received: by mail-pg1-f193.google.com with SMTP id f14so2009388pgi.9
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 13:44:32 -0700 (PDT)
+        id S2395184AbfJQUtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 16:49:08 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:36580 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728420AbfJQUtH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 16:49:07 -0400
+Received: by mail-yw1-f67.google.com with SMTP id x64so1369363ywg.3
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 13:49:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=QrdtgiqdwbTjqAtS7fLbpHezQoDUp9ICG7q/Cv0tpqc=;
-        b=lA1M+W653UVf5S5m6KkG5VGuChZNkH6rPFKXNa0TmYwddxDp5wDgn7NYZKffCeO06b
-         b0QgEAVrTtPPkXLxErCrx70pHixBI8nLbcwTZGQKvyl7i0W0m1fAGvkDFNKDOMadpTzS
-         nmba1FLIf6H4T/Ud+6BtUp2/+Zj8Ru+5o7krJOWtDg4H4JQVezNFDscHjvxqn6fYTC7A
-         k3YpShN5ZkskQlsAe0VOy220skPK+FPSkMd1n9DZSZQ/BS1W0Q6J3vvik05HmQ6h69m4
-         PDjP5VmZOJe2cGxZe7H03xjJKfOFNUTssOj6pOPkP4MIuHLLCFR5ViVhhpLDprp+hoYR
-         u33w==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=pBNYdqc2YSvIj6dkxfx1AnclyKc/vSMiI0PdnPlJZq0=;
+        b=dnexs5LJk4TIauQA3Id2FrpuUAv9LAbyzqQAuGxvFhq5YRDKzFskDWaWxzeK/PAMRM
+         ODoKPwYVpFOpnQvk0JtbzF1u92TA1qCOxdnX1ASjfqRRCz/uN9mk7mW1068ja/1F1as3
+         13cvYjgWaJBuLPIwaTlNqqwjKvOyadyNi3oaR70PQXZjU2uJ9v9XVajCBdLoIq4slTH3
+         gT9E3tDieZ5PXeJcyfCDpq4NQZmw/BKxnDolKFk/yBJ2bg310qI21YESh4KRcAU1fGkZ
+         EB7bDnCVIHcGG615jcCcaWflapu5ofoqew/MF9idcFCQ+AcsNMkg2XfWf4E3Gww11Vpe
+         j5lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QrdtgiqdwbTjqAtS7fLbpHezQoDUp9ICG7q/Cv0tpqc=;
-        b=aUjxEF9Dzv0e/QjjszcoGRXU9d6n+9ioPkEceqAd6r+jNv00bB/CL++FuvxiiAOFZg
-         EbvrrVXPxvqVup2rIAzqsnyRRprSqB6p91vTAhfZx1iRCJzM/LhNxr8uHV943TbXNKm+
-         tqr7QJovOGptTKD9gEnegECLxKQ7wrY7neiz4dYjBcx9AM80EvzrUdufrpoi2Oy2TqP/
-         Pk8i0Vhl2GBK78yC26AT1lLzo8gkMkiV0a/fp/kuJolZ2oIqbQhEaapM4Wyk4U/O2Yrn
-         /0YEEjwwrFFPkcaYtl3LlOT/TJjhDhs4mykaygg/7rcas2vMeA0fRHOiG3BsqnRKf5r1
-         HJyQ==
-X-Gm-Message-State: APjAAAXQIOGFbaD/3wWjg99RqmwN45gjWABEouPAL9jqPZijWvgCKfnA
-        O1MtNRpThxCqaNzQald9QL14Vw==
-X-Google-Smtp-Source: APXvYqzuG7vsfBpftNaMhJ5ZjNi57Wnxees9+OYetXg9d1/IXofqPZ5aNiMojYt5XlWqv+w1XdIssg==
-X-Received: by 2002:a62:ac02:: with SMTP id v2mr2271719pfe.97.1571345072041;
-        Thu, 17 Oct 2019 13:44:32 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id n2sm3415811pgg.77.2019.10.17.13.44.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 13:44:31 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 13:44:30 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v4 bpf-next 5/7] selftests/bpf: replace test_progs and
- test_maps w/ general rule
-Message-ID: <20191017204430.GC2090@mini-arch>
-References: <20191016060051.2024182-1-andriin@fb.com>
- <20191016060051.2024182-6-andriin@fb.com>
- <20191016163249.GD1897241@mini-arch>
- <CAEf4BzYVWc8RWNSthN8whROYJUEijR1Uh3Lyt6bkuhM2tRsq2Q@mail.gmail.com>
- <20191017160716.GA2090@mini-arch>
- <CAEf4BzYSUoN2Boy-iveFAFGiiAMta5S9SK8aGO1BMnd+q2FzbA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pBNYdqc2YSvIj6dkxfx1AnclyKc/vSMiI0PdnPlJZq0=;
+        b=kYatpCK40/BrWsgzT6jWf2KqUXp1viyriw5y2uonXXa9/kLhSS1js8evFuI80KX0qK
+         EYuIiMSdz8ybdDIbE1/V4lCxS3ZZK20LU3OTDqe9f6D3AgR/nRKY5XBeoF1gO9UQYBP2
+         GXAG1c/IhmT/pKXXuVfdzZCxbOlpIYISUNZ4q6Ni0xTRUxdjcnVjET7wZKbvFizt41//
+         R9GLL9i4N71epiEQ3ms0Lh4Tqtw3Z/veYUUi7i+Ab1HyyxG5Wi+AV9uhPZZLsSFxo7xH
+         1N6ndkkuebSk+vgo9PMyb7/ltlCSjU6RhvfESExG7r1s30xdjf9eU4icdPqPgR78mj1G
+         6Cew==
+X-Gm-Message-State: APjAAAUls2G6CT5UPkiVSFIYqp26AmZkQTeyD6GWH/mSmOGbhGxbRBRY
+        x7VcAQu6vm9WgxFs+zRt7PrWj8oo
+X-Google-Smtp-Source: APXvYqwy7Blb7xosaDksZKrUX7ie/YmWcnm+OaliDUOcTzFygm32gfN8fOXu097MVDXzKRuCTIUFMQ==
+X-Received: by 2002:a81:1a85:: with SMTP id a127mr4639279ywa.53.1571345345948;
+        Thu, 17 Oct 2019 13:49:05 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id z66sm280869ywz.78.2019.10.17.13.49.03
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Oct 2019 13:49:04 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id s7so1140225ybq.7
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 13:49:03 -0700 (PDT)
+X-Received: by 2002:a25:3753:: with SMTP id e80mr3842771yba.203.1571345342876;
+ Thu, 17 Oct 2019 13:49:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYSUoN2Boy-iveFAFGiiAMta5S9SK8aGO1BMnd+q2FzbA@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+References: <cover.1570455278.git.martinvarghesenokia@gmail.com>
+ <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
+ <CA+FuTSc=uTot72dxn7VRfCv59GcfWb32ZM5XU1_GHt3Ci3PL_A@mail.gmail.com> <20191017132029.GA9982@martin-VirtualBox>
+In-Reply-To: <20191017132029.GA9982@martin-VirtualBox>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 17 Oct 2019 16:48:26 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScS+fm_scnm5qkU4wtV+FAW8XkC4OfwCbLOxuPz1YipNw@mail.gmail.com>
+Message-ID: <CA+FuTScS+fm_scnm5qkU4wtV+FAW8XkC4OfwCbLOxuPz1YipNw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, corbet@lwn.net,
+        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
+        martin.varghese@nokia.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/17, Andrii Nakryiko wrote:
-> On Thu, Oct 17, 2019 at 9:07 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> >
-> > On 10/16, Andrii Nakryiko wrote:
-> > > On Wed, Oct 16, 2019 at 9:32 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > >
-> > > > On 10/15, Andrii Nakryiko wrote:
-> > > > > Define test runner generation meta-rule that codifies dependencies
-> > > > > between test runner, its tests, and its dependent BPF programs. Use that
-> > > > > for defining test_progs and test_maps test-runners. Also additionally define
-> > > > > 2 flavors of test_progs:
-> > > > > - alu32, which builds BPF programs with 32-bit registers codegen;
-> > > > > - bpf_gcc, which build BPF programs using GCC, if it supports BPF target.
-> > > > Question:
-> > > >
-> > > > Why not merge test_maps tests into test_progs framework and have a
-> > > > single binary instead of doing all this makefile-related work?
-> > > > We can independently address the story with alu32/gcc progs (presumably
-> > > > in the same manner, with make defines).
+On Thu, Oct 17, 2019 at 9:20 AM Martin Varghese
+<martinvarghesenokia@gmail.com> wrote:
+>
+> On Tue, Oct 08, 2019 at 12:28:23PM -0400, Willem de Bruijn wrote:
+> > On Tue, Oct 8, 2019 at 5:51 AM Martin Varghese
+> > <martinvarghesenokia@gmail.com> wrote:
 > > >
-> > > test_maps wasn't a reason for doing this, alue2/bpf_gcc was. test_maps
-> > > is a simple sub-case that was just easy to convert to. I dare you to
-> > > try solve alu32/bpf_gcc with make defines (whatever you mean by that)
-> > > and in a simpler manner ;)
-> > I think my concern comes from the fact that I don't really understand why
-> > we need all that complexity (and the problem you're solving for alu/gcc;
-> > part of that is that you're replacing everything, so it's hard to
-> > understand what's the real diff).
-> >
-> > In particular, why do we need to compile test_progs 3 times for
-> > normal/alu32/gcc? Isn't it the same test_progs? Can we just teach test_progs
-> > to run the tests for 3 output dirs with different versions of BPF programs?
-> > (kind of like you do in your first patch with -<flavor>, but just in a loop).
-> 
-> So that's a good question and the answer is "no, we can't". And that's
-> why I consider alu32/bpf_gcc broken. Check progs/test_attach_probe.c,
-> it does BPF_OBJECT_EMBED, which links BPF object into test object
-> file. This means that if we want to compile BPF objects differently
-> between default/alu32/gcc flavors, we need to compile test_progs
-> independently. Embedding objects is going to be prevalent way to
-> consume them (and it is already the only way we consume them in
-> production at FB), so we need to accommodate it. With some more
-> usability improvements that's on my TODO list, it will become also
-> much more convenient and easy to consume such BPF objects.
-Thanks for the explanation, I missed that EMBED_FILE in attach_probe.c
-
-I was going to suggest to move it out of test_progs (or use open() instead
-of embedding?) if you want to test bpf_object__open_mem (to avoid all that
-complexity and make test_progs work with any bpf alu32/gcc/clang subdir),
-but it seems like you have pretty much settled on the embedding.
-
-It's interesting that we try to do it a bit different here, maybe
-even going as far as rolling out individual BPF .o files without
-updating the control plane :-)
-
-> > > > I can hardly follow the existing makefile and now with the evals it's
-> > > > 10x more complicated for no good reason.
+> > > From: Martin <martin.varghese@nokia.com>
 > > >
-> > > I agree that existing Makefile logic is hard to follow, especially
-> > > given it's broken. But I think 10x more complexity is gross
-> > > exaggeration and just means you haven't tried to follow rules' logic.
-> > Not 10x, but it does raise a complexity bar. I tried to follow the
-> > rules, but I admit that I didn't try too hard :-)
-> 
-> So see my explanation above about why we need to compile flavors
-> independently. Rules have to be like they are here. I'd like to make
-> dependencies between test objects and BPF objects a bit more granular,
-> but only after we land this, it's already quite a lot of changes at
-> once.
-> 
-> Beyond fixing the rules, $(eval)/$(call) is a new stuff for
-> selftests/bpf's Makefile, but it's semantics is well described in
-> documentation and you can gloss over it for now, it shouldn't break
-> with Makefile changes.
-> 
-> >
-> > > The rules inside DEFINE_TEST_RUNNER_RULES are exactly (minus one or
-> > > two ifs to prevent re-definition of target) the rules that should have
-> > > been written for test_progs, test_progs-alu32, test_progs-bpf_gcc.
-> > > They define a chain of BPF .c -> BPF .o -> tests .c -> tests .o ->
-> > > final binary + test.h generation. Previously we were getting away with
-> > > this for, e.g., test_progs-alu32, because we always also built
-> > > test_progs in parallel, which generated necessary stuff. Now with
-> > > recent changes to test_attach_probe.c which now embeds BPF .o file,
-> > > this doesn't work anymore. And it's going to be more and more
-> > > prevalent form, so we need to fix it.
+> > > The Bareudp tunnel module provides a generic L3 encapsulation
+> > > tunnelling module for tunnelling different protocols like MPLS,
+> > > IP,NSH etc inside a UDP tunnel.
 > > >
-> > > Surely $(eval) and $(call) are not common for simple Makefiles, but
-> > > just ignore it, we need that to only dynamically generate
-> > > per-test-runner rules. DEFINE_TEST_RUNNER_RULES can be almost read
-> > > like a normal Makefile definitions, module $$(VAR) which is turned
-> > > into a normal $(VAR) upon $(call) evaluation.
-> > >
-> > > But really, I'd like to be wrong and if there is simpler way to
-> > > achieve the same - go for it, I'll gladly review and ack.
-> > Again, it probably comes from the fact that I don't see the problem
-> > you're solving. Can we start by removing 3 test_progs variations
-> > (somthing like patch below)? If we can do it, then the leftover parts
-> > that generate alu32/gcc bpf program don't look too bad and can probably
-> > be tweaked without makefile codegen.
-> 
-> Yes, it probably is. See above, I tried to give more context.
-Again, thanks for the explanation, I did indeed miss that EMBED_FILE
-case. But I'd still vote for moving that test into a dedicated binary,
-have single test_progs that works with a flavored BPF subdir and simplify
-the makefile instead of adding more stuff into it.
+> > > Signed-off-by: Martin Varghese <martinvarghesenokia@gmail.com>
+> > > ---
 
-These are my 2c, feel free to ignore :-) We have our own simplified
-reimplementation anyway to fit into our testing system, so I don't
-have a horse in this race.
+> > > +static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *s=
+kb)
+> > > +{
+> >
+> >
+> > > +       skb_push(skb, sizeof(struct ethhdr));
+> > > +       eh =3D (struct ethhdr *)skb->data;
+> > > +       eh->h_proto =3D proto;
+> > > +
+> > > +       skb_reset_mac_header(skb);
+> > > +       skb->protocol =3D eth_type_trans(skb, bareudp->dev);
+> > > +       skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
+> > > +       oiph =3D skb_network_header(skb);
+> > > +       skb_reset_network_header(skb);
+> > > +
+> > > +       if (bareudp_get_sk_family(bs) =3D=3D AF_INET)
+> >
+> > This should be derived from packet contents, not socket state.
+> > Although the one implies the other, I imagine.
+> >
+>
+> The IP Stack check IP headers & puts the packet in the correct socket, he=
+nce checking the ip headers again is reduntant correct?
 
-> I've fixed some other inconveniences with current Makefile set up
-> (e.g., on-demand bpf_helper_defs.h re-generation, etc), but those are
-> minor changes and it was hard to de-couple from the main change.
-> 
+This parses the inner packet after decapsulation. The protocol stack
+has selected the socket based on the outer packet, right?
+
+I guess the correctness comes from the administrator having configured
+the bareudp for this protocol type, so implicitly guarantees that no
+other inner packets will appear.
+
+Also, the oiph pointer is a bit fragile now that a new mac header is
+constructed in the space that used to hold the encapsulation headers.
+I suppose it only updates eth->h_proto, which lies in the former udp
+header. More fundamentally, is moving the mac header needed at all, if
+the stack correctly uses skb_mac_header whenever it accesses also
+after decapsulation?
+
+> In geneve & vxlan it is done the same way.
+>
+>
+> > > +static struct rtable *bareudp_get_v4_rt(struct sk_buff *skb,
+> > > +                                       struct net_device *dev,
+> > > +                                       struct bareudp_sock *bs4,
+> > > +                                       struct flowi4 *fl4,
+> > > +                                       const struct ip_tunnel_info *=
+info)
+> > > +{
+> > > +       bool use_cache =3D ip_tunnel_dst_cache_usable(skb, info);
+> > > +       struct bareudp_dev *bareudp =3D netdev_priv(dev);
+> > > +       struct dst_cache *dst_cache;
+> > > +       struct rtable *rt =3D NULL;
+> > > +       __u8 tos;
+> > > +
+> > > +       if (!bs4)
+> > > +               return ERR_PTR(-EIO);
+> > > +
+> > > +       memset(fl4, 0, sizeof(*fl4));
+> > > +       fl4->flowi4_mark =3D skb->mark;
+> > > +       fl4->flowi4_proto =3D IPPROTO_UDP;
+> > > +       fl4->daddr =3D info->key.u.ipv4.dst;
+> > > +       fl4->saddr =3D info->key.u.ipv4.src;
+> > > +
+> > > +       tos =3D info->key.tos;
+> > > +       fl4->flowi4_tos =3D RT_TOS(tos);
+> > > +
+> > > +       dst_cache =3D (struct dst_cache *)&info->dst_cache;
+> > > +       if (use_cache) {
+> > > +               rt =3D dst_cache_get_ip4(dst_cache, &fl4->saddr);
+> > > +               if (rt)
+> > > +                       return rt;
+> > > +       }
+> > > +       rt =3D ip_route_output_key(bareudp->net, fl4);
+> > > +       if (IS_ERR(rt)) {
+> > > +               netdev_dbg(dev, "no route to %pI4\n", &fl4->daddr);
+> > > +               return ERR_PTR(-ENETUNREACH);
+> > > +       }
+> > > +       if (rt->dst.dev =3D=3D dev) { /* is this necessary? */
+> > > +               netdev_dbg(dev, "circular route to %pI4\n", &fl4->dad=
+dr);
+> > > +               ip_rt_put(rt);
+> > > +               return ERR_PTR(-ELOOP);
+> > > +       }
+> > > +       if (use_cache)
+> > > +               dst_cache_set_ip4(dst_cache, &rt->dst, fl4->saddr);
+> > > +       return rt;
+> > > +}
+> > > +
+> > > +#if IS_ENABLED(CONFIG_IPV6)
+> > > +static struct dst_entry *bareudp_get_v6_dst(struct sk_buff *skb,
+> > > +                                           struct net_device *dev,
+> > > +                                           struct bareudp_sock *bs6,
+> > > +                                           struct flowi6 *fl6,
+> > > +                                           const struct ip_tunnel_in=
+fo *info)
+> > > +{
+> > > +       bool use_cache =3D ip_tunnel_dst_cache_usable(skb, info);
+> > > +       struct bareudp_dev *bareudp =3D netdev_priv(dev);
+> > > +       struct dst_entry *dst =3D NULL;
+> > > +       struct dst_cache *dst_cache;
+> > > +       __u8 prio;
+> > > +
+> > > +       if (!bs6)
+> > > +               return ERR_PTR(-EIO);
+> > > +
+> > > +       memset(fl6, 0, sizeof(*fl6));
+> > > +       fl6->flowi6_mark =3D skb->mark;
+> > > +       fl6->flowi6_proto =3D IPPROTO_UDP;
+> > > +       fl6->daddr =3D info->key.u.ipv6.dst;
+> > > +       fl6->saddr =3D info->key.u.ipv6.src;
+> > > +       prio =3D info->key.tos;
+> > > +
+> > > +       fl6->flowlabel =3D ip6_make_flowinfo(RT_TOS(prio),
+> > > +                                          info->key.label);
+> > > +       dst_cache =3D (struct dst_cache *)&info->dst_cache;
+> > > +       if (use_cache) {
+> > > +               dst =3D dst_cache_get_ip6(dst_cache, &fl6->saddr);
+> > > +               if (dst)
+> > > +                       return dst;
+> > > +       }
+> > > +       if (ipv6_stub->ipv6_dst_lookup(bareudp->net, bs6->sock->sk, &=
+dst,
+> > > +                                      fl6)) {
+> > > +               netdev_dbg(dev, "no route to %pI6\n", &fl6->daddr);
+> > > +               return ERR_PTR(-ENETUNREACH);
+> > > +       }
+> > > +       if (dst->dev =3D=3D dev) { /* is this necessary? */
+> > > +               netdev_dbg(dev, "circular route to %pI6\n", &fl6->dad=
+dr);
+> > > +               dst_release(dst);
+> > > +               return ERR_PTR(-ELOOP);
+> > > +       }
+> > > +
+> > > +       if (use_cache)
+> > > +               dst_cache_set_ip6(dst_cache, dst, &fl6->saddr);
+> > > +       return dst;
+> > > +}
+> > > +#endif
 > >
-> > --- a/tools/testing/selftests/bpf/Makefile
-> > +++ b/tools/testing/selftests/bpf/Makefile
-> > @@ -157,26 +157,10 @@ TEST_VERIFIER_CFLAGS := -I. -I$(OUTPUT) -Iverifier
-> >
-> 
-> [...]
-> 
-> >  endif
-> >
-> > > Please truncate irrelevant parts, easier to review.
-> > Sure, will do, but I always forget because I don't have this problem.
-> > In mutt I can press shift+s to jump to the next unquoted section.
-> 
-> no worries, but with a bit of recurring reminder it becomes easier, I
-> know from my own experience :)
+> > The route lookup logic is very similar to vxlan_get_route and
+> > vxlan6_get_route. Can be reused?
+>
+> I had a look at the vxlan & geneve and it seems the corresponding functio=
+ns  in those modules are tightly coupled  to the rest of the module design.
+> More specifically wrt the ttl inheritance & the caching behaviour. It may=
+ not be possible for those modules to use a new generic API unless without =
+a change in those module design.
+
+bareudp_get_v4_rt is identical to geneve_get_v4_rt down to the comment
+aside from
+
+        if ((tos =3D=3D 1) && !geneve->collect_md) {
+                tos =3D ip_tunnel_get_dsfield(ip_hdr(skb), skb);
+                use_cache =3D false;
+        }
+
+Same for bareudp_get_v6_dst and geneve_get_v6_dst.
+
+Worst case that one branch could be made conditional on a boolean
+argument? Maybe this collect_md part (eventually) makes sense to
+bareudp, as well.
+
+
+
+> The bareudp module is a generic L3 encapsulation module. It could be used=
+ to tunnel different l3 protocols. TTL Inheritance behaviour when tunnelled
+> could be different for these inner protocols. Hence moving  this function=
+ to a common place will make it tough to change it later when a need arises=
+ for a new protocol
+>
+> Otherwise we should have more generic function which takes the  generic I=
+P header params as arguments. Then the point is we don=E2=80=99t need a fun=
+ction like that
+> We can just fill up "struct flowi4" and call ip_route_output_key or dst_c=
+ache_get_ip4 to get the route table entry
+>
+>
+> Thanks
+> Martin
