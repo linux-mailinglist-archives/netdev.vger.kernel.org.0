@@ -2,125 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3627EDA902
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3CF7DA90C
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405826AbfJQJqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 05:46:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34540 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732002AbfJQJqQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 05:46:16 -0400
-Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B2E520650;
-        Thu, 17 Oct 2019 09:46:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571305575;
-        bh=PZEYDLyau8wuGvBF0ZnfxqTWSklpMPP7W534r/y0++A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VRvwau6oQmL7eyjSEJSRV42qJ4ivbi8lXp+euSkSnKGLur5HVoqFsMaxnves7j71U
-         buo9O7GHtlJSHAImt9yuUTxebQxza1Zt4sglXD/9naxtYOS2ufMrx/RnYJSOO6QgHv
-         /oletUbT4pBXmHdsXS723VbYAe2PtabgY7QH/ibM=
-Date:   Thu, 17 Oct 2019 11:46:09 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, thomas.petazzoni@bootlin.com,
-        brouer@redhat.com, ilias.apalodimas@linaro.org,
-        matteo.croce@redhat.com, mw@semihalf.com
-Subject: Re: [PATCH v4 net-next 4/7] net: mvneta: add basic XDP support
-Message-ID: <20191017094609.GC2861@localhost.localdomain>
-References: <cover.1571258792.git.lorenzo@kernel.org>
- <30b6fad4fe5411e092171bb825f7a6ce0041d63e.1571258793.git.lorenzo@kernel.org>
- <20191016182650.2989ddf4@cakuba.netronome.com>
+        id S2394037AbfJQJsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 05:48:11 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:42361 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727242AbfJQJsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 05:48:11 -0400
+X-Originating-IP: 86.207.98.53
+Received: from localhost (aclermont-ferrand-651-1-259-53.w86-207.abo.wanadoo.fr [86.207.98.53])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 8BD7320004;
+        Thu, 17 Oct 2019 09:48:06 +0000 (UTC)
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH v2 1/2] dt-bindings: net: lpc-eth: document optional properties
+Date:   Thu, 17 Oct 2019 11:47:56 +0200
+Message-Id: <20191017094757.26885-1-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="pAwQNkOnpTn9IO2O"
-Content-Disposition: inline
-In-Reply-To: <20191016182650.2989ddf4@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The Ethernet controller is also an mdio controller, to be able to parse
+children (phys for example), #address-cells and #size-cells must be
+present.
 
---pAwQNkOnpTn9IO2O
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+ Documentation/devicetree/bindings/net/lpc-eth.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> On Wed, 16 Oct 2019 23:03:09 +0200, Lorenzo Bianconi wrote:
-> > Add basic XDP support to mvneta driver for devices that rely on software
-> > buffer management. Currently supported verdicts are:
-> > - XDP_DROP
-> > - XDP_PASS
-> > - XDP_REDIRECT
-> > - XDP_ABORTED
-> >=20
-> > - iptables drop:
-> > $iptables -t raw -I PREROUTING -p udp --dport 9 -j DROP
-> > $nstat -n && sleep 1 && nstat
-> > IpInReceives		151169		0.0
-> > IpExtInOctets		6953544		0.0
-> > IpExtInNoECTPkts	151165		0.0
-> >=20
-> > - XDP_DROP via xdp1
-> > $./samples/bpf/xdp1 3
-> > proto 0:	421419 pkt/s
-> > proto 0:	421444 pkt/s
-> > proto 0:	421393 pkt/s
-> > proto 0:	421440 pkt/s
-> > proto 0:	421184 pkt/s
-> >=20
-> > Tested-by: Matteo Croce <mcroce@redhat.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->=20
-> > +static int mvneta_xdp_setup(struct net_device *dev, struct bpf_prog *p=
-rog,
-> > +			    struct netlink_ext_ack *extack)
-> > +{
-> > +	struct mvneta_port *pp =3D netdev_priv(dev);
-> > +	struct bpf_prog *old_prog;
-> > +
-> > +	if (prog && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Jumbo frames not supported on XDP");
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	if (netif_running(dev))
-> > +		mvneta_stop(dev);
->=20
-> Actually if pp->prog && prog you don't have to stop/start, right?
-> You just gotta restart if !!pp->prog !=3D !!prog?
+diff --git a/Documentation/devicetree/bindings/net/lpc-eth.txt b/Documentation/devicetree/bindings/net/lpc-eth.txt
+index b92e927808b6..cfe0e5991d46 100644
+--- a/Documentation/devicetree/bindings/net/lpc-eth.txt
++++ b/Documentation/devicetree/bindings/net/lpc-eth.txt
+@@ -10,6 +10,11 @@ Optional properties:
+   absent, "rmii" is assumed.
+ - use-iram: Use LPC32xx internal SRAM (IRAM) for DMA buffering
+ 
++Optional subnodes:
++- mdio : specifies the mdio bus, used as a container for phy nodes according to
++  phy.txt in the same directory
++
++
+ Example:
+ 
+ 	mac: ethernet@31060000 {
+-- 
+2.21.0
 
-uhm..right :). I will fix in in v5.
-
-Regards,
-Lorenzo
-
->=20
-> > +	old_prog =3D xchg(&pp->xdp_prog, prog);
-> > +	if (old_prog)
-> > +		bpf_prog_put(old_prog);
-> > +
-> > +	if (netif_running(dev))
-> > +		return mvneta_open(dev);
-> > +
-> > +	return 0;
-> > +}
-
---pAwQNkOnpTn9IO2O
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXag4XgAKCRA6cBh0uS2t
-rFfEAQCmHEpSS7U1TiQaL8XcHP/U9iiec3SZDXSOMUhV6Ob2QQEAtCR8k5yuIE8p
-F1291qW3Ca6CDker1ZDM582XBweKKAM=
-=WwcZ
------END PGP SIGNATURE-----
-
---pAwQNkOnpTn9IO2O--
