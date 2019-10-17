@@ -2,115 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D04DA5C2
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:49:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BEE3DA5C7
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404735AbfJQGth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 02:49:37 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54929 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389340AbfJQGth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:49:37 -0400
-Received: by mail-wm1-f67.google.com with SMTP id p7so1250740wmp.4
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 23:49:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3O1LXno2sElwzfqxT0UKTxXlrCFKeAbrmZgVoo3JZi8=;
-        b=u8JfUvyEHsP1mOUmgvVLHY8YuaUu62XnCqqGmfmDcAbm3M+BqV0WRTPxRekyI0yWgj
-         lGL+BYscu4Yq+Uzbf/kB0JiruT3xc6FXoxDp00MRqaw94mV9R0OJet9vt8dv0BA9io9k
-         sn0ghGV2jFHXWnxMw1E3goIiQzRC5+4suX+vDozXH6K8uTJNx+UCBsPc/14uzn2h3Akt
-         ly1H92q77FRiE77sHaz9Cz+q88B8C+eU8BXWw+uIDbod0khFocapm1Dd6pEfBg+Mu9zt
-         5Otz2z8tOU82sEX5GaeA6ENF6DMg+Y9/LpxReggQ8T6rnrbt35Sld1Gw2Je542ZC7v7Y
-         cCiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3O1LXno2sElwzfqxT0UKTxXlrCFKeAbrmZgVoo3JZi8=;
-        b=BH6QPR2sDacWOPyyh6XsHxc5/45fPBL9tfXEiYNg4xc+K1BKXLGLHc7R59QsKgOymh
-         QcMMMKRkZ28ymOh+DG/Co9lfDvoBlhJzgaC5FdlKRnAv62sKMMaPvudUyhaoFYJBibwi
-         mFODMcZWODrU/VnGlUxf77r2sopZZj0c4xfvwAF7+ENaeFViIkYIgv3a+fy9LQc20uNn
-         EGYz93bUNp5oZ8gj2qBP8ZguOeOkAplYnHy7k59l/ZpRjR5HOzoh8oPGp1oNWak4IsE2
-         2opPuvxLMvjrCXDinfeGm2yWKoPVzRvuQTbkvq3l4T62NIkcQwRs2PZ6ra6ynrqpD9aE
-         Gt4A==
-X-Gm-Message-State: APjAAAUgReRHCUlk+ca1KpVJjJgPQmmriwFzJ6WRV8IUBFAu2Wmk3bbH
-        SzY1eb8Z87eBlyyADO/MtzFQyexs6sU=
-X-Google-Smtp-Source: APXvYqwmwGAlKPVMIWuunuWk4uvfp1Bw26g0ghxWXPLGflj+qmzedoZsulnhW4o7AJDWlOAiYVPT+g==
-X-Received: by 2002:a7b:ce89:: with SMTP id q9mr1422679wmj.2.1571294975005;
-        Wed, 16 Oct 2019 23:49:35 -0700 (PDT)
-Received: from apalos.home (ppp-94-65-92-5.home.otenet.gr. [94.65.92.5])
-        by smtp.gmail.com with ESMTPSA id t83sm2145492wmt.18.2019.10.16.23.49.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Oct 2019 23:49:34 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 09:49:31 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        davem@davemloft.net, brouer@redhat.com, lorenzo@kernel.org
-Subject: Re: [PATCH] net: netsec: Correct dma sync for XDP_TX frames
-Message-ID: <20191017064931.GA12128@apalos.home>
-References: <20191016114032.21617-1-ilias.apalodimas@linaro.org>
- <20191016171401.16cb1bd5@cakuba.netronome.com>
+        id S2406077AbfJQGwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 02:52:38 -0400
+Received: from mx2.suse.de ([195.135.220.15]:53250 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2389340AbfJQGwi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 02:52:38 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 7846BADAB;
+        Thu, 17 Oct 2019 06:52:35 +0000 (UTC)
+Date:   Thu, 17 Oct 2019 08:52:30 +0200
+From:   Daniel Wagner <dwagner@suse.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
+Subject: Re: lan78xx and phy_state_machine
+Message-ID: <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191015005327.GJ19861@lunn.ch>
+ <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
+ <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
+ <20191016155107.GH17013@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191016171401.16cb1bd5@cakuba.netronome.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191016155107.GH17013@lunn.ch>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, 
+On Wed, Oct 16, 2019 at 05:51:07PM +0200, Andrew Lunn wrote:
+> Hi Daniel
+> 
+> Please could you give this a go. It is totally untested, not even
+> compile tested...
 
-On Wed, Oct 16, 2019 at 05:14:01PM -0700, Jakub Kicinski wrote:
-> On Wed, 16 Oct 2019 14:40:32 +0300, Ilias Apalodimas wrote:
-> > bpf_xdp_adjust_head() can change the frame boundaries. Account for the
-> > potential shift properly by calculating the new offset before
-> > syncing the buffer to the device for XDP_TX
-> > 
-> > Fixes: ba2b232108d3 ("net: netsec: add XDP support")
-> > Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> 
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> 
-> You should target this to the bpf or net tree (appropriate [PATCH xyz]
-> marking). Although I must admit it's unclear to me as well whether the
-> driver changes should be picked up by bpf maintainers or Dave :S
+Sure. The system boots but ther is one splat:
 
-My bad i forgot to add the net-next tag. I'd prefer Dave picking that up, since
-he picked all the XDP-related patches for this driver before. 
-Dave shall i re-send with the proper tag?
 
-> 
-> > diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-> > index f9e6744d8fd6..41ddd8fff2a7 100644
-> > --- a/drivers/net/ethernet/socionext/netsec.c
-> > +++ b/drivers/net/ethernet/socionext/netsec.c
-> > @@ -847,8 +847,8 @@ static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
-> >  		enum dma_data_direction dma_dir =
-> >  			page_pool_get_dma_dir(rx_ring->page_pool);
-> >  
-> > -		dma_handle = page_pool_get_dma_addr(page) +
-> > -			NETSEC_RXBUF_HEADROOM;
-> > +		dma_handle = page_pool_get_dma_addr(page) + xdpf->headroom +
-> > +			sizeof(*xdpf);
-> 
-> very nitpick: I'd personally write addr + sizeof(*xdpf) + xdpf->headroom
-> since that's the order in which they appear in memory
-> 
-> But likely not worth reposting for just that :)
+[    2.213987] usb 1-1: new high-speed USB device number 2 using dwc2
+[    2.426789] hub 1-1:1.0: USB hub found
+[    2.430677] hub 1-1:1.0: 4 ports detected
+[    2.721982] usb 1-1.1: new high-speed USB device number 3 using dwc2
+[    2.826991] hub 1-1.1:1.0: USB hub found
+[    2.831093] hub 1-1.1:1.0: 3 ports detected
+[    3.489988] usb 1-1.1.1: new high-speed USB device number 4 using dwc2
+[    3.729045] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): deferred multicast write 0x00007ca0
+[    3.870518] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): No External EEPROM. Setting MAC Speed
+[    3.881900] libphy: lan78xx-mdiobus: probed
+[    3.893322] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): registered mdiobus bus usb-001:004
+[    3.902984] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): phydev->irq = 79
+[    4.283761] random: crng init done
+[    4.958866] lan78xx 1-1.1.1:1.0 eth0: receive multicast hash filter
+[    4.965311] lan78xx 1-1.1.1:1.0 eth0: deferred multicast write 0x00007ca2
+[    6.502358] lan78xx 1-1.1.1:1.0 eth0: PHY INTR: 0x00020000
+[    6.507935] ------------[ cut here ]------------
+[    6.512635] irq 79 handler irq_default_primary_handler+0x0/0x8 enabled interrupts
+[    6.520250] WARNING: CPU: 0 PID: 0 at kernel/irq/handle.c:152 __handle_irq_event_percpu+0x150/0x170
+[    6.529424] Modules linked in:
+[    6.532526] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.0-rc3-00018-g5bc52f64e884-dirty #36
+[    6.541172] Hardware name: Raspberry Pi 3 Model B+ (DT)
+[    6.546471] pstate: 60000005 (nZCv daif -PAN -UAO)
+[    6.551329] pc : __handle_irq_event_percpu+0x150/0x170
+[    6.556539] lr : __handle_irq_event_percpu+0x150/0x170
+[    6.561747] sp : ffff800010003cc0
+[    6.565104] x29: ffff800010003cc0 x28: 0000000000000060 
+[    6.570493] x27: ffff8000110fb9b0 x26: ffff800011a3daeb 
+[    6.575882] x25: ffff800011892d40 x24: ffff000037525800 
+[    6.581270] x23: 000000000000004f x22: ffff800010003d64 
+[    6.586659] x21: 0000000000000000 x20: 0000000000000002 
+[    6.592046] x19: ffff00003716fb00 x18: 0000000000000010 
+[    6.597434] x17: 0000000000000001 x16: 0000000000000007 
+[    6.602822] x15: ffff8000118931b0 x14: 747075727265746e 
+[    6.608210] x13: 692064656c62616e x12: 65203878302f3078 
+[    6.613598] x11: 302b72656c646e61 x10: 685f7972616d6972 
+[    6.618986] x9 : 705f746c75616665 x8 : ffff800011a9f000 
+[    6.624374] x7 : ffff800010681150 x6 : 00000000000000f9 
+[    6.629761] x5 : 0000000000000000 x4 : 0000000000000000 
+[    6.635148] x3 : 00000000ffffffff x2 : ffff8000118a2440 
+[    6.640535] x1 : ab82878caf7c9e00 x0 : 0000000000000000 
+[    6.645923] Call trace:
+[    6.648404]  __handle_irq_event_percpu+0x150/0x170
+[    6.653262]  handle_irq_event_percpu+0x30/0x88
+[    6.657767]  handle_irq_event+0x44/0xc8
+[    6.661659]  handle_simple_irq+0x90/0xc0
+[    6.665635]  generic_handle_irq+0x24/0x38
+[    6.669703]  intr_complete+0x104/0x178
+[    6.673508]  __usb_hcd_giveback_urb+0x58/0xf8
+[    6.677927]  usb_giveback_urb_bh+0xac/0x108
+[    6.682173]  tasklet_action_common.isra.0+0x154/0x1a0
+[    6.687298]  tasklet_hi_action+0x24/0x30
+[    6.691277]  __do_softirq+0x120/0x23c
+[    6.694990]  irq_exit+0xb8/0xd8
+[    6.698174]  __handle_domain_irq+0x64/0xb8
+[    6.702326]  bcm2836_arm_irqchip_handle_irq+0x60/0xc0
+[    6.707449]  el1_irq+0xb8/0x180
+[    6.710634]  arch_cpu_idle+0x10/0x18
+[    6.714260]  do_idle+0x200/0x280
+[    6.717532]  cpu_startup_entry+0x20/0x40
+[    6.721512]  rest_init+0xd4/0xe0
+[    6.724786]  arch_call_rest_init+0xc/0x14
+[    6.728851]  start_kernel+0x420/0x44c
+[    6.732562] ---[ end trace e770c2c68be5476f ]---
+[    6.742776] lan78xx 1-1.1.1:1.0 eth0: speed: 1000 duplex: 1 anadv: 0x05e1 anlpa: 0xc1e1
+[    6.750940] lan78xx 1-1.1.1:1.0 eth0: rx pause disabled, tx pause disabled
+[    6.769976] Sending DHCP requests ..., OK
+[   12.926088] IP-Config: Got DHCP answer from 192.168.19.2, my address is 192.168.19.53
+[   12.934059] IP-Config: Complete:
+[   12.937335]      device=eth0, hwaddr=b8:27:eb:85:c7:c9, ipaddr=192.168.19.53, mask=255.255.255.0, gw=192.168.19.1
+[   12.947758]      host=192.168.19.53, domain=, nis-domain=(none)
+[   12.953772]      bootserver=192.168.19.2, rootserver=192.168.19.2, rootpath=
+[   12.953776]      nameserver0=192.168.19.2
+[   12.965221] ALSA device list:
+[   12.968246]   No soundcards found.
+[   12.984397] VFS: Mounted root (nfs filesystem) on device 0:19.
+[   12.991059] devtmpfs: mounted
+[   13.000530] Freeing unused kernel memory: 5504K
+[   13.018077] Run /sbin/init as init process
+[   44.010022] nfs: server 192.168.19.2 not responding, still trying
+[   44.010027] nfs: server 192.168.19.2 not responding, still trying
+[   44.010033] nfs: server 192.168.19.2 not responding, still trying
+[   44.010056] nfs: server 192.168.19.2 not responding, still trying
+[   44.010070] nfs: server 192.168.19.2 not responding, still trying
+[   44.017003] nfs: server 192.168.19.2 OK
+[   44.028842] nfs: server 192.168.19.2 OK
+[   44.035171] nfs: server 192.168.19.2 OK
+[   44.035751] nfs: server 192.168.19.2 OK
+[   44.035796] nfs: server 192.168.19.2 OK
+[   46.056211] systemd[1]: System time before build time, advancing clock.
+[   46.114708] systemd[1]: systemd 232 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN)
+[   46.133593] systemd[1]: Detected architecture arm64.
 
-Isn't sizeof static anyway? If Dave needs a v2 with the proper tag i'll change
-this as well 
-
-> 
-> >  		dma_sync_single_for_device(priv->dev, dma_handle, xdpf->len,
-> >  					   dma_dir);
-> >  		tx_desc.buf_type = TYPE_NETSEC_XDP_TX;
-> 
-
-Thanks
-/Ilias
+Welcome to Debian GNU/Linux 9 (stretch)!
