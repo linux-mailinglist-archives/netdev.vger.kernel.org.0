@@ -2,91 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED40FDAF03
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 16:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97157DB01F
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 16:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439778AbfJQOCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 10:02:25 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48700 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727542AbfJQOCZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 10:02:25 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id D7B36B5C9;
-        Thu, 17 Oct 2019 14:02:22 +0000 (UTC)
-Message-ID: <1571320940.5264.11.camel@suse.com>
-Subject: Re: KMSAN: uninit-value in ax88172a_bind
-From:   Oliver Neukum <oneukum@suse.com>
-To:     syzbot <syzbot+a8d4acdad35e6bbca308@syzkaller.appspotmail.com>,
-        davem@davemloft.net, swinslow@gmail.com, glider@google.com,
-        syzkaller-bugs@googlegroups.com, opensource@jilayne.com,
-        tglx@linutronix.de, gregkh@linuxfoundation.org,
-        allison@lohutok.net, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Date:   Thu, 17 Oct 2019 16:02:20 +0200
-In-Reply-To: <00000000000064555d0594ebff2f@google.com>
-References: <00000000000064555d0594ebff2f@google.com>
-Content-Type: multipart/mixed; boundary="=-1FI935soZhHIsJol0ILN"
-X-Mailer: Evolution 3.26.6 
-Mime-Version: 1.0
+        id S2403776AbfJQOdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 10:33:18 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58280 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726583AbfJQOdS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 10:33:18 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9411E307CDE7;
+        Thu, 17 Oct 2019 14:33:17 +0000 (UTC)
+Received: from bistromath.localdomain (unknown [10.36.118.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B2BE960600;
+        Thu, 17 Oct 2019 14:33:15 +0000 (UTC)
+Date:   Thu, 17 Oct 2019 16:33:14 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        herbert@gondor.apana.org.au, steffen.klassert@secunet.com
+Subject: Re: [PATCH net-next v4 0/6] ipsec: add TCP encapsulation support
+ (RFC 8229)
+Message-ID: <20191017143314.GA621051@bistromath.localdomain>
+References: <cover.1570787286.git.sd@queasysnail.net>
+ <20191014.144327.888902765137276425.davem@davemloft.net>
+ <20191015082424.GA435630@bistromath.localdomain>
+ <20191015114657.45954831@cakuba.netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20191015114657.45954831@cakuba.netronome.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 17 Oct 2019 14:33:17 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---=-1FI935soZhHIsJol0ILN
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-
-Am Montag, den 14.10.2019, 22:10 -0700 schrieb syzbot:
-> Hello,
+2019-10-15, 11:46:57 -0700, Jakub Kicinski wrote:
+> On Tue, 15 Oct 2019 10:24:24 +0200, Sabrina Dubroca wrote:
+> > 2019-10-14, 14:43:27 -0400, David Miller wrote:
+> > > From: Sabrina Dubroca <sd@queasysnail.net>
+> > > Date: Fri, 11 Oct 2019 16:57:23 +0200
+> > >   
+> > > > This patchset introduces support for TCP encapsulation of IKE and ESP
+> > > > messages, as defined by RFC 8229 [0]. It is an evolution of what
+> > > > Herbert Xu proposed in January 2018 [1] that addresses the main
+> > > > criticism against it, by not interfering with the TCP implementation
+> > > > at all. The networking stack now has infrastructure for this: TCP ULPs
+> > > > and Stream Parsers.  
+> > > 
+> > > So this will bring up a re-occurring nightmare in that now we have another
+> > > situation where stacking ULPs would be necessary (kTLS over TCP encap) and
+> > > the ULP mechanism simply can't do this.
+> > > 
+> > > Last time this came up, it had to do with sock_map.  No way could be found
+> > > to stack ULPs properly, so instead sock_map was implemented via something
+> > > other than ULPs.
+> > > 
+> > > I fear we have the same situation here again and this issue must be
+> > > addressed before these patches are included.
+> > > 
+> > > Thanks.  
+> > 
+> > I don't think there's any problem here. We're not stacking ULPs on the
+> > same socket. There's a TCP encap socket for IPsec, which belongs to
+> > the IKE daemon. The traffic on that socket is composed of IKE messages
+> > and ESP packets. Then there's whatever userspace sockets (doesn't have
+> > to be TCP), and the whole IPsec and TCP encap is completely invisible
+> > to them.
+> > 
+> > Where we would probably need ULP stacking is if we implement ESP over
+> > TLS [1], but we're not there.
+> > 
+> > [1] https://tools.ietf.org/html/rfc8229#appendix-A
 > 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    fa169025 kmsan: get rid of unused static functions in kmsa..
-> git tree:       https://github.com/google/kmsan.git master
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1432a653600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=49548798e87d32d7
-> dashboard link: https://syzkaller.appspot.com/bug?extid=a8d4acdad35e6bbca308
-> compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-> 80fee25776c2fb61e74c1ecb1a523375c2500b69)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14743a6f600000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125bdbc7600000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+a8d4acdad35e6bbca308@syzkaller.appspotmail.com
+> But can there be any potential issues if the TCP socket with esp ULP is
+> also inserted into a sockmap? (well, I think sockmap socket gets a ULP,
+> I think we prevent sockmap on top of ULP but not the other way around..)
 
-#syz test: https://github.com/google/kmsan.git fa169025
+Yeah, there's nothing preventing a socket that's already in a sockmap
+from getting a ULP, only for inserting a socket in a sockmap if it
+already has a ULP (see sock_map_update_common).
 
+I gave it a quick test with espintcp, it doesn't quite seem to work: a
+sockmap program that drops everything actually drops messages, but a
+sockmap program that drops some messages based on length... doesn't.
 
---=-1FI935soZhHIsJol0ILN
-Content-Disposition: attachment;
-	filename="0001-asix-fix-information-leak-on-short-answers.patch"
-Content-Transfer-Encoding: base64
-Content-Type: text/x-patch; name="0001-asix-fix-information-leak-on-short-answers.patch";
-	charset="UTF-8"
+Although, to be honest, I don't see a use case for sockmap on espintcp
+sockets.
 
-RnJvbSBhNmZkN2EwNGEzMzBhOGJmYWQ4MzZiMjA4NDNlYTVmZTI2ZTBhZTM4IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBPbGl2ZXIgTmV1a3VtIDxvbmV1a3VtQHN1c2UuY29tPgpEYXRl
-OiBUaHUsIDE3IE9jdCAyMDE5IDE1OjEyOjMzICswMjAwClN1YmplY3Q6IFtQQVRDSF0gYXNpeDog
-Zml4IGluZm9ybWF0aW9uIGxlYWsgb24gc2hvcnQgYW5zd2VycwoKSWYgYSBtYWxpY2lvdXMgZGV2
-aWNlIGdpdmVzIGEgc2hvcnQgTUFDIGl0IGNhbiBlbGljaXQgdXAgdG8KNSBieXRlcyBvZiBsZWFr
-ZWQgbWVtb3J5IG91dCBvZiB0aGUgZHJpdmVyLiBXZSBuZWVkIHRvIGNoZWNrIGZvcgpFVEhfQUxF
-Ti4KClNpZ25lZC1vZmYtYnk6IE9saXZlciBOZXVrdW0gPG9uZXVrdW1Ac3VzZS5jb20+Ci0tLQog
-ZHJpdmVycy9uZXQvdXNiL2F4ODgxNzJhLmMgfCAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNl
-cnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC91c2IvYXg4
-ODE3MmEuYyBiL2RyaXZlcnMvbmV0L3VzYi9heDg4MTcyYS5jCmluZGV4IDAxMWJkNGNiNTQ2ZS4u
-YWYzOTk0ZTA4NTNiIDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC91c2IvYXg4ODE3MmEuYworKysg
-Yi9kcml2ZXJzL25ldC91c2IvYXg4ODE3MmEuYwpAQCAtMTk2LDcgKzE5Niw3IEBAIHN0YXRpYyBp
-bnQgYXg4ODE3MmFfYmluZChzdHJ1Y3QgdXNibmV0ICpkZXYsIHN0cnVjdCB1c2JfaW50ZXJmYWNl
-ICppbnRmKQogCiAJLyogR2V0IHRoZSBNQUMgYWRkcmVzcyAqLwogCXJldCA9IGFzaXhfcmVhZF9j
-bWQoZGV2LCBBWF9DTURfUkVBRF9OT0RFX0lELCAwLCAwLCBFVEhfQUxFTiwgYnVmLCAwKTsKLQlp
-ZiAocmV0IDwgMCkgeworCWlmIChyZXQgPCBFVEhfQUxFTikgewogCQluZXRkZXZfZXJyKGRldi0+
-bmV0LCAiRmFpbGVkIHRvIHJlYWQgTUFDIGFkZHJlc3M6ICVkXG4iLCByZXQpOwogCQlnb3RvIGZy
-ZWU7CiAJfQotLSAKMi4xNi40Cgo=
+> Is there any chance we could see some selftests here?
 
+For espintcp? That's planned, I need to rework my test scripts so that
+they don't need human interaction, and turn them into selftests.
 
---=-1FI935soZhHIsJol0ILN--
-
+-- 
+Sabrina
