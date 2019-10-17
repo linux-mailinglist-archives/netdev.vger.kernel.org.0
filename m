@@ -2,107 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D62E6DA590
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 008B5DA599
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 08:28:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390987AbfJQGYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 02:24:31 -0400
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:50151 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727653AbfJQGYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:24:31 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 2D7EC371;
-        Thu, 17 Oct 2019 02:24:30 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 17 Oct 2019 02:24:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=YP1wGi
-        dd85LU7NyzQOFhkeqB5Aw8voC3hXvbkm8w4gA=; b=AFd+UGXEciNbnc28YuQjNX
-        GP+EpdaQlhVuIturNTJrTU2f2onAmAN8/hf2YqwUJBbajR3HhQIOlMWSEFn+6AxX
-        8d8T4xC0ghky44fUX3KOCwLSwu1JozGKlhEd647Hbt/WSiUfQYUXDCK46RHu2SEu
-        /1KQSAqiQCoxwAGVKCSo/FCucMqhNTI2ia+GUNLc8nZSM3w22/bS8hZ2r4tkaDDq
-        Kv3ai3F+vevxiFMTPkDyTuVmqux/9hvQ0dF17FmXcfvjUwYDK8tC78RGjmw99jyz
-        KbP/VsAYYlNtlqz8ztRoOd/5eGKBCRcvZArbZZWGK06uu4qY18BMj2Akl9VZeCJQ
-        ==
-X-ME-Sender: <xms:HQmoXXcnEEUrjppTg1MSPmnpGcxvtx0f4hlpR25q1r3B3ZFe0GV-0w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrjeeigddutdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
-    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:HQmoXUkuEo1bsWwkwUuEhi0DghR4F4LH-EOuD6sSAE5yTIzFTvZgwA>
-    <xmx:HQmoXWFPbV5hKdZQXLy0CfRrIfNt4jqkLuGj3AI8btB0UYmm8gmJQQ>
-    <xmx:HQmoXU7Oi6C6AqkXQdf8HYy6J_r5_I-DBGzLUU59GNGbBao2xxgMrg>
-    <xmx:HQmoXZBbT3MOtMDF0Bk8C52T5R3Fx0ycnPSK81Ba5iFyA1LPxKFXVA>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B2CFFD60057;
-        Thu, 17 Oct 2019 02:24:28 -0400 (EDT)
-Date:   Thu, 17 Oct 2019 09:24:27 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Wei Wang <weiwan@google.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jesse Hathaway <jesse@mbuki-mvuki.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net] ipv4: fix race condition between route lookup and
- invalidation
-Message-ID: <20191017062427.GA25025@splinter>
-References: <20191016190315.151095-1-weiwan@google.com>
+        id S2392589AbfJQG2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 02:28:50 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:39971 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390993AbfJQG2u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 02:28:50 -0400
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 38BCE10000B
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 06:28:46 +0000 (UTC)
+Received: by mail-ua1-f43.google.com with SMTP id j5so303217uak.12
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 23:28:46 -0700 (PDT)
+X-Gm-Message-State: APjAAAW8GU6/TohpjiUEK9oqNZtHgTAT83Fb1eER/jBjEhcuAn5NQAET
+        LG6tyzY8qAStGbSaTOOFmZNp/9e++m5xOWb5kL0=
+X-Google-Smtp-Source: APXvYqyRnfbkG/94j4Ns8zoY4UjSRTVNTqodd92gbI3FRkOOIrdjOxKsNB1xHes2TmW0u2qoUkSq9haRW9VbrgB5N+M=
+X-Received: by 2002:ab0:5bdb:: with SMTP id z27mr1415597uae.118.1571293724849;
+ Wed, 16 Oct 2019 23:28:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191016190315.151095-1-weiwan@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <1570509631-13008-1-git-send-email-martinvarghesenokia@gmail.com>
+ <CAOrHB_A6diWm08Swp3_2Eo+VCvugRsh60Vc8_t2pC3QLEAR9xQ@mail.gmail.com>
+ <20191010043101.GA19339@martin-VirtualBox> <CAOrHB_CSwAPW7XwyaFV_hxQADmh25a8JMJa0tRXZbnu-2R60Kw@mail.gmail.com>
+ <20191014160444.GA29007@martin-VirtualBox> <CAOrHB_CXu-WGPB-7+K8hA=ZubgcMWAERVYbMhKVuSK5z1Sz7tQ@mail.gmail.com>
+ <20191016030516.GA2700@martin-VirtualBox>
+In-Reply-To: <20191016030516.GA2700@martin-VirtualBox>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Wed, 16 Oct 2019 23:28:34 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_BVttHGQeY2KjHH75kfuBc-_SNj_OZV3zJmNE3mmA5ZdA@mail.gmail.com>
+Message-ID: <CAOrHB_BVttHGQeY2KjHH75kfuBc-_SNj_OZV3zJmNE3mmA5ZdA@mail.gmail.com>
+Subject: Re: [PATCH net-next] Change in Openvswitch to support MPLS label
+ depth of 3 in ingress direction
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Benc <jbenc@redhat.com>, scott.drennan@nokia.com,
+        martin.varghese@nokia.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 12:03:15PM -0700, Wei Wang wrote:
-> Jesse and Ido reported the following race condition:
-> <CPU A, t0> - Received packet A is forwarded and cached dst entry is
-> taken from the nexthop ('nhc->nhc_rth_input'). Calls skb_dst_set()
-> 
-> <t1> - Given Jesse has busy routers ("ingesting full BGP routing tables
-> from multiple ISPs"), route is added / deleted and rt_cache_flush() is
-> called
-> 
-> <CPU B, t2> - Received packet B tries to use the same cached dst entry
-> from t0, but rt_cache_valid() is no longer true and it is replaced in
-> rt_cache_route() by the newer one. This calls dst_dev_put() on the
-> original dst entry which assigns the blackhole netdev to 'dst->dev'
-> 
-> <CPU A, t3> - dst_input(skb) is called on packet A and it is dropped due
-> to 'dst->dev' being the blackhole netdev
-> 
-> There are 2 issues in the v4 routing code:
-> 1. A per-netns counter is used to do the validation of the route. That
-> means whenever a route is changed in the netns, users of all routes in
-> the netns needs to redo lookup. v6 has an implementation of only
-> updating fn_sernum for routes that are affected.
-> 2. When rt_cache_valid() returns false, rt_cache_route() is called to
-> throw away the current cache, and create a new one. This seems
-> unnecessary because as long as this route does not change, the route
-> cache does not need to be recreated.
-> 
-> To fully solve the above 2 issues, it probably needs quite some code
-> changes and requires careful testing, and does not suite for net branch.
-> 
-> So this patch only tries to add the deleted cached rt into the uncached
-> list, so user could still be able to use it to receive packets until
-> it's done.
-> 
-> Fixes: 95c47f9cf5e0 ("ipv4: call dst_dev_put() properly")
-> Signed-off-by: Wei Wang <weiwan@google.com>
-> Reported-by: Ido Schimmel <idosch@idosch.org>
-> Reported-by: Jesse Hathaway <jesse@mbuki-mvuki.org>
-> Tested-by: Jesse Hathaway <jesse@mbuki-mvuki.org>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> Cc: David Ahern <dsahern@gmail.com>
-
-Reviewed-by: Ido Schimmel <idosch@mellanox.com>
+On Tue, Oct 15, 2019 at 8:05 PM Martin Varghese
+<martinvarghesenokia@gmail.com> wrote:
+>
+> On Tue, Oct 15, 2019 at 12:03:35AM -0700, Pravin Shelar wrote:
+> > On Mon, Oct 14, 2019 at 9:06 AM Martin Varghese
+> > <martinvarghesenokia@gmail.com> wrote:
+> > >
+> > > On Sat, Oct 12, 2019 at 01:08:26PM -0700, Pravin Shelar wrote:
+> > > > On Wed, Oct 9, 2019 at 9:31 PM Martin Varghese
+> > > > <martinvarghesenokia@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, Oct 09, 2019 at 08:29:51AM -0700, Pravin Shelar wrote:
+> > > > > > On Mon, Oct 7, 2019 at 9:41 PM Martin Varghese
+> > > > > > <martinvarghesenokia@gmail.com> wrote:
+> > > > > > >
+> > > > > > > From: Martin Varghese <martin.varghese@nokia.com>
+> > > > > > >
+> > > > > > > The openvswitch was supporting a MPLS label depth of 1 in the ingress
+> > > > > > > direction though the userspace OVS supports a max depth of 3 labels.
+> > > > > > > This change enables openvswitch module to support a max depth of
+> > > > > > > 3 labels in the ingress.
+> > > > > > >
+> > > > > > > Signed-off-by: Martin Varghese <martinvarghesenokia@gmail.com>
+> > > > > > > ---
+> > > > > > >  net/openvswitch/actions.c      | 10 +++++++-
+> > > > > > >  net/openvswitch/flow.c         | 20 ++++++++++-----
+> > > > > > >  net/openvswitch/flow.h         |  9 ++++---
+> > > > > > >  net/openvswitch/flow_netlink.c | 55 +++++++++++++++++++++++++++++++++---------
+> > > > > > >  4 files changed, 72 insertions(+), 22 deletions(-)
+> > > > > > >
+> > > > > > > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> > > > > > > index 3572e11..eb5bed5 100644
+> > > > > > > --- a/net/openvswitch/actions.c
+> > > > > > > +++ b/net/openvswitch/actions.c
+> > > > > > > @@ -178,10 +178,14 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
+> > > > > > >  {
+> > > > > > >         int err;
+> > > > > > >
+> > > > > > > +       if (!key->mpls.num_labels_mask)
+> > > > > > > +               return -EINVAL;
+> > > > > > > +
+> > > > > > >         err = skb_mpls_pop(skb, ethertype);
+> > > > > > >         if (err)
+> > > > > > >                 return err;
+> > > > > > >
+> > > > > > > +       key->mpls.num_labels_mask >>= 1;
+> > > > > > >         invalidate_flow_key(key);
+> > > > > > Since this key is immediately invalidated, what is point of updating
+> > > > > > the label count?
+> > > > > >
+> > > > >
+> > > > > The num_labels_mask is being checked in the pop_mpls action to see if anymore
+> > > > > label present to pop.
+> > > > >
+> > > > > if (!key->mpls.num_labels_mask)
+> > > > >         return -EINVAL:
+> > > > >
+> > > > > > >         return 0;
+> > > > > > >  }
+> > > > > > What about checks in OVS_ACTION_ATTR_PUSH_MPLS?
+> > > > > >
+> > > > > The change does not have any impact to the PUSH_MPLS actions.
+> > > > > It should work as before.
+> > > > >
+> > > > Since the MPLS label count is checked in POP, the PUSH action needs to
+> > > > update the count.
+> > > >
+> > > Ok, that would be to support a rule like this
+> > > eth_type(0x0800),actions: push_mpls(label=7,tc=0,ttl=64,bos=1,eth_type=0x8847), pop_mpls(eth_type=0x800)
+> > >
+> > > Though this rule has no effect we can support it for the completeness.
+> > > It would entail a code like this
+> > >
+> > >  if (eth_p_mpls(proto))
+> > >         key->mpls.num_labels_mask = (key->mpls.num_labels_mask << 1 &
+> > >                                      GENMASK(MPLS_LABEL_DEPTH -1, 0))| 0x1;  else
+> > >         key->mpls.num_labels_mask = (key->mpls.num_labels_mask & 0x0)|0x01;
+> > Yes, but as mentioned below, it can be moved to flow install time.
+> >
+> > > > > > > @@ -192,6 +196,7 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
+> > > > > > >         struct mpls_shim_hdr *stack;
+> > > > > > >         __be32 lse;
+> > > > > > >         int err;
+> > > > > > > +       u32 i = 0;
+> > > > > > >
+> > > > > > >         stack = mpls_hdr(skb);
+> > > > > > >         lse = OVS_MASKED(stack->label_stack_entry, *mpls_lse, *mask);
+> > > > > > > @@ -199,7 +204,10 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
+> > > > > > >         if (err)
+> > > > > > >                 return err;
+> > > > > > >
+> > > > > > > -       flow_key->mpls.top_lse = lse;
+> > > > > > > +       for (i = MPLS_LABEL_DEPTH - 1; i > 0; i--)
+> > > > > > > +               flow_key->mpls.lse[i] = flow_key->mpls.lse[i - 1];
+> > > > > > > +
+> > > > > > > +       flow_key->mpls.lse[i] = *mpls_lse;
+> > > > > > This is changing semantic of mpls-set action. It is looking like
+> > > > > > mpls-push. Lets keep the MPLS set that sets one or more MPLS lebels.
+> > > > > >
+> > > > > > >         return 0;
+> > > > > > >  }
+> > > > >
+> > > > > Not sure if I got your comment correct.
+> > > > > Just as before, the new code updates the top most label in the flow_key.
+> > > > I am referring to the for loop which shifts labels to make room new
+> > > > label been set. I think the set action should over-write labels
+> > > > specified in set action.
+> > > >
+> > > Correct. Then this would suffice " flow_key->mpls.lse[0] = lse"
+> > >
+> > Yes, with this change this action need to support one more labels in set action.
+> >
+> shouldn't we be consistent with the existing behaviour in current kernel module, Dpif-netdev & ovs userspace, where the set_mpls action  sets the top most MPLS label params ?
+ok, I am fine with setting topmost label.
