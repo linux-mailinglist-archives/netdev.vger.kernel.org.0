@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22922DB786
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 21:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86274DB795
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 21:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391475AbfJQTbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 15:31:37 -0400
-Received: from mga09.intel.com ([134.134.136.24]:13356 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387844AbfJQTbh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 15:31:37 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Oct 2019 12:31:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,308,1566889200"; 
-   d="scan'208";a="397692900"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Oct 2019 12:31:36 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: taprio testing - Any help?
-In-Reply-To: <c4ff605f-d556-2c68-bcfd-65082ec8f73a@ti.com>
-References: <a69550fc-b545-b5de-edd9-25d1e3be5f6b@ti.com> <87v9sv3uuf.fsf@linux.intel.com> <7fc6c4fd-56ed-246f-86b7-8435a1e58163@ti.com> <87r23j3rds.fsf@linux.intel.com> <CA+h21hon+QzS7tRytM2duVUvveSRY5BOGXkHtHOdTEwOSBcVAg@mail.gmail.com> <45d3e5ed-7ddf-3d1d-9e4e-f555437b06f9@ti.com> <871rve5229.fsf@linux.intel.com> <f6fb6448-35f0-3071-bda1-7ca5f4e3e11e@ti.com> <87zhi01ldy.fsf@linux.intel.com> <c4ff605f-d556-2c68-bcfd-65082ec8f73a@ti.com>
-Date:   Thu, 17 Oct 2019 12:32:39 -0700
-Message-ID: <87bluf182w.fsf@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S2390034AbfJQTdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 15:33:42 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:41060 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbfJQTdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 15:33:42 -0400
+Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0E736140505D9;
+        Thu, 17 Oct 2019 12:33:41 -0700 (PDT)
+Date:   Thu, 17 Oct 2019 15:33:40 -0400 (EDT)
+Message-Id: <20191017.153340.1998610553660604312.davem@davemloft.net>
+To:     bigeasy@linutronix.de
+Cc:     sergei.shtylyov@cogentembedded.com, netdev@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        edumazet@google.com, tglx@linutronix.de, mkl@pengutronix.de,
+        peterz@infradead.org
+Subject: Re: [PATCH net-next v2] net: sched: Avoid using yield() in a busy
+ waiting loop
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
+References: <20191011171526.fon5npsxnarpn3qp@linutronix.de>
+        <8c3fad79-369a-403d-89fd-e54ab1b03643@cogentembedded.com>
+        <20191016082833.u4jxbiqg3oo6lyue@linutronix.de>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-2022-jp
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 17 Oct 2019 12:33:41 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Murali Karicheri <m-karicheri2@ti.com> writes:
->
-> root@am57xx-evm:~# tc qdisc replace dev eth0 parent root handle 100 taprio \
->  >     num_tc 4 \
->  >     map 2 3 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->  >     queues 1@0 1@0 1@0 1@0 \
->  >     base-time 1564535762845777831 \
->  >     sched-entry S 0xC 15000000 \
->  >     sched-entry S 0x2 15000000 \
->  >     sched-entry S 0x4 15000000 \
->  >     sched-entry S 0x8 15000000 \
->  >     txtime-delay 300000 \
->  >     flags 0x1 \
->  >     clockid CLOCK_TAI
-> RTNETLINK answers: Invalid argument
->
-> Anything wrong with the command syntax?
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 16 Oct 2019 10:28:33 +0200
 
-I tried this example here, and it got accepted ok. I am using the
-current net-next master. The first thing that comes to mind is that
-perhaps you backported some old version of some of the patches (so it's
-different than what's upstream now).
+> From: Marc Kleine-Budde <mkl@pengutronix.de>
+> 
+> With threaded interrupts enabled, the interrupt thread runs as SCHED_RR
+> with priority 50. If a user application with a higher priority preempts
+> the interrupt thread and tries to shutdown the network interface then it
+> will loop forever. The kernel will spin in the loop waiting for the
+> device to become idle and the scheduler will never consider the
+> interrupt thread because its priority is lower.
+> 
+> Avoid the problem by sleeping for a jiffy giving other tasks,
+> including the interrupt thread, a chance to run and make progress.
+> 
+> In the original thread it has been suggested to use wait_event() and
+> properly waiting for the state to occur. DaveM explained that this would
+> require to add expensive checks in the fast paths of packet processing.
+> 
+> Link: https://lkml.kernel.org/r/1393976987-23555-1-git-send-email-mkl@pengutronix.de
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> [bigeasy: Rewrite commit message, add comment, use
+>           schedule_timeout_uninterruptible()]
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> v1…v2: Typo fixes, noticed by Sergei Shtylyov.
 
-
-Cheers,
---
-Vinicius
+Applied, thank you.
