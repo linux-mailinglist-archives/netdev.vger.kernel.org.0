@@ -2,114 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F60DA304
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 03:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7B4DA31A
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 03:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395436AbfJQBYs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Oct 2019 21:24:48 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:48123 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389094AbfJQBYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 21:24:48 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9H1OSdP000991, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS12.realtek.com.tw[172.21.6.16])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9H1OSdP000991
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Oct 2019 09:24:28 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS12.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Thu, 17 Oct
- 2019 09:24:27 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Laura Abbott <labbott@redhat.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Nicolas Waisman <nico@semmle.com>
-Subject: RE: [PATCH] rtlwifi: Fix potential overflow on P2P code
-Thread-Topic: [PATCH] rtlwifi: Fix potential overflow on P2P code
-Thread-Index: AQHVhGRS0Eb+pvqKg0iKoQwx5Knt06deCEZw
-Date:   Thu, 17 Oct 2019 01:24:26 +0000
-Message-ID: <5B2DA6FDDF928F4E855344EE0A5C39D1D5C84368@RTITMBSVM04.realtek.com.tw>
-References: <20191016205716.2843-1-labbott@redhat.com>
-In-Reply-To: <20191016205716.2843-1-labbott@redhat.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.95]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S2388364AbfJQB1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 21:27:00 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:44718 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727888AbfJQB1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 21:27:00 -0400
+Received: by mail-lf1-f65.google.com with SMTP id q12so434137lfc.11
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 18:26:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=dXwGHNG0PMfzjMwCwhbxZZSodtXhVF8HfPNnchSkh3M=;
+        b=RaZets2WCBFmNZCMpxhatC5XYP/5d2MpB2lloe/eQpOK0OPvnFZcXVjtgAAYORUR64
+         Zyan8QYBoq8BnBp4mVbYGAVht3L7S7qKM0uVhuKI3X/e/qeRTar2PJQiJ3nPsR0A8rf/
+         61ncx8Agnl8kVHjkQKWr7n3dTguu3VgAzwbmCfkrGKvlrxRGHB3awAS94cggbkEYeC7u
+         l8yMy810E2BdZDvlxOTta5Bgj3AvmIPXv711Kr9ZUIvFqNqH8l5udnBC+9mJ4KB1gKRg
+         +Bp3lpagKgsVTI6esj9YN8gygq/LbqlfDzmrE9pEQf4y34C1m7BHnY3Pm91kJk64E8dx
+         OuLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=dXwGHNG0PMfzjMwCwhbxZZSodtXhVF8HfPNnchSkh3M=;
+        b=enaj65VFT3VpG9TRneB9vulZv9cEKMQekVxymBssk7IJDj2lD83Ci1a1fpTLeYtf2p
+         PlP/IfxpKhVTF36dXxQ5P8MjeQmNdd0Uiv1afCaSAPC7oKCO1xkVIaMKA9Etz+jN0w1I
+         pjp9412EvTa/fTCkCgzUEuuU4O+LZ3W7hzX/eSZsINa8xQREO4g/hkkWmEK1OHA2neBC
+         aNGYQjb0r7XLiNvo05I4FyjOIM65Md4fikYf2cRpsuDGbaPv1LgxSm1TqeesE8N7ULRf
+         udLwhhlfDaJhdu9HyV5UxezsSc7WQLm6vEuFGQDXR2vW9tC431B9LMxcdTD3xLC5N38Q
+         DpTg==
+X-Gm-Message-State: APjAAAUtlpVPwPxQ+MoQgFWgJ6R1Lpv96vNk9C5KzW+om/O9n3t3OVWa
+        qgjFaAiCNTPCe8PNJlJQilnJtA==
+X-Google-Smtp-Source: APXvYqxpKuYVWGJgqKT7x/CbbHsLauXmroxJUxpbJeYLfxCVLz41SrjivlhAxdSa3FLSKoLDv/KoxA==
+X-Received: by 2002:ac2:4830:: with SMTP id 16mr419697lft.2.1571275618170;
+        Wed, 16 Oct 2019 18:26:58 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id g3sm259411lja.61.2019.10.16.18.26.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 18:26:57 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 18:26:50 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org,
+        matteo.croce@redhat.com, mw@semihalf.com
+Subject: Re: [PATCH v4 net-next 4/7] net: mvneta: add basic XDP support
+Message-ID: <20191016182650.2989ddf4@cakuba.netronome.com>
+In-Reply-To: <30b6fad4fe5411e092171bb825f7a6ce0041d63e.1571258793.git.lorenzo@kernel.org>
+References: <cover.1571258792.git.lorenzo@kernel.org>
+        <30b6fad4fe5411e092171bb825f7a6ce0041d63e.1571258793.git.lorenzo@kernel.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: linux-wireless-owner@vger.kernel.org [mailto:linux-wireless-owner@vger.kernel.org] On Behalf
-> Of Laura Abbott
-> Sent: Thursday, October 17, 2019 4:57 AM
-> To: Pkshih; Kalle Valo
-> Cc: Laura Abbott; David S. Miller; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Nicolas Waisman
-> Subject: [PATCH] rtlwifi: Fix potential overflow on P2P code
+On Wed, 16 Oct 2019 23:03:09 +0200, Lorenzo Bianconi wrote:
+> Add basic XDP support to mvneta driver for devices that rely on software
+> buffer management. Currently supported verdicts are:
+> - XDP_DROP
+> - XDP_PASS
+> - XDP_REDIRECT
+> - XDP_ABORTED
 > 
-> Nicolas Waisman noticed that even though noa_len is checked for
-> a compatible length it's still possible to overrun the buffers
-> of p2pinfo since there's no check on the upper bound of noa_num.
-> Bounds check noa_num against P2P_MAX_NOA_NUM.
+> - iptables drop:
+> $iptables -t raw -I PREROUTING -p udp --dport 9 -j DROP
+> $nstat -n && sleep 1 && nstat
+> IpInReceives		151169		0.0
+> IpExtInOctets		6953544		0.0
+> IpExtInNoECTPkts	151165		0.0
 > 
-> Reported-by: Nicolas Waisman <nico@semmle.com>
-> Signed-off-by: Laura Abbott <labbott@redhat.com>
-> ---
-> Compile tested only as this was reported to the security list.
-> ---
->  drivers/net/wireless/realtek/rtlwifi/ps.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+> - XDP_DROP via xdp1
+> $./samples/bpf/xdp1 3
+> proto 0:	421419 pkt/s
+> proto 0:	421444 pkt/s
+> proto 0:	421393 pkt/s
+> proto 0:	421440 pkt/s
+> proto 0:	421184 pkt/s
 > 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/ps.c b/drivers/net/wireless/realtek/rtlwifi/ps.c
-> index 70f04c2f5b17..c5cff598383d 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/ps.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
-> @@ -754,6 +754,13 @@ static void rtl_p2p_noa_ie(struct ieee80211_hw *hw, void *data,
->  				return;
->  			} else {
->  				noa_num = (noa_len - 2) / 13;
-> +				if (noa_num > P2P_MAX_NOA_NUM) {
-> +					RT_TRACE(rtlpriv, COMP_INIT, DBG_LOUD,
-> +						 "P2P notice of absence: invalid noa_num.%d\n",
-> +						 noa_num);
-> +					return;
+> Tested-by: Matteo Croce <mcroce@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-As the discussion at <security@kernel.org>, I think it'd be better to use
-the min between noa_num and P2P_MAX_NOA_NUM, and fall through the code instead
-of return. Because ignore all NoA isn't better than apply two of them.
-
-
-> +				}
+> +static int mvneta_xdp_setup(struct net_device *dev, struct bpf_prog *prog,
+> +			    struct netlink_ext_ack *extack)
+> +{
+> +	struct mvneta_port *pp = netdev_priv(dev);
+> +	struct bpf_prog *old_prog;
 > +
->  			}
->  			noa_index = ie[3];
->  			if (rtlpriv->psc.p2p_ps_info.p2p_ps_mode ==
-> @@ -848,6 +855,13 @@ static void rtl_p2p_action_ie(struct ieee80211_hw *hw, void *data,
->  				return;
->  			} else {
->  				noa_num = (noa_len - 2) / 13;
-> +				if (noa_num > P2P_MAX_NOA_NUM) {
-> +					RT_TRACE(rtlpriv, COMP_FW, DBG_LOUD,
-> +						 "P2P notice of absence: invalid noa_len.%d\n",
-> +						 noa_len);
-> +					return;
+> +	if (prog && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Jumbo frames not supported on XDP");
+> +		return -EOPNOTSUPP;
+> +	}
 > +
-> +				}
->  			}
->  			noa_index = ie[3];
->  			if (rtlpriv->psc.p2p_ps_info.p2p_ps_mode ==
-> --
-> 2.21.0
+> +	if (netif_running(dev))
+> +		mvneta_stop(dev);
 
+Actually if pp->prog && prog you don't have to stop/start, right?
+You just gotta restart if !!pp->prog != !!prog?
+
+> +	old_prog = xchg(&pp->xdp_prog, prog);
+> +	if (old_prog)
+> +		bpf_prog_put(old_prog);
+> +
+> +	if (netif_running(dev))
+> +		return mvneta_open(dev);
+> +
+> +	return 0;
+> +}
