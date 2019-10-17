@@ -2,173 +2,635 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E3CDB973
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 00:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A30EDB97E
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 00:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503715AbfJQWDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 18:03:05 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:29428 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2441587AbfJQWDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 18:03:05 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9HLwWlk031582;
-        Thu, 17 Oct 2019 15:01:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=0F3O/G09+8RDQ956ALlfFPTWWr5h01TaK8Rg/fDAySA=;
- b=ZuPpGPHyoM2lO5KzW5LHgIuxbeLKQdnW6ERbVGMxx4tJwCrPBI6If6TXUlM0iou32PPY
- rCi9lHXPaStNOk2Y7/6Y370I8JQ72bWLCm5GcjYr8p2I9rUxKbyIgA7cO145ciSdQXby
- lObGxXLB3tg3qK7mf2dDB2D8N3GFCuEwR+Y= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vpw9r8y9x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 17 Oct 2019 15:01:51 -0700
-Received: from ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) by
- ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 17 Oct 2019 15:01:50 -0700
-Received: from NAM05-BY2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 17 Oct 2019 15:01:50 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dDx89fr2QrNMaTHCpUVyAefqcyj5UndIevqomZWgzkWenuoefie9BU/U5wfnbs9bvSnSlHgBpWhH8UFASn0Hfy2jjd1ReZ4wGRFoT60h4t2bYbNb+QUaqlqFOav1YkQ0iu2bhDU+pen6OkCEBk6zPQCbntCWEZR/3fXuYYkGfg8rJHgumgHF/LoW3Ia9oalqNdjNBDjX9XUcqxOT92atwMGtxUslRuODxxX5SyGOPLbL6kRso/vN10p6tZFvacdaOx5bAbp/cTVrK1ev9gr7Ldc9HmrotqyvVTdwikWlMOqNRLEgKHSp22vhBfZtimvVMrF+v4uX9uK9oGvipKtutQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0F3O/G09+8RDQ956ALlfFPTWWr5h01TaK8Rg/fDAySA=;
- b=hYFRpmUbI9qQ9waTKjONir6sErOuzK5lxm0HmwJ+K6UoqPQ/0LiTBwtSQlUwU3i1dejj47it3w29g9xkngBEEX7nhy9M9G/NqR+E8lFyDyCGmkILCSYAJggusaUElcOMaGVxOF7/JQSVtQ4rp3etM4D/nunard20taxLLh1IVKUi5xg7U8NhkI3vqRZLTRJTkpuxm5Wtl5HgLPHZR5+4NYKOm8X7YlZEAx/HBUDtrHjzt8mykZyv7N4T2Q6co6c1u0fb5DbRwXiZZsnz7s7hWoSRGxFbvALp0QMu3eHcKxD5b78BeaUsUBzVBiPGgoPLky3YJSo6gpmnh0mGioQSgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0F3O/G09+8RDQ956ALlfFPTWWr5h01TaK8Rg/fDAySA=;
- b=g0uoj/R4P0myrukAwCuCs0qWosFby2t1zT3Avj6glb8Ht4OU7/2xj0Fjpb1NOXe1A21KVUjEPe5abs8GPL9y7aW1mZr2hDFY8fcBx7lNVZw7NZcUV1BKWzgaTtAH3SjIBWWoQRcF80NcXebrq/wGGG8PUxWwUn6HOanuRFkQ56A=
-Received: from BY5PR15MB3636.namprd15.prod.outlook.com (52.133.252.91) by
- BY5PR15MB3572.namprd15.prod.outlook.com (52.133.255.88) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Thu, 17 Oct 2019 22:01:49 +0000
-Received: from BY5PR15MB3636.namprd15.prod.outlook.com
- ([fe80::7887:4f9c:70df:285c]) by BY5PR15MB3636.namprd15.prod.outlook.com
- ([fe80::7887:4f9c:70df:285c%4]) with mapi id 15.20.2347.023; Thu, 17 Oct 2019
- 22:01:49 +0000
-From:   Vijay Khemka <vijaykhemka@fb.com>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        id S2503735AbfJQWGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 18:06:17 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36617 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503724AbfJQWGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 18:06:16 -0400
+Received: by mail-wm1-f66.google.com with SMTP id m18so4117098wmc.1;
+        Thu, 17 Oct 2019 15:06:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2XTmUdi3RPUYI6rnc4hcEUxSQTSxBfl5ZdZ//kGEK50=;
+        b=CTU7g7BAfv1iOfImSHdH5co8qO34xFcgE8NRavtmOOHjjJmkzrIMSg/4s/ZNqEPcct
+         9jymu8xCwSMOZKXJAASygVDNtKJZi0fuphZi5dpFLCTe98yZbZ1dIc1wv3j1+DcJnDEn
+         mT8HUkMsAFNJm0ivchQy+xQYHJPGizfhzMh5zeJCowH1GGQEKgos2UNkYfGpNB/x8qXC
+         uDMbU84QsiWaM37pL5Cq6ipnfcx8r/xCAjnkTbJMp4Lpg/Riorrpgya4tbqF0CyFWmmi
+         Cdb1GeUFtzQl7+51/YX9GFaZ8VvN+Slk+lRWI9S98ctcgMSlINQ0zc6I2MIZU9+ui3z3
+         DS4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2XTmUdi3RPUYI6rnc4hcEUxSQTSxBfl5ZdZ//kGEK50=;
+        b=a6a7SARYRMqJ2Vn6pcZ6l/gRXZei7K6kI5Wj7q3gc95JriVEZ1Gm7kNDTrEjVOVK/K
+         BBSdENTTUD7irhxs3unsUE8Pi+CzCF4crl54nfSJPlIHfeaWlbKTwbIqEQrqE+OqisNg
+         h5MeisIqZFHBilRr8BG8GCT+Mb5ADm7xuBPBR7cwG4xPJaB6HtA1oMx9L0wEl6zHc2lf
+         Vue9pIFzekyi/RCDQbdB5pCb6qJifX1SCr6claSDfQIt8o7EE3FM30a3toJ5qyCwqKIj
+         gNEEFWhPD/ppprPpZNQISrymDeaZl9AEuP1sm7qebc4wKzt6j1KR2YXZeDoUDxpmIwgm
+         by4A==
+X-Gm-Message-State: APjAAAWDLPvGg7roK63AdcXqXuJt1qnpl0IDXgMA/waAXjQgypSHZUjw
+        NEc6Y4XwTp5CC4vZ5V6wzvg=
+X-Google-Smtp-Source: APXvYqxek5lvdwA6bvVjCFG4FdT6vjuQfYoRe3slxmVEawqP5nuPJGSrhF9jV+2VqwgFbG/yn3d4tA==
+X-Received: by 2002:a1c:4c08:: with SMTP id z8mr4741299wmf.38.1571349971943;
+        Thu, 17 Oct 2019 15:06:11 -0700 (PDT)
+Received: from [192.168.1.2] ([86.124.196.40])
+        by smtp.gmail.com with ESMTPSA id i1sm4523692wmb.19.2019.10.17.15.06.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 17 Oct 2019 15:06:11 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] net: phy: Add ability to debug RGMII
+ connections
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        "Sven Van Asbroeck" <TheSven73@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Bhupesh Sharma" <bhsharma@redhat.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
-Thread-Topic: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
-Thread-Index: AQHVgIJ8iNM2JFB8dkCGpaKji+MwkKdeE2WAgADjLwA=
-Date:   Thu, 17 Oct 2019 22:01:48 +0000
-Message-ID: <0C0BC813-5A84-403F-9C48-9447AAABD867@fb.com>
-References: <20191011213027.2110008-1-vijaykhemka@fb.com>
- <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
-In-Reply-To: <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [2620:10d:c090:200::3:f653]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 63c7cef0-b01f-4e89-6bf1-08d7534d9c09
-x-ms-traffictypediagnostic: BY5PR15MB3572:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR15MB35722890CE8F93FAA427069CDD6D0@BY5PR15MB3572.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 01930B2BA8
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(39860400002)(396003)(366004)(346002)(189003)(199004)(110136005)(6246003)(2906002)(54906003)(6436002)(486006)(316002)(11346002)(6116002)(33656002)(14444005)(446003)(229853002)(7736002)(2616005)(256004)(305945005)(71190400001)(71200400001)(14454004)(478600001)(25786009)(46003)(6486002)(7416002)(476003)(4001150100001)(2201001)(4326008)(186003)(99286004)(6512007)(5660300002)(6506007)(36756003)(76176011)(102836004)(2501003)(81166006)(8676002)(91956017)(76116006)(66946007)(81156014)(66476007)(66446008)(66556008)(86362001)(64756008)(8936002)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:BY5PR15MB3572;H:BY5PR15MB3636.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iedLVTcCEat0NMZl3WTaE/XSuHEGC3DKCWqF88kg3GrdAxuPgrNMg+YOQfOTDsGGXmXOGGSGY9FZ5RZNRqMMXmkUk5ef5JoMF7qUrQHf5yuNSbvpbxo00V/ez+fzSTAy2muQzj3nyzdJh5QfFzauN7bi9VYRIxxHKs19EV9vj+FYl5ibyelolnDa9G83nl68dgpe+wZYDcVA5VHtCA65L5mA+vIh/y2DOt4d51ZUj7QERgnSTURyW4TGleqehQrHUYpidYRQJd0ZRRA0w2v1pS+GWLiEpQ2Wrgpef6hi3+8+j5gihQPV4NrXb4U4U8QBACW0P/8T1EZZVQp1q0Q4NAkA6xOarbU4hQsa58iUZYyd/9GvKi1YQ5UTJPP2e9zt1X95rjW+QoU86rQLe/+JEggRINBmdBI47q/HnVzRAkE=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B146F1DF5A37764E8AB04AAC4108B5C5@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        open list <linux-kernel@vger.kernel.org>, hkallweit1@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com, rmk+kernel@armlinux.org.uk,
+        cphealy@gmail.com, Jose Abreu <joabreu@synopsys.com>
+References: <20191015224953.24199-1-f.fainelli@gmail.com>
+ <20191015224953.24199-3-f.fainelli@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Message-ID: <4feb3979-1d59-4ad3-b2f1-90d82cfbdf54@gmail.com>
+Date:   Fri, 18 Oct 2019 01:06:09 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 63c7cef0-b01f-4e89-6bf1-08d7534d9c09
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Oct 2019 22:01:48.9516
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CK7iCz1tEqLEYAsnBlaDagDKwbk+uW0tyvwOBhE0LOH87ioiJ5vcmaCxvaIy8UQzeVF7c190b/1qmMeDCEKs3A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3572
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-17_06:2019-10-17,2019-10-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=948
- lowpriorityscore=0 mlxscore=0 suspectscore=0 phishscore=0 clxscore=1011
- adultscore=0 spamscore=0 bulkscore=0 priorityscore=1501 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910170193
-X-FB-Internal: deliver
+In-Reply-To: <20191015224953.24199-3-f.fainelli@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7v09uIDEwLzE2LzE5LCA2OjI5IFBNLCAiQmVuamFtaW4gSGVycmVuc2NobWlkdCIgPGJl
-bmhAa2VybmVsLmNyYXNoaW5nLm9yZz4gd3JvdGU6DQoNCiAgICBPbiBGcmksIDIwMTktMTAtMTEg
-YXQgMTQ6MzAgLTA3MDAsIFZpamF5IEtoZW1rYSB3cm90ZToNCiAgICA+IEhXIGNoZWNrc3VtIGdl
-bmVyYXRpb24gaXMgbm90IHdvcmtpbmcgZm9yIEFTVDI1MDAsIHNwZWNpYWxseSB3aXRoDQogICAg
-PiBJUFY2DQogICAgPiBvdmVyIE5DU0kuIEFsbCBUQ1AgcGFja2V0cyB3aXRoIElQdjYgZ2V0IGRy
-b3BwZWQuIEJ5IGRpc2FibGluZyB0aGlzDQogICAgPiBpdCB3b3JrcyBwZXJmZWN0bHkgZmluZSB3
-aXRoIElQVjYuIEFzIGl0IHdvcmtzIGZvciBJUFY0IHNvIGVuYWJsZWQNCiAgICA+IGh3IGNoZWNr
-c3VtIGJhY2sgZm9yIElQVjQuDQogICAgPiANCiAgICA+IFZlcmlmaWVkIHdpdGggSVBWNiBlbmFi
-bGVkIGFuZCBjYW4gZG8gc3NoLg0KICAgIA0KICAgIFNvIHdoaWxlIHRoaXMgcHJvYmFibHkgd29y
-a3MsIEkgZG9uJ3QgdGhpbmsgdGhpcyBpcyB0aGUgcmlnaHQNCiAgICBhcHByb2FjaCwgYXQgbGVh
-c3QgYWNjb3JkaW5nIHRvIHRoZSBjb21tZW50cyBpbiBza2J1ZmYuaA0KDQpUaGlzIGlzIG5vdCBh
-IG1hdHRlciBvZiB1bnN1cHBvcnRlZCBjc3VtLCBpdCBpcyBicm9rZW4gaHcgY3N1bS4gDQpUaGF0
-J3Mgd2h5IHdlIGRpc2FibGUgaHcgY2hlY2tzdW0uIE15IGd1ZXNzIGlzIG9uY2Ugd2UgZGlzYWJs
-ZQ0KSHcgY2hlY2tzdW0sIGl0IHdpbGwgdXNlIHN3IGNoZWNrc3VtLiBTbyBJIGFtIGp1c3QgZGlz
-YWJsaW5nIGh3IA0KQ2hlY2tzdW0uDQogICAgDQogICAgVGhlIGRyaXZlciBzaG91bGQgaGF2ZSBo
-YW5kbGVkIHVuc3VwcG9ydGVkIGNzdW0gdmlhIFNXIGZhbGxiYWNrDQogICAgYWxyZWFkeSBpbiBm
-dGdtYWMxMDBfcHJlcF90eF9jc3VtKCkNCiAgICANCiAgICBDYW4geW91IGNoZWNrIHdoeSB0aGlz
-IGRpZG4ndCB3b3JrIGZvciB5b3UgPw0KICAgIA0KICAgIENoZWVycywNCiAgICBCZW4uDQogICAg
-DQogICAgPiBTaWduZWQtb2ZmLWJ5OiBWaWpheSBLaGVta2EgPHZpamF5a2hlbWthQGZiLmNvbT4N
-CiAgICA+IC0tLQ0KICAgID4gQ2hhbmdlcyBzaW5jZSB2MToNCiAgICA+ICBFbmFibGVkIElQVjQg
-aHcgY2hlY2tzdW0gZ2VuZXJhdGlvbiBhcyBpdCB3b3JrcyBmb3IgSVBWNC4NCiAgICA+IA0KICAg
-ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgfCAxMyArKysrKysr
-KysrKystDQogICAgPiAgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDEgZGVsZXRp
-b24oLSkNCiAgICA+IA0KICAgID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Zh
-cmFkYXkvZnRnbWFjMTAwLmMNCiAgICA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9m
-dGdtYWMxMDAuYw0KICAgID4gaW5kZXggMDMwZmVkNjUzOTNlLi4wMjU1YTI4ZDI5NTggMTAwNjQ0
-DQogICAgPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jDQog
-ICAgPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jDQogICAg
-PiBAQCAtMTg0Miw4ICsxODQyLDE5IEBAIHN0YXRpYyBpbnQgZnRnbWFjMTAwX3Byb2JlKHN0cnVj
-dA0KICAgID4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KICAgID4gIAkvKiBBU1QyNDAwICBkb2Vz
-bid0IGhhdmUgd29ya2luZyBIVyBjaGVja3N1bSBnZW5lcmF0aW9uICovDQogICAgPiAgCWlmIChu
-cCAmJiAob2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUobnAsICJhc3BlZWQsYXN0MjQwMC1tYWMiKSkp
-DQogICAgPiAgCQluZXRkZXYtPmh3X2ZlYXR1cmVzICY9IH5ORVRJRl9GX0hXX0NTVU07DQogICAg
-PiArDQogICAgPiArCS8qIEFTVDI1MDAgZG9lc24ndCBoYXZlIHdvcmtpbmcgSFcgY2hlY2tzdW0g
-Z2VuZXJhdGlvbiBmb3IgSVBWNg0KICAgID4gKwkgKiBidXQgaXQgd29ya3MgZm9yIElQVjQsIHNv
-IGRpc2FibGluZyBodyBjaGVja3N1bSBhbmQgZW5hYmxpbmcNCiAgICA+ICsJICogaXQgZm9yIG9u
-bHkgSVBWNC4NCiAgICA+ICsJICovDQogICAgPiArCWlmIChucCAmJiAob2ZfZGV2aWNlX2lzX2Nv
-bXBhdGlibGUobnAsICJhc3BlZWQsYXN0MjUwMC1tYWMiKSkpDQogICAgPiB7DQogICAgPiArCQlu
-ZXRkZXYtPmh3X2ZlYXR1cmVzICY9IH5ORVRJRl9GX0hXX0NTVU07DQogICAgPiArCQluZXRkZXYt
-Pmh3X2ZlYXR1cmVzIHw9IE5FVElGX0ZfSVBfQ1NVTTsNCiAgICA+ICsJfQ0KICAgID4gKw0KICAg
-ID4gIAlpZiAobnAgJiYgb2ZfZ2V0X3Byb3BlcnR5KG5wLCAibm8taHctY2hlY2tzdW0iLCBOVUxM
-KSkNCiAgICA+IC0JCW5ldGRldi0+aHdfZmVhdHVyZXMgJj0gfihORVRJRl9GX0hXX0NTVU0gfA0K
-ICAgID4gTkVUSUZfRl9SWENTVU0pOw0KICAgID4gKwkJbmV0ZGV2LT5od19mZWF0dXJlcyAmPSB+
-KE5FVElGX0ZfSFdfQ1NVTSB8DQogICAgPiBORVRJRl9GX1JYQ1NVTQ0KICAgID4gKwkJCQkJIHwg
-TkVUSUZfRl9JUF9DU1VNKTsNCiAgICA+ICAJbmV0ZGV2LT5mZWF0dXJlcyB8PSBuZXRkZXYtPmh3
-X2ZlYXR1cmVzOw0KICAgID4gIA0KICAgID4gIAkvKiByZWdpc3RlciBuZXR3b3JrIGRldmljZSAq
-Lw0KICAgIA0KICAgIA0KDQo=
+Hi Florian,
+
+[sorry, I started writing this before you sent out a v2]
+
+On 10/16/19 1:49 AM, Florian Fainelli wrote:
+> RGMII connections are always troublesome because of the need to add
+> delays between the RX or TX clocks and data lines. This can lead to a
+> fair amount of breakage that upsets users.
+> 
+> Introduce a new sysfs write only attribute which can be set to 1 to
+> instruct the PHY library to attempt to probe what the correct RGMII
+> phy_interface_t value should be. When such debugging is requested, the
+> PHY library will do a number of checks whether this debugging is even
+> necessary (RGMII used, Gigabit, not a Generic PHY driver etc.) and if
+> successfull will proceed with:
+> 
+> - putting the PHY in loopback mode
+> - register a packet handler with an unused Ethernet type value in the
+>    kernel (ETH_P_EDSA is a well known unused value)
+> - re-configure the PHY and MAC with the phy_interface_t value to be
+>    tried, which is one of the 4 possible interfaces, starting with the
+>    currently defined one
+> - craft a MTU sized packet with the Ethernet interface's MAC SA and DA
+>    set to itself and send that in a process context
+> - wait for that packet to be received through the registered packet_type
+>    handler
+> 
+> If the packet is not received, we have a problem with the RGMII
+> interface, if we do receive something, we check the FCS we calculated on
+> transmit matches the FCS of the packet received, if we have a mismatch
+> it most likely will not.
+> 
+> If all is well, we stop iterating over all possible RGMII combinations
+> and offer the one that is deemed suitable which is what an user should
+> be trying by configuring the platform appropriately.
+> 
+> This is not deemed to be 100% fool proof, but given how much support
+> getting RGMII seems to involved, this seemed like a good tool to have
+> users self-diagnose their connection issues.
+> 
+> Future improvements could be made in order to extrapolate from a
+> specific frame patter the type of skewing between RXC/TXC that is going
+> on so as to refine the search process, and even possibly suggest delays.
+> 
+> The function phy_rgmii_debug_probe() could also be used by an Ethernet
+> controller during its selftests routines instead of open-coding that
+> part.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>   .../ABI/testing/sysfs-class-net-phydev        |  11 +
+>   drivers/net/phy/Kconfig                       |   9 +
+>   drivers/net/phy/Makefile                      |   1 +
+>   drivers/net/phy/phy-rgmii-debug.c             | 269 ++++++++++++++++++
+>   drivers/net/phy/phy_device.c                  |  31 ++
+>   include/linux/phy.h                           |   9 +
+>   6 files changed, 330 insertions(+)
+>   create mode 100644 drivers/net/phy/phy-rgmii-debug.c
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
+> index 206cbf538b59..989fc128ec94 100644
+> --- a/Documentation/ABI/testing/sysfs-class-net-phydev
+> +++ b/Documentation/ABI/testing/sysfs-class-net-phydev
+> @@ -49,3 +49,14 @@ Description:
+>   		Boolean value indicating whether the PHY device is used in
+>   		standalone mode, without a net_device associated, by PHYLINK.
+>   		Attribute created only when this is the case.
+> +
+> +What:		/sys/class/mdio_bus/<bus>/<device>/phy_rgmii_debug
+> +Date:		October 2019
+> +KernelVersion:	5.5
+> +Contact:	netdev@vger.kernel.org
+> +Description:
+> +		Write only attribute used to trigger the debugging of RGMII
+> +		connections. Upon writing, this will either return success
+> +		and print to kernel console the correct phy_interface value
+> +		or an error will be returned. See CONFIG_PHY_RGMII_DEBUG for
+> +		details.
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index fe602648b99f..e5b54627d426 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -248,6 +248,15 @@ config LED_TRIGGER_PHY
+>   		<Speed in megabits>Mbps OR <Speed in gigabits>Gbps OR link
+>   		for any speed known to the PHY.
+>   
+> +config PHY_RGMII_DEBUG
+> +	bool "Support debugging of RGMII connections"
+> +	---help---
+> +	   This enables support for troubleshooting RGMII connections by
+> +	   making use of the PHY devices standard loopback feature in order to
+> +	   probe the correct RGMII connection.
+> +
+> +	   If unsure, say N here.
+> +
+>   
+>   comment "MII PHY device drivers"
+>   
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index a03437e091f3..1d9fddf83f6c 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -18,6 +18,7 @@ obj-$(CONFIG_MDIO_DEVICE)	+= mdio-bus.o
+>   endif
+>   libphy-$(CONFIG_SWPHY)		+= swphy.o
+>   libphy-$(CONFIG_LED_TRIGGER_PHY)	+= phy_led_triggers.o
+> +libphy-$(CONFIG_PHY_RGMII_DEBUG)	+= phy-rgmii-debug.o
+>   
+>   obj-$(CONFIG_PHYLINK)		+= phylink.o
+>   obj-$(CONFIG_PHYLIB)		+= libphy.o
+> diff --git a/drivers/net/phy/phy-rgmii-debug.c b/drivers/net/phy/phy-rgmii-debug.c
+> new file mode 100644
+> index 000000000000..f66ce8bc942c
+> --- /dev/null
+> +++ b/drivers/net/phy/phy-rgmii-debug.c
+> @@ -0,0 +1,269 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * PHY library RGMII debugging tool.
+> + *
+> + * Author: Florian Fainelli <f.fainelli@gmail.com>
+> + */
+> +#include <linux/completion.h>
+> +#include <linux/export.h>
+> +#include <linux/kernel.h>
+> +#include <linux/phy.h>
+> +#include <linux/workqueue.h>
+> +#include <linux/etherdevice.h>
+> +#include <linux/crc32.h>
+> +
+> +#include <uapi/linux/if_ether.h>
+> +
+> +struct phy_rgmii_debug_priv {
+> +	struct work_struct work;
+> +	struct phy_device *phydev;
+> +	struct completion compl;
+> +	struct sk_buff *skb;
+> +	u32 fcs;
+> +	unsigned int rcv_ok;
+> +};
+> +
+> +static u32 phy_rgmii_probe_skb_fcs(struct sk_buff *skb)
+> +{
+> +	u32 fcs;
+> +
+> +	fcs = crc32_le(~0, skb->data, skb->len);
+> +	fcs = ~fcs;
+> +
+> +	return fcs;
+> +}
+> +
+> +static int phy_rgmii_debug_rcv(struct sk_buff *skb, struct net_device *dev,
+> +			       struct packet_type *pt, struct net_device *unused)
+> +{
+> +	struct phy_rgmii_debug_priv *priv = pt->af_packet_priv;
+> +	u32 fcs;
+> +
+> +	/* If we receive something, the Ethernet header was valid and so was
+> +	 * the Ethernet type, so to re-calculate the FCS we need to undo what
+> +	 * eth_type_trans() just did.
+> +	 */
+> +	if (!__skb_push(skb, ETH_HLEN))
+> +		return 0;
+
+Why would this return NULL?
+
+> +
+> +	fcs = phy_rgmii_probe_skb_fcs(skb);
+> +	if (skb->len != priv->skb->len || fcs != priv->fcs) {
+
+I feel like this logic is broken. How do you know that this skb is that 
+skb? Everybody else can still enqueue to the netdev, right?
+
+Actually if I'm right about the FCS errors resulting in drops below, 
+then any news here is good news, no need to even compare the FCS of two 
+frames which you don't know whether they're in fact one and the same.
+
+> +		print_hex_dump(KERN_INFO, "RX probe skb: ",
+> +			       DUMP_PREFIX_OFFSET, 16, 1, skb->data, 32,
+> +			       false);
+> +		netdev_warn(dev, "Calculated FCS: 0x%08x expected: 0x%08x\n",
+> +			    fcs, priv->fcs);
+> +	} else {
+> +		priv->rcv_ok = 1;
+> +	}
+> +
+> +	complete(&priv->compl);
+> +
+> +	return 0;
+> +}
+> +
+> +static int phy_rgmii_trigger_config(struct phy_device *phydev,
+> +				    phy_interface_t interface)
+> +{
+> +	int ret = 0;
+> +
+> +	/* Configure the interface mode to be tested */
+> +	phydev->interface = interface;
+> +
+> +	/* Forcibly run the fixups and config_init() */
+> +	ret = phy_init_hw(phydev);
+> +	if (ret) {
+> +		phydev_err(phydev, "phy_init_hw failed: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Some PHY drivers configure RGMII delays in their config_aneg()
+> +	 * callback, so make sure we run through those as well.
+> +	 */
+> +	ret = phy_start_aneg(phydev);
+> +	if (ret) {
+> +		phydev_err(phydev, "phy_start_aneg failed: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Put back in loopback mode since phy_init_hw() may have issued
+> +	 * a software reset.
+> +	 */
+> +	ret = phy_loopback(phydev, true);
+> +	if (ret)
+> +		phydev_err(phydev, "phy_loopback failed: %d\n", ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static void phy_rgmii_probe_xmit_work(struct work_struct *work)
+> +{
+> +	struct phy_rgmii_debug_priv *priv;
+> +
+> +	priv = container_of(work, struct phy_rgmii_debug_priv, work);
+> +
+> +	dev_queue_xmit(priv->skb);
+
+Oops, you just lost ownership of priv->skb here. Anything happening 
+further is in a race with the netdev driver. You need to hold a 
+reference to it with skb_get().
+
+> +}
+> +
+> +static int phy_rgmii_prepare_probe(struct phy_rgmii_debug_priv *priv)
+> +{
+> +	struct phy_device *phydev = priv->phydev;
+> +	struct net_device *ndev = phydev->attached_dev;
+> +	struct sk_buff *skb;
+> +	int ret;
+> +
+> +	skb = netdev_alloc_skb(ndev, ndev->mtu);
+> +	if (!skb)
+> +		return -ENOMEM;
+> +
+> +	priv->skb = skb;
+
+Could you assign priv->skb at the end, not here? This way you won't risk 
+leaking a freed pointer into priv->skb if eth_header below fails.
+
+> +	skb->dev = ndev;
+> +	skb_put(skb, ndev->mtu);
+> +	memset(skb->data, 0xaa, skb->len);
+> +
+
+I think you need to do something like this before skb_put:
+
++       skb->protocol = htons(ETH_P_EDSA);
++       skb_reset_network_header(skb);
++       skb_reset_transport_header(skb);
+
+Otherwise I get a lot of these errors on a bridged net device:
+
+[  142.919783] protocol 0000 is buggy, dev swp2
+[  142.924436] protocol 0000 is buggy, dev eth2
+
+> +	/* Build the header */
+> +	ret = eth_header(skb, ndev, ETH_P_EDSA, ndev->dev_addr,
+> +			 NULL, ndev->mtu);
+
+A switch net device will complain about having SMAC == DMAC and drop the 
+frame. Don't you want to send broadcast frames here?
+
+> +	if (ret != ETH_HLEN) {
+> +		kfree_skb(skb);
+> +		return -EINVAL;
+> +	}
+> +
+> +	priv->fcs = phy_rgmii_probe_skb_fcs(skb);
+> +
+
+I'm far from a checksumming expert, but if the FCS was invalid, wouldn't 
+the RX MAC just drop the frame?
+
+> +	return 0;
+> +}
+> +
+> +static int phy_rgmii_probe_interface(struct phy_rgmii_debug_priv *priv,
+> +				     phy_interface_t iface)
+> +{
+> +	struct phy_device *phydev = priv->phydev;
+> +	struct net_device *ndev = phydev->attached_dev;
+> +	unsigned long timeout;
+> +	int ret;
+> +
+> +	ret = phy_rgmii_trigger_config(phydev, iface);
+> +	if (ret) {
+> +		netdev_err(ndev, "%s rejected by driver(s)\n",
+> +			   phy_modes(iface));
+> +		return ret;
+> +	}
+> +
+> +	netdev_info(ndev, "Trying \"%s\" PHY interface\n", phy_modes(iface));
+> +
+> +	/* Prepare probe frames now */
+> +	ret = phy_rgmii_prepare_probe(priv);
+> +	if (ret)
+> +		return ret;
+> +
+> +	priv->rcv_ok = 0;
+> +	reinit_completion(&priv->compl);
+> +
+> +	cancel_work_sync(&priv->work);
+> +	schedule_work(&priv->work);
+> +
+> +	timeout = wait_for_completion_timeout(&priv->compl,
+> +					      msecs_to_jiffies(3000));
+> +	if (!timeout) {
+> +		netdev_err(ndev, "transmit timeout!\n");
+> +		ret = -ETIMEDOUT;
+> +		goto out;
+> +	}
+> +
+> +	ret = priv->rcv_ok == 1 ? 0 : -EINVAL;
+> +out:
+> +	phy_loopback(phydev, false);
+> +	dev_consume_skb_any(priv->skb);
+
+Don't consume the skb if the xmit has timed out. The driver will have 
+already freed it in that case, leading to:
+
+[  145.994328] sja1105 spi0.1 swp2: transmit timeout!
+[  145.999259] ------------[ cut here ]------------
+[  146.003901] WARNING: CPU: 0 PID: 163 at lib/refcount.c:190 
+refcount_sub_and_test_checked+0xb8/0xc0
+[  146.013029] refcount_t: underflow; use-after-free.
+
+That means, in practice, moving the kfree_skb call to phy_rgmii_debug_rcv.
+
+> +	return ret;
+> +}
+> +
+> +static struct packet_type phy_rgmii_probes_type __read_mostly = {
+> +	.type	= cpu_to_be16(ETH_P_EDSA),
+> +	.func	= phy_rgmii_debug_rcv,
+> +};
+> +
+> +static int phy_rgmii_can_debug(struct phy_device *phydev)
+> +{
+> +	struct net_device *ndev = phydev->attached_dev;
+> +
+> +	if (!ndev) {
+> +		netdev_err(ndev, "No network device attached\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (!phy_interface_is_rgmii(phydev)) {
+> +		netdev_info(ndev, "Not RGMII configured, nothing to do\n");
+> +		return 0;
+> +	}
+> +
+> +	if (!phydev->is_gigabit_capable) {
+> +		netdev_err(ndev, "not relevant in non-Gigabit mode\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (phy_driver_is_genphy(phydev) || phy_driver_is_genphy_10g(phydev)) {
+> +		netdev_err(ndev, "only relevant with non-generic drivers\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +	return 1;
+> +}
+> +
+> +int phy_rgmii_debug_probe(struct phy_device *phydev)
+> +{
+> +	struct net_device *ndev = phydev->attached_dev;
+> +	unsigned char operstate = ndev->operstate;
+> +	phy_interface_t rgmii_modes[4] = {
+> +		PHY_INTERFACE_MODE_RGMII,
+> +		PHY_INTERFACE_MODE_RGMII_ID,
+> +		PHY_INTERFACE_MODE_RGMII_RXID,
+> +		PHY_INTERFACE_MODE_RGMII_TXID
+> +	};
+> +	struct phy_rgmii_debug_priv *priv;
+> +	unsigned int i, count;
+> +	int ret;
+> +
+> +	ret = phy_rgmii_can_debug(phydev);
+> +	if (ret <= 0)
+> +		return ret;
+> +
+> +	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	if (phy_rgmii_probes_type.af_packet_priv)
+> +		return -EBUSY;
+> +
+> +	phy_rgmii_probes_type.af_packet_priv = priv;
+> +	priv->phydev = phydev;
+> +	INIT_WORK(&priv->work, phy_rgmii_probe_xmit_work);
+> +	init_completion(&priv->compl);
+> +
+> +	/* We are now testing this network device */
+> +	ndev->operstate = IF_OPER_TESTING;
+> +
+
+Shouldn't you put the netdev in promisc mode somewhere?
+
+> +	dev_add_pack(&phy_rgmii_probes_type);
+> +
+> +	/* Determine where to start */
+> +	for (i = 0; i < ARRAY_SIZE(rgmii_modes); i++) {
+> +		if (phydev->interface == rgmii_modes[i])
+> +			break;
+> +	}
+> +
+> +	/* Now probe all modes */
+> +	for (count = 0; count < ARRAY_SIZE(rgmii_modes); count++) {
+> +		ret = phy_rgmii_probe_interface(priv, rgmii_modes[i]);
+> +		if (ret == 0) {
+> +			netdev_info(ndev, "Determined \"%s\" to be correct\n",
+> +				    phy_modes(rgmii_modes[i]));
+> +			break;
+> +		}
+> +		i = (i + 1) % ARRAY_SIZE(rgmii_modes);
+> +	}
+> +
+> +	dev_remove_pack(&phy_rgmii_probes_type);
+> +	kfree(priv);
+> +	phy_rgmii_probes_type.af_packet_priv = NULL;
+> +	ndev->operstate = operstate;
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(phy_rgmii_debug_probe);
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index c2e66b9ec161..29b20befc371 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -537,10 +537,41 @@ phy_has_fixups_show(struct device *dev, struct device_attribute *attr,
+>   }
+>   static DEVICE_ATTR_RO(phy_has_fixups);
+>   
+> +static ssize_t
+> +phy_rgmii_debug_enable_store(struct device *dev, struct device_attribute *attr,
+> +			     const char *buf, size_t count)
+> +{
+> +	struct phy_device *phydev = to_phy_device(dev);
+> +	unsigned int val;
+> +	int ret = -EPERM;
+> +
+> +	if (!capable(CAP_NET_ADMIN))
+> +		goto out;
+> +
+> +	ret = kstrtoint(buf, 0, &val);
+> +	if (ret)
+> +		goto out;
+> +
+> +	if (val != 1) {
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	ret = phy_rgmii_debug_probe(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = count;
+> +out:
+> +	return ret;
+> +}
+> +static DEVICE_ATTR_WO(phy_rgmii_debug_enable);
+> +
+>   static struct attribute *phy_dev_attrs[] = {
+>   	&dev_attr_phy_id.attr,
+>   	&dev_attr_phy_interface.attr,
+>   	&dev_attr_phy_has_fixups.attr,
+> +	&dev_attr_phy_rgmii_debug_enable.attr,
+>   	NULL,
+>   };
+>   ATTRIBUTE_GROUPS(phy_dev);
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index 9a0e981df502..83a25430596e 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -1287,4 +1287,13 @@ module_exit(phy_module_exit)
+>   bool phy_driver_is_genphy(struct phy_device *phydev);
+>   bool phy_driver_is_genphy_10g(struct phy_device *phydev);
+>   
+> +#ifdef CONFIG_PHY_RGMII_DEBUG
+> +int phy_rgmii_debug_probe(struct phy_device *phydev);
+> +#else
+> +static inline int phy_rgmii_debug_probe(struct phy_device *phydev)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +#endif
+> +
+>   #endif /* __PHY_H */
+> 
+
+Despite the above, I couldn't actually get this running successfully. At 
+the end of the test I always get "-bash: echo: write error: Connection 
+timed out".
+It's a fun toy, but I don't really think it's very useful in catching 
+any bug.
+It's basically a glorified ping test, and brainless ping tests are 
+precisely the reason why people get this wrong most of the time. You 
+can't have a generic software tool identify for you a configuration 
+problem that depends entirely upon a private hardware implementation of 
+a specification that is vague.
+
+I mean in theory, the arithmetic is simple enough for a MAC-to-PHY 
+connection. These 2 equalities always need to hold true:
+
+MAC TX delay + PCB TX delay + PHY TX delay == 1
+MAC RX delay + PCB RX delay + PHY RX delay == 1
+
+meaning that delays in each direction need to be applied at most once.
+
+For a PHY-to-MAC connection, there is this unwritten Linux rule that the 
+PHY should apply the requested delays in both directions. This already 
+contradicts common sense, as it is not uncommon, from a hardware point 
+of view, for each device to add the delays in its own TX direction (so 
+the MAC would add the TX delays and the PHY would add the RX delays). 
+That is not possible to specify with Linux. But let's go with the flow. 
+So the PHY adds all specified delays, and one can assume that the 
+unspecified delays up to rgmii-id were added by the PCB. This small 
+kernel thread would basically probe for PCB delays, in this case, 
+assuming that the MAC driver and the PHY driver are both compliant.
+
+Let's say there is more than one phy-mode that works. Andrew said to 
+raise a red flag in that case, because the PHY driver is surely not 
+doing the right thing with the delays. But:
+- Maybe it is, but the equalities above aren't completely set in stone. 
+Maybe the inserted propagation delays aren't high enough that two of 
+them would break the link again.
+- Which of the multiple phy-mode configurations that work is the right 
+one? A tool that can't tell me that is pointless, IMO. My PHY works due 
+to pin strapping, but the driver is buggy. Do I care? No, as long as it 
+works, and as long as it will continue to work after somebody fixes the 
+driver. How do I know what delay mode is right? Well, of course, if it 
+works with the configuration out of pin strapping, then obviously I 
+should put the pin strapping settings in the DT. End of story. Can this 
+kernel thread tell me that? No....
+
+And then, there's the RGMII fixed-link. The rules are cloudy for that 
+one, because now there's potentially 2 phy-modes that operate on the 
+same link. To complicate matters even further, your patch does not 
+consider the fixed-link (no PHY) case, and there is no generic interface 
+to even add selftests for that in the future. You would need to unbind 
+the MAC driver, mangle the DT bindings, then bind it back again...
+
+I guess I'm just concerned about the chaos that a tool returning false 
+positives would create for people who don't really follow what's going 
+on ("look, but the tool said this!").
+
+Thanks,
+-Vladimir
