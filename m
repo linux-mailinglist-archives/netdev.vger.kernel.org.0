@@ -2,70 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAF7CDB23A
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 18:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21FF3DB23C
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 18:22:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440473AbfJQQWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 12:22:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50846 "EHLO vps0.lunn.ch"
+        id S2502028AbfJQQWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 12:22:41 -0400
+Received: from correo.us.es ([193.147.175.20]:56862 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391091AbfJQQWT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 12:22:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=yYGDmTWdpok/xWnLGj7w6mA7xTyvaVCtiqcsC3AJCpQ=; b=2L+jAG8Ywqn73DSlznFpAet952
-        vUroIflGLGIMEnu3QNwOuXpyLOY/ZGjiT7ph2pfGXhZQT98B8J/3fdzZvqx8YG07Q8c2jMQF1n8e9
-        BoT+kzWK4wzK04r0iA8e+q2ZdrlJO8okRbkptmRX7YAZVwz+3MWII9AgeCnMJ20Ibd8w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iL8XW-0005Du-AQ; Thu, 17 Oct 2019 18:22:14 +0200
-Date:   Thu, 17 Oct 2019 18:22:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 2/2] net: lpc_eth: parse phy nodes from device tree
-Message-ID: <20191017162214.GS17013@lunn.ch>
-References: <20191017094757.26885-1-alexandre.belloni@bootlin.com>
- <20191017094757.26885-2-alexandre.belloni@bootlin.com>
+        id S2391091AbfJQQWl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 12:22:41 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 4139C4A706E
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 18:22:37 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 31BB1FF13C
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 18:22:37 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 1FCC6B8009; Thu, 17 Oct 2019 18:22:37 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 30B6D59B;
+        Thu, 17 Oct 2019 18:22:35 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 17 Oct 2019 18:22:35 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 0162C42EF4E1;
+        Thu, 17 Oct 2019 18:22:34 +0200 (CEST)
+Date:   Thu, 17 Oct 2019 18:22:37 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, jiri@resnulli.us, saeedm@mellanox.com,
+        vishal@chelsio.com, vladbu@mellanox.com, ecree@solarflare.com
+Subject: Re: [PATCH net-next,v5 3/4] net: flow_offload: mangle action at byte
+ level
+Message-ID: <20191017162237.h4e6bdoosd5b2ipj@salvia>
+References: <20191014221051.8084-1-pablo@netfilter.org>
+ <20191014221051.8084-4-pablo@netfilter.org>
+ <20191016163651.230b60e1@cakuba.netronome.com>
+ <20191017161157.rr4lrolsjbnmk3ke@salvia>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191017094757.26885-2-alexandre.belloni@bootlin.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191017161157.rr4lrolsjbnmk3ke@salvia>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 17, 2019 at 11:47:57AM +0200, Alexandre Belloni wrote:
-> When connected to a micrel phy, phy_find_first doesn't work properly
-> because the first phy found is on address 0, the broadcast address but, the
-> first thing the phy driver is doing is disabling this broadcast address.
-> The phy is then available only on address 1 but the mdio driver doesn't
-> know about it.
+On Thu, Oct 17, 2019 at 06:11:57PM +0200, Pablo Neira Ayuso wrote:
+[...]
+> >  (3) it causes loss of functionality (looks like a single u32 changing
+> >      both sport and dport is rejected by the IR since it wouldn't
+> >      match fields);
 > 
-> Instead, register the mdio bus using of_mdiobus_register and try to find
-> the phy description in device tree before falling back to phy_find_first.
+> Not correct.
 > 
-> This ultimately also allows to describe the interrupt the phy is connected
-> to.
+> tc filter add dev eth0 protocol ip \
+>         parent ffff: \
+>         pref 11 \
+>         flower ip_proto tcp \
+>         dst_port 80 \
+>         src_ip 1.1.2.3/24 \
+>         action pedit ex munge tcp src 2004 \
+>         action pedit ex munge tcp dst 80
 > 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> This results in two independent tc pedit actions:
+> 
+> * One tc pedit action with one single key, with value 0xd4070000 /
+>   0x0000ffff.
+> * Another tc pedit action with one single key, with value 0x00005000
+>   / 0xffff0000.
+> 
+> This works perfectly with this patchset.
 
-Hi Alexandre
+You refer to single u32 word changing both sport and dport.
 
-It is normal to have a cover note for a patch series.
+What's the point with including this in the subset of the uAPI to be
+supported?
 
-Otherwise:
+In software, it really makes sense to use this representation since it
+is speeding up packet processing.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+In hardware, supporting this uAPI really gets you nothing at all.
 
-    Andrew
+We have to document what subset of the uAPI is support through
+hardware offloads. Pretending that we can support all uAPI is not
+true, we only support for tc pedit extended mode right now.
