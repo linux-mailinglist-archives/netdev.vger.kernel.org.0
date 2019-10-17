@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3F7DA4BD
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 06:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 893AEDA4CA
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 06:35:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407759AbfJQE2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 00:28:14 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:46740 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbfJQE2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 00:28:14 -0400
-Received: by mail-lj1-f193.google.com with SMTP id d1so947149ljl.13;
-        Wed, 16 Oct 2019 21:28:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9itVDfvQg1eQTz/ujhX3fv/gLuxI/FNToeADri4X1p0=;
-        b=WpGx7HBMetecA3cVsAa0Wh1jIfZ0A02UQSCmCaEz88+57PSEkfj44hyQCVk3wE5/zZ
-         wdKSJZQggS6TsiQEkzD62cQgQWGTO3rOJBsaKFpjGT5947uY2RaZ21siEqtftvErcVna
-         pEgnMbfIZT03GL5KISp1uSaYMH+z7+ungwVgwJ13IfsnziDbglZ8JKTpeAMRMs8SZxpY
-         UnlUcP1XtXW5XLY0FPVnFMHcDgxOVHtYAE3RaQoFqP/rJVbr0oRyUI5Vbqjj2RRDKX9n
-         QnYCF1yRncVbv2Md7C+brq6M/0Y73bYpOFyNn9PFtT9R47cQBi1n6kPKg0rp/qbjVvf1
-         NLUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9itVDfvQg1eQTz/ujhX3fv/gLuxI/FNToeADri4X1p0=;
-        b=fEF9l2RSlX+8/4gV2errZVqFhB0R61Kg+drs9mgREuaFEpWf+iBfDnhB2Gojb30I2k
-         TYYD7omVtj+e8mO1qJttKYIbnVen/RqdgnJEykwzF2pJ4a/jBqVSyYyIXmooUQREjexD
-         9s4ypTfLVNc05aXOrl757ycWakIriNfcdm8rAvbsFii/NuTBvOrBukprtHapAPFdMnnw
-         dHWi43iiRD/AKzuLRPp1ct9jf4A46wHfhILpyMEY5w5YrP7hEcSmthUXi+dkrRP0sc6P
-         AUZQo996jsC26pomLp2bLo5Pd/GUEb8NdtAspgnHvL4CvR46aenVOvFe3COM/2GPsG6k
-         y4TA==
-X-Gm-Message-State: APjAAAVMwQ8VyUAvA/Gw+WvMRYtlLzs2OUps7LBvmqMY3QWhvfuwhCoa
-        VjrJk2ATDTN1pPTdChMigsY7qHb/WO4iagXGAcQ=
-X-Google-Smtp-Source: APXvYqz8Ngeflz8UKqzBD+voi1UDp+cPzChWJ58O0xKkOrDH7qFHIWn6+8iFNrFujFp1KPIiAeN8Pof+lIuQGlJehPY=
-X-Received: by 2002:a2e:9bc1:: with SMTP id w1mr953751ljj.136.1571286490527;
- Wed, 16 Oct 2019 21:28:10 -0700 (PDT)
+        id S2407775AbfJQEf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 00:35:56 -0400
+Received: from thsbbfxrt01p.thalesgroup.com ([192.54.144.131]:57698 "EHLO
+        thsbbfxrt01p.thalesgroup.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726394AbfJQEf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 00:35:56 -0400
+X-Greylist: delayed 323 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Oct 2019 00:35:54 EDT
+Received: from thsbbfxrt01p.thalesgroup.com (localhost [127.0.0.1])
+        by localhost (Postfix) with SMTP id 46tx6Z3hSmz44nN;
+        Thu, 17 Oct 2019 06:30:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=thalesgroup.com;
+        s=xrt20181201; t=1571286630;
+        bh=O64FPBGQUrQtbB7zcOSO4pj++QSQdX9KKYztJ7QTMc0=;
+        h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
+         Content-Transfer-Encoding:MIME-Version:From;
+        b=pD0s5LWv5Pp9FPrdvlwKGxrGEYSAToU9m/WBQS6tdjOHXFvt3xyYDN4tQ1n++5JC9
+         bJqvx4Z3j7y5nCXi0VSI4HMRdcJ2JEL71wYqlp/oLhjm8NIzKlqpLfNmKo6z7JnP6V
+         7pvGGYDvzfBp/ygFBna5cW/P7Qq3RU4QmWuSTKQ43ht5KmH3lXZprgMe8+2r0Lvi4E
+         t8z6pAXJNUaCgWiRRBPzS/HNyaofYFrUaVN1ASmmOxxKC4q1BDKjXR5E9fHEdksp1Q
+         HkmFYiCb956LOar9shqQT/2fpaqmePtKSiPdzIrOJpHX/cN0phvmJwCJBUmPFnlubW
+         Mr0dFKvV45rRA==
+From:   JABLONSKY Jan <Jan.JABLONSKY@thalesgroup.com>
+To:     Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Trond Myklebust <trond.myklebust@primarydata.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        "Jeff Layton" <jlayton@poochiereds.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        Jan Stancek <jstancek@redhat.com>
+Subject: Re: [PATCH net] sunrpc: fix UDP memory accounting for v4.4 kernel
+Thread-Topic: [PATCH net] sunrpc: fix UDP memory accounting for v4.4 kernel
+Thread-Index: AQHVgykwG4NF6Q3nKk+Y9JJzJaI8uadbS1yAgALT/YA=
+Date:   Thu, 17 Oct 2019 04:30:28 +0000
+Message-ID: <e9d73f769e19418143f381ac724d93c275aa3ecc.camel@thalesgroup.com>
+References: <e5070c6d6157290c2a3f627a50d951ca141973b1.camel@thalesgroup.com>
+         <5ba8b82764c8b51744f9c77355c2c917e9206d19.camel@redhat.com>
+In-Reply-To: <5ba8b82764c8b51744f9c77355c2c917e9206d19.camel@redhat.com>
+Accept-Language: en-US, fr-FR
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.1-2 
+x-pmwin-version: 4.0.3, Antivirus-Engine: 3.74.1, Antivirus-Data: 5.68
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F55796EE29EAAE4A8E48E01142430812@iris.infra.thales>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20191016060051.2024182-1-andriin@fb.com>
-In-Reply-To: <20191016060051.2024182-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 16 Oct 2019 21:27:58 -0700
-Message-ID: <CAADnVQJKESit7tDy0atn0-Q7Se=kLhkCWGAmRPJSVPdNAS8BVg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 0/7] Fix, clean up, and revamp selftests/bpf Makefile
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 4:49 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> This patch set extensively revamps selftests/bpf's Makefile to generalize test
-> runner concept and apply it uniformly to test_maps and test_progs test
-> runners, along with test_progs' few build "flavors", exercising various ways
-> to build BPF programs.
->
-> As we do that, we fix dependencies between various phases of test runners, and
-> simplify some one-off rules and dependencies currently present in Makefile.
-> test_progs' flavors are now built into root $(OUTPUT) directory and can be run
-> without any extra steps right from there. E.g., test_progs-alu32 is built and
-> is supposed to be run from $(OUTPUT). It will cd into alu32/ subdirectory to
-> load correct set of BPF object files (which are different from the ones built
-> for test_progs).
->
-> Outline:
-> - patch #1 teaches test_progs about flavor sub-directories;
-> - patch #2 fixes one of CO-RE tests to not depend strictly on process name;
-> - patch #3 changes test_maps's usage of map_tests/tests.h to be the same as
->   test_progs' one;
-> - patch #4 adds convenient short `make test_progs`-like targets to build only
->   individual tests, if necessary;
-> - patch #5 is a main patch in the series; it uses a bunch of make magic
->   (mainly $(call) and $(eval)) to define test runner "skeleton" and apply it
->   to 4 different test runners, lots more details in corresponding commit
->   description;
-> - patch #6 does a bit of post-clean up for test_queue_map and test_stack_map
->   BPF programs;
-> - patch #7 cleans up test_libbpf.sh/test_libbpf_open superseded by test_progs.
->
-> v3->v4:
-> - remove accidentally checked in binaries;
-
-something really odd here.
-Before the patchset ./test_progs -n 27 passes
-after the patch it simply hangs.
-Though strace -f ./test_progs -n 27 passes.
-Any idea?
+T24gVHVlLCAyMDE5LTEwLTE1IGF0IDExOjE5ICswMjAwLCBQYW9sbyBBYmVuaSB3cm90ZToNCj4g
+SGksDQo+IA0KPiBPbiBUdWUsIDIwMTktMTAtMTUgYXQgMDc6MjEgKzAwMDAsIEpBQkxPTlNLWSBK
+YW4gd3JvdGU6DQo+ID4gVGhlIHNhbWUgd2FybmluZ3MgcmVwb3J0ZWQgYnkgSmFuIFN0YW5jZWsg
+bWF5IGFwcGVhciBhbHNvIG9uIDQuNA0KPiA+IEJhc2VkIG9uIFBhb2xvIEFiZW5pJ3Mgd29yay4N
+Cj4gPiANCj4gPiBXQVJOSU5HOiBhdCBuZXQvaXB2NC9hZl9pbmV0LmM6MTU1DQo+ID4gQ1BVOiAx
+IFBJRDogMjE0IENvbW06IGt3b3JrZXIvMToxSCBOb3QgdGFpbnRlZCA0LjQuMTY2ICMxDQo+ID4g
+V29ya3F1ZXVlOiBycGNpb2QgLnhwcnRfYXV0b2Nsb3NlDQo+ID4gdGFzazogYzAwMDAwMDAzNjZm
+NTdjMCB0aTogYzAwMDAwMDAzNDEzNDAwMCB0YXNrLnRpOg0KPiA+IGMwMDAwMDAwMzQxMzQwMDAN
+Cj4gPiBOSVAgW2MwMDAwMDAwMDA2NjIyNjhdIC5pbmV0X3NvY2tfZGVzdHJ1Y3QrMHgxNTgvMHgy
+MDANCj4gPiANCj4gPiBCYXNlZCBvbjogIltuZXRdIHN1bnJwYzogZml4IFVEUCBtZW1vcnkgYWNj
+b3VudGluZyINCj4gDQo+IFNpbmNlIHlvdXIgZ29hbCBoZXJlIGlzIHRoZSBpbmNsdXNpb24gaW50
+byB0aGUgNC40Lnkgc3RhYmxlIHRyZWUsIHlvdQ0KPiBzaG91bGQgZm9sbG93IHRoZSBpbnN0cnVj
+dGlvbnMgbGlzdGVkIGhlcmU6DQo+IA0KPiBodHRwczovL3d3dy5rZXJuZWwub3JnL2RvYy9odG1s
+L2xhdGVzdC9wcm9jZXNzL3N0YWJsZS1rZXJuZWwtcnVsZXMuaHQNCj4gbWwNCj4gDQoNClN1cmUs
+DQpidXQgdW5mb3J0dW5ldGFseSBJIG5vdGljZWQgYTQxYmQyNWFlNjdkICh3aXRoIGNvbW1lbnQg
+Q2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcgIyA0LjQrKQ0KYW5kIHNpbmNlIHRoZW4gSSBoYXZl
+bid0IHNlZW4gYW55IGFkZGl0aW9uYWwgZWZmb3J0IHRvIGJyaW5nIChiYWNrcG9ydCkgdGhpcyBw
+YXRjaCBhbHNvIGZvciA0LjQuDQpTbyBJIHdhbnQgdG8gbWFrZSBpdCBjbGVhciwgYmVmb3JlIHNl
+bmRpbmcgdGhlIHBhdGNoIHRvIHRoZSA0LjQueSBzdGFibGUgdHJlZQ0KDQpUaGFua3MgZm9yIGZl
+ZWRiYWNrDQo=
