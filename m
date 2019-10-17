@@ -2,65 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E8CDA50F
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 07:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78750DA52B
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 07:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390553AbfJQFSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 01:18:05 -0400
-Received: from mail-il1-f176.google.com ([209.85.166.176]:46370 "EHLO
-        mail-il1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728999AbfJQFSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 01:18:05 -0400
-Received: by mail-il1-f176.google.com with SMTP id c4so760857ilq.13
-        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 22:18:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=Y3fXrEj6Q5yGSk3WJTRbPppP3FaNHdsfCgPGtmogobI=;
-        b=Sr8mo8JMusOkKHemrBzQZDiSoFErbCybJhybq5AaZfjFJzri/6BmYte26eUr5RNjSS
-         NsBwdGtfJ+RUYrMzG4UxdDp9io0AdGkYpJPgNVvZvArXlOm5y1o3JKeIilb8DURJVPQQ
-         XepSCMzWJ+hSFwwCf88xyYy4QPxvn+OceFPeFYcFCS2cgyY5/ZOOfSKmRKxEQRdTrY/f
-         +AzbuwEbngZQlCGdhHbuPF5BCum9NOuZr+JSr24iaTcMl/3gil3ZZkIlfk3BHKIaUlU5
-         S18JqOuLIzOXJlv7GbcS8m/kGFvzAfB2yYWMzvlzBAJQpw+MWzWVGF45Q3ObS8ER28PM
-         KdNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=Y3fXrEj6Q5yGSk3WJTRbPppP3FaNHdsfCgPGtmogobI=;
-        b=b0+tOPagrKkaAx3ZqN3s9MftoyfZzQCE1dKSVHKbTyc4Z1WJAlZoRlqzr2SFilSz5i
-         IffRlpXUsxpqcza54VEhvdhwT7UjKFRyyZabx0gbUcZHR2p3GyyKnVXppnNsbFU2KVo9
-         jmdYE0rUApURssv14yKRcUHUvKaIaj19ERcGrt8MUOoK0UOQm6hHR4cRZ/bX3sIrds3q
-         uzD8zw/KHqi3QypuOi3wST8VqBmfGpDnZlMzEGp2Wu+rhdwXrdejwvGlz+SFEW2YtuZ7
-         XpDwpSgcA4ws03X0K7YgRSMnsZDNHq1ctUlj1XfeBbTVayhUPQEqJtPN+8EIrBklQX02
-         8Sjg==
-X-Gm-Message-State: APjAAAWuQjaoVnjzjSUSjqUeCq83qBEWuqRuQKYipT5bHdBcZK/5dyJi
-        pqv8M+Lh2zDPBAo2ZwB52ZpOljtPBgD/SahBJkfydxWd25o=
-X-Google-Smtp-Source: APXvYqydrI/Y511iXQiX1mbBXE4Yzf0JP6P3jVzwkSfMGhBWa8TUbw+/xMskGzW23wKEZBhjaelwIv2IA7RqQk8S5xQ=
-X-Received: by 2002:a92:6e0d:: with SMTP id j13mr1724974ilc.43.1571289484232;
- Wed, 16 Oct 2019 22:18:04 -0700 (PDT)
+        id S2392684AbfJQFk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 01:40:26 -0400
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:56565 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731603AbfJQFkZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 01:40:25 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0TfHZc.W_1571290820;
+Received: from IT-C02W23QPG8WN.local(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0TfHZc.W_1571290820)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 17 Oct 2019 13:40:21 +0800
+From:   Wen Yang <wenyang@linux.alibaba.com>
+Subject: Re: [PATCH] net: mscc: ocelot: add missing of_node_put after calling
+ of_get_child_by_name
+To:     David Miller <davem@davemloft.net>
+Cc:     alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        xlpang@linux.alibaba.com, zhiche.yy@alibaba-inc.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190929065424.2437-1-wenyang@linux.alibaba.com>
+ <20191001.100233.2002881947003652758.davem@davemloft.net>
+Message-ID: <0582802f-2f2e-34d4-8261-78d92646259f@linux.alibaba.com>
+Date:   Thu, 17 Oct 2019 13:40:20 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.1.1
 MIME-Version: 1.0
-From:   Thayne <astrothayne@gmail.com>
-Date:   Wed, 16 Oct 2019 23:17:53 -0600
-Message-ID: <CALbpH+jEOPxfpTXiWwbPKKwueJW5W5Nxb1vyagyk9Tyj6H_Pfg@mail.gmail.com>
-Subject: Documentation for filters in ss
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191001.100233.2002881947003652758.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The man page for ss(8)  states:
 
-> Please take a look at the official documentation for details regarding filters.
 
-However, I have been unable to find any documentation on the filters
-for ss, official or otherwise.
+On 2019/10/2 1:02 上午, David Miller wrote:
+> From: Wen Yang <wenyang@linux.alibaba.com>
+> Date: Sun, 29 Sep 2019 14:54:24 +0800
+> 
+>> of_node_put needs to be called when the device node which is got
+>> from of_get_child_by_name finished using.
+>> In both cases of success and failure, we need to release 'ports',
+>> so clean up the code using goto.
+>>
+>> fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
+>> Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
+> 
+> Applied.
+> 
 
-There was some documentation that was removed in commit
-d77ce080d33370d90de8b123cd143e9599dc1ca6
-(https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=d77ce080d33370d90de8b123cd143e9599dc1ca6)
-which I presume is the official documentation referred to?
+Thank you for your comments.
 
-The man page should probably be updated to either document the filter
-syntax directly or point to where information about it can be found.
+We checked the code repository and found that both ‘Fixes’ and ‘fixes’ 
+are being used, such as:
+
+commit a53651ec93a8d7ab5b26c5390e0c389048b4b4b6
+…
+     net: ena: don't wake up tx queue when down
+…
+     fixes: 1738cd3ed342 (net: ena: Add a driver for Amazon Elastic 
+Network Adapters (ENA))
+…
+
+And,
+
+commit 1df379924304b687263942452836db1d725155df
+…
+     clk: consoldiate the __clk_get_hw() declarations
+…
+
+     Fixes: 59fcdce425b7 ("clk: Remove ifdef for COMMON_CLK in 
+clk-provider.h")
+     fixes: 73e0e496afda ("clkdev: Always allocate a struct clk and call 
+__clk_get() w/ CCF")
+…
+
+
+It is also found that the sha1 following ‘Fixes:’ requires at least 12 
+digits.
+
+So we plan to modify the checkpatch.pl script to check for these issues.
+
+
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index a85d719..ddcd2d0 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -2925,7 +2925,7 @@ sub process {
+  		}
+
+  # check for invalid commit id
+-		if ($in_commit_log && $line =~ 
+/(^fixes:|\bcommit)\s+([0-9a-f]{6,40})\b/i) {
++		if ($in_commit_log && $line =~ /(\bcommit)\s+([0-9a-f]{6,40})\b/i) {
+  			my $id;
+  			my $description;
+  			($id, $description) = git_commit_info($2, undef, undef);
+@@ -2935,6 +2935,25 @@ sub process {
+  			}
+  		}
+
++# check for fixes tag
++		if ($in_commit_log && $line =~ /(^fixes:)\s+([0-9a-f]{6,40})\b/i) {
++			my $id;
++			my $description;
++			($id, $description) = git_commit_info($2, undef, undef);
++			if (!defined($id)) {
++				WARN("UNKNOWN_COMMIT_ID",
++				     "Unknown commit id '$2', maybe rebased or not pulled?\n" . 
+$herecurr);
++			}
++			if ($1 ne "Fixes") {
++				WARN("FIXES_TAG_STYLE",
++				     "The fixes tag should be capitalized (Fixes:).\n" . $hereprev);
++			}
++			if (length($2) < 12) {
++				WARN("FIXES_TAG_STYLE",
++				     "SHA1 should be at least 12 digits long.\n" . $hereprev);
++			}
++		}
++
+  # ignore non-hunk lines and lines being removed
+  		next if (!$hunk_line || $line =~ /^-/);
+
+
+--
+Best wishes,
+Wen Yang
+
+
+
