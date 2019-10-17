@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C8ADB5ED
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A37ACDB5E7
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:22:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503296AbfJQSWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 14:22:32 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:35587 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2441367AbfJQSWQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 14:22:16 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 205so2176275pfw.2
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:22:15 -0700 (PDT)
+        id S2503256AbfJQSWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 14:22:18 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:43158 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503219AbfJQSWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 14:22:17 -0400
+Received: by mail-pg1-f193.google.com with SMTP id i32so1810229pgl.10
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:22:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AEGvKnfQeLZgTuuoBlNpjdEyPkTims2t45IzI4n8yBI=;
-        b=GDC2yRrOHVLVeXuCrJZ3VmJIJ1v4JQVHaPmNBYGnz4NyF+ewC4X1zXwh9SxoGAeuFp
-         wY+CpSbnMNkVuJGCvNvFrqa8sMv0ao4KdtDZL+aN5FwuHBs2683mSLzaEXdZzR6CtrFC
-         PIpdKnaW5EEoaWf6X7EUzcO2+vPmEIL3jHsWQP2tR5R80feQovdeNkkvul79RyR2oCv3
-         LQ6zQLkHAHwvzIqe845Tiqzz+KACfkNWexHFTcuaG210ViQge1vJb5z5EJuoq35YVGtm
-         MQ6A8tf2Iff+JD6FwLeCaQiSqb9z5fIAr+466Z1Oz0G0ic50T8eScDhwu+29g58sr06U
-         tRyQ==
+        bh=SfWTduOZgQlf+4/OVaL191bW8TZVC7mzl+M7vZww7Kg=;
+        b=I0Em0kUABWuWzxwUhRw2AYZx6KG+ZIWbVVqmA8AwsCPPMtpq40+w8Hvtjhg9pAJ/wf
+         nwePOEF0jlj5z+Jx83QJY46Gt1KyRdLY89eunjU7qDpKTYTc4tP1su/uoCiZPjYtgS8K
+         Y0zIqxBXEb5tU5LRQZyO2BNjWvpMFMa3lKKQseQ4zY4mdqLgBY02nCyFO2DWuuF8nBhF
+         neRgz8sQ9CD6OgiQxj/b78ub+9mHtzGQRFngLQ0A5NBnb6exGABgLyLYOdkBPxpC+7pt
+         YC6QnzG+u0F8iEAwU+/5ymi+7GkgaI9RDuWga+5VaFGOjpWgnn1s+JQjevi459Uep9Bm
+         hGCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AEGvKnfQeLZgTuuoBlNpjdEyPkTims2t45IzI4n8yBI=;
-        b=VCF/TH2FZkKOcqXDNE+1bPZZCMDrpewipJ/cK1aNvBfwqJttuArJcKUSpsNq58LbIy
-         f3WRs0tSU1MW1BJdtF0qufT27HQ4+C1RzmC5VR20PArQNC1MKXInsxaJ3yajIftvSk0h
-         0poHhhcYHp4+jMG5lEjamEnPPZRjN3X8Y+t8qnPcunWUH3X+nhuLEZClw/5gwqSnME37
-         sok625QGiq+AKB5ZL9BLaT4jDnlaX1+tD4wTc1M7wbX9EtU/L8SjrepI4geolzASmZo0
-         mNuziSiFrRQr4qkJB7HNzvxHPv/SrTPNfYdCJrAeBmHMSRUzJUq8lITAOk5JvjuNKUIX
-         IQUw==
-X-Gm-Message-State: APjAAAUMFCOn/y6e539LaWpOhad6/HTQDyiMXkh+oaGRs0C3v5VvgVba
-        YoClQ7H2XqbbJv+UhbMMaGQ=
-X-Google-Smtp-Source: APXvYqwlsHhy1HPE8ZnBjZBd3004SQpx+XWvXXajir4Pl9xb/EtO1UobN5r0y5dQedZzVRVI0vkn6Q==
-X-Received: by 2002:a17:90a:bf09:: with SMTP id c9mr6113442pjs.9.1571336535304;
-        Thu, 17 Oct 2019 11:22:15 -0700 (PDT)
+        bh=SfWTduOZgQlf+4/OVaL191bW8TZVC7mzl+M7vZww7Kg=;
+        b=kCgIIqBHBHP+qbxMKquxmlCB0wRcPm3qjoW5vGM5/pkLbBkxP/YGxP+LwaoMPyKKs5
+         H6L+07c3VAVlfRs+a4oRwiR4MVmpjmduaVOxTLgG6D5l03Gi7mI3csOekmYX3LObL/7l
+         EOYfIUlS4v/QJD4wulP37p4B7W6VJm9JRtaSvSc65W88CeRAHUbplnlH8UdCbiOTyDGi
+         saXP0E4usSuD00wiVFguyk672MBDP+NzafYG9wxmGY/XAB8T9wK8+oVUre9RR0AgVIH9
+         AJNKdF746an6ufUeylRDi1LKoL55o91Qi3uMXCmBnl3Gm9JaAI/vm/bkY0Y4CSFTL5Qe
+         vf0Q==
+X-Gm-Message-State: APjAAAVLFlqvIrNnElEUqF81D5LZOTO2rZ6wZ8/e9w4tSYS1K17FEJCt
+        hVWJqMfvwdKIL6u056TvEVs=
+X-Google-Smtp-Source: APXvYqyonmwPgD2Tyv/CZhQueqKO4P9Jt6iZ8HooLTKk3mtoBuHPW2HvAex610M1I90Cm7o4eYqOLQ==
+X-Received: by 2002:a17:90a:858a:: with SMTP id m10mr6273751pjn.128.1571336536486;
+        Thu, 17 Oct 2019 11:22:16 -0700 (PDT)
 Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id p24sm6174603pgc.72.2019.10.17.11.22.13
+        by smtp.gmail.com with ESMTPSA id p24sm6174603pgc.72.2019.10.17.11.22.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 11:22:14 -0700 (PDT)
+        Thu, 17 Oct 2019 11:22:15 -0700 (PDT)
 From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
 To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
         "John W . Linville" <linville@tuxdriver.com>
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH 27/33] fix unused parameter warning in fec_dump_regs()
-Date:   Thu, 17 Oct 2019 11:21:15 -0700
-Message-Id: <20191017182121.103569-27-zenczykowski@gmail.com>
+Subject: [PATCH 28/33] fix unused parameter warning in amd8111e_dump_regs()
+Date:   Thu, 17 Oct 2019 11:21:16 -0700
+Message-Id: <20191017182121.103569-28-zenczykowski@gmail.com>
 X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
 In-Reply-To: <20191017182121.103569-1-zenczykowski@gmail.com>
 References: <CAHo-Ooze4yTO_yeimV-XSD=AXvvd0BmbKdvUK4bKWN=+LXirYQ@mail.gmail.com>
@@ -66,29 +66,29 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Maciej Żenczykowski <maze@google.com>
 
 This fixes:
-  external/ethtool/fec.c:197:43: error: unused parameter 'info' [-Werror,-Wunused-parameter]
-  int fec_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
+  external/ethtool/amd8111e.c:155:48: error: unused parameter 'info' [-Werror,-Wunused-parameter]
+  int amd8111e_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
 
 Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Change-Id: I5d53deb593d72dcfde95b62f1651dd8f5d6aa3ba
+Change-Id: I885d775f4b56f75b8f5bfa2abefb00af5abd9f95
 ---
- fec.c | 3 ++-
+ amd8111e.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fec.c b/fec.c
-index 01b1d34..22bc09f 100644
---- a/fec.c
-+++ b/fec.c
-@@ -194,7 +194,8 @@ static void fec_dump_reg_v2(int reg, u32 val)
- #undef FIELD
- #undef REG
+diff --git a/amd8111e.c b/amd8111e.c
+index 23478f0..5a056b3 100644
+--- a/amd8111e.c
++++ b/amd8111e.c
+@@ -152,7 +152,8 @@ typedef enum {
+ #define PHY_SPEED_100		0x3
  
--int fec_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
-+int fec_dump_regs(struct ethtool_drvinfo *info maybe_unused,
-+		  struct ethtool_regs *regs)
+ 
+-int amd8111e_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
++int amd8111e_dump_regs(struct ethtool_drvinfo *info maybe_unused,
++		       struct ethtool_regs *regs)
  {
- 	const u32 *data = (u32 *)regs->data;
- 	int offset;
+ 
+ 	u32 *reg_buff = (u32 *)regs->data;
 -- 
 2.23.0.866.gb869b98d4c-goog
 
