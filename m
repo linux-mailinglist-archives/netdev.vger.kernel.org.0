@@ -2,210 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A41EDAAE1
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:09:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD59ADAB05
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439637AbfJQLJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 07:09:46 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42438 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393652AbfJQLJq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 07:09:46 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CA158307C649;
-        Thu, 17 Oct 2019 11:09:45 +0000 (UTC)
-Received: from carbon (ovpn-200-46.brq.redhat.com [10.40.200.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8906019C70;
-        Thu, 17 Oct 2019 11:09:39 +0000 (UTC)
-Date:   Thu, 17 Oct 2019 13:09:35 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     <ilias.apalodimas@linaro.org>, <saeedm@mellanox.com>,
-        <tariqt@mellanox.com>, <netdev@vger.kernel.org>,
-        <kernel-team@fb.com>, brouer@redhat.com
-Subject: Re: [PATCH 09/10 net-next] net/mlx5: Add page_pool stats to the
- Mellanox driver
-Message-ID: <20191017130935.01a7a99b@carbon>
-In-Reply-To: <20191016225028.2100206-10-jonathan.lemon@gmail.com>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
-        <20191016225028.2100206-10-jonathan.lemon@gmail.com>
+        id S2502091AbfJQLPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 07:15:25 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:52702 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406044AbfJQLPZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 07:15:25 -0400
+Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1iL3kR-0006th-Mr; Thu, 17 Oct 2019 13:15:15 +0200
+Date:   Thu, 17 Oct 2019 13:15:15 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Christopher S . Hall" <christopher.s.hall@intel.com>
+Subject: Re: [RFC PATCH 1/5] x86: tsc: add tsc to art helpers
+In-Reply-To: <87y2y4vk4g.fsf@gmail.com>
+Message-ID: <alpine.DEB.2.21.1910171256580.1824@nanos.tec.linutronix.de>
+References: <20190716072038.8408-1-felipe.balbi@linux.intel.com> <20190716072038.8408-2-felipe.balbi@linux.intel.com> <alpine.DEB.2.21.1907160952040.1767@nanos.tec.linutronix.de> <87y2zvt1hk.fsf@gmail.com> <alpine.DEB.2.21.1908151458560.1923@nanos.tec.linutronix.de>
+ <87y2y4vk4g.fsf@gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Thu, 17 Oct 2019 11:09:45 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Oct 2019 15:50:27 -0700
-Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+Hi,
 
-> Replace the now deprecated inernal cache stats with the page pool stats.
+On Tue, 1 Oct 2019, Felipe Balbi wrote:
+> (sorry for the long delay, got caught up in other tasks)
 
-I can see that the stats you introduced are useful, but they have to be
-implemented in way that does not hurt performance.
+Delayed by vacation :)
 
-
-> # ethtool -S eth0 | grep rx_pool
->      rx_pool_cache_hit: 1646798
->      rx_pool_cache_full: 0
->      rx_pool_cache_empty: 15723566
->      rx_pool_ring_produce: 474958
->      rx_pool_ring_consume: 0
->      rx_pool_ring_return: 474958
->      rx_pool_flush: 144
->      rx_pool_node_change: 0
+> Thomas Gleixner <tglx@linutronix.de> writes:
+> > On Thu, 15 Aug 2019, Felipe Balbi wrote:
+> >> Thomas Gleixner <tglx@linutronix.de> writes:
+> >> > On Tue, 16 Jul 2019, Felipe Balbi wrote:
+> >> >
+> >> > So some information what those interfaces are used for and why they are
+> >> > needed would be really helpful.
+> >> 
+> >> Okay, I have some more details about this. The TGPIO device itself uses
+> >> ART since TSC is not directly available to anything other than the
+> >> CPU. The 'problem' here is that reading ART incurs extra latency which
+> >> we would like to avoid. Therefore, we use TSC and scale it to
+> >> nanoseconds which, would be the same as ART to ns.
+> >
+> > Fine. But that's not really correct:
+> >
+> >       TSC = art_to_tsc_offset + ART * scale;
 > 
-> Showing about a 10% hit rate for the page pool.
-
-What is the workload from above stats?
-
-
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
->  .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
->  .../ethernet/mellanox/mlx5/core/en_stats.c    | 39 ++++++++++++-------
->  .../ethernet/mellanox/mlx5/core/en_stats.h    | 19 +++++----
->  4 files changed, 35 insertions(+), 25 deletions(-)
+> From silicon folks I got the equation:
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> index 2e281c755b65..b34519061d12 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -50,6 +50,7 @@
->  #include <net/xdp.h>
->  #include <linux/dim.h>
->  #include <linux/bits.h>
-> +#include <net/page_pool.h>
->  #include "wq.h"
->  #include "mlx5_core.h"
->  #include "en_stats.h"
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 2b828de1adf0..f10b5838fb17 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -551,6 +551,7 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
->  		pp_params.nid       = cpu_to_node(c->cpu);
->  		pp_params.dev       = c->pdev;
->  		pp_params.dma_dir   = rq->buff.map_dir;
-> +		pp_params.stats     = &rq->stats->pool;
->  
->  		/* page_pool can be used even when there is no rq->xdp_prog,
->  		 * given page_pool does not handle DMA mapping there is no
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> index ac6fdcda7019..ad42d965d786 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> @@ -102,11 +102,14 @@ static const struct counter_desc sw_stats_desc[] = {
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_buff_alloc_err) },
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cqe_compress_blks) },
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cqe_compress_pkts) },
-> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_reuse) },
-> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_full) },
-> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_empty) },
-> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_busy) },
-> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_waive) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_cache_hit) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_cache_full) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_cache_empty) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_ring_produce) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_ring_consume) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_ring_return) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_flush) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_node_change) },
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_congst_umr) },
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_arfs_err) },
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_recover) },
-> @@ -214,11 +217,14 @@ static void mlx5e_grp_sw_update_stats(struct mlx5e_priv *priv)
->  		s->rx_buff_alloc_err += rq_stats->buff_alloc_err;
->  		s->rx_cqe_compress_blks += rq_stats->cqe_compress_blks;
->  		s->rx_cqe_compress_pkts += rq_stats->cqe_compress_pkts;
-> -		s->rx_cache_reuse += rq_stats->cache_reuse;
-> -		s->rx_cache_full  += rq_stats->cache_full;
-> -		s->rx_cache_empty += rq_stats->cache_empty;
-> -		s->rx_cache_busy  += rq_stats->cache_busy;
-> -		s->rx_cache_waive += rq_stats->cache_waive;
-> +		s->rx_pool_cache_hit += rq_stats->pool.cache_hit;
-> +		s->rx_pool_cache_full += rq_stats->pool.cache_full;
-> +		s->rx_pool_cache_empty += rq_stats->pool.cache_empty;
-> +		s->rx_pool_ring_produce += rq_stats->pool.ring_produce;
-> +		s->rx_pool_ring_consume += rq_stats->pool.ring_consume;
-> +		s->rx_pool_ring_return += rq_stats->pool.ring_return;
-> +		s->rx_pool_flush += rq_stats->pool.flush;
-> +		s->rx_pool_node_change += rq_stats->pool.node_change;
->  		s->rx_congst_umr  += rq_stats->congst_umr;
->  		s->rx_arfs_err    += rq_stats->arfs_err;
->  		s->rx_recover     += rq_stats->recover;
-> @@ -1446,11 +1452,14 @@ static const struct counter_desc rq_stats_desc[] = {
->  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, buff_alloc_err) },
->  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cqe_compress_blks) },
->  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cqe_compress_pkts) },
-> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_reuse) },
-> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_full) },
-> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_empty) },
-> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_busy) },
-> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_waive) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.cache_hit) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.cache_full) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.cache_empty) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.ring_produce) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.ring_consume) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.ring_return) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.flush) },
-> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.node_change) },
->  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, congst_umr) },
->  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, arfs_err) },
->  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, recover) },
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-> index 79f261bf86ac..7d6001969400 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-> @@ -109,11 +109,14 @@ struct mlx5e_sw_stats {
->  	u64 rx_buff_alloc_err;
->  	u64 rx_cqe_compress_blks;
->  	u64 rx_cqe_compress_pkts;
-> -	u64 rx_cache_reuse;
-> -	u64 rx_cache_full;
-> -	u64 rx_cache_empty;
-> -	u64 rx_cache_busy;
-> -	u64 rx_cache_waive;
-> +	u64 rx_pool_cache_hit;
-> +	u64 rx_pool_cache_full;
-> +	u64 rx_pool_cache_empty;
-> +	u64 rx_pool_ring_produce;
-> +	u64 rx_pool_ring_consume;
-> +	u64 rx_pool_ring_return;
-> +	u64 rx_pool_flush;
-> +	u64 rx_pool_node_change;
->  	u64 rx_congst_umr;
->  	u64 rx_arfs_err;
->  	u64 rx_recover;
-> @@ -245,14 +248,10 @@ struct mlx5e_rq_stats {
->  	u64 buff_alloc_err;
->  	u64 cqe_compress_blks;
->  	u64 cqe_compress_pkts;
-> -	u64 cache_reuse;
-> -	u64 cache_full;
-> -	u64 cache_empty;
-> -	u64 cache_busy;
-> -	u64 cache_waive;
->  	u64 congst_umr;
->  	u64 arfs_err;
->  	u64 recover;
-> +	struct page_pool_stats pool;
->  };
->  
->  struct mlx5e_sq_stats {
+> ART = ECX * EBX / EAX;
 
+What is the content of ECX/EBX/EAX and where is it coming from?
+ 
+> If I'm reading this correctly, that's basically what
+> native_calibrate_tsc() does (together with some error checking the safe
+> defaults). Couldn't we, instead, just have a single function like below?
+> 
+> u64 convert_tsc_to_art_ns()
+> {
+> 	return x86_platform.calibrate_tsc();
+> }
 
+Huch? How is that supposed to work? calibrate_tsc() returns the TSC
+frequency.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+> Another way would be extract the important parts from
+> native_calibrate_tsc() into a separate helper. This would safe another
+> call to cpuid(0x15,...);
+
+What for?
+
+The relation between TSC and ART is already established via detect_art()
+which reads all relevant data out of CPUID(ART_CPUID_LEAF).
+
+We use exactly that information for convert_art_to_tsc() so the obvious
+solution for calculating ART from TSC is to do the reverse operation.
+
+convert_art_to_tsc()
+{
+        rem = do_div(art, art_to_tsc_denominator);
+
+        res = art * art_to_tsc_numerator;
+        tmp = rem * art_to_tsc_numerator;
+
+        do_div(tmp, art_to_tsc_denominator);
+        res += tmp + art_to_tsc_offset;
+}
+
+which is translated into math:
+
+      TSC = ART * SCALE + OFFSET
+
+where
+
+      SCALE = N / D
+
+and
+
+      N = CPUID(ART_CPUID_LEAF).EAX
+      D = CPUID(ART_CPUID_LEAF).EBX
+
+So the obvious reverse operation is:
+
+     ART = (TSC - OFFSET) / SCALE;
+
+Translating that into code should not be rocket science.
+
+Thanks,
+
+	tglx
