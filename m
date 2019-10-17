@@ -2,75 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8E5DDAABE
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:02:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A41EDAAE1
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391879AbfJQLCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 07:02:10 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4201 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728464AbfJQLCJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 07:02:09 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id E76A0E8CD5B2E1654BFD;
-        Thu, 17 Oct 2019 19:02:06 +0800 (CST)
-Received: from localhost.localdomain (10.67.212.132) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 17 Oct 2019 19:02:00 +0800
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-To:     <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     yuqi jin <jinyuqi@huawei.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "Jose Abreu" <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>
-Subject: [PATCH] net: stmmac: Fix the problem of tso_xmit
-Date:   Thu, 17 Oct 2019 18:59:10 +0800
-Message-ID: <1571309950-43543-1-git-send-email-zhangshaokun@hisilicon.com>
-X-Mailer: git-send-email 2.7.4
+        id S2439637AbfJQLJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 07:09:46 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42438 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393652AbfJQLJq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 07:09:46 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CA158307C649;
+        Thu, 17 Oct 2019 11:09:45 +0000 (UTC)
+Received: from carbon (ovpn-200-46.brq.redhat.com [10.40.200.46])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8906019C70;
+        Thu, 17 Oct 2019 11:09:39 +0000 (UTC)
+Date:   Thu, 17 Oct 2019 13:09:35 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     <ilias.apalodimas@linaro.org>, <saeedm@mellanox.com>,
+        <tariqt@mellanox.com>, <netdev@vger.kernel.org>,
+        <kernel-team@fb.com>, brouer@redhat.com
+Subject: Re: [PATCH 09/10 net-next] net/mlx5: Add page_pool stats to the
+ Mellanox driver
+Message-ID: <20191017130935.01a7a99b@carbon>
+In-Reply-To: <20191016225028.2100206-10-jonathan.lemon@gmail.com>
+References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
+        <20191016225028.2100206-10-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.212.132]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Thu, 17 Oct 2019 11:09:45 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: yuqi jin <jinyuqi@huawei.com>
+On Wed, 16 Oct 2019 15:50:27 -0700
+Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
 
-When the address width of DMA is greater than 32, the packet header occupies
-a BD descriptor. The starting address of the data should be added to the
-header length.
+> Replace the now deprecated inernal cache stats with the page pool stats.
 
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Signed-off-by: yuqi jin <jinyuqi@huawei.com>
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
- 1 file changed, 1 insertion(+)
+I can see that the stats you introduced are useful, but they have to be
+implemented in way that does not hurt performance.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index c76a1336a451..3e02e64c5fa0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -2995,6 +2995,7 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
- 	} else {
- 		stmmac_set_desc_addr(priv, first, des);
- 		tmp_pay_len = pay_len;
-+		des += proto_hdr_len;
- 	}
- 
- 	stmmac_tso_allocator(priv, des, tmp_pay_len, (nfrags == 0), queue);
+
+> # ethtool -S eth0 | grep rx_pool
+>      rx_pool_cache_hit: 1646798
+>      rx_pool_cache_full: 0
+>      rx_pool_cache_empty: 15723566
+>      rx_pool_ring_produce: 474958
+>      rx_pool_ring_consume: 0
+>      rx_pool_ring_return: 474958
+>      rx_pool_flush: 144
+>      rx_pool_node_change: 0
+> 
+> Showing about a 10% hit rate for the page pool.
+
+What is the workload from above stats?
+
+
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
+>  .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
+>  .../ethernet/mellanox/mlx5/core/en_stats.c    | 39 ++++++++++++-------
+>  .../ethernet/mellanox/mlx5/core/en_stats.h    | 19 +++++----
+>  4 files changed, 35 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> index 2e281c755b65..b34519061d12 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> @@ -50,6 +50,7 @@
+>  #include <net/xdp.h>
+>  #include <linux/dim.h>
+>  #include <linux/bits.h>
+> +#include <net/page_pool.h>
+>  #include "wq.h"
+>  #include "mlx5_core.h"
+>  #include "en_stats.h"
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index 2b828de1adf0..f10b5838fb17 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -551,6 +551,7 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
+>  		pp_params.nid       = cpu_to_node(c->cpu);
+>  		pp_params.dev       = c->pdev;
+>  		pp_params.dma_dir   = rq->buff.map_dir;
+> +		pp_params.stats     = &rq->stats->pool;
+>  
+>  		/* page_pool can be used even when there is no rq->xdp_prog,
+>  		 * given page_pool does not handle DMA mapping there is no
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> index ac6fdcda7019..ad42d965d786 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> @@ -102,11 +102,14 @@ static const struct counter_desc sw_stats_desc[] = {
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_buff_alloc_err) },
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cqe_compress_blks) },
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cqe_compress_pkts) },
+> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_reuse) },
+> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_full) },
+> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_empty) },
+> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_busy) },
+> -	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_cache_waive) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_cache_hit) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_cache_full) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_cache_empty) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_ring_produce) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_ring_consume) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_ring_return) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_flush) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pool_node_change) },
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_congst_umr) },
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_arfs_err) },
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_recover) },
+> @@ -214,11 +217,14 @@ static void mlx5e_grp_sw_update_stats(struct mlx5e_priv *priv)
+>  		s->rx_buff_alloc_err += rq_stats->buff_alloc_err;
+>  		s->rx_cqe_compress_blks += rq_stats->cqe_compress_blks;
+>  		s->rx_cqe_compress_pkts += rq_stats->cqe_compress_pkts;
+> -		s->rx_cache_reuse += rq_stats->cache_reuse;
+> -		s->rx_cache_full  += rq_stats->cache_full;
+> -		s->rx_cache_empty += rq_stats->cache_empty;
+> -		s->rx_cache_busy  += rq_stats->cache_busy;
+> -		s->rx_cache_waive += rq_stats->cache_waive;
+> +		s->rx_pool_cache_hit += rq_stats->pool.cache_hit;
+> +		s->rx_pool_cache_full += rq_stats->pool.cache_full;
+> +		s->rx_pool_cache_empty += rq_stats->pool.cache_empty;
+> +		s->rx_pool_ring_produce += rq_stats->pool.ring_produce;
+> +		s->rx_pool_ring_consume += rq_stats->pool.ring_consume;
+> +		s->rx_pool_ring_return += rq_stats->pool.ring_return;
+> +		s->rx_pool_flush += rq_stats->pool.flush;
+> +		s->rx_pool_node_change += rq_stats->pool.node_change;
+>  		s->rx_congst_umr  += rq_stats->congst_umr;
+>  		s->rx_arfs_err    += rq_stats->arfs_err;
+>  		s->rx_recover     += rq_stats->recover;
+> @@ -1446,11 +1452,14 @@ static const struct counter_desc rq_stats_desc[] = {
+>  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, buff_alloc_err) },
+>  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cqe_compress_blks) },
+>  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cqe_compress_pkts) },
+> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_reuse) },
+> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_full) },
+> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_empty) },
+> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_busy) },
+> -	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, cache_waive) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.cache_hit) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.cache_full) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.cache_empty) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.ring_produce) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.ring_consume) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.ring_return) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.flush) },
+> +	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pool.node_change) },
+>  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, congst_umr) },
+>  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, arfs_err) },
+>  	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, recover) },
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+> index 79f261bf86ac..7d6001969400 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+> @@ -109,11 +109,14 @@ struct mlx5e_sw_stats {
+>  	u64 rx_buff_alloc_err;
+>  	u64 rx_cqe_compress_blks;
+>  	u64 rx_cqe_compress_pkts;
+> -	u64 rx_cache_reuse;
+> -	u64 rx_cache_full;
+> -	u64 rx_cache_empty;
+> -	u64 rx_cache_busy;
+> -	u64 rx_cache_waive;
+> +	u64 rx_pool_cache_hit;
+> +	u64 rx_pool_cache_full;
+> +	u64 rx_pool_cache_empty;
+> +	u64 rx_pool_ring_produce;
+> +	u64 rx_pool_ring_consume;
+> +	u64 rx_pool_ring_return;
+> +	u64 rx_pool_flush;
+> +	u64 rx_pool_node_change;
+>  	u64 rx_congst_umr;
+>  	u64 rx_arfs_err;
+>  	u64 rx_recover;
+> @@ -245,14 +248,10 @@ struct mlx5e_rq_stats {
+>  	u64 buff_alloc_err;
+>  	u64 cqe_compress_blks;
+>  	u64 cqe_compress_pkts;
+> -	u64 cache_reuse;
+> -	u64 cache_full;
+> -	u64 cache_empty;
+> -	u64 cache_busy;
+> -	u64 cache_waive;
+>  	u64 congst_umr;
+>  	u64 arfs_err;
+>  	u64 recover;
+> +	struct page_pool_stats pool;
+>  };
+>  
+>  struct mlx5e_sq_stats {
+
+
+
 -- 
-2.7.4
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
