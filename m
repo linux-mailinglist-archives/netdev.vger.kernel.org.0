@@ -2,127 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92838DB036
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 16:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 756AADB06F
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 16:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403905AbfJQOjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 10:39:02 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:41473 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726583AbfJQOjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 10:39:02 -0400
-Received: by mail-io1-f70.google.com with SMTP id m25so3496047ioo.8
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 07:39:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:content-transfer-encoding;
-        bh=hr+qfDhJzeJp7vdkzu9IVbT0tbr9FcNOmsYLOuY0drc=;
-        b=VDnubsL8KHg5rIHB3TBi2HjfOXpTNyXN+97IRtiJDzlWqrIpLlHYkyzPw5BGH1BXrp
-         jsGyroKNQb9glA2XwNnHn92r0v0EboVb5N514FvhII9uTkqsf3COLUdEdCq5SrTp11Eh
-         fXGxd8iqY2ZFvoXx1h+mUbb4nCGcfjdQTQzmux4Tz2FMQq05OBqNhFR27OlthCX+NmUi
-         yhFlpg8W16NBYArZ23GXWfhgY7AObpVlACW7f/f9scl872QDqM7lqZeDn6//9+0FjpNj
-         2dYtrYfuRmmbe6TE7Nlib2/is6Mh2mqVe2JAsRd+XrzCt9xEVB2eci7coXIlSI+j451c
-         z/Ng==
-X-Gm-Message-State: APjAAAXBz5fz7/IiJp5MntXiPPnbhXukt064VcMCVFwo+EH+TckeftKF
-        IUdzEfRGwxeiMH/crsOe5XmP/cftg5zZnHFv6HjgnjOUQC+C
-X-Google-Smtp-Source: APXvYqycSdc0bHPvjNcUJNsQsbiFtG9+IS4525FsG0pfAD/U1fz7FElgotqdAQu6ehb5JwQXExFrbgbywmtq+gLMF7imXWpexlDk
+        id S2406172AbfJQOtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 10:49:51 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59478 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405405AbfJQOtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 10:49:50 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iL765-0003Nx-83; Thu, 17 Oct 2019 16:49:49 +0200
+Received: from [178.197.249.55] (helo=pc-63.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iL765-000CzU-0G; Thu, 17 Oct 2019 16:49:49 +0200
+Subject: Re: [PATCH bpf-next] bpf: add new helper fd2path for mapping a file
+ descriptor to a pathname
+To:     Zwb <ethercflow@gmail.com>, netdev@vger.kernel.org
+Cc:     yhs@fb.com
+References: <20191017092631.3739-1-ethercflow@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <365b18db-cf7f-1d1d-f048-7220eb702e8f@iogearbox.net>
+Date:   Thu, 17 Oct 2019 16:49:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-Received: by 2002:a92:5f06:: with SMTP id t6mr4260706ilb.203.1571323140873;
- Thu, 17 Oct 2019 07:39:00 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 07:39:00 -0700
-In-Reply-To: <1571320940.5264.11.camel@suse.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a3ab9005951c2d39@google.com>
-Subject: Re: KMSAN: uninit-value in ax88172a_bind
-From:   syzbot <syzbot+a8d4acdad35e6bbca308@syzkaller.appspotmail.com>
-To:     allison@lohutok.net, davem@davemloft.net, glider@google.com,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        oneukum@suse.com, opensource@jilayne.com, swinslow@gmail.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-Content-Transfer-Encoding: base64
+In-Reply-To: <20191017092631.3739-1-ethercflow@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25605/Thu Oct 17 10:52:31 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNCnN5emJvdCBoYXMgdGVzdGVkIHRoZSBwcm9wb3NlZCBwYXRjaCBidXQgdGhlIHJl
-cHJvZHVjZXIgc3RpbGwgdHJpZ2dlcmVkICANCmNyYXNoOg0Ka2VybmVsIEJVRyBhdCBkcml2ZXJz
-L25ldC9waHkvbWRpb19idXMuYzpMSU5FIQ0KDQphc2l4IDUtMTowLjc4IGV0aDE6IHVucmVnaXN0
-ZXIgJ2FzaXgnIHVzYi1kdW1teV9oY2QuNC0xLCBBU0lYIEFYODgxNzJBIFVTQiAgDQoyLjAgRXRo
-ZXJuZXQNCmFzaXggNS0xOjAuNzggZXRoMSAodW5yZWdpc3RlcmVkKTogZGVyZWdpc3RlcmluZyBt
-ZGlvIGJ1cyDvv70b77+9I++/ve+/ve+/ve+/vQgNCi0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0t
-LS0tLS0tLS0tLQ0Ka2VybmVsIEJVRyBhdCBkcml2ZXJzL25ldC9waHkvbWRpb19idXMuYzo0NTMh
-DQppbnZhbGlkIG9wY29kZTogMDAwMCBbIzFdIFNNUA0KQ1BVOiAxIFBJRDogMTE4NTUgQ29tbTog
-a3dvcmtlci8xOjQgTm90IHRhaW50ZWQgNS40LjAtcmMyKyAjMA0KSGFyZHdhcmUgbmFtZTogR29v
-Z2xlIEdvb2dsZSBDb21wdXRlIEVuZ2luZS9Hb29nbGUgQ29tcHV0ZSBFbmdpbmUsIEJJT1MgIA0K
-R29vZ2xlIDAxLzAxLzIwMTENCldvcmtxdWV1ZTogdXNiX2h1Yl93cSBodWJfZXZlbnQNClJJUDog
-MDAxMDptZGlvYnVzX3VucmVnaXN0ZXIrMHgyZTMvMHgzNTAgZHJpdmVycy9uZXQvcGh5L21kaW9f
-YnVzLmM6NDUzDQpDb2RlOiBlOCBkMiBkMiA1ZiBmZSBlYiAzYiA4YiA3ZCBkNCBlOCA2OCBkMiA5
-YyBmYiBlOSA3OCBmZCBmZiBmZiA4YiAzYSBlOCAgDQo1YyBkMiA5YyBmYiA0MSA4MyBmZSAwMiAw
-ZiA4NCA5MyBmZCBmZiBmZiBlOCBhZCAyNiAzOCBmYiA8MGY+IDBiIDQ0IDg5IGY3ICANCmU4IDQz
-IGQyIDljIGZiIDRkIDg1IGZmIDc1IGE1IGU4IDk5IDI2IDM4IGZiIDQ4IDhiDQpSU1A6IDAwMTg6
-ZmZmZjg4ODA4ZTgwZjNmMCBFRkxBR1M6IDAwMDEwMjkzDQpSQVg6IGZmZmZmZmZmODY2OWUxOTMg
-UkJYOiAwMDAwMDAwMDAwMDAwMDAwIFJDWDogZmZmZjg4ODA5MGVkM2M4MA0KUkRYOiAwMDAwMDAw
-MDAwMDAwMDAwIFJTSTogZmZmZmVhMDAwMmM0ZDMxMCBSREk6IDAwMDAwMDAwOGRjM2MzMTgNClJC
-UDogZmZmZjg4ODA4ZTgwZjQ0OCBSMDg6IDAwMDAwMDAwMDAwMDAwMDIgUjA5OiBmZmZmODg4MjFm
-Yzk5YzM4DQpSMTA6IDAwMDAwMDAwMDAwMDAwMDQgUjExOiBmZmZmZmZmZjg2NjY4N2IwIFIxMjog
-ZmZmZjg4ODA4ZGMzYzMxOA0KUjEzOiAwMDAwMDAwMDAwMDAwMDAwIFIxNDogMDAwMDAwMDAxZTM5
-MjY4MCBSMTU6IGZmZmY4ODgwOTBlZDQ2MjgNCkZTOiAgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBH
-UzpmZmZmODg4MTJmZDAwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDANCkNTOiAgMDAx
-MCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCkNSMjogMDAwMDAwMDAw
-MDcxMzZiNCBDUjM6IDAwMDAwMDAwOGI4ZmQwMDAgQ1I0OiAwMDAwMDAwMDAwMTQwNmUwDQpEUjA6
-IDAwMDAwMDAwMDAwMDAwMDAgRFIxOiAwMDAwMDAwMDAwMDAwMDAwIERSMjogMDAwMDAwMDAwMDAw
-MDAwMA0KRFIzOiAwMDAwMDAwMDAwMDAwMDAwIERSNjogMDAwMDAwMDBmZmZlMGZmMCBEUjc6IDAw
-MDAwMDAwMDAwMDA0MDANCkNhbGwgVHJhY2U6DQogIGF4ODgxNzJhX3JlbW92ZV9tZGlvIGRyaXZl
-cnMvbmV0L3VzYi9heDg4MTcyYS5jOjEyNCBbaW5saW5lXQ0KICBheDg4MTcyYV91bmJpbmQrMHgx
-MTkvMHgxYTAgZHJpdmVycy9uZXQvdXNiL2F4ODgxNzJhLmM6Mjc0DQogIHVzYm5ldF9kaXNjb25u
-ZWN0KzB4MjA5LzB4NjYwIGRyaXZlcnMvbmV0L3VzYi91c2JuZXQuYzoxNjExDQogIHVzYl91bmJp
-bmRfaW50ZXJmYWNlKzB4M2EyLzB4ZGQwIGRyaXZlcnMvdXNiL2NvcmUvZHJpdmVyLmM6NDIzDQog
-IF9fZGV2aWNlX3JlbGVhc2VfZHJpdmVyIGRyaXZlcnMvYmFzZS9kZC5jOjExMzQgW2lubGluZV0N
-CiAgZGV2aWNlX3JlbGVhc2VfZHJpdmVyX2ludGVybmFsKzB4OTZmLzB4ZDgwIGRyaXZlcnMvYmFz
-ZS9kZC5jOjExNjUNCiAgZGV2aWNlX3JlbGVhc2VfZHJpdmVyKzB4NGIvMHg2MCBkcml2ZXJzL2Jh
-c2UvZGQuYzoxMTg4DQogIGJ1c19yZW1vdmVfZGV2aWNlKzB4NGJmLzB4NjcwIGRyaXZlcnMvYmFz
-ZS9idXMuYzo1MzINCiAgZGV2aWNlX2RlbCsweGNkNS8weDFjYjAgZHJpdmVycy9iYXNlL2NvcmUu
-YzoyMzc1DQogIHVzYl9kaXNhYmxlX2RldmljZSsweDU2Ny8weDExNTAgZHJpdmVycy91c2IvY29y
-ZS9tZXNzYWdlLmM6MTI0MQ0KICB1c2JfZGlzY29ubmVjdCsweDUxZS8weGQ2MCBkcml2ZXJzL3Vz
-Yi9jb3JlL2h1Yi5jOjIxOTkNCiAgaHViX3BvcnRfY29ubmVjdCBkcml2ZXJzL3VzYi9jb3JlL2h1
-Yi5jOjQ5NDkgW2lubGluZV0NCiAgaHViX3BvcnRfY29ubmVjdF9jaGFuZ2UgZHJpdmVycy91c2Iv
-Y29yZS9odWIuYzo1MjEzIFtpbmxpbmVdDQogIHBvcnRfZXZlbnQgZHJpdmVycy91c2IvY29yZS9o
-dWIuYzo1MzU5IFtpbmxpbmVdDQogIGh1Yl9ldmVudCsweDNmZDAvMHg3MmYwIGRyaXZlcnMvdXNi
-L2NvcmUvaHViLmM6NTQ0MQ0KICBwcm9jZXNzX29uZV93b3JrKzB4MTU3Mi8weDFlZjAga2VybmVs
-L3dvcmtxdWV1ZS5jOjIyNjkNCiAgd29ya2VyX3RocmVhZCsweDExMWIvMHgyNDYwIGtlcm5lbC93
-b3JrcXVldWUuYzoyNDE1DQogIGt0aHJlYWQrMHg0YjUvMHg0ZjAga2VybmVsL2t0aHJlYWQuYzoy
-NTYNCiAgcmV0X2Zyb21fZm9yaysweDM1LzB4NDAgYXJjaC94ODYvZW50cnkvZW50cnlfNjQuUzoz
-NTUNCk1vZHVsZXMgbGlua2VkIGluOg0KLS0tWyBlbmQgdHJhY2UgYzJkYzBmOTM0NWE1NTA4OSBd
-LS0tDQpSSVA6IDAwMTA6bWRpb2J1c191bnJlZ2lzdGVyKzB4MmUzLzB4MzUwIGRyaXZlcnMvbmV0
-L3BoeS9tZGlvX2J1cy5jOjQ1Mw0KQ29kZTogZTggZDIgZDIgNWYgZmUgZWIgM2IgOGIgN2QgZDQg
-ZTggNjggZDIgOWMgZmIgZTkgNzggZmQgZmYgZmYgOGIgM2EgZTggIA0KNWMgZDIgOWMgZmIgNDEg
-ODMgZmUgMDIgMGYgODQgOTMgZmQgZmYgZmYgZTggYWQgMjYgMzggZmIgPDBmPiAwYiA0NCA4OSBm
-NyAgDQplOCA0MyBkMiA5YyBmYiA0ZCA4NSBmZiA3NSBhNSBlOCA5OSAyNiAzOCBmYiA0OCA4Yg0K
-UlNQOiAwMDE4OmZmZmY4ODgwOGU4MGYzZjAgRUZMQUdTOiAwMDAxMDI5Mw0KUkFYOiBmZmZmZmZm
-Zjg2NjllMTkzIFJCWDogMDAwMDAwMDAwMDAwMDAwMCBSQ1g6IGZmZmY4ODgwOTBlZDNjODANClJE
-WDogMDAwMDAwMDAwMDAwMDAwMCBSU0k6IGZmZmZlYTAwMDJjNGQzMTAgUkRJOiAwMDAwMDAwMDhk
-YzNjMzE4DQpSQlA6IGZmZmY4ODgwOGU4MGY0NDggUjA4OiAwMDAwMDAwMDAwMDAwMDAyIFIwOTog
-ZmZmZjg4ODIxZmM5OWMzOA0KUjEwOiAwMDAwMDAwMDAwMDAwMDA0IFIxMTogZmZmZmZmZmY4NjY2
-ODdiMCBSMTI6IGZmZmY4ODgwOGRjM2MzMTgNClIxMzogMDAwMDAwMDAwMDAwMDAwMCBSMTQ6IDAw
-MDAwMDAwMWUzOTI2ODAgUjE1OiBmZmZmODg4MDkwZWQ0NjI4DQpGUzogIDAwMDAwMDAwMDAwMDAw
-MDAoMDAwMCkgR1M6ZmZmZjg4ODEyZmQwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAw
-DQpDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzDQpDUjI6
-IDAwMDAwMDAwMDA3MTM2YjQgQ1IzOiAwMDAwMDAwMDhiOGZkMDAwIENSNDogMDAwMDAwMDAwMDE0
-MDZlMA0KRFIwOiAwMDAwMDAwMDAwMDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAw
-MDAwMDAwMDAwMDAwMDANCkRSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBm
-ZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAwDQoNCg0KVGVzdGVkIG9uOg0KDQpjb21taXQ6ICAgICAg
-ICAgZmExNjkwMjUga21zYW46IGdldCByaWQgb2YgdW51c2VkIHN0YXRpYyBmdW5jdGlvbnMgaW4g
-a21zYS4uDQpnaXQgdHJlZTogICAgICAgaHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9rbXNhbi5n
-aXQNCmNvbnNvbGUgb3V0cHV0OiBodHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94L2xvZy50
-eHQ/eD0xN2ExMjhjZjYwMDAwMA0Ka2VybmVsIGNvbmZpZzogIGh0dHBzOi8vc3l6a2FsbGVyLmFw
-cHNwb3QuY29tL3gvLmNvbmZpZz94PTQ5NTQ4Nzk4ZTg3ZDMyZDcNCmRhc2hib2FyZCBsaW5rOiBo
-dHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS9idWc/ZXh0aWQ9YThkNGFjZGFkMzVlNmJiY2Ez
-MDgNCmNvbXBpbGVyOiAgICAgICBjbGFuZyB2ZXJzaW9uIDkuMC4wICgvaG9tZS9nbGlkZXIvbGx2
-bS9jbGFuZyAgDQo4MGZlZTI1Nzc2YzJmYjYxZTc0YzFlY2IxYTUyMzM3NWMyNTAwYjY5KQ0KcGF0
-Y2g6ICAgICAgICAgIGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvcGF0Y2guZGlmZj94
-PTEzMWEzMjI3NjAwMDAwDQoNCg==
+On 10/17/19 11:26 AM, Zwb wrote:
+> When people want to identify which file system files are being opened,
+> read, and written to, they can use this helper with file descriptor as
+> input to achieve this goal. Other pseudo filesystems are also supported.
+> 
+> Signed-off-by: Zwb <ethercflow@gmail.com>
+
+SOB requires that there is a proper name, see Documentation/process/submitting-patches.rst +431.
+
+[...]
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index a65c3b0c6935..a4a5d432e572 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2769,6 +2769,7 @@ union bpf_attr {
+>   	FN(get_current_pid_tgid),	\
+>   	FN(get_current_uid_gid),	\
+>   	FN(get_current_comm),		\
+> +	FN(fd2path),			\
+
+Adding into the middle will break existing BPF programs. Helper description is also missing.
+
+>   	FN(get_cgroup_classid),		\
+>   	FN(skb_vlan_push),		\
+>   	FN(skb_vlan_pop),		\
