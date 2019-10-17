@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97157DB01F
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 16:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92838DB036
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 16:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403776AbfJQOdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 10:33:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58280 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726583AbfJQOdS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 10:33:18 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9411E307CDE7;
-        Thu, 17 Oct 2019 14:33:17 +0000 (UTC)
-Received: from bistromath.localdomain (unknown [10.36.118.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B2BE960600;
-        Thu, 17 Oct 2019 14:33:15 +0000 (UTC)
-Date:   Thu, 17 Oct 2019 16:33:14 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        herbert@gondor.apana.org.au, steffen.klassert@secunet.com
-Subject: Re: [PATCH net-next v4 0/6] ipsec: add TCP encapsulation support
- (RFC 8229)
-Message-ID: <20191017143314.GA621051@bistromath.localdomain>
-References: <cover.1570787286.git.sd@queasysnail.net>
- <20191014.144327.888902765137276425.davem@davemloft.net>
- <20191015082424.GA435630@bistromath.localdomain>
- <20191015114657.45954831@cakuba.netronome.com>
+        id S2403905AbfJQOjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 10:39:02 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:41473 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726583AbfJQOjC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 10:39:02 -0400
+Received: by mail-io1-f70.google.com with SMTP id m25so3496047ioo.8
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 07:39:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:content-transfer-encoding;
+        bh=hr+qfDhJzeJp7vdkzu9IVbT0tbr9FcNOmsYLOuY0drc=;
+        b=VDnubsL8KHg5rIHB3TBi2HjfOXpTNyXN+97IRtiJDzlWqrIpLlHYkyzPw5BGH1BXrp
+         jsGyroKNQb9glA2XwNnHn92r0v0EboVb5N514FvhII9uTkqsf3COLUdEdCq5SrTp11Eh
+         fXGxd8iqY2ZFvoXx1h+mUbb4nCGcfjdQTQzmux4Tz2FMQq05OBqNhFR27OlthCX+NmUi
+         yhFlpg8W16NBYArZ23GXWfhgY7AObpVlACW7f/f9scl872QDqM7lqZeDn6//9+0FjpNj
+         2dYtrYfuRmmbe6TE7Nlib2/is6Mh2mqVe2JAsRd+XrzCt9xEVB2eci7coXIlSI+j451c
+         z/Ng==
+X-Gm-Message-State: APjAAAXBz5fz7/IiJp5MntXiPPnbhXukt064VcMCVFwo+EH+TckeftKF
+        IUdzEfRGwxeiMH/crsOe5XmP/cftg5zZnHFv6HjgnjOUQC+C
+X-Google-Smtp-Source: APXvYqycSdc0bHPvjNcUJNsQsbiFtG9+IS4525FsG0pfAD/U1fz7FElgotqdAQu6ehb5JwQXExFrbgbywmtq+gLMF7imXWpexlDk
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20191015114657.45954831@cakuba.netronome.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 17 Oct 2019 14:33:17 +0000 (UTC)
+X-Received: by 2002:a92:5f06:: with SMTP id t6mr4260706ilb.203.1571323140873;
+ Thu, 17 Oct 2019 07:39:00 -0700 (PDT)
+Date:   Thu, 17 Oct 2019 07:39:00 -0700
+In-Reply-To: <1571320940.5264.11.camel@suse.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a3ab9005951c2d39@google.com>
+Subject: Re: KMSAN: uninit-value in ax88172a_bind
+From:   syzbot <syzbot+a8d4acdad35e6bbca308@syzkaller.appspotmail.com>
+To:     allison@lohutok.net, davem@davemloft.net, glider@google.com,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        oneukum@suse.com, opensource@jilayne.com, swinslow@gmail.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-10-15, 11:46:57 -0700, Jakub Kicinski wrote:
-> On Tue, 15 Oct 2019 10:24:24 +0200, Sabrina Dubroca wrote:
-> > 2019-10-14, 14:43:27 -0400, David Miller wrote:
-> > > From: Sabrina Dubroca <sd@queasysnail.net>
-> > > Date: Fri, 11 Oct 2019 16:57:23 +0200
-> > >   
-> > > > This patchset introduces support for TCP encapsulation of IKE and ESP
-> > > > messages, as defined by RFC 8229 [0]. It is an evolution of what
-> > > > Herbert Xu proposed in January 2018 [1] that addresses the main
-> > > > criticism against it, by not interfering with the TCP implementation
-> > > > at all. The networking stack now has infrastructure for this: TCP ULPs
-> > > > and Stream Parsers.  
-> > > 
-> > > So this will bring up a re-occurring nightmare in that now we have another
-> > > situation where stacking ULPs would be necessary (kTLS over TCP encap) and
-> > > the ULP mechanism simply can't do this.
-> > > 
-> > > Last time this came up, it had to do with sock_map.  No way could be found
-> > > to stack ULPs properly, so instead sock_map was implemented via something
-> > > other than ULPs.
-> > > 
-> > > I fear we have the same situation here again and this issue must be
-> > > addressed before these patches are included.
-> > > 
-> > > Thanks.  
-> > 
-> > I don't think there's any problem here. We're not stacking ULPs on the
-> > same socket. There's a TCP encap socket for IPsec, which belongs to
-> > the IKE daemon. The traffic on that socket is composed of IKE messages
-> > and ESP packets. Then there's whatever userspace sockets (doesn't have
-> > to be TCP), and the whole IPsec and TCP encap is completely invisible
-> > to them.
-> > 
-> > Where we would probably need ULP stacking is if we implement ESP over
-> > TLS [1], but we're not there.
-> > 
-> > [1] https://tools.ietf.org/html/rfc8229#appendix-A
-> 
-> But can there be any potential issues if the TCP socket with esp ULP is
-> also inserted into a sockmap? (well, I think sockmap socket gets a ULP,
-> I think we prevent sockmap on top of ULP but not the other way around..)
-
-Yeah, there's nothing preventing a socket that's already in a sockmap
-from getting a ULP, only for inserting a socket in a sockmap if it
-already has a ULP (see sock_map_update_common).
-
-I gave it a quick test with espintcp, it doesn't quite seem to work: a
-sockmap program that drops everything actually drops messages, but a
-sockmap program that drops some messages based on length... doesn't.
-
-Although, to be honest, I don't see a use case for sockmap on espintcp
-sockets.
-
-> Is there any chance we could see some selftests here?
-
-For espintcp? That's planned, I need to rework my test scripts so that
-they don't need human interaction, and turn them into selftests.
-
--- 
-Sabrina
+SGVsbG8sDQoNCnN5emJvdCBoYXMgdGVzdGVkIHRoZSBwcm9wb3NlZCBwYXRjaCBidXQgdGhlIHJl
+cHJvZHVjZXIgc3RpbGwgdHJpZ2dlcmVkICANCmNyYXNoOg0Ka2VybmVsIEJVRyBhdCBkcml2ZXJz
+L25ldC9waHkvbWRpb19idXMuYzpMSU5FIQ0KDQphc2l4IDUtMTowLjc4IGV0aDE6IHVucmVnaXN0
+ZXIgJ2FzaXgnIHVzYi1kdW1teV9oY2QuNC0xLCBBU0lYIEFYODgxNzJBIFVTQiAgDQoyLjAgRXRo
+ZXJuZXQNCmFzaXggNS0xOjAuNzggZXRoMSAodW5yZWdpc3RlcmVkKTogZGVyZWdpc3RlcmluZyBt
+ZGlvIGJ1cyDvv70b77+9I++/ve+/ve+/ve+/vQgNCi0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0t
+LS0tLS0tLS0tLQ0Ka2VybmVsIEJVRyBhdCBkcml2ZXJzL25ldC9waHkvbWRpb19idXMuYzo0NTMh
+DQppbnZhbGlkIG9wY29kZTogMDAwMCBbIzFdIFNNUA0KQ1BVOiAxIFBJRDogMTE4NTUgQ29tbTog
+a3dvcmtlci8xOjQgTm90IHRhaW50ZWQgNS40LjAtcmMyKyAjMA0KSGFyZHdhcmUgbmFtZTogR29v
+Z2xlIEdvb2dsZSBDb21wdXRlIEVuZ2luZS9Hb29nbGUgQ29tcHV0ZSBFbmdpbmUsIEJJT1MgIA0K
+R29vZ2xlIDAxLzAxLzIwMTENCldvcmtxdWV1ZTogdXNiX2h1Yl93cSBodWJfZXZlbnQNClJJUDog
+MDAxMDptZGlvYnVzX3VucmVnaXN0ZXIrMHgyZTMvMHgzNTAgZHJpdmVycy9uZXQvcGh5L21kaW9f
+YnVzLmM6NDUzDQpDb2RlOiBlOCBkMiBkMiA1ZiBmZSBlYiAzYiA4YiA3ZCBkNCBlOCA2OCBkMiA5
+YyBmYiBlOSA3OCBmZCBmZiBmZiA4YiAzYSBlOCAgDQo1YyBkMiA5YyBmYiA0MSA4MyBmZSAwMiAw
+ZiA4NCA5MyBmZCBmZiBmZiBlOCBhZCAyNiAzOCBmYiA8MGY+IDBiIDQ0IDg5IGY3ICANCmU4IDQz
+IGQyIDljIGZiIDRkIDg1IGZmIDc1IGE1IGU4IDk5IDI2IDM4IGZiIDQ4IDhiDQpSU1A6IDAwMTg6
+ZmZmZjg4ODA4ZTgwZjNmMCBFRkxBR1M6IDAwMDEwMjkzDQpSQVg6IGZmZmZmZmZmODY2OWUxOTMg
+UkJYOiAwMDAwMDAwMDAwMDAwMDAwIFJDWDogZmZmZjg4ODA5MGVkM2M4MA0KUkRYOiAwMDAwMDAw
+MDAwMDAwMDAwIFJTSTogZmZmZmVhMDAwMmM0ZDMxMCBSREk6IDAwMDAwMDAwOGRjM2MzMTgNClJC
+UDogZmZmZjg4ODA4ZTgwZjQ0OCBSMDg6IDAwMDAwMDAwMDAwMDAwMDIgUjA5OiBmZmZmODg4MjFm
+Yzk5YzM4DQpSMTA6IDAwMDAwMDAwMDAwMDAwMDQgUjExOiBmZmZmZmZmZjg2NjY4N2IwIFIxMjog
+ZmZmZjg4ODA4ZGMzYzMxOA0KUjEzOiAwMDAwMDAwMDAwMDAwMDAwIFIxNDogMDAwMDAwMDAxZTM5
+MjY4MCBSMTU6IGZmZmY4ODgwOTBlZDQ2MjgNCkZTOiAgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBH
+UzpmZmZmODg4MTJmZDAwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDANCkNTOiAgMDAx
+MCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCkNSMjogMDAwMDAwMDAw
+MDcxMzZiNCBDUjM6IDAwMDAwMDAwOGI4ZmQwMDAgQ1I0OiAwMDAwMDAwMDAwMTQwNmUwDQpEUjA6
+IDAwMDAwMDAwMDAwMDAwMDAgRFIxOiAwMDAwMDAwMDAwMDAwMDAwIERSMjogMDAwMDAwMDAwMDAw
+MDAwMA0KRFIzOiAwMDAwMDAwMDAwMDAwMDAwIERSNjogMDAwMDAwMDBmZmZlMGZmMCBEUjc6IDAw
+MDAwMDAwMDAwMDA0MDANCkNhbGwgVHJhY2U6DQogIGF4ODgxNzJhX3JlbW92ZV9tZGlvIGRyaXZl
+cnMvbmV0L3VzYi9heDg4MTcyYS5jOjEyNCBbaW5saW5lXQ0KICBheDg4MTcyYV91bmJpbmQrMHgx
+MTkvMHgxYTAgZHJpdmVycy9uZXQvdXNiL2F4ODgxNzJhLmM6Mjc0DQogIHVzYm5ldF9kaXNjb25u
+ZWN0KzB4MjA5LzB4NjYwIGRyaXZlcnMvbmV0L3VzYi91c2JuZXQuYzoxNjExDQogIHVzYl91bmJp
+bmRfaW50ZXJmYWNlKzB4M2EyLzB4ZGQwIGRyaXZlcnMvdXNiL2NvcmUvZHJpdmVyLmM6NDIzDQog
+IF9fZGV2aWNlX3JlbGVhc2VfZHJpdmVyIGRyaXZlcnMvYmFzZS9kZC5jOjExMzQgW2lubGluZV0N
+CiAgZGV2aWNlX3JlbGVhc2VfZHJpdmVyX2ludGVybmFsKzB4OTZmLzB4ZDgwIGRyaXZlcnMvYmFz
+ZS9kZC5jOjExNjUNCiAgZGV2aWNlX3JlbGVhc2VfZHJpdmVyKzB4NGIvMHg2MCBkcml2ZXJzL2Jh
+c2UvZGQuYzoxMTg4DQogIGJ1c19yZW1vdmVfZGV2aWNlKzB4NGJmLzB4NjcwIGRyaXZlcnMvYmFz
+ZS9idXMuYzo1MzINCiAgZGV2aWNlX2RlbCsweGNkNS8weDFjYjAgZHJpdmVycy9iYXNlL2NvcmUu
+YzoyMzc1DQogIHVzYl9kaXNhYmxlX2RldmljZSsweDU2Ny8weDExNTAgZHJpdmVycy91c2IvY29y
+ZS9tZXNzYWdlLmM6MTI0MQ0KICB1c2JfZGlzY29ubmVjdCsweDUxZS8weGQ2MCBkcml2ZXJzL3Vz
+Yi9jb3JlL2h1Yi5jOjIxOTkNCiAgaHViX3BvcnRfY29ubmVjdCBkcml2ZXJzL3VzYi9jb3JlL2h1
+Yi5jOjQ5NDkgW2lubGluZV0NCiAgaHViX3BvcnRfY29ubmVjdF9jaGFuZ2UgZHJpdmVycy91c2Iv
+Y29yZS9odWIuYzo1MjEzIFtpbmxpbmVdDQogIHBvcnRfZXZlbnQgZHJpdmVycy91c2IvY29yZS9o
+dWIuYzo1MzU5IFtpbmxpbmVdDQogIGh1Yl9ldmVudCsweDNmZDAvMHg3MmYwIGRyaXZlcnMvdXNi
+L2NvcmUvaHViLmM6NTQ0MQ0KICBwcm9jZXNzX29uZV93b3JrKzB4MTU3Mi8weDFlZjAga2VybmVs
+L3dvcmtxdWV1ZS5jOjIyNjkNCiAgd29ya2VyX3RocmVhZCsweDExMWIvMHgyNDYwIGtlcm5lbC93
+b3JrcXVldWUuYzoyNDE1DQogIGt0aHJlYWQrMHg0YjUvMHg0ZjAga2VybmVsL2t0aHJlYWQuYzoy
+NTYNCiAgcmV0X2Zyb21fZm9yaysweDM1LzB4NDAgYXJjaC94ODYvZW50cnkvZW50cnlfNjQuUzoz
+NTUNCk1vZHVsZXMgbGlua2VkIGluOg0KLS0tWyBlbmQgdHJhY2UgYzJkYzBmOTM0NWE1NTA4OSBd
+LS0tDQpSSVA6IDAwMTA6bWRpb2J1c191bnJlZ2lzdGVyKzB4MmUzLzB4MzUwIGRyaXZlcnMvbmV0
+L3BoeS9tZGlvX2J1cy5jOjQ1Mw0KQ29kZTogZTggZDIgZDIgNWYgZmUgZWIgM2IgOGIgN2QgZDQg
+ZTggNjggZDIgOWMgZmIgZTkgNzggZmQgZmYgZmYgOGIgM2EgZTggIA0KNWMgZDIgOWMgZmIgNDEg
+ODMgZmUgMDIgMGYgODQgOTMgZmQgZmYgZmYgZTggYWQgMjYgMzggZmIgPDBmPiAwYiA0NCA4OSBm
+NyAgDQplOCA0MyBkMiA5YyBmYiA0ZCA4NSBmZiA3NSBhNSBlOCA5OSAyNiAzOCBmYiA0OCA4Yg0K
+UlNQOiAwMDE4OmZmZmY4ODgwOGU4MGYzZjAgRUZMQUdTOiAwMDAxMDI5Mw0KUkFYOiBmZmZmZmZm
+Zjg2NjllMTkzIFJCWDogMDAwMDAwMDAwMDAwMDAwMCBSQ1g6IGZmZmY4ODgwOTBlZDNjODANClJE
+WDogMDAwMDAwMDAwMDAwMDAwMCBSU0k6IGZmZmZlYTAwMDJjNGQzMTAgUkRJOiAwMDAwMDAwMDhk
+YzNjMzE4DQpSQlA6IGZmZmY4ODgwOGU4MGY0NDggUjA4OiAwMDAwMDAwMDAwMDAwMDAyIFIwOTog
+ZmZmZjg4ODIxZmM5OWMzOA0KUjEwOiAwMDAwMDAwMDAwMDAwMDA0IFIxMTogZmZmZmZmZmY4NjY2
+ODdiMCBSMTI6IGZmZmY4ODgwOGRjM2MzMTgNClIxMzogMDAwMDAwMDAwMDAwMDAwMCBSMTQ6IDAw
+MDAwMDAwMWUzOTI2ODAgUjE1OiBmZmZmODg4MDkwZWQ0NjI4DQpGUzogIDAwMDAwMDAwMDAwMDAw
+MDAoMDAwMCkgR1M6ZmZmZjg4ODEyZmQwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAw
+DQpDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzDQpDUjI6
+IDAwMDAwMDAwMDA3MTM2YjQgQ1IzOiAwMDAwMDAwMDhiOGZkMDAwIENSNDogMDAwMDAwMDAwMDE0
+MDZlMA0KRFIwOiAwMDAwMDAwMDAwMDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAw
+MDAwMDAwMDAwMDAwMDANCkRSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBm
+ZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAwDQoNCg0KVGVzdGVkIG9uOg0KDQpjb21taXQ6ICAgICAg
+ICAgZmExNjkwMjUga21zYW46IGdldCByaWQgb2YgdW51c2VkIHN0YXRpYyBmdW5jdGlvbnMgaW4g
+a21zYS4uDQpnaXQgdHJlZTogICAgICAgaHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9rbXNhbi5n
+aXQNCmNvbnNvbGUgb3V0cHV0OiBodHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94L2xvZy50
+eHQ/eD0xN2ExMjhjZjYwMDAwMA0Ka2VybmVsIGNvbmZpZzogIGh0dHBzOi8vc3l6a2FsbGVyLmFw
+cHNwb3QuY29tL3gvLmNvbmZpZz94PTQ5NTQ4Nzk4ZTg3ZDMyZDcNCmRhc2hib2FyZCBsaW5rOiBo
+dHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS9idWc/ZXh0aWQ9YThkNGFjZGFkMzVlNmJiY2Ez
+MDgNCmNvbXBpbGVyOiAgICAgICBjbGFuZyB2ZXJzaW9uIDkuMC4wICgvaG9tZS9nbGlkZXIvbGx2
+bS9jbGFuZyAgDQo4MGZlZTI1Nzc2YzJmYjYxZTc0YzFlY2IxYTUyMzM3NWMyNTAwYjY5KQ0KcGF0
+Y2g6ICAgICAgICAgIGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvcGF0Y2guZGlmZj94
+PTEzMWEzMjI3NjAwMDAwDQoNCg==
