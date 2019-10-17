@@ -2,111 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 866F8DA475
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 06:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD70DA47C
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 06:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726018AbfJQEAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 00:00:09 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:39025 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbfJQEAJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 00:00:09 -0400
-Received: by mail-pg1-f194.google.com with SMTP id p12so505416pgn.6;
-        Wed, 16 Oct 2019 21:00:08 -0700 (PDT)
+        id S2392242AbfJQEKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 00:10:20 -0400
+Received: from mail-ed1-f42.google.com ([209.85.208.42]:34073 "EHLO
+        mail-ed1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726982AbfJQEKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 00:10:19 -0400
+Received: by mail-ed1-f42.google.com with SMTP id j8so573861eds.1
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 21:10:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2yNtlok8yGySrOHq9u2AAN+TVi78mKC0EXtVMDO7RbE=;
-        b=UjfiBqxjEEkRWPhPRvbNe7ATaeszJmXFfY3w1zwUxW9IoXcHAJr9E/LvL0tg43UbUn
-         tykduJvG+eQyFEgkfubVasyQ2oM6802QtNwa2uRTIZV2BWynCrKmlgCWWfasdULf7w8c
-         wn7lqz5ihCqHtU3HBTHmSnLQGvY8/7uivC1WlA+TotlJUIFlRYFM3yQCrbZQ6CF2wrtM
-         C/X13h4l83CO9YTztKaGITN5iUhYO1yCm6rKgJIBafHOkcSvXiFDNgKIFOmTLPJdcAKI
-         QgrCCDOTFs40sXkoL155BPSVh7+V4obY5jSeF3Aw6thSK5QcaEcqrD6AgcjgiuO8zMqW
-         nnsw==
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W7+mMd07QQJd8UgLyD1KwD/q5N7onv9q9No08G+KUnI=;
+        b=N2vzlJhcjF5BWDAJ+YjBM262MTgA528w8V7+VHtpKNCsHwKtognA1a0hYC7tHq/BsU
+         jalXWtDj40unH25fytiD1ZexCqfn+ieP0P/31YxX++0p7JtQ3rMltxhIQZiN8CjICPUy
+         HCiylt4naxZpSbNsdQhpF++DE41QW2tb107Qc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2yNtlok8yGySrOHq9u2AAN+TVi78mKC0EXtVMDO7RbE=;
-        b=UTHCt8I9QAkpgjKxhv4Di5oLX7OF/I+Fnee75HTSvao2rw2jCjyXZsdqSm8XvcxfNL
-         NlN/2qoCFpe7DNzwcTchMCJ2og+hHH3AUjzMYbZ+FFveCbe/UGACeDuiP6y39mkELuks
-         1qAi8Jxw0S/L9BM/diraWw483XoRqEPEnlHxK8vl17rb1DoE4crmv7vhROrjzPNO2c/8
-         EkQdtdTKoBkCScbRzhmTEqT+JVMwSsQUMSGg7KMdCswa4/nnpocweCz662IDvNmmgUCE
-         t1vv3PooJYULwuWz878jGHdUxTUNxGFz5wtPyEBif5wEGz32POGhD1Yz6ywahaBuTdto
-         S67A==
-X-Gm-Message-State: APjAAAXH8dFq7OljdW1OjCw2lRIPBNDTnv8dhfFnxwP//cf0bZrUapEz
-        ueDWaAMUu7/9S8RRJ/nQNP0=
-X-Google-Smtp-Source: APXvYqzVaMKqrv1ps6lbRrvel3jjyeCl1eSNaIfxx4celkd9tFL7+xNAkROVnFHyKwkPj7+OozDt1A==
-X-Received: by 2002:a62:5c85:: with SMTP id q127mr1317813pfb.39.1571284807933;
-        Wed, 16 Oct 2019 21:00:07 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id p66sm657775pfg.127.2019.10.16.21.00.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Oct 2019 21:00:07 -0700 (PDT)
-Subject: Re: [PATCH net 0/4] net: bcmgenet: restore internal EPHY support
-To:     Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jaedon.shin@gmail.com
-References: <1571267192-16720-1-git-send-email-opendmb@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <597ee52c-4dc3-2bee-87c9-5f97c382c9ba@gmail.com>
-Date:   Wed, 16 Oct 2019 21:00:05 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W7+mMd07QQJd8UgLyD1KwD/q5N7onv9q9No08G+KUnI=;
+        b=TSNh2DdfVKip6Xt29NodRkySLAxTZN3qN5ufovP+JeHFdWRaOTQD8MgEjZ/UEfkvAT
+         hVQKTMdvQycD9BaMOqzdyk/OM8uuOr22Swn78qOTXEaPgp1amIsBoG21JJW8rch9mw59
+         wx2d4IHHKL7tXFnTVCuPoG06s121/Flny4Z66VDYkyrqqo7tUNA1haNvTkNxvxyJ4vrc
+         UzevdfGfydJXfjXHcmNc5zyOaQ4TRBobqjJT2MzbYv6eJwm5i/2TgI0CyWtDwBh22u5s
+         azrDk+Wu7YDnDXRQi0FoDHwYp+DfD+NJmDlkcE/RLzL6SafD4J80S2aG6Nu1WPh3c91S
+         C7IA==
+X-Gm-Message-State: APjAAAVgZV4PzP1bxcJsFIzhr558XA9wmK6aeM8kd6U3XQSRPKqqYO9m
+        /QiT8eGHkGYQWt2mNdYn903mpJJ5evR6caIvGSz7gg==
+X-Google-Smtp-Source: APXvYqyGyfakKJFS3qRfEkQO3UG0tSmeZTUcVFIXifswlu9i/foM6JC3GaUe7Qfrhdhwcb+splajtJrRsp8MMATIRg4=
+X-Received: by 2002:a17:906:7e17:: with SMTP id e23mr1597332ejr.205.1571285417202;
+ Wed, 16 Oct 2019 21:10:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1571267192-16720-1-git-send-email-opendmb@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAFLxGvwnOi6dSq5yLM78XskweQOY6aPbRt==G9wv5qS+dfj8bw@mail.gmail.com>
+ <3A7BDEE0-7C07-4F23-BA01-F32AD41451BB@cumulusnetworks.com>
+ <5A4A5745-5ADC-4AAC-B060-1BC9907C153C@cumulusnetworks.com>
+ <CAJieiUi-b5vcOTGqXcDpn9fxVwA9jyoMWEDM2F_ZgVfzdgFgeA@mail.gmail.com> <910194713.25283.1571260614731.JavaMail.zimbra@nod.at>
+In-Reply-To: <910194713.25283.1571260614731.JavaMail.zimbra@nod.at>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Wed, 16 Oct 2019 21:10:06 -0700
+Message-ID: <CAJieiUjvamKds6+hbsKhwCJ_MDC9_9Wfy8ogyB1f3OrSgXKC6w@mail.gmail.com>
+Subject: Re: Bridge port userspace events broken?
+To:     Richard Weinberger <richard@nod.at>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Richard Weinberger <richard.weinberger@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        bridge@lists.linux-foundation.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 16, 2019 at 2:16 PM Richard Weinberger <richard@nod.at> wrote:
+>
+> Roopa, Nikolay,
+>
+> ----- Urspr=C3=BCngliche Mail -----
+> > +1,  this can be fixed....but in general all new bridge and link
+> > attributes have better support with netlink.
+> > In this case its IFLA_BRPORT_GROUP_FWD_MASK link attribute available
+> > via ip monitor or bridge monitor.
+> > you probably cannot use it with udev today.
+> >
+> > For the future, I think having udev listen to netlink link and devlink
+> > events would make sense (Not sure if anybody is working on it).
+> > AFAIK the sysfs uevent mechanism for link attributes don't  receive
+> > the required attention and testing like the equivalent netlink events.
+>
+> I understand that netlink works best for you but sysfs notifications are =
+still
+> useful.
+> Please let me explain my use case a little bit more.
+>
+> The application I work on operates on network interfaces, in this case th=
+e
+> interface happens to be a bridge.
+> systemd-networkd sets up the bridge as soon all slave interfaces emerge.
+>
+> Therefore the systemd service file of the application depends on the brid=
+ge.
+> i.e.
+> Requires=3Dsys-subsystem-net-devices-br0.device
+>
+
+interesting. We do have a lot of applications that depend on network
+interfaces and we
+ simply make them depend on the networking service eg with
+"After=3Dnetworking.service".
+
+we don't use systemd-networkd today..but our network interface
+management software (https://packages.debian.org/buster/ifupdown2)
+registers itself as  networking.service. For unsupported options the
+network interface manager provides hooks to invoke pre and post
+commands
+which takes care of the unsupported attributes case you mention above.
+In absence of that, we would probably use systemd ExecStartPost
 
 
-On 10/16/2019 4:06 PM, Doug Berger wrote:
-> I managed to get my hands on an old BCM97435SVMB board to do some
-> testing with the latest kernel and uncovered a number of things
-> that managed to get broken over the years (some by me ;).
-> 
-> This commit set attempts to correct the errors I observed in my
-> testing.
-> 
-> The first commit applies to all internal PHYs to restore proper
-> reporting of link status when a link comes up.
-> 
-> The second commit restores the soft reset to the initialization of
-> the older internal EPHYs used by 40nm Set-Top Box devices.
-> 
-> The third corrects a bug I introduced when removing excessive soft
-> resets by altering the initialization sequence in a way that keeps
-> the GENETv3 MAC interface happy.
-> 
-> Finally, I observed a number of issues when manually configuring
-> the network interface of the older EPHYs that appear to be resolved
-> by the fourth commit.
+> In one specific setup the bridge needs to forward more than usual and
+> group_fwd_mask needs to be altered. Sadly this is nothing systemd-network=
+d
+> can do right now, so I added the following line to the service file of
+> the application:
+> ExecStartPre=3D/bin/bash -c "echo 0xfffd > /sys/class/net/eth0/brport/gro=
+up_fwd_mask"
 
-Thank you very much for addressing all of those problems!
+ok, yeah the right thing here will be for your network manager
+(systemd-networkd)  to support this config attribute.
 
-> 
-> Doug Berger (4):
->   net: bcmgenet: don't set phydev->link from MAC
->   net: phy: bcm7xxx: define soft_reset for 40nm EPHY
->   net: bcmgenet: soft reset 40nm EPHYs before MAC init
->   net: bcmgenet: reset 40nm EPHY on energy detect
-> 
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c |  41 +++++----
->  drivers/net/ethernet/broadcom/genet/bcmgenet.h |   2 +-
->  drivers/net/ethernet/broadcom/genet/bcmmii.c   | 112 +++++++++++--------------
->  drivers/net/phy/bcm7xxx.c                      |   1 +
->  4 files changed, 79 insertions(+), 77 deletions(-)
-> 
+But understand that there will always be an attribute that your
+network interface manager does not support :)
 
--- 
-Florian
+>
+> Here comes the problem, the unit is activated as soon br0 is created but
+> at this time eth0 is sometimes not yet a slave or br0. It takes some time=
+.
+>
+> So I need a way to model this dependency in a systemd environment.
+> A common approach to do so is setting up an udev rule which set a systemd=
+ notify
+> as soon a specific sysfs file arrives.
+
+That is cleaver. But, you now have systemd-networkd and udevd to get
+your interfaces configured right.
+You may be able to get past this for now to find more problems later.
+
+>
+> Teaching the application to listen for bridge specific netlink messages i=
+s
+> another possible approach but seems overkill to me.
+
+understood. In your case, the ideal thing to do is have all your
+configuration done via systemd-networkd.
+that will also make sure your config persists in a single place.
+Agreed that having your application understand netlink to just deal
+with this attribute is overkill.
+
+> Or maybe there is some nice wrapper/helper?
+
+There are many netlink libraries from libnl, python-nlmanager, pyroute2 etc
+
+>
+> It would be nice to have sysfs notifications for bridge devices too.
+> I can understand that not everyone likes this approach but this is the wa=
+y
+> how *many* systems out there work these day. Actually almost any (embedde=
+d)
+> system with systemd.
+>
+
+I think if you are using systemd, systemd-networkd which uses netlink
+is the best
+option to deal with interface link events.
+
+Regardless, for existing bridge sysfs attribute files, Nikolay might
+have a solution after he is back from vacation.
+This should help your  immediate problem with group_fwd_mask.
