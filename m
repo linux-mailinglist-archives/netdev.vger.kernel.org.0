@@ -2,180 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77B11DA83D
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1568DDA876
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405461AbfJQJ0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 05:26:47 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37348 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733031AbfJQJ0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 05:26:47 -0400
-Received: by mail-pg1-f194.google.com with SMTP id p1so1005266pgi.4
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 02:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=281a7veJ+DulLeZQChfjoTTuZ6KmNJS1vFd2OvpkIkw=;
-        b=AvdaF2GcCqiNAYUdI6BKRaNVE4Q4NQbVEIIsNcY7ZOcf8mDUToATq5EKGbzJxb1G6R
-         6LELqMFB72ZCsAJniyFWw5UCCSExXCTiXAqzOfMMOZxs6lrQ+RABdRV38IGII+1DiXDF
-         RNI3VZPEUqmyIAHxTGI49Bwd2cGyy8yKmtqnMWBFG8/5ye90YeHx21yA9eX2Ji01IcLD
-         gTgtrF1OWzJdJ7X2aOtxqDXKWymrZ0Z+qFFKpeAN/kTtjgo++QTbE9G9Q8KsP3pGR07b
-         GCNlSRV4l+3iPr+MFEbRv36McOsvxv2TF8KmKAlMPNyn0wFxPtojgU5NjOZlOGj/2WXp
-         Kxpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=281a7veJ+DulLeZQChfjoTTuZ6KmNJS1vFd2OvpkIkw=;
-        b=tQxm2ql6fOelobdmdFJieMdqrcNvXOH4tXq9PkOUdVAVmDQqbMuWW4qGKdLBSNXk8O
-         vfLBNhcGHe9WIwP/+EauskqzNcEX0ZCJuPXnCk8OiD/XiCvE3RIKF6T9Egd5XLEaaiRm
-         +Px6KEb/udDUpxFp60CZCVKClQUpSLruD2IUFdRlIMNX8pOrxE+yRvfRMlEGbPN9Moy9
-         5IGlh/3ByLUzPPhdLDEsTK1WrAeK/qDtD0fxxP8nSAXu5wt2ARpuC4EJ7kUZOBzF9jys
-         bi9UXCo1M4PL+7hARF+DOf224nSNUE7BIT0umU+9TvWlwDpzB4Tv4RovgAmMueACrTfG
-         5W2w==
-X-Gm-Message-State: APjAAAUzA9YPsnGfQor8pFG1frTqrhP04iSrVEjVmmORikFdC5j31YpS
-        xOwSkH31QrAPYJZxWE9rV0NBsNCX
-X-Google-Smtp-Source: APXvYqyDdGe0S74qSiHJW1hWY3/eSxokpDbtAU0aBEu+r3kzyy6a3rsqza89Z5zlszIGoaOH5rO3yw==
-X-Received: by 2002:a17:90a:9f94:: with SMTP id o20mr3154127pjp.76.1571304406329;
-        Thu, 17 Oct 2019 02:26:46 -0700 (PDT)
-Received: from ubuntu-18.04-x8664 ([128.1.49.85])
-        by smtp.gmail.com with ESMTPSA id f128sm1871506pfg.143.2019.10.17.02.26.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 02:26:45 -0700 (PDT)
-From:   Zwb <ethercflow@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     yhs@fb.com, Zwb <ethercflow@gmail.com>
-Subject: [PATCH bpf-next] bpf: add new helper fd2path for mapping a file descriptor to a pathname
-Date:   Thu, 17 Oct 2019 05:26:31 -0400
-Message-Id: <20191017092631.3739-1-ethercflow@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S2405474AbfJQJhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 05:37:52 -0400
+Received: from correo.us.es ([193.147.175.20]:58184 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728150AbfJQJhw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 05:37:52 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3B41FA0AEED
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:37:47 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 23532DA4D0
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:37:47 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 1909EDA4CA; Thu, 17 Oct 2019 11:37:47 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B4048B7FFB;
+        Thu, 17 Oct 2019 11:37:44 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 17 Oct 2019 11:37:44 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 647474251481;
+        Thu, 17 Oct 2019 11:37:44 +0200 (CEST)
+Date:   Thu, 17 Oct 2019 11:37:44 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Simon Horman <horms@verge.net.au>
+Cc:     lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Julian Anastasov <ja@ssi.bg>
+Subject: Re: [PATCH 0/6] [GIT PULL ipvs-next] IPVS updates for v5.5
+Message-ID: <20191017093744.3dmcwnicf5r76yir@salvia>
+References: <20191015073212.19394-1-horms@verge.net.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191015073212.19394-1-horms@verge.net.au>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When people want to identify which file system files are being opened,
-read, and written to, they can use this helper with file descriptor as
-input to achieve this goal. Other pseudo filesystems are also supported.
+On Tue, Oct 15, 2019 at 09:32:06AM +0200, Simon Horman wrote:
+> Hi Pablo,
+> 
+> Please consider these IPVS updates for v5.5.
+> 
+> As there are a few more changes than usual I'm sending a pull request
+> rather than asking you to apply the patches directly.
+> 
+> This pull request is based on nf-next.
+> 
+> The following changes since commit f8615bf8a3dabd84bf844c6f888929495039d389:
+> 
+>   netfilter: ipset: move ip_set_get_ip_port() to ip_set_bitmap_port.c. (2019-10-07 23:59:02 +0200)
+> 
+> are available in the git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs-next.git tags/ipvs-next-for-v5.5
 
-Signed-off-by: Zwb <ethercflow@gmail.com>
----
- include/linux/bpf.h            |  1 +
- include/uapi/linux/bpf.h       |  1 +
- kernel/bpf/core.c              |  1 +
- kernel/bpf/helpers.c           | 39 ++++++++++++++++++++++++++++++++++
- kernel/trace/bpf_trace.c       |  2 ++
- tools/include/uapi/linux/bpf.h |  1 +
- 6 files changed, 45 insertions(+)
-
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 282e28bf41ec..c0a710cf2c88 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
- extern const struct bpf_func_proto bpf_strtol_proto;
- extern const struct bpf_func_proto bpf_strtoul_proto;
- extern const struct bpf_func_proto bpf_tcp_sock_proto;
-+extern const struct bpf_func_proto bpf_fd2path_proto;
- 
- /* Shared helpers among cBPF and eBPF. */
- void bpf_user_rnd_init_once(void);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index a65c3b0c6935..a4a5d432e572 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2769,6 +2769,7 @@ union bpf_attr {
- 	FN(get_current_pid_tgid),	\
- 	FN(get_current_uid_gid),	\
- 	FN(get_current_comm),		\
-+	FN(fd2path),			\
- 	FN(get_cgroup_classid),		\
- 	FN(skb_vlan_push),		\
- 	FN(skb_vlan_pop),		\
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 66088a9e9b9e..349a8b1be232 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
- const struct bpf_func_proto bpf_get_current_comm_proto __weak;
- const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
- const struct bpf_func_proto bpf_get_local_storage_proto __weak;
-+const struct bpf_func_proto bpf_fd2path_proto __weak;
- 
- const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
- {
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 5e28718928ca..0832536c7ddb 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -487,3 +487,42 @@ const struct bpf_func_proto bpf_strtoul_proto = {
- 	.arg4_type	= ARG_PTR_TO_LONG,
- };
- #endif
-+
-+BPF_CALL_3(bpf_fd2path, char *, dst, u32, size, int, fd)
-+{
-+	struct fd f;
-+	int ret;
-+	char *p;
-+
-+	ret = security_locked_down(LOCKDOWN_BPF_READ);
-+	if (ret < 0)
-+		goto out;
-+
-+	f = fdget_raw(fd);
-+	if (!f.file)
-+		goto out;
-+
-+	p = d_path(&f.file->f_path, dst, size);
-+	if (IS_ERR_OR_NULL(p))
-+		ret = PTR_ERR(p);
-+	else {
-+		ret = strlen(p);
-+		memmove(dst, p, ret);
-+		dst[ret] = 0;
-+	}
-+
-+	if (unlikely(ret < 0))
-+out:
-+		memset(dst, '0', size);
-+
-+	return ret;
-+}
-+
-+const struct bpf_func_proto bpf_fd2path_proto = {
-+	.func       = bpf_fd2path,
-+	.gpl_only   = true,
-+	.ret_type   = RET_INTEGER,
-+	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
-+	.arg2_type  = ARG_CONST_SIZE,
-+	.arg3_type  = ARG_ANYTHING,
-+};
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 44bd08f2443b..0ca7fdefb8e5 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- #endif
- 	case BPF_FUNC_send_signal:
- 		return &bpf_send_signal_proto;
-+	case BPF_FUNC_fd2path:
-+		return &bpf_fd2path_proto;
- 	default:
- 		return NULL;
- 	}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index a65c3b0c6935..a4a5d432e572 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2769,6 +2769,7 @@ union bpf_attr {
- 	FN(get_current_pid_tgid),	\
- 	FN(get_current_uid_gid),	\
- 	FN(get_current_comm),		\
-+	FN(fd2path),			\
- 	FN(get_cgroup_classid),		\
- 	FN(skb_vlan_push),		\
- 	FN(skb_vlan_pop),		\
--- 
-2.17.1
-
+Pulled, thanks.
