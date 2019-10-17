@@ -2,77 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C43ADB7FB
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 21:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C11DB840
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 22:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437149AbfJQTra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 15:47:30 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:35904 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389032AbfJQTra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 15:47:30 -0400
-Received: by mail-lf1-f65.google.com with SMTP id u16so2857212lfq.3
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 12:47:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=zYGMJ+5PSGcdhjynebhBJhlpuCtpM8ZplePlhSfxjME=;
-        b=Q3/Kxif9xGcx9fh2rCVwvpAC5PCK+TIvubfg+KB42sTWAn9NMBF+I+aG60WiLAWpP6
-         j2LaN3VCsgzq3jip+eEEiOV1kDXIqmU08kLNBPN4sh9unoCSGd76OBidkglQJFwd0OHG
-         YBHtHrztf/j63vRwprhC4YXCRjndHenbrb+NCx4FSyHowOJR+R4HhfkQf/rUQRY9YolT
-         cyPqoKOJKBwGxJ0hwx/YrM7XAhxE2dOWPM0zPfVBZ84Dfvfk/axJoxOrhzS/i/btvEV9
-         P2jZL0R8KBzR+4g7c2xFNqk5IuVjnDB9pkj60u9QiCzOkqwm/xyeESZNr5at2WTvzLIC
-         ID2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=zYGMJ+5PSGcdhjynebhBJhlpuCtpM8ZplePlhSfxjME=;
-        b=O2oHpsbU8Ne011cQgn93C8oWB7piuqC9jcQ3qFRElcAbHFLP1sKa7nQuanEfxOJutx
-         E29rIg8geyG8K6aPPB8CE9mXYWI517j8I/JRd+TZFObnaKBxHw3MXv+PYfw4QjWOZ9yp
-         fjIjC38gVCRQoIrHSY8fLEm6IEii+yKytifNTCr3+KyBBJI6bot9Y+IRXJcukZq7QygM
-         RaViGFhamwJZK88WTneFnMhDSCfXETiRVS6XIC8zOnbVk7ToTB4O0cJFQS59/nzizUzt
-         rU7u+gnQOxeARwy2uHPP8urqHfULe8+Js/zQK9fCwLTiEQ9d3X/Mrpr885VKNaF2bsQQ
-         0tFg==
-X-Gm-Message-State: APjAAAWYUgqZZgi+vXit9iOgUGGCF3OgAtOAOY2NetWlCjpivRUKgxZd
-        zOcdr/Dpz2fyFkplx1FLRGhUbgnARyA=
-X-Google-Smtp-Source: APXvYqx8PbIJTWdvtFe2hKfutM9I0amUKD1ekLbBKOuaVfQLJhzUlRtGuo6sma4UBDt0W3puEzM4Hg==
-X-Received: by 2002:a19:f712:: with SMTP id z18mr3168396lfe.166.1571341648082;
-        Thu, 17 Oct 2019 12:47:28 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t8sm2778254ljd.18.2019.10.17.12.47.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 12:47:27 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 12:47:21 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
+        id S2406155AbfJQU2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 16:28:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54774 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392669AbfJQU2q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 16:28:46 -0400
+Received: from localhost (unknown [104.132.0.109])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E4A8D20872;
+        Thu, 17 Oct 2019 20:28:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571344124;
+        bh=CWLsDmLmdYR77gpLL5DPedco3zJy9XUl7rfGOcX4D7o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1CwFat8VN3R7UaivtiPE57Qun45r6dpf1UEOiCohaQD1A4Ut2TKeQfGQDCEahEvAN
+         SCvGBotaVta0OU7UFOhOglCMG9FrzN1UStIs4YhjydLuYW09eTIuS/alJV4Nh9Kupb
+         +fMXhVPfIdh08F1RU2t/R+Zooya52b6YZrH0R3Sg=
+Date:   Thu, 17 Oct 2019 13:28:43 -0700
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andrey Konovalov <andreyknvl@google.com>
+Cc:     USB list <linux-usb@vger.kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
         netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next v3 2/2] net: dsa: mv88e6xxx: Add devlink param
- for ATU hash algorithm.
-Message-ID: <20191017124721.6b5a6427@cakuba.netronome.com>
-In-Reply-To: <20191017192055.23770-3-andrew@lunn.ch>
-References: <20191017192055.23770-1-andrew@lunn.ch>
-        <20191017192055.23770-3-andrew@lunn.ch>
-Organization: Netronome Systems, Ltd.
+        LKML <linux-kernel@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Windsor <dwindsor@gmail.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: [PATCH RFC 3/3] vhost, kcov: collect coverage from vhost_worker
+Message-ID: <20191017202843.GA1103978@kroah.com>
+References: <cover.1571333592.git.andreyknvl@google.com>
+ <af26317c0efd412dd660e81d548a173942f8a0ad.1571333592.git.andreyknvl@google.com>
+ <20191017181800.GB1094415@kroah.com>
+ <CAAeHK+yS24KnecLyhnPEHx-dOSk3cvVHhtGHe+9Uf2d96+ZqjQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAeHK+yS24KnecLyhnPEHx-dOSk3cvVHhtGHe+9Uf2d96+ZqjQ@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Oct 2019 21:20:55 +0200, Andrew Lunn wrote:
-> Some of the marvell switches have bits controlling the hash algorithm
-> the ATU uses for MAC addresses. In some industrial settings, where all
-> the devices are from the same manufacture, and hence use the same OUI,
-> the default hashing algorithm is not optimal. Allow the other
-> algorithms to be selected via devlink.
+On Thu, Oct 17, 2019 at 09:00:18PM +0200, Andrey Konovalov wrote:
+> On Thu, Oct 17, 2019 at 8:18 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Thu, Oct 17, 2019 at 07:44:15PM +0200, Andrey Konovalov wrote:
+> > > This patch adds kcov_remote_start/kcov_remote_stop annotations to the
+> > > vhost_worker function, which is responsible for processing vhost works.
+> > > Since vhost_worker is spawned when a vhost device instance is created,
+> > > the common kcov handle is used for kcov_remote_start/stop annotations.
+> > >
+> > > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> > > ---
+> > >  drivers/vhost/vhost.c | 15 +++++++++++++++
+> > >  drivers/vhost/vhost.h |  3 +++
+> > >  2 files changed, 18 insertions(+)
+> > >
+> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > index 36ca2cf419bf..71a349f6b352 100644
+> > > --- a/drivers/vhost/vhost.c
+> > > +++ b/drivers/vhost/vhost.c
+> > > @@ -357,7 +357,13 @@ static int vhost_worker(void *data)
+> > >               llist_for_each_entry_safe(work, work_next, node, node) {
+> > >                       clear_bit(VHOST_WORK_QUEUED, &work->flags);
+> > >                       __set_current_state(TASK_RUNNING);
+> > > +#ifdef CONFIG_KCOV
+> > > +                     kcov_remote_start(dev->kcov_handle);
+> > > +#endif
+> >
+> > Shouldn't you hide these #ifdefs in a .h file?  This is not a "normal"
+> > kernel coding style at all.
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Well, if it's acceptable to add a kcov_handle field into vhost_dev
+> even when CONFIG_KCOV is not enabled, then we can get rid of those
+> #ifdefs.
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+It should be, it's not a big deal and there's not a ton of those
+structures around that one more field is going to hurt anything...
+
+thanks,
+
+greg k-h
