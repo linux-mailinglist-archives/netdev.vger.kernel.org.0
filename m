@@ -2,198 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ACD8DB256
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 18:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77143DB25E
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 18:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502551AbfJQQ2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 12:28:46 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35672 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392968AbfJQQ2q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 12:28:46 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 205so1989254pfw.2
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 09:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=jHVyFQx7TFOJcTS09TYRKqe3nPO/j0CUeqIfsTn5FB4=;
-        b=ePrXzBmb1kRBr9lU2ZxpqCDCz0bLBR3TyGAGSxxYHEublvx/GdW9GjePm4H6Zw+Xej
-         cISOnLTKyancD1DPibteOrV8iq1FSpPp7xAtz1nv3qKZfbC05jIrfJpDrvJsNDj3lvtS
-         a6s1RzBE+yvk+W2GJVQttdNit3wx6UkHPDpDC8yQk53PZSAcAP47U/MXWHzeHJjaqEGC
-         5EUNZuplNgm/k+DagfRBcV1khgh4xhdFXGAWJoCHfyx5Re+T3tWITS7K5UXm6prOYEHP
-         pXV222Zh/nelRanvRwmFFKsk8jKUmVpUNWmhkfYYuUoxtmRkc1kqmgWb5XH1gYRN7k2L
-         WRnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jHVyFQx7TFOJcTS09TYRKqe3nPO/j0CUeqIfsTn5FB4=;
-        b=qj5XS8gpf5/PELnCBR0w6iV/GjlmAdOcQwuG3jxa6JCzuvBAqbmxdRpffqrcdBtTnF
-         9UegS9pL+YuNPW+3H/w0/TN3+z2bA9+nBA2Cd9lPxnzwn0xq0slD2EIvEcNOVTetwq9A
-         RHbRCpuK0KpMiIphmOEB8BPjTvGvC+dngupnr9dEQcchkEja8KYCcx5dZxlkGRmxW023
-         wcyqJVOkZLG4j4wSc9DsvcYF2SCD+g+8GLGPlcjFMrnxKswFKDgX7jfS5n1W8PF4UJDV
-         V1OjLhSnHxWJRNEdvGkQgdCygGxQoj9UiqE8UKlptbHIuMV4fUjzS73HouEXb4gI5UK7
-         DP2g==
-X-Gm-Message-State: APjAAAX0eMGeAv3XvlYfLUUf9gxJUFPeP1S9QZyJAYISu6AUL1R1NzaO
-        EqtTatoCIAYFgUQLqNggAMSy7Q==
-X-Google-Smtp-Source: APXvYqyJp7DV2CCgsjZq3nAvFmCasYc9HhyJmbEw67qgYGeIuFwL0fwpLOCTnEVzKQWRKvCLVydXgQ==
-X-Received: by 2002:aa7:99c7:: with SMTP id v7mr1157000pfi.165.1571329725369;
-        Thu, 17 Oct 2019 09:28:45 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id c64sm4152903pfc.19.2019.10.17.09.28.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 09:28:44 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 09:28:43 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, Yonghong Song <yhs@fb.com>
-Subject: Re: debug annotations for bpf progs. Was: [PATCH bpf-next 1/3] bpf:
- preserve command of the process that loaded the program
-Message-ID: <20191017162843.GB2090@mini-arch>
-References: <20191011162124.52982-1-sdf@google.com>
- <CAADnVQLKPLXej_v7ymv3yJakoFLGeQwdZOJ5cZmp7xqOxfebqg@mail.gmail.com>
- <20191012003819.GK2096@mini-arch>
- <CAADnVQKuysEvFAX54+f0YPJ1+cgcRJbhrpVE7xmvLqu-ADrk+Q@mail.gmail.com>
- <20191016140112.GF21367@pc-63.home>
+        id S2392634AbfJQQaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 12:30:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54410 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730640AbfJQQaK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 12:30:10 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E66FB2089C;
+        Thu, 17 Oct 2019 16:30:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571329809;
+        bh=LSn0Us39YQvpgHpBtDuP+bFAOJpzc9IBTOH2uPj6gn0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=baztz8B1d3q8sTc8jXA1FQd061EDD0qfMar9TInei1bhpAWcztw/XO5ka5YUo0t+Z
+         ONBYyr8f0yQINsfp3XcaLWZh958ZAg4Kwgzjlytr9jhJlsu8S3Njk0WWckQYOLujjy
+         VIe5SyRXzf8hSOpO7bfb4YftuqOxMmfht8Hv0C+E=
+Date:   Thu, 17 Oct 2019 09:30:07 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        syzbot <syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: kernel panic: stack is corrupted in __lock_acquire (4)
+Message-ID: <20191017163007.GC726@sol.localdomain>
+Mail-Followup-To: bpf <bpf@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        syzbot <syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <0000000000009b3b80058af452ae@google.com>
+ <0000000000000ec274059185a63e@google.com>
+ <CACT4Y+aT5z65OZE6_TQieU5zUYWDvDtAogC45f6ifLkshBK2iw@mail.gmail.com>
+ <20191017162505.GB726@sol.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191016140112.GF21367@pc-63.home>
+In-Reply-To: <20191017162505.GB726@sol.localdomain>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/16, Daniel Borkmann wrote:
-> On Tue, Oct 15, 2019 at 02:21:50PM -0700, Alexei Starovoitov wrote:
-> > On Fri, Oct 11, 2019 at 5:38 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > On 10/11, Alexei Starovoitov wrote:
-> > > > On Fri, Oct 11, 2019 at 9:21 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > > > >
-> > > > > Even though we have the pointer to user_struct and can recover
-> > > > > uid of the user who has created the program, it usually contains
-> > > > > 0 (root) which is not very informative. Let's store the comm of the
-> > > > > calling process and export it via bpf_prog_info. This should help
-> > > > > answer the question "which process loaded this particular program".
-> > > > >
-> > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > > > ---
-> > > > >  include/linux/bpf.h      | 1 +
-> > > > >  include/uapi/linux/bpf.h | 2 ++
-> > > > >  kernel/bpf/syscall.c     | 4 ++++
-> > > > >  3 files changed, 7 insertions(+)
-> > > > >
-> > > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > > > index 5b9d22338606..b03ea396afe5 100644
-> > > > > --- a/include/linux/bpf.h
-> > > > > +++ b/include/linux/bpf.h
-> > > > > @@ -421,6 +421,7 @@ struct bpf_prog_aux {
-> > > > >                 struct work_struct work;
-> > > > >                 struct rcu_head rcu;
-> > > > >         };
-> > > > > +       char created_by_comm[BPF_CREATED_COMM_LEN];
-> > > > >  };
-> > > > >
-> > > > >  struct bpf_array {
-> > > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > > index a65c3b0c6935..4e883ecbba1e 100644
-> > > > > --- a/include/uapi/linux/bpf.h
-> > > > > +++ b/include/uapi/linux/bpf.h
-> > > > > @@ -326,6 +326,7 @@ enum bpf_attach_type {
-> > > > >  #define BPF_F_NUMA_NODE                (1U << 2)
-> > > > >
-> > > > >  #define BPF_OBJ_NAME_LEN 16U
-> > > > > +#define BPF_CREATED_COMM_LEN   16U
-> > > >
-> > > > Nack.
-> > > > 16 bytes is going to be useless.
-> > > > We found it the hard way with prog_name.
-> > > > If you want to embed additional debug information
-> > > > please use BTF for that.
-> > > BTF was my natural choice initially, but then I saw created_by_uid and
-> > > thought created_by_comm might have a chance :-)
+On Thu, Oct 17, 2019 at 09:25:05AM -0700, Eric Biggers wrote:
+> On Sun, Sep 01, 2019 at 08:23:42PM -0700, 'Dmitry Vyukov' via syzkaller-bugs wrote:
+> > On Sun, Sep 1, 2019 at 3:48 PM syzbot
+> > <syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com> wrote:
 > > >
-> > > To clarify, by BTF you mean creating some unused global variable
-> > > and use its name as the debugging info? Or there is some better way?
+> > > syzbot has found a reproducer for the following crash on:
+> > >
+> > > HEAD commit:    38320f69 Merge branch 'Minor-cleanup-in-devlink'
+> > > git tree:       net-next
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=13d74356600000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=1bbf70b6300045af
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=83979935eb6304f8cd46
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1008b232600000
 > > 
-> > I was thinking about adding new section to .btf.ext with this extra data,
-> > but global variable is a better idea indeed.
-> > We'd need to standardize such variables names, so that
-> > bpftool can parse and print it while doing 'bpftool prog show'.
+> > Stack corruption + bpf maps in repro triggers some bells. +bpf mailing list.
+> > 
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com
+> > >
+> > > Kernel panic - not syncing: stack-protector: Kernel stack is corrupted in:
+> > > __lock_acquire+0x36fa/0x4c30 kernel/locking/lockdep.c:3907
+> > > CPU: 0 PID: 8662 Comm: syz-executor.4 Not tainted 5.3.0-rc6+ #153
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > > Google 01/01/2011
+> > > Call Trace:
+> > > Kernel Offset: disabled
+> > > Rebooting in 86400 seconds..
+> > >
 > 
-> +1, much better indeed.
+> This is still reproducible on latest net tree, but using a different kconfig I
+> was able to get a more informative crash output.  Apparently tcp_bpf_unhash() is
+> being called recursively.  Anyone know why this might happen?
 > 
-> > We see more and more cases where services use more than
-> > one program in single .c file to accomplish their goals.
-> > Tying such debug info (like 'created_by_comm') to each program
-> > individually isn't quite right.
-> > In that sense global variables are better, since they cover the
-> > whole .c file.
-> > Beyond 'created_by_comm' there are others things that people
-> > will likely want to know.
-> > Like which version of llvm was used to compile this .o file.
-> > Which unix user name compiled it.
-> > The name of service/daemon that will be using this .o
-> > and so on.
+> This is using the syzkaller language reproducer linked above -- I ran it with:
 > 
-> Also latest git sha of the source repo, for example.
+> 	syz-execprog -threaded=1 -collide=1 -cover=0 -repeat=0 -procs=8 -sandbox=none -enable=net_dev,net_reset,tun syz_bpf.txt
 > 
-> > May be some standard prefix to such global variables will do?
-> > Like "bpftool prog show" can scan global data for
-> > "__annotate_#name" and print both name and string contents ?
-> > For folks who regularly ssh into servers to debug bpf progs
-> > that will help a lot.
-> > May be some annotations llvm can automatically add to .o.
-> > Thoughts?
+> Crash report on net/master:
 > 
-> One thing that might be less clear is how information such as comm
-> or comm args would be stuffed into BTF here, but perhaps these two
-> wouldn't necessarily need to be part of it since these can be retrieved
-> today (as in: "which program is currently holding a reference via fd
-> to a certain prog/map"). For that bpftool could simply walk procfs
-> once and correlate via fdinfo on unique prog/map id, so we could list
-> comms in the dump which should be trivial to add:
-> 
->   # ls -la /proc/30651/fd/10
->   lrwx------ 1 root root 64 Oct 16 15:53 /proc/30651/fd/10 -> anon_inode:bpf-map
->   # cat /proc/30651/fdinfo/10
->   pos:	0
->   flags:	02000002
->   mnt_id:	15
->   map_type:	1
->   key_size:	24
->   value_size:	12
->   max_entries:	65536
->   map_flags:	0x0
->   memlock:	6819840
->   map_id:	384          <---
->   frozen:	0
->   # cat /proc/30651/comm 
->   cilium-agent
->   # cat /proc/30651/cmdline 
->   ./daemon/cilium-agent--ipv4-range10.11.0.0/16[...]--enable-node-port=true
-> 
-> ... and similar for progs. Getting the cmdline from kernel side seems
-> rather annoying from looking into what detour procfs needs to perform.
-> 
-> But aside from these, such annotations via BTF would be really useful.
-Tried to do the following:
+> PANIC: double fault, error_code: 0x0
+> CPU: 3 PID: 8328 Comm: syz-executor Not tainted 5.4.0-rc1-00118-ge497c20e2036 #31
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20191013_105130-anatol 04/01/2014
+> RIP: 0010:mark_lock+0x4/0x640 kernel/locking/lockdep.c:3631
+> Code: a2 7f 27 01 85 c0 0f 84 f3 42 00 00 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 66 66 2e 0f 1f 84 00 00 00 00 00 55 48 89 e5 <41> 57 41 56 41 55 41 54 53 48 83 ec 18 83 fa 08 76 21 44 8b 25 ab
+> RSP: 0018:ffffc9000010d000 EFLAGS: 00010046
+> RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+> RDX: 0000000000000008 RSI: ffff888071f92dd8 RDI: ffff888071f92600
+> RBP: ffffc9000010d000 R08: 0000000000000000 R09: 0000000000022023
+> R10: 00000000000000c8 R11: 0000000000000000 R12: ffff888071f92600
+> R13: ffff888071f92dd8 R14: 0000000000000023 R15: 0000000000000000
+> FS:  00007ff9f7765700(0000) GS:ffff88807fd80000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: ffffc9000010cff8 CR3: 000000000221d000 CR4: 00000000003406e0
+> Call Trace:
+>  <IRQ>
+>  mark_usage kernel/locking/lockdep.c:3592 [inline]
+>  __lock_acquire+0x22f/0xf80 kernel/locking/lockdep.c:3909
+>  lock_acquire+0x99/0x170 kernel/locking/lockdep.c:4487
+>  rcu_lock_acquire include/linux/rcupdate.h:208 [inline]
+>  rcu_read_lock include/linux/rcupdate.h:599 [inline]
+>  tcp_bpf_unhash+0x33/0x1d0 net/ipv4/tcp_bpf.c:549
+>  tcp_bpf_unhash+0x19b/0x1d0 net/ipv4/tcp_bpf.c:554
+>  tcp_bpf_unhash+0x19b/0x1d0 net/ipv4/tcp_bpf.c:554
+>  tcp_bpf_unhash+0x19b/0x1d0 net/ipv4/tcp_bpf.c:554
+>  tcp_bpf_unhash+0x19b/0x1d0 net/ipv4/tcp_bpf.c:554
+[...]
 
-1. Add: static volatile const char __annotate_source1[] = __FILE__;
-   to test_rdonly_maps.c and I think it got optimized away :-/
-   At least I don't see it in the 'bpftool btf dump' output.
+Recursive tcp_bpf_unhash() also showed up in
+"BUG: unable to handle kernel paging request in tls_prots"
+(https://lkml.kernel.org/lkml/000000000000d7bcbb058c3758a1@google.com/T/)
+which was claimed to be fixed by
+"bpf: sockmap/tls, close can race with map free".
+But that fix was months ago; this crash is on latest net tree.
 
-2. Add: char __annotate_source2[] SEC(".meta") = __FILE__;
-   to test_rdonly_maps.c and do all the required plumbing in libbpf
-   to treat .meta like .rodata. I think it works, but the map
-   disappears after bpftool exits because this data is not referenced
-   in the prog and the refcount drops to zero :-(
-
-Am I missing something?
+- Eric
