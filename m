@@ -2,216 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F56DAB82
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:51:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC7BDAB90
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 13:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502171AbfJQLvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 07:51:45 -0400
-Received: from mailout4.samsung.com ([203.254.224.34]:19249 "EHLO
+        id S2409355AbfJQLyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 07:54:49 -0400
+Received: from mailout4.samsung.com ([203.254.224.34]:19993 "EHLO
         mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727877AbfJQLvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 07:51:44 -0400
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20191017115140epoutp0478822a08cc660cac8ee1b92299c0ba30~ObPCqsZys1130211302epoutp04w
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:51:40 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20191017115140epoutp0478822a08cc660cac8ee1b92299c0ba30~ObPCqsZys1130211302epoutp04w
+        with ESMTP id S2409341AbfJQLyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 07:54:49 -0400
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20191017115446epoutp045fa9a4d7bbaf309499998e7d24215d06~ObRvx1yhg1419714197epoutp04t
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:54:46 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20191017115446epoutp045fa9a4d7bbaf309499998e7d24215d06~ObRvx1yhg1419714197epoutp04t
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1571313100;
-        bh=z5RX4YzD39txlPDlH5ZuDcN6Ob50hPcAjN3oTs4zhOA=;
+        s=mail20170921; t=1571313286;
+        bh=9jV+kSGWbjQY3QvQJzMos5sqI2aE1dpYKztG7UbH68A=;
         h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=EA3nrnTxepQAtA3fQcPxWTrymIgsTglvYt9xPujgpwRT4L8CsEVsESAYWzbvoAZ3e
-         DWDFR1Cjn3iHwGdByhyI9hy3oWg9bxEkXj8Y46WS5AP8Ag14NqI9egIqs8/QMPWcSN
-         oRc3nfNbspo42LSsSu5d+jjPTbV+U9str7Yd2tXA=
+        b=gHR4LGnDr4iUJ3zL/aYHCxxWOxKqretNZjynw6lhO1gOD9Nby9PtajjzSOQ79ILT5
+         fU8pGaWUkOEaTj7dUT7EWUlp+rnBBCWCvwo11gHbo/Oat9niU+EgwL+QzhSbZHqT5K
+         aLMYYPbSfCwh909fKgnKd6A5VM1Kr46l5R/v6+Lw=
 Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20191017115140epcas5p3dc0d25f56a592bbb1307472c1407e750~ObPCQaRDH2375523755epcas5p3H;
-        Thu, 17 Oct 2019 11:51:40 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20191017115445epcas5p4642bb0cc615a62bb58ecf0c0974b16ed~ObRvAodTo0364603646epcas5p46;
+        Thu, 17 Oct 2019 11:54:45 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
         epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        0F.24.04480.CC558AD5; Thu, 17 Oct 2019 20:51:40 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-        20191017115140epcas5p4c467d9815c3456e1960afef2177b5fa0~ObPB3eT_60995809958epcas5p4b;
-        Thu, 17 Oct 2019 11:51:40 +0000 (GMT)
+        10.A4.04480.58658AD5; Thu, 17 Oct 2019 20:54:45 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20191017115445epcas5p12e882471c2acd7638bbeeaa9b33bb241~ObRuap1UT0913209132epcas5p1o;
+        Thu, 17 Oct 2019 11:54:45 +0000 (GMT)
 Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20191017115140epsmtrp1f1b7c0625c35a27e8b9e82a3bd884356~ObPB2vSyA2468024680epsmtrp1Z;
-        Thu, 17 Oct 2019 11:51:40 +0000 (GMT)
-X-AuditID: b6c32a4b-cbbff70000001180-31-5da855cc3314
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20191017115445epsmtrp202e637636c962f2cb870b74a6d9a1e02~ObRuZ3tvo1901719017epsmtrp2M;
+        Thu, 17 Oct 2019 11:54:45 +0000 (GMT)
+X-AuditID: b6c32a4b-cbbff70000001180-f7-5da856852954
 Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
         epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        05.E0.03889.BC558AD5; Thu, 17 Oct 2019 20:51:39 +0900 (KST)
+        8A.01.03889.58658AD5; Thu, 17 Oct 2019 20:54:45 +0900 (KST)
 Received: from pankjsharma02 (unknown [107.111.85.32]) by
         epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20191017115138epsmtip1d4d7be4869bbae7cc0124ab22c8a501a~ObPAQkCf52661626616epsmtip1j;
-        Thu, 17 Oct 2019 11:51:38 +0000 (GMT)
+        20191017115442epsmtip1a4e186875488c19cac22a86b5f75bb33~ObRsGbf3a2659326593epsmtip1i;
+        Thu, 17 Oct 2019 11:54:42 +0000 (GMT)
 From:   "pankj.sharma" <pankj.sharma@samsung.com>
-To:     "'Marc Kleine-Budde'" <mkl@pengutronix.de>
-Cc:     <wg@grandegger.com>, <davem@davemloft.net>,
+To:     "'Jeroen Hofstee'" <jhofstee@victronenergy.com>,
+        "'Simon Horman'" <simon.horman@netronome.com>
+Cc:     "'kbuild test robot'" <lkp@intel.com>, <kbuild-all@lists.01.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <wg@grandegger.com>,
+        <mkl@pengutronix.de>, <davem@davemloft.net>,
         <eugen.hristev@microchip.com>, <ludovic.desroches@microchip.com>,
         <pankaj.dubey@samsung.com>, <rcsekar@samsung.com>,
-        "'Sriram Dash'" <sriram.dash@samsung.com>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-In-Reply-To: <00c5c5b7-cc90-ff6c-0c49-77fe0481dac1@pengutronix.de>
-Subject: RE: [PATCH] can: m_can: add support for handling arbitration error
-Date:   Thu, 17 Oct 2019 17:21:36 +0530
-Message-ID: <000e01d584e1$3cb91c10$b62b5430$@samsung.com>
+        "'Sriram Dash'" <sriram.dash@samsung.com>
+In-Reply-To: <1921cfe4-0ee0-e2a5-6696-df5f612c6c56@victronenergy.com>
+Subject: RE: [PATCH] can: m_can: fix boolreturn.cocci warnings
+Date:   Thu, 17 Oct 2019 17:24:41 +0530
+Message-ID: <000f01d584e1$ab1907b0$014b1710$@samsung.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-Mailer: Microsoft Outlook 16.0
 Content-Language: en-us
-Thread-Index: AQHTm5UrDi6Y56TssjuVaZ0vw+2T4wFBl3stAb/DtPKnSn8dcA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Se0hTYRzl2+69u65Wtyn5y7JsPZhWc9GDG4WJRM4MUkiC8NHSi5pO567P
-        KBAbEqZOfFBNw2lqJi5zavigkJWaFDp85Qv/MI1UslJJTYTc7iT/O9855zvnO/CRfLEZdyGj
-        4xIZTZwyVkIIsTfv3T1OfA6qDpFnfHWmS3q1GN2+0oXRNctFfLq/tYSgvxu/4HRdeSFGdxp2
-        0+VNSwJab2nG6eE6AV050YJ7b1M0vhzhKX73jSHF+EolUujW5YrcxhqkWDTtDyBuCi9EMLHR
-        yYzG0+uWMMrY+xRTT7qm9sy14OnI4JyFHEigTsPy62U8CwlJMdWGIP/xMI87LCAYG9bZlT8I
-        DF1GweaVjmwLwQlvERSYyuyuOQQv5k2E1UVQnlCYsY5ZsRMlg7W8clsunzLyQFexhFsFB8oH
-        LOO1tlhHyh/6hwZsGKOOwDtLA8+KRdQ5yNeOEhzeBd1Pp2yhfOoYVJXN8bknucHqdBXO8c4w
-        0/FhI4fcKPaBgr4D1l6gHgmgdCkP4/yX4OP0J8RhR5jtarRPc4EZXaYdx0BZmw6z5gCVCplP
-        HDn6IrQPlNhoPuUOda2eXOsOyFmb4nFuETzMFHPuo1A0PW8v2gfjkw0EhxWQl60j8tBB/ZZd
-        +i279Fu26P+XGRBWg/YwalYVybBn1KfimBQZq1SxSXGRsvB4lQnZfpaHfzMy9Vw1I4pEku2i
-        5oDqEDGuTGbTVGYEJF/iJCrVVoSIRRHKtLuMJj5MkxTLsGa0l8QkzqJ8fDBYTEUqE5kYhlEz
-        mk2VRzq4pCO/8vs7KwZvEHV93usJirNXhkaL3TSzbKPEK1z9t7v4V1aotKj/uFS4+iNDEMgc
-        aqKmY3IXyQdlob6L8p9hLVGmywutfq64X/1zr8DamZygw9eDXknV61V3cFlwh6UQOy+dUd2e
-        SpiovzYCblOhK+G+bbnyeymdz3hG0TftcokEY6OUJz34Glb5D1klI1pVAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrKIsWRmVeSWpSXmKPExsWy7bCSnO7p0BWxBs922ljMOd/CYnHgx3EW
-        i1XfpzJbXN41h83ixdrrrBbrF01hsTi2QMxi0dYv7BazLuxgtbixnt1i6b2drA7cHltW3mTy
-        +HjpNqPHnR9LGT36/xp49G1ZxejxeZNcAFsUl01Kak5mWWqRvl0CV8bpNZ9ZCz7IVJxYsY2t
-        gXGdWBcjJ4eEgInE0Z4LbF2MXBxCArsZJZ7928PYxcgBlJCRWPy5GqJGWGLlv+fsEDUvGSXa
-        9/WxgyTYBPQlpjT9ZQGxRQT0JH5PWMQEYjMLbGeS2LG3DKLhAqPE6gl9rCAJTgEniQt31oA1
-        Cwt4S1y+dgXMZhFQldh3YTNYM6+ApcSklltsELagxMmZT1gghmpLPL35FM5etvA1M8R1ChI/
-        ny5jhYiLS7w8eoQd5AERoF2TL8lPYBSehWTSLCSTZiGZNAtJ9wJGllWMkqkFxbnpucWGBUZ5
-        qeV6xYm5xaV56XrJ+bmbGMGRp6W1g/HEifhDjAIcjEo8vDsCVsQKsSaWFVfmHmKU4GBWEuGd
-        37IkVog3JbGyKrUoP76oNCe1+BCjNAeLkjivfP6xSCGB9MSS1OzU1ILUIpgsEwenVANjwZnw
-        O/f4V3XV3Ty4/MlRtvnt37n91yWu2vW80cNe/LC4t4G33GtLQ6aNT14fvxLGtjV35ZKgAwEM
-        ZbvUFjQrTbVPd2g5uuXEAZuIlX8bvlhFPytVkz+lHt79Qyr64U6Np0Y+jMuXzHLU0v8bwhPE
-        u7iv//9kYbVHarwzTY7V2tmeSH4rqr9GiaU4I9FQi7moOBEAWnD7D7gCAAA=
-X-CMS-MailID: 20191017115140epcas5p4c467d9815c3456e1960afef2177b5fa0
+Thread-Index: AQFBl3stLMda2COLQ4+xvzWrGT0LJgGMJ+EIAU1Heb8BtkGFyQF4xXLRAVs56cYDWI5Z86gwscDw
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0gUURTGuTszO7NLa+OoddKIXFDQfFLRFGYPKgaKsMj+sKy2HNR0N9nR
+        0gjK8hErqYimbVI+UkwtwVbxjflINCwfZUUhlFq6pj00tdKs3Vvkf7/7feecjw8uQ3AfKEcm
+        XBct6nWaSLVcSVa3url5Jh4uCfa50beJz32aQPLNcx0kX/KpieK7UwYQXzqbRfD9dbly3nzl
+        nZwfvfeC4isKMkn+Ud4KvqBqmuaNPTUU/7JWwb+soPmiwVpq+3LBdPeVTPjS9xoJhQ1jMiHl
+        5i9SeDNXhITslLeEkLbgI6SaSpEwVblGyHj4mQ5QBin9QsTI8LOi3tv/hDKsvamMiMrnYl9X
+        e11CXTYGpGCA3QDZVY2UASkZjq1HUD5YLrMYHPsVweIMi42ZP2zMkRsQY90wx+uw3ohgvKMN
+        4cc4guz5KmTZlrPekHl5gbSwPRsCuYm9tGWIYJMJKO8fkFsMBbsbhpoMtIXtWH/4UTRmjSZZ
+        F5j/mG3VVexmWHz1nsJsC503hq1HCXYdFOePE7jDWvg+UkxhfSWMtbfRODgIWo2z1mBgu2iI
+        L2yR4YVdkJL8nMJsB+YOE43ZEaYmG+WYIyC/Po3ElWMhKccOy9ug+VmuVSZYN6io88axNnDt
+        57AMT6vgahKHp10ha2QSYV4Nb949+HtcgNSpZDodORuXFDMuKWZcUsb4PywPkaVolRglaUNF
+        aWPUep14zkvSaKUYXajXqTPaSmT9fu57a1Dlk30tiGWQepmqJqAkmKM0Z6U4bQsChlDbq24n
+        3AnmVCGauPOi/sxxfUykKLUgJ4ZUr1RlUM+PcmyoJlqMEMUoUf/PlTEKx0uIchkrM+/YPzqv
+        mThd7w2pQYuDij53vtM5sKDgQuyByoySg0VxgXn3hqRbYUpTDhfaPTHka7p/qNXj25atOb7O
+        5oGF0UmHYaVH78Ug0WHg2PX0dL/xLtWRX90Ns66pRIPtx/vzVKbfjF4b09fs/njCMJ3pdJJ0
+        2OMZvjevJ36nr5qUwjS+7oRe0vwGSX7vy3oDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLIsWRmVeSWpSXmKPExsWy7bCSnG5r2IpYg/tNPBZzzrewWBz4cZzF
+        YsX7fawWZ7uvMVqs+j6V2eLyrjlsFq+aH7FZvFh7ndVi/aIpLBbHFohZLNr6hd1i1oUdrBY3
+        dnJa3FjPbrH03k5WB36PLStvMnl8vHSb0WPxnpdMHt2z/7F43PmxlNFjevdDZo/+vwYefVtW
+        MXp83iTnMengB/YArigum5TUnMyy1CJ9uwSujGXH5zAW/BGsuH5iCmMD42K+LkYODgkBE4lX
+        jXldjFwcQgK7GSWuTf7CAhGXkVj8ubqLkRPIFJZY+e85O0TNS0aJqZ3bGEESbAL6ElOa/rKA
+        2CICKRJrb54EK2IWmMossWfja2aIjtnMEtdvX2cDqeIUcJV4vK+LHcQWFrCT+LX0JROIzSKg
+        KvHnzXSwOK+ApcT/m89YIWxBiZMzn4BtYBbQlnh68ymcvWwhyAKQ8xQkfj5dxgoRF5d4efQI
+        O8RFURKHZ31nn8AoPAvJqFlIRs1CMmoWkvYFjCyrGCVTC4pz03OLDQuM8lLL9YoTc4tL89L1
+        kvNzNzGCI1lLawfjiRPxhxgFOBiVeHh3BKyIFWJNLCuuzD3EKMHBrCTCO79lSawQb0piZVVq
+        UX58UWlOavEhRmkOFiVxXvn8Y5FCAumJJanZqakFqUUwWSYOTqkGxgV+617oCbJ6dBuYiv/q
+        aXz5Yv1v/h/3t7yy2aNQHSkT9NhiiV1BgfOfV3bf5rT2CprZP7Kfu1L+IQOvgGrsrfk5i3Zf
+        fL/dcdOll3Zt7SLpm6zf2e4uib3JpvVX/7Nh4+Ijytwv2ZT+7DZfo+U94cDKWwJf5KdlX5vb
+        lLh2+qX3+TXFrn/nLFdiKc5INNRiLipOBAD4UIJS4AIAAA==
+X-CMS-MailID: 20191017115445epcas5p12e882471c2acd7638bbeeaa9b33bb241
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 CMS-TYPE: 105P
-X-CMS-RootMailID: 20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4
-References: <CGME20191014113437epcas5p2143d7e85d5a50dad79a4a60a9d666fe4@epcas5p2.samsung.com>
-        <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
-        <00c5c5b7-cc90-ff6c-0c49-77fe0481dac1@pengutronix.de>
+X-CMS-RootMailID: 20191015083235epcas5p3344c1a176f616a7f83833f6a704a4f2a
+References: <1571052844-22633-1-git-send-email-pankj.sharma@samsung.com>
+        <20191014150428.xhhc43ovkxm6oxf2@332d0cec05f4>
+        <20191015055718.mypn63s2ovgwipk3@netronome.com>
+        <9ad7810b-2205-3227-7ef9-0272f3714839@victronenergy.com>
+        <20191015071311.yssgqhoax46lfa7l@netronome.com>
+        <CGME20191015083235epcas5p3344c1a176f616a7f83833f6a704a4f2a@epcas5p3.samsung.com>
+        <1921cfe4-0ee0-e2a5-6696-df5f612c6c56@victronenergy.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Marc Kleine-Budde <mkl=40pengutronix.de>
-> Subject: Re: =5BPATCH=5D can: m_can: add support for handling arbitration=
- error
+> From: Jeroen Hofstee <jhofstee=40victronenergy.com>
+> Subject: Re: =5BPATCH=5D can: m_can: fix boolreturn.cocci warnings
 >=20
-> On 10/14/19 1:34 PM, Pankaj Sharma wrote:
-> > The Bosch MCAN hardware (3.1.0 and above) supports interrupt flag to
-> > detect Protocol error in arbitration phase.
-> >
-> > Transmit error statistics is currently not updated from the MCAN driver=
-.
-> > Protocol error in arbitration phase is a TX error and the network
-> > statistics should be updated accordingly.
-> >
-> > The member =22tx_error=22 of =22struct net_device_stats=22 should be
-> > incremented as arbitration is a transmit protocol error. Also
-> > =22arbitration_lost=22 of =22struct can_device_stats=22 should be incre=
-mented
-> > to report arbitration lost.
-> >
-> > Signed-off-by: Pankaj Sharma <pankj.sharma=40samsung.com>
-> > Signed-off-by: Sriram Dash <sriram.dash=40samsung.com>
-> > ---
-> >  drivers/net/can/m_can/m_can.c =7C 38
-> > +++++++++++++++++++++++++++++++++++
-> >  1 file changed, 38 insertions(+)
-> >
-> > diff --git a/drivers/net/can/m_can/m_can.c
-> > b/drivers/net/can/m_can/m_can.c index b95b382eb308..7efafee0eec8
-> > 100644
-> > --- a/drivers/net/can/m_can/m_can.c
-> > +++ b/drivers/net/can/m_can/m_can.c
-> > =40=40 -778,6 +778,39 =40=40 static inline bool is_lec_err(u32 psr)
-> >  	return psr && (psr =21=3D LEC_UNUSED);
-> >  =7D
-> >
-> > +static inline bool is_protocol_err(u32 irqstatus)
+> Hello Simon,
 >=20
-> please add the comon m_can_ prefix
+> On 10/15/19 9:13 AM, Simon Horman wrote:
+> > On Tue, Oct 15, 2019 at 06:37:54AM +0000, Jeroen Hofstee wrote:
+> >> Hi,
+> >>
+> >> On 10/15/19 7:57 AM, Simon Horman wrote:
+> >>> On Mon, Oct 14, 2019 at 11:04:28PM +0800, kbuild test robot wrote:
+> >>>> From: kbuild test robot <lkp=40intel.com>
+> >>>>
+> >>>> drivers/net/can/m_can/m_can.c:783:9-10: WARNING: return of 0/1 in
+> >>>> function 'is_protocol_err' with return type bool
+> >>>>
+> >>>>    Return statements in functions returning bool should use
+> >>>>    true/false instead of 1/0.
+> >>>> Generated by: scripts/coccinelle/misc/boolreturn.cocci
+> >>>>
+> >>>> Fixes: 46946163ac61 (=22can: m_can: add support for handling
+> >>>> arbitration error=22)
+> >>>> CC: Pankaj Sharma <pankj.sharma=40samsung.com>
+> >>>> Signed-off-by: kbuild test robot <lkp=40intel.com>
+> >>>> ---
+> >>>>
+> >>>> url:    https://github.com/0day-ci/linux/commits/Pankaj-Sharma/can-
+> m_can-add-support-for-handling-arbitration-error/20191014-193532
+> >>>>
+> >>>>    m_can.c =7C    4 ++--
+> >>>>    1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> --- a/drivers/net/can/m_can/m_can.c
+> >>>> +++ b/drivers/net/can/m_can/m_can.c
+> >>>> =40=40 -780,9 +780,9 =40=40 static inline bool is_lec_err(u32 psr)
+> >>>>    static inline bool is_protocol_err(u32 irqstatus)
+> >>>>    =7B
+> >>>>    	if (irqstatus & IR_ERR_LEC_31X)
+> >>>> -		return 1;
+> >>>> +		return true;
+> >>>>    	else
+> >>>> -		return 0;
+> >>>> +		return false;
+> >>>>    =7D
+> >>>>
+> >>>>    static int m_can_handle_protocol_error(struct net_device *dev,
+> >>>> u32 irqstatus)
+> >>>>
+> >>> <2c>
+> >>> Perhaps the following is a nicer way to express this (completely unte=
+sted):
+> >>>
+> >>> 	return =21=21(irqstatus & IR_ERR_LEC_31X); </2c>
+> >>
+> >> Really...., =21=21 for bool / _Bool types? why not simply:
+> >>
+> >> static inline bool is_protocol_err(u32 irqstatus)
+> >> 	return irqstatus & IR_ERR_LEC_31X;
 
-Alright. Will change the name =22is_protocol_err=22 to =22m_can_ is_protoco=
-l_err=22
+Thank you. Will Modify in v2.
 
+> >> =7D
+> > Good point, silly me.
 >=20
-> > +=7B
-> > +	if (irqstatus & IR_ERR_LEC_31X)
-> > +		return 1;
-> > +	else
-> > +		return 0;
-> > +=7D
-> > +
-> > +static int m_can_handle_protocol_error(struct net_device *dev, u32
-> > +irqstatus) =7B
-> > +	struct net_device_stats *stats =3D &dev->stats;
-> > +	struct m_can_priv *priv =3D netdev_priv(dev);
-> > +	struct can_frame *cf;
-> > +	struct sk_buff *skb;
-> > +
-> > +	/* propagate the error condition to the CAN stack */
-> > +	skb =3D alloc_can_err_skb(dev, &cf);
-> > +	if (unlikely(=21skb))
-> > +		return 0;
 >=20
-> please handle the stats, even if the allocation of the skb fails.
-
-Alright. Will do as follows
-+       if (unlikely(=21skb)) =7B
-+               netdev_dbg(dev, =22allocation of skb failed=5Cn=22);
-+               stats->tx_errors++;
-+               return 0;
-+       =7D
-
+> For clarity, I am commenting on the suggestion made by the tool, not the =
+patch
+> itself..
 >=20
-> > +
-> > +	if (priv->version >=3D 31 && (irqstatus & IR_PEA)) =7B
-> > +		netdev_dbg(dev, =22Protocol error in Arbitration fail=5Cn=22);
-> > +		stats->tx_errors++;
-> > +		priv->can.can_stats.arbitration_lost++;
-> > +		cf->can_id =7C=3D CAN_ERR_LOSTARB;
-> > +		cf->data=5B0=5D =7C=3D CAN_ERR_LOSTARB_UNSPEC;
-> > +	=7D
-> > +
-> > +	netif_receive_skb(skb);
-> > +
-> > +	return 1;
-> > +=7D
-> > +
-> >  static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstat=
-us,
-> >  				   u32 psr)
-> >  =7B
-> > =40=40 -792,6 +825,11 =40=40 static int m_can_handle_bus_errors(struct
-> net_device *dev, u32 irqstatus,
-> >  	    is_lec_err(psr))
-> >  		work_done +=3D m_can_handle_lec_err(dev, psr & LEC_UNUSED);
-> >
-> > +	/* handle protocol errors in arbitration phase */
-> > +	if ((priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
-> > +	    is_protocol_err(irqstatus))
-> > +		work_done +=3D m_can_handle_protocol_error(dev, irqstatus);
-> > +
-> >  	/* other unproccessed error interrupts */
-> >  	m_can_handle_other_err(dev, irqstatus);
-> >
-> >
+> Regards,
 >=20
-> Marc
->=20
-> --
-> Pengutronix e.K.                  =7C Marc Kleine-Budde           =7C
-> Industrial Linux Solutions        =7C Phone: +49-231-2826-924     =7C
-> Vertretung West/Dortmund          =7C Fax:   +49-5121-206917-5555 =7C
-> Amtsgericht Hildesheim, HRA 2686  =7C http://www.pengutronix.de   =7C
+> Jeroen
 
 
