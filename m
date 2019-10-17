@@ -2,98 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FBDADAC90
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 14:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92DC7DAE06
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 15:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502512AbfJQMoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 08:44:20 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:13486 "EHLO mx1.redhat.com"
+        id S2394419AbfJQNP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 09:15:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50556 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2502483AbfJQMoM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 08:44:12 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D1F6E3082E10;
-        Thu, 17 Oct 2019 12:44:12 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-117-195.ams2.redhat.com [10.36.117.195])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 675D85D9D5;
-        Thu, 17 Oct 2019 12:44:11 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH net 2/2] vsock/virtio: discard packets if credit is not respected
-Date:   Thu, 17 Oct 2019 14:44:03 +0200
-Message-Id: <20191017124403.266242-3-sgarzare@redhat.com>
-In-Reply-To: <20191017124403.266242-1-sgarzare@redhat.com>
-References: <20191017124403.266242-1-sgarzare@redhat.com>
+        id S2394313AbfJQNP1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 09:15:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=NqVeHSqOt7B49IXQ7DBm0nJvqrZVETdR2j3Q+0D5yBk=; b=BNND/TCB2BZpVmQujW/03vUDTN
+        7iY+e61kwaHLaAoBoDESVzmbENCJ/t60CuvndaGdVxM/aPZ/01g7m2ON9E/KlnwPowwzpI157VscX
+        J5ANU/jbivWqVhtShE18WtdGuvxLC4H6cjreA9z9T/4VVUCLYT6CnI6g2sK72Zzh6xvw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iL5cb-0004RE-8r; Thu, 17 Oct 2019 15:15:17 +0200
+Date:   Thu, 17 Oct 2019 15:15:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniel Wagner <dwagner@suse.de>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
+Subject: Re: lan78xx and phy_state_machine
+Message-ID: <20191017131517.GJ4780@lunn.ch>
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191015005327.GJ19861@lunn.ch>
+ <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
+ <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
+ <20191016155107.GH17013@lunn.ch>
+ <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Thu, 17 Oct 2019 12:44:12 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the remote peer doesn't respect the credit information
-(buf_alloc, fwd_cnt), sending more data than it can send,
-we should drop the packets to prevent a malicious peer
-from using all of our memory.
+On Thu, Oct 17, 2019 at 08:52:30AM +0200, Daniel Wagner wrote:
+> On Wed, Oct 16, 2019 at 05:51:07PM +0200, Andrew Lunn wrote:
+> > Hi Daniel
+> > 
+> > Please could you give this a go. It is totally untested, not even
+> > compile tested...
+> 
+> Sure. The system boots but ther is one splat:
 
-This is patch follows the VIRTIO spec: "VIRTIO_VSOCK_OP_RW data
-packets MUST only be transmitted when the peer has sufficient
-free buffer space for the payload"
+Cool. So we are going in the right direction.
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport_common.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+This splat looks complete different. But it might still be a race
+condition with netdev_register. We should look at what the power
+management code is doing.
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index db127a69f5c3..481f7f8a1655 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -204,10 +204,14 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	return virtio_transport_get_ops()->send_pkt(pkt);
- }
- 
--static void virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
-+static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
- 					struct virtio_vsock_pkt *pkt)
- {
-+	if (vvs->rx_bytes + pkt->len > vvs->buf_alloc)
-+		return false;
-+
- 	vvs->rx_bytes += pkt->len;
-+	return true;
- }
- 
- static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs,
-@@ -879,14 +883,18 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
- 			      struct virtio_vsock_pkt *pkt)
- {
- 	struct virtio_vsock_sock *vvs = vsk->trans;
--	bool free_pkt = false;
-+	bool can_enqueue, free_pkt = false;
- 
- 	pkt->len = le32_to_cpu(pkt->hdr.len);
- 	pkt->off = 0;
- 
- 	spin_lock_bh(&vvs->rx_lock);
- 
--	virtio_transport_inc_rx_pkt(vvs, pkt);
-+	can_enqueue = virtio_transport_inc_rx_pkt(vvs, pkt);
-+	if (!can_enqueue) {
-+		free_pkt = true;
-+		goto out;
-+	}
- 
- 	/* Try to copy small packets into the buffer of last packet queued,
- 	 * to avoid wasting memory queueing the entire buffer with a small
--- 
-2.21.0
-
+	   Andrew
