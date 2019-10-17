@@ -2,143 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E46A7DA90E
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2794DA939
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408676AbfJQJsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 05:48:15 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:41597 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727242AbfJQJsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 05:48:14 -0400
-Received: from localhost (aclermont-ferrand-651-1-259-53.w86-207.abo.wanadoo.fr [86.207.98.53])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id E0CF5100010;
-        Thu, 17 Oct 2019 09:48:09 +0000 (UTC)
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH v2 2/2] net: lpc_eth: parse phy nodes from device tree
-Date:   Thu, 17 Oct 2019 11:47:57 +0200
-Message-Id: <20191017094757.26885-2-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191017094757.26885-1-alexandre.belloni@bootlin.com>
-References: <20191017094757.26885-1-alexandre.belloni@bootlin.com>
+        id S2393892AbfJQJue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 05:50:34 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:43426 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393764AbfJQJue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 05:50:34 -0400
+Received: by mail-lj1-f195.google.com with SMTP id n14so1822794ljj.10
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 02:50:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=VOpKmwMwV+SX3a2cTSW8olQRM71I/wGBB7bz1Yg3eQM=;
+        b=Iae6zscmX3HbQBgmamadRKQU441b4aYUAVax/2HNJZ7/nJ0MA8q13JUrR57DLlc2jM
+         xMbfG23OTHdOItUjNfwBu5XxFUwp7htQWqhEgcTowgsdKeMqMAjmxirJIdhT84/rcmzF
+         Oqa2uSj22NU/2SSkXCk9RKjoFxwDnFvxsSaGw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=VOpKmwMwV+SX3a2cTSW8olQRM71I/wGBB7bz1Yg3eQM=;
+        b=JqNo0wTIY1rgBxvkf194u4InBAnTaZXwYn/Mh6uDT6ejB/Njtd8lWcUr/01LNWX1FY
+         U+A2mx8uTByGDWCkh8/CkYZLi+WubT40mMRc0kb2n0X1SoBK1DK/+Ce9/YMLODLU2j1c
+         kwssBm4pRgbgZIRgZQnIh3j+AW3JC/KOlJCeKPlIMdN0nDuU9D22Yy3niOfmGSD+EAYx
+         ZkQgFgyaK/o2QVmwSjnRS4xCKVga8yqp7Y+5YPHvVRJ6zyKdczu1yMQAJnDhQbO36pnP
+         hjpVPs+o9oPc0zWUfkxJl4ZAae2F46qhml+bgak48ICdqaXUw1QxjEuRa8ET2Q5xje7E
+         d1fg==
+X-Gm-Message-State: APjAAAVeuNKtWg2K4+pNUEMKslazC9uCSymL8ulGbIKpD4dwCsU3EexF
+        YYzq+pIYDzJcnZ9H3H2d5R+Im6agLFVj1Q==
+X-Google-Smtp-Source: APXvYqxEt7OszEvTT4lKuGUk0NtFk4bsU+dbJP6aVrVI3o80DFziyLa+uhtZwI/TMs9kiTQRq3WR+A==
+X-Received: by 2002:a2e:b010:: with SMTP id y16mr1923003ljk.147.1571305831670;
+        Thu, 17 Oct 2019 02:50:31 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id f6sm777125lfl.78.2019.10.17.02.50.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Oct 2019 02:50:31 -0700 (PDT)
+References: <20191016085811.11700-1-jakub@cloudflare.com> <CAEf4BzYUoGx9G6-8EYWReTamNGVmrOcWHEaqemRuv8+np1x17Q@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team@cloudflare.com
+Subject: Re: [PATCH bpf-next] scripts/bpf: Emit an #error directive known types list needs updating
+In-reply-to: <CAEf4BzYUoGx9G6-8EYWReTamNGVmrOcWHEaqemRuv8+np1x17Q@mail.gmail.com>
+Date:   Thu, 17 Oct 2019 11:50:30 +0200
+Message-ID: <875zknog49.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When connected to a micrel phy, phy_find_first doesn't work properly
-because the first phy found is on address 0, the broadcast address but, the
-first thing the phy driver is doing is disabling this broadcast address.
-The phy is then available only on address 1 but the mdio driver doesn't
-know about it.
+On Wed, Oct 16, 2019 at 10:29 PM CEST, Andrii Nakryiko wrote:
+> On Wed, Oct 16, 2019 at 6:21 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> Make the compiler report a clear error when bpf_helpers_doc.py needs
+>> updating rather than rely on the fact that Clang fails to compile
+>> English:
+>>
+>> ../../../lib/bpf/bpf_helper_defs.h:2707:1: error: unknown type name 'Unrecognized'
+>> Unrecognized type 'struct bpf_inet_lookup', please add it to known types!
+>>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>  scripts/bpf_helpers_doc.py | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
+>> index 7df9ce598ff9..08300bc024da 100755
+>> --- a/scripts/bpf_helpers_doc.py
+>> +++ b/scripts/bpf_helpers_doc.py
+>> @@ -489,7 +489,7 @@ class PrinterHelpers(Printer):
+>>          if t in self.mapped_types:
+>>              return self.mapped_types[t]
+>>          print("")
+>> -        print("Unrecognized type '%s', please add it to known types!" % t)
+>> +        print("#error \"Unrecognized type '%s', please add it to known types!\"" % t)
+>
+> My bad, this was intended to be printed to stderr, not to stdout
+> output. Can you please do a follow up patch turning this into eprint
+> instead?
+>
+> This shouldn't be reported by Clang, rather by tool. And we should
+> ensure in libbpf's Makefile that bpf_helper_defs.h is deleted on
+> error. I'll do it a bit later, unless you'll beat me to it.
 
-Instead, register the mdio bus using of_mdiobus_register and try to find
-the phy description in device tree before falling back to phy_find_first.
+This sounds sensible. I could have guessed it. Here's the fix:
 
-This ultimately also allows to describe the interrupt the phy is connected
-to.
+https://lore.kernel.org/bpf/20191017094416.7688-1-jakub@cloudflare.com/T/#u
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
-
-Changes in v2:
- - move the phy decription in the mdio subnode.
-
- drivers/net/ethernet/nxp/lpc_eth.c | 28 ++++++++++++++++++++--------
- 1 file changed, 20 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
-index 89d17399fb5a..a2cf5da398f3 100644
---- a/drivers/net/ethernet/nxp/lpc_eth.c
-+++ b/drivers/net/ethernet/nxp/lpc_eth.c
-@@ -23,6 +23,7 @@
- #include <linux/crc32.h>
- #include <linux/etherdevice.h>
- #include <linux/module.h>
-+#include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
-@@ -402,6 +403,7 @@ struct rx_status_t {
- struct netdata_local {
- 	struct platform_device	*pdev;
- 	struct net_device	*ndev;
-+	struct device_node	*phy_node;
- 	spinlock_t		lock;
- 	void __iomem		*net_base;
- 	u32			msg_enable;
-@@ -760,22 +762,26 @@ static void lpc_handle_link_change(struct net_device *ndev)
- static int lpc_mii_probe(struct net_device *ndev)
- {
- 	struct netdata_local *pldat = netdev_priv(ndev);
--	struct phy_device *phydev = phy_find_first(pldat->mii_bus);
--
--	if (!phydev) {
--		netdev_err(ndev, "no PHY found\n");
--		return -ENODEV;
--	}
-+	struct phy_device *phydev;
- 
- 	/* Attach to the PHY */
- 	if (lpc_phy_interface_mode(&pldat->pdev->dev) == PHY_INTERFACE_MODE_MII)
- 		netdev_info(ndev, "using MII interface\n");
- 	else
- 		netdev_info(ndev, "using RMII interface\n");
-+
-+	if (pldat->phy_node)
-+		phydev =  of_phy_find_device(pldat->phy_node);
-+	else
-+		phydev = phy_find_first(pldat->mii_bus);
-+	if (!phydev) {
-+		netdev_err(ndev, "no PHY found\n");
-+		return -ENODEV;
-+	}
-+
- 	phydev = phy_connect(ndev, phydev_name(phydev),
- 			     &lpc_handle_link_change,
- 			     lpc_phy_interface_mode(&pldat->pdev->dev));
--
- 	if (IS_ERR(phydev)) {
- 		netdev_err(ndev, "Could not attach to PHY\n");
- 		return PTR_ERR(phydev);
-@@ -794,6 +800,7 @@ static int lpc_mii_probe(struct net_device *ndev)
- 
- static int lpc_mii_init(struct netdata_local *pldat)
- {
-+	struct device_node *node;
- 	int err = -ENXIO;
- 
- 	pldat->mii_bus = mdiobus_alloc();
-@@ -823,7 +830,10 @@ static int lpc_mii_init(struct netdata_local *pldat)
- 
- 	platform_set_drvdata(pldat->pdev, pldat->mii_bus);
- 
--	if (mdiobus_register(pldat->mii_bus))
-+	node = of_get_child_by_name(pldat->pdev->dev.of_node, "mdio");
-+	err = of_mdiobus_register(pldat->mii_bus, node);
-+	of_node_put(node);
-+	if (err)
- 		goto err_out_unregister_bus;
- 
- 	if (lpc_mii_probe(pldat->ndev) != 0)
-@@ -1363,6 +1373,8 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
- 	netdev_dbg(ndev, "DMA buffer V address :0x%p\n",
- 			pldat->dma_buff_base_v);
- 
-+	pldat->phy_node = of_parse_phandle(np, "phy-handle", 0);
-+
- 	/* Get MAC address from current HW setting (POR state is all zeros) */
- 	__lpc_get_mac(pldat, ndev->dev_addr);
- 
--- 
-2.21.0
-
+-Jakub
