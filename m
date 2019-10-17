@@ -2,197 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DABDDA812
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B11DA83D
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 11:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408447AbfJQJK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 05:10:59 -0400
-Received: from mail-vk1-f195.google.com ([209.85.221.195]:44046 "EHLO
-        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404200AbfJQJK6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 05:10:58 -0400
-Received: by mail-vk1-f195.google.com with SMTP id j21so336646vki.11
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 02:10:57 -0700 (PDT)
+        id S2405461AbfJQJ0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 05:26:47 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37348 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733031AbfJQJ0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 05:26:47 -0400
+Received: by mail-pg1-f194.google.com with SMTP id p1so1005266pgi.4
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 02:26:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=04hgzc9qmWLKJ4qr0kQdZsxTdQTI10306q/6E8gxvtc=;
-        b=AqiK/AqAzagnlRkDP5D7TqpB+zWnEWzzdcE1+ogvr7ovwCaWkS1E6dkGJIs2VYkna0
-         HA4p49iuZmap9bwrWQDRVBDRirGN4C+C2Zd7u80MbHPDi5LXzDcZodamYr8fGpxOJG9+
-         cQZnATF4Ea0ykf2DI2LFkN6+oO+au47cMBmY/ah6FOd0Yu8NwLdx2gXP6PK0zgfk/FVl
-         d5XrEkNmgDNqjUJTKWvbkMQHDg5i7+QZcSxqmZGGzma5dZtwr+ebc4iw4oBBUKILyGwe
-         5vi75QlYGSAmHTq0wmbKn0zm/loaA1/zPSK2vMr5cX+3JCAUa64xiho02j7x4kDXzF9s
-         eq/g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=281a7veJ+DulLeZQChfjoTTuZ6KmNJS1vFd2OvpkIkw=;
+        b=AvdaF2GcCqiNAYUdI6BKRaNVE4Q4NQbVEIIsNcY7ZOcf8mDUToATq5EKGbzJxb1G6R
+         6LELqMFB72ZCsAJniyFWw5UCCSExXCTiXAqzOfMMOZxs6lrQ+RABdRV38IGII+1DiXDF
+         RNI3VZPEUqmyIAHxTGI49Bwd2cGyy8yKmtqnMWBFG8/5ye90YeHx21yA9eX2Ji01IcLD
+         gTgtrF1OWzJdJ7X2aOtxqDXKWymrZ0Z+qFFKpeAN/kTtjgo++QTbE9G9Q8KsP3pGR07b
+         GCNlSRV4l+3iPr+MFEbRv36McOsvxv2TF8KmKAlMPNyn0wFxPtojgU5NjOZlOGj/2WXp
+         Kxpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=04hgzc9qmWLKJ4qr0kQdZsxTdQTI10306q/6E8gxvtc=;
-        b=ORHP4fP1DLMvIIlrYDL4BpRfYH/qmlMGy2qDbnPgqw8s9cMI1VxOADW7wgdNSX3jdU
-         rCohHrK8WdofBw4vv6hVtSFptHPaMG2bY2g9F3SwRtxF/4/A0GZVIhGm4sOqAe05odN/
-         ShGUoarj0O4w+T/smCB/nIQAi1BHh5fpCHEvBrhu0m3bviS/d1xGHbrdZ35u4RmaQhyL
-         cwoXSeX3WymOGTtyUGYtKuFgb0mB5KvO3qh1mGfme3BFUVufy4+PqbHutPmGIO/64uVg
-         aaYbCpioIw7TUK19zbGDL331f6nOKyyyTxtW9fMHWHxi/dzJFlQoFyEhTUSYwrXUSiT2
-         RZ3g==
-X-Gm-Message-State: APjAAAVHYMrjyp0LMLngTow4LCiF9QUvUhlJR04sof1bAlSKNNpS7MNH
-        TcexADB7qnsIaFFaMETA74PR0dCLOlQCiPc/fVIx1Q==
-X-Google-Smtp-Source: APXvYqy6RzDXcXpkWwa0bGaEo+8n7N3C2W0z0lEf79Xa7qw1LYxocO3L07nV4sCDvLvAw7yANGge1FFEGo3O1xtTF/4=
-X-Received: by 2002:a1f:2f51:: with SMTP id v78mr1342917vkv.101.1571303457218;
- Thu, 17 Oct 2019 02:10:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190722193939.125578-1-dianders@chromium.org>
- <20190722193939.125578-2-dianders@chromium.org> <CAPDyKFpKWo4n+nmBXVcDc4TNzFV3vc+3aeKcu_nKaB=hj=RKUQ@mail.gmail.com>
- <CAD=FV=WTKy3PmMSCbjKA_Ro_MP+dFE89oCzi_Bs7YeCrcD+3Xg@mail.gmail.com>
-In-Reply-To: <CAD=FV=WTKy3PmMSCbjKA_Ro_MP+dFE89oCzi_Bs7YeCrcD+3Xg@mail.gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 17 Oct 2019 11:10:21 +0200
-Message-ID: <CAPDyKFrwUgi6MzyZm0VgGWOahCGW6KgGRrWC7v=KvM=vbFY4RA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] mmc: core: Add sdio_trigger_replug() API
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ganapathi Bhat <gbhat@marvell.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Andreas Fenkart <afenkart@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Nishant Sarmukadam <nishants@marvell.com>,
-        netdev <netdev@vger.kernel.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Kate Stewart <kstewart@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=281a7veJ+DulLeZQChfjoTTuZ6KmNJS1vFd2OvpkIkw=;
+        b=tQxm2ql6fOelobdmdFJieMdqrcNvXOH4tXq9PkOUdVAVmDQqbMuWW4qGKdLBSNXk8O
+         vfLBNhcGHe9WIwP/+EauskqzNcEX0ZCJuPXnCk8OiD/XiCvE3RIKF6T9Egd5XLEaaiRm
+         +Px6KEb/udDUpxFp60CZCVKClQUpSLruD2IUFdRlIMNX8pOrxE+yRvfRMlEGbPN9Moy9
+         5IGlh/3ByLUzPPhdLDEsTK1WrAeK/qDtD0fxxP8nSAXu5wt2ARpuC4EJ7kUZOBzF9jys
+         bi9UXCo1M4PL+7hARF+DOf224nSNUE7BIT0umU+9TvWlwDpzB4Tv4RovgAmMueACrTfG
+         5W2w==
+X-Gm-Message-State: APjAAAUzA9YPsnGfQor8pFG1frTqrhP04iSrVEjVmmORikFdC5j31YpS
+        xOwSkH31QrAPYJZxWE9rV0NBsNCX
+X-Google-Smtp-Source: APXvYqyDdGe0S74qSiHJW1hWY3/eSxokpDbtAU0aBEu+r3kzyy6a3rsqza89Z5zlszIGoaOH5rO3yw==
+X-Received: by 2002:a17:90a:9f94:: with SMTP id o20mr3154127pjp.76.1571304406329;
+        Thu, 17 Oct 2019 02:26:46 -0700 (PDT)
+Received: from ubuntu-18.04-x8664 ([128.1.49.85])
+        by smtp.gmail.com with ESMTPSA id f128sm1871506pfg.143.2019.10.17.02.26.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Oct 2019 02:26:45 -0700 (PDT)
+From:   Zwb <ethercflow@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     yhs@fb.com, Zwb <ethercflow@gmail.com>
+Subject: [PATCH bpf-next] bpf: add new helper fd2path for mapping a file descriptor to a pathname
+Date:   Thu, 17 Oct 2019 05:26:31 -0400
+Message-Id: <20191017092631.3739-1-ethercflow@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Oct 2019 at 02:22, Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Thu, Oct 10, 2019 at 7:11 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> >
-> > On Mon, 22 Jul 2019 at 21:41, Douglas Anderson <dianders@chromium.org> wrote:
-> > >
-> > > When using Marvell WiFi SDIO cards, it is not uncommon for Linux WiFi
-> > > driver to fully lose the communication channel to the firmware running
-> > > on the card.  Presumably the firmware on the card has a bug or two in
-> > > it and occasionally crashes.
-> > >
-> > > The Marvell WiFi driver attempts to recover from this problem.
-> > > Specifically the driver has the function mwifiex_sdio_card_reset()
-> > > which is called when communcation problems are found.  That function
-> > > attempts to reset the state of things by utilizing the mmc_hw_reset()
-> > > function.
-> > >
-> > > The current solution is a bit complex because the Marvell WiFi driver
-> > > needs to manually deinit and reinit the WiFi driver around the reset
-> > > call.  This means it's going through a bunch of code paths that aren't
-> > > normally tested.  However, complexity isn't our only problem.  The
-> > > other (bigger) problem is that Marvell WiFi cards are often combo
-> > > WiFi/Bluetooth cards and Bluetooth runs on a second SDIO func.  While
-> > > the WiFi driver knows that it should re-init its own state around the
-> > > mmc_hw_reset() call there is no good way to inform the Bluetooth
-> > > driver.  That means that in Linux today when you reset the Marvell
-> > > WiFi driver you lose all Bluetooth communication.  Doh!
-> >
-> > Thanks for a nice description to the problem!
-> >
-> > In principle it makes mmc_hw_reset() quite questionable to use for
-> > SDIO func drivers, at all. However, let's consider that for later.
->
-> Yeah, unless you somehow knew that your card would only have one function.
->
->
-> > > One way to fix the above problems is to leverage a more standard way
-> > > to reset the Marvell WiFi card where we go through the same code paths
-> > > as card unplug and the card plug.  In this patch we introduce a new
-> > > API call for doing just that: sdio_trigger_replug().  This API call
-> > > will trigger an unplug of the SDIO card followed by a plug of the
-> > > card.  As part of this the card will be nicely reset.
-> >
-> > I have been thinking back and forth on this, exploring various
-> > options, perhaps adding some callbacks that the core could invoke to
-> > inform the SDIO func drivers of what is going on.
-> >
-> > Although, in the end this boils done to complexity and I think your
-> > approach is simply the most superior in regards to this. However, I
-> > think there is a few things that we can do to even further simply your
-> > approach, let me comment on the code below.
->
-> Right.  Unplugging / re-plugging is sorta gross / inelegant, but it is
-> definitely simpler and nice that it doesn't add so many new code
-> paths.  For cases where you're just trying to re-init things with a
-> hammer it works pretty well.
->
->
-> > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > > Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-> > > ---
-> > >
-> > > Changes in v2:
-> > > - s/routnine/routine (Brian Norris, Matthias Kaehlcke).
-> > > - s/contining/containing (Matthias Kaehlcke).
-> > > - Add Matthias Reviewed-by tag.
-> > >
-> > >  drivers/mmc/core/core.c       | 28 ++++++++++++++++++++++++++--
-> > >  drivers/mmc/core/sdio_io.c    | 20 ++++++++++++++++++++
-> > >  include/linux/mmc/host.h      | 15 ++++++++++++++-
-> > >  include/linux/mmc/sdio_func.h |  2 ++
-> > >  4 files changed, 62 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
-> > > index 221127324709..5da365b1fdb4 100644
-> > > --- a/drivers/mmc/core/core.c
-> > > +++ b/drivers/mmc/core/core.c
-> > > @@ -2161,6 +2161,12 @@ int mmc_sw_reset(struct mmc_host *host)
-> > >  }
-> > >  EXPORT_SYMBOL(mmc_sw_reset);
-> > >
-> > > +void mmc_trigger_replug(struct mmc_host *host)
-> > > +{
-> > > +       host->trigger_replug_state = MMC_REPLUG_STATE_UNPLUG;
-> > > +       _mmc_detect_change(host, 0, false);
-> > > +}
-> > > +
-> > >  static int mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)
-> > >  {
-> > >         host->f_init = freq;
-> > > @@ -2214,6 +2220,11 @@ int _mmc_detect_card_removed(struct mmc_host *host)
-> > >         if (!host->card || mmc_card_removed(host->card))
-> > >                 return 1;
-> > >
-> > > +       if (host->trigger_replug_state == MMC_REPLUG_STATE_UNPLUG) {
-> > > +               mmc_card_set_removed(host->card);
-> > > +               return 1;
-> >
-> > Do you really need to set state of the card to "removed"?
-> >
-> > If I understand correctly, what you need is to allow mmc_rescan() to
-> > run a second time, in particular for non removable cards.
-> >
-> > In that path, mmc_rescan should find the card being non-functional,
-> > thus it should remove it and then try to re-initialize it again. Etc.
-> >
-> > Do you want me to send a patch to show you what I mean!?
->
-> If you don't mind, that would probably be easiest.  I've totally
-> swapped out all of the implementation details of this from my brain
-> now, but if I saw a patch from you it would be easy for me to analyze
-> it and test it.
+When people want to identify which file system files are being opened,
+read, and written to, they can use this helper with file descriptor as
+input to achieve this goal. Other pseudo filesystems are also supported.
 
-Alright, I think I owe you that because of my slow review pase. :-)
+Signed-off-by: Zwb <ethercflow@gmail.com>
+---
+ include/linux/bpf.h            |  1 +
+ include/uapi/linux/bpf.h       |  1 +
+ kernel/bpf/core.c              |  1 +
+ kernel/bpf/helpers.c           | 39 ++++++++++++++++++++++++++++++++++
+ kernel/trace/bpf_trace.c       |  2 ++
+ tools/include/uapi/linux/bpf.h |  1 +
+ 6 files changed, 45 insertions(+)
 
-Patches are coming soon!
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 282e28bf41ec..c0a710cf2c88 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+ extern const struct bpf_func_proto bpf_strtol_proto;
+ extern const struct bpf_func_proto bpf_strtoul_proto;
+ extern const struct bpf_func_proto bpf_tcp_sock_proto;
++extern const struct bpf_func_proto bpf_fd2path_proto;
+ 
+ /* Shared helpers among cBPF and eBPF. */
+ void bpf_user_rnd_init_once(void);
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index a65c3b0c6935..a4a5d432e572 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2769,6 +2769,7 @@ union bpf_attr {
+ 	FN(get_current_pid_tgid),	\
+ 	FN(get_current_uid_gid),	\
+ 	FN(get_current_comm),		\
++	FN(fd2path),			\
+ 	FN(get_cgroup_classid),		\
+ 	FN(skb_vlan_push),		\
+ 	FN(skb_vlan_pop),		\
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 66088a9e9b9e..349a8b1be232 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2042,6 +2042,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+ const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+ const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+ const struct bpf_func_proto bpf_get_local_storage_proto __weak;
++const struct bpf_func_proto bpf_fd2path_proto __weak;
+ 
+ const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+ {
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 5e28718928ca..0832536c7ddb 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -487,3 +487,42 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+ 	.arg4_type	= ARG_PTR_TO_LONG,
+ };
+ #endif
++
++BPF_CALL_3(bpf_fd2path, char *, dst, u32, size, int, fd)
++{
++	struct fd f;
++	int ret;
++	char *p;
++
++	ret = security_locked_down(LOCKDOWN_BPF_READ);
++	if (ret < 0)
++		goto out;
++
++	f = fdget_raw(fd);
++	if (!f.file)
++		goto out;
++
++	p = d_path(&f.file->f_path, dst, size);
++	if (IS_ERR_OR_NULL(p))
++		ret = PTR_ERR(p);
++	else {
++		ret = strlen(p);
++		memmove(dst, p, ret);
++		dst[ret] = 0;
++	}
++
++	if (unlikely(ret < 0))
++out:
++		memset(dst, '0', size);
++
++	return ret;
++}
++
++const struct bpf_func_proto bpf_fd2path_proto = {
++	.func       = bpf_fd2path,
++	.gpl_only   = true,
++	.ret_type   = RET_INTEGER,
++	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
++	.arg2_type  = ARG_CONST_SIZE,
++	.arg3_type  = ARG_ANYTHING,
++};
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 44bd08f2443b..0ca7fdefb8e5 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ #endif
+ 	case BPF_FUNC_send_signal:
+ 		return &bpf_send_signal_proto;
++	case BPF_FUNC_fd2path:
++		return &bpf_fd2path_proto;
+ 	default:
+ 		return NULL;
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index a65c3b0c6935..a4a5d432e572 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -2769,6 +2769,7 @@ union bpf_attr {
+ 	FN(get_current_pid_tgid),	\
+ 	FN(get_current_uid_gid),	\
+ 	FN(get_current_comm),		\
++	FN(fd2path),			\
+ 	FN(get_cgroup_classid),		\
+ 	FN(skb_vlan_push),		\
+ 	FN(skb_vlan_pop),		\
+-- 
+2.17.1
 
-Kind regards
-Uffe
