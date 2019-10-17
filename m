@@ -2,102 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59623DA325
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 03:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4FB8DA323
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 03:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389880AbfJQB3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Oct 2019 21:29:21 -0400
-Received: from gate.crashing.org ([63.228.1.57]:49928 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727593AbfJQB3V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Oct 2019 21:29:21 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id x9H1Sgc9000334;
-        Wed, 16 Oct 2019 20:28:42 -0500
-Message-ID: <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
-Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
-From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
-To:     Vijay Khemka <vijaykhemka@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bhupesh Sharma <bhsharma@redhat.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        joel@jms.id.au, linux-aspeed@lists.ozlabs.org, sdasari@fb.com
-Date:   Thu, 17 Oct 2019 12:28:41 +1100
-In-Reply-To: <20191011213027.2110008-1-vijaykhemka@fb.com>
-References: <20191011213027.2110008-1-vijaykhemka@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
+        id S1730953AbfJQB3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Oct 2019 21:29:00 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34917 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727916AbfJQB27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Oct 2019 21:28:59 -0400
+Received: by mail-lj1-f193.google.com with SMTP id m7so715081lji.2
+        for <netdev@vger.kernel.org>; Wed, 16 Oct 2019 18:28:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=x5dwPlN4iFd8a8gfS79sSxwhKFB2wU4wQCoV5Q2NcZU=;
+        b=Bm4Cdxoy5kk7dylfgAt0esDG8tO0uB8bRUu/norlK2FFKunR4NCuawHbAMAdmedvWt
+         x4a7U4zdYBLtQtl0K12kHufoXZryxGXgBZfIIulw/IdixWKxrCJNXGVkxporRKOfi+4X
+         35QY3xwK1s2+Odgr+bcFvxv31Tj8yPmXim7eunkstKILtEpFsjALrgJUlO7asDxpAx6R
+         VS0jVSaF5AjLmkDRxgIuc+91Winjpm6j+ciLpRq1hdllZhqLjh3h1eykpRwhgH8FGf3H
+         U10fI/4QPG8RXs+gT0zKd9dr+msUDWYP7xQblqRq4TqPoCBMaA4vf1wIHKqA3g92KCZc
+         +yWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=x5dwPlN4iFd8a8gfS79sSxwhKFB2wU4wQCoV5Q2NcZU=;
+        b=icS4RwwiWefi8nkvjRsTTsYNvJMSDKkeOSaWptOf53CaBJC+qIkZ6E83SN9m+qUQW/
+         4eBbSDHqS/V3LI+Wq7WVJBvKDbJU7hTQupon4FbQdxwdhms8hMl6KXItKhh4NMMNoaQW
+         I2o9EufVwhaP+Orv/o2bNHtgBToe5DRk+2091hYAx4Z2yqZlIhGAr92CaLRa+f6JmSWP
+         pTBVZPtgZeZQKOIOy0X0JTghBS8WLXXFLaGjau6I6QWUaaeWGbbwA+rXompcGLpdAcYF
+         +p+zi7+r2irzRgXdYi5+1zgXjuWrvD+3/+gUYD6vd0lmvV4Wk+/SfxynruHFJanMqU1u
+         0Ngg==
+X-Gm-Message-State: APjAAAUzUtILc/vH4j1jq40mfGqY6Rfr6DvKnxI9Rr0HGusZ9xQaTaCs
+        PgGfQ7iiyVt02V8B2+e5H+pFag==
+X-Google-Smtp-Source: APXvYqz0Xg4FZWQ5U6mUV5ru3ppwLwTJhllCIsPGH8ekB9S6WIYw0N6H/SnoySlDfIW8ZnirbWzP2w==
+X-Received: by 2002:a2e:6c15:: with SMTP id h21mr629209ljc.10.1571275737847;
+        Wed, 16 Oct 2019 18:28:57 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s1sm211471lfd.14.2019.10.16.18.28.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Oct 2019 18:28:57 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 18:28:48 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org,
+        matteo.croce@redhat.com, mw@semihalf.com
+Subject: Re: [PATCH v4 net-next 7/7] net: mvneta: add XDP_TX support
+Message-ID: <20191016182849.27d130db@cakuba.netronome.com>
+In-Reply-To: <41267f6501185d6bcf0bc9a883b77e83d5c1f533.1571258793.git.lorenzo@kernel.org>
+References: <cover.1571258792.git.lorenzo@kernel.org>
+        <41267f6501185d6bcf0bc9a883b77e83d5c1f533.1571258793.git.lorenzo@kernel.org>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-10-11 at 14:30 -0700, Vijay Khemka wrote:
-> HW checksum generation is not working for AST2500, specially with
-> IPV6
-> over NCSI. All TCP packets with IPv6 get dropped. By disabling this
-> it works perfectly fine with IPV6. As it works for IPV4 so enabled
-> hw checksum back for IPV4.
+On Wed, 16 Oct 2019 23:03:12 +0200, Lorenzo Bianconi wrote:
+> Implement XDP_TX verdict and ndo_xdp_xmit net_device_ops function
+> pointer
 > 
-> Verified with IPV6 enabled and can do ssh.
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-So while this probably works, I don't think this is the right
-approach, at least according to the comments in skbuff.h
-
-The driver should have handled unsupported csum via SW fallback
-already in ftgmac100_prep_tx_csum()
-
-Can you check why this didn't work for you ?
-
-Cheers,
-Ben.
-
-> Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
-> ---
-> Changes since v1:
->  Enabled IPV4 hw checksum generation as it works for IPV4.
-> 
->  drivers/net/ethernet/faraday/ftgmac100.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
-> b/drivers/net/ethernet/faraday/ftgmac100.c
-> index 030fed65393e..0255a28d2958 100644
-> --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> @@ -1842,8 +1842,19 @@ static int ftgmac100_probe(struct
-> platform_device *pdev)
->  	/* AST2400  doesn't have working HW checksum generation */
->  	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
->  		netdev->hw_features &= ~NETIF_F_HW_CSUM;
+> +static int
+> +mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
+> +			struct xdp_frame *xdpf, bool dma_map)
+> +{
+> +	struct mvneta_tx_desc *tx_desc;
+> +	struct mvneta_tx_buf *buf;
+> +	dma_addr_t dma_addr;
 > +
-> +	/* AST2500 doesn't have working HW checksum generation for IPV6
-> +	 * but it works for IPV4, so disabling hw checksum and enabling
-> +	 * it for only IPV4.
-> +	 */
-> +	if (np && (of_device_is_compatible(np, "aspeed,ast2500-mac")))
-> {
-> +		netdev->hw_features &= ~NETIF_F_HW_CSUM;
-> +		netdev->hw_features |= NETIF_F_IP_CSUM;
+> +	if (txq->count >= txq->tx_stop_threshold)
+> +		return MVNETA_XDP_DROPPED;
+> +
+> +	tx_desc = mvneta_txq_next_desc_get(txq);
+> +
+> +	buf = &txq->buf[txq->txq_put_index];
+> +	if (dma_map) {
+> +		/* ndo_xdp_xmit */
+> +		dma_addr = dma_map_single(pp->dev->dev.parent, xdpf->data,
+> +					  xdpf->len, DMA_TO_DEVICE);
+> +		if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
+> +			mvneta_txq_desc_put(txq);
+> +			return MVNETA_XDP_DROPPED;
+> +		}
+> +		buf->type = MVNETA_TYPE_XDP_NDO;
+> +	} else {
+> +		struct page *page = virt_to_page(xdpf->data);
+> +
+> +		dma_addr = page_pool_get_dma_addr(page) +
+> +			   xdpf->headroom + sizeof(*xdpf);
+
+nit:
+
+ sizeof(*xdpf) + xdpf->headroom
+
+order would be slightly preferable since it matches field ordering in
+memory.
+
+> +		dma_sync_single_for_device(pp->dev->dev.parent, dma_addr,
+> +					   xdpf->len, DMA_BIDIRECTIONAL);
+> +		buf->type = MVNETA_TYPE_XDP_TX;
 > +	}
+> +	buf->xdpf = xdpf;
 > +
->  	if (np && of_get_property(np, "no-hw-checksum", NULL))
-> -		netdev->hw_features &= ~(NETIF_F_HW_CSUM |
-> NETIF_F_RXCSUM);
-> +		netdev->hw_features &= ~(NETIF_F_HW_CSUM |
-> NETIF_F_RXCSUM
-> +					 | NETIF_F_IP_CSUM);
->  	netdev->features |= netdev->hw_features;
->  
->  	/* register network device */
-
+> +	tx_desc->command = MVNETA_TXD_FLZ_DESC;
+> +	tx_desc->buf_phys_addr = dma_addr;
+> +	tx_desc->data_size = xdpf->len;
+> +
+> +	mvneta_update_stats(pp, 1, xdpf->len, true);
+> +	mvneta_txq_inc_put(txq);
+> +	txq->pending++;
+> +	txq->count++;
+> +
+> +	return MVNETA_XDP_TX;
+> +}
