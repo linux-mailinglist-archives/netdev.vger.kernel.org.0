@@ -2,50 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AADB0DBA30
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 01:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6CADBA36
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 01:35:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503756AbfJQXcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 19:32:12 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:43758 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503752AbfJQXcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 19:32:12 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EE85214304E2A;
-        Thu, 17 Oct 2019 16:32:11 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 16:32:11 -0700 (PDT)
-Message-Id: <20191017.163211.2216752480865273146.davem@davemloft.net>
-To:     marex@denx.de
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        george.mccollister@gmail.com, hkallweit1@gmail.com,
-        sean.nyekjaer@prevas.dk, Tristram.Ha@microchip.com,
-        woojung.huh@microchip.com
-Subject: Re: [PATCH net V5 2/2] net: phy: micrel: Update KSZ87xx PHY name
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191016133507.10564-2-marex@denx.de>
-References: <20191016133507.10564-1-marex@denx.de>
-        <20191016133507.10564-2-marex@denx.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
+        id S2438569AbfJQXff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 19:35:35 -0400
+Received: from gate.crashing.org ([63.228.1.57]:38654 "EHLO gate.crashing.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406743AbfJQXff (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 19:35:35 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id x9HNYwHU020037;
+        Thu, 17 Oct 2019 18:34:59 -0500
+Message-ID: <b99afb6c88f00279c68979f344a15a2c200ca67e.camel@kernel.crashing.org>
+Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
+From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To:     Vijay Khemka <vijaykhemka@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Bhupesh Sharma <bhsharma@redhat.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
+        "joel@jms.id.au" <joel@jms.id.au>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        Sai Dasari <sdasari@fb.com>
+Date:   Fri, 18 Oct 2019 10:34:57 +1100
+In-Reply-To: <071cf1eeefcbfc14633a13bc2d15ad7392987a88.camel@kernel.crashing.org>
+References: <20191011213027.2110008-1-vijaykhemka@fb.com>
+         <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
+         <0C0BC813-5A84-403F-9C48-9447AAABD867@fb.com>
+         <071cf1eeefcbfc14633a13bc2d15ad7392987a88.camel@kernel.crashing.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 17 Oct 2019 16:32:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
-Date: Wed, 16 Oct 2019 15:35:07 +0200
-
-> The KSZ8795 PHY ID is in fact used by KSZ8794/KSZ8795/KSZ8765 switches.
-> Update the PHY ID and name to reflect that, as this family of switches
-> is commonly refered to as KSZ87xx
+On Fri, 2019-10-18 at 10:14 +1100, Benjamin Herrenschmidt wrote:
 > 
-> Signed-off-by: Marek Vasut <marex@denx.de>
+> I don't understand what you are saying. You reported a problem with
+> IPV6 checksums generation. The HW doesn't support it. What's "not a
+> matter of unsupported csum" ?
+> 
+> Your patch uses a *deprecated* bit to tell the network stack to only do
+> HW checksum generation on IPV4.
+> 
+> This bit is deprecated for a reason, again, see skbuff.h. The right
+> approach, *which the driver already does*, is to tell the stack that we
+> support HW checksuming using NETIF_F_HW_CSUM, and then, in the transmit
+> handler, to call skb_checksum_help() to have the SW calculate the
+> checksum if it's not a supported type.
+> 
+> This is exactly what ftgmac100_prep_tx_csum() does. It only enables HW
+> checksum generation on supported types and uses skb_checksum_help()
+> otherwise, supported types being protocol ETH_P_IP and IP protocol
+> being raw IP, TCP and UDP.
+> 
+> So this *should* have fallen back to SW for IPV6. So either something
+> in my code there is making an incorrect assumption, or something is
+> broken in skb_checksum_help() for IPV6 (which I somewhat doubt) or
+> something else I can't think of, but setting a *deprecated* flag is
+> definitely not the right answer, neither is completely disabling HW
+> checksumming.
+> 
+> So can you investigate what's going on a bit more closely please ? I
+> can try myself, though I have very little experience with IPV6 and
+> probably won't have time before next week.
 
-Applied.
+I did get that piece of information from Aspeed: The HW checksum
+generation is supported if:
+
+ - The length of UDP header is always 20 bytes.
+ - The length of TCP and IP header have 4 * N bytes (N is 5 to 15).
+
+Now these afaik are also the protocol limits, so it *should* work.
+
+Or am I missing something or some funky encaspulation/header format
+that can be used under some circumstances ?
+
+Cheers,
+Ben.
+
+
