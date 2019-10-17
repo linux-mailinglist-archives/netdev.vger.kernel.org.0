@@ -2,111 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 091CBDB5EA
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:22:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66BE3DB610
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:25:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503276AbfJQSW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 14:22:26 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:43175 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503264AbfJQSWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 14:22:25 -0400
-Received: by mail-pg1-f193.google.com with SMTP id i32so1810420pgl.10
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:22:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sVXj4QsTp2+j0xPd9mlp//c3lsreZ1t/FKSxtEwd+Qg=;
-        b=g7U95ug20YN7wGXLU32e09eYFLoF1sNrslvMwDe7ldzkO/OizTi7M6NXePX2FzTlsr
-         KwGzl3LJtQWnyRtrdvskWAhR9MuKK8UnhKU0VPu3slmiqSBElt5okdBdJ2NQNHF42hhB
-         96UdljDfM2FiB83BBe+qM3HGl2MaKgLgoudPNcm9p1j3mkifzaRmoCXuMIY9WtN8PdKL
-         oIexssnRTL6c+QNO60QpqX5aKzCzj2cf7PnJuhdurfxaSt/LpRFD4eYYKtJSLEyuwI38
-         gDfbhw3eFSLBvbM7lvT7erBc8ShMRrAWqPkTNSzG09YlqVh1ZOx2u93Hd/bf6wiCHD8I
-         xaVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sVXj4QsTp2+j0xPd9mlp//c3lsreZ1t/FKSxtEwd+Qg=;
-        b=WMgiCw5NppEsUba5a9QYC8yi/H7lUDrZgvngyrA8uKJ4tarm8z2F76BMZAm3u0BabM
-         74ViBXDjFkiHxqwwLApCCgFvy7yPm7LMhH9JOonGdtd191o3P4xSyyl32lFjLVPrCHUe
-         UBx2l4ndngHacFUqKEobIXPklNSOwUNok2ISmrZFiH1xhI0QLkMqsYFx/ZjRnUHJvoWo
-         JxVIhh1100oN6kseaV/mmeyV0LXCF9vbBEgp6F9KRB41/SGpQcqn+jAxrkO9Um0g7WvU
-         crOGGM/LUV0aBlJwbAr/x6X2nPopKY46WoSg7zzJXoLJ46sZA6sRFTb5oE897M46mKiz
-         e0Yg==
-X-Gm-Message-State: APjAAAX80bGyeuZzG2K9+DADwvE5HeEK49fZlzTTCIZmkHbxaaM0VVpB
-        0b8n+6cfMy6LXiB70r7LinY=
-X-Google-Smtp-Source: APXvYqwyysFsBBdmzJYRP8X9qFVKdscj6XaKT/s8IkmCdeWadaV343N3N1UHkgXKYaj6jxvDNVIKGg==
-X-Received: by 2002:a17:90a:aa97:: with SMTP id l23mr5947288pjq.7.1571336544184;
-        Thu, 17 Oct 2019 11:22:24 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id p24sm6174603pgc.72.2019.10.17.11.22.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 11:22:23 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "John W . Linville" <linville@tuxdriver.com>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH 33/33] fix unused parameter warning in e1000_get_mac_type()
-Date:   Thu, 17 Oct 2019 11:21:21 -0700
-Message-Id: <20191017182121.103569-33-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
-In-Reply-To: <20191017182121.103569-1-zenczykowski@gmail.com>
-References: <CAHo-Ooze4yTO_yeimV-XSD=AXvvd0BmbKdvUK4bKWN=+LXirYQ@mail.gmail.com>
- <20191017182121.103569-1-zenczykowski@gmail.com>
+        id S2390539AbfJQSZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 14:25:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51164 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728492AbfJQSZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 14:25:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=NzDPVs1BOLZ/9v1I/jx6wbo7cilX1Fk11KMmOCph3h8=; b=jXr3BphEGakjeTyjFBpCWWwPC4
+        WIq5J7LW+vcv1COSR7pPUOKnTQ7O5v60mNt1v51TBSvUenxJ3b4EnuQgJbMeFoVu1/ZTcElwV/+jw
+        lIPd4gAf89BfpZDaNKCKIcXtr/kh1gyq7a5WCoHlqdYPHfFoaczrFqRCvuGtDTXcA0zU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iLASf-0005v4-8D; Thu, 17 Oct 2019 20:25:21 +0200
+Date:   Thu, 17 Oct 2019 20:25:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Stefan Wahren <wahrenst@gmx.net>
+Cc:     Daniel Wagner <dwagner@suse.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: lan78xx and phy_state_machine
+Message-ID: <20191017182521.GU17013@lunn.ch>
+References: <20191014140604.iddhmg5ckqhzlbkw@beryllium.lan>
+ <20191015005327.GJ19861@lunn.ch>
+ <20191015171653.ejgfegw3hkef3mbo@beryllium.lan>
+ <20191016142501.2c76q7kkfmfcnqns@beryllium.lan>
+ <20191016155107.GH17013@lunn.ch>
+ <20191017065230.krcrrlmedzi6tj3r@beryllium.lan>
+ <6f445327-a2bc-fa75-a70a-c117f2205ecd@gmx.net>
+ <20191017174133.e4uhsp77zod5vbef@beryllium.lan>
+ <388beb72-c7e6-745a-ad39-cfbde201f373@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <388beb72-c7e6-745a-ad39-cfbde201f373@gmx.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+On Thu, Oct 17, 2019 at 07:52:32PM +0200, Stefan Wahren wrote:
+> Hi Daniel,
+> 
+> Am 17.10.19 um 19:41 schrieb Daniel Wagner:
+> > Hi Stefan,
+> >
+> > On Thu, Oct 17, 2019 at 07:05:32PM +0200, Stefan Wahren wrote:
+> >> Am 17.10.19 um 08:52 schrieb Daniel Wagner:
+> >>> On Wed, Oct 16, 2019 at 05:51:07PM +0200, Andrew Lunn wrote:
+> >>>> Please could you give this a go. It is totally untested, not even
+> >>>> compile tested...
+> >>> Sure. The system boots but ther is one splat:
+> >>>
+> >> this is a known issues since 4.20 [1], [2]. So not related to the crash.
+> > Oh, I see.
+> >
+> >> Unfortunately, you didn't wrote which kernel version works for you
+> >> (except of this splat). Only 5.3 or 5.4-rc3 too?
+> > With v5.2.20 I was able to boot the system. But after this discussion
+> > I would say that was just luck. The race seems to exist for longer and
+> > only with my 'special' config I am able to reproduce it.
+> okay, let me rephrase my question. You said that 5.4-rc3 didn't even
+> boot in your setup. After applying Andrew's patch, does it boot or is it
+> a different issue?
 
-This fixes:
-  external/ethtool/e1000.c:258:38: error: unused parameter 'revision_id' [-Werror,-Wunused-parameter]
-  e1000_get_mac_type(u16 device_id, u8 revision_id)
+Hi Stefan
 
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Change-Id: I2469ef61996fd273cc3a2a6a7af0ae889c81b02b
----
- e1000.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+I would say i fixed a real issue with my patch. I will submit it to
+David for stable. The problem has come to light because Danial is
+using the kernel ipconfig and NFS root. That makes the race condition
+hit every time. But the issue could happen under other conditions as
+well.
 
-diff --git a/e1000.c b/e1000.c
-index da057b7..91e5bc1 100644
---- a/e1000.c
-+++ b/e1000.c
-@@ -254,8 +254,7 @@ enum e1000_mac_type {
- 	e1000_num_macs
- };
- 
--static enum e1000_mac_type
--e1000_get_mac_type(u16 device_id, u8 revision_id)
-+static enum e1000_mac_type e1000_get_mac_type(u16 device_id)
- {
- 	enum e1000_mac_type mac_type = e1000_undefined;
- 
-@@ -369,7 +368,7 @@ int e1000_dump_regs(struct ethtool_drvinfo *info maybe_unused,
- {
- 	u32 *regs_buff = (u32 *)regs->data;
- 	u16 hw_device_id = (u16)regs->version;
--	u8 hw_revision_id = (u8)(regs->version >> 16);
-+	/* u8 hw_revision_id = (u8)(regs->version >> 16); */
- 	u8 version = (u8)(regs->version >> 24);
- 	enum e1000_mac_type mac_type;
- 	u32 reg;
-@@ -377,7 +376,7 @@ int e1000_dump_regs(struct ethtool_drvinfo *info maybe_unused,
- 	if (version != 1)
- 		return -1;
- 
--	mac_type = e1000_get_mac_type(hw_device_id, hw_revision_id);
-+	mac_type = e1000_get_mac_type(hw_device_id);
- 
- 	if(mac_type == e1000_undefined)
- 		return -1;
--- 
-2.23.0.866.gb869b98d4c-goog
-
+    Andrew
