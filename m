@@ -2,142 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94376DB5CA
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0305DB5C1
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503113AbfJQSTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 14:19:54 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:39114 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438684AbfJQSTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 14:19:53 -0400
-Received: by mail-qt1-f196.google.com with SMTP id n7so4981409qtb.6;
-        Thu, 17 Oct 2019 11:19:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BZGDaHRbot/zkFBLsDuahXid2If7g7NHv2paIMjRMmQ=;
-        b=uESyCx4p0BcCVGA523iokmsdWIej74AcIIz+Nmb6AU29v3GzbnmcUV8SEB30s8YSlu
-         iE9i4H5LeWuwle85Yq5qg+Fuc+AvvDrDy/hCoTmkzti628RIypR+z7fQs6lezpKmS19G
-         Ce1vZABQJOuEXyNpXwKpkOCG/LqTWEAgJExzdD5sDJwM+HRKpIEiiQnQQsy9PSYN1etN
-         BxkDS1rbGWb5+d0ktbBM3o0Laq7jtSEG3J1zPGMPPeFwLpjT1THwCi6HxXwkdoXrdjQJ
-         bN9cV/qqFbySCnXkv6PklgrgGcneQX6TB5R/Qy3wOZFakUJONW//Gy2FkoQ2K5TebveF
-         p6/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BZGDaHRbot/zkFBLsDuahXid2If7g7NHv2paIMjRMmQ=;
-        b=IsMYMRveelsOd+Cfl/YUrAryLLBxqEIp57QwwET/NoWL20pp3CGE7XPNMK6VKbeEdl
-         hGDIVhm9vhPw8sKkcEDcuIZeb2IC11jLYANZ0f6GkLHDbQkdVgIw3XCaZGfvOvihhJMX
-         zSzfIJVuuB1u9je7iQGd2JYKgFjT/lbiDjpzK6tbeXWspH2wdseTES50k0pmlsdGHJqX
-         FxMBuxCuHdvAo+l6Xqwa8xh3kC2y64qTZzoO3m2Y/4YNuZgT5Rxy+zKOH6es/nwzkPWd
-         C2aNExSO/vGGZ7bmFq/liY7zirI9JFjj65mkLlCkX6nR0+1+VBsAHBTVsHtYP5JnLH3O
-         S0cQ==
-X-Gm-Message-State: APjAAAXH65pORNddHSdG2vMUDMeoCBtiOvUtpMEZn3dtcb1pBq8SxmLS
-        FvTxnWwd3WLr1b7OyBaJAf8mF/jE1Q+kfVdcIxmSvlv8
-X-Google-Smtp-Source: APXvYqw9SKTaAaRwPtouNF/y4lqkk3aDyz5kb354ncU98pGiNIEcarm4S5KEEw/c6HGUtlTIGQ3L1qKpq0ZGZQzZInA=
-X-Received: by 2002:ac8:5147:: with SMTP id h7mr5279459qtn.117.1571336391372;
- Thu, 17 Oct 2019 11:19:51 -0700 (PDT)
+        id S2441290AbfJQSTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 14:19:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58280 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2438684AbfJQSTo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 14:19:44 -0400
+Received: from localhost (unknown [192.55.54.60])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7436B20659;
+        Thu, 17 Oct 2019 18:19:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571336383;
+        bh=d2CkK/TjWefe+aETPDcliT8tW3ji3ywfXQM4uR0Zey8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JdgltpGxueQH9B2zsQdKdVywPuJRGbeBqRqgfZUvqHWQ6Cmkpe9L+xCcSRtaFdtiY
+         bccFMNwTuPX3nTL4O/U2gYFyU/WLlgZymFynhRPQVfJ0DKc82IcWePUP/yV1qdJma9
+         wXtDiK3hzot8f4JkLeLC+5eB35zIaB9Nt/5A75Ks=
+Date:   Thu, 17 Oct 2019 11:19:43 -0700
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andrey Konovalov <andreyknvl@google.com>
+Cc:     linux-usb@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Windsor <dwindsor@gmail.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: [PATCH RFC 2/3] usb, kcov: collect coverage from hub_event
+Message-ID: <20191017181943.GC1094415@kroah.com>
+References: <cover.1571333592.git.andreyknvl@google.com>
+ <1b30d1c9e7f86c25425c5ee53d7facede289608e.1571333592.git.andreyknvl@google.com>
 MIME-Version: 1.0
-References: <20191016060051.2024182-1-andriin@fb.com> <20191016060051.2024182-6-andriin@fb.com>
- <CAEf4BzZvNQwcn3=sUHjnVfGzAMkfECpiJ7=YEDWSnLFZD7xeCA@mail.gmail.com> <a5076b0f-9cc2-8f5c-7b3c-5882aa595332@fb.com>
-In-Reply-To: <a5076b0f-9cc2-8f5c-7b3c-5882aa595332@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 17 Oct 2019 11:19:39 -0700
-Message-ID: <CAEf4BzbFEHUqL00cF8bckOfEzeCky9vcRbgaiNK2=mAe=rAY_w@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 5/7] selftests/bpf: replace test_progs and
- test_maps w/ general rule
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1b30d1c9e7f86c25425c5ee53d7facede289608e.1571333592.git.andreyknvl@google.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 17, 2019 at 10:54 AM Alexei Starovoitov <ast@fb.com> wrote:
->
-> On 10/17/19 10:50 AM, Andrii Nakryiko wrote:
-> > On Tue, Oct 15, 2019 at 11:01 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> >>
-> >> Define test runner generation meta-rule that codifies dependencies
-> >> between test runner, its tests, and its dependent BPF programs. Use that
-> >> for defining test_progs and test_maps test-runners. Also additionally define
-> >> 2 flavors of test_progs:
-> >> - alu32, which builds BPF programs with 32-bit registers codegen;
-> >> - bpf_gcc, which build BPF programs using GCC, if it supports BPF target.
-> >>
-> >> Overall, this is accomplished through $(eval)'ing a set of generic
-> >> rules, which defines Makefile targets dynamically at runtime. See
-> >> comments explaining the need for 2 $(evals), though.
-> >>
-> >> For each test runner we have (test_maps and test_progs, currently), and,
-> >> optionally, their flavors, the logic of build process is modeled as
-> >> follows (using test_progs as an example):
-> >> - all BPF objects are in progs/:
-> >>    - BPF object's .o file is built into output directory from
-> >>      corresponding progs/.c file;
-> >>    - all BPF objects in progs/*.c depend on all progs/*.h headers;
-> >>    - all BPF objects depend on bpf_*.h helpers from libbpf (but not
-> >>      libbpf archive). There is an extra rule to trigger bpf_helper_defs.h
-> >>      (re-)build, if it's not present/outdated);
-> >>    - build recipe for BPF object can be re-defined per test runner/flavor;
-> >> - test files are built from prog_tests/*.c:
-> >>    - all such test file objects are built on individual file basis;
-> >>    - currently, every single test file depends on all BPF object files;
-> >>      this might be improved in follow up patches to do 1-to-1 dependency,
-> >>      but allowing to customize this per each individual test;
-> >>    - each test runner definition can specify a list of extra .c and .h
-> >>      files to be built along test files and test runner binary; all such
-> >>      headers are becoming automatic dependency of each test .c file;
-> >>    - due to test files sometimes embedding (using .incbin assembly
-> >>      directive) contents of some BPF objects at compilation time, which are
-> >>      expected to be in CWD of compiler, compilation for test file object does
-> >>      cd into test runner's output directory; to support this mode all the
-> >>      include paths are turned into absolute paths using $(abspath) make
-> >>      function;
-> >> - prog_tests/test.h is automatically (re-)generated with an entry for
-> >>    each .c file in prog_tests/;
-> >> - final test runner binary is linked together from test object files and
-> >>    extra object files, linking together libbpf's archive as well;
-> >> - it's possible to specify extra "resource" files/targets, which will be
-> >>    copied into test runner output directory, if it differes from
-> >>    Makefile-wide $(OUTPUT). This is used to ensure btf_dump test cases and
-> >>    urandom_read binary is put into a test runner's CWD for tests to find
-> >>    them in runtime.
-> >>
-> >> For flavored test runners, their output directory is a subdirectory of
-> >> common Makefile-wide $(OUTPUT) directory with flavor name used as
-> >> subdirectory name.
-> >>
-> >> BPF objects targets might be reused between different test runners, so
-> >> extra checks are employed to not double-define them. Similarly, we have
-> >> redefinition guards for output directories and test headers.
-> >>
-> >> test_verifier follows slightly different patterns and is simple enough
-> >> to not justify generalizing TEST_RUNNER_DEFINE/TEST_RUNNER_DEFINE_RULES
-> >> further to accomodate these differences. Instead, rules for
-> >> test_verifier are minimized and simplified, while preserving correctness
-> >> of dependencies.
-> >>
-> >> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >> ---
-> >
-> > BTW, if correctness and DRY-ness argument is not strong enough, these
-> > changes makes clean rebuild from scratch about 2x faster for me:
-> >
-> > BEFORE: `make clean && time make -j50` is 14-15 seconds
-> > AFTER: `make clean && time make -j50` is 7-8 seconds
->
-> I noticed that too and was about to ask "why?" .. :)
+On Thu, Oct 17, 2019 at 07:44:14PM +0200, Andrey Konovalov wrote:
+> This patch adds kcov_remote_start/kcov_remote_stop annotations to the
+> hub_event function, which is responsible for processing events on USB
+> buses, in particular events that happen during USB device enumeration.
+> Each USB bus gets a unique id, which can be used to attach a kcov device
+> to a particular USB bus for coverage collection.
+> 
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> ---
+>  drivers/usb/core/hub.c    | 4 ++++
+>  include/linux/kcov.h      | 1 +
+>  include/uapi/linux/kcov.h | 7 +++++++
+>  3 files changed, 12 insertions(+)
+> 
+> diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+> index 236313f41f4a..03a40e41b099 100644
+> --- a/drivers/usb/core/hub.c
+> +++ b/drivers/usb/core/hub.c
+> @@ -5374,6 +5374,8 @@ static void hub_event(struct work_struct *work)
+>  	hub_dev = hub->intfdev;
+>  	intf = to_usb_interface(hub_dev);
+>  
+> +	kcov_remote_start(kcov_remote_handle_usb(hdev->bus->busnum));
+> +
+>  	dev_dbg(hub_dev, "state %d ports %d chg %04x evt %04x\n",
+>  			hdev->state, hdev->maxchild,
+>  			/* NOTE: expects max 15 ports... */
+> @@ -5480,6 +5482,8 @@ static void hub_event(struct work_struct *work)
+>  	/* Balance the stuff in kick_hub_wq() and allow autosuspend */
+>  	usb_autopm_put_interface(intf);
+>  	kref_put(&hub->kref, hub_release);
+> +
+> +	kcov_remote_stop();
+>  }
+>  
+>  static const struct usb_device_id hub_id_table[] = {
+> diff --git a/include/linux/kcov.h b/include/linux/kcov.h
+> index 702672d98d35..38a47e0b67c2 100644
+> --- a/include/linux/kcov.h
+> +++ b/include/linux/kcov.h
+> @@ -30,6 +30,7 @@ void kcov_task_exit(struct task_struct *t);
+>  /*
+>   * Reserved handle ranges:
+>   * 0000000000000000 - 0000ffffffffffff : common handles
+> + * 0001000000000000 - 0001ffffffffffff : USB subsystem handles
 
-alu32 BPF .o's were dependent on alu32/test_progs for some reason, so
-they blocked on all tests be built first, which is completely
-backwards and slower. Now all the flavors are built completely in
-parallel. Overall CPU usage across all cores increased (because we do
-more work compiling binaries), but it's more parallel.
+So how many bits are you going to have for any in-kernel tasks?  Aren't
+you going to run out quickly?
+
+
+>   */
+>  void kcov_remote_start(u64 handle);
+>  void kcov_remote_stop(void);
+> diff --git a/include/uapi/linux/kcov.h b/include/uapi/linux/kcov.h
+> index 46f78f716ca9..45c9ae59cebc 100644
+> --- a/include/uapi/linux/kcov.h
+> +++ b/include/uapi/linux/kcov.h
+> @@ -43,4 +43,11 @@ enum {
+>  #define KCOV_CMP_SIZE(n)        ((n) << 1)
+>  #define KCOV_CMP_MASK           KCOV_CMP_SIZE(3)
+>  
+> +#define KCOV_REMOTE_HANDLE_USB  0x0001000000000000ull
+> +
+> +static inline __u64 kcov_remote_handle_usb(unsigned int bus)
+> +{
+> +	return KCOV_REMOTE_HANDLE_USB + (__u64)bus;
+> +}
+
+Why is this function in a uapi .h file?  What userspace code would call
+this?
+
+thanks,
+
+greg k-h
