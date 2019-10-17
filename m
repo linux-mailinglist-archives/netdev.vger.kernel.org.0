@@ -2,102 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE636DB625
-	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:31:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C079DB64A
+	for <lists+netdev@lfdr.de>; Thu, 17 Oct 2019 20:36:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390554AbfJQSbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 14:31:05 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:37082 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731227AbfJQSbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 14:31:04 -0400
-Received: by mail-lj1-f195.google.com with SMTP id l21so3615654lje.4
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 11:31:03 -0700 (PDT)
+        id S2438966AbfJQSgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 14:36:01 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33263 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438924AbfJQSgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 14:36:01 -0400
+Received: by mail-wr1-f66.google.com with SMTP id b9so3520070wrs.0;
+        Thu, 17 Oct 2019 11:35:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=znpVz5tg9ACJ4Rmonx9XgytIE074tRKt/V61yqpE9EM=;
-        b=rlpiNE5E4WJKGhsnbL+Fv4Ba8SI6IvsVhJ0mugQhZxlTrCUwhA9iWDB2SKv/8AhvrX
-         pNNqFm31JInETMQB6B8KrtbV/I0eDf59qBWlyy457C/pvesJeT7ghoc+LfVQAfryZieI
-         LHJyRKI1jQS6iCyFy58zwVhFxVzV6wsB4TtQ3R7sAKUrjM0QhJYZ/fn5g9xcI3QA4SOl
-         CnYJ5e/QCDDO/iqguNxbVixfqyZ0yZiOI/cKus5rkAKgGvO7LxzWBHjIxN0rGluucNpG
-         4mxMVbbyeXIGJzCNnABbYwZGi9hvVrYxQFRdGTVOmybHecFZpYGrGzfpdmedHvy78eza
-         SJaw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=L/172PFesHWuvzNopt4c4XlSQQptfEWlNlsUsPCP8v8=;
+        b=UHG/4bLFtFCzmfzkVGc2ImqhRoK5hPPugYe10a7h/AHV34r//c3q8LQl4Uj67cTlbN
+         JoCk/UwGu+U8SRK2B1kbvqi4b1zjVtdw6qbWArTZsOG4XLgW34gTamVTiIoRw5JfAow7
+         o/7y+KYslgzzN/Vs8xkqNYoxXo8S98QVbnQry/NnNc9kdsybo+1TqjbpWc0156S9NjE/
+         QPp2znoHrt5f62rqIbsgH6NkXL6su3ENXfz9DmK8TQPazqy72sTIaisWe50NqX5JsEg6
+         Hfd4PuerKUUD/Pf5A8rdUty3wYr1lW+daPacXsvGVJ3/aOUhHtCLAFGlp46QbmB+a3GN
+         IFjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=znpVz5tg9ACJ4Rmonx9XgytIE074tRKt/V61yqpE9EM=;
-        b=ZWX/Bir3lgt7AlY2dhTcOlVi48lcQNqib2iR6q/3OeI931MqNRa2WufF9Pe72+xI+8
-         pcORfYXRXL7SKufBhfxYJMnoKG6BCdIl2wmky5uSjOa314WxXaRD+K80qr2TgtDXXRxZ
-         ABV/XT1Yz9JV/den7M+QzMlk32gF4+la8yEuIO8lRRaFk8CZOYaypRh5BpMWBZP+fTzB
-         WaLNtUFf1ZEUjtdWrgZrxx5R+DUNQvLNsq2Mls8u4LpLCN5/7+TrYzG6/FLTa9OOkVj8
-         jPlswl48L00h4v0XJZtWydyt07mzyqhNGOKsVyVqNWxA5DXIaYTxcLbp8+etKLlwFfJo
-         +Drw==
-X-Gm-Message-State: APjAAAXLBCVSKMl/GzNRrNhVzpNwaCeY/2CGrAM2uYI8jv4w2fyjbj7E
-        0iVzcgkXqjIUxp0n6BvKWcz3T3z3g9VA53U1jHE=
-X-Google-Smtp-Source: APXvYqzIUptju9cfU4HUqKbNdvkNT39ICrzFWUdbP2w68yD1IgirZAhyVJ+esy+a3RyRpWtrVg/jZXt2uPM8QyWaFms=
-X-Received: by 2002:a2e:8417:: with SMTP id z23mr3491338ljg.46.1571337062330;
- Thu, 17 Oct 2019 11:31:02 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=L/172PFesHWuvzNopt4c4XlSQQptfEWlNlsUsPCP8v8=;
+        b=HiYL7h45vzGsQQ3790sHprLwSnZM/+wG3N+7iJSNRrO+II9lFf/fWFd5wKAv0bOEvA
+         zPQX+373akAhichskeG3maRRTGb92xUTkN0nrJyq2AyJJczih0YYN5SXY5/sUdWKhHei
+         rMRthONEUu17OT8iXNUlW5Cznt9pt1ZENiiVFIRUt2sAQ6qRPFDF+f1hN6u+nNwpEyvX
+         bxJ/3epNx1FNJ6RKimUy9vQTJvV9GsJGxsUt4HO3kSxOk9T/7Z3CEy6rj6FnmYeraOGO
+         I/wmEK/oghptcEd6BDcwAsHwKh/HlF5oLKQfglP9HghVx9QK99HdU1ZxUl+R0nuDzepm
+         R+aA==
+X-Gm-Message-State: APjAAAWPEaylYRwu4IygTC1S+/BKDsDL21ATcUbm+I9+eLxIcOpLrswD
+        fbjBZaLFA8HF8Bmkd69dj3qDTTDf
+X-Google-Smtp-Source: APXvYqxnhdYQusvYfFeUZHFuap0s7BvTLgqmJZXqKtYnH7Ct6SqR++6A5hhIRnW3QcZVratWlK/KXQ==
+X-Received: by 2002:adf:ee81:: with SMTP id b1mr3923610wro.58.1571337358592;
+        Thu, 17 Oct 2019 11:35:58 -0700 (PDT)
+Received: from [10.230.29.119] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a14sm2540026wmm.44.2019.10.17.11.35.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Oct 2019 11:35:57 -0700 (PDT)
+Subject: Re: [PATCH v1 4/4] net: dsa: add support for Atheros AR9331 build-in
+ switch
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Chris Snook <chris.snook@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org
+References: <20191014061549.3669-1-o.rempel@pengutronix.de>
+ <20191014061549.3669-5-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <2ad26bdc-e099-ded6-1337-5793aba0958d@gmail.com>
+Date:   Thu, 17 Oct 2019 11:35:48 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-References: <20191008053507.252202-1-zenczykowski@gmail.com>
- <20191008053507.252202-2-zenczykowski@gmail.com> <20191008060414.GB25052@breakpoint.cc>
- <CAHo-OowyjPdV-WbnDVqE4dJrHQUcT2q7JYfayVDZ9hhBoxY4DQ@mail.gmail.com>
- <CAHo-Ooy=UC9pEQ8xGuJO+8-c0ZaBYind3mo7UHEz1Oo387hyww@mail.gmail.com> <CAM_iQpV7D73p7k=806u+2vxiDDK-ecFuW5Rbk6j_BDO0K-FEGg@mail.gmail.com>
-In-Reply-To: <CAM_iQpV7D73p7k=806u+2vxiDDK-ecFuW5Rbk6j_BDO0K-FEGg@mail.gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Thu, 17 Oct 2019 11:30:51 -0700
-Message-ID: <CAHo-OoxQ04vvBB-eO8_5MJLfWyy-fdvC_73TF0QfacH6Bg8d=Q@mail.gmail.com>
-Subject: Re: [PATCH 2/2] netfilter: revert "conntrack: silent a memory leak warning"
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191014061549.3669-5-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> So you conclude as it is not leak too? Then what are you trying to
-> fix?
 
-I conclude there is no easily *visible* leak.
-At least not at first glance - not with single threaded code.
 
-> I am becoming more confused after this. :-/
+On 10/13/2019 11:15 PM, Oleksij Rempel wrote:
+> Provide basic support for Atheros AR9331 build-in switch. So far it
+> works as port multiplexer without any hardware offloading support.
 
-I think adding kmemleak_not_leak() is hiding the fact that there
-actually is a leak.
+I glanced through the functional parts of the code, and it looks pretty
+straight forward, since there is no offloading done so far, do you plan
+on adding bridge offload eventually if nothing more?
 
-I think the leak is far more subtle.  Possibly some sort of race
-condition or something.
-I don't see it though.
+When you submit v2, I would suggest splitting the tagger code from the
+switch driver code, just to make them easier to review.
 
-The rcu doesn't seem entirely kosher, but I know little about such things.
-
-And I think the leak is *still* here.
-
-After all kmemleak_not_leak is purely annotation.
-It doesn't fix any leaks, it just makes us not warn about them.
-
-> > Basically AFAICT our use of __krealloc() is exactly like krealloc()
-> > except instead of kfree() we do kfree_rcu().
-> >
-> > And thus I don't understand the need for kmemleak_not_leak(old).
->
-> kfree_rcu() is a callback deferred after a grace period, so if we
-> allocate the memory again before that callback, it is reported to
-> kmemleak as a memory leak unless we mark it as not, right?
->
-> Or kfree_rcu() works nicely with kmemleak which I am not aware
-> of?
-
-We have kfree_rcu() all over the kernel, but there's very few
-kmemleak_not_leak's.
-
-I don't see how kfree_rcu() could not work nicely with kmemleak.
-If it didn't we'd have it reporting leaks all over the place...
+Thanks!
+-- 
+Florian
