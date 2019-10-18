@@ -2,157 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECEC4DC353
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 12:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 231ABDC390
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 13:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633329AbfJRK7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 06:59:21 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55788 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392257AbfJRK7V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 06:59:21 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 3DBB3CA377;
-        Fri, 18 Oct 2019 10:59:20 +0000 (UTC)
-Received: from [10.72.12.59] (ovpn-12-59.pek2.redhat.com [10.72.12.59])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 87CDC60852;
-        Fri, 18 Oct 2019 10:57:30 +0000 (UTC)
-Subject: Re: [PATCH V4 4/6] mdev: introduce virtio device and its device ops
-To:     Tiwei Bie <tiwei.bie@intel.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-References: <20191017104836.32464-1-jasowang@redhat.com>
- <20191017104836.32464-5-jasowang@redhat.com> <20191018094655.GA4200@___>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <a2a8e447-c778-59db-071a-ffa348a69bb8@redhat.com>
-Date:   Fri, 18 Oct 2019 18:57:22 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20191018094655.GA4200@___>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Fri, 18 Oct 2019 10:59:20 +0000 (UTC)
+        id S2409883AbfJRLCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 07:02:14 -0400
+Received: from inca-roads.misterjones.org ([213.251.177.50]:43379 "EHLO
+        inca-roads.misterjones.org" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390315AbfJRLCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 07:02:14 -0400
+Received: from [212.111.254.166] (helo=big-swifty.misterjones.org)
+        by cheepnis.misterjones.org with esmtpsa (TLSv1.2:AES256-GCM-SHA384:256)
+        (Exim 4.80)
+        (envelope-from <maz@kernel.org>)
+        id 1iLQ1L-0005Xu-ES; Fri, 18 Oct 2019 13:02:11 +0200
+Date:   Fri, 18 Oct 2019 12:02:10 +0100
+Message-ID: <86imomz58t.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Daniel Wagner <dwagner@suse.de>
+Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>, Stefan Wahren <wahrenst@gmx.net>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] net: usb: lan78xx: Use phy_mac_interrupt() for interrupt handling
+In-Reply-To: <20191018082817.111480-1-dwagner@suse.de>
+References: <20191018082817.111480-1-dwagner@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 EasyPG/1.0.0 Emacs/26
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 212.111.254.166
+X-SA-Exim-Rcpt-To: dwagner@suse.de, UNGLinuxDriver@microchip.com, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org, woojung.huh@microchip.com, andrew@lunn.ch, wahrenst@gmx.net, Jisheng.Zhang@synaptics.com, bigeasy@linutronix.de, tglx@linutronix.de
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on cheepnis.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 18 Oct 2019 09:28:17 +0100,
+Daniel Wagner <dwagner@suse.de> wrote:
+> 
+> handle_simple_irq() expect interrupts to be disabled. The USB
+> framework is using threaded interrupts, which implies that interrupts
+> are re-enabled as soon as it has run.
+> 
+> This reverts the changes from cc89c323a30e ("lan78xx: Use irq_domain
+> for phy interrupt from USB Int. EP").
+> 
+> [    4.886203] 000: irq 79 handler irq_default_primary_handler+0x0/0x8 enabled interrupts
+> [    4.886243] 000: WARNING: CPU: 0 PID: 0 at kernel/irq/handle.c:152 __handle_irq_event_percpu+0x154/0x168
+> [    4.896294] 000: Modules linked in:
+> [    4.896301] 000: CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.3.6 #39
+> [    4.896310] 000: Hardware name: Raspberry Pi 3 Model B+ (DT)
+> [    4.896315] 000: pstate: 60000005 (nZCv daif -PAN -UAO)
+> [    4.896321] 000: pc : __handle_irq_event_percpu+0x154/0x168
+> [    4.896331] 000: lr : __handle_irq_event_percpu+0x154/0x168
+> [    4.896339] 000: sp : ffff000010003cc0
+> [    4.896346] 000: x29: ffff000010003cc0 x28: 0000000000000060
+> [    4.896355] 000: x27: ffff000011021980 x26: ffff00001189c72b
+> [    4.896364] 000: x25: ffff000011702bc0 x24: ffff800036d6e400
+> [    4.896373] 000: x23: 000000000000004f x22: ffff000010003d64
+> [    4.896381] 000: x21: 0000000000000000 x20: 0000000000000002
+> [    4.896390] 000: x19: ffff8000371c8480 x18: 0000000000000060
+> [    4.896398] 000: x17: 0000000000000000 x16: 00000000000000eb
+> [    4.896406] 000: x15: ffff000011712d18 x14: 7265746e69206465
+> [    4.896414] 000: x13: ffff000010003ba0 x12: ffff000011712df0
+> [    4.896422] 000: x11: 0000000000000001 x10: ffff000011712e08
+> [    4.896430] 000: x9 : 0000000000000001 x8 : 000000000003c920
+> [    4.896437] 000: x7 : ffff0000118cc410 x6 : ffff0000118c7f00
+> [    4.896445] 000: x5 : 000000000003c920 x4 : 0000000000004510
+> [    4.896453] 000: x3 : ffff000011712dc8 x2 : 0000000000000000
+> [    4.896461] 000: x1 : 73a3f67df94c1500 x0 : 0000000000000000
+> [    4.896466] 000: Call trace:
+> [    4.896471] 000:  __handle_irq_event_percpu+0x154/0x168
+> [    4.896481] 000:  handle_irq_event_percpu+0x50/0xb0
+> [    4.896489] 000:  handle_irq_event+0x40/0x98
+> [    4.896497] 000:  handle_simple_irq+0xa4/0xf0
+> [    4.896505] 000:  generic_handle_irq+0x24/0x38
+> [    4.896513] 000:  intr_complete+0xb0/0xe0
+> [    4.896525] 000:  __usb_hcd_giveback_urb+0x58/0xd8
+> [    4.896533] 000:  usb_giveback_urb_bh+0xd0/0x170
+> [    4.896539] 000:  tasklet_action_common.isra.0+0x9c/0x128
+> [    4.896549] 000:  tasklet_hi_action+0x24/0x30
+> [    4.896556] 000:  __do_softirq+0x120/0x23c
+> [    4.896564] 000:  irq_exit+0xb8/0xd8
+> [    4.896571] 000:  __handle_domain_irq+0x64/0xb8
+> [    4.896579] 000:  bcm2836_arm_irqchip_handle_irq+0x60/0xc0
+> [    4.896586] 000:  el1_irq+0xb8/0x140
+> [    4.896592] 000:  arch_cpu_idle+0x10/0x18
+> [    4.896601] 000:  do_idle+0x200/0x280
+> [    4.896608] 000:  cpu_startup_entry+0x20/0x28
+> [    4.896615] 000:  rest_init+0xb4/0xc0
+> [    4.896623] 000:  arch_call_rest_init+0xc/0x14
+> [    4.896632] 000:  start_kernel+0x454/0x480
+> 
+> [dwagner: Updated Jisheng's initial patch]
+> 
+> Fixes: cc89c323a30e ("lan78xx: Use irq_domain for phy interrupt from USB Int. EP")
+> Cc: Woojung Huh <woojung.huh@microchip.com>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Stefan Wahren <wahrenst@gmx.net>
+> Cc: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Daniel Wagner <dwagner@suse.de>
+> ---
+> Hi,
+> 
+> With Andrew's "net: usb: lan78xx: Connect PHY before registering MAC"
+> and this patch I am able to boot and use the RPi3 with -rt.
+> 
+> There was already a lot of dicussion on this topic but no fixes so
+> far. So I just suggest to revert the original commit since it is not
+> clear to me what it fixes:
+> 
+> https://www.spinics.net/lists/netdev/msg542290.html
+> https://marc.info/?l=linux-netdev&m=154604180927252&w=2
+> https://patchwork.kernel.org/patch/10888797/
+> 
+> Without this revert RPi3 is not usable for -rt at this point.
 
-On 2019/10/18 下午5:46, Tiwei Bie wrote:
-> On Thu, Oct 17, 2019 at 06:48:34PM +0800, Jason Wang wrote:
->> + * @get_vq_state:		Get the state for a virtqueue
->> + *				@mdev: mediated device
->> + *				@idx: virtqueue index
->> + *				Returns virtqueue state (last_avail_idx)
->> + * @get_vq_align:		Get the virtqueue align requirement
->> + *				for the device
->> + *				@mdev: mediated device
->> + *				Returns virtqueue algin requirement
->> + * @get_features:		Get virtio features supported by the device
->> + *				@mdev: mediated device
->> + *				Returns the virtio features support by the
->> + *				device
->> + * @get_features:		Set virtio features supported by the driver
-> s/get_features/set_features/
+Acked-by: Marc Zyngier <maz@kernel.org>
 
+	M.
 
-Will fix.
-
-
->
->> + *				configration space
->> + * @get_mdev_features:		Get the feature of virtio mdev device
->> + *				@mdev: mediated device
->> + *				Returns the mdev features (API) support by
->> + *				the device.
->> + * @get_generation:		Get device generaton
->> + *				@mdev: mediated device
->> + *				Returns u32: device generation
->> + */
->> +struct virtio_mdev_device_ops {
->> +	/* Virtqueue ops */
->> +	int (*set_vq_address)(struct mdev_device *mdev,
->> +			      u16 idx, u64 desc_area, u64 driver_area,
->> +			      u64 device_area);
->> +	void (*set_vq_num)(struct mdev_device *mdev, u16 idx, u32 num);
->> +	void (*kick_vq)(struct mdev_device *mdev, u16 idx);
->> +	void (*set_vq_cb)(struct mdev_device *mdev, u16 idx,
->> +			  struct virtio_mdev_callback *cb);
->> +	void (*set_vq_ready)(struct mdev_device *mdev, u16 idx, bool ready);
->> +	bool (*get_vq_ready)(struct mdev_device *mdev, u16 idx);
->> +	int (*set_vq_state)(struct mdev_device *mdev, u16 idx, u64 state);
->> +	u64 (*get_vq_state)(struct mdev_device *mdev, u16 idx);
->> +
->> +	/* Device ops */
->> +	u16 (*get_vq_align)(struct mdev_device *mdev);
->> +	u64 (*get_features)(struct mdev_device *mdev);
->> +	int (*set_features)(struct mdev_device *mdev, u64 features);
->> +	void (*set_config_cb)(struct mdev_device *mdev,
->> +			      struct virtio_mdev_callback *cb);
->> +	u16 (*get_vq_num_max)(struct mdev_device *mdev);
->> +	u32 (*get_device_id)(struct mdev_device *mdev);
->> +	u32 (*get_vendor_id)(struct mdev_device *mdev);
->> +	u8 (*get_status)(struct mdev_device *mdev);
->> +	void (*set_status)(struct mdev_device *mdev, u8 status);
->> +	void (*get_config)(struct mdev_device *mdev, unsigned int offset,
->> +			   void *buf, unsigned int len);
->> +	void (*set_config)(struct mdev_device *mdev, unsigned int offset,
->> +			   const void *buf, unsigned int len);
->> +	u64 (*get_mdev_features)(struct mdev_device *mdev);
-> Do we need a .set_mdev_features method as well?
-
-
-Good question. To me I think we may document that the API provides 
-backward compatibility, so there's no need for set_mdev_features. Or is 
-there any other chance that we need that?
-
-
->
-> It's not very clear what does mdev_features mean.
-> Does it mean the vhost backend features?
->
-> https://github.com/torvalds/linux/blob/0e2adab6cf285c41e825b6c74a3aa61324d1132c/include/uapi/linux/vhost.h#L93-L94
-
-
-Something like this, it's kind of the version of the API, except for the 
-_F_VERSION_1, the first user should be _F_LOG_ALL. I will add more docs 
-for this API.
-
-Thanks
-
-
->
->
->> +	u32 (*get_generation)(struct mdev_device *mdev);
->> +};
->> +
->> +void mdev_set_virtio_ops(struct mdev_device *mdev,
->> +			 const struct virtio_mdev_device_ops *virtio_ops);
->> +
->> +#endif
->> -- 
->> 2.19.1
->>
+-- 
+Jazz is not dead, it just smells funny.
