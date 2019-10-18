@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D6C5DCA49
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:07:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C12DFDCACA
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394445AbfJRQHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 12:07:30 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:38105 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727834AbfJRQHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:07:30 -0400
-Received: by mail-wr1-f67.google.com with SMTP id o15so6425662wru.5
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 09:07:28 -0700 (PDT)
+        id S2394728AbfJRQRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 12:17:15 -0400
+Received: from mail-lf1-f45.google.com ([209.85.167.45]:35875 "EHLO
+        mail-lf1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727429AbfJRQRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:17:15 -0400
+Received: by mail-lf1-f45.google.com with SMTP id u16so5158938lfq.3
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 09:17:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=4COZiLJL79v/rlxbHb1kFVd8LmkD3tCSTbGcpw22Exk=;
-        b=k2o/paSnzGpyQ+CE2UZhcKEj3utk0qGjHP1j1MSVtWNTgyhOniugXjjkS95JlH5iap
-         GpNbovjYWcz6jHydkLL9P+y+bQuyUxQIKWWCjlCOPpCPQiYivQ2hAderJG7UsNMlPgd+
-         QwxQYSLRh9U7eSFDUyqK1MoApEc4CrfhhX9o+gCQe32JuPGCo/vc7pe7SVciI83ccby8
-         jYOHTh0vvzYq6vx/Jfi2XVEpOhOG6f8MuZujqu7YGWqz3su3Zq/ZBAVPRRHis2ljsnOH
-         RH5EEBlK1ReudI6PX80D1nlkC917/E5QqXChaziLPDrAj9LqzlCtpP6eHve0yuXJDMFv
-         eFnw==
+        bh=KIE4FFulbQH8HijkO8A+TSg7g677+NOAe1aOrGPT+CI=;
+        b=M0Xjq3i21/aNQR1IDiBZLDq83N5lkflcxFJ30XqWLfB866OaAIRgasVJS2b3edRHPm
+         kkhl++cff/WVRtjIDkHeVA5fIkMw3SqAoDTiduAvO+Z/ahhMIzuHqrxD6Pz8rweuFVqz
+         yoDOs+5vRO7kQz6uMQIPevBnK1BpyE+sh4AtFXa253LYKyHM5RIp8yD+pPN5RLdUFF7k
+         /qSh7qcCiUctXEAqT2jruI4gXYfyJViV3fiIVbdiJFaLsQNlzqMHUE6iRXKsNsQdfXoD
+         BdraGJ9d2xysFBf7s1GcTbNcEqxTNPrk8iXOrrA1bZT4dk48CorYnQNo5WPmj+jcYJ2o
+         HxaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=4COZiLJL79v/rlxbHb1kFVd8LmkD3tCSTbGcpw22Exk=;
-        b=niVjYA6h+0ch+d/MRFGhBY12klaskkYjLu4fsGwLLlECXJ/TOIO38tI84MiMNJHRf+
-         hF0sRjXXsoIziRsC33OtOdm5bWbZhL+xmWE1iLknfY31AtlYn6rT9EH456eUJPYSWPdV
-         tbeQmsUqW2Kfrn7Wm7kPfyYYiOWFJ80oYy1wJzaQ0V88smcqF95ab/m7ltFMVeBQ/ror
-         sv+JtOMiwk2so0xJOaJmrINhALmN6nUBQu0Vfpto1hxoF8xG7pFiF59l346C/IMNDt1C
-         CQtPt7q2dxvZXDVxqG3nmc/bA1kseHwVPd8jllpmr6D/89cVSISg6if0segpZPGcMtzU
-         eu7A==
-X-Gm-Message-State: APjAAAWHF3i/vtuehjT+wM3mdm3vD7PJyNMdkgVbetH7M7yprScsEnq4
-        K+MwEwfnhrMTnXk7GD5srAyFLqPhK0U=
-X-Google-Smtp-Source: APXvYqwUFEq+KSfZPr++BN5SsE24QutuFRX2Pec9lsL1UYTzOGMHp+Brv7+GWwAz1IAKc2I/EMFv6A==
-X-Received: by 2002:a5d:55c7:: with SMTP id i7mr8882904wrw.371.1571414848117;
-        Fri, 18 Oct 2019 09:07:28 -0700 (PDT)
-Received: from localhost (ip-94-113-126-64.net.upcbroadband.cz. [94.113.126.64])
-        by smtp.gmail.com with ESMTPSA id 5sm7360233wrk.86.2019.10.18.09.07.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 09:07:27 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com, andrew@lunn.ch,
-        mlxsw@mellanox.com
-Subject: [patch net-next] devlink: add format requirement for devlink param names
-Date:   Fri, 18 Oct 2019 18:07:26 +0200
-Message-Id: <20191018160726.18901-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        bh=KIE4FFulbQH8HijkO8A+TSg7g677+NOAe1aOrGPT+CI=;
+        b=ixQuYmMVrOXhAW9nr4kHnjJurM3khN+ajHZU/7sD53R9Xcef/O/hyC1LXHOUCNt8xQ
+         mVwUI2raYdLXWgA8nqREM7p5d9ssZljvyrw2JtaWvFAbPLN807hb8HgzRLDQU0l+lfD7
+         XO8vmMIqjU7q49DR0Oy967rqDdF2EL1kQJCgyo+Wolwc+vQxpvep7OW321Hm9q14Tz2j
+         koL3ZM2CT0Cb1I10T6CxdgwUlElg5cGzGJ7t6Vocab9XuQUCrJkqQbFAUePp7+SyEHy1
+         u4MkRZfq7Vxv84PNZfhe3DHZa4NdGcFg77ACb2z/t5uUpQ/TH2o9MrKxFHMwJO6x9Rn/
+         G3yQ==
+X-Gm-Message-State: APjAAAUR1/0uSUfWvxPNO1nxb1GqGaz72X1C9Uhv7V4KHm8qfP9Qhobt
+        R/jGvdZREJ7KU3VkCZ3KA+0hzg==
+X-Google-Smtp-Source: APXvYqwwCzh6QPZn5naxY2AqCoqRkdhVu2MDysatslykFZ3Bd0Cob2xNSnaQcrHvPZfbJ+IZOdPzdw==
+X-Received: by 2002:a19:f50c:: with SMTP id j12mr6814885lfb.101.1571415432817;
+        Fri, 18 Oct 2019 09:17:12 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id r75sm1086365lff.93.2019.10.18.09.17.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Oct 2019 09:17:12 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        stephen@networkplumber.org, xiyou.wangcong@gmail.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net v2 0/2] net: netem: fix further issues with packet corruption
+Date:   Fri, 18 Oct 2019 09:16:56 -0700
+Message-Id: <20191018161658.26481-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,73 +60,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Hi!
 
-Currently, the name format is not required by the code, however it is
-required during patch review. All params added until now are in-lined
-with the following format:
-1) lowercase characters, digits and underscored are allowed
-2) underscore is neither at the beginning nor at the end and
-   there is no more than one in a row.
+This set is fixing two more issues with the netem packet corruption.
 
-Add checker to the code to require this format from drivers and warn if
-they don't follow.
+First patch (which was previously posted) avoids NULL pointer dereference
+if the first frame gets freed due to allocation or checksum failure.
+v2 improves the clarity of the code a little as requested by Cong.
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- net/core/devlink.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+Second patch ensures we don't return SUCCESS if the frame was in fact
+dropped. Thanks to this commit message for patch 1 no longer needs the
+"this will still break with a single-frame failure" disclaimer.
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 97e9a2246929..5969cab5bc31 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -20,6 +20,7 @@
- #include <linux/workqueue.h>
- #include <linux/u64_stats_sync.h>
- #include <linux/timekeeping.h>
-+#include <linux/ctype.h>
- #include <rdma/ib_verbs.h>
- #include <net/netlink.h>
- #include <net/genetlink.h>
-@@ -7040,10 +7041,37 @@ void devlink_resource_occ_get_unregister(struct devlink *devlink,
- }
- EXPORT_SYMBOL_GPL(devlink_resource_occ_get_unregister);
- 
-+static bool devlink_param_valid_name(const char *name)
-+{
-+	int len = strlen(name);
-+	int i;
-+
-+	/* Name can contain lowercase characters or digits.
-+	 * Underscores are also allowed, but not at the beginning
-+	 * or end of the name and not more than one in a row.
-+	 */
-+
-+	for (i = 0; i < len; i++) {
-+		if (islower(name[i]) || isdigit(name[i]))
-+			continue;
-+		if (name[i] != '_')
-+			return false;
-+		if (i == 0 || i + 1 == len)
-+			return false;
-+		if (name[i - 1] == '_')
-+			return false;
-+	}
-+	return true;
-+}
-+
- static int devlink_param_verify(const struct devlink_param *param)
- {
- 	if (!param || !param->name || !param->supported_cmodes)
- 		return -EINVAL;
-+
-+	if (WARN_ON(!devlink_param_valid_name(param->name)))
-+		return -EINVAL;
-+
- 	if (param->generic)
- 		return devlink_param_generic_verify(param);
- 	else
+Jakub Kicinski (2):
+  net: netem: fix error path for corrupted GSO frames
+  net: netem: correct the parent's backlog when corrupted packet was
+    dropped
+
+ net/sched/sch_netem.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
 -- 
-2.21.0
+2.23.0
 
