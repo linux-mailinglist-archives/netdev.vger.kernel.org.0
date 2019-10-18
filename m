@@ -2,101 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE694DBCB8
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 111DFDBCB2
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390020AbfJRFLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:11:15 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36568 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728069AbfJRFLP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:11:15 -0400
-Received: by mail-pf1-f193.google.com with SMTP id y22so3101115pfr.3;
-        Thu, 17 Oct 2019 22:11:15 -0700 (PDT)
+        id S2387722AbfJRFKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:10:10 -0400
+Received: from mta-p8.oit.umn.edu ([134.84.196.208]:43956 "EHLO
+        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727606AbfJRFKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:10:10 -0400
+X-Greylist: delayed 600 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Oct 2019 01:10:10 EDT
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 1D6C4CBE
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 04:53:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p8.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Wr_lib7aLP4E for <netdev@vger.kernel.org>;
+        Thu, 17 Oct 2019 23:53:12 -0500 (CDT)
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        (using TLSv1.2 with cipher AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id EB8C3CBC
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 23:53:11 -0500 (CDT)
+Received: by mail-io1-f72.google.com with SMTP id w8so6927895iod.21
+        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 21:53:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Lt7tB1LeS2Sex/M1UY8JvLWxPnjBGbRvOSpWI/WAnhY=;
-        b=QXtQOSFwlpgYpLscplD6fS8aglXutf62lteg1WU9ZZfAiczK5JpzBC/uj4c6pZCrVi
-         mLC5q+f+vFwCpsUNiZEQ1uxUxAN3UCSFg5SHqGDqwp9Kmgc9vRXxMcYHD0ndJLbgjnb8
-         4unNOzDzJjT1TM3Fr5Fzp72sxR+x0KUonP+H/KD83u+twq8ec16p8JoUU/uVTzhV79t3
-         ndXhFvfUFWbOnsHqNx6h4knny5/Ngrd6Mg3VzOrTpzdHv4oXuH5vCLyK6PiBfo1DMwsi
-         Hz89jCBqPoUCqjv1wzPC2vYWFOf275cKZHiY3KW8cu7va1MdgcPeUz4bxjyYk96hyTDm
-         l+XA==
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=PiAvGPBAd5r/3XyVj4aUHP7AUeXoHl9s9vGj/rL2vBE=;
+        b=SSAw+mF6f+5B+nirGSGu/AIgxkBVez4C2mLwuOn2tdvSW6D2qgygO+CJhg/4C5A4UY
+         xWLJlB3gN5EseI5nGlOxXzBh17l243fYEsLjpBwMlbcyftv/av5pE+ARJqX4V6h3fEVb
+         apUsF/OH+V+/oXLedtF3gnfl3I+r5VDk4FJpUI4VC2joMHaMKxpbl+T4BOTeZ1qvYq3J
+         9sgaWLiyFSDyQPKt8y46jMtH/uo8saK+v/LqHHNuPDs3YPlY8kVkUpk3MQfwTOR5HcIa
+         Tx4igdKciSEATWOcEVUnHHCFtyOgsKlDcT64tagQdJdLbSr4LvX88ddY8tEER3peRXg/
+         7pGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Lt7tB1LeS2Sex/M1UY8JvLWxPnjBGbRvOSpWI/WAnhY=;
-        b=J+VexhfHff1iG2985ZY8ixEf4eDb1lpJlSpGzD+vnFT1PANPCABO8Iwg9df7XcXed6
-         pJDmvfQ2f2f6B6FNvBsewDgj8SdtctfjHtAngFY4RjfYXzhynFkWb7VS9zSFOcn0Grue
-         VdidbSqLezx+8eengjVMED/KyFDEx5XfU3UNadh3VFrFwjTRowHGsHKKepY8lDVZLmoB
-         rnaOjA8oFwNwMKVnujHMgFWcgCAYPuD5WC3f8+O2CrSIa0AOvnPgbCf/bZCvq1SQtW+4
-         kX2IBmBVbBJrezC/kYaD7AJ5wRVaXagqVGeE9XEIXDQpphsajilQW9n0NdbrFeJPikzS
-         XkgA==
-X-Gm-Message-State: APjAAAWWm2LD4AbgXza5tbulbEf1QqWodvugTBq1ifzdY5/KXoI3eQWk
-        qtIe9jNWCZCGpo28oL2No1CQeuX8
-X-Google-Smtp-Source: APXvYqyE+Nt0AFAIr6XgIzy9G75sgU6aYtXbvU7B0Yj2FMFQq8X+HLgJQbeIvbNHLsgOzTK4zp7PuQ==
-X-Received: by 2002:a17:90a:3628:: with SMTP id s37mr8608320pjb.38.1571371770338;
-        Thu, 17 Oct 2019 21:09:30 -0700 (PDT)
-Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id d11sm4341680pfo.104.2019.10.17.21.09.25
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=PiAvGPBAd5r/3XyVj4aUHP7AUeXoHl9s9vGj/rL2vBE=;
+        b=orGdO1vWLBIj00w8n5ItgIIlkDOMkFdy+VB+n6xLBPT9bdzzTdCU7BbzsSflAvJhPg
+         rnglaZLsAO6KlyicbSVpbwe2w7fuAuFc7wVYO/FdcXMJAOP4cv9OQmMC6iBDMPvQ8Q36
+         ZNgp2ZSuLCIQUFJRW8AP01OzUKFHRGuYbFSS5sXvZw3xlR1/fakV9FM8ZTQPOHNEfS1l
+         qSKj6Sawv7yfn85vy1N+x1LyN0SCIKkId3bDlnmdwtBmTqgo5mE6UAxsfT8UnRABGFae
+         gGw4MpkEOpL8OvTYRhpkXG+A621MXhG0aF8dsRM3AXGC8n5gnW5tCm2xfi3BHPGxQlfj
+         IdGw==
+X-Gm-Message-State: APjAAAXz6Qlr6OSRmKnsaSaoZGJXST+RK/pEnsnyBdAh7DKtwBgo5eHv
+        XWZ3QPyEG7JFDAtnMbb2aUXztqJ1e6BtlFkrQH2AIZHKW8TrwjJwYs7D1FBlikslqKjfC3xEiK/
+        Bz5/jZwfTgm4PNJhUcdIu
+X-Received: by 2002:a92:48cf:: with SMTP id j76mr7837583ilg.246.1571374391564;
+        Thu, 17 Oct 2019 21:53:11 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyC/JNn6/bb1kk/U+cLwblGbXmpbY/tAAsujMTaZdpNNs4/lNdEfWgzh72OP1sSvTEK7SUrdw==
+X-Received: by 2002:a92:48cf:: with SMTP id j76mr7837569ilg.246.1571374391314;
+        Thu, 17 Oct 2019 21:53:11 -0700 (PDT)
+Received: from bee.dtc.umn.edu (cs-bee-u.cs.umn.edu. [128.101.106.63])
+        by smtp.gmail.com with ESMTPSA id 197sm1639719ioc.78.2019.10.17.21.53.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 21:09:29 -0700 (PDT)
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Thu, 17 Oct 2019 21:53:10 -0700 (PDT)
+From:   Kangjie Lu <kjlu@umn.edu>
+To:     kjlu@umn.edu
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Subject: [RFC PATCH v2 bpf-next 14/15] i40e: prefetch xdp->data before running XDP prog
-Date:   Fri, 18 Oct 2019 13:07:47 +0900
-Message-Id: <20191018040748.30593-15-toshiaki.makita1@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/lib80211: scrubbing the buffer for key
+Date:   Thu, 17 Oct 2019 23:53:05 -0500
+Message-Id: <20191018045305.8108-1-kjlu@umn.edu>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP progs are likely to read/write xdp->data.
-This improves the performance of xdp_flow.
+The "key" is not scrubbed. As what peer modules do, the fixes zeros
+out the key buffer.
 
-Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+Signed-off-by: Kangjie Lu <kjlu@umn.edu>
 ---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c | 1 +
+ net/wireless/lib80211_crypt_wep.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index e3f29dc..a85a4ae 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -2207,6 +2207,7 @@ static struct sk_buff *i40e_run_xdp(struct i40e_ring *rx_ring,
- 	if (!xdp_prog)
- 		goto xdp_out;
+diff --git a/net/wireless/lib80211_crypt_wep.c b/net/wireless/lib80211_crypt_wep.c
+index dafc6f3571db..08e511aaa1ff 100644
+--- a/net/wireless/lib80211_crypt_wep.c
++++ b/net/wireless/lib80211_crypt_wep.c
+@@ -202,6 +202,7 @@ static int lib80211_wep_set_key(void *key, int len, u8 * seq, void *priv)
+ 	if (len < 0 || len > WEP_KEY_LEN)
+ 		return -1;
  
-+	prefetchw(xdp->data);
- 	prefetchw(xdp->data_hard_start); /* xdp_frame write */
++	memset(wep, 0, sizeof(*wep));
+ 	memcpy(wep->key, key, len);
+ 	wep->key_len = len;
  
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
 -- 
-1.8.3.1
+2.17.1
 
