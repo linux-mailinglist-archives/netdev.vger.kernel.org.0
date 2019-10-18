@@ -2,343 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D85DC186
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 11:41:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 948E0DC19F
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 11:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633140AbfJRJke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 05:40:34 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:53065 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2442374AbfJRJjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 05:39:43 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iLOjQ-0006Z5-Ty; Fri, 18 Oct 2019 11:39:36 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iLOjN-0007ge-Ew; Fri, 18 Oct 2019 11:39:33 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>, Chris Snook <chris.snook@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        James Hogan <jhogan@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v2 1/5] net: ag71xx: port to phylink
-Date:   Fri, 18 Oct 2019 11:39:25 +0200
-Message-Id: <20191018093929.19299-2-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191018093929.19299-1-o.rempel@pengutronix.de>
-References: <20191018093929.19299-1-o.rempel@pengutronix.de>
+        id S2394789AbfJRJqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 05:46:35 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43636 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389411AbfJRJqf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 05:46:35 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 14030C057F31;
+        Fri, 18 Oct 2019 09:46:34 +0000 (UTC)
+Received: from gondolin (dhcp-192-202.str.redhat.com [10.33.192.202])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AD75B600C1;
+        Fri, 18 Oct 2019 09:46:16 +0000 (UTC)
+Date:   Fri, 18 Oct 2019 11:46:14 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+Subject: Re: [PATCH V4 4/6] mdev: introduce virtio device and its device ops
+Message-ID: <20191018114614.6f1e79dc.cohuck@redhat.com>
+In-Reply-To: <20191017104836.32464-5-jasowang@redhat.com>
+References: <20191017104836.32464-1-jasowang@redhat.com>
+        <20191017104836.32464-5-jasowang@redhat.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Fri, 18 Oct 2019 09:46:34 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The port to phylink was done as close as possible to initial
-functionality.
-Theoretically this HW can support flow control, practically seems to be not
-enough to just enable it. So, more work should be done.
+On Thu, 17 Oct 2019 18:48:34 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/ethernet/atheros/Kconfig  |   2 +-
- drivers/net/ethernet/atheros/ag71xx.c | 146 +++++++++++++++-----------
- 2 files changed, 87 insertions(+), 61 deletions(-)
+> This patch implements basic support for mdev driver that supports
+> virtio transport for kernel virtio driver.
+> 
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/vfio/mdev/mdev_core.c |  12 +++
+>  include/linux/mdev.h          |   4 +
+>  include/linux/virtio_mdev.h   | 151 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 167 insertions(+)
+>  create mode 100644 include/linux/virtio_mdev.h
+> 
+> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+> index d0f3113c8071..5834f6b7c7a5 100644
+> --- a/drivers/vfio/mdev/mdev_core.c
+> +++ b/drivers/vfio/mdev/mdev_core.c
+> @@ -57,6 +57,18 @@ void mdev_set_vfio_ops(struct mdev_device *mdev,
+>  }
+>  EXPORT_SYMBOL(mdev_set_vfio_ops);
+>  
+> +/* Specify the virtio device ops for the mdev device, this
+> + * must be called during create() callback for virtio mdev device.
+> + */
 
-diff --git a/drivers/net/ethernet/atheros/Kconfig b/drivers/net/ethernet/atheros/Kconfig
-index 0058051ba925..2720bde5034e 100644
---- a/drivers/net/ethernet/atheros/Kconfig
-+++ b/drivers/net/ethernet/atheros/Kconfig
-@@ -20,7 +20,7 @@ if NET_VENDOR_ATHEROS
- config AG71XX
- 	tristate "Atheros AR7XXX/AR9XXX built-in ethernet mac support"
- 	depends on ATH79
--	select PHYLIB
-+	select PHYLINK
- 	help
- 	  If you wish to compile a kernel for AR7XXX/91XXX and enable
- 	  ethernet support, then you should always answer Y to this.
-diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-index 1b1a09095c0d..4ad587d6a8e8 100644
---- a/drivers/net/ethernet/atheros/ag71xx.c
-+++ b/drivers/net/ethernet/atheros/ag71xx.c
-@@ -32,6 +32,7 @@
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/of_platform.h>
-+#include <linux/phylink.h>
- #include <linux/regmap.h>
- #include <linux/reset.h>
- #include <linux/clk.h>
-@@ -314,6 +315,8 @@ struct ag71xx {
- 	dma_addr_t stop_desc_dma;
- 
- 	int phy_if_mode;
-+	struct phylink *phylink;
-+	struct phylink_config phylink_config;
- 
- 	struct delayed_work restart_work;
- 	struct timer_list oom_timer;
-@@ -845,24 +848,20 @@ static void ag71xx_hw_start(struct ag71xx *ag)
- 	netif_wake_queue(ag->ndev);
- }
- 
--static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
-+static void ag71xx_mac_config(struct phylink_config *config, unsigned int mode,
-+			      const struct phylink_link_state *state)
- {
--	struct phy_device *phydev = ag->ndev->phydev;
-+	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
- 	u32 cfg2;
- 	u32 ifctl;
- 	u32 fifo5;
- 
--	if (!phydev->link && update) {
--		ag71xx_hw_stop(ag);
--		return;
--	}
--
- 	if (!ag71xx_is(ag, AR7100) && !ag71xx_is(ag, AR9130))
- 		ag71xx_fast_reset(ag);
- 
- 	cfg2 = ag71xx_rr(ag, AG71XX_REG_MAC_CFG2);
- 	cfg2 &= ~(MAC_CFG2_IF_1000 | MAC_CFG2_IF_10_100 | MAC_CFG2_FDX);
--	cfg2 |= (phydev->duplex) ? MAC_CFG2_FDX : 0;
-+	cfg2 |= (state->duplex) ? MAC_CFG2_FDX : 0;
- 
- 	ifctl = ag71xx_rr(ag, AG71XX_REG_MAC_IFCTL);
- 	ifctl &= ~(MAC_IFCTL_SPEED);
-@@ -870,7 +869,7 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
- 	fifo5 = ag71xx_rr(ag, AG71XX_REG_FIFO_CFG5);
- 	fifo5 &= ~FIFO_CFG5_BM;
- 
--	switch (phydev->speed) {
-+	switch (state->speed) {
- 	case SPEED_1000:
- 		cfg2 |= MAC_CFG2_IF_1000;
- 		fifo5 |= FIFO_CFG5_BM;
-@@ -883,7 +882,6 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
- 		cfg2 |= MAC_CFG2_IF_10_100;
- 		break;
- 	default:
--		WARN(1, "not supported speed %i\n", phydev->speed);
- 		return;
- 	}
- 
-@@ -897,58 +895,78 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
- 	ag71xx_wr(ag, AG71XX_REG_MAC_CFG2, cfg2);
- 	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG5, fifo5);
- 	ag71xx_wr(ag, AG71XX_REG_MAC_IFCTL, ifctl);
--
--	ag71xx_hw_start(ag);
--
--	if (update)
--		phy_print_status(phydev);
- }
- 
--static void ag71xx_phy_link_adjust(struct net_device *ndev)
-+static void ag71xx_mac_validate(struct phylink_config *config,
-+			    unsigned long *supported,
-+			    struct phylink_link_state *state)
- {
--	struct ag71xx *ag = netdev_priv(ndev);
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+
-+	if (state->interface != PHY_INTERFACE_MODE_NA &&
-+	    state->interface != PHY_INTERFACE_MODE_GMII &&
-+	    state->interface != PHY_INTERFACE_MODE_MII) {
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
-+	phylink_set(mask, MII);
-+
-+	/* flow control is not supported */
- 
--	ag71xx_link_adjust(ag, true);
-+	phylink_set(mask, 10baseT_Half);
-+	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 100baseT_Half);
-+	phylink_set(mask, 100baseT_Full);
-+
-+	if (state->interface = PHY_INTERFACE_MODE_GMII) {
-+		phylink_set(mask, 1000baseT_Full);
-+		phylink_set(mask, 1000baseX_Full);
-+	}
-+
-+	bitmap_and(supported, supported, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	bitmap_and(state->advertising, state->advertising, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
- }
- 
--static int ag71xx_phy_connect(struct ag71xx *ag)
-+static void ag71xx_mac_link_down(struct phylink_config *config,
-+				 unsigned int mode, phy_interface_t interface)
- {
--	struct device_node *np = ag->pdev->dev.of_node;
--	struct net_device *ndev = ag->ndev;
--	struct device_node *phy_node;
--	struct phy_device *phydev;
--	int ret;
-+	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
- 
--	if (of_phy_is_fixed_link(np)) {
--		ret = of_phy_register_fixed_link(np);
--		if (ret < 0) {
--			netif_err(ag, probe, ndev, "Failed to register fixed PHY link: %d\n",
--				  ret);
--			return ret;
--		}
-+	ag71xx_hw_stop(ag);
-+}
- 
--		phy_node = of_node_get(np);
--	} else {
--		phy_node = of_parse_phandle(np, "phy-handle", 0);
--	}
-+static void ag71xx_mac_link_up(struct phylink_config *config, unsigned int mode,
-+			       phy_interface_t interface,
-+			       struct phy_device *phy)
-+{
-+	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
- 
--	if (!phy_node) {
--		netif_err(ag, probe, ndev, "Could not find valid phy node\n");
--		return -ENODEV;
--	}
-+	ag71xx_hw_start(ag);
-+}
- 
--	phydev = of_phy_connect(ag->ndev, phy_node, ag71xx_phy_link_adjust,
--				0, ag->phy_if_mode);
-+static const struct phylink_mac_ops ag71xx_phylink_mac_ops = {
-+	.validate = ag71xx_mac_validate,
-+	.mac_config = ag71xx_mac_config,
-+	.mac_link_down = ag71xx_mac_link_down,
-+	.mac_link_up = ag71xx_mac_link_up,
-+};
- 
--	of_node_put(phy_node);
-+static int ag71xx_phy_setup(struct ag71xx *ag)
-+{
-+	struct phylink *phylink;
- 
--	if (!phydev) {
--		netif_err(ag, probe, ndev, "Could not connect to PHY device\n");
--		return -ENODEV;
--	}
-+	ag->phylink_config.dev = &ag->ndev->dev;
-+	ag->phylink_config.type = PHYLINK_NETDEV;
- 
--	phy_attached_info(phydev);
-+	phylink = phylink_create(&ag->phylink_config, ag->pdev->dev.fwnode,
-+				 ag->phy_if_mode, &ag71xx_phylink_mac_ops);
-+	if (IS_ERR(phylink))
-+		return PTR_ERR(phylink);
- 
-+	ag->phylink = phylink;
- 	return 0;
- }
- 
-@@ -1239,6 +1257,13 @@ static int ag71xx_open(struct net_device *ndev)
- 	unsigned int max_frame_len;
- 	int ret;
- 
-+	ret = phylink_of_phy_connect(ag->phylink, ag->pdev->dev.of_node, 0);
-+	if (ret) {
-+		netif_err(ag, link, ndev, "phylink_of_phy_connect filed with err: %i\n",
-+			  ret);
-+		goto err;
-+	}
-+
- 	max_frame_len = ag71xx_max_frame_len(ndev->mtu);
- 	ag->rx_buf_size =
- 		SKB_DATA_ALIGN(max_frame_len + NET_SKB_PAD + NET_IP_ALIGN);
-@@ -1251,11 +1276,7 @@ static int ag71xx_open(struct net_device *ndev)
- 	if (ret)
- 		goto err;
- 
--	ret = ag71xx_phy_connect(ag);
--	if (ret)
--		goto err;
--
--	phy_start(ndev->phydev);
-+	phylink_start(ag->phylink);
- 
- 	return 0;
- 
-@@ -1268,8 +1289,7 @@ static int ag71xx_stop(struct net_device *ndev)
- {
- 	struct ag71xx *ag = netdev_priv(ndev);
- 
--	phy_stop(ndev->phydev);
--	phy_disconnect(ndev->phydev);
-+	phylink_stop(ag->phylink);
- 	ag71xx_hw_disable(ag);
- 
- 	return 0;
-@@ -1396,10 +1416,9 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
- 
- static int ag71xx_do_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
- {
--	if (!ndev->phydev)
--		return -EINVAL;
-+	struct ag71xx *ag = netdev_priv(ndev);
- 
--	return phy_mii_ioctl(ndev->phydev, ifr, cmd);
-+	return phylink_mii_ioctl(ag->phylink, ifr, cmd);
- }
- 
- static void ag71xx_oom_timer_handler(struct timer_list *t)
-@@ -1422,13 +1441,14 @@ static void ag71xx_restart_work_func(struct work_struct *work)
- {
- 	struct ag71xx *ag = container_of(work, struct ag71xx,
- 					 restart_work.work);
--	struct net_device *ndev = ag->ndev;
- 
- 	rtnl_lock();
- 	ag71xx_hw_disable(ag);
- 	ag71xx_hw_enable(ag);
--	if (ndev->phydev->link)
--		ag71xx_link_adjust(ag, false);
-+
-+	phylink_stop(ag->phylink);
-+	phylink_start(ag->phylink);
-+
- 	rtnl_unlock();
- }
- 
-@@ -1769,6 +1789,12 @@ static int ag71xx_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, ndev);
- 
-+	err = ag71xx_phy_setup(ag);
-+	if (err) {
-+		netif_err(ag, probe, ndev, "failed to setup phy (%d)\n", err);
-+		goto err_mdio_remove;
-+	}
-+
- 	err = register_netdev(ndev);
- 	if (err) {
- 		netif_err(ag, probe, ndev, "unable to register net device\n");
--- 
-2.23.0
+Change this as for the vfio comment (last patch?)
+
+> +void mdev_set_virtio_ops(struct mdev_device *mdev,
+> +			 const struct virtio_mdev_device_ops *virtio_ops)
+> +{
+> +	BUG_ON(mdev->class_id);
+
+s/BUG_ON/WARN_ON/
+
+> +	mdev->class_id = MDEV_CLASS_ID_VIRTIO;
+> +	mdev->device_ops = virtio_ops;
+> +}
+> +EXPORT_SYMBOL(mdev_set_virtio_ops);
+> +
+>  const void *mdev_get_dev_ops(struct mdev_device *mdev)
+>  {
+>  	return mdev->device_ops;
+
+(...)
+
+> diff --git a/include/linux/virtio_mdev.h b/include/linux/virtio_mdev.h
+> new file mode 100644
+> index 000000000000..b965b50f9b24
+> --- /dev/null
+> +++ b/include/linux/virtio_mdev.h
+> @@ -0,0 +1,151 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Virtio mediated device driver
+> + *
+> + * Copyright 2019, Red Hat Corp.
+> + *     Author: Jason Wang <jasowang@redhat.com>
+> + */
+> +#ifndef _LINUX_VIRTIO_MDEV_H
+> +#define _LINUX_VIRTIO_MDEV_H
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/mdev.h>
+> +#include <uapi/linux/vhost.h>
+> +
+> +#define VIRTIO_MDEV_DEVICE_API_STRING		"virtio-mdev"
+> +#define VIRTIO_MDEV_F_VERSION_1 0x1
+> +
+> +struct virtio_mdev_callback {
+> +	irqreturn_t (*callback)(void *data);
+> +	void *private;
+> +};
+> +
+> +/**
+> + * struct vfio_mdev_device_ops - Structure to be registered for each
+> + * mdev device to register the device to virtio-mdev module.
+> + *
+> + * @set_vq_address:		Set the address of virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@desc_area: address of desc area
+> + *				@driver_area: address of driver area
+> + *				@device_area: address of device area
+> + *				Returns integer: success (0) or error (< 0)
+
+Probably dumb question (have not read the next patches yet): Is this
+agnostic regarding split or packed queues?
+
+> + * @set_vq_num:		Set the size of virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@num: the size of virtqueue
+> + * @kick_vq:			Kick the virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + * @set_vq_cb:			Set the interrupt callback function for
+> + *				a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@cb: virtio-mdev interrupt callback structure
+> + * @set_vq_ready:		Set ready status for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@ready: ready (true) not ready(false)
+> + * @get_vq_ready:		Get ready status for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				Returns boolean: ready (true) or not (false)
+> + * @set_vq_state:		Set the state for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@state: virtqueue state (last_avail_idx)
+> + *				Returns integer: success (0) or error (< 0)
+> + * @get_vq_state:		Get the state for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				Returns virtqueue state (last_avail_idx)
+> + * @get_vq_align:		Get the virtqueue align requirement
+> + *				for the device
+> + *				@mdev: mediated device
+> + *				Returns virtqueue algin requirement
+> + * @get_features:		Get virtio features supported by the device
+> + *				@mdev: mediated device
+> + *				Returns the virtio features support by the
+> + *				device
+> + * @get_features:		Set virtio features supported by the driver
+
+s/get_features/set_features/
+
+> + *				@mdev: mediated device
+> + *				@features: feature support by the driver
+> + *				Returns integer: success (0) or error (< 0)
+> + * @set_config_cb:		Set the config interrupt callback
+> + *				@mdev: mediated device
+> + *				@cb: virtio-mdev interrupt callback structure
+> + * @get_vq_num_max:		Get the max size of virtqueue
+> + *				@mdev: mediated device
+> + *				Returns u16: max size of virtqueue
+> + * @get_device_id:		Get virtio device id
+> + *				@mdev: mediated device
+> + *				Returns u32: virtio device id
+> + * @get_vendor_id:		Get virtio vendor id
+> + *				@mdev: mediated device
+> + *				Returns u32: virtio vendor id
+
+How is the vendor id defined? As for normal virtio-pci devices?
+
+> + * @get_status: 		Get the device status
+> + *				@mdev: mediated device
+> + *				Returns u8: virtio device status
+> + * @set_status: 		Set the device status
+> + *				@mdev: mediated device
+> + *				@status: virtio device status
+> + * @get_config: 		Read from device specific configuration space
+> + *				@mdev: mediated device
+> + *				@offset: offset from the beginning of
+> + *				configuration space
+> + *				@buf: buffer used to read to
+> + *				@len: the length to read from
+> + *				configration space
+> + * @set_config: 		Write to device specific configuration space
+> + *				@mdev: mediated device
+> + *				@offset: offset from the beginning of
+> + *				configuration space
+> + *				@buf: buffer used to write from
+> + *				@len: the length to write to
+> + *				configration space
+> + * @get_mdev_features:		Get the feature of virtio mdev device
+> + *				@mdev: mediated device
+> + *				Returns the mdev features (API) support by
+> + *				the device.
+
+What kind of 'features' are supposed to go in there? Are these bits,
+like you defined for VIRTIO_MDEV_F_VERSION_1 above?
+
+> + * @get_generation:		Get device generaton
+> + *				@mdev: mediated device
+> + *				Returns u32: device generation
+
+Is that callback mandatory?
+
+> + */
+> +struct virtio_mdev_device_ops {
+> +	/* Virtqueue ops */
+> +	int (*set_vq_address)(struct mdev_device *mdev,
+> +			      u16 idx, u64 desc_area, u64 driver_area,
+> +			      u64 device_area);
+> +	void (*set_vq_num)(struct mdev_device *mdev, u16 idx, u32 num);
+> +	void (*kick_vq)(struct mdev_device *mdev, u16 idx);
+> +	void (*set_vq_cb)(struct mdev_device *mdev, u16 idx,
+> +			  struct virtio_mdev_callback *cb);
+> +	void (*set_vq_ready)(struct mdev_device *mdev, u16 idx, bool ready);
+> +	bool (*get_vq_ready)(struct mdev_device *mdev, u16 idx);
+> +	int (*set_vq_state)(struct mdev_device *mdev, u16 idx, u64 state);
+> +	u64 (*get_vq_state)(struct mdev_device *mdev, u16 idx);
+> +
+> +	/* Device ops */
+> +	u16 (*get_vq_align)(struct mdev_device *mdev);
+> +	u64 (*get_features)(struct mdev_device *mdev);
+> +	int (*set_features)(struct mdev_device *mdev, u64 features);
+> +	void (*set_config_cb)(struct mdev_device *mdev,
+> +			      struct virtio_mdev_callback *cb);
+> +	u16 (*get_vq_num_max)(struct mdev_device *mdev);
+> +	u32 (*get_device_id)(struct mdev_device *mdev);
+> +	u32 (*get_vendor_id)(struct mdev_device *mdev);
+> +	u8 (*get_status)(struct mdev_device *mdev);
+> +	void (*set_status)(struct mdev_device *mdev, u8 status);
+> +	void (*get_config)(struct mdev_device *mdev, unsigned int offset,
+> +			   void *buf, unsigned int len);
+> +	void (*set_config)(struct mdev_device *mdev, unsigned int offset,
+> +			   const void *buf, unsigned int len);
+> +	u64 (*get_mdev_features)(struct mdev_device *mdev);
+> +	u32 (*get_generation)(struct mdev_device *mdev);
+> +};
+> +
+> +void mdev_set_virtio_ops(struct mdev_device *mdev,
+> +			 const struct virtio_mdev_device_ops *virtio_ops);
+> +
+> +#endif
 
