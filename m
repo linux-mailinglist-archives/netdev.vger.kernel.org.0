@@ -2,157 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61047DC9FB
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 17:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BDEDCA2A
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394066AbfJRP4x convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Oct 2019 11:56:53 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:31758 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726506AbfJRP4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 11:56:53 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id uk-mta-3-mj2RpJsmO5m7JJzP7Fxiaw-1;
- Fri, 18 Oct 2019 16:56:50 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 18 Oct 2019 16:56:49 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 18 Oct 2019 16:56:49 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Xin Long' <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
-CC:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: RE: [PATCHv3 net-next 1/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED
- notification
-Thread-Topic: [PATCHv3 net-next 1/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED
- notification
-Thread-Index: AQHVgla8fu139gUWN06qp6czSulnBKdgkqoQ
-Date:   Fri, 18 Oct 2019 15:56:49 +0000
-Message-ID: <fb115b1444764b3eacdf69ebd9cf9681@AcuMS.aculab.com>
-References: <cover.1571033544.git.lucien.xin@gmail.com>
- <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
-In-Reply-To: <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S2405727AbfJRQBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 12:01:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52686 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726506AbfJRQBW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 12:01:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=SMevRHn5yAEfndygCJGs4e6HW+7R6WGQ8pVjp6LF3ck=; b=BEErwb0u6hMrDSuQYoY0HlkHWz
+        0gIyUCWa/abTfBKoco0WYf/7oWnJTsQPdB5bRDVguZACXvtAPCqpBkBv5AM1Nt8GCXigGHD9QWJ8V
+        mnp39WvOEaavIcJj5BbQEhNfzkU96y4Vr7cmmnKMZzaBeWy0EipOK5A00odRjeI9n6rA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iLUgm-0001qG-Py; Fri, 18 Oct 2019 18:01:16 +0200
+Date:   Fri, 18 Oct 2019 18:01:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, cphealy@gmail.com,
+        Jose Abreu <joabreu@synopsys.com>
+Subject: Re: [PATCH net-next 2/2] net: phy: Add ability to debug RGMII
+ connections
+Message-ID: <20191018160116.GD24810@lunn.ch>
+References: <20191015224953.24199-3-f.fainelli@gmail.com>
+ <4feb3979-1d59-4ad3-b2f1-90d82cfbdf54@gmail.com>
+ <c4244c9a-28cb-7e37-684d-64e6cdc89b67@gmail.com>
+ <CA+h21hrLHe2n0OxJyCKTU0r7mSB1zK9ggP1-1TCednFN_0rXfg@mail.gmail.com>
+ <20191018130121.GK4780@lunn.ch>
+ <CA+h21hoPrwcgz-q=UROAu0PC=6JbKtbdPhJtZg5ge32_2xJ3TQ@mail.gmail.com>
+ <20191018132316.GI25745@shell.armlinux.org.uk>
+ <CA+h21hqVZ=LF3bQGtqFh4uMu6AhNFcrwQuUcEH-Fc1VrWku-eg@mail.gmail.com>
+ <20191018135411.GJ25745@shell.armlinux.org.uk>
+ <CA+h21hrqRtxWp1c-8F-9qPPsYxA_w_B_131DRayLBd8xjpOzPg@mail.gmail.com>
 MIME-Version: 1.0
-X-MC-Unique: mj2RpJsmO5m7JJzP7Fxiaw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrqRtxWp1c-8F-9qPPsYxA_w_B_131DRayLBd8xjpOzPg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've found v3 :-)
-But it isn't that much better than v2.
+> I don't think you are following the big picture of what I am saying. I
+> was trying to follow Florian's intention (first make sure I understand
+> it) and suggest that the FCS checking code in the patch he submitted
+> is not doing what it was intended to. I am getting apparent FCS
+> mismatches reported by the program, when I know full well that the MAC
+> I am testing on would have dropped those frames were they really
+> invalid.
 
-From: Xin Long
-> Sent: 14 October 2019 07:15
-> SCTP Quick failover draft section 5.1, point 5 has been removed
-> from rfc7829. Instead, "the sender SHOULD (i) notify the Upper
-> Layer Protocol (ULP) about this state transition", as said in
-> section 3.2, point 8.
-> 
-> So this patch is to add SCTP_ADDR_POTENTIALLY_FAILED, defined
-> in section 7.1, "which is reported if the affected address
-> becomes PF". Also remove transport cwnd's update when moving
-> from PF back to ACTIVE , which is no longer in rfc7829 either.
-> 
-> v1->v2:
->   - no change
-> v2->v3:
->   - define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
-> 
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  include/uapi/linux/sctp.h |  2 ++
->  net/sctp/associola.c      | 17 ++++-------------
->  2 files changed, 6 insertions(+), 13 deletions(-)
-> 
-> diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-> index 6bce7f9..f4ab7bb 100644
-> --- a/include/uapi/linux/sctp.h
-> +++ b/include/uapi/linux/sctp.h
-> @@ -410,6 +410,8 @@ enum sctp_spc_state {
->  	SCTP_ADDR_ADDED,
->  	SCTP_ADDR_MADE_PRIM,
->  	SCTP_ADDR_CONFIRMED,
-> +	SCTP_ADDR_POTENTIALLY_FAILED,
-> +#define SCTP_ADDR_PF	SCTP_ADDR_POTENTIALLY_FAILED
->  };
-> 
-> 
-> diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-> index 1ba893b..4f9efba 100644
-> --- a/net/sctp/associola.c
-> +++ b/net/sctp/associola.c
-> @@ -801,14 +801,6 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
->  			spc_state = SCTP_ADDR_CONFIRMED;
->  		else
->  			spc_state = SCTP_ADDR_AVAILABLE;
-> -		/* Don't inform ULP about transition from PF to
-> -		 * active state and set cwnd to 1 MTU, see SCTP
-> -		 * Quick failover draft section 5.1, point 5
-> -		 */
-> -		if (transport->state == SCTP_PF) {
-> -			ulp_notify = false;
-> -			transport->cwnd = asoc->pathmtu;
-> -		}
+I think this FCS check is not needed. If we feed the MAC random data,
+something like 1 in 65535 will have a valid FCS and get passed up.
+I've not seen this happen with Ethernet, but i have seen other network
+technologies wrong decoding noise on the line and passing up frames
+with around 1 in 65536 probability.
 
-This is wrong.
-If the old state is PF and the application hasn't exposed PF the event should be
-ignored.
+But then having the correct Ethertype is another 1 in 65536. So it
+seem pretty improbably we do receiver a packet in this method which is
+bad. So i would say, any packet received here is a good packet, and
+indicate the RGMII mode works. If we don't receive a packet, the mode
+is very probably bad.
 
->  		transport->state = SCTP_ACTIVE;
->  		break;
-> 
-> @@ -817,19 +809,18 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
->  		 * to inactive state.  Also, release the cached route since
->  		 * there may be a better route next time.
->  		 */
-> -		if (transport->state != SCTP_UNCONFIRMED)
-> +		if (transport->state != SCTP_UNCONFIRMED) {
->  			transport->state = SCTP_INACTIVE;
-> -		else {
-> +			spc_state = SCTP_ADDR_UNREACHABLE;
-> +		} else {
->  			sctp_transport_dst_release(transport);
->  			ulp_notify = false;
->  		}
-> -
-> -		spc_state = SCTP_ADDR_UNREACHABLE;
->  		break;
-> 
->  	case SCTP_TRANSPORT_PF:
->  		transport->state = SCTP_PF;
-> -		ulp_notify = false;
-
-Again the event should be supressed if PF isn't exposed.
-
-> +		spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
->  		break;
-> 
->  	default:
-> --
-> 2.1.0
-
-I also haven't spotted where the test that the application has actually enabled
-state transition events is in the code.
-I'd have thought it would be anything is built and allocated.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+	 Andrew
