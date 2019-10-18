@@ -2,134 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41356DD584
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 01:33:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FDB1DD58A
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 01:34:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389854AbfJRXdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 19:33:07 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:34205 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387537AbfJRXdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 19:33:07 -0400
-Received: by mail-ed1-f68.google.com with SMTP id j8so5834910eds.1
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 16:33:06 -0700 (PDT)
+        id S2389922AbfJRXec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 19:34:32 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:38452 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727332AbfJRXeb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 19:34:31 -0400
+Received: by mail-qt1-f195.google.com with SMTP id j31so11537516qta.5
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 16:34:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=N40e/ylM8dqeHfDtCcJ9x1/H39YQ1mOc2g8HRa8K5V8=;
-        b=acSRrrfv205SPXhKfldkHTQgIVZ22tPpBv6Awa4of41qffawHQWnA7qSPICaVjMmiB
-         s4eoLcqqfZB/l4QZoMvRMIHBOs0a/4BGvDBwMpHT32wWDqHlwD8nx59ZG3+P6rPUrBH0
-         XKvUUiPURcB1PlcVl/DzXwph5gjOuM5h25SvlZJvG/oyJObwD+ANeuUrSwTFvA2isr+V
-         0WXWFzdiOp/x5jKhKpPuxMMCe4CrqOGDHMOsJ8hr3YYciFUhPyh5si8mFWa2JYQdoZHu
-         hb/fLZY2zB8SmR+seAhN9NIlMH9t6cJQI/xjjhjW4mvcN7++XpzW7xSgUlvAiomEa0eF
-         D8mg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=86l32FjXBVFoH3QD7EPiX0nO+HvixHavyVDzWDnvOWc=;
+        b=nf3aZwJ4wBuWPJ6rlaV/FKJI5hestGCuUCJKcQKPxVsbNZ8Z5lualOD4yL9fCmnyg5
+         iXOfjzBLMjfK39LaNeE5zuy233RVUlQwzW0oQZag6zpDAtnZvI5DTtIqxhFHNGMCNmu6
+         zf0mxSzRmI3hQyB8m5cYqX1j5RnUShV97Kg5zYaso3bN3Ukm5AB6j/lHFixiPs1C8KIl
+         NQiHVCft1fLnaqFLJ7ITl20qMAzSw0BdvsuUSMTpZaHUwyIcPjV/78DcAzpSpi3RLPC4
+         kKT0yZUt+JYUySd0WsRqtqnsLkvngmLOSd1sEmYjTOWlMNj0EK6xWfPinIW4QTscFXYi
+         pWig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=N40e/ylM8dqeHfDtCcJ9x1/H39YQ1mOc2g8HRa8K5V8=;
-        b=iIRDWlZLlW/XwsJBPkc7vWsDjZnyxhVkPUB6r88mikdY5LYBhEsw0pdHDF36kcI2/A
-         Jo+pivPsS6YvPaFyYkPjlMOGkcka/suayfzFzwVIzThp7zJm9GCi74yntWD/u+Og174G
-         9gUqkfyy8kyzPg1fI1O5T7QBbIbFMQ1+SkMVUKV04LBFt/KBwYmyxHz1lBXq9LqAUzvO
-         pSjErGrEIvDK9n6sOzIyS8U1sOwsFck/dIFXgpd45QfESg7HbzR7c5eaFDWVXteFY7WV
-         mnICRrG3/rLLGYlmK6hiYkMFq58VJYHvSBFNWgxuC+eOHS3r2QFgRL5CEIQ8kuvQFn/I
-         yy4w==
-X-Gm-Message-State: APjAAAX+u7z7xovTZVW0DXhin4xrGGYOYQLDQD+KEjdLZheZSUkNoYsU
-        Er2UXKqjZlB4VI2CA8eDwK1LY9cH
-X-Google-Smtp-Source: APXvYqzs73mNjzoRvAMVxWUJxb+EzG+oPrDsdvkD7XrTfhTTj6NhDnu74OeITILn1p0k6w8vYsLZSQ==
-X-Received: by 2002:a50:f384:: with SMTP id g4mr12321523edm.282.1571441585713;
-        Fri, 18 Oct 2019 16:33:05 -0700 (PDT)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l22sm33047ejg.40.2019.10.18.16.33.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Oct 2019 16:33:04 -0700 (PDT)
-Subject: Re: [PATCH net] net: dsa: fix switch tree list
-To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20191018210246.3018693-1-vivien.didelot@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ac47f14a-c981-0504-d399-930830e655cf@gmail.com>
-Date:   Fri, 18 Oct 2019 16:33:02 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=86l32FjXBVFoH3QD7EPiX0nO+HvixHavyVDzWDnvOWc=;
+        b=W/BUCDEsfVe80jviRG7Oz522RKJ9EWTy7hDuDpvsNwfjucttwuzRQ4jKqpY+l+znk6
+         LCG8l9Z2zxQr240jS/HA2vZWG9mb4wUwhR7KuPsCvPpqHU1V3LRtuF5mkmsoC/1BE4w4
+         sP6GfPUW4MwzN5pmidY10lKW5Zeei1HOo18aqcLOdQBbpsmsQQWtqKKBO71YbDKX5wq7
+         0PaZekHCwrK78H+iMQ5JVR7rVVQsuI81Z0drwzQbBF/pCh/nRYoXJYdZRcVWR67czafu
+         s5VESMbUWU9FwEQS8MiYecUiI0tiTZ7g/+byp+zqkUKQvOZ1B+hfIeJ4J4z/QEMxDhUZ
+         AqSQ==
+X-Gm-Message-State: APjAAAVRT/gTI4MLrsridYFRm91IFG9FYpc0UQwIZVxheSNQ8WHnDxy/
+        30O7ldbINDLzex9nkqR9g9AjlGkIb5NzRnDtZvwXesQLuHI=
+X-Google-Smtp-Source: APXvYqxGDfx0Nbd6OWgcon0Ej6AHgpQ/u6xtnSQj+yIaFW5ekr9AXG2Q7BbpkjH26gPjxuiA9bGOQ9S3m/vqnEs7LKQ=
+X-Received: by 2002:a0c:f792:: with SMTP id s18mr12310266qvn.20.1571441670709;
+ Fri, 18 Oct 2019 16:34:30 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191018210246.3018693-1-vivien.didelot@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1571135440-24313-1-git-send-email-xiangxia.m.yue@gmail.com> <1571135440-24313-4-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1571135440-24313-4-git-send-email-xiangxia.m.yue@gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Fri, 18 Oct 2019 16:33:54 -0700
+Message-ID: <CALDO+SYT-kE=e4NhHR5QxY8JAZ2wbUjW+r2avLdZY9chmfOMQQ@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net-next v4 03/10] net: openvswitch: shrink the
+ mask array if necessary
+To:     xiangxia.m.yue@gmail.com
+Cc:     Greg Rose <gvrose8192@gmail.com>, pravin shelar <pshelar@ovn.org>,
+        "<dev@openvswitch.org>" <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/19 2:02 PM, Vivien Didelot wrote:
-> If there are multiple switch trees on the device, only the last one
-> will be listed, because the arguments of list_add_tail are swapped.
-> 
-> Fixes: 83c0afaec7b7 ("net: dsa: Add new binding implementation")
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+On Wed, Oct 16, 2019 at 5:53 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> When creating and inserting flow-mask, if there is no available
+> flow-mask, we realloc the mask array. When removing flow-mask,
+> if necessary, we shrink mask array.
+>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> Tested-by: Greg Rose <gvrose8192@gmail.com>
+> ---
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+LGTM
+Acked-by: William Tu <u9012063@gmail.com>
 
-Nice catch!
--- 
-Florian
+On the other hand, maybe we should have an upper limit on the
+mask cash size?
+
+Regards,
+William`
+>  net/openvswitch/flow_table.c | 33 +++++++++++++++++++++++----------
+>  1 file changed, 23 insertions(+), 10 deletions(-)
+>
+> diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+> index 0d1df53..237cf85 100644
+> --- a/net/openvswitch/flow_table.c
+> +++ b/net/openvswitch/flow_table.c
+> @@ -693,6 +693,23 @@ static struct table_instance *table_instance_expand(struct table_instance *ti,
+>         return table_instance_rehash(ti, ti->n_buckets * 2, ufid);
+>  }
+>
+> +static void tbl_mask_array_delete_mask(struct mask_array *ma,
+> +                                      struct sw_flow_mask *mask)
+> +{
+> +       int i;
+> +
+> +       /* Remove the deleted mask pointers from the array */
+> +       for (i = 0; i < ma->max; i++) {
+> +               if (mask == ovsl_dereference(ma->masks[i])) {
+> +                       RCU_INIT_POINTER(ma->masks[i], NULL);
+> +                       ma->count--;
+> +                       kfree_rcu(mask, rcu);
+> +                       return;
+> +               }
+> +       }
+> +       BUG();
+> +}
+> +
+>  /* Remove 'mask' from the mask list, if it is not needed any more. */
+>  static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
+>  {
+> @@ -706,18 +723,14 @@ static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
+>
+>                 if (!mask->ref_count) {
+>                         struct mask_array *ma;
+> -                       int i;
+>
+>                         ma = ovsl_dereference(tbl->mask_array);
+> -                       for (i = 0; i < ma->max; i++) {
+> -                               if (mask == ovsl_dereference(ma->masks[i])) {
+> -                                       RCU_INIT_POINTER(ma->masks[i], NULL);
+> -                                       ma->count--;
+> -                                       kfree_rcu(mask, rcu);
+> -                                       return;
+> -                               }
+> -                       }
+> -                       BUG();
+> +                       tbl_mask_array_delete_mask(ma, mask);
+> +
+> +                       /* Shrink the mask array if necessary. */
+> +                       if (ma->max >= (MASK_ARRAY_SIZE_MIN * 2) &&
+> +                           ma->count <= (ma->max / 3))
+> +                               tbl_mask_array_realloc(tbl, ma->max / 2);
+>                 }
+>         }
+>  }
+> --
+> 1.8.3.1
+>
+> _______________________________________________
+> dev mailing list
+> dev@openvswitch.org
+> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
