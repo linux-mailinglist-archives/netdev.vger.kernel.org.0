@@ -2,61 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E8BCDC6A7
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 15:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B94DC69E
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 15:54:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2442863AbfJRN5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 09:57:22 -0400
-Received: from mail.keramplus.com ([212.3.124.226]:60486 "EHLO
-        trixbox1.localdomain" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2439154AbfJRN5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 09:57:22 -0400
-Received: from 127.0.0.1 (trixbox1.localdomain [127.0.0.1])
-        by trixbox1.localdomain (Postfix) with SMTP id C34F4C99720;
-        Fri, 18 Oct 2019 01:13:28 +0300 (EEST)
-Received: from [227.8.226.173] by 127.0.0.1 with ESMTP id <080805-22791>; Thu, 17 Oct 2019 19:02:45 -0400
-Message-ID: <10-rxh-el$-4jbf6n6ac@crq.dl5>
-From:   "Mr Barrister Hans Erich" <Barrister_Hans@stationlibraryjhelum.com>
-Reply-To: "Mr Barrister Hans Erich" <Barrister_Hans@stationlibraryjhelum.com>
-To:     dgandera511@shamyshee.de
-Subject: RE:PERSONAL LETTER FROM MRS RASHIA AMIRA
-Date:   Thu, 17 Oct 19 19:02:45 GMT
-X-Mailer: The Bat! (v1.52f) Business
+        id S2439480AbfJRNyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 09:54:22 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35436 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727349AbfJRNyW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 09:54:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=xySmRcW7GgvpKnVFRCDEwywcn86eeUCzX2OE1gITPPg=; b=nP0UyKnvD1/DO0qM+gQcdJk7e
+        l4/HQALh9wS10nBJBOSCYRx4052BvALPTbJGYfoUKbRv+a34eY5Hg9+9g77ETW40T9Or8GbDINcyY
+        dviCw9RKcNEi2bRG3Jb4m4KuuPTm4sebEnQNcn0VjDkhzEcmyeDp652EHNWzGg+otF421dQzXDfHE
+        1gSgCtfkazHykOCC+YWH3pxXqKrHF+rWKZopHiupIobBXL7i8Aibd26jXt/P8W08aq5Owua9G5+qR
+        RwTIZJYA62iO7O3jd+Y8MeI3s/SsxEE1i+qMYCF8IHWZrdMKQNRDlFvFQwx+o3bmMUosKt6i00KqJ
+        FYEiVTK4Q==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44318)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iLShr-0007vV-3p; Fri, 18 Oct 2019 14:54:15 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iLShn-0000m9-HF; Fri, 18 Oct 2019 14:54:11 +0100
+Date:   Fri, 18 Oct 2019 14:54:11 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, cphealy@gmail.com,
+        Jose Abreu <joabreu@synopsys.com>
+Subject: Re: [PATCH net-next 2/2] net: phy: Add ability to debug RGMII
+ connections
+Message-ID: <20191018135411.GJ25745@shell.armlinux.org.uk>
+References: <20191015224953.24199-1-f.fainelli@gmail.com>
+ <20191015224953.24199-3-f.fainelli@gmail.com>
+ <4feb3979-1d59-4ad3-b2f1-90d82cfbdf54@gmail.com>
+ <c4244c9a-28cb-7e37-684d-64e6cdc89b67@gmail.com>
+ <CA+h21hrLHe2n0OxJyCKTU0r7mSB1zK9ggP1-1TCednFN_0rXfg@mail.gmail.com>
+ <20191018130121.GK4780@lunn.ch>
+ <CA+h21hoPrwcgz-q=UROAu0PC=6JbKtbdPhJtZg5ge32_2xJ3TQ@mail.gmail.com>
+ <20191018132316.GI25745@shell.armlinux.org.uk>
+ <CA+h21hqVZ=LF3bQGtqFh4uMu6AhNFcrwQuUcEH-Fc1VrWku-eg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-        boundary="_E758.469C._.CD59_"
-X-Priority: 3
-X-MSMail-Priority: Normal
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hqVZ=LF3bQGtqFh4uMu6AhNFcrwQuUcEH-Fc1VrWku-eg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 18, 2019 at 04:37:55PM +0300, Vladimir Oltean wrote:
+> On Fri, 18 Oct 2019 at 16:23, Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Fri, Oct 18, 2019 at 04:09:30PM +0300, Vladimir Oltean wrote:
+> > > Hi Andrew,
+> > >
+> > > On Fri, 18 Oct 2019 at 16:01, Andrew Lunn <andrew@lunn.ch> wrote:
+> > > >
+> > > > > Well, that's the tricky part. You're sending a frame out, with no
+> > > > > guarantee you'll get the same frame back in. So I'm not sure that any
+> > > > > identifiers put inside the frame will survive.
+> > > > > How do the tests pan out for you? Do you actually get to trigger this
+> > > > > check? As I mentioned, my NIC drops the frames with bad FCS.
+> > > >
+> > > > My experience is, the NIC drops the frame and increments some the
+> > > > counter about bad FCS. I do very occasionally see a frame delivered,
+> > > > but i guess that is 1/65536 where the FCS just happens to be good by
+> > > > accident. So i think some other algorithm should be used which is
+> > > > unlikely to be good when the FCS is accidentally good, or just check
+> > > > the contents of the packet, you know what is should contain.
+> > > >
+> > > > Are there any NICs which don't do hardware FCS? Is that something we
+> > > > realistically need to consider?
+> > > >
+> > > > > Yes, but remember, nobody guarantees that a frame with DMAC
+> > > > > ff:ff:ff:ff:ff:ff on egress will still have it on its way back. Again,
+> > > > > this all depends on how you plan to manage the rx-all ethtool feature.
+> > > >
+> > > > Humm. Never heard that before. Are you saying some NICs rewrite the
+> > > > DMAN?
+> > > >
+> > >
+> > > I'm just trying to understand the circumstances under which this
+> > > kernel thread makes sense.
+> > > Checking for FCS validity means that the intention was to enable the
+> > > reception of frames with bad FCS.
+> > > Bad FCS after bad RGMII setup/hold times doesn't mean there's a small
+> > > guy in there who rewrites the checksum. It means that frame octets get
+> > > garbled. All octets are just as likely to get garbled, including the
+> > > SFD, preamble, DMAC, etc.
+> > > All I'm saying is that, if the intention of the patch is to actually
+> > > process the FCS of frames before and after, then it should actually
+> > > put the interface in promiscuous mode, so that frames with a
+> > > non-garbled SFD and preamble can still be received, even though their
+> > > DMAC was the one that got garbled.
+> >
+> > Isn't the point of this to see which RGMII setting results in a working
+> > setup?
+> >
+> > So, is it not true that what we're after is receiving a _correct_ frame
+> > that corresponds to the frame that was sent out?
+> >
+> 
+> Only true if the MAC does not drop bad frames by itself. Then the FCS
+> check in the kernel thread is superfluous.
 
---_E758.469C._.CD59_
-Content-Type: text/plain;
-Content-Transfer-Encoding: quoted-printable
+If a MAC driver doesn't drop bad frames, then surely it's buggy, since
+there isn't (afaik) a way of marking a received skb with a FCS error.
+Therefore, forwarding frames with bad FCS into the Linux networking
+stack will allow the reception of bad frames as if they were good.
 
-Greetings
+All the network drivers I've looked at (and written), when encountering
+a packet with an error, update the statistic counters and drop the
+errored packet.
 
-My name is Barrister Hans Erich.
+Do you know of any that don't?
 
-I have a client who is interested to invest in your country, she is a well=
- known politician in her country and deserve a lucrative investment partne=
-rship with you outside her country without any delay   Please can you mana=
-ge such investment please Kindly reply for further details.
-
-Your full names ---------
-
-
-Your urgent response will be appreciated
-
-Thank you and God bless you.
-
-Barrister Hans Erich
-
-Yours sincerely,
-Barrister Hans Erich
-
---_E758.469C._.CD59_--
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
