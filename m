@@ -2,227 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D6CDCBA7
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1D1BDCBC6
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:44:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407837AbfJRQgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 12:36:32 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:45858 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390036AbfJRQgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:36:32 -0400
-Received: by mail-pg1-f195.google.com with SMTP id r1so3646743pgj.12
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 09:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rWLs6Xuc3aJC0s0delqoDli8RYMmapuhff73waYsGtY=;
-        b=AfR7j+fKA2c8DHDcxPY9fGz4gy2w1xUP0WHZe8VBKkez/uJ5S27VRq0sl/hVEpKoZO
-         yy75VizWut/ylGy9uoA/ZOrFXLK2XZOSlu/PUQxXcGH8EnIKAFdWsPXDnzos6YIw73+C
-         r4cMjEoXgC+5kT/DS6RpO+4rzGTqxcSDBu7MASCS4TTqqNBvzPW7bxWoHzvl1T2V7rxl
-         jqpcR4cF1ZzyGb9p7AJ9wLyVnnDe9TyZ8Q69BtJlrSVI4dST5kZWnJg9RVlaTXACEQhm
-         pFFykQatyhMoMtnGpunWdEkcmD4SJJzqTUMjItKXLoC7lmePJtaMwyEYMtgsk1uz4tYH
-         gX0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rWLs6Xuc3aJC0s0delqoDli8RYMmapuhff73waYsGtY=;
-        b=XOr4jOvF2fyiLJ5Y3YTXOPexua9ijVPnSDUoJVRU186vmI1qJDwjCwRlXF8OaeSTU9
-         OCM/07Xn7eTDaw8IAU0tiPJOHpqVqh3/GYPDa5rRwn23vwESnCP6puDpFfqgkCETZzNW
-         2crBeHIgaJHjzxfHvnhMEypRu+m8YJFk67/WptlsbERayCwoILPkZksbiRF5cisJo/qW
-         8BjkXRObRu1PubwKx+JrxJ5ndaIuwBF4CTiqPJmgv+Uwq2x7Vbxb4/S9iZRClPp42/Sr
-         hJYDxv0TbxtundJMcuQHGGZEiCk5LFu0xKPX7PAuh0ykEr6E+6PUB5YO8bktHCRBXO1Z
-         aqSg==
-X-Gm-Message-State: APjAAAWGnU7xvuCNdMJ5EhAkJlCjtHxoqK6462S0C3QKy6TrWOVriXaa
-        Ev1DEcQ5qAN8l0MApeRuLl/SuuOGkVscIg==
-X-Google-Smtp-Source: APXvYqwLWsAjNyv0O5PRoFjzmTVjhvNhmHsItJjRJYU2gj2UFw7QsUBLK7PfTTz6vvOdmQtuSdJS5g==
-X-Received: by 2002:a62:2ec5:: with SMTP id u188mr7635072pfu.252.1571416589407;
-        Fri, 18 Oct 2019 09:36:29 -0700 (PDT)
-Received: from [192.168.1.188] ([66.219.217.79])
-        by smtp.gmail.com with ESMTPSA id o64sm15326856pjb.24.2019.10.18.09.36.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Oct 2019 09:36:28 -0700 (PDT)
-Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting files
- table
-To:     Jann Horn <jannh@google.com>
-Cc:     linux-block@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-References: <20191017212858.13230-1-axboe@kernel.dk>
- <20191017212858.13230-2-axboe@kernel.dk>
- <CAG48ez0G2y0JS9=S2KmePO3xq-5DuzgovrLFiX4TJL-G897LCA@mail.gmail.com>
- <0fb9d9a0-6251-c4bd-71b0-6e34c6a1aab8@kernel.dk>
- <CAG48ez181=JoYudXee0KbU0vDZ=EbxmgB7q0mmjaA0gyp6MFBQ@mail.gmail.com>
- <a54329d5-a128-3ccd-7a12-f6cadaa20dbf@kernel.dk>
- <CAG48ez1SDQNHjgFku4ft4qw9hdv1g6-sf7-dxuU_tJSx+ofV-w@mail.gmail.com>
- <dbcf874d-8484-9c27-157a-c2752181acb5@kernel.dk>
- <CAG48ez3KwaQ3DVH1VoWxFWTG2ZfCQ6M0oyv5vZqkLgY0QDEdiw@mail.gmail.com>
- <a8fb7a1f-69c7-bf2a-b3dd-7886077d234b@kernel.dk>
- <572f40fb-201c-99ce-b3f5-05ff9369b895@kernel.dk>
- <CAG48ez12pteHyZasU8Smup-0Mn3BWNMCVjybd1jvXsPrJ7OmYg@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <20b44cc0-87b1-7bf8-d20e-f6131da9d130@kernel.dk>
-Date:   Fri, 18 Oct 2019 10:36:26 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <CAG48ez12pteHyZasU8Smup-0Mn3BWNMCVjybd1jvXsPrJ7OmYg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S2437321AbfJRQo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 12:44:28 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22016 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2408749AbfJRQo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:44:27 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9IGh0HD015651;
+        Fri, 18 Oct 2019 09:44:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=+UkI4WlqGnJwH5++X/Da96giXkUGNE5rspp9tEDj6xI=;
+ b=EwD8TFAs9kVBBEDmdlvzsBKcrfVJbErUy4sSjZIFfzobR3zC2CvS2CB5Gt2HgA4AuSmL
+ rsqcU3cJzlfnXg+3IsBA41XojXnhhknI1Y/XxSYUrLnZdbKjeyya6tf8SXhF9f3DwURX
+ cNCHJI/94biCNynDn+cHoDZil5gCjBKnj7k= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vqeungrq4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 18 Oct 2019 09:44:09 -0700
+Received: from prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) by
+ prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Fri, 18 Oct 2019 09:44:08 -0700
+Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
+ prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Fri, 18 Oct 2019 09:44:08 -0700
+Received: from NAM04-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Fri, 18 Oct 2019 09:44:08 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=boesN+O++I2/gg6/6OfD/b1cSAk+je/71q0yefXLYX1A7KAhzBF0I8L6FJcy4cNASgyaG3Ne1LiRoUFYoF+w7VCuzyDjyaLA8tA9eY3oSSxNRUDWFWACbd3l2JuWWJ3qpDPwy5uxeLVji/Fs4ElZ09MudXaOC2vskCsyBKvth9zTUpaCuMGCSNgLJOaeSBjuwZk0GrrJ8NkJHItrvemwNBse2LY4KQ2tomWBwEBNjELI4c6H5Gb/s87vqWO6JJoWaBAr/bjvaMX4AQISEkuI9cyvtSMYyO/D6Pt49zQ9UJOo175vW8VcpfomQhdgByVSEepXrQ+2RxHV7IAoXh3UGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+UkI4WlqGnJwH5++X/Da96giXkUGNE5rspp9tEDj6xI=;
+ b=JXQSVJUsxnbWK0Bv2jwsCU4exyTq7ImvhPNix0bvpzMArn6BDUEm8Gy+FubZ2RvGi4ZO3Xa7Cv6sYC+6m0U1Y6LwbKQu/982JIe+enBeqyRK+VN/RCIQnthGQ/5O23x0qNpkYJS3qOcydV4+FgJ1aQVMSeGNGpW3LXjQqoIEl1Tco3nQ/yO2tdaPUDUdeRtkcrqjE6TUVeL1TIFzEP01i9QrerBqo36wseui4YSZMCfRfEpVJtcAYowaroFNERaXPNRLR/TqX3k1jiOj3HRSHjJG+BgrPpL7zE/7cQax0hlRTdmPmYPkbvsbFaP+x0ZMVrC4Kt8D4ODcOgzHaqA19A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+UkI4WlqGnJwH5++X/Da96giXkUGNE5rspp9tEDj6xI=;
+ b=h8al7OZJugEtx2nawCV2undULNBeTKH9priBzlpmy1PdUrZooG/QiHs/C/Wfuvzj8IIpIVs9qCdZNjT6UuDi9GCEORbtJj23D8aPnxjJA3EhekLR8nGt0dir/wKv9gk6Mu7jR00h8WXWJ6yaoPFKvYFKer0bEnllGsNNEpKX/E4=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.60.27) by
+ BYAPR15MB3159.namprd15.prod.outlook.com (20.178.207.220) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Fri, 18 Oct 2019 16:44:00 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::b92c:ebd2:58dc:6b8d]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::b92c:ebd2:58dc:6b8d%5]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
+ 16:44:00 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: Re: [PATCH bpf] xdp: Prevent overflow in devmap_hash cost calculation
+ for 32-bit builds
+Thread-Topic: [PATCH bpf] xdp: Prevent overflow in devmap_hash cost
+ calculation for 32-bit builds
+Thread-Index: AQHVhNnFD9d5pJIOhEuDmXWPa+fSQqdgnMSA
+Date:   Fri, 18 Oct 2019 16:44:00 +0000
+Message-ID: <bad3785d-e4d9-82e7-c5ef-f70e44616711@fb.com>
+References: <20191017105702.2807093-1-toke@redhat.com>
+In-Reply-To: <20191017105702.2807093-1-toke@redhat.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR01CA0046.prod.exchangelabs.com (2603:10b6:300:101::32)
+ To BYAPR15MB3384.namprd15.prod.outlook.com (2603:10b6:a03:112::27)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3:3455]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 10dc147a-faae-4db7-4c68-08d753ea6086
+x-ms-traffictypediagnostic: BYAPR15MB3159:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB315920F1F2A952801619E08FD36C0@BYAPR15MB3159.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:758;
+x-forefront-prvs: 01949FE337
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(376002)(136003)(39860400002)(346002)(366004)(189003)(199004)(2616005)(6246003)(81166006)(81156014)(86362001)(8676002)(4326008)(110136005)(36756003)(31696002)(6636002)(14444005)(11346002)(316002)(256004)(446003)(186003)(476003)(54906003)(6116002)(486006)(46003)(25786009)(66574012)(2906002)(6436002)(305945005)(229853002)(66476007)(66446008)(66556008)(66946007)(99286004)(14454004)(4744005)(6512007)(102836004)(52116002)(53546011)(478600001)(7736002)(5660300002)(2501003)(6506007)(386003)(31686004)(6486002)(8936002)(76176011)(71200400001)(71190400001)(64756008);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3159;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XG64HEwQpcnScKwkWn278NRpIIv+EGAWPmIG/i0NKFCCMfNaKfGGY9cGhjNgYopeRJ5eaxxRFrsACcFWBl8o+YDk7vY4UP4D2KU4fK9q96RlvcGz2QMwq+pbKKNQ2j3qXDEZE5hmylH9rYR3ebFdtO/fY5rLfbC7AcnoTls2jMkIMQTgqVakbWm7ETGWQUOg+0U8D6nRAuDri62i0PtQ4B1ub0n3lSoFl0ObTveqYsWjRKv+nJk5lqnUTTfSpsSRKvJKjns+ES1d9vNszqsqqQwWwYxkOkR0e8xky0MqNKZ/pPsMAt+GZ1kc18jk952zKMILpAcF3y7L2Kf0lzmqcCzwYRq5OmWLdvgWnIZUyYaL8yy6yFeU1bNsxc7e556yjSn6DVI8u1nmRaJlrpAl7SLJvGQWpuLr+u3rnElgPCw=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A03305F5B331214796BF2F00BE615EB3@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10dc147a-faae-4db7-4c68-08d753ea6086
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 16:44:00.6089
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iBy9w3xifP5jNGdOt1rRBuYnJCZznUbwuPsKzTB5OFYmuWz5OXpGBwc4wBn3ZZ22
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3159
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-18_04:2019-10-18,2019-10-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0 clxscore=1011
+ spamscore=0 adultscore=0 suspectscore=0 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910180152
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/19 10:20 AM, Jann Horn wrote:
-> On Fri, Oct 18, 2019 at 5:55 PM Jens Axboe <axboe@kernel.dk> wrote:
->> On 10/18/19 9:00 AM, Jens Axboe wrote:
->>> On 10/18/19 8:52 AM, Jann Horn wrote:
->>>> On Fri, Oct 18, 2019 at 4:43 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>
->>>>> On 10/18/19 8:40 AM, Jann Horn wrote:
->>>>>> On Fri, Oct 18, 2019 at 4:37 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>>>
->>>>>>> On 10/18/19 8:34 AM, Jann Horn wrote:
->>>>>>>> On Fri, Oct 18, 2019 at 4:01 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>>>>> On 10/17/19 8:41 PM, Jann Horn wrote:
->>>>>>>>>> On Fri, Oct 18, 2019 at 4:01 AM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>>>>>>> This is in preparation for adding opcodes that need to modify files
->>>>>>>>>>> in a process file table, either adding new ones or closing old ones.
->>>>>>>> [...]
->>>>>>>>> Updated patch1:
->>>>>>>>>
->>>>>>>>> http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=df6caac708dae8ee9a74c9016e479b02ad78d436
->>>>>>>>
->>>>>>>> I don't understand what you're doing with old_files in there. In the
->>>>>>>> "s->files && !old_files" branch, "current->files = s->files" happens
->>>>>>>> without holding task_lock(), but current->files and s->files are also
->>>>>>>> the same already at that point anyway. And what's the intent behind
->>>>>>>> assigning stuff to old_files inside the loop? Isn't that going to
->>>>>>>> cause the workqueue to keep a modified current->files beyond the
->>>>>>>> runtime of the work?
->>>>>>>
->>>>>>> I simply forgot to remove the old block, it should only have this one:
->>>>>>>
->>>>>>> if (s->files && s->files != cur_files) {
->>>>>>>             task_lock(current);
->>>>>>>             current->files = s->files;
->>>>>>>             task_unlock(current);
->>>>>>>             if (cur_files)
->>>>>>>                     put_files_struct(cur_files);
->>>>>>>             cur_files = s->files;
->>>>>>> }
->>>>>>
->>>>>> Don't you still need a put_files_struct() in the case where "s->files
->>>>>> == cur_files"?
->>>>>
->>>>> I want to hold on to the files for as long as I can, to avoid unnecessary
->>>>> shuffling of it. But I take it your worry here is that we'll be calling
->>>>> something that manipulates ->files? Nothing should do that, unless
->>>>> s->files is set. We didn't hide the workqueue ->files[] before this
->>>>> change either.
->>>>
->>>> No, my worry is that the refcount of the files_struct is left too
->>>> high. From what I can tell, the "do" loop in io_sq_wq_submit_work()
->>>> iterates over multiple instances of struct sqe_submit. If there are
->>>> two sqe_submit instances with the same ->files (each holding a
->>>> reference from the get_files_struct() in __io_queue_sqe()), then:
->>>>
->>>> When processing the first sqe_submit instance, current->files and
->>>> cur_files are set to $user_files.
->>>> When processing the second sqe_submit instance, nothing happens
->>>> (s->files == cur_files).
->>>> After the loop, at the end of the function, put_files_struct() is
->>>> called once on $user_files.
->>>>
->>>> So get_files_struct() has been called twice, but put_files_struct()
->>>> has only been called once. That leaves the refcount too high, and by
->>>> repeating this, an attacker can make the refcount wrap around and then
->>>> cause a use-after-free.
->>>
->>> Ah now I see what you are getting at, yes that's clearly a bug! I wonder
->>> how we best safely can batch the drops. We can track the number of times
->>> we've used the same files, and do atomic_sub_and_test() in a
->>> put_files_struct_many() type addition. But that would leave us open to
->>> the issue you describe, where someone could maliciously overflow the
->>> files ref count.
->>>
->>> Probably not worth over-optimizing, as long as we can avoid the
->>> current->files task lock/unlock and shuffle.
->>>
->>> I'll update the patch.
->>
->> Alright, this incremental on top should do it. And full updated patch
->> here:
->>
->> http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=40449c5a3d3b16796fa13e9469c69d62986e961c
->>
->> Let me know what you think.
-> 
-> Ignoring the locking elision, basically the logic is now this:
-> 
-> static void io_sq_wq_submit_work(struct work_struct *work)
-> {
->          struct io_kiocb *req = container_of(work, struct io_kiocb, work);
->          struct files_struct *cur_files = NULL, *old_files;
->          [...]
->          old_files = current->files;
->          [...]
->          do {
->                  struct sqe_submit *s = &req->submit;
->                  [...]
->                  if (cur_files)
->                          /* drop cur_files reference; borrow lifetime must
->                           * end before here */
->                          put_files_struct(cur_files);
->                  /* move reference ownership to cur_files */
->                  cur_files = s->files;
->                  if (cur_files) {
->                          task_lock(current);
->                          /* current->files borrows reference from cur_files;
->                           * existing borrow from previous loop ends here */
->                          current->files = cur_files;
->                          task_unlock(current);
->                  }
-> 
->                  [call __io_submit_sqe()]
->                  [...]
->          } while (req);
->          [...]
->          /* existing borrow ends here */
->          task_lock(current);
->          current->files = old_files;
->          task_unlock(current);
->          if (cur_files)
->                  /* drop cur_files reference; borrow lifetime must
->                   * end before here */
->                  put_files_struct(cur_files);
-> }
-> 
-> If you run two iterations of this loop, with a first element that has
-> a ->files pointer and a second element that doesn't, then in the
-> second run through the loop, the reference to the files_struct will be
-> dropped while current->files still points to it; current->files is
-> only reset after the loop has ended. If someone accesses
-> current->files through procfs directly after that, AFAICS you'd get a
-> use-after-free.
-
-Amazing how this is still broken. You are right, and it's especially
-annoying since that's exactly the case I originally talked about (not
-flipping current->files if we don't have to). I just did it wrong, so
-we'll leave a dangling pointer in ->files.
-
-The by far most common case is if one sqe has a files it needs to
-attach, then others that also have files will be the same set. So I want
-to optimize for the case where we only flip current->files once when we
-see the files, and once when we're done with the loop.
-
-Let me see if I can get this right...
-
--- 
-Jens Axboe
-
+DQoNCk9uIDEwLzE3LzE5IDM6NTcgQU0sIFRva2UgSMO4aWxhbmQtSsO4cmdlbnNlbiB3cm90ZToN
+Cj4gVGV0c3VvIHBvaW50ZWQgb3V0IHRoYXQgd2l0aG91dCBhbiBleHBsaWNpdCBjYXN0LCB0aGUg
+Y29zdCBjYWxjdWxhdGlvbiBmb3INCj4gZGV2bWFwX2hhc2ggdHlwZSBtYXBzIGNvdWxkIG92ZXJm
+bG93IG9uIDMyLWJpdCBidWlsZHMuIFRoaXMgYWRkcyB0aGUNCj4gbWlzc2luZyBjYXN0Lg0KPiAN
+Cj4gRml4ZXM6IDZmOWQ0NTFhYjFhMyAoInhkcDogQWRkIGRldm1hcF9oYXNoIG1hcCB0eXBlIGZv
+ciBsb29raW5nIHVwIGRldmljZXMgYnkgaGFzaGVkIGluZGV4IikNCj4gUmVwb3J0ZWQtYnk6IFRl
+dHN1byBIYW5kYSA8cGVuZ3Vpbi1rZXJuZWxAaS1sb3ZlLnNha3VyYS5uZS5qcD4NCj4gU2lnbmVk
+LW9mZi1ieTogVG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+DQoNCkFj
+a2VkLWJ5OiBZb25naG9uZyBTb25nIDx5aHNAZmIuY29tPg0KDQo+IC0tLQ0KPiAgIGtlcm5lbC9i
+cGYvZGV2bWFwLmMgfCAyICstDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAx
+IGRlbGV0aW9uKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2JwZi9kZXZtYXAuYyBiL2tl
+cm5lbC9icGYvZGV2bWFwLmMNCj4gaW5kZXggYTBhMTE1M2RhNWFlLi5lMzRmYWM2MDIyZWIgMTAw
+NjQ0DQo+IC0tLSBhL2tlcm5lbC9icGYvZGV2bWFwLmMNCj4gKysrIGIva2VybmVsL2JwZi9kZXZt
+YXAuYw0KPiBAQCAtMTI4LDcgKzEyOCw3IEBAIHN0YXRpYyBpbnQgZGV2X21hcF9pbml0X21hcChz
+dHJ1Y3QgYnBmX2R0YWIgKmR0YWIsIHVuaW9uIGJwZl9hdHRyICphdHRyKQ0KPiAgIA0KPiAgIAkJ
+aWYgKCFkdGFiLT5uX2J1Y2tldHMpIC8qIE92ZXJmbG93IGNoZWNrICovDQo+ICAgCQkJcmV0dXJu
+IC1FSU5WQUw7DQo+IC0JCWNvc3QgKz0gc2l6ZW9mKHN0cnVjdCBobGlzdF9oZWFkKSAqIGR0YWIt
+Pm5fYnVja2V0czsNCj4gKwkJY29zdCArPSAodTY0KSBzaXplb2Yoc3RydWN0IGhsaXN0X2hlYWQp
+ICogZHRhYi0+bl9idWNrZXRzOw0KPiAgIAl9DQo+ICAgDQo+ICAgCS8qIGlmIG1hcCBzaXplIGlz
+IGxhcmdlciB0aGFuIG1lbWxvY2sgbGltaXQsIHJlamVjdCBpdCAqLw0KPiANCg==
