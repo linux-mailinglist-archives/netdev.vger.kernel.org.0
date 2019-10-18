@@ -2,157 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68824DBF6F
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 10:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66128DBFC0
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 10:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504919AbfJRIIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 04:08:04 -0400
-Received: from mail-eopbgr730083.outbound.protection.outlook.com ([40.107.73.83]:27820
-        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2391374AbfJRIIE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 04:08:04 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XdeeqVcEF2HmZB6padbz9/Lbu+13RLmrwg4irEjnVt0pnwH3hJOpVVZeT9tX/gQBl+RZRC9mbufEoEVqBcQX4g8bi6QQ/qypM3dly7Mrf53q3ro3e4UFVLJEPpCpJZMzqQSjl7JW2jicg3JfabqSKzrAYTVPU573UB0xVlcSxrIawlrPksXcOTYXIzmWnt+mCBHqLW7Ke3KqBpW87YPTBtyIiBXcc54kXpcr1Yw89ZnT8qbPcKwpIvadSCJcZps9HQRXQBmc52kY9+6eRyI+46GDit+q74kCAokLWe1aq/hVXcpHGeAhadJIhtfqywNnyn1+59lhInhpnnLjnCV1Kg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SPZbVR1+0g24dXFjPgttoII5bqlwh3+NG8UyiP13LUM=;
- b=Gh4BDv3lWhvml5YXCCodyups+ajsS/4+Mol36X/hz7W3cXe1xL5BeW0to6KKfeV9bZcJ3mUJrdUMob3QSCelFIyWSpe1M1voeH/GCy45E2aIFQ0dBmmNJlQfobGogF2SZe5IXkidSZhFR1oNhlU5JaDABDx5rJ3qN1meVA5lBocREIPgSzk02wkWt+AVfJLc0gAw8w7pPH8kamZyUvvpKRZfyqSkSP+VDacSBsHvS/cbcLhdBvniI3PQT3gIUom1FPKYTKcs8fQuoSA5I4OKmk0vZKUxQHMHotH8jRPQdawfl0zJFkInRr5/tD9aMXfamtBrIuu7ey8mFweFCcIvug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.83) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
+        id S2406746AbfJRIUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 04:20:40 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:33377 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2395519AbfJRIUj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 04:20:39 -0400
+Received: by mail-pl1-f193.google.com with SMTP id d22so2503590pls.0
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 01:20:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SPZbVR1+0g24dXFjPgttoII5bqlwh3+NG8UyiP13LUM=;
- b=V9Lby2RlhnxwfwSCk2m1+X3yrLXm6F2wK45y6uiScUbxxlR5T3NTYIJcSrllsKEgLcObTuK1z3E2V7X1s8M+95+Tk/MbDgBXFKrgPWzrz3Y2KXaoJgug4Hp0oGY2MSRXiAJ67Gjk3ahpsnSTHyM+XhnnBI4nNQ40HKPrdCTTfLc=
-Received: from CY4PR02CA0023.namprd02.prod.outlook.com (2603:10b6:903:18::33)
- by SN6PR02MB3967.namprd02.prod.outlook.com (2603:10b6:805:2b::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.19; Fri, 18 Oct
- 2019 08:08:01 +0000
-Received: from SN1NAM02FT038.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::202) by CY4PR02CA0023.outlook.office365.com
- (2603:10b6:903:18::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.16 via Frontend
- Transport; Fri, 18 Oct 2019 08:08:01 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
- smtp.mailfrom=xilinx.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
-Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- SN1NAM02FT038.mail.protection.outlook.com (10.152.72.69) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2367.14
- via Frontend Transport; Fri, 18 Oct 2019 08:08:00 +0000
-Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
-        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1iLNIm-0000mD-5W; Fri, 18 Oct 2019 01:08:00 -0700
-Received: from [127.0.0.1] (helo=localhost)
-        by xsj-pvapsmtp01 with smtp (Exim 4.63)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1iLNIh-0007n6-1Z; Fri, 18 Oct 2019 01:07:55 -0700
-Received: from xsj-pvapsmtp01 (xsj-pvapsmtp01.xilinx.com [149.199.38.66])
-        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x9I87jHK015921;
-        Fri, 18 Oct 2019 01:07:45 -0700
-Received: from [172.30.17.123]
-        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-        (envelope-from <michals@xilinx.com>)
-        id 1iLNIX-0007lR-1F; Fri, 18 Oct 2019 01:07:45 -0700
-Subject: Re: [PATCH net-next] net: axienet: In kconfig add ARM64 as supported
- platform
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     michal.simek@xilinx.com, anirudha.sarangi@xilinx.com,
-        john.linn@xilinx.com, mchehab+samsung@kernel.org,
-        gregkh@linuxfoundation.org, nicolas.ferre@microchip.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <1571381686-13045-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-From:   Michal Simek <michal.simek@xilinx.com>
-Message-ID: <eb41070c-8393-ec4e-f9c9-f16d082fbe1c@xilinx.com>
-Date:   Fri, 18 Oct 2019 10:07:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=riDVkEhpVRQWbrB7JStgGbHiqZwnP3ZTmnM42mY7YnM=;
+        b=XC1yrAlh0k9uqB+iBQDWTStCQN12PP+lwP1ZRE58P1flolUzVsbnRUoaA9iw+5l74k
+         JTDolCB9jS9N8dUBUjyV4alCr4W+xEnU7AQMmGMHyLA47lnYZdZPPZlxq8u1/DWuEL+v
+         RWBK4SYxqpH98TmS1rIfYAFLib9i5Bt1dW2pI72tyl80TwMqGEAgrnfVO1SFWv8N6N1G
+         /ubfv4ivvt0gpGssm0v/jZq4Pi6ZbWNXYUJ+z+VNn5hE1piwRR92sffrLjSasGFheRmW
+         uhsRHf7Wt7FGiHIuhDWvVJFk4UES//0MuW+GZTFr2NoEwip/2VHBthnwmBWOb57WJPtV
+         77ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=riDVkEhpVRQWbrB7JStgGbHiqZwnP3ZTmnM42mY7YnM=;
+        b=OdgslESEPh/mhLfqK+PH3bbLUJYn6HiZHLbWRYZRbvoGtI1URrE46oRv8uIzv3jRrA
+         h54XataSki/8zEF+3MI1jDse3LtMtfCOLgr1CELMRKkGpIs29cHmbYnNK5//x9LC/uTQ
+         J/tBQjtz581+byTRsxz8VABWozzTSg0Pq5ep+yRluB2EEmyxdDfGNocVCo0Ncix/twb7
+         3W4I9Aq4SBQnZCZNvMga+vWM7id5+bHnuY6g4tPM6n8p9viAqZ2Dw6+r3wLgn80O6bDp
+         akxvxhetAD3+Tz2WuhgOPnIk6zdyBm8q1fJv6RVK91ubDTNxV0wczyKrWf4jidq9pWp4
+         pM4w==
+X-Gm-Message-State: APjAAAUlHJG2Tx3Lvomdpy5ZzpHVYyg6sNw1mTiJYHrbJhdqeD3E9Ok5
+        6jNxTJhebCWGB+uqe7ImRhA=
+X-Google-Smtp-Source: APXvYqx7bbu/ig1DiBW08F1spq4/+dS31bTPWPQhqES9OWNTN3C9NUf0AHk179aXUkbzTPzKh/PafA==
+X-Received: by 2002:a17:902:8505:: with SMTP id bj5mr8189090plb.296.1571386838588;
+        Fri, 18 Oct 2019 01:20:38 -0700 (PDT)
+Received: from martin-VirtualBox ([1.39.146.157])
+        by smtp.gmail.com with ESMTPSA id z4sm7082181pfn.45.2019.10.18.01.20.37
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 18 Oct 2019 01:20:37 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 13:50:29 +0530
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, corbet@lwn.net,
+        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH net-next 1/2] UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+Message-ID: <20191018082029.GA11876@martin-VirtualBox>
+References: <cover.1570455278.git.martinvarghesenokia@gmail.com>
+ <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
+ <CA+FuTSc=uTot72dxn7VRfCv59GcfWb32ZM5XU1_GHt3Ci3PL_A@mail.gmail.com>
+ <20191017132029.GA9982@martin-VirtualBox>
+ <CA+FuTScS+fm_scnm5qkU4wtV+FAW8XkC4OfwCbLOxuPz1YipNw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1571381686-13045-1-git-send-email-radhey.shyam.pandey@xilinx.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-RCIS-Action: ALLOW
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(396003)(136003)(376002)(199004)(189003)(70586007)(4326008)(50466002)(47776003)(8676002)(31696002)(70206006)(65806001)(81166006)(65956001)(5660300002)(36756003)(9786002)(81156014)(8936002)(478600001)(316002)(2616005)(44832011)(336012)(6666004)(126002)(31686004)(36386004)(6246003)(106002)(476003)(305945005)(356004)(11346002)(186003)(2906002)(230700001)(26005)(229853002)(58126008)(23676004)(426003)(446003)(2486003)(486006)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR02MB3967;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8695f6cb-5ce8-4317-992d-08d753a24b24
-X-MS-TrafficTypeDiagnostic: SN6PR02MB3967:
-X-Microsoft-Antispam-PRVS: <SN6PR02MB3967687650A478FA792C61DDC66C0@SN6PR02MB3967.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 01949FE337
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yrmu1g9Ryw0QdQdi9axOai5Qc01deVTtjRdGhUnkF/7ThbC+Rqhdi0fIvZbzBq20c+TGLObf8tHBaeh0ApokRt4ZbBUxjMOaO4xtbXr8MQK0z683pZWhDHbaQknaAPtfGKARG3EVx1p4nr8xEwasA6tYFejslzafBxMpSLHcXwOsjgzZ6mSth8Sw9QAEdO7g5yjjxlw7VP0hfK3Pqxo/A1OQJH+p2YrQRVYHoCbL8cZ3lVyk41zIbyQbcZESxB7QVvfOc4ICR1TJrV7fviLAAqXwbQ7FAkKNQ1AeDJVULcAv2LeWJV1mqzPAfJNx9vrKKkavZJa+aLPuPpuHks2vNo97UEEhiT6kuvhNLFxQUm8nW98KJAMq5GOQvBzM3PNtcsiRRucgOXQN5ZOdT/mOY0hlerjJ3JkSzw9Rr/I43tU=
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2019 08:08:00.5580
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8695f6cb-5ce8-4317-992d-08d753a24b24
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB3967
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+FuTScS+fm_scnm5qkU4wtV+FAW8XkC4OfwCbLOxuPz1YipNw@mail.gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18. 10. 19 8:54, Radhey Shyam Pandey wrote:
-> xilinx axi_emac driver is supported on ZynqMP UltraScale platform(ARM64).
-> So enable it in kconfig. Basic sanity testing is done on zu+ mpsoc zcu102
-> evaluation board.
+On Thu, Oct 17, 2019 at 04:48:26PM -0400, Willem de Bruijn wrote:
+> On Thu, Oct 17, 2019 at 9:20 AM Martin Varghese
+> <martinvarghesenokia@gmail.com> wrote:
+> >
+> > On Tue, Oct 08, 2019 at 12:28:23PM -0400, Willem de Bruijn wrote:
+> > > On Tue, Oct 8, 2019 at 5:51 AM Martin Varghese
+> > > <martinvarghesenokia@gmail.com> wrote:
+> > > >
+> > > > From: Martin <martin.varghese@nokia.com>
+> > > >
+> > > > The Bareudp tunnel module provides a generic L3 encapsulation
+> > > > tunnelling module for tunnelling different protocols like MPLS,
+> > > > IP,NSH etc inside a UDP tunnel.
+> > > >
+> > > > Signed-off-by: Martin Varghese <martinvarghesenokia@gmail.com>
+> > > > ---
 > 
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> ---
->  drivers/net/ethernet/xilinx/Kconfig | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> > > > +static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
+> > > > +{
+> > >
+> > >
+> > > > +       skb_push(skb, sizeof(struct ethhdr));
+> > > > +       eh = (struct ethhdr *)skb->data;
+> > > > +       eh->h_proto = proto;
+> > > > +
+> > > > +       skb_reset_mac_header(skb);
+> > > > +       skb->protocol = eth_type_trans(skb, bareudp->dev);
+> > > > +       skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
+> > > > +       oiph = skb_network_header(skb);
+> > > > +       skb_reset_network_header(skb);
+> > > > +
+> > > > +       if (bareudp_get_sk_family(bs) == AF_INET)
+> > >
+> > > This should be derived from packet contents, not socket state.
+> > > Although the one implies the other, I imagine.
+> > >
+> >
+> > The IP Stack check IP headers & puts the packet in the correct socket, hence checking the ip headers again is reduntant correct?
 > 
-> diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
-> index 8d994ce..a616bdc 100644
-> --- a/drivers/net/ethernet/xilinx/Kconfig
-> +++ b/drivers/net/ethernet/xilinx/Kconfig
-> @@ -6,7 +6,7 @@
->  config NET_VENDOR_XILINX
->  	bool "Xilinx devices"
->  	default y
-> -	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || COMPILE_TEST
-> +	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || ARM64 || COMPILE_TEST
-
-You can remove ARCH_ZYNQ from this line because ARM is there already.
-
-
->  	---help---
->  	  If you have a network (Ethernet) card belonging to this class, say Y.
->  
-> @@ -26,11 +26,11 @@ config XILINX_EMACLITE
->  
->  config XILINX_AXI_EMAC
->  	tristate "Xilinx 10/100/1000 AXI Ethernet support"
-> -	depends on MICROBLAZE || X86 || ARM || COMPILE_TEST
-> +	depends on MICROBLAZE || X86 || ARM || ARM64 || COMPILE_TEST
->  	select PHYLINK
->  	---help---
->  	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
-> -	  AXI bus interface used in Xilinx Virtex FPGAs.
-> +	  AXI bus interface used in Xilinx Virtex FPGAs and Soc's.
->  
->  config XILINX_LL_TEMAC
->  	tristate "Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver"
+> This parses the inner packet after decapsulation. The protocol stack
+> has selected the socket based on the outer packet, right?
 > 
 
-M
+The check on socket  " if (bareudp_get_sk_family(bs) == AF_INET)"  was to find out the outer header was ipv4 and v6.
+Based on that TOS/ECN of outer header is derived from oiph->tos for ipv4 and using ipv6_get_dsfield(oipv6h) for ipv6.
+The TOS/ECN  of inner header are derived in funtions IP_ECN_decapsulate  & IP6_ECN_decapsulate.And they are derived from packet.
+> I guess the correctness comes from the administrator having configured
+> the bareudp for this protocol type, so implicitly guarantees that no
+> other inner packets will appear.
+> 
+Yes that is correct.
+
+> Also, the oiph pointer is a bit fragile now that a new mac header is
+> constructed in the space that used to hold the encapsulation headers.
+> I suppose it only updates eth->h_proto, which lies in the former udp
+> header. More fundamentally, is moving the mac header needed at all, if
+> the stack correctly uses skb_mac_header whenever it accesses also
+> after decapsulation?
+>
+
+We need to move ethernet header. As there could be cases where the packet from a bareudp device is redirected via
+other physical interface to a different network node for further processing.
+I agree that oiph pointer is fragile, but since we are updating only proto field we are not corrupting the oiph.
+But we can do ethernet header update once the oiph is no more used.It would entail setting the skb->protocol before calling IP_ECN_decapsulate 
+
+
+ 
+> > In geneve & vxlan it is done the same way.
+> >
+> >
+> > > > +static struct rtable *bareudp_get_v4_rt(struct sk_buff *skb,
+> > > > +                                       struct net_device *dev,
+> > > > +                                       struct bareudp_sock *bs4,
+> > > > +                                       struct flowi4 *fl4,
+> > > > +                                       const struct ip_tunnel_info *info)
+> > > > +{
+> > > > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+> > > > +       struct bareudp_dev *bareudp = netdev_priv(dev);
+> > > > +       struct dst_cache *dst_cache;
+> > > > +       struct rtable *rt = NULL;
+> > > > +       __u8 tos;
+> > > > +
+> > > > +       if (!bs4)
+> > > > +               return ERR_PTR(-EIO);
+> > > > +
+> > > > +       memset(fl4, 0, sizeof(*fl4));
+> > > > +       fl4->flowi4_mark = skb->mark;
+> > > > +       fl4->flowi4_proto = IPPROTO_UDP;
+> > > > +       fl4->daddr = info->key.u.ipv4.dst;
+> > > > +       fl4->saddr = info->key.u.ipv4.src;
+> > > > +
+> > > > +       tos = info->key.tos;
+> > > > +       fl4->flowi4_tos = RT_TOS(tos);
+> > > > +
+> > > > +       dst_cache = (struct dst_cache *)&info->dst_cache;
+> > > > +       if (use_cache) {
+> > > > +               rt = dst_cache_get_ip4(dst_cache, &fl4->saddr);
+> > > > +               if (rt)
+> > > > +                       return rt;
+> > > > +       }
+> > > > +       rt = ip_route_output_key(bareudp->net, fl4);
+> > > > +       if (IS_ERR(rt)) {
+> > > > +               netdev_dbg(dev, "no route to %pI4\n", &fl4->daddr);
+> > > > +               return ERR_PTR(-ENETUNREACH);
+> > > > +       }
+> > > > +       if (rt->dst.dev == dev) { /* is this necessary? */
+> > > > +               netdev_dbg(dev, "circular route to %pI4\n", &fl4->daddr);
+> > > > +               ip_rt_put(rt);
+> > > > +               return ERR_PTR(-ELOOP);
+> > > > +       }
+> > > > +       if (use_cache)
+> > > > +               dst_cache_set_ip4(dst_cache, &rt->dst, fl4->saddr);
+> > > > +       return rt;
+> > > > +}
+> > > > +
+> > > > +#if IS_ENABLED(CONFIG_IPV6)
+> > > > +static struct dst_entry *bareudp_get_v6_dst(struct sk_buff *skb,
+> > > > +                                           struct net_device *dev,
+> > > > +                                           struct bareudp_sock *bs6,
+> > > > +                                           struct flowi6 *fl6,
+> > > > +                                           const struct ip_tunnel_info *info)
+> > > > +{
+> > > > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+> > > > +       struct bareudp_dev *bareudp = netdev_priv(dev);
+> > > > +       struct dst_entry *dst = NULL;
+> > > > +       struct dst_cache *dst_cache;
+> > > > +       __u8 prio;
+> > > > +
+> > > > +       if (!bs6)
+> > > > +               return ERR_PTR(-EIO);
+> > > > +
+> > > > +       memset(fl6, 0, sizeof(*fl6));
+> > > > +       fl6->flowi6_mark = skb->mark;
+> > > > +       fl6->flowi6_proto = IPPROTO_UDP;
+> > > > +       fl6->daddr = info->key.u.ipv6.dst;
+> > > > +       fl6->saddr = info->key.u.ipv6.src;
+> > > > +       prio = info->key.tos;
+> > > > +
+> > > > +       fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
+> > > > +                                          info->key.label);
+> > > > +       dst_cache = (struct dst_cache *)&info->dst_cache;
+> > > > +       if (use_cache) {
+> > > > +               dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
+> > > > +               if (dst)
+> > > > +                       return dst;
+> > > > +       }
+> > > > +       if (ipv6_stub->ipv6_dst_lookup(bareudp->net, bs6->sock->sk, &dst,
+> > > > +                                      fl6)) {
+> > > > +               netdev_dbg(dev, "no route to %pI6\n", &fl6->daddr);
+> > > > +               return ERR_PTR(-ENETUNREACH);
+> > > > +       }
+> > > > +       if (dst->dev == dev) { /* is this necessary? */
+> > > > +               netdev_dbg(dev, "circular route to %pI6\n", &fl6->daddr);
+> > > > +               dst_release(dst);
+> > > > +               return ERR_PTR(-ELOOP);
+> > > > +       }
+> > > > +
+> > > > +       if (use_cache)
+> > > > +               dst_cache_set_ip6(dst_cache, dst, &fl6->saddr);
+> > > > +       return dst;
+> > > > +}
+> > > > +#endif
+> > >
+> > > The route lookup logic is very similar to vxlan_get_route and
+> > > vxlan6_get_route. Can be reused?
+> >
+> > I had a look at the vxlan & geneve and it seems the corresponding functions  in those modules are tightly coupled  to the rest of the module design.
+> > More specifically wrt the ttl inheritance & the caching behaviour. It may not be possible for those modules to use a new generic API unless without a change in those module design.
+> 
+> bareudp_get_v4_rt is identical to geneve_get_v4_rt down to the comment
+> aside from
+> 
+>         if ((tos == 1) && !geneve->collect_md) {
+>                 tos = ip_tunnel_get_dsfield(ip_hdr(skb), skb);
+>                 use_cache = false;
+>         }
+> 
+> Same for bareudp_get_v6_dst and geneve_get_v6_dst.
+> 
+> Worst case that one branch could be made conditional on a boolean
+> argument? Maybe this collect_md part (eventually) makes sense to
+> bareudp, as well.
+> 
+> 
+Unlike Geneve, bareudp module is  a generic L3 encapsulation module and it could be used to tunnel different L3 protocols.
+TTL inheritance requirements for these protocols will be different when tunnelled. For Example - TTL inheritance for MPLS & IP are different.
+And moving this function to a common place will make it tough for Geneve & bareudp if a new L3 protocol with new TTL inheritance requirements shows up
+
+
+> 
+> > The bareudp module is a generic L3 encapsulation module. It could be used to tunnel different l3 protocols. TTL Inheritance behaviour when tunnelled
+> > could be different for these inner protocols. Hence moving  this function to a common place will make it tough to change it later when a need arises for a new protocol
+> >
+> > Otherwise we should have more generic function which takes the  generic IP header params as arguments. Then the point is we don’t need a function like that
+> > We can just fill up "struct flowi4" and call ip_route_output_key or dst_cache_get_ip4 to get the route table entry
+> >
+> >
+> > Thanks
+> > Martin
