@@ -2,198 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A661DC9EF
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 17:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61047DC9FB
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 17:56:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390054AbfJRPzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 11:55:04 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:45895 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436481AbfJRPzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 11:55:04 -0400
-Received: by mail-pg1-f193.google.com with SMTP id r1so3586740pgj.12
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 08:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LBUYF/N7x8hbc8GXc7h+thi64B1eIh6Rk/6W7sM3oDM=;
-        b=2SvE9jA2N9du2TOdHNwiaPTDUtX3LC9qU6IA6N/SxuhNG9wVeJptkOCG8EPnG5nT83
-         LfiwGHMm1CQb03m7K3V3JrGsT9cJ5dsNUssGn/5iuSe81S5a5SwjZwcVA7cJ3wvWcK5S
-         JhB1UrdHdVpikBCsmbAQCZyZmG8MadJeyEv8v8zuI2gPAQ469+ReOvZxvChDVZo8Bt2o
-         2/bKGiFVwJR40QjUtWSLoNqDyCcjNpuRPv9mhuBtm3TIGqZn65/ji3TVmb4wo3ub0cS+
-         cM1k6NgfOmBVOyVzmpP2XqFrSBJ94Na173dAkanx53gxYsXIkP5KjeCvK3+OCS56Jwep
-         Ek7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LBUYF/N7x8hbc8GXc7h+thi64B1eIh6Rk/6W7sM3oDM=;
-        b=WtzQuE4YiW7vf/pi3F31oyD0T/w+ahot2BtG/BhjKYM1pTdFAdhEWqvivaEY+sl/qr
-         j7r3ZgW7FZ7E1uNunoV7+Y73/U+y1nKn5isubpC9r83HREnaRFlifKMjqcfjMG7qzPU7
-         /BrQfREq4oaD23BMx6Z6+TeeX6zEq4Kxex44JeachaBHiLd25DwsjMtminLckE81FKs0
-         Y5ZJvn+EBqZgdyBWdBBWIHNGNW6YxZtalOjk0x4brqHT/d/nNxgeMxI4ZGouctZ5JeTl
-         FdQHROGwPuVTcptSxz7strgubTS1RBHk0V85gdtEj7XuoD/oeVfL+P8ADGeqcBTHMZ6Q
-         /smA==
-X-Gm-Message-State: APjAAAWdBJjdcWvva3Pv2bnLPOfMh+zdGX+gjW9/qp9TKCX994O+mcvr
-        92xD9EQIa+Hm1a5UBW5E5kgm14d9iCZqHw==
-X-Google-Smtp-Source: APXvYqx0fQSBv0grZFNNFFic5PMS6uA+D2YOVm/rTZfXICvRdP6ONY/5m1YsYPPrw0eZ6xu7bBg5kA==
-X-Received: by 2002:a63:f854:: with SMTP id v20mr10543680pgj.92.1571414101262;
-        Fri, 18 Oct 2019 08:55:01 -0700 (PDT)
-Received: from [192.168.1.188] ([66.219.217.79])
-        by smtp.gmail.com with ESMTPSA id y10sm6520405pfe.148.2019.10.18.08.54.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Oct 2019 08:55:00 -0700 (PDT)
-Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting files
- table
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Jann Horn <jannh@google.com>
-Cc:     linux-block@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-References: <20191017212858.13230-1-axboe@kernel.dk>
- <20191017212858.13230-2-axboe@kernel.dk>
- <CAG48ez0G2y0JS9=S2KmePO3xq-5DuzgovrLFiX4TJL-G897LCA@mail.gmail.com>
- <0fb9d9a0-6251-c4bd-71b0-6e34c6a1aab8@kernel.dk>
- <CAG48ez181=JoYudXee0KbU0vDZ=EbxmgB7q0mmjaA0gyp6MFBQ@mail.gmail.com>
- <a54329d5-a128-3ccd-7a12-f6cadaa20dbf@kernel.dk>
- <CAG48ez1SDQNHjgFku4ft4qw9hdv1g6-sf7-dxuU_tJSx+ofV-w@mail.gmail.com>
- <dbcf874d-8484-9c27-157a-c2752181acb5@kernel.dk>
- <CAG48ez3KwaQ3DVH1VoWxFWTG2ZfCQ6M0oyv5vZqkLgY0QDEdiw@mail.gmail.com>
- <a8fb7a1f-69c7-bf2a-b3dd-7886077d234b@kernel.dk>
-Message-ID: <572f40fb-201c-99ce-b3f5-05ff9369b895@kernel.dk>
-Date:   Fri, 18 Oct 2019 09:54:57 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <a8fb7a1f-69c7-bf2a-b3dd-7886077d234b@kernel.dk>
-Content-Type: text/plain; charset=utf-8
+        id S2394066AbfJRP4x convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Oct 2019 11:56:53 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:31758 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726506AbfJRP4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 11:56:53 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id uk-mta-3-mj2RpJsmO5m7JJzP7Fxiaw-1;
+ Fri, 18 Oct 2019 16:56:50 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 18 Oct 2019 16:56:49 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 18 Oct 2019 16:56:49 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Xin Long' <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
+CC:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCHv3 net-next 1/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED
+ notification
+Thread-Topic: [PATCHv3 net-next 1/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED
+ notification
+Thread-Index: AQHVgla8fu139gUWN06qp6czSulnBKdgkqoQ
+Date:   Fri, 18 Oct 2019 15:56:49 +0000
+Message-ID: <fb115b1444764b3eacdf69ebd9cf9681@AcuMS.aculab.com>
+References: <cover.1571033544.git.lucien.xin@gmail.com>
+ <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
+In-Reply-To: <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: mj2RpJsmO5m7JJzP7Fxiaw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/19 9:00 AM, Jens Axboe wrote:
-> On 10/18/19 8:52 AM, Jann Horn wrote:
->> On Fri, Oct 18, 2019 at 4:43 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>
->>> On 10/18/19 8:40 AM, Jann Horn wrote:
->>>> On Fri, Oct 18, 2019 at 4:37 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>
->>>>> On 10/18/19 8:34 AM, Jann Horn wrote:
->>>>>> On Fri, Oct 18, 2019 at 4:01 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>>> On 10/17/19 8:41 PM, Jann Horn wrote:
->>>>>>>> On Fri, Oct 18, 2019 at 4:01 AM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>>>>> This is in preparation for adding opcodes that need to modify files
->>>>>>>>> in a process file table, either adding new ones or closing old ones.
->>>>>> [...]
->>>>>>> Updated patch1:
->>>>>>>
->>>>>>> http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=df6caac708dae8ee9a74c9016e479b02ad78d436
->>>>>>
->>>>>> I don't understand what you're doing with old_files in there. In the
->>>>>> "s->files && !old_files" branch, "current->files = s->files" happens
->>>>>> without holding task_lock(), but current->files and s->files are also
->>>>>> the same already at that point anyway. And what's the intent behind
->>>>>> assigning stuff to old_files inside the loop? Isn't that going to
->>>>>> cause the workqueue to keep a modified current->files beyond the
->>>>>> runtime of the work?
->>>>>
->>>>> I simply forgot to remove the old block, it should only have this one:
->>>>>
->>>>> if (s->files && s->files != cur_files) {
->>>>>            task_lock(current);
->>>>>            current->files = s->files;
->>>>>            task_unlock(current);
->>>>>            if (cur_files)
->>>>>                    put_files_struct(cur_files);
->>>>>            cur_files = s->files;
->>>>> }
->>>>
->>>> Don't you still need a put_files_struct() in the case where "s->files
->>>> == cur_files"?
->>>
->>> I want to hold on to the files for as long as I can, to avoid unnecessary
->>> shuffling of it. But I take it your worry here is that we'll be calling
->>> something that manipulates ->files? Nothing should do that, unless
->>> s->files is set. We didn't hide the workqueue ->files[] before this
->>> change either.
->>
->> No, my worry is that the refcount of the files_struct is left too
->> high. From what I can tell, the "do" loop in io_sq_wq_submit_work()
->> iterates over multiple instances of struct sqe_submit. If there are
->> two sqe_submit instances with the same ->files (each holding a
->> reference from the get_files_struct() in __io_queue_sqe()), then:
->>
->> When processing the first sqe_submit instance, current->files and
->> cur_files are set to $user_files.
->> When processing the second sqe_submit instance, nothing happens
->> (s->files == cur_files).
->> After the loop, at the end of the function, put_files_struct() is
->> called once on $user_files.
->>
->> So get_files_struct() has been called twice, but put_files_struct()
->> has only been called once. That leaves the refcount too high, and by
->> repeating this, an attacker can make the refcount wrap around and then
->> cause a use-after-free.
+I've found v3 :-)
+But it isn't that much better than v2.
+
+From: Xin Long
+> Sent: 14 October 2019 07:15
+> SCTP Quick failover draft section 5.1, point 5 has been removed
+> from rfc7829. Instead, "the sender SHOULD (i) notify the Upper
+> Layer Protocol (ULP) about this state transition", as said in
+> section 3.2, point 8.
 > 
-> Ah now I see what you are getting at, yes that's clearly a bug! I wonder
-> how we best safely can batch the drops. We can track the number of times
-> we've used the same files, and do atomic_sub_and_test() in a
-> put_files_struct_many() type addition. But that would leave us open to
-> the issue you describe, where someone could maliciously overflow the
-> files ref count.
+> So this patch is to add SCTP_ADDR_POTENTIALLY_FAILED, defined
+> in section 7.1, "which is reported if the affected address
+> becomes PF". Also remove transport cwnd's update when moving
+> from PF back to ACTIVE , which is no longer in rfc7829 either.
 > 
-> Probably not worth over-optimizing, as long as we can avoid the
-> current->files task lock/unlock and shuffle.
+> v1->v2:
+>   - no change
+> v2->v3:
+>   - define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
 > 
-> I'll update the patch.
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  include/uapi/linux/sctp.h |  2 ++
+>  net/sctp/associola.c      | 17 ++++-------------
+>  2 files changed, 6 insertions(+), 13 deletions(-)
+> 
+> diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
+> index 6bce7f9..f4ab7bb 100644
+> --- a/include/uapi/linux/sctp.h
+> +++ b/include/uapi/linux/sctp.h
+> @@ -410,6 +410,8 @@ enum sctp_spc_state {
+>  	SCTP_ADDR_ADDED,
+>  	SCTP_ADDR_MADE_PRIM,
+>  	SCTP_ADDR_CONFIRMED,
+> +	SCTP_ADDR_POTENTIALLY_FAILED,
+> +#define SCTP_ADDR_PF	SCTP_ADDR_POTENTIALLY_FAILED
+>  };
+> 
+> 
+> diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+> index 1ba893b..4f9efba 100644
+> --- a/net/sctp/associola.c
+> +++ b/net/sctp/associola.c
+> @@ -801,14 +801,6 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
+>  			spc_state = SCTP_ADDR_CONFIRMED;
+>  		else
+>  			spc_state = SCTP_ADDR_AVAILABLE;
+> -		/* Don't inform ULP about transition from PF to
+> -		 * active state and set cwnd to 1 MTU, see SCTP
+> -		 * Quick failover draft section 5.1, point 5
+> -		 */
+> -		if (transport->state == SCTP_PF) {
+> -			ulp_notify = false;
+> -			transport->cwnd = asoc->pathmtu;
+> -		}
 
-Alright, this incremental on top should do it. And full updated patch
-here:
+This is wrong.
+If the old state is PF and the application hasn't exposed PF the event should be
+ignored.
 
-http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=40449c5a3d3b16796fa13e9469c69d62986e961c
+>  		transport->state = SCTP_ACTIVE;
+>  		break;
+> 
+> @@ -817,19 +809,18 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
+>  		 * to inactive state.  Also, release the cached route since
+>  		 * there may be a better route next time.
+>  		 */
+> -		if (transport->state != SCTP_UNCONFIRMED)
+> +		if (transport->state != SCTP_UNCONFIRMED) {
+>  			transport->state = SCTP_INACTIVE;
+> -		else {
+> +			spc_state = SCTP_ADDR_UNREACHABLE;
+> +		} else {
+>  			sctp_transport_dst_release(transport);
+>  			ulp_notify = false;
+>  		}
+> -
+> -		spc_state = SCTP_ADDR_UNREACHABLE;
+>  		break;
+> 
+>  	case SCTP_TRANSPORT_PF:
+>  		transport->state = SCTP_PF;
+> -		ulp_notify = false;
 
-Let me know what you think.
+Again the event should be supressed if PF isn't exposed.
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 68eda36bcc9c..2fed0badad38 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -2289,13 +2289,13 @@ static void io_sq_wq_submit_work(struct work_struct *work)
- 				set_fs(USER_DS);
- 			}
- 		}
--		if (s->files && s->files != cur_files) {
-+		if (cur_files)
-+			put_files_struct(cur_files);
-+		cur_files = s->files;
-+		if (cur_files && cur_files != current->files) {
- 			task_lock(current);
--			current->files = s->files;
-+			current->files = cur_files;
- 			task_unlock(current);
--			if (cur_files)
--				put_files_struct(cur_files);
--			cur_files = s->files;
- 		}
- 
- 		if (!ret) {
-@@ -2393,8 +2393,9 @@ static void io_sq_wq_submit_work(struct work_struct *work)
- 		task_lock(current);
- 		current->files = old_files;
- 		task_unlock(current);
--		put_files_struct(cur_files);
- 	}
-+	if (cur_files)
-+		put_files_struct(cur_files);
- }
- 
- /*
+> +		spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
+>  		break;
+> 
+>  	default:
+> --
+> 2.1.0
 
--- 
-Jens Axboe
+I also haven't spotted where the test that the application has actually enabled
+state transition events is in the code.
+I'd have thought it would be anything is built and allocated.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
