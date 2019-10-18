@@ -2,96 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B31FEDBCA3
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:10:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82451DBC47
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394811AbfJRFId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:08:33 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:43145 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726417AbfJRFId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:08:33 -0400
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iLKFZ-00046M-Le; Fri, 18 Oct 2019 06:52:29 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iLKFW-0006rT-3o; Fri, 18 Oct 2019 06:52:26 +0200
-Date:   Fri, 18 Oct 2019 06:52:26 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Snook <chris.snook@gmail.com>,
-        James Hogan <jhogan@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v1 4/4] net: dsa: add support for Atheros AR9331 build-in
- switch
-Message-ID: <20191018045226.hi2nybxkwopclajy@pengutronix.de>
-References: <20191014061549.3669-1-o.rempel@pengutronix.de>
- <20191014061549.3669-5-o.rempel@pengutronix.de>
- <2ad26bdc-e099-ded6-1337-5793aba0958d@gmail.com>
+        id S2441920AbfJRFAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:00:19 -0400
+Received: from mail-pg1-f176.google.com ([209.85.215.176]:41558 "EHLO
+        mail-pg1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726315AbfJRFAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:00:19 -0400
+Received: by mail-pg1-f176.google.com with SMTP id t3so2649322pga.8;
+        Thu, 17 Oct 2019 22:00:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=hkRzongkuOUe83ChWkL44NvN9Te54QbJ4HXExHzR2dY=;
+        b=jatNbz0IMlnkkWt3Xg1ggLGyaO+fIaHEXiyAghJ3oj3XGcTM6ib5fXHRjNOMzSfc4i
+         vCGp5w1Z+JLotu0IymLr1p0tRWNP7CE0HJgfQHkCoZlqf1NltbKigkHVou6QPc5+xzcG
+         Ww7lLxU48nRRFiQuTCC1TPVDsWKgpHK0/dVgJrMSojuoJrL5UpXHuK31cxiPqs1gQSJS
+         vyxwxHLJ3L3U3jWa10U+hHtsRIlCqeD4B0R6bWzLub+bEXq28Ws5rcGM/JIM9JVLxmQw
+         BlqDV8QwxTIGdGa42EtKB6wDuHg84K2VTcc4AcfkL5/cjszzprioS+kQ2JoyiJeHb3Bi
+         ut3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=hkRzongkuOUe83ChWkL44NvN9Te54QbJ4HXExHzR2dY=;
+        b=ZB6qLK+Rj3bFNulOGUkke6WTqYS7bmQStwEE+tqQgTkK1afgpTYhXx+/zb5bHdk390
+         KUpxi6j0Zc4R+dAN45RmugCVQR7eiyQ3gIlFsNmZq/Zi9PTMhCrQ7S+Vf0s5CI/aotul
+         FIbnZH4BpSbiLMfsI7cSsd4Wn8V4GD4ONsLyreXMy6aGwoVxWxiOuoJ37RF9gOhry9HM
+         OFhGL8688mjjXObw4eVE8y3EVVIuH9d45nr7O2Sv2bSbCfVXPo6tr7jqf035VxX9gn8L
+         JMDL2FdfPz9kFyIq8hzr48Sm3d+UZbVI0oVg5mZ2LAuiyj2uuB6knmCM/jXk2Z68mpOK
+         fj6Q==
+X-Gm-Message-State: APjAAAUvc6jVZUI1Tj19a53uFDv81RcXMiLWsbGfnbBdNXxMQ+T1nzm9
+        /1Kaq7sb1xnr5VjTPpHS2z0=
+X-Google-Smtp-Source: APXvYqwaO3NXr1IrOUdk7COhtE8etBUdbbxwgbUaqCWe2dBM2NF7UNRJQNPJdNWWjJt44Zo+wGuoMQ==
+X-Received: by 2002:aa7:8691:: with SMTP id d17mr4373530pfo.218.1571374818508;
+        Thu, 17 Oct 2019 22:00:18 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:180::cfd0])
+        by smtp.gmail.com with ESMTPSA id r24sm4564056pfh.69.2019.10.17.22.00.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 17 Oct 2019 22:00:17 -0700 (PDT)
+Date:   Thu, 17 Oct 2019 22:00:15 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@elte.hu>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: Re: linux-next: manual merge of the tip tree with the net-next tree
+Message-ID: <20191018050013.sle55bwea5kxovej@ast-mbp>
+References: <20191018133139.30c88807@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2ad26bdc-e099-ded6-1337-5793aba0958d@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:42:51 up 153 days, 11:01, 96 users,  load average: 0.03, 0.02,
- 0.00
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20191018133139.30c88807@canb.auug.org.au>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 17, 2019 at 11:35:48AM -0700, Florian Fainelli wrote:
+On Fri, Oct 18, 2019 at 01:31:39PM +1100, Stephen Rothwell wrote:
+> Hi all,
 > 
+> Today's linux-next merge of the tip tree got a conflict in:
 > 
-> On 10/13/2019 11:15 PM, Oleksij Rempel wrote:
-> > Provide basic support for Atheros AR9331 build-in switch. So far it
-> > works as port multiplexer without any hardware offloading support.
+>   samples/bpf/Makefile
 > 
-> I glanced through the functional parts of the code, and it looks pretty
-> straight forward, since there is no offloading done so far, do you plan
-> on adding bridge offload eventually if nothing more?
+> between commit:
+> 
+>   1d97c6c2511f ("samples/bpf: Base target programs rules on Makefile.target")
+> 
+> from the net-next tree and commit:
+> 
+>   fce9501aec6b ("samples/bpf: fix build by setting HAVE_ATTR_TEST to zero")
+> 
+> from the tip tree.
 
-Currently not. There are following reasons:
-- I do it for the Freifunk project. It is currently not clear, what
-  functionality has higher priority.
-- there are not many ar9331 based devices with enough RAM to run any
-  thing modern. There is even less devices using more then one switch
-  port.
-- IPv6 support is important for this project, but old Atheros switches have some
-  known issues with IPv6 packages in hardware bridge mode. So, this
-  functionality will need more testing.
+Argh.
+Can tip folks revert the patch and let it go the normal route via bpf trees?
+There was no good reason in creating such conflicts.
 
-> When you submit v2, I would suggest splitting the tagger code from the
-> switch driver code, just to make them easier to review.
-
-ok.
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
