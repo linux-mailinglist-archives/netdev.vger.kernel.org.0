@@ -2,32 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CC82DD0EE
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 23:13:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8B1CDD0EB
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 23:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408213AbfJRVNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2506112AbfJRVNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 18 Oct 2019 17:13:44 -0400
-Received: from mga07.intel.com ([134.134.136.100]:17946 "EHLO mga07.intel.com"
+Received: from mga07.intel.com ([134.134.136.100]:17949 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394230AbfJRVNn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 17:13:43 -0400
+        id S2408295AbfJRVNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 17:13:44 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Oct 2019 14:13:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.67,313,1566889200"; 
-   d="scan'208";a="208752585"
+   d="scan'208";a="208752586"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga002.jf.intel.com with ESMTP; 18 Oct 2019 14:13:42 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next v2 0/5][pull request] 1GbE Intel Wired LAN Driver Updates 2019-10-18
-Date:   Fri, 18 Oct 2019 14:13:35 -0700
-Message-Id: <20191018211340.31885-1-jeffrey.t.kirsher@intel.com>
+Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 1/5] igc: Add SCTP CRC checksumming functionality
+Date:   Fri, 18 Oct 2019 14:13:36 -0700
+Message-Id: <20191018211340.31885-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20191018211340.31885-1-jeffrey.t.kirsher@intel.com>
+References: <20191018211340.31885-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,44 +39,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to e1000e and igc only.
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-Sasha adds stream control transmission protocol (SCTP) CRC checksum
-support for igc.  Also added S0ix support to the e1000e driver.  Then
-added multicast support by adding the address list to the MTA table and
-providing the option for IPv6 address for igc.  In addition, added
-receive checksum support to igc as well.  Lastly, cleaned up some code
-that was not fully implemented yet for the VLAN filter table array.
+Add stream control transmission protocol CRC checksum.
 
-v2: Dropped patch 1 & 2 from the original series.  Patch 1 is being sent
-    to 'net' tree as a fix and patch 2 implementation needs to be
-    re-worked.  Updated the patch to add support for S0ix to fix the
-    reverse Xmas tree issues and made the entry/exit functions void
-    since they constantly returned success.  All based on community
-    feedback.
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The following are changes since commit 3858a6451efa795c5a97c33c2735974ac9ec9d6a:
-  Merge branch 'selftests-mlxsw-Add-scale-tests-for-Spectrum-2'
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
-
-Sasha Neftin (5):
-  igc: Add SCTP CRC checksumming functionality
-  e1000e: Add support for S0ix
-  igc: Add set_rx_mode support
-  igc: Add Rx checksum support
-  igc: Clean up unused shadow_vfta pointer
-
- drivers/net/ethernet/intel/e1000e/netdev.c   | 182 +++++++++++++++
- drivers/net/ethernet/intel/e1000e/regs.h     |   4 +
- drivers/net/ethernet/intel/igc/igc.h         |   1 -
- drivers/net/ethernet/intel/igc/igc_defines.h |   8 +-
- drivers/net/ethernet/intel/igc/igc_hw.h      |   1 +
- drivers/net/ethernet/intel/igc/igc_mac.c     | 104 +++++++++
- drivers/net/ethernet/intel/igc/igc_mac.h     |   2 +
- drivers/net/ethernet/intel/igc/igc_main.c    | 226 ++++++++++++++++++-
- 8 files changed, 525 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 63b62d74f961..69e70b297e85 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -4211,6 +4211,7 @@ static int igc_probe(struct pci_dev *pdev,
+ 
+ 	/* Add supported features to the features list*/
+ 	netdev->features |= NETIF_F_HW_CSUM;
++	netdev->features |= NETIF_F_SCTP_CRC;
+ 
+ 	/* setup the private structure */
+ 	err = igc_sw_init(adapter);
 -- 
 2.21.0
 
