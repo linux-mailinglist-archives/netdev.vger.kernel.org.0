@@ -2,56 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F33DCF1E
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 21:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F85DCF2A
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 21:14:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505924AbfJRTLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 15:11:30 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60194 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2502779AbfJRTLa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 15:11:30 -0400
-Received: from 55.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.55] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iLXeq-0005vL-9v; Fri, 18 Oct 2019 21:11:28 +0200
-Date:   Fri, 18 Oct 2019 21:11:27 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     andriin@fb.com, ast@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [bpf-next PATCH] bpf: libbpf, add kernel version section parsing
- back
-Message-ID: <20191018191127.GH26267@pc-63.home>
-References: <157140968634.9073.6407090804163937103.stgit@john-XPS-13-9370>
+        id S2443217AbfJRTOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 15:14:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53232 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2436517AbfJRTOY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 15:14:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uOGFhvWAOHYOd3SMNOBvMaqJx6e/h1fD+87RpUGL3JA=; b=DqHXfO5K7qpUVaIl5ayJXP8tBm
+        icn61OE8mn1aq4PX0ehbF76hEvR44IldjsJb8LhYbqOcI8VmxuskMupU91pZhDVnEV7BZ9tIa5C1q
+        oNzSLnHLl7j+Sy9yEgQIxL4DQ96CcmnoU+WJjjxkdOswUbOHWi7SItxXE/jl+5ai8Udg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iLXhc-0002rk-Qx; Fri, 18 Oct 2019 21:14:20 +0200
+Date:   Fri, 18 Oct 2019 21:14:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, alexandre.belloni@bootlin.com,
+        nicolas.ferre@microchip.com, netdev@vger.kernel.org,
+        thomas.petazzoni@bootlin.com,
+        Russell King <rmk+kernel@arm.linux.org.uk>
+Subject: Re: [PATCH net-next] net: macb: convert to phylink
+Message-ID: <20191018191420.GI24810@lunn.ch>
+References: <20191018143924.7375-1-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <157140968634.9073.6407090804163937103.stgit@john-XPS-13-9370>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25606/Fri Oct 18 10:58:40 2019)
+In-Reply-To: <20191018143924.7375-1-antoine.tenart@bootlin.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 07:41:26AM -0700, John Fastabend wrote:
-> With commit "libbpf: stop enforcing kern_version,..." we removed the
-> kernel version section parsing in favor of querying for the kernel
-> using uname() and populating the version using the result of the
-> query. After this any version sections were simply ignored.
-> 
-> Unfortunately, the world of kernels is not so friendly. I've found some
-> customized kernels where uname() does not match the in kernel version.
-> To fix this so programs can load in this environment this patch adds
-> back parsing the section and if it exists uses the user specified
-> kernel version to override the uname() result. However, keep most the
-> kernel uname() discovery bits so users are not required to insert the
-> version except in these odd cases.
-> 
-> Fixes: 5e61f27070292 ("libbpf: stop enforcing kern_version, populate it for users")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> +	if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
+> +	    (state->interface == PHY_INTERFACE_MODE_NA ||
+> +	     state->interface == PHY_INTERFACE_MODE_GMII ||
+> +	     state->interface == PHY_INTERFACE_MODE_SGMII ||
+> +	     phy_interface_mode_is_rgmii(state->interface))) {
+> +		phylink_set(mask, 1000baseT_Full);
+> +		phylink_set(mask, 1000baseX_Full);
+> +
+> +		if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF))
+> +			phylink_set(mask, 1000baseT_Half);
+> +	}
+> +
+> +	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +	bitmap_and(state->advertising, state->advertising, mask,
+> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +}
+> +
+> +static int macb_mac_link_state(struct phylink_config *config,
+> +			       struct phylink_link_state *state)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
 
-Applied, thanks!
+The hardware supports SGMII, but you have no way of knowing if the
+SGMII link is up? That seems odd.
+
+      Andrew
