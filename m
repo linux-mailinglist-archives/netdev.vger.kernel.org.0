@@ -2,161 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E077DBC4E
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0236DBC95
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:09:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407457AbfJRFAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:00:46 -0400
-Received: from ozlabs.org ([203.11.71.1]:59595 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727627AbfJRFAq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 01:00:46 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46vVR047dMz9sP3;
-        Fri, 18 Oct 2019 13:31:40 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1571365907;
-        bh=STqXBQt1of/WFIT0GVfq42YrvZ3JDvNR2LFQ87IDERM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=MS6cWvzglWlyRB1w1pnINex7OcQ3VsrD6+OCHaOiorDM2hqOFT+bs6SohJ5s1g4HP
-         vW6Szz6i+lJL6exfdTptnjlKSFlCZDhRWs5mfxoRZY65p2NWSBbasLKAu6Dmgitx60
-         oVtxsMEcCCZjlGZjq/+3wJ8gvP58kESCloqqyNATJlCdu76ilIkdgck8K2et+Evcld
-         tEib04l9lohK/Vm4W3NKebRKq+zC2UgdjWZG0UeFJlCONTCPGpiBayAp0iCJyXbxtw
-         VF361NIm2M4bTZFuxmC58w7cphh5VhbYm9ji9ITsLigVsrESCFuvlMeTzJ41WqaeMS
-         vCpvnt4KZ+rUA==
-Date:   Fri, 18 Oct 2019 13:31:39 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@elte.hu>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBl?= =?UTF-8?B?bA==?= 
-        <bjorn.topel@intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: linux-next: manual merge of the tip tree with the net-next tree
-Message-ID: <20191018133139.30c88807@canb.auug.org.au>
+        id S2504346AbfJRFHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:07:12 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39170 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2504332AbfJRFHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:07:11 -0400
+Received: by mail-pf1-f194.google.com with SMTP id v4so3087555pff.6;
+        Thu, 17 Oct 2019 22:07:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Dxf8j2dEp3gTKMidNHZOyi9cs38t6awcBjwDt5BGhco=;
+        b=kRzCl2sU8HhkN2FXU+AB6DHrD5pGZGK8OzQmjA2iRV6j8bod6JDJwCXwZC8OqJep3i
+         QNOn6QPM8Bq+xIddUidzOPgmu00nR5ZPwUV7rrfcXd2kzv461ggEh4UgeDVYvC0n30Pq
+         RaU1oHJXZyKXREXUNgwJr6IkVla6HHwlvRVaZ5SDQcJwXNjhLA+evDK9MEmFovwM5Bfc
+         HLqGNtPyecQjdt66rCHEz+h+1dr028s9/pFc3Fs65iCHDm/IGdPVpX9sDB1W1FIRzrJ5
+         YFC3yFRe0G0Fs+luyOzFip9poCXoUo8sJAN3HXEZu9QoPJzGJGsHl5eIUCZctGMuOeEf
+         2oYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Dxf8j2dEp3gTKMidNHZOyi9cs38t6awcBjwDt5BGhco=;
+        b=TsIvVYg91c/j+hQqMVQl4rYoTHUFIeBsflKovafgcj3B6NuEavA16Nm5cF24DgaqOB
+         GRth1ERyBWnVKh0XYxwrknC1KmTJjHkKlt14EXi3NyQ2eL5SYecl5vJH184m4OuEFwjy
+         j0P4gBakmm/0P7SBAC71cXriHY42LMBMCJ6AJV1vAvO/yRBQf5Lyi+OD2J9oeKaXU54a
+         qVXv4JuQ1xf2yq65l0c3F0hiRzx+WK7H2SLoECR3HodwdOz9pc+qdTX5nSRDnquPX+iO
+         0uVBMEmxZFUQlrwZJ4LIdjjL9JfCWIrbX5+UQJJzjs9LrQFKDQfNe9hr8vYfhpzln8Ls
+         bz/g==
+X-Gm-Message-State: APjAAAXaDKri+4RYM7bSIqLjMV5kgU/pOGW74unq1CW7XArix2nvHjEs
+        QC64My3a+I+aJE6iLafOoWxO9L/I
+X-Google-Smtp-Source: APXvYqx7/HwYNBy93h+fmNaI9cnTLMGY7XFYbErDicOBeRlQ0eTPm/1tR+ecZKuvPeC4oiDJ4HVdmw==
+X-Received: by 2002:a17:90a:9201:: with SMTP id m1mr8641712pjo.74.1571371532978;
+        Thu, 17 Oct 2019 21:05:32 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id m2sm6433577pff.154.2019.10.17.21.05.31
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 17 Oct 2019 21:05:31 -0700 (PDT)
+Date:   Thu, 17 Oct 2019 21:05:30 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Hui Peng <benquike@gmail.com>, davem@davemloft.net,
+        Mathias Payer <mathias.payer@nebelwelt.net>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] Fix a NULL-ptr-deref bug in
+ ath10k_usb_alloc_urb_from_pipe
+Message-ID: <20191018040530.GA28167@roeck-us.net>
+References: <20190804003101.11541-1-benquike@gmail.com>
+ <20190831213139.GA32507@roeck-us.net>
+ <87ftlgqw42.fsf@kamboji.qca.qualcomm.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Z+ofq0xCGo0+RR6uVsB2NLd";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ftlgqw42.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Z+ofq0xCGo0+RR6uVsB2NLd
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sun, Sep 01, 2019 at 11:06:05AM +0300, Kalle Valo wrote:
+> Guenter Roeck <linux@roeck-us.net> writes:
+> 
+> > Hi,
+> >
+> > On Sat, Aug 03, 2019 at 08:31:01PM -0400, Hui Peng wrote:
+> >> The `ar_usb` field of `ath10k_usb_pipe_usb_pipe` objects
+> >> are initialized to point to the containing `ath10k_usb` object
+> >> according to endpoint descriptors read from the device side, as shown
+> >> below in `ath10k_usb_setup_pipe_resources`:
+> >> 
+> >> for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
+> >>         endpoint = &iface_desc->endpoint[i].desc;
+> >> 
+> >>         // get the address from endpoint descriptor
+> >>         pipe_num = ath10k_usb_get_logical_pipe_num(ar_usb,
+> >>                                                 endpoint->bEndpointAddress,
+> >>                                                 &urbcount);
+> >>         ......
+> >>         // select the pipe object
+> >>         pipe = &ar_usb->pipes[pipe_num];
+> >> 
+> >>         // initialize the ar_usb field
+> >>         pipe->ar_usb = ar_usb;
+> >> }
+> >> 
+> >> The driver assumes that the addresses reported in endpoint
+> >> descriptors from device side  to be complete. If a device is
+> >> malicious and does not report complete addresses, it may trigger
+> >> NULL-ptr-deref `ath10k_usb_alloc_urb_from_pipe` and
+> >> `ath10k_usb_free_urb_to_pipe`.
+> >> 
+> >> This patch fixes the bug by preventing potential NULL-ptr-deref.
+> >> 
+> >> Signed-off-by: Hui Peng <benquike@gmail.com>
+> >> Reported-by: Hui Peng <benquike@gmail.com>
+> >> Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
+> >
+> > This patch fixes CVE-2019-15099, which has CVSS scores of 7.5 (CVSS 3.0)
+> > and 7.8 (CVSS 2.0). Yet, I don't find it in the upstream kernel or in Linux
+> > next.
+> >
+> > Is the patch going to be applied to the upstream kernel anytime soon ?
+> 
+> Same answer as in patch 1:
+> 
+> https://patchwork.kernel.org/patch/11074655/
+> 
 
-Hi all,
+Sorry to bring this up again. The ath6k patch made it into the upstream
+kernel, but the ath10k patch didn't. Did it get lost, or was there a
+reason not to apply this patch ?
 
-Today's linux-next merge of the tip tree got a conflict in:
-
-  samples/bpf/Makefile
-
-between commit:
-
-  1d97c6c2511f ("samples/bpf: Base target programs rules on Makefile.target=
-")
-
-from the net-next tree and commit:
-
-  fce9501aec6b ("samples/bpf: fix build by setting HAVE_ATTR_TEST to zero")
-
-from the tip tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc samples/bpf/Makefile
-index 4df11ddb9c75,42b571cde177..000000000000
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@@ -168,38 -171,21 +168,39 @@@ always +=3D ibumad_kern.
-  always +=3D hbm_out_kern.o
-  always +=3D hbm_edt_kern.o
- =20
- -KBUILD_HOSTCFLAGS +=3D -I$(objtree)/usr/include
- -KBUILD_HOSTCFLAGS +=3D -I$(srctree)/tools/lib/bpf/
- -KBUILD_HOSTCFLAGS +=3D -I$(srctree)/tools/testing/selftests/bpf/
- -KBUILD_HOSTCFLAGS +=3D -I$(srctree)/tools/lib/ -I$(srctree)/tools/include
- -KBUILD_HOSTCFLAGS +=3D -I$(srctree)/tools/perf
- -KBUILD_HOSTCFLAGS +=3D -DHAVE_ATTR_TEST=3D0
- +ifeq ($(ARCH), arm)
- +# Strip all except -D__LINUX_ARM_ARCH__ option needed to handle linux
- +# headers when arm instruction set identification is requested.
- +ARM_ARCH_SELECTOR :=3D $(filter -D__LINUX_ARM_ARCH__%, $(KBUILD_CFLAGS))
- +BPF_EXTRA_CFLAGS :=3D $(ARM_ARCH_SELECTOR)
- +TPROGS_CFLAGS +=3D $(ARM_ARCH_SELECTOR)
- +endif
- +
- +TPROGS_CFLAGS +=3D -Wall -O2
- +TPROGS_CFLAGS +=3D -Wmissing-prototypes
- +TPROGS_CFLAGS +=3D -Wstrict-prototypes
- +
- +TPROGS_CFLAGS +=3D -I$(objtree)/usr/include
- +TPROGS_CFLAGS +=3D -I$(srctree)/tools/lib/bpf/
- +TPROGS_CFLAGS +=3D -I$(srctree)/tools/testing/selftests/bpf/
- +TPROGS_CFLAGS +=3D -I$(srctree)/tools/lib/
- +TPROGS_CFLAGS +=3D -I$(srctree)/tools/include
- +TPROGS_CFLAGS +=3D -I$(srctree)/tools/perf
-++TPROGS_CFLAGS +=3D -DHAVE_ATTR_TEST=3D0
- =20
- -HOSTCFLAGS_bpf_load.o +=3D -I$(objtree)/usr/include -Wno-unused-variable
- +ifdef SYSROOT
- +TPROGS_CFLAGS +=3D --sysroot=3D$(SYSROOT)
- +TPROGS_LDFLAGS :=3D -L$(SYSROOT)/usr/lib
- +endif
- +
- +TPROGCFLAGS_bpf_load.o +=3D -Wno-unused-variable
- =20
- -KBUILD_HOSTLDLIBS		+=3D $(LIBBPF) -lelf
- -HOSTLDLIBS_tracex4		+=3D -lrt
- -HOSTLDLIBS_trace_output	+=3D -lrt
- -HOSTLDLIBS_map_perf_test	+=3D -lrt
- -HOSTLDLIBS_test_overhead	+=3D -lrt
- -HOSTLDLIBS_xdpsock		+=3D -pthread
- +TPROGS_LDLIBS			+=3D $(LIBBPF) -lelf
- +TPROGLDLIBS_tracex4		+=3D -lrt
- +TPROGLDLIBS_trace_output	+=3D -lrt
- +TPROGLDLIBS_map_perf_test	+=3D -lrt
- +TPROGLDLIBS_test_overhead	+=3D -lrt
- +TPROGLDLIBS_xdpsock		+=3D -pthread
- =20
-  # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine =
-on cmdline:
-  #  make samples/bpf/ LLC=3D~/git/llvm/build/bin/llc CLANG=3D~/git/llvm/bu=
-ild/bin/clang
-
---Sig_/Z+ofq0xCGo0+RR6uVsB2NLd
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl2pJAsACgkQAVBC80lX
-0GyqEwf/UuMAsHsveGo2AA1IPKiMbsDeaMyqQOSlVmR60dCwQFt/0FIiGRYvDOj1
-Bj8APje30mHsjkB8soqEQ6wZAdDmzzrSIlI55bubZp2ogCBhoP4r+eDfYZJyLiCL
-O3tzu/owv5qrURc6e1qHQch6LhT5So77T3UPpL8xEPoGMPOpMVHeaHwq4H+B9ldA
-JpiMbPI+gRpaDghkt8ZwnPeetv6hChoeZVUKATArwuk5jJM4n+fIpnWratvgI+eZ
-AVPrdPGXNfFqttwLvq/dgjSxwplSn+onU6XtmO7reAPN6NHjPC1F6KNQYOg6nEQQ
-KJer+ciicgEiQ5jNLlr1fRuq0f8f4Q==
-=1V2Z
------END PGP SIGNATURE-----
-
---Sig_/Z+ofq0xCGo0+RR6uVsB2NLd--
+Thanks,
+Guenter
