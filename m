@@ -2,93 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82451DBC47
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1112DBC53
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441920AbfJRFAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:00:19 -0400
-Received: from mail-pg1-f176.google.com ([209.85.215.176]:41558 "EHLO
-        mail-pg1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfJRFAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:00:19 -0400
-Received: by mail-pg1-f176.google.com with SMTP id t3so2649322pga.8;
-        Thu, 17 Oct 2019 22:00:18 -0700 (PDT)
+        id S2409570AbfJRFBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:01:12 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:36436 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407184AbfJRFBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:01:12 -0400
+Received: by mail-pl1-f194.google.com with SMTP id j11so2256918plk.3;
+        Thu, 17 Oct 2019 22:01:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=hkRzongkuOUe83ChWkL44NvN9Te54QbJ4HXExHzR2dY=;
-        b=jatNbz0IMlnkkWt3Xg1ggLGyaO+fIaHEXiyAghJ3oj3XGcTM6ib5fXHRjNOMzSfc4i
-         vCGp5w1Z+JLotu0IymLr1p0tRWNP7CE0HJgfQHkCoZlqf1NltbKigkHVou6QPc5+xzcG
-         Ww7lLxU48nRRFiQuTCC1TPVDsWKgpHK0/dVgJrMSojuoJrL5UpXHuK31cxiPqs1gQSJS
-         vyxwxHLJ3L3U3jWa10U+hHtsRIlCqeD4B0R6bWzLub+bEXq28Ws5rcGM/JIM9JVLxmQw
-         BlqDV8QwxTIGdGa42EtKB6wDuHg84K2VTcc4AcfkL5/cjszzprioS+kQ2JoyiJeHb3Bi
-         ut3Q==
+        bh=wpJfPZmMYz1gHLTNi+cKJTn1LIoYcx1Zone10S78hMg=;
+        b=FZ0tEDaKSb1fjZ35ji80nGBEkLxkXPIXJ2FvWbrkcMTHJwnnbaOejUCN23Q2cfSp7G
+         a7iRe4brGFHMvYqxelgkcTNRPK22hSf8NEaUxvPvNabN9WcB7jUijIgIlDZ2JHj0Roiu
+         p4+P+kEoqzv/73jmaP3gRXUkHTOXN5rXd/uiS8b+WphgcEU4zkHXzjtZOvDwIR+7W41V
+         WJxIBek3fEIO+i+u7AAhsDfy5UOXgdrJxiuVJ6gzALiWuHWdIK3zkT/slxgCkweStRkr
+         gbOrWYsJ4MojCeGdlm51kVCrSD0cEqz1g70jncmaD2Xn0KWjig8Yto64REnBiVZqrJ19
+         CRPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hkRzongkuOUe83ChWkL44NvN9Te54QbJ4HXExHzR2dY=;
-        b=ZB6qLK+Rj3bFNulOGUkke6WTqYS7bmQStwEE+tqQgTkK1afgpTYhXx+/zb5bHdk390
-         KUpxi6j0Zc4R+dAN45RmugCVQR7eiyQ3gIlFsNmZq/Zi9PTMhCrQ7S+Vf0s5CI/aotul
-         FIbnZH4BpSbiLMfsI7cSsd4Wn8V4GD4ONsLyreXMy6aGwoVxWxiOuoJ37RF9gOhry9HM
-         OFhGL8688mjjXObw4eVE8y3EVVIuH9d45nr7O2Sv2bSbCfVXPo6tr7jqf035VxX9gn8L
-         JMDL2FdfPz9kFyIq8hzr48Sm3d+UZbVI0oVg5mZ2LAuiyj2uuB6knmCM/jXk2Z68mpOK
-         fj6Q==
-X-Gm-Message-State: APjAAAUvc6jVZUI1Tj19a53uFDv81RcXMiLWsbGfnbBdNXxMQ+T1nzm9
-        /1Kaq7sb1xnr5VjTPpHS2z0=
-X-Google-Smtp-Source: APXvYqwaO3NXr1IrOUdk7COhtE8etBUdbbxwgbUaqCWe2dBM2NF7UNRJQNPJdNWWjJt44Zo+wGuoMQ==
-X-Received: by 2002:aa7:8691:: with SMTP id d17mr4373530pfo.218.1571374818508;
-        Thu, 17 Oct 2019 22:00:18 -0700 (PDT)
+        bh=wpJfPZmMYz1gHLTNi+cKJTn1LIoYcx1Zone10S78hMg=;
+        b=kkFcHpMDYhX+7ugzXM/NJmmbU/bCUbaC8S7p8IoJRE+xVS+z+wYUGRSJmI7HgQsgdF
+         MQo5/tjDCC6SrqOJEUxTCUAlmZwuLiBxIEPh82PHHYSlTVoSzVF7MZJ4OUQO+JLWqyQz
+         WJnofjjwOmSlo3HSM5GR2hgolILxcoUbORxQ73YBMIVg5vSTGSSaWGt2LU1i8jXxsNxz
+         Cv3XGmUoGLdgjVNZA+HdGjZcZHKEWwrF8IOegQn8+OqQG1vPIpvQOScveq2r70cSQHbB
+         h9WVrMl2jNBNuERS6d/dCPl01lCmmJUPev9tlSvilDeAYeltH0SeollwTOLAruOYryhZ
+         82lA==
+X-Gm-Message-State: APjAAAVQ5ofgOtxXC8lAO9We2RyXRGiMYZSo40FbtekJT2oRw1YtAutG
+        QlnyTBj+frn/CisViK0/WlDD8gvB
+X-Google-Smtp-Source: APXvYqyyRC3rRWHEdU/4ehIqVTyMDDP6d3MBshcdRrCKVsJhdcNuojXErnWWf00fZs7sEBIVI05X/w==
+X-Received: by 2002:a17:902:b94b:: with SMTP id h11mr7840953pls.21.1571374871038;
+        Thu, 17 Oct 2019 22:01:11 -0700 (PDT)
 Received: from ast-mbp ([2620:10d:c090:180::cfd0])
-        by smtp.gmail.com with ESMTPSA id r24sm4564056pfh.69.2019.10.17.22.00.16
+        by smtp.gmail.com with ESMTPSA id s141sm5721197pfs.13.2019.10.17.22.01.09
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 17 Oct 2019 22:00:17 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 22:00:15 -0700
+        Thu, 17 Oct 2019 22:01:10 -0700 (PDT)
+Date:   Thu, 17 Oct 2019 22:01:08 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@elte.hu>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Miller <davem@davemloft.net>,
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Networking <netdev@vger.kernel.org>,
         Linux Next Mailing List <linux-next@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: linux-next: manual merge of the tip tree with the net-next tree
-Message-ID: <20191018050013.sle55bwea5kxovej@ast-mbp>
-References: <20191018133139.30c88807@canb.auug.org.au>
+        ppc-dev <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: linux-next: build warning after merge of the bpf-next tree
+Message-ID: <20191018050107.dsnt4ukq6n6l6luy@ast-mbp>
+References: <20191018105657.4584ec67@canb.auug.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191018133139.30c88807@canb.auug.org.au>
+In-Reply-To: <20191018105657.4584ec67@canb.auug.org.au>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 01:31:39PM +1100, Stephen Rothwell wrote:
+On Fri, Oct 18, 2019 at 10:56:57AM +1100, Stephen Rothwell wrote:
 > Hi all,
 > 
-> Today's linux-next merge of the tip tree got a conflict in:
+> After merging the bpf-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) produced this warning:
 > 
->   samples/bpf/Makefile
-> 
-> between commit:
-> 
->   1d97c6c2511f ("samples/bpf: Base target programs rules on Makefile.target")
-> 
-> from the net-next tree and commit:
-> 
->   fce9501aec6b ("samples/bpf: fix build by setting HAVE_ATTR_TEST to zero")
-> 
-> from the tip tree.
+> WARNING: 2 bad relocations
+> c000000001998a48 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_start
+> c000000001998a50 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_end
 
-Argh.
-Can tip folks revert the patch and let it go the normal route via bpf trees?
-There was no good reason in creating such conflicts.
+Can ppc folks help me figure out what this warning means?
 
