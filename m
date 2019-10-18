@@ -2,119 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BDBEDC7A8
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 16:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D57DC7B5
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 16:49:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408510AbfJROnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 10:43:55 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:35170 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405365AbfJROny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 10:43:54 -0400
-Received: by mail-pg1-f193.google.com with SMTP id p30so3520454pgl.2
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 07:43:52 -0700 (PDT)
+        id S2410454AbfJROtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 10:49:24 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:43075 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728033AbfJROtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 10:49:24 -0400
+Received: by mail-io1-f67.google.com with SMTP id v2so7726814iob.10;
+        Fri, 18 Oct 2019 07:49:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qqD13exqVYnsM1ZZfhtle755qkmvhaW0YCe6dhzNVH0=;
-        b=OaQk+2++QPs2Uoczz52BnqNlZLiAERk1PO0sfo9yTqspjGbTmOZF1F2t9PXHOoq3A7
-         L49GkCrMal0DOv0kLlse2/VWrCTVae77O88o1wkxfP7bwcV56UyE7HeZ2z2BzyUpRbJJ
-         0znfd8KPTGtTF3V6vm//Vig0GDVFuGsimDdWrxmYizTu3hovvU4sC3+HSR7HUGngBqYp
-         ezqgzD0ozhWGImFiIRzu2AQixMKMMzdJ8w1UmXW03k3i4xejFlyI+/bHWxwU7cIAQYpJ
-         R9vMXN4IFSwMpzDeesAJ63OsC+dthar0Nl+jAUNSzxaxQSsXMrOHiorQkljeqvZJF9lS
-         O1ug==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=FEppI0h+E7E6OfAxqCsyFwD0NTotM0BhHygP43OvOMU=;
+        b=MJPTk2oc9EjoTbLUqBdXU7K/C8FWsa+Re8x7rTxcLjzWwcvfXFb+kslEbnPwDp3zsv
+         LQ+aPxrTw18m/b9+tPpJ2M1CZvlVlUsGIXa5w4WscF3OghK+DPlipzJWFvGe6qUwY/Mj
+         3cCK/VLM/AEs6pvsEBelrbM/DzfK2dUyNe09DNAMnxhjP5qwWcg7JWb8FtfvLwjd3XCX
+         EzZXsWaJ5qVU/ZZmFN4M0kFMNndiAOBHJCeRZf/iBqh+8gibes6yjLfPayVlUQSh31kj
+         Rs+73dw8S1qaHgS7T3rq8qs27komUi8E1qjGJz/wG9oQGhu5lCuVhv0PEMHeoqguMffd
+         NLFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qqD13exqVYnsM1ZZfhtle755qkmvhaW0YCe6dhzNVH0=;
-        b=jnfwibKUyWBB9RO4RNOv7QSxjAbfzw+sHxUEgktQ0l9kQv4bynURSgEXZzxeS1uSeT
-         /lhTWfVPa31l4f/g707Ls7hZKh1b8m1pGLbWCb8uHlmIbw54WmeF631t00lob3avnLa/
-         HGl7SrazimbHm7o/dDKb5W5nqMgN3sL17Z/uUa7xYKlKTvpGx8XqYslg3+XzTXDpH8Y+
-         Lj5QjZ4Covud5knNzvPNPF9mWSp2Y9EcUfIXDyV+AU0lRjijBWRQCXGIWN0LScc5nTtc
-         nvIzG9QE/gR3M0NiZv+yP7/n9lkl83BVq5GEexH5pUO3pLZS2yfdf7lOxKaykx+Urg85
-         NbWQ==
-X-Gm-Message-State: APjAAAXM/8QfYfqW1ZFD1OJQJqRcDlwExEYCNK4ool3fC6DTf0jqzIEy
-        1F0Nb6FAAT4ckEBF3F7DSX+28zVA7uXtoQ==
-X-Google-Smtp-Source: APXvYqxhSEUXJ1smjci2IeCyTjfO9xr/dLfImtrg2DgXhTN0iwUMsEz1gpueJMlRel+jnMBX5HZ2/A==
-X-Received: by 2002:a17:90a:8a89:: with SMTP id x9mr11672031pjn.95.1571409831770;
-        Fri, 18 Oct 2019 07:43:51 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c081:1131::1120? ([2620:10d:c090:180::e16a])
-        by smtp.gmail.com with ESMTPSA id g20sm6308189pfo.73.2019.10.18.07.43.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Oct 2019 07:43:50 -0700 (PDT)
-Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting files
- table
-To:     Jann Horn <jannh@google.com>
-Cc:     linux-block@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-References: <20191017212858.13230-1-axboe@kernel.dk>
- <20191017212858.13230-2-axboe@kernel.dk>
- <CAG48ez0G2y0JS9=S2KmePO3xq-5DuzgovrLFiX4TJL-G897LCA@mail.gmail.com>
- <0fb9d9a0-6251-c4bd-71b0-6e34c6a1aab8@kernel.dk>
- <CAG48ez181=JoYudXee0KbU0vDZ=EbxmgB7q0mmjaA0gyp6MFBQ@mail.gmail.com>
- <a54329d5-a128-3ccd-7a12-f6cadaa20dbf@kernel.dk>
- <CAG48ez1SDQNHjgFku4ft4qw9hdv1g6-sf7-dxuU_tJSx+ofV-w@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <dbcf874d-8484-9c27-157a-c2752181acb5@kernel.dk>
-Date:   Fri, 18 Oct 2019 08:43:48 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <CAG48ez1SDQNHjgFku4ft4qw9hdv1g6-sf7-dxuU_tJSx+ofV-w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=FEppI0h+E7E6OfAxqCsyFwD0NTotM0BhHygP43OvOMU=;
+        b=pMlZyAEaKAlCJGKnTXo8MICmcydPRDJwQnvYXMVvVnKK/vQR1o0wMFEG+QL7Fun4Ve
+         My6MM4NIIlisYQGiE4bRX9Nt5J2jY+Y7CDGgwS+ep+X3qbSzC7hysXXDR/XdZpzAFzUN
+         uq5P4F85GitCRZEoWXAdDKMTLO/qGQGcj0nJ1fmC5KbMYRwiuXXYWrfapXYaQbcGrcRi
+         IVddW1DEUz11KAGyNTZD7gyMNI7JiMfXZXV7dJ/cgmEuZqEux4rJZctDzcg0ATGGrRZ7
+         xP6A1B1/GtnJ3Nd5nYx1E1k4R2ZE32NGxNzEvr4txXcMU/3gu7avT1hjHnM0EYQxP8eI
+         WfEg==
+X-Gm-Message-State: APjAAAU35qdTmwFl2ukfk9ZGyUdRdcDJl3Vn63Z77oECWtWlbZ7yGRKx
+        7ykPY4zhU4LwDhHtGP5AvhY=
+X-Google-Smtp-Source: APXvYqyJK9fmV19uGRZHGacg0FM1BcvxjzCXWx29SXt4iZXpAoKd7Vr9Cj3PUolnn7ejNlC2Mym9Kw==
+X-Received: by 2002:a5d:8a16:: with SMTP id w22mr5003254iod.254.1571410162395;
+        Fri, 18 Oct 2019 07:49:22 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id f8sm1847163ioo.27.2019.10.18.07.49.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 07:49:21 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 07:49:13 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@fb.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Message-ID: <5da9d0e9bca63_1a132ad0125505c044@john-XPS-13-9370.notmuch>
+In-Reply-To: <5d976c62bb52b_583b2ae668e6e5b41@john-XPS-13-9370.notmuch>
+References: <20191004030058.2248514-1-andriin@fb.com>
+ <20191004030058.2248514-2-andriin@fb.com>
+ <5d97519e9e7f3_4e6d2b183260e5bcbf@john-XPS-13-9370.notmuch>
+ <CAEf4BzbP=k72O2UXA=Om+Gv1Laj+Ya4QaTNKy7AVkMze6GqLEw@mail.gmail.com>
+ <fb67f98a-08b4-3184-22f8-7d3fb91c9515@fb.com>
+ <CAEf4BzbUSQdYqce+gyjO7-VSrF45nqXuLBMU6qRd63LHD+-JLg@mail.gmail.com>
+ <5d976c62bb52b_583b2ae668e6e5b41@john-XPS-13-9370.notmuch>
+Subject: Re: [PATCH bpf-next 1/2] libbpf: stop enforcing kern_version,
+ populate it for users
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/19 8:40 AM, Jann Horn wrote:
-> On Fri, Oct 18, 2019 at 4:37 PM Jens Axboe <axboe@kernel.dk> wrote:
->>
->> On 10/18/19 8:34 AM, Jann Horn wrote:
->>> On Fri, Oct 18, 2019 at 4:01 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>> On 10/17/19 8:41 PM, Jann Horn wrote:
->>>>> On Fri, Oct 18, 2019 at 4:01 AM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>> This is in preparation for adding opcodes that need to modify files
->>>>>> in a process file table, either adding new ones or closing old ones.
->>> [...]
->>>> Updated patch1:
->>>>
->>>> http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=df6caac708dae8ee9a74c9016e479b02ad78d436
->>>
->>> I don't understand what you're doing with old_files in there. In the
->>> "s->files && !old_files" branch, "current->files = s->files" happens
->>> without holding task_lock(), but current->files and s->files are also
->>> the same already at that point anyway. And what's the intent behind
->>> assigning stuff to old_files inside the loop? Isn't that going to
->>> cause the workqueue to keep a modified current->files beyond the
->>> runtime of the work?
->>
->> I simply forgot to remove the old block, it should only have this one:
->>
->> if (s->files && s->files != cur_files) {
->>          task_lock(current);
->>          current->files = s->files;
->>          task_unlock(current);
->>          if (cur_files)
->>                  put_files_struct(cur_files);
->>          cur_files = s->files;
->> }
+John Fastabend wrote:
+> Andrii Nakryiko wrote:
+> > On Fri, Oct 4, 2019 at 7:36 AM Alexei Starovoitov <ast@fb.com> wrote:
+> > >
+> > > On 10/4/19 7:32 AM, Andrii Nakryiko wrote:
+> > > >> If we are not going to validate the section should we also skip collect'ing it?
+> > > > Well, if user supplied version, we will parse and use it to override
+> > > > out prepopulated one, so in that sense we do have validation.
+> > > >
+> > > > But I think it's fine just to drop it altogether. Will do in v3.
+> > > >
+> > >
+> > > what about older kernel that still enforce it?
+> > > May be populate it in bpf_attr while loading, but
+> > > don't check it in elf from libbpf?
+> > 
+> > That's what my change does. I pre-populate correct kernel version in
+> > bpf_object->kern_version from uname(). If ELF has "version" section,
+> > we still parse it and override bpf_object->kern_version.
+> > bpf_object->kern_version then is always specified as part of
+> > bpf_prog_load->kern_version.
+> > 
+> > So what we are discussing here is to not even look at user-provided
+> > version, but just always specify correct current kernel version. So I
+> > don't think we are going to break anything, except we might allow to
+> > pass some programs that were failing before due to unspecified or zero
+> > version.
+> > 
+> > So with that, do you think it's ok to get rid of version section altogether?
 > 
-> Don't you still need a put_files_struct() in the case where "s->files
-> == cur_files"?
+> Should be fine on my side. Go for it.
 
-I want to hold on to the files for as long as I can, to avoid unnecessary
-shuffling of it. But I take it your worry here is that we'll be calling
-something that manipulates ->files? Nothing should do that, unless
-s->files is set. We didn't hide the workqueue ->files[] before this
-change either.
+... Actually it turns out this broke some kernels that report via uname()
+incorrect version info. Sent a patch out to add just the bits back we need
+to get it working again.
 
--- 
-Jens Axboe
-
+To bad but I can't fix distributions that are deployed so...
