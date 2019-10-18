@@ -2,100 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EB9DC422
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 13:43:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0177BDC445
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 14:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407836AbfJRLn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 07:43:26 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42022 "EHLO mx1.redhat.com"
+        id S2404861AbfJRMA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 08:00:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:44508 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390498AbfJRLn0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 07:43:26 -0400
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2392487AbfJRMA4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 08:00:56 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 197526412E
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 11:43:26 +0000 (UTC)
-Received: by mail-qk1-f198.google.com with SMTP id r17so5193474qkm.16
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 04:43:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6Ub6Gl8wiH8cmKTsFrafRHW9fuJ5vrtuEMWyvrQhDdg=;
-        b=ervJqIv15L6OllSg68bxTTutwmTN5kLY8N6G9nSHZaQ6ELuafhKd2dHtCH0+kl1vNV
-         e69VEn1kUZtrYC5PL5FsZb7vPwqSHh/qN29Cd3Q0xRnndhIymLjAAokDadEVUGc7KTX7
-         M6Zx7xW6d+o0rZBS8tw+585HA/SGx9ketzx8UZJ+fMQX0XvT9Ip44ZKgTzYEpKXLMBRM
-         lb9TZjFAkMDs4tjnVh9S55iPGLeN6t4i+l1lXw9uOFVwXHel0iivkLg1c52qmyqBnfCo
-         NWj9xckDw4YFfMrCv2xG3KmpSURgHOIjM//BCs2sEr+o0xD66Sa/v0FzViUR8jYsY5ch
-         JGvA==
-X-Gm-Message-State: APjAAAV3x9z4DhPri90o8/L4AGysVyfF9iNOPrkwBPCyb5Jnc0H3hRuf
-        pt86JT0FSpFUigMqYRnbJZHw1H94HpbAKRSEqEHMK/7jGq13SCYb3h+KzmQstvG0mew4Owcz5q4
-        RJudwdgKyAL212ugS
-X-Received: by 2002:ac8:141a:: with SMTP id k26mr9417399qtj.372.1571399005325;
-        Fri, 18 Oct 2019 04:43:25 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwjEavSnVnimGynhK2zUjx91XWTp3w/V3NUGx/C7pvOgTC+fTUzLspHsEQefImPQDlxwBybyQ==
-X-Received: by 2002:ac8:141a:: with SMTP id k26mr9417366qtj.372.1571399005006;
-        Fri, 18 Oct 2019 04:43:25 -0700 (PDT)
-Received: from labbott-redhat.redhat.com (pool-96-235-39-235.pitbpa.fios.verizon.net. [96.235.39.235])
-        by smtp.gmail.com with ESMTPSA id d205sm3031043qke.96.2019.10.18.04.43.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 04:43:24 -0700 (PDT)
-From:   Laura Abbott <labbott@redhat.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Laura Abbott <labbott@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nicolas Waisman <nico@semmle.com>
-Subject: [PATCH v2] rtlwifi: Fix potential overflow on P2P code
-Date:   Fri, 18 Oct 2019 07:43:21 -0400
-Message-Id: <20191018114321.13131-1-labbott@redhat.com>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by mx1.redhat.com (Postfix) with ESMTPS id 0CE89C08E2B0;
+        Fri, 18 Oct 2019 12:00:56 +0000 (UTC)
+Received: from griffin.upir.cz (unknown [10.40.205.208])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 17CFC5D9CA;
+        Fri, 18 Oct 2019 12:00:54 +0000 (UTC)
+From:   Jiri Benc <jbenc@redhat.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Peter Oskolkov <posk@google.com>
+Subject: [PATCH bpf] selftests/bpf: More compatible nc options in test_tc_edt
+Date:   Fri, 18 Oct 2019 14:00:42 +0200
+Message-Id: <f5bf07dccd8b552a76c84d49e80b86c5aa071122.1571400024.git.jbenc@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Fri, 18 Oct 2019 12:00:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nicolas Waisman noticed that even though noa_len is checked for
-a compatible length it's still possible to overrun the buffers
-of p2pinfo since there's no check on the upper bound of noa_num.
-Bound noa_num against P2P_MAX_NOA_NUM.
+Out of the three nc implementations widely in use, at least two (BSD netcat
+and nmap-ncat) do not support -l combined with -s. Modify the nc invocation
+to be accepted by all of them.
 
-Reported-by: Nicolas Waisman <nico@semmle.com>
-Signed-off-by: Laura Abbott <labbott@redhat.com>
+Fixes: 7df5e3db8f63 ("selftests: bpf: tc-bpf flow shaping with EDT")
+Cc: Peter Oskolkov <posk@google.com>
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
 ---
-v2: Use P2P_MAX_NOA_NUM instead of erroring out.
----
- drivers/net/wireless/realtek/rtlwifi/ps.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/testing/selftests/bpf/test_tc_edt.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/ps.c b/drivers/net/wireless/realtek/rtlwifi/ps.c
-index 70f04c2f5b17..fff8dda14023 100644
---- a/drivers/net/wireless/realtek/rtlwifi/ps.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
-@@ -754,6 +754,9 @@ static void rtl_p2p_noa_ie(struct ieee80211_hw *hw, void *data,
- 				return;
- 			} else {
- 				noa_num = (noa_len - 2) / 13;
-+				if (noa_num > P2P_MAX_NOA_NUM)
-+					noa_num = P2P_MAX_NOA_NUM;
-+
- 			}
- 			noa_index = ie[3];
- 			if (rtlpriv->psc.p2p_ps_info.p2p_ps_mode ==
-@@ -848,6 +851,9 @@ static void rtl_p2p_action_ie(struct ieee80211_hw *hw, void *data,
- 				return;
- 			} else {
- 				noa_num = (noa_len - 2) / 13;
-+				if (noa_num > P2P_MAX_NOA_NUM)
-+					noa_num = P2P_MAX_NOA_NUM;
-+
- 			}
- 			noa_index = ie[3];
- 			if (rtlpriv->psc.p2p_ps_info.p2p_ps_mode ==
+diff --git a/tools/testing/selftests/bpf/test_tc_edt.sh b/tools/testing/selftests/bpf/test_tc_edt.sh
+index f38567ef694b..daa7d1b8d309 100755
+--- a/tools/testing/selftests/bpf/test_tc_edt.sh
++++ b/tools/testing/selftests/bpf/test_tc_edt.sh
+@@ -59,7 +59,7 @@ ip netns exec ${NS_SRC} tc filter add dev veth_src egress \
+ 
+ # start the listener
+ ip netns exec ${NS_DST} bash -c \
+-	"nc -4 -l -s ${IP_DST} -p 9000 >/dev/null &"
++	"nc -4 -l -p 9000 >/dev/null &"
+ declare -i NC_PID=$!
+ sleep 1
+ 
 -- 
-2.21.0
+2.18.1
 
