@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C018BDBC56
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EB2EDBCAD
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:10:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395281AbfJRFDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:03:00 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:42873 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726663AbfJRFDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:03:00 -0400
-Received: by mail-pl1-f196.google.com with SMTP id g9so936454plj.9;
-        Thu, 17 Oct 2019 22:02:59 -0700 (PDT)
+        id S2391484AbfJRFJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:09:16 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:46401 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727606AbfJRFJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:09:16 -0400
+Received: by mail-qt1-f193.google.com with SMTP id u22so7301621qtq.13;
+        Thu, 17 Oct 2019 22:09:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GTOf/Ta9mLCx6uCsjSPuiUUWC38JnQfNI985qroQXjw=;
-        b=kcjYXQQlaQbCtc9Ciikf6XULMEJAJ5vFb3gdSRzCeMwK4sYZNGGMT6i9FVjCdRumUS
-         9l/uXXJxVZhHtgK2kgbrID2AQZ6dTNwTXSVBjPvMysVOzLgF6j/mnRt/KlkwxE7k+wbB
-         Rz0WSP6WH9A/0Hkt0rNwDgwFyIIi3UKP6Le5mlpQfKCLYiJXbGnQme9MKnoRc+/oeSUB
-         SUvajNx3msTLiP+HC9r5It8QE7q8wOLfTGKQKBzhLkahKfWwq8Ko3Z1QeTidZfMz9UPQ
-         ucAcoyxh1UoLrH8aeJWc17hStbrljqQRU2BCFmgC90trSSW7RLmRfaYt0XV8WjQev1Fs
-         ZpMQ==
+        bh=RfnMY7Z/NlMSF1wkhwfieYlPpCrINoL1LfP3K3mwjsM=;
+        b=DyFLvhPc7Sncs0Maq82PXQmm5BECYROi1USmL1oAOjY+LMbPeNf6aHDT26+GSnnH6d
+         TaqSpH6Y76dE7NLKvz92lV/DdYZ9UMB48L0xddZneFMWFjmzdrNRY/w6oqS/mmxxcVo0
+         sHjtjaxbxtvU5JgKf0mw7a/sAIQIuwMlBw5rLI+DFdK6PwQShHtqPabd4J8kxccams6n
+         9rrlVRptYxNlJKOSvH0/60EKRaxrAqIX5fRdhZH05dZ5pUZVrUzhKg0Cy9vpyEs18BRs
+         aNvoUxIP5eu6SwPjDt9GUzuzFxljzCr/yPwRbfeeIu+4RLXS8BQysLXdgHlAC4gCtiy3
+         DaWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GTOf/Ta9mLCx6uCsjSPuiUUWC38JnQfNI985qroQXjw=;
-        b=G/y/uiWeOa8nYzj7B+77tzktGyH4DYvl3OVFhQCjoPZVnTvNc5ZrcIFBKxZQiJNhln
-         cdTfOlDEej2Jlem59Qpo72uzVudee/ny7XYWkZufJHLSWUQQe6qNaHnsy0wf5wTUjzyQ
-         XAZC7Kwv/K6lnjHYPeE/ypfHlGhx6CKhq4dbTlJIyOSAz9aCh1AkUo35TUhGN5d+bNza
-         a5Ah/pD4Pr+lO7zQvC6Gjq3cN+shtWwk7OEKjd/I286z9Bm9fRI8F/T+AtqWbss1fElF
-         y/qbf+7oHLcUOQNPlnamVRDsMotbI5cBeEnyhLAsxlkVx9VKZdr9xRpHtr25lmU7pEW6
-         T3ig==
-X-Gm-Message-State: APjAAAXi24xQWlHCa3i7un1KiCs30MLjvt5lWCfTUZjsHzm45CYJIQHn
-        YQAh2nRHIwS4ZmkooCSaZKam9sUp
-X-Google-Smtp-Source: APXvYqzCnHVgLSTfgaH3su/NNJ8g5y3hs5HySo+Msq15O4by3957SYjgWIFsILAOq3Dc3I9+RrkVEA==
-X-Received: by 2002:a17:902:8d8e:: with SMTP id v14mr7619205plo.287.1571371722117;
-        Thu, 17 Oct 2019 21:08:42 -0700 (PDT)
+        bh=RfnMY7Z/NlMSF1wkhwfieYlPpCrINoL1LfP3K3mwjsM=;
+        b=rv3nbqPSo/6Q/nfL3eaHRcW5wSx+zIV5cEV33YamRvk7THLI74sJMm7lkFn8W9Dl2k
+         PleAuxdFW1mfAnFD0/R6fWbBBHiLD+4wGXSCM9Etyut8RWG/372DqzpR8492kaY+xMMv
+         y/69qUXoEZCbrSSsot0mkkyJY8WyddXF79e8+604CM9T4GpaMotAZ6M8ivoZrxkVE0KP
+         0dAu2atFxu6eiHDkNSqhyB+C9pZFCtzNJ9AyFcDFQnwV2GmOh96RF2M9zrrNggIygB37
+         wYpROy/QVvK5BREztujoC7vbscf1P5Lb627s+GyIR/mxJ0rfEF+eGyAuDYArFU9dmK/+
+         2V6A==
+X-Gm-Message-State: APjAAAXVOUGO50xjFz1oUAnms0wlV2N1WtcdAnARvPFa29YAmXEI9kA9
+        E74sDWOxMCa6gqLdgTsV+WRxR9P6
+X-Google-Smtp-Source: APXvYqw9TrjyEKo2ZE3+0fVDlfNigbyWGlgFv7gQkHWTdcord3xJ98JXwpbXV6M/WgEZRTgW+c6Tbg==
+X-Received: by 2002:a63:5a03:: with SMTP id o3mr7763457pgb.381.1571371746180;
+        Thu, 17 Oct 2019 21:09:06 -0700 (PDT)
 Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id d11sm4341680pfo.104.2019.10.17.21.08.37
+        by smtp.gmail.com with ESMTPSA id d11sm4341680pfo.104.2019.10.17.21.09.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 21:08:41 -0700 (PDT)
+        Thu, 17 Oct 2019 21:09:05 -0700 (PDT)
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,9 +64,9 @@ Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         William Tu <u9012063@gmail.com>,
         Stanislav Fomichev <sdf@fomichev.me>
-Subject: [RFC PATCH v2 bpf-next 04/15] xdp: Export dev_check_xdp and dev_change_xdp
-Date:   Fri, 18 Oct 2019 13:07:37 +0900
-Message-Id: <20191018040748.30593-5-toshiaki.makita1@gmail.com>
+Subject: [RFC PATCH v2 bpf-next 09/15] xdp_flow: Implement flow replacement/deletion logic in xdp_flow kmod
+Date:   Fri, 18 Oct 2019 13:07:42 +0900
+Message-Id: <20191018040748.30593-10-toshiaki.makita1@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
 References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
@@ -77,192 +77,404 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Factor out the check and change logic from dev_change_xdp_fd(),
-and export them for the following commit.
+As struct flow_rule has descrete storages for flow_dissector and
+key/mask containers, we need to serialize them in some way to pass them
+to UMH.
+
+Convert flow_rule into flow key form used in xdp_flow bpf prog and
+pass it.
 
 Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 ---
- include/linux/netdevice.h |   4 ++
- net/core/dev.c            | 111 +++++++++++++++++++++++++++++++++++++---------
- 2 files changed, 95 insertions(+), 20 deletions(-)
+ net/xdp_flow/xdp_flow_kern_mod.c | 331 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 329 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 3207e0b..c338a73 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3707,6 +3707,10 @@ struct sk_buff *dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
- 				    struct netdev_queue *txq, int *ret);
+diff --git a/net/xdp_flow/xdp_flow_kern_mod.c b/net/xdp_flow/xdp_flow_kern_mod.c
+index 2c80590..e70a86a 100644
+--- a/net/xdp_flow/xdp_flow_kern_mod.c
++++ b/net/xdp_flow/xdp_flow_kern_mod.c
+@@ -3,8 +3,10 @@
+ #include <linux/module.h>
+ #include <linux/umh.h>
+ #include <linux/sched/signal.h>
++#include <linux/etherdevice.h>
+ #include <linux/rhashtable.h>
+ #include <linux/rtnetlink.h>
++#include <linux/if_vlan.h>
+ #include <linux/filter.h>
+ #include "xdp_flow.h"
+ #include "msgfmt.h"
+@@ -24,9 +26,261 @@ struct xdp_flow_prog {
  
- typedef int (*bpf_op_t)(struct net_device *dev, struct netdev_bpf *bpf);
-+int dev_check_xdp(struct net_device *dev, struct netlink_ext_ack *extack,
-+		  bool do_install, u32 *prog_id_p, u32 flags);
-+int dev_change_xdp(struct net_device *dev, struct netlink_ext_ack *extack,
-+		   struct bpf_prog *prod, u32 flags);
- int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 		      int fd, u32 flags);
- u32 __dev_xdp_query(struct net_device *dev, bpf_op_t xdp_op,
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8bc3dce..9965675 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8317,23 +8317,24 @@ static void dev_xdp_uninstall(struct net_device *dev)
- }
+ static struct rhashtable progs;
  
- /**
-- *	dev_change_xdp_fd - set or clear a bpf program for a device rx path
-+ *	dev_check_xdp - check if xdp prog can be [un]installed
-  *	@dev: device
-  *	@extack: netlink extended ack
-- *	@fd: new program fd or negative value to clear
-+ *	@install: flag to install or uninstall
-+ *	@prog_id_p: pointer to a storage for program id
-  *	@flags: xdp-related flags
-  *
-- *	Set or clear a bpf program for a device
-+ *	Check if xdp prog can be [un]installed
-+ *	If a program is already loaded, store the prog id to prog_id_p
-  */
--int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
--		      int fd, u32 flags)
-+int dev_check_xdp(struct net_device *dev, struct netlink_ext_ack *extack,
-+		  bool install, u32 *prog_id_p, u32 flags)
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
- 	enum bpf_netdev_command query;
--	struct bpf_prog *prog = NULL;
- 	bpf_op_t bpf_op, bpf_chk;
- 	bool offload;
--	int err;
-+	u32 prog_id;
++struct xdp_flow_rule {
++	struct rhash_head ht_node;
++	unsigned long cookie;
++	struct xdp_flow_key key;
++	struct xdp_flow_key mask;
++};
++
++static const struct rhashtable_params rules_params = {
++	.key_len = sizeof(unsigned long),
++	.key_offset = offsetof(struct xdp_flow_rule, cookie),
++	.head_offset = offsetof(struct xdp_flow_rule, ht_node),
++	.automatic_shrinking = true,
++};
++
++static struct rhashtable rules;
++
+ extern char xdp_flow_umh_start;
+ extern char xdp_flow_umh_end;
  
- 	ASSERT_RTNL();
- 
-@@ -8350,28 +8351,64 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 	if (bpf_op == bpf_chk)
- 		bpf_chk = generic_xdp_install;
- 
--	if (fd >= 0) {
--		u32 prog_id;
--
-+	if (install) {
- 		if (!offload && __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
- 			NL_SET_ERR_MSG(extack, "native and generic XDP can't be active at the same time");
- 			return -EEXIST;
- 		}
- 
- 		prog_id = __dev_xdp_query(dev, bpf_op, query);
-+		if (prog_id_p)
-+			*prog_id_p = prog_id;
- 		if ((flags & XDP_FLAGS_UPDATE_IF_NOEXIST) && prog_id) {
- 			NL_SET_ERR_MSG(extack, "XDP program already attached");
- 			return -EBUSY;
- 		}
-+	} else {
-+		prog_id = __dev_xdp_query(dev, bpf_op, query);
-+		if (prog_id_p)
-+			*prog_id_p = prog_id;
-+		if (!prog_id)
-+			return -ENOENT;
++static int xdp_flow_parse_actions(struct xdp_flow_actions *actions,
++				  struct flow_action *flow_action,
++				  struct netlink_ext_ack *extack)
++{
++	const struct flow_action_entry *act;
++	int i;
++
++	if (!flow_action_has_entries(flow_action))
++		return 0;
++
++	if (flow_action->num_entries > MAX_XDP_FLOW_ACTIONS)
++		return -ENOBUFS;
++
++	flow_action_for_each(i, act, flow_action) {
++		struct xdp_flow_action *action = &actions->actions[i];
++
++		switch (act->id) {
++		case FLOW_ACTION_ACCEPT:
++			action->id = XDP_FLOW_ACTION_ACCEPT;
++			break;
++		case FLOW_ACTION_DROP:
++			action->id = XDP_FLOW_ACTION_DROP;
++			break;
++		case FLOW_ACTION_REDIRECT:
++		case FLOW_ACTION_VLAN_PUSH:
++		case FLOW_ACTION_VLAN_POP:
++		case FLOW_ACTION_VLAN_MANGLE:
++		case FLOW_ACTION_MANGLE:
++		case FLOW_ACTION_CSUM:
++			/* TODO: implement these */
++			/* fall through */
++		default:
++			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
++			return -EOPNOTSUPP;
++		}
 +	}
- 
--		prog = bpf_prog_get_type_dev(fd, BPF_PROG_TYPE_XDP,
--					     bpf_op == ops->ndo_bpf);
--		if (IS_ERR(prog))
--			return PTR_ERR(prog);
++	actions->num_actions = flow_action->num_entries;
++
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(dev_check_xdp);
 +
-+/**
-+ *	dev_change_xdp - set or clear a bpf program for a device rx path
-+ *	@dev: device
-+ *	@extack: netlink extended ack
-+ *	@prog: bpf progam
-+ *	@flags: xdp-related flags
-+ *
-+ *	Set or clear a bpf program for a device.
-+ *	Caller must call dev_check_xdp before calling this function to
-+ *	check if xdp prog can be [un]installed.
-+ */
-+int dev_change_xdp(struct net_device *dev, struct netlink_ext_ack *extack,
-+		   struct bpf_prog *prog, u32 flags)
++static int xdp_flow_parse_ports(struct xdp_flow_key *key,
++				struct xdp_flow_key *mask,
++				struct flow_cls_offload *f, u8 ip_proto)
 +{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	enum bpf_netdev_command query;
-+	bpf_op_t bpf_op;
-+	bool offload;
++	const struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_match_ports match;
 +
-+	ASSERT_RTNL();
++	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_PORTS))
++		return 0;
 +
-+	offload = flags & XDP_FLAGS_HW_MODE;
-+	query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
++	if (ip_proto != IPPROTO_TCP && ip_proto != IPPROTO_UDP) {
++		NL_SET_ERR_MSG_MOD(f->common.extack,
++				   "Only UDP and TCP keys are supported");
++		return -EINVAL;
++	}
 +
-+	bpf_op = ops->ndo_bpf;
-+	if (!bpf_op || (flags & XDP_FLAGS_SKB_MODE))
-+		bpf_op = generic_xdp_install;
++	flow_rule_match_ports(rule, &match);
 +
-+	if (prog) {
-+		u32 prog_id = __dev_xdp_query(dev, bpf_op, query);
- 
- 		if (!offload && bpf_prog_is_dev_bound(prog->aux)) {
- 			NL_SET_ERR_MSG(extack, "using device-bound program without HW_MODE flag is not supported");
--			bpf_prog_put(prog);
- 			return -EINVAL;
- 		}
- 
-@@ -8379,13 +8416,47 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 			bpf_prog_put(prog);
- 			return 0;
- 		}
--	} else {
--		if (!__dev_xdp_query(dev, bpf_op, query))
--			return 0;
- 	}
- 
--	err = dev_xdp_install(dev, bpf_op, extack, flags, prog);
--	if (err < 0 && prog)
-+	return dev_xdp_install(dev, bpf_op, extack, flags, prog);
++	key->l4port.src = match.key->src;
++	mask->l4port.src = match.mask->src;
++	key->l4port.dst = match.key->dst;
++	mask->l4port.dst = match.mask->dst;
++
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(dev_change_xdp);
 +
-+/**
-+ *	dev_change_xdp_fd - set or clear a bpf program for a device rx path
-+ *	@dev: device
-+ *	@extack: netlink extended ack
-+ *	@fd: new program fd or negative value to clear
-+ *	@flags: xdp-related flags
-+ *
-+ *	Set or clear a bpf program for a device
-+ */
-+int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
-+		      int fd, u32 flags)
++static int xdp_flow_parse_tcp(struct xdp_flow_key *key,
++			      struct xdp_flow_key *mask,
++			      struct flow_cls_offload *f, u8 ip_proto)
 +{
-+	struct bpf_prog *prog = NULL;
-+	bool install = fd >= 0;
++	const struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_match_tcp match;
++
++	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_TCP))
++		return 0;
++
++	if (ip_proto != IPPROTO_TCP) {
++		NL_SET_ERR_MSG_MOD(f->common.extack,
++				   "TCP keys supported only for TCP");
++		return -EINVAL;
++	}
++
++	flow_rule_match_tcp(rule, &match);
++
++	key->tcp.flags = match.key->flags;
++	mask->tcp.flags = match.mask->flags;
++
++	return 0;
++}
++
++static int xdp_flow_parse_ip(struct xdp_flow_key *key,
++			     struct xdp_flow_key *mask,
++			     struct flow_cls_offload *f, __be16 n_proto)
++{
++	const struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_match_ip match;
++
++	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IP))
++		return 0;
++
++	if (n_proto != htons(ETH_P_IP) && n_proto != htons(ETH_P_IPV6)) {
++		NL_SET_ERR_MSG_MOD(f->common.extack,
++				   "IP keys supported only for IPv4/6");
++		return -EINVAL;
++	}
++
++	flow_rule_match_ip(rule, &match);
++
++	key->ip.ttl = match.key->ttl;
++	mask->ip.ttl = match.mask->ttl;
++	key->ip.tos = match.key->tos;
++	mask->ip.tos = match.mask->tos;
++
++	return 0;
++}
++
++static int xdp_flow_parse(struct xdp_flow_key *key, struct xdp_flow_key *mask,
++			  struct xdp_flow_actions *actions,
++			  struct flow_cls_offload *f)
++{
++	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_dissector *dissector = rule->match.dissector;
++	__be16 n_proto = 0, n_proto_mask = 0;
++	u16 addr_type = 0;
++	u8 ip_proto = 0;
 +	int err;
 +
-+	err = dev_check_xdp(dev, extack, install, NULL, flags);
-+	if (err) {
-+		if (!install && err == -ENOENT)
-+			err = 0;
++	if (dissector->used_keys &
++	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
++	      BIT(FLOW_DISSECTOR_KEY_BASIC) |
++	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
++	      BIT(FLOW_DISSECTOR_KEY_TCP) |
++	      BIT(FLOW_DISSECTOR_KEY_IP) |
++	      BIT(FLOW_DISSECTOR_KEY_VLAN))) {
++		NL_SET_ERR_MSG_MOD(f->common.extack, "Unsupported key");
++		return -EOPNOTSUPP;
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
++		struct flow_match_control match;
++
++		flow_rule_match_control(rule, &match);
++		addr_type = match.key->addr_type;
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
++		struct flow_match_basic match;
++
++		flow_rule_match_basic(rule, &match);
++
++		n_proto = match.key->n_proto;
++		n_proto_mask = match.mask->n_proto;
++		if (n_proto == htons(ETH_P_ALL)) {
++			n_proto = 0;
++			n_proto_mask = 0;
++		}
++
++		key->eth.type = n_proto;
++		mask->eth.type = n_proto_mask;
++
++		if (match.mask->ip_proto) {
++			ip_proto = match.key->ip_proto;
++			key->ip.proto = ip_proto;
++			mask->ip.proto = match.mask->ip_proto;
++		}
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
++		struct flow_match_eth_addrs match;
++
++		flow_rule_match_eth_addrs(rule, &match);
++
++		ether_addr_copy(key->eth.dst, match.key->dst);
++		ether_addr_copy(mask->eth.dst, match.mask->dst);
++		ether_addr_copy(key->eth.src, match.key->src);
++		ether_addr_copy(mask->eth.src, match.mask->src);
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
++		struct flow_match_vlan match;
++
++		flow_rule_match_vlan(rule, &match);
++
++		key->vlan.tpid = match.key->vlan_tpid;
++		mask->vlan.tpid = match.mask->vlan_tpid;
++		key->vlan.tci = htons(match.key->vlan_id |
++				      (match.key->vlan_priority <<
++				       VLAN_PRIO_SHIFT));
++		mask->vlan.tci = htons(match.mask->vlan_id |
++				       (match.mask->vlan_priority <<
++					VLAN_PRIO_SHIFT));
++	}
++
++	if (addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
++		struct flow_match_ipv4_addrs match;
++
++		flow_rule_match_ipv4_addrs(rule, &match);
++
++		key->ipv4.src = match.key->src;
++		mask->ipv4.src = match.mask->src;
++		key->ipv4.dst = match.key->dst;
++		mask->ipv4.dst = match.mask->dst;
++	}
++
++	if (addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
++		struct flow_match_ipv6_addrs match;
++
++		flow_rule_match_ipv6_addrs(rule, &match);
++
++		key->ipv6.src = match.key->src;
++		mask->ipv6.src = match.mask->src;
++		key->ipv6.dst = match.key->dst;
++		mask->ipv6.dst = match.mask->dst;
++	}
++
++	err = xdp_flow_parse_ports(key, mask, f, ip_proto);
++	if (err)
 +		return err;
-+	}
++	err = xdp_flow_parse_tcp(key, mask, f, ip_proto);
++	if (err)
++		return err;
 +
-+	if (install) {
-+		bool attach_drv;
++	err = xdp_flow_parse_ip(key, mask, f, n_proto);
++	if (err)
++		return err;
 +
-+		attach_drv = dev->netdev_ops->ndo_bpf &&
-+			     !(flags & XDP_FLAGS_SKB_MODE);
-+		prog = bpf_prog_get_type_dev(fd, BPF_PROG_TYPE_XDP, attach_drv);
-+		if (IS_ERR(prog))
-+			return PTR_ERR(prog);
-+	}
++	// TODO: encapsulation related tasks
 +
-+	err = dev_change_xdp(dev, extack, prog, flags);
-+	if (err && prog)
- 		bpf_prog_put(prog);
++	return xdp_flow_parse_actions(actions, &rule->action,
++					   f->common.extack);
++}
++
+ static void shutdown_umh(void)
+ {
+ 	struct task_struct *tsk;
+@@ -77,12 +331,78 @@ static int transact_umh(struct mbox_request *req, u32 *id)
  
+ static int xdp_flow_replace(struct net_device *dev, struct flow_cls_offload *f)
+ {
+-	return -EOPNOTSUPP;
++	struct xdp_flow_rule *rule;
++	struct mbox_request *req;
++	int err;
++
++	req = kzalloc(sizeof(*req), GFP_KERNEL);
++	if (!req)
++		return -ENOMEM;
++
++	rule = kzalloc(sizeof(*rule), GFP_KERNEL);
++	if (!rule) {
++		err = -ENOMEM;
++		goto out;
++	}
++
++	req->flow.priority = f->common.prio >> 16;
++	err = xdp_flow_parse(&req->flow.key, &req->flow.mask,
++			     &req->flow.actions, f);
++	if (err)
++		goto err_rule;
++
++	rule->cookie = f->cookie;
++	rule->key = req->flow.key;
++	rule->mask = req->flow.mask;
++	err = rhashtable_insert_fast(&rules, &rule->ht_node, rules_params);
++	if (err)
++		goto err_rule;
++
++	req->cmd = XDP_FLOW_CMD_REPLACE;
++	req->ifindex = dev->ifindex;
++	err = transact_umh(req, NULL);
++	if (err)
++		goto err_rht;
++out:
++	kfree(req);
++
++	return err;
++err_rht:
++	rhashtable_remove_fast(&rules, &rule->ht_node, rules_params);
++err_rule:
++	kfree(rule);
++	goto out;
+ }
+ 
+ static int xdp_flow_destroy(struct net_device *dev, struct flow_cls_offload *f)
+ {
+-	return -EOPNOTSUPP;
++	struct xdp_flow_rule *rule;
++	struct mbox_request *req;
++	int err;
++
++	rule = rhashtable_lookup_fast(&rules, &f->cookie, rules_params);
++	if (!rule)
++		return 0;
++
++	req = kzalloc(sizeof(*req), GFP_KERNEL);
++	if (!req)
++		return -ENOMEM;
++
++	req->flow.priority = f->common.prio >> 16;
++	req->flow.key = rule->key;
++	req->flow.mask = rule->mask;
++	req->cmd = XDP_FLOW_CMD_DELETE;
++	req->ifindex = dev->ifindex;
++	err = transact_umh(req, NULL);
++
++	kfree(req);
++
++	if (!err) {
++		rhashtable_remove_fast(&rules, &rule->ht_node, rules_params);
++		kfree(rule);
++	}
++
++	return err;
+ }
+ 
+ static int xdp_flow_setup_flower(struct net_device *dev,
+@@ -308,6 +628,10 @@ static int __init load_umh(void)
+ 	if (err)
+ 		return err;
+ 
++	err = rhashtable_init(&rules, &rules_params);
++	if (err)
++		goto err_progs;
++
+ 	mutex_lock(&xdp_flow_ops.lock);
+ 	if (!xdp_flow_ops.stop) {
+ 		err = -EFAULT;
+@@ -327,6 +651,8 @@ static int __init load_umh(void)
+ 	return 0;
+ err:
+ 	mutex_unlock(&xdp_flow_ops.lock);
++	rhashtable_destroy(&rules);
++err_progs:
+ 	rhashtable_destroy(&progs);
  	return err;
+ }
+@@ -340,6 +666,7 @@ static void __exit fini_umh(void)
+ 	xdp_flow_ops.setup = NULL;
+ 	xdp_flow_ops.setup_cb = NULL;
+ 	mutex_unlock(&xdp_flow_ops.lock);
++	rhashtable_destroy(&rules);
+ 	rhashtable_destroy(&progs);
+ }
+ module_init(load_umh);
 -- 
 1.8.3.1
 
