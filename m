@@ -2,76 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CBBEDD576
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 01:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E6CDD579
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 01:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389450AbfJRXcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 19:32:06 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:34158 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389321AbfJRXcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 19:32:05 -0400
-Received: by mail-lj1-f193.google.com with SMTP id j19so7812545lja.1
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 16:32:04 -0700 (PDT)
+        id S2389572AbfJRXcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 19:32:13 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42477 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387700AbfJRXcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 19:32:13 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f14so4151666pgi.9
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 16:32:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=bOk+Nwv7AY/3M5im96P0v1cp6jRzN0hadKAQNd2Rgac=;
-        b=DuMKndizmbev/G6iDMVUCwQFsTlU0AnXf4p+XzqQFa/F2XVbUSJ7j5IFLNUOcXQcA3
-         +m+rDJJNTwEulwflFqElNEkKgup5zjDaH8tad2QDW0WKh+vObQxNL1kqsVOpE4ZewnRE
-         GIT3y+8us25G5vN9rNPBrMuJEUK0xNs+CMBjqkY6+tMgVl8QDNG06w7Qe13s0uP/+D+n
-         hvJ43fLZJWTok/Vydv9xVzFdWGxELd9a3ihB5W1KDPE58Kq68WevJ3Jb1xl1Qb520HN3
-         infeSBFOH5yqVudVa/FiOVR8wToOn5Zk/Vx3ENQoRvgXIQttItvQ7DPpjf9Ipta9q9TQ
-         jDqw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=H/TQjNeNKxKr1wMUHNfad1MrCG9TgOKr/P3RNrPzY2M=;
+        b=in7df1+CnzZOQfNJwxWO0fosUZecRxsNJEvmAfl4SG3MZu3QiGpG2AzeQ5qntBnA4p
+         MkKVtATlsHR98w5e0uEGaqTxy8TFSkhNC3xrmTTXxWGCx8/SMSPauaB/G4Efdvn3A31X
+         3Imx5SXLJYLMIucfiqb1NMF5nvPB23qdeX+58lTNmCpjgg4Xq0rjamse9XlKQQInrhZe
+         Vqu21B5LtXoHqfdvCoIKUr+vgpiVJqIecq5McD/YSabkrsOICZ98hQSlYpY0gSIyDLJx
+         nvZQ3/vjV2ZNzbapRigfHNpOvarnfTuBDstJJd//wAUKZOkAq6vP2cjY7Kl6sjDyHG+T
+         irWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=bOk+Nwv7AY/3M5im96P0v1cp6jRzN0hadKAQNd2Rgac=;
-        b=UqRsFqpKFjdeUgpZAddxm5R43sbuRVpu6ByqB+9vxO1GKBdyxu/P7uKcdACbo9QRwm
-         hMi67TYlP/We5xxeGA8QthF4mLPSvd84/ZpW9TQu+jk+YL9xBctv2T6C2D63O/cN9K+r
-         PjnX84PccVLd7d8NN0Shv1YWRzq5daIREjyG7fLWOyfncVWVkfYvHPMdOeU40rCNi6hI
-         StCX8s4PxqlYF3X0/VvmoBnfNdftokdfbYUznCWP4PMoly6WQusWrIf4jQsTeKdLelQn
-         g/W7CgQDHJjZyYv6gwyQNcPZOrqab9T+VXclNCWmvVP/Sb0PDC85B2V8TK7jXQ1rxw+z
-         ydSg==
-X-Gm-Message-State: APjAAAXvyxU2l14A2TO9coUOvsZLWrS3MdOdqbQEam6P3HlI7zqZDI7r
-        Vjg74pIEJDCsZ6sBmNFU3j5mXg==
-X-Google-Smtp-Source: APXvYqyek6tELW4NRmY6/lqbijXLozP174xBdciVs1dhVU0bJ6aICt+EelRsvEYL304DTilUtuMSZg==
-X-Received: by 2002:a2e:5354:: with SMTP id t20mr6980039ljd.44.1571441524103;
-        Fri, 18 Oct 2019 16:32:04 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v6sm2885022ljh.66.2019.10.18.16.32.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 16:32:03 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 16:31:56 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH bpf] xdp: Prevent overflow in devmap_hash cost
- calculation for 32-bit builds
-Message-ID: <20191018163156.278f4ca5@cakuba.netronome.com>
-In-Reply-To: <CAADnVQKDaMAVT6UxGy8w+CPUmzvgVWAjXmHexiz09yZJ8CbAeQ@mail.gmail.com>
-References: <20191017105702.2807093-1-toke@redhat.com>
-        <CAADnVQKDaMAVT6UxGy8w+CPUmzvgVWAjXmHexiz09yZJ8CbAeQ@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=H/TQjNeNKxKr1wMUHNfad1MrCG9TgOKr/P3RNrPzY2M=;
+        b=FZzqaeRMwpSgSbfNx2kXPxeCMbhrS7/OPl5Ax0mZEj414yC/e0YyE4p/dj1YLoUuNA
+         mgwXiBGIVhX766ww2zeKjyqxjAt4A/gRjbSnj3PgB3IfQcwtx2ejxgY77widud8NboEt
+         E7GRsx3eDfNJ7Ei0UKlmFS59n+9osfU/dHSNTJLVn9brGtDOpuVTIyaphKOOEUuhc1ws
+         /ffLKwS1hiyCzedjV3mWsmN1oNPEVPz660YJSxijn56iHgUG+cL8s7UxoDNiI9Oq7kge
+         E5LIzHIIGWGyVpv6+jXHNaDz8WRLPlBSTaLEXb5zMEvhNs5BIGqIytLY/6FKYqoMrtwK
+         bP9g==
+X-Gm-Message-State: APjAAAX/tkna2rN/fxgaAgbFbNQUBrm6z/TNPrDafL4uXz8wx2OhhQS2
+        3S5BBbp3gN7+SBGmEO/u6ag=
+X-Google-Smtp-Source: APXvYqxFfUxBYW4wfOk2g6J+8ggoe00A8jSJh0ZLO4GocVexTX6lPoWoAIYEqXRDNQOX4YkCR2gh4g==
+X-Received: by 2002:a63:1945:: with SMTP id 5mr12495184pgz.157.1571441532459;
+        Fri, 18 Oct 2019 16:32:12 -0700 (PDT)
+Received: from [172.20.162.151] ([2620:10d:c090:180::d0dd])
+        by smtp.gmail.com with ESMTPSA id u11sm9714144pgo.65.2019.10.18.16.32.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Oct 2019 16:32:11 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Saeed Mahameed" <saeedm@mellanox.com>
+Cc:     ilias.apalodimas@linaro.org, "Tariq Toukan" <tariqt@mellanox.com>,
+        brouer@redhat.com, kernel-team@fb.com, netdev@vger.kernel.org
+Subject: Re: [PATCH 00/10 net-next] page_pool cleanups
+Date:   Fri, 18 Oct 2019 16:32:07 -0700
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <A6D1D7E1-56F4-4474-A7E7-68627AEE528D@gmail.com>
+In-Reply-To: <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
+References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
+ <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Oct 2019 16:25:24 -0700, Alexei Starovoitov wrote:
-> I'm not sure that cleanup Jakub is proposing is possible or better.
-> Not everything is array_size here and in other places
-> where cost is computed. u64 is imo much cleaner.
 
-Right, adding multiple components with size_t is going to be
-unnecessarily tricky.
+
+On 18 Oct 2019, at 13:50, Saeed Mahameed wrote:
+
+> On Wed, 2019-10-16 at 15:50 -0700, Jonathan Lemon wrote:
+>> This patch combines work from various people:
+>> - part of Tariq's work to move the DMA mapping from
+>>   the mlx5 driver into the page pool.  This does not
+>>   include later patches which remove the dma address
+>>   from the driver, as this conflicts with AF_XDP.
+>>
+>> - Saeed's changes to check the numa node before
+>>   including the page in the pool, and flushing the
+>>   pool on a node change.
+>>
+>
+> Hi Jonathan, thanks for submitting this,
+> the patches you have are not up to date, i have new ones with tracing
+> support and some fixes from offlist review iterations, plus performance
+> numbers and a  cover letter.
+>
+> I will send it to you and you can post it as v2 ?
+
+Sure, I have some other cleanups to do and have a concern about
+the cache effectiveness for some workloads.
+-- 
+Jonathan
+
+
+>
+>
+>> - Statistics and cleanup for page pool.
+>>
+>> Jonathan Lemon (5):
+>>   page_pool: Add page_pool_keep_page
+>>   page_pool: allow configurable linear cache size
+>>   page_pool: Add statistics
+>>   net/mlx5: Add page_pool stats to the Mellanox driver
+>>   page_pool: Cleanup and rename page_pool functions.
+>>
+>> Saeed Mahameed (2):
+>>   page_pool: Add API to update numa node and flush page caches
+>>   net/mlx5e: Rx, Update page pool numa node when changed
+>>
+>> Tariq Toukan (3):
+>>   net/mlx5e: RX, Remove RX page-cache
+>>   net/mlx5e: RX, Manage RX pages only via page pool API
+>>   net/mlx5e: RX, Internal DMA mapping in page_pool
+>>
+>>  drivers/net/ethernet/mellanox/mlx5/core/en.h  |  18 +-
+>>  .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  12 +-
+>>  .../net/ethernet/mellanox/mlx5/core/en_main.c |  19 +-
+>>  .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 128 ++--------
+>>  .../ethernet/mellanox/mlx5/core/en_stats.c    |  39 ++--
+>>  .../ethernet/mellanox/mlx5/core/en_stats.h    |  19 +-
+>>  include/net/page_pool.h                       | 216 +++++++++-------
+>> -
+>>  net/core/page_pool.c                          | 221 +++++++++++-----
+>> --
+>>  8 files changed, 319 insertions(+), 353 deletions(-)
+>>
