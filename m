@@ -2,91 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A744DCFC8
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 22:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA4C3DCFCC
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 22:12:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395071AbfJRULY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 16:11:24 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:33753 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394929AbfJRULY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 16:11:24 -0400
-Received: by mail-pl1-f193.google.com with SMTP id d22so3379804pls.0
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 13:11:24 -0700 (PDT)
+        id S2440062AbfJRUMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 16:12:03 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:35088 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394929AbfJRUMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 16:12:02 -0400
+Received: by mail-ed1-f67.google.com with SMTP id v8so5546173eds.2
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 13:12:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=hXUeQfCFjejlaHZu4j61RpghIvgOB4WRWnuljxk2Kn8=;
-        b=POM8eRUbehASp8K7IG+smVSOyVDscUaCWV4uW3SxBmdx4hwVYjtHevuOWs1G5yua5D
-         rpdQwmiPTabIHsGxroqCbMfYyPZhIFyY7yYNp+zfCfRM2YUeTOmVqj1OHzVy11SnYpHw
-         cxS9gwyBm1KGHEggJeRIfrsBb0Jz/XylClarHfl81+6HscbPtlEzq+O0/duD1XaG62M3
-         XWDSUQYD4kgkHXeAjeNQWBpqJQY6eIA8veRsJC0uKxISaUNxg/wgat9rFZezxfsmBXeL
-         7MqY1430RD8Hmv/YXKlDTaWF5QzQwdvigRdbFUzl7VhQ5BC0ZN7cel+fGsbpscsBA0Or
-         XrHA==
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7en786k5wxhRfzAyZJlq2as2o3NHruwi2vJIOxR1nWo=;
+        b=kE14HcaaHgTgc4z4VETj8qmCj+fvlvgrsLOUy9ZS7Tgb5FQx24A8dsR3QS2/+oBrn5
+         0E61sqe+HpEGq6zFD97BtRw/UMIDgfWxVXj7Qb4c/bgE3tVxlRtFo7NdCir/zlN4kSBg
+         2CoG150vEUh0u74Xhcnvb1MvQ57ZQkA2FiMEpTx3+rFrasyHxz/KjlxVQ+djSHyCRiY+
+         UVIVakMJhbLA8yw4zmr4cO2Ro5+7oYmjBJxbpm/ZjzL8vjcSJPIFkl4rNZRsARfp2Xc0
+         Sgy06clghn3M0nECntl4YylxXrG6byKVgI8qjSf2df/MiRxoZ+RQB9oYmg7pyx4eFeqF
+         qyiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=hXUeQfCFjejlaHZu4j61RpghIvgOB4WRWnuljxk2Kn8=;
-        b=BRoS6gJduLPlbNXlOPAof/otIyrmXYxCvVQTpiwVO/cAPA5punXP/abQ9XHPcXl3zL
-         VS1ZQ4ybbISY8K0sr/JhM+FwKFY4vHeYtHqqlSvS2c3kLB7m15J06t6jBE+UGkimlv90
-         wvJgMBc85seSeoecLGlXvN4zxKVHts2StGZI0INZjnp3mwrAkSvksXAkmuvyZqWuQ6YB
-         uEMkV8mXFsJ3IbTpYM9vxpQvIqWBuzd/53C/4J13/Vpo/4DX7vAZlOuzlOqX0loZat1N
-         EFlW2lLPVSO62t5zrji06SE321wwAkzXu4vzGLCIjgt5m+Gt3hK5zos1HBsCtnuw82hk
-         9XjA==
-X-Gm-Message-State: APjAAAVg/2xDyIBtrNkHtA8h4K3qSPYNFYSCks0CjpCLzBA6+2XD/s7w
-        eY/oCkrgWfMdLo2oXoeAK74=
-X-Google-Smtp-Source: APXvYqxmmz5NuZBf93317xOjUWNLAGUUmTQpgBhI8lEUgsoDaz9obveI7Q3lLX9XFpotIpZ3K4prnQ==
-X-Received: by 2002:a17:902:bcc2:: with SMTP id o2mr11989826pls.281.1571429014110;
-        Fri, 18 Oct 2019 13:03:34 -0700 (PDT)
-Received: from [172.20.162.151] ([2620:10d:c090:180::d0dd])
-        by smtp.gmail.com with ESMTPSA id w134sm8198376pfd.4.2019.10.18.13.03.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Oct 2019 13:03:33 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jakub Kicinski" <jakub.kicinski@netronome.com>
-Cc:     brouer@redhat.com, ilias.apalodimas@linaro.org,
-        saeedm@mellanox.com, tariqt@mellanox.com, netdev@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH 01/10 net-next] net/mlx5e: RX, Remove RX page-cache
-Date:   Fri, 18 Oct 2019 13:03:32 -0700
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <45D9EEE8-9196-43B4-B2EB-2269CE9EAAF6@gmail.com>
-In-Reply-To: <20191016183018.62121bdf@cakuba.netronome.com>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
- <20191016225028.2100206-2-jonathan.lemon@gmail.com>
- <20191016183018.62121bdf@cakuba.netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7en786k5wxhRfzAyZJlq2as2o3NHruwi2vJIOxR1nWo=;
+        b=KgoVgTHgb/e70NkJU3a++Kq7pJXC1+W1WBPqWhWhbEJyB6ySuhz6xMWXjvrE2tLNjM
+         PBdaFMy5YqVd/nSvSmBsXa9ZKp1b7P2KotN4qa1dFC2Py3BWCZPWkU4afytMjGuUKft1
+         qQPI8fH8B3N3/luYedrI/fgckpqCV8HzML+FO58wOAAWGHvl1LMI4o51KMxvsoF7AfoF
+         XsfOgpZGwoq7s1iqC8rLMVYYS/oeJCM6e/2fCO1SnvSQ4/uPnrsryb/CQCgJQSyO7OE2
+         9xAfUry9jluLIta4MgLg0EwLEBbN6kBcUtnfsteQAQpSUjOCBtw1eYCpQ1Xcs9sbjGJ3
+         +TqQ==
+X-Gm-Message-State: APjAAAU0T6gTW5rxmfH+Dfrory3dxVufiyIblA1BP+TuXCaRdWoILHRG
+        i1yDVXS0ZKohlEvgtw9JMWg05dXgHeMTw5OVbC++Yg==
+X-Google-Smtp-Source: APXvYqzWEeCyrhQ3TmWdgkICaFlJ5v7Hfa+hTmltkq+Bvwj5W5VyK9VBW++qSD4C8hLqQhyZ82lBRbHy8ec0ksZkHxE=
+X-Received: by 2002:aa7:d8c6:: with SMTP id k6mr11685035eds.87.1571429048223;
+ Fri, 18 Oct 2019 13:04:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; markup=markdown
+References: <cover.1570455278.git.martinvarghesenokia@gmail.com>
+ <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
+ <CA+FuTSc=uTot72dxn7VRfCv59GcfWb32ZM5XU1_GHt3Ci3PL_A@mail.gmail.com>
+ <20191009124814.GB17712@martin-VirtualBox> <CA+FuTSdGR2G8Wp0khT9nCD49oi2U_GZiyS5vJTBikPRm+0fGPg@mail.gmail.com>
+ <20191009174216.1b3dd3dc@redhat.com>
+In-Reply-To: <20191009174216.1b3dd3dc@redhat.com>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Fri, 18 Oct 2019 13:03:56 -0700
+Message-ID: <CALx6S342=MKHK35=H+2xMW9odHKMj7A5Ws+kNVGxzTDFnxdsPQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+To:     Jiri Benc <jbenc@redhat.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Martin Varghese <martinvarghesenokia@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>, scott.drennan@nokia.com,
+        martin.varghese@nokia.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16 Oct 2019, at 18:30, Jakub Kicinski wrote:
+On Wed, Oct 9, 2019 at 8:42 AM Jiri Benc <jbenc@redhat.com> wrote:
+>
+> On Wed, 9 Oct 2019 10:58:51 -0400, Willem de Bruijn wrote:
+> > Yes, this needs a call to gro_cells_receive like geneve_udp_encap_recv
+> > and vxlan_rcv, instead of returning a negative value back to
+> > udp_queue_rcv_one_skb. Though that's not a major change.
+>
+> Willem, how would you do that? The whole fou code including its netlink
+> API is built around the assumption that it's L4 encapsulation. I see no
+> way to extend it to do L3 encapsulation without major hacks - in fact,
+> you'll add all that Martin's patch adds, including a new netlink API,
+> but just mix that into fou.c.
+>
+More specifically fou allows encapsulation of anything that has an IP
+protocol number. That includes an L3 protocols that have been assigned
+a number (e.g. MPLS, GRE, IPv6, IPv4, EtherIP). So the only need for
+an alternate method to do L3 encapsulation would be for those
+protocols that don't have an IP protocol number assignment.
+Presumably, those just have an EtherType. In that case, it seems
+simple enough to just extend fou to processed an encapsulated
+EtherType. This should be little more than modifying the "struct fou"
+to hold 16 bit EtherType (union with protocol), adding
+FOU_ENCAP_ETHER, corresponding attribute, and then populate
+appropriate receive functions for the socket.
 
-> On Wed, 16 Oct 2019 15:50:19 -0700, Jonathan Lemon wrote:
->> From: Tariq Toukan <tariqt@mellanox.com>
->>
->> Obsolete the RX page-cache layer, pages are now recycled
->> in page_pool.
->>
->> This patch introduce a temporary degradation as recycling
->> does not keep the pages DMA-mapped. That is fixed in a
->> downstream patch.
->>
->> Issue: 1487631
->
-> Please drop these Issue identifiers.
->
->> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
->>
->
-> And no empty lines between tags.
->
->> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Tom
 
-Will fix.
--- 
-Jonathan
+> > Transmit is easier. The example I shared already encapsulates packets
+> > with MPLs and sends them through a tunnel device. Admittedly using
+> > mpls routing. But the ip tunneling infrastructure supports adding
+> > arbitrary inner headers using ip_tunnel_encap_ops.build_header.
+> > net/ipv4/fou.c could be extended with a mpls_build_header alongside
+> > fou_build_header and gue_build_header?
+>
+> The nice thing about the bareudp tunnel is that it's generic. It's just
+> (outer) UDP header followed by (inner) L3 header. You can use it for
+> NSH over UDP. Or for multitude of other purposes.
+>
+> What you're proposing is MPLS only. And it would require similar amount
+> of code as the bareudp generic solution. It also doesn't fit fou
+> design: MPLS is not an IP protocol. Trying to add it there is like
+> forcing a round peg into a square hole. Just look at the code.
+> Start with parse_nl_config.
+>
+> > Extending this existing code has more benefits than code reuse (and
+> > thereby fewer bugs), it also allows reusing the existing GRO logic,
+> > say.
+>
+> In this case, it's the opposite: trying to retrofit L3 encapsulation
+> into fou is going to introduce bugs.
+>
+> Moreover, given the expected usage of bareudp, the nice benefit is it's
+> lwtunnel only. No need to carry all the baggage of standalone
+> configuration fou has.
+>
+> > At a high level, I think we should try hard to avoid duplicating
+> > tunnel code for every combination of inner and outer protocol.
+>
+> Yet you're proposing to do exactly that with special casing MPLS in fou.
+>
+> I'd say bareudp is as generic as you could get it. It allows any L3
+> protocol inside UDP. You can hardly make it more generic than that.
+> With ETH_P_TEB, it could also encapsulate Ethernet (that is, L2).
+>
+> > Geneve
+> > and vxlan on the one hand and generic ip tunnel and FOU on the other
+> > implement most of these features. Indeed, already implements the
+> > IPxIPx, just not MPLS. It will be less code to add MPLS support based
+> > on existing infrastructure.
+>
+> You're mixing apples with oranges. IP tunnels and FOU encapsulate L4
+> payload. VXLAN and Geneve encapsulate L2 payload (or L3 payload for
+> VXLAN-GPE).
+>
+> I agree that VXLAN, Geneve and the proposed bareudp module have
+> duplicated code. The solution is to factoring it out to a common
+> location.
+>
+> > I think it will be preferable to work the other way around and extend
+> > existing ip tunnel infra to add MPLS.
+>
+> You see, that's the problem: this is not IP tunneling.
+>
+>  Jiri
