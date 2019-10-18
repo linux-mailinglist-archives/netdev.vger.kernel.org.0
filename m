@@ -2,455 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E627ADC11C
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 11:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB8DEDC161
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 11:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2632892AbfJRJdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 05:33:52 -0400
-Received: from mga09.intel.com ([134.134.136.24]:30481 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728507AbfJRJdv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 05:33:51 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Oct 2019 02:33:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,311,1566889200"; 
-   d="scan'208";a="348030775"
-Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.55.154])
-  by orsmga004.jf.intel.com with ESMTP; 18 Oct 2019 02:33:46 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, linux-doc@vger.kernel.org
-Cc:     bpf@vger.kernel.org
-Subject: [PATCH bpf v2] xsk: improve documentation for AF_XDP
-Date:   Fri, 18 Oct 2019 11:33:40 +0200
-Message-Id: <1571391220-22835-1-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
+        id S2442397AbfJRJkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 05:40:06 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:42039 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2442386AbfJRJjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 05:39:46 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iLOjQ-0006Z4-Ty; Fri, 18 Oct 2019 11:39:36 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iLOjN-0007gV-De; Fri, 18 Oct 2019 11:39:33 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>, Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: [PATCH v2 0/5] add dsa switch support for ar9331
+Date:   Fri, 18 Oct 2019 11:39:24 +0200
+Message-Id: <20191018093929.19299-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added sections on all the bind flags, libbpf, all the setsockopts and
-all the getsockopts. Also updated the document to reflect the latest
-features and to correct some spelling errors.
+changes v2:
+- move Atheros AR9331 TAG format to separate patch
+- use netdev_warn_once in the tag driver to reduce potential message spam
+- typo fixes
+- reorder tag driver alphabetically 
+- configure switch to maximal frame size
+- use mdiobus_read/write
+- fail if mdio sub node is not found
+- add comment for post reset state
+- remove deprecated comment about device id
+- remove phy-handle option for node with fixed-link
+- ag71xx: set 1G support only for GMII mode
 
-v1 -> v2:
-* Updated XDP program with latest BTF map format
-* Added one more FAQ entry
-* Some minor edits and corrections
+This patch series provides dsa switch support for Atheros ar9331 WiSoC.
+As side effect ag71xx needed to be ported to phylink to make the switch
+driver (as well phylink based) work properly.
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- Documentation/networking/af_xdp.rst | 272 ++++++++++++++++++++++++++++++++----
- 1 file changed, 244 insertions(+), 28 deletions(-)
+Oleksij Rempel (5):
+  net: ag71xx: port to phylink
+  dt-bindings: net: dsa: qca,ar9331 switch documentation
+  MIPS: ath79: ar9331: add ar9331-switch node
+  net: dsa: add support for Atheros AR9331 TAG format
+  net: dsa: add support for Atheros AR9331 build-in switch
 
-diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
-index 83f7ae5..78939f9 100644
---- a/Documentation/networking/af_xdp.rst
-+++ b/Documentation/networking/af_xdp.rst
-@@ -40,13 +40,13 @@ allocates memory for this UMEM using whatever means it feels is most
- appropriate (malloc, mmap, huge pages, etc). This memory area is then
- registered with the kernel using the new setsockopt XDP_UMEM_REG. The
- UMEM also has two rings: the FILL ring and the COMPLETION ring. The
--fill ring is used by the application to send down addr for the kernel
-+FILL ring is used by the application to send down addr for the kernel
- to fill in with RX packet data. References to these frames will then
- appear in the RX ring once each packet has been received. The
--completion ring, on the other hand, contains frame addr that the
-+COMPLETION ring, on the other hand, contains frame addr that the
- kernel has transmitted completely and can now be used again by user
- space, for either TX or RX. Thus, the frame addrs appearing in the
--completion ring are addrs that were previously transmitted using the
-+COMPLETION ring are addrs that were previously transmitted using the
- TX ring. In summary, the RX and FILL rings are used for the RX path
- and the TX and COMPLETION rings are used for the TX path.
- 
-@@ -91,11 +91,16 @@ Concepts
- ========
- 
- In order to use an AF_XDP socket, a number of associated objects need
--to be setup.
-+to be setup. These objects and their options are explained in the
-+following sections.
- 
--Jonathan Corbet has also written an excellent article on LWN,
--"Accelerating networking with AF_XDP". It can be found at
--https://lwn.net/Articles/750845/.
-+For an overview on how AF_XDP works, you can also take a look at the
-+Linux Plumbers paper from 2018 on the subject:
-+http://vger.kernel.org/lpc_net2018_talks/lpc18_paper_af_xdp_perf-v2.pdf. Do
-+NOT consult the paper from 2017 on "AF_PACKET v4", the first attempt
-+at AF_XDP. Nearly everything changed since then. Jonathan Corbet has
-+also written an excellent article on LWN, "Accelerating networking
-+with AF_XDP". It can be found at https://lwn.net/Articles/750845/.
- 
- UMEM
- ----
-@@ -113,22 +118,22 @@ the next socket B can do this by setting the XDP_SHARED_UMEM flag in
- struct sockaddr_xdp member sxdp_flags, and passing the file descriptor
- of A to struct sockaddr_xdp member sxdp_shared_umem_fd.
- 
--The UMEM has two single-producer/single-consumer rings, that are used
-+The UMEM has two single-producer/single-consumer rings that are used
- to transfer ownership of UMEM frames between the kernel and the
- user-space application.
- 
- Rings
- -----
- 
--There are a four different kind of rings: Fill, Completion, RX and
-+There are a four different kind of rings: FILL, COMPLETION, RX and
- TX. All rings are single-producer/single-consumer, so the user-space
- application need explicit synchronization of multiple
- processes/threads are reading/writing to them.
- 
--The UMEM uses two rings: Fill and Completion. Each socket associated
-+The UMEM uses two rings: FILL and COMPLETION. Each socket associated
- with the UMEM must have an RX queue, TX queue or both. Say, that there
- is a setup with four sockets (all doing TX and RX). Then there will be
--one Fill ring, one Completion ring, four TX rings and four RX rings.
-+one FILL ring, one COMPLETION ring, four TX rings and four RX rings.
- 
- The rings are head(producer)/tail(consumer) based rings. A producer
- writes the data ring at the index pointed out by struct xdp_ring
-@@ -146,7 +151,7 @@ The size of the rings need to be of size power of two.
- UMEM Fill Ring
- ~~~~~~~~~~~~~~
- 
--The Fill ring is used to transfer ownership of UMEM frames from
-+The FILL ring is used to transfer ownership of UMEM frames from
- user-space to kernel-space. The UMEM addrs are passed in the ring. As
- an example, if the UMEM is 64k and each chunk is 4k, then the UMEM has
- 16 chunks and can pass addrs between 0 and 64k.
-@@ -164,8 +169,8 @@ chunks mode, then the incoming addr will be left untouched.
- UMEM Completion Ring
- ~~~~~~~~~~~~~~~~~~~~
- 
--The Completion Ring is used transfer ownership of UMEM frames from
--kernel-space to user-space. Just like the Fill ring, UMEM indicies are
-+The COMPLETION Ring is used transfer ownership of UMEM frames from
-+kernel-space to user-space. Just like the FILL ring, UMEM indices are
- used.
- 
- Frames passed from the kernel to user-space are frames that has been
-@@ -181,7 +186,7 @@ The RX ring is the receiving side of a socket. Each entry in the ring
- is a struct xdp_desc descriptor. The descriptor contains UMEM offset
- (addr) and the length of the data (len).
- 
--If no frames have been passed to kernel via the Fill ring, no
-+If no frames have been passed to kernel via the FILL ring, no
- descriptors will (or can) appear on the RX ring.
- 
- The user application consumes struct xdp_desc descriptors from this
-@@ -199,8 +204,24 @@ be relaxed in the future.
- The user application produces struct xdp_desc descriptors to this
- ring.
- 
-+Libbpf
-+======
-+
-+Libbpf is a helper library for eBPF and XDP that makes using these
-+technologies a lot simpler. It also contains specific helper functions
-+in tools/lib/bpf/xsk.h for facilitating the use of AF_XDP. It
-+contains two types of functions: those that can be used to make the
-+setup of AF_XDP socket easier and ones that can be used in the data
-+plane to access the rings safely and quickly. To see an example on how
-+to use this API, please take a look at the sample application in
-+samples/bpf/xdpsock_usr.c which uses libbpf for both setup and data
-+plane operations.
-+
-+We recommend that you use this library unless you have become a power
-+user. It will make your program a lot simpler.
-+
- XSKMAP / BPF_MAP_TYPE_XSKMAP
------------------------------
-+============================
- 
- On XDP side there is a BPF map type BPF_MAP_TYPE_XSKMAP (XSKMAP) that
- is used in conjunction with bpf_redirect_map() to pass the ingress
-@@ -216,21 +237,197 @@ queue 17. Only the XDP program executing for eth0 and queue 17 will
- successfully pass data to the socket. Please refer to the sample
- application (samples/bpf/) in for an example.
- 
-+Configuration Flags and Socket Options
-+======================================
-+
-+These are the various configuration flags that can be used to control
-+and monitor the behavior of AF_XDP sockets.
-+
-+XDP_COPY and XDP_ZERO_COPY bind flags
-+-------------------------------------
-+
-+When you bind to a socket, the kernel will first try to use zero-copy
-+copy. If zero-copy is not supported, it will fall back on using copy
-+mode, i.e. copying all packets out to user space. But if you would
-+like to force a certain mode, you can use the following flags. If you
-+pass the XDP_COPY flag to the bind call, the kernel will force the
-+socket into copy mode. If it cannot use copy mode, the bind call will
-+fail with an error. Conversely, the XDP_ZERO_COPY flag will force the
-+socket into zero-copy mode or fail.
-+
-+XDP_SHARED_UMEM bind flag
-+-------------------------
-+
-+This flag enables you to bind multiple sockets to the same UMEM, but
-+only if they share the same queue id. In this mode, each socket has
-+their own RX and TX rings, but the UMEM (tied to the fist socket
-+created) only has a single FILL ring and a single COMPLETION
-+ring. To use this mode, create the first socket and bind it in the normal
-+way. Create a second socket and create an RX and a TX ring, or at
-+least one of them, but no FILL or COMPLETION rings as the ones from
-+the first socket will be used. In the bind call, set he
-+XDP_SHARED_UMEM option and provide the initial socket's fd in the
-+sxdp_shared_umem_fd field. You can attach an arbitrary number of extra
-+sockets this way.
-+
-+What socket will then a packet arrive on? This is decided by the XDP
-+program. Put all the sockets in the XSK_MAP and just indicate which
-+index in the array you would like to send each packet to. A simple
-+round-robin example of distributing packets is shown below:
-+
-+.. code-block:: c
-+
-+   #include <linux/bpf.h>
-+   #include "bpf_helpers.h"
-+
-+   #define MAX_SOCKS 16
-+
-+   struct {
-+        __uint(type, BPF_MAP_TYPE_XSKMAP);
-+        __uint(max_entries, MAX_SOCKS);
-+        __uint(key_size, sizeof(int));
-+        __uint(value_size, sizeof(int));
-+   } xsks_map SEC(".maps");
-+
-+   struct {
-+        __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+        __uint(max_entries, 1);
-+        __type(key, int);
-+        __type(value, unsigned int);
-+   } rr_map SEC(".maps");
-+
-+   SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-+   {
-+	int key = 0, idx;
-+	unsigned int *rr;
-+
-+	rr = bpf_map_lookup_elem(&rr_map, &key);
-+	if (!rr)
-+	   return XDP_ABORTED;
-+
-+	*rr = (*rr + 1) & (MAX_SOCKS - 1);
-+	idx = *rr;
-+
-+	return bpf_redirect_map(&xsks_map, idx, 0);
-+   }
-+
-+Note, that since there is only a single set of FILL and COMPLETION
-+rings, and they are single producer, single consumer rings, you need
-+to make sure that multiple processes or threads do not use these rings
-+concurrently. There are no synchronization primitives in the
-+libbpf code that protects multiple users at this point in time.
-+
-+XDP_USE_NEED_WAKEUP bind flag
-+-----------------------------
-+
-+This option adds support for a new flag called need_wakeup that is
-+present in the FILL ring and the TX ring, the rings for which user
-+space is a producer. When this option is set in the bind call, the
-+need_wakeup flag will be set if the kernel needs to be explicitly
-+woken up by a syscall to continue processing packets. If the flag is
-+zero, no syscall is needed.
-+
-+If the flag is set on the FILL ring, the application needs to call
-+poll() to be able to continue to receive packets on the RX ring. This
-+can happen, for example, when the kernel has detected that there are no
-+more buffers on the FILL ring and no buffers left on the RX HW ring of
-+the NIC. In this case, interrupts are turned off as the NIC cannot
-+receive any packets (as there are no buffers to put them in), and the
-+need_wakeup flag is set so that user space can put buffers on the
-+FILL ring and then call poll() so that the kernel driver can put these
-+buffers on the HW ring and start to receive packets.
-+
-+If the flag is set for the TX ring, it means that the application
-+needs to explicitly notify the kernel to send any packets put on the
-+TX ring. This can be accomplished either by a poll() call, as in the
-+RX path, or by calling sendto().
-+
-+An example of how to use this flag can be found in
-+samples/bpf/xdpsock_user.c. An example with the use of libbpf helpers
-+would look like this for the TX path:
-+
-+.. code-block:: c
-+
-+   if (xsk_ring_prod__needs_wakeup(&my_tx_ring))
-+      sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
-+
-+I.e., only use the syscall if the flag is set.
-+
-+We recommend that you always enable this mode as it usually leads to
-+better performance especially if you run the application and the
-+driver on the same core, but also if you use different cores for the
-+application and the kernel driver, as it reduces the number of
-+syscalls needed for the TX path.
-+
-+XDP_{RX|TX|UMEM_FILL|UMEM_COMPLETION}_RING setsockopts
-+------------------------------------------------------
-+
-+These setsockopts sets the number of descriptors that the RX, TX,
-+FILL, and COMPLETION rings respectively should have. It is mandatory
-+to set the size of at least one of the RX and TX rings. If you set
-+both, you will be able to both receive and send traffic from your
-+application, but if you only want to do one of them, you can save
-+resources by only setting up one of them. Both the FILL ring and the
-+COMPLETION ring are mandatory if you have a UMEM tied to your socket,
-+which is the normal case. But if the XDP_SHARED_UMEM flag is used, any
-+socket after the first one does not have a UMEM and should in that
-+case not have any FILL or COMPLETION rings created.
-+
-+XDP_UMEM_REG setsockopt
-+-----------------------
-+
-+This setsockopt registers a UMEM to a socket. This is the area that
-+contain all the buffers that packet can recide in. The call takes a
-+pointer to the beginning of this area and the size of it. Moreover, it
-+also has parameter called chunk_size that is the size that the UMEM is
-+divided into. It can only be 2K or 4K at the moment. If you have an
-+UMEM area that is 128K and a chunk size of 2K, this means that you
-+will be able to hold a maximum of 128K / 2K = 64 packets in your UMEM
-+area and that your largest packet size can be 2K.
-+
-+There is also an option to set the headroom of each single buffer in
-+the UMEM. If you set this to N bytes, it means that the packet will
-+start N bytes into the buffer leaving the first N bytes for the
-+application to use. The final option is the flags field, but it will
-+be dealt with in separate sections for each UMEM flag.
-+
-+XDP_STATISTICS getsockopt
-+-------------------------
-+
-+Gets drop statistics of a socket that can be useful for debug
-+purposes. The supported statistics are shown below:
-+
-+.. code-block:: c
-+
-+   struct xdp_statistics {
-+   	  __u64 rx_dropped; /* Dropped for reasons other than invalid desc */
-+	  __u64 rx_invalid_descs; /* Dropped due to invalid descriptor */
-+	  __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
-+   };
-+
-+XDP_OPTIONS getsockopt
-+----------------------
-+
-+Gets options from an XDP socket. The only one supported so far is
-+XDP_OPTIONS_ZEROCOPY which tells you if zero-copy is on or not.
-+
- Usage
- =====
- 
--In order to use AF_XDP sockets there are two parts needed. The
-+In order to use AF_XDP sockets two parts are needed. The
- user-space application and the XDP program. For a complete setup and
- usage example, please refer to the sample application. The user-space
- side is xdpsock_user.c and the XDP side is part of libbpf.
- 
--The XDP code sample included in tools/lib/bpf/xsk.c is the following::
-+The XDP code sample included in tools/lib/bpf/xsk.c is the following:
-+
-+.. code-block:: c
- 
-    SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-    {
-        int index = ctx->rx_queue_index;
- 
--       // A set entry here means that the correspnding queue_id
-+       // A set entry here means that the corresponding queue_id
-        // has an active AF_XDP socket bound to it.
-        if (bpf_map_lookup_elem(&xsks_map, &index))
-            return bpf_redirect_map(&xsks_map, index, 0);
-@@ -238,7 +435,10 @@ The XDP code sample included in tools/lib/bpf/xsk.c is the following::
-        return XDP_PASS;
-    }
- 
--Naive ring dequeue and enqueue could look like this::
-+A simple but not so performance ring dequeue and enqueue could look
-+like this:
-+
-+.. code-block:: c
- 
-     // struct xdp_rxtx_ring {
-     // 	__u32 *producer;
-@@ -287,17 +487,16 @@ Naive ring dequeue and enqueue could look like this::
-         return 0;
-     }
- 
--
--For a more optimized version, please refer to the sample application.
-+But please use the libbpf functions as they are optimized and ready to
-+use. Will make your life easier.
- 
- Sample application
- ==================
- 
- There is a xdpsock benchmarking/test application included that
--demonstrates how to use AF_XDP sockets with both private and shared
--UMEMs. Say that you would like your UDP traffic from port 4242 to end
--up in queue 16, that we will enable AF_XDP on. Here, we use ethtool
--for this::
-+demonstrates how to use AF_XDP sockets with private UMEMs. Say that
-+you would like your UDP traffic from port 4242 to end up in queue 16,
-+that we will enable AF_XDP on. Here, we use ethtool for this::
- 
-       ethtool -N p3p2 rx-flow-hash udp4 fn
-       ethtool -N p3p2 flow-type udp4 src-port 4242 dst-port 4242 \
-@@ -311,13 +510,18 @@ using::
- For XDP_SKB mode, use the switch "-S" instead of "-N" and all options
- can be displayed with "-h", as usual.
- 
-+This sample application uses libbpf to make the setup and usage of
-+AF_XDP simpler. If you want to know how the raw uapi of AF_XDP is
-+really used to make something more advanced, take a look at the libbpf
-+code in tools/lib/bpf/xsk.[ch].
-+
- FAQ
- =======
- 
- Q: I am not seeing any traffic on the socket. What am I doing wrong?
- 
- A: When a netdev of a physical NIC is initialized, Linux usually
--   allocates one Rx and Tx queue pair per core. So on a 8 core system,
-+   allocates one RX and TX queue pair per core. So on a 8 core system,
-    queue ids 0 to 7 will be allocated, one per core. In the AF_XDP
-    bind call or the xsk_socket__create libbpf function call, you
-    specify a specific queue id to bind to and it is only the traffic
-@@ -343,9 +547,21 @@ A: When a netdev of a physical NIC is initialized, Linux usually
-      sudo ethtool -N <interface> flow-type udp4 src-port 4242 dst-port \
-      4242 action 2
- 
--   A number of other ways are possible all up to the capabilitites of
-+   A number of other ways are possible all up to the capabilities of
-    the NIC you have.
- 
-+Q: Can I use the XSKMAP to implement a switch betwen different umems
-+   in copy mode?
-+
-+A: The short answer is no, that is not supported at the moment. The
-+   XSKMAP can only be used to switch traffic coming in on queue id X
-+   to sockets bound to the same queue id X. The XSKMAP can contain
-+   sockets bound to different queue ids, for example X and Y, but only
-+   traffic goming in from queue id Y can be directed to sockets bound
-+   to the same queue id Y. In zero-copy mode, you should use the
-+   switch, or other distribution mechanism, in your NIC to direct
-+   traffic to the correct queue id and socket.
-+
- Credits
- =======
- 
+ .../devicetree/bindings/net/dsa/ar9331.txt    | 148 ++++
+ arch/mips/boot/dts/qca/ar9331.dtsi            | 127 ++-
+ arch/mips/boot/dts/qca/ar9331_dpt_module.dts  |  13 +
+ drivers/net/dsa/Kconfig                       |   2 +
+ drivers/net/dsa/Makefile                      |   1 +
+ drivers/net/dsa/qca/Kconfig                   |  11 +
+ drivers/net/dsa/qca/Makefile                  |   2 +
+ drivers/net/dsa/qca/ar9331.c                  | 823 ++++++++++++++++++
+ drivers/net/ethernet/atheros/Kconfig          |   2 +-
+ drivers/net/ethernet/atheros/ag71xx.c         | 146 ++--
+ include/net/dsa.h                             |   2 +
+ net/dsa/Kconfig                               |   6 +
+ net/dsa/Makefile                              |   1 +
+ net/dsa/tag_ar9331.c                          |  97 +++
+ 14 files changed, 1319 insertions(+), 62 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/ar9331.txt
+ create mode 100644 drivers/net/dsa/qca/Kconfig
+ create mode 100644 drivers/net/dsa/qca/Makefile
+ create mode 100644 drivers/net/dsa/qca/ar9331.c
+ create mode 100644 net/dsa/tag_ar9331.c
+
 -- 
-2.7.4
+2.23.0
 
