@@ -2,83 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A7FDCAF9
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:26:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 511E4DCAFB
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437341AbfJRQZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 12:25:55 -0400
-Received: from mail-pf1-f176.google.com ([209.85.210.176]:34677 "EHLO
-        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394844AbfJRQZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:25:55 -0400
-Received: by mail-pf1-f176.google.com with SMTP id b128so4219970pfa.1
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 09:25:54 -0700 (PDT)
+        id S2437362AbfJRQ2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 12:28:41 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38530 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732948AbfJRQ2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:28:41 -0400
+Received: by mail-qt1-f194.google.com with SMTP id j31so9926087qta.5;
+        Fri, 18 Oct 2019 09:28:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=uh8k7T5KrJHpb+AxCg5qlEBOLfHO2e//8EVW3PbgD14=;
-        b=dV9i9HT0bHmGEA5MkKJ68YiCpsKREeuHRScRWaC6Th1O58v5Lv4e/NPOqfD+lLdzec
-         L0had2hw9j7gt7jaPDjAdWD/JqfCwFJlxBX6QJ7j9jq/9ehGYiCEK4NZV6Tf2nyvZ+qe
-         KXlFAxW4z88/bd9WsmccoHAlgoN6iA9rVNj/1Si1b/pIdXS76iwUmC67g9mjNKDsk1vw
-         EAYHaxAqAPi9mzGusY6aPHfuBjgrDih2rrG5DhdopAbgu2kreLJ56aFd1knjGPMtIJbY
-         qBS9czI/Uxvk7Vj99fJLYCkhwncAXEtEXTZaZob8zc8iRhgahPWWXvDgNlNuJuXIt/un
-         igRg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tN9oYHiUwoH1r7uqZMD+ykxqZWmlQKOgWRW4Qq2HjJY=;
+        b=oeZcOscZtpWxgbAnVrlRee2Jh9eYjtLOUOTbI/yTDxVm+ysmgEuDSmn+3XP40OQ4zW
+         NxLZOD5Pzs4gDDDKRQp52Oi9RuSPGkkSHK5MR+mgGQla7koyzJ5LgbsziogM8LDwKRkF
+         DH77c0o3wUNC63tu9mKQcIrLLSrXUGqMX1h6A3pTHRL0032FzWrcA3JzFgzLEqzoecgB
+         fYAg2kZeYPQdPH37H4LHIdxQOtnw7EhZPerfigUzi6KszDXFWY6gG9H44ssnAEDc5JtD
+         L06aWj7VWuhhm/JBJC7+DW30w1TVJTM4nxMv9oW62GGINJg78DK05WEg6WMhF9cqMbku
+         4Hog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=uh8k7T5KrJHpb+AxCg5qlEBOLfHO2e//8EVW3PbgD14=;
-        b=m9Y37tY3TGBmUML/LzKkEgzEe6AaiQYuaQH20tDjvrkJyMdPJ9cg46424C0L+Eje/s
-         GqRytvTyfB7V5RHTVu7eHAe22C2Bvf2Rtnk4BT1x3LjmvjHcBcHrFE3ffaQpO4u2rsUj
-         qNZEt+fjRiE4kLRLe0xw+jYVuu1SMbWpXBhfPr04q4AXlIOSA7Hzop1S0Am9n+aGGtSG
-         0ByGkmlmIVhDWw7zANK7a9gVq6ZkMs0i9HQcO0fLLRzchagqwFmxr6ovLhbxMtJ4aXiP
-         SqYv01boPWLuj8Qve6sASyvSZo16id273zJENTmEnTPqBEvHBVp3W1ybtYGRt86fL+Xf
-         V9wQ==
-X-Gm-Message-State: APjAAAUcb1SfpW4//X4GmcTfFcdEY1sEyGyOuJt69Zb0qDyzT/pumkJs
-        4uBpB/0isznH/LEVrYsM0dxrow==
-X-Google-Smtp-Source: APXvYqwzsvcM6QGly1cL1yQF+11PJ2/cQ6kuo6gRBG5BNAX183BrPPaRI+d+6oxjGrBlZQefnUk7OQ==
-X-Received: by 2002:a17:90a:a407:: with SMTP id y7mr12130184pjp.124.1571415954154;
-        Fri, 18 Oct 2019 09:25:54 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id d2sm5965699pgq.74.2019.10.18.09.25.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 09:25:54 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 09:25:50 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next] devlink: add format requirement for devlink
- param names
-Message-ID: <20191018092550.6d599f0d@cakuba.netronome.com>
-In-Reply-To: <20191018160726.18901-1-jiri@resnulli.us>
-References: <20191018160726.18901-1-jiri@resnulli.us>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tN9oYHiUwoH1r7uqZMD+ykxqZWmlQKOgWRW4Qq2HjJY=;
+        b=cKFk+12YGpCadouKKAiUqyExddPy/FUXj8IVAFzvvaSyJ3tEf32X8hdgtquz/PxONv
+         nvaVxr/JYR016dVU51hI6xVEP+0uV6zdTVpZMBDEMqoWJC9FgN5nEcWjDQ8inUmqcq23
+         tKmnb015lFjoq2kcJWjKea53HaZO6TmhgVBCsCoJfTmdna5lHiAOcpCUDqRXf2j2OqsO
+         1HMBEGHevC1me7dCR/hjo5/dOIBleh+XzAgwdREhgt4T+HEJO3bILLpNDtjVSVc4r7gw
+         vSwG1P4cJh/ooPIeGQNZ3Fea6O9D9ZzNMPpRp5rZwItyLWlB07uSH7a5IHZjmSv5KVLp
+         gVdg==
+X-Gm-Message-State: APjAAAUVCaeADGajzb+D4BEM5zZFx/tT/k2ivmpXnpB0KFBqqcfOJFIQ
+        imPpgC2TJo1CF3VZLWUg8tIwQiCVVA2Mmi/OKfFI1Pii
+X-Google-Smtp-Source: APXvYqzJIBq0VJxAq6m1hqAL8EDuc3igKbSADUc4R5M5t6LhuntyyzpTkN8grkBb8J50b3I9Sfjn/1l3sYizNhICstQ=
+X-Received: by 2002:aed:35e7:: with SMTP id d36mr3449210qte.59.1571416119718;
+ Fri, 18 Oct 2019 09:28:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191016132802.2760149-1-toke@redhat.com> <CAEf4BzbshfC2VXXbnWnjCA=Mcz8OSO=ACNSRNrNr2mHOm9uCmw@mail.gmail.com>
+ <87mudye45s.fsf@toke.dk>
+In-Reply-To: <87mudye45s.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 18 Oct 2019 09:28:28 -0700
+Message-ID: <CAEf4BzZxszYrXCEpDqe6Gi9FggUOnDiQjP9BQTq=EcszwSghKA@mail.gmail.com>
+Subject: Re: [PATCH bpf] xdp: Handle device unregister for devmap_hash map type
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Oct 2019 18:07:26 +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Currently, the name format is not required by the code, however it is
-> required during patch review. All params added until now are in-lined
-> with the following format:
-> 1) lowercase characters, digits and underscored are allowed
-> 2) underscore is neither at the beginning nor at the end and
->    there is no more than one in a row.
-> 
-> Add checker to the code to require this format from drivers and warn if
-> they don't follow.
-> 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+On Fri, Oct 18, 2019 at 3:31 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > On Wed, Oct 16, 2019 at 9:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> It seems I forgot to add handling of devmap_hash type maps to the devi=
+ce
+> >> unregister hook for devmaps. This omission causes devices to not be
+> >> properly released, which causes hangs.
+> >>
+> >> Fix this by adding the missing handler.
+> >>
+> >> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up dev=
+ices by hashed index")
+> >> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> ---
+> >>  kernel/bpf/devmap.c | 34 ++++++++++++++++++++++++++++++++++
+> >>  1 file changed, 34 insertions(+)
+> >>
+> >
+> > [...]
+> >
+> >> +
+> >> +               while (dev) {
+> >> +                       odev =3D (netdev =3D=3D dev->dev) ? dev : NULL=
+;
+> >> +                       dev =3D hlist_entry_safe(rcu_dereference_raw(h=
+list_next_rcu(&dev->index_hlist)),
+> >
+> > Please run scripts/checkpatch.pl, this looks like a rather long line.
+>
+> That was a deliberate departure from the usual line length, actually. I
+> don't think it helps readability to split that into three lines just to
+> adhere to a strict line length requirement...
 
-Looks good, I could nit pick that length of 0 could also be disallowed
-since we're checking validity, but why would I :)
+Wouldn't local variable make it even more readable?
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>
+> -Toke
+>
