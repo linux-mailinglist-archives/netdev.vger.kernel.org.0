@@ -2,105 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 511E4DCAFB
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:28:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24657DCB8C
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437362AbfJRQ2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 12:28:41 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:38530 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732948AbfJRQ2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:28:41 -0400
-Received: by mail-qt1-f194.google.com with SMTP id j31so9926087qta.5;
-        Fri, 18 Oct 2019 09:28:40 -0700 (PDT)
+        id S2443123AbfJRQdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 12:33:32 -0400
+Received: from mail-pf1-f170.google.com ([209.85.210.170]:33436 "EHLO
+        mail-pf1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2443114AbfJRQda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:33:30 -0400
+Received: by mail-pf1-f170.google.com with SMTP id q10so4232373pfl.0
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 09:33:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=tN9oYHiUwoH1r7uqZMD+ykxqZWmlQKOgWRW4Qq2HjJY=;
-        b=oeZcOscZtpWxgbAnVrlRee2Jh9eYjtLOUOTbI/yTDxVm+ysmgEuDSmn+3XP40OQ4zW
-         NxLZOD5Pzs4gDDDKRQp52Oi9RuSPGkkSHK5MR+mgGQla7koyzJ5LgbsziogM8LDwKRkF
-         DH77c0o3wUNC63tu9mKQcIrLLSrXUGqMX1h6A3pTHRL0032FzWrcA3JzFgzLEqzoecgB
-         fYAg2kZeYPQdPH37H4LHIdxQOtnw7EhZPerfigUzi6KszDXFWY6gG9H44ssnAEDc5JtD
-         L06aWj7VWuhhm/JBJC7+DW30w1TVJTM4nxMv9oW62GGINJg78DK05WEg6WMhF9cqMbku
-         4Hog==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=q1DXhSX1xBL05ZotxsGzILehuIkjDUox9zR3xvM8NFo=;
+        b=S463kMBA5VV4kAbHtK7jA6Cn+dljJuKjJ5y5f39eCPA9sm7J5AjLVDXLgudtE32F+1
+         9Z9nahWepkq5Ai/OD99M/uttAlIOhYu3HxN6S7CCGvLFhmqb6fHOTysDE6l6EUSR4ELM
+         DNMMe6cdeG36nJzBgG3N+9Vs5bxVxoA3Q7gz1VDjwVFNJyy7ztEI8+e/rU1ZTergWf86
+         /ufiOm+EyArV7+GZ0Mw6bdFc7UjsbweVnEfjWVB1/7dBh3XXuTjvCUGWo1mekyADll55
+         DOP9n8f0nkhEN6/SY4nZ/DnTyyHuM79U5hcQgUYye/lQgo4TtnUesoH3CRr62shbk7WC
+         VfKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=tN9oYHiUwoH1r7uqZMD+ykxqZWmlQKOgWRW4Qq2HjJY=;
-        b=cKFk+12YGpCadouKKAiUqyExddPy/FUXj8IVAFzvvaSyJ3tEf32X8hdgtquz/PxONv
-         nvaVxr/JYR016dVU51hI6xVEP+0uV6zdTVpZMBDEMqoWJC9FgN5nEcWjDQ8inUmqcq23
-         tKmnb015lFjoq2kcJWjKea53HaZO6TmhgVBCsCoJfTmdna5lHiAOcpCUDqRXf2j2OqsO
-         1HMBEGHevC1me7dCR/hjo5/dOIBleh+XzAgwdREhgt4T+HEJO3bILLpNDtjVSVc4r7gw
-         vSwG1P4cJh/ooPIeGQNZ3Fea6O9D9ZzNMPpRp5rZwItyLWlB07uSH7a5IHZjmSv5KVLp
-         gVdg==
-X-Gm-Message-State: APjAAAUVCaeADGajzb+D4BEM5zZFx/tT/k2ivmpXnpB0KFBqqcfOJFIQ
-        imPpgC2TJo1CF3VZLWUg8tIwQiCVVA2Mmi/OKfFI1Pii
-X-Google-Smtp-Source: APXvYqzJIBq0VJxAq6m1hqAL8EDuc3igKbSADUc4R5M5t6LhuntyyzpTkN8grkBb8J50b3I9Sfjn/1l3sYizNhICstQ=
-X-Received: by 2002:aed:35e7:: with SMTP id d36mr3449210qte.59.1571416119718;
- Fri, 18 Oct 2019 09:28:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=q1DXhSX1xBL05ZotxsGzILehuIkjDUox9zR3xvM8NFo=;
+        b=AJ2HiYe8GdsCsytTkd3dNXxiCXwv2thi/xFnENP6y3EWwDCrpZXhyHOQj6THYq/G70
+         4MOKUzlwDzviJWkPzQoRsTgO7ckPEasq94s0soShc9CzwkBdrh7rfx6ftSdJBAEIxwzi
+         kKNSrexF237ZXBOOqfgRsmFSAorgcw6zlqgsF3ouoKeZrGA+CrW6F3F7YOK9XWRa3eCL
+         P62TTwIJvt0o5IIFG9uRE0UDXPv0ysoFath9SpBpNg6OEjSxb2LoZgX03rJqqSwcm+FQ
+         x/TKVUX66DSqaAfnk+kzg8xINhi8zXDWJZ4lCxgnDfoKKwEBN+4DumOq2MiBOqm8afiU
+         55sw==
+X-Gm-Message-State: APjAAAU7pzx9mkqIKyGc5xdDLlmxzkfMDdmq/Oxkw4OgSIUbw5phkkjo
+        aHY13QRtn+4qAu1CFAtaiygoXg==
+X-Google-Smtp-Source: APXvYqx1DsIjg6TZqqhNVIDrF/jUas3CDFwNg12a/iFlIJdgR7v+fsaC48usbBMsfqqbbtnEz49wjA==
+X-Received: by 2002:a65:5cca:: with SMTP id b10mr11045938pgt.258.1571416409620;
+        Fri, 18 Oct 2019 09:33:29 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id j126sm8004093pfb.186.2019.10.18.09.33.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 09:33:29 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 09:33:22 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, andrew@lunn.ch, mlxsw@mellanox.com
+Subject: Re: [patch net-next] devlink: add format requirement for devlink
+ param names
+Message-ID: <20191018093322.0a79b622@hermes.lan>
+In-Reply-To: <20191018160726.18901-1-jiri@resnulli.us>
+References: <20191018160726.18901-1-jiri@resnulli.us>
 MIME-Version: 1.0
-References: <20191016132802.2760149-1-toke@redhat.com> <CAEf4BzbshfC2VXXbnWnjCA=Mcz8OSO=ACNSRNrNr2mHOm9uCmw@mail.gmail.com>
- <87mudye45s.fsf@toke.dk>
-In-Reply-To: <87mudye45s.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 18 Oct 2019 09:28:28 -0700
-Message-ID: <CAEf4BzZxszYrXCEpDqe6Gi9FggUOnDiQjP9BQTq=EcszwSghKA@mail.gmail.com>
-Subject: Re: [PATCH bpf] xdp: Handle device unregister for devmap_hash map type
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 3:31 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Wed, Oct 16, 2019 at 9:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-redhat.com> wrote:
-> >>
-> >> It seems I forgot to add handling of devmap_hash type maps to the devi=
-ce
-> >> unregister hook for devmaps. This omission causes devices to not be
-> >> properly released, which causes hangs.
-> >>
-> >> Fix this by adding the missing handler.
-> >>
-> >> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up dev=
-ices by hashed index")
-> >> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> ---
-> >>  kernel/bpf/devmap.c | 34 ++++++++++++++++++++++++++++++++++
-> >>  1 file changed, 34 insertions(+)
-> >>
-> >
-> > [...]
-> >
-> >> +
-> >> +               while (dev) {
-> >> +                       odev =3D (netdev =3D=3D dev->dev) ? dev : NULL=
-;
-> >> +                       dev =3D hlist_entry_safe(rcu_dereference_raw(h=
-list_next_rcu(&dev->index_hlist)),
-> >
-> > Please run scripts/checkpatch.pl, this looks like a rather long line.
->
-> That was a deliberate departure from the usual line length, actually. I
-> don't think it helps readability to split that into three lines just to
-> adhere to a strict line length requirement...
+On Fri, 18 Oct 2019 18:07:26 +0200
+Jiri Pirko <jiri@resnulli.us> wrote:
 
-Wouldn't local variable make it even more readable?
+> +static bool devlink_param_valid_name(const char *name)
+> +{
+> +	int len = strlen(name);
+> +	int i;
+> +
+> +	/* Name can contain lowercase characters or digits.
+> +	 * Underscores are also allowed, but not at the beginning
+> +	 * or end of the name and not more than one in a row.
+> +	 */
+> +
+> +	for (i = 0; i < len; i++) {
 
->
-> -Toke
->
+Very minor stuff.
+   1. since strlen technically returns size_t why not make both i and len type size_t
+   2. no blank line after comment and before loop?
