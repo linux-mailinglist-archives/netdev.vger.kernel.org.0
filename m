@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2624ADD400
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36DA0DD3E4
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730681AbfJRWGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 18:06:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38080 "EHLO mail.kernel.org"
+        id S2404632AbfJRWVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 18:21:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38364 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730760AbfJRWGI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:06:08 -0400
+        id S1731439AbfJRWGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:06:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ADE16205F4;
-        Fri, 18 Oct 2019 22:06:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DDB92222D4;
+        Fri, 18 Oct 2019 22:06:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436367;
-        bh=EkgPa+/bbt0VO+Jpe6yN+mBPY92zQyr3iwOjdFfnoKQ=;
+        s=default; t=1571436384;
+        bh=b3xdM3roLtUKI9V1E4GtHK+Asz06JOQbR6cG2m2Koxg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1r1nQIrbMbr4/+eZXUTxQmsgvZMTlAuCEX1v7m0wYGEn4OHg3Sx3mT0NAWma6IL+H
-         yEl/jfQ7eQYTavfTTDshhnnFzSiuorraWJyVEJpvkSXqOJE/Hpk/1Gh7Jp8GQc45Z/
-         Q21LNzVReHU8veDChOjV4Cifw4tvL6m1rnwT3bJ0=
+        b=iQRhrXiUFtkpsDvJlZV+DoXCRULgsGMWK+Cow+U51wP5Ig2KKvPNvLEeYgErI/0mu
+         jnPgmlW4M4xbeF7+JzmtaPHTaqWeBuFZz5evV8KjM/+JDmngeZ3ROtb1ZLqak5ABj4
+         nx69jAHbFE/hVrWxh3tuyF0F0+g13ZALC1tm6Vyc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Abhishek Ambure <aambure@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 022/100] ath10k: assign 'n_cipher_suites = 11' for WCN3990 to enable WPA3
-Date:   Fri, 18 Oct 2019 18:04:07 -0400
-Message-Id: <20191018220525.9042-22-sashal@kernel.org>
+Cc:     Nir Dotan <nird@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 037/100] mlxsw: spectrum: Set LAG port collector only when active
+Date:   Fri, 18 Oct 2019 18:04:22 -0400
+Message-Id: <20191018220525.9042-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220525.9042-1-sashal@kernel.org>
 References: <20191018220525.9042-1-sashal@kernel.org>
@@ -44,40 +44,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Abhishek Ambure <aambure@codeaurora.org>
+From: Nir Dotan <nird@mellanox.com>
 
-[ Upstream commit 7ba31e6e0cdc0cc2e60e1fcbf467f3c95aea948e ]
+[ Upstream commit 48ebab31d424fbdb8ede8914923bec671a933246 ]
 
-Hostapd uses CCMP, GCMP & GCMP-256 as 'wpa_pairwise' option to run WPA3.
-In WCN3990 firmware cipher suite numbers 9 to 11 are for CCMP,
-GCMP & GCMP-256.
+The LAG port collecting (receive) function was mistakenly set when the
+port was registered as a LAG member, while it should be set only when
+the port collection state is set to true. Set LAG port to collecting
+when it is set to distributing, as described in the IEEE link
+aggregation standard coupled control mux machine state diagram.
 
-To enable CCMP, GCMP & GCMP-256 cipher suites in WCN3990 firmware,
-host sets 'n_cipher_suites = 11' while initializing hardware parameters.
-
-Tested HW: WCN3990
-Tested FW: WLAN.HL.2.0-01188-QCAHLSWMTPLZ-1
-
-Signed-off-by: Abhishek Ambure <aambure@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Nir Dotan <nird@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 62 ++++++++++++++-----
+ 1 file changed, 45 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 5210cffb53440..2791ef2fd716c 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -532,7 +532,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_ops = &wcn3990_ops,
- 		.decap_align_bytes = 1,
- 		.num_peers = TARGET_HL_10_TLV_NUM_PEERS,
--		.n_cipher_suites = 8,
-+		.n_cipher_suites = 11,
- 		.ast_skid_limit = TARGET_HL_10_TLV_AST_SKID_LIMIT,
- 		.num_wds_entries = TARGET_HL_10_TLV_NUM_WDS_ENTRIES,
- 		.target_64bit = true,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index ee126bcf7c350..ccd9aca281b37 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -4410,9 +4410,6 @@ static int mlxsw_sp_port_lag_join(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	err = mlxsw_sp_lag_col_port_add(mlxsw_sp_port, lag_id, port_index);
+ 	if (err)
+ 		goto err_col_port_add;
+-	err = mlxsw_sp_lag_col_port_enable(mlxsw_sp_port, lag_id);
+-	if (err)
+-		goto err_col_port_enable;
+ 
+ 	mlxsw_core_lag_mapping_set(mlxsw_sp->core, lag_id, port_index,
+ 				   mlxsw_sp_port->local_port);
+@@ -4427,8 +4424,6 @@ static int mlxsw_sp_port_lag_join(struct mlxsw_sp_port *mlxsw_sp_port,
+ 
+ 	return 0;
+ 
+-err_col_port_enable:
+-	mlxsw_sp_lag_col_port_remove(mlxsw_sp_port, lag_id);
+ err_col_port_add:
+ 	if (!lag->ref_count)
+ 		mlxsw_sp_lag_destroy(mlxsw_sp, lag_id);
+@@ -4447,7 +4442,6 @@ static void mlxsw_sp_port_lag_leave(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	lag = mlxsw_sp_lag_get(mlxsw_sp, lag_id);
+ 	WARN_ON(lag->ref_count == 0);
+ 
+-	mlxsw_sp_lag_col_port_disable(mlxsw_sp_port, lag_id);
+ 	mlxsw_sp_lag_col_port_remove(mlxsw_sp_port, lag_id);
+ 
+ 	/* Any VLANs configured on the port are no longer valid */
+@@ -4492,21 +4486,56 @@ static int mlxsw_sp_lag_dist_port_remove(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(sldr), sldr_pl);
+ }
+ 
+-static int mlxsw_sp_port_lag_tx_en_set(struct mlxsw_sp_port *mlxsw_sp_port,
+-				       bool lag_tx_enabled)
++static int
++mlxsw_sp_port_lag_col_dist_enable(struct mlxsw_sp_port *mlxsw_sp_port)
+ {
+-	if (lag_tx_enabled)
+-		return mlxsw_sp_lag_dist_port_add(mlxsw_sp_port,
+-						  mlxsw_sp_port->lag_id);
+-	else
+-		return mlxsw_sp_lag_dist_port_remove(mlxsw_sp_port,
+-						     mlxsw_sp_port->lag_id);
++	int err;
++
++	err = mlxsw_sp_lag_col_port_enable(mlxsw_sp_port,
++					   mlxsw_sp_port->lag_id);
++	if (err)
++		return err;
++
++	err = mlxsw_sp_lag_dist_port_add(mlxsw_sp_port, mlxsw_sp_port->lag_id);
++	if (err)
++		goto err_dist_port_add;
++
++	return 0;
++
++err_dist_port_add:
++	mlxsw_sp_lag_col_port_disable(mlxsw_sp_port, mlxsw_sp_port->lag_id);
++	return err;
++}
++
++static int
++mlxsw_sp_port_lag_col_dist_disable(struct mlxsw_sp_port *mlxsw_sp_port)
++{
++	int err;
++
++	err = mlxsw_sp_lag_dist_port_remove(mlxsw_sp_port,
++					    mlxsw_sp_port->lag_id);
++	if (err)
++		return err;
++
++	err = mlxsw_sp_lag_col_port_disable(mlxsw_sp_port,
++					    mlxsw_sp_port->lag_id);
++	if (err)
++		goto err_col_port_disable;
++
++	return 0;
++
++err_col_port_disable:
++	mlxsw_sp_lag_dist_port_add(mlxsw_sp_port, mlxsw_sp_port->lag_id);
++	return err;
+ }
+ 
+ static int mlxsw_sp_port_lag_changed(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				     struct netdev_lag_lower_state_info *info)
+ {
+-	return mlxsw_sp_port_lag_tx_en_set(mlxsw_sp_port, info->tx_enabled);
++	if (info->tx_enabled)
++		return mlxsw_sp_port_lag_col_dist_enable(mlxsw_sp_port);
++	else
++		return mlxsw_sp_port_lag_col_dist_disable(mlxsw_sp_port);
+ }
+ 
+ static int mlxsw_sp_port_stp_set(struct mlxsw_sp_port *mlxsw_sp_port,
+@@ -4668,8 +4697,7 @@ static int mlxsw_sp_netdevice_port_upper_event(struct net_device *lower_dev,
+ 				err = mlxsw_sp_port_lag_join(mlxsw_sp_port,
+ 							     upper_dev);
+ 			} else {
+-				mlxsw_sp_port_lag_tx_en_set(mlxsw_sp_port,
+-							    false);
++				mlxsw_sp_port_lag_col_dist_disable(mlxsw_sp_port);
+ 				mlxsw_sp_port_lag_leave(mlxsw_sp_port,
+ 							upper_dev);
+ 			}
 -- 
 2.20.1
 
