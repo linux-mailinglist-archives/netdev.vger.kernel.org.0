@@ -2,231 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F0ADCF72
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 21:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91C98DCF87
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 21:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2506022AbfJRTkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 15:40:14 -0400
-Received: from mail-eopbgr80078.outbound.protection.outlook.com ([40.107.8.78]:32581
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2443146AbfJRTkN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 15:40:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=moMYY16iKLZtWjChSrM9rDmLrB8wOtJCGbgQtahHXMuVJgtdJCmP+34tJaEhZBgQUf2/Ux1Vm0AIrkke8zoxLTUAxpFENILNKJUZi14BTdMrVfxPTqxj528KajTA67lkuveV/5vAmiiutcMJk4ScMVP6lOUG4QMNJ8CbjiQt090gi9cFQprqQ2jcpJ1NEODNdvdpCUKv6JG/i9wxHtYdHINskskWwXfwJ5JMhSuiiH4INzoQErtQXUP/Y94X2jut954wjbyzjZhdExdd07JdhbUtNAHOmWkAEctrBqxmwlp1YgV74n8nz+5vV1CzdDbFKJOiRNh1lYa/IZY48sc6Eg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BWiJw/ZV+Is9uKUmoDGgrSzewKlXQRjfN4h6b1tBvw0=;
- b=YrRQCZ1YotnrqO0j4rX2o8UEcpxU1FfJlPCE+OLrxNvyUdLfmwUisPbY1H6qnPbYkmayit/tjL+A/nnKjnFoh59Qu4njVCtpMCnZVuAQ0qsGOQct2TWrPhNzIKBvUu9SLzkytrDRBU5ESzZ7DPv9hTbn/l/0b4878/IS+KGgrufKerMq34dWIpO5wUbPKkbZM7oI0J4iA8yJv6cNvPvyU9sgYZMYH+RGWF3CCzF3ec2MLhvs8+/eukP7kWV6hz9Ia9tSb3bRb1rZB4HQhsWt432ruQ9NRkx5dB0Rr14xgC6zBCgyoeJAa83D3xMFluUng+YYEZGziPTTV7pSVjynKg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BWiJw/ZV+Is9uKUmoDGgrSzewKlXQRjfN4h6b1tBvw0=;
- b=cdp3GPglKFHmudaaPKFg/sWquWQ3NlPX8TrgTGNIIeB4o1xg2GG8ahbjN1k1nK/T0acQg3KYF64XPHwOcsI0VxGa4Wa9Y6F5OVnUZWOUuZjXkNsDrJQoAjC64iYL9Ga5IpNXhtms08M3Xfr92PgCH9WRrVivTTzDEUl79CArxzE=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1SPR01MB0392.eurprd05.prod.outlook.com (52.133.247.88) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.20; Fri, 18 Oct 2019 19:38:07 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841%7]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
- 19:38:07 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 03/15] net/mlx5e: kTLS, Release reference on DUMPed fragments in
- shutdown flow
-Thread-Topic: [net 03/15] net/mlx5e: kTLS, Release reference on DUMPed
- fragments in shutdown flow
-Thread-Index: AQHVheuQn9rN5+lXAUqsg6fqJBXGaQ==
-Date:   Fri, 18 Oct 2019 19:38:06 +0000
-Message-ID: <20191018193737.13959-4-saeedm@mellanox.com>
-References: <20191018193737.13959-1-saeedm@mellanox.com>
-In-Reply-To: <20191018193737.13959-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR07CA0079.namprd07.prod.outlook.com
- (2603:10b6:a03:12b::20) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1cfee06f-4f0c-4515-99db-08d75402b2b5
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: VI1SPR01MB0392:|VI1SPR01MB0392:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1SPR01MB0392BA3D5F30A17A197B43C4BE6C0@VI1SPR01MB0392.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2399;
-x-forefront-prvs: 01949FE337
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(39860400002)(396003)(366004)(376002)(199004)(189003)(86362001)(5660300002)(186003)(6436002)(102836004)(446003)(486006)(6506007)(71200400001)(71190400001)(14454004)(2616005)(11346002)(2906002)(26005)(476003)(6512007)(8936002)(81166006)(81156014)(6916009)(1076003)(50226002)(107886003)(8676002)(36756003)(6486002)(256004)(478600001)(386003)(66066001)(64756008)(66946007)(66556008)(66476007)(99286004)(66446008)(4326008)(316002)(54906003)(3846002)(6116002)(25786009)(52116002)(305945005)(76176011)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1SPR01MB0392;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9z88hLtQWiJJJHcwUCpsGovdANiGtUknCfNjvSMZi0ZM0EOvJGaloeOqA/J6pmu6vgJpkDhQCO0Ef0p8LOps9a6gtBp+in394+GngY2cB6ly6SfXqGp/2py4MEaeet9DBiIAyuhR1J74fbi2G6EcGn0SSrqpQub2KYCxr9UwrJcI5G6ijSktvNZkc0mZMP0CsQ/MKhg30klnUQqMg/2E4iGUXCMUUAJoy4/sD6nfVAHN7S8Ev6IvNCGlhZnHjfeaDopgye/azg/s4vx3hOZjYkzpuub6QQAmA18CFviGSyyUAP5BsyxEUvTWXFAGqM8shpIPmVNGcf8EFewMo+GvLV45qJoKxHzXuL8g1s7tXMBysrDU/fOWfi0ydDzlHIxS3A1Qo1oL8dq7B96CyLuZViNamU55yKxc0EvpA41ldt0zUu0lhTlSTz3nJpJGdIut
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2440081AbfJRToa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 15:44:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49908 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390538AbfJRToa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 15:44:30 -0400
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9FE238125C
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 19:44:29 +0000 (UTC)
+Received: by mail-lj1-f199.google.com with SMTP id h19so1334175ljc.5
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 12:44:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v3eNVDBnAH9AGnnWJdHHWAd28QMe+rGJCqeHl7RPnb8=;
+        b=C1FjtJAiQanrWJVw5ggE/f9ueqTgIQmwZxzcDb/uAbsDRvhnuoPVMgWmReimKS+Tzj
+         ItOHwN90RMH6a3J/HnrK7MyAcZsMdKGPhhXgwbZ6OIIvAqcvMBY2Nf6J9zRAdlSyO7bf
+         KGk6k3hb/zTHRmFl1s4mZ9brsCAj1a2P9zCCDZ3Cjwx4jtMAMuhU1i6mxdLm1LAK22zy
+         Vo9ZSNy+W04I/hSJ+lb5nIs7AoeOpkrtg/sPcQEkBJACmInv7qwwhirNItnytQdpK2y1
+         a5V/ZdCLmoBx7QWwGVbq6+vL6ojJdq7hlmNPeJlWRafxy3uvwAAeU1Fdz91Im2a23P/F
+         YMmA==
+X-Gm-Message-State: APjAAAXQzXowq6wTttMSdGvRCdQAFgGLmqpOL5oYdQwqWuGnN0htPKmO
+        DrtcwxARUN7DyEOP2OoPC0AUZsy6TshhOCVKaVQUfOD+rw2YWZryjl/bL3wqe4h/ZjHv1ffdtjq
+        q5z2ZBLgkcGL9keCK
+X-Received: by 2002:a2e:a211:: with SMTP id h17mr7184261ljm.251.1571427868225;
+        Fri, 18 Oct 2019 12:44:28 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzAy4rTveML3hkNoYAHGQjhzvLK6CQZOhKdLfrvVC27x+M5xVdQcKIcHNtcD3HIyNWqd8Ne+w==
+X-Received: by 2002:a2e:a211:: with SMTP id h17mr7184248ljm.251.1571427867983;
+        Fri, 18 Oct 2019 12:44:27 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id o13sm2627404ljh.35.2019.10.18.12.44.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 12:44:27 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 6B9DA1804B6; Fri, 18 Oct 2019 21:44:26 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, kafai@fb.com,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: [PATCH bpf v3] xdp: Handle device unregister for devmap_hash map type
+Date:   Fri, 18 Oct 2019 21:44:18 +0200
+Message-Id: <20191018194418.2951544-1-toke@redhat.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cfee06f-4f0c-4515-99db-08d75402b2b5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 19:38:07.4570
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Rjv/077CtkpdO7GUzw0FP++RWwKxOP6Z1Wwy2zI9BNaifrzI97azHJtMi3WX5LNIz9JxqKwAUK/XZBgvaCfv9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1SPR01MB0392
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@mellanox.com>
+It seems I forgot to add handling of devmap_hash type maps to the device
+unregister hook for devmaps. This omission causes devices to not be
+properly released, which causes hangs.
 
-A call to kTLS completion handler was missing in the TXQSQ release
-flow. Add it.
+Fix this by adding the missing handler.
 
-Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-Reviewed-by: Eran Ben Elisha <eranbe@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devices by hashed index")
+Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- .../mellanox/mlx5/core/en_accel/ktls.h        |  7 ++++-
- .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 11 ++++++--
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 28 ++++++++++---------
- 3 files changed, 30 insertions(+), 16 deletions(-)
+v3:
+  - Use u32 for loop iterator variable
+  - Since we're holding the lock we can just iterate with hlist_for_each_entry_safe()
+v2:
+  - Grab the update lock while walking the map and removing entries.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h b/driv=
-ers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-index b7298f9ee3d3..c4c128908b6e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-@@ -86,7 +86,7 @@ struct sk_buff *mlx5e_ktls_handle_tx_skb(struct net_devic=
-e *netdev,
- 					 struct mlx5e_tx_wqe **wqe, u16 *pi);
- void mlx5e_ktls_tx_handle_resync_dump_comp(struct mlx5e_txqsq *sq,
- 					   struct mlx5e_tx_wqe_info *wi,
--					   struct mlx5e_sq_dma *dma);
-+					   u32 *dma_fifo_cc);
-=20
- #else
-=20
-@@ -94,6 +94,11 @@ static inline void mlx5e_ktls_build_netdev(struct mlx5e_=
-priv *priv)
+ kernel/bpf/devmap.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index c0a48f336997..012dbfb0f54b 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -719,6 +719,31 @@ const struct bpf_map_ops dev_map_hash_ops = {
+ 	.map_check_btf = map_check_no_btf,
+ };
+ 
++static void dev_map_hash_remove_netdev(struct bpf_dtab *dtab,
++				       struct net_device *netdev)
++{
++	unsigned long flags;
++	u32 i;
++
++	spin_lock_irqsave(&dtab->index_lock, flags);
++	for (i = 0; i < dtab->n_buckets; i++) {
++		struct bpf_dtab_netdev *dev;
++		struct hlist_head *head;
++		struct hlist_node *next;
++
++		head = dev_map_index_hash(dtab, i);
++
++		hlist_for_each_entry_safe(dev, next, head, index_hlist) {
++			if (netdev != dev->dev)
++				continue;
++
++			hlist_del_rcu(&dev->index_hlist);
++			call_rcu(&dev->rcu, __dev_map_entry_free);
++		}
++	}
++	spin_unlock_irqrestore(&dtab->index_lock, flags);
++}
++
+ static int dev_map_notification(struct notifier_block *notifier,
+ 				ulong event, void *ptr)
  {
- }
-=20
-+static inline void
-+mlx5e_ktls_tx_handle_resync_dump_comp(struct mlx5e_txqsq *sq,
-+				      struct mlx5e_tx_wqe_info *wi,
-+				      u32 *dma_fifo_cc) {}
+@@ -735,6 +760,11 @@ static int dev_map_notification(struct notifier_block *notifier,
+ 		 */
+ 		rcu_read_lock();
+ 		list_for_each_entry_rcu(dtab, &dev_map_list, list) {
++			if (dtab->map.map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
++				dev_map_hash_remove_netdev(dtab, netdev);
++				continue;
++			}
 +
- #endif
-=20
- #endif /* __MLX5E_TLS_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-index d195366461c9..90c6ce530a18 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-@@ -303,9 +303,16 @@ tx_post_resync_dump(struct mlx5e_txqsq *sq, skb_frag_t=
- *frag, u32 tisn, bool fir
-=20
- void mlx5e_ktls_tx_handle_resync_dump_comp(struct mlx5e_txqsq *sq,
- 					   struct mlx5e_tx_wqe_info *wi,
--					   struct mlx5e_sq_dma *dma)
-+					   u32 *dma_fifo_cc)
- {
--	struct mlx5e_sq_stats *stats =3D sq->stats;
-+	struct mlx5e_sq_stats *stats;
-+	struct mlx5e_sq_dma *dma;
-+
-+	if (!wi->resync_dump_frag)
-+		return;
-+
-+	dma =3D mlx5e_dma_get(sq, (*dma_fifo_cc)++);
-+	stats =3D sq->stats;
-=20
- 	mlx5e_tx_dma_unmap(sq->pdev, dma);
- 	__skb_frag_unref(wi->resync_dump_frag);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_tx.c
-index 9094e9519db7..8dd8f0be101b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -479,14 +479,7 @@ bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_bu=
-dget)
- 			skb =3D wi->skb;
-=20
- 			if (unlikely(!skb)) {
--#ifdef CONFIG_MLX5_EN_TLS
--				if (wi->resync_dump_frag) {
--					struct mlx5e_sq_dma *dma =3D
--						mlx5e_dma_get(sq, dma_fifo_cc++);
--
--					mlx5e_ktls_tx_handle_resync_dump_comp(sq, wi, dma);
--				}
--#endif
-+				mlx5e_ktls_tx_handle_resync_dump_comp(sq, wi, &dma_fifo_cc);
- 				sqcc +=3D wi->num_wqebbs;
- 				continue;
- 			}
-@@ -542,29 +535,38 @@ void mlx5e_free_txqsq_descs(struct mlx5e_txqsq *sq)
- {
- 	struct mlx5e_tx_wqe_info *wi;
- 	struct sk_buff *skb;
-+	u32 dma_fifo_cc;
-+	u16 sqcc;
- 	u16 ci;
- 	int i;
-=20
--	while (sq->cc !=3D sq->pc) {
--		ci =3D mlx5_wq_cyc_ctr2ix(&sq->wq, sq->cc);
-+	sqcc =3D sq->cc;
-+	dma_fifo_cc =3D sq->dma_fifo_cc;
-+
-+	while (sqcc !=3D sq->pc) {
-+		ci =3D mlx5_wq_cyc_ctr2ix(&sq->wq, sqcc);
- 		wi =3D &sq->db.wqe_info[ci];
- 		skb =3D wi->skb;
-=20
- 		if (!skb) {
--			sq->cc +=3D wi->num_wqebbs;
-+			mlx5e_ktls_tx_handle_resync_dump_comp(sq, wi, &dma_fifo_cc);
-+			sqcc +=3D wi->num_wqebbs;
- 			continue;
- 		}
-=20
- 		for (i =3D 0; i < wi->num_dma; i++) {
- 			struct mlx5e_sq_dma *dma =3D
--				mlx5e_dma_get(sq, sq->dma_fifo_cc++);
-+				mlx5e_dma_get(sq, dma_fifo_cc++);
-=20
- 			mlx5e_tx_dma_unmap(sq->pdev, dma);
- 		}
-=20
- 		dev_kfree_skb_any(skb);
--		sq->cc +=3D wi->num_wqebbs;
-+		sqcc +=3D wi->num_wqebbs;
- 	}
-+
-+	sq->dma_fifo_cc =3D dma_fifo_cc;
-+	sq->cc =3D sqcc;
- }
-=20
- #ifdef CONFIG_MLX5_CORE_IPOIB
---=20
-2.21.0
+ 			for (i = 0; i < dtab->map.max_entries; i++) {
+ 				struct bpf_dtab_netdev *dev, *odev;
+ 
+-- 
+2.23.0
 
