@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C496DBC44
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9387DBC7E
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441804AbfJRFAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:00:11 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:42614 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfJRFAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:00:11 -0400
-Received: by mail-pl1-f194.google.com with SMTP id g9so932987plj.9;
-        Thu, 17 Oct 2019 22:00:10 -0700 (PDT)
+        id S2503918AbfJRFGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:06:07 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35374 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725856AbfJRFGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:06:06 -0400
+Received: by mail-pg1-f196.google.com with SMTP id p30so2681052pgl.2;
+        Thu, 17 Oct 2019 22:06:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HXzFJI/J/iuS7umfGU0E3WbfBmf272p7UrFI2fd2lao=;
-        b=ukP+M1s/Rb3wueS//9V9ply43AdKgY+mOWY20e2SOPnBewg9HAFb8C6FEGLpjcvzWM
-         d8McqNTWm616/H8B8OsOjGibsxGBRdha0d1N36woottSd+1mMMh/Qhp47F5O/tOSzFlx
-         qmlQHZFMntlbIb3+7/8gTvrJ5/meJsqcSt0gySDSen+FExra8Llez5VhGaMPIL9gv8/G
-         pAUJS7YpOX0ouw1ItD0Vxle6rE/yGzvac4REeuHTZS+roDqM+Wg1hD/FtnyTXygZqeS4
-         3KbV5JNfI7z015J1wvmJkObZqH6EH3xV0DL3ir8AovHs/HTOo64HCBNs9nW3DYliz5Xc
-         FMRg==
+        bh=3znI3jfyxhlrImFZP1YaxjrIboRVdgk6y/Uv9/1hgdY=;
+        b=XnvfBet4AbU0ExahHoD7IWNzMYRW3M2/FYWTAgA1MZybbezJNpGTEccvqnFVMAXY0g
+         Fm0bBX+M1hT/UDnZNpwGLB4vuqnJ/OaTwDXaCTJHKl4dxIN8im6vEpUpcevzthFxneMp
+         TNBS3RM2ahiDNdj1RY9GdN7Ll8WPPcD7Zxhri2GgvbPW3eiJCs8nbXuswgoeAnsadwaL
+         xF5+yCHVVr2wWk/+D+K2bmO1jCAuqN9xrS5+wtI35rO+NJ4WBaKyX+pjIgqkHE8we+yP
+         NPgoiYv2pwL1o+8s42S27f0NvxZLak+jSeq/MpskJ0CrReBjXWcAVGaJubKBRJsyY+vE
+         rzbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HXzFJI/J/iuS7umfGU0E3WbfBmf272p7UrFI2fd2lao=;
-        b=fffIbq7HefmqO07G0uVr/8tfso7iF484VWCb7JyUNXu3OCQEMSgeLQf6QpXj7lSOZw
-         cx+Qc6Iv12WxiAdvj11CrrscXD1xe1/7tnAvSQ10KLPuk2Kmgitms4ShW428d1x9Zep0
-         6qvreLWg2Fr2sS+yqgLs+N9y1CIVmVgb0f21XLhZSgqJFxcBECYL0lRwjPVscVbhR16A
-         KvF0LwmMBFr+U5fGNnvUMeHyXhZ3Y0j/Kt4lbt3UdoAaSTTyMcdSmLPOF5+mqCKT++tB
-         HJ2+0wEWgkBT4uWflQpEDRobG2gBVjhMqdWkRJs2a117bbmNidzw6+bR9phB9LvBmZRC
-         JX/Q==
-X-Gm-Message-State: APjAAAWRlOHSFntQKLDfRpXB2Blt80sCaJvzGM3huAYQ4kUXpQitVgwK
-        6M6jUFXOKDIkoIL78TEV4vk/nezj
-X-Google-Smtp-Source: APXvYqwB+B4q0ZvtPAxyqi037lwMrxXdZ7UlDoM3w/+8/3BXXUcZumuGlG6GQ1wCkaO5d9I9rYP0YQ==
-X-Received: by 2002:a17:902:ab82:: with SMTP id f2mr7817238plr.39.1571371760774;
-        Thu, 17 Oct 2019 21:09:20 -0700 (PDT)
+        bh=3znI3jfyxhlrImFZP1YaxjrIboRVdgk6y/Uv9/1hgdY=;
+        b=KCgzlAraGzGUt17Lj8ksMiacufWFmi+ExSF4M2erl0twQVNxt4BUipLUUvCvhhStUk
+         3JmY5otxs5HVYjfsLiZMhYsrDUrgVexeFeSM3eb20D3mgsU8R7xKQidaFbdPzFd3XjP0
+         cFr5gQPbxl43Wrvlo50MNLE4oAmrucyr+iv1vQ4WQ4TXWQDYxfXdhA01S5F0Ny3q8GtC
+         x1/kZVur3ogY9pYBevvjp5kp+CMNCCuvgbPpOzdU+f9iRmRKAnL6zG6BntGnQ2uoQ90X
+         xMiI5iRxYF8yu14kWXXCVIyGyXBBou45qe0h80M4XAwPuCYeEc3uBPxJS4nQosDDiu0q
+         rbFA==
+X-Gm-Message-State: APjAAAVUNallv2HZoGEYSTKaREIILRbf/C0J4RZkXxKy/js+G8ajnyuX
+        NLt+qsm1E/pBlTFvgPUxR2A9PQsJ
+X-Google-Smtp-Source: APXvYqzDPlDkah3w9vs71p4pB03R5Apr7H6F4vO+4UvTHwe9ETXCUnl1vgZ0+kcqJFrRfIeWNlCnZw==
+X-Received: by 2002:a17:90a:5896:: with SMTP id j22mr8122854pji.55.1571371775397;
+        Thu, 17 Oct 2019 21:09:35 -0700 (PDT)
 Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id d11sm4341680pfo.104.2019.10.17.21.09.16
+        by smtp.gmail.com with ESMTPSA id d11sm4341680pfo.104.2019.10.17.21.09.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 21:09:20 -0700 (PDT)
+        Thu, 17 Oct 2019 21:09:34 -0700 (PDT)
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,9 +64,9 @@ Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         William Tu <u9012063@gmail.com>,
         Stanislav Fomichev <sdf@fomichev.me>
-Subject: [RFC PATCH v2 bpf-next 12/15] xdp_flow: Implement vlan_push action
-Date:   Fri, 18 Oct 2019 13:07:45 +0900
-Message-Id: <20191018040748.30593-13-toshiaki.makita1@gmail.com>
+Subject: [RFC PATCH v2 bpf-next 15/15] bpf, hashtab: Compare keys in long
+Date:   Fri, 18 Oct 2019 13:07:48 +0900
+Message-Id: <20191018040748.30593-16-toshiaki.makita1@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
 References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
@@ -77,66 +77,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is another example action.
+memcmp() is generally slow. Compare keys in long if possible.
+This improves xdp_flow performance.
 
 Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 ---
- net/xdp_flow/xdp_flow_kern_bpf.c | 23 +++++++++++++++++++++--
- net/xdp_flow/xdp_flow_kern_mod.c |  5 +++++
- 2 files changed, 26 insertions(+), 2 deletions(-)
+ kernel/bpf/hashtab.c | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
 
-diff --git a/net/xdp_flow/xdp_flow_kern_bpf.c b/net/xdp_flow/xdp_flow_kern_bpf.c
-index 381d67e..7930349 100644
---- a/net/xdp_flow/xdp_flow_kern_bpf.c
-+++ b/net/xdp_flow/xdp_flow_kern_bpf.c
-@@ -90,10 +90,29 @@ static inline int action_redirect(struct xdp_flow_action *action)
- static inline int action_vlan_push(struct xdp_md *ctx,
- 				   struct xdp_flow_action *action)
- {
-+	struct vlan_ethhdr *vehdr;
-+	void *data, *data_end;
-+	__be16 proto, tci;
-+
- 	account_action(XDP_FLOW_ACTION_VLAN_PUSH);
- 
--	// TODO: implement this
--	return XDP_ABORTED;
-+	proto = action->vlan.proto;
-+	tci = action->vlan.tci;
-+
-+	if (bpf_xdp_adjust_head(ctx, -VLAN_HLEN))
-+		return XDP_DROP;
-+
-+	data_end = (void *)(long)ctx->data_end;
-+	data = (void *)(long)ctx->data;
-+	if (data + VLAN_ETH_HLEN > data_end)
-+		return XDP_DROP;
-+
-+	__builtin_memmove(data, data + VLAN_HLEN, ETH_ALEN * 2);
-+	vehdr = data;
-+	vehdr->h_vlan_proto = proto;
-+	vehdr->h_vlan_TCI = tci;
-+
-+	return _XDP_CONTINUE;
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 22066a6..8b5ffd4 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -417,6 +417,29 @@ static inline struct hlist_nulls_head *select_bucket(struct bpf_htab *htab, u32
+ 	return &__select_bucket(htab, hash)->head;
  }
  
- static inline int action_vlan_pop(struct xdp_md *ctx,
-diff --git a/net/xdp_flow/xdp_flow_kern_mod.c b/net/xdp_flow/xdp_flow_kern_mod.c
-index 2581b81..7ce1733 100644
---- a/net/xdp_flow/xdp_flow_kern_mod.c
-+++ b/net/xdp_flow/xdp_flow_kern_mod.c
-@@ -84,6 +84,11 @@ static int xdp_flow_parse_actions(struct xdp_flow_actions *actions,
- 			action->ifindex = act->dev->ifindex;
- 			break;
- 		case FLOW_ACTION_VLAN_PUSH:
-+			action->id = XDP_FLOW_ACTION_VLAN_PUSH;
-+			action->vlan.tci = act->vlan.vid |
-+					   (act->vlan.prio << VLAN_PRIO_SHIFT);
-+			action->vlan.proto = act->vlan.proto;
-+			break;
- 		case FLOW_ACTION_VLAN_POP:
- 		case FLOW_ACTION_VLAN_MANGLE:
- 		case FLOW_ACTION_MANGLE:
++/* key1 must be aligned to sizeof long */
++static bool key_equal(void *key1, void *key2, u32 size)
++{
++	/* Check for key1 */
++	BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct htab_elem, key),
++				 sizeof(long)));
++
++	if (IS_ALIGNED((unsigned long)key2 | (unsigned long)size,
++		       sizeof(long))) {
++		unsigned long *lkey1, *lkey2;
++
++		for (lkey1 = key1, lkey2 = key2; size > 0;
++		     lkey1++, lkey2++, size -= sizeof(long)) {
++			if (*lkey1 != *lkey2)
++				return false;
++		}
++
++		return true;
++	}
++
++	return !memcmp(key1, key2, size);
++}
++
+ /* this lookup function can only be called with bucket lock taken */
+ static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash,
+ 					 void *key, u32 key_size)
+@@ -425,7 +448,7 @@ static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash
+ 	struct htab_elem *l;
+ 
+ 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
+-		if (l->hash == hash && !memcmp(&l->key, key, key_size))
++		if (l->hash == hash && key_equal(&l->key, key, key_size))
+ 			return l;
+ 
+ 	return NULL;
+@@ -444,7 +467,7 @@ static struct htab_elem *lookup_nulls_elem_raw(struct hlist_nulls_head *head,
+ 
+ again:
+ 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
+-		if (l->hash == hash && !memcmp(&l->key, key, key_size))
++		if (l->hash == hash && key_equal(&l->key, key, key_size))
+ 			return l;
+ 
+ 	if (unlikely(get_nulls_value(n) != (hash & (n_buckets - 1))))
 -- 
 1.8.3.1
 
