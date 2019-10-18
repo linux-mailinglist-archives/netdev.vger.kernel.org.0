@@ -2,160 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D02EDD3CB
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7D4DD500
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:39:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391137AbfJRWUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 18:20:11 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:52489 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732044AbfJRWUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 18:20:10 -0400
-Received: by mail-pg1-f201.google.com with SMTP id e15so5185836pgh.19
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 15:20:09 -0700 (PDT)
+        id S2393338AbfJRWjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 18:39:16 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:44821 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfJRWjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 18:39:16 -0400
+Received: by mail-lf1-f67.google.com with SMTP id q12so5805448lfc.11
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 15:39:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=W1QDo0Jkh1ZxQ4EW+whWC6eIb/d7rLFoT83l2EeWuww=;
-        b=WV5mtbaUjrJmLCmFJ271B+PRKjfC+rsRdMlnNMq7Ls0pPmItfJGi+miH/8eLq4Q9zt
-         2THzuWIEF0nCR1ij6XIVR8JEkilaehr2P5P3V6GjpvYypVCjlvyXRZQ5jsfPhdRspHqX
-         TpLmFr6BaTsZDtujofhpMhxUBJuXHFHbbpphNygQoZcWLO18OhXDG49SEdpHujlXbFK0
-         dys+If5uZdu/ZO+8mIYEn8qhjkCGZegj/0CQyti4+twE0g5xBD6JvmPIyAoZHQAhnUd3
-         LkCcN0i7KAtibuGHJXSV7yseDMHEELgOuJpbtQHZYHARUmYrnrxNvMFMCQKGR5db6aFd
-         79tA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Tu+y8NQHPJdpH5zk4JXjcOJf2x2sdRfeWLWJG+FKhFs=;
+        b=iAQIR5fnIsTR2Ts309v6YQ/kn615UlLrE03SeNj9KpK0GUbnuTu/+5dED86PZyWoDc
+         dOPBuWT2q6yGKk47t7fZ8pr7muZpcTc5gJrDCtaJlNLKQ5MYaXJlKcXtktaZJrtBwooI
+         uUVNuqi20TMA3Y3YhOtZz+bWL+hnEvUz8LrZZHG3yZgdwvLuV5V0so3llr3O1dWGRQe5
+         ViXJK1MHCvQ17LJtZZOeBhJ+RC0GnTSzIUICkDs8lO3YG5emAUTrnWl2IQeYz8LMn0MJ
+         VQ+CTaF+/RkMV/cY8ra2onYlmmEXI7y+PDLWOXTjmINTje7CEeONJZk80L/NhVFQzgfV
+         ToAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=W1QDo0Jkh1ZxQ4EW+whWC6eIb/d7rLFoT83l2EeWuww=;
-        b=WUGkU5VzM00I6X6F++lcq7pfwVlkvjUsNrLh1HCBUkDIXDW2731W9Aa1xQgIX3PBHC
-         Dp8Hkjhz0adx2ZAQ+ueCMqbMhqA3Gm765gazA5D6mxtogZTVTExr0Xom02E5sSE1lQZy
-         lRT/ADBYbnRspL430KAPwJE6AL1K4QuUFI34tEu5NvlrKbTxrbr/eB9lpekqYA8pz/nK
-         Cwnx4149RnFIT29Gt2kKgITquCNBlY2AcuzL/OnGz0SVjJN6qKQJ6uPNIr8+IA56CDeC
-         k68biwy1M7pwq/VBGBqG2rXXuSAiY1B34xp7aJfzTbnMHe4F3a2ezj9z7/VDWUhzT/Mu
-         gyLg==
-X-Gm-Message-State: APjAAAW/u87YfPvg7hORIFIVTGdXsLnVUBgUAIoVm/lCE+NLS+hMWUg8
-        YX6W9wjCpQJQzcqCq5SzKI0DQGHRgQH0JA==
-X-Google-Smtp-Source: APXvYqzvIVXpn9uKRFuhDwJAV/yzv5kF7dv7kYCjzQZH7tyWfIG028rGDlcgkN/Ccj7d2spCoLtmwg8PVv7CFQ==
-X-Received: by 2002:a63:311:: with SMTP id 17mr12316474pgd.327.1571437209078;
- Fri, 18 Oct 2019 15:20:09 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 15:20:05 -0700
-Message-Id: <20191018222005.45260-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
-Subject: [PATCH net] net: reorder 'struct net' fields to avoid false sharing
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Tu+y8NQHPJdpH5zk4JXjcOJf2x2sdRfeWLWJG+FKhFs=;
+        b=p1fg1vwoLZMjVv+LqQ002w45Db1STHMYkwq6nddgpHV6GvIMRC4UgPBMR08qpuALeB
+         VQV9yeMI6nl5gYHVQpLHm/KkATCCTIPbATaewguhkGJ2YNjeoRGkwhmmPc5CzEQD25SV
+         +TnAGYTcgpDIAu/I/mXUuEAJ6VBq5lR9S/pBqThuxrymQXFah2DRNZbV862yoBcqLBHI
+         m1RU/weBHYmXrtybsTiF1DoaH3nbVQAOI/fMKXT0YmXkwlFWs/Apa530kHkAtNw9Wmk/
+         moObvG+fn+S5cMWLKmmXx9FEp0Y/j3p5ow8v/pTnx67ZHYQYXAECDPzw5YcnakKQIPt4
+         oh3w==
+X-Gm-Message-State: APjAAAWECNnfBeNLufaX81dE3LxKPSPet4ngJTH/ZTuWROBceMb2QPdZ
+        L6e4qDr6eROfQGnFU0SI+hdbzA==
+X-Google-Smtp-Source: APXvYqy4edffS/arTAA9zeCX329BJi3gMMUpHPH5hrbydZapeR2ditRHVTk/m4NSbykVWZSi0AkvkA==
+X-Received: by 2002:ac2:5477:: with SMTP id e23mr7493688lfn.5.1571438353677;
+        Fri, 18 Oct 2019 15:39:13 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id l7sm2885363lji.46.2019.10.18.15.39.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 15:39:13 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 15:39:05 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH] bpftool: Try to read btf as raw data if elf read fails
+Message-ID: <20191018153905.600d7c8a@cakuba.netronome.com>
+In-Reply-To: <20191018103404.12999-1-jolsa@kernel.org>
+References: <20191018103404.12999-1-jolsa@kernel.org>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Intel test robot reported a ~7% regression on TCP_CRR tests
-that they bisected to the cited commit.
+On Fri, 18 Oct 2019 12:34:04 +0200, Jiri Olsa wrote:
+> The bpftool interface stays the same, but now it's possible
+> to run it over BTF raw data, like:
+> 
+>   $ bpftool btf dump file /sys/kernel/btf/vmlinux
+>   libbpf: failed to get EHDR from /sys/kernel/btf/vmlinux
+>   [1] INT '(anon)' size=4 bits_offset=0 nr_bits=32 encoding=(none)
+>   [2] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64 encoding=(none)
+>   [3] CONST '(anon)' type_id=2
+> 
+> I'm also adding err init to 0 because I was getting uninitialized
+> warnings from gcc.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  tools/bpf/bpftool/btf.c | 47 ++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 42 insertions(+), 5 deletions(-)
+> 
+> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+> index 9a9376d1d3df..100fb7e02329 100644
+> --- a/tools/bpf/bpftool/btf.c
+> +++ b/tools/bpf/bpftool/btf.c
+> @@ -12,6 +12,9 @@
+>  #include <libbpf.h>
+>  #include <linux/btf.h>
+>  #include <linux/hashtable.h>
+> +#include <sys/types.h>
+> +#include <sys/stat.h>
+> +#include <unistd.h>
+>  
+>  #include "btf.h"
+>  #include "json_writer.h"
+> @@ -388,6 +391,35 @@ static int dump_btf_c(const struct btf *btf,
+>  	return err;
+>  }
+>  
+> +static struct btf *btf__parse_raw(const char *file)
+> +{
+> +	struct btf *btf = ERR_PTR(-EINVAL);
+> +	__u8 *buf = NULL;
 
-Indeed, every time a new TCP socket is created or deleted,
-the atomic counter net->count is touched (via get_net(net)
-and put_net(net) calls)
+Please drop the inits
 
-So cpus might have to reload a contended cache line in
-net_hash_mix(net) calls.
+> +	struct stat st;
+> +	FILE *f;
+> +
+> +	if (stat(file, &st))
+> +		return btf;
 
-We need to reorder 'struct net' fields to move @hash_mix
-in a read mostly cache line.
+And return constants here
 
-We move in the first cache line fields that can be
-dirtied often.
+> +	f = fopen(file, "rb");
+> +	if (!f)
+> +		return btf;
 
-We probably will have to address in a followup patch
-the __randomize_layout that was added in linux-4.13,
-since this might break our placement choices.
+and here
 
-Fixes: 355b98553789 ("netns: provide pure entropy for net_hash_mix()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
----
- include/net/net_namespace.h | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+> +	buf = malloc(st.st_size);
+> +	if (!buf)
+> +		goto err;
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index f8712bbeb2e039657e5cf8d37b15511de8c9c694..4c2cd937869964301117bea84aeefd8174d641fd 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -52,6 +52,9 @@ struct bpf_prog;
- #define NETDEV_HASHENTRIES (1 << NETDEV_HASHBITS)
- 
- struct net {
-+	/* First cache line can be often dirtied.
-+	 * Do not place here read-mostly fields.
-+	 */
- 	refcount_t		passive;	/* To decide when the network
- 						 * namespace should be freed.
- 						 */
-@@ -60,7 +63,13 @@ struct net {
- 						 */
- 	spinlock_t		rules_mod_lock;
- 
--	u32			hash_mix;
-+	unsigned int		dev_unreg_count;
-+
-+	unsigned int		dev_base_seq;	/* protected by rtnl_mutex */
-+	int			ifindex;
-+
-+	spinlock_t		nsid_lock;
-+	atomic_t		fnhe_genid;
- 
- 	struct list_head	list;		/* list of network namespaces */
- 	struct list_head	exit_list;	/* To linked to call pernet exit
-@@ -76,11 +85,11 @@ struct net {
- #endif
- 	struct user_namespace   *user_ns;	/* Owning user namespace */
- 	struct ucounts		*ucounts;
--	spinlock_t		nsid_lock;
- 	struct idr		netns_ids;
- 
- 	struct ns_common	ns;
- 
-+	struct list_head 	dev_base_head;
- 	struct proc_dir_entry 	*proc_net;
- 	struct proc_dir_entry 	*proc_net_stat;
- 
-@@ -93,17 +102,18 @@ struct net {
- 
- 	struct uevent_sock	*uevent_sock;		/* uevent socket */
- 
--	struct list_head 	dev_base_head;
- 	struct hlist_head 	*dev_name_head;
- 	struct hlist_head	*dev_index_head;
--	unsigned int		dev_base_seq;	/* protected by rtnl_mutex */
--	int			ifindex;
--	unsigned int		dev_unreg_count;
-+	/* Note that @hash_mix can be read millions times per second,
-+	 * it is critical that it is on a read_mostly cache line.
-+	 */
-+	u32			hash_mix;
-+
-+	struct net_device       *loopback_dev;          /* The loopback */
- 
- 	/* core fib_rules */
- 	struct list_head	rules_ops;
- 
--	struct net_device       *loopback_dev;          /* The loopback */
- 	struct netns_core	core;
- 	struct netns_mib	mib;
- 	struct netns_packet	packet;
-@@ -171,7 +181,6 @@ struct net {
- 	struct sock		*crypto_nlsk;
- #endif
- 	struct sock		*diag_nlsk;
--	atomic_t		fnhe_genid;
- } __randomize_layout;
- 
- #include <linux/seq_file_net.h>
--- 
-2.23.0.866.gb869b98d4c-goog
+and jump to the right place here.
+
+> +	if ((size_t) st.st_size != fread(buf, 1, st.st_size, f))
+> +		goto err;
+> +
+> +	btf = btf__new(buf, st.st_size);
+> +
+> +err:
+
+The prefix for error labels which is shared with non-error path is exit_
+
+> +	free(buf);
+> +	fclose(f);
+> +	return btf;
+> +}
+> +
+>  static int do_dump(int argc, char **argv)
+>  {
+>  	struct btf *btf = NULL;
+> @@ -397,7 +429,7 @@ static int do_dump(int argc, char **argv)
+>  	__u32 btf_id = -1;
+>  	const char *src;
+>  	int fd = -1;
+> -	int err;
+> +	int err = 0;
+
+This change looks unnecessary.
+
+>  	if (!REQ_ARGS(2)) {
+>  		usage();
+> @@ -468,10 +500,15 @@ static int do_dump(int argc, char **argv)
+>  		btf = btf__parse_elf(*argv, NULL);
+>  		if (IS_ERR(btf)) {
+>  			err = PTR_ERR(btf);
+> -			btf = NULL;
+> -			p_err("failed to load BTF from %s: %s", 
+> -			      *argv, strerror(err));
+> -			goto done;
+> +			if (err == -LIBBPF_ERRNO__FORMAT)
+> +				btf = btf__parse_raw(*argv);
+> +			if (IS_ERR(btf)) {
+> +				btf = NULL;
+> +				/* Display the original error value. */
+> +				p_err("failed to load BTF from %s: %s",
+> +				      *argv, strerror(err));
+> +				goto done;
+> +			}
+>  		}
+>  		NEXT_ARG();
+>  	} else {
 
