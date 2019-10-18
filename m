@@ -2,153 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB943DBAEA
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 02:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AADCDDBB23
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 02:58:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389158AbfJRAdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 20:33:32 -0400
-Received: from gate.crashing.org ([63.228.1.57]:47116 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728419AbfJRAdc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Oct 2019 20:33:32 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id x9I0Wvrx022950;
-        Thu, 17 Oct 2019 19:32:58 -0500
-Message-ID: <f6d5cb45a9aa167533135c5b218b45b1d210d31a.camel@kernel.crashing.org>
-Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
-From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
-To:     Vijay Khemka <vijaykhemka@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bhupesh Sharma <bhsharma@redhat.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Date:   Fri, 18 Oct 2019 11:32:57 +1100
-In-Reply-To: <9AA81274-01F2-4803-8905-26F0521486CE@fb.com>
-References: <20191011213027.2110008-1-vijaykhemka@fb.com>
-         <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
-         <0C0BC813-5A84-403F-9C48-9447AAABD867@fb.com>
-         <071cf1eeefcbfc14633a13bc2d15ad7392987a88.camel@kernel.crashing.org>
-         <9AA81274-01F2-4803-8905-26F0521486CE@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
+        id S2439199AbfJRA6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 20:58:06 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:48012 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726259AbfJRA6G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 20:58:06 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id A2C61EE21AE6CDFCD053;
+        Fri, 18 Oct 2019 08:58:02 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Fri, 18 Oct 2019
+ 08:57:56 +0800
+Subject: Re: [PATCH net-next 00/12] net: hns3: add some bugfixes and
+ optimizations
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
+References: <1571210231-29154-1-git-send-email-tanhuazhong@huawei.com>
+ <20191016101943.415d73cf@cakuba.netronome.com>
+ <20191016.135003.672960397161023411.davem@davemloft.net>
+ <d76b854c-5f6d-27b6-d40e-e3c0404b5695@huawei.com>
+ <20191017084743.1a5875ff@cakuba.netronome.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <f7a5ea3c-c0b3-4f90-43e4-2aade8593c10@huawei.com>
+Date:   Fri, 18 Oct 2019 08:57:55 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
+MIME-Version: 1.0
+In-Reply-To: <20191017084743.1a5875ff@cakuba.netronome.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-10-18 at 00:06 +0000, Vijay Khemka wrote:
-> 
->     > This is not a matter of unsupported csum, it is broken hw csum. 
->     > That's why we disable hw checksum. My guess is once we disable
->     > Hw checksum, it will use sw checksum. So I am just disabling hw 
->     > Checksum.
->     
->     I don't understand what you are saying. You reported a problem with
->     IPV6 checksums generation. The HW doesn't support it. What's "not a
->     matter of unsupported csum" ?
->     
->     Your patch uses a *deprecated* bit to tell the network stack to only do
->     HW checksum generation on IPV4.
->     
->     This bit is deprecated for a reason, again, see skbuff.h. The right
->     approach, *which the driver already does*, is to tell the stack that we
->     support HW checksuming using NETIF_F_HW_CSUM, and then, in the transmit
->     handler, to call skb_checksum_help() to have the SW calculate the
->     checksum if it's not a supported type.
-> 
-> My understanding was when we enable NETIF_F_HW_CSUM means network 
-> stack enables HW checksum and doesn't calculate SW checksum. But as per
-> this supported types HW checksum are used only for IPV4 and not for IPV6 even
-> though driver enabled NETIF_F_HW_CSUM. For IPV6 it is always a SW generated
-> checksum, please correct me here.
 
-Have you actually read the comments in skbuff.h that I pointed you to ?
 
-And the rest of my email for that matter ?
-
->     This is exactly what ftgmac100_prep_tx_csum() does. It only enables HW
->     checksum generation on supported types and uses skb_checksum_help()
->     otherwise, supported types being protocol ETH_P_IP and IP protocol
->     being raw IP, TCP and UDP.
+On 2019/10/17 23:47, Jakub Kicinski wrote:
+> On Thu, 17 Oct 2019 11:27:09 +0800, tanhuazhong wrote:
+>> On 2019/10/17 1:50, David Miller wrote:
+>>> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+>>> Date: Wed, 16 Oct 2019 10:19:43 -0700
+>>>    
+>>>> On Wed, 16 Oct 2019 15:16:59 +0800, Huazhong Tan wrote:
+>>>>> This patch-set includes some bugfixes and code optimizations
+>>>>> for the HNS3 ethernet controller driver.
+>>>>
+>>>> The code LGTM, mostly, but it certainly seems like patches 2, 3 and 4
+>>>> should be a separate series targeting the net tree :(
+>>>
+>>> Agreed, there are legitimate bug fixes.
+>>>
+>>> I have to say that I see this happening a lot, hns3 bug fixes targetting
+>>> net-next in a larger series of cleanups and other kinds of changes.
+>>>
+>>> Please handle this delegation properly.  Send bug fixes as a series targetting
+>>> 'net', and send everything else targetting 'net-next'.
+>>>    
+>>
+>> Hi, David & Jakub.
+>>
+>> BTW, patch01 is a cleanup which is needed by patch02,
+>> if patch01 targetting 'net-next', patch02 targetting 'net',
+>> there will be a gap again. How should I deal with this case?
 > 
->     
->     So this *should* have fallen back to SW for IPV6. So either something
->     in my code there is making an incorrect assumption, or something is
->     broken in skb_checksum_help() for IPV6 (which I somewhat doubt) or
->     something else I can't think of, but setting a *deprecated* flag is
->     definitely not the right answer, neither is completely disabling HW
->     checksumming.
->     
->     So can you investigate what's going on a bit more closely please ? I
->     can try myself, though I have very little experience with IPV6 and
->     probably won't have time before next week.
->     
->     Cheers,
->     Ben.
->     
->     >     The driver should have handled unsupported csum via SW fallback
->     >     already in ftgmac100_prep_tx_csum()
->     >     
->     >     Can you check why this didn't work for you ?
->     >     
->     >     Cheers,
->     >     Ben.
->     >     
->     >     > Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
->     >     > ---
->     >     > Changes since v1:
->     >     >  Enabled IPV4 hw checksum generation as it works for IPV4.
->     >     > 
->     >     >  drivers/net/ethernet/faraday/ftgmac100.c | 13 ++++++++++++-
->     >     >  1 file changed, 12 insertions(+), 1 deletion(-)
->     >     > 
->     >     > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
->     >     > b/drivers/net/ethernet/faraday/ftgmac100.c
->     >     > index 030fed65393e..0255a28d2958 100644
->     >     > --- a/drivers/net/ethernet/faraday/ftgmac100.c
->     >     > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
->     >     > @@ -1842,8 +1842,19 @@ static int ftgmac100_probe(struct
->     >     > platform_device *pdev)
->     >     >  	/* AST2400  doesn't have working HW checksum generation */
->     >     >  	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
->     >     >  		netdev->hw_features &= ~NETIF_F_HW_CSUM;
->     >     > +
->     >     > +	/* AST2500 doesn't have working HW checksum generation for IPV6
->     >     > +	 * but it works for IPV4, so disabling hw checksum and enabling
->     >     > +	 * it for only IPV4.
->     >     > +	 */
->     >     > +	if (np && (of_device_is_compatible(np, "aspeed,ast2500-mac")))
->     >     > {
->     >     > +		netdev->hw_features &= ~NETIF_F_HW_CSUM;
->     >     > +		netdev->hw_features |= NETIF_F_IP_CSUM;
->     >     > +	}
->     >     > +
->     >     >  	if (np && of_get_property(np, "no-hw-checksum", NULL))
->     >     > -		netdev->hw_features &= ~(NETIF_F_HW_CSUM |
->     >     > NETIF_F_RXCSUM);
->     >     > +		netdev->hw_features &= ~(NETIF_F_HW_CSUM |
->     >     > NETIF_F_RXCSUM
->     >     > +					 | NETIF_F_IP_CSUM);
->     >     >  	netdev->features |= netdev->hw_features;
->     >     >  
->     >     >  	/* register network device */
->     >     
->     >     
->     > 
->     
->     
+> You'll need to reorder the cleanup so that the fixes apply to the
+> unmodified net tree.
+> 
+> Then preferably wait for the net tree to be merged back to net-next
+> before posting the cleanup that'd conflict.  If the conflict is not
+> too hard to resolve you can just post the net-next patches and give
+> some instructions on how to resolve the merge conflict under the ---
+> lines in the commit message.
+> 
+
+ok, thanks.
+
+> .
 > 
 
