@@ -2,134 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D11BDD11D
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 23:22:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B611DD129
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 23:25:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503046AbfJRVWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 17:22:25 -0400
-Received: from mail-eopbgr50040.outbound.protection.outlook.com ([40.107.5.40]:3253
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727508AbfJRVWZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 17:22:25 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QoCIY7ikL/rrRIWrM68TRJIXVRQ3hI3NLf7SqDbzBwnsXKzRsKufw42EhB0FfFXSPdpbpgKbjZ264J0w1eCHiod9fSuGZwOj9+6Q5POAznXvJPyye+b6mV8Y8eaD4AwGTe6A13XOZ9pBRfPXlFaMS4hzY1/7Co8jcdPDZrxgVyrj3FJQnlvC5qx5JiVabajeCOricfPzAfiOY8G8dVD7E51VPIYoUIUpngcZlOFjE79nniDIyLxUckDgHF/OIUennZ3dqMuVDJ8SMFN1MYLM7KU5OKuwhApidtFVoojGB5CFcX2uoZc3ymU6z0gs0zazXth9q4SSsOgNTypuWBrBQA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PdeVc+yvLaJecyNyC4nUEUGleHxVuGXkhuqANK2U8Fo=;
- b=YddVVSZstRIORpTNDiAPZcZAFkKnZFwJ9B0z5M9GWWMF/wLH1rByQyhv/+DSrdpWJnoaJFNEmavnwyY95dL565MHitcnyyyv9s2erbI49Q1TYuSg5ru9OfMM0M23XfimwpKkvCj3PtBrRz0otY+PNptTH6pMbMNtqnWcQ9y/y/Wy93SX7LrrhtJoEvlmGqFArCJT6FY2TrgHusc3EUmiJVjjUakpmUconoaHp3jkeFR/xcqBkTaUl6ttH067W/m5HRpfuetdNJC/pPV/85CmLc32X/74y+xF9Wvjkd0tKoVpsQHttxs5aV54+pDkfeb3g4UJ6lXo5Il4tI7cxv0fmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PdeVc+yvLaJecyNyC4nUEUGleHxVuGXkhuqANK2U8Fo=;
- b=CMaQZfpI3NtOK+5XCT5Kh2Ptsu+saOUine8DkUUxFOuQKmEV2AkY6qmRb+mkeCgG1aMMR9kcHJLndXn9cjE2roEp79xRQ9JupzLKYW33wrp82VCNCwhsgCwos+F29bCVotGY6lxMdB2PG/ZwVi7yp9ctdBUjTDGaF5POubfXqhk=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB6142.eurprd05.prod.outlook.com (20.178.205.88) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.18; Fri, 18 Oct 2019 21:21:41 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841%7]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
- 21:21:41 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>
-CC:     "kernel-team@fb.com" <kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 00/10 net-next] page_pool cleanups
-Thread-Topic: [PATCH 00/10 net-next] page_pool cleanups
-Thread-Index: AQHVhHQsb02Xj+NegE6uf7PssTGj26dg4oMAgAAImYA=
-Date:   Fri, 18 Oct 2019 21:21:41 +0000
-Message-ID: <02eb26349dfe19d41f9b81b35fdb2b1e14008b7e.camel@mellanox.com>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
-         <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
-In-Reply-To: <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 53428db4-06b9-478f-2084-08d754112b2b
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: VI1PR05MB6142:|VI1PR05MB6142:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB61420E7EA0C5603EB09F6A1FBE6C0@VI1PR05MB6142.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 01949FE337
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(346002)(366004)(396003)(189003)(199004)(81156014)(6116002)(66946007)(71190400001)(8936002)(99286004)(256004)(3846002)(81166006)(76176011)(36756003)(6486002)(6436002)(66066001)(14444005)(5660300002)(118296001)(71200400001)(14454004)(66556008)(25786009)(66446008)(66476007)(64756008)(2906002)(6512007)(6246003)(229853002)(76116006)(91956017)(476003)(478600001)(4326008)(4001150100001)(102836004)(86362001)(486006)(11346002)(305945005)(58126008)(7736002)(446003)(54906003)(110136005)(186003)(316002)(2501003)(8676002)(6506007)(2616005)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6142;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bANPt+cXc6l/ax6Z8wwlzw6Ld7x1CYpOuUmMF5CPRb4DZQvQ5JXQ0uP4HiK13+cX+QBtzfmA14UKyfvu55hlOPHXLcIP8u8gHCqVZzqWECWSrZ+7qGRD02gu9EGt7ZsNM0KRQOckqbgHGst+tCEBzWqob74c6Z7feTBYLNR0WWNtXs+jZPPKalSUZMZFssSUfOfWs9HhgSZQhQHbGqNMbipq0124i9xFYfCTzhWsKJOyJUW6wqsBMdpwpqQ8fDYh60pCqZccKBNo2LB61zKm08DZSTAAH3ZX9CjGxAQmvm7jHfcesYcgx8azdwiEfbA6HaPELWPdN+Fqdf2M0jIyf1dQA/EEYMMWwL9jNMjewLOw5hMDdxZUryvnZJkj8qodxDu8ZdMIr7cVlxSM9qnhfQtAGq+C10tx4Tj+8iw+ta0=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0491571BD4329A45B87DE7A3BEBA6DA5@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2440440AbfJRVZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 17:25:13 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:37243 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727508AbfJRVZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 17:25:13 -0400
+Received: by mail-wm1-f65.google.com with SMTP id f22so7373663wmc.2;
+        Fri, 18 Oct 2019 14:25:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yZfAzIb/Kba55Aw+sHVK09/x4YWKV6syg8pmtZMsJ50=;
+        b=iWYh2Nd0eM/HeqF1v6SwZNakMYD+XJJS0R7WEABGsIvTS0U12VMb4Hk3oKkMK5BqB9
+         oNRweWnwMGVcURXallNaXSuhdW284JnhCX3GtezlOZCnlaJcZlxdmBHtuM1AywT8B64G
+         ncMAmpyBemJRtB945SHX4Nd09pVpLJB1QroQvqfdzRduyXPLk7+woTUBFctpALyGfR1z
+         qH5jTQGvwSPOP3Rxq+gNcFjM+z9N7veA5jqu/oG6cq1ZuboLCw8nz3QvsM5Q2YFRZE+R
+         buUB1MFfEtNjaJ3sPBn3VprE5bUwWtJzT2nsCN5F4zrkaOvuSsYxpqzwcOsft93+NVtH
+         OBdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yZfAzIb/Kba55Aw+sHVK09/x4YWKV6syg8pmtZMsJ50=;
+        b=Cv4253a9aiYLzmsH5kGQ7LQCrSquORduTavKPOflolwLu+m3fg0HseQarO/H20FwRy
+         8O6QeHtrgL7oRFFZKu60OQrKXAB37vhLfaI44WSAxhkIGM+Q+zDja7goDERXpetRjSit
+         HKRdnaY2ebxNV2dcXnEhc0pt+CC+U1y3x3TWCLyno7wWVn97rs3ZJtoV+u05rLgryo1e
+         6JfqJPHHXFPZrc9jqNH98XaI0VRsoGzZ8HWwXVEzPaE6wWYGyM6vILyORruzgHF0I7nV
+         RjbMLUgkcPnwV/4U0yzqa2uyfT5NrDralvgM6jadPw7k+6COCiq075muZ84VKfTB5lTt
+         SlZA==
+X-Gm-Message-State: APjAAAVoZ0I7NBnKkT8p1rNOSOSIcyMgfBESDyrXXW8gskcmnfxR745e
+        s72Zw7J4Bw1Tw35M3usG9Uo=
+X-Google-Smtp-Source: APXvYqxCdRItkxuKaHa8vVnC37xc2LT62VfKDXi9PnR0prcxbx8kyqmTXYuS4mI4Jr57p8oZmKa0cg==
+X-Received: by 2002:a05:600c:29a:: with SMTP id 26mr9887170wmk.127.1571433909253;
+        Fri, 18 Oct 2019 14:25:09 -0700 (PDT)
+Received: from jimi ([77.138.210.146])
+        by smtp.gmail.com with ESMTPSA id r2sm6461653wrm.3.2019.10.18.14.25.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 14:25:08 -0700 (PDT)
+Date:   Sat, 19 Oct 2019 00:25:02 +0300
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, shmulik.ladkani@gmail.com
+Subject: Re: [PATCH net] net: sched: act_mirred: drop skb's dst_entry in
+ ingress redirection
+Message-ID: <20191019002502.0519ea9b@jimi>
+In-Reply-To: <e16cfafe-059c-3106-835e-d32b7bb5ba61@linux.alibaba.com>
+References: <20191012071620.8595-1-zhiyuan2048@linux.alibaba.com>
+        <CAM_iQpVkTb6Qf9J-PuXJoQTZa5ojN_oun64SMv9Kji7tZkxSyA@mail.gmail.com>
+        <e2bd3004-9f4b-f3ce-1214-2140f0b7cc61@linux.alibaba.com>
+        <20191016151307.40f63896@jimi>
+        <e16cfafe-059c-3106-835e-d32b7bb5ba61@linux.alibaba.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53428db4-06b9-478f-2084-08d754112b2b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 21:21:41.0559
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mbDfVI5Zc3ghLJxDByWrDQUXWc1FbPc0UZHx2987LtKdG8GXn+m3i1m57+OoqTCNiPcNu2C0Xcqd8qn/Nd/j0w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6142
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTEwLTE4IGF0IDEzOjUwIC0wNzAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
-Cj4gT24gV2VkLCAyMDE5LTEwLTE2IGF0IDE1OjUwIC0wNzAwLCBKb25hdGhhbiBMZW1vbiB3cm90
-ZToNCj4gPiBUaGlzIHBhdGNoIGNvbWJpbmVzIHdvcmsgZnJvbSB2YXJpb3VzIHBlb3BsZToNCj4g
-PiAtIHBhcnQgb2YgVGFyaXEncyB3b3JrIHRvIG1vdmUgdGhlIERNQSBtYXBwaW5nIGZyb20NCj4g
-PiAgIHRoZSBtbHg1IGRyaXZlciBpbnRvIHRoZSBwYWdlIHBvb2wuICBUaGlzIGRvZXMgbm90DQo+
-ID4gICBpbmNsdWRlIGxhdGVyIHBhdGNoZXMgd2hpY2ggcmVtb3ZlIHRoZSBkbWEgYWRkcmVzcw0K
-PiA+ICAgZnJvbSB0aGUgZHJpdmVyLCBhcyB0aGlzIGNvbmZsaWN0cyB3aXRoIEFGX1hEUC4NCj4g
-PiANCj4gPiAtIFNhZWVkJ3MgY2hhbmdlcyB0byBjaGVjayB0aGUgbnVtYSBub2RlIGJlZm9yZQ0K
-PiA+ICAgaW5jbHVkaW5nIHRoZSBwYWdlIGluIHRoZSBwb29sLCBhbmQgZmx1c2hpbmcgdGhlDQo+
-ID4gICBwb29sIG9uIGEgbm9kZSBjaGFuZ2UuDQo+ID4gDQo+IA0KPiBIaSBKb25hdGhhbiwgdGhh
-bmtzIGZvciBzdWJtaXR0aW5nIHRoaXMsDQo+IHRoZSBwYXRjaGVzIHlvdSBoYXZlIGFyZSBub3Qg
-dXAgdG8gZGF0ZSwgaSBoYXZlIG5ldyBvbmVzIHdpdGggdHJhY2luZw0KPiBzdXBwb3J0IGFuZCBz
-b21lIGZpeGVzIGZyb20gb2ZmbGlzdCByZXZpZXcgaXRlcmF0aW9ucywgcGx1cw0KPiBwZXJmb3Jt
-YW5jZQ0KPiBudW1iZXJzIGFuZCBhICBjb3ZlciBsZXR0ZXIuIA0KPiANCj4gSSB3aWxsIHNlbmQg
-aXQgdG8geW91IGFuZCB5b3UgY2FuIHBvc3QgaXQgYXMgdjIgPyANCg0KYWN0dWFsbHkgaSBzdWdn
-ZXN0IHRvIHRha2UgbXkgMyBwYXRjaGVzIG91dCBvZiB0aGlzIHNlcmllcyBhbmQgc3VibWl0DQp0
-aGVtIGFzIHN0YW5kYWxvbmUsIHRoZXkgYXJlIG5vdCBkaXJlY3RseSByZWxhdGVkIHRvIHRoZSBv
-dGhlciBzdHVmZg0KaGVyZSwgYW5kIGNhbiBwZXJmZWN0bHkgd29yayB3aXRob3V0IHRoZW0sIHNp
-bmNlIG15IDMgcGF0Y2hlcyBhcmUNCmFkZHJlc3NpbmcgYSByZWFsIGlzc3VlIHdpdGggcGFnZSBw
-b29sIG51bWEgbm9kZSBtaWdyYXRpb24uDQoNCj4gDQo+IA0KPiA+IC0gU3RhdGlzdGljcyBhbmQg
-Y2xlYW51cCBmb3IgcGFnZSBwb29sLg0KPiA+IA0KPiA+IEpvbmF0aGFuIExlbW9uICg1KToNCj4g
-PiAgIHBhZ2VfcG9vbDogQWRkIHBhZ2VfcG9vbF9rZWVwX3BhZ2UNCj4gPiAgIHBhZ2VfcG9vbDog
-YWxsb3cgY29uZmlndXJhYmxlIGxpbmVhciBjYWNoZSBzaXplDQo+ID4gICBwYWdlX3Bvb2w6IEFk
-ZCBzdGF0aXN0aWNzDQo+ID4gICBuZXQvbWx4NTogQWRkIHBhZ2VfcG9vbCBzdGF0cyB0byB0aGUg
-TWVsbGFub3ggZHJpdmVyDQo+ID4gICBwYWdlX3Bvb2w6IENsZWFudXAgYW5kIHJlbmFtZSBwYWdl
-X3Bvb2wgZnVuY3Rpb25zLg0KPiA+IA0KPiA+IFNhZWVkIE1haGFtZWVkICgyKToNCj4gPiAgIHBh
-Z2VfcG9vbDogQWRkIEFQSSB0byB1cGRhdGUgbnVtYSBub2RlIGFuZCBmbHVzaCBwYWdlIGNhY2hl
-cw0KPiA+ICAgbmV0L21seDVlOiBSeCwgVXBkYXRlIHBhZ2UgcG9vbCBudW1hIG5vZGUgd2hlbiBj
-aGFuZ2VkDQo+ID4gDQo+ID4gVGFyaXEgVG91a2FuICgzKToNCj4gPiAgIG5ldC9tbHg1ZTogUlgs
-IFJlbW92ZSBSWCBwYWdlLWNhY2hlDQo+ID4gICBuZXQvbWx4NWU6IFJYLCBNYW5hZ2UgUlggcGFn
-ZXMgb25seSB2aWEgcGFnZSBwb29sIEFQSQ0KPiA+ICAgbmV0L21seDVlOiBSWCwgSW50ZXJuYWwg
-RE1BIG1hcHBpbmcgaW4gcGFnZV9wb29sDQo+ID4gDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9lbi5oICB8ICAxOCArLQ0KPiA+ICAuLi4vbmV0L2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9lbi94ZHAuYyAgfCAgMTIgKy0NCj4gPiAgLi4uL25ldC9ldGhl
-cm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fbWFpbi5jIHwgIDE5ICstDQo+ID4gIC4uLi9uZXQv
-ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmMgICB8IDEyOCArKy0tLS0tLS0tDQo+
-ID4gIC4uLi9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fc3RhdHMuYyAgICB8ICAzOSAr
-Ky0tDQo+ID4gIC4uLi9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fc3RhdHMuaCAgICB8
-ICAxOSArLQ0KPiA+ICBpbmNsdWRlL25ldC9wYWdlX3Bvb2wuaCAgICAgICAgICAgICAgICAgICAg
-ICAgfCAyMTYgKysrKysrKysrLS0tLS0NCj4gPiAtLQ0KPiA+IC0NCj4gPiAgbmV0L2NvcmUvcGFn
-ZV9wb29sLmMgICAgICAgICAgICAgICAgICAgICAgICAgIHwgMjIxICsrKysrKysrKysrLS0tDQo+
-ID4gLS0NCj4gPiAtLQ0KPiA+ICA4IGZpbGVzIGNoYW5nZWQsIDMxOSBpbnNlcnRpb25zKCspLCAz
-NTMgZGVsZXRpb25zKC0pDQo+ID4gDQo=
+Hi,
+
+On Fri, 18 Oct 2019 00:33:53 +0800
+Zhiyuan Hou <zhiyuan2048@linux.alibaba.com> wrote:
+
+> On 2019/10/16 8:13 =E4=B8=8B=E5=8D=88, Eyal Birger wrote:
+> > Hi,
+> >
+> > On Wed, 16 Oct 2019 01:22:01 +0800
+> > Zhiyuan Hou <zhiyuan2048@linux.alibaba.com> wrote:
+> > =20
+> >> On 2019/10/15 1:57 =E4=B8=8A=E5=8D=88, Cong Wang wrote: =20
+> >>> On Sat, Oct 12, 2019 at 12:16 AM Zhiyuan Hou
+> >>> <zhiyuan2048@linux.alibaba.com> wrote: =20
+> >>>> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+> >>>> index 9ce073a05414..6108a64c0cd5 100644
+> >>>> --- a/net/sched/act_mirred.c
+> >>>> +++ b/net/sched/act_mirred.c
+> >>>> @@ -18,6 +18,7 @@
+> >>>>    #include <linux/gfp.h>
+> >>>>    #include <linux/if_arp.h>
+> >>>>    #include <net/net_namespace.h>
+> >>>> +#include <net/dst.h>
+> >>>>    #include <net/netlink.h>
+> >>>>    #include <net/pkt_sched.h>
+> >>>>    #include <net/pkt_cls.h>
+> >>>> @@ -298,8 +299,10 @@ static int tcf_mirred_act(struct sk_buff
+> >>>> *skb, const struct tc_action *a,
+> >>>>
+> >>>>           if (!want_ingress)
+> >>>>                   err =3D dev_queue_xmit(skb2);
+> >>>> -       else
+> >>>> +       else {
+> >>>> +               skb_dst_drop(skb2);
+> >>>>                   err =3D netif_receive_skb(skb2);
+> >>>> +       } =20
+> >>> Good catch! =20
+> > Indeed! Thanks for fixing this!
+> > =20
+> >>> I don't want to be picky, but it seems this is only needed
+> >>> when redirecting from egress to ingress, right? That is,
+> >>> ingress to ingress, or ingress to egress is okay? If not,
+> >>> please fix all the cases while you are on it? =20
+> >> Sure. But I think this patch is also needed when redirecting from
+> >> ingress to ingress. Because we cannot assure that a skb has null
+> >> dst in ingress redirection path. For example, if redirecting a skb
+> >> from loopback's ingress to other device's ingress, the skb will
+> >> take a dst.
+> >>
+> >> As commit logs point out, skb with valid dst cannot be made routing
+> >> decision in following process. original dst may cause skb loss or
+> >> other unexpected behavior. =20
+> > On the other hand, removing the dst on ingress-to-ingress
+> > redirection may remove LWT information on incoming packets, which
+> > may be undesired. =20
+> Sorry, I do not understand why lwt information is needed on
+> ingress-to-ingress redirection. lwt is used on output path, isn't it?
+> Can you please give more information?
+
+On rx path tunnelled packets parameters received on a collect_md tunnel dev=
+ice
+are kept in a metadata dst. See ip_tunnel_rcv() 'tun_dst' parameter.
+
+The rx metadata dst can be matched by a number of mechanisms like routing
+rules, eBPF, OVS, and netfilter.
+
+Eyal.
