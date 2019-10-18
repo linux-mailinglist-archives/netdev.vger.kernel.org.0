@@ -2,124 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E6CDD579
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 01:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41356DD584
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 01:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389572AbfJRXcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 19:32:13 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42477 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387700AbfJRXcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 19:32:13 -0400
-Received: by mail-pg1-f194.google.com with SMTP id f14so4151666pgi.9
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 16:32:13 -0700 (PDT)
+        id S2389854AbfJRXdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 19:33:07 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:34205 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387537AbfJRXdH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 19:33:07 -0400
+Received: by mail-ed1-f68.google.com with SMTP id j8so5834910eds.1
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 16:33:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=H/TQjNeNKxKr1wMUHNfad1MrCG9TgOKr/P3RNrPzY2M=;
-        b=in7df1+CnzZOQfNJwxWO0fosUZecRxsNJEvmAfl4SG3MZu3QiGpG2AzeQ5qntBnA4p
-         MkKVtATlsHR98w5e0uEGaqTxy8TFSkhNC3xrmTTXxWGCx8/SMSPauaB/G4Efdvn3A31X
-         3Imx5SXLJYLMIucfiqb1NMF5nvPB23qdeX+58lTNmCpjgg4Xq0rjamse9XlKQQInrhZe
-         Vqu21B5LtXoHqfdvCoIKUr+vgpiVJqIecq5McD/YSabkrsOICZ98hQSlYpY0gSIyDLJx
-         nvZQ3/vjV2ZNzbapRigfHNpOvarnfTuBDstJJd//wAUKZOkAq6vP2cjY7Kl6sjDyHG+T
-         irWQ==
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N40e/ylM8dqeHfDtCcJ9x1/H39YQ1mOc2g8HRa8K5V8=;
+        b=acSRrrfv205SPXhKfldkHTQgIVZ22tPpBv6Awa4of41qffawHQWnA7qSPICaVjMmiB
+         s4eoLcqqfZB/l4QZoMvRMIHBOs0a/4BGvDBwMpHT32wWDqHlwD8nx59ZG3+P6rPUrBH0
+         XKvUUiPURcB1PlcVl/DzXwph5gjOuM5h25SvlZJvG/oyJObwD+ANeuUrSwTFvA2isr+V
+         0WXWFzdiOp/x5jKhKpPuxMMCe4CrqOGDHMOsJ8hr3YYciFUhPyh5si8mFWa2JYQdoZHu
+         hb/fLZY2zB8SmR+seAhN9NIlMH9t6cJQI/xjjhjW4mvcN7++XpzW7xSgUlvAiomEa0eF
+         D8mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=H/TQjNeNKxKr1wMUHNfad1MrCG9TgOKr/P3RNrPzY2M=;
-        b=FZzqaeRMwpSgSbfNx2kXPxeCMbhrS7/OPl5Ax0mZEj414yC/e0YyE4p/dj1YLoUuNA
-         mgwXiBGIVhX766ww2zeKjyqxjAt4A/gRjbSnj3PgB3IfQcwtx2ejxgY77widud8NboEt
-         E7GRsx3eDfNJ7Ei0UKlmFS59n+9osfU/dHSNTJLVn9brGtDOpuVTIyaphKOOEUuhc1ws
-         /ffLKwS1hiyCzedjV3mWsmN1oNPEVPz660YJSxijn56iHgUG+cL8s7UxoDNiI9Oq7kge
-         E5LIzHIIGWGyVpv6+jXHNaDz8WRLPlBSTaLEXb5zMEvhNs5BIGqIytLY/6FKYqoMrtwK
-         bP9g==
-X-Gm-Message-State: APjAAAX/tkna2rN/fxgaAgbFbNQUBrm6z/TNPrDafL4uXz8wx2OhhQS2
-        3S5BBbp3gN7+SBGmEO/u6ag=
-X-Google-Smtp-Source: APXvYqxFfUxBYW4wfOk2g6J+8ggoe00A8jSJh0ZLO4GocVexTX6lPoWoAIYEqXRDNQOX4YkCR2gh4g==
-X-Received: by 2002:a63:1945:: with SMTP id 5mr12495184pgz.157.1571441532459;
-        Fri, 18 Oct 2019 16:32:12 -0700 (PDT)
-Received: from [172.20.162.151] ([2620:10d:c090:180::d0dd])
-        by smtp.gmail.com with ESMTPSA id u11sm9714144pgo.65.2019.10.18.16.32.11
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=N40e/ylM8dqeHfDtCcJ9x1/H39YQ1mOc2g8HRa8K5V8=;
+        b=iIRDWlZLlW/XwsJBPkc7vWsDjZnyxhVkPUB6r88mikdY5LYBhEsw0pdHDF36kcI2/A
+         Jo+pivPsS6YvPaFyYkPjlMOGkcka/suayfzFzwVIzThp7zJm9GCi74yntWD/u+Og174G
+         9gUqkfyy8kyzPg1fI1O5T7QBbIbFMQ1+SkMVUKV04LBFt/KBwYmyxHz1lBXq9LqAUzvO
+         pSjErGrEIvDK9n6sOzIyS8U1sOwsFck/dIFXgpd45QfESg7HbzR7c5eaFDWVXteFY7WV
+         mnICRrG3/rLLGYlmK6hiYkMFq58VJYHvSBFNWgxuC+eOHS3r2QFgRL5CEIQ8kuvQFn/I
+         yy4w==
+X-Gm-Message-State: APjAAAX+u7z7xovTZVW0DXhin4xrGGYOYQLDQD+KEjdLZheZSUkNoYsU
+        Er2UXKqjZlB4VI2CA8eDwK1LY9cH
+X-Google-Smtp-Source: APXvYqzs73mNjzoRvAMVxWUJxb+EzG+oPrDsdvkD7XrTfhTTj6NhDnu74OeITILn1p0k6w8vYsLZSQ==
+X-Received: by 2002:a50:f384:: with SMTP id g4mr12321523edm.282.1571441585713;
+        Fri, 18 Oct 2019 16:33:05 -0700 (PDT)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id l22sm33047ejg.40.2019.10.18.16.33.03
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Oct 2019 16:32:11 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Saeed Mahameed" <saeedm@mellanox.com>
-Cc:     ilias.apalodimas@linaro.org, "Tariq Toukan" <tariqt@mellanox.com>,
-        brouer@redhat.com, kernel-team@fb.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 00/10 net-next] page_pool cleanups
-Date:   Fri, 18 Oct 2019 16:32:07 -0700
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <A6D1D7E1-56F4-4474-A7E7-68627AEE528D@gmail.com>
-In-Reply-To: <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
- <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
+        Fri, 18 Oct 2019 16:33:04 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: fix switch tree list
+To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20191018210246.3018693-1-vivien.didelot@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <ac47f14a-c981-0504-d399-930830e655cf@gmail.com>
+Date:   Fri, 18 Oct 2019 16:33:02 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20191018210246.3018693-1-vivien.didelot@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/18/19 2:02 PM, Vivien Didelot wrote:
+> If there are multiple switch trees on the device, only the last one
+> will be listed, because the arguments of list_add_tail are swapped.
+> 
+> Fixes: 83c0afaec7b7 ("net: dsa: Add new binding implementation")
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-On 18 Oct 2019, at 13:50, Saeed Mahameed wrote:
-
-> On Wed, 2019-10-16 at 15:50 -0700, Jonathan Lemon wrote:
->> This patch combines work from various people:
->> - part of Tariq's work to move the DMA mapping from
->>   the mlx5 driver into the page pool.  This does not
->>   include later patches which remove the dma address
->>   from the driver, as this conflicts with AF_XDP.
->>
->> - Saeed's changes to check the numa node before
->>   including the page in the pool, and flushing the
->>   pool on a node change.
->>
->
-> Hi Jonathan, thanks for submitting this,
-> the patches you have are not up to date, i have new ones with tracing
-> support and some fixes from offlist review iterations, plus performance
-> numbers and a  cover letter.
->
-> I will send it to you and you can post it as v2 ?
-
-Sure, I have some other cleanups to do and have a concern about
-the cache effectiveness for some workloads.
+Nice catch!
 -- 
-Jonathan
-
-
->
->
->> - Statistics and cleanup for page pool.
->>
->> Jonathan Lemon (5):
->>   page_pool: Add page_pool_keep_page
->>   page_pool: allow configurable linear cache size
->>   page_pool: Add statistics
->>   net/mlx5: Add page_pool stats to the Mellanox driver
->>   page_pool: Cleanup and rename page_pool functions.
->>
->> Saeed Mahameed (2):
->>   page_pool: Add API to update numa node and flush page caches
->>   net/mlx5e: Rx, Update page pool numa node when changed
->>
->> Tariq Toukan (3):
->>   net/mlx5e: RX, Remove RX page-cache
->>   net/mlx5e: RX, Manage RX pages only via page pool API
->>   net/mlx5e: RX, Internal DMA mapping in page_pool
->>
->>  drivers/net/ethernet/mellanox/mlx5/core/en.h  |  18 +-
->>  .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  12 +-
->>  .../net/ethernet/mellanox/mlx5/core/en_main.c |  19 +-
->>  .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 128 ++--------
->>  .../ethernet/mellanox/mlx5/core/en_stats.c    |  39 ++--
->>  .../ethernet/mellanox/mlx5/core/en_stats.h    |  19 +-
->>  include/net/page_pool.h                       | 216 +++++++++-------
->> -
->>  net/core/page_pool.c                          | 221 +++++++++++-----
->> --
->>  8 files changed, 319 insertions(+), 353 deletions(-)
->>
+Florian
