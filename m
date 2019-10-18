@@ -2,94 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37DEFDBA61
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 02:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B084DBA62
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 02:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441852AbfJRABJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 20:01:09 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:43990 "EHLO
+        id S2503752AbfJRABV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 20:01:21 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:44000 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729190AbfJRABJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 20:01:09 -0400
+        with ESMTP id S1729190AbfJRABV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 20:01:21 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8EF2F1433FC52;
-        Thu, 17 Oct 2019 17:01:08 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 17:01:08 -0700 (PDT)
-Message-Id: <20191017.170108.328402494902327524.davem@davemloft.net>
-To:     sbrivio@redhat.com
-Cc:     walteste@inf.ethz.ch, bcodding@redhat.com, gsierohu@redhat.com,
-        nforro@redhat.com, edumazet@google.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] ipv4: Return -ENETUNREACH if we can't create
- route but saddr is valid
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 273191433FC52;
+        Thu, 17 Oct 2019 17:01:21 -0700 (PDT)
+Date:   Thu, 17 Oct 2019 17:01:20 -0700 (PDT)
+Message-Id: <20191017.170120.984298608358144040.davem@davemloft.net>
+To:     weiwan@google.com
+Cc:     netdev@vger.kernel.org, idosch@idosch.org, jesse@mbuki-mvuki.org,
+        kafai@fb.com, dsahern@gmail.com
+Subject: Re: [PATCH net] ipv4: fix race condition between route lookup and
+ invalidation
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <25812471222471a51caf0a749c7bbc321047ae5e.1571251375.git.sbrivio@redhat.com>
-References: <25812471222471a51caf0a749c7bbc321047ae5e.1571251375.git.sbrivio@redhat.com>
+In-Reply-To: <20191016190315.151095-1-weiwan@google.com>
+References: <20191016190315.151095-1-weiwan@google.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 17 Oct 2019 17:01:08 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 17 Oct 2019 17:01:21 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
-Date: Wed, 16 Oct 2019 20:52:09 +0200
+From: Wei Wang <weiwan@google.com>
+Date: Wed, 16 Oct 2019 12:03:15 -0700
 
-> ...instead of -EINVAL. An issue was found with older kernel versions
-> while unplugging a NFS client with pending RPCs, and the wrong error
-> code here prevented it from recovering once link is back up with a
-> configured address.
+> Jesse and Ido reported the following race condition:
+> <CPU A, t0> - Received packet A is forwarded and cached dst entry is
+> taken from the nexthop ('nhc->nhc_rth_input'). Calls skb_dst_set()
 > 
-> Incidentally, this is not an issue anymore since commit 4f8943f80883
-> ("SUNRPC: Replace direct task wakeups from softirq context"), included
-> in 5.2-rc7, had the effect of decoupling the forwarding of this error
-> by using SO_ERROR in xs_wake_error(), as pointed out by Benjamin
-> Coddington.
+> <t1> - Given Jesse has busy routers ("ingesting full BGP routing tables
+> from multiple ISPs"), route is added / deleted and rt_cache_flush() is
+> called
 > 
-> To the best of my knowledge, this isn't currently causing any further
-> issue, but the error code doesn't look appropriate anyway, and we
-> might hit this in other paths as well.
+> <CPU B, t2> - Received packet B tries to use the same cached dst entry
+> from t0, but rt_cache_valid() is no longer true and it is replaced in
+> rt_cache_route() by the newer one. This calls dst_dev_put() on the
+> original dst entry which assigns the blackhole netdev to 'dst->dev'
 > 
-> In detail, as analysed by Gonzalo Siero, once the route is deleted
-> because the interface is down, and can't be resolved and we return
-> -EINVAL here, this ends up, courtesy of inet_sk_rebuild_header(),
-> as the socket error seen by tcp_write_err(), called by
-> tcp_retransmit_timer().
+> <CPU A, t3> - dst_input(skb) is called on packet A and it is dropped due
+> to 'dst->dev' being the blackhole netdev
 > 
-> In turn, tcp_write_err() indirectly calls xs_error_report(), which
-> wakes up the RPC pending tasks with a status of -EINVAL. This is then
-> seen by call_status() in the SUN RPC implementation, which aborts the
-> RPC call calling rpc_exit(), instead of handling this as a
-> potentially temporary condition, i.e. as a timeout.
+> There are 2 issues in the v4 routing code:
+> 1. A per-netns counter is used to do the validation of the route. That
+> means whenever a route is changed in the netns, users of all routes in
+> the netns needs to redo lookup. v6 has an implementation of only
+> updating fn_sernum for routes that are affected.
+> 2. When rt_cache_valid() returns false, rt_cache_route() is called to
+> throw away the current cache, and create a new one. This seems
+> unnecessary because as long as this route does not change, the route
+> cache does not need to be recreated.
 > 
-> Return -EINVAL only if the input parameters passed to
-> ip_route_output_key_hash_rcu() are actually invalid (this is the case
-> if the specified source address is multicast, limited broadcast or
-> all zeroes), but return -ENETUNREACH in all cases where, at the given
-> moment, the given source address doesn't allow resolving the route.
+> To fully solve the above 2 issues, it probably needs quite some code
+> changes and requires careful testing, and does not suite for net branch.
 > 
-> While at it, drop the initialisation of err to -ENETUNREACH, which
-> was added to __ip_route_output_key() back then by commit
-> 0315e3827048 ("net: Fix behaviour of unreachable, blackhole and
-> prohibit routes"), but actually had no effect, as it was, and is,
-> overwritten by the fib_lookup() return code assignment, and anyway
-> ignored in all other branches, including the if (fl4->saddr) one:
-> I find this rather confusing, as it would look like -ENETUNREACH is
-> the "default" error, while that statement has no effect.
+> So this patch only tries to add the deleted cached rt into the uncached
+> list, so user could still be able to use it to receive packets until
+> it's done.
 > 
-> Also note that after commit fc75fc8339e7 ("ipv4: dont create routes
-> on down devices"), we would get -ENETUNREACH if the device is down,
-> but -EINVAL if the source address is specified and we can't resolve
-> the route, and this appears to be rather inconsistent.
-> 
-> Reported-by: Stefan Walter <walteste@inf.ethz.ch>
-> Analysed-by: Benjamin Coddington <bcodding@redhat.com>
-> Analysed-by: Gonzalo Siero <gsierohu@redhat.com>
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> Fixes: 95c47f9cf5e0 ("ipv4: call dst_dev_put() properly")
+> Signed-off-by: Wei Wang <weiwan@google.com>
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Reported-by: Jesse Hathaway <jesse@mbuki-mvuki.org>
+> Tested-by: Jesse Hathaway <jesse@mbuki-mvuki.org>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
 Applied and queued up for -stable.
