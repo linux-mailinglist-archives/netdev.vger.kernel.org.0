@@ -2,188 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81EE2DC9DC
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 17:53:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A661DC9EF
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 17:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406327AbfJRPxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 11:53:40 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:3186 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727668AbfJRPxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 11:53:40 -0400
-Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
-  Nicolas.Ferre@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="Nicolas.Ferre@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa6.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa6.microchip.iphmx.com; spf=Pass smtp.mailfrom=Nicolas.Ferre@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: OYZmKHXyVFsnnMlBBZrFBE7my3sxnd5YNJBQz6t9fD41YzvZQi1q2zQAzpbDvfInGMNskRdiF8
- vKfGVOOaho2tL4thQrf2DfCxI6Ddq71QZQWHP5fauh1GG5fgS8jPY1H4oYKXygacnAcBPCvH3x
- Lf41oacr84Y55wJfWrYBc4ooH2DCZBWNNo0gzeRNhpkhMfa1hJ/ruBfOsSZ8DYn3Z6lFei/Dsa
- +cJ2ejkB8sP2yiad2/eW9O/Ry4WsFAx1IlRgBE/Ygyy02OPaYYAbIHhnHT9sghpkSAeQQMtSVD
- 558=
-X-IronPort-AV: E=Sophos;i="5.67,312,1566889200"; 
-   d="scan'208";a="50658316"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Oct 2019 08:53:38 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 18 Oct 2019 08:53:38 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 18 Oct 2019 08:53:38 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CUeKWtJGfcD+l8QoUMeNu6H87MRHjMOLvHylCvWIS6+NCvRVn91CyUfk+umH4Lntvxv6D3b1Y1K1eCp8+Bih5Q0pvl4KKHlGDaYzDWPMFBY/DHg7e6PNv/dDJejYkN6QDN5fJHb9szK8ODmtbcaJ2lXnCze2yIOfIJWM6XuMC+wTESiqm8L7ETF96CjPt/inrwBhZBVVoIkdv5mlYwkqqkO8UDXDwEkH05/+81pwFz1PKFekhZeRpJcoYHOOfFPKQjj/I0ZnQcuf4jmfP23ctfrwBdW9GIH3Uws7seAW1M25mlasizwJ6LEjv1cmefe9aKOwnzdUGlbB7M2Ap7kBdA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S3KzmAOj1IGT7tRaCapm81TGgxk1+c4a/XgVZqrdLf0=;
- b=IroUVpNl9o9lNZqMvGP7DaBDpISZJPMT0ztq1wLnrucwsCXOVsUHLkt13q4M2+/TsCftzm8b/I+ppGYgAMm7zJydtMEHPps/EP640kjWgOME4N6CSt3PK3yE4BPDJh6Gr5LAGO50FNpPh2hPmQUJbxH0QBhBkb3StEKNGFwQo0YOcvR6x5R7VgoSRLpiNNP1pugIE41Nv/G21DCWhkja/a7pNEWdR81kN2HZTJWG+TBR4yYY3+yGPNdcaZS93buy8ZBhUSvVrRNRodYHXzEIOL+cYmrmDEeUb8kYdjNGJTxDetaHOdZovFyBHsY5lttn6UJ/yPPHp1gRFZ56eCDlww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S2390054AbfJRPzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 11:55:04 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45895 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436481AbfJRPzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 11:55:04 -0400
+Received: by mail-pg1-f193.google.com with SMTP id r1so3586740pgj.12
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 08:55:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S3KzmAOj1IGT7tRaCapm81TGgxk1+c4a/XgVZqrdLf0=;
- b=DX9Ux0XDWZ6U616FL7ay4aDSQnx8gJPg/R06/jX3pTDjCEzuWQ2iV0fVqUXO+rTltWzLZoTf/dKW/kRYEh2CwBRD3VShBscWdkCt96Gz5TOYomZSrWaTOPiSe1P4LOy8neuthatneqLqybnepjPDUsbHvsxc2/hVCfBF33MXvFo=
-Received: from MWHPR11MB1662.namprd11.prod.outlook.com (10.172.55.15) by
- MWHPR11MB2029.namprd11.prod.outlook.com (10.169.235.143) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Fri, 18 Oct 2019 15:53:37 +0000
-Received: from MWHPR11MB1662.namprd11.prod.outlook.com
- ([fe80::5d81:aef1:f63:3735]) by MWHPR11MB1662.namprd11.prod.outlook.com
- ([fe80::5d81:aef1:f63:3735%3]) with mapi id 15.20.2347.023; Fri, 18 Oct 2019
- 15:53:37 +0000
-From:   <Nicolas.Ferre@microchip.com>
-To:     <m.tretter@pengutronix.de>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <alexandre.belloni@bootlin.com>,
-        <antoine.tenart@bootlin.com>, <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH] macb: propagate errors when getting optional clocks
-Thread-Topic: [PATCH] macb: propagate errors when getting optional clocks
-Thread-Index: AQHVhb4QQinep2IHYEau77BgGFAPSqdgjOMA
-Date:   Fri, 18 Oct 2019 15:53:36 +0000
-Message-ID: <8e505dcc-c485-3413-af9a-2062c113d22f@microchip.com>
-References: <20191018141143.24148-1-m.tretter@pengutronix.de>
-In-Reply-To: <20191018141143.24148-1-m.tretter@pengutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0019.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:62::31) To MWHPR11MB1662.namprd11.prod.outlook.com
- (2603:10b6:301:e::15)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [213.41.198.74]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dd4c8144-5f4b-4453-33eb-08d753e3562b
-x-ms-traffictypediagnostic: MWHPR11MB2029:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB20293594D38534F3D027C8D3E06C0@MWHPR11MB2029.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 01949FE337
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(396003)(136003)(346002)(376002)(189003)(199004)(256004)(71190400001)(14454004)(446003)(107886003)(486006)(2616005)(186003)(2906002)(11346002)(4326008)(71200400001)(476003)(26005)(54906003)(110136005)(6246003)(3846002)(6116002)(2501003)(6512007)(229853002)(6486002)(6436002)(8936002)(64756008)(66446008)(66066001)(31686004)(66946007)(66556008)(66476007)(76176011)(316002)(81166006)(7736002)(53546011)(6506007)(5660300002)(99286004)(478600001)(52116002)(386003)(36756003)(31696002)(8676002)(102836004)(86362001)(81156014)(25786009)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB2029;H:MWHPR11MB1662.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bPsO+6utOEv6TRVoNJ4sUzvuk6lr6Yala8YL5GSJmQVLbVFiTfNH1I2SJBG81OtkL0+5AC+xLKa9V6Z9Ojd5kHZxXBP4bt6meE1Jup28vguZ8yJEXcikFb24a5wwGojY/LpsGlecl5aNrmuNOWf+itKPkLrXTdeJ11PgfJDKqCKdD3xF2vixE1I/7BoIWpQox16LVyCkcOlzaiFlLNxyU+JbktLcIbEzRsxxyeDRWNJUTOj767YPxH2TCJzC2SMjUv7pjqDoEhxjXu/djcBs9EkkXqngqXkKKVJySr/nwNsW5RaAbt5izIEBUqOHg9ivKRljr+r3Wg+ZP6UVR7zP5c6Wa7RQwgoie/w9gXyH1HPyA1vboiqQPNRgFOldt46Wxu1kxQZ0EkNbU34bc4fl/5CtEPCyTeGm0Lh5tNrl15k=
-Content-Type: text/plain; charset="Windows-1252"
-Content-ID: <F03A60334DD12249A446D84FB3B62308@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LBUYF/N7x8hbc8GXc7h+thi64B1eIh6Rk/6W7sM3oDM=;
+        b=2SvE9jA2N9du2TOdHNwiaPTDUtX3LC9qU6IA6N/SxuhNG9wVeJptkOCG8EPnG5nT83
+         LfiwGHMm1CQb03m7K3V3JrGsT9cJ5dsNUssGn/5iuSe81S5a5SwjZwcVA7cJ3wvWcK5S
+         JhB1UrdHdVpikBCsmbAQCZyZmG8MadJeyEv8v8zuI2gPAQ469+ReOvZxvChDVZo8Bt2o
+         2/bKGiFVwJR40QjUtWSLoNqDyCcjNpuRPv9mhuBtm3TIGqZn65/ji3TVmb4wo3ub0cS+
+         cM1k6NgfOmBVOyVzmpP2XqFrSBJ94Na173dAkanx53gxYsXIkP5KjeCvK3+OCS56Jwep
+         Ek7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LBUYF/N7x8hbc8GXc7h+thi64B1eIh6Rk/6W7sM3oDM=;
+        b=WtzQuE4YiW7vf/pi3F31oyD0T/w+ahot2BtG/BhjKYM1pTdFAdhEWqvivaEY+sl/qr
+         j7r3ZgW7FZ7E1uNunoV7+Y73/U+y1nKn5isubpC9r83HREnaRFlifKMjqcfjMG7qzPU7
+         /BrQfREq4oaD23BMx6Z6+TeeX6zEq4Kxex44JeachaBHiLd25DwsjMtminLckE81FKs0
+         Y5ZJvn+EBqZgdyBWdBBWIHNGNW6YxZtalOjk0x4brqHT/d/nNxgeMxI4ZGouctZ5JeTl
+         FdQHROGwPuVTcptSxz7strgubTS1RBHk0V85gdtEj7XuoD/oeVfL+P8ADGeqcBTHMZ6Q
+         /smA==
+X-Gm-Message-State: APjAAAWdBJjdcWvva3Pv2bnLPOfMh+zdGX+gjW9/qp9TKCX994O+mcvr
+        92xD9EQIa+Hm1a5UBW5E5kgm14d9iCZqHw==
+X-Google-Smtp-Source: APXvYqx0fQSBv0grZFNNFFic5PMS6uA+D2YOVm/rTZfXICvRdP6ONY/5m1YsYPPrw0eZ6xu7bBg5kA==
+X-Received: by 2002:a63:f854:: with SMTP id v20mr10543680pgj.92.1571414101262;
+        Fri, 18 Oct 2019 08:55:01 -0700 (PDT)
+Received: from [192.168.1.188] ([66.219.217.79])
+        by smtp.gmail.com with ESMTPSA id y10sm6520405pfe.148.2019.10.18.08.54.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Oct 2019 08:55:00 -0700 (PDT)
+Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting files
+ table
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Jann Horn <jannh@google.com>
+Cc:     linux-block@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+References: <20191017212858.13230-1-axboe@kernel.dk>
+ <20191017212858.13230-2-axboe@kernel.dk>
+ <CAG48ez0G2y0JS9=S2KmePO3xq-5DuzgovrLFiX4TJL-G897LCA@mail.gmail.com>
+ <0fb9d9a0-6251-c4bd-71b0-6e34c6a1aab8@kernel.dk>
+ <CAG48ez181=JoYudXee0KbU0vDZ=EbxmgB7q0mmjaA0gyp6MFBQ@mail.gmail.com>
+ <a54329d5-a128-3ccd-7a12-f6cadaa20dbf@kernel.dk>
+ <CAG48ez1SDQNHjgFku4ft4qw9hdv1g6-sf7-dxuU_tJSx+ofV-w@mail.gmail.com>
+ <dbcf874d-8484-9c27-157a-c2752181acb5@kernel.dk>
+ <CAG48ez3KwaQ3DVH1VoWxFWTG2ZfCQ6M0oyv5vZqkLgY0QDEdiw@mail.gmail.com>
+ <a8fb7a1f-69c7-bf2a-b3dd-7886077d234b@kernel.dk>
+Message-ID: <572f40fb-201c-99ce-b3f5-05ff9369b895@kernel.dk>
+Date:   Fri, 18 Oct 2019 09:54:57 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd4c8144-5f4b-4453-33eb-08d753e3562b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 15:53:36.8586
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: No+e531N/9aOd39FCjYyatxx4VatlAIV/TD4xKprpVUJbfVuNB2qKTdOmPMYJp3pM4gj9NzuOubo1sEz10kS6IhxVsr3+jPMOW6Nn/VOAqA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB2029
+In-Reply-To: <a8fb7a1f-69c7-bf2a-b3dd-7886077d234b@kernel.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/10/2019 at 16:11, Michael Tretter wrote:
-> The tx_clk, rx_clk, and tsu_clk are optional. Currently the macb driver
-> marks clock as not available if it receives an error when trying to get
-> a clock. This is wrong, because a clock controller might return
-> -EPROBE_DEFER if a clock is not available, but will eventually become
-> available.
->=20
-> In these cases, the driver would probe successfully but will never be
-> able to adjust the clocks, because the clocks were not available during
-> probe, but became available later.
->=20
-> For example, the clock controller for the ZynqMP is implemented in the
-> PMU firmware and the clocks are only available after the firmware driver
-> has been probed.
->=20
-> Use devm_clk_get_optional() in instead of devm_clk_get() to get the
-> optional clock and propagate all errors to the calling function.
->=20
-> Signed-off-by: Michael Tretter <m.tretter@pengutronix.de>
+On 10/18/19 9:00 AM, Jens Axboe wrote:
+> On 10/18/19 8:52 AM, Jann Horn wrote:
+>> On Fri, Oct 18, 2019 at 4:43 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>>
+>>> On 10/18/19 8:40 AM, Jann Horn wrote:
+>>>> On Fri, Oct 18, 2019 at 4:37 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>>>>
+>>>>> On 10/18/19 8:34 AM, Jann Horn wrote:
+>>>>>> On Fri, Oct 18, 2019 at 4:01 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>>>>>> On 10/17/19 8:41 PM, Jann Horn wrote:
+>>>>>>>> On Fri, Oct 18, 2019 at 4:01 AM Jens Axboe <axboe@kernel.dk> wrote:
+>>>>>>>>> This is in preparation for adding opcodes that need to modify files
+>>>>>>>>> in a process file table, either adding new ones or closing old ones.
+>>>>>> [...]
+>>>>>>> Updated patch1:
+>>>>>>>
+>>>>>>> http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=df6caac708dae8ee9a74c9016e479b02ad78d436
+>>>>>>
+>>>>>> I don't understand what you're doing with old_files in there. In the
+>>>>>> "s->files && !old_files" branch, "current->files = s->files" happens
+>>>>>> without holding task_lock(), but current->files and s->files are also
+>>>>>> the same already at that point anyway. And what's the intent behind
+>>>>>> assigning stuff to old_files inside the loop? Isn't that going to
+>>>>>> cause the workqueue to keep a modified current->files beyond the
+>>>>>> runtime of the work?
+>>>>>
+>>>>> I simply forgot to remove the old block, it should only have this one:
+>>>>>
+>>>>> if (s->files && s->files != cur_files) {
+>>>>>            task_lock(current);
+>>>>>            current->files = s->files;
+>>>>>            task_unlock(current);
+>>>>>            if (cur_files)
+>>>>>                    put_files_struct(cur_files);
+>>>>>            cur_files = s->files;
+>>>>> }
+>>>>
+>>>> Don't you still need a put_files_struct() in the case where "s->files
+>>>> == cur_files"?
+>>>
+>>> I want to hold on to the files for as long as I can, to avoid unnecessary
+>>> shuffling of it. But I take it your worry here is that we'll be calling
+>>> something that manipulates ->files? Nothing should do that, unless
+>>> s->files is set. We didn't hide the workqueue ->files[] before this
+>>> change either.
+>>
+>> No, my worry is that the refcount of the files_struct is left too
+>> high. From what I can tell, the "do" loop in io_sq_wq_submit_work()
+>> iterates over multiple instances of struct sqe_submit. If there are
+>> two sqe_submit instances with the same ->files (each holding a
+>> reference from the get_files_struct() in __io_queue_sqe()), then:
+>>
+>> When processing the first sqe_submit instance, current->files and
+>> cur_files are set to $user_files.
+>> When processing the second sqe_submit instance, nothing happens
+>> (s->files == cur_files).
+>> After the loop, at the end of the function, put_files_struct() is
+>> called once on $user_files.
+>>
+>> So get_files_struct() has been called twice, but put_files_struct()
+>> has only been called once. That leaves the refcount too high, and by
+>> repeating this, an attacker can make the refcount wrap around and then
+>> cause a use-after-free.
+> 
+> Ah now I see what you are getting at, yes that's clearly a bug! I wonder
+> how we best safely can batch the drops. We can track the number of times
+> we've used the same files, and do atomic_sub_and_test() in a
+> put_files_struct_many() type addition. But that would leave us open to
+> the issue you describe, where someone could maliciously overflow the
+> files ref count.
+> 
+> Probably not worth over-optimizing, as long as we can avoid the
+> current->files task lock/unlock and shuffle.
+> 
+> I'll update the patch.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Tested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-(for the record: on sama5d3 xplained GMAC and MACB interfaces)
+Alright, this incremental on top should do it. And full updated patch
+here:
 
-Thank you Michael. Best regards,
-   Nicolas
+http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=40449c5a3d3b16796fa13e9469c69d62986e961c
 
-> ---
->   drivers/net/ethernet/cadence/macb_main.c | 12 ++++++------
->   1 file changed, 6 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ether=
-net/cadence/macb_main.c
-> index 8e8d557901a9..1e1b774e1953 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -3405,17 +3405,17 @@ static int macb_clk_init(struct platform_device *=
-pdev, struct clk **pclk,
->   		return err;
->   	}
->  =20
-> -	*tx_clk =3D devm_clk_get(&pdev->dev, "tx_clk");
-> +	*tx_clk =3D devm_clk_get_optional(&pdev->dev, "tx_clk");
->   	if (IS_ERR(*tx_clk))
-> -		*tx_clk =3D NULL;
-> +		return PTR_ERR(*tx_clk);
->  =20
-> -	*rx_clk =3D devm_clk_get(&pdev->dev, "rx_clk");
-> +	*rx_clk =3D devm_clk_get_optional(&pdev->dev, "rx_clk");
->   	if (IS_ERR(*rx_clk))
-> -		*rx_clk =3D NULL;
-> +		return PTR_ERR(*rx_clk);
->  =20
-> -	*tsu_clk =3D devm_clk_get(&pdev->dev, "tsu_clk");
-> +	*tsu_clk =3D devm_clk_get_optional(&pdev->dev, "tsu_clk");
->   	if (IS_ERR(*tsu_clk))
-> -		*tsu_clk =3D NULL;
-> +		return PTR_ERR(*tsu_clk);
->  =20
->   	err =3D clk_prepare_enable(*pclk);
->   	if (err) {
->=20
+Let me know what you think.
 
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 68eda36bcc9c..2fed0badad38 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -2289,13 +2289,13 @@ static void io_sq_wq_submit_work(struct work_struct *work)
+ 				set_fs(USER_DS);
+ 			}
+ 		}
+-		if (s->files && s->files != cur_files) {
++		if (cur_files)
++			put_files_struct(cur_files);
++		cur_files = s->files;
++		if (cur_files && cur_files != current->files) {
+ 			task_lock(current);
+-			current->files = s->files;
++			current->files = cur_files;
+ 			task_unlock(current);
+-			if (cur_files)
+-				put_files_struct(cur_files);
+-			cur_files = s->files;
+ 		}
+ 
+ 		if (!ret) {
+@@ -2393,8 +2393,9 @@ static void io_sq_wq_submit_work(struct work_struct *work)
+ 		task_lock(current);
+ 		current->files = old_files;
+ 		task_unlock(current);
+-		put_files_struct(cur_files);
+ 	}
++	if (cur_files)
++		put_files_struct(cur_files);
+ }
+ 
+ /*
 
---=20
-Nicolas Ferre
+-- 
+Jens Axboe
+
