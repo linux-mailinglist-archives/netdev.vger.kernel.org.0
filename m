@@ -2,141 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9387DBC7E
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:09:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B31FEDBCA3
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:10:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503918AbfJRFGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:06:07 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35374 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725856AbfJRFGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:06:06 -0400
-Received: by mail-pg1-f196.google.com with SMTP id p30so2681052pgl.2;
-        Thu, 17 Oct 2019 22:06:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3znI3jfyxhlrImFZP1YaxjrIboRVdgk6y/Uv9/1hgdY=;
-        b=XnvfBet4AbU0ExahHoD7IWNzMYRW3M2/FYWTAgA1MZybbezJNpGTEccvqnFVMAXY0g
-         Fm0bBX+M1hT/UDnZNpwGLB4vuqnJ/OaTwDXaCTJHKl4dxIN8im6vEpUpcevzthFxneMp
-         TNBS3RM2ahiDNdj1RY9GdN7Ll8WPPcD7Zxhri2GgvbPW3eiJCs8nbXuswgoeAnsadwaL
-         xF5+yCHVVr2wWk/+D+K2bmO1jCAuqN9xrS5+wtI35rO+NJ4WBaKyX+pjIgqkHE8we+yP
-         NPgoiYv2pwL1o+8s42S27f0NvxZLak+jSeq/MpskJ0CrReBjXWcAVGaJubKBRJsyY+vE
-         rzbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3znI3jfyxhlrImFZP1YaxjrIboRVdgk6y/Uv9/1hgdY=;
-        b=KCgzlAraGzGUt17Lj8ksMiacufWFmi+ExSF4M2erl0twQVNxt4BUipLUUvCvhhStUk
-         3JmY5otxs5HVYjfsLiZMhYsrDUrgVexeFeSM3eb20D3mgsU8R7xKQidaFbdPzFd3XjP0
-         cFr5gQPbxl43Wrvlo50MNLE4oAmrucyr+iv1vQ4WQ4TXWQDYxfXdhA01S5F0Ny3q8GtC
-         x1/kZVur3ogY9pYBevvjp5kp+CMNCCuvgbPpOzdU+f9iRmRKAnL6zG6BntGnQ2uoQ90X
-         xMiI5iRxYF8yu14kWXXCVIyGyXBBou45qe0h80M4XAwPuCYeEc3uBPxJS4nQosDDiu0q
-         rbFA==
-X-Gm-Message-State: APjAAAVUNallv2HZoGEYSTKaREIILRbf/C0J4RZkXxKy/js+G8ajnyuX
-        NLt+qsm1E/pBlTFvgPUxR2A9PQsJ
-X-Google-Smtp-Source: APXvYqzDPlDkah3w9vs71p4pB03R5Apr7H6F4vO+4UvTHwe9ETXCUnl1vgZ0+kcqJFrRfIeWNlCnZw==
-X-Received: by 2002:a17:90a:5896:: with SMTP id j22mr8122854pji.55.1571371775397;
-        Thu, 17 Oct 2019 21:09:35 -0700 (PDT)
-Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id d11sm4341680pfo.104.2019.10.17.21.09.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 21:09:34 -0700 (PDT)
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Subject: [RFC PATCH v2 bpf-next 15/15] bpf, hashtab: Compare keys in long
-Date:   Fri, 18 Oct 2019 13:07:48 +0900
-Message-Id: <20191018040748.30593-16-toshiaki.makita1@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
+        id S2394811AbfJRFId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:08:33 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:43145 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726417AbfJRFId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:08:33 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iLKFZ-00046M-Le; Fri, 18 Oct 2019 06:52:29 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iLKFW-0006rT-3o; Fri, 18 Oct 2019 06:52:26 +0200
+Date:   Fri, 18 Oct 2019 06:52:26 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Snook <chris.snook@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v1 4/4] net: dsa: add support for Atheros AR9331 build-in
+ switch
+Message-ID: <20191018045226.hi2nybxkwopclajy@pengutronix.de>
+References: <20191014061549.3669-1-o.rempel@pengutronix.de>
+ <20191014061549.3669-5-o.rempel@pengutronix.de>
+ <2ad26bdc-e099-ded6-1337-5793aba0958d@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2ad26bdc-e099-ded6-1337-5793aba0958d@gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 06:42:51 up 153 days, 11:01, 96 users,  load average: 0.03, 0.02,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-memcmp() is generally slow. Compare keys in long if possible.
-This improves xdp_flow performance.
+On Thu, Oct 17, 2019 at 11:35:48AM -0700, Florian Fainelli wrote:
+> 
+> 
+> On 10/13/2019 11:15 PM, Oleksij Rempel wrote:
+> > Provide basic support for Atheros AR9331 build-in switch. So far it
+> > works as port multiplexer without any hardware offloading support.
+> 
+> I glanced through the functional parts of the code, and it looks pretty
+> straight forward, since there is no offloading done so far, do you plan
+> on adding bridge offload eventually if nothing more?
 
-Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
----
- kernel/bpf/hashtab.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+Currently not. There are following reasons:
+- I do it for the Freifunk project. It is currently not clear, what
+  functionality has higher priority.
+- there are not many ar9331 based devices with enough RAM to run any
+  thing modern. There is even less devices using more then one switch
+  port.
+- IPv6 support is important for this project, but old Atheros switches have some
+  known issues with IPv6 packages in hardware bridge mode. So, this
+  functionality will need more testing.
 
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 22066a6..8b5ffd4 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -417,6 +417,29 @@ static inline struct hlist_nulls_head *select_bucket(struct bpf_htab *htab, u32
- 	return &__select_bucket(htab, hash)->head;
- }
- 
-+/* key1 must be aligned to sizeof long */
-+static bool key_equal(void *key1, void *key2, u32 size)
-+{
-+	/* Check for key1 */
-+	BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct htab_elem, key),
-+				 sizeof(long)));
-+
-+	if (IS_ALIGNED((unsigned long)key2 | (unsigned long)size,
-+		       sizeof(long))) {
-+		unsigned long *lkey1, *lkey2;
-+
-+		for (lkey1 = key1, lkey2 = key2; size > 0;
-+		     lkey1++, lkey2++, size -= sizeof(long)) {
-+			if (*lkey1 != *lkey2)
-+				return false;
-+		}
-+
-+		return true;
-+	}
-+
-+	return !memcmp(key1, key2, size);
-+}
-+
- /* this lookup function can only be called with bucket lock taken */
- static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash,
- 					 void *key, u32 key_size)
-@@ -425,7 +448,7 @@ static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash
- 	struct htab_elem *l;
- 
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
--		if (l->hash == hash && !memcmp(&l->key, key, key_size))
-+		if (l->hash == hash && key_equal(&l->key, key, key_size))
- 			return l;
- 
- 	return NULL;
-@@ -444,7 +467,7 @@ static struct htab_elem *lookup_nulls_elem_raw(struct hlist_nulls_head *head,
- 
- again:
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
--		if (l->hash == hash && !memcmp(&l->key, key, key_size))
-+		if (l->hash == hash && key_equal(&l->key, key, key_size))
- 			return l;
- 
- 	if (unlikely(get_nulls_value(n) != (hash & (n_buckets - 1))))
+> When you submit v2, I would suggest splitting the tagger code from the
+> switch driver code, just to make them easier to review.
+
+ok.
+
+Regards,
+Oleksij
 -- 
-1.8.3.1
-
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
