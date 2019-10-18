@@ -2,124 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC0EDBACB
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 02:26:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB943DBAEA
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 02:33:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388305AbfJRA0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Oct 2019 20:26:06 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:37179 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728495AbfJRA0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Oct 2019 20:26:06 -0400
-Received: by mail-lf1-f67.google.com with SMTP id g21so2168754lfh.4
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 17:26:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=aZ+YZXy46MlAIaJTPVbcRMJjSIL+LBp5qj36izVSGc4=;
-        b=iun/tz4Rj0q2mwN7/Cq9hTRWk4gR5Uwb8fBwmzkIdU6cdEEVpq7jHqUCSAQx6qdhS+
-         /SzyUNp2HI3GtHSEY+OvHuRrqoXF2Y5Bh93WiqF0fGfak7llRmwj3R0UzARIGr1UbQ6Z
-         5YsMM1OUlUAqcfWFM7p0PYTn3761MVgU9cJ98zGaJSXn0lnF/1iMpvQ/mOTfBPew/OlO
-         S/ZYeBNd7VgLfwgYY/n+JfD4DkYPsrzwNGF5QPbZjCJvKj76av9ZGdA3mUFizrn95f3v
-         jKhbkqgdESBgUf3CkQCwy8SfZiS6pA8Ch4CxXrrcbbUVkp3xpNvo1YRQpS71c7530xoB
-         A5TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=aZ+YZXy46MlAIaJTPVbcRMJjSIL+LBp5qj36izVSGc4=;
-        b=cQOeOm8LY3Q/t2mu3YEurKS9E1aW27LwX7XrdIw7ITeP172HD2O70MaMdSZXgGSG5G
-         pcxuQEm1CO5J/SrKnZjg9WK16k7bY96UtX1qtFx+Cg6Mc8ns2StsSIcfsnxl4kQgqjHT
-         03EIU0eTfI+NRb8Ggbm+KJVa1LfkIDILhFyqxFW71fYYvrJMcII5B/xEwcOUFtz7f7BU
-         Y2TJ+X4ULtTy8qfOYMsC6y7GHLo+gRn++k/8wg81JOAeaZKwRDc8QlvghQChf60guZMa
-         vLeQ9oLgSi+hJG8tpqQMR7AEOf+qYhhPN0fwu8XVSEoPMBgCDXWB7JwUb8yP0bOn2745
-         vnFw==
-X-Gm-Message-State: APjAAAX7NyDg15tW4dCCZ2MhhNH37bzNXe69y/GIz4Jae47U/youMPpm
-        XDmnzcM9ORxrnQs4s0YUFVmy9A==
-X-Google-Smtp-Source: APXvYqyAhxPxNBQMo0iPNjgtKV9wpdcSLmr+vD+5Z8GblDf0YRvC5Kyn4ROqHAiC6iRpNYcTHIQIWw==
-X-Received: by 2002:ac2:4888:: with SMTP id x8mr3985196lfc.90.1571358364358;
-        Thu, 17 Oct 2019 17:26:04 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 81sm1805862lje.70.2019.10.17.17.26.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2019 17:26:03 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 17:25:55 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pooja Trivedi <poojatrivedi@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, daniel@iogearbox.net,
-        john.fastabend@gmail.com, davejwatson@fb.com, aviadye@mellanox.com,
-        borisp@mellanox.com, Pooja Trivedi <pooja.trivedi@stackpath.com>,
-        Mallesham Jatharakonda <mallesh537@gmail.com>
-Subject: Re: [PATCH V2 net 1/1] net/tls(TLS_SW): Fix list_del double free
- caused by a race condition in tls_tx_records
-Message-ID: <20191017172555.3e550d33@cakuba.netronome.com>
-In-Reply-To: <20191017164825.22d223d1@cakuba.netronome.com>
-References: <CAOrEdsmiz-ssFUpcT_43JfASLYRbt60R7Ta0KxuhrMN35cP0Sw@mail.gmail.com>
-        <1568754836-25124-1-git-send-email-poojatrivedi@gmail.com>
-        <20190918142549.69bfa285@cakuba.netronome.com>
-        <CAOrEds=DqexwYUOfWQ7_yOxre8ojUTqF3wjxY0SC10CbY8KD0w@mail.gmail.com>
-        <20190918144528.57a5cb50@cakuba.netronome.com>
-        <CAOrEdsk6P=HWfK-mKyLt7=tZh342gZrRKwOH9f6ntkNyya-4fA@mail.gmail.com>
-        <20190923172811.1f620803@cakuba.netronome.com>
-        <CAOrEds=zEh5R_4G1UuT-Ee3LT-ZiTV=1JNWb_4a=5Mb4coFEVg@mail.gmail.com>
-        <20190927173753.418634ef@cakuba.netronome.com>
-        <20191009165739.GA1848@kvmhost.ch.hwng.net>
-        <20191017164825.22d223d1@cakuba.netronome.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S2389158AbfJRAdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Oct 2019 20:33:32 -0400
+Received: from gate.crashing.org ([63.228.1.57]:47116 "EHLO gate.crashing.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728419AbfJRAdc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Oct 2019 20:33:32 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id x9I0Wvrx022950;
+        Thu, 17 Oct 2019 19:32:58 -0500
+Message-ID: <f6d5cb45a9aa167533135c5b218b45b1d210d31a.camel@kernel.crashing.org>
+Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
+From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To:     Vijay Khemka <vijaykhemka@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Bhupesh Sharma <bhsharma@redhat.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
+        "joel@jms.id.au" <joel@jms.id.au>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        Sai Dasari <sdasari@fb.com>
+Date:   Fri, 18 Oct 2019 11:32:57 +1100
+In-Reply-To: <9AA81274-01F2-4803-8905-26F0521486CE@fb.com>
+References: <20191011213027.2110008-1-vijaykhemka@fb.com>
+         <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
+         <0C0BC813-5A84-403F-9C48-9447AAABD867@fb.com>
+         <071cf1eeefcbfc14633a13bc2d15ad7392987a88.camel@kernel.crashing.org>
+         <9AA81274-01F2-4803-8905-26F0521486CE@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Oct 2019 16:48:25 -0700, Jakub Kicinski wrote:
-> > The only patch that we have been able to make consistently work
-> > without crashing and also without compromising performance, is the
-> > previously submitted one where later thread bails out of
-> > tls_tx_records. And as mentioned, it can perhaps be made more
-> > efficient by rescheduling delayed work in the case where work handler
-> > thread turns out to be the later thread that has to bail.  
+On Fri, 2019-10-18 at 00:06 +0000, Vijay Khemka wrote:
 > 
-> Let me try to find a way to repro this reliably without any funky
-> accelerators. The sleep in do_tcp_sendpages() should affect all cases.
-> I should have some time today and tomorrow to look into this, bear with
-> me..
+>     > This is not a matter of unsupported csum, it is broken hw csum. 
+>     > That's why we disable hw checksum. My guess is once we disable
+>     > Hw checksum, it will use sw checksum. So I am just disabling hw 
+>     > Checksum.
+>     
+>     I don't understand what you are saying. You reported a problem with
+>     IPV6 checksums generation. The HW doesn't support it. What's "not a
+>     matter of unsupported csum" ?
+>     
+>     Your patch uses a *deprecated* bit to tell the network stack to only do
+>     HW checksum generation on IPV4.
+>     
+>     This bit is deprecated for a reason, again, see skbuff.h. The right
+>     approach, *which the driver already does*, is to tell the stack that we
+>     support HW checksuming using NETIF_F_HW_CSUM, and then, in the transmit
+>     handler, to call skb_checksum_help() to have the SW calculate the
+>     checksum if it's not a supported type.
+> 
+> My understanding was when we enable NETIF_F_HW_CSUM means network 
+> stack enables HW checksum and doesn't calculate SW checksum. But as per
+> this supported types HW checksum are used only for IPV4 and not for IPV6 even
+> though driver enabled NETIF_F_HW_CSUM. For IPV6 it is always a SW generated
+> checksum, please correct me here.
 
-Could you please try this?
+Have you actually read the comments in skbuff.h that I pointed you to ?
 
----->8-----
+And the rest of my email for that matter ?
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index c2b5e0d2ba1a..ab7b0af162a7 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1204,12 +1204,10 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- 		goto alloc_payload;
- 	}
- 
--	if (num_async) {
--		/* Transmit if any encryptions have completed */
--		if (test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask)) {
--			cancel_delayed_work(&ctx->tx_work.work);
--			tls_tx_records(sk, flags);
--		}
-+	/* Transmit if any encryptions have completed */
-+	if (test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask)) {
-+		cancel_delayed_work(&ctx->tx_work.work);
-+		tls_tx_records(sk, flags);
- 	}
- sendpage_end:
- 	ret = sk_stream_error(sk, flags, ret);
-@@ -2171,7 +2169,8 @@ static void tx_work_handler(struct work_struct *work)
- 	if (!test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask))
- 		return;
- 	lock_sock(sk);
--	tls_tx_records(sk, -1);
-+	if (!sk->sk_write_pending)
-+		tls_tx_records(sk, -1);
- 	release_sock(sk);
- }
- 
+>     This is exactly what ftgmac100_prep_tx_csum() does. It only enables HW
+>     checksum generation on supported types and uses skb_checksum_help()
+>     otherwise, supported types being protocol ETH_P_IP and IP protocol
+>     being raw IP, TCP and UDP.
+> 
+>     
+>     So this *should* have fallen back to SW for IPV6. So either something
+>     in my code there is making an incorrect assumption, or something is
+>     broken in skb_checksum_help() for IPV6 (which I somewhat doubt) or
+>     something else I can't think of, but setting a *deprecated* flag is
+>     definitely not the right answer, neither is completely disabling HW
+>     checksumming.
+>     
+>     So can you investigate what's going on a bit more closely please ? I
+>     can try myself, though I have very little experience with IPV6 and
+>     probably won't have time before next week.
+>     
+>     Cheers,
+>     Ben.
+>     
+>     >     The driver should have handled unsupported csum via SW fallback
+>     >     already in ftgmac100_prep_tx_csum()
+>     >     
+>     >     Can you check why this didn't work for you ?
+>     >     
+>     >     Cheers,
+>     >     Ben.
+>     >     
+>     >     > Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
+>     >     > ---
+>     >     > Changes since v1:
+>     >     >  Enabled IPV4 hw checksum generation as it works for IPV4.
+>     >     > 
+>     >     >  drivers/net/ethernet/faraday/ftgmac100.c | 13 ++++++++++++-
+>     >     >  1 file changed, 12 insertions(+), 1 deletion(-)
+>     >     > 
+>     >     > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
+>     >     > b/drivers/net/ethernet/faraday/ftgmac100.c
+>     >     > index 030fed65393e..0255a28d2958 100644
+>     >     > --- a/drivers/net/ethernet/faraday/ftgmac100.c
+>     >     > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+>     >     > @@ -1842,8 +1842,19 @@ static int ftgmac100_probe(struct
+>     >     > platform_device *pdev)
+>     >     >  	/* AST2400  doesn't have working HW checksum generation */
+>     >     >  	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
+>     >     >  		netdev->hw_features &= ~NETIF_F_HW_CSUM;
+>     >     > +
+>     >     > +	/* AST2500 doesn't have working HW checksum generation for IPV6
+>     >     > +	 * but it works for IPV4, so disabling hw checksum and enabling
+>     >     > +	 * it for only IPV4.
+>     >     > +	 */
+>     >     > +	if (np && (of_device_is_compatible(np, "aspeed,ast2500-mac")))
+>     >     > {
+>     >     > +		netdev->hw_features &= ~NETIF_F_HW_CSUM;
+>     >     > +		netdev->hw_features |= NETIF_F_IP_CSUM;
+>     >     > +	}
+>     >     > +
+>     >     >  	if (np && of_get_property(np, "no-hw-checksum", NULL))
+>     >     > -		netdev->hw_features &= ~(NETIF_F_HW_CSUM |
+>     >     > NETIF_F_RXCSUM);
+>     >     > +		netdev->hw_features &= ~(NETIF_F_HW_CSUM |
+>     >     > NETIF_F_RXCSUM
+>     >     > +					 | NETIF_F_IP_CSUM);
+>     >     >  	netdev->features |= netdev->hw_features;
+>     >     >  
+>     >     >  	/* register network device */
+>     >     
+>     >     
+>     > 
+>     
+>     
+> 
+
