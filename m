@@ -2,110 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E59DDCE0F
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 20:36:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 833BFDCDFB
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 20:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505645AbfJRSgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 14:36:13 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41092 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387642AbfJRSgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 14:36:12 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q7so4387718pfh.8
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 11:36:12 -0700 (PDT)
+        id S2505669AbfJRSbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 14:31:40 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:35959 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2505600AbfJRSbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 14:31:39 -0400
+Received: by mail-wm1-f67.google.com with SMTP id m18so7034807wmc.1
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 11:31:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=F1226GAHCP5ljRI20xaHaZyrtrpwD3DRasaIdGAzha8=;
-        b=gYItQ9PfoxYjaqLHy8Kcppym7sg1bY1cm2rfEaSgMNYNjuUAWGuhXXeT4PliR9JvY6
-         jDg4T7Q2knJ3jm05K9hPrXADfDdRhNWLlN7Hs2BnaNOx3TjoPz6VrCS8sX3y89G4fqhx
-         BLeSyXg/n7xCPa7hGJctnrMNYVvgBU6uA+bKX3sT4sHJoRbw/AQoh1xJBn27K2Kgafg6
-         +bIZac9RlQ4M+EoDobG2sR0IwctNGcANcKkeMF+v+CzR/hq73dyOUUe2EWoi1Ke70WRn
-         fec6oxtwyzuunU6ayPsV0wn95M/HpajDMhlnlfnebxkAd4gQbMpZtEvqXbOnnBbrETHZ
-         oeuQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DSnowx3keJnjQeJwi6XYTCzSgNWLN6YD6aazgV2Bf7E=;
+        b=qxXAS+S4Ff84TDGOFLxq/Xcp/sAwng+zARlFcgNNWB/RMA4iGnhrYwspw5I6RjL7NL
+         FO9FQVvOINhrxfW3y096/X6YoQlmdokPCg/dWUrcYwgjiPX27euhkzoGb0LVALhW2zgu
+         JWkwtnt8sOOfdJI2o/+10glswelGbyP7bdgq2wgn3XrvXxFRov4Vb3eqRgMKUGyAz6mO
+         OqImkzEZL+J+URvNxNuUfb0GOw0BOHfyJQXkgPydqLoR+Dh1WZWh/Z/VycAjkvIJHswS
+         kRbdSdC+Jj6Q3hulhJ9vAEPR2oym2zXEmAGHaakwKqwabEv3xh+IoWxvw8JdRoK0puAI
+         cigA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=F1226GAHCP5ljRI20xaHaZyrtrpwD3DRasaIdGAzha8=;
-        b=RnO8HCsZzL0taLQKhhKYGlCErLVA9xG15YVG6Y1TRn9+LNqFavhBx2FMhISdNulRum
-         Bkl0HrBooixsIhWYcIp6vA2PSLUcwnup0PxGpSnrRVGVlsBOI3PkYW+xjdUefx620PEX
-         E0tqioJKTmqVn0tgGo4TBNJPLqmx8Bl9UpHmwtn4lWFDjNMJIujb+47OO3o96oJZkxLt
-         OxUM5KdToBJlg7e1T3zpVqCZz3leQ/3Y9DowMyQ2o6S87Z3jaek7AYaGyvpsd4/TmtS8
-         9TDlT2RvKlJ48vlYF+2fayVdaD8Qw22rjSqc1XekozPpOLPR4yF/Tht5kg16IAOketlc
-         GwGA==
-X-Gm-Message-State: APjAAAUxHhZVeVMvQFetgbR/GdYg5MdwqgwZX5b/c4KkUjaMSAaxz1ae
-        KhJSTJfSMq5RcQvlmT54Eio3gg==
-X-Google-Smtp-Source: APXvYqxjegWkTeh7600ZdsBgRCfTvjITWGlnWIIDHxZqQMZ4GF/bfOC/HLYzQDdOwgVpWppQkrS+kA==
-X-Received: by 2002:a17:90a:266e:: with SMTP id l101mr13008557pje.104.1571423771947;
-        Fri, 18 Oct 2019 11:36:11 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v9sm6727381pfe.1.2019.10.18.11.36.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 11:36:11 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 10:19:49 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Subject: Re: [PATCH bpf] xdp: Prevent overflow in devmap_hash cost
- calculation for 32-bit builds
-Message-ID: <20191018101949.7043c7d9@cakuba.netronome.com>
-In-Reply-To: <87y2xie7no.fsf@toke.dk>
-References: <20191017105702.2807093-1-toke@redhat.com>
-        <20191017115236.17895561@cakuba.netronome.com>
-        <87y2xie7no.fsf@toke.dk>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DSnowx3keJnjQeJwi6XYTCzSgNWLN6YD6aazgV2Bf7E=;
+        b=GJ36dsiEyCmh8eX6ul0x/+yPVLTH7WyzfH7IhKm5mqowZm2foFf/xHntAqlbicHtRt
+         Sr3vmkZQoNJqyklixIs2GVGyEErkgIkoHXSa70xMtcABYPkqItS0lNtZiwdIL1a4rP64
+         R/qcLOdl2Xd+gwU8jby8Ye8r8RyDpYa+rACHJARgyNWlCOxCCtXdNzs5M69zMKpnO1j0
+         HjRRyAgKV66N+ndRFb6x/+79VKbq55sT7vrQGTbbs5N9QRFFdoPZVtAzhzy9OkAsM7fd
+         Bz+omdlYQwlzbWbi1nrQwZOfsEudepKJjR0u78mELfzzkv2WewlrzbSK0YAuhFN6XVVk
+         qvcA==
+X-Gm-Message-State: APjAAAUsKjZ/kbOsSSGiRfKEKbzJ9LZOsNWh85BT/+3/4QXcYobifP2W
+        Y5VoJMjol6UZMbufqb46RNBrV2Hq
+X-Google-Smtp-Source: APXvYqyV+a0NVHCy3XvHuO0XEMGLCQRmV3gb080BtdMWjQ3CI8Mz9KTHhjkKC1uD3Gd64Itx8rnXGQ==
+X-Received: by 2002:a05:600c:2207:: with SMTP id z7mr9067505wml.149.1571423498382;
+        Fri, 18 Oct 2019 11:31:38 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:8c30:515f:fd0f:9c6f? (p200300EA8F2664008C30515FFD0F9C6F.dip0.t-ipconnect.de. [2003:ea:8f26:6400:8c30:515f:fd0f:9c6f])
+        by smtp.googlemail.com with ESMTPSA id d4sm8205991wrc.54.2019.10.18.11.31.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Oct 2019 11:31:37 -0700 (PDT)
+Subject: Re: [PATCH net-next] r8169: remove support for RTL8100e
+To:     David Miller <davem@davemloft.net>
+Cc:     nic_swsd@realtek.com, netdev@vger.kernel.org
+References: <002ad7a5-f1ce-37f4-fa22-e8af1ffa2c18@gmail.com>
+ <20191017.151159.1692504406678037890.davem@davemloft.net>
+ <2b48266a-7fdc-039b-a11d-622da58acf42@gmail.com>
+ <20191017.154014.1196156125754339202.davem@davemloft.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <80d28162-65fa-eb1a-2042-ae98f8f28260@gmail.com>
+Date:   Fri, 18 Oct 2019 20:31:28 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191017.154014.1196156125754339202.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Oct 2019 11:15:39 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> Jakub Kicinski <jakub.kicinski@netronome.com> writes:
->=20
-> > On Thu, 17 Oct 2019 12:57:02 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wr=
-ote: =20
-> >> Tetsuo pointed out that without an explicit cast, the cost calculation=
- for
-> >> devmap_hash type maps could overflow on 32-bit builds. This adds the
-> >> missing cast.
-> >>=20
-> >> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up dev=
-ices by hashed index")
-> >> Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> ---
-> >>  kernel/bpf/devmap.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>=20
-> >> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> >> index a0a1153da5ae..e34fac6022eb 100644
-> >> --- a/kernel/bpf/devmap.c
-> >> +++ b/kernel/bpf/devmap.c
-> >> @@ -128,7 +128,7 @@ static int dev_map_init_map(struct bpf_dtab *dtab,=
- union bpf_attr *attr)
-> >> =20
-> >>  		if (!dtab->n_buckets) /* Overflow check */
-> >>  			return -EINVAL;
-> >> -		cost +=3D sizeof(struct hlist_head) * dtab->n_buckets;
-> >> +		cost +=3D (u64) sizeof(struct hlist_head) * dtab->n_buckets; =20
-> >
-> > array_size()? =20
->=20
-> Well, array_size does this:
->=20
-> 	if (check_mul_overflow(a, b, &bytes))
-> 		return SIZE_MAX;
->=20
-> However, we don't to return SIZE_MAX on overflow, we want the
-> calculation itself to be done in 64 bits so it won't overflow... Or?
-
-Note that array_size calculates on size_t, so it should be fine.
-But looking at it, it seems all of this code uses the (u64) cast,=20
-so I guess that's fine. Clean up for another day :)
+On 17.10.2019 21:40, David Miller wrote:
+> From: Heiner Kallweit <hkallweit1@gmail.com>
+> Date: Thu, 17 Oct 2019 21:26:35 +0200
+> 
+>> To be on the safe side, let me check with Realtek directly.
+> 
+> That's a great idea, let us know what you find out.
+> 
+Realtek suggested to keep the two chip definitions.
+Supposedly RTL_GIGA_MAC_VER_15 is the same as RTL_GIGA_MAC_VER_12,
+and RTL_GIGA_MAC_VER_14 is the same as RTL_GIGA_MAC_VER_11.
+So let's keep it as it is.
