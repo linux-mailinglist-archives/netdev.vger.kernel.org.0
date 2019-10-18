@@ -2,85 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0994ADD15F
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 23:48:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D477BDD177
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:01:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406194AbfJRVsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 17:48:39 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:37605 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403776AbfJRVsj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 17:48:39 -0400
-Received: by mail-qk1-f194.google.com with SMTP id u184so6728860qkd.4
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 14:48:38 -0700 (PDT)
+        id S1726530AbfJRWBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 18:01:18 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42625 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726258AbfJRWBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 18:01:17 -0400
+Received: by mail-pl1-f195.google.com with SMTP id g9so2171147plj.9;
+        Fri, 18 Oct 2019 15:01:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=x6es0hqVWlUEfRxAPpRdpfGhDBbv+wJBmR59LOWFiPw=;
-        b=fsVlcwE7EQtlG/UwcQE3kHQBWgNM6zqrwfMFMSzlg/vPVooU9VxTBbe+h6LfSUogqx
-         UX2Y8kgHqZShWMxBKbhVOe8D/j6+aqS5VYizFejPHuW6lvxaT43kIT3AGbmnZ1fvLIX8
-         +H/bWHSVWCwWCb+ozxl5Q9U3LBQoofUUwNBP2HyEO1PZm7HvX50x2gIdCPoqiiG2IM/T
-         zWZkYPRzQZBhY0zUrq1ZFYTw0eXjX4bVBLbCQUojr1EGVtw3prGwuXQVi+bgJqN+L4uo
-         C1HnnIoK9nvpBaaBe/QEDAWruTG/BBNtX70WBAo5vz8Dnyd6XWFMQ0gbGithQz1NjaHZ
-         LaCA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=XK7KVcDbCTN0IO4XQWLIT2UP5RymllsGZ2OhbI8nqu8=;
+        b=C6eIufveBw6ZYR5miBZviDUn5832235US0qTa09STlzDINydw9xMw96zWK6+vkuniU
+         d+3CQylADjMRIgqe/dTa/9xiNzAgQnIV64Dnq5X9Xix5T1Q3MeTOU7t5dBsPMsmUwKOk
+         BBoE3myVkFUqFhRK4v5b3vDaeRebSlqnr7PzLSfsq5/PbsWIwqVKfWIhysQ85VmBnHV9
+         k6fEYVZWe//7b2EQC2RGQsNWZSDzkF6Sswiqd3uJJmllGGoDwnV7ub2r94nY+h3kUG8c
+         bT2c2d24kmiShHmxf0DT23YcC+/lbkOkZq2ZPv22P1fQIpAnMfsIKEFfI+v9S6Kg1mwa
+         /Q1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=x6es0hqVWlUEfRxAPpRdpfGhDBbv+wJBmR59LOWFiPw=;
-        b=DkMhLA/UvbfcorABqSTgbny3KzL5W1mzT8XSi9KI3jRG2wL7CuqgxOV2WYO7MVpXNR
-         +ebqjEMPjT9+j6n3FlZEVKbNUVM3Q5p9iV9QGAW+FF1VjCgTKSkLlYhYp2X2BH85zuse
-         OFARnRANyXAVPvSlP4MOIKn+rnhxhROrEW6L5BpqEu4JxYd/bVnGNcNhed6c9LzAnkIk
-         UudoyGbVVsxD+f/P5IaZHXaylfZSb9nnbBOi7mTFQhGhrT9Y66ksE8YJ+oXqw0hY6Mf8
-         VtzrTFUawaBMc9R5INOZuMlv9TljcXWgKS68C+GHUnasLNZgAP5gJNGISKgCJuj9AUOt
-         cvNA==
-X-Gm-Message-State: APjAAAWRmq1ooqomKnJ0oLP4Qe+ja8cPrIZ4H6EbTFesDWz4TjQ/6T+4
-        8xsYkj28hfqexf7YAJQDlgkoT8A7
-X-Google-Smtp-Source: APXvYqwWxZLrZuSgFh7YVFAzavTpoRUrQ+J+xuGNv86gYug5yy17wHuXRSmkdP/2ZgYNv15Zu1ywrw==
-X-Received: by 2002:ae9:e30f:: with SMTP id v15mr9478895qkf.202.1571435318233;
-        Fri, 18 Oct 2019 14:48:38 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id c185sm3895493qkf.122.2019.10.18.14.48.36
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=XK7KVcDbCTN0IO4XQWLIT2UP5RymllsGZ2OhbI8nqu8=;
+        b=ixw+Sp5zAPZS/xspMDg4etmrN+3SKoTsgEVn7nfHR9c/TwJbDR0V9bpl3IzBYBK5da
+         Iz2deF8FkEy3Q6sA0/R0eWbE8UENH90ad5vt16IIJuHPNAPqZdUSyqWK18pYXIiO7/K4
+         c2LP16RORvbBauuq5thAvQG8m6P1WBvZK7Rsv7ifx8ZvGKTOHIYEoZjR9arjByNfNuJT
+         mcAgNd2U6FheWUhj8P1LyZiXlcU/oKuoCaneorL1WCV7QdrGi2ljn3FWRD4QMWWhsZJY
+         fKnLTCmSQK+ByWEx04S33ZS5x4JkJY+4qYJl3liVja96SbfmGU7Nmkg5kKtpYJ+IPxZ6
+         zRsA==
+X-Gm-Message-State: APjAAAXGuc02Jh1i1EOgFVxNswUZy/yCfiF+lWuszski6LbaYuZwN6Xz
+        fhNyYvb5K1jAH2YTdu4oQg0=
+X-Google-Smtp-Source: APXvYqyjy6vKUg95VkLGXpdWDrpPIMOi9nx+W01MtJUn4j424Fckwwy1aeVPmA4sOh5sfxNeE9e8Rw==
+X-Received: by 2002:a17:902:aa86:: with SMTP id d6mr12507953plr.268.1571436076354;
+        Fri, 18 Oct 2019 15:01:16 -0700 (PDT)
+Received: from localhost ([131.252.137.171])
+        by smtp.gmail.com with ESMTPSA id z13sm8622815pfq.121.2019.10.18.15.01.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 14:48:37 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 17:48:35 -0400
-Message-ID: <20191018174835.GB3037198@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 2/2] net: dsa: mv88e6xxx: Add devlink param
- for ATU hash algorithm.
-In-Reply-To: <20191017192055.23770-3-andrew@lunn.ch>
-References: <20191017192055.23770-1-andrew@lunn.ch>
- <20191017192055.23770-3-andrew@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        Fri, 18 Oct 2019 15:01:15 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 15:01:15 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     andriin@fb.com, ast@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Message-ID: <5daa362b4c9b6_68182abd481885b455@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191018194425.GI26267@pc-63.home>
+References: <157141046629.11948.8937909716570078019.stgit@john-XPS-13-9370>
+ <20191018194425.GI26267@pc-63.home>
+Subject: Re: [bpf-next PATCH] bpf: libbpf, support older style kprobe load
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Daniel Borkmann wrote:
+> On Fri, Oct 18, 2019 at 07:54:26AM -0700, John Fastabend wrote:
+> > Following ./Documentation/trace/kprobetrace.rst add support for loading
+> > kprobes programs on older kernels.
+> > 
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c |   81 +++++++++++++++++++++++++++++++++++++++++++-----
+> >  1 file changed, 73 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index fcea6988f962..12b3105d112c 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -5005,20 +5005,89 @@ static int determine_uprobe_retprobe_bit(void)
+> >  	return parse_uint_from_file(file, "config:%d\n");
+> >  }
+> >  
+> > +static int use_kprobe_debugfs(const char *name,
+> > +			      uint64_t offset, int pid, bool retprobe)
+> 
+> offset & pid unused?
 
-On Thu, 17 Oct 2019 21:20:55 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
-> --- a/drivers/net/dsa/mv88e6xxx/global1.h
-> +++ b/drivers/net/dsa/mv88e6xxx/global1.h
-> @@ -109,6 +109,7 @@
->  /* Offset 0x0A: ATU Control Register */
->  #define MV88E6XXX_G1_ATU_CTL		0x0a
->  #define MV88E6XXX_G1_ATU_CTL_LEARN2ALL	0x0008
-> +#define MV88E6161_G1_ATU_CTL_HASH_MASK	0x3
+Well pid should be dropped and I'll add support for offset. I've not
+being using offset so missed it here.
 
-If a respin is needed, can you use the 0x1234 format for this mask, so that
-the position of bits are documented as well like with the other macros.
+> 
+> > +{
+> > +	const char *file = "/sys/kernel/debug/tracing/kprobe_events";
+> > +	int fd = open(file, O_WRONLY | O_APPEND, 0);
+> > +	char buf[PATH_MAX];
+> > +	int err;
+> > +
+> > +	if (fd < 0) {
+> > +		pr_warning("failed open kprobe_events: %s\n",
+> > +			   strerror(errno));
+> > +		return -errno;
+> > +	}
+> > +
+> > +	snprintf(buf, sizeof(buf), "%c:kprobes/%s %s",
+> > +		 retprobe ? 'r' : 'p', name, name);
+> > +
+> > +	err = write(fd, buf, strlen(buf));
+> > +	close(fd);
+> > +	if (err < 0)
+> > +		return -errno;
+> > +	return 0;
+> > +}
+> > +
+> >  static int perf_event_open_probe(bool uprobe, bool retprobe, const char *name,
+> >  				 uint64_t offset, int pid)
+> >  {
+> >  	struct perf_event_attr attr = {};
+> >  	char errmsg[STRERR_BUFSIZE];
+> > +	uint64_t config1 = 0;
+> >  	int type, pfd, err;
+> >  
+> >  	type = uprobe ? determine_uprobe_perf_type()
+> >  		      : determine_kprobe_perf_type();
+> >  	if (type < 0) {
+> > -		pr_warning("failed to determine %s perf type: %s\n",
+> > -			   uprobe ? "uprobe" : "kprobe",
+> > -			   libbpf_strerror_r(type, errmsg, sizeof(errmsg)));
+> > -		return type;
+> > +		if (uprobe) {
+> > +			pr_warning("failed to determine uprobe perf type %s: %s\n",
+> > +				   name,
+> > +				   libbpf_strerror_r(type,
+> > +						     errmsg, sizeof(errmsg)));
+> > +		} else {
+> > +			/* If we do not have an event_source/../kprobes then we
+> > +			 * can try to use kprobe-base event tracing, for details
+> > +			 * see ./Documentation/trace/kprobetrace.rst
+> > +			 */
+> > +			const char *file = "/sys/kernel/debug/tracing/events/kprobes/";
+> > +			char c[PATH_MAX];
+> > +			int fd, n;
+> > +
+> > +			snprintf(c, sizeof(c), "%s/%s/id", file, name);
+> > +
+> > +			err = use_kprobe_debugfs(name, offset, pid, retprobe);
+> > +			if (err)
+> > +				return err;
+> 
+> Should we throw a pr_warning() here as well when bailing out?
+
+Sure makes sense.
+
+> 
+> > +			type = PERF_TYPE_TRACEPOINT;
+> > +			fd = open(c, O_RDONLY, 0);
+> > +			if (fd < 0) {
+> > +				pr_warning("failed to open tracepoint %s: %s\n",
+> > +					   c, strerror(errno));
+> > +				return -errno;
+> > +			}
+> > +			n = read(fd, c, sizeof(c));
+> > +			close(fd);
+> > +			if (n < 0) {
+> > +				pr_warning("failed to read %s: %s\n",
+> > +					   c, strerror(errno));
+> > +				return -errno;
+> > +			}
+> > +			c[n] = '\0';
+> > +			config1 = strtol(c, NULL, 0);
+> > +			attr.size = sizeof(attr);
+> > +			attr.type = type;
+> > +			attr.config = config1;
+> > +			attr.sample_period = 1;
+> > +			attr.wakeup_events = 1;
+> 
+> Is there a reason you set latter two whereas below they are not set,
+> does it not default to these?
+
+We can drop this.
+
+> 
+> > +		}
+> > +	} else {
+> > +		config1 = ptr_to_u64(name);
+> > +		attr.size = sizeof(attr);
+> > +		attr.type = type;
+> > +		attr.config1 = config1; /* kprobe_func or uprobe_path */
+> > +		attr.config2 = offset;  /* kprobe_addr or probe_offset */
+> >  	}
+> >  	if (retprobe) {
+> >  		int bit = uprobe ? determine_uprobe_retprobe_bit()
+> > @@ -5033,10 +5102,6 @@ static int perf_event_open_probe(bool uprobe, bool retprobe, const char *name,
+> >  		}
+> >  		attr.config |= 1 << bit;
+> >  	}
+> 
+> What happens in case of retprobe, don't you (unwantedly) bail out here
+> again (even through you've set up the retprobe earlier)?
+
+Will fix as well. Looking to see how it passed on my box here but either
+way its cryptic so will clean up.
+
+> 
+> > -	attr.size = sizeof(attr);
+> > -	attr.type = type;
+> > -	attr.config1 = ptr_to_u64(name); /* kprobe_func or uprobe_path */
+> > -	attr.config2 = offset;		 /* kprobe_addr or probe_offset */
+> >  
+> >  	/* pid filter is meaningful only for uprobes */
+> >  	pfd = syscall(__NR_perf_event_open, &attr,
+> > 
 
 
-Thank you,
-Vivien
