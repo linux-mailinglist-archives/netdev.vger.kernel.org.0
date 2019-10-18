@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 859FBDD434
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:23:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2624ADD400
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405104AbfJRWXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 18:23:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37340 "EHLO mail.kernel.org"
+        id S1730681AbfJRWGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 18:06:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38080 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729482AbfJRWF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:05:28 -0400
+        id S1730760AbfJRWGI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:06:08 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E98A222C2;
-        Fri, 18 Oct 2019 22:05:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id ADE16205F4;
+        Fri, 18 Oct 2019 22:06:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436327;
-        bh=atw4UZaQccT3eKFCQyThccWL3IxyuknKXsMHVAawv3s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lTMh4D0/HdLF9jI+3lfVdMWmbzThp3AiXxBxqp/ZJ3Uj7lCAhqDdJR4s//oIyXkY6
-         vPSnwpqVBnrV/4KzwG1ZXF787SsJcy0h2C+d7PPYcqE+gY5xD23Ht7S4zU/WO4IZWd
-         pjEGUQyjGRoHPLfUi7SlWOyUr9jsF9MJYAapcoY8=
+        s=default; t=1571436367;
+        bh=EkgPa+/bbt0VO+Jpe6yN+mBPY92zQyr3iwOjdFfnoKQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1r1nQIrbMbr4/+eZXUTxQmsgvZMTlAuCEX1v7m0wYGEn4OHg3Sx3mT0NAWma6IL+H
+         yEl/jfQ7eQYTavfTTDshhnnFzSiuorraWJyVEJpvkSXqOJE/Hpk/1Gh7Jp8GQc45Z/
+         Q21LNzVReHU8veDChOjV4Cifw4tvL6m1rnwT3bJ0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ahmad Masri <amasri@codeaurora.org>,
-        Maya Erez <merez@codeaurora.org>,
+Cc:     Abhishek Ambure <aambure@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, wil6210@qca.qualcomm.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 001/100] wil6210: fix freeing of rx buffers in EDMA mode
-Date:   Fri, 18 Oct 2019 18:03:46 -0400
-Message-Id: <20191018220525.9042-1-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 022/100] ath10k: assign 'n_cipher_suites = 11' for WCN3990 to enable WPA3
+Date:   Fri, 18 Oct 2019 18:04:07 -0400
+Message-Id: <20191018220525.9042-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191018220525.9042-1-sashal@kernel.org>
+References: <20191018220525.9042-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,95 +44,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ahmad Masri <amasri@codeaurora.org>
+From: Abhishek Ambure <aambure@codeaurora.org>
 
-[ Upstream commit 6470f31927b46846d957628b719dcfda05446664 ]
+[ Upstream commit 7ba31e6e0cdc0cc2e60e1fcbf467f3c95aea948e ]
 
-After being associated with some EDMA rx traffic, upon "down" driver
-doesn't free all skbs in the rx ring.
-Modify wil_move_all_rx_buff_to_free_list to loop on active list of rx
-buffers, unmap the physical memory and free the skb.
+Hostapd uses CCMP, GCMP & GCMP-256 as 'wpa_pairwise' option to run WPA3.
+In WCN3990 firmware cipher suite numbers 9 to 11 are for CCMP,
+GCMP & GCMP-256.
 
-Signed-off-by: Ahmad Masri <amasri@codeaurora.org>
-Signed-off-by: Maya Erez <merez@codeaurora.org>
+To enable CCMP, GCMP & GCMP-256 cipher suites in WCN3990 firmware,
+host sets 'n_cipher_suites = 11' while initializing hardware parameters.
+
+Tested HW: WCN3990
+Tested FW: WLAN.HL.2.0-01188-QCAHLSWMTPLZ-1
+
+Signed-off-by: Abhishek Ambure <aambure@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wil6210/txrx_edma.c | 44 +++++++-------------
- 1 file changed, 14 insertions(+), 30 deletions(-)
+ drivers/net/wireless/ath/ath10k/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/txrx_edma.c b/drivers/net/wireless/ath/wil6210/txrx_edma.c
-index 3e7fc2983cbb3..409a6fa8b6c8f 100644
---- a/drivers/net/wireless/ath/wil6210/txrx_edma.c
-+++ b/drivers/net/wireless/ath/wil6210/txrx_edma.c
-@@ -234,9 +234,10 @@ static int wil_rx_refill_edma(struct wil6210_priv *wil)
- 	struct wil_ring *ring = &wil->ring_rx;
- 	u32 next_head;
- 	int rc = 0;
--	u32 swtail = *ring->edma_rx_swtail.va;
-+	ring->swtail = *ring->edma_rx_swtail.va;
- 
--	for (; next_head = wil_ring_next_head(ring), (next_head != swtail);
-+	for (; next_head = wil_ring_next_head(ring),
-+	     (next_head != ring->swtail);
- 	     ring->swhead = next_head) {
- 		rc = wil_ring_alloc_skb_edma(wil, ring, ring->swhead);
- 		if (unlikely(rc)) {
-@@ -264,43 +265,26 @@ static void wil_move_all_rx_buff_to_free_list(struct wil6210_priv *wil,
- 					      struct wil_ring *ring)
- {
- 	struct device *dev = wil_to_dev(wil);
--	u32 next_tail;
--	u32 swhead = (ring->swhead + 1) % ring->size;
-+	struct list_head *active = &wil->rx_buff_mgmt.active;
- 	dma_addr_t pa;
--	u16 dmalen;
- 
--	for (; next_tail = wil_ring_next_tail(ring), (next_tail != swhead);
--	     ring->swtail = next_tail) {
--		struct wil_rx_enhanced_desc dd, *d = &dd;
--		struct wil_rx_enhanced_desc *_d =
--			(struct wil_rx_enhanced_desc *)
--			&ring->va[ring->swtail].rx.enhanced;
--		struct sk_buff *skb;
--		u16 buff_id;
-+	while (!list_empty(active)) {
-+		struct wil_rx_buff *rx_buff =
-+			list_first_entry(active, struct wil_rx_buff, list);
-+		struct sk_buff *skb = rx_buff->skb;
- 
--		*d = *_d;
--
--		/* Extract the SKB from the rx_buff management array */
--		buff_id = __le16_to_cpu(d->mac.buff_id);
--		if (buff_id >= wil->rx_buff_mgmt.size) {
--			wil_err(wil, "invalid buff_id %d\n", buff_id);
--			continue;
--		}
--		skb = wil->rx_buff_mgmt.buff_arr[buff_id].skb;
--		wil->rx_buff_mgmt.buff_arr[buff_id].skb = NULL;
- 		if (unlikely(!skb)) {
--			wil_err(wil, "No Rx skb at buff_id %d\n", buff_id);
-+			wil_err(wil, "No Rx skb at buff_id %d\n", rx_buff->id);
- 		} else {
--			pa = wil_rx_desc_get_addr_edma(&d->dma);
--			dmalen = le16_to_cpu(d->dma.length);
--			dma_unmap_single(dev, pa, dmalen, DMA_FROM_DEVICE);
--
-+			rx_buff->skb = NULL;
-+			memcpy(&pa, skb->cb, sizeof(pa));
-+			dma_unmap_single(dev, pa, wil->rx_buf_len,
-+					 DMA_FROM_DEVICE);
- 			kfree_skb(skb);
- 		}
- 
- 		/* Move the buffer from the active to the free list */
--		list_move(&wil->rx_buff_mgmt.buff_arr[buff_id].list,
--			  &wil->rx_buff_mgmt.free);
-+		list_move(&rx_buff->list, &wil->rx_buff_mgmt.free);
- 	}
- }
- 
+diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+index 5210cffb53440..2791ef2fd716c 100644
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -532,7 +532,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.hw_ops = &wcn3990_ops,
+ 		.decap_align_bytes = 1,
+ 		.num_peers = TARGET_HL_10_TLV_NUM_PEERS,
+-		.n_cipher_suites = 8,
++		.n_cipher_suites = 11,
+ 		.ast_skid_limit = TARGET_HL_10_TLV_AST_SKID_LIMIT,
+ 		.num_wds_entries = TARGET_HL_10_TLV_NUM_WDS_ENTRIES,
+ 		.target_64bit = true,
 -- 
 2.20.1
 
