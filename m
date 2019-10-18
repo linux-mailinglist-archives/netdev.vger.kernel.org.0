@@ -2,135 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89024DC619
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 15:31:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85827DC631
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 15:35:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408476AbfJRNbO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Oct 2019 09:31:14 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:45750 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729783AbfJRNbN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 09:31:13 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CE75D307D986;
-        Fri, 18 Oct 2019 13:31:12 +0000 (UTC)
-Received: from gondolin (dhcp-192-202.str.redhat.com [10.33.192.202])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 406EB60619;
-        Fri, 18 Oct 2019 13:30:45 +0000 (UTC)
-Date:   Fri, 18 Oct 2019 15:30:42 +0200
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, haotian.wang@sifive.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
-        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V4 4/6] mdev: introduce virtio device and its device ops
-Message-ID: <20191018153042.3516cde1.cohuck@redhat.com>
-In-Reply-To: <733c0cfe-064f-c8ba-6bf8-165db88d7e07@redhat.com>
-References: <20191017104836.32464-1-jasowang@redhat.com>
-        <20191017104836.32464-5-jasowang@redhat.com>
-        <20191018114614.6f1e79dc.cohuck@redhat.com>
-        <733c0cfe-064f-c8ba-6bf8-165db88d7e07@redhat.com>
-Organization: Red Hat GmbH
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 18 Oct 2019 13:31:13 +0000 (UTC)
+        id S2410354AbfJRNfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 09:35:23 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:43071 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728150AbfJRNfX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 09:35:23 -0400
+Received: by mail-pl1-f194.google.com with SMTP id f21so2862217plj.10;
+        Fri, 18 Oct 2019 06:35:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id;
+        bh=SsJsXFic4Ds6Lk73dimunU2ietWwXXmu0ej5RwXC+UA=;
+        b=GISxMSmdHRoQ6ishW/ilP5//aMCHUDDAFH5E/LaO4lJAnU3lQ+UjGv86+RCZt4Bud/
+         XGtM8zFFSIfgylwzLsT/lTUeVau2ZDrnvdfZ99U7iRL3KEDI2J0Eiranv9SYdiD/tZ5r
+         jNbVgAoBgA7NvN74bvp3RsnuOUdOlzgRAZ2jHINcxPdqpDlNfQ8pBaR9yd2yZ190P6Cv
+         +KpMMHwryvuA5tWM5uQNjTjHQlhyI7nQO0NcW0cFJNLuOaW+dkt3f/LTAwzPi3VxhRXl
+         jrdXlFLNy+NQkwlb1u2Sv0KwwAWBecE6T1jUYOvSfCtrp2ECfoKgrv3oecszHw1MnX5a
+         bDxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id;
+        bh=SsJsXFic4Ds6Lk73dimunU2ietWwXXmu0ej5RwXC+UA=;
+        b=jVgDl+Q64bzLzB0H+2YEoSsl4qxFsPIsOD1ophQ+skyyfvc26PGOA1HdyXXlSQCJTP
+         bqoJUDlM2B8xJ9PWa+aiCX36ANBQxdUoOj5rfHMdq60xfsSge6P2FEC9j51EUD1Mh1ef
+         01TwkHmi29KkQOjsNxazNqaMPesWnGGEcA+Q3+aclBOC27m3vGuSPa00P5U7/6yjPiHD
+         FQdoRINTyCioN+4VPWqKyA/dONU2CCDBo6p5UGHAx3/zrNPGAx+Gj117V0Ps0Ei2wOTs
+         9rsJfjLzsiedpn63nBRo5GYM+L2zEkESb4FTJMJSITS+PQF3gzM55jPr5zoXHR1zSrdL
+         vh7Q==
+X-Gm-Message-State: APjAAAVHMgJb/EMZCLaZiFixb70Q7d5gdxBJPMSu8zRbpdYaLyu5wezA
+        NV62wNcIvR4qvZz+xLPMzHY=
+X-Google-Smtp-Source: APXvYqwhWW+3kGLhJnDO7JbFfbTPaSBWfQxSxgmG2d8fwyCNuvqp0qF2VBxOO19wBJfV3FxDLDt6iA==
+X-Received: by 2002:a17:902:2e:: with SMTP id 43mr10283792pla.55.1571405721031;
+        Fri, 18 Oct 2019 06:35:21 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k66sm6163232pjb.11.2019.10.18.06.35.18
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 18 Oct 2019 06:35:19 -0700 (PDT)
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hui Peng <benquike@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v2] ath10k: Fix a NULL-ptr-deref bug in ath10k_usb_alloc_urb_from_pipe
+Date:   Fri, 18 Oct 2019 06:35:16 -0700
+Message-Id: <20191018133516.12606-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Oct 2019 18:55:02 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+From: Hui Peng <benquike@gmail.com>
 
-> On 2019/10/18 下午5:46, Cornelia Huck wrote:
-> > On Thu, 17 Oct 2019 18:48:34 +0800
-> > Jason Wang <jasowang@redhat.com> wrote:
+The `ar_usb` field of `ath10k_usb_pipe_usb_pipe` objects
+are initialized to point to the containing `ath10k_usb` object
+according to endpoint descriptors read from the device side, as shown
+below in `ath10k_usb_setup_pipe_resources`:
 
-> >> + * @get_vendor_id:		Get virtio vendor id
-> >> + *				@mdev: mediated device
-> >> + *				Returns u32: virtio vendor id  
-> > How is the vendor id defined? As for normal virtio-pci devices?  
-> 
-> 
-> The vendor that provides this device. So something like this
-> 
-> I notice that MMIO also had this so it looks to me it's not pci specific.
+for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
+        endpoint = &iface_desc->endpoint[i].desc;
 
-Ok. Would be good to specify this more explicitly.
+        // get the address from endpoint descriptor
+        pipe_num = ath10k_usb_get_logical_pipe_num(ar_usb,
+                                                endpoint->bEndpointAddress,
+                                                &urbcount);
+        ......
+        // select the pipe object
+        pipe = &ar_usb->pipes[pipe_num];
 
-> 
-> 
-> >  
-> >> + * @get_status: 		Get the device status
-> >> + *				@mdev: mediated device
-> >> + *				Returns u8: virtio device status
-> >> + * @set_status: 		Set the device status
-> >> + *				@mdev: mediated device
-> >> + *				@status: virtio device status
-> >> + * @get_config: 		Read from device specific configuration space
-> >> + *				@mdev: mediated device
-> >> + *				@offset: offset from the beginning of
-> >> + *				configuration space
-> >> + *				@buf: buffer used to read to
-> >> + *				@len: the length to read from
-> >> + *				configration space
-> >> + * @set_config: 		Write to device specific configuration space
-> >> + *				@mdev: mediated device
-> >> + *				@offset: offset from the beginning of
-> >> + *				configuration space
-> >> + *				@buf: buffer used to write from
-> >> + *				@len: the length to write to
-> >> + *				configration space
-> >> + * @get_mdev_features:		Get the feature of virtio mdev device
-> >> + *				@mdev: mediated device
-> >> + *				Returns the mdev features (API) support by
-> >> + *				the device.  
-> > What kind of 'features' are supposed to go in there? Are these bits,
-> > like you defined for VIRTIO_MDEV_F_VERSION_1 above?  
-> 
-> 
-> It's the API or mdev features other than virtio features. It could be 
-> used by driver to determine the capability of the mdev device. Besides 
-> _F_VERSION_1, we may add dirty page tracking etc which means we need new 
-> device ops.
+        // initialize the ar_usb field
+        pipe->ar_usb = ar_usb;
+}
 
-Ok, so that's supposed to be distinct bits that can be or'ed together?
-Makes sense, but probably needs some more documentation somewhere.
+The driver assumes that the addresses reported in endpoint
+descriptors from device side  to be complete. If a device is
+malicious and does not report complete addresses, it may trigger
+NULL-ptr-deref `ath10k_usb_alloc_urb_from_pipe` and
+`ath10k_usb_free_urb_to_pipe`.
 
-> 
-> 
-> >  
-> >> + * @get_generation:		Get device generaton
-> >> + *				@mdev: mediated device
-> >> + *				Returns u32: device generation  
-> > Is that callback mandatory?  
-> 
-> 
-> I think so, it's hard to emulate that completely in virtio-mdev transport.
+This patch fixes the bug by preventing potential NULL-ptr-deref.
 
-IIRC, the generation stuff is not mandatory in the current version of
-virtio, as not all transports have that concept.
+Signed-off-by: Hui Peng <benquike@gmail.com>
+Reported-by: Hui Peng <benquike@gmail.com>
+Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[groeck: Add driver tag to subject, fix build warning]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+v2: Fix build warning, add "ath10k:" to subject
 
-Generally, are any of the callbacks optional, or are all of them
-mandatory? From what I understand, you plan to add new things that
-depend on features... would that mean non-mandatory callbacks?
+ drivers/net/wireless/ath/ath10k/usb.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/usb.c b/drivers/net/wireless/ath/ath10k/usb.c
+index e1420f67f776..9ebe74ee4aef 100644
+--- a/drivers/net/wireless/ath/ath10k/usb.c
++++ b/drivers/net/wireless/ath/ath10k/usb.c
+@@ -38,6 +38,10 @@ ath10k_usb_alloc_urb_from_pipe(struct ath10k_usb_pipe *pipe)
+ 	struct ath10k_urb_context *urb_context = NULL;
+ 	unsigned long flags;
+ 
++	/* bail if this pipe is not initialized */
++	if (!pipe->ar_usb)
++		return NULL;
++
+ 	spin_lock_irqsave(&pipe->ar_usb->cs_lock, flags);
+ 	if (!list_empty(&pipe->urb_list_head)) {
+ 		urb_context = list_first_entry(&pipe->urb_list_head,
+@@ -55,6 +59,10 @@ static void ath10k_usb_free_urb_to_pipe(struct ath10k_usb_pipe *pipe,
+ {
+ 	unsigned long flags;
+ 
++	/* bail if this pipe is not initialized */
++	if (!pipe->ar_usb)
++		return;
++
+ 	spin_lock_irqsave(&pipe->ar_usb->cs_lock, flags);
+ 
+ 	pipe->urb_cnt++;
+-- 
+2.17.1
+
