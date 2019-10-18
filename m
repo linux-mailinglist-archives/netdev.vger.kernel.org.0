@@ -2,59 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C7D4DD500
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:39:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A00CEDD50F
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 00:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393338AbfJRWjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 18:39:16 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44821 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfJRWjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 18:39:16 -0400
-Received: by mail-lf1-f67.google.com with SMTP id q12so5805448lfc.11
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 15:39:14 -0700 (PDT)
+        id S1728910AbfJRWsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 18:48:53 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:40571 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728267AbfJRWsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 18:48:52 -0400
+Received: by mail-lf1-f65.google.com with SMTP id f23so5838648lfk.7
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 15:48:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=Tu+y8NQHPJdpH5zk4JXjcOJf2x2sdRfeWLWJG+FKhFs=;
-        b=iAQIR5fnIsTR2Ts309v6YQ/kn615UlLrE03SeNj9KpK0GUbnuTu/+5dED86PZyWoDc
-         dOPBuWT2q6yGKk47t7fZ8pr7muZpcTc5gJrDCtaJlNLKQ5MYaXJlKcXtktaZJrtBwooI
-         uUVNuqi20TMA3Y3YhOtZz+bWL+hnEvUz8LrZZHG3yZgdwvLuV5V0so3llr3O1dWGRQe5
-         ViXJK1MHCvQ17LJtZZOeBhJ+RC0GnTSzIUICkDs8lO3YG5emAUTrnWl2IQeYz8LMn0MJ
-         VQ+CTaF+/RkMV/cY8ra2onYlmmEXI7y+PDLWOXTjmINTje7CEeONJZk80L/NhVFQzgfV
-         ToAA==
+        bh=AtsybqDOWp2GnV+uGSoCuiaQAQmM7oEncDjuATiiBtI=;
+        b=zWCrcAIf9x84ADk8f62f3Sf7HjjLZWQCBQld03fu/txXTZevHjEvVeDjMTlsw3ah9y
+         jnBjMdhXp7DaWZQZoaX3jzK35QjsIssKlvInGypW6+DlO+Mx6q8XBuKWbNED/wh/LDPe
+         W4FpsDZMGVIqnnylqu1muk6OcJdGX+gofQr4rVoOZ3lojcaInu6R086/jGei7B3t5u1t
+         oE3yW62zKaz6EI7SLvlxkPFfi4OshhbmaROabYROv9TCnUuYNr2I3tiiux7LDAO5MYep
+         CFp76fPK9JQVXqaD5DMjzyzyj+QsYnh3Wwe3TFpfUWbxZD5kVA45yE3XKcv+821zqLcw
+         sOoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=Tu+y8NQHPJdpH5zk4JXjcOJf2x2sdRfeWLWJG+FKhFs=;
-        b=p1fg1vwoLZMjVv+LqQ002w45Db1STHMYkwq6nddgpHV6GvIMRC4UgPBMR08qpuALeB
-         VQV9yeMI6nl5gYHVQpLHm/KkATCCTIPbATaewguhkGJ2YNjeoRGkwhmmPc5CzEQD25SV
-         +TnAGYTcgpDIAu/I/mXUuEAJ6VBq5lR9S/pBqThuxrymQXFah2DRNZbV862yoBcqLBHI
-         m1RU/weBHYmXrtybsTiF1DoaH3nbVQAOI/fMKXT0YmXkwlFWs/Apa530kHkAtNw9Wmk/
-         moObvG+fn+S5cMWLKmmXx9FEp0Y/j3p5ow8v/pTnx67ZHYQYXAECDPzw5YcnakKQIPt4
-         oh3w==
-X-Gm-Message-State: APjAAAWECNnfBeNLufaX81dE3LxKPSPet4ngJTH/ZTuWROBceMb2QPdZ
-        L6e4qDr6eROfQGnFU0SI+hdbzA==
-X-Google-Smtp-Source: APXvYqy4edffS/arTAA9zeCX329BJi3gMMUpHPH5hrbydZapeR2ditRHVTk/m4NSbykVWZSi0AkvkA==
-X-Received: by 2002:ac2:5477:: with SMTP id e23mr7493688lfn.5.1571438353677;
-        Fri, 18 Oct 2019 15:39:13 -0700 (PDT)
+        bh=AtsybqDOWp2GnV+uGSoCuiaQAQmM7oEncDjuATiiBtI=;
+        b=sUWnTytlTP3ceb+pVllyIZnTs3A6gqmH1h/LLLyewriGcJR247YToYm2uGFQSC7chh
+         v4ppA7PiV4u/c0VMAsbbrQq9/J/A8Zpz0KgtpKAo0Yr4nfQG6HA8MUEwPvE1rjhixL3V
+         U1uLa5hKRk9ez6HRKi2iIy975bjhIdDMEd6R5xuU20nYn2XpHcq8l0DNY8Y/x8wLCteq
+         QIR4p2dWBBN4B6ceF2FtNuzgPuYQvUkqieuXj7bwxvSo+UktKdQzfjGuBX1w7e/Ecmin
+         32nxHly5M4fB3HqfD2z8SHBnuywMRZxpxESx7nLEGfY3A8qts2khgBoDK4MIb4ZD8YW9
+         k44A==
+X-Gm-Message-State: APjAAAUZ5fQb8hMD236zEu9O7Szk5lpZVkk5cLyosw/+N9Lu3Jhjv4UZ
+        LDQdC+X8H5MJNGzDcTXu4pM3ng==
+X-Google-Smtp-Source: APXvYqzKZwbqoFo5Nz9E39Yz91nh575O+k7qYjGuFO5yallh7x1FuiBZro2vXNuqLrEYGHMlR2cVjw==
+X-Received: by 2002:ac2:4142:: with SMTP id c2mr7477062lfi.47.1571438930778;
+        Fri, 18 Oct 2019 15:48:50 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id l7sm2885363lji.46.2019.10.18.15.39.10
+        by smtp.gmail.com with ESMTPSA id n3sm2975718lfl.62.2019.10.18.15.48.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 15:39:13 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 15:39:05 -0700
+        Fri, 18 Oct 2019 15:48:50 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 15:48:44 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH] bpftool: Try to read btf as raw data if elf read fails
-Message-ID: <20191018153905.600d7c8a@cakuba.netronome.com>
-In-Reply-To: <20191018103404.12999-1-jolsa@kernel.org>
-References: <20191018103404.12999-1-jolsa@kernel.org>
+To:     Zhu Yanjun <yanjun.zhu@oracle.com>
+Cc:     rain.1986.08.12@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: forcedeth: add xmit_more support
+Message-ID: <20191018154844.34a27c64@cakuba.netronome.com>
+In-Reply-To: <1571392885-32706-1-git-send-email-yanjun.zhu@oracle.com>
+References: <1571392885-32706-1-git-send-email-yanjun.zhu@oracle.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,115 +62,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Oct 2019 12:34:04 +0200, Jiri Olsa wrote:
-> The bpftool interface stays the same, but now it's possible
-> to run it over BTF raw data, like:
-> 
->   $ bpftool btf dump file /sys/kernel/btf/vmlinux
->   libbpf: failed to get EHDR from /sys/kernel/btf/vmlinux
->   [1] INT '(anon)' size=4 bits_offset=0 nr_bits=32 encoding=(none)
->   [2] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64 encoding=(none)
->   [3] CONST '(anon)' type_id=2
-> 
-> I'm also adding err init to 0 because I was getting uninitialized
-> warnings from gcc.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  tools/bpf/bpftool/btf.c | 47 ++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 42 insertions(+), 5 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-> index 9a9376d1d3df..100fb7e02329 100644
-> --- a/tools/bpf/bpftool/btf.c
-> +++ b/tools/bpf/bpftool/btf.c
-> @@ -12,6 +12,9 @@
->  #include <libbpf.h>
->  #include <linux/btf.h>
->  #include <linux/hashtable.h>
-> +#include <sys/types.h>
-> +#include <sys/stat.h>
-> +#include <unistd.h>
->  
->  #include "btf.h"
->  #include "json_writer.h"
-> @@ -388,6 +391,35 @@ static int dump_btf_c(const struct btf *btf,
->  	return err;
->  }
->  
-> +static struct btf *btf__parse_raw(const char *file)
-> +{
-> +	struct btf *btf = ERR_PTR(-EINVAL);
-> +	__u8 *buf = NULL;
+On Fri, 18 Oct 2019 06:01:25 -0400, Zhu Yanjun wrote:
+> This change adds support for xmit_more based on the igb commit 6f19e12f6230
+> ("igb: flush when in xmit_more mode and under descriptor pressure") and
+> commit 6b16f9ee89b8 ("net: move skb->xmit_more hint to softnet data") that
+> were made to igb to support this feature. The function netif_xmit_stopped
+> is called to check if transmit queue on device is currently unable to send
+> to determine if we must write the tail because we can add no further
+> buffers.
+> When normal packets and/or xmit_more packets fill up tx_desc, it is
+> necessary to trigger NIC tx reg.
 
-Please drop the inits
+Looks broken. You gotta make sure you check the kick on _every_ return
+path. There are 4 return statements in each function, you only touched
+2.
 
-> +	struct stat st;
-> +	FILE *f;
-> +
-> +	if (stat(file, &st))
-> +		return btf;
-
-And return constants here
-
-> +	f = fopen(file, "rb");
-> +	if (!f)
-> +		return btf;
-
-and here
-
-> +	buf = malloc(st.st_size);
-> +	if (!buf)
-> +		goto err;
-
-and jump to the right place here.
-
-> +	if ((size_t) st.st_size != fread(buf, 1, st.st_size, f))
-> +		goto err;
-> +
-> +	btf = btf__new(buf, st.st_size);
-> +
-> +err:
-
-The prefix for error labels which is shared with non-error path is exit_
-
-> +	free(buf);
-> +	fclose(f);
-> +	return btf;
-> +}
-> +
->  static int do_dump(int argc, char **argv)
->  {
->  	struct btf *btf = NULL;
-> @@ -397,7 +429,7 @@ static int do_dump(int argc, char **argv)
->  	__u32 btf_id = -1;
->  	const char *src;
->  	int fd = -1;
-> -	int err;
-> +	int err = 0;
-
-This change looks unnecessary.
-
->  	if (!REQ_ARGS(2)) {
->  		usage();
-> @@ -468,10 +500,15 @@ static int do_dump(int argc, char **argv)
->  		btf = btf__parse_elf(*argv, NULL);
->  		if (IS_ERR(btf)) {
->  			err = PTR_ERR(btf);
-> -			btf = NULL;
-> -			p_err("failed to load BTF from %s: %s", 
-> -			      *argv, strerror(err));
-> -			goto done;
-> +			if (err == -LIBBPF_ERRNO__FORMAT)
-> +				btf = btf__parse_raw(*argv);
-> +			if (IS_ERR(btf)) {
-> +				btf = NULL;
-> +				/* Display the original error value. */
-> +				p_err("failed to load BTF from %s: %s",
-> +				      *argv, strerror(err));
-> +				goto done;
-> +			}
->  		}
->  		NEXT_ARG();
->  	} else {
-
+Also the labels should be lower case.
