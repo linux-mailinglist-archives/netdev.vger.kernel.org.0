@@ -2,53 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A485DDCC05
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3273DDCC0B
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 18:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409333AbfJRQz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 12:55:57 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54790 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405642AbfJRQz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 12:55:56 -0400
-Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 96A7E14A8C248;
-        Fri, 18 Oct 2019 09:55:55 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 12:55:54 -0400 (EDT)
-Message-Id: <20191018.125554.337602298468767216.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     richardcochran@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, jakub.kicinski@netronome.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] net: dsa: sja1105: Switch to hardware
- operations for PTP
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191016184102.1335-1-olteanv@gmail.com>
-References: <20191016184102.1335-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 18 Oct 2019 09:55:56 -0700 (PDT)
+        id S2409343AbfJRQ5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 12:57:04 -0400
+Received: from unicorn.mansr.com ([81.2.72.234]:52096 "EHLO unicorn.mansr.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405642AbfJRQ5D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 12:57:03 -0400
+Received: by unicorn.mansr.com (Postfix, from userid 51770)
+        id 578A81560D; Fri, 18 Oct 2019 17:57:01 +0100 (BST)
+From:   Mans Rullgard <mans@mansr.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: ethernet: dwmac-sun8i: show message only when switching to promisc
+Date:   Fri, 18 Oct 2019 17:56:58 +0100
+Message-Id: <20191018165658.9752-1-mans@mansr.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Wed, 16 Oct 2019 21:41:02 +0300
+Printing the info message every time more than the max number of mac
+addresses are requested generates unnecessary log spam.  Showing it only
+when the hw is not already in promiscous mode is equally informative
+without being annoying.
 
-> Adjusting the hardware clock (PTPCLKVAL, PTPCLKADD, PTPCLKRATE) is a
-> requirement for the auxiliary PTP functionality of the switch
-> (TTEthernet, PPS input, PPS output).
-> 
-> Therefore we need to switch to using these registers to keep a
-> synchronized time in hardware, instead of the timecounter/cyclecounter
-> implementation, which is reliant on the free-running PTPTSCLK.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Mans Rullgard <mans@mansr.com>
+---
+Changed in v2:
+- test only RXALL bit
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Applied, thanks.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 79c91526f3ec..c186de64e552 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -646,7 +646,8 @@ static void sun8i_dwmac_set_filter(struct mac_device_info *hw,
+ 			}
+ 		}
+ 	} else {
+-		netdev_info(dev, "Too many address, switching to promiscuous\n");
++		if (!(readl(ioaddr + EMAC_RX_FRM_FLT) & EMAC_FRM_FLT_RXALL))
++			netdev_info(dev, "Too many address, switching to promiscuous\n");
+ 		v = EMAC_FRM_FLT_RXALL;
+ 	}
+ 
+-- 
+2.23.0
+
