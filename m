@@ -2,70 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3BC6DC087
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 11:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FA15DC08A
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 11:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2442275AbfJRJGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 05:06:07 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:53488 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727741AbfJRJGH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 05:06:07 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 7138B24653149FBE9F7C;
-        Fri, 18 Oct 2019 17:06:04 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.439.0; Fri, 18 Oct 2019
- 17:05:54 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <rostedt@goodmis.org>, <mingo@redhat.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <andriin@fb.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH bpf-next] bpf: Fix build error without CONFIG_NET
-Date:   Fri, 18 Oct 2019 17:03:44 +0800
-Message-ID: <20191018090344.26936-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S2406825AbfJRJHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 05:07:16 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:46828 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727741AbfJRJHQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 05:07:16 -0400
+Received: by mail-lj1-f193.google.com with SMTP id d1so5388295ljl.13
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 02:07:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=SRH1Voew0FRQ/ys0rrwd2bZr5vliN3kcFi+61ROPMN0=;
+        b=DzYe7NIk4aKjZxea/6wc6zg13mBF6NxLL61swMelZAs6V0og3EMnz3uooOL2talTwB
+         D283dpluq8k6vxRvyYwbGtvy82lqHGb4wPjVkKn+rd0anjTJ4URir87+bBoyHEfQcGKk
+         TrDTIlCe+No1Q+p/AsM8Diux2x72FHXxiXYEY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=SRH1Voew0FRQ/ys0rrwd2bZr5vliN3kcFi+61ROPMN0=;
+        b=YyHe0V1pJLJcjyfRCZ9Vb8qFTJ1lgGmRMVEg8EesSLvbcy0bmR7DHUrMOhbuqJmr2J
+         /nblC4GGx3IQBjRyYk7DkLcbzIqdaOyplr5UhGSzUN3EBN9w5OSPDa0Hew5L9g+4VU/u
+         TIizG7g4Vr3Cy/7yP2ISTaU6qucHBXO8MaXneIvm6JRSDM+XPM8PmNG314vDq6dqazLw
+         8SLJY/ACbYmEpwPTDVAf4YNgn3vxGHXlH+TVzaKAr2sgXX/dpq8HWLiYLlHDunAP0RuV
+         EfEP/+Ix2r8Pl82Cyd/U+ADa/DvYeetncph7aBDrVb7e/kvowWS6RKXm5DVt90s1k3rt
+         3WXA==
+X-Gm-Message-State: APjAAAW42f6ADF484+to7RdK38UZyFPDUwc36m6ncwV2k3C8iX0YGk0f
+        SLU6mKiqGCLHk3PWAskqdUcgsg==
+X-Google-Smtp-Source: APXvYqzrdQoQzd5ANgZgmQioC7nMEp+JOdgCl1hFol2U0xDe4WD/umCDdNgaGUc/ZJML0aaJG18xIQ==
+X-Received: by 2002:a2e:9848:: with SMTP id e8mr5439877ljj.148.1571389633398;
+        Fri, 18 Oct 2019 02:07:13 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id p3sm2066589ljn.78.2019.10.18.02.07.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 02:07:12 -0700 (PDT)
+References: <20191017083752.30999-1-jakub@cloudflare.com> <20191017181812.eb23epbwnp3fo5sg@kafai-mbp.dhcp.thefacebook.com>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Andrii Nakryiko" <andriin@fb.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Restore the netns after flow dissector reattach test
+In-reply-to: <20191017181812.eb23epbwnp3fo5sg@kafai-mbp.dhcp.thefacebook.com>
+Date:   Fri, 18 Oct 2019 11:07:11 +0200
+Message-ID: <87pniucthc.fsf@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_NET is n, building fails:
+On Thu, Oct 17, 2019 at 08:18 PM CEST, Martin Lau wrote:
+> On Thu, Oct 17, 2019 at 10:37:52AM +0200, Jakub Sitnicki wrote:
 
-kernel/trace/bpf_trace.o: In function `raw_tp_prog_func_proto':
-bpf_trace.c:(.text+0x1a34): undefined reference to `bpf_skb_output_proto'
+[...]
 
-Wrap it into a #ifdef to fix this.
+>> ---
+>>  .../bpf/prog_tests/flow_dissector_reattach.c  | 21 +++++++++++++++----
+>>  1 file changed, 17 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+>> index 777faffc4639..1f51ba66b98b 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector_reattach.c
+>> @@ -91,12 +91,18 @@ static void do_flow_dissector_reattach(void)
+>>
+>>  void test_flow_dissector_reattach(void)
+>>  {
+>> -	int init_net, err;
+>> +	int init_net, self_net, err;
+>> +
+>> +	self_net = open("/proc/self/ns/net", O_RDONLY);
+>> +	if (CHECK_FAIL(self_net < 0)) {
+>> +		perror("open(/proc/self/ns/net");
+>> +		return;
+>> +	}
+>>
+>>  	init_net = open("/proc/1/ns/net", O_RDONLY);
+>>  	if (CHECK_FAIL(init_net < 0)) {
+>>  		perror("open(/proc/1/ns/net)");
+>> -		return;
+>> +		goto out_close;
+> Mostly nit.  close(-1) is ok-ish...  The same goes for the "out_close" in
+> do_flow_dissector_reattach().
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: a7658e1a4164 ("bpf: Check types of arguments passed into helpers")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- kernel/trace/bpf_trace.c | 2 ++
- 1 file changed, 2 insertions(+)
+Happy to fix it up. Is your concern that calls to close invalid FDs
+clutter strace output or something else?
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 52f7e9d..c324089 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1055,8 +1055,10 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	switch (func_id) {
- 	case BPF_FUNC_perf_event_output:
- 		return &bpf_perf_event_output_proto_raw_tp;
-+#ifdef CONFIG_NET
- 	case BPF_FUNC_skb_output:
- 		return &bpf_skb_output_proto;
-+#endif
- 	case BPF_FUNC_get_stackid:
- 		return &bpf_get_stackid_proto_raw_tp;
- 	case BPF_FUNC_get_stack:
--- 
-2.7.4
+>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
+Thanks for the review.
 
+-Jakub
