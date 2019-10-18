@@ -2,146 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF77DCF41
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 21:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E242ADCF5D
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 21:38:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505956AbfJRT2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 15:28:21 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23269 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2502430AbfJRT2V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 15:28:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571426899;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ReGmZfxNLrIuLgZJ1ThEBBVuP3LStbYtdPYwtz23/vM=;
-        b=T2VLUeBFxEfo9GhzmbSk211H297NOg9UAYY5rVu+lUZ3Eb347Vl0k3gFSv/Z7GurSRb0ES
-        VXyLfdbC3GJMpIM7BZ7I8eLvwQWDkxiF204t+v18dsIHaqAmJUqiRskodJUdcnoojFTS5T
-        /7ug7mpTLBmLroIIBUP2lGhErMRIlHs=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-288-Oh-okwwtP0yE8wmhe99mLQ-1; Fri, 18 Oct 2019 15:28:17 -0400
-Received: by mail-lf1-f72.google.com with SMTP id c27so1446285lfj.19
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 12:28:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=8lD3afoo9Y+y5S3nT5ktvWu7wmYcHUcDBojvsLe+bew=;
-        b=LhSGaYt3H/3p5wxmQC4T0tNknqOqLRKn5z5Jc6DFINXUp9Fi0vt14iWJhSMYQkxAb9
-         +zkj+WXOeBKT+O+S4PRZPmbzCSSfA3FWzgdvpP87lHyVrnawiWvWmD8H8hYKh/poMAcj
-         pKOcShMd+b2LQKTqy0Lfezi6hjz3q0RgdIpkuF1tfrnMNQOlrVBSium6MAZ23Z4KEfAQ
-         2nD92orbqrFjevjo6kuhGwbz8O6wojmDsTCfUeegWRqD+eJAOalP8dlp4pzVFsxhSzyH
-         LsYYMX6N6DoYz99EgCSgislTVTPOvj5po8fBKw+xoCcLdlTiJpw23FVm6IHGTONWe0zy
-         LrCQ==
-X-Gm-Message-State: APjAAAX8/YNh6Z5SlhACqESDoLwUZwug+3g01PGErVaMMlGQ0A3S2uC+
-        5KklemaVKsgHBj+b83+9PKqEcn/9ruTX3H7tCP4k6e9BMU8wlaX2bt6i/5JVN/efikOXN4uhlp0
-        7OHEMZVuvdWbBxmFR
-X-Received: by 2002:a19:f107:: with SMTP id p7mr5544649lfh.91.1571426896260;
-        Fri, 18 Oct 2019 12:28:16 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqx4lubWUulL34gzxM41pSqL8vUg6UqCjnneyhVcYOLP6kmlk0Lt2/P31DSg0SBfU3TQloOZEw==
-X-Received: by 2002:a19:f107:: with SMTP id p7mr5544638lfh.91.1571426896046;
-        Fri, 18 Oct 2019 12:28:16 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id x5sm3927436lfg.71.2019.10.18.12.28.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 12:28:15 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9925D1804B6; Fri, 18 Oct 2019 21:28:14 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin Lau <kafai@fb.com>
-Cc:     "daniel\@iogearbox.net" <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: Re: [PATCH bpf v2] xdp: Handle device unregister for devmap_hash map type
-In-Reply-To: <20191018165049.rm6du3yq2e4vg45h@kafai-mbp>
-References: <20191017105232.2806390-1-toke@redhat.com> <20191017190219.hpphf7jnyn6xapb6@kafai-mbp.dhcp.thefacebook.com> <87pniue4cw.fsf@toke.dk> <20191018165049.rm6du3yq2e4vg45h@kafai-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 18 Oct 2019 21:28:14 +0200
-Message-ID: <87tv85dfap.fsf@toke.dk>
-MIME-Version: 1.0
-X-MC-Unique: Oh-okwwtP0yE8wmhe99mLQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
+        id S2443303AbfJRTiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 15:38:22 -0400
+Received: from mail-eopbgr50054.outbound.protection.outlook.com ([40.107.5.54]:47134
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2394836AbfJRTiV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 15:38:21 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E4d2i8vk7ALmTg8FMMx0D2eXZox2eMQypoMnscYyzJmA/Nbl2KvACUCfRgRtuXrp1doyMJYFc30FyhBaabX8m5g4sYs4BAJlJOS4bmZWclDfITkPCsw3Ec49yY9za7eTJrMAUug+j4XLzWfXHwqeXnrOrJ7vqsUDqe7nRpi9RxkqZWgCnzAnU62tSTMRhMesBSttGKQs5DUkRZCBXsMRL5Itk+b2N4Sx0xLy6xy9Fkxc4fHUuxRbdDGYP8yqGjvgR1W4pEynrs1ic56k7rGhg/rbppfDyLBycc7JMaRtpWWfIZ/PBTf8dURDLw4segbk54l6RbabqxGlvE5P/ZZ26w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o6cmNhwCKx+4BthX1eVSo87Sj1mM1S6fMswkqb6HvKE=;
+ b=ZDACowyhGs3SdM4EA7DtKNtMPPdOjfWrhPzmc6q13MyVQDb8UlG4ARh+0rXAYbR0D/Nfmc1mgwuKWIBX3yAZtwlg2ccAPvzTNqI1JI9AViiaQeOcmlCzsoY/VP+H/iumFhdCGSP6wG9dYze4biglNRKJC5StDet75SCXWk81d5LAhk4+fgG/Up7LgaxGJ6LOI88IHtSz+3cQqbUurHACRneCxK+mcLEiLiPLVeZEMzoJqXlmMCwYBSiqZxSuIsTB38UwF0XKzsymHhmTm3T9FrQL7MccNCC/Vf/HZ1cj5BJVSqHf6UU9EymRfvmcb8dzL6wzs+B/D3Ke4Khc7itmOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o6cmNhwCKx+4BthX1eVSo87Sj1mM1S6fMswkqb6HvKE=;
+ b=f5M3EujVcYv2Hj3lrQKhBGe0vCz5MsWloiGpt2CM253Bft0kVyIa4y1wv1JOqCqZQ0JVgG/K0tc5ZHQf+3Ze1x/S8GIwzqiVdYY8eA1ModiHjuSxG9skev0Y8S4I0lM7SGONv1NnChitOGSvjST7G5Tm0SIMHvXpH2l3IjJl8LQ=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1SPR01MB0392.eurprd05.prod.outlook.com (52.133.247.88) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2367.20; Fri, 18 Oct 2019 19:38:00 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::f42d:b87a:e6b2:f841]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::f42d:b87a:e6b2:f841%7]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
+ 19:38:00 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 00/15] Mellanox, mlx5 kTLS fixes 18-10-2019
+Thread-Topic: [pull request][net 00/15] Mellanox, mlx5 kTLS fixes 18-10-2019
+Thread-Index: AQHVheuMgI20jegx6keOfU1dtxu20A==
+Date:   Fri, 18 Oct 2019 19:37:59 +0000
+Message-ID: <20191018193737.13959-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR07CA0079.namprd07.prod.outlook.com
+ (2603:10b6:a03:12b::20) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2cff4a1b-fc99-4edc-3785-08d75402aecd
+x-ms-office365-filtering-ht: Tenant
+x-ms-traffictypediagnostic: VI1SPR01MB0392:|VI1SPR01MB0392:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1SPR01MB03921202936208670E5A8AFFBE6C0@VI1SPR01MB0392.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 01949FE337
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(39860400002)(396003)(366004)(376002)(199004)(189003)(52544003)(86362001)(5660300002)(186003)(6436002)(102836004)(486006)(6506007)(71200400001)(71190400001)(14454004)(2616005)(2906002)(26005)(476003)(6512007)(8936002)(81166006)(81156014)(6916009)(1076003)(50226002)(107886003)(8676002)(36756003)(6486002)(256004)(14444005)(478600001)(386003)(66066001)(64756008)(66946007)(66556008)(66476007)(99286004)(66446008)(4326008)(316002)(54906003)(3846002)(6116002)(25786009)(52116002)(305945005)(7736002)(4001150100001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1SPR01MB0392;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZL5Gs3UltANSmku8bW98YjJt5m8gHmNgUa7gsz9aalD6hdTkkSJzGenYNxzph/tTrNRNi3vQTsajKiFSo90PrxjGkpXts5tDfeQ5L3YUcND5DzRY+T6jqflFPRmVuiVIIRCh9b2LR99LkK3Uvb/9PGogWx7nzin6BH4jrOMoGpSEfpM4tuMSMaTSXWMali0v1VZ0uPeFW/hruBp4dsIjyewjZGQ2GPy36KTN2btWLZToBYyUYRffmmUrc7VLmaYjfOWuwYJ7bvDQn/W3hyGz2A1zwKQCh94BkcIB/wldapS8RmrDoNWmUc+v0ux6jxJJ5a4bh7MfOckrziXmRRqExWVnsoZCW5IQn6IhtAFKaPGwzVf0+s3AIPje8tUWAY7dCp3B9VpxYifI6+RpyO1cEVGkfzTqMFkEg5d6ZlmHzn5xbH5JmyItJL/E7xVS1flR
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cff4a1b-fc99-4edc-3785-08d75402aecd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 19:37:59.8285
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EeG0yjEMcyFBkqw6aa0dFqsAUHH2dIMhif0kNkhmjJJ1aOe4a17SnnZPOaHkZw1zi7ErPdLMuuA3ajvKVgReXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1SPR01MB0392
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Lau <kafai@fb.com> writes:
+Hi Dave,
 
-> On Fri, Oct 18, 2019 at 12:26:55PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Martin Lau <kafai@fb.com> writes:
->>=20
->> > On Thu, Oct 17, 2019 at 12:52:32PM +0200, Toke H=C3=B8iland-J=C3=B8rge=
-nsen wrote:
->> >> It seems I forgot to add handling of devmap_hash type maps to the dev=
-ice
->> >> unregister hook for devmaps. This omission causes devices to not be
->> >> properly released, which causes hangs.
->> >>=20
->> >> Fix this by adding the missing handler.
->> >>=20
->> >> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up de=
-vices by hashed index")
->> >> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> >> ---
->> >> v2:
->> >>   - Grab the update lock while walking the map and removing entries.
->> >>=20
->> >>  kernel/bpf/devmap.c | 37 +++++++++++++++++++++++++++++++++++++
->> >>  1 file changed, 37 insertions(+)
->> >>=20
->> >> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
->> >> index d27f3b60ff6d..a0a1153da5ae 100644
->> >> --- a/kernel/bpf/devmap.c
->> >> +++ b/kernel/bpf/devmap.c
->> >> @@ -719,6 +719,38 @@ const struct bpf_map_ops dev_map_hash_ops =3D {
->> >>  =09.map_check_btf =3D map_check_no_btf,
->> >>  };
->> >> =20
->> >> +static void dev_map_hash_remove_netdev(struct bpf_dtab *dtab,
->> >> +=09=09=09=09       struct net_device *netdev)
->> >> +{
->> >> +=09unsigned long flags;
->> >> +=09int i;
->> > dtab->n_buckets is u32.
->>=20
->> Oh, right, will fix.
->>=20
->> >> +
->> >> +=09spin_lock_irqsave(&dtab->index_lock, flags);
->> >> +=09for (i =3D 0; i < dtab->n_buckets; i++) {
->> >> +=09=09struct bpf_dtab_netdev *dev, *odev;
->> >> +=09=09struct hlist_head *head;
->> >> +
->> >> +=09=09head =3D dev_map_index_hash(dtab, i);
->> >> +=09=09dev =3D hlist_entry_safe(rcu_dereference_raw(hlist_first_rcu(h=
-ead)),
->> > The spinlock has already been held.  Is rcu_deref still needed?
->>=20
->> I guess it's not strictly needed, but since it's an rcu-protected list,
->> and hlist_first_rcu() returns an __rcu-annotated type, I think we will
->> get a 'sparse' warning if it's omitted, no?
->>=20
->> And since it's just a READ_ONCE, it doesn't actually hurt since this is
->> not the fast path, so I'd lean towards just keeping it? WDYT?
->>
-> Can hlist_for_each_safe() be used instead then?
-> A bonus is the following long line will go away.
-> I think the change will be simpler also.
+This series introduces kTLS related fixes to mlx5 driver from Tariq,
+and two misc memory leak fixes form Navid Emamdoost.
 
-Ohhh, yes it can! I was looking for that variant of the for_each macro
-(the removal-safe one) and scratching my head as to why it wasn't there.
-Dunno how I missed that; thanks, will fix and resend! :)
+Please pull and let me know if there is any problem.
 
--Toke
+I would appreciate it if you queue up kTLS fixes from the list below to
+stable kernel v5.3 !
 
+For -stable v4.13:
+  nett/mlx5: prevent memory leak in mlx5_fpga_conn_create_cq=20
+
+For -stable v5.3:
+  net/mlx5: fix memory leak in mlx5_fw_fatal_reporter_dump
+  net/mlx5e: Tx, Fix assumption of single WQEBB of NOP in cleanup flow
+  net/mlx5e: Tx, Zero-memset WQE info struct upon update
+  net/mlx5e: kTLS, Release reference on DUMPed fragments in shutdown flow
+  net/mlx5e: kTLS, Size of a Dump WQE is fixed
+  net/mlx5e: kTLS, Save only the frag page to release at completion
+  net/mlx5e: kTLS, Save by-value copy of the record frags
+  net/mlx5e: kTLS, Fix page refcnt leak in TX resync error flow
+  net/mlx5e: kTLS, Fix missing SQ edge fill
+  net/mlx5e: kTLS, Limit DUMP wqe size
+  net/mlx5e: kTLS, Remove unneeded cipher type checks
+  net/mlx5e: kTLS, Save a copy of the crypto info
+  net/mlx5e: kTLS, Enhance TX resync flow
+  net/mlx5e: TX, Fix consumer index of error cqe dump
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit 38b4fe320119859c11b1dc06f6b4987a16344fa1=
+:
+
+  net: usb: lan78xx: Connect PHY before registering MAC (2019-10-18 10:22:0=
+4 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-f=
+ixes-2019-10-18
+
+for you to fetch changes up to c7ed6d0183d5ea9bc31bcaeeba4070bd62546471:
+
+  net/mlx5: fix memory leak in mlx5_fw_fatal_reporter_dump (2019-10-18 12:1=
+1:55 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2019-10-18
+
+----------------------------------------------------------------
+Navid Emamdoost (2):
+      net/mlx5: prevent memory leak in mlx5_fpga_conn_create_cq
+      net/mlx5: fix memory leak in mlx5_fw_fatal_reporter_dump
+
+Tariq Toukan (13):
+      net/mlx5e: Tx, Fix assumption of single WQEBB of NOP in cleanup flow
+      net/mlx5e: Tx, Zero-memset WQE info struct upon update
+      net/mlx5e: kTLS, Release reference on DUMPed fragments in shutdown fl=
+ow
+      net/mlx5e: kTLS, Size of a Dump WQE is fixed
+      net/mlx5e: kTLS, Save only the frag page to release at completion
+      net/mlx5e: kTLS, Save by-value copy of the record frags
+      net/mlx5e: kTLS, Fix page refcnt leak in TX resync error flow
+      net/mlx5e: kTLS, Fix missing SQ edge fill
+      net/mlx5e: kTLS, Limit DUMP wqe size
+      net/mlx5e: kTLS, Remove unneeded cipher type checks
+      net/mlx5e: kTLS, Save a copy of the crypto info
+      net/mlx5e: kTLS, Enhance TX resync flow
+      net/mlx5e: TX, Fix consumer index of error cqe dump
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  13 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls.c    |   2 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    |  29 +++-
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 190 ++++++++++++-----=
+----
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  13 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |  16 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  10 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  35 ++--
+ .../net/ethernet/mellanox/mlx5/core/fpga/conn.c    |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   |   2 +-
+ 11 files changed, 199 insertions(+), 118 deletions(-)
