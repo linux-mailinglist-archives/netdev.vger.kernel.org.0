@@ -2,125 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CEE5DBD1A
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 634BEDBD14
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:33:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395065AbfJRFge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:36:34 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:42297 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727399AbfJRFge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:36:34 -0400
-Received: by mail-oi1-f196.google.com with SMTP id i185so4188057oif.9
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 22:36:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+ZfQ3YcR54EbpttrnQUrtNXWUUftHFVFQjHIRQYfMjw=;
-        b=CZwxzmm29wlEIKR/7b2q8DbocmeFVU0EUjx7L5M5j5Ll7zEx8p+Z3AbxsipxjN0Ukv
-         hzKH58FkBft4vf+MiYKSBVznDszWlYkTxyKh7nmcni2y+UxghB11x6FCOaGUE2LdJCKm
-         Wk0koikhjDT8JPXEX7vC0b5LrA+rhZEqtRWQRpQoLygbu99wOpUP08guBJQZXF+up/dL
-         VoGj8kYtSflPCt5JbHrVgF1g6y+C5LbbT5kpL9AiAVu9H7HhFVOaKTP6afsOo7ioTQMv
-         qZAkNVwO65jyHnjVym/i/bMBGx/nB8QLPZJyo3cWZaHbdrwcEqhBP/60nuJH7eJ/cNlQ
-         mm2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+ZfQ3YcR54EbpttrnQUrtNXWUUftHFVFQjHIRQYfMjw=;
-        b=QYrY2US/2S87B1UacbohuZelAtZb4LM0wsP5OUdRuGaE5BRlH0eDi9CaB+cnvk4MB/
-         foLT2Jg2uddjPP1HEDQdFBRB8cDSektkHLOSOLc73Mg17jheCpevCGNsHDX0jAxDq7vI
-         kKHc0AAxIZFgtJ6hBaWO2n0OxUChBm6LQvKrW7+tH/1gtpSI4PIZGq3aRkOwWH/8/cH9
-         6P7cp5lf84mLKWl1y5KUKCosXGZhII/Fl68I4HczEDeCRIm02TIQxXN+3kupXXLLoJpI
-         1IYxfUXnsO0LS8ShOGh39vlnvvr54081R824NdzDSsUEafJkcJT6GCQUoNE3vVme7vn+
-         c3fA==
-X-Gm-Message-State: APjAAAWy47aO8vV4XGGeCIef+tezQmCFY+Pe+ZR+liVKWcPvcuTJzxQi
-        AUoYbsKrZBj35UaHZqnzdS6JirOmoE4I3TbsHY09GsY99ZPlWg==
-X-Google-Smtp-Source: APXvYqzWeSTVVWr5DlCgqsMN+TRetKV+8M8BdxIvQZEvTo07uvNK7CrlnKXFvsQaG0ikNcs7MBggK6EgScwD/RYsv7Y=
-X-Received: by 2002:aca:aac5:: with SMTP id t188mr6056901oie.39.1571366510570;
- Thu, 17 Oct 2019 19:41:50 -0700 (PDT)
+        id S2441981AbfJRFcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:32:12 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4719 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727399AbfJRFcK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 01:32:10 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id C6360874604BD2901D3E;
+        Fri, 18 Oct 2019 11:45:48 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 18 Oct 2019 11:45:39 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
+        Yonglong Liu <liuyonglong@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net] net: hns3: fix mis-counting IRQ vector numbers issue
+Date:   Fri, 18 Oct 2019 11:42:59 +0800
+Message-ID: <1571370179-52008-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20191017212858.13230-1-axboe@kernel.dk> <20191017212858.13230-2-axboe@kernel.dk>
-In-Reply-To: <20191017212858.13230-2-axboe@kernel.dk>
-From:   Jann Horn <jannh@google.com>
-Date:   Fri, 18 Oct 2019 04:41:22 +0200
-Message-ID: <CAG48ez0G2y0JS9=S2KmePO3xq-5DuzgovrLFiX4TJL-G897LCA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting files table
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     linux-block@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 4:01 AM Jens Axboe <axboe@kernel.dk> wrote:
-> This is in preparation for adding opcodes that need to modify files
-> in a process file table, either adding new ones or closing old ones.
+From: Yonglong Liu <liuyonglong@huawei.com>
 
-Closing old ones would be tricky. Basically if you call
-get_files_struct() while you're between an fdget()/fdput() pair (e.g.
-from sys_io_uring_enter()), you're not allowed to use that
-files_struct reference to replace or close existing FDs through that
-reference. (Or more accurately, if you go through fdget() with
-files_struct refcount 1, you must not replace/close FDs in there in
-any way until you've passed the corresponding fdput().)
+Currently, the num_msi_left means the vector numbers of NIC,
+but if the PF supported RoCE, it contains the vector numbers
+of NIC and RoCE(Not expected).
 
-You can avoid that if you ensure that you never use fdget()/fdput() in
-the relevant places, only fget()/fput().
+This may cause interrupts lost in some case, because of the
+NIC module used the vector resources which belongs to RoCE.
 
-> If an opcode needs this, it must set REQ_F_NEED_FILES in the request
-> structure. If work that needs to get punted to async context have this
-> set, they will grab a reference to the process file table. When the
-> work is completed, the reference is dropped again.
-[...]
-> @@ -2220,6 +2223,10 @@ static void io_sq_wq_submit_work(struct work_struct *work)
->                                 set_fs(USER_DS);
->                         }
->                 }
-> +               if (s->files && !old_files) {
-> +                       old_files = current->files;
-> +                       current->files = s->files;
-> +               }
+This patch adds a new variable num_nic_msi to store the vector
+numbers of NIC, and adjust the default TQP numbers and rss_size
+according to the value of num_nic_msi.
 
-AFAIK e.g. stuff like proc_fd_link() in procfs can concurrently call
-get_files_struct() even on kernel tasks, so you should take the
-task_lock(current) while fiddling with the ->files pointer.
+Fixes: 46a3df9f9718 ("net: hns3: Add HNS3 Acceleration Engine & Compatibility Layer Support")
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 ++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 21 +++++++++++++++-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  1 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 11 +++++++--
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 28 +++++++++++++++++++---
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  1 +
+ 6 files changed, 58 insertions(+), 6 deletions(-)
 
-Also, maybe I'm too tired to read this correctly, but it seems like
-when io_sq_wq_submit_work() is processing multiple elements with
-->files pointers, this part will only consume a reference to the first
-one?
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index c4b7bf8..75ccc1e 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -32,6 +32,8 @@
+ 
+ #define HNAE3_MOD_VERSION "1.0"
+ 
++#define HNAE3_MIN_VECTOR_NUM	2 /* first one for misc, another for IO */
++
+ /* Device IDs */
+ #define HNAE3_DEV_ID_GE				0xA220
+ #define HNAE3_DEV_ID_25GE			0xA221
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index fd7f943..e02e01b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -906,6 +906,9 @@ static int hclge_query_pf_resource(struct hclge_dev *hdev)
+ 		hnae3_get_field(__le16_to_cpu(req->pf_intr_vector_number),
+ 				HCLGE_PF_VEC_NUM_M, HCLGE_PF_VEC_NUM_S);
+ 
++		/* nic's msix numbers is always equals to the roce's. */
++		hdev->num_nic_msi = hdev->num_roce_msi;
++
+ 		/* PF should have NIC vectors and Roce vectors,
+ 		 * NIC vectors are queued before Roce vectors.
+ 		 */
+@@ -915,6 +918,15 @@ static int hclge_query_pf_resource(struct hclge_dev *hdev)
+ 		hdev->num_msi =
+ 		hnae3_get_field(__le16_to_cpu(req->pf_intr_vector_number),
+ 				HCLGE_PF_VEC_NUM_M, HCLGE_PF_VEC_NUM_S);
++
++		hdev->num_nic_msi = hdev->num_msi;
++	}
++
++	if (hdev->num_nic_msi < HNAE3_MIN_VECTOR_NUM) {
++		dev_err(&hdev->pdev->dev,
++			"Just %u msi resources, not enough for pf(min:2).\n",
++			hdev->num_nic_msi);
++		return -EINVAL;
+ 	}
+ 
+ 	return 0;
+@@ -1507,6 +1519,10 @@ static int  hclge_assign_tqp(struct hclge_vport *vport, u16 num_tqps)
+ 	kinfo->rss_size = min_t(u16, hdev->rss_size_max,
+ 				vport->alloc_tqps / hdev->tm_info.num_tc);
+ 
++	/* ensure one to one mapping between irq and queue at default */
++	kinfo->rss_size = min_t(u16, kinfo->rss_size,
++				(hdev->num_nic_msi - 1) / hdev->tm_info.num_tc);
++
+ 	return 0;
+ }
+ 
+@@ -2285,7 +2301,8 @@ static int hclge_init_msi(struct hclge_dev *hdev)
+ 	int vectors;
+ 	int i;
+ 
+-	vectors = pci_alloc_irq_vectors(pdev, 1, hdev->num_msi,
++	vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
++					hdev->num_msi,
+ 					PCI_IRQ_MSI | PCI_IRQ_MSIX);
+ 	if (vectors < 0) {
+ 		dev_err(&pdev->dev,
+@@ -2300,6 +2317,7 @@ static int hclge_init_msi(struct hclge_dev *hdev)
+ 
+ 	hdev->num_msi = vectors;
+ 	hdev->num_msi_left = vectors;
++
+ 	hdev->base_msi_vector = pdev->irq;
+ 	hdev->roce_base_vector = hdev->base_msi_vector +
+ 				hdev->roce_base_msix_offset;
+@@ -3903,6 +3921,7 @@ static int hclge_get_vector(struct hnae3_handle *handle, u16 vector_num,
+ 	int alloc = 0;
+ 	int i, j;
+ 
++	vector_num = min_t(u16, hdev->num_nic_msi - 1, vector_num);
+ 	vector_num = min(hdev->num_msi_left, vector_num);
+ 
+ 	for (j = 0; j < vector_num; j++) {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 3e9574a..c3d56b8 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -763,6 +763,7 @@ struct hclge_dev {
+ 	u32 base_msi_vector;
+ 	u16 *vector_status;
+ 	int *vector_irq;
++	u16 num_nic_msi;	/* Num of nic vectors for this PF */
+ 	u16 num_roce_msi;	/* Num of roce vectors for this PF */
+ 	int roce_base_vector;
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 9f0e35f..62399cc 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -537,9 +537,16 @@ static void hclge_tm_vport_tc_info_update(struct hclge_vport *vport)
+ 		kinfo->rss_size = kinfo->req_rss_size;
+ 	} else if (kinfo->rss_size > max_rss_size ||
+ 		   (!kinfo->req_rss_size && kinfo->rss_size < max_rss_size)) {
++		/* if user not set rss, the rss_size should compare with the
++		 * valid msi numbers to ensure one to one map between tqp and
++		 * irq as default.
++		 */
++		if (!kinfo->req_rss_size)
++			max_rss_size = min_t(u16, max_rss_size,
++					     (hdev->num_nic_msi - 1) /
++					     kinfo->num_tc);
++
+ 		/* Set to the maximum specification value (max_rss_size). */
+-		dev_info(&hdev->pdev->dev, "rss changes from %d to %d\n",
+-			 kinfo->rss_size, max_rss_size);
+ 		kinfo->rss_size = max_rss_size;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index e3090b3..7d7e712 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -411,6 +411,13 @@ static int hclgevf_knic_setup(struct hclgevf_dev *hdev)
+ 		kinfo->tqp[i] = &hdev->htqp[i].q;
+ 	}
+ 
++	/* after init the max rss_size and tqps, adjust the default tqp numbers
++	 * and rss size with the actual vector numbers
++	 */
++	kinfo->num_tqps = min_t(u16, hdev->num_nic_msix - 1, kinfo->num_tqps);
++	kinfo->rss_size = min_t(u16, kinfo->num_tqps / kinfo->num_tc,
++				kinfo->rss_size);
++
+ 	return 0;
+ }
+ 
+@@ -502,6 +509,7 @@ static int hclgevf_get_vector(struct hnae3_handle *handle, u16 vector_num,
+ 	int alloc = 0;
+ 	int i, j;
+ 
++	vector_num = min_t(u16, hdev->num_nic_msix - 1, vector_num);
+ 	vector_num = min(hdev->num_msi_left, vector_num);
+ 
+ 	for (j = 0; j < vector_num; j++) {
+@@ -2246,13 +2254,14 @@ static int hclgevf_init_msi(struct hclgevf_dev *hdev)
+ 	int vectors;
+ 	int i;
+ 
+-	if (hnae3_get_bit(hdev->ae_dev->flag, HNAE3_DEV_SUPPORT_ROCE_B))
++	if (hnae3_dev_roce_supported(hdev))
+ 		vectors = pci_alloc_irq_vectors(pdev,
+ 						hdev->roce_base_msix_offset + 1,
+ 						hdev->num_msi,
+ 						PCI_IRQ_MSIX);
+ 	else
+-		vectors = pci_alloc_irq_vectors(pdev, 1, hdev->num_msi,
++		vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
++						hdev->num_msi,
+ 						PCI_IRQ_MSI | PCI_IRQ_MSIX);
+ 
+ 	if (vectors < 0) {
+@@ -2268,6 +2277,7 @@ static int hclgevf_init_msi(struct hclgevf_dev *hdev)
+ 
+ 	hdev->num_msi = vectors;
+ 	hdev->num_msi_left = vectors;
++
+ 	hdev->base_msi_vector = pdev->irq;
+ 	hdev->roce_base_vector = pdev->irq + hdev->roce_base_msix_offset;
+ 
+@@ -2533,7 +2543,7 @@ static int hclgevf_query_vf_resource(struct hclgevf_dev *hdev)
+ 
+ 	req = (struct hclgevf_query_res_cmd *)desc.data;
+ 
+-	if (hnae3_get_bit(hdev->ae_dev->flag, HNAE3_DEV_SUPPORT_ROCE_B)) {
++	if (hnae3_dev_roce_supported(hdev)) {
+ 		hdev->roce_base_msix_offset =
+ 		hnae3_get_field(__le16_to_cpu(req->msixcap_localid_ba_rocee),
+ 				HCLGEVF_MSIX_OFT_ROCEE_M,
+@@ -2542,6 +2552,9 @@ static int hclgevf_query_vf_resource(struct hclgevf_dev *hdev)
+ 		hnae3_get_field(__le16_to_cpu(req->vf_intr_vector_number),
+ 				HCLGEVF_VEC_NUM_M, HCLGEVF_VEC_NUM_S);
+ 
++		/* nic's msix numbers is always equals to the roce's. */
++		hdev->num_nic_msix = hdev->num_roce_msix;
++
+ 		/* VF should have NIC vectors and Roce vectors, NIC vectors
+ 		 * are queued before Roce vectors. The offset is fixed to 64.
+ 		 */
+@@ -2551,6 +2564,15 @@ static int hclgevf_query_vf_resource(struct hclgevf_dev *hdev)
+ 		hdev->num_msi =
+ 		hnae3_get_field(__le16_to_cpu(req->vf_intr_vector_number),
+ 				HCLGEVF_VEC_NUM_M, HCLGEVF_VEC_NUM_S);
++
++		hdev->num_nic_msix = hdev->num_msi;
++	}
++
++	if (hdev->num_nic_msix < HNAE3_MIN_VECTOR_NUM) {
++		dev_err(&hdev->pdev->dev,
++			"Just %u msi resources, not enough for vf(min:2).\n",
++			hdev->num_nic_msix);
++		return -EINVAL;
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+index bdde3af..2b8d6bc 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+@@ -270,6 +270,7 @@ struct hclgevf_dev {
+ 	u16 num_msi;
+ 	u16 num_msi_left;
+ 	u16 num_msi_used;
++	u16 num_nic_msix;	/* Num of nic vectors for this VF */
+ 	u16 num_roce_msix;	/* Num of roce vectors for this VF */
+ 	u16 roce_base_msix_offset;
+ 	int roce_base_vector;
+-- 
+2.7.4
 
->
->                 if (!ret) {
->                         s->has_user = cur_mm != NULL;
-> @@ -2312,6 +2319,11 @@ static void io_sq_wq_submit_work(struct work_struct *work)
->                 unuse_mm(cur_mm);
->                 mmput(cur_mm);
->         }
-> +       if (old_files) {
-> +               struct files_struct *files = current->files;
-> +               current->files = old_files;
-> +               put_files_struct(files);
-> +       }
-
-And then here the first files_struct reference is dropped, and the
-rest of them leak?
-
->  }
->
->  /*
-> @@ -2413,6 +2425,8 @@ static int __io_queue_sqe(struct io_ring_ctx *ctx, struct io_kiocb *req,
->
->                         s->sqe = sqe_copy;
->                         memcpy(&req->submit, s, sizeof(*s));
-> +                       if (req->flags & REQ_F_NEED_FILES)
-> +                               req->submit.files = get_files_struct(current);
-
-Stupid question: How does this interact with sqpoll mode? In that
-case, this function is running on a kernel thread that isn't sharing
-the application's files_struct, right?
