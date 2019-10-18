@@ -2,216 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8A61DD0AA
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 22:53:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABD0DD0AF
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 22:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439394AbfJRUxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 16:53:50 -0400
-Received: from mail-eopbgr140084.outbound.protection.outlook.com ([40.107.14.84]:53742
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390535AbfJRUxt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 16:53:49 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gNRVibWDvjmGme1VhNADFypKulZjK/iDUxao2eR9Q48sPdq62u7sRZpTNa0ueqbw7WjUaUwzUm1BGjs72d6Hv7m8UDnyp/JKWMF2/42lz49M+peoEWtmz5NtgEwS3e+wYROKDjpdMSqjmEFFAg4qJe8SphrZPQyHSC1+9+Tbi9OYkSKYFhMo3ROtSFu55ZTR+WERq7RT08XfhwCY56OHYQgIjiDjycpqRKrdj+mtCwbWY0tytzZcdJznADRZy1IweCMKeQ3eR9v3ZwpmidiYPI3xIH6c+zdJbRej3JD4z5rAUNyC1L31ebESAHrznrHe0ZD20sckP6NhIK/90K24gw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cNz0RMe6Ugc5TjZ2MYIlE2k+jJsDJbtXvtkZI9WXQJk=;
- b=ka0Ia5n7PRbpUK9H/h7I/ruPQFAulzsJ/OYh3U+vaLgzoT6aLJJP45u8PoLt4B2QRPRqRJiw5HHA8Td/+nBFZl87QE5Um0tqqudqMs8x2aP94JesuC8VWKtnRdPgg9oOkqhQDMfLkYGQ+bK9kwcm8KTle3qZ3GtTPMDBGENyhOREnDLLPvfVWpRvcBN5GFDcuvejsasRaet1xWRhBo8/wiC4o+DGB3LWcO3KFqR8xlQhFe0s2xvhjzu5al/gs4F7m4T2H5sbW3CzfxFb8zZS9TGBE/PZpXhhgUYnaXAQD9FBtVXNUKOC9QwQZ4qoR9Njvx2+qg+5tuGts9ELf3Yofg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cNz0RMe6Ugc5TjZ2MYIlE2k+jJsDJbtXvtkZI9WXQJk=;
- b=GbAlR9X2KcwQ0sqOTjfmveNk+9toUgNBGJwVvp1bRzoNSHc5lskg/iH6mKHSCmNSkLZ10usk/FIyWEpHcoJ9zlL9UL0Z6/OTt7XoUzvet4znTyer4kNMhqhhde3W4ApBa/pdEFNUm3463vUFinB2zCfxnxxlZpIwVhIk4WyoJMg=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB6477.eurprd05.prod.outlook.com (20.179.26.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.20; Fri, 18 Oct 2019 20:53:42 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841%7]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
- 20:53:42 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>
-CC:     "kernel-team@fb.com" <kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 01/10 net-next] net/mlx5e: RX, Remove RX page-cache
-Thread-Topic: [PATCH 01/10 net-next] net/mlx5e: RX, Remove RX page-cache
-Thread-Index: AQHVhHQvEhUg7fEx70aVphrXYZkpD6dg41QA
-Date:   Fri, 18 Oct 2019 20:53:42 +0000
-Message-ID: <7852500cd0008893985094fa20e2790436391e49.camel@mellanox.com>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
-         <20191016225028.2100206-2-jonathan.lemon@gmail.com>
-In-Reply-To: <20191016225028.2100206-2-jonathan.lemon@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e82dbfb2-1d67-4a34-71a5-08d7540d42a5
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: VI1PR05MB6477:|VI1PR05MB6477:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB6477797B4171A3E6DC2D82A4BE6C0@VI1PR05MB6477.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
-x-forefront-prvs: 01949FE337
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(136003)(376002)(396003)(366004)(199004)(189003)(25786009)(11346002)(2616005)(6506007)(186003)(102836004)(99286004)(76176011)(26005)(5660300002)(256004)(71200400001)(14444005)(4001150100001)(71190400001)(66476007)(446003)(86362001)(66946007)(476003)(81166006)(81156014)(36756003)(486006)(6512007)(91956017)(76116006)(64756008)(66446008)(66556008)(54906003)(3846002)(118296001)(2906002)(478600001)(316002)(66066001)(305945005)(2501003)(14454004)(110136005)(4326008)(6116002)(7736002)(229853002)(6246003)(6436002)(6486002)(8936002)(58126008)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6477;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ksl+Ay+zcXDtO/MOtnofqyuiVoz6XgjtyzNIHBUZ/6mlo4HNV4DUUsRsp32ftTLhiUtYfkry5SV5Ln63rpHdIBvkKIhfyfI5AHbsp2iwlDAYXhTpkl/SuPXlzyquULiJUDMwh5DE7Ea1rTzbHuFTI4PB0nGtt4ruh45UfLqfoa5dNz0ouddIZYjEXM8sFE/WJNjVQU1518mE6LoAkD09iUT08q2HR9UhhBeKc4w+80uJESF70aMJNY4++F+zQWcBI7NVFW05gDaYl9vVL2SGDm+Rw7+rSxNB7k0kQUyh364TZkJNVgfyiCUkxeTEBhm/1rjxft+kFa5XX0vvx1azjdYMGMHpxSzq5lWihSaMHE/p7ZrsF0UYlLMCbhUi9q8T5poPKnm92ihcUwqwSlnDYBtVdX1CoU/+w8tgmvGWr56c0FnWvd+ZHD6khde9cBOA
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <AA7F6DCCF36705469C447F3F71C396BE@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2394417AbfJRUz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 16:55:59 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:52407 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388245AbfJRUz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 16:55:59 -0400
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 0DB84200004
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 20:55:56 +0000 (UTC)
+Received: by mail-ua1-f48.google.com with SMTP id l13so2200578uap.8
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 13:55:56 -0700 (PDT)
+X-Gm-Message-State: APjAAAUQCSuqD1XEqImmj8zO74fxWeDPmThBOZgNCjA3xV03foQ8Uah0
+        2n/OIGtGrJrgJ+Bo+1ayDxTuOeDb3GpehmdA5mY=
+X-Google-Smtp-Source: APXvYqwuV7U8L7yXvN6rvBzOiZ4ydKwky8zI0+wim0KE/FDrmzjP869Y9izMXBJg65+T1desj253aIpXemkzRPx1gE0=
+X-Received: by 2002:ab0:60d2:: with SMTP id g18mr6472598uam.64.1571432155545;
+ Fri, 18 Oct 2019 13:55:55 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e82dbfb2-1d67-4a34-71a5-08d7540d42a5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 20:53:42.3882
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: flfuuBjswdgciGScErC+HyWuk4+hsXsXEUmsRJh0qVT654PLWhSjUl35iaul8ZWeKie17x6FwyThZNXmAAmLSQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6477
+References: <41b3fbfe3aac5ca03f4af0f1c4e146ae67c20570.1570734410.git.gnault@redhat.com>
+ <CAOrHB_Dfoy3hiVVWu7+4fgm_U+rcB_CPuRV58XqB7kKOBcGb1w@mail.gmail.com> <20191013222231.GA4647@linux.home>
+In-Reply-To: <20191013222231.GA4647@linux.home>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Fri, 18 Oct 2019 13:55:46 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_DrnQ4NX=SkE_gwBL_LnamRCGqY_YB-_8VZNscPKiELcw@mail.gmail.com>
+Message-ID: <CAOrHB_DrnQ4NX=SkE_gwBL_LnamRCGqY_YB-_8VZNscPKiELcw@mail.gmail.com>
+Subject: Re: [RFC PATCH net] netns: fix GFP flags in rtnl_net_notifyid()
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Alexei Starovoitov <ast@plumgrid.com>,
+        Jesse Gross <jesse@nicira.com>,
+        Pravin B Shelar <pshelar@nicira.com>,
+        Jiri Benc <jbenc@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTEwLTE2IGF0IDE1OjUwIC0wNzAwLCBKb25hdGhhbiBMZW1vbiB3cm90ZToN
-Cj4gRnJvbTogVGFyaXEgVG91a2FuIDx0YXJpcXRAbWVsbGFub3guY29tPg0KPiANCj4gT2Jzb2xl
-dGUgdGhlIFJYIHBhZ2UtY2FjaGUgbGF5ZXIsIHBhZ2VzIGFyZSBub3cgcmVjeWNsZWQNCj4gaW4g
-cGFnZV9wb29sLg0KPiANCj4gVGhpcyBwYXRjaCBpbnRyb2R1Y2UgYSB0ZW1wb3JhcnkgZGVncmFk
-YXRpb24gYXMgcmVjeWNsaW5nDQo+IGRvZXMgbm90IGtlZXAgdGhlIHBhZ2VzIERNQS1tYXBwZWQu
-IFRoYXQgaXMgZml4ZWQgaW4gYQ0KPiBkb3duc3RyZWFtIHBhdGNoLg0KVGFyaXEsDQoNCmkgdGhp
-bmsgd2UgbmVlZCB0byBoYXZlIHBlcmZvcm1hbmNlIG51bWJlcnMgaGVyZSB0byBzaG93IGRlZ3Jh
-ZGF0aW9uLg0KaSBhbSBzdXJlIHRoYXQgbm9uIFhEUCB0cmFmZmljIFRDUC9VRFAgcGVyZm9ybWFu
-Y2Ugd2lsbCBiZSBoaXQuDQoNCj4gDQo+IElzc3VlOiAxNDg3NjMxDQo+IFNpZ25lZC1vZmYtYnk6
-IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6
-IEpvbmF0aGFuIExlbW9uIDxqb25hdGhhbi5sZW1vbkBnbWFpbC5jb20+DQo+IC0tLQ0KPiAgZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuLmggIHwgMTMgLS0tLQ0KPiAg
-Li4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fbWFpbi5jIHwgMTYgLS0tLS0N
-Cj4gIC4uLi9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmMgICB8IDY3ICsr
-LS0tLS0tLS0tLS0tLS0tDQo+IC0tDQo+ICAzIGZpbGVzIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygr
-KSwgOTIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuLmgNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxs
-YW5veC9tbHg1L2NvcmUvZW4uaA0KPiBpbmRleCA4ZDc2NDUyY2FjZGMuLjA1OTVjZGNmZjU5NCAx
-MDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vu
-LmgNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuLmgN
-Cj4gQEAgLTU4MywxOCArNTgzLDYgQEAgc3RydWN0IG1seDVlX21wd19pbmZvIHsNCj4gIA0KPiAg
-I2RlZmluZSBNTFg1RV9NQVhfUlhfRlJBR1MgNA0KPiAgDQo+IC0vKiBhIHNpbmdsZSBjYWNoZSB1
-bml0IGlzIGNhcGFibGUgdG8gc2VydmUgb25lIG5hcGkgY2FsbCAoZm9yIG5vbi0NCj4gc3RyaWRp
-bmcgcnEpDQo+IC0gKiBvciBhIE1QV1FFIChmb3Igc3RyaWRpbmcgcnEpLg0KPiAtICovDQo+IC0j
-ZGVmaW5lIE1MWDVFX0NBQ0hFX1VOSVQJKE1MWDVfTVBXUlFfUEFHRVNfUEVSX1dRRSA+DQo+IE5B
-UElfUE9MTF9XRUlHSFQgPyBcDQo+IC0JCQkJIE1MWDVfTVBXUlFfUEFHRVNfUEVSX1dRRSA6DQo+
-IE5BUElfUE9MTF9XRUlHSFQpDQo+IC0jZGVmaW5lIE1MWDVFX0NBQ0hFX1NJWkUJKDQgKg0KPiBy
-b3VuZHVwX3Bvd19vZl90d28oTUxYNUVfQ0FDSEVfVU5JVCkpDQo+IC1zdHJ1Y3QgbWx4NWVfcGFn
-ZV9jYWNoZSB7DQo+IC0JdTMyIGhlYWQ7DQo+IC0JdTMyIHRhaWw7DQo+IC0Jc3RydWN0IG1seDVl
-X2RtYV9pbmZvIHBhZ2VfY2FjaGVbTUxYNUVfQ0FDSEVfU0laRV07DQo+IC19Ow0KPiAtDQo+ICBz
-dHJ1Y3QgbWx4NWVfcnE7DQo+ICB0eXBlZGVmIHZvaWQgKCptbHg1ZV9mcF9oYW5kbGVfcnhfY3Fl
-KShzdHJ1Y3QgbWx4NWVfcnEqLCBzdHJ1Y3QNCj4gbWx4NV9jcWU2NCopOw0KPiAgdHlwZWRlZiBz
-dHJ1Y3Qgc2tfYnVmZiAqDQo+IEBAIC02NTgsNyArNjQ2LDYgQEAgc3RydWN0IG1seDVlX3JxIHsN
-Cj4gIAlzdHJ1Y3QgbWx4NWVfcnFfc3RhdHMgKnN0YXRzOw0KPiAgCXN0cnVjdCBtbHg1ZV9jcSAg
-ICAgICAgY3E7DQo+ICAJc3RydWN0IG1seDVlX2NxX2RlY29tcCBjcWQ7DQo+IC0Jc3RydWN0IG1s
-eDVlX3BhZ2VfY2FjaGUgcGFnZV9jYWNoZTsNCj4gIAlzdHJ1Y3QgaHd0c3RhbXBfY29uZmlnICp0
-c3RhbXA7DQo+ICAJc3RydWN0IG1seDVfY2xvY2sgICAgICAqY2xvY2s7DQo+ICANCj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9tYWluLmMN
-Cj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fbWFpbi5jDQo+
-IGluZGV4IDc1NjkyODdmOGYzYy4uMTY4YmUxZjgwMGEzIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fbWFpbi5jDQo+ICsrKyBiL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9tYWluLmMNCj4gQEAgLTYxMiw5
-ICs2MTIsNiBAQCBzdGF0aWMgaW50IG1seDVlX2FsbG9jX3JxKHN0cnVjdCBtbHg1ZV9jaGFubmVs
-DQo+ICpjLA0KPiAgCQlycS0+ZGltLm1vZGUgPSBESU1fQ1FfUEVSSU9EX01PREVfU1RBUlRfRlJP
-TV9FUUU7DQo+ICAJfQ0KPiAgDQo+IC0JcnEtPnBhZ2VfY2FjaGUuaGVhZCA9IDA7DQo+IC0JcnEt
-PnBhZ2VfY2FjaGUudGFpbCA9IDA7DQo+IC0NCj4gIAlyZXR1cm4gMDsNCj4gIA0KPiAgZXJyX2Zy
-ZWU6DQo+IEBAIC02NDAsOCArNjM3LDYgQEAgc3RhdGljIGludCBtbHg1ZV9hbGxvY19ycShzdHJ1
-Y3QgbWx4NWVfY2hhbm5lbA0KPiAqYywNCj4gIA0KPiAgc3RhdGljIHZvaWQgbWx4NWVfZnJlZV9y
-cShzdHJ1Y3QgbWx4NWVfcnEgKnJxKQ0KPiAgew0KPiAtCWludCBpOw0KPiAtDQo+ICAJaWYgKHJx
-LT54ZHBfcHJvZykNCj4gIAkJYnBmX3Byb2dfcHV0KHJxLT54ZHBfcHJvZyk7DQo+ICANCj4gQEAg
-LTY1NSwxNyArNjUwLDYgQEAgc3RhdGljIHZvaWQgbWx4NWVfZnJlZV9ycShzdHJ1Y3QgbWx4NWVf
-cnEgKnJxKQ0KPiAgCQltbHg1ZV9mcmVlX2RpX2xpc3QocnEpOw0KPiAgCX0NCj4gIA0KPiAtCWZv
-ciAoaSA9IHJxLT5wYWdlX2NhY2hlLmhlYWQ7IGkgIT0gcnEtPnBhZ2VfY2FjaGUudGFpbDsNCj4g
-LQkgICAgIGkgPSAoaSArIDEpICYgKE1MWDVFX0NBQ0hFX1NJWkUgLSAxKSkgew0KPiAtCQlzdHJ1
-Y3QgbWx4NWVfZG1hX2luZm8gKmRtYV9pbmZvID0gJnJxLQ0KPiA+cGFnZV9jYWNoZS5wYWdlX2Nh
-Y2hlW2ldOw0KPiAtDQo+IC0JCS8qIFdpdGggQUZfWERQLCBwYWdlX2NhY2hlIGlzIG5vdCB1c2Vk
-LCBzbyB0aGlzIGxvb3AgaXMNCj4gbm90DQo+IC0JCSAqIGVudGVyZWQsIGFuZCBpdCdzIHNhZmUg
-dG8gY2FsbA0KPiBtbHg1ZV9wYWdlX3JlbGVhc2VfZHluYW1pYw0KPiAtCQkgKiBkaXJlY3RseS4N
-Cj4gLQkJICovDQo+IC0JCW1seDVlX3BhZ2VfcmVsZWFzZV9keW5hbWljKHJxLCBkbWFfaW5mbywg
-ZmFsc2UpOw0KPiAtCX0NCj4gLQ0KPiAgCXhkcF9yeHFfaW5mb191bnJlZygmcnEtPnhkcF9yeHEp
-Ow0KPiAgCXBhZ2VfcG9vbF9kZXN0cm95KHJxLT5wYWdlX3Bvb2wpOw0KPiAgCW1seDVfd3FfZGVz
-dHJveSgmcnEtPndxX2N0cmwpOw0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQv
-bWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxs
-YW5veC9tbHg1L2NvcmUvZW5fcnguYw0KPiBpbmRleCBkNmE1NDcyMzhkZTAuLmEzNzczZjhhNDkz
-MSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3Jl
-L2VuX3J4LmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3Jl
-L2VuX3J4LmMNCj4gQEAgLTE4NCw2NSArMTg0LDkgQEAgc3RhdGljIGlubGluZSB1MzINCj4gbWx4
-NWVfZGVjb21wcmVzc19jcWVzX3N0YXJ0KHN0cnVjdCBtbHg1ZV9ycSAqcnEsDQo+ICAJcmV0dXJu
-IG1seDVlX2RlY29tcHJlc3NfY3Flc19jb250KHJxLCB3cSwgMSwgYnVkZ2V0X3JlbSkgLSAxOw0K
-PiAgfQ0KPiAgDQo+IC1zdGF0aWMgaW5saW5lIGJvb2wgbWx4NWVfcGFnZV9pc19yZXNlcnZlZChz
-dHJ1Y3QgcGFnZSAqcGFnZSkNCj4gLXsNCj4gLQlyZXR1cm4gcGFnZV9pc19wZm1lbWFsbG9jKHBh
-Z2UpIHx8IHBhZ2VfdG9fbmlkKHBhZ2UpICE9DQo+IG51bWFfbWVtX2lkKCk7DQo+IC19DQo+IC0N
-Cj4gLXN0YXRpYyBpbmxpbmUgYm9vbCBtbHg1ZV9yeF9jYWNoZV9wdXQoc3RydWN0IG1seDVlX3Jx
-ICpycSwNCj4gLQkJCQkgICAgICBzdHJ1Y3QgbWx4NWVfZG1hX2luZm8gKmRtYV9pbmZvKQ0KPiAt
-ew0KPiAtCXN0cnVjdCBtbHg1ZV9wYWdlX2NhY2hlICpjYWNoZSA9ICZycS0+cGFnZV9jYWNoZTsN
-Cj4gLQl1MzIgdGFpbF9uZXh0ID0gKGNhY2hlLT50YWlsICsgMSkgJiAoTUxYNUVfQ0FDSEVfU0la
-RSAtIDEpOw0KPiAtCXN0cnVjdCBtbHg1ZV9ycV9zdGF0cyAqc3RhdHMgPSBycS0+c3RhdHM7DQo+
-IC0NCj4gLQlpZiAodGFpbF9uZXh0ID09IGNhY2hlLT5oZWFkKSB7DQo+IC0JCXN0YXRzLT5jYWNo
-ZV9mdWxsKys7DQo+IC0JCXJldHVybiBmYWxzZTsNCj4gLQl9DQo+IC0NCj4gLQlpZiAodW5saWtl
-bHkobWx4NWVfcGFnZV9pc19yZXNlcnZlZChkbWFfaW5mby0+cGFnZSkpKSB7DQo+IC0JCXN0YXRz
-LT5jYWNoZV93YWl2ZSsrOw0KPiAtCQlyZXR1cm4gZmFsc2U7DQo+IC0JfQ0KPiAtDQo+IC0JY2Fj
-aGUtPnBhZ2VfY2FjaGVbY2FjaGUtPnRhaWxdID0gKmRtYV9pbmZvOw0KPiAtCWNhY2hlLT50YWls
-ID0gdGFpbF9uZXh0Ow0KPiAtCXJldHVybiB0cnVlOw0KPiAtfQ0KPiAtDQo+IC1zdGF0aWMgaW5s
-aW5lIGJvb2wgbWx4NWVfcnhfY2FjaGVfZ2V0KHN0cnVjdCBtbHg1ZV9ycSAqcnEsDQo+IC0JCQkJ
-ICAgICAgc3RydWN0IG1seDVlX2RtYV9pbmZvICpkbWFfaW5mbykNCj4gLXsNCj4gLQlzdHJ1Y3Qg
-bWx4NWVfcGFnZV9jYWNoZSAqY2FjaGUgPSAmcnEtPnBhZ2VfY2FjaGU7DQo+IC0Jc3RydWN0IG1s
-eDVlX3JxX3N0YXRzICpzdGF0cyA9IHJxLT5zdGF0czsNCj4gLQ0KPiAtCWlmICh1bmxpa2VseShj
-YWNoZS0+aGVhZCA9PSBjYWNoZS0+dGFpbCkpIHsNCj4gLQkJc3RhdHMtPmNhY2hlX2VtcHR5Kys7
-DQo+IC0JCXJldHVybiBmYWxzZTsNCj4gLQl9DQo+IC0NCj4gLQlpZiAocGFnZV9yZWZfY291bnQo
-Y2FjaGUtPnBhZ2VfY2FjaGVbY2FjaGUtPmhlYWRdLnBhZ2UpICE9IDEpIHsNCj4gLQkJc3RhdHMt
-PmNhY2hlX2J1c3krKzsNCj4gLQkJcmV0dXJuIGZhbHNlOw0KPiAtCX0NCj4gLQ0KPiAtCSpkbWFf
-aW5mbyA9IGNhY2hlLT5wYWdlX2NhY2hlW2NhY2hlLT5oZWFkXTsNCj4gLQljYWNoZS0+aGVhZCA9
-IChjYWNoZS0+aGVhZCArIDEpICYgKE1MWDVFX0NBQ0hFX1NJWkUgLSAxKTsNCj4gLQlzdGF0cy0+
-Y2FjaGVfcmV1c2UrKzsNCj4gLQ0KPiAtCWRtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNlKHJxLT5w
-ZGV2LCBkbWFfaW5mby0+YWRkciwNCj4gLQkJCQkgICBQQUdFX1NJWkUsDQo+IC0JCQkJICAgRE1B
-X0ZST01fREVWSUNFKTsNCj4gLQlyZXR1cm4gdHJ1ZTsNCj4gLX0NCj4gLQ0KPiAgc3RhdGljIGlu
-bGluZSBpbnQgbWx4NWVfcGFnZV9hbGxvY19wb29sKHN0cnVjdCBtbHg1ZV9ycSAqcnEsDQo+ICAJ
-CQkJCXN0cnVjdCBtbHg1ZV9kbWFfaW5mbw0KPiAqZG1hX2luZm8pDQo+ICB7DQo+IC0JaWYgKG1s
-eDVlX3J4X2NhY2hlX2dldChycSwgZG1hX2luZm8pKQ0KPiAtCQlyZXR1cm4gMDsNCj4gLQ0KPiAg
-CWRtYV9pbmZvLT5wYWdlID0gcGFnZV9wb29sX2Rldl9hbGxvY19wYWdlcyhycS0+cGFnZV9wb29s
-KTsNCj4gIAlpZiAodW5saWtlbHkoIWRtYV9pbmZvLT5wYWdlKSkNCj4gIAkJcmV0dXJuIC1FTk9N
-RU07DQo+IEBAIC0yNzYsMTQgKzIyMCwxMSBAQCB2b2lkIG1seDVlX3BhZ2VfcmVsZWFzZV9keW5h
-bWljKHN0cnVjdCBtbHg1ZV9ycQ0KPiAqcnEsDQo+ICAJCQkJc3RydWN0IG1seDVlX2RtYV9pbmZv
-ICpkbWFfaW5mbywNCj4gIAkJCQlib29sIHJlY3ljbGUpDQo+ICB7DQo+IC0JaWYgKGxpa2VseShy
-ZWN5Y2xlKSkgew0KPiAtCQlpZiAobWx4NWVfcnhfY2FjaGVfcHV0KHJxLCBkbWFfaW5mbykpDQo+
-IC0JCQlyZXR1cm47DQo+ICsJbWx4NWVfcGFnZV9kbWFfdW5tYXAocnEsIGRtYV9pbmZvKTsNCj4g
-IA0KPiAtCQltbHg1ZV9wYWdlX2RtYV91bm1hcChycSwgZG1hX2luZm8pOw0KPiArCWlmIChsaWtl
-bHkocmVjeWNsZSkpIHsNCj4gIAkJcGFnZV9wb29sX3JlY3ljbGVfZGlyZWN0KHJxLT5wYWdlX3Bv
-b2wsIGRtYV9pbmZvLQ0KPiA+cGFnZSk7DQo+ICAJfSBlbHNlIHsNCj4gLQkJbWx4NWVfcGFnZV9k
-bWFfdW5tYXAocnEsIGRtYV9pbmZvKTsNCj4gIAkJcGFnZV9wb29sX3JlbGVhc2VfcGFnZShycS0+
-cGFnZV9wb29sLCBkbWFfaW5mby0+cGFnZSk7DQo+ICAJCXB1dF9wYWdlKGRtYV9pbmZvLT5wYWdl
-KTsNCj4gIAl9DQo+IEBAIC0xMTY3LDcgKzExMDgsNyBAQCB2b2lkIG1seDVlX2hhbmRsZV9yeF9j
-cWUoc3RydWN0IG1seDVlX3JxICpycSwNCj4gc3RydWN0IG1seDVfY3FlNjQgKmNxZSkNCj4gIAlp
-ZiAoIXNrYikgew0KPiAgCQkvKiBwcm9iYWJseSBmb3IgWERQICovDQo+ICAJCWlmIChfX3Rlc3Rf
-YW5kX2NsZWFyX2JpdChNTFg1RV9SUV9GTEFHX1hEUF9YTUlULCBycS0NCj4gPmZsYWdzKSkgew0K
-PiAtCQkJLyogZG8gbm90IHJldHVybiBwYWdlIHRvIGNhY2hlLA0KPiArCQkJLyogZG8gbm90IHJl
-dHVybiBwYWdlIHRvIHBvb2wsDQo+ICAJCQkgKiBpdCB3aWxsIGJlIHJldHVybmVkIG9uIFhEUF9U
-WCBjb21wbGV0aW9uLg0KPiAgCQkJICovDQo+ICAJCQlnb3RvIHdxX2N5Y19wb3A7DQo+IEBAIC0x
-MjEwLDcgKzExNTEsNyBAQCB2b2lkIG1seDVlX2hhbmRsZV9yeF9jcWVfcmVwKHN0cnVjdCBtbHg1
-ZV9ycQ0KPiAqcnEsIHN0cnVjdCBtbHg1X2NxZTY0ICpjcWUpDQo+ICAJaWYgKCFza2IpIHsNCj4g
-IAkJLyogcHJvYmFibHkgZm9yIFhEUCAqLw0KPiAgCQlpZiAoX190ZXN0X2FuZF9jbGVhcl9iaXQo
-TUxYNUVfUlFfRkxBR19YRFBfWE1JVCwgcnEtDQo+ID5mbGFncykpIHsNCj4gLQkJCS8qIGRvIG5v
-dCByZXR1cm4gcGFnZSB0byBjYWNoZSwNCj4gKwkJCS8qIGRvIG5vdCByZXR1cm4gcGFnZSB0byBw
-b29sLA0KPiAgCQkJICogaXQgd2lsbCBiZSByZXR1cm5lZCBvbiBYRFBfVFggY29tcGxldGlvbi4N
-Cj4gIAkJCSAqLw0KPiAgCQkJZ290byB3cV9jeWNfcG9wOw0K
+On Sun, Oct 13, 2019 at 3:22 PM Guillaume Nault <gnault@redhat.com> wrote:
+>
+> On Sun, Oct 13, 2019 at 12:09:43PM -0700, Pravin Shelar wrote:
+> > On Thu, Oct 10, 2019 at 12:07 PM Guillaume Nault <gnault@redhat.com> wrote:
+> > >
+> > > In rtnl_net_notifyid(), we certainly can't pass a null GFP flag to
+> > > rtnl_notify(). A GFP_KERNEL flag would be fine in most circumstances,
+> > > but there are a few paths calling rtnl_net_notifyid() from atomic
+> > > context or from RCU critical section. The later also precludes the use
+> > > of gfp_any() as it wouldn't detect the RCU case. Also, the nlmsg_new()
+> > > call is wrong too, as it uses GFP_KERNEL unconditionally.
+> > >
+> > > Therefore, we need to pass the GFP flags as parameter. The problem then
+> > > propagates recursively to the callers until the proper flags can be
+> > > determined. The problematic call chains are:
+> > >
+> > >  * ovs_vport_cmd_fill_info -> peernet2id_alloc -> rtnl_net_notifyid
+> > >
+> > >  * rtnl_fill_ifinfo -> rtnl_fill_link_netnsid -> peernet2id_alloc
+> > >  -> rtnl_net_notifyid
+> > >
+> > > For openvswitch, ovs_vport_cmd_get() and ovs_vport_cmd_dump() prevent
+> > > ovs_vport_cmd_fill_info() from using GFP_KERNEL. It'd be nice to move
+> > > the call out of the RCU critical sections, but struct vport doesn't
+> > > have a reference counter, so that'd probably require taking the ovs
+> > > lock. Also, I don't get why ovs_vport_cmd_build_info() used GFP_ATOMIC
+> > > in nlmsg_new(). I've changed it to GFP_KERNEL for consistency, as this
+> > > functions seems to be allowed to sleep (as stated in the comment, it's
+> > > called from a workqueue, under the protection of a mutex).
+> > >
+> > It is safe to change GFP flags to GFP_KERNEL in ovs_vport_cmd_build_info().
+> > The patch looks good to me.
+> >
+> Thanks for your feedback.
+>
+> The point of my RFC is to know if it's possible to avoid all these
+> gfp_t flags, by allowing ovs_vport_cmd_fill_info() to sleep (at least
+> I'd like to figure out if it's worth spending time investigating this
+> path).
+>
+> To do so, we'd requires moving the ovs_vport_cmd_fill_info() call of
+> ovs_vport_cmd_{get,dump}() out of RCU critical section. Since we have
+> no reference counter, I believe we'd have to protect these calls with
+> ovs_lock() instead of RCU. Is that acceptable? If not, is there any
+> other way?
+
+I do not see point of added complexity and serialized OVS flow dumps
+just to avoid GFP_ATOMIC allocations in some code path. What is issue
+passing the parameter as you have done in this patch?
