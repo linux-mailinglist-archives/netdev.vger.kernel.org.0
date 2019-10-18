@@ -2,202 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E49E8DD0FE
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 23:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D11BDD11D
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 23:22:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439665AbfJRVSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 17:18:40 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23322 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390763AbfJRVSj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 17:18:39 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9ILA5KA031423;
-        Fri, 18 Oct 2019 14:18:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=fc3tbpcnEeKSGNZ6t+hn4FAV/SO3NZd5g4g5I7tXMok=;
- b=HRGJo09ACK+6dPw9J8bB4zuRVrPiiHMZvWUVohfAAqZ8J7p8wfuGm+QwYmec7ypHbybe
- eyx4HnfeJzb6cOvCgkwbOCjgLhB+WzoSqCP+lrw0o/5mXxl3QOneeJt1JJ48OS2S1gSt
- 5kM6qtI1BPXtEBFG+t1+IXMuyNBaM9N6kUI= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vqfethsc2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 18 Oct 2019 14:18:24 -0700
-Received: from prn-mbx01.TheFacebook.com (2620:10d:c081:6::15) by
- prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 18 Oct 2019 14:18:23 -0700
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-mbx01.TheFacebook.com (2620:10d:c081:6::15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 18 Oct 2019 14:18:23 -0700
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 18 Oct 2019 14:18:23 -0700
+        id S2503046AbfJRVWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 17:22:25 -0400
+Received: from mail-eopbgr50040.outbound.protection.outlook.com ([40.107.5.40]:3253
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727508AbfJRVWZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 17:22:25 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JaMq7l4AZ6yzyPKXVHqIHEerHHo6e265XbJKvyz7IObqJGO7lAmE2AwzEMQ7PjX11pGyh/9jKSB2hcP3uB66S/AyptBFZv4sQGG9CaFVfMESQDgyUIbTzJv5THnphmfGGOuEoXHyN3eR+gM94u7L26NuCuJTaADUfaoWRZ1qh/dynyOW3fA+9rNxICtTXMLOYce2tpuCgryZaAJlUC0uRN7GvTyxWovXzptDdkLu2wBsIt1BTy3efwTXnPyHQc0Bg7h79Z7JLzHLd/nrMkTFfa02DpihUCNqDudJv1kgIDmzbcvfvt/Vt+ThJjSOUsotAKsd/9fGXYJ2JZtF6wiNCg==
+ b=QoCIY7ikL/rrRIWrM68TRJIXVRQ3hI3NLf7SqDbzBwnsXKzRsKufw42EhB0FfFXSPdpbpgKbjZ264J0w1eCHiod9fSuGZwOj9+6Q5POAznXvJPyye+b6mV8Y8eaD4AwGTe6A13XOZ9pBRfPXlFaMS4hzY1/7Co8jcdPDZrxgVyrj3FJQnlvC5qx5JiVabajeCOricfPzAfiOY8G8dVD7E51VPIYoUIUpngcZlOFjE79nniDIyLxUckDgHF/OIUennZ3dqMuVDJ8SMFN1MYLM7KU5OKuwhApidtFVoojGB5CFcX2uoZc3ymU6z0gs0zazXth9q4SSsOgNTypuWBrBQA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fc3tbpcnEeKSGNZ6t+hn4FAV/SO3NZd5g4g5I7tXMok=;
- b=fXlaILzNT4OL5PfVWusLYibJt9rvr+p+pxSUAx3Do0ZTybFIfYVQw8J62+0dr/txWyX8vYH/cwl5GsTOLx1V9DxjXNq/UtLYv8//4+H1JtDaWQLsuRU4FYOcQxu3VN6vFTYBIeyIIz4Z6gqxyLIoqjwsD5ykYq0ggrPl3QVYv+XHs1Dekm0xb4aCNoKdjTLRWJZC7hLGaA6Xi0YKRz/E7iooifcicovqwbYY2QKMNKWp+jVmu9UMA1me06DirmN8WIweditnlEw50ytIOaRrgl4y+3I8fu5WUxLVmlM3lLX3SvNaZjdri5+KplRf1Bk/w1kgx1TDiNVKAbdWCjp3pQ==
+ bh=PdeVc+yvLaJecyNyC4nUEUGleHxVuGXkhuqANK2U8Fo=;
+ b=YddVVSZstRIORpTNDiAPZcZAFkKnZFwJ9B0z5M9GWWMF/wLH1rByQyhv/+DSrdpWJnoaJFNEmavnwyY95dL565MHitcnyyyv9s2erbI49Q1TYuSg5ru9OfMM0M23XfimwpKkvCj3PtBrRz0otY+PNptTH6pMbMNtqnWcQ9y/y/Wy93SX7LrrhtJoEvlmGqFArCJT6FY2TrgHusc3EUmiJVjjUakpmUconoaHp3jkeFR/xcqBkTaUl6ttH067W/m5HRpfuetdNJC/pPV/85CmLc32X/74y+xF9Wvjkd0tKoVpsQHttxs5aV54+pDkfeb3g4UJ6lXo5Il4tI7cxv0fmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fc3tbpcnEeKSGNZ6t+hn4FAV/SO3NZd5g4g5I7tXMok=;
- b=LM7hQiq2wSzNH45kk/Bwi/7HRCisQu8pksYhbDJEgGgNLuciatWEbH2V0k4GD1Nk9OjSh14W/TsA4o9UGoBNNsheXY+r6mUq1Xtu5du0UuTz64250XUJ2VDxJtKTuush7G9L/CdX3nEGUqhvD/tR/jI/d0WRh3XQ+4yjNp5KGN0=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3134.namprd15.prod.outlook.com (20.178.250.148) with Microsoft SMTP
+ bh=PdeVc+yvLaJecyNyC4nUEUGleHxVuGXkhuqANK2U8Fo=;
+ b=CMaQZfpI3NtOK+5XCT5Kh2Ptsu+saOUine8DkUUxFOuQKmEV2AkY6qmRb+mkeCgG1aMMR9kcHJLndXn9cjE2roEp79xRQ9JupzLKYW33wrp82VCNCwhsgCwos+F29bCVotGY6lxMdB2PG/ZwVi7yp9ctdBUjTDGaF5POubfXqhk=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB6142.eurprd05.prod.outlook.com (20.178.205.88) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.22; Fri, 18 Oct 2019 21:18:22 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::d5a4:a2a6:a805:6647]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::d5a4:a2a6:a805:6647%7]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
- 21:18:21 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
-CC:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: Re: [PATCH bpf v3] xdp: Handle device unregister for devmap_hash map
- type
-Thread-Topic: [PATCH bpf v3] xdp: Handle device unregister for devmap_hash map
- type
-Thread-Index: AQHVhex8Q2w7MSXc4EKgdk2tmnyXYKdg50YA
-Date:   Fri, 18 Oct 2019 21:18:21 +0000
-Message-ID: <20191018211818.5e6gfdjwq4zefnez@kafai-mbp>
-References: <20191018194418.2951544-1-toke@redhat.com>
-In-Reply-To: <20191018194418.2951544-1-toke@redhat.com>
+ 15.20.2347.18; Fri, 18 Oct 2019 21:21:41 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::f42d:b87a:e6b2:f841]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::f42d:b87a:e6b2:f841%7]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
+ 21:21:41 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>
+CC:     "kernel-team@fb.com" <kernel-team@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 00/10 net-next] page_pool cleanups
+Thread-Topic: [PATCH 00/10 net-next] page_pool cleanups
+Thread-Index: AQHVhHQsb02Xj+NegE6uf7PssTGj26dg4oMAgAAImYA=
+Date:   Fri, 18 Oct 2019 21:21:41 +0000
+Message-ID: <02eb26349dfe19d41f9b81b35fdb2b1e14008b7e.camel@mellanox.com>
+References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
+         <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
+In-Reply-To: <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR14CA0072.namprd14.prod.outlook.com
- (2603:10b6:300:81::34) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::51a5]
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 53682d45-2450-4894-a679-08d75410b435
-x-ms-traffictypediagnostic: MN2PR15MB3134:
+x-ms-office365-filtering-correlation-id: 53428db4-06b9-478f-2084-08d754112b2b
+x-ms-office365-filtering-ht: Tenant
+x-ms-traffictypediagnostic: VI1PR05MB6142:|VI1PR05MB6142:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB31342AE87EFBD8B08C3028BAD56C0@MN2PR15MB3134.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-microsoft-antispam-prvs: <VI1PR05MB61420E7EA0C5603EB09F6A1FBE6C0@VI1PR05MB6142.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 01949FE337
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(396003)(39860400002)(376002)(346002)(366004)(136003)(199004)(189003)(6486002)(478600001)(52116002)(66946007)(6436002)(8936002)(81156014)(81166006)(66556008)(6512007)(4326008)(25786009)(9686003)(8676002)(99286004)(14454004)(76176011)(64756008)(6916009)(66446008)(66476007)(6246003)(6506007)(5660300002)(2906002)(229853002)(86362001)(305945005)(71190400001)(7736002)(54906003)(486006)(186003)(446003)(1076003)(33716001)(46003)(256004)(102836004)(386003)(316002)(14444005)(71200400001)(11346002)(476003)(66574012)(6116002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3134;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(346002)(366004)(396003)(189003)(199004)(81156014)(6116002)(66946007)(71190400001)(8936002)(99286004)(256004)(3846002)(81166006)(76176011)(36756003)(6486002)(6436002)(66066001)(14444005)(5660300002)(118296001)(71200400001)(14454004)(66556008)(25786009)(66446008)(66476007)(64756008)(2906002)(6512007)(6246003)(229853002)(76116006)(91956017)(476003)(478600001)(4326008)(4001150100001)(102836004)(86362001)(486006)(11346002)(305945005)(58126008)(7736002)(446003)(54906003)(110136005)(186003)(316002)(2501003)(8676002)(6506007)(2616005)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6142;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: guw0k9oC5TtoYEoKbK9jGQ/6xw5GYPFiCifH96xXFHThnFv1DSjOjVwjCZb0pSfsAEBADQWwD/Mxuam5GHfVXE2yQMrduhO9HCFK9VaLJQBW9bKuCUTb0QePD88MNVMnxlV/v954pbRXQ87B9qFTN5wuX+TtdcJFWN3ZMJtV0gUX3VSszo90yIJnqdiYmzwfXx9frzcexeAZxf6sA4ztkPqr/CSDlMd1+HWkNcb/e9ZGX6xqV4b5i5Ajy86FXNTBPd5Qky27UoEoZqyNwye/UfBvHfdZ6FceIQdDnjpgCTL+ECuktb7al5oyqrJPr/qU6AxqnzO5HlTvIRldfWLPoEE+4qs7ujRTMCP+fVfq4GQhvLMhfpTbDpuN50iFqYzFN2PwvoDf86/0joj9SjGKKKL+xZvNAKn4D2JwTyseK40=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <88CF945621442849B5E53A9B2887DDAB@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: bANPt+cXc6l/ax6Z8wwlzw6Ld7x1CYpOuUmMF5CPRb4DZQvQ5JXQ0uP4HiK13+cX+QBtzfmA14UKyfvu55hlOPHXLcIP8u8gHCqVZzqWECWSrZ+7qGRD02gu9EGt7ZsNM0KRQOckqbgHGst+tCEBzWqob74c6Z7feTBYLNR0WWNtXs+jZPPKalSUZMZFssSUfOfWs9HhgSZQhQHbGqNMbipq0124i9xFYfCTzhWsKJOyJUW6wqsBMdpwpqQ8fDYh60pCqZccKBNo2LB61zKm08DZSTAAH3ZX9CjGxAQmvm7jHfcesYcgx8azdwiEfbA6HaPELWPdN+Fqdf2M0jIyf1dQA/EEYMMWwL9jNMjewLOw5hMDdxZUryvnZJkj8qodxDu8ZdMIr7cVlxSM9qnhfQtAGq+C10tx4Tj+8iw+ta0=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0491571BD4329A45B87DE7A3BEBA6DA5@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53682d45-2450-4894-a679-08d75410b435
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 21:18:21.8917
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53428db4-06b9-478f-2084-08d754112b2b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 21:21:41.0559
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HUmXRyPjiFs2woP8uGK/E2pXD3hCfRE0XM7XFJqeUWRLljF1lBk+MUE5UtrvaWbG
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3134
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-18_05:2019-10-18,2019-10-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 bulkscore=0 spamscore=0 phishscore=0 mlxlogscore=983
- lowpriorityscore=0 clxscore=1015 adultscore=0 impostorscore=0
- suspectscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910180187
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: mbDfVI5Zc3ghLJxDByWrDQUXWc1FbPc0UZHx2987LtKdG8GXn+m3i1m57+OoqTCNiPcNu2C0Xcqd8qn/Nd/j0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6142
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 09:44:18PM +0200, Toke H=F8iland-J=F8rgensen wrote:
-> It seems I forgot to add handling of devmap_hash type maps to the device
-> unregister hook for devmaps. This omission causes devices to not be
-> properly released, which causes hangs.
->=20
-> Fix this by adding the missing handler.
->=20
-> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up device=
-s by hashed index")
-> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Signed-off-by: Toke H=F8iland-J=F8rgensen <toke@redhat.com>
-> ---
-> v3:
->   - Use u32 for loop iterator variable
->   - Since we're holding the lock we can just iterate with hlist_for_each_=
-entry_safe()
-> v2:
->   - Grab the update lock while walking the map and removing entries.
->=20
->  kernel/bpf/devmap.c | 30 ++++++++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
->=20
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index c0a48f336997..012dbfb0f54b 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -719,6 +719,31 @@ const struct bpf_map_ops dev_map_hash_ops =3D {
->  	.map_check_btf =3D map_check_no_btf,
->  };
-> =20
-> +static void dev_map_hash_remove_netdev(struct bpf_dtab *dtab,
-> +				       struct net_device *netdev)
-> +{
-> +	unsigned long flags;
-> +	u32 i;
-> +
-> +	spin_lock_irqsave(&dtab->index_lock, flags);
-> +	for (i =3D 0; i < dtab->n_buckets; i++) {
-> +		struct bpf_dtab_netdev *dev;
-> +		struct hlist_head *head;
-> +		struct hlist_node *next;
-> +
-> +		head =3D dev_map_index_hash(dtab, i);
-> +
-> +		hlist_for_each_entry_safe(dev, next, head, index_hlist) {
-> +			if (netdev !=3D dev->dev)
-> +				continue;
-> +
-> +			hlist_del_rcu(&dev->index_hlist);
-There is another issue...
-"dtab->items--;"
-
-> +			call_rcu(&dev->rcu, __dev_map_entry_free);
-> +		}
-> +	}
-> +	spin_unlock_irqrestore(&dtab->index_lock, flags);
-> +}
-> +
->  static int dev_map_notification(struct notifier_block *notifier,
->  				ulong event, void *ptr)
->  {
-> @@ -735,6 +760,11 @@ static int dev_map_notification(struct notifier_bloc=
-k *notifier,
->  		 */
->  		rcu_read_lock();
->  		list_for_each_entry_rcu(dtab, &dev_map_list, list) {
-> +			if (dtab->map.map_type =3D=3D BPF_MAP_TYPE_DEVMAP_HASH) {
-> +				dev_map_hash_remove_netdev(dtab, netdev);
-> +				continue;
-> +			}
-> +
->  			for (i =3D 0; i < dtab->map.max_entries; i++) {
->  				struct bpf_dtab_netdev *dev, *odev;
-> =20
-> --=20
-> 2.23.0
->=20
+T24gRnJpLCAyMDE5LTEwLTE4IGF0IDEzOjUwIC0wNzAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
+Cj4gT24gV2VkLCAyMDE5LTEwLTE2IGF0IDE1OjUwIC0wNzAwLCBKb25hdGhhbiBMZW1vbiB3cm90
+ZToNCj4gPiBUaGlzIHBhdGNoIGNvbWJpbmVzIHdvcmsgZnJvbSB2YXJpb3VzIHBlb3BsZToNCj4g
+PiAtIHBhcnQgb2YgVGFyaXEncyB3b3JrIHRvIG1vdmUgdGhlIERNQSBtYXBwaW5nIGZyb20NCj4g
+PiAgIHRoZSBtbHg1IGRyaXZlciBpbnRvIHRoZSBwYWdlIHBvb2wuICBUaGlzIGRvZXMgbm90DQo+
+ID4gICBpbmNsdWRlIGxhdGVyIHBhdGNoZXMgd2hpY2ggcmVtb3ZlIHRoZSBkbWEgYWRkcmVzcw0K
+PiA+ICAgZnJvbSB0aGUgZHJpdmVyLCBhcyB0aGlzIGNvbmZsaWN0cyB3aXRoIEFGX1hEUC4NCj4g
+PiANCj4gPiAtIFNhZWVkJ3MgY2hhbmdlcyB0byBjaGVjayB0aGUgbnVtYSBub2RlIGJlZm9yZQ0K
+PiA+ICAgaW5jbHVkaW5nIHRoZSBwYWdlIGluIHRoZSBwb29sLCBhbmQgZmx1c2hpbmcgdGhlDQo+
+ID4gICBwb29sIG9uIGEgbm9kZSBjaGFuZ2UuDQo+ID4gDQo+IA0KPiBIaSBKb25hdGhhbiwgdGhh
+bmtzIGZvciBzdWJtaXR0aW5nIHRoaXMsDQo+IHRoZSBwYXRjaGVzIHlvdSBoYXZlIGFyZSBub3Qg
+dXAgdG8gZGF0ZSwgaSBoYXZlIG5ldyBvbmVzIHdpdGggdHJhY2luZw0KPiBzdXBwb3J0IGFuZCBz
+b21lIGZpeGVzIGZyb20gb2ZmbGlzdCByZXZpZXcgaXRlcmF0aW9ucywgcGx1cw0KPiBwZXJmb3Jt
+YW5jZQ0KPiBudW1iZXJzIGFuZCBhICBjb3ZlciBsZXR0ZXIuIA0KPiANCj4gSSB3aWxsIHNlbmQg
+aXQgdG8geW91IGFuZCB5b3UgY2FuIHBvc3QgaXQgYXMgdjIgPyANCg0KYWN0dWFsbHkgaSBzdWdn
+ZXN0IHRvIHRha2UgbXkgMyBwYXRjaGVzIG91dCBvZiB0aGlzIHNlcmllcyBhbmQgc3VibWl0DQp0
+aGVtIGFzIHN0YW5kYWxvbmUsIHRoZXkgYXJlIG5vdCBkaXJlY3RseSByZWxhdGVkIHRvIHRoZSBv
+dGhlciBzdHVmZg0KaGVyZSwgYW5kIGNhbiBwZXJmZWN0bHkgd29yayB3aXRob3V0IHRoZW0sIHNp
+bmNlIG15IDMgcGF0Y2hlcyBhcmUNCmFkZHJlc3NpbmcgYSByZWFsIGlzc3VlIHdpdGggcGFnZSBw
+b29sIG51bWEgbm9kZSBtaWdyYXRpb24uDQoNCj4gDQo+IA0KPiA+IC0gU3RhdGlzdGljcyBhbmQg
+Y2xlYW51cCBmb3IgcGFnZSBwb29sLg0KPiA+IA0KPiA+IEpvbmF0aGFuIExlbW9uICg1KToNCj4g
+PiAgIHBhZ2VfcG9vbDogQWRkIHBhZ2VfcG9vbF9rZWVwX3BhZ2UNCj4gPiAgIHBhZ2VfcG9vbDog
+YWxsb3cgY29uZmlndXJhYmxlIGxpbmVhciBjYWNoZSBzaXplDQo+ID4gICBwYWdlX3Bvb2w6IEFk
+ZCBzdGF0aXN0aWNzDQo+ID4gICBuZXQvbWx4NTogQWRkIHBhZ2VfcG9vbCBzdGF0cyB0byB0aGUg
+TWVsbGFub3ggZHJpdmVyDQo+ID4gICBwYWdlX3Bvb2w6IENsZWFudXAgYW5kIHJlbmFtZSBwYWdl
+X3Bvb2wgZnVuY3Rpb25zLg0KPiA+IA0KPiA+IFNhZWVkIE1haGFtZWVkICgyKToNCj4gPiAgIHBh
+Z2VfcG9vbDogQWRkIEFQSSB0byB1cGRhdGUgbnVtYSBub2RlIGFuZCBmbHVzaCBwYWdlIGNhY2hl
+cw0KPiA+ICAgbmV0L21seDVlOiBSeCwgVXBkYXRlIHBhZ2UgcG9vbCBudW1hIG5vZGUgd2hlbiBj
+aGFuZ2VkDQo+ID4gDQo+ID4gVGFyaXEgVG91a2FuICgzKToNCj4gPiAgIG5ldC9tbHg1ZTogUlgs
+IFJlbW92ZSBSWCBwYWdlLWNhY2hlDQo+ID4gICBuZXQvbWx4NWU6IFJYLCBNYW5hZ2UgUlggcGFn
+ZXMgb25seSB2aWEgcGFnZSBwb29sIEFQSQ0KPiA+ICAgbmV0L21seDVlOiBSWCwgSW50ZXJuYWwg
+RE1BIG1hcHBpbmcgaW4gcGFnZV9wb29sDQo+ID4gDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0
+L21lbGxhbm94L21seDUvY29yZS9lbi5oICB8ICAxOCArLQ0KPiA+ICAuLi4vbmV0L2V0aGVybmV0
+L21lbGxhbm94L21seDUvY29yZS9lbi94ZHAuYyAgfCAgMTIgKy0NCj4gPiAgLi4uL25ldC9ldGhl
+cm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fbWFpbi5jIHwgIDE5ICstDQo+ID4gIC4uLi9uZXQv
+ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmMgICB8IDEyOCArKy0tLS0tLS0tDQo+
+ID4gIC4uLi9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fc3RhdHMuYyAgICB8ICAzOSAr
+Ky0tDQo+ID4gIC4uLi9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fc3RhdHMuaCAgICB8
+ICAxOSArLQ0KPiA+ICBpbmNsdWRlL25ldC9wYWdlX3Bvb2wuaCAgICAgICAgICAgICAgICAgICAg
+ICAgfCAyMTYgKysrKysrKysrLS0tLS0NCj4gPiAtLQ0KPiA+IC0NCj4gPiAgbmV0L2NvcmUvcGFn
+ZV9wb29sLmMgICAgICAgICAgICAgICAgICAgICAgICAgIHwgMjIxICsrKysrKysrKysrLS0tDQo+
+ID4gLS0NCj4gPiAtLQ0KPiA+ICA4IGZpbGVzIGNoYW5nZWQsIDMxOSBpbnNlcnRpb25zKCspLCAz
+NTMgZGVsZXRpb25zKC0pDQo+ID4gDQo=
