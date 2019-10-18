@@ -2,119 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28EFEDC5F0
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 15:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89024DC619
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 15:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410267AbfJRNX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 09:23:29 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35062 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729109AbfJRNX3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 09:23:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=2I14EvOX2/1YnVDZjctaYDorbM75GscvFA5/hP5DpAA=; b=rOpFFVhhA5dU5sq2tPyWkoU4r
-        ONWyHlxMyffZC9FmlbwjGtx6ZekPv/BDv5nJJXffZlrF4W0xxkGCeWmEIDgDsCgBospckf3zJx6Mb
-        s7Qy+1SqbAFkwVww6Noxr2tn8zp7rJFTIAADL/mZK2sltIF6YKp12GqNjbVCgReaOYfKcgelJwGyT
-        9KLn/p32DeNsBrssgk6OTAmuVPsN93Tr1C5LVBLBmUNRitktMyiVPb0K+DYOiOfjAuKMnJ3tI2PkC
-        rYrGxq08+zwpcqt2+bhQHxZfUp54Istdb4CEYyY5EF/uUvywTzG5Fr7HR4d84VfFPSQuFDMUmQpG2
-        ecXptpUyA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44306)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iLSDx-0007mG-4C; Fri, 18 Oct 2019 14:23:21 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iLSDs-0000kn-NL; Fri, 18 Oct 2019 14:23:16 +0100
-Date:   Fri, 18 Oct 2019 14:23:16 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, cphealy@gmail.com,
-        Jose Abreu <joabreu@synopsys.com>
-Subject: Re: [PATCH net-next 2/2] net: phy: Add ability to debug RGMII
- connections
-Message-ID: <20191018132316.GI25745@shell.armlinux.org.uk>
-References: <20191015224953.24199-1-f.fainelli@gmail.com>
- <20191015224953.24199-3-f.fainelli@gmail.com>
- <4feb3979-1d59-4ad3-b2f1-90d82cfbdf54@gmail.com>
- <c4244c9a-28cb-7e37-684d-64e6cdc89b67@gmail.com>
- <CA+h21hrLHe2n0OxJyCKTU0r7mSB1zK9ggP1-1TCednFN_0rXfg@mail.gmail.com>
- <20191018130121.GK4780@lunn.ch>
- <CA+h21hoPrwcgz-q=UROAu0PC=6JbKtbdPhJtZg5ge32_2xJ3TQ@mail.gmail.com>
+        id S2408476AbfJRNbO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Oct 2019 09:31:14 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45750 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729783AbfJRNbN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 09:31:13 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CE75D307D986;
+        Fri, 18 Oct 2019 13:31:12 +0000 (UTC)
+Received: from gondolin (dhcp-192-202.str.redhat.com [10.33.192.202])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 406EB60619;
+        Fri, 18 Oct 2019 13:30:45 +0000 (UTC)
+Date:   Fri, 18 Oct 2019 15:30:42 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+Subject: Re: [PATCH V4 4/6] mdev: introduce virtio device and its device ops
+Message-ID: <20191018153042.3516cde1.cohuck@redhat.com>
+In-Reply-To: <733c0cfe-064f-c8ba-6bf8-165db88d7e07@redhat.com>
+References: <20191017104836.32464-1-jasowang@redhat.com>
+        <20191017104836.32464-5-jasowang@redhat.com>
+        <20191018114614.6f1e79dc.cohuck@redhat.com>
+        <733c0cfe-064f-c8ba-6bf8-165db88d7e07@redhat.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hoPrwcgz-q=UROAu0PC=6JbKtbdPhJtZg5ge32_2xJ3TQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 18 Oct 2019 13:31:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 04:09:30PM +0300, Vladimir Oltean wrote:
-> Hi Andrew,
+On Fri, 18 Oct 2019 18:55:02 +0800
+Jason Wang <jasowang@redhat.com> wrote:
+
+> On 2019/10/18 下午5:46, Cornelia Huck wrote:
+> > On Thu, 17 Oct 2019 18:48:34 +0800
+> > Jason Wang <jasowang@redhat.com> wrote:
+
+> >> + * @get_vendor_id:		Get virtio vendor id
+> >> + *				@mdev: mediated device
+> >> + *				Returns u32: virtio vendor id  
+> > How is the vendor id defined? As for normal virtio-pci devices?  
 > 
-> On Fri, 18 Oct 2019 at 16:01, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > Well, that's the tricky part. You're sending a frame out, with no
-> > > guarantee you'll get the same frame back in. So I'm not sure that any
-> > > identifiers put inside the frame will survive.
-> > > How do the tests pan out for you? Do you actually get to trigger this
-> > > check? As I mentioned, my NIC drops the frames with bad FCS.
-> >
-> > My experience is, the NIC drops the frame and increments some the
-> > counter about bad FCS. I do very occasionally see a frame delivered,
-> > but i guess that is 1/65536 where the FCS just happens to be good by
-> > accident. So i think some other algorithm should be used which is
-> > unlikely to be good when the FCS is accidentally good, or just check
-> > the contents of the packet, you know what is should contain.
-> >
-> > Are there any NICs which don't do hardware FCS? Is that something we
-> > realistically need to consider?
-> >
-> > > Yes, but remember, nobody guarantees that a frame with DMAC
-> > > ff:ff:ff:ff:ff:ff on egress will still have it on its way back. Again,
-> > > this all depends on how you plan to manage the rx-all ethtool feature.
-> >
-> > Humm. Never heard that before. Are you saying some NICs rewrite the
-> > DMAN?
-> >
 > 
-> I'm just trying to understand the circumstances under which this
-> kernel thread makes sense.
-> Checking for FCS validity means that the intention was to enable the
-> reception of frames with bad FCS.
-> Bad FCS after bad RGMII setup/hold times doesn't mean there's a small
-> guy in there who rewrites the checksum. It means that frame octets get
-> garbled. All octets are just as likely to get garbled, including the
-> SFD, preamble, DMAC, etc.
-> All I'm saying is that, if the intention of the patch is to actually
-> process the FCS of frames before and after, then it should actually
-> put the interface in promiscuous mode, so that frames with a
-> non-garbled SFD and preamble can still be received, even though their
-> DMAC was the one that got garbled.
+> The vendor that provides this device. So something like this
+> 
+> I notice that MMIO also had this so it looks to me it's not pci specific.
 
-Isn't the point of this to see which RGMII setting results in a working
-setup?
+Ok. Would be good to specify this more explicitly.
 
-So, is it not true that what we're after is receiving a _correct_ frame
-that corresponds to the frame that was sent out?
+> 
+> 
+> >  
+> >> + * @get_status: 		Get the device status
+> >> + *				@mdev: mediated device
+> >> + *				Returns u8: virtio device status
+> >> + * @set_status: 		Set the device status
+> >> + *				@mdev: mediated device
+> >> + *				@status: virtio device status
+> >> + * @get_config: 		Read from device specific configuration space
+> >> + *				@mdev: mediated device
+> >> + *				@offset: offset from the beginning of
+> >> + *				configuration space
+> >> + *				@buf: buffer used to read to
+> >> + *				@len: the length to read from
+> >> + *				configration space
+> >> + * @set_config: 		Write to device specific configuration space
+> >> + *				@mdev: mediated device
+> >> + *				@offset: offset from the beginning of
+> >> + *				configuration space
+> >> + *				@buf: buffer used to write from
+> >> + *				@len: the length to write to
+> >> + *				configration space
+> >> + * @get_mdev_features:		Get the feature of virtio mdev device
+> >> + *				@mdev: mediated device
+> >> + *				Returns the mdev features (API) support by
+> >> + *				the device.  
+> > What kind of 'features' are supposed to go in there? Are these bits,
+> > like you defined for VIRTIO_MDEV_F_VERSION_1 above?  
+> 
+> 
+> It's the API or mdev features other than virtio features. It could be 
+> used by driver to determine the capability of the mdev device. Besides 
+> _F_VERSION_1, we may add dirty page tracking etc which means we need new 
+> device ops.
 
-Hence, if the DMAC got changed, it's irrelevent whether we received the
-packet or not - since "no packet" || "changed packet" = fail.
+Ok, so that's supposed to be distinct bits that can be or'ed together?
+Makes sense, but probably needs some more documentation somewhere.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+> 
+> 
+> >  
+> >> + * @get_generation:		Get device generaton
+> >> + *				@mdev: mediated device
+> >> + *				Returns u32: device generation  
+> > Is that callback mandatory?  
+> 
+> 
+> I think so, it's hard to emulate that completely in virtio-mdev transport.
+
+IIRC, the generation stuff is not mandatory in the current version of
+virtio, as not all transports have that concept.
+
+Generally, are any of the callbacks optional, or are all of them
+mandatory? From what I understand, you plan to add new things that
+depend on features... would that mean non-mandatory callbacks?
