@@ -2,129 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22842DBF21
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 09:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68824DBF6F
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 10:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404089AbfJRH6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 03:58:38 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:35006 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728064AbfJRH6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 03:58:37 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 171DB6090E; Fri, 18 Oct 2019 07:58:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571385517;
-        bh=3GTFwjIlWhXTOjjTyMlnew+m09s2RvpZ8RrP6LlGZ+w=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=VqbjfRnoFf9T8b6Wn9tLe9Cf3QFkkqwUA5zfqhdPV56zEfNCVxVwo2gDBRWxfnoms
-         CsLxcC+5pgkhqgIFCOG6N0k7RyaZuhvXDQVJj5cAby+KZejhQsILl3/lRErYzH/yEO
-         ktPJOuCgMT2L/1XZ60yTzXYof8WVV1ELnIJUYMgM=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A344B60953;
-        Fri, 18 Oct 2019 07:58:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571385516;
-        bh=3GTFwjIlWhXTOjjTyMlnew+m09s2RvpZ8RrP6LlGZ+w=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=QBX6rLJCbBNII7ggBVwu4dfcDbjt8gKfG7Kg46eji3m0uIZemysUMpoRrSht6kCVy
-         LKCe/KLyuJ/bnHGG9gn4sRGEiehMCTW5NlDKO0si+LeufMejv+9JJkoO0UrVJl6tAC
-         q3n6zWuMNzfIslJFoG955hkanpk19ZaQiAXSivk8=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A344B60953
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Hui Peng <benquike@gmail.com>, davem@davemloft.net,
-        Mathias Payer <mathias.payer@nebelwelt.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] Fix a NULL-ptr-deref bug in ath10k_usb_alloc_urb_from_pipe
-References: <20190804003101.11541-1-benquike@gmail.com>
-        <20190831213139.GA32507@roeck-us.net>
-        <87ftlgqw42.fsf@kamboji.qca.qualcomm.com>
-        <20191018040530.GA28167@roeck-us.net>
-Date:   Fri, 18 Oct 2019 10:58:32 +0300
-In-Reply-To: <20191018040530.GA28167@roeck-us.net> (Guenter Roeck's message of
-        "Thu, 17 Oct 2019 21:05:30 -0700")
-Message-ID: <875zkmxz6f.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S2504919AbfJRIIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 04:08:04 -0400
+Received: from mail-eopbgr730083.outbound.protection.outlook.com ([40.107.73.83]:27820
+        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2391374AbfJRIIE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 04:08:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XdeeqVcEF2HmZB6padbz9/Lbu+13RLmrwg4irEjnVt0pnwH3hJOpVVZeT9tX/gQBl+RZRC9mbufEoEVqBcQX4g8bi6QQ/qypM3dly7Mrf53q3ro3e4UFVLJEPpCpJZMzqQSjl7JW2jicg3JfabqSKzrAYTVPU573UB0xVlcSxrIawlrPksXcOTYXIzmWnt+mCBHqLW7Ke3KqBpW87YPTBtyIiBXcc54kXpcr1Yw89ZnT8qbPcKwpIvadSCJcZps9HQRXQBmc52kY9+6eRyI+46GDit+q74kCAokLWe1aq/hVXcpHGeAhadJIhtfqywNnyn1+59lhInhpnnLjnCV1Kg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SPZbVR1+0g24dXFjPgttoII5bqlwh3+NG8UyiP13LUM=;
+ b=Gh4BDv3lWhvml5YXCCodyups+ajsS/4+Mol36X/hz7W3cXe1xL5BeW0to6KKfeV9bZcJ3mUJrdUMob3QSCelFIyWSpe1M1voeH/GCy45E2aIFQ0dBmmNJlQfobGogF2SZe5IXkidSZhFR1oNhlU5JaDABDx5rJ3qN1meVA5lBocREIPgSzk02wkWt+AVfJLc0gAw8w7pPH8kamZyUvvpKRZfyqSkSP+VDacSBsHvS/cbcLhdBvniI3PQT3gIUom1FPKYTKcs8fQuoSA5I4OKmk0vZKUxQHMHotH8jRPQdawfl0zJFkInRr5/tD9aMXfamtBrIuu7ey8mFweFCcIvug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SPZbVR1+0g24dXFjPgttoII5bqlwh3+NG8UyiP13LUM=;
+ b=V9Lby2RlhnxwfwSCk2m1+X3yrLXm6F2wK45y6uiScUbxxlR5T3NTYIJcSrllsKEgLcObTuK1z3E2V7X1s8M+95+Tk/MbDgBXFKrgPWzrz3Y2KXaoJgug4Hp0oGY2MSRXiAJ67Gjk3ahpsnSTHyM+XhnnBI4nNQ40HKPrdCTTfLc=
+Received: from CY4PR02CA0023.namprd02.prod.outlook.com (2603:10b6:903:18::33)
+ by SN6PR02MB3967.namprd02.prod.outlook.com (2603:10b6:805:2b::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.19; Fri, 18 Oct
+ 2019 08:08:01 +0000
+Received: from SN1NAM02FT038.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::202) by CY4PR02CA0023.outlook.office365.com
+ (2603:10b6:903:18::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.16 via Frontend
+ Transport; Fri, 18 Oct 2019 08:08:01 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT038.mail.protection.outlook.com (10.152.72.69) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2367.14
+ via Frontend Transport; Fri, 18 Oct 2019 08:08:00 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1iLNIm-0000mD-5W; Fri, 18 Oct 2019 01:08:00 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1iLNIh-0007n6-1Z; Fri, 18 Oct 2019 01:07:55 -0700
+Received: from xsj-pvapsmtp01 (xsj-pvapsmtp01.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x9I87jHK015921;
+        Fri, 18 Oct 2019 01:07:45 -0700
+Received: from [172.30.17.123]
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <michals@xilinx.com>)
+        id 1iLNIX-0007lR-1F; Fri, 18 Oct 2019 01:07:45 -0700
+Subject: Re: [PATCH net-next] net: axienet: In kconfig add ARM64 as supported
+ platform
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     michal.simek@xilinx.com, anirudha.sarangi@xilinx.com,
+        john.linn@xilinx.com, mchehab+samsung@kernel.org,
+        gregkh@linuxfoundation.org, nicolas.ferre@microchip.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1571381686-13045-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+Message-ID: <eb41070c-8393-ec4e-f9c9-f16d082fbe1c@xilinx.com>
+Date:   Fri, 18 Oct 2019 10:07:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1571381686-13045-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(396003)(136003)(376002)(199004)(189003)(70586007)(4326008)(50466002)(47776003)(8676002)(31696002)(70206006)(65806001)(81166006)(65956001)(5660300002)(36756003)(9786002)(81156014)(8936002)(478600001)(316002)(2616005)(44832011)(336012)(6666004)(126002)(31686004)(36386004)(6246003)(106002)(476003)(305945005)(356004)(11346002)(186003)(2906002)(230700001)(26005)(229853002)(58126008)(23676004)(426003)(446003)(2486003)(486006)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR02MB3967;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8695f6cb-5ce8-4317-992d-08d753a24b24
+X-MS-TrafficTypeDiagnostic: SN6PR02MB3967:
+X-Microsoft-Antispam-PRVS: <SN6PR02MB3967687650A478FA792C61DDC66C0@SN6PR02MB3967.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Forefront-PRVS: 01949FE337
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yrmu1g9Ryw0QdQdi9axOai5Qc01deVTtjRdGhUnkF/7ThbC+Rqhdi0fIvZbzBq20c+TGLObf8tHBaeh0ApokRt4ZbBUxjMOaO4xtbXr8MQK0z683pZWhDHbaQknaAPtfGKARG3EVx1p4nr8xEwasA6tYFejslzafBxMpSLHcXwOsjgzZ6mSth8Sw9QAEdO7g5yjjxlw7VP0hfK3Pqxo/A1OQJH+p2YrQRVYHoCbL8cZ3lVyk41zIbyQbcZESxB7QVvfOc4ICR1TJrV7fviLAAqXwbQ7FAkKNQ1AeDJVULcAv2LeWJV1mqzPAfJNx9vrKKkavZJa+aLPuPpuHks2vNo97UEEhiT6kuvhNLFxQUm8nW98KJAMq5GOQvBzM3PNtcsiRRucgOXQN5ZOdT/mOY0hlerjJ3JkSzw9Rr/I43tU=
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2019 08:08:00.5580
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8695f6cb-5ce8-4317-992d-08d753a24b24
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB3967
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guenter Roeck <linux@roeck-us.net> writes:
+On 18. 10. 19 8:54, Radhey Shyam Pandey wrote:
+> xilinx axi_emac driver is supported on ZynqMP UltraScale platform(ARM64).
+> So enable it in kconfig. Basic sanity testing is done on zu+ mpsoc zcu102
+> evaluation board.
+> 
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> ---
+>  drivers/net/ethernet/xilinx/Kconfig | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
+> index 8d994ce..a616bdc 100644
+> --- a/drivers/net/ethernet/xilinx/Kconfig
+> +++ b/drivers/net/ethernet/xilinx/Kconfig
+> @@ -6,7 +6,7 @@
+>  config NET_VENDOR_XILINX
+>  	bool "Xilinx devices"
+>  	default y
+> -	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || COMPILE_TEST
+> +	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || ARM64 || COMPILE_TEST
 
-> On Sun, Sep 01, 2019 at 11:06:05AM +0300, Kalle Valo wrote:
->> Guenter Roeck <linux@roeck-us.net> writes:
->> 
->> > Hi,
->> >
->> > On Sat, Aug 03, 2019 at 08:31:01PM -0400, Hui Peng wrote:
->> >> The `ar_usb` field of `ath10k_usb_pipe_usb_pipe` objects
->> >> are initialized to point to the containing `ath10k_usb` object
->> >> according to endpoint descriptors read from the device side, as shown
->> >> below in `ath10k_usb_setup_pipe_resources`:
->> >> 
->> >> for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
->> >>         endpoint = &iface_desc->endpoint[i].desc;
->> >> 
->> >>         // get the address from endpoint descriptor
->> >>         pipe_num = ath10k_usb_get_logical_pipe_num(ar_usb,
->> >>                                                 endpoint->bEndpointAddress,
->> >>                                                 &urbcount);
->> >>         ......
->> >>         // select the pipe object
->> >>         pipe = &ar_usb->pipes[pipe_num];
->> >> 
->> >>         // initialize the ar_usb field
->> >>         pipe->ar_usb = ar_usb;
->> >> }
->> >> 
->> >> The driver assumes that the addresses reported in endpoint
->> >> descriptors from device side  to be complete. If a device is
->> >> malicious and does not report complete addresses, it may trigger
->> >> NULL-ptr-deref `ath10k_usb_alloc_urb_from_pipe` and
->> >> `ath10k_usb_free_urb_to_pipe`.
->> >> 
->> >> This patch fixes the bug by preventing potential NULL-ptr-deref.
->> >> 
->> >> Signed-off-by: Hui Peng <benquike@gmail.com>
->> >> Reported-by: Hui Peng <benquike@gmail.com>
->> >> Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
->> >
->> > This patch fixes CVE-2019-15099, which has CVSS scores of 7.5 (CVSS 3.0)
->> > and 7.8 (CVSS 2.0). Yet, I don't find it in the upstream kernel or in Linux
->> > next.
->> >
->> > Is the patch going to be applied to the upstream kernel anytime soon ?
->> 
->> Same answer as in patch 1:
->> 
->> https://patchwork.kernel.org/patch/11074655/
->> 
->
-> Sorry to bring this up again. The ath6k patch made it into the upstream
-> kernel, but the ath10k patch didn't. Did it get lost, or was there a
-> reason not to apply this patch ?
+You can remove ARCH_ZYNQ from this line because ARM is there already.
 
-This patch had a build warning, you can see it from patchwork:
 
-https://patchwork.kernel.org/patch/11074657/
+>  	---help---
+>  	  If you have a network (Ethernet) card belonging to this class, say Y.
+>  
+> @@ -26,11 +26,11 @@ config XILINX_EMACLITE
+>  
+>  config XILINX_AXI_EMAC
+>  	tristate "Xilinx 10/100/1000 AXI Ethernet support"
+> -	depends on MICROBLAZE || X86 || ARM || COMPILE_TEST
+> +	depends on MICROBLAZE || X86 || ARM || ARM64 || COMPILE_TEST
+>  	select PHYLINK
+>  	---help---
+>  	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
+> -	  AXI bus interface used in Xilinx Virtex FPGAs.
+> +	  AXI bus interface used in Xilinx Virtex FPGAs and Soc's.
+>  
+>  config XILINX_LL_TEMAC
+>  	tristate "Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver"
+> 
 
-Can someone fix it and resend the patch, please?
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+M
