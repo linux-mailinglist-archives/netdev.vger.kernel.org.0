@@ -2,60 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5F9DC6E1
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 16:05:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA6EDC6FE
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 16:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633754AbfJROF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 10:05:27 -0400
-Received: from unicorn.mansr.com ([81.2.72.234]:51150 "EHLO unicorn.mansr.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2408654AbfJROF1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 10:05:27 -0400
-Received: by unicorn.mansr.com (Postfix, from userid 51770)
-        id A8DB71560D; Fri, 18 Oct 2019 15:05:19 +0100 (BST)
-From:   Mans Rullgard <mans@mansr.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: dwmac-sun8i: show message only when switching to promisc
-Date:   Fri, 18 Oct 2019 15:05:14 +0100
-Message-Id: <20191018140514.21454-1-mans@mansr.com>
-X-Mailer: git-send-email 2.23.0
+        id S2439654AbfJROLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 10:11:50 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:53901 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2439192AbfJROLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 10:11:50 -0400
+Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28] helo=dude02.lab.pengutronix.de)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mtr@pengutronix.de>)
+        id 1iLSyp-0004dK-38; Fri, 18 Oct 2019 16:11:47 +0200
+Received: from mtr by dude02.lab.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mtr@pengutronix.de>)
+        id 1iLSyn-0006R5-GX; Fri, 18 Oct 2019 16:11:45 +0200
+From:   Michael Tretter <m.tretter@pengutronix.de>
+To:     nicolas.ferre@microchip.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Michael Tretter <m.tretter@pengutronix.de>
+Subject: [PATCH] macb: propagate errors when getting optional clocks
+Date:   Fri, 18 Oct 2019 16:11:43 +0200
+Message-Id: <20191018141143.24148-1-m.tretter@pengutronix.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::28
+X-SA-Exim-Mail-From: mtr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Printing the info message every time more than the max number of mac
-addresses are requested generates unnecessary log spam.  Showing it only
-when the hw is not already in promiscous mode is equally informative
-without being annoying.
+The tx_clk, rx_clk, and tsu_clk are optional. Currently the macb driver
+marks clock as not available if it receives an error when trying to get
+a clock. This is wrong, because a clock controller might return
+-EPROBE_DEFER if a clock is not available, but will eventually become
+available.
 
-Signed-off-by: Mans Rullgard <mans@mansr.com>
+In these cases, the driver would probe successfully but will never be
+able to adjust the clocks, because the clocks were not available during
+probe, but became available later.
+
+For example, the clock controller for the ZynqMP is implemented in the
+PMU firmware and the clocks are only available after the firmware driver
+has been probed.
+
+Use devm_clk_get_optional() in instead of devm_clk_get() to get the
+optional clock and propagate all errors to the calling function.
+
+Signed-off-by: Michael Tretter <m.tretter@pengutronix.de>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/cadence/macb_main.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 79c91526f3ec..5be2de1f1179 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -646,7 +646,8 @@ static void sun8i_dwmac_set_filter(struct mac_device_info *hw,
- 			}
- 		}
- 	} else {
--		netdev_info(dev, "Too many address, switching to promiscuous\n");
-+		if (readl(ioaddr + EMAC_RX_FRM_FLT) != EMAC_FRM_FLT_RXALL)
-+			netdev_info(dev, "Too many address, switching to promiscuous\n");
- 		v = EMAC_FRM_FLT_RXALL;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 8e8d557901a9..1e1b774e1953 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -3405,17 +3405,17 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 		return err;
  	}
  
+-	*tx_clk = devm_clk_get(&pdev->dev, "tx_clk");
++	*tx_clk = devm_clk_get_optional(&pdev->dev, "tx_clk");
+ 	if (IS_ERR(*tx_clk))
+-		*tx_clk = NULL;
++		return PTR_ERR(*tx_clk);
+ 
+-	*rx_clk = devm_clk_get(&pdev->dev, "rx_clk");
++	*rx_clk = devm_clk_get_optional(&pdev->dev, "rx_clk");
+ 	if (IS_ERR(*rx_clk))
+-		*rx_clk = NULL;
++		return PTR_ERR(*rx_clk);
+ 
+-	*tsu_clk = devm_clk_get(&pdev->dev, "tsu_clk");
++	*tsu_clk = devm_clk_get_optional(&pdev->dev, "tsu_clk");
+ 	if (IS_ERR(*tsu_clk))
+-		*tsu_clk = NULL;
++		return PTR_ERR(*tsu_clk);
+ 
+ 	err = clk_prepare_enable(*pclk);
+ 	if (err) {
 -- 
-2.23.0
+2.20.1
 
