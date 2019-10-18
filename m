@@ -2,433 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B566BDBDDF
-	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 08:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99EF0DBDE7
+	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 08:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504371AbfJRGvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 02:51:17 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35008 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726986AbfJRGvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 02:51:17 -0400
-Received: by mail-wr1-f66.google.com with SMTP id l10so4519016wrb.2
-        for <netdev@vger.kernel.org>; Thu, 17 Oct 2019 23:51:14 -0700 (PDT)
+        id S2504522AbfJRGzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 02:55:39 -0400
+Received: from mail-eopbgr700061.outbound.protection.outlook.com ([40.107.70.61]:30944
+        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2504371AbfJRGzi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Oct 2019 02:55:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QCHbjngCPcDIrbSOgPvX9pOytBcvA0uZPcd7syP8kUBVfucBcS3z9gaGjumnfvFbrYw7aAffABUZiIdwfO5cbHOBTZctf7ce8LNFB8zoh3fVKJczzdpZ6spF2TCXMh/CeCFyjnxRjK/jE5JiMLx928Wgzax1EK53CLbPbHukATJX2sp5/D9iWenjurE2Y8DUAgHQWfRWbowgstrqFqS+UKafE7eCZFvA8/IyAVha9QRWHPl2KiX8htew8B30mFoDAcXoh9FoU1psXQfMEz5FtxnBcSBjFvdbBOJtJE+gZLqDHLFAudXq4BM27hezwW8Rmh9W9FCQNstFNRigZyr46w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xO1G94WDG+asGTLvtKONPCA/vXBzNm8of9S3xLiQpsQ=;
+ b=YXTzQblSqV7UKDw22Nc8v1UkSDn1HLfnQGSveju9PCxz7htVMsu39Wb+35wptOuaW9sW7XTW+Bgdvtp00exRKyHqPUjnfdQ7WmNwpA2xUqjNjspgdZev7hqV6kAY7GlDwA7eOT9T150FrVH4hLM/wWpOHIjT5roZtO81E7a26dBbEBg9BhPqyhnNa10/hEZqnbGo8MhZ4d7UUrWhFQB6UmvvTJhKqZVheBBeRWV+V/XHFb+thOFve/8qr5TmY0s1BswIe23GKGarYtB9SUT6GJg33QdTqCDQFR4lxQXZYtGRjAEHmX/mnn8hMiuKXLo8NC/AuJXteEIkPJTMvMctTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Bvxk6g3f3hHSiGLZORqnJsGkBod/ATvkQYkNgLI8UlU=;
-        b=aXQj06I6wrLettok/3l5AS1GQYgUKkXpLRsIJtnZfUqKxwjPQba1rbfpqMCM9pqKil
-         bD1UOSVaz3tgvrBIDd8CEBpi0yDGML1De4QHUfXDAuhQBEEBPLXF+p+dIyAKKoBaVKKP
-         UFWrnxdQ/hHOYJ7zzspgkHBZeqCLpJoWKcg60=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bvxk6g3f3hHSiGLZORqnJsGkBod/ATvkQYkNgLI8UlU=;
-        b=iu1sD/UftCaOHWJMMO0/pT5nnkvOJcnX3MkEbP6ukI7BX9LPjD3O6iJ/ADkS0fF5wV
-         RGRxFnS1zjnDBWGB31RM1u3w+sgU2vD4NjUQw93aT0rcmIU9BZVwYKyXzKhY4LZUIe5Y
-         syy1Y6B16LQJD0tGjehmxqFLhNtRVmSf62wmUU22JFlxej61zfXejjf9gmLXa1AOC6QK
-         yRjpdlwDThdIV3GN8QOV2fVT7mw53kaZ6Yh2yxgxYqPGH2ZKAABwXRd6UxvIyhd1SzDn
-         0LounASUQ7+1s/Lg4NnogFkME4i+yI98QGQWGwxlrrxx61iLjzqYiZ3Nu7/IJEGMDarI
-         2GrA==
-X-Gm-Message-State: APjAAAWM0CGUQGyZt1JO8u9b3w0CGtR9ZTta+cF1hd2MMZfAgm54Tk4D
-        jvQ6wAqf1DFJ50wKxYGhePDxmgOwF2hxFRBf7YNP/A==
-X-Google-Smtp-Source: APXvYqza9cagPr90E+656Ew2cQSBp6PNR665hphkeQdMUb1PWgA1nmPmTCfN8DIOiwVDc9tcNd+121xaENPhFu0FjyA=
-X-Received: by 2002:adf:e74c:: with SMTP id c12mr420893wrn.133.1571381473133;
- Thu, 17 Oct 2019 23:51:13 -0700 (PDT)
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xO1G94WDG+asGTLvtKONPCA/vXBzNm8of9S3xLiQpsQ=;
+ b=ZhSs/Sc9bTXZm7t4qsZmBzQYP1QPLTgMXVoRTFKSGr+2xGTVpH1K64bMmGo1xg0xaIBHm+YPx6Fzp7GN/KAZnNw3cqhZcybtXmcKlpwfx2UBzp1FHPOyMePhjPfhNAA5hQhOE6im3pf26GmSR/O/gWyo+EP436sfD56fxoX6+xE=
+Received: from SN6PR02CA0010.namprd02.prod.outlook.com (2603:10b6:805:a2::23)
+ by MN2PR02MB6864.namprd02.prod.outlook.com (2603:10b6:208:1d3::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.23; Fri, 18 Oct
+ 2019 06:54:55 +0000
+Received: from SN1NAM02FT017.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::208) by SN6PR02CA0010.outlook.office365.com
+ (2603:10b6:805:a2::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.24 via Frontend
+ Transport; Fri, 18 Oct 2019 06:54:55 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT017.mail.protection.outlook.com (10.152.72.115) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2367.14
+ via Frontend Transport; Fri, 18 Oct 2019 06:54:55 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <radhey.shyam.pandey@xilinx.com>)
+        id 1iLMA2-0005hV-NB; Thu, 17 Oct 2019 23:54:54 -0700
+Received: from localhost ([127.0.0.1] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <radhey.shyam.pandey@xilinx.com>)
+        id 1iLM9x-0006T4-Hl; Thu, 17 Oct 2019 23:54:49 -0700
+Received: from [10.140.184.180] (helo=ubuntu)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <radheys@ubuntu>)
+        id 1iLM9w-0006Sv-Ud; Thu, 17 Oct 2019 23:54:49 -0700
+Received: by ubuntu (Postfix, from userid 13245)
+        id 2BDC410104C; Fri, 18 Oct 2019 12:24:47 +0530 (IST)
+From:   Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     michal.simek@xilinx.com, anirudha.sarangi@xilinx.com,
+        john.linn@xilinx.com, mchehab+samsung@kernel.org,
+        gregkh@linuxfoundation.org, nicolas.ferre@microchip.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Subject: [PATCH net-next] net: axienet: In kconfig add ARM64 as supported platform
+Date:   Fri, 18 Oct 2019 12:24:46 +0530
+Message-Id: <1571381686-13045-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-Result: No--1.901-7.0-31-1
+X-imss-scan-details: No--1.901-7.0-31-1;No--1.901-5.0-31-1
+X-TM-AS-User-Approved-Sender: No;No
+X-TM-AS-Result-Xfilter: Match text exemption rules:No
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(376002)(136003)(39860400002)(189003)(199004)(4326008)(6266002)(2906002)(107886003)(36756003)(186003)(316002)(50226002)(42186006)(106002)(16586007)(51416003)(478600001)(8936002)(81156014)(81166006)(70206006)(356004)(70586007)(48376002)(126002)(50466002)(476003)(8676002)(486006)(5660300002)(305945005)(426003)(336012)(103686004)(26005)(2616005)(47776003);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR02MB6864;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
 MIME-Version: 1.0
-References: <1923F6C8-A3CC-4904-B2E7-176BDB52AF1B@gmail.com>
- <CACKFLikbp+sTxFBNEnUYFK2oAqeYm58uULE=AXfCp2Afg3x4ew@mail.gmail.com>
- <A1527477-EC6E-4B64-880F-B014E8CFCB9D@gmail.com> <CAMet4B7vi6yYu2HZd1Pj7rhtxme8FmT4wbXTjQOnQEqJp0Z_3w@mail.gmail.com>
- <5AC684B1-79CA-41EB-9553-FFBFD7284085@gmail.com> <CACE64B8-91DE-4F25-B2F7-2C86526986FD@gmail.com>
-In-Reply-To: <CACE64B8-91DE-4F25-B2F7-2C86526986FD@gmail.com>
-From:   Siva Reddy Kallam <siva.kallam@broadcom.com>
-Date:   Fri, 18 Oct 2019 12:21:01 +0530
-Message-ID: <CAMet4B7npXtDd4U7HOKFN74hwpcAYmyq_LH3N_jtcyxtm43JNg@mail.gmail.com>
-Subject: Re: Gentoo Linux 5.x - Tigon3
-To:     Rudolf Spring <rudolf.spring@gmail.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 34963280-717c-4847-9b9b-08d753981535
+X-MS-TrafficTypeDiagnostic: MN2PR02MB6864:
+X-Microsoft-Antispam-PRVS: <MN2PR02MB68642FEA057375321FD0E2CAC76C0@MN2PR02MB6864.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Forefront-PRVS: 01949FE337
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: srglYuf6HLks9xz+RbADIlAVUE3FGiH5eNBMzbR0QHMEaMmTcEBHgUfL++v7MCBdJki08LBx3cnAqOxK+vSM1Dzhm6UzRZzhb+v4kc4lRcxImIUBG/rd3WO5C61gMKEfMs32kHxGJOfAHfSU18mCdldTnF9xrulKMTMhx2WKuKjEzt4zm2rCotGxX4RN/6pgFDM8eOOEYdNUha63VLxXFz7nRnTuCl/Zra9T3anWj6gU13DPewmMlar5Y2aGFLRBe/w1CvvgNjgPM6FMS7AVWpjN9kptUkocHIL9kNCdghx+n9uRiNZVEMNbRh44uFKPf+mt7/C/1QpUKt04PTxSFL8WPjJDPJLXW2u81hzX9/aOzKN75wqE2zPUdi0jbPo/cLnf9k1pyVG9ON1QPfmnIdCbdtFyuYTlfXY5lhZOTEM=
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2019 06:54:55.1042
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34963280-717c-4847-9b9b-08d753981535
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6864
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 17, 2019 at 11:03 PM Rudolf Spring <rudolf.spring@gmail.com> wrote:
->
-> Can you reproduce the error in the lab ? Same behaviour with Kernel 5.3.6.
->
-Yes. We are trying to reproduce in our local lab.  We will update once
-we have reproduction.
->
-> eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9000
->         ether a8:20:66:28:e6:95  txqueuelen 1000  (Ethernet)
->         RX packets 13844854  bytes 2298858755 (2.1 GiB)
->         RX errors 0  dropped 2  overruns 0  frame 0
->         TX packets 14831625  bytes 75684684566 (70.4 GiB)
->         TX errors 158  dropped 0 overruns 0  carrier 0  collisions 0
->         device interrupt 16
->
->      tx_octets: 75686159197
->      tx_collisions: 0
->      tx_xon_sent: 0
->      tx_xoff_sent: 0
->      tx_flow_control: 0
->      tx_mac_errors: 158
->      tx_single_collisions: 0
->      tx_mult_collisions: 0
->      tx_deferred: 0
->      tx_excessive_collisions: 0
->      tx_late_collisions: 0
->      tx_collide_2times: 0
->      tx_collide_3times: 0
->      tx_collide_4times: 0
->      tx_collide_5times: 0
->      tx_collide_6times: 0
->      tx_collide_7times: 0
->      tx_collide_8times: 0
->      tx_collide_9times: 0
->      tx_collide_10times: 0
->      tx_collide_11times: 0
->      tx_collide_12times: 0
->      tx_collide_13times: 0
->      tx_collide_14times: 0
->      tx_collide_15times: 0
->      tx_ucast_packets: 14400082
->      tx_mcast_packets: 435104
->      tx_bcast_packets: 1542
->      tx_carrier_sense_errors: 0
->      tx_discards: 0
->      tx_errors: 0
->
->
-> > On 4 Oct 2019, at 14:53, Rudolf Spring <rudolf.spring@gmail.com> wrote:
-> >
-> > With Kernel 5.3.2. Interesting all are tx_mac_errors.
-> >
-> > ifconfig  eth0
-> > eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9000
-> >        ether a8:20:66:28:e6:95  txqueuelen 1000  (Ethernet)
-> >        RX packets 1649204  bytes 775261068 (739.3 MiB)
-> >        RX errors 0  dropped 0  overruns 0  frame 0
-> >        TX packets 1144621  bytes 1241414276 (1.1 GiB)
-> >        TX errors 369  dropped 0 overruns 0  carrier 0  collisions 0
-> >        device interrupt 16
-> >
-> > ethtool -S eth0
-> > NIC statistics:
-> >     rx_octets: 752756285
-> >     rx_fragments: 0
-> >     rx_ucast_packets: 1132211
-> >     rx_mcast_packets: 128115
-> >     rx_bcast_packets: 372162
-> >     rx_fcs_errors: 0
-> >     rx_align_errors: 0
-> >     rx_xon_pause_rcvd: 0
-> >     rx_xoff_pause_rcvd: 0
-> >     rx_mac_ctrl_rcvd: 0
-> >     rx_xoff_entered: 0
-> >     rx_frame_too_long_errors: 0
-> >     rx_jabbers: 0
-> >     rx_undersize_packets: 0
-> >     rx_in_length_errors: 0
-> >     rx_out_length_errors: 0
-> >     rx_64_or_less_octet_packets: 0
-> >     rx_65_to_127_octet_packets: 0
-> >     rx_128_to_255_octet_packets: 0
-> >     rx_256_to_511_octet_packets: 0
-> >     rx_512_to_1023_octet_packets: 0
-> >     rx_1024_to_1522_octet_packets: 0
-> >     rx_1523_to_2047_octet_packets: 0
-> >     rx_2048_to_4095_octet_packets: 0
-> >     rx_4096_to_8191_octet_packets: 0
-> >     rx_8192_to_9022_octet_packets: 0
-> >     tx_octets: 1236703101
-> >     tx_collisions: 0
-> >     tx_xon_sent: 0
-> >     tx_xoff_sent: 0
-> >     tx_flow_control: 0
-> >     tx_mac_errors: 369
-> >     tx_single_collisions: 0
-> >     tx_mult_collisions: 0
-> >     tx_deferred: 0
-> >     tx_excessive_collisions: 0
-> >     tx_late_collisions: 0
-> >     tx_collide_2times: 0
-> >     tx_collide_3times: 0
-> >     tx_collide_4times: 0
-> >     tx_collide_5times: 0
-> >     tx_collide_6times: 0
-> >     tx_collide_7times: 0
-> >     tx_collide_8times: 0
-> >     tx_collide_9times: 0
-> >     tx_collide_10times: 0
-> >     tx_collide_11times: 0
-> >     tx_collide_12times: 0
-> >     tx_collide_13times: 0
-> >     tx_collide_14times: 0
-> >     tx_collide_15times: 0
-> >     tx_ucast_packets: 986854
-> >     tx_mcast_packets: 146951
-> >     tx_bcast_packets: 1117
-> >     tx_carrier_sense_errors: 0
-> >     tx_discards: 0
-> >     tx_errors: 0
-> >     dma_writeq_full: 0
-> >     dma_write_prioq_full: 0
-> >     rxbds_empty: 0
-> >     rx_discards: 0
-> >     rx_errors: 0
-> >     rx_threshold_hit: 0
-> >     dma_readq_full: 0
-> >     dma_read_prioq_full: 0
-> >     tx_comp_queue_full: 0
-> >     ring_set_send_prod_index: 0
-> >     ring_status_update: 0
-> >     nic_irqs: 0
-> >     nic_avoided_irqs: 0
-> >     nic_tx_threshold_hit: 0
-> >     mbuf_lwm_thresh_hit: 0
-> >
-> >> On 4 Oct 2019, at 12:52, Siva Reddy Kallam <siva.kallam@broadcom.com> wrote:
-> >>
-> >>
-> >>
-> >> On Wed, Oct 2, 2019 at 10:05 PM Rudolf Spring <rudolf.spring@gmail.com> wrote:
-> >> The output of dmesg and ethtool is identical between 4.19.72 and 5.3.2. Any suggestions ?
-> >> Can you please provide the output of "ethtool -S eth0" command?
-> >> In the mean time, I will review the register dump and also try to reproduce in our lab.
-> >> 0000:01:00.0: enabling device (0000 -> 0002)
-> >> [    1.140738] tg3 0000:01:00.0 eth0: Tigon3 [partno(BCM957766a) rev 57766001] (PCI Express) MAC address a8:20:66:28:e6:95
-> >> [    1.140741] tg3 0000:01:00.0 eth0: attached PHY is 57765 (10/100/1000Base-T Ethernet) (WireSpeed[1], EEE[1])
-> >> [    1.140743] tg3 0000:01:00.0 eth0: RXcsums[1] LinkChgREG[0] MIirq[0] ASF[0] TSOcap[1]
-> >> [    1.140744] tg3 0000:01:00.0 eth0: dma_rwctrl[00000001] dma_mask[64-bit]
-> >> [   10.290239] tg3 0000:01:00.0 eth0: Link is up at 1000 Mbps, full duplex
-> >> [   10.290241] tg3 0000:01:00.0 eth0: Flow control is on for TX and on for RX
-> >> [   10.290242] tg3 0000:01:00.0 eth0: EEE is enabled
-> >>
-> >> ethtool eth0
-> >> Settings for eth0:
-> >>        Supported ports: [ TP ]
-> >>        Supported link modes:   10baseT/Half 10baseT/Full
-> >>                                100baseT/Half 100baseT/Full
-> >>                                1000baseT/Half 1000baseT/Full
-> >>        Supported pause frame use: No
-> >>        Supports auto-negotiation: Yes
-> >>        Supported FEC modes: Not reported
-> >>        Advertised link modes:  10baseT/Half 10baseT/Full
-> >>                                100baseT/Half 100baseT/Full
-> >>                                1000baseT/Half 1000baseT/Full
-> >>        Advertised pause frame use: Symmetric
-> >>        Advertised auto-negotiation: Yes
-> >>        Advertised FEC modes: Not reported
-> >>        Link partner advertised link modes:  10baseT/Half 10baseT/Full
-> >>                                             100baseT/Half 100baseT/Full
-> >>                                             1000baseT/Full
-> >>        Link partner advertised pause frame use: Symmetric
-> >>        Link partner advertised auto-negotiation: Yes
-> >>        Link partner advertised FEC modes: Not reported
-> >>        Speed: 1000Mb/s
-> >>        Duplex: Full
-> >>        Port: Twisted Pair
-> >>        PHYAD: 1
-> >>        Transceiver: internal
-> >>        Auto-negotiation: on
-> >>        MDI-X: off
-> >>        Supports Wake-on: g
-> >>        Wake-on: g
-> >>        Current message level: 0x000000ff (255)
-> >>                               drv probe link timer ifdown ifup rx_err tx_err
-> >>        Link detected: yes
-> >>
-> >> ethtool -a eth0
-> >> Pause parameters for eth0:
-> >> Autonegotiate:  on
-> >> RX:             on
-> >> TX:             on
-> >> RX negotiated:  on
-> >> TX negotiated:  on
-> >>
-> >> ethtool -g eth0
-> >> Ring parameters for eth0:
-> >> Pre-set maximums:
-> >> RX:             511
-> >> RX Mini:        0
-> >> RX Jumbo:       255
-> >> TX:             511
-> >> Current hardware settings:
-> >> RX:             200
-> >> RX Mini:        0
-> >> RX Jumbo:       100
-> >> TX:             511
-> >>
-> >> ethtool -c eth0
-> >> Coalesce parameters for eth0:
-> >> Adaptive RX: off  TX: off
-> >> stats-block-usecs: 0
-> >> sample-interval: 0
-> >> pkt-rate-low: 0
-> >> pkt-rate-high: 0
-> >>
-> >> rx-usecs: 20
-> >> rx-frames: 5
-> >> rx-usecs-irq: 0
-> >> rx-frames-irq: 5
-> >>
-> >> tx-usecs: 72
-> >> tx-frames: 53
-> >> tx-usecs-irq: 0
-> >> tx-frames-irq: 5
-> >>
-> >> rx-usecs-low: 0
-> >> rx-frame-low: 0
-> >> tx-usecs-low: 0
-> >> tx-frame-low: 0
-> >>
-> >> rx-usecs-high: 0
-> >> rx-frame-high: 0
-> >> tx-usecs-high: 0
-> >> tx-frame-high: 0
-> >>
-> >> ethtool -k eth0
-> >> Features for eth0:
-> >> rx-checksumming: on
-> >> tx-checksumming: on
-> >>        tx-checksum-ipv4: on
-> >>        tx-checksum-ip-generic: off [fixed]
-> >>        tx-checksum-ipv6: on
-> >>        tx-checksum-fcoe-crc: off [fixed]
-> >>        tx-checksum-sctp: off [fixed]
-> >> scatter-gather: on
-> >>        tx-scatter-gather: on
-> >>        tx-scatter-gather-fraglist: off [fixed]
-> >> tcp-segmentation-offload: on
-> >>        tx-tcp-segmentation: on
-> >>        tx-tcp-ecn-segmentation: on
-> >>        tx-tcp-mangleid-segmentation: off
-> >>        tx-tcp6-segmentation: on
-> >> udp-fragmentation-offload: off
-> >> generic-segmentation-offload: on
-> >> generic-receive-offload: on
-> >> large-receive-offload: off [fixed]
-> >> rx-vlan-offload: on [fixed]
-> >> tx-vlan-offload: on [fixed]
-> >> ntuple-filters: off [fixed]
-> >> receive-hashing: off [fixed]
-> >> highdma: on
-> >> rx-vlan-filter: off [fixed]
-> >> vlan-challenged: off [fixed]
-> >> tx-lockless: off [fixed]
-> >> netns-local: off [fixed]
-> >> tx-gso-robust: off [fixed]
-> >> tx-fcoe-segmentation: off [fixed]
-> >> tx-gre-segmentation: off [fixed]
-> >> tx-gre-csum-segmentation: off [fixed]
-> >> tx-ipxip4-segmentation: off [fixed]
-> >> tx-ipxip6-segmentation: off [fixed]
-> >> tx-udp_tnl-segmentation: off [fixed]
-> >> tx-udp_tnl-csum-segmentation: off [fixed]
-> >> tx-gso-partial: off [fixed]
-> >> tx-sctp-segmentation: off [fixed]
-> >> tx-esp-segmentation: off [fixed]
-> >> tx-udp-segmentation: off [fixed]
-> >> fcoe-mtu: off [fixed]
-> >> tx-nocache-copy: off
-> >> loopback: off [fixed]
-> >> rx-fcs: off [fixed]
-> >> rx-all: off [fixed]
-> >> tx-vlan-stag-hw-insert: off [fixed]
-> >> rx-vlan-stag-hw-parse: off [fixed]
-> >> rx-vlan-stag-filter: off [fixed]
-> >> l2-fwd-offload: off [fixed]
-> >> hw-tc-offload: off [fixed]
-> >> esp-hw-offload: off [fixed]
-> >> esp-tx-csum-hw-offload: off [fixed]
-> >> rx-udp_tunnel-port-offload: off [fixed]
-> >> tls-hw-tx-offload: off [fixed]
-> >> tls-hw-rx-offload: off [fixed]
-> >> rx-gro-hw: off [fixed]
-> >> tls-hw-record: off [fixed]
-> >>
-> >> ethtool -n eth0
-> >> 4 RX rings available
-> >> rxclass: Cannot get RX class rule count: Operation not supported
-> >> RX classification rule retrieval failed
-> >>
-> >> ethtool -t eth0
-> >> The test result is PASS
-> >> The test extra info:
-> >> nvram test        (online)       0
-> >> link test         (online)       0
-> >> register test     (offline)      0
-> >> memory test       (offline)      0
-> >> mac loopback test (offline)      0
-> >> phy loopback test (offline)      0
-> >> ext loopback test (offline)      0
-> >> interrupt test    (offline)      0
-> >>
-> >> ethtool -T eth0
-> >> Time stamping parameters for eth0:
-> >> Capabilities:
-> >>        software-transmit     (SOF_TIMESTAMPING_TX_SOFTWARE)
-> >>        software-receive      (SOF_TIMESTAMPING_RX_SOFTWARE)
-> >>        software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
-> >> PTP Hardware Clock: none
-> >> Hardware Transmit Timestamp Modes:
-> >>        off                   (HWTSTAMP_TX_OFF)
-> >>        on                    (HWTSTAMP_TX_ON)
-> >> Hardware Receive Filter Modes:
-> >>        none                  (HWTSTAMP_FILTER_NONE)
-> >>        ptpv1-l4-event        (HWTSTAMP_FILTER_PTP_V1_L4_EVENT)
-> >>        ptpv2-l4-event        (HWTSTAMP_FILTER_PTP_V2_L4_EVENT)
-> >>        ptpv2-l2-event        (HWTSTAMP_FILTER_PTP_V2_L2_EVENT)
-> >>
-> >> ethtool -l eth0
-> >> Channel parameters for eth0:
-> >> Pre-set maximums:
-> >> RX:             4
-> >> TX:             1
-> >> Other:          0
-> >> Combined:       0
-> >> Current hardware settings:
-> >> RX:             4
-> >> TX:             1
-> >> Other:          0
-> >> Combined:       0
-> >>
-> >> ethtool --show-eee eth0
-> >> EEE Settings for eth0:
-> >>        EEE status: enabled - active
-> >>        Tx LPI: 2047 (us)
-> >>        Supported EEE link modes:  100baseT/Full
-> >>                                   1000baseT/Full
-> >>        Advertised EEE link modes:  100baseT/Full
-> >>                                    1000baseT/Full
-> >>        Link partner advertised EEE link modes:  100baseT/Full
-> >>                                                 1000baseT/Full
-> >>
-> >>> These are all the tg3 changes between 4.19 and 5.0:
-> >>>
-> >>> 750afb08ca71 cross-tree: phase out dma_zalloc_coherent()
-> >>> cddaf02bcb73 tg3: optionally use eth_platform_get_mac_address() to get
-> >>> mac address
-> >>> 3c1bcc8614db net: ethernet: Convert phydev advertize and supported
-> >>> from u32 to link mode
-> >>> 6fe42e228dc2 tg3: extend PTP gettime function to read system clock
-> >>> 310fc0513ea9 tg3: Fix fall-through annotations
-> >>> 22b7d29926b5 net: ethernet: Add helper to determine if pause
-> >>> configuration is supported
-> >>> 70814e819c11 net: ethernet: Add helper for set_pauseparam for Asym Pause
-> >>> af8d9bb2f2f4 net: ethernet: Add helper for MACs which support asym pause
-> >>> 04b7d41d8046 net: ethernet: Fix up drivers masking pause support
-> >>> 58056c1e1b0e net: ethernet: Use phy_set_max_speed() to limit advertised speed
-> >>>
-> >>> Most of the changes are related to PHY settings.  I suggest that you
-> >>> check the link settings, including speed, pause, asym pause, etc
-> >>> between the working kernel and the non-working kernel to see if there
-> >>> are differences in the settings.
-> >>
-> >
->
+xilinx axi_emac driver is supported on ZynqMP UltraScale platform(ARM64).
+So enable it in kconfig. Basic sanity testing is done on zu+ mpsoc zcu102
+evaluation board.
+
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+---
+ drivers/net/ethernet/xilinx/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
+index 8d994ce..a616bdc 100644
+--- a/drivers/net/ethernet/xilinx/Kconfig
++++ b/drivers/net/ethernet/xilinx/Kconfig
+@@ -6,7 +6,7 @@
+ config NET_VENDOR_XILINX
+ 	bool "Xilinx devices"
+ 	default y
+-	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || COMPILE_TEST
++	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || ARM64 || COMPILE_TEST
+ 	---help---
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+@@ -26,11 +26,11 @@ config XILINX_EMACLITE
+ 
+ config XILINX_AXI_EMAC
+ 	tristate "Xilinx 10/100/1000 AXI Ethernet support"
+-	depends on MICROBLAZE || X86 || ARM || COMPILE_TEST
++	depends on MICROBLAZE || X86 || ARM || ARM64 || COMPILE_TEST
+ 	select PHYLINK
+ 	---help---
+ 	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
+-	  AXI bus interface used in Xilinx Virtex FPGAs.
++	  AXI bus interface used in Xilinx Virtex FPGAs and Soc's.
+ 
+ config XILINX_LL_TEMAC
+ 	tristate "Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver"
+-- 
+2.7.4
+
