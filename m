@@ -2,123 +2,385 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0236DBC95
+	by mail.lfdr.de (Postfix) with ESMTP id 61A5CDBC94
 	for <lists+netdev@lfdr.de>; Fri, 18 Oct 2019 07:09:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504346AbfJRFHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 01:07:12 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39170 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2504332AbfJRFHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:07:11 -0400
-Received: by mail-pf1-f194.google.com with SMTP id v4so3087555pff.6;
-        Thu, 17 Oct 2019 22:07:11 -0700 (PDT)
+        id S2436465AbfJRFHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 01:07:09 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33919 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405128AbfJRFHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 01:07:08 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b128so3106022pfa.1;
+        Thu, 17 Oct 2019 22:07:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Dxf8j2dEp3gTKMidNHZOyi9cs38t6awcBjwDt5BGhco=;
-        b=kRzCl2sU8HhkN2FXU+AB6DHrD5pGZGK8OzQmjA2iRV6j8bod6JDJwCXwZC8OqJep3i
-         QNOn6QPM8Bq+xIddUidzOPgmu00nR5ZPwUV7rrfcXd2kzv461ggEh4UgeDVYvC0n30Pq
-         RaU1oHJXZyKXREXUNgwJr6IkVla6HHwlvRVaZ5SDQcJwXNjhLA+evDK9MEmFovwM5Bfc
-         HLqGNtPyecQjdt66rCHEz+h+1dr028s9/pFc3Fs65iCHDm/IGdPVpX9sDB1W1FIRzrJ5
-         YFC3yFRe0G0Fs+luyOzFip9poCXoUo8sJAN3HXEZu9QoPJzGJGsHl5eIUCZctGMuOeEf
-         2oYA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RGvBGcXjMUEtLOONS2cYJkFqbyDRfWGjUI0FogoxSzs=;
+        b=krRZll5KQoL5+5eD8ZgXAkv8ihwuZQAffi9pEy+0tcni3ngWqEG+obdg4XY0nrxBd3
+         +DxXG0Gy2hjUE+P6/LU9f7DsxMf+Hqo/ziFFrmnxZ6roy+CHcoE2VPz6SNSIBcKeYITj
+         pZeF4cRS+5mrqA8pRHqZRqdgAl8LEZTQA6SeHObD9KlO0iZ7N+yc+zAujx2VeqduFuh2
+         IGLKLTv1lpiooCsisaFFZcPKFgol+gqMpYRTbTYUaKPDuDtoR6C9L7eOMfnfz9YZQ020
+         92uA07+miXMBRhhyBFzAM+vhXWyZRjWCaeFGmwy0Rz7NewcxRJA/3W0kUyRMvzIpfVJE
+         vlrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Dxf8j2dEp3gTKMidNHZOyi9cs38t6awcBjwDt5BGhco=;
-        b=TsIvVYg91c/j+hQqMVQl4rYoTHUFIeBsflKovafgcj3B6NuEavA16Nm5cF24DgaqOB
-         GRth1ERyBWnVKh0XYxwrknC1KmTJjHkKlt14EXi3NyQ2eL5SYecl5vJH184m4OuEFwjy
-         j0P4gBakmm/0P7SBAC71cXriHY42LMBMCJ6AJV1vAvO/yRBQf5Lyi+OD2J9oeKaXU54a
-         qVXv4JuQ1xf2yq65l0c3F0hiRzx+WK7H2SLoECR3HodwdOz9pc+qdTX5nSRDnquPX+iO
-         0uVBMEmxZFUQlrwZJ4LIdjjL9JfCWIrbX5+UQJJzjs9LrQFKDQfNe9hr8vYfhpzln8Ls
-         bz/g==
-X-Gm-Message-State: APjAAAXaDKri+4RYM7bSIqLjMV5kgU/pOGW74unq1CW7XArix2nvHjEs
-        QC64My3a+I+aJE6iLafOoWxO9L/I
-X-Google-Smtp-Source: APXvYqx7/HwYNBy93h+fmNaI9cnTLMGY7XFYbErDicOBeRlQ0eTPm/1tR+ecZKuvPeC4oiDJ4HVdmw==
-X-Received: by 2002:a17:90a:9201:: with SMTP id m1mr8641712pjo.74.1571371532978;
-        Thu, 17 Oct 2019 21:05:32 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m2sm6433577pff.154.2019.10.17.21.05.31
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 17 Oct 2019 21:05:31 -0700 (PDT)
-Date:   Thu, 17 Oct 2019 21:05:30 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Hui Peng <benquike@gmail.com>, davem@davemloft.net,
-        Mathias Payer <mathias.payer@nebelwelt.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] Fix a NULL-ptr-deref bug in
- ath10k_usb_alloc_urb_from_pipe
-Message-ID: <20191018040530.GA28167@roeck-us.net>
-References: <20190804003101.11541-1-benquike@gmail.com>
- <20190831213139.GA32507@roeck-us.net>
- <87ftlgqw42.fsf@kamboji.qca.qualcomm.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RGvBGcXjMUEtLOONS2cYJkFqbyDRfWGjUI0FogoxSzs=;
+        b=MSyOyqUp8OgLtRbCGIBgHjJm264WnFpr3b5/Zx8Mw3AV4csYpJA59VtubXMhZnm6z0
+         lAS7/b00ECCNIGLeb4UiYKWc4MThbR4OlCf5PzLLz92z/KOUY7jHBvk+U20R4D/ti7Qa
+         La9yvnW/LMgjtLbYVQEKrWNM0fQbWxixxiqDBZJqdOXg3KY7q9IELKGVOjQab07Zq0CC
+         Cl+5nhjvvwguujoivcH7OlKDHmX+eXBFzIf5Tw4lA3LpC4qlG6o/DPGCXOrPO8E96Efb
+         YX/hwtNwObK31+49JH4yfAuc6ab3+LUmqoDtXSmvfCxuzjUgHuyerUF/GtW54+VeWPZc
+         vs4w==
+X-Gm-Message-State: APjAAAVaqUHJlREU/uu5ScaV/Y2UEnWv9gZWBYtiX7FsR2v/A0EJpo1Z
+        UquBZAypBQsA1KrQ4HJcb7aLbfYz
+X-Google-Smtp-Source: APXvYqxM9Dp5gJwneAZC+qiE9h7YeLI4GkUxxqwjJHH66dmugw3bLMzybZIrG+B0uPCWVo6J7gvLiA==
+X-Received: by 2002:a63:1b44:: with SMTP id b4mr8077975pgm.421.1571371703823;
+        Thu, 17 Oct 2019 21:08:23 -0700 (PDT)
+Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id d11sm4341680pfo.104.2019.10.17.21.08.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Oct 2019 21:08:23 -0700 (PDT)
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pravin B Shelar <pshelar@ovn.org>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        William Tu <u9012063@gmail.com>,
+        Stanislav Fomichev <sdf@fomichev.me>
+Subject: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
+Date:   Fri, 18 Oct 2019 13:07:33 +0900
+Message-Id: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ftlgqw42.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 01, 2019 at 11:06:05AM +0300, Kalle Valo wrote:
-> Guenter Roeck <linux@roeck-us.net> writes:
-> 
-> > Hi,
-> >
-> > On Sat, Aug 03, 2019 at 08:31:01PM -0400, Hui Peng wrote:
-> >> The `ar_usb` field of `ath10k_usb_pipe_usb_pipe` objects
-> >> are initialized to point to the containing `ath10k_usb` object
-> >> according to endpoint descriptors read from the device side, as shown
-> >> below in `ath10k_usb_setup_pipe_resources`:
-> >> 
-> >> for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
-> >>         endpoint = &iface_desc->endpoint[i].desc;
-> >> 
-> >>         // get the address from endpoint descriptor
-> >>         pipe_num = ath10k_usb_get_logical_pipe_num(ar_usb,
-> >>                                                 endpoint->bEndpointAddress,
-> >>                                                 &urbcount);
-> >>         ......
-> >>         // select the pipe object
-> >>         pipe = &ar_usb->pipes[pipe_num];
-> >> 
-> >>         // initialize the ar_usb field
-> >>         pipe->ar_usb = ar_usb;
-> >> }
-> >> 
-> >> The driver assumes that the addresses reported in endpoint
-> >> descriptors from device side  to be complete. If a device is
-> >> malicious and does not report complete addresses, it may trigger
-> >> NULL-ptr-deref `ath10k_usb_alloc_urb_from_pipe` and
-> >> `ath10k_usb_free_urb_to_pipe`.
-> >> 
-> >> This patch fixes the bug by preventing potential NULL-ptr-deref.
-> >> 
-> >> Signed-off-by: Hui Peng <benquike@gmail.com>
-> >> Reported-by: Hui Peng <benquike@gmail.com>
-> >> Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
-> >
-> > This patch fixes CVE-2019-15099, which has CVSS scores of 7.5 (CVSS 3.0)
-> > and 7.8 (CVSS 2.0). Yet, I don't find it in the upstream kernel or in Linux
-> > next.
-> >
-> > Is the patch going to be applied to the upstream kernel anytime soon ?
-> 
-> Same answer as in patch 1:
-> 
-> https://patchwork.kernel.org/patch/11074655/
-> 
+This is a PoC for an idea to offload flow, i.e. TC flower and nftables,
+to XDP.
 
-Sorry to bring this up again. The ath6k patch made it into the upstream
-kernel, but the ath10k patch didn't. Did it get lost, or was there a
-reason not to apply this patch ?
+* Motivation
 
-Thanks,
-Guenter
+The purpose is to speed up flow based network features like TC flower and
+nftables by making use of XDP.
+
+I chose flow feature because my current interest is in OVS. OVS uses TC
+flower to offload flow tables to hardware, so if TC can offload flows to
+XDP, OVS also can be offloaded to XDP.
+
+When TC flower filter is offloaded to XDP, the received packets are
+handled by XDP first, and if their protocol or something is not
+supported by the eBPF program, the program returns XDP_PASS and packets
+are passed to upper layer TC.
+
+The packet processing flow will be like this when this mechanism,
+xdp_flow, is used with OVS.
+
+ +-------------+
+ | openvswitch |
+ |    kmod     |
+ +-------------+
+        ^
+        | if not match in filters (flow key or action not supported by TC)
+ +-------------+
+ |  TC flower  |
+ +-------------+
+        ^
+        | if not match in flow tables (flow key or action not supported by XDP)
+ +-------------+
+ |  XDP prog   |
+ +-------------+
+        ^
+        | incoming packets
+
+Of course we can directly use TC flower without OVS to speed up TC.
+
+This is useful especially when the device does not support HW-offload.
+Such interfaces include virtual interfaces like veth.
+
+
+* How to use
+
+It only supports ingress flow block at this point.
+Enable the feature via ethtool before binding a device to a flow block.
+
+ $ ethtool -K eth0 flow-offload-xdp on
+
+Then bind a device to a flow block using TC or nftables. An example
+commands for TC would be like this.
+
+ $ tc qdisc add dev eth0 clsact
+ $ tc filter add dev eth0 ingress protocol ip flower ...
+
+Alternatively, when using OVS, adding qdisc and filters will be
+automatically done by setting hw-offload.
+
+ $ ovs-vsctl set Open_vSwitch . other_config:hw-offload=true
+ $ systemctl stop openvswitch
+ $ tc qdisc del dev eth0 ingress # or reboot
+ $ ethtool -K eth0 flow-offload-xdp on
+ $ systemctl start openvswitch
+
+NOTE: I have not tested nftables offload. Theoretically it should work.
+
+* Performance
+
+I measured drop rate at veth interface with redirect action from physical
+interface (i40e 25G NIC, XXV 710) to veth. The CPU is Xeon Silver 4114
+(2.20 GHz).
+                                                                 XDP_DROP
+                    +------+                        +-------+    +-------+
+ pktgen -- wire --> | eth0 | -- TC/OVS redirect --> | veth0 |----| veth1 |
+                    +------+   (offloaded to XDP)   +-------+    +-------+
+
+The setup for redirect is done by OVS like this.
+
+ $ ovs-vsctl add-br ovsbr0
+ $ ovs-vsctl add-port ovsbr0 eth0
+ $ ovs-vsctl add-port ovsbr0 veth0
+ $ ovs-vsctl set Open_vSwitch . other_config:hw-offload=true
+ $ systemctl stop openvswitch
+ $ tc qdisc del dev eth0 ingress
+ $ tc qdisc del dev veth0 ingress
+ $ ethtool -K eth0 flow-offload-xdp on
+ $ ethtool -K veth0 flow-offload-xdp on
+ $ systemctl start openvswitch
+
+Tested single core/single flow with 3 kinds of configurations.
+(spectre_v2 disabled)
+- xdp_flow: hw-offload=true, flow-offload-xdp on
+- TC:       hw-offload=true, flow-offload-xdp off (software TC)
+- ovs kmod: hw-offload=false
+
+ xdp_flow  TC        ovs kmod
+ --------  --------  --------
+ 5.2 Mpps  1.2 Mpps  1.1 Mpps
+
+So xdp_flow drop rate is roughly 4x-5x faster than software TC or ovs kmod.
+
+OTOH the time to add a flow increases with xdp_flow.
+
+ping latency of first packet when veth1 does XDP_PASS instead of DROP:
+
+ xdp_flow  TC        ovs kmod
+ --------  --------  --------
+ 22ms      6ms       0.6ms
+
+xdp_flow does a lot of work to emulate TC behavior including UMH
+transaction and multiple bpf map update from UMH which I think increases
+the latency.
+
+
+* Implementation
+
+xdp_flow makes use of UMH to load an eBPF program for XDP, similar to
+bpfilter. The difference is that xdp_flow does not generate the eBPF
+program dynamically but a prebuilt program is embedded in UMH. This is
+mainly because flow insertion is considerably frequent. If we generate
+and load an eBPF program on each insertion of a flow, the latency of the
+first packet of ping in above test will incease, which I want to avoid.
+
+                         +----------------------+
+                         |    xdp_flow_umh      | load eBPF prog for XDP
+                         | (eBPF prog embedded) | update maps for flow tables
+                         +----------------------+
+                                   ^ |
+                           request | v eBPF prog id
+ +-----------+  offload  +-----------------------+
+ | TC flower | --------> |    xdp_flow kmod      | attach the prog to XDP
+ +-----------+           | (flow offload driver) |
+                         +-----------------------+
+
+- When ingress/clsact qdisc is created, i.e. a device is bound to a flow
+  block, xdp_flow kmod requests xdp_flow_umh to load eBPF prog.
+  xdp_flow_umh returns prog id and xdp_flow kmod attach the prog to XDP
+  (the reason of attaching XDP from kmod is that rtnl_lock is held here).
+
+- When flower filter is added, xdp_flow kmod requests xdp_flow_umh to
+  update maps for flow tables.
+
+
+* Patches
+
+- patch 1
+ Basic framework for xdp_flow kmod and UMH.
+
+- patch 2
+ Add prebuilt eBPF program embedded in UMH.
+
+- patch 3, 4, 5
+ Attach the prog to XDP in kmod after using the prog id returned from
+ UMH.
+
+- patch 6, 7
+ Add maps for flow tables and flow table manipulation logic in UMH.
+
+- patch 8
+ Implement flow lookup and basic actions in eBPF prog.
+
+- patch 9
+ Implement flow manipulation logic, serialize flow key and actions from
+ TC flower and make requests to UMH in kmod.
+
+- patch 10
+ Add flow-offload-xdp netdev feature and register indr flow block to call
+ xdp_flow kmod.
+
+- patch 11, 12
+ Add example actions, redirect and vlan_push.
+
+- patch 13
+ Add a testcase for xdp_flow.
+
+- patch 14, 15
+ These are unrelated patches. They just improve XDP program's
+ performance. They are included to demonstrate to what extent xdp_flow
+ performance can increase. Without them, drop rate goes down from 5.2Mpps
+ to 4.2Mpps. The plan is to send these patches separately before
+ drooping RFC tag.
+
+
+* About OVS AF_XDP netdev
+
+Recently OVS has added AF_XDP netdev type support. This also makes use
+of XDP, but in some ways different from this patch set.
+
+- AF_XDP work originally started in order to bring BPF's flexibility to
+  OVS, which enables us to upgrade datapath without updating kernel.
+  AF_XDP solution uses userland datapath so it achieved its goal.
+  xdp_flow will not replace OVS datapath completely, but offload it
+  partially just for speed up.
+
+- OVS AF_XDP requires PMD for the best performance so consumes 100% CPU
+  as well as using another core for softirq.
+
+- OVS AF_XDP needs packet copy when forwarding packets.
+
+- xdp_flow can be used not only for OVS. It works for direct use of TC
+  flower and nftables.
+
+
+* About alternative userland (ovs-vswitchd etc.) implementation
+
+Maybe a similar logic can be implemented in ovs-vswitchd offload
+mechanism, instead of adding code to kernel. I just thought offloading
+TC is more generic and allows wider usage with direct TC command.
+
+For example, considering that OVS inserts a flow to kernel only when
+flow miss happens in kernel, we can in advance add offloaded flows via
+tc filter to avoid flow insertion latency for certain sensitive flows.
+TC flower usage without using OVS is also possible.
+
+Also as written above nftables can be offloaded to XDP with this
+mechanism as well.
+
+Another way to achieve this from userland is to add notifications in
+flow_offload kernel code to inform userspace of flow addition and
+deletion events, and listen them by a deamon which in turn loads eBPF
+programs, attach them to XDP, and modify eBPF maps. Although this may
+open up more use cases, I'm not thinking this is the best solution
+because it requires emulation of kernel behavior as an offload engine
+but flow related code is heavily changing which is difficult to follow
+from out of tree.
+
+* Note
+
+This patch set is based on top of commit 5bc60de50dfe ("selftests: bpf:
+Don't try to read files without read permission") on bpf-next, but need
+to backport commit 98beb3edeb97 ("samples/bpf: Add a workaround for
+asm_inline") from bpf tree to successfully build the module.
+
+* Changes
+
+RFC v2:
+ - Use indr block instead of modifying TC core, feedback from Jakub
+   Kicinski.
+ - Rename tc-offload-xdp to flow-offload-xdp since this works not only
+   for TC but also for nftables, as now I use indr flow block.
+ - Factor out XDP program validation code in net/core and use it to
+   attach a program to XDP from xdp_flow.
+ - Use /dev/kmsg instead of syslog.
+
+Any feedback is welcome.
+Thanks!
+
+Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+
+Toshiaki Makita (15):
+  xdp_flow: Add skeleton of XDP based flow offload driver
+  xdp_flow: Add skeleton bpf program for XDP
+  bpf: Add API to get program from id
+  xdp: Export dev_check_xdp and dev_change_xdp
+  xdp_flow: Attach bpf prog to XDP in kernel after UMH loaded program
+  xdp_flow: Prepare flow tables in bpf
+  xdp_flow: Add flow entry insertion/deletion logic in UMH
+  xdp_flow: Add flow handling and basic actions in bpf prog
+  xdp_flow: Implement flow replacement/deletion logic in xdp_flow kmod
+  xdp_flow: Add netdev feature for enabling flow offload to XDP
+  xdp_flow: Implement redirect action
+  xdp_flow: Implement vlan_push action
+  bpf, selftest: Add test for xdp_flow
+  i40e: prefetch xdp->data before running XDP prog
+  bpf, hashtab: Compare keys in long
+
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c  |    1 +
+ include/linux/bpf.h                          |    8 +
+ include/linux/netdev_features.h              |    2 +
+ include/linux/netdevice.h                    |    4 +
+ kernel/bpf/hashtab.c                         |   27 +-
+ kernel/bpf/syscall.c                         |   42 +-
+ net/Kconfig                                  |    1 +
+ net/Makefile                                 |    1 +
+ net/core/dev.c                               |  113 ++-
+ net/core/ethtool.c                           |    1 +
+ net/xdp_flow/.gitignore                      |    1 +
+ net/xdp_flow/Kconfig                         |   16 +
+ net/xdp_flow/Makefile                        |  112 +++
+ net/xdp_flow/msgfmt.h                        |  102 +++
+ net/xdp_flow/umh_bpf.h                       |   34 +
+ net/xdp_flow/xdp_flow.h                      |   28 +
+ net/xdp_flow/xdp_flow_core.c                 |  180 +++++
+ net/xdp_flow/xdp_flow_kern_bpf.c             |  358 +++++++++
+ net/xdp_flow/xdp_flow_kern_bpf_blob.S        |    7 +
+ net/xdp_flow/xdp_flow_kern_mod.c             |  699 +++++++++++++++++
+ net/xdp_flow/xdp_flow_umh.c                  | 1043 ++++++++++++++++++++++++++
+ net/xdp_flow/xdp_flow_umh_blob.S             |    7 +
+ tools/testing/selftests/bpf/Makefile         |    1 +
+ tools/testing/selftests/bpf/test_xdp_flow.sh |  106 +++
+ 24 files changed, 2864 insertions(+), 30 deletions(-)
+ create mode 100644 net/xdp_flow/.gitignore
+ create mode 100644 net/xdp_flow/Kconfig
+ create mode 100644 net/xdp_flow/Makefile
+ create mode 100644 net/xdp_flow/msgfmt.h
+ create mode 100644 net/xdp_flow/umh_bpf.h
+ create mode 100644 net/xdp_flow/xdp_flow.h
+ create mode 100644 net/xdp_flow/xdp_flow_core.c
+ create mode 100644 net/xdp_flow/xdp_flow_kern_bpf.c
+ create mode 100644 net/xdp_flow/xdp_flow_kern_bpf_blob.S
+ create mode 100644 net/xdp_flow/xdp_flow_kern_mod.c
+ create mode 100644 net/xdp_flow/xdp_flow_umh.c
+ create mode 100644 net/xdp_flow/xdp_flow_umh_blob.S
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_flow.sh
+
+-- 
+1.8.3.1
+
