@@ -2,201 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F831DD8E2
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 15:58:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B603BDD944
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 17:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726026AbfJSN6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 09:58:36 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50512 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725930AbfJSN6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 09:58:36 -0400
-Received: by mail-wm1-f65.google.com with SMTP id 5so8866691wmg.0
-        for <netdev@vger.kernel.org>; Sat, 19 Oct 2019 06:58:32 -0700 (PDT)
+        id S1726130AbfJSPKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 11:10:37 -0400
+Received: from mail-eopbgr150089.outbound.protection.outlook.com ([40.107.15.89]:33154
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725810AbfJSPKg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Oct 2019 11:10:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hUbYu9kb+8Gg0qkftO0I11puGq6Bmf18R0LYOEYjCqBXM5TdJ2NELGAFlaHtnrlOOCAbsU5O9FH9xV9L/oT64UGLnMiFkpIkTbyDPxG3FjQ+paoYwNXYUohloAqX3yC/cw44ImJyGEBN81A2H+WnGnDnY5+h58W9sgANz2glo2DDapDWlV7Lg+abG4OfXKX1kJAg1DL/DJaGvzGG99aeOlLUMZ7u1FN5IWt2thkLiLDYc8iYzJ9b1271H6Bnq+i2DVV85868vVLXFdKfBsea6A85quFs00Cv2dJ9e2QGYRdgGs0AiJWm9a/gnPpsW2sALon7+JDlbzSZJnx53TwAOA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QU+F+RdmUPKoeSZ1CTyPixjpuSiPinH8EHzFUNbJjoA=;
+ b=Iu+UGsfgQZGDos0LW0dXjs8Kqtjx/sCiUBv7NFAV5ewTgbE+CJ6MImBq0Ll9G0jkFQCv134QAj2g8Tp5+A1JPQFjFcIjE5hlQUts55zf6k47xNEikjLS0F8nJcaMb9f+qNlAEg2URgOpHMeqp1DvIFeiFLRHWwxcwy/WpqjvqRHoQl5C5cPPBWXWMxlhtPx0CZRXs8+p7kWbgv+VpAx1N/au4g57I613GtdItQXCBt9IIoADhiO3bwOwTiy3FOsXqADNoePae/tnQAJt0B66NdgSL3Zt/yGcL/NlTQwUC8BLGigQduLK378Noue2+61cp5ZWpaj5R6xZyr6I4Y8hgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=inf.elte.hu; dmarc=pass action=none header.from=inf.elte.hu;
+ dkim=pass header.d=inf.elte.hu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qtxt7B7KA2VfLWmb1pVzJwBoi1XxopBMH+6YQ2q2JfE=;
-        b=CQg6QTilPSxT/j4jz+2zYPzXH3hE7wm1QUmYKUVqtyaLeZJqGHg0r6yD0VD3B0Vl/w
-         KtMHOakjXNPmbvkIwtzuKV/fZnkeHw328lH2EZ1i6iHfiRuZXLG/LR4aDtfFA2bqmNnz
-         E0NWpych/DgsNjONzzdt8CbY2UgyMbdV4F/FkUDcsEqfV5vicIuUrKnX7vNXeVV0OzVL
-         9PJqYj9706pJesbczCLoOUO6P+dBtr6w8INJLsJddMxvG3Qsr4TrN11qKUhJKGjy6GvR
-         hNWPwyS9p9pa85A/Ab04u9nQPAh7j50nbOCHofUMsNt32xvRbscAibQuvG0skWNmg8HI
-         hK6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qtxt7B7KA2VfLWmb1pVzJwBoi1XxopBMH+6YQ2q2JfE=;
-        b=EnV9UbU9ZTgDEOinmpnirryWhnf0IEYsbR7AUt0AxArfxhMPayeN/CcaodkULVfKse
-         cRMKxzV+V3ZlJHuabBYaS0j023YVFPfRd5VNxT2VKgsWH1eC7l1+F2Q7v/4q1uUcJdbU
-         OghFlnZe5czyhvSrTtFGmKhlIhRvmxHZIAovepXkY/WzcsGSnnanhOFcYDwFJ6Q0w5Ds
-         107x0B6KHILHKgDkBr8sg/TDG0M+EwgIv1OygcpeQtBGTYOQ2FhhAE6WFGTtEq2RA1hs
-         q0BaFMcOisq5o3EsM4vV0jKMUi1AlOzxyZDvvKHNd5dj56mbypeuGtGoZrxyQomVPl4g
-         9WWw==
-X-Gm-Message-State: APjAAAU9Y7dy+DIBvA19+5aJYnVwr5hzi9zPhhmikPuGTIJlwKZzE9+z
-        JRHAnrKdPlC0IKc6EXg60fl3IhPf
-X-Google-Smtp-Source: APXvYqzXM+dc/rRDI7yeEbYzkQqB8++DONXgNLsbylKpmviK6NrSEC2TJCdXTzgS8BzQBzPOx6hhVQ==
-X-Received: by 2002:a1c:1f4b:: with SMTP id f72mr2267817wmf.22.1571493512093;
-        Sat, 19 Oct 2019 06:58:32 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f26:6400:cd3d:5fcd:4de0:e061? (p200300EA8F266400CD3D5FCD4DE0E061.dip0.t-ipconnect.de. [2003:ea:8f26:6400:cd3d:5fcd:4de0:e061])
-        by smtp.googlemail.com with ESMTPSA id b5sm8049117wmj.18.2019.10.19.06.58.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 19 Oct 2019 06:58:31 -0700 (PDT)
-Subject: [PATCH net-next 2/2] net: phy: marvell: remove superseded function
- marvell_set_downshift
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <85961f9a-999c-743d-3fd2-66c10e7a219e@gmail.com>
-Message-ID: <0834faf8-3b65-945c-ffc3-6237370cacc9@gmail.com>
-Date:   Sat, 19 Oct 2019 15:58:19 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <85961f9a-999c-743d-3fd2-66c10e7a219e@gmail.com>
-Content-Type: text/plain; charset=utf-8
+ d=ikelte.onmicrosoft.com; s=selector2-ikelte-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QU+F+RdmUPKoeSZ1CTyPixjpuSiPinH8EHzFUNbJjoA=;
+ b=F6eJt093KsvctX3QwaHJvFT7ZOKF+nnOugV1c5z95J7kEEQUJ1maWAaKctdIjmsQV3DFbv3E8i+8RsxNVaHueUxGAwYcRn18+tPi4lx+2iCvZ3R2MBIUmJ6aCYzM60KRGqs63nE7NNW0dX3/BCDgzPAj/OF1J02PVAC+ErhQKtg=
+Received: from DB8PR10MB2620.EURPRD10.PROD.OUTLOOK.COM (20.179.12.155) by
+ DB8PR10MB3547.EURPRD10.PROD.OUTLOOK.COM (10.186.165.207) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2367.21; Sat, 19 Oct 2019 15:10:28 +0000
+Received: from DB8PR10MB2620.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::a10a:13f1:1b17:f1b6]) by DB8PR10MB2620.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::a10a:13f1:1b17:f1b6%3]) with mapi id 15.20.2347.028; Sat, 19 Oct 2019
+ 15:10:28 +0000
+From:   Fejes Ferenc <fejes@inf.elte.hu>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Error when loading BPF_CGROUP_INET_EGRESS program with bpftool
+Thread-Topic: Error when loading BPF_CGROUP_INET_EGRESS program with bpftool
+Thread-Index: AQHVUOwCsMyGQq9J8Eq5fTM6eAC0Wqb31WIAgAAnVoCAAZquAIBo5V0A
+Date:   Sat, 19 Oct 2019 15:10:25 +0000
+Message-ID: <CAAej5Na29DMoQmiXn1VThLH2e3hqvBWqXB8Ah5sPv0Cm-csarQ@mail.gmail.com>
+References: <CAAej5NbkQDpDXEtsROmLmNidSP8qN3VRE56s3z91zHw9XjtNZA@mail.gmail.com>
+ <CAEf4BzZ27SnYkQ=psqxeWadLhnspojiJGQrGB0JRuPkP+GTiNQ@mail.gmail.com>
+ <CAAej5NbwZ80MNQYxP4NiJXheAn1DcSgm+O3zQQgCoP03HGHEgQ@mail.gmail.com>
+ <CAEf4BzZqj-kuFC0Jv-i3k-sSdZE6ThihvqXvnss5rDR7ZRYGzQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzZqj-kuFC0Jv-i3k-sSdZE6ThihvqXvnss5rDR7ZRYGzQ@mail.gmail.com>
+Accept-Language: hu-HU, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM3PR07CA0126.eurprd07.prod.outlook.com
+ (2603:10a6:207:8::12) To DB8PR10MB2620.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:10:b2::27)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fejes@inf.elte.hu; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-gm-message-state: APjAAAVIVDgB22dxb/td2b7pkgQklhxIJ3F/IO9NFUW2EpXW088kszRw
+        oSRyGGTNc3sNOYYlijqJMABHgCp9vjDvAw7UR2Y=
+x-google-smtp-source: APXvYqwdsk3t9BJ1hovWhC7t2vdjNyyEEzlQJXqYRxZPKc6RV9Uw8n0otJDU2sxEW8bjiy4eIlx4cRoG/WfQ/R/gA04=
+x-received: by 2002:a05:600c:2908:: with SMTP id
+ i8mr11607948wmd.20.1571497823305; Sat, 19 Oct 2019 08:10:23 -0700 (PDT)
+x-gmail-original-message-id: <CAAej5Na29DMoQmiXn1VThLH2e3hqvBWqXB8Ah5sPv0Cm-csarQ@mail.gmail.com>
+x-originating-ip: [209.85.128.48]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9df43cb7-ad2e-4bda-d928-08d754a677b3
+x-ms-traffictypediagnostic: DB8PR10MB3547:
+x-microsoft-antispam-prvs: <DB8PR10MB354718E6504FFFA13E1B382CE16F0@DB8PR10MB3547.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 01952C6E96
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(366004)(376002)(39850400004)(136003)(346002)(199004)(189003)(5660300002)(6436002)(6862004)(478600001)(498394004)(186003)(6246003)(305945005)(7736002)(26005)(61266001)(2906002)(66066001)(86362001)(9686003)(6512007)(4326008)(52116002)(64756008)(66446008)(66556008)(66946007)(316002)(8936002)(102836004)(66476007)(55446002)(71190400001)(25786009)(81166006)(81156014)(229853002)(8676002)(76176011)(386003)(3846002)(6116002)(6486002)(446003)(786003)(256004)(14444005)(6506007)(71200400001)(5024004)(486006)(6666004)(99286004)(14454004)(476003)(11346002)(95326003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR10MB3547;H:DB8PR10MB2620.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: inf.elte.hu does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TOSOzhCIhkOonVx26bRKEOiiLeg5GSZPS1MtiAwiBwQgBdPnpikWNYr2F5hAo3vW624g34ii1hpfZvlC3YsQkxRFR7OpAlsipXqgzKa1UUy0fDm6CyEkcrwgJQhmP+LPT8XaLfYz61Vt1KVlOH0FIEkmuR23JFgtQxJXhgnoDfFuvWKOgV3uDhSRFhb8pfKFx9dIAuHHxeBKMqBowBJL0DuD2mpmYYHgmGVznuBq9s2qqNMIYtrymct7d1oQ0ZK66aNYQv/tzSsgC/ERl3yauG9xROdolX53rCLdOWHtllgifn08xD6rbb8mo5jaWMR0TZpXe5uC87biJLYXwpBrhJUdkhJI9fCfyb8UPHZHpu6nhvwoiORVFKYMtBXIj8tWA+B6CcLmJnM9zoPGcZk/acJLUItavKKgBGB4DzBsFECVKdHK2vz31gS7/6V22qPm
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A186C3C3427B4C43AEE61D7FFE41439E@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: inf.elte.hu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9df43cb7-ad2e-4bda-d928-08d754a677b3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2019 15:10:26.0155
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0133bb48-f790-4560-a64d-ac46a472fbbc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rmTnN7y/WUvn2uEB9+Aq6r2ltpLk2MbKVK/OkltFuNTC+hNmDYKF35g90OLvFPFVcbv01JJnHt31rhEkgaDU0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3547
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of superseded function marvell_set_downshift() we can use new
-function m88e1111_set_downshift() in m88e1116r_config_init().
-For this m88e1116r_config_init() has to be moved in the code.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/marvell.c | 88 ++++++++++++++++-----------------------
- 1 file changed, 35 insertions(+), 53 deletions(-)
-
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index bd9bc0b4c..1b574fcee 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -53,7 +53,6 @@
- 
- #define MII_M1011_PHY_SCR			0x10
- #define MII_M1011_PHY_SCR_DOWNSHIFT_EN		BIT(11)
--#define MII_M1011_PHY_SCR_DOWNSHIFT_SHIFT	12
- #define MII_M1011_PHY_SRC_DOWNSHIFT_MASK	GENMASK(14, 12)
- #define MII_M1011_PHY_SCR_DOWNSHIFT_MAX		8
- #define MII_M1011_PHY_SCR_MDI			(0x0 << 5)
-@@ -277,23 +276,6 @@ static int marvell_set_polarity(struct phy_device *phydev, int polarity)
- 	return val != reg;
- }
- 
--static int marvell_set_downshift(struct phy_device *phydev, bool enable,
--				 u8 retries)
--{
--	int reg;
--
--	reg = phy_read(phydev, MII_M1011_PHY_SCR);
--	if (reg < 0)
--		return reg;
--
--	reg &= MII_M1011_PHY_SRC_DOWNSHIFT_MASK;
--	reg |= ((retries - 1) << MII_M1011_PHY_SCR_DOWNSHIFT_SHIFT);
--	if (enable)
--		reg |= MII_M1011_PHY_SCR_DOWNSHIFT_EN;
--
--	return phy_write(phydev, MII_M1011_PHY_SCR, reg);
--}
--
- static int marvell_config_aneg(struct phy_device *phydev)
- {
- 	int changed = 0;
-@@ -662,41 +644,6 @@ static int marvell_config_init(struct phy_device *phydev)
- 	return marvell_of_reg_init(phydev);
- }
- 
--static int m88e1116r_config_init(struct phy_device *phydev)
--{
--	int err;
--
--	err = genphy_soft_reset(phydev);
--	if (err < 0)
--		return err;
--
--	msleep(500);
--
--	err = marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
--	if (err < 0)
--		return err;
--
--	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
--	if (err < 0)
--		return err;
--
--	err = marvell_set_downshift(phydev, true, 8);
--	if (err < 0)
--		return err;
--
--	if (phy_interface_is_rgmii(phydev)) {
--		err = m88e1121_config_aneg_rgmii_delays(phydev);
--		if (err < 0)
--			return err;
--	}
--
--	err = genphy_soft_reset(phydev);
--	if (err < 0)
--		return err;
--
--	return marvell_config_init(phydev);
--}
--
- static int m88e3016_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -910,6 +857,41 @@ static void m88e1111_link_change_notify(struct phy_device *phydev)
- 		phydev_warn(phydev, "Downshift occurred! Cabling may be defective.\n");
- }
- 
-+static int m88e1116r_config_init(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	err = genphy_soft_reset(phydev);
-+	if (err < 0)
-+		return err;
-+
-+	msleep(500);
-+
-+	err = marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
-+	if (err < 0)
-+		return err;
-+
-+	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
-+	if (err < 0)
-+		return err;
-+
-+	err = m88e1111_set_downshift(phydev, 8);
-+	if (err < 0)
-+		return err;
-+
-+	if (phy_interface_is_rgmii(phydev)) {
-+		err = m88e1121_config_aneg_rgmii_delays(phydev);
-+		if (err < 0)
-+			return err;
-+	}
-+
-+	err = genphy_soft_reset(phydev);
-+	if (err < 0)
-+		return err;
-+
-+	return marvell_config_init(phydev);
-+}
-+
- static int m88e1318_config_init(struct phy_device *phydev)
- {
- 	if (phy_interrupt_is_valid(phydev)) {
--- 
-2.23.0
-
-
+U29ycnkgZm9yIHRoZSBsYXRlIHJlcGx5LiBJIGhhdmUgc29tZSB0aW1lIHRvIHRyeSBpdCBhZ2Fp
+bi4NCkkgZG93bmxvYWRlZCBhIGZyZXNoIFVidW50dSAxOS4xMCBpbWFnZSwgd2hpY2ggaGF2ZSBi
+cGZ0b29sIGluY2x1ZGVkDQpmcm9tIHRoZSBsaW51eC10b29scy1nZW5lcmljIHBhY2thZ2UuIFRo
+ZW4gdHJpZWQgdG8gbG9hZCBhIHByb2dyYW0NCndpdGggMCBvciAxIHJldHVybiBjb2RlOiBib3Ro
+IHdvcmtzLg0KQWZ0ZXIgdGhhdCBJIHRyaWVkIHRvIGxvYWQgdGhlIG9yaWdpbmFsIHByb2dyYW0s
+IHdpdGggcmV0dXJuIGNvZGUgMiBvcg0KMyBhbmQgZ290IHRoZSBzYW1lIGVycm9yIG1lc3NhZ2Uu
+DQoNCj4gV2hhdCB3YXMgdGhlIGVycm9yIG1lc3NhZ2UgeW91IGdvdCBhZnRlciB5b3UgcHJvdmlk
+ZWQgY29ycmVjdCBwcm9ncmFtDQo+IGF0dGFjaCB0eXBlPw0KDQpzdWRvIGJwZnRvb2wgcHJvZyBs
+b2FkYWxsIGhibS5vIC9zeXMvZnMvYnBmL2hibTIgdHlwZSBjZ3JvdXBfc2tiL2VncmVzcw0KDQps
+aWJicGY6IGxvYWQgYnBmIHByb2dyYW0gZmFpbGVkOiBJbnZhbGlkIGFyZ3VtZW50DQpsaWJicGY6
+IC0tIEJFR0lOIERVTVAgTE9HIC0tLQ0KbGliYnBmOg0KOyByZXR1cm4gQUxMT1dfUEtUIHwgUkVE
+VUNFX0NXOw0KMDogKGI3KSByMCA9IDMNCjE6ICg5NSkgZXhpdA0KQXQgcHJvZ3JhbSBleGl0IHRo
+ZSByZWdpc3RlciBSMCBoYXMgdmFsdWUgKDB4MzsgMHgwKSBzaG91bGQgaGF2ZSBiZWVuDQppbiAo
+MHgwOyAweDEpDQpwcm9jZXNzZWQgMiBpbnNucyAobGltaXQgMTAwMDAwMCkgbWF4X3N0YXRlc19w
+ZXJfaW5zbiAwIHRvdGFsX3N0YXRlcyAwDQpwZWFrX3N0YXRlcyAwIG1hcmtfcmVhZCAwDQoNCmxp
+YmJwZjogLS0gRU5EIExPRyAtLQ0KbGliYnBmOiBmYWlsZWQgdG8gbG9hZCBwcm9ncmFtICdjZ3Jv
+dXBfc2tiL2VncmVzcycNCmxpYmJwZjogZmFpbGVkIHRvIGxvYWQgb2JqZWN0ICdoYm0ubycNCkVy
+cm9yOiBmYWlsZWQgdG8gbG9hZCBvYmplY3QgZmlsZQ0KDQpTYW1lIGNvbW1hbmQgd2l0aCBzdHJh
+Y2U6DQpicGYoQlBGX1BST0dfTE9BRCwge3Byb2dfdHlwZT1CUEZfUFJPR19UWVBFX0NHUk9VUF9T
+S0IsIGluc25fY250PTIsDQppbnNucz0weDU1ODg4OWI1OWJhMCwgbGljZW5zZT0iR1BMIiwgbG9n
+X2xldmVsPTAsIGxvZ19zaXplPTAsDQpsb2dfYnVmPU5VTEwsIGtlcm5fdmVyc2lvbj1LRVJORUxf
+VkVSU0lPTigwLCAwLCAwKSwgcHJvZ19mbGFncz0wLA0KcHJvZ19uYW1lPSJoYm0iLCBwcm9nX2lm
+aW5kZXg9MCwNCmV4cGVjdGVkX2F0dGFjaF90eXBlPUJQRl9DR1JPVVBfSU5FVF9JTkdSRVNTLCAu
+Li59LCAxMTIpID0gLTEgRUlOVkFMDQooSW52YWxpZCBhcmd1bWVudCkNCmJwZihCUEZfUFJPR19M
+T0FELCB7cHJvZ190eXBlPUJQRl9QUk9HX1RZUEVfQ0dST1VQX1NLQiwgaW5zbl9jbnQ9MiwNCmlu
+c25zPTB4NTU4ODg5YjU5YmEwLCBsaWNlbnNlPSJHUEwiLCBsb2dfbGV2ZWw9MSwgbG9nX3NpemU9
+MTY3NzcyMTUsDQpsb2dfYnVmPSIiLCBrZXJuX3ZlcnNpb249S0VSTkVMX1ZFUlNJT04oMCwgMCwg
+MCksIHByb2dfZmxhZ3M9MCwNCnByb2dfbmFtZT0iaGJtIiwgcHJvZ19pZmluZGV4PTAsDQpleHBl
+Y3RlZF9hdHRhY2hfdHlwZT1CUEZfQ0dST1VQX0lORVRfSU5HUkVTUywgLi4ufSwgMTEyKSA9IC0x
+IEVJTlZBTA0KKEludmFsaWQgYXJndW1lbnQpDQoNClN0cmFjZSBlcnJvciBpcyB0aGUgc2FtZSwg
+ZXZlbiBpZiBJIG1hbnVhbGx5IHNldCB0aGUgdHlwZSB0byBjZ3JvdXBfc2tiL2VncmVzczoNCmJw
+ZihCUEZfUFJPR19MT0FELCB7cHJvZ190eXBlPUJQRl9QUk9HX1RZUEVfQ0dST1VQX1NLQiwgaW5z
+bl9jbnQ9MiwNCmluc25zPTB4NTVhZTQ2Mjk2YmEwLCBsaWNlbnNlPSJHUEwiLCBsb2dfbGV2ZWw9
+MCwgbG9nX3NpemU9MCwNCmxvZ19idWY9TlVMTCwga2Vybl92ZXJzaW9uPUtFUk5FTF9WRVJTSU9O
+KDAsIDAsIDApLCBwcm9nX2ZsYWdzPTAsDQpwcm9nX25hbWU9ImhibSIsIHByb2dfaWZpbmRleD0w
+LA0KZXhwZWN0ZWRfYXR0YWNoX3R5cGU9QlBGX0NHUk9VUF9JTkVUX0lOR1JFU1MsIC4uLn0sIDEx
+MikgPSAtMSBFSU5WQUwNCihJbnZhbGlkIGFyZ3VtZW50KQ0KYnBmKEJQRl9QUk9HX0xPQUQsIHtw
+cm9nX3R5cGU9QlBGX1BST0dfVFlQRV9DR1JPVVBfU0tCLCBpbnNuX2NudD0yLA0KaW5zbnM9MHg1
+NWFlNDYyOTZiYTAsIGxpY2Vuc2U9IkdQTCIsIGxvZ19sZXZlbD0xLCBsb2dfc2l6ZT0xNjc3NzIx
+NSwNCmxvZ19idWY9IiIsIGtlcm5fdmVyc2lvbj1LRVJORUxfVkVSU0lPTigwLCAwLCAwKSwgcHJv
+Z19mbGFncz0wLA0KcHJvZ19uYW1lPSJoYm0iLCBwcm9nX2lmaW5kZXg9MCwNCmV4cGVjdGVkX2F0
+dGFjaF90eXBlPUJQRl9DR1JPVVBfSU5FVF9JTkdSRVNTLCAuLi59LCAxMTIpID0gLTEgRUlOVkFM
+DQooSW52YWxpZCBhcmd1bWVudCkNCg0KSSBub3RpY2VkIHlvdSBkaWQgYSBtYWpvciByZXN0cnVj
+dHVyaW5nIGluIGxpYmJwZiwgSSB3aWxsIHRyeSBvdXQNCndoZXRoZXIgbXkgcHJvYmxlbSBzdGls
+bCBleGlzdCB3aXRoIHRoZSBuZXcgdmVyc2lvbi4NCg0KRmVyZW5jDQo=
