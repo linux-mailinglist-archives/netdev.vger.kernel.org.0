@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0FC9E955D
+	by mail.lfdr.de (Postfix) with ESMTP id F0631E955E
 	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 04:48:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727170AbfJ3Dsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 23:48:33 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38935 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727088AbfJ3Dsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 23:48:33 -0400
-Received: by mail-pf1-f196.google.com with SMTP id v4so569047pff.6
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 20:48:33 -0700 (PDT)
+        id S1727193AbfJ3Dsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 23:48:36 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:43872 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727088AbfJ3Dsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 23:48:36 -0400
+Received: by mail-pg1-f196.google.com with SMTP id l24so497121pgh.10
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 20:48:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=/T/XRYB9s2GEx13IWoOw2ufRUj+YVCEQF7wfiy8lqP8=;
-        b=LgJenqYxoGBbfV10FoDEXIqaAu6fQUrIWc1Z+pLMVnl8hc+F0i9dqvI+n1iCLAXCd6
-         K0/Nk4SQ72uNoUH2xea+8AfybK0VkQXIXIRkistjTeYamDGWgQzxCZPqjWz7ow4741Ja
-         k97L/OxrFc/8qI6bOcLpnlwLOeL5e3hJaRxTiKAtp8uixN8I7KXMN04RnHqf4JHmYmiK
-         cwLCHl7DEIe7NaYYRm5nBLLHnsIxikMs+1NmnTb/U+QMONJsyoC0LhuUv9An4n1qkaKe
-         AbUPCYlY507Xw8tQkGdsFC1R2SJATph6bkwOuLOEdRfS2efJ5WCHIckB5zoQUp7f3Phi
-         20Xw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=V689n7VXWa92NVH0qxFYpfev7qJ8KWsxZVfHA8bdL+k=;
+        b=cz7XbtR5/gA9Ndnl/vVsTwQOXwKYcV/NIgSVor9UyDfrNfvAcoPw6/V0xBEUkHcSHt
+         FDFUElVjp7fEO3pEHFxEAOA+mkh7r7mAX/n1DhvxhPvQM67RNyhSNL3GL/o3TfkCurq9
+         nN+tuwsw8KyUuWB8SEdg3IsS8GGHNc5Q165PNrt0u6vvYWkK3ejqkLPldeYlpIxNN9Pj
+         jN9yRn4YSV8iohpSVCvoK7urfyEV8g4zNeYLUhEMRb8OvoClf1P4ky0B8i6ugTKAQ5vn
+         mjJKXlZlkFPXRRV33XWUXwRSYC5iU2fs2W6MQs0Yb6k57orBiHfp3BtAPT8HNM0Q0X1p
+         l8ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=/T/XRYB9s2GEx13IWoOw2ufRUj+YVCEQF7wfiy8lqP8=;
-        b=PEDATthALq0jgrYmwXAHkkjw9f7SWHAodGDR+kSbnrH3BRqU0Ghf0iB0y8JZaD4j4h
-         l8QFJ62TCeFlLvxlzEBZsCf5QSTgjk8MjpP7sRnOHDtjHRHTaGEHASX/f8XVkrk06RAk
-         ba2ocUecS1G5oHGf+eSFD+KSQR3JiF6EFHA4gAxnJ/FNevxmfK37qqCgHNG4m2Ypfgzi
-         AkA4tpeE/pbJcf2wx6QGf1Mi9sGBgBiglDLmAnKQgvEyLSvdwjOu/hU3bTqsiU1/8BEK
-         5cQ1irwh0bHvzhNNsvA4PlqBaUOT5UZbNicGwr5bIDT+KWA+bFf3WnK0lKm57NhN0t5W
-         D/0A==
-X-Gm-Message-State: APjAAAWC+EC9taEyHBLoQ1V4pySD/4WYmrkUboVDjRmAyZ2XcRQwXh96
-        D2E8Jk8DvSyOtcY0A4Li6IU=
-X-Google-Smtp-Source: APXvYqzDyZs/WsqI65MK2nPDn94EZqRoef37F86267PdyFRsQ0iLX8WgPdSrV7NsiH4Iu189oCzMig==
-X-Received: by 2002:a17:90a:fa81:: with SMTP id cu1mr11398595pjb.114.1572407312563;
-        Tue, 29 Oct 2019 20:48:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=V689n7VXWa92NVH0qxFYpfev7qJ8KWsxZVfHA8bdL+k=;
+        b=V0ClraRugB4xr1MHlbzGYX+of5oxA+yl+0MZDLXtbWwEZhKX+b4ZO3LNi0MVziSkj6
+         oKLGSl7GwuFkzgcKS/WzBcxjSgRJMQDg9LWG5GRDc5hk9OpEhpNJA127NlnjxLnbBH9Q
+         yPldeTRpG1ujL0bYdCyY/uiWEuR/Ez7V5f7wbLRlMsTALSwJzWoyQJp6pU3yf9rfeCoM
+         FBd7zOujBwu4Y4/SPfDIMsAgQQ/HE8im71NOJKQM07p8D7ns3JcTNQh9E+M51hNwqmgU
+         1Ga2sBwFa2OnEE6p9pxdIEE1gKhVXHHsga8slk5/PHFycsVZCgizflp6FRq3e9l2SVkC
+         gAPQ==
+X-Gm-Message-State: APjAAAU9AFuE08d2YuCINBedDDQvYEShGmL9v+jev6shbyvtMBsMC+lT
+        nQuyxu3/RarGiKQhHW2Vfpk=
+X-Google-Smtp-Source: APXvYqx4Wg3M2cSXZacGlIJySkL8V9gAj9jtSgc4ESbUh++rYYYZd8GotWSSTlmZqFx940cDEqDsYg==
+X-Received: by 2002:a62:6087:: with SMTP id u129mr5817080pfb.75.1572407314956;
+        Tue, 29 Oct 2019 20:48:34 -0700 (PDT)
 Received: from local.opencloud.tech.localdomain ([203.100.54.194])
-        by smtp.gmail.com with ESMTPSA id l22sm632390pgj.4.2019.10.29.20.48.30
+        by smtp.gmail.com with ESMTPSA id l22sm632390pgj.4.2019.10.29.20.48.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 20:48:31 -0700 (PDT)
+        Tue, 29 Oct 2019 20:48:34 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     gvrose8192@gmail.com, pshelar@ovn.org
 Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
         Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v5 00/10] optimize openvswitch flow looking up
-Date:   Sat, 19 Oct 2019 16:08:34 +0800
-Message-Id: <1571472524-73832-1-git-send-email-xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v5 01/10] net: openvswitch: add flow-mask cache for performance
+Date:   Sat, 19 Oct 2019 16:08:35 +0800
+Message-Id: <1571472524-73832-2-git-send-email-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1571472524-73832-1-git-send-email-xiangxia.m.yue@gmail.com>
+References: <1571472524-73832-1-git-send-email-xiangxia.m.yue@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -57,76 +60,275 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-This series patch optimize openvswitch for performance or simplify
-codes.
+The idea of this optimization comes from a patch which
+is committed in 2014, openvswitch community. The author
+is Pravin B Shelar. In order to get high performance, I
+implement it again. Later patches will use it.
 
-Patch 1, 2, 4: Port Pravin B Shelar patches to
-linux upstream with little changes.
+Pravin B Shelar, says:
+| On every packet OVS needs to lookup flow-table with every
+| mask until it finds a match. The packet flow-key is first
+| masked with mask in the list and then the masked key is
+| looked up in flow-table. Therefore number of masks can
+| affect packet processing performance.
 
-Patch 5, 6, 7: Optimize the flow looking up and
-simplify the flow hash.
+Link: https://github.com/openvswitch/ovs/commit/5604935e4e1cbc16611d2d97f50b717aa31e8ec5
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Tested-by: Greg Rose <gvrose8192@gmail.com>
+Acked-by: William Tu <u9012063@gmail.com>
+---
+ net/openvswitch/datapath.c   |   3 +-
+ net/openvswitch/flow_table.c | 109 +++++++++++++++++++++++++++++++++++++------
+ net/openvswitch/flow_table.h |  11 ++++-
+ 3 files changed, 107 insertions(+), 16 deletions(-)
 
-Patch 8, 9: are bugfix.
-
-The performance test is on Intel Xeon E5-2630 v4.
-The test topology is show as below:
-
-+-----------------------------------+
-|   +---------------------------+   |
-|   | eth0   ovs-switch    eth1 |   | Host0
-|   +---------------------------+   |
-+-----------------------------------+
-      ^                       |
-      |                       |
-      |                       |
-      |                       |
-      |                       v
-+-----+----+             +----+-----+
-| netperf  | Host1       | netserver| Host2
-+----------+             +----------+
-
-We use netperf send the 64B packets, and insert 255+ flow-mask:
-$ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)" 2
-...
-$ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)" 2
-$
-$ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
-
-* Without series patch, throughput 8.28Mbps
-* With series patch, throughput 46.05Mbps
-
-v5:
-rewrite patch 8, release flow-mask when freeing flow
-
-v4:
-access ma->count with READ_ONCE/WRITE_ONCE API. More information,
-see patch 5 comments. 
-
-v3:
-update ma point when realloc mask_array in patch 5
-
-v2:
-simplify codes. e.g. use kfree_rcu instead of call_rcu
-
-Tonghao Zhang (10):
-  net: openvswitch: add flow-mask cache for performance
-  net: openvswitch: convert mask list in mask array
-  net: openvswitch: shrink the mask array if necessary
-  net: openvswitch: optimize flow mask cache hash collision
-  net: openvswitch: optimize flow-mask looking up
-  net: openvswitch: simplify the flow_hash
-  net: openvswitch: add likely in flow_lookup
-  net: openvswitch: fix possible memleak on destroy flow-table
-  net: openvswitch: don't unlock mutex when changing the user_features
-    fails
-  net: openvswitch: simplify the ovs_dp_cmd_new
-
- net/openvswitch/datapath.c   |  65 +++++---
- net/openvswitch/flow.h       |   1 -
- net/openvswitch/flow_table.c | 381 ++++++++++++++++++++++++++++++++++---------
- net/openvswitch/flow_table.h |  19 ++-
- 4 files changed, 360 insertions(+), 106 deletions(-)
-
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index f30e406..9fea7e1 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -227,7 +227,8 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+ 	stats = this_cpu_ptr(dp->stats_percpu);
+ 
+ 	/* Look up flow. */
+-	flow = ovs_flow_tbl_lookup_stats(&dp->table, key, &n_mask_hit);
++	flow = ovs_flow_tbl_lookup_stats(&dp->table, key, skb_get_hash(skb),
++					 &n_mask_hit);
+ 	if (unlikely(!flow)) {
+ 		struct dp_upcall_info upcall;
+ 
+diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+index cf3582c..3d515c0 100644
+--- a/net/openvswitch/flow_table.c
++++ b/net/openvswitch/flow_table.c
+@@ -36,6 +36,10 @@
+ #define TBL_MIN_BUCKETS		1024
+ #define REHASH_INTERVAL		(10 * 60 * HZ)
+ 
++#define MC_HASH_SHIFT		8
++#define MC_HASH_ENTRIES		(1u << MC_HASH_SHIFT)
++#define MC_HASH_SEGS		((sizeof(uint32_t) * 8) / MC_HASH_SHIFT)
++
+ static struct kmem_cache *flow_cache;
+ struct kmem_cache *flow_stats_cache __read_mostly;
+ 
+@@ -168,10 +172,15 @@ int ovs_flow_tbl_init(struct flow_table *table)
+ {
+ 	struct table_instance *ti, *ufid_ti;
+ 
+-	ti = table_instance_alloc(TBL_MIN_BUCKETS);
++	table->mask_cache = __alloc_percpu(sizeof(struct mask_cache_entry) *
++					   MC_HASH_ENTRIES,
++					   __alignof__(struct mask_cache_entry));
++	if (!table->mask_cache)
++		return -ENOMEM;
+ 
++	ti = table_instance_alloc(TBL_MIN_BUCKETS);
+ 	if (!ti)
+-		return -ENOMEM;
++		goto free_mask_cache;
+ 
+ 	ufid_ti = table_instance_alloc(TBL_MIN_BUCKETS);
+ 	if (!ufid_ti)
+@@ -187,6 +196,8 @@ int ovs_flow_tbl_init(struct flow_table *table)
+ 
+ free_ti:
+ 	__table_instance_destroy(ti);
++free_mask_cache:
++	free_percpu(table->mask_cache);
+ 	return -ENOMEM;
+ }
+ 
+@@ -243,6 +254,7 @@ void ovs_flow_tbl_destroy(struct flow_table *table)
+ 	struct table_instance *ti = rcu_dereference_raw(table->ti);
+ 	struct table_instance *ufid_ti = rcu_dereference_raw(table->ufid_ti);
+ 
++	free_percpu(table->mask_cache);
+ 	table_instance_destroy(ti, ufid_ti, false);
+ }
+ 
+@@ -425,7 +437,8 @@ static bool ovs_flow_cmp_unmasked_key(const struct sw_flow *flow,
+ 
+ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
+ 					  const struct sw_flow_key *unmasked,
+-					  const struct sw_flow_mask *mask)
++					  const struct sw_flow_mask *mask,
++					  u32 *n_mask_hit)
+ {
+ 	struct sw_flow *flow;
+ 	struct hlist_head *head;
+@@ -435,6 +448,8 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
+ 	ovs_flow_mask_key(&masked_key, unmasked, false, mask);
+ 	hash = flow_hash(&masked_key, &mask->range);
+ 	head = find_bucket(ti, hash);
++	(*n_mask_hit)++;
++
+ 	hlist_for_each_entry_rcu(flow, head, flow_table.node[ti->node_ver]) {
+ 		if (flow->mask == mask && flow->flow_table.hash == hash &&
+ 		    flow_cmp_masked_key(flow, &masked_key, &mask->range))
+@@ -443,30 +458,97 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
+ 	return NULL;
+ }
+ 
+-struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
+-				    const struct sw_flow_key *key,
+-				    u32 *n_mask_hit)
++static struct sw_flow *flow_lookup(struct flow_table *tbl,
++				   struct table_instance *ti,
++				   const struct sw_flow_key *key,
++				   u32 *n_mask_hit)
+ {
+-	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+ 	struct sw_flow_mask *mask;
+ 	struct sw_flow *flow;
+ 
+-	*n_mask_hit = 0;
+ 	list_for_each_entry_rcu(mask, &tbl->mask_list, list) {
+-		(*n_mask_hit)++;
+-		flow = masked_flow_lookup(ti, key, mask);
++		flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
+ 		if (flow)  /* Found */
+ 			return flow;
+ 	}
+ 	return NULL;
+ }
+ 
++/*
++ * mask_cache maps flow to probable mask. This cache is not tightly
++ * coupled cache, It means updates to  mask list can result in inconsistent
++ * cache entry in mask cache.
++ * This is per cpu cache and is divided in MC_HASH_SEGS segments.
++ * In case of a hash collision the entry is hashed in next segment.
++ * */
++struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
++					  const struct sw_flow_key *key,
++					  u32 skb_hash,
++					  u32 *n_mask_hit)
++{
++	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
++	struct mask_cache_entry  *entries, *ce, *del;
++	struct sw_flow *flow;
++	u32 hash = skb_hash;
++	int seg;
++
++	*n_mask_hit = 0;
++	if (unlikely(!skb_hash))
++		return flow_lookup(tbl, ti, key, n_mask_hit);
++
++	del = NULL;
++	entries = this_cpu_ptr(tbl->mask_cache);
++
++	for (seg = 0; seg < MC_HASH_SEGS; seg++) {
++		int index;
++
++		index = hash & (MC_HASH_ENTRIES - 1);
++		ce = &entries[index];
++
++		if (ce->skb_hash == skb_hash) {
++			struct sw_flow_mask *mask;
++			int i;
++
++			i = 0;
++			list_for_each_entry_rcu(mask, &tbl->mask_list, list) {
++				if (ce->mask_index == i++) {
++					flow = masked_flow_lookup(ti, key, mask,
++								  n_mask_hit);
++					if (flow)  /* Found */
++						return flow;
++
++					break;
++				}
++			}
++
++			del = ce;
++			break;
++		}
++
++		if (!del || (del->skb_hash && !ce->skb_hash)) {
++			del = ce;
++		}
++
++		hash >>= MC_HASH_SHIFT;
++	}
++
++	flow = flow_lookup(tbl, ti, key, n_mask_hit);
++
++	if (flow) {
++		del->skb_hash = skb_hash;
++		del->mask_index = (*n_mask_hit - 1);
++	}
++
++	return flow;
++}
++
+ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
+ 				    const struct sw_flow_key *key)
+ {
++	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+ 	u32 __always_unused n_mask_hit;
+ 
+-	return ovs_flow_tbl_lookup_stats(tbl, key, &n_mask_hit);
++	return flow_lookup(tbl, ti, key, &n_mask_hit);
+ }
+ 
+ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+@@ -475,10 +557,11 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+ 	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+ 	struct sw_flow_mask *mask;
+ 	struct sw_flow *flow;
++	u32 __always_unused n_mask_hit;
+ 
+ 	/* Always called under ovs-mutex. */
+ 	list_for_each_entry(mask, &tbl->mask_list, list) {
+-		flow = masked_flow_lookup(ti, match->key, mask);
++		flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
+ 		if (flow && ovs_identifier_is_key(&flow->id) &&
+ 		    ovs_flow_cmp_unmasked_key(flow, match))
+ 			return flow;
+@@ -631,7 +714,7 @@ static int flow_mask_insert(struct flow_table *tbl, struct sw_flow *flow,
+ 			return -ENOMEM;
+ 		mask->key = new->key;
+ 		mask->range = new->range;
+-		list_add_rcu(&mask->list, &tbl->mask_list);
++		list_add_tail_rcu(&mask->list, &tbl->mask_list);
+ 	} else {
+ 		BUG_ON(!mask->ref_count);
+ 		mask->ref_count++;
+diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
+index bc52045..04b6b1c 100644
+--- a/net/openvswitch/flow_table.h
++++ b/net/openvswitch/flow_table.h
+@@ -22,6 +22,11 @@
+ 
+ #include "flow.h"
+ 
++struct mask_cache_entry {
++	u32 skb_hash;
++	u32 mask_index;
++};
++
+ struct table_instance {
+ 	struct hlist_head *buckets;
+ 	unsigned int n_buckets;
+@@ -34,6 +39,7 @@ struct table_instance {
+ struct flow_table {
+ 	struct table_instance __rcu *ti;
+ 	struct table_instance __rcu *ufid_ti;
++	struct mask_cache_entry __percpu *mask_cache;
+ 	struct list_head mask_list;
+ 	unsigned long last_rehash;
+ 	unsigned int count;
+@@ -60,8 +66,9 @@ int ovs_flow_tbl_insert(struct flow_table *table, struct sw_flow *flow,
+ struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance *table,
+ 				       u32 *bucket, u32 *idx);
+ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *,
+-				    const struct sw_flow_key *,
+-				    u32 *n_mask_hit);
++					  const struct sw_flow_key *,
++					  u32 skb_hash,
++					  u32 *n_mask_hit);
+ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *,
+ 				    const struct sw_flow_key *);
+ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
 -- 
 1.8.3.1
 
