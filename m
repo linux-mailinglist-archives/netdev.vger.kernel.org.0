@@ -2,54 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB769DDB7A
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 01:46:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61ACBDDBB7
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 02:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbfJSXqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 19:46:14 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54150 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726148AbfJSXqN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Oct 2019 19:46:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=y/IIk71iGqijigb+f4kG5p+2zvpKfOGln9jP+Gs0yiY=; b=TcQyowABaOW5fybIp1Bc55Zz7m
-        RTvouIc41epvcSsR36jzfsbRCKDVUUy3GZMJ1+PPaLGHN+i9enmRFL1I4idSGaz54Vvz5bLGlDwc5
-        s9sBq7OwJBTlhGklqM1+BjYsiLnDZunRuAy2i/cy/7HzcuGgEYVhufLN4dNEZrh6Ym0k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iLyA6-0007Jj-Di; Sun, 20 Oct 2019 01:29:30 +0200
-Date:   Sun, 20 Oct 2019 01:29:30 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linville@tuxdriver.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH 1/3] ethtool: correctly interpret bitrate of 255
-Message-ID: <20191019232930.GA28013@lunn.ch>
-References: <E1iLYu1-0000sp-W5@rmk-PC.armlinux.org.uk>
+        id S1726162AbfJTAXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 20:23:15 -0400
+Received: from [185.116.42.18] ([185.116.42.18]:34947 "EHLO swnlsrv_1"
+        rhost-flags-FAIL-FAIL-FAIL-FAIL) by vger.kernel.org with ESMTP
+        id S1725710AbfJTAXO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Oct 2019 20:23:14 -0400
+Received: from Shop01 (localhost [127.0.0.1])
+        by swnlsrv_1 (Postfix) with SMTP id 90A08CA48A0;
+        Fri, 18 Oct 2019 23:33:00 +0200 (CEST)
+Received: from [38.146.166.254] by Shop01 with SMTP; Sat, 19 Oct 2019 01:31:14 +0400
+Message-ID: <c36dpc476v8-354432pv0r0yzi@7ur4udpen66>
+From:   "Mr Barrister Hans Erich" <Barrister_Hans@stationlibraryjhelum.com>
+Reply-To: "Mr Barrister Hans Erich" <Barrister_Hans@stationlibraryjhelum.com>
+To:     starlr@163.com
+Subject: RE:PERSONAL LETTER FROM MRS RASHIA AMIRA
+Date:   Sat, 19 Oct 19 01:31:14 GMT
+X-Mailer: Microsoft Outlook Express 5.00.2615.200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1iLYu1-0000sp-W5@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/alternative;
+        boundary="4FE833A79BFC60_5."
+X-Priority: 3
+X-MSMail-Priority: Normal
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 09:31:13PM +0100, Russell King wrote:
-> From: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> A bitrate of 255 is special, it means the bitrate is encoded in
-> byte 66 in units of 250MBaud.  Add support for parsing these bit
-> rates.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+--4FE833A79BFC60_5.
+Content-Type: text/plain;
+Content-Transfer-Encoding: quoted-printable
 
-    Andrew
+Greetings
+
+My name is Barrister Hans Erich.
+
+I have a client who is interested to invest in your country, she is a well=
+ known politician in her country and deserve a lucrative investment partne=
+rship with you outside her country without any delay   Please can you mana=
+ge such investment please Kindly reply for further details.
+
+Your full names ---------
+
+
+Your urgent response will be appreciated
+
+Thank you and God bless you.
+
+Barrister Hans Erich
+
+Yours sincerely,
+Barrister Hans Erich
+
+--4FE833A79BFC60_5.--
+
