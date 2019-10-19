@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F42DDA46
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 20:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 704F2DDA2A
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 20:41:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726687AbfJSSm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 14:42:29 -0400
-Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.104]:22572 "EHLO
+        id S1726489AbfJSSlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 14:41:55 -0400
+Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.103]:17723 "EHLO
         mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726347AbfJSSlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 14:41:55 -0400
+        with ESMTP id S1726090AbfJSSly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 14:41:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1571510510;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=8/ITeyMIKJXiU8PIrPxcxydlS2MxJhnwQVJo5WpZiiw=;
-        b=dztIfHmVPGCxOsQFGGi5frWN/VFGM8SQK9Cbau1kCzX9/Xbzmg8d3dreGQCLuJoRWL
-        nOfhW6ydjUj52dUE7y7e0HZqGUSBnROUt8qWuV+/I23jcWCh3PBso5SpnCWaT7CYcRJx
-        spjB0mR1540Ydp05RuS+/xb/Byn5kE8PE/3cnzWTyQi9gKa1iOrvFwwsp9zfCPV1Ef4Z
-        yUUbxncQ1THLqQVZgY5u6q7L9DsjICjzituEDwj8Wx8R59jmTzqz9GYlEOczJ6NPD9Qx
-        65k5pfBJt352KodIVY31W7VqayF8cdY8Ok/rkIdj5GEjlRBT9GkAAnT2phJTCFiXf+h7
-        mGYA==
+        bh=pMHbBt0U2BHK2lkSOiY6byStPby4fYtcUEpZ/uCeAnQ=;
+        b=U38d2VkzMqLGrOwgfPNn62TG8KYUacbqjmyl926RxA0qM2QmU0ui/RTrg1cFBllGrH
+        ahBExzsj67eWHJEb/FRwVyn3wjeW81E/5TzZpVesS2IDqIK0KIXFL33Vdc7B8KYQy/pV
+        sqkmdLvnoCyYVy0peatYtAIK023IFggFXRFewgXgxv8/V/HzpphoLDWy1f2JZmeH5aNs
+        Szq9dw+SvrW95E+KDEvwMUkgX61zhAfLBIIYl2hMYCEguDm8Xwdvo1RgbvcMlTM/wxx6
+        tb57GKYfLX5zq1aI1wsgPLSVRRaSDUPiC0is52CrkPHziUnxpeieIuhp8rzZ/VENFeqq
+        Ea7w==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0pAyXkHTz8="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.28.1 DYNA|AUTH)
-        with ESMTPSA id R0b2a8v9JIfUFMN
+        with ESMTPSA id R0b2a8v9JIfUFMO
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
         Sat, 19 Oct 2019 20:41:30 +0200 (CEST)
@@ -56,10 +56,10 @@ Cc:     linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com
-Subject: [PATCH v2 02/11] net: wireless: ti: wl1251 add device tree support
-Date:   Sat, 19 Oct 2019 20:41:17 +0200
-Message-Id: <062703f6033df5919d814c7312f577e8b2a96838.1571510481.git.hns@goldelico.com>
+        kernel@pyra-handheld.com, stable@vger.kernel.org
+Subject: [PATCH v2 03/11] DTS: ARM: pandora-common: define wl1251 as child node of mmc3
+Date:   Sat, 19 Oct 2019 20:41:18 +0200
+Message-Id: <bec9d76e6da03d734649b9bdf76e9d575c57631a.1571510481.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1571510481.git.hns@goldelico.com>
 References: <cover.1571510481.git.hns@goldelico.com>
@@ -70,56 +70,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We will have the wl1251 defined as a child node of the mmc interface
-and can read setup for gpios, interrupts and the ti,use-eeprom
-property from there instead of pdata to be provided by pdata-quirks.
+Since v4.7 the dma initialization requires that there is a
+device tree property for "rx" and "tx" channels which is
+not provided by the pdata-quirks initialization.
+
+By conversion of the mmc3 setup to device tree this will
+finally allows to remove the OpenPandora wlan specific omap3
+data-quirks.
 
 Fixes: 81eef6ca9201 ("mmc: omap_hsmmc: Use dma_request_chan() for requesting DMA channel")
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+Cc: <stable@vger.kernel.org> # 4.7.0
 ---
- drivers/net/wireless/ti/wl1251/sdio.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/arm/boot/dts/omap3-pandora-common.dtsi | 37 +++++++++++++++++++--
+ 1 file changed, 35 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ti/wl1251/sdio.c b/drivers/net/wireless/ti/wl1251/sdio.c
-index 677f1146ccf0..c54a273713ed 100644
---- a/drivers/net/wireless/ti/wl1251/sdio.c
-+++ b/drivers/net/wireless/ti/wl1251/sdio.c
-@@ -16,6 +16,9 @@
- #include <linux/irq.h>
- #include <linux/pm_runtime.h>
- #include <linux/gpio.h>
-+#include <linux/of.h>
-+#include <linux/of_gpio.h>
-+#include <linux/of_irq.h>
+diff --git a/arch/arm/boot/dts/omap3-pandora-common.dtsi b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+index ec5891718ae6..c595b3eb314d 100644
+--- a/arch/arm/boot/dts/omap3-pandora-common.dtsi
++++ b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+@@ -226,6 +226,18 @@
+ 		gpio = <&gpio6 4 GPIO_ACTIVE_HIGH>;	/* GPIO_164 */
+ 	};
  
- #include "wl1251.h"
- 
-@@ -217,6 +220,7 @@ static int wl1251_sdio_probe(struct sdio_func *func,
- 	struct ieee80211_hw *hw;
- 	struct wl1251_sdio *wl_sdio;
- 	const struct wl1251_platform_data *wl1251_board_data;
-+	struct device_node *np = func->dev.of_node;
- 
- 	hw = wl1251_alloc_hw();
- 	if (IS_ERR(hw))
-@@ -248,6 +252,15 @@ static int wl1251_sdio_probe(struct sdio_func *func,
- 		wl->power_gpio = wl1251_board_data->power_gpio;
- 		wl->irq = wl1251_board_data->irq;
- 		wl->use_eeprom = wl1251_board_data->use_eeprom;
-+	} else if (np) {
-+		wl->use_eeprom =of_property_read_bool(np, "ti,wl1251-has-eeprom");
-+		wl->power_gpio = of_get_named_gpio(np, "ti,power-gpio", 0);
-+		wl->irq = of_irq_get(np, 0);
++	/* wl1251 wifi+bt module */
++	wlan_en: fixed-regulator-wg7210_en {
++		compatible = "regulator-fixed";
++		regulator-name = "vwlan";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		startup-delay-us = <50000>;
++		regulator-always-on;
++		enable-active-high;
++		gpio = <&gpio1 23 GPIO_ACTIVE_HIGH>;
++	};
 +
-+		if (wl->power_gpio == -EPROBE_DEFER || wl->irq == -EPROBE_DEFER) {
-+			ret = -EPROBE_DEFER;
-+			goto disable;
-+		}
- 	}
+ 	/* wg7210 (wifi+bt module) 32k clock buffer */
+ 	wg7210_32k: fixed-regulator-wg7210_32k {
+ 		compatible = "regulator-fixed";
+@@ -522,9 +534,30 @@
+ 	/*wp-gpios = <&gpio4 31 GPIO_ACTIVE_HIGH>;*/	/* GPIO_127 */
+ };
  
- 	if (gpio_is_valid(wl->power_gpio)) {
+-/* mmc3 is probed using pdata-quirks to pass wl1251 card data */
+ &mmc3 {
+-	status = "disabled";
++	vmmc-supply = <&wlan_en>;
++
++	bus-width = <4>;
++	non-removable;
++	ti,non-removable;
++	cap-power-off-card;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc3_pins>;
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	wlan: wl1251@1 {
++		compatible = "ti,wl1251";
++
++		reg = <1>;
++
++		interrupt-parent = <&gpio1>;
++		interrupts = <21 IRQ_TYPE_LEVEL_HIGH>;	/* GPIO_21 */
++
++		ti,wl1251-has-eeprom;
++	};
+ };
+ 
+ /* bluetooth*/
 -- 
 2.19.1
 
