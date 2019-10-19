@@ -2,81 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BAEEDD5A8
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 02:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C6EFDD5AD
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 02:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403805AbfJSADw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Oct 2019 20:03:52 -0400
-Received: from gate.crashing.org ([63.228.1.57]:50059 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730521AbfJSADw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Oct 2019 20:03:52 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id x9J038G6009788;
-        Fri, 18 Oct 2019 19:03:10 -0500
-Message-ID: <0ef567e985ce3fe821cbd80265f85a35d16be373.camel@kernel.crashing.org>
-Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
-From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
-To:     Vijay Khemka <vijaykhemka@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bhupesh Sharma <bhsharma@redhat.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Date:   Sat, 19 Oct 2019 11:03:08 +1100
-In-Reply-To: <529EF9B4-DFDE-4DB7-BE26-3AED8D814134@fb.com>
-References: <20191011213027.2110008-1-vijaykhemka@fb.com>
-         <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
-         <0C0BC813-5A84-403F-9C48-9447AAABD867@fb.com>
-         <071cf1eeefcbfc14633a13bc2d15ad7392987a88.camel@kernel.crashing.org>
-         <9AA81274-01F2-4803-8905-26F0521486CE@fb.com>
-         <f6d5cb45a9aa167533135c5b218b45b1d210d31a.camel@kernel.crashing.org>
-         <529EF9B4-DFDE-4DB7-BE26-3AED8D814134@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S2389490AbfJSALB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Oct 2019 20:11:01 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:35618 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728453AbfJSALB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Oct 2019 20:11:01 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 205so4812011pfw.2
+        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 17:11:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=C4QIMI4guzd7x3IuAQwfn5G5+8wN2B8Pny7JIPX4E9s=;
+        b=XmR6aBYtQuq6647pzZRAK2Zs2MVwEzyn9LG5QNDy5Swi2Le9wO3jfn6VNeCVFi7Ebz
+         EDa9FwrKkvjwKcyEkNRNRtgnClXeW6p3I6CayCZ2Zys9V1hxe5sOBd+VhADNSDEB/3kr
+         QNGHzITDgyde8BefSI9dpsOu+xwOeCICOldmqEhOmLLoTcSZzYaQQnh8nLCAE3Dvcg5e
+         qH1069xJ5UbTYu2ZoemvlLt0n/zkjLxgr762gw5GW0Lwc85YVs5jwr6H/f65rNlNiZlp
+         5cTLT7wkoFd2p8TaHTT/CyfTXtGw/B5IL9zU+gG/TetmWJOgbFQ+sqMZgFBsY4qpYt3n
+         C7qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=C4QIMI4guzd7x3IuAQwfn5G5+8wN2B8Pny7JIPX4E9s=;
+        b=Yr1+k2JPiYoxjA0rwlyK6XBGUMgckQJ5Lu2++bSCMWyVQmwCWpp8++6ybOy0vcKypU
+         qJsZYbX60e4gp+B032GTBhoCx2InFyEsjuqPPyovPxVzyiBr8NkXhjwC2J/mvSRUve7P
+         uU8h40UudKaVDNfNfeNKxpoqtcq0DEoE3zpkSn+Ks/1tKT/VvRhbtyiLS3zGxSG7GwrI
+         nBOGZ7Nxl8pGU+kpeXewWzjTCj8YIOXwPtEeafofZaxn/mKzIztoYvD/zvlgT29bjaVO
+         e5VBgCr49rNeDMzCTwEWABelC6ek4ulziVt073Go8KjU3IC5G12QZ1nXzTd6ntITNEFq
+         KXpg==
+X-Gm-Message-State: APjAAAU0APPtKDNXfGbCxrHzjpGTwAznt2LqqZvcu6scVehJubuWIljE
+        aHrDVhMN9sesP+bp7l2ns/M=
+X-Google-Smtp-Source: APXvYqwI6NNYtGAB2Js8a9Sb22eJSVqslYKBr3dL0RC8qBABMoQezewv0sFIVkTrM8YOXVLlvQrbvw==
+X-Received: by 2002:a17:90a:3acb:: with SMTP id b69mr14378245pjc.75.1571443860520;
+        Fri, 18 Oct 2019 17:11:00 -0700 (PDT)
+Received: from [172.20.162.151] ([2620:10d:c090:180::d0dd])
+        by smtp.gmail.com with ESMTPSA id o42sm6511697pjo.32.2019.10.18.17.10.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Oct 2019 17:10:59 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Saeed Mahameed" <saeedm@mellanox.com>
+Cc:     ilias.apalodimas@linaro.org, "Tariq Toukan" <tariqt@mellanox.com>,
+        brouer@redhat.com, Netdev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@fb.com>
+Subject: Re: [PATCH 01/10 net-next] net/mlx5e: RX, Remove RX page-cache
+Date:   Fri, 18 Oct 2019 17:10:58 -0700
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <7C9F38DB-6164-4ACB-A717-1699ACC9DCB0@gmail.com>
+In-Reply-To: <7852500cd0008893985094fa20e2790436391e49.camel@mellanox.com>
+References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
+ <20191016225028.2100206-2-jonathan.lemon@gmail.com>
+ <7852500cd0008893985094fa20e2790436391e49.camel@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-10-18 at 22:50 +0000, Vijay Khemka wrote:
-> I don't have much understanding of IP Stack but I went through code details and 
-> you are right and found that it should fallback to SW calculation for IPV6 but it doesn't
-> happen because ftgmac100_hard_start_xmit checks for CHECKSUM_PARTIAL before
-> setting HW checksum and calling ftgmac100_prep_tx_csum function. And in my 
-> understanding, this value is set CHECKSUM_PARTIAL in IP stack. I looked up IP stack for
-> IPV6, file net/ipv6/ip6_output.c, function __ip6_append_data: here it sets 
-> CHECKSUM_PARTIAL only for UDP packets not for TCP packets. Please look at line
->  number 1880. This could be an issue we are seeing here as why
-> ftgmac100_prep_tx_csum is not getting triggered for IPV6 with TCP. Please correct
-> me if my understanding is wrong.
->     
+I was running the updated patches on machines with various workloads, and
+have a bunch of different results.
 
-Not entirely sure. tcp_v6_send_response() in tcp_ipv6.c does set
-CHECKSUM_PARTIAL as well. I don't really know how things are being
-handled in that part of the network stack though.
+For the following numbers,
+  Effective = hit / (hit + empty + stall) * 100
 
-From a driver perspective, if the value of ip_summed is not
-CHECKSUM_PARTIAL it means we should not have to calculate any checksum.
-At least that's my understanding here.
+In other words, show the hit rate for for every trip to the cache,
+and the cache full stat is ignored.
 
-You may need to add some traces to the driver to see what you get in
-there, what protocol indication etc... and analyze the corresponding
-packets with something like tcpdump or wireshark on the other end.
+On a webserver:
 
-Cheers,
-Ben.
+[web] # ./eff
+('rx_pool_cache_hit:', '360127643')
+('rx_pool_cache_full:', '0')
+('rx_pool_cache_empty:', '6455735977')
+('rx_pool_ring_produce:', '474958')
+('rx_pool_ring_consume:', '0')
+('rx_pool_ring_return:', '474958')
+('rx_pool_flush:', '144')
+('rx_pool_node_change:', '0')
+cache effectiveness:  5.28
 
+On a proxygen:
+# ethtool -S eth0 | grep rx_pool
+     rx_pool_cache_hit: 1646798
+     rx_pool_cache_full: 0
+     rx_pool_cache_empty: 15723566
+     rx_pool_ring_produce: 474958
+     rx_pool_ring_consume: 0
+     rx_pool_ring_return: 474958
+     rx_pool_flush: 144
+     rx_pool_node_change: 0
+cache effectiveness:  9.48
+
+On both of these, only pages with refcount = 1 are being kept.
+
+
+I changed things around in the page pool so:
+
+1) the cache behaves like a ring instead of a stack, this
+   sacrifices temporal locality.
+
+2) it caches all pages returned regardless of refcount, but
+   only returns pages with refcount=1.
+
+This is the same behavior as the mlx5 cache.  Some gains
+would come about if the sojourn time though the cache is
+greater than the lifetime of the page usage by the networking
+stack, as it provides a fixed working set of mapped pages.
+
+On the web server, this is a net loss:
+[web] # ./eff
+('rx_pool_cache_hit:', '6052662')
+('rx_pool_cache_full:', '156355415')
+('rx_pool_cache_empty:', '409600')
+('rx_pool_cache_stall:', '302787473')
+('rx_pool_ring_produce:', '156633847')
+('rx_pool_ring_consume:', '9925520')
+('rx_pool_ring_return:', '278788')
+('rx_pool_flush:', '96')
+('rx_pool_node_change:', '0')
+cache effectiveness:  1.95720846778
+
+For proxygen on the other hand, it's a win:
+[proxy] # ./eff
+('rx_pool_cache_hit:', '69235177')
+('rx_pool_cache_full:', '35404387')
+('rx_pool_cache_empty:', '460800')
+('rx_pool_cache_stall:', '42932530')
+('rx_pool_ring_produce:', '35717618')
+('rx_pool_ring_consume:', '27879469')
+('rx_pool_ring_return:', '404800')
+('rx_pool_flush:', '108')
+('rx_pool_node_change:', '0')
+cache effectiveness:  61.4721608624
+
+So the correct behavior isn't quite clear cut here - caching a
+working set of mapped pages is beneficial in spite of the HOL
+blocking stalls for some workloads, but I'm sure that it wouldn't
+be too difficult to exceed the WS size.
+
+Thoughts?
+-- 
+Jonathan
 
