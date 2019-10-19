@@ -2,96 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05ED8DDB23
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 23:19:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1118DDB32
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 23:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbfJSVTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 17:19:01 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42444 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726129AbfJSVTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 17:19:01 -0400
-Received: by mail-qk1-f196.google.com with SMTP id f16so8646567qkl.9;
-        Sat, 19 Oct 2019 14:19:00 -0700 (PDT)
+        id S1726175AbfJSV0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 17:26:00 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:46752 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726136AbfJSV0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 17:26:00 -0400
+Received: by mail-pg1-f194.google.com with SMTP id e15so5285881pgu.13;
+        Sat, 19 Oct 2019 14:26:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=OInwu2l8kRk36qEJ8aNRyw7RXhD3MTVYTP7FbpPhse4=;
-        b=msbumPEGjHgLWB8mpblDcXdfWf4cA3qLnXRTAY43JRS5vNYG8h7q5A3pKbFUke3ri/
-         Fucckdkaf3jRiO7eGnRPrD1GB6swjdsp4Hye9h3DzAO3fCmepFHfLfW8EGjPB6gX+Hue
-         7HCyFLS0hGxoIwQN5xEsncGcHAzrE+jJ61gxsOWVMOWgOCb2MJmXDwEz3vEKLY1SSYsn
-         AGkIIFsY7+f+Hbwu9q8T2erHOrCoLHYFnDDhMqXFdiZOqtf/ahJG2X5PYog5rA1rWa8I
-         g35+JsU5gLf1XHgOdevE9eN2FmrX/n9VM2pA3uaMP/w05zZGyuLgTdluJ4/Zo9/ThgvU
-         QAEg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LuC1R6V8c/Kdme5A156FRd/JC432a1mSGvBSl/q3ZUU=;
+        b=ZnOrNkETUnKKV2W50EUrhkGSYwpwQNjMDU3i/s1Yt+3ugs4jYR9+Ebc4N+fes7DyCY
+         hwGaBTmdFew8YbeTNiwU9G9hoCyBC4Y8s0wmJQPrNpvH0/7iGvwMk1I/nPbLBBsO6VJR
+         zKL/d4eLt1F5QwLgEBjKVHsFYaord9+kJL/spIIfDR7F1B6lqLaE1wOzL/QFx9I5vAhi
+         KcenwImPB93iCyK6tQkA/6+7pX/8u+jFiN640F4z2snMr8zATrB8TzY/+a50S4Inl2nr
+         iTD4AzY45cw7TuJiRSNzetfcD3VOfuB+lTFvRQ9o0jseO6Bd2R5gF8NjhsvyvJWgtJx0
+         5Ffg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OInwu2l8kRk36qEJ8aNRyw7RXhD3MTVYTP7FbpPhse4=;
-        b=bhvHIi74q+6YXn/lxws67JhsY+UijtcJF5gU5bByzX8AohWvgbJGHHBp/Yzhp+z9gr
-         E0hhizfiS89E5KVrZYfR8mgNGghG2G7g5TANXqUEU9hZjNRx8XclvQvggp6+rtmJUR3E
-         hybwG4yyB7bK+CJPTukdks0Yu1a2ZMKiETA7X0iwWayzsD+nRUrQO+0gq7g98lBy1hyK
-         Gp/WQKJqgtBaHUaRJnM0JTo48abgG8Vtn1bGzPuipaBC3++5oBxZqwQGDmrIMhhJ74dE
-         1ftETL+fSlURs0e8cYqtP++1I7aRtnGo08KiMVPU6TESzcaXRu7DE03Yu1hkIezYnWSc
-         aCBA==
-X-Gm-Message-State: APjAAAXell/LT8LLjv0Pttytp5olHDkd6tpgmrc/AmoBHkuDdl+3bXz0
-        ieGXZxiA6Ble4Zc9eiNoQh8=
-X-Google-Smtp-Source: APXvYqw5BihCOMh10bAyfZPbJrYrEXHCPtpu2iGDpXQkxzekBaAZfJHZ4nvYV095qX7yi2bTUXaNtA==
-X-Received: by 2002:a05:620a:13c1:: with SMTP id g1mr8673058qkl.369.1571519939913;
-        Sat, 19 Oct 2019 14:18:59 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1d0d])
-        by smtp.gmail.com with ESMTPSA id h23sm4076165qkk.128.2019.10.19.14.18.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 19 Oct 2019 14:18:59 -0700 (PDT)
-Date:   Sat, 19 Oct 2019 14:18:56 -0700
-From:   Tejun Heo <tj@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LuC1R6V8c/Kdme5A156FRd/JC432a1mSGvBSl/q3ZUU=;
+        b=AW1mJeDMnh9eRv9P4RlpUw1d5lORyuz4GrS2FI+BVOQBcYkXmi9TE5bOTMIhaqaTk/
+         NbJTInmajydRM9ikueJj1ms/71vmiGEQnWPatbdJnf/tWSxqBj68AoGDHdMo3GgJHHs+
+         qCyZiLbjIrFDpR+M5ODxMrqvZduJiKwPgWnpo2OUYDt3VyWDnGOojXG0DpoiROObYXCo
+         eT4aCtTvCizPue4QHv2a/x6SBR3xCZoJvzopfOFBZTv9KsVOTmDHczfrOKAv4MnqujOE
+         rNo3JBnXXZQtCTg0AEX3IUa+kFpMLPb1JjDU2ztNIzNFbSWGXk25gpzBgJz9CtPDb5H/
+         tIeA==
+X-Gm-Message-State: APjAAAX8L4AiggtQDacPlNVBod+twUAL+UJFUJuKNDGcOlufiIeKvMdX
+        Ls2Q8NS6P/MNVnHfhQzT9UE=
+X-Google-Smtp-Source: APXvYqwWjIurUxYv1G3ixEDYP9XzaOXOxmAuaYRQDj248y1tyU9RGVycj8IDeRkcqClyFgYhvZ8gSA==
+X-Received: by 2002:a63:560d:: with SMTP id k13mr17083611pgb.437.1571520359768;
+        Sat, 19 Oct 2019 14:25:59 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
+        by smtp.gmail.com with ESMTPSA id w5sm9925023pfn.96.2019.10.19.14.25.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Oct 2019 14:25:58 -0700 (PDT)
+Subject: Re: [PATCH] net: fix sk_page_frag() recursion from memory reclaim
+To:     Tejun Heo <tj@kernel.org>, Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         kernel-team@fb.com, linux-kernel@vger.kernel.org,
         Josef Bacik <josef@toxicpanda.com>
-Subject: Re: [PATCH] net: fix sk_page_frag() recursion from memory reclaim
-Message-ID: <20191019211856.GR18794@devbig004.ftw2.facebook.com>
 References: <20191019170141.GQ18794@devbig004.ftw2.facebook.com>
  <dc6ff540-e7fc-695e-ed71-2bc0a92a0a9b@gmail.com>
+ <20191019211856.GR18794@devbig004.ftw2.facebook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <41874d3e-584c-437c-0110-83e001abf1b9@gmail.com>
+Date:   Sat, 19 Oct 2019 14:25:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dc6ff540-e7fc-695e-ed71-2bc0a92a0a9b@gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20191019211856.GR18794@devbig004.ftw2.facebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-On Sat, Oct 19, 2019 at 11:15:28AM -0700, Eric Dumazet wrote:
-> It seems compiler generates better code with :
-> 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index ab905c4b1f0efd42ebdcae333b3f0a2c7c1b2248..56de6ac99f0952bd0bc003353c094ce3a5a852f4 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -2238,7 +2238,8 @@ struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
->   */
->  static inline struct page_frag *sk_page_frag(struct sock *sk)
->  {
-> -       if (gfpflags_allow_blocking(sk->sk_allocation))
-> +       if (likely((sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC)) ==
-> +                   __GFP_DIRECT_RECLAIM))
->                 return &current->task_frag;
->  
->         return &sk->sk_frag;
-> 
-> 
-> WDYT ?
 
-Whatever works is fine by me.  gfpflags_allow_blocking() is clearer
-than testing __GFP_DIRECT_RECLAIM directly tho.  Maybe a better way is
-introducing a new gfpflags_ helper?
+On 10/19/19 2:18 PM, Tejun Heo wrote:
 
-Thanks.
+> Whatever works is fine by me.  gfpflags_allow_blocking() is clearer
+> than testing __GFP_DIRECT_RECLAIM directly tho.  Maybe a better way is
+> introducing a new gfpflags_ helper?
 
--- 
-tejun
+Sounds good to me !
+
