@@ -2,95 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FADBE9547
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 04:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0FC9E955D
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 04:48:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbfJ3D3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 23:29:15 -0400
-Received: from mga01.intel.com ([192.55.52.88]:43132 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727034AbfJ3D3O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Oct 2019 23:29:14 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Oct 2019 20:29:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,245,1569308400"; 
-   d="scan'208";a="205673662"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by FMSMGA003.fm.intel.com with ESMTP; 29 Oct 2019 20:29:13 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 9/9] ice: allow 3k MTU for XDP
-Date:   Tue, 29 Oct 2019 20:29:10 -0700
-Message-Id: <20191030032910.24261-10-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191030032910.24261-1-jeffrey.t.kirsher@intel.com>
-References: <20191030032910.24261-1-jeffrey.t.kirsher@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727170AbfJ3Dsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 23:48:33 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38935 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727088AbfJ3Dsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 23:48:33 -0400
+Received: by mail-pf1-f196.google.com with SMTP id v4so569047pff.6
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 20:48:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=/T/XRYB9s2GEx13IWoOw2ufRUj+YVCEQF7wfiy8lqP8=;
+        b=LgJenqYxoGBbfV10FoDEXIqaAu6fQUrIWc1Z+pLMVnl8hc+F0i9dqvI+n1iCLAXCd6
+         K0/Nk4SQ72uNoUH2xea+8AfybK0VkQXIXIRkistjTeYamDGWgQzxCZPqjWz7ow4741Ja
+         k97L/OxrFc/8qI6bOcLpnlwLOeL5e3hJaRxTiKAtp8uixN8I7KXMN04RnHqf4JHmYmiK
+         cwLCHl7DEIe7NaYYRm5nBLLHnsIxikMs+1NmnTb/U+QMONJsyoC0LhuUv9An4n1qkaKe
+         AbUPCYlY507Xw8tQkGdsFC1R2SJATph6bkwOuLOEdRfS2efJ5WCHIckB5zoQUp7f3Phi
+         20Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=/T/XRYB9s2GEx13IWoOw2ufRUj+YVCEQF7wfiy8lqP8=;
+        b=PEDATthALq0jgrYmwXAHkkjw9f7SWHAodGDR+kSbnrH3BRqU0Ghf0iB0y8JZaD4j4h
+         l8QFJ62TCeFlLvxlzEBZsCf5QSTgjk8MjpP7sRnOHDtjHRHTaGEHASX/f8XVkrk06RAk
+         ba2ocUecS1G5oHGf+eSFD+KSQR3JiF6EFHA4gAxnJ/FNevxmfK37qqCgHNG4m2Ypfgzi
+         AkA4tpeE/pbJcf2wx6QGf1Mi9sGBgBiglDLmAnKQgvEyLSvdwjOu/hU3bTqsiU1/8BEK
+         5cQ1irwh0bHvzhNNsvA4PlqBaUOT5UZbNicGwr5bIDT+KWA+bFf3WnK0lKm57NhN0t5W
+         D/0A==
+X-Gm-Message-State: APjAAAWC+EC9taEyHBLoQ1V4pySD/4WYmrkUboVDjRmAyZ2XcRQwXh96
+        D2E8Jk8DvSyOtcY0A4Li6IU=
+X-Google-Smtp-Source: APXvYqzDyZs/WsqI65MK2nPDn94EZqRoef37F86267PdyFRsQ0iLX8WgPdSrV7NsiH4Iu189oCzMig==
+X-Received: by 2002:a17:90a:fa81:: with SMTP id cu1mr11398595pjb.114.1572407312563;
+        Tue, 29 Oct 2019 20:48:32 -0700 (PDT)
+Received: from local.opencloud.tech.localdomain ([203.100.54.194])
+        by smtp.gmail.com with ESMTPSA id l22sm632390pgj.4.2019.10.29.20.48.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 29 Oct 2019 20:48:31 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     gvrose8192@gmail.com, pshelar@ovn.org
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v5 00/10] optimize openvswitch flow looking up
+Date:   Sat, 19 Oct 2019 16:08:34 +0800
+Message-Id: <1571472524-73832-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-At this point ice driver is able to work on order 1 pages that are split
-onto two 3k buffers. Let's reflect that when user is setting new MTU
-size and XDP is present on interface.
+This series patch optimize openvswitch for performance or simplify
+codes.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+Patch 1, 2, 4: Port Pravin B Shelar patches to
+linux upstream with little changes.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 98022ed9aaf4..3da674b07339 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4648,6 +4648,18 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 	dev_err(dev, "Rebuild failed, unload and reload driver\n");
- }
- 
-+/**
-+ * ice_max_xdp_frame_size - returns the maximum allowed frame size for XDP
-+ * @vsi: Pointer to VSI structure
-+ */
-+static int ice_max_xdp_frame_size(struct ice_vsi *vsi)
-+{
-+	if (PAGE_SIZE >= 8192 || test_bit(ICE_FLAG_LEGACY_RX, vsi->back->flags))
-+		return ICE_RXBUF_2048 - XDP_PACKET_HEADROOM;
-+	else
-+		return ICE_RXBUF_3072;
-+}
-+
- /**
-  * ice_change_mtu - NDO callback to change the MTU
-  * @netdev: network interface device structure
-@@ -4668,11 +4680,11 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
- 	}
- 
- 	if (ice_is_xdp_ena_vsi(vsi)) {
--		int frame_size = ICE_RXBUF_2048 - XDP_PACKET_HEADROOM;
-+		int frame_size = ice_max_xdp_frame_size(vsi);
- 
- 		if (new_mtu + ICE_ETH_PKT_HDR_PAD > frame_size) {
- 			netdev_err(netdev, "max MTU for XDP usage is %d\n",
--				   frame_size);
-+				   frame_size - ICE_ETH_PKT_HDR_PAD);
- 			return -EINVAL;
- 		}
- 	}
+Patch 5, 6, 7: Optimize the flow looking up and
+simplify the flow hash.
+
+Patch 8, 9: are bugfix.
+
+The performance test is on Intel Xeon E5-2630 v4.
+The test topology is show as below:
+
++-----------------------------------+
+|   +---------------------------+   |
+|   | eth0   ovs-switch    eth1 |   | Host0
+|   +---------------------------+   |
++-----------------------------------+
+      ^                       |
+      |                       |
+      |                       |
+      |                       |
+      |                       v
++-----+----+             +----+-----+
+| netperf  | Host1       | netserver| Host2
++----------+             +----------+
+
+We use netperf send the 64B packets, and insert 255+ flow-mask:
+$ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:01:00:00:00:00/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=no)" 2
+...
+$ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=00:ff:00:00:00:00/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)" 2
+$
+$ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
+
+* Without series patch, throughput 8.28Mbps
+* With series patch, throughput 46.05Mbps
+
+v5:
+rewrite patch 8, release flow-mask when freeing flow
+
+v4:
+access ma->count with READ_ONCE/WRITE_ONCE API. More information,
+see patch 5 comments. 
+
+v3:
+update ma point when realloc mask_array in patch 5
+
+v2:
+simplify codes. e.g. use kfree_rcu instead of call_rcu
+
+Tonghao Zhang (10):
+  net: openvswitch: add flow-mask cache for performance
+  net: openvswitch: convert mask list in mask array
+  net: openvswitch: shrink the mask array if necessary
+  net: openvswitch: optimize flow mask cache hash collision
+  net: openvswitch: optimize flow-mask looking up
+  net: openvswitch: simplify the flow_hash
+  net: openvswitch: add likely in flow_lookup
+  net: openvswitch: fix possible memleak on destroy flow-table
+  net: openvswitch: don't unlock mutex when changing the user_features
+    fails
+  net: openvswitch: simplify the ovs_dp_cmd_new
+
+ net/openvswitch/datapath.c   |  65 +++++---
+ net/openvswitch/flow.h       |   1 -
+ net/openvswitch/flow_table.c | 381 ++++++++++++++++++++++++++++++++++---------
+ net/openvswitch/flow_table.h |  19 ++-
+ 4 files changed, 360 insertions(+), 106 deletions(-)
+
 -- 
-2.21.0
+1.8.3.1
 
