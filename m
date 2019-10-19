@@ -2,70 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF1A4DD664
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 06:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 640FFDD6A4
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 06:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfJSEAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 00:00:02 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:49161 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbfJSEAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 00:00:02 -0400
-Received: by mail-il1-f197.google.com with SMTP id v8so2788966ill.16
-        for <netdev@vger.kernel.org>; Fri, 18 Oct 2019 21:00:01 -0700 (PDT)
+        id S1726556AbfJSElW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 00:41:22 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:37791 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726004AbfJSElV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 00:41:21 -0400
+Received: by mail-io1-f67.google.com with SMTP id b19so9890864iob.4;
+        Fri, 18 Oct 2019 21:41:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=p2VVU+8PljankkCSMCXqV9yM+SFP23m/H23f2IowcHc=;
+        b=T+l2Vpkn9FUAiH16Xkxl9YFf/obtWD724fvhqZ05m4ZwdmFHOEhnZlZOLybtAPdmCT
+         SKF6PpvONV1178FTeVeoa0C+moSh2BmwSLc5Tuw2rgnC2+cZPvsdCS/70I767A0kgr0M
+         Tl4fi1FzYw/GwMmKMfNZHRHK2oQV6HFb9IqDSTc8ik7bhbu7hvkyL9IaCn3YM4Frpug+
+         kVDqSe1n3/bFbB+b67XjNJdmHh4Ic+1Opa/M7oKj9RAMcLLFLGzFlcm6lrjkfLX+fqtX
+         3QSXHVdsJAZ8oDfaZ08JDx7fS0bksC40ZEyYhV/CVfp3g87gVUEHT3nIywvrCqx9FV5c
+         g6wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=enssZdcGZr8zBgaRgbTlKFGqiCX/YdzbT8JMhjDRm00=;
-        b=XwHJqMOZuS8s4TlGPUBQKc3mkae4QXmmxGneK/RthA48iByVa70yl5R/l5McTkjCO9
-         2D4Bt8idhMiJjVM8at5LqXXCLeUTZXIIlJ4yoMLKLe3S1DndZp0h1Rkn/z/yhkpuuGd1
-         wM5U3oBj9W6sOuvZjoaVMa3KC14Ja4wJ6G8GPgSuMnYXGY/CZPGwb11ItmkVbni6/v0Y
-         OEgDth0kf5ubz9M7ksUK8/igXtUFvBKNfedP8ljg+11gqASDgHNIbuICpLBG77p6orQv
-         yqzEWMMcqKvB1jvj7zihuKnA06BJixwqHrDkayrpt5OFcF3HmkF+mRX0g6r6YsXZfZc/
-         ojvA==
-X-Gm-Message-State: APjAAAWfJ9W22+aSq32l6S9A5x7JHc/MpESN3cJ0x3ROPQtA1hhCULFR
-        e/rpLI14AufQaYuiplP+8jFn4SUkw/rJUPwkx2JXqtMbBLWu
-X-Google-Smtp-Source: APXvYqz8lqgBFyZx30Xm89H2jN8QiEn0zBJRqpi9o4I5jqUpUIaAtrg8GgpM0+0dlymC4KEkM4dpnR6YmFV5vqWhd5Z8b7RZzrfp
-MIME-Version: 1.0
-X-Received: by 2002:a92:cb84:: with SMTP id z4mr14774857ilo.78.1571457601324;
- Fri, 18 Oct 2019 21:00:01 -0700 (PDT)
-Date:   Fri, 18 Oct 2019 21:00:01 -0700
-In-Reply-To: <CAKK_rcj55g8WPCLrrLdT+8zWLXXOMVf0jhMyYQj9jndy_+i8qw@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001b4f0b05953b7c13@google.com>
-Subject: Re: memory leak in copy_net_ns
-From:   syzbot <syzbot+3b3296d032353c33184b@syzkaller.appspotmail.com>
-To:     a.p.zijlstra@chello.nl, acme@redhat.com, andi@firstfloor.org,
-        davem@davemloft.net, dhowells@redhat.com, dsahern@gmail.com,
-        jakub.kicinski@netronome.com, jeliantsurux@gmail.com,
-        johannes.berg@intel.com, jolsa@kernel.org,
-        linux-kernel@vger.kernel.org, namhyung@kernel.org,
-        netdev@vger.kernel.org, nicolas.dichtel@6wind.com,
-        syzkaller-bugs@googlegroups.com, tyhicks@canonical.com,
-        willy@infradead.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=p2VVU+8PljankkCSMCXqV9yM+SFP23m/H23f2IowcHc=;
+        b=WWmR2y8T23H8uOr1NwDuZ+cIAcZNVqygCOFVjXTjVRdtsIQE4/Q3dd1XSvVhMQBgI8
+         BevnMRoSZWyRymxoPFhrPZk2Q0yOazLTRwVXEQ/CDo/Dw8/aG+nIy+EW5GJ8U8QBiiR6
+         hQgijQPgxzdQW0frwcWW4sd3FlU/4kh1AjMPxMhMoTUiw7IbkpEQt/g80cKfFYj8HCi0
+         vBcANCGK2qgLuSpiVVJHzsvUZw6bAOuXs6fMwgk04tVDpgT1L2naYCQFW4fjSdjGHBy1
+         SQXdnvd2Ez3c6H/KQaRVVb+GqihkBx56Y7k38jRdPjLRlRzphfFAdvRwTQ0N/10cNnaj
+         8p5Q==
+X-Gm-Message-State: APjAAAWFRPHcjs6a5wicP4fZdcaO/dFJHFn8HLEV/2RB7kw3WJfG6qmp
+        KdJ22YN6TE8sZ4JK3Tz8Dcs=
+X-Google-Smtp-Source: APXvYqzLwhYAv+PlKOslXSIKp9Q5XxGd6tzlv/kzFqD5eR1PFumNUoSf8kaeuqGwNnzPi8/wBX8w/A==
+X-Received: by 2002:a02:b817:: with SMTP id o23mr12507895jam.101.1571460080843;
+        Fri, 18 Oct 2019 21:41:20 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id z20sm2928890iof.38.2019.10.18.21.41.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 21:41:20 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 21:41:12 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Message-ID: <5daa93e8bfc26_3a012ad7c9bb25bca6@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAADnVQLyi9os2FK9OSiZ2CMKtEd7NOR=P_Q-Qd9_0Lu9dn63kw@mail.gmail.com>
+References: <157140968634.9073.6407090804163937103.stgit@john-XPS-13-9370>
+ <4da33f52-e857-9997-4226-4eae0f440df9@fb.com>
+ <CAADnVQLyi9os2FK9OSiZ2CMKtEd7NOR=P_Q-Qd9_0Lu9dn63kw@mail.gmail.com>
+Subject: Re: [bpf-next PATCH] bpf: libbpf, add kernel version section parsing
+ back
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Alexei Starovoitov wrote:
+> On Fri, Oct 18, 2019 at 9:52 AM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > On 10/18/19 7:41 AM, John Fastabend wrote:
+> > > With commit "libbpf: stop enforcing kern_version,..." we removed the
+> > > kernel version section parsing in favor of querying for the kernel
+> > > using uname() and populating the version using the result of the
+> > > query. After this any version sections were simply ignored.
+> > >
+> > > Unfortunately, the world of kernels is not so friendly. I've found some
+> > > customized kernels where uname() does not match the in kernel version.
+> > > To fix this so programs can load in this environment this patch adds
+> > > back parsing the section and if it exists uses the user specified
+> > > kernel version to override the uname() result. However, keep most the
+> > > kernel uname() discovery bits so users are not required to insert the
+> > > version except in these odd cases.
+> > >
+> > > Fixes: 5e61f27070292 ("libbpf: stop enforcing kern_version, populate it for users")
+> > > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > > ---
+> >
+> > In the name of not breaking users of weird kernels :)
+> >
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> 
+> What does it mean that uname is cheated?
+> Can libbpf read it from /proc/sys/kernel/osrelease ?
+> or /proc/version?
+> Is that read only or user space can somehow overwrite it?
 
-syzbot has tested the proposed patch and the reproducer did not trigger  
-crash:
+In this case LINUX_VERSION_CODE as shown in version.h from linux-headers
+does not much what is being reported by /proc/version or osrelease.
 
-Reported-and-tested-by:  
-syzbot+3b3296d032353c33184b@syzkaller.appspotmail.com
-
-Tested on:
-
-commit:         43b815c6 Merge tag 'armsoc-fixes' of git://git.kernel.org/..
-git tree:       https://github.com/google/kasan.git
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9ba1b8c7fca2c71
-dashboard link: https://syzkaller.appspot.com/bug?extid=3b3296d032353c33184b
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=118f59e8e00000
-
-Note: testing is done by a robot and is best-effort only.
+So its a bit surprising to me as well but I haven't got to the bottom
+of it. Maybe something to do with how proc is mounted in this kubernetes
+setup?
