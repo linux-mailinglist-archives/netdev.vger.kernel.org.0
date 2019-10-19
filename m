@@ -2,72 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC3BDD818
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 12:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 635FFDD838
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 12:51:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbfJSK0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 06:26:18 -0400
-Received: from gate.crashing.org ([63.228.1.57]:35061 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725883AbfJSK0S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Oct 2019 06:26:18 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id x9JAPXS6004953;
-        Sat, 19 Oct 2019 05:25:34 -0500
-Message-ID: <72d1a78d7807b1bda00e1bafe0c2ecefe267918b.camel@kernel.crashing.org>
-Subject: Re: [PATCH v2] ftgmac100: Disable HW checksum generation on AST2500
-From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
-To:     Vijay Khemka <vijaykhemka@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bhupesh Sharma <bhsharma@redhat.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Date:   Sat, 19 Oct 2019 21:25:32 +1100
-In-Reply-To: <3D78AA04-A502-4A9F-87A0-0D62D56952AF@fb.com>
-References: <20191011213027.2110008-1-vijaykhemka@fb.com>
-         <3a1176067b745fddfc625bbd142a41913ee3e3a1.camel@kernel.crashing.org>
-         <0C0BC813-5A84-403F-9C48-9447AAABD867@fb.com>
-         <071cf1eeefcbfc14633a13bc2d15ad7392987a88.camel@kernel.crashing.org>
-         <9AA81274-01F2-4803-8905-26F0521486CE@fb.com>
-         <f6d5cb45a9aa167533135c5b218b45b1d210d31a.camel@kernel.crashing.org>
-         <529EF9B4-DFDE-4DB7-BE26-3AED8D814134@fb.com>
-         <0ef567e985ce3fe821cbd80265f85a35d16be373.camel@kernel.crashing.org>
-         <3D78AA04-A502-4A9F-87A0-0D62D56952AF@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1725938AbfJSKvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 06:51:37 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:40652 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbfJSKvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 06:51:37 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 417FA60716; Sat, 19 Oct 2019 10:51:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571482296;
+        bh=Zmkpjo/I5aAU8+rQ0bWrjNgIdtKvqhgADZlmRlXPBm8=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=JIVpdTb5hoQJW07ua7UwHE4TvwkRjQhxXAxRY5sG307Clow3ZH9z1xie9xYTZ/1Vs
+         oJigZKG1victBwDsok7I7V9H89f68SGi2avSZGqF/A2S1Hnziw3ulvd82RpZvE2P5s
+         73llfWQpu16kLQGa1J2+Ha922N1o45/2IpX0hIkA=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C01D16039E;
+        Sat, 19 Oct 2019 10:51:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571482295;
+        bh=Zmkpjo/I5aAU8+rQ0bWrjNgIdtKvqhgADZlmRlXPBm8=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=itmLqvHzzIsUWuwGTlA7pacgaBs22Lo7f/HNrlCNoJY1SW9BeRo7Asd8cyAoFOIGp
+         5H+Hx775cjy0eOeuPiDLD2ZaOaOA+sziSF4zU0yZWZGGiS+prjqUlBL9sOgfBxH16i
+         PoRjcFqUNZK4gXhicUXrxYE4UMsASg5wWKck7OeU=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C01D16039E
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Laura Abbott <labbott@redhat.com>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nicolas Waisman <nico@semmle.com>
+Subject: Re: [PATCH v2] rtlwifi: Fix potential overflow on P2P code
+References: <20191018114321.13131-1-labbott@redhat.com>
+Date:   Sat, 19 Oct 2019 13:51:30 +0300
+In-Reply-To: <20191018114321.13131-1-labbott@redhat.com> (Laura Abbott's
+        message of "Fri, 18 Oct 2019 07:43:21 -0400")
+Message-ID: <871rv9xb2l.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2019-10-19 at 01:31 +0000, Vijay Khemka wrote:
-> Thanks Ben,
-> I will try to add some trace and test whatever possible and test it.
-> As we
-> don't have tcpdump into our image and I have limited understanding of
-> networking stack so if you get some time to verify ipv6, it will be
-> really
-> helpful. 
->     
+Laura Abbott <labbott@redhat.com> writes:
 
-You only need tcpdump (or wireshark) on the *other end* of the link,
-could even be your laptop, to look at what the generated frames look
-like and compare with your traces.
+> Nicolas Waisman noticed that even though noa_len is checked for
+> a compatible length it's still possible to overrun the buffers
+> of p2pinfo since there's no check on the upper bound of noa_num.
+> Bound noa_num against P2P_MAX_NOA_NUM.
+>
+> Reported-by: Nicolas Waisman <nico@semmle.com>
+> Signed-off-by: Laura Abbott <labbott@redhat.com>
+> ---
+> v2: Use P2P_MAX_NOA_NUM instead of erroring out.
+> ---
+>  drivers/net/wireless/realtek/rtlwifi/ps.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+>
+> diff --git a/drivers/net/wireless/realtek/rtlwifi/ps.c b/drivers/net/wireless/realtek/rtlwifi/ps.c
+> index 70f04c2f5b17..fff8dda14023 100644
+> --- a/drivers/net/wireless/realtek/rtlwifi/ps.c
+> +++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
+> @@ -754,6 +754,9 @@ static void rtl_p2p_noa_ie(struct ieee80211_hw *hw, void *data,
+>  				return;
+>  			} else {
+>  				noa_num = (noa_len - 2) / 13;
+> +				if (noa_num > P2P_MAX_NOA_NUM)
+> +					noa_num = P2P_MAX_NOA_NUM;
+> +
+>  			}
+>  			noa_index = ie[3];
+>  			if (rtlpriv->psc.p2p_ps_info.p2p_ps_mode ==
+> @@ -848,6 +851,9 @@ static void rtl_p2p_action_ie(struct ieee80211_hw *hw, void *data,
+>  				return;
+>  			} else {
+>  				noa_num = (noa_len - 2) / 13;
+> +				if (noa_num > P2P_MAX_NOA_NUM)
+> +					noa_num = P2P_MAX_NOA_NUM;
 
-Cheers,
-Ben.
+IMHO using min() would be cleaner, but I'm fine with this as well. Up to
+you.
 
-
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
