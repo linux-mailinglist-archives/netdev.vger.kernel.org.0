@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9727DDA30
-	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 20:42:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91513DDA50
+	for <lists+netdev@lfdr.de>; Sat, 19 Oct 2019 20:42:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726594AbfJSSmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 14:42:01 -0400
-Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.120]:9822 "EHLO
+        id S1726434AbfJSSlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 14:41:53 -0400
+Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.124]:15585 "EHLO
         mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbfJSSl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 14:41:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1571510511;
+        with ESMTP id S1726129AbfJSSlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 14:41:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1571510508;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=/pObl1FM2M6AHMr9luNDZ5UQLwObvzqffucymVvdQFs=;
-        b=f8WNaBqP71JuDMDfUgg9Pw5eQ1uAhZ0R9P5Kp3arMhjRoNg3ggfQ3GyTYSUUcwgu+F
-        BGRWbqSvgx7ZyKwWzZSdGRCCP/5MyTGafm5S63eTO+sIwYBoAXbAMRatgUZWIYXFVSOm
-        ashgOX+yqyB7udrmnewWVUZvQq2FWPdVkYWCvo8iGUF7+0/YjU2dafascI9nRp30epEx
-        Z8u48cdrIkM1lZucGjwYSJPmT2GetkrHNORdiYkCXbAodDE910Ct95JHQIDwG3JnGBMf
-        LMmE+S7aVkk2dI3kuoisoTRRxbhaXNNSvtnrXzVr/vAJk1gMhfrPQpA7q8rHN8EY1UC6
-        bACg==
+        bh=D0xgXIH+YLg/8SxmoFPqkZd7PGd3EE7jBsoj68hDK9Q=;
+        b=oPVklFlHq4tIvv4H4WScZDOuAahMvIHTEhIy7bguJGWqKTselrOfqw97X2EMohSV1Q
+        KRm+J/8HPLrbW7QQ6oIuE9fpOYAtnbQOC660PiJolUqqsAqmNV2R87wtyhN5+FaGjmyS
+        MWsh2kYSl0QuO1N7fi7hMrcnVX61UIUkoHigec7zP4GXNAoi4Pw/fhoH2KYJhCe7E4SN
+        wqx7mlEVIGxjiLKTRQJzf6w3y2Ac13YwFUQ4yiZXMA7KvMBA0Y5sTyFhqSB5HUaL/OAQ
+        koThKyqR4utBXqrODtLdl27iyTb4wzy/YiscGypaEIUDG13eG8nKEEJQho9iHMz9ap/j
+        UkcA==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0pAyXkHTz8="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.28.1 DYNA|AUTH)
-        with ESMTPSA id R0b2a8v9JIfXFMR
+        with ESMTPSA id R0b2a8v9JIfYFMS
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Sat, 19 Oct 2019 20:41:33 +0200 (CEST)
+        Sat, 19 Oct 2019 20:41:34 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
         Tony Lindgren <tony@atomide.com>,
@@ -56,10 +56,10 @@ Cc:     linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com, stable@vger.kernel.org
-Subject: [PATCH v2 06/11] omap: pdata-quirks: remove openpandora quirks for mmc3 and wl1251
-Date:   Sat, 19 Oct 2019 20:41:21 +0200
-Message-Id: <9cb3b9f9bee4aa50a19bf47742cff095b8c2fbfb.1571510481.git.hns@goldelico.com>
+        kernel@pyra-handheld.com
+Subject: [PATCH v2 07/11] omap: remove old hsmmc.[ch] and in Makefile
+Date:   Sat, 19 Oct 2019 20:41:22 +0200
+Message-Id: <9bd4c0bb0df26523d7f5265cdb06d86d63dafba8.1571510481.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1571510481.git.hns@goldelico.com>
 References: <cover.1571510481.git.hns@goldelico.com>
@@ -70,133 +70,259 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With a wl1251 child node of mmc3 in the device tree decoded
-in omap_hsmmc.c to handle special wl1251 initialization, we do
-no longer need to instantiate the mmc3 through pdata quirks.
+There is a new one in drivers/mmc/host/omap_hsmmc.c
+configured by CONFIG_MMC_OMAP_HS and the last user
+was the pdata-quirks for pandora.
 
-We also can remove the wlan regulator and reset/interrupt definitions
-and do them through device tree.
-
-Fixes: 81eef6ca9201 ("mmc: omap_hsmmc: Use dma_request_chan() for requesting DMA channel")
-
+Suggested-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Cc: <stable@vger.kernel.org> # 4.7.0
 ---
- arch/arm/mach-omap2/pdata-quirks.c | 93 ------------------------------
- 1 file changed, 93 deletions(-)
+ arch/arm/mach-omap2/Makefile       |   1 -
+ arch/arm/mach-omap2/hsmmc.c        | 171 -----------------------------
+ arch/arm/mach-omap2/hsmmc.h        |  32 ------
+ arch/arm/mach-omap2/pdata-quirks.c |   1 -
+ 4 files changed, 205 deletions(-)
+ delete mode 100644 arch/arm/mach-omap2/hsmmc.c
+ delete mode 100644 arch/arm/mach-omap2/hsmmc.h
 
-diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
-index 89734ef9ab1e..ecc1ef632951 100644
---- a/arch/arm/mach-omap2/pdata-quirks.c
-+++ b/arch/arm/mach-omap2/pdata-quirks.c
-@@ -303,108 +303,15 @@ static void __init omap3_logicpd_torpedo_init(void)
- }
+diff --git a/arch/arm/mach-omap2/Makefile b/arch/arm/mach-omap2/Makefile
+index 8f208197988f..1b3062f32899 100644
+--- a/arch/arm/mach-omap2/Makefile
++++ b/arch/arm/mach-omap2/Makefile
+@@ -216,7 +216,6 @@ obj-$(CONFIG_MACH_NOKIA_N8X0)		+= board-n8x0.o
  
- /* omap3pandora legacy devices */
--#define PANDORA_WIFI_IRQ_GPIO		21
--#define PANDORA_WIFI_NRESET_GPIO	23
+ # Platform specific device init code
  
- static struct platform_device pandora_backlight = {
- 	.name	= "pandora-backlight",
- 	.id	= -1,
- };
+-omap-hsmmc-$(CONFIG_MMC_OMAP_HS)	:= hsmmc.o
+ obj-y					+= $(omap-hsmmc-m) $(omap-hsmmc-y)
  
--static struct regulator_consumer_supply pandora_vmmc3_supply[] = {
--	REGULATOR_SUPPLY("vmmc", "omap_hsmmc.2"),
--};
+ obj-y					+= omap_phy_internal.o
+diff --git a/arch/arm/mach-omap2/hsmmc.c b/arch/arm/mach-omap2/hsmmc.c
+deleted file mode 100644
+index 63423ea6a240..000000000000
+--- a/arch/arm/mach-omap2/hsmmc.c
++++ /dev/null
+@@ -1,171 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * linux/arch/arm/mach-omap2/hsmmc.c
+- *
+- * Copyright (C) 2007-2008 Texas Instruments
+- * Copyright (C) 2008 Nokia Corporation
+- * Author: Texas Instruments
+- */
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/string.h>
+-#include <linux/delay.h>
+-#include <linux/mmc/host.h>
+-#include <linux/platform_data/hsmmc-omap.h>
 -
--static struct regulator_init_data pandora_vmmc3 = {
--	.constraints = {
--		.valid_ops_mask		= REGULATOR_CHANGE_STATUS,
--	},
--	.num_consumer_supplies	= ARRAY_SIZE(pandora_vmmc3_supply),
--	.consumer_supplies	= pandora_vmmc3_supply,
--};
+-#include "soc.h"
+-#include "omap_device.h"
 -
--static struct fixed_voltage_config pandora_vwlan = {
--	.supply_name		= "vwlan",
--	.microvolts		= 1800000, /* 1.8V */
--	.gpio			= PANDORA_WIFI_NRESET_GPIO,
--	.startup_delay		= 50000, /* 50ms */
--	.enable_high		= 1,
--	.init_data		= &pandora_vmmc3,
--};
+-#include "hsmmc.h"
+-#include "control.h"
 -
--static struct platform_device pandora_vwlan_device = {
--	.name		= "reg-fixed-voltage",
--	.id		= 1,
--	.dev = {
--		.platform_data = &pandora_vwlan,
--	},
--};
+-#if IS_ENABLED(CONFIG_MMC_OMAP_HS)
 -
--static void pandora_wl1251_init_card(struct mmc_card *card)
+-static u16 control_pbias_offset;
+-static u16 control_devconf1_offset;
+-
+-#define HSMMC_NAME_LEN	9
+-
+-static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
+-					struct omap_hsmmc_platform_data *mmc)
 -{
--	/*
--	 * We have TI wl1251 attached to MMC3. Pass this information to
--	 * SDIO core because it can't be probed by normal methods.
--	 */
--	if (card->type == MMC_TYPE_SDIO || card->type == MMC_TYPE_SD_COMBO) {
--		card->quirks |= MMC_QUIRK_NONSTD_SDIO;
--		card->cccr.wide_bus = 1;
--		card->cis.vendor = 0x104c;
--		card->cis.device = 0x9066;
--		card->cis.blksize = 512;
--		card->cis.max_dtr = 24000000;
--		card->ocr = 0x80;
+-	char *hc_name;
+-
+-	hc_name = kzalloc(HSMMC_NAME_LEN + 1, GFP_KERNEL);
+-	if (!hc_name)
+-		return -ENOMEM;
+-
+-	snprintf(hc_name, (HSMMC_NAME_LEN + 1), "mmc%islot%i", c->mmc, 1);
+-	mmc->name = hc_name;
+-	mmc->caps = c->caps;
+-	mmc->reg_offset = 0;
+-
+-	return 0;
+-}
+-
+-static int omap_hsmmc_done;
+-
+-void omap_hsmmc_late_init(struct omap2_hsmmc_info *c)
+-{
+-	struct platform_device *pdev;
+-	int res;
+-
+-	if (omap_hsmmc_done)
+-		return;
+-
+-	omap_hsmmc_done = 1;
+-
+-	for (; c->mmc; c++) {
+-		pdev = c->pdev;
+-		if (!pdev)
+-			continue;
+-		res = omap_device_register(pdev);
+-		if (res)
+-			pr_err("Could not late init MMC\n");
 -	}
 -}
 -
--static struct omap2_hsmmc_info pandora_mmc3[] = {
--	{
--		.mmc		= 3,
--		.caps		= MMC_CAP_4_BIT_DATA | MMC_CAP_POWER_OFF_CARD,
--		.gpio_cd	= -EINVAL,
--		.gpio_wp	= -EINVAL,
--		.init_card	= pandora_wl1251_init_card,
--	},
--	{}	/* Terminator */
--};
+-#define MAX_OMAP_MMC_HWMOD_NAME_LEN		16
 -
--static void __init pandora_wl1251_init(void)
+-static void __init omap_hsmmc_init_one(struct omap2_hsmmc_info *hsmmcinfo,
+-					int ctrl_nr)
 -{
--	struct wl1251_platform_data pandora_wl1251_pdata;
--	int ret;
+-	struct omap_hwmod *oh;
+-	struct omap_hwmod *ohs[1];
+-	struct omap_device *od;
+-	struct platform_device *pdev;
+-	char oh_name[MAX_OMAP_MMC_HWMOD_NAME_LEN];
+-	struct omap_hsmmc_platform_data *mmc_data;
+-	struct omap_hsmmc_dev_attr *mmc_dev_attr;
+-	char *name;
+-	int res;
 -
--	memset(&pandora_wl1251_pdata, 0, sizeof(pandora_wl1251_pdata));
+-	mmc_data = kzalloc(sizeof(*mmc_data), GFP_KERNEL);
+-	if (!mmc_data)
+-		return;
 -
--	pandora_wl1251_pdata.power_gpio = -1;
+-	res = omap_hsmmc_pdata_init(hsmmcinfo, mmc_data);
+-	if (res < 0)
+-		goto free_mmc;
 -
--	ret = gpio_request_one(PANDORA_WIFI_IRQ_GPIO, GPIOF_IN, "wl1251 irq");
--	if (ret < 0)
--		goto fail;
+-	name = "omap_hsmmc";
+-	res = snprintf(oh_name, MAX_OMAP_MMC_HWMOD_NAME_LEN,
+-		     "mmc%d", ctrl_nr);
+-	WARN(res >= MAX_OMAP_MMC_HWMOD_NAME_LEN,
+-	     "String buffer overflow in MMC%d device setup\n", ctrl_nr);
 -
--	pandora_wl1251_pdata.irq = gpio_to_irq(PANDORA_WIFI_IRQ_GPIO);
--	if (pandora_wl1251_pdata.irq < 0)
--		goto fail_irq;
+-	oh = omap_hwmod_lookup(oh_name);
+-	if (!oh) {
+-		pr_err("Could not look up %s\n", oh_name);
+-		goto free_name;
+-	}
+-	ohs[0] = oh;
+-	if (oh->dev_attr != NULL) {
+-		mmc_dev_attr = oh->dev_attr;
+-		mmc_data->controller_flags = mmc_dev_attr->flags;
+-	}
 -
--	pandora_wl1251_pdata.use_eeprom = true;
--	ret = wl1251_set_platform_data(&pandora_wl1251_pdata);
--	if (ret < 0)
--		goto fail_irq;
+-	pdev = platform_device_alloc(name, ctrl_nr - 1);
+-	if (!pdev) {
+-		pr_err("Could not allocate pdev for %s\n", name);
+-		goto free_name;
+-	}
+-	dev_set_name(&pdev->dev, "%s.%d", pdev->name, pdev->id);
 -
--	return;
+-	od = omap_device_alloc(pdev, ohs, 1);
+-	if (IS_ERR(od)) {
+-		pr_err("Could not allocate od for %s\n", name);
+-		goto put_pdev;
+-	}
 -
--fail_irq:
--	gpio_free(PANDORA_WIFI_IRQ_GPIO);
--fail:
--	pr_err("wl1251 board initialisation failed\n");
+-	res = platform_device_add_data(pdev, mmc_data,
+-			      sizeof(struct omap_hsmmc_platform_data));
+-	if (res) {
+-		pr_err("Could not add pdata for %s\n", name);
+-		goto put_pdev;
+-	}
+-
+-	hsmmcinfo->pdev = pdev;
+-
+-	res = omap_device_register(pdev);
+-	if (res) {
+-		pr_err("Could not register od for %s\n", name);
+-		goto free_od;
+-	}
+-
+-	goto free_mmc;
+-
+-free_od:
+-	omap_device_delete(od);
+-
+-put_pdev:
+-	platform_device_put(pdev);
+-
+-free_name:
+-	kfree(mmc_data->name);
+-
+-free_mmc:
+-	kfree(mmc_data);
 -}
 -
- static void __init omap3_pandora_legacy_init(void)
- {
- 	platform_device_register(&pandora_backlight);
--	platform_device_register(&pandora_vwlan_device);
--	omap_hsmmc_init(pandora_mmc3);
--	omap_hsmmc_late_init(pandora_mmc3);
--	pandora_wl1251_init();
- }
- #endif /* CONFIG_ARCH_OMAP3 */
+-void __init omap_hsmmc_init(struct omap2_hsmmc_info *controllers)
+-{
+-	if (omap_hsmmc_done)
+-		return;
+-
+-	omap_hsmmc_done = 1;
+-
+-	if (cpu_is_omap2430()) {
+-		control_pbias_offset = OMAP243X_CONTROL_PBIAS_LITE;
+-		control_devconf1_offset = OMAP243X_CONTROL_DEVCONF1;
+-	} else {
+-		control_pbias_offset = OMAP343X_CONTROL_PBIAS_LITE;
+-		control_devconf1_offset = OMAP343X_CONTROL_DEVCONF1;
+-	}
+-
+-	for (; controllers->mmc; controllers++)
+-		omap_hsmmc_init_one(controllers, controllers->mmc);
+-
+-}
+-
+-#endif
+diff --git a/arch/arm/mach-omap2/hsmmc.h b/arch/arm/mach-omap2/hsmmc.h
+deleted file mode 100644
+index 76c5ed2afa72..000000000000
+--- a/arch/arm/mach-omap2/hsmmc.h
++++ /dev/null
+@@ -1,32 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * MMC definitions for OMAP2
+- */
+-
+-struct mmc_card;
+-
+-struct omap2_hsmmc_info {
+-	u8	mmc;		/* controller 1/2/3 */
+-	u32	caps;		/* 4/8 wires and any additional host
+-				 * capabilities OR'd (ref. linux/mmc/host.h) */
+-	struct platform_device *pdev;	/* mmc controller instance */
+-	/* init some special card */
+-	void (*init_card)(struct mmc_card *card);
+-};
+-
+-#if IS_ENABLED(CONFIG_MMC_OMAP_HS)
+-
+-void omap_hsmmc_init(struct omap2_hsmmc_info *);
+-void omap_hsmmc_late_init(struct omap2_hsmmc_info *);
+-
+-#else
+-
+-static inline void omap_hsmmc_init(struct omap2_hsmmc_info *info)
+-{
+-}
+-
+-static inline void omap_hsmmc_late_init(struct omap2_hsmmc_info *info)
+-{
+-}
+-
+-#endif
+diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
+index ecc1ef632951..4ce05d408a67 100644
+--- a/arch/arm/mach-omap2/pdata-quirks.c
++++ b/arch/arm/mach-omap2/pdata-quirks.c
+@@ -32,7 +32,6 @@
+ #include "omap_device.h"
+ #include "omap-secure.h"
+ #include "soc.h"
+-#include "hsmmc.h"
+ 
+ static struct omap_hsmmc_platform_data __maybe_unused mmc_pdata[2];
  
 -- 
 2.19.1
