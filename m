@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C80DF763
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 23:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1315DF7BF
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 23:49:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730084AbfJUVWA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 17:22:00 -0400
-Received: from mga01.intel.com ([192.55.52.88]:16597 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726672AbfJUVWA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Oct 2019 17:22:00 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Oct 2019 14:21:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,324,1566889200"; 
-   d="scan'208";a="398796611"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 21 Oct 2019 14:21:59 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Yi Wang <wang.yi59@zte.com.cn>, jhs@mojatatu.com
-Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn, up2wing@gmail.com,
-        wang.liang82@zte.com.cn
-Subject: Re: [PATCH] net: sched: taprio: fix -Wmissing-prototypes warnings
-In-Reply-To: <1571658424-4273-1-git-send-email-wang.yi59@zte.com.cn>
-References: <1571658424-4273-1-git-send-email-wang.yi59@zte.com.cn>
-Date:   Mon, 21 Oct 2019 14:23:08 -0700
-Message-ID: <877e4xztc3.fsf@linux.intel.com>
+        id S1730304AbfJUVtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 17:49:25 -0400
+Received: from [185.116.42.18] ([185.116.42.18]:14718 "EHLO swnlsrv_1"
+        rhost-flags-FAIL-FAIL-FAIL-FAIL) by vger.kernel.org with ESMTP
+        id S1726672AbfJUVtZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 17:49:25 -0400
+Received: from 127.0.0.1 (localhost [127.0.0.1])
+        by swnlsrv_1 (Postfix) with SMTP id 30F89CAC849;
+        Sat, 19 Oct 2019 05:53:20 +0200 (CEST)
+Received: from [185.59.52.210]
+        by 127.0.0.1
+        for <jqyrdq@163.com>; Sat, 19 Oct 2019 02:53:44 -0100
+Message-ID: <90z7h$67$1j9--i$fi-2und-ah92-cq@0bc2sbdk4nn>
+From:   "Mr Barrister Hans Erich" <Barrister_Hans@stationlibraryjhelum.com>
+Reply-To: "Mr Barrister Hans Erich" <Barrister_Hans@stationlibraryjhelum.com>
+To:     jqyrdq@163.com
+Subject: RE:PERSONAL LETTER FROM MRS RASHIA AMIRA
+Date:   Sat, 19 Oct 19 02:53:44 GMT
+X-Mailer: The Bat! (v1.52f) Business
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/alternative;
+        boundary="1_C_5C.50EDE57_AEE58C76."
+X-Priority: 3
+X-MSMail-Priority: Normal
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-Yi Wang <wang.yi59@zte.com.cn> writes:
+--1_C_5C.50EDE57_AEE58C76.
+Content-Type: text/plain;
+Content-Transfer-Encoding: quoted-printable
 
-> We get one warnings when build kernel W=1:
-> net/sched/sch_taprio.c:1155:6: warning: no previous prototype for ‘taprio_offload_config_changed’ [-Wmissing-prototypes]
->
-> Make the function static to fix this.
->
-> Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-> ---
+Greetings
 
-This looks like it should be directed to net-next.
+My name is Barrister Hans Erich.
 
-When you re-send it for net-next, feel free to add my:
+I have a client who is interested to invest in your country, she is a well=
+ known politician in her country and deserve a lucrative investment partne=
+rship with you outside her country without any delay   Please can you mana=
+ge such investment please Kindly reply for further details.
 
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Your full names ---------
 
 
-Cheers,
---
-Vinicius
+Your urgent response will be appreciated
+
+Thank you and God bless you.
+
+Barrister Hans Erich
+
+Yours sincerely,
+Barrister Hans Erich
+
+--1_C_5C.50EDE57_AEE58C76.--
+
