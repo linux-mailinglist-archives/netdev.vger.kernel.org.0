@@ -2,87 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 884D7DDFBF
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 19:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93784DDFC7
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 19:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbfJTRbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 13:31:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54452 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726029AbfJTRbH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Oct 2019 13:31:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=8/FgQ2qacImKMxlWmdpp/nzPExDuTmWm1fED5Z0j8aM=; b=wy6uaHP/9FisXodnPwPLUDXnKT
-        HX7CqSteITEo49vZlOcfXDXb2Jw06berXaPOLs7vXw4PpEPJrW0ga7/xbVLQsi8SkOB+cNEDCBTPV
-        lr5DOPD1PbgEfq7f24MWGCDcTc+QjsOf6egyof8gkPqK1qN4BDrcWiS+9t/JdfpeT5H8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iMF2m-00019j-2Z; Sun, 20 Oct 2019 19:31:04 +0200
-Date:   Sun, 20 Oct 2019 19:31:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next v4 2/2] net: dsa: mv88e6xxx: Add devlink param
- for ATU hash algorithm.
-Message-ID: <20191020173104.GB3080@lunn.ch>
-References: <20191019185201.24980-1-andrew@lunn.ch>
- <20191019185201.24980-3-andrew@lunn.ch>
- <20191019191656.GL2185@nanopsycho>
- <20191019192750.GB25148@lunn.ch>
- <20191019210202.GN2185@nanopsycho>
- <20191019211234.GH25148@lunn.ch>
- <20191020055459.GO2185@nanopsycho>
- <20191020060246.GP2185@nanopsycho>
+        id S1726599AbfJTRhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 13:37:34 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33524 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726556AbfJTRhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 13:37:33 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so6863988pfl.0
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 10:37:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=vmU9pgUKQcEuMSYv/BBcahpMF4UtOam9a0i9ZLAtxwE=;
+        b=qKEkBRN+OgbmOLStSpTKuai/Xfu9qXtg1CINfl5SyuNp17UtrCIRg4cYlTHvTP7jvi
+         iySsIaj77Mkq5ikwpFE1Xm/HeB9gXw7gMQ9+8+PbXbc8crqm0BUMsyzxHH8y43gvMhWM
+         ZPqaZTwEpYG8bwy6YiqNQc1EtjsPyI3fSxBuepTvDf3qjb3uJLon9kJhgE/dinrNL/1d
+         KZru/zmy2IyvTIGkhnRqVhuRfzge3ksp3hSNQjh9rO7kaCgQf1K9d8g2B0hgk4eiYUK6
+         2caH3dikfd1EuVemAEzIBBhrl8BglKur+OZCB/z0GRnm39nGICVdA73ecO+5tC5KLM6h
+         coHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=vmU9pgUKQcEuMSYv/BBcahpMF4UtOam9a0i9ZLAtxwE=;
+        b=gK87HxLDcW6juS7vYkIs77JyHugfE3S3RvHYcdp2iOAjc0+pArHq6cxpWwJsvSo2Yp
+         JQcEGY2AsKnBkytmTd4Gm/7kFPx+KeVD93aP0qA8BQQhZJHRpljFxKgBNXh8oE88wHnf
+         +Huu3LnKdDhacOnCKR62mP2B/p04zYx3iltCAk4+JomOFOlAr1akS8s9uaVF3pBqy2Ki
+         NcIM7zUmvGyG+cKUyC1TgWH4ZxchDAU9teRBkG+RZjyXJBo/+b+LYhjN2Oa+lf34Dhe8
+         P6an/V5ByoDmsV0l6miWtmGXweoLTm75gIkggM4LTv8agcrqzR4zYIjFsVW+bWiQclfR
+         Pj/A==
+X-Gm-Message-State: APjAAAWNLc+d6GPFsCLpWWgSSOvWP4RNnRRc5L+b9NS95hWUu8KbZt8x
+        zFyBFp7bBSW3J8Wzci8KdPHR1g==
+X-Google-Smtp-Source: APXvYqyeYLW2YaKmo1xJfJxB58IOQE39T7c3Z1n8MrWodF2BnuK8nbT7D29rYLyZtNnd4qsV0pqqdw==
+X-Received: by 2002:a63:4622:: with SMTP id t34mr21669219pga.0.1571593052820;
+        Sun, 20 Oct 2019 10:37:32 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id e192sm13018937pfh.83.2019.10.20.10.37.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Oct 2019 10:37:32 -0700 (PDT)
+Date:   Sun, 20 Oct 2019 10:37:29 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
+Subject: Re: [PATCH net-next 0/8] net: hns3: add some cleanups &
+ optimizations
+Message-ID: <20191020103729.0aebf696@cakuba.netronome.com>
+In-Reply-To: <1571472236-17401-1-git-send-email-tanhuazhong@huawei.com>
+References: <1571472236-17401-1-git-send-email-tanhuazhong@huawei.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191020060246.GP2185@nanopsycho>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 20, 2019 at 08:02:46AM +0200, Jiri Pirko wrote:
-> Sun, Oct 20, 2019 at 07:54:59AM CEST, jiri@resnulli.us wrote:
-> >Sat, Oct 19, 2019 at 11:12:34PM CEST, andrew@lunn.ch wrote:
-> >>> Could you please follow the rest of the existing params?
-> >>
-> >>Why are params special? Devlink resources can and do have upper case
-> >>characters. So we get into inconsistencies within devlink,
-> >>particularly if there is a link between a parameter and a resources.
-> >
-> >Well, only for netdevsim. Spectrum*.c resources follow the same format.
-> >I believe that the same format should apply on resources as well.
-> >
+On Sat, 19 Oct 2019 16:03:48 +0800, Huazhong Tan wrote:
+> This patchset includes some cleanups and optimizations for the HNS3
+> ethernet driver.
 > 
-> Plus reporters, dpipes follow the same format too. I'm going to send
-> patches to enforce the format there too.
+> [patch 1/8] removes unused and unnecessary structures.
+> 
+> [patch 2/8] uses a ETH_ALEN u8 array to replace two mac_addr_*
+> field in struct hclge_mac_mgr_tbl_entry_cmd.
+> 
+> [patch 3/8] optimizes the barrier used in the IO path.
+> 
+> [patch 4/8] introduces macro ring_to_netdev() to get netdevive
+> from struct hns3_enet_ring variable.
+> 
+> [patch 5/8] makes struct hns3_enet_ring to be cacheline aligned
+> 
+> [patch 6/8] adds a minor cleanup for hns3_handle_rx_bd().
+> 
+> [patch 7/8] removes linear data allocating for fraglist SKB.
+> 
+> [patch 8/8] clears hardware error when resetting.
+> 
+> ---
+> note:
+> In previous patchset, there are some bugfixes which needs below
+> new feature, which is only in 'net-next' but not in 'net' now:
+> net: hns3: support tx-scatter-gather-fraglist feature
+> net: hns3: add support for spoof check setting
+> 
+> So, these bugfixes will be upstreamed when the patch needed is
+> on 'net' tree.
 
-Hi Jiri
-
-I'm pretty much against this. This appears to be arbitrary. There is
-no technical reason, other than most users so far have kept to lower
-case. But in general, the kernel does not impose such restrictions.
-
-Ethtool statistics are mixed case.
-Interface names are mixed case.
-/dev devices are mixed case.
-Namespaces are mixed case.
-All HWMON properties and names are mixed case.
-Interrupt names are mixed case.
-IIO names are mixed case.
-etc.
-
-Apart from the FAT filesystem, can you think of any places in the
-kernel which enforce lower case? And if so, why does it impose lower
-case?
-
-       Andrew
+Thanks! Looks good to me now.
