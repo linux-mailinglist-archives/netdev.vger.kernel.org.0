@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 591AFDDC10
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 05:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73BD0DDC06
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 05:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbfJTDUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 23:20:55 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:44209 "EHLO
+        id S1726598AbfJTDUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 23:20:31 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:33548 "EHLO
         mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726562AbfJTDU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 23:20:28 -0400
-Received: by mail-qk1-f193.google.com with SMTP id u22so9052135qkk.11;
-        Sat, 19 Oct 2019 20:20:27 -0700 (PDT)
+        with ESMTP id S1726565AbfJTDU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 23:20:29 -0400
+Received: by mail-qk1-f193.google.com with SMTP id 71so5207427qkl.0;
+        Sat, 19 Oct 2019 20:20:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6L5GXEQf2TmKkQqvOj5hVJ0JGfsrXHOwa855xP48opA=;
-        b=nYgFwAfG9IeAPQkw5LGeKx+etzNbngpM1Mld5rAXDsaEkKOIevDO8SUskffzBefvDL
-         ek3u2PVhjRsR21BIrJ7TAUcGZM2N2lTKAgL/3zD/VInb8bPuyklhDLU3L36YSI2qXbV4
-         WyArz3jTEL9UoqX4byDznnRPMkm/HxofMaPGnanKnTLlBRyHJzcVLATTO5Wttfoae8AZ
-         BkX7wd3vAcETfBCtuStGpj21DKjAsWlalr/xJQ6xSffrHkQKNUMACH9cUXcQBkAU82Ui
-         vr9qk67uk37CbPi/2NXMD92oYf7di8TOo+MH/HIRNRoRzWbT9iERszFZDmYo0EdJY7b/
-         vv1g==
+        bh=X9xlVGuL8skAUAFw0Gij/npap/PFiX9j4tAkAhvoK5g=;
+        b=CNRME8l3ErVV/iBW27ES1rYw6B0TlJZJNibU5jCYZpuPlGvjCrFCwEDfMA1xsmvc71
+         aNAkj1NB5iEjwdUFNTHNKZpxl/9CAY92PwUgSprcGXOMJhOuIu/SQ0byCE6Wi6AuMNu/
+         az9x0MQl9aXVd8NXMMI397d9IsA91JEYKgtSunbj0gwAgW9D+gInJlJZbS8n2rKzi17N
+         PvuNjyfSYgmklKn4W3i9yYvo1WHomJp193I7G4jams1dxZU+kFjU2qoF+iRr01hkq9C9
+         8E+5SWtnWFv0ffKfK3trJ65JlW0nB0GVx57mJjG6oUmTP0pvNFRWzPqoLOCxBF1Zn1KH
+         9ZLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6L5GXEQf2TmKkQqvOj5hVJ0JGfsrXHOwa855xP48opA=;
-        b=JMZO2Lrs3YW+jGpIwpA2QASj43PVysXZ1Kfhg9qxI/0akBLewHcI3fIjMYaYxrsNrr
-         nNwOlxW9d5+HDqzCcxy0P60zot4BEbrEZvlIKXSqb7ApeSUTmSk+4E6U/ZmhO4J6wZiA
-         RYGZBI4aFh4BX0s1K8bvXpT5GesaIZqqzMpv/MPWcR3zET7XnakQDoWsni8oqZ6A6qrf
-         xkzD1nVYo6V5JKSi1N691cTAZLA5/J/JJZknD/rrzuhwmLPHI8+Ts5/m1R7K63bbRfIa
-         IE5m3sacCB4YOl2s+/YtG+PpNg+aV6iM3AdzyAFtFmxlGXKjd6oSI98Q6QubJ+8/mzf+
-         hBbw==
-X-Gm-Message-State: APjAAAW7b1tpoDmmcF+nIuLLmuuU10V+hqVN4W1yCRY8ydUlNGPIRZYk
-        g/nfB1WQRAgAM6AJkRyoVKY=
-X-Google-Smtp-Source: APXvYqzDWDVgJV5SGzc9MSkGZxKdfdxFVN9xTO3RvdAvQLh24QqV3ajaT1nIIbIg9OTjx8rwA3atKw==
-X-Received: by 2002:a37:8101:: with SMTP id c1mr16605609qkd.287.1571541627190;
-        Sat, 19 Oct 2019 20:20:27 -0700 (PDT)
+        bh=X9xlVGuL8skAUAFw0Gij/npap/PFiX9j4tAkAhvoK5g=;
+        b=e9f1ImzvOatvgkJl5tIbu9dR6n6nKRTwU/surqNE/1n2BybpN4hv9l2esPLs8Bmue8
+         KoxYJ6wAXdMYqaAAai5YZp5gns0P/Os0221Gi2FtdX6Hn+yef+GVZgCylN7G+Esqg8gy
+         8X2a1O5qeNTWqYJ5khypqqc6dCV9/JLbzNgrOTrJTXaAz9qWvrV/FTGBy3G5oBsc6+EJ
+         kG1RQjurW2fhPiIyPIW5GSr8vcfOVW02lz6liIFM/O/hPCH7E0RYu0wENlzTRz03/mMd
+         tFjgJon4SyNpqc2V32tGcLKRrOX3CRsphcDWD4mSKyeJDz8CGbD+H/C4Jc6KpfwNqkwh
+         M6Fg==
+X-Gm-Message-State: APjAAAX8PU4zj4cmlzLPWS1rp8XFY8MR68gEF2uybiBB3V9r/Q/TKrsR
+        HB9LBOUbvsa8YEQ1W0ik1i0=
+X-Google-Smtp-Source: APXvYqzugvPkLsi3lv66B7jammOL7Fsvi9iTEHyKjU+sL9WLKozE3bkdScJLr/Guv9PZ4Mehv4VJOg==
+X-Received: by 2002:a05:620a:2102:: with SMTP id l2mr15601359qkl.363.1571541628607;
+        Sat, 19 Oct 2019 20:20:28 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id q16sm2602742qke.22.2019.10.19.20.20.26
+        by smtp.gmail.com with ESMTPSA id q47sm11924569qtq.95.2019.10.19.20.20.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Oct 2019 20:20:26 -0700 (PDT)
+        Sat, 19 Oct 2019 20:20:28 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: [PATCH net-next 14/16] net: dsa: sja1105: register switch before assigning port private data
-Date:   Sat, 19 Oct 2019 23:19:39 -0400
-Message-Id: <20191020031941.3805884-15-vivien.didelot@gmail.com>
+Subject: [PATCH net-next 15/16] net: dsa: allocate ports on touch
+Date:   Sat, 19 Oct 2019 23:19:40 -0400
+Message-Id: <20191020031941.3805884-16-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191020031941.3805884-1-vivien.didelot@gmail.com>
 References: <20191020031941.3805884-1-vivien.didelot@gmail.com>
@@ -63,53 +63,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like the dsa_switch_tree structures, the dsa_port structures will be
-allocated on switch registration.
-
-The SJA1105 driver is the only one accessing the dsa_port structure
-after the switch allocation and before the switch registration.
-For that reason, move switch registration prior to assigning the priv
-member of the dsa_port structures.
+Allocate the struct dsa_port the first time it is accessed with
+dsa_port_touch, and remove the static dsa_port array from the
+dsa_switch structure.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ include/net/dsa.h |  2 --
+ net/dsa/dsa2.c    | 16 ++++++++++++++--
+ 2 files changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 4b0cb779f187..0ebbda5ca665 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2057,6 +2057,15 @@ static int sja1105_probe(struct spi_device *spi)
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 020f5db8666b..d28ac54cb8c4 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -277,9 +277,7 @@ struct dsa_switch {
+ 	 */
+ 	bool			vlan_filtering;
  
- 	tagger_data = &priv->tagger_data;
+-	/* Dynamically allocated ports, keep last */
+ 	size_t num_ports;
+-	struct dsa_port ports[];
+ };
  
-+	mutex_init(&priv->ptp_data.lock);
-+	mutex_init(&priv->mgmt_lock);
-+
-+	sja1105_tas_setup(ds);
-+
-+	rc = dsa_register_switch(priv->ds);
-+	if (rc)
-+		return rc;
-+
- 	/* Connections between dsa_port and sja1105_port */
- 	for (i = 0; i < SJA1105_NUM_PORTS; i++) {
- 		struct sja1105_port *sp = &priv->ports[i];
-@@ -2065,12 +2074,8 @@ static int sja1105_probe(struct spi_device *spi)
- 		sp->dp = dsa_to_port(ds, i);
- 		sp->data = tagger_data;
- 	}
--	mutex_init(&priv->ptp_data.lock);
--	mutex_init(&priv->mgmt_lock);
+ static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 772deacc33d3..7669a6278c40 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -596,7 +596,13 @@ static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 	struct dsa_port *dp;
  
--	sja1105_tas_setup(ds);
--
--	return dsa_register_switch(priv->ds);
-+	return 0;
+-	dp = &ds->ports[index];
++	list_for_each_entry(dp, &dst->ports, list)
++		if (dp->ds == ds && dp->index == index)
++			return dp;
++
++	dp = kzalloc(sizeof(*dp), GFP_KERNEL);
++	if (!dp)
++		return NULL;
+ 
+ 	dp->ds = ds;
+ 	dp->index = index;
+@@ -865,7 +871,7 @@ struct dsa_switch *dsa_switch_alloc(struct device *dev, size_t n)
+ {
+ 	struct dsa_switch *ds;
+ 
+-	ds = devm_kzalloc(dev, struct_size(ds, ports, n), GFP_KERNEL);
++	ds = devm_kzalloc(dev, sizeof(*ds), GFP_KERNEL);
+ 	if (!ds)
+ 		return NULL;
+ 
+@@ -893,6 +899,12 @@ static void dsa_switch_remove(struct dsa_switch *ds)
+ {
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 	unsigned int index = ds->index;
++	struct dsa_port *dp, *next;
++
++	list_for_each_entry_safe(dp, next, &dst->ports, list) {
++		list_del(&dp->list);
++		kfree(dp);
++	}
+ 
+ 	dsa_tree_remove_switch(dst, index);
  }
- 
- static int sja1105_remove(struct spi_device *spi)
 -- 
 2.23.0
 
