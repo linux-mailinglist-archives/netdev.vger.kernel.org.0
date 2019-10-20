@@ -2,168 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F88CDDEE6
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 16:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47915DDF00
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 17:04:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbfJTOgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 10:36:31 -0400
-Received: from mx2a.mailbox.org ([80.241.60.219]:32875 "EHLO mx2a.mailbox.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726349AbfJTOgb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Oct 2019 10:36:31 -0400
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
-        (No client certificate requested)
-        by mx2a.mailbox.org (Postfix) with ESMTPS id 13E6CA2287;
-        Sun, 20 Oct 2019 16:36:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-language:content-transfer-encoding:content-type
-        :content-type:mime-version:date:date:message-id:subject:subject
-        :from:from:received; s=mail20150812; t=1571582179; bh=33RJF3JIig
-        tswEg6/AYekjtWM+I3XvRvL0JYt1AAHP8=; b=lKkiohUCCNBpLwaR3lajXY0yZs
-        /+Gke5y7X40BHS3P4jQf21fcLfuM05KmgIDYw3kXCm0d6/nOSpEzuby/ggdFDnLH
-        N0+hakS4J1NxKygVaGSBdLesd4bCMhX9UCGeOTQyTSoXx6kmRIOjH3KiEMgF1XBd
-        vRAQiT3XIjwhX6EcwCpt9CugqYWzCNzr7aipJxilB1OmhCo7ba6RvBZigATLEGJq
-        t7pSws2ctFrXt6NGRa9eSzsDf/mUFvzGEbZFaT7R4WNOaYCrdyPoZg7mb5730/hd
-        N+GmdWsbg0MCUkKjRCQHFwzEsMbAxt/m7BoHfMY0+dTPREDqLwe1BggYaUuA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1571582186;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TTgzGv/nSI9GT8GUwIz6X2yO4G3ZjBstkEl/HIetUvA=;
-        b=yoQnFwU8jtb27oAyeiPjaXtHevyGfIclaQz4n0rR3EMEPuI4P4A4SHLVYbMp4dlMscaJJq
-        al0Ap5TXtUhxZdBUSXk2vCH4dpmsyajWuAOjtGNYVor2es3qBIw2cD7BoqsJQYaOo8Y1rX
-        /fyzY/B9LUWCIm74kvt7eMZVSw8UbyIETr9irVyYN2KaWg5bNCmVSslt1uUYfodg3ALVG3
-        rGUvvKTWgoGYhhBQ8LpEHh5Yf2VNMijh3hXWpKHONO4QOBoLRgnUZPEhS2yLaxF6NZb791
-        dZ5xXrI4XV3UhHSiyT43kGSa6rsgF02ewSa3PKNBdZqMmtQ5uAjsFZk1w2eVSA==
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter02.heinlein-hosting.de (spamfilter02.heinlein-hosting.de [80.241.56.116]) (amavisd-new, port 10030)
-        with ESMTP id N1Mo07V6SBpc; Sun, 20 Oct 2019 16:36:19 +0200 (CEST)
-From:   e-m <e-m@mailbox.org>
-Subject: [PATCH] allow ipv6 lladdr for ip6gre
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-Message-ID: <b8d174d7-b9d5-1387-4875-ca5f702fe842@mailbox.org>
-Date:   Sun, 20 Oct 2019 16:36:18 +0200
+        id S1726491AbfJTPET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 11:04:19 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42042 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726373AbfJTPES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 11:04:18 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f14so6063636pgi.9;
+        Sun, 20 Oct 2019 08:04:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6KJryP+tfJkdTokhyTPIITwV+Wsv8Q6hUTNNl5bzzlQ=;
+        b=RO3Utzmv1T/sYXFpUu3+q9zHe+Wsi9u+r9LXoQagQ9syZqHCrCfd1X9lFdELC6S/f/
+         I563WrsLVyg4L/CeL79q6w3+wqe7jxutMRuXqGc4ifIGBY06ETjRh8KXaJv1mc1MCkir
+         3azQPpmW4gxGs4cpQvdE9LR+7VBLcJ2p63YnaaYX3ofHN41p9P4kxRYbejq2aZkTFRom
+         dgtr5gd9grs587l8oCl8AAcfZrz/Cu25Ek+6neiRdqwHIiHQT++c244KUyllnhTaKDgx
+         /aZidpQFg57jQo9ZsFSquuiNcM9ZOZ2Faf3R1eTlyzUScnuEuC9308Wq7tRncgFiOLB/
+         U0Eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6KJryP+tfJkdTokhyTPIITwV+Wsv8Q6hUTNNl5bzzlQ=;
+        b=BdT1irr0gXxu0HjkkUYKlOMI34C0BZRXetoLbOEuG2OWEx7sxGLHNE7LAB+l33relX
+         p+rNVV1zy9DgznaKpsS/I293iqyQ9a4REkkxsdP2F7gcN7jGR9DngzzPJAcvX4FWrbXs
+         LS+GyAU2/1jXylSKIpcdnFFN1gbOev7NXzgZGgH8jL2o1eiW+YXgPbEqaEI4RQMSBjtZ
+         cu4YlETkz0cbbYlmjFwgGuZ/8mFMEljgT25ANHUowE6CRZQsbp0/Brda9ifGidvVBqPq
+         ZCYZiz1NgI2/1RQhtnfPDlgvREABc+gnScEkxQOcUwwboTKpSkHFqgwn9AFt8nDEmz0m
+         eViQ==
+X-Gm-Message-State: APjAAAUFcYaAXONqrUihnY6KR+YxM/pCHg46lNpcz5a5+zAr6VmRv5jr
+        yMkKjcLjPF1IIlSadJ71bqq/57Ba
+X-Google-Smtp-Source: APXvYqxnCw3hmpRBqaP4/BqEO2jPlw1xBBiIrZUWcSTeHT9FxonciwqUb5YDYe/CIlSvaLxj6C3blg==
+X-Received: by 2002:a17:90a:e98d:: with SMTP id v13mr23021514pjy.64.1571583857934;
+        Sun, 20 Oct 2019 08:04:17 -0700 (PDT)
+Received: from haramaki ([2400:4051:c520:1e00:e0af:68c6:243:d109])
+        by smtp.gmail.com with ESMTPSA id 206sm11709853pge.80.2019.10.20.08.04.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Oct 2019 08:04:16 -0700 (PDT)
+Received: by haramaki (Postfix, from userid 1000)
+        id 9C2B912C1F72; Mon, 21 Oct 2019 00:04:14 +0900 (JST)
+From:   Kazutoshi Noguchi <noguchi.kazutosi@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, noguchi.kazutosi@gmail.com
+Subject: [PATCH] r8152: add device id for Lenovo ThinkPad USB-C Dock Gen 2
+Date:   Mon, 21 Oct 2019 00:03:07 +0900
+Message-Id: <20191020150306.11902-1-noguchi.kazutosi@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This device is sold as 'ThinkPad USB-C Dock Gen 2 (40AS)'.
+Chipset is RTL8153 and works with r8152.
+Without this, the generic cdc_ether grabs the device, and the device jam
+connected networks up when the machine suspends.
 
-I recently noticed that its not possible to set ipv6 lladdr for ip6gre 
-tunnels using iproute2.
-
-That is because the parser (int ll_addr_a2n()) treats ipv6 addresses as 
-mac addresses because of the ":".
-
-I dont know iproute2 good enough to say if the patch below breaks 
-anything so please only look at this as a proof of concept.
-
-Thanks for reading.
-
-
-Best regards,
-
-Etienne Muesse
-
-
-// Testing:
-
-ip nei add fdaa::6 lladdr fdbb::6 dev ip6gre123
-
--> "fdbb" is invalid lladdr.
-
-Does not work with current version of iproute2 but with patch below.
-
-
+Signed-off-by: Kazutoshi Noguchi <noguchi.kazutosi@gmail.com>
 ---
-  lib/ll_addr.c | 60 ++++++++++++++++++++++++---------------------------
-  1 file changed, 28 insertions(+), 32 deletions(-)
+ drivers/net/usb/cdc_ether.c | 7 +++++++
+ drivers/net/usb/r8152.c     | 1 +
+ 2 files changed, 8 insertions(+)
 
-diff --git a/lib/ll_addr.c b/lib/ll_addr.c
-index 00b562ae..996901bf 100644
---- a/lib/ll_addr.c
-+++ b/lib/ll_addr.c
-@@ -49,41 +49,37 @@ const char *ll_addr_n2a(const unsigned char *addr, 
-int alen, int type,
-  /*NB: lladdr is char * (rather than u8 *) because sa_data is char * 
-(1003.1g) */
-  int ll_addr_a2n(char *lladdr, int len, const char *arg)
-  {
--    if (strchr(arg, '.')) {
--        inet_prefix pfx;
--        if (get_addr_1(&pfx, arg, AF_INET)) {
--            fprintf(stderr, "\"%s\" is invalid lladdr.\n", arg);
-+    inet_prefix pfx;
-+    int i;
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index 32f53de5b1fe..fe630438f67b 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -787,6 +787,13 @@ static const struct usb_device_id	products[] = {
+ 	.driver_info = 0,
+ },
+ 
++/* ThinkPad USB-C Dock Gen 2 (based on Realtek RTL8153) */
++{
++	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0xa387, USB_CLASS_COMM,
++			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
++	.driver_info = 0,
++},
 +
-+    if (get_addr_1(&pfx, arg, AF_UNSPEC) == 0) {
-+        if (len < pfx.bytelen)
-              return -1;
-+        memcpy(lladdr, pfx.data, pfx.bytelen);
-+        return pfx.bytelen;
-+    }
-+
-+    for (i = 0; i < len; i++) {
-+        int temp;
-+        char *cp = strchr(arg, ':');
-+        if (cp) {
-+            *cp = 0;
-+            cp++;
-          }
--        if (len < 4)
-+        if (sscanf(arg, "%x", &temp) != 1) {
-+            fprintf(stderr, "\"%s\" is invalid lladdr.\n",
-+                arg);
-+            return -1;
-+        }
-+        if (temp < 0 || temp > 255) {
-+            fprintf(stderr, "\"%s\" is invalid lladdr.\n",
-+                arg);
-              return -1;
--        memcpy(lladdr, pfx.data, 4);
--        return 4;
--    } else {
--        int i;
--
--        for (i = 0; i < len; i++) {
--            int temp;
--            char *cp = strchr(arg, ':');
--            if (cp) {
--                *cp = 0;
--                cp++;
--            }
--            if (sscanf(arg, "%x", &temp) != 1) {
--                fprintf(stderr, "\"%s\" is invalid lladdr.\n",
--                    arg);
--                return -1;
--            }
--            if (temp < 0 || temp > 255) {
--                fprintf(stderr, "\"%s\" is invalid lladdr.\n",
--                    arg);
--                return -1;
--            }
--            lladdr[i] = temp;
--            if (!cp)
--                break;
--            arg = cp;
-          }
--        return i + 1;
-+        lladdr[i] = temp;
-+        if (!cp)
-+            break;
-+        arg = cp;
-      }
-+    return i + 1;
-  }
+ /* NVIDIA Tegra USB 3.0 Ethernet Adapters (based on Realtek RTL8153) */
+ {
+ 	USB_DEVICE_AND_INTERFACE_INFO(NVIDIA_VENDOR_ID, 0x09ff, USB_CLASS_COMM,
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index cee9fef925cd..d4a95b50bda6 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -5755,6 +5755,7 @@ static const struct usb_device_id rtl8152_table[] = {
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0xa387)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_TPLINK,  0x0601)},
 -- 
-
+2.20.1
 
