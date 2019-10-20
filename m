@@ -2,123 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 211F4DDF41
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 17:48:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B0EDDFA5
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 19:07:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726486AbfJTPqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 11:46:25 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49287 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726467AbfJTPqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 11:46:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571586383;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NYB5YLU3InOkXCV2AcZVtukurd9BwBDSqfTnbkNJyC8=;
-        b=bq/XcSfkXbhphf9CLs5z6dK3sKoTap6FyvaWccsshUz0wmjjMZ64ssyLZw8ZbEomNiKZAX
-        Jkn6k4RzARE/B/zunKnBSgQcIvXcYZR8QMrzBcXVKaZi4Zz5tdAKJ6xLtLtP04Ya8FxVrN
-        RYQ2QxhLuzmA68of5b34iDv8qM1pSSg=
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
- [209.85.219.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-367-lbe6vLRoPcO70WN52X9t2Q-1; Sun, 20 Oct 2019 11:46:22 -0400
-Received: by mail-yb1-f198.google.com with SMTP id o141so8905425yba.15
-        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 08:46:22 -0700 (PDT)
+        id S1726583AbfJTRHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 13:07:33 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38968 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbfJTRHd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 13:07:33 -0400
+Received: by mail-pg1-f193.google.com with SMTP id p12so6183053pgn.6;
+        Sun, 20 Oct 2019 10:07:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XctxpsmH04LYAq9WgHg+9E0PoY+xS1FvDl3lkgy7Py8=;
+        b=uiGX7Fa6jkw9jaMvT1N9aYHq6RJ87nVEY2tRGdC10we5yLZh1nhR+IYEcUgx+fRX2Y
+         vujMyCZ2ST/xKI2BJt7ZHauoVPh7jBNn9f/fPhPOkciHuGuMveadyFaRxMIC0R/p0CMH
+         cK+ZlL3N92jOX/nvaUNz5OWW0EFIHB6aSG0I0+hI+5kFxO2qoqRUhLWPHFXv8D2nSJny
+         9CX/wQQryqXTcY1X78UTkNDKHJ4g8Wa/D3XHOpAHaJRsR+YimsOneXmcxnNOcE9PNPXz
+         rdxufxhSLH6qVYVf+jkcMhKo37yPEjWvoecRC1PGbgPyDCKosRo5pIpkkRh9vAlcHmLJ
+         dUyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=Alu6ppHvSW114ed3pBahWURj9wM8iWBEEGZ8MLoKgAk=;
-        b=J5sEhSmk3aCQDPktQJMemloe6Sf7N17a9Xlp56vce72qfZeGklKmrpMRUsjWcHjuj4
-         QGD7mBVAuP/HhCuikad7pFAS1NSrkh8IjpAUT4UIJje6tcG+tQjkDq8HNFymzC3Ecwgg
-         sGQvsHeivhcKjAdQtW72nA6E6o1L2b+MW80zka+Yz4bEB9cJOPtMGdqLZUA2YVI6p836
-         /PmtsBo/yCa+mh1gWFPC6fyU+fW7MNxIm5SYDraZXV/fKvmxJxulTw56pDMdfH3JPy5a
-         tz8u9zKeUgECAi5+5YD9rR+b87EBQKnP9d9mNLsgOqkMUxjSXn4Gltm+FNrMyqUezk4Q
-         dmpA==
-X-Gm-Message-State: APjAAAXxyQsj8PfyyEVFfDJ5E5dWexxgaQmE3KNLj6F9LHkwuhBF7ZD+
-        +9TXE5BR0PsjfTpgr8NruWbQ8m7KQRLvYxJY9TikthkV/xHxjmQZFxLuM6ro8aOEdgIBY2kKt+b
-        BMpjojWuhMhgvNhh/wcfKdHRlo/WvYFCQ
-X-Received: by 2002:a25:2005:: with SMTP id g5mr11581344ybg.233.1571586381778;
-        Sun, 20 Oct 2019 08:46:21 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxyKemkRcFRU3wzlgi/T4+K9AZ2BopYayuoVNBd36p+ggns4HBGKTFdfgg55BfQj8iXlviOeklLwD73HIE9Azs=
-X-Received: by 2002:a25:2005:: with SMTP id g5mr11581330ybg.233.1571586381452;
- Sun, 20 Oct 2019 08:46:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XctxpsmH04LYAq9WgHg+9E0PoY+xS1FvDl3lkgy7Py8=;
+        b=pRyjpgM+KYGI2gwFNiUYlZ9+jR9iHmCrkK7tVu/XiWBHOXc08UILDPpKxgZPZshUNQ
+         cHuXQ3WT2M0jXrRKoIBKFF6H+R+XKw9SIWb2qz0y+eytn3DlK7QJMPj3h5YB6ZGV9XrI
+         gVWcVd7cgFGLcxww2+NY74aEQCbWn8Iy1RjRuNKraYZNY6SUR2lDUz6kRada+cpA/I7j
+         gNgCOLpIhbl1zXn6K9ke5Bm3dZ1mq7FvjZLg/BlpcsBmgQuPwzdcjBx562br10Nw3Po0
+         aRdlGkrBXnQUJxK/p0TkDvQdEifT/5iIEbYMUK8c7dzm25rNhelD7VVPWotTQwISohgg
+         215A==
+X-Gm-Message-State: APjAAAW1siyiP5BBDVRqEeFTGQJBCuXrZm7fFvuXaH8tKaiDysN53O0o
+        +n17vpqHg2FW7Dv8d1UAyWRhRlWYBzs=
+X-Google-Smtp-Source: APXvYqy+oa+Wg/7TkIRpXSWGt26Om7+b1X9j+71p8xQGTZMa+OUseW1xu6jQ1IWlC6WxCQzpWIbS8A==
+X-Received: by 2002:a62:4ed6:: with SMTP id c205mr17623065pfb.170.1571591251752;
+        Sun, 20 Oct 2019 10:07:31 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com ([192.55.54.42])
+        by smtp.gmail.com with ESMTPSA id y8sm15938996pgs.34.2019.10.20.10.07.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Oct 2019 10:07:30 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, toke@redhat.com,
+        sridhar.samudrala@intel.com
+Subject: [PATCH bpf-next] libbpf: remove explicit XSKMAP lookup from AF_XDP XDP program
+Date:   Sun, 20 Oct 2019 19:07:11 +0200
+Message-Id: <20191020170711.22082-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-From:   Tom Rix <trix@redhat.com>
-Date:   Sun, 20 Oct 2019 08:46:10 -0700
-Message-ID: <CACVy4SVuw0Qbjiv6PLRn1symoxGzyBMZx2F5O23+jGZG6WHuYA@mail.gmail.com>
-Subject: [PATCH] xfrm : lock input tasklet skb queue
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-MC-Unique: lbe6vLRoPcO70WN52X9t2Q-1
-X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On PREEMPT_RT_FULL while running netperf, a corruption
-of the skb queue causes an oops.
+From: Björn Töpel <bjorn.topel@intel.com>
 
-This appears to be caused by a race condition here
-        __skb_queue_tail(&trans->queue, skb);
-        tasklet_schedule(&trans->tasklet);
-Where the queue is changed before the tasklet is locked by
-tasklet_schedule.
+In commit 43e74c0267a3 ("bpf_xdp_redirect_map: Perform map lookup in
+eBPF helper") the bpf_redirect_map() helper learned to do map lookup,
+which means that the explicit lookup in the XDP program for AF_XDP is
+not needed.
 
-The fix is to use the skb queue lock.
+This commit removes the map lookup, which simplifies the BPF code and
+improves the performance for the "rx_drop" [1] scenario with ~4%.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
+[1] # xdpsock -i eth0 -z -r
+
+Suggested-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- net/xfrm/xfrm_input.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ tools/lib/bpf/xsk.c | 24 +++++-------------------
+ 1 file changed, 5 insertions(+), 19 deletions(-)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 9b599ed66d97..226dead86828 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -758,12 +758,16 @@ static void xfrm_trans_reinject(unsigned long data)
-     struct xfrm_trans_tasklet *trans =3D (void *)data;
-     struct sk_buff_head queue;
-     struct sk_buff *skb;
-+    unsigned long flags;
-
-     __skb_queue_head_init(&queue);
-+    spin_lock_irqsave(&trans->queue.lock, flags);
-     skb_queue_splice_init(&trans->queue, &queue);
-
-     while ((skb =3D __skb_dequeue(&queue)))
-         XFRM_TRANS_SKB_CB(skb)->finish(dev_net(skb->dev), NULL, skb);
-+
-+    spin_unlock_irqrestore(&trans->queue.lock, flags);
- }
-
- int xfrm_trans_queue(struct sk_buff *skb,
-@@ -771,15 +775,20 @@ int xfrm_trans_queue(struct sk_buff *skb,
-                    struct sk_buff *))
- {
-     struct xfrm_trans_tasklet *trans;
-+    unsigned long flags;
-
-     trans =3D this_cpu_ptr(&xfrm_trans_tasklet);
-+    spin_lock_irqsave(&trans->queue.lock, flags);
-
--    if (skb_queue_len(&trans->queue) >=3D netdev_max_backlog)
-+    if (skb_queue_len(&trans->queue) >=3D netdev_max_backlog) {
-+        spin_unlock_irqrestore(&trans->queue.lock, flags);
-         return -ENOBUFS;
-+    }
-
-     XFRM_TRANS_SKB_CB(skb)->finish =3D finish;
-     __skb_queue_tail(&trans->queue, skb);
-     tasklet_schedule(&trans->tasklet);
-+    spin_unlock_irqrestore(&trans->queue.lock, flags);
-     return 0;
- }
- EXPORT_SYMBOL(xfrm_trans_queue);
---=20
-2.23.0
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index b0f532544c91..8e35de3cb443 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -278,29 +278,15 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 	 *
+ 	 *     // A set entry here means that the correspnding queue_id
+ 	 *     // has an active AF_XDP socket bound to it.
+-	 *     if (bpf_map_lookup_elem(&xsks_map, &index))
+-	 *         return bpf_redirect_map(&xsks_map, index, 0);
+-	 *
+-	 *     return XDP_PASS;
++	 *     return bpf_redirect_map(&xsks_map, index, XDP_PASS);
+ 	 * }
+ 	 */
+ 	struct bpf_insn prog[] = {
+-		/* r1 = *(u32 *)(r1 + 16) */
+-		BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 16),
+-		/* *(u32 *)(r10 - 4) = r1 */
+-		BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_1, -4),
+-		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+-		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),
+-		BPF_LD_MAP_FD(BPF_REG_1, xsk->xsks_map_fd),
+-		BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
+-		BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
+-		BPF_MOV32_IMM(BPF_REG_0, 2),
+-		/* if r1 == 0 goto +5 */
+-		BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 5),
+-		/* r2 = *(u32 *)(r10 - 4) */
++		/* r2 = *(u32 *)(r1 + 16) */
++		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, 16),
+ 		BPF_LD_MAP_FD(BPF_REG_1, xsk->xsks_map_fd),
+-		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_10, -4),
+-		BPF_MOV32_IMM(BPF_REG_3, 0),
++		/* r3 = XDP_PASS */
++		BPF_MOV32_IMM(BPF_REG_3, 2),
+ 		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+ 		/* The jumps are to this instruction */
+ 		BPF_EXIT_INSN(),
+-- 
+2.20.1
 
