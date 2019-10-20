@@ -2,263 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8D4DDFAB
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 19:12:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76255DDFB2
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 19:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbfJTRMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 13:12:14 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:32954 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726054AbfJTRMN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 13:12:13 -0400
-Received: by mail-qk1-f196.google.com with SMTP id 71so6253657qkl.0;
-        Sun, 20 Oct 2019 10:12:12 -0700 (PDT)
+        id S1726659AbfJTRZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 13:25:11 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36645 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726556AbfJTRZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 13:25:10 -0400
+Received: by mail-pf1-f194.google.com with SMTP id y22so6841033pfr.3;
+        Sun, 20 Oct 2019 10:25:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2Ecj+ZeIjMcfOAEbWP79WcTG1YfBKfhdkoV2tlBJo1E=;
-        b=KTozHMaa+35EIR5XwvZMw+HxT2PHwk7CcsqrROaXUidYHIYzlBwP4Uf9vlTlTdohyh
-         chlNCvVQk2CdcKv1fZU3G7hNWksTyU5h9iw/B6A/MCxSW+FApwAsNyIDxujHZw50eMmP
-         fUwSly17X3lSTfpIzi919UHtZFjIhBZIq781760TGzqjQQHM0z7ukud+zvkByvtnaX53
-         HWBeJJoVCKKsh0dUzY4LzgRsGu3CORW+x03dKeusQ2cXfhSuK8vts03jX6H/MY4zY607
-         gEzvhn6HukYcfZ1uTdI82kO0Yl+0wYlNT3IG1Xf4nYmIvhUyy7bb9koFdFBAZYFnDNaJ
-         nt0g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=bfdCbxekAsldwt8m5pwg+qcM6L4Gc2Nz/dBiQdkpxT4=;
+        b=PHl01K37HlDkd3UgvSZjOWWJatkA2fo2yhPQp4UdQb4kbxo1sq/ljBLWQfKCr7SRgT
+         4OfvaGk9f6kGFv3G4p7hb8tS8zs4EmWblG6uZiYdvxDGEfFvDqPswjiEeyuuixSZc69t
+         Q9uI1Nyz1tJJR/DzT+Jjr4Ficf9C8aavKMD3K1VJ1jEUNFrb6KcViG4pj6fvnkNmQnDB
+         oiE9CTudGFTd+URAN0gwrSX4nMciqI+qed4kf80Hp2TC+Bsq3xpTo/x+t6wgd/yMXaps
+         RI6lmD8vRzafYvV/ft0ANoZPg4h0Ekn28O4v23BoYwfOMT5hWGddanSQobUIMAYy8NMZ
+         kYTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2Ecj+ZeIjMcfOAEbWP79WcTG1YfBKfhdkoV2tlBJo1E=;
-        b=meWaPXEtoNtH6W3/kn/6AGgFucB741i6tEDTZwDvAhfxdwN0POQkkuLuZ0bv/x3FxX
-         zL0aaX2BsjAla5JWLbYDOPNUx6i5yLVKk8WdBSeXz5U/MhAHLF0HSiGO1iSiptlYP0W7
-         hRdWOJfjHqasV8EvSJkghHpkT6OiVfzLU6SrWZSrkUqSy6hjxRCoNi0E3H9pEqkbmGNQ
-         +wJ1Q83lv8Vk9XSXSUSLfZg61WHcf1SQMC+3Fc7E+aCfI0aK5OvizfqkKtELmq5iY4jM
-         5aIDPBG71Hv0SrhjsoD4caHy4V07azAc0hvjOLDGd4x05KFo5ZaOIdcIc95ZmwlfPDYa
-         IMMA==
-X-Gm-Message-State: APjAAAWfIoC/leOSZgEyPgAM4sHdaaqHtyaakPdXkuRaP0v9SoWDV/kc
-        1qSC2m1TgTmVRRdZBph0qogMeGjGJfF0zdeVNss=
-X-Google-Smtp-Source: APXvYqxCfkppJLJ0//IChvnQN8ymatTMeJGgQLEey36Vm3Kn79me+a9Ns4Z32lYbaBdKZvr6NydxcGoMZs+xg5I2vgI=
-X-Received: by 2002:a05:620a:132b:: with SMTP id p11mr8552225qkj.232.1571591532355;
- Sun, 20 Oct 2019 10:12:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bfdCbxekAsldwt8m5pwg+qcM6L4Gc2Nz/dBiQdkpxT4=;
+        b=r7qvUU+kqymPIoTayOBR+l0MNUyIDA9WlttWjOviH+HoiUTvjyYcmpxz1C99lsThHI
+         SHkVK5uM76QKwGSN1ce1H0TX1jLjdrVdUuS1132qeSX0oS84DMAw6k1ppCtEjBB3XF/v
+         Swe0OgXbNW8NEdiN22o3l5u9QtFvtS+rbbz/oyI7gFsBJhKKQ/4CQjsWwiXoe1R4sSEV
+         IPjRHjlwIHgYn2WELWv2VJ/iPIrgQjiHnoBiHP+NyV8LK4/VyWmrRN03z6Zdzx5Lmtzx
+         uYkEUVWCzSdWfbBM1t7l9N9ZnZXil7sEZNlid0W1gWkJgE4eDGw8e9DoYW4GIPK2Iu2p
+         UtVw==
+X-Gm-Message-State: APjAAAXe/B6UpEroK036A8ki5+7cc+8dhHKRYdnuAnZoQ5zSfX7yKHxi
+        rpxZ+9SNW8hgMeMDPXHsI0k=
+X-Google-Smtp-Source: APXvYqxe+eXydeDD7Rlvl4Gux1bcp9C4lbIrbHlqNHXEp9Ykn1NBoiaoiF4CPg2ene8PgXS7sLjeyw==
+X-Received: by 2002:a63:7405:: with SMTP id p5mr8956730pgc.264.1571592308594;
+        Sun, 20 Oct 2019 10:25:08 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::421e])
+        by smtp.gmail.com with ESMTPSA id w25sm12048831pfi.60.2019.10.20.10.25.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 20 Oct 2019 10:25:07 -0700 (PDT)
+Date:   Sun, 20 Oct 2019 10:25:05 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf v2] xsk: improve documentation for AF_XDP
+Message-ID: <20191020172503.qeee2olqxxnynm6v@ast-mbp.dhcp.thefacebook.com>
+References: <1571391220-22835-1-git-send-email-magnus.karlsson@intel.com>
+ <20191018232756.akn4yvyxmi63dl5b@ast-mbp>
+ <CAJ8uoz292vhqb=L0khWeUs89HF42d+UAgzb1z1tf8my1PaU5Fg@mail.gmail.com>
 MIME-Version: 1.0
-References: <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
- <CAADnVQ+XxmvY0cs8MYriMMd7=2TSEm4zCtB+fs2vkwdUY6UgAQ@mail.gmail.com>
- <3ED8E928C4210A4289A677D2FEB48235140134CE@fmsmsx111.amr.corp.intel.com>
- <2bc26acd-170d-634e-c066-71557b2b3e4f@intel.com> <CAADnVQ+qq6RLMjh5bB1ugXP5p7vYM2F1fLGFQ2pL=2vhCLiBdA@mail.gmail.com>
- <2032d58c-916f-d26a-db14-bd5ba6ad92b9@intel.com> <CAADnVQ+CH1YM52+LfybLS+NK16414Exrvk1QpYOF=HaT4KRaxg@mail.gmail.com>
- <acf69635-5868-f876-f7da-08954d1f690e@intel.com> <20191019001449.fk3gnhih4nx724pm@ast-mbp>
- <6f281517-3785-ce46-65de-e2f78576783b@intel.com> <20191019022525.w5xbwkav2cpqkfwi@ast-mbp>
- <877e4zd8py.fsf@toke.dk>
-In-Reply-To: <877e4zd8py.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Sun, 20 Oct 2019 19:12:01 +0200
-Message-ID: <CAJ+HfNj07FwmU2GGpUYw56PRwu4pHyHNSkbCOogbMB5zB2QqWA@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
- sockets to receive packets directly from a queue
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Herbert, Tom" <tom.herbert@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ8uoz292vhqb=L0khWeUs89HF42d+UAgzb1z1tf8my1PaU5Fg@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 20 Oct 2019 at 12:15, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
-.com> wrote:
->
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->
-> > On Fri, Oct 18, 2019 at 05:45:26PM -0700, Samudrala, Sridhar wrote:
-> >> On 10/18/2019 5:14 PM, Alexei Starovoitov wrote:
-> >> > On Fri, Oct 18, 2019 at 11:40:07AM -0700, Samudrala, Sridhar wrote:
-> >> > >
-> >> > > Perf report for "AF_XDP default rxdrop" with patched kernel - miti=
-gations ON
-> >> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> >> > > Samples: 44K of event 'cycles', Event count (approx.): 38532389541
-> >> > > Overhead  Command          Shared Object              Symbol
-> >> > >    15.31%  ksoftirqd/28     [i40e]                     [k] i40e_cl=
-ean_rx_irq_zc
-> >> > >    10.50%  ksoftirqd/28     bpf_prog_80b55d8a76303785  [k] bpf_pro=
-g_80b55d8a76303785
-> >> > >     9.48%  xdpsock          [i40e]                     [k] i40e_cl=
-ean_rx_irq_zc
-> >> > >     8.62%  xdpsock          xdpsock                    [.] main
-> >> > >     7.11%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_rcv
-> >> > >     5.81%  ksoftirqd/28     [kernel.vmlinux]           [k] xdp_do_=
-redirect
-> >> > >     4.46%  xdpsock          bpf_prog_80b55d8a76303785  [k] bpf_pro=
-g_80b55d8a76303785
-> >> > >     3.83%  xdpsock          [kernel.vmlinux]           [k] xsk_rcv
-> >> >
-> >> > why everything is duplicated?
-> >> > Same code runs in different tasks ?
-> >>
-> >> Yes. looks like these functions run from both the app(xdpsock) context=
- and ksoftirqd context.
-> >>
-> >> >
-> >> > >     2.81%  ksoftirqd/28     [kernel.vmlinux]           [k] bpf_xdp=
-_redirect_map
-> >> > >     2.78%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_map=
-_lookup_elem
-> >> > >     2.44%  xdpsock          [kernel.vmlinux]           [k] xdp_do_=
-redirect
-> >> > >     2.19%  ksoftirqd/28     [kernel.vmlinux]           [k] __xsk_m=
-ap_redirect
-> >> > >     1.62%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_ume=
-m_peek_addr
-> >> > >     1.57%  xdpsock          [kernel.vmlinux]           [k] xsk_ume=
-m_peek_addr
-> >> > >     1.32%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_dir=
-ect_sync_single_for_cpu
-> >> > >     1.28%  xdpsock          [kernel.vmlinux]           [k] bpf_xdp=
-_redirect_map
-> >> > >     1.15%  xdpsock          [kernel.vmlinux]           [k] dma_dir=
-ect_sync_single_for_device
-> >> > >     1.12%  xdpsock          [kernel.vmlinux]           [k] xsk_map=
-_lookup_elem
-> >> > >     1.06%  xdpsock          [kernel.vmlinux]           [k] __xsk_m=
-ap_redirect
-> >> > >     0.94%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_dir=
-ect_sync_single_for_device
-> >> > >     0.75%  ksoftirqd/28     [kernel.vmlinux]           [k] __x86_i=
-ndirect_thunk_rax
-> >> > >     0.66%  ksoftirqd/28     [i40e]                     [k] i40e_cl=
-ean_programming_status
-> >> > >     0.64%  ksoftirqd/28     [kernel.vmlinux]           [k] net_rx_=
-action
-> >> > >     0.64%  swapper          [kernel.vmlinux]           [k] intel_i=
-dle
-> >> > >     0.62%  ksoftirqd/28     [i40e]                     [k] i40e_na=
-pi_poll
-> >> > >     0.57%  xdpsock          [kernel.vmlinux]           [k] dma_dir=
-ect_sync_single_for_cpu
-> >> > >
-> >> > > Perf report for "AF_XDP direct rxdrop" with patched kernel - mitig=
-ations ON
-> >> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> >> > > Samples: 46K of event 'cycles', Event count (approx.): 38387018585
-> >> > > Overhead  Command          Shared Object             Symbol
-> >> > >    21.94%  ksoftirqd/28     [i40e]                    [k] i40e_cle=
-an_rx_irq_zc
-> >> > >    14.36%  xdpsock          xdpsock                   [.] main
-> >> > >    11.53%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_rcv
-> >> > >    11.32%  xdpsock          [i40e]                    [k] i40e_cle=
-an_rx_irq_zc
-> >> > >     4.02%  xdpsock          [kernel.vmlinux]          [k] xsk_rcv
-> >> > >     2.91%  ksoftirqd/28     [kernel.vmlinux]          [k] xdp_do_r=
-edirect
-> >> > >     2.45%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_umem=
-_peek_addr
-> >> > >     2.19%  xdpsock          [kernel.vmlinux]          [k] xsk_umem=
-_peek_addr
-> >> > >     2.08%  ksoftirqd/28     [kernel.vmlinux]          [k] bpf_dire=
-ct_xsk
-> >> > >     2.07%  ksoftirqd/28     [kernel.vmlinux]          [k] dma_dire=
-ct_sync_single_for_cpu
-> >> > >     1.53%  ksoftirqd/28     [kernel.vmlinux]          [k] dma_dire=
-ct_sync_single_for_device
-> >> > >     1.39%  xdpsock          [kernel.vmlinux]          [k] dma_dire=
-ct_sync_single_for_device
-> >> > >     1.22%  ksoftirqd/28     [kernel.vmlinux]          [k] xdp_get_=
-xsk_from_qid
-> >> > >     1.12%  ksoftirqd/28     [i40e]                    [k] i40e_cle=
-an_programming_status
-> >> > >     0.96%  ksoftirqd/28     [i40e]                    [k] i40e_nap=
-i_poll
-> >> > >     0.95%  ksoftirqd/28     [kernel.vmlinux]          [k] net_rx_a=
-ction
-> >> > >     0.89%  xdpsock          [kernel.vmlinux]          [k] xdp_do_r=
-edirect
-> >> > >     0.83%  swapper          [i40e]                    [k] i40e_cle=
-an_rx_irq_zc
-> >> > >     0.70%  swapper          [kernel.vmlinux]          [k] intel_id=
-le
-> >> > >     0.66%  xdpsock          [kernel.vmlinux]          [k] dma_dire=
-ct_sync_single_for_cpu
-> >> > >     0.60%  xdpsock          [kernel.vmlinux]          [k] bpf_dire=
-ct_xsk
-> >> > >     0.50%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_umem=
-_discard_addr
-> >> > >
-> >> > > Based on the perf reports comparing AF_XDP default and direct rxdr=
-op, we can say that
-> >> > > AF_XDP direct rxdrop codepath is avoiding the overhead of going th=
-rough these functions
-> >> > >  bpf_prog_xxx
-> >> > >          bpf_xdp_redirect_map
-> >> > >  xsk_map_lookup_elem
-> >> > >          __xsk_map_redirect
-> >> > > With AF_XDP direct, xsk_rcv() is directly called via bpf_direct_xs=
-k() in xdp_do_redirect()
-> >> >
-> >> > I don't think you're identifying the overhead correctly.
-> >> > xsk_map_lookup_elem is 1%
-> >> > but bpf_xdp_redirect_map() suppose to call __xsk_map_lookup_elem()
-> >> > which is a different function:
-> >> > ffffffff81493fe0 T __xsk_map_lookup_elem
-> >> > ffffffff81492e80 t xsk_map_lookup_elem
-> >> >
-> >> > 10% for bpf_prog_80b55d8a76303785 is huge.
-> >> > It's the actual code of the program _without_ any helpers.
-> >> > How does the program actually look?
-> >>
-> >> It is the xdp program that is loaded via xsk_load_xdp_prog() in tools/=
-lib/bpf/xsk.c
-> >> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/=
-tools/lib/bpf/xsk.c#n268
+On Sun, Oct 20, 2019 at 10:13:49AM +0200, Magnus Karlsson wrote:
+> On Sat, Oct 19, 2019 at 11:48 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
 > >
-> > I see. Looks like map_gen_lookup was never implemented for xskmap.
-> > How about adding it first the way array_map_gen_lookup() is implemented=
-?
-> > This will easily give 2x perf gain.
->
-> I guess we should implement this for devmaps as well now that we allow
-> lookups into those.
->
-> However, in this particular example, the lookup from BPF is not actually
-> needed, since bpf_redirect_map() will return a configurable error value
-> when the map lookup fails (for exactly this use case).
->
-> So replacing:
->
-> if (bpf_map_lookup_elem(&xsks_map, &index))
->     return bpf_redirect_map(&xsks_map, index, 0);
->
-> with simply
->
-> return bpf_redirect_map(&xsks_map, index, XDP_PASS);
->
-> would save the call to xsk_map_lookup_elem().
->
+> > On Fri, Oct 18, 2019 at 11:33:40AM +0200, Magnus Karlsson wrote:
+> > > +
+> > > +   #include <linux/bpf.h>
+> > > +   #include "bpf_helpers.h"
+> > > +
+> > > +   #define MAX_SOCKS 16
+> > > +
+> > > +   struct {
+> > > +        __uint(type, BPF_MAP_TYPE_XSKMAP);
+> > > +        __uint(max_entries, MAX_SOCKS);
+> > > +        __uint(key_size, sizeof(int));
+> > > +        __uint(value_size, sizeof(int));
+> > > +   } xsks_map SEC(".maps");
+> > > +
+> > > +   struct {
+> > > +        __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+> > > +        __uint(max_entries, 1);
+> > > +        __type(key, int);
+> > > +        __type(value, unsigned int);
+> > > +   } rr_map SEC(".maps");
+> >
+> > hmm. does xsks_map compile?
+> 
+> Yes. Actually, I wrote a new sample to demonstrate this feature and to
+> test the code above. I will send that patch set (contains some small
+> additions to libbpf also to be able to support this) to bpf-next.
+> Though, if I used the __type declarations of the rr_map PERCPU_ARRAY I
+> got this warning: "pr_warning("Error in
+> bpf_create_map_xattr(%s):%s(%d). Retrying without BTF.\n")", so I had
+> to change it to the type above that is also used for SOCKMAP. Some
+> enablement that is missing for XSKMAP? Have not dug into it.
 
-Thanks for the reminder! I just submitted a patch. Still, doing the
-map_gen_lookup()  for xsk/devmaps still makes sense!
+Ahh. Right. xskmap explicitly prohibits BTF for key/value.
+const struct bpf_map_ops xsk_map_ops = {
+        ...
+        .map_check_btf = map_check_no_btf,
+};
+I guess it's time to add support for it.
 
-
-Bj=C3=B6rn
-
-
-> -Toke
->
-> _______________________________________________
-> Intel-wired-lan mailing list
-> Intel-wired-lan@osuosl.org
-> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
