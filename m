@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E35EDE0D9
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 00:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D482ADE110
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 01:15:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726604AbfJTWQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 18:16:23 -0400
-Received: from mail-oi1-f173.google.com ([209.85.167.173]:35598 "EHLO
-        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726374AbfJTWQX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 18:16:23 -0400
-Received: by mail-oi1-f173.google.com with SMTP id x3so9479923oig.2
-        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 15:16:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2NFiplO/duAewYKVneQcQQGylDAPK2bukYpl4K78Dsc=;
-        b=bQWHpaKdy43onS6BoyLvH1TouTdm8Fs88SGnWaJlia2m9/5TVW1OU8NgCJJwIowmnc
-         NK2+1F3vUOge9C9ShavpN71u82rblqodLUvg+4f8FUZpz8aKRTRrfjoLm4WFEYvHzfFa
-         qoHqESv+gtKjG1uLbHlDHMfD/VGRI54PiRrG4pXBzj60S2zhtr81qi1+Z/dqx3uwJ4yE
-         S2kc8hkmGvBBA0WhhZYo5tWNVAqNTZCxcrO+5D22i0SDGIrCk7I2ZjKK3X6c1r694YF8
-         RbG/c64fQfmIy4mDqYfoOtu5jgvS8T6G6OKTdKb7rhA7noPUjBNKBNE5GE1a24PnnwwL
-         KpoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2NFiplO/duAewYKVneQcQQGylDAPK2bukYpl4K78Dsc=;
-        b=E8Ho2lcKPujppIP5ouG99AFF1qBeMxMd+ykpqImWdurfGJzJi9vQoKwR6Xd87NQrC+
-         jYbg/sWHxDKa8Wdox6IbcqnpY72XKFyIXUK+cKLfoFC/FcbKXg0Y6hq6Hj+1fvyE6LMA
-         EguJPIciGUkmIlfUwGrOON+RVXSOLVRRbM94xoSgx6ZNVFq/h7qYuSe6Jq6bUReSvFeB
-         Ku0uZhgtDPdDGKlf53TdD1yN4rrLt95wY0r6HSFwRIKLaJpHJ6VFl8AKYKPU50QSZUtf
-         P67F8V++95L2+tnsjFklCJ+Y8NbougODq7wioD7e43nH33tWpJrawYwpCGGyXGl9rBVz
-         J3fg==
-X-Gm-Message-State: APjAAAU4/SYV0c1S4nb7KPLlgu8atxxbbJjpeAhnXnXjpWIgaY7ug03C
-        3TUcKvfh6+UMVu+h6962dE2W9EFlpgk6Pwrde8nFDg==
-X-Google-Smtp-Source: APXvYqzu/Y6WT6CGBjKEFMoo1P0SgKDtvLR931XkUDMoAIyj5mwURExpmvSEle3hn3k6Bah4XtheTF+whvbCjbHSGDY=
-X-Received: by 2002:aca:4d12:: with SMTP id a18mr15871158oib.79.1571609781660;
- Sun, 20 Oct 2019 15:16:21 -0700 (PDT)
+        id S1726688AbfJTXPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 19:15:50 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:48930 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726565AbfJTXPu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 19:15:50 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id CED8E6032D; Sun, 20 Oct 2019 23:15:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571613349;
+        bh=c64NO6vKDvjO0uVxCKEkz2cYaCyPkwDUeC+2lovbnmc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=opf4Bug1SY8v/fxODeHuE4w6+hUJRAXlBFcbiQgPPDOFGIC8t886p922K5a19sXKq
+         OLX2ZDB2e/E8tTGflr23X6N9fRQV6gXaUokbzQCb1YkwHVe9/YoaN9wnLV3yaUz27e
+         7cOGLgTDFdcecYyBAAK8swpwZ02+GCmIz/9GJUig=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id 47564602DC;
+        Sun, 20 Oct 2019 23:15:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571613349;
+        bh=c64NO6vKDvjO0uVxCKEkz2cYaCyPkwDUeC+2lovbnmc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=opf4Bug1SY8v/fxODeHuE4w6+hUJRAXlBFcbiQgPPDOFGIC8t886p922K5a19sXKq
+         OLX2ZDB2e/E8tTGflr23X6N9fRQV6gXaUokbzQCb1YkwHVe9/YoaN9wnLV3yaUz27e
+         7cOGLgTDFdcecYyBAAK8swpwZ02+GCmIz/9GJUig=
 MIME-Version: 1.0
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
-In-Reply-To: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Sun, 20 Oct 2019 18:16:04 -0400
-Message-ID: <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sun, 20 Oct 2019 17:15:49 -0600
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     Neal Cardwell <ncardwell@google.com>
 Cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
+In-Reply-To: <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
+References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
+ <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
+Message-ID: <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tcp_write_queue_purgeOn Sun, Oct 20, 2019 at 4:25 PM Subash Abhinov
-Kasiviswanathan <subashab@codeaurora.org> wrote:
->
-> We are seeing a crash in the TCP ACK codepath often in our regression
-> racks with an ARM64 device with 4.19 based kernel.
->
-> It appears that the tp->highest_ack is invalid when being accessed when
-> a
-> FIN-ACK is received. In all the instances of the crash, the tcp socket
-> is in TCP_FIN_WAIT1 state.
+> Hmm. Random related thought while searching for a possible cause: I
+> wonder if tcp_write_queue_purge() should clear tp->highest_sack (and
+> possibly tp->sacked_out)? The tcp_write_queue_purge() code is careful
+> to call  tcp_clear_all_retrans_hints(tcp_sk(sk)) and I would imagine
+> that similar considerations would imply that we should clear at least
+> tp->highest_sack?
+> 
+> neal
 
-Hmm. Random related thought while searching for a possible cause: I
-wonder if tcp_write_queue_purge() should clear tp->highest_sack (and
-possibly tp->sacked_out)? The tcp_write_queue_purge() code is careful
-to call  tcp_clear_all_retrans_hints(tcp_sk(sk)) and I would imagine
-that similar considerations would imply that we should clear at least
-tp->highest_sack?
+Hi Neal
 
-neal
+If the socket is in FIN-WAIT1, does that mean that all the segments
+corresponding to SACK blocks are sent and ACKed already?
+
+tp->sacked_out is non zero in all these crashes (is the SACK information
+possibly invalid or stale here?).
+
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
