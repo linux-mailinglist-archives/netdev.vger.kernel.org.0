@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 344A2DDE12
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 12:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CE69DDE2B
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 12:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726320AbfJTKO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 06:14:57 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:27727 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726027AbfJTKO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 06:14:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571566495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rBMRx7VKl+U03kBuVO96Nk+z6cMJJlJhVPE1Ji9EtVo=;
-        b=Rjydvl6q50Pt6XplH8eWCzk48hm38ti9SjRrPJDmCiE/IDJIC3BMpKIi4BOjMsOKY8yLVF
-        NzYeq7+eHTFMDO1dtgEcsgNkoUHdcHU3D4Xlq4m7TgAeqiQSLoXog4N++EL7GldWYcPncg
-        kMZu3MECwYEREnuK7mWIOoi0LcnjouE=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-98-uBjR2FjGO0uSH9mNy1l2-A-1; Sun, 20 Oct 2019 06:14:53 -0400
-Received: by mail-lj1-f197.google.com with SMTP id y28so1938287ljn.2
-        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 03:14:53 -0700 (PDT)
+        id S1726289AbfJTK6s convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 20 Oct 2019 06:58:48 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58446 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726016AbfJTK6s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Oct 2019 06:58:48 -0400
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 34C4383F3E
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 10:58:47 +0000 (UTC)
+Received: by mail-lj1-f199.google.com with SMTP id y28so1951530ljn.2
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 03:58:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=lXtTDTE7K2RmqsVX0VCIrU7dqQ+2zlkBv2Zk4TX90ZI=;
-        b=C9QIoO+jkJetbSbpegrq/fOudlqysb+eFh0jIZtloo8Lk1eVxNr+RZspeRqgR1LBFz
-         vtj7qHEXcnpiDEXlz/8PVp8FoyaFRUcgnxYo4lVCYTxS0VzpXa5I/0z6D74BflpHB2d9
-         gFK1bF8iKsHoY+yz6flT0mKAxxQ6rmnhZ9cIuXe2lh88qZnG7CFa+GBSpmS1fntGuK+A
-         RMwpz22xo/JcV5Kxecz3Ethq5S1jOXFwpViBVNVe1eUWev47YBq+utIoLfw8Q6sFz6Ij
-         Oak97ly3/yJAzS90q5Ap3d3GkLNy2WNx8jf2L2gWjLbTikj/DZnv8i9RtGRj8DShAUoN
-         WOPQ==
-X-Gm-Message-State: APjAAAUYXo8Gvss3EC3WWwK8WdFM+BFP9TNC/vDOlfPJwCiZDqIZQsT3
-        omMDr9eE0iWAkODXE1SROh2a+neP5y0NNmXhM2SuwWFMyjce+6RcBSsXcgcZHP31Mb0JKEH+RQo
-        wagbjnJPNkcO/IsPE
-X-Received: by 2002:a2e:81cf:: with SMTP id s15mr9829344ljg.99.1571566492254;
-        Sun, 20 Oct 2019 03:14:52 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwk3PE8wyqtm9E0FO88pbqr/0aL7k1Lp5yiQfGBzgWtbyOMvfKaYdhTmahXXB++Ngh5GJPbgw==
-X-Received: by 2002:a2e:81cf:: with SMTP id s15mr9829335ljg.99.1571566491980;
-        Sun, 20 Oct 2019 03:14:51 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id x3sm4685598ljm.103.2019.10.20.03.14.50
+         :message-id:mime-version:content-transfer-encoding;
+        bh=+NpykUIW65eJ2c36TfeRLe5PwhhRNywnM93E7dMjYSk=;
+        b=XBi4ld3yFf8Kyj3JXNYi3xtJHzGwDV+a9P/v8fF29xVhfJqDseU+7v6uamvTN9FlD5
+         BVIogU90Q/C7vpYzlJ7yO2v+QobLIf59A6mSpzlsQ/rDuE9KVE7KxPzVh07CPlqsS7/k
+         xR8MSNlb2AdQdP8u31cn0cQflGKXthVjGF2uc1mpgs2NkZ+Je8796DCHuf5G56ck+x7u
+         QoPFV24XTQ93UjaGAagJrtLdN2t3zzuVXfsuZt0Zj39g/Qx8hDFwRK+Aml7JZWVWPS53
+         HYdqXTGWWOaq6eIQeezzOBLqK8Hm5brDTK/rgTYG1t9L+YyKttZ+F4dNVl2n0ttI3OTB
+         chWw==
+X-Gm-Message-State: APjAAAUq8ylJ7D2tzF5wfEZwKQrlT7/sXqehhvQQuuiRwnqOBYQiURHB
+        X8zvu8+CcOsI5wjuWs81BQO18FFuGx0heAdfwm8sEHjHfN9lioa3Aj603yPv6EEqtKKovfouhuU
+        K0uOMAf4fnZ3HhSTf
+X-Received: by 2002:ac2:5e9b:: with SMTP id b27mr11482655lfq.89.1571569123795;
+        Sun, 20 Oct 2019 03:58:43 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwheJ5nZH8O2NBDsSwXhawLMJ4fCPt8GVo3AKxJc7SNEseycF42Xbi/TSEiLzxx97eRhCe+Yg==
+X-Received: by 2002:ac2:5e9b:: with SMTP id b27mr11482640lfq.89.1571569123523;
+        Sun, 20 Oct 2019 03:58:43 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id n5sm6167694ljh.54.2019.10.20.03.58.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Oct 2019 03:14:50 -0700 (PDT)
+        Sun, 20 Oct 2019 03:58:42 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BD30C1804C8; Sun, 20 Oct 2019 12:14:49 +0200 (CEST)
+        id BE7C51804C8; Sun, 20 Oct 2019 12:58:40 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "Samudrala\, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Fijalkowski\, Maciej" <maciej.fijalkowski@intel.com>,
-        "Herbert\, Tom" <tom.herbert@intel.com>
-Subject: Re: FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP sockets to receive packets directly from a queue
-In-Reply-To: <20191019022525.w5xbwkav2cpqkfwi@ast-mbp>
-References: <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com> <CAADnVQ+XxmvY0cs8MYriMMd7=2TSEm4zCtB+fs2vkwdUY6UgAQ@mail.gmail.com> <3ED8E928C4210A4289A677D2FEB48235140134CE@fmsmsx111.amr.corp.intel.com> <2bc26acd-170d-634e-c066-71557b2b3e4f@intel.com> <CAADnVQ+qq6RLMjh5bB1ugXP5p7vYM2F1fLGFQ2pL=2vhCLiBdA@mail.gmail.com> <2032d58c-916f-d26a-db14-bd5ba6ad92b9@intel.com> <CAADnVQ+CH1YM52+LfybLS+NK16414Exrvk1QpYOF=HaT4KRaxg@mail.gmail.com> <acf69635-5868-f876-f7da-08954d1f690e@intel.com> <20191019001449.fk3gnhih4nx724pm@ast-mbp> <6f281517-3785-ce46-65de-e2f78576783b@intel.com> <20191019022525.w5xbwkav2cpqkfwi@ast-mbp>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: bpf indirect calls
+In-Reply-To: <20191019200939.kiwuaj7c4bg25vqs@ast-mbp>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1> <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com> <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com> <87o8yqjqg0.fsf@toke.dk> <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com> <87v9srijxa.fsf@toke.dk> <20191016022849.weomgfdtep4aojpm@ast-mbp> <8736fshk7b.fsf@toke.dk> <20191019200939.kiwuaj7c4bg25vqs@ast-mbp>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sun, 20 Oct 2019 12:14:49 +0200
-Message-ID: <877e4zd8py.fsf@toke.dk>
+Date:   Sun, 20 Oct 2019 12:58:40 +0200
+Message-ID: <874l03d6ov.fsf@toke.dk>
 MIME-Version: 1.0
-X-MC-Unique: uBjR2FjGO0uSH9mNy1l2-A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -80,173 +71,145 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-> On Fri, Oct 18, 2019 at 05:45:26PM -0700, Samudrala, Sridhar wrote:
->> On 10/18/2019 5:14 PM, Alexei Starovoitov wrote:
->> > On Fri, Oct 18, 2019 at 11:40:07AM -0700, Samudrala, Sridhar wrote:
->> > >=20
->> > > Perf report for "AF_XDP default rxdrop" with patched kernel - mitiga=
-tions ON
->> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
->> > > Samples: 44K of event 'cycles', Event count (approx.): 38532389541
->> > > Overhead  Command          Shared Object              Symbol
->> > >    15.31%  ksoftirqd/28     [i40e]                     [k] i40e_clea=
-n_rx_irq_zc
->> > >    10.50%  ksoftirqd/28     bpf_prog_80b55d8a76303785  [k] bpf_prog_=
-80b55d8a76303785
->> > >     9.48%  xdpsock          [i40e]                     [k] i40e_clea=
-n_rx_irq_zc
->> > >     8.62%  xdpsock          xdpsock                    [.] main
->> > >     7.11%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_rcv
->> > >     5.81%  ksoftirqd/28     [kernel.vmlinux]           [k] xdp_do_re=
-direct
->> > >     4.46%  xdpsock          bpf_prog_80b55d8a76303785  [k] bpf_prog_=
-80b55d8a76303785
->> > >     3.83%  xdpsock          [kernel.vmlinux]           [k] xsk_rcv
->> >=20
->> > why everything is duplicated?
->> > Same code runs in different tasks ?
->>=20
->> Yes. looks like these functions run from both the app(xdpsock) context a=
-nd ksoftirqd context.
->>=20
->> >=20
->> > >     2.81%  ksoftirqd/28     [kernel.vmlinux]           [k] bpf_xdp_r=
-edirect_map
->> > >     2.78%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_map_l=
-ookup_elem
->> > >     2.44%  xdpsock          [kernel.vmlinux]           [k] xdp_do_re=
-direct
->> > >     2.19%  ksoftirqd/28     [kernel.vmlinux]           [k] __xsk_map=
-_redirect
->> > >     1.62%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_umem_=
-peek_addr
->> > >     1.57%  xdpsock          [kernel.vmlinux]           [k] xsk_umem_=
-peek_addr
->> > >     1.32%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_direc=
-t_sync_single_for_cpu
->> > >     1.28%  xdpsock          [kernel.vmlinux]           [k] bpf_xdp_r=
-edirect_map
->> > >     1.15%  xdpsock          [kernel.vmlinux]           [k] dma_direc=
-t_sync_single_for_device
->> > >     1.12%  xdpsock          [kernel.vmlinux]           [k] xsk_map_l=
-ookup_elem
->> > >     1.06%  xdpsock          [kernel.vmlinux]           [k] __xsk_map=
-_redirect
->> > >     0.94%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_direc=
-t_sync_single_for_device
->> > >     0.75%  ksoftirqd/28     [kernel.vmlinux]           [k] __x86_ind=
-irect_thunk_rax
->> > >     0.66%  ksoftirqd/28     [i40e]                     [k] i40e_clea=
-n_programming_status
->> > >     0.64%  ksoftirqd/28     [kernel.vmlinux]           [k] net_rx_ac=
-tion
->> > >     0.64%  swapper          [kernel.vmlinux]           [k] intel_idl=
-e
->> > >     0.62%  ksoftirqd/28     [i40e]                     [k] i40e_napi=
-_poll
->> > >     0.57%  xdpsock          [kernel.vmlinux]           [k] dma_direc=
-t_sync_single_for_cpu
->> > >=20
->> > > Perf report for "AF_XDP direct rxdrop" with patched kernel - mitigat=
-ions ON
->> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
->> > > Samples: 46K of event 'cycles', Event count (approx.): 38387018585
->> > > Overhead  Command          Shared Object             Symbol
->> > >    21.94%  ksoftirqd/28     [i40e]                    [k] i40e_clean=
-_rx_irq_zc
->> > >    14.36%  xdpsock          xdpsock                   [.] main
->> > >    11.53%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_rcv
->> > >    11.32%  xdpsock          [i40e]                    [k] i40e_clean=
-_rx_irq_zc
->> > >     4.02%  xdpsock          [kernel.vmlinux]          [k] xsk_rcv
->> > >     2.91%  ksoftirqd/28     [kernel.vmlinux]          [k] xdp_do_red=
-irect
->> > >     2.45%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_umem_p=
-eek_addr
->> > >     2.19%  xdpsock          [kernel.vmlinux]          [k] xsk_umem_p=
-eek_addr
->> > >     2.08%  ksoftirqd/28     [kernel.vmlinux]          [k] bpf_direct=
-_xsk
->> > >     2.07%  ksoftirqd/28     [kernel.vmlinux]          [k] dma_direct=
-_sync_single_for_cpu
->> > >     1.53%  ksoftirqd/28     [kernel.vmlinux]          [k] dma_direct=
-_sync_single_for_device
->> > >     1.39%  xdpsock          [kernel.vmlinux]          [k] dma_direct=
-_sync_single_for_device
->> > >     1.22%  ksoftirqd/28     [kernel.vmlinux]          [k] xdp_get_xs=
-k_from_qid
->> > >     1.12%  ksoftirqd/28     [i40e]                    [k] i40e_clean=
-_programming_status
->> > >     0.96%  ksoftirqd/28     [i40e]                    [k] i40e_napi_=
-poll
->> > >     0.95%  ksoftirqd/28     [kernel.vmlinux]          [k] net_rx_act=
-ion
->> > >     0.89%  xdpsock          [kernel.vmlinux]          [k] xdp_do_red=
-irect
->> > >     0.83%  swapper          [i40e]                    [k] i40e_clean=
-_rx_irq_zc
->> > >     0.70%  swapper          [kernel.vmlinux]          [k] intel_idle
->> > >     0.66%  xdpsock          [kernel.vmlinux]          [k] dma_direct=
-_sync_single_for_cpu
->> > >     0.60%  xdpsock          [kernel.vmlinux]          [k] bpf_direct=
-_xsk
->> > >     0.50%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_umem_d=
-iscard_addr
->> > >=20
->> > > Based on the perf reports comparing AF_XDP default and direct rxdrop=
-, we can say that
->> > > AF_XDP direct rxdrop codepath is avoiding the overhead of going thro=
-ugh these functions
->> > > =09bpf_prog_xxx
->> > >          bpf_xdp_redirect_map
->> > > =09xsk_map_lookup_elem
->> > >          __xsk_map_redirect
->> > > With AF_XDP direct, xsk_rcv() is directly called via bpf_direct_xsk(=
-) in xdp_do_redirect()
->> >=20
->> > I don't think you're identifying the overhead correctly.
->> > xsk_map_lookup_elem is 1%
->> > but bpf_xdp_redirect_map() suppose to call __xsk_map_lookup_elem()
->> > which is a different function:
->> > ffffffff81493fe0 T __xsk_map_lookup_elem
->> > ffffffff81492e80 t xsk_map_lookup_elem
->> >=20
->> > 10% for bpf_prog_80b55d8a76303785 is huge.
->> > It's the actual code of the program _without_ any helpers.
->> > How does the program actually look?
->>=20
->> It is the xdp program that is loaded via xsk_load_xdp_prog() in tools/li=
-b/bpf/xsk.c
->> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/to=
-ols/lib/bpf/xsk.c#n268
+> On Wed, Oct 16, 2019 at 03:51:52PM +0200, Toke Høiland-Jørgensen wrote:
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>> 
+>> > On Mon, Oct 14, 2019 at 02:35:45PM +0200, Toke Høiland-Jørgensen wrote:
+>> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>> >> 
+>> >> > On Wed, Oct 09, 2019 at 10:03:43AM +0200, Toke Høiland-Jørgensen wrote:
+>> >> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>> >> >> 
+>> >> >> > Please implement proper indirect calls and jumps.
+>> >> >> 
+>> >> >> I am still not convinced this will actually solve our problem; but OK, I
+>> >> >> can give it a shot.
+>> >> >
+>> >> > If you're not convinced let's talk about it first.
+>> >> >
+>> >> > Indirect calls is a building block for debugpoints.
+>> >> > Let's not call them tracepoints, because Linus banned any discusion
+>> >> > that includes that name.
+>> >> > The debugpoints is a way for BPF program to insert points in its
+>> >> > code to let external facility to do tracing and debugging.
+>> >> >
+>> >> > void (*debugpoint1)(struct xdp_buff *, int code);
+>> >> > void (*debugpoint2)(struct xdp_buff *);
+>> >> > void (*debugpoint3)(int len);
+>> >> 
+>> >> So how would these work? Similar to global variables (i.e., the loader
+>> >> creates a single-entry PROG_ARRAY map for each one)? Presumably with
+>> >> some BTF to validate the argument types?
+>> >> 
+>> >> So what would it take to actually support this? It doesn't quite sound
+>> >> trivial to add?
+>> >
+>> > Depends on definition of 'trivial' :)
+>> 
+>> Well, I don't know... :)
+>> 
+>> > The kernel has a luxury of waiting until clean solution is implemented
+>> > instead of resorting to hacks.
+>> 
+>> It would be helpful if you could give an opinion on what specific
+>> features are missing in the kernel to support these indirect calls. A
+>> few high-level sentences is fine (e.g., "the verifier needs to be able
+>> to do X, and llvm/libbpf needs to have support for Y")... I'm trying to
+>> gauge whether this is something it would even make sense for me to poke
+>> into, or if I'm better off waiting for someone who actually knows what
+>> they are doing to work on this :)
 >
-> I see. Looks like map_gen_lookup was never implemented for xskmap.
-> How about adding it first the way array_map_gen_lookup() is implemented?
-> This will easily give 2x perf gain.
+> I have to reveal a secret first...
+> llvm supports indirect calls since 2017 ;)
+>
+> It can compile the following:
+> struct trace_kfree_skb {
+> 	struct sk_buff *skb;
+> 	void *location;
+> };
+>
+> typedef void (*fn)(struct sk_buff *skb);
+> static fn func;
+>
+> SEC("tp_btf/kfree_skb")
+> int trace_kfree_skb(struct trace_kfree_skb *ctx)
+> {
+> 	struct sk_buff *skb = ctx->skb;
+> 	fn f = *(volatile fn *)&func;
+>
+> 	if (f)
+> 		f(skb);
+> 	return 0;
+> }
+>
+> into proper BPF assembly:
+> ; 	struct sk_buff *skb = ctx->skb;
+>        0:	79 11 00 00 00 00 00 00	r1 = *(u64 *)(r1 + 0)
+> ; 	fn f = *(volatile fn *)&func;
+>        1:	18 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00	r2 = 0 ll
+>        3:	79 22 00 00 00 00 00 00	r2 = *(u64 *)(r2 + 0)
+> ; 	if (f)
+>        4:	15 02 01 00 00 00 00 00	if r2 == 0 goto +1 <LBB0_2>
+> ; 		f(skb);
+>        5:	8d 00 00 00 02 00 00 00	callx 2
+> 0000000000000030 LBB0_2:
+> ; 	return 0;
+>        6:	b7 00 00 00 00 00 00 00	r0 = 0
+>        7:	95 00 00 00 00 00 00 00	exit
+>
+> Indirect call is encoded as JMP|CALL|X
+> Normal call is JMP|CALL|K
 
-I guess we should implement this for devmaps as well now that we allow
-lookups into those.
+Right, cool! So this would be handled like regular (data) global
+variables, with libbpf populating a map to store the value behind the
+scenes? 
 
-However, in this particular example, the lookup from BPF is not actually
-needed, since bpf_redirect_map() will return a configurable error value
-when the map lookup fails (for exactly this use case).
+> What's left to do is to teach the verifier to parse BTF of global data.
+> Then teach it to recognize that r2 at insn 1 is PTR_TO_BTF_ID
+> where btf_id is DATASEC '.bss'
+> Then load r2+0 is also PTR_TO_BTF_ID where btf_id is VAR 'func'.
+> New bool flag to reg_state is needed to tell whether if(rX==NULL) check
+> was completed.
+> Then at insn 5 the verifier will see that R2 is PTR_TO_BTF_ID and !NULL
+> and it's a pointer to a function.
+> Depending on function prototype the verifier would need to check that
+> R1's type match to arg1 of func proto.
+> For simplicity we don't need to deal with pointers to stack,
+> pointers to map, etc. Only PTR_TO_BTF_ID where btf_id is a kernel
+> data structure or scalar is enough to get a lot of mileage out of
+> this indirect call feature.
 
-So replacing:
+OK, so this means that explicit map lookups could be added later? I.e.,
+this:
 
-if (bpf_map_lookup_elem(&xsks_map, &index))
-    return bpf_redirect_map(&xsks_map, index, 0);
+int trace_kfree_skb(struct trace_kfree_skb *ctx)
+{
+	struct sk_buff *skb = ctx->skb;
+        u32 key = 0;
+	fn f;
 
-with simply
+        f = bpf_map_lookup_elem(&fpointer_map, &key);
+        if (f)
+          f(skb);
+}
 
-return bpf_redirect_map(&xsks_map, index, XDP_PASS);
+would need some more work, right?
 
-would save the call to xsk_map_lookup_elem().
+> That's mostly it.
+>
+> Few other safety checks would be needed to make sure that writes
+> into 'r2+0' are also of correct type.
+> We also need partial map_update bpf_sys command to populate
+> function pointer with another bpf program that has matching
+> function proto.
+>
+> I think it's not trivial verifier work, but not hard either.
+> I'm happy to do it as soon as I find time to work on it.
+
+Great! I think it's probably more productive for everyone involved if I
+just wait for you to get around to this, rather than try my own hand at
+this. I'll go hash out the userspace management semantics of chain calls
+in the meantime (using my kernel support patch), since that will surely
+be needed anyway.
 
 -Toke
-
