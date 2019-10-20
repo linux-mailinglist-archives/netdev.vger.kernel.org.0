@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D70DDC1C
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 05:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C678DDC01
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 05:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbfJTDUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Oct 2019 23:20:12 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33362 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726125AbfJTDUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 23:20:11 -0400
-Received: by mail-qt1-f194.google.com with SMTP id r5so15318943qtd.0;
-        Sat, 19 Oct 2019 20:20:10 -0700 (PDT)
+        id S1726417AbfJTDUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Oct 2019 23:20:14 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35460 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726125AbfJTDUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Oct 2019 23:20:13 -0400
+Received: by mail-qk1-f193.google.com with SMTP id w2so9092016qkf.2;
+        Sat, 19 Oct 2019 20:20:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mLh2s3gJ1w56tVuUDIAWtO5cV52zmuk8dwt4nrNGvLs=;
-        b=XKy8QYVI+civRs3nMUu80bw5ez+TW79n2WvUyAWgI5R5DsjfuwL5tr4qlrVLMr3gsX
-         GLuRRW65HUq/Vtrib2Is0bYDuv/m/dKttVAJwCxLrQ28A1sV+65gaozVy0L+GAKtU/Vs
-         Yig31vQmcHpC+b+DbLapTQ6+wR1oKxhuEjg77immCua47rfIDq/apbQrai4XdnBXfZf4
-         ObsBvTxEiZqjD7NtxMgA1TS46Xyg0aH7aVfrScSJ3KCsoger+TmtxgaV/b7FI8LssjEy
-         F+8WY756un7WelFeSAhIAvM+YWYkohvDmkT11cqvCRco7iC28pRfncHVv1mYQXVuxLtr
-         +WnA==
+        bh=CiT2dyKUrcwtWGvVFerk87hVzYZwm5syikYM9sOb9t0=;
+        b=F2h3RDnEjOnrqUfQJed+Z4lmLtNKd17c4J8aOX45O4CSjL25JrkKsnRK3xRWYfTCuF
+         wPqJStCIAd9qv2S/T9MNYXAOY4WN6MDiWQUeHugH3LQZEDkqkUCxSBD93f/8aGj9vnQL
+         0r9rvu09GB8SWqIcCLEsmp8a3MW3sXehazt1wRH2SdZCRvkVmZrsB2zCZOsHw01qBIOi
+         9N0AEvr1CQSEWipQBiDnP0EHVNyUt7awoodyh/N1ARlISMXC692rmT/pKueiKaPompmt
+         yDWmzZh/zEWFbUvpSQkKgmMGdFgeRb+9dCjVv5OYjvl9htKWSw3TR8jNdLx++gXRtQpj
+         Wh5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mLh2s3gJ1w56tVuUDIAWtO5cV52zmuk8dwt4nrNGvLs=;
-        b=qh6vZimGsX6XC/ddoDpB/faiq7XBSLDCaRrGFcedcswEMQnnZ1BC6r4d+B4yXqERE4
-         RGM8oY7/uYOkuT/siV8znhuk1ZNOPR2WkUOcOhZrI+tI5RBqlba17L0L8po0QIioyMBi
-         oivPyQvHy9wHZ7cb5XZpd9ObkEit49RE2eNUprvIudcqsdYQDIh4P91Nck8trQuEhney
-         ggmt6U3gS2rlnum+Rw5LyjZ54eA8DFlsHJD2CV0Vyrlbv3ADC2741NRRUVeTmOLgkgjs
-         J3+uyN1yfAXeRpPCx3fSsjoSwAMyA7n3T0P8+y2cWnbe0vH9Z3RHU9GktWB43xTtm0gi
-         Eiqw==
-X-Gm-Message-State: APjAAAWyl6d+ckLkVGf4b/koQ2UraayGe/B3TTtacyhzlVd3RdfLoM2p
-        wLM3djsTa5QanK4qyxPAHL0=
-X-Google-Smtp-Source: APXvYqzmrQ5I5TA49AseUPXl1AQVTpnH7GRmEiaQ4lg8MnyN4vgPpD3b4bfWugMxsxmEGLLKlRfAzg==
-X-Received: by 2002:ac8:474c:: with SMTP id k12mr18489852qtp.319.1571541610128;
-        Sat, 19 Oct 2019 20:20:10 -0700 (PDT)
+        bh=CiT2dyKUrcwtWGvVFerk87hVzYZwm5syikYM9sOb9t0=;
+        b=dvilZ0dNjiA/i4CzDKDyhle4hIcV6A0rJAW/i0s29VRk1e7B4Rjx0bxqpWktWpfVUX
+         /hogvahrvXEx+TYa4uNkl4HOY2u/DrvFk8UFo97SXJJkTakKvVsbLy1VFTji0EgmzeVX
+         TXvrSCYqMvjZhQELAvvNG0qboZSbEvDDqOF0OGqzc6f+aNGJKmeU+UpotYstVD3Xgb6p
+         mQhPwI3kvCT2qDWdHp1lz5jxhr+rFSDqu6BWJnJySUipiAP3lHv79AcQINuYFHimLHmj
+         CTt94sPMVkPJtA5nv3b6TE+87m+KK8QD8RxedZJ0Gg1OK7JM8PFChPzbFEam051QHZKD
+         OeaA==
+X-Gm-Message-State: APjAAAUgCpmWOg4w6ZiQkvTKIgNqwWffdXsp5r2OyHP3tdd2UEWfYe0/
+        5go55NsNYKm/H4xKPyM/tvs=
+X-Google-Smtp-Source: APXvYqwZ3D9xGCOlXfdqlAfAXqtvbpqnaxqrqo2cXXFSJhUWQUEOS/ho3GGIUbLDWwCFXcxjsMk1NA==
+X-Received: by 2002:a05:620a:2f8:: with SMTP id a24mr14361754qko.21.1571541611506;
+        Sat, 19 Oct 2019 20:20:11 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id z200sm6883273qkb.5.2019.10.19.20.20.09
+        by smtp.gmail.com with ESMTPSA id q25sm4903825qtr.25.2019.10.19.20.20.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Oct 2019 20:20:09 -0700 (PDT)
+        Sat, 19 Oct 2019 20:20:10 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: [PATCH net-next 02/16] net: dsa: add ports list in the switch fabric
-Date:   Sat, 19 Oct 2019 23:19:27 -0400
-Message-Id: <20191020031941.3805884-3-vivien.didelot@gmail.com>
+Subject: [PATCH net-next 03/16] net: dsa: use ports list in dsa_to_port
+Date:   Sat, 19 Oct 2019 23:19:28 -0400
+Message-Id: <20191020031941.3805884-4-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191020031941.3805884-1-vivien.didelot@gmail.com>
 References: <20191020031941.3805884-1-vivien.didelot@gmail.com>
@@ -63,152 +63,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a list of switch ports within the switch fabric. This will help the
-lookup of a port inside the whole fabric, and it is the first step
-towards supporting multiple CPU ports, before deprecating the usage of
-the unique dst->cpu_dp pointer.
-
-In preparation for a future allocation of the dsa_port structures,
-return -ENOMEM in case no structure is returned, even though this
-error cannot be reached yet.
+Use the new ports list instead of accessing the dsa_switch array
+of ports in the dsa_to_port helper.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- include/net/dsa.h |  5 +++++
- net/dsa/dsa2.c    | 48 +++++++++++++++++++++++++++++++++++++++++------
- 2 files changed, 47 insertions(+), 6 deletions(-)
+ include/net/dsa.h | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 2e4fe2f8962b..6ff6dfcdc61d 100644
+index 6ff6dfcdc61d..938de9518c61 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -125,6 +125,9 @@ struct dsa_switch_tree {
- 	 */
- 	struct dsa_port		*cpu_dp;
+@@ -285,7 +285,14 @@ struct dsa_switch {
  
-+	/* List of switch ports */
-+	struct list_head ports;
-+
- 	/*
- 	 * Data for the individual switch chips.
- 	 */
-@@ -195,6 +198,8 @@ struct dsa_port {
- 	struct work_struct	xmit_work;
- 	struct sk_buff_head	xmit_queue;
- 
-+	struct list_head list;
-+
- 	/*
- 	 * Give the switch driver somewhere to hang its per-port private data
- 	 * structures (accessible from the tagger).
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 1716535167ee..b6536641ac99 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -45,6 +45,8 @@ static struct dsa_switch_tree *dsa_tree_alloc(int index)
- 
- 	dst->index = index;
- 
-+	INIT_LIST_HEAD(&dst->ports);
-+
- 	INIT_LIST_HEAD(&dst->list);
- 	list_add_tail(&dst->list, &dsa_tree_list);
- 
-@@ -616,6 +618,22 @@ static int dsa_tree_add_switch(struct dsa_switch_tree *dst,
- 	return err;
- }
- 
-+static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
-+{
+ static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
+ {
+-	return &ds->ports[p];
 +	struct dsa_switch_tree *dst = ds->dst;
 +	struct dsa_port *dp;
 +
-+	dp = &ds->ports[index];
++	list_for_each_entry(dp, &dst->ports, list)
++		if (dp->ds == ds && dp->index == p)
++			return dp;
 +
-+	dp->ds = ds;
-+	dp->index = index;
-+
-+	INIT_LIST_HEAD(&dp->list);
-+	list_add(&dp->list, &dst->ports);
-+
-+	return dp;
-+}
-+
- static int dsa_port_parse_user(struct dsa_port *dp, const char *name)
- {
- 	if (!name)
-@@ -742,6 +760,20 @@ static int dsa_switch_parse_member_of(struct dsa_switch *ds,
- 	return 0;
++	return NULL;
  }
  
-+static int dsa_switch_touch_ports(struct dsa_switch *ds)
-+{
-+	struct dsa_port *dp;
-+	int port;
-+
-+	for (port = 0; port < ds->num_ports; port++) {
-+		dp = dsa_port_touch(ds, port);
-+		if (!dp)
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
- static int dsa_switch_parse_of(struct dsa_switch *ds, struct device_node *dn)
- {
- 	int err;
-@@ -750,6 +782,10 @@ static int dsa_switch_parse_of(struct dsa_switch *ds, struct device_node *dn)
- 	if (err)
- 		return err;
- 
-+	err = dsa_switch_touch_ports(ds);
-+	if (err)
-+		return err;
-+
- 	return dsa_switch_parse_ports_of(ds, dn);
- }
- 
-@@ -807,6 +843,8 @@ static int dsa_switch_parse_ports(struct dsa_switch *ds,
- 
- static int dsa_switch_parse(struct dsa_switch *ds, struct dsa_chip_data *cd)
- {
-+	int err;
-+
- 	ds->cd = cd;
- 
- 	/* We don't support interconnected switches nor multiple trees via
-@@ -817,6 +855,10 @@ static int dsa_switch_parse(struct dsa_switch *ds, struct dsa_chip_data *cd)
- 	if (!ds->dst)
- 		return -ENOMEM;
- 
-+	err = dsa_switch_touch_ports(ds);
-+	if (err)
-+		return err;
-+
- 	return dsa_switch_parse_ports(ds, cd);
- }
- 
-@@ -849,7 +891,6 @@ static int dsa_switch_probe(struct dsa_switch *ds)
- struct dsa_switch *dsa_switch_alloc(struct device *dev, size_t n)
- {
- 	struct dsa_switch *ds;
--	int i;
- 
- 	ds = devm_kzalloc(dev, struct_size(ds, ports, n), GFP_KERNEL);
- 	if (!ds)
-@@ -858,11 +899,6 @@ struct dsa_switch *dsa_switch_alloc(struct device *dev, size_t n)
- 	ds->dev = dev;
- 	ds->num_ports = n;
- 
--	for (i = 0; i < ds->num_ports; ++i) {
--		ds->ports[i].index = i;
--		ds->ports[i].ds = ds;
--	}
--
- 	return ds;
- }
- EXPORT_SYMBOL_GPL(dsa_switch_alloc);
+ static inline bool dsa_is_unused_port(struct dsa_switch *ds, int p)
 -- 
 2.23.0
 
