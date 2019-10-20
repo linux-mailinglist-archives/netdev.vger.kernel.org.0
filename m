@@ -2,80 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 697E0DDF14
-	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 17:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 211F4DDF41
+	for <lists+netdev@lfdr.de>; Sun, 20 Oct 2019 17:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbfJTPMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 11:12:09 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39574 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbfJTPMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 11:12:09 -0400
-Received: by mail-wr1-f66.google.com with SMTP id r3so11043025wrj.6;
-        Sun, 20 Oct 2019 08:12:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sEDPpuabV3/B35Mj82XikN4wgjEHBJYpPuqoickG7cM=;
-        b=qe7JRxXbGbvrO0+E0KKpDJTcZaU1q5xXn2OMubvAwzdz6DXYAFokTgupTFoolqGyjg
-         A6KRGTXAyoj4xsKyZ9hk7cwVP0lmWjMLgtqa3oPhH1GCriZSTXht8bdFzzAwN3Thtm6a
-         zJcjZc6VXK0ADr3Rn6HZ9t5VNQ0r2K0dcDHQbGfz97/1IJ3l1p1NVLHdJZOYCwSUsMO9
-         0N75im9QJWuGekHRmtuGXTXpSLgODycgvCE+yH8zM6slPokq7DmscgUhyKkzqbZ+O6t9
-         YMTNlWiGr/iC0i5HVn+9IGiN1TYHeViLEwNLYWCgUc3AIES6tKXttTV4dmkw4q4c98CC
-         e68Q==
+        id S1726486AbfJTPqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 11:46:25 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49287 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726467AbfJTPqZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 11:46:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571586383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NYB5YLU3InOkXCV2AcZVtukurd9BwBDSqfTnbkNJyC8=;
+        b=bq/XcSfkXbhphf9CLs5z6dK3sKoTap6FyvaWccsshUz0wmjjMZ64ssyLZw8ZbEomNiKZAX
+        Jkn6k4RzARE/B/zunKnBSgQcIvXcYZR8QMrzBcXVKaZi4Zz5tdAKJ6xLtLtP04Ya8FxVrN
+        RYQ2QxhLuzmA68of5b34iDv8qM1pSSg=
+Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
+ [209.85.219.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-367-lbe6vLRoPcO70WN52X9t2Q-1; Sun, 20 Oct 2019 11:46:22 -0400
+Received: by mail-yb1-f198.google.com with SMTP id o141so8905425yba.15
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 08:46:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=sEDPpuabV3/B35Mj82XikN4wgjEHBJYpPuqoickG7cM=;
-        b=gcZRQA9MFWYx75XO1oxDxzg0ZIkN3jqN+c6ybX72Gu9G4LvOMhacAQVfY4hj1n+eAD
-         6mBQGHQMdzeuTZfje8nBhCKnKWdJy1onYBq0vEIh5Ha1Trf2MG/plwZTm+/ehrey3qut
-         cM+7tcZ+9XPjmIKZxsdr6yisVHWnpbrGBquS5Cacowcgmm3cPPKvMve1sjREocvxUVpH
-         MNzFkI3DFqyDVUV3+Esz7bRv01R43dKxoNSjYbEx0QDmK2V0Zn2Vx7CXWNQx1L6NBk1V
-         fMqS9z1XxxYiCkyLW4rgM57GyOOjTWEab3ThVHKvUfBX4e73d+0PyseY2fVyMHGP8SUh
-         oUIg==
-X-Gm-Message-State: APjAAAUzfJ7pWLhe5c44gB1PPVTlqMz0JUPQ1+V1YPeMDFOo2qr6Mm6l
-        dHcc1htzSXHjEuP690BhRiC3HVLNE8k4ng==
-X-Google-Smtp-Source: APXvYqw0jfXTUHK8SC+t6VvHbj+B+5ZX/+DPYODZPb1bq/b1S92Q1hjT09/etSBReCQR1wHjlCNhTg==
-X-Received: by 2002:a05:6000:12cd:: with SMTP id l13mr15862953wrx.181.1571584326730;
-        Sun, 20 Oct 2019 08:12:06 -0700 (PDT)
-Received: from localhost.localdomain ([31.147.208.18])
-        by smtp.googlemail.com with ESMTPSA id e12sm6367204wrs.49.2019.10.20.08.12.05
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Sun, 20 Oct 2019 08:12:06 -0700 (PDT)
-From:   =?UTF-8?q?Tomislav=20Po=C5=BEega?= <pozega.tomislav@gmail.com>
-To:     kvalo@codeaurora.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, davem@davemloft.net,
-        torvalds@linux-foundation.org, johannes@sipsolutions.net,
-        linux-wireless@vger.kernel.org
-Subject: Re: WARNING at net/mac80211/sta_info.c:1057 (__sta_info_destroy_part2())
-Date:   Sun, 20 Oct 2019 17:12:00 +0200
-Message-Id: <1571584320-29816-1-git-send-email-pozega.tomislav@gmail.com>
-X-Mailer: git-send-email 1.7.0.4
-In-Reply-To: <87lfuuln5n.fsf@tynnyri.adurom.net>
-References: <87lfuuln5n.fsf@tynnyri.adurom.net>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=Alu6ppHvSW114ed3pBahWURj9wM8iWBEEGZ8MLoKgAk=;
+        b=J5sEhSmk3aCQDPktQJMemloe6Sf7N17a9Xlp56vce72qfZeGklKmrpMRUsjWcHjuj4
+         QGD7mBVAuP/HhCuikad7pFAS1NSrkh8IjpAUT4UIJje6tcG+tQjkDq8HNFymzC3Ecwgg
+         sGQvsHeivhcKjAdQtW72nA6E6o1L2b+MW80zka+Yz4bEB9cJOPtMGdqLZUA2YVI6p836
+         /PmtsBo/yCa+mh1gWFPC6fyU+fW7MNxIm5SYDraZXV/fKvmxJxulTw56pDMdfH3JPy5a
+         tz8u9zKeUgECAi5+5YD9rR+b87EBQKnP9d9mNLsgOqkMUxjSXn4Gltm+FNrMyqUezk4Q
+         dmpA==
+X-Gm-Message-State: APjAAAXxyQsj8PfyyEVFfDJ5E5dWexxgaQmE3KNLj6F9LHkwuhBF7ZD+
+        +9TXE5BR0PsjfTpgr8NruWbQ8m7KQRLvYxJY9TikthkV/xHxjmQZFxLuM6ro8aOEdgIBY2kKt+b
+        BMpjojWuhMhgvNhh/wcfKdHRlo/WvYFCQ
+X-Received: by 2002:a25:2005:: with SMTP id g5mr11581344ybg.233.1571586381778;
+        Sun, 20 Oct 2019 08:46:21 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxyKemkRcFRU3wzlgi/T4+K9AZ2BopYayuoVNBd36p+ggns4HBGKTFdfgg55BfQj8iXlviOeklLwD73HIE9Azs=
+X-Received: by 2002:a25:2005:: with SMTP id g5mr11581330ybg.233.1571586381452;
+ Sun, 20 Oct 2019 08:46:21 -0700 (PDT)
+MIME-Version: 1.0
+From:   Tom Rix <trix@redhat.com>
+Date:   Sun, 20 Oct 2019 08:46:10 -0700
+Message-ID: <CACVy4SVuw0Qbjiv6PLRn1symoxGzyBMZx2F5O23+jGZG6WHuYA@mail.gmail.com>
+Subject: [PATCH] xfrm : lock input tasklet skb queue
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-MC-Unique: lbe6vLRoPcO70WN52X9t2Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -11 is -EAGAIN which would mean that the HTC credits have run out some
->  reason for the WMI command:
-> 
-> if (ep->tx_credits < credits) {
->         ath10k_dbg(ar, ATH10K_DBG_HTC,
->                 "htc insufficient credits ep %d required %d available %d\n",
->                 eid, credits, ep->tx_credits);
->         spin_unlock_bh(&htc->tx_lock);
->         ret = -EAGAIN;
->         goto err_pull;
-> }
-> 
-> Credits can run out, for example, if there's a lot of WMI command/event
-> activity and are not returned during the 3s wait, firmware crashed or
-> problems with the PCI bus.
+On PREEMPT_RT_FULL while running netperf, a corruption
+of the skb queue causes an oops.
 
-Hi
+This appears to be caused by a race condition here
+        __skb_queue_tail(&trans->queue, skb);
+        tasklet_schedule(&trans->tasklet);
+Where the queue is changed before the tasklet is locked by
+tasklet_schedule.
 
-Can this occur if the target memory is not properly allocated?
+The fix is to use the skb queue lock.
+
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/xfrm/xfrm_input.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 9b599ed66d97..226dead86828 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -758,12 +758,16 @@ static void xfrm_trans_reinject(unsigned long data)
+     struct xfrm_trans_tasklet *trans =3D (void *)data;
+     struct sk_buff_head queue;
+     struct sk_buff *skb;
++    unsigned long flags;
+
+     __skb_queue_head_init(&queue);
++    spin_lock_irqsave(&trans->queue.lock, flags);
+     skb_queue_splice_init(&trans->queue, &queue);
+
+     while ((skb =3D __skb_dequeue(&queue)))
+         XFRM_TRANS_SKB_CB(skb)->finish(dev_net(skb->dev), NULL, skb);
++
++    spin_unlock_irqrestore(&trans->queue.lock, flags);
+ }
+
+ int xfrm_trans_queue(struct sk_buff *skb,
+@@ -771,15 +775,20 @@ int xfrm_trans_queue(struct sk_buff *skb,
+                    struct sk_buff *))
+ {
+     struct xfrm_trans_tasklet *trans;
++    unsigned long flags;
+
+     trans =3D this_cpu_ptr(&xfrm_trans_tasklet);
++    spin_lock_irqsave(&trans->queue.lock, flags);
+
+-    if (skb_queue_len(&trans->queue) >=3D netdev_max_backlog)
++    if (skb_queue_len(&trans->queue) >=3D netdev_max_backlog) {
++        spin_unlock_irqrestore(&trans->queue.lock, flags);
+         return -ENOBUFS;
++    }
+
+     XFRM_TRANS_SKB_CB(skb)->finish =3D finish;
+     __skb_queue_tail(&trans->queue, skb);
+     tasklet_schedule(&trans->tasklet);
++    spin_unlock_irqrestore(&trans->queue.lock, flags);
+     return 0;
+ }
+ EXPORT_SYMBOL(xfrm_trans_queue);
+--=20
+2.23.0
+
