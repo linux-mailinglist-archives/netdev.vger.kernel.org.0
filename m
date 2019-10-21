@@ -2,140 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4710DDF705
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:51:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA26FDF709
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:51:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730271AbfJUUu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 16:50:26 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35886 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728914AbfJUUuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:50:25 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 23so8529752pgk.3;
-        Mon, 21 Oct 2019 13:50:25 -0700 (PDT)
+        id S1730367AbfJUUvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 16:51:37 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41000 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730356AbfJUUvg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:51:36 -0400
+Received: by mail-qt1-f194.google.com with SMTP id c17so20323014qtn.8;
+        Mon, 21 Oct 2019 13:51:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6iAk5MDCFpJbqBCPdQ4j/TZZ0opaOqLSGbfv8Ew9ypQ=;
-        b=IKzJgQDKfy4GjkgeuRNsJSl5hNaeVpYrDO2SYzytWEepQnbGV6rsI5toxxKjRh5PMT
-         6VI9ggnj/ScLYKy6pOj7UsMmsdyJqUDfk65cVGHoFsYcuPw6FL+lxDfj0ZkvgapU/D47
-         D79vRQ5zcNJAF/MOc4OND3w18GIJc3O37Sr1/OJt357GrJjnHeBMOcCN+Ik2NUux7gR8
-         1QlO/NddImG5mVXTR+eOteBu6fwHOU0+/McGVLMWGoUUsVJMJsmYNPHIBUakmLxzgIvO
-         69t5m/ClfZQBckYX9nQxZP7Tt5ouOSXJB99FatQBfjZRPULLarNvz5dVghQNJ3YzGPMr
-         6Afw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2BDuJ0uQ27lt9bnsFQnkkjG+9f/2jgITVP1aLz5xfLE=;
+        b=t/iYIIPVOwk+TvC7sS8FeASOyOZxep3HKStIwFwIMBfpzUwskbpwdK89u2kjzphx5z
+         9m5QO/YUaNmpD387W/20yD8l44ucyeJaf8oU7vCF1pzypOsnFFOmjwmz2Y1po1zvjPjQ
+         KyhySGJp/Jw9+zINnlzYdzUThAboS1XTBYMLn6n6Gxpe4e5ZjE8//5AtOzy1XmSpnIo6
+         /36nE8/E7KGqBREWxe7FECmDbhfNwGOf3/ANgAr21cI3j+mxaLXSeq1YNz0CvdjvxXBI
+         FW9GB9MIw1foZkdS+HuuZTgHswMCUCxeBS39j3YHweX0I2I+klh210DIOfbg3W6FLFtu
+         2YCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6iAk5MDCFpJbqBCPdQ4j/TZZ0opaOqLSGbfv8Ew9ypQ=;
-        b=j1z0lRJ5yrHyEKNr1HXFVqgy6CtN4WZ20YqnrQH963mOe8FRe4Kw++UsWZMrucJ/j3
-         3imPSfJqiseK7wLFhbCLMJ85Htq85J7YC5gcq80PT20sxF1TNkNjrHVS6Zi6JEivrfB+
-         33BGG0/zn+Nw6wYiQuH2/rlbnsyhDUrY6BnK+jDBGJ5bzcWKBPbSaYp45sX6bA4mJSZb
-         C/SrjSypPHWkrmSUJTskon6SkXN+tzVquqchVHQfNxjn0+0GmWefmi57HQyATJx7KT4H
-         CSn7AZnrZw1WF5qJbWuQIm8JAmYDDgT9LNRgbHADt/HlBMvzd36+VXkRLNGn8jVPKAM6
-         yjBA==
-X-Gm-Message-State: APjAAAXO6UoF1YIrH2C3KAq/lWfjMphXo1pP5zaH0DafGxdOWx/fGBMv
-        M4tbakVLEBJQUJTNQNpZzkq4O5L/+a5ofXRUBeI=
-X-Google-Smtp-Source: APXvYqwR5Li3X+63Jbdq8RTCNIFmXKFocUABThMsrd3+729Wa1Lg00Ac4jqQtaDsNFZgSF7SHKLTezOqLfVNWc4y1V0=
-X-Received: by 2002:a17:90a:c48:: with SMTP id u8mr109443pje.16.1571691024729;
- Mon, 21 Oct 2019 13:50:24 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2BDuJ0uQ27lt9bnsFQnkkjG+9f/2jgITVP1aLz5xfLE=;
+        b=IeP9waBETQ6zac7qXSbF38+W/nTelNgNPwUDMPv+NnKTuxDkIea3UJzHKuHBvERtD5
+         qKpsQvPe2dkwGaTQ6FtCPuCGkzt2zWDe1+Fz7+uHYVhJ7OtpCxJNsQuqLBeDwwBDi73p
+         bDF7B0elk9YzGLjkOGGbvPo5N3isZp0EBEKauT0RKtraguMKbcr1BrKjN9JbwmZIbCR1
+         oSTKqZT4NbQQIEXMMswzRHHxAW84dShYNhGVyhFfQxQUdByS9wKFwvsdOyj7fgMmwnel
+         ZZIRB+w+ovRl7tB+nvKWxAGAeFZiw+heczQ/B9rqpRpPDlBeo1HVQaqxfIfWKwuJ76Zw
+         NE3g==
+X-Gm-Message-State: APjAAAU61mOnPoT4fli1e+97KftY2wFksVGANmsAVimjk2OSVAlWVxZc
+        cPi1f+C+Q6VWFGEpSYZJpW3R3obr
+X-Google-Smtp-Source: APXvYqz6oNX82y4ztDEXnfHf2RiUMn+lpD77/ySnf7jrm/FUdmtNN5+gLp4ENzKnZqoOmvR1YGyjqQ==
+X-Received: by 2002:ac8:237b:: with SMTP id b56mr27645010qtb.264.1571691095204;
+        Mon, 21 Oct 2019 13:51:35 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id 64sm8447903qkk.63.2019.10.21.13.51.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Oct 2019 13:51:34 -0700 (PDT)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 00/16] net: dsa: turn arrays of ports into a list
+Date:   Mon, 21 Oct 2019 16:51:14 -0400
+Message-Id: <20191021205130.304149-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-References: <20191012071620.8595-1-zhiyuan2048@linux.alibaba.com>
- <CAM_iQpVkTb6Qf9J-PuXJoQTZa5ojN_oun64SMv9Kji7tZkxSyA@mail.gmail.com>
- <e2bd3004-9f4b-f3ce-1214-2140f0b7cc61@linux.alibaba.com> <20191016151307.40f63896@jimi>
- <e16cfafe-059c-3106-835e-d32b7bb5ba61@linux.alibaba.com> <20191019002502.0519ea9b@jimi>
-In-Reply-To: <20191019002502.0519ea9b@jimi>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 21 Oct 2019 13:50:13 -0700
-Message-ID: <CAM_iQpW-y=Xo08AqYaGUWB8G7zdTimk8zXdHcsqYQir5AyPJJw@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: act_mirred: drop skb's dst_entry in
- ingress redirection
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 2:25 PM Eyal Birger <eyal.birger@gmail.com> wrote:
->
-> Hi,
->
-> On Fri, 18 Oct 2019 00:33:53 +0800
-> Zhiyuan Hou <zhiyuan2048@linux.alibaba.com> wrote:
->
-> > On 2019/10/16 8:13 =E4=B8=8B=E5=8D=88, Eyal Birger wrote:
-> > > Hi,
-> > >
-> > > On Wed, 16 Oct 2019 01:22:01 +0800
-> > > Zhiyuan Hou <zhiyuan2048@linux.alibaba.com> wrote:
-> > >
-> > >> On 2019/10/15 1:57 =E4=B8=8A=E5=8D=88, Cong Wang wrote:
-> > >>> On Sat, Oct 12, 2019 at 12:16 AM Zhiyuan Hou
-> > >>> <zhiyuan2048@linux.alibaba.com> wrote:
-> > >>>> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-> > >>>> index 9ce073a05414..6108a64c0cd5 100644
-> > >>>> --- a/net/sched/act_mirred.c
-> > >>>> +++ b/net/sched/act_mirred.c
-> > >>>> @@ -18,6 +18,7 @@
-> > >>>>    #include <linux/gfp.h>
-> > >>>>    #include <linux/if_arp.h>
-> > >>>>    #include <net/net_namespace.h>
-> > >>>> +#include <net/dst.h>
-> > >>>>    #include <net/netlink.h>
-> > >>>>    #include <net/pkt_sched.h>
-> > >>>>    #include <net/pkt_cls.h>
-> > >>>> @@ -298,8 +299,10 @@ static int tcf_mirred_act(struct sk_buff
-> > >>>> *skb, const struct tc_action *a,
-> > >>>>
-> > >>>>           if (!want_ingress)
-> > >>>>                   err =3D dev_queue_xmit(skb2);
-> > >>>> -       else
-> > >>>> +       else {
-> > >>>> +               skb_dst_drop(skb2);
-> > >>>>                   err =3D netif_receive_skb(skb2);
-> > >>>> +       }
-> > >>> Good catch!
-> > > Indeed! Thanks for fixing this!
-> > >
-> > >>> I don't want to be picky, but it seems this is only needed
-> > >>> when redirecting from egress to ingress, right? That is,
-> > >>> ingress to ingress, or ingress to egress is okay? If not,
-> > >>> please fix all the cases while you are on it?
-> > >> Sure. But I think this patch is also needed when redirecting from
-> > >> ingress to ingress. Because we cannot assure that a skb has null
-> > >> dst in ingress redirection path. For example, if redirecting a skb
-> > >> from loopback's ingress to other device's ingress, the skb will
-> > >> take a dst.
-> > >>
-> > >> As commit logs point out, skb with valid dst cannot be made routing
-> > >> decision in following process. original dst may cause skb loss or
-> > >> other unexpected behavior.
-> > > On the other hand, removing the dst on ingress-to-ingress
-> > > redirection may remove LWT information on incoming packets, which
-> > > may be undesired.
-> > Sorry, I do not understand why lwt information is needed on
-> > ingress-to-ingress redirection. lwt is used on output path, isn't it?
-> > Can you please give more information?
->
-> On rx path tunnelled packets parameters received on a collect_md tunnel d=
-evice
-> are kept in a metadata dst. See ip_tunnel_rcv() 'tun_dst' parameter.
->
-> The rx metadata dst can be matched by a number of mechanisms like routing
-> rules, eBPF, OVS, and netfilter.
+The dsa_switch structure represents the physical switch device itself,
+and is allocated by the driver. The dsa_switch_tree and dsa_port structures
+represent the logical switch fabric (eventually composed of multiple switch
+devices) and its ports, and are allocated by the DSA core.
 
-Should this meta information be kept when redirecting? The dest device
-may be a non-tunnel device, so I don't know if it is still useful when
-for non-tunnel devices.
+This branch lists the logical ports directly in the fabric which simplifies
+the iteration over all ports when assigning the default CPU port or configuring
+the D in DSA in drivers like mv88e6xxx.
 
-Thanks.
+This also removes the unique dst->cpu_dp pointer and is a first step towards
+supporting multiple CPU ports and dropping the DSA_MAX_PORTS limitation.
+
+Because the dsa_port structures are not tight to the dsa_switch structure
+anymore, we do not need to provide an helper for the drivers to allocate a
+switch structure. Like in many other subsystems, drivers can now embed their
+dsa_switch structure as they wish into their private structure. This will
+be particularly interesting for the Broadcom drivers which were currently
+limited by the dynamically allocated array of DSA ports.
+
+The series implements the list of dsa_port structures, makes use of it,
+then drops dst->cpu_dp and the dsa_switch_alloc helper.
+
+Changes in v2:
+  - use list_add_tail instead of list_add to respect ports order
+  - use a single return statement for dsa_to_port
+  - remove pr_info messages
+  - put comments under appropriate branches
+  - add Git tags from reviewers
+
+
+Vivien Didelot (16):
+  net: dsa: use dsa_to_port helper everywhere
+  net: dsa: add ports list in the switch fabric
+  net: dsa: use ports list in dsa_to_port
+  net: dsa: use ports list to find slave
+  net: dsa: use ports list to setup switches
+  net: dsa: use ports list for routing table setup
+  net: dsa: use ports list to find a port by node
+  net: dsa: use ports list to setup multiple master devices
+  net: dsa: use ports list to find first CPU port
+  net: dsa: use ports list to setup default CPU port
+  net: dsa: mv88e6xxx: silently skip PVT ops
+  net: dsa: mv88e6xxx: use ports list to map port VLAN
+  net: dsa: mv88e6xxx: use ports list to map bridge
+  net: dsa: sja1105: register switch before assigning port private data
+  net: dsa: allocate ports on touch
+  net: dsa: remove dsa_switch_alloc helper
+
+ drivers/net/dsa/b53/b53_common.c       |  11 +-
+ drivers/net/dsa/bcm_sf2.c              |   8 +-
+ drivers/net/dsa/bcm_sf2_cfp.c          |   6 +-
+ drivers/net/dsa/dsa_loop.c             |   5 +-
+ drivers/net/dsa/lan9303-core.c         |   4 +-
+ drivers/net/dsa/lantiq_gswip.c         |   4 +-
+ drivers/net/dsa/microchip/ksz_common.c |   5 +-
+ drivers/net/dsa/mt7530.c               |  17 +-
+ drivers/net/dsa/mv88e6060.c            |   4 +-
+ drivers/net/dsa/mv88e6xxx/chip.c       |  90 ++++----
+ drivers/net/dsa/qca8k.c                |   7 +-
+ drivers/net/dsa/realtek-smi-core.c     |   5 +-
+ drivers/net/dsa/sja1105/sja1105_main.c |  37 ++--
+ drivers/net/dsa/vitesse-vsc73xx-core.c |   5 +-
+ include/net/dsa.h                      |  26 ++-
+ net/dsa/dsa.c                          |   8 +-
+ net/dsa/dsa2.c                         | 274 +++++++++++++------------
+ net/dsa/dsa_priv.h                     |  23 +--
+ net/dsa/switch.c                       |   4 +-
+ net/dsa/tag_8021q.c                    |   6 +-
+ 20 files changed, 292 insertions(+), 257 deletions(-)
+
+-- 
+2.23.0
+
