@@ -2,113 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27048DF561
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:51:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A04DF575
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:56:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730142AbfJUSuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 14:50:09 -0400
-Received: from mail-lj1-f169.google.com ([209.85.208.169]:47093 "EHLO
-        mail-lj1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730084AbfJUSuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:50:09 -0400
-Received: by mail-lj1-f169.google.com with SMTP id d1so14436038ljl.13
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 11:50:08 -0700 (PDT)
+        id S1730059AbfJUSyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 14:54:55 -0400
+Received: from mail-wm1-f48.google.com ([209.85.128.48]:36533 "EHLO
+        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbfJUSyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:54:54 -0400
+Received: by mail-wm1-f48.google.com with SMTP id c22so4730368wmd.1;
+        Mon, 21 Oct 2019 11:54:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hXiuJzfcUb4Fraw8s4mIcy/tAIVzwrCRwqGymnuoNJo=;
-        b=lxAdSztdSGaLxSiwenByb0w7TMWVT7kvo1xw2atuSt9Obs5OTG2FIjQWQUxm8CmBtL
-         N37gvNCNfSpJj0sZgjKK0Y2uIxN/KL/wpfumehJAVJgFWCgQC/S5K4Fl75VnzfSuFe7d
-         hKMM9egZzHvJCM7GPPypfwlyV1xU7pKbi0ZEu/JDMf8colp9bEUprBQzVwFBNMwkci6s
-         cb+1Z37U0/TeMNXBPUvcyGp+IUIm20V8D1R3zoOjwZZOIJfCyGwOZi6MzsgU0W2CVdSJ
-         ZSalYCgs1P6x0MomH8d7+Hg029zuurDCvhDTNx2kcC4WEe/COPIjsXZC6mwfZdPlqbLY
-         si3A==
+        h=from:subject:to:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=mo6gx15jA1X6JoHj1nOdlxgncVVbt4VeDL6mDNmRTXU=;
+        b=ilzFTL7VXWACHOrpPzx7h/cPrHCpAF8opuD6Aiph68B6BBNVydfIuH5W3qKurE110X
+         iHOXNHqgs8ExTsaJ+WPS2V5ZaJcVn8RoX5IHTVlR0T7aClm6GhT+kqPQP+V54pGBojM9
+         zpmxidNs87QtsUrNVBM1XqFMWd2KsoavubR6QTTBHDueU27Lp8hJchzWMAMAMGa4BLU5
+         Yo1fyI4YfdQqFWJ02alyJ0z9Yd6R1SmSJlsUGbM6lNb5euwodCADLXq4hyDXAe8ArL8Q
+         r+F9KFrLsGTLEZJrcFBtf57EskOERhxw+wXkucQoxHTBfvsDJnqsyF3ZxkYHmwLnyH31
+         atxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hXiuJzfcUb4Fraw8s4mIcy/tAIVzwrCRwqGymnuoNJo=;
-        b=LHpnEYhXeCPRDZ/AfuySwwLNEN7D8ONIwHBQU2SAUnPoWape9eqpbqkeNYpwBJgGlx
-         E+EsnECpnXW1/UlV55s6CUpAmbCdP3siJbrxpf2rUmxDUTjnjit4aDUeQLy5MPSmqpLg
-         xqs6LP+hVF7HdWSFcj1tXdyCM2WHpXDUkdn7fwhCBEkzzRaRFLvtdk7Y2dgdwWQUmsRJ
-         1L+cvufI8L9c8XPosT14oj9LxbnRcK31siNNTMkUOPrL+v97iXmz0oAYB3NpLpubSznb
-         u4HNBCsEbhLGL7sHojoLVIcBtImvqBbtZ0qGOvIeaX77mX7w5bYQIndFrRJe48cKBEy/
-         UWow==
-X-Gm-Message-State: APjAAAXOjNlXQ8nUE8n3ETF3XonCXy+Ju5tprIRU1f6bZc1CiiH8WCFQ
-        eJLiEyDKW3pBHSrjMh8rZ/tjjVMgr9Qkic+ewRivBKiP
-X-Google-Smtp-Source: APXvYqx6fSh21dxcSx1SSpyE+pDf9Xj9RUL3zia0faOz1FLflx786CjRQnsp7XBxlul+PvyoQkj/ejZtMaNGWovQ648=
-X-Received: by 2002:a2e:b17b:: with SMTP id a27mr15858192ljm.7.1571683807061;
- Mon, 21 Oct 2019 11:50:07 -0700 (PDT)
+        h=x-gm-message-state:from:subject:to:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=mo6gx15jA1X6JoHj1nOdlxgncVVbt4VeDL6mDNmRTXU=;
+        b=WXxREcxKDXNeZhhcljEtsBRZC29gF1zjf0Sc3ChglyaWnFWTBFXCLvCYDkKsC7Vi5+
+         9n7l2S4kyeYWzL0HvmMFUI0pZskhEeKY/v5w9hT9PWkUdf1IHgtbQoDw1kSnSO6hyKsz
+         0rhsrcj12YhiZI3eqYKRUwIU0uJn0x/q1cNHjwJl2NJUroaDL2umETXY77sWYdDy5LyT
+         EPX1xQ+Wd6VJ+DvSWxy1ZwkEDjbvY66547VWs6C4049k5W4Lhvdvx2lM+Zvm2/JDCZ5y
+         jqg5BpvcNDtdE30vM4EyefjnWU3bOabsTzbtH0entyPAWrJcb2vUr/x/7+5hk3ABwYZi
+         z3pg==
+X-Gm-Message-State: APjAAAVbRg23DJ93AF9O1ST8JyxwkZ5+igLd0kRSYAU8wK0SOXQJ9w+m
+        iE7KM9pGEq0fKqr8bluVJw3pN9qI
+X-Google-Smtp-Source: APXvYqwDCx9WAOSFV2HqU3uujWpgJfD+MqoDq8J8YxWr2OHsraD0L3B6rHApg8NgDeBDFSLmPssHPQ==
+X-Received: by 2002:a7b:cd19:: with SMTP id f25mr21521197wmj.154.1571684092528;
+        Mon, 21 Oct 2019 11:54:52 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:1cea:5bb:1373:bc70? (p200300EA8F2664001CEA05BB1373BC70.dip0.t-ipconnect.de. [2003:ea:8f26:6400:1cea:5bb:1373:bc70])
+        by smtp.googlemail.com with ESMTPSA id 36sm10635054wrj.42.2019.10.21.11.54.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Oct 2019 11:54:52 -0700 (PDT)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: r8169: enable ASPM states via sysfs
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Message-ID: <d172e31d-c17a-c01e-8cfc-7a38cc7932b1@gmail.com>
+Date:   Mon, 21 Oct 2019 20:54:41 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <1571425340-7082-1-git-send-email-jbaron@akamai.com>
-In-Reply-To: <1571425340-7082-1-git-send-email-jbaron@akamai.com>
-From:   William Dauchy <wdauchy@gmail.com>
-Date:   Mon, 21 Oct 2019 20:49:54 +0200
-Message-ID: <CAJ75kXa0EcXtn6xBNCr56A_Auzm9NOtPGhXUTGvSARKgfOjTcw@mail.gmail.com>
-Subject: Re: [net-next] tcp: add TCP_INFO status for failed client TFO
-To:     Jason Baron <jbaron@akamai.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        NETDEV <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Christoph Paasch <cpaasch@apple.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jason,
+So far ASPM is disabled in the r8169 driver due to issues on several
+chip version / BIOS version combinations. Commit ad46fe1c7336
+("PCI/ASPM: Add sysfs attributes for controlling ASPM link states")
+adds the option to enable ASPM states for a device via sysfs
+(provided that BIOS allows the OS to control ASPM).
+This commit is included in latest linux-next and may be useful for
+notebook users to benefit from ASPM power saving.
 
-On Sat, Oct 19, 2019 at 11:10 AM Jason Baron <jbaron@akamai.com> wrote:
-> The TCPI_OPT_SYN_DATA bit as part of tcpi_options currently reports whether
-> or not data-in-SYN was ack'd on both the client and server side. We'd like
-> to gather more information on the client-side in the failure case in order
-> to indicate the reason for the failure. This can be useful for not only
-> debugging TFO, but also for creating TFO socket policies. For example, if
-> a middle box removes the TFO option or drops a data-in-SYN, we can
-> can detect this case, and turn off TFO for these connections saving the
-> extra retransmits.
->
-> The newly added tcpi_fastopen_client_fail status is 2 bits and has 4
-> states:
->
-> 1) TFO_STATUS_UNSPEC
->
-> catch-all.
->
-> 2) TFO_NO_COOKIE_SENT
->
-> If TFO_CLIENT_NO_COOKIE mode is off, this state indicates that no cookie
-> was sent because we don't have one yet, its not in cache or black-holing
-> may be enabled (already indicated by the global
-> LINUX_MIB_TCPFASTOPENBLACKHOLE).
->
-> 3) TFO_NO_SYN_DATA
->
-> Data was sent with SYN, we received a SYN/ACK but it did not cover the data
-> portion. Cookie is not accepted by server because the cookie may be invalid
-> or the server may be overloaded.
->
->
-> 4) TFO_NO_SYN_DATA_TIMEOUT
->
-> Data was sent with SYN, we received a SYN/ACK which did not cover the data
-> after at least 1 additional SYN was sent (without data). It may be the case
-> that a middle-box is dropping data-in-SYN packets. Thus, it would be more
-> efficient to not use TFO on this connection to avoid extra retransmits
-> during connection establishment.
->
-> These new fields certainly not cover all the cases where TFO may fail, but
-> other failures, such as SYN/ACK + data being dropped, will result in the
-> connection not becoming established. And a connection blackhole after
-> session establishment shows up as a stalled connection.
-
-I'm curious what would be the arguments compared to creating a new
-getsockopt() to fetch this data?
-
-Thanks,
-
--- 
-William
+Heiner
