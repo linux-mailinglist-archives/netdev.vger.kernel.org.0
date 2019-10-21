@@ -2,97 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA25CDF625
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 21:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B371ADF627
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 21:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730198AbfJUThz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 15:37:55 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:45477 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727211AbfJUThz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 15:37:55 -0400
-Received: by mail-qt1-f195.google.com with SMTP id c21so22866436qtj.12;
-        Mon, 21 Oct 2019 12:37:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=OvR7qZTN7z+OQITB5g0tsZqaN65/2chZfmtHixddV6M=;
-        b=UddYj1I13Df1ib5gS+cO7AEnjxjMACvGxxpBFhhPxy6aqTFoOVSCk004bJPWlHaLol
-         3uJCaoZcyXgFrmMm7tudkLK2Quk00vEFpX4tZxfs9EddWODhyi4QYAF9vfAgko3fA05O
-         XZlJVqhV/mX/Q1OtpWPvVeDGdc28+TEuMXp8ODlb547QQlJfHi82vuoOzUImN/K7arlt
-         /SDIe/0ngQLnMDPFOIouSz/l9PaLE9tix0sHw2o/+m42TMI7cN79WjyC6mLbxebyrr0o
-         6a2N6vaskyLWDNwYub8jJTCZ36/bBsbAQwWlnz1Dv4dUgA2eXScEPG0w0HXwfWS7DMxK
-         OynA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=OvR7qZTN7z+OQITB5g0tsZqaN65/2chZfmtHixddV6M=;
-        b=UWz3Lgj4CFuxVXTHQyGHMe5kgJ4RAgLzncTaHrujA1RZjjlxxdp8G14ue+YuBHCI47
-         2ZTGyhnjMF0cgn01iaGbXRBwIJ2VMpGVP226ZS6hfvFsn/yuZySirxKqJgwHKSOCI/pY
-         cyCY2UHlbn0Dy/o13q+lbT+v1n4vS8NHRM15REHM2pcxH6VQ4v4HczhjEus+1SyCZnhG
-         zd2LsC7hNCsd/ubdtkTEtcgBKxprBerruniNDfCWcxbxCVx7WkJP/8VLFXFgUELhN07l
-         1+jHK8rlerUJGGECOtQD1q11raALnek7F7KxPpaUr4nYngu4j0X51Iix+fSkjTFxgroD
-         zh7w==
-X-Gm-Message-State: APjAAAVbB8NUn0mjkHAAmuiOxj+LKaba8PjJH4Hf9D1IJhmzX9AxezbT
-        CNGAWKA97BtWQdl9N/F5ioJAGD/Q
-X-Google-Smtp-Source: APXvYqz989ocNhooAn2C9jPnGfPL+Ya9E4GvReVSsCzgSht22ZfFT6OEq4NiSmYUnUZJZGauM9QoHA==
-X-Received: by 2002:ac8:2c86:: with SMTP id 6mr25828203qtw.317.1571686673828;
-        Mon, 21 Oct 2019 12:37:53 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id z5sm7851619qkl.101.2019.10.21.12.37.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 12:37:53 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 15:37:52 -0400
-Message-ID: <20191021153752.GB90634@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 05/16] net: dsa: use ports list to setup switches
-In-Reply-To: <20191021124902.GF16084@lunn.ch>
-References: <20191020031941.3805884-1-vivien.didelot@gmail.com>
- <20191020031941.3805884-6-vivien.didelot@gmail.com>
- <21738767-7e98-6c4c-ba1c-bea29142d481@gmail.com>
- <20191021124902.GF16084@lunn.ch>
+        id S2387401AbfJUTkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 15:40:17 -0400
+Received: from mout.kundenserver.de ([212.227.17.24]:55405 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387394AbfJUTkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 15:40:17 -0400
+Received: from mail-qk1-f170.google.com ([209.85.222.170]) by
+ mrelayeu.kundenserver.de (mreue109 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1M1YlB-1iK9cy2UZf-0036fo; Mon, 21 Oct 2019 21:40:15 +0200
+Received: by mail-qk1-f170.google.com with SMTP id f18so13270557qkm.1;
+        Mon, 21 Oct 2019 12:40:15 -0700 (PDT)
+X-Gm-Message-State: APjAAAW6O2stIxmiT3XHipLkkygH6FKdQbrCR8E9x0yZW2vYm0repa3g
+        eLuITuZa9p+mahU009lJEpV/i+6ASDMxPgR1wic=
+X-Google-Smtp-Source: APXvYqxdREhPMNq3Hj/hmWoaovXx6TMUq6d8s20yFnIwk6900ufyhMjnMph2e0AWm2lpV+wYLkj4FI2Tiuqz0h+Wlg0=
+X-Received: by 2002:a37:db0a:: with SMTP id e10mr23631832qki.3.1571686814233;
+ Mon, 21 Oct 2019 12:40:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190731155057.23035-1-johannes@sipsolutions.net>
+In-Reply-To: <20190731155057.23035-1-johannes@sipsolutions.net>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 21 Oct 2019 21:39:58 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a10Gz_aDaOKBDtoPyaUc-OuCmn2buY4+GHHdWERnU+jrg@mail.gmail.com>
+Message-ID: <CAK8P3a10Gz_aDaOKBDtoPyaUc-OuCmn2buY4+GHHdWERnU+jrg@mail.gmail.com>
+Subject: Re: pull-request: mac80211-next 2019-07-31
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        John Crispin <john@phrozen.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:raTexEeV7vHFaqRcd846Wpo1pjaZLmKzXHipHMcVjep2FDyTMDW
+ L3pBGkp2D9llM+4+LgNI4hNEkcWWIEBkdRlwZEBg3qzlxL/077KQh9C4Fj6BR9rZYFsM5SV
+ 9qyWodVQTNJTSa1+m6pcYlUNQ7QWQYtN5LLOYAbqNbAeOOeeDYqZTDR8h3VRb4qW8LaRtHe
+ 8gn7HOcPWbZ9YbcbRpMKQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PZO+prq3e3Y=:6Mm/XEEULHQIX9IgKYH1LK
+ VvUb/Xc46Ej/q6ZdTf14q8ouXjZzIIWA+dPIXuuj774QdoAmChRn7oyrM50mEM6c34vEZT1a1
+ UBQ3IgJUC6iJHBwXJv9vLcsvMnlBT9k0wz9dwY/DV6EyYQ8KR4EPDncxZFSWnjTuWMz6bTirD
+ 2MP6f7w+M3EMlFtgeYAcT4wVpf22ftIG1iuNrjy1uHT0r4Funwfd8jjpsnvbhk6RBDfYtSb4F
+ uSgN1Is4he4UmVNRpnwCmOnrwSSSpDbdtyPsJVB5ZSZcnFvsyeC8tgzyA1KA7JXr7ZPOesnIO
+ QgKmJY5XP0WAzaMrvb+FSVwQXYCFZmOhE/9Ph38LESoKcXFOyNXf3TXVhrOUQiaJLr2FKnoBx
+ cIXMPLyh99v1uoYMoDS7V1hBpft8LxtKt3f+xNPxaPKXltASMQ+r5yX5ZUTty9kihJYxp9ivc
+ ycrVpXgr8nM1xDlYwEWXIIoehaQj+7Z6GF5ngRcV/J9QE1ONXyNN5A26cmvH7moXcRj5Xuk29
+ pShouszJgz4rRf9CTPqefCPC87BoQyKaGEyqkPykWt4clW5xSrNSFC1iP9VVT6HaG+FgjvScS
+ 99M44oBX0vu1fV1zGGfZCJjXTPLUsRtDi2OtBBR/yPjxGT3O21Qe2t3PdEfCCuPOzvwxyT3Jt
+ ozWWR1qOyLzs2on62q5staX00sMwqbHQ4QeKn+8LO8bVa1wt1q7MPo6CpBEFIBtQrPrQUbF+Q
+ TuwUIu3/JohRbg0KaYXfmjAIQfNaJaEvvxNtTOD8kRKjMLDrvWZme3qjREijqmnvfsL+2Mbii
+ MLBriSCWDozoQPnBOcvmy163PJLM5HA6kKYfpcfx+8qf1vGgAMDcxW3bTTttwlIHtAM+gqMnL
+ fUBQ6mOgTX39wa3W1LYg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Oct 2019 14:49:02 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
-> On Sun, Oct 20, 2019 at 07:42:15PM -0700, Florian Fainelli wrote:
-> > 
-> > 
-> > On 10/19/2019 8:19 PM, Vivien Didelot wrote:
-> > > Use the new ports list instead of iterating over switches and their
-> > > ports when setting up the switches and their ports.
-> > > 
-> > > At the same time, provide setup states and messages for ports and
-> > > switches as it is done for the trees.
-> > 
-> > Humm, that becomes quite noisy, would it make sense to have those
-> > messages only for non-user ports that are not already visible because
-> > they do not have a net_device?
-> 
-> I agree, it looks noise. Maybe change them to _dbg()?
->  
-> > If you have multiple switches in a fabric, it might be convenient to use
-> > dev_info(dp->ds->dev, ...) to print your message so you can clearly
-> > identify which port belongs to which switch, which becomes even more
-> > important as it is all flattened thanks to lists now. What do you think?
-> 
-> I do think it needs to identify both the dst and the ds.
+On Wed, Jul 31, 2019 at 5:53 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+> John Crispin (10):
+>       mac80211: add support for parsing ADDBA_EXT IEs
+>       mac80211: add xmit rate to struct ieee80211_tx_status
+>       mac80211: propagate struct ieee80211_tx_status into ieee80211_tx_monitor()
+>       mac80211: add struct ieee80211_tx_status support to ieee80211_add_tx_radiotap_header
+>       mac80211: HE: add Spatial Reuse element parsing support
 
-It is noise indeed and doesn't add much value, I'll remove them.
+Hi Johannes and John,
 
+It looks like one of the last additions pushed the stack usage over
+the 1024 byte limit
+for 32-bit architectures:
 
-Thanks,
-Vivien
+net/mac80211/mlme.c:4063:6: error: stack frame size of 1032 bytes in
+function 'ieee80211_sta_rx_queued_mgmt' [-Werror,-Wframe-larger-than=]
+
+struct ieee802_11_elems is fairly large, and just grew another two pointers.
+When ieee80211_rx_mgmt_assoc_resp() and ieee80211_assoc_success()
+are inlined into ieee80211_sta_rx_queued_mgmt(), there are three copies
+of this structure, which is slightly too much.
+
+Marking any of those functions as __noinline_for_stack would shut up the
+warning but not fix the underlying issue. Silencing the warning might
+be enough if there is a fairly short call chain leading up to
+ieee80211_sta_rx_queued_mgmt(). Another option would be a dynamic
+allocation.
+
+Thoughts?
+
+      Arnd
