@@ -2,157 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D23FDF36F
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:44:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A64EDF3B4
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729968AbfJUQoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 12:44:06 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:37530 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727582AbfJUQoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:44:05 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 56EB728AE51
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Robert Beckett <bob.beckett@collabora.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH] igb: dont drop packets if rx flow control is enabled
-Date:   Mon, 21 Oct 2019 17:39:36 +0100
-Message-Id: <20191021163959.17511-1-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.20.1
+        id S1728104AbfJUQ5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 12:57:49 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:18002 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726672AbfJUQ5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:57:49 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9LGobkq004851
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 09:57:47 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=bGEvpg0+Lvux21Cr6KSmJq0IJGFokFMqS6E6Pe6CQkM=;
+ b=cbR6k9pwUkj6qiIgtiT7i4EKuAw4ksyQ4iez8zfL6wdd7dUcGMiZxK+LD0egGunvvBuS
+ bHT/MVtZs8uAKbe+rZRXDrXnTgaoDUkTzek19fF9XlA8Z8jGpc7z8Gpcloh0EgdAdXk4
+ VQxfxQ2UqfsvIxms996G2g/bgo2KJwyLVFQ= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vrj5dw61m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 09:57:47 -0700
+Received: from 2401:db00:30:600c:face:0:1f:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Mon, 21 Oct 2019 09:57:46 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 46673861996; Mon, 21 Oct 2019 09:57:46 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next] libbpf: make LIBBPF_OPTS macro strictly a variable declaration
+Date:   Mon, 21 Oct 2019 09:57:44 -0700
+Message-ID: <20191021165744.2116648-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-21_04:2019-10-21,2019-10-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8 mlxscore=0
+ clxscore=1015 mlxlogscore=933 impostorscore=0 adultscore=0 malwarescore=0
+ lowpriorityscore=0 bulkscore=0 priorityscore=1501 spamscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1908290000
+ definitions=main-1910210160
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If rx flow control has been enabled (via autoneg or forced), packets
-should not be dropped due to rx descriptor ring exhaustion. Instead
-pause frames should be used to apply back pressure.
+LIBBPF_OPTS is implemented as a mix of field declaration and memset
++ assignment. This makes it neither variable declaration nor purely
+statements, which is a problem, because you can't mix it with either
+other variable declarations nor other function statements, because C90
+compiler mode emits warning on mixing all that together.
 
-Move SRRCTL setup to its own function for easy reuse and only set drop
-enable bit if rx flow control is not enabled.
+This patch changes LIBBPF_OPTS into a strictly declaration of variable
+and solves this problem, as can be seen in case of bpftool, which
+previously would emit compiler warning, if done this way (LIBBPF_OPTS as
+part of function variables declaration block).
 
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/ethernet/intel/igb/igb.h         |  1 +
- drivers/net/ethernet/intel/igb/igb_ethtool.c |  8 ++++
- drivers/net/ethernet/intel/igb/igb_main.c    | 46 ++++++++++++++------
- 3 files changed, 41 insertions(+), 14 deletions(-)
+ tools/bpf/bpftool/prog.c |  6 +++---
+ tools/lib/bpf/libbpf.h   | 13 +++++++------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
-index ca54e268d157..49b5fa9d4783 100644
---- a/drivers/net/ethernet/intel/igb/igb.h
-+++ b/drivers/net/ethernet/intel/igb/igb.h
-@@ -661,6 +661,7 @@ void igb_configure_tx_ring(struct igb_adapter *, struct igb_ring *);
- void igb_configure_rx_ring(struct igb_adapter *, struct igb_ring *);
- void igb_setup_tctl(struct igb_adapter *);
- void igb_setup_rctl(struct igb_adapter *);
-+void igb_setup_srrctl(struct igb_adapter *, struct igb_ring *);
- netdev_tx_t igb_xmit_frame_ring(struct sk_buff *, struct igb_ring *);
- void igb_alloc_rx_buffers(struct igb_ring *, u16);
- void igb_update_stats(struct igb_adapter *);
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 5acf3b743876..3c951f363d0e 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -396,6 +396,7 @@ static int igb_set_pauseparam(struct net_device *netdev,
- 	struct igb_adapter *adapter = netdev_priv(netdev);
- 	struct e1000_hw *hw = &adapter->hw;
- 	int retval = 0;
-+	int i;
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 27da96a797ab..1a7e8ddf8232 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -1093,6 +1093,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ {
+ 	struct bpf_object_load_attr load_attr = { 0 };
+ 	enum bpf_prog_type common_prog_type = BPF_PROG_TYPE_UNSPEC;
++	LIBBPF_OPTS(bpf_object_open_opts, open_opts,
++		.relaxed_maps = relaxed_maps,
++	);
+ 	enum bpf_attach_type expected_attach_type;
+ 	struct map_replace *map_replace = NULL;
+ 	struct bpf_program *prog = NULL, *pos;
+@@ -1106,9 +1109,6 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 	const char *file;
+ 	int idx, err;
  
- 	/* 100basefx does not support setting link flow control */
- 	if (hw->dev_spec._82575.eth_flags.e100_base_fx)
-@@ -428,6 +429,13 @@ static int igb_set_pauseparam(struct net_device *netdev,
+-	LIBBPF_OPTS(bpf_object_open_opts, open_opts,
+-		.relaxed_maps = relaxed_maps,
+-	);
  
- 		retval = ((hw->phy.media_type == e1000_media_type_copper) ?
- 			  igb_force_mac_fc(hw) : igb_setup_link(hw));
-+
-+		/* Make sure SRRCTL considers new fc settings for each ring */
-+		for (i = 0; i < adapter->num_rx_queues; i++) {
-+			struct igb_ring *ring = adapter->rx_ring[i];
-+
-+			igb_setup_srrctl(adapter, ring);
-+		}
- 	}
+ 	if (!REQ_ARGS(2))
+ 		return -1;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 0fdf086beba7..bf105e9e866f 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -77,12 +77,13 @@ struct bpf_object_open_attr {
+  * bytes, but that's the best way I've found and it seems to work in practice.
+  */
+ #define LIBBPF_OPTS(TYPE, NAME, ...)					    \
+-	struct TYPE NAME;						    \
+-	memset(&NAME, 0, sizeof(struct TYPE));				    \
+-	NAME = (struct TYPE) {						    \
+-		.sz = sizeof(struct TYPE),				    \
+-		__VA_ARGS__						    \
+-	}
++	struct TYPE NAME = ({ 						    \
++		memset(&NAME, 0, sizeof(struct TYPE));			    \
++		(struct TYPE) {						    \
++			.sz = sizeof(struct TYPE),			    \
++			__VA_ARGS__					    \
++		};							    \
++	})
  
- 	clear_bit(__IGB_RESETTING, &adapter->state);
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index ffaa6e031632..6b04c961c6e4 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4488,6 +4488,36 @@ static inline void igb_set_vmolr(struct igb_adapter *adapter,
- 	wr32(E1000_VMOLR(vfn), vmolr);
- }
- 
-+/**
-+ *  igb_setup_srrctl - configure the split and replication receive control
-+ *  		       registers
-+ *  @adapter: Board private structure
-+ *  @ring: receive ring to be configured
-+ **/
-+void igb_setup_srrctl(struct igb_adapter *adapter, struct igb_ring *ring)
-+{
-+	struct e1000_hw *hw = &adapter->hw;
-+	int reg_idx = ring->reg_idx;
-+	u32 srrctl;
-+
-+	srrctl = IGB_RX_HDR_LEN << E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
-+	if (ring_uses_large_buffer(ring))
-+		srrctl |= IGB_RXBUFFER_3072 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
-+	else
-+		srrctl |= IGB_RXBUFFER_2048 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
-+	srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
-+	if (hw->mac.type >= e1000_82580)
-+		srrctl |= E1000_SRRCTL_TIMESTAMP;
-+	/* Only set Drop Enable if we are supporting multiple queues
-+	 * and rx flow control is disabled
-+	 */
-+	if (!(hw->fc.current_mode & e1000_fc_rx_pause) &&
-+	    (adapter->vfs_allocated_count || adapter->num_rx_queues > 1))
-+		srrctl |= E1000_SRRCTL_DROP_EN;
-+
-+	wr32(E1000_SRRCTL(reg_idx), srrctl);
-+}
-+
- /**
-  *  igb_configure_rx_ring - Configure a receive ring after Reset
-  *  @adapter: board private structure
-@@ -4502,7 +4532,7 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
- 	union e1000_adv_rx_desc *rx_desc;
- 	u64 rdba = ring->dma;
- 	int reg_idx = ring->reg_idx;
--	u32 srrctl = 0, rxdctl = 0;
-+	u32 rxdctl = 0;
- 
- 	/* disable the queue */
- 	wr32(E1000_RXDCTL(reg_idx), 0);
-@@ -4520,19 +4550,7 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
- 	writel(0, ring->tail);
- 
- 	/* set descriptor configuration */
--	srrctl = IGB_RX_HDR_LEN << E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
--	if (ring_uses_large_buffer(ring))
--		srrctl |= IGB_RXBUFFER_3072 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
--	else
--		srrctl |= IGB_RXBUFFER_2048 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
--	srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
--	if (hw->mac.type >= e1000_82580)
--		srrctl |= E1000_SRRCTL_TIMESTAMP;
--	/* Only set Drop Enable if we are supporting multiple queues */
--	if (adapter->vfs_allocated_count || adapter->num_rx_queues > 1)
--		srrctl |= E1000_SRRCTL_DROP_EN;
--
--	wr32(E1000_SRRCTL(reg_idx), srrctl);
-+	igb_setup_srrctl(adapter, ring);
- 
- 	/* set filtering for VMDQ pools */
- 	igb_set_vmolr(adapter, reg_idx & 0x7, true);
+ struct bpf_object_open_opts {
+ 	/* size of this struct, for forward/backward compatiblity */
 -- 
-2.20.1
+2.17.1
 
