@@ -2,125 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAFB4DF858
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 01:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65608DF86F
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 01:13:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730469AbfJUXAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 19:00:32 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35304 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730276AbfJUXAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 19:00:32 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 205so9363491pfw.2
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 16:00:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=SURSLeTSL7wuoZg4pBrgsadycsCRF2eCp03BsgMlMG0=;
-        b=Meag7SAC6vW6yZS/oje7Wm85r+tkPnshrrX39endzp5QbpqHafCu2b5AXixNaxzyr2
-         T0exF/nmDvNL6CK8t1HHVa/h+HdJSIQk/eVvIaVSUfJrmllzSibBHLek3MEJ+3WTpwFQ
-         WNIOZv+NBWPOWfhffKEsVZc57W2r5RaQfk/xalhlm0MVkqj84GnTsmODiBjry3GbaDNR
-         hEiAeZh/gdpzHD2Ky2Rdr/LbKFtZkBaOceFV/qRATTFS7WowRiOOo6AuhX77xP0w62Ul
-         mjKL9ho2bijjXbK3kF5O2f3TT3ctDRA1oJf8dvFieS2zbAHUiF5n76su+tUwwvUiYTpH
-         sQFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=SURSLeTSL7wuoZg4pBrgsadycsCRF2eCp03BsgMlMG0=;
-        b=XEvAhQyF52+TIxozwjKn5IjqnCQaxjaB6RdV3BAt3a1Bd2NT/16yNEW2+Hz8X215+E
-         VmeDEgO9LfsuF8pjgJqlAQhRCTP1fT7F+MaCC8nZhZk7kIk48kbciH8haafVBzbsxJD8
-         jMCoZvVWreLq8boahs9Tt1s1baquccuuxXqM5jMRjAmD617jQK7fwp2gy6TbMjjmUzX4
-         aoIoZQJ0oR+sXbmttU1qEF62Cxs7HE5reJ/9IlAiNEtfSbPS8FJ0UOfMxiS1Q1Qkj9/s
-         FT+L8QcowvaEVNwNyr3CsSjXmEGDeND51kwfRcYB8Uc/QXqc5FUNtprTk/FshwucgURW
-         YU9w==
-X-Gm-Message-State: APjAAAXZmyf1bJM/cPC3vc8Yd3Q6qOyzPqr4gUbQdmF/FXxL/5RmQ52P
-        rmU2vwWZdFVY5BP1WHvXNCWcFw==
-X-Google-Smtp-Source: APXvYqxYZ2jJ5duUjyqvYuT3lNSHH1ZL2DYp2WDXFH7Aqd7Rk+5j9fUuqhsckt6C5FN5vrOBYczPCA==
-X-Received: by 2002:a63:18d:: with SMTP id 135mr328237pgb.326.1571698831249;
-        Mon, 21 Oct 2019 16:00:31 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id a16sm16448156pfa.53.2019.10.21.16.00.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 16:00:30 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 16:00:26 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>,
-        =?UTF-8?B?UmFmYcWC?= =?UTF-8?B?IE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rajan Vaja <rajan.vaja@xilinx.com>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Vikram Prakash <vikram.prakash@broadcom.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vikas Gupta <vikas.gupta@broadcom.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH V2 3/3] bnxt_en: Add support to collect crash dump via
- ethtool
-Message-ID: <20191021160026.18b3491e@cakuba.netronome.com>
-In-Reply-To: <CAACQVJp1R-9frrgjn6=5s_f3AGBq-fyy5CsYdAio1e=c9iLB9g@mail.gmail.com>
-References: <1571313682-28900-1-git-send-email-sheetal.tigadoli@broadcom.com>
-        <1571313682-28900-4-git-send-email-sheetal.tigadoli@broadcom.com>
-        <20191017122156.4d5262ac@cakuba.netronome.com>
-        <CAACQVJrO_PN8LBY0ovwkdxGsyvW_gGN7C3MxnuW+jjdS_75Hhw@mail.gmail.com>
-        <20191018100122.4cf12967@cakuba.netronome.com>
-        <CAACQVJp1R-9frrgjn6=5s_f3AGBq-fyy5CsYdAio1e=c9iLB9g@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1730468AbfJUXNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 19:13:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56616 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730069AbfJUXNU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 19:13:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Spuk8QNhQmrSsEHeANp2DfSWW33p/48VogUWd/jEFEw=; b=L/ZsrOUvuL2dp1l4USfKTc4/j6
+        6AdNwITSAtgqYpuad7spcRbYRgzcbFcxLoy4QUxkK0A0gE6xE9rw6It+GegficWeipjSgQQiJrEaz
+        +Am27urLv+h35vj22kcw4vRAqwvCZEMgAVlPQBWhdu4dsQ2E40ACrt3x5RhPDCjtILpk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iMgrV-0007BV-Ch; Tue, 22 Oct 2019 01:13:17 +0200
+Date:   Tue, 22 Oct 2019 01:13:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        laurentiu.tudor@nxp.com, f.fainelli@gmail.com, rmk@armlinux.org.uk
+Subject: Re: [PATCH net-next 2/4] bus: fsl-mc: add the fsl_mc_get_endpoint
+ function
+Message-ID: <20191021231317.GA27462@lunn.ch>
+References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
+ <1571698228-30985-3-git-send-email-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571698228-30985-3-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Oct 2019 10:05:18 +0530, Vasundhara Volam wrote:
-> On Fri, Oct 18, 2019 at 10:31 PM Jakub Kicinski wrote:
-> > On Fri, 18 Oct 2019 12:04:35 +0530, Vasundhara Volam wrote:  
-> > > On Fri, Oct 18, 2019 at 12:52 AM Jakub Kicinski wrote:  
-> > > > On Thu, 17 Oct 2019 17:31:22 +0530, Sheetal Tigadoli wrote:  
-> > > > > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> > > > > index 51c1404..1596221 100644
-> > > > > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> > > > > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> > > > > @@ -3311,6 +3311,23 @@ static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
-> > > > >       return rc;
-> > > > >  }
-> > > > >
-> > > > > +static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
-> > > > > +{
-> > > > > +     struct bnxt *bp = netdev_priv(dev);
-> > > > > +
-> > > > > +#ifndef CONFIG_TEE_BNXT_FW
-> > > > > +     return -EOPNOTSUPP;
-> > > > > +#endif  
-> > > >
-> > > >         if (!IS_ENABLED(...))
-> > > >                 return x;
-> > > >
-> > > > reads better IMHO  
-> > > Okay.
-> > >  
-> > > >
-> > > > But also you seem to be breaking live dump for systems with
-> > > > CONFIG_TEE_BNXT_FW=n  
-> > > Yes, we are supporting set_dump only if crash dump is supported.  
-> >
-> > It's wrong.  
->
-> Sorry not very clear. You are saying that support set_dump all the
-> time and return error, if the config option is not enabled? If yes, I
-> will modify the same way as it makes sense.
+Hi Ioana
 
-Yes, I think users can expect that set will work even if there is only
-one dump type/flag supported. Technically implementing the set is not
-required from functional perspective, however, we could imagine
-software that always does a set before a get, and the set should not
-fail.
+> +/**
+> + * dprc_get_connection() - Get connected endpoint and link status if connection
+> + *			exists.
+> + * @mc_io:	Pointer to MC portal's I/O object
+> + * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+> + * @token:	Token of DPRC object
+> + * @endpoint1:	Endpoint 1 configuration parameters
+> + * @endpoint2:	Returned endpoint 2 configuration parameters
+> + * @state:	Returned link state:
+> + *		1 - link is up;
+> + *		0 - link is down;
+> + *		-1 - no connection (endpoint2 information is irrelevant)
+> + *
+> + * Return:     '0' on Success; -ENAVAIL if connection does not exist.
+
+#define	ENAVAIL		119	/* No XENIX semaphores available */
+
+This is not a semaphore.
+
+How about
+
+#define	ENOTCONN	107	/* Transport endpoint is not connected */
+
+	Andrew
