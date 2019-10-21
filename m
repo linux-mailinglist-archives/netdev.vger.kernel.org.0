@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9AE7DE161
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 02:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C3BDE162
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 02:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbfJUAKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 20:10:10 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:35941 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726576AbfJUAKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 20:10:10 -0400
-Received: by mail-lj1-f193.google.com with SMTP id v24so11363583ljj.3
-        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 17:10:07 -0700 (PDT)
+        id S1726822AbfJUAKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 20:10:15 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37562 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726576AbfJUAKO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 20:10:14 -0400
+Received: by mail-lf1-f66.google.com with SMTP id g21so7462609lfh.4
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 17:10:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9/FLpztDlNWbBg/JuYp1tFoVp95L3E5/Cpe4B2PPpq8=;
-        b=ceSY77Z2ACB2CbaTnA8NInoDHEl53XTFKp3dOKq7jxdtrLK/BrwPJPMqwFdL9Xff+H
-         uQIkavYNUrgvdxKrIaeZa0YRjqmlWX8M4CGIE7t8R1TUWjOzUXjnBYTWh0a2uiMQQOuN
-         df80IsAkfnE6AylzUx/u+qPnA4iPQ25M4B0LU2qQXCtT5c3I8SfmyE1WaWbc0EtCRCiW
-         7hsLrGMag1qn7CVktlh9Z3nuY1bIprl4zGlnk/ZmZRC9cy811WWkMPSN3BAxscdQnAqO
-         VVl0uvUrAvEHwlEoHoK5hkfOlxA0sQD3lCONhd1vgHNRi5mk/B5mkN13C2UuuVmkCILL
-         e/IQ==
+        bh=4IX5+POITfEW/GgAGOAhpjC4hfqZle1GS39hd34tABc=;
+        b=c5DF7HgKK0qIVF5rMuCnstNYrUQyFDJudBcyRBvVxl/OVavercO78axLTa1y5E7PY9
+         isDPTp7kArMWMMBYhe8CTWf2krU7hyabVdxzoFqaJLHxrT9CkqWNLB0zHnlRSaspxFtr
+         hwWSEbd/UCBehQVJC4Z2taD1Ge3gBKGq2+QjiqvPWw73jRtgqA95n41bXU8KiS+1njfZ
+         Rxubls2yDJAK07c3eZP8HnqSnuFvaUBVvFkE1l9cpddF7e7dtR+GPZxNb7S9WNj+eLqQ
+         PfkH6ooG2nCzk8PUHBf0dI+NrzvcJ5cppY1PvtylUn9mhARuHLVXGAQeIAtFn53bin1L
+         p3Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9/FLpztDlNWbBg/JuYp1tFoVp95L3E5/Cpe4B2PPpq8=;
-        b=GB8zoW6JRdG+L5W4yA8kmfTNnd2354EgBGNU+pMFmvpfVFBqsfgnB+4A2tFVSDEL71
-         nh57d5XaMJbsSwyb+8TIe3ltGw4rdNbthaDdW9eU9TyOOokPpn4rrZc6rl+NGFQi9vr6
-         uLA+4Fit4WXC3k3DJXaFGuSHYD78w0ofvRMPZ3YZ64b740ZRp2bLNMSn7pawbjyCcMe0
-         u4dOzmhs/rb3NYqsPcKYyOAjGYTRyYLm/6gmKNoDtDAG/2KSHauljOqyc+mUwbNaQGeZ
-         74wDE9ntQ3CJTtI0J6qjU3lO7gHmCMmhMYhlrFGeYMBZW9QqHluisZxLMhUjlJ1g6xqk
-         MNeA==
-X-Gm-Message-State: APjAAAW+xNeCQxSzOxzHr/QC6GGz9cxkI6ZVgs+4u+Pt4qWoIaJJDYvu
-        nWpd1CIHQsFSbunob6a58nQ0zPpUKGI=
-X-Google-Smtp-Source: APXvYqxkNMnxCcngJBmYiFKK+kSNdTDxhhVvaorDNjqW6yb5TjzLPtUUYGFrpkTlEcnw6oUpFAN6UA==
-X-Received: by 2002:a2e:a415:: with SMTP id p21mr12601906ljn.59.1571616606515;
-        Sun, 20 Oct 2019 17:10:06 -0700 (PDT)
+        bh=4IX5+POITfEW/GgAGOAhpjC4hfqZle1GS39hd34tABc=;
+        b=QRH92UmIPsIu60HBv30aSGuSX/BEdXbvfmrXeOOiJM/sPqZ91vdg42KlOBdM86VXy7
+         VOGktgxaEPmN5xu/2vrwyaQQBYIIJH9KV9u04O0r4DY0LZCyn/lpqMysYTblnNTsHwYG
+         cgfcwPWeaHVDJzsYcC61jrUjkSUzfmlBluDBaUnc5ZnmpWUe0HGDN6/bDsgpnsL/pl//
+         JUQqSb7+o6NVjcBZPlp287qVftGdeGGA9Z8o9JiiDhrDBdZsBTB5Xh5+/GvwxSjI0luu
+         N34RIDS9s8ypZwLlSyVrXGaPZhuJJPtnmZ9eO6e0V2Tc7GUCRz8GoekPJ9iKRd3rl+1H
+         2CiA==
+X-Gm-Message-State: APjAAAUN0TksI2CUNfP+e09T+nD7kunXfh4jJUTfl0nmEGtuWCkf9dkl
+        a0R0UyoQQAeGLcgrPxPxgfz/uqqTWgE=
+X-Google-Smtp-Source: APXvYqz9HJ80WQYPLkYek3sIL5YNIjyQQaSzoeE+c1J5uemYm5RUGucuFCVKYGeD3szlVxvSe/7htA==
+X-Received: by 2002:a19:cc07:: with SMTP id c7mr13155282lfg.107.1571616611546;
+        Sun, 20 Oct 2019 17:10:11 -0700 (PDT)
 Received: from localhost.bredbandsbolaget (c-79c8225c.014-348-6c756e10.bbcust.telenor.se. [92.34.200.121])
-        by smtp.gmail.com with ESMTPSA id a18sm2723081lfi.15.2019.10.20.17.10.01
+        by smtp.gmail.com with ESMTPSA id a18sm2723081lfi.15.2019.10.20.17.10.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Oct 2019 17:10:01 -0700 (PDT)
+        Sun, 20 Oct 2019 17:10:08 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 02/10] wan: ixp4xx_hss: enable compile testing
-Date:   Mon, 21 Oct 2019 02:08:16 +0200
-Message-Id: <20191021000824.531-3-linus.walleij@linaro.org>
+Subject: [PATCH 03/10] ptp: ixp46x: move next to ethernet driver
+Date:   Mon, 21 Oct 2019 02:08:17 +0200
+Message-Id: <20191021000824.531-4-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191021000824.531-1-linus.walleij@linaro.org>
 References: <20191021000824.531-1-linus.walleij@linaro.org>
@@ -63,196 +63,138 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The ixp4xx_hss driver needs the platform data definition and the
-system clock rate to be compiled. Move both into a new platform_data
-header file and enable compile testing.
+The ixp46x ptp driver has a somewhat unusual setup, where the ptp
+driver and the ethernet driver are in different directories but
+access the same registers that are defined a platform specific
+header file.
+
+Moving everything into drivers/net/ makes it look more like most
+other ptp drivers and allows compile-testing this driver on
+other targets.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- arch/arm/mach-ixp4xx/goramo_mlr.c            |  4 +++
- arch/arm/mach-ixp4xx/include/mach/platform.h |  9 -----
- drivers/net/wan/Kconfig                      |  3 +-
- drivers/net/wan/ixp4xx_hss.c                 | 35 +++++++++++---------
- include/linux/platform_data/wan_ixp4xx_hss.h | 17 ++++++++++
- 5 files changed, 43 insertions(+), 25 deletions(-)
- create mode 100644 include/linux/platform_data/wan_ixp4xx_hss.h
+ drivers/net/ethernet/xscale/Kconfig                | 14 ++++++++++++++
+ drivers/net/ethernet/xscale/Makefile               |  3 ++-
+ drivers/net/ethernet/xscale/ixp4xx_eth.c           |  3 ++-
+ drivers/{ptp => net/ethernet/xscale}/ptp_ixp46x.c  |  3 ++-
+ .../net/ethernet/xscale/ptp_ixp46x.h               |  0
+ drivers/ptp/Kconfig                                | 14 --------------
+ drivers/ptp/Makefile                               |  1 -
+ 7 files changed, 20 insertions(+), 18 deletions(-)
+ rename drivers/{ptp => net/ethernet/xscale}/ptp_ixp46x.c (99%)
+ rename arch/arm/mach-ixp4xx/include/mach/ixp46x_ts.h => drivers/net/ethernet/xscale/ptp_ixp46x.h (100%)
 
-diff --git a/arch/arm/mach-ixp4xx/goramo_mlr.c b/arch/arm/mach-ixp4xx/goramo_mlr.c
-index a0e0b6b7dc5c..93b7afeee142 100644
---- a/arch/arm/mach-ixp4xx/goramo_mlr.c
-+++ b/arch/arm/mach-ixp4xx/goramo_mlr.c
-@@ -11,6 +11,7 @@
- #include <linux/irq.h>
- #include <linux/kernel.h>
- #include <linux/pci.h>
-+#include <linux/platform_data/wan_ixp4xx_hss.h>
- #include <linux/serial_8250.h>
- #include <asm/mach-types.h>
- #include <asm/mach/arch.h>
-@@ -405,6 +406,9 @@ static void __init gmlr_init(void)
- 	if (hw_bits & CFG_HW_HAS_HSS1)
- 		device_tab[devices++] = &device_hss_tab[1]; /* max index 5 */
- 
-+	hss_plat[0].timer_freq = ixp4xx_timer_freq;
-+	hss_plat[1].timer_freq = ixp4xx_timer_freq;
-+
- 	gpio_request(GPIO_SCL, "SCL/clock");
- 	gpio_request(GPIO_SDA, "SDA/data");
- 	gpio_request(GPIO_STR, "strobe");
-diff --git a/arch/arm/mach-ixp4xx/include/mach/platform.h b/arch/arm/mach-ixp4xx/include/mach/platform.h
-index 342acbe20f7c..04ef8025accc 100644
---- a/arch/arm/mach-ixp4xx/include/mach/platform.h
-+++ b/arch/arm/mach-ixp4xx/include/mach/platform.h
-@@ -104,15 +104,6 @@ struct eth_plat_info {
- 	u8 hwaddr[6];
- };
- 
--/* Information about built-in HSS (synchronous serial) interfaces */
--struct hss_plat_info {
--	int (*set_clock)(int port, unsigned int clock_type);
--	int (*open)(int port, void *pdev,
--		    void (*set_carrier_cb)(void *pdev, int carrier));
--	void (*close)(int port, void *pdev);
--	u8 txreadyq;
--};
--
- /*
-  * Frequency of clock used for primary clocksource
-  */
-diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
-index dd1a147f2971..bf2fe1d602ea 100644
---- a/drivers/net/wan/Kconfig
-+++ b/drivers/net/wan/Kconfig
-@@ -315,7 +315,8 @@ config DSCC4_PCI_RST
- 
- config IXP4XX_HSS
- 	tristate "Intel IXP4xx HSS (synchronous serial port) support"
--	depends on HDLC && ARM && ARCH_IXP4XX && IXP4XX_NPE && IXP4XX_QMGR
-+	depends on HDLC && IXP4XX_NPE && IXP4XX_QMGR
-+	depends on ARCH_IXP4XX || COMPILE_TEST
- 	help
- 	  Say Y here if you want to use built-in HSS ports
+diff --git a/drivers/net/ethernet/xscale/Kconfig b/drivers/net/ethernet/xscale/Kconfig
+index cd0a8f46e7c6..98aa7b8ddb06 100644
+--- a/drivers/net/ethernet/xscale/Kconfig
++++ b/drivers/net/ethernet/xscale/Kconfig
+@@ -27,4 +27,18 @@ config IXP4XX_ETH
+ 	  Say Y here if you want to use built-in Ethernet ports
  	  on IXP4xx processor.
-diff --git a/drivers/net/wan/ixp4xx_hss.c b/drivers/net/wan/ixp4xx_hss.c
-index e7619cec978a..7c5cf77e9ef1 100644
---- a/drivers/net/wan/ixp4xx_hss.c
-+++ b/drivers/net/wan/ixp4xx_hss.c
-@@ -17,6 +17,7 @@
- #include <linux/io.h>
- #include <linux/kernel.h>
- #include <linux/platform_device.h>
-+#include <linux/platform_data/wan_ixp4xx_hss.h>
- #include <linux/poll.h>
+ 
++config PTP_1588_CLOCK_IXP46X
++	tristate "Intel IXP46x as PTP clock"
++	depends on IXP4XX_ETH
++	depends on PTP_1588_CLOCK
++	default y
++	help
++	  This driver adds support for using the IXP46X as a PTP
++	  clock. This clock is only useful if your PTP programs are
++	  getting hardware time stamps on the PTP Ethernet packets
++	  using the SO_TIMESTAMPING API.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called ptp_ixp46x.
++
+ endif # NET_VENDOR_XSCALE
+diff --git a/drivers/net/ethernet/xscale/Makefile b/drivers/net/ethernet/xscale/Makefile
+index 794a519d07b3..607f91b1e878 100644
+--- a/drivers/net/ethernet/xscale/Makefile
++++ b/drivers/net/ethernet/xscale/Makefile
+@@ -3,4 +3,5 @@
+ # Makefile for the Intel XScale IXP device drivers.
+ #
+ 
+-obj-$(CONFIG_IXP4XX_ETH) += ixp4xx_eth.o
++obj-$(CONFIG_IXP4XX_ETH)		+= ixp4xx_eth.o
++obj-$(CONFIG_PTP_1588_CLOCK_IXP46X)	+= ptp_ixp46x.o
+diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+index 6fc04ffb22c2..0075ecdb21f4 100644
+--- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
++++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+@@ -33,10 +33,11 @@
+ #include <linux/ptp_classify.h>
  #include <linux/slab.h>
+ #include <linux/module.h>
+-#include <mach/ixp46x_ts.h>
  #include <linux/soc/ixp4xx/npe.h>
-@@ -1182,14 +1183,14 @@ static int hss_hdlc_attach(struct net_device *dev, unsigned short encoding,
- 	}
- }
+ #include <linux/soc/ixp4xx/qmgr.h>
  
--static u32 check_clock(u32 rate, u32 a, u32 b, u32 c,
-+static u32 check_clock(u32 timer_freq, u32 rate, u32 a, u32 b, u32 c,
- 		       u32 *best, u32 *best_diff, u32 *reg)
- {
- 	/* a is 10-bit, b is 10-bit, c is 12-bit */
- 	u64 new_rate;
- 	u32 new_diff;
- 
--	new_rate = ixp4xx_timer_freq * (u64)(c + 1);
-+	new_rate = timer_freq * (u64)(c + 1);
- 	do_div(new_rate, a * (c + 1) + b + 1);
- 	new_diff = abs((u32)new_rate - rate);
- 
-@@ -1201,40 +1202,43 @@ static u32 check_clock(u32 rate, u32 a, u32 b, u32 c,
- 	return new_diff;
- }
- 
--static void find_best_clock(u32 rate, u32 *best, u32 *reg)
-+static void find_best_clock(u32 timer_freq, u32 rate, u32 *best, u32 *reg)
- {
- 	u32 a, b, diff = 0xFFFFFFFF;
- 
--	a = ixp4xx_timer_freq / rate;
-+	a = timer_freq / rate;
- 
- 	if (a > 0x3FF) { /* 10-bit value - we can go as slow as ca. 65 kb/s */
--		check_clock(rate, 0x3FF, 1, 1, best, &diff, reg);
-+		check_clock(timer_freq, rate, 0x3FF, 1, 1, best, &diff, reg);
- 		return;
- 	}
- 	if (a == 0) { /* > 66.666 MHz */
- 		a = 1; /* minimum divider is 1 (a = 0, b = 1, c = 1) */
--		rate = ixp4xx_timer_freq;
-+		rate = timer_freq;
- 	}
- 
--	if (rate * a == ixp4xx_timer_freq) { /* don't divide by 0 later */
--		check_clock(rate, a - 1, 1, 1, best, &diff, reg);
-+	if (rate * a == timer_freq) { /* don't divide by 0 later */
-+		check_clock(timer_freq, rate, a - 1, 1, 1, best, &diff, reg);
- 		return;
- 	}
- 
- 	for (b = 0; b < 0x400; b++) {
- 		u64 c = (b + 1) * (u64)rate;
--		do_div(c, ixp4xx_timer_freq - rate * a);
-+		do_div(c, timer_freq - rate * a);
- 		c--;
- 		if (c >= 0xFFF) { /* 12-bit - no need to check more 'b's */
- 			if (b == 0 && /* also try a bit higher rate */
--			    !check_clock(rate, a - 1, 1, 1, best, &diff, reg))
-+			    !check_clock(timer_freq, rate, a - 1, 1, 1, best,
-+					 &diff, reg))
- 				return;
--			check_clock(rate, a, b, 0xFFF, best, &diff, reg);
-+			check_clock(timer_freq, rate, a, b, 0xFFF, best,
-+				    &diff, reg);
- 			return;
- 		}
--		if (!check_clock(rate, a, b, c, best, &diff, reg))
-+		if (!check_clock(timer_freq, rate, a, b, c, best, &diff, reg))
- 			return;
--		if (!check_clock(rate, a, b, c + 1, best, &diff, reg))
-+		if (!check_clock(timer_freq, rate, a, b, c + 1, best, &diff,
-+				 reg))
- 			return;
- 	}
- }
-@@ -1285,8 +1289,9 @@ static int hss_hdlc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 
- 		port->clock_type = clk; /* Update settings */
- 		if (clk == CLOCK_INT)
--			find_best_clock(new_line.clock_rate, &port->clock_rate,
--					&port->clock_reg);
-+			find_best_clock(port->plat->timer_freq,
-+					new_line.clock_rate,
-+					&port->clock_rate, &port->clock_reg);
- 		else {
- 			port->clock_rate = 0;
- 			port->clock_reg = CLK42X_SPEED_2048KHZ;
-diff --git a/include/linux/platform_data/wan_ixp4xx_hss.h b/include/linux/platform_data/wan_ixp4xx_hss.h
-new file mode 100644
-index 000000000000..d525a0feb9e1
---- /dev/null
-+++ b/include/linux/platform_data/wan_ixp4xx_hss.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __PLATFORM_DATA_WAN_IXP4XX_HSS_H
-+#define __PLATFORM_DATA_WAN_IXP4XX_HSS_H
++#include "ixp46x_ts.h"
 +
-+#include <linux/types.h>
+ #define DEBUG_DESC		0
+ #define DEBUG_RX		0
+ #define DEBUG_TX		0
+diff --git a/drivers/ptp/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+similarity index 99%
+rename from drivers/ptp/ptp_ixp46x.c
+rename to drivers/net/ethernet/xscale/ptp_ixp46x.c
+index 67028484e9a0..9ecc395239e9 100644
+--- a/drivers/ptp/ptp_ixp46x.c
++++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+@@ -15,7 +15,8 @@
+ #include <linux/module.h>
+ 
+ #include <linux/ptp_clock_kernel.h>
+-#include <mach/ixp46x_ts.h>
 +
-+/* Information about built-in HSS (synchronous serial) interfaces */
-+struct hss_plat_info {
-+	int (*set_clock)(int port, unsigned int clock_type);
-+	int (*open)(int port, void *pdev,
-+		    void (*set_carrier_cb)(void *pdev, int carrier));
-+	void (*close)(int port, void *pdev);
-+	u8 txreadyq;
-+	u32 timer_freq;
-+};
-+
-+#endif
++#include "ixp46x_ts.h"
+ 
+ #define DRIVER		"ptp_ixp46x"
+ #define N_EXT_TS	2
+diff --git a/arch/arm/mach-ixp4xx/include/mach/ixp46x_ts.h b/drivers/net/ethernet/xscale/ptp_ixp46x.h
+similarity index 100%
+rename from arch/arm/mach-ixp4xx/include/mach/ixp46x_ts.h
+rename to drivers/net/ethernet/xscale/ptp_ixp46x.h
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index 960961fb0d7c..0209e0ef082d 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -56,20 +56,6 @@ config PTP_1588_CLOCK_QORIQ
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called ptp-qoriq.
+ 
+-config PTP_1588_CLOCK_IXP46X
+-	tristate "Intel IXP46x as PTP clock"
+-	depends on IXP4XX_ETH
+-	depends on PTP_1588_CLOCK
+-	default y
+-	help
+-	  This driver adds support for using the IXP46X as a PTP
+-	  clock. This clock is only useful if your PTP programs are
+-	  getting hardware time stamps on the PTP Ethernet packets
+-	  using the SO_TIMESTAMPING API.
+-
+-	  To compile this driver as a module, choose M here: the module
+-	  will be called ptp_ixp46x.
+-
+ comment "Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks."
+ 	depends on PHYLIB=n || NETWORK_PHY_TIMESTAMPING=n
+ 
+diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+index 677d1d178a3e..8ac3513f61c9 100644
+--- a/drivers/ptp/Makefile
++++ b/drivers/ptp/Makefile
+@@ -6,7 +6,6 @@
+ ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
+ obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
+ obj-$(CONFIG_PTP_1588_CLOCK_DTE)	+= ptp_dte.o
+-obj-$(CONFIG_PTP_1588_CLOCK_IXP46X)	+= ptp_ixp46x.o
+ obj-$(CONFIG_PTP_1588_CLOCK_PCH)	+= ptp_pch.o
+ obj-$(CONFIG_PTP_1588_CLOCK_KVM)	+= ptp_kvm.o
+ obj-$(CONFIG_PTP_1588_CLOCK_QORIQ)	+= ptp-qoriq.o
 -- 
 2.21.0
 
