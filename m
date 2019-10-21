@@ -2,129 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10E27DEE1C
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C48ACDEE4B
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729211AbfJUNmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 09:42:15 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:4741 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728891AbfJUNmK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Oct 2019 09:42:10 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 83E32A0E0AAC3DF61A3B;
-        Mon, 21 Oct 2019 21:42:07 +0800 (CST)
-Received: from [127.0.0.1] (10.177.31.14) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Mon, 21 Oct 2019
- 21:42:05 +0800
+        id S1729099AbfJUNs0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 09:48:26 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:47009 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728083AbfJUNsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 09:48:25 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q5so8460517pfg.13;
+        Mon, 21 Oct 2019 06:48:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5Lm0hZL1wyztt3hWk0T5URQ4B1o3nLfonDMHZ9hkUMc=;
+        b=emgfxJCWOqZb8kZhrjRTxQXZFdplMN5gKA+OJGcLLss0yLMcHi68zK6RxYoC37E+S3
+         ON5i7tpgn2U/dzeqWfXVX9scx4RV/GoXTa1LPnqfnQivzZVXo6QDBUIxc2AbK6kIgzr0
+         UfczoX/cijShGfh8sS0lG+NgQ1LcHW+RR3I3mdjq1ILrq3oTLI0NE9bK+ryySVQPuIRj
+         wGj5lNU2DFJVvsu727r8TUBkqhz/M6qbzJvPG3Iiucp3VrjSQgeVbP4ejlAcgDuMh/Wm
+         w8i6cSvL+01SpmhLGnlwIyvmTnjZraHEYSa7DwlF+glx1/ggPrfiyF+fJrTh/rcsYrU9
+         0Hwg==
+X-Gm-Message-State: APjAAAWnuIXv8hMaRAB0M92/4QdIiu50HwhPGG2Kyx8Nj+rjxxaj+j1M
+        41FQdBa9ijbcbL+L6N48RVg=
+X-Google-Smtp-Source: APXvYqzL9dlx2FQCFLlR12fRlfcYHt97NCWtrpGNTj/S31/M83EEevzMhJ/jTywCZFuANFY8EXWVNA==
+X-Received: by 2002:a63:1262:: with SMTP id 34mr25905665pgs.269.1571665704647;
+        Mon, 21 Oct 2019 06:48:24 -0700 (PDT)
+Received: from ?IPv6:2601:647:4000:ce:e1dd:ac50:4a18:2864? ([2601:647:4000:ce:e1dd:ac50:4a18:2864])
+        by smtp.gmail.com with ESMTPSA id p88sm15211395pjp.22.2019.10.21.06.48.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Oct 2019 06:48:23 -0700 (PDT)
 Subject: Re: [RFC PATCH 1/2] block: add support for redirecting IO completion
  through eBPF
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     <linux-block@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Network Development" <netdev@vger.kernel.org>,
+To:     Hou Tao <houtao1@huawei.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     linux-block@vger.kernel.org, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         Jens Axboe <axboe@kernel.dk>,
-        "Alexei Starovoitov" <ast@kernel.org>, <hare@suse.com>,
-        <osandov@fb.com>, <ming.lei@redhat.com>, <damien.lemoal@wdc.com>,
-        bvanassche <bvanassche@acm.org>,
+        Alexei Starovoitov <ast@kernel.org>, hare@suse.com,
+        osandov@fb.com, ming.lei@redhat.com, damien.lemoal@wdc.com,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "Martin KaFai Lau" <kafai@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
 References: <20191014122833.64908-1-houtao1@huawei.com>
  <20191014122833.64908-2-houtao1@huawei.com>
  <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
-From:   Hou Tao <houtao1@huawei.com>
-Message-ID: <84032c64-8e5e-6ad1-63ea-57adee7a2875@huawei.com>
-Date:   Mon, 21 Oct 2019 21:42:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.8.0
+ <84032c64-8e5e-6ad1-63ea-57adee7a2875@huawei.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+Message-ID: <737d9d3f-e72c-ac31-6b2a-997202a302bd@acm.org>
+Date:   Mon, 21 Oct 2019 06:48:17 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <84032c64-8e5e-6ad1-63ea-57adee7a2875@huawei.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.31.14]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 10/21/19 6:42 AM, Hou Tao wrote:
+> Your suggestion is much simpler, so there will be no need for adding a new
+> program type, and all things need to be done are adding a raw tracepoint,
+> moving bpf_ccpu into struct request, and letting a BPF program to modify it.
 
-On 2019/10/16 5:04, Alexei Starovoitov wrote:
-> On Mon, Oct 14, 2019 at 5:21 AM Hou Tao <houtao1@huawei.com> wrote:
->>
->> For network stack, RPS, namely Receive Packet Steering, is used to
->> distribute network protocol processing from hardware-interrupted CPU
->> to specific CPUs and alleviating soft-irq load of the interrupted CPU.
->>
->> For block layer, soft-irq (for single queue device) or hard-irq
->> (for multiple queue device) is used to handle IO completion, so
->> RPS will be useful when the soft-irq load or the hard-irq load
->> of a specific CPU is too high, or a specific CPU set is required
->> to handle IO completion.
->>
->> Instead of setting the CPU set used for handling IO completion
->> through sysfs or procfs, we can attach an eBPF program to the
->> request-queue, provide some useful info (e.g., the CPU
->> which submits the request) to the program, and let the program
->> decides the proper CPU for IO completion handling.
->>
->> Signed-off-by: Hou Tao <houtao1@huawei.com>
-> ...
->>
->> +       rcu_read_lock();
->> +       prog = rcu_dereference_protected(q->prog, 1);
->> +       if (prog)
->> +               bpf_ccpu = BPF_PROG_RUN(q->prog, NULL);
->> +       rcu_read_unlock();
->> +
->>         cpu = get_cpu();
->> -       if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
->> -               shared = cpus_share_cache(cpu, ctx->cpu);
->> +       if (bpf_ccpu < 0 || !cpu_online(bpf_ccpu)) {
->> +               ccpu = ctx->cpu;
->> +               if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
->> +                       shared = cpus_share_cache(cpu, ctx->cpu);
->> +       } else
->> +               ccpu = bpf_ccpu;
->>
->> -       if (cpu != ctx->cpu && !shared && cpu_online(ctx->cpu)) {
->> +       if (cpu != ccpu && !shared && cpu_online(ccpu)) {
->>                 rq->csd.func = __blk_mq_complete_request_remote;
->>                 rq->csd.info = rq;
->>                 rq->csd.flags = 0;
->> -               smp_call_function_single_async(ctx->cpu, &rq->csd);
->> +               smp_call_function_single_async(ccpu, &rq->csd);
-> 
-> Interesting idea.
-> Not sure whether such programability makes sense from
-> block layer point of view.
-> 
->>From bpf side having a program with NULL input context is
-> a bit odd. We never had such things in the past, so this patchset
-> won't work as-is.
-No, it just works.
+blk-mq already supports processing completions on the CPU that submitted
+a request so it's not clear to me why any changes in the block layer are
+being proposed for redirecting I/O completions?
 
-> Also no-input means that the program choices are quite limited.
-> Other than round robin and random I cannot come up with other
-> cpu selection idea> I suggest to do writable tracepoint here instead.
-> Take a look at trace_nbd_send_request.
-> BPF prog can write into 'request'.
-> For your use case it will be able to write into 'bpf_ccpu' local variable.
-> If you keep it as raw tracepoint and don't add the actual tracepoint
-> with TP_STRUCT__entry and TP_fast_assign then it won't be abi
-> and you can change it later or remove it altogether.
-> 
-Your suggestion is much simpler, so there will be no need for adding a new
-program type, and all things need to be done are adding a raw tracepoint,
-moving bpf_ccpu into struct request, and letting a BPF program to modify it.
+Thanks,
 
-I will try and thanks for your suggestions.
-
-Regards,
-Tao
-
-> .
-> 
+Bart.
 
