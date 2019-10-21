@@ -2,217 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86600DE3BE
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 07:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF6A2DE3C1
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 07:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726227AbfJUFbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 01:31:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:50124 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725926AbfJUFbJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Oct 2019 01:31:09 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id AAF56AD63;
-        Mon, 21 Oct 2019 05:31:07 +0000 (UTC)
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH] xen/netback: cleanup init and deinit code
-Date:   Mon, 21 Oct 2019 07:30:52 +0200
-Message-Id: <20191021053052.31690-1-jgross@suse.com>
-X-Mailer: git-send-email 2.16.4
+        id S1725877AbfJUFes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 01:34:48 -0400
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:36685 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725765AbfJUFes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 01:34:48 -0400
+Received: by mail-pf1-f176.google.com with SMTP id y22so7678755pfr.3
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 22:34:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=5orW+RENL+KAdSeb6G37q4u0o6eSqB1B7YsGrzK1Kdg=;
+        b=UVj3SLuPOzwtR28WBWdSNyaNFn/jvgOJjUgZWX0HdADs33SGa9mUfxshH4YEHoStLQ
+         pgZIO08uaZo1LNrPyGQolqegcbOC5MIn2lYaPY/br98pLZ6VaVdyZ9IuSkE839Y1QXHT
+         EpvZoP7GH6IqP9jY8uO/SUsRQ4EAs9ZUavbE0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5orW+RENL+KAdSeb6G37q4u0o6eSqB1B7YsGrzK1Kdg=;
+        b=VcWNekSXt0RF3C5FR6SqJmiKe20N6ySyg7r6UPgpu5Icy0exQlpDQBnDp8q0IYTsh4
+         Xe72FPgsJdRpr57GdLI71gp4org/u5Fd7uKMQDpAqdSQTY2KOimiq3TcfOQjcAtoXJQ1
+         d4Hk+wMVQNk6QJWdkilIty2AqToifRna/7vLNiEvRSaYnAA3X/0RMq65XYLzfIkhzo69
+         H7+YGeIB/kZT7lmnkm2SdbZOlxTxsBG8UHvBPRp2Dp3QwDEQg5DMdUmGSShDDPxYL/93
+         Z0jSOmOm9BIHo95t8qOv1771eId4T2e1zqFsn1cXizcH9G7BnvqSERL1SlGAB0VB4hHv
+         bCnQ==
+X-Gm-Message-State: APjAAAWO/xwpcGu+w2Me6gL8OtAynGs8yqce6SiQXS9N5xrvdA7K3ug1
+        3kaG/Y8GO+jz1rxx4GO0wSciuw==
+X-Google-Smtp-Source: APXvYqwhvcDDa3ypAdxNvwcCbToouUtP8a4J01fNYo9Xf3OTtpRYTyQ1CHJYoyFMrrQlg5l40k5LuQ==
+X-Received: by 2002:a63:c411:: with SMTP id h17mr11689403pgd.360.1571636087436;
+        Sun, 20 Oct 2019 22:34:47 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id w2sm14713255pfn.57.2019.10.20.22.34.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 20 Oct 2019 22:34:46 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com
+Subject: [PATCH net 0/5] bnxt_en: Bug fixes.
+Date:   Mon, 21 Oct 2019 01:34:24 -0400
+Message-Id: <1571636069-14179-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do some cleanup of the netback init and deinit code:
+Devlink and error recovery bug fix patches.  Most of the work is by
+Vasundhara Volam.  Please queue patch 1 and 2 for -stable also.  Thanks.
 
-- add an omnipotent queue deinit function usable from
-  xenvif_disconnect_data() and the error path of xenvif_connect_data()
-- only install the irq handlers after initializing all relevant items
-  (especially the kthreads related to the queue)
-- there is no need to use get_task_struct() after creating a kthread
-  and using put_task_struct() again after having stopped it.
-- use kthread_run() instead of kthread_create() to spare the call of
-  wake_up_process().
+Michael Chan (1):
+  bnxt_en: Fix devlink NVRAM related byte order related issues.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Paul Durrant <pdurrant@gmail.com>
----
- drivers/net/xen-netback/interface.c | 114 +++++++++++++++++-------------------
- 1 file changed, 54 insertions(+), 60 deletions(-)
+Vasundhara Volam (4):
+  bnxt_en: Fix the size of devlink MSIX parameters.
+  bnxt_en: Adjust the time to wait before polling firmware readiness.
+  bnxt_en: Minor formatting changes in FW devlink_health_reporter
+  bnxt_en: Avoid disabling pci device in bnxt_remove_one() for already
+    disabled device.
 
-diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-index 103ed00775eb..68dd7bb07ca6 100644
---- a/drivers/net/xen-netback/interface.c
-+++ b/drivers/net/xen-netback/interface.c
-@@ -626,6 +626,38 @@ int xenvif_connect_ctrl(struct xenvif *vif, grant_ref_t ring_ref,
- 	return err;
- }
- 
-+static void xenvif_disconnect_queue(struct xenvif_queue *queue)
-+{
-+	if (queue->tx_irq) {
-+		unbind_from_irqhandler(queue->tx_irq, queue);
-+		if (queue->tx_irq == queue->rx_irq)
-+			queue->rx_irq = 0;
-+		queue->tx_irq = 0;
-+	}
-+
-+	if (queue->rx_irq) {
-+		unbind_from_irqhandler(queue->rx_irq, queue);
-+		queue->rx_irq = 0;
-+	}
-+
-+	if (queue->task) {
-+		kthread_stop(queue->task);
-+		queue->task = NULL;
-+	}
-+
-+	if (queue->dealloc_task) {
-+		kthread_stop(queue->dealloc_task);
-+		queue->dealloc_task = NULL;
-+	}
-+
-+	if (queue->napi.poll) {
-+		netif_napi_del(&queue->napi);
-+		queue->napi.poll = NULL;
-+	}
-+
-+	xenvif_unmap_frontend_data_rings(queue);
-+}
-+
- int xenvif_connect_data(struct xenvif_queue *queue,
- 			unsigned long tx_ring_ref,
- 			unsigned long rx_ring_ref,
-@@ -651,13 +683,27 @@ int xenvif_connect_data(struct xenvif_queue *queue,
- 	netif_napi_add(queue->vif->dev, &queue->napi, xenvif_poll,
- 			XENVIF_NAPI_WEIGHT);
- 
-+	queue->stalled = true;
-+
-+	task = kthread_run(xenvif_kthread_guest_rx, queue,
-+			   "%s-guest-rx", queue->name);
-+	if (IS_ERR(task))
-+		goto kthread_err;
-+	queue->task = task;
-+
-+	task = kthread_run(xenvif_dealloc_kthread, queue,
-+			   "%s-dealloc", queue->name);
-+	if (IS_ERR(task))
-+		goto kthread_err;
-+	queue->dealloc_task = task;
-+
- 	if (tx_evtchn == rx_evtchn) {
- 		/* feature-split-event-channels == 0 */
- 		err = bind_interdomain_evtchn_to_irqhandler(
- 			queue->vif->domid, tx_evtchn, xenvif_interrupt, 0,
- 			queue->name, queue);
- 		if (err < 0)
--			goto err_unmap;
-+			goto err;
- 		queue->tx_irq = queue->rx_irq = err;
- 		disable_irq(queue->tx_irq);
- 	} else {
-@@ -668,7 +714,7 @@ int xenvif_connect_data(struct xenvif_queue *queue,
- 			queue->vif->domid, tx_evtchn, xenvif_tx_interrupt, 0,
- 			queue->tx_irq_name, queue);
- 		if (err < 0)
--			goto err_unmap;
-+			goto err;
- 		queue->tx_irq = err;
- 		disable_irq(queue->tx_irq);
- 
-@@ -678,47 +724,18 @@ int xenvif_connect_data(struct xenvif_queue *queue,
- 			queue->vif->domid, rx_evtchn, xenvif_rx_interrupt, 0,
- 			queue->rx_irq_name, queue);
- 		if (err < 0)
--			goto err_tx_unbind;
-+			goto err;
- 		queue->rx_irq = err;
- 		disable_irq(queue->rx_irq);
- 	}
- 
--	queue->stalled = true;
--
--	task = kthread_create(xenvif_kthread_guest_rx,
--			      (void *)queue, "%s-guest-rx", queue->name);
--	if (IS_ERR(task)) {
--		pr_warn("Could not allocate kthread for %s\n", queue->name);
--		err = PTR_ERR(task);
--		goto err_rx_unbind;
--	}
--	queue->task = task;
--	get_task_struct(task);
--
--	task = kthread_create(xenvif_dealloc_kthread,
--			      (void *)queue, "%s-dealloc", queue->name);
--	if (IS_ERR(task)) {
--		pr_warn("Could not allocate kthread for %s\n", queue->name);
--		err = PTR_ERR(task);
--		goto err_rx_unbind;
--	}
--	queue->dealloc_task = task;
--
--	wake_up_process(queue->task);
--	wake_up_process(queue->dealloc_task);
--
- 	return 0;
- 
--err_rx_unbind:
--	unbind_from_irqhandler(queue->rx_irq, queue);
--	queue->rx_irq = 0;
--err_tx_unbind:
--	unbind_from_irqhandler(queue->tx_irq, queue);
--	queue->tx_irq = 0;
--err_unmap:
--	xenvif_unmap_frontend_data_rings(queue);
--	netif_napi_del(&queue->napi);
-+kthread_err:
-+	pr_warn("Could not allocate kthread for %s\n", queue->name);
-+	err = PTR_ERR(task);
- err:
-+	xenvif_disconnect_queue(queue);
- 	return err;
- }
- 
-@@ -746,30 +763,7 @@ void xenvif_disconnect_data(struct xenvif *vif)
- 	for (queue_index = 0; queue_index < num_queues; ++queue_index) {
- 		queue = &vif->queues[queue_index];
- 
--		netif_napi_del(&queue->napi);
--
--		if (queue->task) {
--			kthread_stop(queue->task);
--			put_task_struct(queue->task);
--			queue->task = NULL;
--		}
--
--		if (queue->dealloc_task) {
--			kthread_stop(queue->dealloc_task);
--			queue->dealloc_task = NULL;
--		}
--
--		if (queue->tx_irq) {
--			if (queue->tx_irq == queue->rx_irq)
--				unbind_from_irqhandler(queue->tx_irq, queue);
--			else {
--				unbind_from_irqhandler(queue->tx_irq, queue);
--				unbind_from_irqhandler(queue->rx_irq, queue);
--			}
--			queue->tx_irq = 0;
--		}
--
--		xenvif_unmap_frontend_data_rings(queue);
-+		xenvif_disconnect_queue(queue);
- 	}
- 
- 	xenvif_mcast_addr_list_free(vif);
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  10 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 112 +++++++++++++---------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h |   3 +-
+ 3 files changed, 73 insertions(+), 52 deletions(-)
+
 -- 
-2.16.4
+2.5.1
 
