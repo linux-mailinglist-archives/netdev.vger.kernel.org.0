@@ -2,109 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 984BBDE65C
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 10:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 060D3DE6B0
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 10:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbfJUI30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 04:29:26 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:45200 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727471AbfJUI30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 04:29:26 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id E9CBE60790; Mon, 21 Oct 2019 08:29:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571646565;
-        bh=lEYF4JRB9NiiBUTl4iJbN9bqjIYPYN8SKd3G8bvgP1A=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=EN18lOlF5rMt2tBxNGzHoEuiVJouK0G0y10D4MtuTk7FcSbKhwScBfUFhBuT9dFEN
-         S06BM8G6x/CrsSKZnmg5ix6DxjchcXogpCTxsjjiwmFH9Yh4sOeJo6+9riNeKY0U+j
-         KbA8qAvmj7zl0JZ8HMb4vYnv/ypiRW1NAu0ttyG8=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727307AbfJUIhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 04:37:34 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:52558 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726181AbfJUIhd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 04:37:33 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id ADFFA204E0;
+        Mon, 21 Oct 2019 10:37:32 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id zNGTWRgXWIcU; Mon, 21 Oct 2019 10:37:32 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7399C60610;
-        Mon, 21 Oct 2019 08:29:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571646564;
-        bh=lEYF4JRB9NiiBUTl4iJbN9bqjIYPYN8SKd3G8bvgP1A=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=YX/zFkIGiPbhVwhwNeiAFuWkFBqgEvdmW1achZW7fpR3+R9mLM/uNODeoA3wOSt8T
-         8le/c4sDJnY437Wi6DnrQsG2KXI+NPcOuX5qip74GvaRamCyOa53bJ8SldE8846Q8y
-         3Y4g6NAbxHfKQHkhgskPzIkRs6vbWoV3OhQpWiRc=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7399C60610
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Chris Chiu <chiu@endlessm.com>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>
-Subject: Re: [PATCH v2] rtl8xxxu: fix RTL8723BU connection failure issue after warm reboot
-References: <20191016015408.11091-1-chiu@endlessm.com>
-        <CAB4CAwen5y7Z4GU7YgpVafyGexxaMDLzrZ949t9p+LiZ9TxAPA@mail.gmail.com>
-        <CAB4CAwcW5JGtZQy+=vugx5rRYMycWoCSSdDc6nwhunqTtqoQaA@mail.gmail.com>
-Date:   Mon, 21 Oct 2019 11:29:19 +0300
-In-Reply-To: <CAB4CAwcW5JGtZQy+=vugx5rRYMycWoCSSdDc6nwhunqTtqoQaA@mail.gmail.com>
-        (Chris Chiu's message of "Mon, 21 Oct 2019 10:26:48 +0800")
-Message-ID: <874l02wlgg.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 44981200A0;
+        Mon, 21 Oct 2019 10:37:32 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 21 Oct 2019
+ 10:37:28 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 43CC531800D5;
+ Mon, 21 Oct 2019 10:37:31 +0200 (CEST)
+Date:   Mon, 21 Oct 2019 10:37:31 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Tom Rix <trix@redhat.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] xfrm : lock input tasklet skb queue
+Message-ID: <20191021083731.GK15862@gauss3.secunet.de>
+References: <CACVy4SVuw0Qbjiv6PLRn1symoxGzyBMZx2F5O23+jGZG6WHuYA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CACVy4SVuw0Qbjiv6PLRn1symoxGzyBMZx2F5O23+jGZG6WHuYA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Chris Chiu <chiu@endlessm.com> writes:
+On Sun, Oct 20, 2019 at 08:46:10AM -0700, Tom Rix wrote:
+> On PREEMPT_RT_FULL while running netperf, a corruption
+> of the skb queue causes an oops.
+> 
+> This appears to be caused by a race condition here
+>         __skb_queue_tail(&trans->queue, skb);
+>         tasklet_schedule(&trans->tasklet);
+> Where the queue is changed before the tasklet is locked by
+> tasklet_schedule.
+> 
+> The fix is to use the skb queue lock.
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  net/xfrm/xfrm_input.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+> index 9b599ed66d97..226dead86828 100644
+> --- a/net/xfrm/xfrm_input.c
+> +++ b/net/xfrm/xfrm_input.c
+> @@ -758,12 +758,16 @@ static void xfrm_trans_reinject(unsigned long data)
+>      struct xfrm_trans_tasklet *trans = (void *)data;
+>      struct sk_buff_head queue;
+>      struct sk_buff *skb;
+> +    unsigned long flags;
+> 
+>      __skb_queue_head_init(&queue);
+> +    spin_lock_irqsave(&trans->queue.lock, flags);
+>      skb_queue_splice_init(&trans->queue, &queue);
+> 
+>      while ((skb = __skb_dequeue(&queue)))
+>          XFRM_TRANS_SKB_CB(skb)->finish(dev_net(skb->dev), NULL, skb);
+> +
+> +    spin_unlock_irqrestore(&trans->queue.lock, flags);
+>  }
+> 
+>  int xfrm_trans_queue(struct sk_buff *skb,
+> @@ -771,15 +775,20 @@ int xfrm_trans_queue(struct sk_buff *skb,
+>                     struct sk_buff *))
+>  {
+>      struct xfrm_trans_tasklet *trans;
+> +    unsigned long flags;
+> 
+>      trans = this_cpu_ptr(&xfrm_trans_tasklet);
+> +    spin_lock_irqsave(&trans->queue.lock, flags);
 
-> On Thu, Oct 17, 2019 at 10:26 AM Chris Chiu <chiu@endlessm.com> wrote:
->>
->> On Wed, Oct 16, 2019 at 9:54 AM Chris Chiu <chiu@endlessm.com> wrote:
->> >
->> > The RTL8723BU has problems connecting to AP after each warm reboot.
->> > Sometimes it returns no scan result, and in most cases, it fails
->> > the authentication for unknown reason. However, it works totally
->> > fine after cold reboot.
->> >
->> > Compare the value of register SYS_CR and SYS_CLK_MAC_CLK_ENABLE
->> > for cold reboot and warm reboot, the registers imply that the MAC
->> > is already powered and thus some procedures are skipped during
->> > driver initialization. Double checked the vendor driver, it reads
->> > the SYS_CR and SYS_CLK_MAC_CLK_ENABLE also but doesn't skip any
->> > during initialization based on them. This commit only tells the
->> > RTL8723BU to do full initialization without checking MAC status.
->> >
->> > Signed-off-by: Chris Chiu <chiu@endlessm.com>
->> Signed-off-by: Jes Sorensen <Jes.Sorensen@gmail.com>
->>
->> Sorry, I forgot to add Jes.
->>
->> Chris
->> > ---
->> >
->> > Note:
->> >   v2: fix typo of commit message
->> >
->> >
->
-> Gentle ping. Cheers.
+As you can see above 'trans' is per cpu, so a spinlock
+is not needed here. Also this does not run in hard
+interrupt context, so irqsave is also not needed.
+I don't see how this can fix anything.
 
-To reduce email please avoid pinging like this, it has been only five
-days since you submitted this version and this is not a 24/7 service. I
-have documented how you can follow the status from patchwork:
+Can you please explain that race a bit more detailed?
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#checking_state_of_patches_from_patchwork
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
