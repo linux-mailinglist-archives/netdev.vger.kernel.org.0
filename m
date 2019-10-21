@@ -2,127 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1FB6DE95B
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 12:22:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BDDDDE96F
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 12:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728183AbfJUKWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 06:22:07 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:32998 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728074AbfJUKWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 06:22:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571653325;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WOCT7wly6KfhuOArDnM97rOlSlf5dicr3quLe5triaA=;
-        b=YwX8sdlK51KtNkNSfj3iFY1teH25gy60xd+NFVxdg8LD50oRUsZFMqbGKegjjq4LP8524l
-        59UNgMAW9Rq9ZLV+OxTGO/hNMBzUvSHkkpQuNLQ/eLdxIF03U2xHBMnLcPbpX4UnP9dHJt
-        Cu4JK+L4SaHJiF8+Sf89U0fA6uvPo6w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-322-mVNupHU-OimsifvQ82L67A-1; Mon, 21 Oct 2019 06:22:02 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 14CFC1005500;
-        Mon, 21 Oct 2019 10:22:01 +0000 (UTC)
-Received: from [10.72.12.22] (ovpn-12-22.pek2.redhat.com [10.72.12.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8C574104F1;
-        Mon, 21 Oct 2019 10:21:51 +0000 (UTC)
-Subject: Re: [RFC 1/2] vhost: IFC VF hardware operation layer
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>, mst@redhat.com,
-        alex.williamson@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
-        zhiyuan.lv@intel.com
-References: <20191016013050.3918-1-lingshan.zhu@intel.com>
- <20191016013050.3918-2-lingshan.zhu@intel.com>
- <2d711b6b-3bdc-afaa-8110-beebd6c5a896@redhat.com>
- <32d4c431-24f2-f9f0-8573-268abc7bb71c@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <0fe6eb76-85a7-a1cb-5b11-8edb01dd65c7@redhat.com>
-Date:   Mon, 21 Oct 2019 18:21:50 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728092AbfJUK1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 06:27:34 -0400
+Received: from mout.kundenserver.de ([212.227.17.10]:52493 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726725AbfJUK1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 06:27:34 -0400
+Received: from mail-qt1-f181.google.com ([209.85.160.181]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1M7KKA-1iNbtw3Liu-007i8U for <netdev@vger.kernel.org>; Mon, 21 Oct 2019
+ 12:27:33 +0200
+Received: by mail-qt1-f181.google.com with SMTP id c21so20139458qtj.12
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 03:27:32 -0700 (PDT)
+X-Gm-Message-State: APjAAAVpNFJfhOHcfy6ajIZOoSiUAIEPguAA3CLrY4v5e8S9HaHCW8SE
+        lCtLifYsbWm26qMxoSwpLecpF9hgStjXx3VW4mI=
+X-Google-Smtp-Source: APXvYqx+o6h3GrENMk92oLRBMoI8YIMY/xHPIvlrcEMz+eBa0TV7rhg2d5lOWhuneE6lApuzqtlWQbcPd9cTA2nOLYk=
+X-Received: by 2002:a0c:fde8:: with SMTP id m8mr23198779qvu.4.1571653651698;
+ Mon, 21 Oct 2019 03:27:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <32d4c431-24f2-f9f0-8573-268abc7bb71c@intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: mVNupHU-OimsifvQ82L67A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+References: <20191021000824.531-1-linus.walleij@linaro.org> <20191021000824.531-11-linus.walleij@linaro.org>
+In-Reply-To: <20191021000824.531-11-linus.walleij@linaro.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 21 Oct 2019 12:27:15 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0BSN8jxxnjPgSoLFouM3awS9DryL0_4Qcwd_cwn+aUEg@mail.gmail.com>
+Message-ID: <CAK8P3a0BSN8jxxnjPgSoLFouM3awS9DryL0_4Qcwd_cwn+aUEg@mail.gmail.com>
+Subject: Re: [PATCH 10/10] net: ethernet: ixp4xx: Use parent dev for DMA pool
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Networking <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:WsPuFt2Jsd8fjaFuDHsinvoT98mqRXfrQsjj82TocZSW2O3FAEO
+ IMMgRvKQZ97K0d7asy5EDpfb6i73I+FSu96kC4z1UKhkViW3P3PizmL4BSER/E2FgS/nDjb
+ weyf1ERJ5NMF+qUPm5602xSULEnbtFskhIBsgaLlx3MoBoBJbpeC5pmipxoqBJ+Q8VkvOuT
+ KInX9mHGjlpnXn90rOL8w==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zA12N3TwO78=:WkVEcASZE1A+Ylg45xvkc7
+ gScKYRoXlDhKfxN7p9MUcRS6Ae4GHw/4nNspuzKi7hCTjGMFo7bugRytXlweuYib2PvdazfXu
+ ub3e+JHlRoebXpVBYyEs7bwbZCMKBrDCgw8LDEo2EU7lsEgK+a3nAly5Kx7czGRAVpT9LTWrX
+ VGEy+kUKhwdEASvMybbRAfLAv1KWM3GNNIHOCyTUXzI0qVxIDwfhViWA2XvqX3KFqL0J1BCoc
+ GvNkrpbfqRmo4v+cjWbwKDWc4oD9MSaaQOLIiuuflznfUJVPRcmYIffbBacDGIyTkEEL8cu7b
+ xb781+J7ldnVCqpkPQKdVduNvzSKkKtW8YrdGJF1Pi8jeHuSWW/UkspZahV+J718LEHmDouMd
+ BZkbStZmBfYWxIttkIHuaBz7WFD7RfWlhdSAE+9VJVsoUPDHZiyJ2pmdw3bC5TeahylsOcTkn
+ TZ1AInyXlJTEsboOIeXhkjxi/7QwGEYcbRvhVObl4v67nsTnactkLxagv02q5YI8K6HvjTWIZ
+ BcOZ0pXaMs5+2/qP3iNWwKb/gxrGb3x1Fgz1PJ+Ww9TQgxfcFZDSgebwskydf6XPXv6pexl5/
+ vjpP2WzXNyowx8U4X5V6Wcw4Ne9sIgc1bPHJ3xq57ugiAVpWxzUuv+DBSrX2MANbqZlmKklWj
+ /m1R9ePsFXLy14YORglYru1er6edFAOfRRkfd+fIivpTM7tM6Rd0nN+o7kYcVu36z8gEjRCWY
+ 570F8+328xXjnO3I9K0ugCbW5wqJiQ+zj5WYMtgXRwHPsJjriCmPoKSL1sNyF+9XOggDdE0Tl
+ 0NeJuTiPKOlZzZYSAzR6Rg0sew6OrkvSI9hxu2Tou///HewCBWwvhBpvADmPJLi5UEiNhp/et
+ SCOGSUJUO7ZnDl7lRsUQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/10/21 =E4=B8=8B=E5=8D=885:57, Zhu, Lingshan wrote:
+On Mon, Oct 21, 2019 at 2:10 AM Linus Walleij <linus.walleij@linaro.org> wrote:
 >
-> On 10/16/2019 4:45 PM, Jason Wang wrote:
->>
->> On 2019/10/16 =E4=B8=8A=E5=8D=889:30, Zhu Lingshan wrote:
->>> + */
->>> +#define IFCVF_TRANSPORT_F_START 28
->>> +#define IFCVF_TRANSPORT_F_END=C2=A0=C2=A0 34
->>> +
->>> +#define IFC_SUPPORTED_FEATURES \
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ((1ULL << VIRTIO_NET_F_MAC)=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | \
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (1ULL << VIRTIO_F_ANY=
-_LAYOUT)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-| \
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (1ULL << VIRTIO_F_VER=
-SION_1) | \
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (1ULL << VHOST_F_LOG_=
-ALL)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | \
->>
->>
->> Let's avoid using VHOST_F_LOG_ALL, using the get_mdev_features()=20
->> instead.
-> Thanks, I will remove VHOST_F_LOG_ALL
->>
->>
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (1ULL << VIRTIO_NET_F=
-_GUEST_ANNOUNCE)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | \
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (1ULL << VIRTIO_NET_F=
-_CTRL_VQ)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- | \
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (1ULL << VIRTIO_NET_F=
-_STATUS)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-| \
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (1ULL << VIRTIO_NET_F=
-_MRG_RXBUF)) /* not fully supported */
->>
->>
->> Why not having VIRTIO_F_IOMMU_PLATFORM and VIRTIO_F_ORDER_PLATFORM?
+> Use the netdevice struct device .parent field when calling
+> dma_pool_create(): the .dma_coherent_mask and .dma_mask
+> pertains to the bus device on the hardware (platform)
+> bus in this case, not the struct device inside the network
+> device. This makes the pool allocation work.
 >
-> I will add VIRTIO_F_ORDER_PLATFORM, for VIRTIO_F_IOMMU_PLATFORM, if we=20
-> add this bit, QEMU may enable viommu, can cause troubles in LM
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
+Has this always been broken, or can you identify when it stopped
+working? It might be a candidate for stable backports.
 
-Qemu has mature support of vIOMMU support for VFIO device, it can shadow=20
-IO page tables and setup them through DMA ioctl of vfio containers. Any=20
-issue you saw here?
-
-Btw, to test them quickly, you can implement set_config/get_config and=20
-test them through virtio-mdev/kernel drivers as well.
-
-Thanks
-
-
-> (through we don't support LM in this version driver)
+> ---
+>  drivers/net/ethernet/xscale/ixp4xx_eth.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Thanks,
-> BR
-> Zhu Lingshan
->>
->> Thanks
->>
-
+> diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+> index 0996046bd046..3ee6d7232eb9 100644
+> --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
+> +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+> @@ -1090,7 +1090,7 @@ static int init_queues(struct port *port)
+>         int i;
+>
+>         if (!ports_open) {
+> -               dma_pool = dma_pool_create(DRV_NAME, &port->netdev->dev,
+> +               dma_pool = dma_pool_create(DRV_NAME, port->netdev->dev.parent,
+>                                            POOL_ALLOC_SIZE, 32, 0);
+>                 if (!dma_pool)
+>                         return -ENOMEM;
+> --
+> 2.21.0
+>
