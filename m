@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 830F1DF035
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD16DF038
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728263AbfJUOpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 10:45:39 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41605 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726987AbfJUOpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 10:45:38 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q7so8565137pfh.8
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 07:45:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yTPxXfaDi/cyr4JY0Jgze0DAKcyw3G+EJ8T7To77x0c=;
-        b=E/SlSvAkGWL8pGfVnOrx5+GTnF6CvSrWmR+zkwKOSkkzfwcdpu65kTGYr8fiTIgmTb
-         /MDHOSXlb+rVJq0m8ODzgBgQNzhPe5snw/63q3NW2jxh3bIjMmPPoHfMdNcqEjFu2lb+
-         HumNyf3lPhRJ+nZ3otIGsjmfY8uPQQfSP8ks+6W2RDchYKLh/XZ3zALOUlwItL3A9JYN
-         cug3R8Dor9BHokXb+24HyBdDBrqK8YqTgzzb7oFXQ3Ntr6SpH4TpJFaeAI/MPl+QVvnd
-         /Wx9r1UMh6hDjKQF0/f2FEXTJFwUTWxWNK2wuUajZn2v7djIAqlDwleTaP9XiJlRpqRO
-         PvrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yTPxXfaDi/cyr4JY0Jgze0DAKcyw3G+EJ8T7To77x0c=;
-        b=LVe1ZlbWQn4hK1bYRG3rn4nbkEr6X8G4CFZAUDTxfe/GzB/C9us9d82wfFfwaArUSe
-         g1JzpRdbomJINxG02vYyo1rSsRI+PlRb1DN9wiqUKse1ZjfSon+o+B02UdhQXfLis8NQ
-         Ro/YldqsVfsqBGdqBq5rtIGd7rDCTd9homxJh9f1IVuZ7+jrzh035sKdY8lPoapqGJH7
-         Fpovb+m9/oxjd0yBszZoCoOJtYKO7+Hau2v5eO4YeHcZirA/kbNOauk9g1pr0jtxHYQC
-         fiEj0YzLL6h8cTL/kFbu88uDz9WE8yHMG1gClXX2uuo+gdQns09rUZerJ/SX5rbEfX1e
-         YyNw==
-X-Gm-Message-State: APjAAAV1IDnS+h8nC8D6eK67FBByIfLazjsEeoTBfP9iQaKleRuXQSSA
-        qog6ktRfLAvC6w8+nWoK9b/nCw==
-X-Google-Smtp-Source: APXvYqzrYlQXe7Wl+Pdo7pLekzBcv2vcqfOuYQs+fs6gn9SlfFOZLCyLa+RYqx/pnpy4I4e9QMaEgw==
-X-Received: by 2002:a17:90a:a605:: with SMTP id c5mr30180069pjq.28.1571669136286;
-        Mon, 21 Oct 2019 07:45:36 -0700 (PDT)
-Received: from [192.168.1.182] ([192.40.64.15])
-        by smtp.gmail.com with ESMTPSA id y80sm16549698pfc.30.2019.10.21.07.45.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 21 Oct 2019 07:45:35 -0700 (PDT)
-Subject: Re: [RFC PATCH 1/2] block: add support for redirecting IO completion
- through eBPF
-To:     Bart Van Assche <bvanassche@acm.org>, Hou Tao <houtao1@huawei.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     linux-block@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, hare@suse.com,
-        osandov@fb.com, ming.lei@redhat.com, damien.lemoal@wdc.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-References: <20191014122833.64908-1-houtao1@huawei.com>
- <20191014122833.64908-2-houtao1@huawei.com>
- <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
- <84032c64-8e5e-6ad1-63ea-57adee7a2875@huawei.com>
- <737d9d3f-e72c-ac31-6b2a-997202a302bd@acm.org>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <b09f97a5-4097-6ac4-00fd-27a77c5d15dd@kernel.dk>
-Date:   Mon, 21 Oct 2019 08:45:33 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728819AbfJUOpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 10:45:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41602 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726987AbfJUOpw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 10:45:52 -0400
+Received: from localhost (unknown [107.87.137.115])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A29D12053B;
+        Mon, 21 Oct 2019 14:45:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571669151;
+        bh=zSxr6boC9XHsm0JY6dQGUP4Y+pfXYhmlbUslvFJagHU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wzQU8e0ZUFNA8uAikS25qhU+PVVOE1nVLd8tB20kS4RhTnUBXXeHPWRWyrc6EfC/U
+         3MxufZMwym9OBnJTJHOyQO6DC35w13zixXNgT34vkVW+/WGisLaRsfWiKq9PCWqjMn
+         eR5n3fRA7Hjg+DR0PEPA/XiaRHmax8grcGZk3iAs=
+Date:   Mon, 21 Oct 2019 10:45:48 -0400
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] debugfs: Add debugfs_create_xul() for hexadecimal
+ unsigned long
+Message-ID: <20191021144548.GA41107@kroah.com>
+References: <20191021143742.14487-1-geert+renesas@glider.be>
+ <20191021143742.14487-2-geert+renesas@glider.be>
 MIME-Version: 1.0
-In-Reply-To: <737d9d3f-e72c-ac31-6b2a-997202a302bd@acm.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191021143742.14487-2-geert+renesas@glider.be>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/21/19 7:48 AM, Bart Van Assche wrote:
-> On 10/21/19 6:42 AM, Hou Tao wrote:
->> Your suggestion is much simpler, so there will be no need for adding a new
->> program type, and all things need to be done are adding a raw tracepoint,
->> moving bpf_ccpu into struct request, and letting a BPF program to modify it.
+On Mon, Oct 21, 2019 at 04:37:36PM +0200, Geert Uytterhoeven wrote:
+> The existing debugfs_create_ulong() function supports objects of
+> type "unsigned long", which are 32-bit or 64-bit depending on the
+> platform, in decimal form.  To format objects in hexadecimal, various
+> debugfs_create_x*() functions exist, but all of them take fixed-size
+> types.
 > 
-> blk-mq already supports processing completions on the CPU that submitted
-> a request so it's not clear to me why any changes in the block layer are
-> being proposed for redirecting I/O completions?
+> Add a debugfs helper for "unsigned long" objects in hexadecimal format.
+> This avoids the need for users to open-code the same, or introduce
+> bugs when casting the value pointer to "u32 *" or "u64 *" to call
+> debugfs_create_x{32,64}().
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  include/linux/debugfs.h | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
+> index 33690949b45d6904..d7b2aebcc277d65e 100644
+> --- a/include/linux/debugfs.h
+> +++ b/include/linux/debugfs.h
+> @@ -356,4 +356,14 @@ static inline ssize_t debugfs_write_file_bool(struct file *file,
+>  
+>  #endif
+>  
+> +static inline void debugfs_create_xul(const char *name, umode_t mode,
+> +				      struct dentry *parent,
+> +				      unsigned long *value)
+> +{
+> +	if (sizeof(*value) == sizeof(u32))
+> +		debugfs_create_x32(name, mode, parent, (u32 *)value);
+> +	else
+> +		debugfs_create_x64(name, mode, parent, (u64 *)value);
+> +}
 
-That's where I'm getting confused as well. I'm not against adding BPF
-functionality to the block layer, but this one seems a bit contrived.
+Looks sane, but can you add some kernel-doc comments here so that we can
+pull it into the debugfs documentation?  Also there is debugfs
+documentation in Documentation/filesystems/ so maybe also add this
+there?  I am going to be overhauling the debugfs documentation "soon"
+but it's at the lower part of my todo list, so it will take a while,
+might as well keep it up to date with new stuff added like this so that
+people don't get lost.
 
--- 
-Jens Axboe
+thanks,
 
+greg k-h
