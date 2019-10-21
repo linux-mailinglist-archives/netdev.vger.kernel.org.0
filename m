@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BDDDDE96F
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 12:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6CEDE97A
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 12:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728092AbfJUK1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 06:27:34 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:52493 "EHLO
+        id S1727987AbfJUKaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 06:30:35 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:38201 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726725AbfJUK1e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 06:27:34 -0400
+        with ESMTP id S1726725AbfJUKaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 06:30:35 -0400
 Received: from mail-qt1-f181.google.com ([209.85.160.181]) by
- mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1M7KKA-1iNbtw3Liu-007i8U for <netdev@vger.kernel.org>; Mon, 21 Oct 2019
- 12:27:33 +0200
-Received: by mail-qt1-f181.google.com with SMTP id c21so20139458qtj.12
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 03:27:32 -0700 (PDT)
-X-Gm-Message-State: APjAAAVpNFJfhOHcfy6ajIZOoSiUAIEPguAA3CLrY4v5e8S9HaHCW8SE
-        lCtLifYsbWm26qMxoSwpLecpF9hgStjXx3VW4mI=
-X-Google-Smtp-Source: APXvYqx+o6h3GrENMk92oLRBMoI8YIMY/xHPIvlrcEMz+eBa0TV7rhg2d5lOWhuneE6lApuzqtlWQbcPd9cTA2nOLYk=
-X-Received: by 2002:a0c:fde8:: with SMTP id m8mr23198779qvu.4.1571653651698;
- Mon, 21 Oct 2019 03:27:31 -0700 (PDT)
+ mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1M597s-1iLP1p36Ga-0019Wr for <netdev@vger.kernel.org>; Mon, 21 Oct 2019
+ 12:30:33 +0200
+Received: by mail-qt1-f181.google.com with SMTP id g50so6036805qtb.4
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 03:30:33 -0700 (PDT)
+X-Gm-Message-State: APjAAAXjyfYHJ4hHARoVwUM1pMVNSMKAVuyOm627eQlk56udiCwv6w3C
+        V7X9JNnuO5dPoBpx6qKrWRBXuBXumhdey1uBBo8=
+X-Google-Smtp-Source: APXvYqxkmvhQQLmaf1/Lev5LoE6PtuB6cdqSpcUQDGoCObQX7zB2Ix9MRDNKJMF9Aj+KG4YAgDXiV5Hc+uALGVu3Yws=
+X-Received: by 2002:a0c:fde8:: with SMTP id m8mr23209284qvu.4.1571653832671;
+ Mon, 21 Oct 2019 03:30:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191021000824.531-1-linus.walleij@linaro.org> <20191021000824.531-11-linus.walleij@linaro.org>
-In-Reply-To: <20191021000824.531-11-linus.walleij@linaro.org>
+References: <20191021000824.531-1-linus.walleij@linaro.org> <20191021000824.531-10-linus.walleij@linaro.org>
+In-Reply-To: <20191021000824.531-10-linus.walleij@linaro.org>
 From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 21 Oct 2019 12:27:15 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0BSN8jxxnjPgSoLFouM3awS9DryL0_4Qcwd_cwn+aUEg@mail.gmail.com>
-Message-ID: <CAK8P3a0BSN8jxxnjPgSoLFouM3awS9DryL0_4Qcwd_cwn+aUEg@mail.gmail.com>
-Subject: Re: [PATCH 10/10] net: ethernet: ixp4xx: Use parent dev for DMA pool
+Date:   Mon, 21 Oct 2019 12:30:16 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1qbJC+nFZD0ZKDqWE6ORbEEZbO_Y+MZBS--ym_VQ6fXQ@mail.gmail.com>
+Message-ID: <CAK8P3a1qbJC+nFZD0ZKDqWE6ORbEEZbO_Y+MZBS--ym_VQ6fXQ@mail.gmail.com>
+Subject: Re: [PATCH 09/10] net: ethernet: ixp4xx: Get port ID from base address
 To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     Networking <netdev@vger.kernel.org>,
         "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:WsPuFt2Jsd8fjaFuDHsinvoT98mqRXfrQsjj82TocZSW2O3FAEO
- IMMgRvKQZ97K0d7asy5EDpfb6i73I+FSu96kC4z1UKhkViW3P3PizmL4BSER/E2FgS/nDjb
- weyf1ERJ5NMF+qUPm5602xSULEnbtFskhIBsgaLlx3MoBoBJbpeC5pmipxoqBJ+Q8VkvOuT
- KInX9mHGjlpnXn90rOL8w==
+X-Provags-ID: V03:K1:gOqQMqhwNLqhpr5IhphJte0gueIHe7hD4EVGNbPhuAyfbvKL64n
+ QnOhsq6JjnS2GSlaczsCcqF7cPsUX4hjyxSWilUlL9TObE322PJJtyhxZmJJqT2QUz6oAC1
+ h1SNn36wYNXm3X++Hnt9l4KTsBKZqZ3mC/v5fW7bN96Xzxk8OGsS5CWOjij+BbjQ0hJrqbn
+ yjrMzOXyBxo7Vay1of6bQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zA12N3TwO78=:WkVEcASZE1A+Ylg45xvkc7
- gScKYRoXlDhKfxN7p9MUcRS6Ae4GHw/4nNspuzKi7hCTjGMFo7bugRytXlweuYib2PvdazfXu
- ub3e+JHlRoebXpVBYyEs7bwbZCMKBrDCgw8LDEo2EU7lsEgK+a3nAly5Kx7czGRAVpT9LTWrX
- VGEy+kUKhwdEASvMybbRAfLAv1KWM3GNNIHOCyTUXzI0qVxIDwfhViWA2XvqX3KFqL0J1BCoc
- GvNkrpbfqRmo4v+cjWbwKDWc4oD9MSaaQOLIiuuflznfUJVPRcmYIffbBacDGIyTkEEL8cu7b
- xb781+J7ldnVCqpkPQKdVduNvzSKkKtW8YrdGJF1Pi8jeHuSWW/UkspZahV+J718LEHmDouMd
- BZkbStZmBfYWxIttkIHuaBz7WFD7RfWlhdSAE+9VJVsoUPDHZiyJ2pmdw3bC5TeahylsOcTkn
- TZ1AInyXlJTEsboOIeXhkjxi/7QwGEYcbRvhVObl4v67nsTnactkLxagv02q5YI8K6HvjTWIZ
- BcOZ0pXaMs5+2/qP3iNWwKb/gxrGb3x1Fgz1PJ+Ww9TQgxfcFZDSgebwskydf6XPXv6pexl5/
- vjpP2WzXNyowx8U4X5V6Wcw4Ne9sIgc1bPHJ3xq57ugiAVpWxzUuv+DBSrX2MANbqZlmKklWj
- /m1R9ePsFXLy14YORglYru1er6edFAOfRRkfd+fIivpTM7tM6Rd0nN+o7kYcVu36z8gEjRCWY
- 570F8+328xXjnO3I9K0ugCbW5wqJiQ+zj5WYMtgXRwHPsJjriCmPoKSL1sNyF+9XOggDdE0Tl
- 0NeJuTiPKOlZzZYSAzR6Rg0sew6OrkvSI9hxu2Tou///HewCBWwvhBpvADmPJLi5UEiNhp/et
- SCOGSUJUO7ZnDl7lRsUQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sactTHwIj20=:XUz+5YRmxWnSgi6UQ63mFm
+ aIWVJVoMPJwIOndB1rJtGczaW/HSw8siIWb7iULhm2OWu52RRntdzGo142qu47N5JZ2n2QZpk
+ x4V/l2n2+RnHGZX1CV9nNBiCfiKmCcdriKElMJsb3X3wPHGhs9kbKyt8OpwAkC+q2YcMxfuts
+ +wVqlxboJM9mKbZJC3pfLfJu0zxg/mj0b1wySTc6a8wiHiBXQ+DCBVUyijE7AfPfZzs0/pG6G
+ 8mdjFCp0l0ksA0pWOM/4mIdTJ8OltssMSlzZTJ6RZDP6dKLTyxNxeJ0sP6FYkfQVb+agHp39Y
+ 9CXkuIiX1QH0C9pcl7GHClCoHpixk3OMZ8mPP+5vvZAAFdnjac9/l+tgxZojkM0kncnINYNAc
+ kAQPGdrQmET2Royd0w1twdiqIkow71bh74jXhmSAhukoyzPZ4k7VJTLyh/Q1F4QO0dI0BcjOg
+ ANoACWdH3FRQJRAIMtJ5j65qXWMFna63HwZtPZSNrq7o2UGp78XmXz2PELVf2bRxIl8Q33bnE
+ +R5gtXKA7DzUWRxGVsqF+6kJiz1AwFCGESD34V2j3j3voFMqUnw75PmpfBSgdNgGTuXwY0+mX
+ ztVu2CexlmjRPAKDeNXBL2UlwLeLOMd626BUI+HHbewKLpQbnkqny8wRvMubC9J/7E6QvfX8w
+ 5gK9J8wUD96gSAwQXO59P+PcKXvI1l6P1XD3ag4K0ED3bjkUdObt1bec9e5Hf74VnQf9H2A/4
+ rEwbYPbNPBN60BzljtWGH/buy+VIjdMLMTa0S2JdMjpTc0aGMdkquYdlQM9rLTrWd+reiP2dl
+ PC2pJJslrPuIbb3WnSFnPEV6tBVqYaJH38gtnz0oB2KktMl2d4T1KtrjXZXyCY5+qtNCBf06c
+ SBDfN8aP2NADCj35c8Wg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -60,34 +60,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Oct 21, 2019 at 2:10 AM Linus Walleij <linus.walleij@linaro.org> wrote:
 >
-> Use the netdevice struct device .parent field when calling
-> dma_pool_create(): the .dma_coherent_mask and .dma_mask
-> pertains to the bus device on the hardware (platform)
-> bus in this case, not the struct device inside the network
-> device. This makes the pool allocation work.
+> The port->id was picked from the platform device .id field,
+> but this is not supposed to be used for passing around
+> random numbers in hardware. Identify the port ID number
+> from the base address instead.
 >
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-Has this always been broken, or can you identify when it stopped
-working? It might be a candidate for stable backports.
+I'm not sure this is better, as now the driver hardcodes the physical
+address, and the port->id value is still the same as the pdev->id
+value that all boards still pass.
 
-> ---
->  drivers/net/ethernet/xscale/ixp4xx_eth.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-> index 0996046bd046..3ee6d7232eb9 100644
-> --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
-> +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-> @@ -1090,7 +1090,7 @@ static int init_queues(struct port *port)
->         int i;
->
->         if (!ports_open) {
-> -               dma_pool = dma_pool_create(DRV_NAME, &port->netdev->dev,
-> +               dma_pool = dma_pool_create(DRV_NAME, port->netdev->dev.parent,
->                                            POOL_ALLOC_SIZE, 32, 0);
->                 if (!dma_pool)
->                         return -ENOMEM;
-> --
-> 2.21.0
->
+Is this just meant to avoid setting the port id explicitly in DT?
+
+       Arnd
