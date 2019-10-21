@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6DF8DF06B
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:52:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CD66DF072
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728223AbfJUOwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 10:52:15 -0400
-Received: from baptiste.telenet-ops.be ([195.130.132.51]:58510 "EHLO
+        id S1729406AbfJUOwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 10:52:30 -0400
+Received: from baptiste.telenet-ops.be ([195.130.132.51]:58472 "EHLO
         baptiste.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729246AbfJUOwN (ORCPT
+        with ESMTP id S1729178AbfJUOwN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 10:52:13 -0400
 Received: from ramsan ([84.194.98.4])
         by baptiste.telenet-ops.be with bizsmtp
-        id GErr2100805gfCL01Err8s; Mon, 21 Oct 2019 16:52:11 +0200
+        id GErr2100905gfCL01Err8t; Mon, 21 Oct 2019 16:52:11 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan with esmtp (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1iMZ2F-00075l-0P; Mon, 21 Oct 2019 16:51:51 +0200
+        id 1iMZ2F-00075n-1J; Mon, 21 Oct 2019 16:51:51 +0200
 Received: from geert by rox.of.borg with local (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1iMZ2E-0008FT-V5; Mon, 21 Oct 2019 16:51:50 +0200
+        id 1iMZ2E-0008FW-Vt; Mon, 21 Oct 2019 16:51:50 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     =?UTF-8?q?Breno=20Leit=C3=A3o?= <leitao@debian.org>,
         Nayna Jain <nayna@linux.ibm.com>,
@@ -44,9 +44,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 2/5] cxgb4/cxgb4vf: Remove superfluous void * cast in debugfs_create_file() call
-Date:   Mon, 21 Oct 2019 16:51:46 +0200
-Message-Id: <20191021145149.31657-3-geert+renesas@glider.be>
+Subject: [PATCH 3/5] drm/amdgpu: Remove superfluous void * cast in debugfs_create_file() call
+Date:   Mon, 21 Oct 2019 16:51:47 +0200
+Message-Id: <20191021145149.31657-4-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191021145149.31657-1-geert+renesas@glider.be>
 References: <20191021145149.31657-1-geert+renesas@glider.be>
@@ -61,22 +61,24 @@ further compiler checks.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-index f6fc0875d5b0a285..4a07a73c672b5996 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-@@ -2480,7 +2480,7 @@ static int setup_debugfs(struct adapter *adapter)
- 	for (i = 0; i < ARRAY_SIZE(debugfs_files); i++)
- 		debugfs_create_file(debugfs_files[i].name,
- 				    debugfs_files[i].mode,
--				    adapter->debugfs_root, (void *)adapter,
-+				    adapter->debugfs_root, adapter,
- 				    debugfs_files[i].fops);
- 
- 	return 0;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
+index 5652cc72ed3a9b3a..b97a38b1e089b3d6 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
+@@ -1090,8 +1090,8 @@ int amdgpu_debugfs_init(struct amdgpu_device *adev)
+ {
+ 	adev->debugfs_preempt =
+ 		debugfs_create_file("amdgpu_preempt_ib", 0600,
+-				    adev->ddev->primary->debugfs_root,
+-				    (void *)adev, &fops_ib_preempt);
++				    adev->ddev->primary->debugfs_root, adev,
++				    &fops_ib_preempt);
+ 	if (!(adev->debugfs_preempt)) {
+ 		DRM_ERROR("unable to create amdgpu_preempt_ib debugsfs file\n");
+ 		return -EIO;
 -- 
 2.17.1
 
