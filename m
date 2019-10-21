@@ -2,121 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A77C4DF325
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 933EEDF338
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728570AbfJUQb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 12:31:57 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52364 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727889AbfJUQbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:31:55 -0400
-Received: by mail-wm1-f68.google.com with SMTP id r19so14083990wmh.2
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 09:31:52 -0700 (PDT)
+        id S1729493AbfJUQfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 12:35:10 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:44989 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729405AbfJUQfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:35:07 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q21so8735853pfn.11
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 09:35:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3IkhyqN1C3DeqmpvyeKao62eu0Id9wyxWa4NyKMwjSY=;
-        b=ecUT7YuSAH7EqAHwjxoJ7bXyebXggXNBwTBOODxudm9W3L4rkeeF2Tup1Rjgq9+0nX
-         1ig00rspZrWlFuh9g6eK7Iu3wfnnlYbTq5Ri8hsPUTViIT9wIE6HafPFwHR/TllGcxDR
-         /9VvDHFweGt+uOWhUbn9oGA4OsW6S59AVRWtMrVsp2JVl6obVs2Z+ocmObYsTyrsJFVq
-         HXrxI67X+xn7XSZiGSVIxnN9jAi3rsKEqKhd4FTequn80r2arymkCrxSqoB1GN+QqgJp
-         iAqbQbKupwGVXNS8Z0tNTPAej0KM6EndGKI+mdUmCApAZb6zvxHZ5V2QC4OygoowVtSt
-         9kGg==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=YQ2SYzDjclp6+UMcXfMKe/dCfkknHxuiGOrHRSVn0cA=;
+        b=ZvioHrwPqgA32sqk/ZfXl+AIKFsddUO2tNAqbJtu4tCcRANhGvReU9J0qCrPtBX4dr
+         XyEFxDF3rI4Skd8uu+tW37bMnIbIfeVll6YP9QPsiv1m3u9UI7Hz50C/EOmQGDDvJxjt
+         MNnpf3ALOQX+wn100d4q49rWpqL/dLYkEvAbPydL+TGXqu4wUlet2YAblmsMtkne7qnv
+         mFnrVk537e3SRZLOSIfp5DZTMcRh1T3I7huUyEOh7iplVBe4IuwO1byLK+LTz8AIzALW
+         g8HnTvBYEWL7IAty6Tx+yooX0qDMEelsrde2cgdpkGApf9pCWxxWG6Loqrv6o3ZIrYoi
+         o0cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3IkhyqN1C3DeqmpvyeKao62eu0Id9wyxWa4NyKMwjSY=;
-        b=hn5blgYRosHPkEsRg7fvgABc2wqYrkIsy8jvf6LeLaxWQtLj/6yXA0hJmPNfWrkFvk
-         lN5UYhi2j8XsYVC5MqS8mMWZugRC8DnUMFGREw6WcARBpyew3RDHGHebELAYj879hO5l
-         R+t6KAuuCz44lnrRWEwOjhfxOPP4v2Wa8zwi7RBdaEV8IqRi62vY4AHhi5G+SxorwZ28
-         sZ83sYBn/uFxtRF7Ir/qh6eFLEUL57JFDHQxaFDxdjHwEswXoa2WTikCt60CJlHH/DUA
-         +xlx7fMeufhETtB0jZq1ARmJxcjOHCQS6TcXvDFYjUXebjn1divQC5HOGfIGa+k2MyjP
-         8jCA==
-X-Gm-Message-State: APjAAAXfr9dDDh4rporBz1/yJmgtfyQIBE2gWUktxA57NA/6XJ6ufHo9
-        8yvIwa+tWM6Vp883OYg4RGQmUQ==
-X-Google-Smtp-Source: APXvYqzPOa4k0MGzDnxIlfae62AIVxgrRFLh8OdQdSIsPDPBjcYwh/TC0W5XSEVF4sDYB4ISkgFdIQ==
-X-Received: by 2002:a7b:cf28:: with SMTP id m8mr20552680wmg.63.1571675512031;
-        Mon, 21 Oct 2019 09:31:52 -0700 (PDT)
-Received: from netronome.com ([83.137.2.245])
-        by smtp.gmail.com with ESMTPSA id z9sm16104645wrl.35.2019.10.21.09.31.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 09:31:51 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 18:31:40 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
-        zhiyuan.lv@intel.com
-Subject: Re: [RFC 1/2] vhost: IFC VF hardware operation layer
-Message-ID: <20191021163139.GC4486@netronome.com>
-References: <20191016011041.3441-1-lingshan.zhu@intel.com>
- <20191016011041.3441-2-lingshan.zhu@intel.com>
- <20191016095347.5sb43knc7eq44ivo@netronome.com>
- <075be045-3a02-e7d8-672f-4a207c410ee8@intel.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=YQ2SYzDjclp6+UMcXfMKe/dCfkknHxuiGOrHRSVn0cA=;
+        b=cYZ8QoMzoi0kleRFyNaIXyRuMkwu9EmOHn7GPLOWAGvJ0WQ5kPqZ5f4TIMfbdSiRcy
+         dyA7vkF78Nbs47zic+IrQP0BtSYo1BSHnceQ4+E5nXQhDqyNypIT2t57w54Qn0JFH/pv
+         vb8osql+SHw/bZPivnerkJpEmi+o7wH75XFZr5lBFmrvp7JgqD5o/5ksam0Fp4KfdEPL
+         tmxs7fF0Ct0QhnRaiX+EI+XJPD0kZ5OVRk+VTTE/PjNbsOdIeqOG2zE0L6t8O/6M6Aut
+         kD0DmjBodtSh9qM8VpwRFfeoxbiBmglQ7kK2gKNpGF1vKexJ9e5eJN4az3Pbxhskg1e6
+         6vuA==
+X-Gm-Message-State: APjAAAUNnXdJIFUiDtWp2zNXH82kKmf8R69lsziWGzBZCEz6OrexIVMO
+        XRiXE2UldIkzH+7LcIBGZi5fIw==
+X-Google-Smtp-Source: APXvYqwmyNu50+FxrTO6V6IulFup1S67xnT8cj+dbepaT4niD1qSPIKhFvBy+c/p26nJk53uezcFig==
+X-Received: by 2002:a63:ad0d:: with SMTP id g13mr26250877pgf.407.1571675706632;
+        Mon, 21 Oct 2019 09:35:06 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id e4sm16610297pff.22.2019.10.21.09.35.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Oct 2019 09:35:05 -0700 (PDT)
+Subject: Re: [PATCH 5/5] ionic: Use debugfs_create_bool() to export bool
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?UTF-8?Q?Breno_Leit=c3=a3o?= <leitao@debian.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        David@rox.of.borg, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Casey Leedom <leedom@chelsio.com>,
+        Pensando Drivers <drivers@pensando.io>,
+        Kevin Hilman <khilman@kernel.org>, Nishanth Menon <nm@ti.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20191021145149.31657-1-geert+renesas@glider.be>
+ <20191021145149.31657-6-geert+renesas@glider.be>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <aeebbd5f-6100-2780-ef1c-6b1c261c9d23@pensando.io>
+Date:   Mon, 21 Oct 2019 09:35:03 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <075be045-3a02-e7d8-672f-4a207c410ee8@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191021145149.31657-6-geert+renesas@glider.be>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 05:55:33PM +0800, Zhu, Lingshan wrote:
-> 
-> On 10/16/2019 5:53 PM, Simon Horman wrote:
-> > Hi Zhu,
-> > 
-> > thanks for your patch.
-> > 
-> > On Wed, Oct 16, 2019 at 09:10:40AM +0800, Zhu Lingshan wrote:
+On 10/21/19 7:51 AM, Geert Uytterhoeven wrote:
+> Currently bool ionic_cq.done_color is exported using
+> debugfs_create_u8(), which requires a cast, preventing further compiler
+> checks.
+>
+> Fix this by switching to debugfs_create_bool(), and dropping the cast.
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-...
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
-> > > +static void ifcvf_read_dev_config(struct ifcvf_hw *hw, u64 offset,
-> > > +		       void *dst, int length)
-> > > +{
-> > > +	int i;
-> > > +	u8 *p;
-> > > +	u8 old_gen, new_gen;
-> > > +
-> > > +	do {
-> > > +		old_gen = ioread8(&hw->common_cfg->config_generation);
-> > > +
-> > > +		p = dst;
-> > > +		for (i = 0; i < length; i++)
-> > > +			*p++ = ioread8((u8 *)hw->dev_cfg + offset + i);
-> > > +
-> > > +		new_gen = ioread8(&hw->common_cfg->config_generation);
-> > > +	} while (old_gen != new_gen);
-> > Would it be wise to limit the number of iterations of the loop above?
-> Thanks but I don't quite get it. This is used to make sure the function
-> would get the latest config.
+> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> index bc03cecf80cc9eb4..5beba915f69d12dd 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> @@ -170,8 +170,7 @@ void ionic_debugfs_add_qcq(struct ionic_lif *lif, struct ionic_qcq *qcq)
+>   	debugfs_create_x64("base_pa", 0400, cq_dentry, &cq->base_pa);
+>   	debugfs_create_u32("num_descs", 0400, cq_dentry, &cq->num_descs);
+>   	debugfs_create_u32("desc_size", 0400, cq_dentry, &cq->desc_size);
+> -	debugfs_create_u8("done_color", 0400, cq_dentry,
+> -			  (u8 *)&cq->done_color);
+> +	debugfs_create_bool("done_color", 0400, cq_dentry, &cq->done_color);
+>   
+>   	debugfs_create_file("tail", 0400, cq_dentry, cq, &cq_tail_fops);
+>   
 
-I am worried about the possibility that it will loop forever.
-Could that happen?
-
-...
-
-> > > +static void io_write64_twopart(u64 val, u32 *lo, u32 *hi)
-> > > +{
-> > > +	iowrite32(val & ((1ULL << 32) - 1), lo);
-> > > +	iowrite32(val >> 32, hi);
-> > > +}
-> > I see this macro is also in virtio_pci_modern.c
-> > 
-> > Assuming lo and hi aren't guaranteed to be sequential
-> > and thus iowrite64_hi_lo() cannot be used perhaps
-> > it would be good to add a common helper somewhere.
-> Thanks, I will try after this IFC patchwork, I will cc you.
-
-Thanks.
-
-...
