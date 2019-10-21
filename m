@@ -2,216 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6A1DEF10
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3F8DEF1E
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729184AbfJUON7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 10:13:59 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:43298 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727755AbfJUON6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 10:13:58 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9LEDqXx061346
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 10:13:57 -0400
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2vscek54th-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 10:13:55 -0400
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
-        Mon, 21 Oct 2019 15:13:26 +0100
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 21 Oct 2019 15:13:24 +0100
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9LEDNPZ8650904
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Oct 2019 14:13:23 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D4C7F4C076;
-        Mon, 21 Oct 2019 14:13:22 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 97A504C06E;
-        Mon, 21 Oct 2019 14:13:22 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 21 Oct 2019 14:13:22 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        gor@linux.ibm.com, heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next 8/8] net/smc: remove close abort worker
-Date:   Mon, 21 Oct 2019 16:13:15 +0200
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191021141315.58969-1-kgraul@linux.ibm.com>
-References: <20191021141315.58969-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 19102114-0020-0000-0000-0000037BFAEC
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19102114-0021-0000-0000-000021D23248
-Message-Id: <20191021141315.58969-9-kgraul@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-21_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910210135
+        id S1729307AbfJUOQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 10:16:01 -0400
+Received: from mail-eopbgr690086.outbound.protection.outlook.com ([40.107.69.86]:23523
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728551AbfJUOP7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 10:15:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hTo6Infd3CXDeysucGi7sU6dNYYv+PjU3vunbYK0zgflC88hYtMisAoQ0ysEdJ1fSZIr3Agu8Mo+4kvk9lpkDq3N2g+YzkXLT8OGF97dVifKAu6SJHe6gVmXWXPUFm69TYYFjPilWQKPB7Zp7Nuu27ADviq2buGWqY85fs25vY+do+Pb2iy8z0RIl4OVvZzupIslFy0zphe7BfJE2wbXt5OjWLap/5BqXr85cXdV8D/4c79KBur6511W5n+yVylrIQmt4CSkd+Oe6JB5xkBNNKTArEBJRgkSOkAYPY94iNeWXlF8eap6PeWAdW1w9/2EIWuXJax5WC1E6lyxM4TPxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tTtI2AgSGAyBr7yiugDE7l54HJqEHszXaHLRsfY7aN0=;
+ b=n0CYA6Y+dgF0Y51mZTB257JWqp+zdiitEqLIvEDjrsvzw0y5NLHkBMInW85szUBKxP99tdcff44f/M4QnETAiL5SRohJhnT70/BbO6xRFLA05lvSesLiCQEJmaGQffWsNHIxzkBnUGo/6qri2BxyqRqtLv+TuBgJSZSc8w0oqy6/q7xhT+eOMwXiZAj5wYgmTrQHoKOI7lQ6cBVTsoCGEz8spYytRT7Oid9d5nUyPhSd5wr7NAQ8c8xGNMuplNWvad6R1y/ftDuXRxhktY7dfDkWiqU072P80w/uSipRcKRwBTqsyeHzjc83MKKtl6srRkYY9wv5wjo0FlgHVmEhBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tTtI2AgSGAyBr7yiugDE7l54HJqEHszXaHLRsfY7aN0=;
+ b=tKaxAoJhdKpxmxSCQgLZkcsKn+biq8xuxUBabGd+l4Tnw+IUUMiq5g8roC38sVYGqx6L61znNvj0XNWPc2PQ+fbqRmfSw7ovI10EGl7J4SH5LTaunZMggOK/TFKHIrQjqqO5Gw0KXLLHaI8yg904P2AO0uRh5a/fpr4fge4avnc=
+Received: from SN6PR02CA0016.namprd02.prod.outlook.com (2603:10b6:805:a2::29)
+ by CH2PR02MB6661.namprd02.prod.outlook.com (2603:10b6:610:7c::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2367.24; Mon, 21 Oct
+ 2019 14:15:56 +0000
+Received: from SN1NAM02FT030.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::203) by SN6PR02CA0016.outlook.office365.com
+ (2603:10b6:805:a2::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2367.21 via Frontend
+ Transport; Mon, 21 Oct 2019 14:15:56 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT030.mail.protection.outlook.com (10.152.72.114) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2367.14
+ via Frontend Transport; Mon, 21 Oct 2019 14:15:55 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1iMYTT-0006KF-3t; Mon, 21 Oct 2019 07:15:55 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1iMYTO-0006RU-3c; Mon, 21 Oct 2019 07:15:50 -0700
+Received: from xsj-pvapsmtp01 (maildrop.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x9LEFms3016333;
+        Mon, 21 Oct 2019 07:15:49 -0700
+Received: from [172.30.17.123]
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <michals@xilinx.com>)
+        id 1iMYTM-0006Qp-Nh; Mon, 21 Oct 2019 07:15:48 -0700
+Subject: Re: [PATCH v2 net-next] net: axienet: In kconfig add ARM64 as
+ supported platform
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     michal.simek@xilinx.com, anirudha.sarangi@xilinx.com,
+        john.linn@xilinx.com, mchehab+samsung@kernel.org,
+        gregkh@linuxfoundation.org, nicolas.ferre@microchip.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1571653110-20505-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+Message-ID: <cbdd6608-804a-086c-1892-1903ec4a7d80@xilinx.com>
+Date:   Mon, 21 Oct 2019 16:15:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <1571653110-20505-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(346002)(396003)(39850400004)(199004)(189003)(305945005)(6246003)(4326008)(23676004)(2486003)(230700001)(47776003)(76176011)(36386004)(58126008)(316002)(36756003)(229853002)(106002)(2906002)(9786002)(50466002)(81156014)(31696002)(478600001)(8676002)(81166006)(8936002)(446003)(6666004)(356004)(5660300002)(31686004)(26005)(336012)(2616005)(44832011)(65956001)(486006)(65806001)(70206006)(426003)(70586007)(126002)(11346002)(476003)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6661;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8dc608b8-a8cf-4951-3103-08d756313013
+X-MS-TrafficTypeDiagnostic: CH2PR02MB6661:
+X-Microsoft-Antispam-PRVS: <CH2PR02MB666109E2F97B47E1D22F5370C6690@CH2PR02MB6661.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:1388;
+X-Forefront-PRVS: 0197AFBD92
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +KLVnFws6PMKBTojAm2CaIKPbpPNuiNpTTFZ9cWledxGvt1ELhOxdEb23KEGRgLhbVhXHax1ziuyEj9KYOMwPHVq2guDGmtiChLNmXtgcLHJQjyZvdawypyE5kYIO32dVppozrORmmb5XL9DjIaeENTPEnLPobfse3zbQyLrgyNJK6yLyJrg5VlE3+wC+pMREYi7uBdSRitTMRuxS5/eFIzcQOi7dP3ncw5avUgMrNuePSQXM4CRtQFEXo3AjqJbIBNrLkmCnRhdoOIb6Jnb8POad34M09VUd3dwoI9Acd0UHpD37QaKY5mS1U5IPxbfjBeyQ8F00qFFEbCDpbiXWvq0tLoqnySR+z2Cpw3gS3gVxHWoEDGakw/fb9ptc1zvhL68Ue26oEQ7rVQVFYZzEkAk/4iqVphbFv/MO59oPrSp1tWimYArEnYgh+4tAuGh
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2019 14:15:55.5023
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8dc608b8-a8cf-4951-3103-08d756313013
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6661
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ursula Braun <ubraun@linux.ibm.com>
+On 21. 10. 19 12:18, Radhey Shyam Pandey wrote:
+> xilinx axi_emac driver is supported on ZynqMP UltraScale platform.
+> So enable ARCH64 in kconfig. It also removes redundant ARCH_ZYNQ
+> dependency. Basic sanity testing is done on zu+ mpsoc zcu102
+> evaluation board.
+> 
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> ---
+> Changes for v2:
+> Remove redundant ARCH_ZYNQ dependency.
+> Modified commit description.
+> ---
+>  drivers/net/ethernet/xilinx/Kconfig | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
+> index 8d994ce..da11876 100644
+> --- a/drivers/net/ethernet/xilinx/Kconfig
+> +++ b/drivers/net/ethernet/xilinx/Kconfig
+> @@ -6,7 +6,7 @@
+>  config NET_VENDOR_XILINX
+>  	bool "Xilinx devices"
+>  	default y
+> -	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || COMPILE_TEST
+> +	depends on PPC || PPC32 || MICROBLAZE || MIPS || X86 || ARM || ARM64 || COMPILE_TEST
+>  	---help---
+>  	  If you have a network (Ethernet) card belonging to this class, say Y.
+>  
+> @@ -26,11 +26,11 @@ config XILINX_EMACLITE
+>  
+>  config XILINX_AXI_EMAC
+>  	tristate "Xilinx 10/100/1000 AXI Ethernet support"
+> -	depends on MICROBLAZE || X86 || ARM || COMPILE_TEST
+> +	depends on MICROBLAZE || X86 || ARM || ARM64 || COMPILE_TEST
+>  	select PHYLINK
+>  	---help---
+>  	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
+> -	  AXI bus interface used in Xilinx Virtex FPGAs.
+> +	  AXI bus interface used in Xilinx Virtex FPGAs and Soc's.
+>  
+>  config XILINX_LL_TEMAC
+>  	tristate "Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver"
+> 
 
-With the introduction of the link group termination worker there is
-no longer a need to postpone smc_close_active_abort() to a worker.
-To protect socket destruction due to normal and abnormal socket
-closing, the socket refcount is increased.
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 
-Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/af_smc.c    |  4 ++++
- net/smc/smc_close.c | 18 +++++++++++-------
- net/smc/smc_close.h |  1 +
- net/smc/smc_core.c  |  6 +++---
- 4 files changed, 19 insertions(+), 10 deletions(-)
+But I can image that others could prefer to remove all dependencies.
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 5b932583e407..91ea098fabd9 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -167,6 +167,7 @@ static int smc_release(struct socket *sock)
- 	if (!sk)
- 		goto out;
- 
-+	sock_hold(sk); /* sock_put below */
- 	smc = smc_sk(sk);
- 
- 	/* cleanup for a dangling non-blocking connect */
-@@ -189,6 +190,7 @@ static int smc_release(struct socket *sock)
- 	sock->sk = NULL;
- 	release_sock(sk);
- 
-+	sock_put(sk); /* sock_hold above */
- 	sock_put(sk); /* final sock_put */
- out:
- 	return rc;
-@@ -970,12 +972,14 @@ void smc_close_non_accepted(struct sock *sk)
- {
- 	struct smc_sock *smc = smc_sk(sk);
- 
-+	sock_hold(sk); /* sock_put below */
- 	lock_sock(sk);
- 	if (!sk->sk_lingertime)
- 		/* wait for peer closing */
- 		sk->sk_lingertime = SMC_MAX_STREAM_WAIT_TIMEOUT;
- 	__smc_release(smc);
- 	release_sock(sk);
-+	sock_put(sk); /* sock_hold above */
- 	sock_put(sk); /* final sock_put */
- }
- 
-diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
-index 2bbcd45a421e..d34e5adce2eb 100644
---- a/net/smc/smc_close.c
-+++ b/net/smc/smc_close.c
-@@ -113,9 +113,10 @@ int smc_close_abort(struct smc_connection *conn)
- /* terminate smc socket abnormally - active abort
-  * link group is terminated, i.e. RDMA communication no longer possible
-  */
--static void smc_close_active_abort(struct smc_sock *smc)
-+void smc_close_active_abort(struct smc_sock *smc)
- {
- 	struct sock *sk = &smc->sk;
-+	bool release_clcsock = false;
- 
- 	if (sk->sk_state != SMC_INIT && smc->clcsock && smc->clcsock->sk) {
- 		sk->sk_err = ECONNABORTED;
-@@ -137,11 +138,14 @@ static void smc_close_active_abort(struct smc_sock *smc)
- 		cancel_delayed_work_sync(&smc->conn.tx_work);
- 		lock_sock(sk);
- 		sk->sk_state = SMC_CLOSED;
-+		sock_put(sk); /* postponed passive closing */
- 		break;
- 	case SMC_PEERCLOSEWAIT1:
- 	case SMC_PEERCLOSEWAIT2:
- 	case SMC_PEERFINCLOSEWAIT:
- 		sk->sk_state = SMC_CLOSED;
-+		smc_conn_free(&smc->conn);
-+		release_clcsock = true;
- 		sock_put(sk); /* passive closing */
- 		break;
- 	case SMC_PROCESSABORT:
-@@ -156,6 +160,12 @@ static void smc_close_active_abort(struct smc_sock *smc)
- 
- 	sock_set_flag(sk, SOCK_DEAD);
- 	sk->sk_state_change(sk);
-+
-+	if (release_clcsock) {
-+		release_sock(sk);
-+		smc_clcsock_release(smc);
-+		lock_sock(sk);
-+	}
- }
- 
- static inline bool smc_close_sent_any_close(struct smc_connection *conn)
-@@ -328,12 +338,6 @@ static void smc_close_passive_work(struct work_struct *work)
- 	lock_sock(sk);
- 	old_state = sk->sk_state;
- 
--	if (conn->killed) {
--		/* abnormal termination */
--		smc_close_active_abort(smc);
--		goto wakeup;
--	}
--
- 	rxflags = &conn->local_rx_ctrl.conn_state_flags;
- 	if (rxflags->peer_conn_abort) {
- 		/* peer has not received all data */
-diff --git a/net/smc/smc_close.h b/net/smc/smc_close.h
-index 084c4f37aa96..634fea2b7c95 100644
---- a/net/smc/smc_close.h
-+++ b/net/smc/smc_close.h
-@@ -25,5 +25,6 @@ int smc_close_shutdown_write(struct smc_sock *smc);
- void smc_close_init(struct smc_sock *smc);
- void smc_clcsock_release(struct smc_sock *smc);
- int smc_close_abort(struct smc_connection *conn);
-+void smc_close_active_abort(struct smc_sock *smc);
- 
- #endif /* SMC_CLOSE_H */
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 46d4b944c4c4..ed02eac636da 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -519,9 +519,7 @@ static void smc_conn_kill(struct smc_connection *conn)
- 	smc_sk_wake_ups(smc);
- 	smc_lgr_unregister_conn(conn);
- 	smc->sk.sk_err = ECONNABORTED;
--	sock_hold(&smc->sk); /* sock_put in close work */
--	if (!schedule_work(&conn->close_work))
--		sock_put(&smc->sk);
-+	smc_close_active_abort(smc);
- }
- 
- /* terminate link group */
-@@ -544,9 +542,11 @@ static void __smc_lgr_terminate(struct smc_link_group *lgr)
- 		read_unlock_bh(&lgr->conns_lock);
- 		conn = rb_entry(node, struct smc_connection, alert_node);
- 		smc = container_of(conn, struct smc_sock, conn);
-+		sock_hold(&smc->sk); /* sock_put below */
- 		lock_sock(&smc->sk);
- 		smc_conn_kill(conn);
- 		release_sock(&smc->sk);
-+		sock_put(&smc->sk); /* sock_hold above */
- 		read_lock_bh(&lgr->conns_lock);
- 		node = rb_first(&lgr->conns_all);
- 	}
--- 
-2.17.1
-
+Thanks,
+Michal
