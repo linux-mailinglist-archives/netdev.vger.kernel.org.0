@@ -2,147 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2223FDF8D7
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 01:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF7DDF8D3
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 01:55:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730370AbfJUX6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 19:58:03 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56886 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728819AbfJUX6D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 19:58:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571702281;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jFHpgQ9TLUmBzy0U/kWA3ZERfeuL0HrxiFj4Wubq64g=;
-        b=E03mrCln9tLCTVFing7vofl/4KKBjkPY3nMHRC2IFbfOx3uFiFePIKgxX+ZaQmq0JM500Q
-        47ouUM/MGlGwfgF8BEJ3IAG/rdrAdVnJQX/s1fBmFZ9AwaStAg+Oc7tI9Qw3gg7qGPkpsg
-        lTtCeWIs3po7+QYt/4+NY54O26Ojtaw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-290-lF5_pNewONS87t0uNh9mpg-1; Mon, 21 Oct 2019 19:57:58 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4988C80183E;
-        Mon, 21 Oct 2019 23:57:53 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-19.phx2.redhat.com [10.3.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DD1571001DD7;
-        Mon, 21 Oct 2019 23:57:37 +0000 (UTC)
-Date:   Mon, 21 Oct 2019 19:57:34 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V7 20/21] audit: add capcontid to set contid
- outside init_user_ns
-Message-ID: <20191021235734.mgcjotdqoe73e4ha@madcap2.tricolour.ca>
-References: <cover.1568834524.git.rgb@redhat.com>
- <214163d11a75126f610bcedfad67a4d89575dc77.1568834525.git.rgb@redhat.com>
- <20191019013904.uevmrzbmztsbhpnh@madcap2.tricolour.ca>
- <CAHC9VhRPygA=LsHLUqv+K=ouAiPFJ6fb2_As=OT-_zB7kGc_aQ@mail.gmail.com>
- <20191021213824.6zti5ndxu7sqs772@madcap2.tricolour.ca>
- <CAHC9VhRdNXsY4neJpSoNyJoAVEoiEc2oW5kSscF99tjmoQAxFA@mail.gmail.com>
+        id S1730409AbfJUXzj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 19:55:39 -0400
+Received: from out1.zte.com.cn ([202.103.147.172]:52268 "EHLO mxct.zte.com.cn"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730180AbfJUXzj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 19:55:39 -0400
+Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
+        by Forcepoint Email with ESMTPS id C2F8075B92D3F24D26F4;
+        Tue, 22 Oct 2019 07:55:36 +0800 (CST)
+Received: from notes_smtp.zte.com.cn (notessmtp.zte.com.cn [10.30.1.239])
+        by mse-fl1.zte.com.cn with ESMTP id x9LNtId7050475;
+        Tue, 22 Oct 2019 07:55:18 +0800 (GMT-8)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from fox-host8.localdomain ([10.74.120.8])
+          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
+          with ESMTP id 2019102207552806-63452 ;
+          Tue, 22 Oct 2019 07:55:28 +0800 
+From:   Yi Wang <wang.yi59@zte.com.cn>
+To:     vinicius.gomes@intel.com, jhs@mojatatu.com
+Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn, up2wing@gmail.com,
+        wang.liang82@zte.com.cn
+Subject: [RESEND][PATCH net-next] net: sched: taprio: fix -Wmissing-prototypes warnings
+Date:   Tue, 22 Oct 2019 07:57:42 +0800
+Message-Id: <1571702262-25929-1-git-send-email-wang.yi59@zte.com.cn>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-In-Reply-To: <CAHC9VhRdNXsY4neJpSoNyJoAVEoiEc2oW5kSscF99tjmoQAxFA@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: lF5_pNewONS87t0uNh9mpg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
+ 21, 2013) at 2019-10-22 07:55:28,
+        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
+ 2019-10-22 07:55:20
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-MAIL: mse-fl1.zte.com.cn x9LNtId7050475
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-10-21 17:43, Paul Moore wrote:
-> On Mon, Oct 21, 2019 at 5:38 PM Richard Guy Briggs <rgb@redhat.com> wrote=
-:
-> > On 2019-10-21 15:53, Paul Moore wrote:
-> > > On Fri, Oct 18, 2019 at 9:39 PM Richard Guy Briggs <rgb@redhat.com> w=
-rote:
-> > > > On 2019-09-18 21:22, Richard Guy Briggs wrote:
-> > > > > Provide a mechanism similar to CAP_AUDIT_CONTROL to explicitly gi=
-ve a
-> > > > > process in a non-init user namespace the capability to set audit
-> > > > > container identifiers.
-> > > > >
-> > > > > Use audit netlink message types AUDIT_GET_CAPCONTID 1027 and
-> > > > > AUDIT_SET_CAPCONTID 1028.  The message format includes the data
-> > > > > structure:
-> > > > > struct audit_capcontid_status {
-> > > > >         pid_t   pid;
-> > > > >         u32     enable;
-> > > > > };
-> > > >
-> > > > Paul, can I get a review of the general idea here to see if you're =
-ok
-> > > > with this way of effectively extending CAP_AUDIT_CONTROL for the sa=
-ke of
-> > > > setting contid from beyond the init user namespace where capable() =
-can't
-> > > > reach and ns_capable() is meaningless for these purposes?
-> > >
-> > > I think my previous comment about having both the procfs and netlink
-> > > interfaces apply here.  I don't see why we need two different APIs at
-> > > the start; explain to me why procfs isn't sufficient.  If the argumen=
-t
-> > > is simply the desire to avoid mounting procfs in the container, how
-> > > many container orchestrators can function today without a valid /proc=
-?
-> >
-> > Ok, sorry, I meant to address that question from a previous patch
-> > comment at the same time.
-> >
-> > It was raised by Eric Biederman that the proc filesystem interface for
-> > audit had its limitations and he had suggested an audit netlink
-> > interface made more sense.
->=20
-> I'm sure you've got it handy, so I'm going to be lazy and ask: archive
-> pointer to Eric's comments?  Just a heads-up, I'm really *not* a fan
-> of using the netlink interface for this, so unless Eric presents a
-> super compelling reason for why we shouldn't use procfs I'm inclined
-> to stick with /proc.
+We get one warnings when build kernel W=1:
+net/sched/sch_taprio.c:1155:6: warning: no previous prototype for ‘taprio_offload_config_changed’ [-Wmissing-prototypes]
 
-It was actually a video call with Eric and Steve where that was
-recommended, so I can't provide you with any first-hand communication
-about it.  I'll get more details...
+Make the function static to fix this.
 
-So, with that out of the way, could you please comment on the general
-idea of what was intended to be the central idea of this mechanism to be
-able to nest containers beyond the initial user namespace (knowing that
-a /proc interface is available and the audit netlink interface isn't
-necessary for it to work and the latter can be easily removed)?
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+---
+ net/sched/sch_taprio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > The intent was to switch to the audit netlink interface for contid,
-> > capcontid and to add the audit netlink interface for loginuid and
-> > sessionid while deprecating the proc interface for loginuid and
-> > sessionid.  This was alluded to in the cover letter, but not very clear=
-,
-> > I'm afraid.  I have patches to remove the contid and loginuid/sessionid
-> > interfaces in another tree which is why I had forgotten to outline that
-> > plan more explicitly in the cover letter.
->=20
-> paul moore
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 6719a65..2121187 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1152,7 +1152,7 @@ void taprio_offload_free(struct tc_taprio_qopt_offload *offload)
+  * offload state (PENDING, ACTIVE, INACTIVE) so it can be visible in dump().
+  * This is left as TODO.
+  */
+-void taprio_offload_config_changed(struct taprio_sched *q)
++static void taprio_offload_config_changed(struct taprio_sched *q)
+ {
+ 	struct sched_gate_list *oper, *admin;
+ 
+-- 
+1.8.3.1
 
