@@ -2,68 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8FE4DF402
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:18:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 781CDDF407
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:19:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728380AbfJURSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 13:18:08 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40445 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728340AbfJURSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:18:08 -0400
+        id S1728663AbfJURSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 13:18:51 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:27514 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727017AbfJURSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:18:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571678287;
+        s=mimecast20190719; t=1571678330;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+t8QSQoLerdt4pejgVZOi0oUqAT+Edm4K+E29wMVHLM=;
-        b=g4AqWU4KwemP6K2DGjAMEJVhLjGErxMvZBjNmd2DnROVq2yF9W2PNgpmAwA19pAxifhu2N
-        bSgXWX626VqA8X/5TGJhA9uKd4a+fLJ0r74YmoEO7YtLgErHiMWU6TZ9T/EqqX5dqdkYmz
-        sLNKy8b/OINd9nLR8dmkdU+wXNk93Uk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-97-y0vLUxLJN7CXjyH_jJ9Qcg-1; Mon, 21 Oct 2019 13:18:05 -0400
-Received: by mail-wr1-f69.google.com with SMTP id v7so5749386wrf.4
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 10:18:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=GV5veQW78aMR5eZOJ6fuROM1N/bzq4/iR/dGSQiRmZo=;
-        b=Twwz7QRIwgLIQBCXdpIipiOXES6KCScZ85uE4CUf86gLjQq/aJMntGdugz5CNME0z8
-         8h006pWOJrx1LZYggfyTv0rxY9+0C+K9GWgUQB40QqMSDwCjnTLO7ndjROIawRddHMOQ
-         Kp+hc6asN11C+v56/usd59M7IwxExbkXO1j2eTsK0YK7kogbH2O3nQkyxjfhGx7vmSEk
-         jJnW0bD71mliXPLNCfvqIyFGG78ba5jpKrExntOmNf4bDorZKmDlVmHhYlFILnVhbqXh
-         Jhzdi8h590GkTyvPE9R925bX1AKO9GBcD+cZaVObrKvK9tgtPsTpbhXJXpWQ0nTLgM95
-         /gWQ==
-X-Gm-Message-State: APjAAAWpXN2QsC1DnAfJzDQHGeOL4PeF6F69DFhpJb8t5rrfEx4Ov/KE
-        Ba6dqu73WeTVmCAMnRlYChZenDF8cKDQDcKqEd4r4epU4l3/2IBCTvSqyjVrCU5QjqUCGm/3ZCo
-        mUKSV0PkEBNhC5nqa
-X-Received: by 2002:adf:b21a:: with SMTP id u26mr21741045wra.119.1571678284027;
-        Mon, 21 Oct 2019 10:18:04 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzrLN72M60UQL4cOILGD73CovlUeWe1ctsIG1zMZaHXb79Klh5ixz8UOVkGISgXAVbqnYecdg==
-X-Received: by 2002:adf:b21a:: with SMTP id u26mr21741027wra.119.1571678283764;
-        Mon, 21 Oct 2019 10:18:03 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id v6sm18695282wru.72.2019.10.21.10.18.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 10:18:03 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 5F1C91800E9; Mon, 21 Oct 2019 19:18:02 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next] libbpf: make LIBBPF_OPTS macro strictly a variable declaration
-In-Reply-To: <20191021165744.2116648-1-andriin@fb.com>
-References: <20191021165744.2116648-1-andriin@fb.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 21 Oct 2019 19:18:02 +0200
-Message-ID: <87r236ow51.fsf@toke.dk>
+        bh=COUQpCQOyKZl+Mt1Tp8T4A2/59o1xTpxVAS5tO6bCLs=;
+        b=MGvta99edb7lVgzvuOFk6JauPNQbHIP5TcmK7i09xCcYMfcCGZthKjJdw2qdjJGfMsuMcq
+        wJcbkrTjYto+V6segvLySaM2w3491FeYfVl1x3O6p4SeVk1N6lr1PfXrKByAurcRkdsur8
+        E+ogYuUq5y9FdnEMkYO40pGihSMno7s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-196-xeMj4WMUPPquj-nL25zMSw-1; Mon, 21 Oct 2019 13:18:47 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 99AFD800D41;
+        Mon, 21 Oct 2019 17:18:45 +0000 (UTC)
+Received: from localhost (unknown [10.14.78.42])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 249A55C28F;
+        Mon, 21 Oct 2019 17:18:45 +0000 (UTC)
+Date:   Mon, 21 Oct 2019 19:18:44 +0200
+From:   Jiri Benc <jbenc@redhat.com>
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Martin Varghese <martinvarghesenokia@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>, scott.drennan@nokia.com,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH net-next 1/2] UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+Message-ID: <20191021191844.1e57f9a0@redhat.com>
+In-Reply-To: <CALx6S342=MKHK35=H+2xMW9odHKMj7A5Ws+kNVGxzTDFnxdsPQ@mail.gmail.com>
+References: <cover.1570455278.git.martinvarghesenokia@gmail.com>
+        <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
+        <CA+FuTSc=uTot72dxn7VRfCv59GcfWb32ZM5XU1_GHt3Ci3PL_A@mail.gmail.com>
+        <20191009124814.GB17712@martin-VirtualBox>
+        <CA+FuTSdGR2G8Wp0khT9nCD49oi2U_GZiyS5vJTBikPRm+0fGPg@mail.gmail.com>
+        <20191009174216.1b3dd3dc@redhat.com>
+        <CALx6S342=MKHK35=H+2xMW9odHKMj7A5Ws+kNVGxzTDFnxdsPQ@mail.gmail.com>
 MIME-Version: 1.0
-X-MC-Unique: y0vLUxLJN7CXjyH_jJ9Qcg-1
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: xeMj4WMUPPquj-nL25zMSw-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -72,74 +63,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andriin@fb.com> writes:
+On Fri, 18 Oct 2019 13:03:56 -0700, Tom Herbert wrote:
+> More specifically fou allows encapsulation of anything that has an IP
+> protocol number. That includes an L3 protocols that have been assigned
+> a number (e.g. MPLS, GRE, IPv6, IPv4, EtherIP). So the only need for
+> an alternate method to do L3 encapsulation would be for those
+> protocols that don't have an IP protocol number assignment.
+> Presumably, those just have an EtherType. In that case, it seems
+> simple enough to just extend fou to processed an encapsulated
+> EtherType. This should be little more than modifying the "struct fou"
+> to hold 16 bit EtherType (union with protocol), adding
+> FOU_ENCAP_ETHER, corresponding attribute, and then populate
+> appropriate receive functions for the socket.
 
-> LIBBPF_OPTS is implemented as a mix of field declaration and memset
-> + assignment. This makes it neither variable declaration nor purely
-> statements, which is a problem, because you can't mix it with either
-> other variable declarations nor other function statements, because C90
-> compiler mode emits warning on mixing all that together.
->
-> This patch changes LIBBPF_OPTS into a strictly declaration of variable
-> and solves this problem, as can be seen in case of bpftool, which
-> previously would emit compiler warning, if done this way (LIBBPF_OPTS as
-> part of function variables declaration block).
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/bpf/bpftool/prog.c |  6 +++---
->  tools/lib/bpf/libbpf.h   | 13 +++++++------
->  2 files changed, 10 insertions(+), 9 deletions(-)
->
-> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-> index 27da96a797ab..1a7e8ddf8232 100644
-> --- a/tools/bpf/bpftool/prog.c
-> +++ b/tools/bpf/bpftool/prog.c
-> @@ -1093,6 +1093,9 @@ static int load_with_options(int argc, char **argv,=
- bool first_prog_only)
->  {
->  =09struct bpf_object_load_attr load_attr =3D { 0 };
->  =09enum bpf_prog_type common_prog_type =3D BPF_PROG_TYPE_UNSPEC;
-> +=09LIBBPF_OPTS(bpf_object_open_opts, open_opts,
-> +=09=09.relaxed_maps =3D relaxed_maps,
-> +=09);
->  =09enum bpf_attach_type expected_attach_type;
->  =09struct map_replace *map_replace =3D NULL;
->  =09struct bpf_program *prog =3D NULL, *pos;
-> @@ -1106,9 +1109,6 @@ static int load_with_options(int argc, char **argv,=
- bool first_prog_only)
->  =09const char *file;
->  =09int idx, err;
-> =20
-> -=09LIBBPF_OPTS(bpf_object_open_opts, open_opts,
-> -=09=09.relaxed_maps =3D relaxed_maps,
-> -=09);
-> =20
->  =09if (!REQ_ARGS(2))
->  =09=09return -1;
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 0fdf086beba7..bf105e9e866f 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -77,12 +77,13 @@ struct bpf_object_open_attr {
->   * bytes, but that's the best way I've found and it seems to work in pra=
-ctice.
->   */
->  #define LIBBPF_OPTS(TYPE, NAME, ...)=09=09=09=09=09    \
-> -=09struct TYPE NAME;=09=09=09=09=09=09    \
-> -=09memset(&NAME, 0, sizeof(struct TYPE));=09=09=09=09    \
-> -=09NAME =3D (struct TYPE) {=09=09=09=09=09=09    \
-> -=09=09.sz =3D sizeof(struct TYPE),=09=09=09=09    \
-> -=09=09__VA_ARGS__=09=09=09=09=09=09    \
-> -=09}
-> +=09struct TYPE NAME =3D ({ =09=09=09=09=09=09    \
-> +=09=09memset(&NAME, 0, sizeof(struct TYPE));=09=09=09    \
-> +=09=09(struct TYPE) {=09=09=09=09=09=09    \
-> +=09=09=09.sz =3D sizeof(struct TYPE),=09=09=09    \
+How do you suggest to plug that in? We need the received inner packets
+to be "encapsulated" in an Ethernet header; the current approach of
+"ip link add type ipip|sit encap fou" does not work here. Are you
+suggesting to add another rtnl link type? How would it look like?
+"ip link add type ethernet encap fou" does not sound appealing,
+especially since "type ethernet" would have no meaning without the
+"encap fou".
 
-Wait, you can stick arbitrary code inside a variable initialisation
-block like this? How does that work? Is everything before the (struct
-type) just ignored (and is that a cast)?
+Thanks,
 
--Toke
+ Jiri
 
