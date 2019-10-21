@@ -2,119 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 311FADE15D
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 02:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB34DDE15E
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 02:09:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbfJUAIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 20:08:07 -0400
-Received: from ozlabs.org ([203.11.71.1]:60091 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726576AbfJUAIH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Oct 2019 20:08:07 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46xH5w6D4Nz9sNx;
-        Mon, 21 Oct 2019 11:08:04 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1571616485;
-        bh=X9w5V/XTy4bCeUmkoajC65IM6vFKbBsy/YOD7h9VvnA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=BeMyn70HjTuQED2UU0IF+TeZAEmEE8infGIEHcwdKmVz1u1HCYrdA/dCVoa/dSADU
-         QA/xgnstFLEoUvv6W+mDuEwip4wU2TWJLg/VwvT9wcPr48d3kmTa1Yp7uy1l7UFEUT
-         b8poZEZiGqHlQetJ65+cnOy/0TTcVh2XwpmJxM0rT6EdPU7n+LWDOO99x2WpHRz/AC
-         50cmAYp0YIkDNtzNTVZn1RdBcEfr7qA5sdJMUd+l2Vm2yZn79Ou+lDoW47YYDYAAnK
-         5QL6eKtzTATDpKz861VWNwVmJNt+l36AsiUuoJ9sXuVbXm1Vz93Bmh7y5lY8ZDFOop
-         walcMpYzqnubw==
-Date:   Mon, 21 Oct 2019 11:07:45 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: linux-next: manual merge of the net-next tree with Linus' tree
-Message-ID: <20191021110745.3c7563a4@canb.auug.org.au>
+        id S1726770AbfJUAIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 20:08:55 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:41812 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726576AbfJUAIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 20:08:54 -0400
+Received: by mail-lj1-f196.google.com with SMTP id f5so11343534ljg.8
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 17:08:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ig3ZNykuinul+2zeSyraVG12jmxt3iv0bplNEVzpPMM=;
+        b=VRlq5aJCTnSEqJGmfutt5MjdShiUB3SA4yQ9iVPBV/7hYo454fRI9PRtRyYHab1zS4
+         paLlO4CewaooGulLfVvrSaNDczieAcmTkcw3pnC15zWXiQSSQcQEZI3z3VnUCyfg/6YR
+         8tJsNXUTEyIeNHu5iRG4S/Ic/t7YCpyQrU5SUqntfaQZjCcAQSrp4eIlUzQPl+jbXFhn
+         mg7zvAEB742Sf2vdHZnik54AAiEJ87VPmUbgAac5nCAt/00tnFG5SeC7EH9tAYtoUoQB
+         PVI6ctS3uXj2T1LK8t7XIxFFQVwIVpzPRSyJFgiCBKyqPVXG3W40SHCoL++/4lV70Yjb
+         K4vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ig3ZNykuinul+2zeSyraVG12jmxt3iv0bplNEVzpPMM=;
+        b=e4IWGE5eruTNpN2l/XIDSGTxXdx/vZF/EUJRc61uD9ON5izMIDb5pR29yvKv/lhCBV
+         qIT9RJ1N3f5rCIexCuM9Ews4OITurmZ+wPyCAWoBirhvnDZUPjMXscs8fKMx1SIL9xZN
+         V0vN2wBaGvEcNfOQv+RWHaT5aTadswyaQ4iIhdyAqlt2U0yw082+1vd+pADu3z6Tyti0
+         Z+owOTNTcEti0yO3AlwTdvcHfYFHHXdhggkaGC5XnkZ8c/R5iotHV+WIdFNSQESC/9Po
+         TANI35j9OiEG/0UE3/rTgc6e/sNjXmsGi1mKp/Ue03OLORs3zGFUy16yE+ClOANGPXR+
+         a2pA==
+X-Gm-Message-State: APjAAAXXsAcbLd+ioAVqC3A55Iu4VnxkLJMUfAkdg0TS/uSWdEIcVzFT
+        ta66vMINmJql7hlyO5zguAmVYEQMDtw=
+X-Google-Smtp-Source: APXvYqwp2uXNWZ486uw8n8rCkU/CjuzPSvZR9FKSPAZk0gI5jDUGvnJBrPTZdhlsc3yUWJu9IpiRGw==
+X-Received: by 2002:a2e:9759:: with SMTP id f25mr13140292ljj.173.1571616532566;
+        Sun, 20 Oct 2019 17:08:52 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-79c8225c.014-348-6c756e10.bbcust.telenor.se. [92.34.200.121])
+        by smtp.gmail.com with ESMTPSA id a18sm2723081lfi.15.2019.10.20.17.08.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Oct 2019 17:08:49 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 00/10] IXP4xx networking cleanups
+Date:   Mon, 21 Oct 2019 02:08:14 +0200
+Message-Id: <20191021000824.531-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/QMu1u_AWC0pXc5bHC_x_aNk";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/QMu1u_AWC0pXc5bHC_x_aNk
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This is a patch series which jams together Arnds and mine
+cleanups for the IXP4xx networking.
 
-Hi all,
+I also have patches for device tree support but that
+requires more elaborate work, this series is some of
+mine and some of Arnds patches that is a good foundation
+for his multiplatform work and my device tree work.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+These are for application to the networking tree so
+that can be taken in one separate sweep.
 
-  include/net/net_namespace.h
+I have tested the patches for a bit using zeroday builds
+and some boots on misc IXP4xx devices and haven't run
+into any major problems. We might find some new stuff
+as a result from the new compiler coverage.
 
-between commit:
+The patch set also hits in the ARM tree but Arnd is
+a ARM SoC maintainer and is hereby informed :)
 
-  2a06b8982f8f ("net: reorder 'struct net' fields to avoid false sharing")
+Arnd Bergmann (4):
+  wan: ixp4xx_hss: fix compile-testing on 64-bit
+  wan: ixp4xx_hss: enable compile testing
+  ptp: ixp46x: move next to ethernet driver
+  ixp4xx_eth: move platform_data definition
 
-from Linus' tree and commit:
+Linus Walleij (6):
+  net: ethernet: ixp4xx: Standard module init
+  net: ethernet: ixp4xx: Use distinct local variable
+  net: ehernet: ixp4xx: Use devm_alloc_etherdev()
+  ARM/net: ixp4xx: Pass ethernet physical base as resource
+  net: ethernet: ixp4xx: Get port ID from base address
+  net: ethernet: ixp4xx: Use parent dev for DMA pool
 
-  a30c7b429f2d ("net: introduce per-netns netdevice notifiers")
+ arch/arm/mach-ixp4xx/fsg-setup.c              |  20 ++
+ arch/arm/mach-ixp4xx/goramo_mlr.c             |  24 +++
+ arch/arm/mach-ixp4xx/include/mach/platform.h  |  22 +--
+ arch/arm/mach-ixp4xx/ixdp425-setup.c          |  20 ++
+ arch/arm/mach-ixp4xx/nas100d-setup.c          |  10 +
+ arch/arm/mach-ixp4xx/nslu2-setup.c            |  10 +
+ arch/arm/mach-ixp4xx/omixp-setup.c            |  20 ++
+ arch/arm/mach-ixp4xx/vulcan-setup.c           |  20 ++
+ drivers/net/ethernet/xscale/Kconfig           |  14 ++
+ drivers/net/ethernet/xscale/Makefile          |   3 +-
+ .../net/ethernet/xscale}/ixp46x_ts.h          |   0
+ drivers/net/ethernet/xscale/ixp4xx_eth.c      | 177 +++++++++---------
+ .../{ptp => net/ethernet/xscale}/ptp_ixp46x.c |   3 +-
+ drivers/net/wan/Kconfig                       |   3 +-
+ drivers/net/wan/ixp4xx_hss.c                  |  39 ++--
+ drivers/ptp/Kconfig                           |  14 --
+ drivers/ptp/Makefile                          |   1 -
+ include/linux/platform_data/eth_ixp4xx.h      |  19 ++
+ include/linux/platform_data/wan_ixp4xx_hss.h  |  17 ++
+ 19 files changed, 292 insertions(+), 144 deletions(-)
+ rename {arch/arm/mach-ixp4xx/include/mach => drivers/net/ethernet/xscale}/ixp46x_ts.h (100%)
+ rename drivers/{ptp => net/ethernet/xscale}/ptp_ixp46x.c (99%)
+ create mode 100644 include/linux/platform_data/eth_ixp4xx.h
+ create mode 100644 include/linux/platform_data/wan_ixp4xx_hss.h
 
-from the net-next tree.
+-- 
+2.21.0
 
-I fixed it up (see below - but it clearly needs more thought) and can
-carry the fix as necessary. This is now fixed as far as linux-next is
-concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc include/net/net_namespace.h
-index 4c2cd9378699,5ac2bb16d4b3..000000000000
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@@ -102,14 -94,14 +103,15 @@@ struct net=20
- =20
-  	struct uevent_sock	*uevent_sock;		/* uevent socket */
- =20
- -	struct list_head 	dev_base_head;
-  	struct hlist_head 	*dev_name_head;
-  	struct hlist_head	*dev_index_head;
-+ 	struct raw_notifier_head	netdev_chain;
- +	/* Note that @hash_mix can be read millions times per second,
- +	 * it is critical that it is on a read_mostly cache line.
- +	 */
- +	u32			hash_mix;
- =20
- -	unsigned int		dev_base_seq;	/* protected by rtnl_mutex */
- -	int			ifindex;
- -	unsigned int		dev_unreg_count;
- +	struct net_device       *loopback_dev;          /* The loopback */
- =20
-  	/* core fib_rules */
-  	struct list_head	rules_ops;
-
---Sig_/QMu1u_AWC0pXc5bHC_x_aNk
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl2s9tEACgkQAVBC80lX
-0GwZpwgAkoebksFVR77r9Wjmyx1QSfLT6xE+3K8mT+eQ70TVcHY4DzSFxuqNhp9C
-nwCyGorGYrcdi4toAQrE7pxExLdArXdma90EHa7HjRxyO6hJO+UUJKE6wTQVF9Hw
-pX85LM0jtoUJewpPdngcv+lY4T2Q75GqLyNHUeTcJCdosATgrCmvsiB9zKGUPJo8
-yZtXvQexcfDTKZmRclVAxBCCuhe78R+2Ptc0EwbBmnDisZFoXLUYT2A/ZyOjVoWR
-RK9803tVm0KVNCVHvpwTyTR4zRIi23GnzmH2oMkNoykdbGioT0gIC+5muEvlVy9+
-hhw2kK5a7Ml6ROqFRgJYhhvn25hCVQ==
-=fbdo
------END PGP SIGNATURE-----
-
---Sig_/QMu1u_AWC0pXc5bHC_x_aNk--
