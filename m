@@ -2,123 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50475DED1A
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:06:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 770B8DEDCA
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:38:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728843AbfJUNGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 09:06:48 -0400
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:59834 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728792AbfJUNGs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 09:06:48 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e07487;MF=zhiyuan2048@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Tfo8Fxn_1571663202;
-Received: from houzhiyuandeMacBook-Pro.local(mailfrom:zhiyuan2048@linux.alibaba.com fp:SMTPD_---0Tfo8Fxn_1571663202)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 21 Oct 2019 21:06:43 +0800
-Subject: Re: [PATCH net] net: sched: act_mirred: drop skb's dst_entry in
- ingress redirection
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, shmulik.ladkani@gmail.com
-References: <20191012071620.8595-1-zhiyuan2048@linux.alibaba.com>
- <CAM_iQpVkTb6Qf9J-PuXJoQTZa5ojN_oun64SMv9Kji7tZkxSyA@mail.gmail.com>
- <e2bd3004-9f4b-f3ce-1214-2140f0b7cc61@linux.alibaba.com>
- <20191016151307.40f63896@jimi>
- <e16cfafe-059c-3106-835e-d32b7bb5ba61@linux.alibaba.com>
- <20191019002502.0519ea9b@jimi>
-From:   Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
-Message-ID: <5e9f0ae7-d31e-a428-9780-b6b7130f73f8@linux.alibaba.com>
-Date:   Mon, 21 Oct 2019 21:06:42 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.1.2
+        id S1728998AbfJUNiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 09:38:07 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37026 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728083AbfJUNiG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 09:38:06 -0400
+Received: by mail-qk1-f193.google.com with SMTP id u184so12620350qkd.4;
+        Mon, 21 Oct 2019 06:38:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9XSunISr1V5QDmswNDcwodBh42fC8d5U9vuncv4G5IM=;
+        b=ER4eUBUHpUKME3CHPHqs7qIKSq69WImH9o9qDSrUTdhYeMZd5G4iVomPepmt/6kMr3
+         iLkuFeqKxRlvDxGYgpTs7s4eb03OxSMvygYTzcJvNdoQJB5nJ+3dxDjl+AoN0daJ59FU
+         6TOFt/9gQ5mrJy6wec4UFSpIb+UYYyS3R2rY5fa/WdczZJZjwmYx0XWE54BafMCm4xUU
+         cB19TRaR/arSPeqPTMJl4KaglfbuFM/LAe9KyWMjYbaxGYiya0UHeROCG3aq1gJPwv0u
+         5rhZlqzYk9z19NqoJTV6CDTGJJlC+QwGzbiiXtDRio+FVfnlB6hvXwqkwgpDkl7MEWZa
+         /f0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9XSunISr1V5QDmswNDcwodBh42fC8d5U9vuncv4G5IM=;
+        b=aVHf7/z3eNLuNsARM2BpYfQtJAwKr7Ff7l+d6eTp2xcwtBtUACJAJdz9RCWb2z/AQl
+         EVESp8TUo0NoLdW/gZ+aN35zt485LoRmXD8Va1GMBfQjI7eH61ZDjHGsUSbPlhSjOXCg
+         1+mCZ/VmhSkKQuLjEHFV47az27R8xhDPWhwvIouB8SC55LlmTmTEQPPOjO8JgSr02WFk
+         BCQA2XvZmru5JCtBNf34Ll+OQ6qU5DktMfKP6FYSE/gRjC/2FmgC1JSNA9YedbTSdhZ/
+         1lov1RbWM/rhG/hLi0UJU1XacIqfB+lTlwPuIuqlf+AOWjyKlC4PGkR4h4ZJ51XWu9mS
+         qO8w==
+X-Gm-Message-State: APjAAAUiGdHtbBNjCuq1B68h6yXU6UlBtkoxqHHY+fbNjpeoNSjYLwGr
+        c5uQEV6FsmxuKk3XX0z/LFdnVVW744SI+Bgd8Eo=
+X-Google-Smtp-Source: APXvYqzLvDLzIi2FRZYljdcSujCRW8S21SwNQNpJnbMDoz4gADdJu0gIy/GFqrhTRQHH4ZEYFgcf+lujjixoK7gqA2A=
+X-Received: by 2002:a37:8b03:: with SMTP id n3mr22111950qkd.493.1571665085765;
+ Mon, 21 Oct 2019 06:38:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191019002502.0519ea9b@jimi>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20191021105938.11820-1-bjorn.topel@gmail.com> <87h842qpvi.fsf@toke.dk>
+ <CAJ+HfNiNwTbER1NfaKamx0p1VcBHjHSXb4_66+2eBff95pmNFg@mail.gmail.com> <87bluaqoim.fsf@toke.dk>
+In-Reply-To: <87bluaqoim.fsf@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 21 Oct 2019 15:37:54 +0200
+Message-ID: <CAJ+HfNgWeY7oLwun2Lt4nbT-Mh2yETZfHOGcYhvD=A+-UxWVOw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] libbpf: use implicit XSKMAP lookup from
+ AF_XDP XDP program
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/10/19 5:25 上午, Eyal Birger wrote:
-> Hi,
+On Mon, 21 Oct 2019 at 14:19, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
+.com> wrote:
 >
-> On Fri, 18 Oct 2019 00:33:53 +0800
-> Zhiyuan Hou <zhiyuan2048@linux.alibaba.com> wrote:
+> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 >
->> On 2019/10/16 8:13 下午, Eyal Birger wrote:
->>> Hi,
->>>
->>> On Wed, 16 Oct 2019 01:22:01 +0800
->>> Zhiyuan Hou <zhiyuan2048@linux.alibaba.com> wrote:
->>>   
->>>> On 2019/10/15 1:57 上午, Cong Wang wrote:
->>>>> On Sat, Oct 12, 2019 at 12:16 AM Zhiyuan Hou
->>>>> <zhiyuan2048@linux.alibaba.com> wrote:
->>>>>> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
->>>>>> index 9ce073a05414..6108a64c0cd5 100644
->>>>>> --- a/net/sched/act_mirred.c
->>>>>> +++ b/net/sched/act_mirred.c
->>>>>> @@ -18,6 +18,7 @@
->>>>>>     #include <linux/gfp.h>
->>>>>>     #include <linux/if_arp.h>
->>>>>>     #include <net/net_namespace.h>
->>>>>> +#include <net/dst.h>
->>>>>>     #include <net/netlink.h>
->>>>>>     #include <net/pkt_sched.h>
->>>>>>     #include <net/pkt_cls.h>
->>>>>> @@ -298,8 +299,10 @@ static int tcf_mirred_act(struct sk_buff
->>>>>> *skb, const struct tc_action *a,
->>>>>>
->>>>>>            if (!want_ingress)
->>>>>>                    err = dev_queue_xmit(skb2);
->>>>>> -       else
->>>>>> +       else {
->>>>>> +               skb_dst_drop(skb2);
->>>>>>                    err = netif_receive_skb(skb2);
->>>>>> +       }
->>>>> Good catch!
->>> Indeed! Thanks for fixing this!
->>>   
->>>>> I don't want to be picky, but it seems this is only needed
->>>>> when redirecting from egress to ingress, right? That is,
->>>>> ingress to ingress, or ingress to egress is okay? If not,
->>>>> please fix all the cases while you are on it?
->>>> Sure. But I think this patch is also needed when redirecting from
->>>> ingress to ingress. Because we cannot assure that a skb has null
->>>> dst in ingress redirection path. For example, if redirecting a skb
->>>> from loopback's ingress to other device's ingress, the skb will
->>>> take a dst.
->>>>
->>>> As commit logs point out, skb with valid dst cannot be made routing
->>>> decision in following process. original dst may cause skb loss or
->>>> other unexpected behavior.
->>> On the other hand, removing the dst on ingress-to-ingress
->>> redirection may remove LWT information on incoming packets, which
->>> may be undesired.
->> Sorry, I do not understand why lwt information is needed on
->> ingress-to-ingress redirection. lwt is used on output path, isn't it?
->> Can you please give more information?
-> On rx path tunnelled packets parameters received on a collect_md tunnel device
-> are kept in a metadata dst. See ip_tunnel_rcv() 'tun_dst' parameter.
+[...]
+> >
+> > bpf_redirect_map() returns a 32-bit signed int, so the upper 32-bit
+> > will need to be cleared. Having an explicit AND is one instruction
+> > less than two shifts. So, it's an optimization (every instruction is
+> > sacred).
 >
-> The rx metadata dst can be matched by a number of mechanisms like routing
-> rules, eBPF, OVS, and netfilter.
-Yes, you are right. Thanks for your explanations.
-
-The metadata dst should not be removed in redirection path and also
-does not affect L3's routing decision.
-
-Maybe we can add a following check to solve it before removing a dst,
-what do you think?
-
-   if (skb_valid_dst(skb2))
-       skb_dst_drop(sbk2);
+> OIC. Well, a comment explaining that might be nice (since you're doing
+> per-instruction comments anyway)? :)
 >
-> Eyal.
+
+Sure, I can do a v3 with a comment, unless someone has a better idea
+avoiding both shifts and AND.
+
+Thanks for taking a look!
+
+
+Bj=C3=B6rn
+
+
+> -Toke
+>
