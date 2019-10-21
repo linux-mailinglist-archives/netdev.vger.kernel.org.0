@@ -2,228 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D69DF686
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:10:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC4EDF6A3
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:21:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730284AbfJUUK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 16:10:28 -0400
-Received: from mga12.intel.com ([192.55.52.136]:57609 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726672AbfJUUK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Oct 2019 16:10:28 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Oct 2019 13:10:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,324,1566889200"; 
-   d="scan'208";a="201468756"
-Received: from unknown (HELO [10.241.228.144]) ([10.241.228.144])
-  by orsmga006.jf.intel.com with ESMTP; 21 Oct 2019 13:10:26 -0700
-Subject: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
- sockets to receive packets directly from a queue
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Herbert, Tom" <tom.herbert@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-References: <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
- <CAADnVQ+XxmvY0cs8MYriMMd7=2TSEm4zCtB+fs2vkwdUY6UgAQ@mail.gmail.com>
- <3ED8E928C4210A4289A677D2FEB48235140134CE@fmsmsx111.amr.corp.intel.com>
- <2bc26acd-170d-634e-c066-71557b2b3e4f@intel.com>
- <CAADnVQ+qq6RLMjh5bB1ugXP5p7vYM2F1fLGFQ2pL=2vhCLiBdA@mail.gmail.com>
- <2032d58c-916f-d26a-db14-bd5ba6ad92b9@intel.com>
- <CAADnVQ+CH1YM52+LfybLS+NK16414Exrvk1QpYOF=HaT4KRaxg@mail.gmail.com>
- <acf69635-5868-f876-f7da-08954d1f690e@intel.com>
- <20191019001449.fk3gnhih4nx724pm@ast-mbp>
- <6f281517-3785-ce46-65de-e2f78576783b@intel.com>
- <20191019022525.w5xbwkav2cpqkfwi@ast-mbp> <877e4zd8py.fsf@toke.dk>
- <CAJ+HfNj07FwmU2GGpUYw56PRwu4pHyHNSkbCOogbMB5zB2QqWA@mail.gmail.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <7642a460-9ba3-d9f7-6cf8-aac45c7eef0d@intel.com>
-Date:   Mon, 21 Oct 2019 13:10:26 -0700
+        id S1730243AbfJUUV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 16:21:29 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44166 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726672AbfJUUV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:21:29 -0400
+Received: by mail-pg1-f194.google.com with SMTP id e10so8469889pgd.11
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 13:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=+CAm7glUJsOTUc5Pb4S3z3xc/bYjRhOS4eOiBUeqfsE=;
+        b=vN35ikRKUJR7aS5qiH43L6fPBMP1MCo4I+wOOZh9ZIU4J3w+Uhny5DksOSzOtFZerd
+         oML5QG35/Vf5DAVgKDwiAFMK19kzLZ1ofWEwv0xokPr1krg+r1kKVJfq7sNwrfesGViZ
+         P+X3Aykjwr+0qVRDve3t/RwK2VfoLjRnN5fACWjxm0EXJl6Pz/mcn2hYFnpYsFFhBH5T
+         c+Bl+TIy3cElFz9+ro43e1ljX7X43LLJ83JtUbNP7rRn8BL+GaQdw/uGQqCH/6MPL0G6
+         CR8M5bxLe+pTYSjdb9iXy20ukHW7H/PsfWnNxfoz4r41U8Q3F/U4tJeoYmhw0sE/AUwn
+         M6NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=+CAm7glUJsOTUc5Pb4S3z3xc/bYjRhOS4eOiBUeqfsE=;
+        b=NYdQC4b2a6jCoC0jAlBIWdErevHi9iCv7g3LhOMPvDdEtX5kYMPuW2OaJpAfYuytqc
+         4NqTxjoZvYxQ0vktXAHHkKoVd/pAWu/Cuu/holyLbvZp8el2fE5GQCaBBt9Wgbb/arPM
+         epqi4qm2U2Fp5wtLegc05Sf0QQrhDbgarQnufpGejrt5UHOlYgb+GoejY6X7W9d5zBmW
+         PufyQfdSnXs5s7A6JuTYv1iK/76ZjaIWXO+R5ncb0UT7vGkXGW0Lrnc4zBSvYfJKgFWo
+         ssk4XzZwZXt38PP4bz27cGIr54CkmTkBHHeTt+ggKVqC209olmP8b2F4dHMu5YiFh9Ur
+         AgUA==
+X-Gm-Message-State: APjAAAU91TtaBzHrDVB5CgU0nGizGvHozOIEpy7tLOaaZllD+1r2V/V+
+        QcoCNcUpRD0JwyZchwWcuBM=
+X-Google-Smtp-Source: APXvYqz0ddaPfsrg/m/ykv4eGjUfYrf3V1Q4ncUal/Pvg8KvJcVDpMB9FMwBKKlUtoa3ZDfs+c8M/A==
+X-Received: by 2002:a63:1b41:: with SMTP id b1mr28127075pgm.335.1571689287366;
+        Mon, 21 Oct 2019 13:21:27 -0700 (PDT)
+Received: from [192.168.0.16] (97-115-93-145.ptld.qwest.net. [97.115.93.145])
+        by smtp.gmail.com with ESMTPSA id y20sm13666935pge.48.2019.10.21.13.21.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Oct 2019 13:21:26 -0700 (PDT)
+Subject: Re: [PATCH net] net: openvswitch: free vport unless
+ register_netdevice() succeeds
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Hillf Danton <hdanton@sina.com>, Taehee Yoo <ap420073@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        syzkaller-bugs@googlegroups.com,
+        syzbot <syzbot+13210896153522fe1ee5@syzkaller.appspotmail.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, netdev@vger.kernel.org,
+        dev@openvswitch.org
+References: <3caa233b136b5104c817a52a5fdc02691e530528.1571651489.git.sbrivio@redhat.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <85c687b8-1f33-6330-04b7-6244fa9fd232@gmail.com>
+Date:   Mon, 21 Oct 2019 13:21:24 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNj07FwmU2GGpUYw56PRwu4pHyHNSkbCOogbMB5zB2QqWA@mail.gmail.com>
+In-Reply-To: <3caa233b136b5104c817a52a5fdc02691e530528.1571651489.git.sbrivio@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/2019 10:12 AM, Björn Töpel wrote:
-> On Sun, 20 Oct 2019 at 12:15, Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>
->>> On Fri, Oct 18, 2019 at 05:45:26PM -0700, Samudrala, Sridhar wrote:
->>>> On 10/18/2019 5:14 PM, Alexei Starovoitov wrote:
->>>>> On Fri, Oct 18, 2019 at 11:40:07AM -0700, Samudrala, Sridhar wrote:
->>>>>>
->>>>>> Perf report for "AF_XDP default rxdrop" with patched kernel - mitigations ON
->>>>>> ==========================================================================
->>>>>> Samples: 44K of event 'cycles', Event count (approx.): 38532389541
->>>>>> Overhead  Command          Shared Object              Symbol
->>>>>>     15.31%  ksoftirqd/28     [i40e]                     [k] i40e_clean_rx_irq_zc
->>>>>>     10.50%  ksoftirqd/28     bpf_prog_80b55d8a76303785  [k] bpf_prog_80b55d8a76303785
->>>>>>      9.48%  xdpsock          [i40e]                     [k] i40e_clean_rx_irq_zc
->>>>>>      8.62%  xdpsock          xdpsock                    [.] main
->>>>>>      7.11%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_rcv
->>>>>>      5.81%  ksoftirqd/28     [kernel.vmlinux]           [k] xdp_do_redirect
->>>>>>      4.46%  xdpsock          bpf_prog_80b55d8a76303785  [k] bpf_prog_80b55d8a76303785
->>>>>>      3.83%  xdpsock          [kernel.vmlinux]           [k] xsk_rcv
->>>>>
->>>>> why everything is duplicated?
->>>>> Same code runs in different tasks ?
->>>>
->>>> Yes. looks like these functions run from both the app(xdpsock) context and ksoftirqd context.
->>>>
->>>>>
->>>>>>      2.81%  ksoftirqd/28     [kernel.vmlinux]           [k] bpf_xdp_redirect_map
->>>>>>      2.78%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_map_lookup_elem
->>>>>>      2.44%  xdpsock          [kernel.vmlinux]           [k] xdp_do_redirect
->>>>>>      2.19%  ksoftirqd/28     [kernel.vmlinux]           [k] __xsk_map_redirect
->>>>>>      1.62%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_umem_peek_addr
->>>>>>      1.57%  xdpsock          [kernel.vmlinux]           [k] xsk_umem_peek_addr
->>>>>>      1.32%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_direct_sync_single_for_cpu
->>>>>>      1.28%  xdpsock          [kernel.vmlinux]           [k] bpf_xdp_redirect_map
->>>>>>      1.15%  xdpsock          [kernel.vmlinux]           [k] dma_direct_sync_single_for_device
->>>>>>      1.12%  xdpsock          [kernel.vmlinux]           [k] xsk_map_lookup_elem
->>>>>>      1.06%  xdpsock          [kernel.vmlinux]           [k] __xsk_map_redirect
->>>>>>      0.94%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_direct_sync_single_for_device
->>>>>>      0.75%  ksoftirqd/28     [kernel.vmlinux]           [k] __x86_indirect_thunk_rax
->>>>>>      0.66%  ksoftirqd/28     [i40e]                     [k] i40e_clean_programming_status
->>>>>>      0.64%  ksoftirqd/28     [kernel.vmlinux]           [k] net_rx_action
->>>>>>      0.64%  swapper          [kernel.vmlinux]           [k] intel_idle
->>>>>>      0.62%  ksoftirqd/28     [i40e]                     [k] i40e_napi_poll
->>>>>>      0.57%  xdpsock          [kernel.vmlinux]           [k] dma_direct_sync_single_for_cpu
->>>>>>
->>>>>> Perf report for "AF_XDP direct rxdrop" with patched kernel - mitigations ON
->>>>>> ==========================================================================
->>>>>> Samples: 46K of event 'cycles', Event count (approx.): 38387018585
->>>>>> Overhead  Command          Shared Object             Symbol
->>>>>>     21.94%  ksoftirqd/28     [i40e]                    [k] i40e_clean_rx_irq_zc
->>>>>>     14.36%  xdpsock          xdpsock                   [.] main
->>>>>>     11.53%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_rcv
->>>>>>     11.32%  xdpsock          [i40e]                    [k] i40e_clean_rx_irq_zc
->>>>>>      4.02%  xdpsock          [kernel.vmlinux]          [k] xsk_rcv
->>>>>>      2.91%  ksoftirqd/28     [kernel.vmlinux]          [k] xdp_do_redirect
->>>>>>      2.45%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_umem_peek_addr
->>>>>>      2.19%  xdpsock          [kernel.vmlinux]          [k] xsk_umem_peek_addr
->>>>>>      2.08%  ksoftirqd/28     [kernel.vmlinux]          [k] bpf_direct_xsk
->>>>>>      2.07%  ksoftirqd/28     [kernel.vmlinux]          [k] dma_direct_sync_single_for_cpu
->>>>>>      1.53%  ksoftirqd/28     [kernel.vmlinux]          [k] dma_direct_sync_single_for_device
->>>>>>      1.39%  xdpsock          [kernel.vmlinux]          [k] dma_direct_sync_single_for_device
->>>>>>      1.22%  ksoftirqd/28     [kernel.vmlinux]          [k] xdp_get_xsk_from_qid
->>>>>>      1.12%  ksoftirqd/28     [i40e]                    [k] i40e_clean_programming_status
->>>>>>      0.96%  ksoftirqd/28     [i40e]                    [k] i40e_napi_poll
->>>>>>      0.95%  ksoftirqd/28     [kernel.vmlinux]          [k] net_rx_action
->>>>>>      0.89%  xdpsock          [kernel.vmlinux]          [k] xdp_do_redirect
->>>>>>      0.83%  swapper          [i40e]                    [k] i40e_clean_rx_irq_zc
->>>>>>      0.70%  swapper          [kernel.vmlinux]          [k] intel_idle
->>>>>>      0.66%  xdpsock          [kernel.vmlinux]          [k] dma_direct_sync_single_for_cpu
->>>>>>      0.60%  xdpsock          [kernel.vmlinux]          [k] bpf_direct_xsk
->>>>>>      0.50%  ksoftirqd/28     [kernel.vmlinux]          [k] xsk_umem_discard_addr
->>>>>>
->>>>>> Based on the perf reports comparing AF_XDP default and direct rxdrop, we can say that
->>>>>> AF_XDP direct rxdrop codepath is avoiding the overhead of going through these functions
->>>>>>   bpf_prog_xxx
->>>>>>           bpf_xdp_redirect_map
->>>>>>   xsk_map_lookup_elem
->>>>>>           __xsk_map_redirect
->>>>>> With AF_XDP direct, xsk_rcv() is directly called via bpf_direct_xsk() in xdp_do_redirect()
->>>>>
->>>>> I don't think you're identifying the overhead correctly.
->>>>> xsk_map_lookup_elem is 1%
->>>>> but bpf_xdp_redirect_map() suppose to call __xsk_map_lookup_elem()
->>>>> which is a different function:
->>>>> ffffffff81493fe0 T __xsk_map_lookup_elem
->>>>> ffffffff81492e80 t xsk_map_lookup_elem
->>>>>
->>>>> 10% for bpf_prog_80b55d8a76303785 is huge.
->>>>> It's the actual code of the program _without_ any helpers.
->>>>> How does the program actually look?
->>>>
->>>> It is the xdp program that is loaded via xsk_load_xdp_prog() in tools/lib/bpf/xsk.c
->>>> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/lib/bpf/xsk.c#n268
->>>
->>> I see. Looks like map_gen_lookup was never implemented for xskmap.
->>> How about adding it first the way array_map_gen_lookup() is implemented?
->>> This will easily give 2x perf gain.
->>
->> I guess we should implement this for devmaps as well now that we allow
->> lookups into those.
->>
->> However, in this particular example, the lookup from BPF is not actually
->> needed, since bpf_redirect_map() will return a configurable error value
->> when the map lookup fails (for exactly this use case).
->>
->> So replacing:
->>
->> if (bpf_map_lookup_elem(&xsks_map, &index))
->>      return bpf_redirect_map(&xsks_map, index, 0);
->>
->> with simply
->>
->> return bpf_redirect_map(&xsks_map, index, XDP_PASS);
->>
->> would save the call to xsk_map_lookup_elem().
->>
-> 
-> Thanks for the reminder! I just submitted a patch. Still, doing the
-> map_gen_lookup()  for xsk/devmaps still makes sense!
-> 
+On 10/21/2019 3:01 AM, Stefano Brivio wrote:
+> From: Hillf Danton <hdanton@sina.com>
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    1e78030e Merge tag 'mmc-v5.3-rc1' of git://git.kernel.org/..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=148d3d1a600000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=30cef20daf3e9977
+> dashboard link: https://syzkaller.appspot.com/bug?extid=13210896153522fe1ee5
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=136aa8c4600000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=109ba792600000
+>
+> =====================================================================
+> BUG: memory leak
+> unreferenced object 0xffff8881207e4100 (size 128):
+>     comm "syz-executor032", pid 7014, jiffies 4294944027 (age 13.830s)
+>     hex dump (first 32 bytes):
+>       00 70 16 18 81 88 ff ff 80 af 8c 22 81 88 ff ff  .p........."....
+>       00 b6 23 17 81 88 ff ff 00 00 00 00 00 00 00 00  ..#.............
+>     backtrace:
+>       [<000000000eb78212>] kmemleak_alloc_recursive  include/linux/kmemleak.h:43 [inline]
+>       [<000000000eb78212>] slab_post_alloc_hook mm/slab.h:522 [inline]
+>       [<000000000eb78212>] slab_alloc mm/slab.c:3319 [inline]
+>       [<000000000eb78212>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
+>       [<00000000006ea6c6>] kmalloc include/linux/slab.h:552 [inline]
+>       [<00000000006ea6c6>] kzalloc include/linux/slab.h:748 [inline]
+>       [<00000000006ea6c6>] ovs_vport_alloc+0x37/0xf0  net/openvswitch/vport.c:130
+>       [<00000000f9a04a7d>] internal_dev_create+0x24/0x1d0  net/openvswitch/vport-internal_dev.c:164
+>       [<0000000056ee7c13>] ovs_vport_add+0x81/0x190  net/openvswitch/vport.c:199
+>       [<000000005434efc7>] new_vport+0x19/0x80 net/openvswitch/datapath.c:194
+>       [<00000000b7b253f1>] ovs_dp_cmd_new+0x22f/0x410  net/openvswitch/datapath.c:1614
+>       [<00000000e0988518>] genl_family_rcv_msg+0x2ab/0x5b0  net/netlink/genetlink.c:629
+>       [<00000000d0cc9347>] genl_rcv_msg+0x54/0x9c net/netlink/genetlink.c:654
+>       [<000000006694b647>] netlink_rcv_skb+0x61/0x170  net/netlink/af_netlink.c:2477
+>       [<0000000088381f37>] genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+>       [<00000000dad42a47>] netlink_unicast_kernel  net/netlink/af_netlink.c:1302 [inline]
+>       [<00000000dad42a47>] netlink_unicast+0x1ec/0x2d0  net/netlink/af_netlink.c:1328
+>       [<0000000067e6b079>] netlink_sendmsg+0x270/0x480  net/netlink/af_netlink.c:1917
+>       [<00000000aab08a47>] sock_sendmsg_nosec net/socket.c:637 [inline]
+>       [<00000000aab08a47>] sock_sendmsg+0x54/0x70 net/socket.c:657
+>       [<000000004cb7c11d>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2311
+>       [<00000000c4901c63>] __sys_sendmsg+0x80/0xf0 net/socket.c:2356
+>       [<00000000c10abb2d>] __do_sys_sendmsg net/socket.c:2365 [inline]
+>       [<00000000c10abb2d>] __se_sys_sendmsg net/socket.c:2363 [inline]
+>       [<00000000c10abb2d>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2363
+>
+> BUG: memory leak
+> unreferenced object 0xffff88811723b600 (size 64):
+>     comm "syz-executor032", pid 7014, jiffies 4294944027 (age 13.830s)
+>     hex dump (first 32 bytes):
+>       01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+>       00 00 00 00 00 00 00 00 02 00 00 00 05 35 82 c1  .............5..
+>     backtrace:
+>       [<00000000352f46d8>] kmemleak_alloc_recursive  include/linux/kmemleak.h:43 [inline]
+>       [<00000000352f46d8>] slab_post_alloc_hook mm/slab.h:522 [inline]
+>       [<00000000352f46d8>] slab_alloc mm/slab.c:3319 [inline]
+>       [<00000000352f46d8>] __do_kmalloc mm/slab.c:3653 [inline]
+>       [<00000000352f46d8>] __kmalloc+0x169/0x300 mm/slab.c:3664
+>       [<000000008e48f3d1>] kmalloc include/linux/slab.h:557 [inline]
+>       [<000000008e48f3d1>] ovs_vport_set_upcall_portids+0x54/0xd0  net/openvswitch/vport.c:343
+>       [<00000000541e4f4a>] ovs_vport_alloc+0x7f/0xf0  net/openvswitch/vport.c:139
+>       [<00000000f9a04a7d>] internal_dev_create+0x24/0x1d0  net/openvswitch/vport-internal_dev.c:164
+>       [<0000000056ee7c13>] ovs_vport_add+0x81/0x190  net/openvswitch/vport.c:199
+>       [<000000005434efc7>] new_vport+0x19/0x80 net/openvswitch/datapath.c:194
+>       [<00000000b7b253f1>] ovs_dp_cmd_new+0x22f/0x410  net/openvswitch/datapath.c:1614
+>       [<00000000e0988518>] genl_family_rcv_msg+0x2ab/0x5b0  net/netlink/genetlink.c:629
+>       [<00000000d0cc9347>] genl_rcv_msg+0x54/0x9c net/netlink/genetlink.c:654
+>       [<000000006694b647>] netlink_rcv_skb+0x61/0x170  net/netlink/af_netlink.c:2477
+>       [<0000000088381f37>] genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+>       [<00000000dad42a47>] netlink_unicast_kernel  net/netlink/af_netlink.c:1302 [inline]
+>       [<00000000dad42a47>] netlink_unicast+0x1ec/0x2d0  net/netlink/af_netlink.c:1328
+>       [<0000000067e6b079>] netlink_sendmsg+0x270/0x480  net/netlink/af_netlink.c:1917
+>       [<00000000aab08a47>] sock_sendmsg_nosec net/socket.c:637 [inline]
+>       [<00000000aab08a47>] sock_sendmsg+0x54/0x70 net/socket.c:657
+>       [<000000004cb7c11d>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2311
+>       [<00000000c4901c63>] __sys_sendmsg+0x80/0xf0 net/socket.c:2356
+>
+> BUG: memory leak
+> unreferenced object 0xffff8881228ca500 (size 128):
+>     comm "syz-executor032", pid 7015, jiffies 4294944622 (age 7.880s)
+>     hex dump (first 32 bytes):
+>       00 f0 27 18 81 88 ff ff 80 ac 8c 22 81 88 ff ff  ..'........"....
+>       40 b7 23 17 81 88 ff ff 00 00 00 00 00 00 00 00  @.#.............
+>     backtrace:
+>       [<000000000eb78212>] kmemleak_alloc_recursive  include/linux/kmemleak.h:43 [inline]
+>       [<000000000eb78212>] slab_post_alloc_hook mm/slab.h:522 [inline]
+>       [<000000000eb78212>] slab_alloc mm/slab.c:3319 [inline]
+>       [<000000000eb78212>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
+>       [<00000000006ea6c6>] kmalloc include/linux/slab.h:552 [inline]
+>       [<00000000006ea6c6>] kzalloc include/linux/slab.h:748 [inline]
+>       [<00000000006ea6c6>] ovs_vport_alloc+0x37/0xf0  net/openvswitch/vport.c:130
+>       [<00000000f9a04a7d>] internal_dev_create+0x24/0x1d0  net/openvswitch/vport-internal_dev.c:164
+>       [<0000000056ee7c13>] ovs_vport_add+0x81/0x190  net/openvswitch/vport.c:199
+>       [<000000005434efc7>] new_vport+0x19/0x80 net/openvswitch/datapath.c:194
+>       [<00000000b7b253f1>] ovs_dp_cmd_new+0x22f/0x410  net/openvswitch/datapath.c:1614
+>       [<00000000e0988518>] genl_family_rcv_msg+0x2ab/0x5b0  net/netlink/genetlink.c:629
+>       [<00000000d0cc9347>] genl_rcv_msg+0x54/0x9c net/netlink/genetlink.c:654
+>       [<000000006694b647>] netlink_rcv_skb+0x61/0x170  net/netlink/af_netlink.c:2477
+>       [<0000000088381f37>] genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+>       [<00000000dad42a47>] netlink_unicast_kernel  net/netlink/af_netlink.c:1302 [inline]
+>       [<00000000dad42a47>] netlink_unicast+0x1ec/0x2d0  net/netlink/af_netlink.c:1328
+>       [<0000000067e6b079>] netlink_sendmsg+0x270/0x480  net/netlink/af_netlink.c:1917
+>       [<00000000aab08a47>] sock_sendmsg_nosec net/socket.c:637 [inline]
+>       [<00000000aab08a47>] sock_sendmsg+0x54/0x70 net/socket.c:657
+>       [<000000004cb7c11d>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2311
+>       [<00000000c4901c63>] __sys_sendmsg+0x80/0xf0 net/socket.c:2356
+>       [<00000000c10abb2d>] __do_sys_sendmsg net/socket.c:2365 [inline]
+>       [<00000000c10abb2d>] __se_sys_sendmsg net/socket.c:2363 [inline]
+>       [<00000000c10abb2d>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2363
+> =====================================================================
+>
+> The function in net core, register_netdevice(), may fail with vport's
+> destruction callback either invoked or not. After commit 309b66970ee2,
+> the duty to destroy vport is offloaded from the driver OTOH, which ends
+> up in the memory leak reported.
+>
+> It is fixed by releasing vport unless device is registered successfully.
+> To do that, the callback assignment is defered until device is registered.
+>
+> Reported-by: syzbot+13210896153522fe1ee5@syzkaller.appspotmail.com
+> Fixes: 309b66970ee2 ("net: openvswitch: do not free vport if register_netdevice() is failed.")
+> Cc: Taehee Yoo <ap420073@gmail.com>
+> Cc: Greg Rose <gvrose8192@gmail.com>
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Cc: Ying Xue <ying.xue@windriver.com>
+> Cc: Andrey Konovalov <andreyknvl@google.com>
+> Signed-off-by: Hillf Danton <hdanton@sina.com>
+> Acked-by: Pravin B Shelar <pshelar@ovn.org>
+> [sbrivio: this was sent to dev@openvswitch.org and never made its way
+>   to netdev -- resending original patch]
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> ---
+> This patch was sent to dev@openvswitch.org and appeared on netdev
+> only as Pravin replied to it, giving his Acked-by. I contacted the
+> original author one month ago requesting to resend this to netdev,
+> but didn't get an answer, so I'm now resending the original patch.
+>
+>   net/openvswitch/vport-internal_dev.c | 11 ++++-------
+>   1 file changed, 4 insertions(+), 7 deletions(-)
+>
+> diff --git a/net/openvswitch/vport-internal_dev.c b/net/openvswitch/vport-internal_dev.c
+> index 21c90d3a7ebf..58a7b8312c28 100644
+> --- a/net/openvswitch/vport-internal_dev.c
+> +++ b/net/openvswitch/vport-internal_dev.c
+> @@ -137,7 +137,7 @@ static void do_setup(struct net_device *netdev)
+>   	netdev->priv_flags |= IFF_LIVE_ADDR_CHANGE | IFF_OPENVSWITCH |
+>   			      IFF_NO_QUEUE;
+>   	netdev->needs_free_netdev = true;
+> -	netdev->priv_destructor = internal_dev_destructor;
+> +	netdev->priv_destructor = NULL;
+>   	netdev->ethtool_ops = &internal_dev_ethtool_ops;
+>   	netdev->rtnl_link_ops = &internal_dev_link_ops;
+>   
+> @@ -159,7 +159,6 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
+>   	struct internal_dev *internal_dev;
+>   	struct net_device *dev;
+>   	int err;
+> -	bool free_vport = true;
+>   
+>   	vport = ovs_vport_alloc(0, &ovs_internal_vport_ops, parms);
+>   	if (IS_ERR(vport)) {
+> @@ -190,10 +189,9 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
+>   
+>   	rtnl_lock();
+>   	err = register_netdevice(vport->dev);
+> -	if (err) {
+> -		free_vport = false;
+> +	if (err)
+>   		goto error_unlock;
+> -	}
+> +	vport->dev->priv_destructor = internal_dev_destructor;
+>   
+>   	dev_set_promiscuity(vport->dev, 1);
+>   	rtnl_unlock();
+> @@ -207,8 +205,7 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
+>   error_free_netdev:
+>   	free_netdev(dev);
+>   error_free_vport:
+> -	if (free_vport)
+> -		ovs_vport_free(vport);
+> +	ovs_vport_free(vport);
+>   error:
+>   	return ERR_PTR(err);
+>   }
 
-I tried Bjorn's patch that avoids the lookups in the BPF prog.
-https://lore.kernel.org/netdev/20191021105938.11820-1-bjorn.topel@gmail.com/
+Thanks Stefano and Hillf.  LGTM
 
-With this patch I am also seeing around 3-4% increase in xdpsock rxdrop performance and
-the perf report looks like this.
-
-Samples: 44K of event 'cycles', Event count (approx.): 38749965204
-Overhead  Command          Shared Object              Symbol
-   16.06%  ksoftirqd/28     [i40e]                     [k] i40e_clean_rx_irq_zc
-   10.18%  ksoftirqd/28     bpf_prog_3c8251c7e0fef8db  [k] bpf_prog_3c8251c7e0fef8db
-   10.15%  xdpsock          [i40e]                     [k] i40e_clean_rx_irq_zc
-   10.06%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_rcv
-    7.45%  xdpsock          xdpsock                    [.] main
-    5.76%  ksoftirqd/28     [kernel.vmlinux]           [k] xdp_do_redirect
-    4.51%  xdpsock          bpf_prog_3c8251c7e0fef8db  [k] bpf_prog_3c8251c7e0fef8db
-    3.67%  xdpsock          [kernel.vmlinux]           [k] xsk_rcv
-    3.06%  ksoftirqd/28     [kernel.vmlinux]           [k] bpf_xdp_redirect_map
-    2.34%  ksoftirqd/28     [kernel.vmlinux]           [k] __xsk_map_redirect
-    2.33%  xdpsock          [kernel.vmlinux]           [k] xdp_do_redirect
-    1.69%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_umem_peek_addr
-    1.69%  xdpsock          [kernel.vmlinux]           [k] xsk_umem_peek_addr
-    1.42%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_direct_sync_single_for_cpu
-    1.19%  xdpsock          [kernel.vmlinux]           [k] bpf_xdp_redirect_map
-    1.13%  xdpsock          [kernel.vmlinux]           [k] dma_direct_sync_single_for_device
-    0.95%  ksoftirqd/28     [kernel.vmlinux]           [k] dma_direct_sync_single_for_device
-    0.92%  swapper          [kernel.vmlinux]           [k] intel_idle
-    0.92%  xdpsock          [kernel.vmlinux]           [k] __xsk_map_redirect
-    0.80%  ksoftirqd/28     [kernel.vmlinux]           [k] __x86_indirect_thunk_rax
-    0.73%  ksoftirqd/28     [i40e]                     [k] i40e_clean_programming_status
-    0.71%  ksoftirqd/28     [kernel.vmlinux]           [k] __xsk_map_lookup_elem
-    0.63%  ksoftirqd/28     [kernel.vmlinux]           [k] net_rx_action
-    0.62%  ksoftirqd/28     [i40e]                     [k] i40e_napi_poll
-    0.58%  xdpsock          [kernel.vmlinux]           [k] dma_direct_sync_single_for_cpu
-
-So with this patch applied, direct receive performance improvement comes down from 46% to 42%.
-I think it is still substantial enough to provide an option to allow direct receive for
-certain use cases. If it is OK, i can re-spin and submit the patches on top of the latest bpf-next
-
-Thanks
-Sridhar
-
-
-
+Reviewed-by: Greg Rose <gvrose8192@gmail.com>
 
