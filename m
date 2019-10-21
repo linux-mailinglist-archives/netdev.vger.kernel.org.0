@@ -2,155 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05893DF80B
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 00:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24D6EDF83B
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 00:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730407AbfJUWem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 18:34:42 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:39169 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729620AbfJUWel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 18:34:41 -0400
-Received: by mail-ed1-f67.google.com with SMTP id l25so47063edt.6;
-        Mon, 21 Oct 2019 15:34:40 -0700 (PDT)
+        id S1730480AbfJUWuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 18:50:19 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:36523 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730276AbfJUWuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 18:50:19 -0400
+Received: by mail-lf1-f67.google.com with SMTP id u16so11446811lfq.3;
+        Mon, 21 Oct 2019 15:50:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4EbmdiQCnki6kAFMlsvxGaxCAP1/cpVjUgeZkhvy+IM=;
-        b=GvBSEsjylRWMygt6asBya+vZaSpXqk6K81Dqxbb4A+EHkJAtCwolaf33n0Q8FHVYf2
-         vcSu4MmZnQzMzcDE7Eph/0usmBvbEDAjDAdpddLdV/4lYslxNWgXTpH1GDyXYESPynID
-         sAyq3VK7P46YEM0hsCPoR8tCsSgbZhqwGqobeD+9cEPUekOktxc49DYca72jutOaHOiW
-         guImMy5zqdh2IGONk/xboEEkNbQarym6sIkGXG6ILgnl1lBxkNuzbqA+9fCbtGpYl7IZ
-         Cd9qvkgpUoTEeDH/+jSFGStdKQ96GXZWVexkFMwLOwFXpnBnjLtQCwXTmgVNeKFocWV1
-         76hQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DH2WqPm/ojhUxsYpmTYJtMkv2XHFaG9I6x06pfPP33M=;
+        b=e0lZVujDIdHQMqq4a4zVTDR0+ugUY6tpSqAOGelmkxayw8TQ12b/b2VcYcmKz9ubRO
+         AhsAx4qCyjJWos0M6KMboJfDKulxo9C2Zt6WYqcCY54MosMiJbWddbbmJQUZ3ectRIQP
+         R4gx7Hr+/1CXcv7A54AuP52NsxMAfoKyQAjqrHHrYB6k6ekLKpHi0MesI3qZGMNZWsRL
+         fsVj4lmWNpq6gjfVlxQg839fhVkaQR7e7tGkfgll+5M0M3Jsy29p8qo3g4V1xwv41iIu
+         GPQqwh+tOjg2d9qegyWrPm/VYf7GOS4IwsiO7LnrmcP8+AKTQvWaQfoFlrGMS2riGoFi
+         g/2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=4EbmdiQCnki6kAFMlsvxGaxCAP1/cpVjUgeZkhvy+IM=;
-        b=eREdfoHgyCO1EoI7lP5YyNbqTeNaFco4QGYA85PwRFE/lWUdFS7d+qutA0raJQZ/cW
-         yV8C88AYCpX0B9j2y6dCzFpmq6iOhSM8nHmk10eAFmjBx7D6CuMDxQiC4tK8m2p/rm66
-         ZD0X01ltHHAcysS73KoYokvKCU2dhDcrEbI8eXRVGWPg0DwJ0SKRKhdQVTp45KMtKkdj
-         hXfbtWKpsXORcOo9M8ieFYznxhwef1rA9k+ghPlGrUmtiV0cZgH4l5GXD+SG9IUWQzxq
-         dPDo28V9p9Nuvw28NzZ1SDThdnUrMLNLx5MT8REoeMzHifhn0FV+JfpLNRb8xHRtHRP1
-         Zwaw==
-X-Gm-Message-State: APjAAAW4CcUETFDlQmJBnLbrS+XThSWfdPs2NcIDGceBspId/7OAUUes
-        rOECDoz3SQI+HWBgcR2F28W6nlNP
-X-Google-Smtp-Source: APXvYqz9COd56d60NXfSyekqGKpdT8jE5Dp+wwf5Jsbs75cZMebZwpeJvl2QxhngJWYOv4PAnJ05jQ==
-X-Received: by 2002:a17:906:3592:: with SMTP id o18mr9137808ejb.17.1571697279593;
-        Mon, 21 Oct 2019 15:34:39 -0700 (PDT)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g43sm234856edb.14.2019.10.21.15.34.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 21 Oct 2019 15:34:38 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 00/16] net: dsa: turn arrays of ports into a
- list
-To:     Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        netdev@vger.kernel.org
-References: <20191021205130.304149-1-vivien.didelot@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <0391ff65-96c2-ab6f-511b-f633bdcfd3d7@gmail.com>
-Date:   Mon, 21 Oct 2019 15:34:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DH2WqPm/ojhUxsYpmTYJtMkv2XHFaG9I6x06pfPP33M=;
+        b=c3yIlCt6NZwPQ9HC1I8bLI4k5aIdoMUy47fYb/BDizHq8etQqGbk1lI01KOnTPvGju
+         uRZdyi96xqtpZcx9OT20aWD8WBEari/5SQ1/m00dMwpN++0OuWcpadarGWGd5QqfiYKr
+         g3VaOoFUDV07JnGAcozLwVu4gocSpYVX6QYmrHYoxVPXWHz9KlS4y11bWX1aMN7jtn/m
+         jDZz19HDqKvvdmfZxVjKbmkpEuyyrl1JYtDPDGcrALHMxWzuYLnu5CBtCX3/riaWTWqR
+         gSiIaP+v60qnOjrWk2Oh1N4ff6+ua3S5BLmbIURT1UsqfaO2L8JVvYuG581ECPjcuF5q
+         3dyA==
+X-Gm-Message-State: APjAAAVthUaL00k8mE0aBQ9EusxlOr+6Zw+hn4o+zgc5LAJ3kAb+sE3Q
+        YsNzcRD05u91whS21qJOkJWkoy9B0xUXAR/oJwM=
+X-Google-Smtp-Source: APXvYqx0Ttf1vJ1Lj2RKwreCFtwTV0UgvuG5zrLhTJi3HeYY5S5oceRiLbSUb+TLqSkGKMoUx4vMYrwXaPHuyMPAApM=
+X-Received: by 2002:ac2:51d9:: with SMTP id u25mr16893966lfm.19.1571698217145;
+ Mon, 21 Oct 2019 15:50:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191021205130.304149-1-vivien.didelot@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191019111931.2981954-1-toke@redhat.com>
+In-Reply-To: <20191019111931.2981954-1-toke@redhat.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 21 Oct 2019 15:50:05 -0700
+Message-ID: <CAADnVQJNrW+tv4ZZJ_UFF969Jm1Gj+SSNa6=Xz=AizDRxOPv3A@mail.gmail.com>
+Subject: Re: [PATCH bpf v4] xdp: Handle device unregister for devmap_hash map type
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/21/19 1:51 PM, Vivien Didelot wrote:
-> The dsa_switch structure represents the physical switch device itself,
-> and is allocated by the driver. The dsa_switch_tree and dsa_port structures
-> represent the logical switch fabric (eventually composed of multiple switch
-> devices) and its ports, and are allocated by the DSA core.
-> 
-> This branch lists the logical ports directly in the fabric which simplifies
-> the iteration over all ports when assigning the default CPU port or configuring
-> the D in DSA in drivers like mv88e6xxx.
-> 
-> This also removes the unique dst->cpu_dp pointer and is a first step towards
-> supporting multiple CPU ports and dropping the DSA_MAX_PORTS limitation.
-> 
-> Because the dsa_port structures are not tight to the dsa_switch structure
-> anymore, we do not need to provide an helper for the drivers to allocate a
-> switch structure. Like in many other subsystems, drivers can now embed their
-> dsa_switch structure as they wish into their private structure. This will
-> be particularly interesting for the Broadcom drivers which were currently
-> limited by the dynamically allocated array of DSA ports.
-> 
-> The series implements the list of dsa_port structures, makes use of it,
-> then drops dst->cpu_dp and the dsa_switch_alloc helper.
+On Sat, Oct 19, 2019 at 4:19 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> It seems I forgot to add handling of devmap_hash type maps to the device
+> unregister hook for devmaps. This omission causes devices to not be
+> properly released, which causes hangs.
+>
+> Fix this by adding the missing handler.
+>
+> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up device=
+s by hashed index")
+> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-For the entire series:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-
-On a BCM7278 with two CPU ports (one at 5, one at 8), and things are
-working as they used to before your patch series, thanks!
--- 
-Florian
+Applied. Thanks!
