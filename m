@@ -2,260 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E04DE554
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 09:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47618DE56C
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 09:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727445AbfJUHbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 03:31:13 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37073 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726480AbfJUHbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 03:31:13 -0400
-Received: by mail-pl1-f195.google.com with SMTP id u20so6188575plq.4;
-        Mon, 21 Oct 2019 00:31:11 -0700 (PDT)
+        id S1727471AbfJUHkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 03:40:35 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37932 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727462AbfJUHkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 03:40:35 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 3so11639951wmi.3
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 00:40:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gl3AjtMuB3uVSOnNiELLGqLzZ5vndSK+Gkr0NStdpWo=;
-        b=pyGiLl7GsYebi5Za0WsUiwuD2+QqAcf0rki4K5c2Vgn+vn3icHK76YIRZzeJW1YRgK
-         pYnC7fOfSpUbWsHEdJ1eBqgNbu2M4HiAkZ3pDmThW3/C7Jhylxe1j2qRgD1mjKcXO345
-         ZCdrlJjptk4sZxEvBrfGSPKq3NVNpB0T9SMR6LMzE3sAsoOXP0wgM+HYmiqwmGYXlouF
-         2WWUy/ACXiwffzRSuQhS+jN5+noRlnkYJ5G3zaE3vRXWBfr+bmNoPhdA15MbofDeHquE
-         SImZpVIVfk7BCr43u7knHP1sEC6DwibVTV3pTM3UZrX0eoX46mhBO2qWB3o9h+pDJ+RV
-         R7yA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ng56756ED51t/eT9lLH6m7o//0HHRK3T616Ko5nMUy4=;
+        b=JA44TSOevliTPlhq00H9jaQeWe9uV4f8ob6IKN+5ArgMRESMEfxOuOwA3pFNDpzNFT
+         +uieIYUtGo+lxiQKUFmMmIj8m2Vnhl2yxpm3mPLokaeA2ypFFtayhjrmEPvgYUR+Rz2h
+         6roSCiET7zBlLikT+HWaypk8sKnn82tKqWEgJpsYsHRaHB4R42miY2nNef47BYOQZcvs
+         mlo21tyQRRysvV3RfINhnY8glvCrPvm5P50ZR8Jdw2SFfBEk/K8zUimZg5bftIPJWAc1
+         RoLNI8huBgZ8kLsfEuYgqJ1Y+7gOtVPHw2/x8lww50+HwmtObJ2vxkEeakvF5BCN9fQf
+         0ACg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gl3AjtMuB3uVSOnNiELLGqLzZ5vndSK+Gkr0NStdpWo=;
-        b=A1Z9JZzVk/P7dACK2h2MTaw9myeK4vNs13n3j6HBTzYX7FyYeKUtp4hOzrBZ/oW3m8
-         e9rmSH+lywplQPDMkGv/V+STdMIOgmFPFE8e1U05Nqu6TrHnnPe7mafIZAKPyKtQcCpj
-         vmo2hjxUuyS4ujCr1czKITV31Lml0UDlNipFKm6pqd9GsfzHqH8Nyq/CVSQrnN8Ug4OD
-         Li5xBIZyVHj2viMmEVTZUwo7Nkq/qdAgdzijI230kMuWMvl0/wB3kFeqioZQ8TmSIUmC
-         JOWQCgocy3lXtKhzWxD5hIwoOn6lTePJYBUXw1lPlxzUCbS0OC/Wcphhuc/K/W3h3pA+
-         Eidw==
-X-Gm-Message-State: APjAAAVsbqfUHkBg9PBeiO9RfIAJ9+X3YSUSUbnuWsHP4kpfVbjKt3CT
-        JYtt5qDdgDOkOIvWWJiL84U=
-X-Google-Smtp-Source: APXvYqw6/VpFlXkvOZrSq0pwvx4MEJcCfnF8VTH+VPOsFb9Vkl0MV1ePCupSor6GACyfEpxvsBDRdA==
-X-Received: by 2002:a17:902:561:: with SMTP id 88mr3915287plf.40.1571643070978;
-        Mon, 21 Oct 2019 00:31:10 -0700 (PDT)
-Received: from [172.20.20.103] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id q76sm23416688pfc.86.2019.10.21.00.31.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Oct 2019 00:31:10 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
- <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com>
-Date:   Mon, 21 Oct 2019 16:31:03 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ng56756ED51t/eT9lLH6m7o//0HHRK3T616Ko5nMUy4=;
+        b=rzOO/QAXAOR5PTSL1Zxh4Zhq6YsnR4TiuttA0eXEYtygvgdcD2DTMv+q1TLv8JGtRC
+         YhCJMJuPbm976j2+De58lD+eIU9hC6c+yqe2tYa4I1iIZpHT8V6nmWU/qg1KDK2zsDmD
+         XrCfnDnZ70A7sy93cRAa9dP4fYajtoVMsSvmrLTrBIcpl00TwwiPnbLTvzfnSbCHCek4
+         zxoJf3OTavz582yoBR37BVoID48zBt70IDd7ag49XFyd48LUMzTtTfwepLbp+L5aiEsm
+         EPrXew3LtZMHz8mc/WWJADBLVmrcIWTKvQjOcrEvazlgg0nvSd3yhsJ+IbU44p9Rbjmq
+         ueKQ==
+X-Gm-Message-State: APjAAAUxLcp+kMWyscJY54KH7e6lQdFZ7doqKV3U3Kj6Go7W5SeyzfZB
+        9pXgueSVIDevItMlNq/onbTnbijjPZs=
+X-Google-Smtp-Source: APXvYqwjX7Tcab+POgt1uxmBgvVx7fZVvygGXYz3lncy8zOk0TCoO/yaEIjHAWP1xgza0wVzKLuXUw==
+X-Received: by 2002:a1c:a9cb:: with SMTP id s194mr2009378wme.92.1571643633158;
+        Mon, 21 Oct 2019 00:40:33 -0700 (PDT)
+Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id g69sm1427055wme.31.2019.10.21.00.40.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Oct 2019 00:40:32 -0700 (PDT)
+Date:   Mon, 21 Oct 2019 09:40:31 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Russell King <rmk@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linville@tuxdriver.com, andrew@lunn.ch,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH 1/3] ethtool: correctly interpret bitrate of 255
+Message-ID: <20191021074030.GB4486@netronome.com>
+References: <E1iLYu1-0000sp-W5@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1iLYu1-0000sp-W5@rmk-PC.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/10/19 0:22, John Fastabend wrote:
-> Toshiaki Makita wrote:
->> This is a PoC for an idea to offload flow, i.e. TC flower and nftables,
->> to XDP.
->>
+On Fri, Oct 18, 2019 at 09:31:13PM +0100, Russell King wrote:
+> From: Russell King <rmk+kernel@armlinux.org.uk>
 > 
-> I've only read the cover letter so far but...
+> A bitrate of 255 is special, it means the bitrate is encoded in
+> byte 66 in units of 250MBaud.  Add support for parsing these bit
+> rates.
 
-Thank you for reading this long cover letter.
+Hi Russell,
 
-> 
->> * Motivation
->>
->> The purpose is to speed up flow based network features like TC flower and
->> nftables by making use of XDP.
->>
->> I chose flow feature because my current interest is in OVS. OVS uses TC
->> flower to offload flow tables to hardware, so if TC can offload flows to
->> XDP, OVS also can be offloaded to XDP.
-> 
-> This adds a non-trivial amount of code and complexity so I'm
-> critical of the usefulness of being able to offload TC flower to
-> XDP when userspace can simply load an XDP program.
-> 
-> Why does OVS use tc flower at all if XDP is about 5x faster using
-> your measurements below? Rather than spend energy adding code to
-> a use case that as far as I can tell is narrowly focused on offload
-> support can we enumerate what is missing on XDP side that blocks
-> OVS from using it directly?
-
-I think nothing is missing for direct XDP use, as long as XDP datapath
-only partially supports OVS flow parser/actions like xdp_flow.
-The point is to avoid duplicate effort when someone wants to use XDP
-through TC flower or nftables transparently.
-
-> Additionally for hardware that can
-> do XDP/BPF offload you will get the hardware offload for free.
-
-This is not necessary as OVS already uses TC flower to offload flows.
-
-> Yes I know XDP is bytecode and you can't "offload" bytecode into
-> a flow based interface likely backed by a tcam but IMO that doesn't
-> mean we should leak complexity into the kernel network stack to
-> fix this. Use the tc-flower for offload only (it has support for
-> this) if you must and use the best (in terms of Mpps) software
-> interface for your software bits. And if you want auto-magic
-> offload support build hardware with BPF offload support.
-> 
-> In addition by using XDP natively any extra latency overhead from
-> bouncing calls through multiple layers would be removed.
-
-To some extent yes, but not completely. Flow insertion from userspace
-triggered by datapath upcall is necessary regardless of whether we use
-TC or not.
-
->> When TC flower filter is offloaded to XDP, the received packets are
->> handled by XDP first, and if their protocol or something is not
->> supported by the eBPF program, the program returns XDP_PASS and packets
->> are passed to upper layer TC.
->>
->> The packet processing flow will be like this when this mechanism,
->> xdp_flow, is used with OVS.
-> 
-> Same as obove just cross out the 'TC flower' box and add support
-> for your missing features to 'XDP prog' box. Now you have less
-> code to maintain and less bugs and aren't pushing packets through
-> multiple hops in a call chain.
-
-If we cross out TC then we would need similar code in OVS userspace.
-In total I don't think it would be less code to maintain.
+it seems from the code either that 0 is also special or its
+handling has been optimised. Perhaps that would be worth mentioning
+in the changelog too.
 
 > 
->>
->>   +-------------+
->>   | openvswitch |
->>   |    kmod     |
->>   +-------------+
->>          ^
->>          | if not match in filters (flow key or action not supported by TC)
->>   +-------------+
->>   |  TC flower  |
->>   +-------------+
->>          ^
->>          | if not match in flow tables (flow key or action not supported by XDP)
->>   +-------------+
->>   |  XDP prog   |
->>   +-------------+
->>          ^
->>          | incoming packets
->>
->> Of course we can directly use TC flower without OVS to speed up TC.
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  sfpid.c | 19 ++++++++++++++++---
+>  1 file changed, 16 insertions(+), 3 deletions(-)
 > 
-> huh? TC flower is part of TC so not sure what 'speed up TC' means. I
-> guess this means using tc flower offload to xdp prog would speed up
-> general tc flower usage as well?
-
-Yes.
-
+> diff --git a/sfpid.c b/sfpid.c
+> index a1753d3a535f..71f0939c6282 100644
+> --- a/sfpid.c
+> +++ b/sfpid.c
+> @@ -328,11 +328,24 @@ void sff8079_show_all(const __u8 *id)
+>  {
+>  	sff8079_show_identifier(id);
+>  	if (((id[0] == 0x02) || (id[0] == 0x03)) && (id[1] == 0x04)) {
+> +		unsigned int br_nom, br_min, br_max;
+> +
+> +		if (id[12] == 0) {
+> +			br_nom = br_min = br_max = 0;
+> +		} else if (id[12] == 255) {
+> +			br_nom = id[66] * 250;
+> +			br_max = id[67];
+> +			br_min = id[67];
+> +		} else {
+> +			br_nom = id[12] * 100;
+> +			br_max = id[66];
+> +			br_min = id[67];
+> +		}
+>  		sff8079_show_ext_identifier(id);
+>  		sff8079_show_connector(id);
+>  		sff8079_show_transceiver(id);
+>  		sff8079_show_encoding(id);
+> -		sff8079_show_value_with_unit(id, 12, "BR, Nominal", 100, "MBd");
+> +		printf("\t%-41s : %u%s\n", "BR, Nominal", br_nom, "MBd");
+>  		sff8079_show_rate_identifier(id);
+>  		sff8079_show_value_with_unit(id, 14,
+>  					     "Length (SMF,km)", 1, "km");
+> @@ -348,8 +361,8 @@ void sff8079_show_all(const __u8 *id)
+>  		sff8079_show_ascii(id, 40, 55, "Vendor PN");
+>  		sff8079_show_ascii(id, 56, 59, "Vendor rev");
+>  		sff8079_show_options(id);
+> -		sff8079_show_value_with_unit(id, 66, "BR margin, max", 1, "%");
+> -		sff8079_show_value_with_unit(id, 67, "BR margin, min", 1, "%");
+> +		printf("\t%-41s : %u%s\n", "BR margin, max", br_max, "%");
+> +		printf("\t%-41s : %u%s\n", "BR margin, min", br_min, "%");
+>  		sff8079_show_ascii(id, 68, 83, "Vendor SN");
+>  		sff8079_show_ascii(id, 84, 91, "Date code");
+>  	}
+> -- 
+> 2.7.4
 > 
-> But again if we are concerned about Mpps metrics just write the XDP
-> program directly.
-
-I guess you mean any Linux users who want TC-like flow handling should develop
-their own XDP programs? (sorry if I misunderstand you.)
-I want to avoid such a situation. The flexibility of eBPF/XDP is nice and it's
-good to have any program each user wants, but not every sysadmin can write low
-level good performance programs like us. For typical use-cases like flow handling
-easy use of XDP through existing kernel interface (here TC) is useful IMO.
-
-> 
-...
->> * About alternative userland (ovs-vswitchd etc.) implementation
->>
->> Maybe a similar logic can be implemented in ovs-vswitchd offload
->> mechanism, instead of adding code to kernel. I just thought offloading
->> TC is more generic and allows wider usage with direct TC command.
->>
->> For example, considering that OVS inserts a flow to kernel only when
->> flow miss happens in kernel, we can in advance add offloaded flows via
->> tc filter to avoid flow insertion latency for certain sensitive flows.
->> TC flower usage without using OVS is also possible.
-> 
-> I argue to cut tc filter out entirely and then I think non of this
-> is needed.
-
-Not correct. Even with native XDP use, multiple map lookup/modification
-from userspace is necessary for flow miss handling, which will lead to
-some latency.
-
-And there are other use-cases for direct TC use, like packet drop or
-redirection for certain flows.
-
-> 
->>
->> Also as written above nftables can be offloaded to XDP with this
->> mechanism as well.
-> 
-> Or same argument use XDP directly.
-
-I'm thinking it's useful for sysadmins to be able to use XDP through
-existing kernel interfaces.
-
-> 
->>
->> Another way to achieve this from userland is to add notifications in
->> flow_offload kernel code to inform userspace of flow addition and
->> deletion events, and listen them by a deamon which in turn loads eBPF
->> programs, attach them to XDP, and modify eBPF maps. Although this may
->> open up more use cases, I'm not thinking this is the best solution
->> because it requires emulation of kernel behavior as an offload engine
->> but flow related code is heavily changing which is difficult to follow
->> from out of tree.
-> 
-> So if everything was already in XDP why would we need these
-> notifications? I think a way to poll on a map from user space would
-> be a great idea e.g. everytime my XDP program adds a flow to my
-> hash map wake up my userspace agent with some ctx on what was added or
-> deleted so I can do some control plane logic.
-
-I was talking about TC emulation above, so map notification is not related
-to this problem, although it may be a nice feature.
-
-> 
-> [...]
-> 
-> Lots of code churn...
-
-Note that most of it is TC offload driver implementation. So it should add
-little complexity to network/XDP/TC core.
-
-> 
->>   24 files changed, 2864 insertions(+), 30 deletions(-)
-> 
-> Thanks,
-> John
-> 
-
-Toshiaki Makita
