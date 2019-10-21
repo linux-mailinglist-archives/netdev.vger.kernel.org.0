@@ -2,226 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A5B1DEABF
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 13:23:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2090DDEB27
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 13:41:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728243AbfJULXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 07:23:39 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:39211 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727433AbfJULXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 07:23:38 -0400
-Received: by mail-qk1-f195.google.com with SMTP id 4so12197478qki.6;
-        Mon, 21 Oct 2019 04:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4SIKg7fkKv4f5oFDvoKTFfO1xQS++1EKIUX0O9ZXAm0=;
-        b=O4yQJ8969KS6QyYr8aiiUkpRHg4e6b/Ndys4gKsb9kSt/U4m6ZlzIbSgsdzxkt0sG+
-         3k6KAK87KmCwo73LyOkI6+VQ+QUEgt7RZSuwxwAlpzr8KV0sQL0FV50NY4r1cNHZoAy4
-         Hl7VwQtvP1m15wM0TSkqTBG7tRGBO1vFZu+i2kaJWZs2hYZfO/wACqZ/dqGX6lfQ7zZh
-         VNRa/WBtC7v6btRyM0qAnH2o0GEmyMg/ebWgX3UfibWLq9fQzWcofGSHJuKj1188tYdT
-         IAyKf3jnltsUMHqcCM3SXiM6J3emh5bFrlmt+ge/8GOmBM7YCdFlUHMJZPn2ExRVsTy/
-         ZdjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4SIKg7fkKv4f5oFDvoKTFfO1xQS++1EKIUX0O9ZXAm0=;
-        b=U+RV4DL2lewe6lfrR7uHbdisHbMyxgn9xAxrqeE333N68QAv5IfkbQpdM7CaZHkOPi
-         z/IfW2nqGEfQFOKZM+TTiL3SlR+WS3iasaNp2Dn5+EAXiD4/nW8uLZmJupqUtxeWuNze
-         miiee2sXYj9zqVD8W7kfplp/OUwIvfe5I8S72N66LLM/1XI+hCMMGr2CCVc+x/0oxuUI
-         3ytPei7IyrR0hdoISJa4di3+ozOjYU20r5tFD3btaFg9abTw5D9UFQTkCVSfOl0rVB1V
-         AERq1BkEryamedmip+6WbvXicp1mXc6djUP2/jiMfU23paYg5nZdDGwVcRe4SZ6oh0R+
-         On4g==
-X-Gm-Message-State: APjAAAUVEx7AJtWyGXekw0uf1H2DOGQ/FZlwSWzGN14Y90azak+NXUQo
-        lnsAl4yfb5kB3AHoc7R50aOdQOTSzF+6UzPLrdWmmf69AS52Rg==
-X-Google-Smtp-Source: APXvYqyb3cq9iqVgxSuE6BHAwvkJujJTOf6AscDEx6NWojVeM+uHa/0awpDTJBoTEsuFk1OSmoxI29XNKv01M1jsQW4=
-X-Received: by 2002:a05:620a:13f2:: with SMTP id h18mr21436800qkl.218.1571657015774;
- Mon, 21 Oct 2019 04:23:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
-In-Reply-To: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 21 Oct 2019 13:23:23 +0200
-Message-ID: <CAJ+HfNga=XFeutQuGvGXkuWKSsDCqak-rjutOzqu-r-pwLL1-w@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        id S1728524AbfJULln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 07:41:43 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:48137 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727725AbfJULlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 07:41:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571658101;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=koi7Z8V8erTKmxD3oP4dYoVUrso6+BxU/qyyj8o5aAY=;
+        b=E1tQYMWRnIXD2VC1l10c9hxaPvQpn5S5GGsRJ4QlPIBRNMz9Plir+iEp1keFDV/bYUHlSc
+        BXPchaKXkVwKFeKVwnmm+C/cTPbzn2nv+L8jzJ8Pu93y878f9bX46rfUkNsHXXPuR5Myu6
+        KSF8X9Ifz0Fgc8jAUEKnsvDnT331XjQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-347-O4qoCLuwM1G_s3lnPtjanQ-1; Mon, 21 Oct 2019 07:41:37 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EDD021005500;
+        Mon, 21 Oct 2019 11:41:34 +0000 (UTC)
+Received: from localhost (ovpn-112-54.ams2.redhat.com [10.36.112.54])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B87A0166A2;
+        Mon, 21 Oct 2019 11:41:29 +0000 (UTC)
+Date:   Mon, 21 Oct 2019 13:41:24 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Greg Rose <gvrose8192@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
         Pravin B Shelar <pshelar@ovn.org>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        syzbot <syzbot+13210896153522fe1ee5@syzkaller.appspotmail.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "dev@openvswitch.org" <dev@openvswitch.org>
+Subject: Re: [PATCH net] net: openvswitch: free vport unless
+ register_netdevice() succeeds
+Message-ID: <20191021134124.35b7927d@redhat.com>
+In-Reply-To: <20191021110801.16764-1-hdanton@sina.com>
+References: <20191021110801.16764-1-hdanton@sina.com>
+Organization: Red Hat
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: O4qoCLuwM1G_s3lnPtjanQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 19 Oct 2019 at 00:31, Toshiaki Makita
-<toshiaki.makita1@gmail.com> wrote:
->
-[...]
->
-> * About OVS AF_XDP netdev
->
-> Recently OVS has added AF_XDP netdev type support. This also makes use
-> of XDP, but in some ways different from this patch set.
->
-> - AF_XDP work originally started in order to bring BPF's flexibility to
->   OVS, which enables us to upgrade datapath without updating kernel.
->   AF_XDP solution uses userland datapath so it achieved its goal.
->   xdp_flow will not replace OVS datapath completely, but offload it
->   partially just for speed up.
->
-> - OVS AF_XDP requires PMD for the best performance so consumes 100% CPU
->   as well as using another core for softirq.
->
+On Mon, 21 Oct 2019 19:08:01 +0800
+Hillf Danton <hdanton@sina.com> wrote:
 
-Disclaimer; I haven't studied the OVS AF_XDP code, so this is about
-AF_XDP in general.
+> Hey Stefano=20
+>=20
+> On Mon, 21 Oct 2019 18:02:48 +0800 Stefano Brivio wrote:
+> >=20
+> > ---
+> > This patch was sent to dev@openvswitch.org and appeared on netdev
+> > only as Pravin replied to it, giving his Acked-by. I contacted the =20
+>=20
+> Correct. I am unable to find the patches I sent to lkml on
+> https://lore.kernel.org/lkml/.
+>=20
+> > original author one month ago requesting to resend this to netdev,
+> > but didn't get an answer, so I'm now resending the original patch.
+> >  =20
+> Nor patches to <xyz@vger.kernel.org>.
+> Say sorry to you for missing in action.
+> I sent a mail to <postmaster@vger.kernel.org> sometime ago asking for
+> how to cure the pain, without a message echoed since.
+> That is my poor defend.
 
-One of the nice things about AF_XDP is that it *doesn't* force a user
-to busy-poll (burn CPUs) like a regular userland pull-mode driver.
-Yes, you can do that if you're extremely latency sensitive, but for
-most users (and I think some OVS deployments might fit into this
-category) not pinning cores/interrupts and using poll() syscalls (need
-wakeup patch [1]) is the way to go. The scenario you're describing
-with ksoftirqd spinning on one core, and user application on another
-is not something I'd recommend, rather run your packet processing
-application on one core together with the softirq processing.
+Ouch, and also this reply didn't reach netdev. Looking at headers:
 
-Bj=C3=B6rn
-[1] https://lore.kernel.org/bpf/1565767643-4908-1-git-send-email-magnus.kar=
-lsson@intel.com/#t
+Received: from r3-20.sinamail.sina.com.cn (r3-20.sinamail.sina.com.cn [202.=
+108.3.20])
+=09by mx1.redhat.com (Postfix) with SMTP id 9868983F45
+=09for <sbrivio@redhat.com>; Mon, 21 Oct 2019 11:08:14 +0000 (UTC)
+Received: from unknown (HELO localhost.localdomain)([222.131.66.83])
+=09by sina.com with ESMTP
+=09id 5DAD919A000082B3; Mon, 21 Oct 2019 19:08:12 +0800 (CST)
 
+it's not in DNSRBL or anything, and looks similar enough to e.g.:
 
+=09https://patchwork.kernel.org/patch/10663003/
 
-> - OVS AF_XDP needs packet copy when forwarding packets.
->
-> - xdp_flow can be used not only for OVS. It works for direct use of TC
->   flower and nftables.
->
->
-> * About alternative userland (ovs-vswitchd etc.) implementation
->
-> Maybe a similar logic can be implemented in ovs-vswitchd offload
-> mechanism, instead of adding code to kernel. I just thought offloading
-> TC is more generic and allows wider usage with direct TC command.
->
-> For example, considering that OVS inserts a flow to kernel only when
-> flow miss happens in kernel, we can in advance add offloaded flows via
-> tc filter to avoid flow insertion latency for certain sensitive flows.
-> TC flower usage without using OVS is also possible.
->
-> Also as written above nftables can be offloaded to XDP with this
-> mechanism as well.
->
-> Another way to achieve this from userland is to add notifications in
-> flow_offload kernel code to inform userspace of flow addition and
-> deletion events, and listen them by a deamon which in turn loads eBPF
-> programs, attach them to XDP, and modify eBPF maps. Although this may
-> open up more use cases, I'm not thinking this is the best solution
-> because it requires emulation of kernel behavior as an offload engine
-> but flow related code is heavily changing which is difficult to follow
-> from out of tree.
->
-> * Note
->
-> This patch set is based on top of commit 5bc60de50dfe ("selftests: bpf:
-> Don't try to read files without read permission") on bpf-next, but need
-> to backport commit 98beb3edeb97 ("samples/bpf: Add a workaround for
-> asm_inline") from bpf tree to successfully build the module.
->
-> * Changes
->
-> RFC v2:
->  - Use indr block instead of modifying TC core, feedback from Jakub
->    Kicinski.
->  - Rename tc-offload-xdp to flow-offload-xdp since this works not only
->    for TC but also for nftables, as now I use indr flow block.
->  - Factor out XDP program validation code in net/core and use it to
->    attach a program to XDP from xdp_flow.
->  - Use /dev/kmsg instead of syslog.
->
-> Any feedback is welcome.
-> Thanks!
->
-> Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
->
-> Toshiaki Makita (15):
->   xdp_flow: Add skeleton of XDP based flow offload driver
->   xdp_flow: Add skeleton bpf program for XDP
->   bpf: Add API to get program from id
->   xdp: Export dev_check_xdp and dev_change_xdp
->   xdp_flow: Attach bpf prog to XDP in kernel after UMH loaded program
->   xdp_flow: Prepare flow tables in bpf
->   xdp_flow: Add flow entry insertion/deletion logic in UMH
->   xdp_flow: Add flow handling and basic actions in bpf prog
->   xdp_flow: Implement flow replacement/deletion logic in xdp_flow kmod
->   xdp_flow: Add netdev feature for enabling flow offload to XDP
->   xdp_flow: Implement redirect action
->   xdp_flow: Implement vlan_push action
->   bpf, selftest: Add test for xdp_flow
->   i40e: prefetch xdp->data before running XDP prog
->   bpf, hashtab: Compare keys in long
->
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c  |    1 +
->  include/linux/bpf.h                          |    8 +
->  include/linux/netdev_features.h              |    2 +
->  include/linux/netdevice.h                    |    4 +
->  kernel/bpf/hashtab.c                         |   27 +-
->  kernel/bpf/syscall.c                         |   42 +-
->  net/Kconfig                                  |    1 +
->  net/Makefile                                 |    1 +
->  net/core/dev.c                               |  113 ++-
->  net/core/ethtool.c                           |    1 +
->  net/xdp_flow/.gitignore                      |    1 +
->  net/xdp_flow/Kconfig                         |   16 +
->  net/xdp_flow/Makefile                        |  112 +++
->  net/xdp_flow/msgfmt.h                        |  102 +++
->  net/xdp_flow/umh_bpf.h                       |   34 +
->  net/xdp_flow/xdp_flow.h                      |   28 +
->  net/xdp_flow/xdp_flow_core.c                 |  180 +++++
->  net/xdp_flow/xdp_flow_kern_bpf.c             |  358 +++++++++
->  net/xdp_flow/xdp_flow_kern_bpf_blob.S        |    7 +
->  net/xdp_flow/xdp_flow_kern_mod.c             |  699 +++++++++++++++++
->  net/xdp_flow/xdp_flow_umh.c                  | 1043 ++++++++++++++++++++=
-++++++
->  net/xdp_flow/xdp_flow_umh_blob.S             |    7 +
->  tools/testing/selftests/bpf/Makefile         |    1 +
->  tools/testing/selftests/bpf/test_xdp_flow.sh |  106 +++
->  24 files changed, 2864 insertions(+), 30 deletions(-)
->  create mode 100644 net/xdp_flow/.gitignore
->  create mode 100644 net/xdp_flow/Kconfig
->  create mode 100644 net/xdp_flow/Makefile
->  create mode 100644 net/xdp_flow/msgfmt.h
->  create mode 100644 net/xdp_flow/umh_bpf.h
->  create mode 100644 net/xdp_flow/xdp_flow.h
->  create mode 100644 net/xdp_flow/xdp_flow_core.c
->  create mode 100644 net/xdp_flow/xdp_flow_kern_bpf.c
->  create mode 100644 net/xdp_flow/xdp_flow_kern_bpf_blob.S
->  create mode 100644 net/xdp_flow/xdp_flow_kern_mod.c
->  create mode 100644 net/xdp_flow/xdp_flow_umh.c
->  create mode 100644 net/xdp_flow/xdp_flow_umh_blob.S
->  create mode 100755 tools/testing/selftests/bpf/test_xdp_flow.sh
->
-> --
-> 1.8.3.1
->
+that was received without issues by majordomo@vger.kernel.org. The only
+relevant difference seems to be the missing HELO from
+r3-20.sinamail.sina.com.cn, I have no idea why that would be omitted.
+
+Headers added by MTA delivering this to me:
+
+X-Greylist: Sender passed SPF test, ACL 264 matched, not delayed by milter-=
+greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Mon, 21 Oct 2019 11:08:19 +=
+0000 (UTC)
+X-Greylist: inspected by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.2=
+7]); Mon, 21 Oct 2019 11:08:19 +0000 (UTC) for IP:'202.108.3.20' DOMAIN:'r3=
+-20.sinamail.sina.com.cn' HELO:'r3-20.sinamail.sina.com.cn' FROM:'hdanton@s=
+ina.com' RCPT:''
+X-RedHat-Spam-Score: 0.001  (FREEMAIL_FROM,SPF_HELO_NONE,SPF_PASS) 202.108.=
+3.20 r3-20.sinamail.sina.com.cn 202.108.3.20 r3-20.sinamail.sina.com.cn <hd=
+anton@sina.com>
+
+it even passes SPF. But maybe the missing HELO is a problem for SPF on
+vger.kernel.org?
+
+Checked against http://vger.kernel.org/majordomo-taboos.txt, also no
+matches.
+
+Sorry, I don't have any suggestions other than contacting
+postmaster@vger.kernel.org again -- perhaps from a different address.
+
+> >  net/openvswitch/vport-internal_dev.c | 11 ++++-------
+> >  1 file changed, 4 insertions(+), 7 deletions(-) =20
+>=20
+> And feel free to pick up the diff if they make sense, as you see,
+> they were sent usually without the Signed-off-by tag.
+
+I think this submission should be fine, I added you as From: and kept
+your original Signed-off-by -- thanks for fixing this by the way!
+
+--=20
+Stefano
+
