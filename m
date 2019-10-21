@@ -2,270 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6813DF73D
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 23:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3640FDF757
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 23:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387405AbfJUVEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 17:04:15 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:38721 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728943AbfJUVEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 17:04:15 -0400
-Received: by mail-wr1-f67.google.com with SMTP id v9so4288529wrq.5
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 14:04:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hBEv6QYPF0Jw/Q+VKatlmEgADK+n5RKsMHBvpwrZDdE=;
-        b=HydMKHLmsweHpm+KHAhWFvDGIBeFGiHjVr3pXVl0c/PIYKlc9Ljoltj4OlVt7kH5JF
-         LQ8pfUQ665VMMUpl3sBRRjtqwZ6p/lQ9QZ1ChXkUiYkI3sYRZoDgAeLJ/mjfEVpyKD6O
-         4icXsAEqWzdQ27AvzQwpc6PO65Qiz1wRHYbFl5rmD0UWv+LpZznTGNZmb5YY9pvn2sPw
-         XWrzTdGgTC2NEhFD9qIZwALTraU62odh1kqOwqyojl6jI6MKVvezWX1rIfmji6liF+Kq
-         S9yX4ERvZrYyRokE8S2og6cymsJZFXlyoz7/LNTYbBh6nYQ+tcNT60dg99Pkia767Mqv
-         OHyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hBEv6QYPF0Jw/Q+VKatlmEgADK+n5RKsMHBvpwrZDdE=;
-        b=QRTp7EfcLdpm3KZKnwufB4JY/yAG4Qz1JOmKvnZe9upW1dROlVb5kAY4EOU/BFTY8j
-         bSwqBlYfyfEWO9f/SZglwZwD/ZzUH/ByWJAFWBzYMRAiWFtUu1JT8P4z6sDbdMfQKLjQ
-         GrfVBCKr8/W220HcW+aAE7rofe3lkmgAGyPOfTDfsynMy6T2YTL2xviUMCL7JQ/OCAem
-         9Di6bT5S5bpuItJNxFXmSbZKOvoWWTzSVpjKao0Y/ZFDMDGhm2wCK7HpklEHy23DzzOO
-         WLgWmFlMz7ztXuiGUi54OFo2Wer39VnlD5yRD0zwSemFys0P36+qBRRQRj9UfHKwacWg
-         FYlw==
-X-Gm-Message-State: APjAAAVX1lv5xzJjRbox4wlrY1xiMgdUdqa3MJ8jcHJxQio/LHwnmJko
-        2BC70stW/WRRW0cHzJvCKz9zQEl5frFD6Q==
-X-Google-Smtp-Source: APXvYqzRvSrYG5+T1eGF/7QzHlK0aR6XJvNjZi/GcsOK4C32G+T9MPf67ui3I7kMYk3/7oGG3EXoEA==
-X-Received: by 2002:adf:ebcb:: with SMTP id v11mr218317wrn.24.1571691851409;
-        Mon, 21 Oct 2019 14:04:11 -0700 (PDT)
-Received: from i5wan.lan (214-247-144-85.ftth.glasoperator.nl. [85.144.247.214])
-        by smtp.gmail.com with ESMTPSA id g5sm14309949wmg.12.2019.10.21.14.04.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 14:04:10 -0700 (PDT)
-From:   Iwan R Timmer <irtimmer@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, Iwan R Timmer <irtimmer@gmail.com>
-Subject: [PATCH net-next v2 2/2] net: dsa: mv88e6xxx: Add support for port mirroring
-Date:   Mon, 21 Oct 2019 23:01:43 +0200
-Message-Id: <20191021210143.119426-3-irtimmer@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191021210143.119426-1-irtimmer@gmail.com>
-References: <20191021210143.119426-1-irtimmer@gmail.com>
+        id S1730052AbfJUVLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 17:11:47 -0400
+Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:57136 "EHLO
+        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727264AbfJUVLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 17:11:46 -0400
+Received: from pps.filterd (m0122333.ppops.net [127.0.0.1])
+        by mx0a-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9LL7CQ4023234;
+        Mon, 21 Oct 2019 22:11:40 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=TI0LNqtK1VbK0q87bAcdbq3maO2d0zkQHSKfV/NIJBU=;
+ b=B1DHmt87PRosyxgd3pteTUMIX3JmrcVKZdxeTrUd3qeNAvhK28u9jSSatZrOU+z19U4/
+ htZBSx4QwYVWI9CwAVyhqjGWRuOGOyglB/jSNhkmhlQ92UOjItSR4nJsogS1jhRWPfW5
+ VEghNHoPxh2uvhdX+lKleuWqTrWx2zt4aFM0WvRhTfbTAb1RT+HCe683V84jBmMvurNd
+ wXbhZiq89QANTz6fZrbcYr6/kEUCCDJqwnnBp+/9Tx9TYd8YAKqWfYUnQwezJXl5iB+8
+ x17KPhbcLB3plWVPq2wIZbnyGbOoSJ9pEUJ0zFY822eTKwLypvG7bDg9BqkcaLokB42t wA== 
+Received: from prod-mail-ppoint7 (prod-mail-ppoint7.akamai.com [96.6.114.121] (may be forged))
+        by mx0a-00190b01.pphosted.com with ESMTP id 2vqsr9m6yh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Oct 2019 22:11:40 +0100
+Received: from pps.filterd (prod-mail-ppoint7.akamai.com [127.0.0.1])
+        by prod-mail-ppoint7.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x9LL2Zbo018986;
+        Mon, 21 Oct 2019 17:11:39 -0400
+Received: from prod-mail-relay14.akamai.com ([172.27.17.39])
+        by prod-mail-ppoint7.akamai.com with ESMTP id 2vqwu1p9dq-1;
+        Mon, 21 Oct 2019 17:11:39 -0400
+Received: from [172.29.170.83] (bos-lpjec.kendall.corp.akamai.com [172.29.170.83])
+        by prod-mail-relay14.akamai.com (Postfix) with ESMTP id E07E0810D5;
+        Mon, 21 Oct 2019 21:11:38 +0000 (GMT)
+Subject: Re: [net-next] tcp: add TCP_INFO status for failed client TFO
+To:     Eric Dumazet <edumazet@google.com>,
+        Christoph Paasch <cpaasch@apple.com>
+Cc:     Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>
+References: <1571425340-7082-1-git-send-email-jbaron@akamai.com>
+ <CADVnQymUMStN=oReEXGFT24NTUfMdZq_khcjZBTaV5=qW0x8_Q@mail.gmail.com>
+ <CAK6E8=et_dMeie07-PHSdVO1i44bVLHcOVh+AMmWQqDpqsuGXQ@mail.gmail.com>
+ <bd51b146-52b8-c56b-8efe-0e0cb73ee6c4@akamai.com>
+ <20191021195150.GA7514@MacBook-Pro-64.local>
+ <CANn89iJEYWVkS5bw1XtnW7NUP-WjZP1EY4Wzgs9u-VYyy0u-_Q@mail.gmail.com>
+From:   Jason Baron <jbaron@akamai.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=jbaron@akamai.com; prefer-encrypt=mutual; keydata=
+ xsFNBFnyIJMBEADamFSO/WCelO/HZTSNbJ1YU9uoEUwmypV2TvyrTrXULcAlH1sXVHS3pNdR
+ I/koZ1V7Ruew5HJC4K9Z5Fuw/RHYWcnQz2X+dSL6rX3BwRZEngjA4r/GDi0EqIdQeQQWCAgT
+ VLWnIenNgmEDCoFQjFny5NMNL+i8SA6hPPRdNjxDowDhbFnkuVUBp1DBqPjHpXMzf3UYsZZx
+ rxNY5YKFNLCpQb1cZNsR2KXZYDKUVALN3jvjPYReWkqRptOSQnvfErikwXRgCTasWtowZ4cu
+ hJFSM5Asr/WN9Wy6oPYObI4yw+KiiWxiAQrfiQVe7fwznStaYxZ2gZmlSPG/Y2/PyoCWYbNZ
+ mJ/7TyED5MTt22R7dqcmrvko0LIpctZqHBrWnLTBtFXZPSne49qGbjzzHywZ0OqZy9nqdUFA
+ ZH+DALipwVFnErjEjFFRiwCWdBNpIgRrHd2bomlyB5ZPiavoHprgsV5ZJNal6fYvvgCik77u
+ 6QgE4MWfhf3i9A8Dtyf8EKQ62AXQt4DQ0BRwhcOW5qEXIcKj33YplyHX2rdOrD8J07graX2Q
+ 2VsRedNiRnOgcTx5Zl3KARHSHEozpHqh7SsthoP2yVo4A3G2DYOwirLcYSCwcrHe9pUEDhWF
+ bxdyyESSm/ysAVjvENsdcreWJqafZTlfdOCE+S5fvC7BGgZu7QARAQABzR9KYXNvbiBCYXJv
+ biA8amJhcm9uQGFrYW1haS5jb20+wsF+BBMBAgAoBQJZ8iCTAhsDBQkJZgGABgsJCAcDAgYV
+ CAIJCgsEFgIDAQIeAQIXgAAKCRC4s7mct4u0M9E0EADBxyL30W9HnVs3x7umqUbl+uBqbBIS
+ GIvRdMDIJXX+EEA6c82ElV2cCOS7dvE3ssG1jRR7g3omW7qEeLdy/iQiJ/qGNdcf0JWHYpmS
+ ThZP3etrl5n7FwLm+51GPqD0046HUdoVshRs10qERDo+qnvMtTdXsfk8uoQ5lyTSvgX4s1H1
+ ppN1BfkG10epsAtjOJJlBoV9e92vnVRIUTnDeTVXfK11+hT5hjBxxs7uS46wVbwPuPjMlbSa
+ ifLnt7Jz590rtzkeGrUoM5SKRL4DVZYNoAVFp/ik1fe53Wr5GJZEgDC3SNGS/u+IEzEGCytj
+ gejvv6KDs3KcTVSp9oJ4EIZRmX6amG3dksXa4W2GEQJfPfV5+/FR8IOg42pz9RpcET32AL1n
+ GxWzY4FokZB0G6eJ4h53DNx39/zaGX1i0cH+EkyZpfgvFlBWkS58JRFrgY25qhPZiySRLe0R
+ TkUcQdqdK77XDJN5zmUP5xJgF488dGKy58DcTmLoaBTwuCnX2OF+xFS4bCHJy93CluyudOKs
+ e4CUCWaZ2SsrMRuAepypdnuYf3DjP4DpEwBeLznqih4hMv5/4E/jMy1ZMdT+Q8Qz/9pjEuVF
+ Yz2AXF83Fqi45ILNlwRjCjdmG9oJRJ+Yusn3A8EbCtsi2g443dKBzhFcmdA28m6MN9RPNAVS
+ ucz3Oc7BTQRZ8iCTARAA2uvxdOFjeuOIpayvoMDFJ0v94y4xYdYGdtiaqnrv01eOac8msBKy
+ 4WRNQ2vZeoilcrPxLf2eRAfsA4dx8Q8kOPvVqDc8UX6ttlHcnwxkH2X4XpJJliA6jx29kBOc
+ oQOeL9R8c3CWL36dYbosZZwHwY5Jjs7R6TJHx1FlF9mOGIPxIx3B5SuJLsm+/WPZW1td7hS0
+ Alt4Yp8XWW8a/X765g3OikdmvnJryTo1s7bojmwBCtu1TvT0NrX5AJId4fELlCTFSjr+J3Up
+ MnmkTSyovPkj8KcvBU1JWVvMnkieqrhHOmf2qdNMm61LGNG8VZQBVDMRg2szB79p54DyD+qb
+ gTi8yb0MFqNvXGRnU/TZmLlxblHA4YLMAuLlJ3Y8Qlw5fJ7F2U1Xh6Z6m6YCajtsIF1VkUhI
+ G2dSAigYpe6wU71Faq1KHp9C9VsxlnSR1rc4JOdj9pMoppzkjCphyX3eV9eRcfm4TItTNTGJ
+ 7DAUQHYS3BVy1fwyuSDIJU/Jrg7WWCEzZkS4sNcBz0/GajYFM7Swybn/VTLtCiioThw4OQIw
+ 9Afb+3sB9WR86B7N7sSUTvUArknkNDFefTJJLMzEboRMJBWzpR5OAyLxCWwVSQtPp0IdiIC2
+ KGF3QXccv/Q9UkI38mWvkilr3EWAOJnPgGCM/521axcyWqXsqNtIxpUAEQEAAcLBZQQYAQIA
+ DwUCWfIgkwIbDAUJCWYBgAAKCRC4s7mct4u0M+AsD/47Q9Gi+HmLyqmaaLBzuI3mmU4vDn+f
+ 50A/U9GSVTU/sAN83i1knpv1lmfG2DgjLXslU+NUnzwFMLI3QsXD3Xx/hmdGQnZi9oNpTMVp
+ tG5hE6EBPsT0BM6NGbghBsymc827LhfYICiahOR/iv2yv6nucKGBM51C3A15P8JgfJcngEnM
+ fCKRuQKWbRDPC9dEK9EBglUYoNPVNL7AWJWKAbVQyCCsJzLBgh9jIfmZ9GClu8Sxi0vu/PpA
+ DSDSJuc9wk+m5mczzzwd4Y6ly9+iyk/CLNtqjT4sRMMV0TCl8ichxlrdt9rqltk22HXRF7ng
+ txomp7T/zRJAqhH/EXWI6CXJPp4wpMUjEUd1B2+s1xKypq//tChF+HfUU4zXUyEXY8nHl6lk
+ hFjW/geTcf6+i6mKaxGY4oxuIjF1s2Ak4J3viSeYfTDBH/fgUzOGI5siBhHWvtVzhQKHfOxg
+ i8t1q09MJY6je8l8DLEIWTHXXDGnk+ndPG3foBucukRqoTv6AOY49zjrt6r++sujjkE4ax8i
+ ClKvS0n+XyZUpHFwvwjSKc+UV1Q22BxyH4jRd1paCrYYurjNG5guGcDDa51jIz69rj6Q/4S9
+ Pizgg49wQXuci1kcC1YKjV2nqPC4ybeT6z/EuYTGPETKaegxN46vRVoE2RXwlVk+vmadVJlG
+ JeQ7iQ==
+Message-ID: <0841fe66-15a7-418f-4b57-4af6e2d45922@akamai.com>
+Date:   Mon, 21 Oct 2019 17:10:43 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <CANn89iJEYWVkS5bw1XtnW7NUP-WjZP1EY4Wzgs9u-VYyy0u-_Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-21_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910210201
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-21_05:2019-10-21,2019-10-21 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 impostorscore=0
+ adultscore=0 phishscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 lowpriorityscore=0 clxscore=1015 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1908290000
+ definitions=main-1910210202
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for configuring port mirroring through the cls_matchall
-classifier. We do a full ingress and/or egress capture towards a
-capture port. It allows setting a different capture port for ingress
-and egress traffic.
 
-It keeps track of the mirrored ports and the destination ports to
-prevent changes to the capture port while other ports are being
-mirrored.
 
-Signed-off-by: Iwan R Timmer <irtimmer@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c    | 70 +++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/chip.h    |  6 +++
- drivers/net/dsa/mv88e6xxx/global1.c | 11 ++++-
- drivers/net/dsa/mv88e6xxx/port.c    | 29 ++++++++++++
- drivers/net/dsa/mv88e6xxx/port.h    |  2 +
- 5 files changed, 117 insertions(+), 1 deletion(-)
+On 10/21/19 4:36 PM, Eric Dumazet wrote:
+> On Mon, Oct 21, 2019 at 12:53 PM Christoph Paasch <cpaasch@apple.com> wrote:
+>>
+> 
+>> Actually, longterm I hope we would be able to get rid of the
+>> blackhole-detection and fallback heuristics. In a far distant future where
+>> these middleboxes have been weeded out ;-)
+>>
+>> So, do we really want to eternalize this as part of the API in tcp_info ?
+>>
+> 
+> A getsockopt() option won't be available for netlink diag (ss command).
+> 
+> So it all depends on plans to use this FASTOPEN information ?
+> 
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index e9735346838d..14e71bc98513 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -4921,6 +4921,74 @@ static int mv88e6xxx_port_mdb_del(struct dsa_switch *ds, int port,
- 	return err;
- }
- 
-+static int mv88e6xxx_port_mirror_add(struct dsa_switch *ds, int port,
-+				     struct dsa_mall_mirror_tc_entry *mirror,
-+				     bool ingress)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	bool other_mirrors = false;
-+	int i;
-+	int err;
-+
-+	if (!chip->info->ops->set_egress_port)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&chip->reg_lock);
-+	if ((ingress ? chip->ingress_dest_port : chip->egress_dest_port) !=
-+	    mirror->to_local_port) {
-+		for (i = 0; i < mv88e6xxx_num_ports(chip); i++)
-+			other_mirrors |= ingress ?
-+					 chip->ports[i].mirror_ingress :
-+					 chip->ports[i].mirror_egress;
-+
-+		/* Can't change egress port when other mirror is active */
-+		if (other_mirrors) {
-+			err = -EBUSY;
-+			goto out;
-+		}
-+
-+		err = chip->info->ops->set_egress_port(chip,
-+						       ingress,
-+						       mirror->to_local_port);
-+		if (err)
-+			goto out;
-+	}
-+
-+	err = mv88e6xxx_port_set_mirror(chip, port, ingress, true);
-+out:
-+	mutex_unlock(&chip->reg_lock);
-+
-+	return err;
-+}
-+
-+static void mv88e6xxx_port_mirror_del(struct dsa_switch *ds, int port,
-+				      struct dsa_mall_mirror_tc_entry *mirror)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	bool other_mirrors = false;
-+	int i;
-+
-+	mutex_lock(&chip->reg_lock);
-+	if (mv88e6xxx_port_set_mirror(chip, port, mirror->ingress, false))
-+		dev_err(ds->dev, "p%d: failed to disable mirroring\n", port);
-+
-+	for (i = 0; i < mv88e6xxx_num_ports(chip); i++)
-+		other_mirrors |= mirror->ingress ?
-+				 chip->ports[i].mirror_ingress :
-+				 chip->ports[i].mirror_egress;
-+
-+	/* Reset egress port when no other mirror is active */
-+	if (!other_mirrors) {
-+		if (chip->info->ops->set_egress_port(chip,
-+						     mirror->ingress,
-+						     dsa_upstream_port(ds,
-+								       port)));
-+			dev_err(ds->dev, "failed to set egress port\n");
-+	}
-+
-+	mutex_unlock(&chip->reg_lock);
-+}
-+
- static int mv88e6xxx_port_egress_floods(struct dsa_switch *ds, int port,
- 					 bool unicast, bool multicast)
- {
-@@ -4975,6 +5043,8 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.port_mdb_prepare       = mv88e6xxx_port_mdb_prepare,
- 	.port_mdb_add           = mv88e6xxx_port_mdb_add,
- 	.port_mdb_del           = mv88e6xxx_port_mdb_del,
-+	.port_mirror_add	= mv88e6xxx_port_mirror_add,
-+	.port_mirror_del	= mv88e6xxx_port_mirror_del,
- 	.crosschip_bridge_join	= mv88e6xxx_crosschip_bridge_join,
- 	.crosschip_bridge_leave	= mv88e6xxx_crosschip_bridge_leave,
- 	.port_hwtstamp_set	= mv88e6xxx_port_hwtstamp_set,
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 42ce3109ebc9..e33a1426dac3 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -228,6 +228,8 @@ struct mv88e6xxx_port {
- 	u64 vtu_miss_violation;
- 	u8 cmode;
- 	unsigned int serdes_irq;
-+	bool mirror_ingress;
-+	bool mirror_egress;
- };
- 
- struct mv88e6xxx_chip {
-@@ -310,6 +312,10 @@ struct mv88e6xxx_chip {
- 	u16 evcap_config;
- 	u16 enable_count;
- 
-+	/* Current ingress and egress monitor ports */
-+	int egress_dest_port;
-+	int ingress_dest_port;
-+
- 	/* Per-port timestamping resources. */
- 	struct mv88e6xxx_port_hwtstamp port_hwtstamp[DSA_MAX_PORTS];
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
-index 35b9610cbe73..ecef80d9d88f 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1.c
-@@ -280,7 +280,16 @@ int mv88e6095_g1_set_egress_port(struct mv88e6xxx_chip *chip, int port,
- 	       __bf_shf(MV88E6185_G1_MONITOR_CTL_INGRESS_DEST_MASK) :
- 	       __bf_shf(MV88E6185_G1_MONITOR_CTL_EGRESS_DEST_MASK));
- 
--	return mv88e6xxx_g1_write(chip, MV88E6185_G1_MONITOR_CTL, reg);
-+	err = mv88e6xxx_g1_write(chip, MV88E6185_G1_MONITOR_CTL, reg);
-+	if (err)
-+		return err;
-+
-+	if (ingress)
-+		chip->ingress_dest_port = port;
-+	else
-+		chip->egress_dest_port = port;
-+
-+	return 0;
- }
- 
- /* Older generations also call this the ARP destination. It has been
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 15ef81654b67..3e7aae56f27a 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -1181,6 +1181,35 @@ int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
- 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, reg);
- }
- 
-+int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
-+			      bool ingress, bool mirror)
-+{
-+	u16 reg;
-+	u16 bit;
-+	int err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL2, &reg);
-+	if (err)
-+		return err;
-+
-+	bit = ingress ? MV88E6XXX_PORT_CTL2_INGRESS_MONITOR :
-+			MV88E6XXX_PORT_CTL2_EGRESS_MONITOR;
-+	reg &= ~bit;
-+
-+	if (mirror)
-+		reg |= bit;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, reg);
-+	if (!err) {
-+		if (ingress)
-+			chip->ports[port].mirror_ingress = mirror;
-+		else
-+			chip->ports[port].mirror_egress = mirror;
-+	}
-+
-+	return err;
-+}
-+
- int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
- 				  u16 mode)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 03a480cd71b9..e9d7b66fd49e 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -368,6 +368,8 @@ int mv88e6352_port_link_state(struct mv88e6xxx_chip *chip, int port,
- int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port);
- int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
- 				     int upstream_port);
-+int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
-+			      bool ingress, bool mirror);
- 
- int mv88e6xxx_port_disable_learn_limit(struct mv88e6xxx_chip *chip, int port);
- int mv88e6xxx_port_disable_pri_override(struct mv88e6xxx_chip *chip, int port);
--- 
-2.23.0
+The original proposal I had 4 states of interest:
 
+First, we are interested in knowing when a socket has TFO set but
+actually requires a retransmit of a non-TFO syn to become established.
+In this case, we'd be better off not using TFO.
+
+A second case is when the server immediately rejects the DATA and just
+acks the syn (but not the data). Again in that case, we don't want to be
+sending syn+data.
+
+The third case was whether or not we sent a cookie. Perhaps, the server
+doesn't have TFO enabled in which case, it really doesn't make make
+sense to enable TFO in the first place. Or if one also controls the
+server its helpful in understanding if the server is mis-configured. So
+that was the motivation I had for the original four states that I
+proposed (final state was a catch-all state).
+
+Yuchung suggested dividing the 3rd case into 2 for - no cookie sent
+because of blackhole or no cookie sent because its not in cache. And
+then dropping the second state because we already have the
+TCPI_OPT_SYN_DATA bit. However, the TCPI_OPT_SYN_DATA may not be set
+because we may fallback in tcp_send_syn_data() due to send failure. So
+I'm inclined to say that the second state is valuable. And since
+blackhole is already a global thing via MIB, I didn't see a strong need
+for it. But it sounded like Yuchung had an interest in it, and I'd
+obviously like a set of states that is generally useful.
+
+Thanks,
+
+-Jason
