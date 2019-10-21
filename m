@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D5BDDF713
+	by mail.lfdr.de (Postfix) with ESMTP id 1E17FDF712
 	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:52:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730517AbfJUUv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 16:51:57 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:45413 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730479AbfJUUvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:51:52 -0400
-Received: by mail-qt1-f196.google.com with SMTP id c21so23283665qtj.12;
-        Mon, 21 Oct 2019 13:51:52 -0700 (PDT)
+        id S1730501AbfJUUv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 16:51:56 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35224 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730494AbfJUUvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:51:54 -0400
+Received: by mail-qt1-f194.google.com with SMTP id m15so23396432qtq.2;
+        Mon, 21 Oct 2019 13:51:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=95u7W4dCH8VRKrE2WocVBnfZD85GAOe+WTprB4izR4Q=;
-        b=rFjFQmsj/K9JUmV1Ip+/mX7lyFMaK9S3vjySnnl8+B0buvPqovA/KBsqGlCbit2wnK
-         slplXz0QR3ACQ+EfQNmbZfMC0NBZYq4j/oBnDOkPJtQwz0F7mtqNIeGejtXe363VCNHZ
-         kqDjNwF9NP8zItAWG54RHsPiJm8ZgopmixzoN9US7mB9FmM5o+VRe+g3ihWbOrgHkirI
-         hovh+EBLO2ud9TxLkaDPAlcu+tdPWb/PwLdmfD23ZCkNrFeupMTX9cxp0pRSPh4g/o7j
-         k7PjCNmngN7fNZeykrc2MZMvqF1DVLB2tTMxaFWtGL8yRxNVS1m3CqGjIdFk41em3D7r
-         ZQ8g==
+        bh=oSeB99tFWrSsr858sLtErorntCjYJIilkerqAgdpByo=;
+        b=KOdh9YDGlIxLKlwrwjHEzIwis/8g92PV/BE52JCKYFqEkK+Y48TP35JaJp7juAZrvZ
+         kba4xzHaPYFpup9+5XQ8DYxyhiiEd+oboNPna18+B2ol3LXvHUeeg8S4zA7Y+PTHTLOw
+         7yD5z3ItiaxoTzxYoS96BL9/HfMIJIR7DAzxgG6+Nlgm53rEQ1sDSJRT20oWJnQ4WI9Q
+         xs6qdTGugM3TtqbOy6W417fc2mRG5S7NOecOtOPjsDkapsM0JgE+39OlbIZ2jphAJ647
+         em1Z1FsMnMjxENW3K3Gcuny+ohotTwFjFtYBKb2JoF6R/oQ5pJ34Hy8c78lZ+T+VzLYj
+         MZKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=95u7W4dCH8VRKrE2WocVBnfZD85GAOe+WTprB4izR4Q=;
-        b=jzHdiG6z/LfkpFCsvwBnoFg3Gy1j3mFVV7ZJhMKLWmLCjZHSIcaRiuthzigIlVPas1
-         6utG67Li27BAQqha2tVetqFPOKinxxs3DNHTCEEn1cpzcsgCiK29fIK+h68fTJXekyT6
-         HDyr7peES3fcs8eQT6Su8Jcql2C3NGkO0bWw6Wc19MCYs+wWmfFVzJ9HY+MB0AFu5kBt
-         bCGsfBEdXXh3ph69AV80bPP+SsZuCKr2uNXfbYsfGkSPjVsyGC9Cxbq2KUXCWYP7OxNF
-         X8vo5MQashcKs7F0/7H/9eNWlo+pGBkiXV4J9vuxaR3llPCA58/5EiCN4faQ1CRkvLkg
-         Qytg==
-X-Gm-Message-State: APjAAAVK30+txxQjDvNpJfvw4q0j6mXC7gCOERj55L+WW27SpIqHkVwr
-        qeyBgVzEVnBBszOwm3R9T8I=
-X-Google-Smtp-Source: APXvYqxAOGBIpTMYVoPuonKVtvSWnGgJeJSFFkXAosdMS0XAePN4PleMe3NhVtPzf0HstCbbQ1eZEQ==
-X-Received: by 2002:ac8:3408:: with SMTP id u8mr26697057qtb.380.1571691111709;
-        Mon, 21 Oct 2019 13:51:51 -0700 (PDT)
+        bh=oSeB99tFWrSsr858sLtErorntCjYJIilkerqAgdpByo=;
+        b=LYLfYRPzK4sGPL8RnKiPVTI2lldEecfOA9wiCTKq1z2pWLWu02UmOUQRzEqAZ4Ezke
+         cmiLcgElqng6IuVQbbQNLxHYch6jqC0nP/Ep0M5vHxJ3ko7maKaDhZxJnujWpaAZ2wGg
+         cs2zk3X+nkZw/VEue2SHGEkulP6lCp/JhjpwqVAr+CdNsXgRy4wMQIPxs1D1E9C7/j2Z
+         sqoPtO8V9Tb4tYLGEDRA1kS32KdlKtYUC1mKuYu1PdKvPCteCL0eI4aFi8p50AHM5IFQ
+         QUEsFMyjbpbH5lvfaobAq2sA3Em6+AUc2idd2+e4LEeOFEuFDPH+h/ZL5326XKvEENXo
+         hjkw==
+X-Gm-Message-State: APjAAAXZucVPHXdCbqsfdOD4jWKfbVY761OCPsYAdw/FRmmahd0VEjHH
+        k/VNIA76csmfVaQs+zGiYEn8Jrf0
+X-Google-Smtp-Source: APXvYqwZiEckxAYx6BtHCcUSkfV2xWUc7O64jrz4E/bde9ZPekJpT8bgi/75ebalkVMuAm2ydLtasQ==
+X-Received: by 2002:ac8:23e8:: with SMTP id r37mr27024688qtr.365.1571691113112;
+        Mon, 21 Oct 2019 13:51:53 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id x19sm8036460qkf.26.2019.10.21.13.51.50
+        by smtp.gmail.com with ESMTPSA id h3sm430795qte.62.2019.10.21.13.51.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 13:51:51 -0700 (PDT)
+        Mon, 21 Oct 2019 13:51:52 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 10/16] net: dsa: use ports list to setup default CPU port
-Date:   Mon, 21 Oct 2019 16:51:24 -0400
-Message-Id: <20191021205130.304149-11-vivien.didelot@gmail.com>
+Subject: [PATCH net-next v2 11/16] net: dsa: mv88e6xxx: silently skip PVT ops
+Date:   Mon, 21 Oct 2019 16:51:25 -0400
+Message-Id: <20191021205130.304149-12-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191021205130.304149-1-vivien.didelot@gmail.com>
 References: <20191021205130.304149-1-vivien.didelot@gmail.com>
@@ -63,91 +63,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new ports list instead of iterating over switches and their
-ports when setting up the default CPU port. Unassign it on teardown.
-
-Now that we can iterate over multiple CPU ports, remove dst->cpu_dp.
-
-At the same time, provide a better error message for CPU-less tree.
+Since mv88e6xxx_pvt_map is a static helper, no need to return
+-EOPNOTSUPP if the chip has no PVT, simply silently skip the operation.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/net/dsa.h |  5 -----
- net/dsa/dsa2.c    | 33 ++++++++++++---------------------
- 2 files changed, 12 insertions(+), 26 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index bd08bdee8341..f572134eb5de 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -120,11 +120,6 @@ struct dsa_switch_tree {
- 	 */
- 	struct dsa_platform_data	*pd;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index d67deec77452..510ccdc2d03c 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1253,7 +1253,7 @@ static int mv88e6xxx_pvt_map(struct mv88e6xxx_chip *chip, int dev, int port)
+ 	u16 pvlan = 0;
  
--	/*
--	 * The switch port to which the CPU is attached.
--	 */
--	struct dsa_port		*cpu_dp;
--
- 	/* List of switch ports */
- 	struct list_head ports;
+ 	if (!mv88e6xxx_has_pvt(chip))
+-		return -EOPNOTSUPP;
++		return 0;
  
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 80191c7702a9..bf8b4e0fcb4f 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -197,38 +197,29 @@ static struct dsa_port *dsa_tree_find_first_cpu(struct dsa_switch_tree *dst)
- 
- static int dsa_tree_setup_default_cpu(struct dsa_switch_tree *dst)
- {
--	struct dsa_switch *ds;
--	struct dsa_port *dp;
--	int device, port;
-+	struct dsa_port *cpu_dp, *dp;
- 
--	/* DSA currently only supports a single CPU port */
--	dst->cpu_dp = dsa_tree_find_first_cpu(dst);
--	if (!dst->cpu_dp) {
--		pr_warn("Tree has no master device\n");
-+	cpu_dp = dsa_tree_find_first_cpu(dst);
-+	if (!cpu_dp) {
-+		pr_err("DSA: tree %d has no CPU port\n", dst->index);
- 		return -EINVAL;
+ 	/* Skip the local source device, which uses in-chip port VLAN */
+ 	if (dev != chip->ds->index)
+@@ -2049,9 +2049,6 @@ static int mv88e6xxx_bridge_map(struct mv88e6xxx_chip *chip,
+ 		}
  	}
  
- 	/* Assign the default CPU port to all ports of the fabric */
--	for (device = 0; device < DSA_MAX_SWITCHES; device++) {
--		ds = dst->ds[device];
--		if (!ds)
--			continue;
+-	if (!mv88e6xxx_has_pvt(chip))
+-		return 0;
 -
--		for (port = 0; port < ds->num_ports; port++) {
--			dp = &ds->ports[port];
+ 	/* Remap the Port VLAN of each cross-chip bridge group member */
+ 	for (dev = 0; dev < DSA_MAX_SWITCHES; ++dev) {
+ 		ds = chip->ds->dst->ds[dev];
+@@ -2101,9 +2098,6 @@ static int mv88e6xxx_crosschip_bridge_join(struct dsa_switch *ds, int dev,
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+ 
+-	if (!mv88e6xxx_has_pvt(chip))
+-		return 0;
 -
--			if (dsa_port_is_user(dp) || dsa_port_is_dsa(dp))
--				dp->cpu_dp = dst->cpu_dp;
--		}
--	}
-+	list_for_each_entry(dp, &dst->ports, list)
-+		if (dsa_port_is_user(dp) || dsa_port_is_dsa(dp))
-+			dp->cpu_dp = cpu_dp;
- 
- 	return 0;
- }
- 
- static void dsa_tree_teardown_default_cpu(struct dsa_switch_tree *dst)
+ 	mv88e6xxx_reg_lock(chip);
+ 	err = mv88e6xxx_pvt_map(chip, dev, port);
+ 	mv88e6xxx_reg_unlock(chip);
+@@ -2116,9 +2110,6 @@ static void mv88e6xxx_crosschip_bridge_leave(struct dsa_switch *ds, int dev,
  {
--	/* DSA currently only supports a single CPU port */
--	dst->cpu_dp = NULL;
-+	struct dsa_port *dp;
-+
-+	list_for_each_entry(dp, &dst->ports, list)
-+		if (dsa_port_is_user(dp) || dsa_port_is_dsa(dp))
-+			dp->cpu_dp = NULL;
- }
+ 	struct mv88e6xxx_chip *chip = ds->priv;
  
- static int dsa_port_setup(struct dsa_port *dp)
+-	if (!mv88e6xxx_has_pvt(chip))
+-		return;
+-
+ 	mv88e6xxx_reg_lock(chip);
+ 	if (mv88e6xxx_pvt_map(chip, dev, port))
+ 		dev_err(ds->dev, "failed to remap cross-chip Port VLAN\n");
 -- 
 2.23.0
 
