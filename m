@@ -2,118 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54697DF791
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 23:43:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 660B7DF796
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 23:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730429AbfJUVni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 17:43:38 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:42046 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730387AbfJUVng (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 17:43:36 -0400
-Received: by mail-lj1-f193.google.com with SMTP id u4so810290ljj.9
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 14:43:33 -0700 (PDT)
+        id S1730361AbfJUVpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 17:45:17 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:41678 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729388AbfJUVpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 17:45:17 -0400
+Received: by mail-pl1-f195.google.com with SMTP id t10so7269906plr.8
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 14:45:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3yz2dDg8kGKHe/KdmAKuB5h5HlI7viBlMhf6Er7BmAc=;
-        b=M6jMXJhStx2J2smoc8sUROKqUvSiOe5Uxj5ERKAEVzwJYa5cP7pIzHeAKS7YO9gLc3
-         MaqfYdj0WEeUXTOpSlmDKllBFzoTaJ6P668rEXvy94XLvzpjGE2cBhhQNcEk4Kdyw0Mt
-         Kg0M+iRdEMz8wYYxs7LWbQtC8vkFING0gIIVNLfSu8fG7ZMZScQhvsSVpFENGRf6RbaX
-         cR2F7O+EjUPP3v7Q8Hgndvid1seaw0TjAQHGIuB2FoYVwHLg8yWM0vZNPM+pgPbEFQdP
-         0l3L+5cxJqH5JpmWETeZzb8mkstpAWFkBEQ8QVSR4oOZ5cVX30LKSvSFOvgN6e52scUf
-         +Qqw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=sM7bGGhshxU6DSzLqCJMwqozRLpxzUDFA4cU/gywtcg=;
+        b=AwadvmmN8bqrWmhVWdCkkQH/aLrI7IYqy4IyPraJIxYKOcv38JjAOlFrpPkZYosiHH
+         tzYi8pm0pc9EVWiSS+enwkDHIPddJyiXdHxbR9u4dew/kfBGvpcFmNeqccpUq9GZxiJL
+         c1OgvqVHBHUnUXDBGDAPkxaRF/U0KXF1nsjrRAg7QTe//zGC7XbemCOnVZU1CKzsNd99
+         aLZfBLAj6FgwUBmzhhyYvbVCxOOZVe4lKXpqbf5o0ZzHp6bBUzt2vD7m4YdaIivnQhR+
+         d7HzWzg+mND+IDG/VgHbKUK1of7uanJHReX9ocS+zV1zC9rYuS9334eZnOi+Ffgn9HIA
+         +zJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3yz2dDg8kGKHe/KdmAKuB5h5HlI7viBlMhf6Er7BmAc=;
-        b=cYnIaLbXXtGXQIK4QYSBL4yiWg8Iv3lo38IaYutnBB1UNiZHn+4vtdy6KUvUbHbOuk
-         CAhdIR6EyKPRbAap2MqYuL9VKuWtaTJhU5JHTeHBmpVbdisWskfCuEDrtcoRZ5VnXC8m
-         1A7Vf2fXwOneuXIg04fNsNJtwSXXIsTvjsqo19ts3+YHlJzZyKBDmKFvF5JVeplRCudk
-         a8Jdt0Bb8504PrFkTj2jOsRhpFM4qHzE6B8c4dRBCaAnSAQyxDR1H/oJ2O6MwJSauCQ8
-         MoZRlkvunKUG4UPZXKecYbq/e5oUTF4MqSSDXOjI2WwxQCIqDAvb3C3yOJyYNJoyy2vl
-         w8PQ==
-X-Gm-Message-State: APjAAAUGyy/KbHGFAuiMWZMvPya/af8LadAsBjJYH6y4p3LJVEJmpiS5
-        quOyRE407K5XMrt7wFM2vAU6CCRjkoiC5rcoctfT
-X-Google-Smtp-Source: APXvYqxUgm3nz/WJuxpRqi/1IdOlAjmH3+7y1lZ1RFxqYiIzBI4/RatsbfN1YCcMEpwspzpdbR1CFm/s2iPvH9CTx4Y=
-X-Received: by 2002:a2e:1b52:: with SMTP id b79mr16459510ljb.225.1571694212743;
- Mon, 21 Oct 2019 14:43:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=sM7bGGhshxU6DSzLqCJMwqozRLpxzUDFA4cU/gywtcg=;
+        b=ouaCeAw1JM/llEfNyvnVdAobK2hKriDo7kbYLUNBXdYSCj5xCavPdb6XfpF2oowtID
+         icFJFxVkiH/A8kJURk1oO6eerN/F7vEYO20CzXQyJnWLWocj4aWzzXT1fhYaWpej/jgI
+         wkb+MfJKvrMH9FJzWBstTNC8s1rgVEbT/2goJK2kPFtpR5gWrj0kU6izU44MpV2uIIGj
+         E1oEaxLiccEwwayGitN3NxmGRmGw+zjMGITb6gsG7QOOSv2kbNbAfzW0gTDTW88cArsI
+         HBGG6rN0Lfs8TzflGokzvoDyDN+3CEsAxXwZmRHD/ZDkNS3nW3j3b08T+BuNZcLqtofU
+         T58Q==
+X-Gm-Message-State: APjAAAXLM6MuPyIky9eA9QJKMP/zWm5dLbETlysBOx7bT9F0NDCcJ7lU
+        au8Av3pRUxgL5E5FZhuozus=
+X-Google-Smtp-Source: APXvYqwJV+RM7Q76JxkaNeOv6RByvlV2xet/3hMcMyXHmpZ8e4oJVhiLKBAwVB0WWiPTmCjzK+/LvQ==
+X-Received: by 2002:a17:902:8d89:: with SMTP id v9mr130725plo.247.1571694316766;
+        Mon, 21 Oct 2019 14:45:16 -0700 (PDT)
+Received: from [172.20.54.239] ([2620:10d:c090:200::3:102c])
+        by smtp.gmail.com with ESMTPSA id l23sm15633996pjy.12.2019.10.21.14.45.15
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Oct 2019 14:45:16 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Saeed Mahameed" <saeedm@mellanox.com>
+Cc:     kernel-team@fb.com, ilias.apalodimas@linaro.org,
+        "Tariq Toukan" <tariqt@mellanox.com>, brouer@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 00/10 net-next] page_pool cleanups
+Date:   Mon, 21 Oct 2019 14:45:15 -0700
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <97F9C936-576A-4051-B435-4A901FFD1575@gmail.com>
+In-Reply-To: <a82be17dbaa84d4868d6825967b8a87afa3551ba.camel@mellanox.com>
+References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
+ <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
+ <A6D1D7E1-56F4-4474-A7E7-68627AEE528D@gmail.com>
+ <a82be17dbaa84d4868d6825967b8a87afa3551ba.camel@mellanox.com>
 MIME-Version: 1.0
-References: <cover.1568834524.git.rgb@redhat.com> <214163d11a75126f610bcedfad67a4d89575dc77.1568834525.git.rgb@redhat.com>
- <20191019013904.uevmrzbmztsbhpnh@madcap2.tricolour.ca> <CAHC9VhRPygA=LsHLUqv+K=ouAiPFJ6fb2_As=OT-_zB7kGc_aQ@mail.gmail.com>
- <20191021213824.6zti5ndxu7sqs772@madcap2.tricolour.ca>
-In-Reply-To: <20191021213824.6zti5ndxu7sqs772@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 21 Oct 2019 17:43:21 -0400
-Message-ID: <CAHC9VhRdNXsY4neJpSoNyJoAVEoiEc2oW5kSscF99tjmoQAxFA@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V7 20/21] audit: add capcontid to set contid
- outside init_user_ns
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 5:38 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2019-10-21 15:53, Paul Moore wrote:
-> > On Fri, Oct 18, 2019 at 9:39 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > On 2019-09-18 21:22, Richard Guy Briggs wrote:
-> > > > Provide a mechanism similar to CAP_AUDIT_CONTROL to explicitly give a
-> > > > process in a non-init user namespace the capability to set audit
-> > > > container identifiers.
-> > > >
-> > > > Use audit netlink message types AUDIT_GET_CAPCONTID 1027 and
-> > > > AUDIT_SET_CAPCONTID 1028.  The message format includes the data
-> > > > structure:
-> > > > struct audit_capcontid_status {
-> > > >         pid_t   pid;
-> > > >         u32     enable;
-> > > > };
-> > >
-> > > Paul, can I get a review of the general idea here to see if you're ok
-> > > with this way of effectively extending CAP_AUDIT_CONTROL for the sake of
-> > > setting contid from beyond the init user namespace where capable() can't
-> > > reach and ns_capable() is meaningless for these purposes?
-> >
-> > I think my previous comment about having both the procfs and netlink
-> > interfaces apply here.  I don't see why we need two different APIs at
-> > the start; explain to me why procfs isn't sufficient.  If the argument
-> > is simply the desire to avoid mounting procfs in the container, how
-> > many container orchestrators can function today without a valid /proc?
+
+
+On 21 Oct 2019, at 12:08, Saeed Mahameed wrote:
+
+> On Fri, 2019-10-18 at 16:32 -0700, Jonathan Lemon wrote:
+>>
+>> On 18 Oct 2019, at 13:50, Saeed Mahameed wrote:
+>>
+>>> On Wed, 2019-10-16 at 15:50 -0700, Jonathan Lemon wrote:
+>>>> This patch combines work from various people:
+>>>> - part of Tariq's work to move the DMA mapping from
+>>>>   the mlx5 driver into the page pool.  This does not
+>>>>   include later patches which remove the dma address
+>>>>   from the driver, as this conflicts with AF_XDP.
+>>>>
+>>>> - Saeed's changes to check the numa node before
+>>>>   including the page in the pool, and flushing the
+>>>>   pool on a node change.
+>>>>
+>>>
+>>> Hi Jonathan, thanks for submitting this,
+>>> the patches you have are not up to date, i have new ones with
+>>> tracing
+>>> support and some fixes from offlist review iterations, plus
+>>> performance
+>>> numbers and a  cover letter.
+>>>
+>>> I will send it to you and you can post it as v2 ?
+>>
+>> Sure, I have some other cleanups to do and have a concern about
+>> the cache effectiveness for some workloads.
 >
-> Ok, sorry, I meant to address that question from a previous patch
-> comment at the same time.
+> Ok then, I will submit the page pool NUMA change patches separately.
+> I will remove the flush mechanism and will add your changes.
 >
-> It was raised by Eric Biederman that the proc filesystem interface for
-> audit had its limitations and he had suggested an audit netlink
-> interface made more sense.
+> for the other patches, mlx5 cache and page pool statistics, i think
+> they need some more work and a lot of pieces are still WIP. I don't
+> want to block the NUMA change API patches.
 
-I'm sure you've got it handy, so I'm going to be lazy and ask: archive
-pointer to Eric's comments?  Just a heads-up, I'm really *not* a fan
-of using the netlink interface for this, so unless Eric presents a
-super compelling reason for why we shouldn't use procfs I'm inclined
-to stick with /proc.
+Sounds good - the stats are only really needed once the mlx5 private
+cache goes away, and it doesn't look like that will happen immediately.
 
-> The intent was to switch to the audit netlink interface for contid,
-> capcontid and to add the audit netlink interface for loginuid and
-> sessionid while deprecating the proc interface for loginuid and
-> sessionid.  This was alluded to in the cover letter, but not very clear,
-> I'm afraid.  I have patches to remove the contid and loginuid/sessionid
-> interfaces in another tree which is why I had forgotten to outline that
-> plan more explicitly in the cover letter.
-
+The private cache and the page pool are performing two different functions
+at the moment.
 -- 
-paul moore
-www.paul-moore.com
+Jonathan
