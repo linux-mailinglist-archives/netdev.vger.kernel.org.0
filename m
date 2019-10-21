@@ -2,180 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7BC5DF341
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D23FDF36F
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:44:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728589AbfJUQgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 12:36:04 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40185 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbfJUQgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:36:04 -0400
-Received: by mail-wr1-f66.google.com with SMTP id o28so14750894wro.7
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 09:36:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rYGCs8IbqfDvfK/AYnWCXK3pREg9I+ooMI5SxqO0Eyg=;
-        b=0n2gUf9pmDyG6QAMEA95St07Lljjs9IxQhjwo9Nlh+SN2v4e1t2w66r3korhhTrFm+
-         alRIMpTV7Tip3yXtYXSZOjmf+jBXDzH7o3+BwSn2w4f7PNUi65nhIxAs7Pu0mwBPqHVU
-         asUQ6VB1p32+1OOxeBDjAxMoXVlYl4PlLy/l1uTTkrqp1AJrtm4d1uAgiOW/qwxdGK2A
-         Mou+hT3Tr/S2TcOkhe5Wwqc55ehCjJxbk5l5NARohojBU7N0RTKdcco6zAE6qP2Y1X53
-         38pv3IL6LSBklLMe89Qh5Qzd4jI9u+YtawHsFGCdY89VMau95Fn4n9PA1ajs0p5yoEN1
-         08CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rYGCs8IbqfDvfK/AYnWCXK3pREg9I+ooMI5SxqO0Eyg=;
-        b=CmbMSjMjFvHcI8phW6ICaeiIuE8TfofQS8UhcidG0zZTpluvPTkJ1QcGE8o8CIHRc7
-         1gAc8GbjG1DeBmSA4DTbfT5jE3muD7aJu/gMgoUC5TGlzHTztAWXunw2CK2H2YcmsqzQ
-         jS3eCkUT6JabYyVRTWYne4+JewN2nSTMoP0zeci1p9c63pTVtYT4WX/p+UiBze01QFWW
-         AWi7yaYm9uTVr4asfSr1/aluo9UpsEQbUJgCWL0Sd5AHnCJE9gO1b2H0Rf6bmb3yRgxv
-         B+T3dazfawO4Ho648/WPlVGXsYHXjMW7WYFnChQfG/MH3j2yD4AiZD2173BU8yvKmnrQ
-         xf4w==
-X-Gm-Message-State: APjAAAVeRexaVgUqKO+7Qd+/FeHhfshfZnzzpKmawaXWdS4+/mG7n7te
-        JZpFUj/NuQQM17Zt6Yja6rcf6iqGqykO2A==
-X-Google-Smtp-Source: APXvYqwfh7/R8krc/+gmpaxar+7JO/KA7WMbGZ6G5XEx5VJCflb8JWG0RvDL/JT78BHRpLyN/9A3HA==
-X-Received: by 2002:adf:a506:: with SMTP id i6mr20254212wrb.159.1571675762166;
-        Mon, 21 Oct 2019 09:36:02 -0700 (PDT)
-Received: from netronome.com ([83.137.2.245])
-        by smtp.gmail.com with ESMTPSA id w9sm8588042wrt.85.2019.10.21.09.36.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 09:36:01 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 18:35:53 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linville@tuxdriver.com, andrew@lunn.ch,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH 1/3] ethtool: correctly interpret bitrate of 255
-Message-ID: <20191021163551.GA7530@netronome.com>
-References: <E1iLYu1-0000sp-W5@rmk-PC.armlinux.org.uk>
- <20191021074030.GB4486@netronome.com>
- <20191021080944.GL25745@shell.armlinux.org.uk>
+        id S1729968AbfJUQoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 12:44:06 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:37530 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727582AbfJUQoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:44:05 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id 56EB728AE51
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Robert Beckett <bob.beckett@collabora.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH] igb: dont drop packets if rx flow control is enabled
+Date:   Mon, 21 Oct 2019 17:39:36 +0100
+Message-Id: <20191021163959.17511-1-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191021080944.GL25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 09:09:44AM +0100, Russell King - ARM Linux admin wrote:
-> On Mon, Oct 21, 2019 at 09:40:31AM +0200, Simon Horman wrote:
-> > On Fri, Oct 18, 2019 at 09:31:13PM +0100, Russell King wrote:
-> > > From: Russell King <rmk+kernel@armlinux.org.uk>
-> > > 
-> > > A bitrate of 255 is special, it means the bitrate is encoded in
-> > > byte 66 in units of 250MBaud.  Add support for parsing these bit
-> > > rates.
-> > 
-> > Hi Russell,
-> > 
-> > it seems from the code either that 0 is also special or its
-> > handling has been optimised. Perhaps that would be worth mentioning
-> > in the changelog too.
-> 
-> The text of SFF8472 rev 12.2:
-> 
-> 5.7     BR, nominal [Address A0h, Byte 12]
-> The nominal bit (signaling) rate (BR, nominal) is specified in units of
-> 100MBd, rounded off to the nearest 100MBd. The bit rate includes those
-> bits necessary to encode and delimit the signal as well as those bits
-> carrying data information. A value of FFh indicates the bit rate is
-> greater than 25.0Gb/s and addresses 66 and 67 are used to determine
-> bit rate. A value of 0 indicates that the bit rate is not specified and
-> must be determined from the transceiver technology. The actual
-> information transfer rate will depend on the encoding of the data, as
-> defined by the encoding value.
-> 
-> 8.4    BR, max [Address A0h, Byte 66]
-> If address 12 is not set to FFh, the upper bit rate limit at which the
-> transceiver will still meet its specifications (BR, max) is specified
-> in units of 1% above the nominal bit rate. If address 12 is set to FFh,
-> the nominal bit (signaling) rate (BR, nominal) is specified in units of
-> 250 MBd, rounded off to the nearest 250 MBd. A value of 00h indicates
-> that this field is not specified.
-> 
-> 8.5    BR, min [Address A0h, Byte 67]
-> If address 12 is not set to FFh, the lower bit rate limit at which the
-> transceiver will still meet its specifications (BR, min) is specified in
-> units of 1% below the nominal bit rate. If address 12 is set to FFh, the
-> limit range of bit rates specified in units of +/- 1% around the nominal
-> signaling rate. A value of zero indicates that this field is not
-> specified.
-> 
-> So I guess you could have a br_nom == 0 (meaning it should be derived
-> from other information) but max/min != 0 - which would be complex to
-> implement, and means that we're doing significant interpretation of
-> the contents.
+If rx flow control has been enabled (via autoneg or forced), packets
+should not be dropped due to rx descriptor ring exhaustion. Instead
+pause frames should be used to apply back pressure.
 
-Thanks Russell,
+Move SRRCTL setup to its own function for easy reuse and only set drop
+enable bit if rx flow control is not enabled.
 
-tricky indeed. My suggestion is that something like the last paragraph
-be included in the changelog. But if you feel otherwise I won't push the
-issue any further.
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+---
+ drivers/net/ethernet/intel/igb/igb.h         |  1 +
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |  8 ++++
+ drivers/net/ethernet/intel/igb/igb_main.c    | 46 ++++++++++++++------
+ 3 files changed, 41 insertions(+), 14 deletions(-)
 
-> 
-> > 
-> > > 
-> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > > ---
-> > >  sfpid.c | 19 ++++++++++++++++---
-> > >  1 file changed, 16 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/sfpid.c b/sfpid.c
-> > > index a1753d3a535f..71f0939c6282 100644
-> > > --- a/sfpid.c
-> > > +++ b/sfpid.c
-> > > @@ -328,11 +328,24 @@ void sff8079_show_all(const __u8 *id)
-> > >  {
-> > >  	sff8079_show_identifier(id);
-> > >  	if (((id[0] == 0x02) || (id[0] == 0x03)) && (id[1] == 0x04)) {
-> > > +		unsigned int br_nom, br_min, br_max;
-> > > +
-> > > +		if (id[12] == 0) {
-> > > +			br_nom = br_min = br_max = 0;
-> > > +		} else if (id[12] == 255) {
-> > > +			br_nom = id[66] * 250;
-> > > +			br_max = id[67];
-> > > +			br_min = id[67];
-> > > +		} else {
-> > > +			br_nom = id[12] * 100;
-> > > +			br_max = id[66];
-> > > +			br_min = id[67];
-> > > +		}
-> > >  		sff8079_show_ext_identifier(id);
-> > >  		sff8079_show_connector(id);
-> > >  		sff8079_show_transceiver(id);
-> > >  		sff8079_show_encoding(id);
-> > > -		sff8079_show_value_with_unit(id, 12, "BR, Nominal", 100, "MBd");
-> > > +		printf("\t%-41s : %u%s\n", "BR, Nominal", br_nom, "MBd");
-> > >  		sff8079_show_rate_identifier(id);
-> > >  		sff8079_show_value_with_unit(id, 14,
-> > >  					     "Length (SMF,km)", 1, "km");
-> > > @@ -348,8 +361,8 @@ void sff8079_show_all(const __u8 *id)
-> > >  		sff8079_show_ascii(id, 40, 55, "Vendor PN");
-> > >  		sff8079_show_ascii(id, 56, 59, "Vendor rev");
-> > >  		sff8079_show_options(id);
-> > > -		sff8079_show_value_with_unit(id, 66, "BR margin, max", 1, "%");
-> > > -		sff8079_show_value_with_unit(id, 67, "BR margin, min", 1, "%");
-> > > +		printf("\t%-41s : %u%s\n", "BR margin, max", br_max, "%");
-> > > +		printf("\t%-41s : %u%s\n", "BR margin, min", br_min, "%");
-> > >  		sff8079_show_ascii(id, 68, 83, "Vendor SN");
-> > >  		sff8079_show_ascii(id, 84, 91, "Date code");
-> > >  	}
-> > > -- 
-> > > 2.7.4
-> > > 
-> > 
-> > 
-> > 
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
+index ca54e268d157..49b5fa9d4783 100644
+--- a/drivers/net/ethernet/intel/igb/igb.h
++++ b/drivers/net/ethernet/intel/igb/igb.h
+@@ -661,6 +661,7 @@ void igb_configure_tx_ring(struct igb_adapter *, struct igb_ring *);
+ void igb_configure_rx_ring(struct igb_adapter *, struct igb_ring *);
+ void igb_setup_tctl(struct igb_adapter *);
+ void igb_setup_rctl(struct igb_adapter *);
++void igb_setup_srrctl(struct igb_adapter *, struct igb_ring *);
+ netdev_tx_t igb_xmit_frame_ring(struct sk_buff *, struct igb_ring *);
+ void igb_alloc_rx_buffers(struct igb_ring *, u16);
+ void igb_update_stats(struct igb_adapter *);
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 5acf3b743876..3c951f363d0e 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -396,6 +396,7 @@ static int igb_set_pauseparam(struct net_device *netdev,
+ 	struct igb_adapter *adapter = netdev_priv(netdev);
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	int retval = 0;
++	int i;
+ 
+ 	/* 100basefx does not support setting link flow control */
+ 	if (hw->dev_spec._82575.eth_flags.e100_base_fx)
+@@ -428,6 +429,13 @@ static int igb_set_pauseparam(struct net_device *netdev,
+ 
+ 		retval = ((hw->phy.media_type == e1000_media_type_copper) ?
+ 			  igb_force_mac_fc(hw) : igb_setup_link(hw));
++
++		/* Make sure SRRCTL considers new fc settings for each ring */
++		for (i = 0; i < adapter->num_rx_queues; i++) {
++			struct igb_ring *ring = adapter->rx_ring[i];
++
++			igb_setup_srrctl(adapter, ring);
++		}
+ 	}
+ 
+ 	clear_bit(__IGB_RESETTING, &adapter->state);
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index ffaa6e031632..6b04c961c6e4 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -4488,6 +4488,36 @@ static inline void igb_set_vmolr(struct igb_adapter *adapter,
+ 	wr32(E1000_VMOLR(vfn), vmolr);
+ }
+ 
++/**
++ *  igb_setup_srrctl - configure the split and replication receive control
++ *  		       registers
++ *  @adapter: Board private structure
++ *  @ring: receive ring to be configured
++ **/
++void igb_setup_srrctl(struct igb_adapter *adapter, struct igb_ring *ring)
++{
++	struct e1000_hw *hw = &adapter->hw;
++	int reg_idx = ring->reg_idx;
++	u32 srrctl;
++
++	srrctl = IGB_RX_HDR_LEN << E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
++	if (ring_uses_large_buffer(ring))
++		srrctl |= IGB_RXBUFFER_3072 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
++	else
++		srrctl |= IGB_RXBUFFER_2048 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
++	srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
++	if (hw->mac.type >= e1000_82580)
++		srrctl |= E1000_SRRCTL_TIMESTAMP;
++	/* Only set Drop Enable if we are supporting multiple queues
++	 * and rx flow control is disabled
++	 */
++	if (!(hw->fc.current_mode & e1000_fc_rx_pause) &&
++	    (adapter->vfs_allocated_count || adapter->num_rx_queues > 1))
++		srrctl |= E1000_SRRCTL_DROP_EN;
++
++	wr32(E1000_SRRCTL(reg_idx), srrctl);
++}
++
+ /**
+  *  igb_configure_rx_ring - Configure a receive ring after Reset
+  *  @adapter: board private structure
+@@ -4502,7 +4532,7 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
+ 	union e1000_adv_rx_desc *rx_desc;
+ 	u64 rdba = ring->dma;
+ 	int reg_idx = ring->reg_idx;
+-	u32 srrctl = 0, rxdctl = 0;
++	u32 rxdctl = 0;
+ 
+ 	/* disable the queue */
+ 	wr32(E1000_RXDCTL(reg_idx), 0);
+@@ -4520,19 +4550,7 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
+ 	writel(0, ring->tail);
+ 
+ 	/* set descriptor configuration */
+-	srrctl = IGB_RX_HDR_LEN << E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
+-	if (ring_uses_large_buffer(ring))
+-		srrctl |= IGB_RXBUFFER_3072 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
+-	else
+-		srrctl |= IGB_RXBUFFER_2048 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
+-	srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
+-	if (hw->mac.type >= e1000_82580)
+-		srrctl |= E1000_SRRCTL_TIMESTAMP;
+-	/* Only set Drop Enable if we are supporting multiple queues */
+-	if (adapter->vfs_allocated_count || adapter->num_rx_queues > 1)
+-		srrctl |= E1000_SRRCTL_DROP_EN;
+-
+-	wr32(E1000_SRRCTL(reg_idx), srrctl);
++	igb_setup_srrctl(adapter, ring);
+ 
+ 	/* set filtering for VMDQ pools */
+ 	igb_set_vmolr(adapter, reg_idx & 0x7, true);
+-- 
+2.20.1
+
