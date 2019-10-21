@@ -2,94 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2120DF654
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 21:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60739DF661
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 21:58:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730180AbfJUTxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 15:53:35 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:46383 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729869AbfJUTxf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 15:53:35 -0400
-Received: by mail-lj1-f193.google.com with SMTP id d1so14617232ljl.13
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 12:53:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B3ZB5cTWc/+E0YKg8QEclL2Ljwj65q5hsf0zgj4Z+rY=;
-        b=1U3vsiCGcdSTOTzaQ4vA8rtgFMEgeQgVyd8UdGC3o/CdMtwBWN4F0gK1w2XsWWSBGH
-         YNQV5ahyV/O6yw4h2p7vwNKddLsSKZA8aEdokn0w75hdbMsvb43uRjbJi8H6JHxCG71w
-         Q4NjPgZg63RufqnWqJjnk2UAQF7YnLs+zbq9EPZiF4/9fTsCtv4l9nCyYbMUGLPTXat5
-         APjvja2QOXD7cHp9B0BCAW/vEBE/sR2BENyelP9rlWUJuII/ey98aimoJiTVDGxwlViu
-         HWB3hhBN5+9iFMdxD2Riji0ncS9ufRQXCLy1K0bA0PdNKWfK7SpaFe+eM4GU9HA2y+6W
-         mAKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B3ZB5cTWc/+E0YKg8QEclL2Ljwj65q5hsf0zgj4Z+rY=;
-        b=iqGVZQc1nzR9wKBEfkWZOwiNuwaBIAhizvDrpsHBMv+ZMj7nBgd368cmaVPapvriV2
-         U5Ml+FrqWQ8NA7m96WprwhdPwNcmM9AF02saW38cUO+tcGvr94S5xpQ2KorE54PT4qBv
-         eZysoN2yVulEUtjZ91Cxtu3XMmE1uUIjreTcM/yWXcY3AytK0T9svDyO06OnMY4lUof7
-         UAyG9XRpm+SREirhhuagVQpnWKiai4EAxl8vz0XoRZWLkt7tqkp8Vji9MIZhq1/bR79X
-         QUH0Ix5TydAxecCu7qwFk9Eece2tYVgZRkdVF4AOpWKwMdUbYeyQ9tcSO8hIM+xAOqEJ
-         cg0g==
-X-Gm-Message-State: APjAAAV3uIdboppRGuXNVKH33w6Se5RY0aCdDHllCHqfSNHKwgfw/AjQ
-        y4wzSjHVeB0yEgXWA4pgl6MPvAfpotI7XZZCOHGQ
-X-Google-Smtp-Source: APXvYqwGLlTHAz4uYJDRoYV7X3sKMFSAWJhdAvt0BgqLKoPKw91r1AdS6gVNJnxX99zDNcARmS/mrYca8VZXodUJ0TA=
-X-Received: by 2002:a2e:5b82:: with SMTP id m2mr394137lje.184.1571687611172;
- Mon, 21 Oct 2019 12:53:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1568834524.git.rgb@redhat.com> <214163d11a75126f610bcedfad67a4d89575dc77.1568834525.git.rgb@redhat.com>
- <20191019013904.uevmrzbmztsbhpnh@madcap2.tricolour.ca>
-In-Reply-To: <20191019013904.uevmrzbmztsbhpnh@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 21 Oct 2019 15:53:20 -0400
-Message-ID: <CAHC9VhRPygA=LsHLUqv+K=ouAiPFJ6fb2_As=OT-_zB7kGc_aQ@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V7 20/21] audit: add capcontid to set contid
- outside init_user_ns
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1730172AbfJUT6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 15:58:34 -0400
+Received: from mxout2.idt.com ([157.165.5.26]:58754 "EHLO mxout2.idt.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726672AbfJUT6e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 15:58:34 -0400
+Received: from mail6.idt.com (localhost [127.0.0.1])
+        by mxout2.idt.com (8.14.4/8.14.4) with ESMTP id x9LJwKdh002423;
+        Mon, 21 Oct 2019 12:58:20 -0700
+Received: from corpml3.corp.idt.com (corpml3.corp.idt.com [157.165.140.25])
+        by mail6.idt.com (8.14.4/8.14.4) with ESMTP id x9LJwJif008501;
+        Mon, 21 Oct 2019 12:58:19 -0700
+Received: from vcheng-VirtualBox.na.ads.idt.com (corpimss2.corp.idt.com [157.165.141.30])
+        by corpml3.corp.idt.com (8.11.7p1+Sun/8.11.7) with ESMTP id x9LJwHW22079;
+        Mon, 21 Oct 2019 12:58:17 -0700 (PDT)
+From:   vincent.cheng.xh@renesas.com
+To:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch, robh+dt@kernel.org
+Cc:     mark.rutland@arm.com, richardcochran@gmail.com,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: [PATCH v3 1/2] dt-bindings: ptp: Add bindings doc for IDT ClockMatrix based PTP clock
+Date:   Mon, 21 Oct 2019 15:57:47 -0400
+Message-Id: <1571687868-22834-1-git-send-email-vincent.cheng.xh@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 9:39 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2019-09-18 21:22, Richard Guy Briggs wrote:
-> > Provide a mechanism similar to CAP_AUDIT_CONTROL to explicitly give a
-> > process in a non-init user namespace the capability to set audit
-> > container identifiers.
-> >
-> > Use audit netlink message types AUDIT_GET_CAPCONTID 1027 and
-> > AUDIT_SET_CAPCONTID 1028.  The message format includes the data
-> > structure:
-> > struct audit_capcontid_status {
-> >         pid_t   pid;
-> >         u32     enable;
-> > };
->
-> Paul, can I get a review of the general idea here to see if you're ok
-> with this way of effectively extending CAP_AUDIT_CONTROL for the sake of
-> setting contid from beyond the init user namespace where capable() can't
-> reach and ns_capable() is meaningless for these purposes?
+From: Vincent Cheng <vincent.cheng.xh@renesas.com>
 
-I think my previous comment about having both the procfs and netlink
-interfaces apply here.  I don't see why we need two different APIs at
-the start; explain to me why procfs isn't sufficient.  If the argument
-is simply the desire to avoid mounting procfs in the container, how
-many container orchestrators can function today without a valid /proc?
+Add device tree binding doc for the IDT ClockMatrix PTP clock.
 
+Co-developed-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+---
+
+Changes since v2:
+ - As suggested by Rob Herring:
+   1. Replace with DT schema
+   2. Remove '-ptp' from compatible string
+   3. Replace wildcard 'x' with the part numbers.
+
+Changes since v1:
+ - No changes
+---
+ .../devicetree/bindings/ptp/ptp-idtcm.yaml         | 63 ++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
+
+diff --git a/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml b/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
+new file mode 100644
+index 0000000..d3771e0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
+@@ -0,0 +1,63 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/ptp/ptp-idtcm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: IDT ClockMatrix (TM) PTP Clock Device Tree Bindings
++
++maintainers:
++  - Vincent Cheng <vincent.cheng.xh@renesas.com>
++
++properties:
++  compatible:
++    enum:
++      # For System Synchronizer
++      - idt,8a34000
++      - idt,8a34001
++      - idt,8a34002
++      - idt,8a34003
++      - idt,8a34004
++      - idt,8a34005
++      - idt,8a34006
++      - idt,8a34007
++      - idt,8a34008
++      - idt,8a34009
++      # For Port Synchronizer
++      - idt,8a34010
++      - idt,8a34011
++      - idt,8a34012
++      - idt,8a34013
++      - idt,8a34014
++      - idt,8a34015
++      - idt,8a34016
++      - idt,8a34017
++      - idt,8a34018
++      - idt,8a34019
++      # For Universal Frequency Translator (UFT)
++      - idt,8a34040
++      - idt,8a34041
++      - idt,8a34042
++      - idt,8a34043
++      - idt,8a34044
++      - idt,8a34045
++      - idt,8a34046
++      - idt,8a34047
++      - idt,8a34048
++      - idt,8a34049
++
++  reg:
++    maxItems: 1
++    description:
++      I2C slave address of the device.
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    phc@5b {
++          compatible = "idt,8a34000";
++          reg = <0x5b>;
++    };
 -- 
-paul moore
-www.paul-moore.com
+2.7.4
+
