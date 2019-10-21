@@ -2,93 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 770B8DEDCA
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E27DEE1C
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728998AbfJUNiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 09:38:07 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:37026 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728083AbfJUNiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 09:38:06 -0400
-Received: by mail-qk1-f193.google.com with SMTP id u184so12620350qkd.4;
-        Mon, 21 Oct 2019 06:38:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9XSunISr1V5QDmswNDcwodBh42fC8d5U9vuncv4G5IM=;
-        b=ER4eUBUHpUKME3CHPHqs7qIKSq69WImH9o9qDSrUTdhYeMZd5G4iVomPepmt/6kMr3
-         iLkuFeqKxRlvDxGYgpTs7s4eb03OxSMvygYTzcJvNdoQJB5nJ+3dxDjl+AoN0daJ59FU
-         6TOFt/9gQ5mrJy6wec4UFSpIb+UYYyS3R2rY5fa/WdczZJZjwmYx0XWE54BafMCm4xUU
-         cB19TRaR/arSPeqPTMJl4KaglfbuFM/LAe9KyWMjYbaxGYiya0UHeROCG3aq1gJPwv0u
-         5rhZlqzYk9z19NqoJTV6CDTGJJlC+QwGzbiiXtDRio+FVfnlB6hvXwqkwgpDkl7MEWZa
-         /f0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9XSunISr1V5QDmswNDcwodBh42fC8d5U9vuncv4G5IM=;
-        b=aVHf7/z3eNLuNsARM2BpYfQtJAwKr7Ff7l+d6eTp2xcwtBtUACJAJdz9RCWb2z/AQl
-         EVESp8TUo0NoLdW/gZ+aN35zt485LoRmXD8Va1GMBfQjI7eH61ZDjHGsUSbPlhSjOXCg
-         1+mCZ/VmhSkKQuLjEHFV47az27R8xhDPWhwvIouB8SC55LlmTmTEQPPOjO8JgSr02WFk
-         BCQA2XvZmru5JCtBNf34Ll+OQ6qU5DktMfKP6FYSE/gRjC/2FmgC1JSNA9YedbTSdhZ/
-         1lov1RbWM/rhG/hLi0UJU1XacIqfB+lTlwPuIuqlf+AOWjyKlC4PGkR4h4ZJ51XWu9mS
-         qO8w==
-X-Gm-Message-State: APjAAAUiGdHtbBNjCuq1B68h6yXU6UlBtkoxqHHY+fbNjpeoNSjYLwGr
-        c5uQEV6FsmxuKk3XX0z/LFdnVVW744SI+Bgd8Eo=
-X-Google-Smtp-Source: APXvYqzLvDLzIi2FRZYljdcSujCRW8S21SwNQNpJnbMDoz4gADdJu0gIy/GFqrhTRQHH4ZEYFgcf+lujjixoK7gqA2A=
-X-Received: by 2002:a37:8b03:: with SMTP id n3mr22111950qkd.493.1571665085765;
- Mon, 21 Oct 2019 06:38:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191021105938.11820-1-bjorn.topel@gmail.com> <87h842qpvi.fsf@toke.dk>
- <CAJ+HfNiNwTbER1NfaKamx0p1VcBHjHSXb4_66+2eBff95pmNFg@mail.gmail.com> <87bluaqoim.fsf@toke.dk>
-In-Reply-To: <87bluaqoim.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 21 Oct 2019 15:37:54 +0200
-Message-ID: <CAJ+HfNgWeY7oLwun2Lt4nbT-Mh2yETZfHOGcYhvD=A+-UxWVOw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: use implicit XSKMAP lookup from
- AF_XDP XDP program
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1729211AbfJUNmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 09:42:15 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4741 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728891AbfJUNmK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 09:42:10 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 83E32A0E0AAC3DF61A3B;
+        Mon, 21 Oct 2019 21:42:07 +0800 (CST)
+Received: from [127.0.0.1] (10.177.31.14) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Mon, 21 Oct 2019
+ 21:42:05 +0800
+Subject: Re: [RFC PATCH 1/2] block: add support for redirecting IO completion
+ through eBPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     <linux-block@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Network Development" <netdev@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Alexei Starovoitov" <ast@kernel.org>, <hare@suse.com>,
+        <osandov@fb.com>, <ming.lei@redhat.com>, <damien.lemoal@wdc.com>,
+        bvanassche <bvanassche@acm.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "Martin KaFai Lau" <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+References: <20191014122833.64908-1-houtao1@huawei.com>
+ <20191014122833.64908-2-houtao1@huawei.com>
+ <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <84032c64-8e5e-6ad1-63ea-57adee7a2875@huawei.com>
+Date:   Mon, 21 Oct 2019 21:42:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.8.0
+MIME-Version: 1.0
+In-Reply-To: <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.31.14]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Oct 2019 at 14:19, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
-.com> wrote:
->
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->
-[...]
-> >
-> > bpf_redirect_map() returns a 32-bit signed int, so the upper 32-bit
-> > will need to be cleared. Having an explicit AND is one instruction
-> > less than two shifts. So, it's an optimization (every instruction is
-> > sacred).
->
-> OIC. Well, a comment explaining that might be nice (since you're doing
-> per-instruction comments anyway)? :)
->
+Hi,
 
-Sure, I can do a v3 with a comment, unless someone has a better idea
-avoiding both shifts and AND.
+On 2019/10/16 5:04, Alexei Starovoitov wrote:
+> On Mon, Oct 14, 2019 at 5:21 AM Hou Tao <houtao1@huawei.com> wrote:
+>>
+>> For network stack, RPS, namely Receive Packet Steering, is used to
+>> distribute network protocol processing from hardware-interrupted CPU
+>> to specific CPUs and alleviating soft-irq load of the interrupted CPU.
+>>
+>> For block layer, soft-irq (for single queue device) or hard-irq
+>> (for multiple queue device) is used to handle IO completion, so
+>> RPS will be useful when the soft-irq load or the hard-irq load
+>> of a specific CPU is too high, or a specific CPU set is required
+>> to handle IO completion.
+>>
+>> Instead of setting the CPU set used for handling IO completion
+>> through sysfs or procfs, we can attach an eBPF program to the
+>> request-queue, provide some useful info (e.g., the CPU
+>> which submits the request) to the program, and let the program
+>> decides the proper CPU for IO completion handling.
+>>
+>> Signed-off-by: Hou Tao <houtao1@huawei.com>
+> ...
+>>
+>> +       rcu_read_lock();
+>> +       prog = rcu_dereference_protected(q->prog, 1);
+>> +       if (prog)
+>> +               bpf_ccpu = BPF_PROG_RUN(q->prog, NULL);
+>> +       rcu_read_unlock();
+>> +
+>>         cpu = get_cpu();
+>> -       if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
+>> -               shared = cpus_share_cache(cpu, ctx->cpu);
+>> +       if (bpf_ccpu < 0 || !cpu_online(bpf_ccpu)) {
+>> +               ccpu = ctx->cpu;
+>> +               if (!test_bit(QUEUE_FLAG_SAME_FORCE, &q->queue_flags))
+>> +                       shared = cpus_share_cache(cpu, ctx->cpu);
+>> +       } else
+>> +               ccpu = bpf_ccpu;
+>>
+>> -       if (cpu != ctx->cpu && !shared && cpu_online(ctx->cpu)) {
+>> +       if (cpu != ccpu && !shared && cpu_online(ccpu)) {
+>>                 rq->csd.func = __blk_mq_complete_request_remote;
+>>                 rq->csd.info = rq;
+>>                 rq->csd.flags = 0;
+>> -               smp_call_function_single_async(ctx->cpu, &rq->csd);
+>> +               smp_call_function_single_async(ccpu, &rq->csd);
+> 
+> Interesting idea.
+> Not sure whether such programability makes sense from
+> block layer point of view.
+> 
+>>From bpf side having a program with NULL input context is
+> a bit odd. We never had such things in the past, so this patchset
+> won't work as-is.
+No, it just works.
 
-Thanks for taking a look!
+> Also no-input means that the program choices are quite limited.
+> Other than round robin and random I cannot come up with other
+> cpu selection idea> I suggest to do writable tracepoint here instead.
+> Take a look at trace_nbd_send_request.
+> BPF prog can write into 'request'.
+> For your use case it will be able to write into 'bpf_ccpu' local variable.
+> If you keep it as raw tracepoint and don't add the actual tracepoint
+> with TP_STRUCT__entry and TP_fast_assign then it won't be abi
+> and you can change it later or remove it altogether.
+> 
+Your suggestion is much simpler, so there will be no need for adding a new
+program type, and all things need to be done are adding a raw tracepoint,
+moving bpf_ccpu into struct request, and letting a BPF program to modify it.
 
+I will try and thanks for your suggestions.
 
-Bj=C3=B6rn
+Regards,
+Tao
 
+> .
+> 
 
-> -Toke
->
