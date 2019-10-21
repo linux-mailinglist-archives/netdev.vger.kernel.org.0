@@ -2,55 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85010DF47C
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF72DF49A
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727767AbfJURrD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 13:47:03 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38080 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbfJURrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:47:03 -0400
-Received: from localhost (unknown [4.14.35.89])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D78A1412C597;
-        Mon, 21 Oct 2019 10:47:02 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 10:47:02 -0700 (PDT)
-Message-Id: <20191021.104702.259004543485790564.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        patrick@notvads.ovh, pablo@netfilter.org,
-        torvalds@linux-foundation.org
-Subject: Re: [PATCH] ipv4: fix IPSKB_FRAG_PMTU handling with fragmentation
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191019162637.222512-1-edumazet@google.com>
-References: <20191019162637.222512-1-edumazet@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 21 Oct 2019 10:47:02 -0700 (PDT)
+        id S1728583AbfJUR7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 13:59:25 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45674 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbfJUR7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:59:25 -0400
+Received: by mail-qt1-f195.google.com with SMTP id c21so22324227qtj.12
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 10:59:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qTXoN8DCBGrFsp6FGfmWDhOfzDwC9R9U4AbtM6Ud4RI=;
+        b=VQYM3XE2e9vlSKbQAnbJfNlkSmKh9vWxBYD6O5c6J6ZCFGLbMOpEgE9xZT+veN9KA9
+         lp8y+/hnRJSNGrKlhnsXoL9bcRAIXGJvq0HwBXgp4sHuD039nu8TmDfvEScsfVSo4CG2
+         K5v+Ax1wFzl12GV/6B99FsorGsspTTOy3stU6u5brECD/ngF4tz7hNQHl3bM1ye1EkHf
+         5rb2OH0pF/vvb4H1BpBKlJoo122t+fVcAkRdeXCGzTz9N9ajfnpUh3V+0S+ATSHq7Ggt
+         FvAe5qS3/xdQHkgCTRztDlZzdEz8HsgvRLPtUtpUQr8CYzI9ivHBUGml+5LifV6YVmG0
+         gUew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qTXoN8DCBGrFsp6FGfmWDhOfzDwC9R9U4AbtM6Ud4RI=;
+        b=iK/zlCa2rbUVn49I/ySMBNSEmUuo8IXSplvaxWgUd5AUAskA2b+TEXcfIul1dFCsZ+
+         zSAwOgRxGDD3Hcwvs96y6vlhBUfgfyy0gls1Vk113Koll7LKEyftvZC6I5ILXlhDN51+
+         emdMpnY6mUeHcQaX5H231i0727qYsV3BP102QGqxMjRHmdXg7NbiK8QSaeIE3VdxKdIW
+         NrZ52tLXrl9Bb6iFoB+8d+mqeFgW2/k9UFrsHKX6AwUTrJUrUv2kmqB5xzsLGZ1hjrDR
+         XCq7rNQOasCl4l+45g61+4qOFPzv+ziyNhuSt6TSoQMYvEC94TmTShDozVV7w0bOxe2B
+         iZXQ==
+X-Gm-Message-State: APjAAAVgeIilHHwmvW7ia2MO7rvCs1umgAxCaAG8p3V355jKrQ0cgGSd
+        OWOXnpDxD0cUjZiLM36KDZgIaxxmAg0hjOwL97Q=
+X-Google-Smtp-Source: APXvYqybsIgL1jG66ZLAXek4GPYDYlb77LPF3UmlxbnygEHLjDLXWDLw024TND3ply1KFrkp6SO21nriMI4aYTFR7Xk=
+X-Received: by 2002:ac8:28e3:: with SMTP id j32mr20462368qtj.212.1571680764235;
+ Mon, 21 Oct 2019 10:59:24 -0700 (PDT)
+MIME-Version: 1.0
+References: <1571135440-24313-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <1571135440-24313-6-git-send-email-xiangxia.m.yue@gmail.com>
+ <CALDO+SaoGxs3ZShuXiT9TaC+e85ArBa85pUxQ6ApmDScrMtx8w@mail.gmail.com> <CAMDZJNVXwkTgFSC7XtANLdF4j_ygQSpVrvq8KaY23czP8FRbBw@mail.gmail.com>
+In-Reply-To: <CAMDZJNVXwkTgFSC7XtANLdF4j_ygQSpVrvq8KaY23czP8FRbBw@mail.gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Mon, 21 Oct 2019 10:58:43 -0700
+Message-ID: <CALDO+SaxFBBAvuxnxc8F9fho8eqByVdCavoBcteRRaWLgFU_tA@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net-next v4 05/10] net: openvswitch: optimize
+ flow-mask looking up
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Greg Rose <gvrose8192@gmail.com>, pravin shelar <pshelar@ovn.org>,
+        "<dev@openvswitch.org>" <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Sat, 19 Oct 2019 09:26:37 -0700
+> > Hi Tonghao,
+> >
+> > Does this improve performance? After all, the original code simply
+> > check whether the mask is NULL, then goto next mask.
+> I tested the performance, but I disable the mask cache, and use the
+> dpdk-pktgen to generate packets:
+> The test ovs flow:
+> ovs-dpctl add-dp system@ovs-system
+> ovs-dpctl add-if system@ovs-system eth6
+> ovs-dpctl add-if system@ovs-system eth7
+>
+> for m in $(seq 1 100 | xargs printf '%.2x\n'); do
+>        ovs-dpctl add-flow ovs-system
+> "in_port(1),eth(dst=00:$m:00:00:00:00/ff:ff:ff:ff:ff:$m),eth_type(0x0800),ipv4(frag=no)"
+> 2
+> done
+>
+> ovs-dpctl add-flow ovs-system
+> "in_port(1),eth(dst=98:03:9b:6e:4a:f5/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)"
+> 2
+> ovs-dpctl add-flow ovs-system
+> "in_port(2),eth(dst=98:03:9b:6e:4a:f4/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=no)"
+> 1
+>
+> for m in $(seq 101 160 | xargs printf '%.2x\n'); do
+>         ovs-dpctl add-flow ovs-system
+> "in_port(1),eth(dst=00:$m:00:00:00:00/ff:ff:ff:ff:ff:$m),eth_type(0x0800),ipv4(frag=no)"
+> 2
+> done
+>
+> for m in $(seq 1 100 | xargs printf '%.2x\n'); do
+>          ovs-dpctl del-flow ovs-system
+> "in_port(1),eth(dst=00:$m:00:00:00:00/ff:ff:ff:ff:ff:$m),eth_type(0x0800),ipv4(frag=no)"
+> done
+>
+> Without this patch: 982481pps (64B)
+> With this patch: 1112495 pps (64B), about 13% improve
+>
 
-> This patch removes the iph field from the state structure, which is not
-> properly initialized. Instead, add a new field to make the "do we want
-> to set DF" be the state bit and move the code to set the DF flag from
-> ip_frag_next().
-> 
-> Joint work with Pablo and Linus.
-> 
-> Fixes: 19c3401a917b ("net: ipv4: place control buffer handling away from fragmentation iterators")
-> Reported-by: Patrick Schönthaler <patrick@notvads.ovh>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Hi Tonghao,
 
-Applied and queued up for -stable, thanks Eric.
+Thanks for doing the measurement.
+Based on the result (skipping 100 NULL mask lookup with 13% improvement),
+and with additional overhead of mask cache being invalidate while
+refilling these 100
+gap, I'd argue that this patch is not necessary. But let's wait for
+others comments.
+
+Regards,
+William
+
+> > However, with your patch,  isn't this invalidated the mask cache entry which
+> > point to the "M" you swap to the front? See my commands inline.
+> >
+> > >
+> > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > Tested-by: Greg Rose <gvrose8192@gmail.com>
+> > > ---
+
+<snip>
+
+> > >  static struct table_instance *table_instance_expand(struct table_instance *ti,
+> > > @@ -704,21 +704,33 @@ static struct table_instance *table_instance_expand(struct table_instance *ti,
+> > >         return table_instance_rehash(ti, ti->n_buckets * 2, ufid);
+> > >  }
+> > >
+> > > -static void tbl_mask_array_delete_mask(struct mask_array *ma,
+> > > -                                      struct sw_flow_mask *mask)
+> > > +static void tbl_mask_array_del_mask(struct flow_table *tbl,
+> > > +                                   struct sw_flow_mask *mask)
+> > >  {
+> > > -       int i;
+> > > +       struct mask_array *ma = ovsl_dereference(tbl->mask_array);
+> > > +       int i, ma_count = READ_ONCE(ma->count);
+> > >
+> > >         /* Remove the deleted mask pointers from the array */
+> > > -       for (i = 0; i < ma->max; i++) {
+> > > -               if (mask == ovsl_dereference(ma->masks[i])) {
+> > > -                       RCU_INIT_POINTER(ma->masks[i], NULL);
+> > > -                       ma->count--;
+> > > -                       kfree_rcu(mask, rcu);
+> > > -                       return;
+> > > -               }
+> > > +       for (i = 0; i < ma_count; i++) {
+> > > +               if (mask == ovsl_dereference(ma->masks[i]))
+> > > +                       goto found;
+> > >         }
+> > > +
+> > >         BUG();
+> > > +       return;
+> > > +
+> > > +found:
+> > > +       WRITE_ONCE(ma->count, ma_count -1);
+> > > +
+> > > +       rcu_assign_pointer(ma->masks[i], ma->masks[ma_count -1]);
+> > > +       RCU_INIT_POINTER(ma->masks[ma_count -1], NULL);
+> >
+> > So when you swap the ma->masks[ma_count -1], the mask cache entry
+> > who's 'mask_index == ma_count' become all invalid?
+> Yes, a little tricky.
+> > Regards,
+> > William
+> >
