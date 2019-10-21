@@ -2,92 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C38DE2E8
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 06:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15562DE35E
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 06:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725827AbfJUEIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 00:08:36 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43776 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725497AbfJUEIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 00:08:36 -0400
-Received: by mail-pl1-f193.google.com with SMTP id v5so1233541ply.10
-        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 21:08:36 -0700 (PDT)
+        id S1726199AbfJUEfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 00:35:33 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:42294 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725763AbfJUEfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 00:35:32 -0400
+Received: by mail-lj1-f194.google.com with SMTP id y23so11699419lje.9
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 21:35:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=encNu5/Y7nZuPIF5BnSSDFgPQoXnK58k6n1ao+O1nfQ=;
-        b=hUtREW1MZ4K2PyAvkn04H9sJCkZOJGPrU6UHIjjkauHDX8ZD4yfoAc3MkODSy8NIdj
-         fVbF2xTaic3FVu6TLr9hbMQ9kFQ5JGwnGRNRBuXU2MBlfHXzNR2JzUzhnfb6BDP/8cCe
-         zRR2Q3odHkLSl7yEraZa7fE7TNaKZoEczFikFbBxMCl56y1LIfn7x9Zz0duTWcD/URHP
-         F7nhqOgssoLybq/Pok4n5rdxp10LC0q3ZPWmw9/bg0xKlUaYQrXVCY9rij6B558Q+MX/
-         WEkMhCD5XWtJK37b+N8C5NFQnSEZKdYm0mvslRaQVUnv0E87kr2vPiW1Y1Q9+lBafTVf
-         TV+w==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QQNBrejSIfQot1yvJ+CXYvqpFeva493kmEcK/FmvoDg=;
+        b=Lxe3V4zwPgql6DdVfOuGdemoN+iTyWUFJnNUZSjTdmoNQjUtvBndjhx5Rdj4/DP/Dn
+         4z1dCVwOAa6V8CYqKP/3oWo7ve+o5f+Qtc1jdxgfpXkIeuRIPOFHPql1RbabNN2N0bOA
+         KrA9Gd8YoyxUxwQ4bbDHN4daiPvi8CYU5SYtg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=encNu5/Y7nZuPIF5BnSSDFgPQoXnK58k6n1ao+O1nfQ=;
-        b=kI9U78JpoR/HZICo0spH+9HR0LWw5EPrAmCX+zplYi3/h/ZslMMJpiwA6rm3r0U79r
-         t49Knh0UY38SjUSGvAdLjBMnZNDFssdoid5WWPyyfZr97zzJTn8V9YNb0fF34hQaFGOE
-         wVZ3K8oQ/ZmOgH4KtUmJ7gwmuaLaIzmyfczozvL+bQKS7mXP8ZCNGqRYPrHlMxRsSM5J
-         xpYDgHYbO67LXaXM7DTbsA7LCNCf+rVAKtf0SnI7wnqjl8Q3LulvCjXNRrL5SviGvfsh
-         gxWlvkRfXu2a9PCsNF+dqVWePgQIgUxwwz4jlwMR7/JqScLbsroB8NzkxTLPYaUvHptX
-         E3CA==
-X-Gm-Message-State: APjAAAXfns7Uz7KtQ6fff6iFfYSolI3vRhnWa6L7CCmEq6X1R55NfV5B
-        N633IpeZDGWKF/fWCVuUvHTuGq+z
-X-Google-Smtp-Source: APXvYqwtEwpPB1Ml6gyuNpncGb/3Ijy/VdlgApsQnf+B1MU3WlVyOyVQjKgYwQacjG44dl6EwP10ZQ==
-X-Received: by 2002:a17:902:9a92:: with SMTP id w18mr22231813plp.223.1571630916015;
-        Sun, 20 Oct 2019 21:08:36 -0700 (PDT)
-Received: from martin-VirtualBox ([1.39.141.104])
-        by smtp.gmail.com with ESMTPSA id r185sm14316667pfr.68.2019.10.20.21.08.34
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 20 Oct 2019 21:08:35 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 09:38:29 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Ben Pfaff <blp@ovn.org>
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org, pshelar@ovn.org,
-        Martin Varghese <martin.varghese@nokia.com>
-Subject: Re: [ovs-dev] [PATCH] Change in openvswitch kernel module to support
- MPLS label depth of 3 in ingress direction.
-Message-ID: <20191021040829.GA19653@martin-VirtualBox>
-References: <1571581532-18581-1-git-send-email-martinvarghesenokia@gmail.com>
- <20191020190706.GC25323@ovn.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QQNBrejSIfQot1yvJ+CXYvqpFeva493kmEcK/FmvoDg=;
+        b=UiL+7X+IDd8jcW/4jneBY6Crdwo/7LktBBxdAitg5JA4DeJ6zMbG3UOyyLgI6GHbh5
+         bt/t643YW1PqnIMqfCICQ117IgD1uDdq76ek+5aw6PdMIq4KfWf16uWITC3lnhi9+Lze
+         m6k0BXUEDxir4Cz15Wj4azgTejfwovvnLWQLooA7V7N2bnbvbmSvtJMZX9kbfsoGgGUh
+         65bQZi5aGXPlkDhQEKp9GWSJ+MYonPj4rN1PnxEulr6HvU+M0CfS2erYp67nSElzx8qV
+         V47s/poQpZ1Wpo4Q+CePyjOPgPdSD1JmT4TrJPQplNRNREopYnQIprMq4itmZLtJhRpb
+         P8bA==
+X-Gm-Message-State: APjAAAXrXIBizTPRJFomdfG/4fy96eGaSwuXzYXodhfHB3aq1unPq9aT
+        qkTHy81kVttfjs0IAACotsWuIsvRSFPkHKWl4GUmlg==
+X-Google-Smtp-Source: APXvYqyPwzrXyWagP0WdecOXwfobY6lx3tOdIlc+iCpmqPIfDijQd2X10s5moFVm+KFeq7Sc0yztxE8DVsyHeSnsbyY=
+X-Received: by 2002:a2e:990c:: with SMTP id v12mr11977368lji.58.1571632530840;
+ Sun, 20 Oct 2019 21:35:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191020190706.GC25323@ovn.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+References: <1571313682-28900-1-git-send-email-sheetal.tigadoli@broadcom.com>
+ <1571313682-28900-4-git-send-email-sheetal.tigadoli@broadcom.com>
+ <20191017122156.4d5262ac@cakuba.netronome.com> <CAACQVJrO_PN8LBY0ovwkdxGsyvW_gGN7C3MxnuW+jjdS_75Hhw@mail.gmail.com>
+ <20191018100122.4cf12967@cakuba.netronome.com>
+In-Reply-To: <20191018100122.4cf12967@cakuba.netronome.com>
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Date:   Mon, 21 Oct 2019 10:05:18 +0530
+Message-ID: <CAACQVJp1R-9frrgjn6=5s_f3AGBq-fyy5CsYdAio1e=c9iLB9g@mail.gmail.com>
+Subject: Re: [PATCH V2 3/3] bnxt_en: Add support to collect crash dump via ethtool
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Rajan Vaja <rajan.vaja@xilinx.com>,
+        Scott Branden <scott.branden@broadcom.com>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Vikram Prakash <vikram.prakash@broadcom.com>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vikas Gupta <vikas.gupta@broadcom.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 20, 2019 at 12:07:06PM -0700, Ben Pfaff wrote:
-> On Sun, Oct 20, 2019 at 07:55:32PM +0530, Martin Varghese wrote:
-> > From: Martin Varghese <martin.varghese@nokia.com>
-> > 
-> > The openvswitch kernel module was supporting a MPLS label depth of 1
-> > in the ingress direction though the userspace OVS supports a max depth
-> > of 3 labels. This change enables openvswitch module to support a max
-> > depth of 3 labels in the ingress.
-> > 
-> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> 
-> Thanks for the patch!
-> 
-> Usually, for kernel module changes, the workflow is to submit the change
-> upstream to the Linux kernel first ("upstream first").  Then, afterward,
-> we backport the upstream changes into the OVS repository.
-> 
-> I see that you have CCed this to the Linux kernel networking list
-> (netdev) but the patch itself is against the OVS repo.  Probably, if you
-> want to get reviews from netdev, you should instead post a patch against
-> the net-next repository.
-> 
-> Thanks again for working to improve Open vSwitch.
+On Fri, Oct 18, 2019 at 10:31 PM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Fri, 18 Oct 2019 12:04:35 +0530, Vasundhara Volam wrote:
+> > On Fri, Oct 18, 2019 at 12:52 AM Jakub Kicinski wrote:
+> > > On Thu, 17 Oct 2019 17:31:22 +0530, Sheetal Tigadoli wrote:
+> > > > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> > > > index 51c1404..1596221 100644
+> > > > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> > > > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> > > > @@ -3311,6 +3311,23 @@ static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
+> > > >       return rc;
+> > > >  }
+> > > >
+> > > > +static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
+> > > > +{
+> > > > +     struct bnxt *bp = netdev_priv(dev);
+> > > > +
+> > > > +#ifndef CONFIG_TEE_BNXT_FW
+> > > > +     return -EOPNOTSUPP;
+> > > > +#endif
+> > >
+> > >         if (!IS_ENABLED(...))
+> > >                 return x;
+> > >
+> > > reads better IMHO
+> > Okay.
+> >
+> > >
+> > > But also you seem to be breaking live dump for systems with
+> > > CONFIG_TEE_BNXT_FW=n
+> > Yes, we are supporting set_dump only if crash dump is supported.
+>
+> It's wrong.
+Sorry not very clear. You are saying that support set_dump all the
+time and return
+error, if the config option is not enabled? If yes, I will modify the
+same way as it
+makes sense.
 
-Thankyou for your mail.
-The same changes are being discussed in netdev@vger.kernel.org.
-Along with this patch, V2 of kernel patch for net-next repo is also submitted.
+>
+> > > > +     if (dump->flag > BNXT_DUMP_CRASH) {
+> > > > +             netdev_err(dev, "Supports only Live(0) and Crash(1) dumps.\n");
+> > >
+> > > more of an _info than _err, if at all
+> > I made this err, as we are returning error on invalid flag value. I
+> > can modify the log to
+> > something like "Invalid dump flag. Supports only Live(0) and Crash(1)
+> > dumps.\n" to make
+> > it more like error log.
+>
+> Not an error.
+Okay.
