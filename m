@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7EEDF54A
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91A59DF54C
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730014AbfJUSr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 14:47:26 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45000 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbfJUSrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:47:25 -0400
-Received: by mail-pg1-f194.google.com with SMTP id e10so8327117pgd.11;
-        Mon, 21 Oct 2019 11:47:25 -0700 (PDT)
+        id S1730041AbfJUSsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 14:48:12 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34048 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbfJUSsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:48:11 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b128so8991321pfa.1;
+        Mon, 21 Oct 2019 11:48:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=YZXh3CQH5hLwX4w45E8/P8x2cIxsApVTP1i3nP57c5E=;
-        b=esS4U4OeTMDmo703W4RXU147NNlSkJx0HRDfPzxm1s8kWuQy7YY8m3SgNkA1lSZ2Gs
-         bkjPWfe1pYmSMo4c4HMUcjMQxwtfxBR6o9d3YisWvVCL3EVkZheQknOm0IwMSt3td0cQ
-         ISDth2bMSQA+r3fbGghp7JY26KACDCDT0QZ9UYfKn5M5ebC0RKOTRNAbK6DHYmzpMBPI
-         99X5p0ukGCPlFEUgjL9LZuyqWoMQWTHv1HerP4y7VuosPa9vP/eFYyTQB5s+2L/DarA2
-         RiHybvtF5P+apLEeqkmju7Ewk37K3vk2NqGkTzhiQ64Q4W2GbxARnQDAq7W/YgSclSbD
-         TZhg==
+        bh=qtw4P1pYpKvWEDYenONqt3drCMTjHlZpzYr4etczZL4=;
+        b=UO2+QucOQmRC9GIqVxWTvEym+SSj64HNhgBxnCHX5MA4KdsTCHCRHszmeLd7PSiYeb
+         rqrDMzv/W2AdSVH46j8QDOdTGI+1lVxJgkukB4F+nshNFH+hgeD8S/7TIydW9VrmeTlL
+         2o3ccH8Md2UIChK+SeyR832k2yl397CxXPZO+d0SmEAZ51La9ZIMVn8m+hEQKgLPjFnC
+         OpF8EfjZxkCrGA1YuFzOpDjuGIEuSS3RgJYlJUfbAm/x3d3922RZAzPI3rd2qKL1bu5P
+         6ddrOpSp6NeYPfQ8daSCJ5yYX2LRULCNgY7nCjoGDjSgFHInivZVuXhtvVOgwkLgqB+Y
+         z4pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YZXh3CQH5hLwX4w45E8/P8x2cIxsApVTP1i3nP57c5E=;
-        b=tgtxeYEAl9Gh8uE2tdKfjGno15Dz0vkiGY3eQqi03ypW7YyGsuwfxKISYEcuXRmeYZ
-         abK2TlMMi9l/rcO2RQMlJO429UhnmOXPPm56XEXUs0XSOe+PJcV3vjhxeU/keD21TH2q
-         rez1M4llt7bHCFJu7/ddXplCzuIoxeDWRKGfDMauqrXQuaYbU2uyY67JlgNJPMsef60+
-         jn/9uK+SBibwtNzS26CwvYmpMe3g6amZHTJI3adayu8eQlbIrCvL8jkypOU0ziqxCCic
-         07Gwn2msie4xaWAM4/sTAhY5hEZavLwkQ6HPRWGvBMz6hYRNOQWNyGh3gAvt7Cj9Ggnx
-         1jAw==
-X-Gm-Message-State: APjAAAU5rlJm5SUhTjIO8RyTScmgsLfZ16E39H2nIzVy7q01IUMqeDbP
-        W2Pg00k1B7hLw037jqb4rCE=
-X-Google-Smtp-Source: APXvYqz/QbP9MmRHvi5TFxXNyYsd+zF2eTrTOL28Rd+Sr60WUEnkAVNWcXWK9HNw+T1fg5EKGpjFqg==
-X-Received: by 2002:aa7:9472:: with SMTP id t18mr24061892pfq.261.1571683644847;
-        Mon, 21 Oct 2019 11:47:24 -0700 (PDT)
+        bh=qtw4P1pYpKvWEDYenONqt3drCMTjHlZpzYr4etczZL4=;
+        b=JZ3oIbSmN0R7KKLdmvmhIh3rUoAK0jhrHkYYd/XSIc7GUuTt1oXayHDzSgptmP7A1g
+         BQ377ck5cGjsXPeWBdVBJq4trCWAS6Q2s5wdzjNP8CwHXWR6swMAxhwk9PbPWHAcUBOb
+         vWOw0q6cJr+uckFQpmXwKmvBvHtkInv85Wcq4VhjQcisP5LrPX1nbn3uuWdGIksbNyNT
+         jXYNiN5l94RKRsbFQPLmGfGw3GqlIH7sPASoWu760nB0bkWCWKioF7JhOpaSJtSEONFe
+         VdDLgXrUAHljUiBAbhdbpDnBMbrYFkA1pjHG7FMF001f4KfqZd429eRvLCVInUhVrha1
+         nhXg==
+X-Gm-Message-State: APjAAAXJuRl19Hr9oIkUN3LO2PvJHt0OP1P1k2uo8ldVd7vKzdPIu9xv
+        CXIQZF5Exl8O09pPSMJeUUw=
+X-Google-Smtp-Source: APXvYqxisCPuXFrgrO+ptqIgNbSsWeWqzcxkfHnwBqHalFXFaW1TjKwK2BZxmX1uv7eOF8sxtkjwMA==
+X-Received: by 2002:a63:734a:: with SMTP id d10mr28147393pgn.334.1571683690712;
+        Mon, 21 Oct 2019 11:48:10 -0700 (PDT)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id t3sm19449792pje.7.2019.10.21.11.47.17
+        by smtp.gmail.com with ESMTPSA id ev20sm14502835pjb.19.2019.10.21.11.48.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 11:47:23 -0700 (PDT)
+        Mon, 21 Oct 2019 11:48:09 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-wireless@vger.kernel.org, jakub.kicinski@netronome.com,
@@ -54,173 +54,469 @@ To:     davem@davemloft.net, netdev@vger.kernel.org,
         ubraun@linux.ibm.com, kgraul@linux.ibm.com,
         jay.vosburgh@canonical.com, schuffelen@google.com, bjorn@mork.no
 Cc:     ap420073@gmail.com
-Subject: [PATCH net v5 00/10] net: fix nested device bugs
-Date:   Mon, 21 Oct 2019 18:47:10 +0000
-Message-Id: <20191021184710.12981-1-ap420073@gmail.com>
+Subject: [PATCH net v5 01/10] net: core: limit nested device depth
+Date:   Mon, 21 Oct 2019 18:47:50 +0000
+Message-Id: <20191021184759.13125-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset fixes several bugs that are related to nesting
-device infrastructure.
-Current nesting infrastructure code doesn't limit the depth level of
-devices. nested devices could be handled recursively. at that moment,
-it needs huge memory and stack overflow could occur.
-Below devices type have same bug.
-VLAN, BONDING, TEAM, MACSEC, MACVLAN, IPVLAN, and VXLAN.
-But I couldn't test all interface types so there could be more device
-types, which have similar problems.
-Maybe qmi_wwan.c code could have same problem.
-So, I would appreciate if someone test qmi_wwan.c and other modules.
+Current code doesn't limit the number of nested devices.
+Nested devices would be handled recursively and this needs huge stack
+memory. So, unlimited nested devices could make stack overflow.
+
+This patch adds upper_level and lower_level, they are common variables
+and represent maximum lower/upper depth.
+When upper/lower device is attached or dettached,
+{lower/upper}_level are updated. and if maximum depth is bigger than 8,
+attach routine fails and returns -EMLINK.
+
+In addition, this patch converts recursive routine of
+netdev_walk_all_{lower/upper} to iterator routine.
 
 Test commands:
     ip link add dummy0 type dummy
-    ip link add vlan1 link dummy0 type vlan id 1
+    ip link add link dummy0 name vlan1 type vlan id 1
+    ip link set vlan1 up
 
-    for i in {2..100}
+    for i in {2..55}
     do
 	    let A=$i-1
-	    ip link add name vlan$i link vlan$A type vlan id $i
+
+	    ip link add vlan$i link vlan$A type vlan id $i
     done
     ip link del dummy0
 
-1st patch actually fixes the root cause.
-It adds new common variables {upper/lower}_level that represent
-depth level. upper_level variable is depth of upper devices.
-lower_level variable is depth of lower devices.
+Splat looks like:
+[  155.513226][  T908] BUG: KASAN: use-after-free in __unwind_start+0x71/0x850
+[  155.514162][  T908] Write of size 88 at addr ffff8880608a6cc0 by task ip/908
+[  155.515048][  T908]
+[  155.515333][  T908] CPU: 0 PID: 908 Comm: ip Not tainted 5.4.0-rc3+ #96
+[  155.516147][  T908] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  155.517233][  T908] Call Trace:
+[  155.517627][  T908]
+[  155.517918][  T908] Allocated by task 0:
+[  155.518412][  T908] (stack is not available)
+[  155.518955][  T908]
+[  155.519228][  T908] Freed by task 0:
+[  155.519885][  T908] (stack is not available)
+[  155.520452][  T908]
+[  155.520729][  T908] The buggy address belongs to the object at ffff8880608a6ac0
+[  155.520729][  T908]  which belongs to the cache names_cache of size 4096
+[  155.522387][  T908] The buggy address is located 512 bytes inside of
+[  155.522387][  T908]  4096-byte region [ffff8880608a6ac0, ffff8880608a7ac0)
+[  155.523920][  T908] The buggy address belongs to the page:
+[  155.524552][  T908] page:ffffea0001822800 refcount:1 mapcount:0 mapping:ffff88806c657cc0 index:0x0 compound_mapcount:0
+[  155.525836][  T908] flags: 0x100000000010200(slab|head)
+[  155.526445][  T908] raw: 0100000000010200 ffffea0001813808 ffffea0001a26c08 ffff88806c657cc0
+[  155.527424][  T908] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
+[  155.528429][  T908] page dumped because: kasan: bad access detected
+[  155.529158][  T908]
+[  155.529410][  T908] Memory state around the buggy address:
+[  155.530060][  T908]  ffff8880608a6b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  155.530971][  T908]  ffff8880608a6c00: fb fb fb fb fb f1 f1 f1 f1 00 f2 f2 f2 f3 f3 f3
+[  155.531889][  T908] >ffff8880608a6c80: f3 fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  155.532806][  T908]                                            ^
+[  155.533509][  T908]  ffff8880608a6d00: fb fb fb fb fb fb fb fb fb f1 f1 f1 f1 00 00 00
+[  155.534436][  T908]  ffff8880608a6d80: f2 f3 f3 f3 f3 fb fb fb 00 00 00 00 00 00 00 00
+[ ... ]
 
-      [U][L]       [U][L]
-vlan1  1  5  vlan4  1  4
-vlan2  2  4  vlan5  2  3
-vlan3  3  3    |
-  |            |
-  +------------+
-  |
-vlan6  4  2
-dummy0 5  1
-
-After this patch, the nesting infrastructure code uses this variable to
-check the depth level.
-
-2nd patch fixes Qdisc lockdep related problem.
-Before this patch, devices use static lockdep map.
-So, if devices that are same types are nested, lockdep will warn about
-recursive situation.
-These patches make these devices use dynamic lockdep key instead of
-static lock or subclass.
-
-3rd patch fixes unexpected IFF_BONDING bit unset.
-When nested bonding interface scenario, bonding interface could lost it's
-IFF_BONDING flag. This should not happen.
-This patch adds a condition before unsetting IFF_BONDING.
-
-4th patch fixes nested locking problem in bonding interface
-Bonding interface has own lock and this uses static lock.
-Bonding interface could be nested and it uses same lockdep key.
-So that unexisting lockdep warning occurs.
-
-5th patch fixes nested locking problem in team interface
-Team interface has own lock and this uses static lock.
-Team interface could be nested and it uses same lockdep key.
-So that unexisting lockdep warning occurs.
-
-6th patch fixes a refcnt leak in the macsec module.
-When the macsec module is unloaded, refcnt leaks occur.
-But actually, that holding refcnt is unnecessary.
-So this patch just removes these code.
-
-7th patch adds ignore flag to an adjacent structure.
-In order to exchange an adjacent node safely, ignore flag is needed.
-
-8th patch makes vxlan add an adjacent link to limit depth level.
-Vxlan interface could set it's lower interface and these lower interfaces
-are handled recursively.
-So, if the depth of lower interfaces is too deep, stack overflow could
-happen.
-
-9th patch removes unnecessary variables and callback.
-After 1st patch, subclass callback and variables are unnecessary.
-This patch just removes these variables and callback.
-
-10th patch fix refcnt leaks in the virt_wifi module
-Like every nested interface, the upper interface should be deleted
-before the lower interface is deleted.
-In order to fix this, the notifier routine is added in this patch.
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
 
 v4 -> v5 :
- - Update log messages
- - Move variables position, 1st patch
- - Fix iterator routine, 1st patch
- - Add generic lockdep key code, which replaces 2, 4, 5, 6, 7 patches.
- - Log message update, 10th patch
- - Fix wrong error value in error path of __init routine, 10th patch
- - hold module refcnt when interface is created, 10th patch
+ - Move variables position
+ - Fix iterator routine
 v3 -> v4 :
- - Add new 12th patch to fix refcnt leaks in the virt_wifi module
- - Fix wrong usage netdev_upper_dev_link() in the vxlan.c
- - Preserve reverse christmas tree variable ordering in the vxlan.c
- - Add missing static keyword in the dev.c
- - Expose netdev_adjacent_change_{prepare/commit/abort} instead of
-   netdev_adjacent_dev_{enable/disable}
+ - This patch is not changed
 v2 -> v3 :
- - Modify nesting infrastructure code to use iterator instead of recursive.
+ - Modify nesting infra code to use iterator instead of recursive
 v1 -> v2 :
- - Make the 3rd patch do not add a new priv_flag.
+ - This patch is not changed
 
-Taehee Yoo (10):
-  net: core: limit nested device depth
-  net: core: add generic lockdep keys
-  bonding: fix unexpected IFF_BONDING bit unset
-  bonding: use dynamic lockdep key instead of subclass
-  team: fix nested locking lockdep warning
-  macsec: fix refcnt leak in module exit routine
-  net: core: add ignore flag to netdev_adjacent structure
-  vxlan: add adjacent link to limit depth level
-  net: remove unnecessary variables and callback
-  virt_wifi: fix refcnt leak in module exit routine
+ include/linux/netdevice.h |   4 +
+ net/core/dev.c            | 272 +++++++++++++++++++++++++++++++-------
+ 2 files changed, 231 insertions(+), 45 deletions(-)
 
- drivers/net/bonding/bond_alb.c                |   2 +-
- drivers/net/bonding/bond_main.c               |  30 +-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   2 +-
- .../net/ethernet/netronome/nfp/nfp_net_repr.c |  18 -
- drivers/net/hamradio/bpqether.c               |  22 -
- drivers/net/hyperv/netvsc_drv.c               |   2 -
- drivers/net/ipvlan/ipvlan_main.c              |   2 -
- drivers/net/macsec.c                          |  18 -
- drivers/net/macvlan.c                         |  19 -
- drivers/net/ppp/ppp_generic.c                 |   2 -
- drivers/net/team/team.c                       |  16 +-
- drivers/net/vrf.c                             |   1 -
- drivers/net/vxlan.c                           |  53 +-
- .../net/wireless/intersil/hostap/hostap_hw.c  |  25 -
- drivers/net/wireless/virt_wifi.c              |  54 +-
- include/linux/if_macvlan.h                    |   1 -
- include/linux/if_team.h                       |   1 +
- include/linux/if_vlan.h                       |  11 -
- include/linux/netdevice.h                     |  61 +-
- include/net/bonding.h                         |   2 +-
- include/net/vxlan.h                           |   1 +
- net/8021q/vlan.c                              |   1 -
- net/8021q/vlan_dev.c                          |  33 -
- net/batman-adv/soft-interface.c               |  32 -
- net/bluetooth/6lowpan.c                       |   8 -
- net/bridge/br_device.c                        |   8 -
- net/core/dev.c                                | 618 +++++++++++++-----
- net/core/dev_addr_lists.c                     |  12 +-
- net/core/rtnetlink.c                          |   1 +
- net/dsa/master.c                              |   5 -
- net/dsa/slave.c                               |  12 -
- net/ieee802154/6lowpan/core.c                 |   8 -
- net/l2tp/l2tp_eth.c                           |   1 -
- net/netrom/af_netrom.c                        |  23 -
- net/rose/af_rose.c                            |  23 -
- net/sched/sch_generic.c                       |  17 +-
- net/smc/smc_core.c                            |   2 +-
- net/smc/smc_pnet.c                            |   2 +-
- 38 files changed, 628 insertions(+), 521 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 9eda1c31d1f7..38c5909e1c35 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1649,6 +1649,8 @@ enum netdev_priv_flags {
+  * 	@perm_addr:		Permanent hw address
+  * 	@addr_assign_type:	Hw address assignment type
+  * 	@addr_len:		Hardware address length
++ *	@upper_level:		Maximum depth level of upper devices.
++ *	@lower_level:		Maximum depth level of lower devices.
+  *	@neigh_priv_len:	Used in neigh_alloc()
+  * 	@dev_id:		Used to differentiate devices that share
+  * 				the same link layer address
+@@ -1875,6 +1877,8 @@ struct net_device {
+ 	unsigned char		perm_addr[MAX_ADDR_LEN];
+ 	unsigned char		addr_assign_type;
+ 	unsigned char		addr_len;
++	unsigned char		upper_level;
++	unsigned char		lower_level;
+ 	unsigned short		neigh_priv_len;
+ 	unsigned short          dev_id;
+ 	unsigned short          dev_port;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index bf3ed413abaf..ab0edfc4a422 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -146,6 +146,7 @@
+ #include "net-sysfs.h"
+ 
+ #define MAX_GRO_SKBS 8
++#define MAX_NEST_DEV 8
+ 
+ /* This should be increased if a protocol with a bigger head is added. */
+ #define GRO_MAX_HEAD (MAX_HEADER + 128)
+@@ -6644,6 +6645,21 @@ struct net_device *netdev_upper_get_next_dev_rcu(struct net_device *dev,
+ }
+ EXPORT_SYMBOL(netdev_upper_get_next_dev_rcu);
+ 
++static struct net_device *netdev_next_upper_dev(struct net_device *dev,
++						struct list_head **iter)
++{
++	struct netdev_adjacent *upper;
++
++	upper = list_entry((*iter)->next, struct netdev_adjacent, list);
++
++	if (&upper->list == &dev->adj_list.upper)
++		return NULL;
++
++	*iter = &upper->list;
++
++	return upper->dev;
++}
++
+ static struct net_device *netdev_next_upper_dev_rcu(struct net_device *dev,
+ 						    struct list_head **iter)
+ {
+@@ -6661,28 +6677,93 @@ static struct net_device *netdev_next_upper_dev_rcu(struct net_device *dev,
+ 	return upper->dev;
+ }
+ 
++static int netdev_walk_all_upper_dev(struct net_device *dev,
++				     int (*fn)(struct net_device *dev,
++					       void *data),
++				     void *data)
++{
++	struct net_device *udev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
++	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
++	int ret, cur = 0;
++
++	now = dev;
++	iter = &dev->adj_list.upper;
++
++	while (1) {
++		if (now != dev) {
++			ret = fn(now, data);
++			if (ret)
++				return ret;
++		}
++
++		next = NULL;
++		while (1) {
++			udev = netdev_next_upper_dev(now, &iter);
++			if (!udev)
++				break;
++
++			next = udev;
++			niter = &udev->adj_list.upper;
++			dev_stack[cur] = now;
++			iter_stack[cur++] = iter;
++			break;
++		}
++
++		if (!next) {
++			if (!cur)
++				return 0;
++			next = dev_stack[--cur];
++			niter = iter_stack[cur];
++		}
++
++		now = next;
++		iter = niter;
++	}
++
++	return 0;
++}
++
+ int netdev_walk_all_upper_dev_rcu(struct net_device *dev,
+ 				  int (*fn)(struct net_device *dev,
+ 					    void *data),
+ 				  void *data)
+ {
+-	struct net_device *udev;
+-	struct list_head *iter;
+-	int ret;
++	struct net_device *udev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
++	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
++	int ret, cur = 0;
+ 
+-	for (iter = &dev->adj_list.upper,
+-	     udev = netdev_next_upper_dev_rcu(dev, &iter);
+-	     udev;
+-	     udev = netdev_next_upper_dev_rcu(dev, &iter)) {
+-		/* first is the upper device itself */
+-		ret = fn(udev, data);
+-		if (ret)
+-			return ret;
++	now = dev;
++	iter = &dev->adj_list.upper;
+ 
+-		/* then look at all of its upper devices */
+-		ret = netdev_walk_all_upper_dev_rcu(udev, fn, data);
+-		if (ret)
+-			return ret;
++	while (1) {
++		if (now != dev) {
++			ret = fn(now, data);
++			if (ret)
++				return ret;
++		}
++
++		next = NULL;
++		while (1) {
++			udev = netdev_next_upper_dev_rcu(now, &iter);
++			if (!udev)
++				break;
++
++			next = udev;
++			niter = &udev->adj_list.upper;
++			dev_stack[cur] = now;
++			iter_stack[cur++] = iter;
++			break;
++		}
++
++		if (!next) {
++			if (!cur)
++				return 0;
++			next = dev_stack[--cur];
++			niter = iter_stack[cur];
++		}
++
++		now = next;
++		iter = niter;
+ 	}
+ 
+ 	return 0;
+@@ -6790,23 +6871,42 @@ int netdev_walk_all_lower_dev(struct net_device *dev,
+ 					void *data),
+ 			      void *data)
+ {
+-	struct net_device *ldev;
+-	struct list_head *iter;
+-	int ret;
++	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
++	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
++	int ret, cur = 0;
+ 
+-	for (iter = &dev->adj_list.lower,
+-	     ldev = netdev_next_lower_dev(dev, &iter);
+-	     ldev;
+-	     ldev = netdev_next_lower_dev(dev, &iter)) {
+-		/* first is the lower device itself */
+-		ret = fn(ldev, data);
+-		if (ret)
+-			return ret;
++	now = dev;
++	iter = &dev->adj_list.lower;
+ 
+-		/* then look at all of its lower devices */
+-		ret = netdev_walk_all_lower_dev(ldev, fn, data);
+-		if (ret)
+-			return ret;
++	while (1) {
++		if (now != dev) {
++			ret = fn(now, data);
++			if (ret)
++				return ret;
++		}
++
++		next = NULL;
++		while (1) {
++			ldev = netdev_next_lower_dev(now, &iter);
++			if (!ldev)
++				break;
++
++			next = ldev;
++			niter = &ldev->adj_list.lower;
++			dev_stack[cur] = now;
++			iter_stack[cur++] = iter;
++			break;
++		}
++
++		if (!next) {
++			if (!cur)
++				return 0;
++			next = dev_stack[--cur];
++			niter = iter_stack[cur];
++		}
++
++		now = next;
++		iter = niter;
+ 	}
+ 
+ 	return 0;
+@@ -6827,28 +6927,93 @@ static struct net_device *netdev_next_lower_dev_rcu(struct net_device *dev,
+ 	return lower->dev;
+ }
+ 
+-int netdev_walk_all_lower_dev_rcu(struct net_device *dev,
+-				  int (*fn)(struct net_device *dev,
+-					    void *data),
+-				  void *data)
++static u8 __netdev_upper_depth(struct net_device *dev)
++{
++	struct net_device *udev;
++	struct list_head *iter;
++	u8 max_depth = 0;
++
++	for (iter = &dev->adj_list.upper,
++	     udev = netdev_next_upper_dev(dev, &iter);
++	     udev;
++	     udev = netdev_next_upper_dev(dev, &iter)) {
++		if (max_depth < udev->upper_level)
++			max_depth = udev->upper_level;
++	}
++
++	return max_depth;
++}
++
++static u8 __netdev_lower_depth(struct net_device *dev)
+ {
+ 	struct net_device *ldev;
+ 	struct list_head *iter;
+-	int ret;
++	u8 max_depth = 0;
+ 
+ 	for (iter = &dev->adj_list.lower,
+-	     ldev = netdev_next_lower_dev_rcu(dev, &iter);
++	     ldev = netdev_next_lower_dev(dev, &iter);
+ 	     ldev;
+-	     ldev = netdev_next_lower_dev_rcu(dev, &iter)) {
+-		/* first is the lower device itself */
+-		ret = fn(ldev, data);
+-		if (ret)
+-			return ret;
++	     ldev = netdev_next_lower_dev(dev, &iter)) {
++		if (max_depth < ldev->lower_level)
++			max_depth = ldev->lower_level;
++	}
+ 
+-		/* then look at all of its lower devices */
+-		ret = netdev_walk_all_lower_dev_rcu(ldev, fn, data);
+-		if (ret)
+-			return ret;
++	return max_depth;
++}
++
++static int __netdev_update_upper_level(struct net_device *dev, void *data)
++{
++	dev->upper_level = __netdev_upper_depth(dev) + 1;
++	return 0;
++}
++
++static int __netdev_update_lower_level(struct net_device *dev, void *data)
++{
++	dev->lower_level = __netdev_lower_depth(dev) + 1;
++	return 0;
++}
++
++int netdev_walk_all_lower_dev_rcu(struct net_device *dev,
++				  int (*fn)(struct net_device *dev,
++					    void *data),
++				  void *data)
++{
++	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
++	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
++	int ret, cur = 0;
++
++	now = dev;
++	iter = &dev->adj_list.lower;
++
++	while (1) {
++		if (now != dev) {
++			ret = fn(now, data);
++			if (ret)
++				return ret;
++		}
++
++		next = NULL;
++		while (1) {
++			ldev = netdev_next_lower_dev_rcu(now, &iter);
++			if (!ldev)
++				break;
++
++			next = ldev;
++			niter = &ldev->adj_list.lower;
++			dev_stack[cur] = now;
++			iter_stack[cur++] = iter;
++			break;
++		}
++
++		if (!next) {
++			if (!cur)
++				return 0;
++			next = dev_stack[--cur];
++			niter = iter_stack[cur];
++		}
++
++		now = next;
++		iter = niter;
+ 	}
+ 
+ 	return 0;
+@@ -7105,6 +7270,9 @@ static int __netdev_upper_dev_link(struct net_device *dev,
+ 	if (netdev_has_upper_dev(upper_dev, dev))
+ 		return -EBUSY;
+ 
++	if ((dev->lower_level + upper_dev->upper_level) > MAX_NEST_DEV)
++		return -EMLINK;
++
+ 	if (!master) {
+ 		if (netdev_has_upper_dev(dev, upper_dev))
+ 			return -EEXIST;
+@@ -7131,6 +7299,12 @@ static int __netdev_upper_dev_link(struct net_device *dev,
+ 	if (ret)
+ 		goto rollback;
+ 
++	__netdev_update_upper_level(dev, NULL);
++	netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
++
++	__netdev_update_lower_level(upper_dev, NULL);
++	netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level, NULL);
++
+ 	return 0;
+ 
+ rollback:
+@@ -7213,6 +7387,12 @@ void netdev_upper_dev_unlink(struct net_device *dev,
+ 
+ 	call_netdevice_notifiers_info(NETDEV_CHANGEUPPER,
+ 				      &changeupper_info.info);
++
++	__netdev_update_upper_level(dev, NULL);
++	netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
++
++	__netdev_update_lower_level(upper_dev, NULL);
++	netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level, NULL);
+ }
+ EXPORT_SYMBOL(netdev_upper_dev_unlink);
+ 
+@@ -9212,6 +9392,8 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+ 
+ 	dev->gso_max_size = GSO_MAX_SIZE;
+ 	dev->gso_max_segs = GSO_MAX_SEGS;
++	dev->upper_level = 1;
++	dev->lower_level = 1;
+ 
+ 	INIT_LIST_HEAD(&dev->napi_list);
+ 	INIT_LIST_HEAD(&dev->unreg_list);
 -- 
 2.17.1
 
