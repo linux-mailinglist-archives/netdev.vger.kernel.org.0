@@ -2,104 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA16DE49B
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 08:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27918DE49E
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 08:33:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbfJUGbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 02:31:24 -0400
-Received: from mx2.suse.de ([195.135.220.15]:54536 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726039AbfJUGbY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Oct 2019 02:31:24 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id B54E2B387;
-        Mon, 21 Oct 2019 06:31:22 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 64296E3C6D; Mon, 21 Oct 2019 08:31:22 +0200 (CEST)
-Date:   Mon, 21 Oct 2019 08:31:22 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Maciej =?iso-8859-2?Q?=AFenczykowski?= <zenczykowski@gmail.com>,
-        Maciej =?iso-8859-2?Q?=AFenczykowski?= <maze@google.com>,
-        "John W . Linville" <linville@tuxdriver.com>
-Subject: Re: [PATCH 02/33] fix unused parameter warnings in do_version() and
- show_usage()
-Message-ID: <20191021063122.GC27784@unicorn.suse.cz>
-References: <CAHo-Ooze4yTO_yeimV-XSD=AXvvd0BmbKdvUK4bKWN=+LXirYQ@mail.gmail.com>
- <20191017182121.103569-1-zenczykowski@gmail.com>
- <20191017182121.103569-2-zenczykowski@gmail.com>
+        id S1726424AbfJUGdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 02:33:04 -0400
+Received: from dvalin.narfation.org ([213.160.73.56]:33178 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbfJUGdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 02:33:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1571639580;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=f8Na+LpUnC8JqDzImVYyMaPGE+qt4/Ni60vqdp8XrY8=;
+        b=syXmfz8mKLUBM1cGhnWNvHBYSh0aKWq8MhW/asgTnjdfU2L/PxVDQdDyu8YF9k8y+pIyqs
+        aSOIA4lTT3JstP8wWxFKYMQSLs0G1pUAyzE7YQJbs7sWyjV/hmLMWDJBbI0k2REkQ4xrKw
+        T6nQAzCRX3HKyfei2AOTJuAUT71rS1E=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     syzbot <syzbot+7dd2da51d8ae6f990403@syzkaller.appspotmail.com>
+Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
+Subject: Re: general protection fault in batadv_iv_ogm_queue_add
+Date:   Mon, 21 Oct 2019 08:32:27 +0200
+Message-ID: <2128256.8pjUZaGXEE@bentobox>
+In-Reply-To: <000000000000ccde8d059564d93d@google.com>
+References: <000000000000ccde8d059564d93d@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191017182121.103569-2-zenczykowski@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/signed; boundary="nextPart3485240.qhH8nyTcuX"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 17, 2019 at 11:20:50AM -0700, Maciej ¯enczykowski wrote:
-> From: Maciej ¯enczykowski <maze@google.com>
-> 
-> This fixes:
->   external/ethtool/ethtool.c:473:43: error: unused parameter 'ctx' [-Werror,-Wunused-parameter]
->   static int do_version(struct cmd_context *ctx)
-> 
->   external/ethtool/ethtool.c:5392:43: error: unused parameter 'ctx' [-Werror,-Wunused-parameter]
->   static int show_usage(struct cmd_context *ctx)
-> 
-> Signed-off-by: Maciej ¯enczykowski <maze@google.com>
-> Change-Id: I0cc52f33bb0e8d7627f5e84bb4e3dfa821d17cc8
-> ---
->  ethtool.c  | 4 ++--
->  internal.h | 2 ++
->  2 files changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/ethtool.c b/ethtool.c
-> index 082e37f..5e0deda 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -470,7 +470,7 @@ static int rxflow_str_to_type(const char *str)
->  	return flow_type;
->  }
->  
-> -static int do_version(struct cmd_context *ctx)
-> +static int do_version(struct cmd_context *ctx maybe_unused)
->  {
+--nextPart3485240.qhH8nyTcuX
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-Considering how frequent this pattern (a callback where not all
-instances use all parameters) is, maybe we could consider disabling the
-warning with -Wno-unused-parameter instead of marking all places where
-it is issued.
-
-Michal Kubecek
-
->  	fprintf(stdout,
->  		PACKAGE " version " VERSION
-> @@ -5484,7 +5484,7 @@ static const struct option {
->  	{}
->  };
->  
-> -static int show_usage(struct cmd_context *ctx)
-> +static int show_usage(struct cmd_context *ctx maybe_unused)
->  {
->  	int i;
->  
-> diff --git a/internal.h b/internal.h
-> index aecf1ce..ff52c6e 100644
-> --- a/internal.h
-> +++ b/internal.h
-> @@ -23,6 +23,8 @@
->  #include <sys/ioctl.h>
->  #include <net/if.h>
->  
-> +#define maybe_unused __attribute__((__unused__))
-> +
->  /* ethtool.h expects these to be defined by <linux/types.h> */
->  #ifndef HAVE_BE_TYPES
->  typedef uint16_t __be16;
-> -- 
-> 2.23.0.866.gb869b98d4c-goog
+On Monday, 21 October 2019 07:21:06 CEST syzbot wrote:
+[...]
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+7dd2da51d8ae6f990403@syzkaller.appspotmail.com
 > 
+> kasan: CONFIG_KASAN_INLINE enabled
+> kasan: GPF could be caused by NULL-ptr deref or user memory access
+> general protection fault: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 0 PID: 4256 Comm: kworker/u4:0 Not tainted 5.4.0-rc3+ #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+> Google 01/01/2011
+> Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
+> RIP: 0010:batadv_iv_ogm_queue_add+0x49/0x1120  
+> net/batman-adv/bat_iv_ogm.c:605
+> Code: 48 89 75 b8 48 89 4d c0 4c 89 45 b0 44 89 4d d0 e8 fc 02 46 fa 48 8d  
+> 7b 03 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48  
+> 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 18 0d 00 00
+> RSP: 0018:ffff88805d2cfb80 EFLAGS: 00010246
+> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffff888092284000
+> RDX: 0000000000000000 RSI: ffffffff872d1214 RDI: 0000000000000003
+> RBP: ffff88805d2cfc18 R08: ffff888092284000 R09: 0000000000000001
+> R10: ffffed100ba59f77 R11: 0000000000000003 R12: dffffc0000000000
+> R13: ffffed101245080e R14: ffff888092284000 R15: 0000000100051cf6
+> FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000200002c0 CR3: 00000000a421b000 CR4: 00000000001426f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>   batadv_iv_ogm_schedule+0xb0b/0xe50 net/batman-adv/bat_iv_ogm.c:813
+>   batadv_iv_send_outstanding_bat_ogm_packet+0x580/0x760  
+> net/batman-adv/bat_iv_ogm.c:1675
+
+I am guessing that the fix for this is queued up since a while at 
+ https://git.open-mesh.org/linux-merge.git/commit/40e220b4218bb3d278e5e8cc04ccdfd1c7ff8307
+
+Kind regards,
+	Sven
+--nextPart3485240.qhH8nyTcuX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl2tUPsACgkQXYcKB8Em
+e0ZceA/+OtAsNK+rKyCKhKluFI1maGPynDOVKdN3fkopRfC6pfxPDtjyvU6R4fbH
+3XYTc6dQ8UBVltpEJ/0cNHCxuaEUjNRYM7rT3a+SD52ge/vJdIR1SdPpVY7UaQj9
+plnFQBF7vSR/YoEfsXLyCFg1S/m237HGU4antFgJ7eNXgx/zSgKZ7tsXnaIDVbsP
+iWsr+PXJ5RQzWDubFfDpJSyvCQn0XPztypLZRKsfa+bo73PqGn3WEWsA/I/QKwTu
+7xUbIWtWEzqciX43489rtkAY2SvoeZAYPckXDs/D2udpdGEVJOLZ4xJCyDpVVfyR
++qm1au5OnHtKg4nMmyi60YLAmh+VN0t2E0GgByabgp7PQ6rgYIEB00Q2Muys1Mhn
+agZ6Z9s4u118mjof9f8eJ1tv1Sx2aRRK+wBOvuOeb6tpoXSDqMV+YZP5TtZ9zETg
+NN63hkKvbrhUYucyxWfkRI6x6pwbZHh3MoggT+34ShO/gzZdZV3S6IgDPpRhPYaL
+Sjhno54NZ84oROcswA6b0gF2T/WD46ebZXxwjN0BIoThQX0U2fk/Hq4sCzTc0Fdt
+7R3yK1SWI/yxLf2MHRqSm8MK066xj92gckB4VU8riRjUIbU+nt4mmTzRgdvXvsyY
+UnrIIU0H3QSx+v56qHpFsFID5wu5BKjm2vKgrokmd9dSokXUSJs=
+=GRad
+-----END PGP SIGNATURE-----
+
+--nextPart3485240.qhH8nyTcuX--
+
+
+
