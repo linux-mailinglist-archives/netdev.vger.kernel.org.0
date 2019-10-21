@@ -2,77 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2BADF041
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809F9DF080
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728958AbfJUOqZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 10:46:25 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55809 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727822AbfJUOqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 10:46:25 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-194-8mmcC7mCPo2YOUBN4MF_Xw-1; Mon, 21 Oct 2019 15:46:21 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 21 Oct 2019 15:46:20 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 21 Oct 2019 15:46:20 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Yunsheng Lin' <linyunsheng@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "allison@lohutok.net" <allison@lohutok.net>,
-        "mmanning@vyatta.att-mail.com" <mmanning@vyatta.att-mail.com>,
-        "petrm@mellanox.com" <petrm@mellanox.com>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH RFC] net: vlan: reverse 4 bytes of vlan header when
- setting initial MTU
-Thread-Topic: [PATCH RFC] net: vlan: reverse 4 bytes of vlan header when
- setting initial MTU
-Thread-Index: AQHViAshdgiBu05N4kSdJcAPfvn0KKdlLGIQ
-Date:   Mon, 21 Oct 2019 14:46:20 +0000
-Message-ID: <8f07f4aad98e44358b92e1e340df131f@AcuMS.aculab.com>
-References: <1571660763-117936-1-git-send-email-linyunsheng@huawei.com>
-In-Reply-To: <1571660763-117936-1-git-send-email-linyunsheng@huawei.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-X-MC-Unique: 8mmcC7mCPo2YOUBN4MF_Xw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S1728842AbfJUOwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 10:52:47 -0400
+Received: from andre.telenet-ops.be ([195.130.132.53]:43080 "EHLO
+        andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727847AbfJUOwK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 10:52:10 -0400
+Received: from ramsan ([84.194.98.4])
+        by andre.telenet-ops.be with bizsmtp
+        id GErr2100905gfCL01Erri1; Mon, 21 Oct 2019 16:52:09 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iMZ2E-00075d-VZ; Mon, 21 Oct 2019 16:51:50 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iMZ2E-0008FP-Rq; Mon, 21 Oct 2019 16:51:50 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     =?UTF-8?q?Breno=20Leit=C3=A3o?= <leitao@debian.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        David@rox.of.borg, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Casey Leedom <leedom@chelsio.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Kevin Hilman <khilman@kernel.org>, Nishanth Menon <nm@ti.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/5] debugfs: Remove casts in debugfs_create_*() callers
+Date:   Mon, 21 Oct 2019 16:51:44 +0200
+Message-Id: <20191021145149.31657-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin
-> Sent: 21 October 2019 13:26
-> Currently the MTU of vlan netdevice is set to the same MTU
-> of the lower device, which requires the underlying device
-> to handle it as the comment has indicated:
-> 
-> 	/* need 4 bytes for extra VLAN header info,
-> 	 * hope the underlying device can handle it.
-> 	 */
-> 	new_dev->mtu = real_dev->mtu;
-> 
-> Currently most of the physical netdevs seems to handle above
-> by reversing 2 * VLAN_HLEN for L2 packet len.
+	Hi all,
 
-s/reverse/reserve/g
+Casting parameters in debugfs_create_*() calls prevents the compiler
+from performing some checks.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Hence this patch series removes superfluous casts, or reworks code to no
+longer need the casts.
 
+All patches can be applied independently, there are no dependencies.
+Thanks for your comments!
+
+Geert Uytterhoeven (5):
+  crypto: nx - Improve debugfs_create_u{32,64}() handling for atomics
+  cxgb4/cxgb4vf: Remove superfluous void * cast in debugfs_create_file()
+    call
+  drm/amdgpu: Remove superfluous void * cast in debugfs_create_file()
+    call
+  power: avs: smartreflex: Remove superfluous cast in
+    debugfs_create_file() call
+  ionic: Use debugfs_create_bool() to export bool
+
+ drivers/crypto/nx/nx_debugfs.c                 | 18 +++++++++---------
+ drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c    |  4 ++--
+ .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c    |  2 +-
+ .../ethernet/pensando/ionic/ionic_debugfs.c    |  3 +--
+ drivers/power/avs/smartreflex.c                |  2 +-
+ 5 files changed, 14 insertions(+), 15 deletions(-)
+
+-- 
+2.17.1
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
