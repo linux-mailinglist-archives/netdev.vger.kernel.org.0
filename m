@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D92DF723
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9A9DF721
 	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730630AbfJUUwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 16:52:45 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:40857 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730419AbfJUUvq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:51:46 -0400
-Received: by mail-qt1-f195.google.com with SMTP id o49so15489581qta.7;
-        Mon, 21 Oct 2019 13:51:45 -0700 (PDT)
+        id S1730466AbfJUUvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 16:51:49 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:33624 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730447AbfJUUvs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:51:48 -0400
+Received: by mail-qt1-f194.google.com with SMTP id r5so23383712qtd.0;
+        Mon, 21 Oct 2019 13:51:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zmHdrtIAzJso5M2LnfOM9dJxmuEt0nVQPAtxHNuTfN0=;
-        b=GzzTpeJRM7yMt0wzr6zYJanU1LYDbykEABgzZadCW267nFtj1ftBq21ED3PXsAsfEl
-         UkfbcB4n85nGz/dZP9cWFawbA6odiu8dfszb9qemzJxXj3LGEq1HyaarT/IcvGtSQmPr
-         c7ljYE/57R4BVxm5vpxXqoBxCP8GxvQb62LK8BJC5LRGhWfLNvb7aEGbvyzegyO5o/YQ
-         m1GsWu9B4G2PNBVLp0SNhOVVYMs0VQb4oxYXa7F4Nu6bIo5W/IzNrAW8ngQj2jQC60An
-         QT/uxyPVk3/eaL50hnkVbImAe6AL7zbjhDJPqhZ7my+Bul6O7mQXI8Ca7CWhACcLSrTy
-         meDQ==
+        bh=gP5aOGQm4RR5GKmbETJdksv4+Dy+n4KwJgPC+qtGMS4=;
+        b=Lbv5YQgUMc4hjqTtCjXgAOUYrLfjzad1Mv/7k3vVcHQMXYKsOSEZQW9mpUtZnBv89h
+         W4BoyD2RnNqkfprfA9aoPVC+CHJ8/gvaK6c/rT85Xqv+udNExtaN7jasi8uKdZkwhIpN
+         kS+ZmdIA4Br215x3Geea3DJ8HQQsmBknv7mCzFAFjShXFMaSo7K+hWWTI0+W6UvQzyz3
+         vEpE/ehZMSkYnID4X1z7MPPg5LWkAn0vEVkx9FimEdfuwDFiokq1OdyTQM3xCXH3rnAT
+         oq7rNqetqcJObM9HgVpNLzQdoHONSYTN3pyvywZ876PS8gvkmmbAjM21ke6YGbubaRtS
+         Yymw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zmHdrtIAzJso5M2LnfOM9dJxmuEt0nVQPAtxHNuTfN0=;
-        b=Fa0kZpkiLnaK3HhpeWSeQWzOI60rZkG8iBqJsWJldZFqXshlSKVR1bI0QYvFiC8nqt
-         e68Tr3qg5HyqLqG5bLo9U5rlr98whTQN9W/XsxYGNZYjcGQV0p5+sJ+OHPB9sL609k1U
-         mdjuRTdEbE9YuIsPe5zSkV3onmCgRWA6bAFn1F5uej2cNxTDEeg4iUlEfx3RG0ufYbXg
-         Rm54QPrmSmeHUa0OgaCR/8D6qsqWkxCRhCpBT8FaHX/levA7yMErswr6cUk2pgkZY9bP
-         sogU/DLBTmtKPpo+Z8UiuGrBEqj//TDE1p/Ai3w4JSU8hfLR4DF52708E9No2bhn7hnY
-         42KA==
-X-Gm-Message-State: APjAAAXr9tamX5xIQ3vkHtI/5q07h+r60YjsPREv5Fn7a0cvM7WGmI6r
-        jeo9F3dmKfnv/G+qX8Eq59k=
-X-Google-Smtp-Source: APXvYqxwQNRDu9W+lllrC0cZIgapYpZAbmxA+Pti7psCTsJqoJc8nRSthG6dU+OqkQURuZOsI3JgPQ==
-X-Received: by 2002:ac8:23e8:: with SMTP id r37mr27024190qtr.365.1571691105393;
-        Mon, 21 Oct 2019 13:51:45 -0700 (PDT)
+        bh=gP5aOGQm4RR5GKmbETJdksv4+Dy+n4KwJgPC+qtGMS4=;
+        b=MucsVzX8zO/N71x9JyGnCmBQdZV4O7Ch+S9JCswxFE/Un8Rcnhds0XA6fD9S/cx0A6
+         CZAjzqMj+Njyr+uFwcjx6A5rVsKSGDtVQMBirISLKdTxX33aXW3Dc25vtL1E5R0wtztQ
+         fTkD1T0halHQaVEtyVUjvxW9mDBrrri0s9vFA0IIcIlujdC8aZ3ftuqBFO5veLTaW5LF
+         7AcsuoopJAAEisCX+1OYlLIXPHz+mKmTLf3Xv82zECjpZnlu1CdLZtbQk7Y+3CyzZH9W
+         eO+A4JH9isbBbxv+GeCP+5S1rxECZndP5sFgagdE8y10HDFQGVb19ZXOuoixkYH6phTU
+         zfCQ==
+X-Gm-Message-State: APjAAAXxnxx/CjeuEJ+/QFOSHbvbyUUhCS2PJVOWJJ+4z0Yfx7IgWtco
+        prMjwYv9ICd7dPX1vb+kx4c=
+X-Google-Smtp-Source: APXvYqwqgl2+x5QDiF30Xi6fe1sHX39dluDbPbiQdvGRO5PLttsHdkhV3cdbNqv85ppspZKJmDd65A==
+X-Received: by 2002:a05:6214:4a:: with SMTP id c10mr8293515qvr.89.1571691107093;
+        Mon, 21 Oct 2019 13:51:47 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id o13sm2272328qto.96.2019.10.21.13.51.44
+        by smtp.gmail.com with ESMTPSA id y5sm8292049qki.108.2019.10.21.13.51.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 13:51:44 -0700 (PDT)
+        Mon, 21 Oct 2019 13:51:46 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 06/16] net: dsa: use ports list for routing table setup
-Date:   Mon, 21 Oct 2019 16:51:20 -0400
-Message-Id: <20191021205130.304149-7-vivien.didelot@gmail.com>
+Subject: [PATCH net-next v2 07/16] net: dsa: use ports list to find a port by node
+Date:   Mon, 21 Oct 2019 16:51:21 -0400
+Message-Id: <20191021205130.304149-8-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191021205130.304149-1-vivien.didelot@gmail.com>
 References: <20191021205130.304149-1-vivien.didelot@gmail.com>
@@ -63,42 +63,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new ports list instead of accessing the dsa_switch array
-of ports when iterating over DSA ports of a switch to set up the
-routing table.
+Use the new ports list instead of iterating over switches and their
+ports to find a port from a given node.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/dsa/dsa2.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/dsa/dsa2.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
 
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 01b6047d9b7b..623805ba8e1a 100644
+index 623805ba8e1a..a4de7ff8b19b 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -157,6 +157,7 @@ static bool dsa_port_setup_routing_table(struct dsa_port *dp)
- 
- static bool dsa_switch_setup_routing_table(struct dsa_switch *ds)
+@@ -113,22 +113,11 @@ static bool dsa_port_is_user(struct dsa_port *dp)
+ static struct dsa_port *dsa_tree_find_port_by_node(struct dsa_switch_tree *dst,
+ 						   struct device_node *dn)
  {
-+	struct dsa_switch_tree *dst = ds->dst;
- 	bool complete = true;
+-	struct dsa_switch *ds;
  	struct dsa_port *dp;
- 	int i;
-@@ -164,10 +165,8 @@ static bool dsa_switch_setup_routing_table(struct dsa_switch *ds)
- 	for (i = 0; i < DSA_MAX_SWITCHES; i++)
- 		ds->rtable[i] = DSA_RTABLE_NONE;
- 
--	for (i = 0; i < ds->num_ports; i++) {
--		dp = &ds->ports[i];
+-	int device, port;
 -
--		if (dsa_port_is_dsa(dp)) {
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		if (dp->ds == ds && dsa_port_is_dsa(dp)) {
- 			complete = dsa_port_setup_routing_table(dp);
- 			if (!complete)
- 				break;
+-	for (device = 0; device < DSA_MAX_SWITCHES; device++) {
+-		ds = dst->ds[device];
+-		if (!ds)
+-			continue;
+ 
+-		for (port = 0; port < ds->num_ports; port++) {
+-			dp = &ds->ports[port];
+-
+-			if (dp->dn == dn)
+-				return dp;
+-		}
+-	}
++	list_for_each_entry(dp, &dst->ports, list)
++		if (dp->dn == dn)
++			return dp;
+ 
+ 	return NULL;
+ }
 -- 
 2.23.0
 
