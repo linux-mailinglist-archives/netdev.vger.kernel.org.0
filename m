@@ -2,67 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22085DE52D
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 09:17:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54943DE52F
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 09:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727332AbfJUHRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 03:17:55 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:46671 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726480AbfJUHRz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 03:17:55 -0400
-Received: by mail-yw1-f65.google.com with SMTP id l64so4528132ywe.13
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 00:17:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RBIYORf0syka+WuaqQ4HNycL5g+DlxcP+y84DLNPIoY=;
-        b=taKpaMyUTgeeDD972MIZjt3FUsoJpy8NnRcAkW9WJac6tT7IoZAxc6ydaNDtF41Eew
-         2mPV8OnqnvXQOOvW/lR4CgP4GR9FaZSLQqPAALdWBbv5c4qvbIUWTC/KFyihXK8WT3Vf
-         AsWJBBZe4BaFpr+oJPcGMSXIkYUKtKIcltDw7DN2vrgpJb+Y2lEzcgLndvzlHFHyEDN8
-         8AVIonRqFKHxwj4AJsGEB5HQ54LYQsTa0e+MoNvZDkxqfcSJy6r1xwX+pe3IVXgZK8H9
-         9enbs6a2QciXfhrKorhD/o5QbabF/E1weLPWjzhPQsqMic84xLGaF8ecl3o1jxXD3hNc
-         yzlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RBIYORf0syka+WuaqQ4HNycL5g+DlxcP+y84DLNPIoY=;
-        b=YsBaL/VnGkT1CjqCWWWbwhl/1xBMSViWSRbsp02vLOuSUhuK568TBJUqOO7FueahC2
-         YzdQR1gvH2pz782xts+d5iejx+3AFMUR1gGhYHlcttvo1P10q0vgHjlX6evji6St9AFH
-         qEuL2rVl1qYxFdz6yjsKhGoRg+2ndQlOJMgVaXMHo3WhdqN9gSzwX3kUxOeoYJtzCULi
-         qNkn+n8JGfPCLyVS233PDXgfkjSygE98EYQf2Ut6wDgmitvyTT6UZz7tzCtzYUg8+Zmj
-         R5LZBoEl9xzdfZZ6PsVoXyUTlxQDABE+1CiQMzuBavh8ZV12DapEAwnL4OKXH0/Zsm0G
-         kO5g==
-X-Gm-Message-State: APjAAAXNUYF4+IPjbPEmy7PrY0mVENvAzMGdJavbvv6B0SBxyTi3SOC6
-        3PYDQf+qkF4QHDek0G1TdI6m1piWd+0wg1wy3EgnGAluC37BbQ==
-X-Google-Smtp-Source: APXvYqwJvUe2t2v+8kA1cTLWwj29O/8DPe0M9xioQFQffRpQ98JKhshAxgzFHaC+UKPXmhjH1OLU6/ATKy7RV42RIUA=
-X-Received: by 2002:a81:4e0d:: with SMTP id c13mr15066096ywb.52.1571642272488;
- Mon, 21 Oct 2019 00:17:52 -0700 (PDT)
+        id S1727359AbfJUHSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 03:18:20 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48528 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726480AbfJUHSU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 03:18:20 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id CBF8DB311;
+        Mon, 21 Oct 2019 07:18:17 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id DEC0DE3C6D; Mon, 21 Oct 2019 09:18:15 +0200 (CEST)
+Date:   Mon, 21 Oct 2019 09:18:15 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7 06/17] ethtool: netlink bitset handling
+Message-ID: <20191021071815.GE27784@unicorn.suse.cz>
+References: <cover.1570654310.git.mkubecek@suse.cz>
+ <af208e79258e7e3c3af3860e6a8908a50dec095f.1570654310.git.mkubecek@suse.cz>
+ <20191011133429.GA3056@nanopsycho>
+ <20191014111847.GB8493@unicorn.suse.cz>
+ <20191014130205.GA2314@nanopsycho>
 MIME-Version: 1.0
-References: <CAHo-Ooze4yTO_yeimV-XSD=AXvvd0BmbKdvUK4bKWN=+LXirYQ@mail.gmail.com>
- <20191017182121.103569-1-zenczykowski@gmail.com> <20191017182121.103569-2-zenczykowski@gmail.com>
- <20191021063122.GC27784@unicorn.suse.cz>
-In-Reply-To: <20191021063122.GC27784@unicorn.suse.cz>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Mon, 21 Oct 2019 00:17:41 -0700
-Message-ID: <CANP3RGfJJUEm31Qy66et+BWxE40GsaN-XSrtw23rqWgw6CuW1g@mail.gmail.com>
-Subject: Re: [PATCH 02/33] fix unused parameter warnings in do_version() and show_usage()
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Linux NetDev <netdev@vger.kernel.org>,
-        "John W . Linville" <linville@tuxdriver.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191014130205.GA2314@nanopsycho>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Considering how frequent this pattern (a callback where not all
-> instances use all parameters) is, maybe we could consider disabling the
-> warning with -Wno-unused-parameter instead of marking all places where
-> it is issued.
+On Mon, Oct 14, 2019 at 03:02:05PM +0200, Jiri Pirko wrote:
+> Mon, Oct 14, 2019 at 01:18:47PM CEST, mkubecek@suse.cz wrote:
+> >On Fri, Oct 11, 2019 at 03:34:29PM +0200, Jiri Pirko wrote:
+> >> Wed, Oct 09, 2019 at 10:59:18PM CEST, mkubecek@suse.cz wrote:
+> >> >+Bit sets
+> >> >+========
+> >> >+
+> >> >+For short bitmaps of (reasonably) fixed length, standard ``NLA_BITFIELD32``
+> >> >+type is used. For arbitrary length bitmaps, ethtool netlink uses a nested
+> >> >+attribute with contents of one of two forms: compact (two binary bitmaps
+> >> >+representing bit values and mask of affected bits) and bit-by-bit (list of
+> >> >+bits identified by either index or name).
+> >> >+
+> >> >+Compact form: nested (bitset) atrribute contents:
+> >> >+
+> >> >+  ============================  ======  ============================
+> >> >+  ``ETHTOOL_A_BITSET_LIST``     flag    no mask, only a list
+> >> 
+> >> I find "list" a bit confusing name of a flag. Perhaps better to stick
+> >> with the "compact" terminology and make this "ETHTOOL_A_BITSET_COMPACT"?
+> >> Then in the code you can have var "is_compact", which makes the code a
+> >> bit easier to read I believe.
+> >
+> >This is not the same as "compact", "list" flag means that the bit set
+> >does not represent a value/mask pair but only a single bitmap (which can
+> >be understood as a list or subset of possible values).
+> 
+> Okay, this is confusing. So you say that the "LIST" may be on and
+> ETHTOOL_A_BITSET_VALUE present, but ETHTOOL_A_BITSET_MASK not?
+> I thought that whtn "LIST" is on, no "VALUE" nor "MASK" should be here.
+> 
+> >This saves some space in kernel replies where there is no natural mask
+> >so that we would have to invent one (usually all possible bits) but it
+> 
+> Do you have an example?
 
-Once you fix it... it stays fixed.  There's no cost to carrying around
-the extra annotation.
-And the warning still finds other places where you're doing it wrong.
+E.g. peer advertised link modes or the four bitmaps returned in reply to
+query for netdev features (replacement for ETHTOOL_GFEATURES).
+
+> >is more important in request where some request want to modify a subset
+> >of bits (set some, unset some) while some requests pass a list of bits
+> >to be set after the operation (i.e. "I want exactly these to be
+> >enabled").
+> 
+> Hmm, it's a different type of bitset then. Wouldn't it be better to have
+> ETHTOOL_A_BITSET_TYPE
+> and enum:
+> ETHTOOL_A_BITSET_TYPE_LIST
+> ETHTOOL_A_BITSET_TYPE_MASKED
+> or something like that?
+> Or maybe just NLA_FLAG called "MASKED". I don't know, "list" has a
+> specific meaning and this isn't that...
+
+"MASKED" sounds fine to me. After all, there is a good chance there will
+be more cases when bitset without mask will be returned so that it would
+be natural to see unmasked bitmaps as default and value/mask pairs as
+something special.
+
+> >> B) Why don't you do bitmap_to_arr32 conversion in this function just
+> >>    before val/mask put. Then you can use normal test_bit() here.
+> >
+> >This relates to the question (below) why we need two versions of the
+> >functions, one for unsigned long based bitmaps, one for u32 based ones.
+> >The reason is that both are used internally by existing code. So if we
+> >had only one set of bitset functions, callers using the other format
+> >would have to do the wrapping themselves.
+> >
+> >There are two reasons why u32 versions are implemented directly and
+> >usingned long ones as wrappers. First, u32 based bitmaps are more
+> >frequent in existing code. Second, when we can get away with a cast
+> >(i.e. anywhere exect 64-bit big endian), unsigned long based bitmap can
+> >be always interpreted as u32 based bitmap but if we tried it the other
+> >way, we would need a special handling of the last word when the number
+> >of 32-bit words is odd.
+> 
+> Okay. Perhaps you can add it as a comment so it is clear what is going
+> on?
+
+OK
+
+Michal
