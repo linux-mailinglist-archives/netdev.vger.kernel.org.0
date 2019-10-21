@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1875EDF550
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:49:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0BCDF552
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730071AbfJUSsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 14:48:33 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:46191 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727211AbfJUSsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:48:33 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q5so8957589pfg.13;
-        Mon, 21 Oct 2019 11:48:32 -0700 (PDT)
+        id S1730087AbfJUSsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 14:48:42 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41398 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbfJUSsm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:48:42 -0400
+Received: by mail-pg1-f193.google.com with SMTP id t3so8332720pga.8;
+        Mon, 21 Oct 2019 11:48:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=u/4BQ/LF3APbUkXGrSYr1EEGzkov+ZD2GnzwyPSlwuQ=;
-        b=F9C9AKRK0PtPDnn9sVpv/7on+N0qnE74IrwU6FmbUL3X6I27zbaTAdSFcFVXYnDhif
-         9NIC9q28zzRLGSxTvjLgcxZV/DZ/CyRJVLJEN1s43HpBOJqZ+TeHWLcUJrgnUewqqItx
-         gKOVMMNaCmP9v1okRIK8M+Rx4bQp0tTbRXc/3XuyCJ34KbgkPQZNe/ow/uKJT7eNfJRU
-         V1Yv4VzFZzxUzoIb1+DEWN5lKVno2yFdurzsXetaVSfam8o2nuNWBjKrXQUCVaYLuiSr
-         dzyGc2nqAy9ujsDvcGzH79CZxAxMqDL/2wKeymKD8ix2CQpycb6bboCz0BnKOscbjHnX
-         LtZg==
+        bh=R8wsPXAJ6V2ED/gXbQO9+7L+/V/BvBRfwqf0RYxHrFI=;
+        b=SMStliBupAS7ABNmk9C9uDN8g8WFtfeL95tGYv1MzbU4DXOC3OOV7vSJjFYjNVHB/5
+         q1B5NRET9VcREvzLMDYCZUnnylPocJdmeSbX207OPWOgYZ29/73DmYLk/K6ix+WSV38c
+         lQUAh8wZrtNw38Dfo6OXer6jApovorsBhC5jGakc6pM9nzth77wgxJRd7gJZbt1S+JU/
+         uecN5BlvPZpu+puangt3I9vPAJyo6ZBKE4oNRkMJbEw5j5+45BZ5JrQtYR5Q5IV/dBKv
+         ufxWPaSu0tgEvHhk/aMsUHWCDakRIbv9qb75WUS3BIvthRY8qRRkMN2OvtBJD4UaJt7J
+         2CSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=u/4BQ/LF3APbUkXGrSYr1EEGzkov+ZD2GnzwyPSlwuQ=;
-        b=SDxYcTAfp3/TzH/VV1P/N8twkpDoo/m0GQyw0Ru/OOCb6bo4xKpNC+2r51nj4RsX6u
-         wLGnwBKv34iGG38utvONCB6jLcxB7psEljNm5GS8MDvrdvAsrdWA4tWu0A9gD8BN5sCq
-         HJ+KaCxEJLRlmEv070z+5nj4uy0+5VhG1xEoGejLDjpG/wY4qzALWJ1vOvKfHfqHt3FG
-         +Xm9v0lEMOb+yEQJILxZxukmGpFXzqAODF3T5N61cd9qAGyO/F5t2iOwzx8735Y9DVB7
-         6fm2LiWTBbaG7krgPVcSpj7lI7jC3H7h7ssQbXUy0k/omEuHo3UbsLndcnwnUVTXk61V
-         w+Pg==
-X-Gm-Message-State: APjAAAU/RS3hsncvhA/vlBo9f6Io7t1pmlqx9VPiW4TcvNCk86zTy1YJ
-        F+UVgNDL+nWV54B6aPtpQeM=
-X-Google-Smtp-Source: APXvYqye4BEBGC3E1BtSuszBcZz6wdkotcAyqXjs9rB8SVuk2DwxP1VAVIqosuhqkHV+RN92dMjpgA==
-X-Received: by 2002:a65:68c2:: with SMTP id k2mr27084254pgt.241.1571683711752;
-        Mon, 21 Oct 2019 11:48:31 -0700 (PDT)
+        bh=R8wsPXAJ6V2ED/gXbQO9+7L+/V/BvBRfwqf0RYxHrFI=;
+        b=AsBM8KMD/3Vs8bAE0QvRM1NdFC1NpxTP2IAbjavAtjh++lDsVtUXS0/nX/c/vEd07n
+         pf3JR3fqcFihFWfDQcRXGDrng8cG2RJT3p27X8vchiBqmdPYYd29CmOZu9nwouUeo8c0
+         3xOBYojB4e+uve+bws53sMqCbfBGCNAsqj74rzuMXqcigv3dlNC4rMp7kqJAE25mth32
+         kWe6U08lMuEexB/DNltY9O0lrXP2c9djI6grEFMYTSu/YvZ3NvEvpYKM3t8zJO4XWApm
+         kg/2D1q3wTQeVtgl7m1s5NzcGx2tVjyOpDFtmEu/iXb1R58v1NoCMFkG9PCMcO/eLhh6
+         8oOQ==
+X-Gm-Message-State: APjAAAVm4a/Ugz6PTInk3pHMq5WtFlLhpaNIkNNQjjB1eScg5LCSLKwB
+        vFMcHFQI+pgwycjMnUbd9EU=
+X-Google-Smtp-Source: APXvYqwq4CzqkVX/Q3YnMLMNNdCO+TvLXQvXtHMaKvoTBWLIuRin/i5Wv8GM8oy5ji0yc4hlB6PEvA==
+X-Received: by 2002:a63:485f:: with SMTP id x31mr27088307pgk.33.1571683721004;
+        Mon, 21 Oct 2019 11:48:41 -0700 (PDT)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id ev20sm14502835pjb.19.2019.10.21.11.48.24
+        by smtp.gmail.com with ESMTPSA id ev20sm14502835pjb.19.2019.10.21.11.48.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 11:48:30 -0700 (PDT)
+        Mon, 21 Oct 2019 11:48:40 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-wireless@vger.kernel.org, jakub.kicinski@netronome.com,
@@ -55,9 +55,9 @@ To:     davem@davemloft.net, netdev@vger.kernel.org,
         ubraun@linux.ibm.com, kgraul@linux.ibm.com,
         jay.vosburgh@canonical.com, schuffelen@google.com, bjorn@mork.no
 Cc:     ap420073@gmail.com
-Subject: [PATCH net v5 03/10] bonding: fix unexpected IFF_BONDING bit unset
-Date:   Mon, 21 Oct 2019 18:47:52 +0000
-Message-Id: <20191021184759.13125-3-ap420073@gmail.com>
+Subject: [PATCH net v5 04/10] bonding: use dynamic lockdep key instead of subclass
+Date:   Mon, 21 Oct 2019 18:47:53 +0000
+Message-Id: <20191021184759.13125-4-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191021184759.13125-1-ap420073@gmail.com>
 References: <20191021184759.13125-1-ap420073@gmail.com>
@@ -66,98 +66,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The IFF_BONDING means bonding master or bonding slave device.
-->ndo_add_slave() sets IFF_BONDING flag and ->ndo_del_slave() unsets
-IFF_BONDING flag.
-
-bond0<--bond1
-
-Both bond0 and bond1 are bonding device and these should keep having
-IFF_BONDING flag until they are removed.
-But bond1 would lose IFF_BONDING at ->ndo_del_slave() because that routine
-do not check whether the slave device is the bonding type or not.
-This patch adds the interface type check routine before removing
-IFF_BONDING flag.
+All bonding device has same lockdep key and subclass is initialized with
+nest_level.
+But actual nest_level value can be changed when a lower device is attached.
+And at this moment, the subclass should be updated but it seems to be
+unsafe.
+So this patch makes bonding use dynamic lockdep key instead of the
+subclass.
 
 Test commands:
     ip link add bond0 type bond
-    ip link add bond1 type bond
-    ip link set bond1 master bond0
-    ip link set bond1 nomaster
-    ip link del bond1 type bond
-    ip link add bond1 type bond
+
+    for i in {1..5}
+    do
+	    let A=$i-1
+	    ip link add bond$i type bond
+	    ip link set bond$i master bond$A
+    done
+    ip link set bond5 master bond0
 
 Splat looks like:
-[  226.665555] proc_dir_entry 'bonding/bond1' already registered
-[  226.666440] WARNING: CPU: 0 PID: 737 at fs/proc/generic.c:361 proc_register+0x2a9/0x3e0
-[  226.667571] Modules linked in: bonding af_packet sch_fq_codel ip_tables x_tables unix
-[  226.668662] CPU: 0 PID: 737 Comm: ip Not tainted 5.4.0-rc3+ #96
-[  226.669508] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[  226.670652] RIP: 0010:proc_register+0x2a9/0x3e0
-[  226.671612] Code: 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 39 01 00 00 48 8b 04 24 48 89 ea 48 c7 c7 a0 0b 14 9f 48 8b b0 e
-0 00 00 00 e8 07 e7 88 ff <0f> 0b 48 c7 c7 40 2d a5 9f e8 59 d6 23 01 48 8b 4c 24 10 48 b8 00
-[  226.675007] RSP: 0018:ffff888050e17078 EFLAGS: 00010282
-[  226.675761] RAX: dffffc0000000008 RBX: ffff88805fdd0f10 RCX: ffffffff9dd344e2
-[  226.676757] RDX: 0000000000000001 RSI: 0000000000000008 RDI: ffff88806c9f6b8c
-[  226.677751] RBP: ffff8880507160f3 R08: ffffed100d940019 R09: ffffed100d940019
-[  226.678761] R10: 0000000000000001 R11: ffffed100d940018 R12: ffff888050716008
-[  226.679757] R13: ffff8880507160f2 R14: dffffc0000000000 R15: ffffed100a0e2c1e
-[  226.680758] FS:  00007fdc217cc0c0(0000) GS:ffff88806c800000(0000) knlGS:0000000000000000
-[  226.681886] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  226.682719] CR2: 00007f49313424d0 CR3: 0000000050e46001 CR4: 00000000000606f0
-[  226.683727] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  226.684725] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  226.685681] Call Trace:
-[  226.687089]  proc_create_seq_private+0xb3/0xf0
-[  226.687778]  bond_create_proc_entry+0x1b3/0x3f0 [bonding]
-[  226.691458]  bond_netdev_event+0x433/0x970 [bonding]
-[  226.692139]  ? __module_text_address+0x13/0x140
-[  226.692779]  notifier_call_chain+0x90/0x160
-[  226.693401]  register_netdevice+0x9b3/0xd80
-[  226.694010]  ? alloc_netdev_mqs+0x854/0xc10
-[  226.694629]  ? netdev_change_features+0xa0/0xa0
-[  226.695278]  ? rtnl_create_link+0x2ed/0xad0
-[  226.695849]  bond_newlink+0x2a/0x60 [bonding]
-[  226.696422]  __rtnl_newlink+0xb9f/0x11b0
-[  226.696968]  ? rtnl_link_unregister+0x220/0x220
-[ ... ]
+[  307.992912] WARNING: possible recursive locking detected
+[  307.993656] 5.4.0-rc3+ #96 Tainted: G        W
+[  307.994367] --------------------------------------------
+[  307.995092] ip/761 is trying to acquire lock:
+[  307.995710] ffff8880513aac60 (&(&bond->stats_lock)->rlock#2/2){+.+.}, at: bond_get_stats+0xb8/0x500 [bonding]
+[  307.997045]
+	       but task is already holding lock: 
+[  307.997923] ffff88805fcbac60 (&(&bond->stats_lock)->rlock#2/2){+.+.}, at: bond_get_stats+0xb8/0x500 [bonding]
+[  307.999215]
+	       other info that might help us debug this:
+[  308.000251]  Possible unsafe locking scenario: 
 
-Fixes: 0b680e753724 ("[PATCH] bonding: Add priv_flag to avoid event mishandling")
+[  308.001137]        CPU0
+[  308.001533]        ----
+[  308.001915]   lock(&(&bond->stats_lock)->rlock#2/2);
+[  308.002609]   lock(&(&bond->stats_lock)->rlock#2/2);
+[  308.003302]
+		*** DEADLOCK ***
+
+[  308.004310]  May be due to missing lock nesting notation
+
+[  308.005319] 3 locks held by ip/761:
+[  308.005830]  #0: ffffffff9fcc42b0 (rtnl_mutex){+.+.}, at: rtnetlink_rcv_msg+0x466/0x8a0
+[  308.006894]  #1: ffff88805fcbac60 (&(&bond->stats_lock)->rlock#2/2){+.+.}, at: bond_get_stats+0xb8/0x500 [bonding]
+[  308.008243]  #2: ffffffff9f9219c0 (rcu_read_lock){....}, at: bond_get_stats+0x9f/0x500 [bonding]
+[  308.009422]
+	       stack backtrace:
+[  308.010124] CPU: 0 PID: 761 Comm: ip Tainted: G        W         5.4.0-rc3+ #96
+[  308.011097] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  308.012179] Call Trace:
+[  308.012601]  dump_stack+0x7c/0xbb
+[  308.013089]  __lock_acquire+0x269d/0x3de0
+[  308.013669]  ? register_lock_class+0x14d0/0x14d0
+[  308.014318]  lock_acquire+0x164/0x3b0
+[  308.014858]  ? bond_get_stats+0xb8/0x500 [bonding]
+[  308.015520]  _raw_spin_lock_nested+0x2e/0x60
+[  308.016129]  ? bond_get_stats+0xb8/0x500 [bonding]
+[  308.017215]  bond_get_stats+0xb8/0x500 [bonding]
+[  308.018454]  ? bond_arp_rcv+0xf10/0xf10 [bonding]
+[  308.019710]  ? rcu_read_lock_held+0x90/0xa0
+[  308.020605]  ? rcu_read_lock_sched_held+0xc0/0xc0
+[  308.021286]  ? bond_get_stats+0x9f/0x500 [bonding]
+[  308.021953]  dev_get_stats+0x1ec/0x270
+[  308.022508]  bond_get_stats+0x1d1/0x500 [bonding]
+
+Fixes: d3fff6c443fe ("net: add netdev_lockdep_set_classes() helper")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
-v2 -> v5 :
+v4 -> v5 :
+ - qdisc part is merged into second patch
+v1 -> v4 :
  - This patch is not changed
-v1 -> v2 :
- - Do not add a new priv_flag.
 
- drivers/net/bonding/bond_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/bonding/bond_main.c | 10 +++++++---
+ include/net/bonding.h           |  1 +
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index ac1b09b56c77..92713b93f66f 100644
+index 92713b93f66f..6a6273590288 100644
 --- a/drivers/net/bonding/bond_main.c
 +++ b/drivers/net/bonding/bond_main.c
-@@ -1816,7 +1816,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 	slave_disable_netpoll(new_slave);
+@@ -3459,7 +3459,7 @@ static void bond_get_stats(struct net_device *bond_dev,
+ 	struct list_head *iter;
+ 	struct slave *slave;
  
- err_close:
--	slave_dev->priv_flags &= ~IFF_BONDING;
-+	if (!netif_is_bond_master(slave_dev))
-+		slave_dev->priv_flags &= ~IFF_BONDING;
- 	dev_close(slave_dev);
+-	spin_lock_nested(&bond->stats_lock, bond_get_nest_level(bond_dev));
++	spin_lock(&bond->stats_lock);
+ 	memcpy(stats, &bond->bond_stats, sizeof(*stats));
  
- err_restore_mac:
-@@ -2017,7 +2018,8 @@ static int __bond_release_one(struct net_device *bond_dev,
- 	else
- 		dev_set_mtu(slave_dev, slave->original_mtu);
+ 	rcu_read_lock();
+@@ -4297,8 +4297,6 @@ void bond_setup(struct net_device *bond_dev)
+ {
+ 	struct bonding *bond = netdev_priv(bond_dev);
  
--	slave_dev->priv_flags &= ~IFF_BONDING;
-+	if (!netif_is_bond_master(slave_dev))
-+		slave_dev->priv_flags &= ~IFF_BONDING;
+-	spin_lock_init(&bond->mode_lock);
+-	spin_lock_init(&bond->stats_lock);
+ 	bond->params = bonding_defaults;
  
- 	bond_free_slave(slave);
+ 	/* Initialize pointers */
+@@ -4367,6 +4365,7 @@ static void bond_uninit(struct net_device *bond_dev)
  
+ 	list_del(&bond->bond_list);
+ 
++	lockdep_unregister_key(&bond->stats_lock_key);
+ 	bond_debug_unregister(bond);
+ }
+ 
+@@ -4772,6 +4771,11 @@ static int bond_init(struct net_device *bond_dev)
+ 
+ 	bond->nest_level = SINGLE_DEPTH_NESTING;
+ 
++	spin_lock_init(&bond->mode_lock);
++	spin_lock_init(&bond->stats_lock);
++	lockdep_register_key(&bond->stats_lock_key);
++	lockdep_set_class(&bond->stats_lock, &bond->stats_lock_key);
++
+ 	list_add_tail(&bond->bond_list, &bn->dev_list);
+ 
+ 	bond_prepare_sysfs_group(bond);
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index f7fe45689142..334909feb2bb 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -239,6 +239,7 @@ struct bonding {
+ 	struct	 dentry *debug_dir;
+ #endif /* CONFIG_DEBUG_FS */
+ 	struct rtnl_link_stats64 bond_stats;
++	struct lock_class_key stats_lock_key;
+ };
+ 
+ #define bond_slave_get_rcu(dev) \
 -- 
 2.17.1
 
