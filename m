@@ -2,80 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47E59DE24E
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 04:43:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB7ADE251
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 04:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727000AbfJUCnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 22:43:32 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36198 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbfJUCnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 22:43:32 -0400
-Received: by mail-pl1-f195.google.com with SMTP id j11so5874573plk.3;
-        Sun, 20 Oct 2019 19:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=whcljhgwF/VLMrwCM5sav3bSUHoyALVsT42DyK47xIs=;
-        b=J6MvKpTZvj81SJeygT9J9FhClSqtd4dxaBL06/APdYtg17qm3Cj28xzUSIjpN9TZnZ
-         T11atwWb8NZ2nPAf0mODEdldt7uWpZHf1M8fChKCRtURpyFgtI3YN9LGhkyKb9QwdXPK
-         fqn5VlD+Cawi2CeU7hhbzUNtuwRW9rIYN96r59VFCdng91DGhZctdbRHjTsCtDtCfALt
-         9QIBrwI52p0PlTaav60qBn4haWV7WOvQwgN7X+umJ1utoMg+2AjLSQxtK9yeTfS7Jirv
-         mHuh2bOtVrcE5CsoIZ+SBdSYt68HKgxHLxTnk7TfGpouVO09C557nnZd6QaDXv/Cg3QM
-         ipeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=whcljhgwF/VLMrwCM5sav3bSUHoyALVsT42DyK47xIs=;
-        b=qYkvg/kAxsvxul14ONFaiKsrnj4fA7lpr+KIJMg4kKh3/m2LiRBW5k+VA52s/lTbmS
-         qLQ9YpSUpYZ7RQGZJCu2zJudApkO+kplmkEjKP+5spyFVxzAYIoZiQhidx+xHLIsC9W4
-         05pomsfHzypMgVW3iH0YC4Zx/d7OKtWi34vJtvWRkzoz+jGM61ARCi+nhJ3z3WBDTL8K
-         tw/+mQnrWEnrPlznuTPI/hSXklrQF1nHLYvEb8Q/tji2cz/T+T89NvDI0C+vhv+Xxb7R
-         6zg3gBOxEAnRWg1FZzz8O9z+WwJKC/Omhr8dlDCfs+c866+olmUUm+zBom0RfG5qAiLb
-         d3EA==
-X-Gm-Message-State: APjAAAXQYacYF1eJJki+Xy0ike8z0ljIJ4HxxeSVYTfenFOpHc5l6w9+
-        CSoCdp6MB2yHV6JFSCqkOz7m6TeD
-X-Google-Smtp-Source: APXvYqzjODtwIm5TOg0wG4xQRry5/Vd32nImiJN7YmiLsMpNMGPemffSN7dYm+D8X9iNALGRhBbHGQ==
-X-Received: by 2002:a17:902:8342:: with SMTP id z2mr21953393pln.309.1571625810874;
-        Sun, 20 Oct 2019 19:43:30 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 71sm17725136pfw.147.2019.10.20.19.43.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Oct 2019 19:43:30 -0700 (PDT)
-Subject: Re: [PATCH net-next 07/16] net: dsa: use ports list to find a port by
- node
-To:     Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        netdev@vger.kernel.org
-References: <20191020031941.3805884-1-vivien.didelot@gmail.com>
- <20191020031941.3805884-8-vivien.didelot@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <c22f6790-7c75-d53e-a540-07e61f901479@gmail.com>
-Date:   Sun, 20 Oct 2019 19:43:29 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        id S1726799AbfJUCp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 22:45:29 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:33276 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726764AbfJUCp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 22:45:29 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 202B1602D8; Mon, 21 Oct 2019 02:45:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571625928;
+        bh=8uTFIfGtSSIYJ3ZuI4g2I7OoCL2DWgnMQeMXn8uL7is=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kv/qvyCAtBvp/ipgqbMEksvY5RzVNqE6QO9Ky89t6iGTH3Boc4EUS7+xti/g7L8KT
+         FsJu6nhLG9VmzgYcAYaNYVJP/HA1YKj/3qmB1VxZyeOowMU05UWYxZsoFg1jK6mlqy
+         An0jO9obc2Rv0G0FySqxMab1XPrFnm7HDeOM4YEA=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id E7A096030D;
+        Mon, 21 Oct 2019 02:45:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571625926;
+        bh=8uTFIfGtSSIYJ3ZuI4g2I7OoCL2DWgnMQeMXn8uL7is=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hvUp2kZ/qSp1AkvFKKl0HgUqhiwR0R1HN9gLCvymgXVYAaeB7khVmN7bp8O2f4nc7
+         deyfTLkEcio1FL0w0aQnG7QuuTNxcgqejRCLqw83QqMswFihAfHLDnx0igsGLLrklO
+         X9H5S68bRbkSUdzIQo6ONW/hRmyjMx64j/v6JUqo=
 MIME-Version: 1.0
-In-Reply-To: <20191020031941.3805884-8-vivien.didelot@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Sun, 20 Oct 2019 20:45:25 -0600
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
+In-Reply-To: <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
+References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
+ <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
+ <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
+ <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
+Message-ID: <2279a8988c3f37771dda5593b350d014@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/19/2019 8:19 PM, Vivien Didelot wrote:
-> Use the new ports list instead of iterating over switches and their
-> ports to find a port from a given node.
+> FIN-WAIT1 just means the local application has called close() or
+> shutdown() to shut down the sending direction of the socket, and the
+> local TCP stack has sent a FIN, and is waiting to receive a FIN and an
+> ACK from the other side (in either order, or simultaneously). The
+> ASCII art state transition diagram on page 22 of RFC 793 (e.g.
+> https://tools.ietf.org/html/rfc793#section-3.2 ) is one source for
+> this, though the W. Richard Stevens books have a much more readable
+> diagram.
 > 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> There may still be unacked and SACKed data in the retransmit queue at
+> this point.
+> 
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Thanks for the clarification.
+
+> Thanks, that is a useful data point. Do you know what particular value
+>  tp->sacked_out has? Would you be able to capture/log the value of
+> tp->packets_out, tp->lost_out, and tp->retrans_out as well?
+> 
+
+tp->sacket_out varies per crash instance - 55, 180 etc.
+However the other values are always the same - tp->packets_out is 0,
+tp->lost_out is 1 and tp->retrans_out is 1.
+
+> Yes, one guess would be that somehow the skbs in the retransmit queue
+> have been freed, but tp->sacked_out is still non-zero and
+> tp->highest_sack is still a dangling pointer into one of those freed
+> skbs. The tcp_write_queue_purge() function is one function that fees
+> the skbs in the retransmit queue and leaves tp->sacked_out as non-zero
+> and  tp->highest_sack as a dangling pointer to a freed skb, AFAICT, so
+> that's why I'm wondering about that function. I can't think of a
+> specific sequence of events that would involve tcp_write_queue_purge()
+> and then a socket that's still in FIN-WAIT1. Maybe I'm not being
+> creative enough, or maybe that guess is on the wrong track. Would you
+> be able to set a new bit in the tcp_sock in tcp_write_queue_purge()
+> and log it in your instrumentation point, to see if
+> tcp_write_queue_purge()  was called for these connections that cause
+> this crash?
+
+Sure, I can try this out.
+
 -- 
-Florian
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
