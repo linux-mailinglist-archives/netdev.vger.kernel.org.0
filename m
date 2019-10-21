@@ -2,107 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CE8DF928
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 02:06:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 597BCDF9E8
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 02:46:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730780AbfJVAEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 20:04:47 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:58590 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730764AbfJVAEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 20:04:46 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C0AB860909; Tue, 22 Oct 2019 00:04:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571702684;
-        bh=4iTsFaI1TiNWCd6OdKQWrO+XwvtZM/sF7MhWLdOJ458=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z2cRUSuTBAwu7dZYmJ1y9epiG8PQ20e6Y89OnVRH+X9BO9gkVT0nhH2eExjYz5NHr
-         7lN+BtwOy3cakSo0Zn+uJs/QI7o26L7A+yJ6KHW9QoFlR7aLVE5W+oEzYmAaR8jj/H
-         UjxBQ19+ebd41rrvblGGcrcwaJfzhrncaK4BTBs4=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.codeaurora.org (Postfix) with ESMTP id C478560112;
-        Tue, 22 Oct 2019 00:04:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571702683;
-        bh=4iTsFaI1TiNWCd6OdKQWrO+XwvtZM/sF7MhWLdOJ458=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Qoq9VIFSE/xnnKckaXa+oKWU6knNpuApUeAmhi0ThhpD8WgQ2oP5JVo5nIDN7LJCt
-         DvXEE5wmttiZ70R3FYmvE26FTPb9/ylQIAIvkfsq11n15yIxCzQ990vn1g+IsSihQn
-         M1wyS5Ez/L0z6d6FsM7v81TQjY7AU7IWwv+j+hsE=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 21 Oct 2019 18:04:43 -0600
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-In-Reply-To: <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
- <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
- <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
- <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
- <2279a8988c3f37771dda5593b350d014@codeaurora.org>
- <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
-Message-ID: <f9ae970c12616f61c6152ebe34019e2b@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.2.5
+        id S1730499AbfJVApp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 20:45:45 -0400
+Received: from nwk-aaemail-lapp02.apple.com ([17.151.62.67]:60112 "EHLO
+        nwk-aaemail-lapp02.apple.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727953AbfJVApp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 20:45:45 -0400
+X-Greylist: delayed 17533 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Oct 2019 20:45:44 EDT
+Received: from pps.filterd (nwk-aaemail-lapp02.apple.com [127.0.0.1])
+        by nwk-aaemail-lapp02.apple.com (8.16.0.27/8.16.0.27) with SMTP id x9LJqKac025351;
+        Mon, 21 Oct 2019 12:53:27 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=sender : date : from :
+ to : cc : subject : message-id : references : mime-version : content-type
+ : in-reply-to; s=20180706;
+ bh=cBt5fU2/9AmS3ShWmDaFsUYFuVMc7BPprw0DZ9tzfHg=;
+ b=C8wGeCCp+X3nGONoDqwpNwRBkFvwr4RHaSIude0/Be6gnJEY5SW1HUaTBdm+uASbVq1E
+ QaTlKd3trzm2yeMaphlG2mmS0NqkqYKVrle1NYbOe5jlniKkd+TnLIiEo8iumsxBLD/i
+ lfHFcZI5AVD0FRllUmlYtjsm4ryTpB1sGqLKxlfWVaF697QMoFlHvj0ygTRK57bedmEQ
+ 4ERmMpXCmXniF4SP14Rzhz8K8U+TgpWOs8GFQECEALuYnSErxhBZg5/OvsoO6zL+U8dM
+ Rt0I99FYndqXp1s+xfFfK+F9Q8qgQsIPuYCHAqqGh1lxTsSs+TRbDd4dyovkO294fMEp LQ== 
+Received: from mr2-mtap-s02.rno.apple.com (mr2-mtap-s02.rno.apple.com [17.179.226.134])
+        by nwk-aaemail-lapp02.apple.com with ESMTP id 2vqy2h1cpj-9
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Mon, 21 Oct 2019 12:53:27 -0700
+Received: from nwk-mmpp-sz10.apple.com
+ (nwk-mmpp-sz10.apple.com [17.128.115.122]) by mr2-mtap-s02.rno.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) with ESMTPS id <0PZQ005NHPX1K610@mr2-mtap-s02.rno.apple.com>; Mon,
+ 21 Oct 2019 12:53:26 -0700 (PDT)
+Received: from process_milters-daemon.nwk-mmpp-sz10.apple.com by
+ nwk-mmpp-sz10.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) id <0PZQ00200PVUQ700@nwk-mmpp-sz10.apple.com>; Mon,
+ 21 Oct 2019 12:53:25 -0700 (PDT)
+X-Va-A: 
+X-Va-T-CD: 1288fa897f207fa8534ef4715f064d3d
+X-Va-E-CD: 93f86fab608f4ce2f92478602106e721
+X-Va-R-CD: a01ad3346a8f4a5cb1f06f0992e0d305
+X-Va-CD: 0
+X-Va-ID: 99ff1158-722c-4308-8abc-047b06903102
+X-V-A:  
+X-V-T-CD: 1288fa897f207fa8534ef4715f064d3d
+X-V-E-CD: 93f86fab608f4ce2f92478602106e721
+X-V-R-CD: a01ad3346a8f4a5cb1f06f0992e0d305
+X-V-CD: 0
+X-V-ID: b9354af0-4baa-4f4f-83b1-0917f68052bb
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,,
+ definitions=2019-10-21_05:,, signatures=0
+Received: from localhost ([17.192.155.217]) by nwk-mmpp-sz10.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) with ESMTPSA id <0PZQ00JL3PUETCB0@nwk-mmpp-sz10.apple.com>; Mon,
+ 21 Oct 2019 12:51:50 -0700 (PDT)
+Date:   Mon, 21 Oct 2019 12:51:50 -0700
+From:   Christoph Paasch <cpaasch@apple.com>
+To:     Jason Baron <jbaron@akamai.com>
+Cc:     Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [net-next] tcp: add TCP_INFO status for failed client TFO
+Message-id: <20191021195150.GA7514@MacBook-Pro-64.local>
+References: <1571425340-7082-1-git-send-email-jbaron@akamai.com>
+ <CADVnQymUMStN=oReEXGFT24NTUfMdZq_khcjZBTaV5=qW0x8_Q@mail.gmail.com>
+ <CAK6E8=et_dMeie07-PHSdVO1i44bVLHcOVh+AMmWQqDpqsuGXQ@mail.gmail.com>
+ <bd51b146-52b8-c56b-8efe-0e0cb73ee6c4@akamai.com>
+MIME-version: 1.0
+Content-type: text/plain; charset=us-ascii
+Content-disposition: inline
+In-reply-to: <bd51b146-52b8-c56b-8efe-0e0cb73ee6c4@akamai.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-21_05:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Interesting! As tcp_input.c summarizes, "packets_out is
-> SND.NXT-SND.UNA counted in packets". In the normal operation of a
-> socket, tp->packets_out should not be 0 if any of those other fields
-> are non-zero.
-> 
-> The tcp_write_queue_purge() function sets packets_out to 0:
+On 21/10/19 - 14:27:24, Jason Baron wrote:
 > 
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/net/ipv4/tcp.c?h=v4.19#n2526
+> On 10/21/19 2:02 PM, Yuchung Cheng wrote:
+> > Thanks for the patch. Detailed comments below
+> > 
+> > On Fri, Oct 18, 2019 at 4:58 PM Neal Cardwell <ncardwell@google.com> wrote:
+> >>
+> >> On Fri, Oct 18, 2019 at 3:03 PM Jason Baron <jbaron@akamai.com> wrote:
+> >>>
+> >>> The TCPI_OPT_SYN_DATA bit as part of tcpi_options currently reports whether
+> >>> or not data-in-SYN was ack'd on both the client and server side. We'd like
+> >>> to gather more information on the client-side in the failure case in order
+> >>> to indicate the reason for the failure. This can be useful for not only
+> >>> debugging TFO, but also for creating TFO socket policies. For example, if
+> >>> a middle box removes the TFO option or drops a data-in-SYN, we can
+> >>> can detect this case, and turn off TFO for these connections saving the
+> >>> extra retransmits.
+> >>>
+> >>> The newly added tcpi_fastopen_client_fail status is 2 bits and has 4
+> >>> states:
+> >>>
+> >>> 1) TFO_STATUS_UNSPEC
+> >>>
+> >>> catch-all.
+> >>>
+> >>> 2) TFO_NO_COOKIE_SENT
+> >>>
+> >>> If TFO_CLIENT_NO_COOKIE mode is off, this state indicates that no cookie
+> >>> was sent because we don't have one yet, its not in cache or black-holing
+> >>> may be enabled (already indicated by the global
+> >>> LINUX_MIB_TCPFASTOPENBLACKHOLE).
+> > 
+> > It'd be useful to separate the two that cookie is available but is
+> > prohibited to use due to BH checking. We've seen users internally get
+> > confused due to lack of this info (after seeing cookies from ip
+> > metrics).
+> > 
 > 
-> So the execution of tcp_write_queue_purge()  before this point is one
-> way for the socket to end up in this weird state.
+> ok, yeah i had been thinking about splitting these out but thought that
+> the LINUX_MIB_TCPFASTOPENBLACKHOLE counter could help differentiate
+> these cases - but I'm ok making it explicit.
 > 
+> >>>
+> >>> 3) TFO_NO_SYN_DATA
+> >>>
+> >>> Data was sent with SYN, we received a SYN/ACK but it did not cover the data
+> >>> portion. Cookie is not accepted by server because the cookie may be invalid
+> >>> or the server may be overloaded.
+> >>>
+> >>>
+> >>> 4) TFO_NO_SYN_DATA_TIMEOUT
+> >>>
+> >>> Data was sent with SYN, we received a SYN/ACK which did not cover the data
+> >>> after at least 1 additional SYN was sent (without data). It may be the case
+> >>> that a middle-box is dropping data-in-SYN packets. Thus, it would be more
+> >>> efficient to not use TFO on this connection to avoid extra retransmits
+> >>> during connection establishment.
+> >>>
+> >>> These new fields certainly not cover all the cases where TFO may fail, but
+> >>> other failures, such as SYN/ACK + data being dropped, will result in the
+> >>> connection not becoming established. And a connection blackhole after
+> >>> session establishment shows up as a stalled connection.
+> >>>
+> >>> Signed-off-by: Jason Baron <jbaron@akamai.com>
+> >>> Cc: Eric Dumazet <edumazet@google.com>
+> >>> Cc: Neal Cardwell <ncardwell@google.com>
+> >>> Cc: Christoph Paasch <cpaasch@apple.com>
+> >>> ---
+> >>
+> >> Thanks for adding this!
+> >>
+> >> It would be good to reset tp->fastopen_client_fail to 0 in tcp_disconnect().
+> >>
+> >>> +/* why fastopen failed from client perspective */
+> >>> +enum tcp_fastopen_client_fail {
+> >>> +       TFO_STATUS_UNSPEC, /* catch-all */
+> >>> +       TFO_NO_COOKIE_SENT, /* if not in TFO_CLIENT_NO_COOKIE mode */
+> >>> +       TFO_NO_SYN_DATA, /* SYN-ACK did not ack SYN data */
+> >>
+> >> I found the "TFO_NO_SYN_DATA" name a little unintuitive; it sounded to
+> >> me like this means the client didn't send a SYN+DATA. What about
+> >> "TFO_DATA_NOT_ACKED", or something like that?
+> >>
+> >> If you don't mind, it would be great to cc: Yuchung on the next rev.
+> > TFO_DATA_NOT_ACKED is already available from the inverse of TCPI_OPT_SYN_DATA
+> > #define TCPI_OPT_SYN_DATA       32 /* SYN-ACK acked data in SYN sent or rcvd */
+> > 
+> > It occurs (3)(4) are already available indirectly from
+> > TCPI_OPT_SYN_DATA and tcpi_total_retrans together, but the socket must
+> > query tcpi_total_retrans right after connect/sendto returns which may
+> > not be preferred.
+> > 
+> > How about an alternative proposal to the types to catch more TFO issues:
+> > 
+> > TFO_STATUS_UNSPEC
+> > TFO_DISABLED_BLACKHOLE_DETECTED
+> > TFO_COOKIE_UNAVAILABLE
+> > TFO_SYN_RETRANSMITTED  // use in conjunction w/ TCPI_OPT_SYN_DATA for (3)(4)
+> 
+> Ok, that set works for me. I will re-spin with these states for v2.
+> Thanks for the suggestion!
 
-In one of the instances, the values are tp->snd_nxt = 1016118098,
-tp->snd_una = 1016047820
+Actually, longterm I hope we would be able to get rid of the
+blackhole-detection and fallback heuristics. In a far distant future where
+these middleboxes have been weeded out ;-)
 
-tp->mss_cache = 1378
+So, do we really want to eternalize this as part of the API in tcp_info ?
 
-I assume the number of outstanding segments should be
-(tp->snd_nxt - tp->snd_una)/tp->mss_cache = 51
 
-tp->packets_out = 0 and tp->sacked_out = 158 in this case.
+Christoph
 
->> > Yes, one guess would be that somehow the skbs in the retransmit queue
->> > have been freed, but tp->sacked_out is still non-zero and
->> > tp->highest_sack is still a dangling pointer into one of those freed
->> > skbs. The tcp_write_queue_purge() function is one function that fees
->> > the skbs in the retransmit queue and leaves tp->sacked_out as non-zero
->> > and  tp->highest_sack as a dangling pointer to a freed skb, AFAICT, so
->> > that's why I'm wondering about that function. I can't think of a
->> > specific sequence of events that would involve tcp_write_queue_purge()
->> > and then a socket that's still in FIN-WAIT1. Maybe I'm not being
->> > creative enough, or maybe that guess is on the wrong track. Would you
->> > be able to set a new bit in the tcp_sock in tcp_write_queue_purge()
->> > and log it in your instrumentation point, to see if
->> > tcp_write_queue_purge()  was called for these connections that cause
->> > this crash?
-
-I've queued up a build which logs calls to tcp_write_queue_purge and
-clears tp->highest_sack and tp->sacked_out. I will let you know how
-it fares by end of week.
-
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
