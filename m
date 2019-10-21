@@ -2,158 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E00E9DE84E
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 11:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 584ECDE834
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 11:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727403AbfJUJkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 05:40:04 -0400
-Received: from regular1.263xmail.com ([211.150.70.203]:58456 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726725AbfJUJkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 05:40:03 -0400
-X-Greylist: delayed 495 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Oct 2019 05:40:02 EDT
-Received: from localhost (unknown [192.168.167.209])
-        by regular1.263xmail.com (Postfix) with ESMTP id B8DB1428;
-        Mon, 21 Oct 2019 17:31:38 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-SKE-CHECKED: 1
-X-ABS-CHECKED: 1
-Received: from localhost.localdomain (unknown [14.18.236.69])
-        by smtp.263.net (postfix) whith ESMTP id P469T140195813033728S1571650292121018_;
-        Mon, 21 Oct 2019 17:31:39 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <6d3ea6ca7491250ed483a3c849e1089c>
-X-RL-SENDER: yili@winhong.com
-X-SENDER: yili@winhong.com
-X-LOGIN-NAME: yili@winhong.com
-X-FST-TO: yili@winhong.com
-X-SENDER-IP: 14.18.236.69
-X-ATTACHMENT-NUM: 0
-X-DNS-TYPE: 0
-From:   Yi Li <yili@winhong.com>
-Cc:     yili@winhong.com, Yi Li <yilikernel@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Changbin Du <changbin.du@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH] perf tools: Use of the macro IS_ERR_OR_NULL
-Date:   Mon, 21 Oct 2019 17:29:33 +0800
-Message-Id: <1571650178-15686-1-git-send-email-yili@winhong.com>
-X-Mailer: git-send-email 2.7.5
+        id S1727807AbfJUJgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 05:36:38 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:44007 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727211AbfJUJgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 05:36:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571650596;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FpZdScR+KHI00mbq34flCWHyvKtJnKCqm7Yan1K0IeI=;
+        b=CfmF4STpp9cTMmDyreZvb4bwNhCtuC97bnNllvBwIXN7QAijTFl9W49fvfqIjIQy7nj7Ge
+        hUw5vJWg2T4Hzp5KQ/HMGX7qXer6ZTud8yIK1UvZMAzIeHbWLw9lJabJ16yXSvwvsp6+C0
+        sXEfM8LYMMZlnn2UhzCNkhuOQMRv3IA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-26-gGQdN0OCO4edN38FnITm1A-1; Mon, 21 Oct 2019 05:36:33 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E66A780183E;
+        Mon, 21 Oct 2019 09:36:25 +0000 (UTC)
+Received: from gondolin (dhcp-192-218.str.redhat.com [10.33.192.218])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 499036012C;
+        Mon, 21 Oct 2019 09:36:09 +0000 (UTC)
+Date:   Mon, 21 Oct 2019 11:36:07 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+Subject: Re: [PATCH V4 5/6] virtio: introduce a mdev based transport
+Message-ID: <20191021113607.16b26d9d.cohuck@redhat.com>
+In-Reply-To: <2bb5645b-5c46-9cae-0571-65c302f51cf2@redhat.com>
+References: <20191017104836.32464-1-jasowang@redhat.com>
+        <20191017104836.32464-6-jasowang@redhat.com>
+        <20191018162007.31631039.cohuck@redhat.com>
+        <2bb5645b-5c46-9cae-0571-65c302f51cf2@redhat.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: gGQdN0OCO4edN38FnITm1A-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yi Li <yilikernel@gmail.com>
+On Mon, 21 Oct 2019 13:59:23 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-This patch introduces the use of the macro IS_ERR_OR_NULL in place of
-tests for NULL and IS_ERR.
+> On 2019/10/18 =E4=B8=8B=E5=8D=8810:20, Cornelia Huck wrote:
+> > On Thu, 17 Oct 2019 18:48:35 +0800
+> > Jason Wang <jasowang@redhat.com> wrote:
+> > =20
+> >> This patch introduces a new mdev transport for virtio. This is used to
+> >> use kernel virtio driver to drive the mediated device that is capable
+> >> of populating virtqueue directly.
+> >>
+> >> A new virtio-mdev driver will be registered to the mdev bus, when a
+> >> new virtio-mdev device is probed, it will register the device with
+> >> mdev based config ops. This means it is a software transport between
+> >> mdev driver and mdev device. The transport was implemented through
+> >> device specific ops which is a part of mdev_parent_ops now.
+> >>
+> >> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> >> ---
+> >>   drivers/virtio/Kconfig       |   7 +
+> >>   drivers/virtio/Makefile      |   1 +
+> >>   drivers/virtio/virtio_mdev.c | 409 +++++++++++++++++++++++++++++++++=
+++
+> >>   3 files changed, 417 insertions(+) =20
+> > (...)
+> > =20
+> >> +static int virtio_mdev_probe(struct device *dev)
+> >> +{
+> >> +=09struct mdev_device *mdev =3D mdev_from_dev(dev);
+> >> +=09const struct virtio_mdev_device_ops *ops =3D mdev_get_dev_ops(mdev=
+);
+> >> +=09struct virtio_mdev_device *vm_dev;
+> >> +=09int rc;
+> >> +
+> >> +=09vm_dev =3D devm_kzalloc(dev, sizeof(*vm_dev), GFP_KERNEL);
+> >> +=09if (!vm_dev)
+> >> +=09=09return -ENOMEM;
+> >> +
+> >> +=09vm_dev->vdev.dev.parent =3D dev;
+> >> +=09vm_dev->vdev.dev.release =3D virtio_mdev_release_dev;
+> >> +=09vm_dev->vdev.config =3D &virtio_mdev_config_ops;
+> >> +=09vm_dev->mdev =3D mdev;
+> >> +=09INIT_LIST_HEAD(&vm_dev->virtqueues);
+> >> +=09spin_lock_init(&vm_dev->lock);
+> >> +
+> >> +=09vm_dev->version =3D ops->get_mdev_features(mdev);
+> >> +=09if (vm_dev->version !=3D VIRTIO_MDEV_F_VERSION_1) {
+> >> +=09=09dev_err(dev, "VIRTIO_MDEV_F_VERSION_1 is mandatory\n");
+> >> +=09=09return -ENXIO;
+> >> +=09} =20
+> > Hm, so how is that mdev features interface supposed to work? If
+> > VIRTIO_MDEV_F_VERSION_1 is a bit, I would expect this code to test for
+> > its presence, and not for identity. =20
+>=20
+>=20
+> This should be used by driver to detect the which sets of functions and=
+=20
+> their semantics that could be provided by the device. E.g when driver=20
+> support both version 2 and version 1 but device only support version 1,=
+=20
+> driver can switch to use version 1. Btw, Is there a easy way for to test=
+=20
+> its presence or do you mean doing sanity testing on existence of the=20
+> mandatory ops that provided by the device?
 
-The following Coccinelle semantic patch was used for making the change:
+What I meant was something like:
 
-@@
-expression e;
-@@
+features =3D ops->get_mdev_features(mdev);
+if (features & VIRTIO_MDEV_F_VERSION_1)
+=09vm_dev->version =3D 1;
+else
+=09//moan about missing support for version 1
 
-- !e || IS_ERR(e)
-+ IS_ERR_OR_NULL(e)
- || ...
+Can there be class id specific extra features, or is this only for core
+features? If the latter, maybe also do something like
 
-Signed-off-by: Yi Li <yilikernel@gmail.com>
----
- tools/perf/util/bpf-loader.c   | 13 +++++++------
- tools/perf/util/parse-events.c |  2 +-
- 2 files changed, 8 insertions(+), 7 deletions(-)
+supported_features =3D ORED_LIST_OF_FEATURES;
+if (features & ~supported_features)
+=09//moan about extra feature bits
 
-diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-index 10c187b..b14d224 100644
---- a/tools/perf/util/bpf-loader.c
-+++ b/tools/perf/util/bpf-loader.c
-@@ -426,7 +426,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
- 	size_t prologue_cnt = 0;
- 	int i, err;
- 
--	if (IS_ERR(priv) || !priv || priv->is_tp)
-+	if (IS_ERR_OR_NULL(priv) || priv->is_tp)
- 		goto errout;
- 
- 	pev = &priv->pev;
-@@ -578,7 +578,7 @@ static int hook_load_preprocessor(struct bpf_program *prog)
- 	bool need_prologue = false;
- 	int err, i;
- 
--	if (IS_ERR(priv) || !priv) {
-+	if (IS_ERR_OR_NULL(priv)) {
- 		pr_debug("Internal error when hook preprocessor\n");
- 		return -BPF_LOADER_ERRNO__INTERNAL;
- 	}
-@@ -650,8 +650,9 @@ int bpf__probe(struct bpf_object *obj)
- 			goto out;
- 
- 		priv = bpf_program__priv(prog);
--		if (IS_ERR(priv) || !priv) {
--			err = PTR_ERR(priv);
-+		if (IS_ERR_OR_NULL(priv)) {
-+			pr_debug("bpf: failed to get private field\n");
-+			err = -BPF_LOADER_ERRNO__INTERNAL;
- 			goto out;
- 		}
- 
-@@ -701,7 +702,7 @@ int bpf__unprobe(struct bpf_object *obj)
- 		struct bpf_prog_priv *priv = bpf_program__priv(prog);
- 		int i;
- 
--		if (IS_ERR(priv) || !priv || priv->is_tp)
-+		if (IS_ERR_OR_NULL(priv) || priv->is_tp)
- 			continue;
- 
- 		for (i = 0; i < priv->pev.ntevs; i++) {
-@@ -759,7 +760,7 @@ int bpf__foreach_event(struct bpf_object *obj,
- 		struct perf_probe_event *pev;
- 		int i, fd;
- 
--		if (IS_ERR(priv) || !priv) {
-+		if (IS_ERR_OR_NULL(priv)) {
- 			pr_debug("bpf: failed to get private field\n");
- 			return -BPF_LOADER_ERRNO__INTERNAL;
- 		}
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index b5e2ade..609c31f 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -690,7 +690,7 @@ int parse_events_load_bpf_obj(struct parse_events_state *parse_state,
- 	struct __add_bpf_event_param param = {parse_state, list, head_config};
- 	static bool registered_unprobe_atexit = false;
- 
--	if (IS_ERR(obj) || !obj) {
-+	if (IS_ERR_OR_NULL(obj)) {
- 		snprintf(errbuf, sizeof(errbuf),
- 			 "Internal error: load bpf obj with NULL");
- 		err = -EINVAL;
--- 
-2.7.5
+>=20
+>=20
+> >
+> > What will happen if we come up with a version 2? If this is backwards
+> > compatible, will both version 2 and version 1 be set? =20
+>=20
+>=20
+> Yes, I think so, and version 2 should be considered as some extensions=20
+> of version 1. If it's completely, it should use a new class id.
 
-
+Ok, that makes sense.
 
