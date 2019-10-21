@@ -2,84 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95440DEE9E
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3B8DEEA6
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 16:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729139AbfJUOBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 10:01:04 -0400
-Received: from mail2.candelatech.com ([208.74.158.173]:51700 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727152AbfJUOBE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 10:01:04 -0400
-Received: from [192.168.1.47] (unknown [50.34.216.97])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728479AbfJUOCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 10:02:40 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44525 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727152AbfJUOCj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 10:02:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571666558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=E76Ncd4hkPdyEmWthnzq2lnetFoG06/DZ+e4atVNaro=;
+        b=K2/+Xnxcpv0eyDsIKfxsORqxsjfQF1IOpBTR5ueKtKfb/WGsp29ciHiwnJTY/rR+sXoaHb
+        a31Ll4J8gbHchj2l4txmGk22N0dxA5QdfKrmRFKetresPyM70naZ9VSoSvpsWCK9+UGQlw
+        k+29hJqm78LwSX92PEVHOG9wGZ5DfRQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-309-42IKWHNWNBWdYFohri2Hfw-1; Mon, 21 Oct 2019 10:02:36 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id A377D137563;
-        Mon, 21 Oct 2019 07:01:01 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com A377D137563
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1571666463;
-        bh=TC0IC7ijVgH9EVtRApZTiGeFe1tzHYJg6SGZj3JD57E=;
-        h=Subject:To:References:Cc:From:Date:In-Reply-To:From;
-        b=dB9W91qhjuh+ZefuIByWJyo92qyfGQjN7Ueu0zjVFermwckAaik1XLfzrxBbMV14O
-         Y8rhWNATIjDSg9KiPv1imIYSGJKhO2yb5M/ZN1AQ+TD/HMkfWGbVDbUqi/AzoJeolO
-         c15E661Rx/PoWdnGtBrkm/EoSyvy755xltPfPqG8=
-Subject: Re: WARNING at net/mac80211/sta_info.c:1057
- (__sta_info_destroy_part2())
-To:     =?UTF-8?Q?Tomislav_Po=c5=beega?= <pozega.tomislav@gmail.com>,
-        kvalo@codeaurora.org
-References: <87lfuuln5n.fsf@tynnyri.adurom.net>
- <1571584320-29816-1-git-send-email-pozega.tomislav@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, davem@davemloft.net,
-        torvalds@linux-foundation.org, johannes@sipsolutions.net,
-        linux-wireless@vger.kernel.org
-From:   Ben Greear <greearb@candelatech.com>
-Message-ID: <073b0ffb-187b-659e-0967-23ae44c5c660@candelatech.com>
-Date:   Mon, 21 Oct 2019 07:01:00 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D63EB107AD33;
+        Mon, 21 Oct 2019 14:02:29 +0000 (UTC)
+Received: from krava (unknown [10.43.17.61])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 09CAB60166;
+        Mon, 21 Oct 2019 14:02:27 +0000 (UTC)
+Date:   Mon, 21 Oct 2019 16:02:27 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH] bpftool: Try to read btf as raw data if elf read fails
+Message-ID: <20191021140227.GD32718@krava>
+References: <20191018103404.12999-1-jolsa@kernel.org>
+ <20191018153905.600d7c8a@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <1571584320-29816-1-git-send-email-pozega.tomislav@gmail.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191018153905.600d7c8a@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: 42IKWHNWNBWdYFohri2Hfw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 18, 2019 at 03:39:05PM -0700, Jakub Kicinski wrote:
+> On Fri, 18 Oct 2019 12:34:04 +0200, Jiri Olsa wrote:
+> > The bpftool interface stays the same, but now it's possible
+> > to run it over BTF raw data, like:
+> >=20
+> >   $ bpftool btf dump file /sys/kernel/btf/vmlinux
+> >   libbpf: failed to get EHDR from /sys/kernel/btf/vmlinux
+> >   [1] INT '(anon)' size=3D4 bits_offset=3D0 nr_bits=3D32 encoding=3D(no=
+ne)
+> >   [2] INT 'long unsigned int' size=3D8 bits_offset=3D0 nr_bits=3D64 enc=
+oding=3D(none)
+> >   [3] CONST '(anon)' type_id=3D2
+> >=20
+> > I'm also adding err init to 0 because I was getting uninitialized
+> > warnings from gcc.
+> >=20
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  tools/bpf/bpftool/btf.c | 47 ++++++++++++++++++++++++++++++++++++-----
+> >  1 file changed, 42 insertions(+), 5 deletions(-)
+> >=20
+> > diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+> > index 9a9376d1d3df..100fb7e02329 100644
+> > --- a/tools/bpf/bpftool/btf.c
+> > +++ b/tools/bpf/bpftool/btf.c
+> > @@ -12,6 +12,9 @@
+> >  #include <libbpf.h>
+> >  #include <linux/btf.h>
+> >  #include <linux/hashtable.h>
+> > +#include <sys/types.h>
+> > +#include <sys/stat.h>
+> > +#include <unistd.h>
+> > =20
+> >  #include "btf.h"
+> >  #include "json_writer.h"
+> > @@ -388,6 +391,35 @@ static int dump_btf_c(const struct btf *btf,
+> >  =09return err;
+> >  }
+> > =20
+> > +static struct btf *btf__parse_raw(const char *file)
+> > +{
+> > +=09struct btf *btf =3D ERR_PTR(-EINVAL);
+> > +=09__u8 *buf =3D NULL;
+>=20
+> Please drop the inits
+>=20
+> > +=09struct stat st;
+> > +=09FILE *f;
+> > +
+> > +=09if (stat(file, &st))
+> > +=09=09return btf;
+>=20
+> And return constants here
+>=20
+> > +=09f =3D fopen(file, "rb");
+> > +=09if (!f)
+> > +=09=09return btf;
+>=20
+> and here
+>=20
+> > +=09buf =3D malloc(st.st_size);
+> > +=09if (!buf)
+> > +=09=09goto err;
+>=20
+> and jump to the right place here.
+>=20
+> > +=09if ((size_t) st.st_size !=3D fread(buf, 1, st.st_size, f))
+> > +=09=09goto err;
+> > +
+> > +=09btf =3D btf__new(buf, st.st_size);
+> > +
+> > +err:
+>=20
+> The prefix for error labels which is shared with non-error path is exit_
+>=20
+> > +=09free(buf);
+> > +=09fclose(f);
+> > +=09return btf;
+> > +}
+> > +
 
+ok for all above
 
-On 10/20/2019 08:12 AM, Tomislav Požega wrote:
->> -11 is -EAGAIN which would mean that the HTC credits have run out some
->>  reason for the WMI command:
->>
->> if (ep->tx_credits < credits) {
->>         ath10k_dbg(ar, ATH10K_DBG_HTC,
->>                 "htc insufficient credits ep %d required %d available %d\n",
->>                 eid, credits, ep->tx_credits);
->>         spin_unlock_bh(&htc->tx_lock);
->>         ret = -EAGAIN;
->>         goto err_pull;
->> }
->>
->> Credits can run out, for example, if there's a lot of WMI command/event
->> activity and are not returned during the 3s wait, firmware crashed or
->> problems with the PCI bus.
->
-> Hi
->
-> Can this occur if the target memory is not properly allocated?
+> >  static int do_dump(int argc, char **argv)
+> >  {
+> >  =09struct btf *btf =3D NULL;
+> > @@ -397,7 +429,7 @@ static int do_dump(int argc, char **argv)
+> >  =09__u32 btf_id =3D -1;
+> >  =09const char *src;
+> >  =09int fd =3D -1;
+> > -=09int err;
+> > +=09int err =3D 0;
+>=20
+> This change looks unnecessary.
 
-I have only seen this on wave-1 cards, and it is usually paired with situations
-where the wave-1 stops doing WMI related interrupts properly as best as I can
-understand.  If I force the firmware to poll instead of waiting for irqs, then
-WMI communication will work for a while...I have not implemented that on the
-driver side though, so I still see these WMI timeout issues.
+I'm getting confusing warnings from gcc about this,
+but there is a code path where do_dump would return
+untouched err:
 
-Thanks,
-Ben
+  do_dump
+     int err;
 
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+     } else if (is_prefix(src, "file")) {
+       btf =3D btf__parse_elf(*argv, NULL);   // succeeds
+
+     }
+
+     while (argc) {
+       if (is_prefix(*argv, "format")) {
+       else {                                // in here
+          goto done;
+       }
+
+     done:
+       return err;
+
+thanks,
+jirka
+
