@@ -2,79 +2,937 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C48ACDEE4B
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D63BDEE65
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 15:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729099AbfJUNs0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 09:48:26 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:47009 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728083AbfJUNsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 09:48:25 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q5so8460517pfg.13;
-        Mon, 21 Oct 2019 06:48:25 -0700 (PDT)
+        id S1728989AbfJUNxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 09:53:16 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:46654 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728134AbfJUNxP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 09:53:15 -0400
+Received: by mail-qt1-f196.google.com with SMTP id u22so21066867qtq.13
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 06:53:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=n9MBnlpyutfnu8h+lCNVky8mZiTOWSiFfRqWuxqLjZI=;
+        b=hr4HdiBvNEuxmiDdEo36vW1ppQsmu2/kQud/3heUeuM6oIngiR2HqibWG2RUfschaT
+         dkOG47qwdrrXU68ov8JokMZnUDqvCpjZMJVvuBS7Ic4mNH0AY3rzmnkIrJDJPnjSldYq
+         Mf4FRbMaP2KKatUdOBW8TiGm8wjDjCn6XY9EfQTLhThY5hmxwe+NFbZ82QDdZyvs+rqn
+         wBpGIGUIp/6p35on3EwREsMvjWDoBkcwj1UolnS/b+eO0+SNG8nKm55kNTURQ/7EMZZ1
+         1RGVKfkL/uMLJKXJOBdAjyutve8ghWOrsr24deuXke3rkEsSIwwIVcVIisLgPBxW0PMX
+         clCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5Lm0hZL1wyztt3hWk0T5URQ4B1o3nLfonDMHZ9hkUMc=;
-        b=emgfxJCWOqZb8kZhrjRTxQXZFdplMN5gKA+OJGcLLss0yLMcHi68zK6RxYoC37E+S3
-         ON5i7tpgn2U/dzeqWfXVX9scx4RV/GoXTa1LPnqfnQivzZVXo6QDBUIxc2AbK6kIgzr0
-         UfczoX/cijShGfh8sS0lG+NgQ1LcHW+RR3I3mdjq1ILrq3oTLI0NE9bK+ryySVQPuIRj
-         wGj5lNU2DFJVvsu727r8TUBkqhz/M6qbzJvPG3Iiucp3VrjSQgeVbP4ejlAcgDuMh/Wm
-         w8i6cSvL+01SpmhLGnlwIyvmTnjZraHEYSa7DwlF+glx1/ggPrfiyF+fJrTh/rcsYrU9
-         0Hwg==
-X-Gm-Message-State: APjAAAWnuIXv8hMaRAB0M92/4QdIiu50HwhPGG2Kyx8Nj+rjxxaj+j1M
-        41FQdBa9ijbcbL+L6N48RVg=
-X-Google-Smtp-Source: APXvYqzL9dlx2FQCFLlR12fRlfcYHt97NCWtrpGNTj/S31/M83EEevzMhJ/jTywCZFuANFY8EXWVNA==
-X-Received: by 2002:a63:1262:: with SMTP id 34mr25905665pgs.269.1571665704647;
-        Mon, 21 Oct 2019 06:48:24 -0700 (PDT)
-Received: from ?IPv6:2601:647:4000:ce:e1dd:ac50:4a18:2864? ([2601:647:4000:ce:e1dd:ac50:4a18:2864])
-        by smtp.gmail.com with ESMTPSA id p88sm15211395pjp.22.2019.10.21.06.48.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Oct 2019 06:48:23 -0700 (PDT)
-Subject: Re: [RFC PATCH 1/2] block: add support for redirecting IO completion
- through eBPF
-To:     Hou Tao <houtao1@huawei.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     linux-block@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexei Starovoitov <ast@kernel.org>, hare@suse.com,
-        osandov@fb.com, ming.lei@redhat.com, damien.lemoal@wdc.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-References: <20191014122833.64908-1-houtao1@huawei.com>
- <20191014122833.64908-2-houtao1@huawei.com>
- <CAADnVQ+UJK41VL-epYGxrRzqL_UsC+X=J8EXEn2i8P+TPGA_jg@mail.gmail.com>
- <84032c64-8e5e-6ad1-63ea-57adee7a2875@huawei.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-Message-ID: <737d9d3f-e72c-ac31-6b2a-997202a302bd@acm.org>
-Date:   Mon, 21 Oct 2019 06:48:17 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n9MBnlpyutfnu8h+lCNVky8mZiTOWSiFfRqWuxqLjZI=;
+        b=Y31JyJpmYGRMKrHoEQlih7i3s0TZSSwlFzsn3mYNeAaq7oS/JMfVYrgFMsMi/fFDXn
+         /hhNrDu3qnVmtwyad3Qku5cwoVVYyX8cy1tPbA4jiWu2toJSxIDKf3YyMnHShHCfY3ob
+         hOxTTqRshakF3vyDr/zQAj0N2yCpZ8OM5ueyoWn6QxcVber0DM6SAautYp9h9Fp6ZSBR
+         xbIzz/DNY2Dqv36Ba6q6JBQMVIW9DsaR0aKkz3E7iRhgDG3+RfUxcajV/3zs71uJFepM
+         j1oyeWCVicjKn6V5fzWlyaa9GD+gacOuCtchYkNjARTNv+VHL7WY0G7pHqCUHo7YrOO7
+         dwOw==
+X-Gm-Message-State: APjAAAUVNhXshgErTvcYmnyQCkIlsGdtqpvPQ1LJJQfAhU3r7fQvkVf+
+        8bQC9ciudtOexWD5Q02QkD3yzmYTtdlQfjIKpy9RBw==
+X-Google-Smtp-Source: APXvYqxEPwn3ToEu6uxjcjGnctJk3aZBxynuXulGQ698CFwV47SyMT7ux/D6WgEnQX2ppHeJH1H0+DHsLIr9wvipjHs=
+X-Received: by 2002:a0c:c3c5:: with SMTP id p5mr23734596qvi.34.1571665992745;
+ Mon, 21 Oct 2019 06:53:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <84032c64-8e5e-6ad1-63ea-57adee7a2875@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8BIT
+References: <cover.1571333592.git.andreyknvl@google.com> <65fed562d5e6571ece5e3f507ee3701b3f0dd8c9.1571333592.git.andreyknvl@google.com>
+In-Reply-To: <65fed562d5e6571ece5e3f507ee3701b3f0dd8c9.1571333592.git.andreyknvl@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 21 Oct 2019 15:53:01 +0200
+Message-ID: <CACT4Y+bDtg+mSgDh_pD6yOOvRguQ8HD_gJDvaaAGyrapiWHzAg@mail.gmail.com>
+Subject: Re: [PATCH RFC 1/3] kcov: remote coverage support
+To:     Andrey Konovalov <andreyknvl@google.com>
+Cc:     USB list <linux-usb@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Windsor <dwindsor@gmail.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/21/19 6:42 AM, Hou Tao wrote:
-> Your suggestion is much simpler, so there will be no need for adding a new
-> program type, and all things need to be done are adding a raw tracepoint,
-> moving bpf_ccpu into struct request, and letting a BPF program to modify it.
+On Thu, Oct 17, 2019 at 7:44 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+>
+> Currently kcov can only collect coverage for syscalls that are issued
+> from the current process. This patch adds support for KCOV_REMOTE_ENABLE,
+> that makes it possible to collect coverage for arbitrary parts of the
+> kernel code, provided that this part is annotated with kcov_remote_start
+> and kcov_remote_stop.
 
-blk-mq already supports processing completions on the CPU that submitted
-a request so it's not clear to me why any changes in the block layer are
-being proposed for redirecting I/O completions?
+Nitpick: () after function names is the common C style.
 
-Thanks,
+> This allows to collect coverage from two types of kernel background
+> threads: the global ones, that are spawned during kernel boot and are
+> always running (e.g. USB hub_event); and the local ones, that are spawned
+> when a user interacts with some kernel interfaces (e.g. vhost).
+>
+> To enable collecting coverage from a global background thread, a unique
+> global id must be assigned and passed to the corresponding
+> kcov_remote_start annotation call. Then a userspace process can pass this
+> id to the KCOV_REMOTE_ENABLE ioctl in the handles array field of the
+> kcov_remote_arg struct. This will attach kcov device to the code section,
+> that is referenced by this id. Multiple ids can be targeted with the same
+> kcov device simultaneously.
+>
+> Since there might be many local background threads spawned from different
+> userspace processes, we can't use a single global id per annotation.
+> Instead, the userspace process passes an id through the common_handle
+> field of the kcov_remote_arg struct. This id gets saved to the kcov_handle
+> field in the current task_struct and needs to be passed to the newly
+> spawned threads via custom annotations. Those threads should be in turn
+> annotated with kcov_remote_start/kcov_remote_stop.
+>
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> ---
+>  Documentation/dev-tools/kcov.rst |  99 +++++++
+>  include/linux/kcov.h             |   9 +
+>  include/linux/sched.h            |   6 +
+>  include/uapi/linux/kcov.h        |  11 +
+>  kernel/kcov.c                    | 434 ++++++++++++++++++++++++++++---
+>  5 files changed, 524 insertions(+), 35 deletions(-)
+>
+> diff --git a/Documentation/dev-tools/kcov.rst b/Documentation/dev-tools/kcov.rst
+> index 42b612677799..1cf0af95a801 100644
+> --- a/Documentation/dev-tools/kcov.rst
+> +++ b/Documentation/dev-tools/kcov.rst
+> @@ -34,6 +34,7 @@ Profiling data will only become accessible once debugfs has been mounted::
+>
+>  Coverage collection
+>  -------------------
+> +
+>  The following program demonstrates coverage collection from within a test
+>  program using kcov:
+>
+> @@ -128,6 +129,7 @@ only need to enable coverage (disable happens automatically on thread end).
+>
+>  Comparison operands collection
+>  ------------------------------
+> +
+>  Comparison operands collection is similar to coverage collection:
+>
+>  .. code-block:: c
+> @@ -202,3 +204,100 @@ Comparison operands collection is similar to coverage collection:
+>
+>  Note that the kcov modes (coverage collection or comparison operands) are
+>  mutually exclusive.
+> +
+> +Remote coverage collection
+> +--------------------------
+> +
+> +With KCOV_ENABLE coverage is collected only for syscalls that are issued from
+> +the current process. With KCOV_REMOTE_ENABLE it's possible to collect coverage
+> +for arbitrary parts of the kernel code, provided that this part is annotated
+> +with kcov_remote_start/kcov_remote_stop.
 
-Bart.
+Same here.
 
+> +This allows to collect coverage from two types of kernel background threads:
+> +the global ones, that are spawned during kernel boot and are always running
+> +(e.g. USB hub_event); and the local ones, that are spawned when a user
+> +interacts with some kernel interfaces (e.g. vhost).
+> +
+> +To enable collecting coverage from a global background thread, a unique global
+> +id must be assigned and passed to the corresponding kcov_remote_start annotation
+> +call. Then a userspace process can pass this id to the KCOV_REMOTE_ENABLE ioctl
+> +in the handles array field of the kcov_remote_arg struct. This will attach kcov
+> +device to the code section, that is referenced by this id. Multiple ids can be
+> +targeted with the same kcov device simultaneously.
+> +
+> +Since there might be many local background threads spawned from different
+> +userspace processes, we can't use a single global id per annotation. Instead,
+> +the userspace process passes an id through the common_handle field of the
+> +kcov_remote_arg struct. This id gets saved to the kcov_handle field in the
+> +current task_struct and needs to be passed to the newly spawned threads via
+> +custom annotations. Those threads should be in turn annotated with
+> +kcov_remote_start/kcov_remote_stop.
+> +
+> +.. code-block:: c
+> +
+> +    struct kcov_remote_arg {
+> +       unsigned        trace_mode;
+> +       unsigned        area_size;
+> +       unsigned        num_handles;
+> +       uint64_t        common_handle;
+> +       uint64_t        handles[0];
+> +    };
+> +
+> +    #define KCOV_REMOTE_MAX_HANDLES            0x10000
+
+This is unused. I would remove it. I assume you just copied all of the
+current declarations. But they are extended over time, so later it
+will be just some random subset of used and unused declarations.
+
+> +
+> +    #define KCOV_INIT_TRACE                    _IOR('c', 1, unsigned long)
+> +    #define KCOV_ENABLE                        _IO('c', 100)
+
+Same here and for few others below.
+
+> +    #define KCOV_DISABLE                       _IO('c', 101)
+> +    #define KCOV_REMOTE_ENABLE         _IOW('c', 102, struct kcov_remote_arg)
+> +
+> +    #define COVER_SIZE (64 << 10)
+> +
+> +    #define KCOV_TRACE_PC      0
+> +    #define KCOV_TRACE_CMP     1
+> +
+> +    #define KCOV_REMOTE_ID     0x42
+> +
+> +    int main(int argc, char **argv)
+> +    {
+> +       int fd;
+> +       unsigned long *cover, n, i;
+> +       uint64_t handle;
+> +
+> +       fd = open("/sys/kernel/debug/kcov", O_RDWR);
+> +       if (fd == -1)
+> +               perror("open"), exit(1);
+> +       if (ioctl(fd, KCOV_INIT_TRACE, COVER_SIZE))
+> +               perror("ioctl"), exit(1);
+> +       cover = (unsigned long*)mmap(NULL, COVER_SIZE * sizeof(unsigned long),
+> +                                    PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+> +       if ((void*)cover == MAP_FAILED)
+> +               perror("mmap"), exit(1);
+> +       /* Enable coverage collection from the USB bus #1. */
+
+This is a bit confusing because KCOV_REMOTE_ID name is not related to
+USB in any way. And the real USB id is actually 1.
+I think we also need to show an example for the common id functionality.
+
+
+> +       arg = calloc(1, sizeof(*arg) + sizeof(uint64_t));
+> +       if (!arg)
+> +               perror("calloc"), exit(1);
+> +       arg->trace_mode = KCOV_TRACE_PC;
+> +       arg->area_size = COVER_SIZE;
+> +       arg->num_handles = 1;
+> +       arg->handles[0] = KCOV_REMOTE_ID;
+> +       if (ioctl(fd, KCOV_REMOTE_ENABLE, arg))
+> +               perror("ioctl"), free(arg), exit(1);
+> +       free(arg);
+> +
+> +       /*
+> +        * The user needs to trigger execution of kernel code section that is
+> +        * annotated with KCOV_REMOTE_ID.
+> +        */
+> +       sleep(2);
+> +
+> +       n = __atomic_load_n(&cover[0], __ATOMIC_RELAXED);
+> +       for (i = 0; i < n; i++)
+> +               printf("0x%lx\n", cover[i + 1]);
+> +       if (ioctl(fd, KCOV_DISABLE, 0))
+> +               perror("ioctl"), exit(1);
+> +       if (munmap(cover, COVER_SIZE * sizeof(unsigned long)))
+> +               perror("munmap"), exit(1);
+> +       if (close(fd))
+> +               perror("close"), exit(1);
+> +       return 0;
+> +    }
+> diff --git a/include/linux/kcov.h b/include/linux/kcov.h
+> index b76a1807028d..702672d98d35 100644
+> --- a/include/linux/kcov.h
+> +++ b/include/linux/kcov.h
+> @@ -27,6 +27,13 @@ enum kcov_mode {
+>  void kcov_task_init(struct task_struct *t);
+>  void kcov_task_exit(struct task_struct *t);
+>
+> +/*
+> + * Reserved handle ranges:
+> + * 0000000000000000 - 0000ffffffffffff : common handles
+> + */
+
+It can make sense to make this scheme slightly more generic and
+officially reserve high bits for "subsystem id" and low bits for "id
+within the subsystem". We probably won't use different subsystems for
+common handles for syzkaller, but still it may be reasonable to be
+able to separate coverage from different subsystems. We could reserve
+0x00 as a "generic" subsystem, but allow introductions of other
+subsystems later.
+
+
+> +void kcov_remote_start(u64 handle);
+> +void kcov_remote_stop(void);
+> +
+>  #define kcov_prepare_switch(t)                 \
+>  do {                                           \
+>         (t)->kcov_mode |= KCOV_IN_CTXSW;        \
+> @@ -41,6 +48,8 @@ do {                                          \
+>
+>  static inline void kcov_task_init(struct task_struct *t) {}
+>  static inline void kcov_task_exit(struct task_struct *t) {}
+> +static inline void kcov_remote_start(u64 handle) {}
+> +static inline void kcov_remote_stop(void) {}
+>  static inline void kcov_prepare_switch(struct task_struct *t) {}
+>  static inline void kcov_finish_switch(struct task_struct *t) {}
+>
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index 2c2e56bd8913..7417e0207b48 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -1211,8 +1211,14 @@ struct task_struct {
+>         /* Buffer for coverage collection: */
+>         void                            *kcov_area;
+>
+> +       /* KCOV sequence number: */
+
+This comment does not add much. Extend it to explain why we need it
+and how it is used.
+
+> +       int                             kcov_sequence;
+> +
+>         /* KCOV descriptor wired with this task or NULL: */
+>         struct kcov                     *kcov;
+> +
+> +       /* KCOV handle for remote coverage collection: */
+> +       u64                             kcov_handle;
+>  #endif
+>
+>  #ifdef CONFIG_MEMCG
+> diff --git a/include/uapi/linux/kcov.h b/include/uapi/linux/kcov.h
+> index 9529867717a8..46f78f716ca9 100644
+> --- a/include/uapi/linux/kcov.h
+> +++ b/include/uapi/linux/kcov.h
+> @@ -4,9 +4,20 @@
+>
+>  #include <linux/types.h>
+>
+> +struct kcov_remote_arg {
+> +       unsigned int    trace_mode;
+> +       unsigned int    area_size;
+> +       unsigned int    num_handles;
+> +       __u64           common_handle;
+
+We need some docs here.
+In particular we never spell out that common_handle == 0 means no
+handle (can't be used for real handles).
+
+> +       __u64           handles[0];
+> +};
+> +
+> +#define KCOV_REMOTE_MAX_HANDLES                0x10000
+> +
+>  #define KCOV_INIT_TRACE                        _IOR('c', 1, unsigned long)
+>  #define KCOV_ENABLE                    _IO('c', 100)
+>  #define KCOV_DISABLE                   _IO('c', 101)
+> +#define KCOV_REMOTE_ENABLE             _IOW('c', 102, struct kcov_remote_arg)
+>
+>  enum {
+>         /*
+> diff --git a/kernel/kcov.c b/kernel/kcov.c
+> index 2ee38727844a..49d1668a4570 100644
+> --- a/kernel/kcov.c
+> +++ b/kernel/kcov.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/types.h>
+>  #include <linux/file.h>
+>  #include <linux/fs.h>
+> +#include <linux/hashtable.h>
+>  #include <linux/init.h>
+>  #include <linux/mm.h>
+>  #include <linux/preempt.h>
+> @@ -23,6 +24,8 @@
+>  #include <linux/refcount.h>
+>  #include <asm/setup.h>
+>
+> +#define kcov_debug(fmt, ...) pr_debug("%s: " fmt, __func__, ##__VA_ARGS__)
+> +
+>  /* Number of 64-bit words written per one comparison: */
+>  #define KCOV_WORDS_PER_CMP 4
+>
+> @@ -44,19 +47,94 @@ struct kcov {
+>          * Reference counter. We keep one for:
+>          *  - opened file descriptor
+>          *  - task with enabled coverage (we can't unwire it from another task)
+> +        *  - each code section for remote coverage collection
+>          */
+>         refcount_t              refcount;
+>         /* The lock protects mode, size, area and t. */
+>         spinlock_t              lock;
+>         enum kcov_mode          mode;
+> -       /* Size of arena (in long's for KCOV_MODE_TRACE). */
+> -       unsigned                size;
+> +       /* Size of arena (in long's). */
+> +       unsigned int            size;
+>         /* Coverage buffer shared with user space. */
+>         void                    *area;
+>         /* Task for which we collect coverage, or NULL. */
+>         struct task_struct      *t;
+> +       /* Collecting coverage from remote threads. */
+> +       bool                    remote;
+> +       /* Size of remote arena (in long's). */
+> +       unsigned int            remote_size;
+> +       /* Sequence is incremented each time kcov is reenabled. */
+> +       int                     sequence;
+> +};
+> +
+> +struct kcov_remote_area {
+> +       struct list_head        list;
+> +       unsigned int            size;
+> +};
+> +
+> +struct kcov_remote {
+> +       u64                     handle;
+> +       struct kcov             *kcov;
+> +       struct hlist_node       hnode;
+>  };
+>
+> +static DEFINE_SPINLOCK(kcov_remote_lock);
+> +static DEFINE_HASHTABLE(kcov_remote_map, 4);
+> +static struct list_head kcov_remote_areas = LIST_HEAD_INIT(kcov_remote_areas);
+> +
+> +static struct kcov_remote *kcov_remote_find(u64 handle)
+> +{
+> +       struct kcov_remote *remote;
+> +
+> +       hash_for_each_possible(kcov_remote_map, remote, hnode, handle) {
+> +               if (remote->handle == handle)
+> +                       return remote;
+> +       }
+> +       return NULL;
+> +}
+> +
+> +static struct kcov_remote *kcov_remote_add(struct kcov *kcov, u64 handle)
+> +{
+> +       struct kcov_remote *remote;
+> +
+> +       if (kcov_remote_find(handle))
+> +               return ERR_PTR(-EEXIST);
+> +       remote = kmalloc(sizeof(*remote), GFP_ATOMIC);
+> +       if (!remote)
+> +               return ERR_PTR(-ENOMEM);
+> +       remote->handle = handle;
+> +       remote->kcov = kcov;
+> +       hash_add(kcov_remote_map, &remote->hnode, handle);
+> +       return remote;
+> +}
+> +
+> +static struct kcov_remote_area *kcov_remote_area_get(unsigned int size)
+> +{
+> +       struct kcov_remote_area *area;
+> +       struct list_head *pos;
+> +
+> +       kcov_debug("size = %u\n", size);
+> +       list_for_each(pos, &kcov_remote_areas) {
+> +               area = list_entry(pos, struct kcov_remote_area, list);
+> +               if (area->size == size) {
+> +                       list_del(&area->list);
+> +                       kcov_debug("rv = %px\n", area);
+> +                       return area;
+> +               }
+> +       }
+> +       kcov_debug("rv = NULL\n");
+> +       return NULL;
+> +}
+> +
+> +static void kcov_remote_area_put(struct kcov_remote_area *area,
+> +                                       unsigned int size)
+> +{
+> +       kcov_debug("area = %px, size = %u\n", area, size);
+> +       INIT_LIST_HEAD(&area->list);
+> +       area->size = size;
+> +       list_add(&area->list, &kcov_remote_areas);
+> +}
+> +
+>  static notrace bool check_kcov_mode(enum kcov_mode needed_mode, struct task_struct *t)
+>  {
+>         unsigned int mode;
+> @@ -73,7 +151,7 @@ static notrace bool check_kcov_mode(enum kcov_mode needed_mode, struct task_stru
+>          * in_interrupt() returns false (e.g. preempt_schedule_irq()).
+>          * READ_ONCE()/barrier() effectively provides load-acquire wrt
+>          * interrupts, there are paired barrier()/WRITE_ONCE() in
+> -        * kcov_ioctl_locked().
+> +        * kcov_start().
+>          */
+>         barrier();
+>         return mode == needed_mode;
+> @@ -227,6 +305,69 @@ void notrace __sanitizer_cov_trace_switch(u64 val, u64 *cases)
+>  EXPORT_SYMBOL(__sanitizer_cov_trace_switch);
+>  #endif /* ifdef CONFIG_KCOV_ENABLE_COMPARISONS */
+>
+> +static void kcov_start(struct task_struct *t, unsigned int size,
+> +                       void *area, enum kcov_mode mode, int sequence)
+> +{
+> +       kcov_debug("t = %px, size = %u, area = %px\n", t, size, area);
+> +       /* Cache in task struct for performance. */
+> +       t->kcov_size = size;
+> +       t->kcov_area = area;
+> +       /* See comment in check_kcov_mode(). */
+> +       barrier();
+> +       WRITE_ONCE(t->kcov_mode, mode);
+> +       t->kcov_sequence = sequence;
+> +}
+> +
+> +static void kcov_stop(struct task_struct *t)
+> +{
+> +       WRITE_ONCE(t->kcov_mode, KCOV_MODE_DISABLED);
+> +       barrier();
+> +       t->kcov_size = 0;
+> +       t->kcov_area = NULL;
+> +}
+> +
+> +static void kcov_task_reset(struct task_struct *t)
+> +{
+> +       kcov_stop(t);
+> +       t->kcov = NULL;
+> +       t->kcov_sequence = 0;
+> +       t->kcov_handle = 0;
+> +}
+> +
+> +void kcov_task_init(struct task_struct *t)
+> +{
+> +       kcov_task_reset(t);
+> +       t->kcov_handle = current->kcov_handle;
+> +}
+> +
+> +static void kcov_reset(struct kcov *kcov)
+> +{
+> +       kcov->t = NULL;
+> +       kcov->mode = KCOV_MODE_INIT;
+> +       kcov->remote = false;
+> +       kcov->remote_size = 0;
+> +       kcov->sequence++;
+> +}
+> +
+> +static void kcov_remote_reset(struct kcov *kcov)
+> +{
+> +       int bkt;
+> +       struct kcov_remote *remote;
+> +       struct hlist_node *tmp;
+> +
+> +       spin_lock(&kcov_remote_lock);
+> +       hash_for_each_safe(kcov_remote_map, bkt, tmp, remote, hnode) {
+> +               if (remote->kcov != kcov)
+> +                       continue;
+> +               kcov_debug("removing handle %llx\n", remote->handle);
+> +               hash_del(&remote->hnode);
+> +               kfree(remote);
+> +       }
+> +       /* Do reset before unlock to prevent races with kcov_remote_start(). */
+> +       kcov_reset(kcov);
+> +       spin_unlock(&kcov_remote_lock);
+> +}
+> +
+>  static void kcov_get(struct kcov *kcov)
+>  {
+>         refcount_inc(&kcov->refcount);
+> @@ -235,20 +376,12 @@ static void kcov_get(struct kcov *kcov)
+>  static void kcov_put(struct kcov *kcov)
+>  {
+>         if (refcount_dec_and_test(&kcov->refcount)) {
+> +               kcov_remote_reset(kcov);
+>                 vfree(kcov->area);
+>                 kfree(kcov);
+>         }
+>  }
+>
+> -void kcov_task_init(strucKCOV_TRACE_PCt task_struct *t)
+> -{
+> -       WRITE_ONCE(t->kcov_mode, KCOV_MODE_DISABLED);
+> -       barrier();
+> -       t->kcov_size = 0;
+> -       t->kcov_area = NULL;
+> -       t->kcov = NULL;
+> -}
+> -
+>  void kcov_task_exit(struct task_struct *t)
+>  {
+>         struct kcov *kcov;
+> @@ -256,15 +389,27 @@ void kcov_task_exit(struct task_struct *t)
+>         kcov = t->kcov;
+>         if (kcov == NULL)
+>                 return;
+> +
+>         spin_lock(&kcov->lock);
+> +       kcov_debug("t = %px, kcov->t = %px\n", t, kcov->t);
+> +       /*
+> +        * If !kcov->remote, this checks that t->kcov->t == t.
+> +        * If kcov->remote == true then the exiting task is either:
+> +        * 1. a remote task between kcov_remote_start() and kcov_remote_stop(),
+> +        *    in this case t != kcov->t and we'll print a warning; or
+> +        * 2. the task that created kcov exiting without calling KCOV_DISABLE,
+> +        *    in this case t == kcov->t and no warning is printed.
+> +        */
+>         if (WARN_ON(kcov->t != t)) {
+>                 spin_unlock(&kcov->lock);
+>                 return;
+>         }
+>         /* Just to not leave dangling references behind. */
+> -       kcov_task_init(t);
+> -       kcov->t = NULL;
+> -       kcov->mode = KCOV_MODE_INIT;
+> +       kcov_task_reset(t);
+> +       if (kcov->remote)
+> +               kcov_remote_reset(kcov);
+> +       else
+> +               kcov_reset(kcov);
+
+These 5 lines are also repeated in KCOV_DISABLE. Looks like a good
+candidate for a helper function.
+
+>         spin_unlock(&kcov->lock);
+>         kcov_put(kcov);
+>  }
+> @@ -313,6 +458,7 @@ static int kcov_open(struct inode *inode, struct file *filep)
+>         if (!kcov)
+>                 return -ENOMEM;
+>         kcov->mode = KCOV_MODE_DISABLED;
+> +       kcov->sequence = 1;
+>         refcount_set(&kcov->refcount, 1);
+>         spin_lock_init(&kcov->lock);
+>         filep->private_data = kcov;
+> @@ -325,6 +471,20 @@ static int kcov_close(struct inode *inode, struct file *filep)
+>         return 0;
+>  }
+>
+> +static int kcov_get_mode(unsigned long arg)
+> +{
+> +       if (arg == KCOV_TRACE_PC)
+> +               return KCOV_MODE_TRACE_PC;
+> +       else if (arg == KCOV_TRACE_CMP)
+> +#ifdef CONFIG_KCOV_ENABLE_COMPARISONS
+> +               return KCOV_MODE_TRACE_CMP;
+> +#else
+> +               return -ENOTSUPP;
+> +#endif
+> +       else
+> +               return -EINVAL;
+> +}
+> +
+>  /*
+>   * Fault in a lazily-faulted vmalloc area before it can be used by
+>   * __santizer_cov_trace_pc(), to avoid recursion issues if any code on the
+> @@ -345,9 +505,13 @@ static int kcov_ioctl_locked(struct kcov *kcov, unsigned int cmd,
+>  {
+>         struct task_struct *t;
+>         unsigned long size, unused;
+> +       int mode, i;
+> +       struct kcov_remote_arg *remote_arg;
+> +       struct kcov_remote *remote;
+>
+>         switch (cmd) {
+>         case KCOV_INIT_TRACE:
+> +               kcov_debug("KCOV_REMOTE_ENABLE\n");
+>                 /*
+>                  * Enable kcov in trace mode and setup buffer size.
+>                  * Must happen before anything else.
+> @@ -366,6 +530,7 @@ static int kcov_ioctl_locked(struct kcov *kcov, unsigned int cmd,
+>                 kcov->mode = KCOV_MODE_INIT;
+>                 return 0;
+>         case KCOV_ENABLE:
+> +               kcov_debug("KCOV_ENABLE\n");
+>                 /*
+>                  * Enable coverage for the current task.
+>                  * At this point user must have been enabled trace mode,
+> @@ -378,29 +543,20 @@ static int kcov_ioctl_locked(struct kcov *kcov, unsigned int cmd,
+>                 t = current;
+>                 if (kcov->t != NULL || t->kcov != NULL)
+>                         return -EBUSY;
+> -               if (arg == KCOV_TRACE_PC)
+> -                       kcov->mode = KCOV_MODE_TRACE_PC;
+> -               else if (arg == KCOV_TRACE_CMP)
+> -#ifdef CONFIG_KCOV_ENABLE_COMPARISONS
+> -                       kcov->mode = KCOV_MODE_TRACE_CMP;
+> -#else
+> -               return -ENOTSUPP;
+> -#endif
+> -               else
+> -                       return -EINVAL;
+> +               mode = kcov_get_mode(arg);
+> +               if (mode < 0)
+> +                       return mode;
+>                 kcov_fault_in_area(kcov);
+> -               /* Cache in task struct for performance. */
+> -               t->kcov_size = kcov->size;
+> -               t->kcov_area = kcov->area;
+> -               /* See comment in check_kcov_mode(). */
+> -               barrier();
+> -               WRITE_ONCE(t->kcov_mode, kcov->mode);
+> +               kcov->mode = mode;
+> +               kcov_start(t, kcov->size, kcov->area, kcov->mode,
+> +                               kcov->sequence);
+>                 t->kcov = kcov;
+>                 kcov->t = t;
+> -               /* This is put either in kcov_task_exit() or in KCOV_DISABLE. */
+> +               /* Put either in kcov_task_exit() or in KCOV_DISABLE. */
+>                 kcov_get(kcov);
+>                 return 0;
+>         case KCOV_DISABLE:
+> +               kcov_debug("KCOV_DISABLE\n");
+>                 /* Disable coverage for the current task. */
+>                 unused = arg;
+>                 if (unused != 0 || current->kcov != kcov)
+> @@ -408,11 +564,52 @@ static int kcov_ioctl_locked(struct kcov *kcov, unsigned int cmd,
+>                 t = current;
+>                 if (WARN_ON(kcov->t != t))
+>                         return -EINVAL;
+> -               kcov_task_init(t);
+> -               kcov->t = NULL;
+> -               kcov->mode = KCOV_MODE_INIT;
+> +               kcov_task_reset(t);
+> +               if (kcov->remote)
+> +                       kcov_remote_reset(kcov);
+> +               else
+> +                       kcov_reset(kcov);
+>                 kcov_put(kcov);
+>                 return 0;
+> +       case KCOV_REMOTE_ENABLE:
+> +               kcov_debug("KCOV_REMOTE_ENABLE\n");
+> +               if (kcov->mode != KCOV_MODE_INIT || !kcov->area)
+> +                       return -EINVAL;
+> +               t = current;
+> +               if (kcov->t != NULL || t->kcov != NULL)
+> +                       return -EBUSY;
+> +               remote_arg = (struct kcov_remote_arg *)arg;
+> +               mode = kcov_get_mode(remote_arg->trace_mode);
+> +               if (mode < 0)
+> +                       return mode;
+> +               kcov->mode = mode;
+> +               t->kcov = kcov;
+> +               kcov->t = t;
+> +               kcov->remote = true;
+> +               kcov->remote_size = remote_arg->area_size;
+
+I think we need some sanity check on area_size, or it can lead to
+overflows later.
+
+> +               spin_lock(&kcov_remote_lock);
+> +               for (i = 0; i < remote_arg->num_handles; i++) {
+> +                       remote = kcov_remote_add(kcov, remote_arg->handles[i]);
+> +                       if (IS_ERR(remote)) {
+> +                               spin_unlock(&kcov_remote_lock);
+> +                               kcov_remote_reset(kcov);
+> +                               return PTR_ERR(remote);
+> +                       }
+> +               }
+> +               if (remote_arg->common_handle) {
+> +                       remote = kcov_remote_add(kcov,
+> +                                       remote_arg->common_handle);
+> +                       if (IS_ERR(remote)) {
+> +                               spin_unlock(&kcov_remote_lock);
+> +                               kcov_remote_reset(kcov);
+> +                               return PTR_ERR(remote);
+> +                       }
+> +                       t->kcov_handle = remote_arg->common_handle;
+> +               }
+> +               spin_unlock(&kcov_remote_lock);
+> +               /* Put either in kcov_task_exit() or in KCOV_DISABLE. */
+> +               kcov_get(kcov);
+> +               return 0;
+>         default:
+>                 return -ENOTTY;
+>         }
+> @@ -422,11 +619,35 @@ static long kcov_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+>  {
+>         struct kcov *kcov;
+>         int res;
+> +       struct kcov_remote_arg *remote_arg = NULL;
+> +       unsigned int remote_num_handles;
+> +       unsigned long remote_arg_size;
+> +
+> +       if (cmd == KCOV_REMOTE_ENABLE) {
+> +               if (get_user(remote_num_handles, (unsigned __user *)(arg +
+> +                               offsetof(struct kcov_remote_arg, num_handles))))
+> +                       return -EFAULT;
+> +               if (remote_num_handles > KCOV_REMOTE_MAX_HANDLES)
+> +                       return -EINVAL;
+> +               remote_arg_size = sizeof(*remote_arg) +
+> +                       remote_num_handles * sizeof(u64);
+
+Looks like a good candidate for struct_size().
+This can't overflow due to KCOV_REMOTE_MAX_HANDLES, but still more
+readable and bulletproof for future.
+
+> +               remote_arg = memdup_user((void __user *)arg, remote_arg_size);
+> +               if (IS_ERR(remote_arg))
+> +                       return PTR_ERR(remote_arg);
+> +               if (remote_arg->num_handles != remote_num_handles) {
+> +                       kfree(remote_arg);
+> +                       return -EINVAL;
+> +               }
+> +               arg = (unsigned long)remote_arg;
+> +       }
+>
+>         kcov = filep->private_data;
+>         spin_lock(&kcov->lock);
+>         res = kcov_ioctl_locked(kcov, cmd, arg);
+>         spin_unlock(&kcov->lock);
+> +
+> +       kfree(remote_arg);
+> +
+>         return res;
+>  }
+>
+> @@ -438,6 +659,149 @@ static const struct file_operations kcov_fops = {
+>         .release        = kcov_close,
+>  };
+>
+> +void kcov_remote_start(u64 handle)
+> +{
+> +       struct kcov_remote *remote;
+> +       void *area;
+> +       struct task_struct *t;
+> +       unsigned int size;
+> +       enum kcov_mode mode;
+> +       int sequence;
+> +
+> +       if (WARN_ON(!in_task()))
+> +               return;
+> +       t = current;
+> +       /*
+> +        * Check that kcov_remote_start is not called twice
+> +        * nor called by user tasks (with enabled kcov).
+> +        */
+> +       if (WARN_ON(t->kcov))
+> +               return;
+> +
+> +       kcov_debug("handle = %llx\n", handle);
+> +
+> +       spin_lock(&kcov_remote_lock);
+> +       remote = kcov_remote_find(handle);
+> +       if (!remote) {
+> +               kcov_debug("no remote found");
+> +               spin_unlock(&kcov_remote_lock);
+> +               return;
+> +       }
+> +       /* Put in kcov_remote_stop(). */
+> +       kcov_get(remote->kcov);
+> +       t->kcov = remote->kcov;
+> +       /*
+> +        * Read kcov fields before unlock to prevent races with
+> +        * KCOV_DISABLE / kcov_remote_reset().
+> +        */
+> +       size = remote->kcov->remote_size;
+> +       mode = remote->kcov->mode;
+> +       sequence = remote->kcov->sequence;
+> +       area = kcov_remote_area_get(size);
+> +       spin_unlock(&kcov_remote_lock);
+> +
+> +       if (!area) {
+> +               area = vmalloc(size * sizeof(unsigned long));
+> +               if (!area) {
+
+Reset t->kcov?
+
+> +                       kcov_put(remote->kcov);
+> +                       return;
+> +               }
+> +       }
+> +       /* Reset coverage size. */
+> +       *(u64 *)area = 0;
+> +
+> +       kcov_debug("area = %px, size = %u", area, size);
+> +
+> +       kcov_start(t, size, area, mode, sequence);
+> +
+> +}
+> +
+> +static void kcov_move_area(enum kcov_mode mode, void *dst_area,
+> +                               unsigned int dst_area_size, void *src_area)
+> +{
+> +       u64 word_size = sizeof(unsigned long);
+> +       u64 count_size, entry_size;
+> +       u64 dst_len, src_len;
+> +       void *dst_entries, *src_entries;
+> +       u64 dst_occupied, dst_free, bytes_to_move, entries_moved;
+> +
+> +       kcov_debug("%px %u <= %px %lu\n",
+> +               dst_area, dst_area_size, src_area, *(unsigned long *)src_area);
+> +
+> +       switch (mode) {
+> +       case KCOV_MODE_TRACE_PC:
+> +               dst_len = READ_ONCE(*(unsigned long *)dst_area);
+> +               src_len = *(unsigned long *)src_area;
+> +               count_size = sizeof(unsigned long);
+> +               entry_size = sizeof(unsigned long);
+> +               break;
+> +       case KCOV_MODE_TRACE_CMP:
+> +               dst_len = READ_ONCE(*(u64 *)dst_area);
+> +               src_len = *(u64 *)src_area;
+> +               count_size = sizeof(u64);
+> +               entry_size = sizeof(u64) * KCOV_WORDS_PER_CMP;
+> +               break;
+> +       default:
+> +               WARN_ON(1);
+> +               return;
+> +       }
+> +
+> +       if (dst_len > (dst_area_size * word_size - count_size) / entry_size)
+> +               return;
+> +       dst_occupied = count_size + dst_len * entry_size;
+> +       dst_free = dst_area_size * word_size - dst_occupied;
+> +       bytes_to_move = min(dst_free, src_len * entry_size);
+> +       dst_entries = dst_area + dst_occupied;
+> +       src_entries = src_area + count_size;
+> +       memcpy(dst_entries, src_entries, bytes_to_move);
+> +       entries_moved = bytes_to_move / entry_size;
+> +
+> +       switch (mode) {
+> +       case KCOV_MODE_TRACE_PC:
+> +               WRITE_ONCE(*(unsigned long *)dst_area, dst_len + entries_moved);
+> +               break;
+> +       case KCOV_MODE_TRACE_CMP:
+> +               WRITE_ONCE(*(u64 *)dst_area, dst_len + entries_moved);
+> +               break;
+> +       default:
+> +               break;
+> +       }
+> +}
+> +
+> +void kcov_remote_stop(void)
+> +{
+> +       struct task_struct *t = current;
+> +       struct kcov *kcov = t->kcov;
+> +       void *area = t->kcov_area;
+> +       unsigned int size = t->kcov_size;
+> +       int sequence = t->kcov_sequence;
+> +
+> +       if (!kcov) {
+> +               kcov_debug("no kcov found\n");
+> +               return;
+> +       }
+> +
+> +       kcov_stop(t);
+> +       t->kcov = NULL;
+> +
+> +       spin_lock(&kcov->lock);
+> +       /*
+> +        * KCOV_DISABLE could have been called between kcov_remote_start()
+> +        * and kcov_remote_stop(), hence the check.
+> +        */
+> +       kcov_debug("move if: %d == %d && %d\n",
+> +               sequence, kcov->sequence, (int)kcov->remote);
+> +       if (sequence == kcov->sequence && kcov->remote)
+> +               kcov_move_area(kcov->mode, kcov->area, kcov->size, area);
+> +       spin_unlock(&kcov->lock);
+> +
+> +       spin_lock(&kcov_remote_lock);
+> +       kcov_remote_area_put(area, size);
+> +       spin_unlock(&kcov_remote_lock);
+> +
+> +       kcov_put(kcov);
+> +}
+> +
+>  static int __init kcov_init(void)
+>  {
+>         /*
+> --
+> 2.23.0.866.gb869b98d4c-goog
+>
