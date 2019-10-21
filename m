@@ -2,118 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC487DF4F9
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97179DF502
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 20:22:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729979AbfJUSUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 14:20:16 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:36018 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbfJUSUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:20:15 -0400
-Received: by mail-qk1-f195.google.com with SMTP id y189so13593863qkc.3;
-        Mon, 21 Oct 2019 11:20:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EqPGNnMebZz4c/xVZrozzj12KPSZJh44zwjeVidbrD8=;
-        b=WJqUYFMQY9dYgqIvx8hj0iArBpnWpnGlSsZfVOT7qQR+OJ7WxMFkW/WLt1U3WN/JeQ
-         UGhYe1iQsSLHD6py0aKFusQ0reHvIfqysVmULZvaSZxwKBwa3+pk8wCbDxZVMQQjPck6
-         d1XuwpL3pU5ny0v0SzmKQHwsaBv3ZBizRcxb1x9SS3KVEjwxP0ZaMAGOI0EzafmVSZsz
-         K0juGO65TGeBPs3Dr6U31nI2lrVJcDeUZW5jpXvrE9J7yRiwed7saeEhh6COItutR2vm
-         dAmsajboI2P+1vkBjMmP481ts0hyh9fmBfWWW16PLj9B1lQGxRk5AvXD2N6uc+4mhDwc
-         cCnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EqPGNnMebZz4c/xVZrozzj12KPSZJh44zwjeVidbrD8=;
-        b=biWelejj0sYR3Ma8IDqKr9/uEfFmhUAOpzeM3QwMk/dMn6pmQNcfcIuO7mDuqDoWW+
-         FSfUq9EqVP5OD5OpnzgrRmEDLKxt7DsEE4kDLrbe2MYeoCz7rBdELNDOl0B7gwESMz4J
-         leLAWgQosxwFmFN+xanE8SnHUk9lKbKX8ewlMgrtKmDBUOvUM7CpiqW2tKNNzhmO1oka
-         oqX5TDPOlAcDLuidBq9WRovOBRKysYmpF12iKMB5NKTbdItLVvXCJEooc/a4czEp8m7H
-         5wgXELoZpwAaHLYB9Rd6GwqUoy699kifSGPwJnUHWWHpAFpoNMr5Lu3kvqV7xGwVDBQZ
-         ANvQ==
-X-Gm-Message-State: APjAAAXaaV2e3weYZ3rQeuzhKBRGCFAmR2Ghfsk1E0+sZGeoF776D7jN
-        hM5RSBBIRGTgNn+TK+FvQvH5MUw5jbLkm0ak2IeuPzBr
-X-Google-Smtp-Source: APXvYqxYSShwEgtqvT4qtfO+uTUk1FuxmBbbqCf22Ct4weLEJEe8FbOAGDo34S/zVwEFx8tn1DUAdQaVxEZ4AmzqCi0=
-X-Received: by 2002:a37:b447:: with SMTP id d68mr24091046qkf.437.1571682013124;
- Mon, 21 Oct 2019 11:20:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191017150032.14359-1-cneirabustos@gmail.com>
- <20191017150032.14359-5-cneirabustos@gmail.com> <d88ce3ca-d235-cd9c-c1a9-c2d01a01541d@fb.com>
-In-Reply-To: <d88ce3ca-d235-cd9c-c1a9-c2d01a01541d@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 21 Oct 2019 11:20:01 -0700
-Message-ID: <CAEf4BzbsDbxjALMJ119B-nweD1xEZ_PHX9r9k8qDpekraaHR2w@mail.gmail.com>
-Subject: Re: [PATCH v14 4/5] tools/testing/selftests/bpf: Add self-tests for
- new helper.
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Carlos Neira <cneirabustos@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730007AbfJUSWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 14:22:37 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.82]:22262 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727110AbfJUSWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 14:22:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1571682152;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=ESbJhDnm5bjuVodC9kh4h0sdAOT1wrM2a4p9lLw+WMU=;
+        b=XmU7ZkYxfp33BkQgcl5YpwmrWOM3l9F4xslYbs0zMYcPe1FXsqxa3XsANba9HChcWM
+        4cZ0ZHMZdtIuY8sVtIzzS9lqfLLABXmNe3wvcbzP/ozh5hH9UI2vAifvvWsF6PpFkgPa
+        af7eo60FnAsUhj6NkntPeV3aEl6f1iELqirCKW7anm1T0OUlb5RRRC5CWwjVqR+HXumx
+        rc6lN7ZBZlqyr1hpXGSoAuH7cDwcn3UYriAHPqVPh110ZL6SOhqs81FdQixc1LXzw1pr
+        iaK9jWwik10QrAdrWZjDzEIJ5b3WItr3nK395plCbUZV7lzgu0+Vil3ikaEmYIlirdiM
+        1xRA==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj5Qpw97WFDVCbXA4Ewxc="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+        by smtp.strato.de (RZmta 44.28.1 DYNA|AUTH)
+        with ESMTPSA id R0b2a8v9LIMGM7B
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Mon, 21 Oct 2019 20:22:16 +0200 (CEST)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH 3/9] DTS: ARM: pandora-common: define wl1251 as child node of mmc3
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20191021171321.GZ5610@atomide.com>
+Date:   Mon, 21 Oct 2019 20:22:15 +0200
+Cc:     =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        David Sterba <dsterba@suse.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, letux-kernel@openphoenux.org,
+        kernel@pyra-handheld.com, stable@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <0C476142-BC54-4950-8B7A-A422ABC2AEB9@goldelico.com>
+References: <cover.1571430329.git.hns@goldelico.com> <58c57f194e35b2a055a58081a0ea0d3ffcd07b6d.1571430329.git.hns@goldelico.com> <20191021171321.GZ5610@atomide.com>
+To:     Tony Lindgren <tony@atomide.com>
+X-Mailer: Apple Mail (2.3124)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 19, 2019 at 1:58 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 10/17/19 8:00 AM, Carlos Neira wrote:
-> > Self tests added for new helper
-> >
-> > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> > ---
-> >   .../bpf/prog_tests/get_ns_current_pid_tgid.c  | 96 +++++++++++++++++++
-> >   .../bpf/progs/get_ns_current_pid_tgid_kern.c  | 53 ++++++++++
 
-It looks like typical naming convention is:
+> Am 21.10.2019 um 19:13 schrieb Tony Lindgren <tony@atomide.com>:
+>=20
+> * H. Nikolaus Schaller <hns@goldelico.com> [191018 20:28]:
+>> Since v4.7 the dma initialization requires that there is a
+>> device tree property for "rx" and "tx" channels which is
+>> not provided by the pdata-quirks initialization.
+>>=20
+>> By conversion of the mmc3 setup to device tree this will
+>> finally allows to remove the OpenPandora wlan specific omap3
+>> data-quirks.
+>>=20
+>> Fixes: 81eef6ca9201 ("mmc: omap_hsmmc: Use dma_request_chan() for =
+requesting DMA channel")
+>=20
+> Here you have the subject line the wrong way around,
+> please update it to start with "ARM: dts: ...".
 
-prog_test/<something>.c
-progs/test_<something>.c
+Ok.
 
-Let's keep this consistent. I'm about to do a bit smarter Makefile
-that will capture this convention, so it's good to have less exception
-to create. Thanks!
-
-Otherwise, besides what Yonghong mentioned, this look good to me.
-
-
-> >   2 files changed, 149 insertions(+)
-> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
-> >
-
-[...]
-
-> > +     prog = bpf_object__find_program_by_title(obj, probe_name);
-> > +     if (CHECK(!prog, "find_probe",
-> > +               "prog '%s' not found\n", probe_name))
-> > +             goto cleanup;
-> > +
-> > +     bpf_program__set_type(prog, BPF_PROG_TYPE_RAW_TRACEPOINT);
->
-> Do we need this? I thought libbpf should automatically
-> infer program type from section name?
-
-We used to, until the patch set that Daniel landed today. Now it can be dropped.
-
->
-> > +
-> > +     load_attr.obj = obj;
-> > +     load_attr.log_level = 0;
-> > +     load_attr.target_btf_path = NULL;
-> > +     err = bpf_object__load_xattr(&load_attr);
-> > +     if (CHECK(err, "obj_load",
-> > +               "failed to load prog '%s': %d\n",
-> > +               probe_name, err))
-> > +             goto cleanup;
->
-
-[...]
