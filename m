@@ -2,51 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6070CDF412
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:21:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 673ABDF3D3
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729597AbfJURUT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 13:20:19 -0400
-Received: from 165084187012.ctinets.com ([165.84.187.12]:35748 "EHLO
-        mail2.ltyschool.edu.hk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727110AbfJURUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:20:19 -0400
-X-Greylist: delayed 1899 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Oct 2019 13:20:18 EDT
-Received: from localhost (mail2.ltyschool.edu.hk [127.0.0.1])
-        by mail2.ltyschool.edu.hk (Postfix) with ESMTP id 3B8492E1F74;
-        Tue, 22 Oct 2019 00:38:02 +0800 (HKT)
-X-Virus-Scanned: amavisd-new at mail2.ltyschool.edu.hk
-Received: from mail2.ltyschool.edu.hk ([127.0.0.1])
-        by localhost (mail2.ltyschool.edu.hk [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id y6g0HJjKqXOo; Tue, 22 Oct 2019 00:38:01 +0800 (HKT)
-Received: from mail2.ltyschool.edu.hk (mail2.ltyschool.edu.hk [127.0.0.1])
-        by mail2.ltyschool.edu.hk (Postfix) with ESMTP id DD7C02E1F6C;
-        Tue, 22 Oct 2019 00:37:59 +0800 (HKT)
-Date:   Tue, 22 Oct 2019 00:37:59 +0800 (HKT)
-From:   "Mme " <st1701132@ltyschool.edu.hk>
-Reply-To: annie.martinez121@gmail.com
-Message-ID: <25219916.1979485.1571675879568.JavaMail.root@ltyschool.edu.hk>
-Subject: =?utf-8?Q?Que_Dieu_Vous_B=C3=A9nisse!?=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [197.234.221.9]
-X-Mailer: Zimbra 7.2.0_GA_2669 (zclient/7.2.0_GA_2669)
-To:     undisclosed-recipients:;
+        id S1728386AbfJURIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 13:08:07 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.84]:32198 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726847AbfJURIH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:08:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1571677682;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=g5fftcy+sbjcXJkucAV/OZbKo+UWi5WQTkrvCV2Jtos=;
+        b=MCpa+9rRKrdom/xaOpun1m6gqtX0goa1UYwlgcdk+bUa7vOK5N5D/I6Gpd2icxGPFb
+        VPW3wd2o3OPlb6EII1dFDERgH46BzQRrXeWmsg5QSFUpNQBjNKt7p27ys1l/c/xfPDjy
+        GxudTskSRd6qrn2lWgpMdDF68/6tGAGD14y3tLP1f7rhGJIFtUIBMP90yQOwuo/RAjij
+        OoQz2iiSsyt+2CDiNGYpMCWOcJtyHk0fQWQu4AU2wcNPtw5QMhnJINkwqlmfViY8G7hJ
+        lXufkL/Pu1Wyg+TvB99AN5V6UAt1m6bCwmifRDuBiqREsTYbwtmOBOpxS+0tTQ2ByCuk
+        QE9w==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj5Qpw97WFDVCbXA4Ewxc="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+        by smtp.strato.de (RZmta 44.28.1 DYNA|AUTH)
+        with ESMTPSA id R0b2a8v9LH7VLxq
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Mon, 21 Oct 2019 19:07:31 +0200 (CEST)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v2 07/11] omap: remove old hsmmc.[ch] and in Makefile
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20191021143008.GS5610@atomide.com>
+Date:   Mon, 21 Oct 2019 19:07:31 +0200
+Cc:     =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        David Sterba <dsterba@suse.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, letux-kernel@openphoenux.org,
+        kernel@pyra-handheld.com
+Content-Transfer-Encoding: 7bit
+Message-Id: <3FDBE28F-B2C5-4EDE-905C-687F601462B6@goldelico.com>
+References: <cover.1571510481.git.hns@goldelico.com> <9bd4c0bb0df26523d7f5265cdb06d86d63dafba8.1571510481.git.hns@goldelico.com> <20191021143008.GS5610@atomide.com>
+To:     Tony Lindgren <tony@atomide.com>
+X-Mailer: Apple Mail (2.3124)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bonjour,
 
-Je soussignée Mme Annie MARTINEZ. Je suis née en France. Je souffre d’un cancer du foie en phase terminale.
-Après de nombreux essais cliniques sans succès, mon médecin vient de m’annoncer que mes jours sont comptés. Je voudrais réaliser un projet d’aide humanitaire à travers vous bien qu’on ne se connait pas vraiment. J’ai alors décidé de vous léguer à titre de legs une somme de un million cinq cent mille dollars américain. Ma propre famille qui devrait en bénéficier m'avait rejetée pour la simple raison de mon mariage avec un Arabe Libyen.
+> Am 21.10.2019 um 16:30 schrieb Tony Lindgren <tony@atomide.com>:
+> 
+> * H. Nikolaus Schaller <hns@goldelico.com> [191019 18:43]:
+>> --- a/arch/arm/mach-omap2/Makefile
+>> +++ b/arch/arm/mach-omap2/Makefile
+>> @@ -216,7 +216,6 @@ obj-$(CONFIG_MACH_NOKIA_N8X0)		+= board-n8x0.o
+>> 
+>> # Platform specific device init code
+>> 
+>> -omap-hsmmc-$(CONFIG_MMC_OMAP_HS)	:= hsmmc.o
+>> obj-y					+= $(omap-hsmmc-m) $(omap-hsmmc-y)
+> 
+> The related obj-y line can go now too, right?
 
-« N’hésitez pas à me répondre pour me parlé directement »
+Yes, I think so. It is a construction that I have never seen before :)
+Therefore I did not recognize that it is related.
 
-NB: Veuillez vous assurer de répondre a la bonne adresse Émail merci et QUE DIEU VOUS BÉNISSE.
+> And looks like common.h also has struct omap2_hsmmc_info
+> so maybe check by grepping for hsmmc_info to see it's gone.
 
-Sincèrement
-Mme ANNIE MARTINEZ
-E-mail Privée: annie.martinez121@gmail.com
+Yes, it is just a forward-declaration of the struct name with
+no user anywhere.
+
+Scheduled for v3.
+
+BTW: should this series go through your tree since it is an
+omap machine?
+
+BR and thanks,
+Nikolaus
+
