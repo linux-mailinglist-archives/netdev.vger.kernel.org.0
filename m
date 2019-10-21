@@ -2,112 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 660B7DF796
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 23:45:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7AE4DF7F5
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 00:22:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730361AbfJUVpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 17:45:17 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:41678 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729388AbfJUVpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 17:45:17 -0400
-Received: by mail-pl1-f195.google.com with SMTP id t10so7269906plr.8
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 14:45:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=sM7bGGhshxU6DSzLqCJMwqozRLpxzUDFA4cU/gywtcg=;
-        b=AwadvmmN8bqrWmhVWdCkkQH/aLrI7IYqy4IyPraJIxYKOcv38JjAOlFrpPkZYosiHH
-         tzYi8pm0pc9EVWiSS+enwkDHIPddJyiXdHxbR9u4dew/kfBGvpcFmNeqccpUq9GZxiJL
-         c1OgvqVHBHUnUXDBGDAPkxaRF/U0KXF1nsjrRAg7QTe//zGC7XbemCOnVZU1CKzsNd99
-         aLZfBLAj6FgwUBmzhhyYvbVCxOOZVe4lKXpqbf5o0ZzHp6bBUzt2vD7m4YdaIivnQhR+
-         d7HzWzg+mND+IDG/VgHbKUK1of7uanJHReX9ocS+zV1zC9rYuS9334eZnOi+Ffgn9HIA
-         +zJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=sM7bGGhshxU6DSzLqCJMwqozRLpxzUDFA4cU/gywtcg=;
-        b=ouaCeAw1JM/llEfNyvnVdAobK2hKriDo7kbYLUNBXdYSCj5xCavPdb6XfpF2oowtID
-         icFJFxVkiH/A8kJURk1oO6eerN/F7vEYO20CzXQyJnWLWocj4aWzzXT1fhYaWpej/jgI
-         wkb+MfJKvrMH9FJzWBstTNC8s1rgVEbT/2goJK2kPFtpR5gWrj0kU6izU44MpV2uIIGj
-         E1oEaxLiccEwwayGitN3NxmGRmGw+zjMGITb6gsG7QOOSv2kbNbAfzW0gTDTW88cArsI
-         HBGG6rN0Lfs8TzflGokzvoDyDN+3CEsAxXwZmRHD/ZDkNS3nW3j3b08T+BuNZcLqtofU
-         T58Q==
-X-Gm-Message-State: APjAAAXLM6MuPyIky9eA9QJKMP/zWm5dLbETlysBOx7bT9F0NDCcJ7lU
-        au8Av3pRUxgL5E5FZhuozus=
-X-Google-Smtp-Source: APXvYqwJV+RM7Q76JxkaNeOv6RByvlV2xet/3hMcMyXHmpZ8e4oJVhiLKBAwVB0WWiPTmCjzK+/LvQ==
-X-Received: by 2002:a17:902:8d89:: with SMTP id v9mr130725plo.247.1571694316766;
-        Mon, 21 Oct 2019 14:45:16 -0700 (PDT)
-Received: from [172.20.54.239] ([2620:10d:c090:200::3:102c])
-        by smtp.gmail.com with ESMTPSA id l23sm15633996pjy.12.2019.10.21.14.45.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 21 Oct 2019 14:45:16 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Saeed Mahameed" <saeedm@mellanox.com>
-Cc:     kernel-team@fb.com, ilias.apalodimas@linaro.org,
-        "Tariq Toukan" <tariqt@mellanox.com>, brouer@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 00/10 net-next] page_pool cleanups
-Date:   Mon, 21 Oct 2019 14:45:15 -0700
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <97F9C936-576A-4051-B435-4A901FFD1575@gmail.com>
-In-Reply-To: <a82be17dbaa84d4868d6825967b8a87afa3551ba.camel@mellanox.com>
-References: <20191016225028.2100206-1-jonathan.lemon@gmail.com>
- <1df61f9dedf2e26bbc94298cc2605002a4700ce6.camel@mellanox.com>
- <A6D1D7E1-56F4-4474-A7E7-68627AEE528D@gmail.com>
- <a82be17dbaa84d4868d6825967b8a87afa3551ba.camel@mellanox.com>
+        id S1730387AbfJUWVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 18:21:48 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:32994 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727264AbfJUWVs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 18:21:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=6uc83vVbAQNL+hWSYNLKkGKf3OFD2g2M4EAFEdxCp8k=; b=036YnA8M35zh7oaZP5i2lrsye
+        EB0cDqf3F8uePuPil4Bamdbm8KtNRvsBdq07e1aHHJgDobEYpDojY9mOeX8YPPd1J2sC+mh+6VDxc
+        /V9CA6YUSYv9pEQ1D6eRYBtf0ymOBj8sxubqz1HIJtD2vM6dH1pOOQwIR9tY0McREESQviSLk1hDT
+        9Aad+EJGZHzyyUWVCsvOL2mAZKl5VCw9Vi52BbeATUdSZaXmXoUrg26XhJ0lkzlnbH06WL0VYhCfN
+        UvtH8sR/oeNe0DxU2hwkxapIuU4gWA+ug0hzwvSwDebQsKNrfX++HAyF36QsP7DTwur0NBbrWwgBa
+        pjPKOdWUg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57354)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iMg3O-0003H1-0z; Mon, 21 Oct 2019 23:21:30 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iMg3G-0003uw-Oy; Mon, 21 Oct 2019 23:21:22 +0100
+Date:   Mon, 21 Oct 2019 23:21:22 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v3 1/5] net: ag71xx: port to phylink
+Message-ID: <20191021222122.GM25745@shell.armlinux.org.uk>
+References: <20191021053811.19818-1-o.rempel@pengutronix.de>
+ <20191021053811.19818-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191021053811.19818-2-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 21, 2019 at 07:38:07AM +0200, Oleksij Rempel wrote:
+> +static void ag71xx_mac_validate(struct phylink_config *config,
+> +			    unsigned long *supported,
+> +			    struct phylink_link_state *state)
+>  {
+> -	struct ag71xx *ag = netdev_priv(ndev);
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+> +
+> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
+> +	    state->interface != PHY_INTERFACE_MODE_GMII &&
+> +	    state->interface != PHY_INTERFACE_MODE_MII) {
+> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +		return;
+> +	}
+> +
+> +	phylink_set(mask, MII);
+> +
+> +	/* flow control is not supported */
+> +
+> +	phylink_set(mask, 10baseT_Half);
+> +	phylink_set(mask, 10baseT_Full);
+> +	phylink_set(mask, 100baseT_Half);
+> +	phylink_set(mask, 100baseT_Full);
+>  
+> -	ag71xx_link_adjust(ag, true);
+> +	if (state->interface == PHY_INTERFACE_MODE_NA &&
+> +	    state->interface == PHY_INTERFACE_MODE_GMII) {
 
+This is always false.
 
-On 21 Oct 2019, at 12:08, Saeed Mahameed wrote:
+Apart from that, from just reading the patch I have no further concerns.
 
-> On Fri, 2019-10-18 at 16:32 -0700, Jonathan Lemon wrote:
->>
->> On 18 Oct 2019, at 13:50, Saeed Mahameed wrote:
->>
->>> On Wed, 2019-10-16 at 15:50 -0700, Jonathan Lemon wrote:
->>>> This patch combines work from various people:
->>>> - part of Tariq's work to move the DMA mapping from
->>>>   the mlx5 driver into the page pool.  This does not
->>>>   include later patches which remove the dma address
->>>>   from the driver, as this conflicts with AF_XDP.
->>>>
->>>> - Saeed's changes to check the numa node before
->>>>   including the page in the pool, and flushing the
->>>>   pool on a node change.
->>>>
->>>
->>> Hi Jonathan, thanks for submitting this,
->>> the patches you have are not up to date, i have new ones with
->>> tracing
->>> support and some fixes from offlist review iterations, plus
->>> performance
->>> numbers and a  cover letter.
->>>
->>> I will send it to you and you can post it as v2 ?
->>
->> Sure, I have some other cleanups to do and have a concern about
->> the cache effectiveness for some workloads.
->
-> Ok then, I will submit the page pool NUMA change patches separately.
-> I will remove the flush mechanism and will add your changes.
->
-> for the other patches, mlx5 cache and page pool statistics, i think
-> they need some more work and a lot of pieces are still WIP. I don't
-> want to block the NUMA change API patches.
+Thanks.
 
-Sounds good - the stats are only really needed once the mlx5 private
-cache goes away, and it doesn't look like that will happen immediately.
-
-The private cache and the page pool are performing two different functions
-at the moment.
 -- 
-Jonathan
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
