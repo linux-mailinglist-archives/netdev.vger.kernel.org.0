@@ -2,119 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF65DEB54
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 13:47:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14301DEB53
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 13:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728513AbfJULre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 07:47:34 -0400
-Received: from mail-oi1-f179.google.com ([209.85.167.179]:38888 "EHLO
-        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727831AbfJULre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 07:47:34 -0400
-Received: by mail-oi1-f179.google.com with SMTP id d140so6439547oib.5
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 04:47:33 -0700 (PDT)
+        id S1728476AbfJULr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 07:47:27 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40529 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727831AbfJULr0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 07:47:26 -0400
+Received: by mail-pf1-f195.google.com with SMTP id x127so8286253pfb.7;
+        Mon, 21 Oct 2019 04:47:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y2Y8DtMTYJdmKTT/tqpNay3sKCQwBBbB1tzl7gaTgTA=;
-        b=icCmB5/hqapmEUrP3y4CPrw4SPzEcZ6H5Zd6FQ10ry6SM1gzBrFfKglm+6OvHKhR6l
-         4/c838TVPnifMk4nE07E2GvEiG5QHpb5UXFVhxNOjeoM10kUKxzoxX9Uic/rvOAzXU9/
-         PchXtoZh5Ql6J1hDmalNZpGZXajpruphM++rxaiFubGPmpfiDYilWrC+1H64L0MLpdtH
-         3QmhSnIphO2VnQfb6ruArq0MT1BGndvZFgwO182+bfzfD7iOcsXgkVANqYerK1sIzLLm
-         S2vVQ1VvH7xfAk7r7JkiboJ3dASRP9dmzy9vgZNxzpiXOlf8o8BFgg5AAFWwwmv+OdK8
-         kQCA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pxuyK2J8Zv4RiKfi5R/IvONY3RKXJZcwRIOIT1s+V5Y=;
+        b=YjBPDWhb0qC7qfbYdQCSh833ufO9oM3ufqCj/fNKmpR5DzFG73dwGQwCauBf4aIzfz
+         CoCvBeRDQCVaq4OR1dAcnxLohErHSg1byu/0unv6VXz4uh+r16jiTcRPPvSL0VGSiX6L
+         PJ20Jg41AH7/e3/5fpIlvVn8nRMYnPOjCOWbTXmrHHNxuKHnwCNbIU855yawe776Rurv
+         uv+PfXHI6w52/BponRxV6Mh4JqZcvmo88utViYmTDRtOutKG2VPOkeRVkEgb2kaqKzSx
+         4xFGAW+9AKxwzoQfiII8INp9dW1lmyjkqNGqTvQoFUe0wrveJlDRDiEmQj3SeXuf9x4a
+         aJ7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y2Y8DtMTYJdmKTT/tqpNay3sKCQwBBbB1tzl7gaTgTA=;
-        b=lTa7l9+5frRrGpWuhwxKxmZQRyj2ExegZnQoB76V3TkdpjG4ejB4RcOAk3iNMZlcMh
-         IoaV9yFLfg0biQ7mG0uYDP9HtRkBc1djOMA/r8zmpa/gEiaV4Ruq3KfFTBBnwb6fyP4P
-         iSQD06iF7QQ7LS1PAmWELwOxhVMYtDVuEVEpXljsEDCtaDwyQOL0ynMEdxLjY7YXQR7P
-         lVlyMe11CMIYu90FQuVknNS6WPAS1qjLqmdItlMug++HqIKtM1+LWs3IKEYp/qFWCW0j
-         M6OQjDPcjRaJP7QVJQ/DXs5oN+j5F8zsWiO3Vo1PhYA2Ycs8KraZ+m98f7C/oKZBn3cH
-         Ahjg==
-X-Gm-Message-State: APjAAAWp8gcDcEpnxkSBT1HkOyyyfbFR5NpXgn1qcvC8c44om9hg10hc
-        xWMtzoLb7honmRrkRsEO2pXAWSfxAAO71bVhlBIptQ==
-X-Google-Smtp-Source: APXvYqyDL02n2xT1mIqWSuKGtRPs7R4tr6QsZ/aPW5Um9qOpUse8jWn5UXeOkHBj66nhbO+p3sACO+l/SL9J0a+LOo8=
-X-Received: by 2002:a54:4e8a:: with SMTP id c10mr18666231oiy.14.1571658452980;
- Mon, 21 Oct 2019 04:47:32 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pxuyK2J8Zv4RiKfi5R/IvONY3RKXJZcwRIOIT1s+V5Y=;
+        b=d2nv7GLoezQgF0KyiMlJ7FqM8lAjtfKx3wTI7SImLtfUK6ZCSV8Csfr7qIKAy2qCdX
+         1NJFhg/K5vZkJCnmSLoFPrF/ioVEYG7aWHSxYRGM3W8Y2ZuvRqjfPH2DgZvWTLU7B5gL
+         cUHVD5K5gN83qaTAbHriWDUldiHe+5VSHRj7Cet7QKSJ2fxp9dP7TtudRzAmnL3E6dDE
+         bbjd/PBIZbf2tGClNQ1HLSNvZdkqtB+n5P7tvGB9T0YwKLEvQlPBWWB2K5dgX4eiw3RL
+         mz7hX1bIanuTK5KBGuoQxk8wymIDo5Qyvz/L6W+cyfdi5+Y65sFogXkOx4KhmZQ6wj7z
+         TW5g==
+X-Gm-Message-State: APjAAAV0wNvBCdBdjnnZZ3n5necf3ckK9XKQzEqlQVFBJXjW4SbYZ7bg
+        mw0jjmaG2QctDLY/unBRtLY=
+X-Google-Smtp-Source: APXvYqyO7KhTEKa8BGtvKo847jWrgMDLYwdwECPs/k+Tk5uOd7EX7Ec9hGP6Dcpw37a2RHoY38QhKA==
+X-Received: by 2002:a62:60c7:: with SMTP id u190mr22348821pfb.256.1571658445921;
+        Mon, 21 Oct 2019 04:47:25 -0700 (PDT)
+Received: from [172.20.20.103] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id l23sm14491937pjy.12.2019.10.21.04.47.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Oct 2019 04:47:24 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        William Tu <u9012063@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
+ <CAJ+HfNga=XFeutQuGvGXkuWKSsDCqak-rjutOzqu-r-pwLL1-w@mail.gmail.com>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <25ade2e7-a8fe-2adb-8d4c-6cc6add21267@gmail.com>
+Date:   Mon, 21 Oct 2019 20:47:17 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
- <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
- <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org> <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
- <2279a8988c3f37771dda5593b350d014@codeaurora.org>
-In-Reply-To: <2279a8988c3f37771dda5593b350d014@codeaurora.org>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Mon, 21 Oct 2019 07:47:16 -0400
-Message-ID: <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAJ+HfNga=XFeutQuGvGXkuWKSsDCqak-rjutOzqu-r-pwLL1-w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 20, 2019 at 10:45 PM Subash Abhinov Kasiviswanathan
-<subashab@codeaurora.org> wrote:
->
-> > FIN-WAIT1 just means the local application has called close() or
-> > shutdown() to shut down the sending direction of the socket, and the
-> > local TCP stack has sent a FIN, and is waiting to receive a FIN and an
-> > ACK from the other side (in either order, or simultaneously). The
-> > ASCII art state transition diagram on page 22 of RFC 793 (e.g.
-> > https://tools.ietf.org/html/rfc793#section-3.2 ) is one source for
-> > this, though the W. Richard Stevens books have a much more readable
-> > diagram.
-> >
-> > There may still be unacked and SACKed data in the retransmit queue at
-> > this point.
-> >
->
-> Thanks for the clarification.
->
-> > Thanks, that is a useful data point. Do you know what particular value
-> >  tp->sacked_out has? Would you be able to capture/log the value of
-> > tp->packets_out, tp->lost_out, and tp->retrans_out as well?
-> >
->
-> tp->sacket_out varies per crash instance - 55, 180 etc.
-> However the other values are always the same - tp->packets_out is 0,
-> tp->lost_out is 1 and tp->retrans_out is 1.
+On 2019/10/21 20:23, Björn Töpel wrote:
+> On Sat, 19 Oct 2019 at 00:31, Toshiaki Makita
+> <toshiaki.makita1@gmail.com> wrote:
+>>
+> [...]
+>>
+>> * About OVS AF_XDP netdev
+>>
+>> Recently OVS has added AF_XDP netdev type support. This also makes use
+>> of XDP, but in some ways different from this patch set.
+>>
+>> - AF_XDP work originally started in order to bring BPF's flexibility to
+>>    OVS, which enables us to upgrade datapath without updating kernel.
+>>    AF_XDP solution uses userland datapath so it achieved its goal.
+>>    xdp_flow will not replace OVS datapath completely, but offload it
+>>    partially just for speed up.
+>>
+>> - OVS AF_XDP requires PMD for the best performance so consumes 100% CPU
+>>    as well as using another core for softirq.
+>>
+> 
+> Disclaimer; I haven't studied the OVS AF_XDP code, so this is about
+> AF_XDP in general.
+> 
+> One of the nice things about AF_XDP is that it *doesn't* force a user
+> to busy-poll (burn CPUs) like a regular userland pull-mode driver.
+> Yes, you can do that if you're extremely latency sensitive, but for
+> most users (and I think some OVS deployments might fit into this
+> category) not pinning cores/interrupts and using poll() syscalls (need
+> wakeup patch [1]) is the way to go. The scenario you're describing
+> with ksoftirqd spinning on one core, and user application on another
+> is not something I'd recommend, rather run your packet processing
+> application on one core together with the softirq processing.
 
-Interesting! As tcp_input.c summarizes, "packets_out is
-SND.NXT-SND.UNA counted in packets". In the normal operation of a
-socket, tp->packets_out should not be 0 if any of those other fields
-are non-zero.
+Thank you for the information.
+I want to evaluate AF_XDP solution more appropriately.
 
-The tcp_write_queue_purge() function sets packets_out to 0:
+William, please correct me if I'm saying something wrong here.
+Or guide me if more appropriate configuration to achieve best performance is possible.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/net/ipv4/tcp.c?h=v4.19#n2526
+> 
+> Björn
+> [1] https://lore.kernel.org/bpf/1565767643-4908-1-git-send-email-magnus.karlsson@intel.com/#t
 
-So the execution of tcp_write_queue_purge()  before this point is one
-way for the socket to end up in this weird state.
-
-> > Yes, one guess would be that somehow the skbs in the retransmit queue
-> > have been freed, but tp->sacked_out is still non-zero and
-> > tp->highest_sack is still a dangling pointer into one of those freed
-> > skbs. The tcp_write_queue_purge() function is one function that fees
-> > the skbs in the retransmit queue and leaves tp->sacked_out as non-zero
-> > and  tp->highest_sack as a dangling pointer to a freed skb, AFAICT, so
-> > that's why I'm wondering about that function. I can't think of a
-> > specific sequence of events that would involve tcp_write_queue_purge()
-> > and then a socket that's still in FIN-WAIT1. Maybe I'm not being
-> > creative enough, or maybe that guess is on the wrong track. Would you
-> > be able to set a new bit in the tcp_sock in tcp_write_queue_purge()
-> > and log it in your instrumentation point, to see if
-> > tcp_write_queue_purge()  was called for these connections that cause
-> > this crash?
->
-> Sure, I can try this out.
-
-Great! Thanks!
-
-neal
+Toshiaki Makita
