@@ -2,136 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69F91DF5DD
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 21:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DB0DF5E6
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 21:22:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730125AbfJUTSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 15:18:46 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33426 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730057AbfJUTSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 15:18:46 -0400
-Received: by mail-qt1-f196.google.com with SMTP id r5so22862502qtd.0;
-        Mon, 21 Oct 2019 12:18:45 -0700 (PDT)
+        id S1729406AbfJUTVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 15:21:38 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35899 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbfJUTVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 15:21:38 -0400
+Received: by mail-wr1-f67.google.com with SMTP id w18so14736060wrt.3
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 12:21:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VfnDb/zq0ubkvSmBH9Xjbewqwm4bLsA3kSGFNJnQEKk=;
-        b=KsX5yEjftCnBCXyDmEypT+gOhpwexr6tRUxlQuJTdqsvus9V6gAzlxhtmK0GlL4vS3
-         DXtXCuQUipnNLsZybWX8iqQYYZj5i5sfc3nGLRbYzweMaSfzAtO4LxQH5HEO818TWZrW
-         51a/mfMfwc/A1KxrLgNVaDO4nN0lw/uje82gN/2weQg//DxQrJRGwhjturSZCYFLscxq
-         dksjFqQLM6hze7MEiQulkMCXtnr6l4IcqK92um1+xGFOgmkSEW0HTa+Q3LDtayXamWvh
-         ARF8ITb/gi9wcpAZ3lxE0CkaUGQbtChptkS7Nm0kNDmk9k7r7Yc4kNmVprR9sjY0qJ3P
-         W+fQ==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=jEImIYBaJ/ojWpXslDKs7XjM98LgNqmmSeww7LbGanM=;
+        b=dLY1nlyYuuJeBcxWJ3HcqxDIwszDqqammh16rufMlDvKQgdalTMpbI1TZs6PDNc7sA
+         DMjskNclDdFmlZMuYaqgFnxzMbDG4Tza+VaCqCm+Y7Tn6/ZXUZ6P8kjB/FH7ixpaXxeY
+         gqYlKArL6rCb3RKK6de/4y6xVxDymVDu4jrjLY1Wb3hKJ+MVkqXSmmTCns7yGmafY/Vr
+         wAciJgw9yLgrKOIXc7Z+T7iY2YeEXh92NZwcQ+eq9O2+QcoF/QWKYpqC9bBVLp7C1xHQ
+         R65JWbgHF5D0ryahmpTBZdIhYV2Wl+cEmb5bGYkrfs1wy5xYjMFfJ99F8Ga0IBUKdogF
+         HfrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VfnDb/zq0ubkvSmBH9Xjbewqwm4bLsA3kSGFNJnQEKk=;
-        b=E441JxV0bZCf+62SizU1AJYzsuGO5SzBA9ZzmfEOZi6V4OrHbB0uq19a9HZB0Fl3R5
-         lDaFuATgisM2m3twvfY0aoPBrqoX/uNl3y1x69SzYu2K1N0g1FaB8QRFSeQ7auQkVjWy
-         FqQdlmWd8AdlqMTcQsJlC42xOIWSGRHd8W20sJ+kzxMOGLO5mm7IEm+MmlytcfQP5TCC
-         RSsaeCaKNhGMLz4w8d+Y5bK7HoKq5ppbf/KBs8YU1xh37V5+fTz+jnXvPfjsMp/oASTu
-         cgpo93QAUKx01W8RM2XXAASeZnmcFKJvF0TxAvpQQGPttWhRmlf/zLzftOb/wWy7WhBY
-         Q2dA==
-X-Gm-Message-State: APjAAAXmug4pW93IjRkxlezWMfetKFBT7Mmy6pe4cs/tw3ct2enviFtC
-        Dp0tJn6gAWQmjW3HguHNCs2drBurE9RjsRtzYxQdZOWT
-X-Google-Smtp-Source: APXvYqwSsQu5LcFTruiehJrueTCy/e9ggYWyd/Bx2OmrKgPfS0PuebNPttFRa5qeXFG7YKgNm+vKox4ourc6vKqsUCc=
-X-Received: by 2002:ac8:1242:: with SMTP id g2mr25772527qtj.141.1571685524859;
- Mon, 21 Oct 2019 12:18:44 -0700 (PDT)
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=jEImIYBaJ/ojWpXslDKs7XjM98LgNqmmSeww7LbGanM=;
+        b=m50VBIVnRwx1zFeVspL9mosHKGYnv/+RqDURa5Snzeav1KWku8W9OdKovchfJrdJUy
+         QiR34mjiXv+RiLXxkM5FDDp4/fRlTNIGLTuqhj+Ct2BJKh8w0lywoSK1Ae2Eom4DkEOZ
+         VIM36t2n9s/34RNXsjiK8Qc087Jdh+I3LylSQUG9te8wkmJ3YUD2aog1Iw8YhfjOxle8
+         eaQGuDOhEdVa+B+Wevy+xJAa/Zx09+LqSjJs7xZjIbNhtcL2TeNNEZ9O5hwoU47+Ayu/
+         UTeY85vTR+dxFWZ8Bp+uHToWObmXUGT4OIbXrenokF6KKvlV/6GZr0MhdFZqH+ynpuvp
+         Swzg==
+X-Gm-Message-State: APjAAAVv7GP61lsIwXCLz6iNhNItOrV2bVTx12UamraBpnAp5NI7xhoK
+        +UwhsEE9IhQmr5YeqzYJ1TGO8KAB
+X-Google-Smtp-Source: APXvYqwExOuI8gonbWa0sdiW6x/i+b/1pAAPpp/8IpP2/6+oV6x/oUdmKjB/P+brGW23ki7XrbrIhA==
+X-Received: by 2002:adf:9381:: with SMTP id 1mr5678066wrp.10.1571685694701;
+        Mon, 21 Oct 2019 12:21:34 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f26:6400:1cea:5bb:1373:bc70? (p200300EA8F2664001CEA05BB1373BC70.dip0.t-ipconnect.de. [2003:ea:8f26:6400:1cea:5bb:1373:bc70])
+        by smtp.googlemail.com with ESMTPSA id a71sm14895218wme.11.2019.10.21.12.21.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Oct 2019 12:21:34 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/4] r8169: remove fiddling with the PCIe max read
+ request size
+Message-ID: <c4f2e4fc-9cbe-2ba1-b0b2-1e734032b550@gmail.com>
+Date:   Mon, 21 Oct 2019 21:21:23 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20191017150032.14359-1-cneirabustos@gmail.com>
- <20191017150032.14359-5-cneirabustos@gmail.com> <d88ce3ca-d235-cd9c-c1a9-c2d01a01541d@fb.com>
- <CAEf4BzbsDbxjALMJ119B-nweD1xEZ_PHX9r9k8qDpekraaHR2w@mail.gmail.com> <20191021191449.GA16484@ebpf00.byteswizards.com>
-In-Reply-To: <20191021191449.GA16484@ebpf00.byteswizards.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 21 Oct 2019 12:18:33 -0700
-Message-ID: <CAEf4BzY5ZMQJYwU5p-r4bnOcZLGsR1_1iY3-0KKnZyttRbyr6g@mail.gmail.com>
-Subject: Re: [PATCH v14 4/5] tools/testing/selftests/bpf: Add self-tests for
- new helper.
-To:     Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 12:14 PM Carlos Antonio Neira Bustos
-<cneirabustos@gmail.com> wrote:
->
-> On Mon, Oct 21, 2019 at 11:20:01AM -0700, Andrii Nakryiko wrote:
-> > On Sat, Oct 19, 2019 at 1:58 AM Yonghong Song <yhs@fb.com> wrote:
-> > >
-> > >
-> > >
-> > > On 10/17/19 8:00 AM, Carlos Neira wrote:
-> > > > Self tests added for new helper
-> > > >
-> > > > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> > > > ---
-> > > >   .../bpf/prog_tests/get_ns_current_pid_tgid.c  | 96 +++++++++++++++++++
-> > > >   .../bpf/progs/get_ns_current_pid_tgid_kern.c  | 53 ++++++++++
-> >
-> > It looks like typical naming convention is:
-> >
-> > prog_test/<something>.c
-> > progs/test_<something>.c
-> >
-> > Let's keep this consistent. I'm about to do a bit smarter Makefile
-> > that will capture this convention, so it's good to have less exception
-> > to create. Thanks!
-> >
-> > Otherwise, besides what Yonghong mentioned, this look good to me.
-> >
-> >
-> > > >   2 files changed, 149 insertions(+)
-> > > >   create mode 100644 tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
-> > > >   create mode 100644 tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
-> > > >
-> >
-> > [...]
-> >
-> > > > +     prog = bpf_object__find_program_by_title(obj, probe_name);
-> > > > +     if (CHECK(!prog, "find_probe",
-> > > > +               "prog '%s' not found\n", probe_name))
-> > > > +             goto cleanup;
-> > > > +
-> > > > +     bpf_program__set_type(prog, BPF_PROG_TYPE_RAW_TRACEPOINT);
-> > >
-> > > Do we need this? I thought libbpf should automatically
-> > > infer program type from section name?
-> >
-> > We used to, until the patch set that Daniel landed today. Now it can be dropped.
-> >
-> > >
-> > > > +
-> > > > +     load_attr.obj = obj;
-> > > > +     load_attr.log_level = 0;
-> > > > +     load_attr.target_btf_path = NULL;
-> > > > +     err = bpf_object__load_xattr(&load_attr);
-> > > > +     if (CHECK(err, "obj_load",
-> > > > +               "failed to load prog '%s': %d\n",
-> > > > +               probe_name, err))
-> > > > +             goto cleanup;
-> > >
-> >
-> > [...]
->
-> Thanks Andrii,
-> I have a doubt, I don't find in prog_tests/rdonly_map.c  where is "test_rdo.bss" defined ?, is called in line 43 but I'm missing how to is it used as I don't see it defined.
->
+The attempt to improve performance by changing the PCIe max read request
+size was added in the vendor driver more than 10 years back and copied
+to r8169 driver. In the vendor driver this has been removed long ago.
+Obviously it had no effect, also in my tests I didn't see any
+difference. Typically the max payload size is less than 512 bytes
+anyway, and the PCI core takes care that the maximum supported value
+is set. So let's remove fiddling with PCIe max read request size from
+r8169 too. This change allows to simplify the driver in the subsequent
+three patches of this series.
 
-This map is created by libbpf implicitly from global variables used by
-BPF object. You just look it up by name, set its value to whatever you
-need global variables to be set up to, and that value will be
-available to BPF program. From BPF program side, when you update
-global variable, that value can be read from user space using that
-same test_rdo.bss map. Does it make sense?
+Heiner Kallweit (4):
+  r8169: remove fiddling with the PCIe max read request size
+  r8169: simplify setting PCI_EXP_DEVCTL_NOSNOOP_EN
+  r8169: remove rtl_hw_start_8168dp
+  r8169: remove rtl_hw_start_8168bef
 
-> Bests
+ drivers/net/ethernet/realtek/r8169_main.c | 90 ++++-------------------
+ 1 file changed, 15 insertions(+), 75 deletions(-)
+
+-- 
+2.23.0
+
