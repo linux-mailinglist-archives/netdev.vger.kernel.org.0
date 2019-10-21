@@ -2,45 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 946F9DF47B
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:46:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85010DF47C
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 19:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727211AbfJURpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 13:45:42 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38072 "EHLO
+        id S1727767AbfJURrD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 13:47:03 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38080 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbfJURpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:45:42 -0400
+        with ESMTP id S1726289AbfJURrD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 13:47:03 -0400
 Received: from localhost (unknown [4.14.35.89])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 98C4614047D0C;
-        Mon, 21 Oct 2019 10:45:41 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 10:45:41 -0700 (PDT)
-Message-Id: <20191021.104541.882166536642996591.davem@davemloft.net>
-To:     hkallweit1@gmail.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: phy: marvell: support downshift as
- PHY tunable
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D78A1412C597;
+        Mon, 21 Oct 2019 10:47:02 -0700 (PDT)
+Date:   Mon, 21 Oct 2019 10:47:02 -0700 (PDT)
+Message-Id: <20191021.104702.259004543485790564.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        patrick@notvads.ovh, pablo@netfilter.org,
+        torvalds@linux-foundation.org
+Subject: Re: [PATCH] ipv4: fix IPSKB_FRAG_PMTU handling with fragmentation
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <85961f9a-999c-743d-3fd2-66c10e7a219e@gmail.com>
-References: <85961f9a-999c-743d-3fd2-66c10e7a219e@gmail.com>
+In-Reply-To: <20191019162637.222512-1-edumazet@google.com>
+References: <20191019162637.222512-1-edumazet@google.com>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 21 Oct 2019 10:45:41 -0700 (PDT)
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 21 Oct 2019 10:47:02 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Date: Sat, 19 Oct 2019 15:56:34 +0200
+From: Eric Dumazet <edumazet@google.com>
+Date: Sat, 19 Oct 2019 09:26:37 -0700
 
-> So far downshift is implemented for one small use case only and can't
-> be controlled from userspace. So let's implement this feature properly
-> as a PHY tunable so that it can be controlled via ethtool.
+> This patch removes the iph field from the state structure, which is not
+> properly initialized. Instead, add a new field to make the "do we want
+> to set DF" be the state bit and move the code to set the DF flag from
+> ip_frag_next().
+> 
+> Joint work with Pablo and Linus.
+> 
+> Fixes: 19c3401a917b ("net: ipv4: place control buffer handling away from fragmentation iterators")
+> Reported-by: Patrick Schönthaler <patrick@notvads.ovh>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 
-Series applied, thanks.
+Applied and queued up for -stable, thanks Eric.
