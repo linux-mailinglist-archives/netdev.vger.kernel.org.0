@@ -2,112 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2838DE1BC
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 03:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68AFBDE1C1
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 03:22:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726767AbfJUBU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Oct 2019 21:20:28 -0400
-Received: from mail-oi1-f181.google.com ([209.85.167.181]:35990 "EHLO
-        mail-oi1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726610AbfJUBU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 21:20:28 -0400
-Received: by mail-oi1-f181.google.com with SMTP id k20so9662026oih.3
-        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 18:20:26 -0700 (PDT)
+        id S1726834AbfJUBWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Oct 2019 21:22:46 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:46135 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726399AbfJUBWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Oct 2019 21:22:46 -0400
+Received: by mail-lj1-f195.google.com with SMTP id d1so11401090ljl.13;
+        Sun, 20 Oct 2019 18:22:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rikXBpy2WdiRQCccaI2OhBDa+W/r6Hy4cLDRLEnnjB0=;
-        b=hRuR9Ozo1f2AXExXLQYJydCqjkp9ngU7xXSNu6wTz1rVe6IYun6B34eRkhNanfE3hE
-         lpU1d6wN+GPqT6IX/lUQCwoQ3wLyDpIK7WoWMVeiFnXf5oAfxPC3VR+TsA++V5MZJK1O
-         amZVny+x8HtbQak3k8BgFoIaHcjM06Ygd+TJlvzQYgCDyCR/uey/iWhk1WzlrnK8JiRh
-         3/EfWdnwEN092jhuTH/P6nU6RMWFF6m7xAOpaDCSfHc8+RsHEfI44WcS3VLTnOXQWVNn
-         SLNgUm57VbgXtiGmIVt9ecVgzSyvvcMWPYs9Jsc+1TMzoCymhj707xDLQdzvOCGIJXnu
-         3vKg==
+        bh=V/JUtmAtM/GkGXaDJB1vyKZ/gwQgDhBXRCWybHQRV1k=;
+        b=R2ppIkaIhKzFC0+4362d6zF8FdwgTWIn1nCslYhGfqoh6Jsn0RAsXwUgAs5b1eMP3k
+         fyLKoD6dmuyQt/tBaZ6Tesjn8KpIUjOgXrMxWGHFAtYaGOrtIiwLPSU/9NrwwNMpfTa6
+         /yV7UQdlP/iQaoTVhK/S7yL61gRt7KP9bxQCeL+Cx5aWoESOUulDFNNyk2SYZkLS6h97
+         joJKZk1i9mtA7C3H0Cf1dOZYnDku7HPxHRF8oXMvt0nniA0JH4EpdzuJ++jzD2Sgeiy/
+         2+NV7l/J5EphLTD+VRL23DJpvPSg+ShqS9jxWhMkFvrLHEc97a7jhvCM9T+GbjK5pPLZ
+         dN4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rikXBpy2WdiRQCccaI2OhBDa+W/r6Hy4cLDRLEnnjB0=;
-        b=tkICAe2NFpWDK37mdv2kg/F3x3/rOGzbhmaMam39yFNUMgOgIKD83WUj8fMhIfxPYs
-         loLlujWqpTKLc9qbhtg/XpA2yi7qec6dJOq8sR4tD+5RyQ3b16mfIJL6HrZpv3RX8DWC
-         N5i9TmuZgd2fseziFwjFz56a6O3+YSN1npNn+1fxyKnKFaYR8WOtsVk8mLnjCY2d0N40
-         Zebe6r1fq9IYRZEXViwEqiu3XZL729SsDXmm/2NTFiZyG+DAjDyltBPVut+t8DJ/EYYh
-         Mo6sI8dPKKM1KflUys/RuQSdnNSyuzN2E3b4vUzzlqckKX76Js2w/+pm/SPJbDrgVkXl
-         IAOQ==
-X-Gm-Message-State: APjAAAUCJBgcGmlD5v8dwfNySZnWCYiJGmF5y8ZYfitTBPOw8ZEFNsNM
-        sHjjHqtJ4FqG5z5b+viD937KZETNCzUJWQcQSD4EZA==
-X-Google-Smtp-Source: APXvYqzGa0dbCHfhzf7NRP9uOEC2g4Lc2mBRFXcd6gE3Ml2U3b+vZ6fMQDs0hqpQYH59WQauMnYQtOAFgZCnXZEMCXY=
-X-Received: by 2002:a54:4e8a:: with SMTP id c10mr16893327oiy.14.1571620825268;
- Sun, 20 Oct 2019 18:20:25 -0700 (PDT)
+        bh=V/JUtmAtM/GkGXaDJB1vyKZ/gwQgDhBXRCWybHQRV1k=;
+        b=rFjRa8JJ9xv/KUFFKiUBN/7wF2CAkJNet44MpebqyTMKTfR+gYSCuNxJxx8EQYyetL
+         HhTuEIbPn+7Jn04YBJ261rGk2nyV+jVRqTL3D/T1n1OdBnfW/dCniJeic39evlMhiGS0
+         95E0HRKlfWdA3CbIyw8KjI0kNTD71J/Bcr3DUZd4WKweswQLaal5VNEJ+JVmWAi81NZG
+         lrvXNcWiLk8GpXNDngw3aiD+6ph37WNZCnxG2t1QgWFQVkrCTQrT/zqts9YlnueSGmhg
+         YJdqEwKDV2CNuWagsNZo0R3NUX/Nr44owHC630BpcHBzkkpf4oBhj4e+/D27WfxPKLd4
+         Cu0A==
+X-Gm-Message-State: APjAAAWZ/ibi4Vv+RW+xyFopDAGJcUdrFL+ZMYkPsdL5Uqq9itxRw1Uo
+        BxKYX6/jTw3CXBG6eSeEXXv+bO1E2B1qLukzKJs=
+X-Google-Smtp-Source: APXvYqxq0kNKbR0aT/7nSQNIKfSC0yOdCtkHu+Eq9h/o5SF7h3HDeGwYjUcOT50IIBc5FQtcfXws13kHxLYtXudWJRs=
+X-Received: by 2002:a2e:9b12:: with SMTP id u18mr13350055lji.142.1571620963520;
+ Sun, 20 Oct 2019 18:22:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
- <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com> <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
-In-Reply-To: <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Sun, 20 Oct 2019 21:20:08 -0400
-Message-ID: <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20191020112344.19395-1-jakub@cloudflare.com> <CAEf4Bzap3PxBuwm+Ew+hgm0bEHa4W0ZhoLTMeo04qW1w=NZSEw@mail.gmail.com>
+In-Reply-To: <CAEf4Bzap3PxBuwm+Ew+hgm0bEHa4W0ZhoLTMeo04qW1w=NZSEw@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 20 Oct 2019 18:22:31 -0700
+Message-ID: <CAADnVQLLuL7-6S-Ms7QvEEiQRTNkn0rBcfp=17xy3-NdBcsHWg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] scripts/bpf: Print an error when known types
+ list needs updating
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Andrii Nakryiko <andriin@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 20, 2019 at 7:15 PM Subash Abhinov Kasiviswanathan
-<subashab@codeaurora.org> wrote:
+On Sun, Oct 20, 2019 at 5:52 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> > Hmm. Random related thought while searching for a possible cause: I
-> > wonder if tcp_write_queue_purge() should clear tp->highest_sack (and
-> > possibly tp->sacked_out)? The tcp_write_queue_purge() code is careful
-> > to call  tcp_clear_all_retrans_hints(tcp_sk(sk)) and I would imagine
-> > that similar considerations would imply that we should clear at least
-> > tp->highest_sack?
+> On Sun, Oct 20, 2019 at 4:24 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 > >
-> > neal
->
-> Hi Neal
->
-> If the socket is in FIN-WAIT1, does that mean that all the segments
-> corresponding to SACK blocks are sent and ACKed already?
+> > Don't generate a broken bpf_helper_defs.h header if the helper script needs
+> > updating because it doesn't recognize a newly added type. Instead print an
+> > error that explains why the build is failing, clean up the partially
+> > generated header and stop.
+> >
+> > v1->v2:
+> > - Switched from temporary file to .DELETE_ON_ERROR.
+> >
+> > Fixes: 456a513bb5d4 ("scripts/bpf: Emit an #error directive known types list needs updating")
+> > Suggested-by: Andrii Nakryiko <andriin@fb.com>
+> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 
-FIN-WAIT1 just means the local application has called close() or
-shutdown() to shut down the sending direction of the socket, and the
-local TCP stack has sent a FIN, and is waiting to receive a FIN and an
-ACK from the other side (in either order, or simultaneously). The
-ASCII art state transition diagram on page 22 of RFC 793 (e.g.
-https://tools.ietf.org/html/rfc793#section-3.2 ) is one source for
-this, though the W. Richard Stevens books have a much more readable
-diagram.
-
-There may still be unacked and SACKed data in the retransmit queue at
-this point.
-
-> tp->sacked_out is non zero in all these crashes
-
-Thanks, that is a useful data point. Do you know what particular value
- tp->sacked_out has? Would you be able to capture/log the value of
-tp->packets_out, tp->lost_out, and tp->retrans_out as well?
-
-> (is the SACK information possibly invalid or stale here?).
-
-Yes, one guess would be that somehow the skbs in the retransmit queue
-have been freed, but tp->sacked_out is still non-zero and
-tp->highest_sack is still a dangling pointer into one of those freed
-skbs. The tcp_write_queue_purge() function is one function that fees
-the skbs in the retransmit queue and leaves tp->sacked_out as non-zero
-and  tp->highest_sack as a dangling pointer to a freed skb, AFAICT, so
-that's why I'm wondering about that function. I can't think of a
-specific sequence of events that would involve tcp_write_queue_purge()
-and then a socket that's still in FIN-WAIT1. Maybe I'm not being
-creative enough, or maybe that guess is on the wrong track. Would you
-be able to set a new bit in the tcp_sock in tcp_write_queue_purge()
-and log it in your instrumentation point, to see if
-tcp_write_queue_purge()  was called for these connections that cause
-this crash?
-
-thanks,
-neal
+Applied.Thanks
