@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1C3DF688
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A58DF689
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 22:11:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730293AbfJUUKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 16:10:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:53971 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726672AbfJUUKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:10:30 -0400
+        id S1730212AbfJUUK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 16:10:58 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:20092 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730069AbfJUUK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 16:10:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571688629;
+        s=mimecast20190719; t=1571688655;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=tIRfkARawuYx5E17weGS9sdJ1VOiUwg/d8BMqTS+xF4=;
-        b=iuWukpnhAp5fVoiPpV1ZhizQuaprjNdTX0ggFKuwzBko00BXMW67Q01WxdvcoiCWndl6L+
-        uVjqRtq9QRJGNyPm3XzeDlmRQ+sHpk6TrVga1qTErhVKtJRji1Ww3rFQIfUQ6AhE8TOqjP
-        FuuMLOJxPBN1msbcS4lc7EOfz4xo5aU=
+        bh=c6Zm4IY7VrUnQ8RKTixaznYCgJL3nPqGqx5Lz+kk3DI=;
+        b=OFd3EbEEXhbnQEI415XsMvGbR1rw1WEeWmYgYS+tRN+470O/kh5+bPUDaFLW0wej8Empi4
+        G+LcCxcjxfZf6yrlFk19Xul7WyWjrhfy8UE0dkLYnhHC8Iwsl+OPe8BRXz1z1SxlHO8FAt
+        3DrvnHTTnqQ0IG4KjfHXHp8aq5ZHwxM=
 Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
  [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-168-6Buyy3G_MOCrG4jyuVyEoA-1; Mon, 21 Oct 2019 16:10:27 -0400
-Received: by mail-wm1-f72.google.com with SMTP id i23so29707wmb.3
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 13:10:27 -0700 (PDT)
+ us-mta-193-_-nTbgsYMfy8fsdU9k-agw-1; Mon, 21 Oct 2019 16:10:54 -0400
+Received: by mail-wm1-f72.google.com with SMTP id z24so5245848wmk.8
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 13:10:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=SMEGf4c6Ma+Bze2+ZiGp43bjN8huF03EIdt6wvA9wXw=;
-        b=EzoMQPMGhZ9vQ1ZeM8NFbReM1xyIVUaPeNailtbhXQyMsVrT6/iYc+e7tZiOc8gS9l
-         BA6qEar7py4eQKowS9gConjZhU8dhSJUiDjP875jpW0XkQ59M19kvJCX3PX69knUjpL6
-         afw5fArSTlJLIXHtzM6UqDoyGCRaNvLC15EPidN/VJ7S6fbwmeKrkyE36VvQWlDWIdxE
-         p0a9WlHgUrqVLEono/nBuVi9jhFvRlpjk7OP594qfnQILKYepLHE3njc1KnyS+xUk3vj
-         IL0eJAE054OdhGtsHV4jlLdsZMxX4BcUENOcpOrdgt0DtJB0ZYks39kOCkKw1gL6RRrl
-         mnIw==
-X-Gm-Message-State: APjAAAXvAWd+YskcW4rl+aY2VqpCGesKM7ZEoXUuuSmE9p+45dYGTXSj
-        id8/0oCbSNV4JU+Bbm1ZdGaykgx9Gs8weVM1qQYqmdLlZ341KH8IhDfYzxdaib514WT24ch+DOD
-        UQHEF0GzD7UX1t4qQ
-X-Received: by 2002:a1c:c912:: with SMTP id f18mr8901558wmb.168.1571688626069;
-        Mon, 21 Oct 2019 13:10:26 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqx15FjYZFXXvyV63hNCvlR9L6mdwPxb6AMjC6rMphOyiOSYm40k8lVTtPDL8hhtsd7I1xplIA==
-X-Received: by 2002:a1c:c912:: with SMTP id f18mr8901544wmb.168.1571688625838;
-        Mon, 21 Oct 2019 13:10:25 -0700 (PDT)
+        bh=FOEIRt2uhE+VjfvSvcsGDHwxP6iiWF3+DKbQW0z4Upk=;
+        b=QvnAVvf3W36P9XMPvjwsYDk5qENeT+/i2T29FL9P8ksdbaNtFtyF+sPPZ43cJ5xTpH
+         pDqThzpfaiWPgSA4gm1HEe93Hjo+lXTxA/BLcgxeIE6YGm0snXhgHfotS6lqN8GLtx8H
+         oYOzN2ASFc6w1r+Ug9kQCivHNOAjZWyTKVtbmDluzvNW6Z39cpUftWXFAjTCIM9fSwKZ
+         OSuUSdSDF14aBDbc/n0Wkc0UTE/xmIAXBn7oweZ9PuLW3nFxzl/GrVBHprAtDd4FmG0Q
+         h2DnFC3MOEnQDTU2DnYL51STnzeFptQpG+/5X7FomZYhiaHTKM3GnNlyC5bu8ZRRkU2Z
+         Uj6Q==
+X-Gm-Message-State: APjAAAVf8QnHhFB2AyAJ/W6O7xOuqoDKgTEMVEl9ILiSEVEl+THjuvdb
+        QemJg8Vcvzv4mDPS2O0G+NUaXSQxQKIfwlUFqubfDGBy2ep8di3qEaTOx73xgluo+H7/J0NSR3Z
+        xLPB9S2zZQ9BtzVHq
+X-Received: by 2002:adf:9001:: with SMTP id h1mr56209wrh.185.1571688652940;
+        Mon, 21 Oct 2019 13:10:52 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyjKq5z+ZvGKweJtbSOvFKPAgD60uXyeSii8F8KpwtDz1LQXgx+Y5uWrPkX1jc35qNA0oxQQg==
+X-Received: by 2002:adf:9001:: with SMTP id h1mr56197wrh.185.1571688652744;
+        Mon, 21 Oct 2019 13:10:52 -0700 (PDT)
 Received: from turbo.teknoraver.net (net-109-115-41-234.cust.vodafonedsl.it. [109.115.41.234])
-        by smtp.gmail.com with ESMTPSA id l18sm20701933wrn.48.2019.10.21.13.10.24
+        by smtp.gmail.com with ESMTPSA id l18sm20701933wrn.48.2019.10.21.13.10.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 13:10:25 -0700 (PDT)
+        Mon, 21 Oct 2019 13:10:52 -0700 (PDT)
 From:   Matteo Croce <mcroce@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
@@ -60,14 +60,14 @@ Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Song Liu <songliubraving@fb.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Paul Blakey <paulb@mellanox.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/4] flow_dissector: add meaningful comments
-Date:   Mon, 21 Oct 2019 22:09:45 +0200
-Message-Id: <20191021200948.23775-2-mcroce@redhat.com>
+Subject: [PATCH net-next 2/4] flow_dissector: skip the ICMP dissector for non ICMP packets
+Date:   Mon, 21 Oct 2019 22:09:46 +0200
+Message-Id: <20191021200948.23775-3-mcroce@redhat.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191021200948.23775-1-mcroce@redhat.com>
 References: <20191021200948.23775-1-mcroce@redhat.com>
 MIME-Version: 1.0
-X-MC-Unique: 6Buyy3G_MOCrG4jyuVyEoA-1
+X-MC-Unique: _-nTbgsYMfy8fsdU9k-agw-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -76,52 +76,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Documents two piece of code which can't be understood at a glance.
+FLOW_DISSECTOR_KEY_ICMP is checked for every packet, not only ICMP ones.
+Even if the test overhead is probably negligible, move the
+ICMP dissector code under the big 'switch(ip_proto)' so it gets called
+only for ICMP packets.
 
 Signed-off-by: Matteo Croce <mcroce@redhat.com>
 ---
- include/net/flow_dissector.h | 1 +
- net/core/flow_dissector.c    | 6 ++++++
- 2 files changed, 7 insertions(+)
+ net/core/flow_dissector.c | 34 +++++++++++++++++++++++++---------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index 90bd210be060..7747af3cc500 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -282,6 +282,7 @@ struct flow_keys {
- =09struct flow_dissector_key_vlan cvlan;
- =09struct flow_dissector_key_keyid keyid;
- =09struct flow_dissector_key_ports ports;
-+=09/* 'addrs' must be the last member */
- =09struct flow_dissector_key_addrs addrs;
- };
-=20
 diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 7c09d87d3269..affde70dad47 100644
+index affde70dad47..6443fac65ce8 100644
 --- a/net/core/flow_dissector.c
 +++ b/net/core/flow_dissector.c
-@@ -1374,6 +1374,9 @@ static inline size_t flow_keys_hash_length(const stru=
-ct flow_keys *flow)
- {
- =09size_t diff =3D FLOW_KEYS_HASH_OFFSET + sizeof(flow->addrs);
- =09BUILD_BUG_ON((sizeof(*flow) - FLOW_KEYS_HASH_OFFSET) % sizeof(u32));
-+=09/* flow.addrs MUST be the last member in struct flow_keys because
-+=09 * different L3 protocols have different address length
-+=09 */
- =09BUILD_BUG_ON(offsetof(typeof(*flow), addrs) !=3D
- =09=09     sizeof(*flow) - sizeof(flow->addrs));
-=20
-@@ -1421,6 +1424,9 @@ __be32 flow_get_u32_dst(const struct flow_keys *flow)
+@@ -203,6 +203,25 @@ __be32 __skb_flow_get_ports(const struct sk_buff *skb,=
+ int thoff, u8 ip_proto,
  }
- EXPORT_SYMBOL(flow_get_u32_dst);
+ EXPORT_SYMBOL(__skb_flow_get_ports);
 =20
-+/* Sort the source and destination IP (and the ports if the IP are the sam=
-e),
-+ * to have consistent hash within the two directions
++/* If FLOW_DISSECTOR_KEY_ICMP is set, get the Type and Code from an ICMP p=
+acket
++ * using skb_flow_get_be16().
 + */
- static inline void __flow_hash_consistentify(struct flow_keys *keys)
- {
- =09int addr_diff, i;
++static void __skb_flow_dissect_icmp(const struct sk_buff *skb,
++=09=09=09=09    struct flow_dissector *flow_dissector,
++=09=09=09=09    void *target_container,
++=09=09=09=09    void *data, int thoff, int hlen)
++{
++=09struct flow_dissector_key_icmp *key_icmp;
++
++=09if (!dissector_uses_key(flow_dissector, FLOW_DISSECTOR_KEY_ICMP))
++=09=09return;
++
++=09key_icmp =3D skb_flow_dissector_target(flow_dissector,
++=09=09=09=09=09     FLOW_DISSECTOR_KEY_ICMP,
++=09=09=09=09=09     target_container);
++=09key_icmp->icmp =3D skb_flow_get_be16(skb, thoff, data, hlen);
++}
++
+ void skb_flow_dissect_meta(const struct sk_buff *skb,
+ =09=09=09   struct flow_dissector *flow_dissector,
+ =09=09=09   void *target_container)
+@@ -853,7 +872,6 @@ bool __skb_flow_dissect(const struct net *net,
+ =09struct flow_dissector_key_basic *key_basic;
+ =09struct flow_dissector_key_addrs *key_addrs;
+ =09struct flow_dissector_key_ports *key_ports;
+-=09struct flow_dissector_key_icmp *key_icmp;
+ =09struct flow_dissector_key_tags *key_tags;
+ =09struct flow_dissector_key_vlan *key_vlan;
+ =09struct bpf_prog *attached =3D NULL;
+@@ -1295,6 +1313,12 @@ bool __skb_flow_dissect(const struct net *net,
+ =09=09=09=09       data, nhoff, hlen);
+ =09=09break;
+=20
++=09case IPPROTO_ICMP:
++=09case IPPROTO_ICMPV6:
++=09=09__skb_flow_dissect_icmp(skb, flow_dissector, target_container,
++=09=09=09=09=09data, nhoff, hlen);
++=09=09break;
++
+ =09default:
+ =09=09break;
+ =09}
+@@ -1308,14 +1332,6 @@ bool __skb_flow_dissect(const struct net *net,
+ =09=09=09=09=09=09=09data, hlen);
+ =09}
+=20
+-=09if (dissector_uses_key(flow_dissector,
+-=09=09=09       FLOW_DISSECTOR_KEY_ICMP)) {
+-=09=09key_icmp =3D skb_flow_dissector_target(flow_dissector,
+-=09=09=09=09=09=09     FLOW_DISSECTOR_KEY_ICMP,
+-=09=09=09=09=09=09     target_container);
+-=09=09key_icmp->icmp =3D skb_flow_get_be16(skb, nhoff, data, hlen);
+-=09}
+-
+ =09/* Process result of IP proto processing */
+ =09switch (fdret) {
+ =09case FLOW_DISSECT_RET_PROTO_AGAIN:
 --=20
 2.21.0
 
