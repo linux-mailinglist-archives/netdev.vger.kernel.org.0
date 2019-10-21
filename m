@@ -2,193 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CC0EDEB86
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 14:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E15DDEB8C
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 14:05:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728325AbfJUMDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 08:03:01 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:38767 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727962AbfJUMDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 08:03:01 -0400
-Received: by mail-qt1-f194.google.com with SMTP id o25so7178159qtr.5;
-        Mon, 21 Oct 2019 05:03:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=U8/udOB8d8afVM4Oiil7MLLGJE7IR3ULS8cNM3yTwf0=;
-        b=O7qeHzritrAi5ln2djGB8me2A+mzu/G9YX49BXe973qpSe6aX5iPKqgS7kPuRn09Lb
-         WpZxlZBZksbh36YHRGRmqm3c4uIca0X0idD58m8l+rMtCJE3yFR2iLd3uctah8IAQAvX
-         GeS4+k81nijouRRLwoXDDkEY0cyPuqdPZNDKLi+J2KkPn+rectQ1xfn13yeAnQnq60Hi
-         1xQiuzY8jiKK9VrfBngn4XFbzj6f/j2asczOtEZcz//iU/arLWtcFUUVyw0oDhNiFnnR
-         0gOkf6rSZ4NTNK/x3+Mv7+kBR7N3Ex4sFZj3uYFj26nAAhmiRMRRfrhWeV+w8EPKJAQr
-         GSYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=U8/udOB8d8afVM4Oiil7MLLGJE7IR3ULS8cNM3yTwf0=;
-        b=OQebzz3pUKeqMCw46hWNbd4fd2tZk2qJdnPXvIb9zzGdP4N4qa3Lt67kl4TuXyBNWW
-         BM1kP++QfxH9BbncaRjjIii/NQHXAPIqfCB1C3r57698i1MI1Ns6y7ISlsVx+7KCJ8Qc
-         0DXAINOE6vt7tPrOit0/UAGh7Z21EHuTo2nfDYw6UTAju5NE0qK4e9R/VaGUTC36YU6t
-         W9B6u0h23iPKpMCmbGmdt8eYSQhDz12mPFLRxBOkkZwGn/pCicqI66nNr/mZ5UVIhWQV
-         TSkLxDyzvZYscTSGE8NS334sK6n5o6bwFL7ZJROyq/CdpGJI+m+DRzQgi3a7MBIr04I8
-         oYZQ==
-X-Gm-Message-State: APjAAAWEC92s3bWwD5V+dHyM75MXBqQunWqCg/G7WEwKYWi4fOkfn68f
-        x5Lb/HiWC/hp69fzMUIHP1jfHzLA2mMDgAgPgS4=
-X-Google-Smtp-Source: APXvYqwvV7DDvA6kJfv6a1UGR14BZ1tIjEvbM4WA/A6SnKgUEMc5M/4aiHb5ZPKpJGN4LRbB1/Bl9rtPlDK+lGjymCI=
-X-Received: by 2002:a05:6214:2c:: with SMTP id b12mr22998689qvr.10.1571659379702;
- Mon, 21 Oct 2019 05:02:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191021105938.11820-1-bjorn.topel@gmail.com> <87h842qpvi.fsf@toke.dk>
-In-Reply-To: <87h842qpvi.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 21 Oct 2019 14:02:48 +0200
-Message-ID: <CAJ+HfNiNwTbER1NfaKamx0p1VcBHjHSXb4_66+2eBff95pmNFg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: use implicit XSKMAP lookup from
- AF_XDP XDP program
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1728306AbfJUMFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 08:05:17 -0400
+Received: from mailout4.samsung.com ([203.254.224.34]:33163 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728218AbfJUMFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 08:05:17 -0400
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20191021120514epoutp0443438bbd138cd892d532eefcbe3ae51e~PqABW9iGr0292302923epoutp04H
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 12:05:14 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20191021120514epoutp0443438bbd138cd892d532eefcbe3ae51e~PqABW9iGr0292302923epoutp04H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1571659514;
+        bh=eION/f0Ms9Y49xzcf6LTMM0EdjvsR4RvafdknSwNs2k=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=N36qU5OrYTP3gqJa9Z/kHl3omqRINNbGFE7BCSfdBW0D0d+v5nlU572qg23ba+JIV
+         c96J02APiH/Qi7wwWCfHMMEefTZ10KQ/OpA9FbNwhvNQJBMsUfLThXdbaHKETXdf/s
+         GDmhz6S2NKELzlsDZELIExbmmq8vgKOslJ8dlxTc=
+Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20191021120513epcas5p14267e3272efd912f4d743c3941bd1bf1~PqAAwvva40695206952epcas5p13;
+        Mon, 21 Oct 2019 12:05:13 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0E.A7.04480.9FE9DAD5; Mon, 21 Oct 2019 21:05:13 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20191021120513epcas5p2fd23f5dbdff6a0e6aa3b0726b30e4b60~PqAAec8Xk1113111131epcas5p2I;
+        Mon, 21 Oct 2019 12:05:13 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20191021120513epsmtrp16f2e2f34d3c8bc7e51b53b96e0e16197~PqAAduvk42573625736epsmtrp1h;
+        Mon, 21 Oct 2019 12:05:13 +0000 (GMT)
+X-AuditID: b6c32a4b-cbbff70000001180-8c-5dad9ef9e249
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        36.CF.04081.9FE9DAD5; Mon, 21 Oct 2019 21:05:13 +0900 (KST)
+Received: from ubuntu.sa.corp.samsungelectronics.net (unknown
+        [107.108.83.125]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20191021120511epsmtip231b786b1a318310976b8dac13f821ad4~Pp-_tQGCt0303503035epsmtip2s;
+        Mon, 21 Oct 2019 12:05:11 +0000 (GMT)
+From:   Pankaj Sharma <pankj.sharma@samsung.com>
+To:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        eugen.hristev@microchip.com, ludovic.desroches@microchip.com,
+        pankaj.dubey@samsung.com, rcsekar@samsung.com,
+        Pankaj Sharma <pankj.sharma@samsung.com>,
+        Sriram Dash <sriram.dash@samsung.com>
+Subject: [PATCH v3] can: m_can: add support for one shot mode
+Date:   Mon, 21 Oct 2019 17:34:40 +0530
+Message-Id: <1571659480-29109-1-git-send-email-pankj.sharma@samsung.com>
+X-Mailer: git-send-email 2.7.4
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrEIsWRmVeSWpSXmKPExsWy7bCmuu7PeWtjDW7c1baYc76FxeLAj+Ms
+        Fqu+T2W2uLxrDpvFi7XXWS3WL5rCYnFsgZjFoq1f2C2Wd91ntph1YQerxY317BZL7+1kdeDx
+        2LLyJpPHx0u3GT3u/FjK6NH/18Cjb8sqRo/Pm+QC2KK4bFJSczLLUov07RK4Mqb0NDEVXBSt
+        OLt/EmsD4wXBLkZODgkBE4kTt9rZuhi5OIQEdjNKXLp6hAUkISTwiVHi9ZtSiMQ3Ronbyyew
+        wHRceg5TtJdR4taKMIiiFiaJwytugyXYBPQkLr2fzAZiiwiESizrncAKUsQs0MQk0bW5lxkk
+        ISxgK7H50l8mEJtFQFXi5M83YHFeAQ+JtrnT2SC2yUncPNfJDNIsIbCFTWLulaesEAkXiQXb
+        jjFD2MISr45vYYewpSRe9rdB2dkSC3f3A13EAWRXSLTNEIYI20scuDIHLMwsoCmxfpc+SJhZ
+        gE+i9/cTJohqXomONiGIajWJqU/fMULYMhJ3Hm2GusxD4sO2E6yQcIiVePbrB/sERplZCEMX
+        MDKuYpRMLSjOTU8tNi0wzkst1ytOzC0uzUvXS87P3cQITgla3jsYN53zOcQowMGoxMPrMH1N
+        rBBrYllxZe4hRgkOZiUR3jsGa2OFeFMSK6tSi/Lji0pzUosPMUpzsCiJ805ivRojJJCeWJKa
+        nZpakFoEk2Xi4JRqYMxqduK7L7gx1/X45s//X76y2fnroovk51kt/poT7fbUFr/6dzma40C+
+        +wTWTeqV935ayBe+O5z9WTFkhe0N5uDw05KT2ssfnTnuLPTvQNP5PbYW33TNT/77INVmGWe0
+        8Pjre5suPhWYk/uk+q26xF6drmsTv/h3re+sm+9WkulZ8PWZDduP44uVWIozEg21mIuKEwGT
+        6kdcBQMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrGLMWRmVeSWpSXmKPExsWy7bCSvO7PeWtjDXoahC3mnG9hsTjw4ziL
+        xarvU5ktLu+aw2bxYu11Vov1i6awWBxbIGaxaOsXdovlXfeZLWZd2MFqcWM9u8XSeztZHXg8
+        tqy8yeTx8dJtRo87P5YyevT/NfDo27KK0ePzJrkAtigum5TUnMyy1CJ9uwSujCk9TUwFF0Ur
+        zu6fxNrAeEGwi5GTQ0LAROLS8yMsXYxcHEICuxkl2mavYu5i5ABKyEgs/lwNUSMssfLfc3aI
+        miYmiR1/T7OAJNgE9CQuvZ/MBmKLCIRL7JzQxQRiMwv0MEm03k0AsYUFbCU2X/oLFmcRUJU4
+        +fMNM4jNK+Ah0TZ3OhvEAjmJm+c6mScw8ixgZFjFKJlaUJybnltsWGCYl1quV5yYW1yal66X
+        nJ+7iREcelqaOxgvL4k/xCjAwajEw+swfU2sEGtiWXFl7iFGCQ5mJRHeOwZrY4V4UxIrq1KL
+        8uOLSnNSiw8xSnOwKInzPs07FikkkJ5YkpqdmlqQWgSTZeLglGpgVMm69XBxHOvrD5dzUp9f
+        CH6goOzYplnvPbPUjcuq6tvRcJ/Dz3gXrFvGG115vbGv8pqc0+c3rfEdG1/Pmme708bo01Sp
+        6a17r7/Ybnm9XuvvpZOvvDwmLo+dlPpfax3/mcIz8VfqLnbcuj/xvr6veMiCV8k/4pOtjf5M
+        /fauvOncRPt3YtmntiuxFGckGmoxFxUnAgB+bzbDOQIAAA==
+X-CMS-MailID: 20191021120513epcas5p2fd23f5dbdff6a0e6aa3b0726b30e4b60
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20191021120513epcas5p2fd23f5dbdff6a0e6aa3b0726b30e4b60
+References: <CGME20191021120513epcas5p2fd23f5dbdff6a0e6aa3b0726b30e4b60@epcas5p2.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Oct 2019 at 13:50, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
-.com> wrote:
->
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->
-> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >
-> > In commit 43e74c0267a3 ("bpf_xdp_redirect_map: Perform map lookup in
-> > eBPF helper") the bpf_redirect_map() helper learned to do map lookup,
-> > which means that the explicit lookup in the XDP program for AF_XDP is
-> > not needed for post-5.3 kernels.
-> >
-> > This commit adds the implicit map lookup with default action, which
-> > improves the performance for the "rx_drop" [1] scenario with ~4%.
-> >
-> > For pre-5.3 kernels, the bpf_redirect_map() returns XDP_ABORTED, and a
-> > fallback path for backward compatibility is entered, where explicit
-> > lookup is still performed. This means a slight regression for older
-> > kernels (an additional bpf_redirect_map() call), but I consider that a
-> > fair punishment for users not upgrading their kernels. ;-)
-> >
-> > v1->v2: Backward compatibility (Toke) [2]
-> >
-> > [1] # xdpsock -i eth0 -z -r
-> > [2] https://lore.kernel.org/bpf/87pnirb3dc.fsf@toke.dk/
-> >
-> > Suggested-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> > ---
-> >  tools/lib/bpf/xsk.c | 45 +++++++++++++++++++++++++++++++++++----------
-> >  1 file changed, 35 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> > index b0f532544c91..391a126b3fd8 100644
-> > --- a/tools/lib/bpf/xsk.c
-> > +++ b/tools/lib/bpf/xsk.c
-> > @@ -274,33 +274,58 @@ static int xsk_load_xdp_prog(struct xsk_socket *x=
-sk)
-> >       /* This is the C-program:
-> >        * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-> >        * {
-> > -      *     int index =3D ctx->rx_queue_index;
-> > +      *     int ret, index =3D ctx->rx_queue_index;
-> >        *
-> >        *     // A set entry here means that the correspnding queue_id
-> >        *     // has an active AF_XDP socket bound to it.
-> > +      *     ret =3D bpf_redirect_map(&xsks_map, index, XDP_PASS);
-> > +      *     ret &=3D XDP_PASS | XDP_REDIRECT;
->
-> Why the masking? Looks a bit weird (XDP return codes are not defined as
-> bitmask values), and it's not really needed, is it?
->
+According to the CAN Specification (see ISO 11898-1:2015, 8.3.4
+Recovery Management), the M_CAN provides means for automatic
+retransmission of frames that have lost arbitration or that
+have been disturbed by errors during transmission. By default
+automatic retransmission is enabled.
 
-bpf_redirect_map() returns a 32-bit signed int, so the upper 32-bit
-will need to be cleared. Having an explicit AND is one instruction
-less than two shifts. So, it's an optimization (every instruction is
-sacred).
+The Bosch MCAN controller has support for disabling automatic
+retransmission.
 
-Compare these two:
+To support time-triggered communication as described in ISO
+11898-1:2015, chapter 9.2, the automatic retransmission may be
+disabled via CCCR.DAR.
 
-0000000000000000 xdp_sock_prog:
-;     int ret, index =3D ctx->rx_queue_index;
-       0:       61 12 10 00 00 00 00 00 r2 =3D *(u32 *)(r1 + 16)
-       1:       63 2a fc ff 00 00 00 00 *(u32 *)(r10 - 4) =3D r2
-;     ret =3D bpf_redirect_map(&xsks_map, index, XDP_PASS);
-       2:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 =3D 0 ll
-       4:       b7 03 00 00 02 00 00 00 r3 =3D 2
-       5:       85 00 00 00 33 00 00 00 call 51
-;     ret &=3D XDP_PASS | XDP_REDIRECT;
-       6:       57 00 00 00 06 00 00 00 r0 &=3D 6
-;     if (ret)
-       7:       55 00 0d 00 00 00 00 00 if r0 !=3D 0 goto +13 <LBB0_3>
-       8:       bf a2 00 00 00 00 00 00 r2 =3D r10
-;     if (bpf_map_lookup_elem(&xsks_map, &index))
-       9:       07 02 00 00 fc ff ff ff r2 +=3D -4
-      10:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 =3D 0 ll
-      12:       85 00 00 00 01 00 00 00 call 1
-      13:       bf 01 00 00 00 00 00 00 r1 =3D r0
-      14:       b7 00 00 00 02 00 00 00 r0 =3D 2
-      15:       15 01 05 00 00 00 00 00 if r1 =3D=3D 0 goto +5 <LBB0_3>
-;         return bpf_redirect_map(&xsks_map, index, 0);
-      16:       61 a2 fc ff 00 00 00 00 r2 =3D *(u32 *)(r10 - 4)
-      17:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 =3D 0 ll
-      19:       b7 03 00 00 00 00 00 00 r3 =3D 0
-      20:       85 00 00 00 33 00 00 00 call 51
+CAN_CTRLMODE_ONE_SHOT is used for disabling automatic retransmission.
 
-00000000000000a8 LBB0_3:
-; }
-      21:       95 00 00 00 00 00 00 00 exit
+Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
+Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
+---
 
+changes in v3: 
+- resolving build errors for net-next branch
 
-Disassembly of section xdp_sock:
+changes in v2:
+- rebase to net-next
 
-0000000000000000 xdp_sock_prog:
-;     int ret, index =3D ctx->rx_queue_index;
-       0:       61 12 10 00 00 00 00 00 r2 =3D *(u32 *)(r1 + 16)
-       1:       63 2a fc ff 00 00 00 00 *(u32 *)(r10 - 4) =3D r2
-;     ret =3D bpf_redirect_map(&xsks_map, index, XDP_PASS);
-       2:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 =3D 0 ll
-       4:       b7 03 00 00 02 00 00 00 r3 =3D 2
-       5:       85 00 00 00 33 00 00 00 call 51
-       6:       67 00 00 00 20 00 00 00 r0 <<=3D 32
-       7:       c7 00 00 00 20 00 00 00 r0 s>>=3D 32
-;     if (ret > 0)
-       8:       65 00 0d 00 00 00 00 00 if r0 s> 0 goto +13 <LBB0_3>
-       9:       bf a2 00 00 00 00 00 00 r2 =3D r10
-;     if (bpf_map_lookup_elem(&xsks_map, &index))
-      10:       07 02 00 00 fc ff ff ff r2 +=3D -4
-      11:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 =3D 0 ll
-      13:       85 00 00 00 01 00 00 00 call 1
-      14:       bf 01 00 00 00 00 00 00 r1 =3D r0
-      15:       b7 00 00 00 02 00 00 00 r0 =3D 2
-      16:       15 01 05 00 00 00 00 00 if r1 =3D=3D 0 goto +5 <LBB0_3>
-;         return bpf_redirect_map(&xsks_map, index, 0);
-      17:       61 a2 fc ff 00 00 00 00 r2 =3D *(u32 *)(r10 - 4)
-      18:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 =3D 0 ll
-      20:       b7 03 00 00 00 00 00 00 r3 =3D 0
-      21:       85 00 00 00 33 00 00 00 call 51
+ drivers/net/can/m_can/m_can.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-00000000000000b0 LBB0_3:
-; }
-      22:       95 00 00 00 00 00 00 00 exit
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 562c8317e3aa..75e7490c4299 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -123,6 +123,7 @@ enum m_can_reg {
+ #define CCCR_CME_CANFD_BRS	0x2
+ #define CCCR_TXP		BIT(14)
+ #define CCCR_TEST		BIT(7)
++#define CCCR_DAR		BIT(6)
+ #define CCCR_MON		BIT(5)
+ #define CCCR_CSR		BIT(4)
+ #define CCCR_CSA		BIT(3)
+@@ -1135,7 +1136,7 @@ static void m_can_chip_config(struct net_device *dev)
+ 	if (cdev->version == 30) {
+ 	/* Version 3.0.x */
+ 
+-		cccr &= ~(CCCR_TEST | CCCR_MON |
++		cccr &= ~(CCCR_TEST | CCCR_MON | CCCR_DAR |
+ 			(CCCR_CMR_MASK << CCCR_CMR_SHIFT) |
+ 			(CCCR_CME_MASK << CCCR_CME_SHIFT));
+ 
+@@ -1145,7 +1146,7 @@ static void m_can_chip_config(struct net_device *dev)
+ 	} else {
+ 	/* Version 3.1.x or 3.2.x */
+ 		cccr &= ~(CCCR_TEST | CCCR_MON | CCCR_BRSE | CCCR_FDOE |
+-			  CCCR_NISO);
++			  CCCR_NISO | CCCR_DAR);
+ 
+ 		/* Only 3.2.x has NISO Bit implemented */
+ 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD_NON_ISO)
+@@ -1165,6 +1166,10 @@ static void m_can_chip_config(struct net_device *dev)
+ 	if (cdev->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
+ 		cccr |= CCCR_MON;
+ 
++	/* Disable Auto Retransmission (all versions) */
++	if (cdev->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
++		cccr |= CCCR_DAR;
++
+ 	/* Write config */
+ 	m_can_write(cdev, M_CAN_CCCR, cccr);
+ 	m_can_write(cdev, M_CAN_TEST, test);
+@@ -1310,7 +1315,8 @@ static int m_can_dev_setup(struct m_can_classdev *m_can_dev)
+ 	m_can_dev->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
+ 					CAN_CTRLMODE_LISTENONLY |
+ 					CAN_CTRLMODE_BERR_REPORTING |
+-					CAN_CTRLMODE_FD;
++					CAN_CTRLMODE_FD |
++					CAN_CTRLMODE_ONE_SHOT;
+ 
+ 	/* Set properties depending on M_CAN version */
+ 	switch (m_can_dev->version) {
+-- 
+2.17.1
 
-
-Bj=C3=B6rn
-
-> -Toke
->
