@@ -2,115 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 933EEDF338
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7BC5DF341
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 18:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729493AbfJUQfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 12:35:10 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44989 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729405AbfJUQfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:35:07 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q21so8735853pfn.11
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 09:35:07 -0700 (PDT)
+        id S1728589AbfJUQgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 12:36:04 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40185 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726672AbfJUQgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 12:36:04 -0400
+Received: by mail-wr1-f66.google.com with SMTP id o28so14750894wro.7
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 09:36:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=YQ2SYzDjclp6+UMcXfMKe/dCfkknHxuiGOrHRSVn0cA=;
-        b=ZvioHrwPqgA32sqk/ZfXl+AIKFsddUO2tNAqbJtu4tCcRANhGvReU9J0qCrPtBX4dr
-         XyEFxDF3rI4Skd8uu+tW37bMnIbIfeVll6YP9QPsiv1m3u9UI7Hz50C/EOmQGDDvJxjt
-         MNnpf3ALOQX+wn100d4q49rWpqL/dLYkEvAbPydL+TGXqu4wUlet2YAblmsMtkne7qnv
-         mFnrVk537e3SRZLOSIfp5DZTMcRh1T3I7huUyEOh7iplVBe4IuwO1byLK+LTz8AIzALW
-         g8HnTvBYEWL7IAty6Tx+yooX0qDMEelsrde2cgdpkGApf9pCWxxWG6Loqrv6o3ZIrYoi
-         o0cQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rYGCs8IbqfDvfK/AYnWCXK3pREg9I+ooMI5SxqO0Eyg=;
+        b=0n2gUf9pmDyG6QAMEA95St07Lljjs9IxQhjwo9Nlh+SN2v4e1t2w66r3korhhTrFm+
+         alRIMpTV7Tip3yXtYXSZOjmf+jBXDzH7o3+BwSn2w4f7PNUi65nhIxAs7Pu0mwBPqHVU
+         asUQ6VB1p32+1OOxeBDjAxMoXVlYl4PlLy/l1uTTkrqp1AJrtm4d1uAgiOW/qwxdGK2A
+         Mou+hT3Tr/S2TcOkhe5Wwqc55ehCjJxbk5l5NARohojBU7N0RTKdcco6zAE6qP2Y1X53
+         38pv3IL6LSBklLMe89Qh5Qzd4jI9u+YtawHsFGCdY89VMau95Fn4n9PA1ajs0p5yoEN1
+         08CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=YQ2SYzDjclp6+UMcXfMKe/dCfkknHxuiGOrHRSVn0cA=;
-        b=cYZ8QoMzoi0kleRFyNaIXyRuMkwu9EmOHn7GPLOWAGvJ0WQ5kPqZ5f4TIMfbdSiRcy
-         dyA7vkF78Nbs47zic+IrQP0BtSYo1BSHnceQ4+E5nXQhDqyNypIT2t57w54Qn0JFH/pv
-         vb8osql+SHw/bZPivnerkJpEmi+o7wH75XFZr5lBFmrvp7JgqD5o/5ksam0Fp4KfdEPL
-         tmxs7fF0Ct0QhnRaiX+EI+XJPD0kZ5OVRk+VTTE/PjNbsOdIeqOG2zE0L6t8O/6M6Aut
-         kD0DmjBodtSh9qM8VpwRFfeoxbiBmglQ7kK2gKNpGF1vKexJ9e5eJN4az3Pbxhskg1e6
-         6vuA==
-X-Gm-Message-State: APjAAAUNnXdJIFUiDtWp2zNXH82kKmf8R69lsziWGzBZCEz6OrexIVMO
-        XRiXE2UldIkzH+7LcIBGZi5fIw==
-X-Google-Smtp-Source: APXvYqwmyNu50+FxrTO6V6IulFup1S67xnT8cj+dbepaT4niD1qSPIKhFvBy+c/p26nJk53uezcFig==
-X-Received: by 2002:a63:ad0d:: with SMTP id g13mr26250877pgf.407.1571675706632;
-        Mon, 21 Oct 2019 09:35:06 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id e4sm16610297pff.22.2019.10.21.09.35.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 21 Oct 2019 09:35:05 -0700 (PDT)
-Subject: Re: [PATCH 5/5] ionic: Use debugfs_create_bool() to export bool
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?Q?Breno_Leit=c3=a3o?= <leitao@debian.org>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        David@rox.of.borg, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Casey Leedom <leedom@chelsio.com>,
-        Pensando Drivers <drivers@pensando.io>,
-        Kevin Hilman <khilman@kernel.org>, Nishanth Menon <nm@ti.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191021145149.31657-1-geert+renesas@glider.be>
- <20191021145149.31657-6-geert+renesas@glider.be>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <aeebbd5f-6100-2780-ef1c-6b1c261c9d23@pensando.io>
-Date:   Mon, 21 Oct 2019 09:35:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rYGCs8IbqfDvfK/AYnWCXK3pREg9I+ooMI5SxqO0Eyg=;
+        b=CmbMSjMjFvHcI8phW6ICaeiIuE8TfofQS8UhcidG0zZTpluvPTkJ1QcGE8o8CIHRc7
+         1gAc8GbjG1DeBmSA4DTbfT5jE3muD7aJu/gMgoUC5TGlzHTztAWXunw2CK2H2YcmsqzQ
+         jS3eCkUT6JabYyVRTWYne4+JewN2nSTMoP0zeci1p9c63pTVtYT4WX/p+UiBze01QFWW
+         AWi7yaYm9uTVr4asfSr1/aluo9UpsEQbUJgCWL0Sd5AHnCJE9gO1b2H0Rf6bmb3yRgxv
+         B+T3dazfawO4Ho648/WPlVGXsYHXjMW7WYFnChQfG/MH3j2yD4AiZD2173BU8yvKmnrQ
+         xf4w==
+X-Gm-Message-State: APjAAAVeRexaVgUqKO+7Qd+/FeHhfshfZnzzpKmawaXWdS4+/mG7n7te
+        JZpFUj/NuQQM17Zt6Yja6rcf6iqGqykO2A==
+X-Google-Smtp-Source: APXvYqwfh7/R8krc/+gmpaxar+7JO/KA7WMbGZ6G5XEx5VJCflb8JWG0RvDL/JT78BHRpLyN/9A3HA==
+X-Received: by 2002:adf:a506:: with SMTP id i6mr20254212wrb.159.1571675762166;
+        Mon, 21 Oct 2019 09:36:02 -0700 (PDT)
+Received: from netronome.com ([83.137.2.245])
+        by smtp.gmail.com with ESMTPSA id w9sm8588042wrt.85.2019.10.21.09.36.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Oct 2019 09:36:01 -0700 (PDT)
+Date:   Mon, 21 Oct 2019 18:35:53 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linville@tuxdriver.com, andrew@lunn.ch,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH 1/3] ethtool: correctly interpret bitrate of 255
+Message-ID: <20191021163551.GA7530@netronome.com>
+References: <E1iLYu1-0000sp-W5@rmk-PC.armlinux.org.uk>
+ <20191021074030.GB4486@netronome.com>
+ <20191021080944.GL25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20191021145149.31657-6-geert+renesas@glider.be>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191021080944.GL25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/21/19 7:51 AM, Geert Uytterhoeven wrote:
-> Currently bool ionic_cq.done_color is exported using
-> debugfs_create_u8(), which requires a cast, preventing further compiler
-> checks.
->
-> Fix this by switching to debugfs_create_bool(), and dropping the cast.
->
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Mon, Oct 21, 2019 at 09:09:44AM +0100, Russell King - ARM Linux admin wrote:
+> On Mon, Oct 21, 2019 at 09:40:31AM +0200, Simon Horman wrote:
+> > On Fri, Oct 18, 2019 at 09:31:13PM +0100, Russell King wrote:
+> > > From: Russell King <rmk+kernel@armlinux.org.uk>
+> > > 
+> > > A bitrate of 255 is special, it means the bitrate is encoded in
+> > > byte 66 in units of 250MBaud.  Add support for parsing these bit
+> > > rates.
+> > 
+> > Hi Russell,
+> > 
+> > it seems from the code either that 0 is also special or its
+> > handling has been optimised. Perhaps that would be worth mentioning
+> > in the changelog too.
+> 
+> The text of SFF8472 rev 12.2:
+> 
+> 5.7     BR, nominal [Address A0h, Byte 12]
+> The nominal bit (signaling) rate (BR, nominal) is specified in units of
+> 100MBd, rounded off to the nearest 100MBd. The bit rate includes those
+> bits necessary to encode and delimit the signal as well as those bits
+> carrying data information. A value of FFh indicates the bit rate is
+> greater than 25.0Gb/s and addresses 66 and 67 are used to determine
+> bit rate. A value of 0 indicates that the bit rate is not specified and
+> must be determined from the transceiver technology. The actual
+> information transfer rate will depend on the encoding of the data, as
+> defined by the encoding value.
+> 
+> 8.4    BR, max [Address A0h, Byte 66]
+> If address 12 is not set to FFh, the upper bit rate limit at which the
+> transceiver will still meet its specifications (BR, max) is specified
+> in units of 1% above the nominal bit rate. If address 12 is set to FFh,
+> the nominal bit (signaling) rate (BR, nominal) is specified in units of
+> 250 MBd, rounded off to the nearest 250 MBd. A value of 00h indicates
+> that this field is not specified.
+> 
+> 8.5    BR, min [Address A0h, Byte 67]
+> If address 12 is not set to FFh, the lower bit rate limit at which the
+> transceiver will still meet its specifications (BR, min) is specified in
+> units of 1% below the nominal bit rate. If address 12 is set to FFh, the
+> limit range of bit rates specified in units of +/- 1% around the nominal
+> signaling rate. A value of zero indicates that this field is not
+> specified.
+> 
+> So I guess you could have a br_nom == 0 (meaning it should be derived
+> from other information) but max/min != 0 - which would be complex to
+> implement, and means that we're doing significant interpretation of
+> the contents.
 
-Acked-by: Shannon Nelson <snelson@pensando.io>
+Thanks Russell,
 
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> index bc03cecf80cc9eb4..5beba915f69d12dd 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> @@ -170,8 +170,7 @@ void ionic_debugfs_add_qcq(struct ionic_lif *lif, struct ionic_qcq *qcq)
->   	debugfs_create_x64("base_pa", 0400, cq_dentry, &cq->base_pa);
->   	debugfs_create_u32("num_descs", 0400, cq_dentry, &cq->num_descs);
->   	debugfs_create_u32("desc_size", 0400, cq_dentry, &cq->desc_size);
-> -	debugfs_create_u8("done_color", 0400, cq_dentry,
-> -			  (u8 *)&cq->done_color);
-> +	debugfs_create_bool("done_color", 0400, cq_dentry, &cq->done_color);
->   
->   	debugfs_create_file("tail", 0400, cq_dentry, cq, &cq_tail_fops);
->   
+tricky indeed. My suggestion is that something like the last paragraph
+be included in the changelog. But if you feel otherwise I won't push the
+issue any further.
 
+> 
+> > 
+> > > 
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > >  sfpid.c | 19 ++++++++++++++++---
+> > >  1 file changed, 16 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/sfpid.c b/sfpid.c
+> > > index a1753d3a535f..71f0939c6282 100644
+> > > --- a/sfpid.c
+> > > +++ b/sfpid.c
+> > > @@ -328,11 +328,24 @@ void sff8079_show_all(const __u8 *id)
+> > >  {
+> > >  	sff8079_show_identifier(id);
+> > >  	if (((id[0] == 0x02) || (id[0] == 0x03)) && (id[1] == 0x04)) {
+> > > +		unsigned int br_nom, br_min, br_max;
+> > > +
+> > > +		if (id[12] == 0) {
+> > > +			br_nom = br_min = br_max = 0;
+> > > +		} else if (id[12] == 255) {
+> > > +			br_nom = id[66] * 250;
+> > > +			br_max = id[67];
+> > > +			br_min = id[67];
+> > > +		} else {
+> > > +			br_nom = id[12] * 100;
+> > > +			br_max = id[66];
+> > > +			br_min = id[67];
+> > > +		}
+> > >  		sff8079_show_ext_identifier(id);
+> > >  		sff8079_show_connector(id);
+> > >  		sff8079_show_transceiver(id);
+> > >  		sff8079_show_encoding(id);
+> > > -		sff8079_show_value_with_unit(id, 12, "BR, Nominal", 100, "MBd");
+> > > +		printf("\t%-41s : %u%s\n", "BR, Nominal", br_nom, "MBd");
+> > >  		sff8079_show_rate_identifier(id);
+> > >  		sff8079_show_value_with_unit(id, 14,
+> > >  					     "Length (SMF,km)", 1, "km");
+> > > @@ -348,8 +361,8 @@ void sff8079_show_all(const __u8 *id)
+> > >  		sff8079_show_ascii(id, 40, 55, "Vendor PN");
+> > >  		sff8079_show_ascii(id, 56, 59, "Vendor rev");
+> > >  		sff8079_show_options(id);
+> > > -		sff8079_show_value_with_unit(id, 66, "BR margin, max", 1, "%");
+> > > -		sff8079_show_value_with_unit(id, 67, "BR margin, min", 1, "%");
+> > > +		printf("\t%-41s : %u%s\n", "BR margin, max", br_max, "%");
+> > > +		printf("\t%-41s : %u%s\n", "BR margin, min", br_min, "%");
+> > >  		sff8079_show_ascii(id, 68, 83, "Vendor SN");
+> > >  		sff8079_show_ascii(id, 84, 91, "Date code");
+> > >  	}
+> > > -- 
+> > > 2.7.4
+> > > 
+> > 
+> > 
+> > 
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
