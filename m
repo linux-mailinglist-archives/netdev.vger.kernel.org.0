@@ -2,108 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6FC8DE371
-	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 07:03:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D6F1DE3AE
+	for <lists+netdev@lfdr.de>; Mon, 21 Oct 2019 07:21:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727090AbfJUFDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 01:03:38 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:38081 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727047AbfJUFDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 01:03:37 -0400
-Received: by mail-qt1-f196.google.com with SMTP id o25so5673822qtr.5;
-        Sun, 20 Oct 2019 22:03:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yNA4IJh7IyVo9n7MPHM6S3n+LSxLyl9PYyPGaB6d5jg=;
-        b=vEUGlEnp1rwVVxS5Jx61vGmhip0OwhHMmGyL0yVwzQ0FCripho21Z0NtCXyGe8INhh
-         pSPdtRohJLUiifxn9saAlL/DmVE3vXz/J0UZwG9JeXd3bdFAXzUgJh65mNZKE2jUAtL0
-         BBIV1MOc4xycQbIrmkdNc1LoOKPxrxjCZM2+HFLEeFJtz7N9cr7z0S25+oKU/RmzOTrG
-         EcmgbeqHNZCBirRJ46GNQcodBWKZMGbEODnUEBZSk8C4MwQfej6j0xxjTDOvdAvQiaPU
-         Mr6KhW46ejKmti8qJYuhwsJJ5YC8+qobJhMD86T0SFOWma2cL7QG0Bx03REq+Rr8nle7
-         yLMQ==
+        id S1725877AbfJUFVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 01:21:08 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:37943 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725765AbfJUFVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 01:21:07 -0400
+Received: by mail-il1-f197.google.com with SMTP id a7so5969482iln.5
+        for <netdev@vger.kernel.org>; Sun, 20 Oct 2019 22:21:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yNA4IJh7IyVo9n7MPHM6S3n+LSxLyl9PYyPGaB6d5jg=;
-        b=C6f0TG5PHA8LCsz3hG8XIZB/fKcMJt8v6wrygRwMF2LrX/jepF2ZaKrLbWCH0TSaDH
-         KgqxjAaV1cab9pamsiwyQiUNFbxM6nWvXSS4kl8FBr28mksEbT2tK7eaD+dhxNJCz2uS
-         i5gAU5OXqDUyLPYBfaEnpO0+CjK5PLDt1Bizvjpn7Lz3kLyE2fSiAKR6N7bzuzSM5mH3
-         WomTviKol3GFEbc26o3QHztvGUqXill4qh99Um+eYSin1TkkEBgV9Hcsycpd3NpzbetE
-         JJZZNL3m8e2iqpWy6Dc3oLA3N6DVxXSH2x18zoSS05YkXmHr809ZF2jzjGPDaAb6+FbE
-         LO+g==
-X-Gm-Message-State: APjAAAXHQOIE4Ybv98DWL6Hkrq5C87tUlsjF5leVGD4spRGGPQN4JWwp
-        9c7JXfNEkvDevliyA49STZ97d91Zd+TS5RYP2gg=
-X-Google-Smtp-Source: APXvYqx+kG6LmHZ83Z0ALN68pee6pOEFXjATi0Z0/HaeHUJfEgdNcXyfZQcm+JF430XF2xZ15b8hGOYvuWC1oLROoM8=
-X-Received: by 2002:ac8:2f90:: with SMTP id l16mr16097989qta.359.1571634216731;
- Sun, 20 Oct 2019 22:03:36 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=RNA7wvEo4dZS4Zjh6nazheoAtSIOteZ88hIBmR8F1xQ=;
+        b=tuXNvOcTnk0hnc+bjiFeqMGJGl54kxrCih44MB6IO1doYKEy9nYnSdcF/tIwJGgcTD
+         VY+0UdxEFf0QnyUGzfrB0fLdeRQvB+zgvEa/X4vjADT/eMxurbSTUdS3w7QH90jbOmgv
+         jgY3bz11mD82yMS4rzDdeKfnkPtz+vqUibE3292U5R7R80CPNvSL43vq/BUsH5t2L3xC
+         P/bxvgAe5gi7f/WC7Vwi6ibGyJafQq0PhtnzYrs0hS53t1Nicgc5NBJcOV9EJhSA5STM
+         SNfteOYYWY5oDlRWNY4ahi8kxeUyIoiV0r3njH6WXhnjEnPGIF+mIO5ll5mr7axOfj7u
+         8Iug==
+X-Gm-Message-State: APjAAAVr7shx9hAfHFmK3g5pKrIyYiASBoytiiUUhGoVIuqJM8bJFBH8
+        XsLuzT8/+zVkmA8ad1DFQAM7uZdBIQvx3GvFRg/PyhHzWJBl
+X-Google-Smtp-Source: APXvYqyCxl0gyCt8f14Ks5hJ2E9kauUFKQD0IBH+dz03PqnOwax24Qywyva4FwEaknsdd/yE0CqkhHO+VOHjd9NQkTK8A/cz5fxI
 MIME-Version: 1.0
-References: <20191020170711.22082-1-bjorn.topel@gmail.com> <87pnirb3dc.fsf@toke.dk>
-In-Reply-To: <87pnirb3dc.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 21 Oct 2019 07:03:25 +0200
-Message-ID: <CAJ+HfNh+RFUQr852HDmq0DufxzrkyD_Tu99UtJUtd==L+tgB8w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: remove explicit XSKMAP lookup from
- AF_XDP XDP program
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a6b:b2d5:: with SMTP id b204mr693498iof.137.1571635266901;
+ Sun, 20 Oct 2019 22:21:06 -0700 (PDT)
+Date:   Sun, 20 Oct 2019 22:21:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ccde8d059564d93d@google.com>
+Subject: general protection fault in batadv_iv_ogm_queue_add
+From:   syzbot <syzbot+7dd2da51d8ae6f990403@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 20 Oct 2019 at 21:53, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
-.com> wrote:
->
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->
-> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >
-> > In commit 43e74c0267a3 ("bpf_xdp_redirect_map: Perform map lookup in
-> > eBPF helper") the bpf_redirect_map() helper learned to do map lookup,
-> > which means that the explicit lookup in the XDP program for AF_XDP is
-> > not needed.
-> >
-> > This commit removes the map lookup, which simplifies the BPF code and
-> > improves the performance for the "rx_drop" [1] scenario with ~4%.
->
-> Nice, 4% is pretty good!
->
-> I wonder if the program needs to be backwards-compatible (with pre-5.3
-> kernels), though?
->
-> You can do that by something like this:
->
-> ret =3D bpf_redirect_map(&xsks_map, index, XDP_PASS);
-> if (ret > 0)
->   return ret;
->
-> if (bpf_map_lookup_elem(&xsks_map, &index))
->    return bpf_redirect_map(&xsks_map, index, 0);
-> return XDP_PASS;
->
+Hello,
 
-Ah, yes. Thanks for pointing that out. I'll do a respin.
+syzbot found the following crash on:
+
+HEAD commit:    998d7551 Merge branch 'akpm' (patches from Andrew)
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1702db87600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e0ac4d9b35046343
+dashboard link: https://syzkaller.appspot.com/bug?extid=7dd2da51d8ae6f990403
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+7dd2da51d8ae6f990403@syzkaller.appspotmail.com
+
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 4256 Comm: kworker/u4:0 Not tainted 5.4.0-rc3+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
+RIP: 0010:batadv_iv_ogm_queue_add+0x49/0x1120  
+net/batman-adv/bat_iv_ogm.c:605
+Code: 48 89 75 b8 48 89 4d c0 4c 89 45 b0 44 89 4d d0 e8 fc 02 46 fa 48 8d  
+7b 03 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48  
+89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 18 0d 00 00
+RSP: 0018:ffff88805d2cfb80 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffff888092284000
+RDX: 0000000000000000 RSI: ffffffff872d1214 RDI: 0000000000000003
+RBP: ffff88805d2cfc18 R08: ffff888092284000 R09: 0000000000000001
+R10: ffffed100ba59f77 R11: 0000000000000003 R12: dffffc0000000000
+R13: ffffed101245080e R14: ffff888092284000 R15: 0000000100051cf6
+FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000200002c0 CR3: 00000000a421b000 CR4: 00000000001426f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  batadv_iv_ogm_schedule+0xb0b/0xe50 net/batman-adv/bat_iv_ogm.c:813
+  batadv_iv_send_outstanding_bat_ogm_packet+0x580/0x760  
+net/batman-adv/bat_iv_ogm.c:1675
+  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Modules linked in:
+---[ end trace 04d065842187c2b8 ]---
+RIP: 0010:batadv_iv_ogm_queue_add+0x49/0x1120  
+net/batman-adv/bat_iv_ogm.c:605
+Code: 48 89 75 b8 48 89 4d c0 4c 89 45 b0 44 89 4d d0 e8 fc 02 46 fa 48 8d  
+7b 03 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48  
+89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 18 0d 00 00
+RSP: 0018:ffff88805d2cfb80 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffff888092284000
+RDX: 0000000000000000 RSI: ffffffff872d1214 RDI: 0000000000000003
+RBP: ffff88805d2cfc18 R08: ffff888092284000 R09: 0000000000000001
+R10: ffffed100ba59f77 R11: 0000000000000003 R12: dffffc0000000000
+R13: ffffed101245080e R14: ffff888092284000 R15: 0000000100051cf6
+FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000200002c0 CR3: 00000000a421b000 CR4: 00000000001426f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
-Thanks,
-Bj=C3=B6rn
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
->
-> This works because bpf_redirect_map() prior to 43e74c0267a3 will return
-> XDP_ABORTED on a non-0 flags value.
->
-> -Toke
->
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
