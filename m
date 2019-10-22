@@ -2,286 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6007E0289
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 13:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71907E028E
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 13:12:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731895AbfJVLLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 07:11:15 -0400
-Received: from mail-eopbgr30074.outbound.protection.outlook.com ([40.107.3.74]:23270
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730450AbfJVLLO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 07:11:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UIot5PElyvtX7sOc0JopzgMfVuBZCyzpkqwGwRXrfz/OwDxjkIA/NE06nyqCkTV9I9tRNixqBbe2n76hs0KDRwCoC6ZiT1xwzNne9eStf/BQYp8/7CDxUDGLRcRKWCwXPwZq0uOv1ULSh0NqJZouI7iRaP0ig0hYjmKGAnDhLOULBCj9IOQSWlqAlEYcYkXj+/44zTznUDPmT7WHqoALN71BUOv4ob2NwwowX47ROCg7+7xQaxzQjCIMv8pOU83Pph81+cFzpb40Xzc8PzcwX3/Dolp2AoQ9G1SZVi3SRxYhlhAuUfTpY8TsEus+V5Cg5Xf2pSvNvBFu8/e/SMmIBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y+h8FfZEpHrbd0xnrh9uKNfnwFft4fCzh/UKt6MoBHY=;
- b=P7/SFCZoVbP5nsBMiW6d22UBp3z46lAW8Bbg9luj047Hg9kzSD4jhWNIJbTZeYniFnPZvM1i9FeIA3qjCUoy4xB1uf997CnsOndngksLvpD82MzxYbtV7Ohsb6DM62weWbg4RybEB86B1H9g3+uNou/CW9af4hvLW32R2J2H7nF58kMq8khjyPok4/ilW2nvKmtLSBmt1LA2UGImscqhOOSYt7uFEzevMBkkdcBiuvz2JPgUzlt2xOe13YkT+9gQnrT5jv+J4ChBqZ+0TlPfbm+A3GGOKlalor4PuQdGnp+YB5Cq3EN0p9I6XkBn5H3KmGPOBiiOWdRckG8SxAs6Bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wolfvision.net; dmarc=pass action=none
- header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y+h8FfZEpHrbd0xnrh9uKNfnwFft4fCzh/UKt6MoBHY=;
- b=LwCqKgBqpW/M8kluwulL+YLNmeUtMFfuGG4U38IgMpflkjHFO+phrSfkSJToiZg1S/+GBBPMTiBqcSuV8wjHTR20CyH2pz+PmNWTYWJ23R9nYTfB/VBnz/Hk6QK9fTFec8KCzSgA4zyuPCMk9lMj3M43fr5Kneu6sxKp84l6o6w=
-Received: from VI1PR08MB3358.eurprd08.prod.outlook.com (52.133.15.144) by
- VI1PR08MB4269.eurprd08.prod.outlook.com (20.179.25.75) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.18; Tue, 22 Oct 2019 11:11:07 +0000
-Received: from VI1PR08MB3358.eurprd08.prod.outlook.com
- ([fe80::8161:607a:cde6:dc5]) by VI1PR08MB3358.eurprd08.prod.outlook.com
- ([fe80::8161:607a:cde6:dc5%3]) with mapi id 15.20.2367.022; Tue, 22 Oct 2019
- 11:11:07 +0000
-From:   =?iso-8859-1?Q?Thomas_H=E4mmerle?= 
-        <Thomas.Haemmerle@wolfvision.net>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "m.tretter@pengutronix.de" <m.tretter@pengutronix.de>,
-        =?iso-8859-1?Q?Thomas_H=E4mmerle?= 
-        <Thomas.Haemmerle@wolfvision.net>
-Subject: [PATCH] net: phy: dp83867: support Wake on LAN
-Thread-Topic: [PATCH] net: phy: dp83867: support Wake on LAN
-Thread-Index: AQHViMlm4gfQcaMYWE6CeVTUQVGaSg==
-Date:   Tue, 22 Oct 2019 11:11:07 +0000
-Message-ID: <1571742645-13800-1-git-send-email-thomas.haemmerle@wolfvision.net>
-Accept-Language: de-AT, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: VI1PR07CA0259.eurprd07.prod.outlook.com
- (2603:10a6:803:b4::26) To VI1PR08MB3358.eurprd08.prod.outlook.com
- (2603:10a6:803:47::16)
-x-mailer: git-send-email 2.7.4
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Thomas.Haemmerle@wolfvision.net; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [91.118.163.37]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 181a725f-b432-40b3-6511-08d756e0891d
-x-ms-traffictypediagnostic: VI1PR08MB4269:|VI1PR08MB4269:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR08MB42697DDA96C44AF2894D0C36ED680@VI1PR08MB4269.eurprd08.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1850;
-x-forefront-prvs: 01986AE76B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39840400004)(346002)(396003)(366004)(376002)(189003)(199004)(107886003)(66066001)(2351001)(81156014)(71200400001)(8676002)(25786009)(81166006)(1730700003)(71190400001)(14454004)(486006)(4326008)(508600001)(102836004)(50226002)(6506007)(386003)(52116002)(6116002)(6916009)(8936002)(3846002)(99286004)(5660300002)(305945005)(14444005)(2501003)(5024004)(256004)(7736002)(316002)(36756003)(476003)(26005)(6512007)(2616005)(2906002)(186003)(6486002)(45776006)(66946007)(66446008)(64756008)(66556008)(66476007)(86362001)(54906003)(6436002)(5640700003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR08MB4269;H:VI1PR08MB3358.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: wolfvision.net does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lMlWXb7qd1UFgSHRXIhAZ+Cw57fwolY3asi/Okl6SvmM3B4szALUXJ6NAWRqZke4L9KHrvfwX+EqKEo66i6nV5+RCgiXzrX+3BVn8UxjTdNtUXp52xAhV+Be90Fq2kmUTRmK7EOjLaXxBsmTwkB6YZiKOD0hR6TY0Sji6wOBwglZbGtelxjcKVYHipnoUmEoAKKp5XqR4Dw4qd26mJLfLehnu9MX9XBlADNPRsyIg5TfzPRLZLTRJ6SZ/v2mDQQO3+plgSH2kaTS8d0EeaFwBOK5tsQk13Jmfes1ytUdNHsjUJPZPLj/Z1m2F9440hCJZxQQBQNf7z3fB7aXMOVmwPtj9s4LNegZGvtk6tRWFUXXweiDiEB6YDOjYH/n2WH9Q13CfPI0f1O6CNqtbnGDzz3kDmG9o1hDxcTUJab+uJnEpTFMWee/jRgXD/2B6GQ/
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1731911AbfJVLM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 07:12:58 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50646 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730450AbfJVLM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 07:12:57 -0400
+Received: by mail-wm1-f68.google.com with SMTP id q13so6709160wmj.0;
+        Tue, 22 Oct 2019 04:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SMzoWL9AphNI7KM02mxmhPfWRC6wxhYzK4GYu+S5uwY=;
+        b=ZcWDaZ2H+n2YEiPwR/IDkZJq4uFG+ZHdMkuXXFTgio7b8/ZN0HPTP4nsqv632B0e81
+         6fFqJkkwBS7TbrLcQFzrWsNMnYZ+5mREZKdntCAx8vVGFOLOea4L8i+U+4AzjfYNhsI3
+         BnBCgyl+CoxDcsZVHNeUCKslA2L3zKWupw3hUG1b1ML2Xv2WFTeqnZOFVV1UOF/B2ez2
+         D29yscVjrU1tueAoVZy1hnok0AcWcq5B2+CZQG1uRtnR9TEUI4O5E9ehWRVIU2tcj+F1
+         qRLONRP0DJO7dbSatjiJVAK6Dp2wLES6n+4h+4mcczy8uS0NnfgmSOx2ylFTqv+l7X7f
+         zj6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SMzoWL9AphNI7KM02mxmhPfWRC6wxhYzK4GYu+S5uwY=;
+        b=LvY8DJ0dszhZIyJw5/EwjagCEPUWbmin9L5zi9yuI1ymUyXNVgj4juvFmJlHiV5nVt
+         9JjwEfz6KdvJzoHFKqhwd+Ksn01kZKzKLd1UhoCnsqrnEiIlxFD9HqLRbJjI/3afwIJG
+         mqQ4EX+wFh1HU8wsWqepuAphHrCWmo2mzfCgM110vJVHPyciUFEGeV+kjCgMLqD/PEJ2
+         BmP1Ty8uS0tfTBTZKx8gI4mxXasW1GMkTOOpGAGxxg7gXdwaFHmy9MOwdt+wlCCEMtvm
+         IXrVb/r6FFc7MyJXPj+Jo1bDHYbZjWkoxtkTHiXNlrpbZM5dMFx+Y8pUzQ1DGGCjmCEF
+         8aAQ==
+X-Gm-Message-State: APjAAAWkbk96hAprKqpMDVMvfBZmauUjxYsMLsknRPa0I2BCY0k8hxKI
+        k1/aTHK5qHXEsNtu1C0fhT0n7asJc4wzs4dRn/MAWwvG
+X-Google-Smtp-Source: APXvYqwzGWXk/AxeGIj8soVELpjgfwGzG4c+Mk7jQCAtzETPH7TAg88biB39pVxx+ESgoYdKZ00DqHNzgU4xtRP3yHc=
+X-Received: by 2002:a7b:c3cf:: with SMTP id t15mr2415366wmj.85.1571742774835;
+ Tue, 22 Oct 2019 04:12:54 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: wolfvision.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 181a725f-b432-40b3-6511-08d756e0891d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 11:11:07.2690
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e94ec9da-9183-471e-83b3-51baa8eb804f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: exuPWRatGj2buO5IkNDW85FdBWbPV1W/gW4JiPexjuPcoMHPdnnM2yfrmP0F41WF2iO0FI0xxxUOpx78k6Set8O83sH3Ww3G94ziUPPM4Hs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB4269
+References: <cover.1571033544.git.lucien.xin@gmail.com> <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
+ <fb115b1444764b3eacdf69ebd9cf9681@AcuMS.aculab.com> <CADvbK_eQrXs4VC+OgsLibA-q2VkkdKXTK+meaRGbxJDK41aLKg@mail.gmail.com>
+In-Reply-To: <CADvbK_eQrXs4VC+OgsLibA-q2VkkdKXTK+meaRGbxJDK41aLKg@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 22 Oct 2019 19:13:30 +0800
+Message-ID: <CADvbK_cYTNupYG4rLPcTz8J7HK5DajcW=UfqNT64-vJi+9yx4w@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 1/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED notification
+To:     David Laight <David.Laight@aculab.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Haemmerle <thomas.haemmerle@wolfvision.net>
+Hi, David L.
 
-This adds WoL support on TI DP83867 for magic, magic secure, unicast and
-broadcast.
+I will repost if you don't have any other dissent.
 
-Signed-off-by: Thomas Haemmerle <thomas.haemmerle@wolfvision.net>
----
- drivers/net/phy/dp83867.c | 131 ++++++++++++++++++++++++++++++++++++++++++=
-+++-
- 1 file changed, 130 insertions(+), 1 deletion(-)
+Thanks for your nice review.
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 37fceaf..a3b7ff7 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -12,6 +12,8 @@
- #include <linux/of.h>
- #include <linux/phy.h>
- #include <linux/delay.h>
-+#include <linux/netdevice.h>
-+#include <linux/etherdevice.h>
-=20
- #include <dt-bindings/net/ti-dp83867.h>
-=20
-@@ -21,8 +23,9 @@
- #define MII_DP83867_PHYCTRL	0x10
- #define MII_DP83867_MICR	0x12
- #define MII_DP83867_ISR		0x13
--#define DP83867_CTRL		0x1f
-+#define DP83867_CFG2		0x14
- #define DP83867_CFG3		0x1e
-+#define DP83867_CTRL		0x1f
-=20
- /* Extended Registers */
- #define DP83867_CFG4            0x0031
-@@ -36,6 +39,13 @@
- #define DP83867_STRAP_STS1	0x006E
- #define DP83867_STRAP_STS2	0x006f
- #define DP83867_RGMIIDCTL	0x0086
-+#define DP83867_RXFCFG		0x0134
-+#define DP83867_RXFPMD1	0x0136
-+#define DP83867_RXFPMD2	0x0137
-+#define DP83867_RXFPMD3	0x0138
-+#define DP83867_RXFSOP1	0x0139
-+#define DP83867_RXFSOP2	0x013A
-+#define DP83867_RXFSOP3	0x013B
- #define DP83867_IO_MUX_CFG	0x0170
- #define DP83867_SGMIICTL	0x00D3
- #define DP83867_10M_SGMII_CFG   0x016F
-@@ -65,6 +75,13 @@
- /* SGMIICTL bits */
- #define DP83867_SGMII_TYPE		BIT(14)
-=20
-+/* RXFCFG bits*/
-+#define DP83867_WOL_MAGIC_EN		BIT(0)
-+#define DP83867_WOL_BCAST_EN		BIT(2)
-+#define DP83867_WOL_UCAST_EN		BIT(4)
-+#define DP83867_WOL_SEC_EN		BIT(5)
-+#define DP83867_WOL_ENH_MAC		BIT(7)
-+
- /* STRAP_STS1 bits */
- #define DP83867_STRAP_STS1_RESERVED		BIT(11)
-=20
-@@ -126,6 +143,115 @@ static int dp83867_ack_interrupt(struct phy_device *p=
-hydev)
- 	return 0;
- }
-=20
-+static int dp83867_set_wol(struct phy_device *phydev,
-+			   struct ethtool_wolinfo *wol)
-+{
-+	struct net_device *ndev =3D phydev->attached_dev;
-+	u16 val_rxcfg, val_micr;
-+	const u8 *mac;
-+
-+	val_rxcfg =3D phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RXFCFG);
-+	val_micr =3D phy_read(phydev, MII_DP83867_MICR);
-+
-+	if (wol->wolopts & (WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_UCAST |
-+			    WAKE_BCAST)) {
-+		val_rxcfg |=3D DP83867_WOL_ENH_MAC;
-+		val_micr |=3D MII_DP83867_MICR_WOL_INT_EN;
-+
-+		if (wol->wolopts & WAKE_MAGIC) {
-+			mac =3D (const u8 *)ndev->dev_addr;
-+
-+			if (!is_valid_ether_addr(mac))
-+				return -EINVAL;
-+
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFPMD1,
-+				      (mac[1] << 8 | mac[0]));
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFPMD2,
-+				      (mac[3] << 8 | mac[2]));
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFPMD3,
-+				      (mac[5] << 8 | mac[4]));
-+
-+			val_rxcfg |=3D DP83867_WOL_MAGIC_EN;
-+		} else {
-+			val_rxcfg &=3D ~DP83867_WOL_MAGIC_EN;
-+		}
-+
-+		if (wol->wolopts & WAKE_MAGICSECURE) {
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
-+				      (wol->sopass[1] << 8) | wol->sopass[0]);
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
-+				      (wol->sopass[3] << 8) | wol->sopass[2]);
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
-+				      (wol->sopass[5] << 8) | wol->sopass[3]);
-+
-+			val_rxcfg |=3D DP83867_WOL_SEC_EN;
-+		} else {
-+			val_rxcfg &=3D ~DP83867_WOL_SEC_EN;
-+		}
-+
-+		if (wol->wolopts & WAKE_UCAST)
-+			val_rxcfg |=3D DP83867_WOL_UCAST_EN;
-+		else
-+			val_rxcfg &=3D ~DP83867_WOL_UCAST_EN;
-+
-+		if (wol->wolopts & WAKE_BCAST)
-+			val_rxcfg |=3D DP83867_WOL_BCAST_EN;
-+		else
-+			val_rxcfg &=3D ~DP83867_WOL_BCAST_EN;
-+	} else {
-+		val_rxcfg &=3D ~DP83867_WOL_ENH_MAC;
-+		val_micr &=3D ~MII_DP83867_MICR_WOL_INT_EN;
-+	}
-+
-+	phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFCFG, val_rxcfg);
-+	phy_write(phydev, MII_DP83867_MICR, val_micr);
-+
-+	return 0;
-+}
-+
-+static void dp83867_get_wol(struct phy_device *phydev,
-+			    struct ethtool_wolinfo *wol)
-+{
-+	u16 value, sopass_val;
-+
-+	wol->supported =3D (WAKE_UCAST | WAKE_BCAST | WAKE_MAGIC |
-+			WAKE_MAGICSECURE);
-+	wol->wolopts =3D 0;
-+
-+	value =3D phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RXFCFG);
-+
-+	if (value & DP83867_WOL_UCAST_EN)
-+		wol->wolopts |=3D WAKE_UCAST;
-+
-+	if (value & DP83867_WOL_BCAST_EN)
-+		wol->wolopts |=3D WAKE_BCAST;
-+
-+	if (value & DP83867_WOL_MAGIC_EN)
-+		wol->wolopts |=3D WAKE_MAGIC;
-+
-+	if (value & DP83867_WOL_SEC_EN) {
-+		sopass_val =3D phy_read_mmd(phydev, DP83867_DEVADDR,
-+					  DP83867_RXFSOP1);
-+		wol->sopass[0] =3D (sopass_val & 0xff);
-+		wol->sopass[1] =3D (sopass_val >> 8);
-+
-+		sopass_val =3D phy_read_mmd(phydev, DP83867_DEVADDR,
-+					  DP83867_RXFSOP2);
-+		wol->sopass[2] =3D (sopass_val & 0xff);
-+		wol->sopass[3] =3D (sopass_val >> 8);
-+
-+		sopass_val =3D phy_read_mmd(phydev, DP83867_DEVADDR,
-+					  DP83867_RXFSOP3);
-+		wol->sopass[4] =3D (sopass_val & 0xff);
-+		wol->sopass[5] =3D (sopass_val >> 8);
-+
-+		wol->wolopts |=3D WAKE_MAGICSECURE;
-+	}
-+
-+	if (!(value & DP83867_WOL_ENH_MAC))
-+		wol->wolopts =3D 0;
-+}
-+
- static int dp83867_config_intr(struct phy_device *phydev)
- {
- 	int micr_status;
-@@ -463,6 +589,9 @@ static struct phy_driver dp83867_driver[] =3D {
- 		.config_init	=3D dp83867_config_init,
- 		.soft_reset	=3D dp83867_phy_reset,
-=20
-+		.get_wol	=3D dp83867_get_wol,
-+		.set_wol	=3D dp83867_set_wol,
-+
- 		/* IRQ related */
- 		.ack_interrupt	=3D dp83867_ack_interrupt,
- 		.config_intr	=3D dp83867_config_intr,
---=20
-2.7.4
-
+On Sat, Oct 19, 2019 at 4:55 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> On Fri, Oct 18, 2019 at 11:56 PM David Laight <David.Laight@aculab.com> wrote:
+> >
+> > I've found v3 :-)
+> ah okay. sorry.
+>
+> > But it isn't that much better than v2.
+> >
+> > From: Xin Long
+> > > Sent: 14 October 2019 07:15
+> > > SCTP Quick failover draft section 5.1, point 5 has been removed
+> > > from rfc7829. Instead, "the sender SHOULD (i) notify the Upper
+> > > Layer Protocol (ULP) about this state transition", as said in
+> > > section 3.2, point 8.
+> > >
+> > > So this patch is to add SCTP_ADDR_POTENTIALLY_FAILED, defined
+> > > in section 7.1, "which is reported if the affected address
+> > > becomes PF". Also remove transport cwnd's update when moving
+> > > from PF back to ACTIVE , which is no longer in rfc7829 either.
+> > >
+> > > v1->v2:
+> > >   - no change
+> > > v2->v3:
+> > >   - define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
+> > >
+> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > ---
+> > >  include/uapi/linux/sctp.h |  2 ++
+> > >  net/sctp/associola.c      | 17 ++++-------------
+> > >  2 files changed, 6 insertions(+), 13 deletions(-)
+> > >
+> > > diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
+> > > index 6bce7f9..f4ab7bb 100644
+> > > --- a/include/uapi/linux/sctp.h
+> > > +++ b/include/uapi/linux/sctp.h
+> > > @@ -410,6 +410,8 @@ enum sctp_spc_state {
+> > >       SCTP_ADDR_ADDED,
+> > >       SCTP_ADDR_MADE_PRIM,
+> > >       SCTP_ADDR_CONFIRMED,
+> > > +     SCTP_ADDR_POTENTIALLY_FAILED,
+> > > +#define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
+> > >  };
+> > >
+> > >
+> > > diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+> > > index 1ba893b..4f9efba 100644
+> > > --- a/net/sctp/associola.c
+> > > +++ b/net/sctp/associola.c
+> > > @@ -801,14 +801,6 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
+> > >                       spc_state = SCTP_ADDR_CONFIRMED;
+> > >               else
+> > >                       spc_state = SCTP_ADDR_AVAILABLE;
+> > > -             /* Don't inform ULP about transition from PF to
+> > > -              * active state and set cwnd to 1 MTU, see SCTP
+> > > -              * Quick failover draft section 5.1, point 5
+> > > -              */
+> > > -             if (transport->state == SCTP_PF) {
+> > > -                     ulp_notify = false;
+> > > -                     transport->cwnd = asoc->pathmtu;
+> > > -             }
+> >
+> > This is wrong.
+> > If the old state is PF and the application hasn't exposed PF the event should be
+> > ignored.
+> yeps, in Patch 2/5:
+> +               if (transport->state == SCTP_PF &&
+> +                   asoc->pf_expose != SCTP_PF_EXPOSE_ENABLE)
+> +                       ulp_notify = false;
+> +               else if (transport->state == SCTP_UNCONFIRMED &&
+> +                        error == SCTP_HEARTBEAT_SUCCESS)
+>                         spc_state = SCTP_ADDR_CONFIRMED;
+>                 else
+>                         spc_state = SCTP_ADDR_AVAILABLE;
+>
+> >
+> > >               transport->state = SCTP_ACTIVE;
+> > >               break;
+> > >
+> > > @@ -817,19 +809,18 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
+> > >                * to inactive state.  Also, release the cached route since
+> > >                * there may be a better route next time.
+> > >                */
+> > > -             if (transport->state != SCTP_UNCONFIRMED)
+> > > +             if (transport->state != SCTP_UNCONFIRMED) {
+> > >                       transport->state = SCTP_INACTIVE;
+> > > -             else {
+> > > +                     spc_state = SCTP_ADDR_UNREACHABLE;
+> > > +             } else {
+> > >                       sctp_transport_dst_release(transport);
+> > >                       ulp_notify = false;
+> > >               }
+> > > -
+> > > -             spc_state = SCTP_ADDR_UNREACHABLE;
+> > >               break;
+> > >
+> > >       case SCTP_TRANSPORT_PF:
+> > >               transport->state = SCTP_PF;
+> > > -             ulp_notify = false;
+> >
+> > Again the event should be supressed if PF isn't exposed.
+> it will be suppressed after Patch 2/5:
+> +               if (asoc->pf_expose != SCTP_PF_EXPOSE_ENABLE)
+> +                       ulp_notify = false;
+> +               else
+> +                       spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
+>                 break;
+>
+> >
+> > > +             spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
+> > >               break;
+> > >
+> > >       default:
+> > > --
+> > > 2.1.0
+> >
+> > I also haven't spotted where the test that the application has actually enabled
+> > state transition events is in the code.
+> all events will be created, but dropped in sctp_ulpq_tail_event() when trying
+> to deliver up:
+>
+>         /* Check if the user wishes to receive this event.  */
+>         if (!sctp_ulpevent_is_enabled(event, ulpq->asoc->subscribe))
+>                 goto out_free;
+>
+> > I'd have thought it would be anything is built and allocated.
+> >
+> >         David
+> >
+> > -
+> > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> > Registration No: 1397386 (Wales)
+> >
