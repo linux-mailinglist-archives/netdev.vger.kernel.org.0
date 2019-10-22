@@ -2,145 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFED7E0E1C
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:19:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97885E0E20
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387571AbfJVWTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 18:19:34 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:57147 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730331AbfJVWTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:19:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571782772;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=My9DwfKfi8IGLIxBBHjX/j2LOHDsw3kgVZcrwGUE6m8=;
-        b=a1czTjmMxx1/gGij/S4PM77nA18oMNGCv4tTuHn4/cghF4HZCXl9oWEz6AWbSVFDC5w6eD
-        Z2U5wk2767SFr70m20RnW6QrZQARn6NPuaq+Ml9dYQgaaULIEK23jyp6dQqQGB48qBXNYn
-        /6A/FYTivFt/PO/Cr4SXfyIxEe89NS8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-239-bIszvY-8P9mKktFNTDLz9A-1; Tue, 22 Oct 2019 18:19:29 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 294DA80183E;
-        Tue, 22 Oct 2019 22:19:28 +0000 (UTC)
-Received: from carbon (ovpn-200-21.brq.redhat.com [10.40.200.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 008A05D6A9;
-        Tue, 22 Oct 2019 22:19:20 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 00:19:17 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Charles McLachlan <cmclachlan@solarflare.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-net-drivers@solarflare.com>, brouer@redhat.com
-Subject: Re: [PATCH net-next 1/6] sfc: support encapsulation of xdp_frames
- in efx_tx_buffer.
-Message-ID: <20191023001917.59f51f52@carbon>
-In-Reply-To: <7eca8299-a6bf-5d47-1815-4d2cfa87c070@solarflare.com>
-References: <05b72fdb-165c-1350-787b-ca8c5261c459@solarflare.com>
-        <7eca8299-a6bf-5d47-1815-4d2cfa87c070@solarflare.com>
+        id S2388128AbfJVWUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 18:20:04 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:40755 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387737AbfJVWUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:20:04 -0400
+Received: by mail-lj1-f196.google.com with SMTP id u22so863801lji.7
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:20:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=eJeiOHf0qMrqlF/fxKjCis2VKW2qM0EkZCFmwOD6UAY=;
+        b=kblqZkpKk9Zv8+vkRFatupFOSxOn+KEJuyarb+K8rHZ/PuJhhR0Ed/8kh+trzE+yE5
+         HXws66SwIuCM+7LckDSHL7N4WKeHP3ryW4/5zdszebvixBPYOEus0ggkgOArT9A1VUlq
+         MBctIzg0ofDuYIPuGGjG7wg22DTTVgAAuKw6iNFdj1NLMRrhYSiXV5dK7d4CjsWt2OTe
+         pBGDl7CCrzI63IYMbC/nPICyLBw5VqVUvhSIUmGZ2fqo+2k6SnB09abYgnmKRMfEnuig
+         +nm1+fqNM9DOl7GLGS8F3n6TWEdLT8DtJdd7GvGGepzxTYvys+4PqHUMCqo3KkIIACvd
+         XYIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=eJeiOHf0qMrqlF/fxKjCis2VKW2qM0EkZCFmwOD6UAY=;
+        b=eBbKjXSucWQx1FC/8sBw/urzBk4ACsXzyUNiI8WK37vy3oMQUu/GYlx4acA+i64Erf
+         rFlZZ1ksOXjuTZSeq4XyhROmGvufplsUZHlgaYBiCrv4mddcn9uyspNjcABkJXsPImzT
+         WwyaCBinmTgqaH4CdSJG2Gv/BO7lZ/UGrZKOb82uNCJYj9hTIG7fXr3WY0lyo1YFcN+s
+         d6Z1nukpf84LDkM+jPri0ZY1L97o+JJkOkJl8sisEH46v7fBkbkhwpC8MMl/LQ9VZ9ye
+         sOiPd3Hk7qqZpc2gISvjBOLounZLznKw5aKxlYsG19UR8YUn3rWpZQFrKFPpW8x6HGDO
+         gI1A==
+X-Gm-Message-State: APjAAAX4t6J9vsMZnZckfBiLDf8+bciulpP5z6m3CFkU2T2jTFGnDLj0
+        W/TZCAOYc1qP+QOahlbW0GPAKA==
+X-Google-Smtp-Source: APXvYqygfc/fvNSdOubo3mFfaZ2INJ9KgK0gK/dRspdCWOAaWW0QuhW0oG93R+xgpeYR28cfxYUKew==
+X-Received: by 2002:a2e:b4ee:: with SMTP id s14mr20399148ljm.88.1571782802349;
+        Tue, 22 Oct 2019 15:20:02 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id h21sm1583836ljl.20.2019.10.22.15.19.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Oct 2019 15:20:01 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 15:19:54 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
+Cc:     linux-kernel@lists.codethink.co.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ipv6: include <net/addrconf.h> for missing declarations
+Message-ID: <20191022151954.2973f774@cakuba.netronome.com>
+In-Reply-To: <20191022144440.23086-1-ben.dooks@codethink.co.uk>
+References: <20191022144440.23086-1-ben.dooks@codethink.co.uk>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: bIszvY-8P9mKktFNTDLz9A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 16:37:53 +0100
-Charles McLachlan <cmclachlan@solarflare.com> wrote:
+On Tue, 22 Oct 2019 15:44:40 +0100, Ben Dooks (Codethink) wrote:
+> Include <net/addrconf.h> for the missing declarations of
+> various functions. Fixes the following sparse warnings:
+> 
+> net/ipv6/addrconf_core.c:94:5: warning: symbol 'register_inet6addr_notifier' was not declared. Should it be static?
+> net/ipv6/addrconf_core.c:100:5: warning: symbol 'unregister_inet6addr_notifier' was not declared. Should it be static?
+> net/ipv6/addrconf_core.c:106:5: warning: symbol 'inet6addr_notifier_call_chain' was not declared. Should it be static?
+> net/ipv6/addrconf_core.c:112:5: warning: symbol 'register_inet6addr_validator_notifier' was not declared. Should it be static?
+> net/ipv6/addrconf_core.c:118:5: warning: symbol 'unregister_inet6addr_validator_notifier' was not declared. Should it be static?
+> net/ipv6/addrconf_core.c:125:5: warning: symbol 'inet6addr_validator_notifier_call_chain' was not declared. Should it be static?
+> net/ipv6/addrconf_core.c:237:6: warning: symbol 'in6_dev_finish_destroy' was not declared. Should it be static?
+> 
+> Signed-off-by: Ben Dooks (Codethink) <ben.dooks@codethink.co.uk>
 
-> Add a field to efx_tx_buffer so that we can track xdp_frames. Add a
-> flag so that buffers that contain xdp_frames can be identified and
-> passed to xdp_return_frame.
->=20
-> Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
-> ---
->  drivers/net/ethernet/sfc/net_driver.h | 10 ++++++++--
->  drivers/net/ethernet/sfc/tx.c         |  2 ++
->  2 files changed, 10 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet=
-/sfc/net_driver.h
-> index 284a1b047ac2..7394d901e021 100644
-> --- a/drivers/net/ethernet/sfc/net_driver.h
-> +++ b/drivers/net/ethernet/sfc/net_driver.h
-> @@ -27,6 +27,7 @@
->  #include <linux/i2c.h>
->  #include <linux/mtd/mtd.h>
->  #include <net/busy_poll.h>
-> +#include <net/xdp.h>
-> =20
->  #include "enum.h"
->  #include "bitfield.h"
-> @@ -136,7 +137,8 @@ struct efx_special_buffer {
->   * struct efx_tx_buffer - buffer state for a TX descriptor
->   * @skb: When @flags & %EFX_TX_BUF_SKB, the associated socket buffer to =
-be
->   *=09freed when descriptor completes
-> - * @option: When @flags & %EFX_TX_BUF_OPTION, a NIC-specific option desc=
-riptor.
-> + * @xdpf: When @flags & %EFX_TX_BUF_XDP, the XDP frame information; its =
-@data
-> + *=09member is the associated buffer to drop a page reference on.
->   * @dma_addr: DMA address of the fragment.
->   * @flags: Flags for allocation and DMA mapping type
->   * @len: Length of this fragment.
-> @@ -146,7 +148,10 @@ struct efx_special_buffer {
->   * Only valid if @unmap_len !=3D 0.
->   */
->  struct efx_tx_buffer {
-> -=09const struct sk_buff *skb;
-> +=09union {
-> +=09=09const struct sk_buff *skb;
-> +=09=09struct xdp_frame *xdpf;
-> +=09};
->  =09union {
->  =09=09efx_qword_t option;
->  =09=09dma_addr_t dma_addr;
-> @@ -160,6 +165,7 @@ struct efx_tx_buffer {
->  #define EFX_TX_BUF_SKB=09=092=09/* buffer is last part of skb */
->  #define EFX_TX_BUF_MAP_SINGLE=098=09/* buffer was mapped with dma_map_si=
-ngle() */
->  #define EFX_TX_BUF_OPTION=090x10=09/* empty buffer for option descriptor=
- */
-> +#define EFX_TX_BUF_XDP=09=090x20=09/* buffer was sent with XDP */
-> =20
->  /**
->   * struct efx_tx_queue - An Efx TX queue
-> diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.=
-c
-> index 65e81ec1b314..9905e8952a45 100644
-> --- a/drivers/net/ethernet/sfc/tx.c
-> +++ b/drivers/net/ethernet/sfc/tx.c
-> @@ -95,6 +95,8 @@ static void efx_dequeue_buffer(struct efx_tx_queue *tx_=
-queue,
->  =09=09netif_vdbg(tx_queue->efx, tx_done, tx_queue->efx->net_dev,
->  =09=09=09   "TX queue %d transmission id %x complete\n",
->  =09=09=09   tx_queue->queue, tx_queue->read_count);
-> +=09} else if (buffer->flags & EFX_TX_BUF_XDP) {
-> +=09=09xdp_return_frame(buffer->xdpf);
-
-Is this efx_dequeue_buffer() function always called under NAPI protection?
-(So it could use the faster xdp_return_frame_rx_napi() ... ?)
-
-
->  =09}
-> =20
->  =09buffer->len =3D 0;
-
-
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Applied, thanks!
