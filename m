@@ -2,124 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46BA8E0AB1
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 691ABE0ABC
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732736AbfJVRaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 13:30:03 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42152 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732657AbfJVRaC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 13:30:02 -0400
-Received: by mail-lj1-f196.google.com with SMTP id u4so3938475ljj.9
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 10:30:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=HmmPBl6eQCJQQpK05KW2nNJH7nyGoslANOpWRy61vOw=;
-        b=zYh25urd8gs/0FeIw9pUR75l7cU4AlLmzOJvB6ZLBSpfGISKg9PuCs9ZV2wD0jAI7V
-         cKcsmwjQWpX/u/wIY3StphOwuuFtS/TuWDnRTA42d6kACzgwf0gyqwpERegSyMe2dIMn
-         LIUDxpLB9H8xTqkLR+RhcjAyMsrw+rc/EaSQldj/orTbyI734aVIWjj7GZd6MtmU5Znh
-         i2b9LYEIiZtRB73o1wmzfB2xBuzW+gKyJfEqcev98AZ5SVm2QXuz2VhM07AqGahfr4Iu
-         VaDKlG7ehiyVq5urU0fsWwcwl2WX0avYGr7HBnb3BjEoJGegVQ5LdaqXKmskejbCYh3e
-         ItfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=HmmPBl6eQCJQQpK05KW2nNJH7nyGoslANOpWRy61vOw=;
-        b=UDc/37eanBq1IxD5t0D/EKDUEM3TCNCttjgB/yQ7TxMQNarOU2uRjOt2oce1NHfmH7
-         Wof1EJnL9Kc/Vac57Wa+la/JJ+Cqle29RjyHC+XaCYgxoBjc4XhPzH1nUyMEUfuLMAPU
-         MCRA9zN0EKfaRvx4HbPTuxidWd5tuVBvax2vLokdAR8WIh5oLR59lBTPy0nsVOGLXwcz
-         2eTUxtezkBXw3TByt2/qHZpNccVKti8znmG06ybnwFp12jIBF/qP5GWb8hs+R4VmsSB0
-         fZDX0Z0ZCNrK01ABYqJrjXOmnud7GUNPHaSjvcfd2hxRuIhOZssSBoEWT4bb9hBa1opZ
-         zJ/w==
-X-Gm-Message-State: APjAAAVKLZ8rDKiWGQGTXza5Xi0YKbosPvD8NNVRPTrkL4zfd3yTerxt
-        Lj0la3uCfWOqOrMiDjJb5eWn1g==
-X-Google-Smtp-Source: APXvYqxpzJg00yRe3OjBd6BnC1zysssaNWZcfUFrdIXzW/KSn/Vdod1X21VKHzDtvBdgHy9erg6Qcw==
-X-Received: by 2002:a2e:416:: with SMTP id 22mr3073575lje.55.1571765400271;
-        Tue, 22 Oct 2019 10:30:00 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id h21sm1288560ljl.20.2019.10.22.10.29.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 10:30:00 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 10:29:52 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        anirudha.sarangi@xilinx.com, john.linn@xilinx.com,
-        mchehab+samsung@kernel.org, gregkh@linuxfoundation.org,
-        nicolas.ferre@microchip.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] net: axienet: In kconfig add ARM64 as
- supported platform
-Message-ID: <20191022102952.09211971@cakuba.netronome.com>
-In-Reply-To: <cbdd6608-804a-086c-1892-1903ec4a7d80@xilinx.com>
-References: <1571653110-20505-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-        <cbdd6608-804a-086c-1892-1903ec4a7d80@xilinx.com>
-Organization: Netronome Systems, Ltd.
+        id S1731436AbfJVReR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 13:34:17 -0400
+Received: from inca-roads.misterjones.org ([213.251.177.50]:52165 "EHLO
+        inca-roads.misterjones.org" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727309AbfJVReR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 13:34:17 -0400
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why)
+        by cheepnis.misterjones.org with esmtpsa (TLSv1.2:AES256-GCM-SHA384:256)
+        (Exim 4.80)
+        (envelope-from <maz@kernel.org>)
+        id 1iMy2u-00030U-T5; Tue, 22 Oct 2019 19:34:13 +0200
+Date:   Tue, 22 Oct 2019 18:34:11 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Daniel Wagner <dwagner@suse.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>, Stefan Wahren <wahrenst@gmx.net>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] net: usb: lan78xx: Use phy_mac_interrupt() for
+ interrupt handling
+Message-ID: <20191022183411.0e9a7bdc@why>
+In-Reply-To: <20191022101747.001b6d06@cakuba.netronome.com>
+References: <20191018082817.111480-1-dwagner@suse.de>
+        <20191018131532.dsfhyiilsi7cy4cm@linutronix.de>
+        <20191022101747.001b6d06@cakuba.netronome.com>
+Organization: Approximate
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: jakub.kicinski@netronome.com, dwagner@suse.de, bigeasy@linutronix.de, UNGLinuxDriver@microchip.com, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org, woojung.huh@microchip.com, andrew@lunn.ch, wahrenst@gmx.net, Jisheng.Zhang@synaptics.com, tglx@linutronix.de
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on cheepnis.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Oct 2019 16:15:45 +0200, Michal Simek wrote:
-> On 21. 10. 19 12:18, Radhey Shyam Pandey wrote:
-> > xilinx axi_emac driver is supported on ZynqMP UltraScale platform.
-> > So enable ARCH64 in kconfig. It also removes redundant ARCH_ZYNQ
-> > dependency. Basic sanity testing is done on zu+ mpsoc zcu102
-> > evaluation board.
-> > 
-> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> > ---
-> > Changes for v2:
-> > Remove redundant ARCH_ZYNQ dependency.
-> > Modified commit description.
-> > ---
-> >  drivers/net/ethernet/xilinx/Kconfig | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
-> > index 8d994ce..da11876 100644
-> > --- a/drivers/net/ethernet/xilinx/Kconfig
-> > +++ b/drivers/net/ethernet/xilinx/Kconfig
-> > @@ -6,7 +6,7 @@
-> >  config NET_VENDOR_XILINX
-> >  	bool "Xilinx devices"
-> >  	default y
-> > -	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || COMPILE_TEST
-> > +	depends on PPC || PPC32 || MICROBLAZE || MIPS || X86 || ARM || ARM64 || COMPILE_TEST
-> >  	---help---
-> >  	  If you have a network (Ethernet) card belonging to this class, say Y.
-> >  
-> > @@ -26,11 +26,11 @@ config XILINX_EMACLITE
-> >  
-> >  config XILINX_AXI_EMAC
-> >  	tristate "Xilinx 10/100/1000 AXI Ethernet support"
-> > -	depends on MICROBLAZE || X86 || ARM || COMPILE_TEST
-> > +	depends on MICROBLAZE || X86 || ARM || ARM64 || COMPILE_TEST
-> >  	select PHYLINK
-> >  	---help---
-> >  	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
-> > -	  AXI bus interface used in Xilinx Virtex FPGAs.
-> > +	  AXI bus interface used in Xilinx Virtex FPGAs and Soc's.
-> >  
-> >  config XILINX_LL_TEMAC
-> >  	tristate "Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver"
-> >   
-> 
-> Acked-by: Michal Simek <michal.simek@xilinx.com>
-> 
-> But I can image that others could prefer to remove all dependencies.
+On Tue, 22 Oct 2019 10:17:47 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-Yes, we'd much rather see this litany of architectures removed.
-Is there any reason it's there in the first place?
+> On Fri, 18 Oct 2019 15:15:32 +0200, Sebastian Andrzej Siewior wrote:
+> > On 2019-10-18 10:28:17 [+0200], Daniel Wagner wrote:  
+> > > handle_simple_irq() expect interrupts to be disabled. The USB
+> > > framework is using threaded interrupts, which implies that interrupts
+> > > are re-enabled as soon as it has run.    
+> > 
+> > Without threading interrupts, this is invoked in pure softirq context
+> > since commit ed194d1367698 ("usb: core: remove local_irq_save() around  
+> > ->complete() handler") where the local_irq_disable() has been removed.    
+> > 
+> > This is probably not a problem because the lock is never observed with
+> > in IRQ context.
+> > 
+> > Wouldn't handle_nested_irq() work here instead of the simple thingy?  
+> 
+> Daniel could you try this suggestion? Would it work?
+> 
+> I'm not sure we are at the stage yet where "doesn't work on -rt" is
+> sufficient reason to revert a working upstream patch. Please correct 
+> me if I'm wrong.
 
-Most drivers are tested on just a few architectures, but as long
-as correct APIs are used they are assumed to work across the board.
-Otherwise 75% of our drivers would be x86 only. Don't be shy.
+But that's the thing: it doesn't work at all, RT or not (it spits an
+awful warning). See the various reports Daniel linked to. Maintainers
+have been completely unresponsive, and the RPI folks have their own out
+of tree hack, I believe (which probably reverts to the previous,
+working situation where the driver uses polling for some of its PHY
+handling business).
+
+Sebastian's suggestion is definitely worth trying if you have the HW
+though.
+
+Thanks,
+
+	M.
+-- 
+Jazz is not dead. It just smells funny...
