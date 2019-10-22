@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EDAEE068F
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BE8DE06A9
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387450AbfJVOgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 10:36:07 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60374 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726915AbfJVOgH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 10:36:07 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id CC66DB022;
-        Tue, 22 Oct 2019 14:36:05 +0000 (UTC)
-Date:   Tue, 22 Oct 2019 16:36:04 +0200
-From:   Cyril Hrubis <chrubis@suse.cz>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        id S1730416AbfJVOpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 10:45:34 -0400
+Received: from imap1.codethink.co.uk ([176.9.8.82]:59354 "EHLO
+        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbfJVOpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 10:45:33 -0400
+Received: from [167.98.27.226] (helo=rainbowdash.codethink.co.uk)
+        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
+        id 1iMvOs-0005FE-Q8; Tue, 22 Oct 2019 15:44:42 +0100
+Received: from ben by rainbowdash.codethink.co.uk with local (Exim 4.92.3)
+        (envelope-from <ben@rainbowdash.codethink.co.uk>)
+        id 1iMvOs-00061A-Ak; Tue, 22 Oct 2019 15:44:42 +0100
+From:   "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
+To:     linux-kernel@lists.codethink.co.uk
+Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ltp@lists.linux.it,
-        Richard Palethorpe <rpalethorpe@suse.de>
-Subject: EPERM failures for repeated runs
-Message-ID: <20191022143604.GA18468@rei>
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ipv6: include <net/addrconf.h> for missing declarations
+Date:   Tue, 22 Oct 2019 15:44:40 +0100
+Message-Id: <20191022144440.23086-1-ben.dooks@codethink.co.uk>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
-Lately we started to write BPF testcases for LTP and after writing a
-first few tests we found out that running more than a few in a row
-causes them to fail with EPERM.
+Include <net/addrconf.h> for the missing declarations of
+various functions. Fixes the following sparse warnings:
 
-The culprit is deferred cleanup of the bpf maps that are locked in the
-memory, see:
+net/ipv6/addrconf_core.c:94:5: warning: symbol 'register_inet6addr_notifier' was not declared. Should it be static?
+net/ipv6/addrconf_core.c:100:5: warning: symbol 'unregister_inet6addr_notifier' was not declared. Should it be static?
+net/ipv6/addrconf_core.c:106:5: warning: symbol 'inet6addr_notifier_call_chain' was not declared. Should it be static?
+net/ipv6/addrconf_core.c:112:5: warning: symbol 'register_inet6addr_validator_notifier' was not declared. Should it be static?
+net/ipv6/addrconf_core.c:118:5: warning: symbol 'unregister_inet6addr_validator_notifier' was not declared. Should it be static?
+net/ipv6/addrconf_core.c:125:5: warning: symbol 'inet6addr_validator_notifier_call_chain' was not declared. Should it be static?
+net/ipv6/addrconf_core.c:237:6: warning: symbol 'in6_dev_finish_destroy' was not declared. Should it be static?
 
-http://lists.linux.it/pipermail/ltp/2019-August/013349.html
+Signed-off-by: Ben Dooks (Codethink) <ben.dooks@codethink.co.uk>
+---
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ net/ipv6/addrconf_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-We worked around that by bumping the limit for the tests in:
-
-https://github.com/linux-test-project/ltp/commit/85c4e886b357f7844f6ab8ec5719168c38703a76
-
-But it looks like this value will not scale, especially for
-architectures that have larger than 4k pages, running four BPF tests in
-a row still fails on ppc64le even with the increased limit.
-
-Perhaps I'm naive but can't we check, in the kernel, if there is
-deferred cleanup in progress if we fail to lock memory for a map and
-retry once it's done?
-
-Or is this intended behavior and should we retry on EPERM in userspace?
-
+diff --git a/net/ipv6/addrconf_core.c b/net/ipv6/addrconf_core.c
+index 783f3c1466da..2fc079284ca4 100644
+--- a/net/ipv6/addrconf_core.c
++++ b/net/ipv6/addrconf_core.c
+@@ -7,6 +7,7 @@
+ #include <linux/export.h>
+ #include <net/ipv6.h>
+ #include <net/ipv6_stubs.h>
++#include <net/addrconf.h>
+ #include <net/ip.h>
+ 
+ /* if ipv6 module registers this function is used by xfrm to force all
 -- 
-Cyril Hrubis
-chrubis@suse.cz
+2.23.0
+
