@@ -2,72 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74D02E0299
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 13:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E98E02DF
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 13:29:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387787AbfJVLPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 07:15:12 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:42078 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387460AbfJVLPK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 07:15:10 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 674EE200647;
-        Tue, 22 Oct 2019 13:15:09 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5BAAB200642;
-        Tue, 22 Oct 2019 13:15:09 +0200 (CEST)
-Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 054E22061E;
-        Tue, 22 Oct 2019 13:15:08 +0200 (CEST)
-From:   Madalin Bucur <madalin.bucur@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     roy.pledge@nxp.com, laurentiu.tudor@nxp.com,
-        Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [PATCH net-next v2 6/6] fsl/fman: remove unused struct member
-Date:   Tue, 22 Oct 2019 14:15:01 +0300
-Message-Id: <1571742901-22923-7-git-send-email-madalin.bucur@nxp.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1571742901-22923-1-git-send-email-madalin.bucur@nxp.com>
-References: <1571742901-22923-1-git-send-email-madalin.bucur@nxp.com>
-Content-Type: text/plain; charset="us-ascii"
-Reply-to: madalin.bucur@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2388644AbfJVL3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 07:29:14 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:41168 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388639AbfJVL3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 07:29:14 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-117-_f82vo55O8-CWEJZlmMdXw-1; Tue, 22 Oct 2019 12:29:10 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 22 Oct 2019 12:29:10 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 22 Oct 2019 12:29:10 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Xin Long' <lucien.xin@gmail.com>
+CC:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCHv2 net-next 2/5] sctp: add pf_expose per netns and sock and
+ asoc
+Thread-Topic: [PATCHv2 net-next 2/5] sctp: add pf_expose per netns and sock
+ and asoc
+Thread-Index: AQHVfcscH+sPaksZF0uqjgObulWL8KdglgNwgAEQtgCABPO6YA==
+Date:   Tue, 22 Oct 2019 11:29:09 +0000
+Message-ID: <dbdb13bb2b584590b793e9a7e9b6de64@AcuMS.aculab.com>
+References: <cover.1570533716.git.lucien.xin@gmail.com>
+ <8fcf707443f7218d3fb131b827c679f423c5ecaf.1570533716.git.lucien.xin@gmail.com>
+ <0779b5aeb9a84b4692b08be7478e0373@AcuMS.aculab.com>
+ <CADvbK_dd9fSbntPqx13wUu7he3ke4UK1bVNPhfhhMzT=zkGPjg@mail.gmail.com>
+In-Reply-To: <CADvbK_dd9fSbntPqx13wUu7he3ke4UK1bVNPhfhhMzT=zkGPjg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: _f82vo55O8-CWEJZlmMdXw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unused struct member second_largest_buf_size. Also, an out of
-bounds access would have occurred in the removed code if there was only
-one buffer pool in use.
-
-Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
----
- drivers/net/ethernet/freescale/fman/fman_port.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
-index bd76c9730692..87b26f063cc8 100644
---- a/drivers/net/ethernet/freescale/fman/fman_port.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_port.c
-@@ -435,7 +435,6 @@ struct fman_port_cfg {
- 
- struct fman_port_rx_pools_params {
- 	u8 num_of_pools;
--	u16 second_largest_buf_size;
- 	u16 largest_buf_size;
- };
- 
-@@ -946,8 +945,6 @@ static int set_ext_buffer_pools(struct fman_port *port)
- 	port->rx_pools_params.num_of_pools = ext_buf_pools->num_of_pools_used;
- 	port->rx_pools_params.largest_buf_size =
- 	    sizes_array[ordered_array[ext_buf_pools->num_of_pools_used - 1]];
--	port->rx_pools_params.second_largest_buf_size =
--	    sizes_array[ordered_array[ext_buf_pools->num_of_pools_used - 2]];
- 
- 	/* FMBM_RMPD reg. - pool depletion */
- 	if (buf_pool_depletion->pools_grp_mode_enable) {
--- 
-2.1.0
+DQpGcm9tOiBYaW4gTG9uZyA8bHVjaWVuLnhpbkBnbWFpbC5jb20+DQo+IFNlbnQ6IDE5IE9jdG9i
+ZXIgMjAxOSAwOTo0NQ0KPiBPbiBGcmksIE9jdCAxOCwgMjAxOSBhdCAxMTozNCBQTSBEYXZpZCBM
+YWlnaHQgPERhdmlkLkxhaWdodEBhY3VsYWIuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IFhp
+biBMb25nDQo+ID4gPiBTZW50OiAwOCBPY3RvYmVyIDIwMTkgMTI6MjUNCj4gPiA+IEFzIHNhaWQg
+aW4gcmZjNzgyOSwgc2VjdGlvbiAzLCBwb2ludCAxMjoNCj4gPiA+DQo+ID4gPiAgIFRoZSBTQ1RQ
+IHN0YWNrIFNIT1VMRCBleHBvc2UgdGhlIFBGIHN0YXRlIG9mIGl0cyBkZXN0aW5hdGlvbg0KPiA+
+ID4gICBhZGRyZXNzZXMgdG8gdGhlIFVMUCBhcyB3ZWxsIGFzIHByb3ZpZGUgdGhlIG1lYW5zIHRv
+IG5vdGlmeSB0aGUNCj4gPiA+ICAgVUxQIG9mIHN0YXRlIHRyYW5zaXRpb25zIG9mIGl0cyBkZXN0
+aW5hdGlvbiBhZGRyZXNzZXMgZnJvbQ0KPiA+ID4gICBhY3RpdmUgdG8gUEYsIGFuZCB2aWNlIHZl
+cnNhLiAgSG93ZXZlciwgaXQgaXMgcmVjb21tZW5kZWQgdGhhdA0KPiA+ID4gICBhbiBTQ1RQIHN0
+YWNrIGltcGxlbWVudGluZyBTQ1RQLVBGIGFsc28gYWxsb3dzIGZvciB0aGUgVUxQIHRvIGJlDQo+
+ID4gPiAgIGtlcHQgaWdub3JhbnQgb2YgdGhlIFBGIHN0YXRlIG9mIGl0cyBkZXN0aW5hdGlvbnMg
+YW5kIHRoZQ0KPiA+ID4gICBhc3NvY2lhdGVkIHN0YXRlIHRyYW5zaXRpb25zLCB0aHVzIGFsbG93
+aW5nIGZvciByZXRlbnRpb24gb2YgdGhlDQo+ID4gPiAgIHNpbXBsZXIgc3RhdGUgdHJhbnNpdGlv
+biBtb2RlbCBvZiBbUkZDNDk2MF0gaW4gdGhlIFVMUC4NCj4gPiA+DQo+ID4gPiBOb3Qgb25seSBk
+b2VzIGl0IGFsbG93IHRvIGV4cG9zZSB0aGUgUEYgc3RhdGUgdG8gVUxQLCBidXQgYWxzbw0KPiA+
+ID4gYWxsb3cgdG8gaWdub3JlIHNjdHAtcGYgdG8gVUxQLg0KPiA+ID4NCj4gPiA+IFNvIHRoaXMg
+cGF0Y2ggaXMgdG8gYWRkIHBmX2V4cG9zZSBwZXIgbmV0bnMsIHNvY2sgYW5kIGFzb2MuIEFuZCBp
+bg0KPiA+ID4gc2N0cF9hc3NvY19jb250cm9sX3RyYW5zcG9ydCgpLCB1bHBfbm90aWZ5IHdpbGwg
+YmUgc2V0IHRvIGZhbHNlIGlmDQo+ID4gPiBhc29jLT5leHBvc2UgaXMgbm90IHNldC4NCj4gPiA+
+DQo+ID4gPiBJdCBhbHNvIGFsbG93cyBhIHVzZXIgdG8gY2hhbmdlIHBmX2V4cG9zZSBwZXIgbmV0
+bnMgYnkgc3lzY3RsLCBhbmQNCj4gPiA+IHBmX2V4cG9zZSBwZXIgc29jayBhbmQgYXNvYyB3aWxs
+IGJlIGluaXRpYWxpemVkIHdpdGggaXQuDQo+ID4gPg0KPiA+ID4gTm90ZSB0aGF0IHBmX2V4cG9z
+ZSBhbHNvIHdvcmtzIGZvciBTQ1RQX0dFVF9QRUVSX0FERFJfSU5GTyBzb2Nrb3B0LA0KPiA+ID4g
+dG8gbm90IGFsbG93IGEgdXNlciB0byBxdWVyeSB0aGUgc3RhdGUgb2YgYSBzY3RwLXBmIHBlZXIg
+YWRkcmVzcw0KPiA+ID4gd2hlbiBwZl9leHBvc2UgaXMgbm90IGVuYWJsZWQsIGFzIHNhaWQgaW4g
+c2VjdGlvbiA3LjMuDQo+ID4gLi4uDQo+ID4gPiBpbmRleCAwOGQxNGQ4Li5hMzAzMDExIDEwMDY0
+NA0KPiA+ID4gLS0tIGEvbmV0L3NjdHAvcHJvdG9jb2wuYw0KPiA+ID4gKysrIGIvbmV0L3NjdHAv
+cHJvdG9jb2wuYw0KPiA+ID4gQEAgLTEyMjAsNiArMTIyMCw5IEBAIHN0YXRpYyBpbnQgX19uZXRf
+aW5pdCBzY3RwX2RlZmF1bHRzX2luaXQoc3RydWN0IG5ldCAqbmV0KQ0KPiA+ID4gICAgICAgLyog
+RW5hYmxlIHBmIHN0YXRlIGJ5IGRlZmF1bHQgKi8NCj4gPiA+ICAgICAgIG5ldC0+c2N0cC5wZl9l
+bmFibGUgPSAxOw0KPiA+ID4NCj4gPiA+ICsgICAgIC8qIEVuYWJsZSBwZiBzdGF0ZSBleHBvc3Vy
+ZSBieSBkZWZhdWx0ICovDQo+ID4gPiArICAgICBuZXQtPnNjdHAucGZfZXhwb3NlID0gMTsNCj4g
+PiA+ICsNCj4gPg0KPiA+IEZvciBjb21wYXRpYmlsaXR5IHdpdGggZXhpc3RpbmcgYXBwbGljYXRp
+b25zIHBmX2V4cG9zZSBNVVNUIGRlZmF1bHQgdG8gMC4NCj4gPiBJJ20gbm90IGV2ZW4gc3VyZSBp
+dCBtYWtlcyBzZW5zZSB0byBoYXZlIGEgc3lzY3RsIGZvciBpdC4NCj4gWW91J3JlIHJlaXZld2lu
+ZyB2MiwgcGxzIGdvIGFuZCBjaGVjayB2MyB3aGVyZSBpdCdzOg0KPiANCj4gbmV0LT5zY3RwLnBm
+X2V4cG9zZSA9IFNDVFBfUEZfRVhQT1NFX1VOVVNFRA0KDQpJJ2xsIGRpZyBvdXQgdGhhdCB0cmkt
+c3RhdGUgbG9naWMgYWdhaW4gbGF0ZXIuDQoNCj4gPiAuLi4NCj4gPiA+IEBAIC01NTIxLDggKzU1
+MjIsMTUgQEAgc3RhdGljIGludCBzY3RwX2dldHNvY2tvcHRfcGVlcl9hZGRyX2luZm8oc3RydWN0
+IHNvY2sgKnNrLCBpbnQgbGVuLA0KPiA+ID4NCj4gPiA+ICAgICAgIHRyYW5zcG9ydCA9IHNjdHBf
+YWRkcl9pZDJ0cmFuc3BvcnQoc2ssICZwaW5mby5zcGluZm9fYWRkcmVzcywNCj4gPiA+ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGluZm8uc3BpbmZvX2Fzc29jX2lk
+KTsNCj4gPiA+IC0gICAgIGlmICghdHJhbnNwb3J0KQ0KPiA+ID4gLSAgICAgICAgICAgICByZXR1
+cm4gLUVJTlZBTDsNCj4gPiA+ICsgICAgIGlmICghdHJhbnNwb3J0KSB7DQo+ID4gPiArICAgICAg
+ICAgICAgIHJldHZhbCA9IC1FSU5WQUw7DQo+ID4gPiArICAgICAgICAgICAgIGdvdG8gb3V0Ow0K
+PiA+ID4gKyAgICAgfQ0KPiA+ID4gKw0KPiA+ID4gKyAgICAgaWYgKHRyYW5zcG9ydC0+c3RhdGUg
+PT0gU0NUUF9QRiAmJiAhdHJhbnNwb3J0LT5hc29jLT5wZl9leHBvc2UpIHsNCj4gPiA+ICsgICAg
+ICAgICAgICAgcmV0dmFsID0gLUVBQ0NFUzsNCj4gPiA+ICsgICAgICAgICAgICAgZ290byBvdXQ7
+DQo+ID4gPiArICAgICB9DQo+ID4NCj4gPiBVZ2cuLi4NCj4gPiBUbyBhdm9pZCByZXBvcnRpbmcg
+dGhlIHVuZXhwZWN0ZWQgJ1NDVFBfUEYnIHN0YXRlIHlvdSBwcm9iYWJsZSBuZWVkDQo+ID4gdG8g
+bGllIGFib3V0IHRoZSBzdGF0ZSAocHJvYmFibHkgcmVwb3J0aW5nICd3b3JraW5nJyAtIG9yIHdo
+YXRldmVyIHN0YXRlDQo+ID4gaXQgd291bGQgYmUgaW4gaWYgUEYgZGV0ZWN0aW9uIHdhc24ndCBl
+bmFibGVkLg0KPiByZXR1cm4gRUFDQ0VTIGlzIGZyb20gUkZDLiBzZWUgdjMgd2hlcmUgaXQncyBi
+ZWNvbWU6DQo+IA0KPiArICAgICAgIGlmICh0cmFuc3BvcnQtPnN0YXRlID09IFNDVFBfUEYgJiYN
+Cj4gKyAgICAgICAgICAgdHJhbnNwb3J0LT5hc29jLT5wZl9leHBvc2UgPT0gU0NUUF9QRl9FWFBP
+U0VfRElTQUJMRSkgew0KPiArICAgICAgICAgICAgICAgcmV0dmFsID0gLUVBQ0NFUzsNCj4gKyAg
+ICAgICAgICAgICAgIGdvdG8gb3V0Ow0KPiArICAgICAgIH0NCj4gDQo+IG5vIG1vcmUgY29tcGF0
+aWJpbGl0eSBpc3N1ZS4NCg0KSG1tbS4uLi4NCk5ldmVyIG1pbmQgd2hhdCB0aGUgUkZDIHNheXMg
+YWJvdXQgcmV0dXJuaW5nIEVBQ0NFU1MsIHRoYXQNCmlzIHN0aWxsIGFuIEFQSSBjaGFuZ2UuDQoN
+Cj4gPiA+IC0tLSBhL25ldC9zY3RwL3N5c2N0bC5jDQo+ID4gPiArKysgYi9uZXQvc2N0cC9zeXNj
+dGwuYw0KPiA+ID4gQEAgLTMxOCw2ICszMTgsMTMgQEAgc3RhdGljIHN0cnVjdCBjdGxfdGFibGUg
+c2N0cF9uZXRfdGFibGVbXSA9IHsNCj4gPiA+ICAgICAgICAgICAgICAgLm1vZGUgICAgICAgICAg
+ID0gMDY0NCwNCj4gPiA+ICAgICAgICAgICAgICAgLnByb2NfaGFuZGxlciAgID0gcHJvY19kb2lu
+dHZlYywNCj4gPiA+ICAgICAgIH0sDQo+ID4gPiArICAgICB7DQo+ID4gPiArICAgICAgICAgICAg
+IC5wcm9jbmFtZSAgICAgICA9ICJwZl9leHBvc2UiLA0KPiA+ID4gKyAgICAgICAgICAgICAuZGF0
+YSAgICAgICAgICAgPSAmaW5pdF9uZXQuc2N0cC5wZl9leHBvc2UsDQo+ID4gPiArICAgICAgICAg
+ICAgIC5tYXhsZW4gICAgICAgICA9IHNpemVvZihpbnQpLA0KPiA+ID4gKyAgICAgICAgICAgICAu
+bW9kZSAgICAgICAgICAgPSAwNjQ0LA0KPiA+ID4gKyAgICAgICAgICAgICAucHJvY19oYW5kbGVy
+ICAgPSBwcm9jX2RvaW50dmVjLA0KPiA+ID4gKyAgICAgfSwNCj4gPg0KPiA+IFNldHRpbmcgdGhp
+cyB3aWxsIGJyZWFrIGV4aXN0aW5nIGFwcGxpY2F0aW9ucy4NCj4gPiBTbyBJIGRvbid0IHRoaW5r
+IHRoZSBkZWZhdWx0IHNob3VsZCBiZSBzZXR0YWJsZS4NCj4gSWYgdGhlIHVzZXIgc2V0cyB0aGlz
+IG5ldyBzeXNjdGwsIGhlIG11c3QgaGF2ZSByZWFsaXplZCB3aGF0J3MgZ29pbmcgdG8gaGFwcGVu
+Lg0KPiBJIGRvbid0IHRoaW5rIHRoaXMgd2lsbCBjYXVzZSAiY29tcGF0aWJpbGl0eSBpc3N1ZSIu
+DQoNClRoZSBwcm9ibGVtIGlzIHRoYXQgc3VwcG9ydCBpcyBhcHBsaWNhdGlvbiBkZXBlbmRhbnQs
+IG5vdCBzeXN0ZW0gZGVwZW5kYW50Lg0KQWxsIGl0IHRha2VzIGlzIGEgZGlzdHJvIHRvIGRlY2lk
+ZSB0byBkZWZhdWx0IHRvIGVuYWJsaW5nIGl0IGFuZCBhbGwgb2xkIGFwcHMgYnJlYWsuDQoNCkdp
+dmVuIHRoZSBhcHBsaWNhdGlvbiBoYXMgdG8gZW5hYmxlIG90aGVyIHRoaW5ncyB0aGVyZSBpcyBu
+byByZWFzb24gbm90IHRvDQpyZXF1aXJlIHRoaXMgdG8gYmUgZW5hYmxlZCBieSBldmVyeSBhcHBs
+aWNhdGlvbiB0aGF0IHdhbnRzIHRvIHNlZSB0aGUgZXZlbnRzIChldGMpLg0KDQpOb3RlIHRoYXQg
+dGhpcyBpcyBkaWZmZXJlbnQgZnJvbSBkb2luZyB0aGUgcHJvdG9jb2wgcGFydCBvZiBQRiAtIHdo
+aWNoIGlzIGxpa2VseQ0KdG8gaGVscCBhcHBsaWNhdGlvbnMgd2hlbiB0aGUgJ3ByaW1hcnknIHBh
+dGggaXMgZG9kZ3kuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUs
+IEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJl
+Z2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
