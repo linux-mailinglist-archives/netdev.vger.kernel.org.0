@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A43E0E36
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:29:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67B33E0E41
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389139AbfJVW3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 18:29:23 -0400
-Received: from mail-lj1-f176.google.com ([209.85.208.176]:37531 "EHLO
-        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732686AbfJVW3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:29:23 -0400
-Received: by mail-lj1-f176.google.com with SMTP id l21so18902975lje.4
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:29:22 -0700 (PDT)
+        id S1731850AbfJVWei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 18:34:38 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:42659 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727154AbfJVWeh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:34:37 -0400
+Received: by mail-lf1-f65.google.com with SMTP id z12so14368355lfj.9
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=9FOtoCFESHJi4wxTzN6IqBIN6ywWAlgMoghhNwhRpqM=;
-        b=MmHCB89CJklZxCu7RA3AVIPVHrD3pzJXbkPORYa3HjFwqiJPCTkxBvQuhvsW2IfrFe
-         5HEuCjOyed5FfpdhPxjYI6VSrQ9YDwG1mNmmcTVz7u6SYPobeqXP5PeuQ3nvNo9pZpFU
-         8EEbgNiJymkvE2oWBuXpPC0Vprl/lFjvT1ALZq07LtleWptY0pZf/p0gRtBo5dLsHmEa
-         N3KHQFZnRXR+j633ENPBwNPxuC9Y/Em9G5NUDrUJM6RrIclvlnCmd89D/94o10I9zti1
-         lr99WphJoyUGhe1oDW+N1ZNhH/oZtBj8XU8lW6ZGTctX5+48ereaGKhtkfKzM6wlohje
-         aAXA==
+        bh=mI05Q9KtQBZiVZ2P8r93fpesYDlDm2A779d7FzhOVC4=;
+        b=2SRXw59iaelQLHtpJxIa3SKs+I+MKRTTBUu5IwvLyOA8fT5f+NWgkFP4YYu4DV0HP3
+         RWp3nupXKk8IhzIVOJ4jmuUcP2KYxNrPLxRg9RHEC1Ddb3O6HlQchqg37pdcIX242jCf
+         IpfsCNmb/gO/eGFhlT0rb5H+W8G/KRXJ1e+wh77RLQoHXkkXu/Mg5ZCaMwp4ESEKi4Eu
+         ONSvRkNV0V2D7PdR5yO6UWn4kboHYy9aILrc/YfSiUhZDPW2XNVo2XW/iAe0iYHTsz/4
+         jA5pOjYgMNjiUyc1qMty8kpr6vGnyJ2tcGuvW1evMtr1OS2hAKIAcSHJDMRCpPruEMVn
+         +uDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=9FOtoCFESHJi4wxTzN6IqBIN6ywWAlgMoghhNwhRpqM=;
-        b=jKGFD3GEjJq4qEGQXz4QXdKiksvg8D8zQcvPyaP6E5kl07MhNUyeJuKwoZyP2ycxV8
-         QWyBTYh3us0uTUmGchq8cF1EcoDGZ0QnhZDHXxSLP912jJZldL2KME20NjKoFBaG3Beq
-         V3LNowMesNBHJ2+kyRSf0ZynQx91cSvqCe8E5XlAijXzgXdkm++A6zPo95a0GY55XIzE
-         SAX9Jb4D8yzDiUDw85TU9dh8b1vOxVrVPdIReyDNtJyFwV0u2inbl//eyLb3R1bx3R+U
-         XGDx0Gnp4NykxvtRdpEmdYQ5rrFDG0gqSvnNUCXdHoQjui6QVni3BNOYg0t8PS4+3/fi
-         cSsQ==
-X-Gm-Message-State: APjAAAWFpI7vHr13ZUdyjWcryWwK3rGc5vNX+I9M3C8VZEXCGT6tJdyB
-        7oXaVzocNjKWqLTtcJ/JWPphtA==
-X-Google-Smtp-Source: APXvYqw9u+Fbae9zCZZJofKlkrDbCHtrHbcSTTrEc5Ccg3iiYwsVqWefC8WGWjEwghACsA+sUNYang==
-X-Received: by 2002:a2e:3c05:: with SMTP id j5mr20619250lja.24.1571783361168;
-        Tue, 22 Oct 2019 15:29:21 -0700 (PDT)
+        bh=mI05Q9KtQBZiVZ2P8r93fpesYDlDm2A779d7FzhOVC4=;
+        b=K114WVK4CntgW9wkXZGLbCk+A8idQ4qDIevlQsqyKrG4jNUz5Djb2v9RbSOhE/SUL2
+         IImTgTPzjHXioQyVVCGaHluaQG5VP5o5iSv+MHYaoWn1k7MiPhGQhGDDUboYqzGTILlP
+         WPsGqWIyrS1pL8Pw2WHl40ks65habpnCk1mB4c37n6YICHxUbiPxZNWeNAhLxpT7YpOu
+         JL15jw1eYRYoCRymBEmPqPTFOB5REkuM6+jdT5zgrnI02zsyVpljNgHxg0WBzs7kZilX
+         /c0OoWMhD+8IDCUAtsZekjy1oEbxFRhLWYO9hkH/bXqw/+dptvO65Kfi5elNzC9THNoY
+         hFRQ==
+X-Gm-Message-State: APjAAAX7nMJ1RivHL8lEdGVk5cbvh0nNkv5jC3Hdr/qe16ckrlCiHCNP
+        BmhuS9iPrWUE85gI1E+tY4T5eQ==
+X-Google-Smtp-Source: APXvYqzu1Zo3aeevJfGePPwaVZuB4jS7ekm5Ys/aaIV89y4JekR4EdxGeRZ5hlEYbkSMImsT/kL3yA==
+X-Received: by 2002:a19:f707:: with SMTP id z7mr9656618lfe.0.1571783675672;
+        Tue, 22 Oct 2019 15:34:35 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j26sm7660642lja.25.2019.10.22.15.29.19
+        by smtp.gmail.com with ESMTPSA id 81sm9663060lje.70.2019.10.22.15.34.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 15:29:20 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 15:29:14 -0700
+        Tue, 22 Oct 2019 15:34:35 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 15:34:28 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
-Cc:     linux-kernel@lists.codethink.co.uk,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [V2] net: hwbm: if CONFIG_NET_HWBM unset, make stub
- functions static
-Message-ID: <20191022152914.19790aea@cakuba.netronome.com>
-In-Reply-To: <20191022152551.19730-1-ben.dooks@codethink.co.uk>
-References: <20191022152551.19730-1-ben.dooks@codethink.co.uk>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: [PATCH net-next] fq_codel: do not include <linux/jhash.h
+Message-ID: <20191022153428.2077ccd0@cakuba.netronome.com>
+In-Reply-To: <20191022163936.33220-1-edumazet@google.com>
+References: <20191022163936.33220-1-edumazet@google.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,39 +63,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 16:25:51 +0100, Ben Dooks (Codethink) wrote:
-> If CONFIG_NET_HWBM is not set, then these stub functions in
-> <net/hwbm.h> should be declared static to avoid trying to
-> export them from any driver that includes this.
+On Tue, 22 Oct 2019 09:39:36 -0700, Eric Dumazet wrote:
+> Since commit 342db221829f ("sched: Call skb_get_hash_perturb
+> in sch_fq_codel") we no longer need anything from this file.
 > 
-> Fixes the following sparse warnings:
-> 
-> ./include/net/hwbm.h:24:6: warning: symbol 'hwbm_buf_free' was not declared. Should it be static?
-> ./include/net/hwbm.h:25:5: warning: symbol 'hwbm_pool_refill' was not declared. Should it be static?
-> ./include/net/hwbm.h:26:5: warning: symbol 'hwbm_pool_add' was not declared. Should it be static?
-> 
-> Signed-off-by: Ben Dooks (Codethink) <ben.dooks@codethink.co.uk>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Same story, going over 80 chars here, please fix and post v2.
-
->  include/net/hwbm.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/net/hwbm.h b/include/net/hwbm.h
-> index 81643cf8a1c4..76a303b2925c 100644
-> --- a/include/net/hwbm.h
-> +++ b/include/net/hwbm.h
-> @@ -21,9 +21,9 @@ void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf);
->  int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp);
->  int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num);
->  #else
-> -void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf) {}
-> -int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp) { return 0; }
-> -int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num)
-> +static inline void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf) {}
-> +static inline int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp) { return 0; }
-> +static inline int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num)
->  { return 0; }
->  #endif /* CONFIG_HWBM */
->  #endif /* _HWBM_H */
-
+Applied, thanks!
