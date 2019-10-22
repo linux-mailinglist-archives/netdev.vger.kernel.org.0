@@ -2,463 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B46E4DFBA9
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 04:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5B12DFBAD
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 04:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730724AbfJVC2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 22:28:54 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:32768 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727264AbfJVC2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 22:28:54 -0400
-X-Greylist: delayed 407 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Oct 2019 22:28:50 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 51ED24969E;
-        Tue, 22 Oct 2019 13:22:00 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=content-transfer-encoding:mime-version:x-mailer:message-id
-        :date:date:subject:subject:from:from:received:received:received;
-         s=mail_dkim; t=1571710920; bh=K9mk/w5gpus/Bq9beExMG01id6etjdht7
-        bwEwxrHNvg=; b=q/8VbfgL3BuhT/raNtekZrCl7VFqJcLRxISmMvC7uyg7bMsco
-        hTDlvuivajSBG77daacHKGWyFlnQPNRV+QqGxmycto42S1QRqdxbP58bfI/Dmc5W
-        Vi1LOzdy2/zUc6gL00LJxlEa5JvCYfdLoVJ8OMoECO5CpNlEHeffbVhKhs=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id NElHPNb_E0r2; Tue, 22 Oct 2019 13:22:00 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 25EBE4A0F0;
-        Tue, 22 Oct 2019 13:21:59 +1100 (AEDT)
-Received: from dhost.dek-tpc.internal (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id D321D4969E;
-        Tue, 22 Oct 2019 13:21:58 +1100 (AEDT)
-From:   Hoang Le <hoang.h.le@dektech.com.au>
-To:     jon.maloy@ericsson.com, maloy@donjonn.com,
-        tipc-discussion@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [net-next] tipc: improve throughput between nodes in netns
-Date:   Tue, 22 Oct 2019 09:20:36 +0700
-Message-Id: <20191022022036.19961-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.20.1
+        id S1730724AbfJVCfh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Oct 2019 22:35:37 -0400
+Received: from mga02.intel.com ([134.134.136.20]:54583 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727264AbfJVCfg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Oct 2019 22:35:36 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Oct 2019 19:35:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,325,1566889200"; 
+   d="scan'208";a="227536442"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by fmsmga002.fm.intel.com with ESMTP; 21 Oct 2019 19:35:35 -0700
+Received: from orsmsx116.amr.corp.intel.com (10.22.240.14) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 21 Oct 2019 19:35:34 -0700
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.9]) by
+ ORSMSX116.amr.corp.intel.com ([169.254.7.79]) with mapi id 14.03.0439.000;
+ Mon, 21 Oct 2019 19:35:34 -0700
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>
+CC:     "emamd001@umn.edu" <emamd001@umn.edu>,
+        "smccaman@umn.edu" <smccaman@umn.edu>,
+        "kjlu@umn.edu" <kjlu@umn.edu>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] ethernet/intel:  release the local packet buffer
+Thread-Topic: [PATCH] ethernet/intel:  release the local packet buffer
+Thread-Index: AQHVbbQoopumek9cY0G4nbDkuqi67admH4Jg
+Date:   Tue, 22 Oct 2019 02:35:33 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B971541EE@ORSMSX103.amr.corp.intel.com>
+References: <20190918000013.32083-1-navid.emamdoost@gmail.com>
+In-Reply-To: <20190918000013.32083-1-navid.emamdoost@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMTM4YzlmZmUtNThjMi00ZWRiLWE1MDctOTI1ZWRhYmQ4Mzc2IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiWDQ1cE1KVzVLRjl6VDVFZ1VLQ3pweGJ2SEZKK2dhRE9JZ0xxVWZtbCtCSm1FS3VGbHpwQkFubE85ZU5hSVp6UiJ9
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, TIPC transports intra-node user data messages directly
-socket to socket, hence shortcutting all the lower layers of the
-communication stack. This gives TIPC very good intra node performance,
-both regarding throughput and latency.
+> From: netdev-owner@vger.kernel.org [mailto:netdev-
+> owner@vger.kernel.org] On Behalf Of Navid Emamdoost
+> Sent: Tuesday, September 17, 2019 5:00 PM
+> Cc: emamd001@umn.edu; smccaman@umn.edu; kjlu@umn.edu; Navid
+> Emamdoost <navid.emamdoost@gmail.com>; Kirsher, Jeffrey T
+> <jeffrey.t.kirsher@intel.com>; David S. Miller <davem@davemloft.net>;
+> intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org
+> Subject: [PATCH] ethernet/intel: release the local packet bufferq
+> 
+> In e100_loopback_test the buffer allocated for the local packet needs to
+> be released.
+> 
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+> ---
+>  drivers/net/ethernet/intel/e100.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-We now introduce a similar mechanism for TIPC data traffic across
-network namespaces located in the same kernel. On the send path, the
-call chain is as always accompanied by the sending node's network name
-space pointer. However, once we have reliably established that the
-receiving node is represented by a namespace on the same host, we just
-replace the namespace pointer with the receiving node/namespace's
-ditto, and follow the regular socket receive patch though the receiving
-node. This technique gives us a throughput similar to the node internal
-throughput, several times larger than if we let the traffic go though
-the full network stacks. As a comparison, max throughput for 64k
-messages is four times larger than TCP throughput for the same type of
-traffic.
+Sorry for the delay getting to this, took me a bit to get the hardware together.
 
-To meet any security concerns, the following should be noted.
+NAK, this patch introduces a trace to my test machines when I run the ethtool diagnostic on an e100 port, the system will sometimes survive a bit after the trace, however if I try to run traffic across the interface after the trace the system panics and locks up with a kernel not syncing message.  I do not have a capture of the lock up panic (I can probably get one via serial port or netconsole if really necessary.)  The trace before the lock up panic is as follows:
+---------------------------------------------------------------------------
+[  102.460446] BUG: Bad page state in process ethtool  pfn:78db8
+[  102.460474] page:ffffd5bf41e36e00 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
+[  102.460505] flags: 0xfffffc0000000()
+[  102.460523] raw: 000fffffc0000000 dead000000000100 dead000000000122 0000000000000000
+[  102.460553] raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
+[  102.460582] page dumped because: nonzero _refcount
+[  102.460602] Modules linked in: snd_hda_codec_realtek snd_hda_codec_generic snd_hda_intel snd_intel_nhlt snd_hda_codec
+ snd_hwdep snd_hda_core snd_seq snd_seq_device snd_pcm mei_wdt snd_timer iTCO_wdt mei_me snd iTCO_vendor_support gpio_ic
+h mei coretemp lpc_ich pcspkr sg soundcore i2c_i801 joydev acpi_cpufreq nfsd auth_rpcgss nfs_acl lockd grace sunrpc ip_t
+ables xfs libcrc32c sd_mod sr_mod cdrom i915 video i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_
+fops e1000e ata_generic firewire_ohci pata_marvell ata_piix drm pata_acpi serio_raw e100 firewire_core libata ptp pps_co
+re mii crc_itu_t
+[  102.460800] CPU: 3 PID: 1541 Comm: ethtool Not tainted 5.4.0-rc1_next-queue_dev-queue_regress-00576-g16390e0 #3
+[  102.460836] Hardware name:  /DQ35JO, BIOS JOQ3510J.86A.0954.2008.0922.2331 09/22/2008
+[  102.460865] Call Trace:
+[  102.460883]  dump_stack+0x5a/0x73
+[  102.460900]  bad_page+0xf5/0x10f
+[  102.460916]  get_page_from_freelist+0x103e/0x1290
+[  102.460936]  ? __switch_to_asm+0x40/0x70
+[  102.460955]  ? __build_skb+0x20/0x190
+[  102.460972]  __alloc_pages_nodemask+0x17d/0x320
+[  102.460991]  page_frag_alloc+0x87/0x130
+[  102.461008]  __netdev_alloc_skb+0x10b/0x130
+[  102.461029]  e100_rx_alloc_skb+0x20/0x180 [e100]
+[  102.461050]  e100_rx_alloc_list+0x98/0x160 [e100]
+[  102.461070]  e100_up+0x11/0x120 [e100]
+[  102.461088]  e100_diag_test+0x14e/0x157 [e100]
+[  102.461107]  ? _cond_resched+0x15/0x30
+[  102.461125]  ? dev_ethtool+0x1133/0x2c30
+[  102.461143]  dev_ethtool+0x1159/0x2c30
+[  102.461161]  ? inet_ioctl+0x1a0/0x1d0
+[  102.461178]  ? netdev_run_todo+0x5d/0x2d0
+[  102.461196]  dev_ioctl+0xb3/0x4e0
+[  102.461212]  sock_do_ioctl+0xa0/0x140
+[  102.461228]  ? do_anonymous_page+0x361/0x670
+[  102.461247]  sock_ioctl+0x26e/0x380
+[  102.461264]  do_vfs_ioctl+0xa9/0x630
+[  102.461281]  ? handle_mm_fault+0xe2/0x1f0
+[  102.462101]  ? __do_page_fault+0x247/0x490
+[  102.462911]  ksys_ioctl+0x60/0x90
+[  102.463715]  __x64_sys_ioctl+0x16/0x20
+[  102.464519]  do_syscall_64+0x5b/0x1b0
+[  102.465321]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  102.466134] RIP: 0033:0x7f03e53f32f7
+[  102.466948] Code: 44 00 00 48 8b 05 79 1b 2d 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 49 1b 2d 00 f7 d8 64 89 01 48
+[  102.468728] RSP: 002b:00007ffffc72ebf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+[  102.469657] RAX: ffffffffffffffda RBX: 00007ffffc72ec50 RCX: 00007f03e53f32f7
+[  102.470595] RDX: 00007ffffc72ec60 RSI: 0000000000008946 RDI: 0000000000000003
+[  102.471532] RBP: 0000000000000001 R08: 0000000000000002 R09: 0000000000000038
+[  102.472453] R10: 00007ffffc72e7c0 R11: 0000000000000246 R12: 0000000000000038
+[  102.473359] R13: 0000000001428010 R14: 00000000014280d0 R15: 00007ffffc72edc8
+[  102.474260] Disabling lock debugging due to kernel taint
+[  104.924447] e100 0000:06:00.0 eth0: NIC Link is Up 100 Mbps Full Duplex
+---------------------------------------------------------------------------
 
-- All nodes joining a cluster are supposed to have been be certified
-and authenticated by mechanisms outside TIPC. This is no different for
-nodes/namespaces on the same host; they have to auto discover each
-other using the attached interfaces, and establish links which are
-supervised via the regular link monitoring mechanism. Hence, a kernel
-local node has no other way to join a cluster than any other node, and
-have to obey to policies set in the IP or device layers of the stack.
-
-- Only when a sender has established with 100% certainty that the peer
-node is located in a kernel local namespace does it choose to let user
-data messages, and only those, take the crossover path to the receiving
-node/namespace.
-
-- If the receiving node/namespace is removed, its namespace pointer
-is invalidated at all peer nodes, and their neighbor link monitoring
-will eventually note that this node is gone.
-
-- To ensure the "100% certainty" criteria, and prevent any possible
-spoofing, received discovery messages must contain a proof that the
-sender knows a common secret. We use the hash mix of the sending
-node/namespace for this purpose, since it can be accessed directly by
-all other namespaces in the kernel. Upon reception of a discovery
-message, the receiver checks this proof against all the local
-namespaces'hash_mix:es. If it finds a match, that, along with a
-matching node id and cluster id, this is deemed sufficient proof that
-the peer node in question is in a local namespace, and a wormhole can
-be opened.
-
-- We should also consider that TIPC is intended to be a cluster local
-IPC mechanism (just like e.g. UNIX sockets) rather than a network
-protocol, and hence we think it can justified to allow it to shortcut the
-lower protocol layers.
-
-Regarding traceability, we should notice that since commit 6c9081a3915d
-("tipc: add loopback device tracking") it is possible to follow the node
-internal packet flow by just activating tcpdump on the loopback
-interface. This will be true even for this mechanism; by activating
-tcpdump on the involved nodes' loopback interfaces their inter-name
-space messaging can easily be tracked.
-
-Suggested-by: Jon Maloy <jon.maloy@ericsson.com>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
----
- net/tipc/discover.c   |  10 ++++-
- net/tipc/msg.h        |  10 +++++
- net/tipc/name_distr.c |   2 +-
- net/tipc/node.c       | 100 ++++++++++++++++++++++++++++++++++++++++--
- net/tipc/node.h       |   4 +-
- net/tipc/socket.c     |   6 +--
- 6 files changed, 121 insertions(+), 11 deletions(-)
-
-diff --git a/net/tipc/discover.c b/net/tipc/discover.c
-index c138d68e8a69..338d402fcf39 100644
---- a/net/tipc/discover.c
-+++ b/net/tipc/discover.c
-@@ -38,6 +38,8 @@
- #include "node.h"
- #include "discover.h"
-=20
-+#include <net/netns/hash.h>
-+
- /* min delay during bearer start up */
- #define TIPC_DISC_INIT	msecs_to_jiffies(125)
- /* max delay if bearer has no links */
-@@ -83,6 +85,7 @@ static void tipc_disc_init_msg(struct net *net, struct =
-sk_buff *skb,
- 	struct tipc_net *tn =3D tipc_net(net);
- 	u32 dest_domain =3D b->domain;
- 	struct tipc_msg *hdr;
-+	u32 hash;
-=20
- 	hdr =3D buf_msg(skb);
- 	tipc_msg_init(tn->trial_addr, hdr, LINK_CONFIG, mtyp,
-@@ -94,6 +97,10 @@ static void tipc_disc_init_msg(struct net *net, struct=
- sk_buff *skb,
- 	msg_set_dest_domain(hdr, dest_domain);
- 	msg_set_bc_netid(hdr, tn->net_id);
- 	b->media->addr2msg(msg_media_addr(hdr), &b->addr);
-+	hash =3D tn->random;
-+	hash ^=3D net_hash_mix(&init_net);
-+	hash ^=3D net_hash_mix(net);
-+	msg_set_peer_net_hash(hdr, hash);
- 	msg_set_node_id(hdr, tipc_own_id(net));
- }
-=20
-@@ -242,7 +249,8 @@ void tipc_disc_rcv(struct net *net, struct sk_buff *s=
-kb,
- 	if (!tipc_in_scope(legacy, b->domain, src))
- 		return;
- 	tipc_node_check_dest(net, src, peer_id, b, caps, signature,
--			     &maddr, &respond, &dupl_addr);
-+			     msg_peer_net_hash(hdr), &maddr, &respond,
-+			     &dupl_addr);
- 	if (dupl_addr)
- 		disc_dupl_alert(b, src, &maddr);
- 	if (!respond)
-diff --git a/net/tipc/msg.h b/net/tipc/msg.h
-index 0daa6f04ca81..a8d0f28094f2 100644
---- a/net/tipc/msg.h
-+++ b/net/tipc/msg.h
-@@ -973,6 +973,16 @@ static inline void msg_set_grp_remitted(struct tipc_=
-msg *m, u16 n)
- 	msg_set_bits(m, 9, 16, 0xffff, n);
- }
-=20
-+static inline void msg_set_peer_net_hash(struct tipc_msg *m, u32 n)
-+{
-+	msg_set_word(m, 9, n);
-+}
-+
-+static inline u32 msg_peer_net_hash(struct tipc_msg *m)
-+{
-+	return msg_word(m, 9);
-+}
-+
- /* Word 10
-  */
- static inline u16 msg_grp_evt(struct tipc_msg *m)
-diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-index 836e629e8f4a..5feaf3b67380 100644
---- a/net/tipc/name_distr.c
-+++ b/net/tipc/name_distr.c
-@@ -146,7 +146,7 @@ static void named_distribute(struct net *net, struct =
-sk_buff_head *list,
- 	struct publication *publ;
- 	struct sk_buff *skb =3D NULL;
- 	struct distr_item *item =3D NULL;
--	u32 msg_dsz =3D ((tipc_node_get_mtu(net, dnode, 0) - INT_H_SIZE) /
-+	u32 msg_dsz =3D ((tipc_node_get_mtu(net, dnode, 0, false) - INT_H_SIZE)=
- /
- 			ITEM_SIZE) * ITEM_SIZE;
- 	u32 msg_rem =3D msg_dsz;
-=20
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index f2e3cf70c922..d830c2d1dbe3 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -45,6 +45,8 @@
- #include "netlink.h"
- #include "trace.h"
-=20
-+#include <net/netns/hash.h>
-+
- #define INVALID_NODE_SIG	0x10000
- #define NODE_CLEANUP_AFTER	300000
-=20
-@@ -126,6 +128,7 @@ struct tipc_node {
- 	struct timer_list timer;
- 	struct rcu_head rcu;
- 	unsigned long delete_at;
-+	struct net *pnet;
- };
-=20
- /* Node FSM states and events:
-@@ -184,7 +187,7 @@ static struct tipc_link *node_active_link(struct tipc=
-_node *n, int sel)
- 	return n->links[bearer_id].link;
- }
-=20
--int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel)
-+int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel, bool connected=
-)
- {
- 	struct tipc_node *n;
- 	int bearer_id;
-@@ -194,6 +197,14 @@ int tipc_node_get_mtu(struct net *net, u32 addr, u32=
- sel)
- 	if (unlikely(!n))
- 		return mtu;
-=20
-+	/* Allow MAX_MSG_SIZE when building connection oriented message
-+	 * if they are in the same core network
-+	 */
-+	if (n->pnet && connected) {
-+		tipc_node_put(n);
-+		return mtu;
-+	}
-+
- 	bearer_id =3D n->active_links[sel & 1];
- 	if (likely(bearer_id !=3D INVALID_BEARER_ID))
- 		mtu =3D n->links[bearer_id].mtu;
-@@ -361,12 +372,16 @@ static void tipc_node_write_unlock(struct tipc_node=
- *n)
- }
-=20
- static struct tipc_node *tipc_node_create(struct net *net, u32 addr,
--					  u8 *peer_id, u16 capabilities)
-+					  u8 *peer_id, u16 capabilities,
-+					  u32 signature, u32 hash_mixes)
- {
- 	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
- 	struct tipc_node *n, *temp_node;
-+	struct tipc_net *tn_peer;
- 	struct tipc_link *l;
-+	struct net *tmp;
- 	int bearer_id;
-+	u32 hash_chk;
- 	int i;
-=20
- 	spin_lock_bh(&tn->node_list_lock);
-@@ -400,6 +415,25 @@ static struct tipc_node *tipc_node_create(struct net=
- *net, u32 addr,
- 	memcpy(&n->peer_id, peer_id, 16);
- 	n->net =3D net;
- 	n->capabilities =3D capabilities;
-+	n->pnet =3D NULL;
-+	for_each_net_rcu(tmp) {
-+		tn_peer =3D net_generic(tmp, tipc_net_id);
-+		if (!tn_peer)
-+			continue;
-+		/* Integrity checking whether node exists in namespace or not */
-+		if (tn_peer->net_id !=3D tn->net_id)
-+			continue;
-+		if (memcmp(peer_id, tn_peer->node_id, NODE_ID_LEN))
-+			continue;
-+
-+		hash_chk =3D tn_peer->random;
-+		hash_chk ^=3D net_hash_mix(&init_net);
-+		hash_chk ^=3D net_hash_mix(tmp);
-+		if (hash_chk ^ hash_mixes)
-+			continue;
-+		n->pnet =3D tmp;
-+		break;
-+	}
- 	kref_init(&n->kref);
- 	rwlock_init(&n->lock);
- 	INIT_HLIST_NODE(&n->hash);
-@@ -979,7 +1013,7 @@ u32 tipc_node_try_addr(struct net *net, u8 *id, u32 =
-addr)
-=20
- void tipc_node_check_dest(struct net *net, u32 addr,
- 			  u8 *peer_id, struct tipc_bearer *b,
--			  u16 capabilities, u32 signature,
-+			  u16 capabilities, u32 signature, u32 hash_mixes,
- 			  struct tipc_media_addr *maddr,
- 			  bool *respond, bool *dupl_addr)
- {
-@@ -998,7 +1032,8 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 	*dupl_addr =3D false;
- 	*respond =3D false;
-=20
--	n =3D tipc_node_create(net, addr, peer_id, capabilities);
-+	n =3D tipc_node_create(net, addr, peer_id, capabilities, signature,
-+			     hash_mixes);
- 	if (!n)
- 		return;
-=20
-@@ -1424,6 +1459,52 @@ static int __tipc_nl_add_node(struct tipc_nl_msg *=
-msg, struct tipc_node *node)
- 	return -EMSGSIZE;
- }
-=20
-+static void tipc_lxc_xmit(struct net *pnet, struct sk_buff_head *list)
-+{
-+	struct tipc_msg *hdr =3D buf_msg(skb_peek(list));
-+	struct sk_buff_head inputq;
-+
-+	switch (msg_user(hdr)) {
-+	case TIPC_LOW_IMPORTANCE:
-+	case TIPC_MEDIUM_IMPORTANCE:
-+	case TIPC_HIGH_IMPORTANCE:
-+	case TIPC_CRITICAL_IMPORTANCE:
-+		if (msg_connected(hdr) || msg_named(hdr)) {
-+			spin_lock_init(&list->lock);
-+			tipc_sk_rcv(pnet, list);
-+			return;
-+		}
-+		if (msg_mcast(hdr)) {
-+			skb_queue_head_init(&inputq);
-+			tipc_sk_mcast_rcv(pnet, list, &inputq);
-+			__skb_queue_purge(list);
-+			skb_queue_purge(&inputq);
-+			return;
-+		}
-+		return;
-+	case MSG_FRAGMENTER:
-+		if (tipc_msg_assemble(list)) {
-+			skb_queue_head_init(&inputq);
-+			tipc_sk_mcast_rcv(pnet, list, &inputq);
-+			__skb_queue_purge(list);
-+			skb_queue_purge(&inputq);
-+		}
-+		return;
-+	case GROUP_PROTOCOL:
-+	case CONN_MANAGER:
-+		spin_lock_init(&list->lock);
-+		tipc_sk_rcv(pnet, list);
-+		return;
-+	case LINK_PROTOCOL:
-+	case NAME_DISTRIBUTOR:
-+	case TUNNEL_PROTOCOL:
-+	case BCAST_PROTOCOL:
-+		return;
-+	default:
-+		return;
-+	};
-+}
-+
- /**
-  * tipc_node_xmit() is the general link level function for message sendi=
-ng
-  * @net: the applicable net namespace
-@@ -1439,6 +1520,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_=
-head *list,
- 	struct tipc_link_entry *le =3D NULL;
- 	struct tipc_node *n;
- 	struct sk_buff_head xmitq;
-+	bool node_up =3D false;
- 	int bearer_id;
- 	int rc;
-=20
-@@ -1455,6 +1537,16 @@ int tipc_node_xmit(struct net *net, struct sk_buff=
-_head *list,
- 		return -EHOSTUNREACH;
- 	}
-=20
-+	node_up =3D node_is_up(n);
-+	if (node_up && n->pnet && check_net(n->pnet)) {
-+		/* xmit inner linux container */
-+		tipc_lxc_xmit(n->pnet, list);
-+		if (likely(skb_queue_empty(list))) {
-+			tipc_node_put(n);
-+			return 0;
-+		}
-+	}
-+
- 	tipc_node_read_lock(n);
- 	bearer_id =3D n->active_links[selector & 1];
- 	if (unlikely(bearer_id =3D=3D INVALID_BEARER_ID)) {
-diff --git a/net/tipc/node.h b/net/tipc/node.h
-index 291d0ecd4101..2557d40fd417 100644
---- a/net/tipc/node.h
-+++ b/net/tipc/node.h
-@@ -75,7 +75,7 @@ u32 tipc_node_get_addr(struct tipc_node *node);
- u32 tipc_node_try_addr(struct net *net, u8 *id, u32 addr);
- void tipc_node_check_dest(struct net *net, u32 onode, u8 *peer_id128,
- 			  struct tipc_bearer *bearer,
--			  u16 capabilities, u32 signature,
-+			  u16 capabilities, u32 signature, u32 hash_mixes,
- 			  struct tipc_media_addr *maddr,
- 			  bool *respond, bool *dupl_addr);
- void tipc_node_delete_links(struct net *net, int bearer_id);
-@@ -92,7 +92,7 @@ void tipc_node_unsubscribe(struct net *net, struct list=
-_head *subscr, u32 addr);
- void tipc_node_broadcast(struct net *net, struct sk_buff *skb);
- int tipc_node_add_conn(struct net *net, u32 dnode, u32 port, u32 peer_po=
-rt);
- void tipc_node_remove_conn(struct net *net, u32 dnode, u32 port);
--int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel);
-+int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel, bool connected=
-);
- bool tipc_node_is_up(struct net *net, u32 addr);
- u16 tipc_node_get_capabilities(struct net *net, u32 addr);
- int tipc_nl_node_dump(struct sk_buff *skb, struct netlink_callback *cb);
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index d579b64705b1..d34bd2e36050 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -854,7 +854,7 @@ static int tipc_send_group_msg(struct net *net, struc=
-t tipc_sock *tsk,
-=20
- 	/* Build message as chain of buffers */
- 	__skb_queue_head_init(&pkts);
--	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid);
-+	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid, false);
- 	rc =3D tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
- 	if (unlikely(rc !=3D dlen))
- 		return rc;
-@@ -1388,7 +1388,7 @@ static int __tipc_sendmsg(struct socket *sock, stru=
-ct msghdr *m, size_t dlen)
- 		return rc;
-=20
- 	__skb_queue_head_init(&pkts);
--	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid);
-+	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid, false);
- 	rc =3D tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
- 	if (unlikely(rc !=3D dlen))
- 		return rc;
-@@ -1526,7 +1526,7 @@ static void tipc_sk_finish_conn(struct tipc_sock *t=
-sk, u32 peer_port,
- 	sk_reset_timer(sk, &sk->sk_timer, jiffies + CONN_PROBING_INTV);
- 	tipc_set_sk_state(sk, TIPC_ESTABLISHED);
- 	tipc_node_add_conn(net, peer_node, tsk->portid, peer_port);
--	tsk->max_pkt =3D tipc_node_get_mtu(net, peer_node, tsk->portid);
-+	tsk->max_pkt =3D tipc_node_get_mtu(net, peer_node, tsk->portid, true);
- 	tsk->peer_caps =3D tipc_node_get_capabilities(net, peer_node);
- 	__skb_queue_purge(&sk->sk_write_queue);
- 	if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
---=20
-2.20.1
 
