@@ -2,172 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9325EDFA09
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 03:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DCF7DFA0E
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 03:16:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730065AbfJVBGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 21:06:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56720 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727953AbfJVBGx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Oct 2019 21:06:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=9KVvA1x4S+g3wS1s0DGWqMKbXR8Sju8g8bBYD34J2VU=; b=5px5GaoYa3xI4ZoQd31yTUVRs/
-        hrTMIHi70oDHrCaPGWUK85s+QmCcxSnw3D7yW9kp1g2/ffSe+5APnRa7Vbslg/T9DBGdSkAAuaCd2
-        4RjFqE7YVGdvsVlzPNFV47SfBxlD1fDQUgOHf/wIPHaGglL23WVHbsRHqdxy+U2YhEMQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iMidN-0007WH-T8; Tue, 22 Oct 2019 03:06:49 +0200
-Date:   Tue, 22 Oct 2019 03:06:49 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        laurentiu.tudor@nxp.com, f.fainelli@gmail.com, rmk@armlinux.org.uk
-Subject: Re: [PATCH net-next 3/4] dpaa2-eth: add MAC/PHY support through
- phylink
-Message-ID: <20191022010649.GI16084@lunn.ch>
-References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
- <1571698228-30985-4-git-send-email-ioana.ciornei@nxp.com>
+        id S1730370AbfJVBQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 21:16:50 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:36574 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727264AbfJVBQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 21:16:50 -0400
+Received: by mail-oi1-f195.google.com with SMTP id k20so12776410oih.3
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 18:16:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZouudMw3ht6kahpLNjT3aAR2Ms80A6g7Oj0EFtNV+H4=;
+        b=jW0iS1tZWCulAnJ8UqTojcEGRLEztJgkt/cf9R8PmXPDGehWSsIc86GFtt2m1OY8oQ
+         xGw6IlnPbn4GuuWtv/9IDxSbP8x6GWF6Jwm0PN0XOE/eoMwvqCfzrpnlUMoeGRbNsXdG
+         ZgN/hvmD6cDKVlzncJtlo65nxKSTlXh+Ido2745mh+6skKueszf6HzUu0sVEaHIbwkjY
+         JR81HBOQ2VHGkrKWNTM+ZKNd6jCRxZ5Zx6uV3YYUaqagRw/ebBAze51+rwToN9VeXBrl
+         9AQqr8aHin/4/4ignbizgtd3WthSAkm+DVuQfFx1Neok0KxnnKRARwI3Dv3lLBFobpOk
+         mKLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZouudMw3ht6kahpLNjT3aAR2Ms80A6g7Oj0EFtNV+H4=;
+        b=HU+eh3Untbejb5V9DDj4aZ1kyordfLXNSLRRxRrOqD8nZFl0el71o+243HSOQt4zLh
+         SJkvntdCaq9izlnWZSVHL+JhIQbLqkCWWGoS7nNgP10Q2czmCpT5Nz1uuL8EbgGLtAAA
+         uX9L8YdcIDYwA8K124RxKg+AdS/XThR/5wREwMrsAr4IScJ9YNmDVgA7DRh+2Dr2a5Vw
+         1fF/BOdP0NPqulAMGEyT6Zc7Rbqxl5LBmz0Pvr43aA3TYSgqbV3btlnEAdVDbrZbmR1Y
+         GsHeZFhsSwREC+bnJYUt6xczCTv958a0CQsG4aiqnpIBcXb8MMjo651xrBxWXZ1PDzH+
+         K7YA==
+X-Gm-Message-State: APjAAAV6jy23XnBBv4UwzuIJjN45vrICL0LI3HAzceL2F4C6D9n3ZR0T
+        qWe8QedBwTwHj0Dm7e+5Txv8OrTQPX8h+NQZKo8=
+X-Google-Smtp-Source: APXvYqwKdnbv3One/YYgR579oH9o59xG7IPeAsJpjQ0TsJ1AxD0tRQExLO+1ps4JKrNybKggV4rBHAPKUYDS6Dc1Uo4=
+X-Received: by 2002:a05:6808:2c3:: with SMTP id a3mr793341oid.40.1571707008969;
+ Mon, 21 Oct 2019 18:16:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1571698228-30985-4-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1571135440-24313-1-git-send-email-xiangxia.m.yue@gmail.com> <CALDO+SZib59P3qmQNWGNjKnrn_+DsFnu+QoPE0gfqRLVRpDk+Q@mail.gmail.com>
+In-Reply-To: <CALDO+SZib59P3qmQNWGNjKnrn_+DsFnu+QoPE0gfqRLVRpDk+Q@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Tue, 22 Oct 2019 09:16:12 +0800
+Message-ID: <CAMDZJNVea1MZG2CRgi9KR1yf6r3x3RnonA0b_ZvEu9B_v5z1Lw@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net-next v4 00/10] optimize openvswitch flow
+ looking up
+To:     William Tu <u9012063@gmail.com>
+Cc:     Greg Rose <gvrose8192@gmail.com>, pravin shelar <pshelar@ovn.org>,
+        "<dev@openvswitch.org>" <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ioana
-
-> +static int dpaa2_eth_connect_mac(struct dpaa2_eth_priv *priv)
-> +{
-> +	struct fsl_mc_device *dpni_dev, *dpmac_dev;
-> +	struct dpaa2_mac *mac;
-> +	int err;
-> +
-> +	dpni_dev = to_fsl_mc_device(priv->net_dev->dev.parent);
-> +	dpmac_dev = fsl_mc_get_endpoint(dpni_dev);
-> +	if (!dpmac_dev || dpmac_dev->dev.type != &fsl_mc_bus_dpmac_type)
-> +		return 0;
-> +
-> +	if (dpaa2_mac_is_type_fixed(dpmac_dev, priv->mc_io))
-> +		return 0;
-> +
-> +	mac = kzalloc(sizeof(struct dpaa2_mac), GFP_KERNEL);
-> +	if (!mac)
-> +		return -ENOMEM;
-> +
-> +	mac->mc_dev = dpmac_dev;
-> +	mac->mc_io = priv->mc_io;
-> +	mac->net_dev = priv->net_dev;
-> +
-> +	err = dpaa2_mac_connect(mac);
-> +	if (err) {
-> +		netdev_err(priv->net_dev, "Error connecting to the MAC endpoint\n");
-> +		kfree(mac);
-> +		return err;
-> +	}
-> +	priv->mac = mac;
-> +
-> +	return 0;
-> +}
-> +
-> +static void dpaa2_eth_disconnect_mac(struct dpaa2_eth_priv *priv)
-> +{
-> +	if (!priv->mac)
-> +		return;
-> +
-> +	rtnl_lock();
-> +	dpaa2_mac_disconnect(priv->mac);
-> +	kfree(priv->mac);
-> +	priv->mac = NULL;
-> +	rtnl_unlock();
-> +}
-
-dpaa2_eth_connect_mac() does not take the rtnl lock.
-dpaa2_eth_disconnect_mac() does. This asymmetry makes me think
-something is wrong. But it could be correct....
-
-> +/* Caller must call of_node_put on the returned value */
-> +static struct device_node *dpaa2_mac_get_node(u16 dpmac_id)
-> +{
-> +	struct device_node *dpmacs, *dpmac = NULL;
-> +	u32 id;
-> +	int err;
-> +
-> +	dpmacs = of_find_node_by_name(NULL, "dpmacs");
-> +	if (!dpmacs)
-> +		return NULL;
-> +
-> +	while ((dpmac = of_get_next_child(dpmacs, dpmac)) != NULL) {
-> +		err = of_property_read_u32(dpmac, "reg", &id);
-> +		if (err)
-> +			continue;
-> +		if (id == dpmac_id)
-> +			break;
-> +	}
-
-of_get_next_child() takes a reference on the child. So you need to
-release that reference. It is better to make use of something like
-for_each_child_of_node() or for_each_available_child_of_node() which
-release the reference at the end of each loop, so long as you don't
-break/return out of the loop.
-
-> +
-> +static void dpaa2_mac_validate(struct phylink_config *config,
-> +			       unsigned long *supported,
-> +			       struct phylink_link_state *state)
-> +{
-> +	struct dpaa2_mac *mac = phylink_to_dpaa2_mac(config);
-> +	struct dpmac_link_state *dpmac_state = &mac->state;
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-> +
-> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
-> +	    dpaa2_mac_phy_mode_mismatch(mac, state->interface)) {
-> +		goto empty_set;
-> +	}
-> +
-> +	phylink_set_port_modes(mask);
-> +	phylink_set(mask, Autoneg);
-> +	phylink_set(mask, Pause);
-> +	phylink_set(mask, Asym_Pause);
-> +
-> +	switch (state->interface) {
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +		phylink_set(mask, 10baseT_Full);
-> +		phylink_set(mask, 100baseT_Full);
-> +		phylink_set(mask, 1000baseT_Full);
-> +		break;
-> +	default:
-> +		goto empty_set;
-> +	}
-> +
-> +	linkmode_and(supported, supported, mask);
-> +	linkmode_and(state->advertising, state->advertising, mask);
-> +
-> +	dpaa2_mac_linkmode2dpmac(supported, &dpmac_state->supported);
-> +	dpaa2_mac_linkmode2dpmac(state->advertising, &dpmac_state->advertising);
-
-Humm. Not sure about these last two lines. Validate should be about if
-the MAC can support something. I don't think you should be setting any
-state here. That should happen in mac_config, when the state really is
-configured.
-
-> +
-> +	return;
-> +
-> +empty_set:
-> +	linkmode_zero(supported);
-> +}
-> +
-
-  Andrew
+On Tue, Oct 22, 2019 at 1:14 AM William Tu <u9012063@gmail.com> wrote:
+>
+> On Wed, Oct 16, 2019 at 5:50 AM <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > This series patch optimize openvswitch for performance or simplify
+> > codes.
+> >
+> > Patch 1, 2, 4: Port Pravin B Shelar patches to
+> > linux upstream with little changes.
+>
+> btw, should we keep Pravin as the author of the above three patches?
+Agree=EF=BC=8C but how i can to that, these patches should be sent by Pravi=
+n ?
+> Regards,
+> William
+>
+> >
+> > Patch 5, 6, 7: Optimize the flow looking up and
+> > simplify the flow hash.
+> >
+> > Patch 8, 9: are bugfix.
+> >
+> > The performance test is on Intel Xeon E5-2630 v4.
+> > The test topology is show as below:
+> >
+> > +-----------------------------------+
+> > |   +---------------------------+   |
+> > |   | eth0   ovs-switch    eth1 |   | Host0
+> > |   +---------------------------+   |
+> > +-----------------------------------+
+> >       ^                       |
+> >       |                       |
+> >       |                       |
+> >       |                       |
+> >       |                       v
+> > +-----+----+             +----+-----+
+> > | netperf  | Host1       | netserver| Host2
+> > +----------+             +----------+
+> >
+> > We use netperf send the 64B packets, and insert 255+ flow-mask:
+> > $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=3D00:01:00:00:00:00=
+/ff:ff:ff:ff:ff:01),eth_type(0x0800),ipv4(frag=3Dno)" 2
+> > ...
+> > $ ovs-dpctl add-flow ovs-switch "in_port(1),eth(dst=3D00:ff:00:00:00:00=
+/ff:ff:ff:ff:ff:ff),eth_type(0x0800),ipv4(frag=3Dno)" 2
+> > $
+> > $ netperf -t UDP_STREAM -H 2.2.2.200 -l 40 -- -m 18
+> >
+> > * Without series patch, throughput 8.28Mbps
+> > * With series patch, throughput 46.05Mbps
+> >
+> > v3->v4:
+> > access ma->count with READ_ONCE/WRITE_ONCE API. More information,
+> > see patch 5 comments.
+> >
+> > v2->v3:
+> > update ma point when realloc mask_array in patch 5.
+> >
+> > v1->v2:
+> > use kfree_rcu instead of call_rcu
+> >
+> > Tonghao Zhang (10):
+> >   net: openvswitch: add flow-mask cache for performance
+> >   net: openvswitch: convert mask list in mask array
+> >   net: openvswitch: shrink the mask array if necessary
+> >   net: openvswitch: optimize flow mask cache hash collision
+> >   net: openvswitch: optimize flow-mask looking up
+> >   net: openvswitch: simplify the flow_hash
+> >   net: openvswitch: add likely in flow_lookup
+> >   net: openvswitch: fix possible memleak on destroy flow-table
+> >   net: openvswitch: don't unlock mutex when changing the user_features
+> >     fails
+> >   net: openvswitch: simplify the ovs_dp_cmd_new
+> >
+> >  net/openvswitch/datapath.c   |  65 +++++----
+> >  net/openvswitch/flow.h       |   1 -
+> >  net/openvswitch/flow_table.c | 316 +++++++++++++++++++++++++++++++++++=
+++------
+> >  net/openvswitch/flow_table.h |  19 ++-
+> >  4 files changed, 329 insertions(+), 72 deletions(-)
+> >
+> > --
+> > 1.8.3.1
+> >
+> > _______________________________________________
+> > dev mailing list
+> > dev@openvswitch.org
+> > https://mail.openvswitch.org/mailman/listinfo/ovs-dev
