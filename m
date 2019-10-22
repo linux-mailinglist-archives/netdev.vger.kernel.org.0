@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97083E0AE3
+	by mail.lfdr.de (Postfix) with ESMTP id 297A3E0AE2
 	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732201AbfJVRnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1732104AbfJVRnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 22 Oct 2019 13:43:22 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55823 "EHLO
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55827 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731897AbfJVRnW (ORCPT
+        with ESMTP id S1731906AbfJVRnW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 13:43:22 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from yuvalav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 22 Oct 2019 19:43:17 +0200
+        with ESMTPS (AES256-SHA encrypted); 22 Oct 2019 19:43:18 +0200
 Received: from sw-mtx-008.mtx.labs.mlnx (sw-mtx-008.mtx.labs.mlnx [10.9.150.35])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9MHhGSa005567;
-        Tue, 22 Oct 2019 20:43:16 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9MHhHxU005575;
+        Tue, 22 Oct 2019 20:43:18 +0300
 Received: from sw-mtx-008.mtx.labs.mlnx (localhost [127.0.0.1])
-        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7) with ESMTP id x9MHhG5K023983;
-        Tue, 22 Oct 2019 20:43:16 +0300
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7) with ESMTP id x9MHhHOL023985;
+        Tue, 22 Oct 2019 20:43:17 +0300
 Received: (from yuvalav@localhost)
-        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7/Submit) id x9MHhGK4023982;
-        Tue, 22 Oct 2019 20:43:16 +0300
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7/Submit) id x9MHhHYB023984;
+        Tue, 22 Oct 2019 20:43:17 +0300
 From:   Yuval Avnery <yuvalav@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     jiri@mellanox.com, saeedm@mellanox.com, leon@kernel.org,
         davem@davemloft.net, jakub.kicinski@netronome.com,
         shuah@kernel.org, Yuval Avnery <yuvalav@mellanox.com>
-Subject: [PATCH net-next 2/9] devlink: Add PCI attributes support for vdev
-Date:   Tue, 22 Oct 2019 20:43:03 +0300
-Message-Id: <1571766190-23943-3-git-send-email-yuvalav@mellanox.com>
+Subject: [PATCH net-next 3/9] devlink: Add port with vdev register support
+Date:   Tue, 22 Oct 2019 20:43:04 +0300
+Message-Id: <1571766190-23943-4-git-send-email-yuvalav@mellanox.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
 References: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
@@ -38,8 +38,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When vdev represents a PCI device it should reflect the PCI device
-type (PF/VF) and it's index.
+A vdev may represent a network device, so it may be linked to
+a devlink port.
+Added devlink_port_register_with_vdev to allow vdev-port linkage.
 
 Example:
 
@@ -49,167 +50,176 @@ $ devlink vdev show pci/0000:03:00.0/1 -jp
         "pci/0000:03:00.0/1": {
             "flavour": "pcivf",
             "pf": 0,
-            "vf": 0
+            "vf": 0,
+            "port_index": 1
         }
     }
 }
-
 $ devlink vdev show pci/0000:03:00.0/1
-pci/0000:03:00.0/1: flavour pcivf pf 0 vf 0
+pci/0000:03:00.0/1: flavour pcivf pf 0 vf 0 port_index 1
+
+$ devlink port show pci/0000:03:00.0/1
+pci/0000:03:00.0/1: type eth netdev ens2f0_0 flavour pcivf pfnum 0 vfnum 0 vdev_index 1
 
 Signed-off-by: Yuval Avnery <yuvalav@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/net/devlink.h        | 17 ++++++++++++
- include/uapi/linux/devlink.h |  8 ++++++
- net/core/devlink.c           | 51 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 76 insertions(+)
+ include/net/devlink.h |  5 ++++
+ net/core/devlink.c    | 53 +++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 54 insertions(+), 4 deletions(-)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 58fe8c339368..ab7e316ea758 100644
+index ab7e316ea758..138d33275963 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -92,7 +92,21 @@ struct devlink_port {
+@@ -90,6 +90,7 @@ struct devlink_port {
+ 	void *type_dev;
+ 	struct devlink_port_attrs attrs;
  	struct delayed_work type_warn_dw;
++	struct devlink_vdev *devlink_vdev; /* linked vdev */
  };
  
-+struct devlink_vdev_pci_pf_attrs {
-+	u16 pf;	/* Associated PCI PF for this vdev. */
-+};
-+
-+struct devlink_vdev_pci_vf_attrs {
-+	u16 pf;	/* Associated PCI PF for this vdev. */
-+	u16 vf;	/* Associated PCI VF for of the PCI PF for this vdev. */
-+};
-+
- struct devlink_vdev_attrs {
-+	enum devlink_vdev_flavour flavour;
-+	union {
-+		struct devlink_vdev_pci_pf_attrs pci_pf;
-+		struct devlink_vdev_pci_vf_attrs pci_vf;
-+	};
- };
- 
- struct devlink_sb_pool_info {
-@@ -819,6 +833,9 @@ struct devlink_vdev *devlink_vdev_create(struct devlink *devlink,
- void devlink_vdev_destroy(struct devlink_vdev *devlink_vdev);
- struct devlink *devlink_vdev_devlink(struct devlink_vdev *devlink_vdev);
- void *devlink_vdev_priv(struct devlink_vdev *devlink_vdev);
-+void devlink_vdev_attrs_pci_pf_init(struct devlink_vdev_attrs *attrs, u16 pf);
-+void devlink_vdev_attrs_pci_vf_init(struct devlink_vdev_attrs *attrs, u16 pf,
-+				    u16 vf);
- int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
- 			u32 size, u16 ingress_pools_count,
- 			u16 egress_pools_count, u16 ingress_tc_count,
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 70e2816331c5..161bad54d528 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -194,6 +194,11 @@ enum devlink_port_flavour {
- 				      */
- };
- 
-+enum devlink_vdev_flavour {
-+	DEVLINK_VDEV_FLAVOUR_PCI_PF,
-+	DEVLINK_VDEV_FLAVOUR_PCI_VF,
-+};
-+
- enum devlink_param_cmode {
- 	DEVLINK_PARAM_CMODE_RUNTIME,
- 	DEVLINK_PARAM_CMODE_DRIVERINIT,
-@@ -431,6 +436,9 @@ enum devlink_attr {
- 	DEVLINK_ATTR_NETNS_ID,			/* u32 */
- 
- 	DEVLINK_ATTR_VDEV_INDEX,		/* u32 */
-+	DEVLINK_ATTR_VDEV_FLAVOUR,		/* u16 */
-+	DEVLINK_ATTR_VDEV_PF_INDEX,		/* u32 */
-+	DEVLINK_ATTR_VDEV_VF_INDEX,		/* u32 */
- 
- 	/* add new attributes above here, update the policy in devlink.c */
- 
+ struct devlink_vdev_pci_pf_attrs {
+@@ -806,6 +807,10 @@ void devlink_free(struct devlink *devlink);
+ int devlink_port_register(struct devlink *devlink,
+ 			  struct devlink_port *devlink_port,
+ 			  unsigned int port_index);
++int devlink_port_register_with_vdev(struct devlink *devlink,
++				    struct devlink_port *devlink_port,
++				    unsigned int port_index,
++				    struct devlink_vdev *devlink_vdev);
+ void devlink_port_unregister(struct devlink_port *devlink_port);
+ void devlink_port_type_eth_set(struct devlink_port *devlink_port,
+ 			       struct net_device *netdev);
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 3d6099ec139e..0a201a373da9 100644
+index 0a201a373da9..2fffbd37e710 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -708,6 +708,7 @@ static int devlink_nl_vdev_fill(struct sk_buff *msg, struct devlink *devlink,
- 				enum devlink_command cmd, u32 vdevid,
- 				u32 seq, int flags)
- {
-+	struct devlink_vdev_attrs *attrs = &devlink_vdev->attrs;
- 	void *hdr;
+@@ -37,6 +37,7 @@ struct devlink_vdev {
+ 	unsigned int index;
+ 	const struct devlink_vdev_ops *ops;
+ 	struct devlink_vdev_attrs attrs;
++	struct devlink_port *devlink_port; /* linked port */
+ 	void *priv;
+ };
  
- 	hdr = genlmsg_put(msg, vdevid, seq, &devlink_nl_family, flags, cmd);
-@@ -719,6 +720,24 @@ static int devlink_nl_vdev_fill(struct sk_buff *msg, struct devlink *devlink,
- 	if (nla_put_u32(msg, DEVLINK_ATTR_VDEV_INDEX, devlink_vdev->index))
+@@ -664,6 +665,10 @@ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+ 			goto nla_put_failure_type_locked;
+ 	}
+ 	spin_unlock_bh(&devlink_port->type_lock);
++	if (devlink_port->devlink_vdev)
++		if (nla_put_u32(msg, DEVLINK_ATTR_VDEV_INDEX,
++				devlink_port->devlink_vdev->index))
++			goto nla_put_failure;
+ 	if (devlink_nl_port_attrs_put(msg, devlink_port))
  		goto nla_put_failure;
  
-+	if (nla_put_u16(msg, DEVLINK_ATTR_VDEV_FLAVOUR, attrs->flavour))
-+		goto nla_put_failure;
-+	switch (attrs->flavour) {
-+	case DEVLINK_VDEV_FLAVOUR_PCI_PF:
-+		if (nla_put_u32(msg, DEVLINK_ATTR_VDEV_PF_INDEX,
-+				attrs->pci_pf.pf))
+@@ -738,6 +743,11 @@ static int devlink_nl_vdev_fill(struct sk_buff *msg, struct devlink *devlink,
+ 		break;
+ 	}
+ 
++	if (devlink_vdev->devlink_port)
++		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_INDEX,
++				devlink_vdev->devlink_port->index))
 +			goto nla_put_failure;
-+		break;
-+	case DEVLINK_VDEV_FLAVOUR_PCI_VF:
-+		if (nla_put_u32(msg, DEVLINK_ATTR_VDEV_PF_INDEX,
-+				attrs->pci_vf.pf))
-+			goto nla_put_failure;
-+		if (nla_put_u32(msg, DEVLINK_ATTR_VDEV_VF_INDEX,
-+				attrs->pci_vf.vf))
-+			goto nla_put_failure;
-+		break;
-+	}
 +
  	genlmsg_end(msg, hdr);
  	return 0;
  
-@@ -6077,6 +6096,9 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_NETNS_FD] = { .type = NLA_U32 },
- 	[DEVLINK_ATTR_NETNS_ID] = { .type = NLA_U32 },
- 	[DEVLINK_ATTR_VDEV_INDEX] = { .type = NLA_U32 },
-+	[DEVLINK_ATTR_VDEV_FLAVOUR] = { .type = NLA_U16 },
-+	[DEVLINK_ATTR_VDEV_PF_INDEX] = { .type = NLA_U32 },
-+	[DEVLINK_ATTR_VDEV_VF_INDEX] = { .type = NLA_U32 },
- };
- 
- static const struct genl_ops devlink_nl_ops[] = {
-@@ -6912,6 +6934,35 @@ void devlink_vdev_destroy(struct devlink_vdev *devlink_vdev)
+@@ -6582,11 +6592,12 @@ static void devlink_port_type_warn_cancel(struct devlink_port *devlink_port)
  }
- EXPORT_SYMBOL_GPL(devlink_vdev_destroy);
  
-+/**
-+ *	devlink_vdev_attrs_pci_pf_int - Init PCI PF vdev attributes
-+ *
-+ *	@devlink_vdev_attr: devlink vdev attributes
-+ *	@pf: associated PF index for the devlink vdev instance
-+ */
-+void devlink_vdev_attrs_pci_pf_init(struct devlink_vdev_attrs *attrs, u16 pf)
-+{
-+	attrs->flavour = DEVLINK_VDEV_FLAVOUR_PCI_PF;
-+	attrs->pci_pf.pf = pf;
-+}
-+EXPORT_SYMBOL_GPL(devlink_vdev_attrs_pci_pf_init);
+ /**
+- *	devlink_port_register - Register devlink port
++ *	devlink_port_register_with_vdev - Register devlink port
+  *
+  *	@devlink: devlink
+  *	@devlink_port: devlink port
+  *	@port_index: driver-specific numerical identifier of the port
++ *	@devlink_vdev: vdev to link with the port
+  *
+  *	Register devlink port with provided port index. User can use
+  *	any indexing, even hw-related one. devlink_port structure
+@@ -6594,9 +6605,10 @@ static void devlink_port_type_warn_cancel(struct devlink_port *devlink_port)
+  *	Note that the caller should take care of zeroing the devlink_port
+  *	structure.
+  */
+-int devlink_port_register(struct devlink *devlink,
+-			  struct devlink_port *devlink_port,
+-			  unsigned int port_index)
++int devlink_port_register_with_vdev(struct devlink *devlink,
++				    struct devlink_port *devlink_port,
++				    unsigned int port_index,
++				    struct devlink_vdev *devlink_vdev)
+ {
+ 	mutex_lock(&devlink->lock);
+ 	if (devlink_port_index_exists(devlink, port_index)) {
+@@ -6606,15 +6618,42 @@ int devlink_port_register(struct devlink *devlink,
+ 	devlink_port->devlink = devlink;
+ 	devlink_port->index = port_index;
+ 	devlink_port->registered = true;
++	devlink_port->devlink_vdev = devlink_vdev;
+ 	spin_lock_init(&devlink_port->type_lock);
+ 	list_add_tail(&devlink_port->list, &devlink->port_list);
+ 	INIT_LIST_HEAD(&devlink_port->param_list);
+ 	mutex_unlock(&devlink->lock);
+ 	INIT_DELAYED_WORK(&devlink_port->type_warn_dw, &devlink_port_type_warn);
+ 	devlink_port_type_warn_schedule(devlink_port);
++	if (devlink_vdev) {
++		devlink_vdev->devlink_port = devlink_port;
++		devlink_vdev_notify(devlink_vdev, DEVLINK_CMD_VDEV_NEW);
++	}
+ 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(devlink_port_register_with_vdev);
 +
 +/**
-+ *	devlink_vdev_attrs_pci_vf_init - Init PCI VF vdev attributes
++ *	devlink_port_register - Register devlink port
 + *
-+ *	@devlink_vdev: devlink vdev
-+ *	@pf: associated PF index for the devlink vdev instance
-+ *	@vf: associated VF index for the devlink vdev instance
++ *	@devlink: devlink
++ *	@devlink_port: devlink port
++ *	@port_index: driver-specific numerical identifier of the port
++ *
++ *	Register devlink port with provided port index. User can use
++ *	any indexing, even hw-related one. devlink_port structure
++ *	is convenient to be embedded inside user driver private structure.
++ *	Note that the caller should take care of zeroing the devlink_port
++ *	structure.
 + */
-+void devlink_vdev_attrs_pci_vf_init(struct devlink_vdev_attrs *attrs, u16 pf,
-+				    u16 vf)
++int devlink_port_register(struct devlink *devlink,
++			  struct devlink_port *devlink_port,
++			  unsigned int port_index)
 +{
-+	attrs->flavour = DEVLINK_VDEV_FLAVOUR_PCI_VF;
-+	attrs->pci_vf.pf = pf;
-+	attrs->pci_vf.vf = vf;
++	return devlink_port_register_with_vdev(devlink, devlink_port,
++					       port_index, NULL);
 +}
-+EXPORT_SYMBOL_GPL(devlink_vdev_attrs_pci_vf_init);
-+
- int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
- 			u32 size, u16 ingress_pools_count,
- 			u16 egress_pools_count, u16 ingress_tc_count,
+ EXPORT_SYMBOL_GPL(devlink_port_register);
+ 
+ /**
+@@ -6624,9 +6663,14 @@ EXPORT_SYMBOL_GPL(devlink_port_register);
+  */
+ void devlink_port_unregister(struct devlink_port *devlink_port)
+ {
++	struct devlink_vdev *devlink_vdev = devlink_port->devlink_vdev;
+ 	struct devlink *devlink = devlink_port->devlink;
+ 
+ 	devlink_port_type_warn_cancel(devlink_port);
++	if (devlink_vdev) {
++		devlink_vdev->devlink_port = NULL;
++		devlink_vdev_notify(devlink_vdev, DEVLINK_CMD_VDEV_NEW);
++	}
+ 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
+ 	mutex_lock(&devlink->lock);
+ 	list_del(&devlink_port->list);
+@@ -6926,6 +6970,7 @@ void devlink_vdev_destroy(struct devlink_vdev *devlink_vdev)
+ {
+ 	struct devlink *devlink = devlink_vdev->devlink;
+ 
++	WARN_ON(devlink_vdev->devlink_port);
+ 	devlink_vdev_notify(devlink_vdev, DEVLINK_CMD_VDEV_DEL);
+ 	mutex_lock(&devlink->lock);
+ 	list_del(&devlink_vdev->list);
 -- 
 2.17.1
 
