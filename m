@@ -2,169 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D250E0E59
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3BDE0E75
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 01:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732738AbfJVWpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 18:45:22 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59237 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731850AbfJVWpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:45:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571784320;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xaYcQAnqa39ZWz6ewdQxce9WP2icr0d1H4tmcHP9WXg=;
-        b=ZbUqwh8Ika4KM3cxoWQkT4proR7RrGB3Ja88xmd6m7lJnYeDUPO/4oxyXLTLNC6CIwgWeO
-        xa0w9Z9lNwRnsxWfXCAUflnI17haFlmeuHL5UrIfsMtJGzfv5yL+am+l16ku1TCPIpbXuP
-        yIAtcs9VWap0lIkFQhGW4nCRM5NuqwM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-329-0zXSX9PkNd6H9Osvy8pt5w-1; Tue, 22 Oct 2019 18:45:13 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D4F9801E52;
-        Tue, 22 Oct 2019 22:45:12 +0000 (UTC)
-Received: from carbon (ovpn-200-21.brq.redhat.com [10.40.200.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D298194BB;
-        Tue, 22 Oct 2019 22:45:03 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 00:45:01 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Charles McLachlan <cmclachlan@solarflare.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-net-drivers@solarflare.com>, brouer@redhat.com
-Subject: Re: [PATCH net-next 2/6] sfc: perform XDP processing on received
- packets.
-Message-ID: <20191023004501.4a78c300@carbon>
-In-Reply-To: <1c193147-d94a-111f-42d3-324c3e8b0282@solarflare.com>
-References: <05b72fdb-165c-1350-787b-ca8c5261c459@solarflare.com>
-        <1c193147-d94a-111f-42d3-324c3e8b0282@solarflare.com>
+        id S2389655AbfJVXLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 19:11:19 -0400
+Received: from mail-pf1-f171.google.com ([209.85.210.171]:36282 "EHLO
+        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728076AbfJVXLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 19:11:17 -0400
+Received: by mail-pf1-f171.google.com with SMTP id y22so11618061pfr.3
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 16:11:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KmtL3JmnFVDWA8irNoviUe3t21PZ21+G5D8LJygBCfY=;
+        b=hbx8WVhDG+uzeGiy6CmYvwUPS1Z+vptOhFPkYiW0N+HahgecWMImRQERwvYrYI6xup
+         dOaX1Vvc5ikOq2H++njTLEgSFvAUiS6qM4i8bEg6DnIom3ZauheiAkeqluJn2nq+Vg0H
+         aYRUfDpTgrlWK1W9QF2Piw5k8IvwFlZXx012gE7Jfoph3eszBz57fe/VwjnL00bhcHsJ
+         pxjhEIStw/Uh4nPTE/giI6tVgYJe0WwVtkCm4y1FPqEcFaihROD/qtkt3cWkFS4KP9pc
+         qM4BPPJ3UHNl7VciWTcWMK3CKdb/fvmiFTicudLqMSc8vRBWHdKlwUSzWBPt+4aAQHkz
+         EZYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KmtL3JmnFVDWA8irNoviUe3t21PZ21+G5D8LJygBCfY=;
+        b=twc4BEww20tS7N+fPbN136ZIh4nNFJDTuyRmiRraQWaslnEDMCM54HGYhSlY73cYVd
+         yFFr6Mwp0l2jTm1uParbSYABzqpjVAdFlFJ11s4xP4j8YoWoRJjgQMrzRAF3lK0ZbEqT
+         bihx8dK/9qiEKj/8D9itNXaFcBcWrVm+Xl0q6oG+W2xkC24Jr3II7kXSs/bI3zTca8r5
+         99tTDgpAuE6Fnq1EsuljTG6DsZ69kApashh/xR+Ad/ksJZstYplL/t1bEHgd5Or4SwsB
+         EBHc4VnzUxzaOyvOFASvr7Z7VMp3lG6n3aLItS3wGTDAxvkY9xRewV8IoL1s1UYoub04
+         A/iQ==
+X-Gm-Message-State: APjAAAWtBd+a/++xC6hHTVY5X5M94Xp6kAJ1eXLf7KkMv8U/LLL3EPeW
+        gtJxmYIpAK3kB3Imiu0p7JQdEeOe
+X-Google-Smtp-Source: APXvYqyI79aUfCM98B09Ca5WdLe2kAD7lEjbI0eS1aRRYVB9zdXu4CDaFAbr3TU1gm5dhyPQ0ZzeCg==
+X-Received: by 2002:a17:90a:9d85:: with SMTP id k5mr1141047pjp.88.1571785874593;
+        Tue, 22 Oct 2019 16:11:14 -0700 (PDT)
+Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
+        by smtp.gmail.com with ESMTPSA id j24sm20619284pff.71.2019.10.22.16.11.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Oct 2019 16:11:13 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     ycheng@google.com, ncardwell@google.com, edumazet@google.com,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: [Patch net-next 0/3] tcp: decouple TLP timer from RTO timer
+Date:   Tue, 22 Oct 2019 16:10:48 -0700
+Message-Id: <20191022231051.30770-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: 0zXSX9PkNd6H9Osvy8pt5w-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 16:38:27 +0100
-Charles McLachlan <cmclachlan@solarflare.com> wrote:
+This patchset contains 3 patches: patch 1 is a cleanup,
+patch 2 is a small change preparing for patch 3, patch 3 is the
+one does the actual change. Please find details in each of them.
 
-> +/** efx_do_xdp: perform XDP processing on a received packet
-> + *
-> + * Returns true if packet should still be delivered.
-> + */
-> +static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
-> +=09=09       struct efx_rx_buffer *rx_buf, u8 **ehp)
-> +{
-> +=09u8 rx_prefix[EFX_MAX_RX_PREFIX_SIZE];
-> +=09struct efx_rx_queue *rx_queue;
-> +=09struct bpf_prog *xdp_prog;
-> +=09struct xdp_buff xdp;
-> +=09u32 xdp_act;
-> +=09s16 offset;
-> +=09int rc;
-> +
-> +=09rcu_read_lock();
-> +=09xdp_prog =3D rcu_dereference(efx->xdp_prog);
-> +=09if (!xdp_prog) {
-> +=09=09rcu_read_unlock();
-> +=09=09return true;
-> +=09}
-> +
-> +=09rx_queue =3D efx_channel_get_rx_queue(channel);
-> +
-> +=09if (unlikely(channel->rx_pkt_n_frags > 1)) {
-> +=09=09/* We can't do XDP on fragmented packets - drop. */
-> +=09=09rcu_read_unlock();
-> +=09=09efx_free_rx_buffers(rx_queue, rx_buf,
-> +=09=09=09=09    channel->rx_pkt_n_frags);
-> +=09=09if (net_ratelimit())
-> +=09=09=09netif_err(efx, rx_err, efx->net_dev,
-> +=09=09=09=09  "XDP is not possible with multiple receive fragments (%d)\=
-n",
-> +=09=09=09=09  channel->rx_pkt_n_frags);
-> +=09=09return false;
-> +=09}
-> +
-> +=09dma_sync_single_for_cpu(&efx->pci_dev->dev, rx_buf->dma_addr,
-> +=09=09=09=09rx_buf->len, DMA_FROM_DEVICE);
-> +
-> +=09/* Save the rx prefix. */
-> +=09EFX_WARN_ON_PARANOID(efx->rx_prefix_size > EFX_MAX_RX_PREFIX_SIZE);
-> +=09memcpy(rx_prefix, *ehp - efx->rx_prefix_size,
-> +=09       efx->rx_prefix_size);
-> +
-> +=09xdp.data =3D *ehp;
-> +=09xdp.data_hard_start =3D xdp.data - XDP_PACKET_HEADROOM;
-> +
-> +=09/* No support yet for XDP metadata */
-> +=09xdp_set_data_meta_invalid(&xdp);
-> +=09xdp.data_end =3D xdp.data + rx_buf->len;
-> +=09xdp.rxq =3D &rx_queue->xdp_rxq_info;
-> +
-> +=09xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> +=09rcu_read_unlock();
-> +
-> +=09offset =3D (u8 *)xdp.data - *ehp;
-> +
-> +=09switch (xdp_act) {
-> +=09case XDP_PASS:
-> +=09=09/* Fix up rx prefix. */
-> +=09=09if (offset) {
-> +=09=09=09*ehp +=3D offset;
-> +=09=09=09rx_buf->page_offset +=3D offset;
-> +=09=09=09rx_buf->len -=3D offset;
-> +=09=09=09memcpy(*ehp - efx->rx_prefix_size, rx_prefix,
-> +=09=09=09       efx->rx_prefix_size);
-> +=09=09}
-> +=09=09break;
-> +
-> +=09case XDP_TX:
-> +=09=09return -EOPNOTSUPP;
-> +
-> +=09case XDP_REDIRECT:
-> +=09=09rc =3D xdp_do_redirect(efx->net_dev, &xdp, xdp_prog);
-> +=09=09if (rc) {
+---
+Cong Wang (3):
+  tcp: get rid of ICSK_TIME_EARLY_RETRANS
+  tcp: make tcp_send_loss_probe() boolean
+  tcp: decouple TLP timer from RTO timer
 
-Can we call the 'rc' variable 'err' instead?
-And give it an unlikely().
+ include/net/inet_connection_sock.h | 13 +++++----
+ include/net/tcp.h                  |  3 ++-
+ net/dccp/timer.c                   |  2 +-
+ net/ipv4/inet_connection_sock.c    |  5 +++-
+ net/ipv4/inet_diag.c               |  8 ++++--
+ net/ipv4/tcp_input.c               |  8 ++++--
+ net/ipv4/tcp_ipv4.c                |  6 +++--
+ net/ipv4/tcp_output.c              |  8 ++++--
+ net/ipv4/tcp_timer.c               | 43 +++++++++++++++++++++++++++---
+ net/ipv6/tcp_ipv6.c                |  6 +++--
+ 10 files changed, 80 insertions(+), 22 deletions(-)
 
-
-> +=09=09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
-> +=09=09=09if (net_ratelimit())
-> +=09=09=09=09netif_err(efx, rx_err, efx->net_dev,
-> +=09=09=09=09=09  "XDP redirect failed (%d)\n", rc);
-> +=09=09}
-> +=09=09break;
-> +
-> +=09default:
-> +=09=09bpf_warn_invalid_xdp_action(xdp_act);
-> +=09=09/* Fall through */
-> +=09case XDP_ABORTED:
-> +=09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
-> +=09=09break;
-> +
-> +=09case XDP_DROP:
-> +=09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
-> +=09=09break;
-> +=09}
-> +
-> +=09return xdp_act =3D=3D XDP_PASS;
-> +}
-> +
-
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+-- 
+2.21.0
 
