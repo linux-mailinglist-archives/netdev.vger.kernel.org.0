@@ -2,104 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE0BE0B2F
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99464E0B33
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:07:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731007AbfJVSGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 14:06:18 -0400
-Received: from mail-eopbgr60071.outbound.protection.outlook.com ([40.107.6.71]:36199
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727154AbfJVSGS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 14:06:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UTarC1YV9jIL1vQU1UJueEFBzEoMGBwCJujV1q2lFVVW4La2wO/0KPqwoB8PxgzahZfEGWNuRGqLSoCPsLDteWaepQxaq6vN5VRH8yXBo2iMY3CuNPXbvuPPTp7KW0mpw3m+DgwLjGqPmWl0iYOg+mRWSy5QuP9i6liEw/k5vMFFCGTSsvWDCCaJ8QasHJjJLh2z7oiH4dZhQJ0uLpsjTbhTI/xlcboX0e6BVLbt7bA7SqxYbf+D3lBZ+MNOx9bzzVsnunkY1IMcNg7pgxpNL9bpaDGctyCiGXvgYn+NfZvFEX7lQJcMuxW9W/6g1D7hIUxjHlL0CExPjcVPhT4EfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a96WdSw6hQDKbqWhTokV1GehYfeRmvSwcxOWNNuV9Ns=;
- b=SH6cAeoDcs7qLB0LeCEAD4CjE5U32cfCmrvfW6nYsVLOrlENnd2XvpF+Xvwd6tMDbEYH3vKUqsE9yo8AceJXzmAAjCIAPVKy6N5Hy8A/wkeE1++rKh0CT9MErYVanAE0jrYj5MAhM8X5vpAYKh2AmbX2KCa8fi5uogmh5+50Egioy6BWoOWZHU6onvaqMO2QvHrAiArSOJ3agpD5Af/cQ3VLtivNGxXr719K0NrhVglRgCWTDZHLn+xLEi++f/70oWWUIEkWMK06vt8o2rgW3jpnOjteG7rNeY6b4ApQc2aFkzwOBkImvCKp2bZHbjh4alcHMm0TGhXYEOTEevix+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a96WdSw6hQDKbqWhTokV1GehYfeRmvSwcxOWNNuV9Ns=;
- b=WscLEPikjNT5cF2PLEUn4Iiq94JURoIoDIPuJ5IHuKyq7ZN5No2OphSHyYNUrT8oTcUj2GY/Z5+U49y2p6eEL+d/oEPtI0VueeaYtMM1vgVHAcN7RaYuEd1lHcgaa+woqy69jqHMqUsV7WSKvNz5ULYPJbD1oV5l0TYLveAVFtg=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB3214.eurprd05.prod.outlook.com (10.175.243.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.21; Tue, 22 Oct 2019 18:06:12 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::f42d:b87a:e6b2:f841%7]) with mapi id 15.20.2347.029; Tue, 22 Oct 2019
- 18:06:12 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-CC:     Eran Ben Elisha <eranbe@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: Re: [net 04/15] net/mlx5e: kTLS, Size of a Dump WQE is fixed
-Thread-Topic: [net 04/15] net/mlx5e: kTLS, Size of a Dump WQE is fixed
-Thread-Index: AQHVheuSwzOlP/azmUesItL6CNiDzKdhB1YAgAXzlYA=
-Date:   Tue, 22 Oct 2019 18:06:11 +0000
-Message-ID: <9dfe7833e5b0a5f9a664c0207e79756c8a868e23.camel@mellanox.com>
-References: <20191018193737.13959-1-saeedm@mellanox.com>
-         <20191018193737.13959-5-saeedm@mellanox.com>
-         <20191018161302.7dffc832@cakuba.netronome.com>
-In-Reply-To: <20191018161302.7dffc832@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 296fb97a-9072-4f5e-ee92-08d7571a85b8
-x-ms-traffictypediagnostic: VI1PR05MB3214:|VI1PR05MB3214:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB3214C81348DD0EC5D3DB1648BE680@VI1PR05MB3214.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2043;
-x-forefront-prvs: 01986AE76B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(366004)(136003)(376002)(346002)(199004)(189003)(66066001)(229853002)(6512007)(4744005)(6246003)(6486002)(2351001)(5640700003)(6116002)(3846002)(107886003)(4326008)(7736002)(305945005)(25786009)(81166006)(81156014)(8676002)(8936002)(478600001)(14454004)(64756008)(118296001)(66556008)(66476007)(76116006)(91956017)(6916009)(66946007)(66446008)(6436002)(102836004)(316002)(54906003)(58126008)(446003)(11346002)(186003)(2616005)(476003)(5660300002)(486006)(36756003)(71200400001)(4001150100001)(86362001)(26005)(2501003)(256004)(99286004)(71190400001)(76176011)(6506007)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3214;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5pSMhN43G2ZN7qGx2clJ5H5XhHjWxb58ElcsbDeX7y9lhAU5eigpd0dfR3VOWMfOPfT05fwqL3/8eZcDSrJT6WHa6u544cWdMiZI8Ekxcz/u/pfpaAE9xk/VuBxMIabHmkyCxeScAhgC2kKGjoZOiIJfyT34GlEeNaFR9c3AoZqdS3fbKEy7B4sea0P5fVQ7hxfmshCLRPdztUUDPWx5Gennzx/5zui3hiL5zyrxpynt2GFICZ+u9i1aiWpqoCNPAYF9OAc/KQGnWv6FPJS9HSbWkPgbKY48zd0IurraC04CQy8leMELxxItvv4nmDHPX1DHChKBzUvyzGsB06ZUXcNXEwTu7y8R+p1Xsy3bUVtsQFoaQgzVzMD3lNnXJBNpOUrrvTJMpa9cWAdhQBp2YAdMzXyR4UVXV4UxO2ZcS5BfZg0N/RAW1u6NjxNbrJxa
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <EC695841B50A844F90AB62BB7FCA3E80@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1732149AbfJVSHr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Oct 2019 14:07:47 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45590 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727154AbfJVSHq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 14:07:46 -0400
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CCF317BDA1
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 18:07:45 +0000 (UTC)
+Received: by mail-lf1-f72.google.com with SMTP id p15so3548430lfc.20
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 11:07:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=QMev1t8/rRusscmilkGORiYqeo2jydWjbzFjuHZcypw=;
+        b=p+gyO1QUP2tlrwvlC5yKy+V9JyM9z3ka3fnHX7aDyGp8832RRb+fW9kLLWGkqre3be
+         mwpaZYkf2CLsOdwyqKo3SA8kPZHU3Dn2rkMR1kljl3qrlQTyUZc6MaJcnzb6cGyZbqFs
+         pLDVOqr19QCl7s9pe9e2imPeWlBYyzcQQLjOXUZC6X8/KARRv+ayfAF/l3GIvQeu0vY/
+         aA9Zjg8mmd6yJqjV4CWdug0kDiqO8v65PoKqKgaPEwpPAev1VVu0xz12DUhD2VmuedhL
+         xe+ANQludUENFAfwCREARfWAWNr11zFlwC6MsZTFSlZEjJlvOk4Fv590VCehZUkp0B2f
+         pNyQ==
+X-Gm-Message-State: APjAAAVS0HKnwzYjf+t3mUP0NQPQmI9s0jlrAyM6rVaLvBpSwBgDL5Da
+        NTRQPCeaB2TKP4xUXcMxkL1mymvNMI2g5ssY7sNOd5nTy9Nbgq3Arwa8NTx5+1U+NuVo4GXJj0z
+        fzlShfHUrzLJiB2yr
+X-Received: by 2002:a19:6759:: with SMTP id e25mr18905128lfj.80.1571767664256;
+        Tue, 22 Oct 2019 11:07:44 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzO0HxlanDX40SXZBPdlgeEJamp1nro6mu/mG7zvv+PQiAmPfdxyRtvndLzMeSJyvivAyIseg==
+X-Received: by 2002:a19:6759:: with SMTP id e25mr18905109lfj.80.1571767663933;
+        Tue, 22 Oct 2019 11:07:43 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id a7sm4382907ljn.4.2019.10.22.11.07.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Oct 2019 11:07:43 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 62CD91804B1; Tue, 22 Oct 2019 20:07:42 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Edward Cree <ecree@solarflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: Support chain calling multiple BPF programs after each other
+In-Reply-To: <aeae7b94-090a-a850-4740-0274ab8178d5@solarflare.com>
+References: <157046883502.2092443.146052429591277809.stgit@alrua-x1> <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com> <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com> <87o8yqjqg0.fsf@toke.dk> <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com> <87v9srijxa.fsf@toke.dk> <5da4ab712043c_25f42addb7c085b83b@john-XPS-13-9370.notmuch> <87eezfi2og.fsf@toke.dk> <f9d5f717-51fe-7d03-6348-dbaf0b9db434@solarflare.com> <87r23egdua.fsf@toke.dk> <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com> <874l07fu61.fsf@toke.dk> <aeae7b94-090a-a850-4740-0274ab8178d5@solarflare.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 22 Oct 2019 20:07:42 +0200
+Message-ID: <87eez4odqp.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 296fb97a-9072-4f5e-ee92-08d7571a85b8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 18:06:11.8801
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: At0HLeTYTQwNKKU4Uno7JQAXX1GLNDwETImC5x9g+EtVGzaMSO147xqqbN6uo7x+6IuulmoOI+WTIhUWfF2aGQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3214
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTEwLTE4IGF0IDE2OjEzIC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gRnJpLCAxOCBPY3QgMjAxOSAxOTozODowOSArMDAwMCwgU2FlZWQgTWFoYW1lZWQgd3Jv
-dGU6DQo+ID4gRnJvbTogVGFyaXEgVG91a2FuIDx0YXJpcXRAbWVsbGFub3guY29tPg0KPiA+IA0K
-PiA+IE5vIEV0aCBzZWdtZW50LCBzbyBubyBkeW5hbWljIGlubGluZSBoZWFkZXJzLg0KPiA+IFRo
-ZSBzaXplIG9mIGEgRHVtcCBXUUUgaXMgZml4ZWQsIHVzZSBjb25zdGFudHMgYW5kIHJlbW92ZQ0K
-PiA+IHVubmVjZXNzYXJ5IGNoZWNrcy4NCj4gPiANCj4gPiBGaXhlczogZDJlYWQxZjM2MGU4ICgi
-bmV0L21seDVlOiBBZGQga1RMUyBUWCBIVyBvZmZsb2FkIHN1cHBvcnQiKQ0KPiA+IFNpZ25lZC1v
-ZmYtYnk6IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gPiBSZXZpZXdlZC1i
-eTogRXJhbiBCZW4gRWxpc2hhIDxlcmFuYmVAbWVsbGFub3guY29tPg0KPiA+IFNpZ25lZC1vZmYt
-Ynk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPiANCj4gSXMgdGhpcyBh
-IGZpeD8NCg0KDQpzb3J0IG9mLCB0aGlzIHBhdGNoIGZ1bmRhbWVudGFsbHkgY2hhbmdlcyB0aGUg
-d2F5IG1seDUgdHJlYXRzIGtUTFMgVFgNCmRlc2NyaXB0b3JzLCB0byBtYWtlIGRvd25zdHJlYW0g
-cGF0Y2hlcyBzaW1wbGVyIGFuZCBtb3JlIGNvcnJlY3QuDQo=
+Edward Cree <ecree@solarflare.com> writes:
+
+> On 17/10/2019 13:11, Toke Høiland-Jørgensen wrote:
+>> I think there's a conceptual disconnect here in how we view what an XDP
+>> program is. In my mind, an XDP program is a stand-alone entity tied to a
+>> particular application; not a library function that can just be inserted
+>> into another program.
+
+> To me, an XDP (or any other eBPF) program is a function that is already
+>  being 'inserted into another program', namely, the kernel.  It's a
+>  function that's being wired up to a hook in the kernel.  Which isn't
+>  so different to wiring it up to a hook in a function that's wired up to
+>  a hook in the kernel (which is what my proposal effectively does).
+
+Yes, see: Different mental models leading to different notions of what
+is the natural way to do things :)
+
+>> Setting aside that for a moment; the reason I don't think this belongs
+>> in userspace is that putting it there would carry a complexity cost that
+>> is higher than having it in the kernel.
+> Complexity in the kernel is more expensive than in userland.  There are
+>  several reasons for this, such as:
+> * The kernel's reliability requirements are stricter — a daemon that
+>   crashes can be restarted, a kernel that crashes ruins your day.
+> * Userland has libraries available for many common tasks that can't be
+>   used in the kernel.
+> * Anything ABI-visible (which this would be) has to be kept forever even
+>   if it turns out to be a Bad Idea™, because We Do Not Break
+> Userspace™.
+
+To me, the first and last of those are actually arguments for putting
+this into the kernel (from the consuming application's PoV). Surely we
+want something that's reliable and well-supported? ;)
+
+> The last of these is the big one, and means that wherever possible the
+> proper course is to prototype functionality in userspace, and then
+> once the ABI is solid and known-useful, it can move to the kernel if
+> there's an advantage to doing so
+
+To me, the prototyping was the tail call-based stuff Facebook and
+Cloudflare has been doing, and this is an attempt to synthesise that
+into something that we can actually agree to support as part of the XDP
+feature set.
+
+>> - Add a new dependency to using XDP (now you not only need the kernel
+>>   and libraries, you'll also need the daemon).
+> You'll need *a* daemon. You won't be tied to a specific
+> implementation.
+
+But the point is that I *want* this to be a specific implementation; or
+rather, a specific interface. I.e., I want this to be an interface that
+people can rely on being available, rather than have a proliferation of
+slightly different ways to achieve this that are subtly incompatible.
+
+>>     - Keeping track of which XDP programs are loaded and attached to
+>>       each interface
+> There's already an API to query this.
+
+There's an API, but the daemon still has to deal with it.
+
+> You would probably want an atomic cmpxchg operation, so that you can
+> detect if someone else is fiddling with XDP and scream noisy warnings.
+
+Yup, probably going to do some sort of atomic program replace API in any
+case :)
+
+>>     - Some kind of interface with the verifier; if an app does
+>>       xdpd_rpc_load(prog), how is the verifier result going to get back
+>>       to the caller?
+> The daemon will get the verifier log back when it tries to update the
+> program; it might want to do a bit of translation before passing it
+> on, but an RPC call can definitely return errors to the caller.
+
+I wasn't implying that it was impossible to report errors over RPC.
+I was saying that you "a bit of translation" is not as trivial as you
+make it out to be...
+
+
+> In the Ideal World of kernel dynamic linking, of course, each app prog
+> gets submitted to the verifier by the app to create a floating function
+> in the kernel that's not bound to any XDP hook (app gets its verifier
+> responses at this point)
+
+I believe this is what Alexei means by "indirect calls". That is
+different, though, because it implies that each program lives as a
+separate object in the kernel - and so it might actually work. What you
+were talking about (until this paragraph) was something that was
+entirely in userspace, and all the kernel sees is a blob of the eBPF
+equivalent of `cat *.so > my_composite_prog.so`.
+
+-Toke
