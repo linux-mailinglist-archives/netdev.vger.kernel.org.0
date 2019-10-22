@@ -2,149 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E98E0B3D
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A120EE0B4B
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732261AbfJVSNV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Oct 2019 14:13:21 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:60150 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729635AbfJVSNU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 14:13:20 -0400
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D4B34368DA
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 18:13:19 +0000 (UTC)
-Received: by mail-lj1-f199.google.com with SMTP id v24so3125047ljh.23
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 11:13:19 -0700 (PDT)
+        id S1730808AbfJVSRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 14:17:07 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:39682 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727226AbfJVSRH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 14:17:07 -0400
+Received: by mail-qk1-f193.google.com with SMTP id 4so17167255qki.6
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 11:17:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=IAJUt/vLXQXxuyMX+swJHjPexvNuUqlo5dHZ7AlMbe8=;
+        b=jpMdroYu6ki7Yw9ahOhHVFC6FjM/ZIWtI+DCzwhQKUJ2QwmkrNVkewh6pAgu1Z59dK
+         pA+Z+DcJ7fGDd8H+qM7J1rcq4wnqTeItnqZqM2y951Q7nOuZcvtJxlI/Zl706eYh5ODX
+         QO2arpZ9JCmtZWGOuw6IIAyV2cPa7O1bKP94sHnob+Nnfvmy66OZ4M+PQf8JFoic0FDR
+         f8RfmIweFB1emXNSq9qLuCdqPIBJGyLawOVol+o5xJDSeqg2utm6SW/30d79JF4WBhyB
+         zKbwGdtsi3ADMJh6tHEuzfyq+kYJgUVTAUTzmK1WXNw/FOgtvPSo3iclQxn6H9mJXn74
+         SFCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=+vbRi+3JMlk5PxQiqLnVHJfXouj+zo5niHlRTYkkAyw=;
-        b=WD3TkejjAvk/1Zt6JsUc/RG94PDQ3EWGylT17S+PX1FtiMgeTcODc6SaLiK3q6EG6b
-         TIlZnldpI05PBtigo7vnx23XfDt+FRImQCeU61fxU7EPag3s29NH4dWsVsXycS8f3GRe
-         bnc7C8ckse7i23azxqpjKnzTMwR+rO/brUlEGxij1bcZoIExbX5ehr0wzS9e730uGPGL
-         6TVIDGgXQWY0ZNIQuKIwV8bbSi3tWmJDdIL0HpvFNoRxrbshuqIXyeccaPctoaJey+Ql
-         tlr//+nlaIg0GU92t8cLmZJQmYmVMsHq/Nl1e9E7iRT94rNLSa+u+8lzIUipmFG+FVjB
-         kEyA==
-X-Gm-Message-State: APjAAAWHHZLPzYPuyAgR+URTfQAvqTN3iTiNsRq3IeqHSO0iNb7QgjuR
-        ryzt2GArCr71mH0lpeUR2WhEW/USh2WuIFIAf8snxNsOygLkD9DHYjqLIuqRLujdVa+t1HRdJzy
-        L3w5RwjCpmdWrGf9f
-X-Received: by 2002:ac2:5468:: with SMTP id e8mr4267839lfn.31.1571767998352;
-        Tue, 22 Oct 2019 11:13:18 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxQ+GuWoES4jexLS9LLdxFqySe8OZ7a9aoaRWxtlFkFyRLgfHjZYQZw1ycIGaQJ9EWhZXG1VQ==
-X-Received: by 2002:ac2:5468:: with SMTP id e8mr4267824lfn.31.1571767998147;
-        Tue, 22 Oct 2019 11:13:18 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id o13sm7709159ljh.35.2019.10.22.11.13.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 11:13:17 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C06BE1804B1; Tue, 22 Oct 2019 20:13:16 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: Store map pin path in struct bpf_map
-In-Reply-To: <CAEf4BzatAgkOiS2+EpauWsUWymmjM4YRBJcSqYj15Ywk8aP6Lw@mail.gmail.com>
-References: <157175668770.112621.17344362302386223623.stgit@toke.dk> <157175668879.112621.10917994557478417780.stgit@toke.dk> <CAEf4BzatAgkOiS2+EpauWsUWymmjM4YRBJcSqYj15Ywk8aP6Lw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 22 Oct 2019 20:13:16 +0200
-Message-ID: <87blu8odhf.fsf@toke.dk>
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=IAJUt/vLXQXxuyMX+swJHjPexvNuUqlo5dHZ7AlMbe8=;
+        b=AsTmyXVeq7vyZuRuC7FaZ/3uK0Li0giEtj41yNDwfZTTv/VMk3LUb4erH2UT2JGTTr
+         b0ouSQ/IGVKzT4z7vUZ6w6vF9CQ9EpQS7XuWdD+34D7ZnBGlbDa9cTA/SiatygOfblov
+         mGCcwjVsFIU7DV3m1jdArvI3Wuv/hV+QjqL7Nr2aHsv1mc+FVzX7GVtTpabNmcDD8Eqp
+         OAxyU8zoUoQu1IUTzIEzUXpYcaMqXEIYneK/yC/ydwsI5S6LxFKRnR//jDNnRlwVpuA1
+         1BP++5dytp1vMt4bpeDhPr9hivglCbRw/eyMSm+ap2EvA1gOR/claJbZvrgt6VudwicF
+         cdMA==
+X-Gm-Message-State: APjAAAWoBl/exHdbkOPjHfcH7UfbUwrz9lOQzxXKvmRnunHtpbXHd3dV
+        pv+u9o76OpZFW/C501X+msaXSQ==
+X-Google-Smtp-Source: APXvYqyXURyLKDMwN1GmVgk4rC+WHgMWjwtz6AeWeDQMxkBAzbgFFqmG70CikJ0fMDTpWiB7znQxag==
+X-Received: by 2002:a05:620a:1e:: with SMTP id j30mr4175428qki.301.1571768226544;
+        Tue, 22 Oct 2019 11:17:06 -0700 (PDT)
+Received: from sevai (69-196-152-194.dsl.teksavvy.com. [69.196.152.194])
+        by smtp.gmail.com with ESMTPSA id p7sm10795138qkc.21.2019.10.22.11.17.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 22 Oct 2019 11:17:06 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri\@resnulli.us" <jiri@resnulli.us>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "dcaratti\@redhat.com" <dcaratti@redhat.com>,
+        "pabeni\@redhat.com" <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation by netlink flag
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+        <20191022143539.GY4321@localhost.localdomain>
+        <vbfmudsx26l.fsf@mellanox.com>
+Date:   Tue, 22 Oct 2019 14:17:04 -0400
+In-Reply-To: <vbfmudsx26l.fsf@mellanox.com> (Vlad Buslov's message of "Tue, 22
+        Oct 2019 14:52:37 +0000")
+Message-ID: <85imog63xb.fsf@mojatatu.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+Vlad Buslov <vladbu@mellanox.com> writes:
 
-> On Tue, Oct 22, 2019 at 9:08 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> On Tue 22 Oct 2019 at 17:35, Marcelo Ricardo Leitner <mleitner@redhat.com> wrote:
+>> On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
+>>> Currently, significant fraction of CPU time during TC filter allocation
+>>> is spent in percpu allocator. Moreover, percpu allocator is protected
+>>> with single global mutex which negates any potential to improve its
+>>> performance by means of recent developments in TC filter update API that
+>>> removed rtnl lock for some Qdiscs and classifiers. In order to
+>>> significantly improve filter update rate and reduce memory usage we
+>>> would like to allow users to skip percpu counters allocation for
+>>> specific action if they don't expect high traffic rate hitting the
+>>> action, which is a reasonable expectation for hardware-offloaded setup.
+>>> In that case any potential gains to software fast-path performance
+>>> gained by usage of percpu-allocated counters compared to regular integer
+>>> counters protected by spinlock are not important, but amount of
+>>> additional CPU and memory consumed by them is significant.
 >>
->> From: Toke Høiland-Jørgensen <toke@redhat.com>
+>> Yes!
 >>
->> When pinning a map, store the pin path in struct bpf_map so it can be
->> re-used later for un-pinning. This simplifies the later addition of per-map
->> pin paths.
->>
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
->>  tools/lib/bpf/libbpf.c |   19 ++++++++++---------
->>  1 file changed, 10 insertions(+), 9 deletions(-)
->>
->> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->> index cccfd9355134..b4fdd8ee3bbd 100644
->> --- a/tools/lib/bpf/libbpf.c
->> +++ b/tools/lib/bpf/libbpf.c
->> @@ -226,6 +226,7 @@ struct bpf_map {
->>         void *priv;
->>         bpf_map_clear_priv_t clear_priv;
->>         enum libbpf_map_type libbpf_type;
->> +       char *pin_path;
->>  };
->>
->>  struct bpf_secdata {
->> @@ -1929,6 +1930,7 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
->>         if (err)
->>                 goto err_close_new_fd;
->>         free(map->name);
->> +       zfree(&map->pin_path);
->>
+>> I wonder how this can play together with conntrack offloading.  With
+>> it the sw datapath will be more used, as a conntrack entry can only be
+>> offloaded after the handshake.  That said, the host can have to
+>> process quite some handshakes in sw datapath.  Seems OvS can then just
+>> not set this flag in act_ct (and others for this rule), and such cases
+>> will be able to leverage the percpu stats.  Right?
 >
-> While you are touching this function, can you please also fix error
-> handling in it? We should store -errno locally on error, before we
-> call close() which might change errno.
+> The flag is set per each actions instance so client can chose not to use
+> the flag in case-by-case basis. Conntrack use case requires further
+> investigation since I'm not entirely convinced that handling first few
+> packets in sw (before connection reaches established state and is
+> offloaded) warrants having percpu counter.
 
-Didn't actually look much at the surrounding function, TBH. I do expect
-that I will need to go poke into this for the follow-on "automatic reuse
-of pinned maps" series anyway. But sure, I can do a bit of cleanup in a
-standalone patch first :)
+Hi Vlad,
 
->>         map->fd = new_fd;
->>         map->name = new_name;
->> @@ -4022,6 +4024,7 @@ int bpf_map__pin(struct bpf_map *map, const char *path)
->>                 return -errno;
->>         }
->>
->> +       map->pin_path = strdup(path);
->
-> if (!map->pin_path) {
->     err = -errno;
->     goto err_close_new_fd;
-> }
-
-Right.
-
->>         pr_debug("pinned map '%s'\n", path);
->>
->>         return 0;
->> @@ -4031,6 +4034,9 @@ int bpf_map__unpin(struct bpf_map *map, const char *path)
->>  {
->>         int err;
->>
->> +       if (!path)
->> +               path = map->pin_path;
->
-> This semantics is kind of weird. Given we now remember pin_path,
-> should we instead check that user-provided path is actually correct
-> and matches what we stored? Alternatively, bpf_map__unpin() w/o path
-> argument looks like a cleaner API.
-
-Yeah, I guess the function without a path argument would make the most
-sense. However, we can't really change the API of bpf_map__unpin()
-(unless you're proposing a symbol-versioned new version?). Dunno if it's
-worth it to include a new, somewhat oddly-named, function to achieve
-this? For the internal libbpf uses at least it's easy enough for the
-caller to just go bpf_map__unpin(map, map->pin_path), so I could also
-just drop this change? WDYT?
-
--Toke
+Did you consider using TCA_ROOT_FLAGS instead of adding another
+per-action 32-bit flag?
