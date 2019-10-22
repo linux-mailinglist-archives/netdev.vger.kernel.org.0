@@ -2,193 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 875EBDFDF5
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 09:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F622DFE14
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 09:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387879AbfJVHED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 03:04:03 -0400
-Received: from relay12.mail.gandi.net ([217.70.178.232]:34011 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387659AbfJVHED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 03:04:03 -0400
-Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 487CB200002
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 07:04:01 +0000 (UTC)
-Received: by mail-vs1-f45.google.com with SMTP id b123so10625411vsb.5
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 00:04:01 -0700 (PDT)
-X-Gm-Message-State: APjAAAXsTsANrcIjGVrFj4uKZ7E/3GlwtJPbjXvgsEdCGTCXk1zLlJFP
-        kqitSSIWGgx3M6MjB69NMe3vGW4x9noeIYI+NhI=
-X-Google-Smtp-Source: APXvYqyJQVL0k1De8cbwcmH4imv79zGlPPZYClz83x1y+R2DXkt9DygtPDtw7zuR+XFmlYPaFJ091/d6ick5NgsIGUo=
-X-Received: by 2002:a67:ec8f:: with SMTP id h15mr983321vsp.66.1571727839729;
- Tue, 22 Oct 2019 00:03:59 -0700 (PDT)
+        id S1730635AbfJVHQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 03:16:26 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:34504 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726160AbfJVHQZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 03:16:25 -0400
+Received: by mail-qk1-f194.google.com with SMTP id f18so14719250qkm.1;
+        Tue, 22 Oct 2019 00:16:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DKOZJivBfgaVZm/MQeBuy3v8RHDAFWBq9N66kk5jmfc=;
+        b=c9xJ373S437DGaiEap0GE9l3QUNCAJ5Nsw3l930PxNs/HJfHVhsaOUpow2coauZSRL
+         M3qtNheqBa6seYCRtzJUmLwufVbE6HzM+0tq1G4lhSGz8cKoZiKQa1knZTxHyU8ekEJU
+         MV5MV20mzj9dJ6HakfxoTLCCaJJ4lkqLXiB8dS5OaeatuP+Hxj6QHZgJfT1yRgE0ifdi
+         EcKM8xfUzTkN4Jw6rY6yYkGIuCVtl03wA0mxD6cvh03WovhXY7Y9I/OMXbbV48G6Y5g+
+         rLDR1l75zMikxMJwLj3sJR7Kr90ngRRpWDjcyI5eqO0NUH7aPhHMO8rayFRCWyUN2GUe
+         2HZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DKOZJivBfgaVZm/MQeBuy3v8RHDAFWBq9N66kk5jmfc=;
+        b=mrjucnVrFOfCMmfBipveBjB8hl8QnL5vfq6nVJcIm3D57gL1CBozdZFdOjhOT0UXLC
+         WVnqUkJg2NRbwRqkPmV/Lznk/rbLxM+x02Gg9irGoDcMFF2WA2RXHkdCD9lGrlNjrqA9
+         oN5Y1yCUfTd+f/B5UNiEPNf8licM28YPaYau9U9WsxUCGsQdJcKvUO2wa5DEq1BuQDCm
+         n4gtxDiiEayxqq2K426HSnGmvvgDf+DMPC6QUNo7v697fRMDrvlNHo5XC2ieqEMkcNhH
+         2slrTfYrnh83jkrmQxIM/n13DpcOse6Vr+LK+i3WTEIT3B3DsOx8eN1Pa5mPEEClxbcX
+         72ow==
+X-Gm-Message-State: APjAAAXk8xGhSr79Ik+QLyTMaTPkdKlcprDjS+hDNwRih3K8b6qCJRqE
+        tsGZcP+D6zVCEkHxWnF2bbScclhXCueBsF4WLHQ=
+X-Google-Smtp-Source: APXvYqySyzVUtkSWsKxipWWsIg3m/CmZj0W+2GPAOg2ttPAfDnZKpnmIVzVe7+VOBz+oMC82UhGCBFydhfwCBOrMLuc=
+X-Received: by 2002:a05:620a:132b:: with SMTP id p11mr1688653qkj.232.1571728582996;
+ Tue, 22 Oct 2019 00:16:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
-In-Reply-To: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Tue, 22 Oct 2019 00:03:49 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_B=1RR+qqx938=O32iTH1yQ+S_gLAXS-aA1PLYYtgu6VA@mail.gmail.com>
-Message-ID: <CAOrHB_B=1RR+qqx938=O32iTH1yQ+S_gLAXS-aA1PLYYtgu6VA@mail.gmail.com>
-Subject: Re: [PATCH v2] Change in Openvswitch to support MPLS label depth of 3
- in ingress direction
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, scott.drennan@nokia.com,
-        Jiri Benc <jbenc@redhat.com>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
+References: <20191021105938.11820-1-bjorn.topel@gmail.com> <87h842qpvi.fsf@toke.dk>
+ <CAJ+HfNiNwTbER1NfaKamx0p1VcBHjHSXb4_66+2eBff95pmNFg@mail.gmail.com>
+ <87bluaqoim.fsf@toke.dk> <CAJ+HfNgWeY7oLwun2Lt4nbT-Mh2yETZfHOGcYhvD=A+-UxWVOw@mail.gmail.com>
+ <CAJ+HfNjd+eMAmeBnZ8iANjcea9ZT2cnvm3axuRwvUEMDpa5zHw@mail.gmail.com> <87v9sip0i8.fsf@toke.dk>
+In-Reply-To: <87v9sip0i8.fsf@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 22 Oct 2019 09:16:11 +0200
+Message-ID: <CAJ+HfNgGTL-P-Qe5zOh=s0RBRMJGx0NXDLTj7DAunwk-HoVdxg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] libbpf: use implicit XSKMAP lookup from
+ AF_XDP XDP program
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        Jiong Wang <jiong.wang@netronome.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 20, 2019 at 7:12 AM Martin Varghese
-<martinvarghesenokia@gmail.com> wrote:
+On Mon, 21 Oct 2019 at 17:43, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
+.com> wrote:
 >
-> From: Martin Varghese <martin.varghese@nokia.com>
+> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 >
-> The openvswitch was supporting a MPLS label depth of 1 in the ingress
-> direction though the userspace OVS supports a max depth of 3 labels.
-> This change enables openvswitch module to support a max depth of
-> 3 labels in the ingress.
+> > On Mon, 21 Oct 2019 at 15:37, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.=
+com> wrote:
+> >>
+> >> On Mon, 21 Oct 2019 at 14:19, Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+> >> >
+> >> > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+> >> >
+> >> [...]
+> >> > >
+> >> > > bpf_redirect_map() returns a 32-bit signed int, so the upper 32-bi=
+t
+> >> > > will need to be cleared. Having an explicit AND is one instruction
+> >> > > less than two shifts. So, it's an optimization (every instruction =
+is
+> >> > > sacred).
+> >> >
+> >> > OIC. Well, a comment explaining that might be nice (since you're doi=
+ng
+> >> > per-instruction comments anyway)? :)
+> >> >
+> >>
+> >> Sure, I can do a v3 with a comment, unless someone has a better idea
+> >> avoiding both shifts and AND.
+> >>
+> >> Thanks for taking a look!
+> >>
+> >
+> > Now wait, there are the JMP32 instructions that Jiong added. So,
+> > shifts/AND can be avoided. Now, regarding backward compat... JMP32 is
+> > pretty new. I need to think a bit how to approach this. I mean, I'd
+> > like to be able to use new BPF instructions.
 >
-> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> ---
-> Changes in v2
->    - Moved MPLS count validation from datapath to configuration.
->    - Fixed set mpls function.
+> Well, they went into kernel 5.1 AFAICT; does AF_XDP even work properly
+> in kernels older than that? For the xdp-tutorial we've just been telling
+> people to upgrade their kernels to use it (see, e.g.,
+> https://github.com/xdp-project/xdp-tutorial/issues/76).
 >
-This patch looks pretty close now.
 
->  net/openvswitch/actions.c      |  2 +-
->  net/openvswitch/flow.c         | 20 ++++++++++-----
->  net/openvswitch/flow.h         |  9 ++++---
->  net/openvswitch/flow_netlink.c | 57 +++++++++++++++++++++++++++++++++---------
->  4 files changed, 66 insertions(+), 22 deletions(-)
->
-...
-> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-> index d7559c6..21de061 100644
-> --- a/net/openvswitch/flow_netlink.c
-> +++ b/net/openvswitch/flow_netlink.c
-> @@ -424,7 +424,7 @@ size_t ovs_key_attr_size(void)
->         [OVS_KEY_ATTR_DP_HASH]   = { .len = sizeof(u32) },
->         [OVS_KEY_ATTR_TUNNEL]    = { .len = OVS_ATTR_NESTED,
->                                      .next = ovs_tunnel_key_lens, },
-> -       [OVS_KEY_ATTR_MPLS]      = { .len = sizeof(struct ovs_key_mpls) },
-> +       [OVS_KEY_ATTR_MPLS]      = { .len = OVS_ATTR_VARIABLE },
->         [OVS_KEY_ATTR_CT_STATE]  = { .len = sizeof(u32) },
->         [OVS_KEY_ATTR_CT_ZONE]   = { .len = sizeof(u16) },
->         [OVS_KEY_ATTR_CT_MARK]   = { .len = sizeof(u32) },
-> @@ -1628,10 +1628,25 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
->
->         if (attrs & (1 << OVS_KEY_ATTR_MPLS)) {
->                 const struct ovs_key_mpls *mpls_key;
-> +               u32 hdr_len;
-> +               u32 label_count, label_count_mask, i;
->
->                 mpls_key = nla_data(a[OVS_KEY_ATTR_MPLS]);
-> -               SW_FLOW_KEY_PUT(match, mpls.top_lse,
-> -                               mpls_key->mpls_lse, is_mask);
-> +               hdr_len = nla_len(a[OVS_KEY_ATTR_MPLS]);
-> +               label_count = hdr_len / sizeof(struct ovs_key_mpls);
-> +
-> +               if (label_count == 0 || label_count > MPLS_LABEL_DEPTH ||
-> +                   hdr_len % sizeof(struct ovs_key_mpls))
-> +                       return -EINVAL;
-> +
-> +               label_count_mask =  GENMASK(label_count - 1, 0);
-> +
-> +               for (i = 0 ; i < label_count; i++)
-> +                       SW_FLOW_KEY_PUT(match, mpls.lse[i],
-> +                                       mpls_key[i].mpls_lse, is_mask);
-> +
-> +               SW_FLOW_KEY_PUT(match, mpls.num_labels_mask,
-> +                               label_count_mask, is_mask);
->
->                 attrs &= ~(1 << OVS_KEY_ATTR_MPLS);
->          }
-> @@ -2114,13 +2129,18 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
->                 ether_addr_copy(arp_key->arp_sha, output->ipv4.arp.sha);
->                 ether_addr_copy(arp_key->arp_tha, output->ipv4.arp.tha);
->         } else if (eth_p_mpls(swkey->eth.type)) {
-> +               u8 i, num_labels;
->                 struct ovs_key_mpls *mpls_key;
->
-> -               nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS, sizeof(*mpls_key));
-> +               num_labels = hweight_long(output->mpls.num_labels_mask);
-> +               nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS,
-> +                                 num_labels * sizeof(*mpls_key));
->                 if (!nla)
->                         goto nla_put_failure;
-> +
->                 mpls_key = nla_data(nla);
-> -               mpls_key->mpls_lse = output->mpls.top_lse;
-> +               for (i = 0; i < num_labels; i++)
-> +                       mpls_key[i].mpls_lse = output->mpls.lse[i];
->         }
->
->         if ((swkey->eth.type == htons(ETH_P_IP) ||
-> @@ -2957,6 +2977,10 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
->         u8 mac_proto = ovs_key_mac_proto(key);
->         const struct nlattr *a;
->         int rem, err;
-> +       u32 mpls_label_count = 0;
-> +
-> +       if (eth_p_mpls(eth_type))
-> +               mpls_label_count = hweight_long(key->mpls.num_labels_mask);
->
-The MPLS push and pop action could be part of nested actions in
-sample, so the count needs to be global count across such nested
-actions. have a look at validate_and_copy_sample().
-
->         nla_for_each_nested(a, attr, rem) {
->                 /* Expected argument lengths, (u32)-1 for variable length. */
-> @@ -3065,25 +3089,34 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
->                              !eth_p_mpls(eth_type)))
->                                 return -EINVAL;
->                         eth_type = mpls->mpls_ethertype;
-> +                       mpls_label_count++;
->                         break;
->                 }
->
-> -               case OVS_ACTION_ATTR_POP_MPLS:
-> +               case OVS_ACTION_ATTR_POP_MPLS: {
-> +                       __be16  proto;
->                         if (vlan_tci & htons(VLAN_CFI_MASK) ||
->                             !eth_p_mpls(eth_type))
->                                 return -EINVAL;
->
-> -                       /* Disallow subsequent L2.5+ set and mpls_pop actions
-> -                        * as there is no check here to ensure that the new
-> -                        * eth_type is valid and thus set actions could
-> -                        * write off the end of the packet or otherwise
-> -                        * corrupt it.
-> +                       /* Disallow subsequent L2.5+ set actions as there is
-> +                        * no check here to ensure that the new eth type is
-> +                        * valid and thus set actions could write off the
-> +                        * end of the packet or otherwise corrupt it.
->                          *
->                          * Support for these actions is planned using packet
->                          * recirculation.
->                          */
-This comment needs updated.
+Yeah, let's take that route, i.e. using JMP32 and one program. One
+could argue that libbpf could do runtime checks and load the simpler
+program w/o the fallback for post-5.3 only, and avoiding the branching
+all together.
 
 
-> -                       eth_type = htons(0);
-> +                       proto = nla_get_be16(a);
-> +                       mpls_label_count--;
-> +
-> +                       if (!eth_p_mpls(proto) || !mpls_label_count)
-> +                               eth_type = htons(0);
-> +                       else
-> +                               eth_type =  proto;
-> +
->                         break;
-> +               }
->
->                 case OVS_ACTION_ATTR_SET:
->                         err = validate_set(a, key, sfa,
-> --
-> 1.8.3.1
+Bj=C3=B6rn
+
+
+> -Toke
 >
