@@ -2,161 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABE89E077E
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:32:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9924E078F
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:38:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732404AbfJVPcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 11:32:22 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:51150 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730768AbfJVPcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 11:32:22 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 8F26A28E66D
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Robert Beckett <bob.beckett@collabora.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH v2] igb: dont drop packets if rx flow control is enabled
-Date:   Tue, 22 Oct 2019 16:31:41 +0100
-Message-Id: <20191022153155.9008-1-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.20.1
+        id S2387474AbfJVPiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 11:38:04 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:48382 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730305AbfJVPiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 11:38:03 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 09884B8005A;
+        Tue, 22 Oct 2019 15:38:01 +0000 (UTC)
+Received: from cim-opti7060.uk.solarflarecom.com (10.17.20.154) by
+ ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Tue, 22 Oct 2019 16:37:56 +0100
+From:   Charles McLachlan <cmclachlan@solarflare.com>
+Subject: [PATCH net-next 1/6] sfc: support encapsulation of xdp_frames in
+ efx_tx_buffer.
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
+        <brouer@redhat.com>
+References: <05b72fdb-165c-1350-787b-ca8c5261c459@solarflare.com>
+Message-ID: <7eca8299-a6bf-5d47-1815-4d2cfa87c070@solarflare.com>
+Date:   Tue, 22 Oct 2019 16:37:53 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <05b72fdb-165c-1350-787b-ca8c5261c459@solarflare.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.154]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24994.003
+X-TM-AS-Result: No-3.185300-8.000000-10
+X-TMASE-MatchedRID: Q/M1H33ihxihqGDU6KwoEDCMW7zNwFaIURtSyr9IJuWdzjX37VUcWsiT
+        Wug2C4DNl1M7KT9/aqA0uSYsteWBcgihmwiXCMoGPwKTD1v8YV5MkOX0UoduuWOMyb1Ixq8VpIs
+        onG6IBJL3r6E0eamPVLdcsksEb7ZAOzpEi4NJ5xP1xv2JHBkcH0T0lGtfbK/pQW6eCaGxKwJ4pq
+        O87q5acCDNUEs+GH8s3yKsu6qwUKcsm617PZ0pZ+LzNWBegCW2XC3N7C7YzreNo+PRbWqfRMprJ
+        P8FBOIaKM/YLUgK1bxAdX7FtqXCxVPf/vBv7o/B7Ho/vbykSFMvoPEXhOt7wK3VFtxX24Vk8jAc
+        BvHv6uXc/McDGqUEKVMAGgQqc7wytjcNO3CcIFNDgw2OfwbhLKMa5OkNpiHkifsL+6CY4Rll3xQ
+        +X3ZmUQ==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.185300-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24994.003
+X-MDID: 1571758682-W0yUKINWmYng
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If rx flow control has been enabled (via autoneg or forced), packets
-should not be dropped due to rx descriptor ring exhaustion. Instead
-pause frames should be used to apply back pressure. This only applies
-if VFs are not in use.
+Add a field to efx_tx_buffer so that we can track xdp_frames. Add a
+flag so that buffers that contain xdp_frames can be identified and
+passed to xdp_return_frame.
 
-Move SRRCTL setup to its own function for easy reuse and only set drop
-enable bit if rx flow control is not enabled.
-
-Since v1: always enable dropping of packets if VFs in use.
-
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
 ---
- drivers/net/ethernet/intel/igb/igb.h         |  1 +
- drivers/net/ethernet/intel/igb/igb_ethtool.c |  8 ++++
- drivers/net/ethernet/intel/igb/igb_main.c    | 47 ++++++++++++++------
- 3 files changed, 42 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/sfc/net_driver.h | 10 ++++++++--
+ drivers/net/ethernet/sfc/tx.c         |  2 ++
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
-index ca54e268d157..49b5fa9d4783 100644
---- a/drivers/net/ethernet/intel/igb/igb.h
-+++ b/drivers/net/ethernet/intel/igb/igb.h
-@@ -661,6 +661,7 @@ void igb_configure_tx_ring(struct igb_adapter *, struct igb_ring *);
- void igb_configure_rx_ring(struct igb_adapter *, struct igb_ring *);
- void igb_setup_tctl(struct igb_adapter *);
- void igb_setup_rctl(struct igb_adapter *);
-+void igb_setup_srrctl(struct igb_adapter *, struct igb_ring *);
- netdev_tx_t igb_xmit_frame_ring(struct sk_buff *, struct igb_ring *);
- void igb_alloc_rx_buffers(struct igb_ring *, u16);
- void igb_update_stats(struct igb_adapter *);
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 3182b059bf55..1107a1921b43 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -396,6 +396,7 @@ static int igb_set_pauseparam(struct net_device *netdev,
- 	struct igb_adapter *adapter = netdev_priv(netdev);
- 	struct e1000_hw *hw = &adapter->hw;
- 	int retval = 0;
-+	int i;
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 284a1b047ac2..7394d901e021 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -27,6 +27,7 @@
+ #include <linux/i2c.h>
+ #include <linux/mtd/mtd.h>
+ #include <net/busy_poll.h>
++#include <net/xdp.h>
  
- 	/* 100basefx does not support setting link flow control */
- 	if (hw->dev_spec._82575.eth_flags.e100_base_fx)
-@@ -428,6 +429,13 @@ static int igb_set_pauseparam(struct net_device *netdev,
+ #include "enum.h"
+ #include "bitfield.h"
+@@ -136,7 +137,8 @@ struct efx_special_buffer {
+  * struct efx_tx_buffer - buffer state for a TX descriptor
+  * @skb: When @flags & %EFX_TX_BUF_SKB, the associated socket buffer to be
+  *	freed when descriptor completes
+- * @option: When @flags & %EFX_TX_BUF_OPTION, a NIC-specific option descriptor.
++ * @xdpf: When @flags & %EFX_TX_BUF_XDP, the XDP frame information; its @data
++ *	member is the associated buffer to drop a page reference on.
+  * @dma_addr: DMA address of the fragment.
+  * @flags: Flags for allocation and DMA mapping type
+  * @len: Length of this fragment.
+@@ -146,7 +148,10 @@ struct efx_special_buffer {
+  * Only valid if @unmap_len != 0.
+  */
+ struct efx_tx_buffer {
+-	const struct sk_buff *skb;
++	union {
++		const struct sk_buff *skb;
++		struct xdp_frame *xdpf;
++	};
+ 	union {
+ 		efx_qword_t option;
+ 		dma_addr_t dma_addr;
+@@ -160,6 +165,7 @@ struct efx_tx_buffer {
+ #define EFX_TX_BUF_SKB		2	/* buffer is last part of skb */
+ #define EFX_TX_BUF_MAP_SINGLE	8	/* buffer was mapped with dma_map_single() */
+ #define EFX_TX_BUF_OPTION	0x10	/* empty buffer for option descriptor */
++#define EFX_TX_BUF_XDP		0x20	/* buffer was sent with XDP */
  
- 		retval = ((hw->phy.media_type == e1000_media_type_copper) ?
- 			  igb_force_mac_fc(hw) : igb_setup_link(hw));
-+
-+		/* Make sure SRRCTL considers new fc settings for each ring */
-+		for (i = 0; i < adapter->num_rx_queues; i++) {
-+			struct igb_ring *ring = adapter->rx_ring[i];
-+
-+			igb_setup_srrctl(adapter, ring);
-+		}
+ /**
+  * struct efx_tx_queue - An Efx TX queue
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index 65e81ec1b314..9905e8952a45 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -95,6 +95,8 @@ static void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 		netif_vdbg(tx_queue->efx, tx_done, tx_queue->efx->net_dev,
+ 			   "TX queue %d transmission id %x complete\n",
+ 			   tx_queue->queue, tx_queue->read_count);
++	} else if (buffer->flags & EFX_TX_BUF_XDP) {
++		xdp_return_frame(buffer->xdpf);
  	}
  
- 	clear_bit(__IGB_RESETTING, &adapter->state);
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 105b0624081a..92c30aac0c28 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4463,6 +4463,37 @@ static inline void igb_set_vmolr(struct igb_adapter *adapter,
- 	wr32(E1000_VMOLR(vfn), vmolr);
- }
- 
-+/**
-+ *  igb_setup_srrctl - configure the split and replication receive control
-+ *  		       registers
-+ *  @adapter: Board private structure
-+ *  @ring: receive ring to be configured
-+ **/
-+void igb_setup_srrctl(struct igb_adapter *adapter, struct igb_ring *ring)
-+{
-+	struct e1000_hw *hw = &adapter->hw;
-+	int reg_idx = ring->reg_idx;
-+	u32 srrctl = 0;
-+
-+	srrctl = IGB_RX_HDR_LEN << E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
-+	if (ring_uses_large_buffer(ring))
-+		srrctl |= IGB_RXBUFFER_3072 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
-+	else
-+		srrctl |= IGB_RXBUFFER_2048 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
-+	srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
-+	if (hw->mac.type >= e1000_82580)
-+		srrctl |= E1000_SRRCTL_TIMESTAMP;
-+	/* Only set Drop Enable if VFs allocated, or we are supporting multiple
-+	 * queues and rx flow control is disabled
-+	 */
-+	if (adapter->vfs_allocated_count ||
-+	    (!(hw->fc.current_mode & e1000_fc_rx_pause) &&
-+	     adapter->num_rx_queues > 1))
-+		srrctl |= E1000_SRRCTL_DROP_EN;
-+
-+	wr32(E1000_SRRCTL(reg_idx), srrctl);
-+}
-+
- /**
-  *  igb_configure_rx_ring - Configure a receive ring after Reset
-  *  @adapter: board private structure
-@@ -4477,7 +4508,7 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
- 	union e1000_adv_rx_desc *rx_desc;
- 	u64 rdba = ring->dma;
- 	int reg_idx = ring->reg_idx;
--	u32 srrctl = 0, rxdctl = 0;
-+	u32 rxdctl = 0;
- 
- 	/* disable the queue */
- 	wr32(E1000_RXDCTL(reg_idx), 0);
-@@ -4495,19 +4526,7 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
- 	writel(0, ring->tail);
- 
- 	/* set descriptor configuration */
--	srrctl = IGB_RX_HDR_LEN << E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
--	if (ring_uses_large_buffer(ring))
--		srrctl |= IGB_RXBUFFER_3072 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
--	else
--		srrctl |= IGB_RXBUFFER_2048 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
--	srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
--	if (hw->mac.type >= e1000_82580)
--		srrctl |= E1000_SRRCTL_TIMESTAMP;
--	/* Only set Drop Enable if we are supporting multiple queues */
--	if (adapter->vfs_allocated_count || adapter->num_rx_queues > 1)
--		srrctl |= E1000_SRRCTL_DROP_EN;
--
--	wr32(E1000_SRRCTL(reg_idx), srrctl);
-+	igb_setup_srrctl(adapter, ring);
- 
- 	/* set filtering for VMDQ pools */
- 	igb_set_vmolr(adapter, reg_idx & 0x7, true);
--- 
-2.20.1
-
+ 	buffer->len = 0;
