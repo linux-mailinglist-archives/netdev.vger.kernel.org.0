@@ -2,85 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52685E07B3
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:44:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A5E1E07CC
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:48:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731906AbfJVPor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 11:44:47 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:39362 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730141AbfJVPor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 11:44:47 -0400
-Received: by mail-qt1-f194.google.com with SMTP id t8so9897790qtc.6
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 08:44:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aEJsGhajzyCVJOuCKLwjFSUsO0f3i2TI6DyKPqhR7FY=;
-        b=P4KaiQhiShClpqiLgPf5gudvn16iX2Kr2un34ScnbMCovXjG7urRX9NX3TTIbTVUgk
-         XHOIlj8ZK4+vVlJuXnwcSSHVGHXYj9ObSK2EfxMULFain91k++d9aiOq69FkQx88o0KW
-         knNsmqAcwFS84dTcIiCw2083rsOyaeLOvyozLHgkoVRTrs4qpz+F6X8dqi1DZdB7uBCt
-         4V9iK+fAxi6gIJMU9xKhsVOlSP1nTOIUlDN4Y7bffFeUB4R/RRdI5zsoOt7F7r3JhCI8
-         Oy4vLCnFpF+rwp0BQ2+dTQO/OX+FBtUfjvCL7BsBY2qyJtDiWnnI5OBp/iPgkBUaQpSo
-         9XMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aEJsGhajzyCVJOuCKLwjFSUsO0f3i2TI6DyKPqhR7FY=;
-        b=Nc6WWYzymI9VAh7jqo+dxkV3ISG5kBFDfKyg5/0XdXUcYk+OEpQ/Dihs18WOdwq+JL
-         qh6rVtg77FJcnh5wzdugGUgjSbSPTa7izfRQbJSMSB1xhyCT5j/S5wuPrAAFzFkLUSvn
-         Bil0J1K0dP7V6q2UnxvgV3XGPzfLJ33i8Ce05Tu7Ml+YBtk8IdmzxRyNTBIesWvy4Fzq
-         HiNeIhpVpFeqWFv8X+/uwJjF/VEaFnc83lExKOJP8RRMJh0GVN55QsKEpjUKlFxyRKGp
-         cdg6FG49DBZIFf0QLViBwnD4xJMWA7+L+NN+YDIZiOgRjCGDF8R8x7/xDFwPfZYn+HfC
-         spDw==
-X-Gm-Message-State: APjAAAUeeofN3RykOwrj4cXKumX9uCshY10dJO6AUMHWXKM0OKYX4t4j
-        HrbrTKYs4/eox0IJK9ldcQaC1En/IaCKyTYIUOd0GwhI1Vk=
-X-Google-Smtp-Source: APXvYqwECgeN5LvVGdUpWT/GatzkGlQa8bXTwru1Tj5fcP4R8/a38nvi5Z2x8komLBTmiSq73OgEsBKrkwi3g/uN1JE=
-X-Received: by 2002:ad4:500f:: with SMTP id s15mr1689551qvo.200.1571759086650;
- Tue, 22 Oct 2019 08:44:46 -0700 (PDT)
+        id S2388042AbfJVPrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 11:47:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46160 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387922AbfJVPru (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 11:47:50 -0400
+Received: from localhost (lfbn-1-10718-76.w90-89.abo.wanadoo.fr [90.89.68.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 37E52214B2;
+        Tue, 22 Oct 2019 15:47:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571759269;
+        bh=AejEtY/BzekHga8zdI53AO/Lgt0U9aGhqsnmnZTTvEk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uIwo/poRGQ2nZ+Ll0BT/EKjrLOkddCaonISjJKhlgNes7MYBprmOjkz0hJ5OVg9cU
+         SQwcO1uSROrdizd+ThAd4149harMVJFT99FKVFGco96K5/coENG9iWDFQHEpNGGv7T
+         uPkDFfV/Iu1SCgCew3BL5GqvjsqY5Ahn2GhbVQJU=
+From:   Maxime Ripard <mripard@kernel.org>
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] dt-bindings: can: Convert Allwinner A10 CAN controller to a schema
+Date:   Tue, 22 Oct 2019 17:47:45 +0200
+Message-Id: <20191022154745.41865-1-mripard@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-References: <1571135440-24313-1-git-send-email-xiangxia.m.yue@gmail.com>
- <CALDO+SZib59P3qmQNWGNjKnrn_+DsFnu+QoPE0gfqRLVRpDk+Q@mail.gmail.com> <CAMDZJNVea1MZG2CRgi9KR1yf6r3x3RnonA0b_ZvEu9B_v5z1Lw@mail.gmail.com>
-In-Reply-To: <CAMDZJNVea1MZG2CRgi9KR1yf6r3x3RnonA0b_ZvEu9B_v5z1Lw@mail.gmail.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Tue, 22 Oct 2019 08:44:04 -0700
-Message-ID: <CALDO+SYPnx_iWKJq1MoFFes14kEJOwYpjozcBgoY+FcA=0Dz=g@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH net-next v4 00/10] optimize openvswitch flow
- looking up
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Greg Rose <gvrose8192@gmail.com>, pravin shelar <pshelar@ovn.org>,
-        "<dev@openvswitch.org>" <dev@openvswitch.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 6:16 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wr=
-ote:
->
-> On Tue, Oct 22, 2019 at 1:14 AM William Tu <u9012063@gmail.com> wrote:
-> >
-> > On Wed, Oct 16, 2019 at 5:50 AM <xiangxia.m.yue@gmail.com> wrote:
-> > >
-> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > >
-> > > This series patch optimize openvswitch for performance or simplify
-> > > codes.
-> > >
-> > > Patch 1, 2, 4: Port Pravin B Shelar patches to
-> > > linux upstream with little changes.
-> >
-> > btw, should we keep Pravin as the author of the above three patches?
-> Agree=EF=BC=8C but how i can to that, these patches should be sent by Pra=
-vin ?
+The older Allwinner SoCs have a CAN controller that is supported in Linux,
+with a matching Device Tree binding.
 
-you can send the patch, and use
-git commit --amend --author=3D""
-to change author
+Now that we have the DT validation in place, let's convert the device tree
+bindings for that controller over to a YAML schemas.
 
-William
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+ .../net/can/allwinner,sun4i-a10-can.yaml      | 51 +++++++++++++++++++
+ .../devicetree/bindings/net/can/sun4i_can.txt | 36 -------------
+ 2 files changed, 51 insertions(+), 36 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/can/sun4i_can.txt
+
+diff --git a/Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml b/Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml
+new file mode 100644
+index 000000000000..770af7c46114
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/can/allwinner,sun4i-a10-can.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Allwinner A10 CAN Controller Device Tree Bindings
++
++maintainers:
++  - Chen-Yu Tsai <wens@csie.org>
++  - Maxime Ripard <maxime.ripard@bootlin.com>
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - const: allwinner,sun7i-a20-can
++          - const: allwinner,sun4i-a10-can
++      - const: allwinner,sun4i-a10-can
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/sun7i-a20-ccu.h>
++
++    can0: can@1c2bc00 {
++        compatible = "allwinner,sun7i-a20-can",
++                     "allwinner,sun4i-a10-can";
++        reg = <0x01c2bc00 0x400>;
++        interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&ccu CLK_APB1_CAN>;
++    };
++
++...
+diff --git a/Documentation/devicetree/bindings/net/can/sun4i_can.txt b/Documentation/devicetree/bindings/net/can/sun4i_can.txt
+deleted file mode 100644
+index f69845e6feaf..000000000000
+--- a/Documentation/devicetree/bindings/net/can/sun4i_can.txt
++++ /dev/null
+@@ -1,36 +0,0 @@
+-Allwinner A10/A20 CAN controller Device Tree Bindings
+------------------------------------------------------
+-
+-Required properties:
+-- compatible: "allwinner,sun4i-a10-can"
+-- reg: physical base address and size of the Allwinner A10/A20 CAN register map.
+-- interrupts: interrupt specifier for the sole interrupt.
+-- clock: phandle and clock specifier.
+-
+-Example
+--------
+-
+-SoC common .dtsi file:
+-
+-	can0_pins_a: can0@0 {
+-		allwinner,pins = "PH20","PH21";
+-		allwinner,function = "can";
+-		allwinner,drive = <0>;
+-		allwinner,pull = <0>;
+-	};
+-...
+-	can0: can@1c2bc00 {
+-		compatible = "allwinner,sun4i-a10-can";
+-		reg = <0x01c2bc00 0x400>;
+-		interrupts = <0 26 4>;
+-		clocks = <&apb1_gates 4>;
+-		status = "disabled";
+-	};
+-
+-Board specific .dts file:
+-
+-	can0: can@1c2bc00 {
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&can0_pins_a>;
+-		status = "okay";
+-	};
+-- 
+2.23.0
+
