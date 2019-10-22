@@ -2,143 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D45DBE098C
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCCE0E09A2
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389565AbfJVQqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 12:46:50 -0400
-Received: from mail-vs1-f73.google.com ([209.85.217.73]:45612 "EHLO
-        mail-vs1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389556AbfJVQqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:46:48 -0400
-Received: by mail-vs1-f73.google.com with SMTP id j67so273379vsd.12
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 09:46:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=xeTajp2gTwNneRzmHl8dZLgjRVR+or7Oc8/MveRSES4=;
-        b=czPv6bG/woLawvFL6EeJ3IomrWe7WJLXIS8Q5s7BYzv4jeVZUhKcqUrBD6MHE4X3Wy
-         gaVhDh9xU1/SIXHSLB3HhPMakMrFItvpEYLIRd8RhTeumsOEr/W5opNycN3wSNR5Nfq+
-         8Uvg/NpAVip0msYuEOWDd/Xwyy3mpXkakREkO3YQmRdtrusv2aVekVFQ4qy0KchHUYZk
-         +EJV75GDzrZF1ylqrZahxNQZVzB02D9UYp4RkPTJWVv8C3gzX45NJnepvMKF4XDAM3hC
-         Al/gAJqFg/Q7YP5ygCC7hd/ANdsR33IrEuArt2jLW5EYKkKEipmUTt4vKFi6vvM+JTA0
-         rQRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=xeTajp2gTwNneRzmHl8dZLgjRVR+or7Oc8/MveRSES4=;
-        b=Lf8Tt0RHpttpyPaM/mvsI8WliYYB5sN2hNmsNLaaCRajwWe1D8ZOj/FF0u0zgTHcrm
-         RzhG7GzeJ2xV0w34IyrbXXwzsVd/2EItZYpM0Y4wTjlincSVjGCEU7Fls+E1e/wik4Fx
-         u3+oxg0aDIJmQv9z1SkwRf7EdHbpBm00xXP4JSyEp4y2aXrq2zNJs6AMQNJ9ysDPIy++
-         Ee5U0ArkMMNiqoS3o77jShYWiX3lpIEcuVRsdL2OjkWYLPhd9fr8Bj4yTaeMjZGmTMAg
-         KSSt+a0em+0xW/7Sdgc323lLVZDU7mm1XkPKBZxTVQJCkJSH4XgvDnsiBStLdH+MvXOn
-         bTtA==
-X-Gm-Message-State: APjAAAXRNQGv8eiekwZwn3EEds8J7zfdI7S7a0ncGbCWtuu2Hwog2eyQ
-        wCWyPFNafO0LlKgMROnfRzGuSVMHtHa7XlRd
-X-Google-Smtp-Source: APXvYqztA3K2JUb94+WtUgiu0B8Mrp7aoBsl8U36U8bVoUlttXs4+RNS1hzM4glUCN7mveu0ffdpO/JosmE95cWz
-X-Received: by 2002:ab0:1896:: with SMTP id t22mr2506869uag.82.1571762807067;
- Tue, 22 Oct 2019 09:46:47 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 18:46:33 +0200
-In-Reply-To: <cover.1571762488.git.andreyknvl@google.com>
-Message-Id: <26e088ae3ebcaa30afe957aeabaa9f0c653df7d0.1571762488.git.andreyknvl@google.com>
-Mime-Version: 1.0
-References: <cover.1571762488.git.andreyknvl@google.com>
-X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
-Subject: [PATCH 3/3] vhost, kcov: collect coverage from vhost_worker
-From:   Andrey Konovalov <andreyknvl@google.com>
-To:     linux-usb@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Windsor <dwindsor@gmail.com>,
-        Elena Reshetova <elena.reshetova@intel.com>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1732148AbfJVQtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 12:49:09 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:53613 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727960AbfJVQtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:49:08 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iMxLE-00054w-PJ; Tue, 22 Oct 2019 18:49:04 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72] (unknown [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1C82B46CBC1;
+        Tue, 22 Oct 2019 16:49:01 +0000 (UTC)
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Vincent Prince <vincent.prince.fr@gmail.com>, jiri@resnulli.us,
+        jhs@mojatatu.com, netdev@vger.kernel.org, dave.taht@gmail.com,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        xiyou.wangcong@gmail.com, davem@davemloft.net
+References: <20190327165632.10711-1-mkl@pengutronix.de>
+ <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
+ <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
+ <20191022094254.489fd6a4@hermes.lan>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
+ for CAN hardware
+Message-ID: <d0d865bd-7bc7-abb5-2b54-2c100c4b9a09@pengutronix.de>
+Date:   Tue, 22 Oct 2019 18:48:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20191022094254.489fd6a4@hermes.lan>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds kcov_remote_start()/kcov_remote_stop() annotations to the
-vhost_worker() function, which is responsible for processing vhost works.
-Since vhost_worker() threads are spawned per vhost device instance
-the common kcov handle is used for kcov_remote_start()/stop() annotations
-(see Documentation/dev-tools/kcov.rst for details). As the result kcov can
-now be used to collect coverage from vhost worker threads.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ
+Content-Type: multipart/mixed; boundary="cJsv4zNEKbGVh1R1bCCefmlaO90Kd3gsf";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Vincent Prince <vincent.prince.fr@gmail.com>, jiri@resnulli.us,
+ jhs@mojatatu.com, netdev@vger.kernel.org, dave.taht@gmail.com,
+ linux-can@vger.kernel.org, kernel@pengutronix.de, xiyou.wangcong@gmail.com,
+ davem@davemloft.net
+Message-ID: <d0d865bd-7bc7-abb5-2b54-2c100c4b9a09@pengutronix.de>
+Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
+ for CAN hardware
+References: <20190327165632.10711-1-mkl@pengutronix.de>
+ <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
+ <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
+ <20191022094254.489fd6a4@hermes.lan>
+In-Reply-To: <20191022094254.489fd6a4@hermes.lan>
 
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- drivers/vhost/vhost.c | 6 ++++++
- drivers/vhost/vhost.h | 1 +
- 2 files changed, 7 insertions(+)
+--cJsv4zNEKbGVh1R1bCCefmlaO90Kd3gsf
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 36ca2cf419bf..a5a557c4b67f 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -30,6 +30,7 @@
- #include <linux/sched/signal.h>
- #include <linux/interval_tree_generic.h>
- #include <linux/nospec.h>
-+#include <linux/kcov.h>
- 
- #include "vhost.h"
- 
-@@ -357,7 +358,9 @@ static int vhost_worker(void *data)
- 		llist_for_each_entry_safe(work, work_next, node, node) {
- 			clear_bit(VHOST_WORK_QUEUED, &work->flags);
- 			__set_current_state(TASK_RUNNING);
-+			kcov_remote_start(dev->kcov_handle);
- 			work->fn(work);
-+			kcov_remote_stop();
- 			if (need_resched())
- 				schedule();
- 		}
-@@ -546,6 +549,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
- 
- 	/* No owner, become one */
- 	dev->mm = get_task_mm(current);
-+	dev->kcov_handle = current->kcov_handle;
- 	worker = kthread_create(vhost_worker, dev, "vhost-%d", current->pid);
- 	if (IS_ERR(worker)) {
- 		err = PTR_ERR(worker);
-@@ -571,6 +575,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
- 	if (dev->mm)
- 		mmput(dev->mm);
- 	dev->mm = NULL;
-+	dev->kcov_handle = 0;
- err_mm:
- 	return err;
- }
-@@ -682,6 +687,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
- 	if (dev->worker) {
- 		kthread_stop(dev->worker);
- 		dev->worker = NULL;
-+		dev->kcov_handle = 0;
- 	}
- 	if (dev->mm)
- 		mmput(dev->mm);
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index e9ed2722b633..a123fd70847e 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -173,6 +173,7 @@ struct vhost_dev {
- 	int iov_limit;
- 	int weight;
- 	int byte_weight;
-+	u64 kcov_handle;
- };
- 
- bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
--- 
-2.23.0.866.gb869b98d4c-goog
+On 10/22/19 6:42 PM, Stephen Hemminger wrote:
+> On Tue, 22 Oct 2019 16:53:44 +0200
+> Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>=20
+>> On 10/22/19 3:23 PM, Vincent Prince wrote:
+>>> Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com> =20
+>>
+>> please include a patch description. I.e. this one:
+>>
+>> -------->8-------->8-------->8-------->8-------->8-------->8-------->8=
+-------- =20
+>> There is networking hardware that isn't based on Ethernet for layers 1=
+ and 2.
+>>
+>> For example CAN.
+>>
+>> CAN is a multi-master serial bus standard for connecting Electronic Co=
+ntrol
+>> Units [ECUs] also known as nodes. A frame on the CAN bus carries up to=
+ 8 bytes
+>> of payload. Frame corruption is detected by a CRC. However frame loss =
+due to
+>> corruption is possible, but a quite unusual phenomenon.
+>>
+>> While fq_codel works great for TCP/IP, it doesn't for CAN. There are a=
+ lot of
+>> legacy protocols on top of CAN, which are not build with flow control =
+or high
+>> CAN frame drop rates in mind.
+>>
+>> When using fq_codel, as soon as the queue reaches a certain delay base=
+d length,
+>> skbs from the head of the queue are silently dropped. Silently meaning=
+ that the
+                 ^^^^^^^^^^^^^^^^^
+>> user space using a send() or similar syscall doesn't get an error. How=
+ever
+>> TCP's flow control algorithm will detect dropped packages and adjust t=
+he
+>> bandwidth accordingly.
 
+> Why not fix fq_codel to return the same errors as other qdisc?
+
+The head drop is the problem. After a send() system call returned to
+user space, one would not expect that a later send() will knock an
+earlier from the queue.
+
+It's too late to throttle the package generation, as one frame is lost
+already.
+
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--cJsv4zNEKbGVh1R1bCCefmlaO90Kd3gsf--
+
+--ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2vMvgACgkQWsYho5Hk
+nSAzwggApHPLYwEg78qvJeyYoQ7Q6601g0Yulhyz3CLoAwyTMppHNesegAYMpfFZ
+D+8kMjLi9x2BhRMBujQYNOP9A82JirEYdiPBoTheqWWF1juEU01Z9UrKKRuKHn9A
+F1hVrh1EcobK5ymr4+wrsl+XSnmz3V8+ytp+skFVQcjofv0qsTzmK57fTlHe/Hfo
+UFhzRsfOw3dksOCQ0vrKy7a491tE68ecLJz6VxmTIZI3CcJeb2UhZqqvTGVSw7fQ
+MqyvNgym2Evqvis8Tf2ih298KOvx8GCw/twgcMD9qCc3RaWgdWlZu2mOIJuhxUph
+gj6IiYRYHCGVcgLX/hhtf85HMAbhxA==
+=DERk
+-----END PGP SIGNATURE-----
+
+--ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ--
