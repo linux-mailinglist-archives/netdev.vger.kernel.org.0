@@ -2,152 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1736E094C
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:40:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B47E0946
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:39:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388480AbfJVQkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 12:40:21 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:42967 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387675AbfJVQkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:40:21 -0400
-Received: by mail-qt1-f196.google.com with SMTP id w14so27684608qto.9
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 09:40:20 -0700 (PDT)
+        id S1732806AbfJVQjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 12:39:42 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:37442 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728768AbfJVQjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:39:41 -0400
+Received: by mail-pg1-f201.google.com with SMTP id u20so9000747pga.4
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 09:39:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=oOLUW7z/uR/ZE9IriulkvZavt5cgpGH+Idk/4muWfog=;
-        b=KY/7lQRwy0YztOVMya8zqkweg9ZMCIpJle8SYv9epjSTpZuLMTpW6ECr8yvPm1451x
-         xxAOxdequ8Ht0mqUiJjwGcQxpXB4qEqNwhMRBOvV0UZ1xAxvlCbRUvNIp31CyBx7/8wA
-         YAlzztVGOsGdBv6Igj4IvNaGrHOU1lGzpcJ90fdCQ7lmROlrLca9QUuseBqKbx1nvHuE
-         QUeGyjw/pLwTvWB7dsctro3vxOpAxAW57pe4b564QUtsxfQST5sz68KpYQCuSFJV+DgU
-         FMSOUZQDRmWdah0tHRmIC09S3Pt2RoqR3rYWIcRMizkoAqFPFZxUeBSwRrtQD9WQyTGc
-         vuGA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=qaI3IIutZxXxnrFA253ho/yI9cM/1Sfh0xG25NT/3ak=;
+        b=jsfKVl5CpIEwAkhG8aQ4Onl3KGZtWEnyZvanp3UReq1sL7MBKLhiGPuBB6VQriNwC5
+         2CFEgNmpiIfbdwHYLvEBNKSUsF7KsUoxGAvnQa4ZcTcOlWg+GSASuNqj/Wmg0wuvInQA
+         ZivwH/YVH7GaXxxRCwv0n9jaaLrNZbsI0joSXnwQtJ8TXqmARTsf8GmJF7FQRwOsPXFT
+         K34TfuoRoFROtMeRMUBbQ+tOraN09jSnUWbFe+bPoOKRlIgHGhqPBXddhg0D6vYLJW9T
+         cuKOz6f5jFr3ta/d3sc6BRNo2Z220Q/+ItQxZDnaySAvlADFEMASBw7F0tSC7TiZGA72
+         8dJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=oOLUW7z/uR/ZE9IriulkvZavt5cgpGH+Idk/4muWfog=;
-        b=FJH+28OtvAC63ZFBFsgK6nxhONMmH+9dF0+fZronzqstoawxpm+Kgsf8YnDpQZXx33
-         FUQscfDXF/cqcXGj0dYnH121HcmYULelde4HufzU0fyAvHUzFKvPaJBUldTbDl+vJxBL
-         gqEJv82pANo8lvtQWyE/89WJzCQ7AFjBRdX9hu7yfHV36KIawl46bUWFePLNJ5FqHebs
-         mteBcJz49Une/twdWmzuKi6iWzB8j35I6k6FVXv/RtagSlplgSxyM1Ac2MXVRdcy0m+p
-         pBedpcvKkEaNE6VOUPk7q+ELUMvAx+g0gp2jqN2vX58OOiSNvpC+N4i17ka7nekebZnu
-         ZUdg==
-X-Gm-Message-State: APjAAAVcYy0qXEmVOVXiW0llqycNjVDWuTSPqqzyafdzgP7KI1uMwjZP
-        obCiCmtK6oDCKWzautntBdU8VOlS
-X-Google-Smtp-Source: APXvYqyn7T8Owt5tz31C1y2zpF2Ro9GALkhl6OzY1utUQPcHYTfXFW0VAypOmo/IQtXARzecPakcAA==
-X-Received: by 2002:a63:1c03:: with SMTP id c3mr4614554pgc.198.1571761986692;
-        Tue, 22 Oct 2019 09:33:06 -0700 (PDT)
-Received: from [172.20.54.239] ([2620:10d:c090:200::1:58c1])
-        by smtp.gmail.com with ESMTPSA id u3sm18679340pfn.134.2019.10.22.09.33.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 22 Oct 2019 09:33:05 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Saeed Mahameed" <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        netdev@vger.kernel.org, ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next 0/4] page_pool: API for numa node change handling
-Date:   Tue, 22 Oct 2019 09:33:04 -0700
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <C432BC84-7B9F-41BF-99F5-E259831A3A49@gmail.com>
-In-Reply-To: <20191022044343.6901-1-saeedm@mellanox.com>
-References: <20191022044343.6901-1-saeedm@mellanox.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=qaI3IIutZxXxnrFA253ho/yI9cM/1Sfh0xG25NT/3ak=;
+        b=amiesnX+ECR/wEcRpR+Dj/RLwWdOUOdPDnLhufqIYupQUwwoKHZxU/yeEX5BcH55tI
+         zZsbRwdqz7lr2x3ZCuzLf28ryAtuwc5jCxaccNRHU/WbW8Gor1840AOR+qMzYVSwWCCh
+         uPBDHif687rJmpjvIXK/Tu+VSVBAvp83P2kH0LzoiCLbmrXH4lNi7LOAwcjtd+1rb9gD
+         CVCBMGWQA8bW8JTtgn1xQEWV9jvtRn3xz3lny1UFC8voKshR4C9pnloL8ufWgTKuRFa/
+         Ms9O3Gg4SaLwN630OHj9tiUbqY7Odama5CqcHUV+mU80RWY8qO4Je6EkWpxgcv+Qbz1Y
+         mDcQ==
+X-Gm-Message-State: APjAAAWrV5ZvfRNVN58o2kltJhvx7orx54ldOsCQ2sAYLdO31/CzLfdz
+        b4Y+O32UJvXtj0At7Z1STkVrwkDE6S4e+A==
+X-Google-Smtp-Source: APXvYqwBcG092ZizGt+rI0szSSSNm4k7YD760VRkeSqoiJavUaxmzkc6v9N6AofhI0H5ePwgnZJc/jV0k7RwRQ==
+X-Received: by 2002:a63:d0f:: with SMTP id c15mr3746800pgl.313.1571762379596;
+ Tue, 22 Oct 2019 09:39:39 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 09:39:36 -0700
+Message-Id: <20191022163936.33220-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
+Subject: [PATCH net-next] fq_codel: do not include <linux/jhash.h
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21 Oct 2019, at 21:44, Saeed Mahameed wrote:
+Since commit 342db221829f ("sched: Call skb_get_hash_perturb
+in sch_fq_codel") we no longer need anything from this file.
 
-> Hi Dave & Jesper,
->
-> This series extends page pool API to allow page pool consumers to update
-> page pool numa node on the fly. This is required since on some systems,
-> rx rings irqs can migrate between numa nodes, due to irq balancer or user
-> defined scripts, current page pool has no way to know of such migration
-> and will keep allocating and holding on to pages from a wrong numa node,
-> which is bad for the consumer performance.
->
-> 1) Add API to update numa node id of the page pool
-> Consumers will call this API to update the page pool numa node id.
->
-> 2) Don't recycle non-reusable pages:
-> Page pool will check upon page return whether a page is suitable for
-> recycling or not.
->  2.1) when it belongs to a different num node.
->  2.2) when it was allocated under memory pressure.
->
-> 3) mlx5 will use the new API to update page pool numa id on demand.
->
-> The series is a joint work between me and Jonathan, we tested it and it
-> proved itself worthy to avoid page allocator bottlenecks and improve
-> packet rate and cpu utilization significantly for the described
-> scenarios above.
->
-> Performance testing:
-> XDP drop/tx rate and TCP single/multi stream, on mlx5 driver
-> while migrating rx ring irq from close to far numa:
->
-> mlx5 internal page cache was locally disabled to get pure page pool
-> results.
->
-> CPU: Intel(R) Xeon(R) CPU E5-2603 v4 @ 1.70GHz
-> NIC: Mellanox Technologies MT27700 Family [ConnectX-4] (100G)
->
-> XDP Drop/TX single core:
-> NUMA  | XDP  | Before    | After
-> ---------------------------------------
-> Close | Drop | 11   Mpps | 10.9 Mpps
-> Far   | Drop | 4.4  Mpps | 5.8  Mpps
->
-> Close | TX   | 6.5 Mpps  | 6.5 Mpps
-> Far   | TX   | 4   Mpps  | 3.5  Mpps
->
-> Improvement is about 30% drop packet rate, 15% tx packet rate for numa
-> far test.
-> No degradation for numa close tests.
->
-> TCP single/multi cpu/stream:
-> NUMA  | #cpu | Before  | After
-> --------------------------------------
-> Close | 1    | 18 Gbps | 18 Gbps
-> Far   | 1    | 15 Gbps | 18 Gbps
-> Close | 12   | 80 Gbps | 80 Gbps
-> Far   | 12   | 68 Gbps | 80 Gbps
->
-> In all test cases we see improvement for the far numa case, and no
-> impact on the close numa case.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/sched/sch_fq_codel.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-These look good, thanks Saeed!
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index c261c0a1886824ca38e8fb4297f9ca23a4c4863a..968519ff36e97734e495d90331d3e3197660b8f6 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -14,7 +14,6 @@
+ #include <linux/errno.h>
+ #include <linux/init.h>
+ #include <linux/skbuff.h>
+-#include <linux/jhash.h>
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
+ #include <net/netlink.h>
 -- 
-Jonathan
+2.23.0.866.gb869b98d4c-goog
 
-
-
->
-> Thanks,
-> Saeed.
->
-> ---
->
-> Jonathan Lemon (1):
->   page_pool: Restructure __page_pool_put_page()
->
-> Saeed Mahameed (3):
->   page_pool: Add API to update numa node
->   page_pool: Don't recycle non-reusable pages
->   net/mlx5e: Rx, Update page pool numa node when changed
->
->  .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  3 ++
->  include/net/page_pool.h                       |  7 +++
->  include/trace/events/page_pool.h              | 22 +++++++++
->  net/core/page_pool.c                          | 46 +++++++++++++------
->  4 files changed, 65 insertions(+), 13 deletions(-)
->
-> -- 
-> 2.21.0
