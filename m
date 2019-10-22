@@ -2,107 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9C6EE0AF1
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:45:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE0BE0B2F
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730433AbfJVRpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 13:45:12 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:33295 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727226AbfJVRpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 13:45:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571766310;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=84NOK6JlBnakomHmdK8lEf2i89cFK17pqxVXj9BUO1k=;
-        b=Bwh8qDWBDVdylOUwwGYGRPJvJpKg2tfPUOUdTb1h9Q7RbsFwurXwyVFVyHSgRe2nbRDUM+
-        OqHf7DIp+hBqZaHZTeG4ieDSiZByOkSCD3MCIdMW0ESCoKsP9ySFKGykR4UYGg+gHwZdKn
-        XAk/nCu2tIKWGmn7DFwBu73h10WiKIo=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-248-waoQBmpSMP2D07f1cb2T9w-1; Tue, 22 Oct 2019 13:45:09 -0400
-Received: by mail-lj1-f200.google.com with SMTP id y12so3107385ljc.8
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 10:45:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=84NOK6JlBnakomHmdK8lEf2i89cFK17pqxVXj9BUO1k=;
-        b=Ims83G183GiqgrSauh6fx1+tzNwHp/oQqv+F1mpy1uCJv0zGVaUDQ38726JpPG60ug
-         x32GmMLuhsG5/y+ioHNSKRMsWjH2aX8lNX2s4FqJfIeYTWTy05s0IpjEEwuk0mEBiUto
-         RIBAPl6rxhZv/KRkL+RoqRaeUbOIkdkPx0VoZY0YnmpsqlxUZGvuvptJRD3CwNcmRj7v
-         cSVy9F6a0cMzLQMuxsHCb196vV1gq7RBCLiFo+sd9ThswcOksRVKLzBvBBsAOJvu4plc
-         CbS3jorMGhP1IsqLBoHYSV01J2Fd+0NLEllEPkU6V9vWDRaO78kB5aDvYlyQsBI6Unpn
-         I4Ag==
-X-Gm-Message-State: APjAAAX4t26gXsC6jh9lj1dulxySH3i2Kt7VIqK0XlnFYWrRLW2pNUJc
-        0BmmamiKggmCHYpG3GbrBkiIt9d/VtCVO5y265R7K2tUXtoeDtnyAAbD626Ux/DLLnqXMWryTKC
-        MGXXZdyGvD9hnQEZd
-X-Received: by 2002:a19:6759:: with SMTP id e25mr18854002lfj.80.1571766307515;
-        Tue, 22 Oct 2019 10:45:07 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyWaFofKCqI5Dh4lYpflNmAetMBkkoN5rdIx4shy+jTuAP5JoYEhNPwO1ylG1Uqw2N1zImLUw==
-X-Received: by 2002:a19:6759:: with SMTP id e25mr18853990lfj.80.1571766307340;
-        Tue, 22 Oct 2019 10:45:07 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id a18sm5692318lfi.15.2019.10.22.10.45.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 10:45:06 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BF9081804B1; Tue, 22 Oct 2019 19:45:05 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-In-Reply-To: <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com> <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch> <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com> <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 22 Oct 2019 19:45:05 +0200
-Message-ID: <87h840oese.fsf@toke.dk>
+        id S1731007AbfJVSGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 14:06:18 -0400
+Received: from mail-eopbgr60071.outbound.protection.outlook.com ([40.107.6.71]:36199
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727154AbfJVSGS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 14:06:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UTarC1YV9jIL1vQU1UJueEFBzEoMGBwCJujV1q2lFVVW4La2wO/0KPqwoB8PxgzahZfEGWNuRGqLSoCPsLDteWaepQxaq6vN5VRH8yXBo2iMY3CuNPXbvuPPTp7KW0mpw3m+DgwLjGqPmWl0iYOg+mRWSy5QuP9i6liEw/k5vMFFCGTSsvWDCCaJ8QasHJjJLh2z7oiH4dZhQJ0uLpsjTbhTI/xlcboX0e6BVLbt7bA7SqxYbf+D3lBZ+MNOx9bzzVsnunkY1IMcNg7pgxpNL9bpaDGctyCiGXvgYn+NfZvFEX7lQJcMuxW9W/6g1D7hIUxjHlL0CExPjcVPhT4EfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a96WdSw6hQDKbqWhTokV1GehYfeRmvSwcxOWNNuV9Ns=;
+ b=SH6cAeoDcs7qLB0LeCEAD4CjE5U32cfCmrvfW6nYsVLOrlENnd2XvpF+Xvwd6tMDbEYH3vKUqsE9yo8AceJXzmAAjCIAPVKy6N5Hy8A/wkeE1++rKh0CT9MErYVanAE0jrYj5MAhM8X5vpAYKh2AmbX2KCa8fi5uogmh5+50Egioy6BWoOWZHU6onvaqMO2QvHrAiArSOJ3agpD5Af/cQ3VLtivNGxXr719K0NrhVglRgCWTDZHLn+xLEi++f/70oWWUIEkWMK06vt8o2rgW3jpnOjteG7rNeY6b4ApQc2aFkzwOBkImvCKp2bZHbjh4alcHMm0TGhXYEOTEevix+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a96WdSw6hQDKbqWhTokV1GehYfeRmvSwcxOWNNuV9Ns=;
+ b=WscLEPikjNT5cF2PLEUn4Iiq94JURoIoDIPuJ5IHuKyq7ZN5No2OphSHyYNUrT8oTcUj2GY/Z5+U49y2p6eEL+d/oEPtI0VueeaYtMM1vgVHAcN7RaYuEd1lHcgaa+woqy69jqHMqUsV7WSKvNz5ULYPJbD1oV5l0TYLveAVFtg=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB3214.eurprd05.prod.outlook.com (10.175.243.161) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2367.21; Tue, 22 Oct 2019 18:06:12 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::f42d:b87a:e6b2:f841]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::f42d:b87a:e6b2:f841%7]) with mapi id 15.20.2347.029; Tue, 22 Oct 2019
+ 18:06:12 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
+CC:     Eran Ben Elisha <eranbe@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [net 04/15] net/mlx5e: kTLS, Size of a Dump WQE is fixed
+Thread-Topic: [net 04/15] net/mlx5e: kTLS, Size of a Dump WQE is fixed
+Thread-Index: AQHVheuSwzOlP/azmUesItL6CNiDzKdhB1YAgAXzlYA=
+Date:   Tue, 22 Oct 2019 18:06:11 +0000
+Message-ID: <9dfe7833e5b0a5f9a664c0207e79756c8a868e23.camel@mellanox.com>
+References: <20191018193737.13959-1-saeedm@mellanox.com>
+         <20191018193737.13959-5-saeedm@mellanox.com>
+         <20191018161302.7dffc832@cakuba.netronome.com>
+In-Reply-To: <20191018161302.7dffc832@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 296fb97a-9072-4f5e-ee92-08d7571a85b8
+x-ms-traffictypediagnostic: VI1PR05MB3214:|VI1PR05MB3214:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB3214C81348DD0EC5D3DB1648BE680@VI1PR05MB3214.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2043;
+x-forefront-prvs: 01986AE76B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(366004)(136003)(376002)(346002)(199004)(189003)(66066001)(229853002)(6512007)(4744005)(6246003)(6486002)(2351001)(5640700003)(6116002)(3846002)(107886003)(4326008)(7736002)(305945005)(25786009)(81166006)(81156014)(8676002)(8936002)(478600001)(14454004)(64756008)(118296001)(66556008)(66476007)(76116006)(91956017)(6916009)(66946007)(66446008)(6436002)(102836004)(316002)(54906003)(58126008)(446003)(11346002)(186003)(2616005)(476003)(5660300002)(486006)(36756003)(71200400001)(4001150100001)(86362001)(26005)(2501003)(256004)(99286004)(71190400001)(76176011)(6506007)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3214;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5pSMhN43G2ZN7qGx2clJ5H5XhHjWxb58ElcsbDeX7y9lhAU5eigpd0dfR3VOWMfOPfT05fwqL3/8eZcDSrJT6WHa6u544cWdMiZI8Ekxcz/u/pfpaAE9xk/VuBxMIabHmkyCxeScAhgC2kKGjoZOiIJfyT34GlEeNaFR9c3AoZqdS3fbKEy7B4sea0P5fVQ7hxfmshCLRPdztUUDPWx5Gennzx/5zui3hiL5zyrxpynt2GFICZ+u9i1aiWpqoCNPAYF9OAc/KQGnWv6FPJS9HSbWkPgbKY48zd0IurraC04CQy8leMELxxItvv4nmDHPX1DHChKBzUvyzGsB06ZUXcNXEwTu7y8R+p1Xsy3bUVtsQFoaQgzVzMD3lNnXJBNpOUrrvTJMpa9cWAdhQBp2YAdMzXyR4UVXV4UxO2ZcS5BfZg0N/RAW1u6NjxNbrJxa
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EC695841B50A844F90AB62BB7FCA3E80@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MC-Unique: waoQBmpSMP2D07f1cb2T9w-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 296fb97a-9072-4f5e-ee92-08d7571a85b8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 18:06:11.8801
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: At0HLeTYTQwNKKU4Uno7JQAXX1GLNDwETImC5x9g+EtVGzaMSO147xqqbN6uo7x+6IuulmoOI+WTIhUWfF2aGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3214
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend <john.fastabend@gmail.com> writes:
-
-> I think for sysadmins in general (not OVS) use case I would work
-> with Jesper and Toke. They seem to be working on this specific
-> problem.
-
-We're definitely thinking about how we can make "XDP magically speeds up
-my network stack" a reality, if that's what you mean. Not that we have
-arrived at anything specific yet...
-
-And yeah, I'd also be happy to discuss what it would take to make a
-native XDP implementation of the OVS datapath; including what (if
-anything) is missing from the current XDP feature set to make this
-feasible. I must admit that I'm not quite clear on why that wasn't the
-approach picked for the first attempt to speed up OVS using XDP...
-
--Toke
-
+T24gRnJpLCAyMDE5LTEwLTE4IGF0IDE2OjEzIC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
+Cj4gT24gRnJpLCAxOCBPY3QgMjAxOSAxOTozODowOSArMDAwMCwgU2FlZWQgTWFoYW1lZWQgd3Jv
+dGU6DQo+ID4gRnJvbTogVGFyaXEgVG91a2FuIDx0YXJpcXRAbWVsbGFub3guY29tPg0KPiA+IA0K
+PiA+IE5vIEV0aCBzZWdtZW50LCBzbyBubyBkeW5hbWljIGlubGluZSBoZWFkZXJzLg0KPiA+IFRo
+ZSBzaXplIG9mIGEgRHVtcCBXUUUgaXMgZml4ZWQsIHVzZSBjb25zdGFudHMgYW5kIHJlbW92ZQ0K
+PiA+IHVubmVjZXNzYXJ5IGNoZWNrcy4NCj4gPiANCj4gPiBGaXhlczogZDJlYWQxZjM2MGU4ICgi
+bmV0L21seDVlOiBBZGQga1RMUyBUWCBIVyBvZmZsb2FkIHN1cHBvcnQiKQ0KPiA+IFNpZ25lZC1v
+ZmYtYnk6IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gPiBSZXZpZXdlZC1i
+eTogRXJhbiBCZW4gRWxpc2hhIDxlcmFuYmVAbWVsbGFub3guY29tPg0KPiA+IFNpZ25lZC1vZmYt
+Ynk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPiANCj4gSXMgdGhpcyBh
+IGZpeD8NCg0KDQpzb3J0IG9mLCB0aGlzIHBhdGNoIGZ1bmRhbWVudGFsbHkgY2hhbmdlcyB0aGUg
+d2F5IG1seDUgdHJlYXRzIGtUTFMgVFgNCmRlc2NyaXB0b3JzLCB0byBtYWtlIGRvd25zdHJlYW0g
+cGF0Y2hlcyBzaW1wbGVyIGFuZCBtb3JlIGNvcnJlY3QuDQo=
