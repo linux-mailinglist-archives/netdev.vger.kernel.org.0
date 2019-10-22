@@ -2,91 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF02DFC2B
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 05:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF8CDFC3E
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 05:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730688AbfJVDV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 23:21:58 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:41154 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730156AbfJVDV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 23:21:58 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q7so9716415pfh.8
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 20:21:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ob9DfPNA5qW/GNRoJuVqHjpe9O4E6pPnWp6/mZccG44=;
-        b=lY6/yVAfbzUvMes3x1T7nbzVmZhalvu01uaKgK02a8/wWzVAPXSYgas12MQwvsn0Cy
-         3set4yBnNbNL/ioQQk1F00AU9wSDptQaAZCBIiSAFNVRxYHw/MsF0kZg/0Kn4SFZfu85
-         DggJ8fP08kL+RM3n/fLmCSycKlj2RyCQsT3lfT0O3MlMYAlHwLhGtwIy6/RvsegoDMo4
-         Dn5x9y9i41vl6EcwvwEVo8qdTifu4MvINRtX0nGkJtePLrkkZWTLdT3RY5uqkrHiYp1/
-         t67j8V8S+XQpHicRT0eStqxppHv/iBRTXVGEpekkMvzPgG6ObmCzwk3KzrqWk11+E1B9
-         AzDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ob9DfPNA5qW/GNRoJuVqHjpe9O4E6pPnWp6/mZccG44=;
-        b=Td0EJRy2zHs3yxGdpPd3cdB0ArKoAgROibIMnFisK6dRk+0ivnfCahhbubhT193Box
-         ag7gmZnNhwlq1jUL8KmeqhaHS2XiiUGKDRLuawxXXN53waz/+wv0s2EfyZ1LFrYXyIZf
-         TMIPO1hEBMazlxcAiqQWp3s6h87QkOcSyXak8XtumWgC4oDvVrDJVkWE+4ETCExPRURl
-         7ywtkogOmHo4t3ZBT1G/IlHq9TjDFZlvdH+TPeq/ulvpkVZ85sRCgkhJzUHC6CTpjLZM
-         dvEcuSMvPPiOdYK+3gtQT8bFqFhFZ2iE5fwkeOZQNRAjMSbdK5aNBYFHtxQzzYmxUl85
-         X4Sg==
-X-Gm-Message-State: APjAAAVgtpf7c3F5fszeClfSuJAzs5nnSm0XpLTK8FJtjIhcUba4bRPR
-        994rfcRLI2eBP5iEfnxGnc0GLA==
-X-Google-Smtp-Source: APXvYqy4qcwkCoemmHbJWnQOoFLZi/aQDQFp6y5pVUo/DM0AWXZ6Ae4ruNf2rVXG6uPHgnHuvKLhKw==
-X-Received: by 2002:a63:4654:: with SMTP id v20mr1318259pgk.11.1571714517835;
-        Mon, 21 Oct 2019 20:21:57 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id z23sm14482635pgu.16.2019.10.21.20.21.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 20:21:57 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 20:21:54 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com
-Subject: Re: [net-next v3 0/5][pull request] 1GbE Intel Wired LAN Driver
- Updates 2019-10-21
-Message-ID: <20191021202154.2136da28@cakuba.netronome.com>
-In-Reply-To: <20191021180143.11775-1-jeffrey.t.kirsher@intel.com>
-References: <20191021180143.11775-1-jeffrey.t.kirsher@intel.com>
-Organization: Netronome Systems, Ltd.
+        id S2387508AbfJVDfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 23:35:17 -0400
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:32774 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2387437AbfJVDfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 23:35:16 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id 29ACD4969F;
+        Tue, 22 Oct 2019 14:35:13 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=content-language:x-mailer:content-transfer-encoding
+        :content-type:content-type:mime-version:message-id:date:date
+        :subject:subject:in-reply-to:references:from:from:received
+        :received:received; s=mail_dkim; t=1571715313; bh=nIYkkU5MLtaDCy
+        NKKvznch9lUcyVDVunNRYLY/3sYnY=; b=MnN5zyQYcOnCcshrs9reAorfRTRoK4
+        Ng0Ac+QHt9krcr6Tl2K9Ot+bzkGolDeD8nQy/mMt5ByijlEH9+wsg9DauzXWd7kw
+        cCmImjImdPvlXz32KJSF0Y7gBlEJLJj1vnIKl7IOhytHmzg94UPfKluM1R0fziWJ
+        Vk1udZtJ+lkfA=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 769LCdGsZrx9; Tue, 22 Oct 2019 14:35:13 +1100 (AEDT)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id 0A17249D89;
+        Tue, 22 Oct 2019 14:35:12 +1100 (AEDT)
+Received: from VNLAP298VNPC (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id A49124969F;
+        Tue, 22 Oct 2019 14:35:11 +1100 (AEDT)
+From:   "Hoang Le" <hoang.h.le@dektech.com.au>
+To:     "'Eric Dumazet'" <eric.dumazet@gmail.com>,
+        <jon.maloy@ericsson.com>, <maloy@donjonn.com>,
+        <tipc-discussion@lists.sourceforge.net>, <netdev@vger.kernel.org>
+References: <20191022022036.19961-1-hoang.h.le@dektech.com.au> <88e00511-ae7f-cbd3-46b1-df0f0509c04e@gmail.com>
+In-Reply-To: <88e00511-ae7f-cbd3-46b1-df0f0509c04e@gmail.com>
+Subject: RE: [net-next] tipc: improve throughput between nodes in netns
+Date:   Tue, 22 Oct 2019 10:33:56 +0700
+Message-ID: <004401d58889$8a3ba740$9eb2f5c0$@dektech.com.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQIBGTi9TYT/dH44O8HREmWnQKht0AJdjXoypvvwHSA=
+Content-Language: en-us
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Oct 2019 11:01:38 -0700, Jeff Kirsher wrote:
-> This series contains updates to e1000e and igc only.
-> 
-> Sasha adds stream control transmission protocol (SCTP) CRC checksum
-> support for igc.  Also added S0ix support to the e1000e driver.  Then
-> added multicast support by adding the address list to the MTA table and
-> providing the option for IPv6 address for igc.  In addition, added
-> receive checksum support to igc as well.  Lastly, cleaned up some code
-> that was not fully implemented yet for the VLAN filter table array.
-> 
-> v2: Dropped patch 1 & 2 from the original series.  Patch 1 is being sent
->     to 'net' tree as a fix and patch 2 implementation needs to be
->     re-worked.  Updated the patch to add support for S0ix to fix the
->     reverse Xmas tree issues and made the entry/exit functions void
->     since they constantly returned success.  All based on community
->     feedback.
-> v3: Cleaned up patch 4 of the series based on feedback from the
->     community.  Cleaned up a stray comma in a code comment and removed
->     the 'inline' of a function that would be inlined by the compiler
->     anyways.
-> 
-> The following are changes since commit 13faf77185225a1383f6f5a072383771ccfe456b:
->   Merge branch 'hns3-next'
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
+Hi Eric,
 
-Pulled, thanks!
+Thanks for quick feedback.
+See my inline answer.
+
+Regards,
+Hoang
+-----Original Message-----
+From: Eric Dumazet <eric.dumazet@gmail.com>=20
+Sent: Tuesday, October 22, 2019 9:41 AM
+To: Hoang Le <hoang.h.le@dektech.com.au>; jon.maloy@ericsson.com; =
+maloy@donjonn.com; tipc-discussion@lists.sourceforge.net; =
+netdev@vger.kernel.org
+Subject: Re: [net-next] tipc: improve throughput between nodes in netns
+
+
+On 10/21/19 7:20 PM, Hoang Le wrote:
+>  	n->net =3D net;
+>  	n->capabilities =3D capabilities;
+> +	n->pnet =3D NULL;
+> +	for_each_net_rcu(tmp) {
+
+This does not scale well, if say you have a thousand netns ?
+[Hoang] This check execs only once at setup step. So we get no problem =
+with huge namespaces.
+
+> +		tn_peer =3D net_generic(tmp, tipc_net_id);
+> +		if (!tn_peer)
+> +			continue;
+> +		/* Integrity checking whether node exists in namespace or not */
+> +		if (tn_peer->net_id !=3D tn->net_id)
+> +			continue;
+> +		if (memcmp(peer_id, tn_peer->node_id, NODE_ID_LEN))
+> +			continue;
+> +
+> +		hash_chk =3D tn_peer->random;
+> +		hash_chk ^=3D net_hash_mix(&init_net);
+
+Why the xor with net_hash_mix(&init_net) is needed ?
+[Hoang] We're trying to eliminate a sniff at injectable discovery =
+message.=20
+Building hash-mixes as much as possible is to prevent fake discovery =
+messages.
+
+> +		hash_chk ^=3D net_hash_mix(tmp);
+> +		if (hash_chk ^ hash_mixes)
+> +			continue;
+> +		n->pnet =3D tmp;
+> +		break;
+> +	}
+
+
+How can we set n->pnet without increasing netns ->count ?
+Using check_net() later might trigger an use-after-free.
+
+[Hoang] In this case, peer node is down. I assume the tipc xmit function =
+already bypassed these lines.
+
