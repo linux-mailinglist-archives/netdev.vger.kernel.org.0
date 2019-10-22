@@ -2,92 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC784E0B7A
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:33:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7657FE0B71
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:31:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732548AbfJVSdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 14:33:16 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.166]:11772 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727851AbfJVSdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 14:33:16 -0400
-X-Greylist: delayed 716 seconds by postgrey-1.27 at vger.kernel.org; Tue, 22 Oct 2019 14:33:15 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1571769195;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=SUO95hzSSetluapukGk/6rTRVcsFbnMspEM+35/uuT4=;
-        b=alWThASuhCMAIG3VYFJW3cr7HXEFou07OHqbHkWKg/TZNXnBsE14KIvZLT4dsLtC4e
-        Xn362WNpG+Oogx0jul2w7hedZHLJfDzh3JVkctB/hehg0rKGMZTZ8N0DzoQU6Hob6oFl
-        dhVf9fmDy+OKwG/97YHgY/G0jNEQBwmyFMa7UR2GFOPWzjz4rAebFQmqZvOraBEgsNL5
-        9jCNnYXUUz6FpozyTR/iv1bURM1R5/rHiIXLckWHvNlvKI2Jp/vw6OhdSt18pUEKG7Uc
-        KPYfnNHJfZDd5qaH3RsGKE10JHLlA9B84mv6j3vhQHGUMDdKDvVTFSw24rMWx8cFB+iL
-        svuA==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVsh5kk59"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.40.177]
-        by smtp.strato.de (RZmta 44.28.1 DYNA|AUTH)
-        with ESMTPSA id 20981av9MILER1D
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Tue, 22 Oct 2019 20:21:14 +0200 (CEST)
-Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
- for CAN hardware
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vincent Prince <vincent.prince.fr@gmail.com>, jiri@resnulli.us,
-        jhs@mojatatu.com, netdev@vger.kernel.org, dave.taht@gmail.com,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        xiyou.wangcong@gmail.com, davem@davemloft.net
-References: <20190327165632.10711-1-mkl@pengutronix.de>
- <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
- <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
- <20191022094254.489fd6a4@hermes.lan>
- <b810b1b7-de82-a6ac-f063-5ee8a6460962@gmail.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <894a5426-b649-fd51-9aad-e66543374b9e@hartkopp.net>
-Date:   Tue, 22 Oct 2019 20:21:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1732316AbfJVSbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 14:31:31 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42933 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729666AbfJVSbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 14:31:31 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q12so11157170pff.9;
+        Tue, 22 Oct 2019 11:31:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YeDvAjQsjrYrlLSuu+Jz91MnGz1OObnz6v+WgTTWu5c=;
+        b=gNztzyFHWTtfSDCaP/HfT9zML2AyKrbFMMzvR9H+nYAokweZkjfCBHOp3Xzh/GF+tZ
+         davs+puk3rn8lzmgcQgZREMAXBv6WGKyR2GDKTuglcL8/a9h8L0+msxpAlh+GcVurkel
+         B+U64TbXlLAq5tHow2iIei6DMzWMgD098kfesOkkv8+/M1vCXIv3Kb3xP/vQorI6pLh6
+         lUWAcHDbuf4T6S9FkFgnktH2QC6MbbeMpej6WEJuGeWWUw3bXS+dG8FmLZHUzUGNCx8f
+         KRSX/3idatgF5LbyT9pCxGuGjOogxaAi3YHkKwXQEO9dDqLD2KWnYR6Yhe5P7MOELP9J
+         aQWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YeDvAjQsjrYrlLSuu+Jz91MnGz1OObnz6v+WgTTWu5c=;
+        b=nt7NBRkjj1kr6fNEvAQpOiZ/f3kqKA72VbWZWJIdJQyc6E3D3Flylm+AEjXgRz2H5f
+         K8FMQFPM8AufP5gbprtQl+cwQbIIfx0PV2+/9/CFcI+HmaWACAZXopMXEqmQmQBb48ap
+         PPOQkd/rSkkm++TsPHuRbAPIPWb9cu82W+uKOkUa/oh3D+CvjVQL73gmp/UCu6XjRG4V
+         N1Ffd5Qghj2AjoPSTMcihMeGPNtXvd8iNhWv8RbKv8/k8KGuAkHsqwIiz/yWMWwmXYIO
+         GXBs1xlRf5awCGD5hzTLY+nBXOaUfL2xjACc97Cl9ISB1Mh+MNGs2ufzUqDwVcZtBS+c
+         J1qw==
+X-Gm-Message-State: APjAAAWBdpZ2lYv0GoyNbdpjmlgu96uCyaIO+j5IkcpzDp49ikYTSAEM
+        +KyRbxBUEv2lzqzdE7DkmFg=
+X-Google-Smtp-Source: APXvYqzna4x7O6NiaYj3+n+EKQggUVh1mmKq21UR1LLUMJLAz77V7BP09P9HL2gIhzrBXlRLzgA8gg==
+X-Received: by 2002:a17:90a:741:: with SMTP id s1mr6612216pje.113.1571769090041;
+        Tue, 22 Oct 2019 11:31:30 -0700 (PDT)
+Received: from taoren-ubuntu-R90MNF91.thefacebook.com ([2620:10d:c090:200::2398])
+        by smtp.gmail.com with ESMTPSA id m19sm16787947pjl.28.2019.10.22.11.31.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Oct 2019 11:31:29 -0700 (PDT)
+From:   rentao.bupt@gmail.com
+To:     "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        Justin Chen <justinpopo6@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     Tao Ren <rentao.bupt@gmail.com>
+Subject: [PATCH net-next v10 0/3] net: phy: support 1000Base-X auto-negotiation for BCM54616S
+Date:   Tue, 22 Oct 2019 11:31:05 -0700
+Message-Id: <20191022183108.14029-1-rentao.bupt@gmail.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <b810b1b7-de82-a6ac-f063-5ee8a6460962@gmail.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Tao Ren <rentao.bupt@gmail.com>
 
-On 22/10/2019 19.28, Eric Dumazet wrote
-> On 10/22/19 9:42 AM, Stephen Hemminger wrote:
-> 
->> Why not fix fq_codel to return the same errors as other qdisc?
->>
-> 
-> I believe the same problem would happen with any qdisc not doing tail drops.
-> 
-> Do we really want to enforce all qdisc to have a common drop strategy ?
+This patch series aims at supporting auto negotiation when BCM54616S is
+running in 1000Base-X mode: without the patch series, BCM54616S PHY driver
+would report incorrect link speed in 1000Base-X mode.
 
-CAN has no drop strategy. There is no transport protocol at this point 
-which can handle and compensate drops. CAN is just about PDUs that are 
-sent on a special medium.
+Patch #1 (of 3) modifies assignment to OR when dealing with dev_flags in
+phy_attach_direct function, so that dev_flags updated in BCM54616S PHY's
+probe callback won't be lost.
 
-And that's what this patch was about.
+Patch #2 (of 3) adds several genphy_c37_* functions to support clause 37
+1000Base-X auto-negotiation, and these functions are called in BCM54616S
+PHY driver.
 
-> 
-> For example, FQ could implement a strategy dropping the oldest packet in the queue,
-> which is absolutely not related to the enqueue order.
-> 
+Patch #3 (of 3) detects BCM54616S PHY's operation mode and calls according
+genphy_c37_* functions to configure auto-negotiation and parse link
+attributes (speed, duplex, and etc.) in 1000Base-X mode.
 
-We have a CAN ID related ematch rule in em_canid.c to be able to 
-configure HTBs, delays or drops. But this is for testing and special 
-use-cases. Silently dropped frames are not expected.
+Heiner Kallweit (1):
+  net: phy: add support for clause 37 auto-negotiation
 
-Regards,
-Oliver
+Tao Ren (2):
+  net: phy: modify assignment to OR for dev_flags in phy_attach_direct
+  net: phy: broadcom: add 1000Base-X support for BCM54616S
 
+ drivers/net/phy/broadcom.c   |  57 +++++++++++++-
+ drivers/net/phy/phy_device.c | 141 ++++++++++++++++++++++++++++++++++-
+ include/linux/brcmphy.h      |  10 ++-
+ include/linux/phy.h          |   4 +
+ 4 files changed, 205 insertions(+), 7 deletions(-)
 
+-- 
+2.17.1
 
