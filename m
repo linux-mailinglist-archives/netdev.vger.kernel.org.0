@@ -2,66 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A649AE03F1
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 14:35:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F6DCE0427
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 14:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388613AbfJVMfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 08:35:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57522 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388095AbfJVMfj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 08:35:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ekmS9190Bn2Ds6TK7FIVus9RSryzOWVRY/CXpqo3/M4=; b=1EJusHdeIt4gHqlXGvnGWPp2Lg
-        IipDMNO8boT3wofq844BEFcBaRxGNxLrgL2GD26ooxXQ4UJ771uf5CzRVsHwYMizkiM5Mz0nO6mQU
-        dcguS75M7CWqvtutsmqf8buDuqUmTyfCQW/s5JVwH0/+uyGUsaCrBawESrS+zcnhbVpQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iMtNv-0001Xh-DT; Tue, 22 Oct 2019 14:35:35 +0200
-Date:   Tue, 22 Oct 2019 14:35:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "epomozov@marvell.com" <epomozov@marvell.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Nikita Danilov <Nikita.Danilov@aquantia.com>
-Subject: Re: [PATCH v3 net-next 10/12] net: aquantia: add support for Phy
- access
-Message-ID: <20191022123535.GB5707@lunn.ch>
-References: <cover.1571737612.git.igor.russkikh@aquantia.com>
- <427b326b9d79721ba0b58542fc0131540ae3cfe7.1571737612.git.igor.russkikh@aquantia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <427b326b9d79721ba0b58542fc0131540ae3cfe7.1571737612.git.igor.russkikh@aquantia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S2388637AbfJVMs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 08:48:59 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38255 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388069AbfJVMs6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 08:48:58 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 3so16046528wmi.3;
+        Tue, 22 Oct 2019 05:48:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=23IYWwe1m0SVry5goG0CA4ET3xRroYCt2o3+8zrmRrk=;
+        b=Ijy+IiniksVNSBo3k6tJzqSUqKRRIOWhInLBe1JZaVRGznkvyh/TMFoYxkxBg0sqoQ
+         OEZv1hJBsZ9W9FURJ2RabPnuQUHfuXBVlaLDWODLZYqjrowyPhZhAkYWUExy7ZzzLMGG
+         yIZcWThD9NQ3yBV1d7E24jPkz2cxpNqup1dmrMxv4rYztu0f69Iox0a03n112NUMwKY2
+         UXwOKCXkMFdqnfEmAhlDp46+pThsFXALi87sU8fcoPfe+GwnzFB6g6WFtJE0tBHkRmTI
+         BaL1FNUGTuDCuoTsYxIPYJttyFvoEgmlLykT5Zzw7fKFVwFXlgKqMVPo9Nmkj8StDi1/
+         HB2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=23IYWwe1m0SVry5goG0CA4ET3xRroYCt2o3+8zrmRrk=;
+        b=AX4Kjei6iZaO6gOvtTE+ntDtTZL5g7aj5PbUca96FLKsOUDVifqTgQ70TaWGJSpKz3
+         gCMKOgxh78avZW/Qma5K1BFQGVoF2jQFWY6jLkOoWC2OxPGbzh+x+9WACn29G8RrYMTY
+         XaotYk9CQRg/flZ4bX3Ygdu+Ao5BxjIVAVbBKUttzpMtuLxJ5KrdgTHdG00kS0Rv3Y23
+         1ws+jBcxTT3p95f35Kljw0UmMETblowVlkS1NdXFT4H5MUe5uEJVGoIB261bf1woAQip
+         Ca0hHt4W2E341u8m4DgTvwcpHdGTUkINuDCW1WgG1vpqy9RRmWAoASiay/5JoNQBCnNB
+         gulQ==
+X-Gm-Message-State: APjAAAVnc+eF4lggsxzol/NjKAgrASd56CDjFK3HevZaltzCh0CzDCUX
+        pRinx4z5AYRnjzdYVH2154g=
+X-Google-Smtp-Source: APXvYqyE8xIEMbD9Wn9Wgi32xcN/SlN8YbVuGASMCqg5/+H4LQ4QqE0GbCJBCSHIjtt4iuAphtoTrg==
+X-Received: by 2002:a1c:9cc6:: with SMTP id f189mr3127839wme.80.1571748536125;
+        Tue, 22 Oct 2019 05:48:56 -0700 (PDT)
+Received: from VM-VPR.corporate.saft.org ([80.215.197.243])
+        by smtp.gmail.com with ESMTPSA id p15sm18249508wrs.94.2019.10.22.05.48.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 22 Oct 2019 05:48:55 -0700 (PDT)
+From:   Vincent Prince <vincent.prince.fr@gmail.com>
+To:     mkl@pengutronix.de
+Cc:     dave.taht@gmail.com, davem@davemloft.net, jhs@mojatatu.com,
+        jiri@resnulli.us, kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
+        Vincent Prince <vincent.prince.fr@gmail.com>
+Subject: [PATCH] net: sch_generic: Use pfifo_fast as fallback scheduler for CAN hardware
+Date:   Tue, 22 Oct 2019 14:47:28 +0200
+Message-Id: <1571748448-11190-1-git-send-email-vincent.prince.fr@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <20190327165632.10711-1-mkl@pengutronix.de>
+References: <20190327165632.10711-1-mkl@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 09:53:45AM +0000, Igor Russkikh wrote:
-> From: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
-> 
-> GPIO PIN control and access is done by direct phy manipulation.
-> Here we add an aq_phy module which is able to access phy registers
-> via MDIO access mailbox.
-> 
-> Access is controlled via HW semaphore.
-> 
-> Co-developed-by: Nikita Danilov <nikita.danilov@aquantia.com>
-> Signed-off-by: Nikita Danilov <nikita.danilov@aquantia.com>
-> Signed-off-by: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
-> Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
+Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com>
+---
+ net/sched/sch_generic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 77b289d..bff43de 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1008,6 +1008,8 @@ static void attach_one_default_qdisc(struct net_device *dev,
+ 
+ 	if (dev->priv_flags & IFF_NO_QUEUE)
+ 		ops = &noqueue_qdisc_ops;
++        else if(dev->type == ARPHRD_CAN)
++		ops = &pfifo_fast_ops;
+ 
+ 	qdisc = qdisc_create_dflt(dev_queue, ops, TC_H_ROOT, NULL);
+ 	if (!qdisc) {
+-- 
+2.7.4
 
-    Andrew
