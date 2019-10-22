@@ -2,159 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3375E0E97
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 01:37:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D333E0ED2
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 01:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389751AbfJVXhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 19:37:42 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42580 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731847AbfJVXhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 19:37:42 -0400
-Received: by mail-lj1-f196.google.com with SMTP id u4so4878783ljj.9
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 16:37:40 -0700 (PDT)
+        id S1727923AbfJVX7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 19:59:04 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36675 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727610AbfJVX7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 19:59:03 -0400
+Received: by mail-pf1-f194.google.com with SMTP id y22so11689953pfr.3
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 16:59:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=fyB/vFz/ujzkN6+eBb05+enZnYQwWLICp2sAjF5YyB4=;
-        b=u4ROBM+GmFnhKuRQQePAa9dFvciN0LgelsN4rk7gTQNLmluoGPQLZgplrqu4MDENb4
-         3y+X6aoVyFzEjm9txZREb7EM+ofotOK0Kdwu3gNDAtu5/0K5iUvooDmpnECZxHh03hjJ
-         mSLXN48gnYxZoXkg1xznrYP0K6eN095BH4lRH9538fLa7Q3C4wEEnb6G+7vW6EVtlGvN
-         twCaibhlqvt6ENXKf+6Fo8mAALd/mR2qJkFFDSSoNCJ0Hl2dUY7Dv3RnUwohNtb7CmzQ
-         cJ4pg5u++5z7c1J5oG+drLjonhAIlUK9TLYfj/WWEbXy7XK8jdSXPurblYhgOTrl+tww
-         N+UA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=EZE4n1CEWwiXxhRvw+llQhWwl7SDzXEz2LUWqMyCyoc=;
+        b=OYP94qq1KXzG8qkoTUtJsYtwfF3KbCaXoCXwoFM58OREYUwZScaNOP9TAG/0BZcDcE
+         z7cFJHDWAlDvGkIfvj0lCSdamFMvqquNUYm2ZOv7EiuaL6LKAqPEjbBRV4YAru6BT3SN
+         UDja75rkf9TT3V/M3dPqO3u2CnCy8kRohoHfpF9J8MGhn6HDh3JdWsQ4nE8wcashD3M4
+         mpjUSEjBl9jSaONr1BxaHVIff2kiPOYTWXHqcy9NGIi7JnrF42rDFL7hhnKQvksIyJgs
+         QjMKkaOS1SL1naYMJV07OqW8mPg6xQyWoPwKFyMiFWIqlmhGbHmDSK0ixtxYLfLsKOe7
+         dkvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=fyB/vFz/ujzkN6+eBb05+enZnYQwWLICp2sAjF5YyB4=;
-        b=FZA8hRZJb1+IHCpXrUC2fxtEUbxdz+UFAb05JTjjfsQzyTPO/whPjAhEDYAuY8hNmb
-         ho2kRB3eV/5ACt8GOTRXrLBPSeZRb8Igo7VLgIF31Q3/lLxeWGIziWJaXmu+ZgFMtxBB
-         Y3Uh8W6r0IHz0MlDgZZQHWVA3usytg22AzlrD4N38PfbsJLO/chGGR/igUcMmuWC+zOT
-         Da9mSHUVYp3aWqK8kOcYQKzcz7IflBCJGGk6Ur/kmj2MLJ1QmEO2grnpnCMKCnfbiGFV
-         RpEbCov41H+QBfsxZZA8YTEpxTFT1njowkQNofQ8J1UdJwdkY9C2JRvTnqYbjVWe9/o2
-         kb1w==
-X-Gm-Message-State: APjAAAWTpn2C30GjRTIxhxGcG30cvy+hCO8gkXIt8K4QIecmrt18DnpS
-        pvDNIgb7LHLEFfzLZcmupzR1zQ==
-X-Google-Smtp-Source: APXvYqxQ+mecaLWGVJduYrIsZZZVa+m+4eWk+pe5FBf+W/cOiGHEioDfCt0axBPgBmXkTHoPAkoriw==
-X-Received: by 2002:a2e:999a:: with SMTP id w26mr897618lji.200.1571787459881;
-        Tue, 22 Oct 2019 16:37:39 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id w23sm2741973lfe.84.2019.10.22.16.37.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 16:37:39 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 16:37:32 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH net-next 5/6] ionic: implement support for rx sgl
-Message-ID: <20191022163732.102f357c@cakuba.netronome.com>
-In-Reply-To: <20191022203113.30015-6-snelson@pensando.io>
-References: <20191022203113.30015-1-snelson@pensando.io>
-        <20191022203113.30015-6-snelson@pensando.io>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EZE4n1CEWwiXxhRvw+llQhWwl7SDzXEz2LUWqMyCyoc=;
+        b=Tf7V1t7fmQG39r4rRMzzuNZzW7BgM/VCQFCssYXo6yxWgIoTim72Wzkz+uGJp14okG
+         UHfgiNOSJfoRghMh+8QVooN5KP0FU10QXsOEz2exYnujb38+mHAHkxq1Y6W3hyxxhS64
+         YZEM6/61cp/CwnjwjVrCl+/ay/4Es4S3BNbAiQM/rMlz2BkKZbvo3adCngpjSXDl0Eqi
+         81hLE5xkxzoc6hYNwpUephrQ33PJL/E/raDZMj/M7CC+9Idiv/apHeN9xVzjgh8mnbtB
+         7M1axeZmvLsDqfNZcMLvvAOt0QKSrh+piKjIbBfkBVsn+8LgDa/WqCeZATd2DjtRb6Kz
+         I5Fg==
+X-Gm-Message-State: APjAAAWIroeXJ+yOXNS1O3AqRrHLokvq+mLTzilG5h5EzPDf7Yi3iRwo
+        ByiNMYhCMnynJn1YJEbVL6P2oM/EKYI=
+X-Google-Smtp-Source: APXvYqx9pTOclgB70Cy6+ONGkCAj6YhIpmBOKpcfYsDYCJCdnE4xQRDRdEYth4eM8tjPoGaDXR6Z5w==
+X-Received: by 2002:a17:90a:9dc5:: with SMTP id x5mr8138638pjv.85.1571788742768;
+        Tue, 22 Oct 2019 16:59:02 -0700 (PDT)
+Received: from sc9-mailhost1.vmware.com ([4.14.35.89])
+        by smtp.gmail.com with ESMTPSA id f6sm21010028pfq.169.2019.10.22.16.59.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 22 Oct 2019 16:59:02 -0700 (PDT)
+From:   William Tu <u9012063@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bjorn.topel@intel.com, daniel@iogearbox.net, ast@kernel.org,
+        magnus.karlsson@intel.com, brouer@redhat.com
+Subject: [PATCH net-next] xsk: Enable AF_XDP by default.
+Date:   Tue, 22 Oct 2019 16:58:31 -0700
+Message-Id: <1571788711-4397-1-git-send-email-u9012063@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 13:31:12 -0700, Shannon Nelson wrote:
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-> index ab6663d94f42..8c96f5fe43a2 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-> @@ -34,52 +34,107 @@ static inline struct netdev_queue *q_to_ndq(struct ionic_queue *q)
->  	return netdev_get_tx_queue(q->lif->netdev, q->index);
->  }
->  
-> -static void ionic_rx_recycle(struct ionic_queue *q, struct ionic_desc_info *desc_info,
-> -			     struct sk_buff *skb)
-> +static struct sk_buff *ionic_rx_skb_alloc(struct ionic_queue *q,
-> +					  unsigned int len, bool frags)
->  {
-> -	struct ionic_rxq_desc *old = desc_info->desc;
-> -	struct ionic_rxq_desc *new = q->head->desc;
-> +	struct ionic_lif *lif = q->lif;
-> +	struct ionic_rx_stats *stats;
-> +	struct net_device *netdev;
-> +	struct sk_buff *skb;
-> +
-> +	netdev = lif->netdev;
-> +	stats = q_to_rx_stats(q);
->  
-> -	new->addr = old->addr;
-> -	new->len = old->len;
-> +	if (frags)
-> +		skb = napi_get_frags(&q_to_qcq(q)->napi);
-> +	else
-> +		skb = netdev_alloc_skb_ip_align(netdev, len);
->  
-> -	ionic_rxq_post(q, true, ionic_rx_clean, skb);
-> +	if (unlikely(!skb)) {
-> +		net_warn_ratelimited("%s: SKB alloc failed on %s!\n",
-> +				     netdev->name, q->name);
-> +		stats->alloc_err++;
-> +		return NULL;
-> +	}
-> +
-> +	return skb;
->  }
->  
-> -static bool ionic_rx_copybreak(struct ionic_queue *q, struct ionic_desc_info *desc_info,
-> -			       struct ionic_cq_info *cq_info, struct sk_buff **skb)
-> +static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
-> +				      struct ionic_desc_info *desc_info,
-> +				      struct ionic_cq_info *cq_info)
->  {
->  	struct ionic_rxq_comp *comp = cq_info->cq_desc;
-> -	struct ionic_rxq_desc *desc = desc_info->desc;
-> -	struct net_device *netdev = q->lif->netdev;
->  	struct device *dev = q->lif->ionic->dev;
-> -	struct sk_buff *new_skb;
-> -	u16 clen, dlen;
-> -
-> -	clen = le16_to_cpu(comp->len);
-> -	dlen = le16_to_cpu(desc->len);
-> -	if (clen > q->lif->rx_copybreak) {
-> -		dma_unmap_single(dev, (dma_addr_t)le64_to_cpu(desc->addr),
-> -				 dlen, DMA_FROM_DEVICE);
-> -		return false;
-> -	}
-> +	struct ionic_page_info *page_info;
-> +	struct sk_buff *skb;
-> +	unsigned int i;
-> +	u16 frag_len;
-> +	u16 len;
->  
-> -	new_skb = netdev_alloc_skb_ip_align(netdev, clen);
-> -	if (!new_skb) {
-> -		dma_unmap_single(dev, (dma_addr_t)le64_to_cpu(desc->addr),
-> -				 dlen, DMA_FROM_DEVICE);
-> -		return false;
-> -	}
-> +	page_info = &desc_info->pages[0];
-> +	len = le16_to_cpu(comp->len);
->  
-> -	dma_sync_single_for_cpu(dev, (dma_addr_t)le64_to_cpu(desc->addr),
-> -				clen, DMA_FROM_DEVICE);
-> +	prefetch(page_address(page_info->page) + NET_IP_ALIGN);
->  
-> -	memcpy(new_skb->data, (*skb)->data, clen);
-> +	skb = ionic_rx_skb_alloc(q, len, true);
-> +	if (unlikely(!skb))
-> +		return NULL;
->  
-> -	ionic_rx_recycle(q, desc_info, *skb);
-> -	*skb = new_skb;
-> +	i = comp->num_sg_elems + 1;
-> +	do {
-> +		if (unlikely(!page_info->page)) {
-> +			dev_kfree_skb(skb);
-> +			return NULL;
-> +		}
+The patch enables XDP_SOCKETS and XDP_SOCKETS_DIAG used by AF_XDP,
+and its dependency on BPF_SYSCALL.
 
-Would you not potentially free the napi->skb here? is that okay?
+Signed-off-by: William Tu <u9012063@gmail.com>
+---
+ init/Kconfig    | 2 +-
+ net/xdp/Kconfig | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/init/Kconfig b/init/Kconfig
+index b4daad2bac23..229eceeb93d4 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1631,7 +1631,7 @@ config BPF_SYSCALL
+ 	bool "Enable bpf() system call"
+ 	select BPF
+ 	select IRQ_WORK
+-	default n
++	default y
+ 	help
+ 	  Enable the bpf() system call that allows to manipulate eBPF
+ 	  programs and maps via file descriptors.
+diff --git a/net/xdp/Kconfig b/net/xdp/Kconfig
+index 71af2febe72a..77fd51d6a5d7 100644
+--- a/net/xdp/Kconfig
++++ b/net/xdp/Kconfig
+@@ -2,7 +2,7 @@
+ config XDP_SOCKETS
+ 	bool "XDP sockets"
+ 	depends on BPF_SYSCALL
+-	default n
++	default y
+ 	help
+ 	  XDP sockets allows a channel between XDP programs and
+ 	  userspace applications.
+@@ -10,7 +10,7 @@ config XDP_SOCKETS
+ config XDP_SOCKETS_DIAG
+ 	tristate "XDP sockets: monitoring interface"
+ 	depends on XDP_SOCKETS
+-	default n
++	default y
+ 	help
+ 	  Support for PF_XDP sockets monitoring interface used by the ss tool.
+ 	  If unsure, say Y.
+-- 
+2.7.4
+
