@@ -2,248 +2,443 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E5DE06DA
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB777E06E2
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732021AbfJVOzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 10:55:36 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:51331 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727582AbfJVOzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 10:55:35 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iMvZM-0008Qq-BV; Tue, 22 Oct 2019 16:55:32 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72] (unknown [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5147846CA81;
-        Tue, 22 Oct 2019 14:55:30 +0000 (UTC)
-Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
- for CAN hardware
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent Prince <vincent.prince.fr@gmail.com>
-Cc:     jiri@resnulli.us, dave.taht@gmail.com, netdev@vger.kernel.org,
-        jhs@mojatatu.com, linux-can@vger.kernel.org, kernel@pengutronix.de,
-        xiyou.wangcong@gmail.com, davem@davemloft.net
-References: <20190327165632.10711-1-mkl@pengutronix.de>
- <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
- <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <a0adc1d1-8a88-b2fa-d6d3-928785b16ebb@pengutronix.de>
-Date:   Tue, 22 Oct 2019 16:55:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S1732121AbfJVO54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 10:57:56 -0400
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:55246 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726955AbfJVO54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 10:57:56 -0400
+Received: by mail-pg1-f202.google.com with SMTP id b128so1130650pga.21
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 07:57:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=XThmgXzKquDAnvRzFR49Wboaox4qsPT3aZdoMAjmYtU=;
+        b=nsxbxsx7bQzm6K3wu48S+qv9FTPAiRcCdQGIowlYKf0OItSYoETTWcKH1atT36Dck3
+         rQmt/WDtOUYJ+MHB2RKSQWgLlH2SWV8O6J6JAH2xDUNGmGkCk1o1DQjAMo9gIpZC4Neh
+         p2GbyjAaPesawcieas9zjqGIAwxbExr+EiN0G8EWNPNPZRt/xRe3TqOhywJHM0TKCaXQ
+         B3W/ylO6IeD6QnWmFniuh6iNn527A/sbI41fdc/puVMwm1kpvgmgpHbINvrJgKKyIU+z
+         LNaMPgPlp7RMKFHVeBj9SB1/QAN1PuQVWneBa9OKwPZG9HjRTIi8paFLhN+zr04GWGWf
+         O5UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=XThmgXzKquDAnvRzFR49Wboaox4qsPT3aZdoMAjmYtU=;
+        b=ha16eyjVG/se5ByWOkWBpWhuk1aOAVlzvdZSPSbwYWKPpKnvksEsH9wYAUim1gSAg0
+         pzkCo/3qGVPPz+5xqCjqLUjFJcbKhRJMW8Ic4JJn54JTGBsJosYbFj9qpkZynO82wjU1
+         tkNcskEST4LIlCwMbUNcs2sr6GAZCokxmyxzbpe6MVoq4uSdywRrA8BcrVbBbAq5Pr3n
+         67T/6NWhmEqF3olbMv4Tz5HLWLMmDF2KspvYZVL6TAINZ7ZClSkMt88HiSL910dlJVZr
+         EjkzfLeScRJKTqrWsidIlcksuyE5TkJDtidx5/eD22ttiF1aQi8xOF9XtDYG+1b9HTzz
+         i3HQ==
+X-Gm-Message-State: APjAAAVhFMfqL7cSfkPDMJJrO1iG1ACtHG1e+rnJPXQNPu5Ihtckd5sl
+        oswqprRv698Yn8C5koJmHavBEoM5/cMqAw==
+X-Google-Smtp-Source: APXvYqzxhWF96LAkRU35niNFgG7Tgml3dJhQ48z+mu8aXpoynHs1VfG/D8N349JrEnhT1pVJd/QziAv+1Qo4EA==
+X-Received: by 2002:a63:7405:: with SMTP id p5mr4331205pgc.264.1571756274356;
+ Tue, 22 Oct 2019 07:57:54 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 07:57:46 -0700
+Message-Id: <20191022145746.4966-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
+Subject: [PATCH net] net/flow_dissector: switch to siphash
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jonathan Berger <jonathann1@walla.com>,
+        Amit Klein <aksecurity@gmail.com>,
+        Benny Pinkas <benny@pinkas.net>,
+        Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C
-Content-Type: multipart/mixed; boundary="Op2BsBVqswp7K1qzXiYA7tDcsxKi4wePu";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Vincent Prince <vincent.prince.fr@gmail.com>
-Cc: jiri@resnulli.us, dave.taht@gmail.com, netdev@vger.kernel.org,
- jhs@mojatatu.com, linux-can@vger.kernel.org, kernel@pengutronix.de,
- xiyou.wangcong@gmail.com, davem@davemloft.net
-Message-ID: <a0adc1d1-8a88-b2fa-d6d3-928785b16ebb@pengutronix.de>
-Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
- for CAN hardware
-References: <20190327165632.10711-1-mkl@pengutronix.de>
- <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
- <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
-In-Reply-To: <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
+UDP IPv6 packets auto flowlabels are using a 32bit secret
+(static u32 hashrnd in net/core/flow_dissector.c) and
+apply jhash() over fields known by the receivers.
 
---Op2BsBVqswp7K1qzXiYA7tDcsxKi4wePu
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Attackers can easily infer the 32bit secret and use this information
+to identify a device and/or user, since this 32bit secret is only
+set at boot time.
 
-On 10/22/19 4:53 PM, Marc Kleine-Budde wrote:
-> On 10/22/19 3:23 PM, Vincent Prince wrote:
->> Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com>
->=20
-> please include a patch description. I.e. this one:
->=20
-> -------->8-------->8-------->8-------->8-------->8-------->8-------->8-=
--------
-> There is networking hardware that isn't based on Ethernet for layers 1 =
-and 2.
->=20
-> For example CAN.
->=20
-> CAN is a multi-master serial bus standard for connecting Electronic Con=
-trol
-> Units [ECUs] also known as nodes. A frame on the CAN bus carries up to =
-8 bytes
-> of payload. Frame corruption is detected by a CRC. However frame loss d=
-ue to
-> corruption is possible, but a quite unusual phenomenon.
->=20
-> While fq_codel works great for TCP/IP, it doesn't for CAN. There are a =
-lot of
-> legacy protocols on top of CAN, which are not build with flow control o=
-r high
-> CAN frame drop rates in mind.
->=20
-> When using fq_codel, as soon as the queue reaches a certain delay based=
- length,
-> skbs from the head of the queue are silently dropped. Silently meaning =
-that the
-> user space using a send() or similar syscall doesn't get an error. Howe=
-ver
-> TCP's flow control algorithm will detect dropped packages and adjust th=
-e
-> bandwidth accordingly.
->=20
-> When using fq_codel and sending raw frames over CAN, which is the commo=
-n use
-> case, the user space thinks the package has been sent without problems,=
- because
-> send() returned without an error. pfifo_fast will drop skbs, if the que=
-ue
-> length exceeds the maximum. But with this scheduler the skbs at the tai=
-l are
-> dropped, an error (-ENOBUFS) is propagated to user space. So that the u=
-ser
-> space can slow down the package generation.
->=20
-> On distributions, where fq_codel is made default via CONFIG_DEFAULT_NET=
-_SCH
-> during compile time, or set default during runtime with sysctl
-> net.core.default_qdisc (see [1]), we get a bad user experience. In my t=
-est case
-> with pfifo_fast, I can transfer thousands of million CAN frames without=
- a frame
-> drop. On the other hand with fq_codel there is more then one lost CAN f=
-rame per
-> thousand frames.
->=20
-> As pointed out fq_codel is not suited for CAN hardware, so this patch c=
-hanges
-> attach_one_default_qdisc() to use pfifo_fast for "ARPHRD_CAN" network d=
-evices.
->=20
-> During transition of a netdev from down to up state the default queuing=
+Really, using jhash() to generate cookies sent on the wire
+is a serious security concern.
 
-> discipline is attached by attach_default_qdiscs() with the help of
-> attach_one_default_qdisc(). This patch modifies attach_one_default_qdis=
-c() to
-> attach the pfifo_fast (pfifo_fast_ops) if the network device type is
-> "ARPHRD_CAN".
-> -------->8-------->8-------->8-------->8-------->8-------->8-------->8-=
--------
+Trying to change the rol32(hash, 16) in ip6_make_flowlabel() would be
+a dead end. Trying to periodically change the secret (like in sch_sfq.c)
+could change paths taken in the network for long lived flows.
 
-Doh, also include the footnote:
+Let's switch to siphash, as we did in commit df453700e8d8
+("inet: switch IP ID generator to siphash")
 
--------->8-------->8-------->8-------->8-------->8-------->8-------->8---=
------
-[1] https://github.com/systemd/systemd/issues/9194
--------->8-------->8-------->8-------->8-------->8-------->8-------->8---=
------
+Using a cryptographically strong pseudo random function will solve this
+privacy issue and more generally remove other weak points in the stack.
 
-Marc
+Packet schedulers using skb_get_hash_perturb() benefit from this change.
 
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+Fixes: b56774163f99 ("ipv6: Enable auto flow labels by default")
+Fixes: 42240901f7c4 ("ipv6: Implement different admin modes for automatic flow labels")
+Fixes: 67800f9b1f4e ("ipv6: Call skb_get_hash_flowi6 to get skb->hash in ip6_make_flowlabel")
+Fixes: cb1ce2ef387b ("ipv6: Implement automatic flow label generation on transmit")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Jonathan Berger <jonathann1@walla.com>
+Reported-by: Amit Klein <aksecurity@gmail.com>
+Reported-by: Benny Pinkas <benny@pinkas.net>
+Cc: Tom Herbert <tom@herbertland.com>
+---
+ include/linux/skbuff.h       |  3 ++-
+ include/net/flow_dissector.h |  3 ++-
+ include/net/fq.h             |  2 +-
+ include/net/fq_impl.h        |  4 ++--
+ net/core/flow_dissector.c    | 38 +++++++++++++++---------------------
+ net/sched/sch_hhf.c          |  8 ++++----
+ net/sched/sch_sfb.c          | 13 ++++++------
+ net/sched/sch_sfq.c          | 14 +++++++------
+ 8 files changed, 42 insertions(+), 43 deletions(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 7914fdaf4226694652da46becdac5747dca97687..a391147c03d4090252117e106a0df8f612955634 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1354,7 +1354,8 @@ static inline __u32 skb_get_hash_flowi6(struct sk_buff *skb, const struct flowi6
+ 	return skb->hash;
+ }
+ 
+-__u32 skb_get_hash_perturb(const struct sk_buff *skb, u32 perturb);
++__u32 skb_get_hash_perturb(const struct sk_buff *skb,
++			   const siphash_key_t *perturb);
+ 
+ static inline __u32 skb_get_hash_raw(const struct sk_buff *skb)
+ {
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index 90bd210be06075818a8ba3213006e16eb610c602..5cd12276ae21a52006debcd846c85be1b04bf596 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/in6.h>
++#include <linux/siphash.h>
+ #include <uapi/linux/if_ether.h>
+ 
+ /**
+@@ -276,7 +277,7 @@ struct flow_keys_basic {
+ struct flow_keys {
+ 	struct flow_dissector_key_control control;
+ #define FLOW_KEYS_HASH_START_FIELD basic
+-	struct flow_dissector_key_basic basic;
++	struct flow_dissector_key_basic basic __aligned(SIPHASH_ALIGNMENT);
+ 	struct flow_dissector_key_tags tags;
+ 	struct flow_dissector_key_vlan vlan;
+ 	struct flow_dissector_key_vlan cvlan;
+diff --git a/include/net/fq.h b/include/net/fq.h
+index d126b5d2026155aa7311ea82ce609122c6da45e0..2ad85e68304142fc3193e8a2c4dc1cfb4cca821a 100644
+--- a/include/net/fq.h
++++ b/include/net/fq.h
+@@ -69,7 +69,7 @@ struct fq {
+ 	struct list_head backlogs;
+ 	spinlock_t lock;
+ 	u32 flows_cnt;
+-	u32 perturbation;
++	siphash_key_t	perturbation;
+ 	u32 limit;
+ 	u32 memory_limit;
+ 	u32 memory_usage;
+diff --git a/include/net/fq_impl.h b/include/net/fq_impl.h
+index be40a4b327e3d1d51f15f29b45216b39e7d1f42e..107c0d700ed6ffd03cd1dc835f086eb989adbed3 100644
+--- a/include/net/fq_impl.h
++++ b/include/net/fq_impl.h
+@@ -108,7 +108,7 @@ static struct sk_buff *fq_tin_dequeue(struct fq *fq,
+ 
+ static u32 fq_flow_idx(struct fq *fq, struct sk_buff *skb)
+ {
+-	u32 hash = skb_get_hash_perturb(skb, fq->perturbation);
++	u32 hash = skb_get_hash_perturb(skb, &fq->perturbation);
+ 
+ 	return reciprocal_scale(hash, fq->flows_cnt);
+ }
+@@ -308,7 +308,7 @@ static int fq_init(struct fq *fq, int flows_cnt)
+ 	INIT_LIST_HEAD(&fq->backlogs);
+ 	spin_lock_init(&fq->lock);
+ 	fq->flows_cnt = max_t(u32, flows_cnt, 1);
+-	fq->perturbation = prandom_u32();
++	get_random_bytes(&fq->perturbation, sizeof(fq->perturbation));
+ 	fq->quantum = 300;
+ 	fq->limit = 8192;
+ 	fq->memory_limit = 16 << 20; /* 16 MBytes */
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 7c09d87d3269e4d01fd895c595a3a6e67d350685..68eda10d0680749ef07372951debab913449e661 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -1350,30 +1350,21 @@ bool __skb_flow_dissect(const struct net *net,
+ }
+ EXPORT_SYMBOL(__skb_flow_dissect);
+ 
+-static u32 hashrnd __read_mostly;
++static siphash_key_t hashrnd __read_mostly;
+ static __always_inline void __flow_hash_secret_init(void)
+ {
+ 	net_get_random_once(&hashrnd, sizeof(hashrnd));
+ }
+ 
+-static __always_inline u32 __flow_hash_words(const u32 *words, u32 length,
+-					     u32 keyval)
++static const void *flow_keys_hash_start(const struct flow_keys *flow)
+ {
+-	return jhash2(words, length, keyval);
+-}
+-
+-static inline const u32 *flow_keys_hash_start(const struct flow_keys *flow)
+-{
+-	const void *p = flow;
+-
+-	BUILD_BUG_ON(FLOW_KEYS_HASH_OFFSET % sizeof(u32));
+-	return (const u32 *)(p + FLOW_KEYS_HASH_OFFSET);
++	BUILD_BUG_ON(FLOW_KEYS_HASH_OFFSET % SIPHASH_ALIGNMENT);
++	return &flow->FLOW_KEYS_HASH_START_FIELD;
+ }
+ 
+ static inline size_t flow_keys_hash_length(const struct flow_keys *flow)
+ {
+ 	size_t diff = FLOW_KEYS_HASH_OFFSET + sizeof(flow->addrs);
+-	BUILD_BUG_ON((sizeof(*flow) - FLOW_KEYS_HASH_OFFSET) % sizeof(u32));
+ 	BUILD_BUG_ON(offsetof(typeof(*flow), addrs) !=
+ 		     sizeof(*flow) - sizeof(flow->addrs));
+ 
+@@ -1388,7 +1379,7 @@ static inline size_t flow_keys_hash_length(const struct flow_keys *flow)
+ 		diff -= sizeof(flow->addrs.tipckey);
+ 		break;
+ 	}
+-	return (sizeof(*flow) - diff) / sizeof(u32);
++	return sizeof(*flow) - diff;
+ }
+ 
+ __be32 flow_get_u32_src(const struct flow_keys *flow)
+@@ -1454,14 +1445,15 @@ static inline void __flow_hash_consistentify(struct flow_keys *keys)
+ 	}
+ }
+ 
+-static inline u32 __flow_hash_from_keys(struct flow_keys *keys, u32 keyval)
++static inline u32 __flow_hash_from_keys(struct flow_keys *keys,
++					const siphash_key_t *keyval)
+ {
+ 	u32 hash;
+ 
+ 	__flow_hash_consistentify(keys);
+ 
+-	hash = __flow_hash_words(flow_keys_hash_start(keys),
+-				 flow_keys_hash_length(keys), keyval);
++	hash = siphash(flow_keys_hash_start(keys),
++		       flow_keys_hash_length(keys), keyval);
+ 	if (!hash)
+ 		hash = 1;
+ 
+@@ -1471,12 +1463,13 @@ static inline u32 __flow_hash_from_keys(struct flow_keys *keys, u32 keyval)
+ u32 flow_hash_from_keys(struct flow_keys *keys)
+ {
+ 	__flow_hash_secret_init();
+-	return __flow_hash_from_keys(keys, hashrnd);
++	return __flow_hash_from_keys(keys, &hashrnd);
+ }
+ EXPORT_SYMBOL(flow_hash_from_keys);
+ 
+ static inline u32 ___skb_get_hash(const struct sk_buff *skb,
+-				  struct flow_keys *keys, u32 keyval)
++				  struct flow_keys *keys,
++				  const siphash_key_t *keyval)
+ {
+ 	skb_flow_dissect_flow_keys(skb, keys,
+ 				   FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL);
+@@ -1524,7 +1517,7 @@ u32 __skb_get_hash_symmetric(const struct sk_buff *skb)
+ 			   &keys, NULL, 0, 0, 0,
+ 			   FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL);
+ 
+-	return __flow_hash_from_keys(&keys, hashrnd);
++	return __flow_hash_from_keys(&keys, &hashrnd);
+ }
+ EXPORT_SYMBOL_GPL(__skb_get_hash_symmetric);
+ 
+@@ -1544,13 +1537,14 @@ void __skb_get_hash(struct sk_buff *skb)
+ 
+ 	__flow_hash_secret_init();
+ 
+-	hash = ___skb_get_hash(skb, &keys, hashrnd);
++	hash = ___skb_get_hash(skb, &keys, &hashrnd);
+ 
+ 	__skb_set_sw_hash(skb, hash, flow_keys_have_l4(&keys));
+ }
+ EXPORT_SYMBOL(__skb_get_hash);
+ 
+-__u32 skb_get_hash_perturb(const struct sk_buff *skb, u32 perturb)
++__u32 skb_get_hash_perturb(const struct sk_buff *skb,
++			   const siphash_key_t *perturb)
+ {
+ 	struct flow_keys keys;
+ 
+diff --git a/net/sched/sch_hhf.c b/net/sched/sch_hhf.c
+index 23cd1c873a2cfc24b907a8177e71dd68b0939701..be35f03b657b1eb10d224594981aa44e1776801c 100644
+--- a/net/sched/sch_hhf.c
++++ b/net/sched/sch_hhf.c
+@@ -5,11 +5,11 @@
+  * Copyright (C) 2013 Nandita Dukkipati <nanditad@google.com>
+  */
+ 
+-#include <linux/jhash.h>
+ #include <linux/jiffies.h>
+ #include <linux/module.h>
+ #include <linux/skbuff.h>
+ #include <linux/vmalloc.h>
++#include <linux/siphash.h>
+ #include <net/pkt_sched.h>
+ #include <net/sock.h>
+ 
+@@ -126,7 +126,7 @@ struct wdrr_bucket {
+ 
+ struct hhf_sched_data {
+ 	struct wdrr_bucket buckets[WDRR_BUCKET_CNT];
+-	u32		   perturbation;   /* hash perturbation */
++	siphash_key_t	   perturbation;   /* hash perturbation */
+ 	u32		   quantum;        /* psched_mtu(qdisc_dev(sch)); */
+ 	u32		   drop_overlimit; /* number of times max qdisc packet
+ 					    * limit was hit
+@@ -264,7 +264,7 @@ static enum wdrr_bucket_idx hhf_classify(struct sk_buff *skb, struct Qdisc *sch)
+ 	}
+ 
+ 	/* Get hashed flow-id of the skb. */
+-	hash = skb_get_hash_perturb(skb, q->perturbation);
++	hash = skb_get_hash_perturb(skb, &q->perturbation);
+ 
+ 	/* Check if this packet belongs to an already established HH flow. */
+ 	flow_pos = hash & HHF_BIT_MASK;
+@@ -582,7 +582,7 @@ static int hhf_init(struct Qdisc *sch, struct nlattr *opt,
+ 
+ 	sch->limit = 1000;
+ 	q->quantum = psched_mtu(qdisc_dev(sch));
+-	q->perturbation = prandom_u32();
++	get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+ 	INIT_LIST_HEAD(&q->new_buckets);
+ 	INIT_LIST_HEAD(&q->old_buckets);
+ 
+diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
+index d448fe3068e5b9f0b35a37d921ab5a74350dc155..4074c50ac3d73100dd82bd631c127326ff49f355 100644
+--- a/net/sched/sch_sfb.c
++++ b/net/sched/sch_sfb.c
+@@ -18,7 +18,7 @@
+ #include <linux/errno.h>
+ #include <linux/skbuff.h>
+ #include <linux/random.h>
+-#include <linux/jhash.h>
++#include <linux/siphash.h>
+ #include <net/ip.h>
+ #include <net/pkt_sched.h>
+ #include <net/pkt_cls.h>
+@@ -45,7 +45,7 @@ struct sfb_bucket {
+  * (Section 4.4 of SFB reference : moving hash functions)
+  */
+ struct sfb_bins {
+-	u32		  perturbation; /* jhash perturbation */
++	siphash_key_t	  perturbation; /* siphash key */
+ 	struct sfb_bucket bins[SFB_LEVELS][SFB_NUMBUCKETS];
+ };
+ 
+@@ -217,7 +217,8 @@ static u32 sfb_compute_qlen(u32 *prob_r, u32 *avgpm_r, const struct sfb_sched_da
+ 
+ static void sfb_init_perturbation(u32 slot, struct sfb_sched_data *q)
+ {
+-	q->bins[slot].perturbation = prandom_u32();
++	get_random_bytes(&q->bins[slot].perturbation,
++			 sizeof(q->bins[slot].perturbation));
+ }
+ 
+ static void sfb_swap_slot(struct sfb_sched_data *q)
+@@ -314,9 +315,9 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		/* If using external classifiers, get result and record it. */
+ 		if (!sfb_classify(skb, fl, &ret, &salt))
+ 			goto other_drop;
+-		sfbhash = jhash_1word(salt, q->bins[slot].perturbation);
++		sfbhash = siphash_1u32(salt, &q->bins[slot].perturbation);
+ 	} else {
+-		sfbhash = skb_get_hash_perturb(skb, q->bins[slot].perturbation);
++		sfbhash = skb_get_hash_perturb(skb, &q->bins[slot].perturbation);
+ 	}
+ 
+ 
+@@ -352,7 +353,7 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		/* Inelastic flow */
+ 		if (q->double_buffering) {
+ 			sfbhash = skb_get_hash_perturb(skb,
+-			    q->bins[slot].perturbation);
++			    &q->bins[slot].perturbation);
+ 			if (!sfbhash)
+ 				sfbhash = 1;
+ 			sfb_skb_cb(skb)->hashes[slot] = sfbhash;
+diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
+index 68404a9d2ce426f7027d83f0adde634cb031ef4a..c787d4d46017b4b41b8eb6d41f2b0a44560ff5bf 100644
+--- a/net/sched/sch_sfq.c
++++ b/net/sched/sch_sfq.c
+@@ -14,7 +14,7 @@
+ #include <linux/errno.h>
+ #include <linux/init.h>
+ #include <linux/skbuff.h>
+-#include <linux/jhash.h>
++#include <linux/siphash.h>
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
+ #include <net/netlink.h>
+@@ -117,7 +117,7 @@ struct sfq_sched_data {
+ 	u8		headdrop;
+ 	u8		maxdepth;	/* limit of packets per flow */
+ 
+-	u32		perturbation;
++	siphash_key_t 	perturbation;
+ 	u8		cur_depth;	/* depth of longest slot */
+ 	u8		flags;
+ 	unsigned short  scaled_quantum; /* SFQ_ALLOT_SIZE(quantum) */
+@@ -157,7 +157,7 @@ static inline struct sfq_head *sfq_dep_head(struct sfq_sched_data *q, sfq_index
+ static unsigned int sfq_hash(const struct sfq_sched_data *q,
+ 			     const struct sk_buff *skb)
+ {
+-	return skb_get_hash_perturb(skb, q->perturbation) & (q->divisor - 1);
++	return skb_get_hash_perturb(skb, &q->perturbation) & (q->divisor - 1);
+ }
+ 
+ static unsigned int sfq_classify(struct sk_buff *skb, struct Qdisc *sch,
+@@ -607,9 +607,11 @@ static void sfq_perturbation(struct timer_list *t)
+ 	struct sfq_sched_data *q = from_timer(q, t, perturb_timer);
+ 	struct Qdisc *sch = q->sch;
+ 	spinlock_t *root_lock = qdisc_lock(qdisc_root_sleeping(sch));
++	siphash_key_t nkey;
+ 
++	get_random_bytes(&nkey, sizeof(nkey));
+ 	spin_lock(root_lock);
+-	q->perturbation = prandom_u32();
++	q->perturbation = nkey;
+ 	if (!q->filter_list && q->tail)
+ 		sfq_rehash(sch);
+ 	spin_unlock(root_lock);
+@@ -688,7 +690,7 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
+ 	del_timer(&q->perturb_timer);
+ 	if (q->perturb_period) {
+ 		mod_timer(&q->perturb_timer, jiffies + q->perturb_period);
+-		q->perturbation = prandom_u32();
++		get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+ 	}
+ 	sch_tree_unlock(sch);
+ 	kfree(p);
+@@ -745,7 +747,7 @@ static int sfq_init(struct Qdisc *sch, struct nlattr *opt,
+ 	q->quantum = psched_mtu(qdisc_dev(sch));
+ 	q->scaled_quantum = SFQ_ALLOT_SIZE(q->quantum);
+ 	q->perturb_period = 0;
+-	q->perturbation = prandom_u32();
++	get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+ 
+ 	if (opt) {
+ 		int err = sfq_change(sch, opt);
+-- 
+2.23.0.866.gb869b98d4c-goog
 
---Op2BsBVqswp7K1qzXiYA7tDcsxKi4wePu--
-
---PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2vGF4ACgkQWsYho5Hk
-nSDabQf+OWsRLkD2sUS3VJ5YvEcDiOKdrFLucnVSCPyOaNazVlcwWhxmSR7N/VCU
-b+SItuo1CrLI51n/MDR1unZpGkyUF4Ih+xFt4W738t0FvCerqwII8R5XkCuacwWq
-eOd4OJIBnfOa/AIbhCIkVvbbC6XzSN950w315cQKsX2H1N7X0jvToitl9yVswDuk
-kksPSIOHYVtqSeCLm2J48J06RoYPmrtc+w4v189MK4eWGMFB8yvaOxOx1mW9vTXD
-oxDCqA6+8Qs7D/j5VhbNC2IrVVFlgvu6r46R1wZUaZm1nB/p9EROsIGIKzWQymMP
-8BGhZ7LeMu9T/J0GilU1JxYNdjVJDQ==
-=jUcQ
------END PGP SIGNATURE-----
-
---PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C--
