@@ -2,66 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D69CE0D0C
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 22:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9A9E0D3A
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 22:29:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388964AbfJVUIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 16:08:06 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:40443 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387609AbfJVUIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 16:08:05 -0400
-Received: by mail-lj1-f193.google.com with SMTP id u22so542233lji.7
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 13:08:02 -0700 (PDT)
+        id S2388344AbfJVU33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 16:29:29 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:38896 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728832AbfJVU32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 16:29:28 -0400
+Received: by mail-lj1-f196.google.com with SMTP id q78so3481819lje.5
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 13:29:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=Jepvi8++4KHG9zardrX3M8QtVwArs/duyX7iXwqTssk=;
-        b=hTrtaAgEvhNL0YSN4U/x7Ca1+Q6F/DEsj55rl49kx51S9+p2NR+6PM81lRfoDLK9lf
-         837MSmEeURh7Y/sXwPp0y3bYNslB1HEp3ToeLTT/chG/obKoJSZ2HtUZ/95uMt8rfPlO
-         g5nHV5XCj1IWeIaftr1vFN4QXb3uFltJs783fwOHs0A0QJVcWT41VJeZoThHcK7t2iJT
-         f9dWzOIX6OwZbaeBacSubKeCVZyS7/HHK0k9xK87b027TFPMjLffxioec+lQTYQE/8PV
-         qWcFyjAUZk4OiY1Dq2jGS60GfL0ll2hI/SOnQ+u9g7uJDfvuPFk7hvNwJDAWTBjFvi5/
-         XHCg==
+        bh=NovAOSnJkjSpelcbLE/Ws4KDhSSFDNoFlL7FMJMTi0k=;
+        b=t3jidYtbAgpqYIUhdpbrdKPhGtENL1+5ot7OAe7W+hVZhj1IkMrfd+/1C4u6XVS8J6
+         mzmnttXiCSUZm85ptFoomC/H1M8KKhwVPkuuvJ6JJosdxvAv8Oo/mb+Y8GbHQTWgr+FR
+         Ftdm1ajzuSNMjZ6L7ZfXzeM02467os2U0UDinfx7U293z+vGTz3oh8WVYRX3B0GyIKB6
+         x9mQvr6xI9HhlSbK6LvFzp9Sk3Zk5Ne1PFjj+W3aNcaKvFv2/MiPlG+UdyK90+Frzw8+
+         FQ5U97PXAdX9zMNFTCFzBBLXtLdgLI8i1JG1N/g9CLKk3EpMtjfqQ3y43dbhwcyVoe+F
+         q3/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=Jepvi8++4KHG9zardrX3M8QtVwArs/duyX7iXwqTssk=;
-        b=C5b9QYyJwusTc7ZXEYeMA4Kkd2Kv+fk0P1qmJ8dCY6lyhL9ndArKF2+WEh71EfARyn
-         bG9tEKUUbqZo3OshTFsf2HoQ4xjx7ys0fAf0uXjDA1l8CK3r43v1bCnsqtbIH+MAp2GY
-         +xwRI3F12r6ezReV/s2Oqr9KG2Im8KbZ0R5XskAGV1Wq9o31SLjsWw2hATGvyHR4Dnym
-         B+bXktRoWziH3pxfxzWfQfpyb41dJeX8LyryjXDz8ny5renmNJwk3+6OEyvACmJR7tkp
-         zwcSWf2YEdhSivvqQEAFNk7RDgaLHOEZ1oBhDsjZnOULkkdUbgPmXq8eHX5qEkuheFqd
-         Knhw==
-X-Gm-Message-State: APjAAAWPXI08j+YSTmNlsiD7ZoPoPXAhXqGnrUzGsxac3Bb4RyY0VEx6
-        nvD7K4ldh0SV5y+M5DaqYxR7kg==
-X-Google-Smtp-Source: APXvYqzHW17dZfehUbHroL+khGtd2o684rg84WG/ysl2SL0ML5ulZOe6aNdkECAkJAUfz3BKic2dBA==
-X-Received: by 2002:a2e:9a99:: with SMTP id p25mr19086167lji.171.1571774881729;
-        Tue, 22 Oct 2019 13:08:01 -0700 (PDT)
+        bh=NovAOSnJkjSpelcbLE/Ws4KDhSSFDNoFlL7FMJMTi0k=;
+        b=rqCAReqiKKJ3DYwmefMDONr0luKF3JHJISY/RhNyLCYo/PWy7R9wcmJZDcUje0FCYh
+         KLcMmixBkpJSW6oRAPCJ3qRTEoEtO82rtrrWS10YqN7maU4c7pa7sWUzjopte2EeihG6
+         NtREf7mINEkwudr4wX67B4egVWw6acPR3L0SCtPWyQUHajIcMayzbxG576oDDzA1LbFl
+         /UmAg+SUYLB6HX3eFGwuHc3RqCYr3RY5FIRCO8erraXm7Svnh3u40tA18W2FJNjH1hyl
+         2nbXH9MBEquFrWbz7y5S6AND/CkX5MK2rLvF147WiPbbO94/pQMmzTB3Ys12sDPRz4Wc
+         nZdQ==
+X-Gm-Message-State: APjAAAWWB1g5oVFnoUe3L4H9WP7PzreAgzE4kaj1f9UQ3TFTideHDV77
+        iLBR2N3PnsDOJzDeVhqG8blLhg==
+X-Google-Smtp-Source: APXvYqyPSAuql9cwfn4M//J4FZnrUIpj2SMp2C3LUlrQyVPh1WJCO4Kz5sij6MmTisACfjt8y4WhPg==
+X-Received: by 2002:a2e:7c13:: with SMTP id x19mr5160033ljc.0.1571776166227;
+        Tue, 22 Oct 2019 13:29:26 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q16sm7027794lfo.7.2019.10.22.13.07.58
+        by smtp.gmail.com with ESMTPSA id g27sm8633468lja.33.2019.10.22.13.29.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 13:08:01 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 13:07:53 -0700
+        Tue, 22 Oct 2019 13:29:25 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 13:29:19 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shaokun Zhang <zhangshaokun@hisilicon.com>
-Cc:     <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, yuqi jin <jinyuqi@huawei.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v2] net: stmmac: Fix the problem of tso_xmit
-Message-ID: <20191022130753.70c12b55@cakuba.netronome.com>
-In-Reply-To: <1571628454-29550-1-git-send-email-zhangshaokun@hisilicon.com>
-References: <0b6b3394-f9f0-2804-0665-fe914ad2cdea@gmail.com>
-        <1571628454-29550-1-git-send-email-zhangshaokun@hisilicon.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        vasundhara-v.volam@broadcom.com
+Subject: Re: [PATCH net 0/5] bnxt_en: Bug fixes.
+Message-ID: <20191022132919.021d8a09@cakuba.netronome.com>
+In-Reply-To: <1571636069-14179-1-git-send-email-michael.chan@broadcom.com>
+References: <1571636069-14179-1-git-send-email-michael.chan@broadcom.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -71,24 +62,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Oct 2019 11:27:34 +0800, Shaokun Zhang wrote:
-> From: yuqi jin <jinyuqi@huawei.com>
-> 
-> When the address width of DMA is greater than 32, the packet header occupies
-> a BD descriptor. The starting address of the data should be added to the
-> header length.
-> 
-> Fixes: a993db88d17d ("net: stmmac: Enable support for > 32 Bits addressing in XGMAC")
-> Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
-> Cc: Jose Abreu <joabreu@synopsys.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Signed-off-by: yuqi jin <jinyuqi@huawei.com>
-> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
-> ---
-> Changes in v2: 
->     -- Address Eric's comment: add the Fixes tag
+On Mon, 21 Oct 2019 01:34:24 -0400, Michael Chan wrote:
+> Devlink and error recovery bug fix patches.  Most of the work is by
+> Vasundhara Volam.  
 
-Applied and queued for 5.3, thanks!
+Thanks, applied.
+
+> Please queue patch 1 and 2 for -stable also.  Thanks.
+
+FWIW these will likely only reach 5.3 since it looks like the bug dates
+to 5.1 but 5.1 and 5.2 branches of stable are already EOL.
