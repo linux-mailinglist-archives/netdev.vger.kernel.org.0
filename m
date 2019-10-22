@@ -2,146 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEB1E058D
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 15:53:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFB05E05A1
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 15:57:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388877AbfJVNxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 09:53:19 -0400
-Received: from mail-eopbgr140043.outbound.protection.outlook.com ([40.107.14.43]:5505
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388381AbfJVNxS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 09:53:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S1iEa92jK11eBqyfPTKYIWi1gLy0Q905sw/XOc9HglLVtatYM28rVlcD0XIc+XoRWEzcUadDK+i2qfsFE2HTgbSZlAhzd72mG0N+GSRDWJg7olMKzce/HU4PtdKK1EbP5S11TtBrRe8VnB7dGE4kI1XI3VLIqSl7uhXRrB7O4xDAy7/lCRsHT3nfmrdb12Cbthj9EW5bt15AifBZT5E+8aLW/M+sXKJ1eSHJWxk1Lo0a8bJ0NVI9dJ4aSL0xRhXTtr5reovtu2IiqYolPxmurshbIvhblyP/2LtrKeUYj1npD2xuck5z5HDJ/eByDoTsCHLP1wZtqJgTvJrbEBmY9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8XTB2jDj7bStRalMMzlBYlIlAXfKMzK9REcCMf2o7Rg=;
- b=dIHvCx5L9WV0uKO5kx5HBxgtcxzRW+NC4cZ/7Q2kDHlH88WRDVphjpcsVqXU/14vSjwaDsS8RoDQosz6ZZD4iJfWL8jAyyKE7VRttTyu8DnvtnHQ53qffqJc7NsVh6PT3ceLNKlQQt1HJsnGJbojQxo3yD7xgOneHEYtrQ+n7+JL5qpd/PbZxM+EQECMPZEEhJgo7nJdBdp86f7wpLJpMDtiLqwyJW3x12Eth/TS7zJPjmH45fyk+6rO0Yu7UjVcpTtM1s7LeiK+YOFViYd3nUuMx8quQT8/28aOZd4RgNlPm+qwR4du4D6DpXGLNipAvIOv6hb0QmokNAszQSmG4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8XTB2jDj7bStRalMMzlBYlIlAXfKMzK9REcCMf2o7Rg=;
- b=MHuP48StKB9i33JI2+uwgaypCSMVrGTBWsz1OHu3CUQ29AMBDUuvd0Q5y6CD5hrh6HYdtr6uPDDbuuc3dhUWFFVxedscUqVGDZ65isTdYIuGT/+NnJ2d4bGp6rWL7wgKsjacFXuoIRBDsj8/Raqm0ME9a8iGAKRppmVTVqhB2Yg=
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.51.208) by
- VI1PR04MB5005.eurprd04.prod.outlook.com (20.177.49.222) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Tue, 22 Oct 2019 13:53:14 +0000
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
- ([fe80::10f0:af2c:76ac:dfb]) by VI1PR04MB5134.eurprd04.prod.outlook.com
- ([fe80::10f0:af2c:76ac:dfb%7]) with mapi id 15.20.2347.029; Tue, 22 Oct 2019
- 13:53:14 +0000
-From:   Laurentiu Tudor <laurentiu.tudor@nxp.com>
-To:     Robin Murphy <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-CC:     Leo Li <leoyang.li@nxp.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Madalin-cristian Bucur <madalin.bucur@nxp.com>
-Subject: Re: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
- dma_addr_to_phys_addr()
-Thread-Topic: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
- dma_addr_to_phys_addr()
-Thread-Index: AQHViNfyo/IzAF7o50+e1U9qS9i5xadmpruAgAAHrIA=
-Date:   Tue, 22 Oct 2019 13:53:14 +0000
-Message-ID: <ab195e02-e7d5-2ca2-9fe0-f2175faf0072@nxp.com>
-References: <20191022125502.12495-1-laurentiu.tudor@nxp.com>
- <20191022125502.12495-2-laurentiu.tudor@nxp.com>
- <62561dca-cdd7-fe01-a0c3-7b5971c96e7e@arm.com>
-In-Reply-To: <62561dca-cdd7-fe01-a0c3-7b5971c96e7e@arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=laurentiu.tudor@nxp.com; 
-x-originating-ip: [89.37.124.34]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: cd1b7fa6-dee9-4c3b-17c0-08d756f72f4f
-x-ms-traffictypediagnostic: VI1PR04MB5005:|VI1PR04MB5005:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB50059A0BE0847CA834F9DE9EEC680@VI1PR04MB5005.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 01986AE76B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(396003)(136003)(376002)(39860400002)(189003)(199004)(8676002)(2616005)(102836004)(110136005)(11346002)(6246003)(2201001)(54906003)(6512007)(8936002)(4326008)(14454004)(6636002)(71200400001)(71190400001)(81156014)(81166006)(25786009)(486006)(561944003)(476003)(256004)(478600001)(31686004)(6486002)(186003)(26005)(446003)(66946007)(86362001)(31696002)(229853002)(5660300002)(3846002)(36756003)(7736002)(66446008)(99286004)(66476007)(91956017)(66556008)(6116002)(305945005)(2501003)(66066001)(316002)(76176011)(76116006)(53546011)(64756008)(6506007)(6436002)(44832011)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5005;H:VI1PR04MB5134.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: K0MTenO+MNAb+xQQiYBVB4uxNSmXG+TUiznNRfSuW7GCQ59Q+W+7GCBXLB8WSvq/xQxDuYXv7uGXCbQ8T+xJt0/khWrXDwQMDmS830RSDbOJ+bxPaWNBj6b7ZzKuHNO7bX+jvMNyKvD2TkGmQheYJyS7jzcoVxwpCgfZlvb5P4dSyIZxSFjgEYSE6isj4Mt7Pan3Wx3xUOrFHFA9pF60dEUhDo421LFfW7pHQO60l05bzqNp+JtidbSQX19o9p8NUrh8TnSdMFGWtBcTdxJCkdAo5JaoMvwS9Cf/mDvO8jrA94hq+nM7muBvay1S90b+MepRdriYS2HnaoTFDdUrFjdqqyypaqeYpUFaLJltP+X6hkj7hOjBLs+Nhy5iEj+gRXgPc0ExXzrRWdc3DnJqi9TrIylC6IAxER96ZLGIudc=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <037C736D50287E4994EC930D45F1AC02@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1731954AbfJVN5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 09:57:41 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34290 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727582AbfJVN5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 09:57:41 -0400
+Received: from 13.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.13] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iMufI-00010z-Ov; Tue, 22 Oct 2019 15:57:38 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     ast@kernel.org
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        syzbot+710043c5d1d5b5013bc7@syzkaller.appspotmail.com
+Subject: [PATCH bpf] bpf: Fix use after free in subprog's jited symbol removal
+Date:   Tue, 22 Oct 2019 15:57:23 +0200
+Message-Id: <55f6367324c2d7e9583fa9ccf5385dcbba0d7a6e.1571752452.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd1b7fa6-dee9-4c3b-17c0-08d756f72f4f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 13:53:14.5388
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9X3QIVq3w+H9zWvcohL/uAVovplXOm7LdqbwG7JAe8pFUugXIgXDh4wpyyRP81cBIJx7c+HVrQXXW1piFP/mww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5005
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25610/Tue Oct 22 10:54:26 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAyMi4xMC4yMDE5IDE2OjI1LCBSb2JpbiBNdXJwaHkgd3JvdGU6DQo+IE9uIDIyLzEwLzIw
-MTkgMTM6NTUsIExhdXJlbnRpdSBUdWRvciB3cm90ZToNCj4+IEZyb206IExhdXJlbnRpdSBUdWRv
-ciA8bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+Pg0KPj4gSW50cm9kdWNlIGEgbmV3IGRtYSBt
-YXAgb3AgY2FsbGVkIGRtYV9hZGRyX3RvX3BoeXNfYWRkcigpIHRoYXQgY29udmVydHMNCj4+IGEg
-ZG1hIGFkZHJlc3MgdG8gdGhlIHBoeXNpY2FsIGFkZHJlc3MgYmFja2luZyBpdCB1cCBhbmQgYWRk
-IHdyYXBwZXIgZm9yDQo+PiBpdC4NCj4gDQo+IEknZCByZWFsbHkgbG92ZSBpdCBpZiB0aGVyZSB3
-YXMgYSBuYW1lIHdoaWNoIGNvdWxkIGVuY2Fwc3VsYXRlIHRoYXQgdGhpcyANCj4gaXMgKm9ubHkq
-IGZvciBleHRyZW1lIHNwZWNpYWwgY2FzZXMgb2YgY29uc3RyYWluZWQgZGVzY3JpcHRvcnMvcGFn
-ZXRhYmxlIA0KPiBlbnRyaWVzL2V0Yy4gd2hlcmUgdGhlcmUncyBzaW1wbHkgbm8gcHJhY3RpY2Fs
-IHdheSB0byBrZWVwIHRyYWNrIG9mIGEgDQo+IENQVSBhZGRyZXNzIGFsb25nc2lkZSB0aGUgRE1B
-IGFkZHJlc3MsIGFuZCB0aGUgb25seSBvcHRpb24gaXMgdGhpcyANCj4gcG90ZW50aWFsbHktYXJi
-aXRyYXJpbHktY29tcGxleCBvcGVyYXRpb24gKEkgbWVhbiwgb24gc29tZSBzeXN0ZW1zIGl0IA0K
-PiBtYXkgZW5kIHVwIHRha2luZyBsb2NrcyBhbmQgcG9raW5nIGhhcmR3YXJlKS4NCj4gDQo+IEVp
-dGhlciB3YXkgaXQncyB0cmlja3kgLSBtdWNoIGFzIEkgZG9uJ3QgbGlrZSBhZGRpbmcgYW4gaW50
-ZXJmYWNlIHdoaWNoIA0KPiBpcyByaXBlIGZvciBkcml2ZXJzIHRvIG1pc3VzZSwgSSBhbHNvIHJl
-YWxseSBkb24ndCB3YW50IGhhY2tzIGxpa2UgDQo+IGJkZjk1OTIzMDg2ZiBzaG92ZWQgaW50byBv
-dGhlciBBUElzIHRvIGNvbXBlbnNhdGUsIHNvIG9uIGJhbGFuY2UgSSdkIA0KPiBwcm9iYWJseSBj
-b25zaWRlciB0aGlzIHByb3Bvc2FsIGV2ZXIgc28gc2xpZ2h0bHkgdGhlIGxlc3NlciBldmlsLg0K
-PiANCj4+IFNpZ25lZC1vZmYtYnk6IExhdXJlbnRpdSBUdWRvciA8bGF1cmVudGl1LnR1ZG9yQG54
-cC5jb20+DQo+PiAtLS0NCj4+IMKgIGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaCB8IDIxICsr
-KysrKysrKysrKysrKysrKysrKw0KPj4gwqAgMSBmaWxlIGNoYW5nZWQsIDIxIGluc2VydGlvbnMo
-KykNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oIGIvaW5j
-bHVkZS9saW51eC9kbWEtbWFwcGluZy5oDQo+PiBpbmRleCA0YTFjNGZjYTQ3NWEuLjU5NjVkMTU5
-YzlhOSAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaA0KPj4gKysr
-IGIvaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oDQo+PiBAQCAtMTMyLDYgKzEzMiw4IEBAIHN0
-cnVjdCBkbWFfbWFwX29wcyB7DQo+PiDCoMKgwqDCoMKgIHU2NCAoKmdldF9yZXF1aXJlZF9tYXNr
-KShzdHJ1Y3QgZGV2aWNlICpkZXYpOw0KPj4gwqDCoMKgwqDCoCBzaXplX3QgKCptYXhfbWFwcGlu
-Z19zaXplKShzdHJ1Y3QgZGV2aWNlICpkZXYpOw0KPj4gwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25n
-ICgqZ2V0X21lcmdlX2JvdW5kYXJ5KShzdHJ1Y3QgZGV2aWNlICpkZXYpOw0KPj4gK8KgwqDCoCBw
-aHlzX2FkZHJfdCAoKmRtYV9hZGRyX3RvX3BoeXNfYWRkcikoc3RydWN0IGRldmljZSAqZGV2LA0K
-Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkbWFf
-YWRkcl90IGRtYV9oYW5kbGUpOw0KPiANCj4gSSdkIGJlIGluY2xpbmVkIHRvIG5hbWUgdGhlIGlu
-dGVybmFsIGNhbGxiYWNrIHNvbWV0aGluZyBhIGJpdCBzbmFwcGllciANCj4gbGlrZSAuZ2V0X3Bo
-eXNfYWRkci4NCg0KQWxyaWdodC4gV2FudCBtZSB0byBhbHNvIHJlbmFtZSB0aGUgd3JhcHBlciB0
-byBzb21ldGhpbmcgbGlrZSANCmRtYV9nZXRfcGh5c19hZGRyKCk/IFNvdW5kcyBhIGJpdCBuaWNl
-ciB0byBtZS4NCg0KPj4gwqAgfTsNCj4+IMKgICNkZWZpbmUgRE1BX01BUFBJTkdfRVJST1LCoMKg
-wqDCoMKgwqDCoCAofihkbWFfYWRkcl90KTApDQo+PiBAQCAtNDQyLDYgKzQ0NCwxOSBAQCBzdGF0
-aWMgaW5saW5lIGludCBkbWFfbWFwcGluZ19lcnJvcihzdHJ1Y3QgZGV2aWNlIA0KPj4gKmRldiwg
-ZG1hX2FkZHJfdCBkbWFfYWRkcikNCj4+IMKgwqDCoMKgwqAgcmV0dXJuIDA7DQo+PiDCoCB9DQo+
-PiArc3RhdGljIGlubGluZSBwaHlzX2FkZHJfdCBkbWFfYWRkcl90b19waHlzX2FkZHIoc3RydWN0
-IGRldmljZSAqZGV2LA0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgZG1hX2FkZHJfdCBkbWFfaGFuZGxlKQ0KPj4gK3sNCj4+ICvCoMKgwqAgY29uc3Qg
-c3RydWN0IGRtYV9tYXBfb3BzICpvcHMgPSBnZXRfZG1hX29wcyhkZXYpOw0KPj4gKw0KPj4gK8Kg
-wqDCoCBpZiAoZG1hX2lzX2RpcmVjdChvcHMpKQ0KPj4gK8KgwqDCoMKgwqDCoMKgIHJldHVybiAo
-cGh5c19hZGRyX3QpZG1hX2hhbmRsZTsNCj4gDQo+IFdlbGwgdGhhdCdzIG5vdCByaWdodCwgaXMg
-aXQgLSByZW1lbWJlciB3aHkgeW91IGhhZCB0aGF0IG5hbWVzcGFjZSANCj4gY29sbGlzaW9uPyA7
-KQ0KPiANCg0KVWdoLCBjb3JyZWN0LiBEb24ndCBrbm93IHdoYXQgSSB3YXMgdGhpbmtpbmcuIFdp
-bGwgcmV3b3JrIHRoZSBjaGVjay4NCg0KLS0tDQpUaGFua3MgJiBCZXN0IFJlZ2FyZHMsIExhdXJl
-bnRpdQ==
+syzkaller managed to trigger the following crash:
+
+  [...]
+  BUG: unable to handle page fault for address: ffffc90001923030
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD aa551067 P4D aa551067 PUD aa552067 PMD a572b067 PTE 80000000a1173163
+  Oops: 0000 [#1] PREEMPT SMP KASAN
+  CPU: 0 PID: 7982 Comm: syz-executor912 Not tainted 5.4.0-rc3+ #0
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  RIP: 0010:bpf_jit_binary_hdr include/linux/filter.h:787 [inline]
+  RIP: 0010:bpf_get_prog_addr_region kernel/bpf/core.c:531 [inline]
+  RIP: 0010:bpf_tree_comp kernel/bpf/core.c:600 [inline]
+  RIP: 0010:__lt_find include/linux/rbtree_latch.h:115 [inline]
+  RIP: 0010:latch_tree_find include/linux/rbtree_latch.h:208 [inline]
+  RIP: 0010:bpf_prog_kallsyms_find kernel/bpf/core.c:674 [inline]
+  RIP: 0010:is_bpf_text_address+0x184/0x3b0 kernel/bpf/core.c:709
+  [...]
+  Call Trace:
+   kernel_text_address kernel/extable.c:147 [inline]
+   __kernel_text_address+0x9a/0x110 kernel/extable.c:102
+   unwind_get_return_address+0x4c/0x90 arch/x86/kernel/unwind_frame.c:19
+   arch_stack_walk+0x98/0xe0 arch/x86/kernel/stacktrace.c:26
+   stack_trace_save+0xb6/0x150 kernel/stacktrace.c:123
+   save_stack mm/kasan/common.c:69 [inline]
+   set_track mm/kasan/common.c:77 [inline]
+   __kasan_kmalloc+0x11c/0x1b0 mm/kasan/common.c:510
+   kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:518
+   slab_post_alloc_hook mm/slab.h:584 [inline]
+   slab_alloc mm/slab.c:3319 [inline]
+   kmem_cache_alloc+0x1f5/0x2e0 mm/slab.c:3483
+   getname_flags+0xba/0x640 fs/namei.c:138
+   getname+0x19/0x20 fs/namei.c:209
+   do_sys_open+0x261/0x560 fs/open.c:1091
+   __do_sys_open fs/open.c:1115 [inline]
+   __se_sys_open fs/open.c:1110 [inline]
+   __x64_sys_open+0x87/0x90 fs/open.c:1110
+   do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:290
+   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+  [...]
+
+After further debugging it turns out that we walk kallsyms while in parallel
+we tear down a BPF program which contains subprograms that have been JITed
+though the program itself has not been fully exposed and is eventually bailing
+out with error.
+
+The bpf_prog_kallsyms_del_subprogs() in bpf_prog_load()'s error path removes
+the symbols, however, bpf_prog_free() tears down the JIT memory too early via
+scheduled work. Instead, it needs to properly respect RCU grace period as the
+kallsyms walk for BPF is under RCU.
+
+Fix it by refactoring __bpf_prog_put()'s tear down and reuse it in our error
+path where we defer final destruction when we have subprogs in the program.
+
+Fixes: 7d1982b4e335 ("bpf: fix panic in prog load calls cleanup")
+Fixes: 1c2a088a6626 ("bpf: x64: add JIT support for multi-function programs")
+Reported-and-tested-by: syzbot+710043c5d1d5b5013bc7@syzkaller.appspotmail.com
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ include/linux/filter.h |  1 -
+ kernel/bpf/core.c      |  2 +-
+ kernel/bpf/syscall.c   | 31 ++++++++++++++++++++-----------
+ 3 files changed, 21 insertions(+), 13 deletions(-)
+
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 2ce57645f3cd..0367a75f873b 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -1099,7 +1099,6 @@ static inline void bpf_get_prog_name(const struct bpf_prog *prog, char *sym)
+ 
+ #endif /* CONFIG_BPF_JIT */
+ 
+-void bpf_prog_kallsyms_del_subprogs(struct bpf_prog *fp);
+ void bpf_prog_kallsyms_del_all(struct bpf_prog *fp);
+ 
+ #define BPF_ANC		BIT(15)
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 66088a9e9b9e..ef0e1e3e66f4 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -502,7 +502,7 @@ int bpf_remove_insns(struct bpf_prog *prog, u32 off, u32 cnt)
+ 	return WARN_ON_ONCE(bpf_adj_branches(prog, off, off + cnt, off, false));
+ }
+ 
+-void bpf_prog_kallsyms_del_subprogs(struct bpf_prog *fp)
++static void bpf_prog_kallsyms_del_subprogs(struct bpf_prog *fp)
+ {
+ 	int i;
+ 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 82eabd4e38ad..bcfc362de4f2 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1332,18 +1332,26 @@ static void __bpf_prog_put_rcu(struct rcu_head *rcu)
+ 	bpf_prog_free(aux->prog);
+ }
+ 
++static void __bpf_prog_put_noref(struct bpf_prog *prog, bool deferred)
++{
++	bpf_prog_kallsyms_del_all(prog);
++	btf_put(prog->aux->btf);
++	kvfree(prog->aux->func_info);
++	bpf_prog_free_linfo(prog);
++
++	if (deferred)
++		call_rcu(&prog->aux->rcu, __bpf_prog_put_rcu);
++	else
++		__bpf_prog_put_rcu(&prog->aux->rcu);
++}
++
+ static void __bpf_prog_put(struct bpf_prog *prog, bool do_idr_lock)
+ {
+ 	if (atomic_dec_and_test(&prog->aux->refcnt)) {
+ 		perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_UNLOAD, 0);
+ 		/* bpf_prog_free_id() must be called first */
+ 		bpf_prog_free_id(prog, do_idr_lock);
+-		bpf_prog_kallsyms_del_all(prog);
+-		btf_put(prog->aux->btf);
+-		kvfree(prog->aux->func_info);
+-		bpf_prog_free_linfo(prog);
+-
+-		call_rcu(&prog->aux->rcu, __bpf_prog_put_rcu);
++		__bpf_prog_put_noref(prog, true);
+ 	}
+ }
+ 
+@@ -1741,11 +1749,12 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
+ 	return err;
+ 
+ free_used_maps:
+-	bpf_prog_free_linfo(prog);
+-	kvfree(prog->aux->func_info);
+-	btf_put(prog->aux->btf);
+-	bpf_prog_kallsyms_del_subprogs(prog);
+-	free_used_maps(prog->aux);
++	/* In case we have subprogs, we need to wait for a grace
++	 * period before we can tear down JIT memory since symbols
++	 * are already exposed under kallsyms.
++	 */
++	__bpf_prog_put_noref(prog, prog->aux->func_cnt);
++	return err;
+ free_prog:
+ 	bpf_prog_uncharge_memlock(prog);
+ free_prog_sec:
+-- 
+2.21.0
+
