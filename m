@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37056DFD28
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 07:39:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 302FFDFD39
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 07:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731031AbfJVFig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 01:38:36 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:42991 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbfJVFig (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 01:38:36 -0400
-Received: by mail-yw1-f65.google.com with SMTP id d5so203222ywk.9
-        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 22:38:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VXG0saMzEAzsEAgaV8rYsByMH+2UbxiUV4+dpUl0nLE=;
-        b=eN7xmGZHLCfDrVXJtpRfi8Y7Ys0nL+E4/MtRM9X6UquLtQi12hifLK6cE17za88p2l
-         Eadgc/023SLO9ihkJJ4eypsJ3X/pwvoUKVJP45tGaE52ZR9CaaOus8JDEc47+mJmGQMz
-         JxIjFKM5kHRnHDAQMfbvgx6XicR6AM1yLq7hU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VXG0saMzEAzsEAgaV8rYsByMH+2UbxiUV4+dpUl0nLE=;
-        b=B2X56bd7zYAehCqQnyVCrV9UGBrVMoPT7rwTaHnMIov5XjCsnpDyUpCN3tefIIvM3U
-         mVdO/7MXOA91gL7xfquwtLyif+HiMo2/Lu3ZBcdNMOIV6wZDaqgB71VuQqmbfB2IL4w4
-         +C6tXz10KvCMPbM8gyqrdRW/Dn2D+3rnKjnoO4kEnogYKVre/t8uEaGjRf6Dnr+Kl9qP
-         NKpcOxh478BysMq6aOEpJ+FBokpmgNaYzvCax8SYdle3igSrBQGSbapJFjg0LaVAxkLU
-         iCYOUfejAh75Beun9MbQtoxER+rpwsR8d/guWoHtPTEsZQv4Nt9WPQeju5oyEsja9n0y
-         9F4Q==
-X-Gm-Message-State: APjAAAXNEihOO95Lcr0RM9tZUPsF/pvickhd3rpmlLds0tMXlR1goUAY
-        pfqHcoaEz4iteX9q+t+gZOH5fiCtNNhUkeBJyKCXwA==
-X-Google-Smtp-Source: APXvYqyCyO0Kbn4J/DuWJrEekTH7ePzXTWEbXqMKdJKkG2SWMOdEuB1lfM7fI0n77mSCjBnfG4l9kMbRTtdY6ZOtpj0=
-X-Received: by 2002:a81:30cd:: with SMTP id w196mr1080202yww.204.1571722714337;
- Mon, 21 Oct 2019 22:38:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <1571636069-14179-1-git-send-email-michael.chan@broadcom.com>
- <1571636069-14179-3-git-send-email-michael.chan@broadcom.com> <20191021211425.242beb0e@cakuba.netronome.com>
-In-Reply-To: <20191021211425.242beb0e@cakuba.netronome.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Mon, 21 Oct 2019 22:38:22 -0700
-Message-ID: <CACKFLi=b6XHEaJxF20hQBOuPQO5sdLVd65DgECqMUndsub-5_A@mail.gmail.com>
-Subject: Re: [PATCH net 2/5] bnxt_en: Fix devlink NVRAM related byte order
- related issues.
+        id S2387523AbfJVF4e convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Oct 2019 01:56:34 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:49469 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbfJVF4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 01:56:34 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9M5uScL025584, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9M5uScL025584
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Oct 2019 13:56:28 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0468.000; Tue, 22 Oct 2019 13:56:27 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
 To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "pmalani@chromium.org" <pmalani@chromium.org>,
+        "grundler@chromium.org" <grundler@chromium.org>
+Subject: RE: [PATCH net-next 4/4] r8152: support firmware of PHY NC for RTL8153A
+Thread-Topic: [PATCH net-next 4/4] r8152: support firmware of PHY NC for
+ RTL8153A
+Thread-Index: AQHVh8FvTRaFw2OX3UCuAY94UXOizqdlfiOAgACsfLA=
+Date:   Tue, 22 Oct 2019 05:56:25 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18EC964@RTITMBSVM03.realtek.com.tw>
+References: <1394712342-15778-330-Taiwan-albertk@realtek.com>
+        <1394712342-15778-334-Taiwan-albertk@realtek.com>
+ <20191021203625.448da742@cakuba.netronome.com>
+In-Reply-To: <20191021203625.448da742@cakuba.netronome.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 9:14 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Mon, 21 Oct 2019 01:34:26 -0400, Michael Chan wrote:
-> > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> > index 68f74f5..bd4b9f3 100644
-> > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> > @@ -226,12 +226,55 @@ static const struct bnxt_dl_nvm_param nvm_params[] = {
-> >        BNXT_NVM_SHARED_CFG, 1, 1},
-> >  };
+Jakub Kicinski [mailto:jakub.kicinski@netronome.com]
+> Sent: Tuesday, October 22, 2019 11:36 AM
+> To: Hayes Wang
+> Cc: netdev@vger.kernel.org; nic_swsd; linux-kernel@vger.kernel.org;
+> pmalani@chromium.org; grundler@chromium.org
+> Subject: Re: [PATCH net-next 4/4] r8152: support firmware of PHY NC for
+> RTL8153A
+> 
+> On Mon, 21 Oct 2019 11:41:13 +0800, Hayes Wang wrote:
+> > Support the firmware of PHY NC which is used to fix the issue found
+> > for PHY. Currently, only RTL_VER_04, RTL_VER_05, and RTL_VER_06 need
+> > it.
 > >
-> > +union bnxt_nvm_data {
-> > +     u8      val8;
-> > +     __le32  val32;
-> > +};
-> > +
-> > +static void bnxt_copy_to_nvm_data(union bnxt_nvm_data *dst,
-> > +                               union devlink_param_value *src,
-> > +                               int nvm_num_bits, int dl_num_bytes)
-> > +{
-> > +     u32 val32 = 0;
-> > +
-> > +     if (nvm_num_bits == 1) {
-> > +             dst->val8 = src->vbool;
-> > +             return;
-> > +     }
->
-> Why do you special case the num_bits == 1? If val32 is __le32 the low
-> byte would have landed on the first byte anyway, no?
->
-> just curious
+> > The order of loading PHY firmware would be
+> >
+> > 	RTL_FW_PHY_START
+> > 	RTL_FW_PHY_NC
+> 
+> Perhaps that's obvious to others, but what's NC? :)
 
-Just so that I don't have to do any casting.  Otherwise if I assign it
-to the __le32, I believe I have to cast to avoid the warning.
+The PHY has several micro controllers which deal with different features.
+The NC is our internal name helping us to know which one is specified.
 
->
-> > +     if (dl_num_bytes == 4)
-> > +             val32 = src->vu32;
-> > +     else if (dl_num_bytes == 2)
-> > +             val32 = (u32)src->vu16;
-> > +     else if (dl_num_bytes == 1)
-> > +             val32 = (u32)src->vu8;
-> > +     dst->val32 = cpu_to_le32(val32);
-> > +}
+Best Regards,
+Hayes
+
+
