@@ -2,117 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF8CDFC3E
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 05:36:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBE86DFC40
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 05:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387508AbfJVDfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 23:35:17 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:32774 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2387437AbfJVDfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 23:35:16 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 29ACD4969F;
-        Tue, 22 Oct 2019 14:35:13 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=content-language:x-mailer:content-transfer-encoding
-        :content-type:content-type:mime-version:message-id:date:date
-        :subject:subject:in-reply-to:references:from:from:received
-        :received:received; s=mail_dkim; t=1571715313; bh=nIYkkU5MLtaDCy
-        NKKvznch9lUcyVDVunNRYLY/3sYnY=; b=MnN5zyQYcOnCcshrs9reAorfRTRoK4
-        Ng0Ac+QHt9krcr6Tl2K9Ot+bzkGolDeD8nQy/mMt5ByijlEH9+wsg9DauzXWd7kw
-        cCmImjImdPvlXz32KJSF0Y7gBlEJLJj1vnIKl7IOhytHmzg94UPfKluM1R0fziWJ
-        Vk1udZtJ+lkfA=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 769LCdGsZrx9; Tue, 22 Oct 2019 14:35:13 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 0A17249D89;
-        Tue, 22 Oct 2019 14:35:12 +1100 (AEDT)
-Received: from VNLAP298VNPC (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id A49124969F;
-        Tue, 22 Oct 2019 14:35:11 +1100 (AEDT)
-From:   "Hoang Le" <hoang.h.le@dektech.com.au>
-To:     "'Eric Dumazet'" <eric.dumazet@gmail.com>,
-        <jon.maloy@ericsson.com>, <maloy@donjonn.com>,
-        <tipc-discussion@lists.sourceforge.net>, <netdev@vger.kernel.org>
-References: <20191022022036.19961-1-hoang.h.le@dektech.com.au> <88e00511-ae7f-cbd3-46b1-df0f0509c04e@gmail.com>
-In-Reply-To: <88e00511-ae7f-cbd3-46b1-df0f0509c04e@gmail.com>
-Subject: RE: [net-next] tipc: improve throughput between nodes in netns
-Date:   Tue, 22 Oct 2019 10:33:56 +0700
-Message-ID: <004401d58889$8a3ba740$9eb2f5c0$@dektech.com.au>
+        id S2387557AbfJVDg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 23:36:29 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36898 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387437AbfJVDg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 23:36:29 -0400
+Received: by mail-pg1-f196.google.com with SMTP id p1so9083094pgi.4
+        for <netdev@vger.kernel.org>; Mon, 21 Oct 2019 20:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=cVy7yShhC8zq//OaJuW+5FNqcWb0Q3J+anwfZn0q1yg=;
+        b=wjdFPrS99Qew3fagBBczM4Wsds99NvhHTvVot1tWpUCWOdm4Hb/cu2O0HCzHA6/Mjm
+         Qj0rVanAt/5WVnqIysEkKdBdVyMSeZ5fuXYcWdDeKw1IFAdR5tLLCksEqmk9fI34l504
+         dy1oWssBXD6FZJvLY3ed/jixqln22tD36CDBE9JE2Vh0hvY92aGD34wxlralqIMbrEMM
+         mdiz1lounw/ppXFAiOdI6MamLDwlo2KhkaaxVryulCVC3qpS4Gw3DrJkXHCKUXpV/fXP
+         8AAIeH4blNuEy1Y9AebZDUHfqqdv5ZJrdeppRFHXuU1ue+NpHMpWf69DyguL/PO0gjm/
+         nTpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=cVy7yShhC8zq//OaJuW+5FNqcWb0Q3J+anwfZn0q1yg=;
+        b=RGk8HQQDoJ6yqSsCEkNcPbGlf5dtu1sj47SZC5qvzO/HXIIwy9JwkA7rIW90JTJPo2
+         qq7fK7ixmIMrzP2u50Ibxii1zCSCWh14NfeAEEd1buqNnFE831/Flw7shYzaHhLlQ4lM
+         TM877kX6j77do5eWNNo8b5Rj8waBb/1/zbE+2jyQGxW8/HDoNLBjBjKiQ9Uf2drawaLB
+         CcYhrpHAsrio1mxVqPjlxHtp7/kVuRUaLbf8AZfxLkHN3EfflJ0+tpABqLZzolkQ9Ea4
+         p0hNq3vwsdA7Nwq7ZbCLXzi1K0zBIBb0qEOYntfz+Kay/cqULpeqOBuvj0pNfBPn8lxw
+         yz8A==
+X-Gm-Message-State: APjAAAWK2WRzm78n3I7tJJ39iWXsEmSXTzniQ946QvioV/Qe0YBNHIwl
+        WrqA4iVJICwiiYaEkM8C/iPc6w==
+X-Google-Smtp-Source: APXvYqxYNpB27E8snEB5dKY2A/L9yUso54sLY2ck5r6vDnSmXHGLHYCdPhWQJqD/GKCo12evJQUlHw==
+X-Received: by 2002:aa7:838f:: with SMTP id u15mr1671720pfm.74.1571715388539;
+        Mon, 21 Oct 2019 20:36:28 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id l23sm16094004pjy.12.2019.10.21.20.36.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Oct 2019 20:36:28 -0700 (PDT)
+Date:   Mon, 21 Oct 2019 20:36:25 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <pmalani@chromium.org>,
+        <grundler@chromium.org>
+Subject: Re: [PATCH net-next 4/4] r8152: support firmware of PHY NC for
+ RTL8153A
+Message-ID: <20191021203625.448da742@cakuba.netronome.com>
+In-Reply-To: <1394712342-15778-334-Taiwan-albertk@realtek.com>
+References: <1394712342-15778-330-Taiwan-albertk@realtek.com>
+        <1394712342-15778-334-Taiwan-albertk@realtek.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQIBGTi9TYT/dH44O8HREmWnQKht0AJdjXoypvvwHSA=
-Content-Language: en-us
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On Mon, 21 Oct 2019 11:41:13 +0800, Hayes Wang wrote:
+> Support the firmware of PHY NC which is used to fix the issue found
+> for PHY. Currently, only RTL_VER_04, RTL_VER_05, and RTL_VER_06 need
+> it.
+> 
+> The order of loading PHY firmware would be
+> 
+> 	RTL_FW_PHY_START
+> 	RTL_FW_PHY_NC
 
-Thanks for quick feedback.
-See my inline answer.
+Perhaps that's obvious to others, but what's NC? :)
 
-Regards,
-Hoang
------Original Message-----
-From: Eric Dumazet <eric.dumazet@gmail.com>=20
-Sent: Tuesday, October 22, 2019 9:41 AM
-To: Hoang Le <hoang.h.le@dektech.com.au>; jon.maloy@ericsson.com; =
-maloy@donjonn.com; tipc-discussion@lists.sourceforge.net; =
-netdev@vger.kernel.org
-Subject: Re: [net-next] tipc: improve throughput between nodes in netns
-
-
-On 10/21/19 7:20 PM, Hoang Le wrote:
->  	n->net =3D net;
->  	n->capabilities =3D capabilities;
-> +	n->pnet =3D NULL;
-> +	for_each_net_rcu(tmp) {
-
-This does not scale well, if say you have a thousand netns ?
-[Hoang] This check execs only once at setup step. So we get no problem =
-with huge namespaces.
-
-> +		tn_peer =3D net_generic(tmp, tipc_net_id);
-> +		if (!tn_peer)
-> +			continue;
-> +		/* Integrity checking whether node exists in namespace or not */
-> +		if (tn_peer->net_id !=3D tn->net_id)
-> +			continue;
-> +		if (memcmp(peer_id, tn_peer->node_id, NODE_ID_LEN))
-> +			continue;
-> +
-> +		hash_chk =3D tn_peer->random;
-> +		hash_chk ^=3D net_hash_mix(&init_net);
-
-Why the xor with net_hash_mix(&init_net) is needed ?
-[Hoang] We're trying to eliminate a sniff at injectable discovery =
-message.=20
-Building hash-mixes as much as possible is to prevent fake discovery =
-messages.
-
-> +		hash_chk ^=3D net_hash_mix(tmp);
-> +		if (hash_chk ^ hash_mixes)
-> +			continue;
-> +		n->pnet =3D tmp;
-> +		break;
-> +	}
-
-
-How can we set n->pnet without increasing netns ->count ?
-Using check_net() later might trigger an use-after-free.
-
-[Hoang] In this case, peer node is down. I assume the tipc xmit function =
-already bypassed these lines.
-
+> 	RTL_FW_PHY_STOP
+> 
+> The RTL_FW_PHY_START/RTL_FW_PHY_STOP are used to lock/unlock the PHY,
+> and set/clear the patch key from the firmware file.
+> 
+> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
