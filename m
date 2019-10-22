@@ -2,117 +2,311 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B26E0625
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1855E0635
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388283AbfJVOOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 10:14:48 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:36462 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728504AbfJVOOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 10:14:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571753686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=3mPV7Lvqud62ejV9ltsaZ32Xw/m6Chr/EI0mwJ2l8R8=;
-        b=UYhz/x2XJ7Uof4EQ72v/2kVFz0xqn6f0RCqyQZxM2xc2crRpjKUoaju6ntBxfzR63ZmGVL
-        NNvWvmI9yGnVKeCXcz5BAUoNe+j8ZfXmhowRQCTKt+FrXUd+L7eU4wgrvHeqQ2LToAxVVg
-        ah8aymwtzuxKCMgXv5u2ozJV6UblyCI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-183-NF3PASVqPXq1rQep7IgW3Q-1; Tue, 22 Oct 2019 10:14:45 -0400
-Received: by mail-wr1-f71.google.com with SMTP id x9so2903684wrq.5
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 07:14:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kMPt/t32x+1ODJs2XSy8W133vtfVEltVTT+TH3yLruo=;
-        b=Y0ZMrza3nmqkLT4rOGedDfLppAwUhNAahjZrmltD/TVRK//7a1WFDkYVf8veq2J7vK
-         LmDnmvHqenZuhcAfYmC5GMDzNlnbrCtXyt7LX/0/kE8foatU4aaavPHwPJBL/5ggCZlt
-         4XftCtKbl7/KLSiWEF6ndhALcO6KdW+qou3bIlx/hlrCR4FGT9z3ymQnteroXwaveUTt
-         v80rXAstTwapdqbG/RT4XJ8xBLAWZkUY/d5Is/qE2KCmRIgBRZ/5gYE9z5GTeUTwejle
-         sH4whD01ejqNLPAgnqI7fCZ9YwO/OhMyggUEU6pnEQQUkj25kNUqE9AUJhIG3WunoVEw
-         b3XQ==
-X-Gm-Message-State: APjAAAXrHYUdJVwOvZAA6zXA4WtgUilCTJRf0c1tZ2+DUHfbiw1xIf/E
-        j4Drs1DcxP0zmEgvAS6lDKukuHXMqcaKKcIpggdQUAcAprbe4B9jveHn+UyK09ZAMXzt/jEcjxV
-        Tq84Zol1JhvC5GUjo
-X-Received: by 2002:a1c:1a95:: with SMTP id a143mr3101171wma.85.1571753683075;
-        Tue, 22 Oct 2019 07:14:43 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwjYxSC4lQ+YDOYHCxAn6MLTwUvZVS5nL+m7CEVs7fbxB2mvutslNDGc4MQu6FR+JAKOxH8dg==
-X-Received: by 2002:a1c:1a95:: with SMTP id a143mr3101149wma.85.1571753682811;
-        Tue, 22 Oct 2019 07:14:42 -0700 (PDT)
-Received: from mcroce-redhat.mxp.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id r19sm11625521wrr.47.2019.10.22.07.14.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 07:14:41 -0700 (PDT)
-From:   Matteo Croce <mcroce@redhat.com>
+        id S1729021AbfJVOTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 10:19:02 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:33509 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726702AbfJVOS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 10:18:59 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 22 Oct 2019 16:18:52 +0200
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9MEIqao023677;
+        Tue, 22 Oct 2019 17:18:52 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
 To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] mvpp2: prefetch frame header
-Date:   Tue, 22 Oct 2019 16:14:38 +0200
-Message-Id: <20191022141438.22002-1-mcroce@redhat.com>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, mleitner@redhat.com, dcaratti@redhat.com,
+        Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next 00/13] Control action percpu counters allocation by netlink flag
+Date:   Tue, 22 Oct 2019 17:17:51 +0300
+Message-Id: <20191022141804.27639-1-vladbu@mellanox.com>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-MC-Unique: NF3PASVqPXq1rQep7IgW3Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When receiving traffic, eth_type_trans() is high up on the perf top list,
-because it's the first function which access the packet data.
+Currently, significant fraction of CPU time during TC filter allocation
+is spent in percpu allocator. Moreover, percpu allocator is protected
+with single global mutex which negates any potential to improve its
+performance by means of recent developments in TC filter update API that
+removed rtnl lock for some Qdiscs and classifiers. In order to
+significantly improve filter update rate and reduce memory usage we
+would like to allow users to skip percpu counters allocation for
+specific action if they don't expect high traffic rate hitting the
+action, which is a reasonable expectation for hardware-offloaded setup.
+In that case any potential gains to software fast-path performance
+gained by usage of percpu-allocated counters compared to regular integer
+counters protected by spinlock are not important, but amount of
+additional CPU and memory consumed by them is significant.
 
-Move the DMA unmap a bit higher, and put a prefetch just after it, so we
-have more time to load the data into the cache.
+In order to allow configuring action counters allocation type at
+runtime, implement following changes:
 
-The packet rate increase is about 13% with a tc drop test: 1620 =3D> 1830 k=
-pps
+- Implement helper functions to update the action counters and use them
+  in affected actions instead of updating counters directly. This steps
+  abstracts actions implementation from counter types that are being
+  used for particular action instance at runtime.
 
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+- Modify the new helpers to use percpu counters if they were allocated
+  during action initialization and use regular counters otherwise.
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/=
-ethernet/marvell/mvpp2/mvpp2_main.c
-index 111b3b8239e1..17378e0d8da1 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -2966,6 +2966,11 @@ static int mvpp2_rx(struct mvpp2_port *port, struct =
-napi_struct *napi,
- =09=09=09continue;
- =09=09}
-=20
-+=09=09dma_unmap_single(dev->dev.parent, dma_addr,
-+=09=09=09=09 bm_pool->buf_size, DMA_FROM_DEVICE);
-+
-+=09=09prefetch(data);
-+
- =09=09if (bm_pool->frag_size > PAGE_SIZE)
- =09=09=09frag_size =3D 0;
- =09=09else
-@@ -2983,9 +2988,6 @@ static int mvpp2_rx(struct mvpp2_port *port, struct n=
-api_struct *napi,
- =09=09=09goto err_drop_frame;
- =09=09}
-=20
--=09=09dma_unmap_single(dev->dev.parent, dma_addr,
--=09=09=09=09 bm_pool->buf_size, DMA_FROM_DEVICE);
--
- =09=09rcvd_pkts++;
- =09=09rcvd_bytes +=3D rx_bytes;
-=20
---=20
+- Extend actions that are used for hardware offloads with optional
+  netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action flag and
+  update affected actions to not allocate percpu counters when the flag
+  is set.
+
+With this changes users that prefer action update slow-path speed over
+software fast-path speed can dynamically request actions to skip percpu
+counters allocation without affecting other users.
+
+Now, lets look at actual performance gains provided by this change.
+Simple test is used to measure insertion rate - iproute2 TC is executed
+in parallel by xargs in batch mode, its total execution time is measured
+by shell builtin "time" command. The command runs 20 concurrent tc
+instances, each with its own batch file with 100k rules:
+
+$ time ls add* | xargs -n 1 -P 20 sudo tc -b
+
+Two main rule profiles are tested. First is simple L2 flower classifier
+with single gact drop action. The configuration is chosen as worst case
+scenario because with single-action rules pressure on percpu allocator
+is minimized. Example rule:
+
+filter add dev ens1f0 protocol ip ingress prio 1 handle 1 flower skip_hw
+    src_mac e4:11:0:0:0:0 dst_mac e4:12:0:0:0:0 action drop
+
+Second profile is typical real-world scenario that uses flower
+classifier with some L2-4 fields and two actions (tunnel_key+mirred).
+Example rule:
+
+filter add dev ens1f0_0 protocol ip ingress prio 1 handle 1 flower
+    skip_hw src_mac e4:11:0:0:0:0 dst_mac e4:12:0:0:0:0 src_ip
+    192.168.111.1 dst_ip 192.168.111.2 ip_proto udp dst_port 1 src_port
+    1 action tunnel_key set id 1 src_ip 2.2.2.2 dst_ip 2.2.2.3 dst_port
+    4789 action mirred egress redirect dev vxlan1
+
+ Profile           |        percpu |     fast_init | X improvement 
+                   | (k rules/sec) | (k rules/sec) |               
+-------------------+---------------+---------------+---------------
+ Gact drop         |           203 |           259 |          1.28 
+ tunnel_key+mirred |            92 |           204 |          2.22 
+
+For simple drop action removing percpu allocation leads to ~25%
+insertion rate improvement. Perf profiles highlights the bottlenecks.
+
+Perf profile of run with percpu allocation (gact drop):
+
++ 89.11% 0.48% tc [kernel.vmlinux] [k] entry_SYSCALL_64
++ 88.58% 0.04% tc [kernel.vmlinux] [k] do_syscall_64
++ 87.50% 0.04% tc libc-2.29.so [.] __libc_sendmsg
++ 86.96% 0.04% tc [kernel.vmlinux] [k] __sys_sendmsg
++ 86.85% 0.01% tc [kernel.vmlinux] [k] ___sys_sendmsg
++ 86.60% 0.05% tc [kernel.vmlinux] [k] sock_sendmsg
++ 86.55% 0.12% tc [kernel.vmlinux] [k] netlink_sendmsg
++ 86.04% 0.13% tc [kernel.vmlinux] [k] netlink_unicast
++ 85.42% 0.03% tc [kernel.vmlinux] [k] netlink_rcv_skb
++ 84.68% 0.04% tc [kernel.vmlinux] [k] rtnetlink_rcv_msg
++ 84.56% 0.24% tc [kernel.vmlinux] [k] tc_new_tfilter
++ 75.73% 0.65% tc [cls_flower] [k] fl_change
++ 71.30% 0.03% tc [kernel.vmlinux] [k] tcf_exts_validate
++ 71.27% 0.13% tc [kernel.vmlinux] [k] tcf_action_init
++ 71.06% 0.01% tc [kernel.vmlinux] [k] tcf_action_init_1
++ 70.41% 0.04% tc [act_gact] [k] tcf_gact_init
++ 53.59% 1.21% tc [kernel.vmlinux] [k] __mutex_lock.isra.0
++ 52.34% 0.34% tc [kernel.vmlinux] [k] tcf_idr_create
+- 51.23% 2.17% tc [kernel.vmlinux] [k] pcpu_alloc
+  - 49.05% pcpu_alloc
+    + 39.35% __mutex_lock.isra.0 4.99% memset_erms
+    + 2.16% pcpu_alloc_area
+  + 2.17% __libc_sendmsg
++ 45.89% 44.33% tc [kernel.vmlinux] [k] osq_lock
++ 9.94% 0.04% tc [kernel.vmlinux] [k] tcf_idr_check_alloc
++ 7.76% 0.00% tc [kernel.vmlinux] [k] tcf_idr_insert
++ 6.50% 0.03% tc [kernel.vmlinux] [k] tfilter_notify
++ 6.24% 6.11% tc [kernel.vmlinux] [k] mutex_spin_on_owner
++ 5.73% 5.32% tc [kernel.vmlinux] [k] memset_erms
++ 5.31% 0.18% tc [kernel.vmlinux] [k] tcf_fill_node
+
+Here bottleneck is clearly in pcpu_alloc() function that takes more than
+half CPU time, which is mostly wasted busy-waiting for internal percpu
+allocator global lock.
+
+With percpu allocation removed (gact drop):
+
++ 87.50% 0.51% tc [kernel.vmlinux] [k] entry_SYSCALL_64
++ 86.94% 0.07% tc [kernel.vmlinux] [k] do_syscall_64
++ 85.75% 0.04% tc libc-2.29.so [.] __libc_sendmsg
++ 85.00% 0.07% tc [kernel.vmlinux] [k] __sys_sendmsg
++ 84.84% 0.07% tc [kernel.vmlinux] [k] ___sys_sendmsg
++ 84.59% 0.01% tc [kernel.vmlinux] [k] sock_sendmsg
++ 84.58% 0.14% tc [kernel.vmlinux] [k] netlink_sendmsg
++ 83.95% 0.12% tc [kernel.vmlinux] [k] netlink_unicast
++ 83.34% 0.01% tc [kernel.vmlinux] [k] netlink_rcv_skb
++ 82.39% 0.12% tc [kernel.vmlinux] [k] rtnetlink_rcv_msg
++ 82.16% 0.25% tc [kernel.vmlinux] [k] tc_new_tfilter
++ 75.13% 0.84% tc [cls_flower] [k] fl_change
++ 69.92% 0.05% tc [kernel.vmlinux] [k] tcf_exts_validate
++ 69.87% 0.11% tc [kernel.vmlinux] [k] tcf_action_init
++ 69.61% 0.02% tc [kernel.vmlinux] [k] tcf_action_init_1
+- 68.80% 0.10% tc [act_gact] [k] tcf_gact_init
+  - 68.70% tcf_gact_init
+    + 36.08% tcf_idr_check_alloc
+    + 31.88% tcf_idr_insert
++ 63.72% 0.58% tc [kernel.vmlinux] [k] __mutex_lock.isra.0
++ 58.80% 56.68% tc [kernel.vmlinux] [k] osq_lock
++ 36.08% 0.04% tc [kernel.vmlinux] [k] tcf_idr_check_alloc
++ 31.88% 0.01% tc [kernel.vmlinux] [k] tcf_idr_insert
+
+The gact actions (like all other actions types) are inserted in single
+idr instance protected by global (per namespace) lock that becomes new
+bottleneck with such simple rule profile and prevents achieving 2x+
+performance increase that can be expected by looking at profiling data
+for insertion action with percpu counter.
+
+Perf profile of run with percpu allocation (tunnel_key+mirred):
+
++ 91.95% 0.21% tc [kernel.vmlinux] [k] entry_SYSCALL_64
++ 91.74% 0.06% tc [kernel.vmlinux] [k] do_syscall_64
++ 90.74% 0.01% tc libc-2.29.so [.] __libc_sendmsg
++ 90.52% 0.01% tc [kernel.vmlinux] [k] __sys_sendmsg
++ 90.50% 0.04% tc [kernel.vmlinux] [k] ___sys_sendmsg
++ 90.41% 0.02% tc [kernel.vmlinux] [k] sock_sendmsg
++ 90.38% 0.04% tc [kernel.vmlinux] [k] netlink_sendmsg
++ 90.10% 0.06% tc [kernel.vmlinux] [k] netlink_unicast
++ 89.76% 0.01% tc [kernel.vmlinux] [k] netlink_rcv_skb
++ 89.28% 0.04% tc [kernel.vmlinux] [k] rtnetlink_rcv_msg
++ 89.15% 0.03% tc [kernel.vmlinux] [k] tc_new_tfilter
++ 83.41% 0.33% tc [cls_flower] [k] fl_change
++ 81.17% 0.04% tc [kernel.vmlinux] [k] tcf_exts_validate
++ 81.13% 0.06% tc [kernel.vmlinux] [k] tcf_action_init
++ 81.04% 0.04% tc [kernel.vmlinux] [k] tcf_action_init_1
+- 73.59% 2.16% tc [kernel.vmlinux] [k] pcpu_alloc
+  - 71.42% pcpu_alloc
+    + 61.41% __mutex_lock.isra.0 5.02% memset_erms
+    + 2.93% pcpu_alloc_area
+  + 2.16% __libc_sendmsg
++ 63.58% 0.17% tc [kernel.vmlinux] [k] tcf_idr_create
++ 63.40% 0.60% tc [kernel.vmlinux] [k] __mutex_lock.isra.0
++ 57.85% 56.38% tc [kernel.vmlinux] [k] osq_lock
++ 46.27% 0.13% tc [act_tunnel_key] [k] tunnel_key_init
++ 34.26% 0.02% tc [act_mirred] [k] tcf_mirred_init
++ 10.99% 0.00% tc [kernel.vmlinux] [k] dst_cache_init
++ 5.32% 5.11% tc [kernel.vmlinux] [k] memset_erms
+
+With two times more actions pressure on percpu allocator doubles, so now
+it takes ~74% of CPU execution time.
+
+With percpu allocation removed (tunnel_key+mirred):
+
++ 86.02% 0.50% tc [kernel.vmlinux] [k] entry_SYSCALL_64
++ 85.51% 0.12% tc [kernel.vmlinux] [k] do_syscall_64
++ 84.40% 0.03% tc libc-2.29.so [.] __libc_sendmsg
++ 83.84% 0.03% tc [kernel.vmlinux] [k] __sys_sendmsg
++ 83.72% 0.01% tc [kernel.vmlinux] [k] ___sys_sendmsg
++ 83.56% 0.01% tc [kernel.vmlinux] [k] sock_sendmsg
++ 83.50% 0.08% tc [kernel.vmlinux] [k] netlink_sendmsg
++ 83.02% 0.17% tc [kernel.vmlinux] [k] netlink_unicast
++ 82.48% 0.00% tc [kernel.vmlinux] [k] netlink_rcv_skb
++ 81.89% 0.11% tc [kernel.vmlinux] [k] rtnetlink_rcv_msg
++ 81.71% 0.25% tc [kernel.vmlinux] [k] tc_new_tfilter
++ 73.99% 0.63% tc [cls_flower] [k] fl_change
++ 69.72% 0.00% tc [kernel.vmlinux] [k] tcf_exts_validate
++ 69.72% 0.09% tc [kernel.vmlinux] [k] tcf_action_init
++ 69.53% 0.05% tc [kernel.vmlinux] [k] tcf_action_init_1
++ 53.08% 0.91% tc [kernel.vmlinux] [k] __mutex_lock.isra.0
++ 45.52% 43.99% tc [kernel.vmlinux] [k] osq_lock
+- 36.02% 0.21% tc [act_tunnel_key] [k] tunnel_key_init
+  - 35.81% tunnel_key_init
+    + 15.95% tcf_idr_check_alloc
+    + 13.91% tcf_idr_insert
+    - 4.70% dst_cache_init
+      + 4.68% pcpu_alloc
++ 33.22% 0.04% tc [kernel.vmlinux] [k] tcf_idr_check_alloc
++ 32.34% 0.05% tc [act_mirred] [k] tcf_mirred_init
++ 28.24% 0.01% tc [kernel.vmlinux] [k] tcf_idr_insert
++ 7.79% 0.05% tc [kernel.vmlinux] [k] idr_alloc_u32
++ 7.67% 7.35% tc [kernel.vmlinux] [k] idr_get_free
++ 6.46% 6.22% tc [kernel.vmlinux] [k] mutex_spin_on_owner
++ 5.11% 0.05% tc [kernel.vmlinux] [k] tfilter_notify
+
+With percpu allocation removed insertion rate is increased by ~120%.
+Such rule profile scales much better than simple single action because
+both types of actions were competing for single lock in percpu
+allocator, but not for action idr lock, which is per-action. Note that
+percpu allocator is still used by dst_cache in tunnel_key actions and
+consumes 4.68% CPU time. Dst_cache seems like good opportunity for
+further insertion rate optimization but is not addressed by this change.
+
+Setup details: 2x Intel(R) Xeon(R) CPU E5-2620 v3 @ 2.40GHz, 32GB memory
+
+Patches applied on top of net-next branch:
+
+commit 2203cbf2c8b58a1e3bef98c47531d431d11639a0 (net-next) Author:
+Russell King <rmk+kernel@armlinux.org.uk> Date: Tue Oct 15 11:38:39 2019
++0100
+
+net: sfp: move fwnode parsing into sfp-bus layer
+
+Vlad Buslov (13):
+  net: sched: extract common action counters update code into function
+  net: sched: extract bstats update code into function
+  net: sched: extract qstats update code into functions
+  net: sched: don't expose action qstats to skb_tc_reinsert()
+  net: sched: modify stats helper functions to support regular stats
+  net: sched: add action fast initialization flag
+  net: sched: act_gact: support fast init flag to skip pcpu allocation
+  net: sched: act_csum: support fast init flag to skip pcpu allocation
+  net: sched: act_mirred: support fast init flag to skip pcpu alloc
+  net: sched: tunnel_key: support fast init flag to skip pcpu alloc
+  net: sched: act_vlan: support fast init flag to skip pcpu allocation
+  net: sched: act_ct: support fast init flag to skip pcpu allocation
+  tc-testing: implement tests for new fast_init action flag
+
+ include/net/act_api.h                         | 47 ++++++++++++++++++-
+ include/net/pkt_cls.h                         |  3 ++
+ include/net/sch_generic.h                     | 12 +----
+ include/uapi/linux/pkt_cls.h                  |  8 ++++
+ include/uapi/linux/tc_act/tc_csum.h           |  1 +
+ include/uapi/linux/tc_act/tc_ct.h             |  1 +
+ include/uapi/linux/tc_act/tc_gact.h           |  1 +
+ include/uapi/linux/tc_act/tc_mirred.h         |  1 +
+ include/uapi/linux/tc_act/tc_tunnel_key.h     |  1 +
+ include/uapi/linux/tc_act/tc_vlan.h           |  1 +
+ net/sched/act_api.c                           | 28 ++++++++++-
+ net/sched/act_bpf.c                           |  2 +-
+ net/sched/act_connmark.c                      |  3 +-
+ net/sched/act_csum.c                          | 22 +++++++--
+ net/sched/act_ct.c                            | 27 +++++++----
+ net/sched/act_ctinfo.c                        |  3 +-
+ net/sched/act_gact.c                          | 32 ++++++++-----
+ net/sched/act_ife.c                           |  2 +-
+ net/sched/act_ipt.c                           |  8 ++--
+ net/sched/act_mirred.c                        | 30 ++++++++----
+ net/sched/act_mpls.c                          |  2 +-
+ net/sched/act_nat.c                           |  3 +-
+ net/sched/act_pedit.c                         |  3 +-
+ net/sched/act_police.c                        |  7 +--
+ net/sched/act_sample.c                        |  2 +-
+ net/sched/act_simple.c                        |  3 +-
+ net/sched/act_skbedit.c                       |  2 +-
+ net/sched/act_skbmod.c                        |  2 +-
+ net/sched/act_tunnel_key.c                    | 20 ++++++--
+ net/sched/act_vlan.c                          | 26 ++++++----
+ .../tc-testing/tc-tests/actions/csum.json     | 24 ++++++++++
+ .../tc-testing/tc-tests/actions/ct.json       | 24 ++++++++++
+ .../tc-testing/tc-tests/actions/gact.json     | 24 ++++++++++
+ .../tc-testing/tc-tests/actions/mirred.json   | 24 ++++++++++
+ .../tc-tests/actions/tunnel_key.json          | 24 ++++++++++
+ .../tc-testing/tc-tests/actions/vlan.json     | 24 ++++++++++
+ 36 files changed, 367 insertions(+), 80 deletions(-)
+
+-- 
 2.21.0
 
