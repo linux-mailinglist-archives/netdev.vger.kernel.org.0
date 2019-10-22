@@ -2,71 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B33E0E41
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E9AE0E55
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731850AbfJVWei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 18:34:38 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:42659 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727154AbfJVWeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:34:37 -0400
-Received: by mail-lf1-f65.google.com with SMTP id z12so14368355lfj.9
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:34:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=mI05Q9KtQBZiVZ2P8r93fpesYDlDm2A779d7FzhOVC4=;
-        b=2SRXw59iaelQLHtpJxIa3SKs+I+MKRTTBUu5IwvLyOA8fT5f+NWgkFP4YYu4DV0HP3
-         RWp3nupXKk8IhzIVOJ4jmuUcP2KYxNrPLxRg9RHEC1Ddb3O6HlQchqg37pdcIX242jCf
-         IpfsCNmb/gO/eGFhlT0rb5H+W8G/KRXJ1e+wh77RLQoHXkkXu/Mg5ZCaMwp4ESEKi4Eu
-         ONSvRkNV0V2D7PdR5yO6UWn4kboHYy9aILrc/YfSiUhZDPW2XNVo2XW/iAe0iYHTsz/4
-         jA5pOjYgMNjiUyc1qMty8kpr6vGnyJ2tcGuvW1evMtr1OS2hAKIAcSHJDMRCpPruEMVn
-         +uDg==
+        id S2389400AbfJVWoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 18:44:13 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:49897 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388836AbfJVWoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:44:13 -0400
+Received: by mail-io1-f71.google.com with SMTP id e14so21349421iot.16
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:44:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=mI05Q9KtQBZiVZ2P8r93fpesYDlDm2A779d7FzhOVC4=;
-        b=K114WVK4CntgW9wkXZGLbCk+A8idQ4qDIevlQsqyKrG4jNUz5Djb2v9RbSOhE/SUL2
-         IImTgTPzjHXioQyVVCGaHluaQG5VP5o5iSv+MHYaoWn1k7MiPhGQhGDDUboYqzGTILlP
-         WPsGqWIyrS1pL8Pw2WHl40ks65habpnCk1mB4c37n6YICHxUbiPxZNWeNAhLxpT7YpOu
-         JL15jw1eYRYoCRymBEmPqPTFOB5REkuM6+jdT5zgrnI02zsyVpljNgHxg0WBzs7kZilX
-         /c0OoWMhD+8IDCUAtsZekjy1oEbxFRhLWYO9hkH/bXqw/+dptvO65Kfi5elNzC9THNoY
-         hFRQ==
-X-Gm-Message-State: APjAAAX7nMJ1RivHL8lEdGVk5cbvh0nNkv5jC3Hdr/qe16ckrlCiHCNP
-        BmhuS9iPrWUE85gI1E+tY4T5eQ==
-X-Google-Smtp-Source: APXvYqzu1Zo3aeevJfGePPwaVZuB4jS7ekm5Ys/aaIV89y4JekR4EdxGeRZ5hlEYbkSMImsT/kL3yA==
-X-Received: by 2002:a19:f707:: with SMTP id z7mr9656618lfe.0.1571783675672;
-        Tue, 22 Oct 2019 15:34:35 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 81sm9663060lje.70.2019.10.22.15.34.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 15:34:35 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 15:34:28 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net-next] fq_codel: do not include <linux/jhash.h
-Message-ID: <20191022153428.2077ccd0@cakuba.netronome.com>
-In-Reply-To: <20191022163936.33220-1-edumazet@google.com>
-References: <20191022163936.33220-1-edumazet@google.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=n8AthPz5EJS+41jvmzMtDwkf5FjVXZx9cmlJKclfd/M=;
+        b=hZL9U8yxoZZZhYdqQrz1PygAeNtl+6DZRAz3sKIsGYMfd4kIx7V41t+9il5ea0wbrD
+         7DddzwC49qnxNujP45c/7z1SZCX+SqgR04179S2wICUnMi7FkgKrDOusIsuAgIKO0pmV
+         5/MdcV7qPzVVHBw3NwM3dQChpJM4KtMpdCv7Ee1xlT8/0FOeN8hK1qCsD5v+xGgb2IKn
+         51ZaDXodZUKbDWIRUoNEYnRz+XrdjoZVkY78B9tpQnnp9ktdoxVkRGYZivuSuMqj+kpZ
+         q7pWaSVFKcF13saduWr0sN3N2qa+EkCadJFcEzwBASGE0T/boOnBJ7K/L3XVEa1UQsUs
+         hdUQ==
+X-Gm-Message-State: APjAAAWV+AUbHFuWdHd7fqIJPoh4KPJBN/uA8ptmofKN8QUzSFOGE+Ei
+        RXLSSC/PVWN6IgXq0uXrSOl8+kHiVzRVrTbNdRkeFPOY183B
+X-Google-Smtp-Source: APXvYqy8SHCJO8nVqDVFjtRO0viqI7sq50268hI2BxRPY53Spf82Y2/LvjiTliYN9zGkl6aZIGnO0+zVoltc7aACBjopLIVrFuUr
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:9c94:: with SMTP id x20mr1571289ill.149.1571784252347;
+ Tue, 22 Oct 2019 15:44:12 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 15:44:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000065d240595878a92@google.com>
+Subject: memory leak in rxrpc_lookup_local
+From:   syzbot <syzbot+305326672fed51b205f7@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 09:39:36 -0700, Eric Dumazet wrote:
-> Since commit 342db221829f ("sched: Call skb_get_hash_perturb
-> in sch_fq_codel") we no longer need anything from this file.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+Hello,
 
-Applied, thanks!
+syzbot found the following crash on:
+
+HEAD commit:    4fe34d61 Merge branch 'x86-urgent-for-linus' of git://git...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11b21d40e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cd7f8e43c7bdf83a
+dashboard link: https://syzkaller.appspot.com/bug?extid=305326672fed51b205f7
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e692ff600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10af816b600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+305326672fed51b205f7@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff888121f35e00 (size 256):
+   comm "syz-executor362", pid 6892, jiffies 4294941791 (age 7.710s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+     00 00 00 00 09 00 00 00 00 80 e7 21 81 88 ff ff  ...........!....
+   backtrace:
+     [<000000006221752a>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<000000006221752a>] slab_post_alloc_hook mm/slab.h:586 [inline]
+     [<000000006221752a>] slab_alloc mm/slab.c:3319 [inline]
+     [<000000006221752a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
+     [<000000006ee28c35>] kmalloc include/linux/slab.h:556 [inline]
+     [<000000006ee28c35>] kzalloc include/linux/slab.h:690 [inline]
+     [<000000006ee28c35>] rxrpc_alloc_local net/rxrpc/local_object.c:79  
+[inline]
+     [<000000006ee28c35>] rxrpc_lookup_local+0x1aa/0x750  
+net/rxrpc/local_object.c:277
+     [<000000009255b1c3>] rxrpc_bind+0x131/0x1e0 net/rxrpc/af_rxrpc.c:149
+     [<00000000d7bcf378>] __sys_bind+0x11c/0x140 net/socket.c:1647
+     [<00000000c269c3cb>] __do_sys_bind net/socket.c:1658 [inline]
+     [<00000000c269c3cb>] __se_sys_bind net/socket.c:1656 [inline]
+     [<00000000c269c3cb>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
+     [<000000000444b7d1>] do_syscall_64+0x73/0x1f0  
+arch/x86/entry/common.c:290
+     [<000000001700d564>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
