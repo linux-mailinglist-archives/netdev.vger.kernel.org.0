@@ -2,101 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE352E0AD8
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFE89E0AE1
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:43:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731422AbfJVRmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 13:42:31 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39716 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727226AbfJVRmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 13:42:31 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 4so17047283qki.6
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 10:42:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Gkeh9SXr2W/e0d/g6gOQoAJngpnGHvNbt25Adv2nDyA=;
-        b=J1ud/+VTA4mBP9KsI/BEYsYsFpq5vdsH2zlZE4wcAGMR+XXOvli7YhMZNgS0cVNsmO
-         HrlLhS7gdwodoByMTCBJTDiNkvMDgonB5UXFhypFVHAXJtx0Bkn5uNVTc5jaXVHZxE7v
-         7m7cTh95J0auoveA4XtlZu0mS0JYWlMdmZZZXDhEHpF6iRXw2fHRqQt6nxYjkji/CLFz
-         /QX9ER8GtWRQz+iaLi55ARSAAMd8hYzhn9WzY+ADNRJywk0l6iQpjZ0PF8oSdud7Ky/f
-         jS5kocl49x36ie/wrXwD3a3JwcJSej128enzFNLKINbnGZtj5G2NVNH4qOLylL4ucZSy
-         xscg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Gkeh9SXr2W/e0d/g6gOQoAJngpnGHvNbt25Adv2nDyA=;
-        b=OGunk7i9O/uIvUHomxCvXYfTrCAPamDBytBrZc3srhO0alda3iVKsvcBP7u/AbY+8O
-         UGHlIiS+fzN2S070YeIorq3K1Y8XZGjHQDP2WLD33TNRXHAr8qS1Z9yPTc6p3UiZh/Zd
-         Ayx8jrS67ks2fjkp0I6X4QxZYII156fNfmJRA0mR7bnpazsLyiHtG0+6CWNM0wzyEH8K
-         wPrqp8WxOiA5143bobP7xs9L6yZtZYf0/Vgs/dMhDHaybDmMsMFb9cWO6hBVb3oMBNPN
-         UYTx4AepIoXgdXU2pvc8rss4fcGHWlE24MZoANrPelI/ERalhK4BMCmRpDbGa2fKLyj/
-         MYLg==
-X-Gm-Message-State: APjAAAUFZHJ/1YqkxvO2jTgwWZWDumt6kgMT8scOHNuAR4rkgAfc2H3k
-        Ela/xjWyIVc2mA9EAoUV/YI74w==
-X-Google-Smtp-Source: APXvYqyNGe52mC3C1CtBUXMYilijRoJ4kPAIEvAuvYC+PJQx5sWz3FTJJUaHusEPOLdLQ9bZHbmfXA==
-X-Received: by 2002:a37:bf05:: with SMTP id p5mr4099896qkf.111.1571766149903;
-        Tue, 22 Oct 2019 10:42:29 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
-        by smtp.gmail.com with ESMTPSA id x64sm1881486qkd.88.2019.10.22.10.42.29
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 22 Oct 2019 10:42:29 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iMyAu-0006VF-P2; Tue, 22 Oct 2019 14:42:28 -0300
-Date:   Tue, 22 Oct 2019 14:42:28 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v2 0/3] Optimize SGL registration
-Message-ID: <20191022174228.GA24923@ziepe.ca>
-References: <20191007135933.12483-1-leon@kernel.org>
+        id S1731781AbfJVRnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 13:43:17 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55786 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730432AbfJVRnR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 13:43:17 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from yuvalav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 22 Oct 2019 19:43:14 +0200
+Received: from sw-mtx-008.mtx.labs.mlnx (sw-mtx-008.mtx.labs.mlnx [10.9.150.35])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9MHhDg5005557;
+        Tue, 22 Oct 2019 20:43:14 +0300
+Received: from sw-mtx-008.mtx.labs.mlnx (localhost [127.0.0.1])
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7) with ESMTP id x9MHhDBS023978;
+        Tue, 22 Oct 2019 20:43:13 +0300
+Received: (from yuvalav@localhost)
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7/Submit) id x9MHhBxg023977;
+        Tue, 22 Oct 2019 20:43:11 +0300
+From:   Yuval Avnery <yuvalav@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jiri@mellanox.com, saeedm@mellanox.com, leon@kernel.org,
+        davem@davemloft.net, jakub.kicinski@netronome.com,
+        shuah@kernel.org, Yuval Avnery <yuvalav@mellanox.com>
+Subject: [PATCH net-next 0/9] devlink vdev
+Date:   Tue, 22 Oct 2019 20:43:01 +0300
+Message-Id: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191007135933.12483-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 07, 2019 at 04:59:30PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
-> 
-> Changelog
-> v1->v2: https://lore.kernel.org/linux-rdma/20191007115819.9211-1-leon@kernel.org
->  * Used Christoph's comment
->  * Change patch code flow to have one DMA_FROM_DEVICE check
-> v0->v1: https://lore.kernel.org/linux-rdma/20191006155955.31445-1-leon@kernel.org
->  * Reorganized patches to have IB/core changes separated from mlx5
->  * Moved SGL check before rdma_rw_force_mr
->  * Added and rephrased original comment.
-> 
-> -----------------------------------------------------------------------------
-> Hi,
-> 
-> This series from Yamin implements long standing "TODO" existed in rw.c.
-> 
-> Thanks
-> 
-> Yamin Friedman (3):
->   net/mlx5: Expose optimal performance scatter entries capability
->   RDMA/rw: Support threshold for registration vs scattering to local
->     pages
->   RDMA/mlx5: Add capability for max sge to get optimized performance
+This patchset introduces devlink vdev.
 
-Applied to for-next with various fixes from Christoph and Bart
+Currently, legacy tools do not provide a comprehensive solution that can
+be used in both SmartNic and non-SmartNic mode.
+Vdev represents a device that exists on the ASIC but is not necessarily
+visible to the kernel.
 
-Thanks,
-Jason
+Using devlink ports is not suitable because:
+
+1. Those devices aren't necessarily network devices (such as NVMe devices)
+   and doesn’t have E-switch representation. Therefore, there is need for
+   more generic representation of PCI VF.
+2. Some attributes are not necessarily pure port attributes
+   (number of MSIX vectors)
+3. It creates a confusing devlink topology, with multiple port flavours
+   and indices.
+
+Vdev will be created along with flavour and attributes.
+Some network vdevs may be linked with a devlink port.
+
+This is also aimed to replace "ip link vf" commands as they are strongly
+linked to the PCI topology and allow access only to enabled VFs.
+Even though current patchset and example is limited to MAC address
+of the VF, this interface will allow to manage PF, VF, mdev in
+SmartNic and non SmartNic modes, in unified way for networking and
+non-networking devices via devlink instance.
+
+Example:
+
+A privileged user wants to configure a VF's hw_addr, before the VF is
+enabled.
+
+$ devlink vdev set pci/0000:03:00.0/1 hw_addr 10:22:33:44:55:66
+
+$ devlink vdev show pci/0000:03:00.0/1
+pci/0000:03:00.0/1: flavour pcivf pf 0 vf 0 port_index 1 hw_addr 10:22:33:44:55:66
+
+$ devlink vdev show pci/0000:03:00.0/1 -jp
+{
+    "vdev": {
+        "pci/0000:03:00.0/1": {
+            "flavour": "pcivf",
+            "pf": 0,
+            "vf": 0,
+            "port_index": 1,
+            "hw_addr": "10:22:33:44:55:66"
+        }
+    }
+}
+
+Patches 1-5 adds devlink support for vdev.
+Patches 6-7 adds netdevsim implementation and test.
+Patch 9 adds mlx5 vdev creation and hw_addr get/set.
+
+Yuval Avnery (9):
+  devlink: Introduce vdev
+  devlink: Add PCI attributes support for vdev
+  devlink: Add port with vdev register support
+  devlink: Support vdev HW address get
+  devlink: Support vdev HW address set
+  netdevsim: Add max_vfs to bus_dev
+  netdevsim: Add devlink vdev creation
+  netdevsim: Add devlink vdev sefltest for netdevsim
+  net/mlx5e: Add support for devlink vdev and vdev hw_addr set/show
+
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  86 ++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.h |   5 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   6 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  19 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |   7 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     |   8 +
+ drivers/net/netdevsim/Makefile                |   2 +-
+ drivers/net/netdevsim/bus.c                   |  39 +-
+ drivers/net/netdevsim/dev.c                   |   9 +-
+ drivers/net/netdevsim/netdevsim.h             |  11 +
+ drivers/net/netdevsim/vdev.c                  |  96 +++++
+ include/net/devlink.h                         |  44 ++
+ include/uapi/linux/devlink.h                  |  16 +
+ net/core/devlink.c                            | 393 +++++++++++++++++-
+ .../drivers/net/netdevsim/devlink.sh          |  55 ++-
+ 16 files changed, 777 insertions(+), 28 deletions(-)
+ create mode 100644 drivers/net/netdevsim/vdev.c
+
+-- 
+2.17.1
+
