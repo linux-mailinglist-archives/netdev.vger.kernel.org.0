@@ -2,132 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27CF6E070E
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 892FEE071F
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:15:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732118AbfJVPJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 11:09:59 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40878 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731453AbfJVPJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 11:09:59 -0400
-Received: by mail-wm1-f67.google.com with SMTP id b24so16505882wmj.5;
-        Tue, 22 Oct 2019 08:09:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JbHOlykCEqNn0kxc0i+cvgM5oVhh+P5JsXT8fXKGZ8k=;
-        b=koaA5MDEJ+V5rHjAyn6mUqlN6DVao8xENHmBDlx1bTRGSiVUfrUp+8pvMYpR1EH4Po
-         ZY67Oyq7dhk0wWIA9+gM6D9ZxEI0om7bQZMXs99aRDjFYuArWpyyKokNGKgQQ3Rh5IEi
-         tJgOtD7Ie+n0OCuZZfcB6QrO6uinigdjHXDOY/0InAS/DzMJPBZGpMB0DbncndfFk1+l
-         jZKtOSdc+0hWTMHwVpPIx8WVB2LkhU6JY1chk6kct+izG7a6TPHfvqnELLlFezwKUZFb
-         b5Wc8aK1iazX3JkCrzbII5YOQzUqEB4zTkyRuONGmfR4zfHepOc+/UfaCbLUeK+ReXRF
-         RWrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=JbHOlykCEqNn0kxc0i+cvgM5oVhh+P5JsXT8fXKGZ8k=;
-        b=PINvaaPrR5fuYIhuc+KaHVbUiRJO++YnAxBRuq7pRz9PNl1PrzESNN+54fHf7iz+Yz
-         t6I0+BQgzA5CBX1PkMyATXmCTzq8zlp19b7giX1/U22krxdNfmiP+sxQBP4y7U5uN30X
-         80KNDlEKaLWN3us36fR35/NN1er6IxBsPw8LsFO6rb5eORX6SFGDlwsc3EAbILv7epxC
-         ZmKeyGMxvlgmrBVU7NGcHJb2IFL4Lqp6b6HY7A1MuIgcAfmAI7Wk8PtexQGl78fHpydK
-         NJqRnreWkHhzwbwt5O3AlD7gSbhE7xM1lElbiuysvwJOw73Pvytg1GhmlyYexasp2yRm
-         c2YA==
-X-Gm-Message-State: APjAAAWRwdd5Auqha+Xs0ErymsIlGfn9RVYdbKok33vCkK5Hhj/KTeH2
-        GApAaASsMaZJx1fRBr95SPo=
-X-Google-Smtp-Source: APXvYqycpcjxt0Vhtf26R74XKM40rycbGF4GBlV2OV/+YPrUW0ExQ/A0j5CDN0SmAqV0T5N0ugzZ2w==
-X-Received: by 2002:a7b:cd89:: with SMTP id y9mr3709184wmj.51.1571756995033;
-        Tue, 22 Oct 2019 08:09:55 -0700 (PDT)
-Received: from VM-VPR.corporate.saft.org ([80.215.197.243])
-        by smtp.gmail.com with ESMTPSA id n17sm6934802wrt.25.2019.10.22.08.09.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 22 Oct 2019 08:09:54 -0700 (PDT)
-From:   Vincent Prince <vincent.prince.fr@gmail.com>
-To:     mkl@pengutronix.de
-Cc:     dave.taht@gmail.com, davem@davemloft.net, jhs@mojatatu.com,
-        jiri@resnulli.us, kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
-        Vincent Prince <vincent.prince.fr@gmail.com>
-Subject: [PATCH v3] net: sch_generic: Use pfifo_fast as fallback scheduler for CAN hardware
-Date:   Tue, 22 Oct 2019 17:09:50 +0200
-Message-Id: <1571756990-19611-1-git-send-email-vincent.prince.fr@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <20190327165632.10711-1-mkl@pengutronix.de>
-References: <20190327165632.10711-1-mkl@pengutronix.de>
+        id S1732196AbfJVPPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 11:15:39 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:48894 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731441AbfJVPPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 11:15:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571757337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CjSNJbMFJ28Qf5ED+IVqMaXpqaTZ/oEFXr17jaYsGd8=;
+        b=QbEl3NGUKoCe23jyxyeb77BjpocbuKb0WPda7uVpO9MbzRqAfoGZ+ZSoabkSNrqINTykDE
+        HvRYPwSqdoATWn6olHHpLjXpUjg3juHSBvmsFXcOMAgtb6EI0H3m3Ohr+RLvHNz6M2xHAM
+        QvsINx8gUPDjKGtT3RIE3Db7ooCV47c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-27-AJW8v2LLOg2ySZJUGn1crA-1; Tue, 22 Oct 2019 11:15:32 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7EFCD1800DD0;
+        Tue, 22 Oct 2019 15:15:27 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-121-180.rdu2.redhat.com [10.10.121.180])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6C3B51001DF0;
+        Tue, 22 Oct 2019 15:15:26 +0000 (UTC)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 68199C0AAD; Tue, 22 Oct 2019 12:15:24 -0300 (-03)
+Date:   Tue, 22 Oct 2019 12:15:24 -0300
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, dcaratti@redhat.com
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Message-ID: <20191022151524.GZ4321@localhost.localdomain>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+MIME-Version: 1.0
+In-Reply-To: <20191022141804.27639-1-vladbu@mellanox.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: AJW8v2LLOg2ySZJUGn1crA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is networking hardware that isn't based on Ethernet for layers 1 and 2.
+On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
+> - Extend actions that are used for hardware offloads with optional
+>   netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action flag and
+>   update affected actions to not allocate percpu counters when the flag
+>   is set.
 
-For example CAN.
+I just went over all the patches and they mostly make sense to me. So
+far the only point I'm uncertain of is the naming of the flag,
+"fast_init".  That is not clear on what it does and can be overloaded
+with other stuff later and we probably don't want that.
 
-CAN is a multi-master serial bus standard for connecting Electronic Control
-Units [ECUs] also known as nodes. A frame on the CAN bus carries up to 8 bytes
-of payload. Frame corruption is detected by a CRC. However frame loss due to
-corruption is possible, but a quite unusual phenomenon.
+Say, for example, we want percpu counters but to disable allocating
+the stats for hw, to make the counter in 28169abadb08 ("net/sched: Add
+hardware specific counters to TC actions") optional.
 
-While fq_codel works great for TCP/IP, it doesn't for CAN. There are a lot of
-legacy protocols on top of CAN, which are not build with flow control or high
-CAN frame drop rates in mind.
+So what about:
+TCA_ACT_FLAGS_NO_PERCPU_STATS
+TCA_ACT_FLAGS_NO_HW_STATS (this one to be done on a subsequent patchset, ye=
+s)
+?
 
-When using fq_codel, as soon as the queue reaches a certain delay based length,
-skbs from the head of the queue are silently dropped. Silently meaning that the
-user space using a send() or similar syscall doesn't get an error. However
-TCP's flow control algorithm will detect dropped packages and adjust the
-bandwidth accordingly.
-
-When using fq_codel and sending raw frames over CAN, which is the common use
-case, the user space thinks the package has been sent without problems, because
-send() returned without an error. pfifo_fast will drop skbs, if the queue
-length exceeds the maximum. But with this scheduler the skbs at the tail are
-dropped, an error (-ENOBUFS) is propagated to user space. So that the user
-space can slow down the package generation.
-
-On distributions, where fq_codel is made default via CONFIG_DEFAULT_NET_SCH
-during compile time, or set default during runtime with sysctl
-net.core.default_qdisc (see [1]), we get a bad user experience. In my test case
-with pfifo_fast, I can transfer thousands of million CAN frames without a frame
-drop. On the other hand with fq_codel there is more then one lost CAN frame per
-thousand frames.
-
-As pointed out fq_codel is not suited for CAN hardware, so this patch changes
-attach_one_default_qdisc() to use pfifo_fast for "ARPHRD_CAN" network devices.
-
-During transition of a netdev from down to up state the default queuing
-discipline is attached by attach_default_qdiscs() with the help of
-attach_one_default_qdisc(). This patch modifies attach_one_default_qdisc() to
-attach the pfifo_fast (pfifo_fast_ops) if the network device type is
-"ARPHRD_CAN".
-
-[1] https://github.com/systemd/systemd/issues/9194
-
-Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com>
----
-Changes in v3:
- - add description
-
-Changes in v2:
- - reformat patch
-
- net/sched/sch_generic.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 77b289d..dfb2982 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1008,6 +1008,8 @@ static void attach_one_default_qdisc(struct net_device *dev,
- 
- 	if (dev->priv_flags & IFF_NO_QUEUE)
- 		ops = &noqueue_qdisc_ops;
-+	else if(dev->type == ARPHRD_CAN)
-+		ops = &pfifo_fast_ops;
- 
- 	qdisc = qdisc_create_dflt(dev_queue, ops, TC_H_ROOT, NULL);
- 	if (!qdisc) {
--- 
-2.7.4
+  Marcelo
 
