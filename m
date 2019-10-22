@@ -2,306 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D91C4DFF31
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 10:14:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24D5ADFF5B
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 10:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388193AbfJVIOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 04:14:15 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39734 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388061AbfJVIOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 04:14:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=aevSxl9niChwz9YwFghP2SigoTLSsMF4gSJ/aWt3qXI=; b=f0Sf0Hb2YstrBRViiVZnFY2R/
-        n1LqGbbMUX718uMGcdew6x8OAZUUsD60REMpqLJz26a/jRS2NBXciplfVf6JqrzDMsNiTd55V4rO4
-        XsQSnyfpmWkZGGSMSqMau1rbMT89JymsXa7DovLtExNpYPkjnC4DGM2h/Tgg1syDBEnRRn5N3RNx/
-        IcDxBtB3+xTUClZLEdKHmSPCqA29YYhedMGjJbxe1yFHdwplRl56uadTLMqmcPauevxAHJ4iSx1+s
-        q+o1kSltIvWKkbMUA8+TvVo4SOIWKHVgCSXH5kZEDfFu/q25iLBnO87SdYoKzJGsIkSaBErkOrvcv
-        uckUWqSQw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:45878)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iMpIu-0005wD-HR; Tue, 22 Oct 2019 09:14:08 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iMpIq-0004O8-PN; Tue, 22 Oct 2019 09:14:04 +0100
-Date:   Tue, 22 Oct 2019 09:14:04 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next 4/4] net: documentation: add docs for MAC/PHY
- support in DPAA2
-Message-ID: <20191022081404.GN25745@shell.armlinux.org.uk>
-References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
- <1571698228-30985-5-git-send-email-ioana.ciornei@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1571698228-30985-5-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S2388375AbfJVI0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 04:26:09 -0400
+Received: from mga06.intel.com ([134.134.136.31]:65278 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388155AbfJVI0J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 04:26:09 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Oct 2019 01:26:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,326,1566889200"; 
+   d="scan'208";a="348986785"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.103.211.44])
+  by orsmga004.jf.intel.com with ESMTP; 22 Oct 2019 01:26:06 -0700
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     bpf@vger.kernel.org, degeneloy@gmail.com, john.fastabend@gmail.com
+Subject: [PATCH bpf-next v2] libbpf: fix compatibility for kernels without need_wakeup
+Date:   Tue, 22 Oct 2019 10:25:56 +0200
+Message-Id: <1571732756-20692-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This mentions phylink, but I never got the other patches of the series
-which presumably implement this idea.
+When the need_wakeup flag was added to AF_XDP, the format of the
+XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the
+kernel to take care of compatibility issues arrising from running
+applications using any of the two formats. However, libbpf was
+not extended to take care of the case when the application/libbpf
+uses the new format but the kernel only supports the old
+format. This patch adds support in libbpf for parsing the old
+format, before the need_wakeup flag was added, and emulating a
+set of static need_wakeup flags that will always work for the
+application.
 
-Please also note that I gave up waiting for another set, and as I now
-have LX2160A hardware, I ended up writing my own version, which can be
-found in my cex7 branch at:
+v1 -> v2:
+* Rebased to bpf-next
+* Rewrote the code as the previous version made you blind
 
- git://git.armlinux.org.uk/~rmk/linux-arm.git cex7
+Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in AF_XDP part")
+Reported-by: Eloy Degen <degeneloy@gmail.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ tools/lib/bpf/xsk.c | 79 +++++++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 67 insertions(+), 12 deletions(-)
 
- http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=cex7
-
-On Tue, Oct 22, 2019 at 01:50:28AM +0300, Ioana Ciornei wrote:
-> Add documentation file for the MAC/PHY support in the DPAA2
-> architecture. This describes the architecture and implementation of the
-> interface between phylink and a DPAA2 network driver.
-> 
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
->  .../device_drivers/freescale/dpaa2/index.rst       |   1 +
->  .../freescale/dpaa2/mac-phy-support.rst            | 191 +++++++++++++++++++++
->  MAINTAINERS                                        |   2 +
->  3 files changed, 194 insertions(+)
->  create mode 100644 Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
-> 
-> diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-> index 67bd87fe6c53..ee40fcc5ddff 100644
-> --- a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-> +++ b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-> @@ -8,3 +8,4 @@ DPAA2 Documentation
->     overview
->     dpio-driver
->     ethernet-driver
-> +   mac-phy-support
-> diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
-> new file mode 100644
-> index 000000000000..51e6624fb774
-> --- /dev/null
-> +++ b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
-> @@ -0,0 +1,191 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +.. include:: <isonum.txt>
-> +
-> +=======================
-> +DPAA2 MAC / PHY support
-> +=======================
-> +
-> +:Copyright: |copy| 2019 NXP
-> +
-> +Overview
-> +--------
-> +
-> +The DPAA2 MAC / PHY support consists of a set of APIs that help DPAA2 network
-> +drivers (dpaa2-eth, dpaa2-ethsw) interract with the PHY library.
-> +
-> +DPAA2 Software Architecture
-> +---------------------------
-> +
-> +Among other DPAA2 objects, the fsl-mc bus exports DPNI objects (abstracting a
-> +network interface) and DPMAC objects (abstracting a MAC). The dpaa2-eth driver
-> +probes on the DPNI object and connects to and configures a DPMAC object with
-> +the help of phylink.
-> +
-> +Data connections may be established between a DPNI and a DPMAC, or between two
-> +DPNIs. Depending on the connection type, the netif_carrier_[on/off] is handled
-> +directly by the dpaa2-eth driver or by phylink.
-> +
-> +.. code-block:: none
-> +
-> +  Sources of abstracted link state information presented by the MC firmware
-> +
-> +                                               +--------------------------------------+
-> +  +------------+                  +---------+  |                           xgmac_mdio |
-> +  | net_device |                  | phylink |--|  +-----+  +-----+  +-----+  +-----+  |
-> +  +------------+                  +---------+  |  | PHY |  | PHY |  | PHY |  | PHY |  |
-> +        |                             |        |  +-----+  +-----+  +-----+  +-----+  |
-> +      +------------------------------------+   |                    External MDIO bus |
-> +      |            dpaa2-eth               |   +--------------------------------------+
-> +      +------------------------------------+
-> +        |                             |                                           Linux
-> +  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> +        |                             |                                     MC firmware
-> +        |              /|             V
-> +  +----------+        / |       +----------+
-> +  |          |       /  |       |          |
-> +  |          |       |  |       |          |
-> +  |   DPNI   |<------|  |<------|   DPMAC  |
-> +  |          |       |  |       |          |
-> +  |          |       \  |<---+  |          |
-> +  +----------+        \ |    |  +----------+
-> +                       \|    |
-> +                             |
-> +           +--------------------------------------+
-> +           | MC firmware polling MAC PCS for link |
-> +           |  +-----+  +-----+  +-----+  +-----+  |
-> +           |  | PCS |  | PCS |  | PCS |  | PCS |  |
-> +           |  +-----+  +-----+  +-----+  +-----+  |
-> +           |                    Internal MDIO bus |
-> +           +--------------------------------------+
-> +
-> +
-> +Depending on an MC firmware configuration setting, each MAC may be in one of two modes:
-> +
-> +- DPMAC_LINK_TYPE_FIXED: the link state management is handled exclusively by
-> +  the MC firmware by polling the MAC PCS. Without the need to register a
-> +  phylink instance, the dpaa2-eth driver will not bind to the connected dpmac
-> +  object at all.
-> +
-> +- DPMAC_LINK_TYPE_PHY: The MC firmware is left waiting for link state update
-> +  events, but those are in fact passed strictly between the dpaa2-mac (based on
-> +  phylink) and its attached net_device driver (dpaa2-eth, dpaa2-ethsw),
-> +  effectively bypassing the firmware.
-> +
-> +Implementation
-> +--------------
-> +
-> +At probe time or when a DPNI's endpoint is dynamically changed, the dpaa2-eth
-> +is responsible to find out if the peer object is a DPMAC and if this is the
-> +case, to integrate it with PHYLINK using the dpaa2_mac_connect() API, which
-> +will do the following:
-> +
-> + - look up the device tree for PHYLINK-compatible of binding (phy-handle)
-> + - will create a PHYLINK instance associated with the received net_device
-> + - connect to the PHY using phylink_of_phy_connect()
-> +
-> +The following phylink_mac_ops callback are implemented:
-> +
-> + - .validate() will populate the supported linkmodes with the MAC capabilities
-> +   only when the phy_interface_t is RGMII_* (at the moment, this is the only
-> +   link type supported by the driver).
-> +
-> + - .mac_config() will configure the MAC in the new configuration using the
-> +   dpmac_set_link_state() MC firmware API.
-> +
-> + - .mac_link_up() / .mac_link_down() will update the MAC link using the same
-> +   API described above.
-> +
-> +At driver unbind() or when the DPNI object is disconnected from the DPMAC, the
-> +dpaa2-eth driver calls dpaa2_mac_disconnect() which will, in turn, disconnect
-> +from the PHY and destroy the PHYLINK instance.
-> +
-> +In case of a DPNI-DPMAC connection, an 'ip link set dev eth0 up' would start
-> +the following sequence of operations:
-> +
-> +(1) phylink_start() called from .dev_open().
-> +(2) The .mac_config() and .mac_link_up() callbacks are called by PHYLINK.
-> +(3) In order to configure the HW MAC, the MC Firmware API
-> +    dpmac_set_link_state() is called.
-> +(4) The firmware will eventually setup the HW MAC in the new configuration.
-> +(5) A netif_carrier_on() call is made directly from PHYLINK on the associated
-> +    net_device.
-> +(6) The dpaa2-eth driver handles the LINK_STATE_CHANGE irq in order to
-> +    enable/disable Rx taildrop based on the pause frame settings.
-> +
-> +.. code-block:: none
-> +
-> +  +---------+               +---------+
-> +  | PHYLINK |-------------->|  eth0   |
-> +  +---------+           (5) +---------+
-> +  (1) ^  |
-> +      |  |
-> +      |  v (2)
-> +  +-----------------------------------+
-> +  |             dpaa2-eth             |
-> +  +-----------------------------------+
-> +         |                    ^ (6)
-> +         |                    |
-> +         v (3)                |
-> +  +---------+---------------+---------+
-> +  |  DPMAC  |               |  DPNI   |
-> +  +---------+               +---------+
-> +  |            MC Firmware            |
-> +  +-----------------------------------+
-> +         |
-> +         |
-> +         v (4)
-> +  +-----------------------------------+
-> +  |             HW MAC                |
-> +  +-----------------------------------+
-> +
-> +In case of a DPNI-DPNI connection, a usual sequence of operations looks like
-> +the following:
-> +
-> +(1) ip link set dev eth0 up
-> +(2) The dpni_enable() MC API called on the associated fsl_mc_device.
-> +(3) ip link set dev eth1 up
-> +(4) The dpni_enable() MC API called on the associated fsl_mc_device.
-> +(5) The LINK_STATE_CHANGED irq is received by both instances of the dpaa2-eth
-> +    driver because now the operational link state is up.
-> +(6) The netif_carrier_on() is called on the exported net_device from
-> +    link_state_update().
-> +
-> +.. code-block:: none
-> +
-> +  +---------+               +---------+
-> +  |  eth0   |               |  eth1   |
-> +  +---------+               +---------+
-> +      |  ^                     ^  |
-> +      |  |                     |  |
-> +  (1) v  | (6)             (6) |  v (3)
-> +  +---------+               +---------+
-> +  |dpaa2-eth|               |dpaa2-eth|
-> +  +---------+               +---------+
-> +      |  ^                     ^  |
-> +      |  |                     |  |
-> +  (2) v  | (5)             (5) |  v (4)
-> +  +---------+---------------+---------+
-> +  |  DPNI   |               |  DPNI   |
-> +  +---------+               +---------+
-> +  |            MC Firmware            |
-> +  +-----------------------------------+
-> +
-> +
-> +Exported API
-> +------------
-> +
-> +Any DPAA2 driver that drivers endpoints of DPMAC objects should service its
-> +_EVENT_ENDPOINT_CHANGED irq and connect/disconnect from the associated DPMAC
-> +when necessary using the below listed API::
-> +
-> + - int dpaa2_mac_connect(struct dpaa2_mac *mac);
-> + - void dpaa2_mac_disconnect(struct dpaa2_mac *mac);
-> +
-> +A phylink integration is necessary only when the partner DPMAC is not of TYPE_FIXED.
-> +One can check for this condition using the below API::
-> +
-> + - bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,struct fsl_mc_io *mc_io);
-> +
-> +Before connection to a MAC, the caller must allocate and populate the
-> +dpaa2_mac structure with the associated net_device, a pointer to the MC portal
-> +to be used and the actual fsl_mc_device structure of the DPMAC.
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d0e562d3ce5b..fdc3c89a4a6d 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -5052,6 +5052,8 @@ F:	drivers/net/ethernet/freescale/dpaa2/dpmac*
->  F:	drivers/net/ethernet/freescale/dpaa2/dpkg.h
->  F:	drivers/net/ethernet/freescale/dpaa2/Makefile
->  F:	drivers/net/ethernet/freescale/dpaa2/Kconfig
-> +F:	Documentation/networking/device_drivers/freescale/dpaa2/ethernet-driver.rst
-> +F:	Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
->  
->  DPAA2 ETHERNET SWITCH DRIVER
->  M:	Ioana Radulescu <ruxandra.radulescu@nxp.com>
-> -- 
-> 1.9.1
-> 
-> 
-> 
-> 
-
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 7866500..aa16458 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -73,6 +73,21 @@ struct xsk_nl_info {
+ 	int fd;
+ };
+ 
++/* Up until and including Linux 5.3 */
++struct xdp_ring_offset_no_flags {
++	__u64 producer;
++	__u64 consumer;
++	__u64 desc;
++};
++
++/* Up until and including Linux 5.3 */
++struct xdp_mmap_offsets_no_flags {
++	struct xdp_ring_offset_no_flags rx;
++	struct xdp_ring_offset_no_flags tx;
++	struct xdp_ring_offset_no_flags fr;
++	struct xdp_ring_offset_no_flags cr;
++};
++
+ int xsk_umem__fd(const struct xsk_umem *umem)
+ {
+ 	return umem ? umem->fd : -EINVAL;
+@@ -133,6 +148,54 @@ static int xsk_set_xdp_socket_config(struct xsk_socket_config *cfg,
+ 	return 0;
+ }
+ 
++static bool xsk_mmap_offsets_has_flags(socklen_t optlen)
++{
++	return (optlen == sizeof(struct xdp_mmap_offsets)) ? true : false;
++}
++
++static int xsk_get_mmap_offsets(int fd, struct xdp_mmap_offsets *off)
++{
++	struct xdp_mmap_offsets_no_flags off_no_flag;
++	socklen_t optlen;
++	int err;
++
++	optlen = sizeof(*off);
++	err = getsockopt(fd, SOL_XDP, XDP_MMAP_OFFSETS, off, &optlen);
++	if (err)
++		return err;
++
++	if (xsk_mmap_offsets_has_flags(optlen))
++		return 0;
++
++	/* getsockopt on a kernel <= 5.3 has no flags fields.
++	 * Copy over the offsets to the correct places in the >=5.4 format
++	 * and put the flags where they would have been on that kernel.
++	 */
++	memcpy(&off_no_flag, off, sizeof(off_no_flag));
++
++	off->rx.producer = off_no_flag.rx.producer;
++	off->rx.consumer = off_no_flag.rx.consumer;
++	off->rx.desc = off_no_flag.rx.desc;
++	off->rx.flags = off_no_flag.rx.consumer + sizeof(u32);
++
++	off->tx.producer = off_no_flag.tx.producer;
++	off->tx.consumer = off_no_flag.tx.consumer;
++	off->tx.desc = off_no_flag.tx.desc;
++	off->tx.flags = off_no_flag.tx.consumer + sizeof(u32);
++
++	off->fr.producer = off_no_flag.fr.producer;
++	off->fr.consumer = off_no_flag.fr.consumer;
++	off->fr.desc = off_no_flag.fr.desc;
++	off->fr.flags = off_no_flag.fr.consumer + sizeof(u32);
++
++	off->cr.producer = off_no_flag.cr.producer;
++	off->cr.consumer = off_no_flag.cr.consumer;
++	off->cr.desc = off_no_flag.cr.desc;
++	off->cr.flags = off_no_flag.cr.consumer + sizeof(u32);
++
++	return 0;
++}
++
+ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+ 			    __u64 size, struct xsk_ring_prod *fill,
+ 			    struct xsk_ring_cons *comp,
+@@ -141,7 +204,6 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+ 	struct xdp_mmap_offsets off;
+ 	struct xdp_umem_reg mr;
+ 	struct xsk_umem *umem;
+-	socklen_t optlen;
+ 	void *map;
+ 	int err;
+ 
+@@ -190,8 +252,7 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+ 		goto out_socket;
+ 	}
+ 
+-	optlen = sizeof(off);
+-	err = getsockopt(umem->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
++	err = xsk_get_mmap_offsets(umem->fd, &off);
+ 	if (err) {
+ 		err = -errno;
+ 		goto out_socket;
+@@ -492,7 +553,6 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 	struct sockaddr_xdp sxdp = {};
+ 	struct xdp_mmap_offsets off;
+ 	struct xsk_socket *xsk;
+-	socklen_t optlen;
+ 	int err;
+ 
+ 	if (!umem || !xsk_ptr || !rx || !tx)
+@@ -551,8 +611,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 		}
+ 	}
+ 
+-	optlen = sizeof(off);
+-	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
++	err = xsk_get_mmap_offsets(xsk->fd, &off);
+ 	if (err) {
+ 		err = -errno;
+ 		goto out_socket;
+@@ -638,7 +697,6 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ int xsk_umem__delete(struct xsk_umem *umem)
+ {
+ 	struct xdp_mmap_offsets off;
+-	socklen_t optlen;
+ 	int err;
+ 
+ 	if (!umem)
+@@ -647,8 +705,7 @@ int xsk_umem__delete(struct xsk_umem *umem)
+ 	if (umem->refcount)
+ 		return -EBUSY;
+ 
+-	optlen = sizeof(off);
+-	err = getsockopt(umem->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
++	err = xsk_get_mmap_offsets(umem->fd, &off);
+ 	if (!err) {
+ 		munmap(umem->fill->ring - off.fr.desc,
+ 		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
+@@ -666,7 +723,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+ {
+ 	size_t desc_sz = sizeof(struct xdp_desc);
+ 	struct xdp_mmap_offsets off;
+-	socklen_t optlen;
+ 	int err;
+ 
+ 	if (!xsk)
+@@ -677,8 +733,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+ 		close(xsk->prog_fd);
+ 	}
+ 
+-	optlen = sizeof(off);
+-	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
++	err = xsk_get_mmap_offsets(xsk->fd, &off);
+ 	if (!err) {
+ 		if (xsk->rx) {
+ 			munmap(xsk->rx->ring - off.rx.desc,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.7.4
+
