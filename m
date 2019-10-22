@@ -2,140 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B977EDFA24
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 03:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC40BDFA29
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 03:35:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730520AbfJVBbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Oct 2019 21:31:13 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4702 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727953AbfJVBbN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Oct 2019 21:31:13 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 4EF1647EB84C658E0A30;
-        Tue, 22 Oct 2019 09:31:10 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Tue, 22 Oct 2019
- 09:31:05 +0800
-Subject: Re: [PATCH RFC] net: vlan: reverse 4 bytes of vlan header when
- setting initial MTU
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     <davem@davemloft.net>, <dsahern@gmail.com>, <jiri@mellanox.com>,
-        <allison@lohutok.net>, <mmanning@vyatta.att-mail.com>,
-        <petrm@mellanox.com>, <dcaratti@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1571660763-117936-1-git-send-email-linyunsheng@huawei.com>
- <20191021162751.1ccb251e@hermes.lan>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <b9567cd4-8fea-497a-5d32-b797425e7854@huawei.com>
-Date:   Tue, 22 Oct 2019 09:31:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1730711AbfJVBcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Oct 2019 21:32:55 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:29075 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730699AbfJVBcy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Oct 2019 21:32:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571707973;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o0Lp/gVS/UVZJ6HpPOA1ELyW3Kw/drS4YFNnrvpMCr8=;
+        b=DHMNIRp6vkHA+41uF4BENOl/UOXKohHEZ+5k4CBMaVwi56iBZLkz9KrmNPIOoASrVw3rfS
+        WE5SYbdJgCKq+z5LJ+vzT8VApE7guNArTrjnH9Te18GiRk4P8/HjTf560wrFi9HyHnaAYW
+        IGasUM8MjB6x5OiEdONTuTlYTM5zmhM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-384-k9QbnoCZP_WXlFbJr2Vfxw-1; Mon, 21 Oct 2019 21:32:50 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CF9221800DC7;
+        Tue, 22 Oct 2019 01:32:48 +0000 (UTC)
+Received: from [10.72.12.133] (ovpn-12-133.pek2.redhat.com [10.72.12.133])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 936AD10027A1;
+        Tue, 22 Oct 2019 01:32:39 +0000 (UTC)
+Subject: Re: [RFC 1/2] vhost: IFC VF hardware operation layer
+To:     Simon Horman <simon.horman@netronome.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        zhiyuan.lv@intel.com
+References: <20191016011041.3441-1-lingshan.zhu@intel.com>
+ <20191016011041.3441-2-lingshan.zhu@intel.com>
+ <20191016095347.5sb43knc7eq44ivo@netronome.com>
+ <075be045-3a02-e7d8-672f-4a207c410ee8@intel.com>
+ <20191021163139.GC4486@netronome.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <15d94e61-9b3d-7854-b65e-6fea6db75450@redhat.com>
+Date:   Tue, 22 Oct 2019 09:32:36 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191021162751.1ccb251e@hermes.lan>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20191021163139.GC4486@netronome.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: k9QbnoCZP_WXlFbJr2Vfxw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/10/22 7:27, Stephen Hemminger wrote:
-> On Mon, 21 Oct 2019 20:26:03 +0800
-> Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> 
->> Currently the MTU of vlan netdevice is set to the same MTU
->> of the lower device, which requires the underlying device
->> to handle it as the comment has indicated:
->>
->> 	/* need 4 bytes for extra VLAN header info,
->> 	 * hope the underlying device can handle it.
->> 	 */
->> 	new_dev->mtu = real_dev->mtu;
->>
->> Currently most of the physical netdevs seems to handle above
->> by reversing 2 * VLAN_HLEN for L2 packet len.
->>
->> But for vlan netdev over vxlan netdev case, the vxlan does not
->> seems to reverse the vlan header for vlan device, which may cause
->> performance degradation because vxlan may emit a packet that
->> exceed the MTU of the physical netdev, and cause the software
->> TSO to happen in ip_finish_output_gso(), software TSO call stack
->> as below:
->>
->>  => ftrace_graph_call
->>  => tcp_gso_segment
->>  => tcp4_gso_segment
->>  => inet_gso_segment
->>  => skb_mac_gso_segment
->>  => skb_udp_tunnel_segment
->>  => udp4_ufo_fragment
->>  => inet_gso_segment
->>  => skb_mac_gso_segment
->>  => __skb_gso_segment
->>  => __ip_finish_output
->>  => ip_output
->>  => ip_local_out
->>  => iptunnel_xmit
->>  => udp_tunnel_xmit_skb
->>  => vxlan_xmit_one
->>  => vxlan_xmit
->>  => dev_hard_start_xmit
->>  => __dev_queue_xmit
->>  => dev_queue_xmit
->>  => vlan_dev_hard_start_xmit
->>  => dev_hard_start_xmit
->>  => __dev_queue_xmit
->>  => dev_queue_xmit
->>  => neigh_resolve_output
->>  => ip_finish_output2
->>  => __ip_finish_output
->>  => ip_output
->>  => ip_local_out
->>  => __ip_queue_xmit
->>  => ip_queue_xmit
->>  => __tcp_transmit_skb
->>  => tcp_write_xmit
->>  => __tcp_push_pending_frames
->>  => tcp_push
->>  => tcp_sendmsg_locked
->>  => tcp_sendmsg
->>  => inet_sendmsg
->>  => sock_sendmsg
->>  => sock_write_iter
->>  => new_sync_write
->>  => __vfs_write
->>  => vfs_write
->>  => ksys_write
->>  => __arm64_sys_write
->>  => el0_svc_common.constprop.0
->>  => el0_svc_handler
->>  => el0_svc  
->>
->> This patch set initial MTU of the vlan device to the MTU of the
->> lower device minus vlan header to handle the above case.
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> 
-> The MTU is visible to user space in many tools, and Linux (and BSD)
-> have always treated VLAN header as not part of the MTU. You can't change
-> that now.
 
-Ok.
-Is there any other feasible way to bring back the performance gain in the
-vlan netdev over vxlan netdev case?
+On 2019/10/22 =E4=B8=8A=E5=8D=8812:31, Simon Horman wrote:
+> On Mon, Oct 21, 2019 at 05:55:33PM +0800, Zhu, Lingshan wrote:
+>> On 10/16/2019 5:53 PM, Simon Horman wrote:
+>>> Hi Zhu,
+>>>
+>>> thanks for your patch.
+>>>
+>>> On Wed, Oct 16, 2019 at 09:10:40AM +0800, Zhu Lingshan wrote:
+> ...
+>
+>>>> +static void ifcvf_read_dev_config(struct ifcvf_hw *hw, u64 offset,
+>>>> +=09=09       void *dst, int length)
+>>>> +{
+>>>> +=09int i;
+>>>> +=09u8 *p;
+>>>> +=09u8 old_gen, new_gen;
+>>>> +
+>>>> +=09do {
+>>>> +=09=09old_gen =3D ioread8(&hw->common_cfg->config_generation);
+>>>> +
+>>>> +=09=09p =3D dst;
+>>>> +=09=09for (i =3D 0; i < length; i++)
+>>>> +=09=09=09*p++ =3D ioread8((u8 *)hw->dev_cfg + offset + i);
+>>>> +
+>>>> +=09=09new_gen =3D ioread8(&hw->common_cfg->config_generation);
+>>>> +=09} while (old_gen !=3D new_gen);
+>>> Would it be wise to limit the number of iterations of the loop above?
+>> Thanks but I don't quite get it. This is used to make sure the function
+>> would get the latest config.
+> I am worried about the possibility that it will loop forever.
+> Could that happen?
+>
+> ...
 
-Or we just leave it as it is, and expect user to manually configure the MTU
-of vlan netdev to the MTU of thelower device minus vlan header when the
-performace in the above case is a concern to user?
 
-Thanks.
+My understanding is that the function here is similar to virtio config=20
+generation [1]. So this can only happen for a buggy hardware.
 
-> 
-> 
-> .
-> 
+Thanks
+
+[1]=20
+https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.=
+html=20
+Section 2.4.1
+
+
+>
+>>>> +static void io_write64_twopart(u64 val, u32 *lo, u32 *hi)
+>>>> +{
+>>>> +=09iowrite32(val & ((1ULL << 32) - 1), lo);
+>>>> +=09iowrite32(val >> 32, hi);
+>>>> +}
+>>> I see this macro is also in virtio_pci_modern.c
+>>>
+>>> Assuming lo and hi aren't guaranteed to be sequential
+>>> and thus iowrite64_hi_lo() cannot be used perhaps
+>>> it would be good to add a common helper somewhere.
+>> Thanks, I will try after this IFC patchwork, I will cc you.
+> Thanks.
+>
+> ...
 
