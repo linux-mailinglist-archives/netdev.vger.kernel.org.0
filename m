@@ -2,96 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C693E0B6C
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC784E0B7A
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731883AbfJVS3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 14:29:32 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:37471 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726702AbfJVS3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 14:29:32 -0400
-Received: by mail-lj1-f195.google.com with SMTP id l21so18272794lje.4;
-        Tue, 22 Oct 2019 11:29:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uxMt9H3LtJ7pqzPSuyrIM24uiwA0nTK1MUHdhFbeMb8=;
-        b=PiAnv00bcmsJPhL9rkYry1ebqzZoDitqWAbx65kYao8BKYY1ncoD4nLJ4o4QR4ORbU
-         GQg+glL5E68Co1wl2U4gGELEcf/oModpXJjasQWm5jtjD7cx49FgEqV/Hea3nN8JGhio
-         V5DLajQPcIoP7crrCNfDgqCQMDopE4UU7eQKMAACrr7bvwtarObyYFm8h+OosPiwQn2L
-         7FM1eEofvJItp0GcZa6xDqDTP35h2N7nWGx+19UqjxzqsSbLtlgTidYcXN9Qvj5fA4io
-         4y1o9HsGwCnWIWduXXwK076dZSCRNQGxDEQUN3wlOtWE1kDEFlWPXaph+egJr8tQomoH
-         IaAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uxMt9H3LtJ7pqzPSuyrIM24uiwA0nTK1MUHdhFbeMb8=;
-        b=GdRcZr8GWpXuLvOgzGW3TJpZgoGyTzh8n9+GIX1Wax1cCDgCcZq6eqY6VWUw04A5x/
-         tl59YQKaX41tdMsBtfEy7RbIKvEDQBNkEZ0BB1hKNUvG2E8QrMcGvNYrsWN3b0yUilmU
-         gS+3yNYA029ZNIvpITSxgF/dF25et/AU+E2fJEjfa7m4Z5vD8HCWmNdhjChVPALwsipb
-         g1gunzonvg89GoP9fyDpk7Qh/onJBL7un03BWWY6e1Ht7A4LYubK5+w4oC4w7FWXIe1v
-         czYA2rYa+WTdhA6mMHpk87E+uENEuGtAGDXB24vSyd/2D3vEnmwx8hpaVPSXubc8hs/z
-         iwNA==
-X-Gm-Message-State: APjAAAVRPZOkmv0PYn7YwRWYMHOrG3zWwYqb/gCnqWdZRmTPx//Mqmvh
-        wNWw8MO+8oYm3kmbdhZrjKBMF8FULpbBxthjEESsEQ==
-X-Google-Smtp-Source: APXvYqxznjs4ukuAeKRHApg+x3X8+OGoWHGAtuPwqYX7BKTMv33fLwj5/VSFNB0WtYVxST94TzGzbLHHcp1sLFgNB00=
-X-Received: by 2002:a2e:9b12:: with SMTP id u18mr20149416lji.142.1571768969771;
- Tue, 22 Oct 2019 11:29:29 -0700 (PDT)
+        id S1732548AbfJVSdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 14:33:16 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.166]:11772 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727851AbfJVSdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 14:33:16 -0400
+X-Greylist: delayed 716 seconds by postgrey-1.27 at vger.kernel.org; Tue, 22 Oct 2019 14:33:15 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1571769195;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=SUO95hzSSetluapukGk/6rTRVcsFbnMspEM+35/uuT4=;
+        b=alWThASuhCMAIG3VYFJW3cr7HXEFou07OHqbHkWKg/TZNXnBsE14KIvZLT4dsLtC4e
+        Xn362WNpG+Oogx0jul2w7hedZHLJfDzh3JVkctB/hehg0rKGMZTZ8N0DzoQU6Hob6oFl
+        dhVf9fmDy+OKwG/97YHgY/G0jNEQBwmyFMa7UR2GFOPWzjz4rAebFQmqZvOraBEgsNL5
+        9jCNnYXUUz6FpozyTR/iv1bURM1R5/rHiIXLckWHvNlvKI2Jp/vw6OhdSt18pUEKG7Uc
+        KPYfnNHJfZDd5qaH3RsGKE10JHLlA9B84mv6j3vhQHGUMDdKDvVTFSw24rMWx8cFB+iL
+        svuA==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVsh5kk59"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.40.177]
+        by smtp.strato.de (RZmta 44.28.1 DYNA|AUTH)
+        with ESMTPSA id 20981av9MILER1D
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Tue, 22 Oct 2019 20:21:14 +0200 (CEST)
+Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
+ for CAN hardware
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent Prince <vincent.prince.fr@gmail.com>, jiri@resnulli.us,
+        jhs@mojatatu.com, netdev@vger.kernel.org, dave.taht@gmail.com,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        xiyou.wangcong@gmail.com, davem@davemloft.net
+References: <20190327165632.10711-1-mkl@pengutronix.de>
+ <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
+ <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
+ <20191022094254.489fd6a4@hermes.lan>
+ <b810b1b7-de82-a6ac-f063-5ee8a6460962@gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <894a5426-b649-fd51-9aad-e66543374b9e@hartkopp.net>
+Date:   Tue, 22 Oct 2019 20:21:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <55f6367324c2d7e9583fa9ccf5385dcbba0d7a6e.1571752452.git.daniel@iogearbox.net>
-In-Reply-To: <55f6367324c2d7e9583fa9ccf5385dcbba0d7a6e.1571752452.git.daniel@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 22 Oct 2019 11:29:18 -0700
-Message-ID: <CAADnVQLgMRfN0iawBbeoA5mFenzDiTecuCnVPtQ7oXbhKkt4qA@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: Fix use after free in subprog's jited symbol removal
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        syzbot+710043c5d1d5b5013bc7@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <b810b1b7-de82-a6ac-f063-5ee8a6460962@gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 6:57 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> syzkaller managed to trigger the following crash:
->
->   [...]
->   BUG: unable to handle page fault for address: ffffc90001923030
->   #PF: supervisor read access in kernel mode
->   #PF: error_code(0x0000) - not-present page
->   PGD aa551067 P4D aa551067 PUD aa552067 PMD a572b067 PTE 80000000a1173163
->   Oops: 0000 [#1] PREEMPT SMP KASAN
->   CPU: 0 PID: 7982 Comm: syz-executor912 Not tainted 5.4.0-rc3+ #0
->   Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->   RIP: 0010:bpf_jit_binary_hdr include/linux/filter.h:787 [inline]
->   RIP: 0010:bpf_get_prog_addr_region kernel/bpf/core.c:531 [inline]
->   RIP: 0010:bpf_tree_comp kernel/bpf/core.c:600 [inline]
->   RIP: 0010:__lt_find include/linux/rbtree_latch.h:115 [inline]
->   RIP: 0010:latch_tree_find include/linux/rbtree_latch.h:208 [inline]
->   RIP: 0010:bpf_prog_kallsyms_find kernel/bpf/core.c:674 [inline]
->   RIP: 0010:is_bpf_text_address+0x184/0x3b0 kernel/bpf/core.c:709
-> After further debugging it turns out that we walk kallsyms while in parallel
-> we tear down a BPF program which contains subprograms that have been JITed
-> though the program itself has not been fully exposed and is eventually bailing
-> out with error.
->
-> The bpf_prog_kallsyms_del_subprogs() in bpf_prog_load()'s error path removes
-> the symbols, however, bpf_prog_free() tears down the JIT memory too early via
-> scheduled work. Instead, it needs to properly respect RCU grace period as the
-> kallsyms walk for BPF is under RCU.
->
-> Fix it by refactoring __bpf_prog_put()'s tear down and reuse it in our error
-> path where we defer final destruction when we have subprogs in the program.
->
-> Fixes: 7d1982b4e335 ("bpf: fix panic in prog load calls cleanup")
-> Fixes: 1c2a088a6626 ("bpf: x64: add JIT support for multi-function programs")
-> Reported-and-tested-by: syzbot+710043c5d1d5b5013bc7@syzkaller.appspotmail.com
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 
-Applied. Thanks!
+On 22/10/2019 19.28, Eric Dumazet wrote
+> On 10/22/19 9:42 AM, Stephen Hemminger wrote:
+> 
+>> Why not fix fq_codel to return the same errors as other qdisc?
+>>
+> 
+> I believe the same problem would happen with any qdisc not doing tail drops.
+> 
+> Do we really want to enforce all qdisc to have a common drop strategy ?
+
+CAN has no drop strategy. There is no transport protocol at this point 
+which can handle and compensate drops. CAN is just about PDUs that are 
+sent on a special medium.
+
+And that's what this patch was about.
+
+> 
+> For example, FQ could implement a strategy dropping the oldest packet in the queue,
+> which is absolutely not related to the enqueue order.
+> 
+
+We have a CAN ID related ematch rule in em_canid.c to be able to 
+configure HTBs, delays or drops. But this is for testing and special 
+use-cases. Silently dropped frames are not expected.
+
+Regards,
+Oliver
+
+
+
