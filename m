@@ -2,103 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DFB0E00F0
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:42:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27048E0103
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731518AbfJVJmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 05:42:23 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:44710 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731459AbfJVJmW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 05:42:22 -0400
-Received: by mail-lj1-f193.google.com with SMTP id c4so1317608lja.11
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 02:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6PngoIqd3Df1CdJuHFWIWAR+3vA7GwvMHjLnoNZAyhA=;
-        b=nm43MeZUUI6GQpkNT6A0YrESS4a/Z0DJ3o9zbifdiIHtP+9Q2tT5ZcCHuHFQxVKZWs
-         3gIcAXIfvHGdVkydGFosRyRjeK+YQ3NgZ4t8Eqq/3w5XjBlr5Ph08jgW7VWWPzcgSPdG
-         qJmUdAL/72WUiByqgPOv+SdbkyZV+NMSEfZZpMfqhotrGSNfPYr71tIf3/x82dfNsHZo
-         KP6IsKcmUpKy2SQyNWrDhtglHdSbCAEZn1DJPQWzn9DLtcDYxcYJhIB7Z6enotA6m5IZ
-         UmPnyUHWTTllkD4Eh9VvC+ZNdYsrFdds6j+/LwFcuoXCmqYlP2ePOZEiQxYrHbxy4dnp
-         RYfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6PngoIqd3Df1CdJuHFWIWAR+3vA7GwvMHjLnoNZAyhA=;
-        b=Fy+9iRjjhit/tW2pS7O+e4plBDbi40E2rka9Fkz31ZpmWsImf+5Sa3U/GWAft/QrtP
-         VBZjSsFA/yX1QTI7M8D1hYag0zptN7A0WnR3bW+C3VPxRy2npG4He6AF+BCr4ka4tdiK
-         x4nq3zc6kZYlxOJvdvzT1RhFeLhLq03baZSC01j9eV8LhMKUP/0tWtwcKPDSCVQWssOX
-         JsPKDxZAURSO+w5caXwXjCOzjaBw0aFE1bpOOOig5O1Ff/T3Etp0/GYDGNItT+bgB9Ug
-         B6b+0jIzManIFoJv0GqOWhU5odoVehIzXkhu/p4ei7MjtvYPVkgh7TWgaPjUnAWJ+76O
-         zwbg==
-X-Gm-Message-State: APjAAAXqT/TUHYmVjmOHAsc4sDy4C2Ne8+iledvndaYaYW/7EXrVxRUF
-        sywEaGZ4/vHkOqUiZbLyMv0ehw==
-X-Google-Smtp-Source: APXvYqxzOPJiicnhU2xU73dS4Ka5ImWerivhccwctOI/IfMg9cJRh20c9txgdneMOboGeKD12wD1dg==
-X-Received: by 2002:a2e:880e:: with SMTP id x14mr17555702ljh.42.1571737340767;
-        Tue, 22 Oct 2019 02:42:20 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:6f4:f4ee:fd19:4aa8:e73f:e22a? ([2a00:1fa0:6f4:f4ee:fd19:4aa8:e73f:e22a])
-        by smtp.gmail.com with ESMTPSA id q124sm9966339ljb.28.2019.10.22.02.42.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 22 Oct 2019 02:42:19 -0700 (PDT)
-Subject: Re: [PATCH] 802.11n IBSS: wlan0 stops receiving packets due to
- aggregation after sender reboot
-To:     =?UTF-8?Q?Krzysztof_Ha=c5=82asa?= <khalasa@piap.pl>,
-        Johannes Berg <johannes@sipsolutions.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <m34l02mh71.fsf@t19.piap.pl> <m3v9shl6jz.fsf@t19.piap.pl>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <628ec530-1f68-e34b-39a5-b3d994d9376c@cogentembedded.com>
-Date:   Tue, 22 Oct 2019 12:42:00 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <m3v9shl6jz.fsf@t19.piap.pl>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1731559AbfJVJrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 05:47:11 -0400
+Received: from mail-eopbgr150043.outbound.protection.outlook.com ([40.107.15.43]:47071
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730312AbfJVJrL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 05:47:11 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=guWFb9VDDwi1Dy/vnZ363fu4RdVOU+96B3vwp4jCaJzWjqwIfRwC7MZgPc1/UVa32m5w9lHmsIhx2VcDg2wXFCh6UcdCLUO+oeD+wZ4MUhjW33TF/wesrVXChFxj/tjacM4UXEGpy4rSwqBsW+3+GuucbzoV/Nr5SdmMBnUXsILT1Rv4TkkJ3o/z82M/X7mpTsphPAMd24cfZr0CVnSvwIg4W5fIaOB1kjrA/BFwnksj4tiTbpc7vbsvkXhhgrlyWGPv4DvG5eMXmcv3Dnq9ugArvvsca9bHJDdi7WUhmVZ+8d19qPsvdlsElqhjA7L5TX6eyHoIpRcAtgv3+BBEgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HfXxo4+MVPLPPMFrqqDq9qIeD9hWj25sTmXzf7vgtVo=;
+ b=lToGFwQqZXqRhunbg5QQXQhOVHr1x3zdZ78gnOt+dlNExRxr84XfdURCb/tQCSPcvTMTUlNHvw8YrPE5NYju0JJUnK3/i6jm6cp+5nvC3O05j+j8vjI8JcieQtK8S9UIBX9ghhHFfUidT0mnA5/sgWBvYKY/bwKE2+Q3yg/f9TyIy3y+uEc5M9KWn3zqf4Q94yEmXck+3gODiSSR6Q6jqEgMf2ZAJj4nISmSx37hJAcfMYUEVfUJsZaZuHkDLiQyALlVy64B0KwRJYRECipkH3gIaERGfmafnuaTK3iRmgbwZHleIeXvOPonodnZSSC0WMH17GB4FGxvQP2AaAhdIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HfXxo4+MVPLPPMFrqqDq9qIeD9hWj25sTmXzf7vgtVo=;
+ b=BYVb6M+CwQRyvo/O7Nc3OrVHjsgL7JGbLlnBEY9NDKb3wuhY6MWfJgtRR4js+G2dCXc0igaUq0SnO0cjcdSaNKPnYECy8NkZpCYuk30SjITbPvXbVHCMVXN23gC9FpBYTS+hPxrJR3/4LCQDh2UGR5K5Tv7bQF4vrbOuwGRzIOI=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB3565.eurprd04.prod.outlook.com (52.134.9.10) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.18; Tue, 22 Oct 2019 09:47:07 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::749b:178a:b8c5:5aaa]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::749b:178a:b8c5:5aaa%11]) with mapi id 15.20.2367.022; Tue, 22 Oct
+ 2019 09:47:07 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "rmk@armlinux.org.uk" <rmk@armlinux.org.uk>
+Subject: RE: [PATCH net-next 2/4] bus: fsl-mc: add the fsl_mc_get_endpoint
+ function
+Thread-Topic: [PATCH net-next 2/4] bus: fsl-mc: add the fsl_mc_get_endpoint
+ function
+Thread-Index: AQHViGH40719o3a9PUiEMMfGYOQweadluXqAgACw0aA=
+Date:   Tue, 22 Oct 2019 09:47:07 +0000
+Message-ID: <VI1PR0402MB280005DA3369B45E551246B0E0680@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
+ <1571698228-30985-3-git-send-email-ioana.ciornei@nxp.com>
+ <20191021231317.GA27462@lunn.ch>
+In-Reply-To: <20191021231317.GA27462@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 24e83a05-1fec-4169-e42f-08d756d4cd5e
+x-ms-traffictypediagnostic: VI1PR0402MB3565:|VI1PR0402MB3565:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB35659A1EDA21355E2A30B2E5E0680@VI1PR0402MB3565.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2399;
+x-forefront-prvs: 01986AE76B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(346002)(366004)(396003)(199004)(189003)(6246003)(476003)(66446008)(66556008)(76116006)(6116002)(55016002)(64756008)(66476007)(81166006)(102836004)(81156014)(6436002)(2906002)(3846002)(86362001)(66946007)(11346002)(26005)(8936002)(229853002)(5660300002)(486006)(44832011)(4326008)(9686003)(8676002)(4744005)(6506007)(446003)(76176011)(478600001)(7696005)(54906003)(316002)(99286004)(25786009)(52536014)(74316002)(256004)(6916009)(186003)(66066001)(71200400001)(33656002)(7736002)(71190400001)(305945005)(14454004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3565;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kXqN2J7vSV0lH/gE2erek1B6xMX9QKyfIlTe1Q4VnNxqw9G0V2dSDB5QXxwRbxIj8j7nUTZmTwjRMpEYIqRgp4ZtfkMNH2m+h+GkafxGFpIE+kLDmP9z31ZKWSc1k1FN2yeOcUD/2xBv/7d6Sv1JGnviP4yT8AGs59q2DbpKtMkLReN/m2yaIfDebAZuv1yJulRagHOyOiCmFwbgVXZdZDJUv3O8wMnB77oPMMcwzM0AMm9hTmOesP2FFOAf5EeXjLrBbIYq7s8OR6e99WbKZGS7BsXmQyuFQYktP/ko43eHy8oLYnw5/TXkhfojDi0waXXRcletUKiAeLQzupQRcpIdPCPi6Lb1gSG0ynxsHY04IVqJ2uiyzwWYbMgDRlWJ7JnrfmpiMtp66uj0yvJI2Uz8nRZyhCIWYfpsPRQm2vw=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24e83a05-1fec-4169-e42f-08d756d4cd5e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 09:47:07.3098
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: l8Y0yKrWUGyP8snm9ZPxGQ489riHtp3ilCVudFUcGCiJ+/pE0/Vv2ongtx1UpL26LfHyjDqoX3DeQKdi2sPh3Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3565
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+> Hi Ioana
 
-On 21.10.2019 15:18, Krzysztof Hałasa wrote:
+Hi Andrew,=20
 
-> Fix a bug where the mac80211 RX aggregation code sets a new aggregation
-> "session" at the remote station's request, but the head_seq_num
-> (the sequence number the receiver expects to receive) isn't reset.
-> 
-> Spotted on a pair of AR9580 in IBSS mode.
-> 
-> Signed-off-by: Krzysztof Halasa <khalasa@piap.pl>
-> 
-> diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
-> index 4d1c335e06e5..775a51cc51c9 100644
-> --- a/net/mac80211/agg-rx.c
-> +++ b/net/mac80211/agg-rx.c
-> @@ -354,9 +354,11 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
->   			 */
->   			rcu_read_lock();
->   			tid_rx = rcu_dereference(sta->ampdu_mlme.tid_rx[tid]);
-> -			if (tid_rx && tid_rx->timeout == timeout)
-> +			if (tid_rx && tid_rx->timeout == timeout) {
-> +				tid_rx->ssn = start_seq_num;
-> +				tid_rx->head_seq_num = start_seq_num;
->   				status = WLAN_STATUS_SUCCESS;
-> -			else
-> +			} else
+>=20
+> > +/**
+> > + * dprc_get_connection() - Get connected endpoint and link status if
+> connection
+> > + *			exists.
+> > + * @mc_io:	Pointer to MC portal's I/O object
+> > + * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+> > + * @token:	Token of DPRC object
+> > + * @endpoint1:	Endpoint 1 configuration parameters
+> > + * @endpoint2:	Returned endpoint 2 configuration parameters
+> > + * @state:	Returned link state:
+> > + *		1 - link is up;
+> > + *		0 - link is down;
+> > + *		-1 - no connection (endpoint2 information is irrelevant)
+> > + *
+> > + * Return:     '0' on Success; -ENAVAIL if connection does not exist.
+>=20
+> #define	ENAVAIL		119	/* No XENIX semaphores
+> available */
+>=20
+> This is not a semaphore.
+>=20
+> How about
+>=20
+> #define	ENOTCONN	107	/* Transport endpoint is not
+> connected */
+>=20
+> 	Andrew
 
-    If you add {} on one branch of *if*, you also need to add {} to all other 
-branches, says CodingStyle...
+ENOTCONN is a better fit here. Will change.=20
 
-[...]
-
-MBR, Sergei
+Thanks,
+Ioana
