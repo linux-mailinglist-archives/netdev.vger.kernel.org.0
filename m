@@ -2,129 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75BF9DFDCC
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 08:47:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94AD3DFDCD
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 08:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387723AbfJVGrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 02:47:20 -0400
-Received: from mail-eopbgr60047.outbound.protection.outlook.com ([40.107.6.47]:21234
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387714AbfJVGrU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 02:47:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h0gCiATycy07vNlLWGl/W5Gu/GXa/XxOG8oQ/liKFbs6J0mN0jv/maEXAyEL7jvlsTpHkOwg/7D8UDsLtDFRGblMvV7YzcUrz4bAhYz2dMtifO/Oqh2eF9WeXvlzYrQ6QLO7swrUL0rCjWMYu1zg8mUKqhMwjILLR2vgAgeKXBZehgNapZ8BynagBc1iFq5IIQ6LRfOcu8s+tDwleYv5VYfYCbzrGMHSf5zMeT5vsv/iYim95XT+poocXpT0ONb5r8JrNbji7RDRUSpoXXCZw77A9c/4hqrMvkE1f1ekgFzSUjKN810qAFXjEH7T/udccyV9/gEuQUO4OCPbi0AzjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R1cru8S3cxJA3UfLrDcwyTcMZ7p6v8PRvy6Ozkc0xf4=;
- b=Py4Hlo7I0TqkRW2YfVvHnwlwBlTgnpZTWBhfs/yNFCu4kyKa3dwO4hsHw1D53jMrFfBYpnQaQqY3XXrwa4ppcXknMxHcIQTC5Mkgo3ea6xuFAOgWP2KQytEMmY4eKcpHN7uNdnrNK9Rkf7hwJuVBAXrZc+0eXwrbKi2esPNbfyUedg89mC0btAEfWmBG7bviWavlOlOjWqVGcjsUL4zxmIKeihqk8aw9pYhN/4BhzZbv1wtjpqaBfFrm1PjDoUqNOdeXfYxkYsp7GBL9PD1t5xSANE6ZvKOB7adBINdeNEXY1SkoOskLQE6NZBukk8x1BcONdalpaAsWzfkVohwU4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R1cru8S3cxJA3UfLrDcwyTcMZ7p6v8PRvy6Ozkc0xf4=;
- b=a/qeazfKpdYzVSEviUUY/I8p89EGAi+TqN0Fb6rKm/uUw7c61UVVehge8ppCXMAj7m1hAy29sV+sjnQJIDKdng5il1nM0x/gwkfLVoLqmIXTNo8pDklp4dSaQ6uSebBE0Xrjzqngp9tXgx9236swfJQ2F6bInEyqD+52ZKwgyKk=
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.21) by
- VI1PR04MB5696.eurprd04.prod.outlook.com (20.178.127.205) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.24; Tue, 22 Oct 2019 06:47:14 +0000
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::75ab:67b7:f87b:dfd4]) by VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::75ab:67b7:f87b:dfd4%6]) with mapi id 15.20.2347.029; Tue, 22 Oct 2019
- 06:47:14 +0000
-From:   Madalin-cristian Bucur <madalin.bucur@nxp.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roy Pledge <roy.pledge@nxp.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: RE: [PATCH net-next 5/6] dpaa_eth: change DMA device
-Thread-Topic: [PATCH net-next 5/6] dpaa_eth: change DMA device
-Thread-Index: AQHViAr73nMz58c3IkSLdCljb94YjqdmEKIAgAAh3rA=
-Date:   Tue, 22 Oct 2019 06:47:14 +0000
-Message-ID: <VI1PR04MB55676CC59282130611BA3675EC680@VI1PR04MB5567.eurprd04.prod.outlook.com>
-References: <1571660862-18313-1-git-send-email-madalin.bucur@nxp.com>
-        <1571660862-18313-6-git-send-email-madalin.bucur@nxp.com>
- <20191021212248.0f2d5f57@cakuba.netronome.com>
-In-Reply-To: <20191021212248.0f2d5f57@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f959f54d-3c42-4d52-4373-08d756bbac1f
-x-ms-traffictypediagnostic: VI1PR04MB5696:|VI1PR04MB5696:
-x-ms-exchange-purlcount: 3
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB5696B39538A57C57E8DCEB18EC680@VI1PR04MB5696.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 01986AE76B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(366004)(39860400002)(346002)(376002)(199004)(13464003)(189003)(53546011)(6916009)(7696005)(6506007)(102836004)(76176011)(25786009)(54906003)(76116006)(316002)(26005)(186003)(229853002)(486006)(33656002)(476003)(4326008)(11346002)(66946007)(446003)(64756008)(66556008)(66476007)(66446008)(74316002)(6116002)(3846002)(86362001)(7736002)(305945005)(6246003)(99286004)(55016002)(6436002)(8936002)(2906002)(81156014)(6306002)(9686003)(8676002)(966005)(5660300002)(52536014)(66066001)(71190400001)(71200400001)(478600001)(14454004)(256004)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5696;H:VI1PR04MB5567.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iOX+TwNxQoQMPGAm757ToPvTuu4aplKl42kaarp5eb18L1fq5b1PTAbVBpFS8CWzpob3jA89eeaKmamms0oK8dIZEukW8qmjSbLOXikS9CPJoOuw6IZDgqQWPXzhUmhT2SMB0LycHzy0J947/tru1ODf78w0MoW9PFo2NrL3dBRLl9ywEcIpv6S9kms12f/1B7uVN4sZLkchM+XVsooPaR2ew+GBuLvnULz0dS8ESVqd6GW57p3+rLDlFMJ/BOiCOF1HDS0mb6cQshiMDXKhDSqar2KoE19Z23o6fBig+Np7oUd1Xn9OKyueNb+IudsfmTHHKC0H3criWC5vnBOqfri81wTHAfE2Nz6iwBCcxSvMDTCk1souy9RgIuLOR0NE9f+izlKiPszTzuuniUkxO3OsWIjMy7LTHe9tH3fIYQdPY2ZuWWqwFEiilv2HNcOeLH5XuiE2vU4PMSYfMQj7MG2ST9q3FDpDlw+au5LqPjs=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2387740AbfJVGst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 02:48:49 -0400
+Received: from mga14.intel.com ([192.55.52.115]:21797 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728346AbfJVGst (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 02:48:49 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Oct 2019 23:48:49 -0700
+X-IronPort-AV: E=Sophos;i="5.67,326,1566889200"; 
+   d="scan'208";a="191365233"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.238.129.48]) ([10.238.129.48])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 21 Oct 2019 23:48:45 -0700
+Subject: Re: [RFC 1/2] vhost: IFC VF hardware operation layer
+To:     Jason Wang <jasowang@redhat.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        zhiyuan.lv@intel.com
+References: <20191016011041.3441-1-lingshan.zhu@intel.com>
+ <20191016011041.3441-2-lingshan.zhu@intel.com>
+ <20191016095347.5sb43knc7eq44ivo@netronome.com>
+ <075be045-3a02-e7d8-672f-4a207c410ee8@intel.com>
+ <20191021163139.GC4486@netronome.com>
+ <15d94e61-9b3d-7854-b65e-6fea6db75450@redhat.com>
+From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
+Message-ID: <1f468365-4fe4-b13f-0841-cc5a60a8fe41@linux.intel.com>
+Date:   Tue, 22 Oct 2019 14:48:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f959f54d-3c42-4d52-4373-08d756bbac1f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 06:47:14.1138
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lc0jjABTqHOrApWuIMptydCveBL7nL5GEigMzIJyjKRFjYx0gIw+3MJnlgVEUPOGTNWFfXpr+UvBaMFdEF0CGQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5696
+In-Reply-To: <15d94e61-9b3d-7854-b65e-6fea6db75450@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Sent: Tuesday, October 22, 2019 7:23 AM
-> To: Madalin-cristian Bucur <madalin.bucur@nxp.com>
-> Cc: davem@davemloft.net; netdev@vger.kernel.org; Roy Pledge
-> <roy.pledge@nxp.com>; Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> Subject: Re: [PATCH net-next 5/6] dpaa_eth: change DMA device
->=20
-> On Mon, 21 Oct 2019 12:28:02 +0000, Madalin-cristian Bucur wrote:
-> > The DPAA Ethernet driver is using the FMan MAC as the device for DMA
-> > mapping. This is not actually correct, as the real DMA device is the
-> > FMan port (the FMan Rx port for reception and the FMan Tx port for
-> > transmission). Changing the device used for DMA mapping to the Fman
-> > Rx and Tx port devices.
-> >
-> > Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
-> > Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
->=20
-> Curious, we also have a patch for fixing this for IXP400.
-> Is there something in recent kernels that uncovers this bug?
 
-Hi Jakub, it's related to the IOMMU on ARM64, this change is just one
-of the many required to get IOMMU working on DPAA 1 platforms. The
-device used for DMA mapping was the MAC but in the DPAA it's another
-HW block that is actually doing the DMA transfers, the port (be it Rx
-or Tx). This fix just makes the code correct, to actually enable IOMMU
-there are some more changes and some are under discussion on other
-threads [1]. I'm pushing these changes so I can make other modifications
-to the DPAA driver while the IOMMU related open items are solved.
-
-Regards,
-Madalin
-
-1. Laurentiu's IOMMU related changes:
-https://lkml.org/lkml/2019/4/22/357
-https://lore.kernel.org/patchwork/cover/997994/
-https://lore.kernel.org/patchwork/project/lkml/list/?series=3D396215
-
-
-
+On 10/22/2019 9:32 AM, Jason Wang wrote:
+>
+> On 2019/10/22 上午12:31, Simon Horman wrote:
+>> On Mon, Oct 21, 2019 at 05:55:33PM +0800, Zhu, Lingshan wrote:
+>>> On 10/16/2019 5:53 PM, Simon Horman wrote:
+>>>> Hi Zhu,
+>>>>
+>>>> thanks for your patch.
+>>>>
+>>>> On Wed, Oct 16, 2019 at 09:10:40AM +0800, Zhu Lingshan wrote:
+>> ...
+>>
+>>>>> +static void ifcvf_read_dev_config(struct ifcvf_hw *hw, u64 offset,
+>>>>> +               void *dst, int length)
+>>>>> +{
+>>>>> +    int i;
+>>>>> +    u8 *p;
+>>>>> +    u8 old_gen, new_gen;
+>>>>> +
+>>>>> +    do {
+>>>>> +        old_gen = ioread8(&hw->common_cfg->config_generation);
+>>>>> +
+>>>>> +        p = dst;
+>>>>> +        for (i = 0; i < length; i++)
+>>>>> +            *p++ = ioread8((u8 *)hw->dev_cfg + offset + i);
+>>>>> +
+>>>>> +        new_gen = ioread8(&hw->common_cfg->config_generation);
+>>>>> +    } while (old_gen != new_gen);
+>>>> Would it be wise to limit the number of iterations of the loop above?
+>>> Thanks but I don't quite get it. This is used to make sure the function
+>>> would get the latest config.
+>> I am worried about the possibility that it will loop forever.
+>> Could that happen?
+>>
+>> ...
+>
+>
+> My understanding is that the function here is similar to virtio config 
+> generation [1]. So this can only happen for a buggy hardware.
+>
+> Thanks
+>
+> [1] 
+> https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html 
+> Section 2.4.1
+Yes!
+>
+>
+>>
+>>>>> +static void io_write64_twopart(u64 val, u32 *lo, u32 *hi)
+>>>>> +{
+>>>>> +    iowrite32(val & ((1ULL << 32) - 1), lo);
+>>>>> +    iowrite32(val >> 32, hi);
+>>>>> +}
+>>>> I see this macro is also in virtio_pci_modern.c
+>>>>
+>>>> Assuming lo and hi aren't guaranteed to be sequential
+>>>> and thus iowrite64_hi_lo() cannot be used perhaps
+>>>> it would be good to add a common helper somewhere.
+>>> Thanks, I will try after this IFC patchwork, I will cc you.
+>> Thanks.
+>>
+>> ...
+>
