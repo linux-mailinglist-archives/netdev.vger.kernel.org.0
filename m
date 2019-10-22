@@ -2,374 +2,617 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8AFE011A
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:49:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3BB6E0143
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731469AbfJVJt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 05:49:56 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40942 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728182AbfJVJtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 05:49:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=w/mYC2UN1A+kizzohIvsq6DqZ3a/YmmiJru/bkKkB1o=; b=OKsb1k7ZtWC3HtQo+X9AzExti
-        l60p2dX+zHwLWutHLbYLpExEfbg81mDgxCPBSlYROu52igEM6BwRHKYV3gngkJ9XBCzUmDn366IvW
-        o9g9eO2jBn5Bncob4zgIgGHKfGDMUYxJ83S7xB+KXiF71VAw+srfoJF2C0T8O9qgH2QDSZ+pbYbaj
-        jaO5Dngwi24exM2DDU/w2ynUosE1mRF8tr5Jg3bWuAbW4xTR/eQ0668sVwm+g6/ifs/rdfCTX5lzh
-        SA8ze068zhGOTBPvwAMEESiUtfQACL+lfLTYaTLyhiY6oXKk/QcCoTQ58UDpIUm4GVVu3zjpL9acw
-        VUzWqT56g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57564)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iMqnW-0006N0-4v; Tue, 22 Oct 2019 10:49:50 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iMqnS-0004Se-Ax; Tue, 22 Oct 2019 10:49:46 +0100
-Date:   Tue, 22 Oct 2019 10:49:46 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next 4/4] net: documentation: add docs for MAC/PHY
- support in DPAA2
-Message-ID: <20191022094946.GR25745@shell.armlinux.org.uk>
-References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
- <1571698228-30985-5-git-send-email-ioana.ciornei@nxp.com>
- <20191022081404.GN25745@shell.armlinux.org.uk>
- <VI1PR0402MB2800BC4220CD181E13B033A6E0680@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+        id S1731651AbfJVJ4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 05:56:24 -0400
+Received: from mga14.intel.com ([192.55.52.115]:34734 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728182AbfJVJ4Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 05:56:24 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Oct 2019 02:56:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,326,1566889200"; 
+   d="scan'208";a="398965385"
+Received: from dpdk-virtio-tbie-2.sh.intel.com ([10.67.104.74])
+  by fmsmga006.fm.intel.com with ESMTP; 22 Oct 2019 02:56:21 -0700
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dan.daly@intel.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, lingshan.zhu@intel.com, tiwei.bie@intel.com
+Subject: [PATCH v2] vhost: introduce mdev based hardware backend
+Date:   Tue, 22 Oct 2019 17:52:29 +0800
+Message-Id: <20191022095230.2514-1-tiwei.bie@intel.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB2800BC4220CD181E13B033A6E0680@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 09:41:45AM +0000, Ioana Ciornei wrote:
-> > Subject: Re: [PATCH net-next 4/4] net: documentation: add docs for MAC/PHY
-> > support in DPAA2
-> > 
-> > This mentions phylink, but I never got the other patches of the series which
-> > presumably implement this idea.
-> 
-> Hi Russell,
-> 
-> I copied you to the entire series. Anyhow, here is a link to the entire patch set - https://www.spinics.net/lists/netdev/msg606466.html.
+This patch introduces a mdev based hardware vhost backend.
+This backend is built on top of the same abstraction used
+in virtio-mdev and provides a generic vhost interface for
+userspace to accelerate the virtio devices in guest.
 
-Please avoid using rmk@armlinux.org.uk for patches.  dspam doesn't
-know about Linux stuff there, and so files emails that contain
-patches into spam.  Please use linux@armlinux.org.uk for all kernel
-related work, as per my addresses in the MAINTAINERS file.
+This backend is implemented as a mdev device driver on top
+of the same mdev device ops used in virtio-mdev but using
+a different mdev class id, and it will register the device
+as a VFIO device for userspace to use. Userspace can setup
+the IOMMU with the existing VFIO container/group APIs and
+then get the device fd with the device name. After getting
+the device fd of this device, userspace can use vhost ioctls
+to setup the backend.
 
-I now need to manually transfer all those emails...
+Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+---
+This patch depends on below series:
+https://lkml.org/lkml/2019/10/17/286
 
-> > Please also note that I gave up waiting for another set, and as I now have
-> > LX2160A hardware, I ended up writing my own version, which can be found in
-> > my cex7 branch at:
-> 
-> I looked through the branch and it seems that the approach you are going for is similar (if not exactly the same) as the one from my previous patch set that was shut down.
-> Also, sorry for the delay on sending another set but it takes a bit of time to consider all the implications of changing the entire architecture of the solution to better fit the upstream model.
-> 
-> Ioana
-> 
-> > 
-> >  git://git.armlinux.org.uk/~rmk/linux-arm.git cex7
-> > 
-> > 
-> > http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=cex7
-> > 
-> > On Tue, Oct 22, 2019 at 01:50:28AM +0300, Ioana Ciornei wrote:
-> > > Add documentation file for the MAC/PHY support in the DPAA2
-> > > architecture. This describes the architecture and implementation of
-> > > the interface between phylink and a DPAA2 network driver.
-> > >
-> > > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > > ---
-> > >  .../device_drivers/freescale/dpaa2/index.rst       |   1 +
-> > >  .../freescale/dpaa2/mac-phy-support.rst            | 191
-> > +++++++++++++++++++++
-> > >  MAINTAINERS                                        |   2 +
-> > >  3 files changed, 194 insertions(+)
-> > >  create mode 100644
-> > > Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-suppor
-> > > t.rst
-> > >
-> > > diff --git
-> > > a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-> > > b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-> > > index 67bd87fe6c53..ee40fcc5ddff 100644
-> > > ---
-> > > a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-> > > +++ b/Documentation/networking/device_drivers/freescale/dpaa2/index.rs
-> > > +++ t
-> > > @@ -8,3 +8,4 @@ DPAA2 Documentation
-> > >     overview
-> > >     dpio-driver
-> > >     ethernet-driver
-> > > +   mac-phy-support
-> > > diff --git
-> > > a/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-supp
-> > > ort.rst
-> > > b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-supp
-> > > ort.rst
-> > > new file mode 100644
-> > > index 000000000000..51e6624fb774
-> > > --- /dev/null
-> > > +++ b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-
-> > > +++ support.rst
-> > > @@ -0,0 +1,191 @@
-> > > +.. SPDX-License-Identifier: GPL-2.0
-> > > +.. include:: <isonum.txt>
-> > > +
-> > > +=======================
-> > > +DPAA2 MAC / PHY support
-> > > +=======================
-> > > +
-> > > +:Copyright: |copy| 2019 NXP
-> > > +
-> > > +Overview
-> > > +--------
-> > > +
-> > > +The DPAA2 MAC / PHY support consists of a set of APIs that help DPAA2
-> > > +network drivers (dpaa2-eth, dpaa2-ethsw) interract with the PHY library.
-> > > +
-> > > +DPAA2 Software Architecture
-> > > +---------------------------
-> > > +
-> > > +Among other DPAA2 objects, the fsl-mc bus exports DPNI objects
-> > > +(abstracting a network interface) and DPMAC objects (abstracting a
-> > > +MAC). The dpaa2-eth driver probes on the DPNI object and connects to
-> > > +and configures a DPMAC object with the help of phylink.
-> > > +
-> > > +Data connections may be established between a DPNI and a DPMAC, or
-> > > +between two DPNIs. Depending on the connection type, the
-> > > +netif_carrier_[on/off] is handled directly by the dpaa2-eth driver or by
-> > phylink.
-> > > +
-> > > +.. code-block:: none
-> > > +
-> > > +  Sources of abstracted link state information presented by the MC
-> > > + firmware
-> > > +
-> > > +                                               +--------------------------------------+
-> > > +  +------------+                  +---------+  |                           xgmac_mdio |
-> > > +  | net_device |                  | phylink |--|  +-----+  +-----+  +-----+  +-----+  |
-> > > +  +------------+                  +---------+  |  | PHY |  | PHY |  | PHY |  | PHY |  |
-> > > +        |                             |        |  +-----+  +-----+  +-----+  +-----+  |
-> > > +      +------------------------------------+   |                    External MDIO bus |
-> > > +      |            dpaa2-eth               |   +--------------------------------------+
-> > > +      +------------------------------------+
-> > > +        |                             |                                           Linux
-> > > +
-> > ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > ~~~~~~~~~~~~~~~~~~~~
-> > > +        |                             |                                     MC firmware
-> > > +        |              /|             V
-> > > +  +----------+        / |       +----------+
-> > > +  |          |       /  |       |          |
-> > > +  |          |       |  |       |          |
-> > > +  |   DPNI   |<------|  |<------|   DPMAC  |
-> > > +  |          |       |  |       |          |
-> > > +  |          |       \  |<---+  |          |
-> > > +  +----------+        \ |    |  +----------+
-> > > +                       \|    |
-> > > +                             |
-> > > +           +--------------------------------------+
-> > > +           | MC firmware polling MAC PCS for link |
-> > > +           |  +-----+  +-----+  +-----+  +-----+  |
-> > > +           |  | PCS |  | PCS |  | PCS |  | PCS |  |
-> > > +           |  +-----+  +-----+  +-----+  +-----+  |
-> > > +           |                    Internal MDIO bus |
-> > > +           +--------------------------------------+
-> > > +
-> > > +
-> > > +Depending on an MC firmware configuration setting, each MAC may be in
-> > one of two modes:
-> > > +
-> > > +- DPMAC_LINK_TYPE_FIXED: the link state management is handled
-> > > +exclusively by
-> > > +  the MC firmware by polling the MAC PCS. Without the need to
-> > > +register a
-> > > +  phylink instance, the dpaa2-eth driver will not bind to the
-> > > +connected dpmac
-> > > +  object at all.
-> > > +
-> > > +- DPMAC_LINK_TYPE_PHY: The MC firmware is left waiting for link state
-> > > +update
-> > > +  events, but those are in fact passed strictly between the dpaa2-mac
-> > > +(based on
-> > > +  phylink) and its attached net_device driver (dpaa2-eth,
-> > > +dpaa2-ethsw),
-> > > +  effectively bypassing the firmware.
-> > > +
-> > > +Implementation
-> > > +--------------
-> > > +
-> > > +At probe time or when a DPNI's endpoint is dynamically changed, the
-> > > +dpaa2-eth is responsible to find out if the peer object is a DPMAC
-> > > +and if this is the case, to integrate it with PHYLINK using the
-> > > +dpaa2_mac_connect() API, which will do the following:
-> > > +
-> > > + - look up the device tree for PHYLINK-compatible of binding
-> > > + (phy-handle)
-> > > + - will create a PHYLINK instance associated with the received
-> > > + net_device
-> > > + - connect to the PHY using phylink_of_phy_connect()
-> > > +
-> > > +The following phylink_mac_ops callback are implemented:
-> > > +
-> > > + - .validate() will populate the supported linkmodes with the MAC capabilities
-> > > +   only when the phy_interface_t is RGMII_* (at the moment, this is the only
-> > > +   link type supported by the driver).
-> > > +
-> > > + - .mac_config() will configure the MAC in the new configuration using the
-> > > +   dpmac_set_link_state() MC firmware API.
-> > > +
-> > > + - .mac_link_up() / .mac_link_down() will update the MAC link using the same
-> > > +   API described above.
-> > > +
-> > > +At driver unbind() or when the DPNI object is disconnected from the
-> > > +DPMAC, the dpaa2-eth driver calls dpaa2_mac_disconnect() which will,
-> > > +in turn, disconnect from the PHY and destroy the PHYLINK instance.
-> > > +
-> > > +In case of a DPNI-DPMAC connection, an 'ip link set dev eth0 up'
-> > > +would start the following sequence of operations:
-> > > +
-> > > +(1) phylink_start() called from .dev_open().
-> > > +(2) The .mac_config() and .mac_link_up() callbacks are called by PHYLINK.
-> > > +(3) In order to configure the HW MAC, the MC Firmware API
-> > > +    dpmac_set_link_state() is called.
-> > > +(4) The firmware will eventually setup the HW MAC in the new configuration.
-> > > +(5) A netif_carrier_on() call is made directly from PHYLINK on the associated
-> > > +    net_device.
-> > > +(6) The dpaa2-eth driver handles the LINK_STATE_CHANGE irq in order to
-> > > +    enable/disable Rx taildrop based on the pause frame settings.
-> > > +
-> > > +.. code-block:: none
-> > > +
-> > > +  +---------+               +---------+
-> > > +  | PHYLINK |-------------->|  eth0   |
-> > > +  +---------+           (5) +---------+
-> > > +  (1) ^  |
-> > > +      |  |
-> > > +      |  v (2)
-> > > +  +-----------------------------------+
-> > > +  |             dpaa2-eth             |
-> > > +  +-----------------------------------+
-> > > +         |                    ^ (6)
-> > > +         |                    |
-> > > +         v (3)                |
-> > > +  +---------+---------------+---------+
-> > > +  |  DPMAC  |               |  DPNI   |
-> > > +  +---------+               +---------+
-> > > +  |            MC Firmware            |
-> > > +  +-----------------------------------+
-> > > +         |
-> > > +         |
-> > > +         v (4)
-> > > +  +-----------------------------------+
-> > > +  |             HW MAC                |
-> > > +  +-----------------------------------+
-> > > +
-> > > +In case of a DPNI-DPNI connection, a usual sequence of operations
-> > > +looks like the following:
-> > > +
-> > > +(1) ip link set dev eth0 up
-> > > +(2) The dpni_enable() MC API called on the associated fsl_mc_device.
-> > > +(3) ip link set dev eth1 up
-> > > +(4) The dpni_enable() MC API called on the associated fsl_mc_device.
-> > > +(5) The LINK_STATE_CHANGED irq is received by both instances of the dpaa2-
-> > eth
-> > > +    driver because now the operational link state is up.
-> > > +(6) The netif_carrier_on() is called on the exported net_device from
-> > > +    link_state_update().
-> > > +
-> > > +.. code-block:: none
-> > > +
-> > > +  +---------+               +---------+
-> > > +  |  eth0   |               |  eth1   |
-> > > +  +---------+               +---------+
-> > > +      |  ^                     ^  |
-> > > +      |  |                     |  |
-> > > +  (1) v  | (6)             (6) |  v (3)
-> > > +  +---------+               +---------+
-> > > +  |dpaa2-eth|               |dpaa2-eth|
-> > > +  +---------+               +---------+
-> > > +      |  ^                     ^  |
-> > > +      |  |                     |  |
-> > > +  (2) v  | (5)             (5) |  v (4)
-> > > +  +---------+---------------+---------+
-> > > +  |  DPNI   |               |  DPNI   |
-> > > +  +---------+               +---------+
-> > > +  |            MC Firmware            |
-> > > +  +-----------------------------------+
-> > > +
-> > > +
-> > > +Exported API
-> > > +------------
-> > > +
-> > > +Any DPAA2 driver that drivers endpoints of DPMAC objects should
-> > > +service its _EVENT_ENDPOINT_CHANGED irq and connect/disconnect from
-> > > +the associated DPMAC when necessary using the below listed API::
-> > > +
-> > > + - int dpaa2_mac_connect(struct dpaa2_mac *mac);
-> > > + - void dpaa2_mac_disconnect(struct dpaa2_mac *mac);
-> > > +
-> > > +A phylink integration is necessary only when the partner DPMAC is not of
-> > TYPE_FIXED.
-> > > +One can check for this condition using the below API::
-> > > +
-> > > + - bool dpaa2_mac_is_type_fixed(struct fsl_mc_device
-> > > + *dpmac_dev,struct fsl_mc_io *mc_io);
-> > > +
-> > > +Before connection to a MAC, the caller must allocate and populate the
-> > > +dpaa2_mac structure with the associated net_device, a pointer to the
-> > > +MC portal to be used and the actual fsl_mc_device structure of the DPMAC.
-> > > diff --git a/MAINTAINERS b/MAINTAINERS index
-> > > d0e562d3ce5b..fdc3c89a4a6d 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -5052,6 +5052,8 @@ F:	drivers/net/ethernet/freescale/dpaa2/dpmac*
-> > >  F:	drivers/net/ethernet/freescale/dpaa2/dpkg.h
-> > >  F:	drivers/net/ethernet/freescale/dpaa2/Makefile
-> > >  F:	drivers/net/ethernet/freescale/dpaa2/Kconfig
-> > > +F:	Documentation/networking/device_drivers/freescale/dpaa2/ethernet-
-> > driver.rst
-> > > +F:	Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-
-> > support.rst
-> > >
-> > >  DPAA2 ETHERNET SWITCH DRIVER
-> > >  M:	Ioana Radulescu <ruxandra.radulescu@nxp.com>
-> > > --
-> > > 1.9.1
-> > >
-> > >
-> > >
-> > >
-> > 
-> > --
-> > RMK's Patch system:
-> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.ar
-> > mlinux.org.uk%2Fdeveloper%2Fpatches%2F&amp;data=02%7C01%7Cioana.cior
-> > nei%40nxp.com%7C3d68212cba5c486cd92208d756c7d35d%7C686ea1d3bc2b4c
-> > 6fa92cd99c5c301635%7C0%7C0%7C637073288560452478&amp;sdata=JOi4zc4
-> > WROKWPD085JMZw4mo8a6pyVZa4JXo6wiaD%2BI%3D&amp;reserved=0
-> > FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> > According to speedtest.net: 11.9Mbps down 500kbps up
-> 
+v1 -> v2:
+- Replace _SET_STATE with _SET_STATUS (MST);
+- Check status bits at each step (MST);
+- Report the max ring size and max number of queues (MST);
+- Add missing MODULE_DEVICE_TABLE (Jason);
+- Only support the network backend w/o multiqueue for now;
+- Some minor fixes and improvements;
+- Rebase on top of virtio-mdev series v4;
 
+RFC v4 -> v1:
+- Implement vhost-mdev as a mdev device driver directly and
+  connect it to VFIO container/group. (Jason);
+- Pass ring addresses as GPAs/IOVAs in vhost-mdev to avoid
+  meaningless HVA->GPA translations (Jason);
+
+RFC v3 -> RFC v4:
+- Build vhost-mdev on top of the same abstraction used by
+  virtio-mdev (Jason);
+- Introduce vhost fd and pass VFIO fd via SET_BACKEND ioctl (MST);
+
+RFC v2 -> RFC v3:
+- Reuse vhost's ioctls instead of inventing a VFIO regions/irqs
+  based vhost protocol on top of vfio-mdev (Jason);
+
+RFC v1 -> RFC v2:
+- Introduce a new VFIO device type to build a vhost protocol
+  on top of vfio-mdev;
+
+ drivers/vfio/mdev/mdev_core.c |  12 +
+ drivers/vhost/Kconfig         |   9 +
+ drivers/vhost/Makefile        |   3 +
+ drivers/vhost/mdev.c          | 415 ++++++++++++++++++++++++++++++++++
+ include/linux/mdev.h          |   3 +
+ include/uapi/linux/vhost.h    |  13 ++
+ 6 files changed, 455 insertions(+)
+ create mode 100644 drivers/vhost/mdev.c
+
+diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+index 5834f6b7c7a5..2963f65e6648 100644
+--- a/drivers/vfio/mdev/mdev_core.c
++++ b/drivers/vfio/mdev/mdev_core.c
+@@ -69,6 +69,18 @@ void mdev_set_virtio_ops(struct mdev_device *mdev,
+ }
+ EXPORT_SYMBOL(mdev_set_virtio_ops);
+ 
++/* Specify the vhost device ops for the mdev device, this
++ * must be called during create() callback for vhost mdev device.
++ */
++void mdev_set_vhost_ops(struct mdev_device *mdev,
++			const struct virtio_mdev_device_ops *vhost_ops)
++{
++	WARN_ON(mdev->class_id);
++	mdev->class_id = MDEV_CLASS_ID_VHOST;
++	mdev->device_ops = vhost_ops;
++}
++EXPORT_SYMBOL(mdev_set_vhost_ops);
++
+ const void *mdev_get_dev_ops(struct mdev_device *mdev)
+ {
+ 	return mdev->device_ops;
+diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+index 3d03ccbd1adc..7b5c2f655af7 100644
+--- a/drivers/vhost/Kconfig
++++ b/drivers/vhost/Kconfig
+@@ -34,6 +34,15 @@ config VHOST_VSOCK
+ 	To compile this driver as a module, choose M here: the module will be called
+ 	vhost_vsock.
+ 
++config VHOST_MDEV
++	tristate "Vhost driver for Mediated devices"
++	depends on EVENTFD && VFIO && VFIO_MDEV
++	select VHOST
++	default n
++	---help---
++	Say M here to enable the vhost_mdev module for use with
++	the mediated device based hardware vhost accelerators.
++
+ config VHOST
+ 	tristate
+ 	---help---
+diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
+index 6c6df24f770c..ad9c0f8c6d8c 100644
+--- a/drivers/vhost/Makefile
++++ b/drivers/vhost/Makefile
+@@ -10,4 +10,7 @@ vhost_vsock-y := vsock.o
+ 
+ obj-$(CONFIG_VHOST_RING) += vringh.o
+ 
++obj-$(CONFIG_VHOST_MDEV) += vhost_mdev.o
++vhost_mdev-y := mdev.o
++
+ obj-$(CONFIG_VHOST)	+= vhost.o
+diff --git a/drivers/vhost/mdev.c b/drivers/vhost/mdev.c
+new file mode 100644
+index 000000000000..5f9cae61018c
+--- /dev/null
++++ b/drivers/vhost/mdev.c
+@@ -0,0 +1,415 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2018-2019 Intel Corporation.
++ */
++
++#include <linux/compat.h>
++#include <linux/kernel.h>
++#include <linux/miscdevice.h>
++#include <linux/mdev.h>
++#include <linux/module.h>
++#include <linux/vfio.h>
++#include <linux/vhost.h>
++#include <linux/virtio_mdev.h>
++#include <linux/virtio_ids.h>
++
++#include "vhost.h"
++
++/* Currently, only network backend w/o multiqueue is supported. */
++#define VHOST_MDEV_VQ_MAX	2
++
++struct vhost_mdev {
++	/* The lock is to protect this structure. */
++	struct mutex mutex;
++	struct vhost_dev dev;
++	struct vhost_virtqueue *vqs;
++	int nvqs;
++	u64 status;
++	u64 features;
++	u64 acked_features;
++	bool opened;
++	struct mdev_device *mdev;
++};
++
++static void handle_vq_kick(struct vhost_work *work)
++{
++	struct vhost_virtqueue *vq = container_of(work, struct vhost_virtqueue,
++						  poll.work);
++	struct vhost_mdev *m = container_of(vq->dev, struct vhost_mdev, dev);
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
++
++	ops->kick_vq(m->mdev, vq - m->vqs);
++}
++
++static irqreturn_t vhost_mdev_virtqueue_cb(void *private)
++{
++	struct vhost_virtqueue *vq = private;
++	struct eventfd_ctx *call_ctx = vq->call_ctx;
++
++	if (call_ctx)
++		eventfd_signal(call_ctx, 1);
++	return IRQ_HANDLED;
++}
++
++static void vhost_mdev_reset(struct vhost_mdev *m)
++{
++	struct mdev_device *mdev = m->mdev;
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
++
++	m->status = 0;
++	return ops->set_status(mdev, m->status);
++}
++
++static long vhost_mdev_get_status(struct vhost_mdev *m, u8 __user *statusp)
++{
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
++	struct mdev_device *mdev = m->mdev;
++	u8 status;
++
++	status = ops->get_status(mdev);
++	m->status = status;
++
++	if (copy_to_user(statusp, &status, sizeof(status)))
++		return -EFAULT;
++
++	return 0;
++}
++
++static long vhost_mdev_set_status(struct vhost_mdev *m, u8 __user *statusp)
++{
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
++	struct mdev_device *mdev = m->mdev;
++	u8 status;
++
++	if (copy_from_user(&status, statusp, sizeof(status)))
++		return -EFAULT;
++
++	/*
++	 * Userspace shouldn't remove status bits unless reset the
++	 * status to 0.
++	 */
++	if (status != 0 && (m->status & ~status) != 0)
++		return -EINVAL;
++
++	ops->set_status(mdev, status);
++	m->status = ops->get_status(mdev);
++
++	return 0;
++}
++
++static long vhost_mdev_get_features(struct vhost_mdev *m, u64 __user *featurep)
++{
++	if (copy_to_user(featurep, &m->features, sizeof(m->features)))
++		return -EFAULT;
++	return 0;
++}
++
++static long vhost_mdev_set_features(struct vhost_mdev *m, u64 __user *featurep)
++{
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
++	struct mdev_device *mdev = m->mdev;
++	u64 features;
++
++	/*
++	 * It's not allowed to change the features after they have
++	 * been negotiated.
++	 */
++	if (m->status & VIRTIO_CONFIG_S_FEATURES_OK)
++		return -EPERM;
++
++	if (copy_from_user(&features, featurep, sizeof(features)))
++		return -EFAULT;
++
++	if (features & ~m->features)
++		return -EINVAL;
++
++	m->acked_features = features;
++	if (ops->set_features(mdev, m->acked_features))
++		return -ENODEV;
++
++	return 0;
++}
++
++static long vhost_mdev_get_vring_num(struct vhost_mdev *m, u16 __user *argp)
++{
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
++	struct mdev_device *mdev = m->mdev;
++	u16 num;
++
++	num = ops->get_vq_num_max(mdev);
++
++	if (copy_to_user(argp, &num, sizeof(num)))
++		return -EFAULT;
++	return 0;
++}
++
++static long vhost_mdev_get_queue_num(struct vhost_mdev *m, u32 __user *argp)
++{
++	u32 nvqs = m->nvqs;
++
++	if (copy_to_user(argp, &nvqs, sizeof(nvqs)))
++		return -EFAULT;
++	return 0;
++}
++
++static long vhost_mdev_vring_ioctl(struct vhost_mdev *m, unsigned int cmd,
++				   void __user *argp)
++{
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
++	struct mdev_device *mdev = m->mdev;
++	struct virtio_mdev_callback cb;
++	struct vhost_virtqueue *vq;
++	struct vhost_vring_state s;
++	u32 idx;
++	long r;
++
++	r = get_user(idx, (u32 __user *)argp);
++	if (r < 0)
++		return r;
++	if (idx >= m->nvqs)
++		return -ENOBUFS;
++
++	/*
++	 * It's not allowed to detect and program vqs before
++	 * features negotiation or after enabling driver.
++	 */
++	if (!(m->status & VIRTIO_CONFIG_S_FEATURES_OK) ||
++	    (m->status & VIRTIO_CONFIG_S_DRIVER_OK))
++		return -EPERM;
++
++	vq = &m->vqs[idx];
++
++	if (cmd == VHOST_MDEV_SET_VRING_ENABLE) {
++		if (copy_from_user(&s, argp, sizeof(s)))
++			return -EFAULT;
++		ops->set_vq_ready(mdev, idx, s.num);
++		return 0;
++	}
++
++	/*
++	 * It's not allowed to detect and program vqs with
++	 * vqs enabled.
++	 */
++	if (ops->get_vq_ready(mdev, idx))
++		return -EPERM;
++
++	if (cmd == VHOST_GET_VRING_BASE)
++		vq->last_avail_idx = ops->get_vq_state(m->mdev, idx);
++
++	r = vhost_vring_ioctl(&m->dev, cmd, argp);
++	if (r)
++		return r;
++
++	switch (cmd) {
++	case VHOST_SET_VRING_ADDR:
++		/*
++		 * In vhost-mdev, the ring addresses set by userspace should
++		 * be the DMA addresses within the VFIO container/group.
++		 */
++		if (ops->set_vq_address(mdev, idx, (u64)vq->desc,
++					(u64)vq->avail, (u64)vq->used))
++			r = -ENODEV;
++		break;
++
++	case VHOST_SET_VRING_BASE:
++		if (ops->set_vq_state(mdev, idx, vq->last_avail_idx))
++			r = -ENODEV;
++		break;
++
++	case VHOST_SET_VRING_CALL:
++		if (vq->call_ctx) {
++			cb.callback = vhost_mdev_virtqueue_cb;
++			cb.private = vq;
++		} else {
++			cb.callback = NULL;
++			cb.private = NULL;
++		}
++		ops->set_vq_cb(mdev, idx, &cb);
++		break;
++
++	case VHOST_SET_VRING_NUM:
++		ops->set_vq_num(mdev, idx, vq->num);
++		break;
++	}
++
++	return r;
++}
++
++static int vhost_mdev_open(void *device_data)
++{
++	struct vhost_mdev *m = device_data;
++	struct vhost_dev *dev;
++	struct vhost_virtqueue **vqs;
++	int nvqs, i, r;
++
++	if (!try_module_get(THIS_MODULE))
++		return -ENODEV;
++
++	mutex_lock(&m->mutex);
++
++	if (m->opened) {
++		r = -EBUSY;
++		goto err;
++	}
++
++	nvqs = m->nvqs;
++	vhost_mdev_reset(m);
++
++	memset(&m->dev, 0, sizeof(m->dev));
++	memset(m->vqs, 0, nvqs * sizeof(struct vhost_virtqueue));
++
++	vqs = kmalloc_array(nvqs, sizeof(*vqs), GFP_KERNEL);
++	if (!vqs) {
++		r = -ENOMEM;
++		goto err;
++	}
++
++	dev = &m->dev;
++	for (i = 0; i < nvqs; i++) {
++		vqs[i] = &m->vqs[i];
++		vqs[i]->handle_kick = handle_vq_kick;
++	}
++	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0);
++	m->opened = true;
++	mutex_unlock(&m->mutex);
++
++	return 0;
++
++err:
++	mutex_unlock(&m->mutex);
++	module_put(THIS_MODULE);
++	return r;
++}
++
++static void vhost_mdev_release(void *device_data)
++{
++	struct vhost_mdev *m = device_data;
++
++	mutex_lock(&m->mutex);
++	vhost_mdev_reset(m);
++	vhost_dev_stop(&m->dev);
++	vhost_dev_cleanup(&m->dev);
++
++	kfree(m->dev.vqs);
++	m->opened = false;
++	mutex_unlock(&m->mutex);
++	module_put(THIS_MODULE);
++}
++
++static long vhost_mdev_unlocked_ioctl(void *device_data,
++				      unsigned int cmd, unsigned long arg)
++{
++	struct vhost_mdev *m = device_data;
++	void __user *argp = (void __user *)arg;
++	long r;
++
++	mutex_lock(&m->mutex);
++
++	switch (cmd) {
++	case VHOST_MDEV_GET_STATUS:
++		r = vhost_mdev_get_status(m, argp);
++		break;
++	case VHOST_MDEV_SET_STATUS:
++		r = vhost_mdev_set_status(m, argp);
++		break;
++	case VHOST_GET_FEATURES:
++		r = vhost_mdev_get_features(m, argp);
++		break;
++	case VHOST_SET_FEATURES:
++		r = vhost_mdev_set_features(m, argp);
++		break;
++	case VHOST_MDEV_GET_VRING_NUM:
++		r = vhost_mdev_get_vring_num(m, argp);
++		break;
++	case VHOST_MDEV_GET_QUEUE_NUM:
++		r = vhost_mdev_get_queue_num(m, argp);
++		break;
++	default:
++		r = vhost_dev_ioctl(&m->dev, cmd, argp);
++		if (r == -ENOIOCTLCMD)
++			r = vhost_mdev_vring_ioctl(m, cmd, argp);
++	}
++
++	mutex_unlock(&m->mutex);
++	return r;
++}
++
++static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
++	.name		= "vfio-vhost-mdev",
++	.open		= vhost_mdev_open,
++	.release	= vhost_mdev_release,
++	.ioctl		= vhost_mdev_unlocked_ioctl,
++};
++
++static int vhost_mdev_probe(struct device *dev)
++{
++	struct mdev_device *mdev = mdev_from_dev(dev);
++	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
++	struct vhost_mdev *m;
++	int nvqs, r;
++
++	/* Currently, only network backend is supported. */
++	if (ops->get_device_id(mdev) != VIRTIO_ID_NET)
++		return -ENOTSUPP;
++
++	if (ops->get_mdev_features(mdev) != VIRTIO_MDEV_F_VERSION_1)
++		return -ENOTSUPP;
++
++	m = devm_kzalloc(dev, sizeof(*m), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
++	if (!m)
++		return -ENOMEM;
++
++	nvqs = VHOST_MDEV_VQ_MAX;
++	m->nvqs = nvqs;
++
++	m->vqs = devm_kmalloc_array(dev, nvqs, sizeof(struct vhost_virtqueue),
++				    GFP_KERNEL);
++	if (!m->vqs)
++		return -ENOMEM;
++
++	r = vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, m);
++	if (r)
++		return r;
++
++	mutex_init(&m->mutex);
++	m->features = ops->get_features(mdev);
++	m->mdev = mdev;
++	return 0;
++}
++
++static void vhost_mdev_remove(struct device *dev)
++{
++	struct vhost_mdev *m;
++
++	m = vfio_del_group_dev(dev);
++	mutex_destroy(&m->mutex);
++}
++
++static const struct mdev_class_id vhost_mdev_match[] = {
++	{ MDEV_CLASS_ID_VHOST },
++	{ 0 },
++};
++MODULE_DEVICE_TABLE(mdev, vhost_mdev_match);
++
++static struct mdev_driver vhost_mdev_driver = {
++	.name	= "vhost_mdev",
++	.probe	= vhost_mdev_probe,
++	.remove	= vhost_mdev_remove,
++	.id_table = vhost_mdev_match,
++};
++
++static int __init vhost_mdev_init(void)
++{
++	return mdev_register_driver(&vhost_mdev_driver, THIS_MODULE);
++}
++module_init(vhost_mdev_init);
++
++static void __exit vhost_mdev_exit(void)
++{
++	mdev_unregister_driver(&vhost_mdev_driver);
++}
++module_exit(vhost_mdev_exit);
++
++MODULE_VERSION("0.0.1");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Mediated device based accelerator for virtio");
+diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+index 13e045e09d3b..6060cdbe6d3e 100644
+--- a/include/linux/mdev.h
++++ b/include/linux/mdev.h
+@@ -114,6 +114,8 @@ void mdev_set_vfio_ops(struct mdev_device *mdev,
+ 		       const struct vfio_mdev_device_ops *vfio_ops);
+ void mdev_set_virtio_ops(struct mdev_device *mdev,
+                          const struct virtio_mdev_device_ops *virtio_ops);
++void mdev_set_vhost_ops(struct mdev_device *mdev,
++			const struct virtio_mdev_device_ops *vhost_ops);
+ const void *mdev_get_dev_ops(struct mdev_device *mdev);
+ 
+ extern struct bus_type mdev_bus_type;
+@@ -131,6 +133,7 @@ struct mdev_device *mdev_from_dev(struct device *dev);
+ enum {
+ 	MDEV_CLASS_ID_VFIO = 1,
+ 	MDEV_CLASS_ID_VIRTIO = 2,
++	MDEV_CLASS_ID_VHOST = 3,
+ 	/* New entries must be added here */
+ };
+ 
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index 40d028eed645..dad3c62bd91b 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -116,4 +116,17 @@
+ #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+ #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+ 
++/* VHOST_MDEV specific defines */
++
++/* Get and set the status of the backend. The status bits follow the
++ * same definition of the device status defined in virtio-spec. */
++#define VHOST_MDEV_GET_STATUS		_IOW(VHOST_VIRTIO, 0x70, __u8)
++#define VHOST_MDEV_SET_STATUS		_IOW(VHOST_VIRTIO, 0x71, __u8)
++/* Enable/disable the ring. */
++#define VHOST_MDEV_SET_VRING_ENABLE	_IOW(VHOST_VIRTIO, 0x72, struct vhost_vring_state)
++/* Get the max ring size. */
++#define VHOST_MDEV_GET_VRING_NUM	_IOW(VHOST_VIRTIO, 0x73, __u16)
++/* Get the max number of queues. */
++#define VHOST_MDEV_GET_QUEUE_NUM	_IOW(VHOST_VIRTIO, 0x74, __u32)
++
+ #endif
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.23.0
+
