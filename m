@@ -2,105 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7745DE0892
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6098E08B8
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:24:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731631AbfJVQTj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Oct 2019 12:19:39 -0400
-Received: from mga01.intel.com ([192.55.52.88]:30068 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730331AbfJVQTj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 12:19:39 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Oct 2019 09:19:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,216,1569308400"; 
-   d="scan'208";a="197166132"
-Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Oct 2019 09:19:38 -0700
-Received: from orsmsx112.amr.corp.intel.com (10.22.240.13) by
- ORSMSX107.amr.corp.intel.com (10.22.240.5) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 22 Oct 2019 09:19:38 -0700
-Received: from orsmsx121.amr.corp.intel.com ([169.254.10.88]) by
- ORSMSX112.amr.corp.intel.com ([169.254.3.185]) with mapi id 14.03.0439.000;
- Tue, 22 Oct 2019 09:19:38 -0700
-From:   "Allan, Bruce W" <bruce.w.allan@intel.com>
-To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "Neftin, Sasha" <sasha.neftin@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
-        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>,
-        Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>,
-        "Brown, Aaron F" <aaron.f.brown@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-Subject: RE: [net-next v3 2/5] e1000e: Add support for S0ix
-Thread-Topic: [net-next v3 2/5] e1000e: Add support for S0ix
-Thread-Index: AQHViDn8atIXCJaa1kmdBZ4YVy3ZGqdmzRcQ
-Date:   Tue, 22 Oct 2019 16:19:37 +0000
-Message-ID: <804857E1F29AAC47BF68C404FC60A1840109952313@ORSMSX121.amr.corp.intel.com>
-References: <20191021180143.11775-1-jeffrey.t.kirsher@intel.com>
- <20191021180143.11775-3-jeffrey.t.kirsher@intel.com>
-In-Reply-To: <20191021180143.11775-3-jeffrey.t.kirsher@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNTZmMmI3OWMtYTQ5MC00NGViLTkxMjQtN2MzYjFhNmZhM2E2IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQllLUFpVVE5CZzlXZDR3Rm5keUpHUVwvczhaMHBaMHdNbWV0WGdtWHROUzUwR2xZNEExRGxsSDRzbDRpN2pyV1gifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1731631AbfJVQYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 12:24:42 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45694 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731518AbfJVQYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:24:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=4cO+8acIhM9K17shnyOAB4m6Sd4pA5D/CMuTsbmCYGE=; b=q/E/cTVFTykh+XhRstDzxRszp
+        CLBbHNZBSloJO/xPV9J7Y5PGYTpIqwRoQ37yQq6RUTPfFOadaU4xqcXDNfYLbEnZTjv68WVGtNINn
+        BkwS0lwf0Z4u7b+ww8WoWQLQy2TGkMtFAjPAt+LorgiCljE97Er9J1SrI1WUPqtJsate5ISqDYd38
+        erVz1IYv+xcLWWez699c9FgFNZAKJK+PekTcc9fkJF0eUoGd6Ws897SUTQ58siSMxkjusur/v9KuG
+        KidPI2vfjX+leucyA1Hq1Tyu5aP1Orik9q92upcRqErjHlQ1HLHTZkh6PrL2zFd08vi0zUkfIlLIi
+        kBr+eTKbQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57712)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iMwxW-0008If-Jx; Tue, 22 Oct 2019 17:24:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iMwxQ-0004in-Ht; Tue, 22 Oct 2019 17:24:28 +0100
+Date:   Tue, 22 Oct 2019 17:24:28 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, laurentiu.tudor@nxp.com,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH net-next 3/4] dpaa2-eth: add MAC/PHY support through
+ phylink
+Message-ID: <20191022162428.GX25745@shell.armlinux.org.uk>
+References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
+ <1571698228-30985-4-git-send-email-ioana.ciornei@nxp.com>
+ <20191022010649.GI16084@lunn.ch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191022010649.GI16084@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org [mailto:netdev-owner@vger.kernel.org]
-> On Behalf Of Jeff Kirsher
-> Sent: Monday, October 21, 2019 11:02 AM
-> To: davem@davemloft.net
-> Cc: Neftin, Sasha <sasha.neftin@intel.com>; netdev@vger.kernel.org;
-> nhorman@redhat.com; sassmann@redhat.com; Wysocki, Rafael J
-> <rafael.j.wysocki@intel.com>; Lifshits, Vitaly <vitaly.lifshits@intel.com>;
-> Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>; Brown, Aaron F
-> <aaron.f.brown@intel.com>; Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Subject: [net-next v3 2/5] e1000e: Add support for S0ix
+On Tue, Oct 22, 2019 at 03:06:49AM +0200, Andrew Lunn wrote:
+> Hi Ioana
 > 
-> From: Sasha Neftin <sasha.neftin@intel.com>
+> > +static int dpaa2_eth_connect_mac(struct dpaa2_eth_priv *priv)
+> > +{
+> > +	struct fsl_mc_device *dpni_dev, *dpmac_dev;
+> > +	struct dpaa2_mac *mac;
+> > +	int err;
+> > +
+> > +	dpni_dev = to_fsl_mc_device(priv->net_dev->dev.parent);
+> > +	dpmac_dev = fsl_mc_get_endpoint(dpni_dev);
+> > +	if (!dpmac_dev || dpmac_dev->dev.type != &fsl_mc_bus_dpmac_type)
+> > +		return 0;
+> > +
+> > +	if (dpaa2_mac_is_type_fixed(dpmac_dev, priv->mc_io))
+> > +		return 0;
+> > +
+> > +	mac = kzalloc(sizeof(struct dpaa2_mac), GFP_KERNEL);
+> > +	if (!mac)
+> > +		return -ENOMEM;
+> > +
+> > +	mac->mc_dev = dpmac_dev;
+> > +	mac->mc_io = priv->mc_io;
+> > +	mac->net_dev = priv->net_dev;
+> > +
+> > +	err = dpaa2_mac_connect(mac);
+> > +	if (err) {
+> > +		netdev_err(priv->net_dev, "Error connecting to the MAC endpoint\n");
+> > +		kfree(mac);
+> > +		return err;
+> > +	}
+> > +	priv->mac = mac;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void dpaa2_eth_disconnect_mac(struct dpaa2_eth_priv *priv)
+> > +{
+> > +	if (!priv->mac)
+> > +		return;
+> > +
+> > +	rtnl_lock();
+> > +	dpaa2_mac_disconnect(priv->mac);
+> > +	kfree(priv->mac);
+> > +	priv->mac = NULL;
+> > +	rtnl_unlock();
+> > +}
 > 
-> Implement flow for S0ix support. Modern SoCs support S0ix low power
-> states during idle periods, which are sub-states of ACPI S0 that increase
-> power saving while supporting an instant-on experience for providing
-> lower latency that ACPI S0. The S0ix states shut off parts of the SoC
-> when they are not in use, while still maintaning optimal performance.
-> This patch add support for S0ix started from an Ice Lake platform.
-> 
-> Suggested-by: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-> Signed-off-by: Vitaly Lifshits <vitaly.lifshits@intel.com>
-> Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
-> Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> ---
->  drivers/net/ethernet/intel/e1000e/netdev.c | 182 +++++++++++++++++++++
->  drivers/net/ethernet/intel/e1000e/regs.h   |   4 +
->  2 files changed, 186 insertions(+)
+> dpaa2_eth_connect_mac() does not take the rtnl lock.
+> dpaa2_eth_disconnect_mac() does. This asymmetry makes me think
+> something is wrong. But it could be correct....
 
-This patch generates warnings that e1000e_s0ix_entry_flow and e1000e_s0ix_exit_flow
-are defined but not used [-Wunused-function] when CONFIG_PM_SLEEP is not defined.
+The way the driver is written, it's fine.
 
-The warnings were called out by Intel's 0-DAY kernel test infrastructure after this patch
-was merged into the dev-queue branch of Jeff's next-queue tree, so any fix for the warnings
-should include the tag " Reported-by: kbuild test robot <lkp@intel.com>".
+dpaa2_eth_connect_mac() is called prior to the netdev being registered.
+At that point, nothing is published.
 
-Bruce.
+dpaa2_eth_disconnect_mac() is called _prior_ to the netdev being
+unregistered, so there could be live accesses happening to the phy
+and phylink.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
