@@ -2,119 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6098E08B8
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44713E08BE
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731631AbfJVQYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 12:24:42 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45694 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731518AbfJVQYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:24:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=4cO+8acIhM9K17shnyOAB4m6Sd4pA5D/CMuTsbmCYGE=; b=q/E/cTVFTykh+XhRstDzxRszp
-        CLBbHNZBSloJO/xPV9J7Y5PGYTpIqwRoQ37yQq6RUTPfFOadaU4xqcXDNfYLbEnZTjv68WVGtNINn
-        BkwS0lwf0Z4u7b+ww8WoWQLQy2TGkMtFAjPAt+LorgiCljE97Er9J1SrI1WUPqtJsate5ISqDYd38
-        erVz1IYv+xcLWWez699c9FgFNZAKJK+PekTcc9fkJF0eUoGd6Ws897SUTQ58siSMxkjusur/v9KuG
-        KidPI2vfjX+leucyA1Hq1Tyu5aP1Orik9q92upcRqErjHlQ1HLHTZkh6PrL2zFd08vi0zUkfIlLIi
-        kBr+eTKbQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57712)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iMwxW-0008If-Jx; Tue, 22 Oct 2019 17:24:34 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iMwxQ-0004in-Ht; Tue, 22 Oct 2019 17:24:28 +0100
-Date:   Tue, 22 Oct 2019 17:24:28 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, laurentiu.tudor@nxp.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH net-next 3/4] dpaa2-eth: add MAC/PHY support through
- phylink
-Message-ID: <20191022162428.GX25745@shell.armlinux.org.uk>
-References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
- <1571698228-30985-4-git-send-email-ioana.ciornei@nxp.com>
- <20191022010649.GI16084@lunn.ch>
+        id S1731802AbfJVQ0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 12:26:21 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56036 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731518AbfJVQ0V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:26:21 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9CC6F140061;
+        Tue, 22 Oct 2019 16:26:19 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 22 Oct
+ 2019 09:26:05 -0700
+Subject: Re: [PATCH net-next 2/6] sfc: perform XDP processing on received
+ packets.
+To:     Charles McLachlan <cmclachlan@solarflare.com>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
+        <brouer@redhat.com>
+References: <05b72fdb-165c-1350-787b-ca8c5261c459@solarflare.com>
+ <1c193147-d94a-111f-42d3-324c3e8b0282@solarflare.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <b1fc9bd7-5f8d-8bf6-1d9d-956cef0311e4@solarflare.com>
+Date:   Tue, 22 Oct 2019 17:26:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191022010649.GI16084@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1c193147-d94a-111f-42d3-324c3e8b0282@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24994.005
+X-TM-AS-Result: No-2.509700-4.000000-10
+X-TMASE-MatchedRID: VPleTT1nwdTmLzc6AOD8DfHkpkyUphL9a2pCAnJvQFGZHfpKN1YMZXv6
+        cG7t9uXqyRoqwKpOKcJ6MMS//CmLem8BU9XGR8QhsFSKfGPIprVc1jwHBugxQOjnKWtZ9LTLS71
+        7hL/58vY0lP87HDyGK0zuDWPQC4cRPB7z3tT8+MJcVlrN0VHFaw73P4/aDCIFHVYuuUDsN/yjxY
+        yRBa/qJQPTK4qtAgwIIC0OoeD/hCbQLWxBF9DMQcRB0bsfrpPInxMyeYT53Rn7W0ZY0KV4OEgmg
+        XGkMc2ugNePUnH2yaj5JSIT5+8NvSyV+bXlxZEwTi8FpJTd0jWXDzwpmj/EZT+xw/v/58/kI0Nk
+        rl5EM8fUNewp4E2/TgSpmVYGQlZ3sxk1kV1Ja8cbbCVMcs1jUlZca9RSYo/b
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.509700-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24994.005
+X-MDID: 1571761580-C4r9DRFd0pmy
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 03:06:49AM +0200, Andrew Lunn wrote:
-> Hi Ioana
-> 
-> > +static int dpaa2_eth_connect_mac(struct dpaa2_eth_priv *priv)
-> > +{
-> > +	struct fsl_mc_device *dpni_dev, *dpmac_dev;
-> > +	struct dpaa2_mac *mac;
-> > +	int err;
-> > +
-> > +	dpni_dev = to_fsl_mc_device(priv->net_dev->dev.parent);
-> > +	dpmac_dev = fsl_mc_get_endpoint(dpni_dev);
-> > +	if (!dpmac_dev || dpmac_dev->dev.type != &fsl_mc_bus_dpmac_type)
-> > +		return 0;
-> > +
-> > +	if (dpaa2_mac_is_type_fixed(dpmac_dev, priv->mc_io))
-> > +		return 0;
-> > +
-> > +	mac = kzalloc(sizeof(struct dpaa2_mac), GFP_KERNEL);
-> > +	if (!mac)
-> > +		return -ENOMEM;
-> > +
-> > +	mac->mc_dev = dpmac_dev;
-> > +	mac->mc_io = priv->mc_io;
-> > +	mac->net_dev = priv->net_dev;
-> > +
-> > +	err = dpaa2_mac_connect(mac);
-> > +	if (err) {
-> > +		netdev_err(priv->net_dev, "Error connecting to the MAC endpoint\n");
-> > +		kfree(mac);
-> > +		return err;
-> > +	}
-> > +	priv->mac = mac;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void dpaa2_eth_disconnect_mac(struct dpaa2_eth_priv *priv)
-> > +{
-> > +	if (!priv->mac)
-> > +		return;
-> > +
-> > +	rtnl_lock();
-> > +	dpaa2_mac_disconnect(priv->mac);
-> > +	kfree(priv->mac);
-> > +	priv->mac = NULL;
-> > +	rtnl_unlock();
-> > +}
-> 
-> dpaa2_eth_connect_mac() does not take the rtnl lock.
-> dpaa2_eth_disconnect_mac() does. This asymmetry makes me think
-> something is wrong. But it could be correct....
+On 22/10/2019 16:38, Charles McLachlan wrote:
+> Adds a field to hold an attached xdp_prog, but never populates it (see
+> following patch).  Also, XDP_TX support is deferred to a later patch
+> in the series.
+>
+> Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
+> ---
+<snip>
+> @@ -764,6 +872,16 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
+>  	rx_queue->fast_fill_trigger = trigger;
+>  	rx_queue->refill_enabled = true;
+>  
+> +	/* Initialise XDP queue information */
+> +	rc = xdp_rxq_info_reg(&rx_queue->xdp_rxq_info, efx->net_dev,
+> +			      rx_queue->core_index);
+> +
+> +	if (rc) {
+> +		netif_err(efx, rx_err, efx->net_dev,
+> +			  "Failure to initialise XDP queue information rc=%d\n",
+> +			  rc);
+> +	}
+What happens if we try to use XDP after this has failed?
+Should we set some kind of "XDP broken" flag to prevent that?
 
-The way the driver is written, it's fine.
-
-dpaa2_eth_connect_mac() is called prior to the netdev being registered.
-At that point, nothing is published.
-
-dpaa2_eth_disconnect_mac() is called _prior_ to the netdev being
-unregistered, so there could be live accesses happening to the phy
-and phylink.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+-Ed
