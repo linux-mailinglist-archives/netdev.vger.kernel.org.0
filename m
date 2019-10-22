@@ -2,120 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B268AE0042
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 047EEE004D
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388211AbfJVJFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 05:05:06 -0400
-Received: from mail.jv-coder.de ([5.9.79.73]:52470 "EHLO mail.jv-coder.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726978AbfJVJFF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 05:05:05 -0400
-X-Greylist: delayed 378 seconds by postgrey-1.27 at vger.kernel.org; Tue, 22 Oct 2019 05:05:04 EDT
-Received: from [10.61.40.7] (unknown [37.156.92.209])
-        by mail.jv-coder.de (Postfix) with ESMTPSA id 0B15E9FA2B;
-        Tue, 22 Oct 2019 08:58:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jv-coder.de; s=dkim;
-        t=1571734725; bh=vmxqbKFdbAsB2xDI6xrGHn1DS1Pl2hjh1JTq6d0++zQ=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version;
-        b=WaY/fLxdqDRfcENriUsOVoPh73icYTpF1VgO6o5bxJNM01aauwiOzp9lCRKS9B3vK
-         5KoM41PObQR9ArA1fz1xpvcODULVcq0k2kO+dCgfhyg/tn/I6z8j42wYJXewMet+GD
-         O7u97x0Mvf0rZp/wHmFI3R5isw3GgWdM860/tAx8=
-Subject: Re: [PATCH] xfrm : lock input tasklet skb queue
-To:     Tom Rix <trix@redhat.com>, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <CACVy4SVuw0Qbjiv6PLRn1symoxGzyBMZx2F5O23+jGZG6WHuYA@mail.gmail.com>
-From:   Joerg Vehlow <lkml@jv-coder.de>
-Message-ID: <ac5f327b-d693-31cb-089f-b0880a4e298b@jv-coder.de>
-Date:   Tue, 22 Oct 2019 10:58:44 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        id S1731348AbfJVJHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 05:07:40 -0400
+Received: from smtprelay0193.hostedemail.com ([216.40.44.193]:38322 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731234AbfJVJHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 05:07:40 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 119F2182CF666;
+        Tue, 22 Oct 2019 09:07:38 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1801:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3870:3871:3872:4321:4605:5007:6742:7808:8603:8660:10004:10400:10450:10455:11026:11232:11233:11473:11658:11914:12043:12114:12295:12297:12438:12740:12760:12895:13148:13230:13439:14096:14097:14180:14181:14659:14721:19904:19999:21060:21080:21627:21740:30012:30029:30054:30060:30070:30090:30091,0,RBL:47.151.135.224:@perches.com:.lbl8.mailshell.net-62.8.0.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: veil63_252ba08252f48
+X-Filterd-Recvd-Size: 4166
+Received: from XPS-9350.home (unknown [47.151.135.224])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 22 Oct 2019 09:07:35 +0000 (UTC)
+Message-ID: <a32b6a6b5f48ff0c4685bd417a8fb66229d95033.camel@perches.com>
+Subject: Re: [PATCH 1/7] debugfs: Add debugfs_create_xul() for hexadecimal
+ unsigned long
+From:   Joe Perches <joe@perches.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Tue, 22 Oct 2019 02:07:34 -0700
+In-Reply-To: <CAMuHMdU4OhsK6Jvy406ZCM+OeGcfVB0b7ccsne9KdMZFLf=JqQ@mail.gmail.com>
+References: <20191021143742.14487-1-geert+renesas@glider.be>
+         <20191021143742.14487-2-geert+renesas@glider.be>
+         <0f91839d858fcb03435ebc85e61ee4e75371ff37.camel@perches.com>
+         <CAMuHMdU4OhsK6Jvy406ZCM+OeGcfVB0b7ccsne9KdMZFLf=JqQ@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.32.1-2 
 MIME-Version: 1.0
-In-Reply-To: <CACVy4SVuw0Qbjiv6PLRn1symoxGzyBMZx2F5O23+jGZG6WHuYA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,HELO_MISC_IP,RDNS_NONE autolearn=no
-        autolearn_force=no version=3.4.2
-X-Spam-Level: *
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.jv-coder.de
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 2019-10-22 at 10:03 +0200, Geert Uytterhoeven wrote:
+> Hi Joe,
 
-I already send a patch on 2019-09-09 to this mailing list with a similar 
-issue[1].
-Sadly no replies, although this is a huge bug in the rt kernel.
-I fixed it a bit differently, using smaller locked regions.
-You have also propably a bug in your patch, because trans->queue.lock is
-no initialized by __skb_queue_head_init (in xfrm_input_init)
+Hey again Geert.
 
-Jörg
+> On Mon, Oct 21, 2019 at 5:37 PM Joe Perches <joe@perches.com> wrote:
+> > On Mon, 2019-10-21 at 16:37 +0200, Geert Uytterhoeven wrote:
+> > > The existing debugfs_create_ulong() function supports objects of
+> > > type "unsigned long", which are 32-bit or 64-bit depending on the
+> > > platform, in decimal form.  To format objects in hexadecimal, various
+> > > debugfs_create_x*() functions exist, but all of them take fixed-size
+> > > types.
+> > > 
+> > > Add a debugfs helper for "unsigned long" objects in hexadecimal format.
+> > > This avoids the need for users to open-code the same, or introduce
+> > > bugs when casting the value pointer to "u32 *" or "u64 *" to call
+> > > debugfs_create_x{32,64}().
+> > []
+> > > diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
+> > []
+> > > @@ -356,4 +356,14 @@ static inline ssize_t debugfs_write_file_bool(struct file *file,
+> > > 
+> > >  #endif
+> > > 
+> > > +static inline void debugfs_create_xul(const char *name, umode_t mode,
+> > > +                                   struct dentry *parent,
+> > > +                                   unsigned long *value)
+> > > +{
+> > > +     if (sizeof(*value) == sizeof(u32))
+> > > +             debugfs_create_x32(name, mode, parent, (u32 *)value);
+> > > +     else
+> > > +             debugfs_create_x64(name, mode, parent, (u64 *)value);
+> > 
+> > trivia: the casts are unnecessary.
+> 
+> They are necessary, in both calls (so using #ifdef as suggested below
+> won't help):
 
-[1] https://lkml.org/lkml/2019/9/9/111
+Silly thinko, (I somehow thought the compiler would
+eliminate the code after the branch not taken, but
+of course it has to compile it first...  oops)
+though the #ifdef should work.
 
-Am 20.10.2019 um 17:46 schrieb Tom Rix:
-> On PREEMPT_RT_FULL while running netperf, a corruption
-> of the skb queue causes an oops.
->
-> This appears to be caused by a race condition here
->          __skb_queue_tail(&trans->queue, skb);
->          tasklet_schedule(&trans->tasklet);
-> Where the queue is changed before the tasklet is locked by
-> tasklet_schedule.
->
-> The fix is to use the skb queue lock.
->
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->   net/xfrm/xfrm_input.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-> index 9b599ed66d97..226dead86828 100644
-> --- a/net/xfrm/xfrm_input.c
-> +++ b/net/xfrm/xfrm_input.c
-> @@ -758,12 +758,16 @@ static void xfrm_trans_reinject(unsigned long data)
->       struct xfrm_trans_tasklet *trans = (void *)data;
->       struct sk_buff_head queue;
->       struct sk_buff *skb;
-> +    unsigned long flags;
->
->       __skb_queue_head_init(&queue);
-> +    spin_lock_irqsave(&trans->queue.lock, flags);
->       skb_queue_splice_init(&trans->queue, &queue);
->
->       while ((skb = __skb_dequeue(&queue)))
->           XFRM_TRANS_SKB_CB(skb)->finish(dev_net(skb->dev), NULL, skb);
-> +
-> +    spin_unlock_irqrestore(&trans->queue.lock, flags);
->   }
->
->   int xfrm_trans_queue(struct sk_buff *skb,
-> @@ -771,15 +775,20 @@ int xfrm_trans_queue(struct sk_buff *skb,
->                      struct sk_buff *))
->   {
->       struct xfrm_trans_tasklet *trans;
-> +    unsigned long flags;
->
->       trans = this_cpu_ptr(&xfrm_trans_tasklet);
-> +    spin_lock_irqsave(&trans->queue.lock, flags);
->
-> -    if (skb_queue_len(&trans->queue) >= netdev_max_backlog)
-> +    if (skb_queue_len(&trans->queue) >= netdev_max_backlog) {
-> +        spin_unlock_irqrestore(&trans->queue.lock, flags);
->           return -ENOBUFS;
-> +    }
->
->       XFRM_TRANS_SKB_CB(skb)->finish = finish;
->       __skb_queue_tail(&trans->queue, skb);
->       tasklet_schedule(&trans->tasklet);
-> +    spin_unlock_irqrestore(&trans->queue.lock, flags);
->       return 0;
->   }
->   EXPORT_SYMBOL(xfrm_trans_queue);
+> > This might be more sensible using #ifdef
+> > 
+> > static inline void debugfs_create_xul(const char *name, umode_t mode,
+> >                                       struct dentry *parent,
+> >                                       unsigned long *value)
+> > {
+> > #if BITS_PER_LONG == 64
+> >         debugfs_create_x64(name, mode, parent, value);
+> > #else
+> >         debugfs_create_x32(name, mode, parent, value);
+> > #endif
+> > }
+> 
+> ... at the expense of the compiler checking only one branch.
+> 
+> Just like "if (IS_ENABLED(CONFIG_<foo>)" (when possible) is preferred
+> over "#ifdef CONFIG_<foo>" because of compile-coverage, I think using
+> "if" here is better than using "#if".
+
+True if all compilers will always eliminate the unused branch.
+
 
