@@ -2,160 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5E1E07CC
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:48:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CDC9E07EE
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388042AbfJVPrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 11:47:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46160 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387922AbfJVPru (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 11:47:50 -0400
-Received: from localhost (lfbn-1-10718-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 37E52214B2;
-        Tue, 22 Oct 2019 15:47:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571759269;
-        bh=AejEtY/BzekHga8zdI53AO/Lgt0U9aGhqsnmnZTTvEk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=uIwo/poRGQ2nZ+Ll0BT/EKjrLOkddCaonISjJKhlgNes7MYBprmOjkz0hJ5OVg9cU
-         SQwcO1uSROrdizd+ThAd4149harMVJFT99FKVFGco96K5/coENG9iWDFQHEpNGGv7T
-         uPkDFfV/Iu1SCgCew3BL5GqvjsqY5Ahn2GhbVQJU=
-From:   Maxime Ripard <mripard@kernel.org>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] dt-bindings: can: Convert Allwinner A10 CAN controller to a schema
-Date:   Tue, 22 Oct 2019 17:47:45 +0200
-Message-Id: <20191022154745.41865-1-mripard@kernel.org>
-X-Mailer: git-send-email 2.23.0
+        id S2387871AbfJVPwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 11:52:35 -0400
+Received: from mail-eopbgr130079.outbound.protection.outlook.com ([40.107.13.79]:51206
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388734AbfJVPwe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 11:52:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CaACjfLCybrfcml2RplV9qmN/smui7K7UvBz3VuNfnNT6hdn+vZKzW4vZ4aJ3B7tR+EEthULcNNVXfemE3cFbGjyX2rkvzgPfCKMotFhprD3DkNMtk7WGNvh/lrZkp64SJeja0kbWmBhvSpDuRO0D/AlT8lw4eRzebgw2AHX4V++wpf9rhXVHTc/E6kD4vJatFNDg87JaedXb9toYp5smkbDFEJRm0DBYt/ddbrlrmGZaF8OOQ8HmBALNnJXw3zp1SNEhVhKyQKtr5DNYLqAOJnXM/pp4k2NTnjoBhlIPpTXqo3bHY3oBT8xgRh6vJm7LhIimaACPkw/47CpOs19rw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jS700TPr8V3h5vuSd7UVlqyafCZPOl5hit5RqTJbbrw=;
+ b=oJDZzYNUARuqt+IuRHijOCCptUv3xCDiVNCDSfHza0KlgVBYa1tPILqwFfkzDLxuf8fo+yg8+8CiT8F67VtNACgyUMp7m2tSKqyh4ALjp1E4mHLzaet7oIQ3JTRcIzRVjtYpEHSS5emFrNaPLWSRSSONvCfuvyK6RH74aV8W0SIkoIAgwmjMzwcJidWrmaNGw60iPgfh+Qe4JBtOML3ou4JBw6LISTCmD+SzIQTcX1kTcrw+4XBplRgzIfUQjW6heIDrV7dLLywP0DSn6yR/ovpovHxGbk7O6Towh2fPoWBDvwKPGgGrTaMlK/QXQO1uNQ3lbN1WU+Bwi839JQZETg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jS700TPr8V3h5vuSd7UVlqyafCZPOl5hit5RqTJbbrw=;
+ b=YkIdHcGVhx8tfcfa4GQtJZQXdgcozTOji7q+f7e36ZknyTB7NI8cutuui0SPonKMrUoRs2Fdt2wdLujprIz0OOvXfigf4zJR5X3BM1TBtpb2XBSd9ZUd+cim8vsCEz6H8BLBGjfhWsGCEqks4cqIejhXaHuVKIVQmo3YdaEEG9c=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB5792.eurprd05.prod.outlook.com (20.178.122.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2367.24; Tue, 22 Oct 2019 15:52:31 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2367.022; Tue, 22 Oct 2019
+ 15:52:31 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
+CC:     Vlad Buslov <vladbu@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6dmxUYAgAAKWoA=
+Date:   Tue, 22 Oct 2019 15:52:31 +0000
+Message-ID: <vbflftcwzes.fsf@mellanox.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <20191022151524.GZ4321@localhost.localdomain>
+In-Reply-To: <20191022151524.GZ4321@localhost.localdomain>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0090.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:8::30) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 766f210d-481f-44a2-cdbe-08d75707d8c2
+x-ms-traffictypediagnostic: VI1PR05MB5792:|VI1PR05MB5792:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB5792EF0656946461B403B2B6AD680@VI1PR05MB5792.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 01986AE76B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(4636009)(346002)(376002)(136003)(396003)(366004)(39860400002)(199004)(189003)(52314003)(8676002)(86362001)(7736002)(4326008)(229853002)(6486002)(305945005)(81156014)(8936002)(81166006)(66556008)(66476007)(66946007)(6116002)(6916009)(6436002)(66446008)(6512007)(3846002)(64756008)(36756003)(6246003)(99286004)(2906002)(486006)(476003)(6506007)(11346002)(102836004)(66066001)(52116002)(2616005)(256004)(14444005)(446003)(26005)(186003)(76176011)(478600001)(54906003)(14454004)(71200400001)(71190400001)(25786009)(386003)(316002)(5660300002)(4226003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5792;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /xXTxZXATwbEvAmu+jqdmiBhzoF4sAEh/RJ/euyujhsvXmV1/g1idNCQHq9323rErH98peevd5wahxYz2Gdebi2geB033Lk4k03dVSElxGdJ9bLIOfq9JG6ZmOuWorrD4CDmiG4RWSHnSqAnMiILKgnrs+oGWiX2lh6yMZ57eYvlVPPqvo9GZKYizgFBnTn9FIN+TULrVg3yPAx7f6ySrjDZaxQYh3em8B7lYS9rJfN73uu0+Bv8eZpkZU+5Vm0EAamp7WwTXdwPVEaD0TzNwoTix/BXjdnDU6B9WSDDyGTTUeKZcmVjZqM4roLJ/7lmHMKLknbD1cE6k/Uzj6TqGrjKEcKuOwSHEv5O06bNp1ow+DnMIWoxoz2vnV0yPkE2qGZcl67mtU7T7AfH+/tdqZ5rE9KI7n2X6PNotoBZXxNVDQRilF39B4++5VkxqEh8
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 766f210d-481f-44a2-cdbe-08d75707d8c2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 15:52:31.0956
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TBXERHziBiW5ifh7SljfVO6akSqrIgkzM0J2ICs2WilUQ0l0cdX5V41YYJ178Tvc6hmYqqM4An+/ZUQUcdPdjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5792
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The older Allwinner SoCs have a CAN controller that is supported in Linux,
-with a matching Device Tree binding.
 
-Now that we have the DT validation in place, let's convert the device tree
-bindings for that controller over to a YAML schemas.
+On Tue 22 Oct 2019 at 18:15, Marcelo Ricardo Leitner <mleitner@redhat.com> =
+wrote:
+> On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
+>> - Extend actions that are used for hardware offloads with optional
+>>   netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action flag and
+>>   update affected actions to not allocate percpu counters when the flag
+>>   is set.
+>
+> I just went over all the patches and they mostly make sense to me. So
+> far the only point I'm uncertain of is the naming of the flag,
+> "fast_init".  That is not clear on what it does and can be overloaded
+> with other stuff later and we probably don't want that.
 
-Signed-off-by: Maxime Ripard <mripard@kernel.org>
----
- .../net/can/allwinner,sun4i-a10-can.yaml      | 51 +++++++++++++++++++
- .../devicetree/bindings/net/can/sun4i_can.txt | 36 -------------
- 2 files changed, 51 insertions(+), 36 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/can/sun4i_can.txt
+I intentionally named it like that because I do want to overload it with
+other stuff in future, instead of adding new flag value for every single
+small optimization we might come up with :)
 
-diff --git a/Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml b/Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml
-new file mode 100644
-index 000000000000..770af7c46114
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/can/allwinner,sun4i-a10-can.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Allwinner A10 CAN Controller Device Tree Bindings
-+
-+maintainers:
-+  - Chen-Yu Tsai <wens@csie.org>
-+  - Maxime Ripard <maxime.ripard@bootlin.com>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - const: allwinner,sun7i-a20-can
-+          - const: allwinner,sun4i-a10-can
-+      - const: allwinner,sun4i-a10-can
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/sun7i-a20-ccu.h>
-+
-+    can0: can@1c2bc00 {
-+        compatible = "allwinner,sun7i-a20-can",
-+                     "allwinner,sun4i-a10-can";
-+        reg = <0x01c2bc00 0x400>;
-+        interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&ccu CLK_APB1_CAN>;
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/net/can/sun4i_can.txt b/Documentation/devicetree/bindings/net/can/sun4i_can.txt
-deleted file mode 100644
-index f69845e6feaf..000000000000
---- a/Documentation/devicetree/bindings/net/can/sun4i_can.txt
-+++ /dev/null
-@@ -1,36 +0,0 @@
--Allwinner A10/A20 CAN controller Device Tree Bindings
-------------------------------------------------------
--
--Required properties:
--- compatible: "allwinner,sun4i-a10-can"
--- reg: physical base address and size of the Allwinner A10/A20 CAN register map.
--- interrupts: interrupt specifier for the sole interrupt.
--- clock: phandle and clock specifier.
--
--Example
---------
--
--SoC common .dtsi file:
--
--	can0_pins_a: can0@0 {
--		allwinner,pins = "PH20","PH21";
--		allwinner,function = "can";
--		allwinner,drive = <0>;
--		allwinner,pull = <0>;
--	};
--...
--	can0: can@1c2bc00 {
--		compatible = "allwinner,sun4i-a10-can";
--		reg = <0x01c2bc00 0x400>;
--		interrupts = <0 26 4>;
--		clocks = <&apb1_gates 4>;
--		status = "disabled";
--	};
--
--Board specific .dts file:
--
--	can0: can@1c2bc00 {
--		pinctrl-names = "default";
--		pinctrl-0 = <&can0_pins_a>;
--		status = "okay";
--	};
--- 
-2.23.0
+Also, I didn't want to hardcode implementation details into UAPI that we
+will have to maintain for long time after percpu allocator in kernel is
+potentially replaced with something new and better (like idr is being
+replaced with xarray now, for example)
 
+Anyway, lets see what other people think. I'm open to changing it.
+
+>
+> Say, for example, we want percpu counters but to disable allocating
+> the stats for hw, to make the counter in 28169abadb08 ("net/sched: Add
+> hardware specific counters to TC actions") optional.
+>
+> So what about:
+> TCA_ACT_FLAGS_NO_PERCPU_STATS
+> TCA_ACT_FLAGS_NO_HW_STATS (this one to be done on a subsequent patchset, =
+yes)
+> ?
+>
+>   Marcelo
