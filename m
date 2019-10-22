@@ -2,134 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CDC9E07EE
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 17:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7745DE0892
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:19:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387871AbfJVPwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 11:52:35 -0400
-Received: from mail-eopbgr130079.outbound.protection.outlook.com ([40.107.13.79]:51206
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388734AbfJVPwe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 11:52:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CaACjfLCybrfcml2RplV9qmN/smui7K7UvBz3VuNfnNT6hdn+vZKzW4vZ4aJ3B7tR+EEthULcNNVXfemE3cFbGjyX2rkvzgPfCKMotFhprD3DkNMtk7WGNvh/lrZkp64SJeja0kbWmBhvSpDuRO0D/AlT8lw4eRzebgw2AHX4V++wpf9rhXVHTc/E6kD4vJatFNDg87JaedXb9toYp5smkbDFEJRm0DBYt/ddbrlrmGZaF8OOQ8HmBALNnJXw3zp1SNEhVhKyQKtr5DNYLqAOJnXM/pp4k2NTnjoBhlIPpTXqo3bHY3oBT8xgRh6vJm7LhIimaACPkw/47CpOs19rw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jS700TPr8V3h5vuSd7UVlqyafCZPOl5hit5RqTJbbrw=;
- b=oJDZzYNUARuqt+IuRHijOCCptUv3xCDiVNCDSfHza0KlgVBYa1tPILqwFfkzDLxuf8fo+yg8+8CiT8F67VtNACgyUMp7m2tSKqyh4ALjp1E4mHLzaet7oIQ3JTRcIzRVjtYpEHSS5emFrNaPLWSRSSONvCfuvyK6RH74aV8W0SIkoIAgwmjMzwcJidWrmaNGw60iPgfh+Qe4JBtOML3ou4JBw6LISTCmD+SzIQTcX1kTcrw+4XBplRgzIfUQjW6heIDrV7dLLywP0DSn6yR/ovpovHxGbk7O6Towh2fPoWBDvwKPGgGrTaMlK/QXQO1uNQ3lbN1WU+Bwi839JQZETg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jS700TPr8V3h5vuSd7UVlqyafCZPOl5hit5RqTJbbrw=;
- b=YkIdHcGVhx8tfcfa4GQtJZQXdgcozTOji7q+f7e36ZknyTB7NI8cutuui0SPonKMrUoRs2Fdt2wdLujprIz0OOvXfigf4zJR5X3BM1TBtpb2XBSd9ZUd+cim8vsCEz6H8BLBGjfhWsGCEqks4cqIejhXaHuVKIVQmo3YdaEEG9c=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB5792.eurprd05.prod.outlook.com (20.178.122.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.24; Tue, 22 Oct 2019 15:52:31 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2367.022; Tue, 22 Oct 2019
- 15:52:31 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
+        id S1731631AbfJVQTj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Oct 2019 12:19:39 -0400
+Received: from mga01.intel.com ([192.55.52.88]:30068 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730331AbfJVQTj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 12:19:39 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Oct 2019 09:19:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,216,1569308400"; 
+   d="scan'208";a="197166132"
+Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
+  by fmsmga007.fm.intel.com with ESMTP; 22 Oct 2019 09:19:38 -0700
+Received: from orsmsx112.amr.corp.intel.com (10.22.240.13) by
+ ORSMSX107.amr.corp.intel.com (10.22.240.5) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 22 Oct 2019 09:19:38 -0700
+Received: from orsmsx121.amr.corp.intel.com ([169.254.10.88]) by
+ ORSMSX112.amr.corp.intel.com ([169.254.3.185]) with mapi id 14.03.0439.000;
+ Tue, 22 Oct 2019 09:19:38 -0700
+From:   "Allan, Bruce W" <bruce.w.allan@intel.com>
+To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "Neftin, Sasha" <sasha.neftin@intel.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6dmxUYAgAAKWoA=
-Date:   Tue, 22 Oct 2019 15:52:31 +0000
-Message-ID: <vbflftcwzes.fsf@mellanox.com>
-References: <20191022141804.27639-1-vladbu@mellanox.com>
- <20191022151524.GZ4321@localhost.localdomain>
-In-Reply-To: <20191022151524.GZ4321@localhost.localdomain>
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
+        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>,
+        Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>,
+        "Brown, Aaron F" <aaron.f.brown@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+Subject: RE: [net-next v3 2/5] e1000e: Add support for S0ix
+Thread-Topic: [net-next v3 2/5] e1000e: Add support for S0ix
+Thread-Index: AQHViDn8atIXCJaa1kmdBZ4YVy3ZGqdmzRcQ
+Date:   Tue, 22 Oct 2019 16:19:37 +0000
+Message-ID: <804857E1F29AAC47BF68C404FC60A1840109952313@ORSMSX121.amr.corp.intel.com>
+References: <20191021180143.11775-1-jeffrey.t.kirsher@intel.com>
+ <20191021180143.11775-3-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20191021180143.11775-3-jeffrey.t.kirsher@intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0090.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:8::30) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 766f210d-481f-44a2-cdbe-08d75707d8c2
-x-ms-traffictypediagnostic: VI1PR05MB5792:|VI1PR05MB5792:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5792EF0656946461B403B2B6AD680@VI1PR05MB5792.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 01986AE76B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(4636009)(346002)(376002)(136003)(396003)(366004)(39860400002)(199004)(189003)(52314003)(8676002)(86362001)(7736002)(4326008)(229853002)(6486002)(305945005)(81156014)(8936002)(81166006)(66556008)(66476007)(66946007)(6116002)(6916009)(6436002)(66446008)(6512007)(3846002)(64756008)(36756003)(6246003)(99286004)(2906002)(486006)(476003)(6506007)(11346002)(102836004)(66066001)(52116002)(2616005)(256004)(14444005)(446003)(26005)(186003)(76176011)(478600001)(54906003)(14454004)(71200400001)(71190400001)(25786009)(386003)(316002)(5660300002)(4226003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5792;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /xXTxZXATwbEvAmu+jqdmiBhzoF4sAEh/RJ/euyujhsvXmV1/g1idNCQHq9323rErH98peevd5wahxYz2Gdebi2geB033Lk4k03dVSElxGdJ9bLIOfq9JG6ZmOuWorrD4CDmiG4RWSHnSqAnMiILKgnrs+oGWiX2lh6yMZ57eYvlVPPqvo9GZKYizgFBnTn9FIN+TULrVg3yPAx7f6ySrjDZaxQYh3em8B7lYS9rJfN73uu0+Bv8eZpkZU+5Vm0EAamp7WwTXdwPVEaD0TzNwoTix/BXjdnDU6B9WSDDyGTTUeKZcmVjZqM4roLJ/7lmHMKLknbD1cE6k/Uzj6TqGrjKEcKuOwSHEv5O06bNp1ow+DnMIWoxoz2vnV0yPkE2qGZcl67mtU7T7AfH+/tdqZ5rE9KI7n2X6PNotoBZXxNVDQRilF39B4++5VkxqEh8
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNTZmMmI3OWMtYTQ5MC00NGViLTkxMjQtN2MzYjFhNmZhM2E2IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQllLUFpVVE5CZzlXZDR3Rm5keUpHUVwvczhaMHBaMHdNbWV0WGdtWHROUzUwR2xZNEExRGxsSDRzbDRpN2pyV1gifQ==
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 766f210d-481f-44a2-cdbe-08d75707d8c2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 15:52:31.0956
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TBXERHziBiW5ifh7SljfVO6akSqrIgkzM0J2ICs2WilUQ0l0cdX5V41YYJ178Tvc6hmYqqM4An+/ZUQUcdPdjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5792
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org [mailto:netdev-owner@vger.kernel.org]
+> On Behalf Of Jeff Kirsher
+> Sent: Monday, October 21, 2019 11:02 AM
+> To: davem@davemloft.net
+> Cc: Neftin, Sasha <sasha.neftin@intel.com>; netdev@vger.kernel.org;
+> nhorman@redhat.com; sassmann@redhat.com; Wysocki, Rafael J
+> <rafael.j.wysocki@intel.com>; Lifshits, Vitaly <vitaly.lifshits@intel.com>;
+> Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>; Brown, Aaron F
+> <aaron.f.brown@intel.com>; Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Subject: [net-next v3 2/5] e1000e: Add support for S0ix
+> 
+> From: Sasha Neftin <sasha.neftin@intel.com>
+> 
+> Implement flow for S0ix support. Modern SoCs support S0ix low power
+> states during idle periods, which are sub-states of ACPI S0 that increase
+> power saving while supporting an instant-on experience for providing
+> lower latency that ACPI S0. The S0ix states shut off parts of the SoC
+> when they are not in use, while still maintaning optimal performance.
+> This patch add support for S0ix started from an Ice Lake platform.
+> 
+> Suggested-by: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+> Signed-off-by: Vitaly Lifshits <vitaly.lifshits@intel.com>
+> Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
+> Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+>  drivers/net/ethernet/intel/e1000e/netdev.c | 182 +++++++++++++++++++++
+>  drivers/net/ethernet/intel/e1000e/regs.h   |   4 +
+>  2 files changed, 186 insertions(+)
 
-On Tue 22 Oct 2019 at 18:15, Marcelo Ricardo Leitner <mleitner@redhat.com> =
-wrote:
-> On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
->> - Extend actions that are used for hardware offloads with optional
->>   netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action flag and
->>   update affected actions to not allocate percpu counters when the flag
->>   is set.
->
-> I just went over all the patches and they mostly make sense to me. So
-> far the only point I'm uncertain of is the naming of the flag,
-> "fast_init".  That is not clear on what it does and can be overloaded
-> with other stuff later and we probably don't want that.
+This patch generates warnings that e1000e_s0ix_entry_flow and e1000e_s0ix_exit_flow
+are defined but not used [-Wunused-function] when CONFIG_PM_SLEEP is not defined.
 
-I intentionally named it like that because I do want to overload it with
-other stuff in future, instead of adding new flag value for every single
-small optimization we might come up with :)
+The warnings were called out by Intel's 0-DAY kernel test infrastructure after this patch
+was merged into the dev-queue branch of Jeff's next-queue tree, so any fix for the warnings
+should include the tag " Reported-by: kbuild test robot <lkp@intel.com>".
 
-Also, I didn't want to hardcode implementation details into UAPI that we
-will have to maintain for long time after percpu allocator in kernel is
-potentially replaced with something new and better (like idr is being
-replaced with xarray now, for example)
-
-Anyway, lets see what other people think. I'm open to changing it.
-
->
-> Say, for example, we want percpu counters but to disable allocating
-> the stats for hw, to make the counter in 28169abadb08 ("net/sched: Add
-> hardware specific counters to TC actions") optional.
->
-> So what about:
-> TCA_ACT_FLAGS_NO_PERCPU_STATS
-> TCA_ACT_FLAGS_NO_HW_STATS (this one to be done on a subsequent patchset, =
-yes)
-> ?
->
->   Marcelo
+Bruce.
