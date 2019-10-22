@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 848FDE0295
+	by mail.lfdr.de (Postfix) with ESMTP id F2DF9E0296
 	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 13:15:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387571AbfJVLPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 07:15:07 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:41920 "EHLO inva021.nxp.com"
+        id S2387684AbfJVLPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 07:15:09 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:41960 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387461AbfJVLPG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 07:15:06 -0400
+        id S2387460AbfJVLPH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 07:15:07 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CD19F200631;
-        Tue, 22 Oct 2019 13:15:04 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CD35F200633;
+        Tue, 22 Oct 2019 13:15:05 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C03DE20064F;
-        Tue, 22 Oct 2019 13:15:04 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BEB6A20010A;
+        Tue, 22 Oct 2019 13:15:05 +0200 (CEST)
 Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 6AA972060F;
-        Tue, 22 Oct 2019 13:15:04 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 666F32060F;
+        Tue, 22 Oct 2019 13:15:05 +0200 (CEST)
 From:   Madalin Bucur <madalin.bucur@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     roy.pledge@nxp.com, laurentiu.tudor@nxp.com,
         Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [PATCH net-next v2 1/6] fsl/fman: don't touch liodn base regs reserved on non-PAMU SoCs
-Date:   Tue, 22 Oct 2019 14:14:56 +0300
-Message-Id: <1571742901-22923-2-git-send-email-madalin.bucur@nxp.com>
+Subject: [PATCH net-next v2 2/6] dpaa_eth: defer probing after qbman
+Date:   Tue, 22 Oct 2019 14:14:57 +0300
+Message-Id: <1571742901-22923-3-git-send-email-madalin.bucur@nxp.com>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1571742901-22923-1-git-send-email-madalin.bucur@nxp.com>
 References: <1571742901-22923-1-git-send-email-madalin.bucur@nxp.com>
@@ -40,46 +40,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-The liodn base registers are specific to PAMU based NXP systems and are
-reserved on SMMU based ones. Don't access them unless PAMU is compiled in.
+If the DPAA 1 Ethernet driver gets probed before the QBMan driver it will
+cause a boot crash. Add predictability in the probing order by deferring
+the Ethernet driver probe after QBMan and portals by using the recently
+introduced QBMan APIs.
 
 Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/fman/fman.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 31 ++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
-index 210749bf1eac..934111def0be 100644
---- a/drivers/net/ethernet/freescale/fman/fman.c
-+++ b/drivers/net/ethernet/freescale/fman/fman.c
-@@ -634,6 +634,9 @@ static void set_port_liodn(struct fman *fman, u8 port_id,
- {
- 	u32 tmp;
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index b4b82b9c5cd6..75eeb2ef409f 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2773,6 +2773,37 @@ static int dpaa_eth_probe(struct platform_device *pdev)
+ 	int err = 0, i, channel;
+ 	struct device *dev;
  
-+	iowrite32be(liodn_ofst, &fman->bmi_regs->fmbm_spliodn[port_id - 1]);
-+	if (!IS_ENABLED(CONFIG_FSL_PAMU))
-+		return;
- 	/* set LIODN base for this port */
- 	tmp = ioread32be(&fman->dma_regs->fmdmplr[port_id / 2]);
- 	if (port_id % 2) {
-@@ -644,7 +647,6 @@ static void set_port_liodn(struct fman *fman, u8 port_id,
- 		tmp |= liodn_base << DMA_LIODN_SHIFT;
- 	}
- 	iowrite32be(tmp, &fman->dma_regs->fmdmplr[port_id / 2]);
--	iowrite32be(liodn_ofst, &fman->bmi_regs->fmbm_spliodn[port_id - 1]);
- }
- 
- static void enable_rams_ecc(struct fman_fpm_regs __iomem *fpm_rg)
-@@ -1942,6 +1944,8 @@ static int fman_init(struct fman *fman)
- 
- 		fman->liodn_offset[i] =
- 			ioread32be(&fman->bmi_regs->fmbm_spliodn[i - 1]);
-+		if (!IS_ENABLED(CONFIG_FSL_PAMU))
-+			continue;
- 		liodn_base = ioread32be(&fman->dma_regs->fmdmplr[i / 2]);
- 		if (i % 2) {
- 			/* FMDM_PLR LSB holds LIODN base for odd ports */
++	err = bman_is_probed();
++	if (!err)
++		return -EPROBE_DEFER;
++	if (err < 0) {
++		dev_err(&pdev->dev, "failing probe due to bman probe error\n");
++		return -ENODEV;
++	}
++	err = qman_is_probed();
++	if (!err)
++		return -EPROBE_DEFER;
++	if (err < 0) {
++		dev_err(&pdev->dev, "failing probe due to qman probe error\n");
++		return -ENODEV;
++	}
++	err = bman_portals_probed();
++	if (!err)
++		return -EPROBE_DEFER;
++	if (err < 0) {
++		dev_err(&pdev->dev,
++			"failing probe due to bman portals probe error\n");
++		return -ENODEV;
++	}
++	err = qman_portals_probed();
++	if (!err)
++		return -EPROBE_DEFER;
++	if (err < 0) {
++		dev_err(&pdev->dev,
++			"failing probe due to qman portals probe error\n");
++		return -ENODEV;
++	}
++
+ 	/* device used for DMA mapping */
+ 	dev = pdev->dev.parent;
+ 	err = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(40));
 -- 
 2.1.0
 
