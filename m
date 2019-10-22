@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82210E030B
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 13:37:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BA84E030D
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 13:37:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731916AbfJVLhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 07:37:37 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:35927 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730749AbfJVLhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 07:37:36 -0400
-Received: by mail-lj1-f193.google.com with SMTP id v24so16818133ljj.3
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 04:37:34 -0700 (PDT)
+        id S2388721AbfJVLhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 07:37:40 -0400
+Received: from mail-lf1-f41.google.com ([209.85.167.41]:33758 "EHLO
+        mail-lf1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731065AbfJVLhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 07:37:37 -0400
+Received: by mail-lf1-f41.google.com with SMTP id y127so12840494lfc.0
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 04:37:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XwpTSQZj56OSYomc9KDBVc5uyUVwcduu9tcaPzQMlu4=;
-        b=L9mD9u1NtrWM8xoDfW9KBEBAjbwYr/XNsM9Nw4rsdtB4K+DpJdibES7k+VbjRKCc5M
-         jiLN4EugX0slnPe0d05Y36kGeRG8sWw2cIsPaimvFA4Dbc8v8ForgV+se1tDBOymyZXj
-         +nREmzhFJYp+gOE6cf9yB8X3sZu+0J20GrkzQ=
+        bh=xo1fyKX+7Sd9n19IL2v+0Ngzo9bK986LfFjLpFdWIA4=;
+        b=lPDEhgGnKjHK3JW9+lHXUDMa6GUyisSi0HMCl/m8GZdiVQWJDQqB4hFGtdlwF0kDwI
+         DhywtEV+1sRCbeIK7pfjc2d+lWqFLCb0U5WOtAIBGrsYuF2BQXOxaGIaYzPItZN03vJV
+         a+AtyMHSciua3aLgwwRec2zSrq/mTFve4GJT8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XwpTSQZj56OSYomc9KDBVc5uyUVwcduu9tcaPzQMlu4=;
-        b=AyTWAK3R1IB9BLqMpJNmnNYqFI0QH5DTm/VT+f/joNCogEgbrrcSXeNeNkr2z2AI5b
-         Ha+6liI+CS8Fz0DZnn5z2rKM8dOUoLLPU2SsheMLOpQ32UeBgb8GP03dgTUiYcBOS6v+
-         uWV62dWh5AXc7yT3ucdvxg2mzXcsCByzdhV9pO1qBbIBSWKsR/m2Xi5ZZT9AATPA9QvQ
-         801AjR1BhwJ8tjrw1HE1Pkvk1oS/1ZGxR25w+rBJIU0+RARAzSReNPz4SxsmIlZAciJw
-         rhIT6Tx0pPLaokvH6bj9YqpxdPrjb/Ks4MthPo6FEvDnTeJ94lgV//Nv1QWB/Va6NV5B
-         qwBg==
-X-Gm-Message-State: APjAAAXsHBh0dWprMtRs+evO2BPAXtr2urgIt2VB279AzTU5ViCxePuA
-        0aDTpAMJh8XQgFrExym7hG0aWA==
-X-Google-Smtp-Source: APXvYqzmjfWIVuqz2e1ZdmrW+JohGhmSgP9fCvJZKAk9rUck9ZRuA0qxpcq+Gr2vjJnrtkO8Y4vAGQ==
-X-Received: by 2002:a2e:85cf:: with SMTP id h15mr18966379ljj.141.1571744253522;
-        Tue, 22 Oct 2019 04:37:33 -0700 (PDT)
+        bh=xo1fyKX+7Sd9n19IL2v+0Ngzo9bK986LfFjLpFdWIA4=;
+        b=j0w++FsmHVyj2aKDfeFbNOd5vgDCA/gJahuQ15XCZOKm15agKIMkfxNZIlZtv4at+9
+         IIW6VrIDFNjKGgeRoKxEiJi2loMqBk47Tr0UsLF1vO0xQX7Bbg6v2fKvAe7ZjR/b6fOD
+         fWr8dn/Ie+1F+WAmndlpTrUKrzkj2wy+SWTeJFXgx2VXh5a7yrcJGOEXlioBCTQEFKML
+         zJvtF0m3rp55ahbqb0rzs9hXTKB/eBt3Cdivx3TIVmb/MjGsOJNOJZUOUGlSncjIbBjY
+         Pfx2IPduGFZFDoPGx5IHI4B10LMKcSXS8P5h2NODw04Y2wSj1caRTFPtrdx1q5BGWjkT
+         FhTA==
+X-Gm-Message-State: APjAAAUGImRVKtuc8Fjv0dGUwftZIs/jrDVh0vz5rn+oq/w+8n7zen3k
+        fCoMB4XTHQcHHeDc/nMkQeJNag==
+X-Google-Smtp-Source: APXvYqxf5RtsP3+8l0+YbiaCq2NOPMWDoMe5AdFeLHwy2MXfNM8EU0LhQhGp2+Ugml2geRnRvpcsMQ==
+X-Received: by 2002:ac2:5108:: with SMTP id q8mr14029087lfb.150.1571744254892;
+        Tue, 22 Oct 2019 04:37:34 -0700 (PDT)
 Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id t135sm9396057lff.70.2019.10.22.04.37.32
+        by smtp.gmail.com with ESMTPSA id i190sm14857960lfi.45.2019.10.22.04.37.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 04:37:33 -0700 (PDT)
+        Tue, 22 Oct 2019 04:37:34 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
         kernel-team@cloudflare.com
-Subject: [RFC bpf-next 1/5] bpf, sockmap: Let BPF helpers use lookup operation on SOCKMAP
-Date:   Tue, 22 Oct 2019 13:37:26 +0200
-Message-Id: <20191022113730.29303-2-jakub@cloudflare.com>
+Subject: [RFC bpf-next 2/5] bpf, sockmap: Allow inserting listening TCP sockets into SOCKMAP
+Date:   Tue, 22 Oct 2019 13:37:27 +0200
+Message-Id: <20191022113730.29303-3-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191022113730.29303-1-jakub@cloudflare.com>
 References: <20191022113730.29303-1-jakub@cloudflare.com>
@@ -59,29 +59,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't require the BPF helpers that need to access SOCKMAP maps to live in
-the sock_map module. Expose SOCKMAP lookup to all kernel-land.
+In order for SOCKMAP type to become a generic collection for storing socket
+references we need to loosen the checks in update callback.
+
+Currently SOCKMAP requires the TCP socket to be in established state, which
+prevents us from using it to keep references to listening sockets.
+
+Change the update pre-checks so that it is sufficient for socket to be in a
+hash table, i.e. have a local address/port, to be inserted.
+
+Return -EINVAL if the condition is not met to be consistent with
+REUSEPORT_SOCKARRY map type.
 
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- net/core/sock_map.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/core/sock_map.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index eb114ee419b6..facacc296e6c 100644
+index facacc296e6c..222036393b90 100644
 --- a/net/core/sock_map.c
 +++ b/net/core/sock_map.c
-@@ -271,7 +271,9 @@ static struct sock *__sock_map_lookup_elem(struct bpf_map *map, u32 key)
+@@ -415,11 +415,14 @@ static int sock_map_update_elem(struct bpf_map *map, void *key,
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	if (!sock_map_sk_is_suitable(sk) ||
+-	    sk->sk_state != TCP_ESTABLISHED) {
++	if (!sock_map_sk_is_suitable(sk)) {
+ 		ret = -EOPNOTSUPP;
+ 		goto out;
+ 	}
++	if (!sk_hashed(sk)) {
++		ret = -EINVAL;
++		goto out;
++	}
  
- static void *sock_map_lookup(struct bpf_map *map, void *key)
- {
--	return ERR_PTR(-EOPNOTSUPP);
-+	u32 index = *(u32 *)key;
-+
-+	return __sock_map_lookup_elem(map, index);
- }
- 
- static int __sock_map_delete(struct bpf_stab *stab, struct sock *sk_test,
+ 	sock_map_sk_acquire(sk);
+ 	ret = sock_map_update_common(map, idx, sk, flags);
 -- 
 2.20.1
 
