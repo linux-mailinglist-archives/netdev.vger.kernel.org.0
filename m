@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C16EE03C9
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 14:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26AFBE03EE
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 14:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389062AbfJVMZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 08:25:02 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:52015 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387575AbfJVMZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 08:25:02 -0400
-X-Originating-IP: 92.137.17.54
-Received: from localhost (alyon-657-1-975-54.w92-137.abo.wanadoo.fr [92.137.17.54])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id DB4701BF215;
-        Tue, 22 Oct 2019 12:24:59 +0000 (UTC)
-Date:   Tue, 22 Oct 2019 14:24:59 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        davem@davemloft.net, nicolas.ferre@microchip.com,
-        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH net-next] net: macb: convert to phylink
-Message-ID: <20191022122459.GE3125@piout.net>
-References: <20191018143924.7375-1-antoine.tenart@bootlin.com>
- <20191018190810.GH24810@lunn.ch>
- <20191018200823.GK25745@shell.armlinux.org.uk>
+        id S2389023AbfJVMe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 08:34:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57512 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388066AbfJVMe2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 08:34:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=DaWu7ewNHf0bG3S4bYR7+QQhteeZV+2msxTJnL4r6rU=; b=TKE3iX4E8mAD7D5hy2pkpQE7EF
+        LbEtQPAWCo67DEL1DXsSOC4dRAZ6ljT2+NojoAEBx6CvAxeySpBjmk6vNrHOfYfqFzI7RH6fibAem
+        BXKDWTJB384zuu8B3+RFLoNd5H8/nKPAERrvzA+26Fq4iRf/RbUSwWdg9Qwjs6emfLiA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iMtMm-0001X0-B6; Tue, 22 Oct 2019 14:34:24 +0200
+Date:   Tue, 22 Oct 2019 14:34:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Thomas =?iso-8859-1?Q?H=E4mmerle?= 
+        <Thomas.Haemmerle@wolfvision.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "m.tretter@pengutronix.de" <m.tretter@pengutronix.de>
+Subject: Re: [PATCH] net: phy: dp83867: support Wake on LAN
+Message-ID: <20191022123424.GA5707@lunn.ch>
+References: <1571742645-13800-1-git-send-email-thomas.haemmerle@wolfvision.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20191018200823.GK25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1571742645-13800-1-git-send-email-thomas.haemmerle@wolfvision.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/10/2019 21:08:23+0100, Russell King - ARM Linux admin wrote:
-> On Fri, Oct 18, 2019 at 09:08:10PM +0200, Andrew Lunn wrote:
-> > On Fri, Oct 18, 2019 at 04:39:24PM +0200, Antoine Tenart wrote:
-> > > This patch converts the MACB Ethernet driver to the Phylink framework.
-> > > The MAC configuration is moved to the Phylink ops and Phylink helpers
-> > > are now used in the ethtools functions.
-> 
-> What seems to be missing is "why".  It isn't obvious from the patch why
-> this conversion is being done...
-> 
+On Tue, Oct 22, 2019 at 11:11:07AM +0000, Thomas Hämmerle wrote:
+> +		if (wol->wolopts & WAKE_MAGICSECURE) {
+> +			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
+> +				      (wol->sopass[1] << 8) | wol->sopass[0]);
+> +			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
+> +				      (wol->sopass[3] << 8) | wol->sopass[2]);
+> +			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
+> +				      (wol->sopass[5] << 8) | wol->sopass[3]);
 
-One of the first goal was to get access to
-phylink_ethtool_get_pauseparam/phylink_ethtool_set_pauseparam and the
-flow control logic instead of having to open code it.
+Hi Thomas
 
-There are also boards with a zynqmp and SFP cages.
+I see sopass[3] twice here. Is that a typo?
 
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+  Andrew
