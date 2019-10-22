@@ -2,219 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCCE0E09A2
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:49:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E9B2E09AB
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 18:50:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732148AbfJVQtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 12:49:09 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:53613 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727960AbfJVQtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:49:08 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iMxLE-00054w-PJ; Tue, 22 Oct 2019 18:49:04 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72] (unknown [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1C82B46CBC1;
-        Tue, 22 Oct 2019 16:49:01 +0000 (UTC)
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Vincent Prince <vincent.prince.fr@gmail.com>, jiri@resnulli.us,
-        jhs@mojatatu.com, netdev@vger.kernel.org, dave.taht@gmail.com,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        xiyou.wangcong@gmail.com, davem@davemloft.net
-References: <20190327165632.10711-1-mkl@pengutronix.de>
- <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
- <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
- <20191022094254.489fd6a4@hermes.lan>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
- for CAN hardware
-Message-ID: <d0d865bd-7bc7-abb5-2b54-2c100c4b9a09@pengutronix.de>
-Date:   Tue, 22 Oct 2019 18:48:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1732826AbfJVQun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 12:50:43 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:42913 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727960AbfJVQum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 12:50:42 -0400
+Received: by mail-qt1-f194.google.com with SMTP id w14so27733030qto.9;
+        Tue, 22 Oct 2019 09:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3jAJkxjVFVzUVJrkjHv+AxjkWN+Ybu1L+yMTqKZAMBc=;
+        b=EaCCNq1n/yFnGw5oVlPlNCPXSUBcFKk9LFZpwAJMAKSBl+3OpoifuytxT7wD4jfcXa
+         iIRl447oPtvARYR16XlMs9n8dyqlvOSYUd6l+w7t7hzXrdRltFTbVHl2kFW/pHsiNowA
+         +YQ5di1EHZfU9ucxK6VfO2xeNcxV9otqsm8Un1BhD+Q0PMScQ8/qLvV5VnPRPpP4bSkE
+         nGAySvIUBD/8ncvXTLe1U4hbIfvsI7D7/V3uqESDtFweTV+0lw0ZqXNjFzsOu8h1g++K
+         C6Q7Z05Ivg12YuAWuIuDlj/w8drR1c5CZ2cDYbfLAoHN2gIIGIrgapCnABJy22NHrfIp
+         0TUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3jAJkxjVFVzUVJrkjHv+AxjkWN+Ybu1L+yMTqKZAMBc=;
+        b=MU1gTC2wla7/ItIp/VGlm6Yz1PlzfmDtAsu1LSpxWM+CEA5VFHKrY/JBQubk/sg4Uc
+         +d4/tIVdms851u22+oDs3bCRlxHtEUObNN8AYuI3EdReXmfbq/2vU9jIF7D42+eu+TpI
+         5K6RG8sX6WnLIA/1Yb+S7RHm7Md+F0EqMmH21SCisDNgOILhS1JYtFWEB2hanC1maiBq
+         tB6lk7fQFl7ecBwiJa1jvJX5XVEmlWFY0/ayxTy5jvpTp84SvPjwtaRn89HsP9E1VjYp
+         mXQhShdDlBYDN6vl0/JvXraR4aGx4E0nvbl9kcnrqaHPSOfVfcraid/DaKR6sF8clvTb
+         YHhA==
+X-Gm-Message-State: APjAAAV5yw9YTxqJVrk15VvX2luuPnjccZYNnEVYxrVJueT5brFrbeyz
+        VgJfT8glFZL1z2b5o9KLvMY=
+X-Google-Smtp-Source: APXvYqyjk6QHYezg+upsGzQ268EzLOtaM+TE5FbsU173q1gGX8Msp7t3ciukWbMIKqLk+bKc0gis/A==
+X-Received: by 2002:ac8:3652:: with SMTP id n18mr4545182qtb.232.1571763041518;
+        Tue, 22 Oct 2019 09:50:41 -0700 (PDT)
+Received: from frodo.byteswizards.com ([190.162.109.190])
+        by smtp.gmail.com with ESMTPSA id 44sm14922244qtt.13.2019.10.22.09.50.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Oct 2019 09:50:40 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 13:50:36 -0300
+From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH v14 4/5] tools/testing/selftests/bpf: Add self-tests for
+ new helper.
+Message-ID: <20191022165036.GA22524@frodo.byteswizards.com>
+References: <20191017150032.14359-1-cneirabustos@gmail.com>
+ <20191017150032.14359-5-cneirabustos@gmail.com>
+ <d88ce3ca-d235-cd9c-c1a9-c2d01a01541d@fb.com>
+ <CAEf4BzbsDbxjALMJ119B-nweD1xEZ_PHX9r9k8qDpekraaHR2w@mail.gmail.com>
+ <20191021191449.GA16484@ebpf00.byteswizards.com>
+ <CAEf4BzY5ZMQJYwU5p-r4bnOcZLGsR1_1iY3-0KKnZyttRbyr6g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20191022094254.489fd6a4@hermes.lan>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzY5ZMQJYwU5p-r4bnOcZLGsR1_1iY3-0KKnZyttRbyr6g@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ
-Content-Type: multipart/mixed; boundary="cJsv4zNEKbGVh1R1bCCefmlaO90Kd3gsf";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Vincent Prince <vincent.prince.fr@gmail.com>, jiri@resnulli.us,
- jhs@mojatatu.com, netdev@vger.kernel.org, dave.taht@gmail.com,
- linux-can@vger.kernel.org, kernel@pengutronix.de, xiyou.wangcong@gmail.com,
- davem@davemloft.net
-Message-ID: <d0d865bd-7bc7-abb5-2b54-2c100c4b9a09@pengutronix.de>
-Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
- for CAN hardware
-References: <20190327165632.10711-1-mkl@pengutronix.de>
- <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
- <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
- <20191022094254.489fd6a4@hermes.lan>
-In-Reply-To: <20191022094254.489fd6a4@hermes.lan>
+On Mon, Oct 21, 2019 at 12:18:33PM -0700, Andrii Nakryiko wrote:
+> On Mon, Oct 21, 2019 at 12:14 PM Carlos Antonio Neira Bustos
+> <cneirabustos@gmail.com> wrote:
+> >
+> > On Mon, Oct 21, 2019 at 11:20:01AM -0700, Andrii Nakryiko wrote:
+> > > On Sat, Oct 19, 2019 at 1:58 AM Yonghong Song <yhs@fb.com> wrote:
+> > > >
+> > > >
+> > > >
+> > > > On 10/17/19 8:00 AM, Carlos Neira wrote:
+> > > > > Self tests added for new helper
+> > > > >
+> > > > > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > > > > ---
+> > > > >   .../bpf/prog_tests/get_ns_current_pid_tgid.c  | 96 +++++++++++++++++++
+> > > > >   .../bpf/progs/get_ns_current_pid_tgid_kern.c  | 53 ++++++++++
+> > >
+> > > It looks like typical naming convention is:
+> > >
+> > > prog_test/<something>.c
+> > > progs/test_<something>.c
+> > >
+> > > Let's keep this consistent. I'm about to do a bit smarter Makefile
+> > > that will capture this convention, so it's good to have less exception
+> > > to create. Thanks!
+> > >
+> > > Otherwise, besides what Yonghong mentioned, this look good to me.
+> > >
+> > >
+> > > > >   2 files changed, 149 insertions(+)
+> > > > >   create mode 100644 tools/testing/selftests/bpf/prog_tests/get_ns_current_pid_tgid.c
+> > > > >   create mode 100644 tools/testing/selftests/bpf/progs/get_ns_current_pid_tgid_kern.c
+> > > > >
+> > >
+> > > [...]
+> > >
+> > > > > +     prog = bpf_object__find_program_by_title(obj, probe_name);
+> > > > > +     if (CHECK(!prog, "find_probe",
+> > > > > +               "prog '%s' not found\n", probe_name))
+> > > > > +             goto cleanup;
+> > > > > +
+> > > > > +     bpf_program__set_type(prog, BPF_PROG_TYPE_RAW_TRACEPOINT);
+> > > >
+> > > > Do we need this? I thought libbpf should automatically
+> > > > infer program type from section name?
+> > >
+> > > We used to, until the patch set that Daniel landed today. Now it can be dropped.
+> > >
+> > > >
+> > > > > +
+> > > > > +     load_attr.obj = obj;
+> > > > > +     load_attr.log_level = 0;
+> > > > > +     load_attr.target_btf_path = NULL;
+> > > > > +     err = bpf_object__load_xattr(&load_attr);
+> > > > > +     if (CHECK(err, "obj_load",
+> > > > > +               "failed to load prog '%s': %d\n",
+> > > > > +               probe_name, err))
+> > > > > +             goto cleanup;
+> > > >
+> > >
+> > > [...]
+> >
+> > Thanks Andrii,
+> > I have a doubt, I don't find in prog_tests/rdonly_map.c  where is "test_rdo.bss" defined ?, is called in line 43 but I'm missing how to is it used as I don't see it defined.
+> >
+> 
+> This map is created by libbpf implicitly from global variables used by
+> BPF object. You just look it up by name, set its value to whatever you
+> need global variables to be set up to, and that value will be
+> available to BPF program. From BPF program side, when you update
+> global variable, that value can be read from user space using that
+> same test_rdo.bss map. Does it make sense?
+> 
+> > Bests
 
---cJsv4zNEKbGVh1R1bCCefmlaO90Kd3gsf
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-
-On 10/22/19 6:42 PM, Stephen Hemminger wrote:
-> On Tue, 22 Oct 2019 16:53:44 +0200
-> Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->=20
->> On 10/22/19 3:23 PM, Vincent Prince wrote:
->>> Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com> =20
->>
->> please include a patch description. I.e. this one:
->>
->> -------->8-------->8-------->8-------->8-------->8-------->8-------->8=
--------- =20
->> There is networking hardware that isn't based on Ethernet for layers 1=
- and 2.
->>
->> For example CAN.
->>
->> CAN is a multi-master serial bus standard for connecting Electronic Co=
-ntrol
->> Units [ECUs] also known as nodes. A frame on the CAN bus carries up to=
- 8 bytes
->> of payload. Frame corruption is detected by a CRC. However frame loss =
-due to
->> corruption is possible, but a quite unusual phenomenon.
->>
->> While fq_codel works great for TCP/IP, it doesn't for CAN. There are a=
- lot of
->> legacy protocols on top of CAN, which are not build with flow control =
-or high
->> CAN frame drop rates in mind.
->>
->> When using fq_codel, as soon as the queue reaches a certain delay base=
-d length,
->> skbs from the head of the queue are silently dropped. Silently meaning=
- that the
-                 ^^^^^^^^^^^^^^^^^
->> user space using a send() or similar syscall doesn't get an error. How=
-ever
->> TCP's flow control algorithm will detect dropped packages and adjust t=
-he
->> bandwidth accordingly.
-
-> Why not fix fq_codel to return the same errors as other qdisc?
-
-The head drop is the problem. After a send() system call returned to
-user space, one would not expect that a later send() will knock an
-earlier from the queue.
-
-It's too late to throttle the package generation, as one frame is lost
-already.
-
-Marc
-
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
-
-
---cJsv4zNEKbGVh1R1bCCefmlaO90Kd3gsf--
-
---ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2vMvgACgkQWsYho5Hk
-nSAzwggApHPLYwEg78qvJeyYoQ7Q6601g0Yulhyz3CLoAwyTMppHNesegAYMpfFZ
-D+8kMjLi9x2BhRMBujQYNOP9A82JirEYdiPBoTheqWWF1juEU01Z9UrKKRuKHn9A
-F1hVrh1EcobK5ymr4+wrsl+XSnmz3V8+ytp+skFVQcjofv0qsTzmK57fTlHe/Hfo
-UFhzRsfOw3dksOCQ0vrKy7a491tE68ecLJz6VxmTIZI3CcJeb2UhZqqvTGVSw7fQ
-MqyvNgym2Evqvis8Tf2ih298KOvx8GCw/twgcMD9qCc3RaWgdWlZu2mOIJuhxUph
-gj6IiYRYHCGVcgLX/hhtf85HMAbhxA==
-=DERk
------END PGP SIGNATURE-----
-
---ZGX4thhKU5ySb8F1SQIYPsBtz9A5sBeYZ--
+Thanks for the explanation Andrii, now it works!.
