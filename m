@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2390E0136
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3753DE0138
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731640AbfJVJxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 05:53:49 -0400
+        id S1731649AbfJVJxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 05:53:52 -0400
 Received: from mail-eopbgr780047.outbound.protection.outlook.com ([40.107.78.47]:41694
         "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731615AbfJVJxs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 05:53:48 -0400
+        id S1731636AbfJVJxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 05:53:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=daL5kHRvVvWGyP20EOpHHDI2S4HUBzKjniEi66VNpQ0o1z1jv+BP4P1G0AysEwZx0GpFvBNJLcKODc+gLHi/XkG8B0xsX+00AcSVP1gJH3UfS3uNPO2wZYAaGNjTQHuCkSv+ySeCJ9MsX9SYQQ23/HYK9VxP4r1+gn8zoUbEp7lZwnUiWR6D1XVEy+SuZHe/QAdhFAhxaGMuVuzyZTklWXpniwHJC9ksHqoI9G6EC4xGJmP4sO2rlMuh2Iv6D/azeIqOCKK6YEvSLsWAAPs7+0FZCFhdU3CNS/9jfAGtO/qsJeIQ/s9WnvF/+9qq9kxtBlakO1TqS93lJxJhzNXg4w==
+ b=j4FakSicuPE3Ktr5Pe3ndn46LhqlSehNKKDUYJD8L4Pcchzgs1ef+CfS4VKa0URrtQio+xKOfs1CwF66Q7Z4lvis2RmBYzRoqKZQM7h8TX5othqhn9C2zwRsZtqHFoftIz6LX8vVIN1GpwKaW5CGUC45HkRxIhegWZHWpESI9qaLXIrIzPFatvRcmQCXi11eAqIvt5K4uvlVIlxomLn+EhkSI66dnXjeSQ58JXcxeXcqRqJpMJoir8RFVUHpfK6KOwSmk8Big8sUm2i+eGyKL1yaEvJQf8P+h9j9G/IT0URrASkeMzGKgwGlKfi1KGKQbeVl7X3rnpmBXomw21D1IQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s3ZaGy+WjREH7WMwwsQBNpfRgu4ztjmiBSJmPcQqXAw=;
- b=JQ5cLMM0vsRMvLHWC/Vn0T991Bh0XJGp/UWX3ndZwfJiSGDZTb6DgxYR0nyZwUXi3sSrsz6/d8jm3xNbqxgcpVloxymzTLiWFTvdRDPz/5WDNYDUwY3tZizlrLkG6ZWaRvIItQ94Lw+rM55t/AN2i2+irvj+utIAsxageX5f0pmGkDzZwy759rkvT8fiqaQm03RQbF6qKzRlQybGH8YBoUHc0MgxVrkzmy8z1vq/RFipHRpOvLcf815RQpjBUif1XOXdA8ipRyc44Sf8Td+j3fHoYUKWXXoT0KMWzxTbFKCC1Dc4E/6/CNvhaK+uh+ECxSz/yHldMC/4YPcNZfLtag==
+ bh=5kVvcP361kusnQOL7tWlU6X4asf0pnsMFdYEi7xxfew=;
+ b=IO3Tg3/mZU1UAlJS95nc5DcLWewjq8Dm0/OqVxhb66EtDHHQpT/Wa/dJ7gno3yVhFKs2/eZijGQuZaSc/6V+b4GenEiDNfwWTJoWBnvW2qME0xHF7/Nrobr0tV7X+msvCN6m+Q6gZCovPwIrfvw/+T8JCX5ZJry6ipYhuKA0lW4xqy2eEk6U8D9rqC4czm5kB3aH2EWxC1BzJ4YFWuBI7xkRmhIjZvx4OLei/Plcbn7Xv3VYCaXDoY7qvIVusbRlFoPX6aanMctA1ZJEXe+MnloDDEHdrKZiQdKYI12zQF+AF0JaVhl7MOevlnUYISErauwMMvP9/fo07Nm4h4yAgQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
  dkim=pass header.d=aquantia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s3ZaGy+WjREH7WMwwsQBNpfRgu4ztjmiBSJmPcQqXAw=;
- b=GVOcB3yr5ImSvLe/wthTUXOC8Ocrwca7mXbk4X8jK8eJk1LBJjB2OBdOCQDM9uFhh76acNh87jeKjXRw4ivpQGt4+zLYCNp4bLJiOrz21gebQARrH7UiC0IsskpmJuivbaYTA6exbs3IyBYJhg5DvAfBIJdZWLVcmB3zjUuneaY=
+ bh=5kVvcP361kusnQOL7tWlU6X4asf0pnsMFdYEi7xxfew=;
+ b=rfdkxEQYcjUp1UWh1MX9o5LI9WpDwNo4iKiDheUKjZr0+3Q5kDckT/UZr7ghLO1g7qbWZZcT6MsfX9YVmEnlVTTPKIiKfoWfDtOJIUeBj+jNTmeO0qcf4+1qV2mH0ws7iV8Fa2V8w7coBXOb1hdzd5LEQjgh/IQ90pHUnK4QNy4=
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
  BN8PR11MB3732.namprd11.prod.outlook.com (20.178.218.223) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.24; Tue, 22 Oct 2019 09:53:40 +0000
+ 15.20.2367.24; Tue, 22 Oct 2019 09:53:43 +0000
 Received: from BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
  ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2347.028; Tue, 22 Oct 2019
- 09:53:40 +0000
+ 09:53:43 +0000
 From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "davem@davemloft.net" <davem@davemloft.net>,
@@ -45,12 +45,13 @@ CC:     "davem@davemloft.net" <davem@davemloft.net>,
         Simon Edelhaus <sedelhaus@marvell.com>,
         Igor Russkikh <Igor.Russkikh@aquantia.com>,
         Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
-Subject: [PATCH v3 net-next 08/12] net: aquantia: add support for ptp ioctls
-Thread-Topic: [PATCH v3 net-next 08/12] net: aquantia: add support for ptp
- ioctls
-Thread-Index: AQHViL6VoRpX+NIOQEuej/2HvAnmBQ==
-Date:   Tue, 22 Oct 2019 09:53:40 +0000
-Message-ID: <777624317f04d6a91d57f6947bee3f477af9c76b.1571737612.git.igor.russkikh@aquantia.com>
+Subject: [PATCH v3 net-next 09/12] net: aquantia: implement get_ts_info
+ ethtool
+Thread-Topic: [PATCH v3 net-next 09/12] net: aquantia: implement get_ts_info
+ ethtool
+Thread-Index: AQHViL6WwVBUUcelPka2qlBkJD3//A==
+Date:   Tue, 22 Oct 2019 09:53:42 +0000
+Message-ID: <037c934c8926d1ff708e1348333fdf91001dbaf0.1571737612.git.igor.russkikh@aquantia.com>
 References: <cover.1571737612.git.igor.russkikh@aquantia.com>
 In-Reply-To: <cover.1571737612.git.igor.russkikh@aquantia.com>
 Accept-Language: en-US
@@ -66,29 +67,29 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-mailer: git-send-email 2.17.1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a4afc8ae-f69f-4ba1-3058-08d756d5b773
+x-ms-office365-filtering-correlation-id: a5af56a2-01c1-46be-fb9a-08d756d5b8f1
 x-ms-traffictypediagnostic: BN8PR11MB3732:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR11MB3732B6211FE4BA330966AC4198680@BN8PR11MB3732.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:13;
+x-microsoft-antispam-prvs: <BN8PR11MB37329C17B19EA8FA22CFD9F998680@BN8PR11MB3732.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:285;
 x-forefront-prvs: 01986AE76B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(39850400004)(346002)(366004)(376002)(396003)(199004)(189003)(2616005)(25786009)(8936002)(81166006)(86362001)(486006)(81156014)(1730700003)(44832011)(476003)(8676002)(50226002)(186003)(71190400001)(11346002)(446003)(14444005)(256004)(71200400001)(3846002)(2906002)(118296001)(66556008)(64756008)(66446008)(6116002)(66476007)(5660300002)(66946007)(6512007)(99286004)(5640700003)(4326008)(54906003)(316002)(107886003)(6486002)(7736002)(305945005)(6436002)(66066001)(26005)(6506007)(386003)(14454004)(102836004)(508600001)(6916009)(52116002)(76176011)(36756003)(2351001)(2501003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3732;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(1496009)(136003)(39850400004)(346002)(366004)(376002)(396003)(199004)(189003)(2616005)(25786009)(8936002)(81166006)(86362001)(486006)(81156014)(1730700003)(44832011)(476003)(8676002)(50226002)(186003)(71190400001)(11346002)(446003)(14444005)(256004)(71200400001)(3846002)(2906002)(118296001)(66556008)(64756008)(66446008)(6116002)(66476007)(5660300002)(66946007)(6512007)(99286004)(5640700003)(4326008)(54906003)(316002)(107886003)(6486002)(7736002)(305945005)(6436002)(66066001)(26005)(6506007)(386003)(14454004)(102836004)(508600001)(6916009)(52116002)(76176011)(36756003)(2351001)(2501003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3732;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: aquantia.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: e57T+w2jOvSixNMKLcUF6xBypDX7St5TYFH3u6vT/fEM21QPFZn7u9YiHwWweiUXeaJB+emCA+jJj70jfOBuIrpqFBHO+0UpEKwrUrm/kOG3+b09QSvVNBXeaYGA+tUehDtqSSbN/eWXm5Lroxv+kwuGk9YC45O1ECtyjNtJkN2u7OpwXCLWdiZC6ZUKsFX/A3OMFjOarR4yV0HVET7406delVB7OtFB9TzzAXdUQoFOWAwksbsgh1qyo+/K85E/BI1tjc+byiWIsaejA90UAyZZaINchn3gdA1/8o+9R8E7a82uk+8qIqKS4aUtpGWbUWWa870rw8ELf0PrlQZg+hAm8RLNXjS8/SnfjbbuAmv+CzWwDAM/kt2RhGiWjMH2DYV48nS2nLWFjz5n6+a/fQOFhhw6VJl6ZXOVtyeeeV14WfsN9WLS8YaqSS0D3XiI
+x-microsoft-antispam-message-info: 1crDkuR3t0trYHJM8XIiihSk40u3aNR4bHGV/1OGJx0/0iHE4P44rmPuqTXz8Zti8x19Fn2bHOYfqMQDURpS+KOdNbaeXjYW+0rIVcT2y1e3rp5ggcgt616piayc+UeLW90zS5LRRoYgMGWbxLPMUX7Ob13Uqx1k6sDb96omcdSrWWCMLWgkEBIK/GZ8rQZ1QEPus3dzQ8P+gI4vAy+3iNY8OLF5KR7ORMRcTJ/Ac765lpW79HI/bPNt0RB5ysNpWXIM9Jx0NBaHs6HKmrRFDYQ+hlPs7uWcx79xetSFAtToK8lwl+fqNWBCdf9yd2Qt5aX16zikSCREyGRanugRAxTVfc0TnuIdZG4aGT1RZtmjHYVsa3kF5IaW72JtfMr1iIDWd91XtHMzGepoWZdmN1gyjUNGA0SPyJgyKxEfuUzlwnIxa61D9d/N496W0zcc
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a4afc8ae-f69f-4ba1-3058-08d756d5b773
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 09:53:40.6084
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5af56a2-01c1-46be-fb9a-08d756d5b8f1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 09:53:42.8692
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MGgWHc3WxDwZJb8qfQzvOy4/Uc2L8uxgaO7M3dpYHftdQd9zOhTiAt500cw3fjZ/K58UoCPJrT1067R1MV8VnA==
+X-MS-Exchange-CrossTenant-userprincipalname: Ox2pCFSv/3d+m1XyhXyM+m3Bx9Rn6VFwt+5f2LsnVggJm4V+b2rqdTkqG+1+eoBpdpZBC13/XoC1pu4cQYU3BQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3732
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -97,226 +98,88 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Egor Pomozov <epomozov@marvell.com>
 
-Here we add support for PTP specific IOCTLs of HW timestamp get/set.
+Ethtool callback with basic information on what PTP features are supported
+by the device.
 
-These will use filters to configure flows onto the required queue ids.
-
+Signed-off-by: Egor Pomozov <epomozov@marvell.com>
 Co-developed-by: Sergey Samoilenko <sergey.samoilenko@aquantia.com>
 Signed-off-by: Sergey Samoilenko <sergey.samoilenko@aquantia.com>
-Signed-off-by: Egor Pomozov <epomozov@marvell.com>
+Co-developed-by: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
+Signed-off-by: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
 Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_main.c  | 82 +++++++++++++++++++
- .../net/ethernet/aquantia/atlantic/aq_ptp.c   | 63 ++++++++++++++
- .../net/ethernet/aquantia/atlantic/aq_ptp.h   |  6 ++
- 3 files changed, 151 insertions(+)
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   | 35 ++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net=
-/ethernet/aquantia/atlantic/aq_main.c
-index f630032af8e1..a26d4a69efad 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -218,6 +218,87 @@ static void aq_ndev_set_multicast_settings(struct net_=
-device *ndev)
- 	(void)aq_nic_set_multicast_list(aq_nic, ndev);
- }
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/=
+net/ethernet/aquantia/atlantic/aq_ethtool.c
+index 24df132384fb..1ae8aabcc41a 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * aQuantia Corporation Network Driver
+- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
++ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
+  */
 =20
-+static int aq_ndev_config_hwtstamp(struct aq_nic_s *aq_nic,
-+				   struct hwtstamp_config *config)
-+{
-+	if (config->flags)
-+		return -EINVAL;
+ /* File aq_ethtool.c: Definition of ethertool related functions. */
+@@ -9,8 +9,11 @@
+ #include "aq_ethtool.h"
+ #include "aq_nic.h"
+ #include "aq_vec.h"
++#include "aq_ptp.h"
+ #include "aq_filters.h"
+=20
++#include <linux/ptp_clock_kernel.h>
 +
-+	switch (config->tx_type) {
-+	case HWTSTAMP_TX_OFF:
-+	case HWTSTAMP_TX_ON:
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	switch (config->rx_filter) {
-+	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-+		config->rx_filter =3D HWTSTAMP_FILTER_PTP_V2_EVENT;
-+		break;
-+	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-+	case HWTSTAMP_FILTER_NONE:
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	return aq_ptp_hwtstamp_config_set(aq_nic->aq_ptp, config);
-+}
-+
-+static int aq_ndev_hwtstamp_set(struct aq_nic_s *aq_nic, struct ifreq *ifr=
-)
-+{
-+	struct hwtstamp_config config;
-+	int ret_val;
-+
-+	if (!aq_nic->aq_ptp)
-+		return -EOPNOTSUPP;
-+
-+	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
-+		return -EFAULT;
-+
-+	ret_val =3D aq_ndev_config_hwtstamp(aq_nic, &config);
-+	if (ret_val)
-+		return ret_val;
-+
-+	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
-+	       -EFAULT : 0;
-+}
-+
-+static int aq_ndev_hwtstamp_get(struct aq_nic_s *aq_nic, struct ifreq *ifr=
-)
-+{
-+	struct hwtstamp_config config;
-+
-+	if (!aq_nic->aq_ptp)
-+		return -EOPNOTSUPP;
-+
-+	aq_ptp_hwtstamp_config_get(aq_nic->aq_ptp, &config);
-+	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
-+	       -EFAULT : 0;
-+}
-+
-+static int aq_ndev_ioctl(struct net_device *netdev, struct ifreq *ifr, int=
- cmd)
-+{
-+	struct aq_nic_s *aq_nic =3D netdev_priv(netdev);
-+
-+	switch (cmd) {
-+	case SIOCSHWTSTAMP:
-+		return aq_ndev_hwtstamp_set(aq_nic, ifr);
-+
-+	case SIOCGHWTSTAMP:
-+		return aq_ndev_hwtstamp_get(aq_nic, ifr);
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
- static int aq_ndo_vlan_rx_add_vid(struct net_device *ndev, __be16 proto,
- 				  u16 vid)
+ static void aq_ethtool_get_regs(struct net_device *ndev,
+ 				struct ethtool_regs *regs, void *p)
  {
-@@ -255,6 +336,7 @@ static const struct net_device_ops aq_ndev_ops =3D {
- 	.ndo_change_mtu =3D aq_ndev_change_mtu,
- 	.ndo_set_mac_address =3D aq_ndev_set_mac_address,
- 	.ndo_set_features =3D aq_ndev_set_features,
-+	.ndo_do_ioctl =3D aq_ndev_ioctl,
- 	.ndo_vlan_rx_add_vid =3D aq_ndo_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid =3D aq_ndo_vlan_rx_kill_vid,
- };
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/=
-ethernet/aquantia/atlantic/aq_ptp.c
-index 82409cb1f815..56613792abc8 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-@@ -44,6 +44,7 @@ struct ptp_tx_timeout {
-=20
- struct aq_ptp_s {
- 	struct aq_nic_s *aq_nic;
-+	struct hwtstamp_config hwtstamp_config;
- 	spinlock_t ptp_lock;
- 	spinlock_t ptp_ring_lock;
- 	struct ptp_clock *ptp_clock;
-@@ -388,6 +389,68 @@ static void aq_ptp_rx_hwtstamp(struct aq_ptp_s *aq_ptp=
-, struct sk_buff *skb,
- 	aq_ptp_convert_to_hwtstamp(aq_ptp, skb_hwtstamps(skb), timestamp);
+@@ -377,6 +380,35 @@ static int aq_ethtool_set_wol(struct net_device *ndev,
+ 	return err;
  }
 =20
-+void aq_ptp_hwtstamp_config_get(struct aq_ptp_s *aq_ptp,
-+				struct hwtstamp_config *config)
++static int aq_ethtool_get_ts_info(struct net_device *ndev,
++				  struct ethtool_ts_info *info)
 +{
-+	*config =3D aq_ptp->hwtstamp_config;
-+}
++	struct aq_nic_s *aq_nic =3D netdev_priv(ndev);
 +
-+static void aq_ptp_prepare_filters(struct aq_ptp_s *aq_ptp)
-+{
-+	aq_ptp->udp_filter.cmd =3D HW_ATL_RX_ENABLE_FLTR_L3L4 |
-+			       HW_ATL_RX_ENABLE_CMP_PROT_L4 |
-+			       HW_ATL_RX_UDP |
-+			       HW_ATL_RX_ENABLE_CMP_DEST_PORT_L4 |
-+			       HW_ATL_RX_HOST << HW_ATL_RX_ACTION_FL3F4_SHIFT |
-+			       HW_ATL_RX_ENABLE_QUEUE_L3L4 |
-+			       aq_ptp->ptp_rx.idx << HW_ATL_RX_QUEUE_FL3L4_SHIFT;
-+	aq_ptp->udp_filter.p_dst =3D PTP_EV_PORT;
++	ethtool_op_get_ts_info(ndev, info);
 +
-+	aq_ptp->eth_type_filter.ethertype =3D ETH_P_1588;
-+	aq_ptp->eth_type_filter.queue =3D aq_ptp->ptp_rx.idx;
-+}
++	if (!aq_nic->aq_ptp)
++		return 0;
 +
-+int aq_ptp_hwtstamp_config_set(struct aq_ptp_s *aq_ptp,
-+			       struct hwtstamp_config *config)
-+{
-+	struct aq_nic_s *aq_nic =3D aq_ptp->aq_nic;
-+	const struct aq_hw_ops *hw_ops;
-+	int err =3D 0;
++	info->so_timestamping |=3D
++		SOF_TIMESTAMPING_TX_HARDWARE |
++		SOF_TIMESTAMPING_RX_HARDWARE |
++		SOF_TIMESTAMPING_RAW_HARDWARE;
 +
-+	hw_ops =3D aq_nic->aq_hw_ops;
-+	if (config->tx_type =3D=3D HWTSTAMP_TX_ON ||
-+	    config->rx_filter =3D=3D HWTSTAMP_FILTER_PTP_V2_EVENT) {
-+		aq_ptp_prepare_filters(aq_ptp);
-+		if (hw_ops->hw_filter_l3l4_set) {
-+			err =3D hw_ops->hw_filter_l3l4_set(aq_nic->aq_hw,
-+							 &aq_ptp->udp_filter);
-+		}
-+		if (!err && hw_ops->hw_filter_l2_set) {
-+			err =3D hw_ops->hw_filter_l2_set(aq_nic->aq_hw,
-+						       &aq_ptp->eth_type_filter);
-+		}
-+		aq_utils_obj_set(&aq_nic->flags, AQ_NIC_PTP_DPATH_UP);
-+	} else {
-+		aq_ptp->udp_filter.cmd &=3D ~HW_ATL_RX_ENABLE_FLTR_L3L4;
-+		if (hw_ops->hw_filter_l3l4_set) {
-+			err =3D hw_ops->hw_filter_l3l4_set(aq_nic->aq_hw,
-+							 &aq_ptp->udp_filter);
-+		}
-+		if (!err && hw_ops->hw_filter_l2_clear) {
-+			err =3D hw_ops->hw_filter_l2_clear(aq_nic->aq_hw,
-+							&aq_ptp->eth_type_filter);
-+		}
-+		aq_utils_obj_clear(&aq_nic->flags, AQ_NIC_PTP_DPATH_UP);
-+	}
++	info->tx_types =3D BIT(HWTSTAMP_TX_OFF) |
++			 BIT(HWTSTAMP_TX_ON);
 +
-+	if (err)
-+		return -EREMOTEIO;
++	info->rx_filters =3D BIT(HWTSTAMP_FILTER_NONE);
 +
-+	aq_ptp->hwtstamp_config =3D *config;
++	info->rx_filters |=3D BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
++			    BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
++			    BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
++
++	info->phc_index =3D ptp_clock_index(aq_ptp_get_ptp_clock(aq_nic->aq_ptp))=
+;
 +
 +	return 0;
 +}
 +
- bool aq_ptp_ring(struct aq_nic_s *aq_nic, struct aq_ring_s *ring)
+ static enum hw_atl_fw2x_rate eee_mask_to_ethtool_mask(u32 speed)
  {
- 	struct aq_ptp_s *aq_ptp =3D aq_nic->aq_ptp;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h b/drivers/net/=
-ethernet/aquantia/atlantic/aq_ptp.h
-index 2c84483fcac1..7a7f36f43ce0 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
-@@ -38,6 +38,12 @@ void aq_ptp_clock_init(struct aq_nic_s *aq_nic);
- int aq_ptp_xmit(struct aq_nic_s *aq_nic, struct sk_buff *skb);
- void aq_ptp_tx_hwtstamp(struct aq_nic_s *aq_nic, u64 timestamp);
-=20
-+/* Must be to check available of PTP before call */
-+void aq_ptp_hwtstamp_config_get(struct aq_ptp_s *aq_ptp,
-+				struct hwtstamp_config *config);
-+int aq_ptp_hwtstamp_config_set(struct aq_ptp_s *aq_ptp,
-+			       struct hwtstamp_config *config);
-+
- /* Return either ring is belong to PTP or not*/
- bool aq_ptp_ring(struct aq_nic_s *aq_nic, struct aq_ring_s *ring);
-=20
+ 	u32 rate =3D 0;
+@@ -604,4 +636,5 @@ const struct ethtool_ops aq_ethtool_ops =3D {
+ 	.set_link_ksettings  =3D aq_ethtool_set_link_ksettings,
+ 	.get_coalesce	     =3D aq_ethtool_get_coalesce,
+ 	.set_coalesce	     =3D aq_ethtool_set_coalesce,
++	.get_ts_info         =3D aq_ethtool_get_ts_info,
+ };
 --=20
 2.17.1
 
