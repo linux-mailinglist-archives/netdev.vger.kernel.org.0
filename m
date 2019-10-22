@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD12BE0E24
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:26:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A43E0E36
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:29:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732315AbfJVW0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 18:26:05 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:34988 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731712AbfJVW0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:26:05 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m7so18899380lji.2
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:26:03 -0700 (PDT)
+        id S2389139AbfJVW3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 18:29:23 -0400
+Received: from mail-lj1-f176.google.com ([209.85.208.176]:37531 "EHLO
+        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732686AbfJVW3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:29:23 -0400
+Received: by mail-lj1-f176.google.com with SMTP id l21so18902975lje.4
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:29:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=zyVBsTyeuK8exQz7uSYQwdsxGdhjYLow8oX5vGt2F/c=;
-        b=lcXDohfgOnbx7TXbgUm4VMI+uk3OyUyfK2CRjgW8nUbpj1mYGechfdG73lQX6EqufG
-         a2eCV8+eaW0ZtqTiMH9967z0RKOexKyX24PlFg3uKQBGXwIRAIog2i2aclI5/unG9HE4
-         iMl/AO5AAc+oDh0AWhnFdJIk6Mi+Fr2PxrW40XVI0Hw0aAyDk0DirtgWbmV7WZe12ep4
-         bBdZ27K1LD9Pr17nHwA/u526pml3DtsgxPB9SLuugjD51/HwmBVdGk2I/wG7eHQhIDTR
-         Eiqe0K3kmGPRYQb6jJC0ClIlupHA/l+5AzGD7lv2tP8GetLk30BfZsjh7Glwx1UN34oh
-         jPsw==
+        bh=9FOtoCFESHJi4wxTzN6IqBIN6ywWAlgMoghhNwhRpqM=;
+        b=MmHCB89CJklZxCu7RA3AVIPVHrD3pzJXbkPORYa3HjFwqiJPCTkxBvQuhvsW2IfrFe
+         5HEuCjOyed5FfpdhPxjYI6VSrQ9YDwG1mNmmcTVz7u6SYPobeqXP5PeuQ3nvNo9pZpFU
+         8EEbgNiJymkvE2oWBuXpPC0Vprl/lFjvT1ALZq07LtleWptY0pZf/p0gRtBo5dLsHmEa
+         N3KHQFZnRXR+j633ENPBwNPxuC9Y/Em9G5NUDrUJM6RrIclvlnCmd89D/94o10I9zti1
+         lr99WphJoyUGhe1oDW+N1ZNhH/oZtBj8XU8lW6ZGTctX5+48ereaGKhtkfKzM6wlohje
+         aAXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=zyVBsTyeuK8exQz7uSYQwdsxGdhjYLow8oX5vGt2F/c=;
-        b=K0OLxtPXqDd+OgPxkC3YbpjSBic35ghyWqDksc+7nUZomJ7E6puqoI9AJ3DCzToTqU
-         BsCivVf6S1B2eXlzM0XkxGC6mgvTQlU2RXgWnBG/J2vkWfg8gvJIMjUuj5HVJzNo2hJY
-         MAF3AVR9/ixhrB3q82XcGSAZX0T0PgEaTjQureOx9weXZXz8ZiPuN0vcKbxf+Kiq2iOO
-         yExkcORNbARcFyGiTQ7XqiZN1VBike/NLGZcYtfXI97IcfYG56cd4My8GitThf/3UOVy
-         SvCK6wVMqwhn/kIdN8gbQ0b09mwpEhOvx+aiBz6EI4jXmw/zulXwo0G5xoY5YilwCvWX
-         2PWQ==
-X-Gm-Message-State: APjAAAW51OGhU+F/upPNJleNGc3y0wQ04X/05vF4WuNMbuXe63ADe1R8
-        E5qo4yJOPEkeVlVzp+VSPWmG8A==
-X-Google-Smtp-Source: APXvYqz6GvtPBXEdvYogP8HTZ4WdOZhDKd0gF/nGW9a+kQSEprgmY0IHuP1ltVctdf3Z4M3WUqH+LA==
-X-Received: by 2002:a2e:8544:: with SMTP id u4mr445073ljj.158.1571783162792;
-        Tue, 22 Oct 2019 15:26:02 -0700 (PDT)
+        bh=9FOtoCFESHJi4wxTzN6IqBIN6ywWAlgMoghhNwhRpqM=;
+        b=jKGFD3GEjJq4qEGQXz4QXdKiksvg8D8zQcvPyaP6E5kl07MhNUyeJuKwoZyP2ycxV8
+         QWyBTYh3us0uTUmGchq8cF1EcoDGZ0QnhZDHXxSLP912jJZldL2KME20NjKoFBaG3Beq
+         V3LNowMesNBHJ2+kyRSf0ZynQx91cSvqCe8E5XlAijXzgXdkm++A6zPo95a0GY55XIzE
+         SAX9Jb4D8yzDiUDw85TU9dh8b1vOxVrVPdIReyDNtJyFwV0u2inbl//eyLb3R1bx3R+U
+         XGDx0Gnp4NykxvtRdpEmdYQ5rrFDG0gqSvnNUCXdHoQjui6QVni3BNOYg0t8PS4+3/fi
+         cSsQ==
+X-Gm-Message-State: APjAAAWFpI7vHr13ZUdyjWcryWwK3rGc5vNX+I9M3C8VZEXCGT6tJdyB
+        7oXaVzocNjKWqLTtcJ/JWPphtA==
+X-Google-Smtp-Source: APXvYqw9u+Fbae9zCZZJofKlkrDbCHtrHbcSTTrEc5Ccg3iiYwsVqWefC8WGWjEwghACsA+sUNYang==
+X-Received: by 2002:a2e:3c05:: with SMTP id j5mr20619250lja.24.1571783361168;
+        Tue, 22 Oct 2019 15:29:21 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c76sm12184600lfg.11.2019.10.22.15.26.00
+        by smtp.gmail.com with ESMTPSA id j26sm7660642lja.25.2019.10.22.15.29.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Oct 2019 15:26:02 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 15:25:54 -0700
+        Tue, 22 Oct 2019 15:29:20 -0700 (PDT)
+Date:   Tue, 22 Oct 2019 15:29:14 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
 Cc:     linux-kernel@lists.codethink.co.uk,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: mvneta: make stub functions static inline
-Message-ID: <20191022152554.251d36ef@cakuba.netronome.com>
-In-Reply-To: <20191022152205.11815-1-ben.dooks@codethink.co.uk>
-References: <20191022152205.11815-1-ben.dooks@codethink.co.uk>
+Subject: Re: [PATCH] [V2] net: hwbm: if CONFIG_NET_HWBM unset, make stub
+ functions static
+Message-ID: <20191022152914.19790aea@cakuba.netronome.com>
+In-Reply-To: <20191022152551.19730-1-ben.dooks@codethink.co.uk>
+References: <20191022152551.19730-1-ben.dooks@codethink.co.uk>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,68 +64,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 16:22:05 +0100, Ben Dooks (Codethink) wrote:
-> If the CONFIG_MVNET_BA is not set, then make the stub functions
-> static inline to avoid trying to export them, and remove hte
-> following sparse warnings:
+On Tue, 22 Oct 2019 16:25:51 +0100, Ben Dooks (Codethink) wrote:
+> If CONFIG_NET_HWBM is not set, then these stub functions in
+> <net/hwbm.h> should be declared static to avoid trying to
+> export them from any driver that includes this.
 > 
-> drivers/net/ethernet/marvell/mvneta_bm.h:163:6: warning: symbol 'mvneta_bm_pool_destroy' was not declared. Should it be static?
-> drivers/net/ethernet/marvell/mvneta_bm.h:165:6: warning: symbol 'mvneta_bm_bufs_free' was not declared. Should it be static?
-> drivers/net/ethernet/marvell/mvneta_bm.h:167:5: warning: symbol 'mvneta_bm_construct' was not declared. Should it be static?
-> drivers/net/ethernet/marvell/mvneta_bm.h:168:5: warning: symbol 'mvneta_bm_pool_refill' was not declared. Should it be static?
-> drivers/net/ethernet/marvell/mvneta_bm.h:170:23: warning: symbol 'mvneta_bm_pool_use' was not declared. Should it be static?
-> drivers/net/ethernet/marvell/mvneta_bm.h:181:18: warning: symbol 'mvneta_bm_get' was not declared. Should it be static?
-> drivers/net/ethernet/marvell/mvneta_bm.h:182:6: warning: symbol 'mvneta_bm_put' was not declared. Should it be static?
+> Fixes the following sparse warnings:
+> 
+> ./include/net/hwbm.h:24:6: warning: symbol 'hwbm_buf_free' was not declared. Should it be static?
+> ./include/net/hwbm.h:25:5: warning: symbol 'hwbm_pool_refill' was not declared. Should it be static?
+> ./include/net/hwbm.h:26:5: warning: symbol 'hwbm_pool_add' was not declared. Should it be static?
 > 
 > Signed-off-by: Ben Dooks (Codethink) <ben.dooks@codethink.co.uk>
 
-Looks like this one will require a bit more work.
+Same story, going over 80 chars here, please fix and post v2.
 
->  drivers/net/ethernet/marvell/mvneta_bm.h | 20 ++++++++++----------
->  1 file changed, 10 insertions(+), 10 deletions(-)
+>  include/net/hwbm.h | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/marvell/mvneta_bm.h b/drivers/net/ethernet/marvell/mvneta_bm.h
-> index c8425d35c049..9c0c6e20cf80 100644
-> --- a/drivers/net/ethernet/marvell/mvneta_bm.h
-> +++ b/drivers/net/ethernet/marvell/mvneta_bm.h
-> @@ -160,14 +160,14 @@ static inline u32 mvneta_bm_pool_get_bp(struct mvneta_bm *priv,
->  			     (bm_pool->id << MVNETA_BM_POOL_ACCESS_OFFS));
->  }
+> diff --git a/include/net/hwbm.h b/include/net/hwbm.h
+> index 81643cf8a1c4..76a303b2925c 100644
+> --- a/include/net/hwbm.h
+> +++ b/include/net/hwbm.h
+> @@ -21,9 +21,9 @@ void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf);
+>  int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp);
+>  int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num);
 >  #else
-> -void mvneta_bm_pool_destroy(struct mvneta_bm *priv,
-> -			    struct mvneta_bm_pool *bm_pool, u8 port_map) {}
-> -void mvneta_bm_bufs_free(struct mvneta_bm *priv, struct mvneta_bm_pool *bm_pool,
-> -			 u8 port_map) {}
-> -int mvneta_bm_construct(struct hwbm_pool *hwbm_pool, void *buf) { return 0; }
-> -int mvneta_bm_pool_refill(struct mvneta_bm *priv,
-> -			  struct mvneta_bm_pool *bm_pool) {return 0; }
-> -struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
-> +static inline void mvneta_bm_pool_destroy(struct mvneta_bm *priv,
-> +					  struct mvneta_bm_pool *bm_pool, u8 port_map) {}
-> +static inline void mvneta_bm_bufs_free(struct mvneta_bm *priv, struct mvneta_bm_pool *bm_pool,
-> +				       u8 port_map) {}
-
-You're going over 80 characters now.
-
-> +static inline int mvneta_bm_construct(struct hwbm_pool *hwbm_pool, void *buf) { return 0; }
-> +static inline int mvneta_bm_pool_refill(struct mvneta_bm *priv,
-> +					struct mvneta_bm_pool *bm_pool) {return 0; }
-> +static inline struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
->  					  enum mvneta_bm_type type, u8 port_id,
->  					  int pkt_size) { return NULL; }
-
-The follow up lines need to be adjusted so that they start on the same
-column as the opening bracket.
-
-checkpatch.pl catches those. Please run it with --strict while at it.
-
-> @@ -178,7 +178,7 @@ static inline void mvneta_bm_pool_put_bp(struct mvneta_bm *priv,
->  static inline u32 mvneta_bm_pool_get_bp(struct mvneta_bm *priv,
->  					struct mvneta_bm_pool *bm_pool)
+> -void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf) {}
+> -int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp) { return 0; }
+> -int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num)
+> +static inline void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf) {}
+> +static inline int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp) { return 0; }
+> +static inline int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num)
 >  { return 0; }
-> -struct mvneta_bm *mvneta_bm_get(struct device_node *node) { return NULL; }
-> -void mvneta_bm_put(struct mvneta_bm *priv) {}
-> +static inline struct mvneta_bm *mvneta_bm_get(struct device_node *node) { return NULL; }
-> +static inline void mvneta_bm_put(struct mvneta_bm *priv) {}
->  #endif /* CONFIG_MVNETA_BM */
->  #endif
+>  #endif /* CONFIG_HWBM */
+>  #endif /* _HWBM_H */
+
