@@ -2,197 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A887DE0B69
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:29:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C693E0B6C
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 20:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731703AbfJVS26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 14:28:58 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:43441 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729635AbfJVS26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 14:28:58 -0400
-Received: by mail-qt1-f193.google.com with SMTP id t20so28221583qtr.10;
-        Tue, 22 Oct 2019 11:28:57 -0700 (PDT)
+        id S1731883AbfJVS3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 14:29:32 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:37471 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726702AbfJVS3c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 14:29:32 -0400
+Received: by mail-lj1-f195.google.com with SMTP id l21so18272794lje.4;
+        Tue, 22 Oct 2019 11:29:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Cn+ppTScQdfWATo7w7y1J4IsnYoScI94OveDbV3GFYg=;
-        b=X2C6c+OYefC+Unlt04CBW++2sriVFP1yev2ECzn7Z/nzl/ubseuICw4Hiu7MZw7kOS
-         Retdgsg0Px+kZ0tAwOt3hwIED/FBw4SEUrwd03BWCb4Fdh/s5hJaGZwhU5dFAnjMbanF
-         ZNRB9uRfMAVdQZVF6vSVufFc02kYaqlij2BZFG4ai8WLLPxbeEhvsGIglGf2RpRN2HsC
-         uQDJZtPkf0nN+JgQ8B56XWZzD+1XovAdSVlcOfwYtWc0wAFiQBYaBx8lH8sQbpcqyvlZ
-         SOu6nBRvbR1SLThULe/m3SIbcOtEfqvXM4Oqy5r5syfAEvkvUCeQdHeN0dp/BdXeEbyj
-         4oIw==
+         :cc;
+        bh=uxMt9H3LtJ7pqzPSuyrIM24uiwA0nTK1MUHdhFbeMb8=;
+        b=PiAnv00bcmsJPhL9rkYry1ebqzZoDitqWAbx65kYao8BKYY1ncoD4nLJ4o4QR4ORbU
+         GQg+glL5E68Co1wl2U4gGELEcf/oModpXJjasQWm5jtjD7cx49FgEqV/Hea3nN8JGhio
+         V5DLajQPcIoP7crrCNfDgqCQMDopE4UU7eQKMAACrr7bvwtarObyYFm8h+OosPiwQn2L
+         7FM1eEofvJItp0GcZa6xDqDTP35h2N7nWGx+19UqjxzqsSbLtlgTidYcXN9Qvj5fA4io
+         4y1o9HsGwCnWIWduXXwK076dZSCRNQGxDEQUN3wlOtWE1kDEFlWPXaph+egJr8tQomoH
+         IaAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Cn+ppTScQdfWATo7w7y1J4IsnYoScI94OveDbV3GFYg=;
-        b=Posaq3Qv3u9bOB/+thJnyYvN0IH7h0AWqZ9KrZ0d1In4vsqviPA6OtBy8DB/5JiJ+h
-         EjRlXAS76CFm8+DCsS2+lGS5F/mFTcPK1hV7uh4hHAgwKCt9zSaTlFgTWYB74tC0jsah
-         T0GhtixDmV0m63MuS4Zolgvjz9Rpd+SyGpWHk2pJKtub4zQtA9/2hJC5GwXarr44sb65
-         /UgeEvSXO/6a+XLHtfNGFH3H1xp3L/q/8Zv5Aa639Ac6veMKmoHloXaDeUkdrakru3Dv
-         REiMxzofGKCv683wa+FeANAu+ThnFIZjKThojuZI5dHNVZ5ua9AElAmfrmDDwGhEGZHR
-         21Sw==
-X-Gm-Message-State: APjAAAUJ1xJkY9reSTjWynfXocuQh//70oPJTJVDPiCuu1wAoKmcLg8z
-        3pvA7urcBkpHOFC2XY3aAfETn2n8KQxdD1LjU5c=
-X-Google-Smtp-Source: APXvYqzTbnZEuBPnUSa+LWn+RKoAajOGxDdvvPou17S0PycvlskFR9kxaPbxzZterZ2tSNN3puhexlSVWBiHoGULqm4=
-X-Received: by 2002:ac8:1242:: with SMTP id g2mr4836878qtj.141.1571768936334;
- Tue, 22 Oct 2019 11:28:56 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=uxMt9H3LtJ7pqzPSuyrIM24uiwA0nTK1MUHdhFbeMb8=;
+        b=GdRcZr8GWpXuLvOgzGW3TJpZgoGyTzh8n9+GIX1Wax1cCDgCcZq6eqY6VWUw04A5x/
+         tl59YQKaX41tdMsBtfEy7RbIKvEDQBNkEZ0BB1hKNUvG2E8QrMcGvNYrsWN3b0yUilmU
+         gS+3yNYA029ZNIvpITSxgF/dF25et/AU+E2fJEjfa7m4Z5vD8HCWmNdhjChVPALwsipb
+         g1gunzonvg89GoP9fyDpk7Qh/onJBL7un03BWWY6e1Ht7A4LYubK5+w4oC4w7FWXIe1v
+         czYA2rYa+WTdhA6mMHpk87E+uENEuGtAGDXB24vSyd/2D3vEnmwx8hpaVPSXubc8hs/z
+         iwNA==
+X-Gm-Message-State: APjAAAVRPZOkmv0PYn7YwRWYMHOrG3zWwYqb/gCnqWdZRmTPx//Mqmvh
+        wNWw8MO+8oYm3kmbdhZrjKBMF8FULpbBxthjEESsEQ==
+X-Google-Smtp-Source: APXvYqxznjs4ukuAeKRHApg+x3X8+OGoWHGAtuPwqYX7BKTMv33fLwj5/VSFNB0WtYVxST94TzGzbLHHcp1sLFgNB00=
+X-Received: by 2002:a2e:9b12:: with SMTP id u18mr20149416lji.142.1571768969771;
+ Tue, 22 Oct 2019 11:29:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <157175668770.112621.17344362302386223623.stgit@toke.dk> <157175669103.112621.7847833678119315310.stgit@toke.dk>
-In-Reply-To: <157175669103.112621.7847833678119315310.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 22 Oct 2019 11:28:45 -0700
-Message-ID: <CAEf4BzbfV5vrFnkNyG35Db2iPmM2ubtFh6OTvLiaetAx6eFHHw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] libbpf: Add pin option to automount BPF
- filesystem before pinning
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <55f6367324c2d7e9583fa9ccf5385dcbba0d7a6e.1571752452.git.daniel@iogearbox.net>
+In-Reply-To: <55f6367324c2d7e9583fa9ccf5385dcbba0d7a6e.1571752452.git.daniel@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 22 Oct 2019 11:29:18 -0700
+Message-ID: <CAADnVQLgMRfN0iawBbeoA5mFenzDiTecuCnVPtQ7oXbhKkt4qA@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Fix use after free in subprog's jited symbol removal
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        syzbot+710043c5d1d5b5013bc7@syzkaller.appspotmail.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 9:08 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Tue, Oct 22, 2019 at 6:57 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> syzkaller managed to trigger the following crash:
 >
-> While the current map pinning functions will check whether the pin path i=
-s
-> contained on a BPF filesystem, it does not offer any options to mount the
-> file system if it doesn't exist. Since we now have pinning options, add a
-> new one to automount a BPF filesystem at the pinning path if that is not
+>   [...]
+>   BUG: unable to handle page fault for address: ffffc90001923030
+>   #PF: supervisor read access in kernel mode
+>   #PF: error_code(0x0000) - not-present page
+>   PGD aa551067 P4D aa551067 PUD aa552067 PMD a572b067 PTE 80000000a1173163
+>   Oops: 0000 [#1] PREEMPT SMP KASAN
+>   CPU: 0 PID: 7982 Comm: syz-executor912 Not tainted 5.4.0-rc3+ #0
+>   Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>   RIP: 0010:bpf_jit_binary_hdr include/linux/filter.h:787 [inline]
+>   RIP: 0010:bpf_get_prog_addr_region kernel/bpf/core.c:531 [inline]
+>   RIP: 0010:bpf_tree_comp kernel/bpf/core.c:600 [inline]
+>   RIP: 0010:__lt_find include/linux/rbtree_latch.h:115 [inline]
+>   RIP: 0010:latch_tree_find include/linux/rbtree_latch.h:208 [inline]
+>   RIP: 0010:bpf_prog_kallsyms_find kernel/bpf/core.c:674 [inline]
+>   RIP: 0010:is_bpf_text_address+0x184/0x3b0 kernel/bpf/core.c:709
+> After further debugging it turns out that we walk kallsyms while in parallel
+> we tear down a BPF program which contains subprograms that have been JITed
+> though the program itself has not been fully exposed and is eventually bailing
+> out with error.
+>
+> The bpf_prog_kallsyms_del_subprogs() in bpf_prog_load()'s error path removes
+> the symbols, however, bpf_prog_free() tears down the JIT memory too early via
+> scheduled work. Instead, it needs to properly respect RCU grace period as the
+> kallsyms walk for BPF is under RCU.
+>
+> Fix it by refactoring __bpf_prog_put()'s tear down and reuse it in our error
+> path where we defer final destruction when we have subprogs in the program.
+>
+> Fixes: 7d1982b4e335 ("bpf: fix panic in prog load calls cleanup")
+> Fixes: 1c2a088a6626 ("bpf: x64: add JIT support for multi-function programs")
+> Reported-and-tested-by: syzbot+710043c5d1d5b5013bc7@syzkaller.appspotmail.com
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 
-Next thing we'll be adding extra options to mount BPF FS... Can we
-leave the task of auto-mounting BPF FS to tools/applications?
-
-> already pointing at a bpffs.
->
-> The mounting logic itself is copied from the iproute2 BPF helper function=
-s.
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  tools/lib/bpf/libbpf.c |   47 ++++++++++++++++++++++++++++++++++++++++++=
-+++++
->  tools/lib/bpf/libbpf.h |    5 ++++-
->  2 files changed, 51 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index aea3916de341..f527224bb211 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -37,6 +37,7 @@
->  #include <sys/epoll.h>
->  #include <sys/ioctl.h>
->  #include <sys/mman.h>
-> +#include <sys/mount.h>
->  #include <sys/stat.h>
->  #include <sys/types.h>
->  #include <sys/vfs.h>
-> @@ -4072,6 +4073,35 @@ int bpf_map__unpin(struct bpf_map *map, const char=
- *path)
->         return 0;
->  }
->
-> +static int mount_bpf_fs(const char *target)
-> +{
-> +       bool bind_done =3D false;
-> +
-> +       while (mount("", target, "none", MS_PRIVATE | MS_REC, NULL)) {
-
-what does this loop do? we need some comments explaining what's going
-on here (or better yet just drop this entirely and let
-bpftool/iproute2 do the mounting).
-
-> +               if (errno !=3D EINVAL || bind_done) {
-> +                       pr_warning("mount --make-private %s failed: %s\n"=
-,
-> +                                  target, strerror(errno));
-> +                       return -1;
-> +               }
-> +
-> +               if (mount(target, target, "none", MS_BIND, NULL)) {
-> +                       pr_warning("mount --bind %s %s failed: %s\n",
-> +                                  target, target, strerror(errno));
-> +                       return -1;
-> +               }
-> +
-> +               bind_done =3D true;
-> +       }
-> +
-> +       if (mount("bpf", target, "bpf", 0, "mode=3D0700")) {
-> +               fprintf(stderr, "mount -t bpf bpf %s failed: %s\n",
-> +                       target, strerror(errno));
-> +               return -1;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
->  static int get_pin_path(char *buf, size_t buf_len,
->                         struct bpf_map *map, struct bpf_object_pin_opts *=
-opts,
->                         bool mkdir)
-> @@ -4102,6 +4132,23 @@ static int get_pin_path(char *buf, size_t buf_len,
-
-Nothing in `get_pin_path` indicates that it's going to do an entire FS
-mount, please split this out of get_pin_path.
-
->                 err =3D make_dir(path);
->                 if (err)
->                         return err;
-> +
-> +               if (OPTS_GET(opts, mount_bpf_fs, false)) {
-> +                       struct statfs st_fs;
-> +                       char *cp;
-> +
-> +                       if (statfs(path, &st_fs)) {
-> +                               char errmsg[STRERR_BUFSIZE];
-> +
-> +                               cp =3D libbpf_strerror_r(errno, errmsg, s=
-izeof(errmsg));
-> +                               pr_warning("failed to statfs %s: %s\n", p=
-ath, cp);
-> +                               return -errno;
-> +                       }
-> +                       if (st_fs.f_type !=3D BPF_FS_MAGIC &&
-> +                           mount_bpf_fs(path)) {
-> +                               return -EINVAL;
-> +                       }
-> +               }
->         }
->
->         len =3D snprintf(buf, buf_len, "%s/%s", path, bpf_map__name(map))=
-;
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 2131eeafb18d..76b9a6cc7063 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -143,8 +143,11 @@ struct bpf_object_pin_opts {
->          * and this type used for all maps instead.
->          */
->         enum libbpf_pin_type override_type;
-> +
-> +       /* Whether to attempt to mount a BPF FS if it's not already mount=
-ed */
-> +       bool mount_bpf_fs;
->  };
-> -#define bpf_object_pin_opts__last_field override_type
-> +#define bpf_object_pin_opts__last_field mount_bpf_fs
->
->  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const char *=
-path);
->  LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
->
+Applied. Thanks!
