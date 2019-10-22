@@ -2,99 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9E9AE0E55
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D250E0E59
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 00:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389400AbfJVWoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 18:44:13 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:49897 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388836AbfJVWoN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:44:13 -0400
-Received: by mail-io1-f71.google.com with SMTP id e14so21349421iot.16
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 15:44:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=n8AthPz5EJS+41jvmzMtDwkf5FjVXZx9cmlJKclfd/M=;
-        b=hZL9U8yxoZZZhYdqQrz1PygAeNtl+6DZRAz3sKIsGYMfd4kIx7V41t+9il5ea0wbrD
-         7DddzwC49qnxNujP45c/7z1SZCX+SqgR04179S2wICUnMi7FkgKrDOusIsuAgIKO0pmV
-         5/MdcV7qPzVVHBw3NwM3dQChpJM4KtMpdCv7Ee1xlT8/0FOeN8hK1qCsD5v+xGgb2IKn
-         51ZaDXodZUKbDWIRUoNEYnRz+XrdjoZVkY78B9tpQnnp9ktdoxVkRGYZivuSuMqj+kpZ
-         q7pWaSVFKcF13saduWr0sN3N2qa+EkCadJFcEzwBASGE0T/boOnBJ7K/L3XVEa1UQsUs
-         hdUQ==
-X-Gm-Message-State: APjAAAWV+AUbHFuWdHd7fqIJPoh4KPJBN/uA8ptmofKN8QUzSFOGE+Ei
-        RXLSSC/PVWN6IgXq0uXrSOl8+kHiVzRVrTbNdRkeFPOY183B
-X-Google-Smtp-Source: APXvYqy8SHCJO8nVqDVFjtRO0viqI7sq50268hI2BxRPY53Spf82Y2/LvjiTliYN9zGkl6aZIGnO0+zVoltc7aACBjopLIVrFuUr
+        id S1732738AbfJVWpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 18:45:22 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59237 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731850AbfJVWpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 18:45:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571784320;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xaYcQAnqa39ZWz6ewdQxce9WP2icr0d1H4tmcHP9WXg=;
+        b=ZbUqwh8Ika4KM3cxoWQkT4proR7RrGB3Ja88xmd6m7lJnYeDUPO/4oxyXLTLNC6CIwgWeO
+        xa0w9Z9lNwRnsxWfXCAUflnI17haFlmeuHL5UrIfsMtJGzfv5yL+am+l16ku1TCPIpbXuP
+        yIAtcs9VWap0lIkFQhGW4nCRM5NuqwM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-329-0zXSX9PkNd6H9Osvy8pt5w-1; Tue, 22 Oct 2019 18:45:13 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D4F9801E52;
+        Tue, 22 Oct 2019 22:45:12 +0000 (UTC)
+Received: from carbon (ovpn-200-21.brq.redhat.com [10.40.200.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D298194BB;
+        Tue, 22 Oct 2019 22:45:03 +0000 (UTC)
+Date:   Wed, 23 Oct 2019 00:45:01 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Charles McLachlan <cmclachlan@solarflare.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-net-drivers@solarflare.com>, brouer@redhat.com
+Subject: Re: [PATCH net-next 2/6] sfc: perform XDP processing on received
+ packets.
+Message-ID: <20191023004501.4a78c300@carbon>
+In-Reply-To: <1c193147-d94a-111f-42d3-324c3e8b0282@solarflare.com>
+References: <05b72fdb-165c-1350-787b-ca8c5261c459@solarflare.com>
+        <1c193147-d94a-111f-42d3-324c3e8b0282@solarflare.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:9c94:: with SMTP id x20mr1571289ill.149.1571784252347;
- Tue, 22 Oct 2019 15:44:12 -0700 (PDT)
-Date:   Tue, 22 Oct 2019 15:44:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000065d240595878a92@google.com>
-Subject: memory leak in rxrpc_lookup_local
-From:   syzbot <syzbot+305326672fed51b205f7@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: 0zXSX9PkNd6H9Osvy8pt5w-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, 22 Oct 2019 16:38:27 +0100
+Charles McLachlan <cmclachlan@solarflare.com> wrote:
 
-syzbot found the following crash on:
+> +/** efx_do_xdp: perform XDP processing on a received packet
+> + *
+> + * Returns true if packet should still be delivered.
+> + */
+> +static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+> +=09=09       struct efx_rx_buffer *rx_buf, u8 **ehp)
+> +{
+> +=09u8 rx_prefix[EFX_MAX_RX_PREFIX_SIZE];
+> +=09struct efx_rx_queue *rx_queue;
+> +=09struct bpf_prog *xdp_prog;
+> +=09struct xdp_buff xdp;
+> +=09u32 xdp_act;
+> +=09s16 offset;
+> +=09int rc;
+> +
+> +=09rcu_read_lock();
+> +=09xdp_prog =3D rcu_dereference(efx->xdp_prog);
+> +=09if (!xdp_prog) {
+> +=09=09rcu_read_unlock();
+> +=09=09return true;
+> +=09}
+> +
+> +=09rx_queue =3D efx_channel_get_rx_queue(channel);
+> +
+> +=09if (unlikely(channel->rx_pkt_n_frags > 1)) {
+> +=09=09/* We can't do XDP on fragmented packets - drop. */
+> +=09=09rcu_read_unlock();
+> +=09=09efx_free_rx_buffers(rx_queue, rx_buf,
+> +=09=09=09=09    channel->rx_pkt_n_frags);
+> +=09=09if (net_ratelimit())
+> +=09=09=09netif_err(efx, rx_err, efx->net_dev,
+> +=09=09=09=09  "XDP is not possible with multiple receive fragments (%d)\=
+n",
+> +=09=09=09=09  channel->rx_pkt_n_frags);
+> +=09=09return false;
+> +=09}
+> +
+> +=09dma_sync_single_for_cpu(&efx->pci_dev->dev, rx_buf->dma_addr,
+> +=09=09=09=09rx_buf->len, DMA_FROM_DEVICE);
+> +
+> +=09/* Save the rx prefix. */
+> +=09EFX_WARN_ON_PARANOID(efx->rx_prefix_size > EFX_MAX_RX_PREFIX_SIZE);
+> +=09memcpy(rx_prefix, *ehp - efx->rx_prefix_size,
+> +=09       efx->rx_prefix_size);
+> +
+> +=09xdp.data =3D *ehp;
+> +=09xdp.data_hard_start =3D xdp.data - XDP_PACKET_HEADROOM;
+> +
+> +=09/* No support yet for XDP metadata */
+> +=09xdp_set_data_meta_invalid(&xdp);
+> +=09xdp.data_end =3D xdp.data + rx_buf->len;
+> +=09xdp.rxq =3D &rx_queue->xdp_rxq_info;
+> +
+> +=09xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+> +=09rcu_read_unlock();
+> +
+> +=09offset =3D (u8 *)xdp.data - *ehp;
+> +
+> +=09switch (xdp_act) {
+> +=09case XDP_PASS:
+> +=09=09/* Fix up rx prefix. */
+> +=09=09if (offset) {
+> +=09=09=09*ehp +=3D offset;
+> +=09=09=09rx_buf->page_offset +=3D offset;
+> +=09=09=09rx_buf->len -=3D offset;
+> +=09=09=09memcpy(*ehp - efx->rx_prefix_size, rx_prefix,
+> +=09=09=09       efx->rx_prefix_size);
+> +=09=09}
+> +=09=09break;
+> +
+> +=09case XDP_TX:
+> +=09=09return -EOPNOTSUPP;
+> +
+> +=09case XDP_REDIRECT:
+> +=09=09rc =3D xdp_do_redirect(efx->net_dev, &xdp, xdp_prog);
+> +=09=09if (rc) {
 
-HEAD commit:    4fe34d61 Merge branch 'x86-urgent-for-linus' of git://git...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11b21d40e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cd7f8e43c7bdf83a
-dashboard link: https://syzkaller.appspot.com/bug?extid=305326672fed51b205f7
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e692ff600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10af816b600000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+305326672fed51b205f7@syzkaller.appspotmail.com
-
-BUG: memory leak
-unreferenced object 0xffff888121f35e00 (size 256):
-   comm "syz-executor362", pid 6892, jiffies 4294941791 (age 7.710s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 09 00 00 00 00 80 e7 21 81 88 ff ff  ...........!....
-   backtrace:
-     [<000000006221752a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006221752a>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<000000006221752a>] slab_alloc mm/slab.c:3319 [inline]
-     [<000000006221752a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<000000006ee28c35>] kmalloc include/linux/slab.h:556 [inline]
-     [<000000006ee28c35>] kzalloc include/linux/slab.h:690 [inline]
-     [<000000006ee28c35>] rxrpc_alloc_local net/rxrpc/local_object.c:79  
-[inline]
-     [<000000006ee28c35>] rxrpc_lookup_local+0x1aa/0x750  
-net/rxrpc/local_object.c:277
-     [<000000009255b1c3>] rxrpc_bind+0x131/0x1e0 net/rxrpc/af_rxrpc.c:149
-     [<00000000d7bcf378>] __sys_bind+0x11c/0x140 net/socket.c:1647
-     [<00000000c269c3cb>] __do_sys_bind net/socket.c:1658 [inline]
-     [<00000000c269c3cb>] __se_sys_bind net/socket.c:1656 [inline]
-     [<00000000c269c3cb>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
-     [<000000000444b7d1>] do_syscall_64+0x73/0x1f0  
-arch/x86/entry/common.c:290
-     [<000000001700d564>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Can we call the 'rc' variable 'err' instead?
+And give it an unlikely().
 
 
+> +=09=09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
+> +=09=09=09if (net_ratelimit())
+> +=09=09=09=09netif_err(efx, rx_err, efx->net_dev,
+> +=09=09=09=09=09  "XDP redirect failed (%d)\n", rc);
+> +=09=09}
+> +=09=09break;
+> +
+> +=09default:
+> +=09=09bpf_warn_invalid_xdp_action(xdp_act);
+> +=09=09/* Fall through */
+> +=09case XDP_ABORTED:
+> +=09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
+> +=09=09break;
+> +
+> +=09case XDP_DROP:
+> +=09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
+> +=09=09break;
+> +=09}
+> +
+> +=09return xdp_act =3D=3D XDP_PASS;
+> +}
+> +
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
