@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F540E06CC
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E5DE06DA
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 16:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726955AbfJVOx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 10:53:56 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:42005 "EHLO
+        id S1732021AbfJVOzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 10:55:36 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:51331 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732096AbfJVOx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 10:53:56 -0400
+        with ESMTP id S1727582AbfJVOzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 10:55:35 -0400
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iMvXk-0008DA-LL; Tue, 22 Oct 2019 16:53:52 +0200
+        id 1iMvZM-0008Qq-BV; Tue, 22 Oct 2019 16:55:32 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72] (unknown [IPv6:2a03:f580:87bc:d400:dcd0:3ded:5374:df72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id EAB6246CA77;
-        Tue, 22 Oct 2019 14:53:48 +0000 (UTC)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5147846CA81;
+        Tue, 22 Oct 2019 14:55:30 +0000 (UTC)
+Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
+ for CAN hardware
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     Vincent Prince <vincent.prince.fr@gmail.com>
-Cc:     jiri@resnulli.us, jhs@mojatatu.com, netdev@vger.kernel.org,
-        dave.taht@gmail.com, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, xiyou.wangcong@gmail.com,
-        davem@davemloft.net
+Cc:     jiri@resnulli.us, dave.taht@gmail.com, netdev@vger.kernel.org,
+        jhs@mojatatu.com, linux-can@vger.kernel.org, kernel@pengutronix.de,
+        xiyou.wangcong@gmail.com, davem@davemloft.net
 References: <20190327165632.10711-1-mkl@pengutronix.de>
  <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
+ <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -93,17 +95,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
  lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
  QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
-Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
- for CAN hardware
-Message-ID: <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
-Date:   Tue, 22 Oct 2019 16:53:44 +0200
+Message-ID: <a0adc1d1-8a88-b2fa-d6d3-928785b16ebb@pengutronix.de>
+Date:   Tue, 22 Oct 2019 16:55:26 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
+In-Reply-To: <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="zsdubcn26iXCvlyTNyB5qRMGbtp1jgx74"
+ boundary="PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -114,95 +114,107 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---zsdubcn26iXCvlyTNyB5qRMGbtp1jgx74
-Content-Type: multipart/mixed; boundary="Edn5yA9Yie6iVjLu0MWeeLlGcHPppl7aV";
+--PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C
+Content-Type: multipart/mixed; boundary="Op2BsBVqswp7K1qzXiYA7tDcsxKi4wePu";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Vincent Prince <vincent.prince.fr@gmail.com>
-Cc: jiri@resnulli.us, jhs@mojatatu.com, netdev@vger.kernel.org,
- dave.taht@gmail.com, linux-can@vger.kernel.org, kernel@pengutronix.de,
+Cc: jiri@resnulli.us, dave.taht@gmail.com, netdev@vger.kernel.org,
+ jhs@mojatatu.com, linux-can@vger.kernel.org, kernel@pengutronix.de,
  xiyou.wangcong@gmail.com, davem@davemloft.net
-Message-ID: <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
+Message-ID: <a0adc1d1-8a88-b2fa-d6d3-928785b16ebb@pengutronix.de>
 Subject: Re: [PATCH v2] net: sch_generic: Use pfifo_fast as fallback scheduler
  for CAN hardware
 References: <20190327165632.10711-1-mkl@pengutronix.de>
  <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
-In-Reply-To: <1571750597-14030-1-git-send-email-vincent.prince.fr@gmail.com>
+ <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
+In-Reply-To: <84b8ce24-fe5d-ead0-0d1d-03ea24b36f71@pengutronix.de>
 
---Edn5yA9Yie6iVjLu0MWeeLlGcHPppl7aV
+--Op2BsBVqswp7K1qzXiYA7tDcsxKi4wePu
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 10/22/19 3:23 PM, Vincent Prince wrote:
-> Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com>
+On 10/22/19 4:53 PM, Marc Kleine-Budde wrote:
+> On 10/22/19 3:23 PM, Vincent Prince wrote:
+>> Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com>
+>=20
+> please include a patch description. I.e. this one:
+>=20
+> -------->8-------->8-------->8-------->8-------->8-------->8-------->8-=
+-------
+> There is networking hardware that isn't based on Ethernet for layers 1 =
+and 2.
+>=20
+> For example CAN.
+>=20
+> CAN is a multi-master serial bus standard for connecting Electronic Con=
+trol
+> Units [ECUs] also known as nodes. A frame on the CAN bus carries up to =
+8 bytes
+> of payload. Frame corruption is detected by a CRC. However frame loss d=
+ue to
+> corruption is possible, but a quite unusual phenomenon.
+>=20
+> While fq_codel works great for TCP/IP, it doesn't for CAN. There are a =
+lot of
+> legacy protocols on top of CAN, which are not build with flow control o=
+r high
+> CAN frame drop rates in mind.
+>=20
+> When using fq_codel, as soon as the queue reaches a certain delay based=
+ length,
+> skbs from the head of the queue are silently dropped. Silently meaning =
+that the
+> user space using a send() or similar syscall doesn't get an error. Howe=
+ver
+> TCP's flow control algorithm will detect dropped packages and adjust th=
+e
+> bandwidth accordingly.
+>=20
+> When using fq_codel and sending raw frames over CAN, which is the commo=
+n use
+> case, the user space thinks the package has been sent without problems,=
+ because
+> send() returned without an error. pfifo_fast will drop skbs, if the que=
+ue
+> length exceeds the maximum. But with this scheduler the skbs at the tai=
+l are
+> dropped, an error (-ENOBUFS) is propagated to user space. So that the u=
+ser
+> space can slow down the package generation.
+>=20
+> On distributions, where fq_codel is made default via CONFIG_DEFAULT_NET=
+_SCH
+> during compile time, or set default during runtime with sysctl
+> net.core.default_qdisc (see [1]), we get a bad user experience. In my t=
+est case
+> with pfifo_fast, I can transfer thousands of million CAN frames without=
+ a frame
+> drop. On the other hand with fq_codel there is more then one lost CAN f=
+rame per
+> thousand frames.
+>=20
+> As pointed out fq_codel is not suited for CAN hardware, so this patch c=
+hanges
+> attach_one_default_qdisc() to use pfifo_fast for "ARPHRD_CAN" network d=
+evices.
+>=20
+> During transition of a netdev from down to up state the default queuing=
 
-please include a patch description. I.e. this one:
+> discipline is attached by attach_default_qdiscs() with the help of
+> attach_one_default_qdisc(). This patch modifies attach_one_default_qdis=
+c() to
+> attach the pfifo_fast (pfifo_fast_ops) if the network device type is
+> "ARPHRD_CAN".
+> -------->8-------->8-------->8-------->8-------->8-------->8-------->8-=
+-------
+
+Doh, also include the footnote:
 
 -------->8-------->8-------->8-------->8-------->8-------->8-------->8---=
 -----
-There is networking hardware that isn't based on Ethernet for layers 1 an=
-d 2.
-
-For example CAN.
-
-CAN is a multi-master serial bus standard for connecting Electronic Contr=
-ol
-Units [ECUs] also known as nodes. A frame on the CAN bus carries up to 8 =
-bytes
-of payload. Frame corruption is detected by a CRC. However frame loss due=
- to
-corruption is possible, but a quite unusual phenomenon.
-
-While fq_codel works great for TCP/IP, it doesn't for CAN. There are a lo=
-t of
-legacy protocols on top of CAN, which are not build with flow control or =
-high
-CAN frame drop rates in mind.
-
-When using fq_codel, as soon as the queue reaches a certain delay based l=
-ength,
-skbs from the head of the queue are silently dropped. Silently meaning th=
-at the
-user space using a send() or similar syscall doesn't get an error. Howeve=
-r
-TCP's flow control algorithm will detect dropped packages and adjust the
-bandwidth accordingly.
-
-When using fq_codel and sending raw frames over CAN, which is the common =
-use
-case, the user space thinks the package has been sent without problems, b=
-ecause
-send() returned without an error. pfifo_fast will drop skbs, if the queue=
-
-length exceeds the maximum. But with this scheduler the skbs at the tail =
-are
-dropped, an error (-ENOBUFS) is propagated to user space. So that the use=
-r
-space can slow down the package generation.
-
-On distributions, where fq_codel is made default via CONFIG_DEFAULT_NET_S=
-CH
-during compile time, or set default during runtime with sysctl
-net.core.default_qdisc (see [1]), we get a bad user experience. In my tes=
-t case
-with pfifo_fast, I can transfer thousands of million CAN frames without a=
- frame
-drop. On the other hand with fq_codel there is more then one lost CAN fra=
-me per
-thousand frames.
-
-As pointed out fq_codel is not suited for CAN hardware, so this patch cha=
-nges
-attach_one_default_qdisc() to use pfifo_fast for "ARPHRD_CAN" network dev=
-ices.
-
-During transition of a netdev from down to up state the default queuing
-discipline is attached by attach_default_qdiscs() with the help of
-attach_one_default_qdisc(). This patch modifies attach_one_default_qdisc(=
-) to
-attach the pfifo_fast (pfifo_fast_ops) if the network device type is
-"ARPHRD_CAN".
+[1] https://github.com/systemd/systemd/issues/9194
 -------->8-------->8-------->8-------->8-------->8-------->8-------->8---=
 -----
 
@@ -215,23 +227,23 @@ Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
 Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
 
 
---Edn5yA9Yie6iVjLu0MWeeLlGcHPppl7aV--
+--Op2BsBVqswp7K1qzXiYA7tDcsxKi4wePu--
 
---zsdubcn26iXCvlyTNyB5qRMGbtp1jgx74
+--PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2vF/gACgkQWsYho5Hk
-nSDInQgAhPBoaT5/gW5yo1b+h7hjTZfw1hsbXp9s527FYOBvinI78dP9HiMa/FTV
-eYdP4bnnCLFN7+YIM4ZaNYEur+GDpCnQsQSUJjfNZ78F/j11AYI5+O/OwRzdQtxj
-DRuavT0zNE1E0kw/lW/Kfl/Iryv3q42TkMzByy9n7sy9mH+jJ/+MdNL9l8OBJjOI
-bdYtCfFkQduc1SxqB9Q4QzwalGfuUDRQ2J3bqU3AhRiIOcEIcuhvdrW78QG9mLv0
-fVCnJAMo2vXM0TnnyEn9mT7xh2uJtieDkKLi6GEgZUyH3+aZyQr4vc709yetryaU
-5x+FTLKlK4bWZUAao/52goo+s67J9g==
-=vr+P
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl2vGF4ACgkQWsYho5Hk
+nSDabQf+OWsRLkD2sUS3VJ5YvEcDiOKdrFLucnVSCPyOaNazVlcwWhxmSR7N/VCU
+b+SItuo1CrLI51n/MDR1unZpGkyUF4Ih+xFt4W738t0FvCerqwII8R5XkCuacwWq
+eOd4OJIBnfOa/AIbhCIkVvbbC6XzSN950w315cQKsX2H1N7X0jvToitl9yVswDuk
+kksPSIOHYVtqSeCLm2J48J06RoYPmrtc+w4v189MK4eWGMFB8yvaOxOx1mW9vTXD
+oxDCqA6+8Qs7D/j5VhbNC2IrVVFlgvu6r46R1wZUaZm1nB/p9EROsIGIKzWQymMP
+8BGhZ7LeMu9T/J0GilU1JxYNdjVJDQ==
+=jUcQ
 -----END PGP SIGNATURE-----
 
---zsdubcn26iXCvlyTNyB5qRMGbtp1jgx74--
+--PMtC1ri3OfM9u9f3SFy99Oy3vmyGD5O2C--
