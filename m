@@ -2,302 +2,428 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3D0CE006C
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:10:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD51E00EC
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 11:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731422AbfJVJKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 05:10:24 -0400
-Received: from mail-eopbgr130074.outbound.protection.outlook.com ([40.107.13.74]:21123
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        id S1731333AbfJVJmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 05:42:03 -0400
+Received: from mail-eopbgr30040.outbound.protection.outlook.com ([40.107.3.40]:52566
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731346AbfJVJKX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 05:10:23 -0400
+        id S1730312AbfJVJmC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 05:42:02 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HxIMpTe02YAQXQ8n17PxMyLbUuP4v21KVKbg1U63lAwwzEaDwp8eUUT9RIqnfhX9dbrO+3DprqgSRq2HBaTGx1koLEaxIW7OOWbljOmSTcoDL/qxjS+al4AdOHUvlN01RtoYXVB5asBdo08017UKxr03ZylzNpigvApZfHubQWCasb7hkYuhdlBEIrvE4Ri6jMdBHK0ToStZFoRwqR/SbH++ljceE6KWajAmnpTTy1i5yn2pXyFqVnABf1+/exr+TeZo4RaJcqrvgkJhMj27gVmtUJxrZH+u0/bbTsme3o/C0rIc/qwYrZ5kbsSQIs7U5zILo3jXXoKHA2db4ywTxg==
+ b=SHy2t9DVbXr860FJgzZ3X5mZM/uP+ilbofjwAjzk4PZKl23i38BkBAHWb04qbN0zTgcNrNwiHC5Xq+wyAy4byR4UiT05POJCTuCK5y6e08WFi4fce1hvmrTFzAao3Dc/JArunFVeQ/GE9dKj4P1fmb8b3CEVVqbGfN6mO9xhJ17BOAbulk1Iw0+JuqnO1Mstfe9mRPncM5igi2tVIl5QmrppqEYUCkg2tfgEY8hgIaR45fq4Nt7TyRbPcrN/TDpfnS6hLANk04jfSveoXnKIZlg0Yy640doL8tM9kMYy+sk4PXrl/KDDVH721TYMs8s+toV/Ej/v/oH7EeGOA5Ht5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vT1/puV2kaPBN3CFnVEF4Q6VAnkIOKxQgLUl1IGg3PQ=;
- b=NjFHZ4ktFOwzX99PbfBtEO3eUE7FGTp+DYjfjG2n6XStTwjeMO9fRg7CfjcYff5ZvfPuHiyuSy9sawn/9oozEwO/s3iGaf/2XcT6lWgWu529zqtpOrsFP7Jb/QNn12NJ/y/Z+gih8Ho+bBqu4lSuWkeLWJSa1ZPP7bmLRR1E79TI9lL9FYFYXvI8CybU4n7XVJyfMEmshd27Q0j0LrUW2bGaoO+DrddLJ6Sv0zC6Fxu6IYTg1x/1WduP2F+U6YjUvb7Cr9JwyoP8OWOPkTKWcK9Ktlpxunw7NU6vX4YBXpYx3New4TjMYTw1wPPNSC7xJV1HQS0sgWFJ2ytmfo8cfQ==
+ bh=Er68+fYeGugE2/z7H6e9hB4k1w9YBjqHxu2Iw7lIGp8=;
+ b=BcZPsVj7fV/IOOJGkRsJRao131bPx4Jj3wbgWFhkohdiWVCPqC4gBvjLcBYDo+8lCK6CGPM4FHG5W/+hwi2fSGeOa9Iw4Gwc2Tgxs9ol4dFt4dkpuCeOmt+9zo2ciK86ZmR6E1yQkoYtBZe5qB19ewdjS2EgNgQtmYnwkCQuR6xlGcEcMNTAXUP5SCZ6Z/SoeZcqZos1s4LUXlRmn/2keD+l3kMfxhV0fzLpj0D0hOz5z9l9sc3bqNyGT685eABgkQWGUArbuwiFosVz/SKKHolRWN3yF6qPcs+6BE7RwLwq/zVM3/IiI75DKf0bvlrphSBJTaNOkC9RJ2uLOye9vw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vT1/puV2kaPBN3CFnVEF4Q6VAnkIOKxQgLUl1IGg3PQ=;
- b=Xq/yy04QWoYvMhvinsbWXX4gjwPV0vgm4A2YskdyxnZpH4hCfyahh+ADpEcOtQUxxj9MhIl3EOVmEoZRZ3yXzJ0WHQ0GKwnO2UT1zJj7Js5oiIxqRXQOzll9NU9Mw7S5e9hk9B3xmI66yjTzkXXwHlacI8WPkdROyXklWiGwZrI=
-Received: from AM0PR04MB5554.eurprd04.prod.outlook.com (20.178.112.146) by
- AM0PR04MB6947.eurprd04.prod.outlook.com (10.255.225.16) with Microsoft SMTP
+ bh=Er68+fYeGugE2/z7H6e9hB4k1w9YBjqHxu2Iw7lIGp8=;
+ b=HJd/CQJq6CkzOzMauY9s/fWpfKL8OPHdiOtqE4Iomedd32zItAW9tXWMps4FHHI5RPxwc571qalqwN3vocpM5vkU/+84dnAL1vZNKDItx1SdZhwegzQRSam8ukiZ+BFBAdE2vKWzko5iWvWMuedqT7iFhkzV6aWtLy59zTZQ2QU=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB3565.eurprd04.prod.outlook.com (52.134.9.10) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2367.21; Tue, 22 Oct 2019 09:10:16 +0000
-Received: from AM0PR04MB5554.eurprd04.prod.outlook.com
- ([fe80::f095:6a81:4305:4960]) by AM0PR04MB5554.eurprd04.prod.outlook.com
- ([fe80::f095:6a81:4305:4960%6]) with mapi id 15.20.2347.029; Tue, 22 Oct 2019
- 09:10:16 +0000
-From:   Madalin-cristian Bucur <madalin.bucur@nxp.com>
-To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Roy Pledge <roy.pledge@nxp.com>
-Subject: RE: [PATCH net-next 5/6] dpaa_eth: change DMA device
-Thread-Topic: [PATCH net-next 5/6] dpaa_eth: change DMA device
-Thread-Index: AQHViAr73nMz58c3IkSLdCljb94YjqdmWzIAgAADdVA=
-Date:   Tue, 22 Oct 2019 09:10:16 +0000
-Message-ID: <AM0PR04MB555448A226207D57557929B5EC680@AM0PR04MB5554.eurprd04.prod.outlook.com>
-References: <1571660862-18313-1-git-send-email-madalin.bucur@nxp.com>
- <1571660862-18313-6-git-send-email-madalin.bucur@nxp.com>
- <db196d48-2b00-6845-025f-f936f244213d@nxp.com>
-In-Reply-To: <db196d48-2b00-6845-025f-f936f244213d@nxp.com>
+ 15.20.2347.18; Tue, 22 Oct 2019 09:41:45 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::749b:178a:b8c5:5aaa]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::749b:178a:b8c5:5aaa%11]) with mapi id 15.20.2367.022; Tue, 22 Oct
+ 2019 09:41:45 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+Subject: RE: [PATCH net-next 4/4] net: documentation: add docs for MAC/PHY
+ support in DPAA2
+Thread-Topic: [PATCH net-next 4/4] net: documentation: add docs for MAC/PHY
+ support in DPAA2
+Thread-Index: AQHViGH4+n2mXc5g4kiXAW6oJiL5B6dmUJEAgAAWAYA=
+Date:   Tue, 22 Oct 2019 09:41:45 +0000
+Message-ID: <VI1PR0402MB2800BC4220CD181E13B033A6E0680@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1571698228-30985-1-git-send-email-ioana.ciornei@nxp.com>
+ <1571698228-30985-5-git-send-email-ioana.ciornei@nxp.com>
+ <20191022081404.GN25745@shell.armlinux.org.uk>
+In-Reply-To: <20191022081404.GN25745@shell.armlinux.org.uk>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@nxp.com; 
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
 x-originating-ip: [212.146.100.6]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 58e182a5-46b2-45af-99e0-08d756cfa7b2
-x-ms-traffictypediagnostic: AM0PR04MB6947:|AM0PR04MB6947:
+x-ms-office365-filtering-correlation-id: b243b228-5824-48c3-648d-08d756d40d60
+x-ms-traffictypediagnostic: VI1PR0402MB3565:|VI1PR0402MB3565:
+x-ms-exchange-purlcount: 3
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR04MB6947F614BD362F845A8521FDEC680@AM0PR04MB6947.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-microsoft-antispam-prvs: <VI1PR0402MB3565E2AD4E0556F1461F6F40E0680@VI1PR0402MB3565.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 01986AE76B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(346002)(376002)(39860400002)(366004)(13464003)(189003)(199004)(76176011)(446003)(7696005)(186003)(11346002)(25786009)(71200400001)(3846002)(6116002)(81156014)(8936002)(81166006)(8676002)(5660300002)(99286004)(74316002)(110136005)(26005)(6506007)(53546011)(486006)(102836004)(476003)(7736002)(305945005)(52536014)(316002)(2501003)(66946007)(66476007)(66556008)(6246003)(2201001)(2906002)(86362001)(33656002)(30864003)(256004)(14454004)(478600001)(229853002)(4326008)(71190400001)(6436002)(64756008)(9686003)(66066001)(55016002)(66446008)(76116006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB6947;H:AM0PR04MB5554.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(346002)(366004)(396003)(199004)(189003)(6246003)(476003)(66446008)(66556008)(76116006)(6116002)(55016002)(64756008)(66476007)(81166006)(102836004)(81156014)(6436002)(2906002)(3846002)(86362001)(66946007)(6306002)(11346002)(26005)(8936002)(229853002)(5660300002)(486006)(44832011)(4326008)(9686003)(8676002)(30864003)(6506007)(446003)(76176011)(478600001)(7696005)(54906003)(316002)(99286004)(25786009)(52536014)(74316002)(256004)(6916009)(186003)(66066001)(45080400002)(71200400001)(33656002)(966005)(7736002)(71190400001)(305945005)(14454004)(14444005)(5024004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3565;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2qiF/RnXn3Bh2Gfu6QqUlwsxYUAcxdvRAhK+z9CYeatRvTL1cwjkBTCEtB7TRSKOV1FiYRViG9oH82hs/9y6yImur9/5LgtZAeeEI/Gu7Wiu/31/bP50sH1bgJ2YdkNsrQrTHylBLXqw1cX/zdS9D/XJREZqOnj10bH5UlbUcbOU3EFFhrURwsFjkt/aVapXpxWWl3lAIpxb2xmVzD0XgXabe5S+7J7t0QUCc5UZXrN0iJW3jfv9QFRoOSQBw/45Hrl+Oqy7ijyA9fsR4aCSkIylgnZeku91rbXQRwFIQK43/xDnF/XCyOeY6y28nf4u9Uu1tyobwnM3hhRPU9BS8bpePT6YFdVbWQwhhqaZbNXQdwudSaoz/BzLeENYDWWUtU6YPFAVnctmo9LmXjr9C6qadKmN3J3/PnVFg+qtY4PQ6xOOPN5wtN5qoSaytPzu
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: lHMMGB2joVw0WM1sGxadgUtZHe8aJeB9c9OSlb//X4laDA8RvFPDr52+1rGg2TOkuJTfa/rt5Bty3EU0kX8nefPKac4gOy9/2fZGMepfcZKjzQc+sPKhzSiho0dTt2ys1HbVhPR1ZzjxT/YKf8RRshdtq7mXcZ60f46aCAnnYej8XAMwv/a6SBvmwtWTTDAbf9B5x5mqo6FqJQ0I8i/lDYO19U9Xq0m29bsI0ELY9gM8ITjORdgA9hplO1ERpIkNVeFSgbfg2EA8ZjrALB/vpdG/HnJPDJUc6mHN+PuRtGXjRu2isxKGirRHg1sJsL7Mm37r2ob8A2+0HIeknrM5XFdI+KPzoj6tvgCvgW66QRTCGayU+Whlzq3+RGbGmflPcZbhLwWl8RlukIYtW78IudgzKnLA6i6dpfPgpg+uLTXthdcfuJtugV+L0+aEc4/HgSV4gmNfcNKw/YolVE5pNQ==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58e182a5-46b2-45af-99e0-08d756cfa7b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 09:10:16.7113
+X-MS-Exchange-CrossTenant-Network-Message-Id: b243b228-5824-48c3-648d-08d756d40d60
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 09:41:45.2751
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UR1X3p7sgdSDGQgBzPghH3STLrQzeAqKruV7azV55CQ9OtJCjXJREBmM7KZDQ9+dNNo2DemOpsRf/z3wjnfP1g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6947
+X-MS-Exchange-CrossTenant-userprincipalname: 7M6XhVpwL7aegYhdsIZI49eFZyp08ggq9c5Mka33wYJVwBRMiqNxsH6a3eby3Bfn/VUzE7fibpto3pgMEnC0yA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3565
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBMYXVyZW50aXUgVHVkb3INCj4g
-U2VudDogVHVlc2RheSwgT2N0b2JlciAyMiwgMjAxOSAxMTo1MCBBTQ0KPiBUbzogTWFkYWxpbi1j
-cmlzdGlhbiBCdWN1ciA8bWFkYWxpbi5idWN1ckBueHAuY29tPjsgZGF2ZW1AZGF2ZW1sb2Z0Lm5l
-dDsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBDYzogUm95IFBsZWRnZSA8cm95LnBsZWRn
-ZUBueHAuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldC1uZXh0IDUvNl0gZHBhYV9ldGg6
-IGNoYW5nZSBETUEgZGV2aWNlDQo+IA0KPiBIZWxsbywNCj4gDQo+IE9uIDIxLjEwLjIwMTkgMTU6
-MjgsIE1hZGFsaW4tY3Jpc3RpYW4gQnVjdXIgd3JvdGU6DQo+ID4gVGhlIERQQUEgRXRoZXJuZXQg
-ZHJpdmVyIGlzIHVzaW5nIHRoZSBGTWFuIE1BQyBhcyB0aGUgZGV2aWNlIGZvciBETUENCj4gPiBt
-YXBwaW5nLiBUaGlzIGlzIG5vdCBhY3R1YWxseSBjb3JyZWN0LCBhcyB0aGUgcmVhbCBETUEgZGV2
-aWNlIGlzIHRoZQ0KPiA+IEZNYW4gcG9ydCAodGhlIEZNYW4gUnggcG9ydCBmb3IgcmVjZXB0aW9u
-IGFuZCB0aGUgRk1hbiBUeCBwb3J0IGZvcg0KPiA+IHRyYW5zbWlzc2lvbikuIENoYW5naW5nIHRo
-ZSBkZXZpY2UgdXNlZCBmb3IgRE1BIG1hcHBpbmcgdG8gdGhlIEZtYW4NCj4gPiBSeCBhbmQgVHgg
-cG9ydCBkZXZpY2VzLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogTWFkYWxpbiBCdWN1ciA8bWFk
-YWxpbi5idWN1ckBueHAuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IExhdXJlbnRpdSBUdWRvciA8
-bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+ID4gLS0tDQo+ID4gICBkcml2ZXJzL25ldC9ldGhl
-cm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jIHwgMTA1ICsrKysrKysrKysrKystLS0tDQo+
-IC0tLS0tLS0tDQo+ID4gICBkcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFh
-X2V0aC5oIHwgICA4ICstDQo+ID4gICAyIGZpbGVzIGNoYW5nZWQsIDYyIGluc2VydGlvbnMoKyks
-IDUxIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVy
-bmV0L2ZyZWVzY2FsZS9kcGFhL2RwYWFfZXRoLmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9m
-cmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+ID4gaW5kZXggOGQ1Njg2ZDg4ZDMwLi42MzljYWZh
-YTU5YjggMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2Rw
-YWEvZHBhYV9ldGguYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9k
-cGFhL2RwYWFfZXRoLmMNCj4gPiBAQCAtMTMzNSwxNSArMTMzNSwxNSBAQCBzdGF0aWMgdm9pZCBk
-cGFhX2ZkX3JlbGVhc2UoY29uc3Qgc3RydWN0DQo+IG5ldF9kZXZpY2UgKm5ldF9kZXYsDQo+ID4g
-ICAJCXZhZGRyID0gcGh5c190b192aXJ0KHFtX2ZkX2FkZHIoZmQpKTsNCj4gPiAgIAkJc2d0ID0g
-dmFkZHIgKyBxbV9mZF9nZXRfb2Zmc2V0KGZkKTsNCj4gPg0KPiA+IC0JCWRtYV91bm1hcF9zaW5n
-bGUoZHBhYV9icC0+ZGV2LCBxbV9mZF9hZGRyKGZkKSwgZHBhYV9icC0+c2l6ZSwNCj4gPiAtCQkJ
-CSBETUFfRlJPTV9ERVZJQ0UpOw0KPiA+ICsJCWRtYV91bm1hcF9zaW5nbGUoZHBhYV9icC0+cHJp
-di0+cnhfZG1hX2RldiwgcW1fZmRfYWRkcihmZCksDQo+ID4gKwkJCQkgZHBhYV9icC0+c2l6ZSwg
-RE1BX0ZST01fREVWSUNFKTsNCj4gPg0KPiA+ICAgCQlkcGFhX3JlbGVhc2Vfc2d0X21lbWJlcnMo
-c2d0KTsNCj4gPg0KPiA+IC0JCWFkZHIgPSBkbWFfbWFwX3NpbmdsZShkcGFhX2JwLT5kZXYsIHZh
-ZGRyLCBkcGFhX2JwLT5zaXplLA0KPiA+IC0JCQkJICAgICAgRE1BX0ZST01fREVWSUNFKTsNCj4g
-PiAtCQlpZiAoZG1hX21hcHBpbmdfZXJyb3IoZHBhYV9icC0+ZGV2LCBhZGRyKSkgew0KPiA+IC0J
-CQlkZXZfZXJyKGRwYWFfYnAtPmRldiwgIkRNQSBtYXBwaW5nIGZhaWxlZCIpOw0KPiA+ICsJCWFk
-ZHIgPSBkbWFfbWFwX3NpbmdsZShkcGFhX2JwLT5wcml2LT5yeF9kbWFfZGV2LCB2YWRkciwNCj4g
-PiArCQkJCSAgICAgIGRwYWFfYnAtPnNpemUsIERNQV9GUk9NX0RFVklDRSk7DQo+ID4gKwkJaWYg
-KGRtYV9tYXBwaW5nX2Vycm9yKGRwYWFfYnAtPnByaXYtPnJ4X2RtYV9kZXYsIGFkZHIpKSB7DQo+
-ID4gKwkJCW5ldGRldl9lcnIobmV0X2RldiwgIkRNQSBtYXBwaW5nIGZhaWxlZCIpOw0KPiA+ICAg
-CQkJcmV0dXJuOw0KPiA+ICAgCQl9DQo+ID4gICAJCWJtX2J1ZmZlcl9zZXQ2NCgmYm1iLCBhZGRy
-KTsNCj4gPiBAQCAtMTQ4OCw3ICsxNDg4LDcgQEAgc3RhdGljIGludCBkcGFhX2VuYWJsZV90eF9j
-c3VtKHN0cnVjdCBkcGFhX3ByaXYNCj4gKnByaXYsDQo+ID4NCj4gPiAgIHN0YXRpYyBpbnQgZHBh
-YV9icF9hZGRfOF9idWZzKGNvbnN0IHN0cnVjdCBkcGFhX2JwICpkcGFhX2JwKQ0KPiA+ICAgew0K
-PiA+IC0Jc3RydWN0IGRldmljZSAqZGV2ID0gZHBhYV9icC0+ZGV2Ow0KPiA+ICsJc3RydWN0IG5l
-dF9kZXZpY2UgKm5ldF9kZXYgPSBkcGFhX2JwLT5wcml2LT5uZXRfZGV2Ow0KPiA+ICAgCXN0cnVj
-dCBibV9idWZmZXIgYm1iWzhdOw0KPiA+ICAgCWRtYV9hZGRyX3QgYWRkcjsNCj4gPiAgIAl2b2lk
-ICpuZXdfYnVmOw0KPiA+IEBAIC0xNDk3LDE2ICsxNDk3LDE4IEBAIHN0YXRpYyBpbnQgZHBhYV9i
-cF9hZGRfOF9idWZzKGNvbnN0IHN0cnVjdA0KPiBkcGFhX2JwICpkcGFhX2JwKQ0KPiA+ICAgCWZv
-ciAoaSA9IDA7IGkgPCA4OyBpKyspIHsNCj4gPiAgIAkJbmV3X2J1ZiA9IG5ldGRldl9hbGxvY19m
-cmFnKGRwYWFfYnAtPnJhd19zaXplKTsNCj4gPiAgIAkJaWYgKHVubGlrZWx5KCFuZXdfYnVmKSkg
-ew0KPiA+IC0JCQlkZXZfZXJyKGRldiwgIm5ldGRldl9hbGxvY19mcmFnKCkgZmFpbGVkLCBzaXpl
-ICV6dVxuIiwNCj4gPiAtCQkJCWRwYWFfYnAtPnJhd19zaXplKTsNCj4gPiArCQkJbmV0ZGV2X2Vy
-cihuZXRfZGV2LA0KPiA+ICsJCQkJICAgIm5ldGRldl9hbGxvY19mcmFnKCkgZmFpbGVkLCBzaXpl
-ICV6dVxuIiwNCj4gPiArCQkJCSAgIGRwYWFfYnAtPnJhd19zaXplKTsNCj4gPiAgIAkJCWdvdG8g
-cmVsZWFzZV9wcmV2aW91c19idWZmczsNCj4gPiAgIAkJfQ0KPiA+ICAgCQluZXdfYnVmID0gUFRS
-X0FMSUdOKG5ld19idWYsIFNNUF9DQUNIRV9CWVRFUyk7DQo+ID4NCj4gPiAtCQlhZGRyID0gZG1h
-X21hcF9zaW5nbGUoZGV2LCBuZXdfYnVmLA0KPiA+ICsJCWFkZHIgPSBkbWFfbWFwX3NpbmdsZShk
-cGFhX2JwLT5wcml2LT5yeF9kbWFfZGV2LCBuZXdfYnVmLA0KPiA+ICAgCQkJCSAgICAgIGRwYWFf
-YnAtPnNpemUsIERNQV9GUk9NX0RFVklDRSk7DQo+ID4gLQkJaWYgKHVubGlrZWx5KGRtYV9tYXBw
-aW5nX2Vycm9yKGRldiwgYWRkcikpKSB7DQo+ID4gLQkJCWRldl9lcnIoZHBhYV9icC0+ZGV2LCAi
-RE1BIG1hcCBmYWlsZWQiKTsNCj4gPiArCQlpZiAodW5saWtlbHkoZG1hX21hcHBpbmdfZXJyb3Io
-ZHBhYV9icC0+cHJpdi0+cnhfZG1hX2RldiwNCj4gPiArCQkJCQkgICAgICAgYWRkcikpKSB7DQo+
-ID4gKwkJCW5ldGRldl9lcnIobmV0X2RldiwgIkRNQSBtYXAgZmFpbGVkIik7DQo+ID4gICAJCQln
-b3RvIHJlbGVhc2VfcHJldmlvdXNfYnVmZnM7DQo+ID4gICAJCX0NCj4gPg0KPiA+IEBAIC0xNjM0
-LDcgKzE2MzYsNyBAQCBzdGF0aWMgc3RydWN0IHNrX2J1ZmYgKmRwYWFfY2xlYW51cF90eF9mZChj
-b25zdA0KPiBzdHJ1Y3QgZHBhYV9wcml2ICpwcml2LA0KPiA+DQo+ID4gICAJaWYgKHVubGlrZWx5
-KHFtX2ZkX2dldF9mb3JtYXQoZmQpID09IHFtX2ZkX3NnKSkgew0KPiA+ICAgCQlucl9mcmFncyA9
-IHNrYl9zaGluZm8oc2tiKS0+bnJfZnJhZ3M7DQo+ID4gLQkJZG1hX3VubWFwX3NpbmdsZShkZXYs
-IGFkZHIsDQo+ID4gKwkJZG1hX3VubWFwX3NpbmdsZShwcml2LT50eF9kbWFfZGV2LCBhZGRyLA0K
-PiA+ICAgCQkJCSBxbV9mZF9nZXRfb2Zmc2V0KGZkKSArIERQQUFfU0dUX1NJWkUsDQo+ID4gICAJ
-CQkJIGRtYV9kaXIpOw0KPiA+DQo+ID4gQEAgLTE2NDQsMjEgKzE2NDYsMjEgQEAgc3RhdGljIHN0
-cnVjdCBza19idWZmICpkcGFhX2NsZWFudXBfdHhfZmQoY29uc3QNCj4gc3RydWN0IGRwYWFfcHJp
-diAqcHJpdiwNCj4gPiAgIAkJc2d0ID0gcGh5c190b192aXJ0KGFkZHIgKyBxbV9mZF9nZXRfb2Zm
-c2V0KGZkKSk7DQo+ID4NCj4gPiAgIAkJLyogc2d0WzBdIGlzIGZyb20gbG93bWVtLCB3YXMgZG1h
-X21hcF9zaW5nbGUoKS1lZCAqLw0KPiA+IC0JCWRtYV91bm1hcF9zaW5nbGUoZGV2LCBxbV9zZ19h
-ZGRyKCZzZ3RbMF0pLA0KPiA+ICsJCWRtYV91bm1hcF9zaW5nbGUocHJpdi0+dHhfZG1hX2Rldiwg
-cW1fc2dfYWRkcigmc2d0WzBdKSwNCj4gPiAgIAkJCQkgcW1fc2dfZW50cnlfZ2V0X2xlbigmc2d0
-WzBdKSwgZG1hX2Rpcik7DQo+ID4NCj4gPiAgIAkJLyogcmVtYWluaW5nIHBhZ2VzIHdlcmUgbWFw
-cGVkIHdpdGggc2tiX2ZyYWdfZG1hX21hcCgpICovDQo+ID4gICAJCWZvciAoaSA9IDE7IGkgPD0g
-bnJfZnJhZ3M7IGkrKykgew0KPiA+ICAgCQkJV0FSTl9PTihxbV9zZ19lbnRyeV9pc19leHQoJnNn
-dFtpXSkpOw0KPiA+DQo+ID4gLQkJCWRtYV91bm1hcF9wYWdlKGRldiwgcW1fc2dfYWRkcigmc2d0
-W2ldKSwNCj4gPiArCQkJZG1hX3VubWFwX3BhZ2UocHJpdi0+dHhfZG1hX2RldiwgcW1fc2dfYWRk
-cigmc2d0W2ldKSwNCj4gPiAgIAkJCQkgICAgICAgcW1fc2dfZW50cnlfZ2V0X2xlbigmc2d0W2ld
-KSwgZG1hX2Rpcik7DQo+ID4gICAJCX0NCj4gPg0KPiA+ICAgCQkvKiBGcmVlIHRoZSBwYWdlIGZy
-YWcgdGhhdCB3ZSBhbGxvY2F0ZWQgb24gVHggKi8NCj4gPiAgIAkJc2tiX2ZyZWVfZnJhZyhwaHlz
-X3RvX3ZpcnQoYWRkcikpOw0KPiA+ICAgCX0gZWxzZSB7DQo+ID4gLQkJZG1hX3VubWFwX3Npbmds
-ZShkZXYsIGFkZHIsDQo+ID4gKwkJZG1hX3VubWFwX3NpbmdsZShwcml2LT50eF9kbWFfZGV2LCBh
-ZGRyLA0KPiA+ICAgCQkJCSBza2JfdGFpbF9wb2ludGVyKHNrYikgLSAodTggKilza2JoLCBkbWFf
-ZGlyKTsNCj4gPiAgIAl9DQo+ID4NCj4gPiBAQCAtMTc2Miw4ICsxNzY0LDggQEAgc3RhdGljIHN0
-cnVjdCBza19idWZmICpzZ19mZF90b19za2IoY29uc3Qgc3RydWN0DQo+IGRwYWFfcHJpdiAqcHJp
-diwNCj4gPiAgIAkJCWdvdG8gZnJlZV9idWZmZXJzOw0KPiA+DQo+ID4gICAJCWNvdW50X3B0ciA9
-IHRoaXNfY3B1X3B0cihkcGFhX2JwLT5wZXJjcHVfY291bnQpOw0KPiA+IC0JCWRtYV91bm1hcF9z
-aW5nbGUoZHBhYV9icC0+ZGV2LCBzZ19hZGRyLCBkcGFhX2JwLT5zaXplLA0KPiA+IC0JCQkJIERN
-QV9GUk9NX0RFVklDRSk7DQo+ID4gKwkJZG1hX3VubWFwX3NpbmdsZShkcGFhX2JwLT5wcml2LT5y
-eF9kbWFfZGV2LCBzZ19hZGRyLA0KPiA+ICsJCQkJIGRwYWFfYnAtPnNpemUsIERNQV9GUk9NX0RF
-VklDRSk7DQo+ID4gICAJCWlmICghc2tiKSB7DQo+ID4gICAJCQlzeiA9IGRwYWFfYnAtPnNpemUg
-Kw0KPiA+ICAgCQkJCVNLQl9EQVRBX0FMSUdOKHNpemVvZihzdHJ1Y3Qgc2tiX3NoYXJlZF9pbmZv
-KSk7DQo+ID4gQEAgLTE4NTMsNyArMTg1NSw2IEBAIHN0YXRpYyBpbnQgc2tiX3RvX2NvbnRpZ19m
-ZChzdHJ1Y3QgZHBhYV9wcml2DQo+ICpwcml2LA0KPiA+ICAgCQkJICAgIGludCAqb2Zmc2V0KQ0K
-PiA+ICAgew0KPiA+ICAgCXN0cnVjdCBuZXRfZGV2aWNlICpuZXRfZGV2ID0gcHJpdi0+bmV0X2Rl
-djsNCj4gPiAtCXN0cnVjdCBkZXZpY2UgKmRldiA9IG5ldF9kZXYtPmRldi5wYXJlbnQ7DQo+ID4g
-ICAJZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24gZG1hX2RpcjsNCj4gPiAgIAl1bnNpZ25lZCBjaGFy
-ICpidWZmZXJfc3RhcnQ7DQo+ID4gICAJc3RydWN0IHNrX2J1ZmYgKipza2JoOw0KPiA+IEBAIC0x
-ODg5LDkgKzE4OTAsOSBAQCBzdGF0aWMgaW50IHNrYl90b19jb250aWdfZmQoc3RydWN0IGRwYWFf
-cHJpdg0KPiAqcHJpdiwNCj4gPiAgIAlmZC0+Y21kIHw9IGNwdV90b19iZTMyKEZNX0ZEX0NNRF9G
-Q08pOw0KPiA+DQo+ID4gICAJLyogTWFwIHRoZSBlbnRpcmUgYnVmZmVyIHNpemUgdGhhdCBtYXkg
-YmUgc2VlbiBieSBGTWFuLCBidXQgbm8gbW9yZQ0KPiAqLw0KPiA+IC0JYWRkciA9IGRtYV9tYXBf
-c2luZ2xlKGRldiwgc2tiaCwNCj4gPiArCWFkZHIgPSBkbWFfbWFwX3NpbmdsZShwcml2LT50eF9k
-bWFfZGV2LCBza2JoLA0KPiA+ICAgCQkJICAgICAgc2tiX3RhaWxfcG9pbnRlcihza2IpIC0gYnVm
-ZmVyX3N0YXJ0LCBkbWFfZGlyKTsNCj4gPiAtCWlmICh1bmxpa2VseShkbWFfbWFwcGluZ19lcnJv
-cihkZXYsIGFkZHIpKSkgew0KPiA+ICsJaWYgKHVubGlrZWx5KGRtYV9tYXBwaW5nX2Vycm9yKHBy
-aXYtPnR4X2RtYV9kZXYsIGFkZHIpKSkgew0KPiA+ICAgCQlpZiAobmV0X3JhdGVsaW1pdCgpKQ0K
-PiA+ICAgCQkJbmV0aWZfZXJyKHByaXYsIHR4X2VyciwgbmV0X2RldiwgImRtYV9tYXBfc2luZ2xl
-KCkNCj4gZmFpbGVkXG4iKTsNCj4gPiAgIAkJcmV0dXJuIC1FSU5WQUw7DQo+ID4gQEAgLTE5MDcs
-NyArMTkwOCw2IEBAIHN0YXRpYyBpbnQgc2tiX3RvX3NnX2ZkKHN0cnVjdCBkcGFhX3ByaXYgKnBy
-aXYsDQo+ID4gICAJY29uc3QgZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24gZG1hX2RpciA9IERNQV9U
-T19ERVZJQ0U7DQo+ID4gICAJY29uc3QgaW50IG5yX2ZyYWdzID0gc2tiX3NoaW5mbyhza2IpLT5u
-cl9mcmFnczsNCj4gPiAgIAlzdHJ1Y3QgbmV0X2RldmljZSAqbmV0X2RldiA9IHByaXYtPm5ldF9k
-ZXY7DQo+ID4gLQlzdHJ1Y3QgZGV2aWNlICpkZXYgPSBuZXRfZGV2LT5kZXYucGFyZW50Ow0KPiA+
-ICAgCXN0cnVjdCBxbV9zZ19lbnRyeSAqc2d0Ow0KPiA+ICAgCXN0cnVjdCBza19idWZmICoqc2ti
-aDsNCj4gPiAgIAlpbnQgaSwgaiwgZXJyLCBzejsNCj4gPiBAQCAtMTk0NiwxMCArMTk0NiwxMCBA
-QCBzdGF0aWMgaW50IHNrYl90b19zZ19mZChzdHJ1Y3QgZHBhYV9wcml2ICpwcml2LA0KPiA+ICAg
-CXFtX3NnX2VudHJ5X3NldF9sZW4oJnNndFswXSwgZnJhZ19sZW4pOw0KPiA+ICAgCXNndFswXS5i
-cGlkID0gRlNMX0RQQUFfQlBJRF9JTlY7DQo+ID4gICAJc2d0WzBdLm9mZnNldCA9IDA7DQo+ID4g
-LQlhZGRyID0gZG1hX21hcF9zaW5nbGUoZGV2LCBza2ItPmRhdGEsDQo+ID4gKwlhZGRyID0gZG1h
-X21hcF9zaW5nbGUocHJpdi0+dHhfZG1hX2Rldiwgc2tiLT5kYXRhLA0KPiA+ICAgCQkJICAgICAg
-c2tiX2hlYWRsZW4oc2tiKSwgZG1hX2Rpcik7DQo+ID4gLQlpZiAodW5saWtlbHkoZG1hX21hcHBp
-bmdfZXJyb3IoZGV2LCBhZGRyKSkpIHsNCj4gPiAtCQlkZXZfZXJyKGRldiwgIkRNQSBtYXBwaW5n
-IGZhaWxlZCIpOw0KPiA+ICsJaWYgKHVubGlrZWx5KGRtYV9tYXBwaW5nX2Vycm9yKHByaXYtPnR4
-X2RtYV9kZXYsIGFkZHIpKSkgew0KPiA+ICsJCW5ldGRldl9lcnIocHJpdi0+bmV0X2RldiwgIkRN
-QSBtYXBwaW5nIGZhaWxlZCIpOw0KPiA+ICAgCQllcnIgPSAtRUlOVkFMOw0KPiA+ICAgCQlnb3Rv
-IHNnMF9tYXBfZmFpbGVkOw0KPiA+ICAgCX0NCj4gPiBAQCAtMTk2MCwxMCArMTk2MCwxMCBAQCBz
-dGF0aWMgaW50IHNrYl90b19zZ19mZChzdHJ1Y3QgZHBhYV9wcml2ICpwcml2LA0KPiA+ICAgCQlm
-cmFnID0gJnNrYl9zaGluZm8oc2tiKS0+ZnJhZ3NbaV07DQo+ID4gICAJCWZyYWdfbGVuID0gc2ti
-X2ZyYWdfc2l6ZShmcmFnKTsNCj4gPiAgIAkJV0FSTl9PTighc2tiX2ZyYWdfcGFnZShmcmFnKSk7
-DQo+ID4gLQkJYWRkciA9IHNrYl9mcmFnX2RtYV9tYXAoZGV2LCBmcmFnLCAwLA0KPiA+ICsJCWFk
-ZHIgPSBza2JfZnJhZ19kbWFfbWFwKHByaXYtPnR4X2RtYV9kZXYsIGZyYWcsIDAsDQo+ID4gICAJ
-CQkJCWZyYWdfbGVuLCBkbWFfZGlyKTsNCj4gPiAtCQlpZiAodW5saWtlbHkoZG1hX21hcHBpbmdf
-ZXJyb3IoZGV2LCBhZGRyKSkpIHsNCj4gPiAtCQkJZGV2X2VycihkZXYsICJETUEgbWFwcGluZyBm
-YWlsZWQiKTsNCj4gPiArCQlpZiAodW5saWtlbHkoZG1hX21hcHBpbmdfZXJyb3IocHJpdi0+dHhf
-ZG1hX2RldiwgYWRkcikpKSB7DQo+ID4gKwkJCW5ldGRldl9lcnIocHJpdi0+bmV0X2RldiwgIkRN
-QSBtYXBwaW5nIGZhaWxlZCIpOw0KPiA+ICAgCQkJZXJyID0gLUVJTlZBTDsNCj4gPiAgIAkJCWdv
-dG8gc2dfbWFwX2ZhaWxlZDsNCj4gPiAgIAkJfQ0KPiA+IEBAIC0xOTg2LDEwICsxOTg2LDEwIEBA
-IHN0YXRpYyBpbnQgc2tiX3RvX3NnX2ZkKHN0cnVjdCBkcGFhX3ByaXYgKnByaXYsDQo+ID4gICAJ
-c2tiaCA9IChzdHJ1Y3Qgc2tfYnVmZiAqKilidWZmZXJfc3RhcnQ7DQo+ID4gICAJKnNrYmggPSBz
-a2I7DQo+ID4NCj4gPiAtCWFkZHIgPSBkbWFfbWFwX3NpbmdsZShkZXYsIGJ1ZmZlcl9zdGFydCwN
-Cj4gPiArCWFkZHIgPSBkbWFfbWFwX3NpbmdsZShwcml2LT50eF9kbWFfZGV2LCBidWZmZXJfc3Rh
-cnQsDQo+ID4gICAJCQkgICAgICBwcml2LT50eF9oZWFkcm9vbSArIERQQUFfU0dUX1NJWkUsIGRt
-YV9kaXIpOw0KPiA+IC0JaWYgKHVubGlrZWx5KGRtYV9tYXBwaW5nX2Vycm9yKGRldiwgYWRkcikp
-KSB7DQo+ID4gLQkJZGV2X2VycihkZXYsICJETUEgbWFwcGluZyBmYWlsZWQiKTsNCj4gPiArCWlm
-ICh1bmxpa2VseShkbWFfbWFwcGluZ19lcnJvcihwcml2LT50eF9kbWFfZGV2LCBhZGRyKSkpIHsN
-Cj4gPiArCQluZXRkZXZfZXJyKHByaXYtPm5ldF9kZXYsICJETUEgbWFwcGluZyBmYWlsZWQiKTsN
-Cj4gPiAgIAkJZXJyID0gLUVJTlZBTDsNCj4gPiAgIAkJZ290byBzZ3RfbWFwX2ZhaWxlZDsNCj4g
-PiAgIAl9DQo+ID4gQEAgLTIwMDMsNyArMjAwMyw3IEBAIHN0YXRpYyBpbnQgc2tiX3RvX3NnX2Zk
-KHN0cnVjdCBkcGFhX3ByaXYgKnByaXYsDQo+ID4gICBzZ3RfbWFwX2ZhaWxlZDoNCj4gPiAgIHNn
-X21hcF9mYWlsZWQ6DQo+ID4gICAJZm9yIChqID0gMDsgaiA8IGk7IGorKykNCj4gPiAtCQlkbWFf
-dW5tYXBfcGFnZShkZXYsIHFtX3NnX2FkZHIoJnNndFtqXSksDQo+ID4gKwkJZG1hX3VubWFwX3Bh
-Z2UocHJpdi0+dHhfZG1hX2RldiwgcW1fc2dfYWRkcigmc2d0W2pdKSwNCj4gPiAgIAkJCSAgICAg
-ICBxbV9zZ19lbnRyeV9nZXRfbGVuKCZzZ3Rbal0pLCBkbWFfZGlyKTsNCj4gPiAgIHNnMF9tYXBf
-ZmFpbGVkOg0KPiA+ICAgY3N1bV9mYWlsZWQ6DQo+ID4gQEAgLTIzMDQsNyArMjMwNCw4IEBAIHN0
-YXRpYyBlbnVtIHFtYW5fY2JfZHFycl9yZXN1bHQNCj4gcnhfZGVmYXVsdF9kcXJyKHN0cnVjdCBx
-bWFuX3BvcnRhbCAqcG9ydGFsLA0KPiA+ICAgCQlyZXR1cm4gcW1hbl9jYl9kcXJyX2NvbnN1bWU7
-DQo+ID4gICAJfQ0KPiA+DQo+ID4gLQlkbWFfdW5tYXBfc2luZ2xlKGRwYWFfYnAtPmRldiwgYWRk
-ciwgZHBhYV9icC0+c2l6ZSwNCj4gRE1BX0ZST01fREVWSUNFKTsNCj4gPiArCWRtYV91bm1hcF9z
-aW5nbGUoZHBhYV9icC0+cHJpdi0+cnhfZG1hX2RldiwgYWRkciwgZHBhYV9icC0+c2l6ZSwNCj4g
-PiArCQkJIERNQV9GUk9NX0RFVklDRSk7DQo+ID4NCj4gPiAgIAkvKiBwcmVmZXRjaCB0aGUgZmly
-c3QgNjQgYnl0ZXMgb2YgdGhlIGZyYW1lIG9yIHRoZSBTR1Qgc3RhcnQgKi8NCj4gPiAgIAl2YWRk
-ciA9IHBoeXNfdG9fdmlydChhZGRyKTsNCj4gPiBAQCAtMjY1OSw3ICsyNjYwLDcgQEAgc3RhdGlj
-IGlubGluZSB2b2lkIGRwYWFfYnBfZnJlZV9wZihjb25zdCBzdHJ1Y3QNCj4gZHBhYV9icCAqYnAs
-DQo+ID4gICB7DQo+ID4gICAJZG1hX2FkZHJfdCBhZGRyID0gYm1fYnVmX2FkZHIoYm1iKTsNCj4g
-Pg0KPiA+IC0JZG1hX3VubWFwX3NpbmdsZShicC0+ZGV2LCBhZGRyLCBicC0+c2l6ZSwgRE1BX0ZS
-T01fREVWSUNFKTsNCj4gPiArCWRtYV91bm1hcF9zaW5nbGUoYnAtPnByaXYtPnJ4X2RtYV9kZXYs
-IGFkZHIsIGJwLT5zaXplLA0KPiBETUFfRlJPTV9ERVZJQ0UpOw0KPiA+DQo+ID4gICAJc2tiX2Zy
-ZWVfZnJhZyhwaHlzX3RvX3ZpcnQoYWRkcikpOw0KPiA+ICAgfQ0KPiA+IEBAIC0yNzY5LDI1ICsy
-NzcwLDI3IEBAIHN0YXRpYyBpbnQgZHBhYV9ldGhfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
-ZQ0KPiAqcGRldikNCj4gPiAgIAlpbnQgZXJyID0gMCwgaSwgY2hhbm5lbDsNCj4gPiAgIAlzdHJ1
-Y3QgZGV2aWNlICpkZXY7DQo+ID4NCj4gPiArCWRldiA9ICZwZGV2LT5kZXY7DQo+ID4gKw0KPiA+
-ICAgCWVyciA9IGJtYW5faXNfcHJvYmVkKCk7DQo+ID4gICAJaWYgKCFlcnIpDQo+ID4gICAJCXJl
-dHVybiAtRVBST0JFX0RFRkVSOw0KPiA+ICAgCWlmIChlcnIgPCAwKSB7DQo+ID4gLQkJZGV2X2Vy
-cigmcGRldi0+ZGV2LCAiZmFpbGluZyBwcm9iZSBkdWUgdG8gYm1hbiBwcm9iZQ0KPiBlcnJvclxu
-Iik7DQo+ID4gKwkJZGV2X2VycihkZXYsICJmYWlsaW5nIHByb2JlIGR1ZSB0byBibWFuIHByb2Jl
-IGVycm9yXG4iKTsNCj4gDQo+IFRoZXNlIGNoYW5nZXMgc2VlbSB1bnJlbGF0ZWQuDQoNClRoZSAm
-cGRldi0+ZGV2IHRvIGRldiByZXBsYWNlbWVudCBpcyBub3QgcmVsYXRlZCBkaXJlY3RseSB0byB0
-aGUgaW5jb3JyZWN0DQpETUEgbWFwcGluZyBkZXZpY2UgYnV0IGEgZGV2aWNlIGhhZCB0byBiZSB1
-c2VkIGZvciB0aGUgcHJpbnRzIGFuZCBwcm9wYWdhdGluZyANCiZwZGV2LT5kZXYgZGlkIG5vdCBs
-b29rIGxpa2UgYSBnb29kIGlkZWEuIEluaXRpYWxseSBJIGhhZCBhIHNlcGFyYXRlIHBhdGNoIGZv
-cg0KdGhpcyBidXQgaXQncyBzdXBlcmZsdW91cyB0byBhZGQgY29kZSBhbmQgcmVtb3ZlIGl0IGlu
-IGFub3RoZXIgcGF0Y2ggZG9pbmcgYWxtb3N0DQpub3RoaW5nLg0KDQo+ID4gICAJCXJldHVybiAt
-RU5PREVWOw0KPiA+ICAgCX0NCj4gPiAgIAllcnIgPSBxbWFuX2lzX3Byb2JlZCgpOw0KPiA+ICAg
-CWlmICghZXJyKQ0KPiA+ICAgCQlyZXR1cm4gLUVQUk9CRV9ERUZFUjsNCj4gPiAgIAlpZiAoZXJy
-IDwgMCkgew0KPiA+IC0JCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxpbmcgcHJvYmUgZHVlIHRv
-IHFtYW4gcHJvYmUNCj4gZXJyb3JcbiIpOw0KPiA+ICsJCWRldl9lcnIoZGV2LCAiZmFpbGluZyBw
-cm9iZSBkdWUgdG8gcW1hbiBwcm9iZSBlcnJvclxuIik7DQo+ID4gICAJCXJldHVybiAtRU5PREVW
-Ow0KPiA+ICAgCX0NCj4gPiAgIAllcnIgPSBibWFuX3BvcnRhbHNfcHJvYmVkKCk7DQo+ID4gICAJ
-aWYgKCFlcnIpDQo+ID4gICAJCXJldHVybiAtRVBST0JFX0RFRkVSOw0KPiA+ICAgCWlmIChlcnIg
-PCAwKSB7DQo+ID4gLQkJZGV2X2VycigmcGRldi0+ZGV2LA0KPiA+ICsJCWRldl9lcnIoZGV2LA0K
-PiA+ICAgCQkJImZhaWxpbmcgcHJvYmUgZHVlIHRvIGJtYW4gcG9ydGFscyBwcm9iZSBlcnJvclxu
-Iik7DQo+ID4gICAJCXJldHVybiAtRU5PREVWOw0KPiA+ICAgCX0NCj4gPiBAQCAtMjc5NSwxOSAr
-Mjc5OCwxMSBAQCBzdGF0aWMgaW50IGRwYWFfZXRoX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
-Y2UNCj4gKnBkZXYpDQo+ID4gICAJaWYgKCFlcnIpDQo+ID4gICAJCXJldHVybiAtRVBST0JFX0RF
-RkVSOw0KPiA+ICAgCWlmIChlcnIgPCAwKSB7DQo+ID4gLQkJZGV2X2VycigmcGRldi0+ZGV2LA0K
-PiA+ICsJCWRldl9lcnIoZGV2LA0KPiA+ICAgCQkJImZhaWxpbmcgcHJvYmUgZHVlIHRvIHFtYW4g
-cG9ydGFscyBwcm9iZSBlcnJvclxuIik7DQo+ID4gICAJCXJldHVybiAtRU5PREVWOw0KPiA+ICAg
-CX0NCj4gPg0KPiA+IC0JLyogZGV2aWNlIHVzZWQgZm9yIERNQSBtYXBwaW5nICovDQo+ID4gLQlk
-ZXYgPSBwZGV2LT5kZXYucGFyZW50Ow0KPiA+IC0JZXJyID0gZG1hX2NvZXJjZV9tYXNrX2FuZF9j
-b2hlcmVudChkZXYsIERNQV9CSVRfTUFTSyg0MCkpOw0KPiA+IC0JaWYgKGVycikgew0KPiA+IC0J
-CWRldl9lcnIoZGV2LCAiZG1hX2NvZXJjZV9tYXNrX2FuZF9jb2hlcmVudCgpIGZhaWxlZFxuIik7
-DQo+ID4gLQkJcmV0dXJuIGVycjsNCj4gPiAtCX0NCj4gDQo+IFdoeSBhcmUgd2UgZHJvcHBpbmcg
-dGhpcyBleHBsaWNpdCBzZXR0aW5nIG9mIHRoZSBkbWEgbWFzaz8NCj4gDQo+IC0tLQ0KPiBCZXN0
-IFJlZ2FyZHMsIExhdXJlbnRpdQ0KDQpIaSBMYXVyZW50aXUsIHlvdSBhcmUgcHJvYmFibHkgcmV2
-aWV3aW5nIHRoZXNlIGNoYW5nZXMgd2l0aCB5b3VyIGluaXRpYWwNCnBhdGNoIGluIG1pbmQgdGhh
-dCB3YXMgdXNpbmcgKGluY29ycmVjdGx5KSB0aGUgc2FtZSAoUngpIHBvcnQgZm9yIERNQQ0KbWFw
-cGluZyBvZiBib3RoIHJlY2VpdmUgYW5kIHRyYW5zbWl0IHRyYWZmaWMuIFBsZWFzZSB0YWtlIGEg
-c2Vjb25kIGxvb2sgYXQNCnRoZSBjaGFuZ2VzIGluIHRoaXMgcGF0Y2guDQoNClJlZ2FyZHMsDQpN
-YWRhbGluDQo=
+> Subject: Re: [PATCH net-next 4/4] net: documentation: add docs for MAC/PH=
+Y
+> support in DPAA2
+>=20
+> This mentions phylink, but I never got the other patches of the series wh=
+ich
+> presumably implement this idea.
+
+Hi Russell,
+
+I copied you to the entire series. Anyhow, here is a link to the entire pat=
+ch set - https://www.spinics.net/lists/netdev/msg606466.html.
+
+>=20
+> Please also note that I gave up waiting for another set, and as I now hav=
+e
+> LX2160A hardware, I ended up writing my own version, which can be found i=
+n
+> my cex7 branch at:
+
+I looked through the branch and it seems that the approach you are going fo=
+r is similar (if not exactly the same) as the one from my previous patch se=
+t that was shut down.
+Also, sorry for the delay on sending another set but it takes a bit of time=
+ to consider all the implications of changing the entire architecture of th=
+e solution to better fit the upstream model.
+
+Ioana
+
+>=20
+>  git://git.armlinux.org.uk/~rmk/linux-arm.git cex7
+>=20
+>=20
+> http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=3Dcex7
+>=20
+> On Tue, Oct 22, 2019 at 01:50:28AM +0300, Ioana Ciornei wrote:
+> > Add documentation file for the MAC/PHY support in the DPAA2
+> > architecture. This describes the architecture and implementation of
+> > the interface between phylink and a DPAA2 network driver.
+> >
+> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > ---
+> >  .../device_drivers/freescale/dpaa2/index.rst       |   1 +
+> >  .../freescale/dpaa2/mac-phy-support.rst            | 191
+> +++++++++++++++++++++
+> >  MAINTAINERS                                        |   2 +
+> >  3 files changed, 194 insertions(+)
+> >  create mode 100644
+> > Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-suppor
+> > t.rst
+> >
+> > diff --git
+> > a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
+> > b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
+> > index 67bd87fe6c53..ee40fcc5ddff 100644
+> > ---
+> > a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
+> > +++ b/Documentation/networking/device_drivers/freescale/dpaa2/index.rs
+> > +++ t
+> > @@ -8,3 +8,4 @@ DPAA2 Documentation
+> >     overview
+> >     dpio-driver
+> >     ethernet-driver
+> > +   mac-phy-support
+> > diff --git
+> > a/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-supp
+> > ort.rst
+> > b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-supp
+> > ort.rst
+> > new file mode 100644
+> > index 000000000000..51e6624fb774
+> > --- /dev/null
+> > +++ b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-
+> > +++ support.rst
+> > @@ -0,0 +1,191 @@
+> > +.. SPDX-License-Identifier: GPL-2.0
+> > +.. include:: <isonum.txt>
+> > +
+> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > +DPAA2 MAC / PHY support
+> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > +
+> > +:Copyright: |copy| 2019 NXP
+> > +
+> > +Overview
+> > +--------
+> > +
+> > +The DPAA2 MAC / PHY support consists of a set of APIs that help DPAA2
+> > +network drivers (dpaa2-eth, dpaa2-ethsw) interract with the PHY librar=
+y.
+> > +
+> > +DPAA2 Software Architecture
+> > +---------------------------
+> > +
+> > +Among other DPAA2 objects, the fsl-mc bus exports DPNI objects
+> > +(abstracting a network interface) and DPMAC objects (abstracting a
+> > +MAC). The dpaa2-eth driver probes on the DPNI object and connects to
+> > +and configures a DPMAC object with the help of phylink.
+> > +
+> > +Data connections may be established between a DPNI and a DPMAC, or
+> > +between two DPNIs. Depending on the connection type, the
+> > +netif_carrier_[on/off] is handled directly by the dpaa2-eth driver or =
+by
+> phylink.
+> > +
+> > +.. code-block:: none
+> > +
+> > +  Sources of abstracted link state information presented by the MC
+> > + firmware
+> > +
+> > +                                               +----------------------=
+----------------+
+> > +  +------------+                  +---------+  |                      =
+     xgmac_mdio |
+> > +  | net_device |                  | phylink |--|  +-----+  +-----+  +-=
+----+  +-----+  |
+> > +  +------------+                  +---------+  |  | PHY |  | PHY |  | =
+PHY |  | PHY |  |
+> > +        |                             |        |  +-----+  +-----+  +-=
+----+  +-----+  |
+> > +      +------------------------------------+   |                    Ex=
+ternal MDIO bus |
+> > +      |            dpaa2-eth               |   +----------------------=
+----------------+
+> > +      +------------------------------------+
+> > +        |                             |                               =
+            Linux
+> > +
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> ~~~~~~~~~~~~~~~~~~~~
+> > +        |                             |                               =
+      MC firmware
+> > +        |              /|             V
+> > +  +----------+        / |       +----------+
+> > +  |          |       /  |       |          |
+> > +  |          |       |  |       |          |
+> > +  |   DPNI   |<------|  |<------|   DPMAC  |
+> > +  |          |       |  |       |          |
+> > +  |          |       \  |<---+  |          |
+> > +  +----------+        \ |    |  +----------+
+> > +                       \|    |
+> > +                             |
+> > +           +--------------------------------------+
+> > +           | MC firmware polling MAC PCS for link |
+> > +           |  +-----+  +-----+  +-----+  +-----+  |
+> > +           |  | PCS |  | PCS |  | PCS |  | PCS |  |
+> > +           |  +-----+  +-----+  +-----+  +-----+  |
+> > +           |                    Internal MDIO bus |
+> > +           +--------------------------------------+
+> > +
+> > +
+> > +Depending on an MC firmware configuration setting, each MAC may be in
+> one of two modes:
+> > +
+> > +- DPMAC_LINK_TYPE_FIXED: the link state management is handled
+> > +exclusively by
+> > +  the MC firmware by polling the MAC PCS. Without the need to
+> > +register a
+> > +  phylink instance, the dpaa2-eth driver will not bind to the
+> > +connected dpmac
+> > +  object at all.
+> > +
+> > +- DPMAC_LINK_TYPE_PHY: The MC firmware is left waiting for link state
+> > +update
+> > +  events, but those are in fact passed strictly between the dpaa2-mac
+> > +(based on
+> > +  phylink) and its attached net_device driver (dpaa2-eth,
+> > +dpaa2-ethsw),
+> > +  effectively bypassing the firmware.
+> > +
+> > +Implementation
+> > +--------------
+> > +
+> > +At probe time or when a DPNI's endpoint is dynamically changed, the
+> > +dpaa2-eth is responsible to find out if the peer object is a DPMAC
+> > +and if this is the case, to integrate it with PHYLINK using the
+> > +dpaa2_mac_connect() API, which will do the following:
+> > +
+> > + - look up the device tree for PHYLINK-compatible of binding
+> > + (phy-handle)
+> > + - will create a PHYLINK instance associated with the received
+> > + net_device
+> > + - connect to the PHY using phylink_of_phy_connect()
+> > +
+> > +The following phylink_mac_ops callback are implemented:
+> > +
+> > + - .validate() will populate the supported linkmodes with the MAC capa=
+bilities
+> > +   only when the phy_interface_t is RGMII_* (at the moment, this is th=
+e only
+> > +   link type supported by the driver).
+> > +
+> > + - .mac_config() will configure the MAC in the new configuration using=
+ the
+> > +   dpmac_set_link_state() MC firmware API.
+> > +
+> > + - .mac_link_up() / .mac_link_down() will update the MAC link using th=
+e same
+> > +   API described above.
+> > +
+> > +At driver unbind() or when the DPNI object is disconnected from the
+> > +DPMAC, the dpaa2-eth driver calls dpaa2_mac_disconnect() which will,
+> > +in turn, disconnect from the PHY and destroy the PHYLINK instance.
+> > +
+> > +In case of a DPNI-DPMAC connection, an 'ip link set dev eth0 up'
+> > +would start the following sequence of operations:
+> > +
+> > +(1) phylink_start() called from .dev_open().
+> > +(2) The .mac_config() and .mac_link_up() callbacks are called by PHYLI=
+NK.
+> > +(3) In order to configure the HW MAC, the MC Firmware API
+> > +    dpmac_set_link_state() is called.
+> > +(4) The firmware will eventually setup the HW MAC in the new configura=
+tion.
+> > +(5) A netif_carrier_on() call is made directly from PHYLINK on the ass=
+ociated
+> > +    net_device.
+> > +(6) The dpaa2-eth driver handles the LINK_STATE_CHANGE irq in order to
+> > +    enable/disable Rx taildrop based on the pause frame settings.
+> > +
+> > +.. code-block:: none
+> > +
+> > +  +---------+               +---------+
+> > +  | PHYLINK |-------------->|  eth0   |
+> > +  +---------+           (5) +---------+
+> > +  (1) ^  |
+> > +      |  |
+> > +      |  v (2)
+> > +  +-----------------------------------+
+> > +  |             dpaa2-eth             |
+> > +  +-----------------------------------+
+> > +         |                    ^ (6)
+> > +         |                    |
+> > +         v (3)                |
+> > +  +---------+---------------+---------+
+> > +  |  DPMAC  |               |  DPNI   |
+> > +  +---------+               +---------+
+> > +  |            MC Firmware            |
+> > +  +-----------------------------------+
+> > +         |
+> > +         |
+> > +         v (4)
+> > +  +-----------------------------------+
+> > +  |             HW MAC                |
+> > +  +-----------------------------------+
+> > +
+> > +In case of a DPNI-DPNI connection, a usual sequence of operations
+> > +looks like the following:
+> > +
+> > +(1) ip link set dev eth0 up
+> > +(2) The dpni_enable() MC API called on the associated fsl_mc_device.
+> > +(3) ip link set dev eth1 up
+> > +(4) The dpni_enable() MC API called on the associated fsl_mc_device.
+> > +(5) The LINK_STATE_CHANGED irq is received by both instances of the dp=
+aa2-
+> eth
+> > +    driver because now the operational link state is up.
+> > +(6) The netif_carrier_on() is called on the exported net_device from
+> > +    link_state_update().
+> > +
+> > +.. code-block:: none
+> > +
+> > +  +---------+               +---------+
+> > +  |  eth0   |               |  eth1   |
+> > +  +---------+               +---------+
+> > +      |  ^                     ^  |
+> > +      |  |                     |  |
+> > +  (1) v  | (6)             (6) |  v (3)
+> > +  +---------+               +---------+
+> > +  |dpaa2-eth|               |dpaa2-eth|
+> > +  +---------+               +---------+
+> > +      |  ^                     ^  |
+> > +      |  |                     |  |
+> > +  (2) v  | (5)             (5) |  v (4)
+> > +  +---------+---------------+---------+
+> > +  |  DPNI   |               |  DPNI   |
+> > +  +---------+               +---------+
+> > +  |            MC Firmware            |
+> > +  +-----------------------------------+
+> > +
+> > +
+> > +Exported API
+> > +------------
+> > +
+> > +Any DPAA2 driver that drivers endpoints of DPMAC objects should
+> > +service its _EVENT_ENDPOINT_CHANGED irq and connect/disconnect from
+> > +the associated DPMAC when necessary using the below listed API::
+> > +
+> > + - int dpaa2_mac_connect(struct dpaa2_mac *mac);
+> > + - void dpaa2_mac_disconnect(struct dpaa2_mac *mac);
+> > +
+> > +A phylink integration is necessary only when the partner DPMAC is not =
+of
+> TYPE_FIXED.
+> > +One can check for this condition using the below API::
+> > +
+> > + - bool dpaa2_mac_is_type_fixed(struct fsl_mc_device
+> > + *dpmac_dev,struct fsl_mc_io *mc_io);
+> > +
+> > +Before connection to a MAC, the caller must allocate and populate the
+> > +dpaa2_mac structure with the associated net_device, a pointer to the
+> > +MC portal to be used and the actual fsl_mc_device structure of the DPM=
+AC.
+> > diff --git a/MAINTAINERS b/MAINTAINERS index
+> > d0e562d3ce5b..fdc3c89a4a6d 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -5052,6 +5052,8 @@ F:	drivers/net/ethernet/freescale/dpaa2/dpmac*
+> >  F:	drivers/net/ethernet/freescale/dpaa2/dpkg.h
+> >  F:	drivers/net/ethernet/freescale/dpaa2/Makefile
+> >  F:	drivers/net/ethernet/freescale/dpaa2/Kconfig
+> > +F:	Documentation/networking/device_drivers/freescale/dpaa2/ethernet-
+> driver.rst
+> > +F:	Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-
+> support.rst
+> >
+> >  DPAA2 ETHERNET SWITCH DRIVER
+> >  M:	Ioana Radulescu <ruxandra.radulescu@nxp.com>
+> > --
+> > 1.9.1
+> >
+> >
+> >
+> >
+>=20
+> --
+> RMK's Patch system:
+> https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww.a=
+r
+> mlinux.org.uk%2Fdeveloper%2Fpatches%2F&amp;data=3D02%7C01%7Cioana.cior
+> nei%40nxp.com%7C3d68212cba5c486cd92208d756c7d35d%7C686ea1d3bc2b4c
+> 6fa92cd99c5c301635%7C0%7C0%7C637073288560452478&amp;sdata=3DJOi4zc4
+> WROKWPD085JMZw4mo8a6pyVZa4JXo6wiaD%2BI%3D&amp;reserved=3D0
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbp=
+s up
+> According to speedtest.net: 11.9Mbps down 500kbps up
