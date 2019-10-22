@@ -2,89 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 691ABE0ABC
-	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18EC3E0AC3
+	for <lists+netdev@lfdr.de>; Tue, 22 Oct 2019 19:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731436AbfJVReR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 13:34:17 -0400
-Received: from inca-roads.misterjones.org ([213.251.177.50]:52165 "EHLO
-        inca-roads.misterjones.org" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727309AbfJVReR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 13:34:17 -0400
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why)
-        by cheepnis.misterjones.org with esmtpsa (TLSv1.2:AES256-GCM-SHA384:256)
-        (Exim 4.80)
-        (envelope-from <maz@kernel.org>)
-        id 1iMy2u-00030U-T5; Tue, 22 Oct 2019 19:34:13 +0200
-Date:   Tue, 22 Oct 2019 18:34:11 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Daniel Wagner <dwagner@suse.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rt-users@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>, Stefan Wahren <wahrenst@gmx.net>,
-        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] net: usb: lan78xx: Use phy_mac_interrupt() for
- interrupt handling
-Message-ID: <20191022183411.0e9a7bdc@why>
-In-Reply-To: <20191022101747.001b6d06@cakuba.netronome.com>
-References: <20191018082817.111480-1-dwagner@suse.de>
-        <20191018131532.dsfhyiilsi7cy4cm@linutronix.de>
-        <20191022101747.001b6d06@cakuba.netronome.com>
-Organization: Approximate
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1732201AbfJVRfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 13:35:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35486 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725837AbfJVRfc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 13:35:32 -0400
+Received: from localhost (mobile-166-172-186-56.mycingular.net [166.172.186.56])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B094320700;
+        Tue, 22 Oct 2019 17:35:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571765730;
+        bh=Jld/hYcxZXmjGFVuWBdEY4QI+QyPIanxZKbLtqBLGBc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KjIZP5hfgFgUn1+Ljz18nxHSEXDVd7I1a8ueHM1nX8sqKYwTPALZAdaZeymD9A5Xk
+         AhqKSe2drZC6ffhxX2VDu2wyGx51R4WPVjG0f6K8p+Z2h7rwP81FZEar+clOopjyBk
+         JWILQvQH0HfCGebHAWRAKurHRkWaeIRbs5Klfa/c=
+Date:   Tue, 22 Oct 2019 13:35:27 -0400
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/7] debugfs: Add debugfs_create_xul() for hexadecimal
+ unsigned long
+Message-ID: <20191022173527.GD230934@kroah.com>
+References: <20191021143742.14487-1-geert+renesas@glider.be>
+ <20191021143742.14487-2-geert+renesas@glider.be>
+ <0f91839d858fcb03435ebc85e61ee4e75371ff37.camel@perches.com>
+ <CAMuHMdU4OhsK6Jvy406ZCM+OeGcfVB0b7ccsne9KdMZFLf=JqQ@mail.gmail.com>
+ <a32b6a6b5f48ff0c4685bd417a8fb66229d95033.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: jakub.kicinski@netronome.com, dwagner@suse.de, bigeasy@linutronix.de, UNGLinuxDriver@microchip.com, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org, woojung.huh@microchip.com, andrew@lunn.ch, wahrenst@gmx.net, Jisheng.Zhang@synaptics.com, tglx@linutronix.de
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on cheepnis.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a32b6a6b5f48ff0c4685bd417a8fb66229d95033.camel@perches.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 10:17:47 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-
-> On Fri, 18 Oct 2019 15:15:32 +0200, Sebastian Andrzej Siewior wrote:
-> > On 2019-10-18 10:28:17 [+0200], Daniel Wagner wrote:  
-> > > handle_simple_irq() expect interrupts to be disabled. The USB
-> > > framework is using threaded interrupts, which implies that interrupts
-> > > are re-enabled as soon as it has run.    
-> > 
-> > Without threading interrupts, this is invoked in pure softirq context
-> > since commit ed194d1367698 ("usb: core: remove local_irq_save() around  
-> > ->complete() handler") where the local_irq_disable() has been removed.    
-> > 
-> > This is probably not a problem because the lock is never observed with
-> > in IRQ context.
-> > 
-> > Wouldn't handle_nested_irq() work here instead of the simple thingy?  
+On Tue, Oct 22, 2019 at 02:07:34AM -0700, Joe Perches wrote:
+> On Tue, 2019-10-22 at 10:03 +0200, Geert Uytterhoeven wrote:
+> > Hi Joe,
 > 
-> Daniel could you try this suggestion? Would it work?
+> Hey again Geert.
 > 
-> I'm not sure we are at the stage yet where "doesn't work on -rt" is
-> sufficient reason to revert a working upstream patch. Please correct 
-> me if I'm wrong.
+> > On Mon, Oct 21, 2019 at 5:37 PM Joe Perches <joe@perches.com> wrote:
+> > > On Mon, 2019-10-21 at 16:37 +0200, Geert Uytterhoeven wrote:
+> > > > The existing debugfs_create_ulong() function supports objects of
+> > > > type "unsigned long", which are 32-bit or 64-bit depending on the
+> > > > platform, in decimal form.  To format objects in hexadecimal, various
+> > > > debugfs_create_x*() functions exist, but all of them take fixed-size
+> > > > types.
+> > > > 
+> > > > Add a debugfs helper for "unsigned long" objects in hexadecimal format.
+> > > > This avoids the need for users to open-code the same, or introduce
+> > > > bugs when casting the value pointer to "u32 *" or "u64 *" to call
+> > > > debugfs_create_x{32,64}().
+> > > []
+> > > > diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
+> > > []
+> > > > @@ -356,4 +356,14 @@ static inline ssize_t debugfs_write_file_bool(struct file *file,
+> > > > 
+> > > >  #endif
+> > > > 
+> > > > +static inline void debugfs_create_xul(const char *name, umode_t mode,
+> > > > +                                   struct dentry *parent,
+> > > > +                                   unsigned long *value)
+> > > > +{
+> > > > +     if (sizeof(*value) == sizeof(u32))
+> > > > +             debugfs_create_x32(name, mode, parent, (u32 *)value);
+> > > > +     else
+> > > > +             debugfs_create_x64(name, mode, parent, (u64 *)value);
+> > > 
+> > > trivia: the casts are unnecessary.
+> > 
+> > They are necessary, in both calls (so using #ifdef as suggested below
+> > won't help):
+> 
+> Silly thinko, (I somehow thought the compiler would
+> eliminate the code after the branch not taken, but
+> of course it has to compile it first...  oops)
+> though the #ifdef should work.
+> 
+> > > This might be more sensible using #ifdef
+> > > 
+> > > static inline void debugfs_create_xul(const char *name, umode_t mode,
+> > >                                       struct dentry *parent,
+> > >                                       unsigned long *value)
+> > > {
+> > > #if BITS_PER_LONG == 64
+> > >         debugfs_create_x64(name, mode, parent, value);
+> > > #else
+> > >         debugfs_create_x32(name, mode, parent, value);
+> > > #endif
+> > > }
+> > 
+> > ... at the expense of the compiler checking only one branch.
+> > 
+> > Just like "if (IS_ENABLED(CONFIG_<foo>)" (when possible) is preferred
+> > over "#ifdef CONFIG_<foo>" because of compile-coverage, I think using
+> > "if" here is better than using "#if".
+> 
+> True if all compilers will always eliminate the unused branch.
 
-But that's the thing: it doesn't work at all, RT or not (it spits an
-awful warning). See the various reports Daniel linked to. Maintainers
-have been completely unresponsive, and the RPI folks have their own out
-of tree hack, I believe (which probably reverts to the previous,
-working situation where the driver uses polling for some of its PHY
-handling business).
-
-Sebastian's suggestion is definitely worth trying if you have the HW
-though.
-
-Thanks,
-
-	M.
--- 
-Jazz is not dead. It just smells funny...
+Good ones will, we don't care about bad ones :)
