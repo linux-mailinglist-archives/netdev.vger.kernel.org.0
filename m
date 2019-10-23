@@ -2,145 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FADBE1F38
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D630E1F46
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:27:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406731AbfJWPYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 11:24:48 -0400
-Received: from mail-wm1-f73.google.com ([209.85.128.73]:57439 "EHLO
-        mail-wm1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406717AbfJWPYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 11:24:47 -0400
-Received: by mail-wm1-f73.google.com with SMTP id m68so4079809wme.7
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 08:24:46 -0700 (PDT)
+        id S2392441AbfJWP0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 11:26:48 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37072 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732725AbfJWP0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 11:26:47 -0400
+Received: by mail-pg1-f193.google.com with SMTP id p1so12358957pgi.4;
+        Wed, 23 Oct 2019 08:26:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=5pfhpJx7UO/QNtR11zCiFnLuGkt6GlpMBjgSmMf75Tg=;
-        b=amtMxUQEE/NOaMMB3lVYFv0UVIN4cbxrFTOMtC+0gOEicg9d0fwN7TprkrYhLBo/Qw
-         2EleEu8IMAhzGJRgyAUacDO8oPPKbhqpC3R4dWMwut0HBsgzzBVDlz/ApsLhBcXyyTSm
-         /eCD/zfLTh6s5SMDIXOKsRL2wDTNqNpwZqeVIVU9EF9beg2ShlZJPx/wjpr4r121AD4r
-         J1naSOk9REiJ+0ShRF4cS702lhMN4FFHmRcdPJ6qvufDuGYARjHTD2Xpz5IW00jpiKBW
-         8cijMl+bWToufDsT5R/eF6fNtOFNqFoN96aYFdTgT2zM1evjQCf9Rb/TDN7b5jUJEzw0
-         AyTw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=eB8tBI6yDFyKa7RDqC5m4uIkOsXMXVXVRZ+cXb0whiI=;
+        b=bt4/svf29WjLyXtdV/XTOBIt3Q+Q3s0L4pf6nH3frdrJltuIWuw4kc/D/yHT03/yIX
+         33R2LmJhWwWva9Xr8g1JiQioza0GRzkJR5kwSYBehMSTr6pPXkLoYe5nLkH+lBwCGEIX
+         MypnYI93gJIiuc8vfZp0v7Sv9HbsQAxrNPbtqI5RJug8YWy5fBH6+/Hh8gu/Zl1ts2SL
+         hUH6OjfLrxhIeh4vk2bAyJG/eY99dZOKtP7ZxjYUqFainhP7jWoQxf1vmiYjQs/ykAS2
+         j9JZeVzb63Au67+2PiAPVjMSS53I8Q9WrYNQzDfXU8hssZp8Z68uNKnaIgK+qMMT1pBN
+         Kq7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=5pfhpJx7UO/QNtR11zCiFnLuGkt6GlpMBjgSmMf75Tg=;
-        b=i95Zw0LdXjM2dPW2rgCvgQOzC5DQYJE4746r5xdB+b1n6CWFeAUfuyIxQcGethLdw7
-         88ald0EP7d8E7pkcaWjux1CDDAKj0DzDYK2tNSBc2b+5e5NK+B2II24g8IPDey+2MwQ4
-         IEmErIa4ctmTlbZcUaRfH5C1ofe5bxzZ9eu4z6CeSqGDOIwvST5GNKSbT6TUkjjbHTXH
-         4GMDQjJPq4LzpZuiVZxt89a/tMU/3LNd0vsh2OyrIMrwJUv+gNrc22otYFrdy2c8mDb7
-         IDuxbt0Pq+XV59iJ28fSTqfVljkHiiA78Ngrl5BOBG9Lldfg3BUjA1sEH8GzSGYASZhq
-         vN5g==
-X-Gm-Message-State: APjAAAVjBSOxl6wiy8To1rrqD+jqhBRm78aFTJznR0Q4Sklk6AMGe9IE
-        vDb0M5J0vw56cER4OtZ6oJBiK7jShI0MKbQG
-X-Google-Smtp-Source: APXvYqzdi2O+812zGiyp5RRX+hLIIZ845MysjmhOziDahGLFuGnRWQ7rOw8CUUpGv+5aE1gSW2A1zPgWo9uj7H6o
-X-Received: by 2002:a5d:6ac3:: with SMTP id u3mr9376179wrw.206.1571844285109;
- Wed, 23 Oct 2019 08:24:45 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 17:24:31 +0200
-In-Reply-To: <cover.1571844200.git.andreyknvl@google.com>
-Message-Id: <dbdc28301a918b307baf9e5d12fee1ed91a483f3.1571844200.git.andreyknvl@google.com>
-Mime-Version: 1.0
-References: <cover.1571844200.git.andreyknvl@google.com>
-X-Mailer: git-send-email 2.24.0.rc0.303.g954a862665-goog
-Subject: [PATCH v2 3/3] vhost, kcov: collect coverage from vhost_worker
-From:   Andrey Konovalov <andreyknvl@google.com>
-To:     linux-usb@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=eB8tBI6yDFyKa7RDqC5m4uIkOsXMXVXVRZ+cXb0whiI=;
+        b=juefXAIBklvnl7Nxts54rXFqPVG7jTvjl7862ftwLeAh1VHqGNdxRAJoNsnV9lacfg
+         OOw4mMBgcNHDnNOzVaqVi5vn1dXd1gsovyOp4AywB3lJrJB5tJNTQzJXUEEAsszT0Pcq
+         2Jib3v5VX5AIo34d7+kH/UZv/Oa95G1adaNXdcb6JjIabutW8izVKyVpqm58r7PzDeG5
+         5egSjNkuLanL025F8iLO/cQPh7PfsrSCRTlfmDCpQ1q5KaomyxE45BCVNAzUsZhzuTjZ
+         TWGeMV6KyTwIN4Zmm2bSvqiO1N6CIzeGPJtelPFPKzVKhIA9Iznel6QXuoRx/rmrPNKr
+         X5fQ==
+X-Gm-Message-State: APjAAAVGR7xeUpSQe7AGuhoKpjehuNkQJdD2Yc6Q8H4XOLpgmG8gNFEQ
+        tUbpbLl9S5Nd1CezntQlHOo=
+X-Google-Smtp-Source: APXvYqyIu2N5oOaT8KT0563kjSMOnaymaWdlyH/6wjqSwBA6M7dEp0dcvB2RactEHhIT3daWCrVzyQ==
+X-Received: by 2002:a62:8248:: with SMTP id w69mr11477291pfd.236.1571844405770;
+        Wed, 23 Oct 2019 08:26:45 -0700 (PDT)
+Received: from nishad ([106.51.232.103])
+        by smtp.gmail.com with ESMTPSA id k17sm32510265pgh.30.2019.10.23.08.26.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 23 Oct 2019 08:26:45 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 20:56:38 +0530
+From:   Nishad Kamdar <nishadkamdar@gmail.com>
+To:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Windsor <dwindsor@gmail.com>,
-        Elena Reshetova <elena.reshetova@intel.com>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Joe Perches <joe@perches.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ethernet: Use the correct style for SPDX License
+ Identifier
+Message-ID: <20191023152634.GA3749@nishad>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds kcov_remote_start()/kcov_remote_stop() annotations to the
-vhost_worker() function, which is responsible for processing vhost works.
-Since vhost_worker() threads are spawned per vhost device instance
-the common kcov handle is used for kcov_remote_start()/stop() annotations
-(see Documentation/dev-tools/kcov.rst for details). As the result kcov can
-now be used to collect coverage from vhost worker threads.
+This patch corrects the SPDX License Identifier style in
+header file related to ethernet driver for Cortina Gemini
+devices. For C header files Documentation/process/license-rules.rst
+mandates C-like comments (opposed to C source files where
+C++ style should be used)
 
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+Changes made by using a script provided by Joe Perches here:
+https://lkml.org/lkml/2019/2/7/46.
+
+Suggested-by: Joe Perches <joe@perches.com>
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
 ---
- drivers/vhost/vhost.c | 6 ++++++
- drivers/vhost/vhost.h | 1 +
- 2 files changed, 7 insertions(+)
+ drivers/net/ethernet/cortina/gemini.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 36ca2cf419bf..f44340b41494 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -30,6 +30,7 @@
- #include <linux/sched/signal.h>
- #include <linux/interval_tree_generic.h>
- #include <linux/nospec.h>
-+#include <linux/kcov.h>
- 
- #include "vhost.h"
- 
-@@ -357,7 +358,9 @@ static int vhost_worker(void *data)
- 		llist_for_each_entry_safe(work, work_next, node, node) {
- 			clear_bit(VHOST_WORK_QUEUED, &work->flags);
- 			__set_current_state(TASK_RUNNING);
-+			kcov_remote_start_common(dev->kcov_handle);
- 			work->fn(work);
-+			kcov_remote_stop();
- 			if (need_resched())
- 				schedule();
- 		}
-@@ -546,6 +549,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
- 
- 	/* No owner, become one */
- 	dev->mm = get_task_mm(current);
-+	dev->kcov_handle = kcov_common_handle();
- 	worker = kthread_create(vhost_worker, dev, "vhost-%d", current->pid);
- 	if (IS_ERR(worker)) {
- 		err = PTR_ERR(worker);
-@@ -571,6 +575,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
- 	if (dev->mm)
- 		mmput(dev->mm);
- 	dev->mm = NULL;
-+	dev->kcov_handle = 0;
- err_mm:
- 	return err;
- }
-@@ -682,6 +687,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
- 	if (dev->worker) {
- 		kthread_stop(dev->worker);
- 		dev->worker = NULL;
-+		dev->kcov_handle = 0;
- 	}
- 	if (dev->mm)
- 		mmput(dev->mm);
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index e9ed2722b633..a123fd70847e 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -173,6 +173,7 @@ struct vhost_dev {
- 	int iov_limit;
- 	int weight;
- 	int byte_weight;
-+	u64 kcov_handle;
- };
- 
- bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
+diff --git a/drivers/net/ethernet/cortina/gemini.h b/drivers/net/ethernet/cortina/gemini.h
+index 0b12f89bf89a..9fdf77d5eb37 100644
+--- a/drivers/net/ethernet/cortina/gemini.h
++++ b/drivers/net/ethernet/cortina/gemini.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /* Register definitions for Gemini GMAC Ethernet device driver
+  *
+  * Copyright (C) 2006 Storlink, Corp.
 -- 
-2.24.0.rc0.303.g954a862665-goog
+2.17.1
 
