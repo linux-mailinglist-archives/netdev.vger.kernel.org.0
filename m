@@ -2,141 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0909E1D04
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 15:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 608BCE1D50
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 15:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406009AbfJWNo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 09:44:26 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38008 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405958AbfJWNo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 09:44:26 -0400
-Received: by mail-wm1-f67.google.com with SMTP id 3so19735855wmi.3;
-        Wed, 23 Oct 2019 06:44:25 -0700 (PDT)
+        id S2406165AbfJWNu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 09:50:28 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41255 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390181AbfJWNu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 09:50:27 -0400
+Received: by mail-qt1-f196.google.com with SMTP id c17so29353467qtn.8
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 06:50:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kOZNOUL7Crs+vgeopZXTqJHfGfBbo4sRox+E2s/0PYc=;
-        b=cXqaHbD47dElXBXIwj9WpEP9i9EEzoab/fA2mAS3AXK3Ud40BI68ZzUJNFw0DgCWo2
-         BMXKYDiZfdTAaYDg3b89qrRRsWL1anjp5CBsJoH2S4Pn0N+6gCjBx+D06MFJRVla86Fl
-         HvkayEv8aCczmkCdkk0+T5Ji0N7acjbTHPjDt2Nbk/L62E06vqw1HCuSufWCV4yuCBEq
-         w/G9aXPwbXmoA3+yFVa9N+PyFZfhH6ddrFRmLCuviRqsYhLHqfO22zAkpEFSf/tppLxh
-         LdTEe0y9hMvEad9XoMYJukVQ75R8A+Ym7F7NG1a1E1qgd/JxrR0ST7BTJ77ydGLYGNMX
-         3Gnw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YRkY+aBxE9hZdBe1FL06hzEtAF+venmJUi6XuiuleYs=;
+        b=Z7umXCP9MjNBDxPLTg06CWYluvjLNqLabwT5jgh+mIUUCO3NtEoNw8SSOy1h2gvBQs
+         ti0A6f88arX4+LZVmjzwpPSUcFoX09Ef6GbbDpjhCUl+hVboNOf7Z+I0yex3UmoHTNI4
+         pFy9UyRqQLlxWUt4FMv/sQgIKTlzdWxa8ZyljGm0umJ/IDY092SX0ezWjhlv0nZKTBGL
+         Fw207fL5ChkW4et6Mv/Kcuu5n6Egiyr/4ILm3tWn6maGZlUeh3qjIY3d8WzHiIjhH0K8
+         7nfgM4adsYjAD2BidWLEm0dimQhZWtGeAZCXHU+75V6n3O9urs7kBVw2Jd+3gved2aLR
+         tpRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=kOZNOUL7Crs+vgeopZXTqJHfGfBbo4sRox+E2s/0PYc=;
-        b=sFiOLtVcP93+AqTlSZqqMKkbBwOVIagvZ9RtmCYu0xYorTDdHcOwmjHzgrOAmcR79C
-         hnceAI1TrhRYMg8WSH/SliN+i1U40VvdjQVgGArG9WPaKEfhAanK/PdwyV3b5mXYs63w
-         IGq0AMEH9cU1lC5rdS11UF5bC00QM+QsUEzUGs/btWSWvJHIV/7CcmrKinsWDfrL7ezR
-         7vpR/bkTah6zhTSsfdE7ucvpSzhGsdXdEnNLKO+QzkMulFPrQklcfnCnW5QSc/7fJSt1
-         ggy3/1jueWj90/f3zjUPPKPJEXKUicfZdIzoVduXaQ1trYZJWDB2V8uadz46aww5SbZZ
-         8bIQ==
-X-Gm-Message-State: APjAAAWM4zHxf6gT64/MKVJqKLXC+xHg0kQHa1V+e/5+W0MxpTtp/9JG
-        CVb5GARicQ7jgQeQvrh8fJQ=
-X-Google-Smtp-Source: APXvYqx/+EFhS6vLTSVsls6EmtBiRjY5ntt9y8h6qB7h3ydj8zR+dIIK8yc7NwiC9Pupk0eee4/qFg==
-X-Received: by 2002:a05:600c:1150:: with SMTP id z16mr6666293wmz.153.1571838264574;
-        Wed, 23 Oct 2019 06:44:24 -0700 (PDT)
-Received: from VM-VPR.corporate.saft.org (i19-lef01-ix2-176-180-80-120.dsl.dyn.abo.bbox.fr. [176.180.80.120])
-        by smtp.gmail.com with ESMTPSA id s10sm15375553wrn.46.2019.10.23.06.44.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 23 Oct 2019 06:44:24 -0700 (PDT)
-From:   Vincent Prince <vincent.prince.fr@gmail.com>
-To:     mkl@pengutronix.de
-Cc:     dave.taht@gmail.com, davem@davemloft.net, jhs@mojatatu.com,
-        jiri@resnulli.us, kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
-        Vincent Prince <vincent.prince.fr@gmail.com>
-Subject: [PATCH v5] net: sch_generic: Use pfifo_fast as fallback scheduler for CAN hardware
-Date:   Wed, 23 Oct 2019 15:44:20 +0200
-Message-Id: <1571838260-19186-1-git-send-email-vincent.prince.fr@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <20190327165632.10711-1-mkl@pengutronix.de>
-References: <20190327165632.10711-1-mkl@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YRkY+aBxE9hZdBe1FL06hzEtAF+venmJUi6XuiuleYs=;
+        b=VeDLqn1w92Uc/hh3LlufXpx6EMPCfOeNXvyuixyWDjsRvapT4JCim0RaxRbDZBH7dk
+         /GYOwZUh+8wgd+7WiVhPud1flJFd6OTUG6nJFcKdxC17+J9ssVgjCrr5pBnetDMRGyCd
+         aPoWA2FPi8wCjzEbM2oIpFL7tdZt7iCo39SyMKyc5iWvtLmU2+qLmEhwlQD+Ij+J+QOC
+         bhZ3dpXnOGl9dzAuekcf9WMwC6HTtMczCvdZdHRmkVgidUXNZY8lYtA+dhVT4Z4PNpqu
+         VdWTtV+ij6qrxG+oLD009K3fUoqkwKkUsqbF7SFhsGbNpeytO/Ez5EBlQGFymz0Wyj/z
+         M60Q==
+X-Gm-Message-State: APjAAAWv013Om3uAwEgWgUOMr5nLzw5y//NvrQMimTU1lvD45VMvI87G
+        eymKp8E+GtPY2oY1ftL2bpOKv7HAOlt7FBN1xwbzRZceRmc=
+X-Google-Smtp-Source: APXvYqzw4YjCo83icRV+mrEHZmgPfBbFlldrPD5LYUxGJwtTpywYc9LXV0/W6t7MKVG/gnLc8w/UCFAy4gNRXqYJWlg=
+X-Received: by 2002:aed:24af:: with SMTP id t44mr8934014qtc.57.1571838623993;
+ Wed, 23 Oct 2019 06:50:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1571762488.git.andreyknvl@google.com> <26e088ae3ebcaa30afe957aeabaa9f0c653df7d0.1571762488.git.andreyknvl@google.com>
+ <CACT4Y+YntxT+cpESOBvbg+h=g-84ECJwQrFg7LM5tbq_zaMd3A@mail.gmail.com> <CAAeHK+yUTZc+BrGDvvTQD4O0hsDzhp0V6GGFdtnmE6U4yWabKw@mail.gmail.com>
+In-Reply-To: <CAAeHK+yUTZc+BrGDvvTQD4O0hsDzhp0V6GGFdtnmE6U4yWabKw@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 23 Oct 2019 15:50:12 +0200
+Message-ID: <CACT4Y+b+RTYjUyB1h0SYjEq8vmOZas3ByjeJqVU1LrjxpRKy2Q@mail.gmail.com>
+Subject: Re: [PATCH 3/3] vhost, kcov: collect coverage from vhost_worker
+To:     Andrey Konovalov <andreyknvl@google.com>
+Cc:     USB list <linux-usb@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Windsor <dwindsor@gmail.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is networking hardware that isn't based on Ethernet for layers 1 and 2.
+On Wed, Oct 23, 2019 at 3:35 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+>
+> On Wed, Oct 23, 2019 at 10:36 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+> >
+> > On Tue, Oct 22, 2019 at 6:46 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+> > >
+> > > This patch adds kcov_remote_start()/kcov_remote_stop() annotations to the
+> > > vhost_worker() function, which is responsible for processing vhost works.
+> > > Since vhost_worker() threads are spawned per vhost device instance
+> > > the common kcov handle is used for kcov_remote_start()/stop() annotations
+> > > (see Documentation/dev-tools/kcov.rst for details). As the result kcov can
+> > > now be used to collect coverage from vhost worker threads.
+> > >
+> > > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> > > ---
+> > >  drivers/vhost/vhost.c | 6 ++++++
+> > >  drivers/vhost/vhost.h | 1 +
+> > >  2 files changed, 7 insertions(+)
+> > >
+> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > index 36ca2cf419bf..a5a557c4b67f 100644
+> > > --- a/drivers/vhost/vhost.c
+> > > +++ b/drivers/vhost/vhost.c
+> > > @@ -30,6 +30,7 @@
+> > >  #include <linux/sched/signal.h>
+> > >  #include <linux/interval_tree_generic.h>
+> > >  #include <linux/nospec.h>
+> > > +#include <linux/kcov.h>
+> > >
+> > >  #include "vhost.h"
+> > >
+> > > @@ -357,7 +358,9 @@ static int vhost_worker(void *data)
+> > >                 llist_for_each_entry_safe(work, work_next, node, node) {
+> > >                         clear_bit(VHOST_WORK_QUEUED, &work->flags);
+> > >                         __set_current_state(TASK_RUNNING);
+> > > +                       kcov_remote_start(dev->kcov_handle);
+> > >                         work->fn(work);
+> > > +                       kcov_remote_stop();
+> > >                         if (need_resched())
+> > >                                 schedule();
+> > >                 }
+> > > @@ -546,6 +549,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
+> > >
+> > >         /* No owner, become one */
+> > >         dev->mm = get_task_mm(current);
+> > > +       dev->kcov_handle = current->kcov_handle;
+> >
+> > kcov_handle is not present in task_struct if !CONFIG_KCOV
+> >
+> > Also this does not use KCOV_SUBSYSTEM_COMMON.
+> > We discussed something along the following lines:
+> >
+> > u64 kcov_remote_handle(u64 subsys, u64 id)
+> > {
+> >   WARN_ON(subsys or id has wrong bits set).
+>
+> Hm, we can't have warnings in kcov_remote_handle() that is exposed in
+> uapi headers. What we can do is return 0 (invalid handle) if subsys/id
+> have incorrect bits set. And then we can either have another
+> kcov_remote_handle() internally (with a different name though) that
+> has a warning, or have warning in kcov_remote_start(). WDYT?
 
-For example CAN.
+I would probably add the warning to kcov_remote_start(). This avoids
+the need for another function and will catch a wrong ID if caller
+generated it by some other means.
+And then ioctls should also detect bad handles passed in and return
+EINVAL. Then we will cover errors for both kernel and user programs.
 
-CAN is a multi-master serial bus standard for connecting Electronic Control
-Units [ECUs] also known as nodes. A frame on the CAN bus carries up to 8 bytes
-of payload. Frame corruption is detected by a CRC. However frame loss due to
-corruption is possible, but a quite unusual phenomenon.
-
-While fq_codel works great for TCP/IP, it doesn't for CAN. There are a lot of
-legacy protocols on top of CAN, which are not build with flow control or high
-CAN frame drop rates in mind.
-
-When using fq_codel, as soon as the queue reaches a certain delay based length,
-skbs from the head of the queue are silently dropped. Silently meaning that the
-user space using a send() or similar syscall doesn't get an error. However
-TCP's flow control algorithm will detect dropped packages and adjust the
-bandwidth accordingly.
-
-When using fq_codel and sending raw frames over CAN, which is the common use
-case, the user space thinks the package has been sent without problems, because
-send() returned without an error. pfifo_fast will drop skbs, if the queue
-length exceeds the maximum. But with this scheduler the skbs at the tail are
-dropped, an error (-ENOBUFS) is propagated to user space. So that the user
-space can slow down the package generation.
-
-On distributions, where fq_codel is made default via CONFIG_DEFAULT_NET_SCH
-during compile time, or set default during runtime with sysctl
-net.core.default_qdisc (see [1]), we get a bad user experience. In my test case
-with pfifo_fast, I can transfer thousands of million CAN frames without a frame
-drop. On the other hand with fq_codel there is more then one lost CAN frame per
-thousand frames.
-
-As pointed out fq_codel is not suited for CAN hardware, so this patch changes
-attach_one_default_qdisc() to use pfifo_fast for "ARPHRD_CAN" network devices.
-
-During transition of a netdev from down to up state the default queuing
-discipline is attached by attach_default_qdiscs() with the help of
-attach_one_default_qdisc(). This patch modifies attach_one_default_qdisc() to
-attach the pfifo_fast (pfifo_fast_ops) if the network device type is
-"ARPHRD_CAN".
-
-[1] https://github.com/systemd/systemd/issues/9194
-
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com>
-Acked-by: Dave Taht <dave.taht@gmail.com>
----
-Changes in v5:
- - add previous ack
-
-Changes in v4: 
- - add Marc credit to commit log
- 
-Changes in v3:
- - add description
-
-Changes in v2:
- - reformat patch
-
- net/sched/sch_generic.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 77b289d..dfb2982 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1008,6 +1008,8 @@ static void attach_one_default_qdisc(struct net_device *dev,
- 
- 	if (dev->priv_flags & IFF_NO_QUEUE)
- 		ops = &noqueue_qdisc_ops;
-+	else if(dev->type == ARPHRD_CAN)
-+		ops = &pfifo_fast_ops;
- 
- 	qdisc = qdisc_create_dflt(dev_queue, ops, TC_H_ROOT, NULL);
- 	if (!qdisc) {
--- 
-2.7.4
-
+>
+> >   return ...;
+> > }
+> >
+> > kcov_remote_handle(KCOV_SUBSYSTEM_USB, bus);
+> > kcov_remote_handle(KCOV_SUBSYSTEM_COMMON, current->kcov_handle);
+> >
+> >
+> > >         worker = kthread_create(vhost_worker, dev, "vhost-%d", current->pid);
+> > >         if (IS_ERR(worker)) {
+> > >                 err = PTR_ERR(worker);
+> > > @@ -571,6 +575,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
+> > >         if (dev->mm)
+> > >                 mmput(dev->mm);
+> > >         dev->mm = NULL;
+> > > +       dev->kcov_handle = 0;
+> > >  err_mm:
+> > >         return err;
+> > >  }
+> > > @@ -682,6 +687,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > >         if (dev->worker) {
+> > >                 kthread_stop(dev->worker);
+> > >                 dev->worker = NULL;
+> > > +               dev->kcov_handle = 0;
+> > >         }
+> > >         if (dev->mm)
+> > >                 mmput(dev->mm);
+> > > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> > > index e9ed2722b633..a123fd70847e 100644
+> > > --- a/drivers/vhost/vhost.h
+> > > +++ b/drivers/vhost/vhost.h
+> > > @@ -173,6 +173,7 @@ struct vhost_dev {
+> > >         int iov_limit;
+> > >         int weight;
+> > >         int byte_weight;
+> > > +       u64 kcov_handle;
+> > >  };
+> > >
+> > >  bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
+> > > --
+> > > 2.23.0.866.gb869b98d4c-goog
+> > >
