@@ -2,75 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44AFCE1B20
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:45:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE090E1B2D
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403789AbfJWMpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 08:45:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40132 "EHLO mail.kernel.org"
+        id S2404165AbfJWMr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 08:47:27 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:56858 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403753AbfJWMpb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 08:45:31 -0400
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ACCF621929
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 12:45:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571834730;
-        bh=v8xwOn31STsJftXdqockqMY2KIiIniWkhz+XoIn91vk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=e0BVBRU2h+t2mMWvNg0dTfOz6oEnX3GJLRTgIpUF9KnBrFQWjLo0dAMqx+95Zns9E
-         dourU0g2L5ToRLyW29VLgmP80aSW9w5r4+VjDSET1BxO4nc+nzVEmjJqHhH/vHmZqy
-         Zd5ZN4VwGlJ7TaoUXwgJxeVN0MBjzgdFKK00S/7s=
-Received: by mail-qk1-f177.google.com with SMTP id e66so19570227qkf.13
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 05:45:30 -0700 (PDT)
-X-Gm-Message-State: APjAAAVxi2eGv4l+ASHN4F+y2AV1hcxDsIRymNM5R5GPvAa+3peO7ans
-        FW7K3/uujvdNJH5SKapDHpIRvlZNV8HI7NthleE=
-X-Google-Smtp-Source: APXvYqwC5EmAdjIQhmFtXqA3sbyDBugMYwggrx0HkA1q8Rq7JbXP0FeM2d5OmXV5bKgcrI3XEsPg7lknQHdhLD2nXC4=
-X-Received: by 2002:a37:6ec3:: with SMTP id j186mr4390643qkc.224.1571834729790;
- Wed, 23 Oct 2019 05:45:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <1394712342-15778-335-Taiwan-albertk@realtek.com>
-In-Reply-To: <1394712342-15778-335-Taiwan-albertk@realtek.com>
-From:   Josh Boyer <jwboyer@kernel.org>
-Date:   Wed, 23 Oct 2019 08:45:18 -0400
-X-Gmail-Original-Message-ID: <CA+5PVA63LaeTQ8QmU6-GLsoe+D84vD-OqwH3eArCtuq8B-8qwQ@mail.gmail.com>
-Message-ID: <CA+5PVA63LaeTQ8QmU6-GLsoe+D84vD-OqwH3eArCtuq8B-8qwQ@mail.gmail.com>
-Subject: Re: [PATCH firmware] rtl_nic: add firmware files for RTL8153
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     Linux Firmware <linux-firmware@kernel.org>,
-        netdev <netdev@vger.kernel.org>, pmalani@chromium.org,
-        grundler@chromium.org,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2390104AbfJWMr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 08:47:26 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E66351A0254;
+        Wed, 23 Oct 2019 14:47:23 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D99891A0245;
+        Wed, 23 Oct 2019 14:47:23 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 80D30205FE;
+        Wed, 23 Oct 2019 14:47:23 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v2 0/5] dpaa2-eth: add MAC/PHY support through phylink
+Date:   Wed, 23 Oct 2019 15:47:04 +0300
+Message-Id: <1571834829-29560-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 11:40 PM Hayes Wang <hayeswang@realtek.com> wrote:
->
-> This adds the firmware for Realtek RTL8153 Based USB Ethernet Adapters.
->
-> 1. Fix compatible issue for Asmedia hub.
-> 2. Fix compatible issue for Compal platform.
-> 3. Fix sometimes the device is lost after rebooting.
-> 4. Improve the compatibility for EEE.
->
-> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-> ---
->  WHENCE                |  11 +++++++++++
->  rtl_nic/rtl8153a-2.fw | Bin 0 -> 1768 bytes
->  rtl_nic/rtl8153a-3.fw | Bin 0 -> 1440 bytes
->  rtl_nic/rtl8153a-4.fw | Bin 0 -> 712 bytes
->  rtl_nic/rtl8153b-2.fw | Bin 0 -> 1088 bytes
->  5 files changed, 11 insertions(+)
->  create mode 100644 rtl_nic/rtl8153a-2.fw
->  create mode 100644 rtl_nic/rtl8153a-3.fw
->  create mode 100644 rtl_nic/rtl8153a-4.fw
->  create mode 100644 rtl_nic/rtl8153b-2.fw
+The dpaa2-eth driver now has support for connecting to its associated PHY
+device found through standard OF bindings. The PHY interraction is handled
+by PHYLINK and even though, at the moment, only RGMII_* phy modes are
+supported by the driver, this is just the first step into adding the
+necessary changes to support the entire spectrum of capabilities.
 
-Applied and pushed out.
+This comes after feedback on the initial DPAA2 MAC RFC submitted here:
+https://lwn.net/Articles/791182/
 
-josh
+The notable change is that now, the DPMAC is not a separate driver, and
+communication between the DPMAC and DPNI no longer happens through
+firmware. Rather, the DPMAC is now a set of API functions that other
+net_device drivers (DPNI, DPSW, etc) can use for PHY management.
+
+The change is incremental, because the DPAA2 architecture has many modes of
+connecting net devices in hardware loopback (for example DPNI to DPNI).
+Those operating modes do not have a DPMAC and phylink instance.
+
+The documentation patch provides a more complete view of the software
+architecture and the current implementation.
+
+Changes in v2:
+ - added patch 1/5 in order to fix module build
+ - use -ENOTCONN as a proper return error of dprc_get_connection()
+ - move the locks to rtnl outside of dpaa2_eth_[dis]connect_mac functions
+ - remove setting supported/advertised from .validate()
+
+Ioana Ciornei (5):
+  bus: fsl-mc: export device types present on the bus
+  bus: fsl-mc: add the fsl_mc_get_endpoint function
+  dpaa2-eth: update the TX frame queues on
+    DPNI_IRQ_EVENT_ENDPOINT_CHANGED
+  dpaa2-eth: add MAC/PHY support through phylink
+  net: documentation: add docs for MAC/PHY support in DPAA2
+
+ .../device_drivers/freescale/dpaa2/index.rst       |   1 +
+ .../freescale/dpaa2/mac-phy-support.rst            | 191 +++++++++++++
+ MAINTAINERS                                        |   4 +
+ drivers/bus/fsl-mc/dprc-driver.c                   |   6 +-
+ drivers/bus/fsl-mc/dprc.c                          |  53 ++++
+ drivers/bus/fsl-mc/fsl-mc-bus.c                    |  43 +++
+ drivers/bus/fsl-mc/fsl-mc-private.h                |  42 +++
+ drivers/net/ethernet/freescale/dpaa2/Makefile      |   2 +-
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   | 124 +++++++--
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h   |   3 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   |  25 ++
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c   | 302 +++++++++++++++++++++
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h   |  32 +++
+ drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h   |  62 +++++
+ drivers/net/ethernet/freescale/dpaa2/dpmac.c       | 149 ++++++++++
+ drivers/net/ethernet/freescale/dpaa2/dpmac.h       | 144 ++++++++++
+ include/linux/fsl/mc.h                             |   2 +
+ 17 files changed, 1156 insertions(+), 29 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac.c
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac.h
+
+-- 
+1.9.1
+
