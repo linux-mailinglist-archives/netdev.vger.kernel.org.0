@@ -2,135 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82B3CE2175
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 19:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50B19E217A
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 19:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbfJWRLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 13:11:22 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:36124 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727024AbfJWRLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 13:11:22 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c22so11297031wmd.1
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 10:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=8iXr1bCPucfV/BlXP7h0HwuQ+aEH9N73PCJr0os4hb4=;
-        b=a+beFt5hlK6LWDd39o4iUH2O4kIKkoGy0GQejP4br9DTQGzzZaqNpbXf7JfWhMz4QJ
-         9PgtlErWslt/jNEYZodCeT7c7mw+agWZZiD/GIOCOcEYcpNiXsqnV/DLbLkL84Kn+z+q
-         9l/GjwurRB2XpmkM3AxWiecfKk8ZQ7+Wc8pOo5wqxGnMKf5bO3m1Bi7F/mKRbsfCe8qg
-         J1ezNYNAlrUBlf6o/3YAWOAiGxeEvXT7SB6XmVU2fdchrO0UngUrn8HufSttMAm0/JZc
-         4qM3WFu00rI35leLynnYDAeJ0zY54CGeuEnbRqWOd8CPigj08oQVUJg8KvZNj7cIFfR+
-         Tn8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=8iXr1bCPucfV/BlXP7h0HwuQ+aEH9N73PCJr0os4hb4=;
-        b=r/swNpAPqBAqRKR1jCE8Lnr0i1pz0J/VKpk4BJ/pWijng1dk4tvVBLJZ/Reb0g94tk
-         rE3xPvomoefEHrsvbVlzIAdw+YshvQQhWjGQ5t1BgBgcMttPSjytyDh/lKtK1DzmTwYX
-         qxL9qgaN4P75fVV/O0rzaDEM0DoDS+5r76Nl8sX3JI+3J6itYaMxRUMuO1cO6599oTS8
-         Cqv639IwLnTAicPiK2PREjOSYLLzMKHD5Ozr7UaDCuR10nHPDih0Ngahu0CLoorxerkm
-         YPxrj3RQ09zap/mZUWlA5WLKCzUF6kfSUTLgjPMgPYDkZzkqCX9JW5c4L4SQ0M6CPhcY
-         EySA==
-X-Gm-Message-State: APjAAAUVjy7qbnyhLSl1JPRS/sa+ZEMn2JE7VQe+fifSV4LKCaQ4dz2R
-        nciljNWF2otq5wnjEPUUDng0Fw==
-X-Google-Smtp-Source: APXvYqwpTE3GTWCdJrVBwx/BqQXBWybfQma1tOKgevAQzX9IySqj6rGT20KkOOOHSfYwnkJSswVfjA==
-X-Received: by 2002:a7b:c395:: with SMTP id s21mr946644wmj.114.1571850680225;
-        Wed, 23 Oct 2019 10:11:20 -0700 (PDT)
-Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id a2sm9365644wrv.39.2019.10.23.10.11.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 10:11:19 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 19:11:16 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Zhu, Lingshan" <lingshan.zhu@intel.com>, mst@redhat.com,
-        alex.williamson@redhat.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
-        zhiyuan.lv@intel.com
-Subject: Re: [RFC 1/2] vhost: IFC VF hardware operation layer
-Message-ID: <20191023171115.GA28355@netronome.com>
-References: <20191016011041.3441-1-lingshan.zhu@intel.com>
- <20191016011041.3441-2-lingshan.zhu@intel.com>
- <20191016095347.5sb43knc7eq44ivo@netronome.com>
- <075be045-3a02-e7d8-672f-4a207c410ee8@intel.com>
- <20191021163139.GC4486@netronome.com>
- <15d94e61-9b3d-7854-b65e-6fea6db75450@redhat.com>
- <20191023101329.GE8732@netronome.com>
- <83356b5f-e2f4-ab79-79d7-20d4850c26a9@redhat.com>
+        id S1728063AbfJWRMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 13:12:01 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48822 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727154AbfJWRMA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 13:12:00 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9NHAjU2002528;
+        Wed, 23 Oct 2019 10:11:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=i73jafUwadDHJEBZWrw1NGSGxQ1ms9yLDbKHz64CELc=;
+ b=KECIyXruURKKG+EJt0mG9X9MChJP3P0d4/AydqVlB4ZM1kdwQ+taOXjWl+EYVkkUCxL0
+ PKzM6jfi93hKpDIojZeMM52PTzaFip2E7Imunc7JfvTv2c3AfszOg5Zh01lu82xEIatj
+ YK564x17P2fvsxtaZdSL4pOWuQhJeuxsjpc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vt9tt4fcb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 23 Oct 2019 10:11:46 -0700
+Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
+ ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 23 Oct 2019 10:11:45 -0700
+Received: from ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) by
+ ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 23 Oct 2019 10:11:45 -0700
+Received: from NAM04-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 23 Oct 2019 10:11:45 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iOkT87fR8Vm86IH79J3FF2Lenx1cFOHL+TLEDNgTfV68OvnhehtTPKJSfNWEJac7lXSsAV+a6Y8ynbbvg5xDzLbIGLQ226iL2Q7c9Blm5ByyD1fmouncp7sba2oKN/Cp8D97jSYInrvJA6GrvFyd8wtQPSmUU3EFDP7P5w5oFRVI6lC0n6UC2L5fUSzx0uUkTXa2dG8zrNJS9ybt16m2PHfcGA0T9yqevkgLjqt2qPX5v+tyz7Nq4eHVDcw1GhxZAHR6t1ffMH2U3lPsCmi2yszfyv8Q1MDMQ/PugC8mqGC3ZFuKi01EApAXMnkKFLRVjOevqMVSqdtkF9JdugMfEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i73jafUwadDHJEBZWrw1NGSGxQ1ms9yLDbKHz64CELc=;
+ b=VfNlhfFDwZ6OYeHjrry8tqC8fNnrHz62r8eN8bceLnyq2J0PmY/cghcTd5S6GvCnvd1kCHHzdMGKe5M6x9piWvIVu4//p6vk6bNkofMDn5h5fEieDjaup1UZNAnuhUWwORPj0fQb0eAsXRG6g8QA/qwUFcWtdHfQjaEn82uDNVWXx6upFMCeSaYrY9RtiNLo0juefstoEFRpsymd/TMVVyAjnwzit2za2urCUxpjBt1WlInEPWREIzYs+m6OgUGLTmBGC/9Y/Il511KDsIPG47HazWNjN3Bd5L1Q9z9K/tWt+mHoMAsdZsisBZz1Zj5iCgM+qsr9/5MCnCsb7LFzGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i73jafUwadDHJEBZWrw1NGSGxQ1ms9yLDbKHz64CELc=;
+ b=gpH8UBQe3Ly8BYKuX3uri8uqCT+IXrN60w8fox2NmMSDnBU00zrmYhBa0jqvmqlHLwSiZKkwlMsIfgHYXpFyZyQPcG32WWebqwlys9+XavdV3pSRqXrwxl88DVxDB9Qd1iv28MOpmu/i0kHNj4p9N+/mdR0SPaV6JrvrQ+bC0q4=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB3432.namprd15.prod.outlook.com (20.179.59.152) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.18; Wed, 23 Oct 2019 17:11:42 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0%5]) with mapi id 15.20.2367.025; Wed, 23 Oct 2019
+ 17:11:42 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix LDLIBS order
+Thread-Topic: [PATCH bpf-next] selftests/bpf: fix LDLIBS order
+Thread-Index: AQHVibb8qHeBBc1cYUqs2bSNljZvPKdodm+A
+Date:   Wed, 23 Oct 2019 17:11:42 +0000
+Message-ID: <6013d833-bec6-fb9f-f356-2d6e159bc582@fb.com>
+References: <20191023153128.3486140-1-andriin@fb.com>
+In-Reply-To: <20191023153128.3486140-1-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR01CA0039.prod.exchangelabs.com (2603:10b6:300:101::25)
+ To BYAPR15MB2501.namprd15.prod.outlook.com (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::741a]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e7ab3bde-a413-4712-b23b-08d757dc1317
+x-ms-traffictypediagnostic: BYAPR15MB3432:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB34327C09B62A7D5A6C0BF358D76B0@BYAPR15MB3432.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:529;
+x-forefront-prvs: 019919A9E4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(376002)(39860400002)(396003)(136003)(366004)(189003)(199004)(71200400001)(14454004)(86362001)(6486002)(6512007)(31696002)(71190400001)(6436002)(31686004)(54906003)(186003)(99286004)(110136005)(478600001)(76176011)(53546011)(386003)(6506007)(6246003)(52116002)(446003)(102836004)(476003)(2616005)(11346002)(46003)(486006)(316002)(4326008)(36756003)(64756008)(7736002)(6116002)(8936002)(66446008)(81156014)(558084003)(305945005)(81166006)(5660300002)(8676002)(66556008)(66946007)(66476007)(2201001)(14444005)(25786009)(256004)(2906002)(229853002)(2501003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3432;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:3;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BE7xL8NuGZrWVVawV3S8Z3/lZwIaRvC3RrkvgnZQ6AaW2RN5m7m20h6miYW2xc8AYV6OKluH3MRIbkwc10oibud/UqaDhqAMhHUouyibajLuLcmrQD6ORdQeOz/SUqHTtQ9pFF+6102h2u0GUliTenkWEDhrP/ew0SjkrDapMy3KEo5cJOMEg8ZSmmm0gDQytD0mEcE3k9r3j1YBCeCfw05h2cB6Ejan13/eZVOpDrBVFn1hkX/wJF8CTBc7mrVoC8ryip3yEArcPscuaT12v8QkCap9WjoxublVgcWiABT+GkosFKAbqR2ksJ/CHgFcPzLyDrXVj5PF5bHSxF4KCeFlU7NvXUZII7qulDX6/U8AMmyF24m8Lu+2fIvYDsoKT5gJ8aEyIqmVDEFbcJsaZYCTSBdrgijunCt+q+p53FQw/uTAlqPI5WoOEnru/3Hl
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AF8D1BD05D263549B28E8B991B13B7D5@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <83356b5f-e2f4-ab79-79d7-20d4850c26a9@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7ab3bde-a413-4712-b23b-08d757dc1317
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2019 17:11:42.4564
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fJOGywGp4FfYWbnNkRVN2fWVIq9Be89XlnEI1vhvN4Zkk09qL9tNrEY/sdyi0utZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3432
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-23_04:2019-10-23,2019-10-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ mlxscore=0 spamscore=0 bulkscore=0 phishscore=0 malwarescore=0
+ clxscore=1015 mlxlogscore=955 adultscore=0 impostorscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910230164
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 06:36:13PM +0800, Jason Wang wrote:
-> 
-> On 2019/10/23 下午6:13, Simon Horman wrote:
-> > On Tue, Oct 22, 2019 at 09:32:36AM +0800, Jason Wang wrote:
-> > > On 2019/10/22 上午12:31, Simon Horman wrote:
-> > > > On Mon, Oct 21, 2019 at 05:55:33PM +0800, Zhu, Lingshan wrote:
-> > > > > On 10/16/2019 5:53 PM, Simon Horman wrote:
-> > > > > > Hi Zhu,
-> > > > > > 
-> > > > > > thanks for your patch.
-> > > > > > 
-> > > > > > On Wed, Oct 16, 2019 at 09:10:40AM +0800, Zhu Lingshan wrote:
-> > > > ...
-> > > > 
-> > > > > > > +static void ifcvf_read_dev_config(struct ifcvf_hw *hw, u64 offset,
-> > > > > > > +		       void *dst, int length)
-> > > > > > > +{
-> > > > > > > +	int i;
-> > > > > > > +	u8 *p;
-> > > > > > > +	u8 old_gen, new_gen;
-> > > > > > > +
-> > > > > > > +	do {
-> > > > > > > +		old_gen = ioread8(&hw->common_cfg->config_generation);
-> > > > > > > +
-> > > > > > > +		p = dst;
-> > > > > > > +		for (i = 0; i < length; i++)
-> > > > > > > +			*p++ = ioread8((u8 *)hw->dev_cfg + offset + i);
-> > > > > > > +
-> > > > > > > +		new_gen = ioread8(&hw->common_cfg->config_generation);
-> > > > > > > +	} while (old_gen != new_gen);
-> > > > > > Would it be wise to limit the number of iterations of the loop above?
-> > > > > Thanks but I don't quite get it. This is used to make sure the function
-> > > > > would get the latest config.
-> > > > I am worried about the possibility that it will loop forever.
-> > > > Could that happen?
-> > > > 
-> > > > ...
-> > > My understanding is that the function here is similar to virtio config
-> > > generation [1]. So this can only happen for a buggy hardware.
-> > Ok, so this circles back to my original question.
-> > Should we put a bound on the number of times the loop runs
-> > or should we accept that the kernel locks up if the HW is buggy?
-> > 
-> 
-> I'm not sure, and similar logic has been used by virtio-pci drivers for
-> years. Consider this logic is pretty simple and it should not be the only
-> place that virito hardware can lock kernel, we can keep it as is.
-
-Ok, I accept that there isn't much use fixing this if its idomatic and
-there are other places virtio hardware can lock up the kernel.
-
-> Actually, there's no need for hardware to implement generation logic, it
-> could be emulated by software or even ignored. In new version of
-> virtio-mdev, get_generation() is optional, when it was not implemented, 0 is
-> simply returned by virtio-mdev transport.
-> 
-> Thanks
-> 
+T24gMTAvMjMvMTkgODozMSBBTSwgQW5kcmlpIE5ha3J5aWtvIHdyb3RlOg0KPiBPcmRlciBvZiAk
+KExETElCUykgbWF0dGVycyB0byBsaW5rZXIsIHNvIHB1dCBpdCBhZnRlciBhbGwgdGhlIC5vIGFu
+ZCAuYQ0KPiBmaWxlcy4NCj4gDQo+IEZpeGVzOiA3NGI1YTU5NjhmZTggKCJzZWxmdGVzdHMvYnBm
+OiBSZXBsYWNlIHRlc3RfcHJvZ3MgYW5kIHRlc3RfbWFwcyB3LyBnZW5lcmFsIHJ1bGUiKQ0KPiBS
+ZXBvcnRlZC1ieTogRGFuaWVsIEJvcmttYW5uPGRhbmllbEBpb2dlYXJib3gubmV0Pg0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBBbmRyaWkgTmFrcnlpa288YW5kcmlpbkBmYi5jb20+DQoNCkFwcGxpZWQuIFRo
+YW5rcw0KDQo=
