@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D02E2503
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 23:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F43FE2504
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 23:16:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406247AbfJWVQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 17:16:28 -0400
-Received: from mga05.intel.com ([192.55.52.43]:46520 "EHLO mga05.intel.com"
+        id S2406262AbfJWVQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 17:16:29 -0400
+Received: from mga06.intel.com ([134.134.136.31]:37691 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406097AbfJWVQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2406230AbfJWVQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 23 Oct 2019 17:16:28 -0400
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2019 14:16:28 -0700
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2019 14:16:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,222,1569308400"; 
-   d="scan'208";a="204069103"
+   d="scan'208";a="228266382"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Oct 2019 14:16:26 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 23 Oct 2019 14:16:26 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
         (envelope-from <lkp@intel.com>)
-        id 1iNNzW-0008Bq-5j; Thu, 24 Oct 2019 05:16:26 +0800
-Date:   Thu, 24 Oct 2019 05:15:27 +0800
+        id 1iNNzW-0008C1-73; Thu, 24 Oct 2019 05:16:26 +0800
+Date:   Thu, 24 Oct 2019 05:15:28 +0800
 From:   kbuild test robot <lkp@intel.com>
 To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
 Cc:     kbuild-all@lists.01.org,
@@ -37,9 +37,8 @@ Cc:     kbuild-all@lists.01.org,
         Simon Edelhaus <sedelhaus@marvell.com>,
         Igor Russkikh <Igor.Russkikh@aquantia.com>,
         Pavel Belous <Pavel.Belous@aquantia.com>
-Subject: Re: [PATCH v3 net-next 11/12] net: aquantia: add support for PIN
- funcs
-Message-ID: <201910240443.6k1OmpJd%lkp@intel.com>
+Subject: [RFC PATCH] net: aquantia: aq_ptp_poll_sync_work_cb() can be static
+Message-ID: <20191023211528.pfpfg27exmgcssga@4978f4969bb8>
 References: <a2a6ecfb5580858c2a690fa0ed1c98cffc61c4b9.1571737612.git.igor.russkikh@aquantia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -52,50 +51,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Igor,
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/Igor-Russkikh/net-aquantia-PTP-support-for-AQC-devices/20191023-194531
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 88652bf8ce4b91c49769a2a49c17dc44b85b4fa2
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
-   drivers/net/ethernet/aquantia/atlantic/aq_ptp.c:950:34: sparse: sparse: Using plain integer as NULL pointer
->> drivers/net/ethernet/aquantia/atlantic/aq_ptp.c:1378:6: sparse: sparse: symbol 'aq_ptp_poll_sync_work_cb' was not declared. Should it be static?
---
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:795:45: sparse: sparse: cast to restricted __le16
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1155:5: sparse: sparse: symbol 'hw_atl_b0_ts_to_sys_clock' was not declared. Should it be static?
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
-
-Please review and possibly fold the followup patch.
-
+Fixes: 66eb1087d188 ("net: aquantia: add support for PIN funcs")
+Signed-off-by: kbuild test robot <lkp@intel.com>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ aq_ptp.c           |    2 +-
+ hw_atl/hw_atl_b0.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+index 3ec08415e53eb..d92d11919649d 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+@@ -1375,7 +1375,7 @@ static int aq_ptp_check_sync1588(struct aq_ptp_s *aq_ptp)
+ 	return 0;
+ }
+ 
+-void aq_ptp_poll_sync_work_cb(struct work_struct *w)
++static void aq_ptp_poll_sync_work_cb(struct work_struct *w)
+ {
+ 	struct delayed_work *dw = to_delayed_work(w);
+ 	struct aq_ptp_s *aq_ptp = container_of(dw, struct aq_ptp_s, poll_sync);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index 51ecf87e01987..8f866c7af4c04 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -1152,7 +1152,7 @@ static int hw_atl_b0_set_sys_clock(struct aq_hw_s *self, u64 time, u64 ts)
+ 	return hw_atl_b0_adj_sys_clock(self, delta);
+ }
+ 
+-int hw_atl_b0_ts_to_sys_clock(struct aq_hw_s *self, u64 ts, u64 *time)
++static int hw_atl_b0_ts_to_sys_clock(struct aq_hw_s *self, u64 ts, u64 *time)
+ {
+ 	*time = self->ptp_clk_offset + ts;
+ 	return 0;
