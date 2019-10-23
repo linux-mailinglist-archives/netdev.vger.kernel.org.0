@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E69BE16E1
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DACDE16F0
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391035AbfJWJ5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 05:57:24 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:54816 "EHLO
+        id S2391068AbfJWJ5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 05:57:39 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:57271 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390990AbfJWJ5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 05:57:23 -0400
+        by vger.kernel.org with ESMTP id S2391062AbfJWJ5j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 05:57:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571824641;
+        s=mimecast20190719; t=1571824657;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TrWFvXQyogrOoIVt0ldFhISsLZ59Cn9KyEtJqWHGRz4=;
-        b=bDGqQmF4E4nkam061ExDAF4IIvUSYmpTzRYbu4V9KKHdCvgEogd6K3xKb58Fs8zx12pJaG
-        AHevev10IUIUwWQDcz/jOa3z3nnyC8GswSxJKzsXg1ujVo+oCTYPpoZFfBq2rUd2/3Pq0l
-        RMIrgZVmvOFNKEwGVVghY7ql88LAxSA=
+        bh=xH1e5dZ5yNsgfegAoTgY8OO6tuw6dIhIV0fCKqZGgNo=;
+        b=HVtPFtgv7pOhc2j/ozDa1Ns5T9OfMfupEmsrc0reEX8IzQIOe/raQalXKm7xbvemY4WPfl
+        JTYtxEqcJUYSmudZNxY0HndTDm+YEWPi6Yi/93/CXLduACZQt/fbe/pUoA/rdhyOmlBfPm
+        g2OSzmU9rwC+EiJELd7Z8mJRDjFWzvI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-326-77PGSS_8M_-kg7TYbOsZaw-1; Wed, 23 Oct 2019 05:57:16 -0400
+ us-mta-347-d9Fm0ffrOxCYRfEX6hxOAg-1; Wed, 23 Oct 2019 05:57:34 -0400
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C02B680183D;
-        Wed, 23 Oct 2019 09:57:14 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 219A9107AD33;
+        Wed, 23 Oct 2019 09:57:32 +0000 (UTC)
 Received: from steredhat.redhat.com (unknown [10.36.118.164])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F29A45C1B2;
-        Wed, 23 Oct 2019 09:56:29 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1CFFB5C1B2;
+        Wed, 23 Oct 2019 09:57:14 +0000 (UTC)
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
@@ -48,14 +48,14 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
         "K. Y. Srinivasan" <kys@microsoft.com>,
         Stephen Hemminger <sthemmin@microsoft.com>,
         virtualization@lists.linux-foundation.org
-Subject: [PATCH net-next 04/14] vsock: add 'transport' member in the struct vsock_sock
-Date:   Wed, 23 Oct 2019 11:55:44 +0200
-Message-Id: <20191023095554.11340-5-sgarzare@redhat.com>
+Subject: [PATCH net-next 05/14] vsock/virtio: add transport parameter to the virtio_transport_reset_no_sock()
+Date:   Wed, 23 Oct 2019 11:55:45 +0200
+Message-Id: <20191023095554.11340-6-sgarzare@redhat.com>
 In-Reply-To: <20191023095554.11340-1-sgarzare@redhat.com>
 References: <20191023095554.11340-1-sgarzare@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: 77PGSS_8M_-kg7TYbOsZaw-1
+X-MC-Unique: d9Fm0ffrOxCYRfEX6hxOAg-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -64,335 +64,428 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As a preparation to support multiple transports, this patch adds
-the 'transport' member at the 'struct vsock_sock'.
-This new field is initialized during the creation in the
-__vsock_create() function.
+We are going to add 'struct vsock_sock *' parameter to
+virtio_transport_get_ops().
 
-This patch also renames the global 'transport' pointer to
-'transport_single', since for now we're only supporting a single
-transport registered at run-time.
+In some cases, like in the virtio_transport_reset_no_sock(),
+we don't have any socket assigned to the packet received,
+so we can't use the virtio_transport_get_ops().
+
+In order to allow virtio_transport_reset_no_sock() to use the
+'.send_pkt' callback from the 'vhost_transport' or 'virtio_transport',
+we add the 'struct virtio_transport *' to it and to its caller:
+virtio_transport_recv_pkt().
+
+We moved the 'vhost_transport' and 'virtio_transport' definition,
+to pass their address to the virtio_transport_recv_pkt().
 
 Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- include/net/af_vsock.h   |  1 +
- net/vmw_vsock/af_vsock.c | 56 +++++++++++++++++++++++++++-------------
- 2 files changed, 39 insertions(+), 18 deletions(-)
+ drivers/vhost/vsock.c                   |  94 +++++++-------
+ include/linux/virtio_vsock.h            |   3 +-
+ net/vmw_vsock/virtio_transport.c        | 160 ++++++++++++------------
+ net/vmw_vsock/virtio_transport_common.c |  12 +-
+ 4 files changed, 135 insertions(+), 134 deletions(-)
 
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index c660402b10f2..a5e1e134261d 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -27,6 +27,7 @@ extern spinlock_t vsock_table_lock;
- struct vsock_sock {
- =09/* sk must be the first member. */
- =09struct sock sk;
-+=09const struct vsock_transport *transport;
- =09struct sockaddr_vm local_addr;
- =09struct sockaddr_vm remote_addr;
- =09/* Links for the global tables of bound and connected sockets. */
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 2f2582fb7fdd..c3a14f853eb0 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -126,7 +126,7 @@ static struct proto vsock_proto =3D {
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 9f57736fe15e..92ab3852c954 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -384,6 +384,52 @@ static bool vhost_vsock_more_replies(struct vhost_vsoc=
+k *vsock)
+ =09return val < vq->num;
+ }
+=20
++static struct virtio_transport vhost_transport =3D {
++=09.transport =3D {
++=09=09.get_local_cid            =3D vhost_transport_get_local_cid,
++
++=09=09.init                     =3D virtio_transport_do_socket_init,
++=09=09.destruct                 =3D virtio_transport_destruct,
++=09=09.release                  =3D virtio_transport_release,
++=09=09.connect                  =3D virtio_transport_connect,
++=09=09.shutdown                 =3D virtio_transport_shutdown,
++=09=09.cancel_pkt               =3D vhost_transport_cancel_pkt,
++
++=09=09.dgram_enqueue            =3D virtio_transport_dgram_enqueue,
++=09=09.dgram_dequeue            =3D virtio_transport_dgram_dequeue,
++=09=09.dgram_bind               =3D virtio_transport_dgram_bind,
++=09=09.dgram_allow              =3D virtio_transport_dgram_allow,
++
++=09=09.stream_enqueue           =3D virtio_transport_stream_enqueue,
++=09=09.stream_dequeue           =3D virtio_transport_stream_dequeue,
++=09=09.stream_has_data          =3D virtio_transport_stream_has_data,
++=09=09.stream_has_space         =3D virtio_transport_stream_has_space,
++=09=09.stream_rcvhiwat          =3D virtio_transport_stream_rcvhiwat,
++=09=09.stream_is_active         =3D virtio_transport_stream_is_active,
++=09=09.stream_allow             =3D virtio_transport_stream_allow,
++
++=09=09.notify_poll_in           =3D virtio_transport_notify_poll_in,
++=09=09.notify_poll_out          =3D virtio_transport_notify_poll_out,
++=09=09.notify_recv_init         =3D virtio_transport_notify_recv_init,
++=09=09.notify_recv_pre_block    =3D virtio_transport_notify_recv_pre_block=
+,
++=09=09.notify_recv_pre_dequeue  =3D virtio_transport_notify_recv_pre_deque=
+ue,
++=09=09.notify_recv_post_dequeue =3D virtio_transport_notify_recv_post_dequ=
+eue,
++=09=09.notify_send_init         =3D virtio_transport_notify_send_init,
++=09=09.notify_send_pre_block    =3D virtio_transport_notify_send_pre_block=
+,
++=09=09.notify_send_pre_enqueue  =3D virtio_transport_notify_send_pre_enque=
+ue,
++=09=09.notify_send_post_enqueue =3D virtio_transport_notify_send_post_enqu=
+eue,
++
++=09=09.set_buffer_size          =3D virtio_transport_set_buffer_size,
++=09=09.set_min_buffer_size      =3D virtio_transport_set_min_buffer_size,
++=09=09.set_max_buffer_size      =3D virtio_transport_set_max_buffer_size,
++=09=09.get_buffer_size          =3D virtio_transport_get_buffer_size,
++=09=09.get_min_buffer_size      =3D virtio_transport_get_min_buffer_size,
++=09=09.get_max_buffer_size      =3D virtio_transport_get_max_buffer_size,
++=09},
++
++=09.send_pkt =3D vhost_transport_send_pkt,
++};
++
+ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+ {
+ =09struct vhost_virtqueue *vq =3D container_of(work, struct vhost_virtqueu=
+e,
+@@ -438,7 +484,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_wor=
+k *work)
+=20
+ =09=09/* Only accept correctly addressed packets */
+ =09=09if (le64_to_cpu(pkt->hdr.src_cid) =3D=3D vsock->guest_cid)
+-=09=09=09virtio_transport_recv_pkt(pkt);
++=09=09=09virtio_transport_recv_pkt(&vhost_transport, pkt);
+ =09=09else
+ =09=09=09virtio_transport_free_pkt(pkt);
+=20
+@@ -786,52 +832,6 @@ static struct miscdevice vhost_vsock_misc =3D {
+ =09.fops =3D &vhost_vsock_fops,
+ };
+=20
+-static struct virtio_transport vhost_transport =3D {
+-=09.transport =3D {
+-=09=09.get_local_cid            =3D vhost_transport_get_local_cid,
+-
+-=09=09.init                     =3D virtio_transport_do_socket_init,
+-=09=09.destruct                 =3D virtio_transport_destruct,
+-=09=09.release                  =3D virtio_transport_release,
+-=09=09.connect                  =3D virtio_transport_connect,
+-=09=09.shutdown                 =3D virtio_transport_shutdown,
+-=09=09.cancel_pkt               =3D vhost_transport_cancel_pkt,
+-
+-=09=09.dgram_enqueue            =3D virtio_transport_dgram_enqueue,
+-=09=09.dgram_dequeue            =3D virtio_transport_dgram_dequeue,
+-=09=09.dgram_bind               =3D virtio_transport_dgram_bind,
+-=09=09.dgram_allow              =3D virtio_transport_dgram_allow,
+-
+-=09=09.stream_enqueue           =3D virtio_transport_stream_enqueue,
+-=09=09.stream_dequeue           =3D virtio_transport_stream_dequeue,
+-=09=09.stream_has_data          =3D virtio_transport_stream_has_data,
+-=09=09.stream_has_space         =3D virtio_transport_stream_has_space,
+-=09=09.stream_rcvhiwat          =3D virtio_transport_stream_rcvhiwat,
+-=09=09.stream_is_active         =3D virtio_transport_stream_is_active,
+-=09=09.stream_allow             =3D virtio_transport_stream_allow,
+-
+-=09=09.notify_poll_in           =3D virtio_transport_notify_poll_in,
+-=09=09.notify_poll_out          =3D virtio_transport_notify_poll_out,
+-=09=09.notify_recv_init         =3D virtio_transport_notify_recv_init,
+-=09=09.notify_recv_pre_block    =3D virtio_transport_notify_recv_pre_block=
+,
+-=09=09.notify_recv_pre_dequeue  =3D virtio_transport_notify_recv_pre_deque=
+ue,
+-=09=09.notify_recv_post_dequeue =3D virtio_transport_notify_recv_post_dequ=
+eue,
+-=09=09.notify_send_init         =3D virtio_transport_notify_send_init,
+-=09=09.notify_send_pre_block    =3D virtio_transport_notify_send_pre_block=
+,
+-=09=09.notify_send_pre_enqueue  =3D virtio_transport_notify_send_pre_enque=
+ue,
+-=09=09.notify_send_post_enqueue =3D virtio_transport_notify_send_post_enqu=
+eue,
+-
+-=09=09.set_buffer_size          =3D virtio_transport_set_buffer_size,
+-=09=09.set_min_buffer_size      =3D virtio_transport_set_min_buffer_size,
+-=09=09.set_max_buffer_size      =3D virtio_transport_set_max_buffer_size,
+-=09=09.get_buffer_size          =3D virtio_transport_get_buffer_size,
+-=09=09.get_min_buffer_size      =3D virtio_transport_get_min_buffer_size,
+-=09=09.get_max_buffer_size      =3D virtio_transport_get_max_buffer_size,
+-=09},
+-
+-=09.send_pkt =3D vhost_transport_send_pkt,
+-};
+-
+ static int __init vhost_vsock_init(void)
+ {
+ =09int ret;
+diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+index 4c7781f4b29b..96d8132acbd7 100644
+--- a/include/linux/virtio_vsock.h
++++ b/include/linux/virtio_vsock.h
+@@ -151,7 +151,8 @@ virtio_transport_dgram_enqueue(struct vsock_sock *vsk,
+=20
+ void virtio_transport_destruct(struct vsock_sock *vsk);
+=20
+-void virtio_transport_recv_pkt(struct virtio_vsock_pkt *pkt);
++void virtio_transport_recv_pkt(struct virtio_transport *t,
++=09=09=09       struct virtio_vsock_pkt *pkt);
+ void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt);
+ void virtio_transport_inc_tx_pkt(struct virtio_vsock_sock *vvs, struct vir=
+tio_vsock_pkt *pkt);
+ u32 virtio_transport_get_credit(struct virtio_vsock_sock *vvs, u32 wanted)=
+;
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transp=
+ort.c
+index 082a30936690..3756f0857946 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -86,33 +86,6 @@ static u32 virtio_transport_get_local_cid(void)
+ =09return ret;
+ }
+=20
+-static void virtio_transport_loopback_work(struct work_struct *work)
+-{
+-=09struct virtio_vsock *vsock =3D
+-=09=09container_of(work, struct virtio_vsock, loopback_work);
+-=09LIST_HEAD(pkts);
+-
+-=09spin_lock_bh(&vsock->loopback_list_lock);
+-=09list_splice_init(&vsock->loopback_list, &pkts);
+-=09spin_unlock_bh(&vsock->loopback_list_lock);
+-
+-=09mutex_lock(&vsock->rx_lock);
+-
+-=09if (!vsock->rx_run)
+-=09=09goto out;
+-
+-=09while (!list_empty(&pkts)) {
+-=09=09struct virtio_vsock_pkt *pkt;
+-
+-=09=09pkt =3D list_first_entry(&pkts, struct virtio_vsock_pkt, list);
+-=09=09list_del_init(&pkt->list);
+-
+-=09=09virtio_transport_recv_pkt(pkt);
+-=09}
+-out:
+-=09mutex_unlock(&vsock->rx_lock);
+-}
+-
+ static int virtio_transport_send_pkt_loopback(struct virtio_vsock *vsock,
+ =09=09=09=09=09      struct virtio_vsock_pkt *pkt)
+ {
+@@ -370,59 +343,6 @@ static bool virtio_transport_more_replies(struct virti=
+o_vsock *vsock)
+ =09return val < virtqueue_get_vring_size(vq);
+ }
+=20
+-static void virtio_transport_rx_work(struct work_struct *work)
+-{
+-=09struct virtio_vsock *vsock =3D
+-=09=09container_of(work, struct virtio_vsock, rx_work);
+-=09struct virtqueue *vq;
+-
+-=09vq =3D vsock->vqs[VSOCK_VQ_RX];
+-
+-=09mutex_lock(&vsock->rx_lock);
+-
+-=09if (!vsock->rx_run)
+-=09=09goto out;
+-
+-=09do {
+-=09=09virtqueue_disable_cb(vq);
+-=09=09for (;;) {
+-=09=09=09struct virtio_vsock_pkt *pkt;
+-=09=09=09unsigned int len;
+-
+-=09=09=09if (!virtio_transport_more_replies(vsock)) {
+-=09=09=09=09/* Stop rx until the device processes already
+-=09=09=09=09 * pending replies.  Leave rx virtqueue
+-=09=09=09=09 * callbacks disabled.
+-=09=09=09=09 */
+-=09=09=09=09goto out;
+-=09=09=09}
+-
+-=09=09=09pkt =3D virtqueue_get_buf(vq, &len);
+-=09=09=09if (!pkt) {
+-=09=09=09=09break;
+-=09=09=09}
+-
+-=09=09=09vsock->rx_buf_nr--;
+-
+-=09=09=09/* Drop short/long packets */
+-=09=09=09if (unlikely(len < sizeof(pkt->hdr) ||
+-=09=09=09=09     len > sizeof(pkt->hdr) + pkt->len)) {
+-=09=09=09=09virtio_transport_free_pkt(pkt);
+-=09=09=09=09continue;
+-=09=09=09}
+-
+-=09=09=09pkt->len =3D len - sizeof(pkt->hdr);
+-=09=09=09virtio_transport_deliver_tap_pkt(pkt);
+-=09=09=09virtio_transport_recv_pkt(pkt);
+-=09=09}
+-=09} while (!virtqueue_enable_cb(vq));
+-
+-out:
+-=09if (vsock->rx_buf_nr < vsock->rx_buf_max_nr / 2)
+-=09=09virtio_vsock_rx_fill(vsock);
+-=09mutex_unlock(&vsock->rx_lock);
+-}
+-
+ /* event_lock must be held */
+ static int virtio_vsock_event_fill_one(struct virtio_vsock *vsock,
+ =09=09=09=09       struct virtio_vsock_event *event)
+@@ -586,6 +506,86 @@ static struct virtio_transport virtio_transport =3D {
+ =09.send_pkt =3D virtio_transport_send_pkt,
+ };
+=20
++static void virtio_transport_loopback_work(struct work_struct *work)
++{
++=09struct virtio_vsock *vsock =3D
++=09=09container_of(work, struct virtio_vsock, loopback_work);
++=09LIST_HEAD(pkts);
++
++=09spin_lock_bh(&vsock->loopback_list_lock);
++=09list_splice_init(&vsock->loopback_list, &pkts);
++=09spin_unlock_bh(&vsock->loopback_list_lock);
++
++=09mutex_lock(&vsock->rx_lock);
++
++=09if (!vsock->rx_run)
++=09=09goto out;
++
++=09while (!list_empty(&pkts)) {
++=09=09struct virtio_vsock_pkt *pkt;
++
++=09=09pkt =3D list_first_entry(&pkts, struct virtio_vsock_pkt, list);
++=09=09list_del_init(&pkt->list);
++
++=09=09virtio_transport_recv_pkt(&virtio_transport, pkt);
++=09}
++out:
++=09mutex_unlock(&vsock->rx_lock);
++}
++
++static void virtio_transport_rx_work(struct work_struct *work)
++{
++=09struct virtio_vsock *vsock =3D
++=09=09container_of(work, struct virtio_vsock, rx_work);
++=09struct virtqueue *vq;
++
++=09vq =3D vsock->vqs[VSOCK_VQ_RX];
++
++=09mutex_lock(&vsock->rx_lock);
++
++=09if (!vsock->rx_run)
++=09=09goto out;
++
++=09do {
++=09=09virtqueue_disable_cb(vq);
++=09=09for (;;) {
++=09=09=09struct virtio_vsock_pkt *pkt;
++=09=09=09unsigned int len;
++
++=09=09=09if (!virtio_transport_more_replies(vsock)) {
++=09=09=09=09/* Stop rx until the device processes already
++=09=09=09=09 * pending replies.  Leave rx virtqueue
++=09=09=09=09 * callbacks disabled.
++=09=09=09=09 */
++=09=09=09=09goto out;
++=09=09=09}
++
++=09=09=09pkt =3D virtqueue_get_buf(vq, &len);
++=09=09=09if (!pkt) {
++=09=09=09=09break;
++=09=09=09}
++
++=09=09=09vsock->rx_buf_nr--;
++
++=09=09=09/* Drop short/long packets */
++=09=09=09if (unlikely(len < sizeof(pkt->hdr) ||
++=09=09=09=09     len > sizeof(pkt->hdr) + pkt->len)) {
++=09=09=09=09virtio_transport_free_pkt(pkt);
++=09=09=09=09continue;
++=09=09=09}
++
++=09=09=09pkt->len =3D len - sizeof(pkt->hdr);
++=09=09=09virtio_transport_deliver_tap_pkt(pkt);
++=09=09=09virtio_transport_recv_pkt(&virtio_transport, pkt);
++=09=09}
++=09} while (!virtqueue_enable_cb(vq));
++
++out:
++=09if (vsock->rx_buf_nr < vsock->rx_buf_max_nr / 2)
++=09=09virtio_vsock_rx_fill(vsock);
++=09mutex_unlock(&vsock->rx_lock);
++}
++
+ static int virtio_vsock_probe(struct virtio_device *vdev)
+ {
+ =09vq_callback_t *callbacks[] =3D {
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio=
+_transport_common.c
+index b1cd16ed66ea..9763394f7a61 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -745,9 +745,9 @@ static int virtio_transport_reset(struct vsock_sock *vs=
+k,
+ /* Normally packets are associated with a socket.  There may be no socket =
+if an
+  * attempt was made to connect to a socket that does not exist.
   */
- #define VSOCK_DEFAULT_CONNECT_TIMEOUT (2 * HZ)
-=20
--static const struct vsock_transport *transport;
-+static const struct vsock_transport *transport_single;
- static DEFINE_MUTEX(vsock_register_mutex);
-=20
- /**** UTILS ****/
-@@ -408,7 +408,9 @@ static bool vsock_is_pending(struct sock *sk)
-=20
- static int vsock_send_shutdown(struct sock *sk, int mode)
+-static int virtio_transport_reset_no_sock(struct virtio_vsock_pkt *pkt)
++static int virtio_transport_reset_no_sock(const struct virtio_transport *t=
+,
++=09=09=09=09=09  struct virtio_vsock_pkt *pkt)
  {
--=09return transport->shutdown(vsock_sk(sk), mode);
-+=09struct vsock_sock *vsk =3D vsock_sk(sk);
-+
-+=09return vsk->transport->shutdown(vsk, mode);
- }
+-=09const struct virtio_transport *t;
+ =09struct virtio_vsock_pkt *reply;
+ =09struct virtio_vsock_pkt_info info =3D {
+ =09=09.op =3D VIRTIO_VSOCK_OP_RST,
+@@ -767,7 +767,6 @@ static int virtio_transport_reset_no_sock(struct virtio=
+_vsock_pkt *pkt)
+ =09if (!reply)
+ =09=09return -ENOMEM;
 =20
- static void vsock_pending_work(struct work_struct *work)
-@@ -518,7 +520,7 @@ static int __vsock_bind_stream(struct vsock_sock *vsk,
- static int __vsock_bind_dgram(struct vsock_sock *vsk,
- =09=09=09      struct sockaddr_vm *addr)
+-=09t =3D virtio_transport_get_ops();
+ =09if (!t) {
+ =09=09virtio_transport_free_pkt(reply);
+ =09=09return -ENOTCONN;
+@@ -1107,7 +1106,8 @@ static bool virtio_transport_space_update(struct sock=
+ *sk,
+ /* We are under the virtio-vsock's vsock->rx_lock or vhost-vsock's vq->mut=
+ex
+  * lock.
+  */
+-void virtio_transport_recv_pkt(struct virtio_vsock_pkt *pkt)
++void virtio_transport_recv_pkt(struct virtio_transport *t,
++=09=09=09       struct virtio_vsock_pkt *pkt)
  {
--=09return transport->dgram_bind(vsk, addr);
-+=09return vsk->transport->dgram_bind(vsk, addr);
- }
+ =09struct sockaddr_vm src, dst;
+ =09struct vsock_sock *vsk;
+@@ -1129,7 +1129,7 @@ void virtio_transport_recv_pkt(struct virtio_vsock_pk=
+t *pkt)
+ =09=09=09=09=09le32_to_cpu(pkt->hdr.fwd_cnt));
 =20
- static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
-@@ -536,7 +538,7 @@ static int __vsock_bind(struct sock *sk, struct sockadd=
-r_vm *addr)
- =09 * like AF_INET prevents binding to a non-local IP address (in most
- =09 * cases), we only allow binding to the local CID.
- =09 */
--=09cid =3D transport->get_local_cid();
-+=09cid =3D vsk->transport->get_local_cid();
- =09if (addr->svm_cid !=3D cid && addr->svm_cid !=3D VMADDR_CID_ANY)
- =09=09return -EADDRNOTAVAIL;
-=20
-@@ -586,6 +588,7 @@ struct sock *__vsock_create(struct net *net,
- =09=09sk->sk_type =3D type;
-=20
- =09vsk =3D vsock_sk(sk);
-+=09vsk->transport =3D transport_single;
- =09vsock_addr_init(&vsk->local_addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);
- =09vsock_addr_init(&vsk->remote_addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);
-=20
-@@ -616,7 +619,7 @@ struct sock *__vsock_create(struct net *net,
- =09=09vsk->connect_timeout =3D VSOCK_DEFAULT_CONNECT_TIMEOUT;
+ =09if (le16_to_cpu(pkt->hdr.type) !=3D VIRTIO_VSOCK_TYPE_STREAM) {
+-=09=09(void)virtio_transport_reset_no_sock(pkt);
++=09=09(void)virtio_transport_reset_no_sock(t, pkt);
+ =09=09goto free_pkt;
  =09}
 =20
--=09if (transport->init(vsk, psk) < 0) {
-+=09if (vsk->transport->init(vsk, psk) < 0) {
- =09=09sk_free(sk);
- =09=09return NULL;
+@@ -1140,7 +1140,7 @@ void virtio_transport_recv_pkt(struct virtio_vsock_pk=
+t *pkt)
+ =09if (!sk) {
+ =09=09sk =3D vsock_find_bound_socket(&dst);
+ =09=09if (!sk) {
+-=09=09=09(void)virtio_transport_reset_no_sock(pkt);
++=09=09=09(void)virtio_transport_reset_no_sock(t, pkt);
+ =09=09=09goto free_pkt;
+ =09=09}
  =09}
-@@ -641,7 +644,7 @@ static void __vsock_release(struct sock *sk, int level)
- =09=09/* The release call is supposed to use lock_sock_nested()
- =09=09 * rather than lock_sock(), if a sock lock should be acquired.
- =09=09 */
--=09=09transport->release(vsk);
-+=09=09vsk->transport->release(vsk);
-=20
- =09=09/* When "level" is SINGLE_DEPTH_NESTING, use the nested
- =09=09 * version to avoid the warning "possible recursive locking
-@@ -670,7 +673,7 @@ static void vsock_sk_destruct(struct sock *sk)
- {
- =09struct vsock_sock *vsk =3D vsock_sk(sk);
-=20
--=09transport->destruct(vsk);
-+=09vsk->transport->destruct(vsk);
-=20
- =09/* When clearing these addresses, there's no need to set the family and
- =09 * possibly register the address family with the kernel.
-@@ -694,13 +697,13 @@ static int vsock_queue_rcv_skb(struct sock *sk, struc=
-t sk_buff *skb)
-=20
- s64 vsock_stream_has_data(struct vsock_sock *vsk)
- {
--=09return transport->stream_has_data(vsk);
-+=09return vsk->transport->stream_has_data(vsk);
- }
- EXPORT_SYMBOL_GPL(vsock_stream_has_data);
-=20
- s64 vsock_stream_has_space(struct vsock_sock *vsk)
- {
--=09return transport->stream_has_space(vsk);
-+=09return vsk->transport->stream_has_space(vsk);
- }
- EXPORT_SYMBOL_GPL(vsock_stream_has_space);
-=20
-@@ -869,6 +872,7 @@ static __poll_t vsock_poll(struct file *file, struct so=
-cket *sock,
- =09=09=09mask |=3D EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
-=20
- =09} else if (sock->type =3D=3D SOCK_STREAM) {
-+=09=09const struct vsock_transport *transport =3D vsk->transport;
- =09=09lock_sock(sk);
-=20
- =09=09/* Listening sockets that have connections in their accept
-@@ -944,6 +948,7 @@ static int vsock_dgram_sendmsg(struct socket *sock, str=
-uct msghdr *msg,
- =09struct sock *sk;
- =09struct vsock_sock *vsk;
- =09struct sockaddr_vm *remote_addr;
-+=09const struct vsock_transport *transport;
-=20
- =09if (msg->msg_flags & MSG_OOB)
- =09=09return -EOPNOTSUPP;
-@@ -952,6 +957,7 @@ static int vsock_dgram_sendmsg(struct socket *sock, str=
-uct msghdr *msg,
- =09err =3D 0;
- =09sk =3D sock->sk;
- =09vsk =3D vsock_sk(sk);
-+=09transport =3D vsk->transport;
-=20
- =09lock_sock(sk);
-=20
-@@ -1036,8 +1042,8 @@ static int vsock_dgram_connect(struct socket *sock,
- =09if (err)
- =09=09goto out;
-=20
--=09if (!transport->dgram_allow(remote_addr->svm_cid,
--=09=09=09=09    remote_addr->svm_port)) {
-+=09if (!vsk->transport->dgram_allow(remote_addr->svm_cid,
-+=09=09=09=09=09 remote_addr->svm_port)) {
- =09=09err =3D -EINVAL;
- =09=09goto out;
- =09}
-@@ -1053,7 +1059,9 @@ static int vsock_dgram_connect(struct socket *sock,
- static int vsock_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
- =09=09=09       size_t len, int flags)
- {
--=09return transport->dgram_dequeue(vsock_sk(sock->sk), msg, len, flags);
-+=09struct vsock_sock *vsk =3D vsock_sk(sock->sk);
-+
-+=09return vsk->transport->dgram_dequeue(vsk, msg, len, flags);
- }
-=20
- static const struct proto_ops vsock_dgram_ops =3D {
-@@ -1079,6 +1087,8 @@ static const struct proto_ops vsock_dgram_ops =3D {
-=20
- static int vsock_transport_cancel_pkt(struct vsock_sock *vsk)
- {
-+=09const struct vsock_transport *transport =3D vsk->transport;
-+
- =09if (!transport->cancel_pkt)
- =09=09return -EOPNOTSUPP;
-=20
-@@ -1115,6 +1125,7 @@ static int vsock_stream_connect(struct socket *sock, =
-struct sockaddr *addr,
- =09int err;
- =09struct sock *sk;
- =09struct vsock_sock *vsk;
-+=09const struct vsock_transport *transport;
- =09struct sockaddr_vm *remote_addr;
- =09long timeout;
- =09DEFINE_WAIT(wait);
-@@ -1122,6 +1133,7 @@ static int vsock_stream_connect(struct socket *sock, =
-struct sockaddr *addr,
- =09err =3D 0;
- =09sk =3D sock->sk;
- =09vsk =3D vsock_sk(sk);
-+=09transport =3D vsk->transport;
-=20
- =09lock_sock(sk);
-=20
-@@ -1365,6 +1377,7 @@ static int vsock_stream_setsockopt(struct socket *soc=
-k,
- =09int err;
- =09struct sock *sk;
- =09struct vsock_sock *vsk;
-+=09const struct vsock_transport *transport;
- =09u64 val;
-=20
- =09if (level !=3D AF_VSOCK)
-@@ -1385,6 +1398,7 @@ static int vsock_stream_setsockopt(struct socket *soc=
-k,
- =09err =3D 0;
- =09sk =3D sock->sk;
- =09vsk =3D vsock_sk(sk);
-+=09transport =3D vsk->transport;
-=20
- =09lock_sock(sk);
-=20
-@@ -1442,6 +1456,7 @@ static int vsock_stream_getsockopt(struct socket *soc=
-k,
- =09int len;
- =09struct sock *sk;
- =09struct vsock_sock *vsk;
-+=09const struct vsock_transport *transport;
- =09u64 val;
-=20
- =09if (level !=3D AF_VSOCK)
-@@ -1465,6 +1480,7 @@ static int vsock_stream_getsockopt(struct socket *soc=
-k,
- =09err =3D 0;
- =09sk =3D sock->sk;
- =09vsk =3D vsock_sk(sk);
-+=09transport =3D vsk->transport;
-=20
- =09switch (optname) {
- =09case SO_VM_SOCKETS_BUFFER_SIZE:
-@@ -1509,6 +1525,7 @@ static int vsock_stream_sendmsg(struct socket *sock, =
-struct msghdr *msg,
- {
- =09struct sock *sk;
- =09struct vsock_sock *vsk;
-+=09const struct vsock_transport *transport;
- =09ssize_t total_written;
- =09long timeout;
- =09int err;
-@@ -1517,6 +1534,7 @@ static int vsock_stream_sendmsg(struct socket *sock, =
-struct msghdr *msg,
-=20
- =09sk =3D sock->sk;
- =09vsk =3D vsock_sk(sk);
-+=09transport =3D vsk->transport;
- =09total_written =3D 0;
- =09err =3D 0;
-=20
-@@ -1648,6 +1666,7 @@ vsock_stream_recvmsg(struct socket *sock, struct msgh=
-dr *msg, size_t len,
- {
- =09struct sock *sk;
- =09struct vsock_sock *vsk;
-+=09const struct vsock_transport *transport;
- =09int err;
- =09size_t target;
- =09ssize_t copied;
-@@ -1658,6 +1677,7 @@ vsock_stream_recvmsg(struct socket *sock, struct msgh=
-dr *msg, size_t len,
-=20
- =09sk =3D sock->sk;
- =09vsk =3D vsock_sk(sk);
-+=09transport =3D vsk->transport;
- =09err =3D 0;
-=20
- =09lock_sock(sk);
-@@ -1872,7 +1892,7 @@ static long vsock_dev_do_ioctl(struct file *filp,
-=20
- =09switch (cmd) {
- =09case IOCTL_VM_SOCKETS_GET_LOCAL_CID:
--=09=09if (put_user(transport->get_local_cid(), p) !=3D 0)
-+=09=09if (put_user(transport_single->get_local_cid(), p) !=3D 0)
- =09=09=09retval =3D -EFAULT;
- =09=09break;
-=20
-@@ -1919,7 +1939,7 @@ int __vsock_core_init(const struct vsock_transport *t=
-, struct module *owner)
- =09if (err)
- =09=09return err;
-=20
--=09if (transport) {
-+=09if (transport_single) {
- =09=09err =3D -EBUSY;
- =09=09goto err_busy;
- =09}
-@@ -1928,7 +1948,7 @@ int __vsock_core_init(const struct vsock_transport *t=
-, struct module *owner)
- =09 * unload while there are open sockets.
- =09 */
- =09vsock_proto.owner =3D owner;
--=09transport =3D t;
-+=09transport_single =3D t;
-=20
- =09vsock_device.minor =3D MISC_DYNAMIC_MINOR;
- =09err =3D misc_register(&vsock_device);
-@@ -1958,7 +1978,7 @@ int __vsock_core_init(const struct vsock_transport *t=
-, struct module *owner)
- err_deregister_misc:
- =09misc_deregister(&vsock_device);
- err_reset_transport:
--=09transport =3D NULL;
-+=09transport_single =3D NULL;
- err_busy:
- =09mutex_unlock(&vsock_register_mutex);
- =09return err;
-@@ -1975,7 +1995,7 @@ void vsock_core_exit(void)
-=20
- =09/* We do not want the assignment below re-ordered. */
- =09mb();
--=09transport =3D NULL;
-+=09transport_single =3D NULL;
-=20
- =09mutex_unlock(&vsock_register_mutex);
- }
-@@ -1986,7 +2006,7 @@ const struct vsock_transport *vsock_core_get_transpor=
-t(void)
- =09/* vsock_register_mutex not taken since only the transport uses this
- =09 * function and only while registered.
- =09 */
--=09return transport;
-+=09return transport_single;
- }
- EXPORT_SYMBOL_GPL(vsock_core_get_transport);
-=20
 --=20
 2.21.0
 
