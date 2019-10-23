@@ -2,166 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1612FE258F
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 23:43:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4568DE25A0
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 23:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407590AbfJWVnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 17:43:21 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59901 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2407584AbfJWVnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 17:43:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571866999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6hpFFnPZykrPqLg3oDhEyOYsEg/U+o2e+slzG/d5mzQ=;
-        b=DJEOMJibX2fUf5gJXlnPKMitVY1S6TNQdFMHFd/vJeuwuoMeA9j3ExrFAfNFh56HXXddej
-        ChzMR5LH/ARdQAo5xirDggDrSFXbp1KA6v6tR5HQaw0CJpTVbbxJqRPq+akSbIEU3rNQMc
-        uweQ71rN2q8lWbss9ryEQ0rtvd9qYkY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-386-O4PFHJpqNaaC_G9ArySt4g-1; Wed, 23 Oct 2019 17:43:15 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EEBC01800D6B;
-        Wed, 23 Oct 2019 21:43:11 +0000 (UTC)
-Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0666F5D6D0;
-        Wed, 23 Oct 2019 21:42:45 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 15:42:45 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V5 2/6] modpost: add support for mdev class id
-Message-ID: <20191023154245.32e4fa49@x1.home>
-In-Reply-To: <20191023130752.18980-3-jasowang@redhat.com>
-References: <20191023130752.18980-1-jasowang@redhat.com>
-        <20191023130752.18980-3-jasowang@redhat.com>
-Organization: Red Hat
+        id S2407630AbfJWVpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 17:45:13 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:34029 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389405AbfJWVpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 17:45:12 -0400
+Received: by mail-pg1-f195.google.com with SMTP id k20so12924004pgi.1
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 14:45:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=wVv/gko2xWydu1JLZtRsll56bUGrw+ROcPrNQCSfTJI=;
+        b=ZFx94vzJn0d4VhTBSKl8pZ3cNITWuInv0ZaLrw6HzWUHawi5zY1iz22K6DjYKMZvi6
+         lo0pPFvEXMrus2Q/Tdj/o3HC+LG48K4X2VX2jLGEzZUInOqGhZqXVmOXrQq+VsG0XXqs
+         xVNHsCMCxYeHtDA0qciVh1+6Pvr4uzjH/8iPs4rqwdcqIOHyQn0A1w42t6Cnf6/tU5/v
+         kyym8hCzWKvi3iG19FKp1cde3d2f7guP3IpAtuQyLg2/1dkDOLpBcpK8bYsDEXSjzhbi
+         GsMWfQ9b/NdoBrTlwh/kd4bsTewF/8tAhN+CyvP1EJAzoM4X5YDrJg2v46v5EQnNTnov
+         UaBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=wVv/gko2xWydu1JLZtRsll56bUGrw+ROcPrNQCSfTJI=;
+        b=R0cET77q0ecdzORTbZvUisRMDFeONQF1PpIT7gVLH1QH3JRcAKs+ngxMWbGkv2X34p
+         ilV6NJsO2sI4NhnHtqokoabY6zNFo/sLVroVq5ldKtNqFNxQG+ijj85YVCuHY4o3s/wB
+         lWCOgNDD+ULlHxsTKVN+NXL3Ay+bSOiag8UcUSnCH4g1o8tzlxm3sKOZfdzxv73C+nKW
+         TZrsZVCRxqnaSCQpYmns99H8KiVvoqFwZSnbgRX8pTMip7HWe8+UZBUu2mQj98SaFPob
+         1QPK6GU4M2dER1G6OzNCtrZp1ddLWLE8K0WHaEIuSrvTFYzic5gVdQsjVhCI/1vMBzPU
+         5l3A==
+X-Gm-Message-State: APjAAAXkzZ64cwo5hpAgqk4G4WIyizW1as6faupZu0pboTbTYX/6RkW8
+        budscMilMrKCUDiA0sMbEHQ1nA==
+X-Google-Smtp-Source: APXvYqyBUlroWXdDEK+9x99Nvnz4DuIfDVTK1gervfMMHpetGzPNRKsRT97RUlND/2P1ksbJTbqNIQ==
+X-Received: by 2002:a65:5603:: with SMTP id l3mr12522428pgs.56.1571867111673;
+        Wed, 23 Oct 2019 14:45:11 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id r185sm25445780pfr.68.2019.10.23.14.45.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Oct 2019 14:45:11 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 14:45:08 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Madalin Bucur <madalin.bucur@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, roy.pledge@nxp.com,
+        laurentiu.tudor@nxp.com
+Subject: Re: [PATCH net-next v3 0/7] DPAA Ethernet changes
+Message-ID: <20191023144508.548edd4f@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <1571821726-6624-1-git-send-email-madalin.bucur@nxp.com>
+References: <1571821726-6624-1-git-send-email-madalin.bucur@nxp.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: O4PFHJpqNaaC_G9ArySt4g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Oct 2019 21:07:48 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+On Wed, 23 Oct 2019 12:08:39 +0300, Madalin Bucur wrote:
+> v3: add newline at the end of error messages
+> v2: resending with From: field matching signed-off-by
+> 
+> Here's a series of changes for the DPAA Ethernet, addressing minor
+> or unapparent issues in the codebase, adding probe ordering based on
+> a recently added DPAA QMan API, removing some redundant code.
 
-> Add support to parse mdev class id table.
->=20
-> Reviewed-by: Parav Pandit <parav@mellanox.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/vfio/mdev/vfio_mdev.c     |  2 ++
->  scripts/mod/devicetable-offsets.c |  3 +++
->  scripts/mod/file2alias.c          | 10 ++++++++++
->  3 files changed, 15 insertions(+)
->=20
-> diff --git a/drivers/vfio/mdev/vfio_mdev.c b/drivers/vfio/mdev/vfio_mdev.=
-c
-> index 7b24ee9cb8dd..cb701cd646f0 100644
-> --- a/drivers/vfio/mdev/vfio_mdev.c
-> +++ b/drivers/vfio/mdev/vfio_mdev.c
-> @@ -125,6 +125,8 @@ static const struct mdev_class_id id_table[] =3D {
->  =09{ 0 },
->  };
-> =20
-> +MODULE_DEVICE_TABLE(mdev, id_table);
-> +
-
-Two questions, first we have:
-
-#define MODULE_DEVICE_TABLE(type, name)                                 \
-extern typeof(name) __mod_##type##__##name##_device_table               \
-  __attribute__ ((unused, alias(__stringify(name))))
-
-Therefore we're defining __mod_mdev__id_table_device_table with alias
-id_table.  When the virtio mdev bus driver is added in 5/6 it uses the
-same name value.  I see virtio types all register this way (virtio,
-id_table), so I assume there's no conflict, but pci types mostly (not
-entirely) seem to use unique names.  Is there a preference to one way
-or the other or it simply doesn't matter?
-
->  static struct mdev_driver vfio_mdev_driver =3D {
->  =09.name=09=3D "vfio_mdev",
->  =09.probe=09=3D vfio_mdev_probe,
-> diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-=
-offsets.c
-> index 054405b90ba4..6cbb1062488a 100644
-> --- a/scripts/mod/devicetable-offsets.c
-> +++ b/scripts/mod/devicetable-offsets.c
-> @@ -231,5 +231,8 @@ int main(void)
->  =09DEVID(wmi_device_id);
->  =09DEVID_FIELD(wmi_device_id, guid_string);
-> =20
-> +=09DEVID(mdev_class_id);
-> +=09DEVID_FIELD(mdev_class_id, id);
-> +
->  =09return 0;
->  }
-> diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-> index c91eba751804..d365dfe7c718 100644
-> --- a/scripts/mod/file2alias.c
-> +++ b/scripts/mod/file2alias.c
-> @@ -1335,6 +1335,15 @@ static int do_wmi_entry(const char *filename, void=
- *symval, char *alias)
->  =09return 1;
->  }
-> =20
-> +/* looks like: "mdev:cN" */
-> +static int do_mdev_entry(const char *filename, void *symval, char *alias=
-)
-> +{
-> +=09DEF_FIELD(symval, mdev_class_id, id);
-> +
-> +=09sprintf(alias, "mdev:c%02X", id);
-
-A lot of entries call add_wildcard() here, should we?  Sorry for the
-basic questions, I haven't played in this code.  Thanks,
-
-Alex
-
-> +=09return 1;
-> +}
-> +
->  /* Does namelen bytes of name exactly match the symbol? */
->  static bool sym_is(const char *name, unsigned namelen, const char *symbo=
-l)
->  {
-> @@ -1407,6 +1416,7 @@ static const struct devtable devtable[] =3D {
->  =09{"typec", SIZE_typec_device_id, do_typec_entry},
->  =09{"tee", SIZE_tee_client_device_id, do_tee_entry},
->  =09{"wmi", SIZE_wmi_device_id, do_wmi_entry},
-> +=09{"mdev", SIZE_mdev_class_id, do_mdev_entry},
->  };
-> =20
->  /* Create MODULE_ALIAS() statements.
-
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
