@@ -2,186 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36527E148E
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D136EE14B0
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390494AbfJWIpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 04:45:22 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44655 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390410AbfJWIpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:45:22 -0400
-Received: by mail-wr1-f68.google.com with SMTP id z9so21066144wrl.11
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 01:45:19 -0700 (PDT)
+        id S2390590AbfJWIuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 04:50:05 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:37530 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390034AbfJWIuF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:50:05 -0400
+Received: by mail-io1-f65.google.com with SMTP id 1so12620973iou.4;
+        Wed, 23 Oct 2019 01:50:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aG/MrLORZBT7UubvhJbOuhcVKCxEQRUmmMmHQznSCQk=;
-        b=umjEnenzd5B+VeYr5sP+5dyV64ewbINkShMYTSjd2lXP3sXTUTNaHpBb3caY6/24o7
-         a88Nun64BRUwK7L7vg+KHe3Ta3Qcdyp4Chk0HGposMnSC3wtersbZxvuTSCqhJ/nud+J
-         KHs6iysHIeK2uD/LKeVni53yibICOkQ/h1qIOqP3/zNB5ipczf2uPEBwpLrXeSr0gI0e
-         hoauUTQ7OUpBf7w3TvTD+rj5xr92BpHyj/KznboTxdNq4OpJ03uDkzA5driiLstlVbTz
-         hY4cYNl/nb/fah07hPonLOHRGfr5jaTJzkMiyp0nyaorIcvqGLdp0HpC9gMd4E3jM9V+
-         fuUg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0hIzN5HFHwPOImmBdq7LkFsdyBlAk23Qhvjgx/Ct5Nw=;
+        b=E0aVRSyFVDTbGH0GGXiaF1VO2bWh5525i8pepFFnqnmPD/L5ugBcaAy+CqFkn5ktmV
+         FndoAt5eUgedUagQVvN1ASrfjlDHBsHqIzRU3MLm7Eb/cHQn7JkhnKRavYB/N0VGV3CX
+         wX3KYj2af8Rl5v7/FUkacqU2I8MgHXbx9pamAmT/t5dYbEw0bzKyO/bzHNlhDOiT3NrZ
+         26NHJVW5iXtWjkXxdQztamZGtsRKgTGGcvh8TXEQ+yazH5jm1oLLOYbXM8vTeHdkYxH9
+         nbkJj29XxLNdPmXKY3P2Tk952iNMYcNZfLzYFwlWjHE04IYMBRzRs0MZkmxhHYSgdGF2
+         ouyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aG/MrLORZBT7UubvhJbOuhcVKCxEQRUmmMmHQznSCQk=;
-        b=aMDxYbWS46ojohQ/2UroOPnUZnJdox9XY1jhHja50UlTNlBfKsWrGLJ5gY01xfSPmw
-         un4YOl4SlPj/zZNtgO8XHMlB0rsPzbGacUOQF523VQg+7waNeDlybwK2dlgWVuJfjWiz
-         wsQyFVNv/JeNtPKZs26QhXmymyPvEHpB01w7CFbJPxCdjUK/GA+H0hi9gFGKHop/5+Nw
-         2y/bQgKQbmmHPXZUn9M+OY0HUFxrfZSGtYjyranWfDL0h7acCpx33UCG4dxe00LhFTA7
-         a74paW+H0oLpuO3D9GMi/aVC+1EzpeCgGyeZdrvqZ29sydAX4F0c4rUJm3RKR+lOt7XI
-         nhjA==
-X-Gm-Message-State: APjAAAV7Xdqumt3PERFprf8pOjsauGH4yUS3Ud/HTyz9SJMzAOoWiTyN
-        ekmlh6C1ITItjgpQVmxjf37+Bg==
-X-Google-Smtp-Source: APXvYqyoVSRTTAYm+hOUzpNqh9xWy5ya6C2yETdl6/IPqn3db12HN5256TQz1VFpzESNxWljcDGezQ==
-X-Received: by 2002:adf:e4c3:: with SMTP id v3mr7278313wrm.220.1571820318800;
-        Wed, 23 Oct 2019 01:45:18 -0700 (PDT)
-Received: from apalos.home (ppp-94-65-92-5.home.otenet.gr. [94.65.92.5])
-        by smtp.gmail.com with ESMTPSA id 5sm29997727wrk.86.2019.10.23.01.45.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 01:45:18 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 11:45:15 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH net-next 3/4] page_pool: Restructure
- __page_pool_put_page()
-Message-ID: <20191023084515.GA3726@apalos.home>
-References: <20191022044343.6901-1-saeedm@mellanox.com>
- <20191022044343.6901-4-saeedm@mellanox.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0hIzN5HFHwPOImmBdq7LkFsdyBlAk23Qhvjgx/Ct5Nw=;
+        b=YNY7kHQ1ulk1myjmFPGAROeYi/0wXjogIbL9odrH3aPVyrSIvFam79oids+pSTi5Ry
+         urXdi4X2nJjCxpR2G87A/6uCz1wVw6kz8LH3r/M5s7ivuDy3vp4En3QfPGQvM9U1AOIt
+         Bnfx0YP354gB20rTXyl+vwMA9PeUViGzbP5qW1nlFEXjl9sQbFTwxUOBAv24BRVv4L0R
+         nnGuL1iBMf3Akp4jFfoMW4ZLPYgoagBuIC3algK0kd+RIWc2zE/VfSAdX8eMlwgT9k/b
+         n00K9zeskFkW/5Oo6r931LYUxaGhjw3a4NKlxgSEO6H6Wi6Xgx+lRrAlPXPOzZJYGUpp
+         gBMQ==
+X-Gm-Message-State: APjAAAUx0lUQ9BwnATx7vkTBxTGoJutG0yx9nZiGON0NZsF8pdPEAzWn
+        1BT3+2ZIDM+8o5VhuV0Eh6rvOEKVxdOEzO0dNeA=
+X-Google-Smtp-Source: APXvYqyKP6o3polGJrn+yHmC9wL5Ygfjkzr5H+6Cugp8XI6oOVjTJpwNUMvOWQ45ebbfxxCyoTerkjpbkx2X1uO/MJE=
+X-Received: by 2002:a5d:9a98:: with SMTP id c24mr2158623iom.203.1571820604517;
+ Wed, 23 Oct 2019 01:50:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191022044343.6901-4-saeedm@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <8080a9a2-82f1-20b5-8d5d-778536f91780@gmail.com>
+ <6fddbb7c-50e4-2d1f-6f88-1d97107e816f@fb.com> <CAJ2QiJLONfJKdMVGu6J-BHnfNKA3R+ZZWfJV2RNrmUO90LPWPQ@mail.gmail.com>
+ <c854894e-6c0a-6d49-4d7f-ae81a34b5711@fb.com>
+In-Reply-To: <c854894e-6c0a-6d49-4d7f-ae81a34b5711@fb.com>
+From:   Prabhakar Kushwaha <prabhakar.pkin@gmail.com>
+Date:   Wed, 23 Oct 2019 14:19:53 +0530
+Message-ID: <CAJ2QiJKqU5GDNa4YHggboy4YUJHB_rr6x_dXWy0hK+jD5Sv29g@mail.gmail.com>
+Subject: Re: Linux-5.4: bpf: test_core_reloc_arrays.o: Segmentation fault with
+ llc -march=bpf
+To:     Yonghong Song <yhs@fb.com>
+Cc:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 04:44:24AM +0000, Saeed Mahameed wrote:
-> From: Jonathan Lemon <jonathan.lemon@gmail.com>
-> 
-> 1) Rename functions to reflect what they are actually doing.
-> 
-> 2) Unify the condition to keep a page.
-> 
-> 3) When page can't be kept in cache, fallback to releasing page to page
-> allocator in one place, instead of calling it from multiple conditions,
-> and reuse __page_pool_return_page().
-> 
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> ---
->  net/core/page_pool.c | 38 +++++++++++++++++++-------------------
->  1 file changed, 19 insertions(+), 19 deletions(-)
-> 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 8120aec999ce..65680aaa0818 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -258,6 +258,7 @@ static bool __page_pool_recycle_into_ring(struct page_pool *pool,
->  				   struct page *page)
->  {
->  	int ret;
-> +
->  	/* BH protection not needed if current is serving softirq */
->  	if (in_serving_softirq())
->  		ret = ptr_ring_produce(&pool->ring, page);
-> @@ -272,8 +273,8 @@ static bool __page_pool_recycle_into_ring(struct page_pool *pool,
->   *
->   * Caller must provide appropriate safe context.
->   */
-> -static bool __page_pool_recycle_direct(struct page *page,
-> -				       struct page_pool *pool)
-> +static bool __page_pool_recycle_into_cache(struct page *page,
-> +					   struct page_pool *pool)
->  {
->  	if (unlikely(pool->alloc.count == PP_ALLOC_CACHE_SIZE))
->  		return false;
-> @@ -283,15 +284,18 @@ static bool __page_pool_recycle_direct(struct page *page,
->  	return true;
->  }
->  
-> -/* page is NOT reusable when:
-> - * 1) allocated when system is under some pressure. (page_is_pfmemalloc)
-> - * 2) belongs to a different NUMA node than pool->p.nid.
-> +/* Keep page in caches only if page:
-> + * 1) wasn't allocated when system is under some pressure (page_is_pfmemalloc).
-> + * 2) belongs to pool's numa node (pool->p.nid).
-> + * 3) refcount is 1 (owned by page pool).
->   *
->   * To update pool->p.nid users must call page_pool_update_nid.
->   */
-> -static bool pool_page_reusable(struct page_pool *pool, struct page *page)
-> +static bool page_pool_keep_page(struct page_pool *pool, struct page *page)
->  {
-> -	return !page_is_pfmemalloc(page) && page_to_nid(page) == pool->p.nid;
-> +	return !page_is_pfmemalloc(page) &&
-> +	       page_to_nid(page) == pool->p.nid &&
-> +	       page_ref_count(page) == 1;
->  }
->  
->  void __page_pool_put_page(struct page_pool *pool,
-> @@ -300,22 +304,19 @@ void __page_pool_put_page(struct page_pool *pool,
->  	/* This allocator is optimized for the XDP mode that uses
->  	 * one-frame-per-page, but have fallbacks that act like the
->  	 * regular page allocator APIs.
-> -	 *
-> -	 * refcnt == 1 means page_pool owns page, and can recycle it.
->  	 */
-> -	if (likely(page_ref_count(page) == 1 &&
-> -		   pool_page_reusable(pool, page))) {
-> +
-> +	if (likely(page_pool_keep_page(pool, page))) {
->  		/* Read barrier done in page_ref_count / READ_ONCE */
->  
->  		if (allow_direct && in_serving_softirq())
-> -			if (__page_pool_recycle_direct(page, pool))
-> +			if (__page_pool_recycle_into_cache(page, pool))
->  				return;
->  
-> -		if (!__page_pool_recycle_into_ring(pool, page)) {
-> -			/* Cache full, fallback to free pages */
-> -			__page_pool_return_page(pool, page);
-> -		}
-> -		return;
-> +		if (__page_pool_recycle_into_ring(pool, page))
-> +			return;
-> +
-> +		/* Cache full, fallback to return pages */
->  	}
->  	/* Fallback/non-XDP mode: API user have elevated refcnt.
->  	 *
-> @@ -330,8 +331,7 @@ void __page_pool_put_page(struct page_pool *pool,
->  	 * doing refcnt based recycle tricks, meaning another process
->  	 * will be invoking put_page.
->  	 */
-> -	__page_pool_clean_page(pool, page);
-> -	put_page(page);
-> +	__page_pool_return_page(pool, page);
+On Wed, Oct 23, 2019 at 10:12 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 10/22/19 8:29 PM, Prabhakar Kushwaha wrote:
+> > Thanks Yonghong for replying.
+> >
+> >
+> >
+> > On Wed, Oct 23, 2019 at 8:04 AM Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >>
+> >>
+> >> On 10/22/19 6:35 PM, Prabhakar Kushwaha wrote:
+> >>>
+> >>>    Adding other mailing list, folks...
+> >>>
+> >>> Hi All,
+> >>>
+> >>> I am trying to build kselftest on Linux-5.4 on ubuntu 18.04. I instal=
+led
+> >>> LLVM-9.0.0 and Clang-9.0.0 from below links after following steps fro=
+m
+> >>> [1] because of discussion [2]
+> >>
+> >> Could you try latest llvm trunk (pre-release 10.0.0)?
+> >> LLVM 9.0.0 has some codes for CORE, but it is not fully supported and
+> >> has some bugs which are only fixed in LLVM 10.0.0. We intend to make
+> >> llvm 10 as the one we claim we have support. Indeed CORE related
+> >> changes are mostly added during 10.0.0 development period.
+> >>
+> >
+> > can you please help me the link to download as
+> > "https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__prereleases.llv=
+m.org_&d=3DDwIBaQ&c=3D5VD0RTtNlTh3ycd41b3MUw&r=3DDA8e1B5r073vIqRrFz7MRA&m=
+=3D-6k0f7iKZO54kHLKBjYdU_7pDlCh61HdtyWQ-d43zwU&s=3D7fbobFiC619_9Pr5b1FbrKvo=
+Hl6sg79NZc3rQgNWa1Q&e=3D " does not have LLVM-10.0.0 packages.
+>
+> llvm 10 has not been released.
+> Could you follow LLVM source build insn at
+> https://github.com/iovisor/bcc/blob/master/INSTALL.md?
+>
+> Specifically:
+> git clone http://llvm.org/git/llvm.git
+> cd llvm/tools; git clone http://llvm.org/git/clang.git
+> cd ..; mkdir -p build/install; cd build
+> cmake -G "Unix Makefiles" -DLLVM_TARGETS_TO_BUILD=3D"BPF;X86" \
+>    -DCMAKE_BUILD_TYPE=3DRelease -DCMAKE_INSTALL_PREFIX=3D$PWD/install ..
+> make
+> make install
+> export PATH=3D$PWD/install/bin:$PATH
+>
 
-I think Jesper had a reason for calling them separately instead of 
-__page_pool_return_page + put_page() (which in fact does the same thing). 
+Thanks Yonghong..
 
-In the future he was planning on removing the __page_pool_clean_page call from
-there, since someone might call __page_pool_put_page() after someone has called
-__page_pool_clean_page()
-Can we leave the calls there as-is?
+after following above steps no more segmentation fault are there.
 
->  }
->  EXPORT_SYMBOL(__page_pool_put_page);
->  
-> -- 
-> 2.21.0
-> 
-
-Thanks
-/Ilias
+--pk
