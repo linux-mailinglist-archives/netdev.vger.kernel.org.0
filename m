@@ -2,167 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A18FEE1840
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 12:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51BBCE1844
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 12:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404510AbfJWKtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 06:49:45 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51846 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390513AbfJWKto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 06:49:44 -0400
-Received: by mail-wm1-f66.google.com with SMTP id q70so13505291wme.1
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 03:49:42 -0700 (PDT)
+        id S2404446AbfJWKwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 06:52:14 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:52379 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390566AbfJWKwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 06:52:14 -0400
+Received: by mail-wm1-f67.google.com with SMTP id r19so20706787wmh.2;
+        Wed, 23 Oct 2019 03:52:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=x9Us54scadrFU9TiJRijJVT2Q9RuXcN3VvdzhxCj4XY=;
-        b=U26NV0Rn2z8GAYz7San694T0J7eRwl0thTNtkgIkNJbPPn3lCOykKiV+flHFRJpwC+
-         EL/N+kAKyd2IGN8eHHgGMBT06Zh2c9WBVfFzIdUDcC3SSQVULEqtMv+OzEpDSToN0OFD
-         WEyTLxg8vnRRUxk1WnWTlJgjqlCJMDyjJ8PJKS3azVFAQD2Q1uuRG1jMq7oo05lcpyzq
-         E7cy1R7pTtSxN0OH34YhoAu4Ox6cAcp+CpwdU5fwa/V8T2vTJ8Xr1VNORzokC77qk98Q
-         zjIPIb0BLVk0cJT1BT7EbBtrSsNOznmZRlGdVN+x5r959X4DWLWDfcIerfX6StGUQ+RW
-         zy6g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=+i1c7z/vrQkTB+2yIcwqOcwIXxSz3gP95Leb8EuF86o=;
+        b=nVIVOcWX+X/egZal8mSWnoQ08UC0P+Vm7Sh51vcDrw3IEF2+2Cs9bCiGtoQZ1MeSM2
+         pEZP7CBrlu5OXc5BsYmfF0J6ou921SInevWNcWDrRnFQeXMe3FCi+fMdTubs/g/ad/JS
+         gyOizrOeAs9eyO3UqYgk5evhHKNPjNUhcNkHrzdLRROQZ8efJYdnTMuc15BGIiFZN5N0
+         GvYUf2ezPdP32EL767P6HACchFxGFzp4Swe/i9QrfYW/FD3KALceoi1clabNF9SXFaFl
+         7vO56nqicz3GlaUU/ZRJOiWSZYUj+WLzY73qIHZX9ad56wt4GkszkK5LIx/6CxpdF3sB
+         +I9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=x9Us54scadrFU9TiJRijJVT2Q9RuXcN3VvdzhxCj4XY=;
-        b=aANCoVDlj0ZYCsWduNmLPdK9DqkFsIjmwsrtJlXckgavLDLwh4FtJenQWP6kdIy+C6
-         oX3T/UWVFVuHlSPBi1/UJVEmemQhBKXNxORk/KyAJWh47Q0gji+0CN3xqW2951d/pHRq
-         82nBwSMu5vbCjiu02IsWCgdnLMh8JMOJK5PiPi469yHFwBxbO0fIvZdv3jSvP/qYvxkd
-         OO9We5UO0w7WIpPI/UgLR3tRRplR6tPxN+OXA8RF7xE6jBAPSlcspY+hw71dk/RWWvd0
-         w2rdRrus7auf9BUiBVqIHPXT1Py+F8k66Oc4rUy3BmBxgRSNDwICgCByL2tcBtQsPsKw
-         lDkw==
-X-Gm-Message-State: APjAAAUS9gbER89mpDK8ALo33UyxyAZJxGV5laNhA4NB0pO7N4FQwPQg
-        7T8Fj5nsaMpgX5RP4D6kezLEtg==
-X-Google-Smtp-Source: APXvYqygvI1eXHgm4oUC8Ldg/5UwX2sIRJ8S+0hGdEWx4GhRDVei8QAywYaoDflMC0ZQnEAqV+p+1g==
-X-Received: by 2002:a1c:f011:: with SMTP id a17mr15921wmb.18.1571827781378;
-        Wed, 23 Oct 2019 03:49:41 -0700 (PDT)
-Received: from google.com ([2a00:79e0:d:210:e8f7:125b:61e9:733d])
-        by smtp.gmail.com with ESMTPSA id w18sm3945309wrl.75.2019.10.23.03.49.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 03:49:40 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 11:49:40 +0100
-From:   Matthias Maennich <maennich@google.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: Module loading problem since 5.3
-Message-ID: <20191023104940.GD27616@google.com>
-References: <20191014085235.GW16384@42.do-not-panic.com>
- <20191014144440.GG35313@google.com>
- <20191016125030.GH16384@42.do-not-panic.com>
- <20191016133710.GB35139@google.com>
- <20191018121848.GB11244@42.do-not-panic.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191018121848.GB11244@42.do-not-panic.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=+i1c7z/vrQkTB+2yIcwqOcwIXxSz3gP95Leb8EuF86o=;
+        b=jBWUprAWTAIlvR1t6hLuxGvZ+2xXuo4hC+2k9yVp1j0R5q+9wzAG741jFVM5B+RoHP
+         I0/OE1qfTNqYCElLcQD/h/0cfcH/v0g66YvyZlDolBMiP7W+jfUirx0EdqZg9xmHnhoz
+         xrAKJ4b6/h6P+eFGKkMHg1c1+xgDxUKJcPjSX33EJc+DcWS3WZhq6lcXk63gsgEO5nP0
+         idHxUoOBYUvfVQTLhOlTsvcsuclEB5PqQVhAxTGELnJzrrZHr1Kxmqga53Rv9gbtAZg2
+         urchXqjAydRrpHuiA3VoNsySuAngQ02EmPb9q7DQ/x/MRP81A3u9ZmgOFzDneIyiznca
+         T98Q==
+X-Gm-Message-State: APjAAAU/bpPLM+Hmu1XgHMPG1vH0omHcsvFpjkv3oB/ObdWDgRtmA60z
+        r3cGFCws5YKiFDAstQT5iMg=
+X-Google-Smtp-Source: APXvYqxF4jxwjd99RwNkgbX3vx0Ih0xjymBplxPaMsoe/BwE5pju2gtoJdmmdtsvKXYcd9mhg7wqSg==
+X-Received: by 2002:a1c:410a:: with SMTP id o10mr7280835wma.117.1571827931585;
+        Wed, 23 Oct 2019 03:52:11 -0700 (PDT)
+Received: from VM-VPR.corporate.saft.org ([80.215.206.132])
+        by smtp.gmail.com with ESMTPSA id 143sm35148526wmb.33.2019.10.23.03.52.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 23 Oct 2019 03:52:11 -0700 (PDT)
+From:   Vincent Prince <vincent.prince.fr@gmail.com>
+To:     mkl@pengutronix.de
+Cc:     dave.taht@gmail.com, davem@davemloft.net, jhs@mojatatu.com,
+        jiri@resnulli.us, kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
+        Vincent Prince <vincent.prince.fr@gmail.com>
+Subject: [PATCH v4] net: sch_generic: Use pfifo_fast as fallback scheduler for CAN hardware
+Date:   Wed, 23 Oct 2019 12:52:00 +0200
+Message-Id: <1571827920-9024-1-git-send-email-vincent.prince.fr@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <20190327165632.10711-1-mkl@pengutronix.de>
+References: <20190327165632.10711-1-mkl@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 12:18:48PM +0000, Luis Chamberlain wrote:
->On Wed, Oct 16, 2019 at 02:37:10PM +0100, Matthias Maennich wrote:
->> On Wed, Oct 16, 2019 at 12:50:30PM +0000, Luis Chamberlain wrote:
->> > On Mon, Oct 14, 2019 at 03:44:40PM +0100, Matthias Maennich wrote:
->> > > Hi Luis!
->> > >
->> > > On Mon, Oct 14, 2019 at 08:52:35AM +0000, Luis Chamberlain wrote:
->> > > > On Fri, Oct 11, 2019 at 09:26:05PM +0200, Heiner Kallweit wrote:
->> > > > > On 10.10.2019 19:15, Luis Chamberlain wrote:
->> > > > > >
->> > > > > >
->> > > > > > On Thu, Oct 10, 2019, 6:50 PM Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> wrote:
->> > > > > >
->> > > > > >        MODULE_SOFTDEP("pre: realtek")
->> > > > > >
->> > > > > >     Are you aware of any current issues with module loading
->> > > > > >     that could cause this problem?
->> > > > > >
->> > > > > >
->> > > > > > Nope. But then again I was not aware of MODULE_SOFTDEP(). I'd encourage an extension to lib/kmod.c or something similar which stress tests this. One way that comes to mind to test this is to allow a new tests case which loads two drives which co depend on each other using this macro. That'll surely blow things up fast. That is, the current kmod tests uses request_module() or get_fs_type(), you'd want a new test case with this added using then two new dummy test drivers with the macro dependency.
->> > > > > >
->> > > > > > If you want to resolve this using a more tested path, you could have request_module() be used as that is currently tested. Perhaps a test patch for that can rule out if it's the macro magic which is the issue.
->> > > > > >
->> > > > > >   Luis
->> > > > >
->> > > > > Maybe issue is related to a bug in introduction of symbol namespaces, see here:
->> > > > > https://lkml.org/lkml/2019/10/11/659
->> > > >
->> > > > Can you have your user with issues either revert 8651ec01daed or apply the fixes
->> > > > mentioned by Matthias to see if that was the issue?
->> > > >
->> > > > Matthias what module did you run into which let you run into the issue
->> > > > with depmod? I ask as I think it would be wise for us to add a test case
->> > > > using lib/test_kmod.c and tools/testing/selftests/kmod/kmod.sh for the
->> > > > regression you detected.
->> > >
->> > > The depmod warning can be reproduced when using a symbol that is built
->> > > into vmlinux and used from a module. E.g. with CONFIG_USB_STORAGE=y and
->> > > CONFIG_USB_UAS=m, the symbol `usb_stor_adjust_quirks` is built in with
->> > > namespace USB_STORAGE and depmod stumbles upon this emitting the
->> > > following warning (e.g. during make modules_install).
->> > >
->> > >  depmod: WARNING: [...]/uas.ko needs unknown symbol usb_stor_adjust_quirks
->> > >
->> > > As there is another (less intrusive) way of implementing the namespace
->> > > feature, I posted a patch series [1] on last Thursday that should
->> > > mitigate the issue as the ksymtab entries depmod eventually relies on
->> > > are no longer carrying the namespace in their names.
->> > >
->> > > Cheers,
->> > > Matthias
->> > >
->> > > [1] https://lore.kernel.org/lkml/20191010151443.7399-1-maennich@google.com/
->> >
->> > Yes but kmalloc() is built-in, and used by *all* drivers compiled as
->> > modules, so why was that an issue?
->>
->> I believe you meant, "why was that *not* an issue?".
->
->Right.
->
->> In ksymtab, namespaced symbols had the format
->>
->>  __ksymtab_<NAMESPACE>.<symbol>
->>
->> while symbols without namespace would still use the old format
->>
->>  __ksymtab_<symbol>
->
->Ah, I didn't see the symbol namespace patches, good stuff!
->
->> These are also the names that are extracted into System.map (using
->> scripts/mksysmap). Depmod is reading the System.map and for symbols used
->> by modules that are in a namespace, it would not find a match as it does
->> not understand the namespace notation. Depmod would still not emit a
->> warning for symbols without namespace as their format did not change.
->
->Can we have a test case for this to ensure we don't regress on this
->again? Or put another way, what test cases were implemented for symbol
->namespaces?
+There is networking hardware that isn't based on Ethernet for layers 1 and 2.
 
-While modpost and kernel/module.c are the tests at build and runtime
-resp. to enforce proper use of symbol namespaces, I could imagine to
-test for the proper layout in the ksymtab entries (note, as mentioned
-earlier there are some fixes in flight to finalize the layout).
-In addition, I could imagine adding a test that tries to load a module
-that uses symbols from a namespace without importing it. The kernel
-should deny loading or complain about it (depending on the
-configuration). These are also some of the test cases I had when working
-on that feature. I did not implement these as automated tests though. I
-will put that on my list but help with that would be very welcome.
+For example CAN.
 
-Cheers,
-Matthias
+CAN is a multi-master serial bus standard for connecting Electronic Control
+Units [ECUs] also known as nodes. A frame on the CAN bus carries up to 8 bytes
+of payload. Frame corruption is detected by a CRC. However frame loss due to
+corruption is possible, but a quite unusual phenomenon.
+
+While fq_codel works great for TCP/IP, it doesn't for CAN. There are a lot of
+legacy protocols on top of CAN, which are not build with flow control or high
+CAN frame drop rates in mind.
+
+When using fq_codel, as soon as the queue reaches a certain delay based length,
+skbs from the head of the queue are silently dropped. Silently meaning that the
+user space using a send() or similar syscall doesn't get an error. However
+TCP's flow control algorithm will detect dropped packages and adjust the
+bandwidth accordingly.
+
+When using fq_codel and sending raw frames over CAN, which is the common use
+case, the user space thinks the package has been sent without problems, because
+send() returned without an error. pfifo_fast will drop skbs, if the queue
+length exceeds the maximum. But with this scheduler the skbs at the tail are
+dropped, an error (-ENOBUFS) is propagated to user space. So that the user
+space can slow down the package generation.
+
+On distributions, where fq_codel is made default via CONFIG_DEFAULT_NET_SCH
+during compile time, or set default during runtime with sysctl
+net.core.default_qdisc (see [1]), we get a bad user experience. In my test case
+with pfifo_fast, I can transfer thousands of million CAN frames without a frame
+drop. On the other hand with fq_codel there is more then one lost CAN frame per
+thousand frames.
+
+As pointed out fq_codel is not suited for CAN hardware, so this patch changes
+attach_one_default_qdisc() to use pfifo_fast for "ARPHRD_CAN" network devices.
+
+During transition of a netdev from down to up state the default queuing
+discipline is attached by attach_default_qdiscs() with the help of
+attach_one_default_qdisc(). This patch modifies attach_one_default_qdisc() to
+attach the pfifo_fast (pfifo_fast_ops) if the network device type is
+"ARPHRD_CAN".
+
+[1] https://github.com/systemd/systemd/issues/9194
+
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Vincent Prince <vincent.prince.fr@gmail.com>
+---
+Changes in v4: 
+ - add Marc credit to commit log
+ 
+Changes in v3:
+ - add description
+
+Changes in v2:
+ - reformat patch
+
+ net/sched/sch_generic.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 77b289d..dfb2982 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1008,6 +1008,8 @@ static void attach_one_default_qdisc(struct net_device *dev,
+ 
+ 	if (dev->priv_flags & IFF_NO_QUEUE)
+ 		ops = &noqueue_qdisc_ops;
++	else if(dev->type == ARPHRD_CAN)
++		ops = &pfifo_fast_ops;
+ 
+ 	qdisc = qdisc_create_dflt(dev_queue, ops, TC_H_ROOT, NULL);
+ 	if (!qdisc) {
+-- 
+2.7.4
 
