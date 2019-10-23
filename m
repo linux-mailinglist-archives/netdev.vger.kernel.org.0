@@ -2,145 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4DABE1457
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3B62E1459
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390321AbfJWIgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 04:36:21 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55640 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2390137AbfJWIgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:36:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571819779;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=48N02/jvRuAsgRhdv+Mi4mPU3dLRpyX+8I00gXgPOW0=;
-        b=SJszAXdGkx+tohpD5j8J3QGylMsL9CMzwlRP3Zy+y3Rgc/+yt7Swmwv1spg/UWGuL9QkAP
-        CZnAji2Qw+poPrHyFS0kW4GP+/iXQyV2bpLUwyEOYSIzbiJPsyKHuw6OXZsw6slxlgk1VO
-        CgsPe2RFVC1A7a7DxLPCN7AdWOyaNVE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-338-4xhr8qFvOJ-YzFpi8NFASg-1; Wed, 23 Oct 2019 04:36:17 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 623CC107AD31;
-        Wed, 23 Oct 2019 08:36:15 +0000 (UTC)
-Received: from krava (unknown [10.43.17.61])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 36E185DD78;
-        Wed, 23 Oct 2019 08:36:09 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 10:36:08 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 1/9] perf tools: add parse events append error
-Message-ID: <20191023083608.GC22919@krava>
-References: <20191017170531.171244-1-irogers@google.com>
- <20191023005337.196160-1-irogers@google.com>
- <20191023005337.196160-2-irogers@google.com>
+        id S2390391AbfJWIgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 04:36:33 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:36631 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390233AbfJWIgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:36:33 -0400
+Received: by mail-qk1-f193.google.com with SMTP id y189so19037700qkc.3
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 01:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9v9iQV19DgUi7HpW2WaXbL0gSupsIrn2jbWl4B5cbgA=;
+        b=GVNr3B/Pu7MhpLCF/dDljxT+FdoGWUX3wKn2/1eUXY7mn6PbLjPdBp3YQsOZ3yPYLQ
+         WSWxUBvh9cHNDXTl/XYd6WcF58ndf5Enb6Zf8GLJrDjg5QY6kDKBcRU+VbEj3gahLRg7
+         vJ9UFiG27wNkTs/40C073ctPhILdFtxNxS+6tI4RSo7/BtCENKdU3NUEzHRPNk2pkyGp
+         cKRNlEWDrcCZQOXVaRFjIaVuR+ng9CxjSsJOAjcXp+VlZYyTIbSM7X1Oxmk8LwouDTkq
+         JOfQ4gCi61/2ZVRZbGRn4D2gGe28nDUzHjiqJm8y4UqCUqMgTGv1E98tZF4saJknGme8
+         2zeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9v9iQV19DgUi7HpW2WaXbL0gSupsIrn2jbWl4B5cbgA=;
+        b=dKD51lo1a6xLjM/tzkKtkIA7voz+9L1oVE0wDksxJ11vDX1vEpOmiVpFHj8ffQEhlW
+         /0Vw4487pTtF8EbFn2xCtgByOmrptWTVebvtZ585mayWWeusI6z2f5+Xm7oa9McQOSXO
+         XbPwVG6kuOtSOE5y9hz0iLI4wDaYbpzop5astp/xICPajxyq+RyIq2kmTx/GaWlOxOEx
+         LxZTJlsG2y+n7lFJT6pXk6r42ZwQfMKiR517QbZfPRy95vCt25hJpPu3+TiTG1PxjvAI
+         8r+dXbtHZ4bL+XDkzDrP8CYV7jI1MRNNRVMsTWsbs/svYIMpcNao/P2/UDP/xOYCGpBZ
+         Dxvg==
+X-Gm-Message-State: APjAAAXLdDPqxl3M7kd9iLxB+6xlGPLA7yr2pBkOHVOCdq971l2znD/D
+        nc3ohLNYdDE7rwVYKP4snoB2TsYwaGrmvBX65XIqKA==
+X-Google-Smtp-Source: APXvYqz5/xtUvZp/vVxcL3Gonlq1fmzZz6efHYtE62iXY8lYaTgZeEKiWaOv+Rs97z8NDXNy+5/kH6MjE+IQOOktJZw=
+X-Received: by 2002:a05:620a:16a6:: with SMTP id s6mr6613669qkj.407.1571819792095;
+ Wed, 23 Oct 2019 01:36:32 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191023005337.196160-2-irogers@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: 4xhr8qFvOJ-YzFpi8NFASg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+References: <cover.1571762488.git.andreyknvl@google.com> <26e088ae3ebcaa30afe957aeabaa9f0c653df7d0.1571762488.git.andreyknvl@google.com>
+In-Reply-To: <26e088ae3ebcaa30afe957aeabaa9f0c653df7d0.1571762488.git.andreyknvl@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 23 Oct 2019 10:36:20 +0200
+Message-ID: <CACT4Y+YntxT+cpESOBvbg+h=g-84ECJwQrFg7LM5tbq_zaMd3A@mail.gmail.com>
+Subject: Re: [PATCH 3/3] vhost, kcov: collect coverage from vhost_worker
+To:     Andrey Konovalov <andreyknvl@google.com>
+Cc:     USB list <linux-usb@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Windsor <dwindsor@gmail.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 05:53:29PM -0700, Ian Rogers wrote:
-> Parse event error handling may overwrite one error string with another
-> creating memory leaks and masking errors. Introduce a helper routine
-> that appends error messages and avoids the memory leak.
-
-good idea, it became little messy with time ;-)
-some comments below
-
-thanks,
-jirka
-
-
->=20
-> Signed-off-by: Ian Rogers <irogers@google.com>
+On Tue, Oct 22, 2019 at 6:46 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+>
+> This patch adds kcov_remote_start()/kcov_remote_stop() annotations to the
+> vhost_worker() function, which is responsible for processing vhost works.
+> Since vhost_worker() threads are spawned per vhost device instance
+> the common kcov handle is used for kcov_remote_start()/stop() annotations
+> (see Documentation/dev-tools/kcov.rst for details). As the result kcov can
+> now be used to collect coverage from vhost worker threads.
+>
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 > ---
->  tools/perf/util/parse-events.c | 102 ++++++++++++++++++++++-----------
->  tools/perf/util/parse-events.h |   2 +
->  tools/perf/util/pmu.c          |  36 ++++++------
->  3 files changed, 89 insertions(+), 51 deletions(-)
->=20
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
-s.c
-> index db882f630f7e..4d42344698b8 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -182,6 +182,34 @@ static int tp_event_has_id(const char *dir_path, str=
-uct dirent *evt_dir)
-> =20
->  #define MAX_EVENT_LENGTH 512
-> =20
-> +void parse_events__append_error(struct parse_events_error *err, int idx,
-> +=09=09=09=09char *str, char *help)
-> +{
-> +=09char *new_str =3D NULL;
-> +
-> +=09WARN(!str, "WARNING: failed to provide error string");
+>  drivers/vhost/vhost.c | 6 ++++++
+>  drivers/vhost/vhost.h | 1 +
+>  2 files changed, 7 insertions(+)
+>
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 36ca2cf419bf..a5a557c4b67f 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -30,6 +30,7 @@
+>  #include <linux/sched/signal.h>
+>  #include <linux/interval_tree_generic.h>
+>  #include <linux/nospec.h>
+> +#include <linux/kcov.h>
+>
+>  #include "vhost.h"
+>
+> @@ -357,7 +358,9 @@ static int vhost_worker(void *data)
+>                 llist_for_each_entry_safe(work, work_next, node, node) {
+>                         clear_bit(VHOST_WORK_QUEUED, &work->flags);
+>                         __set_current_state(TASK_RUNNING);
+> +                       kcov_remote_start(dev->kcov_handle);
+>                         work->fn(work);
+> +                       kcov_remote_stop();
+>                         if (need_resched())
+>                                 schedule();
+>                 }
+> @@ -546,6 +549,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
+>
+>         /* No owner, become one */
+>         dev->mm = get_task_mm(current);
+> +       dev->kcov_handle = current->kcov_handle;
 
-should we also bail out if str is NULL?
+kcov_handle is not present in task_struct if !CONFIG_KCOV
 
-> +=09if (err->str) {
-> +=09=09int ret;
-> +
-> +=09=09if (err->help)
-> +=09=09=09ret =3D asprintf(&new_str,
-> +=09=09=09=09"%s (previous error: %s(help: %s))",
-> +=09=09=09=09str, err->str, err->help);
-> +=09=09else
+Also this does not use KCOV_SUBSYSTEM_COMMON.
+We discussed something along the following lines:
 
-please use {} for multiline condition legs
+u64 kcov_remote_handle(u64 subsys, u64 id)
+{
+  WARN_ON(subsys or id has wrong bits set).
+  return ...;
+}
 
-> +=09=09=09ret =3D asprintf(&new_str,
-> +=09=09=09=09"%s (previous error: %s)",
-> +=09=09=09=09str, err->str);
+kcov_remote_handle(KCOV_SUBSYSTEM_USB, bus);
+kcov_remote_handle(KCOV_SUBSYSTEM_COMMON, current->kcov_handle);
 
-does this actualy happen? could you please provide output
-of this in the changelog?
 
-> +=09=09if (ret < 0)
-> +=09=09=09new_str =3D NULL;
-> +=09=09else
-> +=09=09=09zfree(&str);
-> +=09}
-> +=09err->idx =3D idx;
-> +=09free(err->str);
-> +=09err->str =3D new_str ?: str;
-> +=09free(err->help);
-> +=09err->help =3D help;
-> +}
-> =20
-
-SNIP
-
+>         worker = kthread_create(vhost_worker, dev, "vhost-%d", current->pid);
+>         if (IS_ERR(worker)) {
+>                 err = PTR_ERR(worker);
+> @@ -571,6 +575,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
+>         if (dev->mm)
+>                 mmput(dev->mm);
+>         dev->mm = NULL;
+> +       dev->kcov_handle = 0;
+>  err_mm:
+>         return err;
+>  }
+> @@ -682,6 +687,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>         if (dev->worker) {
+>                 kthread_stop(dev->worker);
+>                 dev->worker = NULL;
+> +               dev->kcov_handle = 0;
+>         }
+>         if (dev->mm)
+>                 mmput(dev->mm);
+> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> index e9ed2722b633..a123fd70847e 100644
+> --- a/drivers/vhost/vhost.h
+> +++ b/drivers/vhost/vhost.h
+> @@ -173,6 +173,7 @@ struct vhost_dev {
+>         int iov_limit;
+>         int weight;
+>         int byte_weight;
+> +       u64 kcov_handle;
+>  };
+>
+>  bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
+> --
+> 2.23.0.866.gb869b98d4c-goog
+>
