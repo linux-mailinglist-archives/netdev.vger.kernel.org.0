@@ -2,138 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF89E14BA
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:51:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ED13E14C8
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390618AbfJWIu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 04:50:59 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50092 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2390607AbfJWIu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:50:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571820657;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YI79mYRt92nE/8ezIrvSVBz+DsF7BXp0cmzQIdyUOA4=;
-        b=A9JPW8X1gyhQlw1429QsJESpF/kqz0g/6vhvKdim+s6QBKYHMh60D4ZKvF+FlPTqpnj5Iy
-        nIF6FCOYeh3gW+34+KKReYjri2cyUvCs85UBS4/IynnYF+bH2GlHA1ftp8ZZe8VFoieCmM
-        OzbHvHxiFt84g/VoTIv0ZCvuQsdlac8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-211-U6V1Un5eMgiryiQC6QiOAw-1; Wed, 23 Oct 2019 04:50:53 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2390314AbfJWIyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 04:54:03 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40784 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390034AbfJWIyC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 04:54:02 -0400
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A5BD0476;
-        Wed, 23 Oct 2019 08:50:50 +0000 (UTC)
-Received: from krava (unknown [10.43.17.61])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 9C56C1001DC2;
-        Wed, 23 Oct 2019 08:50:46 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 10:50:45 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
+        by mx1.redhat.com (Postfix) with ESMTPS id 45AE27FDF0
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 08:54:02 +0000 (UTC)
+Received: by mail-lj1-f197.google.com with SMTP id v24so3469010ljh.23
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 01:54:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=SiOV7Z57BQOyO4TO81ImQ+ZItl6n4Wr0rKFozym1WTA=;
+        b=MYIusOgkNsDSZ1He2amyChDV/ZVHk1auNVxQALUNU+mGpRZfRKVfv0jV1KtUE2+1Go
+         2Rfyawopa0Ls8K4U/hTC2jFzLfToXkfFBt197IhYFJKNHccKhX8ltrghViXIeysO+zjx
+         1PekP7AejZf8dg9fYiuurdI0eED0Dw0eKvFlIcfmycyPteJ9loXFj5edQJ7lR0PgAA8u
+         PBAk0XsTqfmBvKrtQEbX7NCHbN00isYY5LjFx2CQPhus0YWtSw/NFmNhXqUc2LE/DBtw
+         cuWfm6G8fksN/9XQUvHhN9eq9QC18+6dPuoRI3VlArmUEPHD6M+LahXfWjuGLhbGEzee
+         H8+Q==
+X-Gm-Message-State: APjAAAW5u/KuuAlzLLhlc0KS8J5UDaUReuuuVIhbPBwfX3+imlwsMzoR
+        3QTSS+YUhL7mvygpAD08ZBNM/klPkBXHEHXu0ZF79hLgx6wiTBfJoZXf9TR8YkALMx5UL13HMp5
+        +6pH5OTOGUcVzRGs/
+X-Received: by 2002:a2e:b813:: with SMTP id u19mr12953890ljo.23.1571820840810;
+        Wed, 23 Oct 2019 01:54:00 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyobnfOcMs9qyrsH6twatdI07hRD8+v4F8xIsrtdZGqRcE6ZD2vOM4RLnQMb2iT92smAPx2LA==
+X-Received: by 2002:a2e:b813:: with SMTP id u19mr12953875ljo.23.1571820840604;
+        Wed, 23 Oct 2019 01:54:00 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id e8sm5898469ljf.1.2019.10.23.01.53.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Oct 2019 01:53:59 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 13BA01804B1; Wed, 23 Oct 2019 10:53:59 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 3/9] perf tools: ensure config and str in terms are
- unique
-Message-ID: <20191023085045.GE22919@krava>
-References: <20191017170531.171244-1-irogers@google.com>
- <20191023005337.196160-1-irogers@google.com>
- <20191023005337.196160-4-irogers@google.com>
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 2/3] libbpf: Support configurable pinning of maps from BTF annotations
+In-Reply-To: <CAEf4BzY-buKFadzzAKpCdjAZ+1_UwSpQobdRH7yQn_fFXQYX0w@mail.gmail.com>
+References: <157175668770.112621.17344362302386223623.stgit@toke.dk> <157175668991.112621.14204565208520782920.stgit@toke.dk> <CAEf4BzaM32j4iLhvcuwMS+dPDBd52KwviwJuoAwVVr8EwoRpHA@mail.gmail.com> <875zkgobf3.fsf@toke.dk> <CAEf4BzY-buKFadzzAKpCdjAZ+1_UwSpQobdRH7yQn_fFXQYX0w@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 23 Oct 2019 10:53:58 +0200
+Message-ID: <87r233n8pl.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20191023005337.196160-4-irogers@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: U6V1Un5eMgiryiQC6QiOAw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 05:53:31PM -0700, Ian Rogers wrote:
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-SNIP
+>> > 4. Once pinned, map knows its pinned path, just use that, I don't see
+>> > any reasonable use case where you'd want to override path just for
+>> > unpinning.
+>>
+>> Well, unpinning may need to re-construct the pin path. E.g.,
+>> applications that exit after loading and are re-run after unloading,
+>> such as iproute2, probably want to be able to unpin maps. Unfortunately
+>> I don't think there is a way to get the pin path(s) of an object from
+>> the kernel, though, is there? That would be kinda neat for implementing
+>> something like `ip link set dev eth0 xdp off unpin`.
+>
+> Hm... It seems to me that if application exits and another instance
+> starts, it should generate pin path using the same logic, then check
+> if map is already pinned. Then based on settings, either reuse or
+> unpin first. Either way, pin_path needs to be calculated from map
+> attributes, not "guessed" by application.
 
->  =09=09=09=09=09return -1;
-> +=09=09=09=09}
->  =09=09=09=09list_add_tail(&term->list, head);
-> =20
->  =09=09=09=09if (!parse_events_add_pmu(parse_state, list,
->  =09=09=09=09=09=09=09  pmu->name, head,
->  =09=09=09=09=09=09=09  true, true)) {
-> -=09=09=09=09=09pr_debug("%s -> %s/%s/\n", str,
-> +=09=09=09=09=09pr_debug("%s -> %s/%s/\n", config,
->  =09=09=09=09=09=09 pmu->name, alias->str);
->  =09=09=09=09=09ok++;
->  =09=09=09=09}
-> @@ -1462,8 +1472,10 @@ int parse_events_multi_pmu_add(struct parse_events=
-_state *parse_state,
->  =09=09=09}
->  =09=09}
->  =09}
-> -=09if (!ok)
-> +=09if (!ok) {
-> +=09=09free(list);
->  =09=09return -1;
-> +=09}
->  =09*listp =3D list;
->  =09return 0;
->  }
-> @@ -2761,13 +2773,13 @@ int parse_events_term__sym_hw(struct parse_events=
-_term **term,
->  =09struct parse_events_term temp =3D {
->  =09=09.type_val  =3D PARSE_EVENTS__TERM_TYPE_STR,
->  =09=09.type_term =3D PARSE_EVENTS__TERM_TYPE_USER,
-> -=09=09.config    =3D config ?: (char *) "event",
-> +=09=09.config    =3D config ?: strdup("event"),
+Yeah, ideally. However, the bpf object file may not be available (it's
+not for iproute2, for instance). I'm not sure there's really anything we
+*can* do about that, though, other than have the application guess.
+Unless we add more state to the kernel.
 
-there's no check if this succeeds
+Would it make sense to store the fact that a map was auto-pinned as a
+flag in the kernel map info? That way, an application could read that
+flag along with the name and go looking in /sys/fs/bpf.
 
->  =09};
-> =20
->  =09BUG_ON(idx >=3D PERF_COUNT_HW_MAX);
->  =09sym =3D &event_symbols_hw[idx];
-> =20
-> -=09return new_term(term, &temp, (char *) sym->symbol, 0);
-> +=09return new_term(term, &temp, strdup(sym->symbol), 0);
->  }
-> =20
->  int parse_events_term__clone(struct parse_events_term **new,
-> @@ -2776,12 +2788,15 @@ int parse_events_term__clone(struct parse_events_=
-term **new,
->  =09struct parse_events_term temp =3D {
->  =09=09.type_val  =3D term->type_val,
->  =09=09.type_term =3D term->type_term,
-> -=09=09.config    =3D term->config,
-> +=09=09.config    =3D term->config ? strdup(term->config) : NULL,
+Hmm, but I guess it could do that anyway; so maybe what we need is just
+a "try to find all pinned maps of this program" function? That could
+then to something like:
 
-ditto
+- Get the maps IDs and names of all maps attached to that program from
+  the kernel.
 
-also how is this released when term is freed?
+- Look for each map name in /sys/fs/bpf
 
-thanks,
-jirka
+- If a pinned map with the same name exists, compare the IDs, and unlink
+  if they match
 
+I don't suppose it'll be possible to do all that in a race-free manner,
+but that would go for any use of unlink() unless I'm missing something?
+
+-Toke
