@@ -2,136 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D60E147F
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:41:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36527E148E
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390412AbfJWIkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 04:40:52 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:52524 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390298AbfJWIkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:40:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571820050;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Leo1i+YgTzOAxyY1K0L+NX63hVj5HiYTBpizOFvje2U=;
-        b=C8i4c9owWLo9ELGFMx0EgsC5LvJTAmpyeUaS34sSBa41veIUd7TE1CiY+lujUsQazKtoMr
-        /5vCjW72xS8UELAKiJvXqzvq+qohN8bEf7rvy5MoJWW2pXttCSH6oy+5Lhb9cpBSL5vOXO
-        UjfheVFNaVEZDVgMG+iEv2byU4pE2Ys=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-182-apkC9BGkO-e0K5zNBfDeLA-1; Wed, 23 Oct 2019 04:40:46 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 44F761800D6B;
-        Wed, 23 Oct 2019 08:40:44 +0000 (UTC)
-Received: from krava (unknown [10.43.17.61])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 1FEE360BE1;
-        Wed, 23 Oct 2019 08:40:39 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 10:40:39 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 2/9] perf tools: splice events onto evlist even on
- error
-Message-ID: <20191023084039.GD22919@krava>
-References: <20191017170531.171244-1-irogers@google.com>
- <20191023005337.196160-1-irogers@google.com>
- <20191023005337.196160-3-irogers@google.com>
+        id S2390494AbfJWIpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 04:45:22 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44655 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390410AbfJWIpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:45:22 -0400
+Received: by mail-wr1-f68.google.com with SMTP id z9so21066144wrl.11
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 01:45:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aG/MrLORZBT7UubvhJbOuhcVKCxEQRUmmMmHQznSCQk=;
+        b=umjEnenzd5B+VeYr5sP+5dyV64ewbINkShMYTSjd2lXP3sXTUTNaHpBb3caY6/24o7
+         a88Nun64BRUwK7L7vg+KHe3Ta3Qcdyp4Chk0HGposMnSC3wtersbZxvuTSCqhJ/nud+J
+         KHs6iysHIeK2uD/LKeVni53yibICOkQ/h1qIOqP3/zNB5ipczf2uPEBwpLrXeSr0gI0e
+         hoauUTQ7OUpBf7w3TvTD+rj5xr92BpHyj/KznboTxdNq4OpJ03uDkzA5driiLstlVbTz
+         hY4cYNl/nb/fah07hPonLOHRGfr5jaTJzkMiyp0nyaorIcvqGLdp0HpC9gMd4E3jM9V+
+         fuUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aG/MrLORZBT7UubvhJbOuhcVKCxEQRUmmMmHQznSCQk=;
+        b=aMDxYbWS46ojohQ/2UroOPnUZnJdox9XY1jhHja50UlTNlBfKsWrGLJ5gY01xfSPmw
+         un4YOl4SlPj/zZNtgO8XHMlB0rsPzbGacUOQF523VQg+7waNeDlybwK2dlgWVuJfjWiz
+         wsQyFVNv/JeNtPKZs26QhXmymyPvEHpB01w7CFbJPxCdjUK/GA+H0hi9gFGKHop/5+Nw
+         2y/bQgKQbmmHPXZUn9M+OY0HUFxrfZSGtYjyranWfDL0h7acCpx33UCG4dxe00LhFTA7
+         a74paW+H0oLpuO3D9GMi/aVC+1EzpeCgGyeZdrvqZ29sydAX4F0c4rUJm3RKR+lOt7XI
+         nhjA==
+X-Gm-Message-State: APjAAAV7Xdqumt3PERFprf8pOjsauGH4yUS3Ud/HTyz9SJMzAOoWiTyN
+        ekmlh6C1ITItjgpQVmxjf37+Bg==
+X-Google-Smtp-Source: APXvYqyoVSRTTAYm+hOUzpNqh9xWy5ya6C2yETdl6/IPqn3db12HN5256TQz1VFpzESNxWljcDGezQ==
+X-Received: by 2002:adf:e4c3:: with SMTP id v3mr7278313wrm.220.1571820318800;
+        Wed, 23 Oct 2019 01:45:18 -0700 (PDT)
+Received: from apalos.home (ppp-94-65-92-5.home.otenet.gr. [94.65.92.5])
+        by smtp.gmail.com with ESMTPSA id 5sm29997727wrk.86.2019.10.23.01.45.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Oct 2019 01:45:18 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 11:45:15 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH net-next 3/4] page_pool: Restructure
+ __page_pool_put_page()
+Message-ID: <20191023084515.GA3726@apalos.home>
+References: <20191022044343.6901-1-saeedm@mellanox.com>
+ <20191022044343.6901-4-saeedm@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20191023005337.196160-3-irogers@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: apkC9BGkO-e0K5zNBfDeLA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20191022044343.6901-4-saeedm@mellanox.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 05:53:30PM -0700, Ian Rogers wrote:
-> If event parsing fails the event list is leaked, instead splice the list
-> onto the out result and let the caller cleanup.
->=20
-> Signed-off-by: Ian Rogers <irogers@google.com>
+On Tue, Oct 22, 2019 at 04:44:24AM +0000, Saeed Mahameed wrote:
+> From: Jonathan Lemon <jonathan.lemon@gmail.com>
+> 
+> 1) Rename functions to reflect what they are actually doing.
+> 
+> 2) Unify the condition to keep a page.
+> 
+> 3) When page can't be kept in cache, fallback to releasing page to page
+> allocator in one place, instead of calling it from multiple conditions,
+> and reuse __page_pool_return_page().
+> 
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 > ---
->  tools/perf/util/parse-events.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
->=20
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
-s.c
-> index 4d42344698b8..a8f8801bd127 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -1962,15 +1962,20 @@ int parse_events(struct evlist *evlist, const cha=
-r *str,
-> =20
->  =09ret =3D parse_events__scanner(str, &parse_state, PE_START_EVENTS);
->  =09perf_pmu__parse_cleanup();
+>  net/core/page_pool.c | 38 +++++++++++++++++++-------------------
+>  1 file changed, 19 insertions(+), 19 deletions(-)
+> 
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 8120aec999ce..65680aaa0818 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -258,6 +258,7 @@ static bool __page_pool_recycle_into_ring(struct page_pool *pool,
+>  				   struct page *page)
+>  {
+>  	int ret;
 > +
-
-I dont understand.. is there something on the list in case we fail?
-
-> +=09if (list_empty(&parse_state.list)) {
-> +=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
-> +=09=09return -1;
-> +=09}
-
-this will display extra warning message for fail case:
-
-[jolsa@krava perf]$ ./perf record -e krava ls
-WARNING: event parser found nothing
-event syntax error: 'krava'
-                     \___ parser error
-
-we don't want that
-
-jirka
-
+>  	/* BH protection not needed if current is serving softirq */
+>  	if (in_serving_softirq())
+>  		ret = ptr_ring_produce(&pool->ring, page);
+> @@ -272,8 +273,8 @@ static bool __page_pool_recycle_into_ring(struct page_pool *pool,
+>   *
+>   * Caller must provide appropriate safe context.
+>   */
+> -static bool __page_pool_recycle_direct(struct page *page,
+> -				       struct page_pool *pool)
+> +static bool __page_pool_recycle_into_cache(struct page *page,
+> +					   struct page_pool *pool)
+>  {
+>  	if (unlikely(pool->alloc.count == PP_ALLOC_CACHE_SIZE))
+>  		return false;
+> @@ -283,15 +284,18 @@ static bool __page_pool_recycle_direct(struct page *page,
+>  	return true;
+>  }
+>  
+> -/* page is NOT reusable when:
+> - * 1) allocated when system is under some pressure. (page_is_pfmemalloc)
+> - * 2) belongs to a different NUMA node than pool->p.nid.
+> +/* Keep page in caches only if page:
+> + * 1) wasn't allocated when system is under some pressure (page_is_pfmemalloc).
+> + * 2) belongs to pool's numa node (pool->p.nid).
+> + * 3) refcount is 1 (owned by page pool).
+>   *
+>   * To update pool->p.nid users must call page_pool_update_nid.
+>   */
+> -static bool pool_page_reusable(struct page_pool *pool, struct page *page)
+> +static bool page_pool_keep_page(struct page_pool *pool, struct page *page)
+>  {
+> -	return !page_is_pfmemalloc(page) && page_to_nid(page) == pool->p.nid;
+> +	return !page_is_pfmemalloc(page) &&
+> +	       page_to_nid(page) == pool->p.nid &&
+> +	       page_ref_count(page) == 1;
+>  }
+>  
+>  void __page_pool_put_page(struct page_pool *pool,
+> @@ -300,22 +304,19 @@ void __page_pool_put_page(struct page_pool *pool,
+>  	/* This allocator is optimized for the XDP mode that uses
+>  	 * one-frame-per-page, but have fallbacks that act like the
+>  	 * regular page allocator APIs.
+> -	 *
+> -	 * refcnt == 1 means page_pool owns page, and can recycle it.
+>  	 */
+> -	if (likely(page_ref_count(page) == 1 &&
+> -		   pool_page_reusable(pool, page))) {
 > +
-> +=09/*
-> +=09 * Add list to the evlist even with errors to allow callers to clean =
-up.
-> +=09 */
-> +=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
+> +	if (likely(page_pool_keep_page(pool, page))) {
+>  		/* Read barrier done in page_ref_count / READ_ONCE */
+>  
+>  		if (allow_direct && in_serving_softirq())
+> -			if (__page_pool_recycle_direct(page, pool))
+> +			if (__page_pool_recycle_into_cache(page, pool))
+>  				return;
+>  
+> -		if (!__page_pool_recycle_into_ring(pool, page)) {
+> -			/* Cache full, fallback to free pages */
+> -			__page_pool_return_page(pool, page);
+> -		}
+> -		return;
+> +		if (__page_pool_recycle_into_ring(pool, page))
+> +			return;
 > +
->  =09if (!ret) {
->  =09=09struct evsel *last;
-> =20
-> -=09=09if (list_empty(&parse_state.list)) {
-> -=09=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
-> -=09=09=09return -1;
-> -=09=09}
-> -
-> -=09=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
->  =09=09evlist->nr_groups +=3D parse_state.nr_groups;
->  =09=09last =3D evlist__last(evlist);
->  =09=09last->cmdline_group_boundary =3D true;
-> --=20
-> 2.23.0.866.gb869b98d4c-goog
->=20
+> +		/* Cache full, fallback to return pages */
+>  	}
+>  	/* Fallback/non-XDP mode: API user have elevated refcnt.
+>  	 *
+> @@ -330,8 +331,7 @@ void __page_pool_put_page(struct page_pool *pool,
+>  	 * doing refcnt based recycle tricks, meaning another process
+>  	 * will be invoking put_page.
+>  	 */
+> -	__page_pool_clean_page(pool, page);
+> -	put_page(page);
+> +	__page_pool_return_page(pool, page);
 
+I think Jesper had a reason for calling them separately instead of 
+__page_pool_return_page + put_page() (which in fact does the same thing). 
+
+In the future he was planning on removing the __page_pool_clean_page call from
+there, since someone might call __page_pool_put_page() after someone has called
+__page_pool_clean_page()
+Can we leave the calls there as-is?
+
+>  }
+>  EXPORT_SYMBOL(__page_pool_put_page);
+>  
+> -- 
+> 2.21.0
+> 
+
+Thanks
+/Ilias
