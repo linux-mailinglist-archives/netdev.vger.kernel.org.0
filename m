@@ -2,96 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D630E1F46
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:27:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 268D9E1F5E
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:32:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392441AbfJWP0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 11:26:48 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37072 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732725AbfJWP0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 11:26:47 -0400
-Received: by mail-pg1-f193.google.com with SMTP id p1so12358957pgi.4;
-        Wed, 23 Oct 2019 08:26:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=eB8tBI6yDFyKa7RDqC5m4uIkOsXMXVXVRZ+cXb0whiI=;
-        b=bt4/svf29WjLyXtdV/XTOBIt3Q+Q3s0L4pf6nH3frdrJltuIWuw4kc/D/yHT03/yIX
-         33R2LmJhWwWva9Xr8g1JiQioza0GRzkJR5kwSYBehMSTr6pPXkLoYe5nLkH+lBwCGEIX
-         MypnYI93gJIiuc8vfZp0v7Sv9HbsQAxrNPbtqI5RJug8YWy5fBH6+/Hh8gu/Zl1ts2SL
-         hUH6OjfLrxhIeh4vk2bAyJG/eY99dZOKtP7ZxjYUqFainhP7jWoQxf1vmiYjQs/ykAS2
-         j9JZeVzb63Au67+2PiAPVjMSS53I8Q9WrYNQzDfXU8hssZp8Z68uNKnaIgK+qMMT1pBN
-         Kq7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=eB8tBI6yDFyKa7RDqC5m4uIkOsXMXVXVRZ+cXb0whiI=;
-        b=juefXAIBklvnl7Nxts54rXFqPVG7jTvjl7862ftwLeAh1VHqGNdxRAJoNsnV9lacfg
-         OOw4mMBgcNHDnNOzVaqVi5vn1dXd1gsovyOp4AywB3lJrJB5tJNTQzJXUEEAsszT0Pcq
-         2Jib3v5VX5AIo34d7+kH/UZv/Oa95G1adaNXdcb6JjIabutW8izVKyVpqm58r7PzDeG5
-         5egSjNkuLanL025F8iLO/cQPh7PfsrSCRTlfmDCpQ1q5KaomyxE45BCVNAzUsZhzuTjZ
-         TWGeMV6KyTwIN4Zmm2bSvqiO1N6CIzeGPJtelPFPKzVKhIA9Iznel6QXuoRx/rmrPNKr
-         X5fQ==
-X-Gm-Message-State: APjAAAVGR7xeUpSQe7AGuhoKpjehuNkQJdD2Yc6Q8H4XOLpgmG8gNFEQ
-        tUbpbLl9S5Nd1CezntQlHOo=
-X-Google-Smtp-Source: APXvYqyIu2N5oOaT8KT0563kjSMOnaymaWdlyH/6wjqSwBA6M7dEp0dcvB2RactEHhIT3daWCrVzyQ==
-X-Received: by 2002:a62:8248:: with SMTP id w69mr11477291pfd.236.1571844405770;
-        Wed, 23 Oct 2019 08:26:45 -0700 (PDT)
-Received: from nishad ([106.51.232.103])
-        by smtp.gmail.com with ESMTPSA id k17sm32510265pgh.30.2019.10.23.08.26.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 23 Oct 2019 08:26:45 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 20:56:38 +0530
-From:   Nishad Kamdar <nishadkamdar@gmail.com>
-To:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: Use the correct style for SPDX License
- Identifier
-Message-ID: <20191023152634.GA3749@nishad>
+        id S2406693AbfJWPb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 11:31:57 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:34934 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2392472AbfJWPb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 11:31:57 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9NFVcse030599
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 08:31:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=3gSEhCIBvjjkZbkrS5bUTT6nMURqZ9/bsxeKNWAC/h0=;
+ b=SprUEobVJPrfMfVyPq5u54XXmVgDrNG3kM255VPJr4Lmnu99SvP6swVUc1Uq1FrB7AZa
+ Oq+PqlbBJcgmBfTTLLSeUWUZVgtvEGE+Ni3XuhlP4UUZD/A63+qeh0eUg6H1x2p0mTTj
+ wrrcN8gxUX58Lps50vMo+mT27m0bICVqyJA= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vt9td3v0y-9
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 08:31:55 -0700
+Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 23 Oct 2019 08:31:43 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id A62458619EE; Wed, 23 Oct 2019 08:31:41 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next] selftests/bpf: fix LDLIBS order
+Date:   Wed, 23 Oct 2019 08:31:28 -0700
+Message-ID: <20191023153128.3486140-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-23_04:2019-10-23,2019-10-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ mlxscore=0 bulkscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
+ impostorscore=0 clxscore=1015 spamscore=0 phishscore=0 suspectscore=8
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910230154
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch corrects the SPDX License Identifier style in
-header file related to ethernet driver for Cortina Gemini
-devices. For C header files Documentation/process/license-rules.rst
-mandates C-like comments (opposed to C source files where
-C++ style should be used)
+Order of $(LDLIBS) matters to linker, so put it after all the .o and .a
+files.
 
-Changes made by using a script provided by Joe Perches here:
-https://lkml.org/lkml/2019/2/7/46.
-
-Suggested-by: Joe Perches <joe@perches.com>
-Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+Fixes: 74b5a5968fe8 ("selftests/bpf: Replace test_progs and test_maps w/ general rule")
+Reported-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/ethernet/cortina/gemini.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/bpf/Makefile | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/cortina/gemini.h b/drivers/net/ethernet/cortina/gemini.h
-index 0b12f89bf89a..9fdf77d5eb37 100644
---- a/drivers/net/ethernet/cortina/gemini.h
-+++ b/drivers/net/ethernet/cortina/gemini.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0
-+/* SPDX-License-Identifier: GPL-2.0 */
- /* Register definitions for Gemini GMAC Ethernet device driver
-  *
-  * Copyright (C) 2006 Storlink, Corp.
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 11ff34e7311b..ca40655edde7 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -231,14 +231,14 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
+ 		      $(TRUNNER_EXTRA_HDRS)				\
+ 		      $(TRUNNER_BPF_OBJS)				\
+ 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+-	cd $$(@D) && $$(CC) $$(CFLAGS) $$(LDLIBS) -c $(CURDIR)/$$< -o $$(@F)
++	cd $$(@D) && $$(CC) $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
+ 
+ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+ 		       %.c						\
+ 		       $(TRUNNER_EXTRA_HDRS)				\
+ 		       $(TRUNNER_TESTS_HDR)				\
+ 		       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+-	$$(CC) $$(CFLAGS) $$(LDLIBS) -c $$< -o $$@
++	$$(CC) $$(CFLAGS) -c $$< $$(LDLIBS) -o $$@
+ 
+ $(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_FILES) | $(TRUNNER_OUTPUT)
+ ifneq ($2,)
+@@ -249,7 +249,7 @@ endif
+ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
+ 			     $(TRUNNER_EXTRA_OBJS) $$(BPFOBJ)		\
+ 			     | $(TRUNNER_BINARY)-extras
+-	$$(CC) $$(CFLAGS) $$(LDLIBS) $$(filter %.a %.o,$$^) -o $$@
++	$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
+ 
+ endef
+ 
+@@ -303,7 +303,7 @@ verifier/tests.h: verifier/*.c
+ 		  echo '#endif' \
+ 		) > verifier/tests.h)
+ $(OUTPUT)/test_verifier: test_verifier.c verifier/tests.h $(BPFOBJ) | $(OUTPUT)
+-	$(CC) $(CFLAGS) $(LDLIBS) $(filter %.a %.o %.c,$^) -o $@
++	$(CC) $(CFLAGS) $(filter %.a %.o %.c,$^) $(LDLIBS) -o $@
+ 
+ EXTRA_CLEAN := $(TEST_CUSTOM_PROGS)					\
+ 	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
 -- 
 2.17.1
 
