@@ -2,131 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB2DE223D
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 20:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A1D1E223F
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 20:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733125AbfJWSBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 14:01:03 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51536 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727064AbfJWSBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 14:01:02 -0400
-Received: by mail-wm1-f66.google.com with SMTP id q70so15096410wme.1
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 11:01:01 -0700 (PDT)
+        id S2387547AbfJWSBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 14:01:12 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35836 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387516AbfJWSBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 14:01:11 -0400
+Received: by mail-qt1-f194.google.com with SMTP id m15so33668126qtq.2
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 11:01:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        d=ziepe.ca; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=QOrRgBSXpKlQbq6/XicVegpjHbS0n3UmJLpAj4QLq40=;
-        b=VNeFRUAxmOAgNGJxcnbD6ZhmgZLedJxbfGqZSPtYqNoed4gFKhPHdPGjnpMqbscH1m
-         Mo4irZt3HVrKp9k+B0toVSTxl0iCzG9YdqHr68gYdBliPNQ0Oxr7j/B66X5NpZJcAycw
-         vv+GnwakB5+NJEo5qa+SLodKtzdnw5s+MwzDh0JpLSeVSI8i4JJrUbYZR6wvI1yjVep5
-         SVLUOA3J/24T6ssZlQqBofwNLO+Y1yN9gca9Um20XOEu1Wcj0do1YY8NbxB13hvaHJ7c
-         ILxMqXpjKGaBOAu1q7Hja62cfCY5MpopgexHa8TK6mZymO3TgGbN5ghaE7dNQJoNdJ2+
-         1tDQ==
+        bh=NQ6tKgTGVcyRqL0Uez6+bIGFAD/xWLx1fHm590a6YIQ=;
+        b=jtFkd7hTl76drrjU8sdI7bunECUCsC8ktafivS+U7bIYhMIJ+zS0iQCa3pXpQdQ6eq
+         ypwkFXGe4dLgpYRMYpPvbMkx0zuXvfkS+rPNPyiXP2K50Ttg65B6sgq7QNUc7J3mH4Dv
+         zGw/uJhn1LK8R0ihpu7IwnJcBNJliEsP7HZ+Q48B2QVZRS68WSoXfAfZaaKnNl4RbgZk
+         jfkt2oBLSBKBbMoszkfCf3BkrStERShu88Uqhweb9o4W+jaGr4JzXe1FZhlMy5ArvlM2
+         QasjfUN1oOuG8HVPAln2AC9gJJWL0NOCcH5jvTrQnYGFo4pT+wVlg5LNR43krehTP0yD
+         JYCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QOrRgBSXpKlQbq6/XicVegpjHbS0n3UmJLpAj4QLq40=;
-        b=sgDumSWcvDRWJpiXJJKaghyGDHE5srR/P5KevnPEDMAzXRj0Eb7mWVgVsNomh21Uam
-         S8mdX9ns2frRfouhczXjVqgI6GwgctfxAb3pQHMm2QSqeg+hw8t4ZUttEnlBII2RjOml
-         IEwRwVMC2gzxzDGXwMfLaJkTjbKc5MWwiEZhy3mMTy7TXk2/tQ7+HpBt17TFXaq/E9qx
-         /o2Ny2WWhQuqipCO9ufzGrKQPtTnMElQNU4JihWxwf9/llJauFH8YKH96YypTJRMUbqK
-         0+lOerzTGBKWsQ1zYjypEcAooqhz+5yyRpulAW8JVnepNoGCnPVI23/lM2JOHSlpk4zf
-         iUHg==
-X-Gm-Message-State: APjAAAVi4DQ/8LhlIrkSRczL6KBF5fNLiRdlB54xLxyyzPN+AmcAAAil
-        MhMwZ440mpYGYA2O/Cgmte4MWg==
-X-Google-Smtp-Source: APXvYqxhJKnIt4vnRz8xIvPoBaQQL00qw5ItbjGIY1qR+2bAAiQXfPljx2AgDeTXCRC93th0RnSKqg==
-X-Received: by 2002:a1c:9e0d:: with SMTP id h13mr988724wme.136.1571853660319;
-        Wed, 23 Oct 2019 11:01:00 -0700 (PDT)
-Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id d199sm13125872wmd.35.2019.10.23.11.00.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 11:00:59 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 20:00:58 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Paul Blakey <paulb@mellanox.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/4] bonding: balance ICMP echoes in layer3+4
- mode
-Message-ID: <20191023180057.GC28355@netronome.com>
-References: <20191021200948.23775-1-mcroce@redhat.com>
- <20191021200948.23775-5-mcroce@redhat.com>
- <20191023100132.GD8732@netronome.com>
- <CAGnkfhy1rsm0Dp_jsuHhfXY0kzMc_hShYmYSX=X8=q-HMtNczg@mail.gmail.com>
+        bh=NQ6tKgTGVcyRqL0Uez6+bIGFAD/xWLx1fHm590a6YIQ=;
+        b=lwk6tOiw95K12Dz8N4Jm/9Dbp/xHUbXIDACBDRkMdv0HwBLXgnsymWPYZbQHlKfTke
+         3bCpFAT00CDYlpR4h9wJ7rDKFOWQxkI/37BjYwJ87vqwS/4EnoOnl1GQ3iUkxsTI5Cnq
+         KVt/bLt9ca8eQEA+toBm1LWf4ku4Rzbl64mjj3JZqib+8LfqtaB+xTO2diXTaypV6jo6
+         xSfqzADKO5l/CPRqouhty5dh995OgtyHPK5lhawzx/yTHzHYmxOw/+EbXjyL1i9XDXmx
+         CxbXqv4rq02GwxcpYQBtBpgt8KPbT/PPrRp9/E+YUR9yJFN6nzQGD6roLkGK37/sPvpq
+         XIsA==
+X-Gm-Message-State: APjAAAUMBOFWf2vx0JmxkyRq3RFD3lHZO4076RyEtbEk1+y+YjkICWjj
+        zkNSC6rGTf6l2qiuu+QUW0Lefg==
+X-Google-Smtp-Source: APXvYqzbUVVpjQLD1S33F3Se+dUpl1cwA2mMXn+N9c27dQBJQnj92hcffr8ioNzWSaQQcv+3ilUqbg==
+X-Received: by 2002:a0c:9adf:: with SMTP id k31mr2446593qvf.126.1571853670122;
+        Wed, 23 Oct 2019 11:01:10 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id y29sm11774227qtc.8.2019.10.23.11.01.09
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 23 Oct 2019 11:01:09 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iNKwX-0006KT-0c; Wed, 23 Oct 2019 15:01:09 -0300
+Date:   Wed, 23 Oct 2019 15:01:09 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Ertman, David M" <david.m.ertman@intel.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device
+ to provide RDMA
+Message-ID: <20191023180108.GQ23952@ziepe.ca>
+References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
+ <20190926164519.10471-2-jeffrey.t.kirsher@intel.com>
+ <20190926180556.GB1733924@kroah.com>
+ <7e7f6c159de52984b89c13982f0a7fd83f1bdcd4.camel@intel.com>
+ <20190927051320.GA1767635@kroah.com>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
+ <20191023174448.GP23952@ziepe.ca>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAGnkfhy1rsm0Dp_jsuHhfXY0kzMc_hShYmYSX=X8=q-HMtNczg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 06:58:16PM +0200, Matteo Croce wrote:
-> On Wed, Oct 23, 2019 at 12:01 PM Simon Horman
-> <simon.horman@netronome.com> wrote:
-> >
-> > On Mon, Oct 21, 2019 at 10:09:48PM +0200, Matteo Croce wrote:
-> > > The bonding uses the L4 ports to balance flows between slaves.
-> > > As the ICMP protocol has no ports, those packets are sent all to the
-> > > same device:
-> > >
-> > >     # tcpdump -qltnni veth0 ip |sed 's/^/0: /' &
-> > >     # tcpdump -qltnni veth1 ip |sed 's/^/1: /' &
-> > >     # ping -qc1 192.168.0.2
-> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 315, seq 1, length 64
-> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 315, seq 1, length 64
-> > >     # ping -qc1 192.168.0.2
-> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 316, seq 1, length 64
-> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 316, seq 1, length 64
-> > >     # ping -qc1 192.168.0.2
-> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 317, seq 1, length 64
-> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 317, seq 1, length 64
-> > >
-> > > But some ICMP packets have an Identifier field which is
-> > > used to match packets within sessions, let's use this value in the hash
-> > > function to balance these packets between bond slaves:
-> > >
-> > >     # ping -qc1 192.168.0.2
-> > >     0: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 303, seq 1, length 64
-> > >     0: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 303, seq 1, length 64
-> > >     # ping -qc1 192.168.0.2
-> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 304, seq 1, length 64
-> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 304, seq 1, length 64
-> > >
-> > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> >
-> > I see where this patch is going but it is unclear to me what problem it is
-> > solving. I would expect ICMP traffic to be low volume and thus able to be
-> > handled by a single lower-device of a bond.
-> >
-> > ...
+On Wed, Oct 23, 2019 at 05:55:38PM +0000, Ertman, David M wrote:
+> > Did any resolution happen here? Dave, do you know what to do to get Greg's
+> > approval?
+> > 
+> > Jason
 > 
-> Hi,
+> This was the last communication that I saw on this topic.  I was taking Greg's silence as
+> "Oh ok, that works" :)  I hope I was not being too optimistic!
 > 
-> The problem is not balancing the volume, even if it could increase due
-> to IoT devices pinging some well known DNS servers to check for
-> connection.
-> If a bonding slave is down, people using pings to check for
-> connectivity could fail to detect a broken link if all the packets are
-> sent to the alive link.
-> Anyway, although I didn't measure it, the computational overhead of
-> this changeset should be minimal, and only affect ICMP packets when
-> the ICMP dissector is used.
+> If there is any outstanding issue I am not aware of it, but please let me know if I am 
+> out of the loop!
+> 
+> Greg, if you have any other concerns or questions I would be happy to address them! 
 
-So the idea is that by using different id values ping could be used
-to probe all lower-devices of a bond? If so then I understand why
-you want this and have no particular objection.
+I was hoping to hear Greg say that taking a pci_device, feeding it to
+the multi-function-device stuff to split it to a bunch of
+platform_device's is OK, or that mfd should be changed somehow..
+
+As far I as I was interested in the, the basic high level approach
+seems much better than the previous attempt using net notifiers.
+
+Jason
