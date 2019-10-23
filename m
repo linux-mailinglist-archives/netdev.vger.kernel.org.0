@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38179E1562
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6209E1563
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403777AbfJWJJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 05:09:16 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:34276 "EHLO inva020.nxp.com"
+        id S2403782AbfJWJJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 05:09:20 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:55848 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390604AbfJWJJO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 05:09:14 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9A6F31A0123;
-        Wed, 23 Oct 2019 11:09:13 +0200 (CEST)
+        id S2403767AbfJWJJP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 05:09:15 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6E975200137;
+        Wed, 23 Oct 2019 11:09:14 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8EA001A0016;
-        Wed, 23 Oct 2019 11:09:13 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 61F5E2000DF;
+        Wed, 23 Oct 2019 11:09:14 +0200 (CEST)
 Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 49282205FE;
-        Wed, 23 Oct 2019 11:09:13 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 1C407205FE;
+        Wed, 23 Oct 2019 11:09:14 +0200 (CEST)
 From:   Madalin Bucur <madalin.bucur@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     roy.pledge@nxp.com, laurentiu.tudor@nxp.com,
         jakub.kicinski@netronome.com, Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [PATCH net-next v3 6/7] fsl/fman: remove unused struct member
-Date:   Wed, 23 Oct 2019 12:08:45 +0300
-Message-Id: <1571821726-6624-7-git-send-email-madalin.bucur@nxp.com>
+Subject: [PATCH net-next v3 7/7] dpaa_eth: add newline in dev_err() msg
+Date:   Wed, 23 Oct 2019 12:08:46 +0300
+Message-Id: <1571821726-6624-8-git-send-email-madalin.bucur@nxp.com>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1571821726-6624-1-git-send-email-madalin.bucur@nxp.com>
 References: <1571821726-6624-1-git-send-email-madalin.bucur@nxp.com>
@@ -38,36 +38,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unused struct member second_largest_buf_size. Also, an out of
-bounds access would have occurred in the removed code if there was only
-one buffer pool in use.
+Newline was missing at the end of the error message.
 
 Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/fman/fman_port.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
-index bd76c9730692..87b26f063cc8 100644
---- a/drivers/net/ethernet/freescale/fman/fman_port.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_port.c
-@@ -435,7 +435,6 @@ struct fman_port_cfg {
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index e376c32fa003..d3214541c7c5 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -901,7 +901,7 @@ static void dpaa_fq_setup(struct dpaa_priv *priv,
  
- struct fman_port_rx_pools_params {
- 	u8 num_of_pools;
--	u16 second_largest_buf_size;
- 	u16 largest_buf_size;
- };
+ 	if (num_portals == 0)
+ 		dev_err(priv->net_dev->dev.parent,
+-			"No Qman software (affine) channels found");
++			"No Qman software (affine) channels found\n");
  
-@@ -946,8 +945,6 @@ static int set_ext_buffer_pools(struct fman_port *port)
- 	port->rx_pools_params.num_of_pools = ext_buf_pools->num_of_pools_used;
- 	port->rx_pools_params.largest_buf_size =
- 	    sizes_array[ordered_array[ext_buf_pools->num_of_pools_used - 1]];
--	port->rx_pools_params.second_largest_buf_size =
--	    sizes_array[ordered_array[ext_buf_pools->num_of_pools_used - 2]];
- 
- 	/* FMBM_RMPD reg. - pool depletion */
- 	if (buf_pool_depletion->pools_grp_mode_enable) {
+ 	/* Initialize each FQ in the list */
+ 	list_for_each_entry(fq, &priv->dpaa_fq_list, list) {
 -- 
 2.1.0
 
