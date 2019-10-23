@@ -2,276 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63584E1B2E
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B871E1B3A
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405349AbfJWMr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 08:47:28 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:56944 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390962AbfJWMr1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 08:47:27 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D074D1A0738;
-        Wed, 23 Oct 2019 14:47:25 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C38721A0020;
-        Wed, 23 Oct 2019 14:47:25 +0200 (CEST)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 743CF205FE;
-        Wed, 23 Oct 2019 14:47:25 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 5/5] net: documentation: add docs for MAC/PHY support in DPAA2
-Date:   Wed, 23 Oct 2019 15:47:09 +0300
-Message-Id: <1571834829-29560-6-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1571834829-29560-1-git-send-email-ioana.ciornei@nxp.com>
-References: <1571834829-29560-1-git-send-email-ioana.ciornei@nxp.com>
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2390962AbfJWMtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 08:49:33 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:34663 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390892AbfJWMtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 08:49:32 -0400
+Received: by mail-il1-f196.google.com with SMTP id a13so4419953ilp.1
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 05:49:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=h/KPAsx1ms/HlWrQ2kK0emHEnAforwCjQh7wYzYcuMI=;
+        b=P4+pElk6eo2y/Tpz2v/gcafSgarrw29j4ARz6PVFHtOVMOvqWp0gbruHD1sOM+EMvn
+         HpctW69Pc/0TgrE28/73a+77EXoFgWtxe5RQCTUVD7d0R5l9pZ0r5Ahh4z2YbxGkI2n+
+         gNDGnL+0YdyBQKNUVFJluvZOs7Xucmi4tKwNFQUmEWBiiNk4E6yIaKjMAIbDLykbkzmw
+         Orwj3QIHWrqBTFEz97olAMANINmMwUj+BP6JsOF9d0GKUasvgOi4Lq9DnwtpmaJWQ0sv
+         ta98sGPpwGSn3W5yzL9oNh14pQHKpGhOb3QcjXdSLnHz38+8cST1q5gya3a6kCzhGlwd
+         jYXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=h/KPAsx1ms/HlWrQ2kK0emHEnAforwCjQh7wYzYcuMI=;
+        b=IBtixW16B9c75BSpbM5pSYm6abYsWBuGAtwKdUv4J+BSuu8QbTSoAJguaWMJAdt29p
+         xVdNrE3DgOEa2oIr8Px+tS0E073uQZ28PkBo2q7gd827I4F8v/wgiu4hOf1+sDjsU7nk
+         85CG1y2Qt58r2nC2/kiPM9GBG5GZCrlsLfELDsG+vpchn4tRtaMXM9ItYMPbLA9J/ubm
+         A7GQfaHXgyMqSRc5fB4EZ6EmJIny28/iqrGF4xrHO142qSnIKH4f+6ASPn+jeLzyXN/X
+         zQ5n9tuKEBwo6dLH468ikOpunEEaLbi7H7VCiGZixpafXlU/mzVof1OlvJxBp6+JonzW
+         b/AQ==
+X-Gm-Message-State: APjAAAWVgjd0lxY1uBtNjdmNTisbOpxYCcVK7Te4Mv8Ip+fz3D9j16G1
+        5qW4O1b9gmaxMyp88gANNA5xnQ==
+X-Google-Smtp-Source: APXvYqwxdHOZbhD6PRxFI1JkJGP26b+HqtVpJ5HBK0s/S9wrzhI9F7+tt7ChyhwfqkNiRLoBz3BtXw==
+X-Received: by 2002:a92:b308:: with SMTP id p8mr36515356ilh.182.1571834972058;
+        Wed, 23 Oct 2019 05:49:32 -0700 (PDT)
+Received: from [192.168.0.124] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
+        by smtp.googlemail.com with ESMTPSA id g4sm7238494iof.56.2019.10.23.05.49.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 23 Oct 2019 05:49:31 -0700 (PDT)
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+To:     Vlad Buslov <vladbu@mellanox.com>, netdev@vger.kernel.org
+Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        mleitner@redhat.com, dcaratti@redhat.com,
+        Eric Dumazet <edumazet@google.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+Date:   Wed, 23 Oct 2019 08:49:30 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20191022141804.27639-1-vladbu@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation file for the MAC/PHY support in the DPAA2
-architecture. This describes the architecture and implementation of the
-interface between phylink and a DPAA2 network driver.
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
-Changes in v2:
- - none
+Hi Vlad,
 
+On 2019-10-22 10:17 a.m., Vlad Buslov wrote:
+> Currently, significant fraction of CPU time during TC filter allocation
+> is spent in percpu allocator. Moreover, percpu allocator is protected
+> with single global mutex which negates any potential to improve its
+> performance by means of recent developments in TC filter update API that
+> removed rtnl lock for some Qdiscs and classifiers. In order to
+> significantly improve filter update rate and reduce memory usage we
+> would like to allow users to skip percpu counters allocation for
+> specific action if they don't expect high traffic rate hitting the
+> action, which is a reasonable expectation for hardware-offloaded setup.
+> In that case any potential gains to software fast-path performance
+> gained by usage of percpu-allocated counters compared to regular integer
+> counters protected by spinlock are not important, but amount of
+> additional CPU and memory consumed by them is significant.
 
- .../device_drivers/freescale/dpaa2/index.rst       |   1 +
- .../freescale/dpaa2/mac-phy-support.rst            | 191 +++++++++++++++++++++
- MAINTAINERS                                        |   2 +
- 3 files changed, 194 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
+Great to see this becoming low hanging on the fruit tree
+after your improvements.
+Note: had a discussion a few years back with Eric D.(on Cc)
+when i was trying to improve action dumping; what you are seeing
+was very visible when doing a large batch creation of actions.
+At the time i was thinking of amortizing the cost of that mutex
+in a batch action create i.e you ask the per cpu allocator
+to alloc a batch of the stats instead of singular.
 
-diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-index 67bd87fe6c53..ee40fcc5ddff 100644
---- a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-+++ b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-@@ -8,3 +8,4 @@ DPAA2 Documentation
-    overview
-    dpio-driver
-    ethernet-driver
-+   mac-phy-support
-diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
-new file mode 100644
-index 000000000000..51e6624fb774
---- /dev/null
-+++ b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
-@@ -0,0 +1,191 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+.. include:: <isonum.txt>
-+
-+=======================
-+DPAA2 MAC / PHY support
-+=======================
-+
-+:Copyright: |copy| 2019 NXP
-+
-+Overview
-+--------
-+
-+The DPAA2 MAC / PHY support consists of a set of APIs that help DPAA2 network
-+drivers (dpaa2-eth, dpaa2-ethsw) interract with the PHY library.
-+
-+DPAA2 Software Architecture
-+---------------------------
-+
-+Among other DPAA2 objects, the fsl-mc bus exports DPNI objects (abstracting a
-+network interface) and DPMAC objects (abstracting a MAC). The dpaa2-eth driver
-+probes on the DPNI object and connects to and configures a DPMAC object with
-+the help of phylink.
-+
-+Data connections may be established between a DPNI and a DPMAC, or between two
-+DPNIs. Depending on the connection type, the netif_carrier_[on/off] is handled
-+directly by the dpaa2-eth driver or by phylink.
-+
-+.. code-block:: none
-+
-+  Sources of abstracted link state information presented by the MC firmware
-+
-+                                               +--------------------------------------+
-+  +------------+                  +---------+  |                           xgmac_mdio |
-+  | net_device |                  | phylink |--|  +-----+  +-----+  +-----+  +-----+  |
-+  +------------+                  +---------+  |  | PHY |  | PHY |  | PHY |  | PHY |  |
-+        |                             |        |  +-----+  +-----+  +-----+  +-----+  |
-+      +------------------------------------+   |                    External MDIO bus |
-+      |            dpaa2-eth               |   +--------------------------------------+
-+      +------------------------------------+
-+        |                             |                                           Linux
-+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+        |                             |                                     MC firmware
-+        |              /|             V
-+  +----------+        / |       +----------+
-+  |          |       /  |       |          |
-+  |          |       |  |       |          |
-+  |   DPNI   |<------|  |<------|   DPMAC  |
-+  |          |       |  |       |          |
-+  |          |       \  |<---+  |          |
-+  +----------+        \ |    |  +----------+
-+                       \|    |
-+                             |
-+           +--------------------------------------+
-+           | MC firmware polling MAC PCS for link |
-+           |  +-----+  +-----+  +-----+  +-----+  |
-+           |  | PCS |  | PCS |  | PCS |  | PCS |  |
-+           |  +-----+  +-----+  +-----+  +-----+  |
-+           |                    Internal MDIO bus |
-+           +--------------------------------------+
-+
-+
-+Depending on an MC firmware configuration setting, each MAC may be in one of two modes:
-+
-+- DPMAC_LINK_TYPE_FIXED: the link state management is handled exclusively by
-+  the MC firmware by polling the MAC PCS. Without the need to register a
-+  phylink instance, the dpaa2-eth driver will not bind to the connected dpmac
-+  object at all.
-+
-+- DPMAC_LINK_TYPE_PHY: The MC firmware is left waiting for link state update
-+  events, but those are in fact passed strictly between the dpaa2-mac (based on
-+  phylink) and its attached net_device driver (dpaa2-eth, dpaa2-ethsw),
-+  effectively bypassing the firmware.
-+
-+Implementation
-+--------------
-+
-+At probe time or when a DPNI's endpoint is dynamically changed, the dpaa2-eth
-+is responsible to find out if the peer object is a DPMAC and if this is the
-+case, to integrate it with PHYLINK using the dpaa2_mac_connect() API, which
-+will do the following:
-+
-+ - look up the device tree for PHYLINK-compatible of binding (phy-handle)
-+ - will create a PHYLINK instance associated with the received net_device
-+ - connect to the PHY using phylink_of_phy_connect()
-+
-+The following phylink_mac_ops callback are implemented:
-+
-+ - .validate() will populate the supported linkmodes with the MAC capabilities
-+   only when the phy_interface_t is RGMII_* (at the moment, this is the only
-+   link type supported by the driver).
-+
-+ - .mac_config() will configure the MAC in the new configuration using the
-+   dpmac_set_link_state() MC firmware API.
-+
-+ - .mac_link_up() / .mac_link_down() will update the MAC link using the same
-+   API described above.
-+
-+At driver unbind() or when the DPNI object is disconnected from the DPMAC, the
-+dpaa2-eth driver calls dpaa2_mac_disconnect() which will, in turn, disconnect
-+from the PHY and destroy the PHYLINK instance.
-+
-+In case of a DPNI-DPMAC connection, an 'ip link set dev eth0 up' would start
-+the following sequence of operations:
-+
-+(1) phylink_start() called from .dev_open().
-+(2) The .mac_config() and .mac_link_up() callbacks are called by PHYLINK.
-+(3) In order to configure the HW MAC, the MC Firmware API
-+    dpmac_set_link_state() is called.
-+(4) The firmware will eventually setup the HW MAC in the new configuration.
-+(5) A netif_carrier_on() call is made directly from PHYLINK on the associated
-+    net_device.
-+(6) The dpaa2-eth driver handles the LINK_STATE_CHANGE irq in order to
-+    enable/disable Rx taildrop based on the pause frame settings.
-+
-+.. code-block:: none
-+
-+  +---------+               +---------+
-+  | PHYLINK |-------------->|  eth0   |
-+  +---------+           (5) +---------+
-+  (1) ^  |
-+      |  |
-+      |  v (2)
-+  +-----------------------------------+
-+  |             dpaa2-eth             |
-+  +-----------------------------------+
-+         |                    ^ (6)
-+         |                    |
-+         v (3)                |
-+  +---------+---------------+---------+
-+  |  DPMAC  |               |  DPNI   |
-+  +---------+               +---------+
-+  |            MC Firmware            |
-+  +-----------------------------------+
-+         |
-+         |
-+         v (4)
-+  +-----------------------------------+
-+  |             HW MAC                |
-+  +-----------------------------------+
-+
-+In case of a DPNI-DPNI connection, a usual sequence of operations looks like
-+the following:
-+
-+(1) ip link set dev eth0 up
-+(2) The dpni_enable() MC API called on the associated fsl_mc_device.
-+(3) ip link set dev eth1 up
-+(4) The dpni_enable() MC API called on the associated fsl_mc_device.
-+(5) The LINK_STATE_CHANGED irq is received by both instances of the dpaa2-eth
-+    driver because now the operational link state is up.
-+(6) The netif_carrier_on() is called on the exported net_device from
-+    link_state_update().
-+
-+.. code-block:: none
-+
-+  +---------+               +---------+
-+  |  eth0   |               |  eth1   |
-+  +---------+               +---------+
-+      |  ^                     ^  |
-+      |  |                     |  |
-+  (1) v  | (6)             (6) |  v (3)
-+  +---------+               +---------+
-+  |dpaa2-eth|               |dpaa2-eth|
-+  +---------+               +---------+
-+      |  ^                     ^  |
-+      |  |                     |  |
-+  (2) v  | (5)             (5) |  v (4)
-+  +---------+---------------+---------+
-+  |  DPNI   |               |  DPNI   |
-+  +---------+               +---------+
-+  |            MC Firmware            |
-+  +-----------------------------------+
-+
-+
-+Exported API
-+------------
-+
-+Any DPAA2 driver that drivers endpoints of DPMAC objects should service its
-+_EVENT_ENDPOINT_CHANGED irq and connect/disconnect from the associated DPMAC
-+when necessary using the below listed API::
-+
-+ - int dpaa2_mac_connect(struct dpaa2_mac *mac);
-+ - void dpaa2_mac_disconnect(struct dpaa2_mac *mac);
-+
-+A phylink integration is necessary only when the partner DPMAC is not of TYPE_FIXED.
-+One can check for this condition using the below API::
-+
-+ - bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,struct fsl_mc_io *mc_io);
-+
-+Before connection to a MAC, the caller must allocate and populate the
-+dpaa2_mac structure with the associated net_device, a pointer to the MC portal
-+to be used and the actual fsl_mc_device structure of the DPMAC.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d0e562d3ce5b..fdc3c89a4a6d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5052,6 +5052,8 @@ F:	drivers/net/ethernet/freescale/dpaa2/dpmac*
- F:	drivers/net/ethernet/freescale/dpaa2/dpkg.h
- F:	drivers/net/ethernet/freescale/dpaa2/Makefile
- F:	drivers/net/ethernet/freescale/dpaa2/Kconfig
-+F:	Documentation/networking/device_drivers/freescale/dpaa2/ethernet-driver.rst
-+F:	Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
- 
- DPAA2 ETHERNET SWITCH DRIVER
- M:	Ioana Radulescu <ruxandra.radulescu@nxp.com>
--- 
-1.9.1
+I understand your use case being different since it is for h/w
+offload. If you have time can you test with batching many actions
+and seeing the before/after improvement?
 
+Note: even for h/w offload it makes sense to first create the actions
+then bind to filters (in my world thats what we end up doing).
+If we can improve the first phase it is a win for both s/w and hw use
+cases.
+
+Question:
+Given TCA_ACT_FLAGS_FAST_INIT is common to all actions would it make
+sense to use Could you have used a TLV in the namespace of TCA_ACT_MAX
+(outer TLV)? You will have to pass a param to ->init().
+
+cheers,
+jamal
