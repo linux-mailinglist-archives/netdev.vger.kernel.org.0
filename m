@@ -2,242 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 303A5E130D
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 09:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67150E1309
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 09:25:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389876AbfJWHZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 03:25:22 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30408 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2389749AbfJWHZV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 03:25:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571815520;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=t5zjHQpTeAkClNQhQEPJ3+MpaSkNKcTWow8Ri9dKxRU=;
-        b=gimglyuuhmLc5QxbcNDyyxMshLtV95QxW2cUHNa7/qMj8hKGIKxhTX0onyB15qIp664hBo
-        b1B1wH0i8y7UpfQuSibqFkcxgiz49J/l36aoqqBrc5IL1AQD73V7ivgaIIW1nbmzh+vbbe
-        kGl2khCiFF0glgxnpHNCQl1x/uYcFf0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-59-E_1lPYQvMbq6Oa_69H82bw-1; Wed, 23 Oct 2019 03:25:16 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 94EB01800DD0;
-        Wed, 23 Oct 2019 07:25:14 +0000 (UTC)
-Received: from [10.72.12.161] (ovpn-12-161.pek2.redhat.com [10.72.12.161])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BCF725C1D4;
-        Wed, 23 Oct 2019 07:25:01 +0000 (UTC)
-Subject: Re: [PATCH v2] vhost: introduce mdev based hardware backend
-To:     Tiwei Bie <tiwei.bie@intel.com>
-Cc:     mst@redhat.com, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        lingshan.zhu@intel.com
-References: <20191022095230.2514-1-tiwei.bie@intel.com>
- <47a572fd-5597-1972-e177-8ee25ca51247@redhat.com>
- <20191023030253.GA15401@___>
- <ac36f1e3-b972-71ac-fe0c-3db03e016dcf@redhat.com>
- <20191023070747.GA30533@___>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <106834b5-dae5-82b2-0f97-16951709d075@redhat.com>
-Date:   Wed, 23 Oct 2019 15:25:00 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2389829AbfJWHZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 03:25:12 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:54764 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389749AbfJWHZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 03:25:09 -0400
+Received: by mail-io1-f70.google.com with SMTP id d11so7228826ioc.21
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 00:25:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=xKcQJBIQc2/Cq0PCnsJB9k+HD99LAu+MTvjpMZVDV+8=;
+        b=SDCjv+YQwDJDXKLwxq+O5FWz69TvchPVNzjM9QfRBzJOxeYeVoPyWW0z4emtJvCzv+
+         3Q5keHC1yGIgM0It+No8tDGdfof5Q4euhoBNffzsyUsqb0YWRtRJX1Ew56mTjV4a/daV
+         sP/JbHv3FKVrfQ5TzqmbmoogS6sXOib1BoZaM2J6qZcGsN0qyDlXZNhwi/65RQpt8CO+
+         R0O+TFRBng/LKA4vVVWJ7v0Nx1M9A1+OhfMzXsFmoDEa4E/mF5Obe5KaaobZxXXOthkB
+         Y7SjuUDJtX2zP8GxNZJCrFLt7668uqbk35W4NlWfOS2nD0IIh0uq3ZOA1UNUsHIMnSjH
+         d+EQ==
+X-Gm-Message-State: APjAAAUmIAynLPwAg+lpHhTZ+HQnDvY9o1K2zmVMWN8epgqn9Lu4uUhx
+        eLurp2fFH0trKv0dX/4wPB95JC0/l5R/VTN+1tVmhcrMB2ox
+X-Google-Smtp-Source: APXvYqxrecml2exqGoKbJ6ci8PpL1A6Hc4nQaYc0W9iq/OAENApmbjVtblhllVKN2oKbuuRtZeMS/LulN8hGJYhKHpkyqtpMqyIc
 MIME-Version: 1.0
-In-Reply-To: <20191023070747.GA30533@___>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: E_1lPYQvMbq6Oa_69H82bw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a92:8408:: with SMTP id l8mr14466789ild.107.1571815507042;
+ Wed, 23 Oct 2019 00:25:07 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 00:25:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f32b3c05958ed0eb@google.com>
+Subject: INFO: task hung in register_netdevice_notifier (2)
+From:   syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 2019/10/23 =E4=B8=8B=E5=8D=883:07, Tiwei Bie wrote:
-> On Wed, Oct 23, 2019 at 01:46:23PM +0800, Jason Wang wrote:
->> On 2019/10/23 =E4=B8=8A=E5=8D=8811:02, Tiwei Bie wrote:
->>> On Tue, Oct 22, 2019 at 09:30:16PM +0800, Jason Wang wrote:
->>>> On 2019/10/22 =E4=B8=8B=E5=8D=885:52, Tiwei Bie wrote:
->>>>> This patch introduces a mdev based hardware vhost backend.
->>>>> This backend is built on top of the same abstraction used
->>>>> in virtio-mdev and provides a generic vhost interface for
->>>>> userspace to accelerate the virtio devices in guest.
->>>>>
->>>>> This backend is implemented as a mdev device driver on top
->>>>> of the same mdev device ops used in virtio-mdev but using
->>>>> a different mdev class id, and it will register the device
->>>>> as a VFIO device for userspace to use. Userspace can setup
->>>>> the IOMMU with the existing VFIO container/group APIs and
->>>>> then get the device fd with the device name. After getting
->>>>> the device fd of this device, userspace can use vhost ioctls
->>>>> to setup the backend.
->>>>>
->>>>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
->>>>> ---
->>>>> This patch depends on below series:
->>>>> https://lkml.org/lkml/2019/10/17/286
->>>>>
->>>>> v1 -> v2:
->>>>> - Replace _SET_STATE with _SET_STATUS (MST);
->>>>> - Check status bits at each step (MST);
->>>>> - Report the max ring size and max number of queues (MST);
->>>>> - Add missing MODULE_DEVICE_TABLE (Jason);
->>>>> - Only support the network backend w/o multiqueue for now;
->>>> Any idea on how to extend it to support devices other than net? I thin=
-k we
->>>> want a generic API or an API that could be made generic in the future.
->>>>
->>>> Do we want to e.g having a generic vhost mdev for all kinds of devices=
- or
->>>> introducing e.g vhost-net-mdev and vhost-scsi-mdev?
->>> One possible way is to do what vhost-user does. I.e. Apart from
->>> the generic ring, features, ... related ioctls, we also introduce
->>> device specific ioctls when we need them. As vhost-mdev just needs
->>> to forward configs between parent and userspace and even won't
->>> cache any info when possible,
->>
->> So it looks to me this is only possible if we expose e.g set_config and
->> get_config to userspace.
-> The set_config and get_config interface isn't really everything
-> of device specific settings. We also have ctrlq in virtio-net.
+syzbot found the following crash on:
+
+HEAD commit:    3b7c59a1 Merge tag 'pinctrl-v5.4-2' of git://git.kernel.or..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=131abff7600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=420126a10fdda0f1
+dashboard link: https://syzkaller.appspot.com/bug?extid=355f8edb2ff45d5f95fa
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com
+
+INFO: task syz-executor.3:12938 blocked for more than 143 seconds.
+       Not tainted 5.4.0-rc4+ #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor.3  D28568 12938  12570 0x00000004
+Call Trace:
+  context_switch kernel/sched/core.c:3384 [inline]
+  __schedule+0x94f/0x1e70 kernel/sched/core.c:4069
+  schedule+0xd9/0x260 kernel/sched/core.c:4136
+  rwsem_down_write_slowpath+0x70b/0xf90 kernel/locking/rwsem.c:1238
+  __down_write kernel/locking/rwsem.c:1392 [inline]
+  down_write+0x13c/0x150 kernel/locking/rwsem.c:1535
+  register_netdevice_notifier+0x7e/0x650 net/core/dev.c:1644
+  bcm_init+0x1a8/0x220 net/can/bcm.c:1451
+  can_create+0x288/0x4b0 net/can/af_can.c:167
+  __sock_create+0x3d8/0x730 net/socket.c:1418
+  sock_create net/socket.c:1469 [inline]
+  __sys_socket+0x103/0x220 net/socket.c:1511
+  __do_sys_socket net/socket.c:1520 [inline]
+  __se_sys_socket net/socket.c:1518 [inline]
+  __x64_sys_socket+0x73/0xb0 net/socket.c:1518
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459ef9
+Code: Bad RIP value.
+RSP: 002b:00007f95783e1c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000029
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459ef9
+RDX: 0000000000000002 RSI: 0000000000000002 RDI: 000000000000001d
+RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f95783e26d4
+R13: 00000000004c8f16 R14: 00000000004e02c0 R15: 00000000ffffffff
+INFO: task syz-executor.3:12940 blocked for more than 143 seconds.
+       Not tainted 5.4.0-rc4+ #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor.3  D29112 12940  12570 0x00000004
+Call Trace:
+  context_switch kernel/sched/core.c:3384 [inline]
+  __schedule+0x94f/0x1e70 kernel/sched/core.c:4069
+  schedule+0xd9/0x260 kernel/sched/core.c:4136
+  rwsem_down_write_slowpath+0x70b/0xf90 kernel/locking/rwsem.c:1238
+  __down_write kernel/locking/rwsem.c:1392 [inline]
+  down_write+0x13c/0x150 kernel/locking/rwsem.c:1535
+  register_netdevice_notifier+0x7e/0x650 net/core/dev.c:1644
+  bcm_init+0x1a8/0x220 net/can/bcm.c:1451
+  can_create+0x288/0x4b0 net/can/af_can.c:167
+  __sock_create+0x3d8/0x730 net/socket.c:1418
+  sock_create net/socket.c:1469 [inline]
+  __sys_socket+0x103/0x220 net/socket.c:1511
+  __do_sys_socket net/socket.c:1520 [inline]
+  __se_sys_socket net/socket.c:1518 [inline]
+  __x64_sys_socket+0x73/0xb0 net/socket.c:1518
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459ef9
+Code: Bad RIP value.
+RSP: 002b:00007f95783c0c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000029
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459ef9
+RDX: 0000000000000002 RSI: 0000000000000002 RDI: 000000000000001d
+RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f95783c16d4
+R13: 00000000004c8f16 R14: 00000000004e02c0 R15: 00000000ffffffff
+
+Showing all locks held in the system:
+1 lock held by khungtaskd/1070:
+  #0: ffffffff88fab040 (rcu_read_lock){....}, at:  
+debug_show_all_locks+0x5f/0x27e kernel/locking/lockdep.c:5337
+2 locks held by rs:main Q:Reg/8631:
+  #0: ffff88809a078d60 (&f->f_pos_lock){+.+.}, at: __fdget_pos+0xee/0x110  
+fs/file.c:801
+  #1: ffff88821637c428 (sb_writers#3){.+.+}, at: file_start_write  
+include/linux/fs.h:2882 [inline]
+  #1: ffff88821637c428 (sb_writers#3){.+.+}, at: vfs_write+0x485/0x5d0  
+fs/read_write.c:557
+1 lock held by rsyslogd/8633:
+  #0: ffff8880a9391120 (&f->f_pos_lock){+.+.}, at: __fdget_pos+0xee/0x110  
+fs/file.c:801
+2 locks held by getty/8723:
+  #0: ffff888096a75090 (&tty->ldisc_sem){++++}, at:  
+ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+  #1: ffffc90005f1d2e0 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x232/0x1c10 drivers/tty/n_tty.c:2156
+2 locks held by getty/8724:
+  #0: ffff8880a181f090 (&tty->ldisc_sem){++++}, at:  
+ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+  #1: ffffc90005f392e0 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x232/0x1c10 drivers/tty/n_tty.c:2156
+2 locks held by getty/8725:
+  #0: ffff88809ccbf090 (&tty->ldisc_sem){++++}, at:  
+ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+  #1: ffffc90005f292e0 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x232/0x1c10 drivers/tty/n_tty.c:2156
+2 locks held by getty/8726:
+  #0: ffff888092816090 (&tty->ldisc_sem){++++}, at:  
+ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+  #1: ffffc90005f152e0 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x232/0x1c10 drivers/tty/n_tty.c:2156
+2 locks held by getty/8727:
+  #0: ffff8880a10bc090 (&tty->ldisc_sem){++++}, at:  
+ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+  #1: ffffc90005f2d2e0 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x232/0x1c10 drivers/tty/n_tty.c:2156
+2 locks held by getty/8728:
+  #0: ffff888091055090 (&tty->ldisc_sem){++++}, at:  
+ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+  #1: ffffc90005f312e0 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x232/0x1c10 drivers/tty/n_tty.c:2156
+2 locks held by getty/8729:
+  #0: ffff8880a4f5c090 (&tty->ldisc_sem){++++}, at:  
+ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+  #1: ffffc90005f092e0 (&ldata->atomic_read_lock){+.+.}, at:  
+n_tty_read+0x232/0x1c10 drivers/tty/n_tty.c:2156
+3 locks held by kworker/u4:2/12751:
+3 locks held by kworker/u4:8/30968:
+1 lock held by syz-executor.3/12938:
+  #0: ffffffff89996388 (pernet_ops_rwsem){++++}, at:  
+register_netdevice_notifier+0x7e/0x650 net/core/dev.c:1644
+1 lock held by syz-executor.3/12940:
+  #0: ffffffff89996388 (pernet_ops_rwsem){++++}, at:  
+register_netdevice_notifier+0x7e/0x650 net/core/dev.c:1644
+
+=============================================
+
+NMI backtrace for cpu 1
+CPU: 1 PID: 1070 Comm: khungtaskd Not tainted 5.4.0-rc4+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  nmi_cpu_backtrace.cold+0x70/0xb2 lib/nmi_backtrace.c:101
+  nmi_trigger_cpumask_backtrace+0x23b/0x28b lib/nmi_backtrace.c:62
+  arch_trigger_cpumask_backtrace+0x14/0x20 arch/x86/kernel/apic/hw_nmi.c:38
+  trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+  check_hung_uninterruptible_tasks kernel/hung_task.c:205 [inline]
+  watchdog+0x9d0/0xef0 kernel/hung_task.c:289
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 PID: 30777 Comm: kworker/u4:4 Not tainted 5.4.0-rc4+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: bat_events batadv_nc_worker
+RIP: 0010:hlock_class kernel/locking/lockdep.c:163 [inline]
+RIP: 0010:mark_lock+0xca/0x1220 kernel/locking/lockdep.c:3643
+Code: 20 66 81 e3 ff 1f 0f b7 db be 08 00 00 00 48 89 d8 48 c1 f8 06 48 8d  
+3c c5 a0 e9 77 8a e8 4e 73 55 00 48 0f a3 1d 46 12 1f 09 <0f> 83 be 00 00  
+00 48 69 db b0 00 00 00 48 81 c3 c0 ed 77 8a 48 8d
+RSP: 0018:ffff888058de7ad8 EFLAGS: 00000047
+RAX: 0000000000000001 RBX: 0000000000000029 RCX: ffffffff8158d752
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffffff8a77e9a0
+RBP: ffff888058de7b28 R08: 1ffffffff14efd34 R09: fffffbfff14efd35
+R10: fffffbfff14efd34 R11: ffffffff8a77e9a7 R12: 0000000000000008
+R13: ffff888022a00d28 R14: 0000000000000000 R15: 0000000000020029
+FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000459ecf CR3: 000000009451c000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  mark_usage kernel/locking/lockdep.c:3592 [inline]
+  __lock_acquire+0x538/0x4a00 kernel/locking/lockdep.c:3909
+  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4487
+  rcu_lock_acquire include/linux/rcupdate.h:208 [inline]
+  rcu_read_lock include/linux/rcupdate.h:599 [inline]
+  batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:407 [inline]
+  batadv_nc_worker+0x117/0x760 net/batman-adv/network-coding.c:718
+  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
 
-Yes, but it could be processed by the exist API. Isn't it? Just set ctrl=20
-vq address and let parent to deal with that.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-
->
->>
->>> I think it might be better to do
->>> this in one generic vhost-mdev module.
->>
->> Looking at definitions of VhostUserRequest in qemu, it mixed generic API
->> with device specific API. If we want go this ways (a generic vhost-mdev)=
-,
->> more questions needs to be answered:
->>
->> 1) How could userspace know which type of vhost it would use? Do we need=
- to
->> expose virtio subsystem device in for userspace this case?
->>
->> 2) That generic vhost-mdev module still need to filter out unsupported
->> ioctls for a specific type. E.g if it probes a net device, it should ref=
-use
->> API for other type. This in fact a vhost-mdev-net but just not modulariz=
-e it
->> on top of vhost-mdev.
->>
->>
->>>>> - Some minor fixes and improvements;
->>>>> - Rebase on top of virtio-mdev series v4;
-> [...]
->>>>> +
->>>>> +static long vhost_mdev_get_features(struct vhost_mdev *m, u64 __user=
- *featurep)
->>>>> +{
->>>>> +=09if (copy_to_user(featurep, &m->features, sizeof(m->features)))
->>>>> +=09=09return -EFAULT;
->>>> As discussed in previous version do we need to filter out MQ feature h=
-ere?
->>> I think it's more straightforward to let the parent drivers to
->>> filter out the unsupported features. Otherwise it would be tricky
->>> when we want to add more features in vhost-mdev module,
->>
->> It's as simple as remove the feature from blacklist?
-> It's not really that easy. It may break the old drivers.
-
-
-I'm not sure I understand here, we do feature negotiation anyhow. For=20
-old drivers do you mean the guest drivers without MQ?
-
-
->
->>
->>> i.e. if
->>> the parent drivers may expose unsupported features and relay on
->>> vhost-mdev to filter them out, these features will be exposed
->>> to userspace automatically when they are enabled in vhost-mdev
->>> in the future.
->>
->> The issue is, it's only that vhost-mdev knows its own limitation. E.g in
->> this patch, vhost-mdev only implements a subset of transport API, but pa=
-rent
->> doesn't know about that.
->>
->> Still MQ as an example, there's no way (or no need) for parent to know t=
-hat
->> vhost-mdev does not support MQ.
-> The mdev is a MDEV_CLASS_ID_VHOST mdev device. When the parent
-> is being developed, it should know the currently supported features
-> of vhost-mdev.
-
-
-How can parent know MQ is not supported by vhost-mdev?
-
-
->
->> And this allows old kenrel to work with new
->> parent drivers.
-> The new drivers should provide things like VIRTIO_MDEV_F_VERSION_1
-> to be compatible with the old kernels. When VIRTIO_MDEV_F_VERSION_1
-> is provided/negotiated, the behaviours should be consistent.
-
-
-To be clear, I didn't mean a change in virtio-mdev API, I meant:
-
-1) old vhost-mdev kernel driver that filters out MQ
-
-2) new parent driver that support MQ
-
-
->
->> So basically we have three choices here:
->>
->> 1) Implement what vhost-user did and implement a generic vhost-mdev (but=
- may
->> still have lots of device specific code). To support advanced feature wh=
-ich
->> requires the access to config, still lots of API that needs to be added.
->>
->> 2) Implement what vhost-kernel did, have a generic vhost-mdev driver and=
- a
->> vhost bus on top for match a device specific API e.g vhost-mdev-net. We
->> still have device specific API but limit them only to device specific
->> module. Still require new ioctls for advanced feature like MQ.
->>
->> 3) Simply expose all virtio-mdev transport to userspace.
-> Currently, virtio-mdev transport is a set of function callbacks
-> defined in kernel. How to simply expose virtio-mdev transport to
-> userspace?
-
-
-The most straightforward way is to have an 1:1 mapping between ioctl and=20
-virito_mdev_device_ops.
-
-Thanks
-
-
->
->
->> A generic module
->> without any type specific code (like virtio-mdev). No need dedicated API=
- for
->> e.g MQ. But then the API will look much different than current vhost did=
-.
->>
->> Consider the limitation of 1) I tend to choose 2 or 3. What's you opinio=
-n?
->>
->>
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
