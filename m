@@ -2,136 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D263CE222C
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 19:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB2DE223D
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 20:01:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732365AbfJWRzm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Oct 2019 13:55:42 -0400
-Received: from mga09.intel.com ([134.134.136.24]:1186 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730131AbfJWRzm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 13:55:42 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2019 10:55:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,221,1569308400"; 
-   d="scan'208";a="188329106"
-Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
-  by orsmga007.jf.intel.com with ESMTP; 23 Oct 2019 10:55:41 -0700
-Received: from orsmsx101.amr.corp.intel.com ([169.254.8.212]) by
- ORSMSX104.amr.corp.intel.com ([169.254.4.167]) with mapi id 14.03.0439.000;
- Wed, 23 Oct 2019 10:55:39 -0700
-From:   "Ertman, David M" <david.m.ertman@intel.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: RE: [RFC 01/20] ice: Initialize and register multi-function device
- to provide RDMA
-Thread-Topic: [RFC 01/20] ice: Initialize and register multi-function device
- to provide RDMA
-Thread-Index: AQGOetFAPbFeoIHdxRJDZlVegIphLQHJRZnhAdxiwysB1QCSuQJ6/k4op44H7uCAKV2vAP//jAtw
-Date:   Wed, 23 Oct 2019 17:55:38 +0000
-Message-ID: <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
-References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
- <20190926164519.10471-2-jeffrey.t.kirsher@intel.com>
- <20190926180556.GB1733924@kroah.com>
- <7e7f6c159de52984b89c13982f0a7fd83f1bdcd4.camel@intel.com>
- <20190927051320.GA1767635@kroah.com>
- <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
- <20191023174448.GP23952@ziepe.ca>
-In-Reply-To: <20191023174448.GP23952@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYTE5YjdmMDgtYTI5OC00MDk1LWJmODQtNGZkMmUxMzVhZDQzIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiUTRwc0tOamFyTURwTUN0elJlMkJWdE5rQVJMZWVSOUdPc2hHS1VNcFloTFp0TU13cHAyNXNLdzFCbGl6RklnVSJ9
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1733125AbfJWSBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 14:01:03 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51536 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbfJWSBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 14:01:02 -0400
+Received: by mail-wm1-f66.google.com with SMTP id q70so15096410wme.1
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 11:01:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=QOrRgBSXpKlQbq6/XicVegpjHbS0n3UmJLpAj4QLq40=;
+        b=VNeFRUAxmOAgNGJxcnbD6ZhmgZLedJxbfGqZSPtYqNoed4gFKhPHdPGjnpMqbscH1m
+         Mo4irZt3HVrKp9k+B0toVSTxl0iCzG9YdqHr68gYdBliPNQ0Oxr7j/B66X5NpZJcAycw
+         vv+GnwakB5+NJEo5qa+SLodKtzdnw5s+MwzDh0JpLSeVSI8i4JJrUbYZR6wvI1yjVep5
+         SVLUOA3J/24T6ssZlQqBofwNLO+Y1yN9gca9Um20XOEu1Wcj0do1YY8NbxB13hvaHJ7c
+         ILxMqXpjKGaBOAu1q7Hja62cfCY5MpopgexHa8TK6mZymO3TgGbN5ghaE7dNQJoNdJ2+
+         1tDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QOrRgBSXpKlQbq6/XicVegpjHbS0n3UmJLpAj4QLq40=;
+        b=sgDumSWcvDRWJpiXJJKaghyGDHE5srR/P5KevnPEDMAzXRj0Eb7mWVgVsNomh21Uam
+         S8mdX9ns2frRfouhczXjVqgI6GwgctfxAb3pQHMm2QSqeg+hw8t4ZUttEnlBII2RjOml
+         IEwRwVMC2gzxzDGXwMfLaJkTjbKc5MWwiEZhy3mMTy7TXk2/tQ7+HpBt17TFXaq/E9qx
+         /o2Ny2WWhQuqipCO9ufzGrKQPtTnMElQNU4JihWxwf9/llJauFH8YKH96YypTJRMUbqK
+         0+lOerzTGBKWsQ1zYjypEcAooqhz+5yyRpulAW8JVnepNoGCnPVI23/lM2JOHSlpk4zf
+         iUHg==
+X-Gm-Message-State: APjAAAVi4DQ/8LhlIrkSRczL6KBF5fNLiRdlB54xLxyyzPN+AmcAAAil
+        MhMwZ440mpYGYA2O/Cgmte4MWg==
+X-Google-Smtp-Source: APXvYqxhJKnIt4vnRz8xIvPoBaQQL00qw5ItbjGIY1qR+2bAAiQXfPljx2AgDeTXCRC93th0RnSKqg==
+X-Received: by 2002:a1c:9e0d:: with SMTP id h13mr988724wme.136.1571853660319;
+        Wed, 23 Oct 2019 11:01:00 -0700 (PDT)
+Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id d199sm13125872wmd.35.2019.10.23.11.00.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Oct 2019 11:00:59 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 20:00:58 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Paul Blakey <paulb@mellanox.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 4/4] bonding: balance ICMP echoes in layer3+4
+ mode
+Message-ID: <20191023180057.GC28355@netronome.com>
+References: <20191021200948.23775-1-mcroce@redhat.com>
+ <20191021200948.23775-5-mcroce@redhat.com>
+ <20191023100132.GD8732@netronome.com>
+ <CAGnkfhy1rsm0Dp_jsuHhfXY0kzMc_hShYmYSX=X8=q-HMtNczg@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGnkfhy1rsm0Dp_jsuHhfXY0kzMc_hShYmYSX=X8=q-HMtNczg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jason Gunthorpe [mailto:jgg@ziepe.ca]
-> Sent: Wednesday, October 23, 2019 10:45 AM
-> To: Ertman, David M <david.m.ertman@intel.com>
-> Cc: gregkh@linuxfoundation.org; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>; Kirsher, Jeffrey T
-> <jeffrey.t.kirsher@intel.com>; netdev@vger.kernel.org; linux-
-> rdma@vger.kernel.org; dledford@redhat.com
-> Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
-> provide RDMA
-> 
-> On Fri, Sep 27, 2019 at 06:03:51PM +0000, Ertman, David M wrote:
-> > > From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org]
-> > > Sent: Thursday, September 26, 2019 10:13 PM
-> > > To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
-> > > Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>;
-> > > jgg@mellanox.com; netdev@vger.kernel.org;
-> > > linux-rdma@vger.kernel.org; dledford@redhat.com; Ertman, David M
-> > > <david.m.ertman@intel.com>
-> > > Subject: Re: [RFC 01/20] ice: Initialize and register multi-function
-> > > device to provide RDMA
-> > >
-> > > On Thu, Sep 26, 2019 at 11:39:22PM +0000, Nguyen, Anthony L wrote:
-> > > > On Thu, 2019-09-26 at 20:05 +0200, Greg KH wrote:
-> > > > > On Thu, Sep 26, 2019 at 09:45:00AM -0700, Jeff Kirsher wrote:
-> > > > > > From: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > > > > >
-> > > > > > The RDMA block does not advertise on the PCI bus or any other bus.
-> > > > >
-> > > > > Huh?  How do you "know" where it is then?  Isn't is usually
-> > > > > assigned to a PCI device?
-> > > >
-> > > > The RDMA block does not have its own PCI function so it must
-> > > > register and interact with the ice driver.
-> > >
-> > > So the "ice driver" is the real thing controlling the pci device?
-> > > How does it "know" about the RDMA block?
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
+On Wed, Oct 23, 2019 at 06:58:16PM +0200, Matteo Croce wrote:
+> On Wed, Oct 23, 2019 at 12:01 PM Simon Horman
+> <simon.horman@netronome.com> wrote:
 > >
-> > The ICE driver loads and registers to control the PCI device.  It then
-> > creates an MFD device with the name 'ice_rdma'. The device data
-> > provided to the MFD subsystem by the ICE driver is the struct
-> > iidc_peer_dev which contains all of the relevant information that the
-> > IRDMA peer will need to access this PF's IIDC API callbacks
+> > On Mon, Oct 21, 2019 at 10:09:48PM +0200, Matteo Croce wrote:
+> > > The bonding uses the L4 ports to balance flows between slaves.
+> > > As the ICMP protocol has no ports, those packets are sent all to the
+> > > same device:
+> > >
+> > >     # tcpdump -qltnni veth0 ip |sed 's/^/0: /' &
+> > >     # tcpdump -qltnni veth1 ip |sed 's/^/1: /' &
+> > >     # ping -qc1 192.168.0.2
+> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 315, seq 1, length 64
+> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 315, seq 1, length 64
+> > >     # ping -qc1 192.168.0.2
+> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 316, seq 1, length 64
+> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 316, seq 1, length 64
+> > >     # ping -qc1 192.168.0.2
+> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 317, seq 1, length 64
+> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 317, seq 1, length 64
+> > >
+> > > But some ICMP packets have an Identifier field which is
+> > > used to match packets within sessions, let's use this value in the hash
+> > > function to balance these packets between bond slaves:
+> > >
+> > >     # ping -qc1 192.168.0.2
+> > >     0: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 303, seq 1, length 64
+> > >     0: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 303, seq 1, length 64
+> > >     # ping -qc1 192.168.0.2
+> > >     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 304, seq 1, length 64
+> > >     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 304, seq 1, length 64
+> > >
+> > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
 > >
-> > The IRDMA driver loads as a software only driver, and then registers a
-> > MFD function driver that takes ownership of MFD devices named 'ice_rdma'.
-> > This causes the platform bus to perform a matching between ICE's MFD
-> > device and IRDMA's driver.  Then the patform bus will call the IRDMA's
-> > IIDC probe function.  This probe provides the device data to IRDMA.
+> > I see where this patch is going but it is unclear to me what problem it is
+> > solving. I would expect ICMP traffic to be low volume and thus able to be
+> > handled by a single lower-device of a bond.
+> >
+> > ...
 > 
-> Did any resolution happen here? Dave, do you know what to do to get Greg's
-> approval?
+> Hi,
 > 
-> Jason
+> The problem is not balancing the volume, even if it could increase due
+> to IoT devices pinging some well known DNS servers to check for
+> connection.
+> If a bonding slave is down, people using pings to check for
+> connectivity could fail to detect a broken link if all the packets are
+> sent to the alive link.
+> Anyway, although I didn't measure it, the computational overhead of
+> this changeset should be minimal, and only affect ICMP packets when
+> the ICMP dissector is used.
 
-This was the last communication that I saw on this topic.  I was taking Greg's silence as
-"Oh ok, that works" :)  I hope I was not being too optimistic!
-
-If there is any outstanding issue I am not aware of it, but please let me know if I am 
-out of the loop!
-
-Greg, if you have any other concerns or questions I would be happy to address them! 
-
--Dave E
-
+So the idea is that by using different id values ping could be used
+to probe all lower-devices of a bond? If so then I understand why
+you want this and have no particular objection.
