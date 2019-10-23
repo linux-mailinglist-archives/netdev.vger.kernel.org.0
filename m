@@ -2,259 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BE7BE1EDB
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8653DE1EFD
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:12:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406486AbfJWPIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 11:08:07 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:26515 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392410AbfJWPIH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 11:08:07 -0400
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com [209.85.221.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 724613688E
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 15:08:06 +0000 (UTC)
-Received: by mail-wr1-f71.google.com with SMTP id a6so8305345wru.1
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 08:08:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1L6W+k0nNg/tQAHowWr/1ED2GuKCPT//Gnu5zgyCNAI=;
-        b=NRDMW+M3lpItP8BX0pJcV1RgNJX10TN9gd8LMvmpbuNw4GyuEJAIFv2+m5/p+I8wi1
-         PJRxdYUxLrpDqn8Mn4cSlFevLzxCxeVL33Rxe0LOdbPXEh0uPIJi1kUAeAbQw7PzhcxN
-         hhmdmduRSs95bNWXffr+ek9yIxX6pVDwyNNJMrwTKcP5eGNisFKTih8fw1Y/ZjKR2+sn
-         0AnL6MGJuNOQf5HMg14P/ihifdzf/Ly/kE4vKKCYmz2xsUAjtNiK3sL0D3FJaYsXfWY+
-         hiXQ4bSTGRhSVFfkhLXU7308HWLyWI6U7T39XN8Gz9crsECxMbN6DvG2+bqYmxJeUvcq
-         +BeA==
-X-Gm-Message-State: APjAAAUghgQmOLYShDtW2wsFrhHQDfICRJLkBF365q3sfGZLc2C5g/Z1
-        8XLcI1rzbqB7uzpqwP7a3ahcOKYwoT5Yi8+NEV2IhFkhrvTLJwNe2sww7Yb2kQxhygBsG2xI7N1
-        +/zpKmD5JTjWo5r/Z
-X-Received: by 2002:a5d:55c2:: with SMTP id i2mr1459752wrw.176.1571843284750;
-        Wed, 23 Oct 2019 08:08:04 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqx1BkWFgjFt13kSOZhC5tHhC1h/h69jYbIAHFEuvb5Y1HTNMeyVSdSK6hLWHxU9/yDmdywCwA==
-X-Received: by 2002:a5d:55c2:: with SMTP id i2mr1459721wrw.176.1571843284393;
-        Wed, 23 Oct 2019 08:08:04 -0700 (PDT)
-Received: from steredhat (host174-200-dynamic.52-79-r.retail.telecomitalia.it. [79.52.200.174])
-        by smtp.gmail.com with ESMTPSA id x2sm20845980wrn.81.2019.10.23.08.08.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 08:08:03 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 17:08:01 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>
-Cc:     Sasha Levin <sashal@kernel.org>, linux-hyperv@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Arnd Bergmann <arnd@arndb.de>, kvm <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dexuan Cui <decui@microsoft.com>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 11/14] vsock: add multi-transports support
-Message-ID: <CAGxU2F7n48kBy_y2GB=mcvraK=mw_2Jn8=2hvQnEOWqWuT9OjA@mail.gmail.com>
-References: <20191023095554.11340-1-sgarzare@redhat.com>
- <20191023095554.11340-12-sgarzare@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191023095554.11340-12-sgarzare@redhat.com>
-User-Agent: NeoMutt/20180716
+        id S2406564AbfJWPMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 11:12:01 -0400
+Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:36810 "EHLO
+        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390140AbfJWPMA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 11:12:00 -0400
+Received: from pps.filterd (m0122330.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9NF8M78001014;
+        Wed, 23 Oct 2019 16:10:53 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references; s=jan2016.eng;
+ bh=u/JjyQIcoV4c93KQJJgHN/CIzsf6K7Yn0dv80OiAIRA=;
+ b=NFKi0BhC1sUkGbG7yQ4czWXLK9OUROXEQcQWPNLnuqfzOii4i7t/QJC2lr7vvGm0Waay
+ EJbGpM3CUPXvg6VGcLOxYV1hbmssSCAhnjFoPKezfVjDe+fHYhiiRijm9qqHRO3qKQcS
+ FourdJPIKXOyNH8l4R4/b/t7auWLn0BnE12mF6GqVHoRXXm15Z7mxJB+SDdCQvfFawgu
+ hQVRVN7wJEL5pge/QTQqjhTkYLBN5qhzdCkdKW3cdKAvQe5sXBqXKrJe0GmslyDs4I+R
+ msvM1zeLpQs05G7oeyoKmPVWW4fc7Km6XMQ7ue7TkZWedfwcekGd1Z51OM4vXwKMM45I eQ== 
+Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 2vqt4v315f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Oct 2019 16:10:53 +0100
+Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
+        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x9NF2EFT020093;
+        Wed, 23 Oct 2019 11:10:52 -0400
+Received: from prod-mail-relay10.akamai.com ([172.27.118.251])
+        by prod-mail-ppoint1.akamai.com with ESMTP id 2vqwtwt04q-1;
+        Wed, 23 Oct 2019 11:10:51 -0400
+Received: from bos-lpjec.kendall.corp.akamai.com (bos-lpjec.kendall.corp.akamai.com [172.29.170.83])
+        by prod-mail-relay10.akamai.com (Postfix) with ESMTP id 88F3B1FCD8;
+        Wed, 23 Oct 2019 15:10:51 +0000 (GMT)
+From:   Jason Baron <jbaron@akamai.com>
+To:     davem@davemloft.net, edumazet@google.com
+Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Yuchung Cheng <ycheng@google.com>
+Subject: [net-next v2] tcp: add TCP_INFO status for failed client TFO
+Date:   Wed, 23 Oct 2019 11:09:26 -0400
+Message-Id: <1571843366-14691-1-git-send-email-jbaron@akamai.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <2166c3ff-e08d-e89d-4753-01c8bd2d9505@akamai.com>
+References: <2166c3ff-e08d-e89d-4753-01c8bd2d9505@akamai.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-23_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910230152
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-23_04:2019-10-23,2019-10-23 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 lowpriorityscore=0
+ phishscore=0 malwarescore=0 adultscore=0 priorityscore=1501 mlxscore=0
+ bulkscore=0 spamscore=0 suspectscore=2 impostorscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1908290000
+ definitions=main-1910230153
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 11:59 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> This patch adds the support of multiple transports in the
-> VSOCK core.
->
-> With the multi-transports support, we can use vsock with nested VMs
-> (using also different hypervisors) loading both guest->host and
-> host->guest transports at the same time.
->
-> Major changes:
-> - vsock core module can be loaded regardless of the transports
-> - vsock_core_init() and vsock_core_exit() are renamed to
->   vsock_core_register() and vsock_core_unregister()
-> - vsock_core_register() has a feature parameter (H2G, G2H, DGRAM)
->   to identify which directions the transport can handle and if it's
->   support DGRAM (only vmci)
-> - each stream socket is assigned to a transport when the remote CID
->   is set (during the connect() or when we receive a connection request
->   on a listener socket).
->   The remote CID is used to decide which transport to use:
->   - remote CID > VMADDR_CID_HOST will use host->guest transport
->   - remote CID <= VMADDR_CID_HOST will use guest->host transport
-> - listener sockets are not bound to any transports since no transport
->   operations are done on it. In this way we can create a listener
->   socket, also if the transports are not loaded or with VMADDR_CID_ANY
->   to listen on all transports.
-> - DGRAM sockets are handled as before, since only the vmci_transport
->   provides this feature.
->
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
-> RFC -> v1:
-> - documented VSOCK_TRANSPORT_F_* flags
-> - fixed vsock_assign_transport() when the socket is already assigned
->   (e.g connection failed)
-> - moved features outside of struct vsock_transport, and used as
->   parameter of vsock_core_register()
-> ---
->  drivers/vhost/vsock.c                   |   5 +-
->  include/net/af_vsock.h                  |  17 +-
->  net/vmw_vsock/af_vsock.c                | 237 ++++++++++++++++++------
->  net/vmw_vsock/hyperv_transport.c        |  26 ++-
->  net/vmw_vsock/virtio_transport.c        |   7 +-
->  net/vmw_vsock/virtio_transport_common.c |  28 ++-
->  net/vmw_vsock/vmci_transport.c          |  31 +++-
->  7 files changed, 270 insertions(+), 81 deletions(-)
->
-> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> index 6d7e4f022748..b235f4bbe8ea 100644
-> --- a/drivers/vhost/vsock.c
-> +++ b/drivers/vhost/vsock.c
-> @@ -831,7 +831,8 @@ static int __init vhost_vsock_init(void)
->  {
->         int ret;
->
-> -       ret = vsock_core_init(&vhost_transport.transport);
-> +       ret = vsock_core_register(&vhost_transport.transport,
-> +                                 VSOCK_TRANSPORT_F_H2G);
->         if (ret < 0)
->                 return ret;
->         return misc_register(&vhost_vsock_misc);
-> @@ -840,7 +841,7 @@ static int __init vhost_vsock_init(void)
->  static void __exit vhost_vsock_exit(void)
->  {
->         misc_deregister(&vhost_vsock_misc);
-> -       vsock_core_exit();
-> +       vsock_core_unregister(&vhost_transport.transport);
->  };
->
->  module_init(vhost_vsock_init);
-> diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-> index fa1570dc9f5c..27a3463e4892 100644
-> --- a/include/net/af_vsock.h
-> +++ b/include/net/af_vsock.h
-> @@ -91,6 +91,14 @@ struct vsock_transport_send_notify_data {
->         u64 data2; /* Transport-defined. */
->  };
->
-> +/* Transport features flags */
-> +/* Transport provides host->guest communication */
-> +#define VSOCK_TRANSPORT_F_H2G          0x00000001
-> +/* Transport provides guest->host communication */
-> +#define VSOCK_TRANSPORT_F_G2H          0x00000002
-> +/* Transport provides DGRAM communication */
-> +#define VSOCK_TRANSPORT_F_DGRAM                0x00000004
-> +
->  struct vsock_transport {
->         /* Initialize/tear-down socket. */
->         int (*init)(struct vsock_sock *, struct vsock_sock *);
-> @@ -154,12 +162,8 @@ struct vsock_transport {
->
->  /**** CORE ****/
->
-> -int __vsock_core_init(const struct vsock_transport *t, struct module *owner);
-> -static inline int vsock_core_init(const struct vsock_transport *t)
-> -{
-> -       return __vsock_core_init(t, THIS_MODULE);
-> -}
-> -void vsock_core_exit(void);
-> +int vsock_core_register(const struct vsock_transport *t, int features);
-> +void vsock_core_unregister(const struct vsock_transport *t);
->
->  /* The transport may downcast this to access transport-specific functions */
->  const struct vsock_transport *vsock_core_get_transport(struct vsock_sock *vsk);
-> @@ -190,6 +194,7 @@ struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
->                                          struct sockaddr_vm *dst);
->  void vsock_remove_sock(struct vsock_sock *vsk);
->  void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
-> +int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
->
->  /**** TAP ****/
->
-> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> index d89381166028..dddd85d9a147 100644
-> --- a/net/vmw_vsock/af_vsock.c
-> +++ b/net/vmw_vsock/af_vsock.c
-> @@ -130,7 +130,12 @@ static struct proto vsock_proto = {
->  #define VSOCK_DEFAULT_BUFFER_MAX_SIZE (1024 * 256)
->  #define VSOCK_DEFAULT_BUFFER_MIN_SIZE 128
->
-> -static const struct vsock_transport *transport_single;
-> +/* Transport used for host->guest communication */
-> +static const struct vsock_transport *transport_h2g;
-> +/* Transport used for guest->host communication */
-> +static const struct vsock_transport *transport_g2h;
-> +/* Transport used for DGRAM communication */
-> +static const struct vsock_transport *transport_dgram;
->  static DEFINE_MUTEX(vsock_register_mutex);
->
->  /**** UTILS ****/
-> @@ -182,7 +187,7 @@ static int vsock_auto_bind(struct vsock_sock *vsk)
->         return __vsock_bind(sk, &local_addr);
->  }
->
-> -static int __init vsock_init_tables(void)
-> +static void vsock_init_tables(void)
->  {
->         int i;
->
-> @@ -191,7 +196,6 @@ static int __init vsock_init_tables(void)
->
->         for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++)
->                 INIT_LIST_HEAD(&vsock_connected_table[i]);
-> -       return 0;
->  }
->
->  static void __vsock_insert_bound(struct list_head *list,
-> @@ -376,6 +380,62 @@ void vsock_enqueue_accept(struct sock *listener, struct sock *connected)
->  }
->  EXPORT_SYMBOL_GPL(vsock_enqueue_accept);
->
-> +/* Assign a transport to a socket and call the .init transport callback.
-> + *
-> + * Note: for stream socket this must be called when vsk->remote_addr is set
-> + * (e.g. during the connect() or when a connection request on a listener
-> + * socket is received).
-> + * The vsk->remote_addr is used to decide which transport to use:
-> + *  - remote CID > VMADDR_CID_HOST will use host->guest transport
-> + *  - remote CID <= VMADDR_CID_HOST will use guest->host transport
-> + */
-> +int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
-> +{
-> +       const struct vsock_transport *new_transport;
-> +       struct sock *sk = sk_vsock(vsk);
-> +
-> +       switch (sk->sk_type) {
-> +       case SOCK_DGRAM:
-> +               new_transport = transport_dgram;
-> +               break;
-> +       case SOCK_STREAM:
-> +               if (vsk->remote_addr.svm_cid > VMADDR_CID_HOST)
-> +                       new_transport = transport_h2g;
-> +               else
-> +                       new_transport = transport_g2h;
+The TCPI_OPT_SYN_DATA bit as part of tcpi_options currently reports whether
+or not data-in-SYN was ack'd on both the client and server side. We'd like
+to gather more information on the client-side in the failure case in order
+to indicate the reason for the failure. This can be useful for not only
+debugging TFO, but also for creating TFO socket policies. For example, if
+a middle box removes the TFO option or drops a data-in-SYN, we can
+can detect this case, and turn off TFO for these connections saving the
+extra retransmits.
 
-I just noticed that this break the loopback in the guest.
-As a fix, we should use 'transport_g2h' when remote_cid <= VMADDR_CID_HOST
-or remote_cid is the id of 'transport_g2h'.
+The newly added tcpi_fastopen_client_fail status is 2 bits and has the
+following 4 states:
 
-To do that we also need to avoid that L2 guests can have the same CID of L1.
-For vhost_vsock I can call vsock_find_cid() in vhost_vsock_set_cid()
+1) TFO_STATUS_UNSPEC
 
-@Jorgen: for vmci we need to do the same? or it is guaranteed, since
-it's already support nested VMs, that a L2 guests cannot have the
-same CID as the L1.
+Catch-all state which includes when TFO is disabled via black hole
+detection, which is indicated via LINUX_MIB_TCPFASTOPENBLACKHOLE.
 
-I'll send a v2 with this fix, but I'll wait a bit for other comments.
+2) TFO_COOKIE_UNAVAILABLE
 
-Thanks,
-Stefano
+If TFO_CLIENT_NO_COOKIE mode is off, this state indicates that no cookie
+is available in the cache.
+
+3) TFO_DATA_NOT_ACKED
+
+Data was sent with SYN, we received a SYN/ACK but it did not cover the data
+portion. Cookie is not accepted by server because the cookie may be invalid
+or the server may be overloaded.
+
+4) TFO_SYN_RETRANSMITTED
+
+Data was sent with SYN, we received a SYN/ACK which did not cover the data
+after at least 1 additional SYN was sent (without data). It may be the case
+that a middle-box is dropping data-in-SYN packets. Thus, it would be more
+efficient to not use TFO on this connection to avoid extra retransmits
+during connection establishment.
+
+These new fields do not cover all the cases where TFO may fail, but other
+failures, such as SYN/ACK + data being dropped, will result in the
+connection not becoming established. And a connection blackhole after
+session establishment shows up as a stalled connection.
+
+Signed-off-by: Jason Baron <jbaron@akamai.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Cc: Christoph Paasch <cpaasch@apple.com>
+Cc: Yuchung Cheng <ycheng@google.com>
+---
+v2:
+  -use tp->total_retrans instead of syn_drop for the non-tfo case
+  -improve state naming (Neal Cardwell)
+  -s/TFO_NO_COOKIE_SENT/TFO_COOKIE_UNAVAILABLE - exclude black-hole
+   from this state
+
+ net/ipv4/tcp_fastopen.c  |  5 ++++-
+ net/ipv4/tcp_input.c     |  4 ++++
+ 5 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index 99617e5..7790f28 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -223,7 +223,7 @@ struct tcp_sock {
+ 		fastopen_connect:1, /* FASTOPEN_CONNECT sockopt */
+ 		fastopen_no_cookie:1, /* Allow send/recv SYN+data without a cookie */
+ 		is_sack_reneg:1,    /* in recovery from loss with SACK reneg? */
+-		unused:2;
++		fastopen_client_fail:2; /* reason why fastopen failed */
+ 	u8	nonagle     : 4,/* Disable Nagle algorithm?             */
+ 		thin_lto    : 1,/* Use linear timeouts for thin streams */
+ 		recvmsg_inq : 1,/* Indicate # of bytes in queue upon recvmsg */
+diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+index 81e6979..74af1f7 100644
+--- a/include/uapi/linux/tcp.h
++++ b/include/uapi/linux/tcp.h
+@@ -155,6 +155,14 @@ enum {
+ 	TCP_QUEUES_NR,
+ };
+ 
++/* why fastopen failed from client perspective */
++enum tcp_fastopen_client_fail {
++	TFO_STATUS_UNSPEC, /* catch-all */
++	TFO_COOKIE_UNAVAILABLE, /* if not in TFO_CLIENT_NO_COOKIE mode */
++	TFO_DATA_NOT_ACKED, /* SYN-ACK did not ack SYN data */
++	TFO_SYN_RETRANSMITTED, /* SYN-ACK did not ack SYN data after timeout */
++};
++
+ /* for TCP_INFO socket option */
+ #define TCPI_OPT_TIMESTAMPS	1
+ #define TCPI_OPT_SACK		2
+@@ -211,7 +219,7 @@ struct tcp_info {
+ 	__u8	tcpi_backoff;
+ 	__u8	tcpi_options;
+ 	__u8	tcpi_snd_wscale : 4, tcpi_rcv_wscale : 4;
+-	__u8	tcpi_delivery_rate_app_limited:1;
++	__u8	tcpi_delivery_rate_app_limited:1, tcpi_fastopen_client_fail:2;
+ 
+ 	__u32	tcpi_rto;
+ 	__u32	tcpi_ato;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 9f41a76..bb5fc97 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2657,6 +2657,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+ 	/* Clean up fastopen related fields */
+ 	tcp_free_fastopen_req(tp);
+ 	inet->defer_connect = 0;
++	tp->fastopen_client_fail = 0;
+ 
+ 	WARN_ON(inet->inet_num && !icsk->icsk_bind_hash);
+ 
+@@ -3296,6 +3297,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
+ 	info->tcpi_reord_seen = tp->reord_seen;
+ 	info->tcpi_rcv_ooopack = tp->rcv_ooopack;
+ 	info->tcpi_snd_wnd = tp->snd_wnd;
++	info->tcpi_fastopen_client_fail = tp->fastopen_client_fail;
+ 	unlock_sock_fast(sk, slow);
+ }
+ EXPORT_SYMBOL_GPL(tcp_get_info);
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index 3fd4512..dabd2f1 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -422,7 +422,10 @@ bool tcp_fastopen_cookie_check(struct sock *sk, u16 *mss,
+ 		cookie->len = -1;
+ 		return true;
+ 	}
+-	return cookie->len > 0;
++	if (cookie->len > 0)
++		return true;
++	tcp_sk(sk)->fastopen_client_fail = TFO_COOKIE_UNAVAILABLE;
++	return false;
+ }
+ 
+ /* This function checks if we want to defer sending SYN until the first
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 3578357a..d562774 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5812,6 +5812,10 @@ static bool tcp_rcv_fastopen_synack(struct sock *sk, struct sk_buff *synack,
+ 	tcp_fastopen_cache_set(sk, mss, cookie, syn_drop, try_exp);
+ 
+ 	if (data) { /* Retransmit unacked data in SYN */
++		if (tp->total_retrans)
++			tp->fastopen_client_fail = TFO_SYN_RETRANSMITTED;
++		else
++			tp->fastopen_client_fail = TFO_DATA_NOT_ACKED;
+ 		skb_rbtree_walk_from(data) {
+ 			if (__tcp_retransmit_skb(sk, data, 1))
+ 				break;
+-- 
+2.7.4
+
