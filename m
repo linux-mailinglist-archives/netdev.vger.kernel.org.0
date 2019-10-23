@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84114E1DC0
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 16:11:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8773CE1E01
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 16:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404300AbfJWOLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 10:11:35 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:40731 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732167AbfJWOLf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 10:11:35 -0400
-Received: by mail-io1-f68.google.com with SMTP id p6so16872110iod.7
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 07:11:33 -0700 (PDT)
+        id S2389727AbfJWOV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 10:21:59 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:39491 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725852AbfJWOV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 10:21:58 -0400
+Received: by mail-il1-f195.google.com with SMTP id i12so8540565ils.6
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 07:21:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ms4xJUd0YoyuB/IKqDpHAlyQHa/acS6m9rir4YmxrOw=;
-        b=bRhmx0T0ovlPciYOaEc5l3aygoNIWUpK6p+OopcegRmQs9jqca2ol2W/QkCGp5b6Ef
-         tazdqhVXDDWDahbZ8685aesbuP+oEhJetIirLUu8u+BT7xTIASzuqFk60H/uS+c6Kw7N
-         Wswh486+4SJ7RF8v/VBT2LIZCxcMbzZybyplf50IehsBvCGtoo+AuiGJroH42fzAosz9
-         5sB8iTLvQ0auObjWtxnCnXRMU3PfdC3VofsFwKoYE9R/WbzB0PeMjMXlel+xmirXm6gj
-         0bHE3wzdFTX+W3LgVPGqnuOlikkwsthcTBS5WWplPyvWzlrO0XcIEQqHqWlnjATlbLgw
-         2tYQ==
+        bh=YaG6oZO7D1x+lYzRQQFeA/hHV1zln7giQYUkA/ta9i4=;
+        b=UxWCxJrTYW/bMCScTVpj6ZsCM4ugePGqlNUsT6oi6Bh6GCxnbmvHIRd/Zu5FVGn0CZ
+         Z/aLZvwlVdpU+D+ydPceF+EXn0L2GaxEAF+0o5D/voaSUHBM5Amdx8+Zebb4G8qpDDIy
+         Pn27FKBnbM9HWhKNUGme7X3KYZ0Y6NDq/AedEoGmHldTd61khr9fmhAaR2aJobtpx61a
+         +sCjnMewVG33MQdOP4jIlci716yA+wDJdfDP+Csxgn4c+gXEylsBz9yjvVfxGjSVtA1T
+         4im1l90T/zyJHn7itkox/ZYNG9iz5mY/+11L7tQK7vNV72jeRImcmOLzHkyRyAwhh8jf
+         ajCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Ms4xJUd0YoyuB/IKqDpHAlyQHa/acS6m9rir4YmxrOw=;
-        b=V8MOMoHk7FltNX4BFMDy7j776BoRwI/yRUrx2VB1H1iTEcM4//sLpmqaNn98JStPug
-         H5T/Vajk5pcevxLNRfLdB0pdhG9p4StfRX+kvgRMEwtVDzZAg6hsAslDbf4+Sx1IgS6f
-         DI9xB481fmm5bDXOjmTFmPsx/FZbAnUFrPNWIh3/DBDOOzFy+8wS2WUTjZiBS0RzvW9C
-         TV3/qvRtDMipkBb7WTFd55/inFyqgySspZ6/jE8ktEO7Z52pqbESihX70qFCg+KphZMb
-         +IKypGpM1XekdEVURp9Da9JXYbxeaAUwW+pGrS3oqewdhdVHhgFGlD5TgD2Z0bVfvNuj
-         VESQ==
-X-Gm-Message-State: APjAAAVDo8T/x5gBuMC76crCbB/cMl6LIW4xBgCw/aSFtgU1D40flISS
-        Nlt2EYcq4swzqrgyTnZW4kSG5jvEEV1/lA==
-X-Google-Smtp-Source: APXvYqy3P9pZCyajDkOFnT7a7dJLo3Bro5PeZIlLjcn+zegPQHMAfLuBH7vjSPH1p2LPuQBHPznBUw==
-X-Received: by 2002:a5e:9807:: with SMTP id s7mr1158946ioj.215.1571839891865;
-        Wed, 23 Oct 2019 07:11:31 -0700 (PDT)
-Received: from [192.168.1.159] ([65.144.74.34])
-        by smtp.gmail.com with ESMTPSA id c17sm8651919ild.31.2019.10.23.07.11.29
+        bh=YaG6oZO7D1x+lYzRQQFeA/hHV1zln7giQYUkA/ta9i4=;
+        b=P5StTDHEaO3P/+HRbZaVZ0e1hb9ayNn0R7wxR68/vPgfW3c2lfrMdRGVju4UOK6z7I
+         dYpIYvoYZ+GxSYoNuhiGz4AnchA0Wq4kGzjVUL143cNuxKPNT1QkQ1+43pQe1inUrsdH
+         Dak1tHO9BfOY/HSA8rDt6bI//tfMt+aCzr0ki2PihV9R6yWQyi00gRKeFxpAGRxpR/cY
+         ti0pDS4rh0lViRMFDHtFesJGNGtLHkQdd2eHVgwRTBIUzgGHfFlbSlV7/TK347j0gweS
+         xONfTTkHtpIL608hk903mrs5e06DqxSmmSFC6M0jXRjPeiQo5ZGpo8YJInzxZH7hYO9x
+         CUpA==
+X-Gm-Message-State: APjAAAVkeoRfeTTFgFNhtsAYExcIryWJROyGorP4fL+tMtA0oNVot6eS
+        7398kwP6KhsI2pTEtVvPNdkp9A==
+X-Google-Smtp-Source: APXvYqxTdIX7+YdBH0zKp16AgAY8urpotkx/RGjsEFrJuGSs1p3sozprY4mHzeYEgIbMYdITvtHUpA==
+X-Received: by 2002:a92:d38b:: with SMTP id o11mr23460626ilo.20.1571840514384;
+        Wed, 23 Oct 2019 07:21:54 -0700 (PDT)
+Received: from [10.0.0.194] ([64.26.149.125])
+        by smtp.googlemail.com with ESMTPSA id w75sm4629201ill.78.2019.10.23.07.21.51
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Oct 2019 07:11:30 -0700 (PDT)
-Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting files
- table
-To:     Wolfgang Bumiller <w.bumiller@proxmox.com>
-Cc:     linux-block@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-References: <20191017212858.13230-1-axboe@kernel.dk>
- <20191017212858.13230-2-axboe@kernel.dk>
- <20191023120446.75oxdwom34nhe3l5@olga.proxmox.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <3b97233b-5d05-5efc-4173-e3a1ef177cbc@kernel.dk>
-Date:   Wed, 23 Oct 2019 08:11:29 -0600
+        Wed, 23 Oct 2019 07:21:52 -0700 (PDT)
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mleitner@redhat.com" <mleitner@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+ <vbf7e4vy5nq.fsf@mellanox.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+Date:   Wed, 23 Oct 2019 10:21:51 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191023120446.75oxdwom34nhe3l5@olga.proxmox.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <vbf7e4vy5nq.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,94 +73,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/23/19 6:04 AM, Wolfgang Bumiller wrote:
-> On Thu, Oct 17, 2019 at 03:28:56PM -0600, Jens Axboe wrote:
->> This is in preparation for adding opcodes that need to modify files
->> in a process file table, either adding new ones or closing old ones.
+On 2019-10-23 9:04 a.m., Vlad Buslov wrote:
+> 
+> On Wed 23 Oct 2019 at 15:49, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>> Hi Vlad,
 >>
->> If an opcode needs this, it must set REQ_F_NEED_FILES in the request
->> structure. If work that needs to get punted to async context have this
->> set, they will grab a reference to the process file table. When the
->> work is completed, the reference is dropped again.
+
+>> I understand your use case being different since it is for h/w
+>> offload. If you have time can you test with batching many actions
+>> and seeing the before/after improvement?
 > 
-> I think IORING_OP_SENDMSG and _RECVMSG need to set this flag due to
-> SCM_RIGHTS control messages.
-> Thought I'd reply here since I just now ran into the issue that I was
-> getting ever-increasing wrong file descriptor numbers on pretty much
-> ever "other" async recvmsg() call I did via io-uring while receiving
-> file descriptors from lxc for the seccomp-notify proxy. (I'm currently
-> running an ubuntu based 5.3.1 kernel)
-> I ended up finding them in /proc - they show up in all kernel threads,
-> eg.:
+> Will do.
+
+Thanks.
+
+I think you may have published number before, but would be interesting
+to see the before and after of adding the action first and measuring the
+filter improvement without caring about the allocator.
+
 > 
-> root:/root # grep Name /proc/9/status
-> Name:   mm_percpu_wq
-> root:/root # ls -l /proc/9/fd
-> total 0
-> lr-x------ 1 root root 64 Oct 23 12:00 0 -> '/proc/512 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 1 -> /proc/512/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 10 -> '/proc/11782 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 11 -> /proc/11782/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 12 -> '/proc/12210 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 13 -> /proc/12210/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 14 -> '/proc/12298 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 15 -> /proc/12298/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 16 -> '/proc/13955 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 17 -> /proc/13955/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 18 -> '/proc/13989 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 19 -> /proc/13989/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 2 -> '/proc/584 (deleted)'
-> lr-x------ 1 root root 64 Oct 23 12:00 20 -> '/proc/15502 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 21 -> /proc/15502/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 22 -> '/proc/15510 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 23 -> /proc/15510/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 24 -> '/proc/17833 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 25 -> /proc/17833/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 26 -> '/proc/17836 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 27 -> /proc/17836/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 28 -> '/proc/21929 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 29 -> /proc/21929/mem
-> lrwx------ 1 root root 64 Oct 23 12:00 3 -> /proc/584/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 30 -> '/proc/22214 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 31 -> /proc/22214/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 32 -> '/proc/22283 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 33 -> /proc/22283/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 34 -> '/proc/29795 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 35 -> /proc/29795/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 36 -> '/proc/30124 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 37 -> /proc/30124/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 38 -> '/proc/31016 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 39 -> /proc/31016/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 4 -> '/proc/1632 (deleted)'
-> lr-x------ 1 root root 64 Oct 23 12:00 40 -> '/proc/4137 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 41 -> /proc/4137/mem
-> lrwx------ 1 root root 64 Oct 23 12:00 5 -> /proc/1632/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 6 -> '/proc/3655 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 7 -> /proc/3655/mem
-> lr-x------ 1 root root 64 Oct 23 12:00 8 -> '/proc/7075 (deleted)'
-> lrwx------ 1 root root 64 Oct 23 12:00 9 -> /proc/7075/mem
-> root:/root #
+>>
+>> Note: even for h/w offload it makes sense to first create the actions
+>> then bind to filters (in my world thats what we end up doing).
+>> If we can improve the first phase it is a win for both s/w and hw use
+>> cases.
+>>
+>> Question:
+>> Given TCA_ACT_FLAGS_FAST_INIT is common to all actions would it make
+>> sense to use Could you have used a TLV in the namespace of TCA_ACT_MAX
+>> (outer TLV)? You will have to pass a param to ->init().
 > 
-> Those are the fds I expected to receive, and I get fd numbers
-> consistently increasing with them.
-> lxc sends the syscall-executing process' pidfd and its 'mem' fd via a
-> socket, but instead of making it to the receiver, they end up there...
-> 
-> I suspect that an async sendmsg() call could potentially end up
-> accessing those instead of the ones from the sender process, but I
-> haven't tested it...
+> It is not common for all actions. I omitted modifying actions that are
+> not offloaded and some actions don't user percpu allocator at all
+> (pedit, for example) and have no use for this flag at the moment.
 
-Might "just" be a case of the sendmsg() being stuck, we can't currently
-cancel work. So if they never complete, the ring won't go away.
+pedit just never got updated (its simple to update). There is
+value in the software to have _all_ the actions use per cpu stats.
+It improves fast path performance.
 
-Actually working on a small workqueue replacement for io_uring which
-allow us to cancel things like that. It's a requirement for accept() as
-well, but also for basic read/write send/recv on sockets. So used to
-storage IO operations that complete in a finite amount of time...
+Jiri complains constantly about all these new per-action TLVs
+which are generic. He promised to "fix it all" someday. Jiri i notice
+your ack here, what happened? ;->
 
-But yes, I hope with that, and the flush trick that Jann suggested, that
-we can make this 100% reliable for any type of operation.
-
--- 
-Jens Axboe
-
+cheers,
+jamal
