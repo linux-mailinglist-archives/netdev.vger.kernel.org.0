@@ -2,132 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B191E2366
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 21:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93220E2405
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 22:10:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389134AbfJWTpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 15:45:04 -0400
-Received: from mga06.intel.com ([134.134.136.31]:31501 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728697AbfJWTpE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 15:45:04 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2019 12:45:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,222,1569308400"; 
-   d="scan'208";a="197513146"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 23 Oct 2019 12:45:01 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iNMZ2-000CAG-SD; Thu, 24 Oct 2019 03:45:00 +0800
-Date:   Thu, 24 Oct 2019 03:44:41 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     kbuild-all@lists.01.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "epomozov@marvell.com" <epomozov@marvell.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
-Subject: Re: [PATCH v3 net-next 06/12] net: aquantia: implement data PTP
- datapath
-Message-ID: <201910240348.7QggoVlk%lkp@intel.com>
-References: <13c973abf7a0573fbe8e98d48ab07f7d62d05cb5.1571737612.git.igor.russkikh@aquantia.com>
+        id S2389389AbfJWUKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 16:10:05 -0400
+Received: from mail-ed1-f49.google.com ([209.85.208.49]:34066 "EHLO
+        mail-ed1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730318AbfJWUKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 16:10:05 -0400
+Received: by mail-ed1-f49.google.com with SMTP id b72so7815429edf.1;
+        Wed, 23 Oct 2019 13:10:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:mime-version
+         :content-disposition:user-agent;
+        bh=C1NbfjOuUTsXYRctJ+TahLyVOHakGWGNdk4fyJjLp9A=;
+        b=jNFK7rbG6GM43VxqVeMfmX0GUT/q18dLyodhNk8SHuNYeY8X7fC9oW7VEPm+C3J2Kz
+         W1ZizKY60mZn8HGXuafW1xDpdwHlfedQexRfm5y/emsdCz54V4oP6eltP2XWyCd52Tal
+         2dUg0OdoY4/G1Y5b9U9F2Vw7l6NNZ+b+K0UzkeJ7RR7x9Bv48C8yTookFgKqdI5DF9W7
+         qnWZtevkurE0uHqLQfQ8VgFMT7AyzOUOscfvofm5lmpXME//G9/oCBgymH4cG+yWuiT4
+         TYSqoh9uHv2NYm7W6Vs6if0QI5iUrE8sjYBfiGDy9GpYVZcSu1txKHuX+b2VMmvD9eR3
+         gwyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:mime-version:content-disposition:user-agent;
+        bh=C1NbfjOuUTsXYRctJ+TahLyVOHakGWGNdk4fyJjLp9A=;
+        b=I5KOLmqggJH+RI21RsNNNnVcL44HR+6ys4p9vZjkz7WyOFJXXDyKS32UHhIgJNc2bq
+         SJe4QPAvGNuD4C16T3zLj1mn6rSnbfQCMZ8sUPT43zCJxtAi6tuAe1yL+HT0v3qGwd1L
+         RMGUwBijVCqAQu2Ht8vbzw1/FRrv02IyU12/Q/m5c7QhzsqHaFkwn7yF2hcBIJVMnCNQ
+         fBnUiAO9m6aw9cwXUc0meFBeJXvJtgWSMk+ISoVZ6BnD2JtNtfBHrgBcF8PPv58eEIFn
+         uFXNq8p2GE5y5BNsV08Xic7yh96K3/HY/tlIR+xS99ZG8vMMfdaCNsxtgz9eLhG4dEP9
+         7pFg==
+X-Gm-Message-State: APjAAAU914NEC7E9dQ++PiyvfQxU4ripvoLnxb5TV9MoFEelqvr/DKhO
+        wGFRxYFOTxtDY9tJAdTKNxc=
+X-Google-Smtp-Source: APXvYqzYe28YjM3kzXcH00uYMzHG30FNnyv6ODvygeohVjBtT4lsFb7SivWJLOWKsqkEcP8yonn7kg==
+X-Received: by 2002:a17:906:858d:: with SMTP id v13mr24700263ejx.61.1571861402855;
+        Wed, 23 Oct 2019 13:10:02 -0700 (PDT)
+Received: from localhost (ip1f113d5e.dynamic.kabel-deutschland.de. [31.17.61.94])
+        by smtp.gmail.com with ESMTPSA id a20sm842757edt.95.2019.10.23.13.10.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 23 Oct 2019 13:10:02 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 22:10:00 +0200
+From:   Oliver Graute <oliver.graute@gmail.com>
+To:     fugang.duan@nxp.com
+Cc:     festevam@gmail.com,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Subject: fec driver: ethernet rx is deaf on variscite imx6ul board
+Message-ID: <20191023201000.GE20321@ripley>
+Mail-Followup-To: fugang.duan@nxp.com, festevam@gmail.com,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <13c973abf7a0573fbe8e98d48ab07f7d62d05cb5.1571737612.git.igor.russkikh@aquantia.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Igor,
+Hello,
 
-Thank you for the patch! Perhaps something to improve:
+I use the following nodes in my devicetree to get two ethernet ports
+working with fec driver on a Variscite DART-6UL SoM Board (imx6ul).
 
-[auto build test WARNING on net-next/master]
+But ethernet RX is deaf and not working. Some clue whats is the issue
+here? 
 
-url:    https://github.com/0day-ci/linux/commits/Igor-Russkikh/net-aquantia-PTP-support-for-AQC-devices/20191023-194531
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 88652bf8ce4b91c49769a2a49c17dc44b85b4fa2
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+Best regards,
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+Oliver
 
+&fec1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet1>;
+	phy-mode = "rmii";
+	phy-reset-gpios = <&gpio5 0 1>;
+	phy-reset-duration = <100>;
+	phy-handle = <&ethphy0>;
+};
 
-sparse warnings: (new ones prefixed by >>)
+&fec2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet2>;
+	phy-mode = "rmii";
+	phy-handle = <&ethphy1>;
+	phy-reset-gpios = <&gpio1 10 1>;
+	phy-reset-duration = <100>;
 
-   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:794:45: sparse: sparse: cast to restricted __le16
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1201:15: sparse: sparse: cast to restricted __be64
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1202:14: sparse: sparse: cast to restricted __be32
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1202:14: sparse: sparse: cast to restricted __be32
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1202:14: sparse: sparse: cast to restricted __be32
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1202:14: sparse: sparse: cast to restricted __be32
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1202:14: sparse: sparse: cast to restricted __be32
->> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1202:14: sparse: sparse: cast to restricted __be32
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
 
-vim +1201 drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+		ethphy0: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			micrel,rmii-reference-clock-select-25-mhz;
+			clocks = <&clk_rmii_ref>;
+			clock-names = "rmii-ref";
+			reg = <1>;
+		};
 
-  1175	
-  1176	static u16 hw_atl_b0_rx_extract_ts(struct aq_hw_s *self, u8 *p,
-  1177					   unsigned int len, u64 *timestamp)
-  1178	{
-  1179		unsigned int offset = 14;
-  1180		struct ethhdr *eth;
-  1181		u64 sec;
-  1182		u8 *ptr;
-  1183		u32 ns;
-  1184	
-  1185		if (len <= offset || !timestamp)
-  1186			return 0;
-  1187	
-  1188		/* The TIMESTAMP in the end of package has following format:
-  1189		 * (big-endian)
-  1190		 *   struct {
-  1191		 *     uint64_t sec;
-  1192		 *     uint32_t ns;
-  1193		 *     uint16_t stream_id;
-  1194		 *   };
-  1195		 */
-  1196		ptr = p + (len - offset);
-  1197		memcpy(&sec, ptr, sizeof(sec));
-  1198		ptr += sizeof(sec);
-  1199		memcpy(&ns, ptr, sizeof(ns));
-  1200	
-> 1201		sec = be64_to_cpu(sec) & 0xffffffffffffllu;
-> 1202		ns = be32_to_cpu(ns);
-  1203		*timestamp = sec * NSEC_PER_SEC + ns + self->ptp_clk_offset;
-  1204	
-  1205		eth = (struct ethhdr *)p;
-  1206	
-  1207		return (eth->h_proto == htons(ETH_P_1588)) ? 12 : 14;
-  1208	}
-  1209	
+		ethphy1: ethernet-phy@3 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			micrel,rmii-reference-clock-select-25-mhz;
+			clocks = <&clk_rmii_ref>;
+			clock-names = "rmii-ref";
+			reg = <3>;
+		};
+	};
+};
+	pinctrl_enet1: enet1grp {
+		fsl,pins = <
+			MX6UL_PAD_ENET1_RX_EN__ENET1_RX_EN	0x1b0b0
+			MX6UL_PAD_ENET1_RX_ER__ENET1_RX_ER	0x1b0b0
+			MX6UL_PAD_ENET1_RX_DATA0__ENET1_RDATA00	0x1b0b0
+			MX6UL_PAD_ENET1_RX_DATA1__ENET1_RDATA01	0x1b0b0
+			MX6UL_PAD_ENET1_TX_EN__ENET1_TX_EN	0x1b0b0
+			MX6UL_PAD_ENET1_TX_DATA0__ENET1_TDATA00	0x1b0b0
+			MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01	0x1b0b0
+			MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1	0x4001b031
+		>;
+	};
 
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+	pinctrl_enet2: enet2grp {
+		fsl,pins = <
+			MX6UL_PAD_ENET2_RX_EN__ENET2_RX_EN	0x1b0b0
+			MX6UL_PAD_ENET2_RX_ER__ENET2_RX_ER	0x1b0b0
+			MX6UL_PAD_ENET2_RX_DATA0__ENET2_RDATA00	0x1b0b0
+			MX6UL_PAD_ENET2_RX_DATA1__ENET2_RDATA01	0x1b0b0
+			MX6UL_PAD_ENET2_TX_EN__ENET2_TX_EN	0x1b0b0
+			MX6UL_PAD_ENET2_TX_DATA0__ENET2_TDATA00	0x1b0b0
+			MX6UL_PAD_ENET2_TX_DATA1__ENET2_TDATA01	0x1b0b0
+			MX6UL_PAD_ENET2_TX_CLK__ENET2_REF_CLK2	0x4001b031
+			MX6UL_PAD_JTAG_MOD__GPIO1_IO10		0x1b0b0
+		>;
+	};
