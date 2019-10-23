@@ -2,149 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8716E2262
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 20:18:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63DCDE2275
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 20:24:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732726AbfJWSSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 14:18:54 -0400
-Received: from mga03.intel.com ([134.134.136.65]:14439 "EHLO mga03.intel.com"
+        id S2388901AbfJWSY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 14:24:29 -0400
+Received: from mga14.intel.com ([192.55.52.115]:64568 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727309AbfJWSSy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 14:18:54 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
+        id S1733282AbfJWSY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 14:24:29 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2019 11:18:53 -0700
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2019 11:24:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,221,1569308400"; 
-   d="scan'208";a="228220226"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 23 Oct 2019 11:18:51 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iNLDf-000HJl-3p; Thu, 24 Oct 2019 02:18:51 +0800
-Date:   Thu, 24 Oct 2019 02:18:49 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     kbuild-all@lists.01.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "epomozov@marvell.com" <epomozov@marvell.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
-Subject: Re: [PATCH v3 net-next 04/12] net: aquantia: add PTP rings
- infrastructure
-Message-ID: <201910240114.dBccbC6D%lkp@intel.com>
-References: <855844d84a191bc00b9fb847d665f6e16ab131f5.1571737612.git.igor.russkikh@aquantia.com>
+   d="scan'208";a="202075922"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by orsmga006.jf.intel.com with ESMTP; 23 Oct 2019 11:24:28 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/11][pull request] 40GbE Intel Wired LAN Driver Updates 2019-10-23
+Date:   Wed, 23 Oct 2019 11:24:15 -0700
+Message-Id: <20191023182426.13233-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <855844d84a191bc00b9fb847d665f6e16ab131f5.1571737612.git.igor.russkikh@aquantia.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Igor,
+This series contains updates to i40e only.  Several are fixes that could
+go to 'net', but were intended for 'net-next'.
 
-Thank you for the patch! Perhaps something to improve:
+Sylwia changes how the driver function to read the NVM module data, so
+that it is able to read the LLDP agent configuration to allow for
+persistent LLDP.
 
-[auto build test WARNING on net-next/master]
+Arkadiusz provides extended statistics for PF interfaces in i40e.
 
-url:    https://github.com/0day-ci/linux/commits/Igor-Russkikh/net-aquantia-PTP-support-for-AQC-devices/20191023-194531
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 88652bf8ce4b91c49769a2a49c17dc44b85b4fa2
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+Jaroslaw resolves an issue where the incorrect FEC settings were being
+displayed in ethtool, by setting the proper FEC bits.
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+Piotr moves the hardware flags detection into a separate function, so
+that the specific flags can be set based on the MAC and NVM.  Also
+extends the PHY access function to include a command flag to let the
+firmware know it should not change the page while accessing a OSFP module.
+Updates the driver to display the driver and firmware version when in
+recovery mode.
 
+Aleksandr cleans up the code by removing an unneeded macro by calling
+the i40e_update_vfid_in_stats() directly.  Refactored the VF MAC filters
+accounting since an untrusted VF was able to delete but not add a MAC
+filter, so refactor the code to have more consistency and improved
+logging.
 
-sparse warnings: (new ones prefixed by >>)
+Nicholas updates the driver to use a default interval of 50 usecs,
+instead of the current 100 usecs which was causing some regression
+performance issues.
 
->> drivers/net/ethernet/aquantia/atlantic/aq_ptp.c:258:34: sparse: sparse: Using plain integer as NULL pointer
+Damian resolved LED blinking issues for X710T*L devices by adding
+specific flows for these devices in the LED operations.
 
-vim +258 drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+Navid Emamdoost found where allocated memory is not being properly freed
+upon a failure in setting up MAC VLANs, so added the missing kfree().
 
-   253	
-   254	int aq_ptp_ring_alloc(struct aq_nic_s *aq_nic)
-   255	{
-   256		struct aq_ptp_s *aq_ptp = aq_nic->aq_ptp;
-   257		unsigned int tx_ring_idx, rx_ring_idx;
- > 258		struct aq_ring_s *hwts = 0;
-   259		u32 tx_tc_mode, rx_tc_mode;
-   260		struct aq_ring_s *ring;
-   261		int err;
-   262	
-   263		if (!aq_ptp)
-   264			return 0;
-   265	
-   266		/* Index must to be 8 (8 TCs) or 16 (4 TCs).
-   267		 * It depends from Traffic Class mode.
-   268		 */
-   269		aq_nic->aq_hw_ops->hw_tx_tc_mode_get(aq_nic->aq_hw, &tx_tc_mode);
-   270		if (tx_tc_mode == 0)
-   271			tx_ring_idx = PTP_8TC_RING_IDX;
-   272		else
-   273			tx_ring_idx = PTP_4TC_RING_IDX;
-   274	
-   275		ring = aq_ring_tx_alloc(&aq_ptp->ptp_tx, aq_nic,
-   276					tx_ring_idx, &aq_nic->aq_nic_cfg);
-   277		if (!ring) {
-   278			err = -ENOMEM;
-   279			goto err_exit;
-   280		}
-   281	
-   282		aq_nic->aq_hw_ops->hw_rx_tc_mode_get(aq_nic->aq_hw, &rx_tc_mode);
-   283		if (rx_tc_mode == 0)
-   284			rx_ring_idx = PTP_8TC_RING_IDX;
-   285		else
-   286			rx_ring_idx = PTP_4TC_RING_IDX;
-   287	
-   288		ring = aq_ring_rx_alloc(&aq_ptp->ptp_rx, aq_nic,
-   289					rx_ring_idx, &aq_nic->aq_nic_cfg);
-   290		if (!ring) {
-   291			err = -ENOMEM;
-   292			goto err_exit_ptp_tx;
-   293		}
-   294	
-   295		hwts = aq_ring_hwts_rx_alloc(&aq_ptp->hwts_rx, aq_nic, PTP_HWST_RING_IDX,
-   296					     aq_nic->aq_nic_cfg.rxds,
-   297					     aq_nic->aq_nic_cfg.aq_hw_caps->rxd_size);
-   298		if (!hwts) {
-   299			err = -ENOMEM;
-   300			goto err_exit_ptp_rx;
-   301		}
-   302	
-   303		err = aq_ptp_skb_ring_init(&aq_ptp->skb_ring, aq_nic->aq_nic_cfg.rxds);
-   304		if (err != 0) {
-   305			err = -ENOMEM;
-   306			goto err_exit_hwts_rx;
-   307		}
-   308	
-   309		return 0;
-   310	
-   311	err_exit_hwts_rx:
-   312		aq_ring_free(&aq_ptp->hwts_rx);
-   313	err_exit_ptp_rx:
-   314		aq_ring_free(&aq_ptp->ptp_rx);
-   315	err_exit_ptp_tx:
-   316		aq_ring_free(&aq_ptp->ptp_tx);
-   317	err_exit:
-   318		return err;
-   319	}
-   320	
+The following are changes since commit 406715df933ad6a1b8b0545e7689aa5f4ac27922:
+  fq_codel: do not include <linux/jhash.h>
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
 
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+Aleksandr Loktionov (2):
+  i40e: remove the macro with it's argument reuse
+  i40e: Refactoring VF MAC filters counting to make more reliable
+
+Arkadiusz Grubba (1):
+  i40e: Add ability to display VF stats along with PF core stats
+
+Damian Milosek (1):
+  i40e: Fix LED blinking flow for X710T*L devices.
+
+Jaroslaw Gawin (1):
+  i40e: Wrong 'Advertised FEC modes' after set FEC to AUTO
+
+Navid Emamdoost (1):
+  i40e: prevent memory leak in i40e_setup_macvlans
+
+Nicholas Nunley (1):
+  i40e: initialize ITRN registers with correct values
+
+Piotr Azarewicz (2):
+  i40e: Extract detection of HW flags into a function
+  i40e: Extend PHY access with page change flag
+
+Piotr Kwapulinski (1):
+  i40e: allow ethtool to report SW and FW versions in recovery mode
+
+Sylwia Wnuczko (1):
+  i40e: Fix for persistent lldp support
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c |  71 +++++--
+ .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |   8 +-
+ drivers/net/ethernet/intel/i40e/i40e_common.c | 116 +++++++++---
+ drivers/net/ethernet/intel/i40e/i40e_dcb.c    |   4 +-
+ drivers/net/ethernet/intel/i40e/i40e_dcb.h    |   3 +
+ drivers/net/ethernet/intel/i40e/i40e_devids.h |   2 +
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 174 ++++++++++++++++--
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  30 ++-
+ drivers/net/ethernet/intel/i40e/i40e_nvm.c    |  61 +++---
+ .../net/ethernet/intel/i40e/i40e_prototype.h  |  36 ++--
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |   1 +
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    |  45 ++---
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.h    |   1 -
+ 14 files changed, 422 insertions(+), 131 deletions(-)
+
+-- 
+2.21.0
+
