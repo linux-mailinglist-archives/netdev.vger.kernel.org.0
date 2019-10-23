@@ -2,90 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC20DE167D
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88AD8E169A
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403931AbfJWJox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 05:44:53 -0400
-Received: from mail-wm1-f98.google.com ([209.85.128.98]:37124 "EHLO
-        mail-wm1-f98.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403798AbfJWJow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 05:44:52 -0400
-Received: by mail-wm1-f98.google.com with SMTP id f22so18977425wmc.2
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 02:44:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=flowbird.group; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=jymaeoXc9lCIumhT/zmt2WYXQ+MD+RfPYC4j1B6RWHE=;
-        b=dWYB3g1cJZIM6j5e38IfNhXtb5g+T9TdGSQSMrYiie8XaHRdInPmzVVcFAGy2QLVqs
-         xM3Uj1SAFnwTemNz966MvLlP7W2lpQ/kr+F+SFtgewlLZ01rEjE5QJDoa/ayaJvwt+2D
-         +TBForoI/DjBunXlqpTx0JqhMpve0rK8AkqH9glqSdgX+JiTo7QzN/SN2JGZM88lNmN8
-         ze8mxHneYCl3Gxn/U0E4nU3p2mEm41gGnB+5GikVxdfTAYjhNAqDtB8/5aDdy98NfIcn
-         X0ajnLFT9577OGq9AEJEtiuyo427i2qiUdP8/wdZKCJUm6E1FtFG4nzo0SMsD1oi6fuf
-         bTlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=jymaeoXc9lCIumhT/zmt2WYXQ+MD+RfPYC4j1B6RWHE=;
-        b=qj9hWV86Ad3wgBBvl/Q7nPc3S+jluTLBG/S9YrB5uC3xJNH95ohYg8Rm6Yg5HT7PaR
-         AdUK/6m61mR9Czzj9w2OFFA43vtzZS9EQ7hwFy5LV6xWWUWXSJzvoMXXbot7ilc/Y6AK
-         z3tR8JiBM+MtSIYiUS6m9vrpMatJ7jqOgb2wHyVH+Yy+7u1bIrnudr1hktH7d1Y+NXUF
-         M92I+TpDzh2zBqW84dvF9kHH/B2S1/4yvy+p8L2sJu83O6K4llHNo4EwJnb5pF8ZJK13
-         eRmRb4aPBm/AiMzepoTBZ+x7ULDYo7t1l5r+z3HhIj6m1ydLm3Sd+1DMb0YKimSG6Wf7
-         gzDQ==
-X-Gm-Message-State: APjAAAWK6IopFc2oRH9+F9uMPmkx1sHOK2k3tsTgLpZrdJNyPCMGQ8az
-        pUM5KFeQFOG3BZMh/yTKl9RPrZ4Ra6yQnkmQWs8MlPmr57T9
-X-Google-Smtp-Source: APXvYqyc+TieKIvaDb/aCbXAsrzMko5jTwaVvvoLZQJowrPI1LiWrJjEsmKLqg7zSe7xkiJxLwUfgd109sFz
-X-Received: by 2002:a1c:4c02:: with SMTP id z2mr5163159wmf.78.1571823890217;
-        Wed, 23 Oct 2019 02:44:50 -0700 (PDT)
-Received: from mail.besancon.parkeon.com ([185.149.63.251])
-        by smtp-relay.gmail.com with ESMTPS id c197sm190788wme.24.2019.10.23.02.44.49
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Wed, 23 Oct 2019 02:44:50 -0700 (PDT)
-X-Relaying-Domain: flowbird.group
-Received: from [10.32.51.198] (port=36768 helo=PC12445-BES.dynamic.besancon.parkeon.com)
-        by mail.besancon.parkeon.com with esmtp (Exim 4.71)
-        (envelope-from <martin.fuzzey@flowbird.group>)
-        id 1iNDCD-0007m5-Lv; Wed, 23 Oct 2019 11:44:49 +0200
-From:   Martin Fuzzey <martin.fuzzey@flowbird.group>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] net: phy: smsc: LAN8740: add PHY_RST_AFTER_CLK_EN flag
-Date:   Wed, 23 Oct 2019 11:44:24 +0200
-Message-Id: <1571823889-16834-1-git-send-email-martin.fuzzey@flowbird.group>
-X-Mailer: git-send-email 1.9.1
+        id S2404141AbfJWJsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 05:48:52 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:60460 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732648AbfJWJsv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 05:48:51 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9N9mV3W003891, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9N9mV3W003891
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Oct 2019 17:48:31 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0468.000; Wed, 23 Oct 2019 17:48:30 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "pmalani@chromium.org" <pmalani@chromium.org>,
+        "grundler@chromium.org" <grundler@chromium.org>,
+        "'Linux Samsung SOC'" <linux-samsung-soc@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: RE: [PATCH net-next] r8152: support request_firmware for RTL8153
+Thread-Topic: [PATCH net-next] r8152: support request_firmware for RTL8153
+Thread-Index: AQHVg84yG1svvwJLbEa5ZZ4zq0Zj+qdnd3YAgACNnOA=
+Date:   Wed, 23 Oct 2019 09:48:28 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18ED3FA@RTITMBSVM03.realtek.com.tw>
+References: <1394712342-15778-329-Taiwan-albertk@realtek.com>
+        <CGME20191023091648eucas1p12dcc4e9041169e3c7ae43f4ea525dd7f@eucas1p1.samsung.com>
+ <44261242-ff44-0067-bbb9-2241e400ad53@samsung.com>
+In-Reply-To: <44261242-ff44-0067-bbb9-2241e400ad53@samsung.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The LAN8740, like the 8720, also requires a reset after enabling clock.
-The datasheet [1] 3.8.5.1 says:
-	"During a Hardware reset, an external clock must be supplied
-	to the XTAL1/CLKIN signal."
-
-I have observed this issue on a custom i.MX6 based board with
-the LAN8740A.
-
-[1] http://ww1.microchip.com/downloads/en/DeviceDoc/8740a.pdf
-
-Signed-off-by: Martin Fuzzey <martin.fuzzey@flowbird.group>
----
- drivers/net/phy/smsc.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index dc3d92d..b732982 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -327,6 +327,7 @@ static int smsc_phy_probe(struct phy_device *phydev)
- 	.name		= "SMSC LAN8740",
- 
- 	/* PHY_BASIC_FEATURES */
-+	.flags		= PHY_RST_AFTER_CLK_EN,
- 
- 	.probe		= smsc_phy_probe,
- 
--- 
-1.9.1
-
+TWFyZWsgU3p5cHJvd3NraSBbbWFpbHRvOm0uc3p5cHJvd3NraUBzYW1zdW5nLmNvbV0NCj4gU2Vu
+dDogV2VkbmVzZGF5LCBPY3RvYmVyIDIzLCAyMDE5IDU6MTcgUE0NCj4gU3ViamVjdDogUmU6IFtQ
+QVRDSCBuZXQtbmV4dF0gcjgxNTI6IHN1cHBvcnQgcmVxdWVzdF9maXJtd2FyZSBmb3IgUlRMODE1
+Mw0KPiANCj4gSGkgSGF5ZXMsDQo+IA0KPiBPbiAxNi4xMC4yMDE5IDA1OjAyLCBIYXllcyBXYW5n
+IHdyb3RlOg0KPiA+IFRoaXMgcGF0Y2ggc3VwcG9ydHMgbG9hZGluZyBhZGRpdGlvbmFsIGZpcm13
+YXJlIGZpbGUgdGhyb3VnaA0KPiA+IHJlcXVlc3RfZmlybXdhcmUoKS4NCj4gPg0KPiA+IEEgZmly
+bXdhcmUgZmlsZSBtYXkgaW5jbHVkZSBhIGhlYWRlciBmb2xsb3dlZCBieSBzZXZlcmFsIGJsb2Nr
+cw0KPiA+IHdoaWNoIGhhdmUgZGlmZmVyZW50IHR5cGVzIG9mIGZpcm13YXJlLiBDdXJyZW50bHks
+IHRoZSBzdXBwb3J0ZWQNCj4gPiB0eXBlcyBhcmUgUlRMX0ZXX0VORCwgUlRMX0ZXX1BMQSwgYW5k
+IFJUTF9GV19VU0IuDQo+ID4NCj4gPiBUaGUgZmlybXdhcmUgaXMgdXNlZCB0byBmaXggc29tZSBj
+b21wYXRpYmxlIG9yIGhhcmR3YXJlIGlzc3Vlcy4gRm9yDQo+ID4gZXhhbXBsZSwgdGhlIGRldmlj
+ZSBjb3VsZG4ndCBiZSBmb3VuZCBhZnRlciByZWJvb3Rpbmcgc2V2ZXJhbCB0aW1lcy4NCj4gPg0K
+PiA+IFRoZSBzdXBwb3J0ZWQgY2hpcHMgYXJlDQo+ID4gCVJUTF9WRVJfMDQgKHJ0bDgxNTNhLTIu
+ZncpDQo+ID4gCVJUTF9WRVJfMDUgKHJ0bDgxNTNhLTMuZncpDQo+ID4gCVJUTF9WRVJfMDYgKHJ0
+bDgxNTNhLTQuZncpDQo+ID4gCVJUTF9WRVJfMDkgKHJ0bDgxNTNiLTIuZncpDQo+ID4NCj4gPiBT
+aWduZWQtb2ZmLWJ5OiBIYXllcyBXYW5nIDxoYXllc3dhbmdAcmVhbHRlay5jb20+DQo+ID4gUmV2
+aWV3ZWQtYnk6IFByYXNoYW50IE1hbGFuaSA8cG1hbGFuaUBjaHJvbWl1bS5vcmc+DQo+IA0KPiBU
+aGlzIHBhdGNoICh3aGljaCBsYW5kZWQgaW4gbGludXgtbmV4dCBsYXN0IGRheXMpIGNhdXNlcyBh
+IGZvbGxvd2luZw0KPiBrZXJuZWwgb29wcyBvbiB0aGUgQVJNIDMyYml0IEV4eW5vczU0MjIgU29D
+IGJhc2VkIE9kcm9pZCBYVTQgYm9hcmQ6DQoNClBsZWFzZSB0cnkgdGhlIGZvbGxvd2luZyBwYXRj
+aC4NCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3VzYi9yODE1Mi5jIGIvZHJpdmVycy9uZXQv
+dXNiL3I4MTUyLmMNCmluZGV4IGQzYzMwY2NjODU3Ny4uMjgzYjM1YTc2Y2YwIDEwMDY0NA0KLS0t
+IGEvZHJpdmVycy9uZXQvdXNiL3I4MTUyLmMNCisrKyBiL2RyaXZlcnMvbmV0L3VzYi9yODE1Mi5j
+DQpAQCAtNDAwMCw4ICs0MDAwLDggQEAgc3RhdGljIHZvaWQgcnRsODE1Ml9md19tYWNfYXBwbHko
+c3RydWN0IHI4MTUyICp0cCwgc3RydWN0IGZ3X21hYyAqbWFjKQ0KIHN0YXRpYyB2b2lkIHJ0bDgx
+NTJfYXBwbHlfZmlybXdhcmUoc3RydWN0IHI4MTUyICp0cCkNCiB7DQogCXN0cnVjdCBydGxfZncg
+KnJ0bF9mdyA9ICZ0cC0+cnRsX2Z3Ow0KLQljb25zdCBzdHJ1Y3QgZmlybXdhcmUgKmZ3ID0gcnRs
+X2Z3LT5mdzsNCi0Jc3RydWN0IGZ3X2hlYWRlciAqZndfaGRyID0gKHN0cnVjdCBmd19oZWFkZXIg
+Kilmdy0+ZGF0YTsNCisJY29uc3Qgc3RydWN0IGZpcm13YXJlICpmdzsNCisJc3RydWN0IGZ3X2hl
+YWRlciAqZndfaGRyOw0KIAlzdHJ1Y3QgZndfcGh5X3BhdGNoX2tleSAqa2V5Ow0KIAl1MTYga2V5
+X2FkZHIgPSAwOw0KIAlpbnQgaTsNCkBAIC00MDA5LDYgKzQwMDksOSBAQCBzdGF0aWMgdm9pZCBy
+dGw4MTUyX2FwcGx5X2Zpcm13YXJlKHN0cnVjdCByODE1MiAqdHApDQogCWlmIChJU19FUlJfT1Jf
+TlVMTChydGxfZnctPmZ3KSkNCiAJCXJldHVybjsNCiANCisJZncgPSBydGxfZnctPmZ3Ow0KKwlm
+d19oZHIgPSAoc3RydWN0IGZ3X2hlYWRlciAqKWZ3LT5kYXRhOw0KKw0KIAlpZiAocnRsX2Z3LT5w
+cmVfZncpDQogCQlydGxfZnctPnByZV9mdyh0cCk7DQoNCj4gPiArc3RhdGljIHZvaWQgcnRsODE1
+Ml9hcHBseV9maXJtd2FyZShzdHJ1Y3QgcjgxNTIgKnRwKQ0KPiA+ICt7DQo+ID4gKwlzdHJ1Y3Qg
+cnRsX2Z3ICpydGxfZncgPSAmdHAtPnJ0bF9mdzsNCj4gPiArCWNvbnN0IHN0cnVjdCBmaXJtd2Fy
+ZSAqZncgPSBydGxfZnctPmZ3Ow0KPiA+ICsJc3RydWN0IGZ3X2hlYWRlciAqZndfaGRyID0gKHN0
+cnVjdCBmd19oZWFkZXIgKilmdy0+ZGF0YTsNCj4gPiArCWludCBpOw0KPiA+ICsNCj4gPiArCWlm
+IChJU19FUlJfT1JfTlVMTChydGxfZnctPmZ3KSkNCj4gPiArCQlyZXR1cm47DQo+ID4gKw0KPiA+
+ICsJaWYgKHJ0bF9mdy0+cHJlX2Z3KQ0KPiA+ICsJCXJ0bF9mdy0+cHJlX2Z3KHRwKTsNCj4gPiAr
+DQoNCkJlc3QgUmVnYXJkcywNCkhheWVzDQoNCg0K
