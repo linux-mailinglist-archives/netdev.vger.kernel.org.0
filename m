@@ -2,153 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD92E26BF
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 00:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F8C3E26DB
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 01:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392084AbfJWW4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 18:56:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727831AbfJWW4U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 18:56:20 -0400
-Received: from akpm3.svl.corp.google.com (unknown [104.133.8.65])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 77AFA21929;
-        Wed, 23 Oct 2019 22:56:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571871379;
-        bh=pH0FnxHuQ4uryY+5yag7Co6S+Z3nSAfsh/gAbdxNnLk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NZLyOT+ZqApYNjFfkvN4E7nfBNCZAjOdC/wzoETDChxjDRKMAXrf0iSDA2NpO1dAl
-         n3jrJoabu0ncBYm24CEnLneZZFelnIqDG07Oa2FG2xVneQxq6qjLqnh4rNvt1Xk8HB
-         diUUCetS09WEi0qR/QGP/DU2B2gikuUL57m32dSk=
-Date:   Wed, 23 Oct 2019 15:56:19 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Jani Nikula <jani.nikula@intel.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        intel-gfx@lists.freedesktop.org,
-        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Julia Lawall <julia.lawall@lip6.fr>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v4] string-choice: add yesno(), onoff(),
- enableddisabled(), plural() helpers
-Message-Id: <20191023155619.43e0013f0c8c673a5c508c1e@linux-foundation.org>
-In-Reply-To: <20191023131308.9420-1-jani.nikula@intel.com>
-References: <20191023131308.9420-1-jani.nikula@intel.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+        id S2407880AbfJWXDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 19:03:51 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42492 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733196AbfJWXDv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 19:03:51 -0400
+Received: by mail-pg1-f193.google.com with SMTP id f14so12992297pgi.9;
+        Wed, 23 Oct 2019 16:03:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=/OHxiXD2KyXURICS7ZLFhn4YJcbAYHn2yp+8MzAvfDc=;
+        b=spC33OlITWelnU7Z8JWyAbqDTQvQywvirjEaDIyHeT0QVWGLczOmCa5xCp0DVwywjR
+         msJY8gY9kornpUrkl+cVGEcIBGhjTh/jxUT1E6d9A1L87mxVBMYrbgYD80Tzy/0u8nHY
+         3icB+hu4GJobS22XqmGng/Ewvrz+tRltrbQS4y015GxTjShJVbBxpboZZwxsLLsqYhwM
+         YTxtbgYWBE7OuslRYPmPkbcYIiWHZPANhBMbw3je3CWJH18AvwZJAlNBnMsarje6COYw
+         Zo/n9cWmYRPom3E3jeZmTUBKk0u2UGzNuXKNaUJNwrYYfZdEizz9qzui1uv0RMo9lrts
+         O30A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=/OHxiXD2KyXURICS7ZLFhn4YJcbAYHn2yp+8MzAvfDc=;
+        b=JKNGeEUv+W7wlRPXfh4366uwwbwxULcgbneH5E0CEUi4AKAXQHW8VH4R7+/9i0aIv6
+         Y35ap/WcmxK6uJKXzCRthMVJxfa0NL9tgbOCxJ/Sks4BDY6Vj+0a4IaVJaA1f32YXSs4
+         fvkWqb0G//Cxw/CaKSBARdGOeTT/nmYXDMS6/gjbz+lr4KQbqFp47OMBr0E10qNNnzxy
+         5EbeThKuZFa2tWLuwIP7CnmmMZDywLOD7bpP/d9ZscQ+YKCdx9vnyJtssCn0VvgvJ9oG
+         36izUo7u1eK2LJ2UnLBHkFFZ5Vdry3rGV+f5WftFLJnbbxl7hUMY24wbEizg5Fy7N9Ue
+         5qvw==
+X-Gm-Message-State: APjAAAXwr2N7MBiqKu92zG+AzNPHwi0uA0LtgiH23TJNcfy0lHi373BB
+        QqtdzwxcUvo1p6X0Uqr9CzE=
+X-Google-Smtp-Source: APXvYqy7Jps/4WrxQ+4F846S7kPT3OEJ2c0PSYVG+Y1beL2fC2dtGNo/1v5tyXd/G8GbepPoYvyWKA==
+X-Received: by 2002:a63:2326:: with SMTP id j38mr12500963pgj.283.1571871830405;
+        Wed, 23 Oct 2019 16:03:50 -0700 (PDT)
+Received: from [172.26.117.3] ([2620:10d:c090:180::cbd8])
+        by smtp.gmail.com with ESMTPSA id w2sm19272129pgm.18.2019.10.23.16.03.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 23 Oct 2019 16:03:49 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
+Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, kal.conley@dectris.com, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf] xsk: fix registration of Rx-only sockets
+Date:   Wed, 23 Oct 2019 16:03:48 -0700
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <B551C016-76AE-46D3-B2F5-15AFF9073735@gmail.com>
+In-Reply-To: <1571645818-16244-1-git-send-email-magnus.karlsson@intel.com>
+References: <1571645818-16244-1-git-send-email-magnus.karlsson@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Oct 2019 16:13:08 +0300 Jani Nikula <jani.nikula@intel.com> wrot=
-e:
+On 21 Oct 2019, at 1:16, Magnus Karlsson wrote:
 
-> The kernel has plenty of ternary operators to choose between constant
-> strings, such as condition ? "yes" : "no", as well as value =3D=3D 1 ? ""=
- :
-> "s":
->=20
-> $ git grep '? "yes" : "no"' | wc -l
-> 258
-> $ git grep '? "on" : "off"' | wc -l
-> 204
-> $ git grep '? "enabled" : "disabled"' | wc -l
-> 196
-> $ git grep '? "" : "s"' | wc -l
-> 25
->=20
-> Additionally, there are some occurences of the same in reverse order,
-> split to multiple lines, or otherwise not caught by the simple grep.
->=20
-> Add helpers to return the constant strings. Remove existing equivalent
-> and conflicting functions in i915, cxgb4, and USB core. Further
-> conversion can be done incrementally.
->=20
-> The main goal here is to abstract recurring patterns, and slightly clean
-> up the code base by not open coding the ternary operators.
+> Having Rx-only AF_XDP sockets can potentially lead to a crash in the
+> system by a NULL pointer dereference in xsk_umem_consume_tx(). This
+> function iterates through a list of all sockets tied to a umem and
+> checks if there are any packets to send on the Tx ring. Rx-only
+> sockets do not have a Tx ring, so this will cause a NULL pointer
+> dereference. This will happen if you have registered one or more
+> Rx-only sockets to a umem and the driver is checking the Tx ring even
+> on Rx, or if the XDP_SHARED_UMEM mode is used and there is a mix of
+> Rx-only and other sockets tied to the same umem.
+>
+> Fixed by only putting sockets with a Tx component on the list that
+> xsk_umem_consume_tx() iterates over.
 
-Fair enough.
+A future improvement might be renaming umem->xsk_list to umem->xsk_tx_list
+or similar, in order to make it clear that the list is only used on the
+TX path.
 
-> --- /dev/null
-> +++ b/include/linux/string-choice.h
-> @@ -0,0 +1,31 @@
-> +/* SPDX-License-Identifier: MIT */
-> +/*
-> + * Copyright =A9 2019 Intel Corporation
-> + */
-> +
-> +#ifndef __STRING_CHOICE_H__
-> +#define __STRING_CHOICE_H__
-> +
-> +#include <linux/types.h>
-> +
-> +static inline const char *yesno(bool v)
-> +{
-> +	return v ? "yes" : "no";
-> +}
-> +
-> +static inline const char *onoff(bool v)
-> +{
-> +	return v ? "on" : "off";
-> +}
-> +
-> +static inline const char *enableddisabled(bool v)
-> +{
-> +	return v ? "enabled" : "disabled";
-> +}
-> +
-> +static inline const char *plural(long v)
-> +{
-> +	return v =3D=3D 1 ? "" : "s";
-> +}
-> +
-> +#endif /* __STRING_CHOICE_H__ */
+>
+> Fixes: ac98d8aab61b ("xsk: wire upp Tx zero-copy functions")
+> Reported-by: Kal Cutter Conley <kal.conley@dectris.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-These aren't very good function names.  Better to create a kernel-style
-namespace such as "choice_" and then add the expected underscores:
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-choice_yes_no()
-choice_enabled_disabled()
-choice_plural()
-
-(Example: note that slabinfo.c already has an "onoff()").
-
-
-Also, I worry that making these functions inline means that each .o
-file will contain its own copy of the strings ("yes", "no", "enabled",
-etc) if the .c file calls the relevant helper.  I'm not sure if the
-linker is smart enough (yet) to fix this up.  If not, we will end up
-with a smaller kernel by uninlining these functions.=20
-lib/string-choice.c would suit.
-
-And doing this will cause additional savings: calling a single-arg
-out-of-line function generates less .text than calling yesno().  When I
-did this:=20
-
---- a/include/linux/string-choice.h~string-choice-add-yesno-onoff-enableddi=
-sabled-plural-helpers-fix
-+++ a/include/linux/string-choice.h
-@@ -8,10 +8,7 @@
-=20
- #include <linux/types.h>
-=20
--static inline const char *yesno(bool v)
--{
--	return v ? "yes" : "no";
--}
-+const char *yesno(bool v);
-=20
- static inline const char *onoff(bool v)
- {
-
-The text segment of drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.o
-(78 callsites) shrunk by 118 bytes.
-
+-- 
+Jonathan
