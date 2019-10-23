@@ -2,89 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3EB6E142A
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:27:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4DABE1457
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390324AbfJWI13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 04:27:29 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:45076 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390260AbfJWI13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:27:29 -0400
-Received: by mail-lf1-f68.google.com with SMTP id v8so14738739lfa.12;
-        Wed, 23 Oct 2019 01:27:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+BrgSnZCer5UhRsZl4X7zqgqCerRzQvBH6cwLmm1CnM=;
-        b=HI/6Ls542Gr4OKd2Ngr8Ak3SU1zpNWkkmq+6GBvXR8AHzw+qZOmWsyGKHHxpnEOnpz
-         YLSzpQGx67Xkx/cXesSM20PlRkyOrX9/RUsnb6PV63EEq8hY6YFHYMgCFl+iaW28J6qB
-         5ZPNIh0Reh509Rddtku+ngn+DbbVK/k8PXxIIOTek1XmebPVTCL4D/inITSNk0PoQ98o
-         1P4IGRJ4AOL5D/08h9OJKNG148BhQDovoUDgjeU5t19FPRuovYRjBhHNI1YneNu7VUvA
-         O9DzPPieGsRlCxQLD/O42wqtFakq+kfpP6TE8m0PhigGhmRELZYU3KzY347tHU0dX3gH
-         bFbg==
-X-Gm-Message-State: APjAAAXlui92r8iAVPdlkt5Vr9e9sF3n+np3ABK/yGuIToOuIFyjeG6X
-        ViAWiZ1HcUKsWJrvy9Asgh6esPiW
-X-Google-Smtp-Source: APXvYqw+9/yUnQGsArwINEUVGFu4MzLP/NJVoAT3Vw0w3glyFhkEnq2gFz1VWCtf6lPdUnJevJNOzg==
-X-Received: by 2002:ac2:5507:: with SMTP id j7mr22043724lfk.75.1571819247001;
-        Wed, 23 Oct 2019 01:27:27 -0700 (PDT)
-Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
-        by smtp.gmail.com with ESMTPSA id n3sm9001439lfl.62.2019.10.23.01.27.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Oct 2019 01:27:26 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.92.2)
-        (envelope-from <johan@xi.terra>)
-        id 1iNBza-00064N-Md; Wed, 23 Oct 2019 10:27:42 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        stable <stable@vger.kernel.org>,
-        syzbot+863724e7128e14b26732@syzkaller.appspotmail.com
-Subject: [PATCH] can: peak_usb: fix slab info leak
-Date:   Wed, 23 Oct 2019 10:27:05 +0200
-Message-Id: <20191023082705.23283-1-johan@kernel.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <0000000000007a638805951153c5@google.com>
-References: <0000000000007a638805951153c5@google.com>
+        id S2390321AbfJWIgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 04:36:21 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55640 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2390137AbfJWIgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:36:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571819779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=48N02/jvRuAsgRhdv+Mi4mPU3dLRpyX+8I00gXgPOW0=;
+        b=SJszAXdGkx+tohpD5j8J3QGylMsL9CMzwlRP3Zy+y3Rgc/+yt7Swmwv1spg/UWGuL9QkAP
+        CZnAji2Qw+poPrHyFS0kW4GP+/iXQyV2bpLUwyEOYSIzbiJPsyKHuw6OXZsw6slxlgk1VO
+        CgsPe2RFVC1A7a7DxLPCN7AdWOyaNVE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-338-4xhr8qFvOJ-YzFpi8NFASg-1; Wed, 23 Oct 2019 04:36:17 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 623CC107AD31;
+        Wed, 23 Oct 2019 08:36:15 +0000 (UTC)
+Received: from krava (unknown [10.43.17.61])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 36E185DD78;
+        Wed, 23 Oct 2019 08:36:09 +0000 (UTC)
+Date:   Wed, 23 Oct 2019 10:36:08 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 1/9] perf tools: add parse events append error
+Message-ID: <20191023083608.GC22919@krava>
+References: <20191017170531.171244-1-irogers@google.com>
+ <20191023005337.196160-1-irogers@google.com>
+ <20191023005337.196160-2-irogers@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191023005337.196160-2-irogers@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: 4xhr8qFvOJ-YzFpi8NFASg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a small slab info leak due to a failure to clear the command buffer
-at allocation.
+On Tue, Oct 22, 2019 at 05:53:29PM -0700, Ian Rogers wrote:
+> Parse event error handling may overwrite one error string with another
+> creating memory leaks and masking errors. Introduce a helper routine
+> that appends error messages and avoids the memory leak.
 
-The first 16 bytes of the command buffer are always sent to the device
-in pcan_usb_send_cmd() even though only the first two may have been
-initialised in case no argument payload is provided (e.g. when waiting
-for a response).
+good idea, it became little messy with time ;-)
+some comments below
 
-Fixes: bb4785551f64 ("can: usb: PEAK-System Technik USB adapters driver core")
-Cc: stable <stable@vger.kernel.org>     # 3.4
-Reported-by: syzbot+863724e7128e14b26732@syzkaller.appspotmail.com
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/net/can/usb/peak_usb/pcan_usb_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks,
+jirka
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-index 65dce642b86b..0b7766b715fd 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -750,7 +750,7 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
- 	dev = netdev_priv(netdev);
- 
- 	/* allocate a buffer large enough to send commands */
--	dev->cmd_buf = kmalloc(PCAN_USB_MAX_CMD_LEN, GFP_KERNEL);
-+	dev->cmd_buf = kzalloc(PCAN_USB_MAX_CMD_LEN, GFP_KERNEL);
- 	if (!dev->cmd_buf) {
- 		err = -ENOMEM;
- 		goto lbl_free_candev;
--- 
-2.23.0
+
+>=20
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/util/parse-events.c | 102 ++++++++++++++++++++++-----------
+>  tools/perf/util/parse-events.h |   2 +
+>  tools/perf/util/pmu.c          |  36 ++++++------
+>  3 files changed, 89 insertions(+), 51 deletions(-)
+>=20
+> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
+s.c
+> index db882f630f7e..4d42344698b8 100644
+> --- a/tools/perf/util/parse-events.c
+> +++ b/tools/perf/util/parse-events.c
+> @@ -182,6 +182,34 @@ static int tp_event_has_id(const char *dir_path, str=
+uct dirent *evt_dir)
+> =20
+>  #define MAX_EVENT_LENGTH 512
+> =20
+> +void parse_events__append_error(struct parse_events_error *err, int idx,
+> +=09=09=09=09char *str, char *help)
+> +{
+> +=09char *new_str =3D NULL;
+> +
+> +=09WARN(!str, "WARNING: failed to provide error string");
+
+should we also bail out if str is NULL?
+
+> +=09if (err->str) {
+> +=09=09int ret;
+> +
+> +=09=09if (err->help)
+> +=09=09=09ret =3D asprintf(&new_str,
+> +=09=09=09=09"%s (previous error: %s(help: %s))",
+> +=09=09=09=09str, err->str, err->help);
+> +=09=09else
+
+please use {} for multiline condition legs
+
+> +=09=09=09ret =3D asprintf(&new_str,
+> +=09=09=09=09"%s (previous error: %s)",
+> +=09=09=09=09str, err->str);
+
+does this actualy happen? could you please provide output
+of this in the changelog?
+
+> +=09=09if (ret < 0)
+> +=09=09=09new_str =3D NULL;
+> +=09=09else
+> +=09=09=09zfree(&str);
+> +=09}
+> +=09err->idx =3D idx;
+> +=09free(err->str);
+> +=09err->str =3D new_str ?: str;
+> +=09free(err->help);
+> +=09err->help =3D help;
+> +}
+> =20
+
+SNIP
 
