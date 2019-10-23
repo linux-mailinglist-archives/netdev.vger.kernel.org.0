@@ -2,70 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35018E1A72
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59302E1AAA
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389459AbfJWMco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 08:32:44 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:46090 "EHLO inva021.nxp.com"
+        id S2390002AbfJWMeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 08:34:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391589AbfJWMcn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 08:32:43 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 7AC06200254;
-        Wed, 23 Oct 2019 14:32:41 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6B01920024F;
-        Wed, 23 Oct 2019 14:32:41 +0200 (CEST)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 2D1AF205FE;
-        Wed, 23 Oct 2019 14:32:41 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, linux@armlinux.org.uk,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next] phylink: add ASSERT_RTNL() on phylink connect functions
-Date:   Wed, 23 Oct 2019 15:32:20 +0300
-Message-Id: <1571833940-26250-1-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2389633AbfJWMeq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 08:34:46 -0400
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1E84721906;
+        Wed, 23 Oct 2019 12:34:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571834085;
+        bh=3xClPV0s8v1ghovR/t6BdoidIe58oeMF5znszPjzKNA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=K+FVun+77VqMLQ8nGcATn/0yVi1n3inqEhcZQ4rc1jdyiC0PppVQiJ4PjjMWOeePi
+         R5cWGYkK6sklP/GF/ctr02RjRgDoGLhJ2YMCyRcPSWJegkegNIcZ4HLkDeMlK5mCAU
+         XqBCMNPVp04XqBvWpTT/Lo3vtifZpJPKPEmbtCbY=
+Received: by mail-qt1-f176.google.com with SMTP id t20so31960766qtr.10;
+        Wed, 23 Oct 2019 05:34:45 -0700 (PDT)
+X-Gm-Message-State: APjAAAWBTzWdKLusNjbjMhpPLVm4yhnVOfberGeOlBIlfY57bTJ75k5f
+        BjngGOGhtL1z0hKV6F2b96FgvGtv87cotZMUas4=
+X-Google-Smtp-Source: APXvYqyCz6o6W8wU2Uf+XdH/NAI350kbDLwzoeIzLourookteh+cPAzdgEuPCvwPhO3ppnfaxZ6DwridLx/5ufit4D0=
+X-Received: by 2002:ac8:714c:: with SMTP id h12mr8873761qtp.231.1571834084324;
+ Wed, 23 Oct 2019 05:34:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191022140154.436-1-skalluru@marvell.com>
+In-Reply-To: <20191022140154.436-1-skalluru@marvell.com>
+From:   Josh Boyer <jwboyer@kernel.org>
+Date:   Wed, 23 Oct 2019 08:34:32 -0400
+X-Gmail-Original-Message-ID: <CA+5PVA7ka1ar1nX4TFhx0yJvm6i0+gPaZs8s5d667x4ksPjVFQ@mail.gmail.com>
+Message-ID: <CA+5PVA7ka1ar1nX4TFhx0yJvm6i0+gPaZs8s5d667x4ksPjVFQ@mail.gmail.com>
+Subject: Re: [PATCH linux-firmware] bnx2x: Add FW 7.13.15.0.
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Cc:     Linux Firmware <linux-firmware@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-scsi@vger.kernel.org,
+        arahman@marvell.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The appropriate assert on the rtnl lock is not present in phylink's
-connect functions which makes unusual calls to them not to be catched.
-Add the appropriate ASSERT_RTNL().
+On Tue, Oct 22, 2019 at 10:02 AM Sudarsana Reddy Kalluru
+<skalluru@marvell.com> wrote:
+>
+> This patch adds new FW for bnx2x, which addresses the following issues:
+> - TCP packet with padding can open TPA aggregation in GRO mode.
+> - Tx Silent Drops could cause HW error when statistics is not enabled for client.
+> - Transmission of tunneled packets over tx-only clients (with cos>0 in this case) followed by load/unload with DCB update (for instance), resulted in a Tx path halt.
+> - FORWARD_SETUP ramrod yielded a FW assert (x_eth_fp_hsi_ver_invalid).
+>
+> The FW also adds support for direct update of RSS indirection table entry.
+>
+> Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+> Signed-off-by: Ameen Rahman <arahman@marvell.com>
+> ---
+>  WHENCE                       |   3 +++
+>  bnx2x/bnx2x-e1-7.13.15.0.fw  | Bin 0 -> 170168 bytes
+>  bnx2x/bnx2x-e1h-7.13.15.0.fw | Bin 0 -> 178608 bytes
+>  bnx2x/bnx2x-e2-7.13.15.0.fw  | Bin 0 -> 323360 bytes
+>  4 files changed, 3 insertions(+)
+>  create mode 100644 bnx2x/bnx2x-e1-7.13.15.0.fw
+>  create mode 100644 bnx2x/bnx2x-e1h-7.13.15.0.fw
+>  create mode 100644 bnx2x/bnx2x-e2-7.13.15.0.fw
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/phy/phylink.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Applied and pushed out.
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index be7a2c0fa59b..d0aa0c861b2d 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -786,6 +786,8 @@ static int __phylink_connect_phy(struct phylink *pl, struct phy_device *phy,
-  */
- int phylink_connect_phy(struct phylink *pl, struct phy_device *phy)
- {
-+	ASSERT_RTNL();
-+
- 	/* Use PHY device/driver interface */
- 	if (pl->link_interface == PHY_INTERFACE_MODE_NA) {
- 		pl->link_interface = phy->interface;
-@@ -815,6 +817,8 @@ int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
- 	struct phy_device *phy_dev;
- 	int ret;
- 
-+	ASSERT_RTNL();
-+
- 	/* Fixed links and 802.3z are handled without needing a PHY */
- 	if (pl->link_an_mode == MLO_AN_FIXED ||
- 	    (pl->link_an_mode == MLO_AN_INBAND &&
--- 
-1.9.1
-
+josh
