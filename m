@@ -2,162 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C84E1246
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:39:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9D6BE124E
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388034AbfJWGjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 02:39:37 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:49360 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729666AbfJWGjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 02:39:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571812776;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JPoAZ12wvzk0gM/LMQmdcsjRqyc3hj/9X0DxYyB3fTs=;
-        b=hVvgTKdc/bNeH9Wd6Ff8dmsch9XkS8ftV+OW2xaNYTq+d09Og0l3N50DSCJVWDrmDOfwrG
-        ZDu+gOyOaaUT/QkX4Ek0TL3OcwcevVsaegTwgK8nvzuwiJi8LbilbMrkxUO/Cg5ATJjpnw
-        YmfytHTxO9F5TQ30W1xO33jHs4CQA2g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-98-pxA18oaXO4G0FL33orpGpw-1; Wed, 23 Oct 2019 02:39:33 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A9AE801E52;
-        Wed, 23 Oct 2019 06:39:31 +0000 (UTC)
-Received: from [10.72.12.161] (ovpn-12-161.pek2.redhat.com [10.72.12.161])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6BB4A19C70;
-        Wed, 23 Oct 2019 06:39:16 +0000 (UTC)
-Subject: Re: [RFC 2/2] vhost: IFC VF vdpa layer
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
-        Zhu Lingshan <lingshan.zhu@linux.intel.com>, mst@redhat.com,
-        alex.williamson@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
-        zhiyuan.lv@intel.com
-References: <20191016013050.3918-1-lingshan.zhu@intel.com>
- <20191016013050.3918-3-lingshan.zhu@intel.com>
- <9495331d-3c65-6f49-dcd9-bfdb17054cf0@redhat.com>
- <f65358e9-6728-8260-74f7-176d7511e989@intel.com>
- <1cae60b6-938d-e2df-2dca-fbf545f06853@redhat.com>
- <ddf412c6-69e2-b3ca-d0c8-75de1db78ed9@linux.intel.com>
- <b2adaab0-bbc3-b7f0-77da-e1e3cab93b76@redhat.com>
- <6588d9f4-f357-ec78-16a4-ccaf0e3768e7@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <02d44f0a-687f-ed87-518b-7a4d3e83c5d3@redhat.com>
-Date:   Wed, 23 Oct 2019 14:39:15 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2388836AbfJWGkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 02:40:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60402 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728697AbfJWGkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 02:40:16 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 9AD87B3F4;
+        Wed, 23 Oct 2019 06:40:13 +0000 (UTC)
+Date:   Wed, 23 Oct 2019 08:40:12 +0200
+From:   Michal Hocko <mhocko@kernel.org>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Shakeel Butt <shakeelb@google.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH] mm: memcontrol: fix network errors from failing
+ __GFP_ATOMIC charges
+Message-ID: <20191023064012.GB754@dhcp22.suse.cz>
+References: <20191022233708.365764-1-hannes@cmpxchg.org>
 MIME-Version: 1.0
-In-Reply-To: <6588d9f4-f357-ec78-16a4-ccaf0e3768e7@intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: pxA18oaXO4G0FL33orpGpw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191022233708.365764-1-hannes@cmpxchg.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue 22-10-19 19:37:08, Johannes Weiner wrote:
+> While upgrading from 4.16 to 5.2, we noticed these allocation errors
+> in the log of the new kernel:
+> 
+> [ 8642.253395] SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
+> [ 8642.269170]   cache: tw_sock_TCPv6(960:helper-logs), object size: 232, buffer size: 240, default order: 1, min order: 0
+> [ 8642.293009]   node 0: slabs: 5, objs: 170, free: 0
+> 
+>         slab_out_of_memory+1
+>         ___slab_alloc+969
+>         __slab_alloc+14
+>         kmem_cache_alloc+346
+>         inet_twsk_alloc+60
+>         tcp_time_wait+46
+>         tcp_fin+206
+>         tcp_data_queue+2034
+>         tcp_rcv_state_process+784
+>         tcp_v6_do_rcv+405
+>         __release_sock+118
+>         tcp_close+385
+>         inet_release+46
+>         __sock_release+55
+>         sock_close+17
+>         __fput+170
+>         task_work_run+127
+>         exit_to_usermode_loop+191
+>         do_syscall_64+212
+>         entry_SYSCALL_64_after_hwframe+68
+> 
+> accompanied by an increase in machines going completely radio silent
+> under memory pressure.
 
-On 2019/10/23 =E4=B8=8B=E5=8D=882:19, Zhu, Lingshan wrote:
->
-> On 10/22/2019 9:05 PM, Jason Wang wrote:
->>
->> On 2019/10/22 =E4=B8=8B=E5=8D=882:53, Zhu Lingshan wrote:
->>>
->>> On 10/21/2019 6:19 PM, Jason Wang wrote:
->>>>
->>>> On 2019/10/21 =E4=B8=8B=E5=8D=885:53, Zhu, Lingshan wrote:
->>>>>
->>>>> On 10/16/2019 6:19 PM, Jason Wang wrote:
->>>>>>
->>>>>> On 2019/10/16 =E4=B8=8A=E5=8D=889:30, Zhu Lingshan wrote:
->>>>>>> This commit introduced IFC VF operations for vdpa, which complys to
->>>>>>> vhost_mdev interfaces, handles IFC VF initialization,
->>>>>>> configuration and removal.
->>>>>>>
->>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>>> ---
->>
->>
->> [...]
->>
->>
->>>>
->>>>
->>>>>
->>>>>>
->>>>>>
->>>>>>> +}
->>>>>>> +
->>>>>>> +static int ifcvf_mdev_set_features(struct mdev_device *mdev,=20
->>>>>>> u64 features)
->>>>>>> +{
->>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_adapter *adapter =3D mdev_get_drvd=
-ata(mdev);
->>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_hw *vf =3D IFC_PRIVATE_TO_VF(adapt=
-er);
->>>>>>> +
->>>>>>> +=C2=A0=C2=A0=C2=A0 vf->req_features =3D features;
->>>>>>> +
->>>>>>> +=C2=A0=C2=A0=C2=A0 return 0;
->>>>>>> +}
->>>>>>> +
->>>>>>> +static u64 ifcvf_mdev_get_vq_state(struct mdev_device *mdev,=20
->>>>>>> u16 qid)
->>>>>>> +{
->>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_adapter *adapter =3D mdev_get_drvd=
-ata(mdev);
->>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_hw *vf =3D IFC_PRIVATE_TO_VF(adapt=
-er);
->>>>>>> +
->>>>>>> +=C2=A0=C2=A0=C2=A0 return vf->vring[qid].last_avail_idx;
->>>>>>
->>>>>>
->>>>>> Does this really work? I'd expect it should be fetched from hw=20
->>>>>> since it's an internal state.
->>>>> for now, it's working, we intend to support LM in next version=20
->>>>> drivers.
->>>>
->>>>
->>>> I'm not sure I understand here, I don't see any synchronization=20
->>>> between the hardware and last_avail_idx, so last_avail_idx should=20
->>>> not change.
->>>>
->>>> Btw, what did "LM" mean :) ?
->>>
->>> I can add bar IO operations here, LM =3D live migration, sorry for the=
-=20
->>> abbreviation.
->>
->>
->> Just make sure I understand here, I believe you mean reading=20
->> last_avail_idx through IO bar here?
->>
->> Thanks
->
-> Hi Jason,
->
-> Yes, I mean last_avail_idx. is that correct?
->
-> THanks
+This is really worrying because that suggests that something depends on
+GFP_ATOMIC allocation which is fragile and broken. 
+ 
+> One thing that changed since 4.16 is e699e2c6a654 ("net, mm: account
+> sock objects to kmemcg"), which made these slab caches subject to
+> cgroup memory accounting and control.
+> 
+> The problem with that is that cgroups, unlike the page allocator, do
+> not maintain dedicated atomic reserves. As a cgroup's usage hovers at
+> its limit, atomic allocations - such as done during network rx - can
+> fail consistently for extended periods of time. The kernel is not able
+> to operate under these conditions.
+> 
+> We don't want to revert the culprit patch, because it indeed tracks a
+> potentially substantial amount of memory used by a cgroup.
+> 
+> We also don't want to implement dedicated atomic reserves for cgroups.
+> There is no point in keeping a fixed margin of unused bytes in the
+> cgroup's memory budget to accomodate a consumer that is impossible to
+> predict - we'd be wasting memory and get into configuration headaches,
+> not unlike what we have going with min_free_kbytes. We do this for
+> physical mem because we have to, but cgroups are an accounting game.
+> 
+> Instead, account these privileged allocations to the cgroup, but let
+> them bypass the configured limit if they have to. This way, we get the
+> benefits of accounting the consumed memory and have it exert pressure
+> on the rest of the cgroup, but like with the page allocator, we shift
+> the burden of reclaimining on behalf of atomic allocations onto the
+> regular allocations that can block.
 
+On the other hand this would allow to break the isolation by an
+unpredictable amount. Should we put a simple cap on how much we can go
+over the limit. If the memcg limit reclaim is not able to keep up with
+those overflows then even __GFP_ATOMIC allocations have to fail. What do
+you think?
 
-Yes.
+> Cc: stable@kernel.org # 4.18+
+> Fixes: e699e2c6a654 ("net, mm: account sock objects to kmemcg")
+> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+> ---
+>  mm/memcontrol.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> index 8090b4c99ac7..c7e3e758c165 100644
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+> @@ -2528,6 +2528,15 @@ static int try_charge(struct mem_cgroup *memcg, gfp_t gfp_mask,
+>  		goto retry;
+>  	}
+>  
+> +	/*
+> +	 * Memcg doesn't have a dedicated reserve for atomic
+> +	 * allocations. But like the global atomic pool, we need to
+> +	 * put the burden of reclaim on regular allocation requests
+> +	 * and let these go through as privileged allocations.
+> +	 */
+> +	if (gfp_mask & __GFP_ATOMIC)
+> +		goto force;
+> +
+>  	/*
+>  	 * Unlike in global OOM situations, memcg is not in a physical
+>  	 * memory shortage.  Allow dying and OOM-killed tasks to
+> -- 
+> 2.23.0
+> 
 
-Thanks
-
-
->
->>
->>
-
+-- 
+Michal Hocko
+SUSE Labs
