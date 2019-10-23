@@ -2,155 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9786FE21EB
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 19:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF25E21F0
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 19:40:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730976AbfJWRiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 13:38:50 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:36501 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729203AbfJWRit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 13:38:49 -0400
-Received: by mail-yw1-f68.google.com with SMTP id p187so2171205ywg.3
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 10:38:49 -0700 (PDT)
+        id S1730513AbfJWRkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 13:40:16 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:41523 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729283AbfJWRkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 13:40:16 -0400
+Received: by mail-pl1-f196.google.com with SMTP id t10so10419042plr.8
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 10:40:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6Bi+2W5kUDlO+k7pkd4SMkD58ATKfCEmQGZr4H+xJPM=;
-        b=TQaMD3J9qnPc1FpDhFyVtjUhTMNNL4eoGM/FFuzByySHDayFX7hlHjG3Fz9+1iXoj7
-         OSLk63Z/3xqGbK5iWLOlBWZbCUQuMQLd62BFVUDDoOU93XB2PoCXJz+ObFhAkKauKZAR
-         TEz2N1dDaGIwXJQJDQiIYriWtcMGAGJ3nvhlpLrHsISm0OcAK5PjeW7T9sXbWavkFXLX
-         AbtGBs1jBnuyKV+DuHRbSfzxcdmZazlES7VYzWzxljxEXcmAsIOOaizkMbz5O8x7HK1y
-         36q1UaANoHSvv55XmitjKLEvggWvdQ4/OUwWQhg+HGzZRs0wJqlP+wH9fwcNpRtRAPjR
-         A70w==
+        bh=07dMQIg2lrA6wgz0rrIqf754/7FblgaNM+koPoR09QA=;
+        b=Cv+IaU5j9hE+8I9Hj7iLWIwqEehKwHMTxXmZZTYjTP8FdYFixjGtRIDgHAo2CD4wN/
+         nMRYoCxH4SPKEvOj42XRoG6dzNpQ/Ny78VQILzntD24/n4Vv4cMmXxDneLM280kK5edQ
+         xDmp86nXxfsZpRMDor9jSs1ecwipOD2aqD0etmi1ztLIqRBJVhFaLJUD8huVlCdKrQqM
+         2N1fRxzairnXxpYQUmoAESPXCRm45aKPEDdZEZs12hsEzjCELkJgColpblPQSpNWlxkP
+         09qy8Fq1LVYwJeQNUaeseeEZIIrK+4Kq/Lebe4o78ARmdtAwWfllzVflOLPQiiJQTKJK
+         am/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6Bi+2W5kUDlO+k7pkd4SMkD58ATKfCEmQGZr4H+xJPM=;
-        b=jZrYj4LH/Vgfr3z7UwwHxMNF5a34XQUc3OGdVOkbjH/7ogbF9CDcLCS7l8C+NFJ0RY
-         Sk+UVrQZTvN1okw3HomziZshHXTVqS6FFcmictslTDCpeEMwk2rMfQrwjfEksX1c2I3y
-         C50DJ5F3deUBKBMyC8mLcM3CA66QqLW7mDzZ/6tp/OGVRp+2Ff3hZ1Bohg2Y3jvuub7g
-         jiGd1J+9poHR05hQV87VRcDba7YWrQcFp4/ONI0E8rHxOBUW8G/j21LQSajfmaFL84de
-         LoNUuSp+GsGFWBVG4tEBuPUW8FjR9kE1u06LEckHfznAnoD6qG8mTq0/q1FftqVfxYox
-         mn6Q==
-X-Gm-Message-State: APjAAAU2YGUBB0lhEfi5s4VV9gzTbkhNG9n4tz9dVhFMM+aK3PvL8QWF
-        jElSRsk6JPjpR3jQDpQ2QQ6KA1KwEWWvNtSXg/L+vw==
-X-Google-Smtp-Source: APXvYqxPDgnO4F7FM/DKbwbOrP6fUOIoNCBxlVC7chzutLJVJ75WvH5s2XcrPn/dORZ7b8Py0UqwMWfvbb35n1+WHSI=
-X-Received: by 2002:a81:1189:: with SMTP id 131mr3897888ywr.308.1571852328225;
- Wed, 23 Oct 2019 10:38:48 -0700 (PDT)
+        bh=07dMQIg2lrA6wgz0rrIqf754/7FblgaNM+koPoR09QA=;
+        b=QrNVjAetSkGOOyXalvalMjBEBydb0KA24SvAnJ+HSHz+Y8bEfUL6GPRlmoQP6X5sTX
+         pEaMuEw6sLXDe5UHg+mCgCHfxNMuLbH425DqJ8rySYZ+tytxjbC5Pctwlgl887ONBjqG
+         sW2vXw2pX38rwfY5wHRsSoHbiqFHO0FSHH6t2cS20nj/XH+pvJr5Pqm3u6elQD1JohJ3
+         4Hz1LNXNyiebBpd6dQvyNjyn5xdR67xu4UeQhFbdiETQcuoKpuRXsUm1o3OCCCKql8aU
+         hEvHCMT/ad5iqVOdssSYpWsLEclPo86uuuSPvlHjQAb/fUMtMWpevJvRpho+nChJKO4y
+         +DNQ==
+X-Gm-Message-State: APjAAAVBy7M3RjTbsA0dLMJZDWL8vvWrKFNlHDkJDIDQ9Mo5XpR13Smu
+        6dKO4Dau1dk9Zyq1HuQmZfef7dqMUS7KhMnPHHgJogQ/
+X-Google-Smtp-Source: APXvYqwgXv/tqM0XOLF+87vR1rzfi6Gl5nx8B+WUD6tGAqNRldGsbw73QboJZ/ZdpLdE20y8/MmGxWPGKxqLhFvsSUY=
+X-Received: by 2002:a17:902:321:: with SMTP id 30mr11056783pld.61.1571852415448;
+ Wed, 23 Oct 2019 10:40:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191022233708.365764-1-hannes@cmpxchg.org> <20191023064012.GB754@dhcp22.suse.cz>
- <20191023154618.GA366316@cmpxchg.org>
-In-Reply-To: <20191023154618.GA366316@cmpxchg.org>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 23 Oct 2019 10:38:36 -0700
-Message-ID: <CALvZod6fDEqDrYmmVC42552Ej4Y47FVZUj_irSZNxKWRF4vPYw@mail.gmail.com>
-Subject: Re: [PATCH] mm: memcontrol: fix network errors from failing
- __GFP_ATOMIC charges
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, netdev@vger.kernel.org,
-        Kernel Team <kernel-team@fb.com>
+References: <20191022231051.30770-1-xiyou.wangcong@gmail.com>
+ <20191022231051.30770-4-xiyou.wangcong@gmail.com> <CANn89i+Y+fMqPbT-YyKcbQOH96+D=U8K4wnNgFkGYtjStKPrEQ@mail.gmail.com>
+ <CAM_iQpWxDN7Wm_ar7cStiMnhmmy7RK=BG5k4zwD+K6kbgfPEKw@mail.gmail.com> <CANn89i+Q5ucKuEAt6rotf2xwappiMgRwL0Cgmvvnk5adYb-o0w@mail.gmail.com>
+In-Reply-To: <CANn89i+Q5ucKuEAt6rotf2xwappiMgRwL0Cgmvvnk5adYb-o0w@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 23 Oct 2019 10:40:03 -0700
+Message-ID: <CAM_iQpWah2M2tG=+eRS86VtjknTiBC42DSwdHB8USpXgRsfWjw@mail.gmail.com>
+Subject: Re: [Patch net-next 3/3] tcp: decouple TLP timer from RTO timer
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 8:46 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
+On Tue, Oct 22, 2019 at 7:15 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> On Wed, Oct 23, 2019 at 08:40:12AM +0200, Michal Hocko wrote:
-> > On Tue 22-10-19 19:37:08, Johannes Weiner wrote:
-> > > While upgrading from 4.16 to 5.2, we noticed these allocation errors
-> > > in the log of the new kernel:
-> > >
-> > > [ 8642.253395] SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-> > > [ 8642.269170]   cache: tw_sock_TCPv6(960:helper-logs), object size: 232, buffer size: 240, default order: 1, min order: 0
-> > > [ 8642.293009]   node 0: slabs: 5, objs: 170, free: 0
-> > >
-> > >         slab_out_of_memory+1
-> > >         ___slab_alloc+969
-> > >         __slab_alloc+14
-> > >         kmem_cache_alloc+346
-> > >         inet_twsk_alloc+60
-> > >         tcp_time_wait+46
-> > >         tcp_fin+206
-> > >         tcp_data_queue+2034
-> > >         tcp_rcv_state_process+784
-> > >         tcp_v6_do_rcv+405
-> > >         __release_sock+118
-> > >         tcp_close+385
-> > >         inet_release+46
-> > >         __sock_release+55
-> > >         sock_close+17
-> > >         __fput+170
-> > >         task_work_run+127
-> > >         exit_to_usermode_loop+191
-> > >         do_syscall_64+212
-> > >         entry_SYSCALL_64_after_hwframe+68
-> > >
-> > > accompanied by an increase in machines going completely radio silent
-> > > under memory pressure.
+> On Tue, Oct 22, 2019 at 6:10 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 > >
-> > This is really worrying because that suggests that something depends on
-> > GFP_ATOMIC allocation which is fragile and broken.
->
-> I don't think that is true. You cannot rely on a *single instance* of
-> atomic allocations to succeed. But you have to be able to rely on that
-> failure is temporary and there is a chance of succeeding eventually.
->
-> Network is a good example. It retries transmits, but within reason. If
-> you aren't able to process incoming packets for minutes, you might as
-> well be dead.
->
-> > > One thing that changed since 4.16 is e699e2c6a654 ("net, mm: account
-> > > sock objects to kmemcg"), which made these slab caches subject to
-> > > cgroup memory accounting and control.
+> > On Tue, Oct 22, 2019 at 4:24 PM Eric Dumazet <edumazet@google.com> wrote:
 > > >
-> > > The problem with that is that cgroups, unlike the page allocator, do
-> > > not maintain dedicated atomic reserves. As a cgroup's usage hovers at
-> > > its limit, atomic allocations - such as done during network rx - can
-> > > fail consistently for extended periods of time. The kernel is not able
-> > > to operate under these conditions.
+> > > On Tue, Oct 22, 2019 at 4:11 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > >
+> > > > Currently RTO, TLP and PROBE0 all share a same timer instance
+> > > > in kernel and use icsk->icsk_pending to dispatch the work.
+> > > > This causes spinlock contention when resetting the timer is
+> > > > too frequent, as clearly shown in the perf report:
+> > > >
+> > > >    61.72%    61.71%  swapper          [kernel.kallsyms]                        [k] queued_spin_lock_slowpath
+> > > >    ...
+> > > >     - 58.83% tcp_v4_rcv
+> > > >       - 58.80% tcp_v4_do_rcv
+> > > >          - 58.80% tcp_rcv_established
+> > > >             - 52.88% __tcp_push_pending_frames
+> > > >                - 52.88% tcp_write_xmit
+> > > >                   - 28.16% tcp_event_new_data_sent
+> > > >                      - 28.15% sk_reset_timer
+> > > >                         + mod_timer
+> > > >                   - 24.68% tcp_schedule_loss_probe
+> > > >                      - 24.68% sk_reset_timer
+> > > >                         + 24.68% mod_timer
+> > > >
+> > > > This patch decouples TLP timer from RTO timer by adding a new
+> > > > timer instance but still uses icsk->icsk_pending to dispatch,
+> > > > in order to minimize the risk of this patch.
+> > > >
+> > > > After this patch, the CPU time spent in tcp_write_xmit() reduced
+> > > > down to 10.92%.
 > > >
-> > > We don't want to revert the culprit patch, because it indeed tracks a
-> > > potentially substantial amount of memory used by a cgroup.
+> > > What is the exact benchmark you are running ?
 > > >
-> > > We also don't want to implement dedicated atomic reserves for cgroups.
-> > > There is no point in keeping a fixed margin of unused bytes in the
-> > > cgroup's memory budget to accomodate a consumer that is impossible to
-> > > predict - we'd be wasting memory and get into configuration headaches,
-> > > not unlike what we have going with min_free_kbytes. We do this for
-> > > physical mem because we have to, but cgroups are an accounting game.
-> > >
-> > > Instead, account these privileged allocations to the cgroup, but let
-> > > them bypass the configured limit if they have to. This way, we get the
-> > > benefits of accounting the consumed memory and have it exert pressure
-> > > on the rest of the cgroup, but like with the page allocator, we shift
-> > > the burden of reclaimining on behalf of atomic allocations onto the
-> > > regular allocations that can block.
+> > > We never saw any contention like that, so lets make sure you are not
+> > > working around another issue.
 > >
-> > On the other hand this would allow to break the isolation by an
-> > unpredictable amount. Should we put a simple cap on how much we can go
-> > over the limit. If the memcg limit reclaim is not able to keep up with
-> > those overflows then even __GFP_ATOMIC allocations have to fail. What do
-> > you think?
+> > I simply ran 256 parallel netperf with 128 CPU's to trigger this
+> > spinlock contention, 100% reproducible here.
 >
-> I don't expect a big overrun in practice, and it appears that Google
-> has been letting even NOWAIT allocations pass through without
-> isolation issues.
+> How many TX/RX queues on the NIC ?
 
-We have been overcharging for __GFP_HIGH allocations for couple of
-years and see no isolation issues in the production.
+60 queues (default), 25Gbps NIC, mlx5.
 
-> Likewise, we have been force-charging the skmem for
-> a while now and it hasn't been an issue for reclaim to keep up.
+> What is the qdisc setup ?
+
+fq_codel, which is default here. Its parameters are default too.
+
 >
-> My experience from production is that it's a whole lot easier to debug
-> something like a memory.max overrun than it is to debug a machine that
-> won't respond to networking. So that's the side I would err on.
+> >
+> > A single netperf TCP_RR could _also_ confirm the improvement:
+> >
+> > Before patch:
+> >
+> > $ netperf -H XXX -t TCP_RR -l 20
+> > MIGRATED TCP REQUEST/RESPONSE TEST from 0.0.0.0 (0.0.0.0) port 0
+> > AF_INET to XXX () port 0 AF_INET : first burst 0
+> > Local /Remote
+> > Socket Size   Request  Resp.   Elapsed  Trans.
+> > Send   Recv   Size     Size    Time     Rate
+> > bytes  Bytes  bytes    bytes   secs.    per sec
+> >
+> > 655360 873800 1        1       20.00    17665.59
+> > 655360 873800
+> >
+> >
+> > After patch:
+> >
+> > $ netperf -H XXX -t TCP_RR -l 20
+> > MIGRATED TCP REQUEST/RESPONSE TEST from 0.0.0.0 (0.0.0.0) port 0
+> > AF_INET to XXX () port 0 AF_INET : first burst 0
+> > Local /Remote
+> > Socket Size   Request  Resp.   Elapsed  Trans.
+> > Send   Recv   Size     Size    Time     Rate
+> > bytes  Bytes  bytes    bytes   secs.    per sec
+> >
+> > 655360 873800 1        1       20.00    18829.31
+> > 655360 873800
+> >
+> > (I have run it for multiple times, just pick a median one here.)
+> >
+> > The difference can also be observed by turning off/on TLP without patch.
+>
+> OK thanks for using something I can repro easily :)
+>
+> I ran the experiment ten times :
+
+How many CPU's do you have?
+
+
+>
+> lpaa23:/export/hda3/google/edumazet# echo 3
+> >/proc/sys/net/ipv4/tcp_early_retrans
+> lpaa23:/export/hda3/google/edumazet# for f in {1..10}; do
+> ./super_netperf 1 -H lpaa24 -t TCP_RR -l 20; done
+>   26797
+>   26850
+>   25266
+>   27605
+>   26586
+>   26341
+>   27255
+>   27532
+>   26657
+>   27253
+>
+>
+> Then disabled tlp, and got no obvious difference
+>
+> lpaa23:/export/hda3/google/edumazet# echo 0
+> >/proc/sys/net/ipv4/tcp_early_retrans
+> lpaa23:/export/hda3/google/edumazet# for f in {1..10}; do
+> ./super_netperf 1 -H lpaa24 -t TCP_RR -l 20; done
+>   25311
+>   24658
+>   27105
+>   27421
+>   27604
+>   24649
+>   26259
+>   27615
+>   27543
+>   26217
+>
+> I tried with 256 concurrent flows, and same overall observation about
+> tlp not changing the numbers.
+> (In fact I am not even sure we arm RTO at all while doing a TCP_RR)
+
+In case you misunderstand, the CPU profiling I used is captured
+during 256 parallel TCP_STREAM.
+
+
+> lpaa23:/export/hda3/google/edumazet# echo 3
+> >/proc/sys/net/ipv4/tcp_early_retrans
+> lpaa23:/export/hda3/google/edumazet# for f in {1..10}; do
+> ./super_netperf 256 -H lpaa24 -t TCP_RR -l 20; done
+> 1578682
+> 1572444
+> 1573490
+> 1536378
+> 1514905
+> 1580854
+> 1575949
+> 1578925
+> 1511164
+> 1568213
+> lpaa23:/export/hda3/google/edumazet# echo 0
+> >/proc/sys/net/ipv4/tcp_early_retrans
+> lpaa23:/export/hda3/google/edumazet# for f in {1..10}; do
+> ./super_netperf 256 -H lpaa24 -t TCP_RR -l 20; done
+> 1576228
+> 1578401
+> 1577654
+> 1579506
+> 1570682
+> 1582267
+> 1550069
+> 1530599
+> 1583269
+> 1578830
+>
+>
+> I wonder if you have some IRQ smp_affinity problem maybe, or some
+> scheduler strategy constantly migrating your user threads ?
+
+Scheduler is default too. IRQ smp affinity is statically distributed to
+each of the first 60 CPU's.
+
+>
+> TLP is quite subtle, having two timers instead of one is probably
+> going to trigger various bugs.
+
+This is exactly why I keep icsk_pending. ;)
+
+Thanks.
