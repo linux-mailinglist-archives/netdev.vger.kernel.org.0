@@ -2,83 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FA4CE206E
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 18:21:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E95E2086
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 18:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407212AbfJWQVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 12:21:55 -0400
-Received: from mail-pg1-f173.google.com ([209.85.215.173]:42467 "EHLO
-        mail-pg1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404929AbfJWQVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 12:21:55 -0400
-Received: by mail-pg1-f173.google.com with SMTP id f14so12420047pgi.9
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 09:21:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2gNzSLRsY5MYmv6sI0DTqc9fcflHPmtBoEdKyl6UdxU=;
-        b=c9Zs2Hc1ltHNK/pXgRc4OOCrVR/lIdNxlYpwX9WqbTQdl/XIbkCtGpGZc43QsNj/ZU
-         GPly3EBB8+mSlJVQqtuAFhjgUf4ya3yav2+G5bOYrMWFU2GEvGHUwNQggQS3Z91CNwzW
-         tcYbQSg4Z3FjbGLZ+R3f9n9k8Koc23eEG+GRDyr9SpZWrrgwSyKRzNwbUx5gVRiN29Le
-         Dmz/nPJlUUj/PVE36hWm3UD80lfgsyUWkHzgKTsPTcj2DoFstCrZBcQwukY3Wyg/th79
-         fA8HiA9L//cOGbx5PLPc3EkUzGdy05SJ+HmS8D53pAOo6b3fFPFdqs4/Sdd3gsxuoayN
-         TJtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2gNzSLRsY5MYmv6sI0DTqc9fcflHPmtBoEdKyl6UdxU=;
-        b=Fq+fU0/di4JJ6H2bQ920mKEmypA9g9i+FdAD/jV14ccR981wzb7m4JP12FuBJ633+S
-         zhKMW5AVMn/SUYyIjJYoIe/KYXyAmAjWeHs2BihXAUdyZ/ACErHFG9oPJkYTPAL5zgIH
-         JL61PntLXpogBaGNZcSBcANAfNU3r9wl+/q0Jm3PCbABVlrvfDW/YNkUb+u/fOiW4wET
-         gxMp9HpmhdpHFrhbJ2JtEleX+/AnEd4OfJaSgcNbzji780zjt50FgaMaQBxCFaXm/WHJ
-         pxCuCTCWNUwqvZT/++N7w6igasO0+jcw2lsXK/0HpTrQVdMUml1VdWMijyQvfBaNRxHO
-         Q9yQ==
-X-Gm-Message-State: APjAAAUCAzVp1WCWhJPW2Z5CGOBGatJz9lDO+SMZxCb7o8Bvhy6TK1T+
-        qDKa2eXb4du2ThrSxCMAT/ry8U+3wkqRbQ==
-X-Google-Smtp-Source: APXvYqy6YNOS+lxMiHj8eiY3//IUs/N/eveMF2ZVVC5vF6YMSvqq0O9rKh1sBEPQAlXyzE2Ag2BTvg==
-X-Received: by 2002:a63:4622:: with SMTP id t34mr11302936pga.0.1571847714253;
-        Wed, 23 Oct 2019 09:21:54 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 74sm15558573pgb.62.2019.10.23.09.21.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 09:21:53 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 09:21:45 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     =?UTF-8?B?TWljaGHFgiDFgXlzemN6ZWs=?= <michal.lyszczek@bofc.pl>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] ipnetns: do not check netns NAME when -all is
- specified
-Message-ID: <20191023092145.0daebf54@hermes.lan>
-In-Reply-To: <20191022200923.17366-1-michal.lyszczek@bofc.pl>
-References: <20191022200923.17366-1-michal.lyszczek@bofc.pl>
+        id S2407260AbfJWQZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 12:25:39 -0400
+Received: from vulcan.natalenko.name ([104.207.131.136]:57578 "EHLO
+        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389149AbfJWQZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 12:25:39 -0400
+Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id CFB2060CD4E;
+        Wed, 23 Oct 2019 18:25:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1571847935;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T8zzS7fQ1+h8Dch7o2XgPzxblvYJzj9a0o53CwTbiaY=;
+        b=jnyA/zUOIOvhANewA4/U/XLZ/Yg3a6p75ZDGpruHbTgVE0VI+z43o04fM9QZWleV0efy7t
+        wakILwZ4dlR90ml71qd+e8CMJa1hltGwsfHZiM/TRJN9xDLrbq+Q5/4hHoIwQmYQewf3mI
+        tqSHWB4vLQInidp3POEexp11AoVST2E=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 23 Oct 2019 18:25:35 +0200
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: mt76x2e hardware restart
+In-Reply-To: <20191023085039.GB2461@localhost.localdomain>
+References: <deaafa7a3e9ea2111ebb5106430849c6@natalenko.name>
+ <c6d621759c190f7810d898765115f3b4@natalenko.name>
+ <9d581001e2e6cece418329842b2b0959@natalenko.name>
+ <20191012165028.GA8739@lore-desk-wlan.lan>
+ <f7695bc79d40bbc96744a639b1243027@natalenko.name>
+ <96f43a2103a9f2be152c53f867f5805c@natalenko.name>
+ <20191016163842.GA18799@localhost.localdomain>
+ <20191023085039.GB2461@localhost.localdomain>
+Message-ID: <a2f0be152fc9ed53ea10b8e260c23faf@natalenko.name>
+X-Sender: oleksandr@natalenko.name
+User-Agent: Roundcube Webmail/1.3.10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Oct 2019 22:09:23 +0200
-Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl> wrote:
+Hi.
 
-> When `-all' argument is specified netns runs cmd on all namespaces
-> and NAME is not used, but netns nevertheless checks if argv[1] is a
-> valid namespace name ignoring the fact that argv[1] contains cmd
-> and not NAME. This results in bug where user cannot specify
-> absolute path to command.
->=20
->     # ip -all netns exec /usr/bin/whoami
->     Invalid netns name "/usr/bin/whoami"
->=20
-> This forces user to have his command in PATH.
->=20
-> Solution is simply to not validate argv[1] when `-all' argument is
-> specified.
->=20
-> Signed-off-by: Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl>
+On 23.10.2019 10:50, Lorenzo Bianconi wrote:
+> I think I spotted the SG issue on mt76x2e. Could you please:
+> - keep pcie_aspm patch I sent
+> - remove the debug patch where I disabled TX Scatter-Gather on mt76x2e
+> - apply the following patch
 
-Looks good, applied thanks
+Thanks for the patch. So far so good, I was able to start AP, connect to 
+it and conduct a couple of simple speed tests.
 
+I'll use it more today and will let you know in case something breaks.
+
+-- 
+   Oleksandr Natalenko (post-factum)
