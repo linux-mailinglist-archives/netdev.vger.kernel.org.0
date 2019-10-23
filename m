@@ -2,190 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8393DE1176
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 07:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E42E11BD
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 07:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730450AbfJWFFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 01:05:05 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:36399 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728697AbfJWFFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 01:05:05 -0400
-Received: by mail-pl1-f196.google.com with SMTP id j11so9476429plk.3
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 22:05:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=yi5JsBBqGl0YLT1NA/BMQgEfxswVCp0tiWnihOicS0w=;
-        b=g1jNZymI6jzsV3LGuj/lk8BX+neJZCOPOZ5D6DiaMqtmZrHqs0PGdWpc4q8xi1vA8I
-         KQ7SMVSiwulGHAqXxkbnGcip04SoRa090ziifxHmtz1Luqh9jWbQM04rn1vFz/8Vu9mG
-         JlBelPER5qB/UfCT8G9zyHVDw1r6l//w0WlAvtAa5lZD+WF8p95at2KGGHX3x2nio0Bx
-         72Fz1l+eGBC+0cwMSsEPjoA1Ap7HUGoQPhsGp+ua8HJ8Qhyr4wfZTYSeXrNG5mHmt/53
-         rOQA5JYAwymMMrUWYlZSBME6NxAy3cubXYUST7/hODCueTI9LvbWKTqvXsTZ5WjQu7JR
-         K+JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yi5JsBBqGl0YLT1NA/BMQgEfxswVCp0tiWnihOicS0w=;
-        b=PYyt/1oJncviAj/FRVn3Aw6/RDR2ilvoE+aglkOzSTrBKsZuOzFk3v90VNAugP3vcH
-         7gv/wQrXJs+XnP6lNxNXhetBYi5ZnrFZXkbSpvzt+COqXnROw8YV9jc6LRvqkIT27bhU
-         9+qe8H3b8YWuRsUXEDgjM3hLtbIdzSTtc7xoIHLf8wt9P5QXqoXrsWrC/OZjZJhPO5uw
-         CZIe4s/Y1P+mjUjBZ8Cvy+nqT1WWA9BQfEXfYkhc9eg9FNWixTZctDuRjW6sMre6RYo4
-         fAhn2rxpViRThzfuecgBZqTJWPhl6EIY7RYuXOAKUtmtJo1nABOFa2eJz1pVtzqRLJyZ
-         +5dQ==
-X-Gm-Message-State: APjAAAWszIiyWqI+42fI9kvWrqSiKJuHhSdT2G5GMs8WdOLMl6p02prA
-        nwaK/EMCRETBxUI/tgCV39PvM9Xc
-X-Google-Smtp-Source: APXvYqxAp5292vGGxRIuUY/36zRyXUfxrXxTlb3XqkZc1qv7uC8yWZboX1H9I0PEu4BvlBso9uljiw==
-X-Received: by 2002:a17:902:8e8b:: with SMTP id bg11mr7608131plb.332.1571807104495;
-        Tue, 22 Oct 2019 22:05:04 -0700 (PDT)
-Received: from martin-VirtualBox ([106.200.239.72])
-        by smtp.gmail.com with ESMTPSA id l11sm35316954pgf.73.2019.10.22.22.05.03
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 22 Oct 2019 22:05:03 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 10:34:59 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, scott.drennan@nokia.com,
-        Jiri Benc <jbenc@redhat.com>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-Subject: Re: [PATCH v2] Change in Openvswitch to support MPLS label depth of
- 3 in ingress direction
-Message-ID: <20191023050459.GA25094@martin-VirtualBox>
-References: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
- <CAOrHB_B=1RR+qqx938=O32iTH1yQ+S_gLAXS-aA1PLYYtgu6VA@mail.gmail.com>
- <20191022152940.GB23540@martin-VirtualBox>
- <CAOrHB_Cd_Qr2W7r0JSacPSYujR8er3g_sxEmGme7eFow9zyK-Q@mail.gmail.com>
+        id S1730611AbfJWFi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 01:38:56 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:41331 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbfJWFiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 01:38:55 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9N5cVkK004030, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9N5cVkK004030
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 23 Oct 2019 13:38:31 +0800
+Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
+ RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Wed, 23 Oct
+ 2019 13:38:30 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "natechancellor@gmail.com" <natechancellor@gmail.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
+        "clang-built-linux@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH] rtlwifi: Remove unnecessary NULL check in rtl_regd_init
+Thread-Topic: [PATCH] rtlwifi: Remove unnecessary NULL check in rtl_regd_init
+Thread-Index: AQHViTtpsZzjxTpDzEGH+xR50FXlCadnL6AA
+Date:   Wed, 23 Oct 2019 05:38:30 +0000
+Message-ID: <1571809110.12757.0.camel@realtek.com>
+References: <20191023004703.39710-1-natechancellor@gmail.com>
+In-Reply-To: <20191023004703.39710-1-natechancellor@gmail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.95]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EA6B22816DFAC3419D67AF0D26586ED0@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOrHB_Cd_Qr2W7r0JSacPSYujR8er3g_sxEmGme7eFow9zyK-Q@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 08:59:46PM -0700, Pravin Shelar wrote:
-> On Tue, Oct 22, 2019 at 8:29 AM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > On Tue, Oct 22, 2019 at 12:03:49AM -0700, Pravin Shelar wrote:
-> > > On Sun, Oct 20, 2019 at 7:12 AM Martin Varghese
-> > > <martinvarghesenokia@gmail.com> wrote:
-> > > >
-> > > > From: Martin Varghese <martin.varghese@nokia.com>
-> > > >
-> > > > The openvswitch was supporting a MPLS label depth of 1 in the ingress
-> > > > direction though the userspace OVS supports a max depth of 3 labels.
-> > > > This change enables openvswitch module to support a max depth of
-> > > > 3 labels in the ingress.
-> > > >
-> > > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > > > ---
-> > > > Changes in v2
-> > > >    - Moved MPLS count validation from datapath to configuration.
-> > > >    - Fixed set mpls function.
-> > > >
-> > > This patch looks pretty close now.
-> > >
-> > > >  net/openvswitch/actions.c      |  2 +-
-> > > >  net/openvswitch/flow.c         | 20 ++++++++++-----
-> > > >  net/openvswitch/flow.h         |  9 ++++---
-> > > >  net/openvswitch/flow_netlink.c | 57 +++++++++++++++++++++++++++++++++---------
-> > > >  4 files changed, 66 insertions(+), 22 deletions(-)
-> > > >
-> > > ...
-> > > > diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-> > > > index d7559c6..21de061 100644
-> > > > --- a/net/openvswitch/flow_netlink.c
-> > > > +++ b/net/openvswitch/flow_netlink.c
-> > > > @@ -424,7 +424,7 @@ size_t ovs_key_attr_size(void)
-> > > >         [OVS_KEY_ATTR_DP_HASH]   = { .len = sizeof(u32) },
-> > > >         [OVS_KEY_ATTR_TUNNEL]    = { .len = OVS_ATTR_NESTED,
-> > > >                                      .next = ovs_tunnel_key_lens, },
-> > > > -       [OVS_KEY_ATTR_MPLS]      = { .len = sizeof(struct ovs_key_mpls) },
-> > > > +       [OVS_KEY_ATTR_MPLS]      = { .len = OVS_ATTR_VARIABLE },
-> > > >         [OVS_KEY_ATTR_CT_STATE]  = { .len = sizeof(u32) },
-> > > >         [OVS_KEY_ATTR_CT_ZONE]   = { .len = sizeof(u16) },
-> > > >         [OVS_KEY_ATTR_CT_MARK]   = { .len = sizeof(u32) },
-> > > > @@ -1628,10 +1628,25 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
-> > > >
-> > > >         if (attrs & (1 << OVS_KEY_ATTR_MPLS)) {
-> > > >                 const struct ovs_key_mpls *mpls_key;
-> > > > +               u32 hdr_len;
-> > > > +               u32 label_count, label_count_mask, i;
-> > > >
-> > > >                 mpls_key = nla_data(a[OVS_KEY_ATTR_MPLS]);
-> > > > -               SW_FLOW_KEY_PUT(match, mpls.top_lse,
-> > > > -                               mpls_key->mpls_lse, is_mask);
-> > > > +               hdr_len = nla_len(a[OVS_KEY_ATTR_MPLS]);
-> > > > +               label_count = hdr_len / sizeof(struct ovs_key_mpls);
-> > > > +
-> > > > +               if (label_count == 0 || label_count > MPLS_LABEL_DEPTH ||
-> > > > +                   hdr_len % sizeof(struct ovs_key_mpls))
-> > > > +                       return -EINVAL;
-> > > > +
-> > > > +               label_count_mask =  GENMASK(label_count - 1, 0);
-> > > > +
-> > > > +               for (i = 0 ; i < label_count; i++)
-> > > > +                       SW_FLOW_KEY_PUT(match, mpls.lse[i],
-> > > > +                                       mpls_key[i].mpls_lse, is_mask);
-> > > > +
-> > > > +               SW_FLOW_KEY_PUT(match, mpls.num_labels_mask,
-> > > > +                               label_count_mask, is_mask);
-> > > >
-> > > >                 attrs &= ~(1 << OVS_KEY_ATTR_MPLS);
-> > > >          }
-> > > > @@ -2114,13 +2129,18 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
-> > > >                 ether_addr_copy(arp_key->arp_sha, output->ipv4.arp.sha);
-> > > >                 ether_addr_copy(arp_key->arp_tha, output->ipv4.arp.tha);
-> > > >         } else if (eth_p_mpls(swkey->eth.type)) {
-> > > > +               u8 i, num_labels;
-> > > >                 struct ovs_key_mpls *mpls_key;
-> > > >
-> > > > -               nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS, sizeof(*mpls_key));
-> > > > +               num_labels = hweight_long(output->mpls.num_labels_mask);
-> > > > +               nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS,
-> > > > +                                 num_labels * sizeof(*mpls_key));
-> > > >                 if (!nla)
-> > > >                         goto nla_put_failure;
-> > > > +
-> > > >                 mpls_key = nla_data(nla);
-> > > > -               mpls_key->mpls_lse = output->mpls.top_lse;
-> > > > +               for (i = 0; i < num_labels; i++)
-> > > > +                       mpls_key[i].mpls_lse = output->mpls.lse[i];
-> > > >         }
-> > > >
-> > > >         if ((swkey->eth.type == htons(ETH_P_IP) ||
-> > > > @@ -2957,6 +2977,10 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
-> > > >         u8 mac_proto = ovs_key_mac_proto(key);
-> > > >         const struct nlattr *a;
-> > > >         int rem, err;
-> > > > +       u32 mpls_label_count = 0;
-> > > > +
-> > > > +       if (eth_p_mpls(eth_type))
-> > > > +               mpls_label_count = hweight_long(key->mpls.num_labels_mask);
-> > > >
-> > > The MPLS push and pop action could be part of nested actions in
-> > > sample, so the count needs to be global count across such nested
-> > > actions. have a look at validate_and_copy_sample().
-> > >
-> > Embedding mpls_label_count in struct sw_flow_actions will not work for clone
-> >
-> > I guess we need to move the below code to ovs_nla_copy_actions and extend the  arguments of __ovs_nla_copy_actions to take mpls_label_count also
-> > if (eth_p_mpls(eth_type))
-> >                 mpls_label_count = hweight_long(key->mpls.num_labels_mask)
-> >
-> >
-> I am not suggesting changing sw_flow_actions, You can define count
-> variable in ovs_nla_copy_actions() and pass it as a pointer to nested
-> function. That can be used to keep track of MPLS labels at all nested
-> actions.
-
-Actions clone & sample does a clone of SKB correct?
-Hence shouldn't they maintain a seperate mpls_label count for each nested action set
-I assume instead of passing as pointer from ovs_nla_copy_actions ,if passed by value it should 
-solve the problem.Need to try that though.
+T24gVHVlLCAyMDE5LTEwLTIyIGF0IDE3OjQ3IC0wNzAwLCBOYXRoYW4gQ2hhbmNlbGxvciB3cm90
+ZToNCj4gV2hlbiBidWlsZGluZyB3aXRoIENsYW5nICsgLVd0YXV0b2xvZ2ljYWwtcG9pbnRlci1j
+b21wYXJlOg0KPiANCj4gZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3JlZ2Qu
+YzozODk6MzM6IHdhcm5pbmc6IGNvbXBhcmlzb24NCj4gb2YgYWRkcmVzcyBvZiAncnRscHJpdi0+
+cmVnZCcgZXF1YWwgdG8gYSBudWxsIHBvaW50ZXIgaXMgYWx3YXlzIGZhbHNlDQo+IFstV3RhdXRv
+bG9naWNhbC1wb2ludGVyLWNvbXBhcmVdDQo+IMKgwqDCoMKgwqDCoMKgwqBpZiAod2lwaHkgPT0g
+TlVMTCB8fCAmcnRscHJpdi0+cmVnZCA9PSBOVUxMKQ0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB+fn5+fn5+fn5efn5+wqDCoMKg
+wqB+fn5+DQo+IDEgd2FybmluZyBnZW5lcmF0ZWQuDQo+IA0KPiBUaGUgYWRkcmVzcyBvZiBhbiBh
+cnJheSBtZW1iZXIgaXMgbmV2ZXIgTlVMTCB1bmxlc3MgaXQgaXMgdGhlIGZpcnN0DQo+IHN0cnVj
+dCBtZW1iZXIgc28gcmVtb3ZlIHRoZSB1bm5lY2Vzc2FyeSBjaGVjay4gVGhpcyB3YXMgYWRkcmVz
+c2VkIGluDQo+IHRoZSBzdGFnaW5nIHZlcnNpb24gb2YgdGhlIGRyaXZlciBpbiBjb21taXQgZjk4
+Njk3OGIzMmIzICgiU3RhZ2luZzoNCj4gcnRsd2lmaTogcmVtb3ZlIHVubmVjZXNzYXJ5IE5VTEwg
+Y2hlY2siKS4NCj4gDQo+IFdoaWxlIHdlIGFyZSBoZXJlLCBmaXggdGhlIGZvbGxvd2luZyBjaGVj
+a3BhdGNoIHdhcm5pbmc6DQo+IA0KPiBDSEVDSzogQ29tcGFyaXNvbiB0byBOVUxMIGNvdWxkIGJl
+IHdyaXR0ZW4gIiF3aXBoeSINCj4gMzU6IEZJTEU6IGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0
+ZWsvcnRsd2lmaS9yZWdkLmM6Mzg5Og0KPiArwqDCoMKgwqDCoMKgwqBpZiAod2lwaHkgPT0gTlVM
+TCkNCj4gDQo+IEZpeGVzOiAwYzgxNzMzODVlNTQgKCJydGw4MTkyY2U6IEFkZCBuZXcgZHJpdmVy
+IikNCj4gTGluazpodHRwczovL2dpdGh1Yi5jb20vQ2xhbmdCdWlsdExpbnV4L2xpbnV4L2lzc3Vl
+cy83NTANCj4gU2lnbmVkLW9mZi1ieTogTmF0aGFuIENoYW5jZWxsb3IgPG5hdGVjaGFuY2VsbG9y
+QGdtYWlsLmNvbT4NCg0KTG9va3MgZ29vZC4NClRoYW5rcyBmb3IgeW91ciBmaXguDQoNCkFja2Vk
+LWJ5OiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT4NCg0KPiAtLS0NCj4gwqBkcml2
+ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcmVnZC5jIHwgMiArLQ0KPiDCoDEgZmls
+ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9yZWdkLmMNCj4gYi9kcml2
+ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcmVnZC5jDQo+IGluZGV4IGMxMDQzMmNk
+NzAzZS4uOGJlMzFlMGFkODc4IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9y
+ZWFsdGVrL3J0bHdpZmkvcmVnZC5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0
+ZWsvcnRsd2lmaS9yZWdkLmMNCj4gQEAgLTM4Niw3ICszODYsNyBAQCBpbnQgcnRsX3JlZ2RfaW5p
+dChzdHJ1Y3QgaWVlZTgwMjExX2h3ICpodywNCj4gwqAJc3RydWN0IHdpcGh5ICp3aXBoeSA9IGh3
+LT53aXBoeTsNCj4gwqAJc3RydWN0IGNvdW50cnlfY29kZV90b19lbnVtX3JkICpjb3VudHJ5ID0g
+TlVMTDsNCj4gwqANCj4gLQlpZiAod2lwaHkgPT0gTlVMTCB8fCAmcnRscHJpdi0+cmVnZCA9PSBO
+VUxMKQ0KPiArCWlmICghd2lwaHkpDQo+IMKgCQlyZXR1cm4gLUVJTlZBTDsNCj4gwqANCj4gwqAJ
+LyogaW5pdCBjb3VudHJ5X2NvZGUgZnJvbSBlZnVzZSBjaGFubmVsIHBsYW4gKi8NCg0KDQo=
