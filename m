@@ -2,67 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B88FE1376
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 09:54:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC62E1399
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390041AbfJWHyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 03:54:00 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:57706 "EHLO huawei.com"
+        id S2390140AbfJWIGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 04:06:43 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48138 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727574AbfJWHyA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 03:54:00 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 6EB3E66DC43364274BBD;
-        Wed, 23 Oct 2019 15:53:58 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 23 Oct 2019
- 15:53:48 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <Jes.Sorensen@gmail.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] rtl8xxxu: remove set but not used variable 'rate_mask'
-Date:   Wed, 23 Oct 2019 15:53:42 +0800
-Message-ID: <20191023075342.26656-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1727574AbfJWIGm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 04:06:42 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 9EFE6BB24;
+        Wed, 23 Oct 2019 08:06:40 +0000 (UTC)
+Date:   Wed, 23 Oct 2019 10:06:40 +0200
+From:   Daniel Wagner <dwagner@suse.de>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Stefan Wahren <wahrenst@gmx.net>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] net: usb: lan78xx: Use phy_mac_interrupt() for interrupt
+ handling
+Message-ID: <20191023080640.zcw2f2v7fpanoewm@beryllium.lan>
+References: <20191018082817.111480-1-dwagner@suse.de>
+ <20191018131532.dsfhyiilsi7cy4cm@linutronix.de>
+ <20191022101747.001b6d06@cakuba.netronome.com>
+ <20191023074719.gcov5xfrcvns5tlg@beryllium.lan>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191023074719.gcov5xfrcvns5tlg@beryllium.lan>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:4484:6:
- warning: variable rate_mask set but not used [-Wunused-but-set-variable]
+Sebastian suggested to try this here:
 
-It is never used since commit a9bb0b515778 ("rtl8xxxu: Improve
-TX performance of RTL8723BU on rtl8xxxu driver")
-
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 1e3b716..3843d7a 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -4481,11 +4481,6 @@ static u16
- rtl8xxxu_wireless_mode(struct ieee80211_hw *hw, struct ieee80211_sta *sta)
- {
- 	u16 network_type = WIRELESS_MODE_UNKNOWN;
--	u32 rate_mask;
--
--	rate_mask = (sta->supp_rates[0] & 0xfff) |
--		    (sta->ht_cap.mcs.rx_mask[0] << 12) |
--		    (sta->ht_cap.mcs.rx_mask[0] << 20);
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -1264,8 +1264,11 @@ static void lan78xx_status(struct lan78xx_net *dev, struct urb *urb)
+                netif_dbg(dev, link, dev->net, "PHY INTR: 0x%08x\n", intdata);
+                lan78xx_defer_kevent(dev, EVENT_LINK_RESET);
  
- 	if (hw->conf.chandef.chan->band == NL80211_BAND_5GHZ) {
- 		if (sta->vht_cap.vht_supported)
--- 
-2.7.4
+-               if (dev->domain_data.phyirq > 0)
++               if (dev->domain_data.phyirq > 0) {
++                       local_irq_disable();
+                        generic_handle_irq(dev->domain_data.phyirq);
++                       local_irq_enable();
++               }
+        } else
+                netdev_warn(dev->net,
+                            "unexpected interrupt: 0x%08x\n", intdata);
+
+While this gets rid of the warning, the networking interface is not
+really stable:
+
+[   43.999628] nfs: server 192.168.19.2 not responding, still trying
+[   43.999633] nfs: server 192.168.19.2 not responding, still trying
+[   43.999649] nfs: server 192.168.19.2 not responding, still trying
+[   43.999674] nfs: server 192.168.19.2 not responding, still trying
+[   43.999678] nfs: server 192.168.19.2 not responding, still trying
+[   44.006712] nfs: server 192.168.19.2 OK
+[   44.018443] nfs: server 192.168.19.2 OK
+[   44.024765] nfs: server 192.168.19.2 OK
+[   44.025361] nfs: server 192.168.19.2 OK
+[   44.025420] nfs: server 192.168.19.2 OK
+[  256.991659] nfs: server 192.168.19.2 not responding, still trying
+[  256.991664] nfs: server 192.168.19.2 not responding, still trying
+[  256.991669] nfs: server 192.168.19.2 not responding, still trying
+[  256.991685] nfs: server 192.168.19.2 not responding, still trying
+[  256.991713] nfs: server 192.168.19.2 not responding, still trying
+[  256.998797] nfs: server 192.168.19.2 OK
+[  256.999745] nfs: server 192.168.19.2 OK
+[  256.999828] nfs: server 192.168.19.2 OK
+[  257.000438] nfs: server 192.168.19.2 OK
+[  257.004784] nfs: server 192.168.19.2 OK
 
 
+Eventually, the rootfs can be loaded and the system boots. Though the
+system is not really usable because it often stalls:
+
+
+root@debian:~# apt update
+Ign:1 http://deb.debian.org/debian stretch InRelease
+Hit:2 http://deb.debian.org/debian stretch Release
+Reading package lists... 0% 
+
+
+I don't see this with the irqdomain code reverted.
