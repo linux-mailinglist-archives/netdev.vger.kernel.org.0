@@ -2,95 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88AD8E169A
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:48:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D59FE16C6
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 11:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404141AbfJWJsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 05:48:52 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:60460 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732648AbfJWJsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 05:48:51 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9N9mV3W003891, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9N9mV3W003891
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Oct 2019 17:48:31 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
- 14.03.0468.000; Wed, 23 Oct 2019 17:48:30 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "pmalani@chromium.org" <pmalani@chromium.org>,
-        "grundler@chromium.org" <grundler@chromium.org>,
-        "'Linux Samsung SOC'" <linux-samsung-soc@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: RE: [PATCH net-next] r8152: support request_firmware for RTL8153
-Thread-Topic: [PATCH net-next] r8152: support request_firmware for RTL8153
-Thread-Index: AQHVg84yG1svvwJLbEa5ZZ4zq0Zj+qdnd3YAgACNnOA=
-Date:   Wed, 23 Oct 2019 09:48:28 +0000
-Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18ED3FA@RTITMBSVM03.realtek.com.tw>
-References: <1394712342-15778-329-Taiwan-albertk@realtek.com>
-        <CGME20191023091648eucas1p12dcc4e9041169e3c7ae43f4ea525dd7f@eucas1p1.samsung.com>
- <44261242-ff44-0067-bbb9-2241e400ad53@samsung.com>
-In-Reply-To: <44261242-ff44-0067-bbb9-2241e400ad53@samsung.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S2390545AbfJWJ4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 05:56:12 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:27145 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2390939AbfJWJ4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 05:56:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571824571;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PjIrWxilILjTXJMM4pZ+a2frsZYLFCvzVYmdT4dKHeA=;
+        b=b5zDXq8J97LwC5WX8PDjo+cfJdZZOnEezlbTMRhRHpU2HUGLbaQxaw+As7v+urTLtBvPCO
+        jM5JM27+/lVGh8aIP74TVhqRuUiISgaAurfsQFsZZn7yRTifKcU5ghkF4R+odbPzYeFbAN
+        WSNSePJTMlPVIAqAazHXU5EXB1LqDpc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-45-AIB5fJO8MnCfZd5pS6ln_A-1; Wed, 23 Oct 2019 05:56:07 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B56EC1800DD0;
+        Wed, 23 Oct 2019 09:56:05 +0000 (UTC)
+Received: from steredhat.redhat.com (unknown [10.36.118.164])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1BEEB5C1B2;
+        Wed, 23 Oct 2019 09:55:54 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        linux-hyperv@vger.kernel.org,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH net-next 00/14] vsock: add multi-transports support
+Date:   Wed, 23 Oct 2019 11:55:40 +0200
+Message-Id: <20191023095554.11340-1-sgarzare@redhat.com>
 MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: AIB5fJO8MnCfZd5pS6ln_A-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TWFyZWsgU3p5cHJvd3NraSBbbWFpbHRvOm0uc3p5cHJvd3NraUBzYW1zdW5nLmNvbV0NCj4gU2Vu
-dDogV2VkbmVzZGF5LCBPY3RvYmVyIDIzLCAyMDE5IDU6MTcgUE0NCj4gU3ViamVjdDogUmU6IFtQ
-QVRDSCBuZXQtbmV4dF0gcjgxNTI6IHN1cHBvcnQgcmVxdWVzdF9maXJtd2FyZSBmb3IgUlRMODE1
-Mw0KPiANCj4gSGkgSGF5ZXMsDQo+IA0KPiBPbiAxNi4xMC4yMDE5IDA1OjAyLCBIYXllcyBXYW5n
-IHdyb3RlOg0KPiA+IFRoaXMgcGF0Y2ggc3VwcG9ydHMgbG9hZGluZyBhZGRpdGlvbmFsIGZpcm13
-YXJlIGZpbGUgdGhyb3VnaA0KPiA+IHJlcXVlc3RfZmlybXdhcmUoKS4NCj4gPg0KPiA+IEEgZmly
-bXdhcmUgZmlsZSBtYXkgaW5jbHVkZSBhIGhlYWRlciBmb2xsb3dlZCBieSBzZXZlcmFsIGJsb2Nr
-cw0KPiA+IHdoaWNoIGhhdmUgZGlmZmVyZW50IHR5cGVzIG9mIGZpcm13YXJlLiBDdXJyZW50bHks
-IHRoZSBzdXBwb3J0ZWQNCj4gPiB0eXBlcyBhcmUgUlRMX0ZXX0VORCwgUlRMX0ZXX1BMQSwgYW5k
-IFJUTF9GV19VU0IuDQo+ID4NCj4gPiBUaGUgZmlybXdhcmUgaXMgdXNlZCB0byBmaXggc29tZSBj
-b21wYXRpYmxlIG9yIGhhcmR3YXJlIGlzc3Vlcy4gRm9yDQo+ID4gZXhhbXBsZSwgdGhlIGRldmlj
-ZSBjb3VsZG4ndCBiZSBmb3VuZCBhZnRlciByZWJvb3Rpbmcgc2V2ZXJhbCB0aW1lcy4NCj4gPg0K
-PiA+IFRoZSBzdXBwb3J0ZWQgY2hpcHMgYXJlDQo+ID4gCVJUTF9WRVJfMDQgKHJ0bDgxNTNhLTIu
-ZncpDQo+ID4gCVJUTF9WRVJfMDUgKHJ0bDgxNTNhLTMuZncpDQo+ID4gCVJUTF9WRVJfMDYgKHJ0
-bDgxNTNhLTQuZncpDQo+ID4gCVJUTF9WRVJfMDkgKHJ0bDgxNTNiLTIuZncpDQo+ID4NCj4gPiBT
-aWduZWQtb2ZmLWJ5OiBIYXllcyBXYW5nIDxoYXllc3dhbmdAcmVhbHRlay5jb20+DQo+ID4gUmV2
-aWV3ZWQtYnk6IFByYXNoYW50IE1hbGFuaSA8cG1hbGFuaUBjaHJvbWl1bS5vcmc+DQo+IA0KPiBU
-aGlzIHBhdGNoICh3aGljaCBsYW5kZWQgaW4gbGludXgtbmV4dCBsYXN0IGRheXMpIGNhdXNlcyBh
-IGZvbGxvd2luZw0KPiBrZXJuZWwgb29wcyBvbiB0aGUgQVJNIDMyYml0IEV4eW5vczU0MjIgU29D
-IGJhc2VkIE9kcm9pZCBYVTQgYm9hcmQ6DQoNClBsZWFzZSB0cnkgdGhlIGZvbGxvd2luZyBwYXRj
-aC4NCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3VzYi9yODE1Mi5jIGIvZHJpdmVycy9uZXQv
-dXNiL3I4MTUyLmMNCmluZGV4IGQzYzMwY2NjODU3Ny4uMjgzYjM1YTc2Y2YwIDEwMDY0NA0KLS0t
-IGEvZHJpdmVycy9uZXQvdXNiL3I4MTUyLmMNCisrKyBiL2RyaXZlcnMvbmV0L3VzYi9yODE1Mi5j
-DQpAQCAtNDAwMCw4ICs0MDAwLDggQEAgc3RhdGljIHZvaWQgcnRsODE1Ml9md19tYWNfYXBwbHko
-c3RydWN0IHI4MTUyICp0cCwgc3RydWN0IGZ3X21hYyAqbWFjKQ0KIHN0YXRpYyB2b2lkIHJ0bDgx
-NTJfYXBwbHlfZmlybXdhcmUoc3RydWN0IHI4MTUyICp0cCkNCiB7DQogCXN0cnVjdCBydGxfZncg
-KnJ0bF9mdyA9ICZ0cC0+cnRsX2Z3Ow0KLQljb25zdCBzdHJ1Y3QgZmlybXdhcmUgKmZ3ID0gcnRs
-X2Z3LT5mdzsNCi0Jc3RydWN0IGZ3X2hlYWRlciAqZndfaGRyID0gKHN0cnVjdCBmd19oZWFkZXIg
-Kilmdy0+ZGF0YTsNCisJY29uc3Qgc3RydWN0IGZpcm13YXJlICpmdzsNCisJc3RydWN0IGZ3X2hl
-YWRlciAqZndfaGRyOw0KIAlzdHJ1Y3QgZndfcGh5X3BhdGNoX2tleSAqa2V5Ow0KIAl1MTYga2V5
-X2FkZHIgPSAwOw0KIAlpbnQgaTsNCkBAIC00MDA5LDYgKzQwMDksOSBAQCBzdGF0aWMgdm9pZCBy
-dGw4MTUyX2FwcGx5X2Zpcm13YXJlKHN0cnVjdCByODE1MiAqdHApDQogCWlmIChJU19FUlJfT1Jf
-TlVMTChydGxfZnctPmZ3KSkNCiAJCXJldHVybjsNCiANCisJZncgPSBydGxfZnctPmZ3Ow0KKwlm
-d19oZHIgPSAoc3RydWN0IGZ3X2hlYWRlciAqKWZ3LT5kYXRhOw0KKw0KIAlpZiAocnRsX2Z3LT5w
-cmVfZncpDQogCQlydGxfZnctPnByZV9mdyh0cCk7DQoNCj4gPiArc3RhdGljIHZvaWQgcnRsODE1
-Ml9hcHBseV9maXJtd2FyZShzdHJ1Y3QgcjgxNTIgKnRwKQ0KPiA+ICt7DQo+ID4gKwlzdHJ1Y3Qg
-cnRsX2Z3ICpydGxfZncgPSAmdHAtPnJ0bF9mdzsNCj4gPiArCWNvbnN0IHN0cnVjdCBmaXJtd2Fy
-ZSAqZncgPSBydGxfZnctPmZ3Ow0KPiA+ICsJc3RydWN0IGZ3X2hlYWRlciAqZndfaGRyID0gKHN0
-cnVjdCBmd19oZWFkZXIgKilmdy0+ZGF0YTsNCj4gPiArCWludCBpOw0KPiA+ICsNCj4gPiArCWlm
-IChJU19FUlJfT1JfTlVMTChydGxfZnctPmZ3KSkNCj4gPiArCQlyZXR1cm47DQo+ID4gKw0KPiA+
-ICsJaWYgKHJ0bF9mdy0+cHJlX2Z3KQ0KPiA+ICsJCXJ0bF9mdy0+cHJlX2Z3KHRwKTsNCj4gPiAr
-DQoNCkJlc3QgUmVnYXJkcywNCkhheWVzDQoNCg0K
+This series adds the multi-transports support to vsock, following
+this proposal: https://www.spinics.net/lists/netdev/msg575792.html
+
+With the multi-transports support, we can use VSOCK with nested VMs
+(using also different hypervisors) loading both guest->host and
+host->guest transports at the same time.
+Before this series, vmci-transport supported this behavior but only
+using VMware hypervisor on L0, L1, etc.
+
+RFC: https://patchwork.ozlabs.org/cover/1168442/
+RFC -> v1:
+- Added R-b/A-b from Dexuan and Stefan
+- Fixed comments and typos in several patches (Stefan)
+- Patch 7: changed .notify_buffer_size return to void (Stefan)
+- Added patch 8 to simplify the API exposed to the transports (Stefan)
+- Patch 11:
+  + documented VSOCK_TRANSPORT_F_* flags (Stefan)
+  + fixed vsock_assign_transport() when the socket is already assigned
+  + moved features outside of struct vsock_transport, and used as
+    parameter of vsock_core_register() as a preparation of Patch 12
+- Removed "vsock: add 'transport_hg' to handle g2h\h2g transports" patch
+- Added patch 12 to register vmci_transport only when VMCI guest/host
+  are active
+
+The first 9 patches are cleanups and preparations, maybe some of
+these can go regardless of this series.
+
+Patch 10 changes the hvs_remote_addr_init(). setting the
+VMADDR_CID_HOST as remote CID instead of VMADDR_CID_ANY to make
+the choice of transport to be used work properly.
+
+Patch 11 adds multi-transports support.
+
+Patch 12 touch a little bit the vmci_transport and the vmci driver
+to register the vmci_transport only when there are active host/guest.
+
+Patch 13 prevents the transport modules unloading while sockets are
+assigned to them.
+
+Patch 14 fixes an issue in the bind() logic discoverable only with
+the new multi-transport support.
+
+I've tested this series with nested KVM (vsock-transport [L0,L1],
+virtio-transport[L1,L2]) and with VMware (L0) + KVM (L1)
+(vmci-transport [L0,L1], vhost-transport [L1], virtio-transport[L2]).
+
+Dexuan successfully tested the RFC series on HyperV with a Linux guest.
+
+Stefano Garzarella (14):
+  vsock/vmci: remove unused VSOCK_DEFAULT_CONNECT_TIMEOUT
+  vsock: remove vm_sockets_get_local_cid()
+  vsock: remove include/linux/vm_sockets.h file
+  vsock: add 'transport' member in the struct vsock_sock
+  vsock/virtio: add transport parameter to the
+    virtio_transport_reset_no_sock()
+  vsock: add 'struct vsock_sock *' param to vsock_core_get_transport()
+  vsock: handle buffer_size sockopts in the core
+  vsock: add vsock_create_connected() called by transports
+  vsock: move vsock_insert_unbound() in the vsock_create()
+  hv_sock: set VMADDR_CID_HOST in the hvs_remote_addr_init()
+  vsock: add multi-transports support
+  vsock/vmci: register vmci_transport only when VMCI guest/host are
+    active
+  vsock: prevent transport modules unloading
+  vsock: fix bind() behaviour taking care of CID
+
+ drivers/misc/vmw_vmci/vmci_driver.c     |  50 ++++
+ drivers/misc/vmw_vmci/vmci_driver.h     |   2 +
+ drivers/misc/vmw_vmci/vmci_guest.c      |   2 +
+ drivers/misc/vmw_vmci/vmci_host.c       |   7 +
+ drivers/vhost/vsock.c                   |  96 +++---
+ include/linux/virtio_vsock.h            |  18 +-
+ include/linux/vm_sockets.h              |  15 -
+ include/linux/vmw_vmci_api.h            |   2 +
+ include/net/af_vsock.h                  |  44 +--
+ include/net/vsock_addr.h                |   2 +-
+ net/vmw_vsock/af_vsock.c                | 376 ++++++++++++++++++------
+ net/vmw_vsock/hyperv_transport.c        |  70 ++---
+ net/vmw_vsock/virtio_transport.c        | 177 ++++++-----
+ net/vmw_vsock/virtio_transport_common.c | 131 +++------
+ net/vmw_vsock/vmci_transport.c          | 137 +++------
+ net/vmw_vsock/vmci_transport.h          |   3 -
+ net/vmw_vsock/vmci_transport_notify.h   |   1 -
+ 17 files changed, 627 insertions(+), 506 deletions(-)
+ delete mode 100644 include/linux/vm_sockets.h
+
+--=20
+2.21.0
+
