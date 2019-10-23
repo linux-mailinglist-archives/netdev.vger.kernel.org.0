@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D9C7E1128
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 06:43:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2ADE115B
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 06:58:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732161AbfJWEny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 00:43:54 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34684 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731061AbfJWEny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 00:43:54 -0400
-Received: by mail-qt1-f196.google.com with SMTP id e14so10662352qto.1;
-        Tue, 22 Oct 2019 21:43:53 -0700 (PDT)
+        id S2388930AbfJWE6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 00:58:53 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46965 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727850AbfJWE6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 00:58:53 -0400
+Received: by mail-qt1-f194.google.com with SMTP id u22so30413774qtq.13;
+        Tue, 22 Oct 2019 21:58:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=RHycZiEaHcuFesktKBObsZI+gqKiji2X2wOUb3oHi78=;
-        b=C/1hpcy6VAVCyYoAsEZnYyCe5GuLQaV4ziYk5hXqqbFOflbSUxx+0ZpDHtdNwbHh1L
-         WP0kOS2mnYvP6m7cAWLCDFbzm0Z3VGOU/tgVtz2g9UILQx0B7+KeuXM/NL/MghayNzNf
-         ziRp/uJb94FWtYSWprkZeIlHAO0qrYaCEszkPnon9dlttRZy2CFoQsbK0B6J6vS+c5Um
-         nhE6BQaMhFT1lOGkUMSHgHtk45tK1Trgu18GBeUw0B2i4g1946OH3xybVATeMJXA7HZC
-         M53EjpEFzX6V0rju+2yNpwLj0hHCCTDp7xh3uPEPqLaXn8LTHA8gICD4HK9NAqt1Ha/f
-         yDGA==
+        bh=KD9wk3rtlGk25cugQBW8PeMmDWyY5bD+3+xHNKYM4+M=;
+        b=n2ek7N7LIUnGxMfxT6ProPSOnRma9QOTpPmqgCKjvVzxSUfcMjO1JR2PtStO7R6mdm
+         TrZIwO/uVfhrpB+GxI1CtlOvXbDcNCVyS6wC/BIZ4dk14BzTti0WjrEYEPcNzZXDcGU1
+         eTK7TgIFvKtlatJXfISkNAvG21F+FLTe6FTJHnU736zk9nXbo/rO0+ibvYTNSUcPWpXW
+         6seaAtj9dASL6kKGqccgZjNqqiZjh25iecrWf+SLcPHPcn5VpOZgX7EWIrXVeI2lCcfd
+         HNijg1+lMD2G70nisP6lyIniFB9oMUjH/1PaRK217jFdXNznzkqtDo89nkbzIoHf6PEW
+         UkIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RHycZiEaHcuFesktKBObsZI+gqKiji2X2wOUb3oHi78=;
-        b=qHXB6wuvjurMUnqU6s9Ai/ci3KB8QPpwfwojyGif74RLo4fRhYUkTVEDhYg/5y20sO
-         RVsnT5Dy6RvcW9hWBfZTTszSxwnmAC6dAJUKj8u1YHXql/MJceqhM77ut4PGfiukeyXQ
-         1zWVrcS4PsA3EpL+qB/zJaM6J3aE/aGUrLvyH8XO+L46W7SBuMQ2Y5eWo2OtIrKug12E
-         dHSS2ejXufV7rIdsEenM/spzSYubiGgcPxnpnFWba7fFHLRhB9d/OSqlzITmtCOzUnbv
-         usTf3IftDtd47NPKdJ/SS08z/x+2bZlIqaSEeHNh1azsfuFJQDy6WK3bfKpV0eh9Lkqj
-         mPQw==
-X-Gm-Message-State: APjAAAV+jAmCHAIWR1HluvyM6BRJYxth2PF9YqnFEY/c7RVnpaBuH/Ow
-        xjnb3oYp5fIGYdgUugGd/PXWzRq5BUzrC6UYAwgVS+EtoIQ=
-X-Google-Smtp-Source: APXvYqzILeJals3LZXxE3Zv8mn8wBl+QK9Q8DZ2MYikbIeG2ij0jV9p/UdpBMVOmW+GiIVCUbHZYtNaIqdVZ+uknOqs=
-X-Received: by 2002:ac8:4a03:: with SMTP id x3mr1597877qtq.117.1571805833201;
- Tue, 22 Oct 2019 21:43:53 -0700 (PDT)
+        bh=KD9wk3rtlGk25cugQBW8PeMmDWyY5bD+3+xHNKYM4+M=;
+        b=WMQv7ry3Z8asNy8XRpI8udQ51LwwWGgT06gRD7bSB3C0lDyavXXTSUiD8WVtCwbknS
+         7Zo76XLH6o8IVCWF8NKMTEEPi+Ibv515gGkwCfyS43O3J2D5zAioPc3lzbp0ng6G0u7q
+         NS5hpz6iHSXmkKpUBLQtYgoaYeQifkK67WGzOkhI3N2/mYOH3jWWnEMdnc+ATIwejznx
+         vuWS42+Ya3Za/4m/PfF4JjUGSNoUPpyxSeR9g0eN7myH+edEdqG1vZrowKvPBocXIib5
+         KimdUMdRVdX07XDAOhjIWBo/OaUios3emz+aEsgACwQ/t+KSiwSKKW6RuwcPaRpqZMTt
+         6xgw==
+X-Gm-Message-State: APjAAAWhJrVXhbI4YAFCx0T1VOUJ4k9Kefa10uQfMAIBvsMTpH6akv43
+        i9HECAeHV5eWMvovoh9GFq31qy8B4j4xv73fmPU=
+X-Google-Smtp-Source: APXvYqxxryhdMIXux0RZDHmS7x1f/k2bBMHC6QglZx1yrb9ug/N0OA1HRtGRXWhXKUzZlH6Wx0axp63g3uQj84Hur5w=
+X-Received: by 2002:a05:6214:16c5:: with SMTP id d5mr1480870qvz.247.1571806732279;
+ Tue, 22 Oct 2019 21:58:52 -0700 (PDT)
 MIME-Version: 1.0
 References: <157175668770.112621.17344362302386223623.stgit@toke.dk>
- <157175668879.112621.10917994557478417780.stgit@toke.dk> <CAEf4BzatAgkOiS2+EpauWsUWymmjM4YRBJcSqYj15Ywk8aP6Lw@mail.gmail.com>
- <87blu8odhf.fsf@toke.dk> <CAEf4BzapbVb=u_GPLSv-KEctwZz=K3FUb_B6p2HmWnqz06n4Rg@mail.gmail.com>
- <878spcoc0i.fsf@toke.dk> <CAEf4BzboV_84iZNf8HnAOOU=jDnC8+5pYaPDsQUAfV-oGc_4fg@mail.gmail.com>
- <87zhhsmwg7.fsf@toke.dk>
-In-Reply-To: <87zhhsmwg7.fsf@toke.dk>
+ <157175669103.112621.7847833678119315310.stgit@toke.dk> <CAEf4BzbfV5vrFnkNyG35Db2iPmM2ubtFh6OTvLiaetAx6eFHHw@mail.gmail.com>
+ <8736fkob4g.fsf@toke.dk>
+In-Reply-To: <8736fkob4g.fsf@toke.dk>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 22 Oct 2019 21:43:42 -0700
-Message-ID: <CAEf4BzYyo8+xkVwWHZP66fsU2Ve8XrMFFHFzbNE6LGFQxPaEOw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: Store map pin path in struct bpf_map
+Date:   Tue, 22 Oct 2019 21:58:41 -0700
+Message-ID: <CAEf4Bzap3oMPnGJQAsoV-g77ux0FdELiJpvpxn9_zadVnHYdSA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/3] libbpf: Add pin option to automount BPF
+ filesystem before pinning
 To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -66,148 +65,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 12:06 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+On Tue, Oct 22, 2019 at 12:04 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
 hat.com> wrote:
 >
 > Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 >
-> > On Tue, Oct 22, 2019 at 11:45 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
+> > On Tue, Oct 22, 2019 at 9:08 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
 > >>
-> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 > >>
-> >> > On Tue, Oct 22, 2019 at 11:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <t=
-oke@redhat.com> wrote:
-> >> >>
-> >> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-> >> >>
-> >> >> > On Tue, Oct 22, 2019 at 9:08 AM Toke H=C3=B8iland-J=C3=B8rgensen =
-<toke@redhat.com> wrote:
-> >> >> >>
-> >> >> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> >> >>
-> >> >> >> When pinning a map, store the pin path in struct bpf_map so it c=
-an be
-> >> >> >> re-used later for un-pinning. This simplifies the later addition=
- of per-map
-> >> >> >> pin paths.
-> >> >> >>
-> >> >> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com=
->
-> >> >> >> ---
-> >> >> >>  tools/lib/bpf/libbpf.c |   19 ++++++++++---------
-> >> >> >>  1 file changed, 10 insertions(+), 9 deletions(-)
-> >> >> >>
-> >> >> >> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> >> >> >> index cccfd9355134..b4fdd8ee3bbd 100644
-> >> >> >> --- a/tools/lib/bpf/libbpf.c
-> >> >> >> +++ b/tools/lib/bpf/libbpf.c
-> >> >> >> @@ -226,6 +226,7 @@ struct bpf_map {
-> >> >> >>         void *priv;
-> >> >> >>         bpf_map_clear_priv_t clear_priv;
-> >> >> >>         enum libbpf_map_type libbpf_type;
-> >> >> >> +       char *pin_path;
-> >> >> >>  };
-> >> >> >>
-> >> >> >>  struct bpf_secdata {
-> >> >> >> @@ -1929,6 +1930,7 @@ int bpf_map__reuse_fd(struct bpf_map *map,=
- int fd)
-> >> >> >>         if (err)
-> >> >> >>                 goto err_close_new_fd;
-> >> >> >>         free(map->name);
-> >> >> >> +       zfree(&map->pin_path);
-> >> >> >>
-> >> >> >
-> >> >> > While you are touching this function, can you please also fix err=
-or
-> >> >> > handling in it? We should store -errno locally on error, before w=
-e
-> >> >> > call close() which might change errno.
-> >> >>
-> >> >> Didn't actually look much at the surrounding function, TBH. I do ex=
-pect
-> >> >> that I will need to go poke into this for the follow-on "automatic =
-reuse
-> >> >> of pinned maps" series anyway. But sure, I can do a bit of cleanup =
-in a
-> >> >> standalone patch first :)
-> >> >>
-> >> >> >>         map->fd =3D new_fd;
-> >> >> >>         map->name =3D new_name;
-> >> >> >> @@ -4022,6 +4024,7 @@ int bpf_map__pin(struct bpf_map *map, cons=
-t char *path)
-> >> >> >>                 return -errno;
-> >> >> >>         }
-> >> >> >>
-> >> >> >> +       map->pin_path =3D strdup(path);
-> >> >> >
-> >> >> > if (!map->pin_path) {
-> >> >> >     err =3D -errno;
-> >> >> >     goto err_close_new_fd;
-> >> >> > }
-> >> >>
-> >> >> Right.
-> >> >>
-> >> >> >>         pr_debug("pinned map '%s'\n", path);
-> >> >> >>
-> >> >> >>         return 0;
-> >> >> >> @@ -4031,6 +4034,9 @@ int bpf_map__unpin(struct bpf_map *map, co=
-nst char *path)
-> >> >> >>  {
-> >> >> >>         int err;
-> >> >> >>
-> >> >> >> +       if (!path)
-> >> >> >> +               path =3D map->pin_path;
-> >> >> >
-> >> >> > This semantics is kind of weird. Given we now remember pin_path,
-> >> >> > should we instead check that user-provided path is actually corre=
-ct
-> >> >> > and matches what we stored? Alternatively, bpf_map__unpin() w/o p=
-ath
-> >> >> > argument looks like a cleaner API.
-> >> >>
-> >> >> Yeah, I guess the function without a path argument would make the m=
-ost
-> >> >> sense. However, we can't really change the API of bpf_map__unpin()
-> >> >> (unless you're proposing a symbol-versioned new version?). Dunno if=
- it's
-> >> >> worth it to include a new, somewhat oddly-named, function to achiev=
-e
-> >> >> this? For the internal libbpf uses at least it's easy enough for th=
-e
-> >> >> caller to just go bpf_map__unpin(map, map->pin_path), so I could al=
-so
-> >> >> just drop this change? WDYT?
-> >> >
-> >> > I'd probably do strcmp(map->pin_path, path), if path is specified.
-> >> > This will support existing use cases, will allow NULL if we don't wa=
-nt
-> >> > to bother remembering pin_path, will prevent weird use case of pinni=
-ng
-> >> > to one path, but unpinning another one.
-> >>
-> >> So something like
-> >>
-> >> if (path && map->pin_path && strcmp(path, map->pin_path))
+> >> While the current map pinning functions will check whether the pin pat=
+h is
+> >> contained on a BPF filesystem, it does not offer any options to mount =
+the
+> >> file system if it doesn't exist. Since we now have pinning options, ad=
+d a
+> >> new one to automount a BPF filesystem at the pinning path if that is n=
+ot
 > >
-> > can we unpin not pinned map? sounds like an error condition?
+> > Next thing we'll be adding extra options to mount BPF FS... Can we
+> > leave the task of auto-mounting BPF FS to tools/applications?
 >
-> See my other comment about programs exiting. For an example, see the XDP
-> tutorial (just pretend for a moment that that TODO comment was actually
-> there :)):
+> Well, there was a reason I put this into a separate patch: I wasn't sure
+> it really fit here. My reasoning is the following: If we end up with a
+> default auto-pinning that works really well, people are going to just
+> use that. And end up really confused when bpffs is not mounted. And it
+> seems kinda silly to make every application re-implement the same mount
+> check and logic.
+>
+> Or to put it another way: If we agree that the reasonable default thing
+> is to just pin things in /sys/fs/bpf, let's make it as easy as possible
+> for applications to do that right.
+>
 
-replied about re-pinning/sharing, that should come from map definition
-anyways and should be handled by map sharing/reuse code, so I think we
-should be good there.
+This reminds me the setrlimit() issue, though. And we decided that
+library shouldn't be manipulating global resources on behalf of users.
+I think this is a similar one.
+
+> >> already pointing at a bpffs.
+> >>
+> >> The mounting logic itself is copied from the iproute2 BPF helper funct=
+ions.
+> >>
+> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> ---
+> >>  tools/lib/bpf/libbpf.c |   47 +++++++++++++++++++++++++++++++++++++++=
+++++++++
+> >>  tools/lib/bpf/libbpf.h |    5 ++++-
+> >>  2 files changed, 51 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> >> index aea3916de341..f527224bb211 100644
+> >> --- a/tools/lib/bpf/libbpf.c
+> >> +++ b/tools/lib/bpf/libbpf.c
+> >> @@ -37,6 +37,7 @@
+> >>  #include <sys/epoll.h>
+> >>  #include <sys/ioctl.h>
+> >>  #include <sys/mman.h>
+> >> +#include <sys/mount.h>
+> >>  #include <sys/stat.h>
+> >>  #include <sys/types.h>
+> >>  #include <sys/vfs.h>
+> >> @@ -4072,6 +4073,35 @@ int bpf_map__unpin(struct bpf_map *map, const c=
+har *path)
+> >>         return 0;
+> >>  }
+> >>
+> >> +static int mount_bpf_fs(const char *target)
+> >> +{
+> >> +       bool bind_done =3D false;
+> >> +
+> >> +       while (mount("", target, "none", MS_PRIVATE | MS_REC, NULL)) {
+> >
+> > what does this loop do? we need some comments explaining what's going
+> > on here
+>
+> Well, as it says in the commit message I stole this from iproute2. I
+> think the "--make-private, --bind" dance is there to make sure we don't
+> mess up some other mount points at this path. Which seems like a good
+> idea, and one of those things that most people probably won't think
+> about when just writing an application that wants to mount the fs; which
+> is another reason to put this into libbpf :)
+
+I think this is exactly a reason to not do this and rely on
+applications to know and set up their environment properly. All these
+races, accidentally stomping on someone else's FS, etc, that sounds
+like a really good excuse to not do this in libbpf. Definitely not
+until we get a real experience, driven by production use cases, on how
+to go about that correctly. It might be added as a helper, but I think
+application has to call it explicitly.
 
 >
-> https://github.com/xdp-project/xdp-tutorial/blob/master/basic04-pinning-m=
-aps/xdp_loader.c#L135
-
-For the clean up use case, if we pinned map, we have its pin_path
-stored, and can unpin. For rare case where we want unconditionally
-"unpin" map, why app can't just delete the file, if app is so smart as
-to know pin path of some other app's map ;)
-
+> >> +               if (errno !=3D EINVAL || bind_done) {
+> >> +                       pr_warning("mount --make-private %s failed: %s=
+\n",
+> >> +                                  target, strerror(errno));
+> >> +                       return -1;
+> >> +               }
+> >> +
+> >> +               if (mount(target, target, "none", MS_BIND, NULL)) {
+> >> +                       pr_warning("mount --bind %s %s failed: %s\n",
+> >> +                                  target, target, strerror(errno));
+> >> +                       return -1;
+> >> +               }
+> >> +
+> >> +               bind_done =3D true;
+> >> +       }
+> >> +
+> >> +       if (mount("bpf", target, "bpf", 0, "mode=3D0700")) {
+> >> +               fprintf(stderr, "mount -t bpf bpf %s failed: %s\n",
+> >> +                       target, strerror(errno));
+> >> +               return -1;
+> >> +       }
+> >> +
+> >> +       return 0;
+> >> +}
+> >> +
+> >>  static int get_pin_path(char *buf, size_t buf_len,
+> >>                         struct bpf_map *map, struct bpf_object_pin_opt=
+s *opts,
+> >>                         bool mkdir)
+> >> @@ -4102,6 +4132,23 @@ static int get_pin_path(char *buf, size_t buf_l=
+en,
+> >
+> > Nothing in `get_pin_path` indicates that it's going to do an entire FS
+> > mount, please split this out of get_pin_path.
+>
+> Regardless of the arguments above, that is certainly a fair point ;)
 >
 > -Toke
