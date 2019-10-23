@@ -2,370 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 407EDE1010
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 04:35:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25086E101E
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 04:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388931AbfJWCfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 22:35:48 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:45816 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732408AbfJWCfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 22:35:48 -0400
-Received: by mail-oi1-f193.google.com with SMTP id o205so16026430oib.12
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 19:35:47 -0700 (PDT)
+        id S2388283AbfJWClJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 22:41:09 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40274 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730655AbfJWClJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 22:41:09 -0400
+Received: by mail-pf1-f193.google.com with SMTP id x127so11911432pfb.7
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 19:41:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ktEuedfpIjUmz+yMKqtIGu1YXNfclZtdt8H19wjAiOI=;
-        b=OkGz6hXoaDIIwaY2mSoPqFvWpkbOjChm0izoEtX6GXw4BbNKoPmOLEat6gh2uw8uXQ
-         Y9qqTF4FZgzahEjke7LZ0CsSri1w0dnnnoes2VMy5FF5Dz5wtKH974uNEOuhQZTt1+Q7
-         cko7n3FfmDPqtivUxzjGkP7mKhPnbfuQ8izONziJ9vvJnd3rGosDdYsRtKlmR1s4L+l/
-         xy/OB+3Y08nzhSVyHFpukaflyQ8B/jRkxnFxnPU3u4Kwm0Xv9VobNtLsb4zQxtoW7XNI
-         NKAIDxyR5CKgWjpgB3hOIzLdWufzTqeNPXGXuN5kuzWbE+NLLMjuEVQxuf1xFqrVm8Tx
-         GMog==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=5FIvIciojF2InQxNzfxl/Y35ZmCZvKgqghtsDuI4Gkc=;
+        b=PS9Y42C7/3CPf2Z9xH/9gsZmgGVje6L3QgkYqDgvbH9Iq2XzFa6EKEBlzSsubFgOry
+         o2Q98XouraKV7GrLUjMfeg6m0vntp13fCzbE74s6UW4qpKMx/HOgYl2QHPhykt05LBtM
+         Fblcu4A02V6SPAZE+gg645KGK3vZecJJJXGxoVxc+SteKvRKJQeLVHsCI3H4ALlS2zHs
+         8ksIiwkCOfkUYFMd+94JtORdrYhKAFPWT2W/w5668/qea5u8+FEUxI/xm12SkRpUYpz5
+         nDvLNlOYNNq3OWQlVSBg2E+2Y0hGJXrlRokM8B7kxbQYr1xPFFVQ34w7nUAM+IwsBxlj
+         M3Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ktEuedfpIjUmz+yMKqtIGu1YXNfclZtdt8H19wjAiOI=;
-        b=jsjL5rmdu8gmkVB9guzRl5cA+AoLVVqH2tW23NnlCXIGqcIPgyjrqkYZBd2ZSV/Cn4
-         K3/yvFh1g9jYnU9l9Q7DXXVR00qxBrTQ321QYwoe50Ruek7fi7HJwoGyCnNWDufwM8fk
-         O1mHD/Bi/4uSxUl/kMJ1S132aIBukW9MPatzEPu8lWdEFDZG2h/IcmwSRYLMHzdwEXAi
-         PQOP4ngQJHGp2f2g8zr5xtB8nxzdSeo8xDXcCtuSLqYNBwPEYYaqc/WAYQnlmvQ1Gb7Y
-         jtoF0JXfxI/pDaxUupU0OTXwUyFr10AsqxZnWi7Z7IOwj6laBiGZJm/f6wGsZxN+F2we
-         iIfA==
-X-Gm-Message-State: APjAAAU9ya/ZY7qO3YQf3SVInD4KTPzfIIAYYA/oKU2TqHf8dE+HDFgn
-        P3/BUj8xQgU+GHmAek4tajBdepgnS7gujLuJOE4=
-X-Google-Smtp-Source: APXvYqxpTdoZyPRVm/Dp6CtJ3qhXozFyJ8zLuK+udFmwW6GgQInxuO+J3tzMQGSGgIszcw1hGc4XEu7PKhxsNQNmaLY=
-X-Received: by 2002:aca:b503:: with SMTP id e3mr5666301oif.177.1571798146577;
- Tue, 22 Oct 2019 19:35:46 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5FIvIciojF2InQxNzfxl/Y35ZmCZvKgqghtsDuI4Gkc=;
+        b=P7r28j5MihFwnFi7vahZ/l5w8vLqwMIJQPLlCQdDcA9aDrT2Chq3Z/xTN1HKqvFhUc
+         d6Z48h7+kb9PE3vbHaqOZGw/uWgVdmVvgIe3EypjwQxbjVnGq6rX/OqRzYl1TKY5eUcv
+         Qo/wkq0w5sGHaXuL68QH0YKtEJ99PQLs6dh1bzAoI1TSymsJmMx9nTvf4JpwgOV5F3ih
+         1nkuqw2FWX7hqy7dHEzgVtqHOhpNnLn1TnAX/X6r4AwDKKXhT4dzpGlHTAd2vYNnaU/4
+         M6refyH+3pzGbnsl5P5Eif+kBGlBFyRmRtVREjNFvrKdaFUVxPxFdBWZG0rrP9jXH/WQ
+         3qeQ==
+X-Gm-Message-State: APjAAAWTCnWb4uUjtRN4iNcoZfyBXZ0QLiMhunNBpVgrSzQuW1bgGsC4
+        oLbHbvEOzmgIR+ndl5rGaII=
+X-Google-Smtp-Source: APXvYqzJZcopryFmzRAGkiA5fbtKrqIPfnASqNB9+JHojaHE3X33//P5w0PyWRH37Dt2vsWynr3PRw==
+X-Received: by 2002:a63:4c57:: with SMTP id m23mr440012pgl.207.1571798468108;
+        Tue, 22 Oct 2019 19:41:08 -0700 (PDT)
+Received: from martin-VirtualBox ([106.200.239.72])
+        by smtp.gmail.com with ESMTPSA id w189sm21254460pfw.101.2019.10.22.19.41.06
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 22 Oct 2019 19:41:07 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 08:10:37 +0530
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, corbet@lwn.net,
+        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH net-next 1/2] UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+Message-ID: <20191023024037.GB24364@martin-VirtualBox>
+References: <cover.1570455278.git.martinvarghesenokia@gmail.com>
+ <5979d1bf0b5521c66f2f6fa31b7e1cbdddd8cea8.1570455278.git.martinvarghesenokia@gmail.com>
+ <CA+FuTSc=uTot72dxn7VRfCv59GcfWb32ZM5XU1_GHt3Ci3PL_A@mail.gmail.com>
+ <20191017132029.GA9982@martin-VirtualBox>
+ <CA+FuTScS+fm_scnm5qkU4wtV+FAW8XkC4OfwCbLOxuPz1YipNw@mail.gmail.com>
+ <20191018082029.GA11876@martin-VirtualBox>
+ <CA+FuTSf2u2yN1KL3vDLv-j9UQGsGo1dwXNVW8w=NCrdt7n8crg@mail.gmail.com>
 MIME-Version: 1.0
-References: <1571135440-24313-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1571135440-24313-9-git-send-email-xiangxia.m.yue@gmail.com>
- <CAOrHB_B5dLuvoTxGpmaMiX9deEk9KjQHacqNKEpzHA2m5YS7jw@mail.gmail.com>
- <CAMDZJNWD=a+EBneEU-qs3pzXSBoOdzidn5cgOKs-y8G0UWvbnA@mail.gmail.com>
- <CAOrHB_BqGdFmmzTEPxejt0QXmyC_QtAXG=S8kzKi=3w-PacwUw@mail.gmail.com>
- <CAMDZJNXdu3R_GkHEBbwycEpe0wnwNmGzHx-8gUxtwiW1mEy7uw@mail.gmail.com> <CAOrHB_DdMX7sZkk79esdZkmb8RGaX_XiMAxhGz1LgWx50eFD9g@mail.gmail.com>
-In-Reply-To: <CAOrHB_DdMX7sZkk79esdZkmb8RGaX_XiMAxhGz1LgWx50eFD9g@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Wed, 23 Oct 2019 10:35:09 +0800
-Message-ID: <CAMDZJNVfyzmnd4qhp_esE-s3+-z8K=6tBP63X+SCEcjBon60eQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 08/10] net: openvswitch: fix possible memleak
- on destroy flow-table
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Greg Rose <gvrose8192@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSf2u2yN1KL3vDLv-j9UQGsGo1dwXNVW8w=NCrdt7n8crg@mail.gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 2:58 PM Pravin Shelar <pshelar@ovn.org> wrote:
->
-> On Sun, Oct 20, 2019 at 10:02 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+On Fri, Oct 18, 2019 at 10:59:47AM -0400, Willem de Bruijn wrote:
+> On Fri, Oct 18, 2019 at 4:20 AM Martin Varghese
+> <martinvarghesenokia@gmail.com> wrote:
 > >
-> > On Sat, Oct 19, 2019 at 2:12 AM Pravin Shelar <pshelar@ovn.org> wrote:
-> > >
-> > > On Thu, Oct 17, 2019 at 8:16 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > On Thu, Oct 17, 2019 at 04:48:26PM -0400, Willem de Bruijn wrote:
+> > > On Thu, Oct 17, 2019 at 9:20 AM Martin Varghese
+> > > <martinvarghesenokia@gmail.com> wrote:
 > > > >
-> > > > On Fri, Oct 18, 2019 at 6:38 AM Pravin Shelar <pshelar@ovn.org> wrote:
-> > > > >
-> > > > > On Wed, Oct 16, 2019 at 5:50 AM <xiangxia.m.yue@gmail.com> wrote:
+> > > > On Tue, Oct 08, 2019 at 12:28:23PM -0400, Willem de Bruijn wrote:
+> > > > > On Tue, Oct 8, 2019 at 5:51 AM Martin Varghese
+> > > > > <martinvarghesenokia@gmail.com> wrote:
 > > > > > >
-> > > > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > > > > From: Martin <martin.varghese@nokia.com>
 > > > > > >
-> > > > > > When we destroy the flow tables which may contain the flow_mask,
-> > > > > > so release the flow mask struct.
+> > > > > > The Bareudp tunnel module provides a generic L3 encapsulation
+> > > > > > tunnelling module for tunnelling different protocols like MPLS,
+> > > > > > IP,NSH etc inside a UDP tunnel.
 > > > > > >
-> > > > > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > > > > Tested-by: Greg Rose <gvrose8192@gmail.com>
+> > > > > > Signed-off-by: Martin Varghese <martinvarghesenokia@gmail.com>
 > > > > > > ---
-> > > > > >  net/openvswitch/flow_table.c | 14 +++++++++++++-
-> > > > > >  1 file changed, 13 insertions(+), 1 deletion(-)
-> > > > > >
-> > > > > > diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-> > > > > > index 5df5182..d5d768e 100644
-> > > > > > --- a/net/openvswitch/flow_table.c
-> > > > > > +++ b/net/openvswitch/flow_table.c
-> > > > > > @@ -295,6 +295,18 @@ static void table_instance_destroy(struct table_instance *ti,
-> > > > > >         }
-> > > > > >  }
-> > > > > >
-> > > > > > +static void tbl_mask_array_destroy(struct flow_table *tbl)
+> > >
+> > > > > > +static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
 > > > > > > +{
-> > > > > > +       struct mask_array *ma = ovsl_dereference(tbl->mask_array);
-> > > > > > +       int i;
+> > > > >
+> > > > >
+> > > > > > +       skb_push(skb, sizeof(struct ethhdr));
+> > > > > > +       eh = (struct ethhdr *)skb->data;
+> > > > > > +       eh->h_proto = proto;
 > > > > > > +
-> > > > > > +       /* Free the flow-mask and kfree_rcu the NULL is allowed. */
-> > > > > > +       for (i = 0; i < ma->max; i++)
-> > > > > > +               kfree_rcu(rcu_dereference_raw(ma->masks[i]), rcu);
+> > > > > > +       skb_reset_mac_header(skb);
+> > > > > > +       skb->protocol = eth_type_trans(skb, bareudp->dev);
+> > > > > > +       skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
+> > > > > > +       oiph = skb_network_header(skb);
+> > > > > > +       skb_reset_network_header(skb);
 > > > > > > +
-> > > > > > +       kfree_rcu(rcu_dereference_raw(tbl->mask_array), rcu);
+> > > > > > +       if (bareudp_get_sk_family(bs) == AF_INET)
+> > > > >
+> > > > > This should be derived from packet contents, not socket state.
+> > > > > Although the one implies the other, I imagine.
+> > > > >
+> > > >
+> > > > The IP Stack check IP headers & puts the packet in the correct socket, hence checking the ip headers again is reduntant correct?
+> > >
+> > > This parses the inner packet after decapsulation. The protocol stack
+> > > has selected the socket based on the outer packet, right?
+> > >
+> >
+> > The check on socket  " if (bareudp_get_sk_family(bs) == AF_INET)"  was to find out the outer header was ipv4 and v6.
+> > Based on that TOS/ECN of outer header is derived from oiph->tos for ipv4 and using ipv6_get_dsfield(oipv6h) for ipv6.
+> > The TOS/ECN  of inner header are derived in funtions IP_ECN_decapsulate  & IP6_ECN_decapsulate.And they are derived from packet.
+> > > I guess the correctness comes from the administrator having configured
+> > > the bareudp for this protocol type, so implicitly guarantees that no
+> > > other inner packets will appear.
+> > >
+> > Yes that is correct.
+> >
+> > > Also, the oiph pointer is a bit fragile now that a new mac header is
+> > > constructed in the space that used to hold the encapsulation headers.
+> > > I suppose it only updates eth->h_proto, which lies in the former udp
+> > > header. More fundamentally, is moving the mac header needed at all, if
+> > > the stack correctly uses skb_mac_header whenever it accesses also
+> > > after decapsulation?
+> > >
+> >
+> > We need to move ethernet header. As there could be cases where the packet from a bareudp device is redirected via
+> > other physical interface to a different network node for further processing.
+> > I agree that oiph pointer is fragile, but since we are updating only proto field we are not corrupting the oiph.
+> > But we can do ethernet header update once the oiph is no more used.It would entail setting the skb->protocol before calling IP_ECN_decapsulate
+> >
+> >
+> >
+> > > > In geneve & vxlan it is done the same way.
+> 
+> I see, yes, geneve does the same thing.
+> 
+> > > >
+> > > >
+> > > > > > +static struct rtable *bareudp_get_v4_rt(struct sk_buff *skb,
+> > > > > > +                                       struct net_device *dev,
+> > > > > > +                                       struct bareudp_sock *bs4,
+> > > > > > +                                       struct flowi4 *fl4,
+> > > > > > +                                       const struct ip_tunnel_info *info)
+> > > > > > +{
+> > > > > > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+> > > > > > +       struct bareudp_dev *bareudp = netdev_priv(dev);
+> > > > > > +       struct dst_cache *dst_cache;
+> > > > > > +       struct rtable *rt = NULL;
+> > > > > > +       __u8 tos;
+> > > > > > +
+> > > > > > +       if (!bs4)
+> > > > > > +               return ERR_PTR(-EIO);
+> > > > > > +
+> > > > > > +       memset(fl4, 0, sizeof(*fl4));
+> > > > > > +       fl4->flowi4_mark = skb->mark;
+> > > > > > +       fl4->flowi4_proto = IPPROTO_UDP;
+> > > > > > +       fl4->daddr = info->key.u.ipv4.dst;
+> > > > > > +       fl4->saddr = info->key.u.ipv4.src;
+> > > > > > +
+> > > > > > +       tos = info->key.tos;
+> > > > > > +       fl4->flowi4_tos = RT_TOS(tos);
+> > > > > > +
+> > > > > > +       dst_cache = (struct dst_cache *)&info->dst_cache;
+> > > > > > +       if (use_cache) {
+> > > > > > +               rt = dst_cache_get_ip4(dst_cache, &fl4->saddr);
+> > > > > > +               if (rt)
+> > > > > > +                       return rt;
+> > > > > > +       }
+> > > > > > +       rt = ip_route_output_key(bareudp->net, fl4);
+> > > > > > +       if (IS_ERR(rt)) {
+> > > > > > +               netdev_dbg(dev, "no route to %pI4\n", &fl4->daddr);
+> > > > > > +               return ERR_PTR(-ENETUNREACH);
+> > > > > > +       }
+> > > > > > +       if (rt->dst.dev == dev) { /* is this necessary? */
+> > > > > > +               netdev_dbg(dev, "circular route to %pI4\n", &fl4->daddr);
+> > > > > > +               ip_rt_put(rt);
+> > > > > > +               return ERR_PTR(-ELOOP);
+> > > > > > +       }
+> > > > > > +       if (use_cache)
+> > > > > > +               dst_cache_set_ip4(dst_cache, &rt->dst, fl4->saddr);
+> > > > > > +       return rt;
 > > > > > > +}
 > > > > > > +
-> > > > > >  /* No need for locking this function is called from RCU callback or
-> > > > > >   * error path.
-> > > > > >   */
-> > > > > > @@ -304,7 +316,7 @@ void ovs_flow_tbl_destroy(struct flow_table *table)
-> > > > > >         struct table_instance *ufid_ti = rcu_dereference_raw(table->ufid_ti);
-> > > > > >
-> > > > > >         free_percpu(table->mask_cache);
-> > > > > > -       kfree_rcu(rcu_dereference_raw(table->mask_array), rcu);
-> > > > > > +       tbl_mask_array_destroy(table);
-> > > > > >         table_instance_destroy(ti, ufid_ti, false);
-> > > > > >  }
+> > > > > > +#if IS_ENABLED(CONFIG_IPV6)
+> > > > > > +static struct dst_entry *bareudp_get_v6_dst(struct sk_buff *skb,
+> > > > > > +                                           struct net_device *dev,
+> > > > > > +                                           struct bareudp_sock *bs6,
+> > > > > > +                                           struct flowi6 *fl6,
+> > > > > > +                                           const struct ip_tunnel_info *info)
+> > > > > > +{
+> > > > > > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+> > > > > > +       struct bareudp_dev *bareudp = netdev_priv(dev);
+> > > > > > +       struct dst_entry *dst = NULL;
+> > > > > > +       struct dst_cache *dst_cache;
+> > > > > > +       __u8 prio;
+> > > > > > +
+> > > > > > +       if (!bs6)
+> > > > > > +               return ERR_PTR(-EIO);
+> > > > > > +
+> > > > > > +       memset(fl6, 0, sizeof(*fl6));
+> > > > > > +       fl6->flowi6_mark = skb->mark;
+> > > > > > +       fl6->flowi6_proto = IPPROTO_UDP;
+> > > > > > +       fl6->daddr = info->key.u.ipv6.dst;
+> > > > > > +       fl6->saddr = info->key.u.ipv6.src;
+> > > > > > +       prio = info->key.tos;
+> > > > > > +
+> > > > > > +       fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
+> > > > > > +                                          info->key.label);
+> > > > > > +       dst_cache = (struct dst_cache *)&info->dst_cache;
+> > > > > > +       if (use_cache) {
+> > > > > > +               dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
+> > > > > > +               if (dst)
+> > > > > > +                       return dst;
+> > > > > > +       }
+> > > > > > +       if (ipv6_stub->ipv6_dst_lookup(bareudp->net, bs6->sock->sk, &dst,
+> > > > > > +                                      fl6)) {
+> > > > > > +               netdev_dbg(dev, "no route to %pI6\n", &fl6->daddr);
+> > > > > > +               return ERR_PTR(-ENETUNREACH);
+> > > > > > +       }
+> > > > > > +       if (dst->dev == dev) { /* is this necessary? */
+> > > > > > +               netdev_dbg(dev, "circular route to %pI6\n", &fl6->daddr);
+> > > > > > +               dst_release(dst);
+> > > > > > +               return ERR_PTR(-ELOOP);
+> > > > > > +       }
+> > > > > > +
+> > > > > > +       if (use_cache)
+> > > > > > +               dst_cache_set_ip6(dst_cache, dst, &fl6->saddr);
+> > > > > > +       return dst;
+> > > > > > +}
+> > > > > > +#endif
 > > > > >
-> > > > > This should not be required. mask is linked to a flow and gets
-> > > > > released when flow is removed.
-> > > > > Does the memory leak occur when OVS module is abruptly unloaded and
-> > > > > userspace does not cleanup flow table?
-> > > > When we destroy the ovs datapath or net namespace is destroyed , the
-> > > > mask memory will be happened. The call tree:
-> > > > ovs_exit_net/ovs_dp_cmd_del
-> > > > -->__dp_destroy
-> > > > -->destroy_dp_rcu
-> > > > -->ovs_flow_tbl_destroy
-> > > > -->table_instance_destroy (which don't release the mask memory because
-> > > > don't call the ovs_flow_tbl_remove /flow_mask_remove directly or
-> > > > indirectly).
+> > > > > The route lookup logic is very similar to vxlan_get_route and
+> > > > > vxlan6_get_route. Can be reused?
 > > > >
-> > > Thats what I suggested earlier, we need to call function similar to
-> > > ovs_flow_tbl_remove(), we could refactor code to use the code.
-> > > This is better since by introducing tbl_mask_array_destroy() is
-> > > creating a dangling pointer to mask in sw-flow object. OVS is anyway
-> > > iterating entire flow table to release sw-flow in
-> > > table_instance_destroy(), it is natural to release mask at that point
-> > > after releasing corresponding sw-flow.
-> > I got it, thanks. I rewrite the codes, can you help me to review it.
-> > If fine, I will sent it next version.
+> > > > I had a look at the vxlan & geneve and it seems the corresponding functions  in those modules are tightly coupled  to the rest of the module design.
+> > > > More specifically wrt the ttl inheritance & the caching behaviour. It may not be possible for those modules to use a new generic API unless without a change in those module design.
+> > >
+> > > bareudp_get_v4_rt is identical to geneve_get_v4_rt down to the comment
+> > > aside from
+> > >
+> > >         if ((tos == 1) && !geneve->collect_md) {
+> > >                 tos = ip_tunnel_get_dsfield(ip_hdr(skb), skb);
+> > >                 use_cache = false;
+> > >         }
+> > >
+> > > Same for bareudp_get_v6_dst and geneve_get_v6_dst.
+> > >
+> > > Worst case that one branch could be made conditional on a boolean
+> > > argument? Maybe this collect_md part (eventually) makes sense to
+> > > bareudp, as well.
 > > >
 > > >
-> Sure, I can review it, Can you send the patch inlined in mail?
+> > Unlike Geneve, bareudp module is  a generic L3 encapsulation module and it could be used to tunnel different L3 protocols.
+> > TTL inheritance requirements for these protocols will be different when tunnelled. For Example - TTL inheritance for MPLS & IP are different.
+> > And moving this function to a common place will make it tough for Geneve & bareudp if a new L3 protocol with new TTL inheritance requirements shows up
+> 
+> But that is not in geneve_get_v4_rt and its bareudp/v6_dst variants.
 >
-> Thanks.
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index 5df5182..5b20793 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -257,10 +257,75 @@ static void flow_tbl_destroy_rcu_cb(struct rcu_head *rcu)
-        __table_instance_destroy(ti);
- }
+Geneve has a TTL inheritance code in the function
 
--static void table_instance_destroy(struct table_instance *ti,
--                                  struct table_instance *ufid_ti,
-+static void tbl_mask_array_del_mask(struct flow_table *tbl,
-+                                   struct sw_flow_mask *mask)
-+{
-+       struct mask_array *ma = ovsl_dereference(tbl->mask_array);
-+       int i, ma_count = READ_ONCE(ma->count);
-+
-+       /* Remove the deleted mask pointers from the array */
-+       for (i = 0; i < ma_count; i++) {
-+               if (mask == ovsl_dereference(ma->masks[i]))
-+                       goto found;
-+       }
-+
-+       BUG();
-+       return;
-+
-+found:
-+       WRITE_ONCE(ma->count, ma_count -1);
-+
-+       rcu_assign_pointer(ma->masks[i], ma->masks[ma_count -1]);
-+       RCU_INIT_POINTER(ma->masks[ma_count -1], NULL);
-+
-+       kfree_rcu(mask, rcu);
-+
-+       /* Shrink the mask array if necessary. */
-+       if (ma->max >= (MASK_ARRAY_SIZE_MIN * 2) &&
-+           ma_count <= (ma->max / 3))
-+               tbl_mask_array_realloc(tbl, ma->max / 2);
-+}
-+
-+/* Remove 'mask' from the mask list, if it is not needed any more. */
-+static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
-+{
-+       if (mask) {
-+               /* ovs-lock is required to protect mask-refcount and
-+                * mask list.
-+                */
-+               ASSERT_OVSL();
-+               BUG_ON(!mask->ref_count);
-+               mask->ref_count--;
-+
-+               if (!mask->ref_count)
-+                       tbl_mask_array_del_mask(tbl, mask);
-+       }
-+}
-+
-+static void table_instance_remove(struct flow_table *table, struct
-sw_flow *flow)
-+{
-+       struct table_instance *ti = ovsl_dereference(table->ti);
-+       struct table_instance *ufid_ti = ovsl_dereference(table->ufid_ti);
-+
-+       BUG_ON(table->count == 0);
-+       hlist_del_rcu(&flow->flow_table.node[ti->node_ver]);
-+       table->count--;
-+       if (ovs_identifier_is_ufid(&flow->id)) {
-+               hlist_del_rcu(&flow->ufid_table.node[ufid_ti->node_ver]);
-+               table->ufid_count--;
-+       }
-+
-+       /* RCU delete the mask. 'flow->mask' is not NULLed, as it should be
-+        * accessible as long as the RCU read lock is held.
-+        */
-+       flow_mask_remove(table, flow->mask);
-+}
-+
-+static void table_instance_destroy(struct flow_table *table,
-                                   bool deferred)
- {
-+       struct table_instance *ti = ovsl_dereference(table->ti);
-+       struct table_instance *ufid_ti = ovsl_dereference(table->ufid_ti);
-        int i;
+if ((tos == 1) && !geneve->collect_md) {
+                 tos = ip_tunnel_get_dsfield(ip_hdr(skb), skb);
+                 use_cache = false;
+         }
+ 
+> I do think that with close scrutiny there is a lot more room for code
+> deduplication. Just look at the lower half of geneve_rx and
+> bareudp_udp_encap_recv, for instance. This, too, is identical down to
+> the comments. Indeed, is it fair to say that geneve was taken as the
+> basis for this device?
+> 
+Yes it is
+> That said, even just avoiding duplicating those routing functions
+> would be a good start.
+> 
 
-        if (!ti)
-@@ -274,13 +339,9 @@ static void table_instance_destroy(struct
-table_instance *ti,
-                struct sw_flow *flow;
-                struct hlist_head *head = &ti->buckets[i];
-                struct hlist_node *n;
--               int ver = ti->node_ver;
--               int ufid_ver = ufid_ti->node_ver;
+I propose to have a generic route function with the  below prototype
 
--               hlist_for_each_entry_safe(flow, n, head, flow_table.node[ver]) {
--                       hlist_del_rcu(&flow->flow_table.node[ver]);
--                       if (ovs_identifier_is_ufid(&flow->id))
--                               hlist_del_rcu(&flow->ufid_table.node[ufid_ver]);
-+               hlist_for_each_entry_safe(flow, n, head,
-flow_table.node[ti->node_ver]) {
-+                       table_instance_remove(table, flow);
-                        ovs_flow_free(flow, deferred);
-                }
-        }
-@@ -300,12 +361,9 @@ static void table_instance_destroy(struct
-table_instance *ti,
-  */
- void ovs_flow_tbl_destroy(struct flow_table *table)
- {
--       struct table_instance *ti = rcu_dereference_raw(table->ti);
--       struct table_instance *ufid_ti = rcu_dereference_raw(table->ufid_ti);
--
-        free_percpu(table->mask_cache);
-        kfree_rcu(rcu_dereference_raw(table->mask_array), rcu);
--       table_instance_destroy(ti, ufid_ti, false);
-+       table_instance_destroy(table, false);
- }
+iptunnel_get_v4_rt(struct sk_buff *skb,struct net_device *dev,struct bareudp_sock *bs4,struct flowi4 *fl4,
+                   const struct ip_tunnel_info *info
+                   bool use_cache  )
 
- struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance *ti,
-@@ -400,10 +458,9 @@ static struct table_instance
-*table_instance_rehash(struct table_instance *ti,
-        return new_ti;
- }
+And another patch series for other drivers to use this new function
 
--int ovs_flow_tbl_flush(struct flow_table *flow_table)
-+int ovs_flow_tbl_flush(struct flow_table *table)
- {
--       struct table_instance *old_ti, *new_ti;
--       struct table_instance *old_ufid_ti, *new_ufid_ti;
-+       struct table_instance *new_ti, *new_ufid_ti;
-
-        new_ti = table_instance_alloc(TBL_MIN_BUCKETS);
-        if (!new_ti)
-@@ -412,16 +469,12 @@ int ovs_flow_tbl_flush(struct flow_table *flow_table)
-        if (!new_ufid_ti)
-                goto err_free_ti;
-
--       old_ti = ovsl_dereference(flow_table->ti);
--       old_ufid_ti = ovsl_dereference(flow_table->ufid_ti);
-+       table_instance_destroy(table, true);
-
--       rcu_assign_pointer(flow_table->ti, new_ti);
--       rcu_assign_pointer(flow_table->ufid_ti, new_ufid_ti);
--       flow_table->last_rehash = jiffies;
--       flow_table->count = 0;
--       flow_table->ufid_count = 0;
-+       rcu_assign_pointer(table->ti, new_ti);
-+       rcu_assign_pointer(table->ufid_ti, new_ufid_ti);
-+       table->last_rehash = jiffies;
-
--       table_instance_destroy(old_ti, old_ufid_ti, true);
-        return 0;
-
- err_free_ti:
-@@ -700,69 +753,10 @@ static struct table_instance
-*table_instance_expand(struct table_instance *ti,
-        return table_instance_rehash(ti, ti->n_buckets * 2, ufid);
- }
-
--static void tbl_mask_array_del_mask(struct flow_table *tbl,
--                                   struct sw_flow_mask *mask)
--{
--       struct mask_array *ma = ovsl_dereference(tbl->mask_array);
--       int i, ma_count = READ_ONCE(ma->count);
--
--       /* Remove the deleted mask pointers from the array */
--       for (i = 0; i < ma_count; i++) {
--               if (mask == ovsl_dereference(ma->masks[i]))
--                       goto found;
--       }
--
--       BUG();
--       return;
--
--found:
--       WRITE_ONCE(ma->count, ma_count -1);
--
--       rcu_assign_pointer(ma->masks[i], ma->masks[ma_count -1]);
--       RCU_INIT_POINTER(ma->masks[ma_count -1], NULL);
--
--       kfree_rcu(mask, rcu);
--
--       /* Shrink the mask array if necessary. */
--       if (ma->max >= (MASK_ARRAY_SIZE_MIN * 2) &&
--           ma_count <= (ma->max / 3))
--               tbl_mask_array_realloc(tbl, ma->max / 2);
--}
--
--/* Remove 'mask' from the mask list, if it is not needed any more. */
--static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
--{
--       if (mask) {
--               /* ovs-lock is required to protect mask-refcount and
--                * mask list.
--                */
--               ASSERT_OVSL();
--               BUG_ON(!mask->ref_count);
--               mask->ref_count--;
--
--               if (!mask->ref_count)
--                       tbl_mask_array_del_mask(tbl, mask);
--       }
--}
--
- /* Must be called with OVS mutex held. */
- void ovs_flow_tbl_remove(struct flow_table *table, struct sw_flow *flow)
- {
--       struct table_instance *ti = ovsl_dereference(table->ti);
--       struct table_instance *ufid_ti = ovsl_dereference(table->ufid_ti);
--
--       BUG_ON(table->count == 0);
--       hlist_del_rcu(&flow->flow_table.node[ti->node_ver]);
--       table->count--;
--       if (ovs_identifier_is_ufid(&flow->id)) {
--               hlist_del_rcu(&flow->ufid_table.node[ufid_ti->node_ver]);
--               table->ufid_count--;
--       }
--
--       /* RCU delete the mask. 'flow->mask' is not NULLed, as it should be
--        * accessible as long as the RCU read lock is held.
--        */
--       flow_mask_remove(table, flow->mask);
-+       table_instance_remove(table, flow);
- }
-
- static struct sw_flow_mask *mask_alloc(void)
+> I'm harping on this because in other examples in the past where a new
+> device was created by duplicating instead of factoring out code
+> implementations diverge over time in bad ways due to optimizations,
+> features and most importantly bugfixes being applied only to one
+> instance or the other. See for instance tun.c and tap.c.
+> 
+> Unrelated, an ipv6 socket can receive both ipv4 and ipv6 traffic if
+> not setting the v6only bit, so does the device need to have separate
+> sock4 and sock6 members? Both sockets currently lead to the same
+> bareudp_udp_encap_recv callback function.
