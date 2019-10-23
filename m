@@ -2,109 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5216FE21F6
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 19:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 363EAE2208
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 19:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731315AbfJWRmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 13:42:14 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:35869 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731112AbfJWRmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 13:42:14 -0400
-Received: by mail-lf1-f68.google.com with SMTP id u16so16808079lfq.3;
-        Wed, 23 Oct 2019 10:42:12 -0700 (PDT)
+        id S1731912AbfJWRow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 13:44:52 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:35400 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730513AbfJWRow (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 13:44:52 -0400
+Received: by mail-qt1-f195.google.com with SMTP id m15so33610533qtq.2
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 10:44:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DZCbcR5Iy8/K2bF0tkHCyOQWDKeY6OQ5I8XUt1jrWCM=;
-        b=YUs/2M2PHadXLRMoF7pOYzScYZGY5PCeCsacPCyueqtEj0qdNzM4Hr6KLafL5+NB07
-         GZPx8D8QEvJLLeMKadbuv97D8R2zpdg0Ziauh0POYTa4DPFb380D6bfvf/LfcKADPWF/
-         0qmN8vv+uAK24QP9PUMsMke4QlFhVSzinnXBeVLZvy+gPrPezAXDgfnZuSmCcpWMHhMa
-         k/iCPSGipJ73bZ5YaIE7GFlkKvX4d3vmHazVrnv+RnqYPcY+lWoo6w2rva77ZnXx6DTF
-         bpa88lWkJnl4YI/LBrWDClkO7dX0gzpd0qyrcRCBYBeMCAKAzseVbzr49j4PF5Fg1MV0
-         +OvQ==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qFewDq5bPCn8gTmOC4SGcav3DEG85WI+XIcYsQdAE7U=;
+        b=pG2uhmNcL8wYNBu+GctIkDy/CRVvgGpP+k0nm5S+WDxUzqvoft4VIalcdl1nPVUxiR
+         khmVBNs2LzDznMPShV7wcXvKW88/v123jNFZLuhleGd1zSD4PSkq/HsNArSCPfnkiF7B
+         Rto9oDhwvl6aNQi8GIoejo+VdQBUYnHWTpJtHGQ6duzbQDmA+Pp5Yk6e/mBt3+csrPJl
+         +TjUfVl9aNHem5/ODC56xlUnxk1vrqUuyTg0FSYEAtuMvY198D3YG2SC3u4qPxU9+OW8
+         RdoDISqpuadS1u3CgLo4SYJUB2fvoS0tA6mjlDY6/0HJz6fNPQY4UnpcY3tfOyeRMYLN
+         237A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DZCbcR5Iy8/K2bF0tkHCyOQWDKeY6OQ5I8XUt1jrWCM=;
-        b=Wg8VsB7zSUcg0WIJP1rrbTUCVaaK934vHIEH0MS5eMbE2JrhHKID/Axqy7bsUYBqeY
-         FR7jLf62JPYS4zf2OwrimUe/l4JuKwvq7KF3eBKZOnbGByyGStXRXumaL8I+ndoWmkje
-         YmKILwIqvBkC94F0XXN/gH9wEuW2YvjtAvXxJypocaCb74lxpxXrxuJc1VxlVFT9sJ64
-         J10hh0jMQzCvBC8kGTeXTTv+P3Ix3ZAGlf55ytX3JK3xwXeCYdJ2YyV6hhUiA3S4F+Z+
-         LrOAMdIqyL6oKkqdf8iSayBrTsTOZOmZMmRni035t1x4HaQvbU7d+978Zjsj1LuAhxte
-         e3XQ==
-X-Gm-Message-State: APjAAAWFRgFweiVae+1BuQ3TTp8xxdezQvHvfEUG8ZlBaEzsGldBaYVL
-        Jl5DoqA7vk0RSCVAe07tgqrsoi9OXNNF8oISujs=
-X-Google-Smtp-Source: APXvYqxbM46DYnjFMelwxJ6ieSaTahz1CzBnxDFA50cYAXoSzWE707p5aV7UO5MvdUZUvwLsXF7/fX6INTZgyFoEx+g=
-X-Received: by 2002:a19:fc1e:: with SMTP id a30mr10401625lfi.167.1571852531741;
- Wed, 23 Oct 2019 10:42:11 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qFewDq5bPCn8gTmOC4SGcav3DEG85WI+XIcYsQdAE7U=;
+        b=igkpjHMgXRnzgCPuHlrpmwbV7LbZrq8AmsGa3J24dDNAgQo7FQvYZeeEoetO/fo/pc
+         N+6f+O/7IhL00+m26b+PgnxUmu8vWVHBtNHdCMVLsuBsdGK2bSY+gVDJujTsiU4hw8dS
+         cBtSvFDZymoQI3xOnsFMN6eXjXopL5gkVmSs1knVw0h6IvNb+117Qr4P9ueBiRoomQNr
+         gO3UxgaJ/qgVN6bOE+lVsgkwjLWjCAn/L8mYLkLzM/YT5o3mF4TJREE4RxRlB+ii9L3a
+         tXjYMulowF3N6Nzx0HT0euy7WYKQgONZvSMH6BmK10TjXJYyLVO0ifOY91W3rknPlOeB
+         ffTw==
+X-Gm-Message-State: APjAAAV5nheYPM4camEhlmC+PhL6kUGZGJxHqiQIiB/bLtrvyyzNIFlE
+        8iauiaDMjyGcrMgk6PQxfla4M2lwnQs=
+X-Google-Smtp-Source: APXvYqyiAxNLnQZ/1JHg8vBAoT64vo+du2yyD8eQ4LYNi+HE9nc0AEIzHPH8RErAwQ2xUzI8m6Wiuw==
+X-Received: by 2002:ac8:43d9:: with SMTP id w25mr10756188qtn.65.1571852690100;
+        Wed, 23 Oct 2019 10:44:50 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id u43sm13318225qte.19.2019.10.23.10.44.49
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 23 Oct 2019 10:44:49 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iNKgj-0005uE-03; Wed, 23 Oct 2019 14:44:49 -0300
+Date:   Wed, 23 Oct 2019 14:44:48 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Ertman, David M" <david.m.ertman@intel.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>
+Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device
+ to provide RDMA
+Message-ID: <20191023174448.GP23952@ziepe.ca>
+References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
+ <20190926164519.10471-2-jeffrey.t.kirsher@intel.com>
+ <20190926180556.GB1733924@kroah.com>
+ <7e7f6c159de52984b89c13982f0a7fd83f1bdcd4.camel@intel.com>
+ <20190927051320.GA1767635@kroah.com>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
 MIME-Version: 1.0
-References: <1570515415-45593-3-git-send-email-sridhar.samudrala@intel.com>
- <CAADnVQ+XxmvY0cs8MYriMMd7=2TSEm4zCtB+fs2vkwdUY6UgAQ@mail.gmail.com>
- <3ED8E928C4210A4289A677D2FEB48235140134CE@fmsmsx111.amr.corp.intel.com>
- <2bc26acd-170d-634e-c066-71557b2b3e4f@intel.com> <CAADnVQ+qq6RLMjh5bB1ugXP5p7vYM2F1fLGFQ2pL=2vhCLiBdA@mail.gmail.com>
- <2032d58c-916f-d26a-db14-bd5ba6ad92b9@intel.com> <CAADnVQ+CH1YM52+LfybLS+NK16414Exrvk1QpYOF=HaT4KRaxg@mail.gmail.com>
- <acf69635-5868-f876-f7da-08954d1f690e@intel.com> <20191019001449.fk3gnhih4nx724pm@ast-mbp>
- <6f281517-3785-ce46-65de-e2f78576783b@intel.com> <20191019022525.w5xbwkav2cpqkfwi@ast-mbp>
- <877e4zd8py.fsf@toke.dk> <CAJ+HfNj07FwmU2GGpUYw56PRwu4pHyHNSkbCOogbMB5zB2QqWA@mail.gmail.com>
- <7642a460-9ba3-d9f7-6cf8-aac45c7eef0d@intel.com> <CAADnVQ+jiEO+jnFR-G=xG=zz7UOSBieZbc1NN=sSnAwvPaJjUQ@mail.gmail.com>
- <8956a643-0163-5345-34fa-3566762a2b7d@intel.com>
-In-Reply-To: <8956a643-0163-5345-34fa-3566762a2b7d@intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 23 Oct 2019 10:42:00 -0700
-Message-ID: <CAADnVQKwnMChzeGaC66A99cHn5szB4hPZaGXq8JAhd8sjrdGeA@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
- sockets to receive packets directly from a queue
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Herbert, Tom" <tom.herbert@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 12:06 PM Samudrala, Sridhar
-<sridhar.samudrala@intel.com> wrote:
->
-> OK. Here is another data point that shows the perf report with the same test but CPU mitigations
-> turned OFF. Here bpf_prog overhead goes down from almost (10.18 + 4.51)% to (3.23 + 1.44%).
->
->    21.40%  ksoftirqd/28     [i40e]                     [k] i40e_clean_rx_irq_zc
->    14.13%  xdpsock          [i40e]                     [k] i40e_clean_rx_irq_zc
->     8.33%  ksoftirqd/28     [kernel.vmlinux]           [k] xsk_rcv
->     6.09%  ksoftirqd/28     [kernel.vmlinux]           [k] xdp_do_redirect
->     5.19%  xdpsock          xdpsock                    [.] main
->     3.48%  ksoftirqd/28     [kernel.vmlinux]           [k] bpf_xdp_redirect_map
->     3.23%  ksoftirqd/28     bpf_prog_3c8251c7e0fef8db  [k] bpf_prog_3c8251c7e0fef8db
->
-> So a major component of the bpf_prog overhead seems to be due to the CPU vulnerability mitigations.
+On Fri, Sep 27, 2019 at 06:03:51PM +0000, Ertman, David M wrote:
+> > From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org]
+> > Sent: Thursday, September 26, 2019 10:13 PM
+> > To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
+> > Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; jgg@mellanox.com;
+> > netdev@vger.kernel.org; linux-rdma@vger.kernel.org; dledford@redhat.com;
+> > Ertman, David M <david.m.ertman@intel.com>
+> > Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
+> > provide RDMA
+> > 
+> > On Thu, Sep 26, 2019 at 11:39:22PM +0000, Nguyen, Anthony L wrote:
+> > > On Thu, 2019-09-26 at 20:05 +0200, Greg KH wrote:
+> > > > On Thu, Sep 26, 2019 at 09:45:00AM -0700, Jeff Kirsher wrote:
+> > > > > From: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > > > >
+> > > > > The RDMA block does not advertise on the PCI bus or any other bus.
+> > > >
+> > > > Huh?  How do you "know" where it is then?  Isn't is usually assigned
+> > > > to a PCI device?
+> > >
+> > > The RDMA block does not have its own PCI function so it must register
+> > > and interact with the ice driver.
+> > 
+> > So the "ice driver" is the real thing controlling the pci device?  How does it
+> > "know" about the RDMA block?
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> 
+> The ICE driver loads and registers to control the PCI device.  It then
+> creates an MFD device with the name 'ice_rdma'. The device data provided to
+> the MFD subsystem by the ICE driver is the struct iidc_peer_dev which
+> contains all of the relevant information that the IRDMA peer will need
+> to access this PF's IIDC API callbacks
+> 
+> The IRDMA driver loads as a software only driver, and then registers a MFD
+> function driver that takes ownership of MFD devices named 'ice_rdma'.
+> This causes the platform bus to perform a matching between ICE's MFD device
+> and IRDMA's driver.  Then the patform bus will call the IRDMA's IIDC probe
+> function.  This probe provides the device data to IRDMA.
 
-I feel that it's an incorrect conclusion because JIT is not doing
-any retpolines (because there are no indirect calls in bpf).
-There should be no difference in bpf_prog runtime with or without mitigations.
-Also you're running root, so no spectre mitigations either.
+Did any resolution happen here? Dave, do you know what to do to get
+Greg's approval?
 
-This 3% seems like a lot for a function that does few loads that should
-hit d-cache and one direct call.
-Please investigate why you're seeing this 10% cpu cost when mitigations are on.
-perf report/annotate is the best.
-Also please double check that you're using the latest perf.
-Since bpf performance analysis was greatly improved several versions ago.
-I don't think old perf will be showing bogus numbers, but better to
-run the latest.
-
-> The other component is the bpf_xdp_redirect_map() codepath.
->
-> Let me know if it helps to collect any other data that should further help with the perf analysis.
->
+Jason
