@@ -2,358 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9585EE25FB
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 23:58:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75CFCE2609
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 00:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436656AbfJWV6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 17:58:02 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:47479 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2392064AbfJWV6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 17:58:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571867880;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eyH+HYRNmQqgIVvNR9cb6DK0ckOPAfgOAlp+FhC37To=;
-        b=axSWvF+z4A3aJs661qOhUZAqVEgDWZBcK7jjUkzqevcYD3v911Ygl6AAAOK/ss/lj3DnYC
-        Alo+QXu0rWZegLuC4nkCZclEZPYbYjfIsrUWlIL/o7oJ+Al31y+PHTqOpiLUq5LJMSs1mN
-        Jh7f0+muK+9NMosbBKb4tKEe5whFIRA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-72-iczMFMq-MHWX_XShiD9ruw-1; Wed, 23 Oct 2019 17:57:56 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 67A4880183D;
-        Wed, 23 Oct 2019 21:57:52 +0000 (UTC)
-Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2E33E5D6D0;
-        Wed, 23 Oct 2019 21:57:43 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 15:57:28 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V5 4/6] mdev: introduce virtio device and its device ops
-Message-ID: <20191023155728.2a55bc71@x1.home>
-In-Reply-To: <20191023130752.18980-5-jasowang@redhat.com>
-References: <20191023130752.18980-1-jasowang@redhat.com>
-        <20191023130752.18980-5-jasowang@redhat.com>
-Organization: Red Hat
+        id S2407763AbfJWWAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 18:00:30 -0400
+Received: from mail-ua1-f66.google.com ([209.85.222.66]:46348 "EHLO
+        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405035AbfJWWAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 18:00:30 -0400
+Received: by mail-ua1-f66.google.com with SMTP id m21so6512096ual.13
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 15:00:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dI0sWxsLmVczS0Zl3fB+Fk38PLerU4izXXPB6cJSa5A=;
+        b=ioh6xhzN+a3+CASwk3N1YxqSkLK2GtccwFu8wOysMt+GiuN7HqrMwoFY/S/i79qz7N
+         5FgrfL4fnYIbhwPUpv13bezr+ScSan+Xq3ypVcLReQNvbKaMA9VirGA4DtVemEzFHq+W
+         6Nv1ZNYwEaEiuxqEHovQqdKUPJwprXXjdbcrbh6grSaHNBzB7PwKPCwvftx1iIqgz7lW
+         3LPAPZaaE3PYCuUNzFvY3qpBq+a2ooldq/1lvxrZu97qKYuS/0uigKKgiGnV40wcfhZ2
+         HZ3p3sW37w7ob+eUwmM6ZBDsu+CNYDQk3Uyz0DA0phcPvkYCSdZAF+zYn8/avYsOm+6w
+         Sa4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dI0sWxsLmVczS0Zl3fB+Fk38PLerU4izXXPB6cJSa5A=;
+        b=Ya559weySE9LOxV/Fb81qmYhzUymTbM1rU/mXpdDY/S6PZ6+AmOGvntwWtIXOIssyP
+         rxcACT8Bo5EJDAxWm21V+WPFuVEMXGvgyq4ijw7BHKn4ix5AXN5eVns83GqFy81Wuw33
+         xi3LVTCom3ioYIxYjREqbr64IG5vAMUSpYX8ajuJEgz9oqAIqfwCP6NuCpSdH+gklWvj
+         ZlinicQ7tSu0I7zN3zDBPKsOHw+mJG+r1CkoNnqhGFtG7CLWL3eFinnA4AhRkyF/k7d3
+         BHuoIWdB7Pss2abHE4EiBbD64l0PxThK2VjU3BtQB+E7SXWKxAjr3pRcxwt9D08whsVC
+         LBbA==
+X-Gm-Message-State: APjAAAXcDw6cc47gDkKxbxO2fmSJfpqgPSmyMVdDfi8OQ+JcEMlbfkVU
+        QdrcQc3bEc4Dyob2Ywo/TbT2MhVkjCMNbn0Is8toXQ==
+X-Google-Smtp-Source: APXvYqxHczA6BiVplwzud3s2wA04aZMolrqsOBUXDndeV87rWFRn5YMM4GRVW13a5YbULBKherJXiSP0VmUbp49PEbY=
+X-Received: by 2002:ab0:1553:: with SMTP id p19mr6938045uae.80.1571868026964;
+ Wed, 23 Oct 2019 15:00:26 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: iczMFMq-MHWX_XShiD9ruw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <2166c3ff-e08d-e89d-4753-01c8bd2d9505@akamai.com> <1571843366-14691-1-git-send-email-jbaron@akamai.com>
+In-Reply-To: <1571843366-14691-1-git-send-email-jbaron@akamai.com>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Wed, 23 Oct 2019 14:59:50 -0700
+Message-ID: <CAK6E8=deFWCyfvQNkTYBhTbbQy9aqryXPTCSsUpsu9gG6+pzrg@mail.gmail.com>
+Subject: Re: [net-next v2] tcp: add TCP_INFO status for failed client TFO
+To:     Jason Baron <jbaron@akamai.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Christoph Paasch <cpaasch@apple.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Oct 2019 21:07:50 +0800
-Jason Wang <jasowang@redhat.com> wrote:
-
-> This patch implements basic support for mdev driver that supports
-> virtio transport for kernel virtio driver.
->=20
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+On Wed, Oct 23, 2019 at 8:11 AM Jason Baron <jbaron@akamai.com> wrote:
+>
+> The TCPI_OPT_SYN_DATA bit as part of tcpi_options currently reports whether
+> or not data-in-SYN was ack'd on both the client and server side. We'd like
+> to gather more information on the client-side in the failure case in order
+> to indicate the reason for the failure. This can be useful for not only
+> debugging TFO, but also for creating TFO socket policies. For example, if
+> a middle box removes the TFO option or drops a data-in-SYN, we can
+> can detect this case, and turn off TFO for these connections saving the
+> extra retransmits.
+>
+> The newly added tcpi_fastopen_client_fail status is 2 bits and has the
+> following 4 states:
+>
+> 1) TFO_STATUS_UNSPEC
+>
+> Catch-all state which includes when TFO is disabled via black hole
+> detection, which is indicated via LINUX_MIB_TCPFASTOPENBLACKHOLE.
+>
+> 2) TFO_COOKIE_UNAVAILABLE
+>
+> If TFO_CLIENT_NO_COOKIE mode is off, this state indicates that no cookie
+> is available in the cache.
+>
+> 3) TFO_DATA_NOT_ACKED
+>
+> Data was sent with SYN, we received a SYN/ACK but it did not cover the data
+> portion. Cookie is not accepted by server because the cookie may be invalid
+> or the server may be overloaded.
+>
+> 4) TFO_SYN_RETRANSMITTED
+>
+> Data was sent with SYN, we received a SYN/ACK which did not cover the data
+> after at least 1 additional SYN was sent (without data). It may be the case
+> that a middle-box is dropping data-in-SYN packets. Thus, it would be more
+> efficient to not use TFO on this connection to avoid extra retransmits
+> during connection establishment.
+>
+> These new fields do not cover all the cases where TFO may fail, but other
+> failures, such as SYN/ACK + data being dropped, will result in the
+> connection not becoming established. And a connection blackhole after
+> session establishment shows up as a stalled connection.
+>
+> Signed-off-by: Jason Baron <jbaron@akamai.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Neal Cardwell <ncardwell@google.com>
+> Cc: Christoph Paasch <cpaasch@apple.com>
+> Cc: Yuchung Cheng <ycheng@google.com>
 > ---
->  drivers/vfio/mdev/mdev_core.c    |  20 ++++
->  drivers/vfio/mdev/mdev_private.h |   2 +
->  include/linux/mdev.h             |   6 ++
->  include/linux/virtio_mdev_ops.h  | 159 +++++++++++++++++++++++++++++++
->  4 files changed, 187 insertions(+)
->  create mode 100644 include/linux/virtio_mdev_ops.h
->=20
-> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.=
-c
-> index 555bd61d8c38..9b00c3513120 100644
-> --- a/drivers/vfio/mdev/mdev_core.c
-> +++ b/drivers/vfio/mdev/mdev_core.c
-> @@ -76,6 +76,26 @@ const struct vfio_mdev_device_ops *mdev_get_vfio_ops(s=
-truct mdev_device *mdev)
+Acked-by: Yuchung Cheng <ycheng@google.com>
+
+Thanks
+
+> v2:
+>   -use tp->total_retrans instead of syn_drop for the non-tfo case
+>   -improve state naming (Neal Cardwell)
+>   -s/TFO_NO_COOKIE_SENT/TFO_COOKIE_UNAVAILABLE - exclude black-hole
+>    from this state
+>
+>  net/ipv4/tcp_fastopen.c  |  5 ++++-
+>  net/ipv4/tcp_input.c     |  4 ++++
+>  5 files changed, 20 insertions(+), 3 deletions(-)
+>
+> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+> index 99617e5..7790f28 100644
+> --- a/include/linux/tcp.h
+> +++ b/include/linux/tcp.h
+> @@ -223,7 +223,7 @@ struct tcp_sock {
+>                 fastopen_connect:1, /* FASTOPEN_CONNECT sockopt */
+>                 fastopen_no_cookie:1, /* Allow send/recv SYN+data without a cookie */
+>                 is_sack_reneg:1,    /* in recovery from loss with SACK reneg? */
+> -               unused:2;
+> +               fastopen_client_fail:2; /* reason why fastopen failed */
+>         u8      nonagle     : 4,/* Disable Nagle algorithm?             */
+>                 thin_lto    : 1,/* Use linear timeouts for thin streams */
+>                 recvmsg_inq : 1,/* Indicate # of bytes in queue upon recvmsg */
+> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+> index 81e6979..74af1f7 100644
+> --- a/include/uapi/linux/tcp.h
+> +++ b/include/uapi/linux/tcp.h
+> @@ -155,6 +155,14 @@ enum {
+>         TCP_QUEUES_NR,
+>  };
+>
+> +/* why fastopen failed from client perspective */
+> +enum tcp_fastopen_client_fail {
+> +       TFO_STATUS_UNSPEC, /* catch-all */
+> +       TFO_COOKIE_UNAVAILABLE, /* if not in TFO_CLIENT_NO_COOKIE mode */
+> +       TFO_DATA_NOT_ACKED, /* SYN-ACK did not ack SYN data */
+> +       TFO_SYN_RETRANSMITTED, /* SYN-ACK did not ack SYN data after timeout */
+> +};
+> +
+>  /* for TCP_INFO socket option */
+>  #define TCPI_OPT_TIMESTAMPS    1
+>  #define TCPI_OPT_SACK          2
+> @@ -211,7 +219,7 @@ struct tcp_info {
+>         __u8    tcpi_backoff;
+>         __u8    tcpi_options;
+>         __u8    tcpi_snd_wscale : 4, tcpi_rcv_wscale : 4;
+> -       __u8    tcpi_delivery_rate_app_limited:1;
+> +       __u8    tcpi_delivery_rate_app_limited:1, tcpi_fastopen_client_fail:2;
+>
+>         __u32   tcpi_rto;
+>         __u32   tcpi_ato;
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 9f41a76..bb5fc97 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -2657,6 +2657,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+>         /* Clean up fastopen related fields */
+>         tcp_free_fastopen_req(tp);
+>         inet->defer_connect = 0;
+> +       tp->fastopen_client_fail = 0;
+>
+>         WARN_ON(inet->inet_num && !icsk->icsk_bind_hash);
+>
+> @@ -3296,6 +3297,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
+>         info->tcpi_reord_seen = tp->reord_seen;
+>         info->tcpi_rcv_ooopack = tp->rcv_ooopack;
+>         info->tcpi_snd_wnd = tp->snd_wnd;
+> +       info->tcpi_fastopen_client_fail = tp->fastopen_client_fail;
+>         unlock_sock_fast(sk, slow);
 >  }
->  EXPORT_SYMBOL(mdev_get_vfio_ops);
-> =20
-> +/* Specify the virtio device ops for the mdev device, this
-> + * must be called during create() callback for virtio mdev device.
-> + */
-> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> +=09=09=09 const struct virtio_mdev_device_ops *virtio_ops)
-> +{
-> +=09mdev_set_class(mdev, MDEV_CLASS_ID_VIRTIO);
-> +=09mdev->virtio_ops =3D virtio_ops;
-> +}
-> +EXPORT_SYMBOL(mdev_set_virtio_ops);
-> +
-> +/* Get the virtio device ops for the mdev device. */
-> +const struct virtio_mdev_device_ops *
-> +mdev_get_virtio_ops(struct mdev_device *mdev)
-> +{
-> +=09WARN_ON(mdev->class_id !=3D MDEV_CLASS_ID_VIRTIO);
-> +=09return mdev->virtio_ops;
-> +}
-> +EXPORT_SYMBOL(mdev_get_virtio_ops);
-> +
->  struct device *mdev_dev(struct mdev_device *mdev)
->  {
->  =09return &mdev->dev;
-> diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_pr=
-ivate.h
-> index 0770410ded2a..7b47890c34e7 100644
-> --- a/drivers/vfio/mdev/mdev_private.h
-> +++ b/drivers/vfio/mdev/mdev_private.h
-> @@ -11,6 +11,7 @@
->  #define MDEV_PRIVATE_H
-> =20
->  #include <linux/vfio_mdev_ops.h>
-> +#include <linux/virtio_mdev_ops.h>
-> =20
->  int  mdev_bus_register(void);
->  void mdev_bus_unregister(void);
-> @@ -38,6 +39,7 @@ struct mdev_device {
->  =09u16 class_id;
->  =09union {
->  =09=09const struct vfio_mdev_device_ops *vfio_ops;
-> +=09=09const struct virtio_mdev_device_ops *virtio_ops;
->  =09};
->  };
-> =20
-> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
-> index 4625f1a11014..9b69b0bbebfd 100644
-> --- a/include/linux/mdev.h
-> +++ b/include/linux/mdev.h
-> @@ -17,6 +17,7 @@
-> =20
->  struct mdev_device;
->  struct vfio_mdev_device_ops;
-> +struct virtio_mdev_device_ops;
-> =20
->  /*
->   * Called by the parent device driver to set the device which represents
-> @@ -112,6 +113,10 @@ void mdev_set_class(struct mdev_device *mdev, u16 id=
-);
->  void mdev_set_vfio_ops(struct mdev_device *mdev,
->  =09=09       const struct vfio_mdev_device_ops *vfio_ops);
->  const struct vfio_mdev_device_ops *mdev_get_vfio_ops(struct mdev_device =
-*mdev);
-> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> +=09=09=09 const struct virtio_mdev_device_ops *virtio_ops);
-> +const struct virtio_mdev_device_ops *
-> +mdev_get_virtio_ops(struct mdev_device *mdev);
-> =20
->  extern struct bus_type mdev_bus_type;
-> =20
-> @@ -127,6 +132,7 @@ struct mdev_device *mdev_from_dev(struct device *dev)=
-;
-> =20
->  enum {
->  =09MDEV_CLASS_ID_VFIO =3D 1,
-> +=09MDEV_CLASS_ID_VIRTIO =3D 2,
->  =09/* New entries must be added here */
->  };
-> =20
-> diff --git a/include/linux/virtio_mdev_ops.h b/include/linux/virtio_mdev_=
-ops.h
-> new file mode 100644
-> index 000000000000..d417b41f2845
-> --- /dev/null
-> +++ b/include/linux/virtio_mdev_ops.h
-> @@ -0,0 +1,159 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Virtio mediated device driver
-> + *
-> + * Copyright 2019, Red Hat Corp.
-> + *     Author: Jason Wang <jasowang@redhat.com>
-> + */
-> +#ifndef _LINUX_VIRTIO_MDEV_H
-> +#define _LINUX_VIRTIO_MDEV_H
-> +
-> +#include <linux/interrupt.h>
-> +#include <linux/mdev.h>
-> +#include <uapi/linux/vhost.h>
-> +
-> +#define VIRTIO_MDEV_DEVICE_API_STRING=09=09"virtio-mdev"
-> +#define VIRTIO_MDEV_F_VERSION_1 0x1
-> +
-> +struct virtio_mdev_callback {
-> +=09irqreturn_t (*callback)(void *data);
-> +=09void *private;
-> +};
-> +
-> +/**
-> + * struct vfio_mdev_device_ops - Structure to be registered for each
-> + * mdev device to register the device for virtio/vhost drivers.
-> + *
-> + * The device ops that is supported by VIRTIO_MDEV_F_VERSION_1, the
-> + * callbacks are mandatory unless explicity mentioned.
-
-If the version of the callbacks is returned by a callback within the
-structure defined by the version... isn't that a bit circular?  This
-seems redundant to me versus the class id.  The fact that the parent
-driver defines the device as MDEV_CLASS_ID_VIRTIO should tell us this
-already.  If it was incremented, we'd need an MDEV_CLASS_ID_VIRTIOv2,
-which the virtio-mdev bus driver could add to its id table and handle
-differently.
-
-> + *
-> + * @set_vq_address:=09=09Set the address of virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + *=09=09=09=09@desc_area: address of desc area
-> + *=09=09=09=09@driver_area: address of driver area
-> + *=09=09=09=09@device_area: address of device area
-> + *=09=09=09=09Returns integer: success (0) or error (< 0)
-> + * @set_vq_num:=09=09=09Set the size of virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + *=09=09=09=09@num: the size of virtqueue
-> + * @kick_vq:=09=09=09Kick the virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + * @set_vq_cb:=09=09=09Set the interrupt callback function for
-> + *=09=09=09=09a virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + *=09=09=09=09@cb: virtio-mdev interrupt callback structure
-> + * @set_vq_ready:=09=09Set ready status for a virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + *=09=09=09=09@ready: ready (true) not ready(false)
-> + * @get_vq_ready:=09=09Get ready status for a virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + *=09=09=09=09Returns boolean: ready (true) or not (false)
-> + * @set_vq_state:=09=09Set the state for a virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + *=09=09=09=09@state: virtqueue state (last_avail_idx)
-> + *=09=09=09=09Returns integer: success (0) or error (< 0)
-> + * @get_vq_state:=09=09Get the state for a virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@idx: virtqueue index
-> + *=09=09=09=09Returns virtqueue state (last_avail_idx)
-> + * @get_vq_align:=09=09Get the virtqueue align requirement
-> + *=09=09=09=09for the device
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns virtqueue algin requirement
-> + * @get_features:=09=09Get virtio features supported by the device
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns the virtio features support by the
-> + *=09=09=09=09device
-> + * @get_features:=09=09Set virtio features supported by the driver
-       ^ s/g/s/
-
-Thanks,
-Alex
-
-
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@features: feature support by the driver
-> + *=09=09=09=09Returns integer: success (0) or error (< 0)
-> + * @set_config_cb:=09=09Set the config interrupt callback
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@cb: virtio-mdev interrupt callback structure
-> + * @get_vq_num_max:=09=09Get the max size of virtqueue
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns u16: max size of virtqueue
-> + * @get_device_id:=09=09Get virtio device id
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns u32: virtio device id
-> + * @get_vendor_id:=09=09Get id for the vendor that provides this device
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns u32: virtio vendor id
-> + * @get_status:=09=09=09Get the device status
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns u8: virtio device status
-> + * @set_status:=09=09=09Set the device status
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@status: virtio device status
-> + * @get_config:=09=09=09Read from device specific configuration space
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@offset: offset from the beginning of
-> + *=09=09=09=09configuration space
-> + *=09=09=09=09@buf: buffer used to read to
-> + *=09=09=09=09@len: the length to read from
-> + *=09=09=09=09configration space
-> + * @set_config:=09=09=09Write to device specific configuration space
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09@offset: offset from the beginning of
-> + *=09=09=09=09configuration space
-> + *=09=09=09=09@buf: buffer used to write from
-> + *=09=09=09=09@len: the length to write to
-> + *=09=09=09=09configration space
-> + * @get_mdev_features:=09=09Get a set of bits that demonstrate
-> + *=09=09=09=09thecapability of the mdev device. New
-> + *=09=09=09=09features bits must be added when
-> + *=09=09=09=09introducing new device ops.
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns the mdev features (API) support by
-> + *=09=09=09=09the device.
-> + * @get_generation:=09=09Get device config generaton (optionally)
-> + *=09=09=09=09@mdev: mediated device
-> + *=09=09=09=09Returns u32: device generation
-> + */
-> +struct virtio_mdev_device_ops {
-> +=09/* Virtqueue ops */
-> +=09int (*set_vq_address)(struct mdev_device *mdev,
-> +=09=09=09      u16 idx, u64 desc_area, u64 driver_area,
-> +=09=09=09      u64 device_area);
-> +=09void (*set_vq_num)(struct mdev_device *mdev, u16 idx, u32 num);
-> +=09void (*kick_vq)(struct mdev_device *mdev, u16 idx);
-> +=09void (*set_vq_cb)(struct mdev_device *mdev, u16 idx,
-> +=09=09=09  struct virtio_mdev_callback *cb);
-> +=09void (*set_vq_ready)(struct mdev_device *mdev, u16 idx, bool ready);
-> +=09bool (*get_vq_ready)(struct mdev_device *mdev, u16 idx);
-> +=09int (*set_vq_state)(struct mdev_device *mdev, u16 idx, u64 state);
-> +=09u64 (*get_vq_state)(struct mdev_device *mdev, u16 idx);
-> +
-> +=09/* Virtio device ops */
-> +=09u16 (*get_vq_align)(struct mdev_device *mdev);
-> +=09u64 (*get_features)(struct mdev_device *mdev);
-> +=09int (*set_features)(struct mdev_device *mdev, u64 features);
-> +=09void (*set_config_cb)(struct mdev_device *mdev,
-> +=09=09=09      struct virtio_mdev_callback *cb);
-> +=09u16 (*get_vq_num_max)(struct mdev_device *mdev);
-> +=09u32 (*get_device_id)(struct mdev_device *mdev);
-> +=09u32 (*get_vendor_id)(struct mdev_device *mdev);
-> +=09u8 (*get_status)(struct mdev_device *mdev);
-> +=09void (*set_status)(struct mdev_device *mdev, u8 status);
-> +=09void (*get_config)(struct mdev_device *mdev, unsigned int offset,
-> +=09=09=09   void *buf, unsigned int len);
-> +=09void (*set_config)(struct mdev_device *mdev, unsigned int offset,
-> +=09=09=09   const void *buf, unsigned int len);
-> +=09u32 (*get_generation)(struct mdev_device *mdev);
-> +
-> +=09/* Mdev device ops */
-> +=09u64 (*get_mdev_features)(struct mdev_device *mdev);
-> +};
-> +
-> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> +=09=09=09 const struct virtio_mdev_device_ops *virtio_ops);
-> +
-> +#endif
-
+>  EXPORT_SYMBOL_GPL(tcp_get_info);
+> diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+> index 3fd4512..dabd2f1 100644
+> --- a/net/ipv4/tcp_fastopen.c
+> +++ b/net/ipv4/tcp_fastopen.c
+> @@ -422,7 +422,10 @@ bool tcp_fastopen_cookie_check(struct sock *sk, u16 *mss,
+>                 cookie->len = -1;
+>                 return true;
+>         }
+> -       return cookie->len > 0;
+> +       if (cookie->len > 0)
+> +               return true;
+> +       tcp_sk(sk)->fastopen_client_fail = TFO_COOKIE_UNAVAILABLE;
+> +       return false;
+>  }
+>
+>  /* This function checks if we want to defer sending SYN until the first
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 3578357a..d562774 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -5812,6 +5812,10 @@ static bool tcp_rcv_fastopen_synack(struct sock *sk, struct sk_buff *synack,
+>         tcp_fastopen_cache_set(sk, mss, cookie, syn_drop, try_exp);
+>
+>         if (data) { /* Retransmit unacked data in SYN */
+> +               if (tp->total_retrans)
+> +                       tp->fastopen_client_fail = TFO_SYN_RETRANSMITTED;
+> +               else
+> +                       tp->fastopen_client_fail = TFO_DATA_NOT_ACKED;
+>                 skb_rbtree_walk_from(data) {
+>                         if (__tcp_retransmit_skb(sk, data, 1))
+>                                 break;
+> --
+> 2.7.4
+>
