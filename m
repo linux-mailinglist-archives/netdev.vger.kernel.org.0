@@ -2,110 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ED13E14C8
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:54:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC523E14D0
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 10:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390314AbfJWIyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 04:54:03 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40784 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390034AbfJWIyC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 04:54:02 -0400
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2390527AbfJWI4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 04:56:12 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59494 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2390034AbfJWI4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 04:56:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571820970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EvCbYNTh8y91QToWpilpaNg9PeqSBs8+413OMwilG5k=;
+        b=NfnvSqXNAVAneC5ZHSlLKLq5eQRY4BLDqiYbIsSP00kTGvXMZEGv4MCzdyK+QeSxDJ6Jle
+        sUtss1xWqmaYSmupceYsSAZD0aNvOEEjCpwbZk3fDqDs5JGa8/0r5EIDhMK3Sydtn/7vD5
+        Riv5TkuH6Qk8SFiCQ4OWBMPxDvupMkk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-10-ql5HWQknOC-Kj9qZDxUaIA-1; Wed, 23 Oct 2019 04:56:06 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 45AE27FDF0
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 08:54:02 +0000 (UTC)
-Received: by mail-lj1-f197.google.com with SMTP id v24so3469010ljh.23
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 01:54:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=SiOV7Z57BQOyO4TO81ImQ+ZItl6n4Wr0rKFozym1WTA=;
-        b=MYIusOgkNsDSZ1He2amyChDV/ZVHk1auNVxQALUNU+mGpRZfRKVfv0jV1KtUE2+1Go
-         2Rfyawopa0Ls8K4U/hTC2jFzLfToXkfFBt197IhYFJKNHccKhX8ltrghViXIeysO+zjx
-         1PekP7AejZf8dg9fYiuurdI0eED0Dw0eKvFlIcfmycyPteJ9loXFj5edQJ7lR0PgAA8u
-         PBAk0XsTqfmBvKrtQEbX7NCHbN00isYY5LjFx2CQPhus0YWtSw/NFmNhXqUc2LE/DBtw
-         cuWfm6G8fksN/9XQUvHhN9eq9QC18+6dPuoRI3VlArmUEPHD6M+LahXfWjuGLhbGEzee
-         H8+Q==
-X-Gm-Message-State: APjAAAW5u/KuuAlzLLhlc0KS8J5UDaUReuuuVIhbPBwfX3+imlwsMzoR
-        3QTSS+YUhL7mvygpAD08ZBNM/klPkBXHEHXu0ZF79hLgx6wiTBfJoZXf9TR8YkALMx5UL13HMp5
-        +6pH5OTOGUcVzRGs/
-X-Received: by 2002:a2e:b813:: with SMTP id u19mr12953890ljo.23.1571820840810;
-        Wed, 23 Oct 2019 01:54:00 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyobnfOcMs9qyrsH6twatdI07hRD8+v4F8xIsrtdZGqRcE6ZD2vOM4RLnQMb2iT92smAPx2LA==
-X-Received: by 2002:a2e:b813:: with SMTP id u19mr12953875ljo.23.1571820840604;
-        Wed, 23 Oct 2019 01:54:00 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id e8sm5898469ljf.1.2019.10.23.01.53.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 01:53:59 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 13BA01804B1; Wed, 23 Oct 2019 10:53:59 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 462DC1800DBE;
+        Wed, 23 Oct 2019 08:56:04 +0000 (UTC)
+Received: from krava (unknown [10.43.17.61])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 495EE60BE1;
+        Wed, 23 Oct 2019 08:56:00 +0000 (UTC)
+Date:   Wed, 23 Oct 2019 10:55:59 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 2/3] libbpf: Support configurable pinning of maps from BTF annotations
-In-Reply-To: <CAEf4BzY-buKFadzzAKpCdjAZ+1_UwSpQobdRH7yQn_fFXQYX0w@mail.gmail.com>
-References: <157175668770.112621.17344362302386223623.stgit@toke.dk> <157175668991.112621.14204565208520782920.stgit@toke.dk> <CAEf4BzaM32j4iLhvcuwMS+dPDBd52KwviwJuoAwVVr8EwoRpHA@mail.gmail.com> <875zkgobf3.fsf@toke.dk> <CAEf4BzY-buKFadzzAKpCdjAZ+1_UwSpQobdRH7yQn_fFXQYX0w@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 23 Oct 2019 10:53:58 +0200
-Message-ID: <87r233n8pl.fsf@toke.dk>
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 4/9] perf tools: move ALLOC_LIST into a function
+Message-ID: <20191023085559.GF22919@krava>
+References: <20191017170531.171244-1-irogers@google.com>
+ <20191023005337.196160-1-irogers@google.com>
+ <20191023005337.196160-5-irogers@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20191023005337.196160-5-irogers@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: ql5HWQknOC-Kj9qZDxUaIA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+On Tue, Oct 22, 2019 at 05:53:32PM -0700, Ian Rogers wrote:
+> Having a YYABORT in a macro makes it hard to free memory for components
+> of a rule. Separate the logic out.
 
->> > 4. Once pinned, map knows its pinned path, just use that, I don't see
->> > any reasonable use case where you'd want to override path just for
->> > unpinning.
->>
->> Well, unpinning may need to re-construct the pin path. E.g.,
->> applications that exit after loading and are re-run after unloading,
->> such as iproute2, probably want to be able to unpin maps. Unfortunately
->> I don't think there is a way to get the pin path(s) of an object from
->> the kernel, though, is there? That would be kinda neat for implementing
->> something like `ip link set dev eth0 xdp off unpin`.
->
-> Hm... It seems to me that if application exits and another instance
-> starts, it should generate pin path using the same logic, then check
-> if map is already pinned. Then based on settings, either reuse or
-> unpin first. Either way, pin_path needs to be calculated from map
-> attributes, not "guessed" by application.
+Acked-by: Jiri Olsa <jolsa@kernel.org>
 
-Yeah, ideally. However, the bpf object file may not be available (it's
-not for iproute2, for instance). I'm not sure there's really anything we
-*can* do about that, though, other than have the application guess.
-Unless we add more state to the kernel.
+thanks,
+jirka
 
-Would it make sense to store the fact that a map was auto-pinned as a
-flag in the kernel map info? That way, an application could read that
-flag along with the name and go looking in /sys/fs/bpf.
+>=20
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/util/parse-events.y | 65 ++++++++++++++++++++++------------
+>  1 file changed, 43 insertions(+), 22 deletions(-)
+>=20
+> diff --git a/tools/perf/util/parse-events.y b/tools/perf/util/parse-event=
+s.y
+> index 27d6b187c9b1..26cb65798522 100644
+> --- a/tools/perf/util/parse-events.y
+> +++ b/tools/perf/util/parse-events.y
+> @@ -25,12 +25,17 @@ do { \
+>  =09=09YYABORT; \
+>  } while (0)
+> =20
+> -#define ALLOC_LIST(list) \
+> -do { \
+> -=09list =3D malloc(sizeof(*list)); \
+> -=09ABORT_ON(!list);              \
+> -=09INIT_LIST_HEAD(list);         \
+> -} while (0)
+> +static struct list_head* alloc_list()
+> +{
+> +=09struct list_head *list;
+> +
+> +=09list =3D malloc(sizeof(*list));
+> +=09if (!list)
+> +=09=09return NULL;
+> +
+> +=09INIT_LIST_HEAD(list);
+> +=09return list;
+> +}
+> =20
+>  static void inc_group_count(struct list_head *list,
+>  =09=09       struct parse_events_state *parse_state)
+> @@ -238,7 +243,8 @@ PE_NAME opt_pmu_config
+>  =09if (error)
+>  =09=09error->idx =3D @1.first_column;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09if (parse_events_add_pmu(_parse_state, list, $1, $2, false, false)) {
+>  =09=09struct perf_pmu *pmu =3D NULL;
+>  =09=09int ok =3D 0;
+> @@ -306,7 +312,8 @@ value_sym '/' event_config '/'
+>  =09int type =3D $1 >> 16;
+>  =09int config =3D $1 & 255;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_numeric(_parse_state, list, type, config, $=
+3));
+>  =09parse_events_terms__delete($3);
+>  =09$$ =3D list;
+> @@ -318,7 +325,8 @@ value_sym sep_slash_slash_dc
+>  =09int type =3D $1 >> 16;
+>  =09int config =3D $1 & 255;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_numeric(_parse_state, list, type, config, N=
+ULL));
+>  =09$$ =3D list;
+>  }
+> @@ -327,7 +335,8 @@ PE_VALUE_SYM_TOOL sep_slash_slash_dc
+>  {
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_tool(_parse_state, list, $1));
+>  =09$$ =3D list;
+>  }
+> @@ -339,7 +348,8 @@ PE_NAME_CACHE_TYPE '-' PE_NAME_CACHE_OP_RESULT '-' PE=
+_NAME_CACHE_OP_RESULT opt_e
+>  =09struct parse_events_error *error =3D parse_state->error;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_cache(list, &parse_state->idx, $1, $3, $5, =
+error, $6));
+>  =09parse_events_terms__delete($6);
+>  =09$$ =3D list;
+> @@ -351,7 +361,8 @@ PE_NAME_CACHE_TYPE '-' PE_NAME_CACHE_OP_RESULT opt_ev=
+ent_config
+>  =09struct parse_events_error *error =3D parse_state->error;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_cache(list, &parse_state->idx, $1, $3, NULL=
+, error, $4));
+>  =09parse_events_terms__delete($4);
+>  =09$$ =3D list;
+> @@ -363,7 +374,8 @@ PE_NAME_CACHE_TYPE opt_event_config
+>  =09struct parse_events_error *error =3D parse_state->error;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_cache(list, &parse_state->idx, $1, NULL, NU=
+LL, error, $2));
+>  =09parse_events_terms__delete($2);
+>  =09$$ =3D list;
+> @@ -375,7 +387,8 @@ PE_PREFIX_MEM PE_VALUE '/' PE_VALUE ':' PE_MODIFIER_B=
+P sep_dc
+>  =09struct parse_events_state *parse_state =3D _parse_state;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_breakpoint(list, &parse_state->idx,
+>  =09=09=09=09=09     (void *) $2, $6, $4));
+>  =09$$ =3D list;
+> @@ -386,7 +399,8 @@ PE_PREFIX_MEM PE_VALUE '/' PE_VALUE sep_dc
+>  =09struct parse_events_state *parse_state =3D _parse_state;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_breakpoint(list, &parse_state->idx,
+>  =09=09=09=09=09     (void *) $2, NULL, $4));
+>  =09$$ =3D list;
+> @@ -397,7 +411,8 @@ PE_PREFIX_MEM PE_VALUE ':' PE_MODIFIER_BP sep_dc
+>  =09struct parse_events_state *parse_state =3D _parse_state;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_breakpoint(list, &parse_state->idx,
+>  =09=09=09=09=09     (void *) $2, $4, 0));
+>  =09$$ =3D list;
+> @@ -408,7 +423,8 @@ PE_PREFIX_MEM PE_VALUE sep_dc
+>  =09struct parse_events_state *parse_state =3D _parse_state;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_breakpoint(list, &parse_state->idx,
+>  =09=09=09=09=09     (void *) $2, NULL, 0));
+>  =09$$ =3D list;
+> @@ -421,7 +437,8 @@ tracepoint_name opt_event_config
+>  =09struct parse_events_error *error =3D parse_state->error;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09if (error)
+>  =09=09error->idx =3D @1.first_column;
+> =20
+> @@ -457,7 +474,8 @@ PE_VALUE ':' PE_VALUE opt_event_config
+>  {
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_numeric(_parse_state, list, (u32)$1, $3, $4=
+));
+>  =09parse_events_terms__delete($4);
+>  =09$$ =3D list;
+> @@ -468,7 +486,8 @@ PE_RAW opt_event_config
+>  {
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_add_numeric(_parse_state, list, PERF_TYPE_RAW, =
+$1, $2));
+>  =09parse_events_terms__delete($2);
+>  =09$$ =3D list;
+> @@ -480,7 +499,8 @@ PE_BPF_OBJECT opt_event_config
+>  =09struct parse_events_state *parse_state =3D _parse_state;
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_load_bpf(parse_state, list, $1, false, $2));
+>  =09parse_events_terms__delete($2);
+>  =09$$ =3D list;
+> @@ -490,7 +510,8 @@ PE_BPF_SOURCE opt_event_config
+>  {
+>  =09struct list_head *list;
+> =20
+> -=09ALLOC_LIST(list);
+> +=09list =3D alloc_list();
+> +=09ABORT_ON(!list);
+>  =09ABORT_ON(parse_events_load_bpf(_parse_state, list, $1, true, $2));
+>  =09parse_events_terms__delete($2);
+>  =09$$ =3D list;
+> --=20
+> 2.23.0.866.gb869b98d4c-goog
+>=20
 
-Hmm, but I guess it could do that anyway; so maybe what we need is just
-a "try to find all pinned maps of this program" function? That could
-then to something like:
-
-- Get the maps IDs and names of all maps attached to that program from
-  the kernel.
-
-- Look for each map name in /sys/fs/bpf
-
-- If a pinned map with the same name exists, compare the IDs, and unlink
-  if they match
-
-I don't suppose it'll be possible to do all that in a race-free manner,
-but that would go for any use of unlink() unless I'm missing something?
-
--Toke
