@@ -2,190 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6429FE191F
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 13:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C530E1965
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 13:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405014AbfJWLdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 07:33:55 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:40643 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390678AbfJWLdz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 07:33:55 -0400
-Received: by mail-il1-f195.google.com with SMTP id d83so10077823ilk.7
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 04:33:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w9EMXwTzi2G53AXGJ5eGxtmMpWQK79Y5WHtLxDhYubo=;
-        b=J0usiRN1ezlKbpvTsC7ZALKt9X4luDSIKl5lq+Xn34vX8JwcH8X5h0S4u8E8zMSV4F
-         etm10JONOHY9SST4MI5OdB0v+NPcjpJqGEO610hKfR73WA3o9dRr8YUjCdHsgVhsdJGl
-         FaXMbzO1itsKg3iEIBNTG38H87MrMEYsJvW/wJtSgjU9dXwDJ1HxLjx1NoUuUxUhK/PX
-         ZQQ8ctiAvrrASD1gxnOD1tlcHvInmuOubyx0JrHlTEPQB9JWTVuty6y+bne3vukK/00w
-         iCPYwiurKBZm64Zmjh5Bj8mEbZDrfRcxzByKzTvgiCbkyQn6rMPUkwRfsCjIGK+Zfn0E
-         isTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w9EMXwTzi2G53AXGJ5eGxtmMpWQK79Y5WHtLxDhYubo=;
-        b=ciSLnsZoX/zbpUXO/xETfERDrhBOPEtibK5pO0WyIqf7JHTa71rJ1zgSLC6XY3XVf/
-         4C5ScE3nvsocACO0ME2+sG8WI1h+6RrEn+tPbSFKJegv75fwFMuvwLPm0O6dS47U/KgB
-         TaLt6sFPNPNKs/v1uua36zmu/SuIHjN51n09I+xj5Lq7MuGZjIVyIp7sSdSy7Qp9d+21
-         ZWDXuxYEXPYR8AFnHc2OWlNlK0Q5IyUrErUssChHl0zeILinCWpGAFoUGwkORofpRuss
-         HKt9ic+WZO2MIuM2KJGFM+njJr2+kKXPTMmofhnjNniJC57o3tqbIaw0JXc5IKtEvQdm
-         o22Q==
-X-Gm-Message-State: APjAAAVZDMEACnUoxRCFdo4WSVDcqSMILGm9uRvXFfNyczlYc7xNo5fF
-        SftK1NrVTwI0fJHv5+uRTLmRxm+O3Vv4jfjXazE=
-X-Google-Smtp-Source: APXvYqzh7zSVzdI/DO36hXP+yWepgOSPwp1rWT2sZ6XUbpymwU4ZRsoMRpSRcZvbyCZTPhozs8XIUUek/n/gZpDa+S4=
-X-Received: by 2002:a92:a308:: with SMTP id a8mr35954589ili.65.1571830434412;
- Wed, 23 Oct 2019 04:33:54 -0700 (PDT)
+        id S2405130AbfJWLxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 07:53:14 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:36377 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732092AbfJWLxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 07:53:14 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9NBqkls003476, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9NBqkls003476
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 23 Oct 2019 19:52:46 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Wed, 23 Oct
+ 2019 19:52:45 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "pmalani@chromium.org" <pmalani@chromium.org>,
+        "grundler@chromium.org" <grundler@chromium.org>,
+        "'Linux Samsung SOC'" <linux-samsung-soc@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: RE: [PATCH net-next] r8152: support request_firmware for RTL8153
+Thread-Topic: [PATCH net-next] r8152: support request_firmware for RTL8153
+Thread-Index: AQHVg84yG1svvwJLbEa5ZZ4zq0Zj+qdnd3YAgACNnOD//4TeAIAAm7jA
+Date:   Wed, 23 Oct 2019 11:52:45 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18ED47C@RTITMBSVM03.realtek.com.tw>
+References: <1394712342-15778-329-Taiwan-albertk@realtek.com>
+        <CGME20191023091648eucas1p12dcc4e9041169e3c7ae43f4ea525dd7f@eucas1p1.samsung.com>
+        <44261242-ff44-0067-bbb9-2241e400ad53@samsung.com>
+        <0835B3720019904CB8F7AA43166CEEB2F18ED3FA@RTITMBSVM03.realtek.com.tw>
+ <c20abd08-5f22-2cc8-15fa-956d06b5b8af@samsung.com>
+In-Reply-To: <c20abd08-5f22-2cc8-15fa-956d06b5b8af@samsung.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1571737634-5830-1-git-send-email-yanjun.zhu@oracle.com>
-In-Reply-To: <1571737634-5830-1-git-send-email-yanjun.zhu@oracle.com>
-From:   Rain River <rain.1986.08.12@gmail.com>
-Date:   Wed, 23 Oct 2019 19:39:56 +0800
-Message-ID: <CAJr_XRCeYZ0C1+UwC3Kh=kfG2qRyr+59bm5gbHmr94f1OK4o_Q@mail.gmail.com>
-Subject: Re: [PATCHv2 1/1] net: forcedeth: add xmit_more support
-To:     Zhu Yanjun <yanjun.zhu@oracle.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 5:38 PM Zhu Yanjun <yanjun.zhu@oracle.com> wrote:
->
-> This change adds support for xmit_more based on the igb commit 6f19e12f6230
-> ("igb: flush when in xmit_more mode and under descriptor pressure") and
-> commit 6b16f9ee89b8 ("net: move skb->xmit_more hint to softnet data") that
-> were made to igb to support this feature. The function netif_xmit_stopped
-> is called to check if transmit queue on device is currently unable to send
-> to determine if we must write the tail because we can add no further
-> buffers.
-> When normal packets and/or xmit_more packets fill up tx_desc, it is
-> necessary to trigger NIC tx reg.
->
-> Tested:
->   - pktgen (xmit_more packets) SMP x86_64 ->
->     Test command:
->     ./pktgen_sample03_burst_single_flow.sh ... -b 8 -n 1000000
->     Test results:
->     Params:
->     ...
->     burst: 8
->     ...
->     Result: OK: 12194004(c12188996+d5007) usec, 1000001 (1500byte,0frags)
->     82007pps 984Mb/sec (984084000bps) errors: 0
->
->   - iperf (normal packets) SMP x86_64 ->
->     Test command:
->     Server: iperf -s
->     Client: iperf -c serverip
->     Result:
->     TCP window size: 85.0 KByte (default)
->     ------------------------------------------------------------
->     [ ID] Interval       Transfer     Bandwidth
->     [  3]  0.0-10.0 sec  1.10 GBytes   942 Mbits/sec
->
-> CC: Joe Jin <joe.jin@oracle.com>
-> CC: JUNXIAO_BI <junxiao.bi@oracle.com>
-> Reported-and-tested-by: Nan san <nan.1986san@gmail.com>
-> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
-
-Thanks.
-Acked-by: Rain River <rain.1986.08.12@gmail.com>
-
-> ---
-> V1->V2: use the lower case label.
-> ---
->  drivers/net/ethernet/nvidia/forcedeth.c | 37 +++++++++++++++++++++++++++------
->  1 file changed, 31 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-> index 05d2b47..e2bb0cd 100644
-> --- a/drivers/net/ethernet/nvidia/forcedeth.c
-> +++ b/drivers/net/ethernet/nvidia/forcedeth.c
-> @@ -2225,6 +2225,7 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
->         struct nv_skb_map *prev_tx_ctx;
->         struct nv_skb_map *tmp_tx_ctx = NULL, *start_tx_ctx = NULL;
->         unsigned long flags;
-> +       netdev_tx_t ret = NETDEV_TX_OK;
->
->         /* add fragments to entries count */
->         for (i = 0; i < fragments; i++) {
-> @@ -2240,7 +2241,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
->                 netif_stop_queue(dev);
->                 np->tx_stop = 1;
->                 spin_unlock_irqrestore(&np->lock, flags);
-> -               return NETDEV_TX_BUSY;
-> +
-> +               /* When normal packets and/or xmit_more packets fill up
-> +                * tx_desc, it is necessary to trigger NIC tx reg.
-> +                */
-> +               ret = NETDEV_TX_BUSY;
-> +               goto txkick;
->         }
->         spin_unlock_irqrestore(&np->lock, flags);
->
-> @@ -2357,8 +2363,14 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
->
->         spin_unlock_irqrestore(&np->lock, flags);
->
-> -       writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
-> -       return NETDEV_TX_OK;
-> +txkick:
-> +       if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
-> +               u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
-> +
-> +               writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
-> +       }
-> +
-> +       return ret;
->  }
->
->  static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
-> @@ -2381,6 +2393,7 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
->         struct nv_skb_map *start_tx_ctx = NULL;
->         struct nv_skb_map *tmp_tx_ctx = NULL;
->         unsigned long flags;
-> +       netdev_tx_t ret = NETDEV_TX_OK;
->
->         /* add fragments to entries count */
->         for (i = 0; i < fragments; i++) {
-> @@ -2396,7 +2409,13 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
->                 netif_stop_queue(dev);
->                 np->tx_stop = 1;
->                 spin_unlock_irqrestore(&np->lock, flags);
-> -               return NETDEV_TX_BUSY;
-> +
-> +               /* When normal packets and/or xmit_more packets fill up
-> +                * tx_desc, it is necessary to trigger NIC tx reg.
-> +                */
-> +               ret = NETDEV_TX_BUSY;
-> +
-> +               goto txkick;
->         }
->         spin_unlock_irqrestore(&np->lock, flags);
->
-> @@ -2542,8 +2561,14 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
->
->         spin_unlock_irqrestore(&np->lock, flags);
->
-> -       writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
-> -       return NETDEV_TX_OK;
-> +txkick:
-> +       if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
-> +               u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
-> +
-> +               writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
-> +       }
-> +
-> +       return ret;
->  }
->
->  static inline void nv_tx_flip_ownership(struct net_device *dev)
-> --
-> 2.7.4
->
+TWFyZWsgU3p5cHJvd3NraSBbbWFpbHRvOm0uc3p5cHJvd3NraUBzYW1zdW5nLmNvbV0NCj4gU2Vu
+dDogV2VkbmVzZGF5LCBPY3RvYmVyIDIzLCAyMDE5IDY6MjMgUE0NClsuLi5dDQo+ID4+IFRoaXMg
+cGF0Y2ggKHdoaWNoIGxhbmRlZCBpbiBsaW51eC1uZXh0IGxhc3QgZGF5cykgY2F1c2VzIGEgZm9s
+bG93aW5nDQo+ID4+IGtlcm5lbCBvb3BzIG9uIHRoZSBBUk0gMzJiaXQgRXh5bm9zNTQyMiBTb0Mg
+YmFzZWQgT2Ryb2lkIFhVNCBib2FyZDoNCj4gPiBQbGVhc2UgdHJ5IHRoZSBmb2xsb3dpbmcgcGF0
+Y2guDQo+IA0KPiBZZXMsIHRoaXMgZml4ZXMgdGhlIGlzc3VlLiBJJ3ZlIGFwcGxpZWQgdGhvc2Ug
+Y2hhbmdlcyBtYW51YWxseSBvbiB0b3Agb2YNCj4gTGludXggbmV4dC0yMDE5MTAyMiwgZHVlIHRv
+IHNvbWUgZGlmZmVyZW5jZXMgaW4gdGhlIGNvbnRleHQuIFdoZW4geW91DQo+IHByZXBhcmUgYSBm
+aW5hbCBwYXRjaCwgZmVlbCBmcmVlIHRvIGFkZDoNCj4gDQo+IFJlcG9ydGVkLWJ5OiBNYXJlayBT
+enlwcm93c2tpIDxtLnN6eXByb3dza2lAc2Ftc3VuZy5jb20+DQo+IEZpeGVzOiA5MzcwZjJkMDVh
+MmEgKCJyODE1Mjogc3VwcG9ydCByZXF1ZXN0X2Zpcm13YXJlIGZvciBSVEw4MTUzIikNCj4gVGVz
+dGVkLWJ5OiBNYXJlayBTenlwcm93c2tpIDxtLnN6eXByb3dza2lAc2Ftc3VuZy5jb20+DQoNClRo
+YW5rcw0KDQpCZXN0IFJlZ2FyZHMsDQpIYXllcw0KDQoNCg0K
