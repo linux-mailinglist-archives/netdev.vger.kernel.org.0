@@ -2,72 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB02E0F3C
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 02:34:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98DB2E0F3F
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 02:36:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731712AbfJWAdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 20:33:51 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43277 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727610AbfJWAdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 20:33:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571790829;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=L06TXI6Vj4mhhNtCHcisydZYDybVAGuxU9Mq4ab/6+0=;
-        b=cqqGv+QHdw/lChII00LDxjOYfdLa05khIZN2gabvLvYUC4f/i0l2YTYXtnkSCPBj+Ra0QY
-        z3kavi3q88pPqrw4nF14GpOKjo5+M6H/UiMX7Nkd06dKqu8xS44ePKZ4W0Z8m9eInYlbxp
-        RJ7ULLYTIfY5weSGJuiuYjxrBeMibAQ=
-Received: from mail-yw1-f72.google.com (mail-yw1-f72.google.com
- [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-222-fo8mxo3NPmmPc1rTJ65tHw-1; Tue, 22 Oct 2019 20:33:45 -0400
-Received: by mail-yw1-f72.google.com with SMTP id s38so485086ywa.5
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 17:33:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=L06TXI6Vj4mhhNtCHcisydZYDybVAGuxU9Mq4ab/6+0=;
-        b=dDAi3U1EOY7f+qL9SPxmamHJ7bhJTVtzYvtlLeSnIwtR61GLpU5D8uyFlbv+3crZl9
-         RdkoJ3o8/3l6ueS3hkTh4XAXVCLt2LMP2GWNFJQESm0PlBrM54G2djn/CD/Xp+ENJ7cx
-         TS205GICBgDMAXp9gr/90BRhLuYPzBgRbrqsUcgAkrcoylwqZFjO29wf0JWJnvj8hh/k
-         dtPmDC480vTddnYpibt01ZWJRmWlxGrG9CPgyFeC4iCpDm+X0gS37t1b4QCAQTHIoqpT
-         fT9pdrnhnkEWtLJIwcehYSIpktNT5gKhL8gbC+MpVHWDvev3rDjIiywZeKKMzYfEZMjx
-         8rMQ==
-X-Gm-Message-State: APjAAAV06qiXRcTf9SarGJKDhrtDR8wckLhDEYmsdCHtK2lLimF6LaIn
-        R7bJeYYVo4dKGfa1kxWfLoLBDrWpPFgd9y04NMw4xiGU5xKBNcbgJIAZvjA/KtvuXOrmRDkVHgk
-        iSf1P4SdTsQ7bp1Sh0iSihAbGYdF3jMUT
-X-Received: by 2002:a25:70c3:: with SMTP id l186mr2713971ybc.233.1571790824982;
-        Tue, 22 Oct 2019 17:33:44 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyHFatb7VN3aWeF2BTP2HzwmupBAgir8JASamIqoNVXs987KedyWPbTEyTBLNfMHnYICr1i78zqyEeaC3G4skU=
-X-Received: by 2002:a25:70c3:: with SMTP id l186mr2713964ybc.233.1571790824789;
- Tue, 22 Oct 2019 17:33:44 -0700 (PDT)
+        id S1732078AbfJWAf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 20:35:56 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58718 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727140AbfJWAf4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Oct 2019 20:35:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6Z1DBBH/xUKUXF6UckwoFUZ5ZnN9nnX2q+E7Z7EAe2Q=; b=y9NLf0atN/EmyK6I1GyF2uyzPc
+        Wef1EEQatx+CogP0iIpR5QX2/xoGcAmg+ahCmFHstkzlyen5Yw0d8g5664osChhKqFiChQ1FxotsZ
+        8VTDFSCkt1zIan4zR5AzDg3UQjMMe9Kmwk9uQr3EA/rF3vm0xr/w0hhDljIR8XVCrprE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iN4cp-0004IX-0w; Wed, 23 Oct 2019 02:35:43 +0200
+Date:   Wed, 23 Oct 2019 02:35:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v4 2/5] dt-bindings: net: dsa: qca,ar9331 switch
+ documentation
+Message-ID: <20191023003543.GE5707@lunn.ch>
+References: <20191022055743.6832-1-o.rempel@pengutronix.de>
+ <20191022055743.6832-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-From:   Tom Rix <trix@redhat.com>
-Date:   Tue, 22 Oct 2019 17:33:34 -0700
-Message-ID: <CACVy4SX9qbe3D7ZVU9dredVcTrP9jd2LB0AaFUSmiPeqeaj8kg@mail.gmail.com>
-Subject: [PATCH v2 0/1] xfrm : lock input tasklet skb queue
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Joerg Vehlow <lkml@jv-coder.de>
-X-MC-Unique: fo8mxo3NPmmPc1rTJ65tHw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191022055743.6832-3-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rev 2 is Jorg's original patch with some if-defs to lock only for RT.
+On Tue, Oct 22, 2019 at 07:57:40AM +0200, Oleksij Rempel wrote:
+> Atheros AR9331 has built-in 5 port switch. The switch can be configured
+> to use all 5 or 4 ports. One of built-in PHYs can be used by first built-in
+> ethernet controller or to be used directly by the switch over second ethernet
+> controller.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-I have tested Jorg's change, it works on RT and since it was first it
-should take precedence.
-I can appreciate not forcing the normal kernel to move ad-hoc to RT.
-So I hope that the compromise of conditionally including the change
-will be acceptable.
+Hi Oleksij
 
-Tom
+What we never really discussed is how this MUXing of the PHY works.
 
+What i'm worried about is that when we do understand how it works, we
+cannot properly support it using this binding.
+
+Please could you try to find information about this.
+
+Thanks
+	Andrew
