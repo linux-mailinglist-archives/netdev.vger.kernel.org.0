@@ -2,192 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3257FE1EBC
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C988E1ED1
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 17:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391697AbfJWPAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 11:00:19 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:44256 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390851AbfJWPAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 11:00:19 -0400
-Received: by mail-pl1-f194.google.com with SMTP id q15so10208364pll.11
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 08:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N+w72TNzpRjbI10b0jitVHs/ZztNdVqny0Vx93sBfHk=;
-        b=LkFiQMFlNCbmBcSny+BOcbJp4l+Y7hxmhJpwbh+oZKj4dclcUmkgKvgYT/+UYb+gC2
-         gyHdiiQA0zgCVq5edOVaCswUbLLDVp5XxK7S64xHl5B14kzfNFd1rQGeDZSDltZr/3Wu
-         JUlYM9V7bShYYsBBni9hVzN4el8+a0sJvdIGSmvxXXC+hQroujJZ3Ku4IzspLg14V4pP
-         rO5w9PLppQQ6gwzqvOxY2udruUJiYhNLNVz1w2QSMCchaEg4Q1G6HlbIZru6HKxG+aS9
-         CXqkZ33YbTEGVGVz3EaMmpMU7IxVFS79ScHmIC/CAFsX2auB9k4I7uGZczMJuJ1biDdh
-         KMQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N+w72TNzpRjbI10b0jitVHs/ZztNdVqny0Vx93sBfHk=;
-        b=BrlUyVFadNf7ZDe/MdK5IX/FH0+4Ehpfwe5VspDySo5sJeePYaavMGdr/mTWgqR9/h
-         +w4JGhZ87+axOtPIayPZc0pN1Eu2jbLQcUvN1pPwO44vRV8MDs/SqDp5jsZUdhHcciCk
-         jhHeEtO/QyYGwgfZHS2Lbuojonry7WF2mbWujkzRydgWT4A4XPmui+it5MwW9i2yA0S6
-         Fo5+YazlWcQLHMW57AZQXMPkVausfHor53V97ZF0VsqTqAwgNITGYBF/z72/BtxTmXdp
-         d4yO+X6uMFviF74Qla18+nrPFzG3DBEfboO7rBWl7S10OzkxxxPLY4yGtKImcUuHuk7w
-         BfaQ==
-X-Gm-Message-State: APjAAAVYQZxFbi45+azkDBKRqr4ddNyRaKDX0AQiFzd5+V+jIG++mE2Z
-        OJuJsJ/Jaygtxq8/sR14ht5KIAha0Dp5YIaLnfl/GQ==
-X-Google-Smtp-Source: APXvYqzT4S2F+jsQrBIZuP+l7T+33RUZhHDDMRCf+924fdyQ7ByNNyi84Cz1xTdKu0cUzV3k5+G7LjvdIr/BATafnwk=
-X-Received: by 2002:a17:902:9002:: with SMTP id a2mr10495952plp.147.1571842817724;
- Wed, 23 Oct 2019 08:00:17 -0700 (PDT)
+        id S2406472AbfJWPEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 11:04:52 -0400
+Received: from mail-eopbgr140042.outbound.protection.outlook.com ([40.107.14.42]:3589
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2390431AbfJWPEv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 11:04:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B/C0LUvreh2lON8OfO2xglX5h8jUnyhIlhMtqR5uQT1P0L16VfnriWRumAKiJUZfaE0ygTvTtGC8TZPWi5JgIXHhISgdMeL8CKoCqxBoDjI9L043/k9pF0DtxR8c4nXiumS8rgSDI/LCfvSIGUb0/QQdwh9jYWVT/RRIYWcrwPAF+LkpRGYmVhc3T9dz7Sqbf1ZdUGynaj4+WRT+i0IpWemfsa7WjGmDm0kLs4MOKIIzgf4/nldeImb0Xdwpixz1msTPty0CDBVUNO3L2VpsYG33NVQGukTXN/w0A/6XqyUY9D/941my+E4l6FHbAvqZqSb0B5rixKfqpmH5Kwmi/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r6F1J8KX0J6EL9hcayJ4NxIsH+m0N41/K12iEsL//Cg=;
+ b=AOXG61bmWAZk+4EUAMOMgWoMGmdcTeKQ7QB55d/588nLU1tJpeNnQVtjjdV0mYMDqI2NpuHNcHzz2K2SkVaqEtkOUUjg7rAuFXHSQLJiIHCrVviCjhM/JIPbLVtOnVX+PxvgJ7WO1fDTNMnUyv8N9p+uJ8efU6QkbsToSVA1bmwnYS/I5Ick3sIxo4faZDkjBp+dZMSAfZ4UFy23j9GLJ0wxVT7DqAfzZKjGS62Lb7lWf9T1eehapRpsLJUxjcKfx/lLm4MH3bTbXXUi424X8U8Kd+ZmoCP6HG6AQBjK+4TKHpaydx622GoSCtLIurquks4aQTO/uQaFgHsh4fGhZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r6F1J8KX0J6EL9hcayJ4NxIsH+m0N41/K12iEsL//Cg=;
+ b=VigSp1WbdPfUSNmYv3fy8J8C9/XGCsfoRptraHWvGPjx4meU4iyEHDXx+WlxGawNkQfIofgGCd3KqfwFG/2aYVbtvIyvnYhb+RNQeyE75NNbtm9OGBvt3q/R6Y2tGLfJBeny/65S89kWEwpd4FDbIMNuTRoF++3R9YvJQGxdYlA=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB3325.eurprd05.prod.outlook.com (10.175.244.154) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2367.24; Wed, 23 Oct 2019 15:04:47 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2367.025; Wed, 23 Oct 2019
+ 15:04:46 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+CC:     Vlad Buslov <vladbu@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mleitner@redhat.com" <mleitner@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6doLtcAgAAEK4CAABWjgIAAC/qA
+Date:   Wed, 23 Oct 2019 15:04:46 +0000
+Message-ID: <vbf4kzzy038.fsf@mellanox.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+ <vbf7e4vy5nq.fsf@mellanox.com>
+ <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+In-Reply-To: <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0406.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:f::34) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b564a93f-e108-4333-4d93-08d757ca57cb
+x-ms-traffictypediagnostic: VI1PR05MB3325:|VI1PR05MB3325:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB3325C36DEDA75B4A223AE44DAD6B0@VI1PR05MB3325.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 019919A9E4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(396003)(136003)(366004)(346002)(199004)(189003)(53546011)(6436002)(66946007)(6486002)(305945005)(7736002)(6512007)(6116002)(386003)(3846002)(6506007)(229853002)(99286004)(26005)(102836004)(4326008)(186003)(11346002)(64756008)(5660300002)(8676002)(81166006)(14454004)(66556008)(81156014)(86362001)(66476007)(2616005)(476003)(486006)(8936002)(446003)(478600001)(66446008)(2906002)(25786009)(256004)(4001150100001)(54906003)(14444005)(316002)(36756003)(71190400001)(52116002)(71200400001)(6246003)(6916009)(66066001)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3325;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FivwiM5XM9Kqm85FdHsapKHZBKzcK1gDgNTIxHKvX+th+Z9R2xTHcWmSGgBLA7PCuDZ81+ARTtiK1MXhYnP6iXablXrJTbmfyVY1zI7UHXJzlRd8/pTlSd0LzJMUV1wI7E2Rjp/seFHzpEFUlgDqqRsDTAw5KlU2fWz1cr3PKNXUUC2yMjJvHtVxUPE9ncUFXabw8wjdxSgbjKuEdTy439cgdCrjMWgqIuRrpKhBWeSKolarMPgaHW2zJcbIp1+ydUQzZXzliMKRsTSx9qKv3FNenzN3KxgvRUKXCorKElvRu6mCtSUFTMlsudJ1U+oa5yyPFroN8AJ3ZMnfn6vI5KaLCy+yGO6G+mh9jE7EAcff2bDZ+Xj61E1gna6oyA5YFGhK3g38xzxyp4zSqJ6BfASukw5bKcZ/WXz/8h95mVCJsnL0TRjC2Tz5Mi0QiKUt
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <cover.1571762488.git.andreyknvl@google.com> <26e088ae3ebcaa30afe957aeabaa9f0c653df7d0.1571762488.git.andreyknvl@google.com>
- <CACT4Y+YntxT+cpESOBvbg+h=g-84ECJwQrFg7LM5tbq_zaMd3A@mail.gmail.com>
- <CAAeHK+yUTZc+BrGDvvTQD4O0hsDzhp0V6GGFdtnmE6U4yWabKw@mail.gmail.com> <CACT4Y+b+RTYjUyB1h0SYjEq8vmOZas3ByjeJqVU1LrjxpRKy2Q@mail.gmail.com>
-In-Reply-To: <CACT4Y+b+RTYjUyB1h0SYjEq8vmOZas3ByjeJqVU1LrjxpRKy2Q@mail.gmail.com>
-From:   Andrey Konovalov <andreyknvl@google.com>
-Date:   Wed, 23 Oct 2019 17:00:06 +0200
-Message-ID: <CAAeHK+x-dihJ5+Zb1JBNaL5VK1zB87BR5kPX2B=q+FyVW+WHnw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] vhost, kcov: collect coverage from vhost_worker
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     USB list <linux-usb@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Windsor <dwindsor@gmail.com>,
-        Elena Reshetova <elena.reshetova@intel.com>,
-        Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b564a93f-e108-4333-4d93-08d757ca57cb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2019 15:04:46.8003
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: J/ezl/OEFpfePlLL/gfJELtzTye2XcuxUWQkDLe1EN5ok0djvSUWglHHsFjfjbWq12sXdCbpcrQ58H/GwaZ7BA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3325
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 3:50 PM Dmitry Vyukov <dvyukov@google.com> wrote:
->
-> On Wed, Oct 23, 2019 at 3:35 PM Andrey Konovalov <andreyknvl@google.com> wrote:
-> >
-> > On Wed, Oct 23, 2019 at 10:36 AM Dmitry Vyukov <dvyukov@google.com> wrote:
-> > >
-> > > On Tue, Oct 22, 2019 at 6:46 PM Andrey Konovalov <andreyknvl@google.com> wrote:
-> > > >
-> > > > This patch adds kcov_remote_start()/kcov_remote_stop() annotations to the
-> > > > vhost_worker() function, which is responsible for processing vhost works.
-> > > > Since vhost_worker() threads are spawned per vhost device instance
-> > > > the common kcov handle is used for kcov_remote_start()/stop() annotations
-> > > > (see Documentation/dev-tools/kcov.rst for details). As the result kcov can
-> > > > now be used to collect coverage from vhost worker threads.
-> > > >
-> > > > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-> > > > ---
-> > > >  drivers/vhost/vhost.c | 6 ++++++
-> > > >  drivers/vhost/vhost.h | 1 +
-> > > >  2 files changed, 7 insertions(+)
-> > > >
-> > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > > index 36ca2cf419bf..a5a557c4b67f 100644
-> > > > --- a/drivers/vhost/vhost.c
-> > > > +++ b/drivers/vhost/vhost.c
-> > > > @@ -30,6 +30,7 @@
-> > > >  #include <linux/sched/signal.h>
-> > > >  #include <linux/interval_tree_generic.h>
-> > > >  #include <linux/nospec.h>
-> > > > +#include <linux/kcov.h>
-> > > >
-> > > >  #include "vhost.h"
-> > > >
-> > > > @@ -357,7 +358,9 @@ static int vhost_worker(void *data)
-> > > >                 llist_for_each_entry_safe(work, work_next, node, node) {
-> > > >                         clear_bit(VHOST_WORK_QUEUED, &work->flags);
-> > > >                         __set_current_state(TASK_RUNNING);
-> > > > +                       kcov_remote_start(dev->kcov_handle);
-> > > >                         work->fn(work);
-> > > > +                       kcov_remote_stop();
-> > > >                         if (need_resched())
-> > > >                                 schedule();
-> > > >                 }
-> > > > @@ -546,6 +549,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
-> > > >
-> > > >         /* No owner, become one */
-> > > >         dev->mm = get_task_mm(current);
-> > > > +       dev->kcov_handle = current->kcov_handle;
-> > >
-> > > kcov_handle is not present in task_struct if !CONFIG_KCOV
-> > >
-> > > Also this does not use KCOV_SUBSYSTEM_COMMON.
-> > > We discussed something along the following lines:
-> > >
-> > > u64 kcov_remote_handle(u64 subsys, u64 id)
-> > > {
-> > >   WARN_ON(subsys or id has wrong bits set).
-> >
-> > Hm, we can't have warnings in kcov_remote_handle() that is exposed in
-> > uapi headers. What we can do is return 0 (invalid handle) if subsys/id
-> > have incorrect bits set. And then we can either have another
-> > kcov_remote_handle() internally (with a different name though) that
-> > has a warning, or have warning in kcov_remote_start(). WDYT?
->
-> I would probably add the warning to kcov_remote_start(). This avoids
-> the need for another function and will catch a wrong ID if caller
-> generated it by some other means.
-> And then ioctls should also detect bad handles passed in and return
-> EINVAL. Then we will cover errors for both kernel and user programs.
 
-OK, will do in v2.
+On Wed 23 Oct 2019 at 17:21, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> On 2019-10-23 9:04 a.m., Vlad Buslov wrote:
+>>
+>> On Wed 23 Oct 2019 at 15:49, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>> Hi Vlad,
+>>>
+>
+>>> I understand your use case being different since it is for h/w
+>>> offload. If you have time can you test with batching many actions
+>>> and seeing the before/after improvement?
+>>
+>> Will do.
+>
+> Thanks.
+>
+> I think you may have published number before, but would be interesting
+> to see the before and after of adding the action first and measuring the
+> filter improvement without caring about the allocator.
+
+For filter with single gact drop action (first line in insertion rate
+table in the cover letter) I get insertion rate of 412k rules/sec with
+all of the actions preallocated in advance, which is 2x improvement.
 
 >
-> >
-> > >   return ...;
-> > > }
-> > >
-> > > kcov_remote_handle(KCOV_SUBSYSTEM_USB, bus);
-> > > kcov_remote_handle(KCOV_SUBSYSTEM_COMMON, current->kcov_handle);
-
-I'll add internal kcov_remote_handle_common() and
-kcov_remote_handle_usb() helpers to simplify kcov hooks in usb/vhost
-code though.
-
-> > >
-> > >
-> > > >         worker = kthread_create(vhost_worker, dev, "vhost-%d", current->pid);
-> > > >         if (IS_ERR(worker)) {
-> > > >                 err = PTR_ERR(worker);
-> > > > @@ -571,6 +575,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
-> > > >         if (dev->mm)
-> > > >                 mmput(dev->mm);
-> > > >         dev->mm = NULL;
-> > > > +       dev->kcov_handle = 0;
-> > > >  err_mm:
-> > > >         return err;
-> > > >  }
-> > > > @@ -682,6 +687,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > > >         if (dev->worker) {
-> > > >                 kthread_stop(dev->worker);
-> > > >                 dev->worker = NULL;
-> > > > +               dev->kcov_handle = 0;
-> > > >         }
-> > > >         if (dev->mm)
-> > > >                 mmput(dev->mm);
-> > > > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> > > > index e9ed2722b633..a123fd70847e 100644
-> > > > --- a/drivers/vhost/vhost.h
-> > > > +++ b/drivers/vhost/vhost.h
-> > > > @@ -173,6 +173,7 @@ struct vhost_dev {
-> > > >         int iov_limit;
-> > > >         int weight;
-> > > >         int byte_weight;
-> > > > +       u64 kcov_handle;
-> > > >  };
-> > > >
-> > > >  bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
-> > > > --
-> > > > 2.23.0.866.gb869b98d4c-goog
-> > > >
+>>
+>>>
+>>> Note: even for h/w offload it makes sense to first create the actions
+>>> then bind to filters (in my world thats what we end up doing).
+>>> If we can improve the first phase it is a win for both s/w and hw use
+>>> cases.
+>>>
+>>> Question:
+>>> Given TCA_ACT_FLAGS_FAST_INIT is common to all actions would it make
+>>> sense to use Could you have used a TLV in the namespace of TCA_ACT_MAX
+>>> (outer TLV)? You will have to pass a param to ->init().
+>>
+>> It is not common for all actions. I omitted modifying actions that are
+>> not offloaded and some actions don't user percpu allocator at all
+>> (pedit, for example) and have no use for this flag at the moment.
+>
+> pedit just never got updated (its simple to update). There is
+> value in the software to have _all_ the actions use per cpu stats.
+> It improves fast path performance.
+>
+> Jiri complains constantly about all these new per-action TLVs
+> which are generic. He promised to "fix it all" someday. Jiri i notice
+> your ack here, what happened? ;->
+>
+> cheers,
+> jamal
