@@ -2,97 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5B89E0F8B
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 03:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FBCFE0F92
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 03:10:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731266AbfJWBGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Oct 2019 21:06:24 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58794 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731059AbfJWBGY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Oct 2019 21:06:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Ab36XEbIO9dGtvulmA1y5l4Y+OEvyatTrK5rRhzAxBg=; b=sFrY7MPG/5rgSbn8tyKYqZ1Qf9
-        7gKYgbvcnrY8Fg65sRokIudW594VKOuELTs3pXKR1xixb/M7IPsYWRzIXCsalqMhzdk+k/JFf5GMq
-        kulHL9OcOC2siFDhtt/E5Oop8hWhlA8Nb3j6w6de//lxn9siLHPm3Wlj95zdZut6wFmc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iN56T-0004QO-76; Wed, 23 Oct 2019 03:06:21 +0200
-Date:   Wed, 23 Oct 2019 03:06:21 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Iwan R Timmer <irtimmer@gmail.com>
-Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net
-Subject: Re: [PATCH net-next v2 1/2] net: dsa: mv88e6xxx: Split monitor port
- configuration
-Message-ID: <20191023010621.GH5707@lunn.ch>
-References: <20191021210143.119426-1-irtimmer@gmail.com>
- <20191021210143.119426-2-irtimmer@gmail.com>
+        id S1732328AbfJWBKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Oct 2019 21:10:39 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37251 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732188AbfJWBKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Oct 2019 21:10:39 -0400
+Received: by mail-pg1-f196.google.com with SMTP id p1so11070264pgi.4
+        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 18:10:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=suKcbjs27TNYLjQ5qKmsBBPJ/AYcEvEyPi0zqfkfKQA=;
+        b=ZPJahJn+BucCm8sRjzWxhSVAT/hGhQ0KNUbbxAFh5Gf3PQEtAhxJ6eAR2E0ENZ+JmX
+         xB/1MkJ6d4QNYLs9Eh9K+me+Ls6LQ4d2zIF4/jU6ZcEu8hmEO50s8HyYWQWxpdUx/Pck
+         ILTySWpM4KaC7Ai+Oauqje3lgpsmx1mioOpm30UKgyQGiDH7G5O+ym+ECXW8j/qJHOEu
+         I+AbmfF5WHtBD1Eie32zKR8BkfClLjRnhV5dKtTxXgh+hW4iH3w7sB93cyuNqUirgVMn
+         OLt+CCtMKndTuyE68jH+938AQ8sMbThRElsZiBJqWRVDRlHjL54hpkS1n69QBSgoZnBH
+         y7ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=suKcbjs27TNYLjQ5qKmsBBPJ/AYcEvEyPi0zqfkfKQA=;
+        b=U4b7A5p6sLuVTraASwThd2mWe1EnnnsU6OSQXYnGDkUNCeKv8Y8NghleY44Mwjze7W
+         atg497yRQOh5J7WeDzcqhHes7BMRJa/zepGVqm1FLWGBg5ZwbIhbUtzE35IJ40NOCe0a
+         tGj+UxraBzNSV1GdH6GQD8cS7n9iXl7XJ5X2+6snuAEisEheH+Y7D4yhCGoe9gaIeBkY
+         tW81jV6Q0oyoMFhRX5uCYEkhbvkGBQH5Y7q12SIbzOVgv9JnAyTjYz/I1FRo67fKVrUy
+         WZ9WEtPRp3z1ZWaqIt/STHAgNt4bojWGFCMrs8kHTokocfzU48eXpr1KWfmb09bu/PTX
+         XHIA==
+X-Gm-Message-State: APjAAAWh+bLuIVnXhe/JS17JQAETIZwCcNIX2xkVnpPNF07oyk0VCeuH
+        V74fsE/dM8b9k0EfghHs8SeseNq6IshZy6L1h44=
+X-Google-Smtp-Source: APXvYqwR9XlO4o1tjWqnXoC5EU+I/WVtfLatg1RhxvgpgBZ6c3DlSvctSWTkUriEvNSydVlqgY5GRwXAL1wSMJOjMOs=
+X-Received: by 2002:a63:a849:: with SMTP id i9mr6689630pgp.237.1571793038756;
+ Tue, 22 Oct 2019 18:10:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191021210143.119426-2-irtimmer@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191022231051.30770-1-xiyou.wangcong@gmail.com>
+ <20191022231051.30770-4-xiyou.wangcong@gmail.com> <CANn89i+Y+fMqPbT-YyKcbQOH96+D=U8K4wnNgFkGYtjStKPrEQ@mail.gmail.com>
+In-Reply-To: <CANn89i+Y+fMqPbT-YyKcbQOH96+D=U8K4wnNgFkGYtjStKPrEQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 22 Oct 2019 18:10:27 -0700
+Message-ID: <CAM_iQpWxDN7Wm_ar7cStiMnhmmy7RK=BG5k4zwD+K6kbgfPEKw@mail.gmail.com>
+Subject: Re: [Patch net-next 3/3] tcp: decouple TLP timer from RTO timer
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 11:01:42PM +0200, Iwan R Timmer wrote:
-> Separate the configuration of the egress and ingress monitor port.
-> This allows the port mirror functionality to do ingress and egress
-> port mirroring to separate ports.
-> 
-> Signed-off-by: Iwan R Timmer <irtimmer@gmail.com>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c    |  9 ++++++++-
->  drivers/net/dsa/mv88e6xxx/chip.h    |  3 ++-
->  drivers/net/dsa/mv88e6xxx/global1.c | 23 +++++++++++------------
->  drivers/net/dsa/mv88e6xxx/global1.h |  6 ++++--
->  4 files changed, 25 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 6787d560e9e3..e9735346838d 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -2378,7 +2378,14 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
->  
->  		if (chip->info->ops->set_egress_port) {
->  			err = chip->info->ops->set_egress_port(chip,
-> -							       upstream_port);
-> +							       true,
-> +							       upstream_port);
-> +			if (err)
-> +				return err;
-> +
-> +			err = chip->info->ops->set_egress_port(chip,
-> +							       false,
-> +							       upstream_port);
+On Tue, Oct 22, 2019 at 4:24 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Tue, Oct 22, 2019 at 4:11 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > Currently RTO, TLP and PROBE0 all share a same timer instance
+> > in kernel and use icsk->icsk_pending to dispatch the work.
+> > This causes spinlock contention when resetting the timer is
+> > too frequent, as clearly shown in the perf report:
+> >
+> >    61.72%    61.71%  swapper          [kernel.kallsyms]                        [k] queued_spin_lock_slowpath
+> >    ...
+> >     - 58.83% tcp_v4_rcv
+> >       - 58.80% tcp_v4_do_rcv
+> >          - 58.80% tcp_rcv_established
+> >             - 52.88% __tcp_push_pending_frames
+> >                - 52.88% tcp_write_xmit
+> >                   - 28.16% tcp_event_new_data_sent
+> >                      - 28.15% sk_reset_timer
+> >                         + mod_timer
+> >                   - 24.68% tcp_schedule_loss_probe
+> >                      - 24.68% sk_reset_timer
+> >                         + 24.68% mod_timer
+> >
+> > This patch decouples TLP timer from RTO timer by adding a new
+> > timer instance but still uses icsk->icsk_pending to dispatch,
+> > in order to minimize the risk of this patch.
+> >
+> > After this patch, the CPU time spent in tcp_write_xmit() reduced
+> > down to 10.92%.
+>
+> What is the exact benchmark you are running ?
+>
+> We never saw any contention like that, so lets make sure you are not
+> working around another issue.
 
-Hi Iwam
+I simply ran 256 parallel netperf with 128 CPU's to trigger this
+spinlock contention, 100% reproducible here.
 
-I never find true/false very simple to understand. Please could you
-add an enum. We already have
+A single netperf TCP_RR could _also_ confirm the improvement:
 
-enum mv88e6xxx_egress_mode {
-        MV88E6XXX_EGRESS_MODE_UNMODIFIED,
-        MV88E6XXX_EGRESS_MODE_UNTAGGED,
-        MV88E6XXX_EGRESS_MODE_TAGGED,
-        MV88E6XXX_EGRESS_MODE_ETHERTYPE,
-};
+Before patch:
 
-so maybe
+$ netperf -H XXX -t TCP_RR -l 20
+MIGRATED TCP REQUEST/RESPONSE TEST from 0.0.0.0 (0.0.0.0) port 0
+AF_INET to XXX () port 0 AF_INET : first burst 0
+Local /Remote
+Socket Size   Request  Resp.   Elapsed  Trans.
+Send   Recv   Size     Size    Time     Rate
+bytes  Bytes  bytes    bytes   secs.    per sec
 
-enum mv88e6xxx_egress_direction {
-        MV88E6XXX_EGRESS_DIR_INGRESS,
-        MV88E6XXX_EGRESS_DIR_EGRESS,
-};
+655360 873800 1        1       20.00    17665.59
+655360 873800
 
-Otherwise the spirit of the patch is O.K.
 
-	  Andrew
+After patch:
+
+$ netperf -H XXX -t TCP_RR -l 20
+MIGRATED TCP REQUEST/RESPONSE TEST from 0.0.0.0 (0.0.0.0) port 0
+AF_INET to XXX () port 0 AF_INET : first burst 0
+Local /Remote
+Socket Size   Request  Resp.   Elapsed  Trans.
+Send   Recv   Size     Size    Time     Rate
+bytes  Bytes  bytes    bytes   secs.    per sec
+
+655360 873800 1        1       20.00    18829.31
+655360 873800
+
+(I have run it for multiple times, just pick a median one here.)
+
+The difference can also be observed by turning off/on TLP without patch.
+
+Thanks.
